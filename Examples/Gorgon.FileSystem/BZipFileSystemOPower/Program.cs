@@ -23,7 +23,6 @@
 // Created: Saturday, January 19, 2013 7:32:45 PM
 // 
 
-
 using Gorgon.UI;
 
 namespace Gorgon.Examples;
@@ -33,7 +32,6 @@ namespace Gorgon.Examples;
 /// </summary>
 static class Program
 {
-
     /// <summary>
     /// The main entry point for the application.
     /// </summary>
@@ -57,5 +55,4 @@ static class Program
             GorgonExample.UnloadResources();
         }
     }
-
 }

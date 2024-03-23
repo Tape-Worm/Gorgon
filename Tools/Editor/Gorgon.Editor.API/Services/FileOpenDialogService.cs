@@ -23,7 +23,6 @@
 // Created: September 24, 2018 12:48:59 PM
 // 
 
-
 using Gorgon.Editor.Properties;
 using Gorgon.UI;
 
@@ -35,7 +34,6 @@ namespace Gorgon.Editor.Services;
 public class FileOpenDialogService
     : IFileDialogService
 {
-
     /// <summary>
     /// Property to set or return a file filter.
     /// </summary>        
@@ -71,8 +69,6 @@ public class FileOpenDialogService
         get;
         set;
     }
-
-
 
     /// <summary>
     /// Function to retrieve the parent form for the message box.
@@ -128,5 +124,4 @@ public class FileOpenDialogService
             dialog?.Dispose();
         }
     }
-
 }

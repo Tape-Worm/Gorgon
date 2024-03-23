@@ -23,7 +23,6 @@
 // Created: March 28, 2019 9:48:28 AM
 // 
 
-
 using System.ComponentModel;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Controls;
@@ -38,7 +37,6 @@ namespace Gorgon.Editor.SpriteEditor;
 internal partial class SpriteWrap
     : EditorSubPanelCommon, IDataContext<ISpriteTextureWrapEdit>
 {
-
     /// <summary>
     /// Property to return the data context for the view.
     /// </summary>
@@ -48,8 +46,6 @@ internal partial class SpriteWrap
         get;
         private set;
     }
-
-
 
     /// <summary>Handles the Click event of the RadioHClamp control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -266,8 +262,6 @@ internal partial class SpriteWrap
         ViewModel.PropertyChanged += DataContext_PropertyChanged;
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="SpriteWrap"/> class.</summary>
     public SpriteWrap()
     {
@@ -279,5 +273,4 @@ internal partial class SpriteWrap
         RadioHMirrorOnce.Tag = RadioVMirrorOnce.Tag = TextureWrap.MirrorOnce;
         RadioHBorder.Tag = RadioVBorder.Tag = TextureWrap.Border;
     }
-
 }

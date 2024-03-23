@@ -23,7 +23,6 @@
 // Created: March 25, 2019 9:47:13 AM
 // 
 
-
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
@@ -44,7 +43,6 @@ namespace Gorgon.Editor.AnimationEditor;
 internal class ImportSettingsParameters(AnimationImportSettings settings, CodecRegistry codecs, IFileDialogService openCodecDialog, GorgonMefPlugInCache plugInCache, IHostContentServices hostServices)
         : PlugInsCategoryViewModelParameters(openCodecDialog, plugInCache, hostServices)
 {
-
     /// <summary>
     /// Property to return the settings for the plug in.
     /// </summary>
@@ -60,6 +58,5 @@ internal class ImportSettingsParameters(AnimationImportSettings settings, CodecR
     {
         get;
     } = codecs ?? throw new ArgumentNullException(nameof(settings));
-
 
 }

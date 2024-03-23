@@ -23,7 +23,6 @@
 // Created: Saturday, August 1, 2015 12:29:34 PM
 // 
 
-
 using Gorgon.Graphics;
 
 namespace Gorgon.Input;
@@ -45,7 +44,6 @@ namespace Gorgon.Input;
 public class GorgonMouseEventArgs(MouseButtons buttons, MouseButtons shiftButtons, GorgonPoint position, int wheelPosition, GorgonPoint relativePosition, int wheelDelta, int clickCount, bool isAbsolute)
         : EventArgs
 {
-
     /// <summary>
     /// Property to return the buttons that were held down during a <see cref="GorgonRawMouse"/> event.
     /// </summary>
@@ -120,8 +118,5 @@ public class GorgonMouseEventArgs(MouseButtons buttons, MouseButtons shiftButton
     {
         get;
     } = isAbsolute;
-
-
-
 
 }

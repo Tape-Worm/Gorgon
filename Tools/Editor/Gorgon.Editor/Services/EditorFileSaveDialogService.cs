@@ -23,7 +23,6 @@
 // Created: September 24, 2018 12:48:59 PM
 // 
 
-
 using System.Text;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Properties;
@@ -46,8 +45,6 @@ internal class EditorFileSaveDialogService(EditorSettings settings, FileSystemPr
 
     // The previously selected file extension filter index.
     private int _lastSelectedExtensionIndex = -1;
-
-
 
     /// <summary>
     /// Property to set or return a file filter.
@@ -111,8 +108,6 @@ internal class EditorFileSaveDialogService(EditorSettings settings, FileSystemPr
         get;
         set;
     }
-
-
 
     /// <summary>
     /// Function to build a file system writer filter string for file dialogs.
@@ -292,6 +287,4 @@ internal class EditorFileSaveDialogService(EditorSettings settings, FileSystemPr
             dialog?.Dispose();
         }
     }
-
-
 }

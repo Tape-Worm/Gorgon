@@ -23,7 +23,6 @@
 // Created: June 7, 2018 4:18:45 PM
 // 
 
-
 using System.Runtime.CompilerServices;
 using Gorgon.Graphics.Core;
 
@@ -56,8 +55,6 @@ internal sealed class DrawCallFactory(GorgonGraphics graphics, GorgonTexture2DVi
     // The current input layout.
     private readonly GorgonInputLayout _inputLayout = inputLayout;
 
-
-
     /// <summary>
     /// Property to set or return the buffer used to hold alpha test data.
     /// </summary>
@@ -66,8 +63,6 @@ internal sealed class DrawCallFactory(GorgonGraphics graphics, GorgonTexture2DVi
         get;
         set;
     }
-
-
 
     /// <summary>
     /// Function to set up common states for a draw call type.
@@ -155,6 +150,4 @@ internal sealed class DrawCallFactory(GorgonGraphics graphics, GorgonTexture2DVi
                                 .IndexBuffer(indexBuffer)
                                 .Build(_drawIndexAllocator);
     }
-
-
 }

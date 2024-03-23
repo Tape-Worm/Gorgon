@@ -17,8 +17,6 @@ public class SaveAsService(IContentFileManager fileManager)
     // The file manager for the project.
     private readonly IContentFileManager _fileManager = fileManager ?? throw new ArgumentNullException(nameof(fileManager));
 
-
-
     /// <summary>
     /// Function to present a means of providing a path for a save as operation.
     /// </summary>
@@ -52,6 +50,4 @@ public class SaveAsService(IContentFileManager fileManager)
             saveDialog.Dispose();
         }
     }
-
-
 }

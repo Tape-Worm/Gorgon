@@ -23,7 +23,6 @@
 // Created: Monday, June 27, 2011 8:59:25 AM
 // 
 
-
 using Gorgon.IO.Providers;
 
 namespace Gorgon.IO;
@@ -73,7 +72,6 @@ namespace Gorgon.IO;
 internal class VirtualFile
     : IGorgonVirtualFile
 {
-
     /// <summary>
     /// Property to return the file system that owns this file.
     /// </summary>
@@ -163,8 +161,6 @@ internal class VirtualFile
     /// </remarks>
     public string Name => PhysicalFile.Name;
 
-
-
     /// <summary>
     /// Function to open a stream to the file on the physical file system.
     /// </summary>
@@ -173,8 +169,6 @@ internal class VirtualFile
     /// This will open a <see cref="Stream"/> to the physical file for reading. Applications that open a stream to a file are responsible for closing the <see cref="Stream"/> when they are done.
     /// </remarks>
     public Stream OpenStream() => MountPoint.Provider.OpenFileStream(this);
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="VirtualFile"/> class.
@@ -191,5 +185,4 @@ internal class VirtualFile
         BaseFileName = Path.GetFileNameWithoutExtension(fileInfo.Name);
         MountPoint = mountPoint;
     }
-
 }

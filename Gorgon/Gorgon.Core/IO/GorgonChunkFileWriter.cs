@@ -23,7 +23,6 @@
 // Created: Sunday, June 14, 2015 10:40:50 PM
 // 
 
-
 using Gorgon.Properties;
 
 namespace Gorgon.IO;
@@ -125,8 +124,6 @@ public sealed class GorgonChunkFileWriter
     private GorgonChunk _activeChunk;
     // The active chunk writer.
     private GorgonBinaryWriter _activeWriter;
-
-
 
     /// <summary>
     /// Function to write the header information for the chunk file.
@@ -259,8 +256,6 @@ public sealed class GorgonChunkFileWriter
         _activeWriter = null;
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonChunkFileWriter"/> class.
     /// </summary>
@@ -287,5 +282,4 @@ public sealed class GorgonChunkFileWriter
 
         _appHeaderId = appHeaderId;
     }
-
 }

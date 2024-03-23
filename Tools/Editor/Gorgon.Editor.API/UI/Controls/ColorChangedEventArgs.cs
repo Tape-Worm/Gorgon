@@ -23,7 +23,6 @@
 // Created: March 28, 2019 9:45:09 AM
 // 
 
-
 using Gorgon.Graphics;
 
 namespace Gorgon.Editor.UI.Controls;
@@ -37,7 +36,6 @@ namespace Gorgon.Editor.UI.Controls;
 public class ColorChangedEventArgs(GorgonColor newColor, GorgonColor originalColor)
         : EventArgs
 {
-
     /// <summary>
     /// Property to return the selected color.
     /// </summary>
@@ -53,6 +51,5 @@ public class ColorChangedEventArgs(GorgonColor newColor, GorgonColor originalCol
     {
         get;
     } = originalColor;
-
 
 }

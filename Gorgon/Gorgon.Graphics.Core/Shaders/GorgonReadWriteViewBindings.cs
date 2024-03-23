@@ -23,7 +23,6 @@
 // Created: May 30, 2018 10:23:53 PM
 // 
 
-
 using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
@@ -47,13 +46,10 @@ namespace Gorgon.Graphics.Core;
 public sealed class GorgonReadWriteViewBindings
     : GorgonArray<GorgonReadWriteViewBinding>
 {
-
     /// <summary>
     /// The maximum number of vertex buffers allow to be bound at the same time.
     /// </summary>
     public const int MaximumReadWriteViewCount = 64;
-
-
 
     /// <summary>
     /// Property to return the native items wrapped by this list.
@@ -70,8 +66,6 @@ public sealed class GorgonReadWriteViewBindings
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to validate an item being assigned to a slot.
@@ -130,8 +124,6 @@ public sealed class GorgonReadWriteViewBindings
         Array.Clear(Counts, 0, Counts.Length);
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonReadWriteViewBindings"/> class.
     /// </summary>
@@ -144,5 +136,4 @@ public sealed class GorgonReadWriteViewBindings
         // Force us to clear to the empty views instead of the default for the type.
         Clear();
     }
-
 }

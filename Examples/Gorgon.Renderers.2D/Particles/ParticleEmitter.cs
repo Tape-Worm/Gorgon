@@ -23,7 +23,6 @@
 // Created: August 14, 2020 10:12:30 AM
 // 
 
-
 using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Graphics;
@@ -104,7 +103,6 @@ public class ParticleEmitter
         /// </summary>
         public float TerminalAge;
 
-
         /// <summary>
         /// Function to copy the contents of this particle to another particle.
         /// </summary>
@@ -128,7 +126,6 @@ public class ParticleEmitter
 
     }
 
-
     // List of particles.
     private Particle[] _particles = null;
     // Previous position.
@@ -141,7 +138,6 @@ public class ParticleEmitter
     private int _aliveCount;
     // The fractional remainder for the particle allocation calculation.
     private float _remainder;
-
 
     /// <summary>
     /// Property to set or return the scale for the emitter.
@@ -349,8 +345,6 @@ public class ParticleEmitter
         get;
         set;
     }
-
-
 
     /// <summary>
     /// Function to create and initialize the particles.
@@ -572,5 +566,4 @@ public class ParticleEmitter
         // Force particle creation (assume 60 FPS).
         CreateParticles(1 / 60.0f);
     }
-
 }

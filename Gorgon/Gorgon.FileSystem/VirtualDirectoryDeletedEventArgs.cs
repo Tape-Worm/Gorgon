@@ -23,7 +23,6 @@
 // Created: January 2, 2020 1:14:24 PM
 // 
 
-
 namespace Gorgon.IO;
 
 /// <summary>

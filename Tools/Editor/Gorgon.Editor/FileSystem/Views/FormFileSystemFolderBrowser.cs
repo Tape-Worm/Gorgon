@@ -23,7 +23,6 @@
 // Created: April 28, 2019 12:15:14 PM
 // 
 
-
 using System.ComponentModel;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.ViewModels;
@@ -40,8 +39,6 @@ internal partial class FormFileSystemFolderBrowser
 
     // The currently active directory.
     private IDirectory _currentDirectory;
-
-
 
     /// <summary>
     /// Property to set or return the description to display on the browser.
@@ -66,8 +63,6 @@ internal partial class FormFileSystemFolderBrowser
     /// </summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public string CurrentDirectory => FolderBrowser.CurrentDirectory;
-
-
 
     /// <summary>
     /// Function to retrieve the current directory as an <see cref="IDirectory"/> object.
@@ -282,8 +277,6 @@ internal partial class FormFileSystemFolderBrowser
 
         ViewModel = dataContext;
     }
-
-
 
     /// <summary>Initializes a new instance of the <see cref="FormFileSystemFolderBrowser"/> class.</summary>
     public FormFileSystemFolderBrowser() => InitializeComponent();

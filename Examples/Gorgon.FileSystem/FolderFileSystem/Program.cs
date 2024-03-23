@@ -23,7 +23,6 @@
 // Created: Saturday, January 5, 2013 3:29:58 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.IO;
@@ -59,8 +58,6 @@ internal static class Program
     private static GorgonFileSystem _fileSystem;
     // The log used logging debug messages.
     private static IGorgonLog _log;
-
-
 
     /// <summary>
     /// The main entry point for the application.

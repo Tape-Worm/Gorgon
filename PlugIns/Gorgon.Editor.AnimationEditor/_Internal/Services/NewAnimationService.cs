@@ -23,7 +23,6 @@
 // Created: July 23, 2020 12:34:48 PM
 // 
 
-
 using Gorgon.Editor.AnimationEditor.Properties;
 using Gorgon.Editor.Content;
 using Gorgon.Graphics.Imaging;
@@ -50,8 +49,6 @@ internal class NewAnimationService(IContentFileManager fileManager, IGorgonSprit
     private readonly IGorgonImageCodec _imageCodec = imageCodec ?? throw new ArgumentNullException(nameof(imageCodec));
     // THe sprite codec for loading sprite data.
     private readonly IGorgonSpriteCodec _spriteCodec = spriteCodec ?? throw new ArgumentNullException(nameof(spriteCodec));
-
-
 
     /// <summary>
     /// Function to determine if an image content file is a sprite or not.
@@ -129,8 +126,4 @@ internal class NewAnimationService(IContentFileManager fileManager, IGorgonSprit
             ? (newAnimationForm.ObjectName, newAnimationForm.Length, newAnimationForm.Fps, newAnimationForm.PrimarySpriteFile, newAnimationForm.BackgroundTextureFile)
             : (null, 0, 0, null, null);
     }
-
-
-
-
 }

@@ -23,7 +23,6 @@
 // Created: September 5, 2021 7:38:51 PM
 // 
 
-
 using System.ComponentModel;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Controls;
@@ -42,8 +41,6 @@ internal partial class FontSolidBrushView
     // The event hook counter.
     private int _eventHook;
 
-
-
     /// <summary>
     /// Property to return the data context for the view.
     /// </summary>
@@ -53,8 +50,6 @@ internal partial class FontSolidBrushView
         get;
         private set;
     }
-
-
 
     /// <summary>
     /// Function to unhook the events.
@@ -258,8 +253,6 @@ internal partial class FontSolidBrushView
         ViewModel.PropertyChanged += DataContext_PropertyChanged;
         ValidateControls();
     }
-
-
 
     /// <summary>Initializes a new instance of the <see cref="FontOutlineView"/> class.</summary>
     public FontSolidBrushView() => InitializeComponent();

@@ -23,7 +23,6 @@
 // Created: June 16, 2020 4:24:54 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Animation;
 using Gorgon.Editor.PlugIns;
@@ -45,8 +44,6 @@ internal class KeyFrame
     private TextureValue _texture;
     // The floating point values for the key.
     private Vector4 _floatValues;
-
-
 
     /// <summary>Property to set or return the time index for the key frame.</summary>
     public float Time
@@ -106,8 +103,6 @@ internal class KeyFrame
         }
     }
 
-
-
     /// <summary>Function to inject dependencies for the view model.</summary>
     /// <param name="injectionParameters">The parameters to inject.</param>
     /// <remarks>
@@ -132,5 +127,4 @@ internal class KeyFrame
             _floatValues = injectionParameters.FloatValues.Value;
         }
     }
-
 }

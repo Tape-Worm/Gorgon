@@ -23,7 +23,6 @@
 // Created: March 15, 2019 11:53:17 AM
 // 
 
-
 using Gorgon.Editor.Rendering;
 
 namespace Gorgon.Editor.SpriteEditor;
@@ -34,7 +33,6 @@ namespace Gorgon.Editor.SpriteEditor;
 internal interface ISpriteViewer
     : IContentRenderer
 {
-
     /// <summary>
     /// Property to set or return the opacity of the content in the view.
     /// </summary>
@@ -50,8 +48,6 @@ internal interface ISpriteViewer
         get;
         set;
     }
-
-
 
     /// <summary>
     /// Function to create resources required for the lifetime of the viewer.

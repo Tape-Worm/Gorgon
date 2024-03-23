@@ -23,7 +23,6 @@
 // Created: June 5, 2020 6:15:37 PM
 // 
 
-
 using Gorgon.Editor.AnimationEditor.Properties;
 using Gorgon.Editor.AnimationEditor.Services;
 using Gorgon.Editor.PlugIns;
@@ -54,8 +53,6 @@ internal class AnimationImporterPlugIn
     /// The file name for the file that stores the settings.
     /// </summary>
     public readonly static string SettingsFilename = typeof(AnimationImporterPlugIn).FullName;
-
-
 
     /// <summary>
     /// Function to retrieve the codec used by the sprite.
@@ -167,12 +164,9 @@ internal class AnimationImporterPlugIn
     /// <remarks>This method creates an instance of the custom content importer. The application will use the object returned to perform the actual import process.</remarks>
     protected override IEditorContentImporter OnCreateImporter() => new GorgonAnimationImporter(ProjectFileSystem, TemporaryFileSystem, _codecs, HostContentServices.GraphicsContext.Renderer2D, HostContentServices.Log);
 
-
-
     /// <summary>Initializes a new instance of the <see cref="AnimationImporterPlugIn"/> class.</summary>
     public AnimationImporterPlugIn()
         : base(Resources.GORANM_IMPORT_DESC)
     {
     }
-
 }

@@ -23,7 +23,6 @@
 // Created: April 4, 2019 8:58:41 AM
 // 
 
-
 using System.ComponentModel;
 using System.Numerics;
 using Gorgon.Editor.UI;
@@ -48,16 +47,12 @@ internal partial class SpriteAnchor
     // Mid point of right side.
     private float _midRight;
 
-
-
     /// <summary>Property to return the data context assigned to this view.</summary>
     public ISpriteAnchorEdit ViewModel
     {
         get;
         private set;
     }
-
-
 
     /// <summary>
     /// Function to set the mid points for the edges of the sprite.
@@ -411,8 +406,6 @@ internal partial class SpriteAnchor
 
         ViewModel.PropertyChanged += DataContext_PropertyChanged;
     }
-
-
 
     /// <summary>Initializes a new instance of the <see cref="SpriteAnchor"/> class.</summary>
     public SpriteAnchor() => InitializeComponent();

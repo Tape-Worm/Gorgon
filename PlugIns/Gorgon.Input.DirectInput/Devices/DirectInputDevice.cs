@@ -23,7 +23,6 @@
 // Created: Sunday, September 13, 2015 8:59:22 PM
 // 
 
-
 using System.Diagnostics;
 using Gorgon.Core;
 using Gorgon.Input.DirectInput.Properties;
@@ -51,8 +50,6 @@ internal class DirectInputDevice
     // The axis to Direct Input property mappings.
     private readonly IReadOnlyDictionary<GamingDeviceAxis, DI.DeviceObjectId> _axisMappings;
 
-
-
     /// <summary>
     /// Property to return whether the gaming device is connected or not.
     /// </summary> 
@@ -66,8 +63,6 @@ internal class DirectInputDevice
     /// </para>
     /// </remarks>
     public override bool IsConnected => _directInput.IsDeviceAttached(_info.DeviceID);
-
-
 
     /// <summary>
     /// Function to acquire a gaming device.
@@ -327,8 +322,6 @@ internal class DirectInputDevice
         base.Dispose();
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="DirectInputDevice"/> class.
     /// </summary>
@@ -343,5 +336,4 @@ internal class DirectInputDevice
         _joystick = new Lazy<DI.Joystick>(() => CreateJoystick(directInput, deviceInfo), true);
         _axisMappings = axisMappings;
     }
-
 }

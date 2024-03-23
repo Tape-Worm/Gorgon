@@ -23,7 +23,6 @@
 // Created: August 25, 2018 10:57:09 AM
 // 
 
-
 using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Graphics;
@@ -33,7 +32,6 @@ using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
 using Gorgon.Renderers;
 using Gorgon.UI;
-
 
 namespace Gorgon.Examples;
 
@@ -50,8 +48,6 @@ S - Show frame stats.
 Click - move other ship into foreground.
 Mousewheel - blur/sharpen background.
 ESC - Quit.";
-
-
 
     // The graphics interface.
     private static GorgonGraphics _graphics;
@@ -88,12 +84,6 @@ ESC - Quit.";
     private static GorgonFont _helpFont;
     // Flag to indicate that the help text should be visible.
     private static bool _showHelp = true;
-
-
-
-
-
-
 
     /// <summary>
     /// Function to draw the lower layer.
@@ -268,7 +258,6 @@ ESC - Quit.";
 
             BuildRenderTargets(new GorgonPoint(_screen.Width, _screen.Height));
 
-
             _backgroundTexture = GorgonTexture2DView.FromFile(_graphics,
                                                               Path.Combine(GorgonExample.GetResourcePath(@"Textures\TheShadowGn0s\").FullName,
                                                                            "VBBack.jpg"),
@@ -435,8 +424,6 @@ ESC - Quit.";
     /// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
     private static void Window_MouseMove(object sender, MouseEventArgs e) => _fgSprite.Position = new Vector2(e.X, e.Y);
 
-
-
     /// <summary>
     /// The main entry point for the application.
     /// </summary>
@@ -473,5 +460,4 @@ ESC - Quit.";
             _graphics?.Dispose();
         }
     }
-
 }

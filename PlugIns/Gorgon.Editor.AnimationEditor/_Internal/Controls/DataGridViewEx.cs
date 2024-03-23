@@ -23,7 +23,6 @@
 // Created: June 10, 2020 12:23:33 PM
 // 
 
-
 using System.ComponentModel;
 using Gorgon.Math;
 
@@ -44,8 +43,6 @@ internal class DataGridViewEx
     private readonly List<DataGridViewCell> _dragCells = [];
     // Flag to indicate that the selection changed event should be fired or not.
     private int _noFireSelectEvent;
-
-
 
     // The true event that is fired when selected cells are dragged.        
     private event EventHandler<CellsDragEventArgs> CellsDragEvent;
@@ -77,8 +74,6 @@ internal class DataGridViewEx
         }
     }
 
-
-
     /// <summary>
     /// Property to set or return the message to display when no data is present.
     /// </summary>
@@ -98,8 +93,6 @@ internal class DataGridViewEx
         get;
         set;
     }
-
-
 
     /// <summary>Raises the <see cref="Control.MouseMove"/> event.</summary>
     /// <param name="e">A <see cref="MouseEventArgs"/> that contains the event data.</param>
@@ -261,8 +254,6 @@ internal class DataGridViewEx
 
         base.Dispose(disposing);
     }
-
-
 
     /// <summary>Initializes a new instance of the <see cref="DataGridViewEx"/> class.</summary>
     public DataGridViewEx() => DoubleBuffered = true;

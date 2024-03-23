@@ -23,7 +23,6 @@
 // Created: August 26, 2018 6:59:36 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Properties;
@@ -43,8 +42,6 @@ internal class GraphicsContext
 
     // Leases for a swap chain.
     private readonly Dictionary<string, WeakReference<GorgonSwapChain>> _swapChainLeases = new(StringComparer.OrdinalIgnoreCase);
-
-
 
     /// <summary>
     /// Property to return information about the video adapter selected.
@@ -80,8 +77,6 @@ internal class GraphicsContext
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to return a leased out swap chain.
@@ -216,8 +211,6 @@ internal class GraphicsContext
         Graphics?.Dispose();
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GraphicsContext"/> class.
     /// </summary>
@@ -231,6 +224,4 @@ internal class GraphicsContext
         FontFactory = fontFactory;
         Renderer2D = new Gorgon2D(graphics);
     }
-
-
 }

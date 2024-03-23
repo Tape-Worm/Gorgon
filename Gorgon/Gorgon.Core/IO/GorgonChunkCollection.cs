@@ -23,7 +23,6 @@
 // Created: Sunday, June 14, 2015 9:42:32 PM
 // 
 
-
 using System.Collections;
 
 namespace Gorgon.IO;
@@ -38,7 +37,6 @@ internal class GorgonChunkCollection
     // The backing store for the chunks.
     private readonly List<GorgonChunk> _list = [];
 
-
     /// <summary>
     /// Property to set or return a chunk at the specified index.
     /// </summary>
@@ -47,8 +45,6 @@ internal class GorgonChunkCollection
         get => _list[index];
         set => _list[index] = value;
     }
-
-
 
     /// <summary>
     /// Determines the index of a specific item in the <see cref="IList{T}" />.
@@ -70,8 +66,6 @@ internal class GorgonChunkCollection
     /// <param name="index">The zero-based index of the item to remove.</param>
     public void RemoveAt(int index) => _list.RemoveAt(index);
 
-
-
     /// <summary>
     /// Gets the number of elements contained in the <see cref="ICollection{T}" />.
     /// </summary>
@@ -83,9 +77,6 @@ internal class GorgonChunkCollection
     /// </summary>
     /// <value><b>true</b> if this instance is read only; otherwise, <b>false</b>.</value>
     bool ICollection<GorgonChunk>.IsReadOnly => false;
-
-
-
 
     /// <summary>
     /// Adds an item to the <see cref="ICollection{T}" />.
@@ -163,8 +154,6 @@ internal class GorgonChunkCollection
         }
     }
 
-
-
     /// <summary>
     /// Function to return the index of a chunk by its name.
     /// </summary>
@@ -213,6 +202,5 @@ internal class GorgonChunkCollection
     /// <param name="chunkID">The <see cref="ulong"/> ID of the chunk.</param>
     /// <returns><b>true</b> if a chunk exists with the specified <paramref name="chunkID"/>, <b>false</b> if not.</returns>
     public bool Contains(ulong chunkID) => IndexOf(chunkID) != -1;
-
 
 }

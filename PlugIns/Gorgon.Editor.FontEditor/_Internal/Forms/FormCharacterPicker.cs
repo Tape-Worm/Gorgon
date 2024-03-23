@@ -23,7 +23,6 @@
 // Created: Sunday, March 10, 2013 10:57:24 PM
 // 
 
-
 namespace Gorgon.Editor.FontEditor;
 
 /// <summary>
@@ -32,7 +31,6 @@ namespace Gorgon.Editor.FontEditor;
 internal partial class FormCharacterPicker
         : Form
 {
-
     /// <summary>
     /// Property to set or return the current font.
     /// </summary>
@@ -51,8 +49,6 @@ internal partial class FormCharacterPicker
         set => CharPicker.Characters = value;
     }
 
-
-
     /// <summary>Handles the OkClicked event of the CharPicker control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
@@ -62,8 +58,6 @@ internal partial class FormCharacterPicker
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
     private void CharPicker_CancelClicked(object sender, EventArgs e) => DialogResult = DialogResult.Cancel;
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FormCharacterPicker"/> class.

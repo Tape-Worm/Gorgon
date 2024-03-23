@@ -23,7 +23,6 @@
 // Created: December 5, 2020 3:43:01 PM
 // 
 
-
 namespace Gorgon.UI;
 
 /// <summary>
@@ -32,7 +31,6 @@ namespace Gorgon.UI;
 public partial class FormOverlay
     : Form
 {
-
     /// <summary>Gets the required creation parameters when the control handle is created.</summary>
     protected override CreateParams CreateParams
     {
@@ -47,8 +45,6 @@ public partial class FormOverlay
             return baseParams;
         }
     }
-
-
 
     /// <summary>Initializes a new instance of the <see cref="FormOverlay" /> class.</summary>
     public FormOverlay() => InitializeComponent();

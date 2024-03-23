@@ -20,8 +20,6 @@ internal class TextureEditorContext
     // The name of the context.
     private const string ContextName = "TextureEditor";
 
-
-
     // Flag to indicate that the font uses premultiplied alpha for its textures.
     private bool _premultipliedAlpha;
     // The service used to generate fonts.
@@ -33,8 +31,6 @@ internal class TextureEditorContext
     private int _selectedArrayIndex;
     // The currently hosted panel view model.
     private IHostedPanelViewModel _currentPanel;
-
-
 
     /// <summary>
     /// Property to return the solid brush viewmodel.
@@ -314,8 +310,6 @@ internal class TextureEditorContext
     {
         get;
     }
-
-
 
     /// <summary>Handles the WaitPanelDeactivated event of the CurrentPanel control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -818,7 +812,6 @@ internal class TextureEditorContext
             return false;
         }
 
-
         return !brush.Brush.Equals(_fontService.WorkerFont.Brush);
     }
 
@@ -938,8 +931,6 @@ internal class TextureEditorContext
         base.OnUnload();
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="TextureEditorContext" /> class.</summary>
     public TextureEditorContext()
     {
@@ -955,6 +946,4 @@ internal class TextureEditorContext
         ActivateGradientBrushCommand = new EditorCommand<object>(DoActivateGradientBrush, CanActivateGradientBrush);
         ActivateTextureBrushCommand = new EditorCommand<object>(DoActivateTextureBrush, CanActivateTextureBrush);
     }
-
-
 }

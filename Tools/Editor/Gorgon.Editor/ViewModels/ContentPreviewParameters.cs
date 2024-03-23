@@ -23,7 +23,6 @@
 // Created: December 23, 2018 1:59:47 AM
 // 
 
-
 using Gorgon.Editor.Content;
 using Gorgon.Editor.PlugIns;
 using Gorgon.IO;
@@ -40,7 +39,6 @@ namespace Gorgon.Editor.ViewModels;
 internal class ContentPreviewParameters(IHostContentServices hostServices, ViewModelFactory viewModelFactory)
         : ViewModelCommonParameters(hostServices, viewModelFactory)
 {
-
     /// <summary>
     /// Property to set or return the file explorer view model.
     /// </summary>
@@ -67,6 +65,4 @@ internal class ContentPreviewParameters(IHostContentServices hostServices, ViewM
         get;
         set;
     }
-
-
 }

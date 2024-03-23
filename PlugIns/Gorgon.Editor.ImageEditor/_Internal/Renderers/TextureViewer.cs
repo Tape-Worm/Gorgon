@@ -23,7 +23,6 @@
 // Created: February 10, 2020 10:19:46 PM
 // 
 
-
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Gorgon.Animation;
@@ -42,7 +41,6 @@ namespace Gorgon.Editor.ImageEditor;
 internal abstract class TextureViewer
     : DefaultContentRenderer<IImageContent>, ITextureViewer
 {
-
     /// <summary>
     /// Parameters to pass to the texture shader(s).
     /// </summary>
@@ -64,8 +62,6 @@ internal abstract class TextureViewer
         public float MipLevel;
     }
 
-
-
     // The pixel shader for rendering an image.
     private GorgonPixelShader _imageShader;
     // The parameters for the texture viewer shader.
@@ -84,8 +80,6 @@ internal abstract class TextureViewer
     private readonly GorgonAnimationBuilder _animationBuilder = new();
     // Flag to indicate that the texture needs refreshing.
     private bool _textureNeedsUpdate = true;
-
-
 
     /// <summary>
     /// Property to return the batch state for rendering the texture.
@@ -129,8 +123,6 @@ internal abstract class TextureViewer
         get;
         set;
     }
-
-
 
     /// <summary>
     /// Function to update the texture parameters for rendering.
@@ -413,8 +405,6 @@ internal abstract class TextureViewer
         OnCreateResources();
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="TextureViewer"/> class.</summary>
     /// <param name="name">The name of the renderer.</param>
     /// <param name="shaderName">The name of the shader to use for rendering the texture.</param>
@@ -428,5 +418,4 @@ internal abstract class TextureViewer
         _shaderName = shaderName;
         _textureSlot = textureSlot.Max(0).Min(_slots.Length - 1);
     }
-
 }

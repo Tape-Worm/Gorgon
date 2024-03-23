@@ -23,7 +23,6 @@
 // Created: January 16, 2021 12:10:27 AM
 // 
 
-
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -38,7 +37,6 @@ namespace Gorgon.Renderers.Geometry;
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
 public struct GorgonVertexPosNormColorUv
 {
-
     /// <summary>
     /// The size of the vertex, in bytes.
     /// </summary>
@@ -68,8 +66,6 @@ public struct GorgonVertexPosNormColorUv
     [InputElement(3, "TEXCOORD")]
     public Vector2 UV;
 
-
-
     /// <summary>
     /// Deconstructs this instance into individual position values.
     /// </summary>
@@ -96,8 +92,6 @@ public struct GorgonVertexPosNormColorUv
         uv = UV;
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="GorgonVertexPosNormColorUv" /> struct.</summary>
     /// <param name="pos">The position.</param>
     /// <param name="normal">The vertex normal.</param>
@@ -123,5 +117,4 @@ public struct GorgonVertexPosNormColorUv
         Normal = normal;
         Color = color;
     }
-
 }

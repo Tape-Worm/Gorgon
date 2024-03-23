@@ -23,7 +23,6 @@
 // Created: Thursday, December 15, 2011 9:43:36 AM
 // 
 
-
 using Gorgon.Diagnostics;
 using SharpDX.D3DCompiler;
 using D3D11 = SharpDX.Direct3D11;
@@ -49,8 +48,6 @@ public sealed class GorgonVertexShader
     // The D3D 11 vertex shader.
     private D3D11.VertexShader _nativeShader;
 
-
-
     /// <summary>
     /// Property to return the Direct 3D vertex shader.
     /// </summary>
@@ -60,8 +57,6 @@ public sealed class GorgonVertexShader
     /// Property to return the type of shader.
     /// </summary>
     public override ShaderType ShaderType => ShaderType.Vertex;
-
-
 
     /// <summary>
     /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
@@ -79,8 +74,6 @@ public sealed class GorgonVertexShader
 
         base.Dispose();
     }
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonVertexShader" /> class.

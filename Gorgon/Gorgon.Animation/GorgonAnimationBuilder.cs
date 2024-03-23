@@ -23,7 +23,6 @@
 // Created: August 17, 2018 2:02:22 PM
 // 
 
-
 using Gorgon.Animation.Properties;
 using Gorgon.Core;
 using Gorgon.Graphics;
@@ -71,8 +70,6 @@ public class GorgonAnimationBuilder
     private readonly Dictionary<string, TrackKeyBuilder<GorgonKeyGorgonColor>> _colorTracks = new(StringComparer.OrdinalIgnoreCase);
     // A list of builders for texture tracks.
     private readonly Dictionary<string, TrackKeyBuilder<GorgonKeyTexture2D>> _textureTracks = new(StringComparer.OrdinalIgnoreCase);
-
-
 
     /// <summary>
     /// Function to edit a track that uses single floating point values for its key frame values.
@@ -330,7 +327,6 @@ public class GorgonAnimationBuilder
         return result;
     }
 
-
     /// <summary>
     /// Function to delete a track that updates a single floating point value for its key frame values.
     /// </summary>
@@ -355,7 +351,6 @@ public class GorgonAnimationBuilder
             ? throw new KeyNotFoundException(string.Format(Resources.GORANM_TRACK_DOES_NOT_EXIST, name))
             : this;
     }
-
 
     /// <summary>
     /// Function to delete a track that updates a 2D vector value for its key frame values.
@@ -859,5 +854,4 @@ public class GorgonAnimationBuilder
 
         return Build($"Animation_{Guid.NewGuid():N}", maxTime.Max(0));
     }
-
 }

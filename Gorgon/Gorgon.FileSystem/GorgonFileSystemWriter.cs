@@ -23,7 +23,6 @@
 // Created: Wednesday, September 23, 2015 7:21:55 PM
 // 
 
-
 using System.Buffers;
 using System.Text;
 using Gorgon.Collections;
@@ -109,8 +108,6 @@ public class GorgonFileSystemWriter
     // The maximum size for the working buffers.
     private const int MaxBufferSize = 262_144;
 
-
-
     /// <summary>
     /// Event triggered when a virtual directory has been added to the file system.
     /// </summary>
@@ -168,8 +165,6 @@ public class GorgonFileSystemWriter
     /// </summary>
     public event EventHandler<VirtualFileCopiedMovedEventArgs> VirtualFileMoved;
 
-
-
     // The list of invalid file name characters.
     private readonly char[] _invalidFileNameChars = Path.GetInvalidFileNameChars();
     // Locking synchronization for multiple threads.
@@ -184,8 +179,6 @@ public class GorgonFileSystemWriter
     private byte[] _writeBuffer;
     // The buffer used for building a path.
     private readonly StringBuilder _pathBuffer = new(1024);
-
-
 
     /// <summary>
     /// Property to return the file system linked to this writable area.
@@ -205,8 +198,6 @@ public class GorgonFileSystemWriter
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to replace a path with a new root path.
@@ -445,7 +436,6 @@ public class GorgonFileSystemWriter
             }
         }
     }
-
 
     /// <summary>
     /// Function to return the write area path for a given virtual file system path.
@@ -741,7 +731,6 @@ public class GorgonFileSystemWriter
                     OnDeleteComplete();
                     return;
                 }
-
 
                 onDelete?.Invoke(file.FullPath);
                 if (DeleteVirtualFile(file))
@@ -2442,5 +2431,4 @@ public class GorgonFileSystemWriter
         WriteLocation = writeLocation.FormatDirectory(Path.DirectorySeparatorChar);
         _mountPoint = new GorgonFileSystemMountPoint(fileSystem.DefaultProvider, WriteLocation, "/");
     }
-
 }

@@ -23,7 +23,6 @@
 // Created: Sunday, September 22, 2013 8:43:37 PM
 // 
 
-
 using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.Properties;
@@ -68,8 +67,6 @@ public class GorgonFileExtensionCollection
             UpdateItem(extension, value);
         }
     }
-
-
 
     /// <summary>
     /// Function to add a file extension to the collection.

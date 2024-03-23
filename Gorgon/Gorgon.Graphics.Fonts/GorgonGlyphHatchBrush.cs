@@ -23,7 +23,6 @@
 // Created: Saturday, October 12, 2013 11:22:36 PM
 // 
 
-
 using System.Drawing.Drawing2D;
 using Gorgon.IO;
 
@@ -325,7 +324,6 @@ public enum GlyphBrushHatchStyle
 public class GorgonGlyphHatchBrush
     : GorgonGlyphBrush
 {
-
     /// <summary>
     /// Property to return the type of brush.
     /// </summary>
@@ -357,8 +355,6 @@ public class GorgonGlyphHatchBrush
         get;
         set;
     }
-
-
 
     /// <summary>
     /// Function to convert this brush to the equivalent GDI+ brush type.
@@ -417,5 +413,4 @@ public class GorgonGlyphHatchBrush
             && (brush.BackgroundColor == BackgroundColor)
             && (brush.ForegroundColor == ForegroundColor)));
     }
-
 }

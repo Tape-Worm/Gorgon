@@ -23,7 +23,6 @@
 // Created: May 15, 2019 10:54:42 PM
 // 
 
-
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -91,7 +90,6 @@ namespace Gorgon.Renderers;
 public class Gorgon2DBloomEffect
     : Gorgon2DEffect, IGorgon2DCompositorEffect
 {
-
     /// <summary>
     /// Settings to apply when bright pass filtering.
     /// </summary>
@@ -116,12 +114,8 @@ public class Gorgon2DBloomEffect
         public Vector4 DirtTransform;
     }
 
-
-
     // The maximum number of iterations for sampling.
     private const int MaxIterations = 16;
-
-
 
     // Macro used to define low quality bloom code.
     private readonly GorgonShaderMacro _lowQualityMacro = new("LOW_QUALITY_BLOOM");
@@ -171,8 +165,6 @@ public class Gorgon2DBloomEffect
     private readonly BloomTextureInfo _blurTargetInfo;
     // Flag to use lower quality functions to improve performance.
     private bool _lowQuality;
-
-
 
     /// <summary>
     /// Property to set or return whether to use lower quality rendering to improve performance.
@@ -280,8 +272,6 @@ public class Gorgon2DBloomEffect
         get;
         set;
     }
-
-
 
     /// <summary>
     /// Function to return the down/upsampling targets to the pool.
@@ -689,8 +679,6 @@ public class Gorgon2DBloomEffect
         CompileShaders();
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="Gorgon2DBloomEffect" /> class.
     /// </summary>
@@ -707,5 +695,4 @@ public class Gorgon2DBloomEffect
         _sceneTargetInfo = new BloomTextureInfo(_targetInfo, "Bloom Source Image");
         _blurTargetInfo = new BloomTextureInfo(_targetInfo, "Blurred/Filtered Target");
     }
-
 }

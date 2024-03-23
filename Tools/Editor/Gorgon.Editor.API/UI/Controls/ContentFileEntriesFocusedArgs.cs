@@ -23,7 +23,6 @@
 // Created: June 1, 2020 12:09:23 AM
 // 
 
-
 namespace Gorgon.Editor.UI.Controls;
 
 /// <summary>

@@ -23,7 +23,6 @@
 // Created: May 19, 2020 12:51:42 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
@@ -50,8 +49,6 @@ internal class SpriteAnchorEdit
     private bool _previewScaling;
     // Flag to indicate that preview rotation is active.
     private bool _previewRotation;
-
-
 
     /// <summary>Property to return whether the panel is modal.</summary>
     public override bool IsModal => true;
@@ -183,8 +180,6 @@ internal class SpriteAnchorEdit
             OnPropertyChanged();
         }
     }
-
-
 
     /// <summary>Function to inject dependencies for the view model.</summary>
     /// <param name="injectionParameters">The parameters to inject.</param>

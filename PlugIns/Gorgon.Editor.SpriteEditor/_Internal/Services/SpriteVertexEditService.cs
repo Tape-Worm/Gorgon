@@ -23,7 +23,6 @@
 // Created: April 8, 2019 9:27:07 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.Services;
@@ -74,8 +73,6 @@ internal class SpriteVertexEditService
     private int _selectedVertexIndex = -1;
     // The camera used to render the UI.
     private GorgonOrthoCamera _camera;
-
-
 
     // Event triggered when the keyboard icon is clicked.
     private event EventHandler KeyboardIconClickedEvent;
@@ -164,8 +161,6 @@ internal class SpriteVertexEditService
         }
     }
 
-
-
     /// <summary>
     /// Property to set or return the camera being used.
     /// </summary>
@@ -253,8 +248,6 @@ internal class SpriteVertexEditService
             SetupHandles();
         }
     }
-
-
 
     /// <summary>
     /// Function to raise the <see cref="VerticesChangedEvent"/> event.
@@ -387,7 +380,6 @@ internal class SpriteVertexEditService
 
         GetActiveHandle();
     }
-
 
     /// <summary>
     /// Function called when a key is held down.
@@ -697,8 +689,6 @@ internal class SpriteVertexEditService
         }
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="SpriteVertexEditService"/> class.</summary>
     /// <param name="renderer">The 2D renderer for the application.</param>
     public SpriteVertexEditService(Gorgon2D renderer)
@@ -720,5 +710,4 @@ internal class SpriteVertexEditService
             Name = "VertexEditor_KeyboardIcon"
         }, CommonEditorResources.KeyboardIcon), true);
     }
-
 }

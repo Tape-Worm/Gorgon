@@ -23,7 +23,6 @@
 // Created: July 25, 2018 8:30:32 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Math;
@@ -42,8 +41,6 @@ public sealed class GorgonDirectionalLight
     private Vector3 _lightDirection;
     // The GPU data for the light.
     private GorgonGpuLightData _lightData;
-
-
 
     /// <summary>
     /// Property to set or return the type of light to render.
@@ -70,8 +67,6 @@ public sealed class GorgonDirectionalLight
             IsUpdated = true;
         }
     }
-
-
 
     /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
     /// <param name="other">An object to compare with this object.</param>
@@ -112,8 +107,6 @@ public sealed class GorgonDirectionalLight
         return ref _lightData;
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonDirectionalLight"/> class.
     /// </summary>
@@ -137,5 +130,4 @@ public sealed class GorgonDirectionalLight
 
         LightDirection = copy.LightDirection;
     }
-
 }

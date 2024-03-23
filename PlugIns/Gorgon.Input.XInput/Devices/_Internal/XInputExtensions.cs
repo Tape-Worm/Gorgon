@@ -23,7 +23,6 @@
 // Created: December 8, 2020 2:51:07 PM
 // 
 
-
 using XI = SharpDX.XInput;
 
 namespace Gorgon.Input.XInput;

@@ -23,7 +23,6 @@
 // Created: April 2, 2019 5:24:26 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Animation;
 using Gorgon.Editor.UI;
@@ -45,8 +44,6 @@ internal class SingleSpriteViewer
     private readonly ImageAnimationController _animController = new();
     private IGorgonAnimation _opacityAnimation;
     private readonly GorgonAnimationBuilder _animationBuilder = new();
-
-
 
     /// <summary>
     /// Property to return whether the opactiy animation is playing.
@@ -70,8 +67,6 @@ internal class SingleSpriteViewer
         get;
         private set;
     }
-
-
 
     /// <summary>
     /// Function to update the sprite colors.
@@ -155,7 +150,6 @@ internal class SingleSpriteViewer
 
         Vector2 halfRegion = new(DataContext.Texture.Width * -0.5f, DataContext.Texture.Height * -0.5f);
 
-
         Renderer.Begin(camera: Camera);
         Renderer.DrawFilledRectangle(new GorgonRectangleF(halfRegion.X,
                                                        halfRegion.Y,
@@ -208,8 +202,6 @@ internal class SingleSpriteViewer
 
         ForceMoveTo(new Vector2(spritePosition.X, spritePosition.Y), spriteZoomLevel.GetScale(), true);
     }
-
-
 
     /// <summary>Initializes a new instance of the <see cref="SingleSpriteViewer"/> class.</summary>
     /// <param name="name">The name of the renderer.</param>

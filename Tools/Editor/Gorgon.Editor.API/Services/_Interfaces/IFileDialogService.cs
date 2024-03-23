@@ -23,7 +23,6 @@
 // Created: September 24, 2018 12:45:12 PM
 // 
 
-
 namespace Gorgon.Editor.Services;
 
 /// <summary>
@@ -31,7 +30,6 @@ namespace Gorgon.Editor.Services;
 /// </summary>
 public interface IFileDialogService
 {
-
     /// <summary>
     /// Property to set or return a file filter.
     /// </summary>
@@ -67,8 +65,6 @@ public interface IFileDialogService
         get;
         set;
     }
-
-
 
     /// <summary>
     /// Function to retrieve a single file name.

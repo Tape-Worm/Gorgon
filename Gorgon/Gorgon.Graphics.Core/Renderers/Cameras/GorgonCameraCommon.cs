@@ -23,7 +23,6 @@
 // Created: January 13, 2021 7:35:06 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Graphics;
@@ -89,8 +88,6 @@ public abstract class GorgonCameraCommon
     private WeakReference<GorgonRenderTargetView> _target;
     // The position of the camera.
     private Vector3 _position;
-
-
 
     /// <summary>
     /// Property to return direct access to the position data by reference.
@@ -296,8 +293,6 @@ public abstract class GorgonCameraCommon
         get;
     }
 
-
-
     /// <summary>
     /// Function to retrieve the render target assigned to this camera.
     /// </summary>
@@ -415,7 +410,6 @@ public abstract class GorgonCameraCommon
     /// be used to convert the position.  This means if the camera is moved or moving, then the converted screen point will not reflect that.</remarks>
     public void Unproject(Vector3 worldSpacePosition, out Vector3 result, bool includeViewTransform = true) =>
         Unproject(worldSpacePosition, out result, new GorgonPoint(TargetWidth, TargetHeight), includeViewTransform);
-
 
     /// <summary>
     /// Function to unproject a world space position into screen space.
@@ -539,8 +533,6 @@ public abstract class GorgonCameraCommon
     /// </summary>        
     public void DiscardChanges() => Changes = CameraChange.None;
 
-
-
     /// <summary>Initializes a new instance of the <see cref="GorgonCameraCommon" /> class.</summary>
     /// <param name="graphics">The graphics interface to use with this object.</param>
     /// <param name="viewDimensions">The view dimensions.</param>
@@ -556,6 +548,4 @@ public abstract class GorgonCameraCommon
         MinimumDepth = minDepth;
         MaximumDepth = maximumDepth.Max(1.0f);
     }
-
-
 }

@@ -23,7 +23,6 @@
 // Created: March 25, 2018 3:01:41 PM
 // 
 
-
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Reflection;
@@ -165,14 +164,10 @@ public sealed class GorgonMefPlugInService(GorgonMefPlugInCache mefCache)
     // Flag to indicate whether or not the plugins have been scanned.
     private int _scanned;
 
-
-
     /// <summary>
     /// Property to return the number of plugins that are currently loaded in this service.
     /// </summary>
     public int LoadedPlugInCount => _loadedPlugIns.Count;
-
-
 
     /// <summary>
     /// Function to unload a plugin by its name.
@@ -405,6 +400,4 @@ public sealed class GorgonMefPlugInService(GorgonMefPlugInCache mefCache)
             DisposePlugIn(plugin);
         }
     }
-
-
 }

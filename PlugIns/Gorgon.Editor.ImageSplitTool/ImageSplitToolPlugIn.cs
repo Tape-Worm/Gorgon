@@ -23,7 +23,6 @@
 // Created: March 2, 2019 11:15:34 AM
 // 
 
-
 using Gorgon.Editor.Content;
 using Gorgon.Editor.ImageSplitTool.Properties;
 using Gorgon.Editor.PlugIns;
@@ -44,8 +43,6 @@ internal class ImageSplitToolPlugIn
 
     // The cached button definition.
     private ToolPlugInRibbonButton _button;
-
-
 
     /// <summary>
     /// Function to retrieve the sprite file entries from the file system.
@@ -296,12 +293,9 @@ internal class ImageSplitToolPlugIn
         base.OnShutdown();
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="ImageSplitToolPlugIn"/> class.</summary>
     public ImageSplitToolPlugIn()
         : base(Resources.GORIST_PLUGIN_DESC)
     {
     }
-
 }

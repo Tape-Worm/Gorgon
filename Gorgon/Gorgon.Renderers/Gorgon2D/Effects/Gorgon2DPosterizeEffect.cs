@@ -23,7 +23,6 @@
 // Created: Thursday, April 05, 2012 8:23:51 AM
 // 
 
-
 using System.Runtime.InteropServices;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -44,7 +43,6 @@ namespace Gorgon.Renderers;
 public class Gorgon2DPosterizedEffect
     : Gorgon2DEffect, IGorgon2DCompositorEffect
 {
-
     /// <summary>
     /// Settings for the effect shader.
     /// </summary>
@@ -75,8 +73,6 @@ public class Gorgon2DPosterizedEffect
         public bool PosterizeAlpha => _posterizeAlpha != 0;
     }
 
-
-
     // Buffer for the posterize effect.
     private GorgonConstantBufferView _posterizeBuffer;
     // The shader used to render the effect.
@@ -88,8 +84,6 @@ public class Gorgon2DPosterizedEffect
     private Settings _settings;
     // Flag to indicate that the parameters have been updated.
     private bool _isUpdated = true;
-
-
 
     /// <summary>
     /// Property to set or return whether to posterize the alpha channel.
@@ -149,8 +143,6 @@ public class Gorgon2DPosterizedEffect
             _isUpdated = true;
         }
     }
-
-
 
     /// <summary>
     /// Function called when the effect is being initialized.
@@ -282,8 +274,6 @@ public class Gorgon2DPosterizedEffect
         End();
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="Gorgon2DPosterizedEffect" /> class.
     /// </summary>
@@ -294,5 +284,4 @@ public class Gorgon2DPosterizedEffect
         _settings = new Settings(false, 1.0f, 4);
         Macros.Add(new GorgonShaderMacro("POSTERIZE_EFFECT"));
     }
-
 }

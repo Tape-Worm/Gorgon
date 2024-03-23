@@ -23,7 +23,6 @@
 // Created: April 19, 2019 12:31:15 PM
 // 
 
-
 using System.ComponentModel;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Views;
@@ -43,8 +42,6 @@ internal partial class EditorSettingsPanel
     // The lookup used to locate panels.
     private readonly Dictionary<string, SettingsBaseControl> _panelLookup = new(StringComparer.OrdinalIgnoreCase);
 
-
-
     /// <summary>Property to return the data context assigned to this view.</summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public IEditorSettings ViewModel
@@ -52,8 +49,6 @@ internal partial class EditorSettingsPanel
         get;
         private set;
     }
-
-
 
     /// <summary>Handles the SelectedIndexChanged event of the ListCategories control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -273,8 +268,6 @@ internal partial class EditorSettingsPanel
         ViewModel.PropertyChanged += DataContext_PropertyChanged;
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="EditorSettingsPanel"/> class.</summary>
     public EditorSettingsPanel()
     {
@@ -284,5 +277,4 @@ internal partial class EditorSettingsPanel
         _panelLookup[PlugInList.PanelID] = PlugInList;
         _categoryLookup[ListCategories.Items[0].ToString()] = PlugInList.PanelID;
     }
-
 }

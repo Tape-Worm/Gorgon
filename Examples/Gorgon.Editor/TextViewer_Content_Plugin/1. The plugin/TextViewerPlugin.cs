@@ -23,7 +23,6 @@
 // Created: August 3, 2020 1:41:20 PM
 // 
 
-
 using System.Diagnostics;
 using System.Text;
 using Gorgon.Core;
@@ -89,8 +88,6 @@ internal class TextViewerPlugin
     /// </summary>
     public const string ContentTypeValue = "Text";
 
-
-
     // No thumbnail image.
     // This is the default image that will be displayed in the preview panel on the main window. 
     // Some plug ins will want to render small representation of the content so users can determine 
@@ -120,8 +117,6 @@ internal class TextViewerPlugin
     /// The name of the settings file.
     /// </summary>
     public static readonly string SettingsName = typeof(TextViewerPlugin).FullName;
-
-
 
     // This name is used as an internal identifier for the plug in. This is typically the fully qualified type name of the plug in class.
 
@@ -177,8 +172,6 @@ internal class TextViewerPlugin
     /// </remarks>
     protected override GorgonFileExtension DefaultFileExtension => new(".txt", "Text files");
 
-
-
     // This method is not explicitly required, but is included here to set up default metadata attributes for our content.
     // It's only called if the plug in needs to determine if the file can be opened or not. Typically this is done when 
     // a file has no metadata, and thus no simple means of determining which plug in can open the file. 
@@ -233,7 +226,6 @@ internal class TextViewerPlugin
         // This is used to define specific keywords when searching for files in the main editor window.  
         // We have none for this specific plug in type, so for now we leave it empty.
     }
-
 
     // For plug ins that have persistent settings, we provide a means of accessing those settings through the Settings menu option
     // on the File tab. 
@@ -517,8 +509,6 @@ internal class TextViewerPlugin
     /// <returns>An image for the icon.</returns>
     public Image GetNewIcon() => Resources.textviewer_example_new_24x24;
 
-
-
     // When we construct the plug in object, we'll need to send back a friendly description 
     // for display purposes.
 
@@ -529,5 +519,4 @@ internal class TextViewerPlugin
         SmallIconID = Guid.NewGuid();
         NewIconID = Guid.NewGuid();
     }
-
 }

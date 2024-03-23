@@ -23,7 +23,6 @@
 // Created: April 19, 2019 1:25:38 PM
 // 
 
-
 using System.ComponentModel;
 
 namespace Gorgon.Editor.UI.Views;
@@ -34,13 +33,10 @@ namespace Gorgon.Editor.UI.Views;
 public partial class SettingsBaseControl
     : EditorBaseControl
 {
-
     /// <summary>
     /// The panel that will contain the controls for the settings.
     /// </summary>
     protected Panel PanelBody;
-
-
 
     /// <summary>
     /// Property to return the ID of the panel.
@@ -58,12 +54,6 @@ public partial class SettingsBaseControl
         get => base.Text;
         set => LabelCaption.Text = base.Text = value;
     }
-
-
-
-
-
-
 
     /// <summary>Initializes a new instance of the <see cref="SettingsBaseControl"/> class.</summary>
     public SettingsBaseControl() => InitializeComponent();

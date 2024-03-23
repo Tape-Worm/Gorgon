@@ -23,7 +23,6 @@
 // Created: Friday, June 24, 2011 10:05:35 AM
 // 
 
-
 using Gorgon.Input.Properties;
 using Gorgon.Math;
 
@@ -64,8 +63,6 @@ public abstract class GorgonGamingDevice
     private readonly POVDirection[] _povDirections;
     // Flag to indicate whether the gaming device has been acquired or not.
     private bool _isAcquired;
-
-
 
     /// <summary>
     /// Property to return the current direction for the point-of-view hat.
@@ -204,8 +201,6 @@ public abstract class GorgonGamingDevice
             _isAcquired = OnAcquire(value);
         }
     }
-
-
 
     /// <summary>
     /// Function to update the direction flag for the POV.
@@ -415,8 +410,6 @@ public abstract class GorgonGamingDevice
     /// </remarks>
     public virtual void Dispose() => GC.SuppressFinalize(this);
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonGamingDevice"/> class.
     /// </summary>
@@ -436,5 +429,4 @@ public abstract class GorgonGamingDevice
         Info = deviceInfo;
         Axis = new GorgonGamingDeviceAxisList<IGorgonGamingDeviceAxis>(deviceInfo.AxisInfo.Select(item => new GamingDeviceAxisProperties(item.Value)));
     }
-
 }

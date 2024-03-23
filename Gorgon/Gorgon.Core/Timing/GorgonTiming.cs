@@ -23,7 +23,6 @@
 // Created: Saturday, June 18, 2011 10:29:46 AM
 // 
 
-
 using Gorgon.Math;
 
 namespace Gorgon.Timing;
@@ -106,8 +105,6 @@ public static class GorgonTiming
     private static float? _lowestFps;
     // The lowest frame delta.
     private static float? _lowestDelta;
-
-
 
     /// <summary>
     /// Property to set or return the maximum frame delta, in seconds.
@@ -371,8 +368,6 @@ public static class GorgonTiming
         private set;
     }
 
-
-
     /// <summary>
     /// Function to gather timing data.
     /// </summary>
@@ -559,8 +554,6 @@ public static class GorgonTiming
     /// <param name="fps">Desired frames per second.</param>
     /// <returns>Frames per second in microseconds.</returns>
     public static double FpsToMicroseconds(double fps) => fps > 0 ? 1000000 / fps : 0;
-
-
 
     /// <summary>
     /// Initializes the <see cref="GorgonTiming"/> class.

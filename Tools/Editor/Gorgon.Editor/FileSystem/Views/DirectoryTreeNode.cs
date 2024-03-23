@@ -23,7 +23,6 @@
 // Created: December 8, 2019 3:20:08 PM
 // 
 
-
 using System.ComponentModel;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.ViewModels;
@@ -36,7 +35,6 @@ namespace Gorgon.Editor.Views;
 internal class DirectoryTreeNode
     : TreeNode, IDataContext<IDirectory>
 {
-
     /// <summary>Property to return the data context assigned to this view.</summary>
     public IDirectory ViewModel
     {
@@ -54,8 +52,6 @@ internal class DirectoryTreeNode
                 : base.ForeColor;
         set => base.ForeColor = value;
     }
-
-
 
     /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -162,5 +158,4 @@ internal class DirectoryTreeNode
 
         ViewModel = dataContext;
     }
-
 }

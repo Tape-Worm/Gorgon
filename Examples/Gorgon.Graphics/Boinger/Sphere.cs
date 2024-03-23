@@ -23,7 +23,6 @@
 // Created: Sunday, December 30, 2012 10:25:22 AM
 // 
 
-
 using System.Numerics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
@@ -37,7 +36,6 @@ namespace Gorgon.Examples;
 internal class Sphere
     : Model
 {
-
     /// <summary>
     /// Property to return the radius of the sphere.
     /// </summary>
@@ -140,5 +138,4 @@ internal class Sphere
                                             },
                                             Indices);
     }
-
 }

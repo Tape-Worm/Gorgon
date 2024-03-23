@@ -23,7 +23,6 @@
 // Created: April 20, 2019 2:19:56 PM
 // 
 
-
 using System.ComponentModel;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Views;
@@ -41,7 +40,6 @@ namespace Gorgon.Examples;
 internal partial class TextContentSettingsPanel
     : SettingsBaseControl, IDataContext<ISettings>
 {
-
     /// <summary>Property to return the ID of the panel.</summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public override string PanelID => ViewModel?.ID.ToString() ?? Guid.Empty.ToString();
@@ -53,8 +51,6 @@ internal partial class TextContentSettingsPanel
         get;
         private set;
     }
-
-
 
     /// <summary>Handles the CheckedChanged event of the Radio controls.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -120,8 +116,6 @@ internal partial class TextContentSettingsPanel
         InitializeFromDataContext(dataContext);
         ViewModel = dataContext;
     }
-
-
 
     /// <summary>Initializes a new instance of the <see cref="TextContentSettingsPanel"/> class.</summary>
     public TextContentSettingsPanel() => InitializeComponent();

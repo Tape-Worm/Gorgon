@@ -22,7 +22,6 @@
 // Created: February 6, 2020 9:57:02 PM
 // 
 
-
 using System.ComponentModel;
 using System.Numerics;
 using Gorgon.Animation;
@@ -396,8 +395,6 @@ public class DefaultContentRenderer<T>
     /// </summary>
     public float Zoom => _camera.Zoom.X;
 
-
-
     /// <summary>
     /// Function to reset the "to window" zoom state.
     /// </summary>
@@ -501,7 +498,6 @@ public class DefaultContentRenderer<T>
         {
             return;
         }
-
 
         if (((_mouseArgs.Modifiers & Keys.Control) == Keys.Control) && (CanZoom))
         {
@@ -1337,8 +1333,6 @@ public class DefaultContentRenderer<T>
         ForceMoveTo(offset, zoom, false);
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="DefaultContentRenderer{T}"/> class.</summary>
     /// <param name="name">The name of the renderer.</param>
     /// <param name="renderer">The main renderer for the content view.</param>
@@ -1367,5 +1361,4 @@ public class DefaultContentRenderer<T>
 
         SetDataContext(dataContext);
     }
-
 }

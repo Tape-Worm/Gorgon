@@ -23,7 +23,6 @@
 // Created: Thursday, January 7, 2016 7:15:06 PM
 // 
 
-
 using SharpDX.DXGI;
 
 namespace Gorgon.Graphics.Core;
@@ -40,8 +39,6 @@ internal class VideoOutputInfo
 
     // Output description.
     private OutputDescription _desc;
-
-
 
     /// <summary>
     /// Property to return the index of the output.
@@ -102,8 +99,6 @@ internal class VideoOutputInfo
         get;
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="VideoOutputInfo" /> class.
     /// </summary>
@@ -118,5 +113,4 @@ internal class VideoOutputInfo
         Rotation = (RotationMode)_desc.Rotation;
         VideoModes = modes.Select(item => new GorgonVideoMode(item)).ToArray();
     }
-
 }

@@ -23,7 +23,6 @@
 // Created: May 23, 2018 12:18:45 PM
 // 
 
-
 using Gorgon.Memory;
 using Gorgon.Patterns;
 
@@ -47,7 +46,6 @@ public abstract class GorgonStateBuilderAllocator<TB, TRs>
     where TB : GorgonStateBuilderCommon<TB, TRs>
     where TRs : class, IEquatable<TRs>
 {
-
     /// <summary>
     /// Function to update the properties of the state, allocated from an allocator, from the working copy.
     /// </summary>
@@ -80,8 +78,6 @@ public abstract class GorgonStateBuilderAllocator<TB, TRs>
         return state;
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonStateBuilderAllocator{TB,TRs}"/> class.
     /// </summary>
@@ -90,5 +86,4 @@ public abstract class GorgonStateBuilderAllocator<TB, TRs>
         : base(renderState)
     {
     }
-
 }

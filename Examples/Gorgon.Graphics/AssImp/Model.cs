@@ -20,8 +20,6 @@ internal class Model
     // The world matrix for this model.
     private System.Numerics.Matrix4x4 _worldMatrix;
 
-
-
     /// <summary>
     /// Property to return the list of meshes to render.
     /// </summary>
@@ -116,8 +114,6 @@ internal class Model
         get;
         set;
     }
-
-
 
     /// <summary>
     /// Function to retrieve the list of materials for the model.
@@ -325,5 +321,4 @@ internal class Model
 
         return result;
     }
-
 }

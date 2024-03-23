@@ -23,7 +23,6 @@
 // Created: Wednesday, April 04, 2012 12:35:23 PM
 // 
 
-
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers.Cameras;
@@ -48,8 +47,6 @@ public class Gorgon2DInvertEffect
     // The batch render state.
     private Gorgon2DBatchState _batchState;
 
-
-
     /// <summary>
     /// Property to set or return whether to invert the alpha channel.
     /// </summary>
@@ -67,8 +64,6 @@ public class Gorgon2DInvertEffect
             _invertBuffer?.Buffer.SetData(in _invertAlpha);
         }
     }
-
-
 
     /// <summary>
     /// Function called to build a new (or return an existing) 2D batch state.
@@ -195,8 +190,6 @@ public class Gorgon2DInvertEffect
                                         new GorgonRectangleF(0, 0, 1, 1));
         End();
     }
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Gorgon2DInvertEffect" /> class.

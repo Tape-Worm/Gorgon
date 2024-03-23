@@ -23,7 +23,6 @@
 // Created: Saturday, July 18, 2015 4:38:03 PM
 // 
 
-
 using Gorgon.Native;
 
 namespace Gorgon.Input;
@@ -45,7 +44,6 @@ namespace Gorgon.Input;
 /// <param name="size">The size of a single HID value within the data.</param>
 public readonly struct GorgonRawHIDData(GorgonPtr<byte> data, int size)
 {
-
     /// <summary>
     /// A pointer to the device data received from Raw Input.
     /// </summary>
@@ -56,14 +54,9 @@ public readonly struct GorgonRawHIDData(GorgonPtr<byte> data, int size)
     /// </summary>
     public readonly int HIDDataSize = size;
 
-
-
     /// <summary>
     /// Property to return the number of HID inputs contained within the data.
     /// </summary>
     public int ItemCount => ((HidData == GorgonPtr<byte>.NullPtr) || (HIDDataSize == 0)) ? 0 : HidData.Length / HIDDataSize;
-
-
-
 
 }

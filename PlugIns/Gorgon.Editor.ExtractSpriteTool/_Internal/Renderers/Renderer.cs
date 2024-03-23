@@ -23,7 +23,6 @@
 // Created: April 24, 2019 10:14:49 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Editor.ExtractSpriteTool.Properties;
 using Gorgon.Editor.Rendering;
@@ -51,8 +50,6 @@ internal class Renderer
     private Gorgon2DBatchState _inverted;
     // The sprite to display for preview.
     private readonly GorgonSprite _previewSprite = new();
-
-
 
     /// <summary>
     /// Function to update the preview sprite.
@@ -196,8 +193,6 @@ internal class Renderer
         _previewSprite.Texture = DataContext.Texture;
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="Renderer"/> class.</summary>
     /// <param name="renderer">The 2D renderer for the application.</param>
     /// <param name="swapChain">The swap chain bound to the window.</param>
@@ -208,5 +203,4 @@ internal class Renderer
         _previewSprite.Anchor = new Vector2(0.5f, 0.5f);
         _previewSprite.TextureSampler = GorgonSamplerState.PointFiltering;
     }
-
 }

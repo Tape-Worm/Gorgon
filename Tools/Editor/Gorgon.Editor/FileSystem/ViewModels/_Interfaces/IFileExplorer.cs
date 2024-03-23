@@ -23,7 +23,6 @@
 // Created: September 4, 2018 10:16:21 PM
 // 
 
-
 using System.Collections.ObjectModel;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI;
@@ -36,13 +35,10 @@ namespace Gorgon.Editor.ViewModels;
 internal interface IFileExplorer
     : IViewModel
 {
-
     /// <summary>
     /// Event triggered when the file system has been updated.
     /// </summary>
     event EventHandler FileSystemUpdated;
-
-
 
     /// <summary>
     /// Property to return the clipboard handler for this view model.
@@ -236,5 +232,4 @@ internal interface IFileExplorer
     {
         get;
     }
-
 }

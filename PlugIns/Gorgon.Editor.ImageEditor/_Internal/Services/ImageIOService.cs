@@ -23,7 +23,6 @@
 // Created: January 4, 2019 9:42:51 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
@@ -73,8 +72,6 @@ internal class ImageIOService(IGorgonImageCodec defaultCodec,
     // The image to use as a placeholder for thumbnail generation.
     private readonly IGorgonImage _noThumbImage = noThumbnailImage;
 
-
-
     /// <summary>
     /// Property to return the default plugin codec.
     /// </summary>
@@ -103,8 +100,6 @@ internal class ImageIOService(IGorgonImageCodec defaultCodec,
     /// Property to return whether or not block compression is supported.
     /// </summary>
     public bool CanHandleBlockCompression => _compressor is not null;
-
-
 
     /// <summary>
     /// Function to import an image file from the physical file system into the current image.
@@ -144,7 +139,6 @@ internal class ImageIOService(IGorgonImageCodec defaultCodec,
             }
 
             metaData = importCodec.GetMetaData(stream);
-
 
             // We absolutely need to have an extension, or else the texconv tool will not work.
             GorgonFileExtension codecExtension = new(importCodec.CodecCommonExtensions[0]);
@@ -275,7 +269,6 @@ internal class ImageIOService(IGorgonImageCodec defaultCodec,
         }
 
         _log.Print($"Working image file: '{workFile.FullPath}'.", LoggingLevel.Verbose);
-
 
         IGorgonVirtualFile result;
         // For compressed images, we need to rely on an external tool to do the job.             
@@ -534,6 +527,4 @@ internal class ImageIOService(IGorgonImageCodec defaultCodec,
         using Stream stream = ScratchArea.OpenStream(filePath, FileMode.Open);
         return DefaultCodec.GetMetaData(stream);
     }
-
-
 }

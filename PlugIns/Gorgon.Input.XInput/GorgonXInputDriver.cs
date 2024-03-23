@@ -23,7 +23,6 @@
 // Created: Friday, July 15, 2011 6:22:48 AM
 // 
 
-
 using Gorgon.Diagnostics;
 using Gorgon.Input.XInput.Properties;
 using XI = SharpDX.XInput;
@@ -36,7 +35,6 @@ namespace Gorgon.Input.XInput;
 public class GorgonXInputDriver
     : GorgonGamingDeviceDriver
 {
-
     /// <summary>
     /// Function to enumerate the gaming devices supported by this driver.
     /// </summary>
@@ -95,8 +93,6 @@ public class GorgonXInputDriver
         // Nothing to do dispose.
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonXInputDriver"/> class.
     /// </summary>
@@ -104,5 +100,4 @@ public class GorgonXInputDriver
         : base(Resources.GORINP_XINP_SERVICEDESC)
     {
     }
-
 }

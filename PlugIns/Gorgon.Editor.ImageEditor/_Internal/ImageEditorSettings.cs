@@ -23,7 +23,6 @@
 // Created: November 7, 2018 1:33:38 PM
 // 
 
-
 using Newtonsoft.Json;
 
 namespace Gorgon.Editor.ImageEditor;

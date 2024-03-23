@@ -23,7 +23,6 @@
 // Created: April 19, 2021 10:52:46 PM
 // 
 
-
 using Gorgon.Graphics.Core;
 
 namespace Gorgon.Renderers.Techniques;
@@ -104,7 +103,6 @@ public interface IGorgonGBuffer
     {
         get;
     }
-
 
     /// <summary>
     /// Function to clear the GBuffer.

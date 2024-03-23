@@ -23,14 +23,12 @@
 // Created: June 9, 2018 10:57:03 AM
 // 
 
-
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Gorgon.Math;
 using Gorgon.Renderers.Geometry;
 
 namespace Gorgon.Renderers;
-
 
 /// <summary>
 /// Provides functionality for transforming renderable vertices

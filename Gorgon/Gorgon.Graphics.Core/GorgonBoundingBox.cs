@@ -23,7 +23,6 @@
 // Created: February 12, 2021 1:03:15 PM
 // 
 
-
 // Copyright (c) 2010-2014 SharpDX - Alexandre Mutel
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -69,17 +68,16 @@
 * THE SOFTWARE.
 */
 
-
 using System.ComponentModel;
 using System.Globalization;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Gorgon.Core;
+using Gorgon.Graphics.Core.Properties;
 using Gorgon.Math;
-using Gorgon.Properties;
 
-namespace Gorgon.Renderers.Data;
+namespace Gorgon.Graphics.Core;
 
 /// <summary>
 /// Represents an axis-aligned bounding box in three dimensional space
@@ -224,7 +222,7 @@ public readonly struct GorgonBoundingBox
     /// </summary>
     /// <param name="points">The points that will be contained by the box.</param>
     /// <param name="result">When the method completes, contains the newly constructed bounding box.</param>
-    public static void FromPoints(Span<Vector3> points, out GorgonBoundingBox result)
+    public static void FromPoints(ReadOnlySpan<Vector3> points, out GorgonBoundingBox result)
     {
         if (points.IsEmpty)
         {
@@ -245,13 +243,38 @@ public readonly struct GorgonBoundingBox
     }
 
     /// <summary>
+    /// Constructs a <see cref="GorgonBoundingBox"/> that fully contains the given points.
+    /// </summary>
+    /// <param name="points">The points that will be contained by the box.</param>
+    /// <returns>When the method completes, contains the newly constructed bounding box.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static GorgonBoundingBox FromPoints(ReadOnlySpan<Vector3> points)
+    {
+        FromPoints(points, out GorgonBoundingBox result);
+        return result;
+    }
+
+    /// <summary>
     /// Constructs a <see cref="GorgonBoundingBox"/> from a given sphere.
     /// </summary>
     /// <param name="sphere">The sphere that will designate the extents of the box.</param>
     /// <param name="result">When the method completes, contains the newly constructed bounding box.</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void FromSphere(GorgonBoundingSphere sphere, out GorgonBoundingBox result)
                            => result = new GorgonBoundingBox(new Vector3(sphere.Center.X - sphere.Radius, sphere.Center.Y - sphere.Radius, sphere.Center.Z - sphere.Radius),
                                        new Vector3(sphere.Center.X + sphere.Radius, sphere.Center.Y + sphere.Radius, sphere.Center.Z + sphere.Radius));
+
+    /// <summary>
+    /// Constructs a <see cref="GorgonBoundingBox"/> from a given sphere.
+    /// </summary>
+    /// <param name="sphere">The sphere that will designate the extents of the box.</param>
+    /// <returns>When the method completes, contains the newly constructed bounding box.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static GorgonBoundingBox FromSphere(GorgonBoundingSphere sphere)
+    {
+        FromSphere(sphere, out GorgonBoundingBox result);
+        return result;
+    }
 
     /// <summary>
     /// Constructs a <see cref="GorgonBoundingBox"/> that is as large as the total combined area of the two specified boxes.
@@ -262,6 +285,19 @@ public readonly struct GorgonBoundingBox
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void Merge(ref readonly GorgonBoundingBox value1, ref readonly GorgonBoundingBox value2, out GorgonBoundingBox result)
         => result = new GorgonBoundingBox(value1.Minimum.Min(value2.Minimum), value1.Maximum.Max(value2.Maximum));
+
+    /// <summary>
+    /// Constructs a <see cref="GorgonBoundingBox"/> that is as large as the total combined area of the two specified boxes.
+    /// </summary>
+    /// <param name="value1">The first box to merge.</param>
+    /// <param name="value2">The second box to merge.</param>
+    /// <returns>When the method completes, contains the newly constructed bounding box.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static GorgonBoundingBox Merge(GorgonBoundingBox value1, GorgonBoundingBox value2)
+    {
+        Merge(in value1, in value2, out GorgonBoundingBox result);
+        return result;
+    }
 
     /// <summary>
     /// Function to intersect two Axis Aligned Bounding Boxes.
@@ -289,6 +325,19 @@ public readonly struct GorgonBoundingBox
     }
 
     /// <summary>
+    /// Function to intersect two Axis Aligned Bounding Boxes.
+    /// </summary>
+    /// <param name="aabb1">The first axis aligned bounding box.</param>
+    /// <param name="aabb2">The second axis aligned bounding box.</param>
+    /// <returns>The intersection of both bounding boxes.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static GorgonBoundingBox Intersect(GorgonBoundingBox aabb1, GorgonBoundingBox aabb2)
+    {
+        Intersect(in aabb1, in aabb2, out GorgonBoundingBox result);
+        return result;
+    }
+
+    /// <summary>
     /// Function to transform an AABB by a world matrix.
     /// </summary>
     /// <param name="aabb">The axis aligned bounding box to transform.</param>
@@ -303,6 +352,18 @@ public readonly struct GorgonBoundingBox
         Vector3 newExtent = Vector3.TransformNormal(extent, absMatrix);
 
         result = new GorgonBoundingBox(Vector3.Subtract(newCenter, newExtent), Vector3.Add(newCenter, newExtent));
+    }
+
+    /// <summary>
+    /// Function to transform an AABB by a world matrix.
+    /// </summary>
+    /// <param name="aabb">The axis aligned bounding box to transform.</param>
+    /// <param name="worldMatrix">The world matrix to multiply by.</param>
+    /// <returns>The new transformed axis aligned bounding box.</returns>
+    public static GorgonBoundingBox Transform(GorgonBoundingBox aabb, Matrix4x4 worldMatrix)
+    {
+        Transform(in aabb, in worldMatrix, out GorgonBoundingBox result);
+        return result;
     }
 
     /// <summary>
@@ -329,7 +390,7 @@ public readonly struct GorgonBoundingBox
     /// <returns>
     /// A <see cref="string"/> that represents this instance.
     /// </returns>
-    public override string ToString() => string.Format(CultureInfo.CurrentCulture, Resources.GOR_TOSTR_AABB, Minimum.X, Minimum.Y, Minimum.Z, Maximum.X, Maximum.Y, Maximum.Z);
+    public override string ToString() => string.Format(CultureInfo.CurrentCulture, Resources.GORGFX_TOSTR_AABB, Minimum.X, Minimum.Y, Minimum.Z, Maximum.X, Maximum.Y, Maximum.Z);
 
     /// <summary>
     /// Returns a hash code for this instance.
@@ -347,7 +408,7 @@ public readonly struct GorgonBoundingBox
     /// <c>true</c> if the specified <see cref="Vector4"/> is equal to this instance; otherwise, <c>false</c>.
     /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    bool IEquatable<GorgonBoundingBox>.Equals(GorgonBoundingBox value) => Equals(in this, in value);
+    public bool Equals(GorgonBoundingBox value) => Equals(in this, in value);
 
     /// <summary>
     /// Determines whether the specified <see cref="object"/> is equal to this instance.
@@ -398,6 +459,7 @@ public readonly struct GorgonBoundingBox
     /// <param name="left">The left value to compare.</param>
     /// <param name="right">The right value to compare.</param>
     /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool Equals(ref readonly GorgonBoundingBox left, ref readonly GorgonBoundingBox right) => left.Minimum.Equals(right.Minimum) && left.Maximum.Equals(right.Maximum);
 
     /// <summary>Function to compare this instance with another.</summary>

@@ -23,7 +23,6 @@
 // Created: April 28, 2019 10:27:15 AM
 // 
 
-
 using System.ComponentModel;
 
 namespace Gorgon.UI;
@@ -34,7 +33,6 @@ namespace Gorgon.UI;
 public class FolderDeleteArgs
     : CancelEventArgs
 {
-
     /// <summary>
     /// Property to return the path to the directory being deleted.
     /// </summary>
@@ -69,8 +67,6 @@ public class FolderDeleteArgs
         get;
         set;
     }
-
-
 
     /// <summary>Initializes a new instance of the <see cref="FolderDeleteArgs"/> class.</summary>
     /// <param name="dirPath">The path to the directory to delete.</param>

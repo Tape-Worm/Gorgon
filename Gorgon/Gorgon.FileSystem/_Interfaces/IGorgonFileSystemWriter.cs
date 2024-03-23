@@ -23,7 +23,6 @@
 // Created: Tuesday, September 22, 2015 10:43:31 PM
 // 
 
-
 namespace Gorgon.IO;
 
 /// <summary>
@@ -99,7 +98,6 @@ namespace Gorgon.IO;
 public interface IGorgonFileSystemWriter<out T>
     where T : Stream
 {
-
     /// <summary>
     /// Event triggered when a virtual directory has been added to the file system.
     /// </summary>
@@ -157,8 +155,6 @@ public interface IGorgonFileSystemWriter<out T>
     /// </summary>
     event EventHandler<VirtualFileCopiedMovedEventArgs> VirtualFileMoved;
 
-
-
     /// <summary>
     /// Property to return the location on the physical file system to use as the writable area for a <see cref="IGorgonFileSystem"/>.
     /// </summary>
@@ -177,8 +173,6 @@ public interface IGorgonFileSystemWriter<out T>
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to create a new directory in the writable area on the physical file system.

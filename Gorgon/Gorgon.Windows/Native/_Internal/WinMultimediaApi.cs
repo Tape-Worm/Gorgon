@@ -23,7 +23,6 @@
 // Created: Wednesday, August 12, 2015 8:04:27 PM
 // 
 
-
 using System.Runtime.InteropServices;
 using System.Security;
 
@@ -35,7 +34,6 @@ namespace Gorgon.Native;
 [SuppressUnmanagedCodeSecurity]
 internal static partial class WinMultimediaApi
 {
-
     /// <summary>
     /// Function to return time from a medium precision timer.
     /// </summary>
@@ -74,8 +72,6 @@ internal static partial class WinMultimediaApi
     /// <returns>0 if successful, non-0 if not.</returns>
     [LibraryImport("winmm.dll")]
     public static partial int timeGetDevCaps(ref TIMECAPS timeCaps, int size);
-
-
 
     /// <summary>
     /// Initializes static members of the <see cref="WinMultimediaApi"/> class.

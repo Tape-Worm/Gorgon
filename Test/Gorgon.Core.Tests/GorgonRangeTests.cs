@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Gorgon.Core.Tests;
 
@@ -177,7 +172,7 @@ public class GorgonRangeTests
         GorgonRange<int> left = new(10, 45);
         GorgonRange<int> right = new(25, 60);
 
-        GorgonRange<int> intersection = GorgonRange<int>.Intersect(left, right);        
+        GorgonRange<int> intersection = GorgonRange<int>.Intersect(left, right);
 
         Assert.AreEqual(25, intersection.Minimum);
         Assert.AreEqual(45, intersection.Maximum);
@@ -240,7 +235,7 @@ public class GorgonRangeTests
         Assert.AreEqual(75, actual.Maximum);
         Assert.AreEqual(95, actual.Range);
 
-        actual = GorgonRange<int>.Expand(actual,-30);
+        actual = GorgonRange<int>.Expand(actual, -30);
         Assert.AreEqual(10, actual.Minimum);
         Assert.AreEqual(45, actual.Maximum);
         Assert.AreEqual(35, actual.Range);
@@ -251,13 +246,13 @@ public class GorgonRangeTests
     {
         GorgonRange<int> range = new(10, 45);
         int expectedRange = range.Range;
-        GorgonRange<int> actual = GorgonRange<int>.Shift(range,30);
+        GorgonRange<int> actual = GorgonRange<int>.Shift(range, 30);
 
         Assert.AreEqual(40, actual.Minimum);
         Assert.AreEqual(75, actual.Maximum);
         Assert.AreEqual(expectedRange, actual.Range);
 
-        actual = GorgonRange<int>.Shift(actual,-30);
+        actual = GorgonRange<int>.Shift(actual, -30);
         Assert.AreEqual(10, actual.Minimum);
         Assert.AreEqual(45, actual.Maximum);
         Assert.AreEqual(expectedRange, actual.Range);

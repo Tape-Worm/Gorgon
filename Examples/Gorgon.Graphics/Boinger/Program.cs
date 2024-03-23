@@ -23,7 +23,6 @@
 // Created: March 2, 2017 7:46:37 PM
 // 
 
-
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Gorgon.Examples.Properties;
@@ -125,8 +124,6 @@ internal static class Program
     private static GorgonVideoMode _selectedVideoMode;
     // The draw call used to render the plane(s).
     private static readonly GorgonDrawIndexCall[] _drawCalls = new GorgonDrawIndexCall[3];
-
-
 
     /// <summary>
     /// Function to update the ball position.
@@ -410,7 +407,6 @@ internal static class Program
         // Build the depth buffer for our swap chain.
         BuildDepthBuffer(_swap.Width, _swap.Height);
 
-
         if (!ExampleConfig.Default.IsWindowed)
         {
             // Get the output for the main window.
@@ -490,7 +486,6 @@ internal static class Program
                                      .Wrapping(TextureWrap.Wrap, TextureWrap.Wrap)
                                      .Build();
 
-
         // Initialize our draw call so we can render the objects.
         // All objects are using triangle lists, so we must tell the draw call that's what we need to render.
         for (int i = 0; i < 2; ++i)
@@ -509,7 +504,7 @@ internal static class Program
         }
 
         // For our sphere, we can just reuse the builder(s) since only a small part of the resources have changed.
-        _sphere.Material.TextureSampler = sampler;        
+        _sphere.Material.TextureSampler = sampler;
         _drawCalls[2] = drawBuilder.VertexBuffer(_inputLayout, _sphere.VertexBufferBindings[0])
                                    .ShaderResource(ShaderType.Pixel, _sphere.Material.Texture)
                                    .IndexBuffer(_sphere.IndexBuffer, 0, _sphere.IndexBuffer.IndexCount)
@@ -650,7 +645,6 @@ internal static class Program
         BuildDepthBuffer(e.Size.X, e.Size.Y);
         _graphics.SetDepthStencil(_depthBuffer);
     }
-
 
     /// <summary>
     /// The main entry point for the application.

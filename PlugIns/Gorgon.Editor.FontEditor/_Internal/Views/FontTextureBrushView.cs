@@ -23,7 +23,6 @@
 // Created: September 10, 2021 2:37:30 AM
 // 
 
-
 using System.ComponentModel;
 using Gorgon.Editor.FontEditor.Properties;
 using Gorgon.Editor.UI;
@@ -45,8 +44,6 @@ internal partial class FontTextureBrushView
     // The event hook counter.
     private int _eventHook;
 
-
-
     /// <summary>
     /// Property to return the data context for the view.
     /// </summary>
@@ -56,8 +53,6 @@ internal partial class FontTextureBrushView
         get;
         private set;
     }
-
-
 
     /// <summary>
     /// Function to unhook the events.
@@ -323,8 +318,6 @@ internal partial class FontTextureBrushView
         ValidateControls();
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="FontTextureBrushView"/> class.</summary>
     public FontTextureBrushView()
     {
@@ -338,5 +331,4 @@ internal partial class FontTextureBrushView
         ComboWrapMode.Items.Add(new WrapModeComboItem(GlyphBrushWrapMode.TileFlipXandY, Resources.GORFNT_TEXT_TILE_FLIP));
         ComboWrapMode.SelectedIndex = 0;
     }
-
 }

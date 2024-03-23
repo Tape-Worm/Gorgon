@@ -23,7 +23,6 @@
 // Created: June 15, 2016 9:33:57 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using D3D11 = SharpDX.Direct3D11;
@@ -93,18 +92,15 @@ namespace Gorgon.Graphics.Core;
 public sealed class GorgonConstantBuffer
     : GorgonBufferCommon, IGorgonConstantBufferInfo
 {
-
     /// <summary>
     /// The prefix to assign to a default name.
     /// </summary>
     internal const string NamePrefix = nameof(GorgonConstantBuffer);
 
-
     // The information used to create the buffer.
     private GorgonConstantBufferInfo _info;
     // A list of constant buffer views.
     private List<GorgonConstantBufferView> _cbvs = [];
-
 
     /// <summary>
     /// Property to return the bind flags used for the D3D 11 resource.
@@ -139,8 +135,6 @@ public sealed class GorgonConstantBuffer
         get;
         private set;
     }
-
-
 
     /// <summary>
     /// Function to initialize the buffer data.
@@ -271,8 +265,6 @@ public sealed class GorgonConstantBuffer
 
         return buffer;
     }
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonConstantBuffer" /> class.

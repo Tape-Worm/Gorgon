@@ -23,7 +23,6 @@
 // Created: April 4, 2019 8:59:29 PM
 // 
 
-
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 
@@ -44,8 +43,6 @@ internal class SpriteColorEdit
     private readonly bool[] _selectedVertex = new bool[4];
     // The currently selected color.
     private GorgonColor _selectedColor = GorgonColors.BlackTransparent;
-
-
 
     /// <summary>
     /// Property to set or return the currently selected color for an individual vertex.
@@ -148,8 +145,6 @@ internal class SpriteColorEdit
     /// <summary>Property to return whether the panel is modal.</summary>
     public override bool IsModal => true;
 
-
-
     /// <summary>Function to inject dependencies for the view model.</summary>
     /// <param name="injectionParameters">The parameters to inject.</param>
     /// <remarks>
@@ -160,8 +155,6 @@ internal class SpriteColorEdit
         // Nothing to inject.
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="SpriteColorEdit"/> class.</summary>
     public SpriteColorEdit()
     {
@@ -171,5 +164,4 @@ internal class SpriteColorEdit
             _color[i] = _originalColor[i] = GorgonColors.BlackTransparent;
         }
     }
-
 }

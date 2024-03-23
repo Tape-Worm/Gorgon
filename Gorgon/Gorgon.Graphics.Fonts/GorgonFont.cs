@@ -22,7 +22,6 @@
 // Created: Friday, April 13, 2012 6:51:08 AM
 // 
 
-
 using System.Drawing.Imaging;
 using System.Drawing.Text;
 using Gorgon.Core;

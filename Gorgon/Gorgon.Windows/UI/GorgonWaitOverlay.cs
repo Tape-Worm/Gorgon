@@ -23,7 +23,6 @@
 // Created: December 5, 2020 3:41:43 PM
 // 
 
-
 using Gorgon.Graphics;
 
 namespace Gorgon.UI;
@@ -45,8 +44,6 @@ public class GorgonWaitOverlay
 
     // The parent control.
     private WeakReference<Control> _parent;
-
-
 
     /// <summary>
     /// Property to return whether the overlay is active or not.
@@ -70,8 +67,6 @@ public class GorgonWaitOverlay
         get => _overlay.Value.OverlayColor;
         set => _overlay.Value.OverlayColor = value;
     }
-
-
 
     /// <summary>Handles the Resize event of the Parent control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -259,5 +254,4 @@ public class GorgonWaitOverlay
             _overlay.Value.Hide();
         }
     }
-
 }

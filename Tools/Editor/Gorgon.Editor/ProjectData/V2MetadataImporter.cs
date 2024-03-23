@@ -23,7 +23,6 @@
 // Created: October 30, 2018 12:48:54 PM
 // 
 
-
 using System.Xml.Linq;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Metadata;
@@ -53,14 +52,10 @@ internal class V2MetadataImporter(string metadataFile, IGorgonLog log)
     /// </summary>
     public const string V2MetadataFilename = ".gorgon.editor.metadata";
 
-
-
     // The file containing the metadata.
     private readonly string _file = metadataFile ?? throw new ArgumentNullException(nameof(metadataFile));
     // The log interface for debug messages.
     private readonly IGorgonLog _log = log ?? GorgonLog.NullLog;
-
-
 
     /// <summary>
     /// Function to import the files in the metadata.
@@ -142,6 +137,4 @@ internal class V2MetadataImporter(string metadataFile, IGorgonLog log)
         }
         _log.Print("Imported v2 Gorgon Editor metadata.", LoggingLevel.Simple);
     }
-
-
 }

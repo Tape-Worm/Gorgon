@@ -23,7 +23,6 @@
 // Created: July 22, 2017 10:16:16 AM
 // 
 
-
 using System.Numerics;
 using Gorgon.Diagnostics;
 using D3D11 = SharpDX.Direct3D11;
@@ -73,8 +72,6 @@ public abstract class GorgonReadWriteView(GorgonGraphicsResource resource)
     // The D3D11 UAV descriptor.
     private D3D11.UnorderedAccessViewDescription1 _uavDesc;
 
-
-
     /// <summary>
     /// Property to return a reference to the D3D11 UAV descriptor.
     /// </summary>
@@ -88,8 +85,6 @@ public abstract class GorgonReadWriteView(GorgonGraphicsResource resource)
         get;
         private set;
     }
-
-
 
     /// <summary>
     /// Function to perform the creation of a specific kind of view.
@@ -202,6 +197,4 @@ public abstract class GorgonReadWriteView(GorgonGraphicsResource resource)
         Native = null;
         base.Dispose();
     }
-
-
 }

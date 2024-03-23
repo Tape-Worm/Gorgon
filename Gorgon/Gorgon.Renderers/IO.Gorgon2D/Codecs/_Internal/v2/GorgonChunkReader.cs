@@ -23,7 +23,6 @@
 // Created: Wednesday, January 23, 2013 7:37:44 PM
 // 
 
-
 using System.Text;
 using Gorgon.Graphics;
 using Gorgon.IO;
@@ -44,7 +43,6 @@ namespace GorgonLibrary.IO;
 internal class GorgonChunkReader(Stream stream)
         : GorgonChunkedFormat(stream, ChunkAccessMode.Read)
 {
-
     /// <summary>
     /// Function to determine if the next bytes indicate match the chunk ID.
     /// </summary>

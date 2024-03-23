@@ -23,7 +23,6 @@
 // Created: August 19, 2018 9:25:19 AM
 // 
 
-
 using System.Numerics;
 using Gorgon.Animation.Properties;
 using Gorgon.Graphics;
@@ -57,7 +56,6 @@ namespace Gorgon.Animation;
 public class GorgonSpriteAnimationController
     : GorgonAnimationController<GorgonSprite>
 {
-
     /// <summary>
     /// The name of the opacity track.
     /// </summary>
@@ -98,8 +96,6 @@ public class GorgonSpriteAnimationController
     /// The name of the lower right 3D position track.
     /// </summary>
     public const string LowerRight3DTrackName = nameof(GorgonSprite.CornerOffsets.LowerRight) + "3D";
-
-
 
     /// <summary>
     /// The track registration for the angle of rotation for the sprite.
@@ -214,8 +210,6 @@ public class GorgonSpriteAnimationController
     /// The track registration for the texture, texture coordinates, and texture array index on a sprite.
     /// </summary>
     public static readonly GorgonTrackRegistration TextureTrack = new(nameof(GorgonSprite.Texture), Resources.GORANM_TEXT_TEXTURE, AnimationTrackKeyType.Texture2D, TrackInterpolationMode.None);
-
-
 
     /// <summary>Function called when a single floating point value needs to be updated on the animated object.</summary>
     /// <param name="track">The track currently being processed.</param>
@@ -480,5 +474,4 @@ public class GorgonSpriteAnimationController
         RegisterTrack(LowerRightColorTrack);
         RegisterTrack(TextureTrack);
     }
-
 }

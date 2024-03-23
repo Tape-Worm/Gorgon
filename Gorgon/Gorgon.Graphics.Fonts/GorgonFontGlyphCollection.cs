@@ -23,7 +23,6 @@
 // Created: Sunday, September 22, 2013 11:35:47 AM
 // 
 
-
 using System.Collections;
 using Gorgon.Graphics.Core;
 
@@ -38,8 +37,6 @@ public sealed class GorgonGlyphCollection
 
     // The list of glyphs.
     private readonly SortedList<char, GorgonGlyph> _list;
-
-
 
     /// <summary>
     /// Gets the number of elements contained in the <see cref="ICollection{T}"/>.
@@ -63,8 +60,6 @@ public sealed class GorgonGlyphCollection
         get => _list[character];
         internal set => _list[character] = value;
     }
-
-
 
     /// <summary>
     /// Adds an item to the <see cref="ICollection{T}" />.
@@ -167,8 +162,6 @@ public sealed class GorgonGlyphCollection
 
         return groupedGlyphs.ToDictionary(k => k.Key, v => (IReadOnlyList<GorgonGlyph>)[.. v]);
     }
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonGlyphCollection"/> class.

@@ -23,7 +23,6 @@
 // Created: June 28, 2020 6:27:53 PM
 // 
 
-
 using Gorgon.Animation;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI;
@@ -40,7 +39,6 @@ namespace Gorgon.Editor.AnimationEditor;
 internal class PropertiesParameters(IGorgonAnimation animation, IHostContentServices hostServices)
         : HostedPanelViewModelParameters(hostServices)
 {
-
     /// <summary>
     /// Property to return the animation being edited.
     /// </summary>
@@ -48,6 +46,5 @@ internal class PropertiesParameters(IGorgonAnimation animation, IHostContentServ
     {
         get;
     } = animation;
-
 
 }

@@ -23,7 +23,6 @@
 // Created: Sunday, September 20, 2015 9:32:27 AM
 // 
 
-
 using Gorgon.IO.Providers;
 using ICSharpCode.SharpZipLib.Zip;
 
@@ -35,7 +34,6 @@ namespace Gorgon.IO.Zip;
 internal class ZipPhysicalFileInfo
     : IGorgonPhysicalFileInfo
 {
-
     /// <summary>
     /// Property to return the compressed size of the file, in bytes.
     /// </summary>
@@ -130,15 +128,11 @@ internal class ZipPhysicalFileInfo
         get;
     }
 
-
-
     /// <summary>Function to refresh the file information.</summary>
     public void Refresh()
     {
         // We don't need to refresh a packed file.
     }
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ZipPhysicalFileInfo" /> class.
@@ -167,5 +161,4 @@ internal class ZipPhysicalFileInfo
         Name = Path.GetFileName(entry.Name).FormatFileName();
         VirtualPath = directory + Name;
     }
-
 }

@@ -23,7 +23,6 @@
 // Created: August 9, 2018 8:35:23 AM
 // 
 
-
 using System.Numerics;
 using Gorgon.Graphics;
 using Gorgon.Renderers.Geometry;
@@ -38,8 +37,6 @@ public class GorgonPolySpriteVertex
 
     // The actual vertex for the sprite.
     internal Gorgon2DVertex Vertex;
-
-
 
     /// <summary>
     /// Property to return the position of the vertex in space.
@@ -63,8 +60,6 @@ public class GorgonPolySpriteVertex
         get => new(Vertex.UV.X, Vertex.UV.Y);
         internal set => Vertex.UV = new Vector4(value, Vertex.UV.Z, 0);
     }
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonPolySpriteVertex" /> class.

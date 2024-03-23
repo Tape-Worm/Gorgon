@@ -23,7 +23,6 @@
 // Created: August 18, 2018 10:39:26 AM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Graphics;
 
@@ -94,8 +93,6 @@ internal class ColorTrack
         set;
     } = true;
 
-
-
     /// <summary>
     /// Function to retrieve the value at the specified time index.
     /// </summary>
@@ -130,8 +127,6 @@ internal class ColorTrack
         return new GorgonKeyGorgonColor(timeIndex, color);
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="ColorTrack"/> class.
     /// </summary>
@@ -150,5 +145,4 @@ internal class ColorTrack
 
         _splineController.UpdateTangents();
     }
-
 }

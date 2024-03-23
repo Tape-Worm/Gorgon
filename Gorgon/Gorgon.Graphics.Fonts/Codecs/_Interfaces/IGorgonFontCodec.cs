@@ -23,7 +23,6 @@
 // Created: February 23, 2017 10:26:34 PM
 // 
 
-
 using Gorgon.Core;
 
 namespace Gorgon.Graphics.Fonts.Codecs;
@@ -39,7 +38,6 @@ namespace Gorgon.Graphics.Fonts.Codecs;
 public interface IGorgonFontCodec
     : IGorgonNamedObject
 {
-
     /// <summary>
     /// Property to return the common file name extension(s) for a codec.
     /// </summary>
@@ -101,8 +99,6 @@ public interface IGorgonFontCodec
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to load a font from a stream.

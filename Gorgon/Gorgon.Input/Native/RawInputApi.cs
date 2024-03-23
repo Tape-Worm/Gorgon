@@ -23,7 +23,6 @@
 // Created: Tuesday, September 08, 2015 1:26:21 AM
 // 
 
-
 using System.Buffers;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -254,7 +253,6 @@ internal enum RawInputDeviceFlags
     InputSinkEx = 0x00001000
 }
 
-
 /// <summary>
 /// Native raw Input API functionality
 /// </summary>
@@ -264,14 +262,10 @@ internal static partial class RawInputApi
     // The size of the raw input data header.
     private static readonly int _headerSize = Unsafe.SizeOf<RAWINPUTHEADER>();
 
-
-
     /// <summary>
     /// The window message for Raw Input.
     /// </summary>
     public const int WmRawInput = 0x00FF;
-
-
 
     /// <summary>
     /// Function to retrieve raw input data.
@@ -599,8 +593,6 @@ internal static partial class RawInputApi
             }
         }
     }
-
-
 
     /// <summary>
     /// Initializes static members of the <see cref="RawInputApi"/> class.

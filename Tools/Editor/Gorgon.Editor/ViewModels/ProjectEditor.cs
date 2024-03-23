@@ -23,7 +23,6 @@
 // Created: September 4, 2018 12:46:15 PM
 // 
 
-
 using System.ComponentModel;
 using System.Diagnostics;
 using Gorgon.Collections;
@@ -61,13 +60,10 @@ internal enum ProjectItemType
 internal class ProjectEditor
     : ViewModelBase<ProjectEditorParameters, IHostContentServices>, IProjectEditor
 {
-
     /// <summary>
     /// Metadata naming for the project item type attribute.
     /// </summary>
     public const string ProjectItemTypeAttrName = "ProjectItemType";
-
-
 
     // The project data for the view model.
     private IProject _projectData;
@@ -91,8 +87,6 @@ internal class ProjectEditor
     private IReadOnlyList<IContentPlugInMetadata> _contentCreators;
     // The current clipboard context.
     private IClipboardHandler _clipboardContext;
-
-
 
     /// <summary>
     /// Property to return the available tool plug in button definitions for the application.
@@ -291,8 +285,6 @@ internal class ProjectEditor
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to persist the project metadata to the disk.
@@ -835,7 +827,6 @@ internal class ProjectEditor
 
             directory = _fileExplorer.SelectedDirectory ?? _fileExplorer.Root;
 
-
             ShowWaitPanel(string.Format(Resources.GOREDIT_TEXT_CREATING_CONTENT, metadata.ContentType));
 
             // Ensure we don't wipe out any changes.
@@ -1044,8 +1035,6 @@ internal class ProjectEditor
         base.OnUnload();
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="ProjectEditor"/> class.</summary>
     public ProjectEditor()
     {
@@ -1056,5 +1045,4 @@ internal class ProjectEditor
         CreateContentCommand = new EditorAsyncCommand<Guid>(DoCreateContentAsync, CanCreateContent);
         ContentClosedCommand = new EditorCommand<object>(DoContentClosed);
     }
-
 }

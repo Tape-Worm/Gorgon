@@ -23,7 +23,6 @@
 // Created: January 4, 2021 2:30:19 PM
 // 
 
-
 using Gorgon.Collections;
 using D3D11 = SharpDX.Direct3D11;
 
@@ -35,7 +34,6 @@ namespace Gorgon.Graphics.Core;
 internal class BlendStateArray
     : GorgonArray<GorgonBlendState>
 {
-
     /// <summary>
     /// Function to build the D3D11 blend state.
     /// </summary>
@@ -81,12 +79,9 @@ internal class BlendStateArray
         };
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="BlendStateArray" /> class.</summary>
     internal BlendStateArray()
         : base(D3D11.OutputMergerStage.SimultaneousRenderTargetCount)
     {
     }
-
 }

@@ -23,7 +23,6 @@
 // Created: Thursday, September 10, 2015 10:00:48 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Graphics;
 
@@ -79,7 +78,6 @@ public enum MouseButtons
 public interface IGorgonMouse
     : IGorgonRawInputDevice, IGorgonRawInputDeviceData<GorgonRawMouseData>
 {
-
     /// <summary>
     /// Event triggered when the mouse is moved.
     /// </summary>
@@ -104,8 +102,6 @@ public interface IGorgonMouse
     /// Event triggered when a double click is performed on a mouse button.
     /// </summary>
     event EventHandler<GorgonMouseEventArgs> MouseDoubleClicked;
-
-
 
     /// <summary>
     /// Property to set or return the last reported relative position movement offset.
@@ -247,5 +243,4 @@ public interface IGorgonMouse
         get;
         set;
     }
-
 }

@@ -23,7 +23,6 @@
 // Created: August 25, 2018 2:43:42 PM
 // 
 
-
 using Gorgon.Animation;
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
@@ -39,7 +38,6 @@ namespace Gorgon.IO;
 public abstract class GorgonAnimationCodecCommon
     : IGorgonAnimationCodec
 {
-
     /// <summary>
     /// The ID for the file header for the most current version of the animation format.
     /// </summary>
@@ -49,8 +47,6 @@ public abstract class GorgonAnimationCodecCommon
     /// The highest currently supported version for animation serialization.
     /// </summary>
     public static readonly Version CurrentVersion = new(3, 1);
-
-
 
     /// <summary>
     /// Property to return the friendly description of the format.
@@ -119,8 +115,6 @@ public abstract class GorgonAnimationCodecCommon
         protected set;
     }
 
-
-
     /// <summary>
     /// Function to save the animation data to a stream.
     /// </summary>
@@ -150,7 +144,6 @@ public abstract class GorgonAnimationCodecCommon
     /// <param name="stream">The stream containing the data.</param>
     /// <returns><b>true</b> if the data can be read, or <b>false</b> if not.</returns>
     protected abstract bool OnIsReadable(Stream stream);
-
 
     /// <summary>
     /// Function to retrieve the names of the associated textures.
@@ -418,8 +411,6 @@ public abstract class GorgonAnimationCodecCommon
         }
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonAnimationCodecCommon"/> class.
     /// </summary>
@@ -448,5 +439,4 @@ public abstract class GorgonAnimationCodecCommon
         Codec = name;
         CodecDescription = string.IsNullOrWhiteSpace(description) ? name : description;
     }
-
 }

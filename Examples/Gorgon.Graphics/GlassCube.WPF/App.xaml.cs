@@ -23,7 +23,6 @@
 // Created: January 6, 2021 8:09:16 PM
 // 
 
-
 using System.Windows;
 
 namespace Gorgon.Examples;

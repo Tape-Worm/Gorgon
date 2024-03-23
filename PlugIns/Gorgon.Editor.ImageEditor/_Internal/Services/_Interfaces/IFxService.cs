@@ -23,7 +23,6 @@
 // Created: March 1, 2020 8:20:42 PM
 // 
 
-
 using Gorgon.Graphics.Imaging;
 
 namespace Gorgon.Editor.ImageEditor;
@@ -34,7 +33,6 @@ namespace Gorgon.Editor.ImageEditor;
 internal interface IFxService
     : IDisposable
 {
-
     /// <summary>
     /// Property to return the image that will contain the effect output.
     /// </summary>
@@ -42,8 +40,6 @@ internal interface IFxService
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to apply the current effect that is using a preview.

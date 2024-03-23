@@ -23,7 +23,6 @@
 // Created: Monday, June 15, 2015 8:57:39 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Properties;
 
@@ -134,8 +133,6 @@ public sealed class GorgonChunkFileReader
     private long _headerEnd;
     // The size of the file, in bytes.
     private long _fileSize;
-
-
 
     /// <summary>
     /// Function to read in the chunk table from the file.
@@ -379,8 +376,6 @@ public sealed class GorgonChunkFileReader
         return _activeReader;
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonChunkFileReader"/> class.
     /// </summary>
@@ -415,12 +410,11 @@ public sealed class GorgonChunkFileReader
         {
             throw new ArgumentException(Resources.GOR_ERR_STREAM_IS_WRITEONLY, nameof(stream));
         }
-        
+
         ArgumentNullException.ThrowIfNull(appSpecificIds);
 
         _appSpecificIds = new HashSet<ulong>(appSpecificIds.Distinct().OrderByDescending(item => item));
-        
+
         ArgumentEmptyException.ThrowIfNullOrEmpty(_appSpecificIds, nameof(appSpecificIds));
     }
-
 }

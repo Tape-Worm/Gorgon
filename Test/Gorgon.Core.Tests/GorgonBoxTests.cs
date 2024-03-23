@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Numerics;
 using Gorgon.Graphics;
 using Newtonsoft.Json;
 
@@ -110,7 +105,7 @@ public class GorgonBoxTests
     public void Ceiling()
     {
         GorgonBoxF floatBox = new(10.8f, 9.2f, 5.5f, 11.2f, 15.6f, 19.0f);
-        GorgonBox.Ceiling (in floatBox, out GorgonBox ceiling);
+        GorgonBox.Ceiling(in floatBox, out GorgonBox ceiling);
 
         Assert.AreEqual(ceiling.X, 11.0f);
         Assert.AreEqual(ceiling.Y, 10.0f);
@@ -176,7 +171,7 @@ public class GorgonBoxTests
         Assert.AreEqual(intRect.Y, intBox.Y);
         Assert.AreEqual(intRect.Width, intBox.Width);
         Assert.AreEqual(intRect.Height, intBox.Height);
-    }    
+    }
 
     [TestMethod]
     public void Truncate()
@@ -314,7 +309,7 @@ public class GorgonBoxTests
         GorgonBox main = new(-20, -20, -20, 40, 40, 40);
         GorgonBox inside = new(-5, -5, -5, 10, 10, 10);
         GorgonBox outsideLeft = new(-100, 0, 0, 50, 50, 50);
-        GorgonBox outsideRight= new(100, 0, 0, 50, 50, 50);
+        GorgonBox outsideRight = new(100, 0, 0, 50, 50, 50);
         GorgonBox outsideTop = new(0, -100, 0, 50, 50, 50);
         GorgonBox outsideBottom = new(0, 100, 0, 50, 50, 50);
         GorgonBox outsideFront = new(0, 0, -100, 50, 50, 50);
@@ -425,7 +420,7 @@ public class GorgonBoxTests
         GorgonBox expected4 = new GorgonBox(5, 5, 5, 10, 10, 10);
         GorgonBox result4 = GorgonBox.Intersect(box7, box8);
         Assert.AreEqual(expected4, result4);
-    }    
+    }
 
     [TestMethod]
     public void TupleDeconstruction()

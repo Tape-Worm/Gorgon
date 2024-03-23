@@ -23,7 +23,6 @@
 // Created: Tuesday, June 14, 2011 8:50:49 PM
 // 
 
-
 using System.Globalization;
 using Gorgon.Core;
 using Gorgon.Diagnostics.LogProviders;
@@ -36,7 +35,6 @@ namespace Gorgon.Diagnostics;
 public class GorgonTextFileLog
     : GorgonLog
 {
-
     /// <summary>
     /// Property to return the path to the log file.
     /// </summary>
@@ -84,5 +82,4 @@ public class GorgonTextFileLog
 
         Provider = new LogTextFileProvider(LogPath);
     }
-
 }

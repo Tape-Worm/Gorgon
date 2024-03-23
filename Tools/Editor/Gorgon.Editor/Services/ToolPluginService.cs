@@ -23,7 +23,6 @@
 // Created: October 29, 2018 1:19:30 PM
 // 
 
-
 using System.Text;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
@@ -57,8 +56,6 @@ internal class ToolPlugInService(string settingsDirectory, IHostContentServices 
     // The host application services to pass to the plug ins.
     private readonly IHostContentServices _hostServices = hostServices;
 
-
-
     /// <summary>Property to return the list of tool plugins loaded in to the application.</summary>
     /// <value>The plugins.</value>
     public IReadOnlyDictionary<string, ToolPlugIn> PlugIns => _plugins;
@@ -70,8 +67,6 @@ internal class ToolPlugInService(string settingsDirectory, IHostContentServices 
     /// Property to return the UI buttons for the tool plug in.
     /// </summary>
     public IReadOnlyDictionary<string, IReadOnlyList<IToolPlugInRibbonButton>> RibbonButtons => _ribbonButtons;
-
-
 
     /// <summary>
     /// Function to return the file for the content plug in settings.
@@ -233,7 +228,6 @@ internal class ToolPlugInService(string settingsDirectory, IHostContentServices 
         }
     }
 
-
     /// <summary>Function to remove a tool plugin from the service.</summary>
     /// <param name="plugin">The plugin to remove.</param>
     public void RemoveToolPlugIn(ToolPlugIn plugin)
@@ -344,8 +338,4 @@ internal class ToolPlugInService(string settingsDirectory, IHostContentServices 
 
         ClearToolButtons();
     }
-
-
-
-
 }

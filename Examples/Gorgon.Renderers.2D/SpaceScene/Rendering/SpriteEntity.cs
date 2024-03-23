@@ -23,7 +23,6 @@
 // Created: May 21, 2019 11:43:27 AM
 // 
 
-
 using System.Numerics;
 using Gorgon.Animation;
 using Gorgon.Core;
@@ -37,7 +36,7 @@ namespace Gorgon.Examples;
 /// An entity for a sprite layer
 /// </summary>
 /// <remarks>Initializes a new instance of the <see cref="SpriteEntity"/> class.</remarks>
-public class SpriteEntity 
+public class SpriteEntity
     : IGorgonNamedObject
 {
     /// <inheritdoc/>

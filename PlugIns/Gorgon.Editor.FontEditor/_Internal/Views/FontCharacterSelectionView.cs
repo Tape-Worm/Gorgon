@@ -23,7 +23,6 @@
 // Created: September 3, 2021 9:37:58 AM
 // 
 
-
 using System.ComponentModel;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Controls;
@@ -36,7 +35,6 @@ namespace Gorgon.Editor.FontEditor;
 internal partial class FontCharacterSelectionView
     : EditorSubPanelCommon, IDataContext<IFontCharacterSelection>
 {
-
     /// <summary>
     /// Property to return the data context for the view.
     /// </summary>
@@ -46,8 +44,6 @@ internal partial class FontCharacterSelectionView
         get;
         private set;
     }
-
-
 
     /// <summary>Handles the CharactersChanged event of the CharPicker control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -179,8 +175,6 @@ internal partial class FontCharacterSelectionView
         ViewModel.PropertyChanged += DataContext_PropertyChanged;
         ValidateOk();
     }
-
-
 
     /// <summary>Initializes a new instance of the <see cref="FontCharacterSelectionView"/> class.</summary>
     public FontCharacterSelectionView() => InitializeComponent();

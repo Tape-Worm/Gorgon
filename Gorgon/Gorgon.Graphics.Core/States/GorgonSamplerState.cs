@@ -23,7 +23,6 @@
 // Created: July 28, 2016 11:49:51 PM
 // 
 
-
 using System.Diagnostics;
 using Gorgon.Core;
 using Gorgon.Math;
@@ -93,8 +92,6 @@ public class GorgonSamplerState
         WrapV = TextureWrap.Wrap,
         WrapW = TextureWrap.Wrap
     };
-
-
 
     /// <summary>
     /// Property to return the Direct3D native sampler state.
@@ -295,8 +292,6 @@ public class GorgonSamplerState
         internal set;
     }
 
-
-
     /// <summary>
     /// Function to build the D3D11 sampler state.
     /// </summary>
@@ -367,8 +362,6 @@ public class GorgonSamplerState
         return hashCode.ToHashCode();
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonSamplerState"/> class.
     /// </summary>
@@ -403,5 +396,4 @@ public class GorgonSamplerState
         ComparisonFunction = Comparison.Never;
         MipLevelOfDetailBias = 0.0f;
     }
-
 }

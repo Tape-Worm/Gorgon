@@ -23,7 +23,6 @@
 // Created: Wednesday, February 01, 2012 9:40:15 AM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Native;
@@ -48,7 +47,6 @@ namespace Gorgon.Graphics.Core;
 public readonly struct GorgonVertexBufferBinding(GorgonVertexBuffer buffer, int stride, int offset = 0)
         : IGorgonEquatableByRef<GorgonVertexBufferBinding>
 {
-
     /// <summary>
     /// Empty vertex buffer binding.
     /// </summary>
@@ -66,8 +64,6 @@ public readonly struct GorgonVertexBufferBinding(GorgonVertexBuffer buffer, int 
     /// Offset within the buffer to start at, in bytes.
     /// </summary>
     public readonly int Offset = offset;
-
-
 
     /// <summary>
     /// Function to create a vertex buffer and its binding.
@@ -190,8 +186,5 @@ public readonly struct GorgonVertexBufferBinding(GorgonVertexBuffer buffer, int 
     /// <param name="right">The right.</param>
     /// <returns>The result of the operator.</returns>
     public static bool operator !=(GorgonVertexBufferBinding left, GorgonVertexBufferBinding right) => !Equals(in left, in right);
-
-
-
 
 }

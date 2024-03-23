@@ -99,8 +99,6 @@
 // contributors exclude the implied warranties of merchantability, fitness for a
 // particular purpose and non-infringement.
 
-
-
 using System.Runtime.CompilerServices;
 using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Properties;
@@ -189,8 +187,6 @@ public sealed class GorgonCodecTga
         BufferFormat.B8G8R8X8_UNorm
     ];
 
-
-
     /// <summary>
     /// Property to return the pixel formats supported by the codec.
     /// </summary>
@@ -225,8 +221,6 @@ public sealed class GorgonCodecTga
     /// Property to return whether the image codec supports a depth component for volume textures.
     /// </summary>
     public override bool SupportsDepth => false;
-
-
 
     /// <summary>
     /// Function to read in the TGA header from a stream.
@@ -948,7 +942,6 @@ public sealed class GorgonCodecTga
         int headerSize = Unsafe.SizeOf<TgaHeader>();
         long position = 0;
 
-
         if (stream is null)
         {
             throw new ArgumentNullException(nameof(stream));
@@ -983,7 +976,6 @@ public sealed class GorgonCodecTga
             reader?.Dispose();
         }
     }
-
 
     /// <summary>
     /// Function to determine if this codec can read the image data within the stream or not.
@@ -1051,8 +1043,6 @@ public sealed class GorgonCodecTga
 
         return (header.ImageType is not TgaImageType.BlackAndWhite and not TgaImageType.BlackAndWhiteRLE) || (header.BPP is 8);
     }
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonCodecTga" /> class.

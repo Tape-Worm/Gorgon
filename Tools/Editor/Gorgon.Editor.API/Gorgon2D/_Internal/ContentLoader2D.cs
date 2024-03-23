@@ -23,7 +23,6 @@
 // Created: August 2, 2020 1:12:20 PM
 // 
 
-
 using System.Globalization;
 using Gorgon.Animation;
 using Gorgon.Core;
@@ -73,8 +72,6 @@ internal class ContentLoader2D(IGorgonFileSystem fileSystem, IProjectMetadata me
     // The metadata from the editor.
     private readonly IProjectMetadata _metadata = metadata;
 
-
-
     /// <summary>Property to return a list of codecs that can be used to load animation content data.</summary>
     /// <remarks>Codecs added here are for external codecs. All built-in codecs for Gorgon will not appear in this list and are always used when loading files.</remarks>
     public IList<IGorgonAnimationCodec> ExternalAnimationCodecs
@@ -101,8 +98,6 @@ internal class ContentLoader2D(IGorgonFileSystem fileSystem, IProjectMetadata me
     {
         get;
     } = textureCache;
-
-
 
     /// <summary>
     /// Function to retrieve the list of available codecs for loading animation data.
@@ -187,7 +182,6 @@ internal class ContentLoader2D(IGorgonFileSystem fileSystem, IProjectMetadata me
             _graphics.Log.Print($"WARNING: The texture '{path}' was not found in the editor file system.", LoggingLevel.Intermediate);
             return null;
         }
-
 
         if (!metadata.Attributes.TryGetValue("ImageCodec", out string codecName))
         {
@@ -726,6 +720,4 @@ internal class ContentLoader2D(IGorgonFileSystem fileSystem, IProjectMetadata me
 
         return Convert.ToBoolean(excluded, CultureInfo.InvariantCulture);
     }
-
-
 }

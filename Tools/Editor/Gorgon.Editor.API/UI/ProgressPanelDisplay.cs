@@ -23,7 +23,6 @@
 // Created: February 17, 2020 1:56:46 AM
 // 
 
-
 using Gorgon.Timing;
 using Gorgon.UI;
 
@@ -46,8 +45,6 @@ public class ProgressPanelDisplay
     private IViewModel _viewModel;
     // The timer used to control the rate of updates to the progress panel.
     private readonly IGorgonTimer _progressTimer;
-
-
 
     /// <summary>
     /// Function to unassign the events from the view model.
@@ -123,8 +120,6 @@ public class ProgressPanelDisplay
         UnassignEvents();
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="ProgressPanelDisplay"/> class.</summary>
     /// <param name="appForm">The application form that will be the parent to the wait panel.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="appForm"/> parameter is <b>null</b>.</exception>
@@ -137,6 +132,4 @@ public class ProgressPanelDisplay
         };
         _progressTimer = new GorgonTimerQpc();
     }
-
-
 }

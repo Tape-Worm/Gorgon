@@ -23,7 +23,6 @@
 // Created: July 4, 2016 1:05:13 AM
 // 
 
-
 using Gorgon.Collections;
 using Gorgon.Math;
 using D3D11 = SharpDX.Direct3D11;
@@ -36,13 +35,10 @@ namespace Gorgon.Graphics.Core;
 public sealed class GorgonSamplerStates
     : GorgonArray<GorgonSamplerState>
 {
-
     /// <summary>
     /// The maximum number of allowed sampler states that can be bound at the same time.
     /// </summary>
     public const int MaximumSamplerStateCount = D3D11.CommonShaderStage.SamplerSlotCount;
-
-
 
     /// <summary>
     /// Property to return the native samplers.
@@ -51,8 +47,6 @@ public sealed class GorgonSamplerStates
     {
         get;
     } = new D3D11.SamplerState[MaximumSamplerStateCount];
-
-
 
     /// <summary>
     /// Function called when a dirty item is found and added.
@@ -65,8 +59,6 @@ public sealed class GorgonSamplerStates
     /// Function called when the array is cleared.
     /// </summary>
     protected override void OnClear() => Array.Clear(Native, 0, Native.Length);
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonSamplerStates"/> class.
@@ -85,5 +77,4 @@ public sealed class GorgonSamplerStates
             this[i] = states[i];
         }
     }
-
 }

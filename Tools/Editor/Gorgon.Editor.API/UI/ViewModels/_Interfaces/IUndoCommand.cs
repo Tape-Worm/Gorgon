@@ -23,7 +23,6 @@
 // Created: November 17, 2018 1:11:01 PM
 // 
 
-
 using Gorgon.Editor.Services;
 
 namespace Gorgon.Editor.UI;
@@ -42,7 +41,6 @@ namespace Gorgon.Editor.UI;
 /// </remarks>
 public interface IUndoCommand
 {
-
     /// <summary>
     /// Property to return the service that owns this command.
     /// </summary>
@@ -66,8 +64,6 @@ public interface IUndoCommand
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to undo the changes performed by this command.

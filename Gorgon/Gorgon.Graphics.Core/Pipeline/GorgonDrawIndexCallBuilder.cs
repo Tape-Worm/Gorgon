@@ -23,7 +23,6 @@
 // Created: May 23, 2018 1:44:30 PM
 // 
 
-
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Memory;
 
@@ -58,7 +57,6 @@ namespace Gorgon.Graphics.Core;
 public class GorgonDrawIndexCallBuilder
     : GorgonDrawCallBuilderCommon<GorgonDrawIndexCallBuilder, GorgonDrawIndexCall>
 {
-
     /// <summary>
     /// Function to create a new draw call.
     /// </summary>
@@ -180,8 +178,6 @@ public class GorgonDrawIndexCallBuilder
         return this;
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonDrawIndexCallBuilder"/> class.
     /// </summary>
@@ -190,5 +186,4 @@ public class GorgonDrawIndexCallBuilder
     {
 
     }
-
 }

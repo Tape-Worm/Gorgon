@@ -23,7 +23,6 @@
 // Created: August 5, 2020 1:03:04 AM
 // 
 
-
 namespace Gorgon.Examples;
 
 /// <summary>
@@ -35,7 +34,6 @@ namespace Gorgon.Examples;
 internal partial class FormTextEditor
     : Form
 {
-
     /// <summary>
     /// Property to set or return the original text.
     /// </summary>
@@ -54,8 +52,6 @@ internal partial class FormTextEditor
         set => TextContent.Text = value ?? string.Empty;
     }
 
-
-
     /// <summary>
     /// Function to validate the OK button state.
     /// </summary>
@@ -65,8 +61,6 @@ internal partial class FormTextEditor
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void TextContent_TextChanged(object sender, EventArgs e) => ValidateOk();
-
-
 
     /// <summary>Initializes a new instance of the <see cref="FormTextEditor"/> class.</summary>
     public FormTextEditor() => InitializeComponent();

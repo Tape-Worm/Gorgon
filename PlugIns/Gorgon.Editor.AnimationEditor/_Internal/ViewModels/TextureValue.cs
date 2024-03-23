@@ -23,7 +23,6 @@
 // Created: June 16, 2020 3:36:38 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Editor.AnimationEditor.Properties;
 using Gorgon.Editor.Content;
@@ -44,7 +43,6 @@ namespace Gorgon.Editor.AnimationEditor;
 internal readonly struct TextureValue(GorgonTexture2DView texture, IContentFile textureFile, int arrayIndex, GorgonRectangleF textureCoordinates)
         : IGorgonEquatableByRef<TextureValue>
 {
-
     /// <summary>
     /// The texture to use when rendering the key.
     /// </summary>
@@ -64,8 +62,6 @@ internal readonly struct TextureValue(GorgonTexture2DView texture, IContentFile 
     /// The file for the texture.
     /// </summary>
     public readonly IContentFile TextureFile = textureFile;
-
-
 
     /// <summary>Returns a hash code for this instance.</summary>
     /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
@@ -124,8 +120,5 @@ internal readonly struct TextureValue(GorgonTexture2DView texture, IContentFile 
     ///     <span class="keyword">true</span> (<span class="keyword">True</span> in Visual Basic)</span> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <span class="keyword"><span class="languageSpecificText"><span class="cs">false</span><span class="vb">False</span><span class="cpp">false</span></span></span><span class="nu"><span class="keyword">false</span> (<span class="keyword">False</span> in Visual Basic)</span>.
     /// </returns>
     public bool Equals(ref readonly TextureValue other) => Equals(in other, in this);
-
-
-
 
 }

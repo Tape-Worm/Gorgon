@@ -23,7 +23,6 @@
 // Created: March 2, 2017 7:46:50 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
@@ -75,8 +74,6 @@ internal static class Program
     // A draw call tells the GPU what to draw, and what special states to apply when rendering. This will be submitted to our GorgonGraphics object so that the 
     // GPU can queue up the data for rendering.
     private static GorgonDrawCall _drawCall;
-
-
 
     /// <summary>
     /// Function to handle idle time for the application.
@@ -278,7 +275,6 @@ internal static class Program
             GorgonExample.EndInit();
         }
     }
-
 
     /// <summary>
     /// The main entry point for the application.

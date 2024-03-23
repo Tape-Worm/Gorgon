@@ -23,13 +23,11 @@
 // Created: August 28, 2021 9:09:37 PM
 // 
 
-
 using Gorgon.Graphics;
 using Gorgon.Graphics.Fonts;
 using Gorgon.IO;
 using Gorgon.UI;
 using Drawing = System.Drawing;
-
 
 namespace Gorgon.Editor.FontEditor;
 
@@ -42,8 +40,6 @@ internal partial class FormNewFont
 
     // Font used for preview.
     private Font _font;
-
-
 
     /// <summary>
     /// Property to return the font name.
@@ -321,8 +317,6 @@ internal partial class FormNewFont
     /// </remarks>
     bool IGorgonFontInfo.UseKerningPairs => true;
 
-
-
     /// <summary>
     /// Function to validate the controls on the form.
     /// </summary>
@@ -479,8 +473,6 @@ internal partial class FormNewFont
         ComboFontFamilies.Select();
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="FormNewFont"/> class.
     /// </summary>
@@ -490,6 +482,4 @@ internal partial class FormNewFont
 
         ComboFontFamilies.RefreshFonts(true);
     }
-
-
 }

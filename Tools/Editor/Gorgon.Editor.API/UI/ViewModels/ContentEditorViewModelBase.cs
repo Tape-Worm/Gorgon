@@ -23,7 +23,6 @@
 // Created: October 29, 2018 4:15:09 PM
 // 
 
-
 using Gorgon.Editor.Content;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Properties;
@@ -81,8 +80,6 @@ public abstract class ContentEditorViewModelBase<T>
 
     // The number of files selected in the project file explorer.
     private bool _filesSelected;
-
-
 
     /// <summary>
     /// Property to return the file manager used to manage content files.
@@ -296,8 +293,6 @@ public abstract class ContentEditorViewModelBase<T>
         }
     }
 
-
-
     /// <summary>Handles the Renamed event of the File control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="ContentFileRenamedEventArgs"/> instance containing the event data.</param>
@@ -454,8 +449,6 @@ public abstract class ContentEditorViewModelBase<T>
         _file.IsOpen = false;
         _file.IsChanged = false;
     }
-
-
 
     /// <summary>Initializes a new instance of the EditorContentCommon class.</summary>
     protected ContentEditorViewModelBase() => CloseContentCommand = new EditorAsyncCommand<CloseContentArgs>(DoCloseContentAsync);

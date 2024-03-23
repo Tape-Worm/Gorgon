@@ -23,7 +23,6 @@
 // Created: August 10, 2018 9:11:41 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Examples.Properties;
@@ -58,8 +57,6 @@ static class Program
     // Angles of rotation in degrees.
     private static float _angle1;
     private static float _angle2 = 360.0f;
-
-
 
     /// <summary>
     /// Function called when the application goes into an idle state.
@@ -273,5 +270,4 @@ static class Program
             _graphics?.Dispose();
         }
     }
-
 }

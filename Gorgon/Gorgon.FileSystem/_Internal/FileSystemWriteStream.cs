@@ -23,7 +23,6 @@
 // Created: Thursday, September 24, 2015 8:33:14 PM
 // 
 
-
 namespace Gorgon.IO;
 
 /// <summary>
@@ -46,8 +45,6 @@ internal class FileSystemWriteStream(string writePath, FileMode fileMode)
     // Flag to indicate that the stream is disposed.
     private int _disposed;
 
-
-
     /// <summary>Gets the length in bytes of the stream.</summary>
     public override long Length => (_disposed == 0) ? base.Length : _length;
 
@@ -59,8 +56,6 @@ internal class FileSystemWriteStream(string writePath, FileMode fileMode)
         get;
         set;
     }
-
-
 
     /// <summary>
     /// Releases the unmanaged resources used by the <see cref="FileStream"/> and optionally releases the managed resources.
@@ -94,6 +89,4 @@ internal class FileSystemWriteStream(string writePath, FileMode fileMode)
             OnCloseCallback = null;
         }
     }
-
-
 }

@@ -23,7 +23,6 @@
 // Created: June 5, 2018 12:51:54 PM
 // 
 
-
 using Gorgon.Collections;
 
 namespace Gorgon.Graphics.Core;
@@ -34,7 +33,6 @@ namespace Gorgon.Graphics.Core;
 /// <seealso cref="GorgonComputeEngine"/>
 public class GorgonDispatchCall
 {
-
     /// <summary>
     /// Property to return the current Direct3D state.
     /// </summary>
@@ -68,8 +66,6 @@ public class GorgonDispatchCall
     /// </summary>
     public IGorgonReadOnlyArray<GorgonConstantBufferView> ConstantBuffers => D3DState.CsConstantBuffers;
 
-
-
     /// <summary>
     /// Function to set up the data structure with initialized values.
     /// </summary>
@@ -80,8 +76,6 @@ public class GorgonDispatchCall
         D3DState.CsSamplers = new GorgonSamplerStates();
         D3DState.CsConstantBuffers = new GorgonConstantBuffers();
     }
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonDispatchCall"/> class.
@@ -106,5 +100,4 @@ public class GorgonDispatchCall
                                     D3DState.DsSrvs = D3DState.HsSrvs = new GorgonShaderResourceViews();
         D3DState.ReadWriteViews = new GorgonReadWriteViewBindings();
     }
-
 }

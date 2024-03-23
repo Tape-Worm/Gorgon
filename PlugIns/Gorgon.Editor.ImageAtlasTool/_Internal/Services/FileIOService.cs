@@ -23,7 +23,6 @@
 // Created: May 8, 2019 11:46:39 AM
 // 
 
-
 using Gorgon.Editor.Content;
 using Gorgon.Editor.ImageAtlasTool.Properties;
 using Gorgon.Graphics.Core;
@@ -51,8 +50,6 @@ internal class FileIOService(IContentFileManager fileSystem, IGorgonImageCodec i
     private readonly IGorgonImageCodec _defaultImageCodec = imageCodec;
     // The default sprite codec.
     private readonly IGorgonSpriteCodec _defaultSpriteCodec = spriteCodec;
-
-
 
     /// <summary>Function to load the images used to generate the atlas texture(s).</summary>
     /// <param name="files">The image files to load.</param>
@@ -241,6 +238,4 @@ internal class FileIOService(IContentFileManager fileSystem, IGorgonImageCodec i
             image?.Dispose();
         }
     }
-
-
 }

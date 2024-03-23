@@ -23,7 +23,6 @@
 // Created: Thursday, January 10, 2013 8:33:49 AM
 // 
 
-
 using System.Drawing.Imaging;
 using DrawingGraphics = System.Drawing.Graphics;
 
@@ -51,8 +50,6 @@ internal class MouseCursor
     // Color to clear the surface with.
     private readonly Color _clearColor;
 
-
-
     /// <summary>
     /// Property to set or return the cursor hot spot.
     /// </summary>
@@ -61,8 +58,6 @@ internal class MouseCursor
         get;
         set;
     }
-
-
 
     /// <summary>
     /// Function to clean up any objects that are allocating memory.

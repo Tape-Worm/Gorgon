@@ -23,7 +23,6 @@
 // Created: November 11, 2018 12:43:46 AM
 // 
 
-
 using System.Reflection;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Properties;
@@ -43,8 +42,6 @@ public static class ViewFactory
 
     // A list of view builders used to create views.
     private static readonly Dictionary<string, Func<Control>> _viewBuilders = new(StringComparer.OrdinalIgnoreCase);
-
-
 
     /// <summary>Function to register the specified view model with a view builder.</summary>
     /// <typeparam name="T">The type of view model. Must implement <see cref="IViewModel"/>.</typeparam>
@@ -199,5 +196,4 @@ public static class ViewFactory
             ? throw new KeyNotFoundException(string.Format(Resources.GOREDIT_ERR_CANNOT_FIND_VIEW_FACTORY, typeName))
             : (T)_viewBuilders[interfaceType.AssemblyQualifiedName]();
     }
-
 }

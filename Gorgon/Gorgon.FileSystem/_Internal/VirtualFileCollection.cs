@@ -23,7 +23,6 @@
 // Created: Monday, June 27, 2011 8:59:49 AM
 // 
 
-
 using System.Collections;
 using Gorgon.Collections;
 using Gorgon.IO.Properties;
@@ -43,13 +42,10 @@ internal class VirtualFileCollection
     // The list of file entries.
     private readonly Dictionary<string, VirtualFile> _files = new(StringComparer.OrdinalIgnoreCase);
 
-
-
     /// <summary>
     /// Property to return whether the keys are case sensitive.
     /// </summary>
     public bool KeysAreCaseSensitive => false;
-
 
     /// <summary>
     /// Property to return a file system file entry by name.
@@ -90,8 +86,6 @@ internal class VirtualFileCollection
     /// The number of elements in the collection. 
     /// </returns>
     public int Count => _files.Count;
-
-
 
     /// <summary>
     /// Function to return whether a file entry with the specified name exists in this collection.
@@ -183,7 +177,6 @@ internal class VirtualFileCollection
             return false;
         }
 
-
         if (!_files.TryGetValue(item.Name, out VirtualFile _))
         {
             return false;
@@ -216,8 +209,6 @@ internal class VirtualFileCollection
     /// An <see cref="IEnumerator" /> object that can be used to iterate through the collection.
     /// </returns>
     IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)_files.Values).GetEnumerator();
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="VirtualFileCollection"/> class.

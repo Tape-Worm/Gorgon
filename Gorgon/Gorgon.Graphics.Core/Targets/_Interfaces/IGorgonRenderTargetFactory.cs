@@ -23,7 +23,6 @@
 // Created: May 14, 2019 11:50:37 AM
 // 
 
-
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
@@ -50,7 +49,6 @@ namespace Gorgon.Graphics.Core;
 /// </remarks>
 public interface IGorgonRenderTargetFactory
 {
-
     /// <summary>
     /// Property to return the number of render targets that are currently in flight.
     /// </summary>
@@ -83,8 +81,6 @@ public interface IGorgonRenderTargetFactory
         get;
         set;
     }
-
-
 
     /// <summary>
     /// Function to expire any previously allocated targets after a certain amount of time.

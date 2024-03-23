@@ -23,7 +23,6 @@
 // Created: Sunday, March 2, 2014 8:52:44 PM
 // 
 
-
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing.Drawing2D;
@@ -59,16 +58,12 @@ internal partial class FontGradientBrushView
     // Points for drawing a triangle.
     private readonly PointF[] _trianglePoints = new PointF[3];
 
-
-
     /// <summary>Property to return the data context assigned to this view.</summary>
     public IFontGradientBrush ViewModel
     {
         get;
         private set;
     }
-
-
 
     /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -170,7 +165,6 @@ internal partial class FontGradientBrushView
 
         ValidateOk();
     }
-
 
     /// <summary>
     /// Function to draw the weight node.
@@ -849,7 +843,6 @@ internal partial class FontGradientBrushView
     {
         base.OnLoad(e);
 
-
         _controlPanelImage = new Bitmap(PanelGradControls.ClientSize.Width,
                                         PanelGradControls.ClientSize.Height,
                                         PixelFormat.Format32bppArgb);
@@ -893,8 +886,6 @@ internal partial class FontGradientBrushView
         ViewModel.PropertyChanged += DataContext_PropertyChanged;
         HookEvents();
     }
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FontGradientBrushView"/> class.

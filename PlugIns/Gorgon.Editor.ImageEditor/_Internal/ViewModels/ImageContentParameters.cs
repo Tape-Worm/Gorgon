@@ -23,7 +23,6 @@
 // Created: November 10, 2018 11:23:11 PM
 // 
 
-
 using Gorgon.Editor.Content;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
@@ -71,7 +70,6 @@ internal class ImageContentParameters(IContentFileManager fileManager,
     ImageEditorServices services)
         : ContentViewModelInjection(fileManager, file, services.HostContentServices ?? throw new ArgumentNullException(nameof(services)))
 {
-
     /// <summary>
     /// Property to return the image dimension editor view model.
     /// </summary>
@@ -207,6 +205,5 @@ internal class ImageContentParameters(IContentFileManager fileManager,
     {
         get;
     } = services.ExternalEditorService;
-
 
 }

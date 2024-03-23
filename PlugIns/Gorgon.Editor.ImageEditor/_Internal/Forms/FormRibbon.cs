@@ -23,7 +23,6 @@
 // Created: February 13, 2021 12:53:57 PM
 // 
 
-
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Numerics;
@@ -54,8 +53,6 @@ internal partial class FormRibbon
     private ZoomLevels _zoomLevel = ZoomLevels.ToWindow;
     // The renderer for the content.
     private IContentRenderer _contentRenderer;
-
-
 
     /// <summary>
     /// Property to set or return the data context for the ribbon on the form.
@@ -95,8 +92,6 @@ internal partial class FormRibbon
             UpdateZoomMenu();
         }
     }
-
-
 
     /// <summary>Handles the ZoomScale event of the ContentRenderer control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -435,7 +430,6 @@ internal partial class FormRibbon
         ValidateButtons();
     }
 
-
     /// <summary>Handles the Click event of the ButtonImport control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
@@ -566,7 +560,6 @@ internal partial class FormRibbon
         ViewModel.UndoCommand.Execute(null);
         ValidateButtons();
     }
-
 
     /// <summary>Handles the Click event of the ButtonPremultipliedAlpha control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -717,7 +710,6 @@ internal partial class FormRibbon
         }
     }
 
-
     /// <summary>
     /// Function to clear the codec list.
     /// </summary>
@@ -785,8 +777,6 @@ internal partial class FormRibbon
         ViewModel.PropertyChanged -= DataContext_PropertyChanged;
     }
 
-
-
     /// <summary>
     /// Function to reset the view when no data context is assigned.
     /// </summary>
@@ -799,7 +789,6 @@ internal partial class FormRibbon
         UpdateImageTypeMenu(null);
         ItemZoomToWindow.Checked = true;
     }
-
 
     /// <summary>Handles the Click event of the ButtonFxApply control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -853,7 +842,6 @@ internal partial class FormRibbon
         ContentRenderer?.MoveTo(new Vector2(ContentRenderer.ClientSize.X * 0.5f, ContentRenderer.ClientSize.Y * 0.5f),
                                 _zoomLevel.GetScale());
     }
-
 
     /// <summary>Handles the Click event of the Item2DImage control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -995,8 +983,6 @@ internal partial class FormRibbon
         UpdateZoomMenu();
     }
 
-
-
     /// <summary>Initializes a new instance of the FormRibbon class.</summary>
     public FormRibbon()
     {
@@ -1018,5 +1004,4 @@ internal partial class FormRibbon
             _menuItems[level] = menuItem;
         }
     }
-
 }

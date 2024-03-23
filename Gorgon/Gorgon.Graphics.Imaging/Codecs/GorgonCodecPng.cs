@@ -23,8 +23,6 @@
 // Created: June 27, 2016 11:18:56 PM
 // 
 
-
-
 using Gorgon.Graphics.Imaging.Properties;
 using SharpDX.WIC;
 
@@ -79,14 +77,9 @@ public sealed class GorgonCodecPng(GorgonPngEncodingOptions encodingOptions = nu
         BufferFormat.R16G16B16A16_UNorm
     ];
 
-
-
     /// <summary>
     /// Property to return the supported pixel formats for this codec.
     /// </summary>
     public override IReadOnlyList<BufferFormat> SupportedPixelFormats => _supportedPixelFormats;
-
-
-
 
 }

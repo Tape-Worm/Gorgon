@@ -93,6 +93,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command='"$(SolutionDir)\Tools\ResourceCommentCleaner\ResourceCommentCleaner.exe" "$(ProjectDir)Properties\"' />
+    <Exec Command="&quot;$(SolutionDir)\Tools\ResourceCommentCleaner\ResourceCommentCleaner.exe&quot; &quot;$(ProjectDir)Properties\&quot;" />
   </Target>
 </Project>

@@ -23,7 +23,6 @@
 // Created: Wednesday, October 3, 2012 9:13:59 PM
 // 
 
-
 namespace Gorgon.Animation;
 
 /// <summary>
@@ -45,8 +44,6 @@ public class GorgonKeySingle
 
     // The value for the key.
     private float _value;
-
-
 
     /// <summary>
     /// Property to return the time at which the key frame is stored.
@@ -70,15 +67,11 @@ public class GorgonKeySingle
         get;
     } = typeof(float);
 
-
-
     /// <summary>
     /// Function to clone an object.
     /// </summary>
     /// <returns>The cloned object.</returns>
     public IGorgonKeyFrame Clone() => new GorgonKeySingle(this);
-
-
 
     /// <summary>Initializes a new instance of the <see cref="GorgonKeySingle"/> class.</summary>
     /// <param name="key">The key to copy.</param>
@@ -99,5 +92,4 @@ public class GorgonKeySingle
         Time = time;
         Value = value;
     }
-
 }

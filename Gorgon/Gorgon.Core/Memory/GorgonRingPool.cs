@@ -29,8 +29,6 @@ public class GorgonRingPool<T>
     // The items in the pool.
     private readonly T[] _items;
 
-
-
     /// <summary>
     /// Property to set or return the allocator to use when creating new instances of an object.
     /// </summary>
@@ -56,8 +54,6 @@ public class GorgonRingPool<T>
     /// </remarks>
     /// <seealso cref="Reset"/>
     public int AvailableSlots => TotalSize - (_currentItem + 1);
-
-
 
     /// <summary>
     /// Function to allocate a new object from the pool.
@@ -131,8 +127,6 @@ public class GorgonRingPool<T>
         Interlocked.Exchange(ref _currentItem, -1);
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonRingPool{T}"/> class.
     /// </summary>
@@ -157,5 +151,4 @@ public class GorgonRingPool<T>
         _items = new T[objectCount];
         ItemAllocator = allocator;
     }
-
 }

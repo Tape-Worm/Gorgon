@@ -23,7 +23,6 @@
 // Created: March 4, 2017 12:47:54 PM
 // 
 
-
 using Avalonia;
 
 namespace Gorgon.Examples;

@@ -220,7 +220,6 @@ internal class IcoSphere
                     continue;
                 }
 
-
                 if (corrections.TryGetValue(index, out int correctIndex))
                 {
                     newIndices.Add(correctIndex);
@@ -279,7 +278,6 @@ internal class IcoSphere
                                    index1,
                                    index0
                                ]);
-
 
                 subIndices.Add(
                                [
@@ -387,5 +385,4 @@ internal class IcoSphere
 
         BuildSphere(graphics, radius * 0.5f, subDivisions, textureCoordinates);
     }
-
 }

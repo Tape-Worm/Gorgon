@@ -23,7 +23,6 @@
 // Created: Sunday, April 08, 2012 2:36:05 PM
 // 
 
-
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers.Cameras;
@@ -60,8 +59,6 @@ public class Gorgon2DBurnDodgeEffect
     // The batch render state.
     private Gorgon2DBatchState _batchStateDodgeBurn;
 
-
-
     /// <summary>
     /// Property to set or return whether to use a burn or dodge effect.
     /// </summary>
@@ -88,8 +85,6 @@ public class Gorgon2DBurnDodgeEffect
         get;
         set;
     }
-
-
 
     /// <summary>
     /// Function called when the effect is being initialized.
@@ -245,8 +240,6 @@ public class Gorgon2DBurnDodgeEffect
                                         new GorgonRectangleF(0, 0, 1, 1));
         End();
     }
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Gorgon2DBurnDodgeEffect"/> class.

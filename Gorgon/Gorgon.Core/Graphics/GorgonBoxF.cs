@@ -22,14 +22,14 @@
 // Created: Thursday, March 15, 2012 7:34:32 PM
 // 
 
+using System.Numerics;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using Gorgon.Core;
+using Gorgon.Json;
 using Gorgon.Math;
 using Gorgon.Properties;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using System.Numerics;
 using Newtonsoft.Json;
-using Gorgon.Json;
-using Gorgon.Core;
 
 namespace Gorgon.Graphics;
 
@@ -99,7 +99,7 @@ public struct GorgonBoxF
     /// <summary>
     /// Property to determine if the box is empty.
     /// </summary>
-    public readonly bool IsEmpty => Width.EqualsEpsilon(0) && Height.EqualsEpsilon(0) && Depth.EqualsEpsilon(0) 
+    public readonly bool IsEmpty => Width.EqualsEpsilon(0) && Height.EqualsEpsilon(0) && Depth.EqualsEpsilon(0)
                                  && X.EqualsEpsilon(0) && Y.EqualsEpsilon(0) && Z.EqualsEpsilon(0);
 
     /// <summary>
@@ -298,7 +298,7 @@ public struct GorgonBoxF
             result = Empty;
             return;
         }
-        
+
         result = FromLTFRBB(left, top, front, right, bottom, back);
     }
 
@@ -531,7 +531,6 @@ public struct GorgonBoxF
         Expand(in box, amount, out GorgonBoxF result);
         return result;
     }
-
 
     /// <summary>
     /// Function to ceiling the values of a <see cref="GorgonBoxF"/> and convert to a <see cref="GorgonBox"/>.

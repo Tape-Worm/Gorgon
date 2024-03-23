@@ -23,7 +23,6 @@
 // Created: June 13, 2018 4:13:14 PM
 // 
 
-
 using Gorgon.Collections;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers.Cameras;
@@ -105,7 +104,6 @@ namespace Gorgon.Renderers;
 public sealed class Gorgon2DShaderState<T>
     where T : GorgonShader
 {
-
     /// <summary>
     /// The constant buffers, with read/write access.
     /// </summary>
@@ -118,8 +116,6 @@ public sealed class Gorgon2DShaderState<T>
     /// The shader resource views, with read/write access.
     /// </summary>
     internal GorgonArray<GorgonShaderResourceView> RwSrvs = new(16);
-
-
 
     /// <summary>
     /// Property to return the shader.
@@ -145,13 +141,10 @@ public sealed class Gorgon2DShaderState<T>
     /// </summary>
     public IGorgonReadOnlyArray<GorgonShaderResourceView> ShaderResources => RwSrvs;
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonShaderResources"/> class.
     /// </summary>
     internal Gorgon2DShaderState()
     {
     }
-
 }

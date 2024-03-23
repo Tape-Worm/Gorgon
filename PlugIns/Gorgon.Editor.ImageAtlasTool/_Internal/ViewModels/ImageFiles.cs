@@ -23,7 +23,6 @@
 // Created: May 7, 2019 11:50:04 AM
 // 
 
-
 using System.ComponentModel;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
@@ -47,8 +46,6 @@ internal class ImageFiles
     // The directory path for thumbnails this session.
     private const string ThumbnailPath = "/Thumbnails/";
 
-
-
     // The service used to search through the files.
     private ISearchService<IContentFileExplorerSearchEntry> _searchService;
     // The list of selected files.
@@ -63,8 +60,6 @@ internal class ImageFiles
     private IGorgonFileSystemWriter<Stream> _tempFileSystem;
     // The name of the image that is currently loading.
     private string _loadingImage;
-
-
 
     /// <summary>
     /// Property to set or return the name of the image that is currently loading.
@@ -122,7 +117,6 @@ internal class ImageFiles
         get;
     }
 
-
     /// <summary>Property to return the command used to search through the file list.</summary>
     public IEditorCommand<string> SearchCommand
     {
@@ -159,8 +153,6 @@ internal class ImageFiles
         get;
         set;
     }
-
-
 
     /// <summary>Handles the PropertyChanged event of the File control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -367,13 +359,10 @@ internal class ImageFiles
         base.OnUnload();
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="ImageFiles"/> class.</summary>
     public ImageFiles()
     {
         SearchCommand = new EditorCommand<string>(DoSearch, CanSearch);
         RefreshImagePreviewCommand = new EditorAsyncCommand<IReadOnlyList<ContentFileExplorerFileEntry>>(DoRefreshPreviewAsync);
     }
-
 }

@@ -23,7 +23,6 @@
 // Created: July 11, 2020 9:54:43 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Editor.Rendering;
 using Gorgon.Renderers;
@@ -42,13 +41,10 @@ namespace Gorgon.Editor.Services;
 /// </remarks>
 public interface IAnchorEditService
 {
-
     /// <summary>
     /// Event triggered when the anchor position is updated.
     /// </summary>
     event EventHandler AnchorChanged;
-
-
 
     /// <summary>
     /// Property to set or return the position of the sprite anchor.
@@ -84,10 +80,6 @@ public interface IAnchorEditService
     {
         get;
     }
-
-
-
-
 
     /// <summary>
     /// Function to intercept keyboard key presses.

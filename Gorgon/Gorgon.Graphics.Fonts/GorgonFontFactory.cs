@@ -23,7 +23,6 @@
 // Created: Sunday, May 20, 2012 10:06:05 PM
 // 
 
-
 using System.Buffers;
 using System.Drawing.Text;
 using Gorgon.Core;
@@ -69,8 +68,6 @@ public sealed class GorgonFontFactory
     // Synchronization object for multiple threads.
     private readonly object _syncLock = new();
 
-
-
     /// <summary>
     /// Property to return the graphics interface used to generate the fonts.
     /// </summary>
@@ -91,8 +88,6 @@ public sealed class GorgonFontFactory
     /// </para>
     /// </remarks>
     public GorgonFont DefaultFont => _defaultFont.Value;
-
-
 
     /// <summary>
     /// Function to compare two <see cref="IGorgonFontInfo"/> types to determine equality.
@@ -532,8 +527,6 @@ public sealed class GorgonFontFactory
         InvalidateCache();
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonFontFactory"/> class.
     /// </summary>
@@ -562,5 +555,4 @@ public sealed class GorgonFontFactory
         Graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
         _defaultFont = new Lazy<GorgonFont>(GenerateDefaultFont, true);
     }
-
 }

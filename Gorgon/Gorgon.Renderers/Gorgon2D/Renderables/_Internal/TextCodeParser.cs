@@ -23,7 +23,6 @@
 // Created: June 12, 2018 12:37:25 PM
 // 
 
-
 using System.Globalization;
 using System.Text;
 using Gorgon.Graphics;
@@ -123,7 +122,7 @@ internal class TextCodeParser
         _parseBuffer.Append(encodedText);
 
         do
-        {               
+        {
             startTagIndex = IndexOfControlChars(_parseBuffer, "[c", 0);
 
             int endTagIndex;

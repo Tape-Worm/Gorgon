@@ -23,7 +23,6 @@
 // Created: August 22, 2021 1:37:20 PM
 // 
 
-
 using System.Collections.ObjectModel;
 using Gorgon.Editor.UI;
 
@@ -35,7 +34,6 @@ namespace Gorgon.Editor.ImageEditor;
 internal interface ISettingsPlugins
     : ISettingsCategory
 {
-
     /// <summary>
     /// Property to return the list of selected codecs.
     /// </summary>

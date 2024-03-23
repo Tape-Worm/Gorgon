@@ -23,7 +23,6 @@
 // Created: August 6, 2018 8:24:41 PM
 // 
 
-
 using Gorgon.Graphics;
 using Gorgon.Renderers;
 
@@ -54,13 +53,10 @@ public enum ButtonState
 /// <exception cref="ArgumentNullException">Thrown when the <paramref name="pass"/> parameter is <b>null</b></exception>
 public class Button(IGorgon2DCompositorPass pass)
 {
-
     /// <summary>
     /// Event fired when the button is clicked.
     /// </summary>
     public event EventHandler Click;
-
-
 
     // Disabled background color
     private readonly GorgonColor _disabledBackColor = new(0, 0, 0, 0.3f);
@@ -74,8 +70,6 @@ public class Button(IGorgon2DCompositorPass pass)
     private readonly GorgonColor _backColor = new(0, 0, 0, 0.85f);
     // The standard foreground color.
     private readonly GorgonColor _foreColor = GorgonColors.White;
-
-
 
     /// <summary>
     /// Property to set or return the state for the button.
@@ -134,8 +128,6 @@ public class Button(IGorgon2DCompositorPass pass)
     /// Property to return the text for the button.
     /// </summary>
     public string Text => Pass.Name;
-
-
 
     /// <summary>
     /// Function to trigger a button click.

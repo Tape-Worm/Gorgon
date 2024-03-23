@@ -23,7 +23,6 @@
 // Created: April 20, 2019 2:22:57 PM
 // 
 
-
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using Gorgon.Editor.ImageEditor.Properties;
@@ -46,8 +45,6 @@ internal class SettingsPlugins
     // The registry for image codecs.
     private ICodecRegistry _codecs;
 
-
-
     /// <summary>Property to return the file name that will hold the plug ins.</summary>
     protected override string SettingsFileName => typeof(ImageEditorPlugIn).FullName;
 
@@ -69,8 +66,6 @@ internal class SettingsPlugins
     {
         get;
     } = [];
-
-
 
     /// <summary>Handles the CollectionChanged event of the CodecPlugInPaths control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -258,5 +253,4 @@ internal class SettingsPlugins
 
         base.OnUnload();
     }
-
 }

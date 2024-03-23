@@ -23,7 +23,6 @@
 // Created: March 2, 2019 2:09:04 AM
 // 
 
-
 using System.ComponentModel;
 using System.Numerics;
 using Gorgon.Editor.Content;
@@ -45,7 +44,6 @@ namespace Gorgon.Editor.SpriteEditor;
 internal class SpriteContent
     : ContentEditorViewModelBase<SpriteContentParameters>, ISpriteContent
 {
-
     /// <summary>
     /// Arguments for an undo/redo operation.
     /// </summary>
@@ -81,8 +79,6 @@ internal class SpriteContent
         public GorgonSamplerState SamplerState;
     }
 
-
-
     // The default color for a sprite.
     private static readonly GorgonColor[] _defaultColor =
     [
@@ -104,8 +100,6 @@ internal class SpriteContent
     private IContentFile _originalTexture;
     // The currently active panel.
     private IHostedPanelViewModel _currentPanel;
-
-
 
     /// <summary>
     /// Property to return the sprite color editor.
@@ -178,7 +172,6 @@ internal class SpriteContent
             NotifyPropertyChanged(nameof(SpriteInfo));
         }
     }
-
 
     /// <summary>
     /// Property to return the index of the texture array that the sprite uses.
@@ -490,8 +483,6 @@ internal class SpriteContent
         get;
         private set;
     }
-
-
 
     /// <summary>Handles the PropertyChanged event of the ColorEditor control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -869,7 +860,6 @@ internal class SpriteContent
             HideWaitPanel();
         }
     }
-
 
     /// <summary>
     /// Function to determine if the current color can be comitted.
@@ -1767,8 +1757,6 @@ internal class SpriteContent
         }
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="SpriteContent"/> class.</summary>
     public SpriteContent()
     {
@@ -1785,5 +1773,4 @@ internal class SpriteContent
         SetTextureFilteringCommand = new EditorCommand<SampleFilter>(DoSetTextureFilter, CanSetTextureFilter);
         SetTextureCommand = new EditorAsyncCommand<SetTextureArgs>(DoSetTexture, CanSetTexture);
     }
-
 }

@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Gorgon.Graphics;
 
 namespace Gorgon.Core.Tests;
@@ -31,7 +27,7 @@ public class GorgonPitchLayoutTests
 
         Assert.AreEqual(layout.SlicePitch, 64000);
         Assert.AreEqual(layout.RowPitch, 320);
-        Assert.AreEqual(layout.HorizontalBlockCount,80);
+        Assert.AreEqual(layout.HorizontalBlockCount, 80);
         Assert.AreEqual(layout.VerticalBlockCount, 50);
 
         Assert.ThrowsException<ArgumentException>(() => new GorgonPitchLayout(320, 200, 80, 0));

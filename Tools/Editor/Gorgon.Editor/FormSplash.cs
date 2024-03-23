@@ -23,7 +23,6 @@
 // Created: Monday, September 23, 2013 12:02:10 AM
 // 
 
-
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Properties;
 
@@ -38,8 +37,6 @@ partial class FormSplash
 
     // The application version number.
     private readonly Version _appVersion;
-
-
 
     /// <summary>
     /// Property to set or return the text shown in the information label.
@@ -57,8 +54,6 @@ partial class FormSplash
             labelInfo.Refresh();
         }
     }
-
-
 
     /// <summary>
     /// Function to update the version text.
@@ -96,8 +91,6 @@ partial class FormSplash
         InfoText = Resources.GOREDIT_TEXT_INITIALIZING;
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="FormSplash"/> class.
     /// </summary>
@@ -107,5 +100,4 @@ partial class FormSplash
 
         _appVersion = GetType().Assembly.GetName().Version;
     }
-
 }

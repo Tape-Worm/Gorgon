@@ -22,10 +22,9 @@
 // Created: Wednesday, October 02, 2012 07:17:00 AM
 // 
 
-
 using System.Numerics;
-using Gorgon.Properties;
 using Gorgon.Math;
+using Gorgon.Properties;
 
 namespace Gorgon.Graphics;
 
@@ -234,8 +233,6 @@ public class GorgonCatmullRomSpline
         }
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonCatmullRomSpline"/> object.
     /// </summary>
@@ -249,5 +246,4 @@ public class GorgonCatmullRomSpline
         Points = new List<Vector4>(256);
         _tangents = new Vector4[256];
     }
-
 }

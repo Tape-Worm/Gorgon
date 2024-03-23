@@ -23,7 +23,6 @@
 // Created: Thursday, December 15, 2011 12:49:30 PM
 // 
 
-
 using Gorgon.Diagnostics;
 using SharpDX.D3DCompiler;
 using D3D11 = SharpDX.Direct3D11;
@@ -49,8 +48,6 @@ public sealed class GorgonPixelShader
     // The D3D 11 pixel shader.
     private D3D11.PixelShader _shader;
 
-
-
     /// <summary>
     /// Property to return the Direct3D pixel shader.
     /// </summary>
@@ -60,8 +57,6 @@ public sealed class GorgonPixelShader
     /// Property to return the type of shader.
     /// </summary>
     public override ShaderType ShaderType => ShaderType.Pixel;
-
-
 
     /// <summary>
     /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
@@ -78,8 +73,6 @@ public sealed class GorgonPixelShader
 
         base.Dispose();
     }
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonPixelShader" /> class.

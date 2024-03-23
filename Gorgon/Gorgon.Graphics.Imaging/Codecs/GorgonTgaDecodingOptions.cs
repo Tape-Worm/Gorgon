@@ -23,7 +23,6 @@
 // Created: August 15, 2016 11:30:16 PM
 // 
 
-
 using Gorgon.Configuration;
 using Gorgon.Graphics.Imaging.Properties;
 
@@ -35,7 +34,6 @@ namespace Gorgon.Graphics.Imaging.Codecs;
 public class GorgonTgaDecodingOptions
     : IGorgonImageCodecDecodingOptions
 {
-
     /// <summary>
     /// Property to return the list of options available to the codec.
     /// </summary>
@@ -80,8 +78,6 @@ public class GorgonTgaDecodingOptions
 
         set => Options.SetOptionValue(nameof(SetZeroAlphaAsOpaque), value);
     }
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonTgaDecodingOptions"/> class.

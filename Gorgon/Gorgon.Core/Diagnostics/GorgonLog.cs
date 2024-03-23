@@ -23,7 +23,6 @@
 // Created: Tuesday, June 14, 2011 8:50:49 PM
 // 
 
-
 using System.Collections;
 using System.Collections.Concurrent;
 using Gorgon.Core;
@@ -52,15 +51,10 @@ public abstract class GorgonLog
     // The application version.
     private readonly Version _appVersion;
 
-
     /// <summary>
     /// An instance of a log that does no logging and merely contains empty methods.
     /// </summary>
     public static readonly IGorgonLog NullLog = new LogDummy();
-
-
-
-
 
     /// <summary>
     /// Property to return the ID of the thread that created the log object.
@@ -408,7 +402,6 @@ public abstract class GorgonLog
         }
     }
 
-
     /// <summary>
     /// Function to perform any one time inital logging.
     /// </summary>
@@ -426,8 +419,6 @@ public abstract class GorgonLog
 
         Provider.Open($"**** {LogApplication} (Version {_appVersion?.ToString() ?? "N/A"}) logging begins on thread ID 0x{ThreadID.FormatHex()} ****\r\n{(LogFilterLevel != LoggingLevel.NoLogging ? $"**** Filter level: {LogFilterLevel}\r\n" : string.Empty)}");
     }
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonLog"/> class.
@@ -451,5 +442,4 @@ public abstract class GorgonLog
 
         _appVersion = version;
     }
-
 }

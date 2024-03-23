@@ -23,7 +23,6 @@
 // Created: February 18, 2020 7:27:02 PM
 // 
 
-
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics.Imaging;
@@ -46,8 +45,6 @@ internal class SourceImagePicker
     private int _currentArrayDepth;
     // The current mip map level.
     private int _mipLevel;
-
-
 
     /// <summary>Property to return the source image being imported.</summary>
     public IGorgonImage SourceImage
@@ -153,8 +150,6 @@ internal class SourceImagePicker
         }
     }
 
-
-
     /// <summary>Function to inject dependencies for the view model.</summary>
     /// <param name="injectionParameters">The parameters to inject.</param>
     /// <remarks>
@@ -199,5 +194,4 @@ internal class SourceImagePicker
 
         base.OnUnload();
     }
-
 }

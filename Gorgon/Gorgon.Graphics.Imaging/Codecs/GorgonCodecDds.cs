@@ -99,8 +99,6 @@
 // contributors exclude the implied warranties of merchantability, fitness for a
 // particular purpose and non-infringement.
 
-
-
 using System.Buffers;
 using System.Runtime.CompilerServices;
 using Gorgon.Core;
@@ -167,8 +165,6 @@ public sealed class GorgonCodecDds
 
     // The DDS file magic number: "DDS "
     private const uint MagicNumber = 0x20534444;
-
-
 
     private static readonly DdsPixelFormat _pfDxt1 = new(DdsPixelFormatFlags.FourCC, MakeFourCC('D', 'X', 'T', '1'), 0, 0, 0, 0, 0);     // DXT1		
     private static readonly DdsPixelFormat _pfDxt2 = new(DdsPixelFormatFlags.FourCC, MakeFourCC('D', 'X', 'T', '2'), 0, 0, 0, 0, 0);     // DXT2
@@ -248,8 +244,6 @@ public sealed class GorgonCodecDds
     // Supported buffer formats.
     private readonly BufferFormat[] _formats;
 
-
-
     /// <summary>
     /// Property to return the pixel formats supported by the codec.
     /// </summary>
@@ -287,8 +281,6 @@ public sealed class GorgonCodecDds
     /// Property to return the abbreviated name of the codec (e.g. PNG).
     /// </summary>
     public override string Codec => "DDS";
-
-
 
     /// <summary>
     /// Function to create a FOURCC value.
@@ -332,7 +324,6 @@ public sealed class GorgonCodecDds
         {
             return DdsConversionFlags.RGB8332;
         }
-
 
         if ((flags & DdsConversionFlags.A4L4) == DdsConversionFlags.A4L4)
         {
@@ -1474,8 +1465,6 @@ public sealed class GorgonCodecDds
         return magicNumber == MagicNumber;
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonCodecDds" /> class.
     /// </summary>
@@ -1490,5 +1479,4 @@ public sealed class GorgonCodecDds
                     where format != BufferFormat.Unknown && !info.IsTypeless
                     select format).ToArray();
     }
-
 }

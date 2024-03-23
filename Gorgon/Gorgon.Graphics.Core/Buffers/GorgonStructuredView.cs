@@ -23,7 +23,6 @@
 // Created: July 5, 2017 11:30:50 PM
 // 
 
-
 using Gorgon.Core;
 using D3D = SharpDX.Direct3D;
 using D3D11 = SharpDX.Direct3D11;
@@ -48,7 +47,6 @@ namespace Gorgon.Graphics.Core;
 public sealed class GorgonStructuredView
     : GorgonBufferViewCommon, IGorgonBufferInfo
 {
-
     /// <summary>
     /// Property to return the size of an element, in bytes.
     /// </summary>
@@ -118,8 +116,6 @@ public sealed class GorgonStructuredView
     /// </summary>
     string IGorgonNamedObject.Name => Buffer?.Name;
 
-
-
     /// <summary>Function to retrieve the necessary parameters to create the native view.</summary>
     /// <returns>A tuple containing the parameters.</returns>
     private protected override ref readonly D3D11.ShaderResourceViewDescription1 OnGetSrvParams()
@@ -139,8 +135,6 @@ public sealed class GorgonStructuredView
         return ref SrvDesc;
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonStructuredView"/> class.
     /// </summary>
@@ -155,5 +149,4 @@ public sealed class GorgonStructuredView
         : base(buffer, startingElement, elementCount, totalElementCount)
     {
     }
-
 }

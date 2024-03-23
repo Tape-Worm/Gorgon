@@ -23,7 +23,6 @@
 // Created: Saturday, October 12, 2013 10:08:08 PM
 // 
 
-
 using System.Drawing.Drawing2D;
 using Gorgon.IO;
 using Gorgon.Math;
@@ -45,7 +44,6 @@ namespace Gorgon.Graphics.Fonts;
 public class GorgonGlyphLinearGradientBrush
     : GorgonGlyphBrush
 {
-
     /// <summary>
     /// Property to set or return the region for the gradient.
     /// </summary>
@@ -159,8 +157,6 @@ public class GorgonGlyphLinearGradientBrush
         get;
     }
 
-
-
     /// <summary>Function to write out the specifics of the font brush data to a file writer.</summary>
     /// <param name="writer">The writer used to write the brush data.</param>
     internal override void WriteBrushData(GorgonBinaryWriter writer)
@@ -272,8 +268,6 @@ public class GorgonGlyphLinearGradientBrush
             && (brush.GammaCorrection == GammaCorrection)
             && (brush.Interpolation.SequenceEqual(Interpolation))));
     }
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonGlyphPathGradientBrush"/> class.

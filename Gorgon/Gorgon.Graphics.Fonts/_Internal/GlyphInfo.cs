@@ -40,7 +40,6 @@ namespace Gorgon.Graphics.Fonts;
 /// <param name="outlineOffset">The outline offset.</param>
 internal class GlyphInfo(Bitmap glyphBitmap, GorgonRectangle region, GorgonPoint offset, GorgonRectangle outlineRegion, GorgonPoint outlineOffset)
 {
-
     /// <summary>
     /// Property to return the packed bitmap associated with the glyph.
     /// </summary>
@@ -98,6 +97,4 @@ internal class GlyphInfo(Bitmap glyphBitmap, GorgonRectangle region, GorgonPoint
         get;
         set;
     }
-
-
 }

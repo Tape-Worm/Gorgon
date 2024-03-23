@@ -23,7 +23,6 @@
 // Created: March 2, 2017 12:11:47 AM
 // 
 
-
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Timing;
@@ -106,8 +105,6 @@ internal static class Program
     private static readonly GorgonRectangle[] _clearRegions = new GorgonRectangle[2];
     // Clearing pattern values (0 = full swap chain, 1 upper left/lower right only, 2 upper right, lower left only)
     private static int _clearPattern;
-
-
 
     /// <summary>
     /// Function to handle idle time for the application.
@@ -334,7 +331,6 @@ internal static class Program
         // To enter full screen borderless window mode, call EnterFullScreen with no parameters.
         _swap.EnterFullScreen(in nearestMode, output);
     }
-
 
     /// <summary>
     /// The main entry point for the application.

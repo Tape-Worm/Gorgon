@@ -23,7 +23,6 @@
 // Created: Tuesday, January 1, 2013 7:35:52 PM
 // 
 
-
 namespace Gorgon.Examples;
 
 /// <summary>
@@ -34,13 +33,11 @@ namespace Gorgon.Examples;
 internal class GreenPlugIn
     : TextColorPlugIn
 {
-
     /// <summary>
     /// Function to create the writer that will output our text with a specified color.
     /// </summary>
     /// <returns>The writer interface.</returns>
     public override TextColorWriter CreateWriter() => new TextMultiColorWriter(ConsoleColor.Green);
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GreenPlugIn" /> class.

@@ -23,7 +23,6 @@
 // Created: August 31, 2018 12:21:33 AM
 // 
 
-
 namespace Gorgon.Editor.Services;
 
 /// <summary>
@@ -63,7 +62,6 @@ public enum MessageResponse
 /// </summary>
 public interface IMessageDisplayService
 {
-
     /// <summary>
     /// Function to show an informational message.
     /// </summary>

@@ -23,7 +23,6 @@
 // Created: March 6, 2020 1:38:12 PM
 // 
 
-
 using Gorgon.Editor.UI;
 using Gorgon.Math;
 
@@ -38,8 +37,6 @@ internal class FxEmboss
 
     // The amount to sharpen.
     private int _amount = 50;
-
-
 
     /// <summary>Property to set or return the amount to sharpen.</summary>
     public int Amount
@@ -62,8 +59,6 @@ internal class FxEmboss
     /// <summary>Property to return whether the panel is modal.</summary>
     public override bool IsModal => false;
 
-
-
     /// <summary>Function to inject dependencies for the view model.</summary>
     /// <param name="injectionParameters">The parameters to inject.</param>
     /// <remarks>
@@ -77,5 +72,4 @@ internal class FxEmboss
     protected override void OnInitialize(HostedPanelViewModelParameters injectionParameters)
     {
     }
-
 }

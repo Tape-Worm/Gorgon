@@ -23,7 +23,6 @@
 // Created: December 18, 2018 12:30:56 AM
 // 
 
-
 using System.Diagnostics;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Services;
@@ -62,13 +61,8 @@ internal class GorgonSpriteImporter(IGorgonFileSystem projectFileSystem, IGorgon
     // The path to the temporary directory.
     private string _tempDirPath;
 
-
-
     /// <summary>Property to return whether or not the imported file needs to be cleaned up after processing.</summary>
     public bool NeedsCleanup => true;
-
-
-
 
     /// <summary>
     /// Function to locate the associated texture file for a sprite.
@@ -230,6 +224,4 @@ internal class GorgonSpriteImporter(IGorgonFileSystem projectFileSystem, IGorgon
             _log.LogException(ex);
         }
     }
-
-
 }

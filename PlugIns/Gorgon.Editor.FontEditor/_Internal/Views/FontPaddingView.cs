@@ -23,7 +23,6 @@
 // Created: September 3, 2021 9:37:58 AM
 // 
 
-
 using System.ComponentModel;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Controls;
@@ -40,8 +39,6 @@ internal partial class FontPaddingView
     // The event hook counter.
     private int _eventHook;
 
-
-
     /// <summary>
     /// Property to return the data context for the view.
     /// </summary>
@@ -51,8 +48,6 @@ internal partial class FontPaddingView
         get;
         private set;
     }
-
-
 
     /// <summary>Handles the ValueChanged event of the NumericPadding control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -217,8 +212,6 @@ internal partial class FontPaddingView
         ViewModel.PropertyChanged += DataContext_PropertyChanged;
         ValidateOk();
     }
-
-
 
     /// <summary>Initializes a new instance of the <see cref="FontPaddingView"/> class.</summary>
     public FontPaddingView() => InitializeComponent();

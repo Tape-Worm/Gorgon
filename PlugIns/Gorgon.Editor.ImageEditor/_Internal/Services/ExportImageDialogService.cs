@@ -23,7 +23,6 @@
 // Created: January 5, 2019 1:44:44 PM
 // 
 
-
 using Gorgon.Editor.Content;
 using Gorgon.Editor.ImageEditor.Properties;
 using Gorgon.Editor.Services;
@@ -45,8 +44,6 @@ internal class ExportImageDialogService(ISettings settings)
     // The settings for the image editor.
     private readonly ISettings _settings = settings ?? throw new ArgumentNullException(nameof(settings));
 
-
-
     /// <summary>Property to set or return the codec used for exporting.</summary>
     public IGorgonImageCodec SelectedCodec
     {
@@ -62,8 +59,6 @@ internal class ExportImageDialogService(ISettings settings)
         get;
         set;
     }
-
-
 
     /// <summary>
     /// Function to retrieve the last directory path used for import/export.
@@ -132,8 +127,4 @@ internal class ExportImageDialogService(ISettings settings)
         ConfigureDialog();
         return base.GetFilename();
     }
-
-
-
-
 }

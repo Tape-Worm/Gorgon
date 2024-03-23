@@ -23,7 +23,6 @@
 // Created: May 23, 2018 1:44:30 PM
 // 
 
-
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Memory;
 
@@ -58,7 +57,6 @@ namespace Gorgon.Graphics.Core;
 public class GorgonDrawCallBuilder
     : GorgonDrawCallBuilderCommon<GorgonDrawCallBuilder, GorgonDrawCall>
 {
-
     /// <summary>
     /// Function to create a new draw call.
     /// </summary>
@@ -126,8 +124,6 @@ public class GorgonDrawCallBuilder
         return this;
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonDrawCallBuilder"/> class.
     /// </summary>
@@ -136,5 +132,4 @@ public class GorgonDrawCallBuilder
     {
 
     }
-
 }

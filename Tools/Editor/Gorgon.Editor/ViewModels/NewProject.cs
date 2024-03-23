@@ -23,7 +23,6 @@
 // Created: August 27, 2018 8:51:39 PM
 // 
 
-
 using System.Security;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
@@ -68,8 +67,6 @@ internal class NewProject
     private string _invalidPathReason;
     // The default path for projects.
     private readonly string _defaultProjectPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Gorgon", "Projects");
-
-
 
     /// <summary>Property to return the reason that a workspace path may be invalid.</summary>
     public string InvalidPathReason
@@ -212,8 +209,6 @@ internal class NewProject
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to validate the selected workspace directory.
@@ -500,8 +495,6 @@ internal class NewProject
         _computerInfo = new GorgonComputerInfo();
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="NewProject"/> class.</summary>
     public NewProject()
     {
@@ -509,5 +502,4 @@ internal class NewProject
         SetProjectWorkspaceCommand = new EditorCommand<SetProjectWorkspaceArgs>(DoSetProjectWorkspace, CanSetProjectWorkspace);
         SelectProjectWorkspaceCommand = new EditorCommand<object>(DoSelectProjectWorkspace);
     }
-
 }

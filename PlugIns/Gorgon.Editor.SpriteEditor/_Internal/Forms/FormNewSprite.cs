@@ -23,7 +23,6 @@
 // Created: March 31, 2020 10:49:39 PM
 // 
 
-
 using System.ComponentModel;
 using System.Numerics;
 using Gorgon.Editor.Content;
@@ -111,8 +110,6 @@ internal partial class FormNewSprite
         get;
         private set;
     }
-
-
 
     /// <summary>Handles the FileEntrySelected event of the FileTextures control.</summary>
     /// <param name="sender">The source of the event.</param>

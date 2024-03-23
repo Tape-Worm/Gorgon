@@ -23,7 +23,6 @@
 // Created: July 28, 2018 11:33:52 AM
 // 
 
-
 using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Graphics;
@@ -77,8 +76,6 @@ static class Program
     private static GorgonOrthoCamera _camera;
     // Flag to indicate we should rotate the logo.
     private static bool _rotate;
-
-
 
     /// <summary>
     /// Function called when the application goes into an idle state.
@@ -413,5 +410,4 @@ static class Program
             _graphics?.Dispose();
         }
     }
-
 }

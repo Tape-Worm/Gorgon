@@ -23,7 +23,6 @@
 // Created: Saturday, October 12, 2013 10:28:27 PM
 // 
 
-
 using System.Drawing.Drawing2D;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts.Properties;
@@ -87,8 +86,6 @@ public class GorgonGlyphTextureBrush
     private int _width;
     private int _height;
 
-
-
     /// <summary>
     /// Property to return the type of brush.
     /// </summary>
@@ -129,8 +126,6 @@ public class GorgonGlyphTextureBrush
     /// Property to return the image data to apply to the brush.
     /// </summary>
     public Span<byte> Image => _imageData;
-
-
 
     /// <summary>Function to write out the specifics of the font brush data to a file writer.</summary>
     /// <param name="writer">The writer used to write the brush data.</param>
@@ -277,8 +272,6 @@ public class GorgonGlyphTextureBrush
             && (brush.Image.SequenceEqual(Image))));
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="GorgonGlyphTextureBrush"/> class.</summary>
     internal GorgonGlyphTextureBrush() => TextureRegion = new GorgonRectangleF(0, 0, 1, 1);
 
@@ -339,5 +332,4 @@ public class GorgonGlyphTextureBrush
         tempImage.Buffers[0].Data.CopyTo(_imageData.AsSpan());
         TextureRegion = new GorgonRectangleF(0, 0, 1, 1);
     }
-
 }

@@ -23,7 +23,6 @@
 // Created: June 15, 2016 9:39:42 PM
 // 
 
-
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using Gorgon.Core;
@@ -39,7 +38,6 @@ namespace Gorgon.Graphics.Core;
 public record GorgonConstantBufferInfo(int SizeInBytes)
     : IGorgonConstantBufferInfo
 {
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonConstantBufferInfo"/> class.
     /// </summary>
@@ -51,8 +49,6 @@ public record GorgonConstantBufferInfo(int SizeInBytes)
         Name = info.Name;
         Usage = info.Usage;
     }
-
-
 
     /// <summary>
     /// Property to return the intended usage flags for this buffer.
@@ -74,8 +70,6 @@ public record GorgonConstantBufferInfo(int SizeInBytes)
         get;
         init;
     } = GorgonGraphicsResource.GenerateName(GorgonConstantBuffer.NamePrefix);
-
-
 
     /// <summary>
     /// Function to create a <see cref="IGorgonConstantBufferInfo"/> based on the type representing a vertex.

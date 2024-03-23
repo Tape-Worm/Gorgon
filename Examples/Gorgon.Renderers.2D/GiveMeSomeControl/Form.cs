@@ -23,7 +23,6 @@
 // Created: August 24, 2018 2:33:28 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Animation;
 using Gorgon.Core;
@@ -33,7 +32,6 @@ using Gorgon.Graphics.Fonts;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Renderers;
 using Gorgon.UI;
-
 
 namespace Gorgon.Examples;
 
@@ -70,8 +68,6 @@ public partial class Form
     private Vector2 _scale = new(2, 2);
     // The original size of the left panel.
     private Vector2 _originalSize;
-
-
 
     /// <summary>
     /// Handles the SplitterMoved event of the SplitViews control.
@@ -334,8 +330,6 @@ public partial class Form
             Cursor.Current = Cursors.Default;
         }
     }
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Form"/> class.

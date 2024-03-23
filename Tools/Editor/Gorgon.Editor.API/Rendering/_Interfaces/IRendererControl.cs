@@ -23,7 +23,6 @@
 // Created: August 26, 2018 7:07:58 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
 
@@ -35,7 +34,6 @@ namespace Gorgon.Editor.Rendering;
 public interface IRendererControl
     : IGorgonNamedObject
 {
-
     /// <summary>
     /// Property to return the graphics context.
     /// </summary>
@@ -51,8 +49,6 @@ public interface IRendererControl
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to begin rendering on the control.

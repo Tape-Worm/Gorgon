@@ -23,7 +23,6 @@
 // Created: May 5, 2019 5:03:12 PM
 // 
 
-
 using System.Collections;
 using System.ComponentModel;
 using Gorgon.Core;
@@ -40,7 +39,6 @@ namespace Gorgon.Editor.UI.Controls;
 public partial class ContentFileExplorer
     : EditorBaseControl
 {
-
     /// <summary>
     /// A comparer used to sort the files and directories.
     /// </summary>
@@ -61,8 +59,6 @@ public partial class ContentFileExplorer
         private readonly DataGridViewColumn _columnDirectoryName = directoryName;
         // The column containing the file path.
         private readonly DataGridViewColumn _columnFile = file;
-
-
 
         /// <summary>Compares two objects and returns a value indicating whether one is less than, equal to, or greater than the other.</summary>
         /// <param name="x">The first object to compare.</param>
@@ -110,12 +106,7 @@ public partial class ContentFileExplorer
         /// </returns>
         int IComparer.Compare(object x, object y) => Compare((DataGridViewRow)x, (DataGridViewRow)y);
 
-
-
-
     }
-
-
 
     /// <summary>
     /// Event triggered when a search term is entered into the search box.
@@ -141,8 +132,6 @@ public partial class ContentFileExplorer
     [Category("Behavior"), Description("Triggered when a file entry is unselected.")]
     public event EventHandler<ContentFileEntrySelectedEventArgs> FileEntryUnselected;
 
-
-
     // The directory font.
     private readonly Font _dirFont;
     // The comparer used to sort the grid.
@@ -160,8 +149,6 @@ public partial class ContentFileExplorer
     private CheckBox _checkBoxHeader;
     // The currently selected directory (for single select mode).
     private string _currentDirectory;
-
-
 
     /// <summary>
     /// Property to set or return the list of entries to display.
@@ -245,8 +232,6 @@ public partial class ContentFileExplorer
     /// </remarks>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public string CurrentDirectory => _currentDirectory;
-
-
 
     /// <summary>
     /// Function to build the cache for the file icons.
@@ -573,7 +558,6 @@ public partial class ContentFileExplorer
     /// <param name="row">The row to evaluate.</param>
     /// <returns><b>true</b> if the row represents a directory, <b>false</b> if not.</returns>
     private bool IsDirectoryRow(DataGridViewRow row) => row.Cells[ColumnDirectory.Index].Value.IfNull(false);
-
 
     /// <summary>Handles the CellMouseLeave event of the GridFiles control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -1031,8 +1015,6 @@ public partial class ContentFileExplorer
         GridFiles.Select();
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="ContentFileExplorer"/> class.</summary>
     public ContentFileExplorer()
     {
@@ -1041,5 +1023,4 @@ public partial class ContentFileExplorer
         _dirFont = new Font(Font, FontStyle.Bold);
         _fileComparer = new FileComparer(GridFiles, ColumnDirectory, ColumnDirName, ColumnLocation);
     }
-
 }

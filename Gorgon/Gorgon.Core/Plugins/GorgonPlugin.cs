@@ -23,7 +23,6 @@
 // Created: Thursday, June 23, 2011 11:24:37 AM
 // 
 
-
 using System.Reflection;
 using Gorgon.Core;
 
@@ -104,7 +103,6 @@ namespace Gorgon.PlugIns;
 public abstract class GorgonPlugIn
     : IGorgonNamedObject
 {
-
     /// <summary>
     /// Property to return the name of this object.
     /// </summary>
@@ -137,8 +135,6 @@ public abstract class GorgonPlugIn
         get;
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonPlugIn"/> class.
     /// </summary>
@@ -154,5 +150,4 @@ public abstract class GorgonPlugIn
         PlugInPath = GetType().Assembly.ManifestModule.FullyQualifiedName;
         Name = GetType().FullName;
     }
-
 }

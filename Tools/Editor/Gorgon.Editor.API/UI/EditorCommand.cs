@@ -23,7 +23,6 @@
 // Created: August 26, 2018 12:31:41 PM
 // 
 
-
 namespace Gorgon.Editor.UI;
 
 /// <summary>
@@ -48,8 +47,6 @@ public class EditorCommand<T>
     // Action called to execute the function.
     private readonly Action _executeNoArgs;
 
-
-
     /// <summary>
     /// Function to determine if a command can be executed or not.
     /// </summary>
@@ -71,8 +68,6 @@ public class EditorCommand<T>
 
         _executeNoArgs();
     }
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="EditorCommand{T}"/> class.
@@ -97,5 +92,4 @@ public class EditorCommand<T>
         _executeNoArgs = execute ?? throw new ArgumentNullException(nameof(execute));
         _canExecuteNoArgs = canExecute;
     }
-
 }

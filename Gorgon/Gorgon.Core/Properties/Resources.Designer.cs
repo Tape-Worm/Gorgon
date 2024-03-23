@@ -685,24 +685,6 @@ namespace Gorgon.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Axis Aligned Bounding Box.  Min: {0},{1},{2}, Max: {3}, {4}, {5}.
-        /// </summary>
-        internal static string GOR_TOSTR_AABB {
-            get {
-                return ResourceManager.GetString("GOR_TOSTR_AABB", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Bounding Sphere. Center: {0}, {1}, {2}, Radius: {3}.
-        /// </summary>
-        internal static string GOR_TOSTR_BOUNDING_SPHERE {
-            get {
-                return ResourceManager.GetString("GOR_TOSTR_BOUNDING_SPHERE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Gorgon Box: {0}x{1}x{2}-{3}x{4}x{5} (Width: {6}, Height: {7}, Depth {8}).
         /// </summary>
         internal static string GOR_TOSTR_BOX {
@@ -809,15 +791,6 @@ namespace Gorgon.Properties {
         internal static string GOR_TOSTR_RATIONAL {
             get {
                 return ResourceManager.GetString("GOR_TOSTR_RATIONAL", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Ray: Start ({0}, {1}, {2}) Direction ({3}, {4}, {5})..
-        /// </summary>
-        internal static string GOR_TOSTR_RAY {
-            get {
-                return ResourceManager.GetString("GOR_TOSTR_RAY", resourceCulture);
             }
         }
         

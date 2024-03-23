@@ -23,7 +23,6 @@
 // Created: May 24, 2018 7:24:06 PM
 // 
 
-
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Patterns;
 using D3D11 = SharpDX.Direct3D11;
@@ -62,8 +61,6 @@ public class GorgonPipelineStateBuilder
     // The working state.
     private readonly GorgonPipelineState _workState = new();
 
-
-
     /// <summary>
     /// Property to return the graphics interface used to build the pipeline state.
     /// </summary>
@@ -71,8 +68,6 @@ public class GorgonPipelineStateBuilder
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to add a rasterizer state to this pipeline state.
@@ -302,8 +297,6 @@ public class GorgonPipelineStateBuilder
         // Build the actual state.
         Graphics.PipelineStateCache.Cache(_workState);
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonPipelineStateBuilder"/> class.
     /// </summary>
@@ -316,5 +309,4 @@ public class GorgonPipelineStateBuilder
         _workState.DepthStencilState = GorgonDepthStencilState.Default;
         _workState.PrimitiveType = Core.PrimitiveType.TriangleList;
     }
-
 }

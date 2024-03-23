@@ -50,8 +50,6 @@ internal class AvaloniaSwapChainImage
     // The last presentation task.
     private Task _lastPresentation;
 
-
-
     /// <summary>
     /// Property to return the current render target view for the image.
     /// </summary>
@@ -90,8 +88,6 @@ internal class AvaloniaSwapChainImage
     /// Property to return the height of the image, in pixels.
     /// </summary>
     public int Height => _pixelSize.Height;
-
-
 
     /// <summary>
     /// Function to initialize the swap chain image.
@@ -169,8 +165,6 @@ internal class AvaloniaSwapChainImage
         _lastPresentation = _surface.UpdateWithKeyedMutexAsync(_imported, 1, 0);
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="AvaloniaSwapChainImage"/> class.
     /// </summary>
@@ -187,5 +181,4 @@ internal class AvaloniaSwapChainImage
 
         Initialize();
     }
-
 }

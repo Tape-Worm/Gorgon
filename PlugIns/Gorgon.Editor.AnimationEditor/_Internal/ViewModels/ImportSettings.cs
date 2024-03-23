@@ -23,7 +23,6 @@
 // Created: April 24, 2019 11:16:33 AM
 // 
 
-
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using Gorgon.Editor.AnimationEditor.Properties;
@@ -46,8 +45,6 @@ internal class ImportSettings
     // The codecs for the plug in.
     private CodecRegistry _codecs;
 
-
-
     /// <summary>Property to return the file name that will hold the plug ins.</summary>
     protected override string SettingsFileName => AnimationImporterPlugIn.SettingsFilename;
 
@@ -69,8 +66,6 @@ internal class ImportSettings
 
     /// <summary>Property to return the name of this object.</summary>
     public override string Name => Resources.GORANM_IMPORT_DESC;
-
-
 
     /// <summary>Handles the CollectionChanged event of the CodecPlugInPaths control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -260,5 +255,4 @@ internal class ImportSettings
 
         base.OnUnload();
     }
-
 }

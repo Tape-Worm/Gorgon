@@ -23,7 +23,6 @@
 // Created: June 28, 2016 10:38:40 PM
 // 
 
-
 using Gorgon.Configuration;
 using Gorgon.Graphics.Imaging.Properties;
 using SharpDX.WIC;
@@ -71,7 +70,6 @@ public enum PngFilter
 public sealed class GorgonPngEncodingOptions
     : IGorgonWicEncodingOptions
 {
-
     /// <summary>
     /// Property to set or return whether all frames in an image array should be persisted.
     /// </summary>
@@ -173,8 +171,6 @@ public sealed class GorgonPngEncodingOptions
     {
         get;
     }
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonPngEncodingOptions"/> class.

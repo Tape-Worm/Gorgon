@@ -23,7 +23,6 @@
 // Created: April 4, 2020 9:35:21 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Editor.Rendering;
@@ -46,13 +45,10 @@ namespace Gorgon.Editor.SpriteEditor;
 internal class DefaultSpriteViewer(Gorgon2D renderer, GorgonSwapChain swapChain, ISpriteContent dataContext, IMarchingAnts marchingAnts)
         : SpriteViewer(ViewerName, renderer, swapChain, dataContext)
 {
-
     /// <summary>
     /// The name of the viewer.
     /// </summary>
     public const string ViewerName = "DefaultSpriteViewer";
-
-
 
     // Marching ants rectangle.
     private readonly IMarchingAnts _marchAnts = marchingAnts;
@@ -64,8 +60,6 @@ internal class DefaultSpriteViewer(Gorgon2D renderer, GorgonSwapChain swapChain,
     private readonly GorgonSprite _sprite = new();
     // The region where the sprite is located on the texture.
     private GorgonRectangleF _spriteRegion;
-
-
 
     /// <summary>Function called when a property on the <see cref="DefaultContentRenderer{T}.DataContext"/> has been changed.</summary>
     /// <param name="propertyName">The name of the property that was changed.</param>
@@ -289,6 +283,4 @@ internal class DefaultSpriteViewer(Gorgon2D renderer, GorgonSwapChain swapChain,
 
         MoveTo(new Vector2(spritePosition.X, spritePosition.Y), spriteZoomLevel.GetScale());
     }
-
-
 }

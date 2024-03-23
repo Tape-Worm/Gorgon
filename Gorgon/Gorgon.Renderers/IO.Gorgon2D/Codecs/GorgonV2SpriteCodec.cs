@@ -23,7 +23,6 @@
 // Created: August 11, 2018 3:43:13 PM
 // 
 
-
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Gorgon.Core;
@@ -46,7 +45,6 @@ namespace Gorgon.IO;
 public class GorgonV2SpriteCodec(Gorgon2D renderer)
         : GorgonSpriteCodecCommon(renderer, Resources.GOR2DIO_V2_CODEC, Resources.GOR2DIO_V2_CODEC_DESCRIPTION)
 {
-
     /// <summary>
     /// Filtering to apply to a texture.
     /// </summary>
@@ -97,8 +95,6 @@ public class GorgonV2SpriteCodec(Gorgon2D renderer)
         CompareAnisotropic = 131072,
     }
 
-
-
     // Sprite texture data chunk.
     private const string TextureDataChunk = "TXTRDATA";
     // Sprite render data chunk.
@@ -110,8 +106,6 @@ public class GorgonV2SpriteCodec(Gorgon2D renderer)
     /// Header for the Gorgon sprite file.
     /// </summary>		
     public const string FileHeader = "GORSPR20";
-
-
 
     /// <summary>
     /// Property to return whether or not the codec can decode sprite data.
@@ -130,8 +124,6 @@ public class GorgonV2SpriteCodec(Gorgon2D renderer)
     {
         get;
     } = new Version(2, 0);
-
-
 
     /// <summary>
     /// Function to convert Gorgon 2.x texture filtering to 3.x texture filtering values.
@@ -498,6 +490,5 @@ public class GorgonV2SpriteCodec(Gorgon2D renderer)
     /// <param name="sprite">The sprite to serialize into the stream.</param>
     /// <param name="stream">The stream that will contain the sprite.</param>
     protected override void OnSaveToStream(GorgonSprite sprite, Stream stream) => throw new NotSupportedException();
-
 
 }

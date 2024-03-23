@@ -23,7 +23,6 @@
 // Created: February 27, 2019 1:06:53 PM
 // 
 
-
 using System.Diagnostics;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.ImageEditor.Properties;
@@ -40,7 +39,6 @@ namespace Gorgon.Editor.ImageEditor;
 internal class ImageExternalEditService(IGorgonLog log)
         : IImageExternalEditService
 {
-
     /// <summary>
     /// Data manipulated by the file system watcher should the file be altered in any way.
     /// </summary>
@@ -56,12 +54,8 @@ internal class ImageExternalEditService(IGorgonLog log)
         public bool HasChanges;
     }
 
-
-
     // The log used for debug logging messages.
     private readonly IGorgonLog _log = log ?? GorgonLog.NullLog;
-
-
 
     /// <summary>
     /// Function to create a file system watcher for the specified file.
@@ -157,8 +151,4 @@ internal class ImageExternalEditService(IGorgonLog log)
 
         return true;
     }
-
-
-
-
 }

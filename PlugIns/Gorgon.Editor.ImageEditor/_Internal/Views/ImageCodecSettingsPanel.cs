@@ -23,7 +23,6 @@
 // Created: April 20, 2019 2:19:56 PM
 // 
 
-
 using System.Collections.Specialized;
 using System.ComponentModel;
 using Gorgon.Editor.UI;
@@ -37,7 +36,6 @@ namespace Gorgon.Editor.ImageEditor;
 internal partial class ImageCodecSettingsPanel
     : SettingsBaseControl, IDataContext<ISettingsPlugins>
 {
-
     /// <summary>Property to return the ID of the panel.</summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public override string PanelID => ViewModel?.ID.ToString() ?? Guid.Empty.ToString();
@@ -49,8 +47,6 @@ internal partial class ImageCodecSettingsPanel
         get;
         private set;
     }
-
-
 
     /// <summary>
     /// Function to validate the buttons on the control.
@@ -105,7 +101,6 @@ internal partial class ImageCodecSettingsPanel
             ListCodecs.EndUpdate();
         }
     }
-
 
     /// <summary>Handles the ItemSelectionChanged event of the ListCodecs control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -309,8 +304,6 @@ internal partial class ImageCodecSettingsPanel
         ViewModel.CodecPlugInPaths.CollectionChanged += CodecPlugInPaths_CollectionChanged;
         ViewModel.SelectedCodecs.CollectionChanged += SelectedCodecs_CollectionChanged;
     }
-
-
 
     /// <summary>Initializes a new instance of the <see cref="ImageCodecSettingsPanel"/> class.</summary>
     public ImageCodecSettingsPanel() => InitializeComponent();

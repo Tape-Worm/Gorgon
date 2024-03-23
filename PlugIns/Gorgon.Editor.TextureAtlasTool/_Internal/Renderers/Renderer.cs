@@ -23,7 +23,6 @@
 // Created: April 24, 2019 10:14:49 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.TextureAtlasTool.Properties;
@@ -50,8 +49,6 @@ internal class Renderer(Gorgon2D renderer, GorgonSwapChain swapChain, ITextureAt
     private GorgonOrthoCamera _camera;
     // The sprite used to display the texture.
     private GorgonSprite _textureSprite;
-
-
 
     /// <summary>
     /// Function to draw a message on the screen when no atlas is loaded.
@@ -115,6 +112,4 @@ internal class Renderer(Gorgon2D renderer, GorgonSwapChain swapChain, ITextureAt
             TextureSampler = GorgonSamplerState.PointFiltering
         };
     }
-
-
 }

@@ -23,7 +23,6 @@
 // Created: October 30, 2018 8:12:24 PM
 // 
 
-
 using System.ComponentModel;
 using Gorgon.Editor.ImageEditor.Fx;
 using Gorgon.Editor.ImageEditor.Properties;
@@ -50,8 +49,6 @@ internal partial class ImageEditorView
     // The form for the image picker.
     private readonly FormImagePicker _imagePickerForm;
 
-
-
     /// <summary>Property to return the data context assigned to this view.</summary>
     /// <value>The data context.</value>
     public IImageContent ViewModel
@@ -59,8 +56,6 @@ internal partial class ImageEditorView
         get;
         private set;
     }
-
-
 
     /// <summary>
     /// Function to validate the controls on the view.
@@ -207,7 +202,6 @@ internal partial class ImageEditorView
 
         LabelMipDetails.Text = string.Format(Resources.GORIMG_TEXT_MIP_DETAILS, dataContext.CurrentMipLevel + 1, dataContext.MipCount, size.X, size.Y);
     }
-
 
     /// <summary>Handles the Click event of the ButtonNextMip control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -544,8 +538,6 @@ internal partial class ImageEditorView
         ViewModel = dataContext;
     }
 
-
-
     /// <summary>Initializes a new instance of the ImageEditorView class.</summary>
     public ImageEditorView()
     {
@@ -567,5 +559,4 @@ internal partial class ImageEditorView
         RegisterChildPanel(typeof(FxPosterize).FullName, FxPosterizeSettings);
         RegisterChildPanel(typeof(FxOneBit).FullName, Fx1BitSettings);
     }
-
 }

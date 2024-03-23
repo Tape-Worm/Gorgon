@@ -23,7 +23,6 @@
 // Created: June 20, 2016 10:52:04 PM
 // 
 
-
 using System.Collections;
 using Gorgon.Diagnostics;
 using Gorgon.Math;
@@ -42,8 +41,6 @@ class ImageBufferList
     private IGorgonImageBuffer[] _buffers;
     // Image that owns this buffer.
     private readonly IGorgonImageInfo _imageInfo;
-
-
 
     /// <summary>
     /// Property to return the offsets of the mip map levels.
@@ -100,8 +97,6 @@ class ImageBufferList
             return _buffers[offsetSize.Item1];
         }
     }
-
-
 
     /// <summary>
     /// Function to create a list of buffers to use.
@@ -236,8 +231,6 @@ class ImageBufferList
     /// <returns></returns>
     public bool Contains(int mipLevel, int depthSliceOrArrayIndex = 0) => IndexOf(mipLevel, depthSliceOrArrayIndex) != -1;
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="ImageBufferList"/> class.
     /// </summary>
@@ -247,5 +240,4 @@ class ImageBufferList
         _imageInfo = imageInfo;
         _buffers = [];
     }
-
 }

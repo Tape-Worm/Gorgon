@@ -23,7 +23,6 @@
 // Created: June 29, 2016 10:46:00 PM
 // 
 
-
 using Gorgon.Configuration;
 using Gorgon.Graphics.Imaging.Properties;
 using Gorgon.Math;
@@ -36,7 +35,6 @@ namespace Gorgon.Graphics.Imaging.Codecs;
 public class GorgonGifEncodingOptions
     : IGorgonWicEncodingOptions
 {
-
     /// <summary>
     /// Property to return the list of options available to the codec.
     /// </summary>
@@ -160,8 +158,6 @@ public class GorgonGifEncodingOptions
         get => Options.GetOptionValue<bool>(nameof(IGorgonImageCodecEncodingOptions.SaveAllFrames));
         set => Options.SetOptionValue(nameof(IGorgonImageCodecEncodingOptions.SaveAllFrames), value);
     }
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonGifEncodingOptions"/> class.

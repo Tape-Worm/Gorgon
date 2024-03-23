@@ -23,7 +23,6 @@
 // Created: September 4, 2021 10:07:26 AM
 // 
 
-
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI;
 
@@ -38,7 +37,6 @@ namespace Gorgon.Editor.FontEditor;
 internal class FontCharacterSelectionParameters(FontService fontService, IHostContentServices hostServices)
         : HostedPanelViewModelParameters(hostServices)
 {
-
     /// <summary>
     /// Property to return the service used to generate fonts.
     /// </summary>
@@ -46,6 +44,5 @@ internal class FontCharacterSelectionParameters(FontService fontService, IHostCo
     {
         get;
     } = fontService ?? throw new ArgumentNullException(nameof(fontService));
-
 
 }

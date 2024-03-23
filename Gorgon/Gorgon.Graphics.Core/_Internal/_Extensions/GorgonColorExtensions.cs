@@ -23,7 +23,6 @@
 // Created: November 11, 2017 12:27:27 PM
 // 
 
-
 using SharpDX.Mathematics.Interop;
 using DX = SharpDX;
 

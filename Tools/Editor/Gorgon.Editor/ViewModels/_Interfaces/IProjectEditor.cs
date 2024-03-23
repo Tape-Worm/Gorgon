@@ -23,7 +23,6 @@
 // Created: September 4, 2018 11:11:06 AM
 // 
 
-
 using System.ComponentModel;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.PlugIns;
@@ -37,7 +36,6 @@ namespace Gorgon.Editor.ViewModels;
 internal interface IProjectEditor
     : IViewModel
 {
-
     /// <summary>
     /// Property to return the available tool plug in button definitions for the application.
     /// </summary>
@@ -150,5 +148,4 @@ internal interface IProjectEditor
     {
         get;
     }
-
 }

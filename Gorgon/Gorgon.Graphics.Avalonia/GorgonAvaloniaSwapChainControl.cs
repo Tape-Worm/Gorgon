@@ -58,8 +58,6 @@ public class GorgonAvaloniaSwapChainControl
     // Flag to indicate that the next frame is queued for rendering.
     private bool _nextFrameQueued;
 
-
-
     /// <summary>
     /// Event for a resized control.
     /// </summary>
@@ -73,8 +71,6 @@ public class GorgonAvaloniaSwapChainControl
         add => AddHandler(ResizedEvent, value);
         remove => RemoveHandler(ResizedEvent, value);
     }
-
-
 
     /// <summary>
     /// Function to extract the functionality for composition of the swap chain on the control.
@@ -234,5 +230,4 @@ public class GorgonAvaloniaSwapChainControl
         _nextFrameQueued = true;
         _compositor?.RequestCompositionUpdate(Update);
     }
-
 }

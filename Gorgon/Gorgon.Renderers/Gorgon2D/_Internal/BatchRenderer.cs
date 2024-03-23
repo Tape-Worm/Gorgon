@@ -23,7 +23,6 @@
 // Created: June 6, 2018 8:56:13 PM
 // 
 
-
 using System.Runtime.CompilerServices;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -39,7 +38,6 @@ namespace Gorgon.Renderers;
 internal sealed class BatchRenderer
     : IDisposable
 {
-
     /// <summary>
     /// Maximum number of renderables that can be buffered prior to sending to the GPU.
     /// We have 10,922 renderables (16 bit Index Buffer - 65536 bytes / 6 indices per renderable = ~10922).
@@ -49,8 +47,6 @@ internal sealed class BatchRenderer
     private const int MaxVertexCount = MaxSpriteCount * 4;
     // The maximum number of indices we can render.
     private const int MaxIndexCount = MaxSpriteCount * 6;
-
-
 
     // Start with a modest cache size.
     private Gorgon2DVertex[] _vertexCache = new Gorgon2DVertex[4096];
@@ -68,8 +64,6 @@ internal sealed class BatchRenderer
     private int _vertexBufferIndex;
     // The vertex index offset used by the index buffer to offset within the vertex buffer.
     private int _indexBufferBaseVertexIndex;
-
-
 
     /// <summary>
     /// Property to return the graphics interface that built this object.
@@ -112,8 +106,6 @@ internal sealed class BatchRenderer
         get;
         private set;
     }
-
-
 
     /// <summary>
     /// Function to create the vertex/index buffers for the renderer.
@@ -320,8 +312,6 @@ internal sealed class BatchRenderer
         IndexBuffer?.Dispose();
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="BatchRenderer"/> class.
     /// </summary>
@@ -333,5 +323,4 @@ internal sealed class BatchRenderer
         TextSpriteTransformer = new TextSpriteTransformer();
         CreateBuffers();
     }
-
 }

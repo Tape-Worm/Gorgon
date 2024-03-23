@@ -23,7 +23,6 @@
 // Created: April 7, 2018 11:01:10 PM
 // 
 
-
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
@@ -36,8 +35,6 @@ internal static class DisposableRegistrar
     private static readonly Dictionary<GorgonGraphics, List<WeakReference<IDisposable>>> _disposables = [];
     // Synchronization object for multiple threads.
     private static readonly object _syncLock = new();
-
-
 
     /// <summary>
     /// Function to retrieve the list of disposables for a given graphics instance.
@@ -144,5 +141,4 @@ internal static class DisposableRegistrar
             _disposables.Remove(graphics);
         }
     }
-
 }

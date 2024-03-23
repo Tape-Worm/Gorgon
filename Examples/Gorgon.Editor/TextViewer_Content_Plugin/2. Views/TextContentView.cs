@@ -23,7 +23,6 @@
 // Created: August 3, 2020 3:45:05 PM
 // 
 
-
 using System.ComponentModel;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.UI;
@@ -67,8 +66,6 @@ internal partial class TextContentView
     // The form containing the ribbon used to merge with the application ribbon.
     private readonly FormRibbon _formRibbon;
 
-
-
     /// <summary>Property to return the data context assigned to this view.</summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)] // <-- So we don't show up in the IDE.
     public ITextContent ViewModel
@@ -76,8 +73,6 @@ internal partial class TextContentView
         get;
         private set;
     }
-
-
 
     /// <summary>
     /// Function to initialize the view from the data context.
@@ -215,8 +210,6 @@ internal partial class TextContentView
         TextColorPicker.SetDataContext(dataContext?.TextColor);
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="TextContentView"/> class.</summary>
     public TextContentView()
     {
@@ -243,5 +236,4 @@ internal partial class TextContentView
         // instance of the sub panel control.
         RegisterChildPanel(typeof(TextColor).FullName, TextColorPicker);
     }
-
 }

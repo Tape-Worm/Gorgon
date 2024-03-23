@@ -23,7 +23,6 @@
 // Created: July 25, 2017 9:36:23 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 using D3D11 = SharpDX.Direct3D11;
@@ -158,5 +157,4 @@ public sealed class GorgonStreamOutLayout
             Native[i] = _elements[i].NativeElement;
         }
     }
-
 }

@@ -23,7 +23,6 @@
 // Created: March 28, 2019 9:48:28 AM
 // 
 
-
 using System.ComponentModel;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Controls;
@@ -42,8 +41,6 @@ internal partial class SpritePickMaskColor
     // The original mask value.
     private ClipMask _originalMask;
 
-
-
     /// <summary>
     /// Property to return the data context for the view.
     /// </summary>
@@ -53,8 +50,6 @@ internal partial class SpritePickMaskColor
         get;
         private set;
     }
-
-
 
     /// <summary>Handles the Click event of the RadioAlpha control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -288,8 +283,6 @@ internal partial class SpritePickMaskColor
 
         ViewModel.PropertyChanged += DataContext_PropertyChanged;
     }
-
-
 
     /// <summary>Initializes a new instance of the <see cref="SpriteColor"/> class.</summary>
     public SpritePickMaskColor() => InitializeComponent();

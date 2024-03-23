@@ -95,8 +95,6 @@ public class MarchingAnts
             });
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="MarchingAnts"/> class.</summary>
     /// <param name="renderer">The 2D renderer for the application.</param>
     public MarchingAnts(Gorgon2D renderer)
@@ -104,5 +102,4 @@ public class MarchingAnts
         _renderer = renderer;
         _marchAntsTexture = new Lazy<GorgonTexture2DView>(Build, true);
     }
-
 }

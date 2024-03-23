@@ -23,7 +23,6 @@
 // Created: June 6, 2018 12:53:53 PM
 // 
 
-
 using System.ComponentModel;
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -86,7 +85,6 @@ namespace Gorgon.Renderers;
 public sealed class Gorgon2D
     : IGorgon2DFluent, IGorgon2DDrawingFluent, IGorgonGraphicsObject
 {
-
     /// <summary>
     /// The common miscellaneous values to pass to the shaders.
     /// </summary>
@@ -141,8 +139,6 @@ public sealed class Gorgon2D
         }
     }
 
-
-
     // The renderer is not initialized.        
     private const int Uninitialized = 0;
 
@@ -176,8 +172,6 @@ public sealed class Gorgon2D
     /// The name of the shaders used by the <see cref="Gorgon2DLightingEffect"/>.
     /// </summary>
     public const string GorgonLightingShaderIncludeName = "Gorgon2DLightingShader";
-
-
 
     // The flag to indicate that the renderer is initialized.
     private int _initialized = Uninitialized;
@@ -254,8 +248,6 @@ public sealed class Gorgon2D
     private Vector4 _currentTimingValues;
     // The previous frame count.
     private ulong _lastFrameCount;
-
-
 
     /// <summary>
     /// Property to return a black texture to pass to shaders when no texture is specified.
@@ -339,8 +331,6 @@ public sealed class Gorgon2D
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to flush the queued up changes to the GPU.
@@ -434,7 +424,6 @@ public sealed class Gorgon2D
         {
             _currentDrawCall = _drawCallFactory.GetDrawCall(renderable, _currentBatchState, _batchRenderer);
         }
-
 
         _lastRenderable = renderable;
         // All states are reconciled, so reset the change flag.
@@ -1218,7 +1207,6 @@ public sealed class Gorgon2D
                         kerningValues.TryGetValue(kernPair, out kernAmount);
                     }
 
-
                     _batchRenderer.TextSpriteTransformer.Transform(renderable,
                                                                     glyph,
                                                                     null,
@@ -1545,7 +1533,6 @@ public sealed class Gorgon2D
                             kerningValues.TryGetValue(kernPair, out kernAmount);
                         }
 
-
                         _batchRenderer.TextSpriteTransformer.Transform(renderable,
                                                                         glyph,
                                                                         blockColor,
@@ -1779,7 +1766,7 @@ public sealed class Gorgon2D
         //// Push borders to the outside.
         if (thickness > 1.0f)
         {
-            region = GorgonRectangleF.Expand(region, thickness / 2.0f);            
+            region = GorgonRectangleF.Expand(region, thickness / 2.0f);
         }
 
         GorgonRectangleF? topAcross = null;
@@ -1985,7 +1972,6 @@ public sealed class Gorgon2D
             texture = _defaultTexture;
         }
 
-
         v0.Color = color;
         v1.Color = color;
         v2.Color = color;
@@ -2166,7 +2152,6 @@ public sealed class Gorgon2D
         Vector2 outerRadius = new((region.Width * 0.5f) + (thickness * 0.5f), (region.Height * 0.5f) + (thickness * 0.5f));
         Vector2 innerRadius = new((region.Width * 0.5f) - (thickness * 0.5f), (region.Height * 0.5f) - (thickness * 0.5f));
 
-
         int vertexIndex = 0;
         for (int i = 0; i <= quality; ++i)
         {
@@ -2194,7 +2179,7 @@ public sealed class Gorgon2D
                 else
                 {
                     GorgonRectangleF scaleRegion = GorgonRectangleF.Expand(region, thickness * 0.5f);
-                    
+
                     uvOuter = new Vector4((((outerPoint.X - scaleRegion.Left) / scaleRegion.Width) * textureRegion.Value.Width) + textureRegion.Value.Left,
                                              (((outerPoint.Y - scaleRegion.Top) / scaleRegion.Height) * textureRegion.Value.Height) + textureRegion.Value.Top,
                                              textureArrayIndex, 1);
@@ -2419,7 +2404,7 @@ public sealed class Gorgon2D
                 else
                 {
                     GorgonRectangleF scaleRegion = GorgonRectangleF.Expand(region, thickness * 0.5f);
-                    
+
                     uvOuter = new Vector4((((outerPoint.X - scaleRegion.Left) / scaleRegion.Width) * textureRegion.Value.Width) + textureRegion.Value.Left,
                                              (((outerPoint.Y - scaleRegion.Top) / scaleRegion.Height) * textureRegion.Value.Height) + textureRegion.Value.Top,
                                              textureArrayIndex, 1);
@@ -2685,7 +2670,6 @@ public sealed class Gorgon2D
         return this;
     }
 
-
     /// <summary>
     /// Initializes a new instance of the <see cref="Gorgon2D"/> class.
     /// </summary>
@@ -2715,5 +2699,4 @@ public sealed class Gorgon2D
 
         _defaultCamera = defaultCamera;
     }
-
 }

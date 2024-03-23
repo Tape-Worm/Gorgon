@@ -23,7 +23,6 @@
 // Created: Tuesday, January 1, 2013 7:38:21 PM
 // 
 
-
 using Gorgon.PlugIns;
 
 namespace Gorgon.Examples;

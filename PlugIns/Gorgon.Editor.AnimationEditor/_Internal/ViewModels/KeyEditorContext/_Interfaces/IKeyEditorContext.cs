@@ -23,7 +23,6 @@
 // Created: July 1, 2020 12:30:22 AM
 // 
 
-
 using Gorgon.Editor.UI;
 
 namespace Gorgon.Editor.AnimationEditor;

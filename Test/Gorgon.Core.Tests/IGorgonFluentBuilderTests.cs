@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Gorgon.Memory;
 using Gorgon.Patterns;
 
@@ -16,7 +13,7 @@ public class TestClass
         set;
     }
 
-    public TestClass(int value) => Value = value;  
+    public TestClass(int value) => Value = value;
 }
 
 public class DumbAllocator
@@ -85,7 +82,7 @@ public class IGorgonFluentBuilderTests
         TestFluentBuilder builder = new();
 
         TestClass obj = builder.SetValue(10)
-                               .Build();      
+                               .Build();
 
         Assert.AreEqual(10, obj.Value);
 
@@ -125,5 +122,5 @@ public class IGorgonFluentBuilderTests
                                .Build();
 
         Assert.AreEqual(expected.Value, obj.Value);
-    }    
+    }
 }

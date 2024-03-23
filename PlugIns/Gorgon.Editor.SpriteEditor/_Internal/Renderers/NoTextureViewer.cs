@@ -23,7 +23,6 @@
 // Created: March 31, 2019 10:25:11 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Editor.SpriteEditor.Properties;
 using Gorgon.Graphics;
@@ -40,18 +39,13 @@ namespace Gorgon.Editor.SpriteEditor;
 internal class NoTextureViewer
     : SpriteViewer
 {
-
     /// <summary>
     /// The name of the viewer.
     /// </summary>
     public const string ViewerName = "SpriteNoTextureRenderer";
 
-
-
     // The texture to display when a sprite lacks a texture association.
     private GorgonTexture2DView _noImage;
-
-
 
     /// <summary>Releases unmanaged and - optionally - managed resources.</summary>
     /// <param name="disposing">
@@ -80,7 +74,6 @@ internal class NoTextureViewer
         Renderer.End();
     }
 
-
     /// <summary>Function called during resource creation.</summary>
     protected sealed override void OnCreateResources()
     {
@@ -100,8 +93,6 @@ internal class NoTextureViewer
         // This viewer cannot pan or zoom.
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="NoTextureViewer"/> class.</summary>
     /// <param name="renderer">The 2D renderer for the application.</param>
     /// <param name="swapChain">The swap chain for the render area.</param>
@@ -113,5 +104,4 @@ internal class NoTextureViewer
         CanPanHorizontally = false;
         CanZoom = false;
     }
-
 }

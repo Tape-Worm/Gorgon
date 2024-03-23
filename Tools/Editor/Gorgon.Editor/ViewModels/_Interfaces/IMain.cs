@@ -23,7 +23,6 @@
 // Created: August 26, 2018 9:34:44 PM
 // 
 
-
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI;
 
@@ -35,7 +34,6 @@ namespace Gorgon.Editor.ViewModels;
 internal interface IMain
     : IViewModel
 {
-
     /// <summary>
     /// Property to return the settings for the application.
     /// </summary>
@@ -123,5 +121,4 @@ internal interface IMain
     {
         get;
     }
-
 }

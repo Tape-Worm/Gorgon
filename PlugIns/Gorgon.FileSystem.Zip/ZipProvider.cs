@@ -23,7 +23,6 @@
 // Created: Monday, June 27, 2011 9:33:12 AM
 // 
 
-
 using Gorgon.IO.Providers;
 using Gorgon.IO.Zip.Properties;
 using ICSharpCode.SharpZipLib.Zip;
@@ -36,18 +35,13 @@ namespace Gorgon.IO.Zip;
 internal class ZipProvider
     : GorgonFileSystemProvider
 {
-
     /// <summary>
     /// Header bytes for a zip file.
     /// </summary>
     public static IEnumerable<byte> ZipHeader = [0x50, 0x4B, 0x3, 0x4];
 
-
-
     /// <summary>Property to return whether this provider only gives read only access to the physical file system.</summary>
     public override bool IsReadOnly => true;
-
-
 
     /// <summary>
     /// Function to enumerate the files and directories from a physical location and map it to a virtual location.
@@ -93,7 +87,6 @@ internal class ZipProvider
                     {
                         directoryName = "/";
                     }
-
 
                     if (!directories.Contains(directoryName))
                     {
@@ -183,8 +176,6 @@ internal class ZipProvider
 
         return headerBytes.SequenceEqual(ZipHeader);
     }
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ZipProvider"/> class.

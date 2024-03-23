@@ -23,7 +23,6 @@
 // Created: Monday, June 27, 2011 9:00:18 AM
 // 
 
-
 using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.PlugIns;
@@ -66,7 +65,6 @@ namespace Gorgon.IO.Providers;
 public abstract class GorgonFileSystemProvider(string providerDescription)
         : GorgonPlugIn(providerDescription), IGorgonFileSystemProvider
 {
-
     /// <summary>
     /// Property to return a memory stream manager for efficient usage of the <see cref="MemoryStream"/> type.
     /// </summary>
@@ -106,8 +104,6 @@ public abstract class GorgonFileSystemProvider(string providerDescription)
 
     /// <summary>Property to return the path to the provider assembly (if applicable).</summary>
     public string ProviderPath => PlugInPath ?? string.Empty;
-
-
 
     /// <summary>
     /// Function to return the virtual file system path from a physical file system path.
@@ -292,8 +288,6 @@ public abstract class GorgonFileSystemProvider(string providerDescription)
             throw new ArgumentNullException(nameof(physicalLocation));
         }
 
-
-
         if (mountPoint is null)
         {
             throw new ArgumentNullException(nameof(mountPoint));
@@ -302,7 +296,6 @@ public abstract class GorgonFileSystemProvider(string providerDescription)
         return string.IsNullOrWhiteSpace(physicalLocation)
             ? throw new ArgumentEmptyException(nameof(physicalLocation))
             : OnEnumerate(physicalLocation, mountPoint);
-
 
     }
 
@@ -330,7 +323,6 @@ public abstract class GorgonFileSystemProvider(string providerDescription)
         {
             throw new ArgumentNullException(nameof(physicalLocation));
         }
-
 
         if (mountPoint is null)
         {
@@ -383,8 +375,4 @@ public abstract class GorgonFileSystemProvider(string providerDescription)
             : OnCanReadFile(physicalPath);
 
     }
-
-
-
-
 }

@@ -23,7 +23,6 @@
 // Created: December 12, 2018 10:52:42 AM
 // 
 
-
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Drawing.Design;
@@ -35,14 +34,11 @@ namespace Gorgon.UI;
 /// </summary>
 public partial class GorgonSearchBox : UserControl
 {
-
     /// <summary>
     /// The event triggered when a search is initiated.
     /// </summary>
     [Category("Behavior"), Description("Event triggered when a search is initiated.")]
     public event EventHandler<GorgonSearchEventArgs> Search;
-
-
 
     /// <summary>This property is not relevant for this class.</summary>
     [Browsable(false)]
@@ -128,8 +124,6 @@ public partial class GorgonSearchBox : UserControl
         get => TipSearch.ForeColor;
         set => TipSearch.ForeColor = value;
     }
-
-
 
     /// <summary>Handles the TextChanged event of the TextSearch control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -232,8 +226,6 @@ public partial class GorgonSearchBox : UserControl
         base.OnParentBackColorChanged(e);
         TextSearch.BackColor = BackColor;
     }
-
-
 
     /// <summary>Initializes a new instance of the <see cref="GorgonSearchBox"/> class.</summary>
     public GorgonSearchBox() => InitializeComponent();

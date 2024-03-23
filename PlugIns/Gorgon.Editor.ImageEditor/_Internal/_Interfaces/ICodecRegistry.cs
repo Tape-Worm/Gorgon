@@ -23,7 +23,6 @@
 // Created: April 22, 2019 10:49:16 PM
 // 
 
-
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
 
@@ -34,7 +33,6 @@ namespace Gorgon.Editor.ImageEditor;
 /// </summary>
 internal interface ICodecRegistry
 {
-
     /// <summary>
     /// Property to return the codecs cross referenced with known file extension types.
     /// </summary>
@@ -58,8 +56,6 @@ internal interface ICodecRegistry
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to add a codec to the registry.

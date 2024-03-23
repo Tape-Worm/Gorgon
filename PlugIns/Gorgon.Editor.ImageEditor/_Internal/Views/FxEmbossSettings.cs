@@ -23,7 +23,6 @@
 // Created: March 6, 2020 1:30:22 PM
 // 
 
-
 using System.ComponentModel;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Controls;
@@ -36,15 +35,12 @@ namespace Gorgon.Editor.ImageEditor;
 internal partial class FxEmbossSettings
     : EditorSubPanelCommon, IDataContext<IFxEmboss>
 {
-
     /// <summary>Property to return the data context assigned to this view.</summary>
     public IFxEmboss ViewModel
     {
         get;
         private set;
     }
-
-
 
     /// <summary>Handles the ValueChanged event of the NumericEmbossAmount control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -153,8 +149,6 @@ internal partial class FxEmbossSettings
 
         ViewModel.PropertyChanged += DataContext_PropertyChanged;
     }
-
-
 
     /// <summary>Initializes a new instance of the <see cref="FxEmbossSettings"/> class.</summary>
     public FxEmbossSettings() => InitializeComponent();

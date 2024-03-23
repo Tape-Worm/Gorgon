@@ -23,7 +23,6 @@
 // Created: March 22, 2018 11:34:55 AM
 // 
 
-
 using System.Diagnostics;
 using System.Text;
 using Gorgon.Native;
@@ -38,7 +37,6 @@ namespace Gorgon.Diagnostics.LogProviders;
 internal class LogConsoleProvider
     : IGorgonLogProvider
 {
-
     /// <summary>
     /// The type of message to display.
     /// </summary>
@@ -66,8 +64,6 @@ internal class LogConsoleProvider
         Warning2
     }
 
-
-
     // Message strings used to determine the type of message.
     private readonly string _exceptionLine = $"\t{Resources.GOR_LOG_EXCEPTION.ToUpper()}!!";
     private readonly string _errorLine = $"] {Resources.GOR_LOG_ERROR}";
@@ -78,8 +74,6 @@ internal class LogConsoleProvider
     private int _hasConsole;
     // Flag to indicate that we own the console window.
     private bool _ownsConsole;
-
-
 
     /// <summary>
     /// Function to close the data store for writing.
@@ -314,5 +308,4 @@ internal class LogConsoleProvider
             FormatLine(lines[i], messageType);
         }
     }
-
 }

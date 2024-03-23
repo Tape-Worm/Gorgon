@@ -23,7 +23,6 @@
 // Created: August 30, 2021 11:38:42 PM
 // 
 
-
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 
@@ -46,8 +45,6 @@ internal class FontOutline
     private GorgonColor _endColor = GorgonColors.Black;
     // The size of the outline.
     private int _outlineSize;
-
-
 
     /// <summary>
     /// Property to set or return the size of the outline.
@@ -145,8 +142,6 @@ internal class FontOutline
     /// <summary>Property to return whether the panel is modal.</summary>
     public override bool IsModal => true;
 
-
-
     /// <summary>Function to inject dependencies for the view model.</summary>
     /// <param name="injectionParameters">The parameters to inject.</param>
     /// <remarks>
@@ -156,5 +151,4 @@ internal class FontOutline
     {
         // Nothing to inject.
     }
-
 }

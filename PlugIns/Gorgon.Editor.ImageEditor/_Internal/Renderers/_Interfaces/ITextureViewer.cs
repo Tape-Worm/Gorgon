@@ -23,7 +23,6 @@
 // Created: February 9, 2020 6:55:13 PM
 // 
 
-
 using Gorgon.Editor.Rendering;
 
 namespace Gorgon.Editor.ImageEditor;
@@ -34,7 +33,6 @@ namespace Gorgon.Editor.ImageEditor;
 internal interface ITextureViewer
     : IContentRenderer
 {
-
     /// <summary>
     /// Property to set or return the opacity of the content in the view.
     /// </summary>
@@ -43,8 +41,6 @@ internal interface ITextureViewer
         get;
         set;
     }
-
-
 
     /// <summary>
     /// Function to create resources required for the lifetime of the viewer.

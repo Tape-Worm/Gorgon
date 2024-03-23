@@ -23,7 +23,6 @@
 // Created: March 1, 2020 8:12:59 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Editor.Rendering;
@@ -72,8 +71,6 @@ internal class FxService(IGraphicsContext graphics)
     // The working image that our textures are based on.
     private IGorgonImage _workingImage;
 
-
-
     /// <summary>
     /// Property to return the image that will contain the effect output.
     /// </summary>
@@ -92,8 +89,6 @@ internal class FxService(IGraphicsContext graphics)
         get;
         private set;
     }
-
-
 
     /// <summary>
     /// Function to destroy the texture data.
@@ -473,6 +468,4 @@ internal class FxService(IGraphicsContext graphics)
         invert?.Dispose();
         blur?.Dispose();
     }
-
-
 }

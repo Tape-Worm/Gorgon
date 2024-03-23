@@ -130,7 +130,6 @@ internal static partial class Win32API
     [LibraryImport("user32.dll")]
     public static partial nint MonitorFromWindow(nint hwnd, MonitorFlags flags);
 
-
     /// <summary>
     /// Initializes static members of the <see cref="Win32API"/> class.
     /// </summary>

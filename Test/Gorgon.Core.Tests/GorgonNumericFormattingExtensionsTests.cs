@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Gorgon.Core.Tests;
 
@@ -36,7 +32,7 @@ public class GorgonNumericFormattingExtensionsTests
         Assert.AreEqual("1.0 TB", terrabyte.FormatMemory(), true);
         Assert.AreEqual("1.0 TB", uterrabyte.FormatMemory(), true);
         Assert.AreEqual("1.0 PB", petabyte.FormatMemory(), true);
-        Assert.AreEqual("287.4 KB", floatValue.FormatMemory(),true);
+        Assert.AreEqual("287.4 KB", floatValue.FormatMemory(), true);
         Assert.AreEqual("287.4 KB", doubleValue.FormatMemory(), true);
         Assert.AreEqual("287.4 KB", decimalValue.FormatMemory(), true);
     }

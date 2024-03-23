@@ -23,7 +23,6 @@
 // Created: June 20, 2016 8:37:31 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Properties;
 using Gorgon.Math;
@@ -64,8 +63,6 @@ public partial class GorgonImage
     private GorgonPtr<byte> _imagePtr;
     // Flag to indicate that the image is in an editing state.
     private bool _isEditing;
-
-
 
     /// <summary>
     /// Property to return the pointer to the beginning of the internal buffer.
@@ -162,8 +159,6 @@ public partial class GorgonImage
     /// </para>
     /// </remarks>
     public int ArrayCount => _imageInfo.ArrayCount;
-
-
 
     /// <summary>
     /// Function to initialize the image data.
@@ -672,8 +667,6 @@ public partial class GorgonImage
         imageData?.Dispose();
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="GorgonImage" /> class.</summary>
     /// <param name="source">The source image to copy.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="source"/> parameter is <b>null</b>.</exception>
@@ -756,5 +749,4 @@ public partial class GorgonImage
 
         Initialize(data);
     }
-
 }

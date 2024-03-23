@@ -23,7 +23,6 @@
 // Created: February 13, 2021 3:59:57 PM
 // 
 
-
 using System.Numerics;
 
 namespace Gorgon.Examples;
@@ -41,8 +40,6 @@ internal class LayerCamera(IEnumerable<Layer> layers)
 
     // The layer to track.
     private Layer _trackingLayer;
-
-
 
     /// <summary>
     /// Property to return the list of layers to control.
@@ -72,8 +69,6 @@ internal class LayerCamera(IEnumerable<Layer> layers)
         }
     }
 
-
-
     /// <summary>
     /// Function to set the position of all unlocked layers.
     /// </summary>
@@ -94,6 +89,4 @@ internal class LayerCamera(IEnumerable<Layer> layers)
             layer.Update();
         }
     }
-
-
 }

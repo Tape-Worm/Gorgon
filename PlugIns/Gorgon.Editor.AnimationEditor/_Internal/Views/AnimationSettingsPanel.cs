@@ -23,7 +23,6 @@
 // Created: April 20, 2019 2:19:56 PM
 // 
 
-
 using System.ComponentModel;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Views;
@@ -37,7 +36,6 @@ namespace Gorgon.Editor.AnimationEditor;
 internal partial class AnimationSettingsPanel
     : SettingsBaseControl, IDataContext<ISettings>
 {
-
     /// <summary>Property to return the ID of the panel.</summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public override string PanelID => ViewModel?.ID.ToString() ?? Guid.Empty.ToString();
@@ -49,8 +47,6 @@ internal partial class AnimationSettingsPanel
         get;
         private set;
     }
-
-
 
     /// <summary>Handles the Click event of the CheckUnsupported control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -158,8 +154,6 @@ internal partial class AnimationSettingsPanel
         InitializeFromDataContext(dataContext);
         ViewModel = dataContext;
     }
-
-
 
     /// <summary>Initializes a new instance of the <see cref="AnimationSettingsPanel"/> class.</summary>
     public AnimationSettingsPanel() => InitializeComponent();

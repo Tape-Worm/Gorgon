@@ -23,7 +23,6 @@
 // Created: July 17, 2018 3:12:16 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Graphics;
@@ -32,7 +31,6 @@ using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Math;
 using Gorgon.Renderers;
 using Gorgon.UI;
-
 
 namespace Gorgon.Examples;
 
@@ -44,8 +42,6 @@ static class Program
 
     // Help text.
     private const string HelpText = "F1 - Show/hide the help text.\nC - Cloak or uncloak the ship\nMouse wheel - Rotate the ship.\nEscape - Close this example.";
-
-
 
     // Our 2D renderer.
     private static Gorgon2D _renderer;
@@ -87,8 +83,6 @@ static class Program
     private static readonly CloakController _cloakController = new();
     // Final render target brightness.
     private static float _finalBrightness = 1.0f;
-
-
 
     /// <summary>
     /// Function to perform operations while the CPU is idle.
@@ -489,5 +483,4 @@ static class Program
             _graphics?.Dispose();
         }
     }
-
 }

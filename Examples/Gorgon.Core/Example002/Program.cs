@@ -23,7 +23,6 @@
 // Created: Wednesday, September 12, 2012 8:26:10 PM
 // 
 
-
 using System.Drawing;
 using System.Windows.Forms;
 using Gorgon.Core;
@@ -45,8 +44,6 @@ internal static class Program
     private static int _lastX;                                  // Last horizontal coordinate.
     private static int _lastY;                                  // Last vertical coordinate.
     private static float _lastTime;                             // Last time we drew.
-
-
 
     /// <summary>
     /// Function that's called during idle time.
@@ -114,5 +111,4 @@ internal static class Program
             ex.Handle(e => GorgonDialogs.ErrorBox(null, e), GorgonApplication.Log);
         }
     }
-
 }

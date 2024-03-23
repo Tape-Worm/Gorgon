@@ -23,7 +23,6 @@
 // Created: Friday, May 23, 2015 3:09:45 PM
 // 
 
-
 using Gorgon.Diagnostics.LogProviders;
 
 namespace Gorgon.Diagnostics;
@@ -34,7 +33,6 @@ namespace Gorgon.Diagnostics;
 internal class LogDummy
     : IGorgonThreadedLog
 {
-
     /// <summary>
     /// Property to return the ID of the thread that created the log object.
     /// </summary>
@@ -61,8 +59,6 @@ internal class LogDummy
     /// Property to return the provider for this log.
     /// </summary>
     public IGorgonLogProvider Provider => null;
-
-
 
     /// <summary>
     /// Function to send an exception to the log.

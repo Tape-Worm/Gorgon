@@ -23,7 +23,6 @@
 // Created: September 4, 2018 9:45:38 AM
 // 
 
-
 namespace Gorgon.Editor;
 
 /// <summary>

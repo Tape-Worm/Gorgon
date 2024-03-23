@@ -23,7 +23,6 @@
 // Created: Thursday, January 17, 2013 11:07:02 PM
 // 
 
-
 using System.Text;
 using Gorgon.Core;
 using Gorgon.IO;
@@ -76,8 +75,6 @@ public partial class Form
     private Label _instructions;
     // File system plug in assembly cache.
     private GorgonMefPlugInCache _cache;
-
-
 
     /// <summary>
     /// Handles the NodeMouseDoubleClick event of the treeFileSystem control.
@@ -416,5 +413,4 @@ public partial class Form
         imageTree.Images.Add(Properties.Resources.document_text_16x16);
         imageTree.Images.Add(Properties.Resources.packed_file_16x16);
     }
-
 }

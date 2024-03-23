@@ -23,7 +23,6 @@
 // Created: August 31, 2018 10:50:08 AM
 // 
 
-
 using System.ComponentModel;
 using Gorgon.Windows.Properties;
 
@@ -38,8 +37,6 @@ public partial class GorgonWaitMessagePanel
 
     // The image used for the wait icon.
     private Image _waitIcon;
-
-
 
     /// <summary>
     /// Indicates the border style for the for wait message box.
@@ -235,8 +232,6 @@ public partial class GorgonWaitMessagePanel
             }
         }
     }
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonWaitMessagePanel"/> class.

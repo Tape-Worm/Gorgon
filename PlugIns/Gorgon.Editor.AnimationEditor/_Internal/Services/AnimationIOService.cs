@@ -23,7 +23,6 @@
 // Created: June 7, 2020 9:42:02 PM
 // 
 
-
 using System.Diagnostics;
 using System.Globalization;
 using System.Numerics;
@@ -48,14 +47,11 @@ namespace Gorgon.Editor.AnimationEditor.Services;
 /// <param name="log">The logging interface for debug logging.</param>
 internal class AnimationIOService(IContentFileManager fileManager, ITextureCache textureCache, IGorgonAnimationCodec animCodec, IGorgonSpriteCodec spriteCodec, IGorgonLog log)
 {
-
     /// <summary>
     /// The name of the attributes that define the start position.
     /// </summary>
     public const string StartPositionAttrX = "SpriteStartPositionX";
     public const string StartPositionAttrY = "SpriteStartPositionY";
-
-
 
     /// <summary>
     /// The primary sprite dependency data.
@@ -124,8 +120,6 @@ internal class AnimationIOService(IContentFileManager fileManager, ITextureCache
         } = textureFiles;
     }
 
-
-
     // The content file manager.
     private readonly IContentFileManager _fileManager = fileManager;
     // The image codec used to read image file data.
@@ -136,8 +130,6 @@ internal class AnimationIOService(IContentFileManager fileManager, ITextureCache
     private readonly IGorgonAnimationCodec _animationCodec = animCodec;
     // The logging interface for debug logging.
     private readonly IGorgonLog _log = log;
-
-
 
     /// <summary>Function to load an associated sprite texture for sprite content.</summary>
     /// <param name="spriteContent">The sprite content file to use.</param>
@@ -546,6 +538,4 @@ internal class AnimationIOService(IContentFileManager fileManager, ITextureCache
             backgroundTexture.file.IsOpen = false;
         }
     }
-
-
 }

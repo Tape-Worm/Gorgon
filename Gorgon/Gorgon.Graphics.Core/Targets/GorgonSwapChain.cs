@@ -23,7 +23,6 @@
 // Created: April 7, 2018 11:45:40 PM
 // 
 
-
 using System.Diagnostics;
 using Gorgon.Collections;
 using Gorgon.Core;
@@ -237,8 +236,6 @@ public sealed class GorgonSwapChain
         }
     }
 
-
-
     /// <summary>
     /// Property to return the internal DXGI swap chain.
     /// </summary>
@@ -404,8 +401,6 @@ public sealed class GorgonSwapChain
     /// <seealso cref="EnterFullScreen(BufferFormat)"/>
     /// <seealso cref="ExitFullScreen"/>
     public bool IsWindowed => FullscreenOutput is null || _fullScreenVideoMode is null;
-
-
 
     /// <summary>
     /// Function to locate the form for the owning control.
@@ -1363,8 +1358,6 @@ public sealed class GorgonSwapChain
         this.UnregisterDisposable(Graphics);
         swapChain.Dispose();
     }
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonSwapChain"/> class.

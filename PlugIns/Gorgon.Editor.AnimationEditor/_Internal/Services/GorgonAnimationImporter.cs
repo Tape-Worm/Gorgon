@@ -23,7 +23,6 @@
 // Created: December 18, 2018 12:30:56 AM
 // 
 
-
 using System.Diagnostics;
 using Gorgon.Animation;
 using Gorgon.Diagnostics;
@@ -63,13 +62,8 @@ internal class GorgonAnimationImporter(IGorgonFileSystem projectFileSystem, IGor
     // The path to the temporary directory.
     private string _tempDirPath;
 
-
-
     /// <summary>Property to return whether or not the imported file needs to be cleaned up after processing.</summary>
     public bool NeedsCleanup => true;
-
-
-
 
     /// <summary>
     /// Function to locate the associated texture file for a animation.
@@ -241,6 +235,4 @@ internal class GorgonAnimationImporter(IGorgonFileSystem projectFileSystem, IGor
             _log.LogException(ex);
         }
     }
-
-
 }

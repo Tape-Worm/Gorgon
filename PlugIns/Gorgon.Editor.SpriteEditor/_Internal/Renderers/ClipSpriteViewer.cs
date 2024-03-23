@@ -23,7 +23,6 @@
 // Created: April 4, 2020 9:35:21 PM
 // 
 
-
 using System.ComponentModel;
 using System.Numerics;
 using Gorgon.Core;
@@ -72,8 +71,6 @@ internal class ClipSpriteViewer
         }
     }
 
-
-
     // Marching ants rectangle.
     private readonly IRectClipperService _clipper;
     // The render target for the sprite texture.
@@ -82,8 +79,6 @@ internal class ClipSpriteViewer
     private GorgonTexture2DView _spriteTexture;
     // The sprite to render.
     private readonly GorgonSprite _sprite;
-
-
 
     /// <summary>
     /// Function to release the texture resources.
@@ -387,8 +382,6 @@ internal class ClipSpriteViewer
         MoveTo(new Vector2(spritePosition.X, spritePosition.Y), spriteZoomLevel.GetScale());
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="ClipSpriteViewer"/> class.</summary>
     /// <param name="renderer">The main renderer for the content view.</param>
     /// <param name="swapChain">The swap chain for the content view.</param>
@@ -403,5 +396,4 @@ internal class ClipSpriteViewer
         _sprite = new GorgonSprite();
         _clipper = selectionRect;
     }
-
 }

@@ -23,7 +23,6 @@
 // Created: Sunday, July 24, 2011 10:15:39 PM
 // 
 
-
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Security;
@@ -50,8 +49,6 @@ internal static unsafe partial class Win32API
     private static Font _tempFont;
     // Synchronization object for threading.
     private static readonly object _syncLock = new();
-
-
 
     /// <summary>
     /// The SelectObject function selects an object into the specified device context (DC). The new object replaces the previous object of the same type.
@@ -100,8 +97,6 @@ internal static unsafe partial class Win32API
     /// <returns>If the function succeeds, the return value identifies the previous mapping mode.  If the function fails, the return value is zero.</returns>
     [LibraryImport("gdi32.dll", EntryPoint = "SetMapMode")]
     private static partial MapModes SetMapMode(nint hdc, MapModes fnMapMode);
-
-
 
     /// <summary>
     /// Function to set the active font.
@@ -239,8 +234,6 @@ internal static unsafe partial class Win32API
 
         return result;
     }
-
-
 
     /// <summary>
     /// Initializes static members of the <see cref="Win32API"/> class.

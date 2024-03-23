@@ -23,7 +23,6 @@
 // Created: Sunday, December 9, 2012 4:43:49 PM
 // 
 
-
 using Gorgon.Core;
 using D3D11 = SharpDX.Direct3D11;
 
@@ -104,7 +103,6 @@ public enum ResourceUsage
     Staging = D3D11.ResourceUsage.Staging
 }
 
-
 /// <summary>
 /// Priority used to evict a resource from video memory
 /// </summary>
@@ -168,8 +166,6 @@ public abstract class GorgonGraphicsResource(GorgonGraphics graphics)
     private readonly Dictionary<Guid, object> _appData = [];
     // The Direct 3D 11 resource.
     private D3D11.Resource _resource;
-
-
 
     /// <summary>
     /// Property to set or return the Direct 3D resource object bound to this object.
@@ -260,8 +256,6 @@ public abstract class GorgonGraphicsResource(GorgonGraphics graphics)
         get;
     }
 
-
-
     /// <summary>
     /// Function to generate a new name for a resource.
     /// </summary>
@@ -324,8 +318,4 @@ public abstract class GorgonGraphicsResource(GorgonGraphics graphics)
 
         return result;
     }
-
-
-
-
 }

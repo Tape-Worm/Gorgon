@@ -23,7 +23,6 @@
 // Created: June 7, 2018 3:41:52 PM
 // 
 
-
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Memory;
@@ -42,8 +41,6 @@ public class Gorgon2DBatchStateBuilder
 
     // The state that will be edited.
     private readonly Gorgon2DBatchState _worker = new();
-
-
 
     /// <summary>
     /// Function to assign a blending factor used to modulate with the pixel shader, current render target or both.
@@ -212,8 +209,6 @@ public class Gorgon2DBatchStateBuilder
         return this;
     }
 
-
-
     /// <summary>
     /// Function to return the object.
     /// </summary>
@@ -328,5 +323,4 @@ public class Gorgon2DBatchStateBuilder
 
         return state;
     }
-
 }

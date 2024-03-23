@@ -23,7 +23,6 @@
 // Created: July 15, 2020 3:56:31 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Renderers;
 

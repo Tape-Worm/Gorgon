@@ -22,7 +22,6 @@
 // Created: July 4, 2018 9:54:28 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics;
@@ -77,7 +76,7 @@ public enum PassContinuationState
 /// <seealso cref="Gorgon2D"/>
 /// <seealso cref="GorgonTexture2DView"/>
 /// <seealso cref="GorgonRenderTargetView"/>
-public abstract class Gorgon2DEffect 
+public abstract class Gorgon2DEffect
     : IGorgonNamedObject, IDisposable, IGorgonGraphicsObject
 {
     // Flag to indicate that the effect is initialized.
@@ -99,7 +98,7 @@ public abstract class Gorgon2DEffect
     // The state used to override the default depth/stencil state for the effect.
     private GorgonDepthStencilState _depthStencilStateOverride;
     // The state used to override the default raster state for the effect.
-    private GorgonRasterState _rasterStateOverride;        
+    private GorgonRasterState _rasterStateOverride;
 
     /// <summary>
     /// Property to return the allocator to use with batch states.
@@ -185,8 +184,6 @@ public abstract class Gorgon2DEffect
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to set up state prior to rendering.

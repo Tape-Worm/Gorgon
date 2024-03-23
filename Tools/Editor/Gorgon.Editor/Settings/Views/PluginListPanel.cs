@@ -23,7 +23,6 @@
 // Created: April 19, 2019 12:51:39 PM
 // 
 
-
 using System.ComponentModel;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Properties;
@@ -39,7 +38,6 @@ namespace Gorgon.Editor.Views;
 internal partial class PlugInListPanel
     : SettingsBaseControl, IDataContext<ISettingsPlugInsList>
 {
-
     /// <summary>Property to return the ID of the panel.</summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public override string PanelID => ViewModel?.ID.ToString() ?? Guid.Empty.ToString();
@@ -51,8 +49,6 @@ internal partial class PlugInListPanel
         get;
         private set;
     }
-
-
 
     /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -200,8 +196,6 @@ internal partial class PlugInListPanel
 
         ViewModel.PropertyChanged += DataContext_PropertyChanged;
     }
-
-
 
     /// <summary>Initializes a new instance of the <see cref="PlugInListPanel"/> class.</summary>
     public PlugInListPanel() => InitializeComponent();

@@ -23,7 +23,6 @@
 // Created: August 11, 2018 3:36:34 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers;
@@ -37,7 +36,6 @@ namespace Gorgon.IO;
 public interface IGorgonSpriteCodec
     : IGorgonGraphicsObject, IGorgonNamedObject
 {
-
     /// <summary>
     /// Property to return the common file extensions for this codec.
     /// </summary>
@@ -93,8 +91,6 @@ public interface IGorgonSpriteCodec
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to retrieve the name of the associated texture.

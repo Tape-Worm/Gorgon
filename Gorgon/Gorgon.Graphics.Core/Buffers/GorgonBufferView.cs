@@ -23,7 +23,6 @@
 // Created: July 4, 2017 11:54:56 PM
 // 
 
-
 using Gorgon.Core;
 using D3D = SharpDX.Direct3D;
 using D3D11 = SharpDX.Direct3D11;
@@ -50,7 +49,6 @@ namespace Gorgon.Graphics.Core;
 public sealed class GorgonBufferView
     : GorgonBufferViewCommon, IGorgonBufferInfo
 {
-
     /// <summary>
     /// Property to return the format for the view.
     /// </summary>
@@ -136,8 +134,6 @@ public sealed class GorgonBufferView
     /// </summary>
     string IGorgonNamedObject.Name => Buffer?.Name;
 
-
-
     /// <summary>Function to retrieve the necessary parameters to create the native view.</summary>
     /// <returns>A shader resource view descriptor.</returns>
     private protected override ref readonly D3D11.ShaderResourceViewDescription1 OnGetSrvParams()
@@ -156,8 +152,6 @@ public sealed class GorgonBufferView
 
         return ref SrvDesc;
     }
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonBufferView"/> class.
@@ -180,5 +174,4 @@ public sealed class GorgonBufferView
         FormatInformation = formatInfo ?? throw new ArgumentNullException(nameof(formatInfo));
         Format = format;
     }
-
 }

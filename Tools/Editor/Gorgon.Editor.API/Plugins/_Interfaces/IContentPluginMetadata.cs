@@ -23,7 +23,6 @@
 // Created: October 29, 2018 9:04:44 PM
 // 
 
-
 using Gorgon.Editor.Content;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics.Imaging;
@@ -35,7 +34,6 @@ namespace Gorgon.Editor.PlugIns;
 /// </summary>
 public interface IContentPlugInMetadata
 {
-
     /// <summary>
     /// Property to return the name of the plug in.
     /// </summary>
@@ -92,8 +90,6 @@ public interface IContentPlugInMetadata
         get;
     }
 
-
-
     /// <summary>
     /// Function to retrieve a thumbnail for the content.
     /// </summary>
@@ -111,7 +107,6 @@ public interface IContentPlugInMetadata
     /// <returns><b>true</b> if it can be opened in-place, <b>false</b> if not.</returns>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="file"/> parameter is <b>null</b>.</exception>
     bool CanOpenInPlace(IContentFile file, IEditorContent currentContent);
-
 
     /// <summary>
     /// Function to determine if the content plugin can open the specified file.

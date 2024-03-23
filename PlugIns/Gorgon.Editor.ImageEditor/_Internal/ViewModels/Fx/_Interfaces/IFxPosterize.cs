@@ -23,7 +23,6 @@
 // Created: March 25, 2020 8:14:27 PM
 // 
 
-
 using Gorgon.Editor.UI;
 
 namespace Gorgon.Editor.ImageEditor;

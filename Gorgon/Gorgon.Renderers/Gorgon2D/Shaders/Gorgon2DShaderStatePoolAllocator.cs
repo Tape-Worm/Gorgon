@@ -23,7 +23,6 @@
 // Created: September 23, 2019 4:33:14 PM
 // 
 
-
 using Gorgon.Graphics.Core;
 using Gorgon.Memory;
 
@@ -37,7 +36,6 @@ public class Gorgon2DShaderStatePoolAllocator<T>
     : GorgonRingPool<Gorgon2DShaderState<T>>
     where T : GorgonShader
 {
-
     /// <summary>Initializes a new instance of the <see cref="Gorgon2DShaderStatePoolAllocator{T}"/> class.</summary>
     /// <param name="objectCount">[Optional] The number of objects to initialize the pool with.</param>
     public Gorgon2DShaderStatePoolAllocator(int objectCount = 128)

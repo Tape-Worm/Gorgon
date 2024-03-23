@@ -23,7 +23,6 @@
 // Created: August 11, 2018 3:43:13 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Animation;
 using Gorgon.Core;
@@ -49,8 +48,6 @@ public class GorgonV1SpriteBinaryCodec(Gorgon2D renderer)
     // The animation codec for the sprite.
     private readonly GorgonV1AnimationCodec _animationCodec = new(renderer);
 
-
-
     /// <summary>
     /// Property to return whether or not the codec can decode sprite data.
     /// </summary>
@@ -68,8 +65,6 @@ public class GorgonV1SpriteBinaryCodec(Gorgon2D renderer)
     {
         get;
     } = new Version(1, 2);
-
-
 
     /// <summary>
     /// Function to convert Gorgon 1.x image smoothing to 2.x texture filtering values.
@@ -514,7 +509,5 @@ public class GorgonV1SpriteBinaryCodec(Gorgon2D renderer)
     /// <exception cref="GorgonException">Thrown if the <paramref name="stream"/> is write only.</exception>
     /// <exception cref="EndOfStreamException">Thrown if the current <paramref name="stream"/> position, plus the size of the data exceeds the length of the stream.</exception>
     public int GetAnimationCount(Stream stream) => _animationCodec.GetAnimationCount(stream);
-
-
 
 }

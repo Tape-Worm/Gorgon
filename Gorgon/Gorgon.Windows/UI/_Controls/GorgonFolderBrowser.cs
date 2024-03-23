@@ -23,7 +23,6 @@
 // Created: August 28, 2018 1:49:45 PM
 // 
 
-
 using System.ComponentModel;
 using System.Text;
 using Gorgon.Core;
@@ -88,8 +87,6 @@ public partial class GorgonFolderBrowser
     // The current directory.
     private string _currentDirectory;
 
-
-
     /// <summary>
     /// Event triggered when a folder is about to be deleted from the file system.
     /// </summary>
@@ -119,8 +116,6 @@ public partial class GorgonFolderBrowser
     /// </summary>
     [Category("Behavior"), Description("Event triggered when the folder was set to active by entering it in the interface.")]
     public event EventHandler<FolderSelectedArgs> FolderEntered;
-
-
 
     /// <summary>
     /// Property to set or return the character to use as the directory separator.
@@ -484,8 +479,6 @@ public partial class GorgonFolderBrowser
             ValidateControls();
         }
     }
-
-
 
     /// <summary>
     /// Function to format the directory path name to fit the settings of the control.
@@ -1395,7 +1388,6 @@ public partial class GorgonFolderBrowser
                     ImageIndex = imageIndex
                 };
 
-
                 item.SubItems.Add($@"{freeSpace.FormatMemory()}");
                 ListDirectories.Items.Add(item);
             }
@@ -1686,8 +1678,6 @@ public partial class GorgonFolderBrowser
         PanelError.Visible = true;
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonFolderBrowser"/> class.
     /// </summary>
@@ -1700,5 +1690,4 @@ public partial class GorgonFolderBrowser
         ListDirectories.Sorting = SortOrder.None;
         _sortColumn = ColumnDirectoryName;
     }
-
 }

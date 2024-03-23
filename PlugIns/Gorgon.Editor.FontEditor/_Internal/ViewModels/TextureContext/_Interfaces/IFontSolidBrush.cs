@@ -23,7 +23,6 @@
 // Created: September 5, 2021 8:00:54 PM
 // 
 
-
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Fonts;

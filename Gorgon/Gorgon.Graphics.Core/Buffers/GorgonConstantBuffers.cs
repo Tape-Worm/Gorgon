@@ -23,7 +23,6 @@
 // Created: July 9, 2016 3:47:30 PM
 // 
 
-
 using Gorgon.Collections;
 using Gorgon.Math;
 using D3D11 = SharpDX.Direct3D11;
@@ -42,13 +41,10 @@ namespace Gorgon.Graphics.Core;
 public sealed class GorgonConstantBuffers
     : GorgonArray<GorgonConstantBufferView>
 {
-
     /// <summary>
     /// The maximum size for a constant buffer binding list.
     /// </summary>
     public const int MaximumConstantBufferCount = D3D11.CommonShaderStage.ConstantBufferApiSlotCount;
-
-
 
     /// <summary>
     /// Property to return the native buffers.
@@ -73,8 +69,6 @@ public sealed class GorgonConstantBuffers
     {
         get;
     } = new int[MaximumConstantBufferCount];
-
-
 
     /// <summary>
     /// Function called when a dirty item is found and added.
@@ -120,8 +114,6 @@ public sealed class GorgonConstantBuffers
         return -1;
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonConstantBuffers"/> class.
     /// </summary>
@@ -139,5 +131,4 @@ public sealed class GorgonConstantBuffers
             this[i] = bufferViews[i];
         }
     }
-
 }

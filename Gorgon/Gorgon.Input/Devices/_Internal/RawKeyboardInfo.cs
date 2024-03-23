@@ -23,7 +23,6 @@
 // Created: Tuesday, September 07, 2015 1:51:39 PM
 // 
 
-
 using Gorgon.Native;
 
 namespace Gorgon.Input;
@@ -42,7 +41,6 @@ namespace Gorgon.Input;
 internal class RawKeyboardInfo(nint deviceHandle, string hidPath, string className, string description, RID_DEVICE_INFO_KEYBOARD deviceInfo)
         : IGorgonKeyboardInfo
 {
-
     /// <summary>
     /// Property to return a human friendly description of the device.
     /// </summary>
@@ -111,6 +109,5 @@ internal class RawKeyboardInfo(nint deviceHandle, string hidPath, string classNa
     {
         get;
     } = (KeyboardType)deviceInfo.dwType;
-
 
 }

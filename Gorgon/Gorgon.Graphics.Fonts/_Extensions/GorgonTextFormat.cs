@@ -23,7 +23,6 @@
 // Created: January 26, 2021 1:16:56 PM
 // 
 
-
 using System.Numerics;
 using System.Text;
 using Gorgon.Core;
@@ -196,7 +195,6 @@ public static class GorgonTextFormat
                 ++index;
                 continue;
             }
-
 
             if (!font.Glyphs.TryGetValue(character, out GorgonGlyph glyph))
             {

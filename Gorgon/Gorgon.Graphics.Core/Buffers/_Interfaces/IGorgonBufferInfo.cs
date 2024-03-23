@@ -23,7 +23,6 @@
 // Created: July 4, 2017 10:06:48 PM
 // 
 
-
 using Gorgon.Core;
 
 namespace Gorgon.Graphics.Core;

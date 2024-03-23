@@ -23,7 +23,6 @@
 // Created: April 16, 2019 11:31:06 AM
 // 
 
-
 using System.ComponentModel;
 using System.Numerics;
 using Gorgon.Editor.Rendering;
@@ -52,8 +51,6 @@ internal class ColorEditViewer(Gorgon2D renderer, GorgonSwapChain swapChain, ISp
     private int _activeHandleIndex = -1;
     // Working color set.
     private readonly GorgonColor[] _colors = new GorgonColor[4];
-
-
 
     /// <summary>
     /// Function to set the selected colors.
@@ -390,6 +387,4 @@ internal class ColorEditViewer(Gorgon2D renderer, GorgonSwapChain swapChain, ISp
 
         DataContext.ColorEditor.PropertyChanged += ColorEditor_PropertyChanged;
     }
-
-
 }

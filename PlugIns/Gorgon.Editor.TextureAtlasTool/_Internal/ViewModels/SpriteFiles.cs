@@ -23,7 +23,6 @@
 // Created: May 7, 2019 11:50:04 AM
 // 
 
-
 using System.ComponentModel;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
@@ -47,8 +46,6 @@ internal class SpriteFiles
     // The directory path for thumbnails this session.
     private const string ThumbnailPath = "/Thumbnails/";
 
-
-
     // The service used to search through the files.
     private ISearchService<IContentFileExplorerSearchEntry> _searchService;
     // The list of selected files.
@@ -61,8 +58,6 @@ internal class SpriteFiles
     private IGorgonImage _previewImage;
     // The file system used for writing temporary data.
     private IGorgonFileSystemWriter<Stream> _tempFileSystem;
-
-
 
     /// <summary>
     /// Property to return the sprite file entries.
@@ -101,7 +96,6 @@ internal class SpriteFiles
         get;
     }
 
-
     /// <summary>Property to return the command used to search through the file list.</summary>
     public IEditorCommand<string> SearchCommand
     {
@@ -131,8 +125,6 @@ internal class SpriteFiles
             OnPropertyChanged();
         }
     }
-
-
 
     /// <summary>Handles the PropertyChanged event of the File control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -339,13 +331,10 @@ internal class SpriteFiles
         base.OnUnload();
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="SpriteFiles"/> class.</summary>
     public SpriteFiles()
     {
         SearchCommand = new EditorCommand<string>(DoSearch, CanSearch);
         RefreshSpritePreviewCommand = new EditorAsyncCommand<IReadOnlyList<ContentFileExplorerFileEntry>>(DoRefreshPreviewAsync);
     }
-
 }

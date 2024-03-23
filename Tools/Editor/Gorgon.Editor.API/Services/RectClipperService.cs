@@ -23,7 +23,6 @@
 // Created: March 19, 2019 2:09:29 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Editor.Rendering;
 using Gorgon.Graphics;
@@ -72,8 +71,6 @@ public class RectClipperService
     private GorgonOrthoCamera _camera;
     // Flag to indicate that the rectangle should be clipped against the boundaries.
     private bool _clipBounds = true;
-
-
 
     // Event for rectangle updates.        
     private event EventHandler RectChangedEvent;
@@ -130,8 +127,6 @@ public class RectClipperService
             RectChangedEvent -= value;
         }
     }
-
-
 
     /// <summary>
     /// Property to set or return the camera being used.
@@ -247,7 +242,7 @@ public class RectClipperService
             }
 
             if ((_clipBounds) && (!Bounds.IsEmpty))
-            {               
+            {
                 if (!Bounds.Contains(value))
                 {
                     value = GorgonRectangleF.Intersect(Bounds, value);
@@ -278,8 +273,6 @@ public class RectClipperService
         get;
         set;
     } = true;
-
-
 
     /// <summary>
     /// Function called when the rectangle dimensions have been updated.
@@ -742,8 +735,6 @@ public class RectClipperService
         }
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="RectClipperService"/> class.</summary>
     /// <param name="renderer">The 2D renderer for the application.</param>
     /// <param name="marchingAnts">The marching ants rectangle used to display the selection region.</param>
@@ -771,5 +762,4 @@ public class RectClipperService
             Name = "RectClipper_KeyboardIcon"
         }, CommonEditorResources.KeyboardIcon), true);
     }
-
 }

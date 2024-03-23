@@ -23,7 +23,6 @@
 // Created: Thursday, September 10, 2015 11:17:57 PM
 // 
 
-
 using Gorgon.Native;
 
 namespace Gorgon.Input;
@@ -40,7 +39,6 @@ namespace Gorgon.Input;
 public class GorgonHIDEventArgs(GorgonPtr<byte> data, int size, int count)
         : EventArgs
 {
-
     /// <summary>
     /// Property to return the data buffer storing the HID data.
     /// </summary>
@@ -64,6 +62,5 @@ public class GorgonHIDEventArgs(GorgonPtr<byte> data, int size, int count)
     {
         get;
     } = count;
-
 
 }

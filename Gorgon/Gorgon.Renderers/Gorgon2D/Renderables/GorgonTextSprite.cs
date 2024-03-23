@@ -23,7 +23,6 @@
 // Created: June 7, 2018 3:13:51 PM
 // 
 
-
 using System.Numerics;
 using System.Text;
 using Gorgon.Core;
@@ -32,7 +31,6 @@ using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts;
 using Gorgon.Math;
 using Gorgon.UI;
-
 
 namespace Gorgon.Renderers;
 
@@ -621,5 +619,4 @@ public class GorgonTextSprite
         Text = text ?? string.Empty;
         GlyphCornerColors = new GorgonGlyphColors(GorgonColors.White, Renderable);
     }
-
 }

@@ -23,7 +23,6 @@
 // Created: April 28, 2019 10:27:15 AM
 // 
 
-
 using System.ComponentModel;
 
 namespace Gorgon.UI;
@@ -34,7 +33,6 @@ namespace Gorgon.UI;
 public class FolderRenameArgs
     : CancelEventArgs
 {
-
     /// <summary>
     /// Property to return the path to the directory being renamed.
     /// </summary>
@@ -76,8 +74,6 @@ public class FolderRenameArgs
         set;
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="FolderRenameArgs"/> class.</summary>
     /// <param name="oldDirPath">The path to the directory being renamed.</param>
     /// <param name="oldName">The old name for the directory.</param>
@@ -90,5 +86,4 @@ public class FolderRenameArgs
         OldName = oldName;
         NewName = newName;
     }
-
 }

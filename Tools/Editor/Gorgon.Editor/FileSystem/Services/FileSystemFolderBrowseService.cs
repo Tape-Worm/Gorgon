@@ -23,7 +23,6 @@
 // Created: April 28, 2019 11:08:29 AM
 // 
 
-
 using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.Editor.Properties;
@@ -44,8 +43,6 @@ internal class FileSystemFolderBrowseService(IMain mainViewModel)
 
     // The main view model for the application.
     private readonly IMain _mainViewModel = mainViewModel ?? throw new ArgumentNullException(nameof(mainViewModel));
-
-
 
     /// <summary>
     /// Function to retrieve the parent form for the message box.
@@ -93,8 +90,4 @@ internal class FileSystemFolderBrowseService(IMain mainViewModel)
         browser.SetInitialPath(initialDirectory);
         return browser.ShowDialog(GetParentForm()) != DialogResult.OK ? null : browser.CurrentDirectory.FormatDirectory('/');
     }
-
-
-
-
 }

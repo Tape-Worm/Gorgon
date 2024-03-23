@@ -23,7 +23,6 @@
 // Created: October 12, 2018 12:48:16 PM
 // 
 
-
 using Gorgon.Editor.UI;
 using Gorgon.PlugIns;
 
@@ -80,8 +79,6 @@ public abstract class EditorPlugIn(string description)
     // Empty string array for IsPlugInAvailable.
     private readonly IReadOnlyList<string> _defaultPlugInAvailablity = [];
 
-
-
     /// <summary>
     /// Property to return the common services from the host application.
     /// </summary>
@@ -115,8 +112,6 @@ public abstract class EditorPlugIn(string description)
         get;
     }
 
-
-
     /// <summary>
     /// Function to retrieve the settings interface for this plug in.
     /// </summary>
@@ -148,7 +143,6 @@ public abstract class EditorPlugIn(string description)
     /// </remarks>
     protected virtual IReadOnlyList<string> OnGetPlugInAvailability() => _defaultPlugInAvailablity;
 
-
     /// <summary>
     /// Function to retrieve the settings interface for the plug in.
     /// </summary>
@@ -172,6 +166,5 @@ public abstract class EditorPlugIn(string description)
     /// </para>
     /// </remarks>
     public IReadOnlyList<string> IsPlugInAvailable() => OnGetPlugInAvailability();
-
 
 }

@@ -23,7 +23,6 @@
 // Created: January 15, 2019 9:04:41 PM
 // 
 
-
 using System.ComponentModel;
 using Gorgon.Editor.ImageEditor.ViewModels;
 using Gorgon.Editor.UI;
@@ -38,7 +37,6 @@ namespace Gorgon.Editor.ImageEditor;
 internal partial class GenMipMapSettings
     : EditorSubPanelCommon, IDataContext<IMipMapSettings>
 {
-
     /// <summary>Property to return the data context assigned to this view.</summary>
     /// <value>The data context.</value>
     [Browsable(false)]
@@ -47,8 +45,6 @@ internal partial class GenMipMapSettings
         get;
         private set;
     }
-
-
 
     /// <summary>
     /// Function to update whether mip maps are supported or not.
@@ -134,7 +130,6 @@ internal partial class GenMipMapSettings
 
         ViewModel.PropertyChanged -= DataContext_PropertyChanged;
     }
-
 
     /// <summary>
     /// Function called when the view should be reset by a <b>null</b> data context.
@@ -226,8 +221,6 @@ internal partial class GenMipMapSettings
         ViewModel.PropertyChanged += DataContext_PropertyChanged;
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="Editor.Views.GenMipMapSettings"/> class.</summary>
     public GenMipMapSettings()
     {
@@ -241,5 +234,4 @@ internal partial class GenMipMapSettings
             ComboMipFilter.Items.Add(filter);
         }
     }
-
 }

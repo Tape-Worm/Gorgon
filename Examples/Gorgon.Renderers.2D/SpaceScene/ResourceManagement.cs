@@ -23,7 +23,6 @@
 // Created: May 19, 2019 11:01:36 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Animation;
 using Gorgon.Core;
@@ -77,8 +76,6 @@ internal class ResourceManagement(Gorgon2D renderer, GorgonMefPlugInCache plugIn
     // The list of effects used by the application.
     private readonly Dictionary<string, Gorgon2DEffect> _effects = new(StringComparer.OrdinalIgnoreCase);
 
-
-
     /// <summary>
     /// Property to return the effects used by the application.
     /// </summary>
@@ -126,8 +123,6 @@ internal class ResourceManagement(Gorgon2D renderer, GorgonMefPlugInCache plugIn
     /// Propert to return all of the post process compositors.
     /// </summary>
     public IReadOnlyDictionary<string, Gorgon2DCompositor> PostProcessCompositors => _postProcess;
-
-
 
     /// <summary>
     /// Function to load the images for the textures.
@@ -376,7 +371,6 @@ internal class ResourceManagement(Gorgon2D renderer, GorgonMefPlugInCache plugIn
             _textureCache.ReturnTexture(texture.Value);
         }
 
-
         Textures = await LoadImageData("/images/");
 
         Sprites = await LoadSpriteDataAsync("/sprites/");
@@ -426,6 +420,4 @@ internal class ResourceManagement(Gorgon2D renderer, GorgonMefPlugInCache plugIn
             compositor.Value.Dispose();
         }
     }
-
-
 }

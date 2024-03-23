@@ -23,7 +23,6 @@
 // Created: April 26, 2017 12:46:08 PM
 // 
 
-
 using System.Runtime.CompilerServices;
 using Gorgon.Properties;
 
@@ -50,7 +49,7 @@ public class ArgumentEmptyException
         }
 
         if (string.IsNullOrWhiteSpace(value))
-        {        
+        {
             throw new ArgumentEmptyException(parameterName);
         }
     }

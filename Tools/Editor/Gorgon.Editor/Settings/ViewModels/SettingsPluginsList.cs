@@ -23,7 +23,6 @@
 // Created: April 20, 2019 11:50:31 AM
 // 
 
-
 using System.Collections.ObjectModel;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Properties;
@@ -40,8 +39,6 @@ internal class SettingsPlugInsList
 
     // The current plug in.
     private ISettingsPlugInListItem _current;
-
-
 
     /// <summary>Property to return the plug ins.</summary>
     public ObservableCollection<ISettingsPlugInListItem> PlugIns
@@ -80,8 +77,6 @@ internal class SettingsPlugInsList
     /// property.</remarks>
     public string Name => Resources.GOREDIT_SETTINGS_CATEGORY_PLUGINS;
 
-
-
     /// <summary>
     /// Function to select a plug in from the list.
     /// </summary>
@@ -110,8 +105,6 @@ internal class SettingsPlugInsList
     /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
     /// </remarks>
     protected override void OnInitialize(SettingsPlugInsListParameters injectionParameters) => PlugIns = new ObservableCollection<ISettingsPlugInListItem>(injectionParameters.PlugIns?.OrderBy(item => item.Name, StringComparer.CurrentCultureIgnoreCase));
-
-
 
     /// <summary>Initializes a new instance of the <see cref="SettingsPlugInsList"/> class.</summary>
     public SettingsPlugInsList() => SelectPlugInCommand = new EditorCommand<int>(DoSelectPlugIn);

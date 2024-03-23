@@ -23,7 +23,6 @@
 // Created: August 26, 2018 12:49:15 PM
 // 
 
-
 using System.Diagnostics;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
@@ -37,7 +36,6 @@ namespace Gorgon.Editor;
 /// </summary>
 static class Program
 {
-
     /// <summary>
     /// Property to return the directory used by the application for settings and other functionality.
     /// </summary>
@@ -60,8 +58,6 @@ static class Program
         get;
         private set;
     }
-
-
 
     /// <summary>
     /// Function to locate a command line argument, and its subsequent value (if applicable).

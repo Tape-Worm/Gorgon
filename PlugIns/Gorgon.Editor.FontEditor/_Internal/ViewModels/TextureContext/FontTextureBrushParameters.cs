@@ -23,7 +23,6 @@
 // Created: September 10, 2021 12:46:10 PM
 // 
 
-
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI;
 
@@ -39,7 +38,6 @@ namespace Gorgon.Editor.FontEditor;
 internal class FontTextureBrushParameters(ImageLoadService imageLoader, IHostContentServices hostServices)
         : HostedPanelViewModelParameters(hostServices)
 {
-
     /// <summary>
     /// Property to return the service used to load texture images.
     /// </summary>
@@ -47,7 +45,5 @@ internal class FontTextureBrushParameters(ImageLoadService imageLoader, IHostCon
     {
         get;
     } = imageLoader ?? throw new ArgumentNullException(nameof(imageLoader));
-
-
 
 }

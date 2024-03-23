@@ -23,14 +23,12 @@
 // Created: September 1, 2021 6:49:26 PM
 // 
 
-
 using System.Diagnostics;
 using Gorgon.Editor.Content;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts;
 using Gorgon.Graphics.Fonts.Codecs;
 using Gorgon.IO;
-
 
 namespace Gorgon.Editor.FontEditor;
 
@@ -62,8 +60,6 @@ internal class FontService
     public static readonly IEnumerable<char> DefaultCharacters = Enumerable.Range(32, 224)
                                                                            .Select(Convert.ToChar)
                                                                            .Where(c => !char.IsControl(c));
-
-
 
     /// <summary>
     /// Event fired before the font is updated.
@@ -126,8 +122,6 @@ internal class FontService
         }
     }
 
-
-
     /// <summary>
     /// Property to return the textures for the font.
     /// </summary>
@@ -151,8 +145,6 @@ internal class FontService
     /// Property to return the current worker font.
     /// </summary>
     public GorgonFont WorkerFont => _font;
-
-
 
     /// <summary>
     /// Function to retrieve the list of textures for the font.
@@ -300,8 +292,6 @@ internal class FontService
         }
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="FontService" /> class.</summary>
     /// <param name="factory">The factory used to build the font.</param>
     /// <param name="font">The current font to use as the worker font.</param>
@@ -316,5 +306,4 @@ internal class FontService
 
         GetTextures();
     }
-
 }

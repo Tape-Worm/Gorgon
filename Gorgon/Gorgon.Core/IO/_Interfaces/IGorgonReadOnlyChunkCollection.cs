@@ -23,7 +23,6 @@
 // Created: Sunday, June 14, 2015 9:50:50 PM
 // 
 
-
 namespace Gorgon.IO;
 
 /// <summary>
@@ -32,7 +31,6 @@ namespace Gorgon.IO;
 public interface IGorgonReadOnlyChunkCollection
     : IReadOnlyList<GorgonChunk>
 {
-
     /// <summary>
     /// Property to return a chunk by a string identifier.
     /// </summary>
@@ -54,8 +52,6 @@ public interface IGorgonReadOnlyChunkCollection
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to return the index of a chunk by its name.

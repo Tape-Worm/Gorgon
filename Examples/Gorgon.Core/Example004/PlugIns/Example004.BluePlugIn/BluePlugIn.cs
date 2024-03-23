@@ -23,7 +23,6 @@
 // Created: Tuesday, January 1, 2013 7:35:52 PM
 // 
 
-
 namespace Gorgon.Examples;
 
 /// <summary>
@@ -32,7 +31,6 @@ namespace Gorgon.Examples;
 internal class BluePlugIn
     : TextColorPlugIn
 {
-
     /// <summary>
     /// Now we'll define the method to return our blue text color writer.
     /// </summary>

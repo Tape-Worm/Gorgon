@@ -23,7 +23,6 @@
 // Created: August 18, 2018 10:51:40 AM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Newtonsoft.Json;
@@ -64,7 +63,6 @@ public interface IGorgonAnimationTrack<out T>
     : IGorgonNamedObject
     where T : IGorgonKeyFrame
 {
-
     /// <summary>
     /// Property to return the spline controller (if applicable) for the track.
     /// </summary>
@@ -122,8 +120,6 @@ public interface IGorgonAnimationTrack<out T>
         get;
         set;
     }
-
-
 
     /// <summary>
     /// Function to retrieve the value at the specified time index.

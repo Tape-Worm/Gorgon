@@ -23,7 +23,6 @@
 // Created: Wednesday, November 02, 2011 10:11:10 AM
 // 
 
-
 using System.Globalization;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
@@ -106,8 +105,6 @@ public static class GorgonApplication
     // Peek message NoRemove flag.
     private const uint PeekMessageNoRemove = 0;
 
-
-
     // Event fired when the application is about to exit.
     private static event EventHandler ExitEvent;
 
@@ -166,8 +163,6 @@ public static class GorgonApplication
         }
     }
 
-
-
     // Main application form.
     private static Form _mainForm;
     // Flag to indicate that the application needs to close.
@@ -186,8 +181,6 @@ public static class GorgonApplication
     private static int _runAtomic;
     // Event used to put the application to sleep.
     private static readonly ManualResetEventSlim _unfocusedTimeout = new(false, 20);
-
-
 
     /// <summary>
     /// Property to return information about the computer.
@@ -480,8 +473,6 @@ public static class GorgonApplication
             }
         }
     }
-
-
 
     /// <summary>
     /// Handles the Idle event of the Application control.
@@ -944,8 +935,6 @@ public static class GorgonApplication
         }
     }
 
-
-
     /// <summary>
     /// Initializes the <see cref="GorgonApplication"/> class.
     /// </summary>
@@ -965,5 +954,4 @@ public static class GorgonApplication
 
         StartupPath = new DirectoryInfo(Application.StartupPath.FormatDirectory(Path.DirectorySeparatorChar));
     }
-
 }

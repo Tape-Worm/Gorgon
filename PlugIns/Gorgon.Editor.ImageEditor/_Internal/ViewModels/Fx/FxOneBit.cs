@@ -23,7 +23,6 @@
 // Created: March 26, 2020 9:05:50 PM
 // 
 
-
 using Gorgon.Editor.UI;
 using Gorgon.Math;
 
@@ -41,8 +40,6 @@ internal class FxOneBit
     private int _maxThreshold = 255;
     // The flag used to invert the black/white values.
     private bool _invert;
-
-
 
     /// <summary>
     /// Property to set or return the maximum threshold to convert to white (or black if inverted).
@@ -104,8 +101,6 @@ internal class FxOneBit
     /// <summary>Property to return whether the panel is modal.</summary>
     public override bool IsModal => false;
 
-
-
     /// <summary>Function to inject dependencies for the view model.</summary>
     /// <param name="injectionParameters">The parameters to inject.</param>
     /// <remarks>
@@ -119,5 +114,4 @@ internal class FxOneBit
     protected override void OnInitialize(HostedPanelViewModelParameters injectionParameters)
     {
     }
-
 }

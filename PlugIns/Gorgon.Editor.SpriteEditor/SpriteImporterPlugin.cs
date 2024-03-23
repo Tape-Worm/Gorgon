@@ -23,7 +23,6 @@
 // Created: March 2, 2019 11:15:34 AM
 // 
 
-
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.SpriteEditor.Properties;
@@ -53,9 +52,6 @@ internal class SpriteImporterPlugIn
     /// The file name for the file that stores the settings.
     /// </summary>
     public readonly static string SettingsFilename = typeof(SpriteImporterPlugIn).FullName;
-
-
-
 
     /// <summary>
     /// Function to retrieve the codec used by the sprite.
@@ -172,12 +168,9 @@ internal class SpriteImporterPlugIn
     /// </remarks>
     protected override bool OnCanOpenContent(string filePath) => GetCodec(filePath, _codecs) is not null;
 
-
-
     /// <summary>Initializes a new instance of the <see cref="SpriteImporterPlugIn"/> class.</summary>
     public SpriteImporterPlugIn()
         : base(Resources.GORSPR_IMPORT_DESC)
     {
     }
-
 }

@@ -23,7 +23,6 @@
 // Created: April 8, 2018 8:17:22 PM
 // 
 
-
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Gorgon.Core;
@@ -44,13 +43,10 @@ namespace Gorgon.Graphics.Core;
 public sealed class GorgonTexture3D
     : GorgonGraphicsResource, IGorgonTexture3DInfo, IGorgonTextureResource
 {
-
     /// <summary>
     /// The prefix used for generated names.
     /// </summary>
     internal const string NamePrefix = nameof(GorgonTexture3D);
-
-
 
     // Default texture loading options.
     private static readonly GorgonTextureLoadOptions _defaultLoadOptions = new();
@@ -106,7 +102,6 @@ public sealed class GorgonTexture3D
     bool IGorgonImageInfo.IsPowerOfTwo => ((Width == 0) || (Width & (Width - 1)) == 0)
                                           && ((Height == 0) || (Height & (Height - 1)) == 0)
                                           && ((Depth == 0) || (Depth & (Depth - 1)) == 0);
-
 
     /// <summary>
     /// Property to return the ID for this texture.
@@ -184,8 +179,6 @@ public sealed class GorgonTexture3D
     /// Property to return the name of this object.
     /// </summary>
     public override string Name => _info.Name;
-
-
 
     /// <summary>
     /// Function to transfer texture data into an image buffer.
@@ -421,7 +414,6 @@ public sealed class GorgonTexture3D
 
         D3DResource = ResourceFactory.Create(Graphics.D3DDevice, Name, TextureID, in tex3DDesc, image);
     }
-
 
     /// <summary>
     /// Function to copy this texture into another <see cref="GorgonTexture3D"/>.
@@ -907,7 +899,6 @@ public sealed class GorgonTexture3D
                                    (sourceRectangle.Value.Width.Min(destinationTexture.Width).Max(1)).Min(Width),
                                    (sourceRectangle.Value.Height.Min(destinationTexture.Height).Max(1)).Min(Height));
         }
-
 
         // Ensure the indices are clipped to our settings.
         GorgonRange<int> srcDepth = sourceDepthSliceRange is null
@@ -1842,8 +1833,6 @@ public sealed class GorgonTexture3D
     /// <returns>The default shader resource view for the texture.</returns>
     GorgonShaderResourceView IGorgonTextureResource.GetShaderResourceView() => GetShaderResourceView();
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonTexture3D"/> class.
     /// </summary>
@@ -1899,8 +1888,6 @@ public sealed class GorgonTexture3D
 
         SizeInBytes = CalculateSizeInBytes(_info);
 
-
         this.RegisterDisposable(graphics);
     }
-
 }

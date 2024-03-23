@@ -23,7 +23,6 @@
 // Created: September 19, 2018 8:11:03 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Editor.Properties;
 
@@ -39,14 +38,10 @@ public class ClipboardService
     // The data stored on the clipboard.
     private object _data;
 
-
-
     /// <summary>
     /// Property to return whether or not there is data on the clipboard.
     /// </summary>
     public bool HasData => _data is not null;
-
-
 
     /// <summary>
     /// Function to return the data from the clipboard as the specified type.
@@ -128,5 +123,4 @@ public class ClipboardService
 
         _data = item;
     }
-
 }

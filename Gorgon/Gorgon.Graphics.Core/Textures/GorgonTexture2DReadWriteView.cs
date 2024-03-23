@@ -23,7 +23,6 @@
 // Created: July 22, 2017 10:31:48 AM
 // 
 
-
 using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
@@ -70,7 +69,6 @@ namespace Gorgon.Graphics.Core;
 public sealed class GorgonTexture2DReadWriteView
     : GorgonReadWriteView, IGorgonTexture2DInfo, IGorgonImageInfo
 {
-
     /// <summary>
     /// Property to return the type of image data.
     /// </summary>
@@ -234,8 +232,6 @@ public sealed class GorgonTexture2DReadWriteView
     /// Property to return whether the resource used by this view can be shared or not.
     /// </summary>
     public TextureSharingOptions Shared => Texture.Shared;
-
-
 
     /// <summary>Function to retrieve the necessary parameters to create the native view.</summary>
     /// <returns>The D3D11 UAV descriptor.</returns>        
@@ -718,8 +714,6 @@ public sealed class GorgonTexture2DReadWriteView
         return view;
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonTexture2DReadWriteView"/> class.
     /// </summary>
@@ -746,5 +740,4 @@ public sealed class GorgonTexture2DReadWriteView
         ArrayIndex = arrayIndex;
         ArrayCount = arrayCount;
     }
-
 }

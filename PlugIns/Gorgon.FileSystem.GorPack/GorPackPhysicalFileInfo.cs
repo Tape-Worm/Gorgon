@@ -23,7 +23,6 @@
 // Created: Saturday, September 19, 2015 11:45:31 PM
 // 
 
-
 using Gorgon.IO.Providers;
 
 namespace Gorgon.IO.GorPack;
@@ -52,7 +51,6 @@ internal class GorPackPhysicalFileInfo(string physicalPath,
                                long? compressedSize)
         : IGorgonPhysicalFileInfo
 {
-
     /// <summary>
     /// Property to return the date of creation for the file.
     /// </summary>
@@ -150,15 +148,9 @@ internal class GorPackPhysicalFileInfo(string physicalPath,
     /// </remarks>
     public bool IsEncrypted => false;
 
-
-
     /// <summary>Function to refresh the file information.</summary>
     public void Refresh()
     {
         // We don't need to refresh a packed file.
     }
-
-
-
-
 }

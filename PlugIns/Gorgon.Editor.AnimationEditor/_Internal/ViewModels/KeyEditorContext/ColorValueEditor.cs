@@ -23,7 +23,6 @@
 // Created: July 6, 2020 11:22:06 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
@@ -39,8 +38,6 @@ internal class ColorValueEditor
 
     // The original color for the sprite.
     private GorgonColor _originalColor = GorgonColors.White;
-
-
 
     /// <summary>
     /// Property to return whether to edit alpha values or color values.
@@ -124,8 +121,6 @@ internal class ColorValueEditor
         }
     }
 
-
-
     /// <summary>Function used to notify when the <see cref="KeyValueEditor{T}.Track"/> property is assigned.</summary>
     protected override void OnTrackSet()
     {
@@ -142,5 +137,4 @@ internal class ColorValueEditor
     {
         // Nothing to inject.
     }
-
 }

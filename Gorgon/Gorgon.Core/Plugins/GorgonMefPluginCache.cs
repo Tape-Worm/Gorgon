@@ -23,7 +23,6 @@
 // Created: Thursday, June 23, 2011 11:22:58 AM
 // 
 
-
 using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Composition.Primitives;
 using System.ComponentModel.Composition.Registration;
@@ -119,8 +118,6 @@ public sealed class GorgonMefPlugInCache
     // The builder used for type registration.
     private readonly RegistrationBuilder _builder = new();
 
-
-
     /// <summary>
     /// Property to return the logging interface for debug logging.
     /// </summary>
@@ -137,8 +134,6 @@ public sealed class GorgonMefPlugInCache
         get;
         private set;
     }
-
-
 
     /// <summary>
     /// Function to update the list of assemblies.
@@ -162,7 +157,6 @@ public sealed class GorgonMefPlugInCache
             }
         }
     }
-
 
     /// <summary>
     /// Function to determine if the assembly defined in the assembly path is a .NET managed assembly or not.
@@ -411,8 +405,6 @@ public sealed class GorgonMefPlugInCache
         }
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonMefPlugInCache"/> class.
     /// </summary>
@@ -428,5 +420,4 @@ public sealed class GorgonMefPlugInCache
         Log = log ?? GorgonLog.NullLog;
         _container = new CompositionContainer(_rootCatalog, CompositionOptions.DisableSilentRejection | CompositionOptions.IsThreadSafe);
     }
-
 }

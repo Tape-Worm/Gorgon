@@ -23,7 +23,6 @@
 // Created: April 1, 2019 11:51:35 PM
 // 
 
-
 using System.ComponentModel;
 using System.Numerics;
 using Gorgon.Core;
@@ -229,7 +228,6 @@ internal class PickSpriteViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IS
         _marchAnts.Draw(marchAntsRect);
         Renderer.End();
     }
-
 
     /// <summary>Function called to perform custom loading of resources.</summary>
     protected override void OnLoad()

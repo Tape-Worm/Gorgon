@@ -23,7 +23,6 @@
 // Created: November 24, 2019 7:59:40 PM
 // 
 
-
 using System.ComponentModel;
 
 namespace Gorgon.Editor.Views;
@@ -34,13 +33,10 @@ namespace Gorgon.Editor.Views;
 internal class TreeEx
     : TreeView
 {
-
     /// <summary>
     /// The event fired when the node edit is canceled.
     /// </summary>
     public event EventHandler EditCanceled;
-
-
 
     // Text box used to rename a node.
     private TextBox _renameBox;
@@ -48,8 +44,6 @@ internal class TreeEx
     private TreeNode _renameNode;
     // The points for the expand/collapse icon polygon.
     private readonly PointF[] _expandIconPoints = new PointF[3];
-
-
 
     /// <summary>Gets or sets a value indicating whether the label text of the tree nodes can be edited.</summary>
     [EditorBrowsable(EditorBrowsableState.Never), Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -90,7 +84,6 @@ internal class TreeEx
         {
         }
     }
-
 
     /// <summary>Gets or sets a value indicating whether the selected tree node remains highlighted even when the tree view has lost the focus.</summary>
     [EditorBrowsable(EditorBrowsableState.Never), Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -180,8 +173,6 @@ internal class TreeEx
     /// </summary>
     [Browsable(false)]
     public bool IsEditing => _renameNode is not null;
-
-
 
     /// <summary>
     /// Handles the LostFocus event of the _renameBox control.
@@ -600,8 +591,6 @@ internal class TreeEx
         HideRenameBox(true);
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="TreeEx"/> class.</summary>
     public TreeEx()
     {
@@ -614,5 +603,4 @@ internal class TreeEx
         ShowRootLines = ShowLines = false;
         FullRowSelect = true;
     }
-
 }

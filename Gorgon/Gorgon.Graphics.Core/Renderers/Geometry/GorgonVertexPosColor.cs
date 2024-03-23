@@ -23,7 +23,6 @@
 // Created: January 16, 2021 12:10:27 AM
 // 
 
-
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -38,7 +37,6 @@ namespace Gorgon.Renderers.Geometry;
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
 public struct GorgonVertexPosColor
 {
-
     /// <summary>
     /// The size of the vertex, in bytes.
     /// </summary>
@@ -55,8 +53,6 @@ public struct GorgonVertexPosColor
     /// </summary>
     [InputElement(1, "COLOR")]
     public GorgonColor Color;
-
-
 
     /// <summary>
     /// Deconstructs this instance into individual position values.
@@ -80,8 +76,6 @@ public struct GorgonVertexPosColor
         color = Color;
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="GorgonVertexPosColor" /> struct.</summary>
     /// <param name="pos">The position.</param>
     /// <param name="color">The diffuse color for the vertex.</param>
@@ -99,5 +93,4 @@ public struct GorgonVertexPosColor
         Position = pos;
         Color = color;
     }
-
 }

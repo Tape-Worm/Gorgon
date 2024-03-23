@@ -23,7 +23,6 @@
 // Created: February 14, 2020 8:55:59 AM
 // 
 
-
 using Gorgon.Editor.Content;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI;
@@ -41,7 +40,6 @@ namespace Gorgon.Editor.ImageEditor;
 internal class ImagePickerParameters(IContentFileManager fileManager, IContentFile file, IHostContentServices commonServices)
         : ContentViewModelInjection(fileManager, file, commonServices)
 {
-
     /// <summary>
     /// Property to set or return the image editor services.
     /// </summary>
@@ -77,6 +75,4 @@ internal class ImagePickerParameters(IContentFileManager fileManager, IContentFi
         get;
         set;
     }
-
-
 }

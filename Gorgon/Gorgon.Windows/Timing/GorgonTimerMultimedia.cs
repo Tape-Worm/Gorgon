@@ -23,7 +23,6 @@
 // Created: Saturday, June 18, 2011 10:35:53 AM
 // 
 
-
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Gorgon.Native;
@@ -63,8 +62,6 @@ public sealed class GorgonTimerMultimedia
     // Error code returned when setting timer period.
     private const uint ErrorNoCanDo = 97;
 
-
-
     // Flag to indicate that the timer was initialized.
     private bool _initialized;
     // The last period for the timer.
@@ -79,8 +76,6 @@ public sealed class GorgonTimerMultimedia
     private double _milliseconds;
     // Timer capabilities.
     private static TIMECAPS _timeCaps;
-
-
 
     /// <summary>
     /// Property to return the number of milliseconds elapsed since the timer was started.
@@ -138,9 +133,6 @@ public sealed class GorgonTimerMultimedia
     /// Property to return whether this timer has a resolution of less than 1 millisecond or not.
     /// </summary>
     public bool IsHighResolution => false;
-
-
-
 
     /// <summary>
     /// Function to retrieve the timeGetTime time data.
@@ -262,5 +254,4 @@ public sealed class GorgonTimerMultimedia
         _startTime = WinMultimediaApi.timeGetTime();
         _initialized = true;
     }
-
 }

@@ -23,7 +23,6 @@
 // Created: January 12, 2020 3:22:37 PM
 // 
 
-
 namespace Gorgon.Editor.ViewModels;
 
 /// <summary>

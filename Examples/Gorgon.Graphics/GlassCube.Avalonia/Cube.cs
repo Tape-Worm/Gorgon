@@ -23,7 +23,6 @@
 // Created: March 4, 2017 10:22:08 AM
 // 
 
-
 using System.Numerics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
@@ -45,8 +44,6 @@ public class Cube
     // The world matrix to send to the vertex shader for transformation.
     // This is the combination of the rotation and translation matrix.
     private Matrix4x4 _world = Matrix4x4.Identity;
-
-
 
     /// <summary>
     /// Property to return the vertex buffer that holds the cube vertex data.
@@ -84,8 +81,6 @@ public class Cube
             return ref _world;
         }
     }
-
-
 
     /// <summary>
     /// Function to rotate the cube.
@@ -199,5 +194,4 @@ public class Cube
                                                                vertices)
         };
     }
-
 }

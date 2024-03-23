@@ -23,7 +23,6 @@
 // Created: July 30, 2016 12:21:01 PM
 // 
 
-
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
@@ -97,8 +96,6 @@ public class GorgonBlendState
     /// Modulated blending on render target 0 with source alpha overwriting the destination alpha.
     /// </summary>
     public static readonly GorgonBlendState ModulatedAlphaOverwrite;
-
-
 
     /// <summary>
     /// Property to return whether blending should be enabled for this render target.
@@ -214,7 +211,6 @@ public class GorgonBlendState
         internal set;
     }
 
-
     /// <summary>
     /// Property to return the logical operation to apply when blending.
     /// </summary>
@@ -249,8 +245,6 @@ public class GorgonBlendState
         internal set;
     }
 
-
-
     /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
     /// <returns>true if the current object is equal to the <paramref name="state" /> parameter; otherwise, false.</returns>
     /// <param name="state">An object to compare with this object.</param>
@@ -279,8 +273,6 @@ public class GorgonBlendState
     /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
     /// </returns>
     public override int GetHashCode() => HashCode.Combine(WriteMask, AlphaBlendOperation, ColorBlendOperation, DestinationAlphaBlend, DestinationColorBlend, IsBlendingEnabled, SourceAlphaBlend, SourceColorBlend);
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonBlendState"/> class.
@@ -392,5 +384,4 @@ public class GorgonBlendState
             DestinationColorBlend = Blend.InverseSourceColor
         };
     }
-
 }

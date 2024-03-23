@@ -23,7 +23,6 @@
 // Created: May 6, 2019 10:14:55 AM
 // 
 
-
 using Gorgon.Editor.Content;
 
 namespace Gorgon.Editor.UI.Controls;
@@ -39,8 +38,6 @@ public class ContentFileExplorerFileEntry
     private bool _visible = true;
     // Flag to indicate that the entry is selected.
     private bool _isSelected;
-
-
 
     /// <summary>
     /// Property to return the parent of this entry.
@@ -122,8 +119,6 @@ public class ContentFileExplorerFileEntry
     /// <summary>Property to return whether or not this entry is a directory.</summary>
     bool IContentFileExplorerSearchEntry.IsDirectory => false;
 
-
-
     /// <summary>Initializes a new instance of the <see cref="ContentFileExplorerFileEntry"/> class.</summary>
     /// <param name="contentFile">The content file associated with this entry.</param>
     /// <param name="parent">The parent directory for this file.</param>
@@ -141,5 +136,4 @@ public class ContentFileExplorerFileEntry
             AssociationType = contentType;
         }
     }
-
 }

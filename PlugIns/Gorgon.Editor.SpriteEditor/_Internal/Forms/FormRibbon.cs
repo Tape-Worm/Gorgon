@@ -23,7 +23,6 @@
 // Created: April 2, 2019 11:23:30 PM
 // 
 
-
 using System.ComponentModel;
 using System.Numerics;
 using Gorgon.Editor.Rendering;
@@ -58,8 +57,6 @@ internal partial class FormRibbon
     private ZoomLevels _zoomLevel = ZoomLevels.ToWindow;
     // The renderer for the content.
     private IContentRenderer _contentRenderer;
-
-
 
     /// <summary>
     /// Property to set or return the current graphics context.
@@ -108,8 +105,6 @@ internal partial class FormRibbon
             UpdateZoomMenu();
         }
     }
-
-
 
     /// <summary>Handles the ZoomScale event of the ContentRenderer control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -307,7 +302,6 @@ internal partial class FormRibbon
         ValidateButtons();
     }
 
-
     /// <summary>Handles the Click event of the ButtonSpriteClipFullSize control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
@@ -453,7 +447,6 @@ internal partial class FormRibbon
         ViewModel.SpriteClipCommand.Execute(null);
         ValidateButtons();
     }
-
 
     /// <summary>Handles the Click event of the ButtonSpriteVertexOffsets control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -634,7 +627,6 @@ internal partial class FormRibbon
                     {
                         _ribbonButtons.Add(new WeakReference<KryptonRibbonGroupButton>(item));
                     }
-
 
                     foreach (KryptonRibbonGroupNumericUpDown item in container.Items.OfType<KryptonRibbonGroupNumericUpDown>())
                     {
@@ -946,8 +938,6 @@ internal partial class FormRibbon
         UpdateZoomMenu();
     }
 
-
-
     /// <summary>Initializes a new instance of the FormRibbon class.</summary>
     public FormRibbon()
     {
@@ -967,5 +957,4 @@ internal partial class FormRibbon
             _menuItems[level] = menuItem;
         }
     }
-
 }

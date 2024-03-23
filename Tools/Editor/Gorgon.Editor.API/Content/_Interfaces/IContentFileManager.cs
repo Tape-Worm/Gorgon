@@ -23,7 +23,6 @@
 // Created: March 2, 2019 5:29:01 PM
 // 
 
-
 using Gorgon.Graphics.Core;
 using Gorgon.IO;
 
@@ -34,13 +33,10 @@ namespace Gorgon.Editor.Content;
 /// </summary>
 public interface IContentFileManager
 {
-
     /// <summary>
     /// Event triggered when the selected files change.
     /// </summary>
     event EventHandler SelectedFilesChanged;
-
-
 
     /// <summary>
     /// Property to return the current directory.
@@ -49,8 +45,6 @@ public interface IContentFileManager
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to determine if a directory is excluded from a packed file.

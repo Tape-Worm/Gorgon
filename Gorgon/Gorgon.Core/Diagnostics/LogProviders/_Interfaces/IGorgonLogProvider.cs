@@ -23,7 +23,6 @@
 // Created: March 20, 2018 11:05:20 PM
 // 
 
-
 namespace Gorgon.Diagnostics.LogProviders;
 
 /// <summary>

@@ -23,7 +23,6 @@
 // Created: Thursday, April 05, 2012 8:23:51 AM
 // 
 
-
 using System.Numerics;
 using System.Runtime.InteropServices;
 using Gorgon.Graphics;
@@ -39,7 +38,6 @@ namespace Gorgon.Renderers;
 public class Gorgon2DSobelEdgeDetectEffect
     : Gorgon2DEffect, IGorgon2DCompositorEffect
 {
-
     /// <summary>
     /// Settings for the effect shader.
     /// </summary>
@@ -71,8 +69,6 @@ public class Gorgon2DSobelEdgeDetectEffect
         public float Threshold => _texelThreshold.Z;
     }
 
-
-
     // Buffer for the sobel edge detection.
     private GorgonConstantBufferView _sobelBuffer;
     // The pixel shader for the effect.
@@ -88,8 +84,6 @@ public class Gorgon2DSobelEdgeDetectEffect
     private float _lineThickness = 1.0f;
     // The texture size used to calculate the line thickness.
     private Vector2 _textureSize = new(512.0f, 512.0f);
-
-
 
     /// <summary>
     /// Property to set or return the offset of the shapren/embossing edges.
@@ -175,8 +169,6 @@ public class Gorgon2DSobelEdgeDetectEffect
             _isUpdated = true;
         }
     }
-
-
 
     /// <summary>
     /// Function called when the effect is being initialized.
@@ -310,8 +302,6 @@ public class Gorgon2DSobelEdgeDetectEffect
         End();
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="Gorgon2DSobelEdgeDetectEffect"/> class.
     /// </summary>
@@ -322,5 +312,4 @@ public class Gorgon2DSobelEdgeDetectEffect
         _settings = new Settings(Color.Black, Vector2.Zero, 0.75f);
         Macros.Add(new GorgonShaderMacro("SOBEL_EDGE_EFFECT"));
     }
-
 }

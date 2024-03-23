@@ -23,7 +23,6 @@
 // Created: June 20, 2016 9:23:44 PM
 // 
 
-
 namespace Gorgon.Graphics.Imaging;
 
 /// <summary>
@@ -58,7 +57,6 @@ public enum ImageDataType
 /// </summary>
 public interface IGorgonImageInfo
 {
-
     /// <summary>
     /// Property to return the type of image data.
     /// </summary>
@@ -139,7 +137,6 @@ public interface IGorgonImageInfo
         get;
     }
 
-
     /// <summary>
     /// Property to return the number of mip map levels in the image.
     /// </summary>
@@ -178,5 +175,4 @@ public interface IGorgonImageInfo
     {
         get;
     }
-
 }

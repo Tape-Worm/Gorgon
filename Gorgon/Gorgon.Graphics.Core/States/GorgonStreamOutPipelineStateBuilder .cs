@@ -23,7 +23,6 @@
 // Created: May 24, 2018 7:24:06 PM
 // 
 
-
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Memory;
 using Gorgon.Patterns;
@@ -66,8 +65,6 @@ public class GorgonStreamOutPipelineStateBuilder
         PrimitiveType = Core.PrimitiveType.TriangleList
     });
 
-
-
     /// <summary>
     /// Property to return the graphics interface used to build the pipeline state.
     /// </summary>
@@ -75,8 +72,6 @@ public class GorgonStreamOutPipelineStateBuilder
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to set primitive topology for the draw call.
@@ -291,8 +286,6 @@ public class GorgonStreamOutPipelineStateBuilder
     /// <returns>A new pipeline state.</returns>
     public GorgonStreamOutPipelineState Build() => Build(null);
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonStreamOutPipelineStateBuilder"/> class.
     /// </summary>
@@ -306,5 +299,4 @@ public class GorgonStreamOutPipelineStateBuilder
         _workState.PipelineState.DepthStencilState = GorgonDepthStencilState.Default;
         _workState.PipelineState.PrimitiveType = Core.PrimitiveType.TriangleList;
     }
-
 }

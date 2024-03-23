@@ -23,7 +23,6 @@
 // Created: July 25, 2017 8:41:37 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 
@@ -44,7 +43,6 @@ namespace Gorgon.Graphics.Core;
 public readonly struct GorgonStreamOutBinding
     : IGorgonEquatableByRef<GorgonStreamOutBinding>
 {
-
     /// <summary>
     /// An empty binding.
     /// </summary>
@@ -62,8 +60,6 @@ public readonly struct GorgonStreamOutBinding
     /// A value of -1 will cause the buffer to append data after the last location written in a previous stream out operation.
     /// </remarks>
     public readonly int Offset;
-
-
 
     /// <summary>
     /// Function to determine if a buffer type is valid or not.
@@ -148,8 +144,6 @@ public readonly struct GorgonStreamOutBinding
     /// <returns>The result of the operator.</returns>
     public static bool operator !=(GorgonStreamOutBinding left, GorgonStreamOutBinding right) => !Equals(in left, in right);
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonStreamOutBinding"/> struct.
     /// </summary>
@@ -168,5 +162,4 @@ public readonly struct GorgonStreamOutBinding
         Buffer = buffer;
         Offset = offset;
     }
-
 }

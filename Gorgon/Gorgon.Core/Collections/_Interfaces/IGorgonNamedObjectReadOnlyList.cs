@@ -23,7 +23,6 @@
 // Created: Thursday, May 21, 2015 9:44:12 PM
 // 
 
-
 using Gorgon.Core;
 
 namespace Gorgon.Collections;
@@ -36,7 +35,6 @@ public interface IGorgonNamedObjectReadOnlyList<T>
     : IReadOnlyList<T>
     where T : IGorgonNamedObject
 {
-
     /// <summary>
     /// Property to return whether the keys are case sensitive.
     /// </summary>
@@ -52,8 +50,6 @@ public interface IGorgonNamedObjectReadOnlyList<T>
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to return whether an item with the specified name exists in this collection.

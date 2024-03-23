@@ -23,7 +23,6 @@
 // Created: Monday, June 27, 2011 9:01:45 AM
 // 
 
-
 namespace Gorgon.IO;
 
 /// <summary>
@@ -35,8 +34,6 @@ public class GorgonFileSystemStream
 
     // Base stream to use.
     private Stream _baseStream;
-
-
 
     /// <summary>
     /// Property to set or return whether to close the underlying stream when this stream is closed.
@@ -129,8 +126,6 @@ public class GorgonFileSystemStream
         get => _baseStream.WriteTimeout;
         set => _baseStream.WriteTimeout = value;
     }
-
-
 
     /// <summary>
     /// Releases the unmanaged resources used by the <see cref="Stream"/> and optionally releases the managed resources.
@@ -294,8 +289,6 @@ public class GorgonFileSystemStream
     /// <exception cref="ObjectDisposedException">Methods were called after the stream was closed. </exception>
     public override void WriteByte(byte value) => _baseStream.WriteByte(value);
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonFileSystemStream"/> class.
     /// </summary>
@@ -314,5 +307,4 @@ public class GorgonFileSystemStream
             _baseStream.Position = 0;
         }
     }
-
 }

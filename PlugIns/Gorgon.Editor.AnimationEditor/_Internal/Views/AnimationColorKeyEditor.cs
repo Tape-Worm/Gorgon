@@ -23,7 +23,6 @@
 // Created: July 6, 2020 11:20:21 PM
 // 
 
-
 using System.ComponentModel;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Controls;
@@ -41,8 +40,6 @@ internal partial class AnimationColorKeyEditor
     // Flag to indicate that the events are assigned.
     private int _eventsAssigned = 1;
 
-
-
     /// <summary>
     /// Property to return the data context for the view.
     /// </summary>
@@ -52,8 +49,6 @@ internal partial class AnimationColorKeyEditor
         get;
         private set;
     }
-
-
 
     /// <summary>
     /// Function to disable the events on the control.
@@ -301,8 +296,6 @@ internal partial class AnimationColorKeyEditor
 
         ViewModel.PropertyChanged += DataContext_PropertyChanged;
     }
-
-
 
     /// <summary>Initializes a new instance of the <see cref="AnimationColorKeyEditor"/> class.</summary>
     public AnimationColorKeyEditor() => InitializeComponent();

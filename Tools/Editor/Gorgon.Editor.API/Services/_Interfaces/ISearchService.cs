@@ -23,7 +23,6 @@
 // Created: December 12, 2018 5:23:41 PM
 // 
 
-
 using Gorgon.Core;
 
 namespace Gorgon.Editor.Services;
@@ -54,7 +53,6 @@ public enum SearchMode
     /// </summary>
     EndsWith = 4
 }
-
 
 /// <summary>
 /// An interface to provide access to a search service

@@ -23,7 +23,6 @@
 // Created: Wednesday, September 16, 2015 8:48:16 PM
 // 
 
-
 using System.Runtime.InteropServices;
 using Gorgon.Native;
 
@@ -37,7 +36,6 @@ namespace Gorgon.Input;
 /// </remarks>
 internal class MessageFilterHook
 {
-
     /// <summary>
     /// Delegate for the callback into the window procedure.
     /// </summary>
@@ -47,8 +45,6 @@ internal class MessageFilterHook
     /// <param name="lParam">Window parameter 2.</param>
     /// <returns>The result of processing the message.</returns>
     private delegate nint WndProc(nint hwnd, int msg, nint wParam, nint lParam);
-
-
 
     // A list of message hooks registered to varying windows.
     private static readonly Dictionary<nint, MessageFilterHook> _registeredHooks = new(new GorgonnintEqualityComparer());
@@ -65,8 +61,6 @@ internal class MessageFilterHook
     private List<RawInputMessageFilter> _messageFilters = [];
     // Flag to indicate whether the hook is installed.
     private bool _hooked;
-
-
 
     /// <summary>
     /// Function to process the messages through the installed message filters.
@@ -246,8 +240,6 @@ internal class MessageFilterHook
             hook.UninstallWindowProcedure();
         }
     }
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MessageFilterHook"/> class.

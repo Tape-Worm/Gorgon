@@ -23,7 +23,6 @@
 // Created: March 26, 2018 9:46:27 AM
 // 
 
-
 namespace Gorgon.Diagnostics;
 
 // ReSharper disable InconsistentNaming

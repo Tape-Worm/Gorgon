@@ -23,7 +23,6 @@
 // Created: May 23, 2018 12:55:38 PM
 // 
 
-
 namespace Gorgon.Collections;
 
 /// <summary>
@@ -34,7 +33,6 @@ public interface IGorgonReadOnlyArray<T>
     : IReadOnlyList<T>, IEquatable<IReadOnlyList<T>>
     where T : IEquatable<T>
 {
-
     /// <summary>
     /// Property to return the length of the array.
     /// </summary>
@@ -50,8 +48,6 @@ public interface IGorgonReadOnlyArray<T>
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to return a read only span for a slice of the array.

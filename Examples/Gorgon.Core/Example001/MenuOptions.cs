@@ -23,7 +23,6 @@
 // Created: Tuesday, September 11, 2012 8:43:55 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.UI;
@@ -154,5 +153,4 @@ internal static class MenuOptions
             GorgonDialogs.ErrorBox(null, ex);
         }
     }
-
 }

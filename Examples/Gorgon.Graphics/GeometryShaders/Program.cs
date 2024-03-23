@@ -23,7 +23,6 @@
 // Created: June 3, 2018 11:04:26 AM
 // 
 
-
 using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -84,8 +83,6 @@ static class Program
     private static float _angle;
     // The height offset.
     private static float _heightOffset;
-
-
 
     /// <summary>
     /// Function to update the world project matrix.
@@ -166,7 +163,6 @@ static class Program
         {
             _angle -= 360.0f;
         }
-
 
         // This will allow us to animate the center point of our pyramid.
         _heightOffset = _angle.ToRadians().FastSin().Abs();
@@ -349,5 +345,4 @@ static class Program
             _graphics?.Dispose();
         }
     }
-
 }

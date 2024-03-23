@@ -23,7 +23,6 @@
 // Created: May 20, 2019 11:43:44 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Graphics;
 using Gorgon.Renderers.Cameras;
@@ -98,8 +97,6 @@ internal abstract class Layer
         get;
         set;
     }
-
-
 
     /// <summary>
     /// Function to update the light transforms for this layer.

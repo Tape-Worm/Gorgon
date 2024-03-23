@@ -23,7 +23,6 @@
 // Created: March 28, 2019 9:37:16 AM
 // 
 
-
 using System.ComponentModel;
 using Gorgon.Graphics;
 
@@ -66,8 +65,6 @@ public partial class ColorPicker
         }
     }
 
-
-
     /// <summary>
     /// Property to set or return the color selection.
     /// </summary>
@@ -88,8 +85,6 @@ public partial class ColorPicker
         set => Picker.OldColor = GorgonColor.ToColor(value);
     }
 
-
-
     /// <summary>Handles the ColorChanged event of the Picker control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
@@ -98,8 +93,6 @@ public partial class ColorPicker
         EventHandler<ColorChangedEventArgs> handler = ColorChangedEvent;
         handler?.Invoke(this, new ColorChangedEventArgs(SelectedColor, OriginalColor));
     }
-
-
 
     /// <summary>Initializes a new instance of the <see cref="ColorPicker"/> class.</summary>
     public ColorPicker() => InitializeComponent();

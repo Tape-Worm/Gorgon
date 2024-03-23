@@ -23,7 +23,6 @@
 // Created: July 7, 2016 11:53:48 PM
 // 
 
-
 using System.Text;
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
@@ -35,7 +34,6 @@ namespace Gorgon.Graphics.Core;
 /// </summary>
 internal class ShaderProcessor
 {
-
     /// <summary>
     /// Property to return the list of cached include files.
     /// </summary>
@@ -43,8 +41,6 @@ internal class ShaderProcessor
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to trim whitespace from the beginning and end of a line.
@@ -140,7 +136,6 @@ internal class ShaderProcessor
 
         string includePath = Path.GetFullPath(line.ToString(1, endQuote - 1));
 
-
         if (includePath.Length == 0)
         {
             throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORGFX_ERR_SHADER_INCLUDE_PATH_INVALID, includeLine));
@@ -224,8 +219,6 @@ internal class ShaderProcessor
 
         return result.ToString();
     }
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ShaderProcessor"/> class.

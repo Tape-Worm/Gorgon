@@ -23,7 +23,6 @@
 // Created: Thursday, December 15, 2011 12:49:30 PM
 // 
 
-
 using Gorgon.Diagnostics;
 using SharpDX.D3DCompiler;
 using D3D11 = SharpDX.Direct3D11;
@@ -49,8 +48,6 @@ public sealed class GorgonGeometryShader
     // The D3D 11 geometry shader.
     private D3D11.GeometryShader _shader;
 
-
-
     /// <summary>
     /// Property to set or return the Direct3D geometry shader.
     /// </summary>
@@ -72,8 +69,6 @@ public sealed class GorgonGeometryShader
     /// Property to return the type of shader.
     /// </summary>
     public override ShaderType ShaderType => ShaderType.Geometry;
-
-
 
     /// <summary>
     /// Function to convert this geometry shader to use a stream output.
@@ -131,8 +126,6 @@ public sealed class GorgonGeometryShader
 
         base.Dispose();
     }
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonGeometryShader" /> class.

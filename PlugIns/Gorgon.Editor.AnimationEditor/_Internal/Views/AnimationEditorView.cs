@@ -23,7 +23,6 @@
 // Created: March 14, 2019 11:33:25 AM
 // 
 
-
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Numerics;
@@ -63,8 +62,6 @@ internal partial class AnimationEditorView
     // The service to facilitate vertex editing for an animation.
     private VertexEditService _vertexEditorService;
 
-
-
     /// <summary>Property to return the data context assigned to this view.</summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public IAnimationContent ViewModel
@@ -72,8 +69,6 @@ internal partial class AnimationEditorView
         get;
         private set;
     }
-
-
 
     /// <summary>Handles the PropertyChanged event of the KeyEditor control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -457,8 +452,6 @@ internal partial class AnimationEditorView
         ViewModel.KeyEditor.PropertyChanged += KeyEditor_PropertyChanged;
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="AnimationEditorView"/> class.</summary>
     public AnimationEditorView(AnimationEditorSettings settings)
         : this() => _ribbonForm.Settings = settings;
@@ -476,5 +469,4 @@ internal partial class AnimationEditorView
         RegisterChildPanel(typeof(KeyValueEditor).FullName, FloatValuesEditor);
         RegisterChildPanel(typeof(ColorValueEditor).FullName, ColorValuesEditor);
     }
-
 }

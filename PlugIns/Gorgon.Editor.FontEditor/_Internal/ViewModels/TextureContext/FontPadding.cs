@@ -23,7 +23,6 @@
 // Created: September 3, 2021 5:42:42 PM
 // 
 
-
 using Gorgon.Editor.UI;
 
 namespace Gorgon.Editor.FontEditor;
@@ -37,8 +36,6 @@ internal class FontPadding
 
     // The padding around each glyph on the texture.
     private int _padding = 1;
-
-
 
     /// <summary>Property to return whether the panel is modal.</summary>
     public override bool IsModal => true;
@@ -60,8 +57,6 @@ internal class FontPadding
         }
     }
 
-
-
     /// <summary>Function to inject dependencies for the view model.</summary>
     /// <param name="injectionParameters">The parameters to inject.</param>
     /// <remarks>
@@ -75,5 +70,4 @@ internal class FontPadding
     protected override void OnInitialize(HostedPanelViewModelParameters injectionParameters)
     {
     }
-
 }

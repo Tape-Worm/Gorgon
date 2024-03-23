@@ -23,7 +23,6 @@
 // Created: Monday, December 14, 2015 8:41:48 PM
 // 
 
-
 using System.Runtime.CompilerServices;
 using Gorgon.Math;
 using SharpDX.DXGI;

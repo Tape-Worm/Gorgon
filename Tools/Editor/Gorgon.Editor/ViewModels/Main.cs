@@ -23,7 +23,6 @@
 // Created: August 26, 2018 9:43:30 PM
 // 
 
-
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Text;
@@ -58,8 +57,6 @@ internal class Main
     private EditorFileOpenDialogService _openDialog;
     // The directory locator service.
     private IDirectoryLocateService _directoryLocator;
-
-
 
     /// <summary>
     /// Property to return the settings for the application.
@@ -181,8 +178,6 @@ internal class Main
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to save the project metadata.
@@ -820,8 +815,6 @@ internal class Main
         base.OnUnload();
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="Main"/> class.
     /// </summary>
@@ -831,5 +824,4 @@ internal class Main
         OpenPackFileCommand = new EditorCommand<object>(DoOpenPackFileAsync, CanOpenProjects);
         AppClosingAsyncCommand = new EditorAsyncCommand<AppCloseArgs>(DoAppCloseAsync);
     }
-
 }

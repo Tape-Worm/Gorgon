@@ -23,7 +23,6 @@
 // Created: February 6, 2020 9:57:02 PM
 // 
 
-
 using System.ComponentModel;
 using System.Numerics;
 using Gorgon.Core;
@@ -206,7 +205,6 @@ public class DefaultToolRenderer<T>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="SwapChainResizingEventArgs"/> instance containing the event data.</param>
     private void SwapChain_BeforeSwapChainResized(object sender, SwapChainResizingEventArgs e) => OnResizeBegin();
-
 
     /// <summary>
     /// Function to calculate scaling to the specified size, bounded by the client area of the rendering control.

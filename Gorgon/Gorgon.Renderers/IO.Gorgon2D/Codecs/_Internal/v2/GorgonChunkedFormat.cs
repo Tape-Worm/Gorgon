@@ -23,7 +23,6 @@
 // Created: Monday, January 21, 2013 9:19:55 AM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.IO;
 using Gorgon.IO.Properties;
@@ -55,21 +54,16 @@ internal enum ChunkAccessMode
 internal abstract class GorgonChunkedFormat
     : IDisposable
 {
-
     /// <summary>
     /// The size of the temporary buffer for large data reads/writes.
     /// </summary>
     protected internal const int TempBufferSize = 65536;
-
-
 
     private bool _disposed;                                                 // Flag to indicate that the object was disposed.
     private ulong _currentChunk;                                            // Our current chunk.
     private long _chunkStart;                                               // The start of the current chunk.
     private long _chunkEnd;                                                 // The end of the current chunk.
     private uint _chunkSize;                                                // Size of the chunk.
-
-
 
     /// <summary>
     /// Property to set or return the temporary buffer for large reads/writes.
@@ -110,8 +104,6 @@ internal abstract class GorgonChunkedFormat
     /// Property to return the underlying stream for the chunking object.
     /// </summary>
     public Stream BaseStream => ChunkAccessMode == ChunkAccessMode.Write ? Writer.BaseStream : Reader.BaseStream;
-
-
 
     /// <summary>
     /// Function to validate the access mode.
@@ -270,8 +262,6 @@ internal abstract class GorgonChunkedFormat
         }
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonChunkedFormat" /> class.
     /// </summary>
@@ -318,8 +308,6 @@ internal abstract class GorgonChunkedFormat
         }
     }
 
-
-
     /// <summary>
     /// Releases unmanaged and - optionally - managed resources.
     /// </summary>
@@ -351,5 +339,4 @@ internal abstract class GorgonChunkedFormat
         Dispose(true);
         GC.SuppressFinalize(this);
     }
-
 }

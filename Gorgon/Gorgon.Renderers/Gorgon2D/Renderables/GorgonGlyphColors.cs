@@ -23,7 +23,6 @@
 // Created: February 8, 2017 7:22:29 PM
 // 
 
-
 using System.Collections;
 using System.Runtime.CompilerServices;
 using Gorgon.Graphics;
@@ -39,8 +38,6 @@ public class GorgonGlyphColors
 
     // The renderable that owns this object.
     private readonly TextRenderable _renderable;
-
-
 
     /// <summary>
     /// Property to set or return the corner color by index.
@@ -156,8 +153,6 @@ public class GorgonGlyphColors
     /// <summary>Gets the number of elements in the collection.</summary>
     public int Count => 4;
 
-
-
     /// <summary>
     /// Function to assign a single color to all corners.
     /// </summary>
@@ -215,8 +210,6 @@ public class GorgonGlyphColors
         }
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonGlyphColors"/> class.
     /// </summary>
@@ -227,5 +220,4 @@ public class GorgonGlyphColors
         _renderable = renderable;
         SetAll(defaultColor);
     }
-
 }

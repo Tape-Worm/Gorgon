@@ -23,7 +23,6 @@
 // Created: July 2, 2018 11:17:53 AM
 // 
 
-
 using System.Globalization;
 using System.Numerics;
 using Gorgon.Graphics;
@@ -80,8 +79,6 @@ public class Gorgon2DGaussBlurEffect
     private GorgonTexture2DInfo _blurRtvInfo;
     // The blur render target pixel format.
     private BufferFormat _blurTargetFormat = BufferFormat.R8G8B8A8_UNorm;
-
-
 
     /// <summary>
     /// Property to return the size of the convolution kernel used to apply weighting against pixel samples when blurring.
@@ -266,8 +263,6 @@ public class Gorgon2DGaussBlurEffect
             _needOffsetUpdate = true;
         }
     }
-
-
 
     /// <summary>
     /// Function to update the render target.
@@ -616,8 +611,6 @@ public class Gorgon2DGaussBlurEffect
 
         EndRender(output);
     }
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Gorgon2DGaussBlurEffect"/> class.

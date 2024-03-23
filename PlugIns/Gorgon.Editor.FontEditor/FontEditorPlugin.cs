@@ -23,7 +23,6 @@
 // Created: August 28, 2021 7:27:39 PM
 // 
 
-
 using System.Diagnostics;
 using System.Numerics;
 using Gorgon.Core;
@@ -58,8 +57,6 @@ internal class FontEditorPlugin
     // The attribute key name for the animation codec attribute.
     private const string CodecAttr = "AnimationCodec";
 
-
-
     // No thumbnail image.
     private IGorgonImage _noThumbnail;
     // The global settings for the plug in.
@@ -77,8 +74,6 @@ internal class FontEditorPlugin
     /// The name of the settings file.
     /// </summary>
     public static readonly string SettingsName = typeof(FontEditorPlugin).FullName;
-
-
 
     /// <summary>
     /// Property to return the cached fonts for the font editor.
@@ -123,8 +118,6 @@ internal class FontEditorPlugin
     /// Plug in developers can override this to default the file name extension for their content when creating new content with <see cref="GetDefaultContentAsync(string, HashSet{string})"/>.
     /// </remarks>
     protected override GorgonFileExtension DefaultFileExtension => new(_defaultCodec.DefaultFileExtension, Resources.GORFNT_TEXT_FILE_OPEN_DESC);
-
-
 
     /// <summary>
     /// Function to update the font cache.
@@ -500,8 +493,6 @@ internal class FontEditorPlugin
     /// <summary>Function to retrieve the icon used for new content creation.</summary>
     /// <returns>An image for the icon.</returns>
     public Image GetNewIcon() => Resources.font_24x24;
-
-
 
     // When we construct the plug in object, we'll need to send back a friendly description 
     // for display purposes.

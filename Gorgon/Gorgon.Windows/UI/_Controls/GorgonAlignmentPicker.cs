@@ -23,7 +23,6 @@
 // Created: January 16, 2019 8:16:45 PM
 // 
 
-
 using System.ComponentModel;
 using System.Windows.Forms.Design;
 
@@ -40,15 +39,11 @@ public partial class GorgonAlignmentPicker
     // The current alignment.
     private Alignment _alignment = Alignment.Center;
 
-
-
     /// <summary>
     /// Event triggered when the alignment value changes.
     /// </summary>
     [Description("Event fired with the alignment property changes."), Category("Alignment")]
     public event EventHandler AlignmentChanged;
-
-
 
     /// <summary>
     /// Property to return the currently selected alignment.
@@ -68,8 +63,6 @@ public partial class GorgonAlignmentPicker
             CheckButton();
         }
     }
-
-
 
     /// <summary>
     /// Function to update the button state based on the current alignment.
@@ -139,8 +132,6 @@ public partial class GorgonAlignmentPicker
     /// <param name="specified">A bitwise combination of the <see cref="BoundsSpecified"/> values.</param>
     protected override void SetBoundsCore(int x, int y, int width, int height, BoundsSpecified specified) => base.SetBoundsCore(x, y, 105, 105, specified);
 
-
-
     /// <summary>Initializes a new instance of the <see cref="GorgonAlignmentPicker"/> class.</summary>
     public GorgonAlignmentPicker()
     {
@@ -156,7 +147,6 @@ public partial class GorgonAlignmentPicker
         radioBottomRight.Tag = Alignment.LowerRight;
         radioCenter.Tag = Alignment.Center;
     }
-
 }
 
 /// <summary>

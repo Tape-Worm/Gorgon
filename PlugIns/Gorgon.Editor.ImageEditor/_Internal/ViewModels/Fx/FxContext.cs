@@ -23,7 +23,6 @@
 // Created: February 23, 2020 12:42:33 PM
 // 
 
-
 using Gorgon.Diagnostics;
 using Gorgon.Editor.ImageEditor.Properties;
 using Gorgon.Editor.ImageEditor.ViewModels;
@@ -48,8 +47,6 @@ internal class FxContext
     private bool _effectsApplied;
     // The effects service used to apply effects to the image or generate previews.
     private IFxService _fxService;
-
-
 
     /// <summary>
     /// Property to return the view model for the blur fx settings.
@@ -244,8 +241,6 @@ internal class FxContext
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to set the working image for the blur effect.
@@ -611,8 +606,6 @@ internal class FxContext
         base.OnUnload();
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="FxContext"/> class.</summary>
     /// <param name="imageContent">The image content view model.</param>
     /// <param name="blur">The blur Fx view model.</param>
@@ -632,5 +625,4 @@ internal class FxContext
         ShowPosterizeCommand = new EditorCommand<object>(DoShowPosterize, CanShowPosterize);
         ShowOneBitCommand = new EditorCommand<object>(DoShowOneBit, CanShowOneBit);
     }
-
 }

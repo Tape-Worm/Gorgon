@@ -23,7 +23,6 @@
 // Created: January 4, 2019 10:58:00 AM
 // 
 
-
 using System.ComponentModel;
 
 namespace Gorgon.Editor.UI;
@@ -36,7 +35,6 @@ namespace Gorgon.Editor.UI;
 public class CloseContentArgs(bool checkForChanges)
         : CancelEventArgs
 {
-
     /// <summary>
     /// Property to return whether or not to check the content for changes prior to closing.
     /// </summary>
@@ -44,8 +42,5 @@ public class CloseContentArgs(bool checkForChanges)
     {
         get;
     } = checkForChanges;
-
-
-
 
 }

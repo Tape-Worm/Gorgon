@@ -23,7 +23,6 @@
 // Created: April 10, 2020 11:58:11 AM
 // 
 
-
 using System.ComponentModel;
 
 namespace Gorgon.Editor.SpriteEditor;

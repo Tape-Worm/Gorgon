@@ -23,7 +23,6 @@
 // Created: August 3, 2017 12:44:06 PM
 // 
 
-
 using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -66,8 +65,6 @@ public partial class Form
     private GorgonTexture2DView _outputView;
     // The output uav for the output texture.
     private GorgonTexture2DReadWriteView _outputUav;
-
-
 
     /// <summary>
     /// Handles the Click event of the ButtonImagePath control.
@@ -252,8 +249,6 @@ public partial class Form
             Cursor.Current = Cursors.Default;
         }
     }
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Form"/> class.

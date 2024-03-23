@@ -23,7 +23,6 @@
 // Created: July 18, 2018 4:04:19 PM
 // 
 
-
 using System.Numerics;
 using System.Windows.Forms;
 using Gorgon.Animation;
@@ -70,8 +69,6 @@ static class Program
     private static GorgonSpriteAnimationController _animController;
     // The background scroll position.
     private static float _pos;
-
-
 
     /// <summary>
     /// Function to load the Gorgon pack file provider plugin.
@@ -269,5 +266,4 @@ static class Program
             _assemblyCache?.Dispose();
         }
     }
-
 }

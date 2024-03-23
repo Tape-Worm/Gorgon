@@ -23,7 +23,6 @@
 // Created: November 6, 2017 5:56:11 PM
 // 
 
-
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
@@ -31,7 +30,6 @@ namespace Gorgon.Graphics.Core;
 /// </summary>
 public readonly struct GorgonVideoAdapterMemory
 {
-
     /// <summary>
     /// The amount of dedicated system memory available, in bytes.
     /// </summary>
@@ -47,8 +45,6 @@ public readonly struct GorgonVideoAdapterMemory
     /// </summary>
     public readonly long Shared;
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonVideoAdapterMemory"/> struct.
     /// </summary>
@@ -61,5 +57,4 @@ public readonly struct GorgonVideoAdapterMemory
         Shared = shared;
         Video = gpu;
     }
-
 }

@@ -23,7 +23,6 @@
 // Created: April 22, 2019 10:47:26 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Editor.ImageEditor.Properties;
 using Gorgon.Editor.PlugIns;
@@ -49,8 +48,6 @@ internal static class SharedDataFactory
     private static readonly Lazy<ICodecRegistry> _codecRegistryFactory;
     // The factory that creates/loads the settings view model.
     private static readonly Lazy<(Settings settings, SettingsPlugins pluginSettings)> _settingsViewModelFactory;
-
-
 
     /// <summary>
     /// Function to retrieve the common plug in cache.
@@ -129,8 +126,6 @@ internal static class SharedDataFactory
         return (_codecRegistryFactory.Value, _settingsViewModelFactory.Value.settings, _settingsViewModelFactory.Value.pluginSettings);
     }
 
-
-
     /// <summary>Initializes static members of the <see cref="SharedDataFactory"/> class.</summary>
     static SharedDataFactory()
     {
@@ -139,5 +134,4 @@ internal static class SharedDataFactory
         _codecRegistryFactory = new Lazy<ICodecRegistry>(GetCodecRegistry, LazyThreadSafetyMode.ExecutionAndPublication);
         _settingsViewModelFactory = new Lazy<(Settings, SettingsPlugins)>(GetSettingsViewModel, LazyThreadSafetyMode.ExecutionAndPublication);
     }
-
 }

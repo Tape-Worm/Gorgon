@@ -23,7 +23,6 @@
 // Created: Saturday, September 12, 2015 1:47:55 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Input.Properties;
@@ -50,8 +49,6 @@ public sealed class GorgonGamingDeviceDriverFactory(GorgonMefPlugInCache pluginC
     private readonly IGorgonPlugInService _plugInService = new GorgonMefPlugInService(pluginCache);
     // The cache holding the plug in assemblies.
     private readonly GorgonMefPlugInCache _plugInCache = pluginCache ?? throw new ArgumentNullException(nameof(pluginCache));
-
-
 
     /// <summary>
     /// Function to load all drivers from the plug in assemblies that are currently loaded.
@@ -142,6 +139,4 @@ public sealed class GorgonGamingDeviceDriverFactory(GorgonMefPlugInCache pluginC
 
         return result;
     }
-
-
 }

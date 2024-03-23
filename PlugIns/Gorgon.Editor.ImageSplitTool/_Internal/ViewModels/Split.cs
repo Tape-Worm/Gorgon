@@ -23,7 +23,6 @@
 // Created: May 7, 2019 11:50:04 AM
 // 
 
-
 using System.ComponentModel;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
@@ -47,8 +46,6 @@ internal class ImageSelection
 
     // The directory path for thumbnails this session.
     private const string ThumbnailPath = "/Thumbnails/";
-
-
 
     // The service used to search through the files.
     private ISearchService<IContentFileExplorerSearchEntry> _searchService;
@@ -74,8 +71,6 @@ internal class ImageSelection
     private TextureAtlasSplitter _splitService;
     // The progress for the splitting operation.
     private string _progress = string.Empty;
-
-
 
     /// <summary>
     /// Property to return the progress for the splitting operation.
@@ -198,8 +193,6 @@ internal class ImageSelection
     {
         get;
     }
-
-
 
     /// <summary>Handles the PropertyChanged event of the File control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -516,8 +509,6 @@ internal class ImageSelection
         base.OnUnload();
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="ImageSelection"/> class.</summary>
     public ImageSelection()
     {
@@ -528,5 +519,4 @@ internal class ImageSelection
         SearchCommand = new EditorCommand<string>(DoSearch, CanSearch);
         CancelCommand = new EditorAsyncCommand<CancelEventArgs>(DoCancelAsync);
     }
-
 }

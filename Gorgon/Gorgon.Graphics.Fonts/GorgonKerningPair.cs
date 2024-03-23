@@ -23,7 +23,6 @@
 // Created: Tuesday, April 17, 2012 9:15:18 AM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Graphics.Fonts.Properties;
 
@@ -41,7 +40,6 @@ namespace Gorgon.Graphics.Fonts;
 public readonly struct GorgonKerningPair(char leftChar, char rightChar)
         : IGorgonEquatableByRef<GorgonKerningPair>
 {
-
     /// <summary>
     /// Left character.
     /// </summary>
@@ -50,8 +48,6 @@ public readonly struct GorgonKerningPair(char leftChar, char rightChar)
     /// Right character.
     /// </summary>
     public readonly char RightCharacter = rightChar;
-
-
 
     /// <summary>
     /// Function to determine if 2 kerning pairs are the same.
@@ -122,8 +118,5 @@ public readonly struct GorgonKerningPair(char leftChar, char rightChar)
     /// <returns>
     ///   <b>true</b> if equal, <b>false</b> if not.</returns>
     public bool Equals(ref readonly GorgonKerningPair other) => Equals(in this, in other);
-
-
-
 
 }

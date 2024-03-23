@@ -23,7 +23,6 @@
 // Created: June 6, 2018 2:34:12 PM
 // 
 
-
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -38,7 +37,6 @@ namespace Gorgon.Renderers.Geometry;
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
 public struct Gorgon2DVertex
 {
-
     /// <summary>
     /// The size of the vertex, in bytes.
     /// </summary>
@@ -73,8 +71,6 @@ public struct Gorgon2DVertex
     [InputElement(3, "ANGLE")]
     public Vector2 Angle;
 
-
-
     /// <summary>
     /// Deconstructs this instance into individual position values.
     /// </summary>
@@ -100,8 +96,6 @@ public struct Gorgon2DVertex
         uv = UV;
         angle = Angle;
     }
-
-
 
     /// <summary>Initializes a new instance of the <see cref="Gorgon2DVertex" /> struct.</summary>
     /// <param name="pos">The position.</param>
@@ -141,5 +135,4 @@ public struct Gorgon2DVertex
         UV = uv;
         Angle = angle;
     }
-
 }

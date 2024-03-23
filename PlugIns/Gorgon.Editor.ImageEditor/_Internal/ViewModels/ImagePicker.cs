@@ -23,7 +23,6 @@
 // Created: February 14, 2020 9:22:52 AM
 // 
 
-
 using System.Collections.ObjectModel;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
@@ -68,8 +67,6 @@ internal class ImagePicker
     private bool _needsTransform;
     // Flag to indicate that the image being imported has multiple sub resources.
     private bool _multiSubResources;
-
-
 
     /// <summary>
     /// Property to return the settings for cropping/resizing/aligning an imported image.
@@ -349,8 +346,6 @@ internal class ImagePicker
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to check whether the image needs cropping or resizing.
@@ -830,8 +825,6 @@ internal class ImagePicker
         base.OnUnload();
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="ImagePicker"/> class.</summary>
     public ImagePicker()
     {
@@ -844,5 +837,4 @@ internal class ImagePicker
         UpdateImageCommand = new EditorCommand<object>(DoUpdateImage);
         RestoreCommand = new EditorCommand<object>(DoRestore, CanRestore);
     }
-
 }

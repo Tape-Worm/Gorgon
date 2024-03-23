@@ -23,7 +23,6 @@
 // Created: October 29, 2018 1:04:03 PM
 // 
 
-
 using Gorgon.Editor.Content;
 using Gorgon.Editor.PlugIns;
 using Gorgon.IO;
@@ -37,7 +36,6 @@ namespace Gorgon.Editor.Services;
 public interface IToolPlugInService
     : IDisabledPlugInService
 {
-
     /// <summary>
     /// Property to return the list of tool plugins loaded in to the application.
     /// </summary>
@@ -53,8 +51,6 @@ public interface IToolPlugInService
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function called when a project is loaded/created.

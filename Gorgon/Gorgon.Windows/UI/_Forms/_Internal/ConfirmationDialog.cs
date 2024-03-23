@@ -23,7 +23,6 @@
 // Created: Saturday, June 18, 2011 4:20:43 PM
 // 
 
-
 using System.ComponentModel;
 
 namespace Gorgon.UI;
@@ -37,8 +36,6 @@ internal partial class ConfirmationDialog
 
     // Don't show the cancel button.
     private bool _showCancel;
-
-
 
     /// <summary>
     /// Property to set or return whether to show the cancel button.
@@ -72,8 +69,6 @@ internal partial class ConfirmationDialog
         get;
         protected set;
     }
-
-
 
     /// <summary>
     /// Raises the <see cref="E:System.Windows.Forms.Form.FormClosing"></see> event.
@@ -171,8 +166,6 @@ internal partial class ConfirmationDialog
         }
     }
 
-
-
     /// <summary>
     /// Constructor.
     /// </summary>
@@ -181,6 +174,5 @@ internal partial class ConfirmationDialog
         ConfirmationResult = ConfirmationResult.None;
         InitializeComponent();
     }
-
 }
 

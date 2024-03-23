@@ -23,7 +23,6 @@
 // Created: April 20, 2019 10:22:08 AM
 // 
 
-
 using System.Collections.ObjectModel;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Properties;
@@ -40,8 +39,6 @@ internal class EditorSettings
 
     // The currently selected category.
     private ISettingsCategory _current;
-
-
 
     /// <summary>Property to return the current category ID being used.</summary>
     public ISettingsCategory CurrentCategory
@@ -85,8 +82,6 @@ internal class EditorSettings
         private set;
     }
 
-
-
     /// <summary>
     /// Function to change the current category.
     /// </summary>
@@ -124,8 +119,6 @@ internal class EditorSettings
         Categories = new ObservableCollection<ISettingsCategory>(injectionParameters.Categories);
         PlugInsList = injectionParameters.PlugInsList;
     }
-
-
 
     /// <summary>Initializes a new instance of the <see cref="EditorSettings"/> class.</summary>
     public EditorSettings() => SetCategoryCommand = new EditorCommand<string>(DoSetCategory);

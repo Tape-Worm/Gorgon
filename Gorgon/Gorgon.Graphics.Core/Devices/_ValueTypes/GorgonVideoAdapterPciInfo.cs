@@ -23,7 +23,6 @@
 // Created: November 6, 2017 5:56:30 PM
 // 
 
-
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
@@ -31,7 +30,6 @@ namespace Gorgon.Graphics.Core;
 /// </summary>
 public readonly struct GorgonVideoAdapterPciInfo
 {
-
     /// <summary>
     /// The PCI device ID for the adapter.
     /// </summary>
@@ -52,8 +50,6 @@ public readonly struct GorgonVideoAdapterPciInfo
     /// </summary>
     public readonly int VendorID;
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonVideoAdapterPciInfo"/> struct.
     /// </summary>
@@ -68,5 +64,4 @@ public readonly struct GorgonVideoAdapterPciInfo
         SubSystemID = subsystemID;
         VendorID = vendorID;
     }
-
 }

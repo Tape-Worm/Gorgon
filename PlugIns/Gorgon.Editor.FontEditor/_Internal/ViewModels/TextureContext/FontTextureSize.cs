@@ -23,7 +23,6 @@
 // Created: September 3, 2021 9:48:54 AM
 // 
 
-
 using Gorgon.Editor.UI;
 
 namespace Gorgon.Editor.FontEditor;
@@ -38,8 +37,6 @@ internal class FontTextureSize
     // The texture size.
     private int _textureWidth = 512;
     private int _textureHeight = 512;
-
-
 
     /// <summary>Property to set or return the width of the font textures.</summary>
     public int TextureWidth
@@ -78,8 +75,6 @@ internal class FontTextureSize
     /// <summary>Property to return whether the panel is modal.</summary>
     public override bool IsModal => true;
 
-
-
     /// <summary>Function to inject dependencies for the view model.</summary>
     /// <param name="injectionParameters">The parameters to inject.</param>
     /// <remarks>
@@ -94,5 +89,4 @@ internal class FontTextureSize
     {
         // Empty on purpose.
     }
-
 }

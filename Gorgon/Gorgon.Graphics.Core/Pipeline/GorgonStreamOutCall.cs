@@ -23,7 +23,6 @@
 // Created: May 29, 2018 1:31:23 PM
 // 
 
-
 using Gorgon.Collections;
 
 namespace Gorgon.Graphics.Core;
@@ -66,8 +65,6 @@ public class GorgonStreamOutCall
 
     // The current pipeline state.
     private GorgonStreamOutPipelineState _pipelineState;
-
-
 
     /// <summary>
     /// Property to return the internal D3D state.
@@ -113,8 +110,6 @@ public class GorgonStreamOutCall
     /// </summary>
     public IGorgonReadOnlyArray<GorgonReadWriteViewBinding> ReadWriteViews => D3DState.ReadWriteViews;
 
-
-
     /// <summary>
     /// Function to set up shader resource views for each shader.
     /// </summary>
@@ -145,8 +140,6 @@ public class GorgonStreamOutCall
         D3DState.HsConstantBuffers = D3DState.DsConstantBuffers = D3DState.VsConstantBuffers = D3DState.GsConstantBuffers = D3DState.CsConstantBuffers = new GorgonConstantBuffers();
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonStreamOutCall"/> class.
     /// </summary>
@@ -155,5 +148,4 @@ public class GorgonStreamOutCall
         PixelShader = new GorgonShaderResources();
         D3DState.StreamOutBindings = new GorgonStreamOutBindings();
     }
-
 }

@@ -23,7 +23,6 @@
 // Created: May 7, 2019 6:23:18 PM
 // 
 
-
 using System.ComponentModel;
 using System.Diagnostics;
 using Gorgon.Editor.Content;
@@ -63,8 +62,6 @@ internal class TextureAtlas
     private int _previewTextureIndex;
     // The sprites used to generate the atlas.
     private IReadOnlyDictionary<IContentFile, GorgonSprite> _sprites = new Dictionary<IContentFile, GorgonSprite>();
-
-
 
     /// <summary>
     /// Property to return the view model for the sprite file loader.
@@ -149,7 +146,6 @@ internal class TextureAtlas
             OnPropertyChanged();
         }
     }
-
 
     /// <summary>
     /// Property to return the base atlas texture name.
@@ -277,7 +273,6 @@ internal class TextureAtlas
         get;
     }
 
-
     /// <summary>
     /// Property to return the command used to commit the atlas data back to the file system.
     /// </summary>
@@ -285,8 +280,6 @@ internal class TextureAtlas
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to determine whether sprites can be loaded or not.
@@ -523,7 +516,6 @@ internal class TextureAtlas
         }
     }
 
-
     /// <summary>
     /// Function to determine we can move to the next preview image.
     /// </summary>
@@ -708,8 +700,6 @@ internal class TextureAtlas
         base.OnUnload();
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="TextureAtlas"/> class.</summary>
     public TextureAtlas()
     {
@@ -720,5 +710,4 @@ internal class TextureAtlas
         PrevPreviewCommand = new EditorCommand<object>(DoPrevPreview, CanPrevPreview);
         CommitAtlasCommand = new EditorCommand<CancelEventArgs>(DoCommitAtlas, CanCommitAtlas);
     }
-
 }

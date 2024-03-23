@@ -25,9 +25,9 @@ using System.Drawing;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using Gorgon.Properties;
 using Gorgon.Json;
 using Gorgon.Math;
+using Gorgon.Properties;
 using Newtonsoft.Json;
 
 namespace Gorgon.Graphics;
@@ -254,7 +254,7 @@ public struct GorgonPoint(int x, int y)
     {
         x = X;
         y = Y;
-    }    
+    }
 
     /// <summary>
     /// Function to return a string representation of the type.

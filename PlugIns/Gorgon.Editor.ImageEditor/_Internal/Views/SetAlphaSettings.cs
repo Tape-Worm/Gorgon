@@ -23,7 +23,6 @@
 // Created: January 15, 2019 9:04:41 PM
 // 
 
-
 using System.ComponentModel;
 using Gorgon.Core;
 using Gorgon.Editor.ImageEditor.ViewModels;
@@ -39,7 +38,6 @@ namespace Gorgon.Editor.ImageEditor;
 internal partial class SetAlphaSettings
     : EditorSubPanelCommon, IDataContext<IAlphaSettings>
 {
-
     /// <summary>Property to return the data context assigned to this view.</summary>
     /// <value>The data context.</value>
     [Browsable(false)]
@@ -48,8 +46,6 @@ internal partial class SetAlphaSettings
         get;
         private set;
     }
-
-
 
     /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -111,7 +107,6 @@ internal partial class SetAlphaSettings
         ImageAlpha.Refresh();
     }
 
-
     /// <summary>Handles the Paint event of the ImageAlpha control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="PaintEventArgs"/> instance containing the event data.</param>
@@ -133,7 +128,6 @@ internal partial class SetAlphaSettings
 
         ViewModel.PropertyChanged -= DataContext_PropertyChanged;
     }
-
 
     /// <summary>
     /// Function called when the view should be reset by a <b>null</b> data context.
@@ -224,8 +218,6 @@ internal partial class SetAlphaSettings
 
         ViewModel.PropertyChanged += DataContext_PropertyChanged;
     }
-
-
 
     /// <summary>Initializes a new instance of the <see cref="SetAlphaSettings"/> class.</summary>
     public SetAlphaSettings() => InitializeComponent();

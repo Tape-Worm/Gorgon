@@ -20,7 +20,7 @@
 // 
 // Created: November 17, 2023 5:05:35 PM
 //
- 
+
 using Gorgon.Properties;
 
 namespace Gorgon.Core;

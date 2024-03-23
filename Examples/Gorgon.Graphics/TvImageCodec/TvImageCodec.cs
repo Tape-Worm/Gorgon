@@ -23,7 +23,6 @@
 // Created: March 5, 2017 10:05:08 PM
 // 
 
-
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Gorgon.Core;
@@ -74,8 +73,6 @@ internal class TvImageCodec
         public int Height;
     }
 
-
-
     // The magic number to identify the file.
     private const long MagicValue = 0x3074724356543020;
 
@@ -85,8 +82,6 @@ internal class TvImageCodec
     [
         BufferFormat.R8G8B8A8_UNorm
     ];
-
-
 
     /// <summary>
     /// Property to return the friendly description of the format.
@@ -124,8 +119,6 @@ internal class TvImageCodec
     /// Property to return whether the image codec supports block compression.
     /// </summary>
     public override bool SupportsBlockCompression => false;
-
-
 
     /// <summary>
     /// Function to read the meta data for the image.
@@ -380,7 +373,6 @@ internal class TvImageCodec
             stream.Position = position;
         }
     }
-
 
     /// <summary>
     /// Function to read the meta data for image data within a stream.

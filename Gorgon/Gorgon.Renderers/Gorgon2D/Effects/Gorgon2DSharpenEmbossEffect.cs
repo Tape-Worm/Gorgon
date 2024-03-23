@@ -23,7 +23,6 @@
 // Created: Monday, April 02, 2012 2:59:16 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -57,8 +56,6 @@ public class Gorgon2DSharpenEmbossEffect
     private bool _isUpdated = true;
     // The texture size used to calculate the emboss/sharpen edges.
     private Vector2 _textureSize = new(512.0f, 512.0f);
-
-
 
     /// <summary>
     /// Property to set or return the offset of the shapren/embossing edges.
@@ -106,8 +103,6 @@ public class Gorgon2DSharpenEmbossEffect
         }
     }
 
-
-
     /// <summary>
     /// Function called when the effect is being initialized.
     /// </summary>
@@ -147,7 +142,6 @@ public class Gorgon2DSharpenEmbossEffect
                                 .ConstantBuffer(_sharpenEmbossBuffer, 1)
                                 .Shader(_embossShader)
                                 .Build();
-
 
             _sharpenBatchState = builders.BatchBuilder
                                  .PixelShaderState(_sharpenState)
@@ -257,8 +251,6 @@ public class Gorgon2DSharpenEmbossEffect
                                         new GorgonRectangleF(0, 0, 1, 1));
         End();
     }
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Gorgon2DSharpenEmbossEffect" /> class.

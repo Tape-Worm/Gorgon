@@ -23,7 +23,6 @@
 // Created: August 10, 2018 7:34:05 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Diagnostics;

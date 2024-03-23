@@ -23,7 +23,6 @@
 // Created: August 16, 2016 3:47:42 PM
 // 
 
-
 using Gorgon.IO.Properties;
 
 namespace Gorgon.IO;
@@ -34,7 +33,6 @@ namespace Gorgon.IO;
 public struct GorgonSpriteCodecDescription
     : IEquatable<GorgonSpriteCodecDescription>
 {
-
     /// <summary>
     /// The name of the plug in.  This will be the same as its fully qualified type name.
     /// </summary>
@@ -44,8 +42,6 @@ public struct GorgonSpriteCodecDescription
     /// A friendly description used for display.
     /// </summary>
     public string Description;
-
-
 
     /// <summary>
     /// Function to determine if two instances are equal.
@@ -92,8 +88,6 @@ public struct GorgonSpriteCodecDescription
     /// <returns><b>true</b> if the two instances are not equal, <b>false</b> if they are.</returns>
     public static bool operator !=(GorgonSpriteCodecDescription left, GorgonSpriteCodecDescription right) => !Equals(left, right);
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonSpriteCodecDescription"/> struct.
     /// </summary>
@@ -108,5 +102,4 @@ public struct GorgonSpriteCodecDescription
         Name = type.FullName;
         Description = string.Empty;
     }
-
 }

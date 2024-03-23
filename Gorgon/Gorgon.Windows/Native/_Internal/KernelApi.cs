@@ -23,7 +23,6 @@
 // Created: Wednesday, August 12, 2015 8:07:36 PM
 // 
 
-
 using System.Runtime.InteropServices;
 using System.Security;
 
@@ -63,13 +62,10 @@ internal enum ConsoleCloseSignal
 [SuppressUnmanagedCodeSecurity]
 internal static partial class KernelApi
 {
-
     /// <summary>
     /// Standard output handle.
     /// </summary>
     public const int StdOutputHandle = -11;
-
-
 
     /// <summary>
     /// Property to return the number of bytes of installed physical RAM.
@@ -103,16 +99,12 @@ internal static partial class KernelApi
         }
     }
 
-
-
     /// <summary>
     /// Event delegate for closing the console window.
     /// </summary>
     /// <param name="dwControlType">The type of event.</param>
     /// <returns><b>true</b> if the event is handled, <b>false</b> if not.</returns>
     public delegate bool ConsoleCloseHandler(ConsoleCloseSignal dwControlType);
-
-
 
     /// <summary>
     /// Function to retrieve the standard handle.
@@ -226,8 +218,6 @@ internal static partial class KernelApi
     [LibraryImport("kernel32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
     public static partial bool QueryPerformanceCounter(out long performanceCount);
-
-
 
     /// <summary>
     /// Initializes static members of the <see cref="KernelApi"/> class.

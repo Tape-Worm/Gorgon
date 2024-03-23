@@ -23,7 +23,6 @@
 // Created: Sunday, June 14, 2015 2:26:21 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Properties;
 
@@ -61,7 +60,6 @@ namespace Gorgon.IO;
 /// <conceptualLink target="7b81343e-e2fc-4f0f-926a-d9193ae481fe">Gorgon Chunk File Format (GCFF) details</conceptualLink>
 public abstract class GorgonChunkFile<T>
 {
-
     /// <summary>
     /// The header ID for the 1.0 version of the chunk file format. (GCFF0100)
     /// </summary>
@@ -70,8 +68,6 @@ public abstract class GorgonChunkFile<T>
     /// The chunk table chunk ID (CHUNKTBL)
     /// </summary>
     public const ulong ChunkTableID = 0x4C42544B4E554843;
-
-
 
     /// <summary>
     /// Property to return an editable list of chunks.
@@ -105,8 +101,6 @@ public abstract class GorgonChunkFile<T>
     /// Use this property to determine if a chunk exists when reading a chunk file.
     /// </remarks>
     public IGorgonReadOnlyChunkCollection Chunks => ChunkList;
-
-
 
     /// <summary>
     /// Function to perform validation against the requested chunk ID and the list of reserved values.
@@ -252,7 +246,7 @@ public abstract class GorgonChunkFile<T>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="stream"/> is has its <see cref="Stream.CanSeek"/> property set to <b>false</b>.</exception>
     protected GorgonChunkFile(Stream stream)
     {
-        ArgumentNullException.ThrowIfNull(stream);        
+        ArgumentNullException.ThrowIfNull(stream);
 
         if (!stream.CanSeek)
         {
@@ -262,5 +256,4 @@ public abstract class GorgonChunkFile<T>
         ChunkList = [];
         Stream = new GorgonStreamWrapper(stream);
     }
-
 }

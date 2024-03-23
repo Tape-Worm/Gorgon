@@ -23,7 +23,6 @@
 // Created: June 7, 2020 9:28:04 PM
 // 
 
-
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI;
 
@@ -39,7 +38,6 @@ namespace Gorgon.Editor.AnimationEditor;
 internal class SettingsParameters(AnimationEditorSettings settings, IHostContentServices hostServices)
         : SettingsCategoryViewModelParameters(hostServices)
 {
-
     /// <summary>
     /// Property to return the settings for the plug in.
     /// </summary>
@@ -47,6 +45,5 @@ internal class SettingsParameters(AnimationEditorSettings settings, IHostContent
     {
         get;
     } = settings ?? throw new ArgumentNullException(nameof(settings));
-
 
 }

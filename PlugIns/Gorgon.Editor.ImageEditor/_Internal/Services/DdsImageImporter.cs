@@ -23,7 +23,6 @@
 // Created: December 18, 2018 12:30:56 AM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Services;
@@ -52,8 +51,6 @@ internal class DdsImageImporter(IGorgonFileSystemWriter<Stream> tempFileSystemWr
     private readonly ICodecRegistry _codecs = codecs;
     // The path to the temporary directory.
     private string _tempDirPath;
-
-
 
     /// <summary>Function to clean up any temporary working data.</summary>
     public void CleanUp()
@@ -137,6 +134,4 @@ internal class DdsImageImporter(IGorgonFileSystemWriter<Stream> tempFileSystemWr
 
         return _tempWriter.FileSystem.GetFile(outputFilePath);
     }
-
-
 }

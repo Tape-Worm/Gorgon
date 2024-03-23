@@ -23,7 +23,6 @@
 // Created: July 19, 2016 1:29:59 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
@@ -51,7 +50,6 @@ namespace Gorgon.Graphics.Core;
 public sealed class GorgonTexture3DView
     : GorgonShaderResourceView, IGorgonTexture3DInfo, IGorgonImageInfo
 {
-
     /// <summary>
     /// Property to return the type of image data.
     /// </summary>
@@ -175,8 +173,6 @@ public sealed class GorgonTexture3DView
     /// Property to return the flags to determine how the texture will be bound with the pipeline when rendering.
     /// </summary>
     public TextureBinding Binding => Texture?.Binding ?? TextureBinding.None;
-
-
 
     /// <summary>Function to retrieve the necessary parameters to create the native view.</summary>
     /// <returns>A shader resource view descriptor.</returns>

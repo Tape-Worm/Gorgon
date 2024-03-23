@@ -23,7 +23,6 @@
 // Created: May 6, 2019 10:14:55 AM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.IO;
 
@@ -40,8 +39,6 @@ public class ContentFileExplorerDirectoryEntry
     private bool _visible = true;
     // Flag to indicate that the entry is selected.
     private bool _isExpanded = true;
-
-
 
     /// <summary>
     /// Property to return the parent of this entry.
@@ -120,8 +117,6 @@ public class ContentFileExplorerDirectoryEntry
     /// <summary>Property to return whether or not this entry is a directory.</summary>
     bool IContentFileExplorerSearchEntry.IsDirectory => true;
 
-
-
     /// <summary>
     /// Function to notify the file entries that visibility or expansion has changed.
     /// </summary>
@@ -132,8 +127,6 @@ public class ContentFileExplorerDirectoryEntry
             entry.NotifyPropertyChanged(nameof(ContentFileExplorerFileEntry.IsVisible));
         }
     }
-
-
 
     /// <summary>Initializes a new instance of the <see cref="ContentFileExplorerDirectoryEntry"/> class.</summary>
     /// <param name="fullPath">The full path to the directory.</param>
@@ -156,5 +149,4 @@ public class ContentFileExplorerDirectoryEntry
         FullPath = fullPath.FormatDirectory('/');
         Name = FullPath;
     }
-
 }

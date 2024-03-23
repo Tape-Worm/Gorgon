@@ -23,7 +23,6 @@
 // Created: January 16, 2021 12:10:27 AM
 // 
 
-
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -38,7 +37,6 @@ namespace Gorgon.Renderers.Geometry;
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
 public struct GorgonVertexPosNormColorUvTangent
 {
-
     /// <summary>
     /// The size of the vertex, in bytes.
     /// </summary>
@@ -74,8 +72,6 @@ public struct GorgonVertexPosNormColorUvTangent
     [InputElement(4, "TANGENT")]
     public Vector4 Tangent;
 
-
-
     /// <summary>
     /// Deconstructs this instance into individual position values.
     /// </summary>
@@ -103,8 +99,6 @@ public struct GorgonVertexPosNormColorUvTangent
         uv = UV;
         tangent = Tangent;
     }
-
-
 
     /// <summary>Initializes a new instance of the <see cref="GorgonVertexPosNormColorUvTangent" /> struct.</summary>
     /// <param name="pos">The position.</param>
@@ -135,5 +129,4 @@ public struct GorgonVertexPosNormColorUvTangent
         Color = color;
         Tangent = tangent;
     }
-
 }

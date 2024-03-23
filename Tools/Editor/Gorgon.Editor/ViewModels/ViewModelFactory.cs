@@ -23,7 +23,6 @@
 // Created: August 28, 2018 12:43:55 PM
 // 
 
-
 using Gorgon.Collections;
 using Gorgon.Editor.Metadata;
 using Gorgon.Editor.Native;
@@ -62,8 +61,6 @@ internal class ViewModelFactory(Editor.EditorSettings settings, ProjectManager p
     private SynchronizationContext _syncContext;
     // The list of content creator plug ins.
     private IReadOnlyList<IContentPlugInMetadata> _contentCreators = [];
-
-
 
     /// <summary>
     /// Function to send the item specified in the path to the recycle bin.
@@ -601,8 +598,4 @@ internal class ViewModelFactory(Editor.EditorSettings settings, ProjectManager p
 
         return result;
     }
-
-
-
-
 }

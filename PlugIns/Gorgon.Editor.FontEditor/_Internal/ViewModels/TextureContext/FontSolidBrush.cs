@@ -23,7 +23,6 @@
 // Created: September 5, 2021 8:24:33 PM
 // 
 
-
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Fonts;
@@ -36,7 +35,6 @@ namespace Gorgon.Editor.FontEditor;
 internal class FontSolidBrush
     : HostedPanelViewModelBase<HostedPanelViewModelParameters>, IFontSolidBrush, IFontBrush
 {
-
     /// <summary>
     /// The default brush.
     /// </summary>
@@ -48,8 +46,6 @@ internal class FontSolidBrush
     // The current brush for the font.
     private GorgonGlyphSolidBrush _brush = DefaultBrush;
     private GorgonColor _original = GorgonColors.White;
-
-
 
     /// <summary>
     /// Property to set or return the currently selected solid color brush.
@@ -101,8 +97,6 @@ internal class FontSolidBrush
     /// </summary>
     GorgonGlyphBrush IFontBrush.Brush => Brush;
 
-
-
     /// <summary>
     /// Function to inject dependencies for the view model.
     /// </summary>
@@ -117,5 +111,4 @@ internal class FontSolidBrush
         _brush = DefaultBrush;
         Unload();
     }
-
 }

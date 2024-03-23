@@ -23,7 +23,6 @@
 // Created: May 23, 2019 4:02:35 PM
 // 
 
-
 using Gorgon.Animation;
 
 namespace Gorgon.Examples;

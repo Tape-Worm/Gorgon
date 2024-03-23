@@ -23,7 +23,6 @@
 // Created: August 16, 2016 3:47:42 PM
 // 
 
-
 using Gorgon.Graphics.Imaging.Properties;
 
 namespace Gorgon.Graphics.Imaging.Codecs;
@@ -34,7 +33,6 @@ namespace Gorgon.Graphics.Imaging.Codecs;
 public struct GorgonImageCodecDescription
     : IEquatable<GorgonImageCodecDescription>
 {
-
     /// <summary>
     /// The name of the codec.  This will be the same as its fully qualified type name of the codec (e.g. <c>Gorgon.Graphics.Imaging.Codecs.</c><see cref="GorgonCodecPng"/>).
     /// </summary>
@@ -44,8 +42,6 @@ public struct GorgonImageCodecDescription
     /// A friendly description used for display.
     /// </summary>
     public string Description;
-
-
 
     /// <summary>
     /// Function to determine if two instances are equal.
@@ -92,8 +88,6 @@ public struct GorgonImageCodecDescription
     /// <returns><b>true</b> if the two instances are not equal, <b>false</b> if they are.</returns>
     public static bool operator !=(GorgonImageCodecDescription left, GorgonImageCodecDescription right) => !Equals(left, right);
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonImageCodecDescription"/> struct.
     /// </summary>
@@ -108,5 +102,4 @@ public struct GorgonImageCodecDescription
         Name = type.FullName;
         Description = string.Empty;
     }
-
 }

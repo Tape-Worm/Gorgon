@@ -23,7 +23,6 @@
 // Created: March 29, 2018 12:24:36 PM
 // 
 
-
 using System.Runtime.CompilerServices;
 using Gorgon.IO;
 using Gorgon.Math;

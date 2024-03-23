@@ -23,7 +23,6 @@
 // Created: October 30, 2018 7:11:23 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Editor.Metadata;
 
@@ -35,13 +34,10 @@ namespace Gorgon.Editor.Content;
 public interface IContentFile
     : IGorgonNamedObject
 {
-
     /// <summary>
     /// Event triggered if this content file was renamed.
     /// </summary>
     event EventHandler<ContentFileRenamedEventArgs> Renamed;
-
-
 
     /// <summary>
     /// Property to set or return whether the file has changes.
@@ -84,8 +80,6 @@ public interface IContentFile
         get;
         set;
     }
-
-
 
     /// <summary>
     /// Function to link a content file to be dependant upon this content.

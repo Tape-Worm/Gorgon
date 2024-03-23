@@ -23,7 +23,6 @@
 // Created: December 7, 2019 11:55:10 AM
 // 
 
-
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.Metadata;
@@ -44,8 +43,6 @@ internal class File
     // The name of the default icon.
     private const string DefaultIconName = "generic_file_20x20.png";
 
-
-
     // The synchronization lock for the rename event.
     private readonly object _eventLock = new();
     // The virtual file wrapped by this view model.
@@ -64,8 +61,6 @@ internal class File
     private bool _isChanged;
     // File type.
     private string _type = Resources.GOREDIT_TEXT_UNKNOWN;
-
-
 
     // The event triggered when a file is renamed.
     private event EventHandler<ContentFileRenamedEventArgs> RenamedEvent;
@@ -100,8 +95,6 @@ internal class File
         }
     }
 
-
-
     /// <summary>
     /// Property to return the type of file.
     /// </summary>
@@ -120,7 +113,6 @@ internal class File
             OnPropertyChanged();
         }
     }
-
 
     /// <summary>
     /// Property to set or return a flag to indicate whether the directory was marked for a cut operation.
@@ -281,8 +273,6 @@ internal class File
         get;
     }
 
-
-
     /// <summary>
     /// Function to refresh the data for the file.
     /// </summary>
@@ -425,8 +415,6 @@ internal class File
     /// <summary>Function called to refresh the information about the file.</summary>
     void IContentFile.Refresh() => RefreshFileData();
 
-
-
     /// <summary>Initializes a new instance of the <see cref="File"/> class.</summary>
     public File()
     {
@@ -434,5 +422,4 @@ internal class File
         RefreshCommand = new EditorCommand<object>(DoRefreshFileData);
         RenameCommand = new EditorCommand<RenameArgs>(DoRename);
     }
-
 }

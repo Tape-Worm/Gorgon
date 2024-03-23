@@ -23,7 +23,6 @@
 // Created: August 29, 2018 8:19:12 PM
 // 
 
-
 using Gorgon.Editor.Metadata;
 using Newtonsoft.Json;
 
@@ -34,7 +33,6 @@ namespace Gorgon.Editor.ProjectData;
 /// </summary>
 internal class Project30
 {
-
     /// <summary>
     /// Property to return the version for the project file.
     /// </summary>
@@ -55,13 +53,10 @@ internal class Project30
         private set;
     } = new Dictionary<string, Project30ItemMetadata>(StringComparer.OrdinalIgnoreCase);
 
-
-
     /// <summary>Initializes a new instance of the Project class.</summary>
     [JsonConstructor]
     public Project30()
     {
         // Used by JSON.Net for deserialization.
     }
-
 }

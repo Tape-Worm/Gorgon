@@ -23,7 +23,6 @@
 // Created: Monday, April 09, 2012 7:14:08 AM
 // 
 
-
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -39,7 +38,6 @@ namespace Gorgon.Renderers;
 public class Gorgon2DDisplacementEffect
     : Gorgon2DEffect
 {
-
     /// <summary>
     /// The constant buffer GPU data.
     /// </summary>
@@ -73,8 +71,6 @@ public class Gorgon2DDisplacementEffect
         public Vector2 ChromaAbScale;
     }
 
-
-
     // The shader used for displacement.
     private GorgonPixelShader _displacementShader;
     private Gorgon2DShaderState<GorgonPixelShader> _displacementState;
@@ -96,8 +92,6 @@ public class Gorgon2DDisplacementEffect
     private GorgonTexture2DView _displaceTexture;
     // The output render target.
     private GorgonRenderTarget2DView _output;
-
-
 
     /// <summary>
     /// Property to set or return the strength of the displacement map.
@@ -180,8 +174,6 @@ public class Gorgon2DDisplacementEffect
         get;
         set;
     } = GorgonSamplerState.Default;
-
-
 
     /// <summary>
     /// Function called when the effect is being initialized.
@@ -364,8 +356,6 @@ public class Gorgon2DDisplacementEffect
         _displaceTexture = null;
         _output = null;
     }
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Gorgon2DDisplacementEffect"/> class.

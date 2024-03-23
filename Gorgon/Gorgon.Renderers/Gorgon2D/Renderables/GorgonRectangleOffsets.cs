@@ -23,7 +23,6 @@
 // Created: February 8, 2017 7:22:29 PM
 // 
 
-
 using System.Collections;
 using System.Numerics;
 
@@ -38,8 +37,6 @@ public class GorgonRectangleOffsets
 
     // The renderable object to update.
     private readonly BatchRenderable _renderable;
-
-
 
     /// <summary>
     /// Property to set or return the corner offset value by index.
@@ -175,8 +172,6 @@ public class GorgonRectangleOffsets
         }
     }
 
-
-
     /// <summary>
     /// Function to assign a single offset to all corners.
     /// </summary>
@@ -212,8 +207,6 @@ public class GorgonRectangleOffsets
         destination.UpperRight = UpperRight;
         destination.UpperLeft = UpperLeft;
     }
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonRectangleOffsets"/> class.

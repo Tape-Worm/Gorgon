@@ -23,7 +23,6 @@
 // Created: May 30, 2018 10:25:39 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 
@@ -65,14 +64,10 @@ public readonly struct GorgonReadWriteViewBinding
     /// </summary>
     public readonly GorgonReadWriteView ReadWriteView;
 
-
-
     /// <summary>
     /// Property to return the type of UAV if the UAV is for a structured buffer.
     /// </summary>
     public StructuredBufferReadWriteViewType ReadWriteViewType => _structuredUav?.ReadWriteViewType ?? StructuredBufferReadWriteViewType.None;
-
-
 
     /// <summary>
     /// Returns a <see cref="string" /> that represents this instance.
@@ -130,8 +125,6 @@ public readonly struct GorgonReadWriteViewBinding
     /// <returns><b>true</b> if not equal, <b>false</b> if equal.</returns>
     public static bool operator !=(GorgonReadWriteViewBinding left, GorgonReadWriteViewBinding right) => !Equals(in left, in right);
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonReadWriteViewBinding"/> struct.
     /// </summary>
@@ -154,5 +147,4 @@ public readonly struct GorgonReadWriteViewBinding
         _structuredUav = readWriteView;
         InitialCount = initialCount;
     }
-
 }

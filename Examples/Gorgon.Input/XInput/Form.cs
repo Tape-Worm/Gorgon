@@ -22,7 +22,6 @@
 // Created: Friday, January 11, 2013 8:27:21 AM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Input;
 using Gorgon.PlugIns;
@@ -67,8 +66,6 @@ public partial class Form : System.Windows.Forms.Form
     private DrawingSurface _surface;
     // The assembly cache for the plug ins
     private GorgonMefPlugInCache _assemblies = null;
-
-
 
     /// <summary>
     /// Function called during the paint event of the controls that display controller information.
@@ -191,7 +188,6 @@ public partial class Form : System.Windows.Forms.Form
         float speed = panelDisplay.ClientSize.Width / 2.0f * GorgonTiming.Delta;
         PointF position = new((speed * moveVector.X) + _stickPosition[index].X,
                                     (speed * -moveVector.Y) + _stickPosition[index].Y);
-
 
         // Limit the range of the positioning.
         if (position.X < -cursorSize.Width)

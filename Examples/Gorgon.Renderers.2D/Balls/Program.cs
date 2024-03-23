@@ -23,7 +23,6 @@
 // Created: Monday, February 20, 2012 6:03:01 PM
 // 
 
-
 using System.Numerics;
 using System.Text;
 using Gorgon.Core;
@@ -37,7 +36,6 @@ using Gorgon.Math;
 using Gorgon.Renderers;
 using Gorgon.Timing;
 using Gorgon.UI;
-
 
 namespace Gorgon.Examples;
 

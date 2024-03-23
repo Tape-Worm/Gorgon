@@ -23,7 +23,6 @@
 // Created: September 15, 2018 12:53:46 PM
 // 
 
-
 using System.ComponentModel;
 using Gorgon.Math;
 
@@ -44,8 +43,6 @@ public partial class GorgonProgressPanel
     private int _cancelEvent;
     // Flag to indicate that cancellation is allowed.
     private bool _allowCancel;
-
-
 
     // The event triggered when the operation is cancelled.
     private event EventHandler OperationCancelledEvent;
@@ -76,8 +73,6 @@ public partial class GorgonProgressPanel
             OperationCancelledEvent -= value;
         }
     }
-
-
 
     /// <summary>Gets or sets the foreground color of progress message box.</summary>
     [Browsable(true),
@@ -217,8 +212,6 @@ public partial class GorgonProgressPanel
             }
         }
     }
-
-
 
     /// <summary>
     /// Function to unassign the cancel event.
@@ -385,8 +378,6 @@ public partial class GorgonProgressPanel
         ButtonCancel.PerformClick();
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonProgressPanel"/> class.
     /// </summary>
@@ -400,5 +391,4 @@ public partial class GorgonProgressPanel
             AssignCancelEvent();
         }
     }
-
 }

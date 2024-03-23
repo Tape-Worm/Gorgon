@@ -23,7 +23,6 @@
 // Created: February 23, 2017 9:49:20 PM
 // 
 
-
 namespace Gorgon.Graphics.Fonts;
 
 /// <summary>
@@ -38,8 +37,6 @@ internal class GlyphNode(GlyphNode parentNode)
 
     // Flag to indicate that we have no more space.
     private bool _noMoreRoom;
-
-
 
     /// <summary>
     /// Property to set or return the region that this node occupies on the image.
@@ -80,8 +77,6 @@ internal class GlyphNode(GlyphNode parentNode)
     /// Property to return whether this node is a leaf node.
     /// </summary>
     public bool IsLeaf => ((Left is null) && (Right is null));
-
-
 
     /// <summary>
     /// Function to add a node as a child to this node.
@@ -134,8 +129,4 @@ internal class GlyphNode(GlyphNode parentNode)
 
         return Left.AddNode(dimensions);
     }
-
-
-
-
 }

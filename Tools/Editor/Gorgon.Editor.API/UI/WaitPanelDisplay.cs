@@ -23,7 +23,6 @@
 // Created: February 17, 2020 1:19:36 AM
 // 
 
-
 using Gorgon.UI;
 
 namespace Gorgon.Editor.UI;
@@ -41,8 +40,6 @@ public class WaitPanelDisplay
     private IViewModel _viewModel;
     // The form to parent the wait panel.
     private readonly Control _appForm;
-
-
 
     /// <summary>
     /// Function to unassign the events from the view model.
@@ -101,8 +98,6 @@ public class WaitPanelDisplay
     /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
     public void Dispose() => UnassignEvents();
 
-
-
     /// <summary>Initializes a new instance of the <see cref="WaitPanelDisplay"/> class.</summary>
     /// <param name="appForm">The application form that will be the parent to the wait panel.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="appForm"/> parameter is <b>null</b>.</exception>
@@ -114,5 +109,4 @@ public class WaitPanelDisplay
             OverlayColor = Graphics.GorgonColors.Black
         };
     }
-
 }

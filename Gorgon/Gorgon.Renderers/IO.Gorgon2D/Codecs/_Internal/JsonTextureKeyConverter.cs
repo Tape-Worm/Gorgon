@@ -23,12 +23,11 @@
 // Created: August 25, 2018 10:30:45 PM
 // 
 
-
-using Gorgon.Json;
 using Gorgon.Animation;
-using Gorgon.Graphics.Core;
-using Newtonsoft.Json;
 using Gorgon.Graphics;
+using Gorgon.Graphics.Core;
+using Gorgon.Json;
+using Newtonsoft.Json;
 
 namespace Gorgon.IO;
 

@@ -23,7 +23,6 @@
 // Created: October 29, 2018 4:12:28 PM
 // 
 
-
 using System.ComponentModel;
 using Gorgon.Core;
 using Gorgon.Editor.Properties;
@@ -53,8 +52,6 @@ public partial class ContentBaseControl
     private IEditorContent _dataContext;
     // A list of child panel views identified by name.
     private readonly Dictionary<string, Control> _panelViews = new(StringComparer.OrdinalIgnoreCase);
-
-
 
     // Event triggered when the content is closed.
     private event EventHandler ContentClosedEvent;
@@ -197,8 +194,6 @@ public partial class ContentBaseControl
         }
     }
 
-
-
     /// <summary>
     /// Property to return the currently hosted panel in the <see cref="HostPanelControls"/>.
     /// </summary>
@@ -285,8 +280,6 @@ public partial class ContentBaseControl
     /// <summary>Property to return the swap chain assigned to the control.</summary>
     [Browsable(false)]
     public GorgonSwapChain SwapChain => _swapChain;
-
-
 
     /// <summary>Handles the Click event of the ButtonClose control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -897,8 +890,6 @@ public partial class ContentBaseControl
         GraphicsContext = context;
         _swapChain = swapChain;
     }
-
-
 
     /// <summary>Initializes a new instance of the ContentBaseControl class.</summary>
     public ContentBaseControl() => InitializeComponent();

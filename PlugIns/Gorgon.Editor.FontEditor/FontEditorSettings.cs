@@ -23,7 +23,6 @@
 // Created: August 28, 2021 7:27:16 PM
 // 
 
-
 using Newtonsoft.Json;
 
 namespace Gorgon.Editor.FontEditor;

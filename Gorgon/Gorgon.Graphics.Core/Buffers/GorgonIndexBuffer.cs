@@ -23,7 +23,6 @@
 // Created: June 15, 2016 9:33:57 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
@@ -77,18 +76,13 @@ namespace Gorgon.Graphics.Core;
 public sealed class GorgonIndexBuffer
     : GorgonBufferCommon, IGorgonIndexBufferInfo
 {
-
     /// <summary>
     /// The prefix to assign to a default name.
     /// </summary>
     internal const string NamePrefix = nameof(GorgonIndexBuffer);
 
-
-
     // The information used to create the buffer.
     private readonly GorgonIndexBufferInfo _info;
-
-
 
     /// <summary>
     /// Property to return the bind flags used for the D3D 11 resource.
@@ -151,8 +145,6 @@ public sealed class GorgonIndexBuffer
     /// </summary>
     public override string Name => _info.Name;
 
-
-
     /// <summary>
     /// Function to initialize the buffer data.
     /// </summary>
@@ -190,7 +182,6 @@ public sealed class GorgonIndexBuffer
 
         D3DResource = Native = ResourceFactory.Create(Graphics.D3DDevice, Name, in desc, initialData);
     }
-
 
     /// <summary>
     /// Function to retrieve a copy of this buffer as a staging resource.
@@ -296,8 +287,6 @@ public sealed class GorgonIndexBuffer
         return result;
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonIndexBuffer" /> class.
     /// </summary>
@@ -380,5 +369,4 @@ public sealed class GorgonIndexBuffer
         _info = new GorgonIndexBufferInfo(info ?? throw new ArgumentNullException(nameof(info)));
         Initialize(initialData.IsEmpty ? throw new ArgumentNullException(nameof(initialData)) : initialData);
     }
-
 }

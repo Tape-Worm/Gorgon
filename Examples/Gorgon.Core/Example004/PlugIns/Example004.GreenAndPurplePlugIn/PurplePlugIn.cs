@@ -23,7 +23,6 @@
 // Created: Tuesday, January 1, 2013 7:35:52 PM
 // 
 
-
 namespace Gorgon.Examples;
 
 /// <summary>
@@ -34,7 +33,6 @@ namespace Gorgon.Examples;
 internal class PurplePlugIn
     : TextColorPlugIn
 {
-
     /// <summary>
     /// Function to create the writer that will output our text with a specified color.
     /// </summary>

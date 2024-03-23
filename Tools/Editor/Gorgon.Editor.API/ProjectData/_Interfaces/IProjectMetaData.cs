@@ -23,7 +23,6 @@
 // Created: March 27, 2019 10:51:12 PM
 // 
 
-
 using Gorgon.Editor.Metadata;
 
 namespace Gorgon.Editor.ProjectData;

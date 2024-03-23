@@ -23,7 +23,6 @@
 // Created: August 16, 2016 3:30:55 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Properties;
 using Gorgon.PlugIns;
@@ -45,7 +44,6 @@ namespace Gorgon.Graphics.Imaging.Codecs;
 public abstract class GorgonImageCodecPlugIn(string description)
         : GorgonPlugIn(description)
 {
-
     /// <summary>
     /// Property to return the names of the available codecs for this plug in.
     /// </summary>
@@ -56,8 +54,6 @@ public abstract class GorgonImageCodecPlugIn(string description)
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to create a new <see cref="IGorgonImageCodec"/>.
@@ -117,7 +113,6 @@ public abstract class GorgonImageCodecPlugIn(string description)
             throw new ArgumentNullException(nameof(codec));
         }
 
-
         if (string.IsNullOrWhiteSpace(codec))
         {
             throw new ArgumentEmptyException(nameof(codec));
@@ -148,7 +143,6 @@ public abstract class GorgonImageCodecPlugIn(string description)
         {
             throw new ArgumentNullException(nameof(codec));
         }
-
 
         if (string.IsNullOrWhiteSpace(codec))
         {
@@ -196,8 +190,4 @@ public abstract class GorgonImageCodecPlugIn(string description)
 
         return result ?? throw new KeyNotFoundException(string.Format(Resources.GORIMG_ERR_CODEC_NOT_IN_PLUGIN, codec));
     }
-
-
-
-
 }

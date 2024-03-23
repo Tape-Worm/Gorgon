@@ -23,7 +23,6 @@
 // Created: Saturday, January 19, 2013 4:13:55 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.IO.Properties;
 using Gorgon.IO.Providers;
@@ -36,7 +35,6 @@ namespace Gorgon.IO;
 public readonly struct GorgonFileSystemMountPoint
     : IGorgonEquatableByRef<GorgonFileSystemMountPoint>
 {
-
     /// <summary>
     /// Flag to indicate whether the mount point is a fake mount point or not (i.e. it has no real physical location).
     /// </summary>
@@ -54,8 +52,6 @@ public readonly struct GorgonFileSystemMountPoint
     /// The virtual location of the mount point.
     /// </summary>
     public readonly string MountLocation;
-
-
 
     /// <summary>
     /// Function to determine if two instances are equal.
@@ -124,8 +120,6 @@ public readonly struct GorgonFileSystemMountPoint
     /// <returns><b>true</b> if not equal, <b>false</b> if equal.</returns>
     public static bool operator !=(GorgonFileSystemMountPoint left, GorgonFileSystemMountPoint right) => !Equals(in left, in right);
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonFileSystemMountPoint" /> struct.
     /// </summary>
@@ -162,5 +156,4 @@ public readonly struct GorgonFileSystemMountPoint
         MountLocation = mountLocation;
         IsFakeMount = isFakeMountPoint;
     }
-
 }

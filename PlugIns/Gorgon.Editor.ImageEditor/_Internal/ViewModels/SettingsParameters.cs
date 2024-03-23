@@ -23,7 +23,6 @@
 // Created: April 20, 2019 5:20:34 PM
 // 
 
-
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI;
 
@@ -42,7 +41,6 @@ namespace Gorgon.Editor.ImageEditor;
 internal class SettingsParameters(ImageEditorSettings settings, IHostContentServices hostServices)
         : SettingsCategoryViewModelParameters(hostServices)
 {
-
     /// <summary>
     /// Property to return the settings for the image editor plugin.
     /// </summary>
@@ -50,6 +48,5 @@ internal class SettingsParameters(ImageEditorSettings settings, IHostContentServ
     {
         get;
     } = settings ?? throw new ArgumentNullException(nameof(settings));
-
 
 }

@@ -23,7 +23,6 @@
 // Created: August 1, 2017 11:00:30 PM
 // 
 
-
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core;
@@ -51,13 +50,10 @@ namespace Gorgon.Graphics.Core;
 public sealed class GorgonComputeEngine(GorgonGraphics graphics)
         : IGorgonGraphicsObject
 {
-
     /// <summary>
     /// The maximum number of thread groups that can be sent when executing the shader.
     /// </summary>
     public const int MaxThreadGroupCount = D3D11.ComputeShaderStage.DispatchMaximumThreadGroupsPerDimension + 1;
-
-
 
     /// <summary>
     /// Property to return the graphics interface that owns this object.
@@ -66,8 +62,6 @@ public sealed class GorgonComputeEngine(GorgonGraphics graphics)
     {
         get;
     } = graphics ?? throw new ArgumentNullException(nameof(graphics));
-
-
 
     /// <summary>
     /// Function to execute a <see cref="GorgonComputeShader"/>.
@@ -128,6 +122,5 @@ public sealed class GorgonComputeEngine(GorgonGraphics graphics)
     /// </para>
     /// </remarks>
     public void Execute(GorgonDispatchCall dispatchCall, GorgonBufferCommon indirectArgs, int threadGroupOffset = 0) => Graphics.Dispatch(dispatchCall, indirectArgs, threadGroupOffset);
-
 
 }

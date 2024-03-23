@@ -23,7 +23,6 @@
 // Created: June 29, 2016 8:13:58 PM
 // 
 
-
 using Gorgon.Collections.Specialized;
 using Gorgon.Properties;
 
@@ -35,7 +34,6 @@ namespace Gorgon.Configuration;
 public sealed class GorgonOptionBag
     : GorgonNamedObjectList<IGorgonOption>, IGorgonOptionBag
 {
-
     /// <summary>
     /// Function to retrieve the value for an option.
     /// </summary>
@@ -69,7 +67,7 @@ public sealed class GorgonOptionBag
     public GorgonOptionBag(IEnumerable<IGorgonOption> options)
         : base(false)
     {
-        ArgumentNullException.ThrowIfNull(options);        
+        ArgumentNullException.ThrowIfNull(options);
 
         foreach (IGorgonOption option in options)
         {
@@ -83,5 +81,4 @@ public sealed class GorgonOptionBag
             Add(option);
         }
     }
-
 }

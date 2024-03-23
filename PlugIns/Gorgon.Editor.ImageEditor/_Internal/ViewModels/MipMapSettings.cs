@@ -23,7 +23,6 @@
 // Created: February 5, 2019 7:54:23 PM
 // 
 
-
 using Gorgon.Editor.ImageEditor.Properties;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics.Imaging;
@@ -44,8 +43,6 @@ internal class MipMapSettings
     private ImageFilter _resizeFilter = ImageFilter.Fant;
     // The number of mip map levels in the image.
     private int _mipLevels = 2;
-
-
 
     /// <summary>Property to return whether the panel is modal.</summary>
     public override bool IsModal => true;
@@ -109,8 +106,6 @@ internal class MipMapSettings
         get;
     }
 
-
-
     /// <summary>
     /// Function to update the maximum mip map count for the current spatial dimensions.
     /// </summary>
@@ -156,8 +151,6 @@ internal class MipMapSettings
         }
     }
 
-
-
     /// <summary>Function to inject dependencies for the view model.</summary>
     /// <param name="injectionParameters">The parameters to inject.</param>
     /// <remarks>
@@ -167,8 +160,6 @@ internal class MipMapSettings
     {
 
     }
-
-
 
     /// <summary>Initializes a new instance of the <see cref="DimensionSettings"/> class.</summary>
     public MipMapSettings() => UpdateImageInfoCommand = new EditorCommand<IGorgonImage>(DoUpdateImageInfo);

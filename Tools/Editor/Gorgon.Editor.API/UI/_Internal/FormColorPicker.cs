@@ -23,7 +23,6 @@
 // Created: April 27, 2019 6:49:36 PM
 // 
 
-
 using System.ComponentModel;
 using Gorgon.Editor.UI.Controls;
 using Gorgon.Graphics;
@@ -36,7 +35,6 @@ namespace Gorgon.Editor.Services;
 internal partial class FormColorPicker
     : Form
 {
-
     /// <summary>
     /// Property to set or return the original color.
     /// </summary>
@@ -57,8 +55,6 @@ internal partial class FormColorPicker
         set => Picker.SelectedColor = value;
     }
 
-
-
     /// <summary>Handles the ColorChanged event of the Picker control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="ColorChangedEventArgs"/> instance containing the event data.</param>
@@ -72,8 +68,6 @@ internal partial class FormColorPicker
 
         ButtonOk.Enabled = Picker.SelectedColor != Picker.OriginalColor;
     }
-
-
 
     /// <summary>Initializes a new instance of the <see cref="FormColorPicker"/> class.</summary>
     public FormColorPicker() => InitializeComponent();

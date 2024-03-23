@@ -23,7 +23,6 @@
 // Created: August 12, 2018 4:16:33 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
 using Gorgon.IO.Properties;
@@ -38,7 +37,6 @@ namespace Gorgon.IO;
 public abstract class GorgonSpriteCodecCommon
     : IGorgonSpriteCodec
 {
-
     /// <summary>
     /// The ID for the file header for the most current version of the sprite format.
     /// </summary>
@@ -48,8 +46,6 @@ public abstract class GorgonSpriteCodecCommon
     /// The highest currently supported version for sprite serialization.
     /// </summary>
     public static readonly Version CurrentVersion = new(3, 0);
-
-
 
     /// <summary>
     /// Property to return the friendly description of the format.
@@ -116,8 +112,6 @@ public abstract class GorgonSpriteCodecCommon
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to save the sprite data to a stream.
@@ -384,8 +378,6 @@ public abstract class GorgonSpriteCodecCommon
         }
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonSpriteCodecCommon"/> class.
     /// </summary>
@@ -415,5 +407,4 @@ public abstract class GorgonSpriteCodecCommon
         Codec = name;
         CodecDescription = string.IsNullOrWhiteSpace(description) ? name : description;
     }
-
 }

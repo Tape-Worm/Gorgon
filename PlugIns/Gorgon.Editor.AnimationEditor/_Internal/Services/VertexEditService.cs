@@ -23,7 +23,6 @@
 // Created: July 19, 2020 12:02:56 AM
 // 
 
-
 using System.Numerics;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.Services;
@@ -66,8 +65,6 @@ internal class VertexEditService
     // The camera used to render the UI.
     private GorgonOrthoCamera _camera;
 
-
-
     // Event triggered when the vertex coordinates have been altered.        
     private event EventHandler<VertexChangedEventArgs> VerticesChangedEvent;
 
@@ -96,8 +93,6 @@ internal class VertexEditService
             VerticesChangedEvent -= value;
         }
     }
-
-
 
     /// <summary>
     /// Property to set or return the camera being used.
@@ -177,8 +172,6 @@ internal class VertexEditService
             SetupHandles();
         }
     }
-
-
 
     /// <summary>
     /// Function to raise the <see cref="VerticesChangedEvent"/> event.
@@ -297,7 +290,6 @@ internal class VertexEditService
 
         GetActiveHandle();
     }
-
 
     /// <summary>
     /// Function called when a key is held down.
@@ -516,8 +508,6 @@ internal class VertexEditService
     /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
     public void Dispose() => VerticesChangedEvent = null;
 
-
-
     /// <summary>Initializes a new instance of the <see cref="VertexEditService"/> class.</summary>
     /// <param name="renderer">The 2D renderer for the application.</param>
     public VertexEditService(Gorgon2D renderer)
@@ -527,5 +517,4 @@ internal class VertexEditService
         _handles[2].HandleCursor = _handles[0].HandleCursor =
         _handles[3].HandleCursor = _handles[1].HandleCursor = Cursors.Cross;
     }
-
 }

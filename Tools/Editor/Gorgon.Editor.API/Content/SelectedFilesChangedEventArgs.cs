@@ -23,8 +23,6 @@
 // Created: February 13, 2020 2:58:34 PM
 // 
 
-
-
 namespace Gorgon.Editor.Content;
 
 /// <summary>
@@ -39,6 +37,4 @@ public class SelectedFilesChangedEventArgs
     {
         get;
     }
-
-
 }

@@ -23,7 +23,6 @@
 // Created: April 8, 2018 8:17:22 PM
 // 
 
-
 using System.Runtime.CompilerServices;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
@@ -35,7 +34,6 @@ using SharpDX.DXGI;
 using D3D11 = SharpDX.Direct3D11;
 using DX = SharpDX;
 
-
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
@@ -44,13 +42,10 @@ namespace Gorgon.Graphics.Core;
 public sealed class GorgonTexture1D
     : GorgonGraphicsResource, IGorgonTexture1DInfo, IGorgonTextureResource
 {
-
     /// <summary>
     /// The prefix used for generated names.
     /// </summary>
     internal const string NamePrefix = nameof(GorgonTexture1D);
-
-
 
     // Default texture loading options.
     private static readonly GorgonTextureLoadOptions _defaultLoadOptions = new();
@@ -181,8 +176,6 @@ public sealed class GorgonTexture1D
     /// Property to return whether the size of the texture is a power of 2 or not.
     /// </summary>
     bool IGorgonImageInfo.IsPowerOfTwo => ((Width == 0) || (Width & (Width - 1)) == 0);
-
-
 
     /// <summary>
     /// Function to transfer texture data into an image buffer.
@@ -1631,8 +1624,6 @@ public sealed class GorgonTexture1D
     /// <returns>The default shader resource view for the texture.</returns>
     GorgonShaderResourceView IGorgonTextureResource.GetShaderResourceView() => GetShaderResourceView();
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonTexture1D"/> class.
     /// </summary>
@@ -1691,5 +1682,4 @@ public sealed class GorgonTexture1D
 
         this.RegisterDisposable(graphics);
     }
-
 }

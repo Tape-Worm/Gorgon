@@ -23,7 +23,6 @@
 // Created: August 14, 2018 6:43:34 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.IO.Properties;
 using Gorgon.PlugIns;
@@ -46,7 +45,6 @@ namespace Gorgon.IO;
 public abstract class GorgonAnimationCodecPlugIn(string description)
         : GorgonPlugIn(description)
 {
-
     /// <summary>
     /// Property to return the names of the available codecs for this plug in.
     /// </summary>
@@ -57,8 +55,6 @@ public abstract class GorgonAnimationCodecPlugIn(string description)
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to create a new <see cref="IGorgonAnimationCodec"/>.
@@ -109,6 +105,4 @@ public abstract class GorgonAnimationCodecPlugIn(string description)
 
         return result ?? throw new KeyNotFoundException(string.Format(Resources.GOR2DIO_ERR_CODEC_NOT_IN_PLUGIN, codec));
     }
-
-
 }

@@ -23,7 +23,6 @@
 // Created: September 7, 2021 11:02:36 PM
 // 
 
-
 using Gorgon.Graphics;
 
 namespace Gorgon.Editor.FontEditor;
@@ -39,7 +38,6 @@ namespace Gorgon.Editor.FontEditor;
 /// <param name="index">The index of the corresponding interpolation value.</param>
 internal class WeightHandle(float weight, GorgonColor color, int index)
 {
-
     /// <summary>
     /// Property to return the index of the interpolation value.
     /// </summary>
@@ -66,8 +64,5 @@ internal class WeightHandle(float weight, GorgonColor color, int index)
         get;
         set;
     } = weight;
-
-
-
 
 }

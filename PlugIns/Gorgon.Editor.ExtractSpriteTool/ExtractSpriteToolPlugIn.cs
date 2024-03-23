@@ -23,7 +23,6 @@
 // Created: March 2, 2019 11:15:34 AM
 // 
 
-
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.ExtractSpriteTool.Properties;
@@ -51,8 +50,6 @@ internal class ExtractSpriteToolPlugIn
     private IGorgonImageCodec _defaultImageCodec;
     // Data used for extracting sprites.
     private readonly SpriteExtractionData _extractData = new();
-
-
 
     /// <summary>
     /// Function to determine if the form can be shown.
@@ -249,12 +246,9 @@ internal class ExtractSpriteToolPlugIn
         base.OnShutdown();
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="ExtractSpriteToolPlugIn"/> class.</summary>
     public ExtractSpriteToolPlugIn()
         : base(Resources.GOREST_PLUGIN_DESC)
     {
     }
-
 }

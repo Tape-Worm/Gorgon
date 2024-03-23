@@ -23,17 +23,7 @@
 // Created: Sunday, October 16, 2011 2:10:22 PM
 // 
 
-
 using Gorgon.Graphics.Core.Properties;
-/* Unmerged change from project 'Gorgon.Graphics.Core (net5.0-windows)'
-Before:
-using DXGI = SharpDX.DXGI;
-using D3D11 = SharpDX.Direct3D11;
-After:
-using D3D11 = SharpDX.Direct3D11;
-using DXGI = SharpDX.DXGI;
-*/
-
 
 namespace Gorgon.Graphics.Core;
 
@@ -63,7 +53,6 @@ namespace Gorgon.Graphics.Core;
 /// </remarks>
 public record GorgonMultisampleInfo(int Count, int Quality)
 {
-
     /// <summary>
     /// The default multisampling value.
     /// </summary>
@@ -81,8 +70,6 @@ public record GorgonMultisampleInfo(int Count, int Quality)
     /// A pattern where all of the samples are located at the pixel center.
     /// </summary>
     public static readonly int CenteredMultisamplePatternQuality = unchecked((int)0xfffffffe);
-
-
 
     /// <summary>
     /// Returns a <see cref="string" /> that represents this instance.

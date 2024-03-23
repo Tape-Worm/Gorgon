@@ -23,7 +23,6 @@
 // Created: February 22, 2020 5:32:41 PM
 // 
 
-
 using System.ComponentModel;
 using Gorgon.Editor.ImageEditor.Fx;
 using Gorgon.Editor.UI;
@@ -37,15 +36,12 @@ namespace Gorgon.Editor.ImageEditor;
 internal partial class FxBlurSettings
     : EditorSubPanelCommon, IDataContext<IFxBlur>
 {
-
     /// <summary>Property to return the data context assigned to this view.</summary>
     public IFxBlur ViewModel
     {
         get;
         private set;
     }
-
-
 
     /// <summary>Handles the ValueChanged event of the NumericBlurAmount control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -154,8 +150,6 @@ internal partial class FxBlurSettings
 
         ViewModel.PropertyChanged += DataContext_PropertyChanged;
     }
-
-
 
     /// <summary>Initializes a new instance of the <see cref="FxBlurSettings"/> class.</summary>
     public FxBlurSettings() => InitializeComponent();

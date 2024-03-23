@@ -23,7 +23,6 @@
 // Created: May 9, 2019 7:50:58 AM
 // 
 
-
 using System.ComponentModel;
 using System.Numerics;
 using Gorgon.Editor.ImageAtlasTool.Properties;
@@ -61,8 +60,6 @@ internal partial class FormImageSelector
     // The current state of the close operation.
     private int _closeState;
 
-
-
     /// <summary>Property to return the data context assigned to this view.</summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public IImageFiles ViewModel
@@ -70,8 +67,6 @@ internal partial class FormImageSelector
         get;
         private set;
     }
-
-
 
     /// <summary>
     /// Function to validate the controls on the form.
@@ -95,7 +90,6 @@ internal partial class FormImageSelector
         ViewModel.SearchCommand.Execute(e.SearchText);
         ValidateControls();
     }
-
 
     /// <summary>Contents the file explorer file entries focused.</summary>
     /// <param name="sender">The sender.</param>
@@ -386,8 +380,6 @@ internal partial class FormImageSelector
         ViewModel.PropertyChanged += DataContext_PropertyChanged;
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="FormImageSelector"/> class.</summary>
     public FormImageSelector()
     {
@@ -396,5 +388,4 @@ internal partial class FormImageSelector
 
         _syncContext = SynchronizationContext.Current;
     }
-
 }

@@ -226,9 +226,9 @@ public static class GorgonStringFormattingExtension
         {
             return result;
         }
-        
+
         result++;
-        
+
         while (size >= 0x80)
         {
             size >>= 7;

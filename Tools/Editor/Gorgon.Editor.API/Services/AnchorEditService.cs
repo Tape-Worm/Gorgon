@@ -23,7 +23,6 @@
 // Created: July 11, 2020 9:51:23 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Animation;
 using Gorgon.Editor.Rendering;
@@ -61,14 +60,10 @@ public class AnchorEditService : IAnchorEditService
     // Flag to indicate that the mouse cursor is hidden.
     private bool _cursorHidden;
 
-
-
     /// <summary>
     /// Event triggered when the anchor position is updated.
     /// </summary>
     public event EventHandler AnchorChanged;
-
-
 
     /// <summary>
     /// Property to set or return the camera for the renderer.
@@ -107,8 +102,6 @@ public class AnchorEditService : IAnchorEditService
         get;
         set;
     }
-
-
 
     /// <summary>
     /// Function to assign the anchor position.
@@ -317,8 +310,6 @@ public class AnchorEditService : IAnchorEditService
         _animController.Update();
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="AnchorEditService"/> class.</summary>
     /// <param name="renderer">The 2D renderer for the application.</param>
     /// <param name="anchorSprite">The sprite representing the anchor icon.</param>
@@ -344,5 +335,4 @@ public class AnchorEditService : IAnchorEditService
             .EndEdit()
             .Build("Icon Opacity");
     }
-
 }

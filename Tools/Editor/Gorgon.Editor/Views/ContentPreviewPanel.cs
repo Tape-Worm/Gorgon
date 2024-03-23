@@ -23,7 +23,6 @@
 // Created: December 22, 2018 8:59:01 PM
 // 
 
-
 using System.ComponentModel;
 using System.Numerics;
 using Gorgon.Editor.Properties;
@@ -63,8 +62,6 @@ internal partial class ContentPreviewPanel
     // The text to draw.
     private GorgonTextSprite _titleText;
 
-
-
     /// <summary>
     /// Property to set or return the application graphics context.
     /// </summary>
@@ -82,8 +79,6 @@ internal partial class ContentPreviewPanel
         get;
         private set;
     }
-
-
 
     /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -323,8 +318,6 @@ internal partial class ContentPreviewPanel
         ViewModel.PropertyChanged += DataContext_PropertyChanged;
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="Views.ContentPreview"/> class.</summary>
     public ContentPreviewPanel()
     {
@@ -334,5 +327,4 @@ internal partial class ContentPreviewPanel
 
         InitializeComponent();
     }
-
 }

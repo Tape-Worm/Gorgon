@@ -36,7 +36,6 @@ namespace Gorgon.Examples;
 public class TvImageCodecPlugIn
     : GorgonImageCodecPlugIn
 {
-
     /// <summary>
     /// Property to return the names of the available codecs for this plug in.
     /// </summary>
@@ -47,8 +46,6 @@ public class TvImageCodecPlugIn
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to create a new <see cref="IGorgonImageCodec"/>.

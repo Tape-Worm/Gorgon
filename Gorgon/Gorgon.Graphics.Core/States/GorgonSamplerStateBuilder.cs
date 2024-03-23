@@ -23,7 +23,6 @@
 // Created: July 28, 2016 11:49:51 PM
 // 
 
-
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
@@ -54,7 +53,6 @@ namespace Gorgon.Graphics.Core;
 public class GorgonSamplerStateBuilder(GorgonGraphics graphics)
         : GorgonStateBuilderCommon<GorgonSamplerStateBuilder, GorgonSamplerState>(new GorgonSamplerState()), IGorgonGraphicsObject
 {
-
     /// <summary>
     /// Property to return the graphics interface that built this object.
     /// </summary>
@@ -62,8 +60,6 @@ public class GorgonSamplerStateBuilder(GorgonGraphics graphics)
     {
         get;
     } = graphics ?? throw new ArgumentNullException(nameof(graphics));
-
-
 
     /// <summary>
     /// Function to copy the values of one state into another.
@@ -246,8 +242,4 @@ public class GorgonSamplerStateBuilder(GorgonGraphics graphics)
 
         return this;
     }
-
-
-
-
 }

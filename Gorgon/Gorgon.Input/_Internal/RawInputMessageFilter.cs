@@ -23,10 +23,8 @@
 // Created: Tuesday, September 08, 2015 12:31:48 AM
 // 
 
-
 using Gorgon.Graphics;
 using Gorgon.Input;
-
 
 namespace Gorgon.Native;
 
@@ -45,8 +43,6 @@ internal class RawInputMessageFilter
     private readonly Dictionary<DeviceKey, IGorgonRawInputDeviceData<GorgonRawKeyboardData>> _keyboardDevices;
     private readonly Dictionary<DeviceKey, IGorgonRawInputDeviceData<GorgonRawMouseData>> _mouseDevices;
     private readonly Dictionary<DeviceKey, IGorgonRawInputDeviceData<GorgonRawHIDData>> _hidDevices;
-
-
 
     /// <summary>
     /// Function to retrieve a raw input HID.
@@ -291,8 +287,6 @@ internal class RawInputMessageFilter
         return true;
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="RawInputMessageFilter"/> class.
     /// </summary>
@@ -323,5 +317,4 @@ internal class RawInputMessageFilter
     {
         Dispose();
     }
-
 }

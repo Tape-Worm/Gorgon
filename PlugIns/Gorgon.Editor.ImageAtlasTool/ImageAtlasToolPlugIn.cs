@@ -23,7 +23,6 @@
 // Created: March 2, 2019 11:15:34 AM
 // 
 
-
 using Gorgon.Editor.Content;
 using Gorgon.Editor.ImageAtlasTool.Properties;
 using Gorgon.Editor.PlugIns;
@@ -59,8 +58,6 @@ internal class ImageAtlasToolPlugIn
     private ImageFiles _fileVm;
     // The texture atlas view model.
     private ImageAtlas _textureAtlas;
-
-
 
     /// <summary>
     /// Function to retrieve the image file entries from the file system.
@@ -224,12 +221,9 @@ internal class ImageAtlasToolPlugIn
         base.OnShutdown();
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="ImageAtlasToolPlugIn"/> class.</summary>
     public ImageAtlasToolPlugIn()
         : base(Resources.GORIAG_PLUGIN_DESC)
     {
     }
-
 }

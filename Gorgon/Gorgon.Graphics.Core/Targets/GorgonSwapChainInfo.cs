@@ -23,7 +23,6 @@
 // Created: Tuesday, June 4, 2013 8:25:47 PM
 // 
 
-
 namespace Gorgon.Graphics.Core;
 
 /// <summary> 
@@ -41,7 +40,6 @@ namespace Gorgon.Graphics.Core;
 public record GorgonSwapChainInfo(int Width, int Height, BufferFormat Format)
     : IGorgonSwapChainInfo
 {
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonSwapChainInfo"/> class.
     /// </summary>
@@ -54,8 +52,6 @@ public record GorgonSwapChainInfo(int Width, int Height, BufferFormat Format)
         Name = string.IsNullOrEmpty(newName) ? info.Name : newName;
         StretchBackBuffer = info.StretchBackBuffer;
     }
-
-
 
     /// <summary>
     /// Property to return whether the back buffer contents will be stretched to fit the size of the presentation target area (typically the client area of the window).

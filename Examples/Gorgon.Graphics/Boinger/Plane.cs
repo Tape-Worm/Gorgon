@@ -23,7 +23,6 @@
 // Created: Sunday, December 30, 2012 10:25:22 AM
 // 
 
-
 using System.Numerics;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -37,7 +36,6 @@ namespace Gorgon.Examples;
 internal class Plane
     : Model
 {
-
     /// <summary>
     /// Property to return the size of the plane.
     /// </summary>
@@ -96,5 +94,4 @@ internal class Plane
                                             },
                                             Indices);
     }
-
 }

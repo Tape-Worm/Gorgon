@@ -23,7 +23,6 @@
 // Created: December 10, 2018 9:31:34 PM
 // 
 
-
 using Gorgon.IO;
 
 namespace Gorgon.Editor.ProjectData;

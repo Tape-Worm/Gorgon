@@ -23,8 +23,6 @@
 // Created: September 5, 2018 12:35:20 PM
 // 
 
-
-
 using Newtonsoft.Json;
 
 namespace Gorgon.Editor.Metadata;
@@ -35,7 +33,6 @@ namespace Gorgon.Editor.Metadata;
 [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
 internal class ProjectItemMetadata30
 {
-
     /// <summary>
     /// Property to set or return the name of the plugin associated with the metadata file path.
     /// </summary>

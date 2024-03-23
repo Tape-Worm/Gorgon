@@ -23,7 +23,6 @@
 // Created: June 13, 2016 8:45:14 PM
 // 
 
-
 using Gorgon.Graphics.Imaging;
 
 namespace Gorgon.Graphics.Core;
@@ -37,7 +36,6 @@ namespace Gorgon.Graphics.Core;
 public record GorgonTexture2DInfo(int Width, int Height, BufferFormat Format)
     : IGorgonTexture2DInfo, IGorgonImageInfo
 {
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonTexture2DInfo"/> class.
     /// </summary>
@@ -55,8 +53,6 @@ public record GorgonTexture2DInfo(int Width, int Height, BufferFormat Format)
         Usage = info.Usage;
         Shared = info.Shared;
     }
-
-
 
     /// <summary>
     /// Property to return the type of image data.

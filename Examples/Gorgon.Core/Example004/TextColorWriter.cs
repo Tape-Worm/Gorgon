@@ -23,7 +23,6 @@
 // Created: Tuesday, January 1, 2013 7:24:03 PM
 // 
 
-
 namespace Gorgon.Examples;
 
 /// <summary>
@@ -55,5 +54,4 @@ public abstract class TextColorWriter
         Console.ForegroundColor = TextColor;
         Console.WriteLine(text);
     }
-
 }

@@ -23,7 +23,6 @@
 // Created: February 8, 2020 9:27:54 PM
 // 
 
-
 using System.ComponentModel;
 using Gorgon.Core;
 using Gorgon.Editor.ImageEditor.Fx;
@@ -41,13 +40,10 @@ namespace Gorgon.Editor.ImageEditor;
 internal class TextureFxViewer
     : TextureViewer
 {
-
     /// <summary>
     /// The effects renderer.
     /// </summary>
     public const string ViewerName = "ContextFx";
-
-
 
     // The number of blur passes.
     private int _passes = 1;
@@ -72,8 +68,6 @@ internal class TextureFxViewer
     private bool _oneBitInvert;
     // The service used to apply effects.
     private readonly IFxPreviewer _fxPreviewer;
-
-
 
     /// <summary>Handles the BitSettingsPropertyChanged event.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -292,8 +286,6 @@ internal class TextureFxViewer
         DataContext.FxContext.OneBitSettings.PropertyChanged += OneBitSettings_PropertyChanged;
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="TextureFxViewer"/> class.</summary>
     /// <param name="renderer">The main renderer for the content view.</param>
     /// <param name="swapChain">The swap chain for the content view.</param>
@@ -305,5 +297,4 @@ internal class TextureFxViewer
         AllowArrayDepthChange = false;
         AllowMipChange = false;
     }
-
 }

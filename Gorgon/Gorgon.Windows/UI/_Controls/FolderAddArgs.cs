@@ -23,7 +23,6 @@
 // Created: April 28, 2019 10:27:15 AM
 // 
 
-
 using System.ComponentModel;
 
 namespace Gorgon.UI;
@@ -34,7 +33,6 @@ namespace Gorgon.UI;
 public class FolderAddArgs
     : CancelEventArgs
 {
-
     /// <summary>
     /// Property to return the path to the directory being created.
     /// </summary>
@@ -68,8 +66,6 @@ public class FolderAddArgs
         set;
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="FolderAddArgs"/> class.</summary>
     /// <param name="parentPath">The parent to the parent directory.</param>
     /// <param name="newDirPath">  The path to the new directory.</param>
@@ -80,5 +76,4 @@ public class FolderAddArgs
         DirectoryPath = newDirPath;
         DirectoryName = directoryName;
     }
-
 }

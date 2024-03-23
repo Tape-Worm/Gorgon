@@ -23,7 +23,6 @@
 // Created: October 29, 2018 3:49:26 PM
 // 
 
-
 using Gorgon.Editor.Content;
 
 namespace Gorgon.Editor.UI;
@@ -72,7 +71,6 @@ public enum SaveReason
 public interface IEditorContent
     : IViewModel
 {
-
     /// <summary>
     /// Property to return the clipboard handler for this view model.
     /// </summary>
@@ -177,5 +175,4 @@ public interface IEditorContent
     {
         get;
     }
-
 }

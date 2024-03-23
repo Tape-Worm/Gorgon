@@ -23,7 +23,6 @@
 // Created: May 23, 2018 12:18:45 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Memory;
@@ -76,8 +75,6 @@ public sealed class GorgonStreamOutCallBuilder
 
     // The worker call used to build up the object.
     private readonly GorgonStreamOutCall _workerCall;
-
-
 
     /// <summary>
     /// Function to assign a list of samplers to a shader on the pipeline.
@@ -378,8 +375,6 @@ public sealed class GorgonStreamOutCallBuilder
         return this;
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonDrawCallBuilder"/> class.
     /// </summary>
@@ -394,5 +389,4 @@ public sealed class GorgonStreamOutCallBuilder
         _workerCall.SetupViews();
         _workerCall.D3DState.VertexBuffers = new GorgonVertexBufferBindings();
     }
-
 }

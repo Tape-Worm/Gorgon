@@ -23,7 +23,6 @@
 // Created: September 6, 2021 12:44:34 AM
 // 
 
-
 using System.ComponentModel;
 using System.Drawing.Drawing2D;
 using System.Drawing.Text;
@@ -42,8 +41,6 @@ internal class ComboPatterns
     private readonly SortedDictionary<string, HatchStyle> _patternList = new(StringComparer.OrdinalIgnoreCase);
     // Proper name buffer.
     private readonly StringBuilder _properName = new(128);
-
-
 
     /// <summary>
     /// N/A
@@ -83,8 +80,6 @@ internal class ComboPatterns
             SelectedIndex = Items.IndexOf(properName);
         }
     }
-
-
 
     /// <summary>
     /// Function to separate an enumeration name at capital letters and numeric values with a space.
@@ -175,8 +170,6 @@ internal class ComboPatterns
         }
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="ComboPatterns"/> class.
     /// </summary>
@@ -185,5 +178,4 @@ internal class ComboPatterns
         base.DrawMode = DrawMode.OwnerDrawVariable;
         base.Sorted = true;
     }
-
 }

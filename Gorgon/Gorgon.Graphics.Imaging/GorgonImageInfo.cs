@@ -23,7 +23,6 @@
 // Created: June 20, 2016 9:22:50 PM
 // 
 
-
 using Gorgon.Math;
 
 namespace Gorgon.Graphics.Imaging;
@@ -36,7 +35,6 @@ namespace Gorgon.Graphics.Imaging;
 public record GorgonImageInfo(ImageDataType ImageType, BufferFormat Format)
     : IGorgonImageInfo
 {
-
     /// <summary>
     /// A copy constructor for an <see cref="IGorgonImageInfo"/>.
     /// </summary>
@@ -52,8 +50,6 @@ public record GorgonImageInfo(ImageDataType ImageType, BufferFormat Format)
         MipCount = info.MipCount.Max(1);
         HasPreMultipliedAlpha = info.HasPreMultipliedAlpha;
     }
-
-
 
     /// <summary>
     /// Property to return the total number of images there are in an image array.

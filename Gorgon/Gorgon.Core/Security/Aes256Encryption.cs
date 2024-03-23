@@ -23,8 +23,6 @@ public class Aes256Encryption
     // The initialization vector and key.
     private readonly (byte[] IV, byte[] Key) _ivKey;
 
-
-
     /// <summary>
     /// Function to extract the symmetric key from the key data passed to the constructor.
     /// </summary>
@@ -209,8 +207,6 @@ public class Aes256Encryption
         return (hashGen.GetBytes(aes.BlockSize / 8), hashGen.GetBytes(aes.KeySize / 8));
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="Aes256Encryption"/> class.
     /// </summary>
@@ -237,7 +233,6 @@ public class Aes256Encryption
         _ivKey = GetSymmetricKey(keyPairFileData);
     }
 
-
     /// <summary>
     /// Initializes a new instance of the <see cref="Aes256Encryption"/> class.
     /// </summary>
@@ -263,5 +258,4 @@ public class Aes256Encryption
 
         _ivKey = (iv, key);
     }
-
 }

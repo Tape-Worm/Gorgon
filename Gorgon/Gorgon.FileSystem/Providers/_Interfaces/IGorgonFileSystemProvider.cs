@@ -23,7 +23,6 @@
 // Created: Saturday, September 19, 2015 11:40:07 PM
 // 
 
-
 using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.PlugIns;
@@ -55,7 +54,6 @@ namespace Gorgon.IO.Providers;
 public interface IGorgonFileSystemProvider
     : IGorgonNamedObject
 {
-
     /// <summary>
     /// Property to return whether this provider only gives read only access to the physical file system.
     /// </summary>
@@ -92,8 +90,6 @@ public interface IGorgonFileSystemProvider
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to return the virtual file system path from a physical file system path.

@@ -23,7 +23,6 @@
 // Created: Tuesday, September 07, 2015 2:27:10 PM
 // 
 
-
 using Gorgon.Native;
 
 namespace Gorgon.Input;
@@ -55,14 +54,10 @@ public class GorgonRawHID(GorgonRawHIDInfo hidInfo)
     // Synchronization for multiple threads.
     private readonly object _syncLock = new();
 
-
-
     /// <summary>
     /// Event triggered when Raw Input receives data from the device.
     /// </summary>
     public event EventHandler<GorgonHIDEventArgs> DataReceived;
-
-
 
     /// <summary>
     /// Property to return the handle for the device.
@@ -130,9 +125,6 @@ public class GorgonRawHID(GorgonRawHIDInfo hidInfo)
         }
     }
 
-
-
-
     /// <summary>
     /// Function to process the Gorgon raw input data into device state data and appropriate events.
     /// </summary>
@@ -156,6 +148,4 @@ public class GorgonRawHID(GorgonRawHIDInfo hidInfo)
 
         GC.SuppressFinalize(this);
     }
-
-
 }

@@ -23,7 +23,6 @@
 // Created: March 28, 2020 7:50:38 PM
 // 
 
-
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Services;
 
@@ -37,7 +36,6 @@ public abstract class PlugInsCategory<T>
     : SettingsCategoryBase<T>
     where T : PlugInsCategoryViewModelParameters
 {
-
     /// <summary>
     /// Property to return the dialog used to open plug in assemblies.
     /// </summary>
@@ -78,8 +76,6 @@ public abstract class PlugInsCategory<T>
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to write out the settings.
@@ -184,8 +180,6 @@ public abstract class PlugInsCategory<T>
     /// </remarks>
     protected override void OnInitialize(T injectionParameters) => OpenCodecDialog = injectionParameters.OpenCodecDialog;
 
-
-
     /// <summary>Initializes a new instance of the <see cref="PlugInsCategory{T}"/> class.</summary>
     protected PlugInsCategory()
     {
@@ -193,5 +187,4 @@ public abstract class PlugInsCategory<T>
         LoadPlugInAssemblyCommand = new EditorCommand<object>(DoLoadPlugInAssembly);
         UnloadPlugInAssembliesCommand = new EditorCommand<object>(DoUnloadPlugInAssemblies, CanUnloadPlugInAssemblies);
     }
-
 }

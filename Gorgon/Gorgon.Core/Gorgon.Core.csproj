@@ -100,4 +100,8 @@
   <ItemGroup>
     <Using Include="System.Text" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Graphics\Renderers\" />
+    <Folder Include="Graphics\Renderers\Data\" />
+  </ItemGroup>
 </Project>

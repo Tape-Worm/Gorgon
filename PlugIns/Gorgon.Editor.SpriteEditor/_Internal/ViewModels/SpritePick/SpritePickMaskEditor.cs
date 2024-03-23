@@ -23,7 +23,6 @@
 // Created: May 9, 2020 11:21:29 PM
 // 
 
-
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 
@@ -38,8 +37,6 @@ internal class SpritePickMaskEditor
 
     // The settings for the plug in.
     private ISettings _pluginSettings;
-
-
 
     /// <summary>Property to set or return the type of masking to perform when picking a sprite using the sprite picker tool.</summary>
     public ClipMask ClipMaskType
@@ -77,8 +74,6 @@ internal class SpritePickMaskEditor
 
     /// <summary>Property to return whether the panel is modal.</summary>
     public override bool IsModal => false;
-
-
 
     /// <summary>Function to inject dependencies for the view model.</summary>
     /// <param name="injectionParameters">The parameters to inject.</param>

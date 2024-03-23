@@ -23,7 +23,6 @@
 // Created: July 4, 2020 12:40:55 AM
 // 
 
-
 using System.Numerics;
 using Gorgon.Animation;
 using Gorgon.Diagnostics;
@@ -53,8 +52,6 @@ internal class KeyProcessorService(ITextureCache textureCache, IGorgonLog log)
     private readonly SetKeyFramesArgs _setKeysArgs = new();
     // The synchronization lock for multiple threads.
     private readonly object _syncLock = new();
-
-
 
     /// <summary>
     /// Function to retrieve a list of files for each key frame in a texture track.
@@ -336,6 +333,4 @@ internal class KeyProcessorService(ITextureCache textureCache, IGorgonLog log)
                 return null;
         }
     }
-
-
 }

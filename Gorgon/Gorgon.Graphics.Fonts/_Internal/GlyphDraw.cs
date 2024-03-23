@@ -23,7 +23,6 @@
 // Created: February 15, 2017 9:22:49 PM
 // 
 
-
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Globalization;
@@ -283,7 +282,6 @@ internal class GlyphDraw(IGorgonFontInfo fontInfo, GdiFontData fontData)
                                         _fontData.Font.Size,
                                         new RectangleF(0, 0, glyphBitmap.Width, glyphBitmap.Height),
                                         _fontData.DrawFormat);
-
 
             glyphGraphics.FillPath(brush, glyphRenderer);
         }
@@ -655,6 +653,4 @@ internal class GlyphDraw(IGorgonFontInfo fontInfo, GdiFontData fontData)
 
         return result;
     }
-
-
 }

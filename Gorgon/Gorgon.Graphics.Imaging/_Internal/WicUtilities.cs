@@ -23,7 +23,6 @@
 // Created: June 20, 2016 11:49:00 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Graphics.Imaging.Properties;
@@ -71,8 +70,6 @@ class WicUtilities
     private const string DecOptPalette = "Palette";
     // Decoding option for the alpha threshold.
     private const string DecOptAlphaThreshold = "AlphaThreshold";
-
-
 
     /// <summary>
     /// A value to hold a WIC to Gorgon buffer format value.
@@ -176,12 +173,8 @@ class WicUtilities
         new(PixelFormat.Format96bppRGBFixedPoint, PixelFormat.Format128bppRGBAFloat)
     ];
 
-
-
     // The WIC factory.
     private readonly ImagingFactory _factory;
-
-
 
     /// <summary>
     /// Function to find the best buffer format for a given pixel format.
@@ -1374,7 +1367,6 @@ class WicUtilities
                 frame?.Dispose();
                 frame = decoder.GetFrame(i);
 
-
                 frame.MetadataQueryReader.TryGetMetadataByName(delayMetaDataName, out object value);
 
                 if (value is null)
@@ -1401,8 +1393,6 @@ class WicUtilities
     /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
     /// </summary>
     public void Dispose() => _factory?.Dispose();
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="WicUtilities"/> class.

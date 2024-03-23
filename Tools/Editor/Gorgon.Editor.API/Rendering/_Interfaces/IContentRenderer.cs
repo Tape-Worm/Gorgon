@@ -23,7 +23,6 @@
 // Created: February 6, 2020 9:51:28 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Editor.UI;
@@ -43,7 +42,6 @@ namespace Gorgon.Editor.Rendering;
 public interface IContentRenderer
     : IGorgonNamedObject, IDisposable
 {
-
     /// <summary>
     /// Event triggered when the camera is zoomed.
     /// </summary>
@@ -56,8 +54,6 @@ public interface IContentRenderer
     /// Event triggered when the render region has changed its size.
     /// </summary>
     event EventHandler RenderRegionChanged;
-
-
 
     /// <summary>
     /// Property to return the current zoom level.
@@ -138,7 +134,6 @@ public interface IContentRenderer
         set;
     }
 
-
     /// <summary>
     /// Property to set or return whether the renderer is enabled.
     /// </summary>
@@ -155,8 +150,6 @@ public interface IContentRenderer
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to set the offset of the view.

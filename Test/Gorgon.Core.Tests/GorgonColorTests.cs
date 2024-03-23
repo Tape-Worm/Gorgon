@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
 using Gorgon.Graphics;
 using Gorgon.Json;
 using Newtonsoft.Json;
@@ -33,7 +27,7 @@ public class JsonData
     {
         get;
         private set;
-    } = Guid.NewGuid().ToString(); 
+    } = Guid.NewGuid().ToString();
 
     public GorgonColor Color
     {
@@ -78,7 +72,7 @@ public class GorgonColorTests
     public void Deconstruct()
     {
         GorgonColor color = GorgonColors.Red;
-        
+
         (float r, float g, float b, float a) = color;
 
         Assert.AreEqual(1.0f, r);
@@ -110,7 +104,7 @@ public class GorgonColorTests
     public void FromARGB()
     {
         GorgonColor color = GorgonColor.FromARGB(0xff7fbf3f);
-        
+
         Assert.AreEqual(0.498039216f, color.Red);
         Assert.AreEqual(0.7490196f, color.Green);
         Assert.AreEqual(0.247058824f, color.Blue);
@@ -122,7 +116,7 @@ public class GorgonColorTests
     {
         GorgonColor color = new(0.5f, 0.75f, 0.25f, 1.0f);
         int signedAbgr = GorgonColor.ToABGR(color);
-        
+
         unchecked
         {
             Assert.AreEqual((int)0xff3fbf7f, signedAbgr);
@@ -145,7 +139,7 @@ public class GorgonColorTests
     {
         GorgonColor color = new(GorgonColors.White, 0.5f);
         GorgonColor premultiplied = GorgonColor.PremultiplyAlpha(color);
-        
+
         Assert.AreEqual(new GorgonColor(0.5f, 0.5f, 0.5f, 0.5f), premultiplied);
     }
 
@@ -187,7 +181,7 @@ public class GorgonColorTests
     {
         GorgonColor color = new(0.5f, 0.75f, 0.25f, 1.0f);
         int signedBgra = GorgonColor.ToBGRA(color);
-        
+
         unchecked
         {
             Assert.AreEqual((int)0x3fbf7fff, signedBgra);
@@ -206,7 +200,7 @@ public class GorgonColorTests
     }
 
     [TestMethod]
-    public void ToColor ()
+    public void ToColor()
     {
         GorgonColor color = new(0.5f, 0.75f, 0.25f, 1.0f);
         System.Drawing.Color drawingColor = GorgonColor.ToColor(color);
@@ -256,7 +250,7 @@ public class GorgonColorTests
     {
         GorgonColor color = new(0.5f, 0.75f, 0.25f, 1.0f);
         Vector4 rgb = GorgonColor.ToVector4(color);
-        
+
         Assert.AreEqual(0.5f, rgb.X);
         Assert.AreEqual(0.75, rgb.Y);
         Assert.AreEqual(0.25f, rgb.Z);
@@ -268,7 +262,7 @@ public class GorgonColorTests
     {
         Vector4 rgba = new(0.5f, 0.75f, 0.25f, 1.0f);
         GorgonColor color = GorgonColor.FromVector4(rgba);
-        
+
         Assert.AreEqual(0.5f, rgba.X);
         Assert.AreEqual(0.75, rgba.Y);
         Assert.AreEqual(0.25f, rgba.Z);
@@ -287,7 +281,7 @@ public class GorgonColorTests
     {
         GorgonColor color = new GorgonColor(0.76431364f, 0, 0, 1);
         color = GorgonColor.ToLinear(color);
-        
+
         Assert.AreEqual(0.545098f, color.Red);
     }
 
@@ -321,7 +315,7 @@ public class GorgonColorTests
             Color = GorgonColors.Purple
         };
 
-        string expected = "{\"Id\":\""+ data.Id +"\",\"Color\":-65281,\"NullableColor\":null}";
+        string expected = "{\"Id\":\"" + data.Id + "\",\"Color\":-65281,\"NullableColor\":null}";
         string json = Newtonsoft.Json.JsonConvert.SerializeObject(data);
 
         Assert.AreEqual(expected, json);

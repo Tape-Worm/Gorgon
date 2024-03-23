@@ -25,9 +25,9 @@ using System.Drawing;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using Gorgon.Properties;
 using Gorgon.Json;
 using Gorgon.Math;
+using Gorgon.Properties;
 using Newtonsoft.Json;
 
 namespace Gorgon.Graphics;
@@ -274,7 +274,7 @@ public struct GorgonRectangleF
         float top = rectangle2.Top.Max(rectangle1.Top);
 
         float right = rectangle2.Right.Min(rectangle1.Right);
-        float bottom = rectangle2.Bottom.Min(rectangle1.Bottom);        
+        float bottom = rectangle2.Bottom.Min(rectangle1.Bottom);
 
         if ((right <= left) || (bottom <= top))
         {

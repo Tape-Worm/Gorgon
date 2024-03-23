@@ -23,7 +23,6 @@
 // Created: Wednesday, February 26, 2014 6:19:08 PM
 // 
 
-
 namespace Gorgon.UI;
 
 /// <summary>
@@ -35,8 +34,6 @@ internal partial class WarningDialog
     private int _lastWidth;                 // Last used width.
     private string _warningDetails;         // Error details.
     private int _detailHeight;              // Height for details panel.
-
-
 
     /// <summary>
     /// Property to set or return whether to open the detail panel when the dialog is shown.
@@ -68,8 +65,6 @@ internal partial class WarningDialog
             ValidateFunctions();
         }
     }
-
-
 
     /// <summary>
     /// Handles the Click event of the detailsButton control.
@@ -163,8 +158,6 @@ internal partial class WarningDialog
         DrawMessage(g, maxTextHeight);
     }
 
-
-
     /// <summary>
     /// Constructor.
     /// </summary>
@@ -176,5 +169,4 @@ internal partial class WarningDialog
         ShowDetailPanel = false;
         _warningDetails = "";
     }
-
 }

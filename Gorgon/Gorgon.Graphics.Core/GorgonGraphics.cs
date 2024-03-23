@@ -23,7 +23,6 @@
 // Created: April 6, 2018 8:15:10 AM
 // 
 
-
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
@@ -105,7 +104,6 @@ namespace Gorgon.Graphics.Core;
 public sealed class GorgonGraphics
     : IGorgonNativeResource, IDisposable
 {
-
     /// <summary>
     /// Event triggered before a render target is changed.
     /// </summary>
@@ -136,8 +134,6 @@ public sealed class GorgonGraphics
     /// </summary>
     public event EventHandler DepthStencilChanged;
 
-
-
     /// <summary>
     /// The minimum build number required for the Windows 10 operating system.
     /// </summary>
@@ -147,9 +143,6 @@ public sealed class GorgonGraphics
     /// The name of the shader file data used for include files that wish to use the include shader.
     /// </summary>
     public const string BlitterShaderIncludeFileName = "__Gorgon_TextureBlitter_Shader__";
-
-
-
 
     // The D3D 11.x device context.
     private D3D11.DeviceContext4 _deviceContext;
@@ -178,8 +171,6 @@ public sealed class GorgonGraphics
 
     // The timer used to trigger a clean up of cached render targets.
     private readonly GorgonTimerQpc _rtExpireTimer = new();
-
-
 
     /// <summary>
     /// Property to return the Direct 3D 11.x device context for this graphics instance.
@@ -380,8 +371,6 @@ public sealed class GorgonGraphics
     /// </para>
     /// </remarks>        
     nint IGorgonNativeResource.Handle => D3DDevice.NativePointer;
-
-
 
     /// <summary>
     /// Function to retrieve the multi sample maximum quality level support for a given format.
@@ -1267,8 +1256,6 @@ public sealed class GorgonGraphics
 #endif
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonGraphics"/> class.
     /// </summary>
@@ -1379,5 +1366,4 @@ public sealed class GorgonGraphics
         IsDebugEnabled = true;
 #endif
     }
-
 }

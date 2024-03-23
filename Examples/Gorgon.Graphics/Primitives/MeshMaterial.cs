@@ -23,7 +23,6 @@
 // Created: July 30, 2017 2:55:45 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Collections;
 using Gorgon.Graphics.Core;
@@ -35,7 +34,6 @@ namespace Gorgon.Examples;
 /// </summary>
 internal class MeshMaterial
 {
-
     /// <summary>
     /// Property to return the textures for this mesh.
     /// </summary>
@@ -89,8 +87,6 @@ internal class MeshMaterial
         set;
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="MeshMaterial"/> class.
     /// </summary>
@@ -100,5 +96,4 @@ internal class MeshMaterial
         Textures = new GorgonArray<string>(3);
         BlendState = GorgonBlendState.NoBlending;
     }
-
 }

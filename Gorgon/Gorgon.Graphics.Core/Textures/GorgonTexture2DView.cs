@@ -23,7 +23,6 @@
 // Created: July 19, 2016 1:29:59 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
@@ -51,7 +50,6 @@ namespace Gorgon.Graphics.Core;
 public sealed class GorgonTexture2DView
     : GorgonShaderResourceView, IGorgonTexture2DInfo, IGorgonImageInfo
 {
-
     /// <summary>
     /// Property to return the type of image data.
     /// </summary>
@@ -231,8 +229,6 @@ public sealed class GorgonTexture2DView
     /// Property to return whether the resource used by this view can be shared or not.
     /// </summary>
     public TextureSharingOptions Shared => Texture.Shared;
-
-
 
     /// <summary>
     /// Function to retrieve the view description for a 2D texture.
@@ -793,8 +789,6 @@ public sealed class GorgonTexture2DView
         return view;
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonTexture2DView"/> class.
     /// </summary>
@@ -824,5 +818,4 @@ public sealed class GorgonTexture2DView
         ArrayIndex = arrayIndex;
         ArrayCount = arrayCount;
     }
-
 }

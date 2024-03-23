@@ -23,14 +23,12 @@
 // Created: June 21, 2020 12:18:20 AM
 // 
 
-
 using System.Collections;
 using System.Collections.Concurrent;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 
 namespace Gorgon.Graphics.Core;
-
 
 /// <summary>
 /// A texture cache used to keep textures resident for use over a user defined lifetime
@@ -59,7 +57,6 @@ public class GorgonTextureCache<T>(GorgonGraphics graphics)
     : IEnumerable<T>
     where T : class, IGorgonTextureResource
 {
-
     /// <summary>
     /// An entry in the texture cache.
     /// </summary>
@@ -94,8 +91,6 @@ public class GorgonTextureCache<T>(GorgonGraphics graphics)
         }
     }
 
-
-
     // The graphics interface used to create the textures.
     private readonly GorgonGraphics _graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
     // The cache that holds the textures and redirected file name.
@@ -105,14 +100,10 @@ public class GorgonTextureCache<T>(GorgonGraphics graphics)
     // The list of textures to that are currently being loaded.
     private readonly List<string> _scheduledTextures = [];
 
-
-
     /// <summary>
     /// Property to return the number of cached textures.
     /// </summary>
     public int Count => _cache.Count;
-
-
 
     /// <summary>
     /// Function used to locate the texture if it is not stored in the cache.
@@ -181,7 +172,6 @@ public class GorgonTextureCache<T>(GorgonGraphics graphics)
         {
             return false;
         }
-
 
         if (!_cache.TryGetValue(texture.Name, out Lazy<TextureEntry> entry))
         {
@@ -594,6 +584,5 @@ public class GorgonTextureCache<T>(GorgonGraphics graphics)
     /// <summary>Returns an enumerator that iterates through a collection.</summary>
     /// <returns>An <see cref="IEnumerator"/> object that can be used to iterate through the collection.</returns>
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-
 
 }

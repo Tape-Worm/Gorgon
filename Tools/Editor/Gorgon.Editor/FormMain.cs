@@ -23,7 +23,6 @@
 // Created: August 26, 2018 8:51:04 PM
 // 
 
-
 using System.Collections.Specialized;
 using System.ComponentModel;
 using Gorgon.Editor.PlugIns;
@@ -63,8 +62,6 @@ internal partial class FormMain
         Closed = 2
     }
 
-
-
     // The context for a clipboard handler object.
     private IClipboardHandler _clipboardContext;
     // The flag to indicate that the application is already closing.
@@ -96,8 +93,6 @@ internal partial class FormMain
     // The application settings.
     private readonly EditorSettings _settings;
 
-
-
     /// <summary>
     /// Property to return the data context assigned to this view.
     /// </summary>
@@ -117,8 +112,6 @@ internal partial class FormMain
         get => PanelProject.GraphicsContext;
         set => PanelProject.GraphicsContext = value;
     }
-
-
 
     /// <summary>
     /// Function to release all tool ribbon items.
@@ -372,7 +365,6 @@ internal partial class FormMain
 
         fileExplorer.OpenContentFileCommand.Execute(currentFilePath);
     }
-
 
     /// <summary>Handles the Click event of the ButtonFileSystemRefresh control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -1220,7 +1212,6 @@ internal partial class FormMain
         ValidateRibbonButtons();
     }
 
-
     /// <summary>
     /// Handles the Click event of the ButtonFileSystemPaste control.
     /// </summary>
@@ -1409,8 +1400,6 @@ internal partial class FormMain
             ValidateRibbonButtons();
         }
     }
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FormMain"/> class.

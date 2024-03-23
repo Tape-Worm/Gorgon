@@ -23,7 +23,6 @@
 // Created: Sunday, January 13, 2013 5:59:29 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Input;
 using Gorgon.Math;
@@ -47,8 +46,6 @@ internal class SprayCan
     private float _vibMax;                  // Maximum vibration.
     private float _sprayAmount;             // Spray amount.
     private float _sprayMax;                // Maximum spray amount.			
-
-
 
     /// <summary>
     /// Property to return the point size for the spray.
@@ -228,8 +225,6 @@ internal class SprayCan
         }
     }
 
-
-
     /// <summary>
     /// Function to update the sprayer.
     /// </summary>
@@ -342,5 +337,4 @@ internal class SprayCan
         SprayAlpha = 255.0f;
         IsActive = false;
     }
-
 }

@@ -23,7 +23,6 @@
 // Created: November 2, 2018 10:46:16 PM
 // 
 
-
 using System.Collections;
 
 namespace Gorgon.Editor.Views;

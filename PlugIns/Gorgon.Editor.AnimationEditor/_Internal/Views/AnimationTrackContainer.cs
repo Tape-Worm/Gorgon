@@ -23,7 +23,6 @@
 // Created: June 10, 2020 4:04:09 PM
 // 
 
-
 using System.Collections.Specialized;
 using System.ComponentModel;
 using Gorgon.Animation;
@@ -52,8 +51,6 @@ internal partial class AnimationTrackContainer
     // The data to copy/move.
     private readonly KeyFrameCopyMoveData _copyMoveData = new();
 
-
-
     /// <summary>Property to return the data context assigned to this view.</summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public IAnimationContent ViewModel
@@ -61,8 +58,6 @@ internal partial class AnimationTrackContainer
         get;
         private set;
     }
-
-
 
     /// <summary>
     /// Function to disable grid events.
@@ -855,8 +850,6 @@ internal partial class AnimationTrackContainer
         ViewModel.Tracks.CollectionChanged += Tracks_CollectionChanged;
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="AnimationTrackContainer"/> class.</summary>
     public AnimationTrackContainer()
     {
@@ -880,5 +873,4 @@ internal partial class AnimationTrackContainer
             ForeColor = DarkFormsRenderer.CutForeground
         };
     }
-
 }

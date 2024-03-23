@@ -13,7 +13,6 @@
 /// </remarks>
 public interface IGorgonTimer
 {
-
     /// <summary>
     /// Property to return the number of milliseconds elapsed since the timer was started.
     /// </summary>
@@ -77,8 +76,6 @@ public interface IGorgonTimer
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to reset the timer.

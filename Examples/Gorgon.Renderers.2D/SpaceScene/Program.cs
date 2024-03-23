@@ -23,7 +23,6 @@
 // Created: May 18, 2019 1:25:32 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Examples.Properties;
@@ -36,7 +35,6 @@ using Gorgon.Renderers;
 using Gorgon.Renderers.Cameras;
 using Gorgon.UI;
 using DX = SharpDX;
-
 
 namespace Gorgon.Examples;
 
@@ -87,8 +85,6 @@ static class Program
     private static GorgonTextSprite _textSprite;
     // Flag to indicate that the instructions be shown.
     private static bool _showInstructions = true;
-
-
 
     /// <summary>Handles the KeyUp event of the Keyboard control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -428,5 +424,4 @@ static class Program
             _assemblyCache?.Dispose();
         }
     }
-
 }

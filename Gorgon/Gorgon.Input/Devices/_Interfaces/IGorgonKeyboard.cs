@@ -23,7 +23,6 @@
 // Created: Thursday, September 10, 2015 10:12:40 PM
 // 
 
-
 namespace Gorgon.Input;
 
 /// <summary>
@@ -91,7 +90,6 @@ public enum KeyboardType
 public interface IGorgonKeyboard
     : IGorgonRawInputDevice, IGorgonRawInputDeviceData<GorgonRawKeyboardData>
 {
-
     /// <summary>
     /// Event fired when a key is pressed on the keyboard.
     /// </summary>
@@ -101,8 +99,6 @@ public interface IGorgonKeyboard
     /// Event fired when a key is released on the keyboard.
     /// </summary>
     event EventHandler<GorgonKeyboardEventArgs> KeyUp;
-
-
 
     /// <summary>
     /// Property to return information about this keyboard.
@@ -119,8 +115,6 @@ public interface IGorgonKeyboard
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to convert a keyboard key into a character (if applicable).

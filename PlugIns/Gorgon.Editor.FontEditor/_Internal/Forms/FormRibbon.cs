@@ -23,7 +23,6 @@
 // Created: February 13, 2021 4:04:07 PM
 // 
 
-
 using System.ComponentModel;
 using System.Numerics;
 using Gorgon.Editor.FontEditor.Properties;
@@ -48,8 +47,6 @@ internal partial class FormRibbon
     private ZoomLevels _zoomLevel = ZoomLevels.ToWindow;
     // The renderer for the content.
     private IContentRenderer _contentRenderer;
-
-
 
     /// <summary>
     /// Property to set or return the data context for the ribbon on the form.
@@ -89,8 +86,6 @@ internal partial class FormRibbon
             UpdateZoomMenu();
         }
     }
-
-
 
     /// <summary>Handles the ZoomScale event of the ContentRenderer control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -223,7 +218,6 @@ internal partial class FormRibbon
         ViewModel.TextureEditor.ActivatePatternBrushCommand.Execute(null);
         ValidateButtons();
     }
-
 
     /// <summary>Handles the Click event of the MenuItemGradient control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -475,7 +469,6 @@ internal partial class FormRibbon
         ValidateButtons();
     }
 
-
     /// <summary>Handles the Click event of the ButtonOutline control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
@@ -681,8 +674,6 @@ internal partial class FormRibbon
         NumericSize.ValueChanged += NumericSize_ValueChanged;
     }
 
-
-
     /// <summary>Initializes a new instance of the FormRibbon class.</summary>
     public FormRibbon()
     {
@@ -700,5 +691,4 @@ internal partial class FormRibbon
             _menuZoomItems[level] = menuItem;
         }
     }
-
 }

@@ -23,7 +23,6 @@
 // Created: December 30, 2020 8:59:46 PM
 // 
 
-
 using System.Diagnostics;
 using Gorgon.Collections;
 using Gorgon.Diagnostics;
@@ -88,8 +87,6 @@ internal class StateEvaluator(GorgonGraphics graphics)
         VsSamplers = new GorgonSamplerStates()
     };
 
-
-
     // The viewports used to define the area to render into.
     public DX.ViewportF[] Viewports = new DX.ViewportF[16];
 
@@ -101,8 +98,6 @@ internal class StateEvaluator(GorgonGraphics graphics)
 
     // The currently bound depth/stencil buffer.
     public GorgonDepthStencil2DView DepthStencil;
-
-
 
     /// <summary>
     /// Function to compare the index buffer binding with stream out bindings.
@@ -827,8 +822,4 @@ internal class StateEvaluator(GorgonGraphics graphics)
         _blendFactor = GorgonColors.White;
         _blendSampleMask = int.MinValue;
     }
-
-
-
-
 }

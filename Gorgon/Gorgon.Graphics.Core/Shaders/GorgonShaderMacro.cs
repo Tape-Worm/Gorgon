@@ -23,7 +23,6 @@
 // Created: Saturday, August 24, 2013 11:01:08 AM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 using D3D = SharpDX.Direct3D;

@@ -31,7 +31,7 @@ namespace Gorgon.Animation;
 /// <summary>
 /// A base class for a <see cref="IGorgonAnimation"/> implementation
 /// </summary>
-public class AnimationData 
+public class AnimationData
     : IGorgonNamedObject, IGorgonAnimation
 {
     // Number of loops for the animation.

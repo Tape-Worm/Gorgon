@@ -23,7 +23,6 @@
 // Created: Thursday, February 14, 2013 9:24:55 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Properties;
 using Gorgon.Math;
@@ -59,8 +58,6 @@ public sealed class GorgonCodecGif(GorgonGifEncodingOptions encodingOptions = nu
         "/imgdesc/Top"
     ];
 
-
-
     /// <summary>
     /// Property to return the list of names used to locate frame offsets in metadata.
     /// </summary>
@@ -73,8 +70,6 @@ public sealed class GorgonCodecGif(GorgonGifEncodingOptions encodingOptions = nu
     /// Property to return whether the codec supports decoding/encoding multiple frames or not.
     /// </summary>
     public override bool SupportsMultipleFrames => true;
-
-
 
     /// <summary>
     /// Function to retrieve custom metadata when encoding an image frame.
@@ -205,8 +200,4 @@ public sealed class GorgonCodecGif(GorgonGifEncodingOptions encodingOptions = nu
             stream.Position = position;
         }
     }
-
-
-
-
 }

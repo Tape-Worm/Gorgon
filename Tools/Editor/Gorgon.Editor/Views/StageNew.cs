@@ -23,7 +23,6 @@
 // Created: August 26, 2018 11:51:46 PM
 // 
 
-
 using System.ComponentModel;
 using Gorgon.Core;
 using Gorgon.Editor.Properties;
@@ -39,7 +38,6 @@ namespace Gorgon.Editor.Views;
 internal partial class StageNew
     : EditorBaseControl, IDataContext<INewProject>
 {
-
     /// <summary>
     /// Property to return the data context assigned to this view.
     /// </summary>
@@ -49,8 +47,6 @@ internal partial class StageNew
         get;
         private set;
     }
-
-
 
     /// <summary>
     /// Function to reset the path input textbox to its original color.
@@ -313,12 +309,9 @@ internal partial class StageNew
         }
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="StageNew"/> class.
     /// </summary>
     public StageNew() => InitializeComponent();
-
 
 }

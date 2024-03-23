@@ -23,7 +23,6 @@
 // Created: May 7, 2019 6:23:18 PM
 // 
 
-
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Numerics;
@@ -74,8 +73,6 @@ internal class ImageAtlas
     private Task<IReadOnlyDictionary<IContentFile, IGorgonImage>> _loadImageTask;
     // The list of sprites used for the atlas.
     private IReadOnlyDictionary<IContentFile, GorgonSprite> _atlasSpriteList;
-
-
 
     /// <summary>
     /// Property to return the view model for the image file loader.
@@ -207,7 +204,6 @@ internal class ImageAtlas
         }
     }
 
-
     /// <summary>
     /// Property to return the base atlas texture name.
     /// </summary>
@@ -245,7 +241,6 @@ internal class ImageAtlas
             OnPropertyChanged();
         }
     }
-
 
     /// <summary>
     /// Property to return the atlas after it's been generated.
@@ -354,7 +349,6 @@ internal class ImageAtlas
         get;
     }
 
-
     /// <summary>
     /// Property to return the command used to commit the atlas data back to the file system.
     /// </summary>
@@ -362,8 +356,6 @@ internal class ImageAtlas
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to determine whether images can be loaded or not.
@@ -631,7 +623,6 @@ internal class ImageAtlas
         }
     }
 
-
     /// <summary>
     /// Function to determine we can move to the next preview image.
     /// </summary>
@@ -699,7 +690,6 @@ internal class ImageAtlas
         {
             return false;
         }
-
 
         if (Atlas is not null)
         {
@@ -897,8 +887,6 @@ internal class ImageAtlas
         base.OnUnload();
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="ImageAtlas"/> class.</summary>
     public ImageAtlas()
     {
@@ -909,5 +897,4 @@ internal class ImageAtlas
         PrevPreviewCommand = new EditorCommand<object>(DoPrevPreview, CanPrevPreview);
         CommitAtlasCommand = new EditorCommand<CancelEventArgs>(DoCommitAtlas, CanCommitAtlas);
     }
-
 }

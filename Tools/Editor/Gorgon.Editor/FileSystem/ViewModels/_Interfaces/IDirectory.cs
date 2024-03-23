@@ -23,7 +23,6 @@
 // Created: December 2, 2019 8:14:23 AM
 // 
 
-
 using System.Collections.ObjectModel;
 using Gorgon.Core;
 using Gorgon.Editor.UI;
@@ -68,7 +67,6 @@ internal enum DirectoryActions
 internal interface IDirectory
     : IViewModel, IGorgonNamedObject
 {
-
     /// <summary>
     /// Property to return the actions that can be performed on this directory.
     /// </summary>
@@ -165,5 +163,4 @@ internal interface IDirectory
     {
         get;
     }
-
 }

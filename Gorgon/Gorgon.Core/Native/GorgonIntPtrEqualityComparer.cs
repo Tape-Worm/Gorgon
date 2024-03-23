@@ -23,7 +23,6 @@
 // Created: Wednesday, July 15, 2015 11:36:46 PM
 // 
 
-
 namespace Gorgon.Native;
 
 /// <summary>

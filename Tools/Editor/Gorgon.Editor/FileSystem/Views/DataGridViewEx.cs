@@ -23,7 +23,6 @@
 // Created: January 11, 2020 3:32:25 PM
 // 
 
-
 using System.ComponentModel;
 using Gorgon.Math;
 
@@ -42,8 +41,6 @@ internal class DataGridViewEx
     private MouseEventArgs _passThruEventArgs;
     // The list of rows for dragging.
     private readonly List<DataGridViewRow> _dragRows = [];
-
-
 
     // Event fired when rows are dragged.
     private event EventHandler<RowsDragEventArgs> RowsDragEvent;
@@ -74,8 +71,6 @@ internal class DataGridViewEx
             RowsDragEvent -= value;
         }
     }
-
-
 
     /// <summary>Processes keys used for navigating in the <see cref="DataGridView"/>.</summary>
     /// <param name="e">Contains information about the key that was pressed.</param>
@@ -259,5 +254,4 @@ internal class DataGridViewEx
 
         base.Dispose(disposing);
     }
-
 }

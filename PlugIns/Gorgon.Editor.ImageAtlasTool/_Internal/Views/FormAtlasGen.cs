@@ -23,7 +23,6 @@
 // Created: April 24, 2019 6:55:01 PM
 // 
 
-
 using System.ComponentModel;
 using System.Diagnostics;
 using Gorgon.Editor.ImageAtlasTool.Properties;
@@ -48,8 +47,6 @@ internal partial class FormAtlasGen
     // Flag to indicate that the dialog should close when the file selector closes.
     private bool _closeOnFileSelectionClose = true;
 
-
-
     /// <summary>Property to return the data context assigned to this view.</summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public IImageAtlas ViewModel
@@ -67,8 +64,6 @@ internal partial class FormAtlasGen
         get;
         private set;
     }
-
-
 
     /// <summary>
     /// Function to validate the controls on the form.
@@ -493,8 +488,6 @@ internal partial class FormAtlasGen
         AddRenderer(atlasRenderer.Name, atlasRenderer);
         SwitchRenderer(atlasRenderer.Name);
     }
-
-
 
     /// <summary>Initializes a new instance of the <see cref="FormAtlasGen"/> class.</summary>
     public FormAtlasGen() => InitializeComponent();

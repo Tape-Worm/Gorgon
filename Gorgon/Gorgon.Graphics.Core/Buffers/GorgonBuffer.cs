@@ -23,7 +23,6 @@
 // Created: July 4, 2017 10:05:54 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
@@ -38,18 +37,13 @@ namespace Gorgon.Graphics.Core;
 public sealed class GorgonBuffer
     : GorgonBufferCommon, IGorgonBufferInfo
 {
-
     /// <summary>
     /// The prefix to assign to a default name.
     /// </summary>
     internal const string NamePrefix = nameof(GorgonBuffer);
 
-
-
     // The information used to create the buffer.
     private GorgonBufferInfo _info;
-
-
 
     /// <summary>
     /// Property to return the bind flags used for the D3D 11 resource.
@@ -103,7 +97,6 @@ public sealed class GorgonBuffer
     public override bool IsCpuReadable =>
         ((_info.AllowCpuRead) && (Usage == ResourceUsage.Default) && ((Binding & BufferBinding.Shader) == BufferBinding.Shader))
         || (Usage == ResourceUsage.Staging);
-
 
     /// <summary>
     /// Property to set or return whether to allow the CPU read access to the buffer.
@@ -162,8 +155,6 @@ public sealed class GorgonBuffer
     /// </remarks>
     public bool IndirectArgs => (_info.IndirectArgs) && (((Binding & BufferBinding.Shader) == BufferBinding.Shader) ||
                                                          ((Binding & BufferBinding.ReadWrite) == BufferBinding.ReadWrite));
-
-
 
     /// <summary>
     /// Function to retrieve the binding flags for the buffer.
@@ -362,7 +353,6 @@ public sealed class GorgonBuffer
     /// </para>
     /// </remarks>
     public int GetTotalElementCount(BufferFormat format) => format == BufferFormat.Unknown ? 0 : GetTotalElementCount(new GorgonFormatInfo(format));
-
 
     /// <summary>
     /// Function to retrieve the total number of structured elements in a buffer.
@@ -795,8 +785,6 @@ public sealed class GorgonBuffer
 
         return result;
     }
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonBuffer" /> class.

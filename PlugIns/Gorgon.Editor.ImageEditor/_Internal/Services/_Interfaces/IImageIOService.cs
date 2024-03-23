@@ -23,7 +23,6 @@
 // Created: January 4, 2019 10:10:47 PM
 // 
 
-
 using Gorgon.Editor.Content;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Imaging;
@@ -37,7 +36,6 @@ namespace Gorgon.Editor.ImageEditor;
 /// </summary>
 internal interface IImageIOService
 {
-
     /// <summary>
     /// Property to return whether or not block compression is supported.
     /// </summary>
@@ -69,8 +67,6 @@ internal interface IImageIOService
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to save the specified image file.

@@ -23,7 +23,6 @@
 // Created: March 22, 2018 11:32:20 AM
 // 
 
-
 using System.Diagnostics;
 using Gorgon.Core;
 using Gorgon.IO;
@@ -39,8 +38,6 @@ internal class LogTextFileProvider
 
     // The file information for the log file.
     private readonly FileInfo _filePath;
-
-
 
     /// <summary>
     /// Function to open the data store for writing.
@@ -130,8 +127,6 @@ internal class LogTextFileProvider
         }
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="LogTextFileProvider"/> class.
     /// </summary>
@@ -144,5 +139,4 @@ internal class LogTextFileProvider
 
         _filePath = new FileInfo(filePath.FormatPath(Path.DirectorySeparatorChar));
     }
-
 }

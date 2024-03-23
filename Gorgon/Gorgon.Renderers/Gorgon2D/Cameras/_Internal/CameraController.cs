@@ -23,7 +23,6 @@
 // Created: August 20, 2018 1:30:41 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers.Cameras;
@@ -44,8 +43,6 @@ internal class CameraController
     // The buffer for holding the camera GPU data.
     private GorgonConstantBufferView _cameraBuffer;
 
-
-
     /// <summary>
     /// Property to return the buffer used for the GPU camera data.
     /// </summary>
@@ -58,8 +55,6 @@ internal class CameraController
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to update the camera data on the GPU.
@@ -102,8 +97,6 @@ internal class CameraController
         buffer?.Dispose();
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="CameraController"/> class.
     /// </summary>
@@ -116,5 +109,4 @@ internal class CameraController
                                                                       "Gorgon 2D Camera Constant Buffer",
                                                                       ResourceUsage.Dynamic);
     }
-
 }

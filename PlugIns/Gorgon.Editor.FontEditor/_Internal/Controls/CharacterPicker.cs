@@ -23,7 +23,6 @@
 // Created: September 3, 2021 8:09:39 PM
 // 
 
-
 using System.ComponentModel;
 using System.Data;
 using System.Globalization;
@@ -143,8 +142,6 @@ public partial class CharacterPicker
             _cancelClickedEvent -= value;
         }
     }
-
-
 
     /// <summary>
     /// Property to set or return whether the OK/Cancel buttons are visible.
@@ -503,7 +500,6 @@ public partial class CharacterPicker
                 }
 
                 char c = Convert.ToChar(i + range.Minimum + _page);
-
 
                 if ((!IsCharacterSupported(c)) || (Convert.ToInt32(c) > range.Maximum))
                 {

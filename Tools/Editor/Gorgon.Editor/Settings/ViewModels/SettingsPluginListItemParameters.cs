@@ -23,7 +23,6 @@
 // Created: April 20, 2019 11:17:43 AM
 // 
 
-
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.UI.ViewModels;
@@ -37,7 +36,6 @@ namespace Gorgon.Editor.ViewModels;
 internal class SettingsPlugInListItemParameters
     : ViewModelInjection<IHostServices>
 {
-
     /// <summary>
     /// Property to return the description/name of the plug in.
     /// </summary>
@@ -91,8 +89,6 @@ internal class SettingsPlugInListItemParameters
         get;
         private set;
     }
-
-
 
     /// <summary>Initializes a new instance of the <see cref="SettingsPlugInListItemParameters"/> class.</summary>
     /// <param name="plugin">The plugin to evaluate.</param>
@@ -153,5 +149,4 @@ internal class SettingsPlugInListItemParameters
         Path = plugin.ProviderPath;
         Description = plugin.Description;
     }
-
 }

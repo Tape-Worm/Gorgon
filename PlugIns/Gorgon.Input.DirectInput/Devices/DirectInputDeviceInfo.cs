@@ -22,7 +22,6 @@
 // Created: Sunday, September 13, 2015 2:09:21 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Native;
 using DI = SharpDX.DirectInput;

@@ -23,7 +23,6 @@
 // Created: April 8, 2018 1:44:13 PM
 // 
 
-
 using SharpDX.Direct3D;
 using SharpDX.DXGI;
 using D3D11 = SharpDX.Direct3D11;

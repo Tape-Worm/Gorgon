@@ -23,7 +23,6 @@
 // Created: January 15, 2020 10:24:37 AM
 // 
 
-
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
@@ -48,8 +47,6 @@ internal class FileSystemClipboardHandler
     // Supported data types for the clipboard.
     private readonly Type _supportedDataTypeDirectory = typeof(IDirectoryCopyMoveData);
     private readonly Type _supportedDataTypeFile = typeof(IFileCopyMoveData);
-
-
 
     /// <summary>Property to return whether the clipboard has data or not.</summary>
     public bool HasData
@@ -95,9 +92,6 @@ internal class FileSystemClipboardHandler
     {
         get;
     }
-
-
-
 
     /// <summary>
     /// Function to determine if data can be pasted into the file system.
@@ -313,8 +307,6 @@ internal class FileSystemClipboardHandler
         }
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="FileSystemClipboardHandler"/> class.</summary>
     /// <param name="fileExplorer">The file explorer view model that owns this handler.</param>
     /// <param name="clipboardService">The clipboard service used to access clipboard data in Windows.</param>
@@ -330,5 +322,4 @@ internal class FileSystemClipboardHandler
         CopyDataCommand = new EditorCommand<object>(DoCopyData, CanCopyData);
         PasteDataCommand = new EditorAsyncCommand<object>(DoPasteDataAsync, CanPasteData);
     }
-
 }

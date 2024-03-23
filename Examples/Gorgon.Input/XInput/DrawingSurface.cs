@@ -22,7 +22,6 @@
 // Created: Saturday, January 12, 2013 4:44:57 PM
 // 
 
-
 using System.Drawing.Imaging;
 using Gorgon.Examples.Properties;
 using Gorgon.Timing;
@@ -66,8 +65,6 @@ internal class DrawingSurface
     // Cursor image attributes.
     private ImageAttributes _cursorAttribs;
 
-
-
     /// <summary>
     /// Property to return the cursor size.
     /// </summary>
@@ -75,8 +72,6 @@ internal class DrawingSurface
     {
         get;
     }
-
-
 
     /// <summary>
     /// Handles the Resize event of the surfaceControl control.

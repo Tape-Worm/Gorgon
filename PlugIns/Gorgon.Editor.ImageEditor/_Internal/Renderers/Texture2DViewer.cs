@@ -23,7 +23,6 @@
 // Created: February 8, 2020 9:27:54 PM
 // 
 
-
 using System.Diagnostics;
 using Gorgon.Editor.ImageEditor.ViewModels;
 using Gorgon.Graphics;
@@ -48,8 +47,6 @@ internal class Texture2DViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IIm
     private GorgonTexture2DView _textureView;
     // The texture resource.
     private GorgonTexture2D _texture;
-
-
 
     /// <summary>
     /// Function to destroy the texture.
@@ -107,6 +104,4 @@ internal class Texture2DViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IIm
                                     textureSampler: GorgonSamplerState.PointFiltering);
         Renderer.End();
     }
-
-
 }

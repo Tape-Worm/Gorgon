@@ -24,9 +24,9 @@
 using System.Drawing;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using Gorgon.Properties;
 using Gorgon.Json;
 using Gorgon.Math;
+using Gorgon.Properties;
 using Newtonsoft.Json;
 
 namespace Gorgon.Graphics;
@@ -270,10 +270,10 @@ public struct GorgonRectangle
     public static GorgonRectangle Intersect(GorgonRectangle rectangle1, GorgonRectangle rectangle2)
     {
         int left = rectangle2.Left.Max(rectangle1.Left);
-        int top = rectangle2.Top.Max(rectangle1.Top);        
+        int top = rectangle2.Top.Max(rectangle1.Top);
 
         int right = rectangle2.Right.Min(rectangle1.Right);
-        int bottom = rectangle2.Bottom.Min(rectangle1.Bottom);        
+        int bottom = rectangle2.Bottom.Min(rectangle1.Bottom);
 
         if ((right <= left) || (bottom <= top))
         {
@@ -328,7 +328,7 @@ public struct GorgonRectangle
     public static GorgonRectangle Union(GorgonRectangle rectangle1, GorgonRectangle rectangle2)
     {
         int l = rectangle1.Left.Min(rectangle2.Left);
-        int t = rectangle1.Top.Min(rectangle2.Top);        
+        int t = rectangle1.Top.Min(rectangle2.Top);
         int r = rectangle1.Right.Max(rectangle2.Right);
         int b = rectangle1.Bottom.Max(rectangle2.Bottom);
 
@@ -373,7 +373,7 @@ public struct GorgonRectangle
     /// <param name="left">The left instance to compare.</param>
     /// <param name="right">The right instance to compare.</param>
     /// <returns><b>true</b> if not equal, <b>false</b> if equal.</returns>
-    public static bool operator !=(GorgonRectangle left, GorgonRectangle right) => !Equals(left, right);    
+    public static bool operator !=(GorgonRectangle left, GorgonRectangle right) => !Equals(left, right);
 
     /// <summary>
     /// Returns a hash code for this instance.
@@ -404,7 +404,7 @@ public struct GorgonRectangle
     {
         x = X;
         y = Y;
-        width = Width; 
+        width = Width;
         height = Height;
     }
 
@@ -462,7 +462,7 @@ public struct GorgonRectangle
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static GorgonRectangle Ceiling(GorgonRectangleF other) => new((int)other.X.FastCeiling(), (int)other.Y.FastCeiling(),
                                                                                      (int)other.Width.FastCeiling(), (int)other.Height.FastCeiling());
-    
+
     /// <summary>
     /// Function to floor the values of a <see cref="GorgonRectangleF"/> and convert to a <see cref="GorgonRectangle"/>.
     /// </summary>
@@ -493,7 +493,7 @@ public struct GorgonRectangle
     public GorgonRectangle(int x, int y, int width, int height)
     {
         X = x;
-        Y = y; 
+        Y = y;
         Width = width;
         Height = height;
     }

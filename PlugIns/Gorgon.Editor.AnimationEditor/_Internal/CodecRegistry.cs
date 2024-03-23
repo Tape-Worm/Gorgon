@@ -23,7 +23,6 @@
 // Created: April 24, 2019 1:54:37 PM
 // 
 
-
 using System.Reflection;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.AnimationEditor.Properties;
@@ -53,8 +52,6 @@ internal class CodecRegistry(GorgonMefPlugInCache pluginCache, Gorgon2D renderer
     // The 2D renderer for the application.
     private readonly Gorgon2D _renderer = renderer;
 
-
-
     /// <summary>
     /// Property to return the list of codecs.
     /// </summary>
@@ -78,8 +75,6 @@ internal class CodecRegistry(GorgonMefPlugInCache pluginCache, Gorgon2D renderer
     {
         get;
     } = [];
-
-
 
     /// <summary>
     /// Function to load external animation codec plug ins.
@@ -286,6 +281,4 @@ internal class CodecRegistry(GorgonMefPlugInCache pluginCache, Gorgon2D renderer
             CodecFileTypes.Add(codecFile);
         }
     }
-
-
 }

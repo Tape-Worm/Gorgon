@@ -23,7 +23,6 @@
 // Created: August 11, 2018 3:43:13 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Graphics;
@@ -44,7 +43,6 @@ namespace Gorgon.IO;
 public class GorgonV3PolySpriteBinaryCodec(Gorgon2D renderer)
         : GorgonPolySpriteCodecCommon(renderer, Resources.GOR2DIO_V3_POLYSPRITE_BIN_CODEC, Resources.GOR2DIO_V3_POLYSPRITE_BIN_CODEC_DESCRIPTION)
 {
-
     /// <summary>
     /// The sprite data chunk ID.
     /// </summary>
@@ -84,8 +82,6 @@ public class GorgonV3PolySpriteBinaryCodec(Gorgon2D renderer)
     /// Property to return the version of sprite data that the codec supports.
     /// </summary>
     public override Version Version => CurrentVersion;
-
-
 
     /// <summary>
     /// Function to load the texture information.
@@ -458,6 +454,4 @@ public class GorgonV3PolySpriteBinaryCodec(Gorgon2D renderer)
             reader?.Close();
         }
     }
-
-
 }

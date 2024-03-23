@@ -23,7 +23,6 @@
 // Created: October 15, 2018 3:00:13 PM
 // 
 
-
 using System.ComponentModel;
 
 namespace Gorgon.Editor.ViewModels;

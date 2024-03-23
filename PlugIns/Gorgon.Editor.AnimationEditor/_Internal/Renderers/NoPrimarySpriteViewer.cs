@@ -23,7 +23,6 @@
 // Created: June 8, 2020 7:27:57 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Editor.AnimationEditor.Properties;
@@ -44,13 +43,10 @@ namespace Gorgon.Editor.AnimationEditor;
 internal class NoPrimarySpriteViewer
     : DefaultContentRenderer<IAnimationContent>
 {
-
     /// <summary>
     /// The name of the viewer.
     /// </summary>
     public const string ViewerName = "AnimationNoSpriteRenderer";
-
-
 
     // The texture to display when an animation does not contain a primary sprite.
     private GorgonTexture2DView _noSprite;
@@ -70,8 +66,6 @@ internal class NoPrimarySpriteViewer
     private GorgonTextSprite _displayText;
     // The number of loops for the background animation.
     private int _stripAnimCount;
-
-
 
     /// <summary>
     /// Function to destroy the render target background.
@@ -230,8 +224,6 @@ internal class NoPrimarySpriteViewer
         };
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="NoPrimarySpriteViewer"/> class.</summary>
     /// <param name="renderer">The 2D renderer for the application.</param>
     /// <param name="swapChain">The swap chain for the render area.</param>
@@ -246,5 +238,4 @@ internal class NoPrimarySpriteViewer
 
         _fontFactory = fontFactory;
     }
-
 }

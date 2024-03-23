@@ -23,7 +23,6 @@
 // Created: September 27, 2018 10:11:34 PM
 // 
 
-
 using Gorgon.Editor.ViewModels;
 
 namespace Gorgon.Editor.Views;
@@ -40,7 +39,6 @@ namespace Gorgon.Editor.Views;
 internal class TreeNodeDragData(DirectoryTreeNode sourceNode, CopyMoveOperation dragOperation)
         : IDirectoryCopyMoveData
 {
-
     /// <summary>
     /// Property to return the tree node being dragged.
     /// </summary>        
@@ -82,6 +80,4 @@ internal class TreeNodeDragData(DirectoryTreeNode sourceNode, CopyMoveOperation 
         get;
         set;
     }
-
-
 }

@@ -23,7 +23,6 @@
 // Created: November 17, 2018 1:17:48 PM
 // 
 
-
 namespace Gorgon.Editor.Services;
 
 /// <summary>
@@ -31,7 +30,6 @@ namespace Gorgon.Editor.Services;
 /// </summary>
 public interface IUndoService
 {
-
     /// <summary>
     /// Property to return whether or not the service can undo.
     /// </summary>
@@ -55,8 +53,6 @@ public interface IUndoService
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to cancel the currently executing undo/redo operation.

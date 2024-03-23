@@ -23,7 +23,6 @@
 // Created: Thursday, November 24, 2011 3:38:16 PM
 // 
 
-
 using System.Diagnostics;
 using System.Numerics;
 using System.Reflection;
@@ -141,8 +140,6 @@ public sealed class GorgonInputLayout
     // The Direct 3D input layout.
     private D3D11.InputLayout _d3DInputLayout;
 
-
-
     /// <summary>
     /// Property to return the Direct 3D input layout.
     /// </summary>
@@ -189,8 +186,6 @@ public sealed class GorgonInputLayout
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to convert this input layout into a Direct3D input layout.
@@ -252,7 +247,6 @@ public sealed class GorgonInputLayout
         {
             GorgonInputElement element = _elements[i];
             size += element.SizeInBytes;
-
 
             // Calculate the individual slot sizes.
             if (_slotSizes.TryGetValue(element.Slot, out int slotSize))
@@ -692,7 +686,6 @@ public sealed class GorgonInputLayout
         return elements;
     }
 
-
     /// <summary>
     /// Function to convert this input layout into a <see cref="GorgonStreamOutLayout"/>
     /// </summary>
@@ -881,8 +874,6 @@ public sealed class GorgonInputLayout
 
         this.UnregisterDisposable(Graphics);
     }
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonInputLayout"/> class.

@@ -23,7 +23,6 @@
 // Created: July 8, 2016 11:26:58 AM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
@@ -46,7 +45,6 @@ namespace Gorgon.Graphics.Core;
 /// </remarks>
 public static class GorgonShaderFactory
 {
-
     /// <summary>
     /// The header chunk for a Gorgon binary shader file.
     /// </summary>
@@ -61,8 +59,6 @@ public static class GorgonShaderFactory
     /// The chunk ID for the chunk that contains the binary shader bytecode.
     /// </summary>
     public const string BinaryShaderByteCode = "BYTECODE";
-
-
 
     // A processor used to parse shader source code for include statements.
     private static readonly ShaderProcessor _processor = new();
@@ -82,8 +78,6 @@ public static class GorgonShaderFactory
     private static readonly Dictionary<ShaderType, ObjectActivator<GorgonShader>> _shaderFactory =
         [];
 
-
-
     /// <summary>
     /// Property to return the list of <see cref="GorgonShaderInclude"/> definitions to include with compiled shaders.
     /// </summary>
@@ -95,8 +89,6 @@ public static class GorgonShaderFactory
     /// </remarks>
     /// <seealso cref="GorgonShaderInclude"/>
     public static IDictionary<string, GorgonShaderInclude> Includes => _processor.CachedIncludes;
-
-
 
     /// <summary>
     /// Function to load a shader from a <see cref="Stream"/> containing a Gorgon binary shader in chunked format.
@@ -470,8 +462,6 @@ public static class GorgonShaderFactory
         }
     }
 
-
-
     /// <summary>
     /// Initializes static members of the <see cref="GorgonShaderFactory" /> class.
     /// </summary>
@@ -485,5 +475,4 @@ public static class GorgonShaderFactory
                                                                         typeof(ShaderBytecode));
         }
     }
-
 }

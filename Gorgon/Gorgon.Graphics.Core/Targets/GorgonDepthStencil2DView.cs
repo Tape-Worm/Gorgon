@@ -23,7 +23,6 @@
 // Created: Saturday, June 8, 2013 4:53:00 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
@@ -82,7 +81,6 @@ public enum DepthStencilViewFlags
 public sealed class GorgonDepthStencil2DView
     : GorgonResourceView, IGorgonTexture2DInfo, IGorgonImageInfo
 {
-
     /// <summary>
     /// Property to return the native D3D depth/stencil view.
     /// </summary>
@@ -293,8 +291,6 @@ public sealed class GorgonDepthStencil2DView
     /// </summary>
     public TextureSharingOptions Shared => Texture.Shared;
 
-
-
     /// <summary>
     /// Function to retrieve the description for a 2D depth/stencil view.
     /// </summary>
@@ -354,7 +350,6 @@ public sealed class GorgonDepthStencil2DView
 
         return Native;
     }
-
 
     /// <summary>
     /// Function to create a new <see cref="GorgonDepthStencil2DView"/> for this texture.
@@ -580,7 +575,6 @@ public sealed class GorgonDepthStencil2DView
             return;
         }
 
-
         RawRectangle[] clearRects = GorgonArrayPool<RawRectangle>.SharedTiny.Rent(rectangles.Length);
 
         try
@@ -708,9 +702,6 @@ public sealed class GorgonDepthStencil2DView
         base.Dispose();
     }
 
-
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonDepthStencil2DView"/> class.
     /// </summary>
@@ -743,5 +734,4 @@ public sealed class GorgonDepthStencil2DView
 
         Bounds = new GorgonRectangle(0, 0, Width, Height);
     }
-
 }

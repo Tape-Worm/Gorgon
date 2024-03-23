@@ -23,7 +23,6 @@
 // Created: July 5, 2017 2:53:14 PM
 // 
 
-
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
@@ -40,7 +39,6 @@ namespace Gorgon.Graphics.Core;
 public abstract class GorgonBufferViewCommon(GorgonBuffer buffer, int startingElement, int elementCount, int totalElementCount)
         : GorgonShaderResourceView(buffer)
 {
-
     /// <summary>
     /// Property to return the buffer associated with the view.
     /// </summary>
@@ -82,8 +80,6 @@ public abstract class GorgonBufferViewCommon(GorgonBuffer buffer, int startingEl
         get;
     }
 
-
-
     /// <summary>
     /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
     /// </summary>
@@ -92,6 +88,4 @@ public abstract class GorgonBufferViewCommon(GorgonBuffer buffer, int startingEl
         Buffer = null;
         base.Dispose();
     }
-
-
 }

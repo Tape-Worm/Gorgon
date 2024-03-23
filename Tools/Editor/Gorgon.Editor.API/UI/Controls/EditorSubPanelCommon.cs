@@ -23,7 +23,6 @@
 // Created: April 4, 2019 7:51:22 PM
 // 
 
-
 using System.ComponentModel;
 using Gorgon.Editor.UI.Views;
 
@@ -46,13 +45,10 @@ namespace Gorgon.Editor.UI.Controls;
 public partial class EditorSubPanelCommon
     : EditorBaseControl
 {
-
     /// <summary>
     /// The panel that will hold the body of the sub panel.
     /// </summary>
     protected Panel PanelBody;
-
-
 
     /// <summary>
     /// Event triggered when the OK button is clicked.
@@ -65,8 +61,6 @@ public partial class EditorSubPanelCommon
     /// </summary>
     [Category("Behavior"), Description("Triggered when the Cancel button is clicked.")]
     public event EventHandler Cancel;
-
-
 
     /// <summary>
     /// Property to set or return the text to display in the caption.
@@ -90,8 +84,6 @@ public partial class EditorSubPanelCommon
         get => PanelConfirmCancel.Visible;
         set => PanelConfirmCancel.Visible = value;
     }
-
-
 
     /// <summary>Handles the Click event of the ButtonOK control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -153,8 +145,6 @@ public partial class EditorSubPanelCommon
 
         ValidateOk();
     }
-
-
 
     /// <summary>Initializes a new instance of the <see cref="EditorSubPanelCommon"/> class.</summary>
     public EditorSubPanelCommon() => InitializeComponent();

@@ -23,7 +23,6 @@
 // Created: February 12, 2021 4:11:22 PM
 // 
 
-
 // Copyright (c) 2010-2014 SharpDX - Alexandre Mutel
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -69,16 +68,15 @@
 * THE SOFTWARE.
 */
 
-
 using System.Globalization;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Gorgon.Core;
-using Gorgon.Properties;
+using Gorgon.Graphics.Core.Properties;
 using DX = SharpDX;
 
-namespace Gorgon.Renderers.Data;
+namespace Gorgon.Graphics.Core;
 
 /// <summary>
 /// Represents a three dimensional line based on a point in space and a direction
@@ -109,8 +107,8 @@ public struct GorgonRay(Vector3 position, Vector3 direction)
     /// <param name="y">Y coordinate on 2d screen.</param>
     /// <param name="viewport">The viewport to use.</param>
     /// <param name="worldViewProjection">The world, view, projection matrix.</param>
-    /// <returns>Resulting <see cref="GorgonRay"/>.</returns>
-    public static GorgonRay GetPickRay(int x, int y, ref readonly DX.ViewportF viewport, ref readonly Matrix4x4 worldViewProjection)
+    /// <param name="result">The resulting world space ray.</param>
+    public static void GetPickRay(int x, int y, ref readonly DX.ViewportF viewport, ref readonly Matrix4x4 worldViewProjection, out GorgonRay result)
     {
         Vector3 nearPoint = new(x, y, 0);
         Vector3 farPoint = new(x, y, 1);
@@ -120,7 +118,22 @@ public struct GorgonRay(Vector3 position, Vector3 direction)
 
         Vector3 direction = Vector3.Normalize(farPoint - nearPoint);
 
-        return new GorgonRay(nearPoint, direction);
+        result = new GorgonRay(nearPoint, direction);
+    }
+
+    /// <summary>
+    /// Calculates a world space <see cref="GorgonRay"/> from 2d screen coordinates.
+    /// </summary>
+    /// <param name="x">X coordinate on 2d screen.</param>
+    /// <param name="y">Y coordinate on 2d screen.</param>
+    /// <param name="viewport">The viewport to use.</param>
+    /// <param name="worldViewProjection">The world, view, projection matrix.</param>
+    /// <returns>The resulting world space ray.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static GorgonRay GetPickRay(int x, int y, DX.ViewportF viewport, Matrix4x4 worldViewProjection)
+    {
+        GetPickRay(x, y, ref viewport, ref worldViewProjection, out GorgonRay result);
+        return result;
     }
 
     /// <summary>
@@ -147,7 +160,7 @@ public struct GorgonRay(Vector3 position, Vector3 direction)
     /// <returns>
     /// A <see cref="string"/> that represents this instance.
     /// </returns>
-    public override readonly string ToString() => string.Format(CultureInfo.CurrentCulture, Resources.GOR_TOSTR_RAY, Position.X, Position.Y, Position.Z, Direction.X, Direction.Y, Direction.Z);
+    public override readonly string ToString() => string.Format(CultureInfo.CurrentCulture, Resources.GORGFX_TOSTR_RAY, Position.X, Position.Y, Position.Z, Direction.X, Direction.Y, Direction.Z);
 
     /// <summary>
     /// Returns a hash code for this instance.
@@ -173,7 +186,8 @@ public struct GorgonRay(Vector3 position, Vector3 direction)
     /// <param name="left">The left value to compare.</param>
     /// <param name="right">The right value to compare.</param>
     /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-    public static bool Equals(in GorgonRay left, in GorgonRay right) => left.Position.Equals(right.Position) && left.Direction.Equals(right.Direction);  
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool Equals(ref readonly GorgonRay left, ref readonly GorgonRay right) => left.Position.Equals(right.Position) && left.Direction.Equals(right.Direction);
 
     /// <summary>
     /// Determines whether the specified <see cref="object"/> is equal to this instance.

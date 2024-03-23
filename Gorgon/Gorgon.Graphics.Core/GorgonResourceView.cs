@@ -23,7 +23,6 @@
 // Created: May 20, 2018 11:49:55 AM
 // 
 
-
 using System.Diagnostics;
 using Gorgon.Diagnostics;
 using D3D11 = SharpDX.Direct3D11;
@@ -41,8 +40,6 @@ public abstract class GorgonResourceView
     private GorgonGraphicsResource _resource;
     // The resource view.
     private D3D11.ResourceView _view;
-
-
 
     /// <summary>
     /// Property to return the logging interface use for debug messages.
@@ -80,8 +77,6 @@ public abstract class GorgonResourceView
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to perform the creation of a specific kind of view.
@@ -127,7 +122,6 @@ public abstract class GorgonResourceView
         GC.SuppressFinalize(this);
     }
 
-
     /// <summary>
     /// Indicates whether the current object is equal to another object of the same type.
     /// </summary>
@@ -164,8 +158,6 @@ public abstract class GorgonResourceView
     /// </returns>
     public override int GetHashCode() => _view.GetHashCode();
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonResourceView"/> class.
     /// </summary>
@@ -176,5 +168,4 @@ public abstract class GorgonResourceView
         _resource = resource ?? throw new ArgumentNullException(nameof(resource));
         Graphics = _resource.Graphics;
     }
-
 }

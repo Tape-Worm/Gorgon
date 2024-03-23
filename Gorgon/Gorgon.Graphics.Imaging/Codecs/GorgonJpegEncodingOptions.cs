@@ -23,7 +23,6 @@
 // Created: August 4, 2016 11:32:12 PM
 // 
 
-
 using Gorgon.Configuration;
 using Gorgon.Graphics.Imaging.Properties;
 
@@ -35,7 +34,6 @@ namespace Gorgon.Graphics.Imaging.Codecs;
 public sealed class GorgonJpegEncodingOptions
     : IGorgonWicEncodingOptions
 {
-
     /// <summary>
     /// Property to set or return whether all frames in an image array should be persisted.
     /// </summary>
@@ -138,8 +136,6 @@ public sealed class GorgonJpegEncodingOptions
             // Intentionally left blank.
         }
     }
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonJpegEncodingOptions"/> class.

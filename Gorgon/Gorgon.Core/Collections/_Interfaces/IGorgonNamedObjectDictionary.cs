@@ -23,7 +23,6 @@
 // Created: Thursday, May 21, 2015 11:32:08 PM
 // 
 
-
 using System.ComponentModel;
 using Gorgon.Core;
 
@@ -37,7 +36,6 @@ public interface IGorgonNamedObjectDictionary<T>
     : ICollection<T>
     where T : IGorgonNamedObject
 {
-
     /// <summary>
     /// Gets a value indicating whether this instance is read only.
     /// </summary>
@@ -66,8 +64,6 @@ public interface IGorgonNamedObjectDictionary<T>
         get;
         set;
     }
-
-
 
     /// <summary>
     /// Function to remove an item by its name.

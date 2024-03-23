@@ -23,7 +23,6 @@
 // Created: December 7, 2019 11:56:02 AM
 // 
 
-
 using Gorgon.Editor.Metadata;
 using Gorgon.Editor.PlugIns;
 using Gorgon.IO;
@@ -40,7 +39,6 @@ namespace Gorgon.Editor.ViewModels;
 internal class FileParameters(IHostContentServices hostServices, ViewModelFactory factory)
         : ViewModelCommonParameters(hostServices, factory)
 {
-
     /// <summary>
     /// Property to set or return the virtual file wrapped by the view model.
     /// </summary>
@@ -67,6 +65,4 @@ internal class FileParameters(IHostContentServices hostServices, ViewModelFactor
         get;
         set;
     }
-
-
 }

@@ -23,7 +23,6 @@
 // Created: December 1, 2020 9:29:00 PM
 // 
 
-
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Gorgon.Core;
@@ -77,7 +76,6 @@ public unsafe readonly struct GorgonPtr<T>
     : IEquatable<GorgonPtr<T>>, IComparable<GorgonPtr<T>>
     where T : unmanaged
 {
-
     /// <summary>
     /// Represents a null pointer.
     /// </summary>
@@ -93,8 +91,6 @@ public unsafe readonly struct GorgonPtr<T>
     /// The number of items of type <typeparamref name="T"/> stored within the memory block. 
     /// </summary>
     public readonly int Length;
-
-
 
     /// <summary>
     /// Property to return the size, in bytes, of the type represented by <typeparamref name="T"/>.
@@ -141,8 +137,6 @@ public unsafe readonly struct GorgonPtr<T>
             return ref Unsafe.AsRef<T>(_ptr + index);
         }
     }
-
-
 
     /// <summary>
     /// Operator to determine if one pointer address is less than another.
@@ -515,7 +509,7 @@ public unsafe readonly struct GorgonPtr<T>
             throw new NullReferenceException();
         }
 
-        ArgumentOutOfRangeException.ThrowIfLessThan(offset, 0);       
+        ArgumentOutOfRangeException.ThrowIfLessThan(offset, 0);
         ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(offset, SizeInBytes);
 
         return ref Unsafe.AsRef<Tc>(offset + (byte*)_ptr);
@@ -575,7 +569,7 @@ public unsafe readonly struct GorgonPtr<T>
 
         count ??= Length - sourceIndex;
 
-        ArgumentOutOfRangeException.ThrowIfLessThan(count.Value, 0);        
+        ArgumentOutOfRangeException.ThrowIfLessThan(count.Value, 0);
 
         if (sourceIndex + count.Value > Length)
         {
@@ -612,7 +606,7 @@ public unsafe readonly struct GorgonPtr<T>
     /// </para>
     /// </remarks>
     public void CopyTo(GorgonNativeBuffer<T> destination, int sourceIndex = 0, int? count = null, int destIndex = 0)
-    {        
+    {
         if (_ptr == null)
         {
             throw new NullReferenceException();
@@ -669,12 +663,12 @@ public unsafe readonly struct GorgonPtr<T>
         }
 
         ArgumentNullException.ThrowIfNull(destination);
-        ArgumentOutOfRangeException.ThrowIfLessThan(sourceIndex, 0);        
-        ArgumentOutOfRangeException.ThrowIfLessThan(destIndex, 0);        
+        ArgumentOutOfRangeException.ThrowIfLessThan(sourceIndex, 0);
+        ArgumentOutOfRangeException.ThrowIfLessThan(destIndex, 0);
 
         count ??= Length - sourceIndex;
 
-        ArgumentOutOfRangeException.ThrowIfLessThan(count.Value, 0);        
+        ArgumentOutOfRangeException.ThrowIfLessThan(count.Value, 0);
 
         if (sourceIndex + count.Value > Length)
         {
@@ -725,11 +719,11 @@ public unsafe readonly struct GorgonPtr<T>
             throw new IOException(Resources.GOR_ERR_STREAM_IS_READONLY);
         }
 
-        ArgumentOutOfRangeException.ThrowIfLessThan(startIndex, 0);        
+        ArgumentOutOfRangeException.ThrowIfLessThan(startIndex, 0);
 
         count ??= Length - startIndex;
 
-        ArgumentOutOfRangeException.ThrowIfLessThan(count.Value, 0);        
+        ArgumentOutOfRangeException.ThrowIfLessThan(count.Value, 0);
 
         if (startIndex + count.Value > Length)
         {
@@ -771,12 +765,12 @@ public unsafe readonly struct GorgonPtr<T>
             throw new NullReferenceException();
         }
 
-        ArgumentOutOfRangeException.ThrowIfLessThan(index, 0);        
+        ArgumentOutOfRangeException.ThrowIfLessThan(index, 0);
 
         count ??= Length - index;
 
         ArgumentOutOfRangeException.ThrowIfLessThan(count.Value, 0);
-        
+
         if (index + count.Value > Length)
         {
             throw new ArgumentException(Resources.GOR_ERR_DATABUFF_BUFFER_OVERRUN);
@@ -1410,5 +1404,4 @@ public unsafe readonly struct GorgonPtr<T>
         _ptr = pointer;
         Length = count;
     }
-
 }

@@ -193,8 +193,6 @@ internal static partial class Win32API
             ushort min = shortPtr;
             ushort max = shortPtr2;
 
-
-
             GorgonRange<int> value = new(min, max + min - 1);
 
             KeyValuePair<string, GorgonRange<int>> rangeName = (from unicodeRange in _ranges

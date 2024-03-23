@@ -23,7 +23,6 @@
 // Created: September 27, 2018 10:11:34 PM
 // 
 
-
 using Gorgon.Editor.ViewModels;
 
 namespace Gorgon.Editor.Views;
@@ -40,7 +39,6 @@ namespace Gorgon.Editor.Views;
 internal class ExplorerImportData(IReadOnlyList<string> explorerPaths)
         : IImportData
 {
-
     /// <summary>Property to return the list of files/directories from Windows Explorer.</summary>
     public List<string> PhysicalPaths
     {
@@ -67,6 +65,4 @@ internal class ExplorerImportData(IReadOnlyList<string> explorerPaths)
         get;
         set;
     }
-
-
 }

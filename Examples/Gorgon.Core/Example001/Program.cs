@@ -23,7 +23,6 @@
 // Created: Tuesday, September 11, 2012 8:35:18 PM
 // 
 
-
 using System.Windows.Forms;
 using Gorgon.Timing;
 
@@ -36,8 +35,6 @@ internal class Program
 {
 
     private static bool _quit;          // Flag to quit the application.
-
-
 
     /// <summary>
     /// Function to draw the time at the bottom of the window.
@@ -195,5 +192,4 @@ internal class Program
             Console.CursorTop = Console.WindowHeight - 1;
         }
     }
-
 }

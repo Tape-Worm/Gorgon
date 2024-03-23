@@ -23,7 +23,6 @@
 // Created: Sunday, July 03, 2011 9:16:14 AM
 // 
 
-
 using System.Globalization;
 using System.Text;
 using System.Xml.Linq;
@@ -43,18 +42,13 @@ namespace Gorgon.IO.GorPack;
 internal class GorPackProvider
     : GorgonFileSystemProvider
 {
-
     /// <summary>
     /// The pack file header.
     /// </summary>
     public const string GorPackHeader = "GORPACK1.SharpZip.BZ2";
 
-
-
     /// <summary>Property to return whether this provider only gives read only access to the physical file system.</summary>
     public override bool IsReadOnly => true;
-
-
 
     /// <summary>
     /// Function to decompress a data block.
@@ -311,8 +305,6 @@ internal class GorPackProvider
 
         return (string.Equals(header, GorPackHeader));
     }
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorPackProvider"/> class.

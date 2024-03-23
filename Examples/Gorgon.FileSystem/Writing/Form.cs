@@ -23,7 +23,6 @@
 // Created: Friday, January 18, 2013 8:47:30 AM
 // 
 
-
 using System.Text;
 using Gorgon.Core;
 using Gorgon.IO;
@@ -63,8 +62,6 @@ public partial class Form
     private string _originalText = string.Empty;
     // Changed text.
     private string _changedText = string.Empty;
-
-
 
     /// <summary>
     /// Handles the TextChanged event of the textDisplay control.
@@ -159,8 +156,6 @@ public partial class Form
             UpdateInfo();
         }
     }
-
-
 
     /// <summary>
     /// Function to enable or disable the command buttons.

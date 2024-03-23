@@ -23,7 +23,6 @@
 // Created: July 4, 2016 1:05:13 AM
 // 
 
-
 using Gorgon.Collections;
 using Gorgon.Math;
 using D3D11 = SharpDX.Direct3D11;
@@ -45,13 +44,10 @@ namespace Gorgon.Graphics.Core;
 public sealed class GorgonShaderResourceViews
     : GorgonArray<GorgonShaderResourceView>
 {
-
     /// <summary>
     /// The maximum size for a shader resource view binding list.
     /// </summary>
     public const int MaximumShaderResourceViewCount = 64;
-
-
 
     /// <summary>
     /// Property to return the native buffers.
@@ -60,8 +56,6 @@ public sealed class GorgonShaderResourceViews
     {
         get;
     } = new D3D11.ShaderResourceView[MaximumShaderResourceViewCount];
-
-
 
     /// <summary>
     /// Function called when a dirty item is found and added.
@@ -74,8 +68,6 @@ public sealed class GorgonShaderResourceViews
     /// Function called when the array is cleared.
     /// </summary>
     protected override void OnClear() => Array.Clear(Native, 0, Native.Length);
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonShaderResourceViews"/> class.
@@ -94,5 +86,4 @@ public sealed class GorgonShaderResourceViews
             this[i] = bufferViews[i];
         }
     }
-
 }

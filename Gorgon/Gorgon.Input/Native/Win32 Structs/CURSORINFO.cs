@@ -23,7 +23,6 @@
 // Created: Tuesday, August 4, 2015 9:32:39 PM
 // 
 
-
 using System.Runtime.InteropServices;
 
 // ReSharper disable InconsistentNaming

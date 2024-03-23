@@ -23,7 +23,6 @@
 // Created: February 19, 2023 1:30:47 PM
 // 
 
-
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Avalonia.Controls;
@@ -72,8 +71,6 @@ public partial class MainWindow : Window
     // The target delta time.
     private const float TargetDelta = 1 / 60.0f;
 
-
-
     // The primary graphics interface.
     private GorgonGraphics _graphics;
     // The layout for a cube vertex.
@@ -102,7 +99,6 @@ public partial class MainWindow : Window
     private float _accumulator;
     // The timer used for updating the text block.
     private IGorgonTimer _timer;
-
 
     /// <summary>
     /// Function to update the texture smoothing on the cube.
@@ -273,7 +269,6 @@ public partial class MainWindow : Window
 
         _timer = new GorgonTimerQpc();
     }
-
 
     /// <summary>
     /// Function called when the window is loaded.

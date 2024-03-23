@@ -23,7 +23,6 @@
 // Created: December 12, 2018 4:43:24 PM
 // 
 
-
 using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.Editor.Properties;
@@ -59,8 +58,6 @@ internal class FileSystemSearchSystem(IDirectory rootDirectory)
             Resources.GOREDIT_SEARCH_KEYWORD_DEPENDS_ON
         }
     };
-
-
 
     /// <summary>
     /// Function to parse the search text passed from the user to extract specific keywords.
@@ -140,7 +137,6 @@ internal class FileSystemSearchSystem(IDirectory rootDirectory)
 
         _searchKeywords[keyword] = attribute;
     }
-
 
     /// <summary>
     /// Function to check if the requested keyword value is within the attribute metadata for the file node content.
@@ -340,6 +336,4 @@ internal class FileSystemSearchSystem(IDirectory rootDirectory)
 
         return searchResults;
     }
-
-
 }

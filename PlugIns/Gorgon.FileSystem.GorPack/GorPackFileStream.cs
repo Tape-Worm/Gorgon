@@ -23,7 +23,6 @@
 // Created: Sunday, July 03, 2011 9:26:17 AM
 // 
 
-
 using Gorgon.IO.GorPack.Properties;
 using ICSharpCode.SharpZipLib.BZip2;
 
@@ -44,8 +43,6 @@ internal class GorPackFileStream
     private long _position;
     // Base position in the stream.
     private readonly long _basePosition;
-
-
 
     /// <summary>
     /// When overridden in a derived class, gets a value indicating whether the current stream supports writing.
@@ -139,8 +136,6 @@ internal class GorPackFileStream
         get => _bzipStream.ReadTimeout;
         set => _bzipStream.ReadTimeout = value;
     }
-
-
 
     /// <summary>
     /// Releases the unmanaged resources used by the <see cref="Stream"/> and optionally releases the managed resources.
@@ -256,7 +251,6 @@ internal class GorPackFileStream
                 break;
         }
 
-
         if (_position > Length)
         {
             throw new EndOfStreamException(Resources.GORFS_GORPACK_ERR_EOS);
@@ -328,8 +322,6 @@ internal class GorPackFileStream
     /// <exception cref="ObjectDisposedException">Methods were called after the stream was closed. </exception>
     public override void WriteByte(byte value) => throw new NotSupportedException();
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorPackFileStream"/> class.
     /// </summary>
@@ -345,5 +337,4 @@ internal class GorPackFileStream
         Length = file.Size;
         _basePosition = stream.Position;
     }
-
 }

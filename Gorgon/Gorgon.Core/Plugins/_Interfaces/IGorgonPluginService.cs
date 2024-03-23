@@ -137,7 +137,6 @@ public enum AssemblySigningResults
 /// </example>
 public interface IGorgonPlugInService
 {
-
     /// <summary>
     /// Property to return the number of plugins that are currently loaded in this service.
     /// </summary>
@@ -145,8 +144,6 @@ public interface IGorgonPlugInService
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to retrieve the list of plugins from a given assembly.

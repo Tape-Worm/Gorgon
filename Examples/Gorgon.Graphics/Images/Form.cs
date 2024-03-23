@@ -23,7 +23,6 @@
 // Created: March 31, 2018 1:12:38 PM
 // 
 
-
 using Gorgon.UI;
 
 namespace Gorgon.Examples;
@@ -66,8 +65,6 @@ public partial class Form
     private GifAnimator _gifAnim;
     // The graphics context for the form.
     private System.Drawing.Graphics _graphics;
-
-
 
     /// <summary>Raises the <see cref="E:System.Windows.Forms.Form.Load" /> event.</summary>
     /// <param name="e">An <see cref="EventArgs" /> that contains the event data. </param>
@@ -159,8 +156,6 @@ public partial class Form
         }
         Close();
     }
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Form"/> class.

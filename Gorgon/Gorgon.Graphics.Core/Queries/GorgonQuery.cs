@@ -23,7 +23,6 @@
 // Created: January 16, 2021 12:46:29 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 using D3D11 = SharpDX.Direct3D11;
@@ -120,8 +119,6 @@ public abstract class GorgonQuery<T>
     // The D3D query.
     private D3D11.Query _d3dQuery;
 
-
-
     /// <summary>
     /// Property to return the native D3D query.
     /// </summary>
@@ -149,8 +146,6 @@ public abstract class GorgonQuery<T>
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to initialize the query.
@@ -236,8 +231,6 @@ public abstract class GorgonQuery<T>
         query?.Dispose();
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="GorgonQuery{T}" /> class.</summary>
     /// <param name="graphics">The graphics interface used to build the query.</param>
     /// <param name="name">[Optional] The name for the query.</param>
@@ -248,5 +241,4 @@ public abstract class GorgonQuery<T>
         Name = string.IsNullOrWhiteSpace(name) ? $"{GetType().Name}_{Guid.NewGuid():N}" : name;
         Initialize();
     }
-
 }

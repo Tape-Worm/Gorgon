@@ -44,8 +44,6 @@ internal class Cube
     // This is the combination of the rotation and translation matrix.
     private Matrix4x4 _world = Matrix4x4.Identity;
 
-
-
     /// <summary>
     /// Property to return the vertex buffer that holds the cube vertex data.
     /// </summary>
@@ -83,8 +81,6 @@ internal class Cube
         }
     }
 
-
-
     /// <summary>
     /// Function to rotate the cube.
     /// </summary>
@@ -119,8 +115,6 @@ internal class Cube
         VertexBuffer[0].VertexBuffer.Dispose();
         IndexBuffer?.Dispose();
     }
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Cube"/> class.
@@ -186,5 +180,4 @@ internal class Cube
                                                                 vertices)
         };
     }
-
 }

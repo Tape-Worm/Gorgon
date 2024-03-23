@@ -23,7 +23,6 @@
 // Created: May 2, 2019 9:24:26 AM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -98,8 +97,6 @@ public class GorgonTextureAtlasService
         get;
         set;
     }
-
-
 
     /// <summary>
     /// Function to calculate the size to the next power of two.
@@ -337,7 +334,6 @@ public class GorgonTextureAtlasService
         return result;
     }
 
-
     /// <summary>
     /// Function to determine the best texture size and array count for the texture atlas based on the sprites passed in.
     /// </summary>
@@ -520,8 +516,6 @@ public class GorgonTextureAtlasService
         }
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="GorgonTextureAtlasService"/> class.</summary>
     /// <param name="renderer">The 2D renderer to use when generating the atlas data.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/> parameter is <strong>null</strong>.</exception>
@@ -530,5 +524,4 @@ public class GorgonTextureAtlasService
         _renderer = renderer ?? throw new ArgumentNullException(nameof(renderer));
         _graphics = _renderer.Graphics;
     }
-
 }

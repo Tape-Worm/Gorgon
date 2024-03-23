@@ -23,7 +23,6 @@
 // Created: Sunday, January 13, 2013 6:49:00 PM
 // 
 
-
 using System.Diagnostics;
 using System.Numerics;
 using System.Reflection;
@@ -119,8 +118,6 @@ public partial class MainForm
     private readonly Gorgon2DBatchStateBuilder _blendBuilder = new();
     // Our assembly cache for our plugins.
     private GorgonMefPlugInCache _assemblyCache;
-
-
 
     /// <summary>
     /// Handles the <see cref="E:KeyDown" /> event.
@@ -665,7 +662,6 @@ public partial class MainForm
             // Relocate the window to the center of the screen.				
             Location = new Point(currentScreen.Bounds.Left + (currentScreen.WorkingArea.Width / 2) - (ClientSize.Width / 2),
                                  currentScreen.Bounds.Top + (currentScreen.WorkingArea.Height / 2) - (ClientSize.Height / 2));
-
 
             // Create the 2D renderer.
             _2D = new Gorgon2D(_graphics);

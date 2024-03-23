@@ -23,7 +23,6 @@
 // Created: September 25, 2018 1:13:08 AM
 // 
 
-
 using System.ComponentModel;
 using Gorgon.Math;
 using Gorgon.UI;
@@ -36,7 +35,6 @@ namespace Gorgon.Editor.UI;
 internal partial class FormDirectoryLocator
     : Form
 {
-
     /// <summary>
     /// Event triggered when a folder is selected.
     /// </summary>
@@ -47,12 +45,8 @@ internal partial class FormDirectoryLocator
     /// </summary>
     public EventHandler<FolderSelectedArgs> FolderEntered;
 
-
-
     // The previous window size.
     private static Rectangle? _prevWindowSize;
-
-
 
     /// <summary>
     /// Property to set or return the current directory.
@@ -67,8 +61,6 @@ internal partial class FormDirectoryLocator
             ButtonOK.Enabled = value is not null;
         }
     }
-
-
 
     /// <summary>
     /// Function called when a folder is entered.
@@ -118,8 +110,6 @@ internal partial class FormDirectoryLocator
 
         _prevWindowSize = Bounds;
     }
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FormDirectoryLocator"/> class.

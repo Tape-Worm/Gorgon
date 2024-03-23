@@ -23,7 +23,6 @@
 // Created: Wednesday, September 12, 2012 8:26:19 PM
 // 
 
-
 using System.Drawing;
 using System.Drawing.Text;
 using System.Windows.Forms;

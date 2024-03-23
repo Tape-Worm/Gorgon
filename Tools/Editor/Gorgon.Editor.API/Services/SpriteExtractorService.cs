@@ -23,7 +23,6 @@
 // Created: April 27, 2019 12:22:19 PM
 // 
 
-
 using System.Diagnostics;
 using System.Numerics;
 using Gorgon.Editor.Content;
@@ -59,8 +58,6 @@ public class SpriteExtractorService(Gorgon2D renderer, IContentFileManager fileM
     private readonly IContentFileManager _fileManager = fileManager;
     // The default sprite codec.
     private readonly IGorgonSpriteCodec _defaultCodec = defaultCodec;
-
-
 
     /// <summary>
     /// Function to detect if a sprite has no pixel data.
@@ -293,8 +290,4 @@ public class SpriteExtractorService(Gorgon2D renderer, IContentFileManager fileM
             file.LinkContent(textureFile);
         }
     }
-
-
-
-
 }

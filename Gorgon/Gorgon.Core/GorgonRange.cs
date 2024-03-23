@@ -20,12 +20,12 @@
 // 
 // Created: March 15, 2024 6:15:16 PM
 //
- 
+
+using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Gorgon.Properties;
 using Newtonsoft.Json;
-using System.Numerics;
-using System.Runtime.CompilerServices;
 
 namespace Gorgon.Core;
 

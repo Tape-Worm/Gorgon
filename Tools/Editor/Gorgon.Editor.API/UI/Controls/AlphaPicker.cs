@@ -23,7 +23,6 @@
 // Created: July 7, 2020 12:31:02 AM
 // 
 
-
 using System.ComponentModel;
 using System.Drawing.Drawing2D;
 using Gorgon.Math;
@@ -43,8 +42,6 @@ public partial class AlphaPicker
     private readonly PointF[] _cursor = new PointF[3];
     // Flag to indicate that the numeric control events are enabled.
     private int _numericEventsEnabled = 1;
-
-
 
     // Event triggered when the alpha value was changed.
     private event EventHandler AlphaValueChangedEvent;
@@ -76,8 +73,6 @@ public partial class AlphaPicker
         }
     }
 
-
-
     /// <summary>
     /// Property to set or return the alpha value.
     /// </summary>
@@ -87,8 +82,6 @@ public partial class AlphaPicker
         get => (int)(_alphaValue * 255);
         set => SetAlphaValue(value / 255.0f);
     }
-
-
 
     /// <summary>
     /// Function to disable the events on the numeric control.
@@ -178,10 +171,7 @@ public partial class AlphaPicker
         SetAlphaValue(e.X / (float)PanelAlpha.ClientSize.Width);
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="AlphaPicker"/> class.</summary>
     public AlphaPicker() => InitializeComponent();
-
 
 }

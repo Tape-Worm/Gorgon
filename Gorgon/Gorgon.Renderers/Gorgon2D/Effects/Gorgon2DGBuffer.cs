@@ -23,7 +23,6 @@
 // Created: November 14, 2019 10:53:27 PM
 // 
 
-
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Gorgon.Graphics;
@@ -70,8 +69,6 @@ public class Gorgon2DGBuffer
     private (int normalIndex, int specularIndex) _indices;
     // The macro sent to the shader to enable using array indices.
     private readonly GorgonShaderMacro _useArrayMacro = new("USE_ARRAY");
-
-
 
     /// <summary>
     /// Property to return the entire gbuffer texture (all array indices).
@@ -133,8 +130,6 @@ public class Gorgon2DGBuffer
 
     /// <summary>Property to return the position render target for the gbuffer.</summary>
     public GorgonRenderTarget2DView PositionTarget => _target[3];
-
-
 
     /// <summary>
     /// Function to dispose of the gbuffer.
@@ -430,8 +425,6 @@ public class Gorgon2DGBuffer
         EndRender(_target[0]);
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="Gorgon2DGBuffer"/> class.</summary>
     /// <param name="renderer">The 2D renderer for the application.</param>
     /// <param name="width">The initial width of the gbuffer.</param>
@@ -443,5 +436,4 @@ public class Gorgon2DGBuffer
         _graphics = renderer?.Graphics ?? throw new ArgumentNullException(nameof(renderer));
         Resize(width, height);
     }
-
 }

@@ -23,7 +23,6 @@
 // Created: August 25, 2018 2:43:32 PM
 // 
 
-
 using System.Numerics;
 using System.Text;
 using Gorgon.Animation;
@@ -47,7 +46,6 @@ namespace Gorgon.IO;
 public class GorgonV3AnimationJsonCodec(Gorgon2D renderer)
         : GorgonAnimationCodecCommon(renderer, Resources.GOR2DIO_V3_ANIM_JSON_CODEC, Resources.GOR2DIO_V3_ANIM_JSON_CODEC_DESCRIPTION)
 {
-
     /// <summary>
     /// The ID for the file header for the previous version of the animation format.
     /// </summary>
@@ -57,8 +55,6 @@ public class GorgonV3AnimationJsonCodec(Gorgon2D renderer)
     /// The previous version for animation serialization.
     /// </summary>
     internal static readonly Version Version30 = new(3, 0);
-
-
 
     /// <summary>
     /// Property to return whether or not the codec can decode animation data.
@@ -74,8 +70,6 @@ public class GorgonV3AnimationJsonCodec(Gorgon2D renderer)
     /// Property to return the version of animation data that the codec supports.
     /// </summary>
     public override Version Version => Version30;
-
-
 
     /// <summary>
     /// Function to retrieve the stream as JSON.Net object.
@@ -397,7 +391,6 @@ public class GorgonV3AnimationJsonCodec(Gorgon2D renderer)
 
         return positions;
     }
-
 
     /// <summary>Function to retrieve the names of the associated textures.</summary>
     /// <param name="stream">The stream containing the texture data.</param>
@@ -730,6 +723,4 @@ public class GorgonV3AnimationJsonCodec(Gorgon2D renderer)
             reader?.Close();
         }
     }
-
-
 }

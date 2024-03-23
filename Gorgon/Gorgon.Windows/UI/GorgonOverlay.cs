@@ -23,7 +23,6 @@
 // Created: December 5, 2020 3:41:43 PM
 // 
 
-
 using Gorgon.Collections;
 using Gorgon.Graphics;
 using Gorgon.Math;
@@ -48,8 +47,6 @@ public class GorgonOverlay
     // The amount of transparency.
     private int _transparencyPercent = 50;
 
-
-
     /// <summary>
     /// Property to return whether the overlay is active or not.
     /// </summary>
@@ -72,8 +69,6 @@ public class GorgonOverlay
         get;
         set;
     } = GorgonColors.Black;
-
-
 
     /// <summary>Handles the GotFocus event of the Parent control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -330,5 +325,4 @@ public class GorgonOverlay
 
         overlayForm?.Dispose();
     }
-
 }

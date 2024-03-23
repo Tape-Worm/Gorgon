@@ -23,7 +23,6 @@
 // Created: Saturday, January 5, 2013 3:29:58 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.IO.Providers;
@@ -66,8 +65,6 @@ internal static class Program
     // The log used for debug logging.
     private static IGorgonLog _log;
 
-
-
     /// <summary>
     /// Property to return the path to the plug ins.
     /// </summary>
@@ -94,8 +91,6 @@ internal static class Program
             return Path.GetFullPath(path);
         }
     }
-
-
 
     /// <summary>
     /// Function to retrieve the directory that contains the plugins for an application.

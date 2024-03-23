@@ -23,7 +23,6 @@
 // Created: October 29, 2018 2:52:09 PM
 // 
 
-
 using System.Diagnostics;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
@@ -76,8 +75,6 @@ internal class ImageEditorPlugIn
     /// </summary>
     public static readonly string SettingsName = typeof(ImageEditorPlugIn).FullName;
 
-
-
     /// <summary>Property to return the name of the plug in.</summary>
     string IContentPlugInMetadata.PlugInName => Name;
 
@@ -101,8 +98,6 @@ internal class ImageEditorPlugIn
 
     /// <summary>Property to return the friendly (i.e shown on the UI) name for the type of content.</summary>
     public string ContentType => Resources.GORIMG_CONTENT_TYPE;
-
-
 
     /// <summary>
     /// Function to render the thumbnail into the image passed in.
@@ -252,7 +247,6 @@ internal class ImageEditorPlugIn
     /// <param name="searchService">The search service to use for registration.</param>
     protected override void OnRegisterSearchKeywords<T>(ISearchService<T> searchService) => searchService.MapKeywordToContentAttribute(Resources.GORIMG_SEARCH_KEYWORD_CODEC, ImageContent.CodecAttr);
 
-
     /// <summary>Function to retrieve the settings interface for this plug in.</summary>
     /// <returns>The settings interface view model.</returns>
     /// <remarks>
@@ -341,7 +335,6 @@ internal class ImageEditorPlugIn
         embossSettings.Initialize(injector);
         edgeDetectSettings.Initialize(injector);
         posterizeSettings.Initialize(injector);
-
 
         imagePicker.Initialize(new ImagePickerParameters(fileManager, file, HostContentServices)
         {
@@ -544,8 +537,6 @@ internal class ImageEditorPlugIn
     /// <summary>Function to retrieve the icon used for new content creation.</summary>
     /// <returns>An image for the icon.</returns>
     public Drawing.Image GetNewIcon() => null;
-
-
 
     /// <summary>Initializes a new instance of the ImageEditorPlugIn class.</summary>
     public ImageEditorPlugIn()

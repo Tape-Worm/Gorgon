@@ -23,7 +23,6 @@
 // Created: Tuesday, July 23, 2013 7:58:34 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Properties;
 using Gorgon.Math;
@@ -396,8 +395,6 @@ public class GorgonImageBuffer
     /// </summary>
     /// <param name="value">The byte value used to fill the buffer.</param>
     public void Fill(byte value) => Data.Fill(value);
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonImageBuffer" /> class.

@@ -23,7 +23,6 @@
 // Created: August 19, 2018 9:25:19 AM
 // 
 
-
 using System.Numerics;
 using Gorgon.Animation.Properties;
 using Gorgon.Graphics;
@@ -57,13 +56,10 @@ namespace Gorgon.Animation;
 public class GorgonTextSpriteAnimationController
     : GorgonAnimationController<GorgonTextSprite>
 {
-
     /// <summary>
     /// The name of the opacity track.
     /// </summary>
     public const string OpacityTrackName = "Opacity";
-
-
 
     /// <summary>
     /// The track registration for the angle of rotation for the sprite.
@@ -104,8 +100,6 @@ public class GorgonTextSpriteAnimationController
     /// The track registration for the color on a sprite.
     /// </summary>
     public static readonly GorgonTrackRegistration ColorTrack = new(nameof(GorgonTextSprite.Color), Resources.GORANM_TEXT_COLOR, AnimationTrackKeyType.Color);
-
-
 
     /// <summary>Function called when a single floating point value needs to be updated on the animated object.</summary>
     /// <param name="track">The track currently being processed.</param>
@@ -245,5 +239,4 @@ public class GorgonTextSpriteAnimationController
         RegisterTrack(Position3DTrack);
         RegisterTrack(ColorTrack);
     }
-
 }

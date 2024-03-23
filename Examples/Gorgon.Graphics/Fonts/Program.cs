@@ -23,7 +23,6 @@
 // Created: August 14, 2018 7:28:55 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Examples.Properties;
@@ -89,8 +88,6 @@ static class Program
     private static float _angleSpeed = 360.0f;
     // The text to display.
     private readonly static string _text = Resources.Lorem_Ipsum;
-
-
 
     /// <summary>
     /// Function to generate the Gorgon bitmap fonts.
@@ -336,7 +333,6 @@ static class Program
             _angleSpeed = 360.0f;
         }
 
-
         if (_fontIndex >= _font.Count)
         {
             _fontIndex = 0;
@@ -444,5 +440,4 @@ static class Program
             _graphics?.Dispose();
         }
     }
-
 }

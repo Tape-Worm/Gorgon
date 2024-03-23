@@ -23,7 +23,6 @@
 // Created: July 25, 2018 8:30:32 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Math;
@@ -67,8 +66,6 @@ public abstract class GorgonLightCommon
     private float _specIntensity = 1.0f;
     // The intensity of the light.
     private float _intensity = 1.0f;
-
-
 
     /// <summary>
     /// Property to return whether the light was updated or not.
@@ -185,15 +182,11 @@ public abstract class GorgonLightCommon
         get;
     }
 
-
-
     /// <summary>
     /// Function to return data that can be updated to the GPU for use in shaders.
     /// </summary>
     /// <returns>A reference to the data to send to the GPU.</returns>
     public abstract ref readonly GorgonGpuLightData GetGpuData();
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonLightCommon"/> class.
@@ -218,5 +211,4 @@ public abstract class GorgonLightCommon
         SpecularPower = copy.SpecularPower;
         Intensity = copy.Intensity;
     }
-
 }

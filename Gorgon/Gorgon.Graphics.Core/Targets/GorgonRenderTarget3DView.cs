@@ -23,7 +23,6 @@
 // Created: Friday, July 19, 2013 10:13:11 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
@@ -52,7 +51,6 @@ namespace Gorgon.Graphics.Core;
 public sealed class GorgonRenderTarget3DView
         : GorgonRenderTargetView, IGorgonTexture3DInfo, IGorgonImageInfo
 {
-
     /// <summary>
     /// Property to return the type of image data.
     /// </summary>
@@ -195,8 +193,6 @@ public sealed class GorgonRenderTarget3DView
     /// </summary>
     public override TextureBinding Binding => Texture?.Binding ?? TextureBinding.None;
 
-
-
     /// <summary>
     /// Function to perform the creation of a specific kind of view.
     /// </summary>
@@ -327,8 +323,6 @@ public sealed class GorgonRenderTarget3DView
         return result;
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonRenderTarget3DView" /> class.
     /// </summary>
@@ -349,5 +343,4 @@ public sealed class GorgonRenderTarget3DView
         MipHeight = (Height >> MipSlice).Max(1);
         Bounds = new GorgonRectangle(0, 0, Width, Height);
     }
-
 }

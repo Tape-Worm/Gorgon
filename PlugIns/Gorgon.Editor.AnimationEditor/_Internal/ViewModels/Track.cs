@@ -23,7 +23,6 @@
 // Created: June 14, 2020 10:18:07 PM
 // 
 
-
 using Gorgon.Animation;
 using Gorgon.Editor.AnimationEditor.Properties;
 using Gorgon.Editor.PlugIns;
@@ -40,7 +39,6 @@ namespace Gorgon.Editor.AnimationEditor;
 internal class Track
     : ViewModelBase<TrackParameters, IHostContentServices>, ITrack
 {
-
     /// <summary>
     /// Undo/redo arguments for changing the track interpolation.
     /// </summary>
@@ -52,8 +50,6 @@ internal class Track
         public TrackInterpolationMode Mode;
     }
 
-
-
     // The registration for the track.
     private GorgonTrackRegistration _registration;
     // The current track interpolation mode.
@@ -64,8 +60,6 @@ internal class Track
     private IKeyFrame[] _keyFrames = [];
     // The service for undo/redo functionality.
     private IUndoService _undoService;
-
-
 
     /// <summary>
     /// Property to return the sprite property updated by this track.
@@ -180,8 +174,6 @@ internal class Track
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to assign the track ID property.
@@ -316,13 +308,10 @@ internal class Track
         SetTrackID();
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="Track"/> class.</summary>
     public Track()
     {
         SetInterpolationModeCommand = new EditorCommand<TrackInterpolationMode>(DoSetInterpolation);
         SetKeyFramesCommand = new EditorCommand<SetKeyFramesArgs>(DoSetKeyFrames);
     }
-
 }

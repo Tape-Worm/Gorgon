@@ -23,7 +23,6 @@
 // Created: Wednesday, August 12, 2015 11:45:26 PM
 // 
 
-
 using System.Runtime.InteropServices;
 
 // ReSharper disable InconsistentNaming
@@ -424,7 +423,6 @@ internal enum VirtualKeys
     /// <summary>Key: Modifiers</summary>
     Modifiers = None
 }
-
 
 /// <summary>
 /// Enumeration containing flags for raw keyboard input

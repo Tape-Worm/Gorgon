@@ -23,7 +23,6 @@
 // Created: Thursday, January 3, 2013 9:43:42 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Input;
 using Gorgon.PlugIns;
@@ -67,8 +66,6 @@ internal static class Program
 
     // The cache that will hold our plugin instances.
     private static GorgonMefPlugInCache _pluginCache;
-
-
 
     /// <summary>
     /// Function to load in the gaming device driver plug ins.
@@ -173,5 +170,4 @@ internal static class Program
             _pluginCache?.Dispose();
         }
     }
-
 }

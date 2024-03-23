@@ -23,7 +23,6 @@
 // Created: March 26, 2019 3:57:12 PM
 // 
 
-
 using System.ComponentModel;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Properties;
@@ -50,8 +49,6 @@ public partial class FormName
 
     // The object type to be displayed in the textbox cue.
     private string _objectType = string.Empty;
-
-
 
     /// <summary>
     /// Property to set or return the name of the object.
@@ -83,8 +80,6 @@ public partial class FormName
             TextName.CueText = string.Format(Resources.GOREDIT_TEXT_NAME_CUE, _objectType);
         }
     }
-
-
 
     /// <summary>Handles the Leave event of the TextName control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -153,8 +148,6 @@ public partial class FormName
         TextName.Select();
         TextName.SelectAll();
     }
-
-
 
     /// <summary>Initializes a new instance of the <see cref="FormName"/> class.</summary>
     public FormName() => InitializeComponent();

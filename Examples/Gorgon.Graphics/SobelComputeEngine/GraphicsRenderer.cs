@@ -23,7 +23,6 @@
 // Created: August 3, 2017 10:43:33 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -46,8 +45,6 @@ internal class GraphicsRenderer(GorgonGraphics graphics)
     private readonly GorgonGraphics _graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
     // The swap chain used to render our data.
     private GorgonSwapChain _swapChain;
-
-
 
     /// <summary>
     /// Function to render the data to the panel assigned in the <see cref="SetPanel"/> method.
@@ -128,6 +125,5 @@ internal class GraphicsRenderer(GorgonGraphics graphics)
     /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
     /// </summary>
     public void Dispose() => _swapChain?.Dispose();
-
 
 }

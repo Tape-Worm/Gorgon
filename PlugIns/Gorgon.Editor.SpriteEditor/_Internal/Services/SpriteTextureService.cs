@@ -23,7 +23,6 @@
 // Created: March 18, 2019 12:11:28 PM
 // 
 
-
 using System.Diagnostics;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
@@ -63,8 +62,6 @@ internal class SpriteTextureService(IGraphicsContext graphicsContext, IContentFi
     private readonly IGorgonSpriteCodec _spriteCodec = spriteCodec;
     // The logging interface for debug logging.
     private readonly IGorgonLog _log = log;
-
-
 
     /// <summary>
     /// Function to render the image data into an 32 bit RGBA pixel format render target and then return it as the properly formatted image data.
@@ -285,6 +282,4 @@ internal class SpriteTextureService(IGraphicsContext graphicsContext, IContentFi
             ? null
             : _imageCodec.GetMetaData(stream);
     }
-
-
 }

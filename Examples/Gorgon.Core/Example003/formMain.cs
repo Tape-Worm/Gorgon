@@ -23,7 +23,6 @@
 // Created: Tuesday, September 18, 2012 8:01:47 PM
 // 
 
-
 using System.Drawing;
 using System.Drawing.Text;
 using System.Windows.Forms;
@@ -46,15 +45,10 @@ public partial class FormMain : Form
     // Image for our form.
     private Bitmap _bitmap;
 
-
-
     /// <summary>
     /// Property to return the size of the graphics canvas.
     /// </summary>
     public Size GraphicsSize => _bitmap.Size;
-
-
-
 
     /// <summary>
     /// Raises the <see cref="E:System.Windows.Forms.Form.Load" /> event.
@@ -109,7 +103,6 @@ public partial class FormMain : Form
             ex.Handle(e => GorgonDialogs.ErrorBox(this, e), GorgonApplication.Log);
         }
     }
-
 
     /// <summary>
     /// Raises the <see cref="E:System.Windows.Forms.Form.FormClosing" /> event.
@@ -167,7 +160,6 @@ public partial class FormMain : Form
     /// Function to clear the buffer.
     /// </summary>
     public void Clear() => _graphics.Clear(Color.Black);
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FormMain" /> class.

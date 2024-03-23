@@ -23,7 +23,6 @@
 // Created: Saturday, August 9, 2014 10:47:56 AM
 // 
 
-
 using System.Numerics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
@@ -40,8 +39,6 @@ internal class Plane
 
     // Initial orientation.
     private Matrix4x4 _orientation;
-
-
 
     /// <summary>
     /// Function to build the plane vertices.
@@ -157,5 +154,4 @@ internal class Plane
 
         UpdateAabb(vertexData);
     }
-
 }

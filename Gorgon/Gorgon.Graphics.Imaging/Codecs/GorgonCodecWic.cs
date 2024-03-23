@@ -23,7 +23,6 @@
 // Created: June 27, 2016 7:53:02 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Properties;
 using Gorgon.IO;
@@ -55,8 +54,6 @@ public abstract class GorgonCodecWic<TWicEncOpt, TWicDecOpt>
         BufferFormat.B8G8R8A8_UNorm,
         BufferFormat.B8G8R8X8_UNorm
     ];
-
-
 
     /// <summary>
     /// Property to return the list of names used to locate frame offsets in metadata.
@@ -109,8 +106,6 @@ public abstract class GorgonCodecWic<TWicEncOpt, TWicDecOpt>
     /// Property to return the supported pixel formats for this codec.
     /// </summary>
     public override IReadOnlyList<BufferFormat> SupportedPixelFormats => _supportedFormats;
-
-
 
     /// <summary>
     /// Function to retrieve custom metadata when encoding an image frame.
@@ -410,8 +405,6 @@ public abstract class GorgonCodecWic<TWicEncOpt, TWicDecOpt>
         }
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonCodecWic{TWicEncOpt, TWicDecOpt}" /> class.
     /// </summary>
@@ -441,5 +434,4 @@ public abstract class GorgonCodecWic<TWicEncOpt, TWicDecOpt>
         CodecCommonExtensions = extensions ?? [];
         SupportedFileFormat = containerGUID;
     }
-
 }

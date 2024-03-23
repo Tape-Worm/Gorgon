@@ -23,7 +23,6 @@
 // Created: May 29, 2018 8:57:29 AM
 // 
 
-
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
@@ -62,7 +61,6 @@ public enum StencilFace
 public class GorgonDepthStencilStateBuilder
     : GorgonStateBuilderAllocator<GorgonDepthStencilStateBuilder, GorgonDepthStencilState>
 {
-
     /// <summary>
     /// Function to copy the state settings from the source state into the destination.
     /// </summary>
@@ -249,8 +247,6 @@ public class GorgonDepthStencilStateBuilder
         return this;
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonDepthStencilStateBuilder"/> class.
     /// </summary>
@@ -258,5 +254,4 @@ public class GorgonDepthStencilStateBuilder
         : base(new GorgonDepthStencilState())
     {
     }
-
 }

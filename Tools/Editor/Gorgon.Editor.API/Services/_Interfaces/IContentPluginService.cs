@@ -23,7 +23,6 @@
 // Created: October 29, 2018 1:04:03 PM
 // 
 
-
 using Gorgon.Editor.Content;
 using Gorgon.Editor.Metadata;
 using Gorgon.Editor.PlugIns;
@@ -51,14 +50,12 @@ public enum MetadataPlugInState
     NotFound
 }
 
-
 /// <summary>
 /// Provides access to the various content specific plugins in the application
 /// </summary>
 public interface IContentPlugInService
     : IDisabledPlugInService
 {
-
     /// <summary>
     /// Property to return the list of content plugins loaded in to the application.
     /// </summary>
@@ -83,8 +80,6 @@ public interface IContentPlugInService
         get;
         set;
     }
-
-
 
     /// <summary>
     /// Function to retrieve the appropriate content importer for the file specified.

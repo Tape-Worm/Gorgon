@@ -23,7 +23,6 @@
 // Created: Saturday, June 18, 2011 4:20:26 PM
 // 
 
-
 using System.ComponentModel;
 using System.Drawing.Text;
 
@@ -39,8 +38,6 @@ internal partial class BaseDialog
     private string _message = string.Empty;             // Message to be displayed.
     private Point _textPosition = new(60, 2);     // Text position.
     private Size _maxTextSize;                          // Maximum text size.
-
-
 
     /// <summary>
     /// Property to set or return the maximum width of the text.
@@ -92,8 +89,6 @@ internal partial class BaseDialog
             ValidateFunctions();
         }
     }
-
-
 
     /// <summary>
     /// Raises the <see cref="E:System.Windows.Forms.Control.KeyDown"></see> event.
@@ -278,8 +273,6 @@ internal partial class BaseDialog
             DrawDialog(e.Graphics);
         }
     }
-
-
 
     /// <summary>
     /// Constructor.

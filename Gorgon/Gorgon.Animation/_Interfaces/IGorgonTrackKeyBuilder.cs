@@ -23,7 +23,6 @@
 // Created: August 18, 2018 7:18:17 PM
 // 
 
-
 namespace Gorgon.Animation;
 
 /// <summary>

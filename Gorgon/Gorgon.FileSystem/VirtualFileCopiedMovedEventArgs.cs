@@ -23,7 +23,6 @@
 // Created: January 14, 2020 8:52:21 AM
 // 
 
-
 namespace Gorgon.IO;
 
 /// <summary>
@@ -39,7 +38,6 @@ public class VirtualFileCopiedMovedEventArgs
     {
         get;
     }
-
 
     /// <summary>
     /// Property to return the destination directory for the copy operation.

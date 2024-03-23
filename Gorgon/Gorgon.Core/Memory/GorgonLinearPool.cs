@@ -23,7 +23,6 @@
 // Created: June 11, 2016 7:26:28 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Properties;
 
@@ -53,8 +52,6 @@ public class GorgonLinearPool<T>
     // The items in the pool.
     private readonly T[] _items;
 
-
-
     /// <summary>
     /// Property to set or return the allocator to use when creating new instances of an object.
     /// </summary>
@@ -80,8 +77,6 @@ public class GorgonLinearPool<T>
     /// </remarks>
     /// <seealso cref="Reset"/>
     public int AvailableSlots => TotalSize - (_currentItem + 1);
-
-
 
     /// <summary>
     /// Function to allocate a new object from the pool.
@@ -155,8 +150,6 @@ public class GorgonLinearPool<T>
         Interlocked.Exchange(ref _currentItem, -1);
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonLinearPool{T}"/> class.
     /// </summary>
@@ -181,5 +174,4 @@ public class GorgonLinearPool<T>
         _items = new T[objectCount];
         ItemAllocator = allocator;
     }
-
 }

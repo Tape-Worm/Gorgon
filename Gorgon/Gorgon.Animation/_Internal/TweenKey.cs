@@ -23,7 +23,6 @@
 // Created: August 18, 2018 1:17:00 PM
 // 
 
-
 using Gorgon.Math;
 
 namespace Gorgon.Animation;
@@ -33,7 +32,6 @@ namespace Gorgon.Animation;
 /// </summary>
 public static class TweenKey
 {
-
     /// <summary>
     /// Function to search for the previous and next key for a specific time code.
     /// </summary>
@@ -132,5 +130,4 @@ public static class TweenKey
                    ? (prevKey, nextKey, prevKeyIndex, 0.0f)
                    : (prevKey, nextKey, prevKeyIndex, ((requestedTime - prevKey.Time) / keyDelta).Min(1.0f).Max(0));
     }
-
 }

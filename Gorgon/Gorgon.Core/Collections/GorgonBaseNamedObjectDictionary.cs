@@ -23,7 +23,6 @@
 // Created: Tuesday, June 14, 2011 10:12:12 PM
 // 
 
-
 using System.Collections;
 using System.ComponentModel;
 using Gorgon.Core;
@@ -50,8 +49,6 @@ public abstract class GorgonBaseNamedObjectDictionary<T>(bool caseSensitive)
     // Internal collection to hold our objects.
     private readonly Dictionary<string, T> _list = new(caseSensitive ? StringComparer.Ordinal : StringComparer.OrdinalIgnoreCase);
 
-
-
     /// <summary>
     /// Property to return the list of items in the underlying collection.
     /// </summary>
@@ -64,8 +61,6 @@ public abstract class GorgonBaseNamedObjectDictionary<T>(bool caseSensitive)
     {
         get;
     } = caseSensitive;
-
-
 
     /// <summary>
     /// Function to add several items to the list.

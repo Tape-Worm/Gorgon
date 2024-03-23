@@ -23,7 +23,6 @@
 // Created: January 16, 2021 5:59:25 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 using D3D11 = SharpDX.Direct3D11;
@@ -36,7 +35,6 @@ namespace Gorgon.Graphics.Core;
 public readonly struct GorgonTimestampDisjointResult
     : IGorgonEquatableByRef<GorgonTimestampDisjointResult>
 {
-
     /// <summary>
     /// The frequency that the counter increments at, in Hz.
     /// </summary>
@@ -51,8 +49,6 @@ public readonly struct GorgonTimestampDisjointResult
     /// Disjoint is <b>false</b>.
     /// </remarks>
     public readonly bool IsDisjoint;
-
-
 
     /// <summary>Returns a hash code for this instance.</summary>
     /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
@@ -80,8 +76,6 @@ public readonly struct GorgonTimestampDisjointResult
     ///   <c>true</c> if the specified <see cref="object" /> is equal to this instance; otherwise, <c>false</c>.</returns>
     public override bool Equals(object obj) => (obj is GorgonTimestampDisjointResult result) ? result.Equals(in this) : base.Equals(obj);
 
-
-
     /// <summary>Initializes a new instance of the <see cref="GorgonTimestampDisjointResult" /> struct.</summary>
     /// <param name="timestamp">The timestamp to evaluate.</param>
     internal GorgonTimestampDisjointResult(D3D11.QueryDataTimestampDisjoint timestamp)
@@ -89,5 +83,4 @@ public readonly struct GorgonTimestampDisjointResult
         Frequency = (ulong)timestamp.Frequency;
         IsDisjoint = timestamp.Disjoint;
     }
-
 }

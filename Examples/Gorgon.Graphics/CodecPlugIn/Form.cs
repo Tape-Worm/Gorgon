@@ -23,7 +23,6 @@
 // Created: March 5, 2017 10:33:01 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Examples;
 using Gorgon.Graphics;
@@ -54,8 +53,6 @@ public partial class Form : System.Windows.Forms.Form
     private IGorgonImage _image;
     // Our custom codec loaded from the plug in.
     private IGorgonImageCodec _customCodec;
-
-
 
     /// <summary>
     /// Function called during idle time.
@@ -210,7 +207,6 @@ public partial class Form : System.Windows.Forms.Form
                 GorgonApplication.Quit();
                 return;
             }
-
 
             // Set up the graphics interface.
             // Find out which devices we have installed in the system.

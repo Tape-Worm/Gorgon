@@ -23,7 +23,6 @@
 // Created: August 28, 2021 7:29:17 PM
 // 
 
-
 using Gorgon.Editor.UI;
 
 namespace Gorgon.Editor.FontEditor;

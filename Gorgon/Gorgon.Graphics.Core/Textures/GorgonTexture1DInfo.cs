@@ -23,7 +23,6 @@
 // Created: June 13, 2016 8:45:14 PM
 // 
 
-
 using Gorgon.Graphics.Imaging;
 
 namespace Gorgon.Graphics.Core;
@@ -36,7 +35,6 @@ namespace Gorgon.Graphics.Core;
 public record GorgonTexture1DInfo(int Width, BufferFormat Format)
     : IGorgonTexture1DInfo, IGorgonImageInfo
 {
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonTexture1DInfo"/> class.
     /// </summary>
@@ -51,8 +49,6 @@ public record GorgonTexture1DInfo(int Width, BufferFormat Format)
         MipLevels = info.MipLevels;
         Usage = info.Usage;
     }
-
-
 
     /// <summary>
     /// Property to return the name of the texture.

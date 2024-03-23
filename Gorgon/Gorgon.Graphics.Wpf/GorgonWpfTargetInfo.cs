@@ -23,7 +23,6 @@
 // Created: January 6, 2021 1:29:04 PM
 // 
 
-
 using System.Windows.Controls;
 
 namespace Gorgon.Graphics.Wpf;
@@ -34,7 +33,6 @@ namespace Gorgon.Graphics.Wpf;
 public class GorgonWpfTargetInfo
     : IGorgonWpfTargetInfo
 {
-
     /// <summary>
     /// Property to return the name of the WPF target.
     /// </summary>
@@ -53,8 +51,6 @@ public class GorgonWpfTargetInfo
     {
         get;
     }
-
-
 
     /// <summary>Initializes a new instance of the <see cref="GorgonWpfTargetInfo" /> class.</summary>
     /// <param name="info">The information object to clone.</param>
@@ -85,5 +81,4 @@ public class GorgonWpfTargetInfo
         RenderImage = renderImage ?? throw new ArgumentNullException(nameof(renderImage));
         Name = string.IsNullOrEmpty(name) ? $"WPF_RenderTarget_{Guid.NewGuid():N}" : name;
     }
-
 }

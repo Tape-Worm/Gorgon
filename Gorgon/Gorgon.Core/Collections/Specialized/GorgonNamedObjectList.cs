@@ -23,7 +23,6 @@
 // Created: Thursday, May 21, 2015 11:21:36 PM
 // 
 
-
 using Gorgon.Core;
 
 namespace Gorgon.Collections.Specialized;
@@ -48,7 +47,6 @@ public class GorgonNamedObjectList<T>(bool caseSensitive = true)
     : GorgonBaseNamedObjectList<T>(caseSensitive)
     where T : IGorgonNamedObject
 {
-
     /// <summary>
     /// Property to set or return an item in this list by index.
     /// </summary>
@@ -62,9 +60,6 @@ public class GorgonNamedObjectList<T>(bool caseSensitive = true)
     /// Property to return an item in this list by name.
     /// </summary>
     public T this[string name] => GetItemByName(name);
-
-
-
 
     /// <summary>
     /// Function to clear the items from the list.
@@ -91,7 +86,7 @@ public class GorgonNamedObjectList<T>(bool caseSensitive = true)
     /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is less than 0.</exception>
     public void Insert(int index, T item)
     {
-        ArgumentOutOfRangeException.ThrowIfNegative(index);        
+        ArgumentOutOfRangeException.ThrowIfNegative(index);
 
         Items.Insert(index, item);
     }
@@ -131,7 +126,5 @@ public class GorgonNamedObjectList<T>(bool caseSensitive = true)
     /// <param name="name">Name of the item to remove.</param>
     /// <exception cref="KeyNotFoundException">Thrown when no item with the specified <paramref name="name"/> can be found.</exception>
     public void Remove(string name) => RemoveItemByName(name);
-
-
 
 }

@@ -23,7 +23,6 @@
 // Created: Thursday, September 17, 2015 8:15:57 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.PlugIns;
 
@@ -85,7 +84,6 @@ namespace Gorgon.Input;
 public interface IGorgonGamingDeviceDriver
     : IGorgonNamedObject, IDisposable
 {
-
     /// <summary>
     /// Property to return a description of the driver.
     /// </summary>
@@ -93,8 +91,6 @@ public interface IGorgonGamingDeviceDriver
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to enumerate the gaming devices supported by this driver.

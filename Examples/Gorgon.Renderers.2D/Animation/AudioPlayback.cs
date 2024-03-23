@@ -23,7 +23,6 @@
 // Created: January 7, 2019 9:21:59 PM
 // 
 
-
 using Mm = SharpDX.Multimedia;
 using Xa = SharpDX.XAudio2;
 
@@ -45,14 +44,10 @@ internal class AudioPlayback
     // The currently playing track.
     private Task _currentPlayback;
 
-
-
     /// <summary>
     /// Property to return whether or not the audio is playing.
     /// </summary>
     public bool IsPlaying => (_tokenSource is not null) && (_tokenSource.Token.IsCancellationRequested);
-
-
 
     /// <summary>
     /// Function to stop the audio.
@@ -135,5 +130,4 @@ internal class AudioPlayback
         _audio = new Xa.XAudio2();
         _masterVoice = new Xa.MasteringVoice(_audio);
     }
-
 }

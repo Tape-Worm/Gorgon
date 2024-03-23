@@ -23,7 +23,6 @@
 // Created: Friday, December 11, 2015 9:55:34 PM
 // 
 
-
 using SharpDX.DXGI;
 using D3D11 = SharpDX.Direct3D11;
 
@@ -43,8 +42,6 @@ internal class VideoAdapterInfo
 
     // The DXGI adapter description
     private readonly AdapterDescription2 _adapterDesc;
-
-
 
     /// <summary>
     /// Property to return the maximum number of render targets allow to be assigned at the same time.
@@ -133,7 +130,6 @@ internal class VideoAdapterInfo
     /// </summary>
     public long Luid => _adapterDesc.Luid;
 
-
     /// <summary>
     /// Property to return the outputs on this device.
     /// </summary>
@@ -158,8 +154,6 @@ internal class VideoAdapterInfo
     {
         get;
     }
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="VideoAdapterInfo" /> class.
@@ -198,5 +192,4 @@ internal class VideoAdapterInfo
         Outputs = new GorgonVideoAdapterOutputList(finalOutputs);
         FeatureSet = featureSet;
     }
-
 }

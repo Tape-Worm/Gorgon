@@ -23,7 +23,6 @@
 // Created: August 28, 2021 9:17:30 PM
 // 
 
-
 using System.ComponentModel;
 using System.Drawing.Text;
 
@@ -35,7 +34,6 @@ namespace Gorgon.Editor.FontEditor;
 internal class ComboFonts
     : ComboBox
 {
-
     /// <summary>
     /// N/A
     /// </summary>
@@ -54,8 +52,6 @@ internal class ComboFonts
     /// </summary>
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden), Browsable(false), EditorBrowsable(EditorBrowsableState.Never)]
     public new bool Sorted => true;
-
-
 
     /// <summary>
     /// Raises the <see cref="E:System.Windows.Forms.ComboBox.MeasureItem" /> event.
@@ -171,8 +167,6 @@ internal class ComboFonts
         }
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="ComboFonts"/> class.
     /// </summary>
@@ -181,5 +175,4 @@ internal class ComboFonts
         base.DrawMode = DrawMode.OwnerDrawVariable;
         base.Sorted = true;
     }
-
 }

@@ -23,7 +23,6 @@
 // Created: August 5, 2020 8:35:30 PM
 // 
 
-
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI;
 
@@ -39,7 +38,6 @@ namespace Gorgon.Examples;
 internal class SettingsParameters(TextContentSettings settings, IHostContentServices hostServices)
         : SettingsCategoryViewModelParameters(hostServices)
 {
-
     /// <summary>
     /// Property to return the settings for the plug in.
     /// </summary>
@@ -47,6 +45,5 @@ internal class SettingsParameters(TextContentSettings settings, IHostContentServ
     {
         get;
     } = settings ?? throw new ArgumentNullException(nameof(settings));
-
 
 }

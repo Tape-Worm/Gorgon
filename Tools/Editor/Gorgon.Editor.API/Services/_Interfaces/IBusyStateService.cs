@@ -23,7 +23,6 @@
 // Created: August 31, 2018 12:59:09 AM
 // 
 
-
 namespace Gorgon.Editor.Services;
 
 /// <summary>
@@ -31,13 +30,10 @@ namespace Gorgon.Editor.Services;
 /// </summary>
 public interface IBusyStateService
 {
-
     /// <summary>
     /// Event triggered when the busy state changes.
     /// </summary>
     event EventHandler BusyStateChanged;
-
-
 
     /// <summary>
     /// Property to return whether or not there's a busy state.
@@ -46,8 +42,6 @@ public interface IBusyStateService
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to forcefully reset the busy state back to an idle state.

@@ -23,7 +23,6 @@
 // Created: April 5, 2018 12:49:36 PM
 // 
 
-
 namespace Gorgon.Examples;
 
 /// <summary>
@@ -45,8 +44,6 @@ class GifAnimator(SynchronizationContext syncContext)
     private CancellationTokenSource _cancel;
     private int _currentFrame;
 
-
-
     /// <summary>
     /// Property to return the current frame of animation.
     /// </summary>
@@ -64,8 +61,6 @@ class GifAnimator(SynchronizationContext syncContext)
         get;
         set;
     }
-
-
 
     /// <summary>
     /// Function to reset the frame index.
@@ -129,7 +124,4 @@ class GifAnimator(SynchronizationContext syncContext)
         _animationTask = null;
         _cancel = null;
     }
-
-
-
 }

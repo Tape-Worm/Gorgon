@@ -23,7 +23,6 @@
 // Created: October 1, 2018 8:06:27 PM
 // 
 
-
 using Gorgon.UI;
 
 namespace Gorgon.Editor.Services;

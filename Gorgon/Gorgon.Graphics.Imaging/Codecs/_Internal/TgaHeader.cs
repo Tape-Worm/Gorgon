@@ -23,7 +23,6 @@
 // Created: August 8, 2016 12:38:49 AM
 // 
 
-
 using System.Runtime.InteropServices;
 
 namespace Gorgon.Graphics.Imaging.Codecs;

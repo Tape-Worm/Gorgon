@@ -23,7 +23,6 @@
 // Created: March 28, 2019 9:48:28 AM
 // 
 
-
 using System.ComponentModel;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Controls;
@@ -41,8 +40,6 @@ internal partial class SpriteColor
     // The list of vertices that were selected.
     private readonly GorgonColor[] _selectedColors = new GorgonColor[4];
 
-
-
     /// <summary>
     /// Property to return the data context for the view.
     /// </summary>
@@ -52,8 +49,6 @@ internal partial class SpriteColor
         get;
         private set;
     }
-
-
 
     /// <summary>Handles the ColorChanged event of the Picker control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -240,8 +235,6 @@ internal partial class SpriteColor
 
         ViewModel.PropertyChanged += DataContext_PropertyChanged;
     }
-
-
 
     /// <summary>Initializes a new instance of the <see cref="SpriteColor"/> class.</summary>
     public SpriteColor() => InitializeComponent();

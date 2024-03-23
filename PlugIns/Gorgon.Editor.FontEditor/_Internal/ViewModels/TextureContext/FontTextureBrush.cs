@@ -23,7 +23,6 @@
 // Created: September 10, 2021 12:45:27 PM
 // 
 
-
 using Gorgon.Editor.FontEditor.Properties;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
@@ -138,8 +137,6 @@ internal class FontTextureBrush
     /// Property to set or return the brush used to render the glyphs.
     /// </summary>
     GorgonGlyphBrush IFontBrush.Brush => Brush;
-
-
 
     /// <summary>
     /// Function to extract the information from the current brush.

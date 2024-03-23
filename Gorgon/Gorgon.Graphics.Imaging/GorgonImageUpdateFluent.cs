@@ -23,7 +23,6 @@
 // Created: December 27, 2020 4:49:31 PM
 // 
 
-
 using System.Collections.Concurrent;
 using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Properties;
@@ -88,8 +87,6 @@ public partial class GorgonImage
     private readonly ConcurrentQueue<Action> _commands = new();
     // WIC utility functions for editing the image.
     private WicUtilities _wic;
-
-
 
     /// <summary>
     /// Function to perform image format conversion.
@@ -966,5 +963,4 @@ public partial class GorgonImage
         }
         return this;
     }
-
 }

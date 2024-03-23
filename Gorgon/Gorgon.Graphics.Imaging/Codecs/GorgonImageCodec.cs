@@ -23,7 +23,6 @@
 // Created: Monday, June 27 2016 5:59:03 PM
 // 
 
-
 using System.ComponentModel;
 using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Properties;
@@ -205,7 +204,6 @@ public abstract class GorgonImageCodec<TEncOpt, TDecOpt>(TEncOpt encodingOptions
     where TEncOpt : class, IGorgonImageCodecEncodingOptions
     where TDecOpt : class, IGorgonImageCodecDecodingOptions
 {
-
     /// <summary>
     /// Property to return the encoding options for the codec.
     /// </summary>
@@ -304,8 +302,6 @@ public abstract class GorgonImageCodec<TEncOpt, TDecOpt>(TEncOpt encodingOptions
     /// Property to return the name of this object.
     /// </summary>
     string IGorgonNamedObject.Name => Codec;
-
-
 
     /// <summary>
     /// Function to decode an image from a stream.
@@ -576,8 +572,5 @@ public abstract class GorgonImageCodec<TEncOpt, TDecOpt>(TEncOpt encodingOptions
     /// A <see cref="string" /> that represents this instance.
     /// </returns>
     public override string ToString() => string.Format(Resources.GORIMG_TOSTR_IMAGE_CODEC, Codec);
-
-
-
 
 }

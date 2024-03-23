@@ -23,7 +23,6 @@
 // Created: Tuesday, September 18, 2012 8:07:22 PM
 // 
 
-
 using System.Windows.Forms;
 
 namespace Gorgon.Examples;

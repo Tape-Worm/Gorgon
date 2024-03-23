@@ -23,7 +23,6 @@
 // Created: Monday, June 27, 2011 9:00:18 AM
 // 
 
-
 using System.Text;
 using Gorgon.Core;
 using Gorgon.IO.Properties;
@@ -62,11 +61,8 @@ namespace Gorgon.IO.Providers;
 internal sealed class FolderFileSystemProvider
     : GorgonFileSystemProvider
 {
-
     /// <summary>Property to return whether this provider only gives read only access to the physical file system.</summary>
     public override bool IsReadOnly => false;
-
-
 
     /// <summary>
     /// Function to enumerate files from the file system.
@@ -232,8 +228,6 @@ internal sealed class FolderFileSystemProvider
                             .ToDictionary(k => k.VirtualPath, v => (IGorgonPhysicalFileInfo)v, StringComparer.OrdinalIgnoreCase);
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="FolderFileSystemProvider"/> class.
     /// </summary>
@@ -244,5 +238,4 @@ internal sealed class FolderFileSystemProvider
         : base(Resources.GORFS_FOLDER_FS_DESC)
     {
     }
-
 }

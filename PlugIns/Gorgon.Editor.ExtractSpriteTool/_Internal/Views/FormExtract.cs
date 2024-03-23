@@ -23,7 +23,6 @@
 // Created: April 24, 2019 6:55:01 PM
 // 
 
-
 using System.ComponentModel;
 using Gorgon.Editor.ExtractSpriteTool.Properties;
 using Gorgon.Editor.Rendering;
@@ -59,8 +58,6 @@ internal partial class FormExtract
         get;
         private set;
     }
-
-
 
     /// <summary>
     /// Function to validate the controls on the form.
@@ -250,7 +247,6 @@ internal partial class FormExtract
 
         DialogResult = DialogResult.OK;
     }
-
 
     /// <summary>Handles the Click event of the ButtonNextSprite control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -585,8 +581,6 @@ internal partial class FormExtract
 
         ViewModel = dataContext;
     }
-
-
 
     /// <summary>Initializes a new instance of the <see cref="FormExtract"/> class.</summary>
     /// <param name="settings">The settings.</param>

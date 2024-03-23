@@ -23,7 +23,6 @@
 // Created: Tuesday, September 18, 2012 8:00:02 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.IO;
@@ -65,8 +64,6 @@ internal static class Program
 
     // The logging interface for debug messaging.
     private static IGorgonLog _log;
-
-
 
     /// <summary>
     /// The main entry point for the application.
@@ -186,5 +183,4 @@ internal static class Program
             _log.LogEnd();
         }
     }
-
 }

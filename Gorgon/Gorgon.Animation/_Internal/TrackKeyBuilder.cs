@@ -22,8 +22,6 @@ internal class TrackKeyBuilder<T>(GorgonAnimationBuilder parent)
     // The animation builder for the animation that contains the track being edited.
     private readonly GorgonAnimationBuilder _parent = parent;
 
-
-
     /// <summary>
     /// Property to return the interpolation mode for the track.
     /// </summary>
@@ -49,8 +47,6 @@ internal class TrackKeyBuilder<T>(GorgonAnimationBuilder parent)
     {
         get;
     } = [];
-
-
 
     /// <summary>
     /// Function to locate a key frame by its time code.
@@ -250,6 +246,4 @@ internal class TrackKeyBuilder<T>(GorgonAnimationBuilder parent)
         Enabled(false);
         return this;
     }
-
-
 }

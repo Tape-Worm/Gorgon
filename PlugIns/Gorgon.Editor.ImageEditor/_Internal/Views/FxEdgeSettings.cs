@@ -23,7 +23,6 @@
 // Created: March 6, 2020 1:30:22 PM
 // 
 
-
 using System.ComponentModel;
 using Gorgon.Editor.ImageEditor.Properties;
 using Gorgon.Editor.UI;
@@ -38,7 +37,6 @@ namespace Gorgon.Editor.ImageEditor;
 internal partial class FxEdgeSettings
     : EditorSubPanelCommon, IDataContext<IFxEdgeDetect>
 {
-
     /// <summary>Property to return the data context assigned to this view.</summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public IFxEdgeDetect ViewModel
@@ -46,8 +44,6 @@ internal partial class FxEdgeSettings
         get;
         private set;
     }
-
-
 
     /// <summary>Handles the ValueChanged event of the TrackThreshold control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -233,8 +229,6 @@ internal partial class FxEdgeSettings
 
         ViewModel.PropertyChanged += DataContext_PropertyChanged;
     }
-
-
 
     /// <summary>Initializes a new instance of the <see cref="FxEdgeSettings"/> class.</summary>
     public FxEdgeSettings() => InitializeComponent();

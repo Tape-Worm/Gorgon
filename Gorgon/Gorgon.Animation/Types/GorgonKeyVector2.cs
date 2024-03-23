@@ -23,7 +23,6 @@
 // Created: Wednesday, October 3, 2012 9:13:59 PM
 // 
 
-
 using System.Numerics;
 
 namespace Gorgon.Animation;
@@ -48,8 +47,6 @@ public class GorgonKeyVector2
     // The value for the key.
     private Vector2 _value;
 
-
-
     /// <summary>
     /// Property to return the time at which the key frame is stored.
     /// </summary>
@@ -72,15 +69,11 @@ public class GorgonKeyVector2
         get;
     } = typeof(Vector2);
 
-
-
     /// <summary>
     /// Function to clone an object.
     /// </summary>
     /// <returns>The cloned object.</returns>
     public IGorgonKeyFrame Clone() => new GorgonKeyVector2(this);
-
-
 
     /// <summary>Initializes a new instance of the <see cref="GorgonKeyVector2"/> class.</summary>
     /// <param name="key">The key to copy.</param>
@@ -101,5 +94,4 @@ public class GorgonKeyVector2
         Time = time;
         Value = value;
     }
-
 }

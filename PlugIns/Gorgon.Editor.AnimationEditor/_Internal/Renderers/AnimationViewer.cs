@@ -23,7 +23,6 @@
 // Created: June 8, 2020 7:33:05 PM
 // 
 
-
 using System.ComponentModel;
 using System.Numerics;
 using Gorgon.Animation;
@@ -64,8 +63,6 @@ internal abstract class AnimationViewer(string name, Gorgon2D renderer, GorgonSw
     private IKeyFrame _nextKey;
     // The effect for the onion skin.
     private Gorgon2DSilhouetteEffect _silhouette;
-
-
 
     /// <summary>
     /// Property to return the rectangle clipper interface.
@@ -108,8 +105,6 @@ internal abstract class AnimationViewer(string name, Gorgon2D renderer, GorgonSw
     /// Property to return the canvas that will receive the rendering for the animated sprite.
     /// </summary>
     protected GorgonRenderTarget2DView Canvas => _mainRtv;
-
-
 
     /// <summary>
     /// Function to create the main render target view.
@@ -666,6 +661,5 @@ internal abstract class AnimationViewer(string name, Gorgon2D renderer, GorgonSw
 
     /// <summary>Function to set the default zoom/offset for the viewer.</summary>
     public abstract void DefaultZoom();
-
 
 }

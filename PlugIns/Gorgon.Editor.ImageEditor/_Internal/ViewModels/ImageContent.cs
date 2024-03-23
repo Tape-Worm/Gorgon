@@ -23,7 +23,6 @@
 // Created: October 30, 2018 7:58:37 PM
 // 
 
-
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -160,8 +159,6 @@ internal class ImageContent
         public bool IsPremultiplied;
     }
 
-
-
     /// <summary>
     /// The attribute key name for the image codec attribute.
     /// </summary>
@@ -174,8 +171,6 @@ internal class ImageContent
     /// The attribute key name for the premultiplied alpha flag.
     /// </summary>
     public const string PremultipliedAttr = "Premultiplied";
-
-
 
     // The list of available codecs matched by extension.
     private readonly List<(GorgonFileExtension extension, IGorgonImageCodec codec)> _codecs = [];
@@ -223,8 +218,6 @@ internal class ImageContent
     private (string ExePath, string FriendlyName, Drawing.Bitmap IconLarge, Drawing.Bitmap IconSmall) _externalEditorInfo;
     // Information for the user defined editor.
     private (string ExePath, string FriendlyName, Drawing.Bitmap IconLarge, Drawing.Bitmap IconSmall) _userEditorInfo;
-
-
 
     /// <summary>
     /// Property to return the settings for the image editor plugin.
@@ -667,8 +660,6 @@ internal class ImageContent
         get;
     }
 
-
-
     /// <summary>Handles the CollectionChanged event of the CodecPlugInPaths control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="NotifyCollectionChangedEventArgs"/> instance containing the event data.</param>
@@ -703,7 +694,6 @@ internal class ImageContent
 
         ContentState = ContentState.Modified;
     }
-
 
     /// <summary>
     /// Function to perform the image import by bringing in a new image to replace the current mip level and array index, or depth slice. 
@@ -1171,7 +1161,6 @@ internal class ImageContent
 
         return result;
     }
-
 
     /// <summary>
     /// Function to determine if format conversion can happen.
@@ -2852,7 +2841,6 @@ internal class ImageContent
         }
     }
 
-
     /// <summary>
     /// Function to determine if the effects can be applied to the main image.
     /// </summary>
@@ -3213,8 +3201,6 @@ internal class ImageContent
         }
     }
 
-
-
     /// <summary>Initializes a new instance of the ImageContent class.</summary>
     public ImageContent()
     {
@@ -3233,5 +3219,4 @@ internal class ImageContent
         CopyToImageCommand = new EditorAsyncCommand<CopyToImageArgs>(DoCopyToImageAsync, CanCopyToImage);
         ShowFxCommand = new EditorCommand<object>(() => DoShowFx(), CanShowFx);
     }
-
 }

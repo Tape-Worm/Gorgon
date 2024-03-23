@@ -23,7 +23,6 @@
 // Created: Wednesday, October 3, 2012 9:16:10 PM
 // 
 
-
 using Gorgon.Graphics;
 
 namespace Gorgon.Animation;
@@ -48,8 +47,6 @@ public class GorgonKeyGorgonColor
     // The value for the key frame.
     private GorgonColor _value;
 
-
-
     /// <summary>
     /// Property to set or return the value to store in the key frame.
     /// </summary>
@@ -72,15 +69,11 @@ public class GorgonKeyGorgonColor
         get;
     } = typeof(GorgonColor);
 
-
-
     /// <summary>
     /// Function to clone an object.
     /// </summary>
     /// <returns>The cloned object.</returns>
     public IGorgonKeyFrame Clone() => new GorgonKeyGorgonColor(this);
-
-
 
     /// <summary>Initializes a new instance of the <see cref="GorgonKeyRectangle"/> class.</summary>
     /// <param name="key">The key to copy.</param>
@@ -101,5 +94,4 @@ public class GorgonKeyGorgonColor
         Time = time;
         _value = value;
     }
-
 }

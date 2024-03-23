@@ -25,8 +25,6 @@ internal class CodecRegistry(GorgonMefPlugInCache pluginCache, IGorgonLog log)
     // The log.
     private readonly IGorgonLog _log = log;
 
-
-
     /// <summary>
     /// Property to return the list of codecs.
     /// </summary>
@@ -50,8 +48,6 @@ internal class CodecRegistry(GorgonMefPlugInCache pluginCache, IGorgonLog log)
     {
         get;
     } = [];
-
-
 
     /// <summary>
     /// Function to load external image codec plug ins.
@@ -273,6 +269,4 @@ internal class CodecRegistry(GorgonMefPlugInCache pluginCache, IGorgonLog log)
             }
         }
     }
-
-
 }

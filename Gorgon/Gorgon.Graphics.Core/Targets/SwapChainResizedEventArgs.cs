@@ -35,7 +35,6 @@ namespace Gorgon.Graphics.Core;
 public class SwapChainResizedEventArgs(GorgonPoint newSize, GorgonPoint oldSize)
         : EventArgs
 {
-
     /// <summary>
     /// Property to return the size of the swap chain backbuffers.
     /// </summary>
@@ -51,6 +50,5 @@ public class SwapChainResizedEventArgs(GorgonPoint newSize, GorgonPoint oldSize)
     {
         get;
     } = oldSize;
-
 
 }

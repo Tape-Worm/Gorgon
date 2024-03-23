@@ -23,7 +23,6 @@
 // Created: December 29, 2020 4:51:04 PM
 // 
 
-
 using Gorgon.Graphics.Imaging;
 using D3D11 = SharpDX.Direct3D11;
 using DX = SharpDX;

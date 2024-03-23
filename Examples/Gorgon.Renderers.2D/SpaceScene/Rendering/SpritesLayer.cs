@@ -23,7 +23,6 @@
 // Created: May 21, 2019 11:13:16 AM
 // 
 
-
 using System.Numerics;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -46,8 +45,6 @@ internal class SpritesLayer(Gorgon2D renderer, IReadOnlyDictionary<string, Gorgo
     private readonly Dictionary<string, SpriteEntity> _spriteByName = [];
     // A list of sprite entities to draw.
     private readonly List<(int index, SpriteEntity entity)> _drawList = [];
-
-
 
     /// <summary>
     /// Property to return the effects for the system.
@@ -82,8 +79,6 @@ internal class SpritesLayer(Gorgon2D renderer, IReadOnlyDictionary<string, Gorgo
         get;
         set;
     }
-
-
 
     /// <summary>
     /// Function to perform a culling pass to exclude objects that are not visible.
@@ -270,6 +265,5 @@ internal class SpritesLayer(Gorgon2D renderer, IReadOnlyDictionary<string, Gorgo
     /// <param name="name">The name of the sprite.</param>
     /// <returns>The sprite entity with the specified name.</returns>
     public SpriteEntity GetSpriteByName(string name) => _spriteByName[name];
-
 
 }

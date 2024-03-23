@@ -23,7 +23,6 @@
 // Created: February 7, 2020 3:36:57 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Animation;
 using Gorgon.Editor.UI;
@@ -40,7 +39,6 @@ internal class CameraAnimationController<T>
     : GorgonAnimationController<GorgonOrthoCamera>
     where T : class, IVisualEditorContent
 {
-
     /// <summary>
     /// The track registration for the position.
     /// </summary>
@@ -52,8 +50,6 @@ internal class CameraAnimationController<T>
 
     // The renderer that is animating.
     private readonly DefaultContentRenderer<T> _renderer;
-
-
 
     /// <summary>Function called when a <see cref="GorgonColor"/> value needs to be updated on the animated object.</summary>
     /// <param name="track">The track currently being processed.</param>
@@ -141,8 +137,6 @@ internal class CameraAnimationController<T>
         // Not needed.
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="CameraAnimationController{T}"/> class.</summary>
     public CameraAnimationController(DefaultContentRenderer<T> renderer)
     {
@@ -151,5 +145,4 @@ internal class CameraAnimationController<T>
         RegisterTrack(ZoomTrack);
         RegisterTrack(PositionTrack);
     }
-
 }

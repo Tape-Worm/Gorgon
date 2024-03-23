@@ -23,7 +23,6 @@
 // Created: Friday, August 9, 2013 3:16:00 PM
 // 
 
-
 using System.Runtime.InteropServices;
 using Gorgon.Core;
 using Gorgon.Math;
@@ -87,7 +86,6 @@ internal readonly struct AlphaTestData(bool isEnabled, GorgonRange<float> alphaR
     /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
     /// </returns>
     public override int GetHashCode() => HashCode.Combine(IsEnabled, LowerAlpha, UpperAlpha);
-
 
     /// <summary>
     /// Indicates whether the current object is equal to another object of the same type.

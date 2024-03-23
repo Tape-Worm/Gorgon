@@ -23,7 +23,6 @@
 // Created: Thursday, September 10, 2015 10:11:39 PM
 // 
 
-
 using System.Collections;
 
 namespace Gorgon.Input;
@@ -37,8 +36,6 @@ public class GorgonKeyStateCollection
 
     // Keyboard key state.
     private readonly Dictionary<Keys, KeyState> _keys = new(new GorgonKeysEqualityComparer());
-
-
 
     /// <summary>
     /// Property to return the state of a given key.
@@ -59,8 +56,6 @@ public class GorgonKeyStateCollection
         }
         set => _keys[key] = value;
     }
-
-
 
     /// <summary>
     /// Function to reset the key states.
@@ -94,15 +89,12 @@ public class GorgonKeyStateCollection
         this[Keys.Shift] = KeyState.Up;
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonKeyStateCollection"/> class.
     /// </summary>
     internal GorgonKeyStateCollection()
     {
     }
-
 
     /// <summary>
     /// Gets the number of elements contained in the <see cref="ICollection{T}"></see>.
@@ -115,9 +107,6 @@ public class GorgonKeyStateCollection
     /// </summary>
     /// <returns>true if the <see cref="ICollection{T}"></see> is read-only; otherwise, false.</returns>
     public bool IsReadOnly => true;
-
-
-
 
     /// <summary>
     /// Adds an item to the <see cref="ICollection{T}"></see>.
@@ -158,8 +147,6 @@ public class GorgonKeyStateCollection
     /// <exception cref="NotSupportedException"></exception>
     bool ICollection<KeyState>.Remove(KeyState item) => false;
 
-
-
     /// <summary>
     /// Returns an enumerator that iterates through the collection.
     /// </summary>
@@ -174,8 +161,6 @@ public class GorgonKeyStateCollection
             yield return state.Value;
         }
     }
-
-
 
     /// <summary>
     /// Returns an enumerator that iterates through a collection.

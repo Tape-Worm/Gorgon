@@ -23,7 +23,6 @@
 // Created: September 23, 2019 4:11:02 PM
 // 
 
-
 using Gorgon.Memory;
 using Gorgon.Reflection;
 
@@ -42,9 +41,6 @@ public class GorgonStateBuilderPoolAllocator<T>(int size = 4096)
 
     // The object creator.
     private static readonly Lazy<ObjectActivator<T>> _creator;
-
-
-
 
     /// <summary>
     /// Initializes static members of the <see cref="GorgonDrawCallPoolAllocator{T}"/> class.

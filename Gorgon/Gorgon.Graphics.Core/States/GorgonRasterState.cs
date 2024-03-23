@@ -23,7 +23,6 @@
 // Created: July 27, 2016 7:02:11 PM
 // 
 
-
 using Gorgon.Math;
 using D3D11 = SharpDX.Direct3D11;
 
@@ -50,7 +49,6 @@ namespace Gorgon.Graphics.Core;
 public class GorgonRasterState
     : IEquatable<GorgonRasterState>
 {
-
     /// <summary>
     /// The default raster state.
     /// </summary>
@@ -103,8 +101,6 @@ public class GorgonRasterState
     {
         CullMode = CullingMode.None
     };
-
-
 
     /// <summary>
     /// Property to return the current culling mode.
@@ -214,7 +210,6 @@ public class GorgonRasterState
         get;
         internal set;
     }
-
 
     /// <summary>
     /// Property to return whether depth/clipping is enabled or not.
@@ -332,8 +327,6 @@ public class GorgonRasterState
         internal set;
     }
 
-
-
     /// <summary>
     /// Function to retrieve the Direct 3D 11 rasterizer state object.
     /// </summary>
@@ -412,8 +405,6 @@ public class GorgonRasterState
         return hashCode.ToHashCode();
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonRasterState"/> class.
     /// </summary>
@@ -443,5 +434,4 @@ public class GorgonRasterState
         FillMode = FillMode.Solid;
         IsDepthClippingEnabled = true;
     }
-
 }

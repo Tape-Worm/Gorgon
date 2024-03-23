@@ -23,7 +23,6 @@
 // Created: August 4, 2016 6:21:01 PM
 // 
 
-
 using Gorgon.Core;
 
 namespace Gorgon.Graphics.Imaging.Codecs;
@@ -193,7 +192,6 @@ namespace Gorgon.Graphics.Imaging.Codecs;
 public interface IGorgonImageCodec
     : IGorgonNamedObject
 {
-
     /// <summary>
     /// Property to return whether the codec supports encoding of image data.
     /// </summary>
@@ -279,8 +277,6 @@ public interface IGorgonImageCodec
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to load an image from a stream.

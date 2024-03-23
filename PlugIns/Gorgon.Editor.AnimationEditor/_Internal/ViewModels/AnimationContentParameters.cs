@@ -23,7 +23,6 @@
 // Created: June 7, 2020 8:25:18 PM
 // 
 
-
 using System.Collections.ObjectModel;
 using Gorgon.Animation;
 using Gorgon.Editor.AnimationEditor.Services;

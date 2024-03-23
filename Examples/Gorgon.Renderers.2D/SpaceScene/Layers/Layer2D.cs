@@ -23,7 +23,6 @@
 // Created: May 20, 2019 11:37:29 PM
 // 
 
-
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers;
@@ -38,7 +37,6 @@ namespace Gorgon.Examples;
 internal abstract class Layer2D(Gorgon2D renderer)
         : Layer
 {
-
     /// <summary>
     /// Property to return the graphics interface for the applicaton.
     /// </summary>
@@ -51,8 +49,6 @@ internal abstract class Layer2D(Gorgon2D renderer)
     {
         get;
     } = renderer;
-
-
 
     /// <summary>
     /// Function to blit the specified texture into the current output target.
@@ -67,7 +63,5 @@ internal abstract class Layer2D(Gorgon2D renderer)
             textureCoordinates ?? new GorgonRectangleF(0, 0, 1, 1),
             textureSampler: samplerState ?? GorgonSamplerState.Default,
             depth: 0.1f);
-
-
 
 }

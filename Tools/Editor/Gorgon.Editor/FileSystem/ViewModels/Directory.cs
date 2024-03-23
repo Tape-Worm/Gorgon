@@ -23,7 +23,6 @@
 // Created: September 4, 2018 10:48:10 PM
 // 
 
-
 using System.Collections.ObjectModel;
 using Gorgon.Collections;
 using Gorgon.Editor.PlugIns;
@@ -49,8 +48,6 @@ internal class Directory
     private bool _isCut;
     // Flag to indicate that the directory is excluded from a packed file system.
     private bool _isExcluded;
-
-
 
     /// <summary>
     /// Property to set or return a flag to indicate whether the directory was marked for a cut operation.
@@ -183,8 +180,6 @@ internal class Directory
         }
     }
 
-
-
     /// <summary>
     /// Function to calculate the total size, in bytes, for the files contained within this directory, and any sub directory within this directory.
     /// </summary>
@@ -276,8 +271,6 @@ internal class Directory
         PhysicalPath = injectionParameters.PhysicalPath;
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="Directory" /> class.
     /// </summary>
@@ -288,5 +281,4 @@ internal class Directory
         ParentRenamedCommand = new EditorCommand<object>(DoParentRenamed);
         RenameCommand = new EditorCommand<RenameArgs>(DoRename, CanRename);
     }
-
 }

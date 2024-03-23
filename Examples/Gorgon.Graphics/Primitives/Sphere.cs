@@ -23,7 +23,6 @@
 // Created: Sunday, December 30, 2012 10:25:22 AM
 // 
 
-
 using System.Numerics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
@@ -41,8 +40,6 @@ internal class Sphere
     // Initial orientation.
     private Matrix4x4 _orientation;
 
-
-
     /// <summary>
     /// Property to return the radius of the sphere.
     /// </summary>
@@ -51,8 +48,6 @@ internal class Sphere
         get;
         private set;
     }
-
-
 
     /// <summary>
     /// Function to create the vertex data for the sphere.
@@ -122,8 +117,6 @@ internal class Sphere
         }
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="Sphere" /> class.
     /// </summary>
@@ -174,5 +167,4 @@ internal class Sphere
 
         UpdateAabb(vertexData);
     }
-
 }

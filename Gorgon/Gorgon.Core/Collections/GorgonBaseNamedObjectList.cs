@@ -23,7 +23,6 @@
 // Created: Tuesday, June 14, 2011 10:12:38 PM
 // 
 
-
 using System.Collections;
 using System.ComponentModel;
 using Gorgon.Core;
@@ -50,8 +49,6 @@ public abstract class GorgonBaseNamedObjectList<T>(bool caseSensitive)
     private readonly List<T> _list = [];
     private readonly StringComparison _caseSensitivity = caseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;
 
-
-
     /// <summary>
     /// Property to return the list of items in the underlying collection.
     /// </summary>
@@ -64,8 +61,6 @@ public abstract class GorgonBaseNamedObjectList<T>(bool caseSensitive)
     {
         get;
     } = caseSensitive;
-
-
 
     /// <summary>
     /// Function to retrieve the item at the specified index by name.
@@ -329,6 +324,5 @@ public abstract class GorgonBaseNamedObjectList<T>(bool caseSensitive)
     /// </summary>
     /// <param name="index">The index of the item to remove.</param>
     void IGorgonNamedObjectList<T>.Remove(int index) => _list.RemoveAt(index);
-
 
 }

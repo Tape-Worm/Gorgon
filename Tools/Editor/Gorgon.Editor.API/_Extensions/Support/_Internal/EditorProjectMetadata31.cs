@@ -23,7 +23,6 @@
 // Created: March 27, 2019 10:49:22 PM
 // 
 
-
 using Gorgon.Editor.Metadata;
 using Gorgon.Editor.ProjectData;
 using Newtonsoft.Json;

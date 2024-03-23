@@ -23,7 +23,6 @@
 // Created: January 4, 2021 12:38:32 PM
 // 
 
-
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core;
@@ -40,16 +39,12 @@ internal class SamplerCache(D3D11.Device5 device)
     // The size of the initial cache.
     private const int InitialCacheSize = 8;
 
-
-
     // The D3D11 device object for creating samplers.
     private readonly D3D11.Device5 _device = device;
     // A list of cached pipeline states.
     private GorgonSamplerState[] _cachedSamplers = new GorgonSamplerState[InitialCacheSize];
     // A syncrhonization lock for multiple thread when dealing with the sampler cache.
     private readonly object _samplerLock = new();
-
-
 
     /// <summary>
     /// Function to invalidate the cache data.
@@ -165,6 +160,4 @@ internal class SamplerCache(D3D11.Device5 device)
             _cachedSamplers[4] = GorgonSamplerState.PointFilteringWrapping;
         }
     }
-
-
 }

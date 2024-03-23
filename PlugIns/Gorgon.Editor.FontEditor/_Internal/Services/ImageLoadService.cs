@@ -23,7 +23,6 @@
 // Created: September 10, 2021 8:45:45 PM
 // 
 
-
 using Gorgon.Editor.Content;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Imaging;
@@ -44,8 +43,6 @@ internal class ImageLoadService(IGorgonImageCodec codec, IContentFileManager fil
     private readonly IContentFileManager _fileManager = fileManager;
     // The codec for the images.
     private readonly IGorgonImageCodec _codec = codec;
-
-
 
     /// <summary>
     /// Function to return whether the file in the path is an image file or not.
@@ -121,6 +118,4 @@ internal class ImageLoadService(IGorgonImageCodec codec, IContentFileManager fil
 
         return Task.Run(LoadImage);
     }
-
-
 }

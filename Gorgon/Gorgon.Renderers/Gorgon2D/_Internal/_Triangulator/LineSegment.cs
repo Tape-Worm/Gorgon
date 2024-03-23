@@ -49,7 +49,6 @@ internal struct LineSegment(Vertex a, Vertex b)
         float ua = uaNum / denom;
         float ub = ubNum / denom;
 
-
         // ReSharper disable CompareOfFloatsByEqualityOperator
         if (ua.Clamp(0, 1) != ua || ub.Clamp(0f, 1f) != ub)
         {

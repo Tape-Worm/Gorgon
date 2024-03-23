@@ -23,7 +23,6 @@
 // Created: Saturday, October 12, 2013 9:10:02 PM
 // 
 
-
 using System.Drawing.Drawing2D;
 using System.Numerics;
 using Gorgon.IO;
@@ -46,7 +45,6 @@ namespace Gorgon.Graphics.Fonts;
 public class GorgonGlyphPathGradientBrush
     : GorgonGlyphBrush
 {
-
     /// <summary>
     /// Property to return the type of brush.
     /// </summary>
@@ -127,8 +125,6 @@ public class GorgonGlyphPathGradientBrush
     {
         get;
     }
-
-
 
     /// <summary>Function to write out the specifics of the font brush data to a file writer.</summary>
     /// <param name="writer">The writer used to write the brush data.</param>
@@ -342,8 +338,6 @@ public class GorgonGlyphPathGradientBrush
             && (brush.SurroundColors.SequenceEqual(SurroundColors))));
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonGlyphPathGradientBrush"/> class.
     /// </summary>
@@ -355,5 +349,4 @@ public class GorgonGlyphPathGradientBrush
         Interpolation = [];
         SurroundColors = [];
     }
-
 }

@@ -23,7 +23,6 @@
 // Created: September 6, 2021 12:54:13 PM
 // 
 
-
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Fonts;
@@ -36,7 +35,6 @@ namespace Gorgon.Editor.FontEditor;
 internal class FontPatternBrush
     : HostedPanelViewModelBase<HostedPanelViewModelParameters>, IFontPatternBrush, IFontBrush
 {
-
     /// <summary>
     /// The default pattern brush.
     /// </summary>
@@ -51,8 +49,6 @@ internal class FontPatternBrush
     private GorgonGlyphHatchBrush _brush = DefaultBrush;
     // The original colors for the brush.
     private (GorgonColor Foreground, GorgonColor Background) _originalColors;
-
-
 
     /// <summary>Property to return whether the panel is modal.</summary>
     public override bool IsModal => true;
@@ -98,8 +94,6 @@ internal class FontPatternBrush
     /// </summary>
     GorgonGlyphBrush IFontBrush.Brush => Brush;
 
-
-
     /// <summary>Function to inject dependencies for the view model.</summary>
     /// <param name="injectionParameters">The parameters to inject.</param>
     protected override void OnInitialize(HostedPanelViewModelParameters injectionParameters)
@@ -113,5 +107,4 @@ internal class FontPatternBrush
         _brush = DefaultBrush;
         Unload();
     }
-
 }

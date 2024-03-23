@@ -23,7 +23,6 @@
 // Created: Friday, May 23, 2015 2:36:10 PM
 // 
 
-
 using Gorgon.Diagnostics.LogProviders;
 
 namespace Gorgon.Diagnostics;
@@ -55,7 +54,6 @@ public enum LoggingLevel
 /// </remarks>
 public interface IGorgonLog
 {
-
     /// <summary>
     /// Property to return the provider for this log.
     /// </summary>
@@ -80,8 +78,6 @@ public interface IGorgonLog
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to perform any one time inital logging.

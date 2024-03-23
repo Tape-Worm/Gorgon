@@ -23,7 +23,6 @@
 // Created: April 25, 2019 9:37:40 AM
 // 
 
-
 using Newtonsoft.Json;
 
 namespace Gorgon.Editor.ImageSplitTool;

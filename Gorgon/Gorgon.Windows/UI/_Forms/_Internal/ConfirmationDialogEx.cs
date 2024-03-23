@@ -23,7 +23,6 @@
 // Created: Saturday, June 18, 2011 4:21:02 PM
 // 
 
-
 namespace Gorgon.UI;
 
 /// <summary>
@@ -32,11 +31,6 @@ namespace Gorgon.UI;
 internal partial class ConfirmationDialogEx
     : ConfirmationDialog
 {
-
-
-
-
-
     /// <summary>
     /// Raises the <see cref="E:System.Windows.Forms.Form.FormClosing"></see> event.
     /// </summary>
@@ -90,8 +84,6 @@ internal partial class ConfirmationDialogEx
 
         DrawMessage(g, maxTextHeight);
     }
-
-
 
     /// <summary>
     /// Constructor.

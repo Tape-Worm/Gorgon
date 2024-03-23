@@ -23,7 +23,6 @@
 // Created: Thursday, May 21, 2015 9:36:17 PM
 // 
 
-
 using System.ComponentModel;
 using Gorgon.Core;
 
@@ -37,7 +36,6 @@ public interface IGorgonNamedObjectList<T>
     : IList<T>
     where T : IGorgonNamedObject
 {
-
     /// <summary>
     /// Gets a value indicating whether this instance is read only.
     /// </summary>
@@ -65,8 +63,6 @@ public interface IGorgonNamedObjectList<T>
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to remove an item with the specified name from this list.

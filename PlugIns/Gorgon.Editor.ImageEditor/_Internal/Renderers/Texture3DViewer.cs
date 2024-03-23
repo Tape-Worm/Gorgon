@@ -23,7 +23,6 @@
 // Created: January 9, 2019 1:43:36 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Editor.ImageEditor.Properties;
 using Gorgon.Editor.ImageEditor.ViewModels;
@@ -52,8 +51,6 @@ internal class Texture3DViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IIm
     private GorgonTexture3DView _textureView;
     // The volume renderer.
     private VolumeRenderer _volRenderer;
-
-
 
     /// <summary>Function to dispose any texture resources.</summary>
     protected override void DestroyTexture()
@@ -150,6 +147,4 @@ internal class Texture3DViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IIm
         _volRenderer = new VolumeRenderer(Graphics);
         _volRenderer.CreateResources(ClientSize);
     }
-
-
 }

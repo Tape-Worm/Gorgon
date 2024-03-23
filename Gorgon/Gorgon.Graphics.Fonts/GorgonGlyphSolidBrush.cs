@@ -23,7 +23,6 @@
 // Created: Saturday, October 12, 2013 11:22:36 PM
 // 
 
-
 using Gorgon.IO;
 
 namespace Gorgon.Graphics.Fonts;
@@ -43,7 +42,6 @@ namespace Gorgon.Graphics.Fonts;
 public class GorgonGlyphSolidBrush
     : GorgonGlyphBrush
 {
-
     /// <summary>
     /// Property to return the type of brush.
     /// </summary>
@@ -57,8 +55,6 @@ public class GorgonGlyphSolidBrush
         get;
         set;
     }
-
-
 
     /// <summary>Function to write out the specifics of the font brush data to a file writer.</summary>
     /// <param name="writer">The writer used to write the brush data.</param>
@@ -83,7 +79,6 @@ public class GorgonGlyphSolidBrush
         Color = Color
     };
 
-
     /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
     /// <param name="other">An object to compare with this object.</param>
     /// <returns>
@@ -103,9 +98,6 @@ public class GorgonGlyphSolidBrush
 
         return ((brush == this) || ((brush is not null) && (brush.Color == Color)));
     }
-
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonGlyphSolidBrush"/> class.

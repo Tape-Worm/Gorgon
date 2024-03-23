@@ -23,7 +23,6 @@
 // Created: April 20, 2019 10:58:12 AM
 // 
 
-
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.UI;
@@ -48,8 +47,6 @@ internal class SettingsPlugInListItem
     // The path to the plug in assembly.
     private string _path;
 
-
-
     /// <summary>Property to return the name/description for the plug in.</summary>
     public string Name
     {
@@ -66,7 +63,6 @@ internal class SettingsPlugInListItem
             OnPropertyChanged();
         }
     }
-
 
     /// <summary>
     /// Property to return the path to the plug in.
@@ -138,8 +134,6 @@ internal class SettingsPlugInListItem
         }
     }
 
-
-
     /// <summary>Function to inject dependencies for the view model.</summary>
     /// <param name="injectionParameters">The parameters to inject.</param>
     /// <exception cref="ArgumentMissingException">Name - injectionParameters</exception>
@@ -155,5 +149,4 @@ internal class SettingsPlugInListItem
                                                                                         : injectionParameters.DisabledReason;
         Path = injectionParameters.Path;
     }
-
 }

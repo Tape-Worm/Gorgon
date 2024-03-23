@@ -23,8 +23,6 @@
 // Created: Wednesday, July 1, 2015 7:44:04 PM
 // 
 
-
-
 namespace System.Windows.Forms;
 
 /// <summary>

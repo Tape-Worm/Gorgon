@@ -23,7 +23,6 @@
 // Created: Thursday, January 17, 2013 11:06:54 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.UI;
@@ -36,7 +35,6 @@ namespace Gorgon.Examples;
 /// <remarks>To see a description of this example, look in formMain.cs</remarks>
 internal static class Program
 {
-
     /// <summary>
     /// Property to return the log used for debug log messages.
     /// </summary>
@@ -45,8 +43,6 @@ internal static class Program
         get;
         private set;
     }
-
-
 
     /// <summary>
     /// The main entry point for the application.
@@ -73,5 +69,4 @@ internal static class Program
             Log.LogEnd();
         }
     }
-
 }

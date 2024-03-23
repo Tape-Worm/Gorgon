@@ -23,7 +23,6 @@
 // Created: April 10, 2019 8:19:52 AM
 // 
 
-
 using System.ComponentModel;
 using System.Numerics;
 using Gorgon.Editor.UI;
@@ -36,19 +35,12 @@ namespace Gorgon.Editor.SpriteEditor;
 internal partial class FormManualVertexEdit
     : Form, IDataContext<ISpriteVertexEditContext>
 {
-
-
-
-
-
     /// <summary>Property to return the data context assigned to this view.</summary>
     public ISpriteVertexEditContext ViewModel
     {
         get;
         private set;
     }
-
-
 
     /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -163,8 +155,6 @@ internal partial class FormManualVertexEdit
 
         ViewModel.PropertyChanged += DataContext_PropertyChanged;
     }
-
-
 
     /// <summary>Initializes a new instance of the <see cref="FormManualVertexEdit"/> class.</summary>
     public FormManualVertexEdit() => InitializeComponent();

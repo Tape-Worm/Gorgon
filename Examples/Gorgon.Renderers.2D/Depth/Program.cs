@@ -23,7 +23,6 @@
 // Created: May 9, 2019 5:34:12 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Animation;
 using Gorgon.Core;
@@ -93,8 +92,6 @@ static class Program
     private static GorgonMefPlugInCache _assemblyCache;
     // The cache for holding sprite textures.
     private static GorgonTextureCache<GorgonTexture2D> _textureCache;
-
-
 
     /// <summary>
     /// Function to draw the background layer.
@@ -292,7 +289,6 @@ static class Program
         _animations[AnimationName.WalkUp] = animBuilder.Build("Walk Up", 6.666667f);
         _animations[AnimationName.WalkUp].IsLooped = true;
 
-
         // Build animation for turning left.
         time = 0;
         animBuilder.Clear();
@@ -420,8 +416,6 @@ static class Program
         GorgonExample.EndInit();
     }
 
-
-
     /// <summary>
     /// The main entry point for the application.
     /// </summary>
@@ -464,5 +458,4 @@ static class Program
             _assemblyCache?.Dispose();
         }
     }
-
 }

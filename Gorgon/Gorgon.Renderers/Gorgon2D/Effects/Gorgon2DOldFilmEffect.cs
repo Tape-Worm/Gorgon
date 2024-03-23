@@ -23,7 +23,6 @@
 // Created: Thursday, August 22, 2013 11:54:51 PM
 // 
 
-
 using System.Numerics;
 using System.Runtime.InteropServices;
 using Gorgon.Core;
@@ -390,7 +389,6 @@ public class Gorgon2DOldFilmEffect
                     simplexNoise = 0.0f;
                 }
 
-
                 image.Buffers[0].Data[(y * imageBuffer.PitchInformation.RowPitch) + x] = (byte)(simplexNoise * 255.0f);
             }
         }
@@ -650,8 +648,6 @@ public class Gorgon2DOldFilmEffect
         EndRender(output);
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="Gorgon2DOldFilmEffect"/> class.
     /// </summary>
@@ -684,5 +680,4 @@ public class Gorgon2DOldFilmEffect
             SepiaDarkColor = new GorgonColor(0.2f, 0.102f, 0, 1.0f)
         };
     }
-
 }

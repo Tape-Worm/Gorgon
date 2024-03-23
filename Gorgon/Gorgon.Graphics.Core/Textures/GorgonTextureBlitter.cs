@@ -23,7 +23,6 @@
 // Created: March 6, 2017 10:47:10 PM
 // 
 
-
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Gorgon.Graphics.Core.Properties;
@@ -104,7 +103,6 @@ public class GorgonTextureBlitter
                 return;
             }
 
-
             _blitVertexShader = GorgonShaderFactory.Compile<GorgonVertexShader>(_graphics,
                                                                             Resources.GraphicsShaders,
                                                                             "GorgonBltVertexShader",
@@ -143,7 +141,6 @@ public class GorgonTextureBlitter
                                                                            Usage = ResourceUsage.Dynamic,
                                                                        });
 
-
             _fsPso = _fsPsoBuilder.PixelShader(_fsPixelShader)
                                   .VertexShader(_fsVertexShader)
                                   .BlendState(GorgonBlendState.NoBlending)
@@ -152,7 +149,6 @@ public class GorgonTextureBlitter
             _fsBuilder.PipelineState(_fsPso)
                       .VertexRange(0, 3)
                       .SamplerState(ShaderType.Pixel, GorgonSamplerState.PointFiltering);
-
 
             _blitPso = _blitPsoBuilder.VertexShader(_blitVertexShader)
                                       .BlendState(GorgonBlendState.NoBlending)
@@ -167,7 +163,6 @@ public class GorgonTextureBlitter
                         .SamplerState(ShaderType.Pixel, GorgonSamplerState.Default)
                         .PipelineState(_blitPso)
                         .ConstantBuffer(ShaderType.Vertex, _wvpBuffer);
-
 
             _defaultTexture = Resources.White_2x2.ToTexture2D(_graphics,
                                                               new GorgonTexture2DLoadOptions

@@ -23,7 +23,6 @@
 // Created: July 4, 2020 10:03:17 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Editor.AnimationEditor.Properties;
 using Gorgon.Editor.UI;
@@ -44,8 +43,6 @@ internal class KeyValueEditor
     private Vector4 _floatValues;
     // The sprite to update.
     private GorgonSprite _workingSprite;
-
-
 
     /// <summary>Property to return the title for the editor.</summary>
     public string Title => string.IsNullOrWhiteSpace(_editTrack?.Track.Description) ? Resources.GORANM_DEFAULT_TITLE : _editTrack?.Track.Description;
@@ -120,8 +117,6 @@ internal class KeyValueEditor
         }
     }
 
-
-
     /// <summary>Function to inject dependencies for the view model.</summary>
     /// <param name="injectionParameters">The parameters to inject.</param>
     /// <remarks>
@@ -143,5 +138,4 @@ internal class KeyValueEditor
     protected virtual void OnTrackSet()
     {
     }
-
 }

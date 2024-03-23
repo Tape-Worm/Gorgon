@@ -23,7 +23,6 @@
 // Created: August 25, 2018 2:43:32 PM
 // 
 
-
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Gorgon.Animation;
@@ -47,7 +46,6 @@ namespace Gorgon.IO;
 public class GorgonV31AnimationBinaryCodec(Gorgon2D renderer)
         : GorgonAnimationCodecCommon(renderer, Resources.GOR2DIO_V3_1_ANIM_BIN_CODEC, Resources.GOR2DIO_V3_1_ANIM_BIN_CODEC_DESCRIPTION)
 {
-
     /// <summary>
     /// The version data chunk ID.
     /// </summary>
@@ -103,8 +101,6 @@ public class GorgonV31AnimationBinaryCodec(Gorgon2D renderer)
     /// Property to return the version of animation data that the codec supports.
     /// </summary>
     public override Version Version => CurrentVersion;
-
-
 
     /// <summary>
     /// Function to load the texture information.
@@ -505,7 +501,6 @@ public class GorgonV31AnimationBinaryCodec(Gorgon2D renderer)
                 }
             }
 
-
             return result;
         }
         finally
@@ -594,6 +589,4 @@ public class GorgonV31AnimationBinaryCodec(Gorgon2D renderer)
             reader?.Close();
         }
     }
-
-
 }

@@ -23,7 +23,6 @@
 // Created: February 5, 2019 7:54:23 PM
 // 
 
-
 using Gorgon.Editor.ImageEditor.Properties;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics.Core;
@@ -70,8 +69,6 @@ internal class DimensionSettings
     private int _depthSlicesOrArrayIndices = 1;
     // Flag to indicate mip maps are supported.
     private bool _mipSupport;
-
-
 
     /// <summary>Property to return whether the panel is modal.</summary>
     public override bool IsModal => true;
@@ -339,8 +336,6 @@ internal class DimensionSettings
         get;
     }
 
-
-
     /// <summary>
     /// Function to update the maximum mip map count for the current spatial dimensions.
     /// </summary>
@@ -403,16 +398,12 @@ internal class DimensionSettings
         }
     }
 
-
-
     /// <summary>Function to inject dependencies for the view model.</summary>
     /// <param name="injectionParameters">The parameters to inject.</param>
     /// <remarks>
     /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
     /// </remarks>
     protected override void OnInitialize(DimensionSettingsParameters injectionParameters) => _videoAdapter = injectionParameters.VideoAdapter;
-
-
 
     /// <summary>Initializes a new instance of the <see cref="DimensionSettings"/> class.</summary>
     public DimensionSettings() => UpdateImageInfoCommand = new EditorCommand<IGorgonImage>(DoUpdateImageInfo);

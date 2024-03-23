@@ -23,7 +23,6 @@
 // Created: Saturday, June 18, 2011 4:20:00 PM
 // 
 
-
 using System.Collections;
 using System.Text;
 using Gorgon.Core;
@@ -67,7 +66,6 @@ public enum ConfirmationResult
 /// </summary>
 public static class GorgonDialogs
 {
-
     /// <summary>
     /// Function to format the stack trace output.
     /// </summary>
@@ -432,5 +430,4 @@ public static class GorgonDialogs
 
         return result;
     }
-
 }

@@ -23,7 +23,6 @@
 // Created: August 25, 2018 2:43:32 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Animation;
 using Gorgon.Core;
@@ -41,11 +40,6 @@ namespace Gorgon.IO;
 public class GorgonV1AnimationCodec
     : GorgonAnimationCodecCommon
 {
-
-
-
-
-
     /// <summary>
     /// Property to return whether or not the codec can decode animation data.
     /// </summary>
@@ -63,8 +57,6 @@ public class GorgonV1AnimationCodec
     {
         get;
     } = new Version(1, 2);
-
-
 
     /// <summary>
     /// Function to save the animation data to a stream.
@@ -564,7 +556,6 @@ public class GorgonV1AnimationCodec
                         continue;
                 }
 
-
             }
 
             result[i] = builder.Build(name, length);
@@ -790,7 +781,6 @@ public class GorgonV1AnimationCodec
         return OnReadMultipleFromStream(stream, true)[0];
     }
 
-
     /// <summary>Function to retrieve the names of the associated textures.</summary>
     /// <param name="stream">The stream containing the texture data.</param>
     /// <returns>The names of the texture associated with the animations, or an empty list if no textures were found.</returns>
@@ -985,8 +975,6 @@ public class GorgonV1AnimationCodec
             ? throw new EndOfStreamException()
             : OnReadMultipleFromStream(stream, false);
     }
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonV1AnimationCodec"/> class.

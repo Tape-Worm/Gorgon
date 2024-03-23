@@ -23,7 +23,6 @@
 // Created: July 16, 2018 2:41:40 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Graphics;
@@ -49,8 +48,6 @@ public partial class Form
     private GorgonSwapChain _screen;
     // Our 2D renderer.
     private Gorgon2D _renderer;
-
-
 
     /// <summary>
     /// Function to draw the pretty picture.

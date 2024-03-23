@@ -23,7 +23,6 @@
 // Created: May 24, 2019 3:33:44 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Animation;
 using Gorgon.Graphics;
@@ -75,8 +74,6 @@ internal class Ship(SpritesLayer layer)
     private Vector2 _position;
     // The laughable AI.
     private DummyAi _ai;
-
-
 
     /// <summary>
     /// Property to return the speed of the ship.
@@ -159,8 +156,6 @@ internal class Ship(SpritesLayer layer)
             UpdateEntityPositions();
         }
     }
-
-
 
     /// <summary>
     /// Function to update the entity positions to match the position of the ship.
@@ -357,6 +352,4 @@ internal class Ship(SpritesLayer layer)
 
         UpdateEntityPositions();
     }
-
-
 }

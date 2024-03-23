@@ -22,7 +22,6 @@
 // Created: August 2, 2018 3:38:43 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -33,7 +32,7 @@ namespace Gorgon.Renderers;
 /// <summary>
 /// Defines the a composition pass for the <see cref="Gorgon2DCompositor"/>
 /// </summary>
-internal class CompositionPass 
+internal class CompositionPass
     : IGorgonNamedObject, IGorgon2DCompositorPass
 {
     /// <inheritdoc/>

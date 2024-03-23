@@ -23,7 +23,6 @@
 // Created: December 30, 2020 10:45:30 PM
 // 
 
-
 using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -113,7 +112,6 @@ internal class D3D11StateApplicator(GorgonGraphics graphics, GorgonRenderTargetV
                 typeof(D3D11.DepthStencilView)  // depthStencilViewRef
         ], null);
 
-
         if (methodInfo is null)
         {
             // We'll fall back to the params version if we can't get the method for some reason (this really should never happen).
@@ -132,7 +130,6 @@ internal class D3D11StateApplicator(GorgonGraphics graphics, GorgonRenderTargetV
         _setRenderTargets = (Action<D3D11.OutputMergerStage, int, nint, D3D11.DepthStencilView>)resultMethod.Compile();
     }
 
-
     /// <summary>
     /// Function to retrieve the internal set uavs method for a compute shader.
     /// </summary>
@@ -146,7 +143,6 @@ internal class D3D11StateApplicator(GorgonGraphics graphics, GorgonRenderTargetV
                 typeof(nint),                    // unorderedAccessBuffer
                 typeof(nint)                    // uavCount
         ], null);
-
 
         if (methodInfo is null)
         {
@@ -182,7 +178,6 @@ internal class D3D11StateApplicator(GorgonGraphics graphics, GorgonRenderTargetV
                 typeof(nint),                    // unorderedAccessViewsOut
                 typeof(nint)                    // uAVInitialCountsRef
         ], null);
-
 
         if (methodInfo is null)
         {
@@ -385,7 +380,6 @@ internal class D3D11StateApplicator(GorgonGraphics graphics, GorgonRenderTargetV
         D3D11.SamplerState[] states = samplers.Native;
         shaderStage.SetSamplers(indices.Start, indices.Count, states);
     }
-
 
     /// <summary>
     /// Function to bind the constant buffers to a specific shader stage.

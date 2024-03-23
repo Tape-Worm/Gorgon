@@ -23,7 +23,6 @@
 // Created: February 12, 2021 6:35:57 PM
 // 
 
-
 // Copyright (c) 2010-2014 SharpDX - Alexandre Mutel
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -44,14 +43,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-
 using System.Collections;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Gorgon.Math;
 using Gorgon.Memory;
 
-namespace Gorgon.Renderers.Data;
+namespace Gorgon.Graphics.Core;
 
 /// <summary>
 /// The names of the frustum planes
@@ -404,7 +402,6 @@ public class GorgonBoundingFrustum
 
         return result;
     }
-
 
     /// <summary>
     /// Function to update the frustum with a new view/projection matrix.

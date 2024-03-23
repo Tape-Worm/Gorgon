@@ -23,12 +23,10 @@
 // Created: January 15, 2021 2:48:43 PM
 // 
 
-
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Core.Properties;
-using Gorgon.Renderers.Data;
 
 namespace Gorgon.Renderers.Debug;
 
@@ -56,15 +54,11 @@ public class GorgonFrustumVisual
     // The pixel shader.
     private GorgonPixelShader _pixelShader;
 
-
-
     /// <summary>Property to return the graphics interface that built this object.</summary>
     public GorgonGraphics Graphics
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to initialize the visual.
@@ -169,8 +163,6 @@ public class GorgonFrustumVisual
         _inputLayout?.Dispose();
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="GorgonFrustumVisual" /> class.</summary>
     /// <param name="graphics">The graphics interface to update.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/> parameter is <b>null</b>.</exception>
@@ -179,5 +171,4 @@ public class GorgonFrustumVisual
         Graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
         Initialize();
     }
-
 }

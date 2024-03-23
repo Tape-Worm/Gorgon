@@ -23,7 +23,6 @@
 // Created: Saturday, June 18, 2011 10:35:53 AM
 // 
 
-
 using System.ComponentModel;
 using Gorgon.Native;
 using Gorgon.Windows.Properties;
@@ -71,8 +70,6 @@ public sealed class GorgonTimerQpc
     private long _currentTicks;
     // Number of microseconds elapsed.
     private double _microSeconds;
-
-
 
     /// <summary>
     /// Property to return the number of milliseconds elapsed since the timer was started.
@@ -128,9 +125,6 @@ public sealed class GorgonTimerQpc
     /// </summary>
     public bool IsHighResolution => true;
 
-
-
-
     /// <summary>
     /// Function to return the Query Performance Counter time.
     /// </summary>
@@ -169,5 +163,4 @@ public sealed class GorgonTimerQpc
         KernelApi.QueryPerformanceCounter(out _startTime);
         _queried = true;
     }
-
 }

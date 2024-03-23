@@ -23,7 +23,6 @@
 // Created: January 15, 2019 9:04:41 PM
 // 
 
-
 using System.ComponentModel;
 using Gorgon.Editor.ImageEditor.Properties;
 using Gorgon.Editor.UI;
@@ -38,7 +37,6 @@ namespace Gorgon.Editor.ImageEditor;
 internal partial class ImageResizeSettings
     : EditorSubPanelCommon, IDataContext<ICropResizeSettings>
 {
-
     /// <summary>Property to return the data context assigned to this view.</summary>
     /// <value>The data context.</value>
     [Browsable(false)]
@@ -47,8 +45,6 @@ internal partial class ImageResizeSettings
         get;
         private set;
     }
-
-
 
     /// <summary>
     /// Function to validate the state of the controls in the view.
@@ -71,7 +67,6 @@ internal partial class ImageResizeSettings
         RadioResize.Enabled = radioEnabled;
         LabelImageFilter.Visible = ComboImageFilter.Visible = CheckPreserveAspect.Visible = radioEnabled && RadioResize.Checked;
     }
-
 
     /// <summary>Handles the Click event of the CheckPreserveAspect control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -177,7 +172,6 @@ internal partial class ImageResizeSettings
 
         ViewModel.PropertyChanged -= DataContext_PropertyChanged;
     }
-
 
     /// <summary>
     /// Function called when the view should be reset by a <b>null</b> data context.
@@ -329,8 +323,6 @@ internal partial class ImageResizeSettings
         }
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="Editor.Views.ImageResizeSettings"/> class.</summary>
     public ImageResizeSettings()
     {
@@ -344,5 +336,4 @@ internal partial class ImageResizeSettings
             ComboImageFilter.Items.Add(filter);
         }
     }
-
 }

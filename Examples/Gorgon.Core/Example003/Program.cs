@@ -23,7 +23,6 @@
 // Created: Tuesday, September 18, 2012 8:00:02 PM
 // 
 
-
 using System.Drawing;
 using System.Windows.Forms;
 using Gorgon.Core;
@@ -60,8 +59,6 @@ internal static class Program
     private static IGorgonLog _log;
     // The current idle method.
     private static Func<bool> _currentIdle;
-
-
 
     /// <summary>
     /// Function that's called during idle time.
@@ -197,5 +194,4 @@ internal static class Program
             ex.Handle(e => GorgonDialogs.ErrorBox(null, e), GorgonApplication.Log);
         }
     }
-
 }

@@ -23,7 +23,6 @@
 // Created: April 28, 2019 8:34:21 PM
 // 
 
-
 namespace Gorgon.Editor.ExtractSpriteTool;
 
 /// <summary>

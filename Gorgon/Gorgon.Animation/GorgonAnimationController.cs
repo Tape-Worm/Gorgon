@@ -23,7 +23,6 @@
 // Created: Monday, September 3, 2012 7:46:31 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Animation.Properties;
 using Gorgon.Diagnostics;
@@ -119,8 +118,6 @@ where T : class
     // The list of registered track names that can be played with a given animation.
     private readonly List<GorgonTrackRegistration> _playableTracks = [];
 
-
-
     /// <summary>
     /// Property to return the list of available tracks used by this controller.
     /// </summary>
@@ -210,8 +207,6 @@ where T : class
             NotifyAnimation();
         }
     }
-
-
 
     /// <summary>
     /// Function to build up the playable track list.
@@ -657,5 +652,4 @@ where T : class
         _animatedObject = null;
         CurrentAnimation = null;
     }
-
 }

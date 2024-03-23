@@ -23,7 +23,6 @@
 // Created: May 15, 2020 10:52:06 PM
 // 
 
-
 using System.Buffers;
 using System.Numerics;
 using Gorgon.Diagnostics;
@@ -40,13 +39,10 @@ namespace Gorgon.Editor.SpriteEditor;
 internal class SpriteVertexEditContext
     : EditorContext<SpriteVertexEditContextParameters>, ISpriteVertexEditContext
 {
-
     /// <summary>
     /// The name of the viewer associated with this context.
     /// </summary>
     public const string ViewerName = "ContextCornerOffsets";
-
-
 
     // The sprite content view model that owns this view model.
     private ISpriteContent _spriteContent;
@@ -56,8 +52,6 @@ internal class SpriteVertexEditContext
     private int _selectedVertex = -1;
     // The list of vertices.
     private readonly Vector2[] _vertices = new Vector2[4];
-
-
 
     /// <summary>Property to set or return the vertex offset for the selected vertex.</summary>
     public Vector2 Offset
@@ -160,8 +154,6 @@ internal class SpriteVertexEditContext
         get;
     }
 
-
-
     /// <summary>
     /// Function to determine if the vertices can be reset to their original positions.
     /// </summary>
@@ -250,13 +242,10 @@ internal class SpriteVertexEditContext
         base.OnUnload();
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="SpriteVertexEditContext"/> class.</summary>
     public SpriteVertexEditContext()
     {
         ResetOffsetCommand = new EditorCommand<object>(DoReset, CanReset);
         CancelCommand = new EditorCommand<object>(DoCancel);
     }
-
 }

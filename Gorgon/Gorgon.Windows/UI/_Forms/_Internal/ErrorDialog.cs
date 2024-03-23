@@ -23,7 +23,6 @@
 // Created: Saturday, June 18, 2011 4:21:26 PM
 // 
 
-
 namespace Gorgon.UI;
 
 /// <summary>
@@ -35,8 +34,6 @@ internal partial class ErrorDialog
     private int _lastWidth;                 // Last used width.
     private string _errorDetails;           // Error details.
     private int _detailHeight;              // Height for details panel.
-
-
 
     /// <summary>
     /// Property to set or return whether to open the detail panel when the dialog is shown.
@@ -68,8 +65,6 @@ internal partial class ErrorDialog
             ValidateFunctions();
         }
     }
-
-
 
     /// <summary>
     /// Handles the Click event of the detailsButton control.
@@ -162,8 +157,6 @@ internal partial class ErrorDialog
         DrawMessage(g, maxTextHeight);
     }
 
-
-
     /// <summary>
     /// Constructor.
     /// </summary>
@@ -175,5 +168,4 @@ internal partial class ErrorDialog
         ShowDetailPanel = false;
         _errorDetails = "";
     }
-
 }

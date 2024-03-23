@@ -38,8 +38,6 @@ internal class FontGradientBrush
         ScaleAngle = false
     };
 
-
-
     /// <summary>Property to return whether the panel is modal.</summary>
     public override bool IsModal => true;
 
@@ -198,8 +196,6 @@ internal class FontGradientBrush
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to sort the node list.
@@ -518,8 +514,6 @@ internal class FontGradientBrush
     /// <param name="injectionParameters">The parameters to inject.</param>
     protected override void OnInitialize(HostedPanelViewModelParameters injectionParameters) => ExtractBrushData(DefaultBrush);
 
-
-
     /// <summary>Initializes a new instance of the <see cref="FontGradientBrush" /> class.</summary>
     public FontGradientBrush()
     {
@@ -531,5 +525,4 @@ internal class FontGradientBrush
         SetWeightCommand = new EditorCommand<float>(DoSetWeight, CanSetWeight);
         SetColorCommand = new EditorCommand<GorgonColor>(DoSetColor, CanSetColor);
     }
-
 }

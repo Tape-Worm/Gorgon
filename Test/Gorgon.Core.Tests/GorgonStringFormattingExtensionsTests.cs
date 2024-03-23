@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Buffers;
-using System.Collections.Generic;
-using System.Diagnostics.Eventing.Reader;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Linq;
 
 namespace Gorgon.Core.Tests;
@@ -51,8 +46,8 @@ public class GorgonStringFormattingExtensionsTests
   <Value>Value2</Value>
 </Root>";
 
-        XDocument document = new(new XDeclaration("1.0", "utf-8", "yes"), 
-                                                   new XElement("Root", 
+        XDocument document = new(new XDeclaration("1.0", "utf-8", "yes"),
+                                                   new XElement("Root",
                                                         new XElement("Value", "Value"),
                                                         new XElement("Value", "Value2")));
 

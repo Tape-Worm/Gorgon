@@ -23,7 +23,6 @@
 // Created: September 23, 2019 4:33:14 PM
 // 
 
-
 using Gorgon.Memory;
 
 namespace Gorgon.Renderers;
@@ -34,7 +33,6 @@ namespace Gorgon.Renderers;
 public class Gorgon2DBatchStatePoolAllocator
     : GorgonRingPool<Gorgon2DBatchState>
 {
-
     /// <summary>Initializes a new instance of the <see cref="Gorgon2DBatchStatePoolAllocator"/> class.</summary>
     /// <param name="objectCount">[Optional] The number of objects to initialize the pool with.</param>
     public Gorgon2DBatchStatePoolAllocator(int objectCount = 1024)

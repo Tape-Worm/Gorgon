@@ -28,8 +28,6 @@ public abstract class HostedPanelViewModelBase<T>
     // The command to execute when the OK button is clicked.
     private IEditorCommand<object> _okCommand;
 
-
-
     /// <summary>Property to set or return whether the panel is active or not.</summary>
     public bool IsActive
     {
@@ -78,8 +76,6 @@ public abstract class HostedPanelViewModelBase<T>
         }
     }
 
-
-
     /// <summary>
     /// Function to cancel the dimension change operation.
     /// </summary>
@@ -103,8 +99,6 @@ public abstract class HostedPanelViewModelBase<T>
     /// </summary>
     /// <returns><b>true</b> if the cancel operation was handled, or <b>false</b> if not.</returns>
     protected virtual bool OnCancel() => false;
-
-
 
     /// <summary>Initializes a new instance of the <see cref="HostedPanelViewModelBase{T}"/> class.</summary>
     protected HostedPanelViewModelBase() => CancelCommand = new EditorCommand<object>(DoCancel);

@@ -23,7 +23,6 @@
 // Created: April 8, 2018 8:17:22 PM
 // 
 
-
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Gorgon.Core;
@@ -44,13 +43,10 @@ namespace Gorgon.Graphics.Core;
 public sealed class GorgonTexture2D
     : GorgonGraphicsResource, IGorgonTexture2DInfo, IGorgonTextureResource, IGorgonSharedResource
 {
-
     /// <summary>
     /// The prefix used for generated names.
     /// </summary>
     internal const string NamePrefix = nameof(GorgonTexture2D);
-
-
 
     // Default texture loading options.
     private static readonly GorgonTexture2DLoadOptions _defaultLoadOptions = new();
@@ -78,8 +74,6 @@ public sealed class GorgonTexture2D
     private DXGI.Resource _sharedResource;
     // The keyed mutex for the shared resource.
     private DXGI.KeyedMutex _keyedMutex;
-
-
 
     /// <summary>
     /// Property to return the bind flags used for the D3D 11 resource.
@@ -221,8 +215,6 @@ public sealed class GorgonTexture2D
     /// Settings this flag to <b>true</b> allows the texture to be used with external graphics interfaces such as a Direct3D device. This is useful for providing interoperation between systems.
     /// </remarks>
     public TextureSharingOptions Shared => _info.Shared;
-
-
 
     /// <summary>
     /// Function to transfer texture data into an image buffer.
@@ -1534,7 +1526,6 @@ public sealed class GorgonTexture2D
                 MipCount = 1
             });
 
-
             // Copy the data from the texture.
             for (int i = index; i < image.ArrayCount; ++i)
             {
@@ -2327,8 +2318,6 @@ public sealed class GorgonTexture2D
     /// </remarks>
     void IGorgonSharedResource.Release(long key) => _keyedMutex?.Release(key);
 
-
-
     /// <summary>Initializes a new instance of the <see cref="GorgonTexture2D" /> class.</summary>
     /// <param name="graphics">The graphics interface used to create this texture.</param>
     /// <param name="surface">The pointer to an external rendering surface.</param>
@@ -2492,8 +2481,6 @@ public sealed class GorgonTexture2D
 
         SizeInBytes = CalculateSizeInBytes(_info);
 
-
         this.RegisterDisposable(graphics);
     }
-
 }

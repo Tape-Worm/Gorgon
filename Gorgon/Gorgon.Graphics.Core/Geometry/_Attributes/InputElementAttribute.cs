@@ -23,7 +23,6 @@
 // Created: Thursday, November 24, 2011 3:40:38 PM
 // 
 
-
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
@@ -91,7 +90,6 @@ namespace Gorgon.Graphics.Core;
 public class InputElementAttribute(string context, BufferFormat format, int offset)
         : Attribute
 {
-
     /// <summary>
     /// Property to return the explicit order of the field.
     /// </summary>
@@ -203,9 +201,6 @@ public class InputElementAttribute(string context, BufferFormat format, int offs
         set;
     } = 0;
 
-
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="InputElementAttribute"/> class.
     /// </summary>
@@ -224,5 +219,4 @@ public class InputElementAttribute(string context, BufferFormat format, int offs
         Offset = 0;
         AutoOffset = true;
     }
-
 }

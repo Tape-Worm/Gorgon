@@ -23,7 +23,6 @@
 // Created: July 22, 2017 10:31:48 AM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using D3D11 = SharpDX.Direct3D11;
@@ -82,7 +81,6 @@ public enum StructuredBufferReadWriteViewType
 public sealed class GorgonStructuredReadWriteView
     : GorgonBufferReadWriteViewCommon<GorgonBuffer>, IGorgonBufferInfo
 {
-
     /// <summary>
     /// Property to return the size of an element, in bytes.
     /// </summary>
@@ -160,8 +158,6 @@ public sealed class GorgonStructuredReadWriteView
     /// </summary>
     string IGorgonNamedObject.Name => Buffer?.Name;
 
-
-
     /// <summary>Function to retrieve the necessary parameters to create the native view.</summary>
     /// <returns>The D3D11 UAV descriptor.</returns>
     private protected override ref readonly D3D11.UnorderedAccessViewDescription1 OnGetUavParams()
@@ -210,8 +206,6 @@ public sealed class GorgonStructuredReadWriteView
 
         buffer.Graphics.D3DDeviceContext.CopyStructureCount(buffer.Native, offset, Native);
     }
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonStructuredReadWriteView"/> class.

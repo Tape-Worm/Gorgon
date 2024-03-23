@@ -24,7 +24,6 @@
 // 
 // This code was adapted from the stack overflow answer at http://stackoverflow.com/questions/254129/how-to-i-display-a-sort-arrow-in-the-header-of-a-list-view-column-using-c
 
-
 using Gorgon.Core;
 using Gorgon.Native;
 
@@ -49,7 +48,6 @@ public static class GorgonListViewExtensions
     // Flag to make the column sort descending.
     private const int HeaderSortUp = 0x400;
 
-
     /// <summary>
     /// Function to retrieve the boundaries for the header on a list view.
     /// </summary>
@@ -72,7 +70,6 @@ public static class GorgonListViewExtensions
 
         return listView.RectangleToClient(Rectangle.FromLTRB(winRect.left, winRect.top, winRect.right, winRect.bottom));
     }
-
 
     /// <summary>
     /// Function to paint the non-client area of the list view header with a specific color.

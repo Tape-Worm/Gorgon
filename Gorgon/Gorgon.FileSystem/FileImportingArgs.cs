@@ -23,7 +23,6 @@
 // Created: January 25, 2020 10:56:15 AM
 // 
 
-
 namespace Gorgon.IO;
 
 /// <summary>
@@ -32,7 +31,6 @@ namespace Gorgon.IO;
 public class FileImportingArgs
     : EventArgs
 {
-
     /// <summary>
     /// Property to set or return the physical file path of the file being imported.
     /// </summary>
@@ -41,5 +39,4 @@ public class FileImportingArgs
         get;
         set;
     }
-
 }

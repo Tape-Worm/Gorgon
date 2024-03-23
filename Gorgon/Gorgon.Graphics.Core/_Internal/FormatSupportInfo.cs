@@ -23,7 +23,6 @@
 // Created: November 21, 2017 8:44:47 PM
 // 
 
-
 using Gorgon.Graphics.Imaging;
 using D3D11 = SharpDX.Direct3D11;
 
@@ -44,7 +43,6 @@ internal class FormatSupportInfo(BufferFormat format,
                                  D3D11.ComputeShaderFormatSupport computeSupport,
                                  GorgonMultisampleInfo multisampleMax) : IGorgonFormatSupportInfo
 {
-
     /// <summary>
     /// Property to return the format that is being queried for support.
     /// </summary>
@@ -102,9 +100,6 @@ internal class FormatSupportInfo(BufferFormat format,
         get;
     } = multisampleMax;
 
-
-
-
     /// <summary>
     /// Function to determine if a format is suitable for the texture type specified by <see cref="ImageDataType"/>.
     /// </summary>
@@ -118,6 +113,5 @@ internal class FormatSupportInfo(BufferFormat format,
         ImageDataType.ImageCube => (FormatSupport & BufferFormatSupport.TextureCube) == BufferFormatSupport.TextureCube,
         _ => false,
     };
-
 
 }

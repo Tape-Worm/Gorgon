@@ -23,7 +23,6 @@
 // Created: August 3, 2020 3:51:47 PM
 // 
 
-
 using System.Text;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
@@ -67,8 +66,6 @@ internal class TextContent
     private TextEditorService _textEditor;
     // The service used for providing undo/redo functionality.
     private IUndoService _undoService;
-
-
 
     /// <summary>
     /// Property to return the view model for the text color editor.
@@ -237,8 +234,6 @@ internal class TextContent
         get;
     }
 
-
-
     /// <summary>Handles the PropertyChanged event of the TextColor control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
@@ -297,7 +292,6 @@ internal class TextContent
             File.IsOpen = true;
         }
     }
-
 
     /// <summary>
     /// Function to determine if the text can be changed or not.
@@ -474,7 +468,6 @@ internal class TextContent
         }
     }
 
-
     /// <summary>
     /// Function to determine if an undo operation is possible.
     /// </summary>
@@ -591,7 +584,6 @@ internal class TextContent
         _color = GorgonColor.FromARGB(colorValue);
     }
 
-
     /// <summary>Function called when the associated view is loaded.</summary>
     /// <remarks>
     ///   <para>
@@ -612,7 +604,6 @@ internal class TextContent
         TextColor.OkCommand = new EditorCommand<object>(DoSetColor, CanSetColor);
     }
 
-
     /// <summary>Function called when the associated view is unloaded.</summary>
     /// <remarks>This method is used to perform tear down and clean up of resources.</remarks>
     /// <seealso cref="ViewModelBase{T, THs}.Load" />
@@ -625,8 +616,6 @@ internal class TextContent
         base.OnUnload();
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="TextContent"/> class.</summary>
     public TextContent()
     {
@@ -636,5 +625,4 @@ internal class TextContent
         UndoCommand = new EditorCommand<object>(DoUndoAsync, CanUndo);
         RedoCommand = new EditorCommand<object>(DoRedoAsync, CanRedo);
     }
-
 }

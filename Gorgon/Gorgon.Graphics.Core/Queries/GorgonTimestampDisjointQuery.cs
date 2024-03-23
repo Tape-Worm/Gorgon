@@ -23,7 +23,6 @@
 // Created: January 16, 2021 1:57:57 PM
 // 
 
-
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core;
@@ -37,11 +36,8 @@ namespace Gorgon.Graphics.Core;
 public class GorgonTimestampDisjointQuery(GorgonGraphics graphics, string name = null)
         : GorgonQuery<GorgonTimestampDisjointResult>(graphics, name)
 {
-
     /// <summary>Property to return the type of query to execute.</summary>
     public override QueryType QueryType => QueryType.TimestampDisjoint;
-
-
 
     /// <summary>
     /// Function to retrieve the result data for the query.
@@ -59,6 +55,4 @@ public class GorgonTimestampDisjointQuery(GorgonGraphics graphics, string name =
         result = new GorgonTimestampDisjointResult(data);
         return true;
     }
-
-
 }

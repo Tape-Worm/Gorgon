@@ -23,7 +23,6 @@
 // Created: Monday, January 21, 2013 9:03:04 AM
 // 
 
-
 using System.Buffers;
 using System.Globalization;
 using Gorgon.Core;
@@ -47,8 +46,6 @@ public static class GorgonIOExtensions
     private static readonly char[] _illegalPathChars = Path.GetInvalidPathChars();
     // Illegal file name characters.
     private static readonly char[] _illegalFileChars = Path.GetInvalidFileNameChars();
-
-
 
     /// <summary>
     /// Function to read data into a span from a stream.
@@ -87,7 +84,7 @@ public static class GorgonIOExtensions
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
     public static void Write(this Stream stream, ReadOnlySpan<byte> buffer)
     {
-        ArgumentNullException.ThrowIfNull(stream);        
+        ArgumentNullException.ThrowIfNull(stream);
 
         ArrayPool<byte> pool = GorgonArrayPool<byte>.GetBestPool(buffer.Length);
         byte[] writeBuffer = pool.Rent(buffer.Length);
@@ -169,7 +166,7 @@ public static class GorgonIOExtensions
     /// </remarks>
     public static int CopyToStream(this Stream stream, Stream destination, int count, byte[] buffer)
     {
-        ArgumentNullException.ThrowIfNull(stream);               
+        ArgumentNullException.ThrowIfNull(stream);
         ArgumentNullException.ThrowIfNull(destination);
         ArgumentNullException.ThrowIfNull(buffer);
 
@@ -360,7 +357,7 @@ public static class GorgonIOExtensions
     {
         int stringLength = 0;
 
-        ArgumentNullException.ThrowIfNull(stream);        
+        ArgumentNullException.ThrowIfNull(stream);
 
         encoding ??= Encoding.UTF8;
 
@@ -741,5 +738,4 @@ public static class GorgonIOExtensions
                | ((ulong)((byte)chunkName[1]) << 8)
                | (byte)chunkName[0];
     }
-
 }

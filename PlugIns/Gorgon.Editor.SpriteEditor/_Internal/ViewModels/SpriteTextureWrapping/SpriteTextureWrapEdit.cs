@@ -23,7 +23,6 @@
 // Created: May 22, 2020 7:15:42 PM
 // 
 
-
 using Gorgon.Editor.SpriteEditor.Properties;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
@@ -48,8 +47,6 @@ internal class SpriteTextureWrapEdit
     private TextureWrap _vWrap = TextureWrap.Clamp;
     // The current color for the border.
     private GorgonColor _border = GorgonColors.White;
-
-
 
     /// <summary>Property to return whether the panel is modal.</summary>
     public override bool IsModal => false;
@@ -130,8 +127,6 @@ internal class SpriteTextureWrapEdit
             OnPropertyChanged();
         }
     }
-
-
 
     /// <summary>
     /// Function to build a sampler based on state.

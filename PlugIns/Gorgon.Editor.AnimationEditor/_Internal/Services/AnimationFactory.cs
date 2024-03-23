@@ -23,7 +23,6 @@
 // Created: June 24, 2020 2:54:40 PM
 // 
 
-
 using System.Buffers;
 using System.Numerics;
 using Gorgon.Animation;
@@ -40,8 +39,6 @@ internal static class AnimationFactory
 
     // The builder used to create the animation.
     private static readonly GorgonAnimationBuilder _builder = new();
-
-
 
     /// <summary>
     /// Function to build animation tracks for single floating point value manipualtion.
@@ -290,5 +287,4 @@ internal static class AnimationFactory
 
         return result;
     }
-
 }

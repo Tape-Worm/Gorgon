@@ -23,7 +23,6 @@
 // Created: August 5, 2020 8:33:33 PM
 // 
 
-
 using Gorgon.Editor.UI;
 
 namespace Gorgon.Examples;
@@ -37,8 +36,6 @@ internal class Settings
 
     // The settings data for the plug in.
     private TextContentSettings _settings;
-
-
 
     /// <summary>Property to set or return the default font face.</summary>
     public FontFace DefaultFont
@@ -59,8 +56,6 @@ internal class Settings
 
     /// <summary>Property to return the name of this object.</summary>
     public override string Name => "Example Plug in - Text Content";
-
-
 
     /// <summary>Function to inject dependencies for the view model.</summary>
     /// <param name="injectionParameters">The parameters to inject.</param>

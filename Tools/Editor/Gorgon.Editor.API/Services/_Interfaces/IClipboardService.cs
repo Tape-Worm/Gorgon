@@ -23,8 +23,6 @@
 // Created: September 19, 2018 8:08:47 PM
 // 
 
-
-
 namespace Gorgon.Editor.Services;
 
 /// <summary>
@@ -32,7 +30,6 @@ namespace Gorgon.Editor.Services;
 /// </summary>
 public interface IClipboardService
 {
-
     /// <summary>
     /// Property to return whether or not there is data on the clipboard.
     /// </summary>
@@ -40,8 +37,6 @@ public interface IClipboardService
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to return whether or not the data on the clipboard is of the type specified.

@@ -23,7 +23,6 @@
 // Created: December 5, 2018 9:37:55 PM
 // 
 
-
 using System.ComponentModel;
 using Gorgon.Editor.UI.Views;
 
@@ -35,7 +34,6 @@ namespace Gorgon.Editor.Views;
 internal partial class Stage
     : EditorBaseControl
 {
-
     /// <summary>
     /// Event triggered when the back button is clicked.
     /// </summary>
@@ -53,12 +51,8 @@ internal partial class Stage
     /// </summary>
     public event EventHandler<SaveEventArgs> SaveClicked;
 
-
-
     // Flag to indicate that we're in start up mode.
     private bool _isStartup = true;
-
-
 
     /// <summary>
     /// Property to set or return whether the stage should be shown in start up configuration or not.
@@ -95,8 +89,6 @@ internal partial class Stage
         get => ButtonOpenPackFile.Enabled;
         set => ButtonOpenPackFile.Enabled = value;
     }
-
-
 
     /// <summary>Function to update the current view state.</summary>
     private void SetViewState()
@@ -177,8 +169,6 @@ internal partial class Stage
             CheckNew.PerformClick();
         }
     }
-
-
 
     /// <summary>Initializes a new instance of the <see cref="Stage"/> class.</summary>
     public Stage() => InitializeComponent();

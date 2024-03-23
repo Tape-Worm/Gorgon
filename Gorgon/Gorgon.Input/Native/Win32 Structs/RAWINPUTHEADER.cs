@@ -23,7 +23,6 @@
 // Created: Wednesday, August 12, 2015 11:52:01 PM
 // 
 
-
 using System.Runtime.InteropServices;
 using Gorgon.Input;
 

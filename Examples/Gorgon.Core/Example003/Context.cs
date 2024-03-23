@@ -23,7 +23,6 @@
 // Created: Tuesday, September 18, 2012 8:03:43 PM
 // 
 
-
 using System.Drawing;
 using System.Windows.Forms;
 using Gorgon.Diagnostics;
@@ -44,8 +43,6 @@ internal class Context
     private readonly IGorgonTimer _timer;
     // A splash screen.
     private FormSplash _splashScreen;
-
-
 
     /// <summary>
     /// Handles the KeyDown event of the MainForm control.

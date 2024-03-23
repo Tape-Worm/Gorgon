@@ -23,7 +23,6 @@
 // Created: August 1, 2017 9:35:50 PM
 // 
 
-
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Gorgon.Examples.Properties;
@@ -74,8 +73,6 @@ internal class Program
     // The maximum number of elements to send and receive.
     private const int MaxValues = 10000;
 
-
-
     // The graphics device used to by the compute engine.
     private static GorgonGraphics _graphics;
     // The compute shader to run.
@@ -90,8 +87,6 @@ internal class Program
     private static GorgonComputeEngine _engine;
     // The dispatch call builder.
     private static readonly GorgonDispatchCallBuilder _dispatchBuilder = new();
-
-
 
     /// <summary>
     /// A function to create our input/input buffers and populate the input buffers with the data to send to the GPU.
@@ -191,7 +186,7 @@ internal class Program
     private static OutputData[] Execute()
     {
         // The first step is to provide the compute shader with the information it needs to do its job.
-        GorgonReadWriteViewBinding resourceView = new (_outputBuffer.GetStructuredReadWriteView());
+        GorgonReadWriteViewBinding resourceView = new(_outputBuffer.GetStructuredReadWriteView());
         GorgonDispatchCall dispatch = _dispatchBuilder.ShaderResource(_intBuffer.GetShaderResourceView(BufferFormat.R32_SInt))
                                                       .ShaderResource(_floatBuffer.GetShaderResourceView(BufferFormat.R32_Float), 1)
                                                       .ReadWriteView(in resourceView)
@@ -314,5 +309,4 @@ internal class Program
         Console.WriteLine("Press any key to exit.");
         Console.ReadKey();
     }
-
 }

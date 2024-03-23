@@ -23,7 +23,6 @@
 // Created: June 29, 2016 8:42:51 PM
 // 
 
-
 using Gorgon.Configuration;
 
 namespace Gorgon.Graphics.Imaging.Codecs;

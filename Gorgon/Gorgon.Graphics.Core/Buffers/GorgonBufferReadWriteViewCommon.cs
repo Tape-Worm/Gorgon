@@ -23,7 +23,6 @@
 // Created: July 22, 2017 10:31:48 AM
 // 
 
-
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
@@ -59,7 +58,6 @@ public abstract class GorgonBufferReadWriteViewCommon<T>(T buffer, int elementSt
     : GorgonReadWriteView(buffer)
     where T : GorgonBufferCommon
 {
-
     /// <summary>
     /// Property to return the buffer associated with this view.
     /// </summary>
@@ -100,6 +98,4 @@ public abstract class GorgonBufferReadWriteViewCommon<T>(T buffer, int elementSt
     {
         get;
     }
-
-
 }

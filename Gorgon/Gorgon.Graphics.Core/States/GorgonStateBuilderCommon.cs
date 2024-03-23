@@ -23,7 +23,6 @@
 // Created: May 23, 2018 12:18:45 PM
 // 
 
-
 using Gorgon.Patterns;
 
 namespace Gorgon.Graphics.Core;
@@ -38,7 +37,6 @@ public abstract class GorgonStateBuilderCommon<TB, TRs>
     where TB : GorgonStateBuilderCommon<TB, TRs>
     where TRs : class
 {
-
     /// <summary>
     /// Property to set or return the state being edited.
     /// </summary>
@@ -46,8 +44,6 @@ public abstract class GorgonStateBuilderCommon<TB, TRs>
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to create a new state with the properties copied from the working copy.
@@ -86,8 +82,6 @@ public abstract class GorgonStateBuilderCommon<TB, TRs>
     /// </summary>
     /// <returns>The fluent builder interface.</returns>
     public TB Clear() => OnClearState();
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonStateBuilderCommon{TB,TRs}"/> class.

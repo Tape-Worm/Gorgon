@@ -23,7 +23,6 @@
 // Created: July 4, 2016 9:16:56 PM
 // 
 
-
 using Gorgon.Collections;
 using D3D11 = SharpDX.Direct3D11;
 
@@ -63,8 +62,6 @@ public class GorgonPipelineState
     private GorgonHullShader _hullShader;
     // Topology.
     private PrimitiveType _primitiveType;
-
-
 
     /// <summary>
     /// Property to set or return the states that have been updated in this pipeline state.
@@ -316,8 +313,6 @@ public class GorgonPipelineState
     /// </summary>
     public IGorgonReadOnlyArray<GorgonBlendState> BlendStates => RwBlendStates;
 
-
-
     /// <summary>
     /// Function to clear the pipeline state.
     /// </summary>
@@ -369,8 +364,6 @@ public class GorgonPipelineState
         state.D3DRasterState = D3DRasterState;
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonPipelineState"/> class.
     /// </summary>
@@ -383,5 +376,4 @@ public class GorgonPipelineState
     internal GorgonPipelineState()
     {
     }
-
 }

@@ -23,7 +23,6 @@
 // Created: March 28, 2019 9:48:28 AM
 // 
 
-
 using System.ComponentModel;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Controls;
@@ -46,7 +45,6 @@ namespace Gorgon.Examples;
 internal partial class TextColorView
     : EditorSubPanelCommon, IDataContext<ITextColor>
 {
-
     /// <summary>
     /// Property to return the data context for the view.
     /// </summary>
@@ -56,8 +54,6 @@ internal partial class TextColorView
         get;
         private set;
     }
-
-
 
     /// <summary>Handles the ColorChanged event of the Picker control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -217,8 +213,6 @@ internal partial class TextColorView
 
         ViewModel.PropertyChanged += DataContext_PropertyChanged;
     }
-
-
 
     /// <summary>Initializes a new instance of the <see cref="TextColorView"/> class.</summary>
     public TextColorView() => InitializeComponent();

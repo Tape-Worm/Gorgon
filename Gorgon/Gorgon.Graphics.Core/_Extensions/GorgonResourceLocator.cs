@@ -23,7 +23,6 @@
 // Created: August 11, 2018 1:54:00 PM
 // 
 
-
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
@@ -70,7 +69,6 @@ public enum LocateFilterType
 /// </summary>
 public static class GorgonResourceLocator
 {
-
     /// <summary>
     /// Function to perform a comparison of an item name to the name specified, using the filter type specified.
     /// </summary>
@@ -124,7 +122,6 @@ public static class GorgonResourceLocator
         {
             throw new ArgumentNullException(nameof(graphics));
         }
-
 
         if (string.IsNullOrWhiteSpace(name))
         {

@@ -23,7 +23,6 @@
 // Created: March 22, 2018 11:38:18 AM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Diagnostics.LogProviders;
 
@@ -35,7 +34,6 @@ namespace Gorgon.Diagnostics;
 public class GorgonLogConsole
     : GorgonLog
 {
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonLog"/> class.
     /// </summary>

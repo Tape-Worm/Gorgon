@@ -23,7 +23,6 @@
 // Created: Saturday, October 12, 2013 9:03:05 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.IO;
 
@@ -62,7 +61,6 @@ public enum GlyphBrushType
 public abstract class GorgonGlyphBrush
     : IGorgonCloneable<GorgonGlyphBrush>, IEquatable<GorgonGlyphBrush>
 {
-
     /// <summary>
     /// Property to return the type of brush.
     /// </summary>
@@ -70,8 +68,6 @@ public abstract class GorgonGlyphBrush
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to convert this brush to the equivalent GDI+ brush type.

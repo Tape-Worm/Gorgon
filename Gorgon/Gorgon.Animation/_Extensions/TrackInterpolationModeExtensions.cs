@@ -23,7 +23,6 @@
 // Created: March 4, 2021 12:45:19 AM
 // 
 
-
 using Gorgon.Animation.Properties;
 
 namespace Gorgon.Animation;
@@ -65,7 +64,6 @@ public static class TrackInterpolationModeExtensions
             }
         }
     }
-
 
     /// <summary>
     /// Function to get a the <see cref="TrackInterpolationMode"/> from a culture sensitive string.

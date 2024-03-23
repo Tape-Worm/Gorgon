@@ -23,7 +23,6 @@
 // Created: August 3, 2020 3:45:05 PM
 // 
 
-
 using System.ComponentModel;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.Services;
@@ -50,8 +49,6 @@ internal partial class FontContentView
     // The form containing the ribbon used to merge with the application ribbon.
     private readonly FormRibbon _ribbonForm;
 
-
-
     /// <summary>
     /// Property to set or return the font factory for our fonts.
     /// </summary>
@@ -68,8 +65,6 @@ internal partial class FontContentView
         get;
         private set;
     }
-
-
 
     /// <summary>
     /// Function to validate the controls on the view.
@@ -275,8 +270,6 @@ internal partial class FontContentView
         FontTextureBrush.SetDataContext(dataContext?.TextureEditor.TextureBrush);
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="FontContentView"/> class.</summary>
     public FontContentView()
     {
@@ -294,5 +287,4 @@ internal partial class FontContentView
         RegisterChildPanel(typeof(FontGradientBrush).FullName, FontGradientBrush);
         RegisterChildPanel(typeof(FontTextureBrush).FullName, FontTextureBrush);
     }
-
 }

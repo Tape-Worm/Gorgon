@@ -23,7 +23,6 @@
 // Created: August 29, 2018 8:19:12 PM
 // 
 
-
 using Gorgon.Editor.Metadata;
 using Newtonsoft.Json;
 
@@ -35,11 +34,6 @@ namespace Gorgon.Editor.ProjectData;
 internal class Project
     : IProject
 {
-
-
-
-
-
     /// <summary>
     /// Property to return the version for the project file.
     /// </summary>
@@ -116,8 +110,6 @@ internal class Project
         private set;
     } = new Dictionary<string, ProjectItemMetadata>(StringComparer.OrdinalIgnoreCase);
 
-
-
     /// <summary>Initializes a new instance of the Project class.</summary>
     [JsonConstructor]
     public Project()
@@ -173,5 +165,4 @@ internal class Project
         FileSystemDirectory = fileSystemDir ?? throw new ArgumentNullException(nameof(fileSystemDir));
         SourceDirectory = srcDirectory ?? throw new ArgumentNullException(nameof(srcDirectory));
     }
-
 }

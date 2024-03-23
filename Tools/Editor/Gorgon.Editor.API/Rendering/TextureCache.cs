@@ -23,7 +23,6 @@
 // Created: June 21, 2020 12:18:20 AM
 // 
 
-
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.Properties;
@@ -33,7 +32,6 @@ using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
 
 namespace Gorgon.Editor.Rendering;
-
 
 /// <summary>
 /// A texture cache used to keep textures resident for use over a user defined lifetime
@@ -64,7 +62,6 @@ namespace Gorgon.Editor.Rendering;
 public class TextureCache(GorgonGraphics graphics, IContentFileManager fileManager, IGorgonFileSystemWriter<Stream> tempWriter, IGorgonImageCodec codec, IGorgonLog log)
         : ITextureCache
 {
-
     /// <summary>
     /// An entry in the texture cache.
     /// </summary>
@@ -102,12 +99,8 @@ public class TextureCache(GorgonGraphics graphics, IContentFileManager fileManag
         }
     }
 
-
-
     // The path to the texture cache directory.
     private const string CacheDirectory = "/Gorgon.Editor/TextureCache/";
-
-
 
     // The graphics interface used to create the textures.
     private readonly GorgonGraphics _graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
@@ -123,8 +116,6 @@ public class TextureCache(GorgonGraphics graphics, IContentFileManager fileManag
     private IGorgonVirtualDirectory _cacheDirectory;
     // The log interface for capturing debug messages.
     private readonly IGorgonLog _log = log ?? throw new ArgumentNullException(nameof(log));
-
-
 
     /// <summary>
     /// Function to load a texture for the texture cache.
@@ -556,6 +547,4 @@ public class TextureCache(GorgonGraphics graphics, IContentFileManager fileManag
 
         return entry.Users;
     }
-
-
 }

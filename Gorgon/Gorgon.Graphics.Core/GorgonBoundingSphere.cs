@@ -23,7 +23,6 @@
 // Created: February 12, 2021 1:49:23 PM
 // 
 
-
 // Copyright (c) 2010-2014 SharpDX - Alexandre Mutel
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -69,16 +68,14 @@
 * THE SOFTWARE.
 */
 
-
-using System.ComponentModel;
 using System.Globalization;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using Gorgon.Graphics.Core.Properties;
 using Gorgon.Math;
-using Gorgon.Properties;
 
-namespace Gorgon.Renderers.Data;
+namespace Gorgon.Graphics.Core;
 
 /// <summary>
 /// Represents a bounding sphere in three dimensional space
@@ -117,7 +114,7 @@ public readonly struct GorgonBoundingSphere(Vector3 center, float radius)
     /// </summary>
     /// <param name="points">The points that will be contained by the sphere.</param>
     /// <returns>When the method completes, contains the newly constructed bounding sphere.</returns>
-    public static GorgonBoundingSphere FromPoints(Span<Vector3> points)
+    public static GorgonBoundingSphere FromPoints(ReadOnlySpan<Vector3> points)
     {
         if (points.IsEmpty)
         {
@@ -226,7 +223,7 @@ public readonly struct GorgonBoundingSphere(Vector3 center, float radius)
     /// <returns>
     /// A <see cref="string"/> that represents this instance.
     /// </returns>
-    public override string ToString() => string.Format(CultureInfo.CurrentCulture, Resources.GOR_TOSTR_BOUNDING_SPHERE, Center.X, Center.Y, Center.Z, Radius);
+    public override string ToString() => string.Format(CultureInfo.CurrentCulture, Resources.GORGFX_TOSTR_BOUNDING_SPHERE, Center.X, Center.Y, Center.Z, Radius);
 
     /// <summary>
     /// Returns a hash code for this instance.
@@ -265,8 +262,7 @@ public readonly struct GorgonBoundingSphere(Vector3 center, float radius)
 
     /// <summary>Deconstructs this instance.</summary>
     /// <param name="center">The center of the sphere.</param>
-    /// <param name="radius">The radius of the sphere.</param>
-    [EditorBrowsable(EditorBrowsableState.Never)]
+    /// <param name="radius">The radius of the sphere.</param>    
     public void Deconstruct(out Vector3 center, out float radius)
     {
         center = Center;

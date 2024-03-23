@@ -23,7 +23,6 @@
 // Created: Saturday, September 19, 2015 11:40:28 PM
 // 
 
-
 namespace Gorgon.IO.Providers;
 
 /// <summary>
@@ -31,7 +30,6 @@ namespace Gorgon.IO.Providers;
 /// </summary>
 public interface IGorgonPhysicalFileInfo
 {
-
     /// <summary>
     /// Property to return the full path to the physical file.
     /// </summary>
@@ -131,8 +129,6 @@ public interface IGorgonPhysicalFileInfo
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to refresh the file information.

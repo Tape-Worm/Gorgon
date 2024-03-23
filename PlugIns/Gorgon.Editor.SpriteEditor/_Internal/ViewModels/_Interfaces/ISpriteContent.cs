@@ -23,7 +23,6 @@
 // Created: March 14, 2019 11:39:34 AM
 // 
 
-
 using System.Numerics;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
@@ -37,7 +36,6 @@ namespace Gorgon.Editor.SpriteEditor;
 internal interface ISpriteContent
     : IVisualEditorContent, IUndoHandler, ISpriteInfo
 {
-
     /// <summary>
     /// Property to return the editor used to modify the texture wrapping state for a sprite.
     /// </summary>
@@ -238,5 +236,4 @@ internal interface ISpriteContent
     {
         get;
     }
-
 }

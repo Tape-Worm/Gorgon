@@ -23,7 +23,6 @@
 // Created: February 8, 2017 7:22:29 PM
 // 
 
-
 using System.Collections;
 using System.Runtime.CompilerServices;
 using Gorgon.Graphics;
@@ -39,8 +38,6 @@ public class GorgonSpriteColors
 
     // The renderable that owns this object.
     private readonly BatchRenderable _renderable;
-
-
 
     /// <summary>
     /// Property to set or return the corner color by index.
@@ -160,8 +157,6 @@ public class GorgonSpriteColors
     /// <summary>Gets the number of elements in the collection.</summary>
     public int Count => 4;
 
-
-
     /// <summary>
     /// Function to assign a single color to all corners.
     /// </summary>
@@ -223,8 +218,6 @@ public class GorgonSpriteColors
         }
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonSpriteColors"/> class.
     /// </summary>
@@ -235,5 +228,4 @@ public class GorgonSpriteColors
         _renderable = renderable;
         SetAll(defaultColor);
     }
-
 }

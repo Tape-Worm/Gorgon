@@ -23,7 +23,6 @@
 // Created: November 17, 2018 6:57:44 PM
 // 
 
-
 namespace Gorgon.Editor.UI;
 
 /// <summary>
@@ -31,7 +30,6 @@ namespace Gorgon.Editor.UI;
 /// </summary>
 public interface IUndoHandler
 {
-
     /// <summary>
     /// Property to return the command to undo an operation.
     /// </summary>
@@ -47,5 +45,4 @@ public interface IUndoHandler
     {
         get;
     }
-
 }

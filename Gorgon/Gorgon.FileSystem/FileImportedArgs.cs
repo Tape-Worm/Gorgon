@@ -23,7 +23,6 @@
 // Created: January 25, 2020 10:56:15 AM
 // 
 
-
 namespace Gorgon.IO;
 
 /// <summary>
@@ -35,7 +34,6 @@ namespace Gorgon.IO;
 public class FileImportedArgs(string physicalFilePath, IGorgonVirtualFile virtualFile)
         : EventArgs
 {
-
     /// <summary>
     /// Property to return the physical file path of the file being imported.
     /// </summary>
@@ -51,8 +49,5 @@ public class FileImportedArgs(string physicalFilePath, IGorgonVirtualFile virtua
     {
         get;
     } = virtualFile;
-
-
-
 
 }

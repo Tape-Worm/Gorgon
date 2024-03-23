@@ -23,7 +23,6 @@
 // Created: Wednesday, November 23, 2011 9:54:30 AM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 using SharpDX.DXGI;
@@ -45,7 +44,6 @@ namespace Gorgon.Graphics.Core;
 public readonly struct GorgonInputElement
     : IGorgonNamedObject, IGorgonEquatableByRef<GorgonInputElement>
 {
-
     /// <summary>
     /// The Direct 3D 11 Input Element that is wrapped by this type.
     /// </summary>
@@ -60,8 +58,6 @@ public readonly struct GorgonInputElement
     /// </para>
     /// </remarks>
     public readonly int SizeInBytes;
-
-
 
     /// <summary>
     /// Property to return the name of this object.
@@ -142,8 +138,6 @@ public readonly struct GorgonInputElement
     /// </remarks>
     public int InstanceCount => D3DInputElement.Classification == D3D11.InputClassification.PerInstanceData ? D3DInputElement.InstanceDataStepRate : 0;
 
-
-
     /// <summary>
     /// Determines whether the specified <see cref="object"/> is equal to this instance.
     /// </summary>
@@ -207,8 +201,6 @@ public readonly struct GorgonInputElement
     /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
     public bool Equals(ref readonly GorgonInputElement other) => Equals(in this, in other);
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonInputElement"/> class.
     /// </summary>
@@ -262,5 +254,4 @@ public readonly struct GorgonInputElement
                                                  instanced ? instanceCount : 0);
         SizeInBytes = formatInfo.SizeInBytes;
     }
-
 }

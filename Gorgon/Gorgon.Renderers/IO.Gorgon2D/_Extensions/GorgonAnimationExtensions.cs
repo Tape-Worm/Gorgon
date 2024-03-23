@@ -23,7 +23,6 @@
 // Created: August 25, 2018 10:21:07 PM
 // 
 
-
 using Gorgon.Animation;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -35,7 +34,6 @@ namespace Gorgon.IO;
 /// </summary>
 public static class GorgonAnimationExtensions
 {
-
     /// <summary>
     /// The property name for the header value.
     /// </summary>
@@ -44,8 +42,6 @@ public static class GorgonAnimationExtensions
     /// The property name for the header value.
     /// </summary>
     internal const string JsonVersionProp = "version";
-
-
 
     /// <summary>
     /// Function to convert a <see cref="IGorgonAnimation"/> to a JSON string.
@@ -84,5 +80,4 @@ public static class GorgonAnimationExtensions
 
         return jsonObj.ToString(prettyFormat ? Formatting.Indented : Formatting.None);
     }
-
 }

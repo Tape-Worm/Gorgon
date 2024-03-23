@@ -23,7 +23,6 @@
 // Created: August 26, 2018 12:07:23 PM
 // 
 
-
 using System.ComponentModel;
 
 namespace Gorgon.Editor.UI;
@@ -57,7 +56,6 @@ namespace Gorgon.Editor.UI;
 public interface IDataContext<T>
     where T : class, IViewModel
 {
-
     /// <summary>
     /// Property to return the data context assigned to this view.
     /// </summary>
@@ -65,8 +63,6 @@ public interface IDataContext<T>
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to assign a data context to the view as a view model.

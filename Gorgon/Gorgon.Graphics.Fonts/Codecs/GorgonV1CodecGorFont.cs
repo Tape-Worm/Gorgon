@@ -23,7 +23,6 @@
 // Created: February 23, 2017 11:39:19 PM
 // 
 
-
 using Gorgon.Graphics.Fonts.Properties;
 using Gorgon.IO;
 
@@ -47,8 +46,6 @@ public sealed class GorgonV1CodecGorFont
     private const string FontInfoChunk = "FONTINFO";
     // Header for a Gorgon font file.
     private const string FileHeader = "GORFNT10";
-
-
 
     /// <summary>
     /// Property to return the default filename extension for font files.
@@ -85,8 +82,6 @@ public sealed class GorgonV1CodecGorFont
     /// Property to return the abbreviated name of the codec (e.g. GorFont).
     /// </summary>
     public override string Codec => "GorFont";
-
-
 
     /// <summary>
     /// Function to read the chunk containing the font information.
@@ -231,7 +226,6 @@ public sealed class GorgonV1CodecGorFont
                                                  ]);
         GorgonFontInfo fontInfo = null;
 
-
         try
         {
             fontFile.Open();
@@ -334,8 +328,6 @@ public sealed class GorgonV1CodecGorFont
             stream.Position = position;
         }
     }
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonV1CodecGorFont"/> class.

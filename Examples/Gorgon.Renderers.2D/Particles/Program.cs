@@ -23,7 +23,6 @@
 // Created: August 16, 2020 11:22:55 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Graphics;
@@ -62,8 +61,6 @@ static class Program
     private static bool _showHelp = true;
     // Particles emit an explosion effect.
     private static bool _explosion = true;
-
-
 
     /// <summary>
     /// Function to update the emitter to change the particle effect.
@@ -339,5 +336,4 @@ static class Program
             _graphics?.Dispose();
         }
     }
-
 }

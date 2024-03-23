@@ -23,7 +23,6 @@
 // Created: July 30, 2017 1:49:31 PM
 // 
 
-
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Numerics;
@@ -32,7 +31,6 @@ using System.Runtime.InteropServices;
 using Gorgon.Collections;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
-using Gorgon.Renderers;
 using Gorgon.Renderers.Cameras;
 using Gorgon.Renderers.Data;
 using Gorgon.Renderers.Debug;
@@ -90,8 +88,6 @@ internal class SimpleRenderer
         public float SpecularPower;
     }
 
-
-
     // The graphics interface to use.
     private readonly GorgonGraphics _graphics;
     // A constant buffer for holding the projection*view matrix.
@@ -122,8 +118,6 @@ internal class SimpleRenderer
     private readonly GorgonBoundingFrustum _frustum = new();
     // The visual for AABBs.
     private readonly GorgonAABBVisual _aabbVisual;
-
-
 
     /// <summary>
     /// Property to return the list of meshes to render.
@@ -171,8 +165,6 @@ internal class SimpleRenderer
         get;
         set;
     }
-
-
 
     /// <summary>
     /// Function to create a draw call based on a mesh.
@@ -469,8 +461,6 @@ internal class SimpleRenderer
         }
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="SimpleRenderer"/> class.
     /// </summary>
@@ -492,5 +482,4 @@ internal class SimpleRenderer
 
         InitializeConstantBuffers();
     }
-
 }

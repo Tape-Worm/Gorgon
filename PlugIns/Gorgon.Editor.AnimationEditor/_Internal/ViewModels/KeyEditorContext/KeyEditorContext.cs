@@ -23,7 +23,6 @@
 // Created: July 1, 2020 12:34:36 AM
 // 
 
-
 using System.Buffers;
 using System.ComponentModel;
 using System.Numerics;
@@ -43,7 +42,6 @@ namespace Gorgon.Editor.AnimationEditor;
 internal class KeyEditorContext
     : EditorContext<KeyEditorContextParameters>, IKeyEditorContext
 {
-
     /// <summary>
     /// Arguments for undoing or redoing a key assignment.
     /// </summary>
@@ -96,15 +94,10 @@ internal class KeyEditorContext
         public bool Move;
     }
 
-
-
-
     /// <summary>
     /// The name of the context.
     /// </summary>
     public const string ContextName = "ContextKeyEditor";
-
-
 
     // The project file manager.
     private IContentFileManager _fileManager;
@@ -118,8 +111,6 @@ internal class KeyEditorContext
     private GorgonSpriteAnimationController _controller;
     // The animation content.
     private IAnimationContent _content;
-
-
 
     /// <summary>
     /// Property to return the key value editor.
@@ -246,8 +237,6 @@ internal class KeyEditorContext
         get;
     }
 
-
-
     /// <summary>Handles the PropertyChanged event of the Content control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
@@ -260,7 +249,6 @@ internal class KeyEditorContext
                 break;
         }
     }
-
 
     /// <summary>
     /// Function to remove the selected key frames.
@@ -731,7 +719,6 @@ internal class KeyEditorContext
 
                     keyFrames ??= ArrayPool<IKeyFrame>.Shared.Rent(trackSel.Track.KeyFrames.Count);
 
-
                     Array.Clear(keyFrames, 0, keyFrames.Length);
                     for (int k = 0; k < trackSel.Track.KeyFrames.Count; ++k)
                     {
@@ -963,7 +950,6 @@ internal class KeyEditorContext
             HostServices.MessageDisplay.ShowError(ex, Resources.GORANM_ERR_SETTING_KEY);
         }
     }
-
 
     /// <summary>
     /// Function to determine if an undo operation is possible.
@@ -1325,8 +1311,6 @@ internal class KeyEditorContext
         base.OnUnload();
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="KeyEditorContext"/> class.</summary>
     public KeyEditorContext()
     {
@@ -1340,5 +1324,4 @@ internal class KeyEditorContext
         PasteDataCommand = new EditorAsyncCommand<object>(DoPasteKeyframesAsync, CanPasteKeyframes);
         CopyMoveFramesCommand = new EditorAsyncCommand<KeyFrameCopyMoveData>(DoCopyMoveFramesAsync, CanCopyMoveFrames);
     }
-
 }

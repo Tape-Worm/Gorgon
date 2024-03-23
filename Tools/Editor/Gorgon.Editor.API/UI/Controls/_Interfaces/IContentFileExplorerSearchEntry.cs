@@ -23,7 +23,6 @@
 // Created: May 6, 2019 12:35:46 PM
 // 
 
-
 using Gorgon.Core;
 
 namespace Gorgon.Editor.UI.Controls;

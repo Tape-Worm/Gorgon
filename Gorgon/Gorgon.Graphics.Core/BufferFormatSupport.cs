@@ -23,7 +23,6 @@
 // Created: November 16, 2017 12:17:15 PM
 // 
 
-
 // ReSharper disable InconsistentNaming
 using D3D11 = SharpDX.Direct3D11;
 

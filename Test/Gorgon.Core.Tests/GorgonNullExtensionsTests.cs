@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Gorgon.Core.Tests;
 
@@ -36,10 +32,10 @@ public class GorgonNullExtensionsTests
     public enum TestEnum
     {
         E1,
-        E2, 
-        E3, 
-        E4, 
-        E5, 
+        E2,
+        E3,
+        E4,
+        E5,
         E6
     }
 
@@ -47,7 +43,7 @@ public class GorgonNullExtensionsTests
     public void AsNullable()
     {
         object? numericValue = null;
-                
+
         Assert.IsNull(numericValue.AsNullable<int>());
 
         numericValue = 1;

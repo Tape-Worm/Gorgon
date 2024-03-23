@@ -23,7 +23,6 @@
 // Created: January 9, 2019 1:43:36 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Editor.ImageEditor.ViewModels;
 using Gorgon.Editor.Rendering;
@@ -32,7 +31,6 @@ using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Renderers;
-
 
 namespace Gorgon.Editor.ImageEditor;
 
@@ -61,8 +59,6 @@ internal class TextureCubeViewer(Gorgon2D renderer, GorgonSwapChain swapChain, G
     private IMarchingAnts _selectionRect;
     // The font factory used to generate the font for the glyphs.
     private readonly GorgonFontFactory _fontFactory = fontFactory;
-
-
 
     /// <summary>Releases unmanaged and - optionally - managed resources.</summary>
     /// <param name="disposing">
@@ -219,6 +215,4 @@ internal class TextureCubeViewer(Gorgon2D renderer, GorgonSwapChain swapChain, G
 
         _selectionRect = new MarchingAnts(Renderer);
     }
-
-
 }

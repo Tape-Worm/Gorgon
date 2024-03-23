@@ -23,7 +23,6 @@
 // Created: March 4, 2017 9:51:18 AM
 // 
 
-
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;

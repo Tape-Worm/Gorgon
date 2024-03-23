@@ -23,7 +23,6 @@
 // Created: Sunday, May 06, 2012 12:13:14 PM
 // 
 
-
 using System.Diagnostics;
 
 namespace Gorgon.Editor.UI;

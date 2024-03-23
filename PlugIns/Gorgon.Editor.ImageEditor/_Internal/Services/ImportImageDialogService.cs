@@ -23,7 +23,6 @@
 // Created: January 5, 2019 1:44:44 PM
 // 
 
-
 using System.Text;
 using Gorgon.Editor.ImageEditor.Properties;
 using Gorgon.Editor.Services;
@@ -47,16 +46,12 @@ internal class ImportImageDialogService(ISettings settings, ICodecRegistry codec
     // The codecs available to the importer.
     private readonly ICodecRegistry _codecs = codecs ?? throw new ArgumentNullException(nameof(codecs));
 
-
-
     /// <summary>Property to return the codec used for exporting.</summary>
     public IGorgonImageCodec SelectedCodec
     {
         get;
         private set;
     }
-
-
 
     /// <summary>
     /// Function to retrieve the last directory path used for import/export.
@@ -148,8 +143,4 @@ internal class ImportImageDialogService(ISettings settings, ICodecRegistry codec
 
         return filePath;
     }
-
-
-
-
 }

@@ -23,7 +23,6 @@
 // Created: July 25, 2017 9:28:39 PM
 // 
 
-
 using Gorgon.Collections;
 using Gorgon.Math;
 using D3D11 = SharpDX.Direct3D11;
@@ -41,13 +40,10 @@ namespace Gorgon.Graphics.Core;
 public sealed class GorgonStreamOutBindings
     : GorgonArray<GorgonStreamOutBinding>
 {
-
     /// <summary>
     /// The maximum number of vertex buffers allow to be bound at the same time.
     /// </summary>
     public const int MaximumStreamOutCount = 4;
-
-
 
     /// <summary>
     /// Property to return the native items wrapped by this list.
@@ -56,8 +52,6 @@ public sealed class GorgonStreamOutBindings
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function called when a dirty item is found and added.
@@ -110,8 +104,6 @@ public sealed class GorgonStreamOutBindings
         return -1;
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonStreamOutBindings"/> class.
     /// </summary>
@@ -131,5 +123,4 @@ public sealed class GorgonStreamOutBindings
             this[i] = bindings[i];
         }
     }
-
 }

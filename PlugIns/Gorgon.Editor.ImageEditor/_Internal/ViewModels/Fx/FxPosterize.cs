@@ -23,7 +23,6 @@
 // Created: March 25, 2020 8:15:10 PM
 // 
 
-
 using Gorgon.Editor.UI;
 using Gorgon.Math;
 
@@ -38,8 +37,6 @@ internal class FxPosterize
 
     // The amount to sharpen.
     private int _amount = 4;
-
-
 
     /// <summary>Property to set or return the amount to sharpen.</summary>
     public int Amount
@@ -62,8 +59,6 @@ internal class FxPosterize
     /// <summary>Property to return whether the panel is modal.</summary>
     public override bool IsModal => false;
 
-
-
     /// <summary>Function to inject dependencies for the view model.</summary>
     /// <param name="injectionParameters">The parameters to inject.</param>
     /// <remarks>
@@ -77,5 +72,4 @@ internal class FxPosterize
     protected override void OnInitialize(HostedPanelViewModelParameters injectionParameters)
     {
     }
-
 }

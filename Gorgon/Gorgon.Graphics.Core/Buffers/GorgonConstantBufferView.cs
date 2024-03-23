@@ -36,8 +36,6 @@ public sealed class GorgonConstantBufferView
     // The buffer associated with the view.
     private GorgonConstantBuffer _buffer;
 
-
-
     /// <summary>
     /// Property to set or return whether the view constant range has been adjusted
     /// </summary>
@@ -126,8 +124,6 @@ public sealed class GorgonConstantBufferView
         get;
         private set;
     }
-
-
 
     /// <summary>
     /// Function to change the view element range in the associated constant buffer.
@@ -351,8 +347,6 @@ public sealed class GorgonConstantBufferView
     /// <returns><see langword="true" /> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <see langword="false" />.</returns>
     public bool Equals(GorgonConstantBufferView other) => (ReferenceEquals(this, other)) && (!ViewAdjusted);
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonConstantBufferView"/> class.
     /// </summary>
@@ -366,5 +360,4 @@ public sealed class GorgonConstantBufferView
         TotalElementCount = (int)(buffer.SizeInBytes / 256.0f).FastFloor().Min(1);
         AdjustView(firstElement, elementCount);
     }
-
 }

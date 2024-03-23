@@ -27,10 +27,10 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
+using Gorgon.Json;
 using Gorgon.Math;
 using Gorgon.Properties;
 using Newtonsoft.Json;
-using Gorgon.Json;
 
 namespace Gorgon.Graphics;
 

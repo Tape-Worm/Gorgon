@@ -23,7 +23,6 @@
 // Created: May 18, 2019 9:24:40 AM
 // 
 
-
 using System.Numerics;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics;
@@ -85,8 +84,6 @@ public class Gorgon2DChromaticAberrationEffect(Gorgon2D renderer)
     // Flag to indicate whether to aberrate the entire screen, or just the corners.
     private bool _fullScreen;
 
-
-
     /// <summary>
     /// Property to set or return the texture for look up.
     /// </summary>
@@ -142,8 +139,6 @@ public class Gorgon2DChromaticAberrationEffect(Gorgon2D renderer)
         }
     }
 
-
-
     /// <summary>Releases unmanaged and - optionally - managed resources.</summary>
     /// <param name="disposing">
     ///   <c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
@@ -184,7 +179,6 @@ public class Gorgon2DChromaticAberrationEffect(Gorgon2D renderer)
                                                                   .ConstantBuffer(_settings, 1)
                                                                   .Build(PixelShaderAllocator);
             }
-
 
             _chromeAbBatchState = builders.BatchBuilder.Clear()
                                                        .BlendState(GorgonBlendState.Premultiplied)
@@ -273,6 +267,4 @@ public class Gorgon2DChromaticAberrationEffect(Gorgon2D renderer)
         EndPass(0, output);
         EndRender(output);
     }
-
-
 }

@@ -23,7 +23,6 @@
 // Created: March 2, 2019 2:09:04 AM
 // 
 
-
 using System.Buffers;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -53,7 +52,6 @@ namespace Gorgon.Editor.AnimationEditor;
 internal class AnimationContent
     : ContentEditorViewModelBase<AnimationContentParameters>, IAnimationContent
 {
-
     /// <summary>
     /// Data stored for adding a track using undo/redo.
     /// </summary>
@@ -93,8 +91,6 @@ internal class AnimationContent
         public Dictionary<ITrack, List<IKeyFrame>> Keys;
     }
 
-
-
     // The primary sprite.
     private (GorgonSprite sprite, IContentFile spriteFile, IContentFile textureFile) _primarySprite;
     // The background image to display for guiding.
@@ -123,8 +119,6 @@ internal class AnimationContent
     private IReadOnlyList<TrackKeySelection> _selected = [];
     // The starting position of the primary sprite.
     private Vector2 _primaryStart;
-
-
 
     /// <summary>
     /// Property to return the add track view model.
@@ -542,8 +536,6 @@ internal class AnimationContent
         get;
     }
 
-
-
     /// <summary>
     /// Function to default the selection to the first keyframe in the first track.
     /// </summary>
@@ -719,7 +711,6 @@ internal class AnimationContent
                 break;
         }
     }
-
 
     /// <summary>
     /// Function called when the texture track collection is updated.
@@ -1054,7 +1045,6 @@ internal class AnimationContent
                                && (AddTrack.AvailableTracks.Count > 0)
                                && (AddTrack is not null)
                                && (AddTrack.SelectedTracks.Count > 0);
-
 
     /// <summary>
     /// Function to add tracks to the animation.
@@ -1815,7 +1805,6 @@ internal class AnimationContent
 
         return ((!Length.EqualsEpsilon(Properties.Length)) || (!Fps.EqualsEpsilon(Properties.Fps)) || (IsLooping != Properties.IsLooped) || (_animation.LoopCount != Properties.LoopCount));
 
-
     }
 
     /// <summary>
@@ -2257,8 +2246,6 @@ internal class AnimationContent
         }
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="AnimationContent"/> class.</summary>
     public AnimationContent()
     {
@@ -2284,5 +2271,4 @@ internal class AnimationContent
         SaveContentCommand = new EditorAsyncCommand<SaveReason>(DoSaveAsync, CanSave);
         NewAnimationCommand = new EditorAsyncCommand<object>(DoCreateAnimationAsync, CanCreateAnimation);
     }
-
 }

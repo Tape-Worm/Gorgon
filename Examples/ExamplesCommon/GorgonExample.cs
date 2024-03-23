@@ -23,7 +23,6 @@
 // Created: August 23, 2018 4:42:41 PM
 // 
 
-
 using System.Numerics;
 using System.Text;
 using Gorgon.Core;
@@ -37,7 +36,6 @@ using Gorgon.IO;
 using Gorgon.Renderers;
 using Gorgon.Timing;
 using Gorgon.UI;
-
 
 namespace Gorgon.Examples;
 
@@ -59,8 +57,6 @@ public static class GorgonExample
     private static readonly StringBuilder _statsText = new();
     // The main window for the application.
     private static FormMain _mainForm;
-
-
 
     /// <summary>
     /// Property to set or return the path to the plug in directory.
@@ -98,8 +94,6 @@ public static class GorgonExample
     /// Property to return the font factory used to handle font creation for our examples.
     /// </summary>
     public static GorgonFontFactory Fonts => _factory;
-
-
 
     /// <summary>
     /// Function to retrieve the directory that contains the plugins for an application.
@@ -372,5 +366,4 @@ public static class GorgonExample
 
         return _mainForm;
     }
-
 }

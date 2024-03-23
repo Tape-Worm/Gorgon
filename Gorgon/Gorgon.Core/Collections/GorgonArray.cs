@@ -23,7 +23,6 @@
 // Created: April 2, 2017 2:04:59 PM
 // 
 
-
 using System.Collections;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
@@ -495,8 +494,6 @@ public class GorgonArray<T>
         // We have different dirty states, so this array is different than the other one.
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonArray{T}"/> class.
     /// </summary>
@@ -512,5 +509,4 @@ public class GorgonArray<T>
         BackingArray = new T[maxSize];
         _dirtyItems = (0, 0);
     }
-
 }

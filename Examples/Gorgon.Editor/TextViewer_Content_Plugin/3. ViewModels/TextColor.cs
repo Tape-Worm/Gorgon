@@ -23,7 +23,6 @@
 // Created: April 4, 2019 8:59:29 PM
 // 
 
-
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 
@@ -40,8 +39,6 @@ internal class TextColor
     private GorgonColor _originalColor = GorgonColors.Black;
     // The current color for the sprite.
     private GorgonColor _color = GorgonColors.Black;
-
-
 
     /// <summary>Property to set or return the currently selected color.</summary>
     public GorgonColor SelectedColor
@@ -79,8 +76,6 @@ internal class TextColor
     /// <summary>Property to return whether the panel is modal.</summary>
     public override bool IsModal => true;
 
-
-
     /// <summary>Function to inject dependencies for the view model.</summary>
     /// <param name="injectionParameters">The parameters to inject.</param>
     /// <remarks>
@@ -90,5 +85,4 @@ internal class TextColor
     {
         // Nothing to inject.
     }
-
 }

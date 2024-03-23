@@ -23,7 +23,6 @@
 // Created: Wednesday, September 9, 2015 8:21:31 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Input.Properties;
@@ -116,8 +115,6 @@ public class GorgonRawMouse
     /// Event triggered when a double click is performed on a mouse button.
     /// </summary>
     public event EventHandler<GorgonMouseEventArgs> MouseDoubleClicked;
-
-
 
     /// <summary>
     /// Property to return the type of device.

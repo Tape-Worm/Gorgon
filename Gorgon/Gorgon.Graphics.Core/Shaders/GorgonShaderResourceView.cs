@@ -23,7 +23,6 @@
 // Created: July 21, 2016 11:05:38 AM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
@@ -52,8 +51,6 @@ public abstract class GorgonShaderResourceView(GorgonGraphicsResource resource)
     // The shader resource view descriptor.
     private D3D11.ShaderResourceViewDescription1 _srvDesc;
 
-
-
     /// <summary>
     /// Property to return a reference to the shader resource view descriptor.
     /// </summary>
@@ -67,8 +64,6 @@ public abstract class GorgonShaderResourceView(GorgonGraphicsResource resource)
         get;
         set;
     }
-
-
 
     /// <summary>Function to perform the creation of a specific kind of view.</summary>
     /// <returns>The view that was created.</returns>
@@ -138,6 +133,5 @@ public abstract class GorgonShaderResourceView(GorgonGraphicsResource resource)
     /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
     /// </returns>
     public override int GetHashCode() => base.GetHashCode();
-
 
 }

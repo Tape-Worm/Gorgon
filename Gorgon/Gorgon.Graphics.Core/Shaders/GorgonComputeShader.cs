@@ -23,7 +23,6 @@
 // Created: Thursday, December 15, 2011 9:43:36 AM
 // 
 
-
 using Gorgon.Diagnostics;
 using SharpDX.D3DCompiler;
 using D3D11 = SharpDX.Direct3D11;
@@ -50,8 +49,6 @@ public sealed class GorgonComputeShader
     // The D3D 11 compute shader.
     private D3D11.ComputeShader _shader;
 
-
-
     /// <summary>
     /// Property to return the Direct 3D compute shader.
     /// </summary>
@@ -61,8 +58,6 @@ public sealed class GorgonComputeShader
     /// Property to return the type of shader.
     /// </summary>
     public override ShaderType ShaderType => ShaderType.Compute;
-
-
 
     /// <summary>
     /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
@@ -79,8 +74,6 @@ public sealed class GorgonComputeShader
 
         base.Dispose();
     }
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonVertexShader" /> class.

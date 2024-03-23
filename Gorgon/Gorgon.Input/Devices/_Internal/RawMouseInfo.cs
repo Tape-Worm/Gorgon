@@ -23,7 +23,6 @@
 // Created: Tuesday, September 07, 2015 1:51:39 PM
 // 
 
-
 using Gorgon.Native;
 
 namespace Gorgon.Input;
@@ -42,7 +41,6 @@ namespace Gorgon.Input;
 internal class RawMouseInfo(nint deviceHandle, string hidPath, string className, string description, RID_DEVICE_INFO_MOUSE deviceInfo)
         : IGorgonMouseInfo
 {
-
     /// <summary>
     /// Property to return a human friendly description of the device.
     /// </summary>
@@ -106,6 +104,5 @@ internal class RawMouseInfo(nint deviceHandle, string hidPath, string className,
     {
         get;
     } = deviceInfo.dwId;
-
 
 }

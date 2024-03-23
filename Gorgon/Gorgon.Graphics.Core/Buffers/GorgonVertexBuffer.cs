@@ -23,7 +23,6 @@
 // Created: June 15, 2016 9:33:57 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
@@ -116,18 +115,13 @@ namespace Gorgon.Graphics.Core;
 public sealed class GorgonVertexBuffer
     : GorgonBufferCommon, IGorgonVertexBufferInfo
 {
-
     /// <summary>
     /// The prefix to assign to a default name.
     /// </summary>
     internal const string NamePrefix = nameof(GorgonVertexBuffer);
 
-
-
     // The information used to create the buffer
     private readonly GorgonVertexBufferInfo _info;
-
-
 
     /// <summary>
     /// Property to return the bind flags used for the D3D 11 resource.
@@ -138,7 +132,6 @@ public sealed class GorgonVertexBuffer
     /// Property to return the binding used to bind this buffer to the GPU.
     /// </summary>
     public VertexIndexBufferBinding Binding => _info.Binding;
-
 
     /// <summary>
     /// Property to return the usage for the resource.
@@ -174,8 +167,6 @@ public sealed class GorgonVertexBuffer
     /// Property to return the name of this object.
     /// </summary>
     public override string Name => _info.Name;
-
-
 
     /// <summary>
     /// Function to initialize the buffer data.
@@ -424,8 +415,6 @@ public sealed class GorgonVertexBuffer
         return result;
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonVertexBuffer" /> class.
     /// </summary>
@@ -439,5 +428,4 @@ public sealed class GorgonVertexBuffer
         _info = new GorgonVertexBufferInfo(info ?? throw new ArgumentNullException(nameof(info)));
         Initialize(initialData);
     }
-
 }

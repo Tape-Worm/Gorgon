@@ -23,7 +23,6 @@
 // Created: December 5, 2020 3:34:58 PM
 // 
 
-
 using Gorgon.Graphics;
 using Gorgon.Timing;
 using Gorgon.UI;
@@ -59,8 +58,6 @@ public partial class FormMain
     {
         TransparencyPercent = 75
     };
-
-
 
     /// <summary>Handles the Click event of the ButtonOverlayForm control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -203,8 +200,6 @@ public partial class FormMain
 
         wait.Hide();
     }
-
-
 
     /// <summary>Initializes a new instance of the <see cref="FormMain" /> class.</summary>
     public FormMain() => InitializeComponent();

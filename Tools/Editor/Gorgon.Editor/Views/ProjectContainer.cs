@@ -23,7 +23,6 @@
 // Created: September 4, 2018 11:09:28 AM
 // 
 
-
 using System.ComponentModel;
 using System.Diagnostics;
 using Gorgon.Editor.Rendering;
@@ -182,8 +181,6 @@ internal partial class ProjectContainer
         }
     }
 
-
-
     // Synchronization lock for the file explorer context changed event.
     private readonly object _eventLock = new();
     // Flag to indicate that the data context load should be deferred.
@@ -194,8 +191,6 @@ internal partial class ProjectContainer
     private ContentBaseControl _contentControl;
     // The graphics context for the application.
     private IGraphicsContext _graphicsContext;
-
-
 
     /// <summary>
     /// Property to set or return the settings for the application.
@@ -236,8 +231,6 @@ internal partial class ProjectContainer
         get;
         private set;
     }
-
-
 
     /// <summary>
     /// Function to set the splitter distance.
@@ -614,7 +607,6 @@ internal partial class ProjectContainer
         }
     }
 
-
     /// <summary>Handles the Leave event of the FileExplorer control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
@@ -781,8 +773,6 @@ internal partial class ProjectContainer
         ViewModel.PropertyChanging += DataContext_PropertyChanging;
         ViewModel.PropertyChanged += DataContext_PropertyChanged;
     }
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ProjectContainer"/> class.

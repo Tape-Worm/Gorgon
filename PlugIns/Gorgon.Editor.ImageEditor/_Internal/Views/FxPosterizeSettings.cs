@@ -23,7 +23,6 @@
 // Created: March 24, 2020 11:25:54 PM
 // 
 
-
 using System.ComponentModel;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Controls;
@@ -36,15 +35,12 @@ namespace Gorgon.Editor.ImageEditor;
 internal partial class FxPosterizeSettings
     : EditorSubPanelCommon, IDataContext<IFxPosterize>
 {
-
     /// <summary>Property to return the data context assigned to this view.</summary>
     public IFxPosterize ViewModel
     {
         get;
         private set;
     }
-
-
 
     /// <summary>Handles the ValueChanged event of the TrackAmount control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -151,8 +147,6 @@ internal partial class FxPosterizeSettings
 
         ViewModel.PropertyChanged += DataContext_PropertyChanged;
     }
-
-
 
     /// <summary>Initializes a new instance of the <see cref="FxPosterizeSettings"/> class.</summary>
     public FxPosterizeSettings() => InitializeComponent();

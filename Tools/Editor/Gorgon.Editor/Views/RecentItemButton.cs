@@ -23,7 +23,6 @@
 // Created: December 20, 2018 12:47:27 AM
 // 
 
-
 using System.ComponentModel;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.UI;
@@ -44,14 +43,10 @@ internal partial class RecentItemButton
     // Flag to indicate that a mouse button is down.
     private bool _isMouseDown;
 
-
-
     /// <summary>
     /// Event fired to determine if the button should be deleted or not.
     /// </summary>
     public event EventHandler DeleteItem;
-
-
 
     /// <summary>
     /// Property to set or return the recent item object for this button.
@@ -71,8 +66,6 @@ internal partial class RecentItemButton
             UpdateRecentItem();
         }
     }
-
-
 
     /// <summary>
     /// Function to determine if the mouse is over the control or not.
@@ -198,13 +191,10 @@ internal partial class RecentItemButton
         UpdateRecentItem();
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="UI._Internal.RecentItemButton"/> class.</summary>
     public RecentItemButton()
     {
         SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
         InitializeComponent();
     }
-
 }

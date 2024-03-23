@@ -23,7 +23,6 @@
 // Created: April 27, 2019 11:35:57 AM
 // 
 
-
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
@@ -44,8 +43,6 @@ public class SpriteExtractionData
 
     // A weak reference to the texture so we don't hang onto it for eternity.
     private WeakReference<GorgonTexture2DView> _textureRef;
-
-
 
     /// <summary>
     /// Property to set or return whether to skip empty sprites.

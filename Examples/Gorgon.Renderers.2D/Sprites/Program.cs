@@ -23,7 +23,6 @@
 // Created: July 18, 2018 4:04:19 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Graphics;
@@ -67,12 +66,6 @@ static class Program
     private static bool _floatLeft = true;
     // The offset for the floating ship.
     private static float _floatOffset;
-
-
-
-
-
-
 
     /// <summary>
     /// Function called during CPU idle time.
@@ -318,5 +311,4 @@ static class Program
             _graphics?.Dispose();
         }
     }
-
 }

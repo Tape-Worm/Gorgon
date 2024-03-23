@@ -23,14 +23,12 @@
 // Created: August 3, 2020 4:40:15 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Editor.Rendering;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts;
 using Gorgon.Renderers;
-
 
 namespace Gorgon.Examples;
 
@@ -61,8 +59,6 @@ internal class TextRenderer(Gorgon2D renderer, GorgonSwapChain mainRenderTarget,
     private GorgonFont _arial;
     private GorgonFont _timesNewRoman;
     private GorgonFont _papyrus;
-
-
 
     /// <summary>
     /// Function to update the font for the text sprite.
@@ -177,7 +173,7 @@ internal class TextRenderer(Gorgon2D renderer, GorgonSwapChain mainRenderTarget,
         GorgonRectangleF backgroundRegion = new(RenderRegion.Width * -0.5f + 10, RenderRegion.Height * -0.5f + 10, RenderRegion.Width, RenderRegion.Height);
         Renderer.DrawFilledRectangle(backgroundRegion, GorgonColors.Black);
         backgroundRegion.X -= 10;
-        backgroundRegion.Y -= 10;        
+        backgroundRegion.Y -= 10;
         Renderer.DrawFilledRectangle(backgroundRegion, GorgonColors.White);
         Renderer.End();
     }
@@ -297,6 +293,5 @@ internal class TextRenderer(Gorgon2D renderer, GorgonSwapChain mainRenderTarget,
     /// Function to set the view to a default zoom level.
     /// </summary>
     public void DefaultZoom() => MoveTo(Vector2.Zero, 1);
-
 
 }

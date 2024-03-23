@@ -23,7 +23,6 @@
 // Created: Monday, March 10, 2014 12:44:57 AM
 // 
 
-
 using System.ComponentModel;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
@@ -47,16 +46,12 @@ internal partial class FontPatternBrushView
     // Lock for reentrancy on events.
     private int _eventLock;
 
-
-
     /// <summary>Property to return the data context assigned to this view.</summary>
     public IFontPatternBrush ViewModel
     {
         get;
         private set;
     }
-
-
 
     /// <summary>
     /// Handles the Paint event of the panelPreview control.
@@ -333,8 +328,6 @@ internal partial class FontPatternBrushView
         ValidateOk();
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="FontPatternBrushView"/> class.
     /// </summary>
@@ -343,5 +336,4 @@ internal partial class FontPatternBrushView
         InitializeComponent();
         ComboHatch.RefreshPatterns();
     }
-
 }

@@ -23,7 +23,6 @@
 // Created: May 9, 2019 7:50:58 AM
 // 
 
-
 using System.ComponentModel;
 using System.Numerics;
 using Gorgon.Editor.Rendering;
@@ -86,7 +85,6 @@ internal partial class FormSpriteSelector
         ViewModel.SearchCommand.Execute(e.SearchText);
         ValidateControls();
     }
-
 
     /// <summary>Contents the file explorer file entries focused.</summary>
     /// <param name="sender">The sender.</param>

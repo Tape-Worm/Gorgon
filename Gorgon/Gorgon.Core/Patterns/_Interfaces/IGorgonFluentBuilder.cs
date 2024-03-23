@@ -22,7 +22,6 @@
 // Created: June 7, 2018 3:55:47 PM
 // 
 
-
 using Gorgon.Memory;
 
 namespace Gorgon.Patterns;

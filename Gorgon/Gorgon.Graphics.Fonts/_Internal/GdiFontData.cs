@@ -23,7 +23,6 @@
 // Created: February 14, 2017 6:17:54 PM
 // 
 
-
 using System.Drawing.Text;
 
 namespace Gorgon.Graphics.Fonts;
@@ -34,7 +33,6 @@ namespace Gorgon.Graphics.Fonts;
 internal class GdiFontData
     : IDisposable
 {
-
     /// <summary>
     /// Property to return the font used to draw the glyphs.
     /// </summary>
@@ -89,8 +87,6 @@ internal class GdiFontData
     /// </summary>
     public float Descent => (FontHeight * Font.FontFamily.GetCellDescent(Font.Style)) / Font.FontFamily.GetEmHeight(Font.Style);
 
-
-
     /// <summary>
     /// Function to build out the font data.
     /// </summary>
@@ -119,7 +115,6 @@ internal class GdiFontData
 
         // If we cannot locate the font family by name, then fall back.
         fontFamily ??= FontFamily.GenericSerif;
-
 
         // Scale the font appropriately.
         if (fontInfo.FontHeightMode == GorgonFontHeightMode.Points)
@@ -167,5 +162,4 @@ internal class GdiFontData
         StringFormat?.Dispose();
         Font?.Dispose();
     }
-
 }

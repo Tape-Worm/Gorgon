@@ -23,7 +23,6 @@
 // Created: Sunday, July 5, 2015 1:22:12 PM
 // 
 
-
 using System.Collections;
 using Gorgon.Input.Properties;
 
@@ -43,8 +42,6 @@ public sealed class GorgonGamingDeviceAxisList<T>
     // The list of information about each axis.
     private readonly Dictionary<GamingDeviceAxis, T> _infoList = [];
 
-
-
     /// <summary>
     /// Property to return the number of axes on the gaming device.
     /// </summary>
@@ -54,7 +51,6 @@ public sealed class GorgonGamingDeviceAxisList<T>
     /// Property to return the range for the specified <see cref="GamingDeviceAxis"/>.
     /// </summary>
     public T this[GamingDeviceAxis axis] => _infoList[axis];
-
 
     /// <summary>
     /// Gets the <see cref="GorgonGamingDeviceAxisInfo"/> at the specified index in the axis list.
@@ -72,9 +68,6 @@ public sealed class GorgonGamingDeviceAxisList<T>
             return _infoList[_axisList[index]];
         }
     }
-
-
-
 
     /// <summary>
     /// Function to add an axis to the list.
@@ -109,7 +102,6 @@ public sealed class GorgonGamingDeviceAxisList<T>
     /// <filterpriority>2</filterpriority>
     IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)_infoList.Values).GetEnumerator();
 
-
     /// <summary>
     /// Function to determine if a specific <see cref="GamingDeviceAxis"/> is supported.
     /// </summary>
@@ -129,8 +121,6 @@ public sealed class GorgonGamingDeviceAxisList<T>
     /// </remarks>
     public bool TryGetValue(GamingDeviceAxis axis, out T result) => _infoList.TryGetValue(axis, out result);
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonGamingDeviceAxisList{T}" /> class.
     /// </summary>
@@ -142,5 +132,4 @@ public sealed class GorgonGamingDeviceAxisList<T>
             Add(item);
         }
     }
-
 }

@@ -23,7 +23,6 @@
 // Created: February 14, 2020 12:33:11 PM
 // 
 
-
 using Gorgon.Graphics.Imaging;
 using Gorgon.IO;
 
@@ -39,7 +38,6 @@ namespace Gorgon.Editor.ImageEditor;
 /// <param name="originalMetadata">The original size of the image.</param>
 internal class ImagePickerImportData(string originalFilePath, IGorgonVirtualFile fromFile, IGorgonImage thumbnail, IGorgonImageInfo originalMetadata)
 {
-
     /// <summary>
     /// Property to return the image containing the thumbnail.
     /// </summary>
@@ -72,8 +70,5 @@ internal class ImagePickerImportData(string originalFilePath, IGorgonVirtualFile
     {
         get;
     } = originalMetadata;
-
-
-
 
 }

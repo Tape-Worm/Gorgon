@@ -23,7 +23,6 @@
 // Created: August 27, 2018 12:52:19 AM
 // 
 
-
 using Gorgon.Editor.UI;
 
 namespace Gorgon.Editor.ViewModels;
@@ -34,7 +33,6 @@ namespace Gorgon.Editor.ViewModels;
 internal interface INewProject
     : IViewModel
 {
-
     /// <summary>
     /// Property to return the title of the project.
     /// </summary>
@@ -117,5 +115,4 @@ internal interface INewProject
     {
         get;
     }
-
 }

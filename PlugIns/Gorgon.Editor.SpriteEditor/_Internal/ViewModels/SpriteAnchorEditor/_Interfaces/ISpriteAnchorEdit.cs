@@ -35,7 +35,6 @@ namespace Gorgon.Editor.SpriteEditor;
 internal interface ISpriteAnchorEdit
     : IHostedPanelViewModel
 {
-
     /// <summary>
     /// Property to set or return whether to preview rotation with the current anchor setting.
     /// </summary>

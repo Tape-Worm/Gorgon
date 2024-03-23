@@ -23,7 +23,6 @@
 // Created: August 29, 2018 8:26:27 PM
 // 
 
-
 namespace Gorgon.UI;
 
 /// <summary>
@@ -37,7 +36,6 @@ namespace Gorgon.UI;
 public class FolderSelectedArgs(string folder)
         : EventArgs
 {
-
     /// <summary>
     /// Property to return the path to the folder.
     /// </summary>
@@ -48,7 +46,5 @@ public class FolderSelectedArgs(string folder)
     {
         get;
     } = folder ?? string.Empty;
-
-
 
 }

@@ -23,7 +23,6 @@
 // Created: August 26, 2018 12:05:43 PM
 // 
 
-
 using System.ComponentModel;
 
 namespace Gorgon.Editor.UI;
@@ -84,7 +83,6 @@ namespace Gorgon.Editor.UI;
 public interface IViewModel
     : INotifyPropertyChanged, INotifyPropertyChanging
 {
-
     /// <summary>
     /// Event triggered when a wait overlay panel needs to be activated.
     /// </summary>
@@ -104,8 +102,6 @@ public interface IViewModel
     /// Event triggered when the progress overlay should be deactivated.
     /// </summary>
     event EventHandler ProgressDeactivated;
-
-
 
     /// <summary>
     /// Function to notify when a property has been changed.

@@ -23,7 +23,6 @@
 // Created: August 6, 2018 2:40:09 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Graphics;
@@ -89,8 +88,6 @@ static class Program
     private static Vector2 _dragOffset;
     // The starting position of the drag.
     private static Vector2 _dragStart;
-
-
 
     /// <summary>
     /// Function to present the rendering to the main window.
@@ -236,7 +233,6 @@ static class Program
             button.Click += Button_Click;
         }
     }
-
 
     /// <summary>
     /// Function to handle the button click event.
@@ -646,5 +642,4 @@ static class Program
             _graphics?.Dispose();
         }
     }
-
 }

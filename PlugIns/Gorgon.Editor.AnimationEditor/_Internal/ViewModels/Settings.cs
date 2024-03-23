@@ -23,7 +23,6 @@
 // Created: March 25, 2019 9:58:48 AM
 // 
 
-
 using Gorgon.Editor.AnimationEditor.Properties;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
@@ -155,8 +154,6 @@ internal class Settings
 
     /// <summary>Property to return the name of this object.</summary>
     public override string Name => Resources.GORANM_DESC;
-
-
 
     /// <summary>Function to inject dependencies for the view model.</summary>
     /// <param name="injectionParameters">The parameters to inject.</param>

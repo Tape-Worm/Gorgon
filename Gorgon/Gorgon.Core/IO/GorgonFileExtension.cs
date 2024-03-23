@@ -23,7 +23,6 @@
 // Created: Sunday, September 22, 2013 8:28:38 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Properties;
 
@@ -122,8 +121,6 @@ public readonly struct GorgonFileExtension
     /// <returns><b>true</b> if greater than, <b>false</b> if not.</returns>
     public static bool operator >(GorgonFileExtension left, GorgonFileExtension right) => string.Compare(left.Extension, right.Extension, StringComparison.OrdinalIgnoreCase) == 1;
 
-
-
     /// <summary>
     /// Function to return if instances are equal.
     /// </summary>
@@ -211,8 +208,6 @@ public readonly struct GorgonFileExtension
             : string.Compare(Extension, other, StringComparison.OrdinalIgnoreCase);
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonFileExtension"/> struct.
     /// </summary>
@@ -244,5 +239,4 @@ public readonly struct GorgonFileExtension
         : this(extension, string.Empty)
     {
     }
-
 }

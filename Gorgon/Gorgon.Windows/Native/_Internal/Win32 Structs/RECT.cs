@@ -23,7 +23,6 @@
 // Created: August 29, 2018 7:59:35 PM
 // 
 
-
 using System.Runtime.InteropServices;
 // ReSharper disable All
 

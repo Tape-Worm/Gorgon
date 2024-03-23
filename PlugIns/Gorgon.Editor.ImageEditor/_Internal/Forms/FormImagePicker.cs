@@ -23,7 +23,6 @@
 // Created: February 13, 2020 12:32:15 PM
 // 
 
-
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Numerics;
@@ -84,8 +83,6 @@ internal partial class FormImagePicker
     // The sprite for the preview.
     private GorgonSprite _previewSprite;
 
-
-
     /// <summary>Property to return the data context assigned to this view.</summary>
     public IImagePicker ViewModel
     {
@@ -101,8 +98,6 @@ internal partial class FormImagePicker
         get;
         set;
     }
-
-
 
     /// <summary>
     /// Function to validate the button state on the form.
@@ -904,7 +899,6 @@ internal partial class FormImagePicker
         ViewModel.CancelImportFileCommand.Execute(null);
     }
 
-
     /// <summary>Handles the Click event of the ButtonRestore control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
@@ -1174,7 +1168,6 @@ internal partial class FormImagePicker
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="NotifyCollectionChangedEventArgs"/> instance containing the event data.</param>
     private void ChangedSubResources_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) => ValidateButtons(ViewModel);
-
 
     /// <summary>Handles the PropertyChanging event of the DataContext control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -1503,8 +1496,6 @@ internal partial class FormImagePicker
         ViewModel.ChangedSubResources.CollectionChanged += ChangedSubResources_CollectionChanged;
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="FormImagePicker"/> class.</summary>
     public FormImagePicker()
     {
@@ -1521,5 +1512,4 @@ internal partial class FormImagePicker
         _waitPanel = new WaitPanelDisplay(this);
         _progressPanel = new ProgressPanelDisplay(this);
     }
-
 }

@@ -23,7 +23,6 @@
 // Created: April 24, 2019 10:14:49 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Editor.ImageAtlasTool.Properties;
 using Gorgon.Editor.Rendering;
@@ -52,8 +51,6 @@ internal class Renderer(Gorgon2D renderer, GorgonSwapChain swapChain, IImageAtla
     private GorgonTexture2DView _texture;
     // The sprite used to display the texture.
     private GorgonSprite _textureSprite;
-
-
 
     /// <summary>
     /// Function to build a texture for the current image.
@@ -214,6 +211,4 @@ internal class Renderer(Gorgon2D renderer, GorgonSwapChain swapChain, IImageAtla
             TextureSampler = GorgonSamplerState.PointFiltering
         };
     }
-
-
 }

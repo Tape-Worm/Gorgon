@@ -23,7 +23,6 @@
 // Created: October 28, 2018 3:44:09 PM
 // 
 
-
 using System.Collections.ObjectModel;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.UI;

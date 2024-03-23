@@ -23,7 +23,6 @@
 // Created: March 21, 2021 10:22:33 PM
 // 
 
-
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
@@ -32,7 +31,6 @@ namespace Gorgon.Graphics.Core;
 internal class TempTargetTextureInfo
     : IGorgonTexture2DInfo
 {
-
     /// <summary>Property to return the width of the texture, in pixels.</summary>
     public int Width
     {
@@ -133,8 +131,6 @@ internal class TempTargetTextureInfo
         set;
     }
 
-
-
     /// <summary>
     /// Function to initialize the information data.
     /// </summary>
@@ -151,5 +147,4 @@ internal class TempTargetTextureInfo
         Width = info.Width;
         Height = info.Height;
     }
-
 }

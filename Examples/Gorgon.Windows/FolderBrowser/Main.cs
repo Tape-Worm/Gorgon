@@ -23,7 +23,6 @@
 // Created: December 7, 2020 3:17:59 PM
 // 
 
-
 using Gorgon.IO;
 using Gorgon.UI;
 
@@ -50,8 +49,6 @@ public partial class Main
 
     // The area where we can make changes (our resource area).
     private DirectoryInfo _writeArea;
-
-
 
     /// <summary>Function called when the browser enters a new folder.</summary>
     /// <param name="sender">The sender of the event.</param>
@@ -93,8 +90,6 @@ public partial class Main
             Browser.Text = "Double click on a folder to change it.";
         }
     }
-
-
 
     /// <summary>Initializes a new instance of the <see cref="Main" /> class.</summary>
     public Main() => InitializeComponent();

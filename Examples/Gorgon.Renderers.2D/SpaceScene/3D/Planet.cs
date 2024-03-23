@@ -23,7 +23,6 @@
 // Created: May 21, 2019 12:29:13 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Animation;
 
@@ -42,8 +41,6 @@ internal class Planet
     private readonly List<MeshAnimationController> _animController;
     // The world position of this entity.
     private Vector3 _position;
-
-
 
     /// <summary>
     /// Property to return the meshes used to render the layers of this planet.
@@ -70,8 +67,6 @@ internal class Planet
         get;
         set;
     }
-
-
 
     /// <summary>
     /// Function to update the entity during a frame.
@@ -117,5 +112,4 @@ internal class Planet
             _animController.Add(new MeshAnimationController());
         }
     }
-
 }

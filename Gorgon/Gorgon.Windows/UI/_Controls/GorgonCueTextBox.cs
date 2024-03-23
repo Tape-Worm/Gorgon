@@ -23,7 +23,6 @@
 // Created: December 11, 2018 8:38:27 PM
 // 
 
-
 using System.ComponentModel;
 
 namespace Gorgon.UI;
@@ -38,14 +37,10 @@ public class GorgonCueTextBox
     // Paint message.
     private const int WM_PAINT = 0x000F;
 
-
-
     // Text for the cue.
     private string _cueText = string.Empty;
     // Font used to draw the cue.
     private Font _cueFont;
-
-
 
     /// <summary>
     /// Property to set or return the text for the textbox cue.
@@ -62,8 +57,6 @@ public class GorgonCueTextBox
             Invalidate();
         }
     }
-
-
 
     /// <summary>
     /// Function to create the font used for the cue text.
@@ -169,5 +162,4 @@ public class GorgonCueTextBox
 
         base.Dispose(disposing);
     }
-
 }

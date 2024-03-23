@@ -23,7 +23,6 @@
 // Created: Tuesday, September 07, 2015 1:45:21 PM
 // 
 
-
 using Gorgon.Diagnostics;
 using Gorgon.Native;
 
@@ -95,8 +94,6 @@ public class GorgonRawInput
     private readonly Dictionary<DeviceKey, IGorgonRawInputDeviceData<GorgonRawKeyboardData>> _keyboardDevices = [];
     // The list of pointing devices registered on the system.
     private readonly Dictionary<DeviceKey, IGorgonRawInputDeviceData<GorgonRawMouseData>> _mouseDevices = [];
-
-
 
     /// <summary>
     /// Function to unhook raw input from the application.
@@ -577,8 +574,6 @@ public class GorgonRawInput
         GC.SuppressFinalize(this);
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonRawInput"/> class.
     /// </summary>
@@ -610,5 +605,4 @@ public class GorgonRawInput
     {
         UnhookRawInput();
     }
-
 }

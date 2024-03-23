@@ -23,7 +23,6 @@
 // Created: September 27, 2018 10:11:34 PM
 // 
 
-
 using Gorgon.Editor.UI;
 using Gorgon.Editor.ViewModels;
 
@@ -38,8 +37,6 @@ internal class GridRowsDragData
 
     // The list of paths for the files being dragged.
     private readonly string[] _filePaths;
-
-
 
     /// <summary>
     /// Property to return the grid rows being dragged.
@@ -95,8 +92,6 @@ internal class GridRowsDragData
         set;
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GridRowsDragData"/> class.
     /// </summary>
@@ -115,5 +110,4 @@ internal class GridRowsDragData
         _filePaths = files.Select(item => item.FullPath).ToArray();
         Operation = dragOperation;
     }
-
 }

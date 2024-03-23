@@ -23,7 +23,6 @@
 // Created: February 7, 2021 12:31:53 AM
 // 
 
-
 using Gorgon.Graphics;
 using Microsoft.Extensions.Configuration;
 

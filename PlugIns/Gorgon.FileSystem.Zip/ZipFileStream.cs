@@ -23,7 +23,6 @@
 // Created: Monday, June 27, 2011 9:31:05 AM
 // 
 
-
 using Gorgon.IO.Zip.Properties;
 using ICSharpCode.SharpZipLib.Zip;
 
@@ -42,8 +41,6 @@ internal class ZipFileStream
     private long _position;                 // Position in the stream.
     private long _basePosition;             // Base position in the stream.
     private long _length;                   // File length.
-
-
 
     /// <summary>
     /// When overridden in a derived class, gets a value indicating whether the current stream supports writing.
@@ -133,8 +130,6 @@ internal class ZipFileStream
         get => _zipStream.ReadTimeout;
         set => _zipStream.ReadTimeout = value;
     }
-
-
 
     /// <summary>
     /// Function to get the zip entry stream.
@@ -289,7 +284,6 @@ internal class ZipFileStream
                 break;
         }
 
-
         if (_position > Length)
         {
             throw new EndOfStreamException(Resources.GORFS_ZIP_ERR_EOS);
@@ -360,8 +354,6 @@ internal class ZipFileStream
     /// <exception cref="NotSupportedException">The stream does not support writing, or the stream is already closed. </exception>
     /// <exception cref="ObjectDisposedException">Methods were called after the stream was closed. </exception>
     public override void WriteByte(byte value) => throw new NotSupportedException();
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ZipFileStream"/> class.

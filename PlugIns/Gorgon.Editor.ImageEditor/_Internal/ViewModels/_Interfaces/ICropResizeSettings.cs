@@ -23,7 +23,6 @@
 // Created: January 16, 2019 8:37:40 AM
 // 
 
-
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Imaging;

@@ -23,7 +23,6 @@
 // Created: July 27, 2017 12:42:58 PM
 // 
 
-
 using Gorgon.Diagnostics;
 using SharpDX.D3DCompiler;
 using D3D11 = SharpDX.Direct3D11;
@@ -50,8 +49,6 @@ public sealed class GorgonDomainShader
     // The D3D 11 Domain Shader.
     private D3D11.DomainShader _shader;
 
-
-
     /// <summary>
     /// Property to set or return the Direct3D domain shader.
     /// </summary>
@@ -61,8 +58,6 @@ public sealed class GorgonDomainShader
     /// Property to return the type of shader.
     /// </summary>
     public override ShaderType ShaderType => ShaderType.Domain;
-
-
 
     /// <summary>
     /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
@@ -79,8 +74,6 @@ public sealed class GorgonDomainShader
 
         base.Dispose();
     }
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonDomainShader" /> class.

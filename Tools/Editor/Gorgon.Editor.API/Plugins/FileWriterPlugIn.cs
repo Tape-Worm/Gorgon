@@ -23,7 +23,6 @@
 // Created: October 12, 2018 1:08:11 PM
 // 
 
-
 using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.Editor.Properties;
@@ -60,8 +59,6 @@ public abstract class FileWriterPlugIn
 
     // Default compression amount.
     private float _compressAmount = 0.5f;
-
-
 
     /// <summary>
     /// Property to return the equivalent type name for v2 of the Gorgon file writer plugin.
@@ -129,8 +126,6 @@ public abstract class FileWriterPlugIn
     /// Property to return the type of plug in.
     /// </summary>
     public sealed override PlugInType PlugInType => PlugInType.Writer;
-
-
 
     /// <summary>
     /// Function to write the file to the specified path.
@@ -230,7 +225,6 @@ public abstract class FileWriterPlugIn
             throw new ArgumentNullException(nameof(filePath));
         }
 
-
         if (workspace is null)
         {
             throw new ArgumentNullException(nameof(workspace));
@@ -248,8 +242,6 @@ public abstract class FileWriterPlugIn
     /// <param name="hostServices">The services to pass from the host application to the plug in.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="hostServices"/> parameter is <b>null</b>.</exception>
     public void Initialize(IHostServices hostServices) => HostServices = hostServices ?? throw new ArgumentNullException(nameof(hostServices));
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FileWriterPlugIn"/> class.
@@ -274,5 +266,4 @@ public abstract class FileWriterPlugIn
 
         FileExtensions = extensions;
     }
-
 }

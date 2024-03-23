@@ -23,7 +23,6 @@
 // Created: February 12, 2020 6:29:10 PM
 // 
 
-
 using System.ComponentModel;
 
 namespace Gorgon.Editor.ImageEditor.ViewModels;

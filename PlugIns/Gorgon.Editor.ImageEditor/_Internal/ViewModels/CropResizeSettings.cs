@@ -23,7 +23,6 @@
 // Created: January 16, 2019 8:44:21 AM
 // 
 
-
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Imaging;
@@ -56,8 +55,6 @@ internal class CropResizeSettings
     private ImageFilter _imageFilter = ImageFilter.Point;
     // The directory for the imported file.
     private string _importFileDirectory;
-
-
 
     /// <summary>Property to return whether the panel is modal.</summary>
     public override bool IsModal => true;
@@ -230,8 +227,6 @@ internal class CropResizeSettings
         }
     }
 
-
-
     /// <summary>Function to inject dependencies for the view model.</summary>
     /// <param name="injectionParameters">The parameters to inject.</param>
     /// <remarks>
@@ -240,5 +235,4 @@ internal class CropResizeSettings
     protected override void OnInitialize(HostedPanelViewModelParameters injectionParameters)
     {
     }
-
 }

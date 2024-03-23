@@ -23,7 +23,6 @@
 // Created: June 13, 2018 4:17:02 PM
 // 
 
-
 using Gorgon.Collections;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
@@ -113,8 +112,6 @@ public class Gorgon2DShaderStateBuilder<T>
 
     // The shader to build.
     private readonly Gorgon2DShaderState<T> _workingShader = new();
-
-
 
     /// <summary>
     /// Function to copy a list of items.
@@ -350,5 +347,4 @@ public class Gorgon2DShaderStateBuilder<T>
         shader.Shader = _workingShader.Shader;
         return shader;
     }
-
 }

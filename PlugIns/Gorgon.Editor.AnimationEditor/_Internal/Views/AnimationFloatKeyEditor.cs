@@ -23,7 +23,6 @@
 // Created: July 4, 2020 10:31:35 PM
 // 
 
-
 using System.ComponentModel;
 using System.Numerics;
 using Gorgon.Editor.AnimationEditor.Properties;
@@ -43,8 +42,6 @@ internal partial class AnimationFloatKeyEditor
     // The lock for events.
     private int _numericEventsAssigned = 1;
 
-
-
     /// <summary>Property to return the data context assigned to this view.</summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public IKeyValueEditor ViewModel
@@ -52,8 +49,6 @@ internal partial class AnimationFloatKeyEditor
         get;
         private set;
     }
-
-
 
     /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -229,7 +224,6 @@ internal partial class AnimationFloatKeyEditor
                         continue;
                 }
 
-
                 label.Text = values.DisplayName;
                 label.Visible = true;
 
@@ -302,8 +296,6 @@ internal partial class AnimationFloatKeyEditor
 
         ViewModel.PropertyChanged += DataContext_PropertyChanged;
     }
-
-
 
     /// <summary>Initializes a new instance of the <see cref="AnimationFloatKeyEditor"/> class.</summary>
     public AnimationFloatKeyEditor() => InitializeComponent();

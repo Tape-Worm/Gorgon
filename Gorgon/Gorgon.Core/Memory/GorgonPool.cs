@@ -23,7 +23,6 @@
 // Created: June 11, 2016 7:26:28 PM
 // 
 
-
 using System.Collections.Concurrent;
 using Gorgon.Core;
 using Gorgon.Properties;
@@ -59,8 +58,6 @@ public class GorgonPool<T>
     // The number of available slots.
     private int _availableSlots;
 
-
-
     /// <summary>
     /// Property to set or return the allocator to use when creating new instances of an object.
     /// </summary>
@@ -86,8 +83,6 @@ public class GorgonPool<T>
     /// </remarks>
     /// <seealso cref="Reset"/>
     public int AvailableSlots => _availableSlots;
-
-
 
     /// <summary>
     /// Function to allocate a new object from the pool.
@@ -176,8 +171,6 @@ public class GorgonPool<T>
         Interlocked.Exchange(ref _availableSlots, TotalSize);
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonLinearPool{T}"/> class.
     /// </summary>
@@ -202,5 +195,4 @@ public class GorgonPool<T>
         _availableSlots = TotalSize = objectCount;
         _freeList = new ConcurrentStack<T>();
     }
-
 }

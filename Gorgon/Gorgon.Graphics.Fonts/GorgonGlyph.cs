@@ -23,7 +23,6 @@
 // Created: Friday, April 13, 2012 7:12:15 AM
 // 
 
-
 using System.Globalization;
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
@@ -38,7 +37,6 @@ namespace Gorgon.Graphics.Fonts;
 public sealed class GorgonGlyph
     : IGorgonNamedObject, IEquatable<GorgonGlyph>
 {
-
     /// <summary>
     /// Property to return the name of this object.
     /// </summary>
@@ -155,8 +153,6 @@ public sealed class GorgonGlyph
         set;
     }
 
-
-
     /// <summary>
     /// Function to change the texture pointed at by this glyph.
     /// </summary>
@@ -253,8 +249,6 @@ public sealed class GorgonGlyph
     /// <returns><see langword="true" /> if the current object is equal to the <paramref name="obj" /> parameter; otherwise, <see langword="false" />.</returns>
     public override bool Equals(object obj) => Equals(obj as GorgonGlyph);
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonGlyph"/> class.
     /// </summary>
@@ -270,5 +264,4 @@ public sealed class GorgonGlyph
         Character = character;
         Advance = advance;
     }
-
 }

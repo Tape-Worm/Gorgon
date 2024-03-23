@@ -23,7 +23,6 @@
 // Created: August 3, 2020 3:51:47 PM
 // 
 
-
 using System.ComponentModel;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
@@ -33,7 +32,6 @@ using Gorgon.Editor.UI;
 using Gorgon.Graphics.Fonts;
 using Gorgon.IO;
 using Gorgon.Math;
-
 
 namespace Gorgon.Editor.FontEditor;
 
@@ -58,8 +56,6 @@ internal class FontContent
     private bool _isItalic;
     // The selected font family.
     private FontFamily _fontFamily;
-
-
 
     /// <summary>
     /// Property to set or return the currently active hosted panel.
@@ -365,8 +361,6 @@ internal class FontContent
     {
         get;
     }
-
-
 
     /// <summary>Handles the FontUpdating event of the FontService control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -778,7 +772,6 @@ internal class FontContent
             }
         }
 
-
         if (points == (FontUnits == GorgonFontHeightMode.Points))
         {
             return;
@@ -904,7 +897,6 @@ internal class FontContent
             GorgonFontInfo undoArgs = new(_info);
             bool isBold = _info.FontStyle is GorgonFontStyle.Bold or GorgonFontStyle.BoldItalics;
             bool isItalic = _info.FontStyle is GorgonFontStyle.Italics or GorgonFontStyle.BoldItalics;
-
 
             if ((!localFamily.IsStyleAvailable(FontStyle.Regular)) && (_info.FontStyle == GorgonFontStyle.Normal))
             {
@@ -1360,8 +1352,6 @@ internal class FontContent
         base.OnUnload();
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="FontContent"/> class.</summary>
     public FontContent()
     {
@@ -1379,5 +1369,4 @@ internal class FontContent
         ActivateCharacterSelectionCommand = new EditorCommand<object>(DoActivateCharacterSelection, CanActivateCharacterSelection);
         NewFontCommand = new EditorAsyncCommand<object>(DoCreateFontAsync, CanCreateFont);
     }
-
 }

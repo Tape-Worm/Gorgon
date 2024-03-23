@@ -23,7 +23,6 @@
 // Created: Thursday, January 10, 2013 8:17:04 AM
 // 
 
-
 using System.Drawing.Imaging;
 using Gorgon.Core;
 using DrawingGraphics = System.Drawing.Graphics;
@@ -42,8 +41,6 @@ internal class Spray
     // List if brushes to use.
     private readonly SolidBrush[] _brushes;
 
-
-
     /// <summary>
     /// Property to return the image used for the surface.
     /// </summary>
@@ -52,8 +49,6 @@ internal class Spray
         get;
         private set;
     }
-
-
 
     /// <summary>
     /// Function to resize the drawing area.

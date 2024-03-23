@@ -23,7 +23,6 @@
 // Created: May 4, 2020 12:18:53 AM
 // 
 
-
 using System.Numerics;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.PlugIns;
@@ -39,13 +38,10 @@ namespace Gorgon.Editor.SpriteEditor;
 internal class SpriteClipContext
     : EditorContext<SpriteClipContextParameters>, ISpriteClipContext
 {
-
     /// <summary>
     /// The name of the viewer.
     /// </summary>
     public const string ViewerName = "ContextSpriteClip";
-
-
 
     // The sprite content view model.
     private ISpriteContent _spriteContent;
@@ -57,8 +53,6 @@ internal class SpriteClipContext
     private int _arrayIndex;
     // The size for the fixed width/height sprite clipping.
     private Vector2? _fixedSize;
-
-
 
     /// <summary>Property to return the context name.</summary>
     /// <remarks>This value is used as a unique ID for the context.</remarks>
@@ -139,7 +133,6 @@ internal class SpriteClipContext
         }
     }
 
-
     /// <summary>
     /// Property to return the command used to update the array index.
     /// </summary>
@@ -179,8 +172,6 @@ internal class SpriteClipContext
             return string.Format(Resources.GORSPR_TEXT_SPRITE_INFO, rect.Left, rect.Top, rect.Right, rect.Bottom, rect.Width, rect.Height);
         }
     }
-
-
 
     /// <summary>
     /// Function to determine whether the array index for the sprite can be updated.
@@ -323,8 +314,6 @@ internal class SpriteClipContext
         _rect = _spriteContent.Texture?.ToPixel(_spriteContent.TextureCoordinates) ?? GorgonRectangleF.Empty;
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="SpriteClipContext"/> class.</summary>
     public SpriteClipContext()
     {
@@ -333,5 +322,4 @@ internal class SpriteClipContext
         FixedSizeCommand = new EditorCommand<Vector2?>(DoUseFixedSize, CanUseFixedSize);
         CancelCommand = new EditorCommand<object>(DoCancel, CanCancel);
     }
-
 }

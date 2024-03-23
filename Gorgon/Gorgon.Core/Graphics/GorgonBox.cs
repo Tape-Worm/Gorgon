@@ -22,14 +22,14 @@
 // Created: Thursday, March 15, 2012 7:34:32 PM
 // 
 
+using System.Numerics;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using Gorgon.Core;
+using Gorgon.Json;
 using Gorgon.Math;
 using Gorgon.Properties;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
 using Newtonsoft.Json;
-using Gorgon.Json;
-using System.Numerics;
-using Gorgon.Core;
 
 namespace Gorgon.Graphics;
 

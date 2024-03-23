@@ -23,7 +23,6 @@
 // Created: Saturday, January 19, 2013 7:32:49 PM
 // 
 
-
 using System.Numerics;
 using System.Text;
 using Gorgon.Core;
@@ -37,7 +36,6 @@ using Gorgon.Math;
 using Gorgon.Renderers;
 using Gorgon.Timing;
 using Gorgon.UI;
-
 
 namespace Gorgon.Examples;
 
@@ -88,8 +86,6 @@ public partial class Form
     private bool _showHelp = true;
     // Show rendering statistics.	
     private bool _showStats;
-
-
 
     /// <summary>
     /// Function to reset the blur targets to the original image.
@@ -169,7 +165,6 @@ public partial class Form
 
         // Switch back to our screen for rendering.
         _graphics.SetRenderTarget(_screen.RenderTargetView);
-
 
         // Draw the base.
         _renderer.Begin();

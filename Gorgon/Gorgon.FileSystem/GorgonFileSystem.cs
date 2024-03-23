@@ -23,7 +23,6 @@
 // Created: Monday, June 27, 2011 8:54:59 AM
 // 
 
-
 using System.Diagnostics;
 using System.Globalization;
 using System.Text.RegularExpressions;
@@ -112,7 +111,6 @@ namespace Gorgon.IO;
 public class GorgonFileSystem
     : IGorgonFileSystem, IGorgonFileSystemNotifier
 {
-
     /// <summary>
     /// Directory separator character.
     /// </summary>
@@ -128,8 +126,6 @@ public class GorgonFileSystem
     private readonly HashSet<GorgonFileSystemMountPoint> _mountProviders;
     // A read/write version of the RootDirectory property.
     private readonly VirtualDirectory _rootDirectory;
-
-
 
     /// <summary>
     /// Property to return the <see cref="IGorgonFileSystemProvider"/> installed in this file system.
@@ -182,8 +178,6 @@ public class GorgonFileSystem
     /// </para>
     /// </remarks>
     public IGorgonVirtualDirectory RootDirectory => _rootDirectory;
-
-
 
     /// <summary>
     /// Function to mount a file as a mount point in the virtual file system.
@@ -345,7 +339,6 @@ public class GorgonFileSystem
 
             VirtualDirectory directory = GetVirtualDirectory(directoryName) ?? throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, directoryName));
 
-
             // Update the file information to the most recent provider.
             if (!directory.Files.TryGetValue(fileInfo.Name, out VirtualFile virtualFile))
             {
@@ -364,7 +357,6 @@ public class GorgonFileSystem
 
         _log.Print("{0} directories parsed, and {1} files processed.", LoggingLevel.Simple, data.Directories.Count, data.Files.Count);
     }
-
 
     /// <summary>
     /// Function to determine if the name of an object matches the pattern specified.
@@ -1201,7 +1193,6 @@ public class GorgonFileSystem
                                                                             mountPointDirectory.MountPoint.PhysicalPath,
                                                                             mountPointDirectory.MountPoint.MountLocation));
 
-
                 mountPointDirectory.MountPoint = newMountPoint;
                 return;
             }
@@ -1397,8 +1388,6 @@ public class GorgonFileSystem
         }
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonFileSystem"/> class.
     /// </summary>
@@ -1457,5 +1446,4 @@ public class GorgonFileSystem
 
         _rootDirectory = new VirtualDirectory(default, this, null, "/");
     }
-
 }

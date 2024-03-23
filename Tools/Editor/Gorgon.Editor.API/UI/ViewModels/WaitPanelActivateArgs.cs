@@ -23,7 +23,6 @@
 // Created: August 31, 2018 2:35:59 PM
 // 
 
-
 namespace Gorgon.Editor.UI;
 
 /// <summary>
@@ -37,7 +36,6 @@ namespace Gorgon.Editor.UI;
 public class WaitPanelActivateArgs(string message, string title)
         : EventArgs
 {
-
     /// <summary>
     /// Property to return the message for the wait panel overlay.
     /// </summary>
@@ -53,6 +51,5 @@ public class WaitPanelActivateArgs(string message, string title)
     {
         get;
     } = title ?? string.Empty;
-
 
 }

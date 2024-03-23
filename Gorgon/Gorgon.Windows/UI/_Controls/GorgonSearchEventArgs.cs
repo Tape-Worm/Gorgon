@@ -23,7 +23,6 @@
 // Created: December 12, 2018 11:14:05 AM
 // 
 
-
 namespace Gorgon.UI;
 
 /// <summary>
@@ -34,7 +33,6 @@ namespace Gorgon.UI;
 public class GorgonSearchEventArgs(string searchText)
         : EventArgs
 {
-
     /// <summary>
     /// Property to return the text to search for.
     /// </summary>
@@ -42,6 +40,5 @@ public class GorgonSearchEventArgs(string searchText)
     {
         get;
     } = searchText ?? string.Empty;
-
 
 }

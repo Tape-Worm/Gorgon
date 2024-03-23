@@ -23,7 +23,6 @@
 // Created: May 4, 2020 12:18:53 AM
 // 
 
-
 using Gorgon.Diagnostics;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.SpriteEditor.Properties;
@@ -55,8 +54,6 @@ internal class SpritePickContext
     private IGorgonImage _imageData;
     // The padding, in pixels, around the picked rectangle.
     private int _padding;
-
-
 
     /// <summary>Property to return the context name.</summary>
     /// <remarks>This value is used as a unique ID for the context.</remarks>
@@ -371,8 +368,6 @@ internal class SpritePickContext
         base.OnUnload();
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="SpritePickContext"/> class.</summary>
     public SpritePickContext()
     {
@@ -381,5 +376,4 @@ internal class SpritePickContext
         UpdateArrayIndexCommand = new EditorCommand<int>(DoUpdateArrayIndex, CanUpdateArrayIndex);
         CancelCommand = new EditorCommand<object>(DoCancel, CanCancel);
     }
-
 }

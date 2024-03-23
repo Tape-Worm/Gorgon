@@ -23,10 +23,9 @@
 // Created: May 4, 2020 12:12:25 AM
 // 
 
-
+using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Imaging;
-using Gorgon.Editor.UI;
 
 namespace Gorgon.Editor.SpriteEditor;
 

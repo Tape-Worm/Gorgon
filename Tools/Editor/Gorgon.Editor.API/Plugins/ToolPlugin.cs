@@ -23,7 +23,6 @@
 // Created: April 18, 2019 8:48:54 AM
 // 
 
-
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
 using Gorgon.IO;
@@ -56,8 +55,6 @@ public abstract class ToolPlugIn(string description)
     private int _initialized;
     // Tool services passed in from the host application.
     private IHostContentServices _hostToolServices;
-
-
 
     /// <summary>
     /// Property to return the services from the host application.
@@ -103,8 +100,6 @@ public abstract class ToolPlugIn(string description)
 
     /// <summary>Property to return the type of this plug in.</summary>
     public sealed override PlugInType PlugInType => PlugInType.Tool;
-
-
 
     /// <summary>
     /// Function to allow custom plug ins to implement custom actions when a project is created/opened.
@@ -205,7 +200,6 @@ public abstract class ToolPlugIn(string description)
         HostToolServices = null;
     }
 
-
     /// <summary>
     /// Function to perform any required initialization for the plugin.
     /// </summary>
@@ -228,7 +222,4 @@ public abstract class ToolPlugIn(string description)
 
         OnInitialize();
     }
-
-
-
 }

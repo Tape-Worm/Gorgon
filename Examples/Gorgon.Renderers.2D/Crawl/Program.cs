@@ -23,7 +23,6 @@
 // Created: July 18, 2018 4:04:19 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Examples.Properties;
@@ -33,7 +32,6 @@ using Gorgon.Graphics.Fonts;
 using Gorgon.Renderers;
 using Gorgon.Timing;
 using Gorgon.UI;
-
 
 namespace Gorgon.Examples;
 
@@ -63,12 +61,6 @@ static class Program
     private static GorgonTextSprite _crawlText;
     // The position of the crawl text.
     private static Vector2 _crawlPosition;
-
-
-
-
-
-
 
     /// <summary>
     /// Function to create the render targets to display.
@@ -289,5 +281,4 @@ static class Program
             _graphics?.Dispose();
         }
     }
-
 }

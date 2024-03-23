@@ -23,7 +23,6 @@
 // Created: September 7, 2020 11:53:49 PM
 // 
 
-
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
@@ -49,8 +48,6 @@ public struct GorgonGraphicsStatistics
 
     // The number of stream out calls.
     internal long _streamOutCount;
-
-
 
     /// <summary>
     /// Property to return the number of calls to clear render targets or depth buffers.

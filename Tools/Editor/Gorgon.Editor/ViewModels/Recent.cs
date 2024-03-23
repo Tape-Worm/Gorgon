@@ -23,7 +23,6 @@
 // Created: October 28, 2018 4:03:36 PM
 // 
 
-
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using Gorgon.Core;
@@ -47,8 +46,6 @@ internal class Recent
     // The project manager for the application.
     private ProjectManager _projectManager;
 
-
-
     /// <summary>Property to return the list of recent files.</summary>
     public ObservableCollection<RecentItem> Files
     {
@@ -68,8 +65,6 @@ internal class Recent
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to delete a project item.
@@ -188,8 +183,6 @@ internal class Recent
         Unload();
         Files.CollectionChanged -= Files_CollectionChanged;
     }
-
-
 
     /// <summary>Initializes a new instance of the <see cref="Recent"/> class.</summary>
     public Recent() => DeleteItemCommand = new EditorCommand<RecentItem>(DoDeleteItemAsync, args => args is not null);

@@ -23,7 +23,6 @@
 // Created: June 9, 2018 10:57:03 AM
 // 
 
-
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Gorgon.Graphics;
@@ -243,7 +242,6 @@ internal class TextSpriteTransformer
         {
             return;
         }
-
 
         int oldSize = 0;
         int newSize = (((characterCount + (characterCount / 2)) + 63) & ~63) * 4;

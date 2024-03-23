@@ -23,7 +23,6 @@
 // Created: March 24, 2018 4:00:49 PM
 // 
 
-
 namespace Gorgon.Security;
 
 /// <summary>

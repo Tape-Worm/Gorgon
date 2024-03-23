@@ -23,7 +23,6 @@
 // Created: June 7, 2018 3:13:51 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Collections;
 using Gorgon.Core;
@@ -51,8 +50,6 @@ public class GorgonPolySprite
         WorldMatrix = Matrix4x4.Identity,
         TextureTransform = new Vector4(0, 0, 1, 1)
     };
-
-
 
     /// <summary>
     /// Property to return the read/write list of vertices for the poly sprite.
@@ -435,8 +432,6 @@ public class GorgonPolySprite
         }
     }
 
-
-
     /// <summary>
     /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
     /// </summary>
@@ -616,7 +611,6 @@ public class GorgonPolySprite
             throw new ArgumentNullException(nameof(indices));
         }
 
-
         if ((vertices.Count < 3) || (indices.Count < 3))
         {
             throw new GorgonException(GorgonResult.CannotCreate, Resources.GOR2D_ERR_POLY_SPRITE_NOT_ENOUGH_VERTS);
@@ -661,13 +655,10 @@ public class GorgonPolySprite
         return newSprite;
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonPolySprite"/> class.
     /// </summary>
     internal GorgonPolySprite()
     {
     }
-
 }

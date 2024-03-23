@@ -23,7 +23,6 @@
 // Created: Saturday, September 19, 2015 8:34:24 PM
 // 
 
-
 using System.Text;
 
 namespace Gorgon.IO.Providers;
@@ -41,8 +40,6 @@ internal class PhysicalFileInfo
     private readonly string _physicalRoot;
     // The buffer used to update the virtual path.
     private readonly StringBuilder _pathBuffer = new();
-
-
 
     /// <summary>
     /// Property to return the full path to the physical file.
@@ -121,8 +118,6 @@ internal class PhysicalFileInfo
     /// </remarks>
     public bool IsEncrypted => false;
 
-
-
     /// <summary>Function to refresh the file information.</summary>
     public void Refresh()
     {
@@ -137,8 +132,6 @@ internal class PhysicalFileInfo
 
         VirtualPath = _pathBuffer.ToString();
     }
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PhysicalFileInfo" /> class.
@@ -164,5 +157,4 @@ internal class PhysicalFileInfo
         _fileInfo = file;
         VirtualPath = virtualPath;
     }
-
 }

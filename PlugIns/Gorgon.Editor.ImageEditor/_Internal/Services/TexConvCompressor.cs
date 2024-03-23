@@ -23,7 +23,6 @@
 // Created: November 12, 2018 10:23:07 PM
 // 
 
-
 using System.Diagnostics;
 using Gorgon.Core;
 using Gorgon.Editor.ImageEditor.Properties;
@@ -104,16 +103,12 @@ internal class TexConvCompressor(FileInfo texConvFile, IGorgonFileSystemWriter<S
         }
     };
 
-
-
     // The path to the texture converter process.
     private readonly FileInfo _texConv = texConvFile;
     // The file system writer to use.
     private readonly IGorgonFileSystemWriter<Stream> _writer = scratchWriter;
     // PlugIn image file codec.
     private readonly IGorgonImageCodec _codec = codec;
-
-
 
     /// <summary>
     /// Function to compress an image using block compression.
@@ -242,6 +237,4 @@ internal class TexConvCompressor(FileInfo texConvFile, IGorgonFileSystemWriter<S
             }
         }
     }
-
-
 }

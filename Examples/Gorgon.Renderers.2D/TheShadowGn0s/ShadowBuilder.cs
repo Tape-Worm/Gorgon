@@ -23,7 +23,6 @@
 // Created: August 25, 2018 12:04:13 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -51,8 +50,6 @@ public class ShadowBuilder(Gorgon2D renderer, Gorgon2DGaussBlurEffect effect, Go
     // Our sprites to draw.
     private readonly GorgonSprite _sprite1 = sprite1;
     private readonly GorgonSprite _sprite2 = sprite2;
-
-
 
     /// <summary>
     /// Function to build the shadows for the sprites.
@@ -128,9 +125,6 @@ public class ShadowBuilder(Gorgon2D renderer, Gorgon2DGaussBlurEffect effect, Go
             }
         ];
 
-
         return (resultSprites, resultTexture);
     }
-
-
 }

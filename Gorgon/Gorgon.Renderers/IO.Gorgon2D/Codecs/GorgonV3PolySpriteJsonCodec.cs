@@ -23,7 +23,6 @@
 // Created: August 11, 2018 3:43:13 PM
 // 
 
-
 using System.Numerics;
 using System.Text;
 using Gorgon.Core;
@@ -49,7 +48,6 @@ namespace Gorgon.IO;
 public class GorgonV3PolySpriteJsonCodec(Gorgon2D renderer)
         : GorgonPolySpriteCodecCommon(renderer, Resources.GOR2DIO_V3_POLYSPRITE_JSON_CODEC, Resources.GOR2DIO_V3_POLYSPRITE_JSON_CODEC_DESCRIPTION)
 {
-
     /// <summary>
     /// Property to return whether or not the codec can decode sprite data.
     /// </summary>
@@ -64,8 +62,6 @@ public class GorgonV3PolySpriteJsonCodec(Gorgon2D renderer)
     /// Property to return the version of sprite data that the codec supports.
     /// </summary>
     public override Version Version => CurrentVersion;
-
-
 
     /// <summary>
     /// Function to retrieve the stream as JSON.Net object.
@@ -285,6 +281,4 @@ public class GorgonV3PolySpriteJsonCodec(Gorgon2D renderer)
 
         return result;
     }
-
-
 }

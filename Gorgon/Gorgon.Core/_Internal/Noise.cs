@@ -160,7 +160,6 @@ internal class Noise
         return 40.0f * (n0 + n1 + n2); // The scale factor is preliminary!
     }
 
-
     internal static float Generate(float x, float y, float z)
     {
         // Simple skewing factors for the 3D case

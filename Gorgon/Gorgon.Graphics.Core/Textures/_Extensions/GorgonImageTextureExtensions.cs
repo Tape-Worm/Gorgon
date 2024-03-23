@@ -23,7 +23,6 @@
 // Created: July 20, 2016 10:40:09 PM
 // 
 
-
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.GdiPlus;
 

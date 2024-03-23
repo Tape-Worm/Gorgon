@@ -23,7 +23,6 @@
 // Created: August 26, 2018 6:58:49 PM
 // 
 
-
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts;
 using Gorgon.Renderers;
@@ -35,7 +34,6 @@ namespace Gorgon.Editor.Rendering;
 /// </summary>
 public interface IGraphicsContext
 {
-
     /// <summary>
     /// Property to return information about the video adapter selected.
     /// </summary>
@@ -75,8 +73,6 @@ public interface IGraphicsContext
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to return a leased out swap chain.

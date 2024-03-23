@@ -23,7 +23,6 @@
 // Created: August 2, 2020 12:56:22 PM
 // 
 
-
 using Gorgon.Animation;
 using Gorgon.Editor;
 using Gorgon.Graphics.Core;
@@ -51,7 +50,6 @@ namespace Gorgon.IO;
 /// </remarks>
 public interface IGorgonContentLoader
 {
-
     /// <summary>
     /// Property to return a list of codecs that can be used to load animation content data.
     /// </summary>
@@ -108,8 +106,6 @@ public interface IGorgonContentLoader
         get;
     }
 
-
-
     /// <summary>
     /// Function to retrieve the dependencies for a file.
     /// </summary>
@@ -134,7 +130,6 @@ public interface IGorgonContentLoader
     /// </para>
     /// </remarks>
     IReadOnlyDictionary<string, string> GetFileAttributes(string path);
-
 
     /// <summary>
     /// Function to load an image from the editor file system.

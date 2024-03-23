@@ -23,7 +23,6 @@
 // Created: Saturday, April 14, 2012 10:56:23 AM
 // 
 
-
 using Gorgon.Graphics.Fonts.Properties;
 
 namespace Gorgon.Graphics.Fonts;
@@ -33,7 +32,6 @@ namespace Gorgon.Graphics.Fonts;
 /// </summary>
 internal static class GlyphPacker
 {
-
     /// <summary>
     /// Property to return the root node.
     /// </summary>
@@ -42,8 +40,6 @@ internal static class GlyphPacker
         get;
         private set;
     }
-
-
 
     /// <summary>
     /// Function to create the root node.
@@ -77,5 +73,4 @@ internal static class GlyphPacker
 
         return newNode?.Region;
     }
-
 }

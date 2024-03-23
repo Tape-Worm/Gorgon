@@ -23,7 +23,6 @@
 // Created: Friday, July 19, 2013 10:13:11 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
@@ -55,7 +54,6 @@ namespace Gorgon.Graphics.Core;
 public sealed class GorgonRenderTarget2DView
         : GorgonRenderTargetView, IGorgonTexture2DInfo, IGorgonImageInfo
 {
-
     /// <summary>
     /// Property to set or return the owner <see cref="RenderTargetFactory"/> for this texture.
     /// </summary>
@@ -235,8 +233,6 @@ public sealed class GorgonRenderTarget2DView
     /// Property to return whether the resource used by this view can be shared or not.
     /// </summary>
     public TextureSharingOptions Shared => Texture.Shared;
-
-
 
     /// <summary>
     /// Function to retrieve the view description.
@@ -551,8 +547,6 @@ public sealed class GorgonRenderTarget2DView
         return result;
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonRenderTarget2DView" /> class.
     /// </summary>
@@ -573,5 +567,4 @@ public sealed class GorgonRenderTarget2DView
         MipHeight = (Height >> MipSlice).Max(1);
         Bounds = new GorgonRectangle(0, 0, Width, Height);
     }
-
 }

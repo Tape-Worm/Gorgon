@@ -23,7 +23,6 @@
 // Created: Monday, March 05, 2012 10:34:16 AM
 // 
 
-
 using System.Numerics;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -64,8 +63,6 @@ public class GorgonOrthoCamera(GorgonGraphics graphics, Vector2 viewDimensions, 
     private Vector2 _anchor = Vector2.Zero;
     // Angle of rotation on the Z axis.
     private float _angleZ;
-
-
 
     /// <summary>
     /// Property to set or return the rotation on the Z axis, in degrees.

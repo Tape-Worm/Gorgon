@@ -23,7 +23,6 @@
 // Created: August 29, 2018 8:16:04 PM
 // 
 
-
 using Newtonsoft.Json;
 
 // TODO:
@@ -40,7 +39,6 @@ namespace Gorgon.Editor.ProjectData;
 public interface IProject
     : IProjectMetadata
 {
-
     /// <summary>
     /// Property to return the workspace used by the project.
     /// </summary>
@@ -93,5 +91,4 @@ public interface IProject
     {
         get;
     }
-
 }

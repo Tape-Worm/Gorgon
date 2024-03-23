@@ -71,7 +71,7 @@ public static class GorgonRandom
     /// </summary>    
     public static int Seed
     {
-        get => _seed;        
+        get => _seed;
         set
         {
             Noise.Seed = value;

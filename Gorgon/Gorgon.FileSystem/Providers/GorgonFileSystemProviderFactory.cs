@@ -23,7 +23,6 @@
 // Created: Tuesday, June 2, 2015 9:56:56 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.IO.Properties;
@@ -83,8 +82,6 @@ public sealed class GorgonFileSystemProviderFactory(GorgonMefPlugInCache plugInC
     private readonly GorgonMefPlugInCache _plugInCache = plugInCache ?? throw new ArgumentNullException(nameof(plugInCache));
     // The application log file.
     private readonly IGorgonLog _log = log ?? GorgonLog.NullLog;
-
-
 
     /// <summary>
     /// Function to create a new file system provider.
@@ -181,6 +178,4 @@ public sealed class GorgonFileSystemProviderFactory(GorgonMefPlugInCache plugInC
 
         return [.. plugInService.GetPlugIns<GorgonFileSystemProvider>()];
     }
-
-
 }

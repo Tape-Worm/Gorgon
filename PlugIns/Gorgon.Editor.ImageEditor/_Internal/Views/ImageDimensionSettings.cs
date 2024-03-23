@@ -23,7 +23,6 @@
 // Created: January 15, 2019 9:04:41 PM
 // 
 
-
 using System.ComponentModel;
 using Gorgon.Editor.ImageEditor.Properties;
 using Gorgon.Editor.ImageEditor.ViewModels;
@@ -39,7 +38,6 @@ namespace Gorgon.Editor.ImageEditor;
 internal partial class ImageDimensionSettings
     : EditorSubPanelCommon, IDataContext<IDimensionSettings>
 {
-
     /// <summary>Property to return the data context assigned to this view.</summary>
     /// <value>The data context.</value>
     [Browsable(false)]
@@ -48,8 +46,6 @@ internal partial class ImageDimensionSettings
         get;
         private set;
     }
-
-
 
     /// <summary>
     /// Function to validate the state of the controls in the view.
@@ -210,7 +206,6 @@ internal partial class ImageDimensionSettings
         control.Increment = steps;
     }
 
-
     /// <summary>Handles the ValueChanged event of the NumericWidth control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
@@ -275,7 +270,6 @@ internal partial class ImageDimensionSettings
 
         ViewModel.PropertyChanged -= DataContext_PropertyChanged;
     }
-
 
     /// <summary>
     /// Function called when the view should be reset by a <b>null</b> data context.
@@ -389,8 +383,6 @@ internal partial class ImageDimensionSettings
         ViewModel.PropertyChanged += DataContext_PropertyChanged;
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="ImageDimensionSettings"/> class.</summary>
     public ImageDimensionSettings()
     {
@@ -404,5 +396,4 @@ internal partial class ImageDimensionSettings
             ComboImageFilter.Items.Add(filter);
         }
     }
-
 }

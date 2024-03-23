@@ -23,7 +23,6 @@
 // Created: December 10, 2018 8:07:48 PM
 // 
 
-
 using System.Xml.Linq;
 
 namespace Gorgon.Editor.GorPackWriterPlugIn;
@@ -33,7 +32,6 @@ namespace Gorgon.Editor.GorPackWriterPlugIn;
 /// </summary>
 internal class CompressJob
 {
-
     /// <summary>
     /// Property to return the files to process for this job.
     /// </summary>

@@ -23,7 +23,6 @@
 // Created: Monday, April 02, 2012 2:59:16 PM
 // 
 
-
 using System.Runtime.InteropServices;
 using Gorgon.Core;
 using Gorgon.Graphics;
@@ -45,7 +44,6 @@ namespace Gorgon.Renderers;
 public class Gorgon2D1BitEffect
     : Gorgon2DEffect, IGorgon2DCompositorEffect
 {
-
     /// <summary>
     /// Settings for the effect shader.
     /// </summary>
@@ -88,8 +86,6 @@ public class Gorgon2D1BitEffect
         public bool UseAlpha => _useAlpha != 0;
     }
 
-
-
     // Constant buffer for the 1 bit information.
     private GorgonConstantBufferView _1BitBuffer;
     // Settings for the effect.
@@ -102,8 +98,6 @@ public class Gorgon2D1BitEffect
     private Gorgon2DShaderState<GorgonPixelShader> _shaderState;
     // The batch state to render.
     private Gorgon2DBatchState _batchState;
-
-
 
     /// <summary>
     /// Property to set or return whether to use an average of the texel colors or to use a grayscale calculation.
@@ -122,7 +116,6 @@ public class Gorgon2D1BitEffect
             _isUpdated = true;
         }
     }
-
 
     /// <summary>
     /// Property to set or return whether the alpha channel should be included in the conversion.
@@ -177,8 +170,6 @@ public class Gorgon2D1BitEffect
             _isUpdated = true;
         }
     }
-
-
 
     /// <summary>
     /// Function called to initialize the effect.
@@ -314,8 +305,6 @@ public class Gorgon2D1BitEffect
         End();
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="Gorgon2D1BitEffect"/> class.
     /// </summary>
@@ -327,5 +316,4 @@ public class Gorgon2D1BitEffect
         Macros.Add(new GorgonShaderMacro("GRAYSCALE_EFFECT"));
         Macros.Add(new GorgonShaderMacro("ONEBIT_EFFECT"));
     }
-
 }

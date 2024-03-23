@@ -23,7 +23,6 @@
 // Created: July 28, 2016 11:49:51 PM
 // 
 
-
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core;
@@ -50,7 +49,6 @@ namespace Gorgon.Graphics.Core;
 public class GorgonDepthStencilState
     : IEquatable<GorgonDepthStencilState>
 {
-
     /// <summary>
     /// The default depth/stencil state.
     /// </summary>
@@ -174,9 +172,6 @@ public class GorgonDepthStencilState
         DepthComparison = Comparison.GreaterEqual
     };
 
-
-
-
     /// <summary>
     /// Property to set or return the depth comparison function.
     /// </summary>
@@ -280,8 +275,6 @@ public class GorgonDepthStencilState
         get;
     }
 
-
-
     /// <summary>
     /// Function to build the Direct3D 11 depth/stencil state.
     /// </summary>
@@ -347,8 +340,6 @@ public class GorgonDepthStencilState
     /// </returns>
     public override int GetHashCode() => HashCode.Combine(BackFaceStencilOp, FrontFaceStencilOp, DepthComparison, IsDepthEnabled, IsDepthWriteEnabled, IsStencilEnabled, StencilReadMask, StencilWriteMask);
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonDepthStencilState"/> class.
     /// </summary>
@@ -377,5 +368,4 @@ public class GorgonDepthStencilState
         BackFaceStencilOp = new GorgonStencilOperation();
         FrontFaceStencilOp = new GorgonStencilOperation();
     }
-
 }

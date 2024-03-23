@@ -23,7 +23,6 @@
 // Created: April 16, 2018 11:19:23 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Graphics.Imaging;
@@ -601,8 +600,6 @@ public sealed class GorgonTexture1DReadWriteView
         return view;
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonTexture1DReadWriteView"/> class.
     /// </summary>
@@ -629,5 +626,4 @@ public sealed class GorgonTexture1DReadWriteView
         ArrayIndex = arrayIndex;
         ArrayCount = arrayCount;
     }
-
 }

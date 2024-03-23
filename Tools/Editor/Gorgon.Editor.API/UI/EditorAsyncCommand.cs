@@ -23,7 +23,6 @@
 // Created: August 26, 2018 12:31:41 PM
 // 
 
-
 namespace Gorgon.Editor.UI;
 
 /// <summary>
@@ -51,8 +50,6 @@ public class EditorAsyncCommand<T>
     private readonly Func<bool> _canExecuteNoArgs;
     // Action called to execute the function.
     private readonly Func<Task> _executeNoArgs;
-
-
 
     /// <summary>
     /// Function to execute the command.
@@ -84,8 +81,6 @@ public class EditorAsyncCommand<T>
 
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="EditorCommand{T}"/> class.
     /// </summary>
@@ -109,6 +104,4 @@ public class EditorAsyncCommand<T>
         _executeNoArgs = execute ?? throw new ArgumentNullException(nameof(execute));
         _canExecuteNoArgs = canExecute;
     }
-
-
 }

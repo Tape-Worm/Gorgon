@@ -23,7 +23,6 @@
 // Created: January 25, 2021 12:55:54 PM
 // 
 
-
 using System.Buffers;
 
 namespace Gorgon.Memory;
@@ -33,7 +32,6 @@ namespace Gorgon.Memory;
 /// </summary>
 public static class GorgonArrayPool<T>
 {
-
     /// <summary>
     /// Property to return an array pool with a maximum size of 1,048,576 items per array.
     /// </summary>
@@ -62,8 +60,6 @@ public static class GorgonArrayPool<T>
     /// </summary>
     public static ArrayPool<T> SharedHuge { get; } = ArrayPool<T>.Create(1_073_741_824, 5);
 
-
-
     /// <summary>
     /// Function to return the best suited pool based on the requested array size.
     /// </summary>
@@ -88,5 +84,4 @@ public static class GorgonArrayPool<T>
 
         return size <= 131_217_728 ? SharedLarge : SharedHuge;
     }
-
 }

@@ -23,7 +23,6 @@
 // Created: Saturday, January 19, 2013 7:32:45 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.UI;
 
@@ -34,7 +33,6 @@ namespace Gorgon.Examples;
 /// </summary>
 static class Program
 {
-
     /// <summary>
     /// The main entry point for the application.
     /// </summary>
@@ -54,5 +52,4 @@ static class Program
             ex.Handle(e => GorgonDialogs.ErrorBox(null, e), GorgonApplication.Log);
         }
     }
-
 }

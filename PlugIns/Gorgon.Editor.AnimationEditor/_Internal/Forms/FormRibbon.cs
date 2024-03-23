@@ -23,7 +23,6 @@
 // Created: April 2, 2019 11:23:30 PM
 // 
 
-
 using System.ComponentModel;
 using System.Numerics;
 using Gorgon.Animation;
@@ -59,8 +58,6 @@ internal partial class FormRibbon
     private IContentRenderer _contentRenderer;
     // The currently active undo/redo handler.
     private IUndoHandler _currentUndoHandler;
-
-
 
     /// <summary>
     /// Property to set or return the current graphics context.
@@ -110,8 +107,6 @@ internal partial class FormRibbon
         get;
         private set;
     }
-
-
 
     /// <summary>Handles the PropertyChanged event of the KeyEditor control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -375,7 +370,6 @@ internal partial class FormRibbon
         ValidateButtons();
     }
 
-
     /// <summary>Handles the Click event of the ButtonAnimationSetKeyframe control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
@@ -622,7 +616,6 @@ internal partial class FormRibbon
                         _ribbonButtons.Add(new WeakReference<KryptonRibbonGroupButton>(item));
                     }
 
-
                     foreach (KryptonRibbonGroupNumericUpDown item in container.Items.OfType<KryptonRibbonGroupNumericUpDown>())
                     {
                         _ribbonNumerics.Add(new WeakReference<KryptonRibbonGroupNumericUpDown>(item));
@@ -822,8 +815,6 @@ internal partial class FormRibbon
         ViewModel.PropertyChanged += DataContext_PropertyChanged;
     }
 
-
-
     /// <summary>Initializes a new instance of the FormRibbon class.</summary>
     public FormRibbon()
     {
@@ -843,5 +834,4 @@ internal partial class FormRibbon
             _menuItems[level] = menuItem;
         }
     }
-
 }

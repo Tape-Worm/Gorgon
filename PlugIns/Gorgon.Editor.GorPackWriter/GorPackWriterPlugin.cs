@@ -23,7 +23,6 @@
 // Created: October 12, 2018 1:38:47 PM
 // 
 
-
 using System.Buffers;
 using System.Diagnostics;
 using System.Globalization;
@@ -54,8 +53,6 @@ internal class GorPackWriterPlugIn
     /// </summary>
     public const int MaxBufferSize = 1048575;
 
-
-
     // The memory stream manager for efficient memory usage.
     private static readonly RecyclableMemoryStreamManager _memStreamManager = new(new RecyclableMemoryStreamManager.Options
     {
@@ -64,8 +61,6 @@ internal class GorPackWriterPlugIn
     });
     // The global buffer used to write out data to a stream.
     private byte[] _globalWriteBuffer;
-
-
 
     /// <summary>Property to return the equivalent type name for v2 of the Gorgon file writer plugin.</summary>
     /// <remarks>This is here to facilitate importing of file metadata from v2 of the gorgon editor files. Only specify a compatible type here, otherwise things will go wrong.</remarks>
@@ -76,8 +71,6 @@ internal class GorPackWriterPlugIn
     /// </summary>
     /// <value>The capabilities.</value>
     public override WriterCapabilities Capabilities => WriterCapabilities.Compression;
-
-
 
     /// <summary>
     /// Function to create a new path node.
@@ -642,8 +635,6 @@ internal class GorPackWriterPlugIn
         }
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorPackWriterPlugIn"/> class.
     /// </summary>
@@ -651,5 +642,4 @@ internal class GorPackWriterPlugIn
         : base(Resources.GORPKW_DESC, [new GorgonFileExtension("gorPack", Resources.GORPKW_GORPACK_FILE_EXT_DESC)])
     {
     }
-
 }

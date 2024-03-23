@@ -23,7 +23,6 @@
 // Created: Sunday, September 20, 2015 12:06:21 AM
 // 
 
-
 namespace Gorgon.IO.Providers;
 
 /// <summary>
@@ -40,7 +39,6 @@ namespace Gorgon.IO.Providers;
 /// <param name="files">The files.</param>
 public sealed class GorgonPhysicalFileSystemData(IReadOnlyList<string> directories, IReadOnlyList<IGorgonPhysicalFileInfo> files)
 {
-
     /// <summary>
     /// Property to return the available directories from the physical file system
     /// </summary>
@@ -56,8 +54,5 @@ public sealed class GorgonPhysicalFileSystemData(IReadOnlyList<string> directori
     {
         get;
     } = files;
-
-
-
 
 }

@@ -23,7 +23,6 @@
 // Created: February 19, 2023 9:53:51 PM
 // 
 
-
 using Avalonia;
 using Avalonia.Rendering.Composition;
 using Gorgon.Graphics.Core;
@@ -52,8 +51,6 @@ internal class AvaloniaSwapChain(GorgonGraphics graphics, ICompositionGpuInterop
     // The currently active render target image.
     private AvaloniaSwapChainImage _currentImage;
 
-
-
     /// <summary>
     /// Property to return the graphics interface that built this object.
     /// </summary>
@@ -62,8 +59,6 @@ internal class AvaloniaSwapChain(GorgonGraphics graphics, ICompositionGpuInterop
         get;
         private set;
     } = graphics;
-
-
 
     /// <summary>
     /// Function to retrieve the image for the swap chain that is not already in flight.
@@ -147,8 +142,4 @@ internal class AvaloniaSwapChain(GorgonGraphics graphics, ICompositionGpuInterop
             await img.DisposeAsync();
         }
     }
-
-
-
-
 }

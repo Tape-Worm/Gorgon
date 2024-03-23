@@ -23,7 +23,6 @@
 // Created: December 17, 2018 10:00:39 PM
 // 
 
-
 using Gorgon.Editor.ImageEditor.Properties;
 using Gorgon.Editor.ImageEditor.Services;
 using Gorgon.Editor.PlugIns;
@@ -46,8 +45,6 @@ internal class ImageImporterPlugIn
 
     // The codec registry.
     private ICodecRegistry _codecs;
-
-
 
     /// <summary>Function to retrieve the settings interface for this plug in.</summary>
     /// <param name="injector">Objects to inject into the view model.</param>
@@ -144,13 +141,10 @@ internal class ImageImporterPlugIn
         return codecs.CodecFileTypes.FirstOrDefault(item => item.extension == extension).codec;
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="ImageImporterPlugIn"/> class.</summary>
     public ImageImporterPlugIn()
         : base(Resources.GORIMG_IMPORT_DESC)
     {
 
     }
-
 }

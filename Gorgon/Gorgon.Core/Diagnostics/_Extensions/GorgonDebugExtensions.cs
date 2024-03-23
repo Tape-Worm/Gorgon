@@ -23,7 +23,6 @@
 // Created: Thursday, August 25, 2011 8:17:09 PM
 // 
 
-
 using System.Collections;
 using System.Diagnostics;
 using Gorgon.Core;
@@ -36,7 +35,6 @@ namespace Gorgon.Diagnostics;
 /// </summary>
 public static class GorgonDebugExtensions
 {
-
     /// <summary>
     /// Function to throw an exception if a string is <b>null</b> or empty.
     /// </summary>
@@ -510,5 +508,4 @@ public static class GorgonDebugExtensions
             throw new ArgumentNullException(paramName);
         }
     }
-
 }

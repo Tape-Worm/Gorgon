@@ -23,7 +23,6 @@
 // Created: August 17, 2018 3:34:16 PM
 // 
 
-
 using Gorgon.Math;
 
 namespace Gorgon.Animation;
@@ -35,7 +34,6 @@ internal class KeyframeIndexComparer<T>
     : IComparer<T>
     where T : IGorgonKeyFrame
 {
-
     /// <summary>
     /// Compares two objects and returns a value indicating whether one is less than, equal to, or greater than the other.
     /// </summary>
@@ -53,7 +51,6 @@ internal class KeyframeIndexComparer<T>
             return -1;
         }
 
-
         if (x.Time.EqualsEpsilon(y.Time))
         {
             return 0;
@@ -62,5 +59,4 @@ internal class KeyframeIndexComparer<T>
         return x.Time < y.Time ? -1 : 1;
 
     }
-
 }

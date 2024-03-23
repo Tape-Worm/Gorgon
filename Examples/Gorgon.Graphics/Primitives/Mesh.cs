@@ -23,11 +23,9 @@
 // Created: Thursday, September 18, 2014 2:11:22 AM
 // 
 
-
 using System.Numerics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
-using Gorgon.Renderers.Data;
 using Gorgon.Renderers.Geometry;
 
 namespace Gorgon.Examples;
@@ -42,11 +40,8 @@ namespace Gorgon.Examples;
 internal abstract class Mesh(GorgonGraphics graphics)
         : IDisposable
 {
-
     // The axis aligned bounding box for the mesh.
     private GorgonBoundingBox _aabb;
-
-
 
     /// <summary>
     /// Property to return the material for this mesh.
@@ -131,8 +126,6 @@ internal abstract class Mesh(GorgonGraphics graphics)
         get;
         set;
     } = true;
-
-
 
     /// <summary>
     /// Function to update the axis aligned bounding box for the mesh.

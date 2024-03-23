@@ -23,7 +23,6 @@
 // Created: March 25, 2019 9:47:13 AM
 // 
 
-
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI.ViewModels;
 
@@ -39,7 +38,6 @@ namespace Gorgon.Editor.SpriteEditor;
 internal class SettingsParameters(SpriteEditorSettings settings, IHostContentServices hostServices)
         : ViewModelInjection<IHostContentServices>(hostServices)
 {
-
     /// <summary>
     /// Property to return the settings for the plug in.
     /// </summary>
@@ -47,6 +45,5 @@ internal class SettingsParameters(SpriteEditorSettings settings, IHostContentSer
     {
         get;
     } = settings ?? throw new ArgumentNullException(nameof(settings));
-
 
 }

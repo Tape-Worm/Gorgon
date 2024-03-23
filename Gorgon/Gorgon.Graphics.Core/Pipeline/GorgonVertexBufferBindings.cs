@@ -23,8 +23,6 @@
 // Created: July 26, 2016 10:35:58 PM
 // 
 
-
-
 using Gorgon.Collections;
 using Gorgon.Math;
 using D3D11 = SharpDX.Direct3D11;
@@ -42,13 +40,10 @@ namespace Gorgon.Graphics.Core;
 public sealed class GorgonVertexBufferBindings
     : GorgonArray<GorgonVertexBufferBinding>
 {
-
     /// <summary>
     /// The maximum number of vertex buffers allow to be bound at the same time.
     /// </summary>
     public const int MaximumVertexBufferCount = D3D11.InputAssemblerStage.VertexInputResourceSlotCount;
-
-
 
     /// <summary>
     /// Property to return the native items wrapped by this list.
@@ -69,8 +64,6 @@ public sealed class GorgonVertexBufferBindings
         get;
         internal set;
     }
-
-
 
     /// <summary>
     /// Function called when a dirty item is found and added.
@@ -123,8 +116,6 @@ public sealed class GorgonVertexBufferBindings
         return -1;
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonVertexBufferBindings" /> class.
     /// </summary>
@@ -152,5 +143,4 @@ public sealed class GorgonVertexBufferBindings
             this[i] = bindings[i];
         }
     }
-
 }

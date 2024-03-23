@@ -23,7 +23,6 @@
 // Created: Thursday, September 24, 2015 10:30:17 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.IO.Providers;
 
@@ -105,8 +104,6 @@ namespace Gorgon.IO;
 /// </example>
 public interface IGorgonFileSystem
 {
-
-
     /// <summary>
     /// Property to return the <see cref="IGorgonFileSystemProvider"/> installed in this file system.
     /// </summary>
@@ -155,8 +152,6 @@ public interface IGorgonFileSystem
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to find all the directories with the name specified by the directory mask.

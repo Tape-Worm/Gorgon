@@ -23,7 +23,6 @@
 // Created: March 22, 2019 10:06:04 AM
 // 
 
-
 using Gorgon.Graphics;
 using Newtonsoft.Json;
 

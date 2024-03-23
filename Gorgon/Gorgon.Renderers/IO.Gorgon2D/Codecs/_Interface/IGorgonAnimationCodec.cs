@@ -23,7 +23,6 @@
 // Created: August 25, 2018 2:35:12 PM
 // 
 
-
 using Gorgon.Animation;
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
@@ -38,7 +37,6 @@ namespace Gorgon.IO;
 public interface IGorgonAnimationCodec
     : IGorgonNamedObject
 {
-
     /// <summary>
     /// Property to return the friendly description of the format.
     /// </summary>
@@ -94,8 +92,6 @@ public interface IGorgonAnimationCodec
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to retrieve the names of the textures associated with the animation.

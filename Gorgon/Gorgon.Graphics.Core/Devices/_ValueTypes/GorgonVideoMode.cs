@@ -23,7 +23,6 @@
 // Created: November 7, 2017 12:57:57 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Math;
@@ -79,7 +78,6 @@ public enum ModeScanlineOrder
 public readonly struct GorgonVideoMode
     : IGorgonEquatableByRef<GorgonVideoMode>, IComparable<GorgonVideoMode>
 {
-
     /// <summary>
     /// A representation of an invalid video mode.
     /// </summary>
@@ -114,14 +112,10 @@ public readonly struct GorgonVideoMode
     /// </summary>
     public readonly ModeScanlineOrder ScanlineOrder;
 
-
-
     /// <summary>
     /// Property to return the size for the video mode.
     /// </summary>
     public GorgonPoint Size => new(Width, Height);
-
-
 
     /// <summary>
     /// Function to determine if two instances are equal or not.
@@ -232,8 +226,6 @@ public readonly struct GorgonVideoMode
     /// <returns><b>true</b> if not equal, <b>false</b> if equal.</returns>
     public static bool operator !=(GorgonVideoMode left, GorgonVideoMode right) => !Equals(in left, in right);
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonVideoMode" /> struct.
     /// </summary>
@@ -275,5 +267,4 @@ public readonly struct GorgonVideoMode
         ScanlineOrder = scanlineOrder;
         SupportsStereo = steroSupport;
     }
-
 }

@@ -23,7 +23,6 @@
 // Created: April 4, 2018 9:39:05 PM
 // 
 
-
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using Gorgon.Graphics;
@@ -70,12 +69,6 @@ class ImageGallery
     private Point _gifPosition;
     // Counter for drawing frames.
     private int _isDrawing;
-
-
-
-
-
-
 
     /// <summary>
     /// Function to provide a quick and dirty method of drawing outlined text.
@@ -346,8 +339,6 @@ class ImageGallery
         _destBitmap?.Dispose();
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="ImageGallery"/> class.
     /// </summary>
@@ -369,5 +360,4 @@ class ImageGallery
         SizeF dpiScale = new(newScaleWidth, newScaleWidth);
         _imageSize = new Size((int)(dpiScale.Width * 320), (int)(dpiScale.Height * 240));
     }
-
 }

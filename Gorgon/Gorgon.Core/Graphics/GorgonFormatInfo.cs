@@ -36,8 +36,8 @@
 // DirectXTex: https://github.com/Microsoft/DirectXTex
 
 using System.Diagnostics;
-using Gorgon.Properties;
 using Gorgon.Math;
+using Gorgon.Properties;
 
 namespace Gorgon.Graphics;
 
@@ -662,7 +662,7 @@ public class GorgonFormatInfo
         if (IsPlanar)
         {
             switch (Format)
-            {            
+            {
                 case BufferFormat.NV12:
                 case BufferFormat.Opaque420:
                     if ((height % 2) != 0)
@@ -776,7 +776,7 @@ public class GorgonFormatInfo
             {
                 // These are planar formats.
                 BufferFormat.NV11 => height << 1,
-                BufferFormat.NV12 or BufferFormat.P010 or BufferFormat.P016 or BufferFormat.Opaque420 => height + ((height + 1) >> 1),                
+                BufferFormat.NV12 or BufferFormat.P010 or BufferFormat.P016 or BufferFormat.Opaque420 => height + ((height + 1) >> 1),
                 // All other formats report height as-is.
                 _ => height
             };

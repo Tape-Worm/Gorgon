@@ -23,7 +23,6 @@
 // Created: Monday, April 02, 2012 2:59:16 PM
 // 
 
-
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers.Cameras;
@@ -49,8 +48,6 @@ public class Gorgon2DSilhouetteEffect
     private Gorgon2DShaderState<GorgonPixelShader> _shaderState;
     // The batch state to render.
     private Gorgon2DBatchState _batchState;
-
-
 
     /// <summary>
     /// Function called to initialize the effect.
@@ -157,8 +154,6 @@ public class Gorgon2DSilhouetteEffect
                                         new GorgonRectangleF(0, 0, 1, 1));
         End();
     }
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Gorgon2DSilhouetteEffect"/> class.

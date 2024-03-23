@@ -23,7 +23,6 @@
 // Created: September 4, 2018 3:13:35 PM
 // 
 
-
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Text;
@@ -65,8 +64,6 @@ internal partial class FileExploder
 
     // The name for a dummy node.
     private const string DummyNodeName = "*$__DUMMY__$*";
-
-
 
     // The event fired when the control context is changed.
     private event EventHandler ControlContextChangedEvent;
@@ -140,8 +137,6 @@ internal partial class FileExploder
         }
     }
 
-
-
     // The synchronization lock for the control context changed event.
     private readonly object _eventLock = new();
     // Flag to indicate that the events for the tree are hooked up.
@@ -169,8 +164,6 @@ internal partial class FileExploder
     private FileExplorerContext _controlContext = FileExplorerContext.None;
     // Flag to indicate if a rename operation is active.
     private bool _isRenaming;
-
-
 
     /// <summary>
     /// Property to set or return the application settings.
@@ -229,8 +222,6 @@ internal partial class FileExploder
             OnIsRenamingChanged();
         }
     }
-
-
 
     /// <summary>
     /// Function to set the distance for the splitter panels.
@@ -327,7 +318,6 @@ internal partial class FileExploder
         {
             DisableAllDirectoryItems();
         }
-
 
         if ((dataContext.Clipboard?.GetClipboardDataTypeCommand is not null) && (dataContext.Clipboard.GetClipboardDataTypeCommand.CanExecute(_clipboardValidationArgs)))
         {
@@ -1342,7 +1332,6 @@ internal partial class FileExploder
         ViewModel.PropertyChanging -= DataContext_PropertyChanging;
         ViewModel.PropertyChanged -= DataContext_PropertyChanged;
     }
-
 
     /// <summary>
     /// Function to remove a node, and it's child nodes from the node cache.
@@ -3118,8 +3107,6 @@ internal partial class FileExploder
         ViewModel.SelectDirectoryCommand.Execute(node.Name);
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="FileExploder"/> class.
     /// </summary>
@@ -3163,5 +3150,4 @@ internal partial class FileExploder
             ForeColor = DarkFormsRenderer.DisabledColor,
         };
     }
-
 }

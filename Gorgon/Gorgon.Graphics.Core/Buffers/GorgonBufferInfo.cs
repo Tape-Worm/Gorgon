@@ -23,7 +23,6 @@
 // Created: July 5, 2017 2:44:43 PM
 // 
 
-
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
@@ -38,7 +37,6 @@ namespace Gorgon.Graphics.Core;
 public record GorgonBufferInfo(int SizeInBytes)
     : IGorgonBufferInfo
 {
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonBufferInfo"/> class.
     /// </summary>
@@ -55,8 +53,6 @@ public record GorgonBufferInfo(int SizeInBytes)
         AllowRawView = info.AllowRawView;
         IndirectArgs = info.IndirectArgs;
     }
-
-
 
     /// <summary>
     /// Property to return whether to allow the CPU read access to the buffer.

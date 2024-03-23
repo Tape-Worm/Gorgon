@@ -23,8 +23,6 @@
 // Created: June 16, 2020 8:00:52 PM
 // 
 
-
-
 namespace Gorgon.Editor.AnimationEditor;
 
 /// <summary>
@@ -35,7 +33,6 @@ namespace Gorgon.Editor.AnimationEditor;
 /// <param name="trackIndex">The index of the track.</param>
 internal class GetTrackKeyArgs(int keyIndex, int trackIndex)
 {
-
     /// <summary>
     /// Property to set or return whether there's key data in the track.
     /// </summary>
@@ -60,6 +57,5 @@ internal class GetTrackKeyArgs(int keyIndex, int trackIndex)
     {
         get;
     } = trackIndex;
-
 
 }

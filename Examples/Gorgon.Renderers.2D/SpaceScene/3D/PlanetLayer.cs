@@ -23,7 +23,6 @@
 // Created: May 18, 2019 7:32:37 PM
 // 
 
-
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -79,7 +78,6 @@ internal class PlanetLayer(GorgonGraphics graphics, ResourceManagement resources
         public float SpecularPower;
     }
 
-
     // The application graphics interface.
     private readonly GorgonGraphics _graphics = graphics;
     // The application resources.
@@ -112,8 +110,6 @@ internal class PlanetLayer(GorgonGraphics graphics, ResourceManagement resources
     // Flag to indicate that we can draw the planet or not.
     private readonly List<Planet> _drawPlanets = [];
 
-
-
     /// <summary>
     /// Property to return a list of 3D planets to render.
     /// </summary>
@@ -121,8 +117,6 @@ internal class PlanetLayer(GorgonGraphics graphics, ResourceManagement resources
     {
         get;
     } = [];
-
-
 
     /// <summary>
     /// Function to build up the constant buffer data for our shaders.
@@ -391,6 +385,4 @@ internal class PlanetLayer(GorgonGraphics graphics, ResourceManagement resources
         _lightBuffer?.Dispose();
         _vertexLayout?.Dispose();
     }
-
-
 }

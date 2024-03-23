@@ -23,7 +23,6 @@
 // Created: Monday, April 02, 2012 1:41:47 PM
 // 
 
-
 using System.Runtime.InteropServices;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -62,7 +61,6 @@ public enum WaveType
 public class Gorgon2DWaveEffect(Gorgon2D renderer)
         : Gorgon2DEffect(renderer, Resources.GOR2D_EFFECT_WAVE, Resources.GOR2D_EFFECT_WAVE_DESC, 1), IGorgon2DCompositorEffect
 {
-
     /// <summary>
     /// Settings for the effect shader.
     /// </summary>
@@ -103,8 +101,6 @@ public class Gorgon2DWaveEffect(Gorgon2D renderer)
         public WaveType WaveType => (WaveType)_waveType;
     }
 
-
-
     // Constant buffer for the wave information.
     private GorgonConstantBufferView _waveBuffer;
     // Settings for the effect shader.
@@ -116,8 +112,6 @@ public class Gorgon2DWaveEffect(Gorgon2D renderer)
     private Gorgon2DShaderState<GorgonPixelShader> _waveState;
     // The batch state for rendering.
     private Gorgon2DBatchState _batchState;
-
-
 
     /// <summary>
     /// Property to set or return the wave type.
@@ -212,8 +206,6 @@ public class Gorgon2DWaveEffect(Gorgon2D renderer)
             _isUpdated = true;
         }
     }
-
-
 
     /// <summary>
     /// Function called to initialize the effect.
@@ -350,8 +342,4 @@ public class Gorgon2DWaveEffect(Gorgon2D renderer)
                                         new GorgonRectangleF(0, 0, 1, 1));
         End();
     }
-
-
-
-
 }

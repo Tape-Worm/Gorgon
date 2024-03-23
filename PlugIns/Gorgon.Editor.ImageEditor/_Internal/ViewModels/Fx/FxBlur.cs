@@ -23,7 +23,6 @@
 // Created: February 22, 2020 5:43:26 PM
 // 
 
-
 using Gorgon.Editor.UI;
 using Gorgon.Math;
 
@@ -38,8 +37,6 @@ internal class FxBlur
 
     // The amount of blur to apply.
     private int _blurAmount = 1;
-
-
 
     /// <summary>Property to return whether the panel is modal.</summary>
     public override bool IsModal => false;
@@ -63,8 +60,6 @@ internal class FxBlur
         }
     }
 
-
-
     /// <summary>Function to inject dependencies for the view model.</summary>
     /// <param name="injectionParameters">The parameters to inject.</param>
     /// <remarks>
@@ -78,5 +73,4 @@ internal class FxBlur
     protected override void OnInitialize(HostedPanelViewModelParameters injectionParameters)
     {
     }
-
 }

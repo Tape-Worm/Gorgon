@@ -23,7 +23,6 @@
 // Created: November 28, 2018 4:20:34 PM
 // 
 
-
 using System.Collections.ObjectModel;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI;
@@ -40,8 +39,6 @@ internal class RootDirectory
 
     // The root directory wrapped by the view model.
     private IGorgonVirtualDirectory _root;
-
-
 
     /// <summary>Property to return the ID for the directory.</summary>
     public string ID => "FFFFFFF1FFF1FFF1FFF1FFFFFFFFFFF1";
@@ -103,8 +100,6 @@ internal class RootDirectory
         }
     }
 
-
-
     /// <summary>
     /// Function to calculate the total size, in bytes, for the files contained within this directory, and any sub directory within this directory.
     /// </summary>
@@ -117,8 +112,6 @@ internal class RootDirectory
     /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
     /// </remarks>
     protected override void OnInitialize(RootDirectoryParameters injectionParameters) => _root = injectionParameters.RootDirectory;
-
-
 
     /// <summary>Initializes a new instance of the <see cref="RootDirectory"/> class.</summary>
     public RootDirectory() => GetSizeInBytesCommand = new EditorCommand<GetSizeInBytesCommandArgs>(DoGetSizeInBytes);

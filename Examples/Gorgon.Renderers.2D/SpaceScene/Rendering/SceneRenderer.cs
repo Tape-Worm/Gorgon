@@ -23,7 +23,6 @@
 // Created: May 18, 2019 5:09:46 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -54,8 +53,6 @@ internal class SceneRenderer
     // Post processing groups.  Use to render specific layers with post processing effects.
     private readonly List<(string name, Gorgon2DCompositor compositor)> _postProcessGroups = [];
     private readonly Dictionary<string, List<Layer>> _postProcessLayers = new(StringComparer.OrdinalIgnoreCase);
-
-
 
     /// <summary>
     /// Function to copy the contents of a texture to the screen buffer.
@@ -219,7 +216,6 @@ internal class SceneRenderer
         }
     }
 
-
     /// <summary>
     /// Function to load the resources for the renderer.
     /// </summary>
@@ -273,5 +269,4 @@ internal class SceneRenderer
         _layers.AddRange(layerController.Layers);
         _camera = camera;
     }
-
 }

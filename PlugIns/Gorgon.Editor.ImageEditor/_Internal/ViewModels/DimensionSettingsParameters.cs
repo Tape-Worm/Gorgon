@@ -23,7 +23,6 @@
 // Created: February 5, 2019 7:57:48 PM
 // 
 
-
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics.Core;
@@ -39,7 +38,6 @@ namespace Gorgon.Editor.ImageEditor.ViewModels;
 internal class DimensionSettingsParameters(IHostContentServices hostServices)
         : HostedPanelViewModelParameters(hostServices)
 {
-
     /// <summary>
     /// Property to return the video adapter used by the application.
     /// </summary>
@@ -47,7 +45,5 @@ internal class DimensionSettingsParameters(IHostContentServices hostServices)
     {
         get;
     } = hostServices.GraphicsContext.Graphics.VideoAdapter;
-
-
 
 }

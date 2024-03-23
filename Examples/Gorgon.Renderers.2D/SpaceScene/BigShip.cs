@@ -23,7 +23,6 @@
 // Created: May 24, 2019 3:33:44 PM
 // 
 
-
 using System.Numerics;
 
 namespace Gorgon.Examples;
@@ -50,8 +49,6 @@ internal class BigShip(SpritesLayer layer)
     // Position of the ship.
     private Vector2 _position;
 
-
-
     /// <summary>
     /// Property to set or return the angle of rotation, in degrees, for the ship.
     /// </summary>
@@ -77,8 +74,6 @@ internal class BigShip(SpritesLayer layer)
             UpdateEntityPositions();
         }
     }
-
-
 
     /// <summary>
     /// Function to update the entity positions to match the position of the ship.
@@ -109,6 +104,4 @@ internal class BigShip(SpritesLayer layer)
         _shipIllum.Scale = 4;
         UpdateEntityPositions();
     }
-
-
 }

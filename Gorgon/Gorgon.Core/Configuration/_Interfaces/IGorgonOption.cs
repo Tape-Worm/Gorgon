@@ -23,7 +23,6 @@
 // Created: August 16, 2016 4:40:09 PM
 // 
 
-
 using Gorgon.Core;
 
 namespace Gorgon.Configuration;
@@ -34,7 +33,6 @@ namespace Gorgon.Configuration;
 public interface IGorgonOption
     : IGorgonNamedObject
 {
-
     /// <summary>
     /// Property to return the type of data stored in the option.
     /// </summary>
@@ -42,8 +40,6 @@ public interface IGorgonOption
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to retrieve the value stored in this option.

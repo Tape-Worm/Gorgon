@@ -23,7 +23,6 @@
 // Created: December 23, 2018 2:15:44 PM
 // 
 
-
 using System.Collections.Specialized;
 using System.ComponentModel;
 using Gorgon.Diagnostics;
@@ -69,8 +68,6 @@ internal class ContentPreview
     private bool _forceRefresh;
     // Flag to indicate whether the preview is loading or not.
     private bool _loading;
-
-
 
     /// <summary>
     /// Property to return the task used for loading the image preview.
@@ -162,8 +159,6 @@ internal class ContentPreview
             OnPropertyChanged();
         }
     }
-
-
 
     /// <summary>
     /// Function to load the preview thumbnail.
@@ -488,13 +483,10 @@ internal class ContentPreview
         _fileExplorer.PropertyChanging -= FileExplorer_PropertyChanging;
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="ContentPreview"/> class.</summary>
     public ContentPreview()
     {
         RefreshPreviewCommand = new EditorAsyncCommand<string>(DoRefreshPreview);
         ResetPreviewCommand = new EditorAsyncCommand<object>(DoResetPreview);
     }
-
 }

@@ -23,7 +23,6 @@
 // Created: March 2, 2019 11:15:34 AM
 // 
 
-
 using Gorgon.Editor.Content;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Services;
@@ -58,8 +57,6 @@ internal class TextureAtlasToolPlugIn
     private SpriteFiles _fileVm;
     // The texture atlas view model.
     private TextureAtlas _textureAtlas;
-
-
 
     /// <summary>
     /// Function to retrieve the sprite file entries from the file system.
@@ -223,12 +220,9 @@ internal class TextureAtlasToolPlugIn
         base.OnShutdown();
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="TextureAtlasToolPlugIn"/> class.</summary>
     public TextureAtlasToolPlugIn()
         : base(Resources.GORTAG_PLUGIN_DESC)
     {
     }
-
 }

@@ -23,7 +23,6 @@
 // Created: Thursday, January 17, 2013 11:07:10 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.IO;
@@ -58,16 +57,12 @@ internal static class Program
 
     private const string PlugInName = "Gorgon.IO.Zip.ZipProvider";
 
-
-
     // The plugin assemblies.
     private static GorgonMefPlugInCache _pluginAssemblies;
     // File system.
     private static GorgonFileSystem _fileSystem;
     // The log file used for debug logging.
     private static IGorgonLog _log;
-
-
 
     /// <summary>
     /// Function to retrieve the directory that contains the plugins for an application.

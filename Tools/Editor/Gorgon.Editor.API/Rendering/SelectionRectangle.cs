@@ -23,7 +23,6 @@
 // Created: February 24, 2019 5:25:42 PM
 // 
 
-
 using System.Diagnostics;
 using System.Numerics;
 using Gorgon.Editor.Properties;
@@ -49,8 +48,6 @@ public class SelectionRectangle
     private readonly Lazy<GorgonTexture2DView> _selectionTexture;
     // The offset of the texture within the selection rectangle.
     private Vector2 _selectionTextureOffset;
-
-
 
     /// <summary>
     /// Property to set or return the color for the selection rectangle.
@@ -78,8 +75,6 @@ public class SelectionRectangle
         get;
         set;
     } = new Vector2(16, 16);
-
-
 
     /// <summary>
     /// Function to create the selection texture.
@@ -147,8 +142,6 @@ public class SelectionRectangle
         }
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="SelectionRectangle"/> class.</summary>
     /// <param name="graphics">The graphics context to use.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/> parameter is <b>null</b>.</exception>
@@ -162,5 +155,4 @@ public class SelectionRectangle
         _renderer = graphics.Renderer2D;
         _selectionTexture = new Lazy<GorgonTexture2DView>(CreateSelectionTexture, LazyThreadSafetyMode.ExecutionAndPublication);
     }
-
 }

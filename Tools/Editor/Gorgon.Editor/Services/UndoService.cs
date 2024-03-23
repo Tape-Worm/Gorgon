@@ -23,7 +23,6 @@
 // Created: November 17, 2018 1:26:14 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.UI;
@@ -49,8 +48,6 @@ internal class UndoService(IGorgonLog log)
     // The cancellation source cancelling the undo/redo operation.
     private CancellationTokenSource _cancelSource;
 
-
-
     /// <summary>
     /// Property to return whether or not the service can undo.
     /// </summary>
@@ -65,8 +62,6 @@ internal class UndoService(IGorgonLog log)
     /// Property to return the undo items in the undo stack.
     /// </summary>
     public IEnumerable<string> UndoItems => _undoStack.Select(item => item.Description);
-
-
 
     /// <summary>
     /// Function to assign a command to the undo stack.
@@ -232,6 +227,4 @@ internal class UndoService(IGorgonLog log)
             _cancelSource = null;
         }
     }
-
-
 }

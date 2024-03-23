@@ -23,7 +23,6 @@
 // Created: Tuesday, March 11, 2014 9:18:52 PM
 // 
 
-
 using System.Drawing.Drawing2D;
 using Gorgon.Graphics.Fonts;
 
@@ -37,7 +36,7 @@ namespace Gorgon.Editor.FontEditor;
 /// </remarks>
 /// <param name="wrapMode">The wrap mode.</param>
 /// <param name="text">The text.</param>
-internal readonly struct  WrapModeComboItem(GlyphBrushWrapMode wrapMode, string text)
+internal readonly struct WrapModeComboItem(GlyphBrushWrapMode wrapMode, string text)
         : IEquatable<WrapModeComboItem>
 {
 
@@ -48,8 +47,6 @@ internal readonly struct  WrapModeComboItem(GlyphBrushWrapMode wrapMode, string 
     /// The wrapping mode.
     /// </summary>
     public readonly GlyphBrushWrapMode WrapMode = wrapMode;
-
-
 
     /// <summary>
     /// Operator to determine if two instances are equal.
@@ -113,9 +110,6 @@ internal readonly struct  WrapModeComboItem(GlyphBrushWrapMode wrapMode, string 
     /// A <see cref="string" /> that represents this instance.
     /// </returns>
     public override readonly string ToString() => _text;
-
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="WrapModeComboItem"/> struct.

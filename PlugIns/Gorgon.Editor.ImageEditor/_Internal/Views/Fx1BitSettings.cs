@@ -23,7 +23,6 @@
 // Created: March 24, 2020 10:38:50 PM
 // 
 
-
 using System.ComponentModel;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Controls;
@@ -36,11 +35,6 @@ namespace Gorgon.Editor.ImageEditor;
 internal partial class Fx1BitSettings
     : EditorSubPanelCommon, IDataContext<IFxOneBit>
 {
-
-
-
-
-
     /// <summary>Property to return the data context assigned to this view.</summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public IFxOneBit ViewModel
@@ -48,8 +42,6 @@ internal partial class Fx1BitSettings
         get;
         private set;
     }
-
-
 
     /// <summary>Handles the Click event of the CheckInvert control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -201,8 +193,6 @@ internal partial class Fx1BitSettings
 
         ViewModel.PropertyChanged += DataContext_PropertyChanged;
     }
-
-
 
     /// <summary>Initializes a new instance of the <see cref="Fx1BitSettings"/> class.</summary>
     public Fx1BitSettings() => InitializeComponent();

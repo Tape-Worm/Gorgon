@@ -23,7 +23,6 @@
 // Created: April 20, 2019 2:19:56 PM
 // 
 
-
 using System.Collections.Specialized;
 using System.ComponentModel;
 using Gorgon.Editor.UI;
@@ -37,7 +36,6 @@ namespace Gorgon.Editor.AnimationEditor;
 internal partial class AnimationCodecSettingsPanel
     : SettingsBaseControl, IDataContext<IImportSettings>
 {
-
     /// <summary>Property to return the ID of the panel.</summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public override string PanelID => ViewModel?.ID.ToString() ?? Guid.Empty.ToString();
@@ -49,8 +47,6 @@ internal partial class AnimationCodecSettingsPanel
         get;
         private set;
     }
-
-
 
     /// <summary>
     /// Function to validate the buttons on the control.
@@ -321,8 +317,6 @@ internal partial class AnimationCodecSettingsPanel
         ViewModel.CodecPlugInPaths.CollectionChanged += CodecPlugInPaths_CollectionChanged;
         ViewModel.SelectedCodecs.CollectionChanged += SelectedCodecs_CollectionChanged;
     }
-
-
 
     /// <summary>Initializes a new instance of the <see cref="AnimationCodecSettingsPanel"/> class.</summary>
     public AnimationCodecSettingsPanel() => InitializeComponent();

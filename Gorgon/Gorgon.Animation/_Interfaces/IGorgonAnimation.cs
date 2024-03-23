@@ -23,7 +23,6 @@
 // Created: August 16, 2018 2:23:22 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Newtonsoft.Json;
@@ -55,7 +54,6 @@ namespace Gorgon.Animation;
 public interface IGorgonAnimation
     : IGorgonNamedObject
 {
-
     /// <summary>
     /// Property to set or return the number of times to loop an animation.
     /// </summary>
@@ -173,8 +171,6 @@ public interface IGorgonAnimation
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to retrieve the maximum number of key frames across all tracks.

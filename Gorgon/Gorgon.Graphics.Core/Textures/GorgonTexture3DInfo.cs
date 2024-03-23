@@ -23,7 +23,6 @@
 // Created: April 17, 2018 12:40:18 PM
 // 
 
-
 using Gorgon.Graphics.Imaging;
 
 namespace Gorgon.Graphics.Core;
@@ -38,7 +37,6 @@ namespace Gorgon.Graphics.Core;
 public record GorgonTexture3DInfo(int Width, int Height, int Depth, BufferFormat Format)
     : IGorgonTexture3DInfo, IGorgonImageInfo
 {
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonTexture3DInfo"/> class.
     /// </summary>
@@ -52,8 +50,6 @@ public record GorgonTexture3DInfo(int Width, int Height, int Depth, BufferFormat
         MipLevels = info.MipLevels;
         Usage = info.Usage;
     }
-
-
 
     /// <summary>
     /// Property to return the type of image data.

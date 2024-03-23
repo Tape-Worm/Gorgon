@@ -23,7 +23,6 @@
 // Created: August 31, 2018 1:00:47 AM
 // 
 
-
 using Gorgon.Math;
 
 namespace Gorgon.Editor.Services;
@@ -44,8 +43,6 @@ public class WaitCursorBusyState
     private readonly object _eventLock = new();
     // The number of times the SetBusy method has been called.
     private int _busyStateCounter;
-
-
 
     // Event triggered when the busy state changes.
     private event EventHandler BusyStateChangedEvent;
@@ -82,8 +79,6 @@ public class WaitCursorBusyState
         }
     }
 
-
-
     /// <summary>
     /// Property to return whether or not there's a busy state.
     /// </summary>
@@ -92,8 +87,6 @@ public class WaitCursorBusyState
         get;
         private set;
     }
-
-
 
     /// <summary>
     /// Function to trigger the busy state change event.
@@ -163,5 +156,4 @@ public class WaitCursorBusyState
 
         OnBusyStateChanged();
     }
-
 }

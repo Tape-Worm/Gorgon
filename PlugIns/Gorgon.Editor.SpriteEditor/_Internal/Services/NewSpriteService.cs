@@ -23,7 +23,6 @@
 // Created: May 7, 2020 12:57:05 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.SpriteEditor.Properties;
@@ -48,8 +47,6 @@ internal class NewSpriteService(IContentFileManager fileManager, IGorgonImageCod
     private readonly IContentFileManager _fileManager = fileManager ?? throw new ArgumentNullException(nameof(fileManager));
     // The image codec for loading texture data.
     private readonly IGorgonImageCodec _imageCodec = imageCodec ?? throw new ArgumentNullException(nameof(imageCodec));
-
-
 
     /// <summary>
     /// Function to determine if an image content file is a 2D image or not.
@@ -76,7 +73,6 @@ internal class NewSpriteService(IContentFileManager fileManager, IGorgonImageCod
         {
             throw new ArgumentNullException(nameof(currentSprite));
         }
-
 
         string spritePath = currentSprite.Path;
 
@@ -112,8 +108,4 @@ internal class NewSpriteService(IContentFileManager fileManager, IGorgonImageCod
             ? (newSpriteForm.ObjectName, newSpriteForm.TextureFile, newSpriteForm.SpriteSize)
             : (null, null, Vector2.Zero);
     }
-
-
-
-
 }

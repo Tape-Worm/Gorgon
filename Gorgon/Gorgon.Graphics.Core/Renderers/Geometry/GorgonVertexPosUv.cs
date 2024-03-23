@@ -23,7 +23,6 @@
 // Created: January 16, 2021 12:10:27 AM
 // 
 
-
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -37,7 +36,6 @@ namespace Gorgon.Renderers.Geometry;
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
 public struct GorgonVertexPosUv
 {
-
     /// <summary>
     /// The size of the vertex, in bytes.
     /// </summary>
@@ -54,8 +52,6 @@ public struct GorgonVertexPosUv
     /// </summary>
     [InputElement(1, "TEXCOORD")]
     public Vector2 UV;
-
-
 
     /// <summary>
     /// Deconstructs this instance into individual position values.
@@ -79,8 +75,6 @@ public struct GorgonVertexPosUv
         uv = UV;
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="GorgonVertexPosUv" /> struct.</summary>
     /// <param name="pos">The position.</param>
     /// <param name="uv">The texture coordinates.</param>
@@ -98,5 +92,4 @@ public struct GorgonVertexPosUv
         Position = pos;
         UV = uv;
     }
-
 }

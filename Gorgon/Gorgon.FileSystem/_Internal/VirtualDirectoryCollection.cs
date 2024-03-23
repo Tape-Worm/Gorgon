@@ -23,7 +23,6 @@
 // Created: Monday, June 27, 2011 8:59:02 AM
 // 
 
-
 using System.Collections;
 using Gorgon.Collections;
 using Gorgon.IO.Properties;
@@ -46,8 +45,6 @@ internal class VirtualDirectoryCollection(VirtualDirectory parent)
     // The parent directory that owns this collection.
     private readonly VirtualDirectory _parent = parent;
 
-
-
     /// <summary>
     /// Property to return a directory by its name.
     /// </summary>
@@ -56,7 +53,6 @@ internal class VirtualDirectoryCollection(VirtualDirectory parent)
         get
         {
             name = name.FormatPathPart();
-
 
             return !_directories.TryGetValue(name, out VirtualDirectory directory)
                 ? throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, name))
@@ -81,8 +77,6 @@ internal class VirtualDirectoryCollection(VirtualDirectory parent)
     /// The number of elements in the collection. 
     /// </returns>
     public int Count => _directories.Count;
-
-
 
     /// <summary>
     /// Adds an item to the <see cref="ICollection{T}" />.
@@ -277,8 +271,4 @@ internal class VirtualDirectoryCollection(VirtualDirectory parent)
         value = directory;
         return true;
     }
-
-
-
-
 }

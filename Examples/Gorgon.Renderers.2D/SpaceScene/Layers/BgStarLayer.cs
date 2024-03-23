@@ -23,7 +23,6 @@
 // Created: May 20, 2019 11:43:38 PM
 // 
 
-
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers;
@@ -38,7 +37,6 @@ namespace Gorgon.Examples;
 internal class BgStarLayer(Gorgon2D renderer)
         : Layer2D(renderer)
 {
-
     /// <summary>
     /// Property to set or return the texture used to draw the stars on the background.
     /// </summary>
@@ -47,8 +45,6 @@ internal class BgStarLayer(Gorgon2D renderer)
         get;
         set;
     }
-
-
 
     /// <summary>Function called to update items per frame on the layer.</summary>
     protected sealed override void OnUpdate()
@@ -65,6 +61,4 @@ internal class BgStarLayer(Gorgon2D renderer)
             GorgonSamplerState.Wrapping);
         Renderer.End();
     }
-
-
 }

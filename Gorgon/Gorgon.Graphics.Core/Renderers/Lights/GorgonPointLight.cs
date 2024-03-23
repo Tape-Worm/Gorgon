@@ -23,7 +23,6 @@
 // Created: July 25, 2018 8:30:32 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Math;
@@ -48,8 +47,6 @@ public sealed class GorgonPointLight
     private float _range = float.MaxValue.Sqrt();
     // The GPU data for the light.
     private GorgonGpuLightData _lightData;
-
-
 
     /// <summary>
     /// Property to set or return the type of light to render.
@@ -155,8 +152,6 @@ public sealed class GorgonPointLight
         }
     }
 
-
-
     /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
     /// <param name="other">An object to compare with this object.</param>
     /// <returns>
@@ -199,8 +194,6 @@ public sealed class GorgonPointLight
         return ref _lightData;
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonPointLight"/> class.
     /// </summary>
@@ -227,5 +220,4 @@ public sealed class GorgonPointLight
         _attenuationB = copy._attenuationB;
         _attenuationC = copy._attenuationC;
     }
-
 }

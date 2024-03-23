@@ -23,7 +23,6 @@
 // Created: March 24, 2019 10:22:58 AM
 // 
 
-
 using System.Numerics;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Imaging;
@@ -51,7 +50,6 @@ internal enum ClipMask
 /// </summary>
 internal class PickClipperService
 {
-
     /// <summary>
     /// Stores a span of lines that form the boundaries of where to clip.
     /// </summary>
@@ -71,16 +69,12 @@ internal class PickClipperService
         public int Y;
     }
 
-
-
     // A list of pixels that have been checked by the clipper.
     private bool[] _pixels = [];
     // The image data.
     private IGorgonImageBuffer _imageData;
     // The padding for the rectangle.
     private int _padding;
-
-
 
     /// <summary>
     /// Property to set or return the padding for the clipping rectangle.
@@ -115,8 +109,6 @@ internal class PickClipperService
             _pixels = new bool[_imageData.Width * _imageData.Height];
         }
     }
-
-
 
     /// <summary>
     /// Function to determine if the pixel at the specified location is a value that falls within the mask.
@@ -316,7 +308,7 @@ internal class PickClipperService
             }
 
             // Update the boundaries.
-            clipRegion = GorgonRectangleF.FromLTRB(spanRegion.Left.Min((int)clipRegion.Left), (spanRegion.Top + 1).Min((int)clipRegion.Top), 
+            clipRegion = GorgonRectangleF.FromLTRB(spanRegion.Left.Min((int)clipRegion.Left), (spanRegion.Top + 1).Min((int)clipRegion.Top),
                                                    (spanRegion.Right + 1).Max((int)clipRegion.Right), spanRegion.Bottom.Max((int)clipRegion.Bottom));
         }
 
@@ -345,5 +337,4 @@ internal class PickClipperService
         // Ensure that we don't get a degenerate rectangle.
         return ((clipRegion.IsEmpty) || (clipRegion.Width < 0) || (clipRegion.Height < 0)) ? null : clipRegion;
     }
-
 }

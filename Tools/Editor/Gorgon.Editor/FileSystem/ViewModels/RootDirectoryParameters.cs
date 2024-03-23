@@ -23,7 +23,6 @@
 // Created: December 2, 2019 8:32:27 AM
 // 
 
-
 using Gorgon.Editor.PlugIns;
 using Gorgon.IO;
 
@@ -39,7 +38,6 @@ namespace Gorgon.Editor.ViewModels;
 internal class RootDirectoryParameters(IHostContentServices hostServices, ViewModelFactory factory)
         : ViewModelCommonParameters(hostServices, factory)
 {
-
     /// <summary>
     /// Property to set or return the virtual root directory.
     /// </summary>
@@ -57,8 +55,4 @@ internal class RootDirectoryParameters(IHostContentServices hostServices, ViewMo
         get;
         set;
     }
-
-
-
-
 }

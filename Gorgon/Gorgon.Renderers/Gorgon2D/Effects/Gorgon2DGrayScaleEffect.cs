@@ -23,7 +23,6 @@
 // Created: Monday, April 02, 2012 1:41:47 PM
 // 
 
-
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers.Cameras;
@@ -43,8 +42,6 @@ public class Gorgon2DGrayScaleEffect
     // The shader used to render grayscale images.
     private GorgonPixelShader _grayScaleShader;
     private Gorgon2DShaderState<GorgonPixelShader> _grayScaleState;
-
-
 
     /// <summary>
     /// Function called when the effect is being initialized.
@@ -148,8 +145,6 @@ public class Gorgon2DGrayScaleEffect
                                         new GorgonRectangleF(0, 0, 1, 1));
         End();
     }
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Gorgon2DGrayScaleEffect" /> class.

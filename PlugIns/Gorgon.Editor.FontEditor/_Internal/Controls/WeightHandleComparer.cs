@@ -23,7 +23,6 @@
 // Created: September 7, 2021 11:04:32 PM
 // 
 
-
 using Gorgon.Math;
 
 namespace Gorgon.Editor.FontEditor;
@@ -57,5 +56,4 @@ internal class WeightHandleComparer
 
         return x.Weight < y.Weight ? -1 : 1;
     }
-
 }

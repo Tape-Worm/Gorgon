@@ -23,7 +23,6 @@
 // Created: May 24, 2018 11:03:35 PM
 // 
 
-
 using Gorgon.Collections;
 
 namespace Gorgon.Graphics.Core;
@@ -33,7 +32,6 @@ namespace Gorgon.Graphics.Core;
 /// </summary>
 public sealed class GorgonShaderResources
 {
-
     /// <summary>
     /// Property to return the samplers for the shader.
     /// </summary>
@@ -61,13 +59,10 @@ public sealed class GorgonShaderResources
         internal set;
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonShaderResources"/> class.
     /// </summary>
     internal GorgonShaderResources()
     {
     }
-
 }

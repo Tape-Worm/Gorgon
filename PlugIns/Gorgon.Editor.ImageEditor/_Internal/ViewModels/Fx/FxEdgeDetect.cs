@@ -23,7 +23,6 @@
 // Created: March 6, 2020 1:38:12 PM
 // 
 
-
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 using Gorgon.Math;
@@ -45,8 +44,6 @@ internal class FxEdgeDetect
     private GorgonColor _lineColor = GorgonColors.Black;
     // Flag to indicate that the edges should be overlaid on top of the original image or not.
     private bool _overlay = true;
-
-
 
     /// <summary>Property to return whether the panel is modal.</summary>
     public override bool IsModal => false;
@@ -121,8 +118,6 @@ internal class FxEdgeDetect
         }
     }
 
-
-
     /// <summary>Function to inject dependencies for the view model.</summary>
     /// <param name="injectionParameters">The parameters to inject.</param>
     /// <remarks>
@@ -136,5 +131,4 @@ internal class FxEdgeDetect
     protected override void OnInitialize(HostedPanelViewModelParameters injectionParameters)
     {
     }
-
 }

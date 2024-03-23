@@ -23,7 +23,6 @@
 // Created: April 6, 2018 3:01:32 PM
 // 
 
-
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core;

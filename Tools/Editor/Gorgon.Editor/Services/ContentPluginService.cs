@@ -23,7 +23,6 @@
 // Created: October 29, 2018 1:19:30 PM
 // 
 
-
 using System.Text;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
@@ -55,8 +54,6 @@ internal class ContentPlugInService
     // The services passed from the host to the content plug ins.
     private readonly IHostContentServices _hostServices;
 
-
-
     /// <summary>Property to return the list of content plugins loaded in to the application.</summary>
     /// <value>The plugins.</value>
     public IReadOnlyDictionary<string, ContentPlugIn> PlugIns => _plugins;
@@ -77,8 +74,6 @@ internal class ContentPlugInService
         get;
         set;
     }
-
-
 
     /// <summary>
     /// Function to retrieve the actual plug in based on the name associated with the project metadata item.
@@ -120,7 +115,6 @@ internal class ContentPlugInService
 #else
         Path.Combine(_settingsDir, Path.ChangeExtension(name.FormatFileName(), "json"));
 #endif
-
 
     /// <summary>
     /// Function to load plugins for content editors.
@@ -502,8 +496,6 @@ internal class ContentPlugInService
         }
     }
 
-
-
     /// <summary>Initializes a new instance of the ContentPlugInService class.</summary>
     /// <param name="settingsDirectory">The directory that will contain settings for the content plug ins.</param>
     /// <param name="hostServices">The services to pass from the host application to the content plug ins.</param>
@@ -521,5 +513,4 @@ internal class ContentPlugInService
 
         _hostServices = hostServices ?? throw new ArgumentNullException(nameof(hostServices));
     }
-
 }

@@ -23,7 +23,6 @@
 // Created: February 24, 2017 9:03:08 AM
 // 
 
-
 using System.Text;
 using Gorgon.Core;
 using Gorgon.Graphics.Fonts.Properties;
@@ -89,8 +88,6 @@ public class GorgonCodecBmFont
     // The tag that indicates whether the font has an outline.
     private const string OutlineTag = "outline";
 
-
-
     /// <summary>
     /// Property to return the default filename extension for font files.
     /// </summary>
@@ -129,8 +126,6 @@ public class GorgonCodecBmFont
     /// Property to return the abbreviated name of the codec (e.g. GorFont).
     /// </summary>
     public override string Codec => "BmFont";
-
-
 
     /// <summary>
     /// Function to break a series of line items into a list of key/value pairs for processing.
@@ -526,8 +521,6 @@ public class GorgonCodecBmFont
             stream.Position = position;
         }
     }
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonCodecBmFont" /> class.

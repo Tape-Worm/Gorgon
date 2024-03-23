@@ -23,7 +23,6 @@
 // Created: Monday, June 27, 2011 8:57:11 AM
 // 
 
-
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Gorgon.Native;
@@ -51,8 +50,6 @@ public class GorgonBinaryWriter(Stream output, Encoding encoder, bool keepStream
 
     // The size of the temporary buffer used to stream data out.
     private int _bufferSize = 65536;
-
-
 
     /// <summary>
     /// Property to set or return the size of the buffer, in bytes, used to stream the data out.
@@ -87,8 +84,6 @@ public class GorgonBinaryWriter(Stream output, Encoding encoder, bool keepStream
     {
         get;
     } = keepStreamOpen;
-
-
 
     /// <summary>
     /// Function to write data from a span to a stream.
@@ -391,9 +386,6 @@ public class GorgonBinaryWriter(Stream output, Encoding encoder, bool keepStream
         }
     }
 
-
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonBinaryWriter"/> class.
     /// </summary>
@@ -403,5 +395,4 @@ public class GorgonBinaryWriter(Stream output, Encoding encoder, bool keepStream
         : this(output, Encoding.UTF8, keepStreamOpen)
     {
     }
-
 }

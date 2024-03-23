@@ -23,7 +23,6 @@
 // Created: Thursday, September 10, 2015 10:53:11 PM
 // 
 
-
 using Gorgon.Native;
 
 namespace Gorgon.Input;
@@ -34,7 +33,6 @@ namespace Gorgon.Input;
 public class GorgonRawHIDInfo
     : IGorgonRawHIDInfo
 {
-
     /// <summary>
     /// Property to return the device class name.
     /// </summary>
@@ -107,8 +105,6 @@ public class GorgonRawHIDInfo
         get;
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonRawHIDInfo"/> class.
     /// </summary>
@@ -130,5 +126,4 @@ public class GorgonRawHIDInfo
         Usage = (HIDUsage)deviceInfo.usUsage;
         UsagePage = (HIDUsagePage)deviceInfo.usUsagePage;
     }
-
 }

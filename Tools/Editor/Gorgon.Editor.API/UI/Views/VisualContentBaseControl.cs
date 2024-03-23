@@ -23,7 +23,6 @@
 // Created: February 6, 2020 8:21:58 PM
 // 
 
-
 using System.ComponentModel;
 using System.Numerics;
 using Gorgon.Core;
@@ -66,8 +65,6 @@ public partial class VisualContentBaseControl
     private int _transformEventRegister;
     // The data context for the view.
     private IVisualEditorContent _dataContext;
-
-
 
     /// <summary>
     /// Property to return the current renderer.
@@ -139,8 +136,6 @@ public partial class VisualContentBaseControl
     /// </summary>
     [Browsable(false)]
     public Panel RenderWindow => PanelRenderWindow;
-
-
 
     /// <summary>
     /// Function to handle idle time and rendering.
@@ -708,8 +703,6 @@ public partial class VisualContentBaseControl
         ShowFocusState(true);
         RenderControl.Select();
     }
-
-
 
     /// <summary>Initializes a new instance of the <see cref="VisualContentBaseControl"/> class.</summary>
     public VisualContentBaseControl() => InitializeComponent();

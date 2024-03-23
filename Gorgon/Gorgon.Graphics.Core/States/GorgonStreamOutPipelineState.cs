@@ -23,7 +23,6 @@
 // Created: May 29, 2018 3:09:46 PM
 // 
 
-
 using Gorgon.Collections;
 
 namespace Gorgon.Graphics.Core;
@@ -52,7 +51,6 @@ namespace Gorgon.Graphics.Core;
 /// <seealso cref="GorgonStreamOutPipelineStateBuilder"/>
 public class GorgonStreamOutPipelineState
 {
-
     /// <summary>
     /// Property to set or return the pipeline state.
     /// </summary>
@@ -61,8 +59,6 @@ public class GorgonStreamOutPipelineState
         get;
         set;
     }
-
-
 
     /// <summary>
     /// Property to return the type of primitive to use when drawing.
@@ -116,8 +112,6 @@ public class GorgonStreamOutPipelineState
     /// </summary>
     public IGorgonReadOnlyArray<GorgonBlendState> BlendStates => PipelineState.RwBlendStates;
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonStreamOutPipelineState" /> class.
     /// </summary>
@@ -136,5 +130,4 @@ public class GorgonStreamOutPipelineState
     internal GorgonStreamOutPipelineState()
     {
     }
-
 }

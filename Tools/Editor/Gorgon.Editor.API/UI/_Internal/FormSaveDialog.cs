@@ -23,7 +23,6 @@
 // Created: December 12, 2021 1:32:41 AM
 // 
 
-
 using System.Data;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.Properties;
@@ -47,8 +46,6 @@ internal partial class FormSaveDialog
     private string _currentFileName;
     // The current directory.
     private string _currentDirectory;
-
-
 
     /// <summary>
     /// Property to set or return the project file manager/
@@ -110,8 +107,6 @@ internal partial class FormSaveDialog
         get;
         private set;
     }
-
-
 
     /// <summary>
     /// Function to validate the controls on the form.
@@ -255,8 +250,6 @@ internal partial class FormSaveDialog
         FileExplorer.Entries = [.. dirs.Values];
         ValidateControls();
     }
-
-
 
     /// <summary>Initializes a new instance of the <see cref="FormSaveDialog" /> class.</summary>
     public FormSaveDialog() => InitializeComponent();

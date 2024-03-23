@@ -23,7 +23,6 @@
 // Created: Monday, June 27, 2011 8:58:26 AM
 // 
 
-
 using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.IO.Providers;
@@ -46,7 +45,6 @@ namespace Gorgon.IO;
 internal class VirtualDirectory
     : IGorgonVirtualDirectory
 {
-
     /// <summary>
     /// Property to return the name of the directory.
     /// </summary>
@@ -99,7 +97,6 @@ internal class VirtualDirectory
     /// </summary>
     IGorgonNamedObjectReadOnlyDictionary<IGorgonVirtualFile> IGorgonVirtualDirectory.Files => Files;
 
-
     /// <summary>
     /// Property to return the list of <see cref="IGorgonVirtualFile"/> objects within this directory.
     /// </summary>
@@ -131,8 +128,6 @@ internal class VirtualDirectory
     /// Property to return the full path to the directory.
     /// </summary>
     public string FullPath => Parent is null ? "/" : Parent.FullPath + Name + "/";
-
-
 
     /// <summary>
     /// Function to return all the parents up to the root directory.
@@ -223,8 +218,6 @@ internal class VirtualDirectory
         return directories.Any(item => item.Files.Contains(fileName));
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="VirtualDirectory" /> class.
     /// </summary>
@@ -241,5 +234,4 @@ internal class VirtualDirectory
         Directories = new VirtualDirectoryCollection(this);
         Files = new VirtualFileCollection(this);
     }
-
 }

@@ -7,7 +7,6 @@ namespace Gorgon.Examples;
 /// </summary>
 internal class DummyAi
 {
-
     /// <summary>
     /// Property to set or return the ship to control.
     /// </summary>
@@ -19,8 +18,6 @@ internal class DummyAi
         get;
         set;
     }
-
-
 
     /// <summary>
     /// Function to perform an update from the so called "AI".
@@ -45,5 +42,4 @@ internal class DummyAi
             Ship.HardStop();
         }
     }
-
 }

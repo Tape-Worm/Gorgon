@@ -23,7 +23,6 @@
 // Created: August 3, 2017 10:18:21 PM
 // 
 
-
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 
@@ -46,8 +45,6 @@ internal class Sobel
     private GorgonDispatchCall _dispatch;
     // The dispatch call builder.
     private readonly GorgonDispatchCallBuilder _dispatchBuilder;
-
-
 
     /// <summary>
     /// Function to process a texture into the output texture.
@@ -85,8 +82,6 @@ internal class Sobel
     /// </summary>
     public void Dispose() => _sobelData?.Dispose();
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="Sobel"/> class.
     /// </summary>
@@ -112,5 +107,4 @@ internal class Sobel
         _dispatchBuilder.ConstantBuffer(_sobelData.GetView())
                         .ComputeShader(sobelShader);
     }
-
 }

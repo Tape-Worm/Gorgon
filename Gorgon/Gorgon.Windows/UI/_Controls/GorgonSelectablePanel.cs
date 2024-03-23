@@ -23,7 +23,6 @@
 // Created: Tuesday, October 29, 2013 10:06:31 PM
 // 
 
-
 using System.ComponentModel;
 
 namespace Gorgon.UI;
@@ -35,7 +34,6 @@ namespace Gorgon.UI;
 public class GorgonSelectablePanel
     : Panel
 {
-
     /// <summary>
     /// Types of messages that passed to a window.
     /// </summary>
@@ -48,22 +46,16 @@ public class GorgonSelectablePanel
         MouseWheel = 0x020A
     }
 
-
-
     // Show focus flag.
     private bool _showFocus = true;
     // Flag to indicate that the panel is resizing.
     private bool _resizing;
-
-
 
     /// <summary>
     /// Event triggered when drawing this control to a bitmap.
     /// </summary>
     [Category("Appearance"), Description("Event triggered when this control is rendered to a bitmap, or printed.")]
     public event EventHandler<PaintEventArgs> RenderToBitmap;
-
-
 
     /// <summary>
     /// Gets or sets a value indicating whether the user can give the focus to this control using the TAB key.
@@ -100,8 +92,6 @@ public class GorgonSelectablePanel
             Invalidate();
         }
     }
-
-
 
     /// <summary>Raises the <see cref="RenderToBitmap"/> event.</summary>
     /// <param name="e">A <see cref="PaintEventArgs"/> that contains the event data.</param>
@@ -199,8 +189,6 @@ public class GorgonSelectablePanel
         base.WndProc(ref m);
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonSelectablePanel"/> class.
     /// </summary>
@@ -209,5 +197,4 @@ public class GorgonSelectablePanel
         SetStyle(ControlStyles.Selectable, true);
         TabStop = true;
     }
-
 }

@@ -23,7 +23,6 @@
 // Created: February 6, 2020 9:51:28 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Graphics;
 
@@ -41,7 +40,6 @@ namespace Gorgon.Editor.Rendering;
 public interface IToolRenderer
     : IGorgonNamedObject, IDisposable
 {
-
     /// <summary>
     /// Property to return the size of the view client area.
     /// </summary>
@@ -70,8 +68,6 @@ public interface IToolRenderer
         get;
         set;
     }
-
-
 
     /// <summary>
     /// Function to render the content.

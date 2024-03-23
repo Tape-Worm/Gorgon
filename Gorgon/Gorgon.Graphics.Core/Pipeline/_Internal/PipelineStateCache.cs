@@ -23,7 +23,6 @@
 // Created: January 3, 2021 11:59:00 PM
 // 
 
-
 using System.Runtime.CompilerServices;
 using D3D11 = SharpDX.Direct3D11;
 
@@ -41,16 +40,12 @@ internal class PipelineStateCache(D3D11.Device5 device)
     // The initial size for the cache.
     private const int InitialCacheSize = 16;
 
-
-
     // A syncrhonization lock for multiple thread when dealing with the pipeline state cache.
     private readonly object _stateLock = new();
     // A list of cached pipeline states.
     private GorgonPipelineState[] _cachedPipelineStates = new GorgonPipelineState[InitialCacheSize];
     // The Direct 3D device.
     private readonly D3D11.Device5 _device = device;
-
-
 
     /// <summary>
     /// Function to invalidate the cache data.
@@ -242,6 +237,5 @@ internal class PipelineStateCache(D3D11.Device5 device)
 
     /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
     public void Dispose() => InvalidateCache();
-
 
 }

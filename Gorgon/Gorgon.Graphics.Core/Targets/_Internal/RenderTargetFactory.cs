@@ -23,7 +23,6 @@
 // Created: May 14, 2019 11:11:34 AM
 // 
 
-
 using Gorgon.Diagnostics;
 using Gorgon.Memory;
 using Gorgon.Timing;
@@ -77,8 +76,6 @@ internal class RenderTargetFactory(GorgonGraphics graphics)
     // An allocator for creating texture info objects.
     private readonly GorgonRingPool<TempTargetTextureInfo> _textureInfoAllocator = new(100, () => new TempTargetTextureInfo());
 
-
-
     /// <summary>
     /// Property to return the number of render targets that are currently in flight.
     /// </summary>
@@ -110,8 +107,6 @@ internal class RenderTargetFactory(GorgonGraphics graphics)
         get;
         set;
     } = 0.5;
-
-
 
     /// <summary>
     /// Function to expire any previously allocated targets after a certain amount of time.
@@ -286,8 +281,4 @@ internal class RenderTargetFactory(GorgonGraphics graphics)
         _srvs.Clear();
         _renderTargets.Clear();
     }
-
-
-
-
 }

@@ -23,7 +23,6 @@
 // Created: March 27, 2020 10:53:09 AM
 // 
 
-
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Services;
 using Gorgon.PlugIns;
@@ -41,7 +40,6 @@ namespace Gorgon.Editor.UI;
 public class PlugInsCategoryViewModelParameters(IFileDialogService openCodecDialog, GorgonMefPlugInCache plugInCache, IHostContentServices hostServices)
         : SettingsCategoryViewModelParameters(hostServices)
 {
-
     /// <summary>
     /// Property to return the plug in cache.
     /// </summary>
@@ -57,6 +55,5 @@ public class PlugInsCategoryViewModelParameters(IFileDialogService openCodecDial
     {
         get;
     } = openCodecDialog ?? throw new ArgumentNullException(nameof(openCodecDialog));
-
 
 }

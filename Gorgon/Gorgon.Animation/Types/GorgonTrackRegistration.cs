@@ -23,7 +23,6 @@
 // Created: October 30, 2019 11:02:53 AM
 // 
 
-
 using Gorgon.Animation.Properties;
 using Gorgon.Core;
 
@@ -87,8 +86,6 @@ public class GorgonTrackRegistration
     // The counter for generating IDs.
     private static int _idCount;
 
-
-
     /// <summary>
     /// Property to return the numeric ID of the track.
     /// </summary>
@@ -142,8 +139,6 @@ public class GorgonTrackRegistration
         get;
     }
 
-
-
     /// <summary>Returns a <see cref="string"/> that represents this instance.</summary>
     /// <returns>A <see cref="string"/> that represents this instance.</returns>
     public override string ToString() => string.Format(Resources.GORANM_TOSTR_TRACKREG, TrackName, KeyType.ToString());
@@ -188,5 +183,4 @@ public class GorgonTrackRegistration
         SupportedInterpolation = interpolationSupport;
         ID = Interlocked.Increment(ref _idCount);
     }
-
 }

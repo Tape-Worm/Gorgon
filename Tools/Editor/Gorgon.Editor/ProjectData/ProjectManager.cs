@@ -23,7 +23,6 @@
 // Created: September 1, 2018 8:41:18 PM
 // 
 
-
 using System.Buffers;
 using System.Diagnostics;
 using System.Text;
@@ -61,16 +60,12 @@ internal class ProjectManager(FileSystemProviders providers, IGorgonLog log)
     // The file system directory name.
     private const string FileSystemDirectoryName = "fs";
 
-
-
     // The stream used for the lock file.
     private Stream _lockStream;
     // The log interface for debug messages.
     private readonly IGorgonLog _log = log ?? GorgonLog.NullLog;
     // The provider service for handling reading and writing project files.
     private readonly FileSystemProviders _providers = providers ?? throw new ArgumentNullException(nameof(providers));
-
-
 
     /// <summary>
     /// Function to set up the required project directories.
@@ -470,7 +465,6 @@ internal class ProjectManager(FileSystemProviders providers, IGorgonLog log)
         }
 
         workspace = Path.GetFullPath(workspace).FormatDirectory(Path.DirectorySeparatorChar);
-
 
         if (!Directory.Exists(workspace))
         {
@@ -953,6 +947,4 @@ internal class ProjectManager(FileSystemProviders providers, IGorgonLog log)
         Shell32.SendToRecycleBin(projectPath, FileOperationFlags.FOF_SILENT | FileOperationFlags.FOF_NOCONFIRMATION | FileOperationFlags.FOF_WANTNUKEWARNING);
         return true;
     }
-
-
 }

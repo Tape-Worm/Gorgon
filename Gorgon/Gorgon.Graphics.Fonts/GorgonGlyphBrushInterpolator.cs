@@ -23,7 +23,6 @@
 // Created: Sunday, March 2, 2014 9:34:26 PM
 // 
 
-
 using Gorgon.Graphics.Fonts.Properties;
 using Gorgon.Math;
 
@@ -40,7 +39,6 @@ namespace Gorgon.Graphics.Fonts;
 public readonly struct GorgonGlyphBrushInterpolator(float weight, GorgonColor color)
         : IEquatable<GorgonGlyphBrushInterpolator>, IComparable<GorgonGlyphBrushInterpolator>
 {
-
     /// <summary>
     /// Property to return the interpolation weight.
     /// </summary>
@@ -50,8 +48,6 @@ public readonly struct GorgonGlyphBrushInterpolator(float weight, GorgonColor co
     /// Property to return the interpolation color.
     /// </summary>
     public readonly GorgonColor Color = color;
-
-
 
     /// <summary>
     /// Returns a <see cref="string" /> that represents this instance.
@@ -65,7 +61,6 @@ public readonly struct GorgonGlyphBrushInterpolator(float weight, GorgonColor co
                              Color.Green,
                              Color.Blue,
                              Color.Alpha);
-
 
     /// <summary>
     /// Indicates whether the current object is equal to another object of the same type.
@@ -99,7 +94,6 @@ public readonly struct GorgonGlyphBrushInterpolator(float weight, GorgonColor co
     /// A value that indicates the relative order of the objects being compared. The return value has the following meanings: Value Meaning Less than zero This object is less than the <paramref name="other" /> parameter.Zero This object is equal to <paramref name="other" />. Greater than zero This object is greater than <paramref name="other" />.
     /// </returns>
     public int CompareTo(GorgonGlyphBrushInterpolator other) => Weight < other.Weight ? -1 : Weight > other.Weight ? 1 : 0;
-
 
     /// <summary>
     /// Performs an equality check on two instances.
@@ -148,8 +142,5 @@ public readonly struct GorgonGlyphBrushInterpolator(float weight, GorgonColor co
     /// <param name="right">The right instance to compare.</param>
     /// <returns><b>true</b> if <paramref name="left"/> is greater than or equal to <paramref name="right"/>, <b>false</b> if not.</returns>
     public static bool operator >=(GorgonGlyphBrushInterpolator left, GorgonGlyphBrushInterpolator right) => left.CompareTo(right) >= 0;
-
-
-
 
 }

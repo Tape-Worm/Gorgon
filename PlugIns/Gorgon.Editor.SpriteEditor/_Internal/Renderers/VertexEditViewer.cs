@@ -23,7 +23,6 @@
 // Created: April 8, 2019 5:03:58 PM
 // 
 
-
 using System.Buffers;
 using System.ComponentModel;
 using System.Numerics;
@@ -75,12 +74,8 @@ internal class VertexEditViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IS
         }
     }
 
-
-
     // The editor used to update the sprite vertices.
     private readonly SpriteVertexEditService _vertexEditor = vertexEditor;
-
-
 
     /// <summary>
     /// Function to set the vertices in the vertex editor service.
@@ -309,6 +304,4 @@ internal class VertexEditViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IS
 
         base.Dispose(disposing);
     }
-
-
 }

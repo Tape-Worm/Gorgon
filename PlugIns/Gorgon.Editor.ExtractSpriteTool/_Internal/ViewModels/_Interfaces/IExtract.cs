@@ -23,7 +23,6 @@
 // Created: May 24, 2020 11:25:55 PM
 // 
 
-
 using Gorgon.Editor.Services;
 using Gorgon.Editor.Tools;
 using Gorgon.Editor.UI;
@@ -192,7 +191,6 @@ internal interface IExtract
     {
         get;
     }
-
 
     /// <summary>
     /// Property to return the command used to go to the next preview sprite.

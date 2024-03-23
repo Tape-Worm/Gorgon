@@ -23,7 +23,6 @@
 // Created: December 17, 2018 10:01:27 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Metadata;
@@ -58,7 +57,6 @@ namespace Gorgon.Editor.PlugIns;
 public abstract class ContentImportPlugIn
     : EditorPlugIn
 {
-
     /// <summary>
     /// An attribute name for the file metadata to indicate that this item was imported.
     /// </summary>
@@ -68,8 +66,6 @@ public abstract class ContentImportPlugIn
     /// </remarks>
     public const string ImportOriginalFileNameAttr = "ImportOriginalName";
 
-
-
     // Flag to indicate that the plugin is initialized.
     private int _initialized;
     // The content services passed in from the host application.
@@ -77,8 +73,6 @@ public abstract class ContentImportPlugIn
 
     // The factory used to create the importer.
     private readonly Lazy<IEditorContentImporter> _importerFactory;
-
-
 
     /// <summary>
     /// Property to return the services from the host application.
@@ -130,8 +124,6 @@ public abstract class ContentImportPlugIn
     /// </remarks>
     /// <seealso cref="PlugIns.PlugInType"/>
     public sealed override PlugInType PlugInType => PlugInType.ContentImporter;
-
-
 
     /// <summary>
     /// Function to provide custom initialization for the plugin.
@@ -264,7 +256,6 @@ public abstract class ContentImportPlugIn
 
     }
 
-
     /// <summary>
     /// Function to retrieve a content import
     /// </summary>        
@@ -354,8 +345,6 @@ public abstract class ContentImportPlugIn
         HostServices.Log.Print($"Initializing {Name}...", LoggingLevel.Simple);
         OnInitialize();
     }
-
-
 
     /// <summary>Initializes a new instance of the <see cref="ContentImportPlugIn"/> class.</summary>
     /// <param name="description">Optional description of the plugin.</param>

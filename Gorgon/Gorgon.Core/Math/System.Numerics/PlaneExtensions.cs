@@ -23,7 +23,6 @@
 // Created: February 12, 2021 4:41:57 PM
 // 
 
-
 using System.Runtime.CompilerServices;
 
 namespace System.Numerics;

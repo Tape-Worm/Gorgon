@@ -23,7 +23,6 @@
 // Created: November 10, 2018 10:13:20 PM
 // 
 
-
 using Krypton.Ribbon;
 
 namespace Gorgon.Editor;

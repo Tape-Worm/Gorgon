@@ -23,8 +23,6 @@
 // Created: September 5, 2018 12:35:20 PM
 // 
 
-
-
 using Gorgon.Editor.PlugIns;
 using Newtonsoft.Json;
 
@@ -39,8 +37,6 @@ public class ProjectItemMetadata
 
     // The metadata for a content plugin.
     private IContentPlugInMetadata _contentMetadata;
-
-
 
     /// <summary>
     /// Property to return the ID for the item.
@@ -110,8 +106,6 @@ public class ProjectItemMetadata
             _contentMetadata = value;
         }
     }
-
-
 
     /// <summary>Initializes a new instance of the <see cref="ProjectItemMetadata"/> class.</summary>
     /// <param name="oldVersion">The old version of project metadata.</param>

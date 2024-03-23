@@ -23,7 +23,6 @@
 // Created: Sunday, September 13, 2015 1:47:57 PM
 // 
 
-
 using Gorgon.Diagnostics;
 using Gorgon.Input.DirectInput.Properties;
 using DI = SharpDX.DirectInput;
@@ -45,8 +44,6 @@ internal sealed class GorgonDirectInputDriver
     // The available axis mappings for the individual gaming devices.
     private readonly Dictionary<IGorgonGamingDeviceInfo, IReadOnlyDictionary<GamingDeviceAxis, DI.DeviceObjectId>> _axisMappings =
                                 [];
-
-
 
     /// <summary>Releases unmanaged and - optionally - managed resources.</summary>
     /// <param name="disposing">
@@ -139,8 +136,6 @@ internal sealed class GorgonDirectInputDriver
             // Attempt to acquire the device immediately.
             IsAcquired = true
         };
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonDirectInputDriver"/> class.

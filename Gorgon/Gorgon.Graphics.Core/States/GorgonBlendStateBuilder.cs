@@ -23,7 +23,6 @@
 // Created: May 24, 2018 4:10:30 PM
 // 
 
-
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
@@ -48,7 +47,6 @@ namespace Gorgon.Graphics.Core;
 public class GorgonBlendStateBuilder
     : GorgonStateBuilderAllocator<GorgonBlendStateBuilder, GorgonBlendState>
 {
-
     /// <summary>
     /// Function to copy the state settings from the source state into the destination.
     /// </summary>
@@ -203,8 +201,6 @@ public class GorgonBlendStateBuilder
         return this;
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonBlendStateBuilder"/> class.
     /// </summary>
@@ -213,5 +209,4 @@ public class GorgonBlendStateBuilder
     {
 
     }
-
 }

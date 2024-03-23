@@ -23,7 +23,6 @@
 // Created: August 9, 2018 8:45:09 AM
 // 
 
-
 using System.Collections;
 using System.Numerics;
 using Gorgon.Core;
@@ -77,8 +76,6 @@ public class GorgonPolySpriteBuilder(Gorgon2D renderer)
     // The triangulator used to convert the polygon into a triangle mesh.
     private readonly Triangulator _triangulator = new(null);
 
-
-
     /// <summary>
     /// Property to return the number of vertices in the polysprite.
     /// </summary>
@@ -91,8 +88,6 @@ public class GorgonPolySpriteBuilder(Gorgon2D renderer)
     {
         get;
     } = renderer?.Graphics ?? throw new ArgumentNullException(nameof(renderer));
-
-
 
     /// <summary>
     /// Function to copy the values from one sprite to another.
@@ -579,8 +574,5 @@ public class GorgonPolySpriteBuilder(Gorgon2D renderer)
     /// </summary>
     /// <returns>An <see cref="IEnumerator" /> object that can be used to iterate through the collection.</returns>
     IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)_workingSprite.RwVertices).GetEnumerator();
-
-
-
 
 }

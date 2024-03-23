@@ -23,7 +23,6 @@
 // Created: Sunday, June 14, 2015 5:59:28 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Properties;
 
@@ -41,7 +40,6 @@ namespace Gorgon.IO;
 public readonly struct GorgonChunk(ulong id, int size, ulong offset)
         : IGorgonEquatableByRef<GorgonChunk>
 {
-
     /// <summary>
     /// An empty chunk.
     /// </summary>
@@ -62,8 +60,6 @@ public readonly struct GorgonChunk(ulong id, int size, ulong offset)
     /// </summary>
     /// <remarks>This is relative to the header of the file.</remarks>
     public readonly ulong FileOffset = offset;
-
-
 
     /// <summary>
     /// Returns a <see cref="string" /> that represents this instance.
@@ -106,8 +102,6 @@ public readonly struct GorgonChunk(ulong id, int size, ulong offset)
     /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
     public bool Equals(ref readonly GorgonChunk other) => Equals(in this, in other);
 
-
-
     /// <summary>
     /// Operator used to compare two instances for equality.
     /// </summary>
@@ -123,6 +117,5 @@ public readonly struct GorgonChunk(ulong id, int size, ulong offset)
     /// <param name="right">The right instance to compare.</param>
     /// <returns><b>true</b> if not equal, <b>false</b> otherwise.</returns>
     public static bool operator !=(GorgonChunk left, GorgonChunk right) => !Equals(in left, in right);
-
 
 }

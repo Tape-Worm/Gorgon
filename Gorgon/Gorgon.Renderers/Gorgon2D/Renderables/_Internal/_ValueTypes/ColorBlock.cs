@@ -23,7 +23,6 @@
 // Created: June 12, 2018 10:59:58 AM
 // 
 
-
 using Gorgon.Graphics;
 
 namespace Gorgon.Renderers;
@@ -39,7 +38,6 @@ namespace Gorgon.Renderers;
 /// <param name="color">The color for the block.</param>
 internal readonly struct ColorBlock(int start, int end, GorgonColor color)
 {
-
     /// <summary>
     /// The starting character index.
     /// </summary>
@@ -54,7 +52,5 @@ internal readonly struct ColorBlock(int start, int end, GorgonColor color)
     /// The color for the block.
     /// </summary>
     public readonly GorgonColor Color = color;
-
-
 
 }

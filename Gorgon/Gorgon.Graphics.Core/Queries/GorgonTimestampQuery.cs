@@ -23,8 +23,6 @@
 // Created: January 16, 2021 1:57:57 PM
 // 
 
-
-
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
@@ -36,11 +34,8 @@ namespace Gorgon.Graphics.Core;
 public class GorgonTimestampQuery(GorgonGraphics graphics, string name = null)
         : GorgonQuery<ulong>(graphics, name)
 {
-
     /// <summary>Property to return the type of query to execute.</summary>
     public override QueryType QueryType => QueryType.Timestamp;
-
-
 
     /// <summary>
     /// Function to retrieve the result data for the query.
@@ -48,6 +43,5 @@ public class GorgonTimestampQuery(GorgonGraphics graphics, string name = null)
     /// <param name="result">The result of the query.</param>
     /// <returns><b>true</b> if the query results are ready to be consumed, or <b>false</b> if not.</returns>
     protected override bool OnGetData(out ulong result) => Graphics.D3DDeviceContext.GetData(D3dQuery, out result);
-
 
 }

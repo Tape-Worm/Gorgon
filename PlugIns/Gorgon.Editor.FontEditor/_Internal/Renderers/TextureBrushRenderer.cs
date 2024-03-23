@@ -23,7 +23,6 @@
 // Created: August 3, 2020 4:40:15 PM
 // 
 
-
 using System.ComponentModel;
 using System.Numerics;
 using Gorgon.Core;
@@ -61,8 +60,6 @@ internal class TextureBrushRenderer(Gorgon2D renderer, GorgonSwapChain mainRende
     private GorgonTexture2DView _targetTexture;
     // The clipper used to cut out a part of the texture.
     private readonly IRectClipperService _clipper = clipper;
-
-
 
     /// <summary>Handles the PropertyChanging event of the Context control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -373,6 +370,5 @@ internal class TextureBrushRenderer(Gorgon2D renderer, GorgonSwapChain mainRende
     /// Function to set the view to a default zoom level.
     /// </summary>
     public void DefaultZoom() => MoveTo(Vector2.Zero, 1);
-
 
 }

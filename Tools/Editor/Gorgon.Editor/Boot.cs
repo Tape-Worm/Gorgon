@@ -23,7 +23,6 @@
 // Created: August 26, 2018 5:37:32 PM
 // 
 
-
 using System.Reflection;
 using System.Text;
 using Gorgon.Diagnostics;
@@ -62,8 +61,6 @@ internal class Boot
     private ToolPlugInService _toolPlugIns;
     // The service for managing content plug ins.
     private ContentPlugInService _contentPlugIns;
-
-
 
     /// <summary>Handles the AssemblyResolve event of the CurrentDomain control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -493,5 +490,4 @@ internal class Boot
             Cursor.Current = Cursors.Default;
         }
     }
-
 }

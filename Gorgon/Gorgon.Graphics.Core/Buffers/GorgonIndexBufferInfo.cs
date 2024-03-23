@@ -23,7 +23,6 @@
 // Created: April 18, 2018 10:52:38 PM
 // 
 
-
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
@@ -33,7 +32,6 @@ namespace Gorgon.Graphics.Core;
 public record GorgonIndexBufferInfo(int IndexCount)
     : IGorgonIndexBufferInfo
 {
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonIndexBufferInfo"/> class.
     /// </summary>
@@ -47,8 +45,6 @@ public record GorgonIndexBufferInfo(int IndexCount)
         Use16BitIndices = info.Use16BitIndices;
         Binding = info.Binding;
     }
-
-
 
     /// <summary>
     /// Property to return the intended usage for binding to the GPU.

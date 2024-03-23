@@ -23,7 +23,6 @@
 // Created: February 12, 2021 8:21:53 PM
 // 
 
-
 // Copyright (c) 2010-2014 SharpDX - Alexandre Mutel
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -69,13 +68,11 @@
 * THE SOFTWARE.
 */
 
-
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Gorgon.Math;
-using Gorgon.Renderers.Data;
 
-namespace Gorgon.Renderers;
+namespace Gorgon.Graphics.Core;
 
 /// <summary>
 /// Defines the type of intersection on a plane
@@ -625,7 +622,7 @@ public static class GorgonIntersections
             return (false, Vector3.Zero);
         }
 
-        return (true, point1);        
+        return (true, point1);
     }
 
     /// <summary>
@@ -1135,7 +1132,6 @@ public static class GorgonIntersections
         float distance = Vector3.Dot(plane.Normal, sphere.Center);
         distance += plane.D;
 
-
         if (distance > sphere.Radius)
         {
             return PlaneIntersection.Front;
@@ -1158,7 +1154,6 @@ public static class GorgonIntersections
         {
             return false;
         }
-
 
         if (box1.Minimum.Y > box2.Maximum.Y || box2.Minimum.Y > box1.Maximum.Y)
         {
@@ -1254,7 +1249,6 @@ public static class GorgonIntersections
             return Containment.Disjoint;
         }
 
-
         if (box1.Maximum.Z < box2.Minimum.Z || box1.Minimum.Z > box2.Maximum.Z)
         {
             return Containment.Disjoint;
@@ -1321,7 +1315,6 @@ public static class GorgonIntersections
         Containment test1 = SphereContainsPoint(sphere, vertex1);
         Containment test2 = SphereContainsPoint(sphere, vertex2);
         Containment test3 = SphereContainsPoint(sphere, vertex3);
-
 
         if (test1 == Containment.Contains && test2 == Containment.Contains && test3 == Containment.Contains)
         {
@@ -1426,7 +1419,6 @@ public static class GorgonIntersections
     public static Containment SphereContainsSphere(GorgonBoundingSphere sphere1, GorgonBoundingSphere sphere2)
     {
         float distance = Vector3.Distance(sphere1.Center, sphere2.Center);
-
 
         if (sphere1.Radius + sphere2.Radius < distance)
         {

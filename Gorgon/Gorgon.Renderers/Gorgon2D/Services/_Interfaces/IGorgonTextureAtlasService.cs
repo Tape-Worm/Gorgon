@@ -23,7 +23,6 @@
 // Created: May 2, 2019 9:11:18 AM
 // 
 
-
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 
@@ -46,7 +45,6 @@ namespace Gorgon.Renderers.Services;
 /// </remarks>
 public interface IGorgonTextureAtlasService
 {
-
     /// <summary>
     /// Property to set or return the amount of padding, in pixels, to place around each sprite.
     /// </summary>
@@ -87,8 +85,6 @@ public interface IGorgonTextureAtlasService
         get;
         set;
     }
-
-
 
     /// <summary>
     /// Function to generate the textures and sprites for the texture atlas.

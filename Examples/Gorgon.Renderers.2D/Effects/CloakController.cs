@@ -31,7 +31,6 @@ public enum CloakDirection
     CloakPulse = 4
 }
 
-
 /// <summary>
 /// Defines the states for cloaking the ship
 /// </summary>
@@ -46,8 +45,6 @@ public class CloakController
     private float _cloakAmount;
     // The direction to move in order to stop the pulse.
     private int _stopPulseDirection = 1;
-
-
 
     /// <summary>
     /// Property to return the opacity.
@@ -76,8 +73,6 @@ public class CloakController
         get;
         private set;
     }
-
-
 
     /// <summary>
     /// Function to initiate the cloak.
@@ -158,5 +153,4 @@ public class CloakController
                 break;
         }
     }
-
 }

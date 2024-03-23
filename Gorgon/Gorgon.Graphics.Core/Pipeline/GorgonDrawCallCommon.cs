@@ -23,7 +23,6 @@
 // Created: May 23, 2018 12:18:45 PM
 // 
 
-
 using Gorgon.Collections;
 
 namespace Gorgon.Graphics.Core;
@@ -43,7 +42,6 @@ namespace Gorgon.Graphics.Core;
 /// <seealso cref="GorgonGraphics"/>
 public abstract class GorgonDrawCallCommon
 {
-
     /// <summary>
     /// Property to return the internal D3D state.
     /// </summary>
@@ -120,8 +118,6 @@ public abstract class GorgonDrawCallCommon
     /// </summary>
     public IGorgonReadOnlyArray<GorgonReadWriteViewBinding> ReadWriteViews => D3DState.ReadWriteViews;
 
-
-
     /// <summary>
     /// Function to set up shader resource views for each shader.
     /// </summary>
@@ -163,8 +159,6 @@ public abstract class GorgonDrawCallCommon
         D3DState.CsConstantBuffers = new GorgonConstantBuffers();
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonDrawCallCommon"/> class.
     /// </summary>
@@ -176,5 +170,4 @@ public abstract class GorgonDrawCallCommon
         DomainShader = new GorgonShaderResources();
         HullShader = new GorgonShaderResources();
     }
-
 }

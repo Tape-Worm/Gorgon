@@ -23,7 +23,6 @@
 // Created: March 28, 2019 9:48:28 AM
 // 
 
-
 using System.ComponentModel;
 using Gorgon.Editor.AnimationEditor.Properties;
 using Gorgon.Editor.UI;
@@ -42,8 +41,6 @@ internal partial class AnimationProperties
     // Flag to indicate that events have been assigned to the control.
     private int _eventsAssigned = 1;
 
-
-
     /// <summary>
     /// Property to return the data context for the view.
     /// </summary>
@@ -53,8 +50,6 @@ internal partial class AnimationProperties
         get;
         private set;
     }
-
-
 
     /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -297,8 +292,6 @@ internal partial class AnimationProperties
 
         ViewModel.PropertyChanged += DataContext_PropertyChanged;
     }
-
-
 
     /// <summary>Initializes a new instance of the <see cref="AnimationProperties"/> class.</summary>
     public AnimationProperties() => InitializeComponent();

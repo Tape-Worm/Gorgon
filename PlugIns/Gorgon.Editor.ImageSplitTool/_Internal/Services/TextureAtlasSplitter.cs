@@ -23,7 +23,6 @@
 // Created: August 18, 2020 11:10:05 AM
 // 
 
-
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.ImageSplitTool.Properties;
@@ -58,12 +57,6 @@ internal class TextureAtlasSplitter
     private readonly IGorgonLog _log;
     // The list of image and sprite files.
     private readonly IReadOnlyDictionary<IContentFile, IReadOnlyList<IContentFile>> _imagesAndSprites;
-
-
-
-
-
-
 
     /// <summary>
     /// Function to load the image data.
@@ -398,8 +391,6 @@ internal class TextureAtlasSplitter
         }
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="TextureAtlasSplitter"/> class.</summary>
     /// <param name="renderer">The renderer used to generate image data.</param>
     /// <param name="imagesAndSprites">The list of image and sprite dependency files</param>
@@ -417,5 +408,4 @@ internal class TextureAtlasSplitter
         _spriteCodec = spriteCodec;
         _log = log;
     }
-
 }

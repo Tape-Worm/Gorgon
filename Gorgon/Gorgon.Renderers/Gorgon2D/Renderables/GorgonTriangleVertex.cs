@@ -23,7 +23,6 @@
 // Created: July 2, 2018 10:29:39 AM
 // 
 
-
 using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Graphics;
@@ -44,7 +43,6 @@ namespace Gorgon.Renderers;
 public readonly struct GorgonTriangleVertex(Vector2 position, GorgonColor color, Vector2? textureCoordinate = null, int textureArrayIndex = 0)
         : IGorgonEquatableByRef<GorgonTriangleVertex>
 {
-
     /// <summary>
     /// The horizontal and vertical position of the point.
     /// </summary>
@@ -67,8 +65,6 @@ public readonly struct GorgonTriangleVertex(Vector2 position, GorgonColor color,
     /// The color of the point.
     /// </summary>
     public readonly GorgonColor Color = color;
-
-
 
     /// <summary>Returns the hash code for this instance.</summary>
     /// <returns>A 32-bit signed integer that is the hash code for this instance.</returns>
@@ -121,7 +117,5 @@ public readonly struct GorgonTriangleVertex(Vector2 position, GorgonColor color,
     /// <param name="right">The right instance to compare.</param>
     /// <returns><b>true</b> if both instances are not equal, <b>false</b> if equal.</returns>
     public static bool operator !=(GorgonTriangleVertex left, GorgonTriangleVertex right) => !Equals(in left, in right);
-
-
 
 }

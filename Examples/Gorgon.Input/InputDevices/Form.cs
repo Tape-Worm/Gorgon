@@ -23,7 +23,6 @@
 // Created: Saturday, January 5, 2013 3:33:05 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
@@ -110,14 +109,10 @@ public partial class Form : System.Windows.Forms.Form
     // Timer used to refresh the labels.
     private readonly GorgonTimerQpc _labelTimer = new();
 
-
-
     /// <summary>
     /// Property to return the mid point of the display panel size, in screen space.
     /// </summary>
     private Point DisplayHalfSize => new(panelDisplay.ClientSize.Width / 2, panelDisplay.ClientSize.Height / 2);
-
-
 
     /// <summary>
     /// Handles the Paint event of the panelMouse control.

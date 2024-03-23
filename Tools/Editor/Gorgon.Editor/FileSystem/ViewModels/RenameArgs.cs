@@ -23,7 +23,6 @@
 // Created: September 5, 2018 9:09:28 AM
 // 
 
-
 using System.ComponentModel;
 
 namespace Gorgon.Editor.ViewModels;
@@ -39,7 +38,6 @@ namespace Gorgon.Editor.ViewModels;
 internal class RenameArgs(string oldName, string newName)
         : CancelEventArgs(false)
 {
-
     /// <summary>
     /// Property to return the old name.
     /// </summary>
@@ -65,6 +63,5 @@ internal class RenameArgs(string oldName, string newName)
         get;
         set;
     } = newName;
-
 
 }

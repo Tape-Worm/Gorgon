@@ -23,7 +23,6 @@
 // Created: August 23, 2018 4:45:05 PM
 // 
 
-
 namespace Gorgon.Examples;
 
 /// <summary>
@@ -31,7 +30,6 @@ namespace Gorgon.Examples;
 /// </summary>
 public partial class FormMain : Form
 {
-
     /// <summary>
     /// Property to return the synchronization context for this window.
     /// </summary>
@@ -56,8 +54,6 @@ public partial class FormMain : Form
             LabelPleaseWait.Visible = !value;
         }
     }
-
-
 
     /// <summary>Raises the <see cref="E:System.Windows.Forms.Form.Load" /> event.</summary>
     /// <param name="e">An <see cref="EventArgs" /> that contains the event data. </param>
@@ -85,8 +81,6 @@ public partial class FormMain : Form
         Application.DoEvents();
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="FormMain"/> class.
     /// </summary>
@@ -96,5 +90,4 @@ public partial class FormMain : Form
 
         CurrentSyncContext = SynchronizationContext.Current;
     }
-
 }

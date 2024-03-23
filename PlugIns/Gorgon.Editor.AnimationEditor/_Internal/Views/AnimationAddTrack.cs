@@ -23,7 +23,6 @@
 // Created: March 28, 2019 9:48:28 AM
 // 
 
-
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -39,7 +38,6 @@ namespace Gorgon.Editor.AnimationEditor;
 internal partial class AnimationAddTrack
     : EditorSubPanelCommon, IDataContext<IAddTrack>
 {
-
     /// <summary>
     /// A list box item for the track.
     /// </summary>
@@ -60,11 +58,6 @@ internal partial class AnimationAddTrack
         public override string ToString() => TrackRegistration.Description;
     }
 
-
-
-
-
-
     /// <summary>
     /// Property to return the data context for the view.
     /// </summary>
@@ -74,8 +67,6 @@ internal partial class AnimationAddTrack
         get;
         private set;
     }
-
-
 
     /// <summary>Handles the CollectionChanged event of the AvailableTracks control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -284,8 +275,6 @@ internal partial class AnimationAddTrack
 
         ValidateOk();
     }
-
-
 
     /// <summary>Initializes a new instance of the <see cref="AnimationAddTrack"/> class.</summary>
     public AnimationAddTrack() => InitializeComponent();

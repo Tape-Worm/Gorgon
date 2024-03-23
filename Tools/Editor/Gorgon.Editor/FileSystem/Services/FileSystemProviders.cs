@@ -23,7 +23,6 @@
 // Created: September 24, 2018 11:05:00 AM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.PlugIns;
@@ -52,8 +51,6 @@ internal class FileSystemProviders(IHostServices hostServices)
     // Common application services.
     private readonly IHostServices _hostServices = hostServices ?? throw new ArgumentNullException(nameof(hostServices));
 
-
-
     /// <summary>
     /// Property to return the list of disabled provider plug ins.
     /// </summary>
@@ -68,8 +65,6 @@ internal class FileSystemProviders(IHostServices hostServices)
     /// Property to return all loaded file system writer plug ins.
     /// </summary>
     public IReadOnlyDictionary<string, FileWriterPlugIn> Writers => _writers;
-
-
 
     /// <summary>
     /// Function to retrieve the file system provider that supports the specified file.
@@ -184,7 +179,6 @@ internal class FileSystemProviders(IHostServices hostServices)
             {
                 continue;
             }
-
 
             if (!result.TryGetValue(description, out (FileWriterPlugIn plugin, List<GorgonFileExtension> extensions) extensions))
             {
@@ -312,8 +306,4 @@ internal class FileSystemProviders(IHostServices hostServices)
             }
         }
     }
-
-
-
-
 }

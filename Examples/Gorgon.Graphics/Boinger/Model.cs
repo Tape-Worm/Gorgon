@@ -23,7 +23,6 @@
 // Created: Sunday, December 30, 2012 2:35:20 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
@@ -58,8 +57,6 @@ internal abstract class Model
     private bool _isScaleChanged;
     // Flag to inidcate that our rotation has been updated.
     private bool _isRotationChanged;
-
-
 
     /// <summary>
     /// Property to return the input layout of the vertices for the mesh stored within this model.
@@ -179,8 +176,6 @@ internal abstract class Model
         }
     }
 
-
-
     /// <summary>
     /// Function to update the transformation matrix of the plane.
     /// </summary>
@@ -242,5 +237,4 @@ internal abstract class Model
         InputLayout = inputLayout;
         VertexBufferBindings = new GorgonVertexBufferBindings(InputLayout);
     }
-
 }

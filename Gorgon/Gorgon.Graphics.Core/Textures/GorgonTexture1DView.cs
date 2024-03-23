@@ -23,7 +23,6 @@
 // Created: April 16, 2018 11:19:12 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Graphics.Imaging;
@@ -50,7 +49,6 @@ namespace Gorgon.Graphics.Core;
 public sealed class GorgonTexture1DView
     : GorgonShaderResourceView, IGorgonTexture1DInfo, IGorgonImageInfo
 {
-
     /// <summary>
     /// Property to return the type of image data.
     /// </summary>
@@ -206,8 +204,6 @@ public sealed class GorgonTexture1DView
     /// </summary>
     public TextureBinding Binding => Texture?.Binding ?? TextureBinding.None;
 
-
-
     /// <summary>Function to retrieve the necessary parameters to create the native view.</summary>
     /// <returns>A shader resource view descriptor.</returns>
     private protected override ref readonly D3D11.ShaderResourceViewDescription1 OnGetSrvParams()
@@ -238,7 +234,6 @@ public sealed class GorgonTexture1DView
         Texture = null;
         base.Dispose();
     }
-
 
     /// <summary>
     /// Function to convert a <see cref="GorgonRange{T}"/> of texel coordinates to pixel space.
@@ -577,8 +572,6 @@ public sealed class GorgonTexture1DView
         return view;
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonTexture1DView" /> class.
     /// </summary>
@@ -608,5 +601,4 @@ public sealed class GorgonTexture1DView
         ArrayIndex = arrayIndex;
         ArrayCount = arrayCount;
     }
-
 }

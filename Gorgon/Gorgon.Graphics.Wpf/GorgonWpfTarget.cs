@@ -150,8 +150,6 @@ public class GorgonWpfTarget
     // Flag to indicate rendering has started.
     private int _started;
 
-
-
     /// <summary>
     /// Property to return the backing texture for the WPF surface to render into.
     /// </summary>
@@ -196,8 +194,6 @@ public class GorgonWpfTarget
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to build a render target from the WPF surface.
@@ -370,8 +366,6 @@ public class GorgonWpfTarget
         CompositionTarget.Rendering -= CompositionTarget_Rendering;
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="GorgonWpfTarget" /> class.</summary>
     /// <param name="graphics">The graphics object used to create the necessary resources.</param>
     /// <param name="info">The information used to build the object.</param>
@@ -388,5 +382,4 @@ public class GorgonWpfTarget
 
         Initialize();
     }
-
 }

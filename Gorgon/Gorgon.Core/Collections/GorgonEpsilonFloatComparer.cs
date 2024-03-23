@@ -23,7 +23,6 @@
 // Created: August 18, 2018 10:41:23 AM
 // 
 
-
 using Gorgon.Math;
 
 namespace Gorgon.Collections;

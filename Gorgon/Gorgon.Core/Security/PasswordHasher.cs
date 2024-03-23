@@ -23,7 +23,6 @@
 // Created: November 30, 2020 10:31:30 PM
 // 
 
-
 using System.Security.Cryptography;
 using Gorgon.Core;
 
@@ -54,8 +53,6 @@ public static class PasswordHasher
     /// If the password supplied exceeds this value, then it will be cropped to this length before hashing.
     /// </remarks>
     public const int MaxiumumPasswordLength = 256;
-
-
 
     /// <summary>
     /// Function to generate a salt value.
@@ -116,5 +113,4 @@ public static class PasswordHasher
 
         return (iv, key);
     }
-
 }

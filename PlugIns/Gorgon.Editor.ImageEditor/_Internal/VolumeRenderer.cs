@@ -23,7 +23,6 @@
 // Created: January 14, 2019 12:33:21 PM
 // 
 
-
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -44,7 +43,6 @@ namespace Gorgon.Editor.ImageEditor;
 internal class VolumeRenderer(GorgonGraphics graphics)
         : IDisposable
 {
-
     /// <summary>
     /// The parameters for rendering the volume.
     /// </summary>
@@ -60,8 +58,6 @@ internal class VolumeRenderer(GorgonGraphics graphics)
         /// </summary>
         public int Iterations;
     }
-
-
 
     // The graphics interface to use.
     private readonly GorgonGraphics _graphics = graphics;
@@ -101,8 +97,6 @@ internal class VolumeRenderer(GorgonGraphics graphics)
     // The viewport for the cube.
     private DX.ViewportF _cubeView;
 
-
-
     /// <summary>
     /// Property to return the region on the screen to render the volume.
     /// </summary>
@@ -111,9 +105,6 @@ internal class VolumeRenderer(GorgonGraphics graphics)
         get;
         private set;
     }
-
-
-
 
     /// <summary>
     /// Function to update the cube transform and send it to the GPU.
@@ -326,6 +317,4 @@ internal class VolumeRenderer(GorgonGraphics graphics)
         _cubeDirShader = null;
         _cubeVs = null;
     }
-
-
 }

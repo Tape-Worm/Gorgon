@@ -23,7 +23,6 @@
 // Created: Sunday, October 11, 2015 11:51:54 PM
 // 
 
-
 using Gorgon.Properties;
 
 namespace Gorgon.Math;
@@ -34,7 +33,6 @@ namespace Gorgon.Math;
 public readonly struct GorgonRationalNumber
     : IEquatable<GorgonRationalNumber>, IComparable<GorgonRationalNumber>
 {
-
     /// <summary>
     /// An empty rational number.
     /// </summary>
@@ -49,8 +47,6 @@ public readonly struct GorgonRationalNumber
     /// The denominator for the number.
     /// </summary>
     public readonly int Denominator;
-
-
 
     /// <summary>
     /// Function to compare two instances for equality.
@@ -251,8 +247,6 @@ public readonly struct GorgonRationalNumber
         return leftRational >= rightRational;
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonRationalNumber"/> struct.
     /// </summary>
@@ -269,5 +263,4 @@ public readonly struct GorgonRationalNumber
         Numerator = numerator;
         Denominator = denominator;
     }
-
 }

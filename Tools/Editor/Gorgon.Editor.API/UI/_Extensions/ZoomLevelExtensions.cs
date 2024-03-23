@@ -23,7 +23,6 @@
 // Created: March 21, 2019 11:21:46 PM
 // 
 
-
 using Gorgon.Editor.Properties;
 using Gorgon.Math;
 
@@ -229,6 +228,5 @@ public static class ZoomLevelExtensions
 
         return ZoomLevels.Percent12;
     }
-
 }
 

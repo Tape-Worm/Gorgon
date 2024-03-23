@@ -23,7 +23,6 @@
 // Created: June 29, 2016 10:46:00 PM
 // 
 
-
 using Gorgon.Configuration;
 using Gorgon.Graphics.Imaging.Properties;
 
@@ -40,7 +39,6 @@ namespace Gorgon.Graphics.Imaging.Codecs;
 public class GorgonGifDecodingOptions
     : IGorgonWicDecodingOptions
 {
-
     /// <summary>
     /// Property to set or return flags used to determine how to handle bit depth conversion for specific formats.
     /// </summary>
@@ -149,8 +147,6 @@ public class GorgonGifDecodingOptions
             // Intentionally left blank.
         }
     }
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonGifDecodingOptions"/> class.

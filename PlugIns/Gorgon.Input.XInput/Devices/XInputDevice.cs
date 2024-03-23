@@ -23,7 +23,6 @@
 // Created: Friday, July 15, 2011 6:22:41 AM
 // 
 
-
 using Gorgon.Core;
 using XI = SharpDX.XInput;
 

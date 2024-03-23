@@ -23,7 +23,6 @@
 // Created: January 30, 2021 10:36:37 PM
 // 
 
-
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Windows;
@@ -82,8 +81,6 @@ public partial class MainWindow
     // The target delta time.
     private const float TargetDelta = 1 / 60.0f;
 
-
-
     // The primary graphics interface.
     private GorgonGraphics _graphics;
     // The WPF render target. This is where we'll send our rendering.
@@ -118,8 +115,6 @@ public partial class MainWindow
     private Point? _dragStart;
     // Flag to indicate that the window is being dragged.
     private bool _isDragging;
-
-
 
     /// <summary>Handles the SizeChanged event of the grid control.</summary>
     /// <param name="sender">The source of the event.</param>

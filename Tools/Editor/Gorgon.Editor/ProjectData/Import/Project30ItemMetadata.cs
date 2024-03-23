@@ -23,8 +23,6 @@
 // Created: September 5, 2018 12:35:20 PM
 // 
 
-
-
 using Newtonsoft.Json;
 
 namespace Gorgon.Editor.Metadata;
@@ -34,7 +32,6 @@ namespace Gorgon.Editor.Metadata;
 /// </summary>
 public class Project30ItemMetadata
 {
-
     /// <summary>
     /// Property to set or return the name of the plugin associated with the metadata file path.
     /// </summary>
@@ -68,13 +65,10 @@ public class Project30ItemMetadata
         private set;
     } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="Project30ItemMetadata"/> class.
     /// </summary>
     public Project30ItemMetadata()
     {
     }
-
 }

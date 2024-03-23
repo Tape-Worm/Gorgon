@@ -23,7 +23,6 @@
 // Created: September 28, 2018 9:03:32 PM
 // 
 
-
 using System.ComponentModel;
 using System.Globalization;
 using Gorgon.Math;
@@ -51,8 +50,6 @@ internal class RibbonMerger(KryptonRibbon targetRibbon)
     // The list of merged items.
     private readonly HashSet<Component> _mergedItems = [];
 
-
-
     /// <summary>
     /// Property to return the target ribbon that will receive the merged items.
     /// </summary>
@@ -60,8 +57,6 @@ internal class RibbonMerger(KryptonRibbon targetRibbon)
     {
         get;
     } = targetRibbon ?? throw new ArgumentNullException(nameof(targetRibbon));
-
-
 
     /// <summary>
     /// Function to retrieve the sorting index from the items tag.
@@ -401,6 +396,4 @@ internal class RibbonMerger(KryptonRibbon targetRibbon)
             }
         }
     }
-
-
 }

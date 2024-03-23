@@ -23,7 +23,6 @@
 // Created: June 14, 2020 10:21:02 PM
 // 
 
-
 using Gorgon.Animation;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Services;
@@ -50,7 +49,6 @@ internal class TrackParameters(GorgonTrackRegistration registration,
                     IHostContentServices hostServices)
         : ViewModelInjection<IHostContentServices>(hostServices)
 {
-
     /// <summary>
     /// Property to return the registration for the track.
     /// </summary>
@@ -99,6 +97,4 @@ internal class TrackParameters(GorgonTrackRegistration registration,
         get;
         set;
     }
-
-
 }

@@ -162,7 +162,6 @@ internal enum ShellIconSize
 [SuppressUnmanagedCodeSecurity]
 internal partial class ShellApi
 {
-
     /// <summary>
     /// ID for the image list COM objects.
     /// </summary>
@@ -175,8 +174,6 @@ internal partial class ShellApi
     /// Mask not required.
     /// </summary>
     private const int ILD_IMAGE = 0x00000020;
-
-
 
     /// <summary>
     /// Function to retrieve an image list.

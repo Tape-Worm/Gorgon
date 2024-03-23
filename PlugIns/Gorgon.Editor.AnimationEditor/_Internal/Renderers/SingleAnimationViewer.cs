@@ -23,7 +23,6 @@
 // Created: June 10, 2020 6:38:49 AM
 // 
 
-
 using System.Numerics;
 using Gorgon.Animation;
 using Gorgon.Editor.Rendering;
@@ -44,20 +43,15 @@ namespace Gorgon.Editor.AnimationEditor;
 internal class SingleAnimationViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IAnimationContent dataContext)
         : AnimationViewer(ViewerName, renderer, swapChain, dataContext, null, true)
 {
-
     /// <summary>
     /// The name of the viewer.
     /// </summary>
     public const string ViewerName = nameof(AnimationTrackKeyType.Single);
 
-
-
     // The starting angle for the sprite.
     private float _startAngle;
     // Flag to indicate we're dragging the angle.
     private bool _dragAngle;
-
-
 
     /// <summary>
     /// Function to calculate an angle, in degrees, from the current mouse position.
@@ -251,8 +245,6 @@ internal class SingleAnimationViewer(Gorgon2D renderer, GorgonSwapChain swapChai
         SupportsOnionSkinning = SelectedTrackID == TrackSpriteProperty.Angle;
     }
 
-
-
     /// <summary>Function to set the default zoom/offset for the viewer.</summary>
     public override void DefaultZoom()
     {
@@ -263,6 +255,4 @@ internal class SingleAnimationViewer(Gorgon2D renderer, GorgonSwapChain swapChai
 
         ZoomToSprite(Sprite);
     }
-
-
 }

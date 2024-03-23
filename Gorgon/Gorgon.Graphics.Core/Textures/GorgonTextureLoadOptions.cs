@@ -23,7 +23,6 @@
 // Created: April 12, 2018 12:40:39 AM
 // 
 
-
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
@@ -51,7 +50,6 @@ public class GorgonTextureLoadOptions
         get;
         set;
     } = ResourceUsage.Default;
-
 
     /// <summary>
     /// Property to set or return the allowed bindings for the texture.

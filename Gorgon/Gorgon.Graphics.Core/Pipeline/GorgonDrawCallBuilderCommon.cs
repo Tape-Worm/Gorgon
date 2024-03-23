@@ -23,7 +23,6 @@
 // Created: May 23, 2018 12:18:45 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Memory;
@@ -54,7 +53,6 @@ public abstract class GorgonDrawCallBuilderCommon<TB, TDc>
     where TB : GorgonDrawCallBuilderCommon<TB, TDc>
     where TDc : GorgonDrawCallCommon
 {
-
     /// <summary>
     /// Property to return the draw call being edited.
     /// </summary>
@@ -62,8 +60,6 @@ public abstract class GorgonDrawCallBuilderCommon<TB, TDc>
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to create a new draw call.
@@ -738,8 +734,6 @@ public abstract class GorgonDrawCallBuilderCommon<TB, TDc>
     /// <exception cref="GorgonException">Thrown if a <see cref="GorgonVertexShader"/> is not assigned to the <see cref="GorgonPipelineState.VertexShader"/> property with the <see cref="PipelineState(GorgonPipelineStateBuilder)"/> command.</exception>
     public TDc Build() => Build(null);
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonDrawCallBuilder"/> class.
     /// </summary>
@@ -755,5 +749,4 @@ public abstract class GorgonDrawCallBuilderCommon<TB, TDc>
         DrawCall.D3DState.StreamOutBindings = new GorgonStreamOutBindings();
         DrawCall.D3DState.PipelineState = new GorgonPipelineState();
     }
-
 }

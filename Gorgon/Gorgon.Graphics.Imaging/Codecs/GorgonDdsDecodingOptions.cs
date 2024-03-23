@@ -23,7 +23,6 @@
 // Created: August 16, 2016 3:08:12 PM
 // 
 
-
 using Gorgon.Configuration;
 
 namespace Gorgon.Graphics.Imaging.Codecs;
@@ -71,7 +70,6 @@ public enum DdsLegacyFlags
 public class GorgonDdsDecodingOptions
     : IGorgonImageCodecDecodingOptions
 {
-
     /// <summary>
     /// Property to return the list of options available to the codec.
     /// </summary>
@@ -141,8 +139,6 @@ public class GorgonDdsDecodingOptions
             // Intentionally left blank.
         }
     }
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonDdsDecodingOptions"/> class.

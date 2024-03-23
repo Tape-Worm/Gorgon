@@ -23,7 +23,6 @@
 // Created: February 24, 2017 12:20:41 AM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Graphics.Fonts.Properties;
 using DX = SharpDX;
@@ -47,7 +46,6 @@ namespace Gorgon.Graphics.Fonts.Codecs;
 public abstract class GorgonFontCodec(GorgonFontFactory factory)
         : IGorgonFontCodec
 {
-
     /// <summary>
     /// Property to return the font factory containing cached font data.
     /// </summary>
@@ -127,8 +125,6 @@ public abstract class GorgonFontCodec(GorgonFontFactory factory)
     /// property.
     /// </remarks>
     string IGorgonNamedObject.Name => Codec;
-
-
 
     /// <summary>
     /// Function to write the font data to the stream.
@@ -464,6 +460,5 @@ public abstract class GorgonFontCodec(GorgonFontFactory factory)
     /// A <see cref="string" /> that represents this instance.
     /// </returns>
     public override string ToString() => string.Format(Resources.GORGFX_TOSTR_FONT_CODEC, Codec);
-
 
 }

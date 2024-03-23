@@ -23,7 +23,6 @@
 // Created: May 25, 2020 9:52:13 PM
 // 
 
-
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.ExtractSpriteTool.Properties;
@@ -66,8 +65,6 @@ internal class Extract
     private int _currentPreviewSprite;
     // The file that contains the texture to extract from.
     private IContentFile _textureFile;
-
-
 
     /// <summary>
     /// Property to return the progress status of the extraction operation.
@@ -116,7 +113,6 @@ internal class Extract
             OnPropertyChanged();
         }
     }
-
 
     /// <summary>
     /// Property to return the number of sprites for previewing.
@@ -186,7 +182,6 @@ internal class Extract
             NotifyPropertyChanged(nameof(MaxGridSize));
         }
     }
-
 
     /// <summary>
     /// Property to set or return the size of a grid cell.
@@ -372,8 +367,6 @@ internal class Extract
         get;
     }
 
-
-
     /// <summary>
     /// Function to assign the color used to mask out empty regions.
     /// </summary>
@@ -522,7 +515,6 @@ internal class Extract
         }
     }
 
-
     /// <summary>
     /// Function to determine if the sprites can be saved at this time.
     /// </summary>
@@ -589,7 +581,6 @@ internal class Extract
         {
             return true;
         }
-
 
         if (HostServices.MessageDisplay.ShowConfirmation(Resources.GOREST_CONFIRM_EXTRACT_IN_PROGRESS) == MessageResponse.No)
         {
@@ -665,8 +656,6 @@ internal class Extract
         Unload();
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="Extract"/> class.</summary>
     public Extract()
     {
@@ -677,5 +666,4 @@ internal class Extract
         CancelSpriteGenerationCommand = new EditorCommand<object>(DoCancelSpriteGeneration, CanCancelSpriteGeneration);
         SaveSpritesCommand = new EditorCommand<SaveSpritesArgs>(DoSaveSprites, CanSaveSprites);
     }
-
 }

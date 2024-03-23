@@ -23,7 +23,6 @@
 // Created: Wednesday, July 15, 2015 7:00:06 PM
 // 
 
-
 namespace Gorgon.Input;
 
 /// <summary>
@@ -38,7 +37,6 @@ namespace Gorgon.Input;
 public class GorgonKeyboardEventArgs(Keys key, Keys modifierKey, int scanData)
         : EventArgs
 {
-
     /// <summary>
     /// Property to return key that is pressed.
     /// </summary>
@@ -77,7 +75,5 @@ public class GorgonKeyboardEventArgs(Keys key, Keys modifierKey, int scanData)
     {
         get;
     } = scanData;
-
-
 
 }

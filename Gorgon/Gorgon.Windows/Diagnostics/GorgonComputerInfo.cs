@@ -23,7 +23,6 @@
 // Created: Wednesday, November 02, 2011 9:05:14 AM
 // 
 
-
 using System.Collections;
 using Gorgon.Collections.Specialized;
 using Gorgon.Native;
@@ -43,8 +42,6 @@ public class GorgonComputerInfo
     private readonly GorgonConcurrentDictionary<string, string> _userVariables;
     // List of process specific environment variables.
     private readonly GorgonConcurrentDictionary<string, string> _processVariables;
-
-
 
     /// <summary>
     /// Property to return the total physical RAM available in bytes.
@@ -125,9 +122,6 @@ public class GorgonComputerInfo
     /// </summary>
     public IReadOnlyDictionary<string, string> ProcessEnvironmentVariables => _processVariables;
 
-
-
-
     /// <summary>
     /// Function to refresh the list of user and machine specific environment variables.
     /// </summary>
@@ -160,8 +154,6 @@ public class GorgonComputerInfo
         }
     }
 
-
-
     /// <summary>
     /// Initializes the <see cref="GorgonComputerInfo"/> class.
     /// </summary>
@@ -173,5 +165,4 @@ public class GorgonComputerInfo
 
         RefreshEnvironmentVariables();
     }
-
 }

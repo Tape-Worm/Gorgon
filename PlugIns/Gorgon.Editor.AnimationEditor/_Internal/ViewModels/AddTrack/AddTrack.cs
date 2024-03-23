@@ -23,7 +23,6 @@
 // Created: April 4, 2019 8:59:29 PM
 // 
 
-
 using System.Collections.ObjectModel;
 using Gorgon.Animation;
 using Gorgon.Editor.AnimationEditor.Properties;
@@ -40,9 +39,6 @@ internal class AddTrack
 
     // The list of selected tracks.
     private readonly List<GorgonTrackRegistration> _selectedTracks = [];
-
-
-
 
     /// <summary>Property to return whether the panel is modal.</summary>
     public override bool IsModal => true;
@@ -84,8 +80,6 @@ internal class AddTrack
         get;
     }
 
-
-
     /// <summary>Function to select the tracks to add.</summary>
     /// <param name="tracks">The list of tracks to add.</param>
     private void DoSelectTracks(IReadOnlyList<GorgonTrackRegistration> tracks)
@@ -114,8 +108,6 @@ internal class AddTrack
         _selectedTracks.Clear();
         Unload();
     }
-
-
 
     /// <summary>Initializes a new instance of the <see cref="AddTrack"/> class.</summary>
     public AddTrack() => SelectTracksCommand = new EditorCommand<IReadOnlyList<GorgonTrackRegistration>>(DoSelectTracks);

@@ -23,7 +23,6 @@
 // Created: March 28, 2019 9:48:28 AM
 // 
 
-
 using System.ComponentModel;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Controls;
@@ -41,8 +40,6 @@ internal partial class FontOutlineView
     // The event hook counter.
     private int _eventHook;
 
-
-
     /// <summary>
     /// Property to return the data context for the view.
     /// </summary>
@@ -52,8 +49,6 @@ internal partial class FontOutlineView
         get;
         private set;
     }
-
-
 
     /// <summary>
     /// Function to unhook the events.
@@ -302,8 +297,6 @@ internal partial class FontOutlineView
         ViewModel.PropertyChanged += DataContext_PropertyChanged;
         ValidateControls();
     }
-
-
 
     /// <summary>Initializes a new instance of the <see cref="FontOutlineView"/> class.</summary>
     public FontOutlineView() => InitializeComponent();

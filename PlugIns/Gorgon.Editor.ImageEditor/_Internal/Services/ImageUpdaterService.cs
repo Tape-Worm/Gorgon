@@ -23,7 +23,6 @@
 // Created: January 21, 2019 8:31:11 AM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Imaging;
@@ -37,7 +36,6 @@ namespace Gorgon.Editor.ImageEditor;
 /// </summary>
 internal class ImageUpdaterService : IImageUpdaterService
 {
-
     /// <summary>
     /// Function to retrieve the starting point for an operaiton based on an alignment.
     /// </summary>
@@ -472,5 +470,4 @@ internal class ImageUpdaterService : IImageUpdaterService
 
         return result;
     }
-
 }

@@ -23,7 +23,6 @@
 // Created: July 9, 2016 3:54:15 PM
 // 
 
-
 using System.Runtime.CompilerServices;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
@@ -64,8 +63,6 @@ public abstract class GorgonBufferCommon
     private Dictionary<BufferShaderViewKey, GorgonShaderResourceView> _shaderViews = [];
     // A cache of unordered access views for the buffer.
     private Dictionary<BufferShaderViewKey, GorgonReadWriteView> _uavs = [];
-
-
 
     /// <summary>
     /// Property to return the log used to log debug messages.
@@ -117,8 +114,6 @@ public abstract class GorgonBufferCommon
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to validate the bindings for a given buffer.
@@ -297,7 +292,6 @@ public abstract class GorgonBufferCommon
             throw new ArgumentException(string.Format(Resources.GORGFX_ERR_DEST_INDEX_AND_COUNT_TOO_LARGE, (destOffset + copySize), destSize));
         }
     }
-
 
     /// <summary>
     /// Function to read the contents of this buffer into memory pointed at by a pointer.
@@ -1002,7 +996,6 @@ public abstract class GorgonBufferCommon
     {
         destinationBuffer.ValidateObject(nameof(destinationBuffer));
 
-
 #if DEBUG
         if (destinationBuffer.Native.Description.Usage == D3D11.ResourceUsage.Immutable)
         {
@@ -1105,8 +1098,6 @@ public abstract class GorgonBufferCommon
         base.Dispose();
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonBufferCommon" /> class.
     /// </summary>
@@ -1119,5 +1110,4 @@ public abstract class GorgonBufferCommon
 
         this.RegisterDisposable(graphics);
     }
-
 }

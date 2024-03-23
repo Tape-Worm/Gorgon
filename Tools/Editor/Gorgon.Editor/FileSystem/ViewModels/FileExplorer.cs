@@ -23,7 +23,6 @@
 // Created: September 4, 2018 10:43:51 PM
 // 
 
-
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -52,8 +51,6 @@ internal class FileExplorer
     // The amount of time, in milliseconds, to pause an operation so the user can cancel the operation.
     private const int MaxUserInteractionTimeMilliseconds = 50;
     private const int MinUserInteractionTimeMilliseconds = 5;
-
-
 
     // Internal event for the file system updated event.
     private event EventHandler FileSystemUpdatedEvent;
@@ -122,8 +119,6 @@ internal class FileExplorer
         }
     }
 
-
-
     // The synchronization locks for the file system events.
     private readonly object _fsUpdatedEventLock = new();
     private readonly object _selectedChangedEventLock = new();
@@ -156,8 +151,6 @@ internal class FileExplorer
     private int _userInteractionTimeMilliseconds = MaxUserInteractionTimeMilliseconds;
     private readonly IGorgonTimer _uiTimer = GorgonTimerQpc.SupportsQpc() ? new GorgonTimerQpc() : new GorgonTimerMultimedia();
     private double _lastTime = -1;
-
-
 
     /// <summary>Property to return the current directory.</summary>
     string IContentFileManager.CurrentDirectory => SelectedDirectory?.FullPath ?? Root.FullPath;
@@ -266,7 +259,6 @@ internal class FileExplorer
     {
         get;
     }
-
 
     /// <summary>
     /// Property to return the command used to create a new directory.
@@ -415,8 +407,6 @@ internal class FileExplorer
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to call the <see cref="SelectedFilesChangedEvent"/>
@@ -1081,7 +1071,6 @@ internal class FileExplorer
         }
     }
 
-
     /// <summary>
     /// Function to update directory view models after a copy or move operation.
     /// </summary>
@@ -1606,7 +1595,6 @@ internal class FileExplorer
         }
     }
 
-
     /// <summary>
     /// Function to determine if a directory can be selected or not.
     /// </summary>
@@ -1865,7 +1853,6 @@ internal class FileExplorer
         {
             return false;
         }
-
 
         // Ensure that:
         // 1. We can move.
@@ -2317,7 +2304,6 @@ internal class FileExplorer
         }
     }
 
-
     /// <summary>
     /// Function to determine if the directory can be copied.
     /// </summary>
@@ -2562,7 +2548,6 @@ internal class FileExplorer
             _lastTime = -1;
         }
     }
-
 
     /// <summary>
     /// Function to determine if a directory can be exported.
@@ -3540,8 +3525,6 @@ internal class FileExplorer
         return excluder.IsExcluded;
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="FileExplorer"/> class.
     /// </summary>
@@ -3565,5 +3548,4 @@ internal class FileExplorer
         RefreshCommand = new EditorAsyncCommand<object>(DoRefreshAsync);
         GetDirectoryCommand = new EditorCommand<GetDirectoryArgs>(DoGetDirectory, CanGetDirectory);
     }
-
 }

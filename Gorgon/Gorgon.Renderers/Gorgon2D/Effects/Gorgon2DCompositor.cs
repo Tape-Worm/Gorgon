@@ -23,7 +23,6 @@
 // Created: August 2, 2018 12:25:08 PM
 // 
 
-
 using System.Collections;
 using Gorgon.Collections.Specialized;
 using Gorgon.Core;
@@ -70,8 +69,6 @@ public class Gorgon2DCompositor(Gorgon2D renderer)
     // The color used to clear the final render target.
     private GorgonColor? _finalClear = GorgonColors.BlackTransparent;
 
-
-
     /// <summary>
     /// Property to return the graphics interface that built this object.
     /// </summary>
@@ -98,7 +95,6 @@ public class Gorgon2DCompositor(Gorgon2D renderer)
     /// </summary>
     public IGorgon2DCompositorPass this[int index] => _passes[index];
 
-
     /// <summary>
     /// Property to return the passes registered within the compositor by name.
     /// </summary>
@@ -115,8 +111,6 @@ public class Gorgon2DCompositor(Gorgon2D renderer)
             return this[index];
         }
     }
-
-
 
     /// <summary>
     /// Function to free any resources allocated by the compositor.
@@ -324,7 +318,6 @@ public class Gorgon2DCompositor(Gorgon2D renderer)
         _passLookup.Remove(effectName);
         return this;
     }
-
 
     /// <summary>
     /// Function to add an effect, and an optional rendering action to the compositor queue.
@@ -611,6 +604,5 @@ public class Gorgon2DCompositor(Gorgon2D renderer)
     /// <summary>Returns an enumerator that iterates through a collection.</summary>
     /// <returns>An <see cref="IEnumerator"/> object that can be used to iterate through the collection.</returns>
     IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)_passes).GetEnumerator();
-
 
 }

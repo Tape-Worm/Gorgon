@@ -40,7 +40,7 @@ namespace Gorgon.Core;
 /// </remarks>
 public interface IGorgonEquatableByRef<T>
     : IEquatable<T>
-    where T : struct    
+    where T : struct
 {
     /// <summary>
     /// Function to compare this instance with another.

@@ -23,7 +23,6 @@
 // Created: Sunday, September 13, 2015 1:54:33 PM
 // 
 
-
 using Gorgon.Diagnostics;
 using Gorgon.PlugIns;
 
@@ -89,7 +88,6 @@ namespace Gorgon.Input;
 public abstract class GorgonGamingDeviceDriver(string description)
         : GorgonPlugIn(description), IGorgonGamingDeviceDriver
 {
-
     /// <summary>
     /// Property to return the logger used for debugging.
     /// </summary>
@@ -98,8 +96,6 @@ public abstract class GorgonGamingDeviceDriver(string description)
         get;
         internal set;
     } = GorgonLog.NullLog;
-
-
 
     /// <summary>Releases unmanaged and - optionally - managed resources.</summary>
     /// <param name="disposing">
@@ -180,7 +176,4 @@ public abstract class GorgonGamingDeviceDriver(string description)
         Dispose(true);
         GC.SuppressFinalize(this);
     }
-
-
-
 }

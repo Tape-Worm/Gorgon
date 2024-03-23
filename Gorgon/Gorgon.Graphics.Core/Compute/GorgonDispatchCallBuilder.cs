@@ -23,7 +23,6 @@
 // Created: June 5, 2018 1:00:31 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Memory;
@@ -41,8 +40,6 @@ public class GorgonDispatchCallBuilder
 
     // The dispatch call being edited.
     private readonly GorgonDispatchCall _worker;
-
-
 
     /// <summary>
     /// Function to assign a list of samplers to a compute shader on the pipeline.
@@ -300,8 +297,6 @@ public class GorgonDispatchCallBuilder
         return this;
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonDispatchCallBuilder"/> class.
     /// </summary>
@@ -310,5 +305,4 @@ public class GorgonDispatchCallBuilder
         _worker = new GorgonDispatchCall();
         _worker.Setup();
     }
-
 }

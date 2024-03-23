@@ -23,7 +23,6 @@
 // Created: June 9, 2018 10:57:03 AM
 // 
 
-
 using System.Numerics;
 using Gorgon.Graphics;
 using Gorgon.Math;
@@ -107,8 +106,6 @@ internal class PolySpriteTransformer
         {
             return;
         }
-
-
 
         TransformVertices(ref renderable.Anchor,
                           ref renderable.Bounds,

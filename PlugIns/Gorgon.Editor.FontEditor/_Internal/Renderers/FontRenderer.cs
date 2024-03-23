@@ -23,7 +23,6 @@
 // Created: August 3, 2020 4:40:15 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Editor.FontEditor.Properties;
 using Gorgon.Editor.Rendering;
@@ -48,8 +47,6 @@ internal class FontRenderer(Gorgon2D renderer, GorgonSwapChain mainRenderTarget,
 
     // The sprite used to render our text data.
     private GorgonTextSprite _textSprite;
-
-
 
     /// <summary>
     /// Function to retrieve the batch state for rendering.
@@ -165,6 +162,5 @@ internal class FontRenderer(Gorgon2D renderer, GorgonSwapChain mainRenderTarget,
     /// Function to set the view to a default zoom level.
     /// </summary>
     public void DefaultZoom() => MoveTo(Vector2.Zero, -1);
-
 
 }

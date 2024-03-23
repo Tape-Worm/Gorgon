@@ -23,7 +23,6 @@
 // Created: October 29, 2018 4:15:09 PM
 // 
 
-
 using Gorgon.Editor.Content;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Properties;
@@ -64,8 +63,6 @@ public abstract class EditorToolViewModelBase<T>
     // The command used to close the content.
     private IEditorAsyncCommand<CloseToolArgs> _closeCommand;
 
-
-
     /// <summary>
     /// Property to return the file manager used to manage content files.
     /// </summary>
@@ -100,8 +97,6 @@ public abstract class EditorToolViewModelBase<T>
             OnPropertyChanged();
         }
     }
-
-
 
     /// <summary>
     /// Function called to close the tool.
@@ -168,8 +163,6 @@ public abstract class EditorToolViewModelBase<T>
 
         ContentFileManager = injectionParameters.ContentFileManager;
     }
-
-
 
     /// <summary>Initializes a new instance of the EditorContentCommon class.</summary>
     protected EditorToolViewModelBase() => CloseToolCommand = new EditorAsyncCommand<CloseToolArgs>(DoCloseToolAsync);

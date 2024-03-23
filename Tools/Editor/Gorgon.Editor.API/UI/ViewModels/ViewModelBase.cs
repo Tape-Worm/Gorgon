@@ -23,7 +23,6 @@
 // Created: August 26, 2018 12:02:30 PM
 // 
 
-
 using System.ComponentModel;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Math;
@@ -94,7 +93,6 @@ public abstract class ViewModelBase<T, THs>
     where THs : IHostServices
     where T : class, IViewModelInjection<THs>
 {
-
     /// <summary>
     /// Event triggered when a wait overlay panel needs to be activated.
     /// </summary>
@@ -115,12 +113,8 @@ public abstract class ViewModelBase<T, THs>
     /// </summary>
     public event EventHandler ProgressDeactivated;
 
-
-
     // Flag to indicate that the view model has been loaded.
     private int _loaded;
-
-
 
     /// <summary>
     /// Property to return the services passed in from the host application.
@@ -130,8 +124,6 @@ public abstract class ViewModelBase<T, THs>
         get;
         private set;
     }
-
-
 
     /// <summary>
     /// Function to activate and/or update the progress panel overlay on the view, if the view supports it.
@@ -334,8 +326,6 @@ public abstract class ViewModelBase<T, THs>
         OnInitialize(injectionParameters);
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="ViewModelBase{T, THs}"/> class.
     /// </summary>
@@ -343,5 +333,4 @@ public abstract class ViewModelBase<T, THs>
     {
 
     }
-
 }

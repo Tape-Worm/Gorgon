@@ -23,7 +23,6 @@
 // Created: August 17, 2020 9:00:20 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Editor.ImageSplitTool.Properties;
 using Gorgon.Editor.Rendering;
@@ -55,8 +54,6 @@ internal class Renderer(Gorgon2D renderer, GorgonSwapChain swapChain, ISplit dat
     private GorgonTexture2DView _backgroundImage;
     // Flag to indicate that the texture is loading.
     private bool _loading;
-
-
 
     /// <summary>
     /// Function to update the image to render for previewing.
@@ -225,6 +222,4 @@ internal class Renderer(Gorgon2D renderer, GorgonSwapChain swapChain, ISplit dat
             UpdateRenderImage(DataContext.PreviewImage);
         }
     }
-
-
 }

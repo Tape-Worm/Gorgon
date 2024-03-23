@@ -23,7 +23,6 @@
 // Created: Sunday, July 24, 2011 10:16:37 PM
 // 
 
-
 using System.Runtime.InteropServices;
 
 namespace Gorgon.Native;

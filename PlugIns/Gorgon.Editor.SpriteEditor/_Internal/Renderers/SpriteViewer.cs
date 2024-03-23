@@ -23,7 +23,6 @@
 // Created: March 15, 2019 11:56:19 AM
 // 
 
-
 using Gorgon.Animation;
 using Gorgon.Editor.Rendering;
 using Gorgon.Graphics.Core;
@@ -49,8 +48,6 @@ internal abstract class SpriteViewer(string name, Gorgon2D renderer, GorgonSwapC
     private IGorgonAnimation _opacityAnimation;
     private readonly GorgonAnimationBuilder _animationBuilder = new();
 
-
-
     /// <summary>
     /// Property to return whether the opactiy animation is playing.
     /// </summary>
@@ -69,8 +66,6 @@ internal abstract class SpriteViewer(string name, Gorgon2D renderer, GorgonSwapC
         get;
         set;
     }
-
-
 
     /// <summary>
     /// Function to animate the sprite texture opacity.
@@ -141,6 +136,5 @@ internal abstract class SpriteViewer(string name, Gorgon2D renderer, GorgonSwapC
 
     /// <summary>Function to set the default zoom/offset for the viewer.</summary>
     public abstract void DefaultZoom();
-
 
 }

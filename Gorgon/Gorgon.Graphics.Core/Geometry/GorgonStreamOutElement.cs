@@ -23,7 +23,6 @@
 // Created: Wednesday, November 23, 2011 9:54:30 AM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Math;
@@ -45,13 +44,10 @@ namespace Gorgon.Graphics.Core;
 public readonly struct GorgonStreamOutElement
     : IGorgonNamedObject, IGorgonEquatableByRef<GorgonStreamOutElement>
 {
-
     /// <summary>
     /// The Direct 3D 11 Input Element that is wrapped by this type.
     /// </summary>
     internal readonly D3D11.StreamOutputElement NativeElement;
-
-
 
     /// <summary>
     /// Property to return the name of this object.
@@ -104,8 +100,6 @@ public readonly struct GorgonStreamOutElement
     /// The valid range for OutputSlot is 0 to 3.
     /// </remarks>
     public int Slot => NativeElement.OutputSlot;
-
-
 
     /// <summary>
     /// Determines whether the specified <see cref="object"/> is equal to this instance.
@@ -170,8 +164,6 @@ public readonly struct GorgonStreamOutElement
     /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
     public bool Equals(ref readonly GorgonStreamOutElement other) => Equals(in this, in other);
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonStreamOutElement"/> class.
     /// </summary>
@@ -222,5 +214,4 @@ public readonly struct GorgonStreamOutElement
 
         NativeElement = new D3D11.StreamOutputElement(stream.Max(0), context, index, start, count, slot);
     }
-
 }

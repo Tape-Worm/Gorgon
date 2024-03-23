@@ -23,7 +23,6 @@
 // Created: Monday, February 20, 2012 6:36:59 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Graphics;
 
@@ -34,7 +33,6 @@ namespace Gorgon.Examples;
 /// </summary>
 public class Ball
 {
-
     /// <summary>Position of the ball.</summary>
     public Vector2 Position;
     /// <summary>Delta for the position of the ball.</summary>

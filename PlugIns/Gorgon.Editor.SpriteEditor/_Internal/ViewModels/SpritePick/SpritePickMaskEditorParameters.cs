@@ -23,7 +23,6 @@
 // Created: May 9, 2020 11:26:04 PM
 // 
 
-
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI;
 
@@ -38,7 +37,6 @@ namespace Gorgon.Editor.SpriteEditor;
 internal class SpritePickMaskEditorParameters(ISettings pluginSettings, IHostContentServices hostServices)
         : HostedPanelViewModelParameters(hostServices)
 {
-
     /// <summary>
     /// Property to return the plug in settings.
     /// </summary>
@@ -46,6 +44,5 @@ internal class SpritePickMaskEditorParameters(ISettings pluginSettings, IHostCon
     {
         get;
     } = pluginSettings ?? throw new ArgumentNullException(nameof(pluginSettings));
-
 
 }

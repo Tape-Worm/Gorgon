@@ -23,7 +23,6 @@
 // Created: Monday, June 27, 2011 8:56:28 AM
 // 
 
-
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Gorgon.Native;
@@ -51,8 +50,6 @@ public class GorgonBinaryReader(Stream input, Encoding encoder, bool keepStreamO
 
     // The size of the temporary buffer used to stream data in.
     private int _bufferSize = 65536;
-
-
 
     /// <summary>
     /// Property to set or return the size of the buffer, in bytes, used to stream the data in.
@@ -87,8 +84,6 @@ public class GorgonBinaryReader(Stream input, Encoding encoder, bool keepStreamO
     {
         get;
     } = keepStreamOpen;
-
-
 
     /// <summary>
     /// Function to read bytes from a stream into a buffer pointed at by the pointer.
@@ -438,9 +433,6 @@ public class GorgonBinaryReader(Stream input, Encoding encoder, bool keepStreamO
         return array;
     }
 
-
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonBinaryReader"/> class.
     /// </summary>
@@ -450,5 +442,4 @@ public class GorgonBinaryReader(Stream input, Encoding encoder, bool keepStreamO
         : this(input, Encoding.UTF8, keepStreamOpen)
     {
     }
-
 }

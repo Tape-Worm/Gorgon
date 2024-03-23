@@ -23,7 +23,6 @@
 // Created: September 4, 2021 10:15:00 AM
 // 
 
-
 using Gorgon.Editor.UI;
 
 namespace Gorgon.Editor.FontEditor;
@@ -41,8 +40,6 @@ internal class FontCharacterSelection
     private FontService _fontService;
     // The current font.
     private Font _currentFont;
-
-
 
     /// <summary>Property to set or return the characters to use as the font glyphs.</summary>
     public IEnumerable<char> Characters
@@ -85,8 +82,6 @@ internal class FontCharacterSelection
     /// <summary>Property to return whether the panel is modal.</summary>
     public override bool IsModal => true;
 
-
-
     /// <summary>Function to inject dependencies for the view model.</summary>
     /// <param name="injectionParameters">The parameters to inject.</param>
     /// <remarks>
@@ -116,5 +111,4 @@ internal class FontCharacterSelection
 
         base.OnUnload();
     }
-
 }

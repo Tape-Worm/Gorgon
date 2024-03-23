@@ -23,7 +23,6 @@
 // Created: Wednesday, September 16, 2015 11:20:25 PM
 // 
 
-
 namespace Gorgon.Input;
 
 /// <summary>

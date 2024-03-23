@@ -23,7 +23,6 @@
 // Created: May 9, 2019 12:38:19 PM
 // 
 
-
 using System.ComponentModel;
 using Gorgon.Core;
 using Gorgon.Editor.Properties;
@@ -65,8 +64,6 @@ public partial class EditorToolBaseForm
     private IEditorTool _dataContext;
     // The state for the close procedure.
     private int _closeState;
-
-
 
     /// <summary>
     /// Property to return the currently active tool renderer.
@@ -122,8 +119,6 @@ public partial class EditorToolBaseForm
             _renderControl = value;
         }
     }
-
-
 
     /// <summary>Handles the PropertyChanging event of the DataContext control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -232,7 +227,6 @@ public partial class EditorToolBaseForm
         _dataContext.PropertyChanging -= DataContext_PropertyChanging;
         _dataContext.PropertyChanged -= DataContext_PropertyChanged;
     }
-
 
     /// <summary>
     /// Function to handle a drag enter event on the render control.
@@ -669,8 +663,6 @@ public partial class EditorToolBaseForm
         _swapChain = swapChain;
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="EditorToolBaseForm"/> class.</summary>
     public EditorToolBaseForm()
     {
@@ -678,5 +670,4 @@ public partial class EditorToolBaseForm
 
         InitializeComponent();
     }
-
 }

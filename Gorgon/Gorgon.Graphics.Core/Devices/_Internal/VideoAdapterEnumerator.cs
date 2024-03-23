@@ -23,7 +23,6 @@
 // Created: Saturday, February 23, 2013 4:00:19 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using SharpDX.DXGI;

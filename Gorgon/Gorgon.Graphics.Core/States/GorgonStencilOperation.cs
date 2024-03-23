@@ -23,7 +23,6 @@
 // Created: July 29, 2016 7:31:42 PM
 // 
 
-
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
@@ -32,7 +31,6 @@ namespace Gorgon.Graphics.Core;
 public class GorgonStencilOperation
     : IEquatable<GorgonStencilOperation>
 {
-
     /// <summary>
     /// Property to set or return the comparison function to use for stencil operations.
     /// </summary>
@@ -86,8 +84,6 @@ public class GorgonStencilOperation
         internal set;
     }
 
-
-
     /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
     /// <param name="other">An object to compare with this object.</param>
     /// <returns>
@@ -113,8 +109,6 @@ public class GorgonStencilOperation
     /// </returns>
     public override int GetHashCode() => HashCode.Combine(Comparison, DepthFailOperation, FailOperation, PassOperation);
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonStencilOperation"/> class.
     /// </summary>
@@ -137,5 +131,4 @@ public class GorgonStencilOperation
         FailOperation = StencilOperation.Keep;
         PassOperation = StencilOperation.Keep;
     }
-
 }

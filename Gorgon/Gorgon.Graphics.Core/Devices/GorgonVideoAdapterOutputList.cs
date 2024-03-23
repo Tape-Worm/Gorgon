@@ -23,7 +23,6 @@
 // Created: April 8, 2018 1:27:04 PM
 // 
 
-
 using System.Collections;
 using Gorgon.Collections;
 using Gorgon.Native;
@@ -40,8 +39,6 @@ public sealed class GorgonVideoAdapterOutputList
     // The backing store for the list.
     private readonly IReadOnlyDictionary<string, IGorgonVideoOutputInfo> _outputs;
 
-
-
     /// <summary>
     /// Property to return whether the keys are case sensitive.
     /// </summary>
@@ -55,8 +52,6 @@ public sealed class GorgonVideoAdapterOutputList
     /// Property to return an item in the dictionary by its name.
     /// </summary>
     public IGorgonVideoOutputInfo this[string name] => _outputs[name];
-
-
 
     /// <summary>
     /// Function to return the correct output where the majority of a window resides.
@@ -98,8 +93,6 @@ public sealed class GorgonVideoAdapterOutputList
     /// <summary>Returns an enumerator that iterates through a collection.</summary>
     /// <returns>An <see cref="IEnumerator" /> object that can be used to iterate through the collection.</returns>
     IEnumerator IEnumerable.GetEnumerator() => _outputs.Select(output => output.Value).GetEnumerator();
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonVideoAdapterOutputList"/> class.

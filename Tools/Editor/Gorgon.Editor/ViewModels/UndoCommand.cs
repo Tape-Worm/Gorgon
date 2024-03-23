@@ -23,7 +23,6 @@
 // Created: November 17, 2018 3:29:06 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Editor.Services;
 
@@ -51,8 +50,6 @@ internal class UndoCommand<TU, TR>
     // The action to execute when redoing instead of a command.
     private readonly Func<TR, CancellationToken, Task> _redoAction;
 
-
-
     /// <summary>
     /// Property to return the service that owns this command.
     /// </summary>
@@ -73,8 +70,6 @@ internal class UndoCommand<TU, TR>
     {
         get;
     }
-
-
 
     /// <summary>Function to undo the changes performed by this command.</summary>
     /// <param name="cancelToken">A cancellation token for canceling the operation.</param>
@@ -129,8 +124,6 @@ internal class UndoCommand<TU, TR>
         disposeRedo?.Dispose();
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="EditorCommand{T}"/> class.
     /// </summary>        
@@ -162,5 +155,4 @@ internal class UndoCommand<TU, TR>
         _redoArgs = redoArgs;
         _undoArgs = undoArgs;
     }
-
 }

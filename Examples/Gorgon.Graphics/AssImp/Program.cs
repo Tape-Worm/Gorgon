@@ -57,8 +57,6 @@ internal static class Program
         public Vector3 CameraPos;
     }
 
-
-
     // The form for the application.
     private static FormMain _mainForm;
     // The primary graphics interface.
@@ -91,8 +89,6 @@ internal static class Program
     private static MaterialGpuData _materialGpu = new();
     // The matrix data to the send to the GPU.
     private static MatrixGpuData _matrixGpu = new();
-
-
 
     /// <summary>Handles the SwapChainResized event of the Screen control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -381,5 +377,4 @@ internal static class Program
             GorgonExample.UnloadResources();
         }
     }
-
 }

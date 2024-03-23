@@ -23,7 +23,6 @@
 // Created: March 14, 2019 11:33:25 AM
 // 
 
-
 using System.ComponentModel;
 using System.Numerics;
 using Gorgon.Editor.Rendering;
@@ -71,8 +70,6 @@ internal partial class SpriteEditorView
     // The current sprite texture array index updater.
     private IArrayUpdate _arrayUpdater;
 
-
-
     /// <summary>Property to return the data context assigned to this view.</summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public ISpriteContent ViewModel
@@ -80,8 +77,6 @@ internal partial class SpriteEditorView
         get;
         private set;
     }
-
-
 
     /// <summary>
     /// Function to validate the controls on the view.
@@ -852,8 +847,6 @@ internal partial class SpriteEditorView
         ViewModel = dataContext;
     }
 
-
-
     /// <summary>Initializes a new instance of the <see cref="SpriteEditorView"/> class.</summary>
     public SpriteEditorView()
     {
@@ -882,5 +875,4 @@ internal partial class SpriteEditorView
         RegisterChildPanel(typeof(SpriteAnchorEdit).FullName, SpriteAnchorSelector);
         RegisterChildPanel(typeof(SpriteTextureWrapEdit).FullName, SpriteWrapping);
     }
-
 }

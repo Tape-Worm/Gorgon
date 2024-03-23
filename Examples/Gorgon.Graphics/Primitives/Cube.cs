@@ -23,7 +23,6 @@
 // Created: Sunday, August 10, 2014 10:49:01 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
@@ -40,8 +39,6 @@ internal class Cube
 
     // Initial orientation.
     private Matrix4x4 _orientation;
-
-
 
     /// <summary>
     /// Function to build the plane vertices.
@@ -175,7 +172,6 @@ internal class Cube
                                                  },
                                                  vertexData);
 
-
         IndexBuffer = new GorgonIndexBuffer(graphics,
                                             new GorgonIndexBufferInfo(IndexCount)
                                             {
@@ -186,5 +182,4 @@ internal class Cube
 
         UpdateAabb(vertexData);
     }
-
 }

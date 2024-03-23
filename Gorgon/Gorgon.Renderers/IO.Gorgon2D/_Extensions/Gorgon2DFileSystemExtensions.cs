@@ -23,7 +23,6 @@
 // Created: August 12, 2018 7:31:50 PM
 // 
 
-
 using Gorgon.Animation;
 using Gorgon.Core;
 using Gorgon.Graphics;
@@ -47,8 +46,6 @@ public static class Gorgon2DFileSystemExtensions
         Binding = TextureBinding.ShaderResource,
         Usage = ResourceUsage.Default
     };
-
-
 
     /// <summary>
     /// Function to determine the polygonal sprite codec to use when loading the sprite.
@@ -715,5 +712,4 @@ public static class Gorgon2DFileSystemExtensions
             animStream?.Dispose();
         }
     }
-
 }

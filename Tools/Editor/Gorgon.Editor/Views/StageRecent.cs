@@ -23,7 +23,6 @@
 // Created: August 26, 2018 11:23:41 PM
 // 
 
-
 using System.Collections.Specialized;
 using System.ComponentModel;
 using Gorgon.Editor.ProjectData;
@@ -39,7 +38,6 @@ namespace Gorgon.Editor.Views;
 internal partial class StageRecent
     : EditorBaseControl, IDataContext<IRecent>
 {
-
     /// <summary>Property to return the data context assigned to this view.</summary>        
     [Browsable(false)]
     public IRecent ViewModel
@@ -53,8 +51,6 @@ internal partial class StageRecent
     /// </summary>
     [Browsable(false)]
     public bool HasItems => ViewModel?.Files.Count > 0;
-
-
 
     /// <summary>Handles the CollectionChanged event of the Files control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -288,8 +284,6 @@ internal partial class StageRecent
 
         ViewModel.Files.CollectionChanged += Files_CollectionChanged;
     }
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="StageRecent"/> class.

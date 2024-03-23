@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Gorgon.Graphics;
 
 namespace Gorgon.Core.Tests;
@@ -10,7 +7,7 @@ namespace Gorgon.Core.Tests;
 [TestClass]
 public class GorgonFormatInfoTests
 {
-//#error Finish me.
+    //#error Finish me.
     [TestMethod]
     public void Ctor()
     {
@@ -38,7 +35,7 @@ public class GorgonFormatInfoTests
             BufferFormat.BC2_UNorm,
             BufferFormat.BC3_UNorm,
             BufferFormat.BC4_UNorm,
-            BufferFormat.BC5_UNorm,                
+            BufferFormat.BC5_UNorm,
             BufferFormat.BC7_UNorm,
             BufferFormat.BC1_UNorm_SRgb,
             BufferFormat.BC2_UNorm_SRgb,
@@ -47,14 +44,14 @@ public class GorgonFormatInfoTests
             BufferFormat.BC4_SNorm,
             BufferFormat.BC5_SNorm,
             BufferFormat.BC6H_Sf16,
-            BufferFormat.BC6H_Uf16            
+            BufferFormat.BC6H_Uf16
         ];
 
         foreach (BufferFormat format in formats)
         {
             GorgonFormatInfo info = new(format);
             Assert.IsTrue(info.IsCompressed, $"{format} not compressed");
-        }        
+        }
     }
 
     [TestMethod]
@@ -99,7 +96,7 @@ public class GorgonFormatInfoTests
             BufferFormat.D16_UNorm,
             BufferFormat.D24_UNorm_S8_UInt,
             BufferFormat.D32_Float,
-            BufferFormat.D32_Float_S8X24_UInt            
+            BufferFormat.D32_Float_S8X24_UInt
         ];
 
         foreach (BufferFormat format in formats)
@@ -166,7 +163,7 @@ public class GorgonFormatInfoTests
         }
     }
 
-    public void IsPalettized() 
+    public void IsPalettized()
     {
         BufferFormat[] formats =
         {
@@ -269,7 +266,7 @@ public class GorgonFormatInfoTests
         {
             GorgonFormatInfo info = new(format);
 
-            Assert.IsTrue(info.HasAlpha, $"{format} should have alpha channel.");            
+            Assert.IsTrue(info.HasAlpha, $"{format} should have alpha channel.");
         }
     }
 
@@ -394,7 +391,7 @@ public class GorgonFormatInfoTests
             (BufferFormat.A8_UNorm, 8),
             (BufferFormat.AI44, 8),
             (BufferFormat.IA44, 8),
-            (BufferFormat.P8, 8),            
+            (BufferFormat.P8, 8),
             (BufferFormat.R1_UNorm, 8)
         ];
 

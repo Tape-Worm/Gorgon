@@ -23,7 +23,6 @@
 // Created: August 25, 2018 2:43:32 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Animation;
 using Gorgon.Diagnostics;
@@ -45,7 +44,6 @@ namespace Gorgon.IO;
 public class GorgonV3AnimationBinaryCodec(Gorgon2D renderer)
         : GorgonAnimationCodecCommon(renderer, Resources.GOR2DIO_V3_ANIM_BIN_CODEC, Resources.GOR2DIO_V3_ANIM_BIN_CODEC_DESCRIPTION)
 {
-
     /// <summary>
     /// The version data chunk ID.
     /// </summary>
@@ -97,8 +95,6 @@ public class GorgonV3AnimationBinaryCodec(Gorgon2D renderer)
     /// Property to return the version of animation data that the codec supports.
     /// </summary>
     public override Version Version => GorgonV3AnimationJsonCodec.Version30;
-
-
 
     /// <summary>
     /// Function to load the texture information.
@@ -338,7 +334,7 @@ public class GorgonV3AnimationBinaryCodec(Gorgon2D renderer)
                 {
                     // SharpDX rectangle data was stored as LTRB, so we need to convert it to keep compatibility.
                     GorgonRectangleF tempRect = binReader.ReadValue<GorgonRectangleF>();
-                    track.SetKey(new GorgonKeyRectangle(binReader.ReadSingle(), GorgonRectangleF.FromLTRB(tempRect.X, tempRect.Y ,tempRect.Width, tempRect.Height)));
+                    track.SetKey(new GorgonKeyRectangle(binReader.ReadSingle(), GorgonRectangleF.FromLTRB(tempRect.X, tempRect.Y, tempRect.Width, tempRect.Height)));
                 }
                 track.EndEdit();
                 reader.CloseChunk();
@@ -442,6 +438,4 @@ public class GorgonV3AnimationBinaryCodec(Gorgon2D renderer)
             reader?.Close();
         }
     }
-
-
 }

@@ -23,7 +23,6 @@
 // Created: May 19, 2020 12:37:42 PM
 // 
 
-
 using System.Buffers;
 using System.ComponentModel;
 using System.Numerics;
@@ -54,8 +53,6 @@ internal class AnchorEditViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IS
     private readonly GorgonSpriteAnimationController _controller = new();
     // The scaling/rotation animation.
     private IGorgonAnimation _scaleRotateAnim;
-
-
 
     /// <summary>Handles the AnchorChanged event of the AnchorService control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -263,6 +260,4 @@ internal class AnchorEditViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IS
         DataContext.AnchorEditor.PropertyChanged -= AnchorEditor_PropertyChanged;
         base.OnUnload();
     }
-
-
 }

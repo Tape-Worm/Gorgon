@@ -23,7 +23,6 @@
 // Created: Tuesday, September 07, 2015 2:15:24 PM
 // 
 
-
 using Gorgon.Diagnostics;
 using Gorgon.Input.Properties;
 using Gorgon.Native;

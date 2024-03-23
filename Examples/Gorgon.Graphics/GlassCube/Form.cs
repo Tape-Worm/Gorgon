@@ -23,7 +23,6 @@
 // Created: March 4, 2017 10:22:14 AM
 // 
 
-
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Gorgon.Core;
@@ -46,8 +45,6 @@ public partial class Form : System.Windows.Forms.Form
 
     // The target delta time.
     private const float TargetDelta = 1 / 60.0f;
-
-
 
     // The primary graphics interface.
     private GorgonGraphics _graphics;
@@ -79,8 +76,6 @@ public partial class Form : System.Windows.Forms.Form
     private float _accumulator;
     // The timer used for updating the text block.
     private IGorgonTimer _timer;
-
-
 
     /// <summary>Handles the Resize event of the AfterSwapChain control.</summary>
     /// <param name="sender">The source of the event.</param>

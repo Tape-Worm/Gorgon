@@ -23,7 +23,6 @@
 // Created: Sunday, September 13, 2015 12:02:50 PM
 // 
 
-
 using Gorgon.Native;
 using Microsoft.Win32;
 
@@ -58,7 +57,6 @@ internal static class GamingDeviceRegistryInfo
         {
             return null;
         }
-
 
         // Take the HID path, and split it out until we get the appropriate sub key name.
         string[] parts = hidDeviceInfo.HIDPath.Split(new[]

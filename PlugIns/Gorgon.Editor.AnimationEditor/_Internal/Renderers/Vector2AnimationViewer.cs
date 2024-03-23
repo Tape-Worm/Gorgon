@@ -23,7 +23,6 @@
 // Created: June 10, 2020 6:38:49 AM
 // 
 
-
 using System.Buffers;
 using System.Numerics;
 using Gorgon.Animation;
@@ -50,13 +49,10 @@ namespace Gorgon.Editor.AnimationEditor;
 internal class Vector2AnimationViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IAnimationContent dataContext, IRectClipperService clipper, IAnchorEditService anchorEditor, VertexEditService vertexEditor)
         : AnimationViewer(ViewerName, renderer, swapChain, dataContext, clipper, true)
 {
-
     /// <summary>
     /// The name of the viewer.
     /// </summary>
     public const string ViewerName = nameof(AnimationTrackKeyType.Vector2);
-
-
 
     // The anchor editor service.
     private readonly IAnchorEditService _anchorEdit = anchorEditor;
@@ -66,8 +62,6 @@ internal class Vector2AnimationViewer(Gorgon2D renderer, GorgonSwapChain swapCha
     private int _clipAnchorEvent;
     // Previous angle when modifying vertices for a sprite.
     private GorgonSprite _vertexEditSprite;
-
-
 
     /// <summary>
     /// Function to enable the events for the clipper/anchor editor.
@@ -601,8 +595,6 @@ internal class Vector2AnimationViewer(Gorgon2D renderer, GorgonSwapChain swapCha
         base.OnUnload();
     }
 
-
-
     /// <summary>Function to set the default zoom/offset for the viewer.</summary>
     public override void DefaultZoom()
     {
@@ -613,6 +605,4 @@ internal class Vector2AnimationViewer(Gorgon2D renderer, GorgonSwapChain swapCha
 
         ZoomToSprite(Sprite);
     }
-
-
 }

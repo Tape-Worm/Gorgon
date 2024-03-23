@@ -8,7 +8,6 @@ namespace Gorgon.Editor.PlugIns;
 public interface IToolPlugInRibbonButton
     : IGorgonNamedObject
 {
-
     /// <summary>
     /// Property to return the action to perform when the button is clicked.
     /// </summary>
@@ -40,7 +39,6 @@ public interface IToolPlugInRibbonButton
     {
         get;
     }
-
 
     /// <summary>
     /// Property to return whether this button should start a separator.
@@ -82,8 +80,6 @@ public interface IToolPlugInRibbonButton
         get;
         set;
     }
-
-
 
     /// <summary>
     /// Function to validate the button to ensure it'll be displayed correctly on the ribbon.

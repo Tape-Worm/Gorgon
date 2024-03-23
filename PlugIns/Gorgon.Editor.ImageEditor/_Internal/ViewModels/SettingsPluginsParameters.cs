@@ -23,7 +23,6 @@
 // Created: April 20, 2019 5:20:34 PM
 // 
 
-
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
@@ -44,7 +43,6 @@ namespace Gorgon.Editor.ImageEditor;
 internal class SettingsPluginsParameters(ImageEditorSettings settings, ICodecRegistry codecs, IFileDialogService openCodecDialog, GorgonMefPlugInCache plugInCache, IHostContentServices hostServices)
         : PlugInsCategoryViewModelParameters(openCodecDialog, plugInCache, hostServices)
 {
-
     /// <summary>
     /// Property to return the settings for the image editor plugin.
     /// </summary>
@@ -60,6 +58,5 @@ internal class SettingsPluginsParameters(ImageEditorSettings settings, ICodecReg
     {
         get;
     } = codecs ?? throw new ArgumentNullException(nameof(codecs));
-
 
 }

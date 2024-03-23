@@ -23,7 +23,6 @@
 // Created: Thursday, May 21, 2015 11:21:36 PM
 // 
 
-
 using Gorgon.Core;
 
 namespace Gorgon.Collections.Specialized;
@@ -48,7 +47,6 @@ public class GorgonNamedObjectDictionary<T>(bool caseSensitive = true)
     : GorgonBaseNamedObjectDictionary<T>(caseSensitive)
     where T : IGorgonNamedObject
 {
-
     /// <summary>
     /// Property to return an item in this list by name.
     /// </summary>
@@ -76,8 +74,6 @@ public class GorgonNamedObjectDictionary<T>(bool caseSensitive = true)
             UpdateItem(name, value);
         }
     }
-
-
 
     /// <summary>
     /// Function to clear the items from the list.
@@ -108,7 +104,5 @@ public class GorgonNamedObjectDictionary<T>(bool caseSensitive = true)
     /// <param name="name">Name of the item to remove.</param>
     /// <exception cref="KeyNotFoundException">Thrown when no item with the specified <paramref name="name"/> can be found.</exception>
     public void Remove(string name) => Items.Remove(name);
-
-
 
 }

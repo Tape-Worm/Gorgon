@@ -23,7 +23,6 @@
 // Created: Tuesday, September 18, 2012 8:00:02 PM
 // 
 
-
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Gorgon.IO;

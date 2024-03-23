@@ -23,7 +23,6 @@
 // Created: Thursday, August 7, 2014 9:38:25 PM
 // 
 
-
 using System.Numerics;
 using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
@@ -94,7 +93,6 @@ internal static class Program
     private static GorgonFont _font;
     // The text sprite used to display our info.
     private static GorgonTextSprite _textSprite;
-
 
     /// <summary>
     /// Main application loop.

@@ -23,7 +23,6 @@
 // Created: Friday, June 15, 2012 9:55:35 AM
 // 
 
-
 using System.Runtime.CompilerServices;
 
 namespace Gorgon.Math;
@@ -63,8 +62,6 @@ public static class GorgonMathExtensions
     /// Constant value for &#x03C0;.
     /// </summary>
     public const float PI = 3.141593f;
-
-
 
     /// <summary>
     /// Function to perform an approximation of a sine calculation.
@@ -452,7 +449,6 @@ public static class GorgonMathExtensions
     /// <returns>The angle in radians.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static decimal ToRadians(this decimal degrees) => degrees * (decimal)DegConvert;
-
 
     /// <summary>
     /// Function to convert a <see cref="double"/> value representing a radian into an angle in degrees.
@@ -1243,7 +1239,6 @@ public static class GorgonMathExtensions
         {
             (min, max) = (max, min);
         }
-
 
         if (angle > max)
         {

@@ -23,7 +23,6 @@
 // Created: March 29, 2018 11:54:42 AM
 // 
 
-
 using System.Collections;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -141,7 +140,7 @@ public sealed class GorgonNativeBuffer<T>
     {
         ArgumentNullException.ThrowIfNull(array);
         ArgumentOutOfRangeException.ThrowIfLessThan(index, 0);
-        
+
         if ((index + count) > array.Length)
         {
             throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, index, count));
@@ -225,7 +224,7 @@ public sealed class GorgonNativeBuffer<T>
     /// </remarks>
     public void CopyTo(GorgonNativeBuffer<T> destination, int sourceIndex = 0, int? count = null, int destIndex = 0)
     {
-        ArgumentNullException.ThrowIfNull(destination);        
+        ArgumentNullException.ThrowIfNull(destination);
 
         _memoryBlock.CopyTo(destination._memoryBlock, sourceIndex, count, destIndex);
     }
@@ -571,8 +570,6 @@ public sealed class GorgonNativeBuffer<T>
     /// <returns>An <see cref="IEnumerator"/> object that can be used to iterate through the collection.</returns>
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonNativeBuffer{T}" /> class.
     /// </summary>
@@ -640,5 +637,4 @@ public sealed class GorgonNativeBuffer<T>
     {
         Dispose();
     }
-
 }

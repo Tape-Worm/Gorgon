@@ -23,7 +23,6 @@
 // Created: December 12, 2018 4:43:24 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.UI.Controls;
@@ -48,8 +47,6 @@ public class EditorContentSearchService(IReadOnlyList<IContentFileExplorerSearch
         { Resources.GOREDIT_SEARCH_DIRECTORY_TAG1, "directory" },
         { Resources.GOREDIT_SEARCH_DIRECTORY_TAG2, "directory" }
     };
-
-
 
     /// <summary>
     /// Function to parse the search text passed from the user to extract specific keywords.
@@ -250,6 +247,4 @@ public class EditorContentSearchService(IReadOnlyList<IContentFileExplorerSearch
 
         return searchResults;
     }
-
-
 }

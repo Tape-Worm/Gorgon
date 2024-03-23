@@ -23,7 +23,6 @@
 // Created: July 25, 2018 7:36:58 PM
 // 
 
-
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -118,8 +117,6 @@ public class Gorgon2DLightingEffect(Gorgon2D renderer)
         public int ZCheck;
     }
 
-
-
     // Our custom vertex shader for per pixel lighting.
     private GorgonVertexShader _vertexLitTransformShader;
     private Gorgon2DShaderState<GorgonVertexShader> _vertexLitShaderState;
@@ -139,8 +136,6 @@ public class Gorgon2DLightingEffect(Gorgon2D renderer)
         AmbientColor = GorgonColors.Black,
         ZCheck = 1
     };
-
-
 
     /// <summary>
     /// Property to set or return the global ambient color.
@@ -171,8 +166,6 @@ public class Gorgon2DLightingEffect(Gorgon2D renderer)
     /// <summary>Property to return the number of passes required to render the effect.</summary>
     /// <remarks>This is merely for information, passes may or may not be exposed to the end user by the effect author.</remarks>
     public override int PassCount => Lights.Count + 1;
-
-
 
     /// <summary>
     /// Function to perform the actual rendering of the effect.
@@ -331,7 +324,6 @@ public class Gorgon2DLightingEffect(Gorgon2D renderer)
         return PassContinuationState.Continue;
     }
 
-
     /// <summary>
     /// Function called to initialize the effect.
     /// </summary>
@@ -379,6 +371,4 @@ public class Gorgon2DLightingEffect(Gorgon2D renderer)
 
         OnRender(gbuffer.GBufferTexture, output, camera);
     }
-
-
 }

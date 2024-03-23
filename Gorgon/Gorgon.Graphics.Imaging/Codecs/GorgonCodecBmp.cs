@@ -23,7 +23,6 @@
 // Created: August 4, 2016 11:22:47 PM
 // 
 
-
 using Gorgon.Graphics.Imaging.Properties;
 using SharpDX.WIC;
 
@@ -74,14 +73,10 @@ public sealed class GorgonCodecBmp
         BufferFormat.B5G6R5_UNorm
     ];
 
-
-
     /// <summary>
     /// Property to return the supported pixel formats for this codec.
     /// </summary>
     public override IReadOnlyList<BufferFormat> SupportedPixelFormats => _supportedFormats;
-
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonCodecBmp"/> class.
@@ -90,5 +85,4 @@ public sealed class GorgonCodecBmp
         : base("BMP", Resources.GORIMG_DESC_BMP_CODEC, ["bmp", "dib"], ContainerFormatGuids.Bmp, null, null)
     {
     }
-
 }

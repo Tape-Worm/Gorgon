@@ -23,8 +23,6 @@
 // Created: August 26, 2018 9:49:35 PM
 // 
 
-
-
 using System.ComponentModel;
 
 namespace Gorgon.Editor.UI.Views;
@@ -35,7 +33,6 @@ namespace Gorgon.Editor.UI.Views;
 public partial class EditorBaseControl
     : UserControl
 {
-
     /// <summary>
     /// Property to return whether or not the control is being used in a designer.
     /// </summary>
@@ -45,8 +42,6 @@ public partial class EditorBaseControl
         get;
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="EditorBaseControl"/> class.
     /// </summary>
@@ -55,5 +50,4 @@ public partial class EditorBaseControl
         IsDesignTime = LicenseManager.UsageMode == LicenseUsageMode.Designtime;
         InitializeComponent();
     }
-
 }

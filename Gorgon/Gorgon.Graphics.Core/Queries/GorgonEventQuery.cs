@@ -23,7 +23,6 @@
 // Created: January 16, 2021 1:57:57 PM
 // 
 
-
 using DX = SharpDX;
 
 namespace Gorgon.Graphics.Core;
@@ -37,11 +36,8 @@ namespace Gorgon.Graphics.Core;
 public class GorgonEventQuery(GorgonGraphics graphics, string name = null)
         : GorgonQuery<bool>(graphics, name)
 {
-
     /// <summary>Property to return the type of query to execute.</summary>
     public override QueryType QueryType => QueryType.Event;
-
-
 
     /// <summary>
     /// Function to retrieve the result data for the query.
@@ -59,6 +55,4 @@ public class GorgonEventQuery(GorgonGraphics graphics, string name = null)
         result = value;
         return true;
     }
-
-
 }

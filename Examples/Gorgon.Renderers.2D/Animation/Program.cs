@@ -23,7 +23,6 @@
 // Created: August 19, 2018 10:22:18 AM
 // 
 
-
 using System.Numerics;
 using Gorgon.Animation;
 using Gorgon.Core;
@@ -70,8 +69,6 @@ static class Program
     private static readonly AudioPlayback _mp3Player = new();
     // The task used while playing audio.
     private static Task _audioTask;
-
-
 
     // ReSharper disable once InconsistentNaming
     /// <summary>
@@ -328,7 +325,6 @@ static class Program
 
         return true;
     }
-
 
     /// <summary>
     /// The main entry point for the application.

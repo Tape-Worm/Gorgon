@@ -85,8 +85,6 @@ public class GorgonRawKeyboard
         get;
     }
 
-
-
     /// <summary>
     /// Function to retrieve information for the system keyboard if no specific keyboard is defined on creation.
     /// </summary>
@@ -328,8 +326,6 @@ public class GorgonRawKeyboard
         }
     }
 
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonRawKeyboard"/> class.
     /// </summary>
@@ -348,5 +344,4 @@ public class GorgonRawKeyboard
         KeyStates = new GorgonKeyStateCollection();
         KeyStates.Reset();
     }
-
 }

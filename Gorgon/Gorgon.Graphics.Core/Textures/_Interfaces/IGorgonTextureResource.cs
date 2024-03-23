@@ -23,7 +23,6 @@
 // Created: August 2, 2020 12:01:41 PM
 // 
 
-
 using Gorgon.Core;
 using Gorgon.Graphics.Imaging;
 
@@ -35,7 +34,6 @@ namespace Gorgon.Graphics.Core;
 public interface IGorgonTextureResource
     : IGorgonNamedObject, IGorgonGraphicsObject, IGorgonImageInfo, IDisposable
 {
-
     /// <summary>
     /// Property to return the ID for this texture.
     /// </summary>
@@ -43,8 +41,6 @@ public interface IGorgonTextureResource
     {
         get;
     }
-
-
 
     /// <summary>
     /// Function to retrieve a default shader resource view.

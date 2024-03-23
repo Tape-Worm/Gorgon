@@ -23,7 +23,6 @@
 // Created: March 31, 2020 10:49:39 PM
 // 
 
-
 using System.ComponentModel;
 using Gorgon.Editor.AnimationEditor.Properties;
 using Gorgon.Editor.Content;
@@ -63,8 +62,6 @@ internal partial class FormNewAnimation
     private float _originalFps;
     // The path to the preview directory.
     private static readonly string _previewDirPath = $"/Thumbnails/";
-
-
 
     /// <summary>
     /// Property to set or return the image codec for textures.
@@ -147,8 +144,6 @@ internal partial class FormNewAnimation
     /// </summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public float Fps => (float)NumericFps.Value;
-
-
 
     /// <summary>Handles the FileEntrySelected event of the FilePrimarySprite control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -524,8 +519,6 @@ internal partial class FormNewAnimation
         NumericFps.Value = ((decimal)_originalFps).Max(NumericFps.Minimum).Min(NumericFps.Maximum);
         UpdateFrameCountLabel();
     }
-
-
 
     /// <summary>Initializes a new instance of the <see cref="FormNewAnimation"/> class.</summary>
     public FormNewAnimation() => InitializeComponent();

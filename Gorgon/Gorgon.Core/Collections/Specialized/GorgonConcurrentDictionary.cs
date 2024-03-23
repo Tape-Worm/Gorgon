@@ -23,7 +23,6 @@
 // Created: Sunday, June 7, 2015 12:28:22 PM
 // 
 
-
 using System.Collections.Concurrent;
 
 namespace Gorgon.Collections.Specialized;

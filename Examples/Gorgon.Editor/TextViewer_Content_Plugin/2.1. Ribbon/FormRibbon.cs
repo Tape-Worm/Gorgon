@@ -23,7 +23,6 @@
 // Created: February 13, 2021 4:04:07 PM
 // 
 
-
 using System.ComponentModel;
 using System.Numerics;
 using Gorgon.Editor.Rendering;
@@ -69,8 +68,6 @@ internal partial class FormRibbon
     // The renderer for the content.
     private IContentRenderer _contentRenderer;
 
-
-
     /// <summary>
     /// Property to set or return the data context for the ribbon on the form.
     /// </summary>
@@ -114,8 +111,6 @@ internal partial class FormRibbon
             UpdateZoomMenu();
         }
     }
-
-
 
     /// <summary>Handles the ZoomScale event of the ContentRenderer control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -464,7 +459,6 @@ internal partial class FormRibbon
         UpdateZoomMenu();
     }
 
-
     /// <summary>Initializes a new instance of the FormRibbon class.</summary>
     public FormRibbon()
     {
@@ -492,5 +486,4 @@ internal partial class FormRibbon
         _menuFontItems[FontFace.TimesNewRoman] = ItemTimesNewRoman;
         _menuFontItems[FontFace.Papyrus] = ItemPapyrus;
     }
-
 }
