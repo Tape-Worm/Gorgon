@@ -37,6 +37,7 @@ public static class GorgonNamedObjectLinqExtensions
     /// <param name="list">The list to evaluate.</param>
     /// <param name="name">The name of the object to look up.</param>
     /// <returns>The item with the specified name.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="list"/> parameter is <b>null</b>.</exception>
     /// <exception cref="KeyNotFoundException">Thrown if no with the <paramref name="name"/> could be found in the <paramref name="list"/>.</exception>
     /// <remarks>
     /// <para>
@@ -54,10 +55,13 @@ public static class GorgonNamedObjectLinqExtensions
     /// <param name="name">The name of the object to look up.</param>
     /// <param name="comparer">The comparer to use when comparing strings.</param>
     /// <returns>The item with the specified name.</returns>
-    /// <exception cref="KeyNotFoundException">Thrown if no with the <paramref name="name"/> could be found in the <paramref name="list"/>.</exception>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="list"/> parameter is <b>null</b>.</exception>
+    /// <exception cref="KeyNotFoundException">Thrown if no with the <paramref name="name"/> could be found in the <paramref name="list"/>.</exception>    
     public static T GetByName<T>(this IEnumerable<T> list, string name, StringComparer comparer)
         where T : IGorgonNamedObject
     {
+        ArgumentNullException.ThrowIfNull(list);
+
         if (string.IsNullOrEmpty(name))
         {
             throw new KeyNotFoundException(string.Format(Resources.GOR_ERR_KEY_NOT_FOUND, name));
@@ -122,6 +126,7 @@ public static class GorgonNamedObjectLinqExtensions
     /// <param name="list">The list to evaluate.</param>
     /// <param name="name">The name of the object to look up.</param>
     /// <returns>The index of the item, if found. Or, -1, if not.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="list"/> parameter is <b>null</b>.</exception>
     /// <remarks>
     /// <para>
     /// The default comparer is <see cref="StringComparer.OrdinalIgnoreCase"/>. This means that the <see cref="IGorgonNamedObject.Name"/> is case insensitive, and uses a binary comparison.
@@ -137,6 +142,7 @@ public static class GorgonNamedObjectLinqExtensions
     /// <param name="list">The list to evaluate.</param>
     /// <param name="name">The name of the object to look up.</param>    
     /// <returns><b>true</b> if found, <b>false</b> if not.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="list"/> parameter is <b>null</b>.</exception>
     /// <remarks>
     /// <para>
     /// The default comparer is <see cref="StringComparer.OrdinalIgnoreCase"/>. This means that the <see cref="IGorgonNamedObject.Name"/> is case insensitive, and uses a binary comparison.
@@ -153,6 +159,7 @@ public static class GorgonNamedObjectLinqExtensions
     /// <param name="name">The name of the object to look up.</param>
     /// <param name="comparer">The comparer to use when comparing strings.</param>
     /// <returns><b>true</b> if found, <b>false</b> if not.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="list"/> parameter is <b>null</b>.</exception>
     public static bool ContainsName<T>(this IEnumerable<T> list, string name, StringComparer comparer)
         where T : IGorgonNamedObject => IndexOfName(list, name, comparer) != -1;
 
@@ -164,10 +171,13 @@ public static class GorgonNamedObjectLinqExtensions
     /// <param name="name">The name of the object to look up.</param>
     /// <param name="comparer">The comparer to use when comparing strings.</param>
     /// <returns>The index of the item, if found. Or, -1, if not.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="list"/> parameter is <b>null</b>.</exception>
     public static int IndexOfName<T>(this IEnumerable<T> list, string name, StringComparer comparer)
         where T : IGorgonNamedObject
     {
         int count = 0;
+
+        ArgumentNullException.ThrowIfNull(list);
 
         if (string.IsNullOrEmpty(name))
         {

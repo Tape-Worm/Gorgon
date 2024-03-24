@@ -31,6 +31,7 @@ using Gorgon.Editor.Rendering;
 using Gorgon.Editor.Services;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
+using Gorgon.Math;
 using Gorgon.Renderers;
 
 namespace Gorgon.Editor.SpriteEditor;

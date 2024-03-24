@@ -76,7 +76,7 @@ internal class FileSystemFolderBrowseService(IMain mainViewModel)
         }
 
         IDirectory initialDirectory = initialPath == "/" ? _mainViewModel.CurrentProject?.FileExplorer.Root
-                                                         : _mainViewModel.CurrentProject?.FileExplorer.Root.Directories.Traverse(d => d.Directories)
+                                                         : _mainViewModel.CurrentProject?.FileExplorer.Root.Directories.TraverseBreadthFirst(d => d.Directories)
                                                                 .FirstOrDefault(d => string.Equals(d.FullPath, initialPath, StringComparison.OrdinalIgnoreCase));
 
         initialDirectory ??= _mainViewModel.CurrentProject?.FileExplorer.Root;

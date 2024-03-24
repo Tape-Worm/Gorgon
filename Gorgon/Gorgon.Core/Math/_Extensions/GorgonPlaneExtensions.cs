@@ -1,7 +1,7 @@
 ﻿
 // 
-// Gorgon
-// Copyright (C) 2021 Michael Winsor
+// Gorgon.
+// Copyright (C) 2024 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -11,26 +11,32 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software
+// all copies or substantial portions of the Software.
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE
+// THE SOFTWARE.
 // 
 // Created: February 12, 2021 4:41:57 PM
 // 
 
+using System.Numerics;
 using System.Runtime.CompilerServices;
 
-namespace System.Numerics;
+namespace Gorgon.Math;
 
 /// <summary>
-/// Extension methods for the Plane type
+/// Extension methods for the Plane type.
 /// </summary>
-public static class PlaneExtensions
+/// <remarks>
+/// <para>
+/// This contains code adapted from <a href="https://github.com/sharpdx/SharpDX">SharpDX</a>.
+/// </para>
+/// </remarks>
+public static class GorgonPlaneExtensions
 {
     /// <summary>
     /// Function to build a matrix that can be used to flatten geometry into a shadow on the plane.
@@ -43,7 +49,7 @@ public static class PlaneExtensions
     /// This code was adapted from SharpDX (https://github.com/sharpdx/SharpDX).
     /// </para>
     /// </remarks>
-    public static void Shadow(this ref readonly Plane plane, Vector4 lightDirection, out Matrix4x4 result)
+    public static void Shadow(this Plane plane, Vector4 lightDirection, out Matrix4x4 result)
     {
         float dot = (plane.Normal.X * lightDirection.X) + (plane.Normal.Y * lightDirection.Y) + (plane.Normal.Z * lightDirection.Z) + (plane.D * lightDirection.W);
         float x = -plane.Normal.X;
@@ -79,7 +85,7 @@ public static class PlaneExtensions
     /// This code was adapted from SharpDX (https://github.com/sharpdx/SharpDX).
     /// </para>
     /// </remarks>
-    public static void Reflect(this ref readonly Plane plane, out Matrix4x4 result)
+    public static void Reflect(this Plane plane, out Matrix4x4 result)
     {
         float x = plane.Normal.X;
         float y = plane.Normal.Y;
@@ -141,7 +147,7 @@ public static class PlaneExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Plane Normalize(Plane plane)
     {
-        float magnitude = 1.0f / (float)(Math.Sqrt((plane.Normal.X * plane.Normal.X) + (plane.Normal.Y * plane.Normal.Y) + (plane.Normal.Z * plane.Normal.Z)));
+        float magnitude = 1.0f / (MathF.Sqrt((plane.Normal.X * plane.Normal.X) + (plane.Normal.Y * plane.Normal.Y) + (plane.Normal.Z * plane.Normal.Z)));
         return new Plane(plane.Normal.X * magnitude, plane.Normal.Y * magnitude, plane.Normal.Z * magnitude, plane.D * magnitude);
     }
 
@@ -151,7 +157,7 @@ public static class PlaneExtensions
     /// <param name="plane">The normalized source plane.</param>
     /// <param name="rotation">The quaternion rotation.</param>
     /// <param name="result">When the method completes, contains the transformed plane.</param>
-    public static void Transform(ref readonly Plane plane, ref readonly Quaternion rotation, out Plane result)
+    public static void Transform(Plane plane, Quaternion rotation, out Plane result)
     {
         float x2 = rotation.X + rotation.X;
         float y2 = rotation.Y + rotation.Y;
@@ -181,8 +187,7 @@ public static class PlaneExtensions
     /// </summary>
     /// <param name="planes">The array of normalized planes to transform.</param>
     /// <param name="rotation">The quaternion rotation.</param>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="planes"/> is <c>null</c>.</exception>
-    public static void Transform(Span<Plane> planes, ref readonly Quaternion rotation)
+    public static void Transform(Span<Plane> planes, Quaternion rotation)
     {
         if (planes.IsEmpty)
         {
@@ -208,10 +213,6 @@ public static class PlaneExtensions
             float y = planes[i].Normal.Y;
             float z = planes[i].Normal.Z;
 
-            /*
-             * Note:
-             * Factor common arithmetic out of loop.
-            */
             planes[i].Normal.X = ((x * ((1.0f - yy) - zz)) + (y * (xy - wz))) + (z * (xz + wy));
             planes[i].Normal.Y = ((x * (xy + wz)) + (y * ((1.0f - xx) - zz))) + (z * (yz - wx));
             planes[i].Normal.Z = ((x * (xz - wy)) + (y * (yz + wx))) + (z * ((1.0f - xx) - yy));
@@ -224,7 +225,7 @@ public static class PlaneExtensions
     /// <param name="plane">The normalized source plane.</param>
     /// <param name="transformation">The transformation matrix.</param>
     /// <param name="result">When the method completes, contains the transformed plane.</param>
-    public static void Transform(ref readonly Plane plane, ref readonly Matrix4x4 transformation, out Plane result)
+    public static void Transform(Plane plane, ref readonly Matrix4x4 transformation, out Plane result)
     {
         float x = plane.Normal.X;
         float y = plane.Normal.Y;
@@ -254,7 +255,7 @@ public static class PlaneExtensions
 
         for (int i = 0; i < planes.Length; ++i)
         {
-            Transform(in planes[i], in transformation, out planes[i]);
+            Transform(planes[i], in transformation, out planes[i]);
         }
     }
 }

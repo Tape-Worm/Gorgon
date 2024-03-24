@@ -1,7 +1,7 @@
 ﻿
 // 
-// Gorgon
-// Copyright (C) 2021 Michael Winsor
+// Gorgon.
+// Copyright (C) 2024 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -11,30 +11,33 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software
+// all copies or substantial portions of the Software.
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE
+// THE SOFTWARE.
 // 
 // Created: February 12, 2021 12:16:12 PM
 // 
 
-using System.Runtime.CompilerServices;
-using Gorgon.Math;
 
-namespace System.Numerics;
+using System.Numerics;
+using System.Runtime.CompilerServices;
+
+namespace Gorgon.Math;
 
 /// <summary>
-/// Extension methods for the 4x4 matrix type
+/// Extension methods for the 4x4 matrix type.
 /// </summary>
 /// <remarks>
-/// This contains code adapted from <a href="https://github.com/sharpdx/SharpDX">SharpDX</a>
+/// <para>
+/// This contains code adapted from <a href="https://github.com/sharpdx/SharpDX">SharpDX</a>.
+/// </para>
 /// </remarks>
-public static class Matrix4x4Extensions
+public static class GorgonMatrix4x4Extensions
 {
     /// <summary>
     /// Function to get the up <see cref="Vector3"/> of the matrix; that is M21, M22, and M23.
@@ -253,9 +256,8 @@ public static class Matrix4x4Extensions
     /// Function to retrieve a matrix with absolute values.
     /// </summary>
     /// <param name="matrix">The matrix to evaluate.</param>
-    /// <param name="absMatrix">The matrix with absolute values.</param>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void Abs(this ref readonly Matrix4x4 matrix, out Matrix4x4 absMatrix)
+    /// <param name="absMatrix">The matrix with absolute values.</param>    
+    public static void Abs(this in Matrix4x4 matrix, out Matrix4x4 absMatrix)
     {
         absMatrix = default;
         absMatrix.M11 = matrix.M11.Abs();

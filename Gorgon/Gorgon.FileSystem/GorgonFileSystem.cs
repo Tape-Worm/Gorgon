@@ -571,7 +571,7 @@ public class GorgonFileSystem
     internal static IEnumerable<VirtualDirectory> FlattenDirectoryHierarchy(VirtualDirectory directory, string searchMask)
     {
         IEnumerable<VirtualDirectory> directories = directory.Directories.GetVirtualDirectories()
-                                                                         .Traverse(d => d.Directories.GetVirtualDirectories());
+                                                                         .TraverseBreadthFirst(d => d.Directories.GetVirtualDirectories());
 
         if (!string.Equals(searchMask, "*", StringComparison.OrdinalIgnoreCase))
         {
@@ -676,7 +676,7 @@ public class GorgonFileSystem
 
         // All files have a physical link, and since that physical link is no longer valid, we need to update the physical path for each file under
         // the directory and any subdirectories.
-        foreach (VirtualDirectory subDir in dir.Directories.Traverse(d => d.Directories).OfType<VirtualDirectory>().Where(item => item is not null))
+        foreach (VirtualDirectory subDir in dir.Directories.TraverseBreadthFirst(d => d.Directories).OfType<VirtualDirectory>().Where(item => item is not null))
         {
             if (subDir.MountPoint != mountPoint)
             {

@@ -1,7 +1,7 @@
 ﻿
 // 
-// Gorgon
-// Copyright (C) 2021 Michael Winsor
+// Gorgon.
+// Copyright (C) 2024 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -11,28 +11,28 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software
+// all copies or substantial portions of the Software.
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE
+// THE SOFTWARE.
 // 
 // Created: January 30, 2021 3:43:05 PM
 // 
 
+using System.Drawing;
+using System.Numerics;
 using System.Runtime.CompilerServices;
-using Gorgon.Graphics;
-using Gorgon.Math;
 
-namespace System.Numerics;
+namespace Gorgon.Math;
 
 /// <summary>
-/// Extension methods for vectors
+/// Extension methods for vectors.
 /// </summary>
-public static class VectorExtensions
+public static class GorgonVectorExtensions
 {
     /// <summary>
     /// Function to truncate the vector coordinates to the whole number portion of their values.
@@ -188,9 +188,9 @@ public static class VectorExtensions
     /// <param name="worldViewProjection">The combined world-view-projection matrix.</param>
     /// <returns>The vector in screen space.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Vector3 Project(Vector3 vector, float x, float y, float width, float height, float minZ, float maxZ, Matrix4x4 worldViewProjection)
+    public static Vector3 Project(Vector3 vector, float x, float y, float width, float height, float minZ, float maxZ, ref readonly Matrix4x4 worldViewProjection)
     {
-        Vector3 v = Vector3.Transform(vector, worldViewProjection);
+        var v = Vector3.Transform(vector, worldViewProjection);
         return new Vector3(((1.0f + v.X) * 0.5f * width) + x, ((1.0f - v.Y) * 0.5f * height) + y, (v.Z * (maxZ - minZ)) + minZ);
     }
 
@@ -209,7 +209,7 @@ public static class VectorExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Vector3 Unproject(this Vector3 vector, float x, float y, float width, float height, float minZ, float maxZ, ref readonly Matrix4x4 worldViewProjection)
     {
-        Vector3 v = new();
+        var v = new Vector3();
         Matrix4x4.Invert(worldViewProjection, out Matrix4x4 matrix);
 
         v.X = (((vector.X - x) / width) * 2.0f) - 1.0f;
@@ -286,4 +286,36 @@ public static class VectorExtensions
     /// <returns>The converted vector.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Vector4 ToVector4(this Quaternion q) => new(q.X, q.Y, q.Z, q.W);
+
+    /// <summary>
+    /// Function to convert a <see cref="Vector2"/> to a <see cref="PointF"/>.
+    /// </summary>
+    /// <param name="vector">The vector to convert.</param>
+    /// <returns>The converted point.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static PointF ToPointF(this Vector2 vector) => new(vector.X, vector.Y);
+
+    /// <summary>
+    /// Function to convert a <see cref="Vector2"/> to a <see cref="PointF"/>.
+    /// </summary>
+    /// <param name="vector">The vector to convert.</param>
+    /// <returns>The converted point.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Point ToPoint(this Vector2 vector) => new((int)vector.X, (int)vector.Y);
+
+    /// <summary>
+    /// Function to convert a <see cref="Vector2"/> to a <see cref="SizeF"/>.
+    /// </summary>
+    /// <param name="vector">The vector to convert.</param>
+    /// <returns>The converted size.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static SizeF ToSizeF(this Vector2 vector) => new(vector.X, vector.Y);
+
+    /// <summary>
+    /// Function to convert a <see cref="Vector2"/> to a <see cref="Size"/>.
+    /// </summary>
+    /// <param name="vector">The vector to convert.</param>
+    /// <returns>The converted size.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Size ToSize(this Vector2 vector) => new((int)vector.X, (int)vector.Y);
 }

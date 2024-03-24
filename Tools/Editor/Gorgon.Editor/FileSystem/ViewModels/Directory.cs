@@ -173,7 +173,7 @@ internal class Directory
             _isExcluded = value;
             OnPropertyChanged();
 
-            foreach (IExcludable child in Directories.Traverse(d => d.Directories).OfType<IExcludable>())
+            foreach (IExcludable child in Directories.TraverseBreadthFirst(d => d.Directories).OfType<IExcludable>())
             {
                 child.IsExcluded = value;
             }

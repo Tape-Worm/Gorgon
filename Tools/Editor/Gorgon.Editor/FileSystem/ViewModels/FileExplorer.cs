@@ -584,7 +584,7 @@ internal class FileExplorer
     /// <param name="directory">The directory to start searching from.</param>
     /// <returns>The <see cref="IFile"/> that is open, or <b>null</b> if not file is open.</returns>
     private IFile CheckForOpenFile(IDirectory directory) => directory.Files
-                                                                     .Concat(directory.Directories.Traverse(d => d.Directories)
+                                                                     .Concat(directory.Directories.TraverseBreadthFirst(d => d.Directories)
                                                                                                   .SelectMany(item => item.Files))
                                                                      .FirstOrDefault(item => item.IsOpen);
 
@@ -862,7 +862,7 @@ internal class FileExplorer
         }
 
         fileIDList.AddRange(directory.Files);
-        IEnumerable<IDirectory> directories = _directories.Values.Traverse(d => d.Directories);
+        IEnumerable<IDirectory> directories = _directories.Values.TraverseBreadthFirst(d => d.Directories);
 
         dirIDList.AddRange(directories);
         fileIDList.AddRange(directories.SelectMany(d => d.Files));
@@ -1059,7 +1059,7 @@ internal class FileExplorer
             _files[file.ID] = file;
         }
 
-        foreach (IDirectory subDir in directory.Directories.Traverse(d => d.Directories))
+        foreach (IDirectory subDir in directory.Directories.TraverseBreadthFirst(d => d.Directories))
         {
             _directories[subDir.ID] = subDir;
 
@@ -1349,7 +1349,7 @@ internal class FileExplorer
             }
 
             // Ensure file linkages are noticed.
-            foreach (IFile selectedFile in directory.Files.Concat(directory.Directories.Traverse(d => d.Directories)
+            foreach (IFile selectedFile in directory.Files.Concat(directory.Directories.TraverseBreadthFirst(d => d.Directories)
                                                           .SelectMany(item => item.Files)))
             {
                 if (!IsFileLinked(selectedFile))
@@ -1819,7 +1819,7 @@ internal class FileExplorer
             }
 
             // Update the directory in our file system.
-            (string originalPath, IFile file)[] originalPaths = selected.Files.Concat(selected.Directories.Traverse(d => d.Directories)
+            (string originalPath, IFile file)[] originalPaths = selected.Files.Concat(selected.Directories.TraverseBreadthFirst(d => d.Directories)
                                                                                                           .SelectMany(d => d.Files))
                                                                                                           .Select(item => (item.FullPath, item))
                                                                               .ToArray();
@@ -2980,7 +2980,7 @@ internal class FileExplorer
         Root.Files.CollectionChanged += Files_CollectionChanged;
 
         // Hook the sub directory and file collections.
-        foreach (IDirectory subDir in Root.Directories.Traverse(d => d.Directories))
+        foreach (IDirectory subDir in Root.Directories.TraverseBreadthFirst(d => d.Directories))
         {
             subDir.Files.CollectionChanged += Files_CollectionChanged;
             subDir.Directories.CollectionChanged += Directories_CollectionChanged;
@@ -2998,7 +2998,7 @@ internal class FileExplorer
         Clipboard.PropertyChanging -= Clipboard_PropertyChanging;
 
         // Unhook the sub directories/files.
-        foreach (IDirectory subDir in Root.Directories.Traverse(d => d.Directories))
+        foreach (IDirectory subDir in Root.Directories.TraverseBreadthFirst(d => d.Directories))
         {
             subDir.Directories.CollectionChanged -= Directories_CollectionChanged;
             subDir.Files.CollectionChanged -= Files_CollectionChanged;
@@ -3296,7 +3296,7 @@ internal class FileExplorer
         if (recursive)
         {
             paths = paths.Concat(parentDir.Directories
-                                          .Traverse(d => d.Directories)
+                                          .TraverseBreadthFirst(d => d.Directories)
                                           .SelectMany(item => item.Files)
                                           .Cast<IContentFile>());
         }
@@ -3346,7 +3346,7 @@ internal class FileExplorer
         (string mask, int searchPatternState, IDirectory parentDir, bool usePattern) = GetSearchState(directoryPath, searchMask);
 
         IEnumerable<IDirectory> paths = recursive ? parentDir.Directories
-                                                             .Traverse(d => d.Directories)
+                                                             .TraverseBreadthFirst(d => d.Directories)
                                                   : parentDir.Directories;
 
         return searchPatternState switch
@@ -3395,7 +3395,7 @@ internal class FileExplorer
         (string mask, int searchPatternState, IDirectory parentDir, bool usePattern) = GetSearchState(directoryPath, searchMask);
 
         IEnumerable<IDirectory> paths = recursive ? parentDir.Directories
-                                                             .Traverse(d => d.Directories)
+                                                             .TraverseBreadthFirst(d => d.Directories)
                                                   : parentDir.Directories;
 
         var allPaths = parentDir.Files.Select(item => new { item.FullPath, item.Name })

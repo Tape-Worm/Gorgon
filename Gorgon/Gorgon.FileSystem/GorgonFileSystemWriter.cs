@@ -679,7 +679,7 @@ public class GorgonFileSystemWriter
 
         // Build up a list of directories to delete.
         // We'll sort these by full path length since it is impossible to have a child directory with a longer name than its parent.
-        List<IGorgonVirtualDirectory> directories = [.. directory.Directories.Traverse(d => d.Directories).OrderByDescending(d => d.FullPath.Length)];
+        List<IGorgonVirtualDirectory> directories = [.. directory.Directories.TraverseBreadthFirst(d => d.Directories).OrderByDescending(d => d.FullPath.Length)];
 
         // If we've deleted a sub directory (i.e. not the root), then include it in the list as well.
         directories.Add(directory);
@@ -1181,7 +1181,7 @@ public class GorgonFileSystemWriter
 
             List<IGorgonVirtualDirectory> dirsToCopy =
             [
-                srcDirectory, .. srcDirectory.Directories.Traverse(d => d.Directories)
+                srcDirectory, .. srcDirectory.Directories.TraverseBreadthFirst(d => d.Directories)
             ];
             Dictionary<IGorgonVirtualDirectory, IEnumerable<IGorgonVirtualFile>> filesToCopy = dirsToCopy.SelectMany(f => f.Files)
                                         .GroupBy(f => f.Directory)
@@ -1392,7 +1392,7 @@ public class GorgonFileSystemWriter
 
             List<IGorgonVirtualDirectory> dirsToCopy =
             [
-                srcDirectory, .. srcDirectory.Directories.Traverse(d => d.Directories)
+                srcDirectory, .. srcDirectory.Directories.TraverseBreadthFirst(d => d.Directories)
             ];
             Dictionary<IGorgonVirtualDirectory, IEnumerable<IGorgonVirtualFile>> filesToCopy = dirsToCopy.SelectMany(f => f.Files)
                                         .GroupBy(f => f.Directory)
@@ -1980,7 +1980,7 @@ public class GorgonFileSystemWriter
 
             List<IGorgonVirtualDirectory> dirsToCopy =
             [
-                srcDirectory, .. srcDirectory.Directories.Traverse(d => d.Directories)
+                srcDirectory, .. srcDirectory.Directories.TraverseBreadthFirst(d => d.Directories)
             ];
             Dictionary<IGorgonVirtualDirectory, IEnumerable<IGorgonVirtualFile>> filesToCopy = dirsToCopy.SelectMany(f => f.Files)
                                         .GroupBy(f => f.Directory)

@@ -325,7 +325,7 @@ internal class ProjectEditor
         SaveMetadata(_fileExplorer.Root);
 
         // Evaluate each directory in the file system.
-        foreach (IDirectory directory in _fileExplorer.Root.Directories.Traverse(d => d.Directories))
+        foreach (IDirectory directory in _fileExplorer.Root.Directories.TraverseBreadthFirst(d => d.Directories))
         {
             SaveMetadata(directory);
         }

@@ -232,7 +232,7 @@ internal class FileSystemSearchSystem(IDirectory rootDirectory)
     /// <returns><b>true</b> if regular search should be stopped, <b>false</b> if it should continue.</returns>
     private bool CheckKeyword(string keyword, SearchMode mode, string modeSearchText, List<IFile> searchResults)
     {
-        IEnumerable<IFile> files = _rootDirectory.Directories.Traverse(d => d.Directories).SelectMany(f => f.Files).Concat(_rootDirectory.Files);
+        IEnumerable<IFile> files = _rootDirectory.Directories.TraverseBreadthFirst(d => d.Directories).SelectMany(f => f.Files).Concat(_rootDirectory.Files);
 
         if (string.Equals(keyword, Resources.GOREDIT_SEARCH_KEYWORD_DEPENDENCIES, StringComparison.CurrentCultureIgnoreCase))
         {
@@ -316,7 +316,7 @@ internal class FileSystemSearchSystem(IDirectory rootDirectory)
             return searchResults;
         }
 
-        foreach (IFile node in _rootDirectory.Directories.Traverse(d => d.Directories).SelectMany(f => f.Files).Concat(_rootDirectory.Files))
+        foreach (IFile node in _rootDirectory.Directories.TraverseBreadthFirst(d => d.Directories).SelectMany(f => f.Files).Concat(_rootDirectory.Files))
         {
             if (searchResults.Contains(node))
             {

@@ -495,6 +495,29 @@ public class GorgonArray<T>
     }
 
     /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="source"></param>
+    /// <param name="markDirty"></param>
+#warning This constructor is temporary until we get to the GorgonArray rewrite.
+    public GorgonArray(IEnumerable<T> source, bool markDirty = false)
+        : this(source.Count())
+    {
+        int i = 0;
+
+        foreach (T item in source)
+        {
+
+            BackingArray[i++] = item;
+        }
+
+        if (markDirty)
+        {
+            _dirtyIndices = long.MaxValue;
+        }
+    }
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="GorgonArray{T}"/> class.
     /// </summary>
     /// <param name="maxSize">The maximum size.</param>

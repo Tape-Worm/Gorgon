@@ -30,6 +30,7 @@ using Gorgon.Editor.Rendering;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
+using Gorgon.Math;
 using Gorgon.Renderers;
 
 namespace Gorgon.Editor.SpriteEditor;
@@ -134,8 +135,8 @@ internal class PickSpriteViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IS
         _sprite.TextureRegion = _sprite.Texture.ToTexel((GorgonRectangle)DataContext.SpritePickContext.SpriteRectangle);
         _sprite.Size = DataContext.SpritePickContext.SpriteRectangle.Size.Truncate();
         _sprite.Position = new Vector2(DataContext.SpritePickContext.SpriteRectangle.X - (RenderRegion.Width * 0.5f),
-                                          DataContext.SpritePickContext.SpriteRectangle.Y - (RenderRegion.Height * 0.5f))
-                                 .Truncate();
+                                       DataContext.SpritePickContext.SpriteRectangle.Y - (RenderRegion.Height * 0.5f))
+                                       .Truncate();
 
         _spriteRegion = Renderer.MeasureSprite(_sprite);
     }

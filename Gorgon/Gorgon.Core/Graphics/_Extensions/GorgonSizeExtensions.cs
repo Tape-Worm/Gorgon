@@ -1,6 +1,5 @@
-﻿// 
-// Gorgon.
-// Copyright (C) 2024 Michael Winsor
+﻿// Gorgon.
+// Copyright (C) 2023 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -19,28 +18,33 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: August 18, 2018 10:41:23 AM
-// 
+// Created: December 18, 2023 7:06:47 PM
+//
 
-using Gorgon.Math;
+using System.Numerics;
+using System.Runtime.CompilerServices;
+using System.Drawing;
 
-namespace Gorgon.Collections;
+namespace Gorgon.Graphics;
 
 /// <summary>
-/// A comparer for comparing floating point values using epsilon equality.
+/// Extension methods for the <see cref="Size"/> and <see cref="SizeF"/> types.
 /// </summary>
-/// <remarks>
-/// Initializes a new instance of the <see cref="GorgonEpsilonFloatComparer"/> class.
-/// </remarks>
-/// <param name="epsilon">[Optional] The epsilon error value used to negate floating point drift.</param>
-public class GorgonEpsilonFloatComparer(float epsilon = 1e-6f)
-    : IComparer<float>
+public static class GorgonSizeExtensions
 {
     /// <summary>
-    /// Compares two objects and returns a value indicating whether one is less than, equal to, or greater than the other.
+    /// Function to convert a <see cref="SizeF"/> to a <see cref="Vector2"/>.
     /// </summary>
-    /// <param name="x">The first object to compare.</param>
-    /// <param name="y">The second object to compare.</param>
-    /// <returns>A signed integer that indicates the relative values of <paramref name="x" /> and <paramref name="y" />.</returns>
-    public int Compare(float x, float y) => x.EqualsEpsilon(y, epsilon) ? 0 : (x < y ? 1 : -1);
+    /// <param name="size">The size to convert.</param>    
+    /// <returns>The converted vector.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Vector2 ToVector2(this SizeF size) => new(size.Width, size.Height);
+
+    /// <summary>
+    /// Function to convert a <see cref="Size"/> to a <see cref="Vector2"/>.
+    /// </summary>
+    /// <param name="size">The size to convert.</param>    
+    /// <returns>The converted vector.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Vector2 ToVector2(this Size size) => new(size.Width, size.Height);
 }

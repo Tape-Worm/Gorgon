@@ -31,6 +31,7 @@ using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
+using Gorgon.Math;
 using Gorgon.Renderers;
 
 namespace Gorgon.Editor.SpriteEditor;
@@ -209,8 +210,8 @@ internal class ClipSpriteViewer
         _sprite.TextureRegion = _sprite.Texture.ToTexel((GorgonRectangle)_clipper.Rectangle);
         _sprite.Size = _clipper.Rectangle.Size.Truncate();
         _sprite.Position = new Vector2(_clipper.Rectangle.X - (RenderRegion.Width * 0.5f),
-                                          _clipper.Rectangle.Y - (RenderRegion.Height * 0.5f))
-                                 .Truncate();
+                                       _clipper.Rectangle.Y - (RenderRegion.Height * 0.5f))
+                                       .Truncate();
     }
 
     /// <summary>Handles the KeyboardIconClicked event of the Clipper control.</summary>

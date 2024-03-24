@@ -29,6 +29,7 @@ using Gorgon.Editor.Services;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts;
+using Gorgon.Math;
 using Gorgon.Renderers;
 
 namespace Gorgon.Editor.AnimationEditor;

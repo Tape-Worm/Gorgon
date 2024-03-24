@@ -1289,7 +1289,7 @@ internal partial class FileExploder
         _directoryNodes.Clear();
         ViewModel.Unload();
 
-        foreach (DirectoryTreeNode node in TreeDirectories.Nodes.OfType<DirectoryTreeNode>().Traverse(n => n.Nodes.OfType<DirectoryTreeNode>()))
+        foreach (DirectoryTreeNode node in TreeDirectories.Nodes.OfType<DirectoryTreeNode>().TraverseBreadthFirst(n => n.Nodes.OfType<DirectoryTreeNode>()))
         {
             node.ViewModel.PropertyChanged += Directory_PropertyChanged;
             node.ViewModel.Directories.CollectionChanged -= Directories_CollectionChanged;
@@ -1346,7 +1346,7 @@ internal partial class FileExploder
         }
 
         DirectoryTreeNode[] childNodes = dirNode.Nodes.OfType<DirectoryTreeNode>()
-                                                      .Traverse(n => n.Nodes.OfType<DirectoryTreeNode>())
+                                                      .TraverseBreadthFirst(n => n.Nodes.OfType<DirectoryTreeNode>())
                                                       .ToArray();
 
         foreach (DirectoryTreeNode treeNode in childNodes)
@@ -2737,7 +2737,7 @@ internal partial class FileExploder
             }
 
             // Second, remove the view models from the existing nodes.
-            foreach (DirectoryTreeNode subDirNode in parentNode.Nodes.OfType<DirectoryTreeNode>().Traverse(n => n.Nodes.OfType<DirectoryTreeNode>()))
+            foreach (DirectoryTreeNode subDirNode in parentNode.Nodes.OfType<DirectoryTreeNode>().TraverseBreadthFirst(n => n.Nodes.OfType<DirectoryTreeNode>()))
             {
                 RemoveFileEvents(subDirNode.ViewModel.Files);
 

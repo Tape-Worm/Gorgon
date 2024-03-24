@@ -263,7 +263,7 @@ public class GorgonOverlay
         parent.HandleDestroyed += Parent_HandleDestroyed;
         parent.GotFocus += Parent_GotFocus;
 
-        foreach (Control child in parent.Controls.OfType<Control>().Traverse(c => c.Controls.OfType<Control>()))
+        foreach (Control child in parent.Controls.OfType<Control>().TraverseBreadthFirst(c => c.Controls.OfType<Control>()))
         {
             child.GotFocus += Parent_GotFocus;
         }
@@ -310,7 +310,7 @@ public class GorgonOverlay
 
         if (parent is not null)
         {
-            foreach (Control child in parent.Controls.OfType<Control>().Traverse(c => c.Controls.OfType<Control>()))
+            foreach (Control child in parent.Controls.OfType<Control>().TraverseBreadthFirst(c => c.Controls.OfType<Control>()))
             {
                 child.GotFocus -= Parent_GotFocus;
             }

@@ -27,6 +27,7 @@ using System.Numerics;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.Services;
 using Gorgon.Graphics;
+using Gorgon.Math;
 using Gorgon.Renderers;
 using Gorgon.Renderers.Cameras;
 

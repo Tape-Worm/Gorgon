@@ -74,6 +74,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
+using Gorgon.Math;
 using DX = SharpDX;
 
 namespace Gorgon.Graphics.Core;

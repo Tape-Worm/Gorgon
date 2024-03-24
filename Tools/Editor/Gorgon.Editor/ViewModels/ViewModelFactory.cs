@@ -201,7 +201,7 @@ internal class ViewModelFactory(Editor.EditorSettings settings, ProjectManager p
 
         List<IGorgonVirtualDirectory> subDirs =
         [
-            parentVirtDir, .. parentVirtDir.Directories.Traverse(d => d.Directories)
+            parentVirtDir, .. parentVirtDir.Directories.TraverseBreadthFirst(d => d.Directories)
         ];
 
         for (int i = 0; i < subDirs.Count; ++i)
@@ -316,7 +316,7 @@ internal class ViewModelFactory(Editor.EditorSettings settings, ProjectManager p
         _directoryBuffer.Clear();
         _directoryBuffer[parent.FullPath] = parent;
 
-        foreach (IDirectory dir in parent.Directories.Traverse(d => d.Directories))
+        foreach (IDirectory dir in parent.Directories.TraverseBreadthFirst(d => d.Directories))
         {
             _directoryBuffer[dir.FullPath] = dir;
         }
@@ -367,7 +367,7 @@ internal class ViewModelFactory(Editor.EditorSettings settings, ProjectManager p
         _directoryBuffer.Clear();
         _directoryBuffer[parent.FullPath] = parent;
 
-        foreach (IDirectory dir in parent.Directories.Traverse(d => d.Directories))
+        foreach (IDirectory dir in parent.Directories.TraverseBreadthFirst(d => d.Directories))
         {
             _directoryBuffer[dir.FullPath] = dir;
         }
@@ -432,7 +432,7 @@ internal class ViewModelFactory(Editor.EditorSettings settings, ProjectManager p
 
         // Ensure all children are present so we have the proper parent directory when creating the new directory.
         // For example, if we create A/B/C and A/B already exists, then C's parent should return A/B as it should already exist.
-        foreach (IDirectory child in parent.Directories.Traverse(d => d.Directories))
+        foreach (IDirectory child in parent.Directories.TraverseBreadthFirst(d => d.Directories))
         {
             _directoryBuffer[child.FullPath] = child;
         }
