@@ -23,7 +23,8 @@
 // Created: June 29, 2016 8:13:58 PM
 // 
 
-using Gorgon.Collections.Specialized;
+using System.Collections;
+using Gorgon.Core;
 using Gorgon.Properties;
 
 namespace Gorgon.Configuration;
@@ -32,15 +33,30 @@ namespace Gorgon.Configuration;
 /// Provides a functionality for setting and reading various options from a predefined option bag
 /// </summary>
 public sealed class GorgonOptionBag
-    : GorgonNamedObjectList<IGorgonOption>, IGorgonOptionBag
+    : IGorgonOptionBag
 {
+    // The backing store for the options.
+    private readonly List<IGorgonOption> _options = [];
+
+    /// <inheritdoc/>
+    public int Count => _options.Count;
+
+    /// <summary>
+    /// Property to return an option at a specific index.
+    /// </summary>
+    /// <exception cref="ArgumentException">Thrown when the option name already exists in the bag.</exception>"
+    /// <remarks>
+    /// When passing a <b>null</b> to this property, the option at the specified index will be removed.
+    /// </remarks>
+    public IGorgonOption this[int index]  => _options[index];
+
     /// <summary>
     /// Function to retrieve the value for an option.
     /// </summary>
     /// <typeparam name="T">The type of data for the option.</typeparam>
     /// <param name="optionName">The name of the option.</param>
     /// <returns>The value stored with the option.</returns>
-    public T GetOptionValue<T>(string optionName) => GetItemByName(optionName).GetValue<T>();
+    public T GetOptionValue<T>(string optionName) => this.GetByName(optionName).GetValue<T>();
 
     /// <summary>
     /// Function to assign a value for an option.
@@ -48,15 +64,36 @@ public sealed class GorgonOptionBag
     /// <typeparam name="T">The type of data for the option.</typeparam>
     /// <param name="optionName">The name of the option.</param>
     /// <param name="value">The value to assign to the option.</param>
+    /// <exception cref="KeyNotFoundException">Thrown when the option name is not found in the bag.</exception>"
     public void SetOptionValue<T>(string optionName, T value)
-    {
-        if (!Contains(optionName))
+    {    
+        if (!this.ContainsName(optionName))
         {
             throw new KeyNotFoundException();
         }
 
-        GetItemByName(optionName).SetValue(value);
+        this.GetByName(optionName).SetValue(value);
     }
+
+    /// <inheritdoc/>
+    public int IndexOf(IGorgonOption item) => _options.IndexOf(item);
+
+    /// <inhertidoc/>
+    public bool Contains(IGorgonOption item) 
+    {
+        if (item is null)
+        {
+            return false;
+        }
+
+        return _options.Contains(item);
+    }
+
+    /// <inheritdoc/>
+    public IEnumerator<IGorgonOption> GetEnumerator() => _options.GetEnumerator();
+
+    /// <inheritdoc/>
+    IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)_options).GetEnumerator();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonOptionBag"/> class.
@@ -65,20 +102,19 @@ public sealed class GorgonOptionBag
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="options"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentException">Thrown when the <paramref name="options"/> contains a value that is already in this option bag.</exception>
     public GorgonOptionBag(IEnumerable<IGorgonOption> options)
-        : base(false)
     {
         ArgumentNullException.ThrowIfNull(options);
 
         foreach (IGorgonOption option in options)
         {
             // Don't allow duplicates.
-            if ((Contains(option.Name))
+            if ((this.ContainsName(option.Name))
                 || (Contains(option)))
             {
                 throw new ArgumentException(string.Format(Resources.GOR_ERR_OPTION_ALREADY_EXISTS, option.Name), nameof(options));
             }
 
-            Add(option);
+            _options.Add(option);
         }
     }
 }

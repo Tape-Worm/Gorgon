@@ -31,7 +31,7 @@ namespace Gorgon.Configuration;
 /// Provides a functionality for setting and reading various options from a defined option bag
 /// </summary>
 public interface IGorgonOptionBag
-    : IGorgonNamedObjectReadOnlyList<IGorgonOption>
+    : IReadOnlyList<IGorgonOption>
 {
     /// <summary>
     /// Function to retrieve the value for an option.

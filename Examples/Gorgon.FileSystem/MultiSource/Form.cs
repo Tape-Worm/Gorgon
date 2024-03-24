@@ -266,8 +266,11 @@ public partial class Form
             }
 
             // Enumerate the data.  For the purposed of this example, we will filter out known binary files from our file system.				
-            IOrderedEnumerable<IGorgonVirtualDirectory> directories = directory.Directories.OrderBy(item => item.Name);
-            IEnumerable<IGorgonVirtualFile> files = directory.Files.OrderBy(item => item.Name).Where(item => item.Extension is not ".gorSprite" and not ".gal");
+            IEnumerable<IGorgonVirtualDirectory> directories = directory.Directories.Select(d => d.Value)
+                                                                                    .OrderBy(item => item.Name);
+            IEnumerable<IGorgonVirtualFile> files = directory.Files.Select(f => f.Value)
+                                                                   .Where(item => item.Extension is not ".gorSprite" and not ".gal")
+                                                                   .OrderBy(item => item.Name);                                                                   
 
             // Get directories.
             foreach (IGorgonVirtualDirectory subDirectory in directories)
@@ -293,7 +296,7 @@ public partial class Form
                 }
 
                 // Add a dummy node if there are files or sub directories.
-                if ((subDirectory.Directories.Count > 0) || (subDirectory.Files.Count(item => item.Extension is not ".gorSprite" and not ".gal") > 0))
+                if ((subDirectory.Directories.Count > 0) || (subDirectory.Files.Count(item => item.Value.Extension is not ".gorSprite" and not ".gal") > 0))
                 {
                     directoryNode.Nodes.Add(new TreeNode("This is a dummy node."));
                 }

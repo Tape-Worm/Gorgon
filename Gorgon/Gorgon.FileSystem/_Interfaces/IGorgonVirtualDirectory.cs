@@ -75,7 +75,7 @@ public interface IGorgonVirtualDirectory
     /// <summary>
     /// Property to return the list of any child <see cref="IGorgonVirtualDirectory"/> items under this virtual directory.
     /// </summary>
-    IGorgonNamedObjectReadOnlyDictionary<IGorgonVirtualDirectory> Directories
+    IReadOnlyDictionary<string, IGorgonVirtualDirectory> Directories
     {
         get;
     }
@@ -83,7 +83,7 @@ public interface IGorgonVirtualDirectory
     /// <summary>
     /// Property to return the list of <see cref="IGorgonVirtualFile"/> objects within this directory.
     /// </summary>
-    IGorgonNamedObjectReadOnlyDictionary<IGorgonVirtualFile> Files
+    IReadOnlyDictionary<string, IGorgonVirtualFile> Files
     {
         get;
     }
@@ -136,7 +136,7 @@ public interface IGorgonVirtualDirectory
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="file"/> parameter is <b>null</b>.</exception>
     /// <remarks>
     /// Use this to determine if a <see cref="IGorgonVirtualFile"/> exists under this directory or any of its sub directories. This search includes all sub directories for this and child directories. 
-    /// To determine if a file exists in the immediate directory, use the <see cref="IGorgonNamedObjectReadOnlyDictionary{T}.Contains"/> method.
+    /// To determine if a file exists in the immediate directory, use the <see cref="IReadOnlyDictionary{TKey, TValue}.ContainsKey"/> method.
     /// </remarks>
     bool ContainsFile(IGorgonVirtualFile file);
 
@@ -149,7 +149,7 @@ public interface IGorgonVirtualDirectory
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="fileName"/> parameter is empty.</exception>
     /// <remarks>
     /// Use this to determine if a <see cref="IGorgonVirtualFile"/> exists under this directory or any of its sub directories. This search includes all sub directories for this and child directories. 
-    /// To determine if a file exists in the immediate directory, use the <see cref="IGorgonNamedObjectReadOnlyDictionary{T}.Contains"/> method.
+    /// To determine if a file exists in the immediate directory, use the <see cref="IReadOnlyDictionary{TKey, TValue}.ContainsKey"/> method.
     /// </remarks>
     bool ContainsFile(string fileName);
 

@@ -24,7 +24,7 @@
 // 
 
 using System.Collections;
-using Gorgon.Collections;
+using System.Diagnostics.CodeAnalysis;
 using Gorgon.IO.Properties;
 
 namespace Gorgon.IO;
@@ -36,39 +36,13 @@ namespace Gorgon.IO;
 /// Initializes a new instance of the <see cref="VirtualDirectoryCollection" /> class
 /// </remarks>
 /// <param name="parent">The parent directory that owns this collection.</param>
-internal class VirtualDirectoryCollection(VirtualDirectory parent)
-        : IGorgonNamedObjectReadOnlyDictionary<IGorgonVirtualDirectory>
+internal class VirtualDirectoryCollection(VirtualDirectory parent) 
+    : IReadOnlyDictionary<string, IGorgonVirtualDirectory>
 {
-
     // The backing store for the directories.
     private readonly Dictionary<string, VirtualDirectory> _directories = new(StringComparer.OrdinalIgnoreCase);
     // The parent directory that owns this collection.
     private readonly VirtualDirectory _parent = parent;
-
-    /// <summary>
-    /// Property to return a directory by its name.
-    /// </summary>
-    public VirtualDirectory this[string name]
-    {
-        get
-        {
-            name = name.FormatPathPart();
-
-            return !_directories.TryGetValue(name, out VirtualDirectory directory)
-                ? throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, name))
-                : directory;
-        }
-    }
-
-    /// <summary>
-    /// Property to return an item in the dictionary by its name.
-    /// </summary>
-    IGorgonVirtualDirectory IGorgonNamedObjectReadOnlyDictionary<IGorgonVirtualDirectory>.this[string name] => this[name];
-
-    /// <summary>
-    /// Property to return whether the keys are case sensitive.
-    /// </summary>
-    public bool KeysAreCaseSensitive => false;
 
     /// <summary>
     /// Gets the number of elements in the collection.
@@ -77,6 +51,28 @@ internal class VirtualDirectoryCollection(VirtualDirectory parent)
     /// The number of elements in the collection. 
     /// </returns>
     public int Count => _directories.Count;
+
+    /// <inheritdoc/>
+    IEnumerable<string> IReadOnlyDictionary<string, IGorgonVirtualDirectory>.Keys => _directories.Keys;
+
+    /// <inheritdoc/>
+    IEnumerable<IGorgonVirtualDirectory> IReadOnlyDictionary<string, IGorgonVirtualDirectory>.Values => _directories.Values;
+
+    /// <summary>
+    /// Property to return a directory by its name.
+    /// </summary>
+    IGorgonVirtualDirectory IReadOnlyDictionary<string, IGorgonVirtualDirectory>.this[string key] 
+    {
+        get
+        {
+            // Ensure the key is formatted to remove illegal path characters.
+            key = key.FormatPathPart();
+
+            return !_directories.TryGetValue(key, out VirtualDirectory directory)
+                ? throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, key))
+                : directory;
+        }
+    }
 
     /// <summary>
     /// Adds an item to the <see cref="ICollection{T}" />.
@@ -113,13 +109,7 @@ internal class VirtualDirectoryCollection(VirtualDirectory parent)
             return false;
         }
 
-        if (!_directories.ContainsValue(item))
-        {
-            return false;
-        }
-
-        _directories.Remove(item.Name);
-        return true;
+        return _directories.Remove(item.Name);
     }
 
     /// <summary>
@@ -130,7 +120,7 @@ internal class VirtualDirectoryCollection(VirtualDirectory parent)
     /// <returns>
     ///   <b>true</b> if the directory was found, <b>false</b> if not.
     /// </returns>
-    public bool TryGetValue(string name, out VirtualDirectory value)
+    public bool TryGetValue(string name, [MaybeNullWhen(false)] out VirtualDirectory value)
     {
         value = null;
 
@@ -140,50 +130,22 @@ internal class VirtualDirectoryCollection(VirtualDirectory parent)
     }
 
     /// <summary>
-    /// Returns an enumerator that iterates through the collection.
-    /// </summary>
-    /// <returns>
-    /// A <see cref="IEnumerator{T}" /> that can be used to iterate through the collection.
-    /// </returns>
-    IEnumerator<IGorgonVirtualDirectory> IEnumerable<IGorgonVirtualDirectory>.GetEnumerator()
-    {
-        // ReSharper disable once LoopCanBeConvertedToQuery
-        foreach (KeyValuePair<string, VirtualDirectory> directory in _directories)
-        {
-            yield return directory.Value;
-        }
-    }
-
-    /// <summary>
-    /// Function to return an internal enumerator for manipulation of the directory structure.
-    /// </summary>
-    /// <returns>
-    /// A <see cref="IEnumerator{T}" /> that can be used to iterate through the collection.
-    /// </returns>
-    public IEnumerator<VirtualDirectory> GetEnumerator()
-    {
-        // ReSharper disable once LoopCanBeConvertedToQuery
-        foreach (KeyValuePair<string, VirtualDirectory> directory in _directories)
-        {
-            yield return directory.Value;
-        }
-    }
-
-    /// <summary>
     /// Function to return the concrete virtual directories for for this collection.
     /// </summary>
-    /// <returns>
-    /// The <see cref="IEnumerable{T}"/> for this collection.
-    /// </returns>
-    public IEnumerable<VirtualDirectory> GetVirtualDirectories() => _directories.Select(item => item.Value);
+    /// <returns>The <see cref="IEnumerable{T}"/> for this collection.</returns>
+    public IEnumerable<VirtualDirectory> EnumerateVirtualDirectories() => _directories.Select(item => item.Value);
 
-    /// <summary>
-    /// Returns an enumerator that iterates through a collection.
-    /// </summary>
-    /// <returns>
-    /// An <see cref="IEnumerator" /> object that can be used to iterate through the collection.
-    /// </returns>
+    /// <inhertidoc/>
     IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)_directories.Values).GetEnumerator();
+
+    /// <inheritdoc/>
+    IEnumerator<KeyValuePair<string, IGorgonVirtualDirectory>> IEnumerable<KeyValuePair<string, IGorgonVirtualDirectory>>.GetEnumerator()
+    {
+        foreach (KeyValuePair<string, VirtualDirectory> directory in _directories)
+        {
+            yield return new KeyValuePair<string, IGorgonVirtualDirectory>(directory.Key, directory.Value);
+        }
+    }
 
     /// <summary>
     /// Function to add a new directory to the collection.
@@ -216,14 +178,14 @@ internal class VirtualDirectoryCollection(VirtualDirectory parent)
         foreach (string item in directories)
         {
             // If there's a file with the same name as the directory, then we can't continue.
-            if (directory.Files.Contains(item))
+            if (directory.Files.ContainsKey(item))
             {
                 throw new IOException(string.Format(Resources.GORFS_ERR_FILE_EXISTS, directory.Files[item].FullPath));
             }
 
-            if (directory.Directories.Contains(item))
+            if (directory.Directories.TryGetValue(item, out VirtualDirectory childDirectory))
             {
-                directory = directory.Directories[item];
+                directory = childDirectory;
             }
             else
             {
@@ -246,7 +208,7 @@ internal class VirtualDirectoryCollection(VirtualDirectory parent)
     /// </summary>
     /// <param name="name">Name of the item to find.</param>
     /// <returns><b>true</b>if found, <b>false</b> if not.</returns>
-    public bool Contains(string name)
+    public bool ContainsKey(string name)
     {
         name = name.FormatPathPart();
 
@@ -259,9 +221,8 @@ internal class VirtualDirectoryCollection(VirtualDirectory parent)
     /// <param name="name">The name of the item to look up.</param>
     /// <param name="value">The item, if found, or the default value for the type if not.</param>
     /// <returns><b>true</b> if the item was found, <b>false</b> if not.</returns>
-    bool IGorgonNamedObjectReadOnlyDictionary<IGorgonVirtualDirectory>.TryGetValue(string name, out IGorgonVirtualDirectory value)
+    bool IReadOnlyDictionary<string, IGorgonVirtualDirectory>.TryGetValue(string name, [MaybeNullWhen(false)] out IGorgonVirtualDirectory value)
     {
-
         if (!TryGetValue(name, out VirtualDirectory directory))
         {
             value = null;

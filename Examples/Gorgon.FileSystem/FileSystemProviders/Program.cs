@@ -190,7 +190,7 @@ internal static class Program
                 //
                 // Note that a provider may have multiple preferred extensions.
                 string[] extensionList = (from preferred in _providers[i].PreferredExtensions
-                                          select $"*.{preferred.Extension}").ToArray();
+                                          select $"*.{preferred.Value.Extension}").ToArray();
 
                 if (extensionList.Length > 0)
                 {

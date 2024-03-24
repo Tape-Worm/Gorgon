@@ -24,7 +24,6 @@
 // 
 
 using System.Collections;
-using Gorgon.Collections;
 using Gorgon.Native;
 
 namespace Gorgon.Graphics.Core;
@@ -33,9 +32,8 @@ namespace Gorgon.Graphics.Core;
 /// A list of outputs on a video adapter
 /// </summary>
 public sealed class GorgonVideoAdapterOutputList
-    : IGorgonNamedObjectReadOnlyDictionary<IGorgonVideoOutputInfo>
+    : IReadOnlyDictionary<string, IGorgonVideoOutputInfo>
 {
-
     // The backing store for the list.
     private readonly IReadOnlyDictionary<string, IGorgonVideoOutputInfo> _outputs;
 
@@ -47,6 +45,12 @@ public sealed class GorgonVideoAdapterOutputList
     /// <summary>Gets the number of elements in the collection.</summary>
     /// <returns>The number of elements in the collection. </returns>
     public int Count => _outputs.Count;
+
+    /// <inheritdoc/>
+    IEnumerable<string> IReadOnlyDictionary<string, IGorgonVideoOutputInfo>.Keys => _outputs.Keys;
+
+    /// <inheritdoc/>
+    IEnumerable<IGorgonVideoOutputInfo> IReadOnlyDictionary<string, IGorgonVideoOutputInfo>.Values => _outputs.Values;
 
     /// <summary>
     /// Property to return an item in the dictionary by its name.
@@ -68,7 +72,7 @@ public sealed class GorgonVideoAdapterOutputList
 
         nint monitor = Win32API.MonitorFromWindow(windowHandle, MonitorFlags.MONITOR_DEFAULTTONEAREST);
 
-        return monitor == IntPtr.Zero ? null : this.FirstOrDefault(item => item.MonitorHandle == monitor);
+        return monitor == IntPtr.Zero ? null : _outputs.FirstOrDefault(item => item.Value.MonitorHandle == monitor).Value;
     }
 
     /// <summary>
@@ -76,7 +80,7 @@ public sealed class GorgonVideoAdapterOutputList
     /// </summary>
     /// <param name="name">Name of the item to find.</param>
     /// <returns><b>true</b>if found, <b>false</b> if not.</returns>
-    public bool Contains(string name) => _outputs.ContainsKey(name);
+    public bool ContainsKey(string name) => _outputs.ContainsKey(name);
 
     /// <summary>
     /// Function to return an item from the collection.
@@ -93,6 +97,15 @@ public sealed class GorgonVideoAdapterOutputList
     /// <summary>Returns an enumerator that iterates through a collection.</summary>
     /// <returns>An <see cref="IEnumerator" /> object that can be used to iterate through the collection.</returns>
     IEnumerator IEnumerable.GetEnumerator() => _outputs.Select(output => output.Value).GetEnumerator();
+
+    /// <inheritdocs/>
+    IEnumerator<KeyValuePair<string, IGorgonVideoOutputInfo>> IEnumerable<KeyValuePair<string, IGorgonVideoOutputInfo>>.GetEnumerator()
+    {
+        foreach (KeyValuePair<string, IGorgonVideoOutputInfo> output in _outputs)
+        {
+            yield return output;
+        }
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonVideoAdapterOutputList"/> class.

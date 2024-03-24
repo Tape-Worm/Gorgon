@@ -48,44 +48,6 @@ public static class GorgonIEnumerableExtensions
     /// Function to flatten a tree of objects into a flat traversable list using a depth first approach.
     /// </summary>
     /// <typeparam name="T">The type of value in the tree.</typeparam>
-    /// <param name="root">The root value to evaluate.</param>
-    /// <param name="getChildren">The method to retrieve the next level of children.</param>
-    /// <returns>An enumerable containing the flattened list of objects.</returns>
-    public static IEnumerable<T> TraverseDepthFirst<T>(this T root, Func<T, IEnumerable<T>> getChildren)
-    {
-        if (root is null)
-        {
-            yield break;
-        }
-
-        Stack<T> queue = new();
-
-        queue.Push(root);
-
-        while (queue.Count > 0)
-        {
-            T node = queue.Pop();
-
-            yield return node;
-
-            IEnumerable<T> subChildren = getChildren?.Invoke(node);
-
-            if (subChildren is null)
-            {
-                continue;
-            }
-
-            foreach (T child in subChildren.Reverse())
-            {
-                queue.Push(child);
-            }
-        }
-    }
-
-    /// <summary>
-    /// Function to flatten a tree of objects into a flat traversable list using a depth first approach.
-    /// </summary>
-    /// <typeparam name="T">The type of value in the tree.</typeparam>
     /// <param name="children">The list of objects to evaluate.</param>
     /// <param name="getChildren">The method to retrieve the next level of children.</param>
     /// <returns>An enumerable containing the flattened list of objects.</returns>
@@ -116,43 +78,6 @@ public static class GorgonIEnumerableExtensions
             foreach (T child in subChildren.Reverse())
             {
                 queue.Push(child);
-            }
-        }
-    }
-
-    /// <summary>
-    /// Function to flatten a tree of objects into a flat traversable list using a breadth first approach.
-    /// </summary>
-    /// <typeparam name="T">The type of value in the tree.</typeparam>
-    /// <param name="root">The root value to evaluate.</param>
-    /// <param name="getChildren">The method to retrieve the next level of children.</param>
-    /// <returns>An enumerable containing the flattened list of objects.</returns>
-    public static IEnumerable<T> TraverseBreadthFirst<T>(this T root, Func<T, IEnumerable<T>> getChildren)
-    {
-        if (root is null)
-        {
-            yield break;
-        }
-
-        Queue<T> queue = new();
-        queue.Enqueue(root);
-
-        while (queue.Count > 0)
-        {
-            T node = queue.Dequeue();
-
-            yield return node;
-
-            IEnumerable<T> subChildren = getChildren?.Invoke(node);
-
-            if (subChildren is null)
-            {
-                continue;
-            }
-
-            foreach (T child in subChildren)
-            {
-                queue.Enqueue(child);
             }
         }
     }

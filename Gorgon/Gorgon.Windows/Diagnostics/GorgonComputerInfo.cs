@@ -24,7 +24,6 @@
 // 
 
 using System.Collections;
-using Gorgon.Collections.Specialized;
 using Gorgon.Native;
 
 namespace Gorgon.Diagnostics;
@@ -35,13 +34,12 @@ namespace Gorgon.Diagnostics;
 public class GorgonComputerInfo
     : IGorgonComputerInfo
 {
-
     // List of machine specific environment variables.
-    private readonly GorgonConcurrentDictionary<string, string> _machineVariables;
+    private readonly Dictionary<string, string> _machineVariables;
     // List of user specific environment variables.
-    private readonly GorgonConcurrentDictionary<string, string> _userVariables;
+    private readonly Dictionary<string, string> _userVariables;
     // List of process specific environment variables.
-    private readonly GorgonConcurrentDictionary<string, string> _processVariables;
+    private readonly Dictionary<string, string> _processVariables;
 
     /// <summary>
     /// Property to return the total physical RAM available in bytes.
@@ -159,9 +157,9 @@ public class GorgonComputerInfo
     /// </summary>
     public GorgonComputerInfo()
     {
-        _machineVariables = new GorgonConcurrentDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-        _userVariables = new GorgonConcurrentDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-        _processVariables = new GorgonConcurrentDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        _machineVariables = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        _userVariables = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        _processVariables = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
         RefreshEnvironmentVariables();
     }

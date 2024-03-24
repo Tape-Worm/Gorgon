@@ -1,5 +1,4 @@
-﻿
-// 
+﻿// 
 // Gorgon
 // Copyright (C) 2013 Michael Winsor
 // 
@@ -23,7 +22,8 @@
 // Created: Sunday, September 22, 2013 8:43:37 PM
 // 
 
-using Gorgon.Collections;
+using System.Collections;
+using System.Diagnostics.CodeAnalysis;
 using Gorgon.Core;
 using Gorgon.Properties;
 
@@ -33,8 +33,29 @@ namespace Gorgon.IO;
 /// A collection of file extensions
 /// </summary>
 public class GorgonFileExtensionCollection
-    : GorgonBaseNamedObjectDictionary<GorgonFileExtension>
+    : IDictionary<string, GorgonFileExtension>, IReadOnlyDictionary<string, GorgonFileExtension>
 {
+    // The list of extensions.
+    private readonly Dictionary<string, GorgonFileExtension> _extensions = new(StringComparer.OrdinalIgnoreCase);
+
+    /// <inheritdoc/>
+    ICollection<string> IDictionary<string, GorgonFileExtension>.Keys => _extensions.Keys;
+
+    /// <inheritdoc/>
+    ICollection<GorgonFileExtension> IDictionary<string, GorgonFileExtension>.Values => _extensions.Values;
+
+    /// <inheritdoc/>
+    public int Count => throw new NotImplementedException();
+
+    /// <inheritdoc/>
+    bool ICollection<KeyValuePair<string, GorgonFileExtension>>.IsReadOnly => false;
+
+    /// <inheritdoc/>
+    IEnumerable<string> IReadOnlyDictionary<string, GorgonFileExtension>.Keys => _extensions.Keys;
+
+    /// <inheritdoc/>
+    IEnumerable<GorgonFileExtension> IReadOnlyDictionary<string, GorgonFileExtension>.Values => _extensions.Values;
+
     /// <summary>
     /// Property to set or return an extension in the collection.
     /// </summary>
@@ -47,9 +68,7 @@ public class GorgonFileExtensionCollection
                 extension = extension[1..];
             }
 
-            return !Contains(extension)
-                ? throw new KeyNotFoundException(string.Format(Resources.GOR_ERR_FILE_EXTENSION_NOT_FOUND, extension))
-                : Items[extension];
+            return _extensions[extension];
         }
         set
         {
@@ -58,13 +77,7 @@ public class GorgonFileExtensionCollection
                 extension = extension[1..];
             }
 
-            if (!Contains(extension))
-            {
-                Add(value);
-                return;
-            }
-
-            UpdateItem(extension, value);
+            _extensions[extension] = value;
         }
     }
 
@@ -79,12 +92,12 @@ public class GorgonFileExtensionCollection
             extension = new GorgonFileExtension(string.Empty, extension.Description);
         }
 
-        if (Contains(extension))
+        if (ContainsKey(extension.Extension))
         {
             throw new ArgumentException(string.Format(Resources.GOR_ERR_FILE_EXTENSION_EXISTS, extension.Extension));
         }
 
-        Items.Add(extension.Extension, extension);
+        _extensions[extension.Extension] = extension;
     }
 
     /// <summary>
@@ -103,12 +116,12 @@ public class GorgonFileExtensionCollection
             extension = extension[1..];
         }
 
-        if (!Contains(extension))
+        if (!ContainsKey(extension))
         {
             throw new KeyNotFoundException(string.Format(Resources.GOR_ERR_FILE_EXTENSION_NOT_FOUND, extension));
         }
 
-        Items.Remove(extension);
+        _extensions.Remove(extension);
     }
 
     /// <summary>
@@ -118,24 +131,71 @@ public class GorgonFileExtensionCollection
     /// <exception cref="KeyNotFoundException">Thrown when the <paramref name="extension"/> could not be found in the collection.</exception>
     public void Remove(GorgonFileExtension extension)
     {
-        if (!Contains(extension))
+        if (!ContainsKey(extension.Extension))
         {
             throw new KeyNotFoundException(string.Format(Resources.GOR_ERR_FILE_EXTENSION_NOT_FOUND, extension));
         }
 
-        RemoveItem(extension);
+        _extensions.Remove(extension.Extension);
     }
 
     /// <summary>
     /// Function to clear all items from the collection.
     /// </summary>
-    public void Clear() => Items.Clear();
+    public void Clear() => _extensions.Clear();
+
+    /// <inheritdoc/>
+    void IDictionary<string, GorgonFileExtension>.Add(string key, GorgonFileExtension value) => Add(value);
+
+    /// <inheritdoc/>
+    public bool ContainsKey(string key) => _extensions.ContainsKey(key);
+
+    /// <inheritdoc/>
+    bool IDictionary<string, GorgonFileExtension>.Remove(string key)
+    {
+        if (!ContainsKey(key))
+        {
+            return false;
+        }
+
+        Remove(key);
+        return true;
+    }
+
+    /// <inheritdoc/>
+    public bool TryGetValue(string key, [MaybeNullWhen(false)] out GorgonFileExtension value) => _extensions.TryGetValue(key, out value);
+
+    /// <inheritdoc/>
+    void ICollection<KeyValuePair<string, GorgonFileExtension>>.Add(KeyValuePair<string, GorgonFileExtension> item) => Add(item.Value);
+
+    /// <inheritdoc/>
+    bool ICollection<KeyValuePair<string, GorgonFileExtension>>.Contains(KeyValuePair<string, GorgonFileExtension> item) => ContainsKey(item.Value.Extension);
+
+    /// <inheritdoc/>
+    void ICollection<KeyValuePair<string, GorgonFileExtension>>.CopyTo(KeyValuePair<string, GorgonFileExtension>[] array, int arrayIndex) => ((ICollection<KeyValuePair<string, GorgonFileExtension>>)_extensions).CopyTo(array, arrayIndex);
+
+    /// <inheritdoc/>
+    bool ICollection<KeyValuePair<string, GorgonFileExtension>>.Remove(KeyValuePair<string, GorgonFileExtension> item)
+    {
+        if (!ContainsKey(item.Value.Extension))
+        {
+            return false;
+        }
+
+        Remove(item.Value.Extension);
+        return true;
+    }
+
+    /// <inheritdoc/>
+    public IEnumerator<KeyValuePair<string, GorgonFileExtension>> GetEnumerator() => _extensions.GetEnumerator();
+
+    /// <inheritdoc/>
+    IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)_extensions).GetEnumerator();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonFileExtensionCollection"/> class.
     /// </summary>
     public GorgonFileExtensionCollection()
-        : base(false)
     {
     }
 }

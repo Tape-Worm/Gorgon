@@ -201,7 +201,8 @@ internal class ViewModelFactory(Editor.EditorSettings settings, ProjectManager p
 
         List<IGorgonVirtualDirectory> subDirs =
         [
-            parentVirtDir, .. parentVirtDir.Directories.TraverseBreadthFirst(d => d.Directories)
+            parentVirtDir, .. parentVirtDir.Directories.TraverseBreadthFirst(d => d.Value.Directories)
+                                                       .Select(d => d.Value)
         ];
 
         for (int i = 0; i < subDirs.Count; ++i)
@@ -245,7 +246,8 @@ internal class ViewModelFactory(Editor.EditorSettings settings, ProjectManager p
             }
 
             // Add file view models.
-            foreach (IGorgonVirtualFile file in subDir.Files.OrderBy(item => item.Name))
+            foreach (IGorgonVirtualFile file in subDir.Files.OrderBy(item => item.Value.Name)
+                                                            .Select(f => f.Value))
             {
                 project.ProjectItems.TryGetValue(file.FullPath, out ProjectItemMetadata metaData);
 

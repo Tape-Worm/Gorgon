@@ -24,7 +24,7 @@
 // 
 
 using System.Collections;
-using Gorgon.Collections;
+using System.Diagnostics.CodeAnalysis;
 using Gorgon.IO.Properties;
 using Gorgon.IO.Providers;
 
@@ -34,23 +34,12 @@ namespace Gorgon.IO;
 /// A collection of file entries available from the file system
 /// </summary>
 internal class VirtualFileCollection
-    : IGorgonNamedObjectReadOnlyDictionary<IGorgonVirtualFile>
+    : IReadOnlyDictionary<string, IGorgonVirtualFile>
 {
-
     // Parent directory for this file system entry.
     private readonly VirtualDirectory _parent;
     // The list of file entries.
     private readonly Dictionary<string, VirtualFile> _files = new(StringComparer.OrdinalIgnoreCase);
-
-    /// <summary>
-    /// Property to return whether the keys are case sensitive.
-    /// </summary>
-    public bool KeysAreCaseSensitive => false;
-
-    /// <summary>
-    /// Property to return a file system file entry by name.
-    /// </summary>
-    IGorgonVirtualFile IGorgonNamedObjectReadOnlyDictionary<IGorgonVirtualFile>.this[string fileName] => this[fileName];
 
     /// <summary>
     /// Property to return a file system file entry by name.
@@ -87,6 +76,17 @@ internal class VirtualFileCollection
     /// </returns>
     public int Count => _files.Count;
 
+    /// <inheritdoc/>
+    IEnumerable<string> IReadOnlyDictionary<string, IGorgonVirtualFile>.Keys => _files.Keys;
+
+    /// <inheritdoc/>
+    IEnumerable<IGorgonVirtualFile> IReadOnlyDictionary<string, IGorgonVirtualFile>.Values => _files.Values;
+
+    /// <summary>
+    /// Property to return a file system file entry by name.
+    /// </summary>
+    IGorgonVirtualFile IReadOnlyDictionary<string, IGorgonVirtualFile>.this[string key] => this[key];
+
     /// <summary>
     /// Function to return whether a file entry with the specified name exists in this collection.
     /// </summary>
@@ -94,7 +94,7 @@ internal class VirtualFileCollection
     /// <returns>
     ///   <b>true</b>if found, <b>false</b> if not.
     /// </returns>
-    public bool Contains(string name)
+    public bool ContainsKey(string name)
     {
         name = name.FormatFileName();
 
@@ -107,10 +107,9 @@ internal class VirtualFileCollection
     /// <param name="name">The name of the item to look up.</param>
     /// <param name="value">The item, if found, or the default value for the type if not.</param>
     /// <returns><b>true</b> if the item was found, <b>false</b> if not.</returns>
-    bool IGorgonNamedObjectReadOnlyDictionary<IGorgonVirtualFile>.TryGetValue(string name, out IGorgonVirtualFile value)
+    bool IReadOnlyDictionary<string, IGorgonVirtualFile>.TryGetValue(string name, [MaybeNullWhen(false)] out IGorgonVirtualFile value)
     {
-
-        if (!TryGetValue(name, out VirtualFile file))
+        if (!TryGetVirtualDirectory(name, out VirtualFile file))
         {
             value = null;
             return false;
@@ -121,14 +120,12 @@ internal class VirtualFileCollection
     }
 
     /// <summary>
-    /// Function to return a file entry from the collection.
+    /// Function to return a concrete file object from the collection.
     /// </summary>
     /// <param name="name">The name of the file entry to look up.</param>
     /// <param name="value">The file entry, if found, or <b>null</b> if not.</param>
-    /// <returns>
-    ///   <b>true</b> if the file was found, <b>false</b> if not.
-    /// </returns>
-    public bool TryGetValue(string name, out VirtualFile value)
+    /// <returns><b>true</b> if the file was found, <b>false</b> if not.</returns>
+    public bool TryGetVirtualDirectory(string name, [MaybeNullWhen(false)] out VirtualFile value)
     {
         value = null;
 
@@ -177,30 +174,14 @@ internal class VirtualFileCollection
             return false;
         }
 
-        if (!_files.TryGetValue(item.Name, out VirtualFile _))
-        {
-            return false;
-        }
-
-        _files.Remove(item.Name);
-        return true;
+        return _files.Remove(item.Name);
     }
 
     /// <summary>
     /// Function to return the concrete file types for this collection.
     /// </summary>
-    /// <returns>
-    /// The <see cref="IEnumerable{T}"/> for this collection.
-    /// </returns>
-    public IEnumerable<VirtualFile> GetVirtualFiles() => _files.Select(item => item.Value);
-
-    /// <summary>
-    /// Returns an enumerator that iterates through the collection.
-    /// </summary>
-    /// <returns>
-    /// A <see cref="IEnumerator{T}" /> that can be used to iterate through the collection.
-    /// </returns>
-    public IEnumerator<IGorgonVirtualFile> GetEnumerator() => GetVirtualFiles().GetEnumerator();
+    /// <returns>The <see cref="IEnumerable{T}"/> for this collection.</returns>
+    public IEnumerable<VirtualFile> EnumerateVirtualFiles() => _files.Select(item => item.Value);
 
     /// <summary>
     /// Returns an enumerator that iterates through a collection.
@@ -210,10 +191,18 @@ internal class VirtualFileCollection
     /// </returns>
     IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)_files.Values).GetEnumerator();
 
+    /// <inheritdoc/>
+    IEnumerator<KeyValuePair<string, IGorgonVirtualFile>> IEnumerable<KeyValuePair<string, IGorgonVirtualFile>>.GetEnumerator()
+    {
+        foreach (KeyValuePair<string, VirtualFile> file in _files)
+        {
+            yield return new KeyValuePair<string, IGorgonVirtualFile>(file.Key, file.Value);
+        }
+    }
+
     /// <summary>
     /// Initializes a new instance of the <see cref="VirtualFileCollection"/> class.
     /// </summary>
     /// <param name="parent">The parent directory that owns this collection.</param>
     internal VirtualFileCollection(VirtualDirectory parent) => _parent = parent;
-
 }

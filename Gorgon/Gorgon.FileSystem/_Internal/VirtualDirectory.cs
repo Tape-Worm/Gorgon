@@ -57,12 +57,7 @@ internal class VirtualDirectory
     /// <summary>
     /// Property to return the <see cref="IGorgonFileSystem"/> that contains this directory.
     /// </summary>
-    IGorgonFileSystem IGorgonVirtualDirectory.FileSystem => FileSystem;
-
-    /// <summary>
-    /// Property to return the <see cref="IGorgonFileSystem"/> that contains this directory.
-    /// </summary>
-    public GorgonFileSystem FileSystem
+    public IGorgonFileSystem FileSystem
     {
         get;
     }
@@ -82,7 +77,7 @@ internal class VirtualDirectory
     /// <summary>
     /// Property to return the list of any child <see cref="IGorgonVirtualDirectory"/> items under this virtual directory.
     /// </summary>
-    IGorgonNamedObjectReadOnlyDictionary<IGorgonVirtualDirectory> IGorgonVirtualDirectory.Directories => Directories;
+    IReadOnlyDictionary<string, IGorgonVirtualDirectory> IGorgonVirtualDirectory.Directories => Directories;
 
     /// <summary>
     /// Property to return the list of any child <see cref="IGorgonVirtualDirectory"/> items under this virtual directory.
@@ -95,7 +90,7 @@ internal class VirtualDirectory
     /// <summary>
     /// Property to return the list of <see cref="IGorgonVirtualFile"/> objects within this directory.
     /// </summary>
-    IGorgonNamedObjectReadOnlyDictionary<IGorgonVirtualFile> IGorgonVirtualDirectory.Files => Files;
+    IReadOnlyDictionary<string, IGorgonVirtualFile> IGorgonVirtualDirectory.Files => Files;
 
     /// <summary>
     /// Property to return the list of <see cref="IGorgonVirtualFile"/> objects within this directory.
@@ -112,7 +107,7 @@ internal class VirtualDirectory
     /// If this value is <b>null</b>, then this will be the root directory for the file system.
     /// </remarks>
     IGorgonVirtualDirectory IGorgonVirtualDirectory.Parent => Parent;
-
+    
     /// <summary>
     /// Property to return the parent of this directory.
     /// </summary>
@@ -123,7 +118,7 @@ internal class VirtualDirectory
     {
         get;
     }
-
+    
     /// <summary>
     /// Property to return the full path to the directory.
     /// </summary>
@@ -181,7 +176,7 @@ internal class VirtualDirectory
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="file"/> parameter is <b>null</b>.</exception>
     /// <remarks>
     /// Use this to determine if a <see cref="IGorgonVirtualFile"/> exists under this directory or any of its sub directories. This search includes all sub directories for this and child directories. 
-    /// To determine if a file exists in the immediate directory, use the <see cref="IGorgonNamedObjectReadOnlyDictionary{T}.Contains"/> method.
+    /// To determine if a file exists in the immediate directory, use the <see cref="IReadOnlyDictionary{TKey, TValue}.ContainsKey"/> method.
     /// </remarks>
     public bool ContainsFile(IGorgonVirtualFile file) => file is null ? throw new ArgumentNullException(nameof(file)) : ContainsFile(file.Name);
 
@@ -194,7 +189,7 @@ internal class VirtualDirectory
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="fileName"/> parameter is empty.</exception>
     /// <remarks>
     /// Use this to determine if a <see cref="IGorgonVirtualFile"/> exists under this directory or any of its sub directories. This search includes all sub directories for this and child directories. 
-    /// To determine if a file exists in the immediate directory, use the <see cref="IGorgonNamedObjectReadOnlyDictionary{T}.Contains"/> method.
+    /// To determine if a file exists in the immediate directory, use the <see cref="IReadOnlyDictionary{TKey, TValue}.ContainsKey"/> method.
     /// </remarks>
     public bool ContainsFile(string fileName)
     {
@@ -208,14 +203,14 @@ internal class VirtualDirectory
             throw new ArgumentEmptyException(nameof(fileName));
         }
 
-        if (Files.Contains(fileName))
+        if (Files.ContainsKey(fileName))
         {
             return true;
         }
 
         IEnumerable<VirtualDirectory> directories = GorgonFileSystem.FlattenDirectoryHierarchy(this, "*");
 
-        return directories.Any(item => item.Files.Contains(fileName));
+        return directories.Any(item => item.Files.ContainsKey(fileName));
     }
 
     /// <summary>
@@ -225,7 +220,7 @@ internal class VirtualDirectory
     /// <param name="fileSystem">The file system that contains the directory.</param>
     /// <param name="parentDirectory">The parent of this directory.</param>
     /// <param name="name">The name of the directory.</param>
-    public VirtualDirectory(GorgonFileSystemMountPoint mountPoint, GorgonFileSystem fileSystem, VirtualDirectory parentDirectory, string name)
+    public VirtualDirectory(GorgonFileSystemMountPoint mountPoint, IGorgonFileSystem fileSystem, VirtualDirectory parentDirectory, string name)
     {
         MountPoint = mountPoint;
         FileSystem = fileSystem;

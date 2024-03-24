@@ -267,7 +267,7 @@ public class GorgonFileSystemWriter
     /// <returns>The updated file name.</returns>
     private string GetNewName(IGorgonVirtualDirectory dir, string fileName)
     {
-        if (!dir.Files.Contains(fileName))
+        if (!dir.Files.ContainsKey(fileName))
         {
             return fileName;
         }
@@ -277,7 +277,7 @@ public class GorgonFileSystemWriter
         string ext = Path.GetExtension(fileName);
         int counter = 1;
 
-        while (dir.Files.Contains(newPath.ToString()))
+        while (dir.Files.ContainsKey(newPath.ToString()))
         {
             newPath.Length = 0;
             newPath.Append(file);
@@ -678,8 +678,10 @@ public class GorgonFileSystemWriter
         IGorgonVirtualDirectory directory = FileSystem.GetDirectory(path) ?? throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, path));
 
         // Build up a list of directories to delete.
-        // We'll sort these by full path length since it is impossible to have a child directory with a longer name than its parent.
-        List<IGorgonVirtualDirectory> directories = [.. directory.Directories.TraverseBreadthFirst(d => d.Directories).OrderByDescending(d => d.FullPath.Length)];
+        // We'll sort these by full path length since it is impossible to have a child directory with a longer full path name than its parent.
+        List<IGorgonVirtualDirectory> directories = [.. directory.Directories.Select(d => d.Value)
+                                                                             .TraverseBreadthFirst(d => d.Directories.Select(item => item.Value))
+                                                                             .OrderByDescending(d => d.FullPath.Length)];
 
         // If we've deleted a sub directory (i.e. not the root), then include it in the list as well.
         directories.Add(directory);
@@ -723,7 +725,7 @@ public class GorgonFileSystemWriter
                 return;
             }
 
-            IGorgonVirtualFile[] files = [.. dir.Files];
+            IGorgonVirtualFile[] files = [.. dir.Files.Select(item => item.Value)];
             foreach (IGorgonVirtualFile file in files)
             {
                 if (cancelToken.Value.IsCancellationRequested)
@@ -950,7 +952,7 @@ public class GorgonFileSystemWriter
 
         IGorgonVirtualFile file = FileSystem.GetFile(path) ?? throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, path));
 
-        if ((file.Directory.Directories.Contains(newName)) || (file.Directory.Files.Contains(newName)))
+        if ((file.Directory.Directories.ContainsKey(newName)) || (file.Directory.Files.ContainsKey(newName)))
         {
             throw new IOException(string.Format(Resources.GORFS_ERR_FILE_EXISTS, newName));
         }
@@ -1024,7 +1026,7 @@ public class GorgonFileSystemWriter
 
         IGorgonVirtualDirectory directory = FileSystem.GetDirectory(path) ?? throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, path));
 
-        if ((directory.Directories.Contains(newName)) || (directory.Files.Contains(newName)))
+        if ((directory.Directories.ContainsKey(newName)) || (directory.Files.ContainsKey(newName)))
         {
             throw new IOException(string.Format(Resources.GORFS_ERR_DIRECTORY_EXISTS, newName));
         }
@@ -1181,10 +1183,11 @@ public class GorgonFileSystemWriter
 
             List<IGorgonVirtualDirectory> dirsToCopy =
             [
-                srcDirectory, .. srcDirectory.Directories.TraverseBreadthFirst(d => d.Directories)
+                srcDirectory, .. srcDirectory.Directories.Select(d => d.Value)
+                                                         .TraverseBreadthFirst(d => d.Directories.Select(d => d.Value))
             ];
             Dictionary<IGorgonVirtualDirectory, IEnumerable<IGorgonVirtualFile>> filesToCopy = dirsToCopy.SelectMany(f => f.Files)
-                                        .GroupBy(f => f.Directory)
+                                        .GroupBy(f => f.Value.Directory)
                                         .ToDictionary(d => d.Key, f => (IEnumerable<IGorgonVirtualFile>)f);
 
             for (int i = 0; i < dirsToCopy.Count; ++i)
@@ -1225,8 +1228,8 @@ public class GorgonFileSystemWriter
 
                     string fileName = srcFile.Name;
                     string destFilePath = destDirPath + fileName;
-                    bool fileExists = destDir.Files.Contains(fileName);
-                    bool directoryExists = destDir.Directories.Contains(fileName);
+                    bool fileExists = destDir.Files.ContainsKey(fileName);
+                    bool directoryExists = destDir.Directories.ContainsKey(fileName);
 
                     if ((conflictRes != FileConflictResolution.OverwriteAll) && (conflictCallback is not null)
                             && ((fileExists) || (directoryExists)))
@@ -1392,10 +1395,11 @@ public class GorgonFileSystemWriter
 
             List<IGorgonVirtualDirectory> dirsToCopy =
             [
-                srcDirectory, .. srcDirectory.Directories.TraverseBreadthFirst(d => d.Directories)
+                srcDirectory, .. srcDirectory.Directories.Select(d => d.Value)
+                                                         .TraverseBreadthFirst(d => d.Directories.Select(d => d.Value))
             ];
             Dictionary<IGorgonVirtualDirectory, IEnumerable<IGorgonVirtualFile>> filesToCopy = dirsToCopy.SelectMany(f => f.Files)
-                                        .GroupBy(f => f.Directory)
+                                        .GroupBy(f => f.Value.Directory)
                                         .ToDictionary(d => d.Key, f => (IEnumerable<IGorgonVirtualFile>)f);
 
             for (int i = 0; i < dirsToCopy.Count; ++i)
@@ -1436,8 +1440,8 @@ public class GorgonFileSystemWriter
 
                     string fileName = file.Name;
                     string destFilePath = destDirPath + fileName;
-                    bool fileExists = destDir.Files.Contains(file.Name);
-                    bool directoryExists = destDir.Directories.Contains(file.Name);
+                    bool fileExists = destDir.Files.ContainsKey(file.Name);
+                    bool directoryExists = destDir.Directories.ContainsKey(file.Name);
 
                     if ((conflictRes != FileConflictResolution.OverwriteAll) && (conflictCallback is not null)
                         && ((fileExists) || (directoryExists)))
@@ -1589,8 +1593,8 @@ public class GorgonFileSystemWriter
 
                 string fileName = srcFile.Name;
                 string destFilePath = destDirectory.FullPath + fileName;
-                bool fileExists = destDirectory.Files.Contains(fileName);
-                bool directoryExists = destDirectory.Directories.Contains(fileName);
+                bool fileExists = destDirectory.Files.ContainsKey(fileName);
+                bool directoryExists = destDirectory.Directories.ContainsKey(fileName);
 
                 if ((conflictRes != FileConflictResolution.OverwriteAll) && (conflictCallback is not null)
                         && ((fileExists) || (directoryExists)))
@@ -1738,8 +1742,8 @@ public class GorgonFileSystemWriter
 
                 string fileName = file.Name;
                 string destFilePath = destDirectory.FullPath + fileName;
-                bool fileExists = destDirectory.Files.Contains(file.Name);
-                bool directoryExists = destDirectory.Directories.Contains(file.Name);
+                bool fileExists = destDirectory.Files.ContainsKey(file.Name);
+                bool directoryExists = destDirectory.Directories.ContainsKey(file.Name);
 
                 if ((conflictRes != FileConflictResolution.OverwriteAll) && (conflictCallback is not null)
                     && ((fileExists) || (directoryExists)))
@@ -1980,10 +1984,11 @@ public class GorgonFileSystemWriter
 
             List<IGorgonVirtualDirectory> dirsToCopy =
             [
-                srcDirectory, .. srcDirectory.Directories.TraverseBreadthFirst(d => d.Directories)
+                srcDirectory, .. srcDirectory.Directories.Select(d => d.Value)
+                                                         .TraverseBreadthFirst(d => d.Directories.Select(d => d.Value))
             ];
             Dictionary<IGorgonVirtualDirectory, IEnumerable<IGorgonVirtualFile>> filesToCopy = dirsToCopy.SelectMany(f => f.Files)
-                                        .GroupBy(f => f.Directory)
+                                        .GroupBy(f => f.Value.Directory)
                                         .ToDictionary(d => d.Key, f => (IEnumerable<IGorgonVirtualFile>)f);
 
             for (int i = 0; i < dirsToCopy.Count; ++i)
@@ -2194,8 +2199,8 @@ public class GorgonFileSystemWriter
 
                     string fileName = Path.GetFileName(beforeArgs.PhysicalFilePath);
                     string destFilePath = destDir.FullPath + fileName;
-                    bool fileExists = destDir.Files.Contains(fileName);
-                    bool directoryExists = destDir.Directories.Contains(fileName);
+                    bool fileExists = destDir.Files.ContainsKey(fileName);
+                    bool directoryExists = destDir.Directories.ContainsKey(fileName);
 
                     if ((conflictRes != FileConflictResolution.OverwriteAll) && (conflictCallback is not null)
                         && ((fileExists) || (directoryExists)))

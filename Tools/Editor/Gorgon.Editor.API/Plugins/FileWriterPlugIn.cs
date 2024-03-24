@@ -116,7 +116,7 @@ public abstract class FileWriterPlugIn
     /// <remarks>
     /// Plug in developers must provide common file extensions supported by the plug in type, or else this plug in cannot be used.
     /// </remarks>
-    public IGorgonNamedObjectReadOnlyDictionary<GorgonFileExtension> FileExtensions
+    public IReadOnlyDictionary<string, GorgonFileExtension> FileExtensions
     {
         get;
         private set;

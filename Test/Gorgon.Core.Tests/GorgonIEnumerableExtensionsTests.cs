@@ -68,27 +68,6 @@ public class GorgonIEnumerableExtensionsTests
     };
 
     [TestMethod]
-    public void TraverseDepthFirst_Root()
-    {
-        List<string> expected =
-        [
-            "Root", 
-            "Child 1", 
-                "GrandChild 1", 
-                "GrandChild 2", 
-                    "Great GrandChild 1", 
-                    "Great GrandChild 2", 
-                "GrandChild 3", 
-            "Child 2"
-        ];
-        List<string> actual = new();
-
-        actual.AddRange(_root.TraverseDepthFirst(x => x.Children).Select(x => x.Name));
-
-        Assert.IsTrue(expected.SequenceEqual(actual));
-    }
-
-    [TestMethod]
     public void TraverseDepthFirst_IEnumerable()
     {
         List<string> expected =
@@ -104,27 +83,6 @@ public class GorgonIEnumerableExtensionsTests
         List<string> actual = new();
 
         actual.AddRange(_root.Children.TraverseDepthFirst(x => x.Children).Select(x => x.Name));
-
-        Assert.IsTrue(expected.SequenceEqual(actual));
-    }
-
-    [TestMethod]
-    public void TraverseBreadthFirst_Root()
-    {
-        List<string> expected =
-        [
-            "Root",
-            "Child 1",
-            "Child 2",
-            "GrandChild 1",
-            "GrandChild 2",
-            "GrandChild 3",
-            "Great GrandChild 1",
-            "Great GrandChild 2",
-        ];
-        List<string> actual = new();
-
-        actual.AddRange(_root.TraverseBreadthFirst(x => x.Children).Select(x => x.Name));
 
         Assert.IsTrue(expected.SequenceEqual(actual));
     }

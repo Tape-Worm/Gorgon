@@ -368,19 +368,19 @@ class WicUtilities
     /// <param name="options">The list of options to apply.</param>
     private static void SetFrameOptions(BitmapFrameEncode frame, IGorgonWicEncodingOptions options)
     {
-        if (options.Options.Contains(EncOptInterlacing))
+        if (options.Options.ContainsName(EncOptInterlacing))
         {
-            frame.Options.InterlaceOption = options.Options[EncOptInterlacing].GetValue<bool>();
+            frame.Options.InterlaceOption = options.Options.GetOptionValue<bool>(EncOptInterlacing);
         }
 
-        if (options.Options.Contains(EncOptFilter))
+        if (options.Options.ContainsName(EncOptFilter))
         {
-            frame.Options.FilterOption = options.Options[EncOptFilter].GetValue<PngFilterOption>();
+            frame.Options.FilterOption = options.Options.GetOptionValue<PngFilterOption>(EncOptFilter);
         }
 
-        if (options.Options.Contains(EncOptImageQuality))
+        if (options.Options.ContainsName(EncOptImageQuality))
         {
-            frame.Options.ImageQuality = options.Options[EncOptImageQuality].GetValue<float>();
+            frame.Options.ImageQuality = options.Options.GetOptionValue<float>(EncOptImageQuality);
         }
     }
 
@@ -393,7 +393,7 @@ class WicUtilities
     private (Palette Palette, float Alpha)? GetDecoderPalette(BitmapFrameDecode frame, IGorgonWicDecodingOptions options)
     {
         // If there's no palette option on the decoder, then we do nothing.
-        if ((options is not null) && (!options.Options.Contains(DecOptPalette)))
+        if ((options is not null) && (!options.Options.ContainsName(DecOptPalette)))
         {
             return null;
         }
@@ -403,8 +403,8 @@ class WicUtilities
             return null;
         }
 
-        IList<GorgonColor> paletteColors = options?.Options[DecOptPalette].GetValue<IList<GorgonColor>>() ?? [];
-        float alpha = options?.Options[DecOptAlphaThreshold].GetValue<float>() ?? 0.0f;
+        IList<GorgonColor> paletteColors = options?.Options.GetOptionValue<IList<GorgonColor>>(DecOptPalette) ?? [];
+        float alpha = options?.Options.GetOptionValue<float>(DecOptAlphaThreshold) ?? 0.0f;
 
         // If there are no colors set, then extract it from the frame.
         if (paletteColors.Count == 0)
@@ -446,7 +446,7 @@ class WicUtilities
     private (Palette Palette, float Alpha)? GetEncoderPalette(Bitmap frame, IGorgonWicEncodingOptions options)
     {
         // If there's no palette option on the decoder, then we do nothing.
-        if ((options is not null) && (!options.Options.Contains(DecOptPalette)))
+        if ((options is not null) && (!options.Options.ContainsName(DecOptPalette)))
         {
             return null;
         }
@@ -456,8 +456,8 @@ class WicUtilities
             return null;
         }
 
-        IList<GorgonColor> paletteColors = options?.Options[DecOptPalette].GetValue<IList<GorgonColor>>() ?? [];
-        float alpha = options?.Options[DecOptAlphaThreshold].GetValue<float>() ?? 0.0f;
+        IList<GorgonColor> paletteColors = options?.Options.GetOptionValue<IList<GorgonColor>>(DecOptPalette) ?? [];
+        float alpha = options?.Options.GetOptionValue<float>(DecOptAlphaThreshold) ?? 0.0f;
         Palette wicPalette;
 
         // If there are no colors set, then extract it from the frame.
@@ -718,10 +718,10 @@ class WicUtilities
             encoderInfo = encoder.EncoderInfo;
 
             bool saveAllFrames = encoderInfo.IsMultiframeSupported && imageData.ArrayCount > 1;
-
+            
             if ((saveAllFrames)
                 && (options is not null)
-                && (options.Options.Contains(nameof(IGorgonWicEncodingOptions.SaveAllFrames))))
+                && (options.Options.ContainsName(nameof(IGorgonWicEncodingOptions.SaveAllFrames))))
             {
                 saveAllFrames = options.SaveAllFrames;
             }

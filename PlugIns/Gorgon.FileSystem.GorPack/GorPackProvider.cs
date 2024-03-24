@@ -310,9 +310,8 @@ internal class GorPackProvider
     /// Initializes a new instance of the <see cref="GorPackProvider"/> class.
     /// </summary>
     public GorPackProvider()
-        : base(Resources.GORFS_GORPACK_DESC) => PreferredExtensions = new GorgonFileExtensionCollection
-                              {
-                                  new GorgonFileExtension("gorPack", Resources.GORFS_GORPACK_FILE_DESC)
-                              };
-
+        : base(Resources.GORFS_GORPACK_DESC) => PreferredExtensions = new GorgonFileExtensionCollection()
+                                                                      {
+                                                                          new GorgonFileExtension("gorPack", Resources.GORFS_GORPACK_FILE_DESC)
+                                                                      };
 }

@@ -78,7 +78,7 @@ public interface IGorgonFileSystemProvider
     /// that physical file system type. This list can then be then used in an application to filter the types of files to open with a <see cref="IGorgonFileSystem"/>. If the file system reads directories on 
     /// the native file system, then this collection should remain empty.
     /// </remarks>
-    IGorgonNamedObjectReadOnlyDictionary<GorgonFileExtension> PreferredExtensions
+    IReadOnlyDictionary<string, GorgonFileExtension> PreferredExtensions
     {
         get;
     }

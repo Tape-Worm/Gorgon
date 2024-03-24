@@ -802,13 +802,15 @@ public sealed class GorgonSwapChain
 
             if (monitor != IntPtr.Zero)
             {
-                output = Graphics.VideoAdapter.Outputs.FirstOrDefault(item => item.MonitorHandle == monitor);
+                output = Graphics.VideoAdapter.Outputs.Select(o => o.Value)
+                                                      .FirstOrDefault(item => item.MonitorHandle == monitor);
             }
 
             if (output is null)
             {
                 monitor = Win32API.MonitorFromWindow(ParentForm.Handle, MonitorFlags.MONITOR_DEFAULTTOPRIMARY);
-                output = Graphics.VideoAdapter.Outputs.FirstOrDefault(item => item.MonitorHandle == monitor);
+                output = Graphics.VideoAdapter.Outputs.Select(o => o.Value)
+                                                      .FirstOrDefault(item => item.MonitorHandle == monitor);
 
                 Debug.Assert(output is not null, "Cannot find a suitable output for full screen borderless window mode.");
             }

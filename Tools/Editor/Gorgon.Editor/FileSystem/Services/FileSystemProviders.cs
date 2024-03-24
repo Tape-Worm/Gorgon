@@ -140,7 +140,7 @@ internal class FileSystemProviders(IHostServices hostServices)
 
         // First, try to locate by extension.
         IGorgonFileSystemProvider result = _readers.Select(item => item.Value)
-            .FirstOrDefault(item => item.PreferredExtensions.Contains(extension));
+            .FirstOrDefault(item => item.PreferredExtensions.ContainsKey(extension));
 
         // No provider is registered with that extension, fall back to trying to read each file.
         if (result is null)
@@ -173,7 +173,7 @@ internal class FileSystemProviders(IHostServices hostServices)
                 continue;
             }
 
-            string description = provider.Value.FileExtensions.FirstOrDefault(item => !string.IsNullOrWhiteSpace(item.Description)).Description;
+            string description = provider.Value.FileExtensions.FirstOrDefault(item => !string.IsNullOrWhiteSpace(item.Value.Description)).Value.Description;
 
             if (string.IsNullOrWhiteSpace(description))
             {
@@ -185,7 +185,7 @@ internal class FileSystemProviders(IHostServices hostServices)
                 result[description] = extensions = (provider.Value, new List<GorgonFileExtension>());
             }
 
-            extensions.extensions.AddRange(provider.Value.FileExtensions.OrderBy(item => item.Extension));
+            extensions.extensions.AddRange(provider.Value.FileExtensions.Select(item => item.Value).OrderBy(item => item.Extension));
         }
 
         return result.Where(item => item.Value.Item2.Count > 0).Select(item => (item.Key, item.Value.Item1, (IReadOnlyList<GorgonFileExtension>)item.Value.Item2)).ToArray();
@@ -206,7 +206,7 @@ internal class FileSystemProviders(IHostServices hostServices)
                 continue;
             }
 
-            string description = provider.Value.PreferredExtensions.FirstOrDefault(item => !string.IsNullOrWhiteSpace(item.Description)).Description;
+            string description = provider.Value.PreferredExtensions.FirstOrDefault(item => !string.IsNullOrWhiteSpace(item.Value.Description)).Value.Description;
 
             if (string.IsNullOrWhiteSpace(description))
             {
@@ -218,7 +218,7 @@ internal class FileSystemProviders(IHostServices hostServices)
                 result[description] = extensions = [];
             }
 
-            extensions.AddRange(provider.Value.PreferredExtensions.OrderBy(item => item.Extension));
+            extensions.AddRange(provider.Value.PreferredExtensions.Select(item => item.Value).OrderBy(item => item.Extension));
         }
 
         return result.Where(item => item.Value.Count > 0).Select(item => (item.Key, (IReadOnlyList<GorgonFileExtension>)item.Value)).ToArray();

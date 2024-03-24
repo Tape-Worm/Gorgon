@@ -340,7 +340,7 @@ public class GorgonFileSystem
             VirtualDirectory directory = GetVirtualDirectory(directoryName) ?? throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, directoryName));
 
             // Update the file information to the most recent provider.
-            if (!directory.Files.TryGetValue(fileInfo.Name, out VirtualFile virtualFile))
+            if (!directory.Files.TryGetVirtualDirectory(fileInfo.Name, out VirtualFile virtualFile))
             {
                 directory.Files.Add(mountPoint, fileInfo);
             }
@@ -389,12 +389,12 @@ public class GorgonFileSystem
     {
         IEnumerable<VirtualDirectory> directories = FlattenDirectoryHierarchy(directory, "*");
 
-        foreach (VirtualFile file in directory.Files.GetVirtualFiles().Where(item => IsPatternMatch(item, searchMask)))
+        foreach (VirtualFile file in directory.Files.EnumerateVirtualFiles().Where(item => IsPatternMatch(item, searchMask)))
         {
             yield return file;
         }
 
-        foreach (VirtualFile file in directories.SelectMany(subDirectory => subDirectory.Files.GetVirtualFiles()
+        foreach (VirtualFile file in directories.SelectMany(subDirectory => subDirectory.Files.EnumerateVirtualFiles()
                                                                                               .Where(item => IsPatternMatch(item, searchMask))))
         {
             yield return file;
@@ -425,8 +425,8 @@ public class GorgonFileSystem
             ? throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, path))
             : !recursive
                    ? (string.Equals(directoryMask, "*", StringComparison.OrdinalIgnoreCase)
-                          ? startDirectory.Directories.GetVirtualDirectories()
-                          : startDirectory.Directories.GetVirtualDirectories()
+                          ? startDirectory.Directories.EnumerateVirtualDirectories()
+                          : startDirectory.Directories.EnumerateVirtualDirectories()
                                           .Where(item => IsPatternMatch(item, directoryMask)))
                    : FlattenDirectoryHierarchy(startDirectory, directoryMask);
     }
@@ -456,8 +456,8 @@ public class GorgonFileSystem
             ? throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, path))
             : !recursive
                    ? (string.Equals(fileMask, "*", StringComparison.OrdinalIgnoreCase)
-                          ? start.Files.GetVirtualFiles()
-                          : start.Files.GetVirtualFiles().Where(item => IsPatternMatch(item, fileMask)))
+                          ? start.Files.EnumerateVirtualFiles()
+                          : start.Files.EnumerateVirtualFiles().Where(item => IsPatternMatch(item, fileMask)))
                    : FlattenFileHierarchy(start, fileMask);
     }
 
@@ -499,7 +499,7 @@ public class GorgonFileSystem
         // Start search.
         VirtualDirectory search = GetVirtualDirectory(directory);
 
-        return search is null ? null : search.Files.Contains(filename) ? search.Files[filename] : null;
+        return search is null ? null : search.Files.ContainsKey(filename) ? search.Files[filename] : null;
     }
 
     /// <summary>
@@ -544,19 +544,15 @@ public class GorgonFileSystem
 
         VirtualDirectory directory = _rootDirectory;
 
-        // ReSharper disable once ForCanBeConvertedToForeach
         for (int i = 0; i < directories.Length; i++)
         {
-            // Search our child directories.
-            if (directory.Directories.Contains(directories[i]))
-            {
-                directory = directory.Directories[directories[i]];
-            }
-            else
-            {
-                // If we couldn't find this path part, then abort.
+            if (!directory.Directories.TryGetValue(directories[i], out VirtualDirectory childDirectory))
+            {            
                 return null;
             }
+
+            // We could have this in the TryGetValue as 'out directory', but this is more readable.
+            directory = childDirectory;
         }
 
         return directory;
@@ -570,8 +566,8 @@ public class GorgonFileSystem
     /// <returns>An enumerable containing the flattened list.</returns>
     internal static IEnumerable<VirtualDirectory> FlattenDirectoryHierarchy(VirtualDirectory directory, string searchMask)
     {
-        IEnumerable<VirtualDirectory> directories = directory.Directories.GetVirtualDirectories()
-                                                                         .TraverseBreadthFirst(d => d.Directories.GetVirtualDirectories());
+        IEnumerable<VirtualDirectory> directories = directory.Directories.EnumerateVirtualDirectories()
+                                                                         .TraverseBreadthFirst(d => d.Directories.EnumerateVirtualDirectories());
 
         if (!string.Equals(searchMask, "*", StringComparison.OrdinalIgnoreCase))
         {
@@ -646,7 +642,7 @@ public class GorgonFileSystem
             // Update the physical file information on the files.
             foreach (KeyValuePair<string, IGorgonPhysicalFileInfo> fileInfo in files)
             {
-                if (!directory.Files.TryGetValue(fileInfo.Value.Name, out VirtualFile file))
+                if (!directory.Files.TryGetVirtualDirectory(fileInfo.Value.Name, out VirtualFile file))
                 {
                     // This shouldn't happen. 
                     _log.Print($"The file '{fileInfo.Value.Name}' was not found in the directory '{directory.FullPath}'.", LoggingLevel.All);
@@ -676,8 +672,8 @@ public class GorgonFileSystem
 
         // All files have a physical link, and since that physical link is no longer valid, we need to update the physical path for each file under
         // the directory and any subdirectories.
-        foreach (VirtualDirectory subDir in dir.Directories.TraverseBreadthFirst(d => d.Directories).OfType<VirtualDirectory>().Where(item => item is not null))
-        {
+        foreach (VirtualDirectory subDir in dir.Directories.EnumerateVirtualDirectories().TraverseBreadthFirst(d => d.Directories.EnumerateVirtualDirectories()))
+        {            
             if (subDir.MountPoint != mountPoint)
             {
                 subDir.MountPoint = mountPoint;
@@ -1167,9 +1163,9 @@ public class GorgonFileSystem
                 else
                 {
                     newMountPoint = directory.Directories.Count > 0
-                                     ? directory.Directories.First().MountPoint
+                                     ? directory.Directories.EnumerateVirtualDirectories().First().MountPoint
                                      : (directory.Files.Count > 0
-                                            ? directory.Files.First().MountPoint
+                                            ? directory.Files.EnumerateVirtualFiles().First().MountPoint
                                             : new GorgonFileSystemMountPoint(DefaultProvider, directory.MountPoint.PhysicalPath, directory.MountPoint.MountLocation));
                     // If there are still files or sub directories in the directory, then keep it around, and 
                     // set its provider back to the first provider in the list of directories, files or the 
@@ -1186,9 +1182,9 @@ public class GorgonFileSystem
                 || (mountPointDirectory.Files.Count != 0))
             {
                 newMountPoint = mountPointDirectory.Directories.Count > 0
-                                    ? mountPointDirectory.Directories.First().MountPoint
+                                    ? mountPointDirectory.Directories.EnumerateVirtualDirectories().First().MountPoint
                                     : (mountPointDirectory.Files.Count > 0
-                                           ? mountPointDirectory.Files.First().MountPoint
+                                           ? mountPointDirectory.Files.EnumerateVirtualFiles().First().MountPoint
                                            : new GorgonFileSystemMountPoint(DefaultProvider,
                                                                             mountPointDirectory.MountPoint.PhysicalPath,
                                                                             mountPointDirectory.MountPoint.MountLocation));

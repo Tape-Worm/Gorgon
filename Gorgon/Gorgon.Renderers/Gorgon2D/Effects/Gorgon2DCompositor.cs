@@ -24,7 +24,6 @@
 // 
 
 using System.Collections;
-using Gorgon.Collections.Specialized;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics;
@@ -61,7 +60,7 @@ public class Gorgon2DCompositor(Gorgon2D renderer)
     // The texture view for the pong target.
     private GorgonTexture2DView _pongTexture;
     // The ordered list where the actual passes are stored.
-    private readonly GorgonNamedObjectList<CompositionPass> _passes = [];
+    private readonly List<CompositionPass> _passes = [];
     // The unique list of effects
     private readonly Dictionary<string, int> _passLookup = new(StringComparer.OrdinalIgnoreCase);
     // The color used to clear the initial render target.
@@ -292,7 +291,7 @@ public class Gorgon2DCompositor(Gorgon2D renderer)
         }
 
         CompositionPass pass = _passes[index];
-        _passes.Remove(index);
+        _passes.RemoveAt(index);
         _passLookup.Remove(pass.Name);
         return this;
     }
@@ -314,7 +313,7 @@ public class Gorgon2DCompositor(Gorgon2D renderer)
             return this;
         }
 
-        _passes.Remove(index);
+        _passes.RemoveAt(index);
         _passLookup.Remove(effectName);
         return this;
     }

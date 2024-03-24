@@ -221,7 +221,7 @@ internal static class Program
 
                 Console.ForegroundColor = ConsoleColor.Yellow;
 
-                foreach (IGorgonVirtualFile file in directory.Files)
+                foreach (IGorgonVirtualFile file in directory.Files.Select(item => item.Value))
                 {
                     Console.Write("   {0}", file.Name);
                     // Align the size to the same place.
