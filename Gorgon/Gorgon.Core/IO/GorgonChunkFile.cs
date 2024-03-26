@@ -1,5 +1,4 @@
-﻿
-// 
+﻿// 
 // Gorgon
 // Copyright (C) 2015 Michael Winsor
 // 
@@ -221,7 +220,6 @@ public abstract class GorgonChunkFile<T>
     /// </summary>
     /// <param name="chunkName">The name of the chunk.</param>
     /// <returns>A <see cref="GorgonBinaryReader"/>, or <see cref="GorgonBinaryWriter"/> that will allow reading or writing within the chunk.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="chunkName"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="chunkName"/> parameter is empty.</exception>
     /// <remarks>
     /// See the <see cref="GorgonChunkFileReader.OpenChunk(ulong)"/>, or the <see cref="GorgonChunkFileWriter.OpenChunk(ulong)"/> method for more information.
@@ -242,12 +240,9 @@ public abstract class GorgonChunkFile<T>
     /// <remarks>
     /// The <paramref name="stream"/> passed to this method requires that the <see cref="Stream.CanSeek"/> property returns a value of <b>true</b>.
     /// </remarks>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream" /> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="stream"/> is has its <see cref="Stream.CanSeek"/> property set to <b>false</b>.</exception>
     protected GorgonChunkFile(Stream stream)
     {
-        ArgumentNullException.ThrowIfNull(stream);
-
         if (!stream.CanSeek)
         {
             throw new ArgumentException(Resources.GOR_ERR_STREAM_NOT_SEEKABLE, nameof(stream));

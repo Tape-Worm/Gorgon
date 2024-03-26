@@ -24,7 +24,6 @@
 // 
 
 using Gorgon.Core;
-using Gorgon.Diagnostics;
 using D3D11 = SharpDX.Direct3D11;
 using DXGI = SharpDX.DXGI;
 
@@ -182,11 +181,13 @@ public sealed class GorgonStructuredReadWriteView
     /// </summary>
     /// <param name="buffer">The buffer that will receive the data.</param>
     /// <param name="offset">[Optional] The offset, in bytes, within the buffer attached to this view to start reading from.</param>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="offset"/> parameter is less than 0, or greater than or equal to the 
+    /// <see cref="GorgonGraphicsResource.SizeInBytes"/><c>-4</c> of the <paramref name="buffer"/>.</exception>
     /// <remarks>
     /// <para>
-    /// When the structure unordered access view is set up with a <see cref="StructuredBufferReadWriteViewType.Append"/>, or <see cref="StructuredBufferReadWriteViewType.Counter"/>, the values updated by these flags are 
-    /// not readily accessible from the CPU. To retrieve these values, this method must be called to retrieve the values. These values are copied into the <paramref name="buffer"/> provided to the 
-    /// method so that applications can make use of data generated on the GPU. Note that this value will be written out as a 32 bit unsigned integer.
+    /// When the structure unordered access view is set up with a <see cref="StructuredBufferReadWriteViewType.Append"/>, or <see cref="StructuredBufferReadWriteViewType.Counter"/>, the values updated by 
+    /// these flags are not readily accessible from the CPU. To retrieve these values, this method must be called to retrieve the values. These values are copied into the <paramref name="buffer"/> provided 
+    /// to the method so that applications can make use of data generated on the GPU. Note that this value will be written out as a 32 bit unsigned integer.
     /// </para>
     /// <para>
     /// If the unordered access view does not specify the appropriate values on the <see cref="ReadWriteViewType"/>, then this method will do nothing.
@@ -201,8 +202,10 @@ public sealed class GorgonStructuredReadWriteView
     /// </remarks>
     public void CopyStructureCount(GorgonBufferCommon buffer, int offset = 0)
     {
-        buffer.ValidateObject(nameof(buffer));
-        offset.ValidateRange(nameof(offset), 0, Buffer.SizeInBytes - 4);
+#if DEBUG
+        ArgumentOutOfRangeException.ThrowIfLessThan(offset, 0);
+        ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(offset, buffer.SizeInBytes - 4);
+#endif
 
         buffer.Graphics.D3DDeviceContext.CopyStructureCount(buffer.Native, offset, Native);
     }
@@ -221,5 +224,4 @@ public sealed class GorgonStructuredReadWriteView
                                  int elementCount,
                                  int totalElementCount)
         : base(buffer, elementStart, elementCount, totalElementCount) => ReadWriteViewType = uavType;
-
 }

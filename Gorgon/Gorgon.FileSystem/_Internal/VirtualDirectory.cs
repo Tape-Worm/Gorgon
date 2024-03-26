@@ -23,7 +23,6 @@
 // Created: Monday, June 27, 2011 8:58:26 AM
 // 
 
-using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.IO.Providers;
 
@@ -107,7 +106,7 @@ internal class VirtualDirectory
     /// If this value is <b>null</b>, then this will be the root directory for the file system.
     /// </remarks>
     IGorgonVirtualDirectory IGorgonVirtualDirectory.Parent => Parent;
-    
+
     /// <summary>
     /// Property to return the parent of this directory.
     /// </summary>
@@ -118,7 +117,7 @@ internal class VirtualDirectory
     {
         get;
     }
-    
+
     /// <summary>
     /// Property to return the full path to the directory.
     /// </summary>

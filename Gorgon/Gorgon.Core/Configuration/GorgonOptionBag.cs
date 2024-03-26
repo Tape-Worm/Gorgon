@@ -48,15 +48,16 @@ public sealed class GorgonOptionBag
     /// <remarks>
     /// When passing a <b>null</b> to this property, the option at the specified index will be removed.
     /// </remarks>
-    public IGorgonOption this[int index]  => _options[index];
+    public IGorgonOption this[int index] => _options[index];
 
     /// <summary>
     /// Function to retrieve the value for an option.
     /// </summary>
     /// <typeparam name="T">The type of data for the option.</typeparam>
     /// <param name="optionName">The name of the option.</param>
+    /// <exception cref="KeyNotFoundException">Thrown when the option name is not found in the bag.</exception>"
     /// <returns>The value stored with the option.</returns>
-    public T GetOptionValue<T>(string optionName) => this.GetByName(optionName).GetValue<T>();
+    public T? GetOptionValue<T>(string optionName) => _options.GetByName(optionName).GetValue<T>();
 
     /// <summary>
     /// Function to assign a value for an option.
@@ -65,29 +66,21 @@ public sealed class GorgonOptionBag
     /// <param name="optionName">The name of the option.</param>
     /// <param name="value">The value to assign to the option.</param>
     /// <exception cref="KeyNotFoundException">Thrown when the option name is not found in the bag.</exception>"
-    public void SetOptionValue<T>(string optionName, T value)
-    {    
-        if (!this.ContainsName(optionName))
+    public void SetOptionValue<T>(string optionName, T? value)
+    {
+        if (!_options.ContainsName(optionName))
         {
             throw new KeyNotFoundException();
         }
 
-        this.GetByName(optionName).SetValue(value);
+        _options.GetByName(optionName).SetValue(value);
     }
 
     /// <inheritdoc/>
     public int IndexOf(IGorgonOption item) => _options.IndexOf(item);
 
     /// <inhertidoc/>
-    public bool Contains(IGorgonOption item) 
-    {
-        if (item is null)
-        {
-            return false;
-        }
-
-        return _options.Contains(item);
-    }
+    public bool Contains(IGorgonOption item) => _options.Contains(item);
 
     /// <inheritdoc/>
     public IEnumerator<IGorgonOption> GetEnumerator() => _options.GetEnumerator();
@@ -99,12 +92,9 @@ public sealed class GorgonOptionBag
     /// Initializes a new instance of the <see cref="GorgonOptionBag"/> class.
     /// </summary>
     /// <param name="options">Values and types used to initialize the options.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="options"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentException">Thrown when the <paramref name="options"/> contains a value that is already in this option bag.</exception>
     public GorgonOptionBag(IEnumerable<IGorgonOption> options)
     {
-        ArgumentNullException.ThrowIfNull(options);
-
         foreach (IGorgonOption option in options)
         {
             // Don't allow duplicates.

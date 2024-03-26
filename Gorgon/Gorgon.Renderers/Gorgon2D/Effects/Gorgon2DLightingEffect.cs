@@ -26,7 +26,6 @@
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using Gorgon.Diagnostics;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
@@ -364,11 +363,5 @@ public class Gorgon2DLightingEffect(Gorgon2D renderer)
     /// <param name="output">The final output target for the effect.</param>
     /// <param name="camera">[Optional] The camera used to transform the lights to camera space.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="gbuffer"/>, or the <paramref name="output"/> parameter is <b>null</b>.</exception>
-    public void Render(IGorgonGBuffer gbuffer, GorgonRenderTargetView output, GorgonCameraCommon camera = null)
-    {
-        gbuffer.ValidateObject(nameof(gbuffer));
-        output.ValidateObject(nameof(output));
-
-        OnRender(gbuffer.GBufferTexture, output, camera);
-    }
+    public void Render(IGorgonGBuffer gbuffer, GorgonRenderTargetView output, GorgonCameraCommon camera = null) => OnRender(gbuffer.GBufferTexture, output, camera);
 }

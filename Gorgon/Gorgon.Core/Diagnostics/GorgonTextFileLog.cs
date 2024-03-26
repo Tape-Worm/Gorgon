@@ -49,20 +49,19 @@ public class GorgonTextFileLog
     /// <param name="appName">File name for the log file.</param>
     /// <param name="extraPath">Additional directories for the path.</param>
     /// <param name="version">[Optional] The version of the application that is logging.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="appName"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="appName"/> parameter is empty.</exception>
     /// <remarks>
     /// <para>
     /// This constructor automatically creates a <see cref="IGorgonLogProvider"/> that outputs to a text file and assigns it to the <see cref="GorgonLog.Provider"/> property.
     /// </para>
     /// </remarks>
-    public GorgonTextFileLog(string appName, string extraPath, Version version = null)
+    public GorgonTextFileLog(string appName, string? extraPath, Version? version = null)
         : base(appName, version)
     {
         string logPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
 
         // Verify the extra path information.
-        if (!string.IsNullOrEmpty(extraPath))
+        if (!string.IsNullOrWhiteSpace(extraPath))
         {
             // Remove any text up to and after the volume separator character.
             if (extraPath.Contains(Path.VolumeSeparatorChar.ToString(CultureInfo.InvariantCulture)))
@@ -72,7 +71,7 @@ public class GorgonTextFileLog
                                 : string.Empty;
             }
 
-            if (!string.IsNullOrEmpty(extraPath))
+            if (!string.IsNullOrWhiteSpace(extraPath))
             {
                 logPath = Path.Combine(logPath, extraPath);
             }

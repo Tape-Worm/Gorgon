@@ -108,5 +108,4 @@ public interface IGorgonLog
     /// <param name="level">Level that this message falls under.</param>
     /// <param name="arguments">List of optional arguments.</param>
     void Print(string formatSpecifier, LoggingLevel level, params object[] arguments);
-
 }

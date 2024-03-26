@@ -35,7 +35,6 @@ namespace Gorgon.Diagnostics.LogProviders;
 internal class LogTextFileProvider
     : IGorgonLogProvider
 {
-
     // The file information for the log file.
     private readonly FileInfo _filePath;
 
@@ -43,33 +42,24 @@ internal class LogTextFileProvider
     /// Function to open the data store for writing.
     /// </summary>
     /// <param name="initialMessage">[Optional] The initial message to write.</param>
-    public void Open(string initialMessage = null)
+    public void Open(string? initialMessage = null)
     {
-        StreamWriter stream = null;
-
         Debug.Assert(_filePath.Directory is not null, $"Directory not found for '{_filePath.FullName}'");
 
-        try
+        // Create the directory if it doesn't exist.
+        if (!_filePath.Directory.Exists)
         {
-            // Create the directory if it doesn't exist.
-            if (!_filePath.Directory.Exists)
-            {
-                _filePath.Directory.Create();
-                _filePath.Directory.Refresh();
-            }
+            _filePath.Directory.Create();
+            _filePath.Directory.Refresh();
+        }
 
-            // Open the stream.
-            stream = new StreamWriter(File.Open(_filePath.FullName, FileMode.Create, FileAccess.Write, FileShare.Read), Encoding.UTF8);
-            if (!string.IsNullOrWhiteSpace(initialMessage))
-            {
-                stream.WriteLine(initialMessage);
-            }
-            stream.Flush();
-        }
-        finally
+        // Open the stream.
+        using StreamWriter stream = new(File.Open(_filePath.FullName, FileMode.Create, FileAccess.Write, FileShare.Read), Encoding.UTF8);
+        if (!string.IsNullOrWhiteSpace(initialMessage))
         {
-            stream?.Close();
+            stream.WriteLine(initialMessage);
         }
+        stream.Flush();
     }
 
     /// <summary>
@@ -78,8 +68,6 @@ internal class LogTextFileProvider
     /// <param name="message">The message to write.</param>
     public void SendMessage(string message)
     {
-        StreamWriter stream = null;
-
         if (!_filePath.Exists)
         {
             return;
@@ -87,51 +75,32 @@ internal class LogTextFileProvider
 
         message ??= string.Empty;
 
-        try
-        {
-            // Open the stream.
-            stream = new StreamWriter(File.Open(_filePath.FullName, FileMode.Append, FileAccess.Write, FileShare.Read), Encoding.UTF8);
-            stream.WriteLine(message);
-            stream.Flush();
-        }
-        finally
-        {
-            stream?.Close();
-        }
+        using StreamWriter stream = new(File.Open(_filePath.FullName, FileMode.Append, FileAccess.Write, FileShare.Read), Encoding.UTF8);
+        stream.WriteLine(message);
+        stream.Flush();
     }
 
     /// <summary>
     /// Function to close the data store for writing.
     /// </summary>
     /// <param name="closingMessage">[Optional] The message to write when closing.</param>
-    public void Close(string closingMessage)
+    public void Close(string? closingMessage)
     {
-        StreamWriter stream = null;
-
         if ((!_filePath.Exists)
             || (string.IsNullOrWhiteSpace(closingMessage)))
         {
             return;
         }
 
-        try
-        {
-            // Open the stream.
-            stream = new StreamWriter(File.Open(_filePath.FullName, FileMode.Append, FileAccess.Write, FileShare.Read), Encoding.UTF8);
-            stream.WriteLine(closingMessage);
-            stream.Flush();
-        }
-        finally
-        {
-            stream?.Close();
-        }
+        using StreamWriter stream = new(File.Open(_filePath.FullName, FileMode.Append, FileAccess.Write, FileShare.Read), Encoding.UTF8);
+        stream.WriteLine(closingMessage);
+        stream.Flush();
     }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LogTextFileProvider"/> class.
     /// </summary>
     /// <param name="filePath">The path to the file to write into.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="filePath"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="filePath"/> parameter is empty.</exception>
     public LogTextFileProvider(string filePath)
     {

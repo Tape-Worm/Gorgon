@@ -1,5 +1,4 @@
-﻿
-// 
+﻿// 
 // Gorgon
 // Copyright (C) 2015 Michael Winsor
 // 
@@ -122,13 +121,12 @@ namespace Gorgon.IO;
 public sealed class GorgonChunkFileReader
     : GorgonChunkFile<GorgonBinaryReader>
 {
-
     // The list of allowable application specific Id values.
     private readonly HashSet<ulong> _appSpecificIds;
     // The currently active chunk.
     private GorgonChunk _activeChunk;
     // The reader for the active chunk.
-    private GorgonBinaryReader _activeReader;
+    private GorgonBinaryReader? _activeReader;
     // The byte marker for the end of the file header.
     private long _headerEnd;
     // The size of the file, in bytes.
@@ -249,7 +247,7 @@ public sealed class GorgonChunkFileReader
 
         _activeChunk = default;
         Stream.Position = _headerEnd;
-        _activeReader.Dispose();
+        _activeReader?.Dispose();
         _activeReader = null;
     }
 
@@ -258,12 +256,9 @@ public sealed class GorgonChunkFileReader
     /// </summary>
     /// <param name="stream">The stream containing the data.</param>
     /// <returns><b>true</b> if the stream data contains a chunk file, <b>false</b> if not.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
     /// <exception cref="IOException">Thrown when the <paramref name="stream"/> is write-only.</exception>
     public static bool IsReadable(Stream stream)
     {
-        ArgumentNullException.ThrowIfNull(stream);
-
         if (!stream.CanRead)
         {
             throw new IOException(Resources.GOR_ERR_STREAM_IS_WRITEONLY);
@@ -274,7 +269,7 @@ public sealed class GorgonChunkFileReader
             return false;
         }
 
-        GorgonBinaryReader reader = null;
+        GorgonBinaryReader? reader = null;
         long pos = 0;
 
         try
@@ -341,6 +336,11 @@ public sealed class GorgonChunkFileReader
         {
             if (_activeChunk.ID == chunkId)
             {
+                if (_activeReader is null)
+                {
+                    throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOR_ERR_CHUNK_NOT_OPEN, chunkId));
+                }
+
                 return _activeReader;
             }
 
@@ -348,7 +348,7 @@ public sealed class GorgonChunkFileReader
         }
 
         _activeChunk = chunk;
-        GorgonBinaryReader reader = null;
+        GorgonBinaryReader? reader = null;
 
         // Validate the chunk ID at the offset.
         try
@@ -383,7 +383,6 @@ public sealed class GorgonChunkFileReader
     /// <param name="appSpecificIds">The allowable application specific ids for file validation.</param>
     /// <remarks>
     /// </remarks>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/>, or the <paramref name="appSpecificIds"/> parameters are <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="appSpecificIds"/> contains no values.
     /// <para>-or-</para>
     /// <para>Thrown when the <paramref name="stream"/> is write-only</para>
@@ -411,10 +410,8 @@ public sealed class GorgonChunkFileReader
             throw new ArgumentException(Resources.GOR_ERR_STREAM_IS_WRITEONLY, nameof(stream));
         }
 
-        ArgumentNullException.ThrowIfNull(appSpecificIds);
-
         _appSpecificIds = new HashSet<ulong>(appSpecificIds.Distinct().OrderByDescending(item => item));
 
-        ArgumentEmptyException.ThrowIfNullOrEmpty(_appSpecificIds, nameof(appSpecificIds));
+        ArgumentEmptyException.ThrowIfNullOrEmpty(_appSpecificIds);
     }
 }

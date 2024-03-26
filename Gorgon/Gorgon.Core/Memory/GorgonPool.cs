@@ -64,7 +64,6 @@ public class GorgonPool<T>
     protected Func<T> ItemAllocator
     {
         get;
-        set;
     }
 
     /// <summary>
@@ -102,7 +101,7 @@ public class GorgonPool<T>
     /// </remarks>
     /// <seealso cref="AvailableSlots"/>
     /// <seealso cref="Reset"/>
-    public T Allocate(Action<T> initializer = null)
+    public T Allocate(Action<T>? initializer = null)
     {
         if (Interlocked.Decrement(ref _availableSlots) <= 0)
         {
@@ -110,7 +109,7 @@ public class GorgonPool<T>
         }
 
         if ((_freeList.IsEmpty)
-            || (!_freeList.TryPop(out T item)))
+            || (!_freeList.TryPop(out T? item)))
         {
             item = ItemAllocator();
         }
@@ -125,7 +124,6 @@ public class GorgonPool<T>
     /// </summary>
     /// <param name="item">The item to deallocate.</param>
     /// <param name="finalizer">[Optional] A finalizer callback method used to clean up the object before putting it back in the pool.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="item"/> parameter is <b>null</b>.</exception>
     /// <exception cref="GorgonException">Thrown when there is no more room to add an item to the free list.</exception>
     /// <remarks>
     /// <para>
@@ -136,9 +134,12 @@ public class GorgonPool<T>
     /// If the <paramref name="finalizer"/> callback method is supplied, then the object will have a chance to be cleaned up prior to putting it back into the pool. 
     /// </para>
     /// </remarks>
-    public void Deallocate(ref T item, Action<T> finalizer = null)
+    public void Deallocate(ref T? item, Action<T>? finalizer = null)
     {
-        ArgumentNullException.ThrowIfNull(item);
+        if (item is null)
+        {
+            return;
+        }
 
         if (Interlocked.Increment(ref _availableSlots) > TotalSize)
         {
@@ -177,7 +178,6 @@ public class GorgonPool<T>
     /// <param name="objectCount">The number of total objects available to the allocator.</param>
     /// <param name="allocator">The allocator used to create an object in the pool.</param>
     /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="objectCount"/> parameter is less than 1.</exception>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="allocator"/> parameter is <b>null</b>.</exception>
     /// <remarks>
     /// <para>
     /// The <paramref name="allocator"/> callback method passed will be executed for each object that has not been initialized in the pool (i.e. the object would be returned as <b>null</b> when 
@@ -191,7 +191,7 @@ public class GorgonPool<T>
             throw new ArgumentOutOfRangeException(nameof(objectCount), Resources.GOR_ERR_ALLOCATOR_SIZE_TOO_SMALL);
         }
 
-        ItemAllocator = allocator ?? throw new ArgumentNullException(nameof(allocator));
+        ItemAllocator = allocator;
         _availableSlots = TotalSize = objectCount;
         _freeList = new ConcurrentStack<T>();
     }

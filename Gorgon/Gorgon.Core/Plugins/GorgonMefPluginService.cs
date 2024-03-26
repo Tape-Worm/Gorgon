@@ -150,13 +150,12 @@ namespace Gorgon.PlugIns;
 /// Initializes a new instance of the <see cref="GorgonMefPlugInService"/> class
 /// </remarks>
 /// <param name="mefCache">The cache of MEF plugin assemblies.</param>
-/// <exception cref="ArgumentNullException">Thrown when the <paramref name="mefCache"/> parameter is <b>null</b>.</exception>
 public sealed class GorgonMefPlugInService(GorgonMefPlugInCache mefCache)
         : IGorgonPlugInService
 {
 
     // The MEF plugin assembly cache.
-    private readonly GorgonMefPlugInCache _cache = mefCache ?? throw new ArgumentNullException(nameof(mefCache));
+    private readonly GorgonMefPlugInCache _cache = mefCache;
     // The application log file.
     private readonly IGorgonLog _log = mefCache.Log ?? GorgonLog.NullLog;
     // List of previously loaded plugins.
@@ -190,23 +189,17 @@ public sealed class GorgonMefPlugInService(GorgonMefPlugInCache mefCache)
     /// <typeparam name="T">The base type of the plugin. Must implement <see cref="GorgonPlugIn"/>.</typeparam>
     /// <param name="pluginName">Fully qualified type name of the plugin to find.</param>
     /// <returns>The plugin, if found, or <b>null</b> if not.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="pluginName"/> is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="pluginName"/> is empty.</exception>
-    public T GetPlugIn<T>(string pluginName) where T : GorgonPlugIn
+    public T? GetPlugIn<T>(string pluginName) where T : GorgonPlugIn
     {
-        ArgumentNullException.ThrowIfNull(pluginName);
-
-        if (string.IsNullOrWhiteSpace(pluginName))
-        {
-            throw new ArgumentEmptyException(nameof(pluginName));
-        }
+        ArgumentEmptyException.ThrowIfNullOrWhiteSpace(pluginName);
 
         if (_scanned == 0)
         {
             ScanPlugIns();
         }
 
-        return !_loadedPlugIns.TryGetValue(pluginName, out Lazy<GorgonPlugIn, IDictionary<string, object>> plugin) ? null : plugin.Value as T;
+        return !_loadedPlugIns.TryGetValue(pluginName, out Lazy<GorgonPlugIn, IDictionary<string, object>>? plugin) ? null : plugin.Value as T;
     }
 
     /// <summary>
@@ -224,7 +217,7 @@ public sealed class GorgonMefPlugInService(GorgonMefPlugInCache mefCache)
     /// If the assembly is not loaded, then an exception is thrown.
     /// </para>
     /// </remarks>
-    public IReadOnlyList<string> GetPlugInNames(AssemblyName assemblyName = null)
+    public IReadOnlyList<string> GetPlugInNames(AssemblyName? assemblyName = null)
     {
         if (_scanned == 0)
         {
@@ -237,7 +230,7 @@ public sealed class GorgonMefPlugInService(GorgonMefPlugInCache mefCache)
                                     {
                                         Debug.Assert(item.Value.Metadata.ContainsKey("Assembly"), "Assembly info not found.");
 
-                                        AssemblyName name = item.Value.Metadata["Assembly"] as AssemblyName;
+                                        AssemblyName? name = item.Value.Metadata["Assembly"] as AssemblyName;
 
                                         Debug.Assert(name is not null, "Assembly name is null.");
 
@@ -257,7 +250,7 @@ public sealed class GorgonMefPlugInService(GorgonMefPlugInCache mefCache)
     /// This will retrieve all the plugins from the plugin service of the type <typeparamref name="T"/>. If the <paramref name="assemblyName"/> parameter is not <b>null</b>, then, 
     /// the only the assembly with that name will be scanned for the plugin type.
     /// </remarks>
-    public IReadOnlyList<T> GetPlugIns<T>(AssemblyName assemblyName = null)
+    public IReadOnlyList<T> GetPlugIns<T>(AssemblyName? assemblyName = null)
         where T : GorgonPlugIn
     {
         if (_scanned == 0)
@@ -271,7 +264,7 @@ public sealed class GorgonMefPlugInService(GorgonMefPlugInCache mefCache)
                                     {
                                         Debug.Assert(item.Value.Metadata.ContainsKey("Assembly"), "Assembly info not found.");
 
-                                        AssemblyName name = item.Value.Metadata["Assembly"] as AssemblyName;
+                                        AssemblyName? name = item.Value.Metadata["Assembly"] as AssemblyName;
 
                                         Debug.Assert(name is not null, "Assembly name is null.");
 
@@ -311,7 +304,7 @@ public sealed class GorgonMefPlugInService(GorgonMefPlugInCache mefCache)
                 {
                     Debug.Assert(plugin.Metadata.ContainsKey("Name"), "Name metadata not found.");
 
-                    string name = plugin.Metadata["Name"]?.ToString();
+                    string? name = plugin.Metadata["Name"]?.ToString();
 
                     Debug.Assert(!string.IsNullOrWhiteSpace(name), "Name is null or whitespace.");
 
@@ -333,8 +326,14 @@ public sealed class GorgonMefPlugInService(GorgonMefPlugInCache mefCache)
         {
             StringBuilder errorMessage = new(512);
 
-            foreach (Exception loadEx in rex.LoaderExceptions)
+            foreach (Exception? loadEx in rex.LoaderExceptions)
             {
+                if (loadEx is null)
+                {
+                    _log.Print("[Error]: There were reflection type load exceptions, but no exception was found.", LoggingLevel.Verbose);
+                    continue;
+                }
+
                 if (errorMessage.Length > 0)
                 {
                     errorMessage.Append("\n\r");
@@ -358,19 +357,13 @@ public sealed class GorgonMefPlugInService(GorgonMefPlugInCache mefCache)
     /// Function to unload a plugin by its name.
     /// </summary>
     /// <param name="name">Fully qualified type name of the plugin to remove.</param>
-    /// <exception cref="ArgumentNullException">The <paramref name="name"/> parameter was <b>null</b>.</exception>
     /// <exception cref="ArgumentException">The <paramref name="name "/> parameter was an empty string.</exception>
     /// <returns><b>true</b> if the plugin was unloaded successfully, <b>false</b> if it did not exist in the collection, or failed to unload.</returns>
     public bool Unload(string name)
     {
-        ArgumentNullException.ThrowIfNull(name);
+        ArgumentEmptyException.ThrowIfNullOrWhiteSpace(name);
 
-        if (string.IsNullOrWhiteSpace(name))
-        {
-            throw new ArgumentEmptyException(nameof(name));
-        }
-
-        if (!_loadedPlugIns.TryRemove(name, out Lazy<GorgonPlugIn, IDictionary<string, object>> plugin))
+        if (!_loadedPlugIns.TryRemove(name, out Lazy<GorgonPlugIn, IDictionary<string, object>>? plugin))
         {
             _log.Print($"PlugIn '{name}' was not found, it may not have been created yet.", LoggingLevel.Simple);
             return false;

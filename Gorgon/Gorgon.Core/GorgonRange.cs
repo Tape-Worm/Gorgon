@@ -227,7 +227,7 @@ public readonly struct GorgonRange<T>
     /// <param name="value">Value to evaluate.</param>
     /// <returns><b>true</b> if the value falls into the range, <b>false</b> if not.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool Contains(T value) => value >= Minimum && value <= Maximum;
+    public readonly bool Contains(T value) => value >= Minimum && value <= Maximum;
 
     /// <summary>
     /// Indicates whether this instance and a specified object are equal.
@@ -236,7 +236,7 @@ public readonly struct GorgonRange<T>
     /// <returns>
     /// true if <paramref name="obj"/> and this instance are the same type and represent the same value; otherwise, false.
     /// </returns>
-    public override bool Equals(object obj) => obj is GorgonRange<T> range ? Equals(this, range) : base.Equals(obj);
+    public override readonly bool Equals(object? obj) => obj is GorgonRange<T> range ? Equals(this, range) : base.Equals(obj);
 
     /// <summary>
     /// Returns the hash code for this instance.
@@ -244,7 +244,7 @@ public readonly struct GorgonRange<T>
     /// <returns>
     /// A 32-bit signed integer that is the hash code for this instance.
     /// </returns>
-    public override int GetHashCode() => HashCode.Combine(Minimum, Maximum);
+    public override readonly int GetHashCode() => HashCode.Combine(Minimum, Maximum);
 
     /// <summary>
     /// Returns the fully qualified type name of this instance.
@@ -252,7 +252,7 @@ public readonly struct GorgonRange<T>
     /// <returns>
     /// A <see cref="string"/> containing a fully qualified type name.
     /// </returns>
-    public override string ToString() => string.Format(Resources.GOR_TOSTR_GORGONRANGE, Minimum, Maximum, Range);
+    public override readonly string ToString() => string.Format(Resources.GOR_TOSTR_GORGONRANGE, Minimum, Maximum, Range);
 
     /// <summary>
     /// Function to compare two instances for equality.
@@ -270,7 +270,7 @@ public readonly struct GorgonRange<T>
     /// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
     /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool Equals(GorgonRange<T> other) => Equals(this, other);
+    public readonly bool Equals(GorgonRange<T> other) => Equals(this, other);
 
     /// <summary>
     /// Compares the current object with another object of the same type.
@@ -280,7 +280,7 @@ public readonly struct GorgonRange<T>
     /// A 32-bit signed integer that indicates the relative order of the objects being compared. The return value has the following meanings: Value Meaning Less than zero This object is less than the other parameter.Zero This object is equal to other. Greater than zero This object is greater than other.
     /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public int CompareTo(GorgonRange<T> other) => Range.CompareTo(other.Range);
+    public readonly int CompareTo(GorgonRange<T> other) => Range.CompareTo(other.Range);
 
     /// <summary>
     /// Function to determine if two ranges would intersect each others <see cref="Minimum"/> and <see cref="Maximum"/>.
@@ -288,7 +288,7 @@ public readonly struct GorgonRange<T>
     /// <param name="other">The other range to compare.</param>
     /// <returns><b>true</b> if there is an intersection, <b>false</b> if not.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool Intersects(GorgonRange<T> other) => (Minimum <= other.Maximum) && (Maximum >= other.Minimum);
+    public readonly bool Intersects(GorgonRange<T> other) => (Minimum <= other.Maximum) && (Maximum >= other.Minimum);
 
     /// <summary>
     /// Function to clamp a value between the <see cref="Minimum"/> and <see cref="Maximum"/> values.

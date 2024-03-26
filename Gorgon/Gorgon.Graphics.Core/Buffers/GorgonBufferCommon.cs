@@ -994,8 +994,6 @@ public abstract class GorgonBufferCommon
     /// </remarks>
     public void CopyTo(GorgonBufferCommon destinationBuffer, int sourceOffset = 0, int byteCount = 0, int destOffset = 0, CopyMode copyMode = CopyMode.None)
     {
-        destinationBuffer.ValidateObject(nameof(destinationBuffer));
-
 #if DEBUG
         if (destinationBuffer.Native.Description.Usage == D3D11.ResourceUsage.Immutable)
         {

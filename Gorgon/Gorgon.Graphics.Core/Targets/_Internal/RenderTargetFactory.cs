@@ -23,7 +23,7 @@
 // Created: May 14, 2019 11:11:34 AM
 // 
 
-using Gorgon.Diagnostics;
+using Gorgon.Core;
 using Gorgon.Memory;
 using Gorgon.Timing;
 
@@ -166,8 +166,7 @@ internal class RenderTargetFactory(GorgonGraphics graphics)
     /// <param name="name">A unique user defined name for a new render target.</param>
     /// <param name="clearOnRetrieve">[Optional] <b>true</b> to clear the render target when retrieved, or <b>false</b> to leave the contents as-is.</param>
     /// <returns>The requested render target.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="targetInfo"/>, or the <paramref name="name"/> parameter is <b>null</b>.</exception>
-    /// <exception cref="ArgumentException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
+    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
     /// <remarks>
     /// <para>
     /// All calls to this method should be paired with a call to the <see cref="Return"/> method.  Failure to do so may result in a leak.
@@ -185,8 +184,7 @@ internal class RenderTargetFactory(GorgonGraphics graphics)
     /// </remarks>
     public GorgonRenderTarget2DView Rent(IGorgonTexture2DInfo targetInfo, string name, bool clearOnRetrieve = true)
     {
-        name.ValidateString(nameof(name));
-        targetInfo.ValidateObject(nameof(targetInfo));
+        ArgumentEmptyException.ThrowIfNullOrWhiteSpace(name);
 
         ExpireTargets();
 

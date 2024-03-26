@@ -1011,8 +1011,6 @@ public sealed class Gorgon2D
     /// <seealso cref="GorgonSprite"/>
     public IGorgon2DDrawingFluent DrawPolygonSprite(GorgonPolySprite sprite)
     {
-        sprite.ValidateObject(nameof(sprite));
-
 #if DEBUG
         if (_beginCalled == 0)
         {
@@ -1090,8 +1088,6 @@ public sealed class Gorgon2D
     /// <remarks>This is the equivalent of an axis aligned bounding box.</remarks>        
     public GorgonRectangleF MeasureSprite(GorgonSprite sprite)
     {
-        sprite.ValidateObject(nameof(sprite));
-
         if (_initialized != Initialized)
         {
             Initialize();
@@ -1119,8 +1115,6 @@ public sealed class Gorgon2D
         int vertexOffset = 0;
         // The position of the current glyph.
         Vector2 position = Vector2.Zero;
-
-        sprite.ValidateObject(nameof(sprite));
 
         if (_initialized != Initialized)
         {
@@ -1282,8 +1276,6 @@ public sealed class Gorgon2D
     /// <seealso cref="GorgonSprite"/>
     public IGorgon2DDrawingFluent DrawSprite(GorgonSprite sprite)
     {
-        sprite.ValidateObject(nameof(sprite));
-
 #if DEBUG
         if (_beginCalled == 0)
         {
@@ -1397,7 +1389,6 @@ public sealed class Gorgon2D
     /// <seealso cref="GorgonSprite"/>
     public IGorgon2DDrawingFluent DrawTextSprite(GorgonTextSprite sprite)
     {
-        sprite.ValidateObject(nameof(sprite));
 #if DEBUG
         if (_beginCalled == 0)
         {
@@ -1411,8 +1402,6 @@ public sealed class Gorgon2D
         int vertexOffset = 0;
         // The position of the current glyph.
         Vector2 position = Vector2.Zero;
-
-        sprite.ValidateObject(nameof(sprite));
 
         _textBuffer.Length = 0;
         int textLength = sprite.Text.Length;

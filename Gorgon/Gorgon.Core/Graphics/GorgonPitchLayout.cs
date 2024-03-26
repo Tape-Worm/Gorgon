@@ -123,7 +123,7 @@ public readonly struct GorgonPitchLayout
     /// <returns>
     ///   <b>true</b> if the specified <see cref="object" /> is equal to this instance; otherwise, <b>false</b>.
     /// </returns>
-    public override bool Equals(object obj) => obj is GorgonPitchLayout pitchLayout ? Equals(this, pitchLayout) : base.Equals(obj);
+    public override bool Equals(object? obj) => obj is GorgonPitchLayout pitchLayout ? Equals(this, pitchLayout) : base.Equals(obj);
 
     /// <summary>
     /// Returns a hash code for this instance.

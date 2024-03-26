@@ -25,7 +25,6 @@
 
 using System.Collections;
 using Gorgon.Core;
-using Gorgon.Diagnostics;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
@@ -529,9 +528,6 @@ public class Gorgon2DCompositor(Gorgon2D renderer)
     /// <returns>The fluent interface for the effects processor.</returns>
     public Gorgon2DCompositor Render(GorgonTexture2DView source, GorgonRenderTargetView output)
     {
-        source.ValidateObject(nameof(source));
-        output.ValidateObject(nameof(output));
-
         // We cannot copy a texture to itself, and it's pointless to do so, so just leave.
         if ((source.Resource == output.Resource)
             && (_passLookup.Count == 0))

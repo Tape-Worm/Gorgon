@@ -24,7 +24,6 @@
 // 
 
 using Gorgon.Collections;
-using Gorgon.Core;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core;
@@ -46,7 +45,7 @@ internal class BlendStateArray
         ReadOnlySpan<GorgonBlendState> indices = GetDirtySpan();
 
         if (indices.IsEmpty)
-        {        
+        {
             return null;
         }
 

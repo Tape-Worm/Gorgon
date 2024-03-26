@@ -1219,14 +1219,24 @@ public sealed class GorgonSwapChain
     /// If the window that the swap chain is bound with is occluded and/or the swap chain is in between a mode switch, then this method will place the swap chain into stand by mode, and will recover 
     /// (i.e. turn off stand by) once the device is ready for rendering again.
     /// </para>
+    /// <para>
+    /// <note type="important">
+    /// <para>
+    /// For performance reasons, any exceptions thrown from this method will only be thrown when Gorgon is compiled as DEBUG.
+    /// </para>
+    /// </note>
+    /// </para>
     /// </remarks>
-    /// <exception cref="ArgumentOutOfRangeException">Thrown when the interval parameter is less than 0 or greater than 4. This is only thrown when Gorgon is compiled in <b>DEBUG</b> mode.</exception>
-    /// <exception cref="GorgonException">Thrown when the method encounters an unrecoverable error.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when the interval parameter is less than 0 or greater than 4.</exception>
+    /// <exception cref="GorgonException">Thrown when the method encounters an unrecoverable error. This always thrown, regardless of the compilation mode.</exception>
     public void Present(int interval = 0)
     {
         DXGI.PresentFlags flags = !IsInStandBy ? DXGI.PresentFlags.None : DXGI.PresentFlags.Test;
 
-        interval.ValidateRange(nameof(interval), 0, 4, true, true);
+#if DEBUG
+        ArgumentOutOfRangeException.ThrowIfLessThan(interval, 0);
+        ArgumentOutOfRangeException.ThrowIfGreaterThan(interval, 4);
+#endif
 
         // The tearing flag is only supported by windowed mode. Fullscreen exclusive already has tearing by design.
         if (((IsWindowed) || (_isFullScreenBorderless)) && (_supportsTearing != 0) && (interval == 0) && (!IsInStandBy))

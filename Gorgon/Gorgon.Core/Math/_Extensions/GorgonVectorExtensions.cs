@@ -23,7 +23,6 @@
 // Created: January 30, 2021 3:43:05 PM
 // 
 
-using System.Drawing;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 
@@ -286,36 +285,4 @@ public static class GorgonVectorExtensions
     /// <returns>The converted vector.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Vector4 ToVector4(this Quaternion q) => new(q.X, q.Y, q.Z, q.W);
-
-    /// <summary>
-    /// Function to convert a <see cref="Vector2"/> to a <see cref="PointF"/>.
-    /// </summary>
-    /// <param name="vector">The vector to convert.</param>
-    /// <returns>The converted point.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static PointF ToPointF(this Vector2 vector) => new(vector.X, vector.Y);
-
-    /// <summary>
-    /// Function to convert a <see cref="Vector2"/> to a <see cref="PointF"/>.
-    /// </summary>
-    /// <param name="vector">The vector to convert.</param>
-    /// <returns>The converted point.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Point ToPoint(this Vector2 vector) => new((int)vector.X, (int)vector.Y);
-
-    /// <summary>
-    /// Function to convert a <see cref="Vector2"/> to a <see cref="SizeF"/>.
-    /// </summary>
-    /// <param name="vector">The vector to convert.</param>
-    /// <returns>The converted size.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static SizeF ToSizeF(this Vector2 vector) => new(vector.X, vector.Y);
-
-    /// <summary>
-    /// Function to convert a <see cref="Vector2"/> to a <see cref="Size"/>.
-    /// </summary>
-    /// <param name="vector">The vector to convert.</param>
-    /// <returns>The converted size.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Size ToSize(this Vector2 vector) => new((int)vector.X, (int)vector.Y);
 }

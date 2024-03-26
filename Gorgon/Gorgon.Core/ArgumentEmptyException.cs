@@ -41,7 +41,7 @@ public class ArgumentEmptyException
     /// <param name="parameterName">The name of the parameter.</param>
     /// <exception cref="ArgumentNullException">Thrown if the <paramref name="value"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown if the <paramref name="value"/> parameter is empty or only has whitespace.</exception>
-    public static void ThrowIfNullOrWhiteSpace(string value, [CallerArgumentExpression(nameof(value))] string parameterName = null)
+    public static void ThrowIfNullOrWhiteSpace(string value, [CallerArgumentExpression(nameof(value))] string? parameterName = null)
     {
         if (value is null)
         {
@@ -61,7 +61,7 @@ public class ArgumentEmptyException
     /// <param name="parameterName">The name of the parameter.</param>
     /// <exception cref="ArgumentNullException">Thrown if the <paramref name="value"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown if the <paramref name="value"/> parameter is empty.</exception>
-    public static void ThrowIfNullOrEmpty(string value, [CallerArgumentExpression(nameof(value))] string parameterName = null)
+    public static void ThrowIfNullOrEmpty(string value, [CallerArgumentExpression(nameof(value))] string? parameterName = null)
     {
         if (value is null)
         {
@@ -81,7 +81,7 @@ public class ArgumentEmptyException
     /// <param name="parameterName">The name of the parameter.</param>
     /// <exception cref="ArgumentNullException">Thrown if the <paramref name="value"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown if the <paramref name="value"/> parameter is empty.</exception>
-    public static void ThrowIfNullOrEmpty<T>(IReadOnlyCollection<T> value, [CallerArgumentExpression(nameof(value))] string parameterName = null)
+    public static void ThrowIfNullOrEmpty<T>(IReadOnlyCollection<T> value, [CallerArgumentExpression(nameof(value))] string? parameterName = null)
     {
         if (value is null)
         {
@@ -101,7 +101,7 @@ public class ArgumentEmptyException
     /// <param name="parameterName">The name of the parameter.</param>
     /// <exception cref="ArgumentNullException">Thrown if the <paramref name="value"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown if the <paramref name="value"/> parameter is empty.</exception>
-    public static void ThrowIfNullOrEmpty<TKey, TValue>(IReadOnlyDictionary<TKey, TValue> value, [CallerArgumentExpression(nameof(value))] string parameterName = null)
+    public static void ThrowIfNullOrEmpty<TKey, TValue>(IReadOnlyDictionary<TKey, TValue> value, [CallerArgumentExpression(nameof(value))] string? parameterName = null)
     {
         if (value is null)
         {
@@ -118,8 +118,8 @@ public class ArgumentEmptyException
     /// Initializes a new instance of the <see cref="ArgumentEmptyException"/> class.
     /// </summary>
     /// <param name="parameterName">The name of the parameter that caused the exception.</param>
-    public ArgumentEmptyException(string parameterName)
-        : base(string.Format(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, parameterName))
+    public ArgumentEmptyException(string? parameterName)
+        : base(string.Format(Resources.GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY, parameterName ?? string.Empty))
     {
     }
 

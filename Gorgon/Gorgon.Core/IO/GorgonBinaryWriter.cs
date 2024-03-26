@@ -258,7 +258,6 @@ public class GorgonBinaryWriter(Stream output, Encoding encoder, bool keepStream
     /// <param name="value">Array of values to write.</param>
     /// <param name="startIndex">[Optional] Starting index in the array.</param>
     /// <param name="count">[Optional] Number of array elements to copy.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="value"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="startIndex"/> parameter is less than 0.
     /// <para>-or-</para>
     /// <para>Thrown when the startIndex parameter is equal to or greater than the number of elements in the value parameter.</para>
@@ -288,8 +287,6 @@ public class GorgonBinaryWriter(Stream output, Encoding encoder, bool keepStream
     public void WriteRange<T>(T[] value, int startIndex = 0, int? count = null)
         where T : unmanaged
     {
-        ArgumentNullException.ThrowIfNull(value);
-
         count ??= value.Length - startIndex;
 
         if (startIndex < 0)

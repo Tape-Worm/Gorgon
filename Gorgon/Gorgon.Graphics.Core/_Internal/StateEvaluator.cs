@@ -25,7 +25,6 @@
 
 using System.Diagnostics;
 using Gorgon.Collections;
-using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Math;
 using D3D11 = SharpDX.Direct3D11;
@@ -84,7 +83,7 @@ internal class StateEvaluator(GorgonGraphics graphics)
     {
         void ScanStreamOut(ReadOnlySpan<GorgonStreamOutBinding> soBindings)
         {
-            for (int s = 0;  s < soBindings.Length; ++s)
+            for (int s = 0; s < soBindings.Length; ++s)
             {
                 GorgonBufferCommon soBuffer = soBindings[s].Buffer;
 
@@ -158,11 +157,10 @@ internal class StateEvaluator(GorgonGraphics graphics)
                 {
                     _log.Print($"WARNING: The vertex buffer '{vBuffer.Name}' is bound for input and stream out. It will be unbound from the vertex buffers.", LoggingLevel.Verbose);
                 }
-                
+
                 vertexBuffers.MarkClean(start + v);
             }
         }
-
 
         for (int s = 0; s < streamOutBuffers.Length; ++s)
         {
@@ -231,7 +229,7 @@ internal class StateEvaluator(GorgonGraphics graphics)
 
                 srvs[start + s] = null;
             }
-            
+
             srvs.MarkDirty(dirtyRange);
         }
 
@@ -448,7 +446,7 @@ internal class StateEvaluator(GorgonGraphics graphics)
         Debug.Assert(left.Length == right.Length, $"Both arrays must be of the same length. Left: {left.Length}, Right: {right.Length}");
 
         (int leftStart, int leftCount) = left.GetDirtyStartIndexAndCount();
-        (int rightStart, int rightCount) = right.GetDirtyStartIndexAndCount();  
+        (int rightStart, int rightCount) = right.GetDirtyStartIndexAndCount();
 
         int leftEnd = leftStart + leftCount;
         int rightEnd = rightStart + rightCount;
@@ -760,7 +758,7 @@ internal class StateEvaluator(GorgonGraphics graphics)
     public void ResetState()
     {
         _prevPipelineState.Clear();
-        
+
         _prevResourceState.Reset();
 
         _ranges.Reset();

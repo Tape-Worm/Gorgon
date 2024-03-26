@@ -24,7 +24,6 @@
 // 
 
 using System.Numerics;
-using Gorgon.Diagnostics;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
@@ -258,9 +257,6 @@ public class Gorgon2DChromaticAberrationEffect(Gorgon2D renderer)
     /// </remarks>
     public void Render(GorgonTexture2DView texture, GorgonRenderTargetView output)
     {
-        texture.ValidateObject(nameof(texture));
-        output.ValidateObject(nameof(output));
-
         BeginRender(output);
         BeginPass(0, output);
         Renderer.DrawFilledRectangle(new GorgonRectangleF(0, 0, output.Width, output.Height), GorgonColors.White, texture, new GorgonRectangleF(0, 0, 1, 1));

@@ -1,7 +1,5 @@
-﻿
-// 
-// Gorgon
-// Copyright (C) 2018 Michael Winsor
+﻿// Gorgon.
+// Copyright (C) 2024 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -11,40 +9,48 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software
+// all copies or substantial portions of the Software.
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE
+// THE SOFTWARE.
 // 
-// Created: March 20, 2018 11:05:20 PM
-// 
+// Created: March 26, 2024 12:05:11 AM
+//
 
-namespace Gorgon.Diagnostics.LogProviders;
+using Gorgon.Diagnostics.LogProviders;
+
+namespace Gorgon.Diagnostics;
 
 /// <summary>
-/// A provider that accesses a data store to store logging messages
+/// A dummy provider for the dummy log.
 /// </summary>
-public interface IGorgonLogProvider
+internal class DummyLogProvider
+    : IGorgonLogProvider
 {
     /// <summary>
-    /// Function to open the data store for writing.
+    /// An instance of a provider that does nothing.
     /// </summary>
-    /// <param name="initialMessage">[Optional] The initial message to write.</param>
-    void Open(string? initialMessage = null);
+    public static readonly DummyLogProvider NullProvider = new();
 
-    /// <summary>
-    /// Function to write a message to the data store.
-    /// </summary>
-    /// <param name="message">The message to write.</param>
-    void SendMessage(string message);
+    /// <inheritdoc/>
+    public void Close(string? closingMessage = null)
+    {
+        // Intentionally left blank.
+    }
 
-    /// <summary>
-    /// Function to close the data store for writing.
-    /// </summary>
-    /// <param name="closingMessage">[Optional] The message to write when closing.</param>
-    void Close(string? closingMessage = null);
+    /// <inheritdoc/>
+    public void Open(string? initialMessage = null)
+    {
+        // Intentionally left blank.
+    }
+
+    /// <inheritdoc/>
+    public void SendMessage(string message)
+    {
+        // Intentionally left blank.
+    }
 }

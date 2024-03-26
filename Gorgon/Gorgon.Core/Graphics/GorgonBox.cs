@@ -22,7 +22,6 @@
 // Created: Thursday, March 15, 2012 7:34:32 PM
 // 
 
-using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Gorgon.Core;
@@ -408,7 +407,7 @@ public struct GorgonBox
     /// <returns>
     ///   <b>true</b> if the specified <see cref="object" /> is equal to this instance; otherwise, <b>false</b>.
     /// </returns>
-    public override readonly bool Equals(object obj) => obj is GorgonBox box ? box.Equals(in this) : base.Equals(obj);
+    public override readonly bool Equals(object? obj) => obj is GorgonBox box ? box.Equals(in this) : base.Equals(obj);
 
     /// <summary>
     /// Operator to determine if 2 instances are equal.

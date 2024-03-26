@@ -23,7 +23,6 @@
 // Created: Tuesday, September 22, 2015 8:54:34 PM
 // 
 
-using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.IO.Providers;
 

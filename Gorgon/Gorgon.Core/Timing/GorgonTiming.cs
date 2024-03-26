@@ -42,7 +42,8 @@ namespace Gorgon.Timing;
 /// </remarks>
 /// <example>
 /// When using the <c>Gorgon.UI.GorgonApplication</c> class, the timing code is automatically updated by its own idle loop:
-/// <code>
+/// <code lang="csharp">
+/// <![CDATA[
 ///	public static bool MyLoop()
 /// {
 ///     Console.CursorLeft = 0;
@@ -56,9 +57,11 @@ namespace Gorgon.Timing;
 /// {
 ///		GorgonApplication.Run(MyLoop);
 /// }
+/// ]]>
 /// </code> 
 /// And here is a a custom application loop using the <see cref="GorgonTiming"/> class:
-/// <code>
+/// <code lang="csharp">
+/// <![CDATA[
 /// // This assumes the Win32 API call to PeekMessage is imported
 /// public void DoLoop()
 /// {
@@ -74,13 +77,13 @@ namespace Gorgon.Timing;
 ///			// Do your processing
 ///		}
 /// }
+/// ]]>
 /// </code>
 /// </example>
 public static class GorgonTiming
 {
-
     // Timer used in calculations.
-    private static IGorgonTimer _timer;
+    private static IGorgonTimer? _timer;
     // The value to indicate how long the application has been running.
     private static decimal _appTimer;
     // Frame counter.
@@ -132,7 +135,7 @@ public static class GorgonTiming
     {
         get;
         set;
-    }
+    } = 1.0f;
 
     /// <summary>
     /// Property to return the number of seconds since a Gorgon application was started.
@@ -554,10 +557,4 @@ public static class GorgonTiming
     /// <param name="fps">Desired frames per second.</param>
     /// <returns>Frames per second in microseconds.</returns>
     public static double FpsToMicroseconds(double fps) => fps > 0 ? 1000000 / fps : 0;
-
-    /// <summary>
-    /// Initializes the <see cref="GorgonTiming"/> class.
-    /// </summary>
-    static GorgonTiming() => TimeScale = 1;
-
 }

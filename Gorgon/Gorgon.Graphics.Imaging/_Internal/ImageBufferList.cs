@@ -24,7 +24,6 @@
 // 
 
 using System.Collections;
-using Gorgon.Diagnostics;
 using Gorgon.Math;
 using Gorgon.Native;
 
@@ -65,10 +64,10 @@ class ImageBufferList
     /// <summary>
     /// Property to return the buffer for the given mip map level and depth slice.
     /// </summary>
-    /// <exception cref="ArgumentOutOfRangeException">Thrown when the array index or the depth slice parameters are larger than their respective boundaries, or less than 0. Only thrown when this assembly is compiled in DEBUG mode.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when the array index or the depth slice parameters are larger than their respective boundaries, or less than 0.</exception>
     /// <remarks>
     /// <para>
-    /// To get the array length, or the mip map count, use the <see cref="P:Gorgon.Graphics.GorgonImageData.Settings">Settings</see> property.
+    /// To get the array length, or the mip map count, use the <see cref="IGorgonImageInfo.ArrayCount"/> or <see cref="IGorgonImageInfo.MipCount"/> property.
     /// </para>
     /// <para>
     /// To get the depth slice count, use the <see cref="IGorgonImage.GetDepthCount"/> method.
@@ -83,16 +82,21 @@ class ImageBufferList
         {
             (int, int) offsetSize;
 
-            mipLevel.ValidateRange(nameof(mipLevel), 0, _imageInfo.MipCount);
+            ArgumentOutOfRangeException.ThrowIfLessThan(mipLevel, 0);
+            ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(mipLevel, _imageInfo.MipCount);
 
             if (_imageInfo.ImageType == ImageDataType.Image3D)
             {
-                depthSliceOrArrayIndex.ValidateRange("arrayIndexDepthSlice", 0, _imageInfo.Depth);
+                ArgumentOutOfRangeException.ThrowIfLessThan(depthSliceOrArrayIndex, 0);
+                ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(depthSliceOrArrayIndex, _imageInfo.Depth);
+
                 offsetSize = MipOffsetSize[mipLevel];
                 return _buffers[offsetSize.Item1 + depthSliceOrArrayIndex];
             }
 
-            depthSliceOrArrayIndex.ValidateRange("arrayIndexDepthSlice", 0, _imageInfo.ArrayCount);
+            ArgumentOutOfRangeException.ThrowIfLessThan(depthSliceOrArrayIndex, 0);
+            ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(depthSliceOrArrayIndex, _imageInfo.ArrayCount);
+
             offsetSize = MipOffsetSize[mipLevel + (depthSliceOrArrayIndex * _imageInfo.MipCount)];
             return _buffers[offsetSize.Item1];
         }

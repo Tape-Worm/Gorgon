@@ -21,9 +21,9 @@
 // Created: December 18, 2023 7:06:47 PM
 //
 
+using System.Drawing;
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using System.Drawing;
 
 namespace Gorgon.Graphics;
 
@@ -47,4 +47,20 @@ public static class GorgonSizeExtensions
     /// <returns>The converted vector.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Vector2 ToVector2(this Size size) => new(size.Width, size.Height);
+
+    /// <summary>
+    /// Function to convert a <see cref="Vector2"/> to a <see cref="SizeF"/>.
+    /// </summary>
+    /// <param name="vector">The vector to convert.</param>
+    /// <returns>The converted size.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static SizeF ToSizeF(this Vector2 vector) => new(vector.X, vector.Y);
+
+    /// <summary>
+    /// Function to convert a <see cref="Vector2"/> to a <see cref="Size"/>.
+    /// </summary>
+    /// <param name="vector">The vector to convert.</param>
+    /// <returns>The converted size.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Size ToSize(this Vector2 vector) => new((int)vector.X, (int)vector.Y);
 }

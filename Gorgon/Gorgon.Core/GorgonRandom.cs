@@ -22,6 +22,7 @@
 // Created: Sunday, October 14, 2012 4:37:30 PM
 // 
 
+using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using CenterCLR.XorRandomGenerator;
 using Gorgon.Math;
@@ -72,6 +73,7 @@ public static class GorgonRandom
     public static int Seed
     {
         get => _seed;
+        [MemberNotNull(nameof(_rnd))]
         set
         {
             Noise.Seed = value;

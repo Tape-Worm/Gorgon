@@ -358,7 +358,7 @@ public struct GorgonRectangleF
     /// <returns>
     ///   <b>true</b> if the specified <see cref="object" /> is equal to this instance; otherwise, <b>false</b>.
     /// </returns>
-    public override readonly bool Equals(object obj) => obj is GorgonRectangleF rectangle ? rectangle.Equals(this) : base.Equals(obj);
+    public override readonly bool Equals(object? obj) => obj is GorgonRectangleF rectangle ? rectangle.Equals(this) : base.Equals(obj);
 
     /// <summary>
     /// Operator to determine if 2 instances are equal.

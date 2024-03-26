@@ -33,15 +33,14 @@ namespace Gorgon.Configuration;
 public class GorgonOption
     : IGorgonNamedObject, IGorgonOption
 {
-
     // The value stored in this option.
-    private object _value;
+    private object? _value;
     // The default value stored in this option.
-    private readonly object _defaultValue;
+    private readonly object? _defaultValue;
     // The minimum allowed value for this option.
-    private readonly object _minValue;
+    private readonly object? _minValue;
     // The maximum allowed value for this option.
-    private readonly object _maxValue;
+    private readonly object? _maxValue;
 
     /// <summary>
     /// Property to return the type of data stored in the option.
@@ -81,11 +80,11 @@ public class GorgonOption
     /// </summary>
     /// <typeparam name="T">The type of the value.</typeparam>
     /// <returns>The value, strongly typed.</returns>
-    public T GetDefaultValue<T>()
+    public T? GetDefaultValue<T>()
     {
         Type type = typeof(T);
 
-        return typeof(T) != type ? (T)Convert.ChangeType(_defaultValue, type) : (T)_defaultValue;
+        return typeof(T) != type ? (T?)Convert.ChangeType(_defaultValue, type) : (T?)_defaultValue;
     }
 
     /// <summary>
@@ -93,11 +92,11 @@ public class GorgonOption
     /// </summary>
     /// <typeparam name="T">The type of the value.</typeparam>
     /// <returns>The value, strongly typed.</returns>
-    public T GetMinValue<T>()
+    public T? GetMinValue<T>()
     {
         Type type = typeof(T);
 
-        return typeof(T) != type ? (T)Convert.ChangeType(_minValue, type) : (T)_minValue;
+        return typeof(T) != type ? (T?)Convert.ChangeType(_minValue, type) : (T?)_minValue;
     }
 
     /// <summary>
@@ -105,11 +104,11 @@ public class GorgonOption
     /// </summary>
     /// <typeparam name="T">The type of the value.</typeparam>
     /// <returns>The value, strongly typed.</returns>
-    public T GetMaxValue<T>()
+    public T? GetMaxValue<T>()
     {
         Type type = typeof(T);
 
-        return typeof(T) != type ? (T)Convert.ChangeType(_maxValue, type) : (T)_maxValue;
+        return typeof(T) != type ? (T?)Convert.ChangeType(_maxValue, type) : (T?)_maxValue;
     }
 
     /// <summary>
@@ -117,11 +116,11 @@ public class GorgonOption
     /// </summary>
     /// <typeparam name="T">The type for the value.</typeparam>
     /// <returns>The value, strongly typed.</returns>
-    public T GetValue<T>()
+    public T? GetValue<T>()
     {
         Type type = typeof(T);
 
-        return (typeof(T) != Type) && (_value is IConvertible) ? (T)Convert.ChangeType(_value, type) : (T)_value;
+        return (typeof(T) != Type) ? (T?)Convert.ChangeType(_value, type) : (T?)_value;
     }
 
     /// <summary>
@@ -129,9 +128,9 @@ public class GorgonOption
     /// </summary>
     /// <typeparam name="T">The type parmeter for the value.</typeparam>
     /// <param name="value">The value to assign.</param>
-    public void SetValue<T>(T value)
+    public void SetValue<T>(T? value)
     {
-        object newValue = value;
+        object? newValue = value;
 
         // Convert to the type used by this option.
         if ((typeof(T) != Type) && (value is IConvertible))
@@ -154,8 +153,8 @@ public class GorgonOption
             case TypeCode.Single:
             case TypeCode.Decimal:
                 {
-                    // Convert to a decimal first, just because it's the largest primitive number format.
-                    decimal convertedValue = (decimal)Convert.ChangeType(newValue, typeof(decimal));
+                    // Convert to a decimal first, just because it's the largest primitive number format for the values we store.
+                    decimal convertedValue = (decimal?)Convert.ChangeType(newValue, typeof(decimal)) ?? default;
 
                     if (_minValue is not null)
                     {
@@ -182,7 +181,7 @@ public class GorgonOption
                 break;
             case TypeCode.DateTime:
                 {
-                    DateTime convertedValue = (DateTime)Convert.ChangeType(newValue, typeof(DateTime));
+                    DateTime convertedValue = (DateTime?)Convert.ChangeType(newValue, typeof(DateTime)) ?? default;
 
                     if (_minValue is not null)
                     {
@@ -220,7 +219,6 @@ public class GorgonOption
     /// <param name="minValue">[Optional] The minimum value for the option.</param>
     /// <param name="maxValue">[Optional] The maximum value for the option.</param>
     /// <returns>A new <see cref="IGorgonOption"/>.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
     /// <remarks>
     /// <para>
@@ -228,7 +226,7 @@ public class GorgonOption
     /// is a single line, then the <see cref="Text"/> and <see cref="Description"/> fields will be the same.
     /// </para>
     /// </remarks>
-    public static IGorgonOption CreateByteOption(string name, byte defaultValue, string description = null, byte? minValue = null, byte? maxValue = null)
+    public static IGorgonOption CreateByteOption(string name, byte defaultValue, string? description = null, byte? minValue = null, byte? maxValue = null)
     {
         if ((minValue is not null) && (defaultValue < minValue.Value))
         {
@@ -257,7 +255,6 @@ public class GorgonOption
     /// <param name="minValue">[Optional] The minimum value for the option.</param>
     /// <param name="maxValue">[Optional] The maximum value for the option.</param>
     /// <returns>A new <see cref="IGorgonOption"/>.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
     /// <remarks>
     /// <para>
@@ -265,7 +262,7 @@ public class GorgonOption
     /// is a single line, then the <see cref="Text"/> and <see cref="Description"/> fields will be the same.
     /// </para>
     /// </remarks>
-    public static IGorgonOption CreateSByteOption(string name, sbyte defaultValue, string description = null, sbyte? minValue = null, sbyte? maxValue = null)
+    public static IGorgonOption CreateSByteOption(string name, sbyte defaultValue, string? description = null, sbyte? minValue = null, sbyte? maxValue = null)
     {
         if ((minValue is not null) && (defaultValue < minValue.Value))
         {
@@ -294,7 +291,6 @@ public class GorgonOption
     /// <param name="minValue">[Optional] The minimum value for the option.</param>
     /// <param name="maxValue">[Optional] The maximum value for the option.</param>
     /// <returns>A new <see cref="IGorgonOption"/>.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
     /// <remarks>
     /// <para>
@@ -302,7 +298,7 @@ public class GorgonOption
     /// is a single line, then the <see cref="Text"/> and <see cref="Description"/> fields will be the same.
     /// </para>
     /// </remarks>
-    public static IGorgonOption CreateInt16Option(string name, short defaultValue, string description = null, short? minValue = null, short? maxValue = null)
+    public static IGorgonOption CreateInt16Option(string name, short defaultValue, string? description = null, short? minValue = null, short? maxValue = null)
     {
         if ((minValue is not null) && (defaultValue < minValue.Value))
         {
@@ -331,7 +327,6 @@ public class GorgonOption
     /// <param name="minValue">[Optional] The minimum value for the option.</param>
     /// <param name="maxValue">[Optional] The maximum value for the option.</param>
     /// <returns>A new <see cref="IGorgonOption"/>.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
     /// <remarks>
     /// <para>
@@ -339,7 +334,7 @@ public class GorgonOption
     /// is a single line, then the <see cref="Text"/> and <see cref="Description"/> fields will be the same.
     /// </para>
     /// </remarks>
-    public static IGorgonOption CreateUInt16Option(string name, ushort defaultValue, string description = null, ushort? minValue = null, ushort? maxValue = null)
+    public static IGorgonOption CreateUInt16Option(string name, ushort defaultValue, string? description = null, ushort? minValue = null, ushort? maxValue = null)
     {
         if ((minValue is not null) && (defaultValue < minValue.Value))
         {
@@ -368,7 +363,6 @@ public class GorgonOption
     /// <param name="minValue">[Optional] The minimum value for the option.</param>
     /// <param name="maxValue">[Optional] The maximum value for the option.</param>
     /// <returns>A new <see cref="IGorgonOption"/>.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
     /// <remarks>
     /// <para>
@@ -376,7 +370,7 @@ public class GorgonOption
     /// is a single line, then the <see cref="Text"/> and <see cref="Description"/> fields will be the same.
     /// </para>
     /// </remarks>
-    public static IGorgonOption CreateInt32Option(string name, int defaultValue, string description, int? minValue = null, int? maxValue = null)
+    public static IGorgonOption CreateInt32Option(string name, int defaultValue, string? description, int? minValue = null, int? maxValue = null)
     {
         if ((minValue is not null) && (defaultValue < minValue.Value))
         {
@@ -405,7 +399,6 @@ public class GorgonOption
     /// <param name="minValue">[Optional] The minimum value for the option.</param>
     /// <param name="maxValue">[Optional] The maximum value for the option.</param>
     /// <returns>A new <see cref="IGorgonOption"/>.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
     /// <remarks>
     /// <para>
@@ -413,7 +406,7 @@ public class GorgonOption
     /// is a single line, then the <see cref="Text"/> and <see cref="Description"/> fields will be the same.
     /// </para>
     /// </remarks>
-    public static IGorgonOption CreateUInt32Option(string name, uint defaultValue, string description = null, uint? minValue = null, uint? maxValue = null)
+    public static IGorgonOption CreateUInt32Option(string name, uint defaultValue, string? description = null, uint? minValue = null, uint? maxValue = null)
     {
         if ((minValue is not null) && (defaultValue < minValue.Value))
         {
@@ -442,7 +435,6 @@ public class GorgonOption
     /// <param name="minValue">[Optional] The minimum value for the option.</param>
     /// <param name="maxValue">[Optional] The maximum value for the option.</param>
     /// <returns>A new <see cref="IGorgonOption"/>.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
     /// <remarks>
     /// <para>
@@ -450,7 +442,7 @@ public class GorgonOption
     /// is a single line, then the <see cref="Text"/> and <see cref="Description"/> fields will be the same.
     /// </para>
     /// </remarks>
-    public static IGorgonOption CreateInt64Option(string name, long defaultValue, string description = null, long? minValue = null, long? maxValue = null)
+    public static IGorgonOption CreateInt64Option(string name, long defaultValue, string? description = null, long? minValue = null, long? maxValue = null)
     {
         if ((minValue is not null) && (defaultValue < minValue.Value))
         {
@@ -479,7 +471,6 @@ public class GorgonOption
     /// <param name="minValue">[Optional] The minimum value for the option.</param>
     /// <param name="maxValue">[Optional] The maximum value for the option.</param>
     /// <returns>A new <see cref="IGorgonOption"/>.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
     /// <remarks>
     /// <para>
@@ -487,7 +478,7 @@ public class GorgonOption
     /// is a single line, then the <see cref="Text"/> and <see cref="Description"/> fields will be the same.
     /// </para>
     /// </remarks>
-    public static IGorgonOption CreateUInt64Option(string name, ulong defaultValue, string description = null, ulong? minValue = null, ulong? maxValue = null)
+    public static IGorgonOption CreateUInt64Option(string name, ulong defaultValue, string? description = null, ulong? minValue = null, ulong? maxValue = null)
     {
         if ((minValue is not null) && (defaultValue < minValue.Value))
         {
@@ -516,7 +507,6 @@ public class GorgonOption
     /// <param name="minValue">[Optional] The minimum value for the option.</param>
     /// <param name="maxValue">[Optional] The maximum value for the option.</param>
     /// <returns>A new <see cref="IGorgonOption"/>.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
     /// <remarks>
     /// <para>
@@ -524,7 +514,7 @@ public class GorgonOption
     /// is a single line, then the <see cref="Text"/> and <see cref="Description"/> fields will be the same.
     /// </para>
     /// </remarks>
-    public static IGorgonOption CreateDoubleOption(string name, double defaultValue, string description = null, double? minValue = null, double? maxValue = null)
+    public static IGorgonOption CreateDoubleOption(string name, double defaultValue, string? description = null, double? minValue = null, double? maxValue = null)
     {
         if ((minValue is not null) && (defaultValue < minValue.Value))
         {
@@ -548,7 +538,6 @@ public class GorgonOption
     /// <param name="minValue">[Optional] The minimum value for the option.</param>
     /// <param name="maxValue">[Optional] The maximum value for the option.</param>
     /// <returns>A new <see cref="IGorgonOption"/>.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
     /// <remarks>
     /// <para>
@@ -556,7 +545,7 @@ public class GorgonOption
     /// is a single line, then the <see cref="Text"/> and <see cref="Description"/> fields will be the same.
     /// </para>
     /// </remarks>
-    public static IGorgonOption CreateSingleOption(string name, float defaultValue, string description = null, float? minValue = null, float? maxValue = null)
+    public static IGorgonOption CreateSingleOption(string name, float defaultValue, string? description = null, float? minValue = null, float? maxValue = null)
     {
         if ((minValue is not null) && (defaultValue < minValue.Value))
         {
@@ -585,7 +574,6 @@ public class GorgonOption
     /// <param name="minValue">[Optional] The minimum value for the option.</param>
     /// <param name="maxValue">[Optional] The maximum value for the option.</param>
     /// <returns>A new <see cref="IGorgonOption"/>.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
     /// <remarks>
     /// <para>
@@ -593,7 +581,7 @@ public class GorgonOption
     /// is a single line, then the <see cref="Text"/> and <see cref="Description"/> fields will be the same.
     /// </para>
     /// </remarks>
-    public static IGorgonOption CreateDecimalOption(string name, decimal defaultValue, string description = null, decimal? minValue = null, decimal? maxValue = null)
+    public static IGorgonOption CreateDecimalOption(string name, decimal defaultValue, string? description = null, decimal? minValue = null, decimal? maxValue = null)
     {
         if ((minValue is not null) && (defaultValue < minValue.Value))
         {
@@ -622,7 +610,6 @@ public class GorgonOption
     /// <param name="maxValue">[Optional] The maximum value for the option.</param>
     /// <param name="description">[Optional] The friendly description for this option.</param>
     /// <returns>A new <see cref="IGorgonOption"/>.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
     /// <remarks>
     /// <para>
@@ -630,7 +617,7 @@ public class GorgonOption
     /// is a single line, then the <see cref="Text"/> and <see cref="Description"/> fields will be the same.
     /// </para>
     /// </remarks>
-    public static IGorgonOption CreateDateTimeOption(string name, DateTime defaultValue, string description = null, DateTime? minValue = null, DateTime? maxValue = null)
+    public static IGorgonOption CreateDateTimeOption(string name, DateTime defaultValue, string? description = null, DateTime? minValue = null, DateTime? maxValue = null)
     {
         if ((minValue is not null) && (defaultValue < minValue.Value))
         {
@@ -642,7 +629,7 @@ public class GorgonOption
             defaultValue = maxValue.Value;
         }
 
-        return new GorgonOption(name, typeof(decimal), defaultValue, minValue ?? null, maxValue ?? null, description);
+        return new GorgonOption(name, typeof(DateTime), defaultValue, minValue ?? null, maxValue ?? null, description);
     }
 
     /// <summary>
@@ -653,7 +640,6 @@ public class GorgonOption
     /// <param name="defaultValue">[Optional] The default value for the option.</param>
     /// <param name="description">[Optional] The friendly description for this option.</param>
     /// <returns>A new <see cref="IGorgonOption"/>.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
     /// <remarks>
     /// <para>
@@ -664,7 +650,7 @@ public class GorgonOption
     /// If the <paramref name="defaultValue"/> is omitted, then the default value for the type is used.
     /// </para>
     /// </remarks>
-    public static IGorgonOption CreateOption<T>(string name, T defaultValue = default, string description = null) => new GorgonOption(name, typeof(T), defaultValue, null, null, description);
+    public static IGorgonOption CreateOption<T>(string name, T? defaultValue = default, string? description = null) => new GorgonOption(name, typeof(T), defaultValue, null, null, description);
 
     /// <summary>
     /// Function to create an option that stores a signed byte value.
@@ -675,7 +661,6 @@ public class GorgonOption
     /// <param name="defaultValue">The default value for the option.</param>
     /// <param name="description">[Optional] The friendly description for this option.</param>
     /// <returns>A new <see cref="IGorgonOption"/>.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
     /// <remarks>
     /// <para>
@@ -683,7 +668,7 @@ public class GorgonOption
     /// is a single line, then the <see cref="Text"/> and <see cref="Description"/> fields will be the same.
     /// </para>
     /// </remarks>
-    public static IGorgonOption CreateOption<T>(string name, T value, T defaultValue, string description = null)
+    public static IGorgonOption CreateOption<T>(string name, T? value, T? defaultValue, string? description = null)
     {
         GorgonOption result = new(name, typeof(T), defaultValue, null, null, description);
         result.SetValue(value);
@@ -699,9 +684,8 @@ public class GorgonOption
     /// <param name="minValue">The minimum allowed value for this option.</param>
     /// <param name="maxValue">The maximum allowed value for this option.</param>
     /// <param name="description">The description for this option.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
-    private GorgonOption(string name, Type type, object defaultValue, object minValue, object maxValue, string description)
+    private GorgonOption(string name, Type type, object? defaultValue, object? minValue, object? maxValue, string? description)
     {
         ArgumentEmptyException.ThrowIfNullOrWhiteSpace(name);
 

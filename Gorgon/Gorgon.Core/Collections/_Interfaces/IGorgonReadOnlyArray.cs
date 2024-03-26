@@ -22,9 +22,6 @@
 // Created: May 23, 2018 12:55:38 PM
 // 
 
-
-using Gorgon.Core;
-
 namespace Gorgon.Collections;
 
 /// <summary>
@@ -33,7 +30,7 @@ namespace Gorgon.Collections;
 /// <typeparam name="T">The type of data in the array.</typeparam>
 public interface IGorgonReadOnlyArray<T>
     : IReadOnlyList<T>
-    where T : IEquatable<T>
+    where T : IEquatable<T>?
 {
     /// <summary>
     /// Property to return the length of the array.

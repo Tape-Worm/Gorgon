@@ -131,7 +131,7 @@ public readonly struct GorgonResult
     /// <returns>
     /// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
     /// </returns>
-    public bool Equals(GorgonResult other) => Equals(this, other);
+    public readonly bool Equals(GorgonResult other) => Equals(this, other);
 
     /// <summary>
     /// Function to compare two instances for equality.
@@ -148,7 +148,7 @@ public readonly struct GorgonResult
     /// <returns>
     /// true if <paramref name="obj"/> and this instance are the same type and represent the same value; otherwise, false.
     /// </returns>
-    public override bool Equals(object obj) => obj is GorgonResult result ? Equals(this, result) : base.Equals(obj);
+    public override readonly bool Equals(object? obj) => obj is GorgonResult result ? Equals(this, result) : base.Equals(obj);
 
     /// <summary>
     /// Returns the fully qualified type name of this instance.
@@ -156,7 +156,7 @@ public readonly struct GorgonResult
     /// <returns>
     /// A <see cref="string"/> containing a fully qualified type name.
     /// </returns>
-    public override string ToString() => string.Format(Resources.GOR_TOSTR_GORGONRESULT, Name, Description, Code.FormatHex());
+    public override readonly string ToString() => string.Format(Resources.GOR_TOSTR_GORGONRESULT, Name, Description, Code.FormatHex());
 
     /// <summary>
     /// Returns the hash code for this instance.
@@ -164,7 +164,7 @@ public readonly struct GorgonResult
     /// <returns>
     /// A 32-bit signed integer that is the hash code for this instance.
     /// </returns>
-    public override int GetHashCode() => HashCode.Combine(Code, Name);
+    public override readonly int GetHashCode() => HashCode.Combine(Code, Name);
 
     /// <summary>
     /// Operator to test for equality.
@@ -188,7 +188,6 @@ public readonly struct GorgonResult
     /// <param name="name">The name of the error.</param>
     /// <param name="code">The numeric code assigned to the error.</param>
     /// <param name="description">The full description of the error.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> or <paramref name="description"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> or <paramref name="description"/> parameter is an empty string.</exception>
     public GorgonResult(string name, int code, string description)
     {

@@ -106,13 +106,12 @@ public enum AssemblyPlatformType
 public sealed class GorgonMefPlugInCache
     : IDisposable
 {
-
     // The contract name for the plug in.
-    private readonly string _contractName = typeof(GorgonPlugIn).FullName;
+    private readonly string _contractName = typeof(GorgonPlugIn).FullName ?? "THIS_SHOULD_NOT_HAPPEN_IF_IT_DOES_WE_RE_IN_TROUBLE";
     // The root catalog for the plugins.
-    private AggregateCatalog _rootCatalog = new();
+    private AggregateCatalog? _rootCatalog = new();
     // The container for the plugin definitions.
-    private CompositionContainer _container;
+    private CompositionContainer? _container;
     // The synchronization lock for multiple threads..
     private static readonly object _syncLock = new();
     // The builder used for type registration.
@@ -133,7 +132,7 @@ public sealed class GorgonMefPlugInCache
     {
         get;
         private set;
-    }
+    } = [];
 
     /// <summary>
     /// Function to update the list of assemblies.
@@ -253,7 +252,7 @@ public sealed class GorgonMefPlugInCache
     /// </note>
     /// </para>
     /// </remarks>
-    public static AssemblySigningResults VerifyAssemblyStrongName(string assemblyPath, byte[] publicKey = null)
+    public static AssemblySigningResults VerifyAssemblyStrongName(string assemblyPath, byte[]? publicKey = null)
     {
         if ((string.IsNullOrWhiteSpace(assemblyPath)) || (!File.Exists(assemblyPath)))
         {
@@ -266,7 +265,7 @@ public sealed class GorgonMefPlugInCache
         }
 
         AssemblyName assemblyName = AssemblyName.GetAssemblyName(assemblyPath);
-        byte[] compareToken = assemblyName.GetPublicKey();
+        byte[]? compareToken = assemblyName.GetPublicKey();
 
         return (compareToken is null) || (publicKey.Length != compareToken.Length) || (!publicKey.SequenceEqual(compareToken))
             ? AssemblySigningResults.Signed | AssemblySigningResults.KeyMismatch
@@ -327,7 +326,6 @@ public sealed class GorgonMefPlugInCache
     /// </summary>
     /// <param name="directoryPath">The path containing the plug in DLLs to load.</param>
     /// <param name="filePattern">[Optional] The file pattern to search for.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="directoryPath"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="directoryPath"/> parameter is empty.</exception>
     /// <exception cref="DirectoryNotFoundException">Thrown if the directory specified by <paramref name="directoryPath"/> does not exist.</exception>
     /// <remarks>
@@ -337,12 +335,12 @@ public sealed class GorgonMefPlugInCache
     /// </remarks>
     public void LoadPlugInAssemblies(string directoryPath, string filePattern = "*.dll")
     {
-        ArgumentNullException.ThrowIfNull(directoryPath);
-
-        if (string.IsNullOrWhiteSpace(directoryPath))
+        if (_rootCatalog is null)
         {
-            throw new ArgumentEmptyException(nameof(directoryPath));
+            throw new GorgonException(GorgonResult.CannotRead, Resources.GOR_ERR_PLUGIN_TYPE_LOAD_FAILURE);
         }
+
+        ArgumentEmptyException.ThrowIfNullOrWhiteSpace(directoryPath);
 
         // Ensure we send in a file search pattern.
         filePattern = Path.GetFileName(filePattern);
@@ -364,7 +362,7 @@ public sealed class GorgonMefPlugInCache
         lock (_syncLock)
         {
             // Check to see if we have this directory and search pattern already.
-            DirectoryCatalog catalog = _rootCatalog.Catalogs.OfType<DirectoryCatalog>()
+            DirectoryCatalog? catalog = _rootCatalog.Catalogs.OfType<DirectoryCatalog>()
                                                             .FirstOrDefault(item => string.Equals(item.FullPath, directoryPath, StringComparison.OrdinalIgnoreCase)
                                                                                  && string.Equals(item.SearchPattern, filePattern, StringComparison.OrdinalIgnoreCase));
 
@@ -391,6 +389,11 @@ public sealed class GorgonMefPlugInCache
     /// </summary>
     public void Refresh()
     {
+        if (_rootCatalog is null)
+        {
+            throw new GorgonException(GorgonResult.CannotRead, Resources.GOR_ERR_PLUGIN_TYPE_LOAD_FAILURE);
+        }
+
         lock (_syncLock)
         {
             HashSet<string> assemblyList = new(StringComparer.OrdinalIgnoreCase);
@@ -409,7 +412,7 @@ public sealed class GorgonMefPlugInCache
     /// Initializes a new instance of the <see cref="GorgonMefPlugInCache"/> class.
     /// </summary>
     /// <param name="log">[Optional] The application log file to use.</param>
-    public GorgonMefPlugInCache(IGorgonLog log = null)
+    public GorgonMefPlugInCache(IGorgonLog? log = null)
     {
         _builder.ForTypesDerivedFrom<GorgonPlugIn>().Export<GorgonPlugIn>(b =>
         {

@@ -44,17 +44,12 @@ public static class GorgonExceptionExtensions
     /// that has a type that is or derives from <see cref="Exception"/>.
     /// </para>
     /// </remarks>
-    public static void Handle<T>(this T ex, Action<T> handler, IGorgonLog log = null)
+    public static void Handle<T>(this T ex, Action<T> handler, IGorgonLog? log = null)
         where T : Exception
     {
-        if (ex is null)
-        {
-            return;
-        }
-
         log?.LogException(ex);
 
         // We pass the exception to the handler so that we don't capture the exception object in the closure.
-        handler?.Invoke(ex);
+        handler.Invoke(ex);
     }
 }

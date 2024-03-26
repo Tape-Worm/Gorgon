@@ -85,7 +85,7 @@ public readonly struct GorgonRationalNumber
     /// </returns>
     /// <param name="obj">The object to compare with the current object. </param>
     /// <filterpriority>2</filterpriority>
-    public override bool Equals(object obj) => obj is GorgonRationalNumber rational ? rational.Equals(this) : base.Equals(obj);
+    public override bool Equals(object? obj) => obj is GorgonRationalNumber rational ? rational.Equals(this) : base.Equals(obj);
 
     /// <summary>
     /// Indicates whether the current object is equal to another object of the same type.

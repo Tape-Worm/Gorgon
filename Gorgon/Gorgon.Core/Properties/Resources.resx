@@ -386,4 +386,7 @@ Code: 0x{2}</value>
   <data name="GOR_TOSTR_RECTANGLE" xml:space="preserve">
     <value>Gorgon Rectangle: {0}x{1}-{2}x{3} (Width: {4}, Height: {5})</value>
   </data>
+  <data name="GOR_ERR_CHUNK_NOT_OPEN" xml:space="preserve">
+    <value>The specified chunk {0} is not open for reading or writing.</value>
+  </data>
 </root>

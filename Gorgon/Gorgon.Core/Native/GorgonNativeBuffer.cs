@@ -162,7 +162,6 @@ public sealed class GorgonNativeBuffer<T>
     /// <param name="count">The number of items in the array to map to the buffer.</param>
     internal static void ValidateArrayParams<TArrayType>(TArrayType[] array, int index, int count)
     {
-        ArgumentNullException.ThrowIfNull(array);
         ArgumentOutOfRangeException.ThrowIfLessThan(index, 0);
 
         if ((index + count) > array.Length)
@@ -236,7 +235,6 @@ public sealed class GorgonNativeBuffer<T>
     /// <param name="sourceIndex">[Optional] The first index to start copying from.</param>
     /// <param name="count">[Optional] The number of items to copy.</param>
     /// <param name="destIndex">[Optional] The destination index in the destination buffer to start copying into.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="destination"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="sourceIndex"/>, or the <paramref name="destIndex"/> parameter is less than 0.</exception>
     /// <exception cref="ArgumentException">
     /// <para>Thrown when the <paramref name="sourceIndex"/> + <paramref name="count"/> is too big for this buffer.</para>
@@ -249,12 +247,7 @@ public sealed class GorgonNativeBuffer<T>
     /// <paramref name="destination"/> buffer to accomodate the amount of data required.
     /// </para>
     /// </remarks>
-    public void CopyTo(GorgonNativeBuffer<T> destination, int sourceIndex = 0, int? count = null, int destIndex = 0)
-    {
-        ArgumentNullException.ThrowIfNull(destination);
-
-        _memoryBlock.CopyTo(destination._memoryBlock, sourceIndex, count, destIndex);
-    }
+    public void CopyTo(GorgonNativeBuffer<T> destination, int sourceIndex = 0, int? count = null, int destIndex = 0) => _memoryBlock.CopyTo(destination._memoryBlock, sourceIndex, count, destIndex);
 
     /// <summary>
     /// Function to copy the contents of this buffer into an array of type <typeparamref name="T"/>.
@@ -263,7 +256,6 @@ public sealed class GorgonNativeBuffer<T>
     /// <param name="sourceIndex">[Optional] The first index to start copying from.</param>
     /// <param name="count">[Optional] The number of items to copy.</param>
     /// <param name="destIndex">[Optional] The destination index in the destination array to start copying into.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="destination"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="sourceIndex"/>, or the <paramref name="destIndex"/> parameter is less than 0.</exception>
     /// <exception cref="ArgumentException">
     /// <para>Thrown when the <paramref name="sourceIndex"/> + <paramref name="count"/> is too big for this buffer.</para>
@@ -276,12 +268,7 @@ public sealed class GorgonNativeBuffer<T>
     /// <paramref name="destination"/> buffer to accomodate the amount of data required.
     /// </para>
     /// </remarks>
-    public void CopyTo(T[] destination, int sourceIndex = 0, int? count = null, int destIndex = 0)
-    {
-        ArgumentNullException.ThrowIfNull(destination);
-
-        _memoryBlock.CopyTo(destination, sourceIndex, count, destIndex);
-    }
+    public void CopyTo(T[] destination, int sourceIndex = 0, int? count = null, int destIndex = 0) => _memoryBlock.CopyTo(destination, sourceIndex, count, destIndex);
 
     /// <summary>
     /// Function to pin an array and access its contents natively.
@@ -290,7 +277,6 @@ public sealed class GorgonNativeBuffer<T>
     /// <param name="index">[Optional] The starting index in the array to pin.</param>
     /// <param name="count">[Optional] The number of items in the array to pin.</param>
     /// <returns>A new <see cref="GorgonNativeBuffer{T}"/> containing the pinned contents of the array.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="array"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is less than 0.</exception>
     /// <exception cref="ArgumentException">Thrown when the <paramref name="index"/> + <paramref name="count"/> are equal to or greater than the length of <paramref name="array"/>.</exception>
     /// <remarks>
@@ -350,7 +336,6 @@ public sealed class GorgonNativeBuffer<T>
     /// <param name="stream">The stream to write into.</param>
     /// <param name="startIndex">[Optional] The index in the buffer to start copying from.</param>
     /// <param name="count">[Optional] The maximum number of items to read from the stream.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
     /// <exception cref="IOException">Thrown when the <paramref name="stream"/> is read only.</exception>
     /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="startIndex"/> is less than 0.</exception>
     /// <exception cref="ArgumentException">Thrown when the <paramref name="startIndex"/> + <paramref name="count"/> are equal to or greater than the <see cref="Length"/>.</exception>
@@ -556,10 +541,7 @@ public sealed class GorgonNativeBuffer<T>
     /// </summary>
     /// <param name="buffer">The buffer to containing the pointer.</param>
     /// <returns>The underlying <see cref="GorgonPtr{T}"/> for the buffer.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="buffer"/> parameter is <b>null</b>.</exception>
-    public static GorgonPtr<T> ToGorgonPtr(GorgonNativeBuffer<T> buffer) => buffer is null
-            ? throw new ArgumentNullException(nameof(buffer))
-            : buffer._memoryBlock;
+    public static GorgonPtr<T> ToGorgonPtr(GorgonNativeBuffer<T> buffer) => buffer._memoryBlock;
 
     /// <summary>
     /// Function to return a stream wrapping this buffer.
@@ -629,7 +611,7 @@ public sealed class GorgonNativeBuffer<T>
             throw new ArgumentOutOfRangeException(nameof(count), Resources.GOR_ERR_DATABUFF_SIZE_TOO_SMALL);
         }
 
-        TypeSize = Unsafe.SizeOf<T>();     
+        TypeSize = Unsafe.SizeOf<T>();
         Allocate(count, alignment.Max(0), true);
         _ownsMemory = true;
 

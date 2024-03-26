@@ -23,7 +23,6 @@
 // 
 
 using Gorgon.Core;
-using Gorgon.Diagnostics;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
@@ -386,8 +385,6 @@ public abstract class Gorgon2DEffect
     /// </remarks>
     protected void BeginRender(GorgonRenderTargetView output, GorgonBlendState blendState = null, GorgonDepthStencilState depthStencilState = null, GorgonRasterState rasterState = null)
     {
-        output.ValidateObject(nameof(output));
-
         if (_currentEffect is not null)
         {
             throw new GorgonException(GorgonResult.AlreadyInitialized, string.Format(Resources.GOR2D_ERR_EFFECT_BEGIN_RENDER_CALLED, _currentEffect));
@@ -422,7 +419,6 @@ public abstract class Gorgon2DEffect
     /// <param name="output">The render target that will receive the rendering.</param>
     /// <param name="camera">[Optional] The camera to use while rendering.</param>
     /// <returns>A <see cref="PassContinuationState"/> value describing how to continue on to the next pass (if applicable).</returns>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="output"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> parameter is less than 0, or not less than <see cref="PassCount"/>.</exception>
     /// <exception cref="GorgonException">Thrown if this method is has been called once before and called again without calling <see cref="EndPass"/>.
     /// <para>-or-</para>
@@ -460,8 +456,10 @@ public abstract class Gorgon2DEffect
     /// <seealso cref="BeginRender"/>
     protected PassContinuationState BeginPass(int index, GorgonRenderTargetView output, GorgonCameraCommon camera = null)
     {
-        output.ValidateObject(nameof(output));
-        index.ValidateRange(nameof(index), 0, PassCount);
+#if DEBUG
+        ArgumentOutOfRangeException.ThrowIfLessThan(index, 0);
+        ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, PassCount);
+#endif
 
         if (_currentEffect is null)
         {
@@ -514,7 +512,10 @@ public abstract class Gorgon2DEffect
     /// <seealso cref="BeginRender"/>
     protected void EndPass(int index, GorgonRenderTargetView output)
     {
-        index.ValidateRange(nameof(index), 0, PassCount);
+#if DEBUG
+        ArgumentOutOfRangeException.ThrowIfLessThan(index, 0);
+        ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, PassCount);
+#endif
 
         if ((!_isRenderingPass) || (_currentEffect is null))
         {

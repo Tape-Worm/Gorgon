@@ -1,5 +1,4 @@
-﻿
-// 
+﻿// 
 // Gorgon
 // Copyright (C) 2021 Michael Winsor
 // 
@@ -22,8 +21,6 @@
 // 
 // Created: January 1, 2021 1:18:53 PM
 // 
-
-using Gorgon.Core;
 
 namespace Gorgon.Graphics.Core;
 

@@ -148,6 +148,7 @@ public abstract class GorgonPlugIn
 
         Assembly = GetType().Assembly.GetName();
         PlugInPath = GetType().Assembly.ManifestModule.FullyQualifiedName;
-        Name = GetType().FullName;
+        // This should never happen, but I guess it's possible that the type name is null.
+        Name = GetType().FullName ?? throw new GorgonException(GorgonResult.CannotCreate);
     }
 }

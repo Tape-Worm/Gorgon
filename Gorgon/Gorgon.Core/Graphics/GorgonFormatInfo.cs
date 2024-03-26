@@ -94,7 +94,7 @@ public enum PitchFlags
 /// element in a buffer at the byte level.
 /// </para>
 /// </remarks>
-public class GorgonFormatInfo
+public sealed class GorgonFormatInfo
 {
     /// <summary>
     /// Property to return the group for the format.

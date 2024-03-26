@@ -24,7 +24,6 @@
 
 using System.Collections;
 using System.Runtime.CompilerServices;
-using Gorgon.Core;
 using Gorgon.Math;
 
 namespace Gorgon.Collections;
@@ -48,7 +47,7 @@ namespace Gorgon.Collections;
 /// </returns>
 public class GorgonArray<T>
     : IList<T>, IGorgonReadOnlyArray<T>
-    where T : IEquatable<T>
+    where T : IEquatable<T>?
 {
     /// <summary>
     /// The maximum number of indices in an array.
@@ -387,7 +386,7 @@ public class GorgonArray<T>
         }
 
         if (!UpdateDirtyIndexAndCount(keepDirtyState))
-        {        
+        {
             return (0, 0);
         }
 
@@ -545,11 +544,8 @@ public class GorgonArray<T>
 
     /// <summary>Copies the elements of the <see cref="ICollection{T}" /> to an <see cref="Array" />, starting at a particular <see cref="Array" /> index.</summary>
     /// <param name="array">The one-dimensional <see cref="Array" /> that is the destination of the elements copied from <see cref="ICollection{T}" />. The <see cref="Array" /> must have zero-based indexing.</param>
-    /// <param name="arrayIndex">The zero-based index in <paramref name="array" /> at which copying begins.</param>
-    /// <exception cref="ArgumentNullException">
-    /// <paramref name="array" /> is null.</exception>
-    /// <exception cref="ArgumentOutOfRangeException">
-    /// <paramref name="arrayIndex" /> is less than 0.</exception>
+    /// <param name="arrayIndex">The zero-based index in <paramref name="array" /> at which copying begins.</param>    
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="arrayIndex" /> is less than 0.</exception>
     /// <exception cref="ArgumentException">The number of elements in the source <see cref="ICollection{T}" /> is greater than the available space from <paramref name="arrayIndex" /> to the end of the destination <paramref name="array" />.</exception>
     public void CopyTo(T[] array, int arrayIndex) => _backingArray.CopyTo(array, arrayIndex);
 

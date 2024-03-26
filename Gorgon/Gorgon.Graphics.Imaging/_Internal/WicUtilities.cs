@@ -718,7 +718,7 @@ class WicUtilities
             encoderInfo = encoder.EncoderInfo;
 
             bool saveAllFrames = encoderInfo.IsMultiframeSupported && imageData.ArrayCount > 1;
-            
+
             if ((saveAllFrames)
                 && (options is not null)
                 && (options.Options.ContainsName(nameof(IGorgonWicEncodingOptions.SaveAllFrames))))

@@ -42,14 +42,11 @@ public static class GorgonNativeExtensions
     /// <param name="stream">The stream to read from.</param>
     /// <param name="count">[Optional] The maximum number of items to read from the stream.</param>
     /// <returns>A <see cref="GorgonNativeBuffer{T}"/> containing the contents of the stream.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
     /// <exception cref="EndOfStreamException">Thrown when the <paramref name="stream"/> is at its end.</exception>
     /// <exception cref="IOException">Thrown when the <paramref name="stream"/> is write only.</exception>
     public static GorgonNativeBuffer<T> ToNativeBuffer<T>(this Stream stream, int? count = null)
         where T : unmanaged
     {
-        ArgumentNullException.ThrowIfNull(stream);
-
         if (stream.Position == stream.Length)
         {
             throw new EndOfStreamException();
@@ -101,7 +98,7 @@ public static class GorgonNativeExtensions
     /// <param name="index">[Optional] The index within the pointer to start writing at.</param>
     /// <param name="count">[Optional] The maximum number of items to read from the stream.</param>
     /// <returns>A <see cref="GorgonNativeBuffer{T}"/> containing the contents of the stream.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/>, or the <paramref name="pointer"/> parameter is <b>null</b>.</exception>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="pointer"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is less than 0.</exception>
     /// <exception cref="ArgumentException">Thrown if the <paramref name="index"/>, <paramref name="count"/>, or both values added together will exceed the size of the <paramref name="pointer"/> or the <paramref name="stream"/>.</exception>
     /// <exception cref="EndOfStreamException">Thrown when the <paramref name="stream"/> is at its end.</exception>
@@ -109,7 +106,10 @@ public static class GorgonNativeExtensions
     public static void CopyTo<T>(this Stream stream, GorgonPtr<T> pointer, int index = 0, int? count = null)
         where T : unmanaged
     {
-        ArgumentNullException.ThrowIfNull(stream);
+        if (pointer == GorgonPtr<T>.NullPtr)
+        {
+            throw new ArgumentNullException(nameof(pointer));
+        }
 
         if (stream.Position == stream.Length)
         {
@@ -240,7 +240,7 @@ public static class GorgonNativeExtensions
     /// <param name="arrayIndex">[Optional] The index in the array to start copying from.</param>
     /// <param name="count">[Optional] The number of items to copy.</param>
     /// <param name="pointerIndex">[Optional] The index in the pointer to start writing into.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="array"/>, or <paramref name="pointer"/> parameter is <b>null</b>.</exception>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="pointer"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="arrayIndex"/>, or the <paramref name="pointerIndex"/> parameter is less than 0.</exception>
     /// <exception cref="ArgumentException">
     /// <para>Thrown when the <paramref name="arrayIndex"/> + <paramref name="count"/> is too big for the <paramref name="array"/>.</para>
@@ -256,8 +256,6 @@ public static class GorgonNativeExtensions
     public static void CopyTo<T>(this T[] array, GorgonPtr<T> pointer, int arrayIndex = 0, int? count = null, int pointerIndex = 0)
         where T : unmanaged
     {
-        ArgumentNullException.ThrowIfNull(array);
-
         if (pointer == GorgonPtr<T>.NullPtr)
         {
             throw new ArgumentNullException(nameof(pointer));
@@ -295,7 +293,6 @@ public static class GorgonNativeExtensions
     /// <param name="index">[Optional] The index in the array that represents the beginning of the native buffer.</param>
     /// <param name="count">[Optional] The number of items in the array that will be contained in the buffer.</param>
     /// <returns>A new <see cref="GorgonNativeBuffer{T}"/> containing the <paramref name="array"/> data.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="array"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is less than 0.</exception>
     /// <exception cref="ArgumentException">Thrown when the <paramref name="index"/> + <paramref name="count"/> are equal to or greater than the length of <paramref name="array"/>.</exception>
     /// <remarks>
@@ -338,7 +335,7 @@ public static class GorgonNativeExtensions
     /// <typeparam name="T">The type of data in the array. Must be an unmanaged value type.</typeparam>
     /// <param name="span">The span to copy from.</param>
     /// <returns>A native buffer containing the contents of the span.</returns>
-    public static GorgonNativeBuffer<T> ToNativeBuffer<T>(this ReadOnlySpan<T> span)
+    public static GorgonNativeBuffer<T>? ToNativeBuffer<T>(this ReadOnlySpan<T> span)
         where T : unmanaged
     {
         if (span.Length == 0)
@@ -358,7 +355,7 @@ public static class GorgonNativeExtensions
     /// <typeparam name="T">The type of data in the array. Must be an unmanaged value type.</typeparam>
     /// <param name="memory">The memory type to copy from.</param>
     /// <returns>A native buffer containing the contents of the memory type.</returns>
-    public static GorgonNativeBuffer<T> ToNativeBuffer<T>(this ReadOnlyMemory<T> memory)
+    public static GorgonNativeBuffer<T>? ToNativeBuffer<T>(this ReadOnlyMemory<T> memory)
         where T : unmanaged
     {
         if (memory.Length == 0)
@@ -380,7 +377,6 @@ public static class GorgonNativeExtensions
     /// <param name="index">[Optional] The index in the array that represents the beginning of the native buffer.</param>
     /// <param name="count">[Optional] The number of items in the array that will be contained in the buffer.</param>
     /// <returns>A new <see cref="GorgonNativeBuffer{T}"/> containing the <paramref name="array"/> data.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="array"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is less than 0.</exception>
     /// <exception cref="ArgumentException">Thrown when the <paramref name="index"/> + <paramref name="count"/> are equal to or greater than the length of <paramref name="array"/>.</exception>
     /// <remarks>

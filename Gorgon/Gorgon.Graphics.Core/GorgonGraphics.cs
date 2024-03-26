@@ -604,10 +604,14 @@ public sealed class GorgonGraphics
     /// <param name="threadGroupCountZ">The number of thread groups to dispatch in the Z direction.</param>
     internal void Dispatch(GorgonDispatchCall dispatchCall, int threadGroupCountX, int threadGroupCountY, int threadGroupCountZ)
     {
-        dispatchCall.ValidateObject(nameof(dispatchCall));
-        threadGroupCountX.ValidateRange(nameof(threadGroupCountX), 0, GorgonComputeEngine.MaxThreadGroupCount);
-        threadGroupCountY.ValidateRange(nameof(threadGroupCountY), 0, GorgonComputeEngine.MaxThreadGroupCount);
-        threadGroupCountZ.ValidateRange(nameof(threadGroupCountZ), 0, GorgonComputeEngine.MaxThreadGroupCount);
+#if DEBUG
+        ArgumentOutOfRangeException.ThrowIfLessThan(threadGroupCountX, 0);
+        ArgumentOutOfRangeException.ThrowIfLessThan(threadGroupCountY, 0);
+        ArgumentOutOfRangeException.ThrowIfLessThan(threadGroupCountZ, 0);
+        ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(threadGroupCountX, GorgonComputeEngine.MaxThreadGroupCount);
+        ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(threadGroupCountY, GorgonComputeEngine.MaxThreadGroupCount);
+        ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(threadGroupCountZ, GorgonComputeEngine.MaxThreadGroupCount);
+#endif
 
         SetDrawStates(dispatchCall.D3DState, GorgonColors.White, int.MinValue, 0);
         D3DDeviceContext.Dispatch(threadGroupCountX, threadGroupCountY, threadGroupCountZ);
@@ -621,9 +625,10 @@ public sealed class GorgonGraphics
     /// <param name="threadGroupOffset">[Optional] The offset within the buffer, in bytes, to where the arguments are stored.</param>
     internal void Dispatch(GorgonDispatchCall dispatchCall, GorgonBufferCommon indirectArgs, int threadGroupOffset = 0)
     {
-        dispatchCall.ValidateObject(nameof(dispatchCall));
-        indirectArgs.ValidateObject(nameof(indirectArgs));
-        threadGroupOffset.ValidateRange(nameof(threadGroupOffset), 0, int.MaxValue);
+#if DEBUG
+        ArgumentOutOfRangeException.ThrowIfLessThan(threadGroupOffset, 0);
+        ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(threadGroupOffset, int.MaxValue);
+#endif
 
         SetDrawStates(dispatchCall.D3DState, GorgonColors.White, int.MinValue, 0);
         D3DDeviceContext.DispatchIndirect(indirectArgs.Native, threadGroupOffset);
@@ -998,7 +1003,6 @@ public sealed class GorgonGraphics
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="drawCall"/> parameter is <b>null</b>.</exception>
     public void Submit(GorgonDrawCall drawCall, GorgonColor? blendFactor = null, int blendSampleMask = int.MinValue, int stencilReference = 0)
     {
-        drawCall.ValidateObject(nameof(drawCall));
         SetDrawStates(drawCall.D3DState, blendFactor ?? GorgonColors.White, blendSampleMask, stencilReference);
         D3DDeviceContext.Draw(drawCall.VertexCount, drawCall.VertexStartIndex);
         unchecked
@@ -1020,7 +1024,6 @@ public sealed class GorgonGraphics
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="drawCall"/> parameter is <b>null</b>.</exception>
     public void SubmitInstance(GorgonDrawCall drawCall, int instanceCount, int startInstanceIndex = 0, GorgonColor? blendFactor = null, int blendSampleMask = int.MinValue, int stencilReference = 0)
     {
-        drawCall.ValidateObject(nameof(drawCall));
         SetDrawStates(drawCall.D3DState, blendFactor ?? GorgonColors.White, blendSampleMask, stencilReference);
         D3DDeviceContext.DrawInstanced(drawCall.VertexCount, instanceCount, drawCall.VertexStartIndex, startInstanceIndex);
         unchecked
@@ -1043,7 +1046,6 @@ public sealed class GorgonGraphics
                        int blendSampleMask = int.MinValue,
                        int stencilReference = 0)
     {
-        drawIndexCall.ValidateObject(nameof(drawIndexCall));
         SetDrawStates(drawIndexCall.D3DState, blendFactor ?? GorgonColors.White, blendSampleMask, stencilReference);
         D3DDeviceContext.DrawIndexed(drawIndexCall.IndexCount, drawIndexCall.IndexStart, drawIndexCall.BaseVertexIndex);
         unchecked
@@ -1065,7 +1067,6 @@ public sealed class GorgonGraphics
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="drawIndexCall"/> parameter is <b>null</b>.</exception>
     public void SubmitInstance(GorgonDrawIndexCall drawIndexCall, int instanceCount, int startInstanceLocation = 0, GorgonColor? blendFactor = null, int blendSampleMask = int.MinValue, int stencilReference = 0)
     {
-        drawIndexCall.ValidateObject(nameof(drawIndexCall));
         SetDrawStates(drawIndexCall.D3DState, blendFactor ?? GorgonColors.White, blendSampleMask, stencilReference);
         D3DDeviceContext.DrawIndexedInstanced(drawIndexCall.IndexCount,
                                               instanceCount,
@@ -1108,9 +1109,6 @@ public sealed class GorgonGraphics
     /// <seealso cref="GorgonDrawCallCommon"/>
     public void SubmitIndirect(GorgonDrawCallCommon drawCall, GorgonBuffer indirectArgs, int argumentOffset = 0)
     {
-        drawCall.ValidateObject(nameof(drawCall));
-        indirectArgs.ValidateObject(nameof(indirectArgs));
-
 #if DEBUG
         if (argumentOffset < 0)
         {
@@ -1162,8 +1160,6 @@ public sealed class GorgonGraphics
                                 int blendSampleMask = int.MinValue,
                                 int stencilReference = 0)
     {
-        drawCall.ValidateObject(nameof(drawCall));
-
 #if DEBUG
         if (drawCall.PipelineState.VertexShader is null)
         {

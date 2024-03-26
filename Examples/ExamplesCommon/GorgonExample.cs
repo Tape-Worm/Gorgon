@@ -26,7 +26,6 @@
 using System.Numerics;
 using System.Text;
 using Gorgon.Core;
-using Gorgon.Diagnostics;
 using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -204,8 +203,6 @@ public static class GorgonExample
     /// <param name="renderer">The 2D renderer that we are using.</param>
     public static void DrawStatsAndLogo(IGorgon2DFluent renderer)
     {
-        renderer.ValidateObject(nameof(renderer));
-
         GorgonGraphics graphics = _factory?.Graphics;
         GorgonRenderTargetView currentRtv = graphics.RenderTargets[0];
 
@@ -247,8 +244,6 @@ public static class GorgonExample
     /// <param name="renderer">The 2D renderer that we are using.</param>
     public static void DrawStatsAndLogo(Gorgon2D renderer)
     {
-        renderer.ValidateObject(nameof(renderer));
-
         GorgonRenderTargetView currentRtv = renderer.Graphics.RenderTargets[0];
 
         if ((currentRtv is null) || (_logo is null) || (_statsFont is null))

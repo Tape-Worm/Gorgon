@@ -270,7 +270,7 @@ public partial class Form
                                                                                     .OrderBy(item => item.Name);
             IEnumerable<IGorgonVirtualFile> files = directory.Files.Select(f => f.Value)
                                                                    .Where(item => item.Extension is not ".gorSprite" and not ".gal")
-                                                                   .OrderBy(item => item.Name);                                                                   
+                                                                   .OrderBy(item => item.Name);
 
             // Get directories.
             foreach (IGorgonVirtualDirectory subDirectory in directories)

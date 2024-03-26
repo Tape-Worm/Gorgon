@@ -37,7 +37,6 @@ public static class GorgonIReadOnlyListExtensions
     /// <param name="list">The list to evaluate.</param>
     /// <param name="predicate">The predicate function used to evaluate the list items.</param>
     /// <returns>The index of the filtered item, or -1 if not found.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="list"/> parameter is <b>null</b>.</exception>
     /// <remarks>
     /// <para>
     /// This method searches through the list starting from the end and executes the <paramref name="predicate"/> against the current item. If the <paramref name="predicate"/> returns <b>true</b>, then the current index is 
@@ -46,8 +45,6 @@ public static class GorgonIReadOnlyListExtensions
     /// </remarks>
     public static int FindLastIndex<T>(this IReadOnlyList<T> list, Predicate<T> predicate)
     {
-        ArgumentNullException.ThrowIfNull(list);
-
         switch (list)
         {
             case T[] arrayList:
@@ -74,7 +71,6 @@ public static class GorgonIReadOnlyListExtensions
     /// <param name="list">The list to evaluate.</param>
     /// <param name="predicate">The predicate function used to evaluate the list items.</param>
     /// <returns>The index of the filtered item, or -1 if not found.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="list"/> parameter is <b>null</b>.</exception>
     /// <remarks>
     /// <para>
     /// This method searches through the list and executes the <paramref name="predicate"/> against the current item. If the <paramref name="predicate"/> returns <b>true</b>, then the current index is 
@@ -83,15 +79,13 @@ public static class GorgonIReadOnlyListExtensions
     /// </remarks>
     public static int FindIndex<T>(this IReadOnlyList<T> list, Predicate<T> predicate)
     {
-        ArgumentNullException.ThrowIfNull(list);
-
         switch (list)
         {
             case T[] arrayList:
-                return Array.FindIndex(arrayList, predicate);                
+                return Array.FindIndex(arrayList, predicate);
             case List<T> concreteList:
                 return concreteList.FindIndex(predicate);
-        }        
+        }
 
         for (int i = 0; i < list.Count; ++i)
         {
@@ -100,14 +94,13 @@ public static class GorgonIReadOnlyListExtensions
                 return i;
             }
         }
-        
+
         return -1;
     }
 
     /// <summary>
     /// Function to determine if an item of type <typeparamref name="T"/> exists within the list.
     /// </summary>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="list"/> parameter is <b>null</b>.</exception>
     /// <typeparam name="T"></typeparam>
     /// <param name="list">The list to evaluate.</param>
     /// <param name="item">The item to find in the list.</param>
@@ -128,8 +121,6 @@ public static class GorgonIReadOnlyListExtensions
     /// </remarks>
     public static bool Contains<T>(this IReadOnlyList<T> list, T item)
     {
-        ArgumentNullException.ThrowIfNull(list);
-
         switch (list)
         {
             case T[] arrayList:
@@ -185,7 +176,6 @@ public static class GorgonIReadOnlyListExtensions
     /// <param name="list">The list of items to evaluate.</param>
     /// <param name="item">The item to search for.</param>
     /// <returns>The index of the <paramref name="item"/> in the <paramref name="list"/> if found, or -1 if not.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="list"/> parameter is <b>null</b>.</exception>
     /// <remarks>
     /// <para>
     /// This method scans through a <see cref="IReadOnlyList{T}"/> to locate the specified <paramref name="item"/>. If the item is found, the index of that item within the <paramref name="list"/> 
@@ -202,8 +192,6 @@ public static class GorgonIReadOnlyListExtensions
     /// </remarks>
     public static int IndexOf<T>(this IReadOnlyList<T> list, T item)
     {
-        ArgumentNullException.ThrowIfNull(list);
-
         switch (list)
         {
             case T[] arrayList:
@@ -262,13 +250,10 @@ public static class GorgonIReadOnlyListExtensions
     /// <param name="list">The list to evaluate.</param>
     /// <param name="array">The array that will receive the data.</param>
     /// <param name="destIndex">[Optional] The index in the destination array to start copying into.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="list"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentException">Thrown when the <paramref name="array"/> isn't large enough to support the entire list.</exception>
     /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="destIndex"/> parameter is less than 0, or greater than/equal to the array length.</exception>
     public static void CopyTo<T>(this IReadOnlyList<T> list, T[] array, int destIndex = 0)
     {
-        ArgumentNullException.ThrowIfNull(list);
-
         if ((destIndex < 0) || (destIndex >= array.Length))
         {
             throw new ArgumentOutOfRangeException(nameof(destIndex));

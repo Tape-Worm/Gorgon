@@ -425,7 +425,7 @@ class D3DState
     {
         PipelineState = null,
         IndexBuffer = null,
-        ComputeShader = null,        
+        ComputeShader = null,
         CsReadWriteViews = new GorgonReadWriteViewBindings(),
         PsSamplers = new GorgonSamplerStates(),
         VsSrvs = new GorgonShaderResourceViews(),

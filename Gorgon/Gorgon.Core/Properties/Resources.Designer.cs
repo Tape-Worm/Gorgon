@@ -205,6 +205,15 @@ namespace Gorgon.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The specified chunk {0} is not open for reading or writing..
+        /// </summary>
+        internal static string GOR_ERR_CHUNK_NOT_OPEN {
+            get {
+                return ResourceManager.GetString("GOR_ERR_CHUNK_NOT_OPEN", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The chunk ID 0x{0} is already the ID of a reserved value..
         /// </summary>
         internal static string GOR_ERR_CHUNK_RESERVED {

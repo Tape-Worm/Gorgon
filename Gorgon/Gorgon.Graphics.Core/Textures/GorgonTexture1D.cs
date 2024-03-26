@@ -378,8 +378,6 @@ public sealed class GorgonTexture1D
             return;
         }
 
-        destTexture.ValidateObject(nameof(destTexture));
-
 #if DEBUG
         if (destTexture.ResourceType != ResourceType)
         {
@@ -482,8 +480,6 @@ public sealed class GorgonTexture1D
     /// </remarks>
     public void CopyTo(GorgonTexture1D destinationTexture, GorgonRange<int>? sourceRange = null, int sourceArrayIndex = 0, int sourceMipLevel = 0, int destX = 0, int destArrayIndex = 0, int destMipLevel = 0, CopyMode copyMode = CopyMode.None)
     {
-        destinationTexture.ValidateObject(nameof(destinationTexture));
-
         // If we're trying to place the image data outside of this texture, then leave.
         if (destX >= destinationTexture.Width)
         {
@@ -630,8 +626,6 @@ public sealed class GorgonTexture1D
     /// </remarks>
     public void CopyTo(GorgonTexture2D destinationTexture, GorgonRange<int>? sourceRange = null, int sourceArrayIndex = 0, int sourceMipLevel = 0, int destX = 0, int destY = 0, int destArrayIndex = 0, int destMipLevel = 0, CopyMode copyMode = CopyMode.None)
     {
-        destinationTexture.ValidateObject(nameof(destinationTexture));
-
         // If we're trying to place the image data outside of the destination texture, then leave.
         if ((destX >= destinationTexture.Width)
             || (destY >= destinationTexture.Height))
@@ -770,8 +764,6 @@ public sealed class GorgonTexture1D
     /// </remarks>
     public void CopyTo(GorgonTexture3D destinationTexture, GorgonRange<int>? sourceRange = null, int sourceArrayIndex = 0, int sourceMipLevel = 0, int destX = 0, int destY = 0, int destZ = 0, int destMipLevel = 0, CopyMode copyMode = CopyMode.None)
     {
-        destinationTexture.ValidateObject(nameof(destinationTexture));
-
         // If we're trying to place the image data outside of this texture, then leave.
         if ((destX >= destinationTexture.Width)
             || (destY >= destinationTexture.Height)

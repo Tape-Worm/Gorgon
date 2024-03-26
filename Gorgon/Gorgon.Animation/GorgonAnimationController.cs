@@ -25,7 +25,6 @@
 
 using System.Numerics;
 using Gorgon.Animation.Properties;
-using Gorgon.Diagnostics;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
@@ -471,8 +470,6 @@ where T : class
     /// <exception cref="NotSupportedException">Thrown when the <paramref name="registration"/> <see cref="GorgonTrackRegistration.KeyType"/> parameter does not have an equivalent supported track key frame data type.</exception>
     protected void RegisterTrack(GorgonTrackRegistration registration)
     {
-        registration.TrackName.ValidateObject(nameof(registration.TrackName));
-
         // Check for a track with the same name.
         if (_trackNames.Any(item => item.Equals(registration)))
         {

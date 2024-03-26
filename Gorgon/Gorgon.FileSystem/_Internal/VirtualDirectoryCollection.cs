@@ -36,7 +36,7 @@ namespace Gorgon.IO;
 /// Initializes a new instance of the <see cref="VirtualDirectoryCollection" /> class
 /// </remarks>
 /// <param name="parent">The parent directory that owns this collection.</param>
-internal class VirtualDirectoryCollection(VirtualDirectory parent) 
+internal class VirtualDirectoryCollection(VirtualDirectory parent)
     : IReadOnlyDictionary<string, IGorgonVirtualDirectory>
 {
     // The backing store for the directories.
@@ -61,7 +61,7 @@ internal class VirtualDirectoryCollection(VirtualDirectory parent)
     /// <summary>
     /// Property to return a directory by its name.
     /// </summary>
-    IGorgonVirtualDirectory IReadOnlyDictionary<string, IGorgonVirtualDirectory>.this[string key] 
+    IGorgonVirtualDirectory IReadOnlyDictionary<string, IGorgonVirtualDirectory>.this[string key]
     {
         get
         {

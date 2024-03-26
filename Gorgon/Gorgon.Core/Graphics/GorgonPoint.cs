@@ -237,7 +237,7 @@ public struct GorgonPoint(int x, int y)
     /// </summary>
     /// <param name="obj">The value to compare with.</param>
     /// <returns><b>true</b> if the two values are equal, <b>false</b> if not.</returns>
-    public override readonly bool Equals(object obj) => obj is GorgonPoint pt ? Equals(this, pt) : base.Equals(obj);
+    public override readonly bool Equals(object? obj) => obj is GorgonPoint pt ? Equals(this, pt) : base.Equals(obj);
 
     /// <summary>
     /// Function to provide a hash code for the type.

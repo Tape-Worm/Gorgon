@@ -1,4 +1,4 @@
-﻿
+﻿#nullable disable
 // 
 // Gorgon
 // Copyright (C) 2015 Michael Winsor
@@ -117,3 +117,4 @@ internal interface IClrStrongName
     [MethodImpl(MethodImplOptions.PreserveSig | MethodImplOptions.InternalCall)]
     int StrongNameTokenFromPublicKey([MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 1)][In] byte[] pbPublicKeyBlob, [MarshalAs(UnmanagedType.U4)][In] int cbPublicKeyBlob, out nint ppbStrongNameToken, [MarshalAs(UnmanagedType.U4)] out int pcbStrongNameToken);
 }
+#nullable enable

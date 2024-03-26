@@ -155,7 +155,7 @@ public interface IGorgonPlugInService
     /// This will retrieve all the plugins from the plugin service of the type <typeparamref name="T"/>. If the <paramref name="assemblyName"/> parameter is not <b>null</b>, then, 
     /// the only the assembly with that name will be scanned for the plugin type.
     /// </remarks>
-    IReadOnlyList<T> GetPlugIns<T>(AssemblyName assemblyName = null)
+    IReadOnlyList<T> GetPlugIns<T>(AssemblyName? assemblyName = null)
         where T : GorgonPlugIn;
 
     /// <summary>
@@ -164,9 +164,8 @@ public interface IGorgonPlugInService
     /// <typeparam name="T">The base type of the plugin. Must implement <see cref="GorgonPlugIn"/>.</typeparam>
     /// <param name="pluginName">Fully qualified type name of the plugin to find.</param>
     /// <returns>The plugin, if found, or <b>null</b> if not.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="pluginName"/> is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="pluginName"/> is empty.</exception>
-    T GetPlugIn<T>(string pluginName)
+    T? GetPlugIn<T>(string pluginName)
         where T : GorgonPlugIn;
 
     /// <summary>
@@ -180,7 +179,7 @@ public interface IGorgonPlugInService
     /// If the assembly is not loaded, then an exception is thrown.
     /// </para>
     /// </remarks>
-    IReadOnlyList<string> GetPlugInNames(AssemblyName assemblyName = null);
+    IReadOnlyList<string> GetPlugInNames(AssemblyName? assemblyName = null);
 
     /// <summary>
     /// Function to scan for plugins in the loaded plugin assemblies.
@@ -199,7 +198,6 @@ public interface IGorgonPlugInService
     /// Function to unload a plugin by its name.
     /// </summary>
     /// <param name="name">Fully qualified type name of the plugin to remove.</param>
-    /// <exception cref="ArgumentNullException">The <paramref name="name"/> parameter was <b>null</b>.</exception>
     /// <exception cref="ArgumentException">The <paramref name="name "/> parameter was an empty string.</exception>
     /// <returns><b>true</b> if the plugin was unloaded successfully, <b>false</b> if it did not exist in the collection, or failed to unload.</returns>
     bool Unload(string name);

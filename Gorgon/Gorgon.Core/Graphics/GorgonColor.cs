@@ -79,7 +79,7 @@ public readonly struct GorgonColor
     /// <returns>
     /// 	<b>true</b> if the specified <see cref="object"/> is equal to this instance; otherwise, <b>false</b>.
     /// </returns>
-    public override bool Equals(object obj) => obj is GorgonColor color ? Equals(this, color) : base.Equals(obj);
+    public override bool Equals(object? obj) => obj is GorgonColor color ? Equals(this, color) : base.Equals(obj);
 
     /// <summary>
     /// Function to convert a <see cref="Vector3"/> to a <see cref="GorgonColor"/>.

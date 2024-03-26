@@ -21,9 +21,9 @@
 // Created: December 18, 2023 7:06:47 PM
 //
 
+using System.Drawing;
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using System.Drawing;
 
 namespace Gorgon.Graphics;
 
@@ -46,5 +46,21 @@ public static class GorgonPointExtensions
     /// <param name="point">The point to convert.</param>
     /// <returns>The converted vector.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Vector2 ToVector2(this PointF point) => new(point.X, point.Y);    
+    public static Vector2 ToVector2(this PointF point) => new(point.X, point.Y);
+
+    /// <summary>
+    /// Function to convert a <see cref="Vector2"/> to a <see cref="PointF"/>.
+    /// </summary>
+    /// <param name="vector">The vector to convert.</param>
+    /// <returns>The converted point.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static PointF ToPointF(this Vector2 vector) => new(vector.X, vector.Y);
+
+    /// <summary>
+    /// Function to convert a <see cref="Vector2"/> to a <see cref="PointF"/>.
+    /// </summary>
+    /// <param name="vector">The vector to convert.</param>
+    /// <returns>The converted point.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Point ToPoint(this Vector2 vector) => new((int)vector.X, (int)vector.Y);
 }

@@ -49,7 +49,7 @@ public abstract class GorgonLog
     // Synchronization lock for multiple threads.
     private readonly object _syncLock = new();
     // The application version.
-    private readonly Version _appVersion;
+    private readonly Version? _appVersion;
 
     /// <summary>
     /// An instance of a log that does no logging and merely contains empty methods.
@@ -93,15 +93,13 @@ public abstract class GorgonLog
     /// Property to return the provider for this log.
     /// </summary>
     /// <remarks>
-    /// <para>
     /// Logging implementations that inherit from this class will be able to assign their own provider in the base constructor.
-    /// </para>
     /// </remarks>
     public IGorgonLogProvider Provider
     {
         get;
         protected set;
-    }
+    } = DummyLogProvider.NullProvider;
 
     /// <summary>
     /// Function to format a stack trace to be more presentable.
@@ -109,7 +107,7 @@ public abstract class GorgonLog
     /// <param name="stack">Stack trace to format.</param>
     /// <param name="indicator">Inner exception indicator.</param>
     /// <param name="resultMessage">The resulting message.</param>
-    private static void FormatStackTrace(string stack, string indicator, StringBuilder resultMessage)
+    private static void FormatStackTrace(string? stack, string indicator, StringBuilder resultMessage)
     {
         if (string.IsNullOrEmpty(stack))
         {
@@ -189,7 +187,7 @@ public abstract class GorgonLog
             exception.AppendFormat("\t{0}!!\r\n", Resources.GOR_LOG_EXCEPTION.ToUpper());
             exception.Append("================================================\r\n");
 
-            Exception inner = ex;
+            Exception? inner = ex;
 
             while (inner is not null)
             {
@@ -289,11 +287,6 @@ public abstract class GorgonLog
     /// <param name="lines">The lines to flush out</param>
     private void FlushLines(List<string> lines)
     {
-        if (lines is null)
-        {
-            return;
-        }
-
         string finalLines;
 
         if (ThreadID != Environment.CurrentManagedThreadId)
@@ -425,14 +418,13 @@ public abstract class GorgonLog
     /// </summary>
     /// <param name="appName">File name for the log file.</param>
     /// <param name="version">[Optional] The version of the application that is logging.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="appName"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="appName"/> parameter is empty.</exception>
     /// <remarks>
     /// <para>
     /// This constructor is meant for developers to implement their own logging implementation without having to recreate all functionality in the <see cref="IGorgonLog"/> interface.
     /// </para>
     /// </remarks>
-    protected GorgonLog(string appName, Version version = null)
+    protected GorgonLog(string appName, Version? version = null)
     {
         ArgumentEmptyException.ThrowIfNullOrWhiteSpace(appName);
 

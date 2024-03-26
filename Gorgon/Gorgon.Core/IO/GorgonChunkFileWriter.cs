@@ -23,6 +23,7 @@
 // Created: Sunday, June 14, 2015 10:40:50 PM
 // 
 
+using Gorgon.Core;
 using Gorgon.Properties;
 
 namespace Gorgon.IO;
@@ -123,7 +124,7 @@ public sealed class GorgonChunkFileWriter
     // The active chunk that we're writing into.
     private GorgonChunk _activeChunk;
     // The active chunk writer.
-    private GorgonBinaryWriter _activeWriter;
+    private GorgonBinaryWriter? _activeWriter;
 
     /// <summary>
     /// Function to write the header information for the chunk file.
@@ -206,6 +207,11 @@ public sealed class GorgonChunkFileWriter
         {
             if (_activeChunk.ID == chunkId)
             {
+                if (_activeWriter is null)
+                {
+                    throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOR_ERR_CHUNK_NOT_OPEN, chunkId));
+                }
+
                 return _activeWriter;
             }
 
@@ -240,7 +246,7 @@ public sealed class GorgonChunkFileWriter
     /// </remarks>
     public override void CloseChunk()
     {
-        if (_activeChunk.ID == 0)
+        if ((_activeChunk.ID == 0) || (_activeWriter is null))
         {
             return;
         }
@@ -264,7 +270,6 @@ public sealed class GorgonChunkFileWriter
     /// <remarks>
     /// The <paramref name="stream"/> passed to this method requires that the <see cref="Stream.CanSeek"/> property returns a value of <b>true</b>.
     /// </remarks>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream" /> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentException">Thrown when the <paramref name="stream" /> is has its <see cref="Stream.CanSeek" /> property set to <b>false</b>.
     /// <para>-or-</para>
     /// <para>

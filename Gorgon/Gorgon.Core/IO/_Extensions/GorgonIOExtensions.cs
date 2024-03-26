@@ -53,11 +53,8 @@ public static class GorgonIOExtensions
     /// <param name="stream">The stream containing the data to read.</param>
     /// <param name="buffer">The span to copy data into.</param>
     /// <returns>The number of bytes read.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
     public static int Read(this Stream stream, Span<byte> buffer)
     {
-        ArgumentNullException.ThrowIfNull(stream);
-
         ArrayPool<byte> pool = GorgonArrayPool<byte>.GetBestPool(buffer.Length);
         byte[] readBuffer = pool.Rent(buffer.Length);
 
@@ -81,11 +78,8 @@ public static class GorgonIOExtensions
     /// </summary>
     /// <param name="stream">The stream containing the data to read.</param>
     /// <param name="buffer">The span to copy data into.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
     public static void Write(this Stream stream, ReadOnlySpan<byte> buffer)
     {
-        ArgumentNullException.ThrowIfNull(stream);
-
         ArrayPool<byte> pool = GorgonArrayPool<byte>.GetBestPool(buffer.Length);
         byte[] writeBuffer = pool.Rent(buffer.Length);
 
@@ -108,7 +102,6 @@ public static class GorgonIOExtensions
     /// <param name="count">The number of bytes to copy.</param>
     /// <param name="bufferSize">[Optional] The size of the temporary buffer used to buffer the data between streams.</param>
     /// <returns>The number of bytes copied, or 0 if no data was copied or at the end of a stream.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="destination"/>, or the <paramref name="stream"/> parameters are <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="stream"/> is write-only.
     /// <para>-or-</para>
     /// <para>Thrown when the <paramref name="destination"/> is read-only.</para>
@@ -149,8 +142,6 @@ public static class GorgonIOExtensions
     /// <param name="count">The number of bytes to copy.</param>
     /// <param name="buffer">The buffer to use for reading and writing the chunks of the file.</param>
     /// <returns>The number of bytes copied, or 0 if no data was copied or at the end of a stream.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="destination"/>,<paramref name="stream"/>, or the <paramref name="buffer"/> parameters are <b>null</b>.</exception>
-    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="buffer"/> is less than 1 byte.</exception>
     /// <exception cref="ArgumentException">Thrown when the <paramref name="stream"/> is write-only.
     /// <para>-or-</para>
     /// <para>Thrown when the <paramref name="destination"/> is read-only.</para>
@@ -166,10 +157,6 @@ public static class GorgonIOExtensions
     /// </remarks>
     public static int CopyToStream(this Stream stream, Stream destination, int count, byte[] buffer)
     {
-        ArgumentNullException.ThrowIfNull(stream);
-        ArgumentNullException.ThrowIfNull(destination);
-        ArgumentNullException.ThrowIfNull(buffer);
-
         if (!stream.CanRead)
         {
             throw new ArgumentException(Resources.GOR_ERR_STREAM_IS_WRITEONLY, nameof(stream));
@@ -210,24 +197,6 @@ public static class GorgonIOExtensions
     }
 
     /// <summary>
-    /// Function to write a string into a stream with UTF-8 encoding.
-    /// </summary>
-    /// <param name="value">The string to write into the stream.</param>
-    /// <param name="stream">Stream to encode the string into.</param>
-    /// <remarks>
-    /// <para>
-    /// This will encode the string as a series of bytes into a stream.  The length of the string, in bytes, will be prefixed to the string as a series of 7 bit byte values.
-    /// </para>
-    /// <para>
-    /// This method is <b>not</b> thread safe. Use care when using threads with this method.
-    /// </para>
-    /// </remarks>
-    /// <returns>The number of bytes written to the stream.</returns>
-    /// <exception cref="IOException">Thrown when the <paramref name="stream"/> parameter is read-only.</exception>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
-    public static int WriteToStream(this string value, Stream stream) => WriteToStream(value, stream, null);
-
-    /// <summary>
     /// Function to encode a string into a stream with the specified encoding.
     /// </summary>
     /// <param name="value">The string to write into the stream.</param>
@@ -244,15 +213,12 @@ public static class GorgonIOExtensions
     /// </remarks>
     /// <returns>The number of bytes written to the stream.</returns>
     /// <exception cref="IOException">Thrown when the <paramref name="stream"/> parameter is read-only.</exception>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
-    public static int WriteToStream(this string value, Stream stream, Encoding encoding)
+    public static int WriteToStream(this string? value, Stream stream, Encoding? encoding = null)
     {
         if (string.IsNullOrEmpty(value))
         {
             return 0;
         }
-
-        ArgumentNullException.ThrowIfNull(stream);
 
         if (!stream.CanWrite)
         {
@@ -286,7 +252,6 @@ public static class GorgonIOExtensions
     /// <param name="value">The string to write.</param>
     /// <param name="encoding">The encoding for the string.</param>
     /// <exception cref="IOException">Thrown when the <paramref name="stream"/> parameter is read-only.</exception>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
     /// <remarks>
     /// <para>
     /// Gorgon stores its strings in a stream by prefixing the string data with the length of the string, in bytes.  This length is encoded as a series of 7-bit bytes.
@@ -298,41 +263,7 @@ public static class GorgonIOExtensions
     /// This method is <b>not</b> thread safe. Use care when using threads with this method.
     /// </para>
     /// </remarks>
-    public static void WriteString(this Stream stream, string value, Encoding encoding) => WriteToStream(value, stream, encoding);
-
-    /// <summary>
-    /// Function to write a string to a stream with UTF-8 encoding.
-    /// </summary>
-    /// <param name="stream">The stream to write the string into.</param>
-    /// <param name="value">The string to write.</param>
-    /// <exception cref="IOException">Thrown when the <paramref name="stream"/> parameter is read-only.</exception>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
-    /// <remarks>
-    /// <para>
-    /// Gorgon stores its strings in a stream by prefixing the string data with the length of the string, in bytes.  This length is encoded as a series of 7-bit bytes.
-    /// </para>
-    /// <para>
-    /// This method is <b>not</b> thread safe. Use care when using threads with this method.
-    /// </para>
-    /// </remarks>
-    public static void WriteString(this Stream stream, string value) => WriteToStream(value, stream, null);
-
-    /// <summary>
-    /// Function to read a string from a stream using UTF-8 encoding.
-    /// </summary>
-    /// <param name="stream">The stream to read the string from.</param>
-    /// <returns>The string in the stream.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
-    /// <exception cref="IOException">Thrown when an attempt to read beyond the end of the <paramref name="stream"/> is made.</exception>
-    /// <remarks>
-    /// <para>
-    /// Gorgon stores its strings in a stream by prefixing the string data with the length of the string.  This length is encoded as a series of 7-bit bytes.
-    /// </para>
-    /// <para>
-    /// This method is <b>not</b> thread safe. Use care when using threads with this method.
-    /// </para>
-    /// </remarks>
-    public static string ReadString(this Stream stream) => ReadString(stream, null);
+    public static void WriteString(this Stream stream, string value, Encoding? encoding = null) => WriteToStream(value, stream, encoding);
 
     /// <summary>
     /// Function to read a string from a stream with the specified encoding.
@@ -340,7 +271,6 @@ public static class GorgonIOExtensions
     /// <param name="stream">The stream to read the string from.</param>
     /// <param name="encoding">The encoding for the string.</param>
     /// <returns>The string in the stream.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
     /// <exception cref="IOException">Thrown when an attempt to read beyond the end of the <paramref name="stream"/> is made.</exception>
     /// <remarks>
     /// <para>
@@ -353,11 +283,9 @@ public static class GorgonIOExtensions
     /// This method is <b>not</b> thread safe. Use care when using threads with this method.
     /// </para>
     /// </remarks>
-    public static string ReadString(this Stream stream, Encoding encoding)
+    public static string ReadString(this Stream stream, Encoding? encoding = null)
     {
         int stringLength = 0;
-
-        ArgumentNullException.ThrowIfNull(stream);
 
         encoding ??= Encoding.UTF8;
 
@@ -395,7 +323,7 @@ public static class GorgonIOExtensions
         try
         {
             Decoder decoder = encoding.GetDecoder();
-            StringBuilder result = null;
+            StringBuilder? result = null;
             counter = 0;
 
             // Buffer the string in, just in case it's super long.
@@ -450,7 +378,7 @@ public static class GorgonIOExtensions
     /// filename, then an empty string will be returned as well.
     /// </para>
     /// </remarks>
-    public static string FormatFileName(this string path)
+    public static string FormatFileName(this string? path)
     {
         if (string.IsNullOrWhiteSpace(path))
         {
@@ -493,7 +421,7 @@ public static class GorgonIOExtensions
     /// that string will be formatted as though it were a directory path.
     /// </para>
     /// </remarks>
-    public static string FormatDirectory(this string path, char directorySeparator)
+    public static string FormatDirectory(this string? path, char directorySeparator)
     {
         string directorySep = _directoryPathSeparator;
         string doubleSeparator = new(new[] { directorySeparator, directorySeparator });
@@ -569,7 +497,7 @@ public static class GorgonIOExtensions
     /// This method removes illegal symbols from the <paramref name="path"/> and replaces them with an underscore character. It will not respect path separators and will consider those characters 
     /// as illegal if provided in the <paramref name="path"/> parameter.
     /// </remarks>
-    public static string FormatPathPart(this string path)
+    public static string FormatPathPart(this string? path)
     {
         if (string.IsNullOrWhiteSpace(path))
         {
@@ -612,8 +540,13 @@ public static class GorgonIOExtensions
     ///		 */
     /// </code>
     /// </remarks>
-    public static string[] GetPathParts(this string path, char directorySeparator)
+    public static string[] GetPathParts(this string? path, char directorySeparator)
     {
+        if (string.IsNullOrWhiteSpace(path))
+        {
+            return [];
+        }
+
         path = path.FormatPath(directorySeparator);
 
         return path.Split(new[]
@@ -641,7 +574,7 @@ public static class GorgonIOExtensions
     /// If no directories are present in the path, then the see <paramref name="directorySeparator"/> is ignored.
     /// </para>
     /// </remarks>
-    public static string FormatPath(this string path, char directorySeparator)
+    public static string FormatPath(this string? path, char directorySeparator)
     {
         if (string.IsNullOrWhiteSpace(path))
         {
@@ -652,7 +585,9 @@ public static class GorgonIOExtensions
         StringBuilder output = new(path);
         output = _illegalPathChars.Aggregate(output, (current, illegalChar) => current.Replace(illegalChar, '_'));
 
-        StringBuilder filePath = new(FormatDirectory(Path.GetDirectoryName(output.ToString()), directorySeparator));
+        string formattedDirName = Path.GetDirectoryName(output.ToString()) ?? string.Empty;
+
+        StringBuilder filePath = new(FormatDirectory(formattedDirName, directorySeparator));
 
         path = output.ToString();
 
@@ -714,12 +649,9 @@ public static class GorgonIOExtensions
     /// </list>
     /// </para>
     /// </remarks>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="chunkName"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="chunkName"/> parameter is empty.</exception>"
     public static ulong ChunkID(this string chunkName)
     {
-        ArgumentEmptyException.ThrowIfNullOrEmpty(chunkName);
-
         if (chunkName.Length > 8)
         {
             chunkName = chunkName[..8];

@@ -24,7 +24,6 @@
 // 
 
 using Gorgon.Collections;
-using Gorgon.Core;
 using Gorgon.Math;
 using D3D11 = SharpDX.Direct3D11;
 
@@ -106,5 +105,5 @@ public sealed class GorgonConstantBuffers
         {
             this[i] = bufferViews[i];
         }
-    }    
+    }
 }

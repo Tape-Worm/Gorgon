@@ -20,7 +20,7 @@
 // 
 // Created: March 23, 2024 6:42:51 PM
 //
- 
+
 namespace Gorgon.Collections;
 
 /// <summary>
@@ -51,11 +51,8 @@ public static class GorgonIEnumerableExtensions
     /// <param name="children">The list of objects to evaluate.</param>
     /// <param name="getChildren">The method to retrieve the next level of children.</param>
     /// <returns>An enumerable containing the flattened list of objects.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="children"/> parameter is <b>null</b>.</exception>
     public static IEnumerable<T> TraverseDepthFirst<T>(this IEnumerable<T> children, Func<T, IEnumerable<T>> getChildren)
     {
-        ArgumentNullException.ThrowIfNull(children);
-
         Stack<T> queue = new();
         foreach (T child in children.Reverse())
         {
@@ -68,7 +65,7 @@ public static class GorgonIEnumerableExtensions
 
             yield return node;
 
-            IEnumerable<T> subChildren = getChildren?.Invoke(node);
+            IEnumerable<T> subChildren = getChildren.Invoke(node);
 
             if (subChildren is null)
             {
@@ -89,11 +86,8 @@ public static class GorgonIEnumerableExtensions
     /// <param name="children">The list of objects to evaluate.</param>
     /// <param name="getChildren">The method to retrieve the next level of children.</param>
     /// <returns>An enumerable containing the flattened list of objects.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="children"/> parameter is <b>null</b>.</exception>
     public static IEnumerable<T> TraverseBreadthFirst<T>(this IEnumerable<T> children, Func<T, IEnumerable<T>> getChildren)
     {
-        ArgumentNullException.ThrowIfNull(children);
-
         Queue<T> queue = new();
         foreach (T child in children)
         {
@@ -106,7 +100,7 @@ public static class GorgonIEnumerableExtensions
 
             yield return node;
 
-            IEnumerable<T> subChildren = getChildren?.Invoke(node);
+            IEnumerable<T> subChildren = getChildren.Invoke(node);
 
             if (subChildren is null)
             {

@@ -93,7 +93,7 @@ public readonly struct GorgonChunk(ulong id, int size, ulong offset)
     /// </summary>
     /// <param name="obj">The object to compare with the current instance.</param>
     /// <returns><b>true</b> if the specified <see cref="object" /> is equal to this instance; otherwise, <b>false</b>.</returns>
-    public override bool Equals(object obj) => obj is GorgonChunk chunk ? chunk.Equals(this) : base.Equals(obj);
+    public override bool Equals(object? obj) => obj is GorgonChunk chunk ? chunk.Equals(this) : base.Equals(obj);
 
     /// <summary>
     /// Function to compare this instance with another.

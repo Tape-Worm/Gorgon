@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Gorgon.Collections;
 
 namespace Gorgon.Core.Tests;
@@ -14,11 +11,11 @@ public class Node
     {
         get;
         set;
-    } = string.Empty;        
+    } = string.Empty;
 
     public List<Node> Children
     {
-        get; 
+        get;
     } = new List<Node>();
 }
 

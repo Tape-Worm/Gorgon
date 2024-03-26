@@ -32,7 +32,7 @@ public class GorgonRingPool<T>
     /// <summary>
     /// Property to set or return the allocator to use when creating new instances of an object.
     /// </summary>
-    protected Func<T> ItemAllocator
+    protected Func<T>? ItemAllocator
     {
         get;
         set;
@@ -75,7 +75,7 @@ public class GorgonRingPool<T>
     /// </remarks>
     /// <seealso cref="AvailableSlots"/>
     /// <seealso cref="Reset"/>
-    public T Allocate(Action<T> initializer = null)
+    public T Allocate(Action<T>? initializer = null)
     {
         int nextIndex = Interlocked.Increment(ref _currentItem);
 
@@ -140,7 +140,7 @@ public class GorgonRingPool<T>
     /// up to the user to create the object if the allocator returns <b>null</b>.
     /// </para>
     /// </remarks>
-    public GorgonRingPool(int objectCount, Func<T> allocator = null)
+    public GorgonRingPool(int objectCount, Func<T>? allocator = null)
     {
         if (objectCount < 1)
         {

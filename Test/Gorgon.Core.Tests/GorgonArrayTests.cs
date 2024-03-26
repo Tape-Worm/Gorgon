@@ -1,19 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using Gorgon.Collections;
-using Microsoft.VisualStudio.TestPlatform.ObjectModel.Client.Payloads;
 
 namespace Gorgon.Core.Tests;
 
 [TestClass]
 public class GorgonArrayTests
 {
-    private readonly string[] _testData = 
+    private readonly string[] _testData =
     [
         Guid.NewGuid().ToString(),
         Guid.NewGuid().ToString(),
@@ -29,7 +24,7 @@ public class GorgonArrayTests
     public void Creation()
     {
         GorgonArray<string?> array = new(32);
-        
+
         Assert.AreEqual(32, array.Length);
 
         array = new GorgonArray<string?>(_testData);
@@ -85,7 +80,7 @@ public class GorgonArrayTests
         GorgonArray<string?> array = new(_testData);
 
         array.RemoveAt(3);
-        
+
         Assert.IsNull(array[3]);
         Assert.IsTrue(array.IsDirty);
         Assert.IsTrue(array.IsIndexDirty(3));
@@ -138,10 +133,10 @@ public class GorgonArrayTests
         for (int i = 0; i < 5; ++i)
         {
             Assert.AreEqual(array[i + 1], range[i]);
-        }    
+        }
 
         Assert.IsTrue(array.IsDirty);
-        
+
         range = array.GetDirtySpan();
 
         for (int i = 0; i < 5; ++i)
@@ -171,7 +166,7 @@ public class GorgonArrayTests
 
         Assert.IsFalse(array.IsDirty);
 
-        array.MarkDirty(2..5);        
+        array.MarkDirty(2..5);
 
         Assert.IsTrue(array.IsDirty);
         Assert.IsTrue(array.IsIndexDirty(2));
@@ -280,7 +275,7 @@ public class GorgonArrayTests
         Assert.AreEqual(array[3], dirty[0]);
         Assert.AreEqual(array[4], dirty[1]);
         Assert.AreEqual(array[7], dirty[2]);
-                
+
         var mem = GC.GetGCMemoryInfo();
         var testProcess = Process.GetCurrentProcess();
         Debugger.Break();

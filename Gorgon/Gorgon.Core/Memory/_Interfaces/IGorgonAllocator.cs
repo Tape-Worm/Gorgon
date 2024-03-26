@@ -47,5 +47,5 @@ public interface IGorgonAllocator<T>
     /// is <b>null</b>, then this parameter will be ignored.
     /// </para>
     /// </remarks>
-    T Allocate(Action<T> initializer = null);
+    T Allocate(Action<T>? initializer = null);
 }

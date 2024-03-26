@@ -547,7 +547,7 @@ public class GorgonFileSystem
         for (int i = 0; i < directories.Length; i++)
         {
             if (!directory.Directories.TryGetValue(directories[i], out VirtualDirectory childDirectory))
-            {            
+            {
                 return null;
             }
 
@@ -673,7 +673,7 @@ public class GorgonFileSystem
         // All files have a physical link, and since that physical link is no longer valid, we need to update the physical path for each file under
         // the directory and any subdirectories.
         foreach (VirtualDirectory subDir in dir.Directories.EnumerateVirtualDirectories().TraverseBreadthFirst(d => d.Directories.EnumerateVirtualDirectories()))
-        {            
+        {
             if (subDir.MountPoint != mountPoint)
             {
                 subDir.MountPoint = mountPoint;

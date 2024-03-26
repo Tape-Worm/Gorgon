@@ -57,9 +57,9 @@ public class GorgonException
     /// </summary>
     /// <param name="result">The result.</param>
     /// <param name="message">Message data to append to the error.</param>
-    /// <param name="inner">The inner exception.</param>
-    public GorgonException(GorgonResult result, string message, Exception inner = null)
-        : base(result.Description + (!string.IsNullOrEmpty(message) ? "\n" + message : string.Empty), inner) => ResultCode = result;
+    /// <param name="innerException">The inner exception.</param>
+    public GorgonException(GorgonResult result, string message, Exception? innerException = null)
+        : base(result.Description + (!string.IsNullOrEmpty(message) ? "\n" + message : string.Empty), innerException) => ResultCode = result;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonException"/> class.
@@ -73,9 +73,9 @@ public class GorgonException
     /// Initializes a new instance of the <see cref="GorgonException"/> class.
     /// </summary>
     /// <param name="result">The result.</param>
-    /// <param name="inner">The inner exception.</param>
-    public GorgonException(GorgonResult result, Exception inner)
-        : this(result, string.Empty, inner)
+    /// <param name="innerException">The inner exception.</param>
+    public GorgonException(GorgonResult result, Exception innerException)
+        : this(result, string.Empty, innerException)
     {
     }
 

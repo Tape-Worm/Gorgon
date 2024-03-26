@@ -70,7 +70,7 @@ public static class GorgonReflectionExtensions
     /// <param name="objectType">The type of object to evaluate.</param>
     /// <param name="paramTypes">The parameter types on the constructor to find.</param>
     /// <returns>The constructor info for the constructor that matches the parameter types, or <b>null</b> if no matching constructor is found.</returns>
-    private static (ConstructorInfo Ctor, ParameterInfo[] Params) GetConstructor(Type objectType, Type[] paramTypes)
+    private static (ConstructorInfo? Ctor, ParameterInfo[] Params) GetConstructor(Type objectType, Type[] paramTypes)
     {
         paramTypes ??= [];
 
@@ -86,7 +86,7 @@ public static class GorgonReflectionExtensions
 
         if (constructors.Length == 0)
         {
-            return (null, null);
+            return (null, []);
         }
 
         if ((paramTypes.Length == 0) && (constructors.Length == 1))
@@ -121,7 +121,6 @@ public static class GorgonReflectionExtensions
     /// This code was derived from a blog post by Mariano Omar Rodriguez at <a href="http://weblogs.asp.net/marianor/using-expression-trees-to-get-property-getter-and-setters" target="_blank">http://weblogs.asp.net/marianor/using-expression-trees-to-get-property-getter-and-setters</a>
     /// </para>
     /// </remarks>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="propertyInfo"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentException">Thrown when the <paramref name="propertyInfo"/> has a <b>null</b> <see cref="MemberInfo.DeclaringType"/> property.</exception>
     /// <exception cref="InvalidCastException">Thrown when the declaring type of the property and type specified by <typeparamref name="T"/> are not the same, and the declaring type does not inherit from <typeparamref name="T"/>.
     /// <para>-or-</para>
@@ -130,8 +129,6 @@ public static class GorgonReflectionExtensions
     /// <returns>The method that will retrieve a property value from an instance.</returns>
     public static PropertyGetter<T, TP> CreatePropertyGetter<T, TP>(this PropertyInfo propertyInfo)
     {
-        ArgumentNullException.ThrowIfNull(propertyInfo);
-
         if (propertyInfo.DeclaringType is null)
         {
             throw new ArgumentException(string.Format(Resources.GOR_ERR_PROPERTY_NO_DECLARING_TYPE, propertyInfo.Name));
@@ -205,7 +202,6 @@ public static class GorgonReflectionExtensions
     /// </para>
     /// </remarks>
     /// <returns>The method that will assign a value to a property on an instance.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="propertyInfo"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentException">Thrown when the <paramref name="propertyInfo"/> has a <b>null</b> <see cref="MemberInfo.DeclaringType"/> property.</exception>
     /// <exception cref="InvalidCastException">Thrown when the declaring type of the property and type specified by <typeparamref name="T"/> are not the same, and the declaring type does not inherit from <typeparamref name="T"/>.
     /// <para>-or-</para>
@@ -213,8 +209,6 @@ public static class GorgonReflectionExtensions
     /// </exception>
     public static PropertySetter<T, TP> CreatePropertySetter<T, TP>(this PropertyInfo propertyInfo)
     {
-        ArgumentNullException.ThrowIfNull(propertyInfo);
-
         if (propertyInfo.DeclaringType is null)
         {
             throw new ArgumentException(string.Format(Resources.GOR_ERR_PROPERTY_NO_DECLARING_TYPE, propertyInfo.Name));
@@ -291,13 +285,10 @@ public static class GorgonReflectionExtensions
     /// no parameter types are passed to this method, then a parameterless constructor is assumed.
     /// </para>
     /// </remarks>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="type"/> parameter is <b>null</b>.</exception>
     /// <exception cref="TypeLoadException">Thrown when the type does not contain a constructor with the specified <paramref name="paramTypes"/>.</exception>
     /// <exception cref="InvalidCastException">Thrown when the type of the generic type parameter <typeparamref name="T"/> is not the same as the <paramref name="type"/> parameter.</exception>
     public static ObjectActivator<T> CreateActivator<T>(this Type type, params Type[] paramTypes)
     {
-        ArgumentNullException.ThrowIfNull(type);
-
         if (type.IsInterface)
         {
             throw new TypeLoadException(string.Format(Resources.GOR_ERR_ACTIVATOR_CANNOT_CREATE_INTERFACE_TYPE, type.FullName));
@@ -320,7 +311,7 @@ public static class GorgonReflectionExtensions
 
         paramTypes ??= [];
 
-        (ConstructorInfo Ctor, ParameterInfo[] Params) = GetConstructor(type, paramTypes);
+        (ConstructorInfo? Ctor, ParameterInfo[] Params) = GetConstructor(type, paramTypes);
 
         if (Ctor is null)
         {
@@ -365,7 +356,6 @@ public static class GorgonReflectionExtensions
     /// </summary>
     /// <param name="field">The field to evaluate.</param>
     /// <returns><b>true</b> if the field is safe for native use, <b>false</b> if not.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="field"/> parameter is <b>null</b>.</exception>
     /// <remarks>
     /// <para>
     /// This method will evaluate a value field to determine if it is safe to use with Gorgon's native memory functions. 
@@ -390,8 +380,6 @@ public static class GorgonReflectionExtensions
     /// </remarks>
     public static bool IsFieldSafeForNative(this FieldInfo field)
     {
-        ArgumentNullException.ThrowIfNull(field);
-
         // Don't check static fields or if the type we're checking is the type that's being examined.
         if ((field.IsStatic) || (field.FieldType == field.DeclaringType))
         {
@@ -416,7 +404,6 @@ public static class GorgonReflectionExtensions
     /// </summary>
     /// <param name="type">The type to evaluate.</param>
     /// <returns><b>true</b> if the type is compatible, <b>false</b> if not.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="type"/> parameter is <b>null</b>.</exception>
     /// <remarks>
     /// <para>
     /// This method will evaluate a value type to determine if it, and its members are safe to use with Gorgon's native memory functions. 
@@ -441,8 +428,6 @@ public static class GorgonReflectionExtensions
     /// </remarks>
     public static bool IsSafeForNative(this Type type)
     {
-        ArgumentNullException.ThrowIfNull(type);
-
         if ((type.StructLayoutAttribute is null) || (type.IsAutoLayout))
         {
             return false;
@@ -455,8 +440,6 @@ public static class GorgonReflectionExtensions
             return false;
         }
 
-        // ReSharper disable once LoopCanBeConvertedToQuery
-        // ReSharper disable once ForCanBeConvertedToForeach
         for (int i = 0; i < fields.Length; ++i)
         {
             if (!fields[i].IsFieldSafeForNative())
@@ -474,7 +457,6 @@ public static class GorgonReflectionExtensions
     /// <param name="type">The type to evaluate.</param>
     /// <param name="incompatibleFields">A list of fields containing information about the fields that are incompatible.</param>
     /// <returns><b>true</b> if the type is compatible, <b>false</b> if not.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="type"/> parameter is <b>null</b>.</exception>
     /// <remarks>
     /// <para>
     /// This method will evaluate a value type to determine if it, and its members are safe to use with Gorgon's native memory functions. 
@@ -499,8 +481,6 @@ public static class GorgonReflectionExtensions
     /// </remarks>
     public static bool IsSafeForNative(this Type type, out IReadOnlyList<FieldInfo> incompatibleFields)
     {
-        ArgumentNullException.ThrowIfNull(type);
-
         List<FieldInfo> result = [];
         incompatibleFields = result;
 

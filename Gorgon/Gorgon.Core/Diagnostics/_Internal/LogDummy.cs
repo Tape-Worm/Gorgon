@@ -58,7 +58,10 @@ internal class LogDummy
     /// <summary>
     /// Property to return the provider for this log.
     /// </summary>
-    public IGorgonLogProvider Provider => null;
+    public IGorgonLogProvider Provider
+    {
+        get;
+    } = new DummyLogProvider();
 
     /// <summary>
     /// Function to send an exception to the log.

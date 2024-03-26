@@ -35,11 +35,8 @@ public static class GorgonStringFormattingExtension
     /// </summary>
     /// <param name="text">The text to evaluate.</param>
     /// <param name="buffer">The array of strings representing a single line per newline control character.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="text"/> parameter is <b>null</b>.</exception>
     public static void GetLines(this StringBuilder text, ref string[] buffer)
     {
-        ArgumentNullException.ThrowIfNull(text);
-
         int lineCount = 0;
 
         if (text.Length == 0)
@@ -117,7 +114,6 @@ public static class GorgonStringFormattingExtension
     /// </summary>
     /// <param name="document">The document to convert.</param>
     /// <returns>The XML document serialized as a string.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="document"/> parameter is <b>null</b>.</exception>"
     /// <remarks>
     /// <para>
     /// This method addresses a shortcoming of the Linq-to-XML <see cref="XDocument"/>.<see cref="XNode.ToString()"/> method. The original method leaves out the declaration element when converted to a string.
@@ -125,8 +121,6 @@ public static class GorgonStringFormattingExtension
     /// </remarks>
     public static string ToStringWithDeclaration(this XDocument document)
     {
-        ArgumentNullException.ThrowIfNull(document);
-
         StringBuilder serializedXML = new();
 
         if (document.Declaration is not null)
@@ -151,7 +145,6 @@ public static class GorgonStringFormattingExtension
     /// <param name="maxLength">The maximum length of the string before adding ellipses.</param>
     /// <param name="prefix"><b>true</b> to put the ellipses on the beginning of the string, or <b>false</b> to put on the end.</param>
     /// <returns>The shortened string with ellipses if the string exceeds the <paramref name="maxLength"/> value. Otherwise, the original string is returned.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="theString"/> parameter is <b>null</b>.</exception>
     /// <remarks>
     /// <para>
     /// This will output a shorted version of <paramref name="theString"/> and will prefix or postfix an ellipses '...' to it. 
@@ -166,8 +159,6 @@ public static class GorgonStringFormattingExtension
     /// </remarks>        
     public static string Ellipses(this string theString, int maxLength, bool prefix = false)
     {
-        ArgumentNullException.ThrowIfNull(theString);
-        
         const string ellipses = "...";
 
         if (string.IsNullOrEmpty(theString))
@@ -217,7 +208,7 @@ public static class GorgonStringFormattingExtension
     /// If the <paramref name="encoding"/> parameter is <b>null</b>, then UTF-8 encoding will be used.
     /// </para>
     /// </remarks>
-    public static int GetByteCount(this ReadOnlySpan<char> value, bool includeLength, Encoding encoding = null)
+    public static int GetByteCount(this ReadOnlySpan<char> value, bool includeLength, Encoding? encoding = null)
     {
         if (value.IsEmpty)
         {
@@ -250,7 +241,6 @@ public static class GorgonStringFormattingExtension
     /// <param name="value">The string to measure.</param>
     /// <param name="includeLength"><b>true</b> to include the number of bytes for the encoded length, <b>false</b> to exclude.</param>
     /// <param name="encoding">[Optional] The encoding for the string.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="value"/> parameter is <b>null</b>.</exception>
     /// <returns>The length of the string, in bytes.</returns>
     /// <remarks>
     /// <para>
@@ -260,9 +250,5 @@ public static class GorgonStringFormattingExtension
     /// If the <paramref name="encoding"/> parameter is <b>null</b>, then UTF-8 encoding will be used.
     /// </para>
     /// </remarks>
-    public static int GetByteCount(this string value, bool includeLength, Encoding encoding = null) 
-    {
-        ArgumentNullException.ThrowIfNull(value);
-        return GetByteCount(value.AsSpan(), includeLength, encoding);
-    }
+    public static int GetByteCount(this string value, bool includeLength, Encoding? encoding = null) => GetByteCount(value.AsSpan(), includeLength, encoding);
 }

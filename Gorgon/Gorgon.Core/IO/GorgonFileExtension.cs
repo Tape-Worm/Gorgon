@@ -136,7 +136,7 @@ public readonly struct GorgonFileExtension
     /// <returns>
     ///   <b>true</b> if the specified <see cref="object" /> is equal to this instance; otherwise, <b>false</b>.
     /// </returns>
-    public override bool Equals(object obj) => obj is GorgonFileExtension ext ? ext.Equals(this) : base.Equals(obj);
+    public override bool Equals(object? obj) => obj is GorgonFileExtension ext ? ext.Equals(this) : base.Equals(obj);
 
     /// <summary>
     /// Returns a hash code for this instance.
@@ -179,7 +179,7 @@ public readonly struct GorgonFileExtension
     /// <returns>
     /// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
     /// </returns>
-    public bool Equals(string other)
+    public bool Equals(string? other)
     {
         if (string.IsNullOrWhiteSpace(other))
         {
@@ -197,7 +197,7 @@ public readonly struct GorgonFileExtension
     /// <returns>
     /// A value that indicates the relative order of the objects being compared. The return value has the following meanings: Value Meaning Less than zero This object is less than the <paramref name="other" /> parameter.Zero This object is equal to <paramref name="other" />. Greater than zero This object is greater than <paramref name="other" />.
     /// </returns>
-    public int CompareTo(string other)
+    public int CompareTo(string? other)
     {
         if (string.IsNullOrWhiteSpace(other))
         {
@@ -213,9 +213,8 @@ public readonly struct GorgonFileExtension
     /// </summary>
     /// <param name="extension">The extension.</param>
     /// <param name="description">The description.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="extension"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="extension"/> parameter is empty.</exception>
-    public GorgonFileExtension(string extension, string description)
+    public GorgonFileExtension(string extension, string? description = null)
     {
         ArgumentEmptyException.ThrowIfNullOrWhiteSpace(extension);
 
@@ -226,17 +225,6 @@ public readonly struct GorgonFileExtension
 
         Extension = extension;
         FullExtension = $".{extension}";
-        Description = description;
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonFileExtension"/> struct.
-    /// </summary>
-    /// <param name="extension">The extension.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="extension"/> parameter is <b>null</b>.</exception>
-    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="extension"/> parameter is empty.</exception>
-    public GorgonFileExtension(string extension)
-        : this(extension, string.Empty)
-    {
+        Description = description ?? string.Empty;
     }
 }

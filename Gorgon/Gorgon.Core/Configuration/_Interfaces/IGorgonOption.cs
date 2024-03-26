@@ -46,34 +46,33 @@ public interface IGorgonOption
     /// </summary>
     /// <typeparam name="T">The type for the value.</typeparam>
     /// <returns>The value, strongly typed.</returns>
-    T GetValue<T>();
+    T? GetValue<T>();
 
     /// <summary>
     /// Function to assign a value for the option.
     /// </summary>
     /// <typeparam name="T">The type parmeter for the value.</typeparam>
     /// <param name="value">The value to assign.</param>
-    void SetValue<T>(T value);
+    void SetValue<T>(T? value);
 
     /// <summary>
     /// Function to retrieve the default value for this option.
     /// </summary>
     /// <typeparam name="T">The type of the value.</typeparam>
     /// <returns>The value, strongly typed.</returns>
-    T GetDefaultValue<T>();
+    T? GetDefaultValue<T>();
 
     /// <summary>
     /// Function to retrieve the minimum allowed value for this option.
     /// </summary>
     /// <typeparam name="T">The type of the value.</typeparam>
     /// <returns>The value, strongly typed.</returns>
-    T GetMinValue<T>();
+    T? GetMinValue<T>();
 
     /// <summary>
     /// Function to retrieve the maximum allowed value for this option.
     /// </summary>
     /// <typeparam name="T">The type of the value.</typeparam>
     /// <returns>The value, strongly typed.</returns>
-    T GetMaxValue<T>();
-
+    T? GetMaxValue<T>();
 }

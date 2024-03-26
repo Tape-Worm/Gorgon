@@ -1,5 +1,4 @@
-﻿
-// 
+﻿// 
 // Gorgon
 // Copyright (C) 2016 Michael Winsor
 // 
@@ -23,8 +22,6 @@
 // Created: June 29, 2016 8:16:09 PM
 // 
 
-using Gorgon.Collections;
-
 namespace Gorgon.Configuration;
 
 /// <summary>
@@ -40,7 +37,7 @@ public interface IGorgonOptionBag
     /// <param name="optionName">The name of the option.</param>
     /// <returns>The value stored with the option.</returns>
     /// <exception cref="KeyNotFoundException">Thrown when the option specified by the <paramref name="optionName"/> was not found.</exception>
-    T GetOptionValue<T>(string optionName);
+    T? GetOptionValue<T>(string optionName);
 
     /// <summary>
     /// Function to assign a value for an option.
@@ -49,5 +46,5 @@ public interface IGorgonOptionBag
     /// <param name="optionName">The name of the option.</param>
     /// <param name="value">The value to assign to the option.</param>
     /// <exception cref="KeyNotFoundException">Thrown when the option specified by the <paramref name="optionName"/> was not found.</exception>
-    void SetOptionValue<T>(string optionName, T value);
+    void SetOptionValue<T>(string optionName, T? value);
 }
