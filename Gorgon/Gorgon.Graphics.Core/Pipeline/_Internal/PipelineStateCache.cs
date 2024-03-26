@@ -77,6 +77,48 @@ internal class PipelineStateCache(D3D11.Device5 device)
     }
 
     /// <summary>
+    /// Function to compare two blend state arrays for equality.
+    /// </summary>
+    /// <param name="left">The left array to compare.</param>
+    /// <param name="right">The right array to compare.</param>
+    /// <returns><b>true</b> if both arrays are equal, <b>false</b> if not.</returns>
+    private bool BlendStateCompare(BlendStateArray left, BlendStateArray right)
+    {
+        if (left == right)
+        {
+            return true;
+        }
+
+        if ((left is null) && (right is null))
+        {
+            return true;
+        }
+
+        if (((right is null) && (left is not null)) || (left is null))
+        {
+            return false;
+        }
+
+        for (int i = 0; i < left.Length; ++i)
+        {
+            GorgonBlendState leftState = left[i];
+            GorgonBlendState rightState = right[i];
+
+            if ((leftState is null) && (rightState is null))
+            {
+                continue;
+            }
+
+            if (!leftState.Equals(rightState))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /// <summary>
     /// Function to compare two states, and determine what values are the same.
     /// </summary>
     /// <param name="cachedState">The previously cached state.</param>
@@ -92,9 +134,9 @@ internal class PipelineStateCache(D3D11.Device5 device)
         inheritedState |= (cachedState.DomainShader == newState.DomainShader) ? PipelineStateChanges.DomainShader : PipelineStateChanges.None;
         inheritedState |= (cachedState.HullShader == newState.HullShader) ? PipelineStateChanges.HullShader : PipelineStateChanges.None;
         inheritedState |= (cachedState.RasterState.Equals(newState.RasterState)) ? PipelineStateChanges.RasterState : PipelineStateChanges.None;
-        inheritedState |= ((cachedState.RwBlendStates.Equals(newState.RwBlendStates))
-                            && (cachedState.IsAlphaToCoverageEnabled == newState.IsAlphaToCoverageEnabled)
-                            && (cachedState.IsIndependentBlendingEnabled == newState.IsIndependentBlendingEnabled)) ? PipelineStateChanges.BlendState : PipelineStateChanges.None;
+        inheritedState |= ((cachedState.IsAlphaToCoverageEnabled == newState.IsAlphaToCoverageEnabled)
+                            && (cachedState.IsIndependentBlendingEnabled == newState.IsIndependentBlendingEnabled)
+                            && (BlendStateCompare(cachedState.RwBlendStates, newState.RwBlendStates))) ? PipelineStateChanges.BlendState : PipelineStateChanges.None;
         inheritedState |= ((cachedState.DepthStencilState is not null)
                             && (cachedState.DepthStencilState.Equals(newState.DepthStencilState))) ? PipelineStateChanges.DepthStencilState : PipelineStateChanges.None;
 

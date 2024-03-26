@@ -25,6 +25,7 @@
 
 using System.Diagnostics;
 using Gorgon.Collections;
+using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Math;
 using D3D11 = SharpDX.Direct3D11;
@@ -39,7 +40,6 @@ namespace Gorgon.Graphics.Core;
 /// <param name="graphics">The graphics interface that owns this evaluator.</param>
 internal class StateEvaluator(GorgonGraphics graphics)
 {
-
     // The previous stencil reference value.
     private int _stencilReference;
     // The previous blend sample mask.
@@ -61,31 +61,7 @@ internal class StateEvaluator(GorgonGraphics graphics)
     private readonly ResourceRanges _ranges = new();
 
     // The previously assigned resource state.
-    private readonly D3DState _prevResourceState = new()
-    {
-        CsReadWriteViews = new GorgonReadWriteViewBindings(),
-        PsSamplers = new GorgonSamplerStates(),
-        VsSrvs = new GorgonShaderResourceViews(),
-        CsConstantBuffers = new GorgonConstantBuffers(),
-        CsSamplers = new GorgonSamplerStates(),
-        CsSrvs = new GorgonShaderResourceViews(),
-        DsConstantBuffers = new GorgonConstantBuffers(),
-        DsSamplers = new GorgonSamplerStates(),
-        DsSrvs = new GorgonShaderResourceViews(),
-        GsConstantBuffers = new GorgonConstantBuffers(),
-        GsSamplers = new GorgonSamplerStates(),
-        GsSrvs = new GorgonShaderResourceViews(),
-        HsConstantBuffers = new GorgonConstantBuffers(),
-        HsSamplers = new GorgonSamplerStates(),
-        HsSrvs = new GorgonShaderResourceViews(),
-        PsConstantBuffers = new GorgonConstantBuffers(),
-        PsSrvs = new GorgonShaderResourceViews(),
-        ReadWriteViews = new GorgonReadWriteViewBindings(),
-        StreamOutBindings = new GorgonStreamOutBindings(),
-        VertexBuffers = new GorgonVertexBufferBindings(),
-        VsConstantBuffers = new GorgonConstantBuffers(),
-        VsSamplers = new GorgonSamplerStates()
-    };
+    private readonly D3DState _prevResourceState = D3DState.Create();
 
     // The viewports used to define the area to render into.
     public DX.ViewportF[] Viewports = new DX.ViewportF[16];
@@ -106,11 +82,11 @@ internal class StateEvaluator(GorgonGraphics graphics)
     /// <param name="streamOut">The current list of stream out buffers.</param>
     private void CheckIndexBufferStreamOut(D3DState state, GorgonStreamOutBindings streamOut)
     {
-        void ScanStreamOut(GorgonStreamOutBindings bindings, ref readonly (int Start, int Count) streamOutIndices)
+        void ScanStreamOut(ReadOnlySpan<GorgonStreamOutBinding> soBindings)
         {
-            for (int s = streamOutIndices.Start; s < streamOutIndices.Count + streamOutIndices.Start; ++s)
+            for (int s = 0;  s < soBindings.Length; ++s)
             {
-                GorgonBufferCommon soBuffer = bindings[s].Buffer;
+                GorgonBufferCommon soBuffer = soBindings[s].Buffer;
 
                 if (((soBuffer is null) || (soBuffer.BindFlags != D3D11.BindFlags.VertexBuffer))
                     || (soBuffer != state.IndexBuffer))
@@ -132,23 +108,21 @@ internal class StateEvaluator(GorgonGraphics graphics)
             return;
         }
 
-        ref readonly (int Start, int Count) newStreamOut = ref streamOut.GetDirtyItems();
+        ReadOnlySpan<GorgonStreamOutBinding> newStreamOut = streamOut.GetDirtySpan();
 
-        if (newStreamOut.Count == 0)
+        if (!newStreamOut.IsEmpty)
+        {
+            ScanStreamOut(newStreamOut);
+        }
+
+        ReadOnlySpan<GorgonStreamOutBinding> prevStreamOut = _prevResourceState.StreamOutBindings.GetDirtySpan();
+
+        if (prevStreamOut.IsEmpty)
         {
             return;
         }
 
-        ScanStreamOut(streamOut, in newStreamOut);
-
-        ref readonly (int Start, int Count) prevStreamOut = ref _prevResourceState.StreamOutBindings.GetDirtyItems();
-
-        if (prevStreamOut.Count == 0)
-        {
-            return;
-        }
-
-        ScanStreamOut(_prevResourceState.StreamOutBindings, in prevStreamOut);
+        ScanStreamOut(prevStreamOut);
     }
 
     /// <summary>
@@ -158,11 +132,21 @@ internal class StateEvaluator(GorgonGraphics graphics)
     /// <param name="streamOut">The current list of stream out buffers.</param>
     private void CheckVertexBufferStreamOut(GorgonVertexBufferBindings vertexBuffers, GorgonStreamOutBindings streamOut)
     {
-        void ScanVertexBuffers(GorgonBufferCommon soBuffer, ref readonly (int Start, int Count) vBufferIndices)
+        ReadOnlySpan<GorgonVertexBufferBinding> newVertexBuffers = vertexBuffers.GetDirtySpan();
+        ReadOnlySpan<GorgonStreamOutBinding> streamOutBuffers = streamOut.GetDirtySpan();
+
+        if ((newVertexBuffers.IsEmpty) || (streamOutBuffers.IsEmpty))
         {
-            for (int v = vBufferIndices.Start; v < vBufferIndices.Count + vBufferIndices.Start; ++v)
+            return;
+        }
+
+        (int start, _) = vertexBuffers.GetDirtyStartIndexAndCount();
+
+        void ScanVertexBuffers(GorgonBufferCommon soBuffer, ReadOnlySpan<GorgonVertexBufferBinding> vBuffers)
+        {
+            for (int v = 0; v < vBuffers.Length; ++v)
             {
-                GorgonBufferCommon vBuffer = vertexBuffers[v].VertexBuffer;
+                GorgonBufferCommon vBuffer = vBuffers[v].VertexBuffer;
 
                 if (((vBuffer is null) || ((vBuffer.BindFlags & D3D11.BindFlags.StreamOutput) != D3D11.BindFlags.StreamOutput))
                     || (soBuffer != vBuffer))
@@ -174,47 +158,41 @@ internal class StateEvaluator(GorgonGraphics graphics)
                 {
                     _log.Print($"WARNING: The vertex buffer '{vBuffer.Name}' is bound for input and stream out. It will be unbound from the vertex buffers.", LoggingLevel.Verbose);
                 }
-                vertexBuffers.ResetAt(v);
+                
+                vertexBuffers.MarkClean(start + v);
             }
         }
 
-        ref readonly (int Start, int Count) newVertexBuffers = ref vertexBuffers.GetDirtyItems();
-        ref readonly (int Start, int Count) streamOutBuffers = ref streamOut.GetDirtyItems();
 
-        if ((newVertexBuffers.Count == 0) || (streamOutBuffers.Count == 0))
+        for (int s = 0; s < streamOutBuffers.Length; ++s)
         {
-            return;
-        }
-
-        for (int s = streamOutBuffers.Start; s < streamOutBuffers.Count + streamOutBuffers.Start; ++s)
-        {
-            GorgonBufferCommon soBuffer = streamOut[s].Buffer;
+            GorgonBufferCommon soBuffer = streamOutBuffers[s].Buffer;
 
             if ((soBuffer is null) || ((soBuffer.BindFlags & D3D11.BindFlags.VertexBuffer) != D3D11.BindFlags.VertexBuffer))
             {
                 continue;
             }
 
-            ScanVertexBuffers(soBuffer, in newVertexBuffers);
+            ScanVertexBuffers(soBuffer, newVertexBuffers);
         }
 
-        streamOutBuffers = ref _prevResourceState.StreamOutBindings.GetDirtyItems();
+        streamOutBuffers = _prevResourceState.StreamOutBindings.GetDirtySpan();
 
-        if (streamOutBuffers.Count == 0)
+        if (streamOutBuffers.IsEmpty)
         {
             return;
         }
 
-        for (int s = streamOutBuffers.Start; s < streamOutBuffers.Count + streamOutBuffers.Start; ++s)
+        for (int s = 0; s < streamOutBuffers.Length; ++s)
         {
-            GorgonBufferCommon soBuffer = streamOut[s].Buffer;
+            GorgonBufferCommon soBuffer = streamOutBuffers[s].Buffer;
 
             if ((soBuffer is null) || ((soBuffer.BindFlags & D3D11.BindFlags.VertexBuffer) != D3D11.BindFlags.VertexBuffer))
             {
                 continue;
             }
 
-            ScanVertexBuffers(soBuffer, in newVertexBuffers);
+            ScanVertexBuffers(soBuffer, newVertexBuffers);
         }
     }
 
@@ -224,18 +202,21 @@ internal class StateEvaluator(GorgonGraphics graphics)
     /// <param name="srvs">The shader resource views to compare.</param>
     private void CheckSrvsRtvs(GorgonArray<GorgonShaderResourceView> srvs)
     {
-        ref readonly (int Start, int Count) indices = ref srvs.GetDirtyItems();
+        ReadOnlySpan<GorgonShaderResourceView> dirtySrvs = srvs.GetDirtySpan();
 
-        if (indices.Count == 0)
+        if (dirtySrvs.IsEmpty)
         {
             return;
         }
 
+        (int start, int count) = srvs.GetDirtyStartIndexAndCount();
+        Range dirtyRange = start..(start + count);
+
         if ((_graphics.DepthStencilView is not null) && ((_graphics.DepthStencilView.Binding & TextureBinding.ShaderResource) == TextureBinding.ShaderResource))
         {
-            for (int s = indices.Start; s < indices.Count + indices.Start; ++s)
+            for (int s = 0; s < dirtySrvs.Length; ++s)
             {
-                GorgonGraphicsResource srvResource = srvs[s]?.Resource;
+                GorgonGraphicsResource srvResource = dirtySrvs[s]?.Resource;
 
                 if ((srvResource is null) || ((srvResource.BindFlags & D3D11.BindFlags.DepthStencil) != D3D11.BindFlags.DepthStencil)
                     || (srvResource != _graphics.DepthStencilView.Resource))
@@ -248,10 +229,10 @@ internal class StateEvaluator(GorgonGraphics graphics)
                     _log.Print($"WARNING: The shader resource '{srvResource.Name}' is bound for input and as a depth/stencil. It will be unbound from the shader resources.", LoggingLevel.Verbose);
                 }
 
-                srvs[s] = null;
+                srvs[start + s] = null;
             }
-
-            srvs.MarkDirty(indices.Start..(indices.Count + indices.Start));
+            
+            srvs.MarkDirty(dirtyRange);
         }
 
         for (int r = 0; r < _graphics.RenderTargets.Count; ++r)
@@ -263,9 +244,9 @@ internal class StateEvaluator(GorgonGraphics graphics)
                 continue;
             }
 
-            for (int s = indices.Start; s < indices.Count + indices.Start; ++s)
+            for (int s = 0; s < dirtySrvs.Length; ++s)
             {
-                GorgonGraphicsResource srvResource = srvs[s]?.Resource;
+                GorgonGraphicsResource srvResource = dirtySrvs[s]?.Resource;
 
                 if ((srvResource is null)
                     || ((srvResource.BindFlags & D3D11.BindFlags.RenderTarget) != D3D11.BindFlags.RenderTarget)
@@ -279,10 +260,10 @@ internal class StateEvaluator(GorgonGraphics graphics)
                     _log.Print($"WARNING: The shader resource '{srvResource.Name}' is bound for input and as a render target. It will be unbound from the shader resources.", LoggingLevel.Verbose);
                 }
 
-                srvs[s] = null;
+                srvs[start + s] = null;
             }
 
-            srvs.MarkDirty(indices.Start..(indices.Count + indices.Start));
+            srvs.MarkDirty(dirtyRange);
         }
     }
 
@@ -293,26 +274,29 @@ internal class StateEvaluator(GorgonGraphics graphics)
     /// <param name="uavs">The unordered access views to compare.</param>
     private void CheckSrvsUavs(GorgonArray<GorgonShaderResourceView> srvs, GorgonArray<GorgonReadWriteViewBinding> uavs)
     {
-        ref readonly (int Start, int Count) uavIndices = ref uavs.GetDirtyItems();
-        ref readonly (int Start, int Count) srvIndices = ref srvs.GetDirtyItems();
+        ReadOnlySpan<GorgonReadWriteViewBinding> dirtyUavs = uavs.GetDirtySpan();
+        ReadOnlySpan<GorgonShaderResourceView> dirtySrvs = srvs.GetDirtySpan();
 
-        if ((srvIndices.Count == 0) || (uavIndices.Count == 0))
+        if ((dirtySrvs.IsEmpty) || (dirtyUavs.IsEmpty))
         {
             return;
         }
 
-        for (int u = uavIndices.Start; u < uavIndices.Count + uavIndices.Start; ++u)
+        (int start, int count) = srvs.GetDirtyStartIndexAndCount();
+        Range dirtyRange = start..(start + count);
+
+        for (int u = 0; u < dirtyUavs.Length; ++u)
         {
-            GorgonGraphicsResource uavResource = uavs[u].ReadWriteView?.Resource;
+            GorgonGraphicsResource uavResource = dirtyUavs[u].ReadWriteView?.Resource;
 
             if ((uavResource is null) || ((uavResource.BindFlags & D3D11.BindFlags.ShaderResource) != D3D11.BindFlags.ShaderResource))
             {
                 continue;
             }
 
-            for (int s = srvIndices.Start; s < srvIndices.Count + srvIndices.Start; ++s)
+            for (int s = 0; s < dirtySrvs.Length; ++s)
             {
-                GorgonGraphicsResource srvResource = srvs[s]?.Resource;
+                GorgonGraphicsResource srvResource = dirtySrvs[s]?.Resource;
 
                 if ((srvResource is null)
                     || ((srvResource.BindFlags & D3D11.BindFlags.UnorderedAccess) != D3D11.BindFlags.UnorderedAccess)
@@ -326,11 +310,11 @@ internal class StateEvaluator(GorgonGraphics graphics)
                     _log.Print($"WARNING: The shader resource '{srvResource.Name}' is bound for input and as an unordered access view. It will be unbound from the shader resources.", LoggingLevel.Verbose);
                 }
 
-                srvs[s] = null;
+                srvs[start + s] = null;
             }
 
-            // Mark the same item(s) as dirty.
-            srvs.MarkDirty(srvIndices.Start..(srvIndices.Count + srvIndices.Start));
+            // Mark the same item(s) as dirty again.
+            srvs.MarkDirty(dirtyRange);
         }
     }
 
@@ -366,9 +350,9 @@ internal class StateEvaluator(GorgonGraphics graphics)
     /// <param name="shaderStage">The current shader stage being evaluated.</param>
     private void CheckDsvSrvsHazards(GorgonArray<GorgonShaderResourceView> srvs, GorgonDepthStencil2DView depth, D3D11.CommonShaderStage shaderStage)
     {
-        ref readonly (int Start, int Count) indices = ref srvs.GetDirtyItems();
+        ReadOnlySpan<GorgonShaderResourceView> dirtySrvs = srvs.GetDirtySpan();
 
-        if (indices.Count == 0)
+        if (dirtySrvs.IsEmpty)
         {
             return;
         }
@@ -380,9 +364,12 @@ internal class StateEvaluator(GorgonGraphics graphics)
             return;
         }
 
-        for (int s = indices.Start; s < indices.Count + indices.Start; ++s)
+        (int start, int count) = srvs.GetDirtyStartIndexAndCount();
+        Range dirtyRange = start..(start + count);
+
+        for (int s = 0; s < dirtySrvs.Length; ++s)
         {
-            GorgonGraphicsResource srv = srvs[s]?.Resource;
+            GorgonGraphicsResource srv = dirtySrvs[s]?.Resource;
 
             if ((srv is null) || ((srv.BindFlags & D3D11.BindFlags.DepthStencil) == D3D11.BindFlags.DepthStencil) || (srv != depthResource))
             {
@@ -394,12 +381,13 @@ internal class StateEvaluator(GorgonGraphics graphics)
                 _log.Print($"WARNING: The depth buffer resource '{depth.Resource.Name}' is bound as an input. Unbinding...", LoggingLevel.Verbose);
             }
 
-            srvs[s] = null;
-            shaderStage.SetShaderResource(s, null);
+            int arrayIndex = start + s;
+            srvs[arrayIndex] = null;
+            shaderStage.SetShaderResource(arrayIndex, null);
         }
 
         // Mark the same item(s) as dirty.
-        srvs.MarkDirty(indices.Start..(indices.Count + indices.Start));
+        srvs.MarkDirty(dirtyRange);
     }
 
     /// <summary>
@@ -410,9 +398,9 @@ internal class StateEvaluator(GorgonGraphics graphics)
     /// <param name="shaderStage">The current shader stage being evaluated.</param>
     private void CheckRtvSrvsHazards(GorgonArray<GorgonShaderResourceView> srvs, GorgonRenderTargetView rtv, D3D11.CommonShaderStage shaderStage)
     {
-        ref readonly (int Start, int Count) indices = ref srvs.GetDirtyItems();
+        ReadOnlySpan<GorgonShaderResourceView> dirtySrvs = srvs.GetDirtySpan();
 
-        if (indices.Count == 0)
+        if (dirtySrvs.IsEmpty)
         {
             return;
         }
@@ -424,21 +412,25 @@ internal class StateEvaluator(GorgonGraphics graphics)
             return;
         }
 
-        for (int s = indices.Start; s < indices.Count + indices.Start; ++s)
+        (int start, int count) = srvs.GetDirtyStartIndexAndCount();
+        Range dirtyRange = start..(start + count);
+
+        for (int s = 0; s < dirtySrvs.Length; ++s)
         {
-            GorgonGraphicsResource srvResource = srvs[s]?.Resource;
+            GorgonGraphicsResource srvResource = dirtySrvs[s]?.Resource;
 
             if ((srvResource is null) || ((srvResource.BindFlags & D3D11.BindFlags.RenderTarget) != D3D11.BindFlags.RenderTarget) || (srvResource != rtvResource))
             {
                 continue;
             }
 
-            srvs[s] = null;
-            shaderStage.SetShaderResource(s, null);
+            int arrayIndex = start + s;
+            srvs[arrayIndex] = null;
+            shaderStage.SetShaderResource(arrayIndex, null);
         }
 
         // Mark the same item(s) as dirty.
-        srvs.MarkDirty(indices.Start..(indices.Count + indices.Start));
+        srvs.MarkDirty(dirtyRange);
     }
 
     /// <summary>
@@ -450,17 +442,18 @@ internal class StateEvaluator(GorgonGraphics graphics)
     /// <param name="change">The type of change being evaluated.</param>
     /// <param name="changes">The current set of changes to be updated.</param>
     /// <param name="range">The unioned range of indices that have changed between the two arrays.</param>
-    private void CheckArray<T>(GorgonArray<T> left, GorgonArray<T> right, ResourceStateChanges change, ref ResourceStateChanges changes, ref (int start, int count) range)
+    private void CheckArray<T>(GorgonArray<T> left, GorgonArray<T> right, ResourceStateChanges change, ref ResourceStateChanges changes, out (int Start, int Count) range)
         where T : IEquatable<T>
     {
         Debug.Assert(left.Length == right.Length, $"Both arrays must be of the same length. Left: {left.Length}, Right: {right.Length}");
 
-        ref readonly (int start, int count) leftIndices = ref left.GetDirtyItems();
-        ref readonly (int start, int count) rightIndices = ref right.GetDirtyItems();
+        (int leftStart, int leftCount) = left.GetDirtyStartIndexAndCount();
+        (int rightStart, int rightCount) = right.GetDirtyStartIndexAndCount();  
 
-        int leftEnd = (leftIndices.count + leftIndices.start);
-        int rightEnd = (rightIndices.count + rightIndices.start);
-        int start = leftIndices.start.Min(rightIndices.start);
+        int leftEnd = leftStart + leftCount;
+        int rightEnd = rightStart + rightCount;
+
+        int start = leftStart.Min(rightStart);
         int end = leftEnd.Max(rightEnd);
 
         for (int i = start; i < end; ++i)
@@ -470,11 +463,12 @@ internal class StateEvaluator(GorgonGraphics graphics)
 
         if (!left.IsDirty)
         {
+            range = (0, 0);
             return;
         }
 
         changes |= change;
-        range = (start, end - start);
+        range = new(start, end - start);
     }
 
     /// <summary>
@@ -549,55 +543,55 @@ internal class StateEvaluator(GorgonGraphics graphics)
         }
 
         // Handle array resources.
-        CheckArray(_prevResourceState.VertexBuffers, newState.VertexBuffers, ResourceStateChanges.VertexBuffers, ref result, ref _ranges.VertexBuffers);
-        CheckArray(_prevResourceState.StreamOutBindings, newState.StreamOutBindings, ResourceStateChanges.StreamOutBuffers, ref result, ref _ranges.StreamOutBuffers);
+        CheckArray(_prevResourceState.VertexBuffers, newState.VertexBuffers, ResourceStateChanges.VertexBuffers, ref result, out _ranges.VertexBuffers);
+        CheckArray(_prevResourceState.StreamOutBindings, newState.StreamOutBindings, ResourceStateChanges.StreamOutBuffers, ref result, out _ranges.StreamOutBuffers);
 
         if ((newState.PipelineState.VertexShader is not null) || ((pipelineStateChanges & PipelineStateChanges.VertexShader) == PipelineStateChanges.VertexShader))
         {
-            CheckArray(_prevResourceState.VsConstantBuffers, newState.VsConstantBuffers, ResourceStateChanges.VsConstants, ref result, ref _ranges.VertexShaderConstants);
-            CheckArray(_prevResourceState.VsSrvs, newState.VsSrvs, ResourceStateChanges.VsResourceViews, ref result, ref _ranges.VertexShaderResources);
-            CheckArray(_prevResourceState.VsSamplers, newState.VsSamplers, ResourceStateChanges.VsSamplers, ref result, ref _ranges.VertexShaderSamplers);
+            CheckArray(_prevResourceState.VsConstantBuffers, newState.VsConstantBuffers, ResourceStateChanges.VsConstants, ref result, out _ranges.VertexShaderConstants);
+            CheckArray(_prevResourceState.VsSrvs, newState.VsSrvs, ResourceStateChanges.VsResourceViews, ref result, out _ranges.VertexShaderResources);
+            CheckArray(_prevResourceState.VsSamplers, newState.VsSamplers, ResourceStateChanges.VsSamplers, ref result, out _ranges.VertexShaderSamplers);
         }
 
         if ((newState.PipelineState.PixelShader is not null) || ((pipelineStateChanges & PipelineStateChanges.PixelShader) == PipelineStateChanges.PixelShader))
         {
-            CheckArray(_prevResourceState.PsConstantBuffers, newState.PsConstantBuffers, ResourceStateChanges.PsConstants, ref result, ref _ranges.PixelShaderConstants);
-            CheckArray(_prevResourceState.PsSrvs, newState.PsSrvs, ResourceStateChanges.PsResourceViews, ref result, ref _ranges.PixelShaderResources);
-            CheckArray(_prevResourceState.PsSamplers, newState.PsSamplers, ResourceStateChanges.PsSamplers, ref result, ref _ranges.PixelShaderSamplers);
+            CheckArray(_prevResourceState.PsConstantBuffers, newState.PsConstantBuffers, ResourceStateChanges.PsConstants, ref result, out _ranges.PixelShaderConstants);
+            CheckArray(_prevResourceState.PsSrvs, newState.PsSrvs, ResourceStateChanges.PsResourceViews, ref result, out _ranges.PixelShaderResources);
+            CheckArray(_prevResourceState.PsSamplers, newState.PsSamplers, ResourceStateChanges.PsSamplers, ref result, out _ranges.PixelShaderSamplers);
         }
 
         if ((newState.PipelineState.GeometryShader is not null) || ((pipelineStateChanges & PipelineStateChanges.GeometryShader) == PipelineStateChanges.GeometryShader))
         {
-            CheckArray(_prevResourceState.GsConstantBuffers, newState.GsConstantBuffers, ResourceStateChanges.GsConstants, ref result, ref _ranges.GeometryShaderConstants);
-            CheckArray(_prevResourceState.GsSrvs, newState.GsSrvs, ResourceStateChanges.GsResourceViews, ref result, ref _ranges.GeometryShaderResources);
-            CheckArray(_prevResourceState.GsSamplers, newState.GsSamplers, ResourceStateChanges.GsSamplers, ref result, ref _ranges.GeometryShaderSamplers);
+            CheckArray(_prevResourceState.GsConstantBuffers, newState.GsConstantBuffers, ResourceStateChanges.GsConstants, ref result, out _ranges.GeometryShaderConstants);
+            CheckArray(_prevResourceState.GsSrvs, newState.GsSrvs, ResourceStateChanges.GsResourceViews, ref result, out _ranges.GeometryShaderResources);
+            CheckArray(_prevResourceState.GsSamplers, newState.GsSamplers, ResourceStateChanges.GsSamplers, ref result, out _ranges.GeometryShaderSamplers);
         }
 
         if ((newState.PipelineState.HullShader is not null) || ((pipelineStateChanges & PipelineStateChanges.HullShader) == PipelineStateChanges.HullShader))
         {
-            CheckArray(_prevResourceState.HsConstantBuffers, newState.HsConstantBuffers, ResourceStateChanges.HsConstants, ref result, ref _ranges.HullShaderConstants);
-            CheckArray(_prevResourceState.HsSrvs, newState.HsSrvs, ResourceStateChanges.HsResourceViews, ref result, ref _ranges.HullShaderResources);
-            CheckArray(_prevResourceState.HsSamplers, newState.HsSamplers, ResourceStateChanges.HsSamplers, ref result, ref _ranges.HullShaderSamplers);
+            CheckArray(_prevResourceState.HsConstantBuffers, newState.HsConstantBuffers, ResourceStateChanges.HsConstants, ref result, out _ranges.HullShaderConstants);
+            CheckArray(_prevResourceState.HsSrvs, newState.HsSrvs, ResourceStateChanges.HsResourceViews, ref result, out _ranges.HullShaderResources);
+            CheckArray(_prevResourceState.HsSamplers, newState.HsSamplers, ResourceStateChanges.HsSamplers, ref result, out _ranges.HullShaderSamplers);
         }
 
         if ((newState.PipelineState.DomainShader is not null) || ((pipelineStateChanges & PipelineStateChanges.DomainShader) == PipelineStateChanges.DomainShader))
         {
-            CheckArray(_prevResourceState.DsConstantBuffers, newState.DsConstantBuffers, ResourceStateChanges.DsConstants, ref result, ref _ranges.DomainShaderConstants);
-            CheckArray(_prevResourceState.DsSrvs, newState.DsSrvs, ResourceStateChanges.DsResourceViews, ref result, ref _ranges.DomainShaderResources);
-            CheckArray(_prevResourceState.DsSamplers, newState.DsSamplers, ResourceStateChanges.DsSamplers, ref result, ref _ranges.DomainShaderSamplers);
+            CheckArray(_prevResourceState.DsConstantBuffers, newState.DsConstantBuffers, ResourceStateChanges.DsConstants, ref result, out _ranges.DomainShaderConstants);
+            CheckArray(_prevResourceState.DsSrvs, newState.DsSrvs, ResourceStateChanges.DsResourceViews, ref result, out _ranges.DomainShaderResources);
+            CheckArray(_prevResourceState.DsSamplers, newState.DsSamplers, ResourceStateChanges.DsSamplers, ref result, out _ranges.DomainShaderSamplers);
         }
 
-        CheckArray(_prevResourceState.ReadWriteViews, newState.ReadWriteViews, ResourceStateChanges.Uavs, ref result, ref _ranges.Uavs);
+        CheckArray(_prevResourceState.ReadWriteViews, newState.ReadWriteViews, ResourceStateChanges.Uavs, ref result, out _ranges.Uavs);
 
         if ((newState.ComputeShader is null) && ((result & ResourceStateChanges.ComputeShader) != ResourceStateChanges.ComputeShader))
         {
             return _ranges;
         }
 
-        CheckArray(_prevResourceState.CsConstantBuffers, newState.CsConstantBuffers, ResourceStateChanges.CsConstants, ref result, ref _ranges.ComputeShaderConstants);
-        CheckArray(_prevResourceState.CsSrvs, newState.CsSrvs, ResourceStateChanges.CsResourceViews, ref result, ref _ranges.ComputeShaderResources);
-        CheckArray(_prevResourceState.CsReadWriteViews, newState.CsReadWriteViews, ResourceStateChanges.CsUavs, ref result, ref _ranges.ComputeShaderUavs);
-        CheckArray(_prevResourceState.CsSamplers, newState.CsSamplers, ResourceStateChanges.CsSamplers, ref result, ref _ranges.ComputeShaderSamplers);
+        CheckArray(_prevResourceState.CsConstantBuffers, newState.CsConstantBuffers, ResourceStateChanges.CsConstants, ref result, out _ranges.ComputeShaderConstants);
+        CheckArray(_prevResourceState.CsSrvs, newState.CsSrvs, ResourceStateChanges.CsResourceViews, ref result, out _ranges.ComputeShaderResources);
+        CheckArray(_prevResourceState.CsReadWriteViews, newState.CsReadWriteViews, ResourceStateChanges.CsUavs, ref result, out _ranges.ComputeShaderUavs);
+        CheckArray(_prevResourceState.CsSamplers, newState.CsSamplers, ResourceStateChanges.CsSamplers, ref result, out _ranges.ComputeShaderSamplers);
 
         return _ranges;
     }
@@ -766,54 +760,10 @@ internal class StateEvaluator(GorgonGraphics graphics)
     public void ResetState()
     {
         _prevPipelineState.Clear();
+        
+        _prevResourceState.Reset();
 
-        _prevResourceState.VertexBuffers.Clear();
-        _prevResourceState.StreamOutBindings.Clear();
-        _prevResourceState.IndexBuffer = null;
-        _prevResourceState.ComputeShader = null;
-        _prevResourceState.ReadWriteViews.Clear();
-        _prevResourceState.PsSamplers.Clear();
-        _prevResourceState.VsSamplers.Clear();
-        _prevResourceState.GsSamplers.Clear();
-        _prevResourceState.DsSamplers.Clear();
-        _prevResourceState.HsSamplers.Clear();
-        _prevResourceState.CsSamplers.Clear();
-        _prevResourceState.VsSrvs.Clear();
-        _prevResourceState.PsSrvs.Clear();
-        _prevResourceState.GsSrvs.Clear();
-        _prevResourceState.DsSrvs.Clear();
-        _prevResourceState.HsSrvs.Clear();
-        _prevResourceState.CsSrvs.Clear();
-        _prevResourceState.VsConstantBuffers.Clear();
-        _prevResourceState.PsConstantBuffers.Clear();
-        _prevResourceState.GsConstantBuffers.Clear();
-        _prevResourceState.DsConstantBuffers.Clear();
-        _prevResourceState.HsConstantBuffers.Clear();
-        _prevResourceState.CsConstantBuffers.Clear();
-        _prevResourceState.CsReadWriteViews.Clear();
-
-        _ranges.Changes = ResourceStateChanges.None;
-        _ranges.ComputeShaderConstants = (int.MaxValue, int.MinValue);
-        _ranges.ComputeShaderResources = (int.MaxValue, int.MinValue);
-        _ranges.ComputeShaderResources = (int.MaxValue, int.MinValue);
-        _ranges.ComputeShaderUavs = (int.MaxValue, int.MinValue);
-        _ranges.DomainShaderConstants = (int.MaxValue, int.MinValue);
-        _ranges.DomainShaderResources = (int.MaxValue, int.MinValue);
-        _ranges.DomainShaderSamplers = (int.MaxValue, int.MinValue);
-        _ranges.GeometryShaderConstants = (int.MaxValue, int.MinValue);
-        _ranges.GeometryShaderResources = (int.MaxValue, int.MinValue);
-        _ranges.GeometryShaderSamplers = (int.MaxValue, int.MinValue);
-        _ranges.HullShaderConstants = (int.MaxValue, int.MinValue);
-        _ranges.HullShaderResources = (int.MaxValue, int.MinValue);
-        _ranges.HullShaderSamplers = (int.MaxValue, int.MinValue);
-        _ranges.PixelShaderConstants = (int.MaxValue, int.MinValue);
-        _ranges.PixelShaderResources = (int.MaxValue, int.MinValue);
-        _ranges.PixelShaderSamplers = (int.MaxValue, int.MinValue);
-        _ranges.StreamOutBuffers = (int.MaxValue, int.MinValue);
-        _ranges.VertexBuffers = (int.MaxValue, int.MinValue);
-        _ranges.VertexShaderConstants = (int.MaxValue, int.MinValue);
-        _ranges.VertexShaderResources = (int.MaxValue, int.MinValue);
-        _ranges.VertexShaderSamplers = (int.MaxValue, int.MinValue);
+        _ranges.Reset();
 
         Array.Clear(RenderTargets, 0, RenderTargets.Length);
         DepthStencil = null;

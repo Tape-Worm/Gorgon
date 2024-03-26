@@ -29,6 +29,7 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Gorgon.Collections;
+using Gorgon.Core;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Renderers.Cameras;
@@ -216,17 +217,17 @@ internal class SimpleRenderer
                     .ConstantBuffer(ShaderType.Pixel, _lightBuffer, 1)
                     .ConstantBuffer(ShaderType.Pixel, _materialBuffer, 2);
 
-        ref readonly (int Start, int Count) textures = ref mesh.Material.Textures.GetDirtyItems();
+        ReadOnlySpan<string> textures = mesh.Material.Textures.GetDirtySpan();
 
-        for (int i = textures.Start; i < textures.Start + textures.Count; ++i)
+        for (int i = 0; i < textures.Length; ++i)
         {
-            if (!TextureCache.TryGetValue(mesh.Material.Textures[i], out GorgonTexture2DView texture))
+            if (!TextureCache.TryGetValue(textures[i], out GorgonTexture2DView texture))
             {
                 continue;
             }
 
-            _drawBuilder.ShaderResource(ShaderType.Pixel, texture, i - textures.Start)
-                        .SamplerState(ShaderType.Pixel, _defaultSampler, i - textures.Start);
+            _drawBuilder.ShaderResource(ShaderType.Pixel, texture, i)
+                        .SamplerState(ShaderType.Pixel, _defaultSampler, i);
         }
 
         _drawCalls.Add(_drawBuilder.Build());
@@ -285,13 +286,18 @@ internal class SimpleRenderer
             return;
         }
 
-        ref readonly (int Start, int Count) dirtyLights = ref Lights.GetDirtyItems();
+        ReadOnlySpan<GorgonPointLight> dirtyLights = Lights.GetDirtySpan();
 
-        int end = (dirtyLights.Start + dirtyLights.Count).Min(MaxLights);
-
-        for (int i = dirtyLights.Start; i < end; ++i)
+        for (int i = 0; i < MaxLights; ++i)
         {
-            _lightData[i] = Lights[i].GetGpuData();
+            if (i < dirtyLights.Length)
+            {
+                _lightData[i] = dirtyLights[i].GetGpuData();
+            }
+            else
+            {
+                _lightData[i] = GorgonGpuLightData.Empty;
+            }
         }
 
         // Send to the constant buffer right away.

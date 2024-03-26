@@ -385,4 +385,68 @@ class D3DState
     /// Property to return the current input layout.
     /// </summary>
     public GorgonInputLayout InputLayout => VertexBuffers?.InputLayout;
+
+    /// <summary>
+    /// Function to reset all the states back to their default values.
+    /// </summary>
+    public void Reset()
+    {
+        VertexBuffers.Clear();
+        StreamOutBindings.Clear();
+        IndexBuffer = null;
+        ComputeShader = null;
+        ReadWriteViews.Clear();
+        PsSamplers.Clear();
+        VsSamplers.Clear();
+        GsSamplers.Clear();
+        DsSamplers.Clear();
+        HsSamplers.Clear();
+        CsSamplers.Clear();
+        VsSrvs.Clear();
+        PsSrvs.Clear();
+        GsSrvs.Clear();
+        DsSrvs.Clear();
+        HsSrvs.Clear();
+        CsSrvs.Clear();
+        VsConstantBuffers.Clear();
+        PsConstantBuffers.Clear();
+        GsConstantBuffers.Clear();
+        DsConstantBuffers.Clear();
+        HsConstantBuffers.Clear();
+        CsConstantBuffers.Clear();
+        CsReadWriteViews.Clear();
+    }
+
+    /// <summary>
+    /// Funciton to create an initialized instance of the <see cref="D3DState"/> object.
+    /// </summary>
+    /// <returns>The initialized D3D state object.</returns>
+    public static D3DState Create() => new()
+    {
+        PipelineState = null,
+        IndexBuffer = null,
+        ComputeShader = null,        
+        CsReadWriteViews = new GorgonReadWriteViewBindings(),
+        PsSamplers = new GorgonSamplerStates(),
+        VsSrvs = new GorgonShaderResourceViews(),
+        CsConstantBuffers = new GorgonConstantBuffers(),
+        CsSamplers = new GorgonSamplerStates(),
+        CsSrvs = new GorgonShaderResourceViews(),
+        DsConstantBuffers = new GorgonConstantBuffers(),
+        DsSamplers = new GorgonSamplerStates(),
+        DsSrvs = new GorgonShaderResourceViews(),
+        GsConstantBuffers = new GorgonConstantBuffers(),
+        GsSamplers = new GorgonSamplerStates(),
+        GsSrvs = new GorgonShaderResourceViews(),
+        HsConstantBuffers = new GorgonConstantBuffers(),
+        HsSamplers = new GorgonSamplerStates(),
+        HsSrvs = new GorgonShaderResourceViews(),
+        PsConstantBuffers = new GorgonConstantBuffers(),
+        PsSrvs = new GorgonShaderResourceViews(),
+        ReadWriteViews = new GorgonReadWriteViewBindings(),
+        StreamOutBindings = new GorgonStreamOutBindings(),
+        VertexBuffers = new GorgonVertexBufferBindings(),
+        VsConstantBuffers = new GorgonConstantBuffers(),
+        VsSamplers = new GorgonSamplerStates()
+    };
 }

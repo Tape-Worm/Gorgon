@@ -24,6 +24,7 @@
 // 
 
 using Gorgon.Collections;
+using Gorgon.Core;
 using Gorgon.Math;
 using D3D11 = SharpDX.Direct3D11;
 
@@ -65,20 +66,18 @@ public sealed class GorgonVertexBufferBindings
         internal set;
     }
 
-    /// <summary>
-    /// Function called when a dirty item is found and added.
-    /// </summary>
-    /// <param name="dirtyIndex">The index that is considered dirty.</param>
-    /// <param name="value">The dirty value.</param>
-    protected override void OnAssignDirtyItem(int dirtyIndex, GorgonVertexBufferBinding value)
+    /// <inheritdoc/>
+    protected override void OnMapDirtyItem(int index, int rangeIndex, bool isDirty)
     {
+        GorgonVertexBufferBinding value = this[index];
+
         if (value.Equals(GorgonVertexBufferBinding.Empty))
         {
-            Native[dirtyIndex] = default;
+            Native[rangeIndex] = default;
         }
         else
         {
-            Native[dirtyIndex] = value.ToVertexBufferBinding();
+            Native[rangeIndex] = value.ToVertexBufferBinding();
         }
     }
 
@@ -86,35 +85,6 @@ public sealed class GorgonVertexBufferBindings
     /// Function called when the array is cleared.
     /// </summary>
     protected override void OnClear() => Array.Clear(Native, 0, Native.Length);
-
-    /// <summary>
-    /// Function to find the index of a <see cref="GorgonStreamOutBinding"/> with the specified buffer.
-    /// </summary>
-    /// <param name="buffer">The buffer to look up.</param>
-    /// <returns>The index of the <see cref="GorgonStreamOutBinding"/>, or -1 if not found.</returns>
-    /// <remarks>
-    /// <para>
-    /// For the sake of efficiency, this checks the dirty items in the list only.
-    /// </para>
-    /// </remarks>
-    internal int IndexOf(GorgonGraphicsResource buffer)
-    {
-        (int start, int count) = GetDirtyItems(true);
-
-        for (int i = 0; i < count; ++i)
-        {
-            GorgonVertexBufferBinding binding = BackingArray[i + start];
-
-            if (binding.VertexBuffer != buffer)
-            {
-                continue;
-            }
-
-            return i + start;
-        }
-
-        return -1;
-    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonVertexBufferBindings" /> class.

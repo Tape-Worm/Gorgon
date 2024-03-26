@@ -48,12 +48,12 @@ public sealed class GorgonSamplerStates
         get;
     } = new D3D11.SamplerState[MaximumSamplerStateCount];
 
-    /// <summary>
-    /// Function called when a dirty item is found and added.
-    /// </summary>
-    /// <param name="dirtyIndex">The index that is considered dirty.</param>
-    /// <param name="value">The dirty value.</param>
-    protected override void OnAssignDirtyItem(int dirtyIndex, GorgonSamplerState value) => Native[dirtyIndex] = value?.Native;
+    /// <inheritdoc/>
+    protected override void OnMapDirtyItem(int index, int rangeIndex, bool isDirty)
+    {
+        GorgonSamplerState value = this[index];
+        Native[rangeIndex] = value?.Native;
+    }
 
     /// <summary>
     /// Function called when the array is cleared.

@@ -24,6 +24,7 @@
 // 
 
 using Gorgon.Collections;
+using Gorgon.Core;
 using Gorgon.Math;
 using D3D11 = SharpDX.Direct3D11;
 
@@ -70,16 +71,13 @@ public sealed class GorgonConstantBuffers
         get;
     } = new int[MaximumConstantBufferCount];
 
-    /// <summary>
-    /// Function called when a dirty item is found and added.
-    /// </summary>
-    /// <param name="dirtyIndex">The index that is considered dirty.</param>
-    /// <param name="value">The dirty value.</param>
-    protected override void OnAssignDirtyItem(int dirtyIndex, GorgonConstantBufferView value)
+    /// <inheritdoc/>
+    protected override void OnMapDirtyItem(int index, int rangeIndex, bool isDirty)
     {
-        Native[dirtyIndex] = value?.Buffer?.Native;
-        ViewStart[dirtyIndex] = value?.StartElement * 16 ?? 0;
-        ViewCount[dirtyIndex] = value?.ElementCount * 16 ?? 0;
+        GorgonConstantBufferView value = this[index];
+        Native[rangeIndex] = value?.Buffer?.Native;
+        ViewStart[rangeIndex] = value?.StartElement * 16 ?? 0;
+        ViewCount[rangeIndex] = value?.ElementCount * 16 ?? 0;
     }
 
     /// <summary>
@@ -90,28 +88,6 @@ public sealed class GorgonConstantBuffers
         Array.Clear(Native, 0, Native.Length);
         Array.Clear(ViewStart, 0, ViewStart.Length);
         Array.Clear(ViewCount, 0, ViewCount.Length);
-    }
-
-    /// <summary>
-    /// Function to find the index of the resource in the array.
-    /// </summary>
-    /// <param name="resource">The resource to look up.</param>
-    /// <returns>The index, if found. -1 if not.</returns>
-    internal int IndexOf(GorgonGraphicsResource resource)
-    {
-        (int start, int count) = GetDirtyItems(true);
-
-        for (int i = 0; i < count; ++i)
-        {
-            GorgonConstantBuffer buffer = BackingArray[i + start]?.Buffer;
-
-            if (buffer == resource)
-            {
-                return i + start;
-            }
-        }
-
-        return -1;
     }
 
     /// <summary>
@@ -130,5 +106,5 @@ public sealed class GorgonConstantBuffers
         {
             this[i] = bufferViews[i];
         }
-    }
+    }    
 }

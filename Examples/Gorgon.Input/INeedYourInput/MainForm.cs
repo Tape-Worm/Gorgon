@@ -310,9 +310,9 @@ public partial class MainForm
         {
             _radius = 2.0f;
         }
-        if (_radius > 10.0f)
+        if (_radius > 50.0f)
         {
-            _radius = 10.0f;
+            _radius = 50.0f;
         }
     }
 
@@ -440,7 +440,7 @@ public partial class MainForm
 
             if (throttleRange.Range != 0)
             {
-                _radius = ((1.0f - (_joystick.Axis[GamingDeviceAxis.Throttle].Value / (float)throttleRange.Range)) * 8) + 2;
+                _radius = ((1.0f - (_joystick.Axis[GamingDeviceAxis.Throttle].Value / (float)throttleRange.Range)) * 48) + 2;
             }
         }
 

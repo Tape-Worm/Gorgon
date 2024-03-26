@@ -25,6 +25,7 @@
 
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using Gorgon.Collections;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Math;
 using Gorgon.Renderers.Cameras;
@@ -240,6 +241,48 @@ public class GorgonTextureBlitter
     }
 
     /// <summary>
+    /// Function to compare two constant buffer arrays for equality.
+    /// </summary>
+    /// <param name="left">The left array to compare.</param>
+    /// <param name="right">The right array to compare with.</param>
+    /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
+    private bool CompareConstantBuffers(IGorgonReadOnlyArray<GorgonConstantBufferView> left, IGorgonReadOnlyArray<GorgonConstantBufferView> right)
+    {
+        if (left == right)
+        {
+            return true;
+        }
+
+        if ((left is null) && (right is null))
+        {
+            return true;
+        }
+
+        if (((right is null) && (left is not null)) || (left is null))
+        {
+            return false;
+        }
+
+        for (int i = 0; i < left.Length; ++i)
+        {
+            GorgonConstantBufferView leftView = left[i];
+            GorgonConstantBufferView rightView = right[i];
+
+            if ((leftView is null) && (rightView is null))
+            {
+                continue;
+            }
+
+            if (!left[i].Equals(right[i]))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /// <summary>
     /// Function to return the appropriate draw call based on the states provided.
     /// </summary>
     /// <param name="texture">The texture to display.</param>
@@ -254,8 +297,7 @@ public class GorgonTextureBlitter
             && (_blitDraw.PixelShader.Samplers[0] == samplerState)
             && (_blitPso.BlendStates[0] == blendState)
             && (_blitDraw.PixelShader.ShaderResources[0] == texture)
-            && ((constantBuffers == _emptyPsConstants)
-                || (_blitDraw.PixelShader.ConstantBuffers.DirtyEquals(constantBuffers))))
+            && ((constantBuffers == _emptyPsConstants) || (CompareConstantBuffers(_blitDraw.PixelShader.ConstantBuffers, constantBuffers))))
         {
             // This draw call hasn't changed, so return the previous one.
             return;
@@ -263,9 +305,8 @@ public class GorgonTextureBlitter
 
         if (_blitPso.BlendStates[0] != blendState)
         {
-            _blitPso = _blitPsoBuilder
-                             .BlendState(blendState)
-                             .Build();
+            _blitPso = _blitPsoBuilder.BlendState(blendState)
+                                      .Build();
 
             _blitBuilder.PipelineState(_blitPso);
         }

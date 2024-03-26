@@ -485,7 +485,7 @@ internal class D3D11StateApplicator(GorgonGraphics graphics, GorgonRenderTargetV
     /// <param name="resourceState">The resources to bind.</param>
     public void BindResourceState(ResourceRanges resourceChanges, D3DState resourceState)
     {
-        ref readonly ResourceStateChanges changes = ref resourceChanges.Changes;
+        ResourceStateChanges changes = resourceChanges.Changes;
 
         if (changes == ResourceStateChanges.None)
         {

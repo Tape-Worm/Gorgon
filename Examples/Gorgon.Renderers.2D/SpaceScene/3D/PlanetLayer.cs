@@ -26,6 +26,7 @@
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
@@ -316,11 +317,11 @@ internal class PlanetLayer(GorgonGraphics graphics, ResourceManagement resources
                             .ConstantBuffer(ShaderType.Pixel, _lightBuffer, 1)
                             .ConstantBuffer(ShaderType.Pixel, _materialBuffer, 2);
 
-                (int startTexture, int textureCount) = layer.Mesh.Material.Textures.GetDirtyItems();
+                ReadOnlySpan<string> range = layer.Mesh.Material.Textures.GetDirtySpan();
 
-                for (int k = startTexture; k < startTexture + textureCount; ++k)
+                for (int k = 0; k < range.Length; ++k)
                 {
-                    GorgonTexture2DView texture = _resources.Textures[layer.Mesh.Material.Textures[k]].GetShaderResourceView();
+                    GorgonTexture2DView texture = _resources.Textures[range[k]].GetShaderResourceView();
                     _drawCallBuilder.ShaderResource(ShaderType.Pixel, texture, k);
                     // We should have this in the material, but since we know what we've got here, this will be fine.
                     _drawCallBuilder.SamplerState(ShaderType.Pixel, GorgonSamplerState.Wrapping, k);

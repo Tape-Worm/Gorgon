@@ -24,6 +24,7 @@
 // 
 
 using Gorgon.Collections;
+using Gorgon.Core;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core;
@@ -42,16 +43,22 @@ internal class BlendStateArray
     /// <param name="isIndependentBlendEnabled">Flag to enable/disable independent blend targets.</param>
     public D3D11.BlendState1 BuildD3D11BlendState(D3D11.Device5 device, bool isAlphaToCoverageEnabled, bool isIndependentBlendEnabled)
     {
-        ref readonly (int start, int count) indices = ref GetDirtyItems();
+        ReadOnlySpan<GorgonBlendState> indices = GetDirtySpan();
+
+        if (indices.IsEmpty)
+        {        
+            return null;
+        }
+
         D3D11.BlendStateDescription1 desc = new()
         {
             AlphaToCoverageEnable = isAlphaToCoverageEnabled,
             IndependentBlendEnable = isIndependentBlendEnabled
         };
 
-        for (int i = 0; i < indices.count; ++i)
+        for (int i = 0; i <= indices.Length; ++i)
         {
-            GorgonBlendState state = this[indices.start + i];
+            GorgonBlendState state = this[i];
 
             if (state is null)
             {

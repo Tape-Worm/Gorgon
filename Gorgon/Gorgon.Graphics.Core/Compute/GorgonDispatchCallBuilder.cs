@@ -234,8 +234,8 @@ public class GorgonDispatchCallBuilder
         // Copy over samplers.
         StateCopy.CopySamplers(final.D3DState.CsSamplers, _worker.D3DState.CsSamplers, 0);
 
-        // Copy over shader resource views.
-        (int _, int _) = _worker.D3DState.CsSrvs.GetDirtyItems();
+        // Copy over shader resource views.        
+        _worker.D3DState.CsSrvs.MarkClean(..^1);
 
         StateCopy.CopySrvs(final.D3DState.CsSrvs, _worker.D3DState.CsSrvs);
 

@@ -67,52 +67,13 @@ public sealed class GorgonReadWriteViewBindings
         get;
     }
 
-    /// <summary>
-    /// Function to validate an item being assigned to a slot.
-    /// </summary>
-    protected override void OnValidate()
+    /// <inheritdoc/>
+    protected override void OnMapDirtyItem(int index, int rangeIndex, bool isDirty)
     {
-        GorgonReadWriteViewBinding startView = this.FirstOrDefault(target => target.ReadWriteView is not null);
+        GorgonReadWriteViewBinding value = this[index];
 
-        // If no other uavs are assigned, then we're done here.
-        if (startView.ReadWriteView is null)
-        {
-            return;
-        }
-
-        int startViewIndex = IndexOf(startView);
-
-        if (startViewIndex == -1)
-        {
-            return;
-        }
-
-        // Only check if we have more than 1 unordered access view being applied.
-        for (int i = 0; i < Length; i++)
-        {
-            GorgonReadWriteViewBinding other = this[i];
-
-            if (other.ReadWriteView is null)
-            {
-                continue;
-            }
-
-            if ((other.Equals(in startView)) && (startViewIndex != i))
-            {
-                throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_UAV_ALREADY_BOUND, other.ReadWriteView.Resource.Name));
-            }
-        }
-    }
-
-    /// <summary>
-    /// Function called when a dirty item is found and added.
-    /// </summary>
-    /// <param name="dirtyIndex">The index that is considered dirty.</param>
-    /// <param name="value">The dirty value.</param>
-    protected override void OnAssignDirtyItem(int dirtyIndex, GorgonReadWriteViewBinding value)
-    {
-        Native[dirtyIndex] = value.ReadWriteView?.Native;
-        Counts[dirtyIndex] = value.ReadWriteView is null ? 0 : value.InitialCount;
+        Native[rangeIndex] = value.ReadWriteView?.Native;
+        Counts[rangeIndex] = value.ReadWriteView is null ? 0 : value.InitialCount;
     }
 
     /// <summary>

@@ -23,6 +23,8 @@
 // Created: January 1, 2021 1:18:53 PM
 // 
 
+using Gorgon.Core;
+
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
@@ -37,89 +39,119 @@ internal class ResourceRanges
     /// <summary>
     /// The begin/end index for vertex buffers.
     /// </summary>
-    public (int Start, int Count) VertexBuffers = (int.MaxValue, int.MinValue);
+    public (int Start, int Count) VertexBuffers = (0, 0);
     /// <summary>
     /// The begin/end index for stream out buffers.
     /// </summary>
-    public (int Start, int Count) StreamOutBuffers = (int.MaxValue, int.MinValue);
+    public (int Start, int Count) StreamOutBuffers = (0, 0);
     /// <summary>
     /// The begin/end index for vertex shader constants.
     /// </summary>
-    public (int Start, int Count) VertexShaderConstants = (int.MaxValue, int.MinValue);
+    public (int Start, int Count) VertexShaderConstants = (0, 0);
     /// <summary>
     /// The begin/end index for vertex shader resource views.
     /// </summary>
-    public (int Start, int Count) VertexShaderResources = (int.MaxValue, int.MinValue);
+    public (int Start, int Count) VertexShaderResources = (0, 0);
     /// <summary>
     /// The begin/end index for vertex shader samplers.
     /// </summary>
-    public (int Start, int Count) VertexShaderSamplers = (int.MaxValue, int.MinValue);
+    public (int Start, int Count) VertexShaderSamplers = (0, 0);
     /// <summary>
     /// The begin/end index for pixel shader constants.
     /// </summary>
-    public (int Start, int Count) PixelShaderConstants = (int.MaxValue, int.MinValue);
+    public (int Start, int Count) PixelShaderConstants = (0, 0);
     /// <summary>
     /// The begin/end index for pixel shader resource views.
     /// </summary>
-    public (int Start, int Count) PixelShaderResources = (int.MaxValue, int.MinValue);
+    public (int Start, int Count) PixelShaderResources = (0, 0);
     /// <summary>
     /// The begin/end index for pixel shader samplers.
     /// </summary>
-    public (int Start, int Count) PixelShaderSamplers = (int.MaxValue, int.MinValue);
+    public (int Start, int Count) PixelShaderSamplers = (0, 0);
     /// <summary>
     /// The begin/end index for geometry shader constants.
     /// </summary>
-    public (int Start, int Count) GeometryShaderConstants = (int.MaxValue, int.MinValue);
+    public (int Start, int Count) GeometryShaderConstants = (0, 0);
     /// <summary>
     /// The begin/end index for geometry shader resource views.
     /// </summary>
-    public (int Start, int Count) GeometryShaderResources = (int.MaxValue, int.MinValue);
+    public (int Start, int Count) GeometryShaderResources = (0, 0);
     /// <summary>
     /// The begin/end index for geometry shader samplers.
     /// </summary>
-    public (int Start, int Count) GeometryShaderSamplers = (int.MaxValue, int.MinValue);
+    public (int Start, int Count) GeometryShaderSamplers = (0, 0);
     /// <summary>
     /// The begin/end index for hull shader constants.
     /// </summary>
-    public (int Start, int Count) HullShaderConstants = (int.MaxValue, int.MinValue);
+    public (int Start, int Count) HullShaderConstants = (0, 0);
     /// <summary>
     /// The begin/end index for hull shader resource views.
     /// </summary>
-    public (int Start, int Count) HullShaderResources = (int.MaxValue, int.MinValue);
+    public (int Start, int Count) HullShaderResources = (0, 0);
     /// <summary>
     /// The begin/end index for hull shader samplers.
     /// </summary>
-    public (int Start, int Count) HullShaderSamplers = (int.MaxValue, int.MinValue);
+    public (int Start, int Count) HullShaderSamplers = (0, 0);
     /// <summary>
     /// The begin/end index for domain shader constants.
     /// </summary>
-    public (int Start, int Count) DomainShaderConstants = (int.MaxValue, int.MinValue);
+    public (int Start, int Count) DomainShaderConstants = (0, 0);
     /// <summary>
     /// The begin/end index for domain shader resource views.
     /// </summary>
-    public (int Start, int Count) DomainShaderResources = (int.MaxValue, int.MinValue);
+    public (int Start, int Count) DomainShaderResources = (0, 0);
     /// <summary>
     /// The begin/end index for domain shader samplers.
     /// </summary>
-    public (int Start, int Count) DomainShaderSamplers = (int.MaxValue, int.MinValue);
+    public (int Start, int Count) DomainShaderSamplers = (0, 0);
     /// <summary>
     /// The begin/end index for compute shader constants.
     /// </summary>
-    public (int Start, int Count) ComputeShaderConstants = (int.MaxValue, int.MinValue);
+    public (int Start, int Count) ComputeShaderConstants = (0, 0);
     /// <summary>
     /// The begin/end index for compute shader resource views.
     /// </summary>
-    public (int Start, int Count) ComputeShaderResources = (int.MaxValue, int.MinValue);
+    public (int Start, int Count) ComputeShaderResources = (0, 0);
     /// <summary>
     /// The begin/end index for compute shader samplers.
     /// </summary>
-    public (int Start, int Count) ComputeShaderSamplers = (int.MaxValue, int.MinValue);
+    public (int Start, int Count) ComputeShaderSamplers = (0, 0);
     /// <summary>
     /// The begin/end index for compute shader unordered access views.
     /// </summary>
-    public (int Start, int Count) ComputeShaderUavs = (int.MaxValue, int.MinValue);
+    public (int Start, int Count) ComputeShaderUavs = (0, 0);
     /// <summary>
     /// The begin/end index for unordered access views.
     /// </summary>
-    public (int Start, int Count) Uavs = (int.MaxValue, int.MinValue);
+    public (int Start, int Count) Uavs = (0, 0);
+
+    /// <summary>
+    /// Function to reset all values back to their original state.
+    /// </summary>
+    public void Reset()
+    {
+        Changes = ResourceStateChanges.None;
+        VertexBuffers = (0, 0);
+        StreamOutBuffers = (0, 0);
+        VertexShaderConstants = (0, 0);
+        VertexShaderResources = (0, 0);
+        VertexShaderSamplers = (0, 0);
+        PixelShaderConstants = (0, 0);
+        PixelShaderResources = (0, 0);
+        PixelShaderSamplers = (0, 0);
+        GeometryShaderConstants = (0, 0);
+        GeometryShaderResources = (0, 0);
+        GeometryShaderSamplers = (0, 0);
+        HullShaderConstants = (0, 0);
+        HullShaderResources = (0, 0);
+        HullShaderSamplers = (0, 0);
+        DomainShaderConstants = (0, 0);
+        DomainShaderResources = (0, 0);
+        DomainShaderSamplers = (0, 0);
+        ComputeShaderConstants = (0, 0);
+        ComputeShaderResources = (0, 0);
+        ComputeShaderSamplers = (0, 0);
+        ComputeShaderUavs = (0, 0);
+        Uavs = (0, 0);
+    }
 }
