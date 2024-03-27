@@ -1,5 +1,4 @@
-﻿
-// 
+﻿// 
 // Gorgon
 // Copyright (C) 2016 Michael Winsor
 // 
@@ -41,31 +40,13 @@ public sealed class GorgonOptionBag
     /// <inheritdoc/>
     public int Count => _options.Count;
 
-    /// <summary>
-    /// Property to return an option at a specific index.
-    /// </summary>
-    /// <exception cref="ArgumentException">Thrown when the option name already exists in the bag.</exception>"
-    /// <remarks>
-    /// When passing a <b>null</b> to this property, the option at the specified index will be removed.
-    /// </remarks>
+    /// <inheritdoc/>
     public IGorgonOption this[int index] => _options[index];
 
-    /// <summary>
-    /// Function to retrieve the value for an option.
-    /// </summary>
-    /// <typeparam name="T">The type of data for the option.</typeparam>
-    /// <param name="optionName">The name of the option.</param>
-    /// <exception cref="KeyNotFoundException">Thrown when the option name is not found in the bag.</exception>"
-    /// <returns>The value stored with the option.</returns>
+    /// <inheritdoc/>
     public T? GetOptionValue<T>(string optionName) => _options.GetByName(optionName).GetValue<T>();
 
-    /// <summary>
-    /// Function to assign a value for an option.
-    /// </summary>
-    /// <typeparam name="T">The type of data for the option.</typeparam>
-    /// <param name="optionName">The name of the option.</param>
-    /// <param name="value">The value to assign to the option.</param>
-    /// <exception cref="KeyNotFoundException">Thrown when the option name is not found in the bag.</exception>"
+    /// <inheritdoc/>
     public void SetOptionValue<T>(string optionName, T? value)
     {
         if (!_options.ContainsName(optionName))

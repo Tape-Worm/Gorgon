@@ -28,8 +28,38 @@ namespace Gorgon.Configuration;
 /// Provides a functionality for setting and reading various options from a defined option bag
 /// </summary>
 public interface IGorgonOptionBag
-    : IReadOnlyList<IGorgonOption>
+    : IEnumerable<IGorgonOption>
 {
+    /// <summary>
+    /// Property to return the number of options in the bag.
+    /// </summary>
+    int Count
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the option at the specified index.
+    /// </summary>
+    IGorgonOption this[int index]
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Function to retrieve the index of an option in the bag.
+    /// </summary>
+    /// <param name="option">The option to evaluate.</param>
+    /// <returns>The index of the option, or -1 if not found.</returns>
+    int IndexOf(IGorgonOption option);
+
+    /// <summary>
+    /// Function to determine if an <see cref="IGorgonOption"/> exists in this bag.
+    /// </summary>
+    /// <param name="option">The option to evaluate.</param>
+    /// <returns><b>true</b> if the option exists, or <b>false</b> if not.</returns>
+    bool Contains(IGorgonOption option);
+
     /// <summary>
     /// Function to retrieve the value for an option.
     /// </summary>

@@ -1,5 +1,4 @@
-﻿
-// 
+﻿// 
 // Gorgon
 // Copyright (C) 2016 Michael Winsor
 // 
@@ -37,6 +36,25 @@ public interface IGorgonOption
     /// Property to return the type of data stored in the option.
     /// </summary>
     Type Type
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return text to display regarding this option.
+    /// </summary>
+    /// <remarks>
+    /// This is pulled from the first line of the <see cref="Description"/>.
+    /// </remarks>
+    public string Text
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the friendly description of this option.
+    /// </summary>
+    string Description
     {
         get;
     }

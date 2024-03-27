@@ -370,7 +370,7 @@ public class GorgonOption
     /// is a single line, then the <see cref="Text"/> and <see cref="Description"/> fields will be the same.
     /// </para>
     /// </remarks>
-    public static IGorgonOption CreateInt32Option(string name, int defaultValue, string? description, int? minValue = null, int? maxValue = null)
+    public static IGorgonOption CreateInt32Option(string name, int defaultValue, string? description = null, int? minValue = null, int? maxValue = null)
     {
         if ((minValue is not null) && (defaultValue < minValue.Value))
         {
