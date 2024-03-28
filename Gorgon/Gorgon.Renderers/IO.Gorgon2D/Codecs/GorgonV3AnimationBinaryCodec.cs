@@ -102,7 +102,7 @@ public class GorgonV3AnimationBinaryCodec(Gorgon2D renderer)
     /// <param name="reader">The reader containing the texture information.</param>
     /// <param name="textureName">The name of the texture.</param>
     /// <returns>The texture attached to the sprite.</returns>
-    private GorgonTexture2DView LoadTexture(GorgonBinaryReader reader, out string textureName)
+    private GorgonTexture2DView LoadTexture(IGorgonChunkReader reader, out string textureName)
     {
         // Write out as much info about the texture as we can so we can look it up based on these values when loading.
         textureName = reader.ReadString();
@@ -148,10 +148,9 @@ public class GorgonV3AnimationBinaryCodec(Gorgon2D renderer)
             return false;
         }
 
-        using GorgonBinaryReader binReader = reader.OpenChunk(VersionData);
+        using IGorgonChunkReader binReader = reader.OpenChunk(VersionData);
         Version fileVersion = new(binReader.ReadByte(), binReader.ReadByte());
-        reader.CloseChunk();
-
+        
         return Version.Equals(fileVersion);
     }
 
@@ -160,58 +159,47 @@ public class GorgonV3AnimationBinaryCodec(Gorgon2D renderer)
     /// <returns>The names of the texture associated with the animations, or an empty list if no textures were found.</returns>
     protected override IReadOnlyList<string> OnGetAssociatedTextureNames(Stream stream)
     {
-        GorgonChunkFileReader reader = null;
-        GorgonBinaryReader binReader = null;
+        using GorgonChunkFileReader reader = new(stream, [CurrentFileHeader]);
 
-        try
+        reader.Open();
+        if (!IsReadableChunkFile(reader))
         {
-            reader = new GorgonChunkFileReader(stream, [CurrentFileHeader]);
-            reader.Open();
-            if (!IsReadableChunkFile(reader))
-            {
-                return [];
-            }
-
-            // No texture data in this file.
-            if (!reader.Chunks.Contains(TextureData))
-            {
-                return [];
-            }
-
-            binReader = reader.OpenChunk(TextureData);
-            int keyCount = binReader.ReadInt32();
-            List<string> result = [];
-
-            for (int i = 0; i < keyCount; ++i)
-            {
-                binReader.ReadSingle();
-                byte hasTexture = binReader.ReadByte();
-
-                if (hasTexture == 0)
-                {
-                    continue;
-                }
-
-                string textureName = binReader.ReadString();
-
-                if ((string.IsNullOrWhiteSpace(textureName))
-                    || (result.Contains(textureName)))
-                {
-                    continue;
-                }
-
-                result.Add(textureName);
-            }
-
-            reader.CloseChunk();
-
-            return result;
+            return [];
         }
-        finally
+
+        // No texture data in this file.
+        if (!reader.Chunks.Contains(TextureData))
         {
-            binReader?.Dispose();
-            reader?.Close();
+            return [];
         }
+
+        using IGorgonChunkReader binReader = reader.OpenChunk(TextureData);
+
+        int keyCount = binReader.ReadInt32();
+        List<string> result = [];
+
+        for (int i = 0; i < keyCount; ++i)
+        {
+            binReader.ReadSingle();
+            byte hasTexture = binReader.ReadByte();
+
+            if (hasTexture == 0)
+            {
+                continue;
+            }
+
+            string textureName = binReader.ReadString();
+
+            if ((string.IsNullOrWhiteSpace(textureName))
+                || (result.Contains(textureName)))
+            {
+                continue;
+            }
+
+            result.Add(textureName);
+        }
+
+        return result;
     }
 
     /// <summary>
@@ -241,7 +229,7 @@ public class GorgonV3AnimationBinaryCodec(Gorgon2D renderer)
                                                [
                                                    CurrentFileHeader
                                                ]);
-        GorgonBinaryReader binReader = null;
+        IGorgonChunkReader binReader = null;
 
         try
         {
@@ -249,9 +237,9 @@ public class GorgonV3AnimationBinaryCodec(Gorgon2D renderer)
             binReader = reader.OpenChunk(AnimationData);
             name = binReader.ReadString();
             float length = binReader.ReadSingle();
-            bool isLooped = binReader.ReadBoolean();
+            bool isLooped = binReader.ReadBool();
             int loopCount = binReader.ReadInt32();
-            reader.CloseChunk();
+            binReader.Close();
 
             int keyCount;
 
@@ -269,7 +257,7 @@ public class GorgonV3AnimationBinaryCodec(Gorgon2D renderer)
                     track.SetKey(new GorgonKeyVector2(binReader.ReadSingle(), new Vector2(val.X, val.Y)));
                 }
                 track.EndEdit();
-                reader.CloseChunk();
+                binReader.Close();
             }
 
             if (reader.Chunks.Contains(ScaleData))
@@ -286,7 +274,7 @@ public class GorgonV3AnimationBinaryCodec(Gorgon2D renderer)
                     track.SetKey(new GorgonKeyVector2(binReader.ReadSingle(), new Vector2(val.X, val.Y)));
                 }
                 track.EndEdit();
-                reader.CloseChunk();
+                binReader.Close();
             }
 
             if (reader.Chunks.Contains(RotationData))
@@ -302,7 +290,7 @@ public class GorgonV3AnimationBinaryCodec(Gorgon2D renderer)
                     track.SetKey(new GorgonKeySingle(binReader.ReadSingle(), binReader.ReadValue<Vector3>().Z));
                 }
                 track.EndEdit();
-                reader.CloseChunk();
+                binReader.Close();
             }
 
             if (reader.Chunks.Contains(SizeData))
@@ -319,7 +307,7 @@ public class GorgonV3AnimationBinaryCodec(Gorgon2D renderer)
                     track.SetKey(new GorgonKeyVector2(binReader.ReadSingle(), new Vector2(val.X, val.Y)));
                 }
                 track.EndEdit();
-                reader.CloseChunk();
+                binReader.Close();
             }
 
             if (reader.Chunks.Contains(BoundsData))
@@ -337,7 +325,7 @@ public class GorgonV3AnimationBinaryCodec(Gorgon2D renderer)
                     track.SetKey(new GorgonKeyRectangle(binReader.ReadSingle(), GorgonRectangleF.FromLTRB(tempRect.X, tempRect.Y, tempRect.Width, tempRect.Height)));
                 }
                 track.EndEdit();
-                reader.CloseChunk();
+                binReader.Close();
             }
 
             if (reader.Chunks.Contains(ColorData))
@@ -353,7 +341,7 @@ public class GorgonV3AnimationBinaryCodec(Gorgon2D renderer)
                     track.SetKey(new GorgonKeyGorgonColor(binReader.ReadSingle(), binReader.ReadValue<GorgonColor>()));
                 }
                 track.EndEdit();
-                reader.CloseChunk();
+                binReader.Close();
             }
 
             IGorgonAnimation result;
@@ -400,7 +388,7 @@ public class GorgonV3AnimationBinaryCodec(Gorgon2D renderer)
                 }
             }
             textureTrack.EndEdit();
-            reader.CloseChunk();
+            binReader.Close();
 
             result = builder.Build(name, length);
             result.IsLooped = isLooped;
@@ -409,7 +397,7 @@ public class GorgonV3AnimationBinaryCodec(Gorgon2D renderer)
         }
         finally
         {
-            binReader?.Dispose();
+            binReader?.Close();
             reader.Close();
         }
     }
@@ -425,7 +413,14 @@ public class GorgonV3AnimationBinaryCodec(Gorgon2D renderer)
 
         try
         {
-            reader = new GorgonChunkFileReader(stream, [GorgonV3AnimationJsonCodec.FileHeader30]);
+            ulong[] appIDs = [GorgonV3AnimationJsonCodec.FileHeader30];
+
+            if (!GorgonChunkFileReader.IsReadable(stream, appIDs))
+            {
+                return false;
+            }
+
+            reader = new GorgonChunkFileReader(stream, appIDs);
             reader.Open();
             return IsReadableChunkFile(reader);
         }

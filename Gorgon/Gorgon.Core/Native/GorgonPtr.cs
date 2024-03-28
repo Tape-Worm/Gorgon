@@ -673,10 +673,10 @@ public unsafe readonly struct GorgonPtr<T>
             throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, startIndex, count.Value));
         }
 
-        using GorgonBinaryWriter writer = new(stream, true);
+        using BinaryWriter writer = new(stream, Encoding.UTF8, true);
         for (int i = 0; i < count.Value; ++i)
         {
-            writer.WriteValue(ref this[i + startIndex]);
+            writer.WriteValue(in this[i + startIndex]);
         }
     }
 

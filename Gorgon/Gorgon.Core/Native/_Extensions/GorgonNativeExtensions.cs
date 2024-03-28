@@ -73,7 +73,7 @@ public static class GorgonNativeExtensions
 
         GorgonNativeBuffer<T> result = new(count.Value);
 
-        using (GorgonBinaryReader reader = new(stream, true))
+        using (BinaryReader reader = new(stream, Encoding.UTF8, true))
         {
             for (int i = 0; i < count.Value; ++i)
             {
@@ -142,7 +142,7 @@ public static class GorgonNativeExtensions
         }
 
         GorgonNativeBuffer<T> result = new(count.Value);
-        using GorgonBinaryReader reader = new(stream, true);
+        using BinaryReader reader = new(stream, Encoding.UTF8, true);
         for (int i = 0; i < count.Value; ++i)
         {
             reader.ReadValue(out result[i]);

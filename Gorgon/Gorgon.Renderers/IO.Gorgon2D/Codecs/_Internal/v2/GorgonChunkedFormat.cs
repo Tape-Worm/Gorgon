@@ -23,6 +23,7 @@
 // Created: Monday, January 21, 2013 9:19:55 AM
 // 
 
+using System.Text;
 using Gorgon.Core;
 using Gorgon.IO;
 using Gorgon.IO.Properties;
@@ -77,7 +78,7 @@ internal abstract class GorgonChunkedFormat
     /// <summary>
     /// Property to return the writer for our stream.
     /// </summary>
-    protected GorgonBinaryWriter Writer
+    protected BinaryWriter Writer
     {
         get;
         private set;
@@ -86,7 +87,7 @@ internal abstract class GorgonChunkedFormat
     /// <summary>
     /// Property to return the reade for our stream.
     /// </summary>
-    protected GorgonBinaryReader Reader
+    protected BinaryReader Reader
     {
         get;
         private set;
@@ -295,7 +296,7 @@ internal abstract class GorgonChunkedFormat
                 throw new ArgumentException(Resources.GOR2DIO_ERR_STREAM_IS_READ_ONLY, nameof(accessMode));
             }
 
-            Writer = new GorgonBinaryWriter(stream, true);
+            Writer = new BinaryWriter(stream, Encoding.UTF8, true);
         }
         else
         {
@@ -304,7 +305,7 @@ internal abstract class GorgonChunkedFormat
                 throw new ArgumentException(Resources.GOR2DIO_ERR_STREAM_IS_WRITE_ONLY, nameof(accessMode));
             }
 
-            Reader = new GorgonBinaryReader(stream, true);
+            Reader = new BinaryReader(stream, Encoding.UTF8, true);
         }
     }
 

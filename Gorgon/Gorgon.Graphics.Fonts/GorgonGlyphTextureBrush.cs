@@ -24,6 +24,7 @@
 // 
 
 using System.Drawing.Drawing2D;
+using System.Text;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts.Properties;
 using Gorgon.Graphics.Imaging;
@@ -129,53 +130,68 @@ public class GorgonGlyphTextureBrush
 
     /// <summary>Function to write out the specifics of the font brush data to a file writer.</summary>
     /// <param name="writer">The writer used to write the brush data.</param>
-    internal override void WriteBrushData(GorgonBinaryWriter writer)
+    internal override void WriteBrushData(IGorgonChunkWriter writer)
     {
-        writer.Write((int)WrapMode);
+        static void SerializeImageData(IGorgonImage image, Stream stream)
+        {
+            using BinaryWriter binWriter = new(stream, Encoding.UTF8, true);
+
+            // Store a place holder for the image size, in bytes.
+            long storedPosition = stream.Position - sizeof(int);
+
+            long size = stream.Length;
+
+            GorgonCodecPng codec = new();
+            codec.Save(image, stream);
+
+            // Return the size of the image data, in bytes.
+            size = stream.Length - size;
+
+            // Update the place holder with the actual size.
+            stream.Position = storedPosition;
+            binWriter.Write((int)size);
+        }
+
+        writer.WriteInt32((int)WrapMode);
         writer.WriteValue(TextureRegion);
 
-        // Mark this as the size.
-        long sizePosition = writer.BaseStream.Position;
-        writer.Write(0);
-
-        // Encode the texture brush as a PNG stream.
-        long size = writer.BaseStream.Length;
-        GorgonCodecPng codec = new();
+        // The placeholder value for the size of the image data.
+        writer.WriteInt32(0);
 
         using IGorgonImage image = ToGorgonImage();
-        codec.Save(image, writer.BaseStream);
 
-        // Calculate the number of bytes written.
-        size = writer.BaseStream.Length - size;
-
-        // Move back and write the size of the image data.
-        writer.BaseStream.Position = sizePosition;
-        writer.Write((int)size);
-
-        // Return to the end of the stream.
-        writer.BaseStream.Position = writer.BaseStream.Length;
+        writer.Serialize(image, SerializeImageData);
     }
 
     /// <summary>Function to read back the specifics of the font brush data from a file reader.</summary>
     /// <param name="reader">The reader used to read the brush data.</param>
-    internal override void ReadBrushData(GorgonBinaryReader reader)
+    internal override void ReadBrushData(IGorgonChunkReader reader)
     {
-        WrapMode = (GlyphBrushWrapMode)reader.ReadInt32();
-        TextureRegion = reader.ReadValue<GorgonRectangleF>();
-        int imageSize = reader.ReadInt32();
+        int imageSize;
 
-        GorgonCodecPng codec = new();
-        using IGorgonImage image = codec.FromStream(reader.BaseStream, imageSize);
-
-        if (image.Format != BufferFormat.R8G8B8A8_UNorm)
+        IGorgonImage DeserializeImageData(Stream stream)
         {
-            image.BeginUpdate()
-                 .ConvertToFormat(BufferFormat.R8G8B8A8_UNorm)
-                 .EndUpdate();
+            GorgonCodecPng codec = new();
+            using IGorgonImage image = codec.FromStream(stream, imageSize);
+
+            if (image.Format != BufferFormat.R8G8B8A8_UNorm)
+            {
+                image.BeginUpdate()
+                     .ConvertToFormat(BufferFormat.R8G8B8A8_UNorm)
+                     .EndUpdate();
+            }
+
+            return image;
         }
 
+        WrapMode = (GlyphBrushWrapMode)reader.ReadInt32();
+        TextureRegion = reader.ReadValue<GorgonRectangleF>();
+        imageSize = reader.ReadInt32();
+
+        using IGorgonImage image = reader.Deserialize(DeserializeImageData);
+
         _imageData = new byte[image.Buffers[0].PitchInformation.SlicePitch];
-        image.Buffers[0].Data.CopyTo(_imageData.AsSpan());
+        image.Buffers[0].Data.CopyTo(_imageData);
 
         _width = image.Width;
         _height = image.Height;

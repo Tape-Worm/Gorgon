@@ -216,7 +216,7 @@ internal class GorPackProvider
     /// </remarks>
     protected override GorgonPhysicalFileSystemData OnEnumerate(string physicalLocation, IGorgonVirtualDirectory mountPoint)
     {
-        using GorgonBinaryReader reader = new(File.Open(physicalLocation, FileMode.Open, FileAccess.Read, FileShare.Read));
+        using BinaryReader reader = new(File.Open(physicalLocation, FileMode.Open, FileAccess.Read, FileShare.Read));
         // Skip the header.
         reader.ReadString();
 
@@ -291,17 +291,16 @@ internal class GorPackProvider
     {
         string header;
 
-        using (GorgonBinaryReader reader = new(File.Open(physicalPath, FileMode.Open, FileAccess.Read, FileShare.Read)))
-        {
-            // If the length of the stream is less or equal to the header size, it's unlikely that we can read this file.
-            if (reader.BaseStream.Length <= GorPackHeader.Length)
-            {
-                return false;
-            }
+        using BinaryReader reader = new(File.Open(physicalPath, FileMode.Open, FileAccess.Read, FileShare.Read));
 
-            reader.ReadByte();
-            header = new string(reader.ReadChars(GorPackHeader.Length));
+        // If the length of the stream is less or equal to the header size, it's unlikely that we can read this file.
+        if (reader.BaseStream.Length <= GorPackHeader.Length)
+        {
+            return false;
         }
+
+        reader.ReadByte();
+        header = new string(reader.ReadChars(GorPackHeader.Length));
 
         return (string.Equals(header, GorPackHeader));
     }

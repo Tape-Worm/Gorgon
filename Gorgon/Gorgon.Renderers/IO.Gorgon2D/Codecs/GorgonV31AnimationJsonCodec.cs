@@ -272,7 +272,7 @@ public class GorgonV31AnimationJsonCodec(Gorgon2D renderer)
             }
         }
 
-        using (GorgonStreamWrapper wrappedStream = new(stream, stream.Position, stream.Length - stream.Position, false))
+        using (GorgonSubStream wrappedStream = new(stream, stream.Position, stream.Length - stream.Position, false))
         using (StreamReader streamReader = new(wrappedStream, Encoding.UTF8, true, 80192, true))
         {
             jsonString = streamReader.ReadToEnd();
@@ -567,7 +567,7 @@ public class GorgonV31AnimationJsonCodec(Gorgon2D renderer)
     /// <returns>A new <see cref="IGorgonAnimation"/>.</returns>
     protected override IGorgonAnimation OnReadFromStream(string name, Stream stream, int byteCount, IEnumerable<GorgonTexture2DView> textureOverrides)
     {
-        using GorgonStreamWrapper wrappedStream = new(stream, stream.Position, byteCount, false);
+        using GorgonSubStream wrappedStream = new(stream, stream.Position, byteCount, false);
         using StreamReader reader = new(wrappedStream, Encoding.UTF8, true, 80192, true);
         string jsonString = reader.ReadToEnd();
         return FromJson(Renderer, name, jsonString, textureOverrides);

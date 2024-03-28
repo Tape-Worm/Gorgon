@@ -366,16 +366,16 @@ public class GorgonGlyphHatchBrush
 
     /// <summary>Function to write out the specifics of the font brush data to a file writer.</summary>
     /// <param name="writer">The writer used to write the brush data.</param>
-    internal override void WriteBrushData(GorgonBinaryWriter writer)
+    internal override void WriteBrushData(IGorgonChunkWriter writer)
     {
-        writer.Write((int)HatchStyle);
-        writer.Write(GorgonColor.ToARGB(ForegroundColor));
-        writer.Write(GorgonColor.ToARGB(BackgroundColor));
+        writer.WriteInt32((int)HatchStyle);
+        writer.WriteInt32(GorgonColor.ToARGB(ForegroundColor));
+        writer.WriteInt32(GorgonColor.ToARGB(BackgroundColor));
     }
 
     /// <summary>Function to read back the specifics of the font brush data from a file reader.</summary>
     /// <param name="reader">The reader used to read the brush data.</param>
-    internal override void ReadBrushData(GorgonBinaryReader reader)
+    internal override void ReadBrushData(IGorgonChunkReader reader)
     {
         HatchStyle = (GlyphBrushHatchStyle)reader.ReadInt32();
         ForegroundColor = GorgonColor.FromARGB(reader.ReadInt32());

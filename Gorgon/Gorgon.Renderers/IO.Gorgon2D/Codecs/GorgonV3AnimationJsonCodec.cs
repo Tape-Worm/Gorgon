@@ -692,7 +692,7 @@ public class GorgonV3AnimationJsonCodec(Gorgon2D renderer)
             Graphics.Log.PrintWarning("The texture overrides parameter is not supported for version 3 files. Textures will not be overridden.", Diagnostics.LoggingLevel.Intermediate);
         }
 
-        using GorgonStreamWrapper wrappedStream = new(stream, stream.Position, byteCount, false);
+        using GorgonSubStream wrappedStream = new(stream, stream.Position, byteCount, false);
         using StreamReader reader = new(wrappedStream, Encoding.UTF8, true, 80192, true);
         string jsonString = reader.ReadToEnd();
         return FromJson(Renderer, jsonString);

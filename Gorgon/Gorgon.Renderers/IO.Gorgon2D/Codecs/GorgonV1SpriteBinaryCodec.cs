@@ -24,6 +24,7 @@
 // 
 
 using System.Numerics;
+using System.Text;
 using Gorgon.Animation;
 using Gorgon.Core;
 using Gorgon.Graphics;
@@ -125,7 +126,7 @@ public class GorgonV1SpriteBinaryCodec(Gorgon2D renderer)
     /// <param name="reader">Binary reader to use to read in the data.</param>
     /// <param name="overrideTexture">The texture to assign to the sprite instead of the texture associated with the name stored in the file.</param>
     /// <returns>The sprite from the stream data.</returns>
-    private static GorgonSprite LoadSprite(GorgonGraphics graphics, GorgonBinaryReader reader, GorgonTexture2DView overrideTexture)
+    private static GorgonSprite LoadSprite(GorgonGraphics graphics, BinaryReader reader, GorgonTexture2DView overrideTexture)
     {
         string imageName = string.Empty;
 
@@ -396,7 +397,7 @@ public class GorgonV1SpriteBinaryCodec(Gorgon2D renderer)
     /// <returns><b>true</b> if the data can be read, or <b>false</b> if not.</returns>
     protected override bool OnIsReadable(Stream stream)
     {
-        using GorgonBinaryReader reader = new(stream, true);
+        using BinaryReader reader = new(stream, Encoding.UTF8, true);
         // If we don't have at least 10 bytes, then this file is not valid.
         if ((stream.Length - stream.Position) < 16)
         {
@@ -426,7 +427,7 @@ public class GorgonV1SpriteBinaryCodec(Gorgon2D renderer)
     /// <returns>The name of the texture associated with the sprite, or <b>null</b> if no texture was found.</returns>
     protected override string OnGetAssociatedTextureName(Stream stream)
     {
-        using GorgonBinaryReader reader = new(stream, true);
+        using BinaryReader reader = new(stream, Encoding.UTF8, true);
         string headerVersion = reader.ReadString();
         if ((!headerVersion.StartsWith("GORSPR", StringComparison.OrdinalIgnoreCase))
             || (headerVersion.Length < 7)
@@ -468,7 +469,7 @@ public class GorgonV1SpriteBinaryCodec(Gorgon2D renderer)
     /// <returns>A new <see cref="GorgonSprite"/>.</returns>
     protected override GorgonSprite OnReadFromStream(Stream stream, int byteCount, GorgonTexture2DView overrideTexture)
     {
-        using GorgonBinaryReader reader = new(stream, true);
+        using BinaryReader reader = new(stream, Encoding.UTF8, true);
         // We don't need the byte count here.
         return LoadSprite(Graphics, reader, overrideTexture);
     }

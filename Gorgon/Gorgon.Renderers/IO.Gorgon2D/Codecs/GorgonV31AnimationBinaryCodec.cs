@@ -108,7 +108,7 @@ public class GorgonV31AnimationBinaryCodec(Gorgon2D renderer)
     /// <param name="reader">The reader containing the texture information.</param>
     /// <param name="textureOverrides">Overrides for the texture keys.</param>
     /// <returns>The texture attached to the sprite.</returns>
-    private (GorgonTexture2DView Texture, string TextureName) LoadTexture(GorgonBinaryReader reader, IEnumerable<GorgonTexture2DView> textureOverrides)
+    private (GorgonTexture2DView Texture, string TextureName) LoadTexture(IGorgonChunkReader reader, IEnumerable<GorgonTexture2DView> textureOverrides)
     {
         // Write out as much info about the texture as we can so we can look it up based on these values when loading.
         string textureName = reader.ReadString();
@@ -175,9 +175,8 @@ public class GorgonV31AnimationBinaryCodec(Gorgon2D renderer)
             return false;
         }
 
-        using GorgonBinaryReader binReader = reader.OpenChunk(VersionData);
-        Version fileVersion = new(binReader.ReadByte(), binReader.ReadByte());
-        reader.CloseChunk();
+        using IGorgonChunkReader binReader = reader.OpenChunk(VersionData);
+        Version fileVersion = new(binReader.ReadByte(), binReader.ReadByte());        
 
         return Version.Equals(fileVersion);
     }
@@ -195,20 +194,20 @@ public class GorgonV31AnimationBinaryCodec(Gorgon2D renderer)
             return;
         }
 
-        GorgonBinaryWriter binWriter = writer.OpenChunk(chunkID);
-        binWriter.Write(tracks.Count(item => item.Value.KeyFrames.Count > 0));
+        using IGorgonChunkWriter binWriter = writer.OpenChunk(chunkID);
+        binWriter.WriteInt32(tracks.Count(item => item.Value.KeyFrames.Count > 0));
 
         foreach (KeyValuePair<string, IGorgonAnimationTrack<GorgonKeyTexture2D>> track in tracks.Where(item => item.Value.KeyFrames.Count > 0))
         {
-            binWriter.Write(track.Key);
-            binWriter.Write(track.Value.IsEnabled);
-            binWriter.Write(track.Value.KeyFrames.Count);
+            binWriter.WriteString(track.Key);
+            binWriter.WriteBool(track.Value.IsEnabled);
+            binWriter.WriteInt32(track.Value.KeyFrames.Count);
 
             for (int i = 0; i < track.Value.KeyFrames.Count; ++i)
             {
                 GorgonKeyTexture2D key = track.Value.KeyFrames[i];
 
-                binWriter.Write(key.Time);
+                binWriter.WriteSingle(key.Time);
 
                 if ((key.Value is null) && (string.IsNullOrWhiteSpace(key.TextureName)))
                 {
@@ -220,42 +219,41 @@ public class GorgonV31AnimationBinaryCodec(Gorgon2D renderer)
 
                     if (key.Value is not null)
                     {
-                        binWriter.Write(key.Value.Texture.Name);
-                        binWriter.Write(key.Value.Texture.Width);
-                        binWriter.Write(key.Value.Texture.Height);
+                        binWriter.WriteString(key.Value.Texture.Name);
+                        binWriter.WriteInt32(key.Value.Texture.Width);
+                        binWriter.WriteInt32(key.Value.Texture.Height);
                         binWriter.WriteValue(key.Value.Texture.Format);
-                        binWriter.Write(key.Value.Texture.ArrayCount);
-                        binWriter.Write(key.Value.Texture.MipLevels);
-                        binWriter.Write(key.Value.ArrayIndex);
-                        binWriter.Write(key.Value.ArrayCount);
-                        binWriter.Write(key.Value.MipSlice);
-                        binWriter.Write(key.Value.MipCount);
+                        binWriter.WriteInt32(key.Value.Texture.ArrayCount);
+                        binWriter.WriteInt32(key.Value.Texture.MipLevels);
+                        binWriter.WriteInt32(key.Value.ArrayIndex);
+                        binWriter.WriteInt32(key.Value.ArrayCount);
+                        binWriter.WriteInt32(key.Value.MipSlice);
+                        binWriter.WriteInt32(key.Value.MipCount);
                         binWriter.WriteValue(key.Value.Format);
                     }
                     else
                     {
-                        binWriter.Write(key.TextureName);
+                        binWriter.WriteString(key.TextureName);
                         // If we don't have any texture reference, write out default values.
-                        binWriter.Write(0);
-                        binWriter.Write(0);
+                        binWriter.WriteInt32(0);
+                        binWriter.WriteInt32(0);
                         binWriter.WriteValue(BufferFormat.Unknown);
-                        binWriter.Write(-1);
-                        binWriter.Write(-1);
-                        binWriter.Write(0);
-                        binWriter.Write(-1);
-                        binWriter.Write(0);
-                        binWriter.Write(-1);
+                        binWriter.WriteInt32(-1);
+                        binWriter.WriteInt32(-1);
+                        binWriter.WriteInt32(0);
+                        binWriter.WriteInt32(-1);
+                        binWriter.WriteInt32(0);
+                        binWriter.WriteInt32(-1);
                         binWriter.WriteValue(BufferFormat.Unknown);
                     }
                 }
 
                 // SharpDX rectangle data was stored as LTRB, so we need to convert it to keep compatibility.
                 GorgonRectangleF tempRect = new(key.TextureCoordinates.Left, key.TextureCoordinates.Top, key.TextureCoordinates.Right, key.TextureCoordinates.Bottom);
-                binWriter.WriteValue(ref key.TextureCoordinates);
-                binWriter.Write(key.TextureArrayIndex);
+                binWriter.WriteValue(in key.TextureCoordinates);
+                binWriter.WriteInt32(key.TextureArrayIndex);
             }
-        }
-        writer.CloseChunk();
+        }        
     }
 
     /// <summary>
@@ -276,25 +274,24 @@ public class GorgonV31AnimationBinaryCodec(Gorgon2D renderer)
             return;
         }
 
-        GorgonBinaryWriter binWriter = writer.OpenChunk(chunkID);
-        binWriter.Write(tracks.Count(item => item.Value.KeyFrames.Count > 0));
+        using IGorgonChunkWriter binWriter = writer.OpenChunk(chunkID);
+        binWriter.WriteInt32(tracks.Count(item => item.Value.KeyFrames.Count > 0));
 
         foreach (KeyValuePair<string, IGorgonAnimationTrack<Tk>> track in tracks.Where(item => item.Value.KeyFrames.Count > 0))
         {
-            binWriter.Write(track.Key);
+            binWriter.WriteString(track.Key);
             binWriter.WriteValue(track.Value.InterpolationMode);
-            binWriter.Write(track.Value.IsEnabled);
-            binWriter.Write(track.Value.KeyFrames.Count);
+            binWriter.WriteBool(track.Value.IsEnabled);
+            binWriter.WriteInt32(track.Value.KeyFrames.Count);
 
             for (int i = 0; i < track.Value.KeyFrames.Count; ++i)
             {
                 Tk key = track.Value.KeyFrames[i];
                 Tkd value = getValue(key);
-                binWriter.Write(key.Time);
-                binWriter.WriteValue(ref value);
+                binWriter.WriteSingle(key.Time);
+                binWriter.WriteValue(in value);
             }
-        }
-        writer.CloseChunk();
+        }        
     }
 
     /// <summary>
@@ -311,7 +308,7 @@ public class GorgonV31AnimationBinaryCodec(Gorgon2D renderer)
             return;
         }
 
-        GorgonBinaryReader binReader = reader.OpenChunk(chunkID);
+        using IGorgonChunkReader binReader = reader.OpenChunk(chunkID);
         int trackCount = binReader.ReadInt32();
 
         for (int i = 0; i < trackCount; ++i)
@@ -320,7 +317,7 @@ public class GorgonV31AnimationBinaryCodec(Gorgon2D renderer)
 
             IGorgonTrackKeyBuilder<GorgonKeyTexture2D> trackBuilder = builder.Edit2DTexture(trackName);
 
-            trackBuilder.Enabled(binReader.ReadBoolean());
+            trackBuilder.Enabled(binReader.ReadBool());
 
             int keyCount = binReader.ReadInt32();
 
@@ -355,8 +352,7 @@ public class GorgonV31AnimationBinaryCodec(Gorgon2D renderer)
             }
 
             trackBuilder.EndEdit();
-        }
-        reader.CloseChunk();
+        }        
     }
 
     /// <summary>
@@ -375,7 +371,7 @@ public class GorgonV31AnimationBinaryCodec(Gorgon2D renderer)
             return;
         }
 
-        GorgonBinaryReader binReader = reader.OpenChunk(chunkID);
+        using IGorgonChunkReader binReader = reader.OpenChunk(chunkID);
         int trackCount = binReader.ReadInt32();
 
         if (trackCount == 0)
@@ -390,7 +386,7 @@ public class GorgonV31AnimationBinaryCodec(Gorgon2D renderer)
             IGorgonTrackKeyBuilder<Tk> builder = getBuilder(trackName);
 
             builder.SetInterpolationMode(binReader.ReadValue<TrackInterpolationMode>());
-            builder.Enabled(binReader.ReadBoolean());
+            builder.Enabled(binReader.ReadBool());
             int keyCount = binReader.ReadInt32();
 
             for (int j = 0; j < keyCount; ++j)
@@ -399,8 +395,7 @@ public class GorgonV31AnimationBinaryCodec(Gorgon2D renderer)
             }
 
             builder.EndEdit();
-        }
-        reader.CloseChunk();
+        }        
     }
 
     /// <summary>
@@ -411,23 +406,23 @@ public class GorgonV31AnimationBinaryCodec(Gorgon2D renderer)
     protected override void OnSaveToStream(IGorgonAnimation animation, Stream stream)
     {
         GorgonChunkFileWriter writer = new(stream, CurrentFileHeader);
-        GorgonBinaryWriter binWriter = null;
+        IGorgonChunkWriter binWriter = null;
 
         try
         {
             writer.Open();
             binWriter = writer.OpenChunk(VersionData);
-            binWriter.Write((byte)Version.Major);
-            binWriter.Write((byte)Version.Minor);
-            writer.CloseChunk();
+            binWriter.WriteByte((byte)Version.Major);
+            binWriter.WriteByte((byte)Version.Minor);
+            writer.Close();
 
             binWriter = writer.OpenChunk(AnimationData);
-            binWriter.Write("NA");
-            binWriter.Write(animation.Length);
-            binWriter.Write(animation.Fps);
-            binWriter.Write(animation.IsLooped);
-            binWriter.Write(animation.LoopCount);
-            writer.CloseChunk();
+            binWriter.WriteString("NA");
+            binWriter.WriteSingle(animation.Length);
+            binWriter.WriteSingle(animation.Fps);
+            binWriter.WriteBool(animation.IsLooped);
+            binWriter.WriteInt32(animation.LoopCount);
+            writer.Close();
 
             // Write tracks with value type data.
             WriteTrackValues(writer, SingleData, animation.SingleTracks, k => k.Value);
@@ -455,60 +450,49 @@ public class GorgonV31AnimationBinaryCodec(Gorgon2D renderer)
     protected override IReadOnlyList<string> OnGetAssociatedTextureNames(Stream stream)
     {
         List<string> result = [];
-        GorgonBinaryReader binReader = null;
-        GorgonChunkFileReader reader = new(stream,
-                                               [
-                                                   CurrentFileHeader
-                                               ]);
-        try
+        
+        using GorgonChunkFileReader reader = new(stream, [ CurrentFileHeader ]);
+        reader.Open();
+
+        if (!reader.Chunks.Contains(TextureData))
         {
-            reader.Open();
+            return [];
+        }
 
-            if (!reader.Chunks.Contains(TextureData))
+        using IGorgonChunkReader binReader = reader.OpenChunk(TextureData);
+
+        int trackCount = binReader.ReadInt32();
+
+        for (int i = 0; i < trackCount; ++i)
+        {
+            binReader.ReadString();
+            binReader.ReadBool();
+            int keyCount = binReader.ReadInt32();
+
+            for (int j = 0; j < keyCount; ++j)
             {
-                return [];
-            }
+                binReader.ReadSingle();
+                byte hasTexture = binReader.ReadByte();
+                string textureName = string.Empty;
 
-            binReader = reader.OpenChunk(TextureData);
-            int trackCount = binReader.ReadInt32();
-
-            for (int i = 0; i < trackCount; ++i)
-            {
-                binReader.ReadString();
-                binReader.ReadBoolean();
-                int keyCount = binReader.ReadInt32();
-
-                for (int j = 0; j < keyCount; ++j)
+                if (hasTexture != 0)
                 {
-                    binReader.ReadSingle();
-                    byte hasTexture = binReader.ReadByte();
-                    string textureName = string.Empty;
+                    textureName = binReader.ReadString();
 
-                    if (hasTexture != 0)
+                    if ((!string.IsNullOrWhiteSpace(textureName))
+                        && (!result.Contains(textureName)))
                     {
-                        textureName = binReader.ReadString();
-
-                        if ((!string.IsNullOrWhiteSpace(textureName))
-                            && (!result.Contains(textureName)))
-                        {
-                            result.Add(textureName);
-                        }
-
-                        binReader.BaseStream.Position += (sizeof(int) * 8) + (sizeof(BufferFormat) * 2);
+                        result.Add(textureName);
                     }
 
-                    binReader.BaseStream.Position += Unsafe.SizeOf<GorgonRectangleF>() + sizeof(int);
+                    binReader.Skip((sizeof(int) * 8) + (sizeof(BufferFormat) * 2));
                 }
-            }
 
-            return result;
+                binReader.Skip(Unsafe.SizeOf<GorgonRectangleF>() + sizeof(int));
+            }
         }
-        finally
-        {
-            reader?.CloseChunk();
-            binReader?.Dispose();
-            reader?.Close();
-        }
+
+        return result;
     }
 
     /// <summary>Function to read the animation data from a stream.</summary>
@@ -529,7 +513,7 @@ public class GorgonV31AnimationBinaryCodec(Gorgon2D renderer)
                                                [
                                                    CurrentFileHeader
                                                ]);
-        GorgonBinaryReader binReader = null;
+        IGorgonChunkReader binReader = null;
 
         try
         {
@@ -539,9 +523,9 @@ public class GorgonV31AnimationBinaryCodec(Gorgon2D renderer)
             binReader.ReadString();
             float length = binReader.ReadSingle();
             float fps = binReader.ReadSingle();
-            bool isLooped = binReader.ReadBoolean();
+            bool isLooped = binReader.ReadBool();
             int loopCount = binReader.ReadInt32();
-            reader.CloseChunk();
+            binReader.Close();
 
             ReadTrackValues<GorgonKeySingle, float>(reader, SingleData, builder.EditSingle, (t, v) => new GorgonKeySingle(t, v));
             ReadTrackValues<GorgonKeyVector2, Vector2>(reader, Vector2Data, builder.EditVector2, (t, v) => new GorgonKeyVector2(t, v));
@@ -576,7 +560,14 @@ public class GorgonV31AnimationBinaryCodec(Gorgon2D renderer)
 
         try
         {
-            reader = new GorgonChunkFileReader(stream, [CurrentFileHeader]);
+            ulong[] appIDs = [CurrentFileHeader];
+
+            if (!GorgonChunkFileReader.IsReadable(stream, appIDs))
+            {
+                return false;
+            }
+
+            reader = new GorgonChunkFileReader(stream, appIDs);
             reader.Open();
             return IsReadableChunkFile(reader);
         }

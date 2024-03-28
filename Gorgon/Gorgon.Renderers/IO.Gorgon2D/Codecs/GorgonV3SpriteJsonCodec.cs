@@ -124,7 +124,7 @@ public class GorgonV3SpriteJsonCodec(Gorgon2D renderer)
     /// <returns>A new <see cref="GorgonSprite"/>.</returns>
     protected override GorgonSprite OnReadFromStream(Stream stream, int byteCount, GorgonTexture2DView overrideTexture)
     {
-        using GorgonStreamWrapper wrappedStream = new(stream, stream.Position, byteCount, false);
+        using GorgonSubStream wrappedStream = new(stream, stream.Position, byteCount, false);
         using StreamReader reader = new(wrappedStream, Encoding.UTF8, true, 80192, true);
         string jsonString = reader.ReadToEnd();
         return FromJson(Renderer, overrideTexture, jsonString);

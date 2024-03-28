@@ -230,9 +230,6 @@ Code: 0x{2}</value>
   <data name="GOR_ERR_ACTIVATOR_CANNOT_CREATE_INTERFACE_TYPE" xml:space="preserve">
     <value>The type [{0}] is an interface. There is no constructor for this type.</value>
   </data>
-  <data name="GOR_ERR_CHUNK_ILLEGAL_OPEN_MODE" xml:space="preserve">
-    <value>The mode must be either [Read] or [Write].</value>
-  </data>
   <data name="GOR_ERR_OFFSET_AND_SIZE_ARE_LARGER_THAN_ARRAY" xml:space="preserve">
     <value>The offset {0} + size {1} requested are larger than the array: {2}</value>
   </data>
@@ -244,27 +241,6 @@ Code: 0x{2}</value>
   </data>
   <data name="GOR_ERR_STREAM_POS_OUT_OF_RANGE" xml:space="preserve">
     <value>The stream position must be 0 or greater.</value>
-  </data>
-  <data name="GOR_ERR_CHUNK_FILE_HEADER_MISMATCH" xml:space="preserve">
-    <value>The header ID of the chunk file is {0}, this value is unrecognized. The chunk file could be out of date, or the file is not a chunk file.</value>
-  </data>
-  <data name="GOR_ERR_CHUNK_FILE_TABLE_CHUNK_INVALID" xml:space="preserve">
-    <value>The chunk file is corrupt. The chunk table ID is invalid.</value>
-  </data>
-  <data name="GOR_ERR_CHUNK_FILE_TABLE_INVALID_COUNT" xml:space="preserve">
-    <value>The chunk file is corrupt. Table entry count is less than zero.</value>
-  </data>
-  <data name="GOR_ERR_CHUNK_FILE_TABLE_OFFSET_INVALID" xml:space="preserve">
-    <value>The chunk file is corrupt. The chunk table offset is invalid.</value>
-  </data>
-  <data name="GOR_ERR_CHUNK_NOT_FOUND" xml:space="preserve">
-    <value>Could not find a chunk with an ID of 0x{0}.</value>
-  </data>
-  <data name="GOR_ERR_CHUNK_RESERVED" xml:space="preserve">
-    <value>The chunk ID 0x{0} is already the ID of a reserved value.</value>
-  </data>
-  <data name="GOR_ERR_CHUNK_FILE_CHUNK_MISMATCH" xml:space="preserve">
-    <value>The chunk ID at offset 0x{0} does not match the chunk ID of 0x{1}.</value>
   </data>
   <data name="GOR_ERR_FILE_EXTENSION_NOT_FOUND" xml:space="preserve">
     <value>The file extension '{0}' was not found in this collection.</value>
@@ -347,9 +323,6 @@ Code: 0x{2}</value>
   <data name="GOR_ERR_DIRECTORY_NOT_FOUND" xml:space="preserve">
     <value>The directory '{0}' was not found.</value>
   </data>
-  <data name="GOR_ERR_CHUNK_FILE_NOT_OPEN" xml:space="preserve">
-    <value>The chunk file is not opened.</value>
-  </data>
   <data name="GOR_ERR_ARGUMENT_MISSING" xml:space="preserve">
     <value>The parameter {0} is not initialized or missing on the parameter {1}.</value>
   </data>
@@ -386,7 +359,49 @@ Code: 0x{2}</value>
   <data name="GOR_TOSTR_RECTANGLE" xml:space="preserve">
     <value>Gorgon Rectangle: {0}x{1}-{2}x{3} (Width: {4}, Height: {5})</value>
   </data>
-  <data name="GOR_ERR_CHUNK_NOT_OPEN" xml:space="preserve">
-    <value>The specified chunk {0} is not open for reading or writing.</value>
+  <data name="GOR_ERR_CHUNK_FILE_CHUNK_MISMATCH" xml:space="preserve">
+    <value>The chunk ID at offset 0x{0} does not match the chunk ID of 0x{1}.</value>
+  </data>
+  <data name="GOR_ERR_CHUNK_FILE_HEADER_MISMATCH" xml:space="preserve">
+    <value>The header ID of the chunk file is {0}, this value is unrecognized. The chunk file could be out of date, or the file is not a chunk file.</value>
+  </data>
+  <data name="GOR_ERR_CHUNK_FILE_NOT_OPEN" xml:space="preserve">
+    <value>The chunk file is not opened.</value>
+  </data>
+  <data name="GOR_ERR_CHUNK_FILE_TABLE_CHUNK_INVALID" xml:space="preserve">
+    <value>The chunk file is corrupt. The chunk table ID is invalid.</value>
+  </data>
+  <data name="GOR_ERR_CHUNK_FILE_TABLE_INVALID_COUNT" xml:space="preserve">
+    <value>The chunk file is corrupt. Table entry count is less than zero.</value>
+  </data>
+  <data name="GOR_ERR_CHUNK_FILE_TABLE_OFFSET_INVALID" xml:space="preserve">
+    <value>The chunk file is corrupt. The chunk table offset is invalid.</value>
+  </data>
+  <data name="GOR_ERR_CHUNK_ILLEGAL_OPEN_MODE" xml:space="preserve">
+    <value>The mode must be either [Read] or [Write].</value>
+  </data>
+  <data name="GOR_ERR_CHUNK_NOT_FOUND" xml:space="preserve">
+    <value>Could not find a chunk with an ID of 0x{0}.</value>
+  </data>
+  <data name="GOR_ERR_CHUNK_READER_DESERIALIZING" xml:space="preserve">
+    <value>The reader is currently deserializing an object. This call cannot be executed while the reader is deserializing.</value>
+  </data>
+  <data name="GOR_ERR_CHUNK_RESERVED" xml:space="preserve">
+    <value>The chunk ID 0x{0} is already the ID of a reserved value.</value>
+  </data>
+  <data name="GOR_ERR_CHUNK_WRITER_SERIALIZING" xml:space="preserve">
+    <value>The writer is currently serializing an object. This call cannot be executed while the writer is serializing.</value>
+  </data>
+  <data name="GOR_ERR_STREAM_SIZE_OUT_OF_RANGE" xml:space="preserve">
+    <value>The stream size must be 0 or greater.</value>
+  </data>
+  <data name="GOR_ERR_CHUNK_ALREADY_OPEN" xml:space="preserve">
+    <value>The chunk ID 0x{0} is already open. Only one chunk may be accessed at a time.</value>
+  </data>
+  <data name="GOR_ERR_CHUNKFILE_MUST_BE_READONLY" xml:space="preserve">
+    <value>The stream for the chunk file must be read only.</value>
+  </data>
+  <data name="GOR_ERR_CHUNKFILE_MUST_BE_WRITEONLY" xml:space="preserve">
+    <value>The stream for the chunk file must be write only.</value>
   </data>
 </root>

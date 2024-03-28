@@ -1,7 +1,6 @@
-﻿
-// 
-// Gorgon
-// Copyright (C) 2013 Michael Winsor
+﻿// 
+// Gorgon.
+// Copyright (C) 2024 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -11,14 +10,14 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software
+// all copies or substantial portions of the Software.
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE
+// THE SOFTWARE.
 // 
 // Created: Sunday, September 22, 2013 8:28:38 PM
 // 
@@ -29,14 +28,14 @@ using Gorgon.Properties;
 namespace Gorgon.IO;
 
 /// <summary>
-/// An extension and description for a file
+/// An extension and description for a file.
 /// </summary>
 /// <remarks>
 /// <para>
-/// This type allows for easy manipulation of file extensions and their descriptions when populating a file dialog extension list
+/// This type allows for easy manipulation of file extensions and their descriptions when populating a file dialog extension list.
 /// </para>
 /// <para>
-/// The file extensions can be compared to each other to determine uniqueness. When comparing file extensions, the comparison is done with a case-insensitive comparer
+/// The file extensions can be compared to each other to determine uniqueness. When comparing file extensions, the comparison is done with a case-insensitive comparer.
 /// </para>
 /// </remarks>
 public readonly struct GorgonFileExtension
@@ -82,6 +81,22 @@ public readonly struct GorgonFileExtension
     public static bool operator ==(GorgonFileExtension left, GorgonFileExtension right) => Equals(left, right);
 
     /// <summary>
+    /// Operator to return whether 2 instances are equal.
+    /// </summary>
+    /// <param name="left">Left instance to compare.</param>
+    /// <param name="right">Right instance to compare.</param>
+    /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
+    public static bool operator ==(GorgonFileExtension left, string right) => string.Equals(left.Extension, right, StringComparison.OrdinalIgnoreCase) || string.Equals(left.FullExtension, right, StringComparison.OrdinalIgnoreCase);
+
+    /// <summary>
+    /// Operator to return whether 2 instances are equal.
+    /// </summary>
+    /// <param name="left">Left instance to compare.</param>
+    /// <param name="right">Right instance to compare.</param>
+    /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
+    public static bool operator ==(string left, GorgonFileExtension right) => string.Equals(left, right.Extension, StringComparison.OrdinalIgnoreCase) || string.Equals(left, right.FullExtension, StringComparison.OrdinalIgnoreCase);
+
+    /// <summary>
     /// Operator to return whether 2 instances are not equal.
     /// </summary>
     /// <param name="left">Left instance to compare.</param>
@@ -90,12 +105,28 @@ public readonly struct GorgonFileExtension
     public static bool operator !=(GorgonFileExtension left, GorgonFileExtension right) => !Equals(left, right);
 
     /// <summary>
+    /// Operator to return whether 2 instances are not equal.
+    /// </summary>
+    /// <param name="left">Left instance to compare.</param>
+    /// <param name="right">Right instance to compare.</param>
+    /// <returns><b>true</b> if not equal, <b>false</b> if equal.</returns>
+    public static bool operator !=(GorgonFileExtension left, string right) => !string.Equals(left.Extension, right, StringComparison.OrdinalIgnoreCase) && !string.Equals(left.FullExtension, right, StringComparison.OrdinalIgnoreCase);
+
+    /// <summary>
+    /// Operator to return whether 2 instances are not equal.
+    /// </summary>
+    /// <param name="left">Left instance to compare.</param>
+    /// <param name="right">Right instance to compare.</param>
+    /// <returns><b>true</b> if not equal, <b>false</b> if equal.</returns>
+    public static bool operator !=(string left, GorgonFileExtension right) => !string.Equals(left, right.Extension, StringComparison.OrdinalIgnoreCase) && !string.Equals(left, right.FullExtension, StringComparison.OrdinalIgnoreCase);
+
+    /// <summary>
     /// Operator to return whether one instance is less or equal to the other.
     /// </summary>
     /// <param name="left">Left instance to compare.</param>
     /// <param name="right">Right instance to compare.</param>
     /// <returns><b>true</b> if less than or equal, <b>false</b> if not.</returns>
-    public static bool operator <=(GorgonFileExtension left, GorgonFileExtension right) => Equals(left, right) || string.Compare(left.Extension, right.Extension, StringComparison.OrdinalIgnoreCase) == -1;
+    public static bool operator <=(GorgonFileExtension left, GorgonFileExtension right) => Equals(left, right) || string.Compare(left.Extension, right.Extension, StringComparison.OrdinalIgnoreCase) < 0;
 
     /// <summary>
     /// Operator to return whether one instance is greater than or equal to the other.
@@ -103,7 +134,7 @@ public readonly struct GorgonFileExtension
     /// <param name="left">Left instance to compare.</param>
     /// <param name="right">Right instance to compare.</param>
     /// <returns><b>true</b> if greater or equal, <b>false</b> if not.</returns>
-    public static bool operator >=(GorgonFileExtension left, GorgonFileExtension right) => Equals(left, right) || string.Compare(left.Extension, right.Extension, StringComparison.OrdinalIgnoreCase) == 1;
+    public static bool operator >=(GorgonFileExtension left, GorgonFileExtension right) => Equals(left, right) || string.Compare(left.Extension, right.Extension, StringComparison.OrdinalIgnoreCase) > 0;
 
     /// <summary>
     /// Operator to return whether one instance is less than the other.
@@ -111,7 +142,8 @@ public readonly struct GorgonFileExtension
     /// <param name="left">Left instance to compare.</param>
     /// <param name="right">Right instance to compare.</param>
     /// <returns><b>true</b> if less than, <b>false</b> if not.</returns>
-    public static bool operator <(GorgonFileExtension left, GorgonFileExtension right) => string.Compare(left.Extension, right.Extension, StringComparison.OrdinalIgnoreCase) == -1;
+    public static bool operator <(GorgonFileExtension left, GorgonFileExtension right) => string.Compare(left.Extension, right.Extension, StringComparison.OrdinalIgnoreCase) < 0;
+
 
     /// <summary>
     /// Operator to return whether one instance is greater than the other.
@@ -119,7 +151,88 @@ public readonly struct GorgonFileExtension
     /// <param name="left">Left instance to compare.</param>
     /// <param name="right">Right instance to compare.</param>
     /// <returns><b>true</b> if greater than, <b>false</b> if not.</returns>
-    public static bool operator >(GorgonFileExtension left, GorgonFileExtension right) => string.Compare(left.Extension, right.Extension, StringComparison.OrdinalIgnoreCase) == 1;
+    public static bool operator >(GorgonFileExtension left, GorgonFileExtension right) => string.Compare(left.Extension, right.Extension, StringComparison.OrdinalIgnoreCase) > 0;
+
+    /// <summary>
+    /// Operator to return whether one instance is less or equal to the other.
+    /// </summary>
+    /// <param name="left">Left instance to compare.</param>
+    /// <param name="right">Right instance to compare.</param>
+    /// <returns><b>true</b> if less than or equal, <b>false</b> if not.</returns>
+    public static bool operator <=(GorgonFileExtension left, string right) => string.Equals(left.Extension, right, StringComparison.OrdinalIgnoreCase)
+                                                                           || string.Compare(left.Extension, right, StringComparison.OrdinalIgnoreCase) < 0
+                                                                           || string.Equals(left.FullExtension, right, StringComparison.OrdinalIgnoreCase)
+                                                                           || string.Compare(left.FullExtension, right, StringComparison.OrdinalIgnoreCase) < 0;
+
+    /// <summary>
+    /// Operator to return whether one instance is greater than or equal to the other.
+    /// </summary>
+    /// <param name="left">Left instance to compare.</param>
+    /// <param name="right">Right instance to compare.</param>
+    /// <returns><b>true</b> if greater or equal, <b>false</b> if not.</returns>
+    public static bool operator >=(GorgonFileExtension left, string right) => string.Equals(left.Extension, right, StringComparison.OrdinalIgnoreCase)
+                                                                           || string.Compare(left.Extension, right, StringComparison.OrdinalIgnoreCase) > 0
+                                                                           || string.Equals(left.FullExtension, right, StringComparison.OrdinalIgnoreCase)
+                                                                           || string.Compare(left.FullExtension, right, StringComparison.OrdinalIgnoreCase) > 0;
+
+    /// <summary>
+    /// Operator to return whether one instance is greater than the other.
+    /// </summary>
+    /// <param name="left">Left instance to compare.</param>
+    /// <param name="right">Right instance to compare.</param>
+    /// <returns><b>true</b> if greater than, <b>false</b> if not.</returns>
+    public static bool operator >(GorgonFileExtension left, string right) => string.Compare(left.Extension, right, StringComparison.OrdinalIgnoreCase) > 0
+                                                                          || string.Compare(left.FullExtension, right, StringComparison.OrdinalIgnoreCase) > 0;
+
+    /// <summary>
+    /// Operator to return whether one instance is less than the other.
+    /// </summary>
+    /// <param name="left">Left instance to compare.</param>
+    /// <param name="right">Right instance to compare.</param>
+    /// <returns><b>true</b> if less than, <b>false</b> if not.</returns>
+    public static bool operator <(GorgonFileExtension left, string right) => string.Compare(left.Extension, right, StringComparison.OrdinalIgnoreCase) < 0
+                                                                          || string.Compare(left.FullExtension, right, StringComparison.OrdinalIgnoreCase) < 0;
+
+    /// <summary>
+    /// Operator to return whether one instance is less or equal to the other.
+    /// </summary>
+    /// <param name="left">Left instance to compare.</param>
+    /// <param name="right">Right instance to compare.</param>
+    /// <returns><b>true</b> if less than or equal, <b>false</b> if not.</returns>
+    public static bool operator <=(string left, GorgonFileExtension right) => string.Equals(left, right.Extension, StringComparison.OrdinalIgnoreCase)
+                                                                           || string.Compare(left, right.Extension, StringComparison.OrdinalIgnoreCase) < 0
+                                                                           || string.Equals(left, right.FullExtension, StringComparison.OrdinalIgnoreCase)
+                                                                           || string.Compare(left, right.FullExtension, StringComparison.OrdinalIgnoreCase) < 0;
+
+    /// <summary>
+    /// Operator to return whether one instance is greater than or equal to the other.
+    /// </summary>
+    /// <param name="left">Left instance to compare.</param>
+    /// <param name="right">Right instance to compare.</param>
+    /// <returns><b>true</b> if greater or equal, <b>false</b> if not.</returns>
+    public static bool operator >=(string left, GorgonFileExtension right) => string.Equals(left, right.Extension, StringComparison.OrdinalIgnoreCase)
+                                                                           || string.Compare(left, right.Extension, StringComparison.OrdinalIgnoreCase) > 0
+                                                                           || string.Equals(left, right.FullExtension, StringComparison.OrdinalIgnoreCase)
+                                                                           || string.Compare(left, right.FullExtension, StringComparison.OrdinalIgnoreCase) > 0;
+
+
+    /// <summary>
+    /// Operator to return whether one instance is less than the other.
+    /// </summary>
+    /// <param name="left">Left instance to compare.</param>
+    /// <param name="right">Right instance to compare.</param>
+    /// <returns><b>true</b> if less than, <b>false</b> if not.</returns>
+    public static bool operator <(string left, GorgonFileExtension right) => string.Compare(left, right.Extension, StringComparison.OrdinalIgnoreCase) < 0
+                                                                          || string.Compare(left, right.FullExtension, StringComparison.OrdinalIgnoreCase) < 0;
+
+    /// <summary>
+    /// Operator to return whether one instance is greater than the other.
+    /// </summary>
+    /// <param name="left">Left instance to compare.</param>
+    /// <param name="right">Right instance to compare.</param>
+    /// <returns><b>true</b> if greater than, <b>false</b> if not.</returns>
+    public static bool operator >(string left, GorgonFileExtension right) => string.Compare(left, right.Extension, StringComparison.OrdinalIgnoreCase) > 0
+                                                                          || string.Compare(left, right.FullExtension, StringComparison.OrdinalIgnoreCase) > 0;
 
     /// <summary>
     /// Function to return if instances are equal.
@@ -196,12 +309,12 @@ public readonly struct GorgonFileExtension
     /// <param name="other">An object to compare with this object.</param>
     /// <returns>
     /// A value that indicates the relative order of the objects being compared. The return value has the following meanings: Value Meaning Less than zero This object is less than the <paramref name="other" /> parameter.Zero This object is equal to <paramref name="other" />. Greater than zero This object is greater than <paramref name="other" />.
-    /// </returns>
+    /// </returns>    
     public int CompareTo(string? other)
     {
         if (string.IsNullOrWhiteSpace(other))
         {
-            return -1;
+            return 1;
         }
 
         return other.StartsWith('.') ? string.Compare(FullExtension, other, StringComparison.OrdinalIgnoreCase)
@@ -214,7 +327,7 @@ public readonly struct GorgonFileExtension
     /// <param name="extension">The extension.</param>
     /// <param name="description">The description.</param>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="extension"/> parameter is empty.</exception>
-    public GorgonFileExtension(string extension, string? description = null)
+    public GorgonFileExtension(string extension, string? description)
     {
         ArgumentEmptyException.ThrowIfNullOrWhiteSpace(extension);
 
@@ -226,5 +339,14 @@ public readonly struct GorgonFileExtension
         Extension = extension;
         FullExtension = $".{extension}";
         Description = description ?? string.Empty;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GorgonFileExtension"/> struct.
+    /// </summary>
+    /// <param name="extension">The extension.</param>
+    public GorgonFileExtension(string extension)
+        : this(extension, string.Empty)
+    {
     }
 }

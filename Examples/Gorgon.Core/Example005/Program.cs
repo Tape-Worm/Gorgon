@@ -25,6 +25,7 @@
 
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Text;
 using Gorgon.IO;
 using Gorgon.Math;
 
@@ -34,7 +35,7 @@ namespace Gorgon.Examples;
 /// Entry point class
 /// </summary>
 /// <remarks>
-/// This example showcases the enhancements brought by the new GorgonBinaryReader and GorgonBinaryWriter objects
+/// This example showcases the enhancements brought by the new BinaryReader and BinaryWriter objects
 /// 
 /// These objects provide extended functionality for the standard .NET BinaryReader/Writer classes so that generic types can be read and/or written, and raw memory (unsafe and ref managed pointers) can be 
 /// also be read and/or written
@@ -62,7 +63,7 @@ internal static class Program
     }
 
     /// <summary>
-    /// Function to write the contents of a reference to a buffer into a stream using the GorgonBinaryWriter and reading it back again using the GorgonBinaryReader.
+    /// Function to write the contents of a span into a stream using the BinaryWriter and reading it back again using the BinaryReader.
     /// </summary>
     /// <param name="stream">The stream that will receive the data.</param>
     /// <remarks>
@@ -71,11 +72,11 @@ internal static class Program
     /// should rarely, if ever, need to use these methods.
     /// </para>
     /// </remarks>
-    private static void WriteRef(MemoryStream stream)
+    private static void WriteSpan(MemoryStream stream)
     {
         stream.Position = 0;
-        GorgonBinaryWriter writer = new(stream, true);
-        GorgonBinaryReader reader = new(stream, true);
+        BinaryWriter writer = new(stream, Encoding.UTF8, true);
+        BinaryReader reader = new(stream, Encoding.UTF8, true);
 
         try
         {
@@ -87,15 +88,18 @@ internal static class Program
             };
 
             Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine("Writing/Reading ref value to memory into a memory stream.");
+            Console.WriteLine("Writing/Reading span value to memory into a memory stream.");
             Console.ForegroundColor = ConsoleColor.White;
 
-            writer.Write(ref Unsafe.As<SomeTestData, byte>(ref data), Unsafe.SizeOf<SomeTestData>());
+            ReadOnlySpan<SomeTestData> span = new(ref data);
+
+            writer.WriteRange(span);
 
             stream.Position = 0;
 
             SomeTestData readData = default;
-            reader.Read(ref Unsafe.As<SomeTestData, byte>(ref readData), Unsafe.SizeOf<SomeTestData>());
+            Span<SomeTestData> readSpan = new(ref readData);
+            reader.ReadRange(readSpan);
 
             Console.WriteLine($"int32 Value1 = 1: {readData.Value1 == 1}");
             Console.WriteLine($"double Value2 = 2.1: {readData.Value2.EqualsEpsilon(2.1)}");
@@ -111,14 +115,14 @@ internal static class Program
     }
 
     /// <summary>
-    /// Function to write the contents of a value type to a stream using the GorgonBinaryWriter and reading it back again using the GorgonBinaryReader.
+    /// Function to write the contents of a value type to a stream using the BinaryWriter and reading it back again using the BinaryReader.
     /// </summary>
     /// <param name="stream">The stream that will receive the data.</param>
     private static void WriteByRefValueType(MemoryStream stream)
     {
         stream.Position = 0;
-        GorgonBinaryWriter writer = new(stream, true);
-        GorgonBinaryReader reader = new(stream, true);
+        BinaryWriter writer = new(stream, Encoding.UTF8, true);
+        BinaryReader reader = new(stream, Encoding.UTF8, true);
 
         try
         {
@@ -133,7 +137,7 @@ internal static class Program
             Console.WriteLine("Writing/Reading a value type to a memory stream.");
             Console.ForegroundColor = ConsoleColor.White;
 
-            writer.WriteValue(ref data);
+            writer.WriteValue(in data);
 
             stream.Position = 0;
 
@@ -153,15 +157,15 @@ internal static class Program
     }
 
     /// <summary>
-    /// Function to write an array of value types to a stream using the GorgonBinaryWriter and reading it back again using the GorgonBinaryReader.
+    /// Function to write an array of value types to a stream using the BinaryWriter and reading it back again using the BinaryReader.
     /// </summary>
     /// <param name="stream">The stream that will receive the data.</param>
     private static void WriteArrayValues(MemoryStream stream)
     {
         stream.Position = 0;
 
-        GorgonBinaryWriter writer = new(stream, true);
-        GorgonBinaryReader reader = new(stream, true);
+        BinaryWriter writer = new(stream, Encoding.UTF8, true);
+        BinaryReader reader = new(stream, Encoding.UTF8, true);
 
         try
         {
@@ -181,12 +185,12 @@ internal static class Program
             Console.WriteLine("Writing/Reading an array of value types to a memory stream.");
             Console.ForegroundColor = ConsoleColor.White;
 
-            writer.WriteRange(expected);
+            writer.WriteRange<SomeTestData>(expected);
 
             stream.Position = 0;
 
             SomeTestData[] actual = new SomeTestData[4];
-            reader.ReadRange(actual, 1);
+            reader.ReadRange(actual.AsSpan(1));
 
             for (int i = 1; i < 4; ++i)
             {
@@ -225,14 +229,14 @@ internal static class Program
         {
             Console.Title = "Gorgon Example #5 - Binary reader/write enhancements.";
             Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine("This example showcases the enhancements brought by the new GorgonBinaryReader and GorgonBinaryWriter objects.");
+            Console.WriteLine("This example showcases the enhancements brought by the extensions to the BinaryReader and BinaryWriter objects.");
             Console.WriteLine();
-            Console.WriteLine("These objects provide extended functionality for the standard .NET BinaryReader/Writer classes so that generic types ");
-            Console.WriteLine("can be read and/or written, and raw memory (unsafe and ref managed pointers) can be also be read and/or written.");
+            Console.WriteLine("These methods provide extended functionality to the standard .NET BinaryReader/Writer classes so that generic types ");
+            Console.WriteLine("can be read and/or written, and raw memory (GorgonPtr types/Spans) can be also be read and/or written.");
             Console.WriteLine();
 
             WriteByRefValueType(stream);
-            WriteRef(stream);
+            WriteSpan(stream);
             WriteArrayValues(stream);
 
             Console.ResetColor();

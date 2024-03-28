@@ -133,6 +133,15 @@ namespace Gorgon.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The chunk ID 0x{0} is already open. Only one chunk may be accessed at a time..
+        /// </summary>
+        internal static string GOR_ERR_CHUNK_ALREADY_OPEN {
+            get {
+                return ResourceManager.GetString("GOR_ERR_CHUNK_ALREADY_OPEN", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The chunk ID at offset 0x{0} does not match the chunk ID of 0x{1}..
         /// </summary>
         internal static string GOR_ERR_CHUNK_FILE_CHUNK_MISMATCH {
@@ -205,11 +214,11 @@ namespace Gorgon.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The specified chunk {0} is not open for reading or writing..
+        ///   Looks up a localized string similar to The reader is currently deserializing an object. This call cannot be executed while the reader is deserializing..
         /// </summary>
-        internal static string GOR_ERR_CHUNK_NOT_OPEN {
+        internal static string GOR_ERR_CHUNK_READER_DESERIALIZING {
             get {
-                return ResourceManager.GetString("GOR_ERR_CHUNK_NOT_OPEN", resourceCulture);
+                return ResourceManager.GetString("GOR_ERR_CHUNK_READER_DESERIALIZING", resourceCulture);
             }
         }
         
@@ -219,6 +228,33 @@ namespace Gorgon.Properties {
         internal static string GOR_ERR_CHUNK_RESERVED {
             get {
                 return ResourceManager.GetString("GOR_ERR_CHUNK_RESERVED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The writer is currently serializing an object. This call cannot be executed while the writer is serializing..
+        /// </summary>
+        internal static string GOR_ERR_CHUNK_WRITER_SERIALIZING {
+            get {
+                return ResourceManager.GetString("GOR_ERR_CHUNK_WRITER_SERIALIZING", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The stream for the chunk file must be read only..
+        /// </summary>
+        internal static string GOR_ERR_CHUNKFILE_MUST_BE_READONLY {
+            get {
+                return ResourceManager.GetString("GOR_ERR_CHUNKFILE_MUST_BE_READONLY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The stream for the chunk file must be write only..
+        /// </summary>
+        internal static string GOR_ERR_CHUNKFILE_MUST_BE_WRITEONLY {
+            get {
+                return ResourceManager.GetString("GOR_ERR_CHUNKFILE_MUST_BE_WRITEONLY", resourceCulture);
             }
         }
         
@@ -483,6 +519,15 @@ namespace Gorgon.Properties {
         internal static string GOR_ERR_STREAM_POS_OUT_OF_RANGE {
             get {
                 return ResourceManager.GetString("GOR_ERR_STREAM_POS_OUT_OF_RANGE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The stream size must be 0 or greater..
+        /// </summary>
+        internal static string GOR_ERR_STREAM_SIZE_OUT_OF_RANGE {
+            get {
+                return ResourceManager.GetString("GOR_ERR_STREAM_SIZE_OUT_OF_RANGE", resourceCulture);
             }
         }
         

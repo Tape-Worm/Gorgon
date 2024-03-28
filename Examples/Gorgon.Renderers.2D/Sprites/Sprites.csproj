@@ -50,14 +50,10 @@
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-
     <None Include="..\..\app.manifest" Link="app.manifest" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\ExamplesCommon\ExamplesCommon.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
     <None Update="appsettings.json">

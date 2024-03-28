@@ -77,7 +77,7 @@ namespace Gorgon.IO;
 /// 
 ///			// Write the chunk that will contain strings
 ///			// Alternatively, we could pass in an ulong value for the chunk ID instead of a string
-///			using (GorgonBinaryWriter writer = file.OpenChunk(StringsChunk))
+///			using (IGorgonChunkWriter writer = file.OpenChunk(StringsChunk))
 ///			{
 ///				writer.Write(strings.Length);
 ///				for (int = 0; i < strings.Length; ++i)
@@ -87,7 +87,7 @@ namespace Gorgon.IO;
 ///			}			
 /// 
 ///			// Write the chunk that will contain integers
-///			using (GorgonBinaryWriter writer = file.OpenChunk(IntChunk))
+///			using (IGorgonChunkWriter writer = file.OpenChunk(IntChunk))
 ///			{
 ///				writer.Write(ints.Length);
 ///				for (int i = 0; i < ints.Length; ++i)
@@ -112,36 +112,32 @@ namespace Gorgon.IO;
 /// </example>
 /// <conceptualLink target="7b81343e-e2fc-4f0f-926a-d9193ae481fe">Gorgon Chunk File Format (GCFF) details</conceptualLink>
 public sealed class GorgonChunkFileWriter
-    : GorgonChunkFile<GorgonBinaryWriter>
+    : GorgonChunkFile
 {
-
     // The application specific header ID.
     private readonly ulong _appHeaderId;
     // The position of the place holder position for deferred data.
-    private long _placeHolderStartPosition;
-    // The position within the stream where the header ends.
-    private long _headerEnd;
+    private ulong _placeHolderStartPosition;
     // The active chunk that we're writing into.
-    private GorgonChunk _activeChunk;
+    private readonly GorgonChunk _activeChunk;
     // The active chunk writer.
-    private GorgonBinaryWriter? _activeWriter;
+    private ChunkWriter? _activeWriter;
 
     /// <summary>
     /// Function to write the header information for the chunk file.
     /// </summary>
     protected override void OnOpen()
     {
-        using GorgonBinaryWriter writer = new(Stream, true);
+        using BinaryWriter writer = new(Stream, Encoding.UTF8, true);
         writer.Write(FileFormatHeaderIDv0100);
         writer.Write(_appHeaderId);
 
         // Write these as placeholders, we'll be back to fill it when we close the file.
-        _placeHolderStartPosition = Stream.Position;
+        _placeHolderStartPosition = (ulong)Stream.Position;
+        // The total length of the file.
         writer.Write((long)0);
+        // The offset of the chunk table within the stream.
         writer.Write((long)0);
-
-        // Record where the header has ended.
-        _headerEnd = Stream.Position;
     }
 
     /// <summary>
@@ -151,13 +147,13 @@ public sealed class GorgonChunkFileWriter
     protected override long OnClose()
     {
         // Force the last chunk to close.
-        if (_activeChunk.ID != 0)
+        if ((_activeChunk.ID != 0) && (_activeWriter is not null))
         {
-            CloseChunk();
+            _activeWriter.Close();
         }
 
         // Write out the file footer and chunk table.
-        using (GorgonBinaryWriter writer = new(Stream, true))
+        using (BinaryWriter writer = new(Stream, Encoding.UTF8, true))
         {
             long tableOffset = Stream.Position;
 
@@ -171,7 +167,7 @@ public sealed class GorgonChunkFileWriter
                 writer.Write(chunk.FileOffset);
             }
 
-            Stream.Position = _placeHolderStartPosition;
+            Stream.Position = (long)_placeHolderStartPosition;
             writer.Write(Stream.Length);
             writer.Write(tableOffset);
         }
@@ -180,21 +176,54 @@ public sealed class GorgonChunkFileWriter
     }
 
     /// <summary>
-    /// Function to open a chunk for reading.
+    /// Function to open a new chunk for writing.
     /// </summary>
-    /// <param name="chunkId">The ID of the chunk to open.</param>
-    /// <returns>A <see cref="GorgonBinaryWriter" /> that will allow writing within the chunk.</returns>
+    /// <param name="chunkId">The ID of the chunk to create.</param>
+    /// <returns>A <see cref="IGorgonChunkWriter" /> that will allow writing within the chunk.</returns>
+    /// <exception cref="IOException">Thrown if the chunk was opened without calling <see cref="GorgonChunkFile.Open"/> first.
+    /// <para>-or-</para>
+    /// <para>Thrown if another <see cref="IGorgonChunkWriter"/> is open elsewhere.</para>
+    /// </exception>
     /// <remarks>
     /// <para>
-    /// Use this to write data to a chunk within the file. This method will add a new chunk to the chunk table represented by the <see cref="GorgonChunkFile{T}.Chunks"/> collection. Note that the <paramref name="chunkId"/> 
-    /// is not required to be unique, but must not be the same as the header for the file, or the chunk table identifier. There are constants in the <see cref="GorgonChunkFile{T}"/> type that expose these values.
+    /// Use this to write data to a chunk within the file. This method will add a new chunk to the chunk table represented by the <see cref="GorgonChunkFile.Chunks"/> collection. Note that the <paramref name="chunkId"/> 
+    /// is not required to be unique (but should be for best results), but must not be the same as the header for the file, or the chunk table identifier. There are constants in the <see cref="GorgonChunkFile"/> type 
+    /// that expose these values.
+    /// </para>
+    /// <para>
+    /// Only one chunk may be open for writing at a time. If a chunk is already open, then an exception will be thrown.
     /// </para>
     /// <note type="Important">
-    /// This method should always be paired with a call to <see cref="GorgonChunkFile{T}.CloseChunk"/>. Failure to do so will keep the chunk table from being updated properly, and corrupt the file.
+    /// The <see cref="IGorgonChunkWriter"/> implements <see cref="IDisposable"/>. Ensure the dispose method is called when finished with the chunk, otherwise file corruption may occur.
     /// </note>
     /// </remarks>
-    /// <exception cref="IOException">Thrown if the chunk was opened without calling <see cref="GorgonChunkFile{T}.Open"/> first.</exception>
-    public override GorgonBinaryWriter OpenChunk(ulong chunkId)
+    /// <seealso cref="IGorgonChunkWriter"/>
+    public IGorgonChunkWriter OpenChunk(string chunkId) => OpenChunk(chunkId.ChunkID());
+
+    /// <summary>
+    /// Function to open a new chunk for writing.
+    /// </summary>
+    /// <param name="chunkId">The ID of the chunk to create.</param>
+    /// <returns>A <see cref="IGorgonChunkWriter" /> that will allow writing within the chunk.</returns>
+    /// <exception cref="IOException">Thrown if the chunk was opened without calling <see cref="GorgonChunkFile.Open"/> first.
+    /// <para>-or-</para>
+    /// <para>Thrown if another <see cref="IGorgonChunkWriter"/> is open elsewhere.</para>
+    /// </exception>
+    /// <remarks>
+    /// <para>
+    /// Use this to write data to a chunk within the file. This method will add a new chunk to the chunk table represented by the <see cref="GorgonChunkFile.Chunks"/> collection. Note that the <paramref name="chunkId"/> 
+    /// is not required to be unique (but should be for best results), but must not be the same as the header for the file, or the chunk table identifier. There are constants in the <see cref="GorgonChunkFile"/> type 
+    /// that expose these values.
+    /// </para>
+    /// <para>
+    /// Only one chunk may be open for writing at a time. If a chunk is already open, then an exception will be thrown.
+    /// </para>
+    /// <note type="Important">
+    /// The <see cref="IGorgonChunkWriter"/> implements <see cref="IDisposable"/>. Ensure the dispose method is called when finished with the chunk, otherwise file corruption may occur.
+    /// </note>
+    /// </remarks>
+    /// <seealso cref="IGorgonChunkWriter"/>
+    public IGorgonChunkWriter OpenChunk(ulong chunkId)
     {
         if (!IsOpen)
         {
@@ -203,63 +232,37 @@ public sealed class GorgonChunkFileWriter
 
         ValidateChunkID(chunkId);
 
-        if (_activeChunk.ID != 0)
+        if ((_activeChunk.ID != 0) || (_activeWriter is not null))
         {
-            if (_activeChunk.ID == chunkId)
+            throw new IOException(string.Format(Resources.GOR_ERR_CHUNK_ALREADY_OPEN, _activeChunk.ID.FormatHex()));
+        }
+
+        // Function called when the chunk is closed.
+        void OnChunkClosed(GorgonChunk chunk)
+        {
+            if (chunk.ID != 0)
             {
-                if (_activeWriter is null)
-                {
-                    throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOR_ERR_CHUNK_NOT_OPEN, chunkId));
-                }
-
-                return _activeWriter;
+                ChunkList.Add(chunk);
             }
+            
+            _activeWriter = null;
 
-            CloseChunk();
+            // Because we're using sub streams, we must ensure that we continue writing at the end of the stream.
+            Stream.Position = Stream.Length;
         }
 
-        // Size is 0 for now, we'll update it later.
-        _activeChunk = new GorgonChunk(chunkId, 0, (ulong)(Stream.Position - _headerEnd + sizeof(long)));
+        ulong position = (ulong)Stream.Position - (_placeHolderStartPosition + 16);
 
-        using (GorgonBinaryWriter chunkIDWriter = new(Stream, true))
+        using (BinaryWriter writer = new(Stream, Encoding.UTF8, true))
         {
-            chunkIDWriter.Write(chunkId);
+            writer.Write(chunkId);
         }
 
-        _activeWriter = new GorgonBinaryWriter(new GorgonStreamWrapper(Stream, 0, 0), true);
+        position += sizeof(ulong);
+
+        _activeWriter = new ChunkWriter(chunkId, Stream, position, OnChunkClosed);
 
         return _activeWriter;
-    }
-
-    /// <summary>
-    /// Function to close an open chunk.
-    /// </summary>
-    /// <remarks>
-    /// <para>
-    /// This will close the active chunk, and add it to the chunk table list. It will reposition the stream pointer for the stream passed to the constructor of this object to the next position for 
-    /// a chunk, or the end of the chunk data.
-    /// </para>
-    /// <para>
-    /// If this method is not called, then the chunk will not be added to the chunk table in the file and the file will lose that chunk. This, however, does not mean the file is necessarily corrupt, 
-    /// just that the chunk will not exist. Regardless, this method should always be called when <see cref="OpenChunk(ulong)"/> is called.
-    /// </para>
-    /// </remarks>
-    public override void CloseChunk()
-    {
-        if ((_activeChunk.ID == 0) || (_activeWriter is null))
-        {
-            return;
-        }
-
-        // Move the stream forward by the amount written.
-        _activeChunk = new GorgonChunk(_activeChunk.ID, (int)(_activeWriter.BaseStream.Length), _activeChunk.FileOffset);
-        Stream.Position += _activeChunk.Size;
-
-        ChunkList.Add(_activeChunk);
-
-        _activeChunk = default;
-        _activeWriter.Dispose();
-        _activeWriter = null;
     }
 
     /// <summary>
@@ -267,16 +270,21 @@ public sealed class GorgonChunkFileWriter
     /// </summary>
     /// <param name="stream">The stream that contains the chunk file to write.</param>
     /// <param name="appHeaderId">An application specific header ID to write to the file for validation.</param>
-    /// <remarks>
-    /// The <paramref name="stream"/> passed to this method requires that the <see cref="Stream.CanSeek"/> property returns a value of <b>true</b>.
-    /// </remarks>
-    /// <exception cref="ArgumentException">Thrown when the <paramref name="stream" /> is has its <see cref="Stream.CanSeek" /> property set to <b>false</b>.
+    /// <exception cref="ArgumentException">Thrown when the <paramref name="stream" /> is has its <see cref="Stream.CanSeek" /> property set to <b>false</b> 
     /// <para>-or-</para>
     /// <para>
     /// Thrown when the <paramref name="stream"/> is read-only.
     /// </para>
-    /// </exception>
-    /// <exception cref="IOException"></exception>
+    /// </exception>    
+    /// <remarks>
+    /// <para>
+    /// The <paramref name="stream"/> passed to this method requires that the <see cref="Stream.CanSeek"/> property returns a value of <b>true</b>.
+    /// </para>
+    /// <para>
+    /// The <paramref name="appHeaderId"/> provides an application specific header ID that can be used to identify the contents of the file. When the chunk file is written this app ID can be used to verify 
+    /// whether the file can be read by the application or not.
+    /// </para>
+    /// </remarks>
     public GorgonChunkFileWriter(Stream stream, ulong appHeaderId)
         : base(stream)
     {

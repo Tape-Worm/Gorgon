@@ -108,7 +108,7 @@ public static class GorgonShaderFactory
     /// Use this to load precompiled shaders from a stream. This has the advantage of not needing a lengthy recompile of the shader when initializing.
     /// </para>
     /// <para>
-    /// This makes use of the Gorgon <see cref="GorgonChunkFile{T}"/> format to allow flexible storage of data. The Gorgon shader format is broken into 2 chunks, both of which are available in the 
+    /// This makes use of the Gorgon <see cref="GorgonChunkFile"/> format to allow flexible storage of data. The Gorgon shader format is broken into 2 chunks, both of which are available in the 
     /// <see cref="BinaryShaderMetaData"/>, and <see cref="BinaryShaderByteCode"/> constants. The file header for the format is stored in the <see cref="BinaryShaderFileHeader"/> constant.  
     /// </para>
     /// <para>
@@ -129,7 +129,6 @@ public static class GorgonShaderFactory
     /// </list>
     /// </para>
     /// </remarks>
-    /// <seealso cref="GorgonChunkFile{T}"/>
     /// <seealso cref="GorgonChunkFileReader"/>
     /// <seealso cref="GorgonChunkFileWriter"/>
     public static T FromStream<T>(GorgonGraphics graphics, Stream stream, int size)
@@ -162,12 +161,13 @@ public static class GorgonShaderFactory
 
         // We will store the shader as a Gorgon chunked binary format. 
         // This will break the shader into parts within the file to allow us the ability to read portions of the file.
-        GorgonChunkFileReader chunkReader = new(stream,
+        using GorgonChunkFileReader chunkReader = new(stream,
                                                                       [
                                                                           BinaryShaderFileHeader.ChunkID()
                                                                       ]);
 
         ShaderBytecode byteCode = null;
+        IGorgonChunkReader? reader = null;
 
         try
         {
@@ -192,19 +192,18 @@ public static class GorgonShaderFactory
             }
 
             // Get the meta data.
-            GorgonBinaryReader reader = chunkReader.OpenChunk(metaDataChunk.ID);
 
+            reader = chunkReader.OpenChunk(metaDataChunk.ID);
             ShaderType shaderType = reader.ReadValue<ShaderType>();
-            bool debug = reader.ReadBoolean();
+            bool debug = reader.ReadBool();
             string entryPoint = reader.ReadString();
+            reader.Close();
 
             if ((!Enum.IsDefined(typeof(ShaderType), shaderType))
                 || (string.IsNullOrWhiteSpace(entryPoint)))
             {
                 throw new GorgonException(GorgonResult.CannotRead, Resources.GORGFX_ERR_NOT_GORGON_SHADER);
-            }
-
-            chunkReader.CloseChunk();
+            }           
 
             Type requestedType = typeof(T);
 
@@ -235,7 +234,8 @@ public static class GorgonShaderFactory
 
             byte[] data = new byte[byteCodeChunk.Size];
 
-            reader.Read(data, 0, byteCodeChunk.Size);
+            reader.ReadArray(data, 0, byteCodeChunk.Size);
+            reader.Close();
 
             graphics.Log.Print($"Compiling {shaderType} '{entryPoint}'.", LoggingLevel.Simple);
             byteCode = new ShaderBytecode(data);
@@ -256,6 +256,7 @@ public static class GorgonShaderFactory
         }
         finally
         {
+            reader?.Close();
             chunkReader.Close();
             byteCode?.Dispose();
         }
@@ -276,7 +277,7 @@ public static class GorgonShaderFactory
     /// Use this to load precompiled shaders from a file. This has the advantage of not needing a lengthy recompile of the shader when initializing.
     /// </para>
     /// <para>
-    /// This makes use of the Gorgon <see cref="GorgonChunkFile{T}"/> format to allow flexible storage of data. The Gorgon shader format is broken into 2 chunks, both of which are available in the 
+    /// This makes use of the Gorgon <see cref="GorgonChunkFile"/> format to allow flexible storage of data. The Gorgon shader format is broken into 2 chunks, both of which are available in the 
     /// <see cref="BinaryShaderMetaData"/>, and <see cref="BinaryShaderByteCode"/> constants. The file header for the format is stored in the <see cref="BinaryShaderFileHeader"/> constant.  
     /// </para>
     /// <para>
@@ -297,7 +298,6 @@ public static class GorgonShaderFactory
     /// </list>
     /// </para>
     /// </remarks>
-    /// <seealso cref="GorgonChunkFile{T}"/>
     /// <seealso cref="GorgonChunkFileReader"/>
     /// <seealso cref="GorgonChunkFileWriter"/>
     public static T FromFile<T>(GorgonGraphics graphics, string path)

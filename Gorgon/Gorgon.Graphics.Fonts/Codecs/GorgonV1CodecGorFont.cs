@@ -23,6 +23,7 @@
 // Created: February 23, 2017 11:39:19 PM
 // 
 
+using System.Text;
 using Gorgon.Graphics.Fonts.Properties;
 using Gorgon.IO;
 
@@ -91,7 +92,7 @@ public sealed class GorgonV1CodecGorFont
     /// <returns>A new <seealso cref="GorgonFontInfo"/> containing information about the font.</returns>
     private static GorgonFontInfo GetFontInfo(GorgonChunkFileReader fontFile, string name)
     {
-        GorgonBinaryReader reader = fontFile.OpenChunk(FontInfoChunk);
+        using IGorgonChunkReader reader = fontFile.OpenChunk(FontInfoChunk);
         GorgonFontInfo info = new(reader.ReadString(), reader.ReadSingle(), reader.ReadValue<GorgonFontHeightMode>())
         {
             Name = name,
@@ -106,7 +107,7 @@ public sealed class GorgonV1CodecGorFont
             TextureWidth = reader.ReadInt32(),
             TextureHeight = reader.ReadInt32(),
             UsePremultipliedTextures = reader.ReadValue<bool>(),
-            UseKerningPairs = reader.ReadBoolean()
+            UseKerningPairs = reader.ReadBool()
         };
 
         return info;
@@ -160,6 +161,7 @@ public sealed class GorgonV1CodecGorFont
                                                      FileHeader.ChunkID()
                                                  ]);
         GorgonFontInfo fontInfo = null;
+        IGorgonChunkReader? reader = null;
 
         try
         {
@@ -173,7 +175,6 @@ public sealed class GorgonV1CodecGorFont
                 return Factory.GetFont(fontInfo);
             }
 
-            GorgonBinaryReader reader = null;
             GorgonGlyphBrush fontBrush = null;
 
             if (fontFile.Chunks.Contains(BrushChunk))
@@ -190,7 +191,7 @@ public sealed class GorgonV1CodecGorFont
                     _ => new GorgonGlyphSolidBrush(),
                 };
                 fontBrush.ReadBrushData(reader);
-                fontFile.CloseChunk();
+                reader.Close();
             }
             else
             {
@@ -208,6 +209,7 @@ public sealed class GorgonV1CodecGorFont
         {
             IDisposable brush = fontInfo?.Brush as IDisposable;
             brush?.Dispose();
+            reader?.Close();
             fontFile.Close();
         }
     }
@@ -225,6 +227,7 @@ public sealed class GorgonV1CodecGorFont
                                                      FileHeader.ChunkID()
                                                  ]);
         GorgonFontInfo fontInfo = null;
+        IGorgonChunkReader? reader = null;
 
         try
         {
@@ -238,7 +241,6 @@ public sealed class GorgonV1CodecGorFont
                 return Factory.GetFont(fontInfo);
             }
 
-            GorgonBinaryReader reader = null;
             GorgonGlyphBrush fontBrush = null;
 
             if (fontFile.Chunks.Contains(BrushChunk))
@@ -255,7 +257,7 @@ public sealed class GorgonV1CodecGorFont
                     _ => new GorgonGlyphSolidBrush(),
                 };
                 fontBrush.ReadBrushData(reader);
-                fontFile.CloseChunk();
+                reader.Close();
             }
             else
             {
@@ -273,6 +275,7 @@ public sealed class GorgonV1CodecGorFont
         {
             IDisposable brush = fontInfo?.Brush as IDisposable;
             brush?.Dispose();
+            reader?.Close();
             fontFile.Close();
         }
     }
@@ -315,7 +318,7 @@ public sealed class GorgonV1CodecGorFont
         }
 
         long position = stream.Position;
-        GorgonBinaryReader reader = new(stream, true);
+        BinaryReader reader = new(stream, Encoding.UTF8, true);
 
         try
         {

@@ -25,6 +25,7 @@
 
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Text;
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Imaging;
@@ -141,7 +142,7 @@ internal class TvImageCodec
         TvHeader header;
 
         // Load the header for the image.
-        using (GorgonBinaryReader reader = new(stream, true))
+        using (BinaryReader reader = new(stream, Encoding.UTF8, true))
         {
             header = reader.ReadValue<TvHeader>();
         }
@@ -194,7 +195,7 @@ internal class TvImageCodec
         // Create our resulting image buffer.
         GorgonImage result = new(settings);
 
-        using (GorgonBinaryReader reader = new(stream, true))
+        using (BinaryReader reader = new(stream, Encoding.UTF8, true))
         {
             // Write each scanline.
             for (int y = 0; y < settings.Height; ++y)
@@ -261,7 +262,7 @@ internal class TvImageCodec
         };
 
         // Write the metadata to the stream.
-        using GorgonBinaryWriter writer = new(stream, true);
+        using BinaryWriter writer = new(stream, Encoding.UTF8, true);
         writer.WriteValue(header);
 
         // Now, we need to encode the image data as 1 byte for every other color component per pixel. 
@@ -352,12 +353,12 @@ internal class TvImageCodec
         // Remember the stream position.
         // If we fail to do this then the stream will be offset when we return and could cause corruption.
         long position = stream.Position;
-        GorgonBinaryReader reader = null;
+        BinaryReader reader = null;
 
         try
         {
-            // Using the GorgonBinaryReader, we can pull in the data we need.
-            reader = new GorgonBinaryReader(stream, true);
+            // Using the BinaryReader, we can pull in the data we need.
+            reader = new BinaryReader(stream, Encoding.UTF8, true);
 
             // Retrieve our magic number.
             TvHeader header = reader.ReadValue<TvHeader>();

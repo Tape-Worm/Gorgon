@@ -79,13 +79,13 @@ public abstract class GorgonGlyphBrush
     /// Function to write out the specifics of the font brush data to a file writer.
     /// </summary>
     /// <param name="writer">The writer used to write the brush data.</param>
-    internal abstract void WriteBrushData(GorgonBinaryWriter writer);
+    internal abstract void WriteBrushData(IGorgonChunkWriter writer);
 
     /// <summary>
     /// Function to read back the specifics of the font brush data from a file reader.
     /// </summary>
     /// <param name="reader">The reader used to read the brush data.</param>
-    internal abstract void ReadBrushData(GorgonBinaryReader reader);
+    internal abstract void ReadBrushData(IGorgonChunkReader reader);
 
     /// <summary>Function to clone an object.</summary>
     /// <returns>The cloned object.</returns>

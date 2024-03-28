@@ -100,6 +100,7 @@
 // particular purpose and non-infringement.
 
 using System.Runtime.CompilerServices;
+using System.Text;
 using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Properties;
 using Gorgon.IO;
@@ -228,7 +229,7 @@ public sealed class GorgonCodecTga
     /// <param name="reader">The reader used to read the stream containing the data.</param>
     /// <param name="conversionFlags">Flags for conversion.</param>
     /// <returns>New image settings.</returns>
-    private static GorgonImageInfo ReadHeader(GorgonBinaryReader reader, out TGAConversionFlags conversionFlags)
+    private static GorgonImageInfo ReadHeader(BinaryReader reader, out TGAConversionFlags conversionFlags)
     {
         conversionFlags = TGAConversionFlags.None;
 
@@ -397,7 +398,7 @@ public sealed class GorgonCodecTga
     /// <param name="flipHorizontal"><b>true</b> to decode the pixels from right to left, or <b>false</b> to decode from left to right.</param>
     /// <param name="format">The pixel format.</param>
     /// <returns><b>true</b> if the run contains entirely transparent pixels, or <b>false</b> if not.</returns>
-    private unsafe bool DecodeRleEncodedRun(GorgonBinaryReader reader, ref byte* dest, ref int x, int runLength, int width, bool expand, bool flipHorizontal, BufferFormat format)
+    private unsafe bool DecodeRleEncodedRun(BinaryReader reader, ref byte* dest, ref int x, int runLength, int width, bool expand, bool flipHorizontal, BufferFormat format)
     {
         bool result = true;
 
@@ -510,7 +511,7 @@ public sealed class GorgonCodecTga
     /// <param name="flipHorizontal"><b>true</b> to decode the pixels from right to left, or <b>false</b> to decode from left to right.</param>
     /// <param name="format">The pixel format.</param>
     /// <returns><b>true</b> if the run contains entirely transparent pixels, or <b>false</b> if not.</returns>
-    private unsafe bool DecodeUncompressedRun(GorgonBinaryReader reader, ref byte* dest, ref int x, int runLength, int width, bool expand, bool flipHorizontal, BufferFormat format)
+    private unsafe bool DecodeUncompressedRun(BinaryReader reader, ref byte* dest, ref int x, int runLength, int width, bool expand, bool flipHorizontal, BufferFormat format)
     {
         bool result = true;
 
@@ -623,7 +624,7 @@ public sealed class GorgonCodecTga
     /// <param name="dest">Destination buffer pointner</param>
     /// <param name="format">Format of the destination buffer.</param>
     /// <param name="conversionFlags">Flags used for conversion.</param>
-    private unsafe bool ReadCompressed(GorgonBinaryReader reader, int width, GorgonPtr<byte> dest, BufferFormat format, TGAConversionFlags conversionFlags)
+    private unsafe bool ReadCompressed(BinaryReader reader, int width, GorgonPtr<byte> dest, BufferFormat format, TGAConversionFlags conversionFlags)
     {
         bool setOpaque = true;
         bool flipHorizontal = (conversionFlags & TGAConversionFlags.InvertX) == TGAConversionFlags.InvertX;
@@ -695,7 +696,7 @@ public sealed class GorgonCodecTga
     /// <param name="reader">A reader used to read the data from the source stream.</param>
     /// <param name="image">Image data.</param>
     /// <param name="conversionFlags">Flags used to convert the image.</param>
-    private void CopyImageData(GorgonBinaryReader reader, IGorgonImage image, TGAConversionFlags conversionFlags)
+    private void CopyImageData(BinaryReader reader, IGorgonImage image, TGAConversionFlags conversionFlags)
     {
         // TGA only supports 1 array level, and 1 mip level, so we only need to get the first buffer.
         IGorgonImageBuffer buffer = image.Buffers[0];
@@ -741,7 +742,7 @@ public sealed class GorgonCodecTga
                     // Read the current scanline into memory.
                     lineBuffer ??= new GorgonNativeBuffer<byte>(srcPitch.RowPitch);
 
-                    reader.ReadRange(lineBuffer.Pointer, count: srcPitch.RowPitch);
+                    reader.ReadRange(lineBuffer.Pointer.ToSpan());
 
                     lineHasZeroAlpha = ReadUncompressed(lineBuffer.Pointer, srcPitch.RowPitch, destPtr, image.Format, conversionFlags);
                 }
@@ -811,7 +812,7 @@ public sealed class GorgonCodecTga
             throw new EndOfStreamException();
         }
 
-        using GorgonBinaryReader reader = new(stream, true);
+        using BinaryReader reader = new(stream, Encoding.UTF8, true);
         GorgonImageInfo info = ReadHeader(reader, out TGAConversionFlags flags);
 
         IGorgonImage image = new GorgonImage(info);
@@ -851,7 +852,7 @@ public sealed class GorgonCodecTga
             throw new NotSupportedException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, imageData.Format));
         }
 
-        using GorgonBinaryWriter writer = new(stream, true);
+        using BinaryWriter writer = new(stream, Encoding.UTF8, true);
         // Write the header for the file before we dump the file contents.
         TgaHeader header = GetHeader(imageData, out TGAConversionFlags conversionFlags);
 
@@ -872,8 +873,8 @@ public sealed class GorgonCodecTga
         // If the two pitches are equal and we have no conversion requirements, then just write out the buffer.
         if ((destPitch == srcPitch) && (conversionFlags == TGAConversionFlags.None))
         {
-            writer.WriteValue(ref header);
-            writer.WriteRange(imageData.Buffers[0].Data, count: srcPitch.SlicePitch);
+            writer.WriteValue(in header);
+            writer.WriteRange<byte>(imageData.Buffers[0].Data.ToSpan(0, srcPitch.SlicePitch));
             return;
         }
 
@@ -884,7 +885,7 @@ public sealed class GorgonCodecTga
         try
         {
             // Persist the working buffer to the stream.
-            writer.WriteValue(ref header);
+            writer.WriteValue(in header);
 
             // Write out each scan line.					
             for (int y = 0; y < imageData.Height; y++)
@@ -908,7 +909,7 @@ public sealed class GorgonCodecTga
 
                 srcPointer += srcPitch.RowPitch;
 
-                writer.WriteRange<byte>(lineBuffer, count: destPitch.RowPitch);
+                writer.WriteRange<byte>(lineBuffer.ToSpan(0, destPitch.RowPitch));
             }
         }
         finally
@@ -962,12 +963,12 @@ public sealed class GorgonCodecTga
             throw new EndOfStreamException();
         }
 
-        GorgonBinaryReader reader = null;
+        BinaryReader reader = null;
 
         try
         {
             position = stream.Position;
-            reader = new GorgonBinaryReader(stream, true);
+            reader = new BinaryReader(stream, Encoding.UTF8, true);
             return ReadHeader(reader, out _);
         }
         finally
@@ -1013,7 +1014,7 @@ public sealed class GorgonCodecTga
         try
         {
             position = stream.Position;
-            GorgonBinaryReader reader = new(stream, true);
+            BinaryReader reader = new(stream, Encoding.UTF8, true);
             header = reader.ReadValue<TgaHeader>();
         }
         finally

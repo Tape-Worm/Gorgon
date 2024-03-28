@@ -558,7 +558,7 @@ internal class GorPackWriterPlugIn
         }
 
         FileInfo tempFile = new(Path.Combine(tempFolderPath.FullName, "working_file"));
-        GorgonBinaryWriter writer = null;
+        BinaryWriter writer = null;
         FileStream inStream = null;
         FileStream outStream = null;
         MemoryStream fatStream = null;
@@ -602,7 +602,7 @@ internal class GorPackWriterPlugIn
 
             inStream = tempFile.Open(FileMode.Open, FileAccess.Read, FileShare.None);
             outStream = File.Open(file, FileMode.Create, FileAccess.Write, FileShare.None);
-            writer = new GorgonBinaryWriter(outStream);
+            writer = new BinaryWriter(outStream);
             writer.Write(FileHeader);
             writer.Write((int)compressedFatStream.Length);
 

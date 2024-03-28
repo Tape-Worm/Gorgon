@@ -84,7 +84,7 @@ public abstract class GorgonShader
     // The ID for the shaders.
     private static long _shaderID;
     // Flag to indicate whether the shader is compiled for debug.
-    private bool _isDebug;
+    private readonly bool _isDebug;
     // The D3D byte code for the shader.
     private ShaderBytecode _byteCode;
 
@@ -129,18 +129,18 @@ public abstract class GorgonShader
     }
 
     /// <summary>
-    /// Function to persist the shader data to a stream as a <see cref="GorgonChunkFile{T}"/>.
+    /// Function to persist the shader data to a stream as a <see cref="GorgonChunkFile"/>.
     /// </summary>
     /// <param name="stream">The stream to write the data into.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentException">Thrown when the stream is read only.</exception>
     /// <remarks>
     /// <para>
-    /// This will write the shader data as <see cref="GorgonChunkFile{T}"/> formatted data into the supplied <paramref name="stream"/>. Shaders may take some time to compile, saving them to a binary 
+    /// This will write the shader data as <see cref="GorgonChunkFile"/> formatted data into the supplied <paramref name="stream"/>. Shaders may take some time to compile, saving them to a binary 
     /// format in a stream will help cut down on the time it takes to initialize an application.
     /// </para>
     /// <para>
-    /// This makes use of the Gorgon <see cref="GorgonChunkFile{T}"/> format to allow flexible storage of data. The Gorgon shader format is broken into 2 chunks, both of which are available in the 
+    /// This makes use of the Gorgon <see cref="GorgonChunkFile"/> format to allow flexible storage of data. The Gorgon shader format is broken into 2 chunks, both of which are available in the 
     /// <see cref="GorgonShaderFactory.BinaryShaderMetaData"/>, and <see cref="GorgonShaderFactory.BinaryShaderByteCode"/> constants. The file header for the format is stored in the 
     /// <see cref="GorgonShaderFactory.BinaryShaderFileHeader"/> constant.  
     /// </para>
@@ -162,7 +162,7 @@ public abstract class GorgonShader
     /// </list>
     /// </para>
     /// </remarks>
-    /// <seealso cref="GorgonChunkFile{T}"/>
+    /// <seealso cref="GorgonChunkFile"/>
     /// <seealso cref="GorgonChunkFileReader"/>
     /// <seealso cref="GorgonChunkFileWriter"/>
     public void Save(Stream stream)
@@ -177,39 +177,35 @@ public abstract class GorgonShader
             throw new ArgumentException(Resources.GORGFX_ERR_STREAM_WRITE_ONLY, nameof(stream));
         }
 
-        GorgonChunkFileWriter chunkFile = new(stream, GorgonShaderFactory.BinaryShaderFileHeader.ChunkID());
+        using GorgonChunkFileWriter chunkFile = new(stream, GorgonShaderFactory.BinaryShaderFileHeader.ChunkID());
 
-        try
+        using (IGorgonChunkWriter writer = chunkFile.OpenChunk(GorgonShaderFactory.BinaryShaderMetaData))
         {
-            GorgonBinaryWriter writer = chunkFile.OpenChunk(GorgonShaderFactory.BinaryShaderMetaData);
             ShaderType shaderType = ShaderType;
-            writer.WriteValue(ref shaderType);
-            writer.WriteValue(ref _isDebug);
-            writer.Write(Name);
-            chunkFile.CloseChunk();
-
-            writer = chunkFile.OpenChunk(GorgonShaderFactory.BinaryShaderByteCode);
-            writer.Write(D3DByteCode.Data);
+            writer.WriteValue(in shaderType);
+            writer.WriteValue(in _isDebug);
+            writer.WriteString(Name);
         }
-        finally
+
+        using (IGorgonChunkWriter writer = chunkFile.OpenChunk(GorgonShaderFactory.BinaryShaderByteCode))
         {
-            chunkFile.CloseChunk();
+            writer.WriteArray(D3DByteCode.Data);
         }
     }
 
     /// <summary>
-    /// Function to persist the shader data to a file as a <see cref="GorgonChunkFile{T}"/>.
+    /// Function to persist the shader data to a file as a <see cref="GorgonChunkFile"/>.
     /// </summary>
     /// <param name="path">The path to the file where the shader data will eb written.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentException">Thrown when <paramref name="path"/> parameter is empty.</exception>
     /// <remarks>
     /// <para>
-    /// This will write the shader data as <see cref="GorgonChunkFile{T}"/> formatted data into the file. Shaders may take some time to compile, saving them to a binary format in a stream will help cut 
+    /// This will write the shader data as <see cref="GorgonChunkFile"/> formatted data into the file. Shaders may take some time to compile, saving them to a binary format in a stream will help cut 
     /// down on the time it takes to initialize an application.
     /// </para>
     /// <para>
-    /// This makes use of the Gorgon <see cref="GorgonChunkFile{T}"/> format to allow flexible storage of data. The Gorgon shader format is broken into 2 chunks, both of which are available in the 
+    /// This makes use of the Gorgon <see cref="GorgonChunkFile"/> format to allow flexible storage of data. The Gorgon shader format is broken into 2 chunks, both of which are available in the 
     /// <see cref="GorgonShaderFactory.BinaryShaderMetaData"/>, and <see cref="GorgonShaderFactory.BinaryShaderByteCode"/> constants. The file header for the format is stored in the 
     /// <see cref="GorgonShaderFactory.BinaryShaderFileHeader"/> constant.  
     /// </para>
@@ -231,7 +227,7 @@ public abstract class GorgonShader
     /// </list>
     /// </para>
     /// </remarks>
-    /// <seealso cref="GorgonChunkFile{T}"/>
+    /// <seealso cref="GorgonChunkFile"/>
     /// <seealso cref="GorgonChunkFileReader"/>
     /// <seealso cref="GorgonChunkFileWriter"/>
     public void Save(string path)

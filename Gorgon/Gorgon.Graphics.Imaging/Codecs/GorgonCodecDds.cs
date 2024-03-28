@@ -101,6 +101,7 @@
 
 using System.Buffers;
 using System.Runtime.CompilerServices;
+using System.Text;
 using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Properties;
 using Gorgon.IO;
@@ -342,7 +343,7 @@ public sealed class GorgonCodecDds
     /// <param name="reader">The reader used to read the information from the underlying stream.</param>
     /// <param name="flags">Conversion flags.</param>
     /// <returns>A new image settings object.</returns>
-    private (ImageDataType ImageType, BufferFormat Format, Dx10Header Header) ReadDX10Header(GorgonBinaryReader reader, out DdsConversionFlags flags)
+    private (ImageDataType ImageType, BufferFormat Format, Dx10Header Header) ReadDX10Header(BinaryReader reader, out DdsConversionFlags flags)
     {
         Dx10Header dx10Header = reader.ReadValue<Dx10Header>();
         flags = DdsConversionFlags.DX10;
@@ -462,7 +463,7 @@ public sealed class GorgonCodecDds
     /// <param name="legacyFlags">Legacy flags to apply.</param>
     /// <param name="conversionFlags">The conversion flags.</param>
     /// <returns>New image settings.</returns>
-    private GorgonImageInfo ReadHeader(GorgonBinaryReader reader, long size, DdsLegacyFlags legacyFlags, out DdsConversionFlags conversionFlags)
+    private GorgonImageInfo ReadHeader(BinaryReader reader, long size, DdsLegacyFlags legacyFlags, out DdsConversionFlags conversionFlags)
     {
         ImageDataType imageType = ImageDataType.Image2D;
         int arrayCount = 1;
@@ -807,7 +808,7 @@ public sealed class GorgonCodecDds
     /// <param name="settings">Meta data for the image header.</param>
     /// <param name="writer">Writer interface for the stream.</param>
     /// <param name="flags">Legacy file format flags.</param>
-    private void WriteHeader(IGorgonImageInfo settings, GorgonBinaryWriter writer, DdsLegacyFlags flags)
+    private void WriteHeader(IGorgonImageInfo settings, BinaryWriter writer, DdsLegacyFlags flags)
     {
         DdsHeader header = new();
         DdsPixelFormat? format = null;
@@ -974,7 +975,7 @@ public sealed class GorgonCodecDds
         header.PixelFormat = format ?? _pfDX10;
 
         // Write out the header.
-        writer.WriteValue(ref header);
+        writer.WriteValue(in header);
 
         // If we didn't map a legacy format, then use the DX 10 header.
         if (format is not null)
@@ -997,7 +998,7 @@ public sealed class GorgonCodecDds
             dx10Header.ArrayCount = (uint)(settings.ArrayCount / 6);
         }
 
-        writer.WriteValue(ref dx10Header);
+        writer.WriteValue(in dx10Header);
     }
 
     /// <summary>
@@ -1053,7 +1054,7 @@ public sealed class GorgonCodecDds
     /// <param name="pitchFlags">Flags used to determine pitch when expanding pixels.</param>
     /// <param name="conversionFlags">Flags used for conversion between legacy formats and the current format.</param>
     /// <param name="palette">Palette used in indexed conversion.</param>
-    private void CopyImageData(GorgonBinaryReader reader, GorgonImage image, PitchFlags pitchFlags, DdsConversionFlags conversionFlags, uint[] palette)
+    private void CopyImageData(BinaryReader reader, GorgonImage image, PitchFlags pitchFlags, DdsConversionFlags conversionFlags, uint[] palette)
     {
         GorgonFormatInfo formatInfo = new(image.Format);
 
@@ -1094,7 +1095,7 @@ public sealed class GorgonCodecDds
                 && (pitchFlags == PitchFlags.None))
         {
             // First mip, array and depth slice is at the start of our image memory buffer.
-            reader.ReadRange(image.ImageData, count: sizeInBytes);
+            reader.ReadRange(image.ImageData.ToSpan());
             return;
         }
 
@@ -1130,7 +1131,7 @@ public sealed class GorgonCodecDds
                         if (formatInfo.IsCompressed)
                         {
                             int size = pitchInfo.SlicePitch.Min(destBuffer.PitchInformation.SlicePitch);
-                            reader.ReadRange(destBuffer.Data, count: size);
+                            reader.ReadRange(destPointer.ToSpan(0, size));
                             continue;
                         }
 
@@ -1140,7 +1141,7 @@ public sealed class GorgonCodecDds
                             // Use this to read a line of data from the source.
                             lineBuffer ??= new GorgonNativeBuffer<byte>(pitchInfo.RowPitch);
 
-                            reader.ReadRange<byte>(lineBuffer, count: pitchInfo.RowPitch);
+                            reader.ReadRange(lineBuffer.ToSpan());
 
                             if ((conversionFlags & DdsConversionFlags.Expand) == DdsConversionFlags.Expand)
                             {
@@ -1207,7 +1208,7 @@ public sealed class GorgonCodecDds
             throw new EndOfStreamException();
         }
 
-        GorgonBinaryReader reader = new(stream, true);
+        BinaryReader reader = new(stream, Encoding.UTF8, true);
 
         // Read the header information.
         GorgonImageInfo settings = ReadHeader(reader, size, DecodingOptions?.LegacyFormatConversionFlags ?? DdsLegacyFlags.None, out DdsConversionFlags flags);
@@ -1248,7 +1249,7 @@ public sealed class GorgonCodecDds
                 else
                 {
                     // Read from the stream if we haven't assigned a palette.
-                    reader.ReadRange(palette, 0, 256);
+                    reader.ReadRange(palette.AsSpan());
                 }
             }
 
@@ -1311,7 +1312,7 @@ public sealed class GorgonCodecDds
         }
 
         // Use a binary writer.
-        using GorgonBinaryWriter writer = new(stream, true);
+        using BinaryWriter writer = new(stream, Encoding.UTF8, true);
         // Write the header for the file.
         WriteHeader(imageData, writer, DdsLegacyFlags.None);
 
@@ -1326,7 +1327,7 @@ public sealed class GorgonCodecDds
                     for (int mipLevel = 0; mipLevel < imageData.MipCount; mipLevel++)
                     {
                         IGorgonImageBuffer buffer = imageData.Buffers[mipLevel, array];
-                        writer.WriteRange(buffer.Data, count: buffer.PitchInformation.SlicePitch);
+                        writer.WriteRange<byte>(buffer.Data.ToSpan(0, buffer.PitchInformation.SlicePitch));
                     }
                 }
                 break;
@@ -1337,7 +1338,7 @@ public sealed class GorgonCodecDds
                     for (int slice = 0; slice < depth; slice++)
                     {
                         IGorgonImageBuffer buffer = imageData.Buffers[mipLevel, slice];
-                        writer.WriteRange(buffer.Data, count: buffer.PitchInformation.SlicePitch);
+                        writer.WriteRange<byte>(buffer.Data.ToSpan(buffer.PitchInformation.SlicePitch));
                     }
 
                     if (depth > 1)
@@ -1401,12 +1402,12 @@ public sealed class GorgonCodecDds
             }
         }
 
-        GorgonBinaryReader reader = null;
+        BinaryReader reader = null;
 
         try
         {
             position = stream.Position;
-            reader = new GorgonBinaryReader(stream, true);
+            reader = new BinaryReader(stream, Encoding.UTF8, true);
             return ReadHeader(reader, headerSize, DdsLegacyFlags.None, out _);
         }
         finally
@@ -1449,12 +1450,12 @@ public sealed class GorgonCodecDds
             return false;
         }
 
-        GorgonBinaryReader reader = null;
+        BinaryReader reader = null;
 
         try
         {
             position = stream.Position;
-            reader = new GorgonBinaryReader(stream, true);
+            reader = new BinaryReader(stream, Encoding.UTF8, true);
             magicNumber = reader.ReadUInt32();
         }
         finally

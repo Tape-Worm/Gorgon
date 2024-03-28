@@ -301,7 +301,7 @@ internal class GorgonChunkReader(Stream stream)
             return;
         }
 
-        Reader.ReadRange(value, startIndex, count);
+        Reader.ReadRange(value.AsSpan(startIndex, count));
     }
 
     /// <summary>

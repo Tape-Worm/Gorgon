@@ -931,7 +931,6 @@ class WicUtilities
         reader.TryGetMetadataByName(metadataNames[1], out object yValue);
 
         xValue ??= 0;
-
         yValue ??= 0;
 
         return new GorgonPoint(Convert.ToInt32(xValue), Convert.ToInt32(yValue));
@@ -947,7 +946,7 @@ class WicUtilities
     public IReadOnlyList<GorgonPoint> GetFrameOffsetMetadata(Stream stream, Guid fileFormat, IReadOnlyList<string> metadataNames)
     {
         long oldPosition = stream.Position;
-        GorgonStreamWrapper wrapper = new(stream, stream.Position);
+        GorgonSubStream wrapper = new(stream, allowWrite: false);
         BitmapDecoder decoder = null;
         WICStream wicStream = null;
         BitmapFrameDecode frame = null;
@@ -1001,7 +1000,7 @@ class WicUtilities
     public GorgonImageInfo GetImageMetaDataFromStream(Stream stream, Guid fileFormat, IGorgonImageCodecDecodingOptions options)
     {
         long oldPosition = stream.Position;
-        GorgonStreamWrapper wrapper = new(stream, stream.Position);
+        GorgonSubStream wrapper = new(stream, allowWrite: false);
         (GorgonImageInfo ImageInfo,
             BitmapFrameDecode FrameDecoder,
             BitmapDecoder Decoder,
@@ -1337,7 +1336,7 @@ class WicUtilities
     public int[] GetFrameDelays(Stream stream, Guid decoderFormat, string delayMetaDataName)
     {
         long oldPosition = stream.Position;
-        GorgonStreamWrapper wrapper = new(stream, stream.Position);
+        GorgonSubStream wrapper = new(stream, allowWrite: false);
         BitmapDecoder decoder = null;
         WICStream wicStream = null;
         BitmapFrameDecode frame = null;

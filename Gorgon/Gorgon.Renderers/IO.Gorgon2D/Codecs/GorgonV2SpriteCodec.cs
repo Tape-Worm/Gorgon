@@ -25,6 +25,7 @@
 
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Text;
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -415,7 +416,7 @@ public class GorgonV2SpriteCodec(Gorgon2D renderer)
     /// <returns><b>true</b> if the data can be read, or <b>false</b> if not.</returns>
     protected override bool OnIsReadable(Stream stream)
     {
-        using GorgonBinaryReader reader = new(stream, true);
+        using BinaryReader reader = new(stream, Encoding.UTF8, true);
         if ((stream.Length - stream.Position) < sizeof(ulong) * 2)
         {
             return false;

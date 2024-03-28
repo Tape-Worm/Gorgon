@@ -134,7 +134,7 @@ public abstract class GorgonCodecWic<TWicEncOpt, TWicDecOpt>
             // exception when the stream position is not exactly 0. 
             if (streamAlias.Position != 0)
             {
-                streamAlias = new GorgonStreamWrapper(stream, 0, size);
+                streamAlias = new GorgonSubStream(stream, 0, size, stream.CanWrite);
             }
 
             IGorgonImage result = wic.DecodeImageData(streamAlias, size, SupportedFileFormat, DecodingOptions, FrameOffsetMetadataNames) ?? throw new IOException(string.Format(Resources.GORIMG_ERR_FILE_FORMAT_NOT_CORRECT, Codec));

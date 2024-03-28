@@ -159,27 +159,27 @@ public class GorgonGlyphLinearGradientBrush
 
     /// <summary>Function to write out the specifics of the font brush data to a file writer.</summary>
     /// <param name="writer">The writer used to write the brush data.</param>
-    internal override void WriteBrushData(GorgonBinaryWriter writer)
+    internal override void WriteBrushData(IGorgonChunkWriter writer)
     {
-        writer.Write(Angle);
-        writer.Write(ScaleAngle);
-        writer.Write(GammaCorrection);
-        writer.Write(Interpolation.Count);
+        writer.WriteSingle(Angle);
+        writer.WriteBool(ScaleAngle);
+        writer.WriteBool(GammaCorrection);
+        writer.WriteInt32(Interpolation.Count);
         for (int i = 0; i < Interpolation.Count; ++i)
         {
             GorgonGlyphBrushInterpolator interp = Interpolation[i];
-            writer.Write(interp.Weight);
-            writer.Write(GorgonColor.ToARGB(interp.Color));
+            writer.WriteSingle(interp.Weight);
+            writer.WriteInt32(GorgonColor.ToARGB(interp.Color));
         }
     }
 
     /// <summary>Function to read back the specifics of the font brush data from a file reader.</summary>
     /// <param name="reader">The reader used to read the brush data.</param>
-    internal override void ReadBrushData(GorgonBinaryReader reader)
+    internal override void ReadBrushData(IGorgonChunkReader reader)
     {
         Angle = reader.ReadSingle();
-        ScaleAngle = reader.ReadBoolean();
-        GammaCorrection = reader.ReadBoolean();
+        ScaleAngle = reader.ReadBool();
+        GammaCorrection = reader.ReadBool();
 
         int interpCount = reader.ReadInt32();
         if (interpCount == 0)

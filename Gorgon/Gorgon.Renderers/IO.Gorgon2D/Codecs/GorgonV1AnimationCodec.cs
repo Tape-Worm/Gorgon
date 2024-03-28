@@ -24,6 +24,7 @@
 // 
 
 using System.Numerics;
+using System.Text;
 using Gorgon.Animation;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
@@ -70,7 +71,7 @@ public class GorgonV1AnimationCodec
     /// </summary>
     /// <param name="reader">The binary reader for the stream.</param>
     /// <param name="version">The version of the sprite.</param>
-    private static void SkipToAnimationSection(GorgonBinaryReader reader, Version version)
+    private static void SkipToAnimationSection(BinaryReader reader, Version version)
     {
         // We don't need the sprite name.
         reader.ReadString();
@@ -275,7 +276,7 @@ public class GorgonV1AnimationCodec
     /// <param name="reader">The reader containing the track data.</param>
     /// <param name="keyCount">The number of keys to read.</param>
     /// <returns>A list of track times and vector2 values.</returns>
-    private static IReadOnlyList<(float time, Vector2 value)> ReadVec2(GorgonBinaryReader reader, int keyCount)
+    private static IReadOnlyList<(float time, Vector2 value)> ReadVec2(BinaryReader reader, int keyCount)
     {
         (float, Vector2)[] keys = new (float, Vector2)[keyCount];
 
@@ -296,7 +297,7 @@ public class GorgonV1AnimationCodec
     /// <param name="reader">The reader containing the track data.</param>
     /// <param name="keyCount">The number of keys to read.</param>
     /// <returns>A list of track times and float values.</returns>
-    private static IReadOnlyList<(float time, float value)> ReadFloat(GorgonBinaryReader reader, int keyCount)
+    private static IReadOnlyList<(float time, float value)> ReadFloat(BinaryReader reader, int keyCount)
     {
         (float, float)[] keys = new (float, float)[keyCount];
 
@@ -317,7 +318,7 @@ public class GorgonV1AnimationCodec
     /// <param name="reader">The reader containing the track data.</param>
     /// <param name="keyCount">The number of keys to read.</param>
     /// <returns>A list of track times and int32 values.</returns>
-    private static IReadOnlyList<(float time, int value)> ReadInt32(GorgonBinaryReader reader, int keyCount)
+    private static IReadOnlyList<(float time, int value)> ReadInt32(BinaryReader reader, int keyCount)
     {
         (float, int)[] keys = new (float, int)[keyCount];
 
@@ -338,7 +339,7 @@ public class GorgonV1AnimationCodec
     /// <param name="reader">The reader containing the track data.</param>
     /// <param name="keyCount">The number of keys to read.</param>
     /// <returns>A list of track keys.</returns>
-    private IReadOnlyList<(float time, GorgonTexture2DView texture, GorgonRectangleF uv, string textureName)> ReadTexture(GorgonBinaryReader reader, int keyCount)
+    private IReadOnlyList<(float time, GorgonTexture2DView texture, GorgonRectangleF uv, string textureName)> ReadTexture(BinaryReader reader, int keyCount)
     {
         List<(float, GorgonTexture2DView, GorgonRectangleF, string)> keys = new(keyCount);
 
@@ -395,7 +396,7 @@ public class GorgonV1AnimationCodec
     /// <param name="builder">The animation builder.</param>
     /// <param name="count">The number of animations.</param>
     /// <returns>The animations in the sprite data.</returns>>
-    private IReadOnlyList<IGorgonAnimation> ReadLatestVersion(GorgonBinaryReader reader, GorgonAnimationBuilder builder, int count)
+    private IReadOnlyList<IGorgonAnimation> ReadLatestVersion(BinaryReader reader, GorgonAnimationBuilder builder, int count)
     {
         IGorgonAnimation[] result = new IGorgonAnimation[count];
 
@@ -575,7 +576,7 @@ public class GorgonV1AnimationCodec
     {
         GorgonAnimationBuilder builder = new();
 
-        using GorgonBinaryReader reader = new(stream, true);
+        using BinaryReader reader = new(stream, Encoding.UTF8, true);
         string headerVersion = reader.ReadString();
         if ((!headerVersion.StartsWith("GORSPR", StringComparison.OrdinalIgnoreCase))
             || (headerVersion.Length < 7)
@@ -635,7 +636,7 @@ public class GorgonV1AnimationCodec
     /// <param name="builder">The animation builder.</param>
     /// <param name="count">The number of animations.</param>
     /// <returns>The animations in the sprite data.</returns>>
-    private IReadOnlyList<IGorgonAnimation> ReadV10AnimationData(GorgonBinaryReader reader, GorgonAnimationBuilder builder, int count)
+    private IReadOnlyList<IGorgonAnimation> ReadV10AnimationData(BinaryReader reader, GorgonAnimationBuilder builder, int count)
     {
         IGorgonAnimation[] result = new IGorgonAnimation[count];
 
@@ -801,7 +802,7 @@ public class GorgonV1AnimationCodec
 
         try
         {
-            GorgonBinaryReader reader = new(stream, true);
+            BinaryReader reader = new(stream, Encoding.UTF8, true);
 
             // If we don't have at least 10 bytes, then this file is not valid.
             if ((stream.Length - stream.Position) < 16)
@@ -872,7 +873,7 @@ public class GorgonV1AnimationCodec
     /// <returns><b>true</b> if the data can be read, or <b>false</b> if not.</returns>
     protected override bool OnIsReadable(Stream stream)
     {
-        using GorgonBinaryReader reader = new(stream, true);
+        using BinaryReader reader = new(stream, Encoding.UTF8, true);
         // If we don't have at least 10 bytes, then this file is not valid.
         if ((stream.Length - stream.Position) < 16)
         {

@@ -128,54 +128,54 @@ public class GorgonGlyphPathGradientBrush
 
     /// <summary>Function to write out the specifics of the font brush data to a file writer.</summary>
     /// <param name="writer">The writer used to write the brush data.</param>
-    internal override void WriteBrushData(GorgonBinaryWriter writer)
+    internal override void WriteBrushData(IGorgonChunkWriter writer)
     {
-        writer.Write((int)WrapMode);
+        writer.WriteInt32((int)WrapMode);
 
-        writer.Write(Points.Count);
+        writer.WriteInt32(Points.Count);
 
         for (int i = 0; i < Points.Count; ++i)
         {
             writer.WriteValue(Points[i]);
         }
 
-        writer.Write(BlendFactors.Count);
+        writer.WriteInt32(BlendFactors.Count);
 
         for (int i = 0; i < BlendFactors.Count; ++i)
         {
-            writer.Write(BlendFactors[i]);
+            writer.WriteSingle(BlendFactors[i]);
         }
 
-        writer.Write(BlendPositions.Count);
+        writer.WriteInt32(BlendPositions.Count);
 
         for (int i = 0; i < BlendPositions.Count; ++i)
         {
-            writer.Write(BlendPositions[i]);
+            writer.WriteSingle(BlendPositions[i]);
         }
 
-        writer.Write(GorgonColor.ToARGB(CenterColor));
+        writer.WriteInt32(GorgonColor.ToARGB(CenterColor));
         writer.WriteValue(CenterPoint);
         writer.WriteValue(FocusScales);
 
-        writer.Write(Interpolation.Count);
+        writer.WriteInt32(Interpolation.Count);
         for (int i = 0; i < Interpolation.Count; ++i)
         {
             GorgonGlyphBrushInterpolator interp = Interpolation[i];
-            writer.Write(interp.Weight);
-            writer.Write(GorgonColor.ToARGB(interp.Color));
+            writer.WriteSingle(interp.Weight);
+            writer.WriteInt32(GorgonColor.ToARGB(interp.Color));
         }
 
-        writer.Write(SurroundColors.Count);
+        writer.WriteInt32(SurroundColors.Count);
 
         for (int i = 0; i < SurroundColors.Count; ++i)
         {
-            writer.Write(GorgonColor.ToARGB(SurroundColors[i]));
+            writer.WriteInt32(GorgonColor.ToARGB(SurroundColors[i]));
         }
     }
 
     /// <summary>Function to read back the specifics of the font brush data from a file reader.</summary>
     /// <param name="reader">The reader used to read the brush data.</param>
-    internal override void ReadBrushData(GorgonBinaryReader reader)
+    internal override void ReadBrushData(IGorgonChunkReader reader)
     {
         WrapMode = (GlyphBrushWrapMode)reader.ReadInt32();
         int count = reader.ReadInt32();
