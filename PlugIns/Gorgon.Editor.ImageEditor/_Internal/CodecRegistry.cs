@@ -78,7 +78,7 @@ internal class CodecRegistry(GorgonMefPlugInCache pluginCache, IGorgonLog log)
 
                 if (Codecs.Any(item => string.Equals(item.GetType().FullName, desc.Name, StringComparison.OrdinalIgnoreCase)))
                 {
-                    _log.Print($"WARNING: The image codec '{desc.Name}' is already loaded, skipping this one...", LoggingLevel.Verbose);
+                    _log.PrintWarning($"The image codec '{desc.Name}' is already loaded, skipping this one...", LoggingLevel.Verbose);
                     continue;
                 }
 
@@ -86,7 +86,7 @@ internal class CodecRegistry(GorgonMefPlugInCache pluginCache, IGorgonLog log)
 
                 if (codec is null)
                 {
-                    _log.Print($"ERROR: The image codec '{desc.Name}' was not created (returned NULL).", LoggingLevel.Simple);
+                    _log.PrintError($"The image codec '{desc.Name}' was not created (returned NULL).", LoggingLevel.Simple);
                     continue;
                 }
 
@@ -182,7 +182,7 @@ internal class CodecRegistry(GorgonMefPlugInCache pluginCache, IGorgonLog log)
         {
             if (CodecPlugIns.Any(item => string.Equals(plugin.Name, item.Name, StringComparison.OrdinalIgnoreCase)))
             {
-                _log.Print($"WARNING: Codec plug in '{plugin.Name}' is already loaded.", LoggingLevel.Intermediate);
+                _log.PrintWarning($"Codec plug in '{plugin.Name}' is already loaded.", LoggingLevel.Intermediate);
                 localErrors.Add(string.Format(Resources.GORIMG_ERR_CODEC_PLUGIN_ALREADY_LOADED, plugin.Name));
                 continue;
             }
@@ -194,7 +194,7 @@ internal class CodecRegistry(GorgonMefPlugInCache pluginCache, IGorgonLog log)
             {
                 if (Codecs.Any(item => string.Equals(desc.Name, item.Name, StringComparison.OrdinalIgnoreCase)))
                 {
-                    _log.Print($"WARNING: Codec '{desc.Name}' is already loaded.", LoggingLevel.Intermediate);
+                    _log.PrintWarning($"Codec '{desc.Name}' is already loaded.", LoggingLevel.Intermediate);
                     localErrors.Add(string.Format(Resources.GORIMG_ERR_CODEC_ALREADY_LOADED, desc.Name));
                     --count;
                     continue;
@@ -204,7 +204,7 @@ internal class CodecRegistry(GorgonMefPlugInCache pluginCache, IGorgonLog log)
 
                 if (imageCodec is null)
                 {
-                    _log.Print($"ERROR: Could not create image codec '{desc.Name}' from plug in '{plugin.PlugInPath}'.", LoggingLevel.Verbose);
+                    _log.PrintError($"Could not create image codec '{desc.Name}' from plug in '{plugin.PlugInPath}'.", LoggingLevel.Verbose);
                     localErrors.Add(string.Format(Resources.GORIMG_ERR_CODEC_LOAD_FAIL, desc.Name));
                     --count;
                     continue;
@@ -218,7 +218,7 @@ internal class CodecRegistry(GorgonMefPlugInCache pluginCache, IGorgonLog log)
 
                     if (CodecFileTypes.Any(item => item.extension.Equals(codecExtension.fileExtension)))
                     {
-                        _log.Print($"WARNING: Another previously loaded codec already uses the file extension '{extension}'.  This file extension will not be registered to the '{imageCodec.Name}' codec.", LoggingLevel.Verbose);
+                        _log.PrintWarning($"Another previously loaded codec already uses the file extension '{extension}'.  This file extension will not be registered to the '{imageCodec.Name}' codec.", LoggingLevel.Verbose);
                         continue;
                     }
 
@@ -261,7 +261,7 @@ internal class CodecRegistry(GorgonMefPlugInCache pluginCache, IGorgonLog log)
 
                 if (CodecFileTypes.Any(item => item.extension.Equals(codecExtension.fileExtension)))
                 {
-                    _log.Print($"WARNING: Another previously loaded codec already uses the file extension '{extension}'.  This file extension will not be registered to the '{codec.Name}' codec.", LoggingLevel.Verbose);
+                    _log.PrintWarning($"Another previously loaded codec already uses the file extension '{extension}'.  This file extension will not be registered to the '{codec.Name}' codec.", LoggingLevel.Verbose);
                     continue;
                 }
 

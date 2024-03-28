@@ -330,7 +330,7 @@ public sealed class GorgonMefPlugInService(GorgonMefPlugInCache mefCache)
             {
                 if (loadEx is null)
                 {
-                    _log.Print("[Error]: There were reflection type load exceptions, but no exception was found.", LoggingLevel.Verbose);
+                    _log.PrintError("There were reflection type load exceptions, but no exception was found.", LoggingLevel.Verbose);
                     continue;
                 }
 

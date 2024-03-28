@@ -187,7 +187,7 @@ internal static class Program
             //
             // Here we specify that we want to run an application context and an idle loop.  The idle loop 
             // will kick in after the main form displays.
-            GorgonApplication.Run(new Context(), Idle);
+            GorgonApplication.Run(new Context(_log), Idle);
         }
         catch (Exception ex)
         {

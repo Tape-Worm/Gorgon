@@ -200,7 +200,7 @@ internal class FileSystemClipboardHandler
         }
         catch (Exception ex)
         {
-            _log.Print("Error while pasting data from the clipboard into the file system.", LoggingLevel.Simple);
+            _log.PrintError("Error while pasting data from the clipboard into the file system.", LoggingLevel.Simple);
             _log.LogException(ex);
         }
     }
@@ -229,7 +229,7 @@ internal class FileSystemClipboardHandler
         }
         catch (Exception ex)
         {
-            _log.Print("Error retrieving clipboard data type information.", LoggingLevel.All);
+            _log.PrintError("Error retrieving clipboard data type information.", LoggingLevel.All);
             _log.LogException(ex);
         }
     }
@@ -285,7 +285,7 @@ internal class FileSystemClipboardHandler
         }
         catch (Exception ex)
         {
-            _log.Print("Error copying data into the clipboard.", LoggingLevel.All);
+            _log.PrintError("Error copying data into the clipboard.", LoggingLevel.All);
             _log.LogException(ex);
         }
     }
@@ -302,7 +302,7 @@ internal class FileSystemClipboardHandler
         }
         catch (Exception ex)
         {
-            _log.Print("Error clearing the clipboard.", LoggingLevel.All);
+            _log.PrintError("Error clearing the clipboard.", LoggingLevel.All);
             _log.LogException(ex);
         }
     }

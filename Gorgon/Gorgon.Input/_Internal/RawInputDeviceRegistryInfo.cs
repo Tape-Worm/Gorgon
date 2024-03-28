@@ -57,7 +57,7 @@ internal static class RawInputDeviceRegistryInfo
             (regValue.Length > 0) &&
             (regValue[1].StartsWith("RDP_", StringComparison.OrdinalIgnoreCase)))
         {
-            log.Print("WARNING: This is an RDP device.  Raw input in Gorgon is not supported under RDP.  Skipping this device.", LoggingLevel.Verbose);
+            log.PrintWarning("This is an RDP device.  Raw input in Gorgon is not supported under RDP.  Skipping this device.", LoggingLevel.Verbose);
             return string.Empty;
         }
 
@@ -95,7 +95,7 @@ internal static class RawInputDeviceRegistryInfo
             (regValue.Length > 0) &&
             (regValue[1].StartsWith("RDP_", StringComparison.OrdinalIgnoreCase)))
         {
-            log.Print("WARNING: This is an RDP device.  Raw input in Gorgon is not supported under RDP.  Skipping this device.", LoggingLevel.Verbose);
+            log.PrintWarning("This is an RDP device.  Raw input in Gorgon is not supported under RDP.  Skipping this device.", LoggingLevel.Verbose);
             return string.Empty;
         }
 

@@ -208,7 +208,7 @@ internal class SpriteVertexEditContext
         }
         catch (Exception ex)
         {
-            _hostServices.Log.Print("Error cancelling sprite vertex editing.", LoggingLevel.Verbose);
+            _hostServices.Log.PrintError("Error cancelling sprite vertex editing.", LoggingLevel.Verbose);
             _hostServices.Log.LogException(ex);
         }
     }

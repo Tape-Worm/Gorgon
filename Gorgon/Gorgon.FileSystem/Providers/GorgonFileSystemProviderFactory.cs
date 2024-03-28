@@ -131,7 +131,7 @@ public sealed class GorgonFileSystemProviderFactory(GorgonMefPlugInCache plugInC
 
         _plugInCache.LoadPlugInAssemblies(dirName, fileName);
 
-        _log.Print("Creating file system provider '{0}'.", LoggingLevel.Simple, providerPlugInName);
+        _log.Print($"Creating file system provider '{providerPlugInName}'.", LoggingLevel.Simple);
 
         IGorgonPlugInService plugInService = new GorgonMefPlugInService(_plugInCache);
 

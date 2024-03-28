@@ -397,7 +397,7 @@ internal class ImagePicker
         }
         catch (Exception ex)
         {
-            HostServices.Log.Print("ERROR: Error cancelling the resize/crop operation.", LoggingLevel.Simple);
+            HostServices.Log.PrintError("Error cancelling the resize/crop operation.", LoggingLevel.Simple);
             HostServices.Log.LogException(ex);
         }
     }
@@ -766,7 +766,7 @@ internal class ImagePicker
         }
         catch (Exception ex)
         {
-            HostServices.Log.Print("ERROR: Cannot deactivate the image picker.", LoggingLevel.Simple);
+            HostServices.Log.PrintError("Cannot deactivate the image picker.", LoggingLevel.Simple);
             HostServices.Log.LogException(ex);
         }
     }

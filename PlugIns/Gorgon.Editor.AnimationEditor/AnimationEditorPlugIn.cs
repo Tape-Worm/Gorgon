@@ -297,7 +297,7 @@ internal class AnimationEditorPlugIn
                     // Skip these tracks, we'll be using another editor for them.
                     continue;
                 default:
-                    HostContentServices.Log.Print($"WARNING: Cannot set metadata for the track '{reg.Description}'.  This track cannot be edited by the animation editor.", LoggingLevel.Intermediate);
+                    HostContentServices.Log.PrintWarning($"Cannot set metadata for the track '{reg.Description}'.  This track cannot be edited by the animation editor.", LoggingLevel.Intermediate);
                     continue;
             }
 
@@ -326,7 +326,7 @@ internal class AnimationEditorPlugIn
 
             if (spriteNames.Count == 0)
             {
-                HostContentServices.Log.Print($"WARNING: The primary sprite was not found, it will have to be reassigned.", LoggingLevel.Intermediate);
+                HostContentServices.Log.PrintWarning($"The primary sprite was not found, it will have to be reassigned.", LoggingLevel.Intermediate);
             }
         }
 
@@ -351,7 +351,7 @@ internal class AnimationEditorPlugIn
         {
             if ((string.IsNullOrWhiteSpace(textureName)) || (!ContentFileManager.FileExists(textureName)))
             {
-                HostContentServices.Log.Print($"WARNING: Texture '{textureName}' not found, the animation may not render correctly.", LoggingLevel.Intermediate);
+                HostContentServices.Log.PrintWarning($"Texture '{textureName}' not found, the animation may not render correctly.", LoggingLevel.Intermediate);
                 continue;
             }
 
@@ -413,13 +413,13 @@ internal class AnimationEditorPlugIn
 
         if (file is null)
         {
-            HostContentServices.Log.Print($"WARNING: The background image file '{files[0]}' was not found.", LoggingLevel.Intermediate);
+            HostContentServices.Log.PrintWarning($"The background image file '{files[0]}' was not found.", LoggingLevel.Intermediate);
             return (null, null);
         }
 
         if (!ioService.IsContentImage(file))
         {
-            HostContentServices.Log.Print($"WARNING: The background image file '{files[0]}' is not valid image content.", LoggingLevel.Intermediate);
+            HostContentServices.Log.PrintWarning($"The background image file '{files[0]}' is not valid image content.", LoggingLevel.Intermediate);
             return (null, null);
         }
 
@@ -679,7 +679,7 @@ internal class AnimationEditorPlugIn
                 if (textureFile is null)
                 {
                     // If we cannot locate the file for the texture, then replace this with an empty key frame.
-                    HostContentServices.Log.Print($"WARNING: The key at index {i}, for track '{track.Value.Name}' has a texture named '{key.TextureName}', but that texture file was not found in the file system. This will be replaced with an empty texture.", LoggingLevel.Intermediate);
+                    HostContentServices.Log.PrintWarning($"The key at index {i}, for track '{track.Value.Name}' has a texture named '{key.TextureName}', but that texture file was not found in the file system. This will be replaced with an empty texture.", LoggingLevel.Intermediate);
                     keyFrames[index] = null;
                     continue;
                 }
@@ -802,7 +802,7 @@ internal class AnimationEditorPlugIn
                     unsupported.Add($"{(string.IsNullOrEmpty(reg.Description) ? reg.TrackName : reg.Description)} [{reg.KeyType}]");
                 }
 
-                HostServices.Log.Print($"WARNING: Animation '{file.Path}' contains a '{reg.TrackName} [{reg.KeyType}]' track, which is not supported by the editor at this time.", LoggingLevel.Intermediate);
+                HostServices.Log.PrintWarning($"Animation '{file.Path}' contains a '{reg.TrackName} [{reg.KeyType}]' track, which is not supported by the editor at this time.", LoggingLevel.Intermediate);
             }
         }
 
@@ -816,7 +816,7 @@ internal class AnimationEditorPlugIn
                     unsupported.Add($"{name} [{dataType}]");
                 }
 
-                HostServices.Log.Print($"WARNING: Animation '{file.Path}' contains a '{name} [{dataType}]' track, which is not supported for sprite animations and will be removed.", LoggingLevel.Intermediate);
+                HostServices.Log.PrintWarning($"Animation '{file.Path}' contains a '{name} [{dataType}]' track, which is not supported for sprite animations and will be removed.", LoggingLevel.Intermediate);
             }
         }
 
@@ -894,7 +894,7 @@ internal class AnimationEditorPlugIn
                 }
                 else
                 {
-                    HostContentServices.Log.Print($"WARNING: Primary sprite '{primarySpriteFile.Path}' was found, but its associated texture was not. Skipping...", LoggingLevel.Intermediate);
+                    HostContentServices.Log.PrintWarning($"Primary sprite '{primarySpriteFile.Path}' was found, but its associated texture was not. Skipping...", LoggingLevel.Intermediate);
                 }
             }
 
@@ -1025,7 +1025,7 @@ internal class AnimationEditorPlugIn
 
         if (textureSprite is null)
         {
-            HostContentServices.Log.Print($"WARNING: The sprite in file '{spriteFile.Path}' could not be loaded. No texture will be assigned to the key frame. This may cause undesirable results.", LoggingLevel.Intermediate);
+            HostContentServices.Log.PrintWarning($"The sprite in file '{spriteFile.Path}' could not be loaded. No texture will be assigned to the key frame. This may cause undesirable results.", LoggingLevel.Intermediate);
             return default;
         }
 

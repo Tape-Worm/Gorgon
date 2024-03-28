@@ -396,7 +396,7 @@ internal class Triangulator(IGorgonLog log)
             return;
         }
 
-        _log?.Print(format, LoggingLevel.Verbose, parameters);
+        _log?.Print(string.Format(format, parameters), LoggingLevel.Verbose);
     }
 }
 

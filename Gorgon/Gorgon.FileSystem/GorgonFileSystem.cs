@@ -301,7 +301,7 @@ public class GorgonFileSystem
             mountDirectory.MountPoint = mountPoint;
         }
 
-        _log.Print("Mounting physical file system path '{0}' to virtual file system path '{1}'.", LoggingLevel.Simple, physicalPath, mountPoint.MountLocation);
+        _log.Print($"Mounting physical file system path '{physicalPath}' to virtual file system path '{mountPoint.MountLocation}'.", LoggingLevel.Simple);
 
         GorgonPhysicalFileSystemData data = mountPoint.Provider.Enumerate(physicalPath, mountDirectory);
 
@@ -355,7 +355,7 @@ public class GorgonFileSystem
             }
         }
 
-        _log.Print("{0} directories parsed, and {1} files processed.", LoggingLevel.Simple, data.Directories.Count, data.Files.Count);
+        _log.Print($"{data.Directories.Count} directories parsed, and {data.Files.Count} files processed.", LoggingLevel.Simple);
     }
 
     /// <summary>
@@ -365,7 +365,6 @@ public class GorgonFileSystem
     /// <param name="item">Item to compare.</param>
     /// <param name="searchMask">The mask used to filter.</param>
     /// <returns><b>true</b> if the name of the item matches the pattern, <b>false</b> if not.</returns>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0046:Convert to conditional expression", Justification = "<Pending>")]
     private static bool IsPatternMatch<T>(T item, string searchMask)
         where T : IGorgonNamedObject
     {

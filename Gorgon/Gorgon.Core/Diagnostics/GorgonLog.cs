@@ -35,8 +35,31 @@ namespace Gorgon.Diagnostics;
 /// Base class for logging objects
 /// </summary>
 public abstract class GorgonLog
-    : IGorgonThreadedLog
+    : IGorgonLog
 {
+    /// <summary>
+    /// The type of message being sent to the log.
+    /// </summary>
+    protected enum MessageType
+    {
+        /// <summary>
+        /// General information.
+        /// </summary>
+        Info = 0,
+        /// <summary>
+        /// A warning message.
+        /// </summary>
+        Warning = 1,
+        /// <summary>
+        /// An error message.
+        /// </summary>
+        Error = 2,
+        /// <summary>
+        /// A critical exception.
+        /// </summary>
+        Critical = 3
+    }
+
     // List of separators for new lines.
     private static readonly char[] _newLineSeparators = ['\n', '\r'];
 
@@ -277,7 +300,7 @@ public abstract class GorgonLog
 
             exception.Append(" \r\n");
 
-            SendToLog(exception.ToString());
+            SendToLog(exception.ToString(), MessageType.Critical);
         }
     }
 
@@ -320,9 +343,9 @@ public abstract class GorgonLog
     /// <summary>
     /// Function to append a line of logging text to the log file.
     /// </summary>
-    /// <param name="formatSpecifier">The pre-formatted text message.</param>
-    /// <param name="arguments">The arguments to pass to the pre-formatted text.</param>
-    private void SendToLog(string formatSpecifier, params object[] arguments)
+    /// <param name="message">The pre-formatted text message.</param>
+    /// <param name="messageType">The type of message being sent to the log.</param>
+    private void SendToLog(string message, MessageType messageType)
     {
         List<string> lines = _outputBuffer;
 
@@ -332,38 +355,36 @@ public abstract class GorgonLog
                                             id => []);
         }
 
-        if ((string.IsNullOrEmpty(formatSpecifier)) || (formatSpecifier == "\n") || (formatSpecifier == "\r"))
+        string prefix = messageType switch
+        {
+            MessageType.Info => string.Empty,
+            MessageType.Warning => " [Warning]:",
+            MessageType.Error => " [Error]:",
+            MessageType.Critical => " [Exception]:",
+            _ => string.Empty,
+        };
+
+        if ((string.IsNullOrEmpty(message)) || (message == "\n") || (message == "\r"))
         {
             lines.Add($"[{DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}]");
         }
         else
         {
             // Get a list of lines.
-            string[] formattedLines = formatSpecifier.Split(_newLineSeparators,
+            string[] formattedLines = message.Split(_newLineSeparators,
                                                             StringSplitOptions.RemoveEmptyEntries);
 
             foreach (string line in formattedLines)
             {
-                string lineToPrint = line;
-                if ((arguments is not null) && (arguments.Length > 0))
-                {
-                    lineToPrint = string.Format(line, arguments);
-                }
-
-                lines.Add($"[{DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}] {lineToPrint}");
+                lines.Add($"[{DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}]{prefix} {line}");
             }
         }
 
         FlushLines(lines);
     }
 
-    /// <summary>
-    /// Function to print a formatted line of text to the log.
-    /// </summary>
-    /// <param name="formatSpecifier">Format specifier for the line.</param>
-    /// <param name="level">Level that this message falls under.</param>
-    /// <param name="arguments">List of optional arguments.</param>
-    public void Print(string formatSpecifier, LoggingLevel level, params object[] arguments)
+    /// <inheritdoc/>
+    public void PrintError(string message, LoggingLevel level)
     {
         if ((LogFilterLevel == LoggingLevel.NoLogging) ||
             ((LogFilterLevel != LoggingLevel.All) && (level != LoggingLevel.All) && (level < LogFilterLevel)))
@@ -373,7 +394,41 @@ public abstract class GorgonLog
 
         lock (_syncLock)
         {
-            SendToLog(formatSpecifier, arguments);
+            SendToLog(message, MessageType.Error);
+        }
+    }
+
+    /// <inheritdoc/>
+    public void PrintWarning(string message, LoggingLevel level)
+    {
+        if ((LogFilterLevel == LoggingLevel.NoLogging) ||
+            ((LogFilterLevel != LoggingLevel.All) && (level != LoggingLevel.All) && (level < LogFilterLevel)))
+        {
+            return;
+        }
+
+        lock (_syncLock)
+        {
+            SendToLog(message, MessageType.Warning);
+        }
+    }
+
+    /// <summary>
+    /// Function to print a formatted line of text to the log.
+    /// </summary>
+    /// <param name="message">The message to write to the log.</param>
+    /// <param name="level">Level that this message falls under.</param>
+    public void Print(string message, LoggingLevel level)
+    {
+        if ((LogFilterLevel == LoggingLevel.NoLogging) ||
+            ((LogFilterLevel != LoggingLevel.All) && (level != LoggingLevel.All) && (level < LogFilterLevel)))
+        {
+            return;
+        }
+
+        lock (_syncLock)
+        {
+            SendToLog(message, MessageType.Info);
         }
     }
 

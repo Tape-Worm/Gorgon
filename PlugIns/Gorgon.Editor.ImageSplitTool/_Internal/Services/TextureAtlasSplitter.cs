@@ -92,7 +92,7 @@ internal class TextureAtlasSplitter
 
             if (sprite.Texture != texture)
             {
-                _log.Print($"WARNING: The sprite '{file.Path}' has texture '{sprite.Texture?.Texture.Name}' when it should have '{texture.Texture.Name}'. Skipping this sprite.", LoggingLevel.Intermediate);
+                _log.PrintWarning($"The sprite '{file.Path}' has texture '{sprite.Texture?.Texture.Name}' when it should have '{texture.Texture.Name}'. Skipping this sprite.", LoggingLevel.Intermediate);
                 continue;
             }
 
@@ -317,13 +317,13 @@ internal class TextureAtlasSplitter
 
             if (imageFile is null)
             {
-                _log.Print($"WARNING: The image file '{imageFile.Path}' is missing!", LoggingLevel.Intermediate);
+                _log.PrintWarning($"The image file '{imageFile.Path}' is missing!", LoggingLevel.Intermediate);
                 continue;
             }
 
             if (!_imagesAndSprites.TryGetValue(imageFile, out IReadOnlyList<IContentFile> spriteFiles))
             {
-                _log.Print($"WARNING: The image file '{imageFile.Path}' is not a texture atlas!", LoggingLevel.Intermediate);
+                _log.PrintWarning($"The image file '{imageFile.Path}' is not a texture atlas!", LoggingLevel.Intermediate);
                 continue;
             }
 

@@ -63,6 +63,14 @@ public interface IGorgonLog
     }
 
     /// <summary>
+    /// Property to return the ID of the thread that created the log object.
+    /// </summary>
+    int ThreadID
+    {
+        get;
+    }
+
+    /// <summary>
     /// Property to set or return the filtering level of this log.
     /// </summary>
     LoggingLevel LogFilterLevel
@@ -102,10 +110,23 @@ public interface IGorgonLog
     void LogException(Exception ex);
 
     /// <summary>
+    /// Function to send an error message to the log.
+    /// </summary>
+    /// <param name="message">The error message to write to the log.</param>
+    /// <param name="level">Level that this message falls under.</param>    
+    void PrintError(string message, LoggingLevel level);
+
+    /// <summary>
+    /// Function to send a warning message to the log.
+    /// </summary>
+    /// <param name="message">The warning message to write to the log.</param>
+    /// <param name="level">Level that this message falls under.</param>    
+    void PrintWarning(string message, LoggingLevel level);
+
+    /// <summary>
     /// Function to print a formatted line of text to the log.
     /// </summary>
-    /// <param name="formatSpecifier">Format specifier for the line.</param>
-    /// <param name="level">Level that this message falls under.</param>
-    /// <param name="arguments">List of optional arguments.</param>
-    void Print(string formatSpecifier, LoggingLevel level, params object[] arguments);
+    /// <param name="message">The message to write to the log.</param>
+    /// <param name="level">Level that this message falls under.</param>    
+    void Print(string message, LoggingLevel level);
 }

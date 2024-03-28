@@ -295,7 +295,7 @@ internal class File
         }
         catch (Exception ex)
         {
-            HostServices.Log.Print("ERROR: Error updating paths.", LoggingLevel.Simple);
+            HostServices.Log.PrintError("Error updating paths.", LoggingLevel.Simple);
             HostServices.Log.LogException(ex);
         }
     }
@@ -311,7 +311,7 @@ internal class File
         }
         catch (Exception ex)
         {
-            HostServices.Log.Print("ERROR: Error refreshing file data.", LoggingLevel.Simple);
+            HostServices.Log.PrintError("Error refreshing file data.", LoggingLevel.Simple);
             HostServices.Log.LogException(ex);
         }
     }
@@ -330,7 +330,7 @@ internal class File
         }
         catch (Exception ex)
         {
-            HostServices.Log.Print("ERROR: Error renaming file.", LoggingLevel.Simple);
+            HostServices.Log.PrintError("Error renaming file.", LoggingLevel.Simple);
             HostServices.Log.LogException(ex);
         }
 

@@ -179,13 +179,13 @@ internal class ContentLoader2D(IGorgonFileSystem fileSystem, IProjectMetadata me
 
         if ((file is null) || (!_metadata.ProjectItems.TryGetValue(path, out ProjectItemMetadata metadata)))
         {
-            _graphics.Log.Print($"WARNING: The texture '{path}' was not found in the editor file system.", LoggingLevel.Intermediate);
+            _graphics.Log.PrintWarning($"The texture '{path}' was not found in the editor file system.", LoggingLevel.Intermediate);
             return null;
         }
 
         if (!metadata.Attributes.TryGetValue("ImageCodec", out string codecName))
         {
-            _graphics.Log.Print($"WARNING: The codec for the texture '{path}' is empty or not found.", LoggingLevel.Intermediate);
+            _graphics.Log.PrintWarning($"The codec for the texture '{path}' is empty or not found.", LoggingLevel.Intermediate);
             return null;
         }
 
@@ -193,7 +193,7 @@ internal class ContentLoader2D(IGorgonFileSystem fileSystem, IProjectMetadata me
 
         if (!imageCodecs.TryGetValue(codecName, out IGorgonImageCodec codec))
         {
-            _graphics.Log.Print($"WARNING: The image codec '{codecName}' is unknown.", LoggingLevel.Intermediate);
+            _graphics.Log.PrintWarning($"The image codec '{codecName}' is unknown.", LoggingLevel.Intermediate);
             return null;
         }
 

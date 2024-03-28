@@ -57,18 +57,13 @@ internal class LogConsoleProvider
         /// <summary>
         /// A warning message.
         /// </summary>
-        Warning,
-        /// <summary>
-        /// Another type of warning message.
-        /// </summary>
-        Warning2
+        Warning
     }
 
     // Message strings used to determine the type of message.
-    private readonly string _exceptionLine = $"\t{Resources.GOR_LOG_EXCEPTION.ToUpper()}!!";
-    private readonly string _errorLine = $"] {Resources.GOR_LOG_ERROR}";
-    private readonly string _warnLine1 = $"] {Resources.GOR_LOG_WARNING}";
-    private readonly string _warnLine2 = $"] {Resources.GOR_LOG_WARNING2}";
+    private readonly string _exceptionLine = $"] [{Resources.GOR_LOG_EXCEPTION}]: ";
+    private readonly string _errorLine = $"] [{Resources.GOR_LOG_ERROR}]: ";
+    private readonly string _warnLine = $"] [{Resources.GOR_LOG_WARNING}]: ";
 
     // Flag to indicate that the app has a console window.
     private int _hasConsole;
@@ -206,10 +201,10 @@ internal class LogConsoleProvider
         }
 
         Console.ForegroundColor = color;
-        Console.Write(" " + word);
+        Console.Write($" [{word}]:");
         Console.ResetColor();
 
-        return line[(start + word.Length)..];
+        return line[(start + word.Length + 2)..];
     }
 
     /// <summary>
@@ -231,7 +226,7 @@ internal class LogConsoleProvider
                 line = (line.Length - end) > 0 ? line[end..] : string.Empty;
 
                 Console.ForegroundColor = ConsoleColor.Green;
-                Console.Write(dateTime);
+                Console.Write($"{dateTime}");
                 Console.ResetColor();
             }
         }
@@ -246,9 +241,6 @@ internal class LogConsoleProvider
                 break;
             case MessageType.Warning:
                 line = HilightWord(line, Resources.GOR_LOG_WARNING, ConsoleColor.Yellow);
-                break;
-            case MessageType.Warning2:
-                line = HilightWord(line, Resources.GOR_LOG_WARNING2, ConsoleColor.Yellow);
                 break;
             default:
                 Console.ResetColor();
@@ -294,13 +286,9 @@ internal class LogConsoleProvider
         {
             messageType = MessageType.Error;
         }
-        else if (message.Contains(_warnLine1))
+        else if (message.Contains(_warnLine))
         {
             messageType = MessageType.Warning;
-        }
-        else if (message.Contains(_warnLine2))
-        {
-            messageType = MessageType.Warning2;
         }
 
         for (int i = 0; i < lines.Length; i++)

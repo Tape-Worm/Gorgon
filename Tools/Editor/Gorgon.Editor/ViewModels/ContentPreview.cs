@@ -240,7 +240,7 @@ internal class ContentPreview
         catch (Exception ex)
         {
             Title = Resources.GOREDIT_ERR_ERROR;
-            HostServices.Log.Print($"ERROR: Error loading thumbnail for '{file.Path}'.", LoggingLevel.Simple);
+            HostServices.Log.PrintError($"Error loading thumbnail for '{file.Path}'.", LoggingLevel.Simple);
             HostServices.Log.LogException(ex);
         }
         finally
@@ -376,7 +376,7 @@ internal class ContentPreview
         }
         catch (Exception ex)
         {
-            HostServices.Log.Print($"Error refreshing the preview image for '{filePath}'.", LoggingLevel.Simple);
+            HostServices.Log.PrintError($"Error refreshing the preview image for '{filePath}'.", LoggingLevel.Simple);
             HostServices.Log.LogException(ex);
         }
     }
@@ -394,7 +394,7 @@ internal class ContentPreview
         }
         catch (Exception ex)
         {
-            HostServices.Log.Print($"Error resetting the preview image.", LoggingLevel.Simple);
+            HostServices.Log.PrintError($"Error resetting the preview image.", LoggingLevel.Simple);
             HostServices.Log.LogException(ex);
         }
     }

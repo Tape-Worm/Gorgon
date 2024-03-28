@@ -775,7 +775,7 @@ public class GorgonV1AnimationCodec
     {
         if ((textureOverrides is not null) && (textureOverrides.Any()))
         {
-            Graphics.Log.Print("WARNING: The texture overrides parameter is not supported for version 1.x files. Textures will not be overridden.", LoggingLevel.Intermediate);
+            Graphics.Log.PrintWarning("The texture overrides parameter is not supported for version 1.x files. Textures will not be overridden.", LoggingLevel.Intermediate);
         }
 
         return OnReadMultipleFromStream(stream, true)[0];

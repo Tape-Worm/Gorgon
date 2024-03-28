@@ -390,14 +390,14 @@ internal class ProjectManager(FileSystemProviders providers, IGorgonLog log)
 
             if (!result.FileSystemDirectory.Exists)
             {
-                _log.Print("WARNING: The file system directory was not found.", LoggingLevel.Verbose);
+                _log.PrintWarning("The file system directory was not found.", LoggingLevel.Verbose);
                 result.FileSystemDirectory.Create();
                 result.FileSystemDirectory.Refresh();
             }
 
             if (!result.TempDirectory.Exists)
             {
-                _log.Print("WARNING: The temporary directory was not found.", LoggingLevel.Verbose);
+                _log.PrintWarning("The temporary directory was not found.", LoggingLevel.Verbose);
                 result.TempDirectory.Create();
                 result.TempDirectory.Refresh();
             }

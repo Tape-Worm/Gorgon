@@ -478,7 +478,7 @@ public class GorgonRawInput
 
             if (info is null)
             {
-                _log.Print("WARNING: Could not retrieve the class and device name.  Skipping this device.", LoggingLevel.Verbose);
+                _log.PrintWarning("Could not retrieve the class and device name.  Skipping this device.", LoggingLevel.Verbose);
                 continue;
             }
 
@@ -505,7 +505,7 @@ public class GorgonRawInput
 
             if (info is null)
             {
-                _log.Print("WARNING: Could not retrieve the class and device name.  Skipping this device.", LoggingLevel.Verbose);
+                _log.PrintWarning("Could not retrieve the class and device name.  Skipping this device.", LoggingLevel.Verbose);
                 continue;
             }
 
@@ -532,7 +532,7 @@ public class GorgonRawInput
 
             if (info is null)
             {
-                _log.Print("WARNING: Could not retrieve the class and device name.  Skipping this device.", LoggingLevel.Verbose);
+                _log.PrintWarning("Could not retrieve the class and device name.  Skipping this device.", LoggingLevel.Verbose);
                 continue;
             }
 

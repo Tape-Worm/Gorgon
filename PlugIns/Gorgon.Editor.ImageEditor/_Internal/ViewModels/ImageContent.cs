@@ -1203,7 +1203,7 @@ internal class ImageContent
         }
         catch (Exception ex)
         {
-            HostServices.Log.Print($"ERROR: Unable to delete the undo cache file at '{undoFile.PhysicalFile.FullPath}'.", LoggingLevel.Simple);
+            HostServices.Log.PrintError($"Unable to delete the undo cache file at '{undoFile.PhysicalFile.FullPath}'.", LoggingLevel.Simple);
             HostServices.Log.LogException(ex);
         }
     }
@@ -2186,7 +2186,7 @@ internal class ImageContent
                 }
                 catch (Exception ex)
                 {
-                    HostServices.Log.Print("Error deleting working image file.", LoggingLevel.All);
+                    HostServices.Log.PrintError("Error deleting working image file.", LoggingLevel.All);
                     HostServices.Log.LogException(ex);
                 }
             }
@@ -2547,13 +2547,13 @@ internal class ImageContent
 
         if (image is null)
         {
-            HostServices.Log.Print("WARNING: No image was found.", LoggingLevel.Simple);
+            HostServices.Log.PrintWarning("No image was found.", LoggingLevel.Simple);
             return;
         }
 
         if (_imageIO.InstalledCodecs.Codecs.Count == 0)
         {
-            HostServices.Log.Print("WARNING: No image codecs were found.  This should not happen.", LoggingLevel.Simple);
+            HostServices.Log.PrintWarning("No image codecs were found.  This should not happen.", LoggingLevel.Simple);
             return;
         }
 
@@ -2836,7 +2836,7 @@ internal class ImageContent
         }
         catch (Exception ex)
         {
-            HostServices.Log.Print("ERROR: Error showing fx options.", LoggingLevel.Simple);
+            HostServices.Log.PrintError("Error showing fx options.", LoggingLevel.Simple);
             HostServices.Log.LogException(ex);
         }
     }
@@ -3020,7 +3020,7 @@ internal class ImageContent
 
             if (string.IsNullOrWhiteSpace(exePath))
             {
-                HostServices.Log.Print($"WARNING: No executable found for files of type 'PNG'. Check to see if the UWP photo app hasn't messed with file registrations for 'PNG' files.", LoggingLevel.Verbose);
+                HostServices.Log.PrintWarning($"No executable found for files of type 'PNG'. Check to see if the UWP photo app hasn't messed with file registrations for 'PNG' files.", LoggingLevel.Verbose);
                 return (string.Empty, string.Empty, null, null);
             }
 

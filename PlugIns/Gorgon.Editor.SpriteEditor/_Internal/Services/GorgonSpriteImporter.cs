@@ -220,7 +220,7 @@ internal class GorgonSpriteImporter(IGorgonFileSystem projectFileSystem, IGorgon
         catch (Exception ex)
         {
             // We'll eat and log this exception, the worst case is we end up with a little more disk usage than we'd like.
-            _log.Print("Error cleaning up temporary directory.", LoggingLevel.Simple);
+            _log.PrintError("Error cleaning up temporary directory.", LoggingLevel.Simple);
             _log.LogException(ex);
         }
     }

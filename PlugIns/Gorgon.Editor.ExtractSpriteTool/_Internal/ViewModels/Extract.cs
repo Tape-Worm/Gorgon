@@ -510,7 +510,7 @@ internal class Extract
         }
         catch (Exception ex)
         {
-            HostServices.Log.Print("ERROR: Error cancelling sprite generation.", LoggingLevel.Simple);
+            HostServices.Log.PrintError("Error cancelling sprite generation.", LoggingLevel.Simple);
             HostServices.Log.LogException(ex);
         }
     }
@@ -596,7 +596,7 @@ internal class Extract
         }
         catch (Exception ex)
         {
-            HostServices.Log.Print("ERROR: Error stopping the extraction process.", LoggingLevel.Simple);
+            HostServices.Log.PrintError("Error stopping the extraction process.", LoggingLevel.Simple);
             HostServices.Log.LogException(ex);
         }
         return true;

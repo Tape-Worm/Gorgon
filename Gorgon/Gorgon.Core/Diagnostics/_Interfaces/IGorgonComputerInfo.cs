@@ -179,8 +179,10 @@ public interface IGorgonComputerInfo
     /// Function to refresh the list of user and machine specific environment variables.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// This method will populate the <see cref="MachineEnvironmentVariables"/>, <see cref="ProcessEnvironmentVariables"/>, and the <see cref="UserEnvironmentVariables"/> properties with values from the 
     /// environment variables for the operating system. These values cannot be modified from this class since this class is meant for information gathering only.
+    /// </para>
     /// </remarks>
     void RefreshEnvironmentVariables();
 }

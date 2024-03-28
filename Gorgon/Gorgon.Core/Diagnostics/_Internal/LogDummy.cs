@@ -23,15 +23,17 @@
 // Created: Friday, May 23, 2015 3:09:45 PM
 // 
 
+using System.Diagnostics;
 using Gorgon.Diagnostics.LogProviders;
 
 namespace Gorgon.Diagnostics;
 
 /// <summary>
-/// An implementation of the <see cref="IGorgonThreadedLog"/> type that does nothing
+/// An implementation of the <see cref="IGorgonLog"/> type that does nothing.
 /// </summary>
+[DebuggerStepThrough()]
 internal class LogDummy
-    : IGorgonThreadedLog
+    : IGorgonLog
 {
     /// <summary>
     /// Property to return the ID of the thread that created the log object.
@@ -81,13 +83,25 @@ internal class LogDummy
     /// <summary>
     /// Function to print a formatted line of text to the log.
     /// </summary>
-    /// <param name="formatSpecifier">Format specifier for the line.</param>
+    /// <param name="message">The message to write to the log.</param>
     /// <param name="level">Level that this message falls under.</param>
-    /// <param name="arguments">List of optional arguments.</param>
-    public void Print(string formatSpecifier, LoggingLevel level, params object[] arguments)
+    public void Print(string message, LoggingLevel level)
     {
         // Intentionally left blank.
     }
+
+    /// <inheritdoc/>
+    public void PrintError(string message, LoggingLevel level)
+    {
+        // Intentionally left blank.
+    }
+
+    /// <inheritdoc/>
+    public void PrintWarning(string message, LoggingLevel level)
+    {
+        // Intentionally left blank.
+    }
+
 
     /// <summary>
     /// Function to perform any one time inital logging.

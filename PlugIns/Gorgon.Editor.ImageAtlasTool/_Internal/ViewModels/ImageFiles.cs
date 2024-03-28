@@ -251,7 +251,7 @@ internal class ImageFiles
         }
         catch (Exception ex)
         {
-            HostServices.Log.Print("ERROR: There was an error generating the image preview data.", LoggingLevel.Simple);
+            HostServices.Log.PrintError("There was an error generating the image preview data.", LoggingLevel.Simple);
             HostServices.Log.LogException(ex);
         }
     }

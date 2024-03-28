@@ -151,7 +151,7 @@ public class TextureCache(GorgonGraphics graphics, IContentFileManager fileManag
             using Stream textureStream = _tempWriter.OpenStream(entry.CachedFile.FullPath, FileMode.Open);
             if (!_codec.IsReadable(textureStream))
             {
-                _log.Print($"ERROR: Texture '{entry.TextureFile.Path}' is not a {_codec.Name} file.", LoggingLevel.Verbose);
+                _log.PrintError($"Texture '{entry.TextureFile.Path}' is not a {_codec.Name} file.", LoggingLevel.Verbose);
             }
 
             return _codec.FromStream(textureStream);
@@ -186,7 +186,7 @@ public class TextureCache(GorgonGraphics graphics, IContentFileManager fileManag
     {
         if (!_fileManager.FileExists(file.Path))
         {
-            _log.Print($"ERROR: File '{file.Path}' does not exist. No texture will be available for this file.", LoggingLevel.Verbose);
+            _log.PrintError($"File '{file.Path}' does not exist. No texture will be available for this file.", LoggingLevel.Verbose);
             return null;
         }
 
@@ -217,7 +217,7 @@ public class TextureCache(GorgonGraphics graphics, IContentFileManager fileManag
             {
                 if (!_codec.IsReadable(inStream))
                 {
-                    _log.Print($"ERROR: Texture '{file.Path}' is not a {_codec.Name} file.", LoggingLevel.Verbose);
+                    _log.PrintError($"Texture '{file.Path}' is not a {_codec.Name} file.", LoggingLevel.Verbose);
                     return null;
                 }
 
@@ -289,7 +289,7 @@ public class TextureCache(GorgonGraphics graphics, IContentFileManager fileManag
 
         if (entry is null)
         {
-            _log.Print($"WARNING: Texture '{texture?.Texture?.Name}' not found in cache.", LoggingLevel.Verbose);
+            _log.PrintWarning($"Texture '{texture?.Texture?.Name}' not found in cache.", LoggingLevel.Verbose);
             return false;
         }
 
@@ -415,7 +415,7 @@ public class TextureCache(GorgonGraphics graphics, IContentFileManager fileManag
             {
                 if (counter == 4)
                 {
-                    _log.Print("WARNING: There was an error deleting the temporary cache directory.", LoggingLevel.Verbose);
+                    _log.PrintWarning("There was an error deleting the temporary cache directory.", LoggingLevel.Verbose);
                     _log.LogException(ex);
                 }
                 else
@@ -458,7 +458,7 @@ public class TextureCache(GorgonGraphics graphics, IContentFileManager fileManag
 
         if (file is null)
         {
-            _log.Print($"ERROR: File '{texture.Texture.Name}' does not exist.", LoggingLevel.Verbose);
+            _log.PrintError($"File '{texture.Texture.Name}' does not exist.", LoggingLevel.Verbose);
             throw new FileNotFoundException(string.Format(Resources.GOREDIT_ERR_FILE_NOT_FOUND, texture.Texture.Name));
         }
 
@@ -487,7 +487,7 @@ public class TextureCache(GorgonGraphics graphics, IContentFileManager fileManag
 
             if (!_codec.IsReadable(inStream))
             {
-                _log.Print($"ERROR: Texture '{file.Path}' is not a {_codec.Name} file.", LoggingLevel.Verbose);
+                _log.PrintError($"Texture '{file.Path}' is not a {_codec.Name} file.", LoggingLevel.Verbose);
                 return false;
             }
 

@@ -304,7 +304,7 @@ internal class FxContext
         }
         catch (Exception ex)
         {
-            _hostServices.Log.Print("ERROR: Cannot cancel the effects operation.", LoggingLevel.Simple);
+            _hostServices.Log.PrintError("Cannot cancel the effects operation.", LoggingLevel.Simple);
             _hostServices.Log.LogException(ex);
         }
     }

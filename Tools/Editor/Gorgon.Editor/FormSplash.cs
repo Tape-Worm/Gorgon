@@ -34,7 +34,6 @@ namespace Gorgon.Editor;
 partial class FormSplash
     : Form
 {
-
     // The application version number.
     private readonly Version _appVersion;
 
@@ -49,7 +48,7 @@ partial class FormSplash
             labelInfo.Text = value;
 
             // Print any text to the log.
-            Program.Log.Print("AppStart: {0}", LoggingLevel.Intermediate, value);
+            Program.Log.Print($"AppStart: {value}", LoggingLevel.Intermediate);
 
             labelInfo.Refresh();
         }

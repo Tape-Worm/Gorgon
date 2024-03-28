@@ -141,7 +141,7 @@ internal class AnimationIOService(IContentFileManager fileManager, ITextureCache
         if ((!spriteContent.Metadata.DependsOn.TryGetValue(CommonEditorContentTypes.ImageType, out List<string> dependency))
                 || (dependency.Count == 0))
         {
-            _log.Print("WARNING: No sprite texture dependency found, interrogating sprite data...", LoggingLevel.Verbose);
+            _log.PrintWarning("No sprite texture dependency found, interrogating sprite data...", LoggingLevel.Verbose);
             // If there's no linkage, then see if the sprite has the path information embedded within its data.
             using Stream spriteStream = _fileManager.OpenStream(spriteContent.Path, FileMode.Open);
             string textureName = _spriteCodec.GetAssociatedTextureName(spriteStream);
@@ -166,7 +166,7 @@ internal class AnimationIOService(IContentFileManager fileManager, ITextureCache
 
         if (!IsContentImage(imageFile))
         {
-            _log.Print($"ERROR: '{dependency[0]}' not found in project or is not an image content file.", LoggingLevel.Simple);
+            _log.PrintError($"'{dependency[0]}' not found in project or is not an image content file.", LoggingLevel.Simple);
             return (null, null);
         }
 
@@ -191,7 +191,7 @@ internal class AnimationIOService(IContentFileManager fileManager, ITextureCache
             || (primaryPath.Count == 0)
             || (!_fileManager.FileExists(primaryPath[0])))
         {
-            _log.Print($"WARNING: Primary sprite is missing for the animation. It will need to be reassigned.", LoggingLevel.Intermediate);
+            _log.PrintWarning($"Primary sprite is missing for the animation. It will need to be reassigned.", LoggingLevel.Intermediate);
             return null;
         }
 
@@ -204,14 +204,14 @@ internal class AnimationIOService(IContentFileManager fileManager, ITextureCache
         {
             if (!IsContentSprite(primarySpriteFile))
             {
-                _log.Print($"ERROR: '{primarySpriteFile.Path}' not found in project or is not a sprite content file.", LoggingLevel.Simple);
+                _log.PrintError($"'{primarySpriteFile.Path}' not found in project or is not a sprite content file.", LoggingLevel.Simple);
                 return null;
             }
 
             spriteStream = _fileManager.OpenStream(primarySpriteFile.Path, FileMode.Open);
             if (!_spriteCodec.IsReadable(spriteStream))
             {
-                _log.Print($"ERROR: '{primarySpriteFile.Path}' is not a {_spriteCodec.Name} file.", LoggingLevel.Simple);
+                _log.PrintError($"'{primarySpriteFile.Path}' is not a {_spriteCodec.Name} file.", LoggingLevel.Simple);
                 return null;
             }
 
@@ -244,7 +244,7 @@ internal class AnimationIOService(IContentFileManager fileManager, ITextureCache
         }
         catch (Exception ex)
         {
-            _log.Print($"ERROR: There was an error loading the sprite '{primarySpriteFile.Path}'.", LoggingLevel.Simple);
+            _log.PrintError($"There was an error loading the sprite '{primarySpriteFile.Path}'.", LoggingLevel.Simple);
             _log.LogException(ex);
 
             return null;
@@ -267,13 +267,13 @@ internal class AnimationIOService(IContentFileManager fileManager, ITextureCache
         if ((!animationFile.Metadata.DependsOn.TryGetValue(CommonEditorContentTypes.ImageType, out List<string> dependencies))
             || (dependencies.Count == 0))
         {
-            _log.Print("WARNING: No sprite texture dependencies found, interrogating animation data...", LoggingLevel.Intermediate);
+            _log.PrintWarning("No sprite texture dependencies found, interrogating animation data...", LoggingLevel.Intermediate);
             using Stream stream = _fileManager.OpenStream(animationFile.Path, FileMode.Open);
             dependencies = new List<string>(_animationCodec.GetAssociatedTextureNames(stream));
 
             if (dependencies.Count == 0)
             {
-                _log.Print($"WARNING: No textures for the animation for were found on the file system.", LoggingLevel.Intermediate);
+                _log.PrintWarning($"No textures for the animation for were found on the file system.", LoggingLevel.Intermediate);
                 return new TextureDependencies([], []);
             }
         }
@@ -289,7 +289,7 @@ internal class AnimationIOService(IContentFileManager fileManager, ITextureCache
 
         if (files.Count == 0)
         {
-            _log.Print($"WARNING: No textures for the animation for were found on the file system.", LoggingLevel.Intermediate);
+            _log.PrintWarning($"No textures for the animation for were found on the file system.", LoggingLevel.Intermediate);
             return new TextureDependencies([], []);
         }
 
@@ -304,7 +304,7 @@ internal class AnimationIOService(IContentFileManager fileManager, ITextureCache
             {
                 if (file is not null)
                 {
-                    _log.Print($"WARNING: The texture '{file.Path}' was not loaded and will not be available when rendering the animation.", LoggingLevel.Intermediate);
+                    _log.PrintWarning($"The texture '{file.Path}' was not loaded and will not be available when rendering the animation.", LoggingLevel.Intermediate);
                 }
                 continue;
             }

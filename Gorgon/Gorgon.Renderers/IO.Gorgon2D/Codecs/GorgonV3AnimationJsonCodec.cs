@@ -689,7 +689,7 @@ public class GorgonV3AnimationJsonCodec(Gorgon2D renderer)
     {
         if ((textureOverrides is not null) && (textureOverrides.Any()))
         {
-            Graphics.Log.Print("WARNING: The texture overrides parameter is not supported for version 3 files. Textures will not be overridden.", Diagnostics.LoggingLevel.Intermediate);
+            Graphics.Log.PrintWarning("The texture overrides parameter is not supported for version 3 files. Textures will not be overridden.", Diagnostics.LoggingLevel.Intermediate);
         }
 
         using GorgonStreamWrapper wrappedStream = new(stream, stream.Position, byteCount, false);

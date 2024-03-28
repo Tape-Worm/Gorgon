@@ -645,7 +645,7 @@ public sealed class GorgonDepthStencil2DView
             else
             {
                 // Do this to notify the user that something is amiss.
-                graphics.Log.Print($"WARNING: Depth Stencil View {info.Name} - Depth/stencil texture has a binding of {TextureBinding.ShaderResource}, but has a view flags of {viewFlags}.  The view will not be bindable to the shader pipeline.",
+                graphics.Log.PrintWarning($"Depth Stencil View {info.Name} - Depth/stencil texture has a binding of {TextureBinding.ShaderResource}, but has a view flags of {viewFlags}.  The view will not be bindable to the shader pipeline.",
                                    LoggingLevel.Simple);
 
             }
@@ -653,7 +653,7 @@ public sealed class GorgonDepthStencil2DView
         else if (viewFlags != DepthStencilViewFlags.None)
         {
             // Do this to notify the user that something is amiss.
-            graphics.Log.Print($"WARNING: Depth Stencil View {info.Name} - Depth/stencil view flag(s) are set to {viewFlags}, but the texture lacks a {TextureBinding.ShaderResource} binding.",
+            graphics.Log.PrintWarning($"Depth Stencil View {info.Name} - Depth/stencil view flag(s) are set to {viewFlags}, but the texture lacks a {TextureBinding.ShaderResource} binding.",
                                LoggingLevel.Simple);
         }
 

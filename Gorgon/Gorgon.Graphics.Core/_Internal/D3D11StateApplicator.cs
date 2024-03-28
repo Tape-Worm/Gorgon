@@ -83,12 +83,7 @@ internal class D3D11StateApplicator(GorgonGraphics graphics, GorgonRenderTargetV
     {
         MethodInfo methodInfo = typeof(D3D11.RasterizerStage).GetMethod("SetScissorRects", BindingFlags.NonPublic | BindingFlags.Instance, null, [typeof(int), typeof(nint)], null);
 
-        if (methodInfo is null)
-        {
-            // We'll fall back to the params version if we can't get the method for some reason (this really should never happen).
-            Debug.Print("[ERROR] Cannot find method SetScissorRects(int, nint) in SharpDX.Direct3D11 assembly. Maybe a different version?");
-            return;
-        }
+        Debug.Assert(methodInfo is not null, "Cannot find method SetScissorRects(int, nint) in SharpDX.Direct3D11 assembly. Maybe a different version?");
 
         ParameterExpression rasterizerParam = Expression.Parameter(typeof(D3D11.RasterizerStage), "rasterizer");
         ParameterExpression countParam = Expression.Parameter(typeof(int), "count");
@@ -112,12 +107,7 @@ internal class D3D11StateApplicator(GorgonGraphics graphics, GorgonRenderTargetV
                 typeof(D3D11.DepthStencilView)  // depthStencilViewRef
         ], null);
 
-        if (methodInfo is null)
-        {
-            // We'll fall back to the params version if we can't get the method for some reason (this really should never happen).
-            Debug.Print("[ERROR] Cannot find method SetRenderTargets(int, nint, DepthStencilView) in SharpDX.Direct3D11 assembly. Maybe a different version?");
-            return;
-        }
+        Debug.Assert(methodInfo is not null, "Cannot find method SetRenderTargets(int, nint, DepthStencilView) in SharpDX.Direct3D11 assembly. Maybe a different version?");
 
         ParameterExpression omParam = Expression.Parameter(typeof(D3D11.OutputMergerStage), "omStage");
         ParameterExpression numViewsParam = Expression.Parameter(typeof(int), "numViews");
@@ -144,12 +134,7 @@ internal class D3D11StateApplicator(GorgonGraphics graphics, GorgonRenderTargetV
                 typeof(nint)                    // uavCount
         ], null);
 
-        if (methodInfo is null)
-        {
-            // We'll fall back to the params version if we can't get the method for some reason (this really should never happen).
-            Debug.Print("[ERROR] Cannot find method SetUnorderedAccessViews(nint, int, int, nint) in SharpDX.Direct3D11 assembly. Maybe a different version?");
-            return;
-        }
+        Debug.Assert(methodInfo is not null, "Cannot find method SetUnorderedAccessViews(nint, int, int, nint) in SharpDX.Direct3D11 assembly. Maybe a different version?");
 
         ParameterExpression stageParam = Expression.Parameter(typeof(D3D11.CommonShaderStage), "commonShaderStage");
         ParameterExpression startSlotParam = Expression.Parameter(typeof(int), "startSlot");
@@ -179,12 +164,7 @@ internal class D3D11StateApplicator(GorgonGraphics graphics, GorgonRenderTargetV
                 typeof(nint)                    // uAVInitialCountsRef
         ], null);
 
-        if (methodInfo is null)
-        {
-            // We'll fall back to the params version if we can't get the method for some reason (this really should never happen).
-            Debug.Print("[ERROR] Cannot find method SetRenderTargetsAndUnorderedAccessViews(int, nint, DepthStencilView, int, int, nint, nint) in SharpDX.Direct3D11 assembly. Maybe a different version?");
-            return;
-        }
+        Debug.Assert(methodInfo is not null, "Cannot find method SetRenderTargetsAndUnorderedAccessViews(int, nint, DepthStencilView, int, int, nint, nint) in SharpDX.Direct3D11 assembly. Maybe a different version?");
 
         ParameterExpression stageParam = Expression.Parameter(typeof(D3D11.OutputMergerStage), "outputMerger");
         ParameterExpression countParam = Expression.Parameter(typeof(int), "numRtvs");
@@ -208,12 +188,7 @@ internal class D3D11StateApplicator(GorgonGraphics graphics, GorgonRenderTargetV
     {
         MethodInfo methodInfo = typeof(D3D11.StreamOutputStage).GetMethod("SetTargets", BindingFlags.NonPublic | BindingFlags.Instance, null, [typeof(int), typeof(nint), typeof(nint)], null);
 
-        if (methodInfo is null)
-        {
-            // We'll fall back to the params version if we can't get the method for some reason (this really should never happen).
-            Debug.Print("[ERROR] Cannot find method SetTargets(int, nint, nint) in SharpDX.Direct3D11 assembly. Maybe a different version?");
-            return;
-        }
+        Debug.Assert(methodInfo is not null, "Cannot find method SetTargets(int, nint, nint) in SharpDX.Direct3D11 assembly. Maybe a different version?");
 
         ParameterExpression stageParam = Expression.Parameter(typeof(D3D11.StreamOutputStage), "streamOut");
         ParameterExpression countParam = Expression.Parameter(typeof(int), "numBuffers");

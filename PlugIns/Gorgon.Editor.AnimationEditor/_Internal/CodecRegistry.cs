@@ -105,7 +105,7 @@ internal class CodecRegistry(GorgonMefPlugInCache pluginCache, Gorgon2D renderer
 
                 if (Codecs.Any(item => string.Equals(item.GetType().FullName, desc.Name, StringComparison.OrdinalIgnoreCase)))
                 {
-                    _log.Print($"WARNING: The animation codec '{desc.Name}' is already loaded, skipping this one...", LoggingLevel.Verbose);
+                    _log.PrintWarning($"The animation codec '{desc.Name}' is already loaded, skipping this one...", LoggingLevel.Verbose);
                     continue;
                 }
 
@@ -113,7 +113,7 @@ internal class CodecRegistry(GorgonMefPlugInCache pluginCache, Gorgon2D renderer
 
                 if (codec is null)
                 {
-                    _log.Print($"ERROR: The animation codec '{desc.Name}' was not created (returned NULL).", LoggingLevel.Simple);
+                    _log.PrintError($"The animation codec '{desc.Name}' was not created (returned NULL).", LoggingLevel.Simple);
                     continue;
                 }
 
@@ -209,7 +209,7 @@ internal class CodecRegistry(GorgonMefPlugInCache pluginCache, Gorgon2D renderer
         {
             if (CodecPlugIns.Any(item => string.Equals(plugin.Name, item.Name, StringComparison.OrdinalIgnoreCase)))
             {
-                _log.Print($"WARNING: Codec plug in '{plugin.Name}' is already loaded.", LoggingLevel.Intermediate);
+                _log.PrintWarning($"Codec plug in '{plugin.Name}' is already loaded.", LoggingLevel.Intermediate);
                 localErrors.Add(string.Format(Resources.GORANM_ERR_CODEC_PLUGIN_ALREADY_LOADED, plugin.Name));
                 continue;
             }
@@ -221,7 +221,7 @@ internal class CodecRegistry(GorgonMefPlugInCache pluginCache, Gorgon2D renderer
             {
                 if (Codecs.Any(item => string.Equals(desc.Name, item.Name, StringComparison.OrdinalIgnoreCase)))
                 {
-                    _log.Print($"WARNING: Codec '{desc.Name}' is already loaded.", LoggingLevel.Intermediate);
+                    _log.PrintWarning($"Codec '{desc.Name}' is already loaded.", LoggingLevel.Intermediate);
                     localErrors.Add(string.Format(Resources.GORANM_ERR_CODEC_ALREADY_LOADED, desc.Name));
                     --count;
                     continue;
@@ -231,7 +231,7 @@ internal class CodecRegistry(GorgonMefPlugInCache pluginCache, Gorgon2D renderer
 
                 if (animationCodec is null)
                 {
-                    _log.Print($"ERROR: Could not create animation codec '{desc.Name}' from plug in '{plugin.PlugInPath}'.", LoggingLevel.Verbose);
+                    _log.PrintError($"Could not create animation codec '{desc.Name}' from plug in '{plugin.PlugInPath}'.", LoggingLevel.Verbose);
                     localErrors.Add(string.Format(Resources.GORANM_ERR_CODEC_LOAD_FAIL, desc.Name));
                     --count;
                     continue;

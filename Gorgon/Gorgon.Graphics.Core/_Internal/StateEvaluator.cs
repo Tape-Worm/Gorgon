@@ -95,7 +95,7 @@ internal class StateEvaluator(GorgonGraphics graphics)
 
                 if (GorgonGraphics.IsDebugEnabled)
                 {
-                    _log.Print($"WARNING: The index buffer '{state.IndexBuffer.Name}' is bound for input and stream out. It will be unbound from the input assembler.", LoggingLevel.Verbose);
+                    _log.PrintWarning($"The index buffer '{state.IndexBuffer.Name}' is bound for input and stream out. It will be unbound from the input assembler.", LoggingLevel.Verbose);
                 }
 
                 state.IndexBuffer = null;
@@ -155,7 +155,7 @@ internal class StateEvaluator(GorgonGraphics graphics)
 
                 if (GorgonGraphics.IsDebugEnabled)
                 {
-                    _log.Print($"WARNING: The vertex buffer '{vBuffer.Name}' is bound for input and stream out. It will be unbound from the vertex buffers.", LoggingLevel.Verbose);
+                    _log.PrintWarning($"The vertex buffer '{vBuffer.Name}' is bound for input and stream out. It will be unbound from the vertex buffers.", LoggingLevel.Verbose);
                 }
 
                 vertexBuffers.MarkClean(start + v);
@@ -224,7 +224,7 @@ internal class StateEvaluator(GorgonGraphics graphics)
 
                 if (GorgonGraphics.IsDebugEnabled)
                 {
-                    _log.Print($"WARNING: The shader resource '{srvResource.Name}' is bound for input and as a depth/stencil. It will be unbound from the shader resources.", LoggingLevel.Verbose);
+                    _log.PrintWarning($"The shader resource '{srvResource.Name}' is bound for input and as a depth/stencil. It will be unbound from the shader resources.", LoggingLevel.Verbose);
                 }
 
                 srvs[start + s] = null;
@@ -255,7 +255,7 @@ internal class StateEvaluator(GorgonGraphics graphics)
 
                 if (GorgonGraphics.IsDebugEnabled)
                 {
-                    _log.Print($"WARNING: The shader resource '{srvResource.Name}' is bound for input and as a render target. It will be unbound from the shader resources.", LoggingLevel.Verbose);
+                    _log.PrintWarning($"The shader resource '{srvResource.Name}' is bound for input and as a render target. It will be unbound from the shader resources.", LoggingLevel.Verbose);
                 }
 
                 srvs[start + s] = null;
@@ -305,7 +305,7 @@ internal class StateEvaluator(GorgonGraphics graphics)
 
                 if (GorgonGraphics.IsDebugEnabled)
                 {
-                    _log.Print($"WARNING: The shader resource '{srvResource.Name}' is bound for input and as an unordered access view. It will be unbound from the shader resources.", LoggingLevel.Verbose);
+                    _log.PrintWarning($"The shader resource '{srvResource.Name}' is bound for input and as an unordered access view. It will be unbound from the shader resources.", LoggingLevel.Verbose);
                 }
 
                 srvs[start + s] = null;
@@ -376,7 +376,7 @@ internal class StateEvaluator(GorgonGraphics graphics)
 
             if (GorgonGraphics.IsDebugEnabled)
             {
-                _log.Print($"WARNING: The depth buffer resource '{depth.Resource.Name}' is bound as an input. Unbinding...", LoggingLevel.Verbose);
+                _log.PrintWarning($"The depth buffer resource '{depth.Resource.Name}' is bound as an input. Unbinding...", LoggingLevel.Verbose);
             }
 
             int arrayIndex = start + s;

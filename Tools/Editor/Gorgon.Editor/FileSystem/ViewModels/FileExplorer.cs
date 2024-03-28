@@ -1920,7 +1920,7 @@ internal class FileExplorer
 
             if (string.IsNullOrWhiteSpace(virtualPath))
             {
-                HostServices.Log.Print($"ERROR: The current path is empty/null. Cannot copy.", LoggingLevel.All);
+                HostServices.Log.PrintError($"The current path is empty/null. Cannot copy.", LoggingLevel.All);
                 return;
             }
 
@@ -2087,7 +2087,7 @@ internal class FileExplorer
 
             if (string.IsNullOrWhiteSpace(virtualPath))
             {
-                HostServices.Log.Print($"ERROR: The current path is empty/null. Cannot copy.", LoggingLevel.All);
+                HostServices.Log.PrintError($"The current path is empty/null. Cannot copy.", LoggingLevel.All);
                 return;
             }
 
@@ -2221,7 +2221,7 @@ internal class FileExplorer
 
             if (string.IsNullOrWhiteSpace(virtualPath))
             {
-                HostServices.Log.Print($"ERROR: The current path is empty/null. Cannot copy.", LoggingLevel.All);
+                HostServices.Log.PrintError($"The current path is empty/null. Cannot copy.", LoggingLevel.All);
                 return;
             }
 
@@ -2352,7 +2352,7 @@ internal class FileExplorer
 
             if (string.IsNullOrWhiteSpace(virtualPath))
             {
-                HostServices.Log.Print($"ERROR: The current path is empty/null. Cannot copy.", LoggingLevel.All);
+                HostServices.Log.PrintError($"The current path is empty/null. Cannot copy.", LoggingLevel.All);
                 return;
             }
 
@@ -2494,7 +2494,7 @@ internal class FileExplorer
 
             if (string.IsNullOrWhiteSpace(virtualPath))
             {
-                HostServices.Log.Print($"ERROR: The current path is empty/null. Cannot copy.", LoggingLevel.All);
+                HostServices.Log.PrintError($"The current path is empty/null. Cannot copy.", LoggingLevel.All);
                 return;
             }
 
@@ -2587,7 +2587,7 @@ internal class FileExplorer
 
             if (string.IsNullOrWhiteSpace(virtualPath))
             {
-                HostServices.Log.Print($"ERROR: The current path is empty/null. Cannot export.", LoggingLevel.All);
+                HostServices.Log.PrintError($"The current path is empty/null. Cannot export.", LoggingLevel.All);
                 return;
             }
 
@@ -2900,7 +2900,7 @@ internal class FileExplorer
         }
         catch (Exception ex)
         {
-            HostServices.Log.Print("ERROR: Failed to refresh the file system.", LoggingLevel.Simple);
+            HostServices.Log.PrintError("Failed to refresh the file system.", LoggingLevel.Simple);
             HostServices.Log.LogException(ex);
         }
         finally

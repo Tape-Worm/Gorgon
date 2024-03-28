@@ -348,7 +348,7 @@ internal class Main
                 }
                 catch (Exception ex)
                 {
-                    HostServices.Log.Print("ERROR: Cannot delete import working directory.", LoggingLevel.Simple);
+                    HostServices.Log.PrintError("Cannot delete import working directory.", LoggingLevel.Simple);
                     HostServices.Log.LogException(ex);
                 }
             }
@@ -407,7 +407,7 @@ internal class Main
 
         if (project is null)
         {
-            HostServices.Log.Print("ERROR: No project was returned from the project manager.", LoggingLevel.Simple);
+            HostServices.Log.PrintError("No project was returned from the project manager.", LoggingLevel.Simple);
             return;
         }
 
@@ -543,7 +543,7 @@ internal class Main
 
             if (!System.IO.Directory.Exists(target))
             {
-                HostServices.Log.Print("ERROR: No project was returned from the project manager.", LoggingLevel.Simple);
+                HostServices.Log.PrintError("No project was returned from the project manager.", LoggingLevel.Simple);
                 return;
             }
 
@@ -747,7 +747,7 @@ internal class Main
             }
             catch (Exception ex)
             {
-                HostServices.Log.Print("ERROR: Failed to unload main view model!", LoggingLevel.Simple);
+                HostServices.Log.PrintError("Failed to unload main view model!", LoggingLevel.Simple);
                 HostServices.Log.LogException(ex);
             }
 

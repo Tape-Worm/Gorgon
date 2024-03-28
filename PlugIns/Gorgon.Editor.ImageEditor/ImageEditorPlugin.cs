@@ -148,7 +148,7 @@ internal class ImageEditorPlugIn
 
         if (!result.Exists)
         {
-            HostContentServices.Log.Print($"WARNING: Texconv.exe was not found at {pluginDir.FullName}. Block compressed formats will be unavailable.", LoggingLevel.Simple);
+            HostContentServices.Log.PrintWarning($"Texconv.exe was not found at {pluginDir.FullName}. Block compressed formats will be unavailable.", LoggingLevel.Simple);
         }
         else
         {
@@ -191,7 +191,7 @@ internal class ImageEditorPlugIn
         }
         catch (Exception ex)
         {
-            HostContentServices.Log.Print($"ERROR: Cannot create thumbnail for '{content.Path}'", LoggingLevel.Intermediate);
+            HostContentServices.Log.PrintError($"Cannot create thumbnail for '{content.Path}'", LoggingLevel.Intermediate);
             HostContentServices.Log.LogException(ex);
             return (null, false);
         }
@@ -524,7 +524,7 @@ internal class ImageEditorPlugIn
         }
         catch (Exception ex)
         {
-            HostContentServices.Log.Print($"ERROR: Cannot create thumbnail for '{contentFile.Path}'", LoggingLevel.Intermediate);
+            HostContentServices.Log.PrintError($"Cannot create thumbnail for '{contentFile.Path}'", LoggingLevel.Intermediate);
             HostContentServices.Log.LogException(ex);
             return null;
         }

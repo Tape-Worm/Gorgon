@@ -136,7 +136,7 @@ public class GorgonTextureCache<T>(GorgonGraphics graphics)
             }
             else
             {
-                _graphics.Log.Print($"WARNING: Texture '{textureName}' exists in the cache with {entry.Value.Users} users, but was garbage collected!", LoggingLevel.Intermediate);
+                _graphics.Log.PrintWarning($"Texture '{textureName}' exists in the cache with {entry.Value.Users} users, but was garbage collected!", LoggingLevel.Intermediate);
             }
 
             texture = textureRef;
@@ -175,7 +175,7 @@ public class GorgonTextureCache<T>(GorgonGraphics graphics)
 
         if (!_cache.TryGetValue(texture.Name, out Lazy<TextureEntry> entry))
         {
-            _graphics.Log.Print($"WARNING: Texture '{texture.Name}' not found in cache.", LoggingLevel.Verbose);
+            _graphics.Log.PrintWarning($"Texture '{texture.Name}' not found in cache.", LoggingLevel.Verbose);
             return false;
         }
 
@@ -313,7 +313,7 @@ public class GorgonTextureCache<T>(GorgonGraphics graphics)
 
                 if (texture is null)
                 {
-                    _graphics.Log.Print($"WARNING: The texture '{textureName}' was not loaded and not added to cache.", LoggingLevel.Intermediate);
+                    _graphics.Log.PrintWarning($"The texture '{textureName}' was not loaded and not added to cache.", LoggingLevel.Intermediate);
                     return null;
                 }
 
@@ -330,7 +330,7 @@ public class GorgonTextureCache<T>(GorgonGraphics graphics)
 
             if (texture is null)
             {
-                _graphics.Log.Print($"WARNING: The texture '{textureName}' was not loaded and not added to cache.", LoggingLevel.Intermediate);
+                _graphics.Log.PrintWarning($"The texture '{textureName}' was not loaded and not added to cache.", LoggingLevel.Intermediate);
                 return null;
             }
 

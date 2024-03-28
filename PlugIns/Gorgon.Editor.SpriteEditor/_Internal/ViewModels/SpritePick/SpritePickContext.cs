@@ -265,7 +265,7 @@ internal class SpritePickContext
         }
         catch (Exception ex)
         {
-            _hostServices.Log.Print("Error cancelling sprite clipping.", LoggingLevel.Verbose);
+            _hostServices.Log.PrintError("Error cancelling sprite clipping.", LoggingLevel.Verbose);
             _hostServices.Log.LogException(ex);
         }
     }
@@ -292,7 +292,7 @@ internal class SpritePickContext
         }
         catch (Exception ex)
         {
-            _hostServices.Log.Print("Error extracting sprite image data.", LoggingLevel.Verbose);
+            _hostServices.Log.PrintError("Error extracting sprite image data.", LoggingLevel.Verbose);
             _hostServices.Log.LogException(ex);
         }
     }

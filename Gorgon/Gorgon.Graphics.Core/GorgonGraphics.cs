@@ -396,7 +396,7 @@ public sealed class GorgonGraphics
         }
         catch (DX.SharpDXException sdEx)
         {
-            Log.Print($"ERROR: Could not retrieve a multisample quality level max for format: [{format}]. Exception: {sdEx.Message}", LoggingLevel.Verbose);
+            Log.PrintError($"Could not retrieve a multisample quality level max for format: [{format}]. Exception: {sdEx.Message}", LoggingLevel.Verbose);
         }
 
         return GorgonMultisampleInfo.NoMultiSampling;

@@ -89,7 +89,7 @@ internal sealed class GorgonDirectInputDriver
                 return true;
             }
 
-            Log.Print($"WARNING: Found gaming device '{device.ProductName}', but it is not attached and enumeration is filtered for attached devices only.  Skipping...",
+            Log.PrintWarning($"Found gaming device '{device.ProductName}', but it is not attached and enumeration is filtered for attached devices only.  Skipping...",
                       LoggingLevel.Verbose);
 
             return false;

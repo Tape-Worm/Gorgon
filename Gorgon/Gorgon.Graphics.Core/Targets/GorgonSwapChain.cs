@@ -691,7 +691,7 @@ public sealed class GorgonSwapChain
             if ((dsv is null) && (Graphics.DepthStencilView.Texture is not null))
             {
                 // Log a warning here because we didn't unbind our depth/stencil.
-                Graphics.Log.Print($"Warning: Depth/Stencil view for resource '{Graphics.DepthStencilView.Texture.Name}' ({Graphics.DepthStencilView.Width}x{Graphics.DepthStencilView.Height}) does not match the size of the swap chain ({_info.Width}x{_info.Height}). Therefore, the depth/stencil view will be unbound from the pipeline.",
+                Graphics.Log.PrintWarning($"Depth/Stencil view for resource '{Graphics.DepthStencilView.Texture.Name}' ({Graphics.DepthStencilView.Width}x{Graphics.DepthStencilView.Height}) does not match the size of the swap chain ({_info.Width}x{_info.Height}). Therefore, the depth/stencil view will be unbound from the pipeline.",
                                    LoggingLevel.Verbose);
             }
         }
@@ -1291,12 +1291,12 @@ public sealed class GorgonSwapChain
             // Check for temporary render target memory leaks.
             if (Graphics.TemporaryTargets.RentedCount > 4)
             {
-                Graphics.Log.Print($"WARNING: There are still {Graphics.TemporaryTargets.RentedCount} render targets in flight at the end of this frame. This may indicate a memory leak. Please ensure to call the Return method to release the rented targets.", LoggingLevel.Simple);
+                Graphics.Log.PrintWarning($"There are still {Graphics.TemporaryTargets.RentedCount} render targets in flight at the end of this frame. This may indicate a memory leak. Please ensure to call the Return method to release the rented targets.", LoggingLevel.Simple);
             }
 
             if (Graphics.TemporaryTargets.RentedCount > 100)
             {
-                Graphics.Log.Print($"ERROR: There are over 100 render targets in flight at the end of this frame. This is almost certainly a memory leak. The application has been stopped in order to keep from running out of memory.", LoggingLevel.Simple);
+                Graphics.Log.PrintError($"There are over 100 render targets in flight at the end of this frame. This is almost certainly a memory leak. The application has been stopped in order to keep from running out of memory.", LoggingLevel.Simple);
                 throw new GorgonException(GorgonResult.OutOfMemory, Resources.GORGFX_ERR_RENTED_TARGETS_IN_FLIGHT);
             }
         }

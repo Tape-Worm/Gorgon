@@ -554,7 +554,7 @@ internal class ProjectEditor
         }
         catch (Exception ex)
         {
-            HostServices.Log.Print("ERROR: Could not save the project metadata due to an exception!!", LoggingLevel.Simple);
+            HostServices.Log.PrintError("Could not save the project metadata due to an exception!!", LoggingLevel.Simple);
             HostServices.Log.LogException(ex);
         }
         finally
@@ -580,7 +580,7 @@ internal class ProjectEditor
         }
         catch (Exception ex)
         {
-            HostServices.Log.Print("Error closing the application.", LoggingLevel.Simple);
+            HostServices.Log.PrintError("Error closing the application.", LoggingLevel.Simple);
             HostServices.Log.LogException(ex);
         }
     }
@@ -596,7 +596,7 @@ internal class ProjectEditor
         }
         catch (Exception ex)
         {
-            HostServices.Log.Print("Error closing the application.", LoggingLevel.Simple);
+            HostServices.Log.PrintError("Error closing the application.", LoggingLevel.Simple);
             HostServices.Log.LogException(ex);
         }
     }

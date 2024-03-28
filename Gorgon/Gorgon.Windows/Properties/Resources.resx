@@ -133,9 +133,6 @@
   <data name="remove_24x24" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\remove_24x24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="GOR_LOG_WARNING2" xml:space="preserve">
-    <value>[WARNING]:</value>
-  </data>
   <data name="GOR_EXCEPT_CUSTOM_INFO" xml:space="preserve">
     <value>Custom Information</value>
   </data>
@@ -158,7 +155,7 @@
     <value>Cannot remove an idle loop when there is no form or application context.</value>
   </data>
   <data name="GOR_LOG_ERROR" xml:space="preserve">
-    <value>ERROR: </value>
+    <value>Error</value>
   </data>
   <data name="GOR_EXCEPT_NO_MSG" xml:space="preserve">
     <value>No message given.</value>
@@ -170,7 +167,7 @@
     <value>..\Resources\add_24x24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="GOR_LOG_WARNING" xml:space="preserve">
-    <value>WARNING: </value>
+    <value>Warning</value>
   </data>
   <data name="Info_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Info_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>

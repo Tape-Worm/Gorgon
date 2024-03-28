@@ -945,7 +945,7 @@ internal class AnimationContent
         }
         catch (Exception ex)
         {
-            HostServices.Log.Print("ERROR: There was an error updating the animation preview.", LoggingLevel.Verbose);
+            HostServices.Log.PrintError("There was an error updating the animation preview.", LoggingLevel.Verbose);
             HostServices.Log.LogException(ex);
         }
     }
@@ -970,7 +970,7 @@ internal class AnimationContent
         }
         catch (Exception ex)
         {
-            HostServices.Log.Print("ERROR: There was an error retrieving the key frame.", LoggingLevel.Verbose);
+            HostServices.Log.PrintError("There was an error retrieving the key frame.", LoggingLevel.Verbose);
             HostServices.Log.LogException(ex);
         }
     }
@@ -1462,7 +1462,7 @@ internal class AnimationContent
         }
         catch (Exception ex)
         {
-            HostServices.Log.Print("ERROR: There was an error selecting the tracks/keys for the animation.", LoggingLevel.Verbose);
+            HostServices.Log.PrintError("There was an error selecting the tracks/keys for the animation.", LoggingLevel.Verbose);
             HostServices.Log.LogException(ex);
         }
     }
@@ -1611,7 +1611,7 @@ internal class AnimationContent
         }
         catch (Exception ex)
         {
-            HostServices.Log.Print("Error: Failed to move selection to the previous key.", LoggingLevel.Verbose);
+            HostServices.Log.PrintError("Failed to move selection to the previous key.", LoggingLevel.Verbose);
             HostServices.Log.LogException(ex);
         }
     }
@@ -1674,7 +1674,7 @@ internal class AnimationContent
         }
         catch (Exception ex)
         {
-            HostServices.Log.Print("Error: Failed to move selection to the next key.", LoggingLevel.Verbose);
+            HostServices.Log.PrintError("Failed to move selection to the next key.", LoggingLevel.Verbose);
             HostServices.Log.LogException(ex);
         }
     }
@@ -1725,7 +1725,7 @@ internal class AnimationContent
         }
         catch (Exception ex)
         {
-            HostServices.Log.Print("Error: Failed to move selection to the first key.", LoggingLevel.Verbose);
+            HostServices.Log.PrintError("Failed to move selection to the first key.", LoggingLevel.Verbose);
             HostServices.Log.LogException(ex);
         }
     }
@@ -1786,7 +1786,7 @@ internal class AnimationContent
         }
         catch (Exception ex)
         {
-            HostServices.Log.Print("Error: Failed to move selection to the last key.", LoggingLevel.Verbose);
+            HostServices.Log.PrintError("Failed to move selection to the last key.", LoggingLevel.Verbose);
             HostServices.Log.LogException(ex);
         }
     }

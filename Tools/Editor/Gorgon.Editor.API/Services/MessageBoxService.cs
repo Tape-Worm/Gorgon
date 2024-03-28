@@ -100,7 +100,7 @@ public class MessageBoxService(IGorgonLog log)
             throw new ArgumentNullException(nameof(ex));
         }
 
-        _log.Print($"ERROR: {(string.IsNullOrWhiteSpace(message) ? ex.Message : message)}", LoggingLevel.Verbose);
+        _log.PrintError($"{(string.IsNullOrWhiteSpace(message) ? ex.Message : message)}", LoggingLevel.Verbose);
         _log.LogException(ex);
 
         GorgonDialogs.ErrorBox(GetParentForm(), string.IsNullOrWhiteSpace(message) ? ex.Message : message, caption, ex);
@@ -116,7 +116,7 @@ public class MessageBoxService(IGorgonLog log)
     {
         if (!string.IsNullOrWhiteSpace(message))
         {
-            _log.Print($"ERROR: {message}", LoggingLevel.Intermediate);
+            _log.PrintError($"{message}", LoggingLevel.Intermediate);
         }
 
         GorgonDialogs.ErrorBox(GetParentForm(), message, caption, details);
@@ -139,7 +139,7 @@ public class MessageBoxService(IGorgonLog log)
     {
         if (!string.IsNullOrWhiteSpace(message))
         {
-            _log.Print($"WARNING: {message}", LoggingLevel.Simple);
+            _log.PrintWarning($"{message}", LoggingLevel.Simple);
         }
 
         GorgonDialogs.WarningBox(GetParentForm(), message, caption, details);

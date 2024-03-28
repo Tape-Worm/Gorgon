@@ -829,7 +829,7 @@ internal class ImageAtlas
         }
         catch (Exception ex)
         {
-            HostServices.Log.Print("ERROR: There was an error canceling the image atlas operation.", Diagnostics.LoggingLevel.Simple);
+            HostServices.Log.PrintError("There was an error canceling the image atlas operation.", Diagnostics.LoggingLevel.Simple);
             HostServices.Log.LogException(ex);
         }
     }

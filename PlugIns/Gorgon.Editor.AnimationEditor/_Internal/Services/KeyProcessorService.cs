@@ -107,7 +107,7 @@ internal class KeyProcessorService(ITextureCache textureCache, IGorgonLog log)
 
         if (textureValue.TextureFile is null)
         {
-            _log.Print("WARNING: The source key frame does not have a texture file associated. The key frame will not be available in the animation.", LoggingLevel.Intermediate);
+            _log.PrintWarning("The source key frame does not have a texture file associated. The key frame will not be available in the animation.", LoggingLevel.Intermediate);
             return null;
         }
 

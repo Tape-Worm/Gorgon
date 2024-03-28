@@ -43,6 +43,8 @@ internal class Context
     private readonly IGorgonTimer _timer;
     // A splash screen.
     private FormSplash _splashScreen;
+    // The log for the application.
+    private readonly IGorgonLog _log;
 
     /// <summary>
     /// Handles the KeyDown event of the MainForm control.
@@ -52,20 +54,30 @@ internal class Context
     /// <exception cref="NotSupportedException"></exception>
     private void MainForm_KeyDown(object sender, KeyEventArgs e)
     {
-        if (e.KeyCode != Keys.Space)
+        switch (e.KeyCode)
         {
-            return;
-        }
+            case Keys.Space:
+                ((FormMain)MainForm).Clear();
+                if (GorgonApplication.IdleMethod == Program.Idle)
+                {
 
-        ((FormMain)MainForm).Clear();
+                    GorgonApplication.IdleMethod = Program.NewIdle;
+                }
+                else
+                {
 
-        if (GorgonApplication.IdleMethod == Program.Idle)
-        {
-            GorgonApplication.IdleMethod = Program.NewIdle;
-        }
-        else
-        {
-            GorgonApplication.IdleMethod = Program.Idle;
+                    GorgonApplication.IdleMethod = Program.Idle;
+                }
+                break;
+            case Keys.E:
+                _log.PrintError("This is an error.", LoggingLevel.Simple);
+                break;
+            case Keys.W:
+                _log.PrintWarning("This is a warning.", LoggingLevel.Simple);
+                break;
+            case Keys.X:
+                _log.LogException(new Exception("This is an exception."));
+                break;
         }
     }
 
@@ -164,8 +176,11 @@ internal class Context
     /// <summary>
     /// Initializes a new instance of the <see cref="Context" /> class.
     /// </summary>
-    public Context()
+    /// <param name="log">The log for the application.</param>
+    public Context(IGorgonLog log)
     {
+        _log = log;
+
         // Create our timer object.
         if (GorgonTimerQpc.SupportsQpc())
         {

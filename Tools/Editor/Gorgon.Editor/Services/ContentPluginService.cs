@@ -139,10 +139,10 @@ internal class ContentPlugInService
                     // Shut the plug in down.
                     plugin.Shutdown();
 
-                    _hostServices.Log.Print($"WARNING: The content plug in '{plugin.Name}' is disabled:", LoggingLevel.Simple);
+                    _hostServices.Log.PrintWarning($"The content plug in '{plugin.Name}' is disabled:", LoggingLevel.Simple);
                     foreach (string reason in validation)
                     {
-                        _hostServices.Log.Print($"WARNING: {reason}", LoggingLevel.Verbose);
+                        _hostServices.Log.PrintWarning($"{reason}", LoggingLevel.Verbose);
                     }
 
                     _disabled[plugin.Name] = new DisabledPlugIn(DisabledReasonCode.ValidationError, plugin.Name, string.Join("\r\n", validation), plugin.PlugInPath);
@@ -159,7 +159,7 @@ internal class ContentPlugInService
                 // Attempt to gracefully shut the plug in down if we error out.
                 plugin.Shutdown();
 
-                _hostServices.Log.Print($"ERROR: Cannot create content plug in '{plugin.Name}'.", LoggingLevel.Simple);
+                _hostServices.Log.PrintError($"Cannot create content plug in '{plugin.Name}'.", LoggingLevel.Simple);
                 _hostServices.Log.LogException(ex);
 
                 _disabled[plugin.Name] = new DisabledPlugIn(DisabledReasonCode.Error, plugin.Name, string.Format(Resources.GOREDIT_DISABLE_CONTENT_PLUGIN_EXCEPTION, ex.Message), plugin.PlugInPath);
@@ -191,10 +191,10 @@ internal class ContentPlugInService
                     // Shut the plug in down.
                     plugin.Shutdown();
 
-                    _hostServices.Log.Print($"WARNING: The importer plug in '{plugin.Name}' is disabled:", LoggingLevel.Simple);
+                    _hostServices.Log.PrintWarning($"The importer plug in '{plugin.Name}' is disabled:", LoggingLevel.Simple);
                     foreach (string reason in validation)
                     {
-                        _hostServices.Log.Print($"WARNING: {reason}", LoggingLevel.Verbose);
+                        _hostServices.Log.PrintWarning($"{reason}", LoggingLevel.Verbose);
                     }
 
                     _disabled[plugin.Name] = new DisabledPlugIn(DisabledReasonCode.ValidationError, plugin.Name, string.Join("\r\n", validation), plugin.PlugInPath);
@@ -211,7 +211,7 @@ internal class ContentPlugInService
                 // Attempt to gracefully shut the plug in down if we error out.
                 plugin.Shutdown();
 
-                _hostServices.Log.Print($"ERROR: Cannot create importer plug in '{plugin.Name}'.", LoggingLevel.Simple);
+                _hostServices.Log.PrintError($"Cannot create importer plug in '{plugin.Name}'.", LoggingLevel.Simple);
                 _hostServices.Log.LogException(ex);
 
                 _disabled[plugin.Name] = new DisabledPlugIn(DisabledReasonCode.Error, plugin.Name, string.Format(Resources.GOREDIT_DISABLE_CONTENT_PLUGIN_EXCEPTION, ex.Message), plugin.PlugInPath);

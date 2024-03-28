@@ -173,7 +173,7 @@ internal class SpriteTextureService(IGraphicsContext graphicsContext, IContentFi
             if ((!spriteContent.Metadata.DependsOn.TryGetValue(CommonEditorContentTypes.ImageType, out List<string> dependency))
                     || (dependency.Count == 0))
             {
-                _log.Print("WARNING: No sprite texture dependency found, interrogating sprite data...", LoggingLevel.Verbose);
+                _log.PrintWarning("No sprite texture dependency found, interrogating sprite data...", LoggingLevel.Verbose);
                 // If there's no linkage, then see if the sprite has the path information embedded within its data.
                 using Stream spriteStream = _fileManager.OpenStream(spriteContent.Path, FileMode.Open);
                 string textureName = _spriteCodec.GetAssociatedTextureName(spriteStream);
@@ -193,14 +193,14 @@ internal class SpriteTextureService(IGraphicsContext graphicsContext, IContentFi
 
             if (!IsContentImage(imageFile))
             {
-                _log.Print($"ERROR: '{dependency[0]}' not found in project or is not an image content file.", LoggingLevel.Simple);
+                _log.PrintError($"'{dependency[0]}' not found in project or is not an image content file.", LoggingLevel.Simple);
                 return (null, null);
             }
 
             using Stream stream = _fileManager.OpenStream(imageFile.Path, FileMode.Open);
             if (!_imageCodec.IsReadable(stream))
             {
-                _log.Print($"ERROR: '{dependency[0]}' is not a {_imageCodec.Name} file.", LoggingLevel.Simple);
+                _log.PrintError($"'{dependency[0]}' is not a {_imageCodec.Name} file.", LoggingLevel.Simple);
                 return ((IGorgonImage, IContentFile imageFile))(null, null);
             }
             else

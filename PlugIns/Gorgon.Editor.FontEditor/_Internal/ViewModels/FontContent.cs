@@ -919,7 +919,7 @@ internal class FontContent
             if ((noRegular) && (!isBold) && (!isItalic))
             {
                 HostServices.MessageDisplay.ShowError(string.Format(Resources.GORFNT_ERR_FONT_FAMILY_NO_STYLE, fontFamily));
-                HostServices.Log.Print($"ERROR: The font family '{fontFamily}' does not support a regular style, bold style, or italic style.", LoggingLevel.Simple);
+                HostServices.Log.PrintError($"The font family '{fontFamily}' does not support a regular style, bold style, or italic style.", LoggingLevel.Simple);
                 return;
             }
 
@@ -1041,7 +1041,7 @@ internal class FontContent
         }
         catch (Exception ex)
         {
-            HostServices.Log.Print("Error: The texture editor context could not be activated.", LoggingLevel.Simple);
+            HostServices.Log.PrintError("The texture editor context could not be activated.", LoggingLevel.Simple);
             HostServices.Log.LogException(ex);
         }
     }
@@ -1063,7 +1063,7 @@ internal class FontContent
         }
         catch (Exception ex)
         {
-            HostServices.Log.Print("Error: The texture character selector could not be activated.", LoggingLevel.Simple);
+            HostServices.Log.PrintError("The texture character selector could not be activated.", LoggingLevel.Simple);
             HostServices.Log.LogException(ex);
         }
     }

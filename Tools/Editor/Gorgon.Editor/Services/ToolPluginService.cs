@@ -200,10 +200,10 @@ internal class ToolPlugInService(string settingsDirectory, IHostContentServices 
                     // Shut the plug in down.
                     plugin.Shutdown();
 
-                    Program.Log.Print($"WARNING: The tool plug in '{plugin.Name}' is disabled:", LoggingLevel.Simple);
+                    Program.Log.PrintWarning($"The tool plug in '{plugin.Name}' is disabled:", LoggingLevel.Simple);
                     foreach (string reason in validation)
                     {
-                        Program.Log.Print($"WARNING: {reason}", LoggingLevel.Verbose);
+                        Program.Log.PrintWarning($"{reason}", LoggingLevel.Verbose);
                     }
 
                     _disabled[plugin.Name] = new DisabledPlugIn(DisabledReasonCode.ValidationError, plugin.Name, string.Join("\r\n", validation), plugin.PlugInPath);
@@ -220,7 +220,7 @@ internal class ToolPlugInService(string settingsDirectory, IHostContentServices 
                 // Attempt to gracefully shut the plug in down if we error out.
                 plugin.Shutdown();
 
-                Program.Log.Print($"ERROR: Cannot create tool plug in '{plugin.Name}'.", LoggingLevel.Simple);
+                Program.Log.PrintError($"Cannot create tool plug in '{plugin.Name}'.", LoggingLevel.Simple);
                 Program.Log.LogException(ex);
 
                 _disabled[plugin.Name] = new DisabledPlugIn(DisabledReasonCode.Error, plugin.Name, string.Format(Resources.GOREDIT_DISABLE_CONTENT_PLUGIN_EXCEPTION, ex.Message), plugin.PlugInPath);

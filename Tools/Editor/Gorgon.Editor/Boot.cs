@@ -214,7 +214,7 @@ internal class Boot
                 {
                     Error = (o, e) =>
                     {
-                        Program.Log.Print("ERROR: Could not read the settings data.", LoggingLevel.Simple);
+                        Program.Log.PrintError("Could not read the settings data.", LoggingLevel.Simple);
                         Program.Log.LogException(e.ErrorContext.Error);
                         e.ErrorContext.Handled = true;
                     }
@@ -433,7 +433,7 @@ internal class Boot
 
             if (!plugInLocation.Exists)
             {
-                Program.Log.Print($"ERROR: Plug in path '{plugInLocation.FullName}' was not found.  No plug ins will be loaded.", LoggingLevel.Simple);
+                Program.Log.PrintError($"Plug in path '{plugInLocation.FullName}' was not found.  No plug ins will be loaded.", LoggingLevel.Simple);
                 GorgonDialogs.ErrorBox(null, Resources.GOREDIT_ERR_LOADING_PLUGINS);
             }
 

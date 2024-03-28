@@ -60,7 +60,7 @@ internal class VideoAdapterEnumerator
 
         if (featureSet is null)
         {
-            log.Print("WARNING: The WARP software adapter does not support the minimum feature set of 12.0. This device will be excluded.", LoggingLevel.All);
+            log.PrintWarning("The WARP software adapter does not support the minimum feature set of 12.0. This device will be excluded.", LoggingLevel.All);
             return null;
         }
 
@@ -263,7 +263,7 @@ internal class VideoAdapterEnumerator
                 // Do not enumerate this device if its feature set is not supported.
                 if (featureSet is null)
                 {
-                    log.Print($"WARNING: The video adapter '{adapterName}' (max. feature level [{D3DDevice5.FeatureLevel}]) is not supported by Gorgon and will be skipped.", LoggingLevel.Verbose);
+                    log.PrintWarning($"The video adapter '{adapterName}' (max. feature level [{D3DDevice5.FeatureLevel}]) is not supported by Gorgon and will be skipped.", LoggingLevel.Verbose);
                     continue;
                 }
 
@@ -271,7 +271,7 @@ internal class VideoAdapterEnumerator
 
                 if (outputs.Count <= 0)
                 {
-                    log.Print($"WARNING:  Video adapter '{adapterName}' has no outputs. Full screen mode will not be possible.", LoggingLevel.Verbose);
+                    log.PrintWarning($" Video adapter '{adapterName}' has no outputs. Full screen mode will not be possible.", LoggingLevel.Verbose);
                 }
 
                 VideoAdapterInfo videoAdapter = new(i, adapter, featureSet.Value, outputs, VideoDeviceType.Hardware);
@@ -294,7 +294,7 @@ internal class VideoAdapterEnumerator
             }
         }
 
-        log.Print("Found {0} video adapters.", LoggingLevel.Simple, devices.Count);
+        log.Print($"Found {devices.Count} video adapters.", LoggingLevel.Simple);
 
         return devices;
     }

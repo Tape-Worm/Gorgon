@@ -266,7 +266,7 @@ internal class FileSystemProviders(IHostServices hostServices)
             }
             catch (Exception ex)
             {
-                _hostServices.Log.Print($"ERROR: Cannot create file system reader plug in '{reader.Name}'.", LoggingLevel.Simple);
+                _hostServices.Log.PrintError($"Cannot create file system reader plug in '{reader.Name}'.", LoggingLevel.Simple);
                 _hostServices.Log.LogException(ex);
 
                 _disabled[reader.Name] = new DisabledPlugIn(DisabledReasonCode.Error, reader.Name, string.Format(Resources.GOREDIT_DISABLE_FILE_PROVIDER_EXCEPTION, ex.Message), reader.ProviderPath);
@@ -284,10 +284,10 @@ internal class FileSystemProviders(IHostServices hostServices)
 
                 if (disabled.Count != 0)
                 {
-                    _hostServices.Log.Print($"WARNING: The file system writer plug in '{writer.Name}' is disabled:", LoggingLevel.Simple);
+                    _hostServices.Log.PrintWarning($"The file system writer plug in '{writer.Name}' is disabled:", LoggingLevel.Simple);
                     foreach (string reason in disabled)
                     {
-                        _hostServices.Log.Print($"WARNING: {reason}", LoggingLevel.Verbose);
+                        _hostServices.Log.PrintWarning($"{reason}", LoggingLevel.Verbose);
                     }
 
                     _disabled[writer.Name] = new DisabledPlugIn(DisabledReasonCode.ValidationError, writer.Name, string.Join("\n", disabled), writer.PlugInPath);
@@ -299,7 +299,7 @@ internal class FileSystemProviders(IHostServices hostServices)
             }
             catch (Exception ex)
             {
-                _hostServices.Log.Print($"ERROR: Cannot create file system writer plug in '{writer.Name}'.", LoggingLevel.Simple);
+                _hostServices.Log.PrintError($"Cannot create file system writer plug in '{writer.Name}'.", LoggingLevel.Simple);
                 _hostServices.Log.LogException(ex);
 
                 _disabled[writer.Name] = new DisabledPlugIn(DisabledReasonCode.Error, writer.Name, string.Format(Resources.GOREDIT_DISABLE_FILE_PROVIDER_EXCEPTION, ex.Message), writer.PlugInPath);
