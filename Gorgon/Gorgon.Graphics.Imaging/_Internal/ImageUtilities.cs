@@ -239,7 +239,7 @@ static class ImageUtilities
 
         if (src != dest)
         {
-            Unsafe.CopyBlock(dest, src, (uint)size);
+            Unsafe.CopyBlock((void*)dest, (void*)src, (uint)size);
         }
     }
 
@@ -481,7 +481,7 @@ static class ImageUtilities
                     return false;
                 }
 
-                Unsafe.CopyBlock(dest, src, (uint)srcPitch);
+                Unsafe.CopyBlock((void*)dest, (void*)src, (uint)srcPitch);
 
                 return false;
             case BufferFormat.A8_UNorm:
@@ -705,7 +705,7 @@ static class ImageUtilities
                     }
                     return;
                 case BufferFormat.A8_UNorm:
-                    Unsafe.InitBlock(dest, 0xff, (uint)size);
+                    Unsafe.InitBlock((void*)dest, 0xff, (uint)size);
                     return;
             }
         }
@@ -713,7 +713,7 @@ static class ImageUtilities
         // Copy if not doing an in-place update.
         if (dest != src)
         {
-            Unsafe.CopyBlock(dest, src, (uint)size);
+            Unsafe.CopyBlock((void*)dest, (void*)src, (uint)size);
         }
     }
 

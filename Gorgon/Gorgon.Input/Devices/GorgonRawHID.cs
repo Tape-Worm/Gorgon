@@ -121,7 +121,7 @@ public class GorgonRawHID(GorgonRawHIDInfo hidInfo)
                 _preParsedData ??= RawInputApi.GetPreparsedDeviceInfoData(Handle);
             }
 
-            return _preParsedData;
+            return (GorgonPtr<byte>)_preParsedData;
         }
     }
 

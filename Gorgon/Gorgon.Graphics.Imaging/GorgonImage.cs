@@ -166,7 +166,7 @@ public partial class GorgonImage
     /// <param name="data">Pre-existing data to use.</param>
     private void Initialize(ReadOnlySpan<byte> data)
     {
-        _imagePtr = _imageData = new GorgonNativeBuffer<byte>(SizeInBytes);
+        _imagePtr = (GorgonPtr<byte>)(_imageData = new GorgonNativeBuffer<byte>(SizeInBytes));
 
         if (!data.IsEmpty)
         {
@@ -472,7 +472,7 @@ public partial class GorgonImage
         GorgonImageInfo info = new(image);
         GorgonFormatInfo formatInfo = new(info.Format);
         GorgonNativeBuffer<byte> data = new(image.SizeInBytes);
-        GorgonPtr<byte> ptr = data.Pointer;
+        GorgonPtr<byte> ptr = (GorgonPtr<byte>)data;
 
         image.ImageData.CopyTo(ptr);
 
@@ -567,7 +567,7 @@ public partial class GorgonImage
             try
             {
                 bufferList = new ImageBufferList(info);
-                bufferList.CreateBuffers(decoded.Pointer);
+                bufferList.CreateBuffers((GorgonPtr<byte>)decoded);
 
                 for (int arrayIndex = 0; arrayIndex < ArrayCount; ++arrayIndex)
                 {
@@ -592,12 +592,13 @@ public partial class GorgonImage
             }
 
             _imageData?.Dispose();
-            _imagePtr = _imageData = null;
+            _imageData = null;
+            _imagePtr = GorgonPtr<byte>.NullPtr;
 
             SanitizeInfo(info);
             FormatInfo = new GorgonFormatInfo(info.Format);
             SizeInBytes = decoded.SizeInBytes;
-            _imagePtr = _imageData = decoded;
+            _imagePtr = (GorgonPtr<byte>)(_imageData = decoded);
             _imageBuffers = bufferList;
         }
 

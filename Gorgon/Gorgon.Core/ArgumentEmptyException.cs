@@ -77,6 +77,7 @@ public class ArgumentEmptyException
     /// <summary>
     /// Function to throw the appropriate exception if the argument is <b>null</b>, or empty.
     /// </summary>
+    /// <typeparam name="T">The type of value in the collection.</typeparam>
     /// <param name="value">The value to evaluate.</param>
     /// <param name="parameterName">The name of the parameter.</param>
     /// <exception cref="ArgumentNullException">Thrown if the <paramref name="value"/> parameter is <b>null</b>.</exception>
@@ -97,6 +98,8 @@ public class ArgumentEmptyException
     /// <summary>
     /// Function to throw the appropriate exception if the argument is <b>null</b>, or empty.
     /// </summary>
+    /// <typeparam name="TKey">The type of key in the dictionary.</typeparam>
+    /// <typeparam name="TValue">The type of value in the dictionary.</typeparam>
     /// <param name="value">The value to evaluate.</param>
     /// <param name="parameterName">The name of the parameter.</param>
     /// <exception cref="ArgumentNullException">Thrown if the <paramref name="value"/> parameter is <b>null</b>.</exception>
@@ -109,6 +112,21 @@ public class ArgumentEmptyException
         }
 
         if (value.Count == 0)
+        {
+            throw new ArgumentEmptyException(parameterName);
+        }
+    }
+
+    /// <summary>
+    /// Function to throw the appropraite exception if the span is empty.
+    /// </summary>
+    /// <typeparam name="T">The type of value in the span.</typeparam>
+    /// <param name="value">The value to evaluate.</param>
+    /// <param name="parameterName">The name of the parameter.</param>
+    /// <exception cref="ArgumentEmptyException">Thrown if the <paramref name="value"/> parameter is empty.</exception>
+    public static void ThrowIfEmpty<T>(ReadOnlySpan<T> value, [CallerArgumentExpression(nameof(value))] string? parameterName = null)
+    {
+        if (value.IsEmpty)
         {
             throw new ArgumentEmptyException(parameterName);
         }

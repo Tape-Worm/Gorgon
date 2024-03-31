@@ -132,7 +132,7 @@ public partial class GorgonImage
         SizeInBytes = CalculateSizeInBytes(_imageInfo);
         FormatInfo = new GorgonFormatInfo(_imageInfo.Format);
 
-        _imagePtr = _imageData = newImage._imageData;
+        _imagePtr = (GorgonPtr<byte>)(_imageData = newImage._imageData);
         _imageBuffers = newImage._imageBuffers;
 
         // Don't allow usage of this image after we're done.  It no longer owns the pointer.
@@ -382,7 +382,7 @@ public partial class GorgonImage
             {
                 GorgonPtr<byte> buffer = newImage.Buffers[0, array].Data;
                 int size = buffer.SizeInBytes;
-                Buffers[0, array].Data.CopyTo(buffer, count: size);
+                Buffers[0, array].Data[..size].CopyTo(buffer[..size]);
             }
 
             // If we have 4 bits per channel, then we need to convert to 8 bit per channel to make WIC happy.
@@ -885,7 +885,7 @@ public partial class GorgonImage
             try
             {
                 bufferList = new ImageBufferList(info);
-                bufferList.CreateBuffers(newBuffer.Pointer);
+                bufferList.CreateBuffers((GorgonPtr<byte>)newBuffer);
 
                 for (int arrayIndex = 0; arrayIndex < ArrayCount; ++arrayIndex)
                 {
@@ -923,12 +923,13 @@ public partial class GorgonImage
             }
 
             _imageData?.Dispose();
-            _imagePtr = _imageData = null;
+            _imageData = null;
+            _imagePtr = GorgonPtr<byte>.NullPtr;
 
             SanitizeInfo(info);
             FormatInfo = new GorgonFormatInfo(info.Format);
             SizeInBytes = newBuffer.SizeInBytes;
-            _imagePtr = _imageData = newBuffer;
+            _imagePtr = (GorgonPtr<byte>)(_imageData = newBuffer);
             _imageBuffers = bufferList;
         }
 

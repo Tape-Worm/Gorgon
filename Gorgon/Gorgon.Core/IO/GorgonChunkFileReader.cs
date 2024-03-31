@@ -276,7 +276,7 @@ public sealed class GorgonChunkFileReader
             }
 
             if (reader.BaseStream.Position + 8 > reader.BaseStream.Length)
-            {            
+            {
                 return false;
             }
 
@@ -390,7 +390,7 @@ public sealed class GorgonChunkFileReader
         }
 
         // Validate the chunk ID at the offset.
-        _activeReader = new ChunkReader(chunk, Stream, OnChunkClosed);        
+        _activeReader = new ChunkReader(chunk, Stream, OnChunkClosed);
         _activeChunk = chunk;
 
         return _activeReader;

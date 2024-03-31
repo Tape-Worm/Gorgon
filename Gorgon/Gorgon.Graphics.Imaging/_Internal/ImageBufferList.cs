@@ -139,7 +139,7 @@ class ImageBufferList
                 for (int depth = 0; depth < mipDepth; depth++)
                 {
                     // Get mip information.						
-                    _buffers[bufferIndex] = new GorgonImageBuffer(new GorgonPtr<byte>(dataAddress, pitchInformation.SlicePitch),
+                    _buffers[bufferIndex] = new GorgonImageBuffer(dataAddress[..pitchInformation.SlicePitch],
                                                                     pitchInformation,
                                                                     mip,
                                                                     array,

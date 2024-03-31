@@ -742,9 +742,9 @@ public sealed class GorgonCodecTga
                     // Read the current scanline into memory.
                     lineBuffer ??= new GorgonNativeBuffer<byte>(srcPitch.RowPitch);
 
-                    reader.ReadRange(lineBuffer.Pointer.ToSpan());
+                    reader.ReadRange<byte>((GorgonPtr<byte>)lineBuffer);
 
-                    lineHasZeroAlpha = ReadUncompressed(lineBuffer.Pointer, srcPitch.RowPitch, destPtr, image.Format, conversionFlags);
+                    lineHasZeroAlpha = ReadUncompressed(lineBuffer, srcPitch.RowPitch, destPtr, image.Format, conversionFlags);
                 }
 
                 if ((lineHasZeroAlpha) && ((conversionFlags & TGAConversionFlags.SetOpaqueAlpha) == TGAConversionFlags.SetOpaqueAlpha))
@@ -794,6 +794,7 @@ public sealed class GorgonCodecTga
                                         buffer.PitchInformation.RowPitch,
                                         image.Format,
                                         ImageBitFlags.OpaqueAlpha);
+
             destPtr += buffer.PitchInformation.RowPitch;
         }
     }
@@ -874,7 +875,7 @@ public sealed class GorgonCodecTga
         if ((destPitch == srcPitch) && (conversionFlags == TGAConversionFlags.None))
         {
             writer.WriteValue(in header);
-            writer.WriteRange<byte>(imageData.Buffers[0].Data.ToSpan(0, srcPitch.SlicePitch));
+            writer.WriteRange<byte>(imageData.Buffers[0].Data[..srcPitch.SlicePitch]);
             return;
         }
 
@@ -894,22 +895,22 @@ public sealed class GorgonCodecTga
                 {
                     ImageUtilities.Compress24BPPScanLine(srcPointer,
                                                             srcPitch.RowPitch,
-                                                            lineBuffer.Pointer,
+                                                            (GorgonPtr<byte>)lineBuffer,
                                                             destPitch.RowPitch,
                                                             (conversionFlags & TGAConversionFlags.Swizzle) == TGAConversionFlags.Swizzle);
                 }
                 else if ((conversionFlags & TGAConversionFlags.Swizzle) == TGAConversionFlags.Swizzle)
                 {
-                    ImageUtilities.SwizzleScanline(srcPointer, srcPitch.RowPitch, lineBuffer.Pointer, destPitch.RowPitch, imageData.Format, ImageBitFlags.None);
+                    ImageUtilities.SwizzleScanline(srcPointer, srcPitch.RowPitch, (GorgonPtr<byte>)lineBuffer, destPitch.RowPitch, imageData.Format, ImageBitFlags.None);
                 }
                 else
                 {
-                    ImageUtilities.CopyScanline(srcPointer, srcPitch.RowPitch, lineBuffer.Pointer, destPitch.RowPitch, imageData.Format, ImageBitFlags.None);
+                    ImageUtilities.CopyScanline(srcPointer, srcPitch.RowPitch, (GorgonPtr<byte>)lineBuffer, destPitch.RowPitch, imageData.Format, ImageBitFlags.None);
                 }
 
                 srcPointer += srcPitch.RowPitch;
 
-                writer.WriteRange<byte>(lineBuffer.ToSpan(0, destPitch.RowPitch));
+                writer.WriteRange<byte>(lineBuffer[..destPitch.RowPitch]);
             }
         }
         finally

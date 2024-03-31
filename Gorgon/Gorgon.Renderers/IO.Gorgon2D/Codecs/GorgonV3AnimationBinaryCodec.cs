@@ -150,7 +150,7 @@ public class GorgonV3AnimationBinaryCodec(Gorgon2D renderer)
 
         using IGorgonChunkReader binReader = reader.OpenChunk(VersionData);
         Version fileVersion = new(binReader.ReadByte(), binReader.ReadByte());
-        
+
         return Version.Equals(fileVersion);
     }
 

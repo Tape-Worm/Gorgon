@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 using Gorgon.IO;
 
 namespace Gorgon.Core.Tests;
@@ -18,11 +13,11 @@ public class GorgonChunkFileTests
 
         using GorgonChunkFileWriter writer = new(stream, 0x12345678);
         writer.Open();
-        
-        using IGorgonChunkWriter chunk = writer.OpenChunk(0x666);        
+
+        using IGorgonChunkWriter chunk = writer.OpenChunk(0x666);
         chunk.WriteString("Test 1 2 3");
         chunk.Close();
-        writer.Close();        
+        writer.Close();
 
         Assert.ThrowsException<EndOfStreamException>(() => new GorgonChunkFileReader(stream, new ulong[] { 0x12345678 }));
     }
@@ -43,14 +38,14 @@ public class GorgonChunkFileTests
         writer.Open();
 
         using IGorgonChunkWriter chunk = writer.OpenChunk(0x666);
-        
+
         chunk.WriteString("Test 1 2 3");
         chunk.Close();
         writer.Close();
 
         stream.Position = 0;
 
-        using GorgonChunkFileReader reader = new(stream, new ulong[] { 0x12345679 });        
+        using GorgonChunkFileReader reader = new(stream, new ulong[] { 0x12345679 });
         Assert.ThrowsException<GorgonException>(() => reader.Open());
     }
 
@@ -69,7 +64,8 @@ public class GorgonChunkFileTests
 
         stream.Position = 0;
 
-        Assert.ThrowsException<GorgonException>(() => {
+        Assert.ThrowsException<GorgonException>(() =>
+        {
             using GorgonChunkFileReader reader = new GorgonChunkFileReader(stream, new ulong[] { 0x12345679 });
             reader.Open();
         });

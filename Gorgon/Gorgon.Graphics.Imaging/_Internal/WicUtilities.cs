@@ -291,7 +291,7 @@ class WicUtilities
     /// <returns>The WIC bitmap pointing to the data stored in <paramref name="imageData"/>.</returns>
     private Bitmap GetBitmap(IGorgonImageBuffer imageData, Guid pixelFormat)
     {
-        DX.DataRectangle dataRect = new(imageData.Data, imageData.PitchInformation.RowPitch);
+        DX.DataRectangle dataRect = new((nint)imageData.Data, imageData.PitchInformation.RowPitch);
         return new Bitmap(_factory, imageData.Width, imageData.Height, pixelFormat, dataRect);
     }
 
@@ -572,7 +572,7 @@ class WicUtilities
             }
             else
             {
-                frame.WritePixels(buffer.Height, buffer.Data, buffer.PitchInformation.RowPitch, buffer.PitchInformation.SlicePitch);
+                frame.WritePixels(buffer.Height, (nint)buffer.Data, buffer.PitchInformation.RowPitch, buffer.PitchInformation.SlicePitch);
             }
 
             frame.Commit();
@@ -783,7 +783,7 @@ class WicUtilities
                     bitmapSource = converter;
                 }
 
-                bitmapSource.CopyPixels(buffer.PitchInformation.RowPitch, bufferPtr, buffer.PitchInformation.SlicePitch);
+                bitmapSource.CopyPixels(buffer.PitchInformation.RowPitch, (nint)bufferPtr, buffer.PitchInformation.SlicePitch);
             }
         }
         finally
@@ -807,7 +807,7 @@ class WicUtilities
         // We don't need to convert, so just leave.
         if ((convertFormat == Guid.Empty) || (frame.PixelFormat == convertFormat))
         {
-            frame.CopyPixels(buffer.PitchInformation.RowPitch, buffer.Data, buffer.PitchInformation.SlicePitch);
+            frame.CopyPixels(buffer.PitchInformation.RowPitch, (nint)buffer.Data, buffer.PitchInformation.SlicePitch);
             return;
         }
 
@@ -842,7 +842,7 @@ class WicUtilities
                 formatConverter = GetFormatConverter(sourceBitmap, convertFormat, dither, null, 0.0f);
             }
 
-            formatConverter.CopyPixels(buffer.PitchInformation.RowPitch, buffer.Data, buffer.PitchInformation.SlicePitch);
+            formatConverter.CopyPixels(buffer.PitchInformation.RowPitch, (nint)buffer.Data, buffer.PitchInformation.SlicePitch);
         }
         finally
         {
@@ -868,14 +868,14 @@ class WicUtilities
 
         if (bitmap.PixelFormat == scaler.PixelFormat)
         {
-            scaler.CopyPixels(buffer.PitchInformation.RowPitch, buffer.Data, buffer.PitchInformation.SlicePitch);
+            scaler.CopyPixels(buffer.PitchInformation.RowPitch, (nint)buffer.Data, buffer.PitchInformation.SlicePitch);
             return;
         }
 
         // There's a chance that, due the filter applied, that the format is now different. 
         // So we'll need to convert.
         using FormatConverter converter = GetFormatConverter(scaler, bitmap.PixelFormat, ImageDithering.None, null, 0);
-        converter.CopyPixels(buffer.PitchInformation.RowPitch, buffer.Data, buffer.PitchInformation.SlicePitch);
+        converter.CopyPixels(buffer.PitchInformation.RowPitch, (nint)buffer.Data, buffer.PitchInformation.SlicePitch);
     }
 
     /// <summary>
@@ -889,7 +889,7 @@ class WicUtilities
     {
         int pixelStride = buffer.PitchInformation.RowPitch / buffer.Width;
         GorgonPtr<byte> data = buffer.Data + ((offsetY * buffer.PitchInformation.RowPitch) + (offsetX * pixelStride));
-        bitmap.CopyPixels(buffer.PitchInformation.RowPitch, data, buffer.PitchInformation.SlicePitch);
+        bitmap.CopyPixels(buffer.PitchInformation.RowPitch, (nint)data, buffer.PitchInformation.SlicePitch);
     }
 
     /// <summary>
@@ -914,7 +914,7 @@ class WicUtilities
 
         // Intersect our clipping rectangle with the buffer size.
         clipper.Initialize(bitmap, new DX.Mathematics.Interop.RawBox(rect.X, rect.Y, rect.Width, rect.Height));
-        clipper.CopyPixels(buffer.PitchInformation.RowPitch, buffer.Data, buffer.PitchInformation.SlicePitch);
+        clipper.CopyPixels(buffer.PitchInformation.RowPitch, (nint)buffer.Data, buffer.PitchInformation.SlicePitch);
     }
 
     /// <summary>
@@ -1277,7 +1277,7 @@ class WicUtilities
                         // Get the array/mip/depth buffer.
                         IGorgonImageBuffer destBuffer = result.Buffers[mip, imageData.ImageType == ImageDataType.Image3D ? depth : array];
                         IGorgonImageBuffer srcBuffer = imageData.Buffers[mip, imageData.ImageType == ImageDataType.Image3D ? depth : array];
-                        DX.DataRectangle rect = new(srcBuffer.Data, srcBuffer.PitchInformation.RowPitch);
+                        DX.DataRectangle rect = new((nint)srcBuffer.Data, srcBuffer.PitchInformation.RowPitch);
 
                         Bitmap bitmap = null;
                         BitmapSource formatConverter = null;
@@ -1302,7 +1302,7 @@ class WicUtilities
                             }
 
                             formatConverter.CopyPixels(destBuffer.PitchInformation.RowPitch,
-                                                        destBuffer.Data,
+                                                        (nint)destBuffer.Data,
                                                         destBuffer.PitchInformation.SlicePitch);
                         }
                         finally

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Gorgon.IO;
+﻿using Gorgon.IO;
 
 namespace Gorgon.Core.Tests;
 
@@ -79,7 +74,7 @@ public class GorgonFileExtensionTests
     {
         GorgonFileExtension fileExtension1 = new GorgonFileExtension(".txt", "Text File");
         GorgonFileExtension fileExtension2 = new GorgonFileExtension(".doc", "Document");
-        Assert.IsTrue(fileExtension2 < fileExtension1);        
+        Assert.IsTrue(fileExtension2 < fileExtension1);
     }
 
     [TestMethod]

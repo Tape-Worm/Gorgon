@@ -192,7 +192,7 @@ public sealed class GorgonCodecGorFont
                 writer = fontFile.OpenChunk(BrushChunk);
                 writer.WriteInt32((int)fontInfo.Brush.BrushType);
                 fontInfo.Brush.WriteBrushData(writer);
-                
+
                 writer.Close();
             }
         }
@@ -292,7 +292,7 @@ public sealed class GorgonCodecGorFont
             IDisposable brush = fontInfo?.Brush as IDisposable;
             brush?.Dispose();
             reader?.Dispose();
-            fontFile.Close();            
+            fontFile.Close();
         }
     }
 

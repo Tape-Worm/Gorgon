@@ -386,7 +386,7 @@ public class GorgonV3PolySpriteBinaryCodec(Gorgon2D renderer)
         }
 
         using IGorgonChunkReader binReader = reader.OpenChunk(VersionData);
-        Version fileVersion = new(binReader.ReadByte(), binReader.ReadByte());        
+        Version fileVersion = new(binReader.ReadByte(), binReader.ReadByte());
 
         return Version.Equals(fileVersion);
     }
@@ -410,7 +410,7 @@ public class GorgonV3PolySpriteBinaryCodec(Gorgon2D renderer)
             }
 
             reader = new GorgonChunkFileReader(stream, appIDs);
-                        
+
             reader.Open();
             return IsReadableChunkFile(reader);
         }
@@ -446,7 +446,7 @@ public class GorgonV3PolySpriteBinaryCodec(Gorgon2D renderer)
         }
 
         using IGorgonChunkReader binReader = reader.OpenChunk(TextureData);
-        string result = binReader.ReadString();            
+        string result = binReader.ReadString();
 
         return result;
     }

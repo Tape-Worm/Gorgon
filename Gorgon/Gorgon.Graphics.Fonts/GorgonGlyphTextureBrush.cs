@@ -345,7 +345,7 @@ public class GorgonGlyphTextureBrush
         _height = tempImage.Height;
 
         _imageData = new byte[tempImage.Buffers[0].PitchInformation.SlicePitch];
-        tempImage.Buffers[0].Data.CopyTo(_imageData.AsSpan());
+        tempImage.Buffers[0].Data.CopyTo(_imageData);
         TextureRegion = new GorgonRectangleF(0, 0, 1, 1);
     }
 }

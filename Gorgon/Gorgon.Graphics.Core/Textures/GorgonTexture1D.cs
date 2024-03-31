@@ -1019,7 +1019,7 @@ public sealed class GorgonTexture1D
                                                                  Right = finalBounds.Right,
                                                                  Bottom = finalBounds.Bottom
                                                              },
-                                                             imageBuffer.Data,
+                                                             (nint)imageBuffer.Data,
                                                              imageBuffer.PitchInformation.RowPitch,
                                                              imageBuffer.PitchInformation.RowPitch,
                                                              (int)copyMode);

@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Gorgon.IO;
@@ -17,7 +15,7 @@ public class GorgonSubStreamTests
     {
         using MemoryStream parent = new();
 
-        long parentPosition = parent.Position;  
+        long parentPosition = parent.Position;
 
         using GorgonSubStream subStream = new(parent);
 
@@ -549,7 +547,7 @@ public class GorgonSubStreamTests
     [TestMethod]
     public void Constructor_ShouldThrowException_WhenParentStreamCannotSeek()
     {
-        using Stream dummy = Mock.Of<Stream>(x => x.CanSeek == false);        
+        using Stream dummy = Mock.Of<Stream>(x => x.CanSeek == false);
         Assert.ThrowsException<ArgumentException>(() => new GorgonSubStream(dummy));
     }
 

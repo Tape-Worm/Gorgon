@@ -203,7 +203,7 @@ public static class GorgonShaderFactory
                 || (string.IsNullOrWhiteSpace(entryPoint)))
             {
                 throw new GorgonException(GorgonResult.CannotRead, Resources.GORGFX_ERR_NOT_GORGON_SHADER);
-            }           
+            }
 
             Type requestedType = typeof(T);
 

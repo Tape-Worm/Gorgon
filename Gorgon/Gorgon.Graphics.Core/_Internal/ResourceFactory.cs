@@ -112,7 +112,7 @@ internal static class ResourceFactory
             for (int depthSlice = 0; depthSlice < depthLevel; ++depthSlice)
             {
                 IGorgonImageBuffer buffer = image.Buffers[mipIndex, depthSlice];
-                dataBoxes[dataBoxIndex++] = new DX.DataBox(buffer.Data, buffer.PitchInformation.RowPitch, buffer.PitchInformation.SlicePitch);
+                dataBoxes[dataBoxIndex++] = new DX.DataBox((nint)buffer.Data, buffer.PitchInformation.RowPitch, buffer.PitchInformation.SlicePitch);
             }
 
             depthLevel >>= 1;
@@ -157,7 +157,7 @@ internal static class ResourceFactory
             {
                 int boxIndex = mipIndex + (arrayIndex * desc.MipLevels);
                 IGorgonImageBuffer buffer = image.Buffers[mipIndex, arrayIndex];
-                dataBoxes[boxIndex] = new DX.DataBox(buffer.Data, buffer.PitchInformation.RowPitch, buffer.PitchInformation.SlicePitch);
+                dataBoxes[boxIndex] = new DX.DataBox((nint)buffer.Data, buffer.PitchInformation.RowPitch, buffer.PitchInformation.SlicePitch);
             }
         }
 
@@ -195,7 +195,7 @@ internal static class ResourceFactory
             {
                 int boxIndex = mipIndex + (arrayIndex * desc.MipLevels);
                 IGorgonImageBuffer buffer = image.Buffers[mipIndex, arrayIndex];
-                dataBoxes[boxIndex] = new DX.DataBox(buffer.Data, buffer.PitchInformation.RowPitch, buffer.PitchInformation.RowPitch);
+                dataBoxes[boxIndex] = new DX.DataBox((nint)buffer.Data, buffer.PitchInformation.RowPitch, buffer.PitchInformation.RowPitch);
             }
         }
 

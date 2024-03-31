@@ -63,24 +63,12 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Update="_Internal\Views\FontCharacterSelectionView.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="_Internal\Views\FontTextureBrushView.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="_Internal\Views\FontSolidBrushView.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="_Internal\Views\FontPaddingView.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="_Internal\Views\FontTextureSizeView.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="_Internal\Views\FontOutlineView.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Update="_Internal\Views\FontCharacterSelectionView.cs" />
+    <Compile Update="_Internal\Views\FontTextureBrushView.cs" />
+    <Compile Update="_Internal\Views\FontSolidBrushView.cs" />
+    <Compile Update="_Internal\Views\FontPaddingView.cs" />
+    <Compile Update="_Internal\Views\FontTextureSizeView.cs" />
+    <Compile Update="_Internal\Views\FontOutlineView.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Update="Properties\Resources.resx">

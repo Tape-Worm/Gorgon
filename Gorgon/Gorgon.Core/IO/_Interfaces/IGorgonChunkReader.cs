@@ -261,7 +261,7 @@ public interface IGorgonChunkReader
     /// </code>
     /// </para>
     /// </remarks>
-    public T Deserialize<T>(Func<Stream, T> deserializeCallback);    
+    public T Deserialize<T>(Func<Stream, T> deserializeCallback);
 
     /// <summary>
     /// Function to close the chunk.

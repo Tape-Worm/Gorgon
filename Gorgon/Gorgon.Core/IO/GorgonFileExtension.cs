@@ -144,7 +144,6 @@ public readonly struct GorgonFileExtension
     /// <returns><b>true</b> if less than, <b>false</b> if not.</returns>
     public static bool operator <(GorgonFileExtension left, GorgonFileExtension right) => string.Compare(left.Extension, right.Extension, StringComparison.OrdinalIgnoreCase) < 0;
 
-
     /// <summary>
     /// Operator to return whether one instance is greater than the other.
     /// </summary>
@@ -214,7 +213,6 @@ public readonly struct GorgonFileExtension
                                                                            || string.Compare(left, right.Extension, StringComparison.OrdinalIgnoreCase) > 0
                                                                            || string.Equals(left, right.FullExtension, StringComparison.OrdinalIgnoreCase)
                                                                            || string.Compare(left, right.FullExtension, StringComparison.OrdinalIgnoreCase) > 0;
-
 
     /// <summary>
     /// Operator to return whether one instance is less than the other.

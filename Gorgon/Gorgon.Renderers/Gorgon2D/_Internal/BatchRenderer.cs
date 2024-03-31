@@ -141,7 +141,7 @@ internal sealed class BatchRenderer
                                                 Usage = ResourceUsage.Immutable,
                                                 Binding = VertexIndexBufferBinding.None
                                             },
-                                            indices.ToSpan());
+                                            (GorgonPtr<int>)indices);
     }
 
     /// <summary>

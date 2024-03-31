@@ -229,7 +229,9 @@ public static class GdiPlusExtensions
                         case PixelFormat.Format32bppArgb:
                             if (!needsSwizzle)
                             {
-                                src.CopyTo(dest, count: destData.Stride.Min(buffer.PitchInformation.RowPitch));
+                                int length = destData.Stride.Min(buffer.PitchInformation.RowPitch);
+
+                                src[..length].CopyTo(dest[..length]);
                                 continue;
                             }
 
@@ -352,7 +354,9 @@ public static class GdiPlusExtensions
 
                 if (!needsSwizzle)
                 {
-                    src.CopyTo(dest, count: destData.Stride.Min(buffer.PitchInformation.RowPitch));
+                    int length = destData.Stride.Min(buffer.PitchInformation.RowPitch);
+
+                    src[..length].CopyTo(dest[..length]);
                     continue;
                 }
 
@@ -467,7 +471,8 @@ public static class GdiPlusExtensions
 
                 if (!needsSwizzle)
                 {
-                    srcPtr.CopyTo(destPtr, count: srcData.Stride.Min(buffer.PitchInformation.RowPitch));
+                    int length = srcData.Stride.Min(buffer.PitchInformation.RowPitch);
+                    srcPtr[..length].CopyTo(destPtr[..length]);
                     continue;
                 }
 

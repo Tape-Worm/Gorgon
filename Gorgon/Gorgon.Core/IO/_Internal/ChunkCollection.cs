@@ -20,7 +20,7 @@
 // 
 // Created: February 8, 2024 10:02:44 PM
 //
- 
+
 using System.Collections;
 
 namespace Gorgon.IO;

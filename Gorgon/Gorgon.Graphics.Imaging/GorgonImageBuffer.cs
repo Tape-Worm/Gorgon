@@ -322,7 +322,7 @@ public class GorgonImageBuffer
         // Finally, copy our data.
         for (int i = 0; i < minHeight; ++i)
         {
-            srcData.CopyTo(dstData, count: minLineSize);
+            srcData[..minLineSize].CopyTo(dstData[..minLineSize]);
 
             srcData += PitchInformation.RowPitch;
             dstData += buffer.PitchInformation.RowPitch;
@@ -378,7 +378,7 @@ public class GorgonImageBuffer
         GorgonPtr<byte> regionEnd = Data + (finalRegion.Bottom * PitchInformation.RowPitch) + (finalRegion.Right * FormatInformation.SizeInBytes);
         GorgonPitchLayout pitch = new(PitchInformation.RowPitch, (int)(regionEnd - regionStart));
 
-        return new GorgonImageBuffer(new GorgonPtr<byte>(regionStart, pitch.SlicePitch),
+        return new GorgonImageBuffer(regionStart[..pitch.SlicePitch],
                                      pitch,
                                      MipLevel,
                                      ArrayIndex,

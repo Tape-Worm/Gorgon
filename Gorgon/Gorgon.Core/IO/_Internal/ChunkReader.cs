@@ -21,12 +21,6 @@
 // Created: March 28, 2024 4:00:28 PM
 //
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Gorgon.Core;
 using Gorgon.Native;
 using Gorgon.Properties;
 
@@ -69,38 +63,8 @@ internal class ChunkReader(GorgonChunk chunk, Stream parentStream, Action onClos
         throw new IOException(Resources.GOR_ERR_CHUNK_WRITER_SERIALIZING);
     }
 
-    /// <summary>
-    /// Function to initialize the chunk in the file.
-    /// </summary>
-    public void Initialize()
-    {
-        /*ulong id = _reader.ReadUInt64();
-
-        if (id == _chunk.ID)
-        {
-            _isOpen = true;
-            return;
-        }
-
-        // Reset this reader if we don't have the correct chunk.
-        try
-        {
-            _reader.Dispose();            
-            _closed = null;
-        }
-        catch
-        {
-            // We don't care about exceptions here.                   
-        }        
-
-        throw new GorgonException(GorgonResult.CannotRead,
-                                  string.Format(Resources.GOR_ERR_CHUNK_FILE_CHUNK_MISMATCH,
-                                                _chunk.FileOffset.FormatHex(),
-                                                _chunk.ID.FormatHex()));*/
-    }
-
     /// <inhertidoc/>
-    public void ReadArray<T>(T[] data, int index = 0, int? count = null) 
+    public void ReadArray<T>(T[] data, int index = 0, int? count = null)
         where T : unmanaged
     {
         CheckIfDeserializing();
@@ -136,8 +100,8 @@ internal class ChunkReader(GorgonChunk chunk, Stream parentStream, Action onClos
     public decimal ReadDecimal()
     {
         CheckIfDeserializing();
-    
-       return _reader.ReadDecimal();
+
+        return _reader.ReadDecimal();
     }
 
     /// <inheritdoc/>
@@ -216,15 +180,15 @@ internal class ChunkReader(GorgonChunk chunk, Stream parentStream, Action onClos
     public ushort ReadUInt16()
     {
         CheckIfDeserializing();
-    
-       return _reader.ReadUInt16();
+
+        return _reader.ReadUInt16();
     }
 
     /// <inheritdoc/>
     public uint ReadUInt32()
     {
         CheckIfDeserializing();
-    
+
         return _reader.ReadUInt32();
     }
 
@@ -232,7 +196,7 @@ internal class ChunkReader(GorgonChunk chunk, Stream parentStream, Action onClos
     public ulong ReadUInt64()
     {
         CheckIfDeserializing();
-    
+
         return _reader.ReadUInt64();
     }
 
@@ -296,7 +260,7 @@ internal class ChunkReader(GorgonChunk chunk, Stream parentStream, Action onClos
         {
             // This isn't strictly necessary, but it's good to be consistent.
             subStream?.Dispose();
-            _inDeserialize= false;
+            _inDeserialize = false;
         }
     }
 

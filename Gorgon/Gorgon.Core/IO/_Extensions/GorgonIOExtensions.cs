@@ -23,12 +23,12 @@
 
 using System.Buffers;
 using System.Globalization;
-using Gorgon.Math;
-using Gorgon.Native;
-using Gorgon.Properties;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Gorgon.Core;
+using Gorgon.Math;
+using Gorgon.Native;
+using Gorgon.Properties;
 
 namespace Gorgon.IO;
 
@@ -418,9 +418,7 @@ public static class GorgonIOExtensions
             throw new IOException(Resources.GOR_ERR_STREAM_IS_READONLY);
         }
 
-#warning This is not here yet, we need to implement it.
-        GorgonPtr<byte> bytePtr = GorgonPtr<byte>.NullPtr;
-        //var bytePtr = GorgonPtr<T>.ToBytePointer(pointer);
+        GorgonPtr<byte> bytePtr = GorgonPtr<T>.ToBytePointer(pointer);
         WritePtr(writer, bytePtr, bytePtr.Length);
     }
 
@@ -481,9 +479,7 @@ public static class GorgonIOExtensions
             throw new EndOfStreamException(Resources.GOR_ERR_STREAM_EOS);
         }
 
-#warning This is not here yet, we need to implement it.
-        GorgonPtr<byte> bytePtr = GorgonPtr<byte>.NullPtr;
-        //var bytePtr = GorgonPtr<T>.ToBytePointer(pointer);
+        GorgonPtr<byte> bytePtr = GorgonPtr<T>.ToBytePointer(pointer);
         ReadPtr(reader, bytePtr, bytePtr.Length);
     }
 

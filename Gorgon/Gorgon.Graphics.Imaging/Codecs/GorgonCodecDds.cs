@@ -1095,7 +1095,7 @@ public sealed class GorgonCodecDds
                 && (pitchFlags == PitchFlags.None))
         {
             // First mip, array and depth slice is at the start of our image memory buffer.
-            reader.ReadRange(image.ImageData.ToSpan());
+            reader.ReadRange<byte>(image.ImageData);
             return;
         }
 
@@ -1131,7 +1131,7 @@ public sealed class GorgonCodecDds
                         if (formatInfo.IsCompressed)
                         {
                             int size = pitchInfo.SlicePitch.Min(destBuffer.PitchInformation.SlicePitch);
-                            reader.ReadRange(destPointer.ToSpan(0, size));
+                            reader.ReadRange<byte>(destPointer[0..size]);
                             continue;
                         }
 
@@ -1141,11 +1141,11 @@ public sealed class GorgonCodecDds
                             // Use this to read a line of data from the source.
                             lineBuffer ??= new GorgonNativeBuffer<byte>(pitchInfo.RowPitch);
 
-                            reader.ReadRange(lineBuffer.ToSpan());
+                            reader.ReadRange<byte>((GorgonPtr<byte>)lineBuffer);
 
                             if ((conversionFlags & DdsConversionFlags.Expand) == DdsConversionFlags.Expand)
                             {
-                                ExpandScanline(lineBuffer.Pointer,
+                                ExpandScanline((GorgonPtr<byte>)lineBuffer,
                                                destPointer,
                                                pitchInfo.RowPitch,
                                                destBuffer.PitchInformation.RowPitch,
@@ -1157,12 +1157,12 @@ public sealed class GorgonCodecDds
                             else if ((conversionFlags & DdsConversionFlags.Swizzle) == DdsConversionFlags.Swizzle)
                             {
                                 // Perform swizzle.
-                                ImageUtilities.SwizzleScanline(lineBuffer.Pointer, pitchInfo.RowPitch, destPointer, destBuffer.PitchInformation.RowPitch, image.Format, expFlags);
+                                ImageUtilities.SwizzleScanline((GorgonPtr<byte>)lineBuffer, pitchInfo.RowPitch, destPointer, destBuffer.PitchInformation.RowPitch, image.Format, expFlags);
                             }
                             else
                             {
                                 // Copy and set constant alpha (if necessary).
-                                ImageUtilities.CopyScanline(lineBuffer.Pointer, pitchInfo.RowPitch, destPointer, destBuffer.PitchInformation.RowPitch, image.Format, expFlags);
+                                ImageUtilities.CopyScanline((GorgonPtr<byte>)lineBuffer, pitchInfo.RowPitch, destPointer, destBuffer.PitchInformation.RowPitch, image.Format, expFlags);
                             }
 
                             // Increment our pointer data by one line.
@@ -1327,7 +1327,7 @@ public sealed class GorgonCodecDds
                     for (int mipLevel = 0; mipLevel < imageData.MipCount; mipLevel++)
                     {
                         IGorgonImageBuffer buffer = imageData.Buffers[mipLevel, array];
-                        writer.WriteRange<byte>(buffer.Data.ToSpan(0, buffer.PitchInformation.SlicePitch));
+                        writer.WriteRange<byte>(buffer.Data[0..buffer.PitchInformation.SlicePitch]);
                     }
                 }
                 break;
@@ -1338,7 +1338,7 @@ public sealed class GorgonCodecDds
                     for (int slice = 0; slice < depth; slice++)
                     {
                         IGorgonImageBuffer buffer = imageData.Buffers[mipLevel, slice];
-                        writer.WriteRange<byte>(buffer.Data.ToSpan(buffer.PitchInformation.SlicePitch));
+                        writer.WriteRange<byte>(buffer.Data[..buffer.PitchInformation.SlicePitch]);
                     }
 
                     if (depth > 1)

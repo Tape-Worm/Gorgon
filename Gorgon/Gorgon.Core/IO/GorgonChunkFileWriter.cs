@@ -118,8 +118,6 @@ public sealed class GorgonChunkFileWriter
     private readonly ulong _appHeaderId;
     // The position of the place holder position for deferred data.
     private ulong _placeHolderStartPosition;
-    // The active chunk that we're writing into.
-    private readonly GorgonChunk _activeChunk;
     // The active chunk writer.
     private ChunkWriter? _activeWriter;
 
@@ -147,10 +145,7 @@ public sealed class GorgonChunkFileWriter
     protected override long OnClose()
     {
         // Force the last chunk to close.
-        if ((_activeChunk.ID != 0) && (_activeWriter is not null))
-        {
-            _activeWriter.Close();
-        }
+        _activeWriter?.Close();
 
         // Write out the file footer and chunk table.
         using (BinaryWriter writer = new(Stream, Encoding.UTF8, true))
@@ -232,9 +227,9 @@ public sealed class GorgonChunkFileWriter
 
         ValidateChunkID(chunkId);
 
-        if ((_activeChunk.ID != 0) || (_activeWriter is not null))
+        if (_activeWriter is not null)
         {
-            throw new IOException(string.Format(Resources.GOR_ERR_CHUNK_ALREADY_OPEN, _activeChunk.ID.FormatHex()));
+            throw new IOException(string.Format(Resources.GOR_ERR_CHUNK_ALREADY_OPEN, chunkId.FormatHex()));
         }
 
         // Function called when the chunk is closed.
@@ -244,7 +239,7 @@ public sealed class GorgonChunkFileWriter
             {
                 ChunkList.Add(chunk);
             }
-            
+
             _activeWriter = null;
 
             // Because we're using sub streams, we must ensure that we continue writing at the end of the stream.

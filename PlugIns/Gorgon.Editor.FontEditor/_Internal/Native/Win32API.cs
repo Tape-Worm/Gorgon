@@ -175,7 +175,7 @@ internal static partial class Win32API
         uint size = GetFontUnicodeRanges(hDc, IntPtr.Zero);
 
         using GorgonNativeBuffer<byte> buffer = new((int)size);
-        GetFontUnicodeRanges(hDc, buffer.Pointer);
+        GetFontUnicodeRanges(hDc, (nint)((GorgonPtr<byte>)buffer));
 
         ref int bufferPtr = ref buffer.AsRef<int>(12);
         int itemCount = bufferPtr;

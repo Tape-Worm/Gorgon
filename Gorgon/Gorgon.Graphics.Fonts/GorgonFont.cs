@@ -359,7 +359,7 @@ public sealed class GorgonFont
         try
         {
             GorgonPtr<int> pixels = new(sourcePixels.Scan0, bitmap.Width * bitmap.Height);
-            GorgonPtr<int> destBuffer = image.Buffers[0, arrayIndex].Data.To<int>();
+            GorgonPtr<int> destBuffer = GorgonPtr<byte>.To<int>(image.Buffers[0, arrayIndex].Data);
 
             // Both buffers should be the same size. If they are not, bad things happen.
             for (int y = 0; y < bitmap.Height; y++)

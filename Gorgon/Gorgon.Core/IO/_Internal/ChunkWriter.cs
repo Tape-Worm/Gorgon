@@ -21,9 +21,8 @@
 // Created: February 9, 2024 2:35:14 PM
 //
 
-using System.Text;
-using Gorgon.Properties;
 using Gorgon.Native;
+using Gorgon.Properties;
 
 namespace Gorgon.IO;
 
@@ -65,7 +64,7 @@ internal class ChunkWriter(ulong chunkID, Stream parentStream, ulong offset, Act
             return;
         }
 
-        throw new IOException(Resources.GOR_ERR_CHUNK_WRITER_SERIALIZING);        
+        throw new IOException(Resources.GOR_ERR_CHUNK_WRITER_SERIALIZING);
     }
 
     /// <inheritdoc/>
@@ -257,7 +256,7 @@ internal class ChunkWriter(ulong chunkID, Stream parentStream, ulong offset, Act
         try
         {
             CheckIfSerializing();
-                        
+
             GorgonChunk chunk = new(ID, (int)_writer.BaseStream.Length, _chunkPosition);
 
             // Finalize and flush the contents of the buffer.

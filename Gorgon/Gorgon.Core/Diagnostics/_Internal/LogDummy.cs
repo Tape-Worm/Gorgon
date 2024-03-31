@@ -102,7 +102,6 @@ internal class LogDummy
         // Intentionally left blank.
     }
 
-
     /// <summary>
     /// Function to perform any one time inital logging.
     /// </summary>

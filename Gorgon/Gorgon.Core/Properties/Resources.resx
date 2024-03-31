@@ -404,4 +404,7 @@ Code: 0x{2}</value>
   <data name="GOR_ERR_CHUNKFILE_MUST_BE_WRITEONLY" xml:space="preserve">
     <value>The stream for the chunk file must be write only.</value>
   </data>
+  <data name="GOR_ERR_PTR_CONVERT_WIDENING" xml:space="preserve">
+    <value>The pointer cannot be converted because the destination type ({0} bytes) is larger than the memory covered by the pointer ({1} bytes).</value>
+  </data>
 </root>

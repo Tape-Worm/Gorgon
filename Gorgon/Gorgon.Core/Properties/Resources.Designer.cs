@@ -442,6 +442,15 @@ namespace Gorgon.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The pointer cannot be converted because the destination type ({0} bytes) is larger than the memory covered by the pointer ({1} bytes)..
+        /// </summary>
+        internal static string GOR_ERR_PTR_CONVERT_WIDENING {
+            get {
+                return ResourceManager.GetString("GOR_ERR_PTR_CONVERT_WIDENING", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The pointer must not be null..
         /// </summary>
         internal static string GOR_ERR_PTR_NULL {

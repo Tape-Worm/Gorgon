@@ -347,7 +347,7 @@ internal static partial class RawInputApi
 
             GorgonNativeBuffer<byte> result = new(dataSize);
 
-            if (GetRawInputDeviceInfo(deviceHandle, RawInputCommand.PreparsedData, (void*)result, ref dataSize) >= 0)
+            if (GetRawInputDeviceInfo(deviceHandle, RawInputCommand.PreparsedData, (void*)(GorgonPtr<byte>)result, ref dataSize) >= 0)
             {
                 return result;
             }

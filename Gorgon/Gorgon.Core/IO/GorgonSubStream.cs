@@ -533,6 +533,6 @@ public class GorgonSubStream
             throw new EndOfStreamException();
         }
 
-        ParentStream = parentStream;        
+        ParentStream = parentStream;
     }
 }

@@ -176,7 +176,7 @@ public class GorgonV31AnimationBinaryCodec(Gorgon2D renderer)
         }
 
         using IGorgonChunkReader binReader = reader.OpenChunk(VersionData);
-        Version fileVersion = new(binReader.ReadByte(), binReader.ReadByte());        
+        Version fileVersion = new(binReader.ReadByte(), binReader.ReadByte());
 
         return Version.Equals(fileVersion);
     }
@@ -253,7 +253,7 @@ public class GorgonV31AnimationBinaryCodec(Gorgon2D renderer)
                 binWriter.WriteValue(in key.TextureCoordinates);
                 binWriter.WriteInt32(key.TextureArrayIndex);
             }
-        }        
+        }
     }
 
     /// <summary>
@@ -291,7 +291,7 @@ public class GorgonV31AnimationBinaryCodec(Gorgon2D renderer)
                 binWriter.WriteSingle(key.Time);
                 binWriter.WriteValue(in value);
             }
-        }        
+        }
     }
 
     /// <summary>
@@ -352,7 +352,7 @@ public class GorgonV31AnimationBinaryCodec(Gorgon2D renderer)
             }
 
             trackBuilder.EndEdit();
-        }        
+        }
     }
 
     /// <summary>
@@ -395,7 +395,7 @@ public class GorgonV31AnimationBinaryCodec(Gorgon2D renderer)
             }
 
             builder.EndEdit();
-        }        
+        }
     }
 
     /// <summary>
@@ -450,8 +450,8 @@ public class GorgonV31AnimationBinaryCodec(Gorgon2D renderer)
     protected override IReadOnlyList<string> OnGetAssociatedTextureNames(Stream stream)
     {
         List<string> result = [];
-        
-        using GorgonChunkFileReader reader = new(stream, [ CurrentFileHeader ]);
+
+        using GorgonChunkFileReader reader = new(stream, [CurrentFileHeader]);
         reader.Open();
 
         if (!reader.Chunks.Contains(TextureData))
