@@ -1,7 +1,6 @@
-﻿
-// 
-// Gorgon
-// Copyright (C) 2015 Michael Winsor
+﻿// 
+// Gorgon.
+// Copyright (C) 2024 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -11,14 +10,14 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software
+// all copies or substantial portions of the Software.
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE
+// THE SOFTWARE.
 // 
 // Created: Sunday, October 11, 2015 11:51:54 PM
 // 
@@ -28,7 +27,7 @@ using Gorgon.Properties;
 namespace Gorgon.Math;
 
 /// <summary>
-/// A representation of a rational number
+/// A representation of a rational number.
 /// </summary>
 public readonly struct GorgonRationalNumber
     : IEquatable<GorgonRationalNumber>, IComparable<GorgonRationalNumber>
@@ -36,7 +35,7 @@ public readonly struct GorgonRationalNumber
     /// <summary>
     /// An empty rational number.
     /// </summary>
-    public static readonly GorgonRationalNumber Empty;
+    public static readonly GorgonRationalNumber Empty = new();
 
     /// <summary>
     /// The numerator for the number.
@@ -134,20 +133,6 @@ public readonly struct GorgonRationalNumber
     public static explicit operator int(GorgonRationalNumber value) => ToInt32(value);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="int"/> to <see cref="GorgonRationalNumber"/>.
-    /// </summary>
-    /// <param name="value">The value to convert.</param>
-    /// <returns>The result of the conversion.</returns>
-    public static implicit operator GorgonRationalNumber(int value) => ToGorgonRationalNumber(value);
-
-    /// <summary>
-    /// Function to perform an implicit conversion from <see cref="int"/> to <see cref="GorgonRationalNumber"/>.
-    /// </summary>
-    /// <param name="value">The value to convert.</param>
-    /// <returns>The result of the conversion.</returns>
-    public static GorgonRationalNumber ToGorgonRationalNumber(int value) => new(value, 1);
-
-    /// <summary>
     /// Function to perform an explicit conversion from <see cref="GorgonRationalNumber"/> to <see cref="int"/>.
     /// </summary>
     /// <param name="value">The value convert.</param>
@@ -230,7 +215,7 @@ public readonly struct GorgonRationalNumber
         decimal leftRational = left;
         decimal rightRational = right;
 
-        return leftRational < rightRational;
+        return leftRational > rightRational;
     }
 
     /// <summary>

@@ -1,7 +1,5 @@
-﻿
-// 
-// Gorgon
-// Copyright (C) 2012 Michael Winsor
+﻿// Gorgon.
+// Copyright (C) 2024 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -11,24 +9,24 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software
+// all copies or substantial portions of the Software.
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE
+// THE SOFTWARE.
 // 
-// Created: Friday, June 15, 2012 9:55:35 AM
-// 
+// Created: November 17, 2023 6:27:06 PM
+//
 
 using System.Runtime.CompilerServices;
 
 namespace Gorgon.Math;
 
 /// <summary>
-/// Fluent extensions for mathematical operations on various numeric types
+/// Fluent extensions for mathematical operations on various numeric types.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -40,7 +38,7 @@ namespace Gorgon.Math;
 /// int myValueTooBig = 150;
 /// int myValueTooSmall = 5;
 /// 
-/// // Ensure the value does not exceed 100, but is greater than 10
+/// // Ensure the value does not exceed 100, but is greater than 10.
 /// Console.WriteLine($"{myValueTooBig.Min(100).Max(10)}, {myValueTooSmall.Min(100).Max(10)}");  
 ///
 /// // Outputs: 100, 10
@@ -52,16 +50,20 @@ namespace Gorgon.Math;
 /// </remarks>
 public static class GorgonMathExtensions
 {
-
+    // A decimal version of the PI constant.
+    private const decimal DecimalPI = 3.14159265M;
     // Constant containing the value used to convert degrees to radians.
-    private const float DegConvert = ((float)System.Math.PI / 180.0f);
+    private const float DegConvert = ((float)DecimalPI / 180.0f);
+    // Constant containing the value used to convert degrees to radians.
+    private const double DoubleDegConvert = ((double)DecimalPI / 180.0);
+    // Constant containing the value used to convert degrees to radians.
+    private const decimal DecimalDegConvert = (DecimalPI / 180.0M);
     // Constant containing the value used to convert radians to degrees.
-    private const float RadConvert = (180.0f / (float)System.Math.PI);
-
-    /// <summary>
-    /// Constant value for &#x03C0;.
-    /// </summary>
-    public const float PI = 3.141593f;
+    private const float RadConvert = (180.0f / (float)DecimalPI);
+    // Constant containing the value used to convert radians to degrees.
+    private const double DoubleRadConvert = (180.0 / (double)DecimalPI);
+    // Constant containing the value used to convert radians to degrees.
+    private const decimal DecimalRadConvert = (180.0M / DecimalPI);
 
     /// <summary>
     /// Function to perform an approximation of a sine calculation.
@@ -377,7 +379,7 @@ public static class GorgonMathExtensions
     /// <param name="value">Value to evaluate.</param>
     /// <returns>The absolute value of <paramref name="value"/>.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static float Abs(this float value) => System.Math.Abs(value);
+    public static float Abs(this float value) => MathF.Abs(value);
 
     /// <summary>
     /// Function to round a <see cref="float"/> value to the nearest whole or fractional number.
@@ -390,7 +392,7 @@ public static class GorgonMathExtensions
     /// See <see cref="System.Math.Round(double,int,MidpointRounding)"/> for more information.
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static float Round(this float value, int decimalCount = 0, MidpointRounding rounding = MidpointRounding.ToEven) => (float)(System.Math.Round(value, decimalCount, rounding));
+    public static float Round(this float value, int decimalCount = 0, MidpointRounding rounding = MidpointRounding.AwayFromZero) => MathF.Round(value, decimalCount, rounding);
 
     /// <summary>
     /// Function to round a <see cref="decimal"/> value to the nearest whole or fractional number.
@@ -403,7 +405,7 @@ public static class GorgonMathExtensions
     /// See <see cref="System.Math.Round(decimal,int,MidpointRounding)"/> for more information.
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static decimal Round(this decimal value, int decimalCount = 0, MidpointRounding rounding = MidpointRounding.ToEven) => System.Math.Round(value, decimalCount, rounding);
+    public static decimal Round(this decimal value, int decimalCount = 0, MidpointRounding rounding = MidpointRounding.AwayFromZero) => decimal.Round(value, decimalCount, rounding);
 
     /// <summary>
     /// Function to round a <see cref="double"/> value to the nearest whole or fractional number.
@@ -416,7 +418,7 @@ public static class GorgonMathExtensions
     /// See <see cref="System.Math.Round(double,int,MidpointRounding)"/> for more information.
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static double Round(this double value, int decimalCount = 0, MidpointRounding rounding = MidpointRounding.ToEven) => System.Math.Round(value, decimalCount, rounding);
+    public static double Round(this double value, int decimalCount = 0, MidpointRounding rounding = MidpointRounding.AwayFromZero) => System.Math.Round(value, decimalCount, rounding);
 
     /// <summary>
     /// Function to convert a <see cref="float"/> value representing a radian into an angle in degrees.
@@ -440,7 +442,7 @@ public static class GorgonMathExtensions
     /// <param name="radians">The value to convert.</param>
     /// <returns>The angle in degrees.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static decimal ToDegrees(this decimal radians) => radians * (decimal)RadConvert;
+    public static decimal ToDegrees(this decimal radians) => radians * DecimalRadConvert;
 
     /// <summary>
     /// Function to convert a <see cref="decimal"/> value representing an angle in degrees into a radian value.
@@ -448,7 +450,8 @@ public static class GorgonMathExtensions
     /// <param name="degrees">The angle value to convert.</param>
     /// <returns>The angle in radians.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static decimal ToRadians(this decimal degrees) => degrees * (decimal)DegConvert;
+    public static decimal ToRadians(this decimal degrees) => degrees * DecimalDegConvert;
+
 
     /// <summary>
     /// Function to convert a <see cref="double"/> value representing a radian into an angle in degrees.
@@ -456,7 +459,7 @@ public static class GorgonMathExtensions
     /// <param name="radians">The value to convert.</param>
     /// <returns>The angle in degrees.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static double ToDegrees(this double radians) => radians * RadConvert;
+    public static double ToDegrees(this double radians) => radians * DoubleRadConvert;
 
     /// <summary>
     /// Function to convert a <see cref="double"/> value representing an angle in degrees into a radian value.
@@ -464,7 +467,7 @@ public static class GorgonMathExtensions
     /// <param name="degrees">The angle value to convert.</param>
     /// <returns>The angle in radians.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static double ToRadians(this double degrees) => degrees * DegConvert;
+    public static double ToRadians(this double degrees) => degrees * DoubleDegConvert;
 
     /// <summary>
     /// Function to determine if a <see cref="float"/> value is equal to another within a given tolerance.
@@ -514,7 +517,7 @@ public static class GorgonMathExtensions
     /// <param name="value">The value to get the inverse square root of.</param>
     /// <returns>The inverted square root of the value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static float InverseSqrt(this float value) => 1.0f / (float)System.Math.Sqrt(value);
+    public static float InverseSqrt(this float value) => 1.0f / MathF.Sqrt(value);
 
     /// <summary>
     /// Function to return the square root for a <see cref="double"/> value.
@@ -530,7 +533,7 @@ public static class GorgonMathExtensions
     /// <param name="value">The value to get the square root of.</param>
     /// <returns>The square root of the value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static float Sqrt(this float value) => (float)System.Math.Sqrt(value);
+    public static float Sqrt(this float value) => MathF.Sqrt(value);
 
     /// <summary>
     /// Function to return the sine value of a <see cref="float"/> value representing an angle, in radians.
@@ -538,15 +541,7 @@ public static class GorgonMathExtensions
     /// <param name="angle">The angle, in radians.</param>
     /// <returns>The sine value of the <paramref name="angle"/>.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static float Sin(this float angle) => (float)System.Math.Sin(angle);
-
-    /// <summary>
-    /// Function to return the sine value of a <see cref="decimal"/> value representing an angle, in radians.
-    /// </summary>
-    /// <param name="angle">The angle, in radians.</param>
-    /// <returns>The sine value of the <paramref name="angle"/>.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static decimal Sin(this decimal angle) => (decimal)System.Math.Sin((double)angle);
+    public static float Sin(this float angle) => MathF.Sin(angle);
 
     /// <summary>
     /// Function to return the sine value of a <see cref="double"/> value representing an angle, in radians.
@@ -562,15 +557,7 @@ public static class GorgonMathExtensions
     /// <param name="angle">The angle, in radians.</param>
     /// <returns>The cosine value of the <paramref name="angle"/>.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static float Cos(this float angle) => (float)System.Math.Cos(angle);
-
-    /// <summary>
-    /// Function to return the cosine value of a <see cref="decimal"/> value representing an angle, in radians.
-    /// </summary>
-    /// <param name="angle">The angle, in radians.</param>
-    /// <returns>The cosine value of the <paramref name="angle"/>.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static decimal Cos(this decimal angle) => (decimal)System.Math.Cos((double)angle);
+    public static float Cos(this float angle) => MathF.Cos(angle);
 
     /// <summary>
     /// Function to return the cosine value of a <see cref="double"/> value representing an angle, in radians.
@@ -586,15 +573,7 @@ public static class GorgonMathExtensions
     /// <param name="angle">The angle, in radians.</param>
     /// <returns>The tangent value of the <paramref name="angle"/>.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static float Tan(this float angle) => (float)System.Math.Tan(angle);
-
-    /// <summary>
-    /// Function to return the tangent value of a <see cref="decimal"/> value representing an angle, in radians.
-    /// </summary>
-    /// <param name="angle">The angle, in radians.</param>
-    /// <returns>The tangent value of the <paramref name="angle"/>.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static decimal Tan(this decimal angle) => (decimal)System.Math.Tan((double)angle);
+    public static float Tan(this float angle) => MathF.Tan(angle);
 
     /// <summary>
     /// Function to return the tangent value of a <see cref="double"/> value representing an angle, in radians.
@@ -610,15 +589,7 @@ public static class GorgonMathExtensions
     /// <param name="sine">The sine value.</param>
     /// <returns>The inverse sine value of the <paramref name="sine"/>.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static float ASin(this float sine) => (float)System.Math.Asin(sine);
-
-    /// <summary>
-    /// Function to return the inverse sine value of a <see cref="decimal"/> value representing an angle, in radians.
-    /// </summary>
-    /// <param name="sine">The sine value.</param>
-    /// <returns>The inverse sine value of the <paramref name="sine"/>.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static decimal ASin(this decimal sine) => (decimal)System.Math.Asin((double)sine);
+    public static float ASin(this float sine) => MathF.Asin(sine);
 
     /// <summary>
     /// Function to return the inverse sine value of a <see cref="double"/> value representing an angle, in radians.
@@ -634,15 +605,7 @@ public static class GorgonMathExtensions
     /// <param name="cosine">The cosine value.</param>
     /// <returns>The inverse cosine value of the <paramref name="cosine"/>.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static float ACos(this float cosine) => (float)System.Math.Acos(cosine);
-
-    /// <summary>
-    /// Function to return the inverse cosine value of a <see cref="decimal"/> value representing an angle, in radians.
-    /// </summary>
-    /// <param name="cosine">The cosine value.</param>
-    /// <returns>The inverse cosine value of the <paramref name="cosine"/>.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static decimal ACos(this decimal cosine) => (decimal)System.Math.Acos((double)cosine);
+    public static float ACos(this float cosine) => MathF.Acos(cosine);
 
     /// <summary>
     /// Function to return the inverse cosine value of a <see cref="double"/> value representing an angle, in radians.
@@ -658,15 +621,7 @@ public static class GorgonMathExtensions
     /// <param name="tangent">The tangent value.</param>
     /// <returns>The tangent sine value of the <paramref name="tangent"/>.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static float ATan(this float tangent) => (float)System.Math.Atan(tangent);
-
-    /// <summary>
-    /// Function to return the inverse tangent value of a <see cref="decimal"/> value representing an angle, in radians.
-    /// </summary>
-    /// <param name="tangent">The tangent value.</param>
-    /// <returns>The tangent sine value of the <paramref name="tangent"/>.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static decimal ATan(this decimal tangent) => (decimal)System.Math.Atan((double)tangent);
+    public static float ATan(this float tangent) => MathF.Atan(tangent);
 
     /// <summary>
     /// Function to return the inverse tangent value of a <see cref="double"/> value representing an angle, in radians.
@@ -683,16 +638,7 @@ public static class GorgonMathExtensions
     /// <param name="x">Horizontal slope value to retrieve the inverse tangent from.</param>
     /// <returns>The inverse tangent of the slope.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static float ATan(this float y, float x) => (float)System.Math.Atan2(y, x);
-
-    /// <summary>
-    /// Function to return the inverse tangent of two <see cref="decimal"/> values representing the horizontal and vertical offset of a slope.
-    /// </summary>
-    /// <param name="y">Vertical slope value to retrieve the inverse tangent from.</param>
-    /// <param name="x">Horizontal slope value to retrieve the inverse tangent from.</param>
-    /// <returns>The inverse tangent of the slope.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static decimal ATan(this decimal y, decimal x) => (decimal)System.Math.Atan2((double)y, (double)x);
+    public static float ATan(this float y, float x) => MathF.Atan2(y, x);
 
     /// <summary>
     /// Function to return the inverse tangent of two <see cref="double"/> values representing the horizontal and vertical offset of a slope.
@@ -715,16 +661,6 @@ public static class GorgonMathExtensions
     public static double Exp(this double power) => System.Math.Exp(power);
 
     /// <summary>
-    /// Function to return <b><i>e</i></b> raised to a <see cref="decimal"/> value as the power.
-    /// </summary>
-    /// <param name="power">The value representing a power to raise to.</param>
-    /// <returns><b><i>e</i></b> raised to the <paramref name="power"/> specified.</returns>
-    /// <remarks>
-    /// <b><i>e</i></b> is a constant value of ~2.71828.
-    /// </remarks>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static decimal Exp(this decimal power) => (decimal)System.Math.Exp((double)power);
-    /// <summary>
     /// Function to return <b><i>e</i></b> raised to a <see cref="float"/> value as the power.
     /// </summary>
     /// <param name="power">The value representing a power to raise to.</param>
@@ -733,7 +669,7 @@ public static class GorgonMathExtensions
     /// <b><i>e</i></b> is a constant value of ~2.71828.
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static float Exp(this float power) => (float)System.Math.Exp(power);
+    public static float Exp(this float power) => MathF.Exp(power);
 
     /// <summary>
     /// Function to raise a <see cref="double"/> to a specified power.
@@ -745,22 +681,13 @@ public static class GorgonMathExtensions
     public static double Pow(this double value, double power) => System.Math.Pow(value, power);
 
     /// <summary>
-    /// Function to raise a <see cref="decimal"/> to a specified power.
-    /// </summary>
-    /// <param name="value">The value to raise.</param>
-    /// <param name="power">The value representing a power to raise to.</param>
-    /// <returns>The <paramref name="value"/> raised to the specified <paramref name="power"/>.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static decimal Pow(this decimal value, decimal power) => (decimal)System.Math.Pow((double)value, (double)power);
-
-    /// <summary>
     /// Function to raise a <see cref="float"/> to a specified power.
     /// </summary>
     /// <param name="value">The value to raise.</param>
     /// <param name="power">The value representing a power to raise to.</param>
     /// <returns>The <paramref name="value"/> raised to the specified <paramref name="power"/>.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static float Pow(this float value, float power) => (float)System.Math.Pow(value, power);
+    public static float Pow(this float value, float power) => MathF.Pow(value, power);
 
     /// <summary>
     /// Function to compute the logarithim of a value.
@@ -769,7 +696,7 @@ public static class GorgonMathExtensions
     /// <param name="power">The new base for the logarithm.</param>
     /// <returns>The logarithim value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static float Log(this float value, float power) => (float)System.Math.Log(value, power);
+    public static float Log(this float value, float power) => MathF.Log(value, power);
 
     /// <summary>
     /// Function to compute the logarithim of a value.
@@ -779,15 +706,6 @@ public static class GorgonMathExtensions
     /// <returns>The logarithim value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static double Log(this double value, double power) => System.Math.Log(value, power);
-
-    /// <summary>
-    /// Function to compute the logarithim of a value.
-    /// </summary>
-    /// <param name="value">The value to compute the logarithim from.</param>
-    /// <param name="power">The new base for the logarithm.</param>
-    /// <returns>The logarithim value.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static decimal Log(this decimal value, decimal power) => (decimal)System.Math.Log((double)value, (double)power);
 
     /// <summary>
     /// Function to return the largest integer less than or equal to the specified <see cref="float"/> value.
@@ -864,22 +782,6 @@ public static class GorgonMathExtensions
     /// <returns>0 if the value is 0, -1 if the value is less than 0, and 1 if the value is greater than 0.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int Sign(this long value)
-    {
-        if (value == 0)
-        {
-            return 0;
-        }
-
-        return value < 0 ? -1 : 1;
-    }
-
-    /// <summary>
-    /// Function to return the sign of a <see cref="sbyte"/> value.
-    /// </summary>
-    /// <param name="value">The value to evaluate.</param>
-    /// <returns>0 if the value is 0, -1 if the value is less than 0, and 1 if the value is greater than 0.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static int Sign(this sbyte value)
     {
         if (value == 0)
         {
@@ -1094,192 +996,87 @@ public static class GorgonMathExtensions
     }
 
     /// <summary>
-    /// Function to limit an angle to the specified minimum and maximum.
+    /// Function to wrap an angle between 0 and 360 degrees.
     /// </summary>
-    /// <param name="angle">The angle to limit.</param>
-    /// <param name="min">[Optional] The minimum value for the angle.</param>
-    /// <param name="max">[Optional] The maxmum value for the angle.</param>
-    /// <returns>The limited angle value.</returns>
-    public static float LimitAngle(this float angle, float min = 0, float max = 360)
+    /// <param name="angle">The angle to wrap.</param>
+    /// <returns>The wrapped angle value.</returns>
+    /// <remarks>
+    /// <para>
+    /// This method ensures that an angle remains within the 0 to 360 degree value range. If an angle exceeds the range, the method will add or remove the required amount to get the angle back into the 0 to 
+    /// 360 degree range.
+    /// </para>
+    /// <para>
+    /// For example, if <paramref name="angle"/> is -45.0f, then the return value will be 315.0f, or if <paramref name="angle"/> is 405.0f, the return value will be 45.0f.
+    /// </para>
+    /// </remarks>
+    public static float WrapAngle(this float angle)
     {
-        if (min.EqualsEpsilon(max))
+        while (angle > 360.0f)
         {
-            return angle.Max(min).Min(max);
+            angle -= 360.0f;
         }
 
-        if (min > max)
+        while (angle < 0.0f)
         {
-            (min, max) = (max, min);
-        }
-
-        if (angle > max)
-        {
-            angle = max - angle;
-        }
-
-        if (angle < min)
-        {
-            angle -= min;
+            angle += 360.0f;
         }
 
         return angle;
     }
 
     /// <summary>
-    /// Function to limit an angle to the specified minimum and maximum.
+    /// Function to wrap an angle between 0 and 360 degrees.
     /// </summary>
-    /// <param name="angle">The angle to limit.</param>
-    /// <param name="min">[Optional] The minimum value for the angle.</param>
-    /// <param name="max">[Optional] The maxmum value for the angle.</param>
-    /// <returns>The limited angle value.</returns>
-    public static double LimitAngle(this double angle, double min = 0, double max = 360)
+    /// <param name="angle">The angle to wrap.</param>
+    /// <returns>The wrapped angle value.</returns>
+    /// <remarks>
+    /// <para>
+    /// This method ensures that an angle remains within the 0 to 360 degree value range. If an angle exceeds the range, the method will add or remove the required amount to get the angle back into the 0 to 
+    /// 360 degree range.
+    /// </para>
+    /// <para>
+    /// For example, if <paramref name="angle"/> is -45.0f, then the return value will be 315.0f, or if <paramref name="angle"/> is 405.0f, the return value will be 45.0f.
+    /// </para>
+    /// </remarks>
+    public static double WrapAngle(this double angle)
     {
-        if (min.EqualsEpsilon(max))
+        while (angle > 360.0)
         {
-            return angle.Max(min).Min(max);
+            angle -= 360.0;
         }
 
-        if (min > max)
+        while (angle < 0)
         {
-            (min, max) = (max, min);
-        }
-
-        if (angle > max)
-        {
-            angle = max - angle;
-        }
-
-        if (angle < min)
-        {
-            angle -= min;
+            angle += 360.0;
         }
 
         return angle;
     }
 
     /// <summary>
-    /// Function to limit an angle to the specified minimum and maximum.
+    /// Function to wrap an angle between 0 and 360 degrees.
     /// </summary>
-    /// <param name="angle">The angle to limit.</param>
-    /// <param name="min">[Optional] The minimum value for the angle.</param>
-    /// <param name="max">[Optional] The maxmum value for the angle.</param>
-    /// <returns>The limited angle value.</returns>
-    public static decimal LimitAngle(this decimal angle, decimal min = 0, decimal max = 360)
+    /// <param name="angle">The angle to wrap.</param>
+    /// <returns>The wrapped angle value.</returns>
+    /// <remarks>
+    /// <para>
+    /// This method ensures that an angle remains within the 0 to 360 degree value range. If an angle exceeds the range, the method will add or remove the required amount to get the angle back into the 0 to 
+    /// 360 degree range.
+    /// </para>
+    /// <para>
+    /// For example, if <paramref name="angle"/> is -45.0f, then the return value will be 315.0f, or if <paramref name="angle"/> is 405.0f, the return value will be 45.0f.
+    /// </para>
+    /// </remarks>
+    public static decimal WrapAngle(this decimal angle)
     {
-        if (min == max)
+        while (angle > 360.0M)
         {
-            return angle.Max(min).Min(max);
+            angle -= 360.0M;
         }
 
-        if (min > max)
+        while (angle < 0)
         {
-            (min, max) = (max, min);
-        }
-
-        if (angle > max)
-        {
-            angle = max - angle;
-        }
-
-        if (angle < min)
-        {
-            angle -= min;
-        }
-
-        return angle;
-    }
-
-    /// <summary>
-    /// Function to limit an angle to the specified minimum and maximum.
-    /// </summary>
-    /// <param name="angle">The angle to limit.</param>
-    /// <param name="min">[Optional] The minimum value for the angle.</param>
-    /// <param name="max">[Optional] The maxmum value for the angle.</param>
-    /// <returns>The limited angle value.</returns>
-    public static short LimitAngle(this short angle, short min = 0, short max = 360)
-    {
-        if (min == max)
-        {
-            return angle.Max(min).Min(max);
-        }
-
-        if (min > max)
-        {
-            (min, max) = (max, min);
-        }
-
-        if (angle > max)
-        {
-            angle = (short)(max - angle);
-        }
-
-        if (angle < min)
-        {
-            angle -= min;
-        }
-
-        return angle;
-    }
-
-    /// <summary>
-    /// Function to limit an angle to the specified minimum and maximum.
-    /// </summary>
-    /// <param name="angle">The angle to limit.</param>
-    /// <param name="min">[Optional] The minimum value for the angle.</param>
-    /// <param name="max">[Optional] The maxmum value for the angle.</param>
-    /// <returns>The limited angle value.</returns>
-    public static int LimitAngle(this int angle, int min = 0, int max = 360)
-    {
-        if (min == max)
-        {
-            return angle.Max(min).Min(max);
-        }
-
-        if (min > max)
-        {
-            (min, max) = (max, min);
-        }
-
-        if (angle > max)
-        {
-            angle = max - angle;
-        }
-
-        if (angle < min)
-        {
-            angle -= min;
-        }
-
-        return angle;
-    }
-
-    /// <summary>
-    /// Function to limit an angle to the specified minimum and maximum.
-    /// </summary>
-    /// <param name="angle">The angle to limit.</param>
-    /// <param name="min">[Optional] The minimum value for the angle.</param>
-    /// <param name="max">[Optional] The maxmum value for the angle.</param>
-    /// <returns>The limited angle value.</returns>
-    public static long LimitAngle(this long angle, long min = 0, long max = 360)
-    {
-        if (min == max)
-        {
-            return angle.Max(min).Min(max);
-        }
-
-        if (min > max)
-        {
-            (min, max) = (max, min);
-        }
-
-        if (angle > max)
-        {
-            angle = max - angle;
-        }
-
-        if (angle < min)
-        {
-            angle -= min;
+            angle += 360.0M;
         }
 
         return angle;
@@ -1293,7 +1090,7 @@ public static class GorgonMathExtensions
     /// <param name="amount">The weighting amount.</param>
     /// <returns>The linearly interpolated value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static float Lerp(this float from, float to, float amount) => ((1.0f - amount) * from) + (amount * to);
+    public static float Lerp(this float from, float to, float amount) => ((to - from) * amount) + from;
 
     /// <summary>
     /// Function to linearly interpolate between two values given a weight amount.
@@ -1303,7 +1100,7 @@ public static class GorgonMathExtensions
     /// <param name="amount">The weighting amount.</param>
     /// <returns>The linearly interpolated value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static double Lerp(this double from, double to, double amount) => ((1.0 - amount) * from) + (amount * to);
+    public static double Lerp(this double from, double to, double amount) => ((to - from) * amount) + from;
 
     /// <summary>
     /// Function to linearly interpolate between two values given a weight amount.
@@ -1313,6 +1110,6 @@ public static class GorgonMathExtensions
     /// <param name="amount">The weighting amount.</param>
     /// <returns>The linearly interpolated value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static decimal Lerp(this decimal from, decimal to, decimal amount) => ((1.0M - amount) * from) + (amount * to);
+    public static decimal Lerp(this decimal from, decimal to, decimal amount) => ((to - from) * amount) + from;
 
 }

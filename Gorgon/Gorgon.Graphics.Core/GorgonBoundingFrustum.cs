@@ -497,7 +497,7 @@ public class GorgonBoundingFrustum
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public float GetWidthAtDepth(float depth)
     {
-        float hAngle = (GorgonMathExtensions.PI * 0.5f - (Vector3.Dot(Planes[FrustumPlane.Near].Normal, Planes[FrustumPlane.Left].Normal)).ACos());
+        float hAngle = (MathF.PI * 0.5f - (Vector3.Dot(Planes[FrustumPlane.Near].Normal, Planes[FrustumPlane.Left].Normal)).ACos());
         return hAngle.Tan() * depth * 2;
     }
 
@@ -509,23 +509,21 @@ public class GorgonBoundingFrustum
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public float GetHeightAtDepth(float depth)
     {
-        float vAngle = (GorgonMathExtensions.PI * 0.5f - (Vector3.Dot(Planes[FrustumPlane.Near].Normal, Planes[FrustumPlane.Top].Normal)).ACos());
+        float vAngle = (MathF.PI * 0.5f - (Vector3.Dot(Planes[FrustumPlane.Near].Normal, Planes[FrustumPlane.Top].Normal)).ACos());
         return vAngle.Tan() * depth * 2;
     }
 
     /// <summary>
     /// Get the distance which when added to camera position along the lookat direction will do the effect of zoom to extents (zoom to fit) operation,
     /// so all the passed points will fit in the current view.
-    /// if the returned value is positive, the camera will move toward the lookat direction (ZoomIn).
-    /// if the returned value is negative, the camera will move in the reverse direction of the lookat direction (ZoomOut).
     /// </summary>
     /// <param name="points">The points.</param>
-    /// <returns>The zoom to fit distance</returns>
+    /// <returns>if the returned value is positive, the camera will move toward the lookat direction (ZoomIn); otherwise if the returned value is negative, the camera will move in the reverse direction of the lookat direction (ZoomOut).</returns>
     public float GetZoomToExtentsShiftDistance(ReadOnlySpan<Vector3> points)
     {
-        float vAngle = GorgonMathExtensions.PI * 0.5f - (Vector3.Dot(Planes[FrustumPlane.Near].Normal, Planes[FrustumPlane.Top].Normal)).ACos();
+        float vAngle = MathF.PI * 0.5f - (Vector3.Dot(Planes[FrustumPlane.Near].Normal, Planes[FrustumPlane.Top].Normal)).ACos();
         float vSin = vAngle.FastSin();
-        float hAngle = GorgonMathExtensions.PI * 0.5f - (Vector3.Dot(Planes[FrustumPlane.Near].Normal, Planes[FrustumPlane.Left].Normal)).ACos();
+        float hAngle = MathF.PI * 0.5f - (Vector3.Dot(Planes[FrustumPlane.Near].Normal, Planes[FrustumPlane.Left].Normal)).ACos();
         float hSin = hAngle.FastSin();
         float horizontalToVerticalMapping = vSin / hSin;
 

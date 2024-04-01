@@ -67,7 +67,7 @@ internal class SingleAnimationViewer(Gorgon2D renderer, GorgonSwapChain swapChai
         Vector2 dest = mousePos - pivotPos;
         dest = Vector2.Normalize(dest);
 
-        return (dest.Y.ATan(dest.X).ToDegrees() - currentAngle).LimitAngle(-360);
+        return (dest.Y.ATan(dest.X).ToDegrees() - currentAngle).WrapAngle();
     }
 
     /// <summary>Function called when a property on the <see cref="DefaultContentRenderer{T}.DataContext"/> has been changed.</summary>
@@ -157,11 +157,11 @@ internal class SingleAnimationViewer(Gorgon2D renderer, GorgonSwapChain swapChai
                 return;
             case Keys.Left:
 
-                DataContext.KeyEditor.CurrentEditor.Value = new Vector4((DataContext.KeyEditor.CurrentEditor.Value.X - amount).LimitAngle(-360), 0, 0, 0);
+                DataContext.KeyEditor.CurrentEditor.Value = new Vector4((DataContext.KeyEditor.CurrentEditor.Value.X - amount).WrapAngle(), 0, 0, 0);
                 args.IsInputKey = true;
                 return;
             case Keys.Right:
-                DataContext.KeyEditor.CurrentEditor.Value = new Vector4((DataContext.KeyEditor.CurrentEditor.Value.X + amount).LimitAngle(-360), 0, 0, 0);
+                DataContext.KeyEditor.CurrentEditor.Value = new Vector4((DataContext.KeyEditor.CurrentEditor.Value.X + amount).WrapAngle(), 0, 0, 0);
                 args.IsInputKey = true;
                 return;
         }
