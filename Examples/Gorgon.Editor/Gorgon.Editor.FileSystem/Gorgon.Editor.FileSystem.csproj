@@ -24,7 +24,7 @@
     <NeutralLanguage>
     </NeutralLanguage>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <ApplicationManifest>..\..\app.manifest</ApplicationManifest>
+    
     <StartupObject>
     </StartupObject>
     <SignAssembly>false</SignAssembly>
@@ -48,10 +48,6 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
-  <ItemGroup>
-
-    <None Include="..\..\app.manifest" Link="app.manifest" />
-  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Tools\Editor\Gorgon.Editor.API\Gorgon.Editor.API.csproj" />
     <ProjectReference Include="..\..\ExamplesCommon\ExamplesCommon.csproj" />

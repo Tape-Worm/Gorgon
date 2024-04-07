@@ -463,8 +463,7 @@ internal static partial class RawInputApi
                 return [];
             }
 
-            ArrayPool<RAWINPUTDEVICELIST> pool = GorgonArrayPool<RAWINPUTDEVICELIST>.GetBestPool(deviceCount);
-            RAWINPUTDEVICELIST[] deviceList = pool.Rent(deviceCount);
+            RAWINPUTDEVICELIST[] deviceList = ArrayPool<RAWINPUTDEVICELIST>.Shared.Rent(deviceCount) ;
 
             try
             {
@@ -481,7 +480,7 @@ internal static partial class RawInputApi
             }
             finally
             {
-                pool.Return(deviceList, true);
+                ArrayPool<RAWINPUTDEVICELIST>.Shared.Return(deviceList, true);
             }
         }
     }

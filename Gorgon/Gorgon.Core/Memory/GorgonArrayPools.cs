@@ -1,5 +1,4 @@
-﻿
-// 
+﻿// 
 // Gorgon
 // Copyright (C) 2021 Michael Winsor
 // 
@@ -28,60 +27,40 @@ using System.Buffers;
 namespace Gorgon.Memory;
 
 /// <summary>
-/// Class to return array pools with a specific maximum size for the arrays that are pooled
+/// A static class containing a list of larger array pools if the default pool from <see cref="ArrayPool{T}.Shared"/> is too small (1,048,576 elements in an array).
 /// </summary>
-public static class GorgonArrayPool<T>
+public static class GorgonArrayPools<T>
 {
-    /// <summary>
-    /// Property to return an array pool with a maximum size of 1,048,576 items per array.
-    /// </summary>
-    /// <remarks>
-    /// This is the same as using <see cref="ArrayPool{T}.Shared"/>.
-    /// </remarks>
-    public static ArrayPool<T> SharedTiny => ArrayPool<T>.Shared;
-
     /// <summary>
     /// Property to return an array pool with a maximum size of 16,777,216 items per array.
     /// </summary>
-    public static ArrayPool<T> SharedSmall { get; } = ArrayPool<T>.Create(16_777_216, 50);
+    public static ArrayPool<T> SharedSmall { get; } = ArrayPool<T>.Create(16_777_216, 32);
 
     /// <summary>
     /// Property to return an array pool with a maximum size of 67,108,864 items per array.
     /// </summary>
-    public static ArrayPool<T> SharedMedium { get; } = ArrayPool<T>.Create(67_108_864, 25);
+    public static ArrayPool<T> SharedMedium { get; } = ArrayPool<T>.Create(67_108_864, 32);
 
     /// <summary>
     /// Property to return an array pool with a maximum size of 134,217,728 items per array.
     /// </summary>
-    public static ArrayPool<T> SharedLarge { get; } = ArrayPool<T>.Create(134_217_728, 11);
+    public static ArrayPool<T> SharedLarge { get; } = ArrayPool<T>.Create(134_217_728, 16);
 
     /// <summary>
     /// Property to return an array pool with a maximum size of 1,073,741,824 items per array.
     /// </summary>
-    public static ArrayPool<T> SharedHuge { get; } = ArrayPool<T>.Create(1_073_741_824, 5);
+    public static ArrayPool<T> SharedHuge { get; } = ArrayPool<T>.Create(1_073_741_824, 8);
 
     /// <summary>
     /// Function to return the best suited pool based on the requested array size.
     /// </summary>
     /// <param name="size">The size of the requested array.</param>
     /// <returns>The best suited array pool.</returns>
-    public static ArrayPool<T> GetBestPool(int size)
+    public static ArrayPool<T> GetBestPool(int size) => size switch
     {
-        if (size <= 1_048_576)
-        {
-            return SharedTiny;
-        }
-
-        if (size <= 16_777_216)
-        {
-            return SharedSmall;
-        }
-
-        if (size <= 67_108_864)
-        {
-            return SharedMedium;
-        }
-
-        return size <= 131_217_728 ? SharedLarge : SharedHuge;
-    }
+        <= 1_048_576 => ArrayPool<T>.Shared,
+        <= 16_777_216 => SharedSmall,
+        <= 67_108_864 => SharedMedium,
+        _ => size <= 131_217_728 ? SharedLarge : SharedHuge
+    };
 }

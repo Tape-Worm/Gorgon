@@ -23,6 +23,7 @@
 // Created: Saturday, June 8, 2013 4:53:00 PM
 // 
 
+using System.Buffers;
 using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
@@ -575,7 +576,7 @@ public sealed class GorgonDepthStencil2DView
             return;
         }
 
-        RawRectangle[] clearRects = GorgonArrayPool<RawRectangle>.SharedTiny.Rent(rectangles.Length);
+        RawRectangle[] clearRects = ArrayPool<RawRectangle>.Shared.Rent(rectangles.Length);
 
         try
         {
@@ -594,7 +595,7 @@ public sealed class GorgonDepthStencil2DView
         }
         finally
         {
-            GorgonArrayPool<RawRectangle>.SharedTiny.Return(clearRects, true);
+            ArrayPool<RawRectangle>.Shared.Return(clearRects, true);
         }
     }
 

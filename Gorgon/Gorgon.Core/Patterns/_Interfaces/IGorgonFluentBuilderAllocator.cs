@@ -42,7 +42,7 @@ namespace Gorgon.Patterns;
 /// </para>
 /// </remarks>
 /// <seealso cref="GorgonRingPool{T}"/>
-[Obsolete("REMOVE THIS LATER. USE IGorgonAllocator INSTEAD!")]
+[Obsolete("REMOVE THIS LATER. USE IGorgonAllocator IN THE BUILDER CONSTRUCTOR INSTEAD!")]
 public interface IGorgonFluentBuilderAllocator<out TB, TBo, in TBa>
     : IGorgonFluentBuilder<TB, TBo>
     where TB : class

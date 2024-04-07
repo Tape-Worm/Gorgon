@@ -50,7 +50,7 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationManifest>..\..\app.manifest</ApplicationManifest>
+    
     <StartupObject>
     </StartupObject>
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
@@ -74,7 +74,6 @@
       </PackagePath>
       <Pack>True</Pack>
     </None>
-    <None Include="..\..\app.manifest" Link="app.manifest" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="SharpDX.Mathematics" Version="4.2.0" />

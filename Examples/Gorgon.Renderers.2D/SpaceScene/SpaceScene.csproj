@@ -25,7 +25,7 @@
     <NeutralLanguage>
     </NeutralLanguage>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <ApplicationManifest>..\..\app.manifest</ApplicationManifest>
+    
     <StartupObject>
     </StartupObject>
     <SignAssembly>false</SignAssembly>
@@ -50,6 +50,9 @@
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
+    <AdditionalFiles Remove="..\..\app.manifest" />
+  </ItemGroup>
+  <ItemGroup>
     <None Remove="Resources\Shaders3D.hlsl" />
   </ItemGroup>
   <ItemGroup>
@@ -60,10 +63,6 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\Shaders3D.hlsl" />
-  </ItemGroup>
-  <ItemGroup>
-
-    <None Include="..\..\app.manifest" Link="app.manifest" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Gorgon\Gorgon.Input\Gorgon.Input.csproj" />

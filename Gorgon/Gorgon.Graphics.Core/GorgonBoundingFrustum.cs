@@ -43,6 +43,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.Buffers;
 using System.Collections;
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -552,7 +553,7 @@ public class GorgonBoundingFrustum
     /// <returns>The zoom to fit distance</returns>
     public float GetZoomToExtentsShiftDistance(ref readonly GorgonBoundingBox boundingBox)
     {
-        Vector3[] corners = GorgonArrayPool<Vector3>.SharedTiny.Rent(8);
+        Vector3[] corners = System.Buffers.ArrayPool<Vector3>.Shared.Rent(8);
 
         try
         {
@@ -568,7 +569,7 @@ public class GorgonBoundingFrustum
         }
         finally
         {
-            GorgonArrayPool<Vector3>.SharedTiny.Return(corners);
+            System.Buffers.ArrayPool<Vector3>.Shared.Return(corners);
         }
     }
 

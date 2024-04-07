@@ -1,5 +1,4 @@
-﻿
-// 
+﻿// 
 // Gorgon
 // Copyright (C) 2016 Michael Winsor
 // 
@@ -30,7 +29,7 @@ using Gorgon.Properties;
 namespace Gorgon.Memory;
 
 /// <summary>
-/// A memory allocation strategy that uses a standar pool/free list allocator to perform memory allocations
+/// A memory allocation strategy that uses a standard pool/free list allocator to perform memory allocations
 /// </summary>
 /// <typeparam name="T">The type of objects to allocate.  These must be a reference type.</typeparam>
 /// <remarks>
@@ -45,21 +44,20 @@ namespace Gorgon.Memory;
 /// nullified.  
 /// </para>
 /// <para>
-/// This allocator will never grow beyond its initial size. So care must be taken ahead of time to ensure the pool is large enough
+/// This allocator will never grow beyond its initial size. So care must be taken ahead of time to ensure the pool is large enough.
 /// </para>
 /// </remarks>
 public class GorgonPool<T>
     : IGorgonAllocator<T>
     where T : class
 {
-
     // The list of items that are free for use.
-    private readonly ConcurrentStack<T> _freeList;
-    // The number of available slots.
-    private int _availableSlots;
+    private readonly ConcurrentStack<T> _freeList = new();
+    // The number of slots that are filled.
+    private int _slotCount = -1;
 
     /// <summary>
-    /// Property to set or return the allocator to use when creating new instances of an object.
+    /// Property to return the allocator to use when creating new instances of an object.
     /// </summary>
     protected Func<T> ItemAllocator
     {
@@ -67,7 +65,7 @@ public class GorgonPool<T>
     }
 
     /// <summary>
-    /// Property to return the number of items available to the allocator.
+    /// Property to return the number of items available to the pool.
     /// </summary>
     public int TotalSize
     {
@@ -78,40 +76,46 @@ public class GorgonPool<T>
     /// Property to return the number of available slots in the pool.
     /// </summary>
     /// <remarks>
-    /// When this value is 0, then the pool is full and should be reset using the <see cref="Reset"/> method.
+    /// When this value is 0, then the pool is full, and items need to be returned to the pool using <see cref="Deallocate(ref T?, Action{T}?)"/>.
     /// </remarks>
-    /// <seealso cref="Reset"/>
-    public int AvailableSlots => _availableSlots;
+    /// <seealso cref="Deallocate(ref T?, Action{T}?)"/>
+    public int AvailableSlots => TotalSize - (_slotCount + 1);
 
     /// <summary>
     /// Function to allocate a new object from the pool.
     /// </summary>
     /// <param name="initializer">[Optional] A function used to initialize the object returned by the allocator.</param>
-    /// <exception cref="GorgonException">Thrown when the pool is completely full.</exception>
     /// <returns>The newly allocated object.</returns>
+    /// <exception cref="GorgonException">Thrown when the pool is completely full.
+    /// <para>-or-</para>
+    /// <para>The object could not be created with the <see cref="ItemAllocator"/> and returned <b>null</b>.</para>
+    /// </exception>    
     /// <remarks>
     /// <para>
-    /// Applications should check to ensure that there is enough free space in the pool to allocate another object by checking the <see cref="AvailableSlots"/> property prior to calling this method. 
-    /// If there is no more room (i.e. <see cref="AvailableSlots"/> is 0), then applications should call the <see cref="Reset"/> method to reset the pool.
+    /// This method returns either a new, or reused object from the pool. The <see cref="ItemAllocator"/> is used to create a new object in the pool if one has never been used before. Otherwise, if the 
+    /// object is reused, then the existing object will be returned from the pool.
     /// </para>
     /// <para>
-    /// If the <paramref name="initializer"/> parameter is supplied, then this callback method can be used to initialize the new object before returning it from the allocator. If the object returned 
-    /// is <b>null</b> (because an allocator was not supplied to the constructor), then this parameter will be ignored.
+    /// Applications should check to ensure that there is enough free space in the pool to allocate another object by checking the <see cref="AvailableSlots"/> property prior to calling this method. 
+    /// If there is no more room (i.e. <see cref="AvailableSlots"/> is 0), then applications should call the <see cref="Deallocate(ref T?, Action{T}?)"/> method to return an object to the pool.
+    /// </para>
+    /// <para>
+    /// If the <paramref name="initializer"/> parameter is supplied, then this callback method can be used to initialize the new object before returning it from the allocator.
     /// </para>
     /// </remarks>
-    /// <seealso cref="AvailableSlots"/>
-    /// <seealso cref="Reset"/>
+    /// <seealso cref="Deallocate(ref T?, Action{T}?)"/>    
     public T Allocate(Action<T>? initializer = null)
     {
-        if (Interlocked.Decrement(ref _availableSlots) <= 0)
+        int filledSlotCount = Interlocked.Increment(ref _slotCount);
+
+        if (filledSlotCount >= TotalSize)
         {
             throw new GorgonException(GorgonResult.OutOfMemory, Resources.GOR_ERR_ALLOCATOR_FULL);
-        }
+        }        
 
-        if ((_freeList.IsEmpty)
-            || (!_freeList.TryPop(out T? item)))
+        if ((_freeList.IsEmpty) || (!_freeList.TryPop(out T? item)))
         {
-            item = ItemAllocator();
+            item = ItemAllocator() ?? throw new GorgonException(GorgonResult.CannotCreate, Resources.GOR_ERR_OBJECT_CREATION_RETURNED_NULL);
         }
 
         initializer?.Invoke(item);
@@ -123,15 +127,17 @@ public class GorgonPool<T>
     /// Function to deallocate an item allocated by this pool.
     /// </summary>
     /// <param name="item">The item to deallocate.</param>
-    /// <param name="finalizer">[Optional] A finalizer callback method used to clean up the object before putting it back in the pool.</param>
+    /// <param name="finalizer">[Optional] A callback method used to perform any required clean up for the object being reset in the pool.</param>
     /// <exception cref="GorgonException">Thrown when there is no more room to add an item to the free list.</exception>
     /// <remarks>
     /// <para>
-    /// The <paramref name="item"/> parameter will be passed by reference to the method so that it will be set to <b>null</b> upon deallocation. This keeps the end user from using the object after it's 
-    /// been deallocated.
+    /// The <paramref name="item"/> parameter will be passed by reference to the method so that it will be set to <b>null</b> upon deallocation. This keeps the end user from using the object after it's been 
+    /// deallocated.
     /// </para>
     /// <para>
-    /// If the <paramref name="finalizer"/> callback method is supplied, then the object will have a chance to be cleaned up prior to putting it back into the pool. 
+    /// This method can take a <paramref name="finalizer"/> parameter that can be used to perform any required clean up, or reset of the objects in the pool. This can be useful if the object requires 
+    /// disposal via a <see cref="IDisposable.Dispose"/> method, of if the object requires some other form of clean up like being reset to a default state. If this parameter is omitted, then no clean up 
+    /// will be executed and the objects will be left in their current state.
     /// </para>
     /// </remarks>
     public void Deallocate(ref T? item, Action<T>? finalizer = null)
@@ -141,12 +147,12 @@ public class GorgonPool<T>
             return;
         }
 
-        if (Interlocked.Increment(ref _availableSlots) > TotalSize)
+        if (Interlocked.Decrement(ref _slotCount) < -1)
         {
             throw new GorgonException(GorgonResult.OutOfMemory, Resources.GOR_ERR_ALLOCATOR_FULL);
         }
 
-        T localItem = Interlocked.Exchange(ref item, null);
+        T? localItem = Interlocked.Exchange(ref item, null);
 
         if (localItem is null)
         {
@@ -158,41 +164,27 @@ public class GorgonPool<T>
     }
 
     /// <summary>
-    /// Function to reset the allocator heap and "free" all previous instances.
-    /// </summary>
-    /// <remarks>
-    /// <para>
-    /// This method does not actually free any memory in the traditional sense, but merely resets the allocation pointer back to the beginning of the heap 
-    /// to allow re-use of objects.
-    /// </para>
-    /// </remarks>
-    public void Reset()
-    {
-        _freeList.Clear();
-        Interlocked.Exchange(ref _availableSlots, TotalSize);
-    }
-
-    /// <summary>
     /// Initializes a new instance of the <see cref="GorgonLinearPool{T}"/> class.
     /// </summary>
-    /// <param name="objectCount">The number of total objects available to the allocator.</param>
+    /// <param name="maxObjectCount">The number of total objects available to the pool.</param>
     /// <param name="allocator">The allocator used to create an object in the pool.</param>
-    /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="objectCount"/> parameter is less than 1.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="maxObjectCount"/> parameter is less than 1.</exception>
     /// <remarks>
     /// <para>
-    /// The <paramref name="allocator"/> callback method passed will be executed for each object that has not been initialized in the pool (i.e. the object would be returned as <b>null</b> when 
-    /// allocated). This ensures that the allocator can correctly initialize the object prior to allocation in the pool. 
+    /// The <paramref name="allocator"/> parameter is a method that is used to create a new object in the pool. This method is called when the pool object has never been used before so that it will 
+    /// return an instance. If the object does not need to be created (i.e. the resulting object has been used before), then the <paramref name="allocator"/> will not be called.
     /// </para>
     /// </remarks>
-    public GorgonPool(int objectCount, Func<T> allocator)
+    /// <seealso cref="Allocate(Action{T}?)"/>
+    public GorgonPool(int maxObjectCount, Func<T> allocator)
     {
-        if (objectCount < 1)
+        if (maxObjectCount < 1)
         {
-            throw new ArgumentOutOfRangeException(nameof(objectCount), Resources.GOR_ERR_ALLOCATOR_SIZE_TOO_SMALL);
+            throw new ArgumentOutOfRangeException(nameof(maxObjectCount), Resources.GOR_ERR_ALLOCATOR_SIZE_TOO_SMALL);
         }
 
         ItemAllocator = allocator;
-        _availableSlots = TotalSize = objectCount;
+        TotalSize = maxObjectCount;
         _freeList = new ConcurrentStack<T>();
     }
 }

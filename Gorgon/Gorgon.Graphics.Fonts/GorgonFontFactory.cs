@@ -300,7 +300,8 @@ public sealed class GorgonFontFactory
         HashSet<string> currentFonts = new(_externalFonts.Families.Select(item => item.Name), StringComparer.OrdinalIgnoreCase);
 
         byte[] data = null;
-        ArrayPool<byte> pool = GorgonArrayPool<byte>.GetBestPool(size.Value);
+
+        ArrayPool<byte> pool = GorgonArrayPools<byte>.GetBestPool(size.Value);
 
         try
         {

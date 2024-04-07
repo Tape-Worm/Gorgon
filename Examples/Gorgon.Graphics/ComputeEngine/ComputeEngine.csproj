@@ -22,7 +22,7 @@
     <NeutralLanguage>
     </NeutralLanguage>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <ApplicationManifest>..\..\app.manifest</ApplicationManifest>
+    
     <StartupObject>
     </StartupObject>
     <SignAssembly>false</SignAssembly>
@@ -48,9 +48,6 @@
   </PropertyGroup>
   <ItemGroup>
     <EmbeddedResource Include="ComputeShader.hlsl" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\app.manifest" Link="app.manifest" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\ExamplesCommon\ExamplesCommon.csproj" />

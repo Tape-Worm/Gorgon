@@ -369,13 +369,12 @@ static class Program
             DrawBlurred();
         }
 
-        _2D.Begin();
         if (_showHelp)
         {
+            _2D.Begin();
             _2D.DrawTextSprite(_helpTextSprite);
+            _2D.End();
         }
-
-        _2D.End();
 
         DrawOverlay();
 

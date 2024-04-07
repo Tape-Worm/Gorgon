@@ -641,7 +641,7 @@ public sealed class GorgonCodecDds
             if (((srcFormat == DdsConversionFlags.Palette) || (srcFormat == DdsConversionFlags.A8P8)) && ((palette is null) || (actualPalette.Length != 256)))
             {
                 // Create an empty palette if we didn't supply one.
-                actualPalette = GorgonArrayPool<uint>.SharedTiny.Rent(256);
+                actualPalette = ArrayPool<uint>.Shared.Rent(256);
             }
 
             unsafe
@@ -797,7 +797,7 @@ public sealed class GorgonCodecDds
         {
             if (actualPalette != palette)
             {
-                GorgonArrayPool<uint>.SharedTiny.Return(actualPalette, true);
+                ArrayPool<uint>.Shared.Return(actualPalette, true);
             }
         }
     }

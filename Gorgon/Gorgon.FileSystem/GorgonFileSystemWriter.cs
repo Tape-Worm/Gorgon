@@ -1152,7 +1152,7 @@ public class GorgonFileSystemWriter
         {
             PrepareWriteArea();
 
-            _writeBuffer = GorgonArrayPool<byte>.SharedTiny.Rent(MaxBufferSize);
+            _writeBuffer = System.Buffers.ArrayPool<byte>.Shared.Rent(MaxBufferSize);
             StringBuilder pathBuffer = new(1024);
             List<(IGorgonVirtualDirectory src, IGorgonVirtualDirectory dest)> dirsCopied = [];
             List<(IGorgonVirtualFile src, IGorgonVirtualFile dest)> filesCopied = [];
@@ -1298,7 +1298,7 @@ public class GorgonFileSystemWriter
         }
         finally
         {
-            GorgonArrayPool<byte>.SharedTiny.Return(_writeBuffer, true);
+            System.Buffers.ArrayPool<byte>.Shared.Return(_writeBuffer, true);
         }
     }
 
@@ -1364,7 +1364,7 @@ public class GorgonFileSystemWriter
         {
             PrepareWriteArea();
 
-            _writeBuffer = GorgonArrayPool<byte>.SharedTiny.Rent(MaxBufferSize);
+            _writeBuffer = System.Buffers.ArrayPool<byte>.Shared.Rent(MaxBufferSize);
             StringBuilder pathBuffer = new(1024);
             List<(IGorgonVirtualDirectory src, IGorgonVirtualDirectory dest)> dirsCopied = [];
             List<(IGorgonVirtualFile src, IGorgonVirtualFile dest)> filesCopied = [];
@@ -1483,7 +1483,7 @@ public class GorgonFileSystemWriter
         }
         finally
         {
-            GorgonArrayPool<byte>.SharedTiny.Return(_writeBuffer);
+            System.Buffers.ArrayPool<byte>.Shared.Return(_writeBuffer);
         }
     }
 
@@ -1554,7 +1554,7 @@ public class GorgonFileSystemWriter
         {
             PrepareWriteArea();
 
-            _writeBuffer = GorgonArrayPool<byte>.SharedTiny.Rent(MaxBufferSize);
+            _writeBuffer = System.Buffers.ArrayPool<byte>.Shared.Rent(MaxBufferSize);
             StringBuilder pathBuffer = new(1024);
             List<(IGorgonVirtualFile src, IGorgonVirtualFile dest)> filesCopied = [];
             CancellationToken cancelToken = options?.CancelToken ?? CancellationToken.None;
@@ -1638,7 +1638,7 @@ public class GorgonFileSystemWriter
         }
         finally
         {
-            GorgonArrayPool<byte>.SharedTiny.Return(_writeBuffer, true);
+            System.Buffers.ArrayPool<byte>.Shared.Return(_writeBuffer, true);
         }
     }
 
@@ -1703,7 +1703,7 @@ public class GorgonFileSystemWriter
         {
             PrepareWriteArea();
 
-            _writeBuffer = GorgonArrayPool<byte>.SharedTiny.Rent(MaxBufferSize);
+            _writeBuffer = System.Buffers.ArrayPool<byte>.Shared.Rent(MaxBufferSize);
             StringBuilder pathBuffer = new(1024);
             List<(IGorgonVirtualFile src, IGorgonVirtualFile dest)> filesCopied = [];
             CancellationToken cancelToken = options?.CancelToken ?? CancellationToken.None;
@@ -1793,7 +1793,7 @@ public class GorgonFileSystemWriter
         }
         finally
         {
-            GorgonArrayPool<byte>.SharedTiny.Return(_writeBuffer, true);
+            System.Buffers.ArrayPool<byte>.Shared.Return(_writeBuffer, true);
         }
     }
 
@@ -1856,7 +1856,7 @@ public class GorgonFileSystemWriter
 
         try
         {
-            _writeBuffer = GorgonArrayPool<byte>.SharedTiny.Rent(MaxBufferSize);
+            _writeBuffer = System.Buffers.ArrayPool<byte>.Shared.Rent(MaxBufferSize);
             StringBuilder pathBuffer = new(1024);
             CancellationToken cancelToken = options?.CancelToken ?? CancellationToken.None;
             Action<string, double> progressCallback = options?.ProgressCallback;
@@ -1913,7 +1913,7 @@ public class GorgonFileSystemWriter
         }
         finally
         {
-            GorgonArrayPool<byte>.SharedTiny.Return(_writeBuffer, true);
+            System.Buffers.ArrayPool<byte>.Shared.Return(_writeBuffer, true);
         }
     }
 
@@ -1968,7 +1968,7 @@ public class GorgonFileSystemWriter
 
         try
         {
-            _writeBuffer = GorgonArrayPool<byte>.SharedTiny.Rent(MaxBufferSize);
+            _writeBuffer = System.Buffers.ArrayPool<byte>.Shared.Rent(MaxBufferSize);
             StringBuilder pathBuffer = new(1024);
             CancellationToken cancelToken = options?.CancelToken ?? CancellationToken.None;
             Action<string, double> progressCallback = options?.ProgressCallback;
@@ -2059,7 +2059,7 @@ public class GorgonFileSystemWriter
         }
         finally
         {
-            GorgonArrayPool<byte>.SharedTiny.Return(_writeBuffer, true);
+            System.Buffers.ArrayPool<byte>.Shared.Return(_writeBuffer, true);
         }
     }
 
@@ -2111,7 +2111,7 @@ public class GorgonFileSystemWriter
         {
             PrepareWriteArea();
 
-            _writeBuffer = GorgonArrayPool<byte>.SharedTiny.Rent(MaxBufferSize);
+            _writeBuffer = System.Buffers.ArrayPool<byte>.Shared.Rent(MaxBufferSize);
             StringBuilder pathBuffer = new(1024);
             List<IGorgonVirtualDirectory> dirsCopied = [];
             List<IGorgonVirtualFile> filesCopied = [];
@@ -2300,7 +2300,7 @@ public class GorgonFileSystemWriter
         }
         finally
         {
-            GorgonArrayPool<byte>.SharedTiny.Return(_writeBuffer, true);
+            System.Buffers.ArrayPool<byte>.Shared.Return(_writeBuffer, true);
         }
     }
 

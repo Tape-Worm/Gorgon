@@ -23,7 +23,7 @@
     <NeutralLanguage>
     </NeutralLanguage>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <ApplicationManifest>..\..\app.manifest</ApplicationManifest>
+    
     <StartupObject>Gorgon.Examples.Program</StartupObject>
     <SignAssembly>false</SignAssembly>
     <AssemblyOriginatorKeyFile>
@@ -53,10 +53,6 @@
     <EmbeddedResource Remove="Properties\**" />
     <None Remove="PlugIns\**" />
     <None Remove="Properties\**" />
-  </ItemGroup>
-  <ItemGroup>
-
-    <None Include="..\..\app.manifest" Link="app.manifest" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Gorgon\Gorgon.Core\Gorgon.Core.csproj" />

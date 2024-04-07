@@ -376,6 +376,15 @@ namespace Gorgon.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The object allocation method failed to create the object and returned null..
+        /// </summary>
+        internal static string GOR_ERR_OBJECT_CREATION_RETURNED_NULL {
+            get {
+                return ResourceManager.GetString("GOR_ERR_OBJECT_CREATION_RETURNED_NULL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The offset {0} + size {1} requested are larger than the array: {2}.
         /// </summary>
         internal static string GOR_ERR_OFFSET_AND_SIZE_ARE_LARGER_THAN_ARRAY {

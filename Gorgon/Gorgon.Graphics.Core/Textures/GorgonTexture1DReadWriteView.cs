@@ -23,6 +23,7 @@
 // Created: April 16, 2018 11:19:23 PM
 // 
 
+using System.Buffers;
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Graphics.Imaging;
@@ -368,7 +369,7 @@ public sealed class GorgonTexture1DReadWriteView
             return;
         }
 
-        RawRectangle[] clearRects = GorgonArrayPool<RawRectangle>.SharedTiny.Rent(rectangles.Length);
+        RawRectangle[] clearRects = ArrayPool<RawRectangle>.Shared.Rent(rectangles.Length);
 
         try
         {
@@ -381,7 +382,7 @@ public sealed class GorgonTexture1DReadWriteView
         }
         finally
         {
-            GorgonArrayPool<RawRectangle>.SharedTiny.Return(clearRects, true);
+            ArrayPool<RawRectangle>.Shared.Return(clearRects, true);
         }
     }
 

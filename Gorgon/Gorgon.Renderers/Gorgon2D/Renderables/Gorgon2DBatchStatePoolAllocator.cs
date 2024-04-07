@@ -30,12 +30,9 @@ namespace Gorgon.Renderers;
 /// <summary>
 /// An allocator used to retrieve 2D batch states from a pool
 /// </summary>    
-public class Gorgon2DBatchStatePoolAllocator
-    : GorgonRingPool<Gorgon2DBatchState>
+/// <remarks>Initializes a new instance of the <see cref="Gorgon2DBatchStatePoolAllocator"/> class.</remarks>
+/// <param name="objectCount">[Optional] The number of objects to initialize the pool with.</param>
+public class Gorgon2DBatchStatePoolAllocator(int objectCount = 1024)
+        : GorgonRingPool<Gorgon2DBatchState>(objectCount, () => new Gorgon2DBatchState())
 {
-    /// <summary>Initializes a new instance of the <see cref="Gorgon2DBatchStatePoolAllocator"/> class.</summary>
-    /// <param name="objectCount">[Optional] The number of objects to initialize the pool with.</param>
-    public Gorgon2DBatchStatePoolAllocator(int objectCount = 1024)
-        : base(objectCount) => ItemAllocator = () => new Gorgon2DBatchState();
-
 }

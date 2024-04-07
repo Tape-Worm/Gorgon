@@ -25,7 +25,7 @@
     <NeutralLanguage>
     </NeutralLanguage>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <ApplicationManifest>..\..\app.manifest</ApplicationManifest>
+    
     <StartupObject>Gorgon.Examples.Program</StartupObject>
     <SignAssembly>false</SignAssembly>
     <AssemblyOriginatorKeyFile>
@@ -47,8 +47,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
-
-    <None Include="..\..\app.manifest" Link="app.manifest" />
+    <AdditionalFiles Remove="..\..\app.manifest" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\ExamplesCommon\ExamplesCommon.csproj" />

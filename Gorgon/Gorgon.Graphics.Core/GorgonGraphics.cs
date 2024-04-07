@@ -23,6 +23,7 @@
 // Created: April 6, 2018 8:15:10 AM
 // 
 
+using System.Buffers;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
@@ -589,7 +590,7 @@ public sealed class GorgonGraphics
     /// </summary>
     internal static void CheckMinimumOperatingSystem()
     {
-        if (!Win32API.IsWindows10OrGreater(MinWin10Build))
+        if (!OperatingSystem.IsOSPlatformVersionAtLeast("Windows", 10, 0, MinWin10Build))
         {
             throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_INVALID_OS, MinWin10Build));
         }
@@ -749,7 +750,7 @@ public sealed class GorgonGraphics
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void SetRenderTarget(GorgonRenderTargetView renderTarget, GorgonDepthStencil2DView depthStencil = null)
     {
-        GorgonRenderTargetView[] renderTargets = GorgonArrayPool<GorgonRenderTargetView>.SharedTiny.Rent(1);
+        GorgonRenderTargetView[] renderTargets = System.Buffers.ArrayPool<GorgonRenderTargetView>.Shared.Rent(1);
 
         try
         {
@@ -758,7 +759,7 @@ public sealed class GorgonGraphics
         }
         finally
         {
-            GorgonArrayPool<GorgonRenderTargetView>.SharedTiny.Return(renderTargets, true);
+            System.Buffers.ArrayPool<GorgonRenderTargetView>.Shared.Return(renderTargets, true);
         }
     }
 
@@ -853,7 +854,7 @@ public sealed class GorgonGraphics
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void SetScissorRect(GorgonRectangle rect)
     {
-        GorgonRectangle[] rects = GorgonArrayPool<GorgonRectangle>.SharedTiny.Rent(1);
+        GorgonRectangle[] rects = System.Buffers.ArrayPool<GorgonRectangle>.Shared.Rent(1);
 
         try
         {
@@ -862,7 +863,7 @@ public sealed class GorgonGraphics
         }
         finally
         {
-            GorgonArrayPool<GorgonRectangle>.SharedTiny.Return(rects, true);
+            System.Buffers.ArrayPool<GorgonRectangle>.Shared.Return(rects, true);
         }
     }
 
@@ -908,7 +909,7 @@ public sealed class GorgonGraphics
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void SetViewport(DX.ViewportF viewport)
     {
-        DX.ViewportF[] viewports = GorgonArrayPool<DX.ViewportF>.SharedTiny.Rent(1);
+        DX.ViewportF[] viewports = System.Buffers.ArrayPool<DX.ViewportF>.Shared.Rent(1);
 
         try
         {
@@ -917,7 +918,7 @@ public sealed class GorgonGraphics
         }
         finally
         {
-            GorgonArrayPool<DX.ViewportF>.SharedTiny.Return(viewports, true);
+            System.Buffers.ArrayPool<DX.ViewportF>.Shared.Return(viewports, true);
         }
     }
 
