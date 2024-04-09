@@ -56,7 +56,7 @@ namespace Gorgon.Graphics.Core;
 /// <seealso cref="GorgonStreamOutCall"/>
 /// <seealso cref="GorgonStreamOutPipelineState"/>
 public class GorgonStreamOutPipelineStateBuilder
-    : IGorgonGraphicsObject, IGorgonFluentBuilderAllocator<GorgonStreamOutPipelineStateBuilder, GorgonStreamOutPipelineState, IGorgonAllocator<GorgonStreamOutPipelineState>>
+    : IGorgonGraphicsObject, IGorgonFluentBuilder<GorgonStreamOutPipelineStateBuilder, GorgonStreamOutPipelineState, IGorgonAllocator<GorgonStreamOutPipelineState>>
 {
 
     // The working state.
@@ -256,7 +256,7 @@ public class GorgonStreamOutPipelineStateBuilder
     /// <summary>
     /// Function to build a pipeline state.
     /// </summary>
-    /// <param name="allocator">The allocator used to create an instance of the object</param>
+    /// <param name="allocator">[Optionak] The allocator used to create an instance of the object.</param>
     /// <returns>The object created or updated by this builder.</returns>
     /// <remarks>
     ///   <para>
@@ -267,7 +267,7 @@ public class GorgonStreamOutPipelineStateBuilder
     /// around for as long as we need them, instead of creating objects that can potentially end up in the large object heap or in Gen 2.
     /// </para>
     /// </remarks>
-    public GorgonStreamOutPipelineState Build(IGorgonAllocator<GorgonStreamOutPipelineState> allocator)
+    public GorgonStreamOutPipelineState Build(IGorgonAllocator<GorgonStreamOutPipelineState>? allocator = null)
     {
         if (allocator is null)
         {
@@ -279,12 +279,6 @@ public class GorgonStreamOutPipelineStateBuilder
 
         return allocator.Allocate(CacheState);
     }
-
-    /// <summary>
-    /// Function to build a pipeline state.
-    /// </summary>
-    /// <returns>A new pipeline state.</returns>
-    public GorgonStreamOutPipelineState Build() => Build(null);
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonStreamOutPipelineStateBuilder"/> class.

@@ -23,6 +23,8 @@
 // Created: May 24, 2018 4:10:30 PM
 // 
 
+using Gorgon.Memory;
+
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
@@ -45,7 +47,7 @@ namespace Gorgon.Graphics.Core;
 /// <seealso cref="GorgonPipelineState"/>
 /// <seealso cref="GorgonBlendState"/>
 public class GorgonBlendStateBuilder
-    : GorgonStateBuilderAllocator<GorgonBlendStateBuilder, GorgonBlendState>
+    : GorgonStateBuilderCommon<GorgonBlendStateBuilder, GorgonBlendState>
 {
     /// <summary>
     /// Function to copy the state settings from the source state into the destination.
@@ -66,14 +68,23 @@ public class GorgonBlendStateBuilder
     }
 
     /// <summary>
-    /// Function to update the properties of the state from the working copy to the final copy.
+    /// Function to create a new state object.
     /// </summary>
-    /// <returns>The fluent builder interface.</returns>
-    protected override GorgonBlendState OnCreateState() => new(WorkingState);
+    /// <param name="allocator">The allocator used to create the object.</param>
+    /// <returns>The new render state.</returns>
+    /// <remarks>
+    /// <para>
+    /// This method should be used to create the object only, the state information will be copied into the object by the <see cref="OnUpdate"/> method.
+    /// </para>
+    /// <para>
+    /// If the <paramref name="allocator"/> is null, the application should create the object using the <c>new</c> keyword. Otherwise, the <paramref name="allocator"/> should be used to create the object.
+    /// </para>
+    /// </remarks>
+    protected override GorgonBlendState OnCreate(IGorgonAllocator<GorgonBlendState>? allocator) => allocator?.Allocate() ?? new();
 
     /// <summary>Function to update the properties of the state, allocated from an allocator, from the working copy.</summary>
     /// <param name="state">The state to update.</param>
-    protected override void OnUpdate(GorgonBlendState state) => CopyState(WorkingState, state);
+    protected override void OnUpdate(GorgonBlendState state) => CopyState(state, WorkingState);
 
     /// <summary>
     /// Function to reset the builder to the specified state.
@@ -90,7 +101,7 @@ public class GorgonBlendStateBuilder
     /// Function to clear the working state for the builder.
     /// </summary>
     /// <returns>The fluent builder interface.</returns>
-    protected override GorgonBlendStateBuilder OnClearState()
+    protected override GorgonBlendStateBuilder OnClear()
     {
         CopyState(WorkingState, GorgonBlendState.Default);
         return this;

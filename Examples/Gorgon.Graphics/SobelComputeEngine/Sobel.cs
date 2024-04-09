@@ -103,7 +103,7 @@ internal class Sobel
                                                   Usage = ResourceUsage.Dynamic
                                               });
 
-        _dispatchBuilder = new GorgonDispatchCallBuilder();
+        _dispatchBuilder = new GorgonDispatchCallBuilder(sobelShader);
         _dispatchBuilder.ConstantBuffer(_sobelData.GetView())
                         .ComputeShader(sobelShader);
     }

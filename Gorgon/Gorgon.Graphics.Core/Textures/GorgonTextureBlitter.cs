@@ -72,7 +72,7 @@ public class GorgonTextureBlitter
     // The builder used to create a pipeline state object.
     private readonly GorgonPipelineStateBuilder _fsPsoBuilder;
     // The allocator used to create/recycle draw calls.
-    private readonly GorgonDrawCallPoolAllocator<GorgonDrawCall> _drawAllocator = new(128);
+    private readonly GorgonDrawCallPoolAllocator _drawAllocator = new(128);
     // The default pipeline state for blitting.
     private GorgonPipelineState _blitPso;
     // The default pipeline state for fullscreen blitting.

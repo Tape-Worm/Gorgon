@@ -86,7 +86,7 @@ internal class Program
     // The compute engine.
     private static GorgonComputeEngine _engine;
     // The dispatch call builder.
-    private static readonly GorgonDispatchCallBuilder _dispatchBuilder = new();
+    private static GorgonDispatchCallBuilder _dispatchBuilder;
 
     /// <summary>
     /// A function to create our input/input buffers and populate the input buffers with the data to send to the GPU.
@@ -173,6 +173,8 @@ internal class Program
         // We will also need to compile a compute shader so we can actually perform the work.
         Console.WriteLine("Compiling the compute shader (SimpleCompute)...");
         _computeShader = GorgonShaderFactory.Compile<GorgonComputeShader>(_graphics, Resources.ComputeShader, "SimpleCompute");
+        
+        _dispatchBuilder = new GorgonDispatchCallBuilder(_computeShader);
 
         // Finally, the star of the show, the compute engine.
         Console.WriteLine("Creating compute engine...");

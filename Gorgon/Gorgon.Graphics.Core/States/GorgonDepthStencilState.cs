@@ -343,22 +343,6 @@ public class GorgonDepthStencilState
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonDepthStencilState"/> class.
     /// </summary>
-    /// <param name="state">A <see cref="GorgonDepthStencilState"/> to copy the settings from.</param>
-    internal GorgonDepthStencilState(GorgonDepthStencilState state)
-    {
-        BackFaceStencilOp = new GorgonStencilOperation(state.BackFaceStencilOp);
-        FrontFaceStencilOp = new GorgonStencilOperation(state.FrontFaceStencilOp);
-        DepthComparison = state.DepthComparison;
-        IsDepthWriteEnabled = state.IsDepthWriteEnabled;
-        IsDepthEnabled = state.IsDepthEnabled;
-        IsStencilEnabled = state.IsStencilEnabled;
-        StencilReadMask = state.StencilReadMask;
-        StencilWriteMask = state.StencilWriteMask;
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonDepthStencilState"/> class.
-    /// </summary>
     internal GorgonDepthStencilState()
     {
         IsDepthWriteEnabled = true;

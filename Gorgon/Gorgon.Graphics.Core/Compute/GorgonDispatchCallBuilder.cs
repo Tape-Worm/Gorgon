@@ -35,9 +35,8 @@ namespace Gorgon.Graphics.Core;
 /// </summary>
 /// <seealso cref="GorgonDispatchCall"/>
 public class GorgonDispatchCallBuilder
-    : IGorgonFluentBuilderAllocator<GorgonDispatchCallBuilder, GorgonDispatchCall, IGorgonAllocator<GorgonDispatchCall>>
+    : IGorgonFluentBuilder<GorgonDispatchCallBuilder, GorgonDispatchCall, IGorgonAllocator<GorgonDispatchCall>>
 {
-
     // The dispatch call being edited.
     private readonly GorgonDispatchCall _worker;
 
@@ -208,7 +207,7 @@ public class GorgonDispatchCallBuilder
     /// <summary>
     /// Function to return the dispatch call.
     /// </summary>
-    /// <param name="allocator">The allocator used to create an instance of the object</param>
+    /// <param name="allocator">[Optional] The allocator used to create an instance of the object</param>
     /// <returns>The dispatch call created or updated by this builder.</returns>
     /// <exception cref="GorgonException">Thrown if a <see cref="GorgonComputeShader"/> is not assigned to the <see cref="GorgonComputeShader"/> property with the <see cref="ComputeShader"/> command.</exception>
     /// <remarks>
@@ -220,13 +219,14 @@ public class GorgonDispatchCallBuilder
     /// around for as long as we need them, instead of creating objects that can potentially end up in the large object heap or in Gen 2.
     /// </para>
     /// <para>
-    /// A dispatch call requires that at least a vertex shader be bound. If none is present, then the method will throw an exception.
+    /// A dispatch call requires that at a compute shader be bound on the builder. If one is not assigned, then the method will throw an exception.
     /// </para>
     /// </remarks>
-    public GorgonDispatchCall Build(IGorgonAllocator<GorgonDispatchCall> allocator)
+    public GorgonDispatchCall Build(IGorgonAllocator<GorgonDispatchCall>? allocator = null)
     {
-        GorgonDispatchCall final = new();
-        final.Setup();
+        GorgonDispatchCall final = allocator?.Allocate() ?? new();
+
+        final.D3DState.ComputeShader = _worker.D3DState.ComputeShader;
 
         // Copy over the available constants.
         StateCopy.CopyConstantBuffers(final.D3DState.CsConstantBuffers, _worker.D3DState.CsConstantBuffers, 0);
@@ -240,24 +240,10 @@ public class GorgonDispatchCallBuilder
         StateCopy.CopySrvs(final.D3DState.CsSrvs, _worker.D3DState.CsSrvs);
 
         // Copy over unordered access views.
-        StateCopy.CopyReadWriteViews(final.D3DState.CsReadWriteViews, _worker.D3DState.CsReadWriteViews, 0);
-
-        if (_worker.D3DState.ComputeShader is null)
-        {
-            throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_NO_COMPUTE_SHADER);
-        }
-
-        final.D3DState.ComputeShader = _worker.D3DState.ComputeShader;
+        StateCopy.CopyReadWriteViews(final.D3DState.CsReadWriteViews, _worker.D3DState.CsReadWriteViews, 0);        
 
         return final;
     }
-
-    /// <summary>
-    /// Function to return the dispatch call.
-    /// </summary>
-    /// <returns>The dispatch call created or updated by this builder.</returns>
-    /// <exception cref="GorgonException">Thrown if a <see cref="GorgonComputeShader"/> is not assigned to the <see cref="GorgonComputeShader"/> property with the <see cref="ComputeShader"/> command.</exception>
-    public GorgonDispatchCall Build() => Build(null);
 
     /// <summary>
     /// Function to reset the builder to the specified dispatch call state.
@@ -300,9 +286,10 @@ public class GorgonDispatchCallBuilder
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonDispatchCallBuilder"/> class.
     /// </summary>
-    public GorgonDispatchCallBuilder()
+    /// <param name="computeShader">The compute shader to use for the dispatch call(s) built by this builder.</param>
+    public GorgonDispatchCallBuilder(GorgonComputeShader computeShader) 
     {
         _worker = new GorgonDispatchCall();
-        _worker.Setup();
+        _worker.D3DState.ComputeShader = computeShader;
     }
 }

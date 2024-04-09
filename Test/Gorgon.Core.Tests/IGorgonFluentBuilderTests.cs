@@ -57,9 +57,9 @@ public class TestFluentBuilder
         return this;
     }
 
-    public TestFluentBuilder ResetTo(TestClass builderObject)
+    public TestFluentBuilder ResetTo(TestClass? builderObject)
     {
-        _value = builderObject.Value;
+        _value = builderObject?.Value ?? default;
         return this;
     }
 

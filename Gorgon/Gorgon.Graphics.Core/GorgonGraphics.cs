@@ -1082,22 +1082,22 @@ public sealed class GorgonGraphics
     }
 
     /// <summary>
-    /// Function to submit a <see cref="GorgonDrawCallCommon"/> to the GPU using a <see cref="GorgonBuffer"/> to pass in variable sized arguments.
+    /// Function to submit a <see cref="GorgonDrawIndexCall"/> to the GPU to generate instanced data.
     /// </summary>
     /// <param name="drawCall">The draw call to submit.</param>
-    /// <param name="indirectArgs">The buffer containing the draw call arguments to pass.</param>
-    /// <param name="argumentOffset">[Optional] The offset, in bytes, within the buffer to start reading the arguments from.</param>
+    /// <param name="indirectArgs">The buffer containing the GPU generated instance data.</param>
+    /// <param name="argumentOffset">[Optional] The offset, in bytes, within the buffer to start reading the primitive data from.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="drawCall"/>, or the <paramref name="indirectArgs"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="argumentOffset"/> parameter is less than 0.</exception>
     /// <exception cref="GorgonException">Thrown if the <paramref name="indirectArgs"/> was not created with the <see cref="IGorgonBufferInfo.IndirectArgs"/> flag set to <b>true</b>.</exception>
     /// <remarks>
     /// <para>
-    /// This allows submitting a <see cref="GorgonDrawCallCommon"/> with variable arguments without having to perform a read back of that data from the GPU and therefore avoid a stall. 
+    /// This allows submitting a <see cref="GorgonDrawIndexCall"/> with GPU generated instance data stored in a <see cref="GorgonBuffer"/>. 
     /// </para>
     /// <para>
-    /// Like the <see cref="SubmitStreamOut"/> method, this is useful when a shader generates an arbitrary amount of data within a buffer. Retrieving the size, or the data itself from the buffer will 
-    /// cause a stall when swtiching back to the CPU. So, to counter this, this method will pass the buffer with the arguments for the draw call straight through without having to get the CPU to read 
-    /// the data back, thus avoiding the stall.
+    /// Instead of pulling the instancing parameters from the <see cref="GorgonDrawIndexCall"/>, this method will use the instance data stored in the <paramref name="indirectArgs"/> buffer. The first four 
+    /// bytes are <c>IndexCountPerInstance</c>, the next 4 bytes represent <c>InstanceCount</c>, the next 4 represent <c>StartIndexLocation</c>, the next 4 represent <c>BaseVertexLocation</c>, and the last 
+    /// 4 byte represent <c>StartInstanceLocation</c>. The location of these values may be offset by <paramref name="argumentOffset"/>. 
     /// </para>
     /// <para>
     /// <note type="important">
@@ -1107,8 +1107,8 @@ public sealed class GorgonGraphics
     /// </note>
     /// </para>
     /// </remarks>
-    /// <seealso cref="GorgonDrawCallCommon"/>
-    public void SubmitIndirect(GorgonDrawCallCommon drawCall, GorgonBuffer indirectArgs, int argumentOffset = 0)
+    /// <seealso cref="GorgonDrawIndexCall"/>
+    public void SubmitInstanceIndirect(GorgonDrawIndexCall drawCall, GorgonBuffer indirectArgs, int argumentOffset = 0)
     {
 #if DEBUG
         if (argumentOffset < 0)
@@ -1131,7 +1131,56 @@ public sealed class GorgonGraphics
     }
 
     /// <summary>
-    /// Function to submit a <see cref="GorgonDrawCallCommon"/> to the GPU.
+    /// Function to submit a <see cref="GorgonDrawCall"/> to the GPU to generate instanced data.
+    /// </summary>
+    /// <param name="drawCall">The draw call to submit.</param>
+    /// <param name="indirectArgs">The buffer containing the GPU generated instance data.</param>
+    /// <param name="argumentOffset">[Optional] The offset, in bytes, within the buffer to start reading the primitive data from.</param>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="drawCall"/>, or the <paramref name="indirectArgs"/> parameter is <b>null</b>.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="argumentOffset"/> parameter is less than 0.</exception>
+    /// <exception cref="GorgonException">Thrown if the <paramref name="indirectArgs"/> was not created with the <see cref="IGorgonBufferInfo.IndirectArgs"/> flag set to <b>true</b>.</exception>
+    /// <remarks>
+    /// <para>
+    /// This allows submitting a <see cref="GorgonDrawCall"/> with GPU generated instance data stored in a <see cref="GorgonBuffer"/>. 
+    /// </para>
+    /// <para>
+    /// Instead of pulling the instancing parameters from the <see cref="GorgonDrawCall"/>, this method will use the instance data stored in the <paramref name="indirectArgs"/> buffer. The first four 
+    /// bytes are <c>VertexCountPerInstance</c>, the next 4 bytes represent <c>InstanceCount</c>, the next 4 represent <c>StartVertexLocation</c>, the and the last 4 represent <c>StartInstanceLocation</c>.
+    /// The location of these values may be offset by <paramref name="argumentOffset"/>. 
+    /// </para>
+    /// <para>
+    /// <note type="important">
+    /// <para>
+    /// For performance reasons, any exceptions thrown from this method will only be thrown when Gorgon is compiled as DEBUG.
+    /// </para>
+    /// </note>
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="GorgonDrawCall"/>
+    public void SubmitInstanceIndirect(GorgonDrawCall drawCall, GorgonBuffer indirectArgs, int argumentOffset = 0)
+    {
+#if DEBUG
+        if (argumentOffset < 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(argumentOffset), Resources.GORGFX_ERR_PARAMETER_LESS_THAN_ZERO);
+        }
+
+        if (!indirectArgs.IndirectArgs)
+        {
+            throw new GorgonException(GorgonResult.AccessDenied, string.Format(Resources.GORGFX_ERR_BUFFER_NOT_INDIRECTARGS, indirectArgs.Name));
+        }
+#endif
+
+        SetDrawStates(drawCall.D3DState, GorgonColors.White, int.MinValue, 0);
+        D3DDeviceContext.DrawInstancedIndirect(indirectArgs.Native, argumentOffset);
+        unchecked
+        {
+            ++_stats._indirectCount;
+        }
+    }
+
+    /// <summary>
+    /// Function to submit a <see cref="GorgonStreamOutCall"/> to the GPU.
     /// </summary>
     /// <param name="drawCall">The draw call to submit.</param>
     /// <param name="blendFactor">[Optional] The factor used to modulate the pixel shader, render target or both.</param>
@@ -1141,7 +1190,7 @@ public sealed class GorgonGraphics
     /// <remarks>
     /// <para>
     /// This method sends a series of state changes and resource bindings to the GPU. However, unlike the <see cref="Submit(GorgonDrawIndexCall, GorgonColor?, int, int)"/> command, this command uses 
-    /// pre-processed data from the vertex and stream out stages. This means that the <see cref="GorgonVertexBuffer"/> attached to the draw call must have been assigned to the  previous
+    /// pre-processed data from the vertex and stream out stages. This means that the <see cref="GorgonVertexBuffer"/> attached to the draw call must have been assigned to the previous
     /// <see cref="GorgonDrawCallCommon.StreamOutBufferBindings"/> and had data deposited into it from the stream out stage. After that, it should be be assigned to a <see cref="GorgonStreamOutCall"/>
     /// passed to this method.
     /// </para>

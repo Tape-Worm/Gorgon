@@ -41,9 +41,9 @@ internal sealed class DrawCallFactory(GorgonGraphics graphics, GorgonTexture2DVi
 {
 
     // The allocater used to create draw calls.
-    private readonly GorgonDrawCallPoolAllocator<GorgonDrawIndexCall> _drawIndexAllocator = new(128);
+    private readonly GorgonDrawIndexCallPoolAllocator _drawIndexAllocator = new(128);
     // The allocater used to create draw calls.
-    private readonly GorgonDrawCallPoolAllocator<GorgonDrawCall> _drawAllocator = new(128);
+    private readonly GorgonDrawCallPoolAllocator _drawAllocator = new(128);
     // The builder used to build a draw call.
     private readonly GorgonDrawIndexCallBuilder _drawIndexBuilder = new();
     // The builder used to build a draw call.
@@ -73,7 +73,6 @@ internal sealed class DrawCallFactory(GorgonGraphics graphics, GorgonTexture2DVi
     /// <param name="renderable">The renderable being rendered.</param>
     /// <param name="batchState">The current batch level state.</param>
     /// <param name="renderer">The renderer used to send renderable data to the GPU.</param>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void SetCommonStates<TB, TD>(GorgonDrawCallBuilderCommon<TB, TD> builder, BatchRenderable renderable, Gorgon2DBatchState batchState, BatchRenderer renderer)
         where TB : GorgonDrawCallBuilderCommon<TB, TD>
         where TD : GorgonDrawCallCommon

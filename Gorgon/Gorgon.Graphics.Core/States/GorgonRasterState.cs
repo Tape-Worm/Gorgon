@@ -408,26 +408,6 @@ public class GorgonRasterState
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonRasterState"/> class.
     /// </summary>
-    /// <param name="state">The state to copy.</param>
-    internal GorgonRasterState(GorgonRasterState state)
-    {
-        IsAntialiasedLineEnabled = state.IsAntialiasedLineEnabled;
-        CullMode = state.CullMode;
-        DepthBias = state.DepthBias;
-        DepthBiasClamp = state.DepthBiasClamp;
-        IsDepthClippingEnabled = state.IsDepthClippingEnabled;
-        FillMode = state.FillMode;
-        ForcedReadWriteViewSampleCount = state.ForcedReadWriteViewSampleCount;
-        IsFrontCounterClockwise = state.IsFrontCounterClockwise;
-        IsMultisamplingEnabled = state.IsMultisamplingEnabled;
-        SlopeScaledDepthBias = state.SlopeScaledDepthBias;
-        UseConservativeRasterization = state.UseConservativeRasterization;
-        ScissorRectsEnabled = state.ScissorRectsEnabled;
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonRasterState"/> class.
-    /// </summary>
     internal GorgonRasterState()
     {
         CullMode = CullingMode.Back;

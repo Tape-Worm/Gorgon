@@ -57,7 +57,6 @@ namespace Gorgon.Graphics.Core;
 public class GorgonPipelineStateBuilder
     : IGorgonGraphicsObject, IGorgonFluentBuilder<GorgonPipelineStateBuilder, GorgonPipelineState>
 {
-
     // The working state.
     private readonly GorgonPipelineState _workState = new();
 
