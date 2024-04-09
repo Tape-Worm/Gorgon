@@ -23,10 +23,12 @@
 // Created: July 8, 2016 11:26:58 AM
 // 
 
+using System.Buffers;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.IO;
+using Gorgon.Memory;
 using Gorgon.Reflection;
 using SharpDX.D3DCompiler;
 using D3D = SharpDX.Direct3D;
@@ -64,7 +66,7 @@ public static class GorgonShaderFactory
     private static readonly ShaderProcessor _processor = new();
 
     // A list of available shader types.
-    private static readonly (Type, ShaderType, string)[] _shaderTypes =
+    private static readonly (Type Type, ShaderType ShaderType, string Profile)[] _shaderTypes =
     [
         (typeof(GorgonVertexShader), ShaderType.Vertex, "vs_5_0"),
         (typeof(GorgonPixelShader), ShaderType.Pixel, "ps_5_0"),
@@ -74,9 +76,27 @@ public static class GorgonShaderFactory
         (typeof(GorgonComputeShader), ShaderType.Compute, "cs_5_0")
     ];
 
-    // A list of factory objects used to create the actual shader objects.
-    private static readonly Dictionary<ShaderType, ObjectActivator<GorgonShader>> _shaderFactory =
-        [];
+    /// <summary>
+    /// Function to create a new instance of a shader.
+    /// </summary>
+    /// <param name="shaderType">The type of shader to create.</param>
+    /// <param name="graphics">The graphics interface used to create the shader.</param>
+    /// <param name="entryPoint">The entry point for the shader.</param>
+    /// <param name="debug"><b>true</b> if debugging is enabled, <b>false</b> if not.</param>
+    /// <param name="byteCode">The byte code for the shader.</param>
+    /// <returns>The new shader.</returns>
+    /// <exception cref="GorgonException">Thrown if the <paramref name="shaderType"/> does not match a known shader type.</exception>
+    private static GorgonShader GetShaderInstance(ShaderType shaderType, GorgonGraphics graphics, string entryPoint, bool debug, ShaderBytecode byteCode) => shaderType switch
+    {
+        ShaderType.Vertex => new GorgonVertexShader(graphics, entryPoint, debug, byteCode),
+        ShaderType.Pixel => new GorgonPixelShader(graphics, entryPoint, debug, byteCode),
+        ShaderType.Geometry => new GorgonGeometryShader(graphics, entryPoint, debug, byteCode),
+        ShaderType.Hull => new GorgonHullShader(graphics, entryPoint, debug, byteCode),
+        ShaderType.Domain => new GorgonDomainShader(graphics, entryPoint, debug, byteCode),
+        ShaderType.Compute => new GorgonComputeShader(graphics, entryPoint, debug, byteCode),
+        _ => throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_SHADER_UNKNOWN_TYPE, shaderType))
+    };
+
 
     /// <summary>
     /// Property to return the list of <see cref="GorgonShaderInclude"/> definitions to include with compiled shaders.
@@ -96,11 +116,9 @@ public static class GorgonShaderFactory
     /// <typeparam name="T">The type of shader to return. Must inherit from <see cref="GorgonShader"/>.</typeparam>
     /// <param name="graphics">The graphics interface used to create the shader.</param>
     /// <param name="stream">The stream containing the binary shader data.</param>
-    /// <param name="size">The size, in bytes, of the binary shader within the stream.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, or the <paramref name="stream"/> parameter is <b>null</b>.</exception>
     /// <exception cref="IOException">Thrown if the <paramref name="stream"/> is write only.</exception>
     /// <exception cref="EndOfStreamException">Thrown if an attempt to read beyond the end of the stream is made.</exception>
-    /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="size"/> parameter is less than 1 byte.</exception>
     /// <exception cref="InvalidCastException">Thrown if the application tries to load a specific shader type as <typeparamref name="T"/>, but it is stored as another type.</exception>
     /// <returns>A new <see cref="GorgonShader"/>. The type of shader depends on the data that was written to the stream and the <typeparamref name="T"/> type parameter.</returns>
     /// <remarks>
@@ -131,7 +149,7 @@ public static class GorgonShaderFactory
     /// </remarks>
     /// <seealso cref="GorgonChunkFileReader"/>
     /// <seealso cref="GorgonChunkFileWriter"/>
-    public static T FromStream<T>(GorgonGraphics graphics, Stream stream, int size)
+    public static T FromStream<T>(GorgonGraphics graphics, Stream stream)
         where T : GorgonShader
     {
         if (graphics is null)
@@ -154,11 +172,6 @@ public static class GorgonShaderFactory
             throw new EndOfStreamException();
         }
 
-        if (size < 1)
-        {
-            throw new ArgumentOutOfRangeException(nameof(size));
-        }
-
         // We will store the shader as a Gorgon chunked binary format. 
         // This will break the shader into parts within the file to allow us the ability to read portions of the file.
         using GorgonChunkFileReader chunkReader = new(stream,
@@ -166,8 +179,10 @@ public static class GorgonShaderFactory
                                                                           BinaryShaderFileHeader.ChunkID()
                                                                       ]);
 
-        ShaderBytecode byteCode = null;
+        ShaderBytecode? byteCode = null;
         IGorgonChunkReader? reader = null;
+        ArrayPool<byte>? arrayPool = null;
+        byte[] data = [];
 
         try
         {
@@ -232,7 +247,8 @@ public static class GorgonShaderFactory
 
             reader = chunkReader.OpenChunk(byteCodeChunk.ID);
 
-            byte[] data = new byte[byteCodeChunk.Size];
+            arrayPool = GorgonArrayPools<byte>.GetBestPool(byteCodeChunk.Size);
+            data = arrayPool.Rent(byteCodeChunk.Size);
 
             reader.ReadArray(data, 0, byteCodeChunk.Size);
             reader.Close();
@@ -240,13 +256,10 @@ public static class GorgonShaderFactory
             graphics.Log.Print($"Compiling {shaderType} '{entryPoint}'.", LoggingLevel.Simple);
             byteCode = new ShaderBytecode(data);
 
-            ObjectActivator<GorgonShader> shaderCtor = _shaderFactory[shaderType];
+            T result = (T)GetShaderInstance(shaderType, graphics, entryPoint, debug, byteCode);
 
-            T result = (T)shaderCtor(graphics.D3DDevice,
-                                       entryPoint,
-                                       debug,
-                                       byteCode);
             result.RegisterDisposable(graphics);
+
             return result;
         }
         catch (DX.CompilationException cEx)
@@ -256,6 +269,7 @@ public static class GorgonShaderFactory
         }
         finally
         {
+            arrayPool?.Return(data, true);
             reader?.Close();
             chunkReader.Close();
             byteCode?.Dispose();
@@ -319,7 +333,7 @@ public static class GorgonShaderFactory
         }
 
         using FileStream stream = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read);
-        return FromStream<T>(graphics, stream, (int)stream.Length);
+        return FromStream<T>(graphics, stream);
     }
 
     /// <summary>
@@ -407,7 +421,7 @@ public static class GorgonShaderFactory
             throw new ArgumentEmptyException(nameof(entryPoint));
         }
 
-        (Type Type, ShaderType Shader, string Profile)? shaderType = _shaderTypes.FirstOrDefault(item => item.Item1 == typeof(T));
+        (Type Type, ShaderType Shader, string Profile)? shaderType = _shaderTypes.FirstOrDefault(item => item.Type == typeof(T));
 
         if (shaderType is null)
         {
@@ -421,8 +435,9 @@ public static class GorgonShaderFactory
         D3D.ShaderMacro[] actualMacros = null;
 
         if ((macros is not null) && (macros.Count > 0))
-        {
-            actualMacros = macros.Select(item => item.D3DShaderMacro).ToArray();
+        {            
+            actualMacros = macros.Select(item => item.D3DShaderMacro)
+                                 .ToArray();
         }
 
         string processedSource = _processor.Process(sourceCode);
@@ -445,12 +460,8 @@ public static class GorgonShaderFactory
                                                         byteCode.Message.Replace("{", "{{").Replace("}", "}}")));
             }
 
-            ObjectActivator<GorgonShader> shaderCtor = _shaderFactory[shaderType.Value.Shader];
+            T result = (T)GetShaderInstance(shaderType.Value.Shader, graphics, entryPoint, debug, byteCode.Bytecode);
 
-            T result = (T)shaderCtor(graphics,
-                                       entryPoint,
-                                       debug,
-                                       byteCode.Bytecode);
             result.RegisterDisposable(graphics);
 
             return result;
@@ -459,20 +470,6 @@ public static class GorgonShaderFactory
         {
             throw new GorgonException(GorgonResult.CannotCompile,
                                       string.Format(Resources.GORGFX_ERR_CANNOT_COMPILE_SHADER, cEx.Message.Replace("{", "{{").Replace("}", "}}")));
-        }
-    }
-
-    /// <summary>
-    /// Initializes static members of the <see cref="GorgonShaderFactory" /> class.
-    /// </summary>
-    static GorgonShaderFactory()
-    {
-        foreach ((Type Type, ShaderType Shader, _) in _shaderTypes)
-        {
-            _shaderFactory[Shader] = Type.CreateActivator<GorgonShader>(typeof(GorgonGraphics),
-                                                                        typeof(string),
-                                                                        typeof(bool),
-                                                                        typeof(ShaderBytecode));
         }
     }
 }

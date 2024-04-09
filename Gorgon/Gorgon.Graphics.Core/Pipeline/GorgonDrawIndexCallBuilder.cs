@@ -62,7 +62,7 @@ public class GorgonDrawIndexCallBuilder
     /// </summary>
     /// <param name="allocator">The allocator to use when creating draw call objects.</param>
     /// <returns>A new draw call.</returns>
-    protected override GorgonDrawIndexCall OnCreate(IGorgonAllocator<GorgonDrawIndexCall> allocator) => allocator is null ? new GorgonDrawIndexCall() : allocator.Allocate();
+    protected override GorgonDrawIndexCall OnCreate(IGorgonAllocator<GorgonDrawIndexCall>? allocator) => allocator?.Allocate() ?? new();
 
     /// <summary>
     /// Function to reset the properties of the draw call to the draw call passed in.

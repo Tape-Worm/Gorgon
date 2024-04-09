@@ -24,30 +24,15 @@
 // 
 
 using Gorgon.Memory;
-using Gorgon.Reflection;
 
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// An allocator used to retrieve draw calls from a pool
+/// An allocator used to retrieve <see cref="GorgonDrawCall"/> objects from a pool
 /// </summary>
-/// <typeparam name="T">The type of draw call.</typeparam>
-/// <remarks>
-/// Initializes a new instance of the <see cref="GorgonLinearPool{T}"/> class
-/// </remarks>
 /// <param name="objectCount">The number of total objects available to the allocator.</param>
 /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="objectCount"/> parameter is less than 1.</exception>
-public class GorgonDrawCallPoolAllocator<T>(int objectCount)
-    : GorgonRingPool<T>(objectCount, () => _creator.Value())
-    where T : GorgonDrawCallCommon
+public sealed class GorgonDrawCallPoolAllocator(int objectCount)
+    : GorgonRingPool<GorgonDrawCall>(objectCount, () => new())
 {
-
-    // The object creator.
-    private static readonly Lazy<ObjectActivator<T>> _creator;
-
-    /// <summary>
-    /// Initializes static members of the <see cref="GorgonDrawCallPoolAllocator{T}"/> class.
-    /// </summary>
-    static GorgonDrawCallPoolAllocator() => _creator = new Lazy<ObjectActivator<T>>(() => typeof(T).CreateActivator<T>(), true);
-
 }

@@ -70,7 +70,7 @@ namespace Gorgon.Graphics.Core;
 /// <seealso cref="GorgonVertexBuffer"/>
 /// <seealso cref="VertexBufferBinding"/>
 public sealed class GorgonStreamOutCallBuilder
-    : IGorgonFluentBuilderAllocator<GorgonStreamOutCallBuilder, GorgonStreamOutCall, IGorgonAllocator<GorgonStreamOutCall>>
+    : IGorgonFluentBuilder<GorgonStreamOutCallBuilder, GorgonStreamOutCall, IGorgonAllocator<GorgonStreamOutCall>>
 {
 
     // The worker call used to build up the object.
@@ -318,13 +318,6 @@ public sealed class GorgonStreamOutCallBuilder
             ? throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_NO_VERTEX_SHADER)
             : final;
     }
-
-    /// <summary>
-    /// Function to return the draw call.
-    /// </summary>
-    /// <returns>The draw call created or updated by this builder.</returns>
-    /// <exception cref="GorgonException">Thrown if a <see cref="GorgonVertexShader"/> is not assigned to the <see cref="GorgonPipelineState.VertexShader"/> property with the <see cref="PipelineState(GorgonStreamOutPipelineState)"/> command.</exception>
-    public GorgonStreamOutCall Build() => Build(null);
 
     /// <summary>
     /// Function to reset the builder to the specified draw call state.

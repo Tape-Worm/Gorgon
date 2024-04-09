@@ -23,6 +23,8 @@
 // Created: May 29, 2018 8:57:29 AM
 // 
 
+using Gorgon.Memory;
+
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
@@ -59,7 +61,7 @@ public enum StencilFace
 /// <seealso cref="GorgonPipelineState"/>
 /// <seealso cref="GorgonDepthStencilState"/>
 public class GorgonDepthStencilStateBuilder
-    : GorgonStateBuilderAllocator<GorgonDepthStencilStateBuilder, GorgonDepthStencilState>
+    : GorgonStateBuilderCommon<GorgonDepthStencilStateBuilder, GorgonDepthStencilState>
 {
     /// <summary>
     /// Function to copy the state settings from the source state into the destination.
@@ -85,14 +87,23 @@ public class GorgonDepthStencilStateBuilder
     }
 
     /// <summary>
-    /// Function to update the properties of the state from the working copy to the final copy.
+    /// Function to create a new state object.
     /// </summary>
-    /// <returns>The fluent builder interface.</returns>
-    protected override GorgonDepthStencilState OnCreateState() => new(WorkingState);
+    /// <param name="allocator">The allocator used to create the object.</param>
+    /// <returns>The new render state.</returns>
+    /// <remarks>
+    /// <para>
+    /// This method should be used to create the object only, the state information will be copied into the object by the <see cref="OnUpdate"/> method.
+    /// </para>
+    /// <para>
+    /// If the <paramref name="allocator"/> is null, the application should create the object using the <c>new</c> keyword. Otherwise, the <paramref name="allocator"/> should be used to create the object.
+    /// </para>
+    /// </remarks>
+    protected override GorgonDepthStencilState OnCreate(IGorgonAllocator<GorgonDepthStencilState>? allocator) => allocator?.Allocate() ?? new();
 
     /// <summary>Function to update the properties of the state, allocated from an allocator, from the working copy.</summary>
     /// <param name="state">The state to update.</param>
-    protected override void OnUpdate(GorgonDepthStencilState state) => CopyState(WorkingState, state);
+    protected override void OnUpdate(GorgonDepthStencilState state) => CopyState(state, WorkingState);
 
     /// <summary>
     /// Function to reset the builder to the specified state.
@@ -109,7 +120,7 @@ public class GorgonDepthStencilStateBuilder
     /// Function to clear the working state for the builder.
     /// </summary>
     /// <returns>The fluent builder interface.</returns>
-    protected override GorgonDepthStencilStateBuilder OnClearState()
+    protected override GorgonDepthStencilStateBuilder OnClear()
     {
         CopyState(WorkingState, GorgonDepthStencilState.Default);
         return this;

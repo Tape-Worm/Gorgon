@@ -67,17 +67,6 @@ public class GorgonDispatchCall
     public IGorgonReadOnlyArray<GorgonConstantBufferView> ConstantBuffers => D3DState.CsConstantBuffers;
 
     /// <summary>
-    /// Function to set up the data structure with initialized values.
-    /// </summary>
-    internal void Setup()
-    {
-        D3DState.CsReadWriteViews = new GorgonReadWriteViewBindings();
-        D3DState.CsSrvs = new GorgonShaderResourceViews();
-        D3DState.CsSamplers = new GorgonSamplerStates();
-        D3DState.CsConstantBuffers = new GorgonConstantBuffers();
-    }
-
-    /// <summary>
     /// Initializes a new instance of the <see cref="GorgonDispatchCall"/> class.
     /// </summary>
     internal GorgonDispatchCall()
@@ -99,5 +88,10 @@ public class GorgonDispatchCall
                                 D3DState.GsSrvs =
                                     D3DState.DsSrvs = D3DState.HsSrvs = new GorgonShaderResourceViews();
         D3DState.ReadWriteViews = new GorgonReadWriteViewBindings();
+
+        D3DState.CsReadWriteViews = new GorgonReadWriteViewBindings();
+        D3DState.CsSrvs = new GorgonShaderResourceViews();
+        D3DState.CsSamplers = new GorgonSamplerStates();
+        D3DState.CsConstantBuffers = new GorgonConstantBuffers();
     }
 }

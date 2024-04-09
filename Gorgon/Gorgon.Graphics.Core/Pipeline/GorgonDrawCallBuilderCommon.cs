@@ -49,7 +49,7 @@ namespace Gorgon.Graphics.Core;
 /// </remarks>
 /// <seealso cref="GorgonGraphics"/>
 public abstract class GorgonDrawCallBuilderCommon<TB, TDc>
-    : IGorgonFluentBuilderAllocator<TB, TDc, IGorgonAllocator<TDc>>
+    : IGorgonFluentBuilder<TB, TDc, IGorgonAllocator<TDc>>
     where TB : GorgonDrawCallBuilderCommon<TB, TDc>
     where TDc : GorgonDrawCallCommon
 {
@@ -66,7 +66,7 @@ public abstract class GorgonDrawCallBuilderCommon<TB, TDc>
     /// </summary>
     /// <param name="allocator">The allocator to use when creating draw call objects.</param>
     /// <returns>A new draw call.</returns>
-    protected abstract TDc OnCreate(IGorgonAllocator<TDc> allocator);
+    protected abstract TDc OnCreate(IGorgonAllocator<TDc>? allocator);
 
     /// <summary>
     /// Function to update the properties of the draw call from the working copy to the final copy.
@@ -602,7 +602,7 @@ public abstract class GorgonDrawCallBuilderCommon<TB, TDc>
     /// <summary>
     /// Function to return the draw call.
     /// </summary>
-    /// <param name="allocator">The allocator used to create an instance of the object</param>
+    /// <param name="allocator">[Optional] The allocator used to create an instance of the object.</param>
     /// <returns>The draw call created or updated by this builder.</returns>
     /// <exception cref="GorgonException">Thrown if a <see cref="GorgonVertexShader"/> is not assigned to the <see cref="GorgonPipelineState.VertexShader"/> property with the <see cref="PipelineState(GorgonPipelineStateBuilder)"/> command.</exception>
     /// <remarks>
@@ -617,7 +617,7 @@ public abstract class GorgonDrawCallBuilderCommon<TB, TDc>
     /// A draw call requires that at least a vertex shader be bound. If none is present, then the method will throw an exception.
     /// </para>
     /// </remarks>
-    public TDc Build(IGorgonAllocator<TDc> allocator)
+    public TDc Build(IGorgonAllocator<TDc>? allocator = null)
     {
         TDc final = OnCreate(allocator);
 
@@ -726,13 +726,6 @@ public abstract class GorgonDrawCallBuilderCommon<TB, TDc>
             ? throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_NO_VERTEX_SHADER)
             : final;
     }
-
-    /// <summary>
-    /// Function to return the draw call.
-    /// </summary>
-    /// <returns>The draw call created or updated by this builder.</returns>
-    /// <exception cref="GorgonException">Thrown if a <see cref="GorgonVertexShader"/> is not assigned to the <see cref="GorgonPipelineState.VertexShader"/> property with the <see cref="PipelineState(GorgonPipelineStateBuilder)"/> command.</exception>
-    public TDc Build() => Build(null);
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonDrawCallBuilder"/> class.

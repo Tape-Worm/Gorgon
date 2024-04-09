@@ -1,5 +1,4 @@
-﻿
-// 
+﻿// 
 // Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
@@ -28,31 +27,30 @@ using Gorgon.Memory;
 namespace Gorgon.Patterns;
 
 /// <summary>
-/// An interface that defines a standard set of functionality for a builder pattern object
+/// An interface that defines a standard set of functionality for a builder pattern object along with a custom allocator for creating objects.
 /// </summary>
 /// <typeparam name="TB">The type of builder. Used to return a fluent interface for the builder.</typeparam>
 /// <typeparam name="TBo">The type of object produced by the builder.</typeparam>
-/// <typeparam name="TBa">The type of optional allocator to use for building objects. Must derive from <see cref="GorgonRingPool{T}"/>.</typeparam>
+/// <typeparam name="TBa">The type of optional allocator to use for building objects. Must derive from <see cref="IGorgonAllocator{TBo}"/>.</typeparam>
 /// <remarks>
 /// <para>
-/// This interface is used to define a fluent builder pattern for creating objects.  
+/// This interface is used to define a fluent builder pattern for creating objects. Please note that this interface is separate from <see cref="IGorgonFluentBuilder{TB, TBo}"/> and cannot be used 
+/// interchangeably.
 /// </para>
 /// <para>
-/// Unlike the <see cref="IGorgonFluentBuilder{TB, TBo}"/> interface, this one defines an allocator type <typeparamref name="TBa"/>
+/// Unlike the <see cref="IGorgonFluentBuilder{TB, TBo}"/> interface, this one defines an allocator type <typeparamref name="TBa"/>. This allows the builder to use a custom allocator to create objects. 
 /// </para>
 /// </remarks>
-/// <seealso cref="GorgonRingPool{T}"/>
-[Obsolete("REMOVE THIS LATER. USE IGorgonAllocator IN THE BUILDER CONSTRUCTOR INSTEAD!")]
-public interface IGorgonFluentBuilderAllocator<out TB, TBo, in TBa>
-    : IGorgonFluentBuilder<TB, TBo>
+/// <seealso cref="IGorgonAllocator{TBo}"/>
+public interface IGorgonFluentBuilder<out TB, TBo, in TBa>
     where TB : class
     where TBo : class
-    where TBa : IGorgonAllocator<TBo>
+    where TBa : class, IGorgonAllocator<TBo>
 {
     /// <summary>
     /// Function to return the object.
     /// </summary>
-    /// <param name="allocator">The allocator used to create an instance of the object</param>
+    /// <param name="allocator">[Optional] The allocator used to create an instance of the object</param>
     /// <returns>The object created or updated by this builder.</returns>
     /// <remarks>
     /// <para>
@@ -63,5 +61,23 @@ public interface IGorgonFluentBuilderAllocator<out TB, TBo, in TBa>
     /// around for as long as we need them, instead of creating objects that can potentially end up in the large object heap or in Gen 2.
     /// </para>
     /// </remarks>
-    TBo Build(TBa allocator);
+    TBo Build(TBa? allocator = null);
+
+    /// <summary>
+    /// Function to reset the builder to the specified state provided by the object passed in.
+    /// </summary>
+    /// <param name="builderObject">The specified object containing the state to copy.</param>
+    /// <returns>The fluent builder interface.</returns>
+    /// <remarks>
+    /// <para>
+    /// Implementations can use this to make a copy of the settings for a previous object in the builder instead of manually setting all the state.
+    /// </para>
+    /// </remarks>
+    TB ResetTo(TBo? builderObject);
+
+    /// <summary>
+    /// Function to clear the builder to a default state.
+    /// </summary>
+    /// <returns>The fluent builder interface.</returns>
+    TB Clear();
 }

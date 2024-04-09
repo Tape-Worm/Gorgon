@@ -70,7 +70,6 @@ namespace Gorgon.Renderers;
 public class GorgonPolySpriteBuilder(Gorgon2D renderer)
         : IGorgonFluentBuilder<GorgonPolySpriteBuilder, GorgonPolySprite>, IEnumerable<GorgonPolySpriteVertex>, IGorgonGraphicsObject
 {
-
     // The working sprite.
     private readonly GorgonPolySprite _workingSprite = new();
     // The triangulator used to convert the polygon into a triangle mesh.

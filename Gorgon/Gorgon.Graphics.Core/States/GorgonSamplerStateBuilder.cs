@@ -23,6 +23,8 @@
 // Created: July 28, 2016 11:49:51 PM
 // 
 
+using Gorgon.Patterns;
+
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
@@ -39,7 +41,7 @@ namespace Gorgon.Graphics.Core;
 /// A sampler state is an immutable object, and as such can only be created by using this object
 /// </para>
 /// <para>
-/// Unlike the other state builders, this builder does not offer the optional use of a <see cref="GorgonStateBuilderPoolAllocator{T}"/>. This is because the state is cached internally and does not need 
+/// Unlike the other state builders, this builder does not offer the optional use of a <see cref="Memory.IGorgonAllocator{T}"/>. This is because the state is cached internally and does not need 
 /// an allocator pool
 /// </para>
 /// </remarks>
@@ -51,8 +53,11 @@ namespace Gorgon.Graphics.Core;
 /// </remarks>
 /// <param name="graphics">The graphics interface used to build sampler states.</param>
 public class GorgonSamplerStateBuilder(GorgonGraphics graphics)
-        : GorgonStateBuilderCommon<GorgonSamplerStateBuilder, GorgonSamplerState>(new GorgonSamplerState()), IGorgonGraphicsObject
+        : IGorgonFluentBuilder<GorgonSamplerStateBuilder, GorgonSamplerState>, IGorgonGraphicsObject
 {
+    // The state being edited.
+    private readonly GorgonSamplerState _workingState = new();
+
     /// <summary>
     /// Property to return the graphics interface that built this object.
     /// </summary>
@@ -81,49 +86,22 @@ public class GorgonSamplerStateBuilder(GorgonGraphics graphics)
     }
 
     /// <summary>
-    /// Function to update the properties of the state from the working copy to the final copy.
-    /// </summary>
-    /// <returns>The new render state.</returns>
-    protected override GorgonSamplerState OnCreateState() => Graphics.SamplerStateCache.Cache(WorkingState);
-
-    /// <summary>
-    /// Function to reset the builder to the specified state.
-    /// </summary>
-    /// <param name="state">The state to copy from.</param>
-    /// <returns>The fluent builder interface.</returns>
-    protected override GorgonSamplerStateBuilder OnResetTo(GorgonSamplerState state)
-    {
-        CopyState(WorkingState, state);
-        return this;
-    }
-
-    /// <summary>
-    /// Function to clear the working state for the builder.
-    /// </summary>
-    /// <returns>The fluent builder interface.</returns>
-    protected override GorgonSamplerStateBuilder OnClearState()
-    {
-        CopyState(WorkingState, GorgonSamplerState.Default);
-        return this;
-    }
-
-    /// <summary>
     /// Function to copy this sampler state into another sampler state.
     /// </summary>
     /// <param name="state">A <see cref="GorgonSamplerState"/> to copy the settings from.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="state"/> parameter is <b>null</b>.</exception>
     internal void CopyTo(GorgonSamplerState state)
     {
-        WorkingState.Filter = state.Filter;
-        WorkingState.WrapU = state.WrapU;
-        WorkingState.WrapV = state.WrapV;
-        WorkingState.WrapW = state.WrapW;
-        WorkingState.MaxAnisotropy = state.MaxAnisotropy;
-        WorkingState.BorderColor = state.BorderColor;
-        WorkingState.MinimumLevelOfDetail = state.MinimumLevelOfDetail;
-        WorkingState.MaximumLevelOfDetail = state.MaximumLevelOfDetail;
-        WorkingState.ComparisonFunction = state.ComparisonFunction;
-        WorkingState.MipLevelOfDetailBias = state.MipLevelOfDetailBias;
+        _workingState.Filter = state.Filter;
+        _workingState.WrapU = state.WrapU;
+        _workingState.WrapV = state.WrapV;
+        _workingState.WrapW = state.WrapW;
+        _workingState.MaxAnisotropy = state.MaxAnisotropy;
+        _workingState.BorderColor = state.BorderColor;
+        _workingState.MinimumLevelOfDetail = state.MinimumLevelOfDetail;
+        _workingState.MaximumLevelOfDetail = state.MaximumLevelOfDetail;
+        _workingState.ComparisonFunction = state.ComparisonFunction;
+        _workingState.MipLevelOfDetailBias = state.MipLevelOfDetailBias;
     }
 
     /// <summary>
@@ -133,7 +111,7 @@ public class GorgonSamplerStateBuilder(GorgonGraphics graphics)
     /// <returns>The fluent builder interface.</returns>
     public GorgonSamplerStateBuilder Filter(SampleFilter filter)
     {
-        WorkingState.Filter = filter;
+        _workingState.Filter = filter;
         return this;
     }
 
@@ -154,29 +132,29 @@ public class GorgonSamplerStateBuilder(GorgonGraphics graphics)
     {
         if ((wrapW is null) && (wrapU is null) && (wrapV is null) && (borderColor is null))
         {
-            WorkingState.WrapU = WorkingState.WrapV = WorkingState.WrapW = TextureWrap.Clamp;
-            WorkingState.BorderColor = GorgonColors.Transparent;
+            _workingState.WrapU = _workingState.WrapV = _workingState.WrapW = TextureWrap.Clamp;
+            _workingState.BorderColor = GorgonColors.Transparent;
             return this;
         }
 
         if (wrapU is not null)
         {
-            WorkingState.WrapU = wrapU.Value;
+            _workingState.WrapU = wrapU.Value;
         }
 
         if (wrapV is not null)
         {
-            WorkingState.WrapV = wrapV.Value;
+            _workingState.WrapV = wrapV.Value;
         }
 
         if (wrapW is not null)
         {
-            WorkingState.WrapW = wrapW.Value;
+            _workingState.WrapW = wrapW.Value;
         }
 
         if (borderColor is not null)
         {
-            WorkingState.BorderColor = borderColor.Value;
+            _workingState.BorderColor = borderColor.Value;
         }
         return this;
     }
@@ -188,7 +166,7 @@ public class GorgonSamplerStateBuilder(GorgonGraphics graphics)
     /// <returns>The fluent builder interface.</returns>
     public GorgonSamplerStateBuilder MaxAnisotropy(int maxAnisotropy)
     {
-        WorkingState.MaxAnisotropy = maxAnisotropy;
+        _workingState.MaxAnisotropy = maxAnisotropy;
         return this;
     }
 
@@ -199,7 +177,7 @@ public class GorgonSamplerStateBuilder(GorgonGraphics graphics)
     /// <returns>The fluent builder interface.</returns>
     public GorgonSamplerStateBuilder ComparisonFunction(Comparison compare)
     {
-        WorkingState.ComparisonFunction = compare;
+        _workingState.ComparisonFunction = compare;
         return this;
     }
 
@@ -219,27 +197,60 @@ public class GorgonSamplerStateBuilder(GorgonGraphics graphics)
     {
         if ((min is null) && (max is null) && (mipLodBias is null))
         {
-            WorkingState.MinimumLevelOfDetail = float.MinValue;
-            WorkingState.MaximumLevelOfDetail = float.MaxValue;
-            WorkingState.MipLevelOfDetailBias = 0;
+            _workingState.MinimumLevelOfDetail = float.MinValue;
+            _workingState.MaximumLevelOfDetail = float.MaxValue;
+            _workingState.MipLevelOfDetailBias = 0;
             return this;
         }
 
         if (min is not null)
         {
-            WorkingState.MinimumLevelOfDetail = min.Value;
+            _workingState.MinimumLevelOfDetail = min.Value;
         }
 
         if (max is not null)
         {
-            WorkingState.MaximumLevelOfDetail = max.Value;
+            _workingState.MaximumLevelOfDetail = max.Value;
         }
 
         if (mipLodBias is not null)
         {
-            WorkingState.MipLevelOfDetailBias = mipLodBias.Value;
+            _workingState.MipLevelOfDetailBias = mipLodBias.Value;
         }
 
+        return this;
+    }
+
+    /// <summary>
+    /// Function to return the state.
+    /// </summary>
+    /// <returns>The state created or updated by this builder.</returns>
+    public GorgonSamplerState Build() => Graphics.SamplerStateCache.Cache(_workingState);
+
+    /// <summary>
+    /// Function to reset the builder to the specified state.
+    /// </summary>
+    /// <param name="state">[Optional] The specified state to copy.</param>
+    /// <returns>The fluent builder interface.</returns>
+    public GorgonSamplerStateBuilder ResetTo(GorgonSamplerState? state = null)
+    {
+        if (state is null)
+        {
+            Clear();
+            return this;
+        }    
+
+        CopyState(_workingState, state);
+        return this;
+    }
+
+    /// <summary>
+    /// Function to clear the builder to a default state.
+    /// </summary>
+    /// <returns>The fluent builder interface.</returns>
+    public GorgonSamplerStateBuilder Clear()
+    {
+        CopyState(_workingState, GorgonSamplerState.Default);
         return this;
     }
 }

@@ -106,7 +106,7 @@ namespace Gorgon.Renderers;
 /// <seealso cref="Gorgon2DBatchState"/>
 /// <seealso cref="GorgonShader"/>
 public class Gorgon2DShaderStateBuilder<T>
-    : IGorgonFluentBuilderAllocator<Gorgon2DShaderStateBuilder<T>, Gorgon2DShaderState<T>, IGorgonAllocator<Gorgon2DShaderState<T>>>
+    : IGorgonFluentBuilder<Gorgon2DShaderStateBuilder<T>, Gorgon2DShaderState<T>, IGorgonAllocator<Gorgon2DShaderState<T>>>
     where T : GorgonShader
 {
 
@@ -274,12 +274,6 @@ public class Gorgon2DShaderStateBuilder<T>
     }
 
     /// <summary>
-    /// Function to return the object.
-    /// </summary>
-    /// <returns>The object created or updated by this builder.</returns>
-    public Gorgon2DShaderState<T> Build() => Build(null);
-
-    /// <summary>
     /// Function to clear the builder to a default state.
     /// </summary>
     /// <returns>The fluent builder interface.</returns>
@@ -317,7 +311,7 @@ public class Gorgon2DShaderStateBuilder<T>
     /// <summary>
     /// Function to return the object.
     /// </summary>
-    /// <param name="allocator">The allocator used to create an instance of the object</param>
+    /// <param name="allocator">[Optional] The allocator used to create an instance of the object.</param>
     /// <returns>The object created or updated by this builder.</returns>
     /// <remarks>
     ///   <para>
@@ -328,18 +322,9 @@ public class Gorgon2DShaderStateBuilder<T>
     /// around for as long as we need them, instead of creating objects that can potentially end up in the large object heap or in Gen 2.
     /// </para>
     /// </remarks>
-    public Gorgon2DShaderState<T> Build(IGorgonAllocator<Gorgon2DShaderState<T>> allocator)
+    public Gorgon2DShaderState<T> Build(IGorgonAllocator<Gorgon2DShaderState<T>>? allocator = null)
     {
-        Gorgon2DShaderState<T> shader;
-
-        if (allocator is null)
-        {
-            shader = new Gorgon2DShaderState<T>();
-        }
-        else
-        {
-            shader = allocator.Allocate();
-        }
+        Gorgon2DShaderState<T> shader = allocator?.Allocate() ?? new();
 
         Copy(shader.RwConstantBuffers, _workingShader.RwConstantBuffers, 0);
         Copy(shader.RwSrvs, _workingShader.RwSrvs, 0);

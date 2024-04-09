@@ -277,23 +277,6 @@ public class GorgonBlendState
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonBlendState"/> class.
     /// </summary>
-    /// <param name="state">The state to copy.</param>
-    internal GorgonBlendState(GorgonBlendState state)
-    {
-        WriteMask = state.WriteMask;
-        AlphaBlendOperation = state.AlphaBlendOperation;
-        ColorBlendOperation = state.ColorBlendOperation;
-        DestinationAlphaBlend = state.DestinationAlphaBlend;
-        DestinationColorBlend = state.DestinationColorBlend;
-        IsBlendingEnabled = state.IsBlendingEnabled;
-        LogicOperation = state.LogicOperation;
-        SourceAlphaBlend = state.SourceAlphaBlend;
-        SourceColorBlend = state.SourceColorBlend;
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonBlendState"/> class.
-    /// </summary>
     internal GorgonBlendState()
     {
         LogicOperation = LogicOperation.Noop;

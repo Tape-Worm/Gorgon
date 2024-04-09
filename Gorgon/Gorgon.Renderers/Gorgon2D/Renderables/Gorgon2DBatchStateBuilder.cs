@@ -36,7 +36,7 @@ namespace Gorgon.Renderers;
 /// <seealso cref="Gorgon2DBatchState"/>
 /// <seealso cref="Gorgon2D"/>
 public class Gorgon2DBatchStateBuilder
-    : IGorgonFluentBuilderAllocator<Gorgon2DBatchStateBuilder, Gorgon2DBatchState, IGorgonAllocator<Gorgon2DBatchState>>
+    : IGorgonFluentBuilder<Gorgon2DBatchStateBuilder, Gorgon2DBatchState, IGorgonAllocator<Gorgon2DBatchState>>
 {
 
     // The state that will be edited.
@@ -210,27 +210,6 @@ public class Gorgon2DBatchStateBuilder
     }
 
     /// <summary>
-    /// Function to return the object.
-    /// </summary>
-    /// <returns>The object created or updated by this builder.</returns>
-    public Gorgon2DBatchState Build()
-    {
-        Gorgon2DBatchState result = new()
-        {
-            PixelShaderState = _worker.PixelShaderState,
-            VertexShaderState = _worker.VertexShaderState,
-            BlendState = _worker.BlendState,
-            DepthStencilState = _worker.DepthStencilState,
-            RasterState = _worker.RasterState,
-            BlendFactor = _worker.BlendFactor,
-            BlendSampleMask = _worker.BlendSampleMask,
-            StencilReference = _worker.StencilReference
-        };
-
-        return result;
-    }
-
-    /// <summary>
     /// Function to clear the builder to a default state.
     /// </summary>
     /// <returns>The fluent builder interface.</returns>
@@ -292,7 +271,7 @@ public class Gorgon2DBatchStateBuilder
     }
 
     /// <summary>Function to return the object.</summary>
-    /// <param name="allocator">The allocator used to create an instance of the object</param>
+    /// <param name="allocator">[Optional] The allocator used to create an instance of the object.</param>
     /// <returns>The object created or updated by this builder.</returns>
     /// <remarks>
     ///   <para>
@@ -303,14 +282,9 @@ public class Gorgon2DBatchStateBuilder
     /// around for as long as we need them, instead of creating objects that can potentially end up in the large object heap or in Gen 2.
     /// </para>
     /// </remarks>
-    public Gorgon2DBatchState Build(IGorgonAllocator<Gorgon2DBatchState> allocator)
+    public Gorgon2DBatchState Build(IGorgonAllocator<Gorgon2DBatchState>? allocator = null)
     {
-        if (allocator is null)
-        {
-            return Build();
-        }
-
-        Gorgon2DBatchState state = allocator.Allocate();
+        Gorgon2DBatchState state = allocator?.Allocate() ?? new Gorgon2DBatchState();
 
         state.PixelShaderState = _worker.PixelShaderState;
         state.VertexShaderState = _worker.VertexShaderState;
