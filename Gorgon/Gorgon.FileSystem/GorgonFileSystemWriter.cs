@@ -30,7 +30,6 @@ using Gorgon.Core;
 using Gorgon.IO.Properties;
 using Gorgon.IO.Providers;
 using Gorgon.Math;
-using Gorgon.Memory;
 using Gorgon.PlugIns;
 
 namespace Gorgon.IO;

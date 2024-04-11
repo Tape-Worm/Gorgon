@@ -306,7 +306,7 @@ internal static class Program
             // Create the vertex input layout.
             // We need to create a layout for our vertex type because the shader won't know how to interpret the data we're sending it otherwise.  
             // This is why we need a vertex shader before we even create the layout.
-            _inputLayout = GorgonInputLayout.CreateUsingType<GorgonVertexPosNormColorUv>(_graphics, _vertexShader);
+            _inputLayout = GorgonInputLayout.CreateUsingType<GorgonVertexPosNormColorUv>(_graphics, nameof(GorgonVertexPosNormColorUv), _vertexShader);
 
             // Create our constant buffers.			
             // Our constant buffers are how we send data to our shaders.  This one in particular will be responsible for sending our world/view/projection matrix 

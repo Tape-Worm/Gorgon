@@ -145,7 +145,7 @@ public static class GorgonTextFormat
 
         _workingBuffer.Length = 0;
         _workingBuffer.Append(renderText);
-        
+
         tabSpacing = tabSpacing.Max(1);
 
         // Strip all carriage returns.

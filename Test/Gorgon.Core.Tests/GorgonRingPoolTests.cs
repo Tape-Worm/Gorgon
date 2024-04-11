@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Gorgon.Memory;
 
 namespace Gorgon.Core.Tests;
@@ -39,7 +37,7 @@ public class GorgonRingPoolTests
     {
         const int poolSize = 3;
         List<DisposableObject> items = new();
-        GorgonRingPool<DisposableObject> pool = new(poolSize, () => new DisposableObject(), () => items.Add(new DisposableObject()));        
+        GorgonRingPool<DisposableObject> pool = new(poolSize, () => new DisposableObject(), () => items.Add(new DisposableObject()));
 
         for (int i = 0; i < poolSize; i++)
         {

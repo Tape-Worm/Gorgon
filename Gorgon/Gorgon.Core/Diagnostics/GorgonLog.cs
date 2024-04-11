@@ -25,6 +25,8 @@
 
 using System.Collections;
 using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using Gorgon.Core;
 using Gorgon.Diagnostics.LogProviders;
 using Gorgon.Properties;
@@ -182,6 +184,27 @@ public abstract class GorgonLog
     }
 
     /// <summary>
+    /// Function to add target site information to the exception message.
+    /// </summary>
+    /// <param name="resultMessage">The message to update.</param>
+    /// <param name="indicator">The indicator for the message.</param>
+    /// <param name="ex">The exception being evaluated.</param>
+    [RequiresUnreferencedCode("Calls System.Exception.TargetSite")]
+    private static void AddTargetSite(StringBuilder resultMessage, string indicator, Exception ex)
+    {
+        if (ex.TargetSite?.DeclaringType is null)
+        {
+            return;
+        }
+
+        resultMessage.AppendFormat("{2}{3}: {0}.{1}\r\n",
+                    ex.TargetSite.DeclaringType.FullName,
+                    ex.TargetSite.Name,
+                    indicator,
+                    Resources.GOR_EXCEPT_TARGET_SITE);
+    }
+
+    /// <summary>
     /// Function to send an exception to the log.
     /// </summary>
     /// <param name="ex">The exception to log.</param>
@@ -190,7 +213,9 @@ public abstract class GorgonLog
     /// If the <see cref="LogFilterLevel"/> is set to <c>LoggingLevel.NoLogging</c>, then the exception will not be logged. If the filter is set to any other setting, it will be logged 
     /// regardless of filter level.
     /// </para>
-    /// </remarks>
+    /// </remarks>    
+    [UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", 
+                                  Justification = "Using RuntimeFeature.IsDynamicCodeSupported flag to skip the code.")]
     public void LogException(Exception ex)
     {
         string indicator = string.Empty; // Inner exception indicator.
@@ -229,13 +254,9 @@ public abstract class GorgonLog
                         exception.AppendFormat("{1}{2}: {0}\r\n", inner.Source, indicator, Resources.GOR_EXCEPT_SRC);
                     }
 
-                    if (inner.TargetSite?.DeclaringType is not null)
+                    if (RuntimeFeature.IsDynamicCodeSupported)
                     {
-                        exception.AppendFormat("{2}{3}: {0}.{1}\r\n",
-                                    inner.TargetSite.DeclaringType.FullName,
-                                    inner.TargetSite.Name,
-                                    indicator,
-                                    Resources.GOR_EXCEPT_TARGET_SITE);
+                        AddTargetSite(exception, indicator, inner);
                     }
 
                     if (inner is GorgonException gorgonException)

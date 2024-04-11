@@ -29,7 +29,6 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
-using Gorgon.Reflection;
 using D3D11 = SharpDX.Direct3D11;
 using DX = SharpDX;
 
@@ -267,15 +266,16 @@ public sealed class GorgonInputLayout
     /// <summary>
     /// Function to build a list of fields from the given type.
     /// </summary>
-    /// <param name="type">The type to evaluate.</param>
+    /// <typeparam name="T">The type to evaluate. Must be an unmanaged blittable value type.</typeparam>
     /// <returns>The list of field info values for the members of the type.</returns>
-    internal static List<(FieldInfo Field, InputElementAttribute InputElement)> GetFieldInfoList(Type type)
+    private static List<(FieldInfo Field, InputElementAttribute InputElement)> GetFieldInfoList<T>()
+        where T : unmanaged
     {
-        FieldInfo[] members = type.GetFields();
+        FieldInfo[] members = typeof(T).GetFields();
 
         if (members.Length == 0)
         {
-            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_VERTEX_NO_FIELDS, type.FullName));
+            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_VERTEX_NO_FIELDS, typeof(T).FullName));
         }
 
         List<(FieldInfo, InputElementAttribute)> result = [];
@@ -289,12 +289,6 @@ public sealed class GorgonInputLayout
             if (attribute is null)
             {
                 continue;
-            }
-
-            // If we have marshalled fields on here, then throw an exception. We don't support complex marshalling.
-            if (!member.IsFieldSafeForNative())
-            {
-                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_VERTEX_TYPE_NOT_VALID_FOR_NATIVE);
             }
 
             Type returnType = member.FieldType;
@@ -312,33 +306,23 @@ public sealed class GorgonInputLayout
 
     /// <summary>
     /// Function to build an input layout using the fields from a value type.
-    /// </summary>
-    /// <typeparam name="T">The type to evaluate. This must be an unmanaged value type.</typeparam>
-    /// <param name="graphics">The graphics interface used to create the input layout.</param>
-    /// <param name="shader">Vertex shader to bind the layout with.</param>
-    /// <returns>A new <see cref="GorgonInputLayout"/> for the type passed to <typeparamref name="T"/>.</returns>
+    /// </summary>    
+    /// <typeparam name="T">The type to evaluate. Must be an unmanaged blittable value type.</typeparam>
+    /// <param name="graphics">The graphics interface used to create the input layout.</param>    
+    /// <param name="name">The name for the input layout object.</param>
+    /// <param name="shader">Vertex shader to bind the layout with.</param>    
+    /// <returns>A new <see cref="GorgonInputLayout"/> for the type passed in via <typeparamref name="T"/>.</returns>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, or the <paramref name="shader"/> parameter is <b>null</b>.</exception>
-    /// <exception cref="ArgumentException">Thrown when an element with the same context, slot and index appears more than once in the members of the <typeparamref name="T"/> type.</exception>
-    /// <exception cref="GorgonException">Thrown when the type specified by <typeparamref name="T"/> is not safe for use with native functions (see <see cref="GorgonReflectionExtensions.IsFieldSafeForNative"/>).
-    /// <para>-or-</para>
-    /// <para>Thrown when the type specified by <typeparamref name="T"/> does not contain any public members.</para>
-    /// <para>-or-</para>
-    /// <para>Thrown if the type specified by <typeparamref name="T"/> does not have a <see cref="LayoutKind"/> of <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/>.</para>
-    /// </exception>
+    /// <exception cref="ArgumentException">Thrown when an element with the same context, slot and index appears more than once in the members of the type <typeparamref name="T"/>.</exception>
     /// <remarks>
     /// <para>
     /// This will build a new <see cref="GorgonInputLayout"/> using the fields within a value type (<c>struct</c>). Each of the members that are to be included in the layout must be decorated with a 
     /// <see cref="InputElementAttribute"/>. If a member is not decorated with this attribute, then it will be ignored.
     /// </para>
     /// <para>
-    /// The type parameter <typeparamref name="T"/> must be an unmanaged value type (<c>struct</c>), reference types are not supported. The members of the type must also be public fields. Properties are not 
+    /// The <typeparamref name="T"/> type parameter must be an unmanaged value type (<c>struct</c>), reference types are not supported. The members of the type must also be public fields. Properties are not 
     /// supported. Futhermore, the struct must be decorated with a <see cref="StructLayoutAttribute"/> that defines a <see cref="LayoutKind"/> of <see cref="LayoutKind.Sequential"/> or 
-    /// <see cref="LayoutKind.Explicit"/>. This is necessary to ensure that the member of the value type are in the correct order when writing to a <see cref="GorgonVertexBuffer"/> or when 
-    /// generating a <see cref="GorgonInputLayout"/> from a type.
-    /// </para>
-    /// <para>
-    /// If the type specified by <typeparamref name="T"/> has members that are not primitive types or value types with a <see cref="StructLayoutAttribute"/>, or the member has a 
-    /// <see cref="MarshalAsAttribute"/>, then an exception is thrown.  Gorgon does not support marshalling of complex types for vertices.
+    /// <see cref="LayoutKind.Explicit"/>. This is necessary to ensure that the member of the value type are in the correct order when writing to a <see cref="GorgonVertexBuffer"/>.
     /// </para>
     /// <para>
     /// The types of the fields must be one of the following types:
@@ -406,123 +390,12 @@ public sealed class GorgonInputLayout
     /// If the type of the member does not match, an exception will be thrown.
     /// </para>
     /// </remarks>
-    /// <seealso cref="GorgonReflectionExtensions.IsFieldSafeForNative"/>
-    public static GorgonInputLayout CreateUsingType<T>(GorgonGraphics graphics, GorgonVertexShader shader)
-        where T : unmanaged => CreateUsingType(graphics, typeof(T), shader);
-
-    /// <summary>
-    /// Function to build an input layout using the fields from a value type.
-    /// </summary>
-    /// <param name="graphics">The graphics interface used to create the input layout.</param>
-    /// <param name="type">The type to evaluate.</param>
-    /// <param name="shader">Vertex shader to bind the layout with.</param>
-    /// <returns>A new <see cref="GorgonInputLayout"/> for the type passed to <paramref name="type"/>.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/>, <paramref name="type"/> or the <paramref name="shader"/> parameter is <b>null</b>.</exception>
-    /// <exception cref="ArgumentException">Thrown when an element with the same context, slot and index appears more than once in the members of the <paramref name="type"/>.
-    /// <para>-or-</para>
-    /// <para>Thrown if the <paramref name="type"/> does not have a <see cref="LayoutKind"/> of <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/>.</para>
-    /// </exception>
-    /// <exception cref="GorgonException">Thrown when the type specified by <paramref name="type"/> is not safe for use with native functions (see <see cref="GorgonReflectionExtensions.IsFieldSafeForNative"/>).
-    /// <para>-or-</para>
-    /// <para>Thrown when the type specified by <paramref name="type"/> does not contain any public members.</para>
-    /// </exception>
-    /// <remarks>
-    /// <para>
-    /// This will build a new <see cref="GorgonInputLayout"/> using the fields within a value type (<c>struct</c>). Each of the members that are to be included in the layout must be decorated with a 
-    /// <see cref="InputElementAttribute"/>. If a member is not decorated with this attribute, then it will be ignored.
-    /// </para>
-    /// <para>
-    /// The <paramref name="type"/> parameter must be an unmanaged value type (<c>struct</c>), reference types are not supported. The members of the type must also be public fields. Properties are not 
-    /// supported. Futhermore, the struct must be decorated with a <see cref="StructLayoutAttribute"/> that defines a <see cref="LayoutKind"/> of <see cref="LayoutKind.Sequential"/> or 
-    /// <see cref="LayoutKind.Explicit"/>. This is necessary to ensure that the member of the value type are in the correct order when writing to a <see cref="GorgonVertexBuffer"/> or when 
-    /// generating a <see cref="GorgonInputLayout"/> from a type.
-    /// </para>
-    /// <para>
-    /// If the type specified by <paramref name="type"/> has members that are not primitive types or value types with a <see cref="StructLayoutAttribute"/>, or the member has a 
-    /// <see cref="MarshalAsAttribute"/>, then an exception is thrown.  Gorgon does not support marshalling of complex types for vertices.
-    /// </para>
-    /// <para>
-    /// The types of the fields must be one of the following types:
-    /// <para>
-    /// <list type="bullet">
-    ///		<item>
-    ///			<description><see cref="byte"/></description>
-    ///		</item>
-    ///		<item>
-    ///			<description><see cref="sbyte"/></description>
-    ///		</item>
-    ///		<item>
-    ///			<description><see cref="short"/></description>
-    ///		</item>
-    ///		<item>
-    ///			<description><see cref="ushort"/></description>
-    ///		</item>
-    ///		<item>
-    ///			<description><see cref="int"/></description>
-    ///		</item>
-    ///		<item>
-    ///			<description><see cref="uint"/></description>
-    ///		</item>
-    ///		<item>
-    ///			<description><see cref="long"/></description>
-    ///		</item>
-    ///		<item>
-    ///			<description><see cref="ulong"/></description>
-    ///		</item>
-    ///		<item>
-    ///			<description><see cref="float"/></description>
-    ///		</item>
-    ///		<item>
-    ///			<description><see cref="Half"/></description>
-    ///		</item>
-    ///		<item>
-    ///		    <description><c>SharpDX.Half</c></description>
-    ///		</item>
-    ///		<item>
-    ///		    <description><c>SharpDX.Half2</c></description>
-    ///		</item>
-    ///		<item>
-    ///		    <description><c>SharpDX.Half4</c></description>
-    ///		</item>
-    ///		<item>
-    ///		    <description><c>SharpDX.Int3</c></description>
-    ///		</item>
-    ///		<item>
-    ///		    <description><c>SharpDX.Int4</c></description>
-    ///		</item>
-    ///		<item>
-    ///			<description><see cref="Vector2"/></description>
-    ///		</item>
-    ///		<item>
-    ///			<description><see cref="Vector3"/></description>
-    ///		</item>
-    ///		<item>
-    ///			<description><see cref="Vector4"/></description>
-    ///		</item>
-    ///		<item>
-    ///			<description><see cref="GorgonColor"/></description>
-    ///		</item>
-    /// </list>
-    /// </para>
-    /// If the type of the member does not match, an exception will be thrown.
-    /// </para>
-    /// </remarks>
-    /// <seealso cref="GorgonReflectionExtensions.IsFieldSafeForNative"/>
-    public static GorgonInputLayout CreateUsingType(GorgonGraphics graphics, Type type, GorgonVertexShader shader)
+    public static GorgonInputLayout CreateUsingType<T>(GorgonGraphics graphics, string? name, GorgonVertexShader shader)
+        where T : unmanaged
     {
         if (graphics is null)
         {
             throw new ArgumentNullException(nameof(graphics));
-        }
-
-        if (type is null)
-        {
-            throw new ArgumentNullException(nameof(type));
-        }
-
-        if ((type.IsAutoLayout) || ((!type.IsLayoutSequential) && (!type.IsExplicitLayout)))
-        {
-            throw new ArgumentException(string.Format(Resources.GORGFX_ERR_LAYOUT_NOT_SEQUENTIAL_EXPLICIT, type.FullName));
         }
 
         if (shader is null)
@@ -530,45 +403,25 @@ public sealed class GorgonInputLayout
             throw new ArgumentNullException(nameof(shader));
         }
 
-        IReadOnlyList<GorgonInputElement> elements = ElementsFromType(type);
-        return new GorgonInputLayout(graphics, type.FullName, shader, elements);
+        IReadOnlyList<GorgonInputElement> elements = ElementsFromType<T>();
+        return new GorgonInputLayout(graphics, name, shader, elements);
     }
-
-    /// <summary>
-    /// Function to retrieve the input elements from the type passed in.
-    /// </summary>
-    /// <typeparam name="T">The type to evaluate.</typeparam>
-    /// <returns>A list of input elements used to build the input layout.</returns>
-    public static IReadOnlyList<GorgonInputElement> ElementsFromType<T>()
-        where T : unmanaged => ElementsFromType(typeof(T));
 
     /// <summary>
     /// Function to retrieve the input elements corresponding to fields on a type.
     /// </summary>
-    /// <param name="type">The type to evaluate.</param>
-    /// <returns>A new <see cref="GorgonInputLayout"/> for the type passed to <paramref name="type"/>.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="type"/> parameter is <b>null</b>.</exception>
-    /// <exception cref="ArgumentException">Thrown when an element with the same context, slot and index appears more than once in the members of the <paramref name="type"/>.
-    /// <para>-or-</para>
-    /// <para>Thrown if the <paramref name="type"/> does not have a <see cref="LayoutKind"/> of <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/>.</para>
-    /// </exception>
-    /// <exception cref="GorgonException">Thrown when the type specified by <paramref name="type"/> is not safe for use with native functions (see <see cref="GorgonReflectionExtensions.IsFieldSafeForNative"/>).
-    /// <para>-or-</para>
-    /// <para>Thrown when the type specified by <paramref name="type"/> does not contain any public members.</para>
-    /// </exception>
+    /// <typeparam name="T">The type to evaluate. Must be an unmanaged blittable value type.</typeparam>
+    /// <returns>A new <see cref="GorgonInputLayout"/> for the type passed in via <typeparamref name="T"/>.</returns>
+    /// <exception cref="ArgumentException">Thrown when an element with the same context, slot and index appears more than once in the members of the type <typeparamref name="T"/>.</exception>
     /// <remarks>
     /// <para>
     /// This will return a list of <see cref="GorgonInputElement"/> values using the fields within a value type (<c>struct</c>). Each of the members that are to be included in the layout must be decorated with a 
     /// <see cref="InputElementAttribute"/>. If a member is not decorated with this attribute, then it will be ignored.
     /// </para>
     /// <para>
-    /// The <paramref name="type"/> parameter must be an unmanaged value type (<c>struct</c>), reference types are not supported. The members of the type must also be public fields. Properties are not 
+    /// The <typeparamref name="T"/> type parameter must be an unmanaged value type (<c>struct</c>), reference types are not supported. The members of the type must also be public fields. Properties are not 
     /// supported. Futhermore, the struct must be decorated with a <see cref="StructLayoutAttribute"/> that defines a <see cref="LayoutKind"/> of <see cref="LayoutKind.Sequential"/> or 
     /// <see cref="LayoutKind.Explicit"/>. This is necessary to ensure that the member of the value type are in the correct order when writing to a <see cref="GorgonVertexBuffer"/>.
-    /// </para>
-    /// <para>
-    /// If the type specified by <paramref name="type"/> has members that are not primitive types or value types with a <see cref="StructLayoutAttribute"/>, or the member has a 
-    /// <see cref="MarshalAsAttribute"/>, then an exception is thrown.  Gorgon does not support marshalling of complex types for vertices.
     /// </para>
     /// <para>
     /// The types of the fields must be one of the following types:
@@ -635,26 +488,16 @@ public sealed class GorgonInputLayout
     /// </para>
     /// If the type of the member does not match, an exception will be thrown.
     /// </para>
-    /// </remarks>
-    /// <seealso cref="GorgonReflectionExtensions.IsFieldSafeForNative"/>
-    public static IReadOnlyList<GorgonInputElement> ElementsFromType(Type type)
+    /// </remarks>    
+    public static IReadOnlyList<GorgonInputElement> ElementsFromType<T>()
+        where T : unmanaged
     {
-        if (type is null)
-        {
-            throw new ArgumentNullException(nameof(type));
-        }
-
-        if ((type.IsAutoLayout) || ((!type.IsLayoutSequential) && (!type.IsExplicitLayout)))
-        {
-            throw new ArgumentException(string.Format(Resources.GORGFX_ERR_LAYOUT_NOT_SEQUENTIAL_EXPLICIT, type.FullName));
-        }
-
         int byteOffset = 0;
-        List<(FieldInfo Field, InputElementAttribute InputElement)> members = GetFieldInfoList(type);
+        List<(FieldInfo Field, InputElementAttribute InputElement)> members = GetFieldInfoList<T>();
 
         if (members.Count == 0)
         {
-            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_VERTEX_NO_FIELDS, type.FullName));
+            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_VERTEX_NO_FIELDS, typeof(T).FullName));
         }
 
         GorgonInputElement[] elements = new GorgonInputElement[members.Count];
@@ -897,7 +740,7 @@ public sealed class GorgonInputLayout
             throw new ArgumentEmptyException(nameof(name));
         }
 
-        Name = name;
+        Name = string.IsNullOrWhiteSpace(name) ? $"{nameof(GorgonInputLayout)}_{Guid.NewGuid():N}" : name;
 
         // Make a copy so we don't allow changing of the original reference.
         _elements = elements?.ToArray() ?? throw new ArgumentNullException(nameof(elements));

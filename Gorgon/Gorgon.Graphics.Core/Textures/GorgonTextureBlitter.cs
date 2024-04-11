@@ -123,7 +123,7 @@ public class GorgonTextureBlitter
                                                                             "GorgonFullScreenPixelShader",
                                                                             GorgonGraphics.IsDebugEnabled);
 
-            _inputLayout = GorgonInputLayout.CreateUsingType<GorgonVertexPosColorUv>(_graphics, _blitVertexShader);
+            _inputLayout = GorgonInputLayout.CreateUsingType<GorgonVertexPosColorUv>(_graphics, nameof(GorgonVertexPosColorUv), _blitVertexShader);
 
             _vertexBufferBindings = new GorgonVertexBufferBindings(_inputLayout)
             {

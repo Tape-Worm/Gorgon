@@ -42,6 +42,9 @@
     <DebugSymbols>true</DebugSymbols>
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
+<PropertyGroup>
+  <IsAotCompatible>true</IsAotCompatible>
+</PropertyGroup>
   <ItemGroup>
     <PackageReference Include="CenterCLR.XorRandomGenerator">
       <Version>1.1.0</Version>

@@ -629,7 +629,7 @@ public sealed class Gorgon2D
             _polyTransformVertexState.Shader = _polyTransformVertexShader = GorgonShaderFactory.Compile<GorgonVertexShader>(Graphics, Resources.BasicSprite, "GorgonVertexShaderPoly", GorgonGraphics.IsDebugEnabled);
             _polyPixelState.Shader = _polyPixelShader = GorgonShaderFactory.Compile<GorgonPixelShader>(Graphics, Resources.BasicSprite, "GorgonPixelShaderPoly", GorgonGraphics.IsDebugEnabled);
 
-            _vertexLayout = GorgonInputLayout.CreateUsingType<Gorgon2DVertex>(Graphics, _defaultVertexShader);
+            _vertexLayout = GorgonInputLayout.CreateUsingType<Gorgon2DVertex>(Graphics, nameof(Gorgon2DVertex), _defaultVertexShader);
 
             // We need to ensure that we have a default texture in case we decide not to send a texture in.
             GorgonTexture2D textureResource = Resources.White_2x2.ToTexture2D(Graphics,

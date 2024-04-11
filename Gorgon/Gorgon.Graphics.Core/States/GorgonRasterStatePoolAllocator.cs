@@ -20,7 +20,7 @@
 // 
 // Created: April 7, 2024 11:18:41 PM
 //
- 
+
 using Gorgon.Memory;
 
 namespace Gorgon.Graphics.Core;
@@ -31,6 +31,6 @@ namespace Gorgon.Graphics.Core;
 /// <remarks>Initializes a new instance of the <see cref="GorgonRasterStatePoolAllocator"/> class.</remarks>
 /// <param name="size">[Optional] The number of items that can be stored in this pool.</param>
 public sealed class GorgonRasterStatePoolAllocator(int size = 4096)
-    : GorgonRingPool<GorgonRasterState>(size, () => new())    
+    : GorgonRingPool<GorgonRasterState>(size, () => new())
 {
 }

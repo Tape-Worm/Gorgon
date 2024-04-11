@@ -232,7 +232,7 @@ internal static class Program
             // We'll be using this to describe to Direct 3D how the elements of a vertex is laid out in memory. 
             // In order to provide synchronization between the layout on the CPU side and the GPU side, we have to pass the vertex shader because it will contain the vertex 
             // layout to match with our C# input layout.
-            _inputLayout = GorgonInputLayout.CreateUsingType<MiniTriVertex>(_graphics, _vertexShader);
+            _inputLayout = GorgonInputLayout.CreateUsingType<MiniTriVertex>(_graphics, nameof(MiniTriVertex), _vertexShader);
 
             // Set up the triangle vertices.
             CreateVertexBuffer();

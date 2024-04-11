@@ -26,6 +26,7 @@
 using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Composition.Primitives;
 using System.ComponentModel.Composition.Registration;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Reflection.PortableExecutable;
 using Gorgon.Core;
@@ -412,6 +413,7 @@ public sealed class GorgonMefPlugInCache
     /// Initializes a new instance of the <see cref="GorgonMefPlugInCache"/> class.
     /// </summary>
     /// <param name="log">[Optional] The application log file to use.</param>
+    [RequiresAssemblyFiles("Plug ins will not work with trimming and Native AOT.")]
     public GorgonMefPlugInCache(IGorgonLog? log = null)
     {
         _builder.ForTypesDerivedFrom<GorgonPlugIn>().Export<GorgonPlugIn>(b =>

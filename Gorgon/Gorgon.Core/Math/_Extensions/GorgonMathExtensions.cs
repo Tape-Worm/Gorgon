@@ -452,7 +452,6 @@ public static class GorgonMathExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static decimal ToRadians(this decimal degrees) => degrees * DecimalDegConvert;
 
-
     /// <summary>
     /// Function to convert a <see cref="double"/> value representing a radian into an angle in degrees.
     /// </summary>

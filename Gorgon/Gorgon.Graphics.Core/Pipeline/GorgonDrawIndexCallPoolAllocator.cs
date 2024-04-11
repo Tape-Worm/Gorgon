@@ -20,7 +20,7 @@
 // 
 // Created: April 7, 2024 10:53:58 PM
 //
- 
+
 using Gorgon.Memory;
 
 namespace Gorgon.Graphics.Core;

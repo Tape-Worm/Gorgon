@@ -173,7 +173,7 @@ internal class Program
         // We will also need to compile a compute shader so we can actually perform the work.
         Console.WriteLine("Compiling the compute shader (SimpleCompute)...");
         _computeShader = GorgonShaderFactory.Compile<GorgonComputeShader>(_graphics, Resources.ComputeShader, "SimpleCompute");
-        
+
         _dispatchBuilder = new GorgonDispatchCallBuilder(_computeShader);
 
         // Finally, the star of the show, the compute engine.

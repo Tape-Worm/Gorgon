@@ -240,7 +240,7 @@ public class GorgonDispatchCallBuilder
         StateCopy.CopySrvs(final.D3DState.CsSrvs, _worker.D3DState.CsSrvs);
 
         // Copy over unordered access views.
-        StateCopy.CopyReadWriteViews(final.D3DState.CsReadWriteViews, _worker.D3DState.CsReadWriteViews, 0);        
+        StateCopy.CopyReadWriteViews(final.D3DState.CsReadWriteViews, _worker.D3DState.CsReadWriteViews, 0);
 
         return final;
     }
@@ -287,7 +287,7 @@ public class GorgonDispatchCallBuilder
     /// Initializes a new instance of the <see cref="GorgonDispatchCallBuilder"/> class.
     /// </summary>
     /// <param name="computeShader">The compute shader to use for the dispatch call(s) built by this builder.</param>
-    public GorgonDispatchCallBuilder(GorgonComputeShader computeShader) 
+    public GorgonDispatchCallBuilder(GorgonComputeShader computeShader)
     {
         _worker = new GorgonDispatchCall();
         _worker.D3DState.ComputeShader = computeShader;

@@ -23,6 +23,7 @@
 // Created: Thursday, June 23, 2011 11:24:37 AM
 // 
 
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using Gorgon.Core;
 
@@ -142,6 +143,7 @@ public abstract class GorgonPlugIn
     /// <remarks>
     /// Implementors of this base class should pass in a hard coded description to the base constructor.
     /// </remarks>
+    [RequiresAssemblyFiles("Plug ins will not work with trimming and Native AOT.")]
     protected GorgonPlugIn(string description)
     {
         Description = description ?? string.Empty;

@@ -23,11 +23,7 @@
 // Created: June 15, 2016 9:39:42 PM
 // 
 
-using System.Reflection;
 using System.Runtime.CompilerServices;
-using Gorgon.Core;
-using Gorgon.Graphics.Core.Properties;
-using Gorgon.Reflection;
 
 namespace Gorgon.Graphics.Core;
 
@@ -80,10 +76,6 @@ public record GorgonConstantBufferInfo(int SizeInBytes)
     /// <param name="usage">[Optional] The usage parameter for the vertex buffer.</param>
     /// <returns>A new <see cref="IGorgonConstantBufferInfo"/> to use when creating a <see cref="GorgonConstantBuffer"/>.</returns>
     /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="count"/> parameter is less than 1.</exception>
-    /// <exception cref="GorgonException">Thrown when the type specified by <typeparamref name="T"/> is not safe for use with native functions (see <see cref="GorgonReflectionExtensions.IsFieldSafeForNative"/>).
-    /// <para>-or-</para>
-    /// <para>Thrown when the type specified by <typeparamref name="T"/> does not contain any public members.</para>
-    /// </exception>
     /// <remarks>
     /// <para>
     /// This method is offered as a convenience to simplify the creation of the required info for a <see cref="GorgonConstantBuffer"/>. It will automatically determine the size of the constant based on the 
@@ -101,9 +93,6 @@ public record GorgonConstantBufferInfo(int SizeInBytes)
     /// If the <paramref name="name"/> parameter is <b>null</b> or empty, then the fully qualified name of the type specified by <typeparamref name="T"/> is used.
     /// </para>
     /// </remarks>
-    /// <seealso cref="GorgonReflectionExtensions.IsFieldSafeForNative"/>
-    /// <seealso cref="GorgonReflectionExtensions.IsSafeForNative(Type)"/>
-    /// <seealso cref="GorgonReflectionExtensions.IsSafeForNative(Type,out IReadOnlyList{FieldInfo})"/>
     public static IGorgonConstantBufferInfo CreateFromType<T>(string name = null, int count = 1, ResourceUsage usage = ResourceUsage.Default)
         where T : unmanaged
     {
@@ -112,23 +101,10 @@ public record GorgonConstantBufferInfo(int SizeInBytes)
             throw new ArgumentOutOfRangeException(nameof(count));
         }
 
-        Type dataType = typeof(T);
-
-        if (dataType.IsSafeForNative(out IReadOnlyList<FieldInfo> badFields))
+        return new GorgonConstantBufferInfo(((count * Unsafe.SizeOf<T>()) + 15) & ~15)
         {
-            return new GorgonConstantBufferInfo(((count * Unsafe.SizeOf<T>()) + 15) & ~15)
-            {
-                Name = string.IsNullOrEmpty(dataType.Name) ? dataType.FullName : name,
-                Usage = usage
-            };
-        }
-
-        if (badFields.Count == 0)
-        {
-            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_TYPE_NO_FIELDS, dataType.FullName));
-        }
-
-        throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_TYPE_NOT_VALID_FOR_NATIVE, dataType.FullName));
+            Name = string.IsNullOrWhiteSpace(name) ? GorgonGraphicsResource.GenerateName(GorgonConstantBuffer.NamePrefix) : name,
+            Usage = usage
+        };
     }
-
 }

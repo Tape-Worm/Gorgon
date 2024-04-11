@@ -106,7 +106,6 @@ using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Properties;
 using Gorgon.IO;
 using Gorgon.Math;
-using Gorgon.Memory;
 using Gorgon.Native;
 
 namespace Gorgon.Graphics.Imaging.Codecs;

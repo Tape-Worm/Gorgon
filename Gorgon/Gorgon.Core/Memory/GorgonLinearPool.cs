@@ -112,7 +112,7 @@ public class GorgonLinearPool<T>
         if (item is null)
         {
             _items[nextIndex] = item ??= ItemAllocator() ?? throw new GorgonException(GorgonResult.CannotCreate, Resources.GOR_ERR_OBJECT_CREATION_RETURNED_NULL);
-        }        
+        }
 
         initializer?.Invoke(item);
 

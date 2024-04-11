@@ -437,7 +437,7 @@ internal static class Program
         // Create the vertex input layout.
         // We need to create a layout for our vertex type because the shader won't know how to interpret the data we're sending it otherwise.  
         // This is why we need a vertex shader before we even create the layout.
-        _inputLayout = GorgonInputLayout.CreateUsingType<GorgonVertexPosUv>(_graphics, _vertexShader);
+        _inputLayout = GorgonInputLayout.CreateUsingType<GorgonVertexPosUv>(_graphics, nameof(GorgonVertexPosUv), _vertexShader);
 
         // Resources are stored as System.Drawing.Bitmap files, so we need to convert into an IGorgonImage so we can upload it to a texture.
         // We also will generate mip-map levels for this image so that scaling the texture will look better. 

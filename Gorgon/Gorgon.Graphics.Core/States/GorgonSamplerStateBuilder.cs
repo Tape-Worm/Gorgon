@@ -238,7 +238,7 @@ public class GorgonSamplerStateBuilder(GorgonGraphics graphics)
         {
             Clear();
             return this;
-        }    
+        }
 
         CopyState(_workingState, state);
         return this;

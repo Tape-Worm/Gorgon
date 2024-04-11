@@ -30,7 +30,6 @@ using System.Runtime.InteropServices;
 using Gorgon.Core;
 using Gorgon.Input;
 using Gorgon.Input.Properties;
-using Gorgon.Memory;
 
 namespace Gorgon.Native;
 
@@ -463,7 +462,7 @@ internal static partial class RawInputApi
                 return [];
             }
 
-            RAWINPUTDEVICELIST[] deviceList = ArrayPool<RAWINPUTDEVICELIST>.Shared.Rent(deviceCount) ;
+            RAWINPUTDEVICELIST[] deviceList = ArrayPool<RAWINPUTDEVICELIST>.Shared.Rent(deviceCount);
 
             try
             {

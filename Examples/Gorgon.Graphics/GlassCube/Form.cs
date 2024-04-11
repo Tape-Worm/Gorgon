@@ -207,7 +207,7 @@ public partial class Form : System.Windows.Forms.Form
         _pixelShader = GorgonShaderFactory.Compile<GorgonPixelShader>(_graphics, Resources.GlassCubeShaders, "GlassCubePS");
 
         // Create the input layout for a cube vertex.
-        _inputLayout = GorgonInputLayout.CreateUsingType<GorgonVertexPosUv>(_graphics, _vertexShader);
+        _inputLayout = GorgonInputLayout.CreateUsingType<GorgonVertexPosUv>(_graphics, nameof(GorgonVertexPosUv), _vertexShader);
 
         // Create our constant buffer so we can send our transformation information to the shader.
         _wvpBuffer = GorgonConstantBufferView.CreateConstantBuffer(_graphics, new GorgonConstantBufferInfo(Unsafe.SizeOf<Matrix4x4>())

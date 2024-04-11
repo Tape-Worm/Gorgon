@@ -23,15 +23,12 @@
 // Created: April 6, 2018 8:15:10 AM
 // 
 
-using System.Buffers;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
-using Gorgon.Memory;
-using Gorgon.Native;
 using Gorgon.Timing;
 using SharpDX.DXGI;
 using D3D = SharpDX.Direct3D;

@@ -29,7 +29,6 @@ using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
-using Gorgon.Memory;
 using SharpDX.Mathematics.Interop;
 using D3D11 = SharpDX.Direct3D11;
 using DX = SharpDX;

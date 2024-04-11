@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Gorgon.Math;
 
 namespace Gorgon.Core.Tests;
@@ -262,7 +258,7 @@ public class GorgonMathTests
         Assert.AreEqual(123.7M, decimalVal.Round(1));
         Assert.AreEqual(123.0M, decimalVal.Round(rounding: MidpointRounding.ToZero));
         Assert.AreEqual(124.0M, decimalVal.Round(rounding: MidpointRounding.AwayFromZero));
-    }    
+    }
 
     [TestMethod]
     public void Sqrt()

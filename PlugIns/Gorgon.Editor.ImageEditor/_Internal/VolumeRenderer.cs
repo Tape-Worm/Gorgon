@@ -242,7 +242,7 @@ internal class VolumeRenderer(GorgonGraphics graphics)
         _cubeVs = GorgonShaderFactory.Compile<GorgonVertexShader>(_graphics, Resources.VolumeRenderShaders, "VolumeVS", true);
         _cubePosShader = GorgonShaderFactory.Compile<GorgonPixelShader>(_graphics, Resources.VolumeRenderShaders, "VolumePositionPS", true);
         _cubeDirShader = GorgonShaderFactory.Compile<GorgonPixelShader>(_graphics, Resources.VolumeRenderShaders, "VolumeRayCastPS", true);
-        _inputLayout = GorgonInputLayout.CreateUsingType<CubeVertex>(_graphics, _cubeVs);
+        _inputLayout = GorgonInputLayout.CreateUsingType<CubeVertex>(_graphics, nameof(CubeVertex), _cubeVs);
         _cube = new Cube(_graphics, _inputLayout);
 
         _cubeTransform = new GorgonConstantBuffer(_graphics, new GorgonConstantBufferInfo(Unsafe.SizeOf<Matrix4x4>()));

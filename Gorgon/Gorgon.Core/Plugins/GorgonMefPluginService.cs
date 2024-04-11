@@ -25,6 +25,7 @@
 
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
@@ -146,10 +147,8 @@ namespace Gorgon.PlugIns;
 /// ]]>
 /// </code>
 /// </example>
-/// <remarks>
-/// Initializes a new instance of the <see cref="GorgonMefPlugInService"/> class
-/// </remarks>
 /// <param name="mefCache">The cache of MEF plugin assemblies.</param>
+[method: RequiresAssemblyFiles("Plug ins will not work with trimming and Native AOT.")]
 public sealed class GorgonMefPlugInService(GorgonMefPlugInCache mefCache)
         : IGorgonPlugInService
 {

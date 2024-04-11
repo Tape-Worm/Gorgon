@@ -43,12 +43,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System.Buffers;
 using System.Collections;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Gorgon.Math;
-using Gorgon.Memory;
 
 namespace Gorgon.Graphics.Core;
 

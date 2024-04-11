@@ -190,7 +190,7 @@ internal class SimpleRenderer
         // here in this example.
         if ((_vertexLayout is null) && (vertexShader is not null))
         {
-            _vertexLayout = GorgonInputLayout.CreateUsingType<GorgonVertexPosNormUvTangent>(_graphics, vertexShader);
+            _vertexLayout = GorgonInputLayout.CreateUsingType<GorgonVertexPosNormUvTangent>(_graphics, nameof(GorgonVertexPosNormUvTangent), vertexShader);
         }
 
         GorgonPixelShader pixelShader = (GorgonPixelShader)shader;

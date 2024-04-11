@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Gorgon.Memory;
 
 namespace Gorgon.Core.Tests;
@@ -132,7 +129,7 @@ public class GorgonPoolTests
         Assert.AreEqual(5, pool.AvailableSlots);
 
         foreach (DisposableObject item in items)
-        {       
+        {
             Assert.IsTrue(item.IsDisposed);
         }
     }

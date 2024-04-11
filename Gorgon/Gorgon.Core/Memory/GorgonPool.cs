@@ -111,7 +111,7 @@ public class GorgonPool<T>
         if (filledSlotCount >= TotalSize)
         {
             throw new GorgonException(GorgonResult.OutOfMemory, Resources.GOR_ERR_ALLOCATOR_FULL);
-        }        
+        }
 
         if ((_freeList.IsEmpty) || (!_freeList.TryPop(out T? item)))
         {

@@ -29,7 +29,6 @@ using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.IO;
 using Gorgon.Memory;
-using Gorgon.Reflection;
 using SharpDX.D3DCompiler;
 using D3D = SharpDX.Direct3D;
 using DX = SharpDX;
@@ -96,7 +95,6 @@ public static class GorgonShaderFactory
         ShaderType.Compute => new GorgonComputeShader(graphics, entryPoint, debug, byteCode),
         _ => throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_SHADER_UNKNOWN_TYPE, shaderType))
     };
-
 
     /// <summary>
     /// Property to return the list of <see cref="GorgonShaderInclude"/> definitions to include with compiled shaders.
@@ -435,7 +433,7 @@ public static class GorgonShaderFactory
         D3D.ShaderMacro[] actualMacros = null;
 
         if ((macros is not null) && (macros.Count > 0))
-        {            
+        {
             actualMacros = macros.Select(item => item.D3DShaderMacro)
                                  .ToArray();
         }
