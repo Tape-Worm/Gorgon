@@ -78,103 +78,46 @@ public class GorgonV31AnimationJsonCodec(Gorgon2D renderer)
             && (version.Equals(Version));
     }
 
-    /*
-    /// <summary>
-    /// Function to read key data for a track.
-    /// </summary>
-    /// <param name="reader">The JSON reader.</param>
-    /// <param name="converter">The converter used to convert the data from JSON.</param>
-    /// <param name="trackProps">The rest of the track properties.</param>
-    /// <returns>A list of 3D vector key frames.</returns>
-    private static List<Tk> ReadKeyData<Tk, Tc>(JsonReader reader, Tc converter, out (TrackInterpolationMode interpolation, bool enabled, string trackName) trackProps)
-           where Tk : class, IGorgonKeyFrame
-           where Tc : JsonConverter<Tk>
-    {
-        List<Tk> ReadKeys()
-        {
-            List<Tk> keys = [];
-            Type type = typeof(Tk);
-
-            while ((reader.Read()) && (reader.TokenType != JsonToken.EndArray))
-            {
-                if (reader.TokenType != JsonToken.StartObject)
-                {
-                    continue;
-                }
-
-                keys.Add(converter.ReadJson(reader, type, null, false, null));
-            }
-
-            return keys;
-        }
-
-        List<Tk> positions = null;
-        TrackInterpolationMode interpolation = TrackInterpolationMode.None;
-        string trackName = string.Empty;
-        bool isEnabled = true;
-
-        while ((reader.Read()) && (reader.TokenType != JsonToken.EndObject))
-        {
-            if (reader.TokenType != JsonToken.PropertyName)
-            {
-                continue;
-            }
-
-            string propName = reader.Value.ToString().ToUpperInvariant();
-
-            switch (propName)
-            {
-                case "INTERPOLATIONMODE":
-                    interpolation = (TrackInterpolationMode)(reader.ReadAsInt32() ?? 0);
-                    break;
-                case "KEYFRAMES":
-                    positions = ReadKeys();
-                    break;
-                case "ISENABLED":
-                    isEnabled = reader.ReadAsBoolean() ?? true;
-                    break;
-                case "NAME":
-                    trackName = reader.ReadAsString();
-                    break;
-            }
-        }
-
-        trackProps = (interpolation, isEnabled, trackName);
-
-        return positions;
-    }
-
-    /// <summary>
-    /// Function to read in a track containing single precision floating point key values.
-    /// </summary>
-    /// <param name="reader">The JSON reader.</param>
-    /// <param name="converter">The converter for key frame data.</param>
-    /// <param name="track">The track list to update.</param>
-    private void ReadTrack<Tk, Tc>(JsonTextReader reader, Tc converter, Dictionary<string, (List<Tk> keys, TrackInterpolationMode interpolation, bool isEnabled)> track)
-        where Tk : class, IGorgonKeyFrame
-        where Tc : JsonConverter<Tk>
-    {
-        if ((!reader.Read()) || (reader.TokenType != JsonToken.StartObject))
-        {
-            return;
-        }
-
-        while ((reader.Read()) && (reader.TokenType != JsonToken.EndObject))
-        {
-            List<Tk> keys = ReadKeyData<Tk, Tc>(reader, converter, out (TrackInterpolationMode interpolation, bool enabled, string trackName) trackProps);
-            track[trackProps.trackName] = (keys, trackProps.interpolation, trackProps.enabled);
-        }
-    }*/
-
     /// <summary>Function to retrieve the names of the associated textures.</summary>
     /// <param name="stream">The stream containing the texture data.</param>
     /// <returns>The names of the texture associated with the animations, or an empty list if no textures were found.</returns>
     protected override IReadOnlyList<string> OnGetAssociatedTextureNames(Stream stream)
     {
-        string jsonString = null;
-
         List<string> result = [];
+        string jsonString = stream.ReadString();
 
+        using JsonDocument document = JsonDocument.Parse(jsonString);
+
+        if ((!IsReadableJsonData(document)) || (!document.RootElement.TryGetProperty("textures", out JsonElement textureTrack)))
+        {
+            return result;
+        }
+
+        foreach (JsonElement track in textureTrack.EnumerateArray())
+        {
+            if (!track.TryGetProperty("keyframes", out JsonElement keyFrames))
+            {
+                continue;
+            }
+
+            foreach (JsonElement keyFrame in keyFrames.EnumerateArray())
+            {
+                if ((!keyFrame.TryGetProperty("texture", out JsonElement texture))
+                    || (!texture.TryGetProperty("name", out JsonElement textureName)))
+                {
+                    continue;
+                }
+
+                string? name = textureName.GetString();
+
+                if ((!string.IsNullOrWhiteSpace(name)) && (!result.Contains(name)))
+                {
+                    result.Add(name);
+                }
+            }
+        }
+
+        return result;
         /*// Loads the texture names.
         void LoadNames(JsonReader reader)
         {
@@ -275,8 +218,6 @@ public class GorgonV31AnimationJsonCodec(Gorgon2D renderer)
                 }
             }
         }*/
-
-        return result;
     }
 
     /// <summary>
@@ -342,199 +283,6 @@ public class GorgonV31AnimationJsonCodec(Gorgon2D renderer)
         }
 
         return document.Deserialize<IGorgonAnimation>(options);
-
-        /*
-        float animLength = 0;
-        float animFps = 0;
-        int loopCount = 0;
-        bool isLooped = false;
-
-        JsonGorgonColorKeyConverter colorConvert = new();
-        JsonTextureKeyConverter textureConvert = new(renderer.Graphics, textureOverrides);
-        JsonSingleKeyConverter singleConverter = new();
-        JsonVector2KeyConverter vec2Converter = new();
-        JsonVector3KeyConverter vec3Converter = new();
-        JsonVector4KeyConverter vec4Converter = new();
-        JsonQuaternionKeyConverter quatConverter = new();
-        JsonRectKeyConverter rectConverter = new();
-
-        Dictionary<string, (List<GorgonKeyVector4>, TrackInterpolationMode, bool)> vec4 = new(StringComparer.OrdinalIgnoreCase);
-        Dictionary<string, (List<GorgonKeyQuaternion>, TrackInterpolationMode, bool)> quat = new(StringComparer.OrdinalIgnoreCase);
-        Dictionary<string, (List<GorgonKeyVector3>, TrackInterpolationMode, bool)> vec3 = new(StringComparer.OrdinalIgnoreCase);
-        Dictionary<string, (List<GorgonKeyVector2>, TrackInterpolationMode, bool)> vec2 = new(StringComparer.OrdinalIgnoreCase);
-        Dictionary<string, (List<GorgonKeySingle>, TrackInterpolationMode, bool)> singles = new(StringComparer.OrdinalIgnoreCase);
-        Dictionary<string, (List<GorgonKeyGorgonColor>, TrackInterpolationMode, bool)> colors = new(StringComparer.OrdinalIgnoreCase);
-        Dictionary<string, (List<GorgonKeyRectangle>, TrackInterpolationMode, bool)> rects = new(StringComparer.OrdinalIgnoreCase);
-        Dictionary<string, (List<GorgonKeyTexture2D>, TrackInterpolationMode, bool)> textures = new(StringComparer.OrdinalIgnoreCase);
-
-        using (StringReader baseReader = new(json))
-        using (JsonTextReader reader = new(baseReader))
-        {
-            if (!IsReadableJObject(reader))
-            {
-                throw new GorgonException(GorgonResult.CannotRead, Resources.GOR2DIO_ERR_JSON_NOT_ANIM);
-            }
-
-            while (reader.Read())
-            {
-                if (reader.TokenType != JsonToken.PropertyName)
-                {
-                    continue;
-                }
-
-                string propName = reader.Value.ToString().ToUpperInvariant();
-
-                switch (propName)
-                {
-                    case "SINGLETRACKS":
-                        ReadTrack(reader, singleConverter, singles);
-                        break;
-                    case "VECTOR2TRACKS":
-                        ReadTrack(reader, vec2Converter, vec2);
-                        break;
-                    case "VECTOR3TRACKS":
-                        ReadTrack(reader, vec3Converter, vec3);
-                        break;
-                    case "VECTOR4TRACKS":
-                        ReadTrack(reader, vec4Converter, vec4);
-                        break;
-                    case "QUATERNIONTRACKS":
-                        ReadTrack(reader, quatConverter, quat);
-                        break;
-                    case "RECTTRACKS":
-                        ReadTrack(reader, rectConverter, rects);
-                        break;
-                    case "COLORTRACKS":
-                        ReadTrack(reader, colorConvert, colors);
-                        break;
-                    case "TEXTURES":
-                        ReadTrack(reader, textureConvert, textures);
-                        break;
-                    case "NAME":
-                        reader.ReadAsString();
-                        break;
-                    case "LENGTH":
-                        animLength = (float)(reader.ReadAsDecimal() ?? 0);
-                        break;
-                    case "FPS":
-                        animFps = (float)(reader.ReadAsDecimal() ?? 60);
-                        break;
-                    case "ISLOOPED":
-                        isLooped = (reader.ReadAsBoolean() ?? false);
-                        break;
-                    case "LOOPCOUNT":
-                        loopCount = (reader.ReadAsInt32() ?? 0);
-                        break;
-                }
-            }
-        }
-
-        GorgonAnimationBuilder builder = new();
-
-        if (singles.Count > 0)
-        {
-            foreach (KeyValuePair<string, (List<GorgonKeySingle> keys, TrackInterpolationMode interpolation, bool isEnabled)> track in singles)
-            {
-                builder.EditSingle(track.Key)
-                       .SetInterpolationMode(track.Value.interpolation)
-                       .Enabled(track.Value.isEnabled)
-                       .SetKeys(track.Value.keys)
-                       .EndEdit();
-            }
-        }
-
-        if (vec2.Count > 0)
-        {
-            foreach (KeyValuePair<string, (List<GorgonKeyVector2> keys, TrackInterpolationMode interpolation, bool isEnabled)> track in vec2)
-            {
-                builder.EditVector2(track.Key)
-                       .SetInterpolationMode(track.Value.interpolation)
-                       .Enabled(track.Value.isEnabled)
-                       .SetKeys(track.Value.keys)
-                       .EndEdit();
-            }
-        }
-
-        if (vec3.Count > 0)
-        {
-            foreach (KeyValuePair<string, (List<GorgonKeyVector3> keys, TrackInterpolationMode interpolation, bool isEnabled)> track in vec3)
-            {
-                builder.EditVector3(track.Key)
-                       .SetInterpolationMode(track.Value.interpolation)
-                       .Enabled(track.Value.isEnabled)
-                       .SetKeys(track.Value.keys)
-                       .EndEdit();
-            }
-        }
-
-        if (vec4.Count > 0)
-        {
-            foreach (KeyValuePair<string, (List<GorgonKeyVector4> keys, TrackInterpolationMode interpolation, bool isEnabled)> track in vec4)
-            {
-                builder.EditVector4(track.Key)
-                       .SetInterpolationMode(track.Value.interpolation)
-                       .Enabled(track.Value.isEnabled)
-                       .SetKeys(track.Value.keys)
-                       .EndEdit();
-            }
-        }
-
-        if (quat.Count > 0)
-        {
-            foreach (KeyValuePair<string, (List<GorgonKeyQuaternion> keys, TrackInterpolationMode interpolation, bool isEnabled)> track in quat)
-            {
-                builder.EditQuaternion(track.Key)
-                       .SetInterpolationMode(track.Value.interpolation)
-                       .Enabled(track.Value.isEnabled)
-                       .SetKeys(track.Value.keys)
-                       .EndEdit();
-            }
-        }
-
-        if (rects.Count > 0)
-        {
-            foreach (KeyValuePair<string, (List<GorgonKeyRectangle> keys, TrackInterpolationMode interpolation, bool isEnabled)> track in rects)
-            {
-                builder.EditRectangle(track.Key)
-                       .SetInterpolationMode(track.Value.interpolation)
-                       .Enabled(track.Value.isEnabled)
-                       .SetKeys(track.Value.keys)
-                       .EndEdit();
-            }
-        }
-
-        if (colors.Count > 0)
-        {
-            foreach (KeyValuePair<string, (List<GorgonKeyGorgonColor> keys, TrackInterpolationMode interpolation, bool isEnabled)> track in colors)
-            {
-                builder.EditColor(track.Key)
-                       .SetInterpolationMode(track.Value.interpolation)
-                       .Enabled(track.Value.isEnabled)
-                       .SetKeys(track.Value.keys)
-                       .EndEdit();
-            }
-        }
-
-        if (textures.Count > 0)
-        {
-            foreach (KeyValuePair<string, (List<GorgonKeyTexture2D> keys, TrackInterpolationMode interpolation, bool isEnabled)> track in textures)
-            {
-                builder.Edit2DTexture(track.Key)
-                       .SetInterpolationMode(track.Value.interpolation)
-                       .Enabled(track.Value.isEnabled)
-                       .SetKeys(track.Value.keys)
-                       .EndEdit();
-            }
-        }
-
-        IGorgonAnimation result = builder.Build(name, animFps, animLength);
-
-        result.LoopCount = loopCount;
-        result.IsLooped = isLooped;
-        result.Speed = 1.0f;
-
-        return result;
-        */
     }
 
     /// <summary>

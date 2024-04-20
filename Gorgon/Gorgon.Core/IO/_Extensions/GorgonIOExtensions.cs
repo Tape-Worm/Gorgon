@@ -924,10 +924,16 @@ public static class GorgonIOExtensions
             return string.Empty;
         }
 
-        // Find the number of bytes required for 4096 characters.
-        int maxByteCount = encoding.GetMaxByteCount(4096);
+        // Find the number of bytes required for up to 4096 characters.
+        int charCount = stringLength.Min(4096);
+        char[] charBuffer = ArrayPool<char>.Shared.Rent(charCount);
+        Span<char> charSpan = charBuffer.AsSpan(0, charCount);
+
+        // Empty the buffer, if not, the get byte count will get screwy.
+        charSpan.Clear();
+
+        int maxByteCount = encoding.GetByteCount(charSpan);
         byte[] buffer = GorgonArrayPools<byte>.GetBestPool(maxByteCount).Rent(maxByteCount);
-        char[] charBuffer = ArrayPool<char>.Shared.Rent(4096);
 
         try
         {
@@ -939,7 +945,7 @@ public static class GorgonIOExtensions
             while ((stream.Position < stream.Length) && (counter < stringLength))
             {
                 // Fill the byte buffer.
-                int bytesRead = stream.Read(buffer, 0, stringLength <= buffer.Length ? stringLength : buffer.Length);
+                int bytesRead = stream.Read(buffer, 0, stringLength <= maxByteCount ? stringLength : maxByteCount);
 
                 if (bytesRead == 0)
                 {
@@ -947,7 +953,7 @@ public static class GorgonIOExtensions
                 }
 
                 // Get the characters.
-                int charsRead = decoder.GetChars(buffer, 0, bytesRead, charBuffer, 0);
+                int charsRead = encoding.GetChars(buffer.AsSpan(0, bytesRead), charSpan);
 
                 // If we've already read the entire string, just dump it back out now.
                 if ((counter == 0) && (bytesRead == stringLength))
@@ -957,9 +963,9 @@ public static class GorgonIOExtensions
 
                 // We'll need a bigger string. So allocate a string builder and use that.
                 // Try to max out the string builder size by the length of our string, in characters.
-                result ??= new StringBuilder(encoding.GetMaxCharCount(stringLength));
+                result ??= new StringBuilder(4096);
 
-                result.Append(charBuffer, 0, charsRead);
+                result.Append(charSpan[..charsRead]);
 
                 counter += bytesRead;
             }
