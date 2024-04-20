@@ -21,11 +21,6 @@
 // Created: April 18, 2024 12:09:30 AM
 //
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Gorgon.Renderers;
@@ -42,7 +37,7 @@ internal class GorgonPolySpriteVertexJsonConverter
     : JsonConverter<GorgonPolySpriteVertex>
 {
     // The converter for converting vector 2 values to and from JSON.
-    private Vector2JsonConverter _vector2Converter = new();
+    private readonly Vector2JsonConverter _vector2Converter = new();
 
     /// <inheritdoc/>
     public override void Write(Utf8JsonWriter writer, GorgonPolySpriteVertex value, JsonSerializerOptions options)

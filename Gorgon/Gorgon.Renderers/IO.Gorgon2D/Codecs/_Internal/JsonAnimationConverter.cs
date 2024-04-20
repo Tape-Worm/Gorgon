@@ -20,26 +20,23 @@
 // 
 // Created: April 17, 2024 10:20:22 PM
 //
- 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Gorgon.Animation;
 using Gorgon.Renderers;
 using Gorgon.Graphics.Core;
-using System.Drawing.Printing;
 
 namespace Gorgon.IO;
 
 /// <summary>
 /// A converter to convert a <see cref="IGorgonAnimation"/> object to and from JSON.
 /// </summary>
-internal class JsonAnimationConverter
-    : JsonConverter<IGorgonAnimation>
+/// <param name="renderer">The renderer used to locate texture data.</param>
+/// <param name="textureOverrides">[Optional] Textures to use in a texture animation track.</param>
+/// <param name="name">The name for the animation.</param>
+internal class JsonAnimationConverter(Gorgon2D? renderer, IEnumerable<GorgonTexture2DView>? textureOverrides, string? name)
+        : JsonConverter<IGorgonAnimation>
 {
     /// <summary>
     /// The property name for the header value.
@@ -53,16 +50,16 @@ internal class JsonAnimationConverter
     // The builder used to create the animation object.
     private readonly GorgonAnimationBuilder _builder = new();
     // The name for the animation.
-    private readonly string _name;
+    private readonly string _name = string.IsNullOrWhiteSpace(name) ? $"GorgonAnimation_{Guid.NewGuid():N}" : name;
     // Converters for data types.
-    private readonly JsonTextureKeyConverter _textureConverter;
-    private readonly JsonSingleKeyConverter _singleKeyConverter;
-    private readonly JsonVector2KeyConverter _vector2KeyConverter;
-    private readonly JsonVector3KeyConverter _vector3KeyConverter;
-    private readonly JsonVector4KeyConverter _vector4KeyConverter;
-    private readonly JsonGorgonColorKeyConverter _colorKeyConverter;
-    private readonly JsonQuaternionKeyConverter _quatConverter;
-    private readonly JsonRectKeyConverter _rectKeyConverter;
+    private readonly JsonTextureKeyConverter _textureConverter = new(renderer?.Graphics, textureOverrides);
+    private readonly JsonSingleKeyConverter _singleKeyConverter = new();
+    private readonly JsonVector2KeyConverter _vector2KeyConverter = new();
+    private readonly JsonVector3KeyConverter _vector3KeyConverter = new();
+    private readonly JsonVector4KeyConverter _vector4KeyConverter = new();
+    private readonly JsonGorgonColorKeyConverter _colorKeyConverter = new();
+    private readonly JsonQuaternionKeyConverter _quatConverter = new();
+    private readonly JsonRectKeyConverter _rectKeyConverter = new();
 
     /// <summary>
     /// Function to read the keys for a given track.
@@ -455,24 +452,5 @@ internal class JsonAnimationConverter
         result.Speed = 1.0f;
 
         return result;
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="JsonAnimationConverter"/> class.
-    /// </summary>
-    /// <param name="renderer">The renderer used to locate texture data.</param>
-    /// <param name="textureOverrides">[Optional] Textures to use in a texture animation track.</param>
-    /// <param name="name">The name for the animation.</param>
-    public JsonAnimationConverter(Gorgon2D? renderer, IEnumerable<GorgonTexture2DView>? textureOverrides, string? name)
-    {
-        _name = string.IsNullOrWhiteSpace(name) ? $"GorgonAnimation_{Guid.NewGuid():N}" : name;
-        _textureConverter = new JsonTextureKeyConverter(renderer?.Graphics, textureOverrides);
-        _singleKeyConverter = new JsonSingleKeyConverter();
-        _vector2KeyConverter = new JsonVector2KeyConverter();
-        _vector3KeyConverter = new JsonVector3KeyConverter();
-        _vector4KeyConverter = new JsonVector4KeyConverter();
-        _colorKeyConverter = new JsonGorgonColorKeyConverter();
-        _rectKeyConverter = new JsonRectKeyConverter();
-        _quatConverter = new JsonQuaternionKeyConverter();
     }
 }

@@ -30,7 +30,6 @@ using Gorgon.Graphics.Core;
 using Gorgon.IO.Properties;
 using Gorgon.Renderers;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace Gorgon.IO;
 
