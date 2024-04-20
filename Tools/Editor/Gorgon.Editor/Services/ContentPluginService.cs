@@ -24,6 +24,8 @@
 // 
 
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
@@ -32,8 +34,6 @@ using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Properties;
 using Gorgon.IO;
 using Gorgon.PlugIns;
-using System.Text.Json.Serialization;
-using System.Text.Json;
 
 namespace Gorgon.Editor.Services;
 
@@ -295,7 +295,7 @@ internal class ContentPlugInService
         using StreamWriter writer = new(stream, Encoding.UTF8, 80000, false);
 
         JsonSerializerOptions options = new();
-        
+
         if (converters is not null)
         {
             foreach (JsonConverter converter in converters)

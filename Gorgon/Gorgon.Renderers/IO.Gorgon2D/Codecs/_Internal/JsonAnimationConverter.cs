@@ -24,8 +24,8 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Gorgon.Animation;
-using Gorgon.Renderers;
 using Gorgon.Graphics.Core;
+using Gorgon.Renderers;
 
 namespace Gorgon.IO;
 
@@ -301,7 +301,7 @@ internal class JsonAnimationConverter(Gorgon2D? renderer, IEnumerable<GorgonText
                 break;
             }
 
-            switch(propertyName)
+            switch (propertyName)
             {
                 case "LENGTH":
                     animLength = reader.GetSingle();
@@ -444,7 +444,6 @@ internal class JsonAnimationConverter(Gorgon2D? renderer, IEnumerable<GorgonText
                        .EndEdit();
             }
         }
-
 
         IGorgonAnimation result = _builder.Build(_name, animFps, animLength);
         result.IsLooped = isLooped;

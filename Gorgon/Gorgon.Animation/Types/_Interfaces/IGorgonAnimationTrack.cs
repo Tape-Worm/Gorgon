@@ -23,9 +23,9 @@
 // Created: August 18, 2018 10:51:40 AM
 // 
 
+using System.Text.Json.Serialization;
 using Gorgon.Core;
 using Gorgon.Graphics;
-using System.Text.Json.Serialization;
 
 namespace Gorgon.Animation;
 

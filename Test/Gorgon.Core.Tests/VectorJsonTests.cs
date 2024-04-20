@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Numerics;
+﻿using System.Numerics;
 using System.Text.Json;
 using Gorgon.Json;
 
@@ -17,7 +12,7 @@ public class VectorJsonTests
     {
         Vector2? testVector = new(10, 20);
         JsonSerializerOptions options = new()
-        {            
+        {
             Converters = { new Vector2JsonConverter() }
         };
         string json = JsonSerializer.Serialize(testVector, options);

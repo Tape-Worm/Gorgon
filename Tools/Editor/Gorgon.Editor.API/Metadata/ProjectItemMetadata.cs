@@ -23,8 +23,8 @@
 // Created: September 5, 2018 12:35:20 PM
 // 
 
-using Gorgon.Editor.PlugIns;
 using System.Text.Json.Serialization;
+using Gorgon.Editor.PlugIns;
 
 namespace Gorgon.Editor.Metadata;
 

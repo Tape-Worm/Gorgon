@@ -214,7 +214,7 @@ public abstract class GorgonLog
     /// regardless of filter level.
     /// </para>
     /// </remarks>    
-    [UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", 
+    [UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code",
                                   Justification = "Using RuntimeFeature.IsDynamicCodeSupported flag to skip the code.")]
     public void LogException(Exception ex)
     {

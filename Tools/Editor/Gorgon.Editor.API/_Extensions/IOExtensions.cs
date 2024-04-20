@@ -25,13 +25,13 @@
 
 using System.Globalization;
 using System.Text;
+using System.Text.Json;
 using Gorgon.Core;
 using Gorgon.Editor;
 using Gorgon.Editor.Metadata;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Support;
-using System.Text.Json;
 
 namespace Gorgon.IO;
 

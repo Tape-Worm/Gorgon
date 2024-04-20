@@ -23,8 +23,8 @@
 // Created: August 25, 2018 10:21:07 PM
 // 
 
-using Gorgon.Animation;
 using System.Text.Json;
+using Gorgon.Animation;
 
 namespace Gorgon.IO;
 

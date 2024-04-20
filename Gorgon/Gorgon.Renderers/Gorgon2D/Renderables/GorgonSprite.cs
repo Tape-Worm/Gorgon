@@ -24,12 +24,12 @@
 // 
 
 using System.Numerics;
+using System.Text.Json.Serialization;
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Renderers.Geometry;
-using System.Text.Json.Serialization;
 
 namespace Gorgon.Renderers;
 

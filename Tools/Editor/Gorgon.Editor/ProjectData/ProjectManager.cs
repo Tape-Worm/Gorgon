@@ -26,6 +26,7 @@
 using System.Buffers;
 using System.Diagnostics;
 using System.Text;
+using System.Text.Json;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Metadata;
@@ -36,7 +37,6 @@ using Gorgon.Editor.Services;
 using Gorgon.IO;
 using Gorgon.IO.Providers;
 using Gorgon.Math;
-using System.Text.Json;
 
 namespace Gorgon.Editor.ProjectData;
 

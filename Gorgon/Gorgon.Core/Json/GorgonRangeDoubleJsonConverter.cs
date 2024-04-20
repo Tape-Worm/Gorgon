@@ -21,9 +21,9 @@
 // Created: December 18, 2023 6:04:41 PM
 //
 
-using Gorgon.Core;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Gorgon.Core;
 
 namespace Gorgon.Json;
 
@@ -31,7 +31,7 @@ namespace Gorgon.Json;
 /// A converter used to convert a <see cref="GorgonRange{T}"/> to and from a JSON value.
 /// </summary>
 public class GorgonRangeDoubleJsonConverter
-    : JsonConverter<GorgonRange<double>>    
+    : JsonConverter<GorgonRange<double>>
 {
     /// <inheritdoc/>
     public override void Write(Utf8JsonWriter writer, GorgonRange<double> value, JsonSerializerOptions options)

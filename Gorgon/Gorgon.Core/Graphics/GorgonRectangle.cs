@@ -24,10 +24,10 @@
 using System.Drawing;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Text.Json.Serialization;
 using Gorgon.Json;
 using Gorgon.Math;
 using Gorgon.Properties;
-using System.Text.Json.Serialization;
 
 namespace Gorgon.Graphics;
 

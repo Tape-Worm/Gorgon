@@ -23,10 +23,10 @@
 // Created: Wednesday, October 3, 2012 9:14:18 PM
 // 
 
+using System.Text.Json.Serialization;
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
-using System.Text.Json.Serialization;
 
 namespace Gorgon.Animation;
 

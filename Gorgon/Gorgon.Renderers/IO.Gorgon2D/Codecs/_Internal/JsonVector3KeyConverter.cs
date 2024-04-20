@@ -24,9 +24,9 @@
 // 
 
 using System.Numerics;
-using Gorgon.Animation;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Gorgon.Animation;
 
 namespace Gorgon.IO;
 

@@ -22,9 +22,9 @@
 //
 
 using System.Numerics;
-using Gorgon.Core;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Gorgon.Core;
 
 namespace Gorgon.Json;
 

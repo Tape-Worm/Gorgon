@@ -22,9 +22,9 @@
 // Created: March 27, 2019 10:49:22 PM
 // 
 
+using System.Text.Json.Serialization;
 using Gorgon.Editor.Metadata;
 using Gorgon.Editor.ProjectData;
-using System.Text.Json.Serialization;
 
 namespace Gorgon.Editor.Support;
 

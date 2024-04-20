@@ -24,12 +24,12 @@
 // 
 
 using System.Text;
+using System.Text.Json;
 using Gorgon.Animation;
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
 using Gorgon.IO.Properties;
 using Gorgon.Renderers;
-using System.Text.Json;
 
 namespace Gorgon.IO;
 
@@ -278,7 +278,7 @@ public class GorgonV31AnimationJsonCodec(Gorgon2D renderer)
 
         return result;
     }
-    
+
     /// <summary>
     /// Function to convert a JSON formatted string into a <see cref="IGorgonAnimation"/> object.
     /// </summary>

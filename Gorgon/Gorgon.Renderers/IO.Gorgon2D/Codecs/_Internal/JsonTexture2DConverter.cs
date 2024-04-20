@@ -23,11 +23,11 @@
 // Created: August 11, 2018 7:56:39 PM
 // 
 
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace Gorgon.IO;
 

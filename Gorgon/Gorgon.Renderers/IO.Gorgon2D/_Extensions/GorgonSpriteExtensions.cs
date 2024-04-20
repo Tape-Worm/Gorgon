@@ -23,10 +23,10 @@
 // Created: August 13, 2018 1:01:46 PM
 // 
 
-using Gorgon.IO;
-using Gorgon.Json;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using Gorgon.IO;
+using Gorgon.Json;
 
 namespace Gorgon.Renderers;
 
@@ -60,7 +60,7 @@ public static class GorgonSpriteExtensions
         }
 
         JsonSerializerOptions options = new()
-        {            
+        {
             Converters =
             {
                 new Vector2JsonConverter(),

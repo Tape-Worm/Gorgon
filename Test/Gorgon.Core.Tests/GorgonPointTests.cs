@@ -1,5 +1,5 @@
-﻿using Gorgon.Graphics;
-using System.Text.Json;
+﻿using System.Text.Json;
+using Gorgon.Graphics;
 
 namespace Gorgon.Core.Tests;
 

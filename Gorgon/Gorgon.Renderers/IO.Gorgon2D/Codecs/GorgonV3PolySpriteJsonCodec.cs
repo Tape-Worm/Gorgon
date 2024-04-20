@@ -25,13 +25,13 @@
 
 using System.Numerics;
 using System.Text;
+using System.Text.Json;
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
 using Gorgon.IO.Properties;
 using Gorgon.Json;
 using Gorgon.Math;
 using Gorgon.Renderers;
-using System.Text.Json;
 
 namespace Gorgon.IO;
 
@@ -130,7 +130,6 @@ public class GorgonV3PolySpriteJsonCodec(Gorgon2D renderer)
         using JsonDocument document = JsonDocument.Parse(json);
         return IsReadableJsonData(document);
     }
-
 
     /// <summary>
     /// Function to retrieve the name of the associated texture.

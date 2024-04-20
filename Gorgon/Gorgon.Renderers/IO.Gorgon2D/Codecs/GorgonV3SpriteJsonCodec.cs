@@ -23,12 +23,12 @@
 // 
 
 using System.Text;
+using System.Text.Json;
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
 using Gorgon.IO.Properties;
 using Gorgon.Json;
 using Gorgon.Renderers;
-using System.Text.Json;
 
 namespace Gorgon.IO;
 
@@ -71,9 +71,9 @@ public class GorgonV3SpriteJsonCodec(Gorgon2D renderer)
             return false;
         }
 
-        return (headerElement.TryGetUInt64(out ulong header)) 
-            && (Version.TryParse(versionElement.GetString(), out Version? version)) 
-            && (header == CurrentFileHeader) 
+        return (headerElement.TryGetUInt64(out ulong header))
+            && (Version.TryParse(versionElement.GetString(), out Version? version))
+            && (header == CurrentFileHeader)
             && (version.Equals(Version));
     }
 
@@ -140,7 +140,7 @@ public class GorgonV3SpriteJsonCodec(Gorgon2D renderer)
         {
             throw new GorgonException(GorgonResult.CannotRead, Resources.GOR2DIO_ERR_JSON_NOT_SPRITE);
         }
-        
+
         string json = stream.ReadString();
 
         if (string.IsNullOrWhiteSpace(json))
@@ -207,7 +207,7 @@ public class GorgonV3SpriteJsonCodec(Gorgon2D renderer)
                 new GorgonRangeFloatJsonConverter(),
                 new JsonSamplerConverter(renderer.Graphics),
                 new JsonTexture2DConverter(renderer.Graphics, overrideTexture)
-            }            
+            }
         };
 
         using JsonDocument document = JsonDocument.Parse(json);

@@ -22,9 +22,9 @@
 //
 
 using System.Numerics;
-using Gorgon.Core;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Gorgon.Core;
 
 namespace Gorgon.Json;
 
@@ -36,7 +36,7 @@ public class Vector4JsonConverter
 {
     /// <inheritdoc/>
     public override void Write(Utf8JsonWriter writer, Vector4 value, JsonSerializerOptions options)
-    {        
+    {
         writer.WriteStartObject();
         writer.WriteNumber("x", value.X);
         writer.WriteNumber("y", value.Y);

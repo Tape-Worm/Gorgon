@@ -24,6 +24,8 @@
 // 
 
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
@@ -31,8 +33,6 @@ using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Properties;
 using Gorgon.IO;
 using Gorgon.PlugIns;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace Gorgon.Editor.Services;
 

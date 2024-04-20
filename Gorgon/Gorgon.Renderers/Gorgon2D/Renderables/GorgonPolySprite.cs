@@ -24,6 +24,7 @@
 // 
 
 using System.Numerics;
+using System.Text.Json.Serialization;
 using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.Graphics;
@@ -32,7 +33,6 @@ using Gorgon.Math;
 using Gorgon.Native;
 using Gorgon.Renderers.Geometry;
 using Gorgon.Renderers.Properties;
-using System.Text.Json.Serialization;
 
 namespace Gorgon.Renderers;
 

@@ -26,6 +26,7 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Text;
+using System.Text.Json;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.PlugIns;
@@ -36,7 +37,6 @@ using Gorgon.Editor.UI;
 using Gorgon.Editor.Views;
 using Gorgon.IO;
 using Gorgon.Json;
-using System.Text.Json;
 
 namespace Gorgon.Editor.ViewModels;
 

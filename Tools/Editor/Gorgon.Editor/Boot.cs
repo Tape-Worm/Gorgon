@@ -25,6 +25,7 @@
 
 using System.Reflection;
 using System.Text;
+using System.Text.Json;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.ProjectData;
@@ -38,7 +39,6 @@ using Gorgon.IO;
 using Gorgon.Math;
 using Gorgon.PlugIns;
 using Gorgon.UI;
-using System.Text.Json;
 
 namespace Gorgon.Editor;
 

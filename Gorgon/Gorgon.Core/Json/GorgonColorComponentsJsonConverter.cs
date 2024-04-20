@@ -21,10 +21,10 @@
 // Created: December 17, 2023 10:59:47 PM
 //
 
-using Gorgon.Core;
-using Gorgon.Graphics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Gorgon.Core;
+using Gorgon.Graphics;
 
 namespace Gorgon.Json;
 

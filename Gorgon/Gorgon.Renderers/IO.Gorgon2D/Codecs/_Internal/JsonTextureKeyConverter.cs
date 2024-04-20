@@ -23,12 +23,12 @@
 // Created: August 25, 2018 10:30:45 PM
 // 
 
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Gorgon.Animation;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Json;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace Gorgon.IO;
 
@@ -56,10 +56,10 @@ class JsonTextureKeyConverter(GorgonGraphics graphics, IEnumerable<GorgonTexture
         writer.WriteStartObject();
         writer.WriteNumber("time", value.Time);
         writer.WritePropertyName("texture");
-        _textureConverter.Write(writer, value.Value, options);        
+        _textureConverter.Write(writer, value.Value, options);
         writer.WriteNumber("arrayindex", value.TextureArrayIndex);
         writer.WritePropertyName("uv");
-        _rectConverter.Write(writer, value.TextureCoordinates, options);        
+        _rectConverter.Write(writer, value.TextureCoordinates, options);
         writer.WriteEndObject();
     }
 

@@ -24,8 +24,8 @@
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using Gorgon.Properties;
 using System.Text.Json.Serialization;
+using Gorgon.Properties;
 
 namespace Gorgon.Core;
 

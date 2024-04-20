@@ -21,12 +21,12 @@
 // Created: April 18, 2024 12:09:30 AM
 //
 
+using System.Numerics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Gorgon.Renderers;
 using Gorgon.Graphics;
-using System.Numerics;
 using Gorgon.Json;
+using Gorgon.Renderers;
 
 namespace Gorgon.IO;
 
@@ -48,7 +48,7 @@ internal class GorgonPolySpriteVertexJsonConverter
         _vector2Converter.Write(writer, value.Position, options);
 
         writer.WritePropertyName("texturecoordinate");
-        _vector2Converter.Write(writer, value.TextureCoordinate, options);        
+        _vector2Converter.Write(writer, value.TextureCoordinate, options);
 
         writer.WriteNumber("color", GorgonColor.ToARGB(value.Color));
 
@@ -81,7 +81,7 @@ internal class GorgonPolySpriteVertexJsonConverter
                 break;
             }
 
-            switch(property)
+            switch (property)
             {
                 case "position":
                     position = _vector2Converter.Read(ref reader, typeof(Vector2), options);
