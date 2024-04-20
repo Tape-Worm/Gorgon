@@ -381,7 +381,7 @@ public class GorgonNativeBufferTests
         }
 
         // Act
-        using GorgonNativeBuffer<byte> newBuffer = buffer.ToNativeBuffer<byte>();
+        using GorgonNativeBuffer<byte> newBuffer = buffer.CopyTo<byte>();
 
         // Assert
         for (int i = 0; i < testData.Length; i++)

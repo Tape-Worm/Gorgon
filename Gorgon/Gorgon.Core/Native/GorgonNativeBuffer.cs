@@ -410,7 +410,7 @@ public sealed class GorgonNativeBuffer<T>
     /// </code>
     /// </para>
     /// </remarks>
-    public GorgonNativeBuffer<TTo> ToNativeBuffer<TTo>()
+    public GorgonNativeBuffer<TTo> CopyTo<TTo>()
         where TTo : unmanaged
     {
         int toSize = Unsafe.SizeOf<TTo>();
