@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
@@ -15,7 +15,7 @@
     <RepositoryUrl>https://github.com/Tape-Worm/Gorgon</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
     <PackageTags>C#, .NET Framework, Direct 3D, SharpDX, Winforms</PackageTags>
-    <EnableNETAnalyzers>false</EnableNETAnalyzers>
+    <EnableNETAnalyzers>True</EnableNETAnalyzers>
     <RootNamespace>Gorgon.IO</RootNamespace>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
@@ -26,10 +26,11 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <AssemblyVersion>4.0.0.0</AssemblyVersion>
     <FileVersion>4.0.0.0</FileVersion>
-
-  </PropertyGroup>
-  <PropertyGroup>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
     <EmbeddedResourceUseDependentUponConvention>true</EmbeddedResourceUseDependentUponConvention>
+    <Nullable>enable</Nullable>
+    <IsAotCompatible>true</IsAotCompatible>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DocumentationFile>bin\Release\Gorgon.FileSystem.xml</DocumentationFile>
@@ -66,5 +67,8 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Using Include="System.Text" />
   </ItemGroup>
 </Project>
