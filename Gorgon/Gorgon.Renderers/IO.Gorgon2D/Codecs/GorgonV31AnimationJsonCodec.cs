@@ -29,7 +29,8 @@ using Gorgon.Core;
 using Gorgon.Graphics.Core;
 using Gorgon.IO.Properties;
 using Gorgon.Renderers;
-using Newtonsoft.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Gorgon.IO;
 
@@ -37,7 +38,7 @@ namespace Gorgon.IO;
 /// A codec used to read/write animations as a JSON formatted string value
 /// </summary>
 /// <remarks>
-/// Initializes a new instance of the <see cref="GorgonV3AnimationJsonCodec"/> class
+/// Initializes a new instance of the <see cref="GorgonV31AnimationJsonCodec"/> class
 /// </remarks>
 /// <param name="renderer">The renderer used for resource handling.</param>
 /// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/> is <b>null</b>.</exception>
@@ -60,61 +61,25 @@ public class GorgonV31AnimationJsonCodec(Gorgon2D renderer)
     public override Version Version => CurrentVersion;
 
     /// <summary>
-    /// Function to retrieve the stream as JSON.Net object.
+    /// Function to determine if the JSON object has the data we need.
     /// </summary>
-    /// <param name="stream">The stream containing the data.</param>
-    /// <returns>The data as a JSON.Net object.</returns>
-    private static JsonReader GetJsonReader(Stream stream)
-    {
-        StreamReader reader = new(stream, Encoding.UTF8, true, 1024, true);
-        JsonTextReader jsonReader = new(reader)
-        {
-            CloseInput = true
-        };
-        return jsonReader;
-    }
-
-    /// <summary>
-    /// Function to determine if the jason object has the data we need.
-    /// </summary>
-    /// <param name="reader">The reader for the JSON data.</param>
+    /// <param name="document">The JSON document to evaluate.</param>
     /// <returns><b>true</b> if the data is for a sprite, <b>false</b> if not.</returns>
-    private bool IsReadableJObject(JsonReader reader)
+    private bool IsReadableJsonData(JsonDocument document)
     {
-        // Find the header node.
-        while (reader.Read())
+        if ((!document.RootElement.TryGetProperty(JsonAnimationConverter.JsonHeaderProp, out JsonElement headerElement))
+            || (!document.RootElement.TryGetProperty(JsonAnimationConverter.JsonVersionProp, out JsonElement versionElement)))
         {
-            if ((string.Equals(reader.Path, "header", StringComparison.Ordinal))
-                && (reader.TokenType == JsonToken.PropertyName))
-            {
-                ulong? id = (ulong?)reader.ReadAsDecimal();
-
-                if ((id is null) || (id != CurrentFileHeader))
-                {
-                    return false;
-                }
-
-                if (!reader.Read())
-                {
-                    return false;
-                }
-            }
-
-            // These must come right after each other.
-            if ((!string.Equals(reader.Path, "version", StringComparison.Ordinal))
-                || (reader.TokenType != JsonToken.PropertyName))
-            {
-                continue;
-            }
-
-            return reader.Read()
-&& (Version.TryParse(reader.Value.ToString(), out Version version))
-                   && (version.Equals(Version));
+            return false;
         }
 
-        return false;
+        return (headerElement.TryGetUInt64(out ulong header))
+            && (Version.TryParse(versionElement.GetString(), out Version? version))
+            && (header == CurrentFileHeader)
+            && (version.Equals(Version));
     }
 
+    /*
     /// <summary>
     /// Function to read key data for a track.
     /// </summary>
@@ -200,7 +165,7 @@ public class GorgonV31AnimationJsonCodec(Gorgon2D renderer)
             List<Tk> keys = ReadKeyData<Tk, Tc>(reader, converter, out (TrackInterpolationMode interpolation, bool enabled, string trackName) trackProps);
             track[trackProps.trackName] = (keys, trackProps.interpolation, trackProps.enabled);
         }
-    }
+    }*/
 
     /// <summary>Function to retrieve the names of the associated textures.</summary>
     /// <param name="stream">The stream containing the texture data.</param>
@@ -211,7 +176,7 @@ public class GorgonV31AnimationJsonCodec(Gorgon2D renderer)
 
         List<string> result = [];
 
-        // Loads the texture names.
+        /*// Loads the texture names.
         void LoadNames(JsonReader reader)
         {
             while ((reader.Read()) && (reader.TokenType != JsonToken.EndObject))
@@ -310,11 +275,11 @@ public class GorgonV31AnimationJsonCodec(Gorgon2D renderer)
                         break;
                 }
             }
-        }
+        }*/
 
         return result;
     }
-
+    
     /// <summary>
     /// Function to convert a JSON formatted string into a <see cref="IGorgonAnimation"/> object.
     /// </summary>
@@ -332,7 +297,7 @@ public class GorgonV31AnimationJsonCodec(Gorgon2D renderer)
     /// <see cref="GorgonKeyTexture2D.TextureName"/> is <c>"WalkingFrames"</c>, then the <see cref="GorgonTexture2D.Name"/> should also be <c>"WalkingFrames"</c>. 
     /// </para>
     /// </remarks>
-    public IGorgonAnimation FromJson(Gorgon2D renderer, string json, string name = null, IEnumerable<GorgonTexture2DView> textureOverrides = null)
+    public static IGorgonAnimation FromJson(Gorgon2D renderer, string json, string name = null, IEnumerable<GorgonTexture2DView> textureOverrides = null)
     {
         if (renderer is null)
         {
@@ -354,6 +319,32 @@ public class GorgonV31AnimationJsonCodec(Gorgon2D renderer)
             name = $"GorgonAnimation_{Guid.NewGuid():N}";
         }
 
+        JsonSerializerOptions options = new()
+        {
+            Converters =
+            {
+                new JsonAnimationConverter(renderer, textureOverrides, name)
+            }
+        };
+
+        using JsonDocument document = JsonDocument.Parse(json);
+
+        if ((!document.RootElement.TryGetProperty(JsonAnimationConverter.JsonHeaderProp, out JsonElement headerElement))
+            || (!document.RootElement.TryGetProperty(JsonAnimationConverter.JsonVersionProp, out JsonElement versionElement))
+            || (!headerElement.TryGetUInt64(out ulong id))
+            || (id != CurrentFileHeader))
+        {
+            throw new GorgonException(GorgonResult.CannotRead, Resources.GOR2DIO_ERR_JSON_NOT_ANIM);
+        }
+
+        if ((!Version.TryParse(versionElement.GetString(), out Version? version)) || (!CurrentVersion.Equals(version)))
+        {
+            throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOR2DIO_ERR_ANIM_VERSION_MISMATCH, CurrentVersion, version));
+        }
+
+        return document.Deserialize<IGorgonAnimation>(options);
+
+        /*
         float animLength = 0;
         float animFps = 0;
         int loopCount = 0;
@@ -544,6 +535,7 @@ public class GorgonV31AnimationJsonCodec(Gorgon2D renderer)
         result.Speed = 1.0f;
 
         return result;
+        */
     }
 
     /// <summary>
@@ -580,22 +572,21 @@ public class GorgonV31AnimationJsonCodec(Gorgon2D renderer)
     /// <returns><b>true</b> if the data can be read, or <b>false</b> if not.</returns>
     protected override bool OnIsReadable(Stream stream)
     {
-        JsonReader reader = null;
-
-        long currentPosition = stream.Position;
-        try
-        {
-            reader = GetJsonReader(stream);
-            return IsReadableJObject(reader);
-        }
-        catch (JsonException)
+        if (stream.Length < 4)
         {
             return false;
         }
-        finally
+
+        // Read the string from the stream.
+        string json = stream.ReadString();
+
+        // If we don't have a string, or we don't start with "{", then it's not valid JSON.
+        if ((string.IsNullOrWhiteSpace(json)) || (!json.StartsWith("{", StringComparison.Ordinal)))
         {
-            stream.Position = currentPosition;
-            reader?.Close();
+            return false;
         }
+
+        using JsonDocument document = JsonDocument.Parse(json);
+        return IsReadableJsonData(document);
     }
 }

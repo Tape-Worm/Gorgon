@@ -36,7 +36,7 @@ using Gorgon.Editor.Services;
 using Gorgon.IO;
 using Gorgon.IO.Providers;
 using Gorgon.Math;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Gorgon.Editor.ProjectData;
 
@@ -326,27 +326,22 @@ internal class ProjectManager(FileSystemProviders providers, IGorgonLog log)
     /// <summary>
     /// Function to retrieve the version from the database file.
     /// </summary>
-    /// <param name="metaDataFile">The path to the metadata file.</param>
+    /// <param name="json">The JSON document to parse.</param>
     /// <param name="location">The directory containing the metadata file.</param>
     /// <returns>The version of the project.</returns>
     /// <exception cref="GorgonException">Thrown if the project was not a valid editor project.</exception>
-    private string GetVersion(string metaDataFile, string location)
+    private string GetVersion(JsonDocument json, string location)
     {
-        using StreamReader reader = new(metaDataFile, Encoding.UTF8);
-        using JsonTextReader jsonReader = new(reader);
-        // First property must be the version #.
-        if ((!jsonReader.Read()) || (!jsonReader.Read()))
+        JsonProperty versionElement = json.RootElement.EnumerateObject().FirstOrDefault();
+
+        // If the first element is not the version, then this is not a valid project.
+        if (!string.Equals(versionElement.Name, nameof(IProjectMetadata.Version), StringComparison.Ordinal))
         {
             throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_DIRECTORY_NO_PROJECT, location));
         }
 
-        if ((jsonReader.TokenType != JsonToken.PropertyName)
-            || (!string.Equals(jsonReader.Value.ToString(), nameof(IProjectMetadata.Version), StringComparison.Ordinal)))
-        {
-            throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_DIRECTORY_NO_PROJECT, location));
-        }
+        string version = versionElement.Value.GetString();
 
-        string version = jsonReader.ReadAsString();
         return !version.StartsWith(CommonEditorConstants.EditorProjectHeader, StringComparison.Ordinal)
             ? throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_DIRECTORY_NO_PROJECT, location))
             : version;
@@ -364,20 +359,19 @@ internal class ProjectManager(FileSystemProviders providers, IGorgonLog log)
 
         _log.Print("Loading project metadata.", LoggingLevel.Verbose);
 
-        string projectVersion = GetVersion(metaDataFile, location);
-
         using (StreamReader reader = new(metaDataFile, Encoding.UTF8))
         {
-            string readJsonData = reader.ReadToEnd();
+            using JsonDocument jsonDoc = JsonDocument.Parse(reader.ReadToEnd());
+            string projectVersion = GetVersion(jsonDoc, location);
 
             switch (projectVersion)
             {
                 case CommonEditorConstants.Editor30ProjectVersion:
-                    Project30 project30 = JsonConvert.DeserializeObject<Project30>(readJsonData);
+                    Project30 project30 = jsonDoc.Deserialize<Project30>();
                     result = new Project(project30);
                     break;
                 case CommonEditorConstants.EditorCurrentProjectVersion:
-                    result = JsonConvert.DeserializeObject<Project>(readJsonData);
+                    result = jsonDoc.Deserialize<Project>();
                     break;
                 default:
                     throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_DIRECTORY_NO_PROJECT, location));
@@ -859,7 +853,7 @@ internal class ProjectManager(FileSystemProviders providers, IGorgonLog log)
         {
             // Write to a transactional file first so we don't corrupt the original.
             jsonWriter = new StreamWriter(File.Open(tempPath, FileMode.Create, FileAccess.Write, FileShare.None), Encoding.UTF8, 81920, false);
-            jsonWriter.Write(JsonConvert.SerializeObject(project));
+            jsonWriter.Write(JsonSerializer.Serialize(project));
             jsonWriter.Flush();
             jsonWriter.Close();
 

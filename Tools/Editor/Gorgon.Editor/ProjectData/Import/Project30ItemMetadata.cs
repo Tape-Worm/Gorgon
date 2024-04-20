@@ -23,7 +23,7 @@
 // Created: September 5, 2018 12:35:20 PM
 // 
 
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace Gorgon.Editor.Metadata;
 
@@ -38,7 +38,6 @@ public class Project30ItemMetadata
     /// <remarks>
     /// If this value is <b>null</b>, then the plugin hasn't been set.  If it's an empty string, then no plugin is associated with this metadata.
     /// </remarks>
-    [JsonProperty]
     public string PlugInName
     {
         get;
@@ -48,7 +47,6 @@ public class Project30ItemMetadata
     /// <summary>
     /// Property to return the custom attributes for this metadata.
     /// </summary>
-    [JsonProperty]
     public Dictionary<string, string> Attributes
     {
         get;
@@ -58,7 +56,7 @@ public class Project30ItemMetadata
     /// <summary>
     /// Property to return the list of item paths that this item depends on.
     /// </summary>
-    [JsonProperty(PropertyName = "Dependencies")]
+    [JsonPropertyName("Dependencies")]
     public Dictionary<string, string> DependsOn
     {
         get;

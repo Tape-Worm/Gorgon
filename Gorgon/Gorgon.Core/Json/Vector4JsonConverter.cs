@@ -23,7 +23,8 @@
 
 using System.Numerics;
 using Gorgon.Core;
-using Newtonsoft.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Gorgon.Json;
 
@@ -31,50 +32,29 @@ namespace Gorgon.Json;
 /// A converter used to convert a <see cref="Vector4"/> to and from a JSON value.
 /// </summary>
 public class Vector4JsonConverter
-    : JsonConverter<Vector4?>
+    : JsonConverter<Vector4>
 {
-    /// <summary>Writes the JSON representation of the object.</summary>
-    /// <param name="writer">The <see cref="JsonWriter" /> to write to.</param>
-    /// <param name="value">The value.</param>
-    /// <param name="serializer">The calling serializer.</param>
-    public override void WriteJson(JsonWriter writer, Vector4? value, JsonSerializer serializer)
-    {
-        if (value is null)
-        {
-            writer.WriteNull();
-            return;
-        }
-
+    /// <inheritdoc/>
+    public override void Write(Utf8JsonWriter writer, Vector4 value, JsonSerializerOptions options)
+    {        
         writer.WriteStartObject();
-        writer.WritePropertyName("x");
-        writer.WriteValue(value.Value.X);
-        writer.WritePropertyName("y");
-        writer.WriteValue(value.Value.Y);
-        writer.WritePropertyName("z");
-        writer.WriteValue(value.Value.Z);
-        writer.WritePropertyName("w");
-        writer.WriteValue(value.Value.W);
+        writer.WriteNumber("x", value.X);
+        writer.WriteNumber("y", value.Y);
+        writer.WriteNumber("z", value.Z);
+        writer.WriteNumber("w", value.W);
         writer.WriteEndObject();
     }
 
-    /// <summary>
-    /// Reads the JSON representation of the object.
-    /// </summary>
-    /// <param name="reader">The <see cref="JsonReader" /> to read from.</param>
-    /// <param name="objectType">Type of the object.</param>
-    /// <param name="existingValue">The existing value of object being read. If there is no existing value then <c>null</c> will be used.</param>
-    /// <param name="hasExistingValue">The existing value has a value.</param>
-    /// <param name="serializer">The calling serializer.</param>
-    /// <returns>The object value.</returns>
-    public override Vector4? ReadJson(JsonReader reader, Type objectType, Vector4? existingValue, bool hasExistingValue, JsonSerializer serializer)
+    /// <inheritdoc/>
+    public override Vector4 Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        if ((reader.TokenType == JsonToken.Null)
+        if ((reader.TokenType == JsonTokenType.Null)
             || (!reader.Read()))
         {
-            return hasExistingValue ? existingValue : null;
+            return default;
         }
 
-        if (reader.TokenType != JsonToken.PropertyName)
+        if (reader.TokenType != JsonTokenType.PropertyName)
         {
             throw new GorgonException(GorgonResult.CannotRead);
         }
@@ -86,24 +66,29 @@ public class Vector4JsonConverter
 
         do
         {
-            string propName = reader.Value?.ToString() ?? string.Empty;
+            string propName = reader.GetString() ?? string.Empty;
+
+            if (!reader.Read())
+            {
+                break;
+            }
 
             switch (propName)
             {
                 case "x":
-                    x = (float)(reader.ReadAsDouble() ?? 0);
+                    x = reader.GetSingle();
                     break;
                 case "y":
-                    y = (float)(reader.ReadAsDouble() ?? 0);
+                    y = reader.GetSingle();
                     break;
                 case "z":
-                    z = (float)(reader.ReadAsDouble() ?? 0);
+                    z = reader.GetSingle();
                     break;
                 case "w":
-                    w = (float)(reader.ReadAsDouble() ?? 0);
+                    w = reader.GetSingle();
                     break;
             }
-        } while ((reader.Read()) && (reader.TokenType == JsonToken.PropertyName));
+        } while ((reader.Read()) && (reader.TokenType == JsonTokenType.PropertyName));
 
         return new Vector4(x, y, z, w);
     }

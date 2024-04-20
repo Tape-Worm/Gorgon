@@ -25,7 +25,7 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Gorgon.Properties;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace Gorgon.Core;
 
@@ -73,13 +73,13 @@ public readonly struct GorgonRange<T>
     /// <summary>
     /// Property to return the range between the two values.
     /// </summary>
-    [JsonIgnore, System.Text.Json.Serialization.JsonIgnore]
+    [JsonIgnore]
     public readonly T Range => Maximum - Minimum;
 
     /// <summary>
     /// Property to return whether the range is empty or not.
     /// </summary>
-    [JsonIgnore, System.Text.Json.Serialization.JsonIgnore]
+    [JsonIgnore]
     public bool IsEmpty => Maximum.Equals(default) && Minimum.Equals(default);
 
     /// <summary>
@@ -393,7 +393,7 @@ public readonly struct GorgonRange<T>
     /// </summary>
     /// <param name="min">The minimum value.</param>
     /// <param name="max">The maximum value.</param>
-    [JsonConstructor, System.Text.Json.Serialization.JsonConstructor]
+    [JsonConstructor]
     public GorgonRange(T min, T max)
     {
         if (min < max)

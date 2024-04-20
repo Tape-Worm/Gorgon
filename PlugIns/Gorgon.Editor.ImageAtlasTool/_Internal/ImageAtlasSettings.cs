@@ -24,7 +24,6 @@
 // 
 
 using Gorgon.Graphics;
-using Newtonsoft.Json;
 
 namespace Gorgon.Editor.ImageAtlasTool;
 
@@ -36,7 +35,6 @@ internal class TextureAtlasSettings
     /// <summary>
     /// Property to set or return the last directory path used to output sprites into.
     /// </summary>
-    [JsonProperty]
     public string LastOutputDir
     {
         get;
@@ -46,7 +44,6 @@ internal class TextureAtlasSettings
     /// <summary>
     /// Property to set or return whether the window is in a maximized state or not.
     /// </summary>
-    [JsonProperty]
     public bool IsMaximized
     {
         get;
@@ -56,7 +53,6 @@ internal class TextureAtlasSettings
     /// <summary>
     /// Property to set or return the maximum texture size.
     /// </summary>
-    [JsonProperty]
     public GorgonPoint MaxTextureSize
     {
         get;
@@ -66,7 +62,6 @@ internal class TextureAtlasSettings
     /// <summary>
     /// Property to set or return the maximum array count.
     /// </summary>
-    [JsonProperty]
     public int MaxArrayCount
     {
         get;
@@ -76,7 +71,6 @@ internal class TextureAtlasSettings
     /// <summary>
     /// Property to set or return the amount of padding around each sprite.
     /// </summary>
-    [JsonProperty]
     public int Padding
     {
         get;
@@ -86,7 +80,6 @@ internal class TextureAtlasSettings
     /// <summary>
     /// Property to set or return whether to generate sprites when generating the atlas.
     /// </summary>
-    [JsonProperty]
     public bool GenerateSprites
     {
         get;

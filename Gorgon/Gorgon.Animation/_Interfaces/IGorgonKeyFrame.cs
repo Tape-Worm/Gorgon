@@ -24,7 +24,7 @@
 // 
 
 using Gorgon.Core;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace Gorgon.Animation;
 

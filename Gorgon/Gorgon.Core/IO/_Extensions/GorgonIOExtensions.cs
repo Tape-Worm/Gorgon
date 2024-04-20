@@ -27,6 +27,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Gorgon.Core;
 using Gorgon.Math;
+using Gorgon.Memory;
 using Gorgon.Native;
 using Gorgon.Properties;
 
@@ -925,7 +926,7 @@ public static class GorgonIOExtensions
 
         // Find the number of bytes required for 4096 characters.
         int maxByteCount = encoding.GetMaxByteCount(4096);
-        byte[] buffer = ArrayPool<byte>.Shared.Rent(maxByteCount);
+        byte[] buffer = GorgonArrayPools<byte>.GetBestPool(maxByteCount).Rent(maxByteCount);
         char[] charBuffer = ArrayPool<char>.Shared.Rent(4096);
 
         try

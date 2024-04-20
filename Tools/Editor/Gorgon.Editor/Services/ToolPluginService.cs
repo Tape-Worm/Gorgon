@@ -31,7 +31,8 @@ using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Properties;
 using Gorgon.IO;
 using Gorgon.PlugIns;
-using Newtonsoft.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Gorgon.Editor.Services;
 
@@ -276,7 +277,18 @@ internal class ToolPlugInService(string settingsDirectory, IHostContentServices 
 
         using Stream stream = settingsFile.OpenRead();
         using StreamReader reader = new(stream, Encoding.UTF8);
-        return JsonConvert.DeserializeObject<T>(reader.ReadToEnd(), converters);
+
+        JsonSerializerOptions options = new();
+
+        if (converters is not null)
+        {
+            foreach (JsonConverter converter in converters)
+            {
+                options.Converters.Add(converter);
+            }
+        }
+
+        return JsonSerializer.Deserialize<T>(reader.ReadToEnd(), options);
     }
 
     /// <summary>Function to write out the settings for a content plug in as a JSON file.</summary>
@@ -308,7 +320,18 @@ internal class ToolPlugInService(string settingsDirectory, IHostContentServices 
         FileInfo settingsFile = GetContentPlugInSettingsPath(name);
         using Stream stream = settingsFile.Open(FileMode.Create, FileAccess.Write, FileShare.None);
         using StreamWriter writer = new(stream, Encoding.UTF8, 80000, false);
-        writer.Write(JsonConvert.SerializeObject(contentSettings, converters));
+
+        JsonSerializerOptions options = new();
+
+        if (converters is not null)
+        {
+            foreach (JsonConverter converter in converters)
+            {
+                options.Converters.Add(converter);
+            }
+        }
+
+        writer.Write(JsonSerializer.Serialize(contentSettings, options));
     }
 
     /// <summary>

@@ -25,8 +25,8 @@
 
 using Gorgon.IO;
 using Gorgon.Json;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace Gorgon.Renderers;
 
@@ -59,25 +59,32 @@ public static class GorgonSpriteExtensions
             throw new ArgumentNullException(nameof(sprite));
         }
 
-        JsonSerializer serializer = new()
-        {
-            CheckAdditionalContent = false,
-            Formatting = prettyFormat ? Formatting.Indented : Formatting.None
+        JsonSerializerOptions options = new()
+        {            
+            Converters =
+            {
+                new Vector2JsonConverter(),
+                new Vector3JsonConverter(),
+                new GorgonColorJsonConverter(),
+                new GorgonRectangleFJsonConverter(),
+                new GorgonRangeFloatJsonConverter(),
+                new JsonSamplerConverter(null),
+                new JsonTexture2DConverter(null, null)
+            },
+            WriteIndented = prettyFormat
         };
 
-        serializer.Converters.Add(new Vector2JsonConverter());
-        serializer.Converters.Add(new Vector3JsonConverter());
-        serializer.Converters.Add(new GorgonColorJsonConverter());
-        serializer.Converters.Add(new GorgonRectangleFJsonConverter());
-        serializer.Converters.Add(new JsonSamplerConverter(null));
-        serializer.Converters.Add(new JsonTexture2DConverter(null, null));
+        JsonObject? node = JsonSerializer.SerializeToNode(sprite, options).AsObject();
 
-        JObject jsonObj = JObject.FromObject(sprite, serializer);
-        JToken firstProp = jsonObj.First;
-        firstProp.AddBeforeSelf(new JProperty(JsonHeaderProp, GorgonSpriteCodecCommon.CurrentFileHeader));
-        firstProp.AddBeforeSelf(new JProperty(JsonVersionProp, GorgonSpriteCodecCommon.CurrentVersion.ToString(2)));
+        if (node is null)
+        {
+            return string.Empty;
+        }
 
-        return jsonObj.ToString(prettyFormat ? Formatting.Indented : Formatting.None);
+        node[JsonHeaderProp] = GorgonSpriteCodecCommon.CurrentFileHeader;
+        node[JsonVersionProp] = GorgonSpriteCodecCommon.CurrentVersion.ToString(2);
+
+        return node.ToJsonString(options);
     }
 
     /// <summary>
@@ -95,24 +102,32 @@ public static class GorgonSpriteExtensions
             throw new ArgumentNullException(nameof(sprite));
         }
 
-        JsonSerializer serializer = new()
+        JsonSerializerOptions options = new()
         {
-            CheckAdditionalContent = false,
-            Formatting = prettyFormat ? Formatting.Indented : Formatting.None
+            Converters =
+            {
+                new Vector2JsonConverter(),
+                new Vector3JsonConverter(),
+                new GorgonColorJsonConverter(),
+                new GorgonRectangleFJsonConverter(),
+                new GorgonRangeFloatJsonConverter(),
+                new JsonSamplerConverter(null),
+                new JsonTexture2DConverter(null, null),
+                new GorgonPolySpriteVertexJsonConverter()
+            },
+            WriteIndented = prettyFormat
         };
 
-        serializer.Converters.Add(new Vector2JsonConverter());
-        serializer.Converters.Add(new Vector3JsonConverter());
-        serializer.Converters.Add(new GorgonColorJsonConverter());
-        serializer.Converters.Add(new GorgonRectangleFJsonConverter());
-        serializer.Converters.Add(new JsonSamplerConverter(null));
-        serializer.Converters.Add(new JsonTexture2DConverter(null, null));
+        JsonObject? node = JsonSerializer.SerializeToNode(sprite, options).AsObject();
 
-        JObject jsonObj = JObject.FromObject(sprite, serializer);
-        JToken firstProp = jsonObj.First;
-        firstProp.AddBeforeSelf(new JProperty(JsonHeaderProp, GorgonPolySpriteCodecCommon.CurrentFileHeader));
-        firstProp.AddBeforeSelf(new JProperty(JsonVersionProp, GorgonPolySpriteCodecCommon.CurrentVersion.ToString(2)));
+        if (node is null)
+        {
+            return string.Empty;
+        }
 
-        return jsonObj.ToString(prettyFormat ? Formatting.Indented : Formatting.None);
+        node[JsonHeaderProp] = GorgonPolySpriteCodecCommon.CurrentFileHeader;
+        node[JsonVersionProp] = GorgonPolySpriteCodecCommon.CurrentVersion.ToString(2);
+
+        return node.ToJsonString(options);
     }
 }

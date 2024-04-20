@@ -24,7 +24,6 @@
 // 
 
 using Gorgon.Graphics;
-using Newtonsoft.Json;
 
 namespace Gorgon.Editor.SpriteEditor;
 
@@ -36,7 +35,6 @@ internal class SpriteImportSettings
     /// <summary>
     /// Property to return the list of additional sprite codec plug ins to load.
     /// </summary>
-    [JsonProperty]
     public Dictionary<string, string> CodecPlugInPaths
     {
         get;
@@ -46,7 +44,6 @@ internal class SpriteImportSettings
     /// <summary>
     /// Property to set or return the last codec plug in path.
     /// </summary>
-    [JsonProperty]
     public string LastCodecPlugInPath
     {
         get;
@@ -62,7 +59,6 @@ internal class SpriteEditorSettings
     /// <summary>
     /// Property to set or return the position of the manual rectangle editor window.
     /// </summary>
-    [JsonProperty]
     public GorgonRectangle? ManualRectangleEditorBounds
     {
         get;
@@ -72,7 +68,6 @@ internal class SpriteEditorSettings
     /// <summary>
     /// Property to set or return the position of the manual vertex editor window.
     /// </summary>
-    [JsonProperty]
     public GorgonRectangle? ManualVertexEditorBounds
     {
         get;
@@ -82,7 +77,6 @@ internal class SpriteEditorSettings
     /// <summary>
     /// Property to set or return whether to show a warning dialog for large images.
     /// </summary>
-    [JsonProperty]
     public bool ShowImageSizeWarning
     {
         get;
@@ -92,7 +86,6 @@ internal class SpriteEditorSettings
     /// <summary>
     /// Property to set or return the type of masking to perform when picking and clipping.
     /// </summary>
-    [JsonProperty]
     public ClipMask ClipMaskType
     {
         get;
@@ -102,7 +95,6 @@ internal class SpriteEditorSettings
     /// <summary>
     /// Property to set or return the sprite picker mask color.
     /// </summary>
-    [JsonProperty]
     public int ClipMaskValue
     {
         get;

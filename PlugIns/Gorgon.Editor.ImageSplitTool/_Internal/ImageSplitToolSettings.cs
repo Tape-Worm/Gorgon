@@ -23,8 +23,6 @@
 // Created: April 25, 2019 9:37:40 AM
 // 
 
-using Newtonsoft.Json;
-
 namespace Gorgon.Editor.ImageSplitTool;
 
 /// <summary>
@@ -35,7 +33,6 @@ internal class ImageSplitToolSettings
     /// <summary>
     /// Property to set or return the last directory path used to output images and sprites into.
     /// </summary>
-    [JsonProperty]
     public string LastOutputDir
     {
         get;
@@ -45,7 +42,6 @@ internal class ImageSplitToolSettings
     /// <summary>
     /// Property to set or return whether the window is in a maximized state or not.
     /// </summary>
-    [JsonProperty]
     public bool IsMaximized
     {
         get;

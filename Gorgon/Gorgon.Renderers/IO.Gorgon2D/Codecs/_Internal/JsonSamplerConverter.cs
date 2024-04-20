@@ -1,5 +1,4 @@
-﻿
-// 
+﻿// 
 // Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
@@ -26,7 +25,8 @@
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
-using Newtonsoft.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Gorgon.IO;
 
@@ -57,54 +57,44 @@ internal class JsonSamplerConverter(GorgonGraphics graphics)
                                                       "wrapW"
                                                   };
 
-    /// <summary>Writes the JSON representation of the object.</summary>
-    /// <param name="writer">The <see cref="JsonWriter" /> to write to.</param>
-    /// <param name="value">The value.</param>
-    /// <param name="serializer">The calling serializer.</param>
-    public override void WriteJson(JsonWriter writer, GorgonSamplerState value, JsonSerializer serializer)
+    /// <inheritdoc/>
+    public override void Write(Utf8JsonWriter writer, GorgonSamplerState value, JsonSerializerOptions options)
     {
-        if (value is null)
-        {
-            writer.WriteNull();
-            return;
-        }
-
         writer.WriteStartObject();
 
         foreach (string propName in _propNames)
         {
-            writer.WritePropertyName(propName);
             switch (propName)
             {
                 case "borderColor":
-                    writer.WriteValue(GorgonColor.ToARGB(value.BorderColor));
+                    writer.WriteNumber(propName, GorgonColor.ToARGB(value.BorderColor));
                     break;
                 case "compareFunc":
-                    writer.WriteValue(value.ComparisonFunction);
+                    writer.WriteNumber(propName, (int)value.ComparisonFunction);
                     break;
                 case "filter":
-                    writer.WriteValue(value.Filter);
+                    writer.WriteNumber(propName, (int)value.Filter);
                     break;
                 case "maxAnisotropy":
-                    writer.WriteValue(value.MaxAnisotropy);
+                    writer.WriteNumber(propName, value.MaxAnisotropy);
                     break;
                 case "maxLod":
-                    writer.WriteValue(value.MaximumLevelOfDetail);
+                    writer.WriteNumber(propName, value.MaximumLevelOfDetail);
                     break;
                 case "minLod":
-                    writer.WriteValue(value.MinimumLevelOfDetail);
+                    writer.WriteNumber(propName, value.MinimumLevelOfDetail);
                     break;
                 case "mipLodBias":
-                    writer.WriteValue(value.MipLevelOfDetailBias);
+                    writer.WriteNumber(propName, value.MipLevelOfDetailBias);
                     break;
                 case "wrapU":
-                    writer.WriteValue(value.WrapU);
+                    writer.WriteNumber(propName, (int)value.WrapU);
                     break;
                 case "wrapV":
-                    writer.WriteValue(value.WrapV);
+                    writer.WriteNumber(propName, (int)value.WrapV);
                     break;
                 case "wrapW":
-                    writer.WriteValue(value.WrapW);
+                    writer.WriteNumber(propName, (int)value.WrapW);
                     break;
                 default:
                     throw new GorgonException(GorgonResult.CannotWrite, $@"Unknown property name {propName}.");
@@ -114,16 +104,10 @@ internal class JsonSamplerConverter(GorgonGraphics graphics)
         writer.WriteEndObject();
     }
 
-    /// <summary>Reads the JSON representation of the object.</summary>
-    /// <param name="reader">The <see cref="JsonReader" /> to read from.</param>
-    /// <param name="objectType">Type of the object.</param>
-    /// <param name="existingValue">The existing value of object being read. If there is no existing value then <c>null</c> will be used.</param>
-    /// <param name="hasExistingValue">The existing value has a value.</param>
-    /// <param name="serializer">The calling serializer.</param>
-    /// <returns>The object value.</returns>
-    public override GorgonSamplerState ReadJson(JsonReader reader, Type objectType, GorgonSamplerState existingValue, bool hasExistingValue, JsonSerializer serializer)
+    /// <inheritdoc/>
+    public override GorgonSamplerState Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        if ((reader.TokenType != JsonToken.StartObject)
+        if ((reader.TokenType != JsonTokenType.StartObject)
             || (_graphics is null))
         {
             return null;
@@ -142,44 +126,51 @@ internal class JsonSamplerConverter(GorgonGraphics graphics)
 
         GorgonSamplerStateBuilder builder = new(_graphics);
 
-        while ((reader.Read()) && (reader.TokenType != JsonToken.EndObject))
+        while ((reader.Read()) && (reader.TokenType != JsonTokenType.EndObject))
         {
-            if (reader.TokenType != JsonToken.PropertyName)
+            if (reader.TokenType != JsonTokenType.PropertyName)
             {
                 continue;
             }
 
-            switch (reader.Value.ToString())
+            string propName = reader.GetString();
+
+            if (!reader.Read())
+            {
+                break;
+            }
+
+            switch (propName)
             {
                 case "borderColor":
-                    borderColor = GorgonColor.FromARGB(reader.ReadAsInt32() ?? 0);
+                    borderColor = GorgonColor.FromARGB(reader.GetInt32());
                     break;
                 case "compareFunc":
-                    compareFunction = (Comparison?)reader.ReadAsInt32();
+                    compareFunction = (Comparison)reader.GetInt32();
                     break;
                 case "filter":
-                    filter = (SampleFilter?)reader.ReadAsInt32();
+                    filter = (SampleFilter)reader.GetInt32();
                     break;
                 case "maxAnisotropy":
-                    maxAnisotropy = reader.ReadAsInt32();
+                    maxAnisotropy = reader.GetInt32();
                     break;
                 case "maxLod":
-                    maxLod = (float?)reader.ReadAsDouble();
+                    maxLod = reader.GetSingle();
                     break;
                 case "minLod":
-                    minLod = (float?)reader.ReadAsDouble();
+                    minLod = reader.GetSingle();
                     break;
                 case "mipLodBias":
-                    mipLodBias = (float?)reader.ReadAsDouble();
+                    mipLodBias = reader.GetSingle();
                     break;
                 case "wrapU":
-                    wrapU = (TextureWrap?)reader.ReadAsInt32();
+                    wrapU = (TextureWrap)reader.GetInt32();
                     break;
                 case "wrapV":
-                    wrapV = (TextureWrap?)reader.ReadAsInt32();
+                    wrapV = (TextureWrap)reader.GetInt32();
                     break;
                 case "wrapW":
-                    wrapW = (TextureWrap?)reader.ReadAsInt32();
+                    wrapW = (TextureWrap)reader.GetInt32();
                     break;
             }
         }

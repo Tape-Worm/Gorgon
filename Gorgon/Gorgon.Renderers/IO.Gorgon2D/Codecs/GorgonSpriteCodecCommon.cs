@@ -344,6 +344,11 @@ public abstract class GorgonSpriteCodecCommon
     /// <exception cref="GorgonException">Thrown if the <paramref name="stream"/> is write only.</exception>
     /// <exception cref="EndOfStreamException">Thrown if the current <paramref name="stream"/> position, plus the size of the data exceeds the length of the stream.</exception>
     /// <exception cref="NotSupportedException">This method is not supported by this codec.</exception>
+    /// <remarks>
+    /// <para>
+    /// This method will restore the <paramref name="stream"/> position when finished, so further calls to stream functions will work as though the stream position has not advanced.
+    /// </para>
+    /// </remarks>
     public bool IsReadable(Stream stream)
     {
         if (!CanDecode)

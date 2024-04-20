@@ -25,7 +25,7 @@
 
 using Gorgon.Core;
 using Gorgon.Graphics;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace Gorgon.Animation;
 
@@ -105,7 +105,7 @@ public interface IGorgonAnimationTrack<out T>
     /// <summary>
     /// Property to return the key frames for the track.
     /// </summary>
-    [JsonProperty("keyframes")]
+    [JsonPropertyName("keyframes")]
     IReadOnlyList<T> KeyFrames
     {
         get;
@@ -114,7 +114,7 @@ public interface IGorgonAnimationTrack<out T>
     /// <summary>
     /// Property to set or return whether this track is enabled during animation.
     /// </summary>
-    [JsonProperty("isEnabled")]
+    [JsonPropertyName("isEnabled")]
     bool IsEnabled
     {
         get;

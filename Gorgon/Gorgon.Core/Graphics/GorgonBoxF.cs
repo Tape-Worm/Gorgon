@@ -29,7 +29,7 @@ using Gorgon.Core;
 using Gorgon.Json;
 using Gorgon.Math;
 using Gorgon.Properties;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace Gorgon.Graphics;
 

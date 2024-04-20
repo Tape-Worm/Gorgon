@@ -21,8 +21,10 @@
 // Created: March 19, 2024 11:12:39 AM
 //
 
+using Gorgon.Core;
 using Gorgon.Graphics;
-using Newtonsoft.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Gorgon.Json;
 
@@ -30,29 +32,19 @@ namespace Gorgon.Json;
 /// A converter used to convert a nullable <see cref="GorgonColor"/> to and from a JSON value.
 /// </summary>
 public class GorgonColorJsonConverter
-    : JsonConverter<GorgonColor?>
+    : JsonConverter<GorgonColor>
 {
-    /// <summary>Writes the JSON representation of the object.</summary>
-    /// <param name="writer">The <see cref="JsonWriter" /> to write to.</param>
-    /// <param name="value">The value.</param>
-    /// <param name="serializer">The calling serializer.</param>
-    public override void WriteJson(JsonWriter writer, GorgonColor? value, JsonSerializer serializer) => serializer.Serialize(writer, value is null ? null : GorgonColor.ToARGB(value.Value));
+    /// <inheritdoc/>
+    public override void Write(Utf8JsonWriter writer, GorgonColor value, JsonSerializerOptions options) => writer.WriteNumberValue(GorgonColor.ToARGB(value));
 
-    /// <summary>Reads the JSON representation of the object.</summary>
-    /// <param name="reader">The <see cref="JsonReader" /> to read from.</param>
-    /// <param name="objectType">Type of the object.</param>
-    /// <param name="existingValue">The existing value of object being read. If there is no existing value then <c>null</c> will be used.</param>
-    /// <param name="hasExistingValue">The existing value has a value.</param>
-    /// <param name="serializer">The calling serializer.</param>
-    /// <returns>The object value.</returns>
-    public override GorgonColor? ReadJson(JsonReader reader, Type objectType, GorgonColor? existingValue, bool hasExistingValue, JsonSerializer serializer)
+    /// <inheritdoc/>
+    public override GorgonColor Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        if (reader.Value is null)
+        if (reader.TokenType != JsonTokenType.Number)
         {
-            return hasExistingValue ? existingValue : null;
+            throw new GorgonException(GorgonResult.CannotRead);
         }
 
-        int argb = serializer.Deserialize<int>(reader);
-        return GorgonColor.FromARGB(argb);
+        return GorgonColor.FromARGB(reader.GetInt32());
     }
 }

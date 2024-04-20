@@ -38,7 +38,7 @@ using Gorgon.IO;
 using Gorgon.Math;
 using Gorgon.PlugIns;
 using Gorgon.UI;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Gorgon.Editor;
 
@@ -210,16 +210,7 @@ internal class Boot
             {
                 Program.Log.Print($"Loading application settings from '{settingsFile.FullName}'", LoggingLevel.Intermediate);
                 reader = new StreamReader(settingsFile.FullName, Encoding.UTF8, true);
-                JsonSerializerSettings settings = new()
-                {
-                    Error = (o, e) =>
-                    {
-                        Program.Log.PrintError("Could not read the settings data.", LoggingLevel.Simple);
-                        Program.Log.LogException(e.ErrorContext.Error);
-                        e.ErrorContext.Handled = true;
-                    }
-                };
-                result = JsonConvert.DeserializeObject<EditorSettings>(reader.ReadToEnd(), settings);
+                result = JsonSerializer.Deserialize<EditorSettings>(reader.ReadToEnd());
                 Program.Log.Print("Application settings loaded.", LoggingLevel.Intermediate);
             }
             catch (JsonException jEx)

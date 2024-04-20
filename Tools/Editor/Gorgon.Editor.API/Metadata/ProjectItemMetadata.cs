@@ -24,14 +24,13 @@
 // 
 
 using Gorgon.Editor.PlugIns;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace Gorgon.Editor.Metadata;
 
 /// <summary>
 /// Metadata for a project item that is included in the project
 /// </summary>
-[JsonObject(MemberSerialization = MemberSerialization.OptIn)]
 public class ProjectItemMetadata
 {
 
@@ -41,6 +40,7 @@ public class ProjectItemMetadata
     /// <summary>
     /// Property to return the ID for the item.
     /// </summary>        
+    [JsonIgnore]
     public string ID
     {
         get;
@@ -53,7 +53,6 @@ public class ProjectItemMetadata
     /// <remarks>
     /// If this value is <b>null</b>, then the plugin hasn't been set.  If it's an empty string, then no plugin is associated with this metadata.
     /// </remarks>
-    [JsonProperty]
     public string PlugInName
     {
         get;
@@ -63,7 +62,6 @@ public class ProjectItemMetadata
     /// <summary>
     /// Property to return the custom attributes for this metadata.
     /// </summary>
-    [JsonProperty]
     public Dictionary<string, string> Attributes
     {
         get;
@@ -73,7 +71,7 @@ public class ProjectItemMetadata
     /// <summary>
     /// Property to return the list of item paths that this item depends on.
     /// </summary>
-    [JsonProperty(PropertyName = "Dependencies")]
+    [JsonPropertyName("Dependencies")]
     public Dictionary<string, List<string>> DependsOn
     {
         get;
@@ -83,6 +81,7 @@ public class ProjectItemMetadata
     /// <summary>
     /// Property to set or return the name of the thumbnail associated with the project item.
     /// </summary>
+    [JsonIgnore]
     public string Thumbnail
     {
         get;
@@ -97,6 +96,7 @@ public class ProjectItemMetadata
     /// Setting this value will set the value for <see cref="PlugInName"/>.
     /// </para>
     /// </remarks>        
+    [JsonIgnore]
     public IContentPlugInMetadata ContentMetadata
     {
         get => _contentMetadata;
@@ -156,6 +156,6 @@ public class ProjectItemMetadata
     /// <summary>
     /// Initializes a new instance of the <see cref="ProjectItemMetadata"/> class.
     /// </summary>
+    [JsonConstructor]
     public ProjectItemMetadata() => ID = Guid.NewGuid().ToString("N");
-
 }

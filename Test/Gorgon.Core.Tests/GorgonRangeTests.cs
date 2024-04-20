@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Text.Json;
+using Gorgon.Json;
 
 namespace Gorgon.Core.Tests;
 
@@ -266,5 +268,106 @@ public class GorgonRangeTests
         Assert.AreEqual(10, range.Clamp(5));
         Assert.AreEqual(45, range.Clamp(80));
         Assert.AreEqual(20, range.Clamp(20));
+    }
+
+    [TestMethod]
+    public void Serialize()
+    {
+        JsonSerializerOptions options = new()
+        {
+            Converters =
+            {
+                new GorgonRangeFloatJsonConverter(),
+                new GorgonRangeDoubleJsonConverter(),
+                new GorgonRangeDecimalJsonConverter(),
+                new GorgonRangeByteJsonConverter(),
+                new GorgonRangeInt16JsonConverter(),
+                new GorgonRangeUInt16JsonConverter(),
+                new GorgonRangeInt32JsonConverter(),
+                new GorgonRangeUInt32JsonConverter(),
+                new GorgonRangeInt64JsonConverter(),
+                new GorgonRangeUInt64JsonConverter()
+            }
+        };
+
+        GorgonRange<float> rfloatExpected = new(10, 50);
+
+        string json = JsonSerializer.Serialize(rfloatExpected, options);
+
+        GorgonRange<float> rfloatActual = JsonSerializer.Deserialize<GorgonRange<float>>(json, options);
+
+        Assert.AreEqual(rfloatExpected, rfloatActual);
+
+        GorgonRange<double> rdoubleExpected = new(10, 50);
+
+        json = JsonSerializer.Serialize(rdoubleExpected, options);
+
+        GorgonRange<double> rdoubleActual = JsonSerializer.Deserialize<GorgonRange<double>>(json, options);
+
+        Assert.AreEqual(rdoubleExpected, rdoubleActual);
+
+        GorgonRange<decimal> rdecimalExpected = new(10, 50);
+
+        json = JsonSerializer.Serialize(rdecimalExpected, options);
+
+        GorgonRange<decimal> rdecimalActual = JsonSerializer.Deserialize<GorgonRange<decimal>>(json, options);
+
+        Assert.AreEqual(rdecimalExpected, rdecimalActual);
+
+        GorgonRange<byte> rbyteExpected = new(10, 50);
+
+        json = JsonSerializer.Serialize(rbyteExpected, options);
+
+        GorgonRange<byte> rbyteActual = JsonSerializer.Deserialize<GorgonRange<byte>>(json, options);
+
+        Assert.AreEqual(rbyteExpected, rbyteActual);
+
+        GorgonRange<short> rshortExpected = new(10, 50);
+
+        json = JsonSerializer.Serialize(rshortExpected, options);
+
+        GorgonRange<short> rshortActual = JsonSerializer.Deserialize<GorgonRange<short>>(json, options);
+
+        Assert.AreEqual(rshortExpected, rshortActual);
+
+        GorgonRange<ushort> rushortExpected = new(10, 50);
+
+        json = JsonSerializer.Serialize(rushortExpected, options);
+
+        GorgonRange<ushort> rushortActual = JsonSerializer.Deserialize<GorgonRange<ushort>>(json, options);
+
+        Assert.AreEqual(rushortExpected, rushortActual);
+
+        GorgonRange<int> rintExpected = new(10, 50);
+
+        json = JsonSerializer.Serialize(rintExpected, options);
+
+        GorgonRange<int> rintActual = JsonSerializer.Deserialize<GorgonRange<int>>(json, options);
+
+        Assert.AreEqual(rintExpected, rintActual);
+
+        GorgonRange<uint> ruintExpected = new(10, 50);
+
+        json = JsonSerializer.Serialize(ruintExpected, options);
+
+        GorgonRange<uint> ruintActual = JsonSerializer.Deserialize<GorgonRange<uint>>(json, options);
+
+        Assert.AreEqual(ruintExpected, ruintActual);
+
+        GorgonRange<long> rlongExpected = new(10, 50);
+
+        json = JsonSerializer.Serialize(rlongExpected, options);
+
+        GorgonRange<long> rlongActual = JsonSerializer.Deserialize<GorgonRange<long>>(json, options);
+
+        Assert.AreEqual(rlongExpected, rlongActual);
+
+        GorgonRange<ulong> rulongExpected = new(10, 50);
+
+        json = JsonSerializer.Serialize(rulongExpected, options);
+
+        GorgonRange<ulong> rulongActual = JsonSerializer.Deserialize<GorgonRange<ulong>>(json, options);
+
+        Assert.AreEqual(rulongExpected, rulongActual);
     }
 }

@@ -26,7 +26,8 @@
 using Gorgon.Diagnostics;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
-using Newtonsoft.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Gorgon.IO;
 
@@ -61,56 +62,46 @@ internal class JsonTexture2DConverter(GorgonGraphics graphics, GorgonTexture2DVi
                                                       "format"
                                                   };
 
-    /// <summary>Writes the JSON representation of the object.</summary>
-    /// <param name="writer">The <see cref="JsonWriter" /> to write to.</param>
-    /// <param name="value">The value.</param>
-    /// <param name="serializer">The calling serializer.</param>
-    public override void WriteJson(JsonWriter writer, GorgonTexture2DView value, JsonSerializer serializer)
+    /// <inheritdoc/>
+    public override void Write(Utf8JsonWriter writer, GorgonTexture2DView value, JsonSerializerOptions options)
     {
-        if (value is null)
-        {
-            writer.WriteNull();
-            return;
-        }
-
         writer.WriteStartObject();
         foreach (string propName in _propNames)
         {
-            writer.WritePropertyName(propName);
             switch (propName)
             {
                 case "name":
-                    writer.WriteValue(value.Texture.Name);
+                    writer.WriteString(propName, value.Texture.Name);
                     break;
                 case "texWidth":
-                    writer.WriteValue(value.Texture.Width);
+                    writer.WriteNumber(propName, value.Texture.Width);
                     break;
                 case "texHeight":
-                    writer.WriteValue(value.Texture.Height);
+                    writer.WriteNumber(propName, value.Texture.Height);
                     break;
                 case "texFormat":
-                    writer.WriteValue(value.Texture.Format);
+                    writer.WriteNumber(propName, (int)value.Texture.Format);
                     break;
                 case "texArrayCount":
-                    writer.WriteValue(value.Texture.ArrayCount);
+                    writer.WriteNumber(propName, value.Texture.ArrayCount);
                     break;
                 case "texMipCount":
-                    writer.WriteValue(value.Texture.MipLevels);
+                    writer.WriteNumber(propName, value.Texture.MipLevels);
                     break;
                 case "arrayStart":
-                    writer.WriteValue(value.ArrayIndex);
+                    writer.WriteNumber(propName, value.ArrayIndex);
                     break;
                 case "arrayCount":
-                    writer.WriteValue(value.ArrayCount);
+                    writer.WriteNumber(propName, value.ArrayCount);
                     break;
                 case "mipStart":
-                    writer.WriteValue(value.MipSlice);
+                    writer.WriteNumber(propName, value.MipSlice);
                     break;
                 case "mipCount":
-                    writer.WriteValue(value.MipCount);
+                    writer.WriteNumber(propName, value.MipCount);
                     break;
                 case "format":
-                    writer.WriteValue(value.Format);
+                    writer.WriteNumber(propName, (int)value.Format);
                     break;
             }
         }
@@ -120,14 +111,14 @@ internal class JsonTexture2DConverter(GorgonGraphics graphics, GorgonTexture2DVi
     /// <summary>
     /// Function to read a texture from the JSON data.
     /// </summary>
-    /// <param name="reader">The JSON reader to use.</param>
-    /// <param name="overrides">[Optional] A list of overrides for the texture.</param>
-    /// <returns>The texture and texture name.</returns>
-    public (GorgonTexture2DView Texture, string TextureName) ReadTexture(JsonReader reader, IEnumerable<GorgonTexture2DView> overrides = null)
+    /// <param name="reader">The reader used to parse the JSON data.</param>
+    /// <param name="overrides">[Optional] A list of textures that can be used as a substitute for the texture in the JSON data.</param>
+    /// <returns>A tuple containing the texture, and the name of the texture.</returns>
+    public (GorgonTexture2DView Texture, string TextureName) ReadTexture(ref Utf8JsonReader reader, IEnumerable<GorgonTexture2DView> overrides = null)
     {
         string textureName = string.Empty;
 
-        if ((reader.TokenType != JsonToken.StartObject)
+        if ((reader.TokenType != JsonTokenType.StartObject)
             || (_graphics is null))
         {
             return (null, null);
@@ -144,47 +135,54 @@ internal class JsonTexture2DConverter(GorgonGraphics graphics, GorgonTexture2DVi
         int? viewArrayCount = null;
         BufferFormat? viewFormat = null;
 
-        while ((reader.Read()) && (reader.TokenType != JsonToken.EndObject))
+        while ((reader.Read()) && (reader.TokenType != JsonTokenType.EndObject))
         {
-            if (reader.TokenType != JsonToken.PropertyName)
+            if (reader.TokenType != JsonTokenType.PropertyName)
             {
                 continue;
             }
 
-            switch (reader.Value.ToString())
+            string propName = reader.GetString();
+
+            if (!reader.Read())
+            {
+                break;
+            }
+
+            switch (propName)
             {
                 case "name":
-                    textureName = reader.ReadAsString();
+                    textureName = reader.GetString();
                     break;
                 case "texWidth":
-                    texWidth = reader.ReadAsInt32();
+                    texWidth = reader.GetInt32();
                     break;
                 case "texHeight":
-                    texHeight = reader.ReadAsInt32();
+                    texHeight = reader.GetInt32();
                     break;
                 case "texFormat":
-                    texFormat = (BufferFormat?)reader.ReadAsInt32();
+                    texFormat = (BufferFormat)reader.GetInt32();
                     break;
                 case "texArrayCount":
-                    texArrayCount = reader.ReadAsInt32();
+                    texArrayCount = reader.GetInt32();
                     break;
                 case "texMipCount":
-                    texMipCount = reader.ReadAsInt32();
+                    texMipCount = reader.GetInt32();
                     break;
                 case "arrayStart":
-                    viewArrayStart = reader.ReadAsInt32();
+                    viewArrayStart = reader.GetInt32();
                     break;
                 case "arrayCount":
-                    viewArrayCount = reader.ReadAsInt32();
+                    viewArrayCount = reader.GetInt32();
                     break;
                 case "mipStart":
-                    viewMipStart = reader.ReadAsInt32();
+                    viewMipStart = reader.GetInt32();
                     break;
                 case "mipCount":
-                    viewMipCount = reader.ReadAsInt32();
+                    viewMipCount = reader.GetInt32();
                     break;
                 case "format":
-                    viewFormat = (BufferFormat?)reader.ReadAsInt32();
+                    viewFormat = (BufferFormat)reader.GetInt32();
                     break;
             }
         }
@@ -231,12 +229,6 @@ internal class JsonTexture2DConverter(GorgonGraphics graphics, GorgonTexture2DVi
         return (texture?.GetShaderResourceView(viewFormat.Value, viewMipStart.Value, viewMipCount.Value, viewArrayStart.Value, viewArrayCount.Value), textureName);
     }
 
-    /// <summary>Reads the JSON representation of the object.</summary>
-    /// <param name="reader">The <see cref="JsonReader" /> to read from.</param>
-    /// <param name="objectType">Type of the object.</param>
-    /// <param name="existingValue">The existing value of object being read. If there is no existing value then <c>null</c> will be used.</param>
-    /// <param name="hasExistingValue">The existing value has a value.</param>
-    /// <param name="serializer">The calling serializer.</param>
-    /// <returns>The object value.</returns>
-    public override GorgonTexture2DView ReadJson(JsonReader reader, Type objectType, GorgonTexture2DView existingValue, bool hasExistingValue, JsonSerializer serializer) => ReadTexture(reader).Texture;
+    /// <inheritdoc/>
+    public override GorgonTexture2DView Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) => ReadTexture(ref reader).Texture;
 }

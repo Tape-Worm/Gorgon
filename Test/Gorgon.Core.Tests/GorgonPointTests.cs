@@ -1,5 +1,5 @@
 ﻿using Gorgon.Graphics;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Gorgon.Core.Tests;
 
@@ -442,11 +442,11 @@ public class GorgonPointTests
         string expectedString = "{\"x\":10,\"y\":20}";
         GorgonPoint point = new(10, 20);
 
-        string actualString = JsonConvert.SerializeObject(point);
+        string actualString = JsonSerializer.Serialize(point);
 
         Assert.AreEqual(expectedString, actualString);
 
-        GorgonPoint deserializedPoint = JsonConvert.DeserializeObject<GorgonPoint>(actualString);
+        GorgonPoint deserializedPoint = JsonSerializer.Deserialize<GorgonPoint>(actualString);
 
         Assert.AreEqual(point, deserializedPoint);
     }

@@ -24,7 +24,6 @@
 // 
 
 using Gorgon.Graphics;
-using Newtonsoft.Json;
 
 namespace Gorgon.Editor.AnimationEditor;
 
@@ -36,7 +35,6 @@ internal class AnimationImportSettings
     /// <summary>
     /// Property to return the list of additional animation codec plug ins to load.
     /// </summary>
-    [JsonProperty]
     public Dictionary<string, string> CodecPlugInPaths
     {
         get;
@@ -46,7 +44,6 @@ internal class AnimationImportSettings
     /// <summary>
     /// Property to set or return the last codec plug in path.
     /// </summary>
-    [JsonProperty]
     public string LastCodecPlugInPath
     {
         get;
@@ -62,7 +59,6 @@ internal class AnimationEditorSettings
     /// <summary>
     /// Property to set or return the offset, in pixels, of the splitter on the editor view.
     /// </summary>
-    [JsonProperty]
     public int SplitOffset
     {
         get;
@@ -72,7 +68,6 @@ internal class AnimationEditorSettings
     /// <summary>
     /// Property to set or return whether the background image should be animated when no primary sprite is present.
     /// </summary>
-    [JsonProperty]
     public bool AnimateBgNoPrimary
     {
         get;
@@ -82,7 +77,6 @@ internal class AnimationEditorSettings
     /// <summary>
     /// Property to set or return whether to use onion skinning.
     /// </summary>
-    [JsonProperty]
     public bool UseOnionSkin
     {
         get;
@@ -92,7 +86,6 @@ internal class AnimationEditorSettings
     /// <summary>
     /// Property to set or return the default screen resolution for the animation.
     /// </summary>
-    [JsonProperty]
     public GorgonPoint DefaultResolution
     {
         get;
@@ -102,7 +95,6 @@ internal class AnimationEditorSettings
     /// <summary>
     /// Property to set or return whether to create a texture track in an empty animation on primary sprite assignment.
     /// </summary>
-    [JsonProperty]
     public bool AddTextureTrackForPrimarySprite
     {
         get;

@@ -31,7 +31,7 @@ using Gorgon.Editor.Metadata;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Support;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Gorgon.IO;
 
@@ -73,49 +73,39 @@ public static class IOExtensions
         int expectedVersion = Convert.ToInt32(CommonEditorConstants.EditorCurrentProjectVersion.Replace("GOREDIT", string.Empty));
         int fileVersion = int.MaxValue;
 
-        using (Stream stream = externalProjectData is null ? jsonMetaDataFile.OpenStream() : externalProjectData.Open(FileMode.Open, FileAccess.Read, FileShare.Read))
-        using (StreamReader reader = new(stream, Encoding.UTF8))
-        using (JsonTextReader jsonReader = new(reader))
+        using Stream stream = externalProjectData is null ? jsonMetaDataFile.OpenStream() : externalProjectData.Open(FileMode.Open, FileAccess.Read, FileShare.Read);
+        using StreamReader reader = new(stream, Encoding.UTF8);
+        using JsonDocument doc = JsonDocument.Parse(reader.ReadToEnd());
+
+        JsonProperty versionProp = doc.RootElement.EnumerateObject().FirstOrDefault();
+
+        if (!string.Equals(versionProp.Name, nameof(IProjectMetadata.Version), StringComparison.Ordinal))
         {
-            // First property must be the version #.
-            if ((!jsonReader.Read()) || (!jsonReader.Read()))
-            {
-                throw new GorgonException(GorgonResult.CannotRead, Resources.GOREDIT_ERR_NOT_EDITOR_PROJECT);
-            }
-
-            if ((jsonReader.TokenType != JsonToken.PropertyName)
-                || (!string.Equals(jsonReader.Value.ToString(), nameof(IProjectMetadata.Version), StringComparison.Ordinal)))
-            {
-                throw new GorgonException(GorgonResult.CannotRead, Resources.GOREDIT_ERR_NOT_EDITOR_PROJECT);
-            }
-
-            if (!int.TryParse(jsonReader.ReadAsString().Replace("GOREDIT", string.Empty), NumberStyles.Integer, CultureInfo.InvariantCulture, out fileVersion))
-            {
-                throw new GorgonException(GorgonResult.CannotRead, Resources.GOREDIT_ERR_NOT_EDITOR_PROJECT);
-            }
-
-            // Ensure we have the correct version.
-            if (expectedVersion < fileVersion)
-            {
-                throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_VERSION_MISMATCH, fileVersion, expectedVersion));
-            }
+            throw new GorgonException(GorgonResult.CannotRead, Resources.GOREDIT_ERR_NOT_EDITOR_PROJECT);
         }
 
-        using (Stream stream = externalProjectData is null ? jsonMetaDataFile.OpenStream() : externalProjectData.Open(FileMode.Open, FileAccess.Read, FileShare.Read))
-        using (StreamReader reader = new(stream, Encoding.UTF8))
-        {
-            string jsonString = reader.ReadToEnd();
+        string version = versionProp.Value.GetString();
 
-            switch (fileVersion)
-            {
-                case 30:
-                    EditorProjectMetadata30 oldProjectData = JsonConvert.DeserializeObject<EditorProjectMetadata30>(jsonString);
-                    return new EditorProjectMetadata31(oldProjectData);
-                case 31:
-                    return JsonConvert.DeserializeObject<EditorProjectMetadata31>(jsonString);
-                default:
-                    throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_VERSION_MISMATCH, fileVersion, expectedVersion));
-            }
+        if (!int.TryParse(version.Replace("GOREDIT", string.Empty), NumberStyles.Integer, CultureInfo.InvariantCulture, out fileVersion))
+        {
+            throw new GorgonException(GorgonResult.CannotRead, Resources.GOREDIT_ERR_NOT_EDITOR_PROJECT);
+        }
+
+        // Ensure we have the correct version.
+        if (expectedVersion < fileVersion)
+        {
+            throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_VERSION_MISMATCH, fileVersion, expectedVersion));
+        }
+
+        switch (fileVersion)
+        {
+            case 30:
+                EditorProjectMetadata30 oldProjectData = doc.Deserialize<EditorProjectMetadata30>();
+                return new EditorProjectMetadata31(oldProjectData);
+            case 31:
+                return doc.Deserialize<EditorProjectMetadata31>();
+            default:
+                throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_VERSION_MISMATCH, fileVersion, expectedVersion));
         }
     }
 

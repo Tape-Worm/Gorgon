@@ -29,6 +29,7 @@ using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging.Codecs;
+using Gorgon.IO;
 using Gorgon.Math;
 using Gorgon.Renderers;
 using Gorgon.UI;
@@ -169,6 +170,10 @@ static class Program
 
         _animation = animBuilder.Build(@"\m/");
         _animation.IsLooped = true;
+
+        string json = _animation.ToJson(true);
+
+        _animation = GorgonV31AnimationJsonCodec.FromJson(_renderer, json);
 
         _animController = new GorgonSpriteAnimationController();
     }

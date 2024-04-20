@@ -36,7 +36,7 @@ using Gorgon.Editor.UI;
 using Gorgon.Editor.Views;
 using Gorgon.IO;
 using Gorgon.Json;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Gorgon.Editor.ViewModels;
 
@@ -203,13 +203,20 @@ internal class Main
 #if DEBUG
         FileInfo settingsFile = new(Path.Combine(Program.ApplicationUserDirectory.FullName, $"Gorgon.Editor.Settings.DEBUG.json"));
 #else
-        var settingsFile = new FileInfo(Path.Combine(Program.ApplicationUserDirectory.FullName, $"Gorgon.Editor.Settings.json"));
+        FileInfo settingsFile = new FileInfo(Path.Combine(Program.ApplicationUserDirectory.FullName, $"Gorgon.Editor.Settings.json"));
 #endif
 
         try
         {
             writer = new StreamWriter(settingsFile.FullName, false, Encoding.UTF8);
-            writer.Write(JsonConvert.SerializeObject(Settings, new GorgonRectangleJsonConverter()));
+
+            writer.Write(JsonSerializer.Serialize(Settings, new JsonSerializerOptions
+            {
+                Converters =
+                {
+                    new GorgonRectangleJsonConverter()
+                }
+            }));
         }
         catch (Exception ex)
         {

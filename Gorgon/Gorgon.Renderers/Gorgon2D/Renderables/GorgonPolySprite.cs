@@ -32,7 +32,7 @@ using Gorgon.Math;
 using Gorgon.Native;
 using Gorgon.Renderers.Geometry;
 using Gorgon.Renderers.Properties;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace Gorgon.Renderers;
 
@@ -54,16 +54,17 @@ public class GorgonPolySprite
     /// <summary>
     /// Property to return the read/write list of vertices for the poly sprite.
     /// </summary>
-    [JsonProperty("verts")]
+    [JsonPropertyName("verts"), JsonInclude]
     internal List<GorgonPolySpriteVertex> RwVertices
     {
         get;
-    } = new List<GorgonPolySpriteVertex>(256);
+        set;
+    } = new(256);
 
     /// <summary>
     /// Property to set or return the read/write list of indices for the poly sprite.
     /// </summary>
-    [JsonProperty("indices")]
+    [JsonPropertyName("indices"), JsonInclude]
     internal int[] RwIndices
     {
         get;
@@ -658,6 +659,7 @@ public class GorgonPolySprite
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonPolySprite"/> class.
     /// </summary>
+    [JsonConstructor]
     internal GorgonPolySprite()
     {
     }

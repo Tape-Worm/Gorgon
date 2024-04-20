@@ -267,8 +267,6 @@ internal class CodecRegistry(GorgonMefPlugInCache pluginCache, Gorgon2D renderer
         // Get built-in codec list.
         Codecs.Add(new GorgonV31AnimationBinaryCodec(_renderer));
         Codecs.Add(new GorgonV31AnimationJsonCodec(_renderer));
-        Codecs.Add(new GorgonV3AnimationBinaryCodec(_renderer));
-        Codecs.Add(new GorgonV3AnimationJsonCodec(_renderer));
 
         LoadCodecPlugIns(settings);
 

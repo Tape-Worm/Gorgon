@@ -23,8 +23,6 @@
 // Created: August 5, 2020 8:30:25 PM
 // 
 
-using Newtonsoft.Json;
-
 namespace Gorgon.Examples;
 
 /// <summary>
@@ -39,7 +37,6 @@ internal class TextContentSettings
     /// <summary>
     /// Property to set or return the default font for the text.
     /// </summary>
-    [JsonProperty]
     public FontFace DefaultFont
     {
         get;

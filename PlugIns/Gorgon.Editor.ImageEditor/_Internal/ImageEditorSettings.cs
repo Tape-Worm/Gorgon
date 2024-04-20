@@ -23,8 +23,6 @@
 // Created: November 7, 2018 1:33:38 PM
 // 
 
-using Newtonsoft.Json;
-
 namespace Gorgon.Editor.ImageEditor;
 
 /// <summary>
@@ -35,7 +33,6 @@ internal class ImageEditorSettings
     /// <summary>
     /// Property to return the list of additional image codec plug ins to load.
     /// </summary>
-    [JsonProperty]
     public Dictionary<string, string> CodecPlugInPaths
     {
         get;
@@ -45,7 +42,6 @@ internal class ImageEditorSettings
     /// <summary>
     /// Property to set or return the last codec plug in path.
     /// </summary>
-    [JsonProperty]
     public string LastCodecPlugInPath
     {
         get;
@@ -55,7 +51,6 @@ internal class ImageEditorSettings
     /// <summary>
     /// Property to set or return the to the directory that was last used for importing/exporting.
     /// </summary>
-    [JsonProperty]
     public string LastImportExportPath
     {
         get;
@@ -65,7 +60,6 @@ internal class ImageEditorSettings
     /// <summary>
     /// Property to set or return the last used alpha value when setting an alpha channel.
     /// </summary>
-    [JsonProperty]
     public int AlphaValue
     {
         get;
@@ -75,7 +69,6 @@ internal class ImageEditorSettings
     /// <summary>
     /// Property to set or return the last used alpha value minimum when setting an alpha channel.
     /// </summary>
-    [JsonProperty]
     public int AlphaRangeMin
     {
         get;
@@ -85,7 +78,6 @@ internal class ImageEditorSettings
     /// <summary>
     /// Property to set or return the last used alpha value maximum when setting an alpha channel.
     /// </summary>
-    [JsonProperty]
     public int AlphaRangeMax
     {
         get;
@@ -93,7 +85,6 @@ internal class ImageEditorSettings
     } = 255;
 
     /// <summary>Property to set or return the width of the picker window.</summary>
-    [JsonProperty]
     public int PickerWidth
     {
         get;
@@ -101,7 +92,6 @@ internal class ImageEditorSettings
     } = 900;
 
     /// <summary>Property to set or return the height of the picker window.</summary>
-    [JsonProperty]
     public int PickerHeight
     {
         get;
@@ -109,7 +99,6 @@ internal class ImageEditorSettings
     } = 600;
 
     /// <summary>Property to set or return the state of the picker window.</summary>
-    [JsonProperty]
     public int PickerWindowState
     {
         get;
@@ -119,7 +108,6 @@ internal class ImageEditorSettings
     /// <summary>
     /// Property to set or return the path to the image editor to use when editing the texture.
     /// </summary>
-    [JsonProperty]
     public string ImageEditorApplicationPath
     {
         get;

@@ -25,7 +25,8 @@
 
 using System.Numerics;
 using Gorgon.Animation;
-using Newtonsoft.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Gorgon.IO;
 
@@ -35,66 +36,52 @@ namespace Gorgon.IO;
 class JsonVector3KeyConverter
     : JsonConverter<GorgonKeyVector3>
 {
-    /// <summary>Writes the JSON representation of the object.</summary>
-    /// <param name="writer">The <see cref="JsonWriter" /> to write to.</param>
-    /// <param name="value">The value.</param>
-    /// <param name="serializer">The calling serializer.</param>
-    public override void WriteJson(JsonWriter writer, GorgonKeyVector3 value, JsonSerializer serializer)
+    /// <inheritdoc/>
+    public override void Write(Utf8JsonWriter writer, GorgonKeyVector3 value, JsonSerializerOptions options)
     {
-        if (value is null)
-        {
-            writer.WriteNull();
-            return;
-        }
-
         writer.WriteStartObject();
-        writer.WritePropertyName("time");
-        writer.WriteValue(value.Time);
-        writer.WritePropertyName("x");
-        writer.WriteValue(value.Value.X);
-        writer.WritePropertyName("y");
-        writer.WriteValue(value.Value.Y);
-        writer.WritePropertyName("z");
-        writer.WriteValue(value.Value.Z);
-        writer.WriteEnd();
+        writer.WriteNumber("time", value.Time);
+        writer.WriteNumber("x", value.Value.X);
+        writer.WriteNumber("y", value.Value.Y);
+        writer.WriteNumber("z", value.Value.Z);
+        writer.WriteEndObject();
     }
 
-    /// <summary>Reads the JSON representation of the object.</summary>
-    /// <param name="reader">The <see cref="JsonReader" /> to read from.</param>
-    /// <param name="objectType">Type of the object.</param>
-    /// <param name="existingValue">The existing value of object being read. If there is no existing value then <c>null</c> will be used.</param>
-    /// <param name="hasExistingValue">The existing value has a value.</param>
-    /// <param name="serializer">The calling serializer.</param>
-    /// <returns>The object value.</returns>
-    public override GorgonKeyVector3 ReadJson(JsonReader reader, Type objectType, GorgonKeyVector3 existingValue, bool hasExistingValue, JsonSerializer serializer)
+    /// <inheritdoc/>
+    public override GorgonKeyVector3 Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         float time = 0;
         float x = 0;
         float y = 0;
         float z = 0;
 
-        while ((reader.Read()) && (reader.TokenType != JsonToken.EndObject))
+        while ((reader.Read()) && (reader.TokenType != JsonTokenType.EndObject))
         {
-            if (reader.TokenType != JsonToken.PropertyName)
+            if (reader.TokenType != JsonTokenType.PropertyName)
             {
                 continue;
             }
 
-            string propName = reader.Value.ToString().ToUpperInvariant();
+            string propName = reader.GetString().ToUpperInvariant();
+
+            if (!reader.Read())
+            {
+                break;
+            }
 
             switch (propName)
             {
                 case "TIME":
-                    time = (float?)reader.ReadAsDecimal() ?? 0;
+                    time = reader.GetSingle();
                     break;
                 case "X":
-                    x = (float?)reader.ReadAsDecimal() ?? 0;
+                    x = reader.GetSingle();
                     break;
                 case "Y":
-                    y = (float?)reader.ReadAsDecimal() ?? 0;
+                    y = reader.GetSingle();
                     break;
                 case "Z":
-                    z = (float?)reader.ReadAsDecimal() ?? 0;
+                    z = reader.GetSingle();
                     break;
             }
         }

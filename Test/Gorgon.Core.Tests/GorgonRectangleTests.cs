@@ -1,6 +1,6 @@
 ﻿using System.Numerics;
 using Gorgon.Graphics;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Gorgon.Core.Tests;
 
@@ -783,22 +783,22 @@ public class GorgonRectangleTests
         string expectedString = "{\"x\":10,\"y\":20,\"width\":30,\"height\":40}";
         GorgonRectangle rectangle = new(10, 20, 30, 40);
 
-        string actualString = JsonConvert.SerializeObject(rectangle);
+        string actualString = JsonSerializer.Serialize(rectangle);
 
         Assert.AreEqual(expectedString, actualString);
 
-        GorgonRectangle deserializedRectangle = JsonConvert.DeserializeObject<GorgonRectangle>(actualString);
+        GorgonRectangle deserializedRectangle = JsonSerializer.Deserialize<GorgonRectangle>(actualString);
 
         Assert.AreEqual(rectangle, deserializedRectangle);
 
         expectedString = "{\"x\":10.5,\"y\":20.5,\"width\":30.25,\"height\":40.75}";
         GorgonRectangleF rectf = new GorgonRectangleF(10.5f, 20.5f, 30.25f, 40.75f);
 
-        actualString = JsonConvert.SerializeObject(rectf);
+        actualString = JsonSerializer.Serialize(rectf);
 
         Assert.AreEqual(expectedString, actualString);
 
-        GorgonRectangleF deserializedRectangleF = JsonConvert.DeserializeObject<GorgonRectangleF>(actualString);
+        GorgonRectangleF deserializedRectangleF = JsonSerializer.Deserialize<GorgonRectangleF>(actualString);
 
         Assert.AreEqual(rectf, deserializedRectangleF);
     }

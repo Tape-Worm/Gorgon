@@ -2,24 +2,10 @@
 using System.Numerics;
 using Gorgon.Graphics;
 using Gorgon.Json;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Gorgon.Core.Tests;
-
-public class GorgonColorContractResolver
-    : DefaultContractResolver
-{
-    protected override JsonConverter? ResolveContractConverter(Type objectType)
-    {
-        if (objectType == typeof(GorgonColor))
-        {
-            return null;
-        }
-
-        return base.ResolveContractConverter(objectType);
-    }
-}
 
 public class JsonData
 {
@@ -316,11 +302,11 @@ public class GorgonColorTests
         };
 
         string expected = "{\"Id\":\"" + data.Id + "\",\"Color\":-65281,\"NullableColor\":null}";
-        string json = Newtonsoft.Json.JsonConvert.SerializeObject(data);
+        string json = JsonSerializer.Serialize(data);
 
         Assert.AreEqual(expected, json);
 
-        JsonData? actual = Newtonsoft.Json.JsonConvert.DeserializeObject<JsonData>(json);
+        JsonData? actual = JsonSerializer.Deserialize<JsonData>(json);
 
         Assert.IsNotNull(actual);
         Assert.IsNull(actual.NullableColor);
@@ -329,33 +315,31 @@ public class GorgonColorTests
         data.NullableColor = GorgonColors.Blue;
 
         expected = "{\"Id\":\"" + data.Id + "\",\"Color\":-65281,\"NullableColor\":-16776961}";
-        json = Newtonsoft.Json.JsonConvert.SerializeObject(data);
+        json = JsonSerializer.Serialize(data);
 
         Assert.AreEqual(expected, json);
 
-        actual = Newtonsoft.Json.JsonConvert.DeserializeObject<JsonData>(json);
+        actual = JsonSerializer.Deserialize<JsonData>(json);
 
         Assert.IsNotNull(actual);
         Assert.IsNotNull(actual.NullableColor);
+        Assert.AreEqual(data.NullableColor, actual.NullableColor);
         Assert.AreEqual(data.Color, actual.Color);
 
         data.NullableColor = null;
 
-        expected = "{\"Id\":\"" + data.Id + "\",\"Color\":{\"r\":255,\"g\":0,\"b\":255,\"a\":255},\"NullableColor\":null}";
-        json = Newtonsoft.Json.JsonConvert.SerializeObject(data, new JsonSerializerSettings
+        JsonSerializerOptions options = new()
         {
-            ContractResolver = new GorgonColorContractResolver(),
-            Converters = new[] { new GorgonColorComponentsJsonConverter() }
-        });
+            Converters = { new GorgonColorComponentsJsonConverter() }
+        };
+
+        expected = "{\"Id\":\"" + data.Id + "\",\"Color\":{\"r\":255,\"g\":0,\"b\":255,\"a\":255},\"NullableColor\":null}";
+        json = JsonSerializer.Serialize(data, options);
 
         Assert.AreEqual(expected, json);
 
 
-        actual = Newtonsoft.Json.JsonConvert.DeserializeObject<JsonData>(json, new JsonSerializerSettings
-        {
-            ContractResolver = new GorgonColorContractResolver(),
-            Converters = new[] { new GorgonColorComponentsJsonConverter() }
-        });
+        actual = JsonSerializer.Deserialize<JsonData>(json, options);
         Assert.IsNotNull(actual);
         Assert.IsNull(actual.NullableColor);
         Assert.AreEqual(data.Color, actual.Color);
@@ -363,19 +347,11 @@ public class GorgonColorTests
         data.NullableColor = GorgonColors.Red;
 
         expected = "{\"Id\":\"" + data.Id + "\",\"Color\":{\"r\":255,\"g\":0,\"b\":255,\"a\":255},\"NullableColor\":{\"r\":255,\"g\":0,\"b\":0,\"a\":255}}";
-        json = Newtonsoft.Json.JsonConvert.SerializeObject(data, new JsonSerializerSettings
-        {
-            ContractResolver = new GorgonColorContractResolver(),
-            Converters = new[] { new GorgonColorComponentsJsonConverter() }
-        });
+        json = JsonSerializer.Serialize(data, options);
 
         Assert.AreEqual(expected, json);
 
-        actual = Newtonsoft.Json.JsonConvert.DeserializeObject<JsonData>(json, new JsonSerializerSettings
-        {
-            ContractResolver = new GorgonColorContractResolver(),
-            Converters = new[] { new GorgonColorComponentsJsonConverter() }
-        });
+        actual = JsonSerializer.Deserialize<JsonData>(json, options);
         Assert.IsNotNull(actual);
         Assert.IsNotNull(actual.NullableColor);
         Assert.AreEqual(data.Color, actual.Color);

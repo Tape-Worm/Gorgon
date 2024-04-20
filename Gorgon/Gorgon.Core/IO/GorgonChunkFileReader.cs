@@ -242,6 +242,11 @@ public sealed class GorgonChunkFileReader
     /// <param name="appIDs">A list of application specific IDs to check for.</param>
     /// <returns><b>true</b> if the stream data contains a chunk file, <b>false</b> if not.</returns>
     /// <exception cref="IOException">Thrown when the <paramref name="stream"/> is write-only.</exception>
+    /// <remarks>
+    /// <para>
+    /// This method will restore the <paramref name="stream"/> position when finished, so further calls to stream functions will work as though the stream position has not advanced.
+    /// </para>
+    /// </remarks>
     public static bool IsReadable(Stream stream, IEnumerable<ulong> appIDs)
     {
         if (!stream.CanRead)

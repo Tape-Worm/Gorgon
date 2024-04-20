@@ -25,7 +25,7 @@
 
 using Gorgon.Core;
 using Gorgon.Graphics;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace Gorgon.Animation;
 
@@ -94,7 +94,7 @@ public interface IGorgonAnimation
     /// <summary>
     /// Property to return the frames per second for this animation.
     /// </summary>
-    [JsonProperty("FPS")]
+    [JsonPropertyName("FPS")]
     float Fps
     {
         get;
@@ -103,7 +103,7 @@ public interface IGorgonAnimation
     /// <summary>
     /// Property to return the tracks used to update any values using a single floating point value.
     /// </summary>
-    [JsonProperty("singletracks")]
+    [JsonPropertyName("singletracks")]
     IReadOnlyDictionary<string, IGorgonAnimationTrack<GorgonKeySingle>> SingleTracks
     {
         get;
@@ -112,7 +112,7 @@ public interface IGorgonAnimation
     /// <summary>
     /// Property to return the tracks used to update any values using a 2D vector.
     /// </summary>
-    [JsonProperty("vector2tracks")]
+    [JsonPropertyName("vector2tracks")]
     IReadOnlyDictionary<string, IGorgonAnimationTrack<GorgonKeyVector2>> Vector2Tracks
     {
         get;
@@ -121,7 +121,7 @@ public interface IGorgonAnimation
     /// <summary>
     /// Property to return the track used to update any values using a 3D vector.
     /// </summary>
-    [JsonProperty("vector3tracks")]
+    [JsonPropertyName("vector3tracks")]
     IReadOnlyDictionary<string, IGorgonAnimationTrack<GorgonKeyVector3>> Vector3Tracks
     {
         get;
@@ -130,7 +130,7 @@ public interface IGorgonAnimation
     /// <summary>
     /// Property to return the track used to update any values using a 4D vector.
     /// </summary>
-    [JsonProperty("vector4tracks")]
+    [JsonPropertyName("vector4tracks")]
     IReadOnlyDictionary<string, IGorgonAnimationTrack<GorgonKeyVector4>> Vector4Tracks
     {
         get;
@@ -139,7 +139,7 @@ public interface IGorgonAnimation
     /// <summary>
     /// Property to return the track used to update any values using a Quaternion.
     /// </summary>
-    [JsonProperty("quaterniontracks")]
+    [JsonPropertyName("quaterniontracks")]
     IReadOnlyDictionary<string, IGorgonAnimationTrack<GorgonKeyQuaternion>> QuaternionTracks
     {
         get;
@@ -148,7 +148,7 @@ public interface IGorgonAnimation
     /// <summary>
     /// Property to return the track used to update any values using a <see cref="GorgonColor"/>.
     /// </summary>
-    [JsonProperty("colortracks")]
+    [JsonPropertyName("colortracks")]
     IReadOnlyDictionary<string, IGorgonAnimationTrack<GorgonKeyGorgonColor>> ColorTracks
     {
         get;
@@ -157,7 +157,7 @@ public interface IGorgonAnimation
     /// <summary>
     /// Property to return the track used to update any values using a SharpDX <c>RectangleF</c>.
     /// </summary>
-    [JsonProperty("recttracks")]
+    [JsonPropertyName("recttracks")]
     IReadOnlyDictionary<string, IGorgonAnimationTrack<GorgonKeyRectangle>> RectangleTracks
     {
         get;
@@ -166,7 +166,7 @@ public interface IGorgonAnimation
     /// <summary>
     /// Property to return the tracks used for updating a 2D texture on an object.
     /// </summary>
-    [JsonProperty("textures")]
+    [JsonPropertyName("textures")]
     IReadOnlyDictionary<string, IGorgonAnimationTrack<GorgonKeyTexture2D>> Texture2DTracks
     {
         get;

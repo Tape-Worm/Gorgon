@@ -629,8 +629,6 @@ public static class Gorgon2DFileSystemExtensions
                            [
                                new GorgonV31AnimationBinaryCodec(renderer),
                                new GorgonV31AnimationJsonCodec(renderer),
-                               new GorgonV3AnimationBinaryCodec(renderer),
-                               new GorgonV3AnimationJsonCodec(renderer),
                                new GorgonV1AnimationCodec(renderer)
                            ];
         }

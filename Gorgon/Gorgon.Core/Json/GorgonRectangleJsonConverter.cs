@@ -25,7 +25,8 @@
 
 using Gorgon.Core;
 using Gorgon.Graphics;
-using Newtonsoft.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Gorgon.Json;
 
@@ -33,50 +34,29 @@ namespace Gorgon.Json;
 /// A converter used to convert a <see cref="GorgonRectangle"/> to and from JSON values.
 /// </summary>
 public class GorgonRectangleJsonConverter
-    : JsonConverter<GorgonRectangle?>
+    : JsonConverter<GorgonRectangle>
 {
-    /// <summary>Writes the JSON representation of the object.</summary>
-    /// <param name="writer">The <see cref="JsonWriter" /> to write to.</param>
-    /// <param name="value">The value.</param>
-    /// <param name="serializer">The calling serializer.</param>
-    public override void WriteJson(JsonWriter writer, GorgonRectangle? value, JsonSerializer serializer)
+    /// <inheritdoc/>
+    public override void Write(Utf8JsonWriter writer, GorgonRectangle value, JsonSerializerOptions options)
     {
-        if (value is null)
-        {
-            writer.WriteNull();
-            return;
-        }
-
         writer.WriteStartObject();
-        writer.WritePropertyName("x");
-        writer.WriteValue(value.Value.X);
-        writer.WritePropertyName("y");
-        writer.WriteValue(value.Value.Y);
-        writer.WritePropertyName("width");
-        writer.WriteValue(value.Value.Width);
-        writer.WritePropertyName("height");
-        writer.WriteValue(value.Value.Height);
+        writer.WriteNumber("x", value.X);
+        writer.WriteNumber("y", value.Y);
+        writer.WriteNumber("width", value.Width);
+        writer.WriteNumber("height", value.Height);
         writer.WriteEndObject();
     }
 
-    /// <summary>
-    /// Reads the JSON representation of the object.
-    /// </summary>
-    /// <param name="reader">The <see cref="JsonReader" /> to read from.</param>
-    /// <param name="objectType">Type of the object.</param>
-    /// <param name="existingValue">The existing value of object being read. If there is no existing value then <c>null</c> will be used.</param>
-    /// <param name="hasExistingValue">The existing value has a value.</param>
-    /// <param name="serializer">The calling serializer.</param>
-    /// <returns>The object value.</returns>
-    public override GorgonRectangle? ReadJson(JsonReader reader, Type objectType, GorgonRectangle? existingValue, bool hasExistingValue, JsonSerializer serializer)
+    /// <inheritdoc/>
+    public override GorgonRectangle Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        if ((reader.TokenType == JsonToken.Null)
+        if ((reader.TokenType == JsonTokenType.Null)
             || (!reader.Read()))
         {
-            return hasExistingValue ? existingValue : null;
+            return default;
         }
 
-        if (reader.TokenType != JsonToken.PropertyName)
+        if (reader.TokenType != JsonTokenType.PropertyName)
         {
             throw new GorgonException(GorgonResult.CannotRead);
         }
@@ -90,39 +70,44 @@ public class GorgonRectangleJsonConverter
 
         do
         {
-            string propName = reader.Value?.ToString() ?? string.Empty;
+            string propName = reader.GetString() ?? string.Empty;
+
+            if (!reader.Read())
+            {
+                break;
+            }
 
             switch (propName)
             {
                 case "left":
                 case "l":
                 case "x":
-                    x = reader.ReadAsInt32() ?? 0;
+                    x = reader.GetInt32();
                     break;
                 case "top":
                 case "t":
                 case "y":
-                    y = reader.ReadAsInt32() ?? 0;
+                    y = reader.GetInt32();
                     break;
                 case "right":
                 case "r":
-                    r = reader.ReadAsInt32() ?? 0;
+                    r = reader.GetInt32();
                     break;
                 case "width":
                 case "w":
-                    w = reader.ReadAsInt32() ?? 0;
+                    w = reader.GetInt32();
                     break;
                 case "bottom":
                 case "b":
-                    b = reader.ReadAsInt32() ?? 0;
+                    b = reader.GetInt32();
                     break;
                 case "height":
                 case "h":
-                    h = reader.ReadAsInt32() ?? 0;
+                    h = reader.GetInt32();
                     break;
             }
         }
-        while ((reader.Read()) && (reader.TokenType == JsonToken.PropertyName));
+        while ((reader.Read()) && (reader.TokenType == JsonTokenType.PropertyName));
 
         if (r is not null)
         {

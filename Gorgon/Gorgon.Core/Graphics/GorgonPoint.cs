@@ -25,10 +25,10 @@ using System.Drawing;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Text.Json.Serialization;
 using Gorgon.Json;
 using Gorgon.Math;
 using Gorgon.Properties;
-using Newtonsoft.Json;
 
 namespace Gorgon.Graphics;
 

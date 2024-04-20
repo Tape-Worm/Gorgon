@@ -23,7 +23,7 @@
 // Created: August 29, 2018 8:16:04 PM
 // 
 
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 // TODO:
 //Add functionality to add plugin names to the project indicating which plugins were available when the project was created

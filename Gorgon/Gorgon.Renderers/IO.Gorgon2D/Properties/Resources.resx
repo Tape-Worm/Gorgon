@@ -120,6 +120,9 @@
   <data name="GOR2DIO_ANIMTION_FILE_EXTENSION_DESC" xml:space="preserve">
     <value>Gorgon Animation</value>
   </data>
+  <data name="GOR2DIO_ERR_ANIM_VERSION_MISMATCH" xml:space="preserve">
+    <value>The animation version is '{0}', but version '{1}' is expected.</value>
+  </data>
   <data name="GOR2DIO_ERR_CODEC_NOT_IN_PLUGIN" xml:space="preserve">
     <value>The codec '{0}' was not found in the plug in.</value>
   </data>

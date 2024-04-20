@@ -24,7 +24,7 @@
 // 
 
 using Gorgon.Editor.Metadata;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace Gorgon.Editor.ProjectData;
 
@@ -36,8 +36,7 @@ internal class Project
 {
     /// <summary>
     /// Property to return the version for the project file.
-    /// </summary>
-    [JsonProperty]
+    /// </summary>    
     public string Version
     {
         get;

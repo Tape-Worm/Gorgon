@@ -29,7 +29,7 @@ using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Renderers.Geometry;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace Gorgon.Renderers;
 
@@ -143,6 +143,12 @@ public class GorgonSprite
             }
 
             bounds = value;
+
+            ref readonly Vector2 anchor = ref Renderable.Anchor;
+            ref Vector2 absAnchor = ref _absoluteAnchor;
+            absAnchor.X = anchor.X * bounds.Width;
+            absAnchor.Y = anchor.Y * bounds.Height;
+
             Renderable.HasVertexChanges = true;
         }
     }
@@ -262,6 +268,12 @@ public class GorgonSprite
             }
 
             bounds = new GorgonRectangleF(bounds.Left, bounds.Top, value.X, value.Y);
+
+            ref readonly Vector2 anchor = ref Renderable.Anchor;
+            ref Vector2 absAnchor = ref _absoluteAnchor;
+            absAnchor.X = anchor.X * bounds.Width;
+            absAnchor.Y = anchor.Y * bounds.Height;
+
             Renderable.HasVertexChanges = true;
         }
     }

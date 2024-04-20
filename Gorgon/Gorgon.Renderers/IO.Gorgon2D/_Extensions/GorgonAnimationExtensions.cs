@@ -24,8 +24,8 @@
 // 
 
 using Gorgon.Animation;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace Gorgon.IO;
 
@@ -34,15 +34,6 @@ namespace Gorgon.IO;
 /// </summary>
 public static class GorgonAnimationExtensions
 {
-    /// <summary>
-    /// The property name for the header value.
-    /// </summary>
-    internal const string JsonHeaderProp = "header";
-    /// <summary>
-    /// The property name for the header value.
-    /// </summary>
-    internal const string JsonVersionProp = "version";
-
     /// <summary>
     /// Function to convert a <see cref="IGorgonAnimation"/> to a JSON string.
     /// </summary>
@@ -58,26 +49,15 @@ public static class GorgonAnimationExtensions
             throw new ArgumentNullException(nameof(animation));
         }
 
-        JsonSerializer settings = new()
+        JsonSerializerOptions options = new()
         {
-            Formatting = prettyFormat ? Formatting.Indented : Formatting.None,
+            WriteIndented = prettyFormat,
             Converters =
-                           {
-                               new JsonTextureKeyConverter(null),
-                               new JsonSingleKeyConverter(),
-                               new JsonVector2KeyConverter(),
-                               new JsonVector3KeyConverter(),
-                               new JsonVector4KeyConverter(),
-                               new JsonGorgonColorKeyConverter(),
-                               new JsonRectKeyConverter()
-                           }
+            {
+                new JsonAnimationConverter(null, null, null)
+            }
         };
 
-        JObject jsonObj = JObject.FromObject(animation, settings);
-        JToken firstProp = jsonObj.First;
-        firstProp.AddBeforeSelf(new JProperty(JsonHeaderProp, GorgonAnimationCodecCommon.CurrentFileHeader));
-        firstProp.AddBeforeSelf(new JProperty(JsonVersionProp, GorgonAnimationCodecCommon.CurrentVersion.ToString(2)));
-
-        return jsonObj.ToString(prettyFormat ? Formatting.Indented : Formatting.None);
+        return JsonSerializer.Serialize(animation, options);
     }
 }

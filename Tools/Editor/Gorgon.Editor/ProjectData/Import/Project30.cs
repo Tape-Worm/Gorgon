@@ -24,7 +24,6 @@
 // 
 
 using Gorgon.Editor.Metadata;
-using Newtonsoft.Json;
 
 namespace Gorgon.Editor.ProjectData;
 
@@ -36,7 +35,6 @@ internal class Project30
     /// <summary>
     /// Property to return the version for the project file.
     /// </summary>
-    [JsonProperty]
     public string Version
     {
         get;
@@ -46,7 +44,6 @@ internal class Project30
     /// <summary>
     /// Property to return the list of project items.
     /// </summary>
-    [JsonProperty]
     public Dictionary<string, Project30ItemMetadata> ProjectItems
     {
         get;
@@ -54,7 +51,6 @@ internal class Project30
     } = new Dictionary<string, Project30ItemMetadata>(StringComparer.OrdinalIgnoreCase);
 
     /// <summary>Initializes a new instance of the Project class.</summary>
-    [JsonConstructor]
     public Project30()
     {
         // Used by JSON.Net for deserialization.

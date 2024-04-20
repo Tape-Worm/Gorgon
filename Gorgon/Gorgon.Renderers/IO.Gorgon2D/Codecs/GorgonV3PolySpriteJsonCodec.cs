@@ -31,9 +31,7 @@ using Gorgon.IO.Properties;
 using Gorgon.Json;
 using Gorgon.Math;
 using Gorgon.Renderers;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
 
 namespace Gorgon.IO;
 
@@ -64,57 +62,22 @@ public class GorgonV3PolySpriteJsonCodec(Gorgon2D renderer)
     public override Version Version => CurrentVersion;
 
     /// <summary>
-    /// Function to retrieve the stream as JSON.Net object.
+    /// Function to determine if the JSON object has the data we need.
     /// </summary>
-    /// <param name="stream">The stream containing the data.</param>
-    /// <returns>The data as a JSON.Net object.</returns>
-    private static JsonReader GetJsonReader(Stream stream)
-    {
-        StreamReader reader = new(stream, Encoding.UTF8, true, 1024, true);
-        JsonTextReader jsonReader = new(reader)
-        {
-            CloseInput = true
-        };
-        return jsonReader;
-    }
-
-    /// <summary>
-    /// Function to determine if the jason object has the data we need.
-    /// </summary>
-    /// <param name="reader">The reader for the JSON data.</param>
+    /// <param name="document">The JSON document to evaluate</param>
     /// <returns><b>true</b> if the data is for a sprite, <b>false</b> if not.</returns>
-    private bool IsReadableJObject(JsonReader reader)
+    private bool IsReadableJsonData(JsonDocument document)
     {
-        // Find the header node.
-        while (reader.Read())
+        if ((!document.RootElement.TryGetProperty(GorgonSpriteExtensions.JsonHeaderProp, out JsonElement headerElement))
+            || (!document.RootElement.TryGetProperty(GorgonSpriteExtensions.JsonVersionProp, out JsonElement versionElement)))
         {
-            if ((string.Equals(reader.Path, "header", StringComparison.Ordinal))
-                && (reader.TokenType == JsonToken.PropertyName))
-            {
-                ulong? id = (ulong?)reader.ReadAsDecimal();
-
-                if ((id is null) || (id != CurrentFileHeader))
-                {
-                    return false;
-                }
-
-                if (!reader.Read())
-                {
-                    return false;
-                }
-            }
-
-            // These must come right after each other.
-            if ((!string.Equals(reader.Path, "version", StringComparison.Ordinal))
-                || (reader.TokenType != JsonToken.PropertyName))
-            {
-                continue;
-            }
-
-            return (reader.Read()) && (Version.TryParse(reader.Value.ToString(), out Version version)) && (version.Equals(Version));
+            return false;
         }
 
-        return false;
+        return (headerElement.TryGetUInt64(out ulong header))
+            && (Version.TryParse(versionElement.GetString(), out Version? version))
+            && (header == CurrentFileHeader)
+            && (version.Equals(Version));
     }
 
     /// <summary>
@@ -129,7 +92,7 @@ public class GorgonV3PolySpriteJsonCodec(Gorgon2D renderer)
         using GorgonSubStream wrappedStream = new(stream, stream.Position, byteCount, false);
         using StreamReader reader = new(wrappedStream, Encoding.UTF8, true, 80192, true);
         string jsonString = reader.ReadToEnd();
-        return FromJson(Renderer, overrideTexture, jsonString);
+        return FromJson(Renderer, jsonString, overrideTexture);
     }
 
     /// <summary>
@@ -150,70 +113,76 @@ public class GorgonV3PolySpriteJsonCodec(Gorgon2D renderer)
     /// <returns><b>true</b> if the data can be read, or <b>false</b> if not.</returns>
     protected override bool OnIsReadable(Stream stream)
     {
-        JsonReader reader = null;
-
-        try
-        {
-            reader = GetJsonReader(stream);
-            return IsReadableJObject(reader);
-        }
-        catch (JsonException)
+        if (stream.Length < 4)
         {
             return false;
         }
-        finally
+
+        // Read the string from the stream.
+        string json = stream.ReadString();
+
+        // If we don't have a string, or we don't start with "{", then it's not valid JSON.
+        if ((string.IsNullOrWhiteSpace(json)) || (!json.StartsWith("{", StringComparison.Ordinal)))
         {
-            reader?.Close();
+            return false;
         }
+
+        using JsonDocument document = JsonDocument.Parse(json);
+        return IsReadableJsonData(document);
     }
+
 
     /// <summary>
     /// Function to retrieve the name of the associated texture.
     /// </summary>
     /// <param name="stream">The stream containing the texture data.</param>
     /// <returns>The name of the texture associated with the sprite, or <b>null</b> if no texture was found.</returns>
+    /// <exception cref="GorgonException">Thrown if the string is not a valid sprite JSON.</exception>
     protected override string OnGetAssociatedTextureName(Stream stream)
     {
-        using JsonReader reader = GetJsonReader(stream);
-        if (!IsReadableJObject(reader))
+        if (stream.Length < 4)
+        {
+            throw new GorgonException(GorgonResult.CannotRead, Resources.GOR2DIO_ERR_JSON_NOT_SPRITE);
+        }
+
+        string json = stream.ReadString();
+
+        if (string.IsNullOrWhiteSpace(json))
         {
             return null;
         }
 
-        while (reader.Read())
+        using JsonDocument document = JsonDocument.Parse(json);
+
+        if (!IsReadableJsonData(document))
         {
-            if ((!string.Equals(reader.Path, "Texture", StringComparison.Ordinal))
-                || (reader.TokenType != JsonToken.PropertyName))
-            {
-                continue;
-            }
-
-            while (reader.Read())
-            {
-                if ((!string.Equals(reader.Path, "Texture.name", StringComparison.Ordinal))
-                    || (reader.TokenType != JsonToken.PropertyName))
-                {
-                    continue;
-                }
-
-                return !reader.Read() ? null : reader.Value?.ToString();
-            }
+            throw new GorgonException(GorgonResult.CannotRead, Resources.GOR2DIO_ERR_JSON_NOT_SPRITE);
         }
 
-        return null;
+        if (!document.RootElement.TryGetProperty("Texture", out JsonElement textureElement))
+        {
+            return null;
+        }
+
+        if (!textureElement.TryGetProperty("name", out JsonElement textureNameElement))
+        {
+            throw new GorgonException(GorgonResult.CannotRead, Resources.GOR2DIO_ERR_JSON_NOT_SPRITE);
+        }
+
+        return textureNameElement.GetString();
     }
 
     /// <summary>
     /// Function to convert a JSON string into a sprite object.
     /// </summary>
     /// <param name="renderer">The renderer for the sprite.</param>
-    /// <param name="overrideTexture">The texture to assign to the sprite instead of the texture associated with the name stored in the file.</param>
     /// <param name="json">The JSON string containing the sprite data.</param>
+    /// <param name="overrideTexture">[Optional] The texture to assign to the sprite instead of the texture associated with the name stored in the file.</param>
     /// <returns>A new <see cref="GorgonPolySprite"/>.</returns>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/>, or the <paramref name="json"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="json"/> parameter is empty.</exception>
     /// <exception cref="GorgonException">Thrown if the JSON string does not contain sprite data, or there is a version mismatch.</exception>
-    public static GorgonPolySprite FromJson(Gorgon2D renderer, GorgonTexture2DView overrideTexture, string json)
+    public static GorgonPolySprite FromJson(Gorgon2D renderer, string json, GorgonTexture2DView? overrideTexture = null)
     {
         if (renderer is null)
         {
@@ -231,35 +200,37 @@ public class GorgonV3PolySpriteJsonCodec(Gorgon2D renderer)
         }
 
         // Set up serialization so we can convert our more complicated structures.
-        JsonSerializer serializer = new()
+        JsonSerializerOptions options = new()
         {
-            CheckAdditionalContent = false
+            Converters =
+            {
+                new Vector2JsonConverter(),
+                new Vector3JsonConverter(),
+                new GorgonColorJsonConverter(),
+                new GorgonRectangleFJsonConverter(),
+                new GorgonRangeFloatJsonConverter(),
+                new JsonSamplerConverter(renderer.Graphics),
+                new JsonTexture2DConverter(renderer.Graphics, overrideTexture),
+                new GorgonPolySpriteVertexJsonConverter()
+            }
         };
 
-        serializer.Converters.Add(new Vector2JsonConverter());
-        serializer.Converters.Add(new Vector3JsonConverter());
-        serializer.Converters.Add(new GorgonColorJsonConverter());
-        serializer.Converters.Add(new GorgonRectangleFJsonConverter());
-        serializer.Converters.Add(new JsonSamplerConverter(renderer.Graphics));
-        serializer.Converters.Add(new JsonTexture2DConverter(renderer.Graphics, overrideTexture));
-        serializer.Converters.Add(new VersionConverter());
+        using JsonDocument document = JsonDocument.Parse(json);
 
-        // Parse the string so we can extract our header/version for comparison.
-        JObject jobj = JObject.Parse(json);
-        ulong jsonID = jobj[GorgonSpriteExtensions.JsonHeaderProp].Value<ulong>();
-        Version jsonVersion = jobj[GorgonSpriteExtensions.JsonVersionProp].ToObject<Version>(serializer);
-
-        if (jsonID != CurrentFileHeader)
+        if ((!document.RootElement.TryGetProperty(GorgonSpriteExtensions.JsonHeaderProp, out JsonElement headerElement))
+            || (!document.RootElement.TryGetProperty(GorgonSpriteExtensions.JsonVersionProp, out JsonElement versionElement))
+            || (!headerElement.TryGetUInt64(out ulong id))
+            || (id != CurrentFileHeader))
         {
             throw new GorgonException(GorgonResult.CannotRead, Resources.GOR2DIO_ERR_JSON_NOT_SPRITE);
         }
 
-        if (!jsonVersion.Equals(CurrentVersion))
+        if ((!Version.TryParse(versionElement.GetString(), out Version? version)) || (!CurrentVersion.Equals(version)))
         {
-            throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOR2DIO_ERR_SPRITE_VERSION_MISMATCH, CurrentVersion, jsonVersion));
+            throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOR2DIO_ERR_SPRITE_VERSION_MISMATCH, CurrentVersion, version));
         }
 
-        GorgonPolySprite workingSpriteData = jobj.ToObject<GorgonPolySprite>(serializer);
+        GorgonPolySprite workingSpriteData = document.Deserialize<GorgonPolySprite>(options);
 
         // We have to rebuild the sprite because it's only data at this point and we need to build up its vertex/index buffers before we can render it.
         if (workingSpriteData.Indices.Count == 0)

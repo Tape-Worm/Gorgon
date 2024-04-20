@@ -1,5 +1,4 @@
-﻿
-// 
+﻿// 
 // Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
@@ -25,7 +24,7 @@
 
 using Gorgon.Editor.Metadata;
 using Gorgon.Editor.ProjectData;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace Gorgon.Editor.Support;
 
@@ -36,7 +35,6 @@ internal class EditorProjectMetadata31
     : IProjectMetadata
 {
     /// <summary>Property to return the version for the project file.</summary>                
-    [JsonProperty]
     public string Version
     {
         get;
@@ -44,7 +42,6 @@ internal class EditorProjectMetadata31
     } = CommonEditorConstants.EditorCurrentProjectVersion;
 
     /// <summary>Property to return the list of project items.</summary>        
-    [JsonProperty]
     public Dictionary<string, ProjectItemMetadata> ProjectItems
     {
         get;

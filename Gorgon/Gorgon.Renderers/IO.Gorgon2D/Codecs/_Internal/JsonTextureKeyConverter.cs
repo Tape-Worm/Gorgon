@@ -27,7 +27,8 @@ using Gorgon.Animation;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Json;
-using Newtonsoft.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Gorgon.IO;
 
@@ -49,38 +50,21 @@ class JsonTextureKeyConverter(GorgonGraphics graphics, IEnumerable<GorgonTexture
     // The texture overrides.
     private readonly IEnumerable<GorgonTexture2DView> _overrides = overrides;
 
-    /// <summary>Writes the JSON representation of the object.</summary>
-    /// <param name="writer">The <see cref="JsonWriter" /> to write to.</param>
-    /// <param name="value">The value.</param>
-    /// <param name="serializer">The calling serializer.</param>
-    public override void WriteJson(JsonWriter writer, GorgonKeyTexture2D value, JsonSerializer serializer)
+    /// <inheritdoc/>
+    public override void Write(Utf8JsonWriter writer, GorgonKeyTexture2D value, JsonSerializerOptions options)
     {
-        if (value is null)
-        {
-            writer.WriteNull();
-            return;
-        }
-
         writer.WriteStartObject();
-        writer.WritePropertyName("time");
-        writer.WriteValue(value.Time);
+        writer.WriteNumber("time", value.Time);
         writer.WritePropertyName("texture");
-        _textureConverter.WriteJson(writer, value.Value, serializer);
-        writer.WritePropertyName("arrayindex");
-        writer.WriteValue(value.TextureArrayIndex);
+        _textureConverter.Write(writer, value.Value, options);        
+        writer.WriteNumber("arrayindex", value.TextureArrayIndex);
         writer.WritePropertyName("uv");
-        _rectConverter.WriteJson(writer, value.TextureCoordinates, serializer);
-        writer.WriteEnd();
+        _rectConverter.Write(writer, value.TextureCoordinates, options);        
+        writer.WriteEndObject();
     }
 
-    /// <summary>Reads the JSON representation of the object.</summary>
-    /// <param name="reader">The <see cref="JsonReader" /> to read from.</param>
-    /// <param name="objectType">Type of the object.</param>
-    /// <param name="existingValue">The existing value of object being read. If there is no existing value then <c>null</c> will be used.</param>
-    /// <param name="hasExistingValue">The existing value has a value.</param>
-    /// <param name="serializer">The calling serializer.</param>
-    /// <returns>The object value.</returns>
-    public override GorgonKeyTexture2D ReadJson(JsonReader reader, Type objectType, GorgonKeyTexture2D existingValue, bool hasExistingValue, JsonSerializer serializer)
+    /// <inheritdoc/>
+    public override GorgonKeyTexture2D Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         float time = 0;
         int arrayIndex = 0;
@@ -88,31 +72,33 @@ class JsonTextureKeyConverter(GorgonGraphics graphics, IEnumerable<GorgonTexture
         GorgonTexture2DView texture = null;
         string textureName = string.Empty;
 
-        while ((reader.Read()) && (reader.TokenType != JsonToken.EndObject))
+        while ((reader.Read()) && (reader.TokenType != JsonTokenType.EndObject))
         {
-            if (reader.TokenType != JsonToken.PropertyName)
+            if (reader.TokenType != JsonTokenType.PropertyName)
             {
                 continue;
             }
 
-            string propName = reader.Value.ToString().ToUpperInvariant();
+            string propName = reader.GetString().ToUpperInvariant();
+
+            if (!reader.Read())
+            {
+                break;
+            }
 
             switch (propName)
             {
                 case "TIME":
-                    time = (float)(reader.ReadAsDecimal() ?? 0);
+                    time = reader.GetSingle();
                     break;
                 case "ARRAYINDEX":
-                    arrayIndex = reader.ReadAsInt32() ?? 0;
+                    arrayIndex = reader.GetInt32();
                     break;
                 case "UV":
-                    reader.Read();
-                    uv = _rectConverter.ReadJson(reader, typeof(GorgonRectangleF), GorgonRectangleF.Empty, false, serializer) ?? GorgonRectangleF.Empty;
+                    uv = _rectConverter.Read(ref reader, typeof(GorgonRectangleF), options);
                     break;
                 case "TEXTURE":
-                    reader.Read();
-
-                    (texture, textureName) = _textureConverter.ReadTexture(reader, _overrides);
+                    (texture, textureName) = _textureConverter.ReadTexture(ref reader, _overrides);
 
                     if ((texture is null) && (string.IsNullOrWhiteSpace(textureName)))
                     {
