@@ -219,7 +219,7 @@ public class GorgonAvaloniaSwapChainControl
 
         if (!GorgonTiming.TimingStarted)
         {
-            GorgonTiming.StartTiming<GorgonTimerQpc>();
+            GorgonTiming.StartTiming(new GorgonTimerQpc());
         }
 
         if (_nextFrameQueued)

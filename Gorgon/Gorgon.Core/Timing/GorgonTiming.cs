@@ -36,7 +36,7 @@ namespace Gorgon.Timing;
 /// and peaks, lows and averages for those values
 /// </para>
 /// <para>
-/// To use this in a custom idle processing loop the user should initialize using the <see cref="StartTiming{T}"/> method, and then, in the loop, call the <see cref="Update"/> method to populate the data 
+/// To use this in a custom idle processing loop the user should initialize using the <see cref="StartTiming"/> method, and then, in the loop, call the <see cref="Update"/> method to populate the data 
 /// with the most recent timings
 /// </para>
 /// </remarks>
@@ -123,7 +123,7 @@ public static class GorgonTiming
     } = 0.333333333;
 
     /// <summary>
-    /// Property to return whether or not the timing has been started by <see cref="StartTiming{T}"/>.
+    /// Property to return whether or not the timing has been started by <see cref="StartTiming"/>.
     /// </summary>
     public static bool TimingStarted => _timingStarted != 0;
 
@@ -376,7 +376,7 @@ public static class GorgonTiming
     /// </summary>
     /// <remarks>
     /// <para>
-    /// Ensure that the <see cref="StartTiming{T}"/> was called prior to calling this method, or no meaningful data will be collected.
+    /// Ensure that the <see cref="StartTiming"/> was called prior to calling this method, or no meaningful data will be collected.
     /// </para>
     /// <para>
     /// <note type="tip">
@@ -483,29 +483,22 @@ public static class GorgonTiming
     }
 
     /// <summary>
-    /// Function to initialize the timing data.
+    /// Function to initialize the timing data with an existing timer.
     /// </summary>
-    /// <typeparam name="T">The type of timer to use. Must be a class, implement <see cref="IGorgonTimer"/> and have a parameterless constructor.</typeparam>
+    /// <param name="timer">The timer to use for the timing data.</param>
     /// <remarks>
     /// <para>
     /// Applications must call this method prior to using this class. Otherwise, no data will be present.
     /// </para>
-    /// <para>
-    /// <note type="tip">
-    /// If you are using the <c>Gorgon.Windows.GorgonApplication</c> class, you do not need to call this method since it contains its own idle processing and therefore will 
-    /// call this method on your behalf.
-    /// </note>
-    /// </para>
     /// </remarks>
-    public static void StartTiming<T>()
-        where T : class, IGorgonTimer, new()
+    public static void StartTiming(IGorgonTimer timer)
     {
         if (Interlocked.CompareExchange(ref _timingStarted, 1, 0) == 1)
         {
             return;
         }
 
-        _timer = new T();
+        _timer = timer;
 
         Reset();
     }

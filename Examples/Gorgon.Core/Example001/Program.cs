@@ -179,7 +179,7 @@ internal class Program
         try
         {
             // In order to use the GorgonTiming class, we need to supply a timer to it.
-            GorgonTiming.StartTiming<GorgonTimerMultimedia>();
+            GorgonTiming.StartTiming(new GorgonTimerMultimedia());
 
             WriteOptions();
             ReadValue();

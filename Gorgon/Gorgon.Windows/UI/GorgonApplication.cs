@@ -497,12 +497,12 @@ public static class GorgonApplication
         {
             if (GorgonTimerQpc.SupportsQpc())
             {
-                GorgonTiming.StartTiming<GorgonTimerQpc>();
+                GorgonTiming.StartTiming(new GorgonTimerQpc());
             }
             else
             {
                 GorgonTimerMultimedia.BeginTiming();
-                GorgonTiming.StartTiming<GorgonTimerMultimedia>();
+                GorgonTiming.StartTiming(new GorgonTimerMultimedia());
             }
         }
 
