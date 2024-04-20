@@ -68,7 +68,7 @@ namespace Gorgon.Timing;
 ///		MSG message;  // Win32 Message structure
 /// 
 ///		// Before loop execution
-///     GorgonTiming.StartTiming&lt;GorgonTimerQpc&gt;();
+///     GorgonTiming.StartTiming(new GorgonTimerQpc());
 /// 
 ///		while (!API.PeekMessage(out message, IntPtr.Zero, 0, 0, PeekMessage.NoRemove))
 ///     {
