@@ -9,17 +9,14 @@ namespace Gorgon.Core.Tests;
 public class GorgonRingPoolTests
 {
     [TestMethod]
-    public void ShouldThrowWhenMaxObjectCountLessThanOne()
-    {
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() => new GorgonRingPool<string>(0, () => "Test"));
-    }
+    public void ShouldThrowWhenMaxObjectCountLessThanOne() => Assert.ThrowsException<ArgumentOutOfRangeException>(() => new GorgonRingPool<string>(0, () => "Test"));
 
     [TestMethod]
     public void ShouldWrapWhenFull()
     {
         const int poolSize = 3;
         GorgonRingPool<DisposableObject> pool = new(poolSize, () => new DisposableObject());
-        List<DisposableObject> items = new();
+        List<DisposableObject> items = [];
 
         for (int i = 0; i < poolSize; i++)
         {
@@ -36,7 +33,7 @@ public class GorgonRingPoolTests
     public void ShouldWrapAndNotifyWhenFull()
     {
         const int poolSize = 3;
-        List<DisposableObject> items = new();
+        List<DisposableObject> items = [];
         GorgonRingPool<DisposableObject> pool = new(poolSize, () => new DisposableObject(), () => items.Add(new DisposableObject()));
 
         for (int i = 0; i < poolSize; i++)
@@ -76,7 +73,7 @@ public class GorgonRingPoolTests
         const int poolSize = 5;
         GorgonRingPool<string> pool = new(poolSize, () => Guid.NewGuid().ToString());
 
-        List<string> allocatedItems = new();
+        List<string> allocatedItems = [];
         for (int i = 0; i < poolSize; i++)
         {
             allocatedItems.Add(pool.Allocate());
@@ -87,10 +84,10 @@ public class GorgonRingPoolTests
     }
 
     [TestMethod]
-    public void ShouldAllocateMultipleItems_WithInitializer()
+    public void ShouldAllocateMultipleItemsWithInitializer()
     {
         GorgonRingPool<DisposableObject> pool = new(5, () => new());
-        List<DisposableObject> items = new List<DisposableObject>();
+        List<DisposableObject> items = [];
 
         for (int i = 0; i < 5; i++)
         {
@@ -112,7 +109,7 @@ public class GorgonRingPoolTests
         Assert.ThrowsException<GorgonException>(() => pool.Allocate());
     }
 
-    private class DisposableObject : IDisposable
+    private sealed class DisposableObject : IDisposable
     {
         public string Text
         {
@@ -125,9 +122,6 @@ public class GorgonRingPoolTests
             get; private set;
         }
 
-        public void Dispose()
-        {
-            IsDisposed = true;
-        }
+        public void Dispose() => IsDisposed = true;
     }
 }

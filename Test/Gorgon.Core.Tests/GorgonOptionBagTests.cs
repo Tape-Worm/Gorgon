@@ -8,13 +8,13 @@ namespace Gorgon.Core.Tests;
 public class GorgonOptionBagTests
 {
     [TestMethod]
-    public void GorgonOptionBag_Constructor_ValidParameters_CreatesInstance()
+    public void GorgonOptionBagConstructorValidParametersCreatesInstance()
     {
         // Arrange
-        IGorgonOption option = GorgonOption.CreateOption<string>("TestOption", "Default");
+        IGorgonOption option = GorgonOption.CreateOption("TestOption", "Default");
 
         // Act
-        GorgonOptionBag optionBag = new GorgonOptionBag(new[] { option });
+        GorgonOptionBag optionBag = new(new[] { option });
 
         // Assert
         Assert.AreEqual(1, optionBag.Count);
@@ -22,24 +22,24 @@ public class GorgonOptionBagTests
     }
 
     [TestMethod]
-    public void GorgonOptionBag_Constructor_DuplicateOptions_ThrowsException()
+    public void GorgonOptionBagConstructorDuplicateOptionsThrowsException()
     {
         // Arrange
-        IGorgonOption option1 = GorgonOption.CreateOption<string>("TestOption", "Default");
-        IGorgonOption option2 = GorgonOption.CreateOption<string>("TestOption", "Default");
+        IGorgonOption option1 = GorgonOption.CreateOption("TestOption", "Default");
+        IGorgonOption option2 = GorgonOption.CreateOption("TestOption", "Default");
 
         // Act and Assert
         Assert.ThrowsException<ArgumentException>(() => new GorgonOptionBag(new[] { option1, option2 }));
     }
 
     [TestMethod]
-    public void GorgonOptionBag_GetOptionValue_ValidParameters_ReturnsValue()
+    public void GorgonOptionBagGetOptionValueValidParametersReturnsValue()
     {
         // Arrange
         string optionName = "TestOption";
         string defaultValue = "Default";
-        IGorgonOption option = GorgonOption.CreateOption<string>(optionName, defaultValue);
-        GorgonOptionBag optionBag = new GorgonOptionBag(new[] { option });
+        IGorgonOption option = GorgonOption.CreateOption(optionName, defaultValue);
+        GorgonOptionBag optionBag = new(new[] { option });
 
         // Act
         string? result = optionBag.GetOptionValue<string>(optionName);
@@ -49,25 +49,25 @@ public class GorgonOptionBagTests
     }
 
     [TestMethod]
-    public void GorgonOptionBag_GetOptionValue_InvalidOptionName_ThrowsException()
+    public void GorgonOptionBagGetOptionValueInvalidOptionNameThrowsException()
     {
         // Arrange
-        IGorgonOption option = GorgonOption.CreateOption<string>("TestOption", "Default");
-        GorgonOptionBag optionBag = new GorgonOptionBag(new[] { option });
+        IGorgonOption option = GorgonOption.CreateOption("TestOption", "Default");
+        GorgonOptionBag optionBag = new(new[] { option });
 
         // Act and Assert
         Assert.ThrowsException<KeyNotFoundException>(() => optionBag.GetOptionValue<string>("InvalidOptionName"));
     }
 
     [TestMethod]
-    public void GorgonOptionBag_SetOptionValue_ValidParameters_SetsValue()
+    public void GorgonOptionBagSetOptionValueValidParametersSetsValue()
     {
         // Arrange
         string optionName = "TestOption";
         string defaultValue = "Default";
         string newValue = "New Value";
-        IGorgonOption option = GorgonOption.CreateOption<string>(optionName, defaultValue);
-        GorgonOptionBag optionBag = new GorgonOptionBag(new[] { option });
+        IGorgonOption option = GorgonOption.CreateOption(optionName, defaultValue);
+        GorgonOptionBag optionBag = new(new[] { option });
 
         // Act
         optionBag.SetOptionValue(optionName, newValue);
@@ -77,22 +77,22 @@ public class GorgonOptionBagTests
     }
 
     [TestMethod]
-    public void GorgonOptionBag_SetOptionValue_InvalidOptionName_ThrowsException()
+    public void GorgonOptionBagSetOptionValueInvalidOptionNameThrowsException()
     {
         // Arrange
-        IGorgonOption option = GorgonOption.CreateOption<string>("TestOption", "Default");
-        GorgonOptionBag optionBag = new GorgonOptionBag(new[] { option });
+        IGorgonOption option = GorgonOption.CreateOption("TestOption", "Default");
+        GorgonOptionBag optionBag = new(new[] { option });
 
         // Act and Assert
         Assert.ThrowsException<KeyNotFoundException>(() => optionBag.SetOptionValue("InvalidOptionName", "New Value"));
     }
 
     [TestMethod]
-    public void GorgonOptionBag_IndexOf_ValidOption_ReturnsIndex()
+    public void GorgonOptionBagIndexOfValidOptionReturnsIndex()
     {
         // Arrange
-        IGorgonOption option = GorgonOption.CreateOption<string>("TestOption", "Default");
-        GorgonOptionBag optionBag = new GorgonOptionBag(new[] { option });
+        IGorgonOption option = GorgonOption.CreateOption("TestOption", "Default");
+        GorgonOptionBag optionBag = new(new[] { option });
 
         // Act
         int index = optionBag.IndexOf(option);
@@ -102,12 +102,12 @@ public class GorgonOptionBagTests
     }
 
     [TestMethod]
-    public void GorgonOptionBag_IndexOf_InvalidOption_ReturnsMinusOne()
+    public void GorgonOptionBagIndexOfInvalidOptionReturnsMinusOne()
     {
         // Arrange
-        IGorgonOption option1 = GorgonOption.CreateOption<string>("TestOption", "Default");
-        IGorgonOption option2 = GorgonOption.CreateOption<string>("InvalidOption", "Default");
-        GorgonOptionBag optionBag = new GorgonOptionBag(new[] { option1 });
+        IGorgonOption option1 = GorgonOption.CreateOption("TestOption", "Default");
+        IGorgonOption option2 = GorgonOption.CreateOption("InvalidOption", "Default");
+        GorgonOptionBag optionBag = new(new[] { option1 });
 
         // Act
         int index = optionBag.IndexOf(option2);
@@ -117,11 +117,11 @@ public class GorgonOptionBagTests
     }
 
     [TestMethod]
-    public void GorgonOptionBag_Contains_ValidOption_ReturnsTrue()
+    public void GorgonOptionBagContainsValidOptionReturnsTrue()
     {
         // Arrange
-        IGorgonOption option = GorgonOption.CreateOption<string>("TestOption", "Default");
-        GorgonOptionBag optionBag = new GorgonOptionBag(new[] { option });
+        IGorgonOption option = GorgonOption.CreateOption("TestOption", "Default");
+        GorgonOptionBag optionBag = new(new[] { option });
 
         // Act
         bool contains = optionBag.Contains(option);
@@ -131,12 +131,12 @@ public class GorgonOptionBagTests
     }
 
     [TestMethod]
-    public void GorgonOptionBag_Contains_InvalidOption_ReturnsFalse()
+    public void GorgonOptionBagContainsInvalidOptionReturnsFalse()
     {
         // Arrange
-        IGorgonOption option1 = GorgonOption.CreateOption<string>("TestOption", "Default");
-        IGorgonOption option2 = GorgonOption.CreateOption<string>("InvalidOption", "Default");
-        GorgonOptionBag optionBag = new GorgonOptionBag(new[] { option1 });
+        IGorgonOption option1 = GorgonOption.CreateOption("TestOption", "Default");
+        IGorgonOption option2 = GorgonOption.CreateOption("InvalidOption", "Default");
+        GorgonOptionBag optionBag = new(new[] { option1 });
 
         // Act
         bool contains = optionBag.Contains(option2);
@@ -146,12 +146,12 @@ public class GorgonOptionBagTests
     }
 
     [TestMethod]
-    public void GetByName_ValidOptionName_ReturnsOption()
+    public void GetByNameValidOptionNameReturnsOption()
     {
         // Arrange
         string optionName = "TestOption";
-        IGorgonOption option = GorgonOption.CreateOption<string>(optionName, "Default");
-        GorgonOptionBag optionBag = new GorgonOptionBag(new[] { option });
+        IGorgonOption option = GorgonOption.CreateOption(optionName, "Default");
+        GorgonOptionBag optionBag = new(new[] { option });
 
         // Act
         IGorgonOption result = optionBag.GetByName(optionName);
@@ -161,23 +161,23 @@ public class GorgonOptionBagTests
     }
 
     [TestMethod]
-    public void GetByName_InvalidOptionName_ThrowsException()
+    public void GetByNameInvalidOptionNameThrowsException()
     {
         // Arrange
-        IGorgonOption option = GorgonOption.CreateOption<string>("TestOption", "Default");
-        GorgonOptionBag optionBag = new GorgonOptionBag(new[] { option });
+        IGorgonOption option = GorgonOption.CreateOption("TestOption", "Default");
+        GorgonOptionBag optionBag = new(new[] { option });
 
         // Act and Assert
         Assert.ThrowsException<KeyNotFoundException>(() => optionBag.GetByName("InvalidOptionName"));
     }
 
     [TestMethod]
-    public void IndexOfName_ValidOptionName_ReturnsIndex()
+    public void IndexOfNameValidOptionNameReturnsIndex()
     {
         // Arrange
         string optionName = "TestOption";
-        IGorgonOption option = GorgonOption.CreateOption<string>(optionName, "Default");
-        GorgonOptionBag optionBag = new GorgonOptionBag(new[] { option });
+        IGorgonOption option = GorgonOption.CreateOption(optionName, "Default");
+        GorgonOptionBag optionBag = new(new[] { option });
 
         // Act
         int index = optionBag.IndexOfName(optionName);
@@ -187,11 +187,11 @@ public class GorgonOptionBagTests
     }
 
     [TestMethod]
-    public void IndexOfName_InvalidOptionName_ReturnsMinusOne()
+    public void IndexOfNameInvalidOptionNameReturnsMinusOne()
     {
         // Arrange
-        IGorgonOption option = GorgonOption.CreateOption<string>("TestOption", "Default");
-        GorgonOptionBag optionBag = new GorgonOptionBag(new[] { option });
+        IGorgonOption option = GorgonOption.CreateOption("TestOption", "Default");
+        GorgonOptionBag optionBag = new(new[] { option });
 
         // Act
         int index = optionBag.IndexOfName("InvalidOptionName");
@@ -201,12 +201,12 @@ public class GorgonOptionBagTests
     }
 
     [TestMethod]
-    public void ContainsName_ValidOptionName_ReturnsTrue()
+    public void ContainsNameValidOptionNameReturnsTrue()
     {
         // Arrange
         string optionName = "TestOption";
-        IGorgonOption option = GorgonOption.CreateOption<string>(optionName, "Default");
-        GorgonOptionBag optionBag = new GorgonOptionBag(new[] { option });
+        IGorgonOption option = GorgonOption.CreateOption(optionName, "Default");
+        GorgonOptionBag optionBag = new(new[] { option });
 
         // Act
         bool contains = optionBag.ContainsName(optionName);
@@ -216,11 +216,11 @@ public class GorgonOptionBagTests
     }
 
     [TestMethod]
-    public void ContainsName_InvalidOptionName_ReturnsFalse()
+    public void ContainsNameInvalidOptionNameReturnsFalse()
     {
         // Arrange
-        IGorgonOption option = GorgonOption.CreateOption<string>("TestOption", "Default");
-        GorgonOptionBag optionBag = new GorgonOptionBag(new[] { option });
+        IGorgonOption option = GorgonOption.CreateOption("TestOption", "Default");
+        GorgonOptionBag optionBag = new(new[] { option });
 
         // Act
         bool contains = optionBag.ContainsName("InvalidOptionName");
@@ -230,13 +230,13 @@ public class GorgonOptionBagTests
     }
 
     [TestMethod]
-    public void CreateInt64Option_SetLongValue_GetAsInt32()
+    public void CreateInt64OptionSetLongValueGetAsInt32()
     {
         // Arrange
         string optionName = "TestOption";
         long defaultValue = 10;
-        IGorgonOption option = GorgonOption.CreateOption<long>(optionName, defaultValue);
-        GorgonOptionBag optionBag = new GorgonOptionBag(new[] { option });
+        IGorgonOption option = GorgonOption.CreateOption(optionName, defaultValue);
+        GorgonOptionBag optionBag = new(new[] { option });
 
         long newValue = 15;
         optionBag.SetOptionValue(optionName, newValue);
@@ -249,20 +249,20 @@ public class GorgonOptionBagTests
     }
 
     [TestMethod]
-    public void GorgonOptionBag_SetAndGet_NumericPrimitiveTypesAndDateTime()
+    public void GorgonOptionBagSetAndGetNumericPrimitiveTypesAndDateTime()
     {
         // Arrange
         IGorgonOption optionInt16 = GorgonOption.CreateOption<short>("OptionInt16", 1);
-        IGorgonOption optionInt32 = GorgonOption.CreateOption<int>("OptionInt32", 2);
+        IGorgonOption optionInt32 = GorgonOption.CreateOption("OptionInt32", 2);
         IGorgonOption optionInt64 = GorgonOption.CreateOption<long>("OptionInt64", 3);
         IGorgonOption optionUInt16 = GorgonOption.CreateOption<ushort>("OptionUInt16", 4);
         IGorgonOption optionUInt32 = GorgonOption.CreateOption<uint>("OptionUInt32", 5);
         IGorgonOption optionUInt64 = GorgonOption.CreateOption<ulong>("OptionUInt64", 6);
-        IGorgonOption optionFloat = GorgonOption.CreateOption<float>("OptionFloat", 7.0f);
-        IGorgonOption optionDouble = GorgonOption.CreateOption<double>("OptionDouble", 8.0);
-        IGorgonOption optionDecimal = GorgonOption.CreateOption<decimal>("OptionDecimal", 9.0m);
-        IGorgonOption optionDateTime = GorgonOption.CreateOption<DateTime>("OptionDateTime", new DateTime(2022, 1, 1));
-        GorgonOptionBag optionBag = new GorgonOptionBag(new[] { optionInt16, optionInt32, optionInt64, optionUInt16, optionUInt32, optionUInt64, optionFloat, optionDouble, optionDecimal, optionDateTime });
+        IGorgonOption optionFloat = GorgonOption.CreateOption("OptionFloat", 7.0f);
+        IGorgonOption optionDouble = GorgonOption.CreateOption("OptionDouble", 8.0);
+        IGorgonOption optionDecimal = GorgonOption.CreateOption("OptionDecimal", 9.0m);
+        IGorgonOption optionDateTime = GorgonOption.CreateOption("OptionDateTime", new DateTime(2022, 1, 1));
+        GorgonOptionBag optionBag = new(new[] { optionInt16, optionInt32, optionInt64, optionUInt16, optionUInt32, optionUInt64, optionFloat, optionDouble, optionDecimal, optionDateTime });
 
         // Act
         short retrievedInt16 = optionBag.GetOptionValue<short>("OptionInt16");
@@ -290,7 +290,7 @@ public class GorgonOptionBagTests
     }
 
     [TestMethod]
-    public void CreateByteOption_SetValue_ValueBelowMin()
+    public void CreateByteOptionSetValueValueBelowMin()
     {
         // Arrange
         string optionName = "TestOption";
@@ -298,7 +298,7 @@ public class GorgonOptionBagTests
         byte maxValue = 127;
         byte defaultValue = 64;
         IGorgonOption option = GorgonOption.CreateByteOption(optionName, defaultValue, null, minValue, maxValue);
-        GorgonOptionBag optionBag = new GorgonOptionBag(new[] { option });
+        GorgonOptionBag optionBag = new(new[] { option });
 
         byte newValue = 60;
 
@@ -311,7 +311,7 @@ public class GorgonOptionBagTests
     }
 
     [TestMethod]
-    public void CreateByteOption_SetValue_ValueOutOfRange()
+    public void CreateByteOptionSetValueValueOutOfRange()
     {
         // Arrange
         string optionName = "TestOption";
@@ -319,7 +319,7 @@ public class GorgonOptionBagTests
         byte maxValue = 127;
         byte defaultValue = 64;
         IGorgonOption option = GorgonOption.CreateByteOption(optionName, defaultValue, null, minValue, maxValue);
-        GorgonOptionBag optionBag = new GorgonOptionBag(new[] { option });
+        GorgonOptionBag optionBag = new(new[] { option });
 
         byte newValue = 130;
 

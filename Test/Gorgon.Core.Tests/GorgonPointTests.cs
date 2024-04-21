@@ -7,85 +7,85 @@ namespace Gorgon.Core.Tests;
 public class GorgonPointTests
 {
     [TestMethod]
-    public void Equals_ReturnsTrueForEqualPoints()
+    public void EqualsReturnsTrueForEqualPoints()
     {
         // Arrange
-        var point1 = new GorgonPoint(10, 20);
-        var point2 = new GorgonPoint(10, 20);
+        GorgonPoint point1 = new(10, 20);
+        GorgonPoint point2 = new(10, 20);
 
         // Act
-        var result = point1.Equals(point2);
+        bool result = point1.Equals(point2);
 
         // Assert
         Assert.IsTrue(result);
     }
 
     [TestMethod]
-    public void Equals_ReturnsFalseForDifferentPoints()
+    public void EqualsReturnsFalseForDifferentPoints()
     {
         // Arrange
-        var point1 = new GorgonPoint(10, 20);
-        var point2 = new GorgonPoint(20, 10);
+        GorgonPoint point1 = new(10, 20);
+        GorgonPoint point2 = new(20, 10);
 
         // Act
-        var result = point1.Equals(point2);
+        bool result = point1.Equals(point2);
 
         // Assert
         Assert.IsFalse(result);
     }
 
     [TestMethod]
-    public void Equals_ReturnsFalseForDifferentType()
+    public void EqualsReturnsFalseForDifferentType()
     {
         // Arrange
-        var point = new GorgonPoint(10, 20);
-        var otherObject = new object();
+        GorgonPoint point = new(10, 20);
+        object otherObject = new();
 
         // Act
-        var result = point.Equals(otherObject);
+        bool result = point.Equals(otherObject);
 
         // Assert
         Assert.IsFalse(result);
     }
 
     [TestMethod]
-    public void GetHashCode_ReturnsSameHashCodeForEqualPoints()
+    public void GetHashCodeReturnsSameHashCodeForEqualPoints()
     {
         // Arrange
-        var point1 = new GorgonPoint(10, 20);
-        var point2 = new GorgonPoint(10, 20);
+        GorgonPoint point1 = new(10, 20);
+        GorgonPoint point2 = new(10, 20);
 
         // Act
-        var hashCode1 = point1.GetHashCode();
-        var hashCode2 = point2.GetHashCode();
+        int hashCode1 = point1.GetHashCode();
+        int hashCode2 = point2.GetHashCode();
 
         // Assert
         Assert.AreEqual(hashCode1, hashCode2);
     }
 
     [TestMethod]
-    public void GetHashCode_ReturnsDifferentHashCodeForDifferentPoints()
+    public void GetHashCodeReturnsDifferentHashCodeForDifferentPoints()
     {
         // Arrange
-        var point1 = new GorgonPoint(10, 20);
-        var point2 = new GorgonPoint(20, 10);
+        GorgonPoint point1 = new(10, 20);
+        GorgonPoint point2 = new(20, 10);
 
         // Act
-        var hashCode1 = point1.GetHashCode();
-        var hashCode2 = point2.GetHashCode();
+        int hashCode1 = point1.GetHashCode();
+        int hashCode2 = point2.GetHashCode();
 
         // Assert
         Assert.AreNotEqual(hashCode1, hashCode2);
     }
 
     [TestMethod]
-    public void Round_ReturnsRoundedPoint()
+    public void RoundReturnsRoundedPoint()
     {
         // Arrange
-        var vector = new System.Numerics.Vector2(10.5f, 20.5f);
+        System.Numerics.Vector2 vector = new(10.5f, 20.5f);
 
         // Act
-        var result = GorgonPoint.Round(vector);
+        GorgonPoint result = GorgonPoint.Round(vector);
 
         // Assert
         Assert.AreEqual(11, result.X);
@@ -93,13 +93,13 @@ public class GorgonPointTests
     }
 
     [TestMethod]
-    public void Ceiling_ReturnsCeilingPoint()
+    public void CeilingReturnsCeilingPoint()
     {
         // Arrange
-        var vector = new System.Numerics.Vector2(10.1f, 20.9f);
+        System.Numerics.Vector2 vector = new(10.1f, 20.9f);
 
         // Act
-        var result = GorgonPoint.Ceiling(vector);
+        GorgonPoint result = GorgonPoint.Ceiling(vector);
 
         // Assert
         Assert.AreEqual(11, result.X);
@@ -107,13 +107,13 @@ public class GorgonPointTests
     }
 
     [TestMethod]
-    public void Floor_ReturnsFloorPoint()
+    public void FloorReturnsFloorPoint()
     {
         // Arrange
-        var vector = new System.Numerics.Vector2(10.9f, 20.1f);
+        System.Numerics.Vector2 vector = new(10.9f, 20.1f);
 
         // Act
-        var result = GorgonPoint.Floor(vector);
+        GorgonPoint result = GorgonPoint.Floor(vector);
 
         // Assert
         Assert.AreEqual(10, result.X);
@@ -121,14 +121,14 @@ public class GorgonPointTests
     }
 
     [TestMethod]
-    public void Add_ReturnsSumOfPoints()
+    public void AddReturnsSumOfPoints()
     {
         // Arrange
-        var point1 = new GorgonPoint(10, 20);
-        var point2 = new GorgonPoint(5, 10);
+        GorgonPoint point1 = new(10, 20);
+        GorgonPoint point2 = new(5, 10);
 
         // Act
-        var result = GorgonPoint.Add(point1, point2);
+        GorgonPoint result = GorgonPoint.Add(point1, point2);
 
         // Assert
         Assert.AreEqual(15, result.X);
@@ -136,14 +136,14 @@ public class GorgonPointTests
     }
 
     [TestMethod]
-    public void Subtract_ReturnsDifferenceOfPoints()
+    public void SubtractReturnsDifferenceOfPoints()
     {
         // Arrange
-        var point1 = new GorgonPoint(10, 20);
-        var point2 = new GorgonPoint(5, 10);
+        GorgonPoint point1 = new(10, 20);
+        GorgonPoint point2 = new(5, 10);
 
         // Act
-        var result = GorgonPoint.Subtract(point1, point2);
+        GorgonPoint result = GorgonPoint.Subtract(point1, point2);
 
         // Assert
         Assert.AreEqual(5, result.X);
@@ -151,14 +151,14 @@ public class GorgonPointTests
     }
 
     [TestMethod]
-    public void Multiply_ReturnsProductOfPointAndScalar()
+    public void MultiplyReturnsProductOfPointAndScalar()
     {
         // Arrange
-        var point = new GorgonPoint(10, 20);
-        var scalar = 2;
+        GorgonPoint point = new(10, 20);
+        int scalar = 2;
 
         // Act
-        var result = GorgonPoint.Multiply(point, scalar);
+        GorgonPoint result = GorgonPoint.Multiply(point, scalar);
 
         // Assert
         Assert.AreEqual(20, result.X);
@@ -166,14 +166,14 @@ public class GorgonPointTests
     }
 
     [TestMethod]
-    public void Divide_ReturnsQuotientOfPointAndScalar()
+    public void DivideReturnsQuotientOfPointAndScalar()
     {
         // Arrange
-        var point = new GorgonPoint(10, 20);
-        var scalar = 2;
+        GorgonPoint point = new(10, 20);
+        int scalar = 2;
 
         // Act
-        var result = GorgonPoint.Divide(point, scalar);
+        GorgonPoint result = GorgonPoint.Divide(point, scalar);
 
         // Assert
         Assert.AreEqual(5, result.X);
@@ -181,10 +181,10 @@ public class GorgonPointTests
     }
 
     [TestMethod]
-    public void ImplicitConversionToVector2_ReturnsVector2()
+    public void ImplicitConversionToVector2ReturnsVector2()
     {
         // Arrange
-        var point = new GorgonPoint(10, 20);
+        GorgonPoint point = new(10, 20);
 
         // Act
         System.Numerics.Vector2 result = point;
@@ -195,10 +195,10 @@ public class GorgonPointTests
     }
 
     [TestMethod]
-    public void ExplicitConversionFromVector2_ReturnsGorgonPoint()
+    public void ExplicitConversionFromVector2ReturnsGorgonPoint()
     {
         // Arrange
-        var vector = new System.Numerics.Vector2(10, 20);
+        System.Numerics.Vector2 vector = new(10, 20);
 
         // Act
         GorgonPoint result = (GorgonPoint)vector;
@@ -209,10 +209,10 @@ public class GorgonPointTests
     }
 
     [TestMethod]
-    public void ImplicitConversionToPoint_ReturnsPoint()
+    public void ImplicitConversionToPointReturnsPoint()
     {
         // Arrange
-        var point = new GorgonPoint(10, 20);
+        GorgonPoint point = new(10, 20);
 
         // Act
         System.Drawing.Point result = point;
@@ -223,10 +223,10 @@ public class GorgonPointTests
     }
 
     [TestMethod]
-    public void ImplicitConversionToPointF_ReturnsPointF()
+    public void ImplicitConversionToPointFReturnsPointF()
     {
         // Arrange
-        var point = new GorgonPoint(10, 20);
+        GorgonPoint point = new(10, 20);
 
         // Act
         System.Drawing.PointF result = point;
@@ -237,10 +237,10 @@ public class GorgonPointTests
     }
 
     [TestMethod]
-    public void ExplicitConversionFromPoint_ReturnsGorgonPoint()
+    public void ExplicitConversionFromPointReturnsGorgonPoint()
     {
         // Arrange
-        var point = new System.Drawing.Point(10, 20);
+        System.Drawing.Point point = new(10, 20);
 
         // Act
         GorgonPoint result = (GorgonPoint)point;
@@ -251,10 +251,10 @@ public class GorgonPointTests
     }
 
     [TestMethod]
-    public void ExplicitConversionFromPointF_ReturnsGorgonPoint()
+    public void ExplicitConversionFromPointFReturnsGorgonPoint()
     {
         // Arrange
-        var point = new System.Drawing.PointF(10, 20);
+        System.Drawing.PointF point = new(10, 20);
 
         // Act
         GorgonPoint result = (GorgonPoint)point;
@@ -265,10 +265,10 @@ public class GorgonPointTests
     }
 
     [TestMethod]
-    public void ImplicitConversionToSize_ReturnsSize()
+    public void ImplicitConversionToSizeReturnsSize()
     {
         // Arrange
-        var point = new GorgonPoint(10, 20);
+        GorgonPoint point = new(10, 20);
 
         // Act
         System.Drawing.Size result = point;
@@ -279,10 +279,10 @@ public class GorgonPointTests
     }
 
     [TestMethod]
-    public void ImplicitConversionToSizeF_ReturnsSizeF()
+    public void ImplicitConversionToSizeFReturnsSizeF()
     {
         // Arrange
-        var point = new GorgonPoint(10, 20);
+        GorgonPoint point = new(10, 20);
 
         // Act
         System.Drawing.SizeF result = point;
@@ -293,10 +293,10 @@ public class GorgonPointTests
     }
 
     [TestMethod]
-    public void ExplicitConversionFromSize_ReturnsGorgonPoint()
+    public void ExplicitConversionFromSizeReturnsGorgonPoint()
     {
         // Arrange
-        var size = new System.Drawing.Size(10, 20);
+        System.Drawing.Size size = new(10, 20);
 
         // Act
         GorgonPoint result = (GorgonPoint)size;
@@ -307,10 +307,10 @@ public class GorgonPointTests
     }
 
     [TestMethod]
-    public void ExplicitConversionFromSizeF_ReturnsGorgonPoint()
+    public void ExplicitConversionFromSizeFReturnsGorgonPoint()
     {
         // Arrange
-        var size = new System.Drawing.SizeF(10, 20);
+        System.Drawing.SizeF size = new(10, 20);
 
         // Act
         GorgonPoint result = (GorgonPoint)size;
@@ -321,14 +321,14 @@ public class GorgonPointTests
     }
 
     [TestMethod]
-    public void AdditionOperator_ReturnsSumOfPoints()
+    public void AdditionOperatorReturnsSumOfPoints()
     {
         // Arrange
-        var point1 = new GorgonPoint(10, 20);
-        var point2 = new GorgonPoint(5, 10);
+        GorgonPoint point1 = new(10, 20);
+        GorgonPoint point2 = new(5, 10);
 
         // Act
-        var result = point1 + point2;
+        GorgonPoint result = point1 + point2;
 
         // Assert
         Assert.AreEqual(15, result.X);
@@ -336,14 +336,14 @@ public class GorgonPointTests
     }
 
     [TestMethod]
-    public void SubtractionOperator_ReturnsDifferenceOfPoints()
+    public void SubtractionOperatorReturnsDifferenceOfPoints()
     {
         // Arrange
-        var point1 = new GorgonPoint(10, 20);
-        var point2 = new GorgonPoint(5, 10);
+        GorgonPoint point1 = new(10, 20);
+        GorgonPoint point2 = new(5, 10);
 
         // Act
-        var result = point1 - point2;
+        GorgonPoint result = point1 - point2;
 
         // Assert
         Assert.AreEqual(5, result.X);
@@ -351,14 +351,14 @@ public class GorgonPointTests
     }
 
     [TestMethod]
-    public void MultiplicationOperator_ReturnsProductOfPointAndScalar()
+    public void MultiplicationOperatorReturnsProductOfPointAndScalar()
     {
         // Arrange
-        var point = new GorgonPoint(10, 20);
-        var scalar = 2;
+        GorgonPoint point = new(10, 20);
+        int scalar = 2;
 
         // Act
-        var result = point * scalar;
+        GorgonPoint result = point * scalar;
 
         // Assert
         Assert.AreEqual(20, result.X);
@@ -366,14 +366,14 @@ public class GorgonPointTests
     }
 
     [TestMethod]
-    public void DivisionOperator_ReturnsQuotientOfPointAndScalar()
+    public void DivisionOperatorReturnsQuotientOfPointAndScalar()
     {
         // Arrange
-        var point = new GorgonPoint(10, 20);
-        var scalar = 2;
+        GorgonPoint point = new(10, 20);
+        int scalar = 2;
 
         // Act
-        var result = point / scalar;
+        GorgonPoint result = point / scalar;
 
         // Assert
         Assert.AreEqual(5, result.X);
@@ -381,56 +381,56 @@ public class GorgonPointTests
     }
 
     [TestMethod]
-    public void EqualityOperator_ReturnsTrueForEqualPoints()
+    public void EqualityOperatorReturnsTrueForEqualPoints()
     {
         // Arrange
-        var point1 = new GorgonPoint(10, 20);
-        var point2 = new GorgonPoint(10, 20);
+        GorgonPoint point1 = new(10, 20);
+        GorgonPoint point2 = new(10, 20);
 
         // Act
-        var result = point1 == point2;
+        bool result = point1 == point2;
 
         // Assert
         Assert.IsTrue(result);
     }
 
     [TestMethod]
-    public void EqualityOperator_ReturnsFalseForDifferentPoints()
+    public void EqualityOperatorReturnsFalseForDifferentPoints()
     {
         // Arrange
-        var point1 = new GorgonPoint(10, 20);
-        var point2 = new GorgonPoint(20, 10);
+        GorgonPoint point1 = new(10, 20);
+        GorgonPoint point2 = new(20, 10);
 
         // Act
-        var result = point1 == point2;
+        bool result = point1 == point2;
 
         // Assert
         Assert.IsFalse(result);
     }
 
     [TestMethod]
-    public void InequalityOperator_ReturnsTrueForDifferentPoints()
+    public void InequalityOperatorReturnsTrueForDifferentPoints()
     {
         // Arrange
-        var point1 = new GorgonPoint(10, 20);
-        var point2 = new GorgonPoint(20, 10);
+        GorgonPoint point1 = new(10, 20);
+        GorgonPoint point2 = new(20, 10);
 
         // Act
-        var result = point1 != point2;
+        bool result = point1 != point2;
 
         // Assert
         Assert.IsTrue(result);
     }
 
     [TestMethod]
-    public void InequalityOperator_ReturnsFalseForEqualPoints()
+    public void InequalityOperatorReturnsFalseForEqualPoints()
     {
         // Arrange
-        var point1 = new GorgonPoint(10, 20);
-        var point2 = new GorgonPoint(10, 20);
+        GorgonPoint point1 = new(10, 20);
+        GorgonPoint point2 = new(10, 20);
 
         // Act
-        var result = point1 != point2;
+        bool result = point1 != point2;
 
         // Assert
         Assert.IsFalse(result);

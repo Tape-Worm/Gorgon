@@ -275,10 +275,6 @@ public class GorgonArrayTests
         Assert.AreEqual(array[3], dirty[0]);
         Assert.AreEqual(array[4], dirty[1]);
         Assert.AreEqual(array[7], dirty[2]);
-
-        var mem = GC.GetGCMemoryInfo();
-        var testProcess = Process.GetCurrentProcess();
-        Debugger.Break();
     }
 
     [TestMethod]

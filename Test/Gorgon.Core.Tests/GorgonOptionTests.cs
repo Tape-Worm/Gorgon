@@ -7,7 +7,7 @@ namespace Gorgon.Core.Tests;
 public class GorgonOptionTests
 {
     [TestMethod]
-    public void CreateByteOption_ValidParameters_ReturnsOption()
+    public void CreateByteOptionValidParametersReturnsOption()
     {
         // Arrange
         string name = "TestOption";
@@ -28,7 +28,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void SetValue_Byte_ValidParameters_SetsValue()
+    public void SetValueByteValidParametersSetsValue()
     {
         // Arrange
         string name = "TestOption";
@@ -44,7 +44,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void CreateByteOption_EmptyName_ThrowsException()
+    public void CreateByteOptionEmptyNameThrowsException()
     {
         // Arrange
         string name = string.Empty;
@@ -55,7 +55,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void GetDefaultValue_Byte_ReturnsDefaultValue()
+    public void GetDefaultValueByteReturnsDefaultValue()
     {
         // Arrange
         string name = "TestOption";
@@ -70,7 +70,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void GetMinValue_Byte_ReturnsMinValue()
+    public void GetMinValueByteReturnsMinValue()
     {
         // Arrange
         string name = "TestOption";
@@ -86,7 +86,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void GetMaxValue_Byte_ReturnsMaxValue()
+    public void GetMaxValueByteReturnsMaxValue()
     {
         // Arrange
         string name = "TestOption";
@@ -102,7 +102,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void SetValue_Byte_ValueLessThanMin_SetsToMin()
+    public void SetValueByteValueLessThanMinSetsToMin()
     {
         // Arrange
         string name = "TestOption";
@@ -119,7 +119,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void SetValue_Byte_ValueGreaterThanMax_SetsToMax()
+    public void SetValueByteValueGreaterThanMaxSetsToMax()
     {
         // Arrange
         string name = "TestOption";
@@ -136,7 +136,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void CreateSByteOption_ValidParameters_ReturnsOption()
+    public void CreateSByteOptionValidParametersReturnsOption()
     {
         // Arrange
         string name = "TestOption";
@@ -157,7 +157,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void SetValue_SByte_ValidParameters_SetsValue()
+    public void SetValueSByteValidParametersSetsValue()
     {
         // Arrange
         string name = "TestOption";
@@ -173,7 +173,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void CreateSByteOption_EmptyName_ThrowsException()
+    public void CreateSByteOptionEmptyNameThrowsException()
     {
         // Arrange
         string name = string.Empty;
@@ -184,7 +184,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void GetDefaultValue_SByte_ReturnsDefaultValue()
+    public void GetDefaultValueSByteReturnsDefaultValue()
     {
         // Arrange
         string name = "TestOption";
@@ -199,7 +199,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void GetMinValue_SByte_ReturnsMinValue()
+    public void GetMinValueSByteReturnsMinValue()
     {
         // Arrange
         string name = "TestOption";
@@ -215,7 +215,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void GetMaxValue_SByte_ReturnsMaxValue()
+    public void GetMaxValueSByteReturnsMaxValue()
     {
         // Arrange
         string name = "TestOption";
@@ -231,7 +231,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void SetValue_SByte_ValueLessThanMin_SetsToMin()
+    public void SetValueSByteValueLessThanMinSetsToMin()
     {
         // Arrange
         string name = "TestOption";
@@ -248,7 +248,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void SetValue_SByte_ValueGreaterThanMax_SetsToMax()
+    public void SetValueSByteValueGreaterThanMaxSetsToMax()
     {
         // Arrange
         string name = "TestOption";
@@ -265,7 +265,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void CreateInt16Option_ValidParameters_ReturnsOption()
+    public void CreateInt16OptionValidParametersReturnsOption()
     {
         // Arrange
         string name = "TestOption";
@@ -286,7 +286,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void SetValue_Int16_ValidParameters_SetsValue()
+    public void SetValueInt16ValidParametersSetsValue()
     {
         // Arrange
         string name = "TestOption";
@@ -302,7 +302,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void CreateInt16Option_EmptyName_ThrowsException()
+    public void CreateInt16OptionEmptyNameThrowsException()
     {
         // Arrange
         string name = string.Empty;
@@ -313,7 +313,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void GetDefaultValue_Int16_ReturnsDefaultValue()
+    public void GetDefaultValueInt16ReturnsDefaultValue()
     {
         // Arrange
         string name = "TestOption";
@@ -328,7 +328,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void GetMinValue_Int16_ReturnsMinValue()
+    public void GetMinValueInt16ReturnsMinValue()
     {
         // Arrange
         string name = "TestOption";
@@ -344,7 +344,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void GetMaxValue_Int16_ReturnsMaxValue()
+    public void GetMaxValueInt16ReturnsMaxValue()
     {
         // Arrange
         string name = "TestOption";
@@ -360,7 +360,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void SetValue_Int16_ValueLessThanMin_SetsToMin()
+    public void SetValueInt16ValueLessThanMinSetsToMin()
     {
         // Arrange
         string name = "TestOption";
@@ -377,7 +377,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void SetValue_Int16_ValueGreaterThanMax_SetsToMax()
+    public void SetValueInt16ValueGreaterThanMaxSetsToMax()
     {
         // Arrange
         string name = "TestOption";
@@ -394,7 +394,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void CreateUInt16Option_ValidParameters_ReturnsOption()
+    public void CreateUInt16OptionValidParametersReturnsOption()
     {
         // Arrange
         string name = "TestOption";
@@ -415,7 +415,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void SetValue_UInt16_ValidParameters_SetsValue()
+    public void SetValueUInt16ValidParametersSetsValue()
     {
         // Arrange
         string name = "TestOption";
@@ -431,7 +431,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void CreateUInt16Option_EmptyName_ThrowsException()
+    public void CreateUInt16OptionEmptyNameThrowsException()
     {
         // Arrange
         string name = string.Empty;
@@ -442,7 +442,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void GetDefaultValue_UInt16_ReturnsDefaultValue()
+    public void GetDefaultValueUInt16ReturnsDefaultValue()
     {
         // Arrange
         string name = "TestOption";
@@ -457,7 +457,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void GetMinValue_UInt16_ReturnsMinValue()
+    public void GetMinValueUInt16ReturnsMinValue()
     {
         // Arrange
         string name = "TestOption";
@@ -473,7 +473,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void GetMaxValue_UInt16_ReturnsMaxValue()
+    public void GetMaxValueUInt16ReturnsMaxValue()
     {
         // Arrange
         string name = "TestOption";
@@ -489,7 +489,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void SetValue_UInt16_ValueLessThanMin_SetsToMin()
+    public void SetValueUInt16ValueLessThanMinSetsToMin()
     {
         // Arrange
         string name = "TestOption";
@@ -506,7 +506,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void CreateInt32Option_ValidParameters_ReturnsOption()
+    public void CreateInt32OptionValidParametersReturnsOption()
     {
         // Arrange
         string name = "TestOption";
@@ -527,7 +527,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void SetValue_Int32_ValidParameters_SetsValue()
+    public void SetValueInt32ValidParametersSetsValue()
     {
         // Arrange
         string name = "TestOption";
@@ -543,7 +543,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void CreateInt32Option_EmptyName_ThrowsException()
+    public void CreateInt32OptionEmptyNameThrowsException()
     {
         // Arrange
         string name = string.Empty;
@@ -554,7 +554,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void GetDefaultValue_Int32_ReturnsDefaultValue()
+    public void GetDefaultValueInt32ReturnsDefaultValue()
     {
         // Arrange
         string name = "TestOption";
@@ -569,7 +569,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void GetMinValue_Int32_ReturnsMinValue()
+    public void GetMinValueInt32ReturnsMinValue()
     {
         // Arrange
         string name = "TestOption";
@@ -585,7 +585,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void GetMaxValue_Int32_ReturnsMaxValue()
+    public void GetMaxValueInt32ReturnsMaxValue()
     {
         // Arrange
         string name = "TestOption";
@@ -601,7 +601,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void SetValue_Int32_ValueLessThanMin_SetsToMin()
+    public void SetValueInt32ValueLessThanMinSetsToMin()
     {
         // Arrange
         string name = "TestOption";
@@ -618,7 +618,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void SetValue_Int32_ValueGreaterThanMax_SetsToMax()
+    public void SetValueInt32ValueGreaterThanMaxSetsToMax()
     {
         // Arrange
         string name = "TestOption";
@@ -635,7 +635,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void SetValue_UInt16_ValueGreaterThanMax_SetsToMax()
+    public void SetValueUInt16ValueGreaterThanMaxSetsToMax()
     {
         // Arrange
         string name = "TestOption";
@@ -652,7 +652,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void CreateUInt32Option_ValidParameters_ReturnsOption()
+    public void CreateUInt32OptionValidParametersReturnsOption()
     {
         // Arrange
         string name = "TestOption";
@@ -673,7 +673,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void SetValue_UInt32_ValidParameters_SetsValue()
+    public void SetValueUInt32ValidParametersSetsValue()
     {
         // Arrange
         string name = "TestOption";
@@ -689,7 +689,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void CreateUInt32Option_EmptyName_ThrowsException()
+    public void CreateUInt32OptionEmptyNameThrowsException()
     {
         // Arrange
         string name = string.Empty;
@@ -700,7 +700,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void GetDefaultValue_UInt32_ReturnsDefaultValue()
+    public void GetDefaultValueUInt32ReturnsDefaultValue()
     {
         // Arrange
         string name = "TestOption";
@@ -715,7 +715,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void GetMinValue_UInt32_ReturnsMinValue()
+    public void GetMinValueUInt32ReturnsMinValue()
     {
         // Arrange
         string name = "TestOption";
@@ -731,7 +731,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void GetMaxValue_UInt32_ReturnsMaxValue()
+    public void GetMaxValueUInt32ReturnsMaxValue()
     {
         // Arrange
         string name = "TestOption";
@@ -747,7 +747,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void SetValue_UInt32_ValueLessThanMin_SetsToMin()
+    public void SetValueUInt32ValueLessThanMinSetsToMin()
     {
         // Arrange
         string name = "TestOption";
@@ -764,7 +764,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void CreateInt64Option_ValidParameters_ReturnsOption()
+    public void CreateInt64OptionValidParametersReturnsOption()
     {
         // Arrange
         string name = "TestOption";
@@ -785,7 +785,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void SetValue_Int64_ValidParameters_SetsValue()
+    public void SetValueInt64ValidParametersSetsValue()
     {
         // Arrange
         string name = "TestOption";
@@ -801,7 +801,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void CreateInt64Option_EmptyName_ThrowsException()
+    public void CreateInt64OptionEmptyNameThrowsException()
     {
         // Arrange
         string name = string.Empty;
@@ -812,7 +812,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void GetDefaultValue_Int64_ReturnsDefaultValue()
+    public void GetDefaultValueInt64ReturnsDefaultValue()
     {
         // Arrange
         string name = "TestOption";
@@ -827,7 +827,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void GetMinValue_Int64_ReturnsMinValue()
+    public void GetMinValueInt64ReturnsMinValue()
     {
         // Arrange
         string name = "TestOption";
@@ -843,7 +843,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void GetMaxValue_Int64_ReturnsMaxValue()
+    public void GetMaxValueInt64ReturnsMaxValue()
     {
         // Arrange
         string name = "TestOption";
@@ -859,7 +859,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void SetValue_Int64_ValueLessThanMin_SetsToMin()
+    public void SetValueInt64ValueLessThanMinSetsToMin()
     {
         // Arrange
         string name = "TestOption";
@@ -876,7 +876,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void SetValue_Int64_ValueGreaterThanMax_SetsToMax()
+    public void SetValueInt64ValueGreaterThanMaxSetsToMax()
     {
         // Arrange
         string name = "TestOption";
@@ -893,7 +893,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void SetValue_UInt32_ValueGreaterThanMax_SetsToMax()
+    public void SetValueUInt32ValueGreaterThanMaxSetsToMax()
     {
         // Arrange
         string name = "TestOption";
@@ -910,7 +910,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void CreateUInt64Option_ValidParameters_ReturnsOption()
+    public void CreateUInt64OptionValidParametersReturnsOption()
     {
         // Arrange
         string name = "TestOption";
@@ -931,7 +931,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void SetValue_UInt64_ValidParameters_SetsValue()
+    public void SetValueUInt64ValidParametersSetsValue()
     {
         // Arrange
         string name = "TestOption";
@@ -947,7 +947,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void CreateUInt64Option_EmptyName_ThrowsException()
+    public void CreateUInt64OptionEmptyNameThrowsException()
     {
         // Arrange
         string name = string.Empty;
@@ -958,7 +958,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void GetDefaultValue_UInt64_ReturnsDefaultValue()
+    public void GetDefaultValueUInt64ReturnsDefaultValue()
     {
         // Arrange
         string name = "TestOption";
@@ -973,7 +973,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void GetMinValue_UInt64_ReturnsMinValue()
+    public void GetMinValueUInt64ReturnsMinValue()
     {
         // Arrange
         string name = "TestOption";
@@ -989,7 +989,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void GetMaxValue_UInt64_ReturnsMaxValue()
+    public void GetMaxValueUInt64ReturnsMaxValue()
     {
         // Arrange
         string name = "TestOption";
@@ -1005,7 +1005,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void SetValue_UInt64_ValueLessThanMin_SetsToMin()
+    public void SetValueUInt64ValueLessThanMinSetsToMin()
     {
         // Arrange
         string name = "TestOption";
@@ -1022,7 +1022,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void SetValue_UInt64_ValueGreaterThanMax_SetsToMax()
+    public void SetValueUInt64ValueGreaterThanMaxSetsToMax()
     {
         // Arrange
         string name = "TestOption";
@@ -1039,7 +1039,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void CreateSingleOption_ValidParameters_ReturnsOption()
+    public void CreateSingleOptionValidParametersReturnsOption()
     {
         // Arrange
         string name = "TestOption";
@@ -1060,7 +1060,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void SetValue_Single_ValidParameters_SetsValue()
+    public void SetValueSingleValidParametersSetsValue()
     {
         // Arrange
         string name = "TestOption";
@@ -1076,7 +1076,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void CreateSingleOption_EmptyName_ThrowsException()
+    public void CreateSingleOptionEmptyNameThrowsException()
     {
         // Arrange
         string name = string.Empty;
@@ -1087,7 +1087,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void GetDefaultValue_Single_ReturnsDefaultValue()
+    public void GetDefaultValueSingleReturnsDefaultValue()
     {
         // Arrange
         string name = "TestOption";
@@ -1102,7 +1102,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void GetMinValue_Single_ReturnsMinValue()
+    public void GetMinValueSingleReturnsMinValue()
     {
         // Arrange
         string name = "TestOption";
@@ -1118,7 +1118,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void GetMaxValue_Single_ReturnsMaxValue()
+    public void GetMaxValueSingleReturnsMaxValue()
     {
         // Arrange
         string name = "TestOption";
@@ -1134,7 +1134,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void SetValue_Single_ValueLessThanMin_SetsToMin()
+    public void SetValueSingleValueLessThanMinSetsToMin()
     {
         // Arrange
         string name = "TestOption";
@@ -1151,7 +1151,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void SetValue_Single_ValueGreaterThanMax_SetsToMax()
+    public void SetValueSingleValueGreaterThanMaxSetsToMax()
     {
         // Arrange
         string name = "TestOption";
@@ -1168,7 +1168,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void CreateDoubleOption_ValidParameters_ReturnsOption()
+    public void CreateDoubleOptionValidParametersReturnsOption()
     {
         // Arrange
         string name = "TestOption";
@@ -1189,7 +1189,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void SetValue_Double_ValidParameters_SetsValue()
+    public void SetValueDoubleValidParametersSetsValue()
     {
         // Arrange
         string name = "TestOption";
@@ -1205,7 +1205,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void CreateDoubleOption_EmptyName_ThrowsException()
+    public void CreateDoubleOptionEmptyNameThrowsException()
     {
         // Arrange
         string name = string.Empty;
@@ -1216,7 +1216,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void GetDefaultValue_Double_ReturnsDefaultValue()
+    public void GetDefaultValueDoubleReturnsDefaultValue()
     {
         // Arrange
         string name = "TestOption";
@@ -1231,7 +1231,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void GetMinValue_Double_ReturnsMinValue()
+    public void GetMinValueDoubleReturnsMinValue()
     {
         // Arrange
         string name = "TestOption";
@@ -1247,7 +1247,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void GetMaxValue_Double_ReturnsMaxValue()
+    public void GetMaxValueDoubleReturnsMaxValue()
     {
         // Arrange
         string name = "TestOption";
@@ -1263,7 +1263,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void SetValue_Double_ValueLessThanMin_SetsToMin()
+    public void SetValueDoubleValueLessThanMinSetsToMin()
     {
         // Arrange
         string name = "TestOption";
@@ -1280,7 +1280,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void SetValue_Double_ValueGreaterThanMax_SetsToMax()
+    public void SetValueDoubleValueGreaterThanMaxSetsToMax()
     {
         // Arrange
         string name = "TestOption";
@@ -1297,7 +1297,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void CreateDecimalOption_ValidParameters_ReturnsOption()
+    public void CreateDecimalOptionValidParametersReturnsOption()
     {
         // Arrange
         string name = "TestOption";
@@ -1318,7 +1318,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void SetValue_Decimal_ValidParameters_SetsValue()
+    public void SetValueDecimalValidParametersSetsValue()
     {
         // Arrange
         string name = "TestOption";
@@ -1334,7 +1334,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void CreateDecimalOption_EmptyName_ThrowsException()
+    public void CreateDecimalOptionEmptyNameThrowsException()
     {
         // Arrange
         string name = string.Empty;
@@ -1345,7 +1345,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void GetDefaultValue_Decimal_ReturnsDefaultValue()
+    public void GetDefaultValueDecimalReturnsDefaultValue()
     {
         // Arrange
         string name = "TestOption";
@@ -1360,7 +1360,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void GetMinValue_Decimal_ReturnsMinValue()
+    public void GetMinValueDecimalReturnsMinValue()
     {
         // Arrange
         string name = "TestOption";
@@ -1376,7 +1376,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void GetMaxValue_Decimal_ReturnsMaxValue()
+    public void GetMaxValueDecimalReturnsMaxValue()
     {
         // Arrange
         string name = "TestOption";
@@ -1392,7 +1392,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void SetValue_Decimal_ValueLessThanMin_SetsToMin()
+    public void SetValueDecimalValueLessThanMinSetsToMin()
     {
         // Arrange
         string name = "TestOption";
@@ -1409,7 +1409,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void SetValue_Decimal_ValueGreaterThanMax_SetsToMax()
+    public void SetValueDecimalValueGreaterThanMaxSetsToMax()
     {
         // Arrange
         string name = "TestOption";
@@ -1426,7 +1426,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void CreateDateTimeOption_ValidParameters_ReturnsOption()
+    public void CreateDateTimeOptionValidParametersReturnsOption()
     {
         // Arrange
         string name = "TestOption";
@@ -1447,7 +1447,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void SetValue_DateTime_ValidParameters_SetsValue()
+    public void SetValueDateTimeValidParametersSetsValue()
     {
         // Arrange
         string name = "TestOption";
@@ -1463,7 +1463,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void CreateDateTimeOption_EmptyName_ThrowsException()
+    public void CreateDateTimeOptionEmptyNameThrowsException()
     {
         // Arrange
         string name = string.Empty;
@@ -1474,7 +1474,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void GetDefaultValue_DateTime_ReturnsDefaultValue()
+    public void GetDefaultValueDateTimeReturnsDefaultValue()
     {
         // Arrange
         string name = "TestOption";
@@ -1489,7 +1489,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void GetMinValue_DateTime_ReturnsMinValue()
+    public void GetMinValueDateTimeReturnsMinValue()
     {
         // Arrange
         string name = "TestOption";
@@ -1505,7 +1505,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void GetMaxValue_DateTime_ReturnsMaxValue()
+    public void GetMaxValueDateTimeReturnsMaxValue()
     {
         // Arrange
         string name = "TestOption";
@@ -1521,7 +1521,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void SetValue_DateTime_ValueLessThanMin_SetsToMin()
+    public void SetValueDateTimeValueLessThanMinSetsToMin()
     {
         // Arrange
         string name = "TestOption";
@@ -1538,7 +1538,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void SetValue_DateTime_ValueGreaterThanMax_SetsToMax()
+    public void SetValueDateTimeValueGreaterThanMaxSetsToMax()
     {
         // Arrange
         string name = "TestOption";
@@ -1555,7 +1555,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void CreateOption_Bool_ValidParameters_ReturnsOption()
+    public void CreateOptionBoolValidParametersReturnsOption()
     {
         // Arrange
         string name = "TestOption";
@@ -1563,7 +1563,7 @@ public class GorgonOptionTests
         string? description = "Test description";
 
         // Act
-        IGorgonOption option = GorgonOption.CreateOption<bool>(name, defaultValue, description);
+        IGorgonOption option = GorgonOption.CreateOption(name, defaultValue, description);
 
         // Assert
         Assert.AreEqual(name, option.Name);
@@ -1572,13 +1572,13 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void SetValue_Bool_ValidParameters_SetsValue()
+    public void SetValueBoolValidParametersSetsValue()
     {
         // Arrange
         string name = "TestOption";
         bool defaultValue = true;
         bool newValue = false;
-        IGorgonOption option = GorgonOption.CreateOption<bool>(name, defaultValue);
+        IGorgonOption option = GorgonOption.CreateOption(name, defaultValue);
 
         // Act
         option.SetValue(newValue);
@@ -1588,23 +1588,23 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void CreateOption_Bool_EmptyName_ThrowsException()
+    public void CreateOptionBoolEmptyNameThrowsException()
     {
         // Arrange
         string name = string.Empty;
         bool defaultValue = true;
 
         // Act and Assert
-        Assert.ThrowsException<ArgumentEmptyException>(() => GorgonOption.CreateOption<bool>(name, defaultValue));
+        Assert.ThrowsException<ArgumentEmptyException>(() => GorgonOption.CreateOption(name, defaultValue));
     }
 
     [TestMethod]
-    public void GetDefaultValue_Bool_ReturnsDefaultValue()
+    public void GetDefaultValueBoolReturnsDefaultValue()
     {
         // Arrange
         string name = "TestOption";
         bool defaultValue = true;
-        IGorgonOption option = GorgonOption.CreateOption<bool>(name, defaultValue);
+        IGorgonOption option = GorgonOption.CreateOption(name, defaultValue);
 
         // Act
         bool? result = option.GetDefaultValue<bool>();
@@ -1614,7 +1614,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void CreateStringOption_ValidParameters_ReturnsOption()
+    public void CreateStringOptionValidParametersReturnsOption()
     {
         // Arrange
         string name = "TestOption";
@@ -1631,7 +1631,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void SetValue_String_ValidParameters_SetsValue()
+    public void SetValueStringValidParametersSetsValue()
     {
         // Arrange
         string name = "TestOption";
@@ -1647,7 +1647,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void SetValue_String_NullValue_SetsValue()
+    public void SetValueStringNullValueSetsValue()
     {
         // Arrange
         string name = "TestOption";
@@ -1663,7 +1663,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void CreateStringOption_EmptyName_ThrowsException()
+    public void CreateStringOptionEmptyNameThrowsException()
     {
         // Arrange
         string name = string.Empty;
@@ -1674,7 +1674,7 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void GetDefaultValue_String_ReturnsDefaultValue()
+    public void GetDefaultValueStringReturnsDefaultValue()
     {
         // Arrange
         string name = "TestOption";
@@ -1689,12 +1689,12 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void CreateInt64Option_SetLongValue_GetAsInt32()
+    public void CreateInt64OptionSetLongValueGetAsInt32()
     {
         // Arrange
         string name = "TestOption";
         long defaultValue = 10;
-        IGorgonOption option = GorgonOption.CreateOption<long>(name, defaultValue);
+        IGorgonOption option = GorgonOption.CreateOption(name, defaultValue);
 
         long newValue = 15;
         option.SetValue(newValue);
@@ -1707,12 +1707,12 @@ public class GorgonOptionTests
     }
 
     [TestMethod]
-    public void CreateInt64Option_SetLongValue_GetAsDouble()
+    public void CreateInt64OptionSetLongValueGetAsDouble()
     {
         // Arrange
         string name = "TestOption";
         long defaultValue = 10;
-        IGorgonOption option = GorgonOption.CreateOption<long>(name, defaultValue);
+        IGorgonOption option = GorgonOption.CreateOption(name, defaultValue);
 
         long newValue = 15;
         option.SetValue(newValue);

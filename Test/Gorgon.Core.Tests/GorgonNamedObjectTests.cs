@@ -8,7 +8,7 @@ namespace Gorgon.Core.Tests;
 [TestClass]
 public class GorgonNamedObjectTests
 {
-    private class EnumerableType(List<IGorgonNamedObject> source)
+    private sealed class EnumerableType(List<IGorgonNamedObject> source)
         : IEnumerable<IGorgonNamedObject>
     {
         public IEnumerator<IGorgonNamedObject> GetEnumerator()
@@ -32,6 +32,8 @@ public class GorgonNamedObjectTests
     }
 
     [TestMethod]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1862:Use the 'StringComparison' method overloads to perform case-insensitive string comparisons", 
+        Justification = "MOQ does not work with String.Equals")]
     public void LinqExtensions()
     {
         IGorgonNamedObject item1 = Mock.Of<IGorgonNamedObject>(x => x.Name == Guid.NewGuid().ToString().ToUpper());

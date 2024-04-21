@@ -7,7 +7,7 @@ namespace Gorgon.Core.Tests;
 public class GorgonNativeBufferTests
 {
     [TestMethod]
-    public void PointerConstructor_ShouldThrowException_WhenPointerIsNull()
+    public void PointerConstructorShouldThrowExceptionWhenPointerIsNull()
     {
         // Arrange
         GorgonPtr<int> pointer = GorgonPtr<int>.NullPtr;
@@ -17,10 +17,10 @@ public class GorgonNativeBufferTests
     }
 
     [TestMethod]
-    public unsafe void PointerConstructor_ShouldCreateBuffer_WhenPointerIsValidAndCountIsWithinRange()
+    public unsafe void PointerConstructorShouldCreateBufferWhenPointerIsValidAndCountIsWithinRange()
     {
         // Arrange
-        int[] array = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+        int[] array = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
         GorgonPtr<int> pointer;
 
         fixed (int* p = array)
@@ -29,24 +29,22 @@ public class GorgonNativeBufferTests
             pointer += 2;
 
             // Act
-            using (GorgonNativeBuffer<int> buffer = new GorgonNativeBuffer<int>(pointer[..5]))
-            {
-                // Assert
-                Assert.AreEqual(5, buffer.Length);
+            using GorgonNativeBuffer<int> buffer = new(pointer[..5]);
+            // Assert
+            Assert.AreEqual(5, buffer.Length);
 
-                for (int i = 0; i < buffer.Length; i++)
-                {
-                    Assert.AreEqual(array[i + 2], buffer[i]);
-                }
+            for (int i = 0; i < buffer.Length; i++)
+            {
+                Assert.AreEqual(array[i + 2], buffer[i]);
             }
         }
     }
 
     [TestMethod]
-    public unsafe void PointerConstructor_ShouldCreateBuffer_WhenPointerIsValidAndCountIsNotSpecified()
+    public unsafe void PointerConstructorShouldCreateBufferWhenPointerIsValidAndCountIsNotSpecified()
     {
         // Arrange
-        int[] array = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+        int[] array = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
         GorgonPtr<int> pointer;
 
         fixed (int* p = array)
@@ -54,42 +52,38 @@ public class GorgonNativeBufferTests
             pointer = new GorgonPtr<int>(p, array.Length);
 
             // Act
-            using (GorgonNativeBuffer<int> buffer = new GorgonNativeBuffer<int>(pointer))
-            {
-                // Assert
-                Assert.AreEqual(array.Length, buffer.Length);
+            using GorgonNativeBuffer<int> buffer = new(pointer);
+            // Assert
+            Assert.AreEqual(array.Length, buffer.Length);
 
-                for (int i = 0; i < buffer.Length; i++)
-                {
-                    Assert.AreEqual(array[i], buffer[i]);
-                }
+            for (int i = 0; i < buffer.Length; i++)
+            {
+                Assert.AreEqual(array[i], buffer[i]);
             }
         }
     }
 
     [TestMethod]
-    public void SizeConstructor_ShouldThrowException_WhenSizeIsLessThanOne()
-    {
+    public void SizeConstructorShouldThrowExceptionWhenSizeIsLessThanOne() =>
         // Act & Assert
         Assert.ThrowsException<ArgumentException>(() => new GorgonNativeBuffer<int>(0));
-    }
 
     [TestMethod]
-    public void SizeConstructor_ShouldCreateBuffer_WhenSizeIsWithinRange()
+    public void SizeConstructorShouldCreateBufferWhenSizeIsWithinRange()
     {
         // Act
-        GorgonNativeBuffer<int> buffer = new GorgonNativeBuffer<int>(10);
+        GorgonNativeBuffer<int> buffer = new(10);
 
         // Assert
         Assert.AreEqual(10, buffer.Length);
     }
 
     [TestMethod]
-    public void Indexer_ReturnsCorrectValue()
+    public void IndexerReturnsCorrectValue()
     {
         // Arrange
-        using GorgonNativeBuffer<int> buffer = new GorgonNativeBuffer<int>(5); // Assuming constructor takes length as parameter.
-        int[] testData = new int[] { 1, 2, 3, 4, 5 };
+        using GorgonNativeBuffer<int> buffer = new(5); // Assuming constructor takes length as parameter.
+        int[] testData = [1, 2, 3, 4, 5];
         for (int i = 0; i < testData.Length; i++)
         {
             buffer[i] = testData[i]; // Writing values to the buffer using the indexer.
@@ -103,11 +97,11 @@ public class GorgonNativeBufferTests
     }
 
     [TestMethod]
-    public void Indexer_RefReturnsCorrectValue()
+    public void IndexerRefReturnsCorrectValue()
     {
         // Arrange
-        using GorgonNativeBuffer<int> buffer = new GorgonNativeBuffer<int>(5); // Assuming constructor takes length as parameter.
-        int[] testData = new int[] { 1, 2, 3, 4, 5 };
+        using GorgonNativeBuffer<int> buffer = new(5); // Assuming constructor takes length as parameter.
+        int[] testData = [1, 2, 3, 4, 5];
         for (int i = 0; i < testData.Length; i++)
         {
             buffer[i] = testData[i]; // Writing values to the buffer using the indexer.
@@ -122,21 +116,21 @@ public class GorgonNativeBufferTests
     }
 
     [TestMethod]
-    public void Indexer_ThrowsIndexOutOfRangeException()
+    public void IndexerThrowsIndexOutOfRangeException()
     {
         // Arrange
-        using GorgonNativeBuffer<int> buffer = new GorgonNativeBuffer<int>(5); // Assuming constructor takes length as parameter.
+        using GorgonNativeBuffer<int> buffer = new(5); // Assuming constructor takes length as parameter.
 
         // Act & Assert
         Assert.ThrowsException<IndexOutOfRangeException>(() => { int value = buffer[10]; }); // Accessing an out-of-range index.
     }
 
     [TestMethod]
-    public void RangeIndexer_ReturnsCorrectGorgonPtr()
+    public void RangeIndexerReturnsCorrectGorgonPtr()
     {
         // Arrange
-        using GorgonNativeBuffer<int> buffer = new GorgonNativeBuffer<int>(5); // Assuming constructor takes length as parameter.
-        int[] testData = new int[] { 1, 2, 3, 4, 5 };
+        using GorgonNativeBuffer<int> buffer = new(5); // Assuming constructor takes length as parameter.
+        int[] testData = [1, 2, 3, 4, 5];
         for (int i = 0; i < testData.Length; i++)
         {
             buffer[i] = testData[i]; // Writing values to the buffer using the indexer.
@@ -159,20 +153,20 @@ public class GorgonNativeBufferTests
     }
 
     [TestMethod]
-    public void RangeIndexer_ThrowsArgumentOutOfRangeException()
+    public void RangeIndexerThrowsArgumentOutOfRangeException()
     {
         // Arrange
-        using GorgonNativeBuffer<int> buffer = new GorgonNativeBuffer<int>(5); // Assuming constructor takes length as parameter.
+        using GorgonNativeBuffer<int> buffer = new(5); // Assuming constructor takes length as parameter.
 
         // Act & Assert
         Assert.ThrowsException<ArgumentOutOfRangeException>(() => { GorgonPtr<int> ptr = buffer[5..10]; }); // Accessing an out-of-range slice.
     }
 
     [TestMethod]
-    public void RangeIndexer_ThrowsArgumentOutOfRangeException_WhenStartIndexIsLessThanZero()
+    public void RangeIndexerThrowsArgumentOutOfRangeExceptionWhenStartIndexIsLessThanZero()
     {
         // Arrange
-        using GorgonNativeBuffer<int> buffer = new GorgonNativeBuffer<int>(5); // Assuming constructor takes length as parameter.
+        using GorgonNativeBuffer<int> buffer = new(5); // Assuming constructor takes length as parameter.
 
         // Act & Assert
         Assert.ThrowsException<ArgumentOutOfRangeException>(() => { GorgonPtr<int> ptr = buffer[-1..3]; }); // Accessing a slice with a starting index less than 0.
@@ -182,8 +176,8 @@ public class GorgonNativeBufferTests
     public void CanImplicitlyCastGorgonNativeBufferToGorgonPtr()
     {
         // Arrange
-        int[] testData = new int[] { 1, 2, 3, 4, 5 };
-        using GorgonNativeBuffer<int> buffer = new GorgonNativeBuffer<int>(5);
+        int[] testData = [1, 2, 3, 4, 5];
+        using GorgonNativeBuffer<int> buffer = new(5);
         for (int i = 0; i < testData.Length; i++)
         {
             buffer[i] = testData[i];
@@ -213,13 +207,13 @@ public class GorgonNativeBufferTests
     }
 
     [TestMethod]
-    public unsafe void FromGorgonPtr_CreatesCorrectGorgonNativeBuffer()
+    public unsafe void FromGorgonPtrCreatesCorrectGorgonNativeBuffer()
     {
         // Arrange
-        int[] testData = new int[] { 1, 2, 3, 4, 5 };
+        int[] testData = [1, 2, 3, 4, 5];
         fixed (int* ptr = testData)
         {
-            GorgonPtr<int> gorgonPtr = new GorgonPtr<int>(ptr, testData.Length);
+            GorgonPtr<int> gorgonPtr = new(ptr, testData.Length);
 
             // Act
             using GorgonNativeBuffer<int> newBuffer = GorgonNativeBuffer<int>.FromSpan(gorgonPtr);
@@ -233,11 +227,11 @@ public class GorgonNativeBufferTests
     }
 
     [TestMethod]
-    public void FromSpan_CreatesCorrectGorgonNativeBuffer()
+    public void FromSpanCreatesCorrectGorgonNativeBuffer()
     {
         // Arrange
-        int[] testData = new int[] { 1, 2, 3, 4, 5 };
-        ReadOnlySpan<int> span = new ReadOnlySpan<int>(testData);
+        int[] testData = [1, 2, 3, 4, 5];
+        ReadOnlySpan<int> span = new(testData);
 
         // Act
         using GorgonNativeBuffer<int> newBuffer = GorgonNativeBuffer<int>.FromSpan(span);
@@ -250,11 +244,11 @@ public class GorgonNativeBufferTests
     }
 
     [TestMethod]
-    public void FromSpan_WithCount_CreatesCorrectGorgonNativeBuffer()
+    public void FromSpanWithCountCreatesCorrectGorgonNativeBuffer()
     {
         // Arrange
-        int[] testData = new int[] { 1, 2, 3, 4, 5 };
-        ReadOnlySpan<int> span = new ReadOnlySpan<int>(testData, 0, 3);
+        int[] testData = [1, 2, 3, 4, 5];
+        ReadOnlySpan<int> span = new(testData, 0, 3);
 
         // Act
         using GorgonNativeBuffer<int> newBuffer = GorgonNativeBuffer<int>.FromSpan(span);
@@ -267,7 +261,7 @@ public class GorgonNativeBufferTests
     }
 
     [TestMethod]
-    public void FromGorgonPtr_NullPtr_ThrowsNullReferenceException()
+    public void FromGorgonPtrNullPtrThrowsNullReferenceException()
     {
         // Arrange
         GorgonPtr<int> ptr = GorgonPtr<int>.NullPtr;
@@ -277,10 +271,10 @@ public class GorgonNativeBufferTests
     }
 
     [TestMethod]
-    public void FromSpan_EmptySpan_ThrowsArgumentException()
+    public void FromSpanEmptySpanThrowsArgumentException()
     {
         // Arrange
-        ReadOnlySpan<int> span = ReadOnlySpan<int>.Empty;
+        ReadOnlySpan<int> span = [];
 
         // Act
         try
@@ -296,12 +290,12 @@ public class GorgonNativeBufferTests
     }
 
     [TestMethod]
-    public void Fill_FillsBufferWithSpecifiedByte()
+    public void FillFillsBufferWithSpecifiedByte()
     {
         // Arrange
         byte fillValue = 0x7f;
         int bufferSize = 5;
-        using GorgonNativeBuffer<byte> buffer = new GorgonNativeBuffer<byte>(bufferSize);
+        using GorgonNativeBuffer<byte> buffer = new(bufferSize);
 
         // Act
         buffer.Fill(fillValue);
@@ -314,11 +308,11 @@ public class GorgonNativeBufferTests
     }
 
     [TestMethod]
-    public void AsRef_CastsCorrectly()
+    public void AsRefCastsCorrectly()
     {
         // Arrange
-        int[] testData = new int[] { 1, 2, 3, 4, 5 };
-        using GorgonNativeBuffer<int> buffer = new GorgonNativeBuffer<int>(testData.Length);
+        int[] testData = [1, 2, 3, 4, 5];
+        using GorgonNativeBuffer<int> buffer = new(testData.Length);
         for (int i = 0; i < testData.Length; i++)
         {
             buffer[i] = testData[i];
@@ -332,11 +326,11 @@ public class GorgonNativeBufferTests
     }
 
     [TestMethod]
-    public void AsRef_WithOffset_CastsCorrectly()
+    public void AsRefWithOffsetCastsCorrectly()
     {
         // Arrange
-        int[] testData = new int[] { 1, 2, 3, 4, 5 };
-        using GorgonNativeBuffer<int> buffer = new GorgonNativeBuffer<int>(testData.Length);
+        int[] testData = [1, 2, 3, 4, 5];
+        using GorgonNativeBuffer<int> buffer = new(testData.Length);
         for (int i = 0; i < testData.Length; i++)
         {
             buffer[i] = testData[i];
@@ -350,31 +344,31 @@ public class GorgonNativeBufferTests
     }
 
     [TestMethod]
-    public void AsRef_NegativeOffset_ThrowsArgumentOutOfRangeException()
+    public void AsRefNegativeOffsetThrowsArgumentOutOfRangeException()
     {
         // Arrange
-        using GorgonNativeBuffer<int> buffer = new GorgonNativeBuffer<int>(5);
+        using GorgonNativeBuffer<int> buffer = new(5);
 
         // Act & Assert
         Assert.ThrowsException<ArgumentOutOfRangeException>(() => buffer.AsRef<byte>(-1));
     }
 
     [TestMethod]
-    public void AsRef_OffsetGreaterThanSize_ThrowsArgumentOutOfRangeException()
+    public void AsRefOffsetGreaterThanSizeThrowsArgumentOutOfRangeException()
     {
         // Arrange
-        using GorgonNativeBuffer<int> buffer = new GorgonNativeBuffer<int>(5);
+        using GorgonNativeBuffer<int> buffer = new(5);
 
         // Act & Assert
         Assert.ThrowsException<ArgumentOutOfRangeException>(() => buffer.AsRef<byte>(buffer.SizeInBytes));
     }
 
     [TestMethod]
-    public void ToNativeBuffer_CastsCorrectly()
+    public void ToNativeBufferCastsCorrectly()
     {
         // Arrange
-        int[] testData = new int[] { 1, 2, 3, 4, 5 };
-        using GorgonNativeBuffer<int> buffer = new GorgonNativeBuffer<int>(testData.Length);
+        int[] testData = [1, 2, 3, 4, 5];
+        using GorgonNativeBuffer<int> buffer = new(testData.Length);
         for (int i = 0; i < testData.Length; i++)
         {
             buffer[i] = testData[i];
@@ -391,11 +385,11 @@ public class GorgonNativeBufferTests
     }
 
     [TestMethod]
-    public void CopyTo_Success()
+    public void CopyToSuccess()
     {
         // Arrange
-        var sourceBuffer = new GorgonNativeBuffer<int>(5);
-        var destinationBuffer = new GorgonNativeBuffer<int>(5);
+        GorgonNativeBuffer<int> sourceBuffer = new(5);
+        GorgonNativeBuffer<int> destinationBuffer = new(5);
 
         // Fill sourceBuffer with some data
         for (int i = 0; i < sourceBuffer.Length; i++)
@@ -414,11 +408,11 @@ public class GorgonNativeBufferTests
     }
 
     [TestMethod]
-    public void CopyTo_WithSourceIndexAndCount_Success()
+    public void CopyToWithSourceIndexAndCountSuccess()
     {
         // Arrange
-        var sourceBuffer = new GorgonNativeBuffer<int>(5);
-        var destinationBuffer = new GorgonNativeBuffer<int>(3);
+        GorgonNativeBuffer<int> sourceBuffer = new(5);
+        GorgonNativeBuffer<int> destinationBuffer = new(3);
 
         // Fill sourceBuffer with some data
         for (int i = 0; i < sourceBuffer.Length; i++)
@@ -438,11 +432,11 @@ public class GorgonNativeBufferTests
 
     [TestMethod]
     [ExpectedException(typeof(ArgumentOutOfRangeException))]
-    public void CopyTo_WithNegativeSourceIndex_Failure()
+    public void CopyToWithNegativeSourceIndexFailure()
     {
         // Arrange
-        var sourceBuffer = new GorgonNativeBuffer<int>(5);
-        var destinationBuffer = new GorgonNativeBuffer<int>(5);
+        GorgonNativeBuffer<int> sourceBuffer = new(5);
+        GorgonNativeBuffer<int> destinationBuffer = new(5);
 
         // Act
         sourceBuffer.CopyTo(destinationBuffer, -1);
@@ -450,11 +444,11 @@ public class GorgonNativeBufferTests
 
     [TestMethod]
     [ExpectedException(typeof(ArgumentOutOfRangeException))]
-    public void CopyTo_WithNegativeDestIndex_Failure()
+    public void CopyToWithNegativeDestIndexFailure()
     {
         // Arrange
-        var sourceBuffer = new GorgonNativeBuffer<int>(5);
-        var destinationBuffer = new GorgonNativeBuffer<int>(5);
+        GorgonNativeBuffer<int> sourceBuffer = new(5);
+        GorgonNativeBuffer<int> destinationBuffer = new(5);
 
         // Act
         sourceBuffer.CopyTo(destinationBuffer, 0, null, -1);
@@ -462,22 +456,22 @@ public class GorgonNativeBufferTests
 
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
-    public void CopyTo_WithInvalidCount_Failure()
+    public void CopyToWithInvalidCountFailure()
     {
         // Arrange
-        var sourceBuffer = new GorgonNativeBuffer<int>(5);
-        var destinationBuffer = new GorgonNativeBuffer<int>(5);
+        GorgonNativeBuffer<int> sourceBuffer = new(5);
+        GorgonNativeBuffer<int> destinationBuffer = new(5);
 
         // Act
         sourceBuffer.CopyTo(destinationBuffer, 0, 6);
     }
 
     [TestMethod]
-    public void CopyTo_Span_Success()
+    public void CopyToSpanSuccess()
     {
         // Arrange
-        var sourceBuffer = new GorgonNativeBuffer<int>(5);
-        var destinationSpan = new Span<int>(new int[5]);
+        GorgonNativeBuffer<int> sourceBuffer = new(5);
+        Span<int> destinationSpan = new(new int[5]);
 
         // Fill sourceBuffer with some data
         for (int i = 0; i < sourceBuffer.Length; i++)
@@ -496,11 +490,11 @@ public class GorgonNativeBufferTests
     }
 
     [TestMethod]
-    public void CopyTo_SpanWithSourceIndexAndCount_Success()
+    public void CopyToSpanWithSourceIndexAndCountSuccess()
     {
         // Arrange
-        var sourceBuffer = new GorgonNativeBuffer<int>(5);
-        var destinationSpan = new Span<int>(new int[3]);
+        GorgonNativeBuffer<int> sourceBuffer = new(5);
+        Span<int> destinationSpan = new(new int[3]);
 
         // Fill sourceBuffer with some data
         for (int i = 0; i < sourceBuffer.Length; i++)
@@ -520,11 +514,11 @@ public class GorgonNativeBufferTests
 
     [TestMethod]
     [ExpectedException(typeof(ArgumentOutOfRangeException))]
-    public void CopyTo_SpanWithNegativeSourceIndex_Failure()
+    public void CopyToSpanWithNegativeSourceIndexFailure()
     {
         // Arrange
-        var sourceBuffer = new GorgonNativeBuffer<int>(5);
-        var destinationSpan = new Span<int>(new int[5]);
+        GorgonNativeBuffer<int> sourceBuffer = new(5);
+        Span<int> destinationSpan = new(new int[5]);
 
         // Act
         sourceBuffer.CopyTo(destinationSpan, -1);
@@ -532,11 +526,11 @@ public class GorgonNativeBufferTests
 
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
-    public void CopyTo_SpanWithInvalidCount_Failure()
+    public void CopyToSpanWithInvalidCountFailure()
     {
         // Arrange
-        var sourceBuffer = new GorgonNativeBuffer<int>(5);
-        var destinationSpan = new Span<int>(new int[5]);
+        GorgonNativeBuffer<int> sourceBuffer = new(5);
+        Span<int> destinationSpan = new(new int[5]);
 
         // Act
         sourceBuffer.CopyTo(destinationSpan, 0, 6);

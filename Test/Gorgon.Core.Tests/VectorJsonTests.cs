@@ -8,7 +8,7 @@ namespace Gorgon.Core.Tests;
 public class VectorJsonTests
 {
     [TestMethod]
-    public void Vector2_JsonConversion()
+    public void Vector2JsonConversion()
     {
         Vector2? testVector = new(10, 20);
         JsonSerializerOptions options = new()
@@ -30,7 +30,7 @@ public class VectorJsonTests
     }
 
     [TestMethod]
-    public void Vector3_JsonConversion()
+    public void Vector3JsonConversion()
     {
         Vector3? testVector = new(10, 20, 30);
         JsonSerializerOptions options = new()
@@ -52,7 +52,7 @@ public class VectorJsonTests
     }
 
     [TestMethod]
-    public void Vector4_JsonConversion()
+    public void Vector4JsonConversion()
     {
         Vector4? testVector = new(10, 20, 30, 40);
         JsonSerializerOptions options = new()

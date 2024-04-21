@@ -11,14 +11,14 @@ public class GorgonStringFormattingExtensionsTests
     public void GetLines()
     {
         string[] expected =
-        {
+        [
             "This is a line of text.",
             "And this is too",
             "",
             "And this one has a blank line above it."
-        };
+        ];
         StringBuilder sb = new(string.Join("\n", expected));
-        string[] actual = Array.Empty<string>();
+        string[] actual = [];
 
         sb.GetLines(ref actual);
 

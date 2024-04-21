@@ -8,25 +8,25 @@ namespace Gorgon.Core.Tests;
 public class GorgonRectangleTests
 {
     [TestMethod]
-    public void InitializeWithLocationAndSize_SetsProperties()
+    public void InitializeWithLocationAndSizeSetsProperties()
     {
         // Arrange
-        GorgonPoint location = new GorgonPoint(10, 20);
-        GorgonPoint size = new GorgonPoint(30, 40);
+        GorgonPoint location = new(10, 20);
+        GorgonPoint size = new(30, 40);
 
         // Act
-        GorgonRectangle rectangle = new GorgonRectangle(location, size);
+        GorgonRectangle rectangle = new(location, size);
 
         // Assert
         Assert.AreEqual(location, rectangle.Location);
         Assert.AreEqual(size, rectangle.Size);
 
         // Arrange
-        Vector2 location1 = new Vector2(10.5f, 20.7f);
-        Vector2 size1 = new Vector2(30.3f, 40.9f);
+        Vector2 location1 = new(10.5f, 20.7f);
+        Vector2 size1 = new(30.3f, 40.9f);
 
         // Act
-        GorgonRectangleF rectangleF = new GorgonRectangleF(location1, size1);
+        GorgonRectangleF rectangleF = new(location1, size1);
 
         // Assert
         Assert.AreEqual(location1, rectangleF.Location);
@@ -34,10 +34,10 @@ public class GorgonRectangleTests
     }
 
     [TestMethod]
-    public void ConvertRectangleFToRectangle_ReturnsConvertedRectangle()
+    public void ConvertRectangleFToRectangleReturnsConvertedRectangle()
     {
         // Arrange
-        GorgonRectangleF rectangleF = new GorgonRectangleF(10.5f, 20.7f, 30.3f, 40.9f);
+        GorgonRectangleF rectangleF = new(10.5f, 20.7f, 30.3f, 40.9f);
 
         // Act
         GorgonRectangle rectangle = GorgonRectangleF.ToGorgonRectangle(rectangleF);
@@ -50,10 +50,10 @@ public class GorgonRectangleTests
     }
 
     [TestMethod]
-    public void Round_ConvertRectangleFToRectangle_RoundsValues()
+    public void RoundConvertRectangleFToRectangleRoundsValues()
     {
         // Arrange
-        GorgonRectangleF rectangleF = new GorgonRectangleF(10.5f, 20.7f, 30.3f, 40.9f);
+        GorgonRectangleF rectangleF = new(10.5f, 20.7f, 30.3f, 40.9f);
 
         // Act
         GorgonRectangle rectangle = GorgonRectangle.Round(rectangleF);
@@ -66,10 +66,10 @@ public class GorgonRectangleTests
     }
 
     [TestMethod]
-    public void Ceiling_ConvertRectangleFToRectangle_CeilsValues()
+    public void CeilingConvertRectangleFToRectangleCeilsValues()
     {
         // Arrange
-        GorgonRectangleF rectangleF = new GorgonRectangleF(10.1f, 20.9f, 30.5f, 40.7f);
+        GorgonRectangleF rectangleF = new(10.1f, 20.9f, 30.5f, 40.7f);
 
         // Act
         GorgonRectangle rectangle = GorgonRectangle.Ceiling(rectangleF);
@@ -81,7 +81,7 @@ public class GorgonRectangleTests
         Assert.AreEqual(41, rectangle.Height);
 
         // Arrange
-        GorgonRectangleF rectangleF2 = new GorgonRectangleF(10.1f, 20.9f, 30.5f, 40.7f);
+        GorgonRectangleF rectangleF2 = new(10.1f, 20.9f, 30.5f, 40.7f);
 
         // Act
         GorgonRectangleF rectangle2 = GorgonRectangleF.Ceiling(rectangleF2);
@@ -94,10 +94,10 @@ public class GorgonRectangleTests
     }
 
     [TestMethod]
-    public void Floor_ConvertRectangleFToRectangle_FloorsValues()
+    public void FloorConvertRectangleFToRectangleFloorsValues()
     {
         // Arrange
-        GorgonRectangleF rectangleF = new GorgonRectangleF(10.9f, 20.1f, 30.7f, 40.5f);
+        GorgonRectangleF rectangleF = new(10.9f, 20.1f, 30.7f, 40.5f);
 
         // Act
         GorgonRectangle rectangle = GorgonRectangle.Floor(rectangleF);
@@ -109,7 +109,7 @@ public class GorgonRectangleTests
         Assert.AreEqual(40, rectangle.Height);
 
         // Arrange
-        GorgonRectangleF rectangleF2 = new GorgonRectangleF(10.9f, 20.1f, 30.7f, 40.5f);
+        GorgonRectangleF rectangleF2 = new(10.9f, 20.1f, 30.7f, 40.5f);
 
         // Act
         GorgonRectangleF rectangle2 = GorgonRectangleF.Floor(rectangleF2);
@@ -122,10 +122,10 @@ public class GorgonRectangleTests
     }
 
     [TestMethod]
-    public void ToGorgonRectangleF_ConvertRectangleToRectangleF_ReturnsConvertedRectangle()
+    public void ToGorgonRectangleFConvertRectangleToRectangleFReturnsConvertedRectangle()
     {
         // Arrange
-        GorgonRectangle rectangle = new GorgonRectangle(10, 20, 30, 40);
+        GorgonRectangle rectangle = new(10, 20, 30, 40);
 
         // Act
         GorgonRectangleF rectangleF = GorgonRectangle.ToGorgonRectangleF(rectangle);
@@ -138,10 +138,10 @@ public class GorgonRectangleTests
     }
 
     [TestMethod]
-    public void Expand_WithPositiveAmount_ExpandsRectangle()
+    public void ExpandWithPositiveAmountExpandsRectangle()
     {
         // Arrange
-        GorgonRectangle rectangle = new GorgonRectangle(10, 20, 30, 40);
+        GorgonRectangle rectangle = new(10, 20, 30, 40);
         int amount = 5;
 
         // Act
@@ -155,10 +155,10 @@ public class GorgonRectangleTests
     }
 
     [TestMethod]
-    public void Expand_WithNegativeAmount_ShrinksRectangle()
+    public void ExpandWithNegativeAmountShrinksRectangle()
     {
         // Arrange
-        GorgonRectangle rectangle = new GorgonRectangle(10, 20, 30, 40);
+        GorgonRectangle rectangle = new(10, 20, 30, 40);
         int amount = -5;
 
         // Act
@@ -172,10 +172,10 @@ public class GorgonRectangleTests
     }
 
     [TestMethod]
-    public void Expand_WithZeroAmount_ReturnsSameRectangle()
+    public void ExpandWithZeroAmountReturnsSameRectangle()
     {
         // Arrange
-        GorgonRectangle rectangle = new GorgonRectangle(10, 20, 30, 40);
+        GorgonRectangle rectangle = new(10, 20, 30, 40);
         int amount = 0;
 
         // Act
@@ -185,7 +185,7 @@ public class GorgonRectangleTests
         Assert.AreEqual(rectangle, expandedRectangle);
 
         // Arrange
-        GorgonRectangleF rectangleF = new GorgonRectangleF(10, 20, 30, 40);
+        GorgonRectangleF rectangleF = new(10, 20, 30, 40);
         float amount2 = 0.0f;
 
         // Act
@@ -196,10 +196,10 @@ public class GorgonRectangleTests
     }
 
     [TestMethod]
-    public void ExplicitConversion_ConvertRectangleFToRectangle_ReturnsConvertedRectangle()
+    public void ExplicitConversionConvertRectangleFToRectangleReturnsConvertedRectangle()
     {
         // Arrange
-        GorgonRectangleF rectangleF = new GorgonRectangleF(10.1f, 20.9f, 30.5f, 40.7f);
+        GorgonRectangleF rectangleF = new(10.1f, 20.9f, 30.5f, 40.7f);
 
         // Act
         GorgonRectangle rectangle = (GorgonRectangle)rectangleF;
@@ -212,10 +212,10 @@ public class GorgonRectangleTests
     }
 
     [TestMethod]
-    public void ImplicitConversion_ConvertRectangleToRectangleF_ReturnsConvertedRectangle()
+    public void ImplicitConversionConvertRectangleToRectangleFReturnsConvertedRectangle()
     {
         // Arrange
-        GorgonRectangle rectangle = new GorgonRectangle(10, 20, 30, 40);
+        GorgonRectangle rectangle = new(10, 20, 30, 40);
 
         // Act
         GorgonRectangleF rectangleF = rectangle;
@@ -228,13 +228,13 @@ public class GorgonRectangleTests
     }
 
     [TestMethod]
-    public void Deconstruct_ReturnsTupleWithValues()
+    public void DeconstructReturnsTupleWithValues()
     {
         // Arrange
-        GorgonRectangle rectangle = new GorgonRectangle(10, 20, 30, 40);
+        GorgonRectangle rectangle = new(10, 20, 30, 40);
 
         // Act
-        var (x, y, width, height) = rectangle;
+        (int x, int y, int width, int height) = rectangle;
 
         // Assert
         Assert.AreEqual(rectangle.X, x);
@@ -243,10 +243,10 @@ public class GorgonRectangleTests
         Assert.AreEqual(rectangle.Height, height);
 
         // Arrange
-        GorgonRectangleF rectangle2 = new GorgonRectangleF(10.1f, 20.2f, 30.3f, 40.4f);
+        GorgonRectangleF rectangle2 = new(10.1f, 20.2f, 30.3f, 40.4f);
 
         // Act
-        var (x2, y2, width2, height2) = rectangle2;
+        (float x2, float y2, float width2, float height2) = rectangle2;
 
         // Assert
         Assert.AreEqual(rectangle2.X, x2);
@@ -256,11 +256,11 @@ public class GorgonRectangleTests
     }
 
     [TestMethod]
-    public void Equals_ReturnsTrueForEqualRectangles()
+    public void EqualsReturnsTrueForEqualRectangles()
     {
         // Arrange
-        GorgonRectangle rectangle1 = new GorgonRectangle(10, 20, 30, 40);
-        GorgonRectangle rectangle2 = new GorgonRectangle(10, 20, 30, 40);
+        GorgonRectangle rectangle1 = new(10, 20, 30, 40);
+        GorgonRectangle rectangle2 = new(10, 20, 30, 40);
 
         // Act
         bool result = GorgonRectangle.Equals(rectangle1, rectangle2);
@@ -269,8 +269,8 @@ public class GorgonRectangleTests
         Assert.IsTrue(result);
 
         // Arrange
-        GorgonRectangleF rectangle3 = new GorgonRectangleF(10.5f, 20.7f, 30.3f, 40.9f);
-        GorgonRectangleF rectangle4 = new GorgonRectangleF(10.5f, 20.7f, 30.3f, 40.9f);
+        GorgonRectangleF rectangle3 = new(10.5f, 20.7f, 30.3f, 40.9f);
+        GorgonRectangleF rectangle4 = new(10.5f, 20.7f, 30.3f, 40.9f);
 
         // Act
         bool result2 = GorgonRectangleF.Equals(rectangle3, rectangle4);
@@ -280,11 +280,11 @@ public class GorgonRectangleTests
     }
 
     [TestMethod]
-    public void Equals_ReturnsFalseForDifferentRectangles()
+    public void EqualsReturnsFalseForDifferentRectangles()
     {
         // Arrange
-        GorgonRectangle rectangle1 = new GorgonRectangle(10, 20, 30, 40);
-        GorgonRectangle rectangle2 = new GorgonRectangle(20, 30, 40, 50);
+        GorgonRectangle rectangle1 = new(10, 20, 30, 40);
+        GorgonRectangle rectangle2 = new(20, 30, 40, 50);
 
         // Act
         bool result = GorgonRectangle.Equals(rectangle1, rectangle2);
@@ -293,8 +293,8 @@ public class GorgonRectangleTests
         Assert.IsFalse(result);
 
         // Arrange
-        GorgonRectangleF rectangleF1 = new GorgonRectangleF(10.5f, 20.7f, 30.3f, 40.9f);
-        GorgonRectangleF rectangleF2 = new GorgonRectangleF(20.5f, 30.7f, 40.3f, 50.9f);
+        GorgonRectangleF rectangleF1 = new(10.5f, 20.7f, 30.3f, 40.9f);
+        GorgonRectangleF rectangleF2 = new(20.5f, 30.7f, 40.3f, 50.9f);
 
         // Act
         bool resultF = GorgonRectangleF.Equals(rectangleF1, rectangleF2);
@@ -304,13 +304,13 @@ public class GorgonRectangleTests
     }
 
     [TestMethod]
-    public void OperatorEquals_ReturnsTrueForEqualRectangles()
+    public void OperatorEqualsReturnsTrueForEqualRectangles()
     {
         // Arrange
-        GorgonRectangle rectangle1 = new GorgonRectangle(10, 20, 30, 40);
-        GorgonRectangle rectangle2 = new GorgonRectangle(10, 20, 30, 40);
-        GorgonRectangleF rectangle3 = new GorgonRectangleF(10.5f, 20.7f, 30.3f, 40.9f);
-        GorgonRectangleF rectangle4 = new GorgonRectangleF(10.5f, 20.7f, 30.3f, 40.9f);
+        GorgonRectangle rectangle1 = new(10, 20, 30, 40);
+        GorgonRectangle rectangle2 = new(10, 20, 30, 40);
+        GorgonRectangleF rectangle3 = new(10.5f, 20.7f, 30.3f, 40.9f);
+        GorgonRectangleF rectangle4 = new(10.5f, 20.7f, 30.3f, 40.9f);
 
         // Act
         bool result = rectangle1 == rectangle2;
@@ -322,13 +322,13 @@ public class GorgonRectangleTests
     }
 
     [TestMethod]
-    public void OperatorEquals_ReturnsFalseForDifferentRectangles()
+    public void OperatorEqualsReturnsFalseForDifferentRectangles()
     {
         // Arrange
-        GorgonRectangle rectangle1 = new GorgonRectangle(10, 20, 30, 40);
-        GorgonRectangle rectangle2 = new GorgonRectangle(20, 30, 40, 50);
-        GorgonRectangleF rectangle3 = new GorgonRectangleF(10.5f, 20.7f, 30.3f, 40.9f);
-        GorgonRectangleF rectangle4 = new GorgonRectangleF(20.5f, 30.7f, 40.3f, 50.9f);
+        GorgonRectangle rectangle1 = new(10, 20, 30, 40);
+        GorgonRectangle rectangle2 = new(20, 30, 40, 50);
+        GorgonRectangleF rectangle3 = new(10.5f, 20.7f, 30.3f, 40.9f);
+        GorgonRectangleF rectangle4 = new(20.5f, 30.7f, 40.3f, 50.9f);
 
         // Act
         bool result = rectangle1 == rectangle2;
@@ -340,13 +340,13 @@ public class GorgonRectangleTests
     }
 
     [TestMethod]
-    public void OperatorNotEquals_ReturnsTrueForDifferentRectangles()
+    public void OperatorNotEqualsReturnsTrueForDifferentRectangles()
     {
         // Arrange
-        GorgonRectangle rectangle1 = new GorgonRectangle(10, 20, 30, 40);
-        GorgonRectangle rectangle2 = new GorgonRectangle(20, 30, 40, 50);
-        GorgonRectangleF rectangle3 = new GorgonRectangleF(10.5f, 20.7f, 30.3f, 40.9f);
-        GorgonRectangleF rectangle4 = new GorgonRectangleF(20.5f, 30.7f, 40.3f, 50.9f);
+        GorgonRectangle rectangle1 = new(10, 20, 30, 40);
+        GorgonRectangle rectangle2 = new(20, 30, 40, 50);
+        GorgonRectangleF rectangle3 = new(10.5f, 20.7f, 30.3f, 40.9f);
+        GorgonRectangleF rectangle4 = new(20.5f, 30.7f, 40.3f, 50.9f);
 
         // Act
         bool result = rectangle1 != rectangle2;
@@ -358,13 +358,13 @@ public class GorgonRectangleTests
     }
 
     [TestMethod]
-    public void OperatorNotEquals_ReturnsFalseForEqualRectangles()
+    public void OperatorNotEqualsReturnsFalseForEqualRectangles()
     {
         // Arrange
-        GorgonRectangle rectangle1 = new GorgonRectangle(10, 20, 30, 40);
-        GorgonRectangle rectangle2 = new GorgonRectangle(10, 20, 30, 40);
-        GorgonRectangleF rectangle3 = new GorgonRectangleF(10.5f, 20.7f, 30.3f, 40.9f);
-        GorgonRectangleF rectangle4 = new GorgonRectangleF(10.5f, 20.7f, 30.3f, 40.9f);
+        GorgonRectangle rectangle1 = new(10, 20, 30, 40);
+        GorgonRectangle rectangle2 = new(10, 20, 30, 40);
+        GorgonRectangleF rectangle3 = new(10.5f, 20.7f, 30.3f, 40.9f);
+        GorgonRectangleF rectangle4 = new(10.5f, 20.7f, 30.3f, 40.9f);
 
         // Act
         bool result = rectangle1 != rectangle2;
@@ -376,367 +376,367 @@ public class GorgonRectangleTests
     }
 
     [TestMethod]
-    public void Union_ShouldReturnCorrectResult_WhenBothRectanglesAreSame()
+    public void UnionShouldReturnCorrectResultWhenBothRectanglesAreSame()
     {
         // Arrange
-        var rectangle1 = new GorgonRectangle(0, 0, 10, 10);
-        var rectangle2 = new GorgonRectangle(0, 0, 10, 10);
+        GorgonRectangle rectangle1 = new(0, 0, 10, 10);
+        GorgonRectangle rectangle2 = new(0, 0, 10, 10);
 
         // Act
-        var result = GorgonRectangle.Union(rectangle1, rectangle2);
+        GorgonRectangle result = GorgonRectangle.Union(rectangle1, rectangle2);
 
         // Assert
         Assert.AreEqual(rectangle1, result);
 
         // Arrange
-        var rectangle3 = new GorgonRectangleF(0, 0, 10, 10);
-        var rectangle4 = new GorgonRectangleF(0, 0, 10, 10);
+        GorgonRectangleF rectangle3 = new(0, 0, 10, 10);
+        GorgonRectangleF rectangle4 = new(0, 0, 10, 10);
 
         // Act
-        var result2 = GorgonRectangleF.Union(rectangle3, rectangle4);
+        GorgonRectangleF result2 = GorgonRectangleF.Union(rectangle3, rectangle4);
 
         // Assert
         Assert.AreEqual(rectangle3, result2);
     }
 
     [TestMethod]
-    public void Union_ShouldReturnCorrectResult_WhenRectanglesAreDifferent()
+    public void UnionShouldReturnCorrectResultWhenRectanglesAreDifferent()
     {
         // Arrange
-        var rectangle1 = new GorgonRectangle(0, 0, 10, 10);
-        var rectangle2 = new GorgonRectangle(5, 5, 15, 15);
+        GorgonRectangle rectangle1 = new(0, 0, 10, 10);
+        GorgonRectangle rectangle2 = new(5, 5, 15, 15);
 
         // Act
-        var result = GorgonRectangle.Union(rectangle1, rectangle2);
+        GorgonRectangle result = GorgonRectangle.Union(rectangle1, rectangle2);
 
         // Assert
         Assert.AreEqual(new GorgonRectangle(0, 0, 20, 20), result);
 
         // Arrange
-        var rectangle3 = new GorgonRectangleF(0, 0, 10, 10);
-        var rectangle4 = new GorgonRectangleF(5, 5, 15, 15);
+        GorgonRectangleF rectangle3 = new(0, 0, 10, 10);
+        GorgonRectangleF rectangle4 = new(5, 5, 15, 15);
 
         // Act
-        var result2 = GorgonRectangleF.Union(rectangle3, rectangle4);
+        GorgonRectangleF result2 = GorgonRectangleF.Union(rectangle3, rectangle4);
 
         // Assert
         Assert.AreEqual(new GorgonRectangle(0, 0, 20, 20), result2);
     }
 
     [TestMethod]
-    public void Union_ShouldReturnCorrectResult_WhenOneRectangleIsInsideAnother()
+    public void UnionShouldReturnCorrectResultWhenOneRectangleIsInsideAnother()
     {
         // Arrange
-        var rectangle1 = new GorgonRectangle(0, 0, 20, 20);
-        var rectangle2 = new GorgonRectangle(5, 5, 10, 10);
+        GorgonRectangle rectangle1 = new(0, 0, 20, 20);
+        GorgonRectangle rectangle2 = new(5, 5, 10, 10);
 
         // Act
-        var result = GorgonRectangle.Union(rectangle1, rectangle2);
+        GorgonRectangle result = GorgonRectangle.Union(rectangle1, rectangle2);
 
         // Assert
         Assert.AreEqual(rectangle1, result);
 
         // Arrange
-        var rectangle3 = new GorgonRectangleF(0, 0, 20, 20);
-        var rectangle4 = new GorgonRectangleF(5, 5, 10, 10);
+        GorgonRectangleF rectangle3 = new(0, 0, 20, 20);
+        GorgonRectangleF rectangle4 = new(5, 5, 10, 10);
 
         // Act
-        var result2 = GorgonRectangleF.Union(rectangle3, rectangle4);
+        GorgonRectangleF result2 = GorgonRectangleF.Union(rectangle3, rectangle4);
 
         // Assert
         Assert.AreEqual(rectangle3, result2);
     }
 
     [TestMethod]
-    public void Intersect_ShouldReturnCorrectResult_WhenBothRectanglesAreSame()
+    public void IntersectShouldReturnCorrectResultWhenBothRectanglesAreSame()
     {
         // Arrange
-        var rectangle1 = new GorgonRectangle(0, 0, 10, 10);
-        var rectangle2 = new GorgonRectangle(0, 0, 10, 10);
+        GorgonRectangle rectangle1 = new(0, 0, 10, 10);
+        GorgonRectangle rectangle2 = new(0, 0, 10, 10);
 
         // Act
-        var result = GorgonRectangle.Intersect(rectangle1, rectangle2);
+        GorgonRectangle result = GorgonRectangle.Intersect(rectangle1, rectangle2);
 
         // Assert
         Assert.AreEqual(rectangle1, result);
 
         // Arrange
-        var rectangle3 = new GorgonRectangleF(0, 0, 10, 10);
-        var rectangle4 = new GorgonRectangleF(0, 0, 10, 10);
+        GorgonRectangleF rectangle3 = new(0, 0, 10, 10);
+        GorgonRectangleF rectangle4 = new(0, 0, 10, 10);
 
         // Act
-        var result2 = GorgonRectangleF.Intersect(rectangle3, rectangle4);
+        GorgonRectangleF result2 = GorgonRectangleF.Intersect(rectangle3, rectangle4);
 
         // Assert
         Assert.AreEqual(rectangle3, result2);
     }
 
     [TestMethod]
-    public void Intersect_ShouldReturnCorrectResult_WhenRectanglesOverlap()
+    public void IntersectShouldReturnCorrectResultWhenRectanglesOverlap()
     {
         // Arrange
-        var rectangle1 = new GorgonRectangle(0, 0, 10, 10);
-        var rectangle2 = new GorgonRectangle(5, 5, 15, 15);
+        GorgonRectangle rectangle1 = new(0, 0, 10, 10);
+        GorgonRectangle rectangle2 = new(5, 5, 15, 15);
 
         // Act
-        var result = GorgonRectangle.Intersect(rectangle1, rectangle2);
+        GorgonRectangle result = GorgonRectangle.Intersect(rectangle1, rectangle2);
 
         // Assert
         Assert.AreEqual(new GorgonRectangle(5, 5, 5, 5), result);
 
         // Arrange
-        var rectangle3 = new GorgonRectangleF(0, 0, 10, 10);
-        var rectangle4 = new GorgonRectangleF(5, 5, 15, 15);
+        GorgonRectangleF rectangle3 = new(0, 0, 10, 10);
+        GorgonRectangleF rectangle4 = new(5, 5, 15, 15);
 
         // Act
-        var result2 = GorgonRectangleF.Intersect(rectangle3, rectangle4);
+        GorgonRectangleF result2 = GorgonRectangleF.Intersect(rectangle3, rectangle4);
 
         // Assert
         Assert.AreEqual(new GorgonRectangleF(5, 5, 5, 5), result2);
     }
 
     [TestMethod]
-    public void Intersect_ShouldReturnEmpty_WhenRectanglesDoNotOverlap()
+    public void IntersectShouldReturnEmptyWhenRectanglesDoNotOverlap()
     {
         // Arrange
-        var rectangle1 = new GorgonRectangle(0, 0, 10, 10);
-        var rectangle2 = new GorgonRectangle(20, 20, 10, 10);
+        GorgonRectangle rectangle1 = new(0, 0, 10, 10);
+        GorgonRectangle rectangle2 = new(20, 20, 10, 10);
 
         // Act
-        var result = GorgonRectangle.Intersect(rectangle1, rectangle2);
+        GorgonRectangle result = GorgonRectangle.Intersect(rectangle1, rectangle2);
 
         // Assert
         Assert.AreEqual(GorgonRectangle.Empty, result);
 
         // Arrange
-        var rectangle3 = new GorgonRectangleF(0, 0, 10, 10);
-        var rectangle4 = new GorgonRectangleF(20, 20, 10, 10);
+        GorgonRectangleF rectangle3 = new(0, 0, 10, 10);
+        GorgonRectangleF rectangle4 = new(20, 20, 10, 10);
 
         // Act
-        var result2 = GorgonRectangleF.Intersect(rectangle3, rectangle4);
+        GorgonRectangleF result2 = GorgonRectangleF.Intersect(rectangle3, rectangle4);
 
         // Assert
         Assert.AreEqual(GorgonRectangleF.Empty, result2);
     }
 
     [TestMethod]
-    public void Intersect_ShouldReturnEmpty_WhenOneRectanglesRightIsEqualToOthersLeft()
+    public void IntersectShouldReturnEmptyWhenOneRectanglesRightIsEqualToOthersLeft()
     {
         // Arrange
-        var rectangle1 = new GorgonRectangle(0, 0, 10, 10);
-        var rectangle2 = new GorgonRectangle(10, 0, 10, 10);
+        GorgonRectangle rectangle1 = new(0, 0, 10, 10);
+        GorgonRectangle rectangle2 = new(10, 0, 10, 10);
 
         // Act
-        var result = GorgonRectangle.Intersect(rectangle1, rectangle2);
+        GorgonRectangle result = GorgonRectangle.Intersect(rectangle1, rectangle2);
 
         // Assert
         Assert.AreEqual(GorgonRectangle.Empty, result);
 
         // Arrange
-        var rectangle3 = new GorgonRectangleF(0, 0, 10, 10);
-        var rectangle4 = new GorgonRectangleF(10, 0, 10, 10);
+        GorgonRectangleF rectangle3 = new(0, 0, 10, 10);
+        GorgonRectangleF rectangle4 = new(10, 0, 10, 10);
 
         // Act
-        var result2 = GorgonRectangleF.Intersect(rectangle3, rectangle4);
+        GorgonRectangleF result2 = GorgonRectangleF.Intersect(rectangle3, rectangle4);
 
         // Assert
         Assert.AreEqual(GorgonRectangleF.Empty, result2);
     }
 
     [TestMethod]
-    public void ContainsRectangle_ShouldReturnTrue_WhenRectangleIsContained()
+    public void ContainsRectangleShouldReturnTrueWhenRectangleIsContained()
     {
         // Arrange
-        var outerRectangle = new GorgonRectangle(0, 0, 10, 10);
-        var innerRectangle = new GorgonRectangle(2, 2, 8, 8);
+        GorgonRectangle outerRectangle = new(0, 0, 10, 10);
+        GorgonRectangle innerRectangle = new(2, 2, 8, 8);
 
         // Act
-        var result = outerRectangle.Contains(innerRectangle);
+        bool result = outerRectangle.Contains(innerRectangle);
 
         // Assert
         Assert.IsTrue(result);
 
         // Arrange
-        var outerRectangle2 = new GorgonRectangleF(0.5f, 0.5f, 10.2f, 10.1f);
-        var innerRectangle2 = new GorgonRectangleF(2.2f, 2.2f, 8.1f, 8);
+        GorgonRectangleF outerRectangle2 = new(0.5f, 0.5f, 10.2f, 10.1f);
+        GorgonRectangleF innerRectangle2 = new(2.2f, 2.2f, 8.1f, 8);
 
         // Act
-        var result2 = outerRectangle2.Contains(innerRectangle2);
+        bool result2 = outerRectangle2.Contains(innerRectangle2);
 
         // Assert
         Assert.IsTrue(result2);
     }
 
     [TestMethod]
-    public void ContainsRectangle_ShouldReturnFalse_WhenRectangleIsNotContained()
+    public void ContainsRectangleShouldReturnFalseWhenRectangleIsNotContained()
     {
         // Arrange
-        var outerRectangle = new GorgonRectangle(0, 0, 10, 10);
-        var innerRectangle = new GorgonRectangle(5, 5, 15, 15);
+        GorgonRectangle outerRectangle = new(0, 0, 10, 10);
+        GorgonRectangle innerRectangle = new(5, 5, 15, 15);
 
         // Act
-        var result = outerRectangle.Contains(innerRectangle);
+        bool result = outerRectangle.Contains(innerRectangle);
 
         // Assert
         Assert.IsFalse(result);
 
         // Arrange
-        var outerRectangle2 = new GorgonRectangleF(0.5f, 0.5f, 10.2f, 10.1f);
-        var innerRectangle2 = new GorgonRectangleF(5.5f, 5, 15.25f, 15.3f);
+        GorgonRectangleF outerRectangle2 = new(0.5f, 0.5f, 10.2f, 10.1f);
+        GorgonRectangleF innerRectangle2 = new(5.5f, 5, 15.25f, 15.3f);
 
         // Act
-        var result2 = outerRectangle2.Contains(innerRectangle2);
+        bool result2 = outerRectangle2.Contains(innerRectangle2);
 
         // Assert
         Assert.IsFalse(result2);
     }
 
     [TestMethod]
-    public void ContainsPoint_ShouldReturnTrue_WhenPointIsContained()
+    public void ContainsPointShouldReturnTrueWhenPointIsContained()
     {
         // Arrange
-        var rectangle = new GorgonRectangle(0, 0, 10, 10);
-        var point = new GorgonPoint(5, 5);
+        GorgonRectangle rectangle = new(0, 0, 10, 10);
+        GorgonPoint point = new(5, 5);
 
         // Act
-        var result = rectangle.Contains(point);
+        bool result = rectangle.Contains(point);
 
         // Assert
         Assert.IsTrue(result);
 
         // Arrange
-        var rectangle2 = new GorgonRectangleF(0.25f, 0.625f, 10.9f, 10.1f);
-        var point2 = new Vector2(5.5f, 5.5f);
+        GorgonRectangleF rectangle2 = new(0.25f, 0.625f, 10.9f, 10.1f);
+        Vector2 point2 = new(5.5f, 5.5f);
 
         // Act
-        var result2 = rectangle2.Contains(point2);
+        bool result2 = rectangle2.Contains(point2);
 
         // Assert
         Assert.IsTrue(result2);
     }
 
     [TestMethod]
-    public void ContainsPoint_ShouldReturnFalse_WhenPointIsNotContained()
+    public void ContainsPointShouldReturnFalseWhenPointIsNotContained()
     {
         // Arrange
-        var rectangle = new GorgonRectangle(0, 0, 10, 10);
-        var point = new GorgonPoint(15, 15);
+        GorgonRectangle rectangle = new(0, 0, 10, 10);
+        GorgonPoint point = new(15, 15);
 
         // Act
-        var result = rectangle.Contains(point);
+        bool result = rectangle.Contains(point);
 
         // Assert
         Assert.IsFalse(result);
 
         // Arrange
-        var rectangle2 = new GorgonRectangleF(0.25f, 0.625f, 10.9f, 10.1f);
-        var point2 = new Vector2(15.9f, 15.75f);
+        GorgonRectangleF rectangle2 = new(0.25f, 0.625f, 10.9f, 10.1f);
+        Vector2 point2 = new(15.9f, 15.75f);
 
         // Act
-        var result2 = rectangle2.Contains(point2);
+        bool result2 = rectangle2.Contains(point2);
 
         // Assert
         Assert.IsFalse(result2);
     }
 
     [TestMethod]
-    public void IntersectsWith_ShouldReturnTrue_WhenRectanglesIntersect()
+    public void IntersectsWithShouldReturnTrueWhenRectanglesIntersect()
     {
         // Arrange
-        var rectangle1 = new GorgonRectangle(0, 0, 10, 10);
-        var rectangle2 = new GorgonRectangle(5, 5, 15, 15);
+        GorgonRectangle rectangle1 = new(0, 0, 10, 10);
+        GorgonRectangle rectangle2 = new(5, 5, 15, 15);
 
         // Act
-        var result = rectangle1.IntersectsWith(rectangle2);
+        bool result = rectangle1.IntersectsWith(rectangle2);
 
         // Assert
         Assert.IsTrue(result);
 
         // Arrange
-        var rectangle3 = new GorgonRectangleF(0, 0, 10, 10);
-        var rectangle4 = new GorgonRectangleF(5.2f, 5.1f, 15.9f, 15.2f);
+        GorgonRectangleF rectangle3 = new(0, 0, 10, 10);
+        GorgonRectangleF rectangle4 = new(5.2f, 5.1f, 15.9f, 15.2f);
 
         // Act
-        var result2 = rectangle3.IntersectsWith(rectangle4);
+        bool result2 = rectangle3.IntersectsWith(rectangle4);
 
         // Assert
         Assert.IsTrue(result2);
     }
 
     [TestMethod]
-    public void IntersectsWith_ShouldReturnFalse_WhenRectanglesDoNotIntersect()
+    public void IntersectsWithShouldReturnFalseWhenRectanglesDoNotIntersect()
     {
         // Arrange
-        var rectangle1 = new GorgonRectangle(0, 0, 10, 10);
-        var rectangle2 = new GorgonRectangle(15, 15, 25, 25);
+        GorgonRectangle rectangle1 = new(0, 0, 10, 10);
+        GorgonRectangle rectangle2 = new(15, 15, 25, 25);
 
         // Act
-        var result = rectangle1.IntersectsWith(rectangle2);
+        bool result = rectangle1.IntersectsWith(rectangle2);
 
         // Assert
         Assert.IsFalse(result);
 
         // Arrange
-        var rectangle3 = new GorgonRectangleF(0, 0, 10, 10);
-        var rectangle4 = new GorgonRectangleF(15.1f, 15.2f, 25.3f, 25.4f);
+        GorgonRectangleF rectangle3 = new(0, 0, 10, 10);
+        GorgonRectangleF rectangle4 = new(15.1f, 15.2f, 25.3f, 25.4f);
 
         // Act
-        var result2 = rectangle3.IntersectsWith(rectangle4);
+        bool result2 = rectangle3.IntersectsWith(rectangle4);
 
         // Assert
         Assert.IsFalse(result2);
     }
 
     [TestMethod]
-    public void IntersectsWith_ShouldReturnTrue_WhenRectanglesAreSame()
+    public void IntersectsWithShouldReturnTrueWhenRectanglesAreSame()
     {
         // Arrange
-        var rectangle1 = new GorgonRectangle(0, 0, 10, 10);
-        var rectangle2 = new GorgonRectangle(0, 0, 10, 10);
+        GorgonRectangle rectangle1 = new(0, 0, 10, 10);
+        GorgonRectangle rectangle2 = new(0, 0, 10, 10);
 
         // Act
-        var result = rectangle1.IntersectsWith(rectangle2);
+        bool result = rectangle1.IntersectsWith(rectangle2);
 
         // Assert
         Assert.IsTrue(result);
 
         // Arrange
-        var rectangle3 = new GorgonRectangleF(0, 0, 10, 10);
-        var rectangle4 = new GorgonRectangleF(0, 0, 10, 10);
+        GorgonRectangleF rectangle3 = new(0, 0, 10, 10);
+        GorgonRectangleF rectangle4 = new(0, 0, 10, 10);
 
         // Act
-        var result2 = rectangle3.IntersectsWith(rectangle4);
+        bool result2 = rectangle3.IntersectsWith(rectangle4);
 
         // Assert
         Assert.IsTrue(result2);
     }
 
     [TestMethod]
-    public void IntersectsWith_ShouldReturnFalse_WhenOneRectanglesRightIsEqualToOthersLeft()
+    public void IntersectsWithShouldReturnFalseWhenOneRectanglesRightIsEqualToOthersLeft()
     {
         // Arrange
-        var rectangle1 = new GorgonRectangle(0, 0, 10, 10);
-        var rectangle2 = new GorgonRectangle(10, 0, 20, 10);
+        GorgonRectangle rectangle1 = new(0, 0, 10, 10);
+        GorgonRectangle rectangle2 = new(10, 0, 20, 10);
 
         // Act
-        var result = rectangle1.IntersectsWith(rectangle2);
+        bool result = rectangle1.IntersectsWith(rectangle2);
 
         // Assert
         Assert.IsFalse(result);
 
         // Arrange
-        var rectangle3 = new GorgonRectangle(0, 0, 10, 10);
-        var rectangle4 = new GorgonRectangle(10, 0, 20, 10);
+        GorgonRectangle rectangle3 = new(0, 0, 10, 10);
+        GorgonRectangle rectangle4 = new(10, 0, 20, 10);
 
         // Act
-        var result2 = rectangle3.IntersectsWith(rectangle4);
+        bool result2 = rectangle3.IntersectsWith(rectangle4);
 
         // Assert
         Assert.IsFalse(result2);
     }
 
     [TestMethod]
-    public void FromTLRB_ShouldReturnCorrectRectangle()
+    public void FromTLRBShouldReturnCorrectRectangle()
     {
         // Arrange
         int top = 1;
@@ -745,7 +745,7 @@ public class GorgonRectangleTests
         int bottom = 6;
 
         // Act
-        var result = GorgonRectangle.FromLTRB(left, top, right, bottom);
+        GorgonRectangle result = GorgonRectangle.FromLTRB(left, top, right, bottom);
 
         // Assert
         Assert.AreEqual(left, result.X);
@@ -764,7 +764,7 @@ public class GorgonRectangleTests
         float bottom2 = 6.0f;
 
         // Act
-        var result2 = GorgonRectangleF.FromLTRB(left, top, right, bottom);
+        GorgonRectangleF result2 = GorgonRectangleF.FromLTRB(left, top, right, bottom);
 
         // Assert
         Assert.AreEqual(left2, result2.X);
@@ -792,7 +792,7 @@ public class GorgonRectangleTests
         Assert.AreEqual(rectangle, deserializedRectangle);
 
         expectedString = "{\"x\":10.5,\"y\":20.5,\"width\":30.25,\"height\":40.75}";
-        GorgonRectangleF rectf = new GorgonRectangleF(10.5f, 20.5f, 30.25f, 40.75f);
+        GorgonRectangleF rectf = new(10.5f, 20.5f, 30.25f, 40.75f);
 
         actualString = JsonSerializer.Serialize(rectf);
 

@@ -6,7 +6,7 @@ namespace Gorgon.Core.Tests;
 public class GorgonChunkTests
 {
     [TestMethod]
-    public void GorgonChunk_Constructor_ShouldSetPropertiesCorrectly()
+    public void GorgonChunkConstructorShouldSetPropertiesCorrectly()
     {
         GorgonChunk chunk = new("CHNKID01".ChunkID(), 456, 789);
 
@@ -16,7 +16,7 @@ public class GorgonChunkTests
     }
 
     [TestMethod]
-    public void GorgonChunk_Equals_ShouldReturnTrueForEqualChunks()
+    public void GorgonChunkEqualsShouldReturnTrueForEqualChunks()
     {
         GorgonChunk chunk1 = new("CHNKID01".ChunkID(), 456, 789);
         GorgonChunk chunk2 = new("CHNKID01".ChunkID(), 456, 789);
@@ -25,7 +25,7 @@ public class GorgonChunkTests
     }
 
     [TestMethod]
-    public void GorgonChunk_Equals_ShouldReturnFalseForUnequalChunks()
+    public void GorgonChunkEqualsShouldReturnFalseForUnequalChunks()
     {
         GorgonChunk chunk1 = new("CHNKID01".ChunkID(), 456, 789);
         GorgonChunk chunk2 = new("CHNKID02".ChunkID(), 654, 987);
@@ -34,7 +34,7 @@ public class GorgonChunkTests
     }
 
     [TestMethod]
-    public void GorgonChunk_EqualityOperator_ShouldReturnTrueForEqualChunks()
+    public void GorgonChunkEqualityOperatorShouldReturnTrueForEqualChunks()
     {
         GorgonChunk chunk1 = new("CHNKID01".ChunkID(), 456, 789);
         GorgonChunk chunk2 = new("CHNKID01".ChunkID(), 456, 789);
@@ -43,7 +43,7 @@ public class GorgonChunkTests
     }
 
     [TestMethod]
-    public void GorgonChunk_EqualityOperator_ShouldReturnFalseForUnequalChunks()
+    public void GorgonChunkEqualityOperatorShouldReturnFalseForUnequalChunks()
     {
         GorgonChunk chunk1 = new("CHNKID01".ChunkID(), 456, 789);
         GorgonChunk chunk2 = new("CHNKID02".ChunkID(), 654, 987);
@@ -52,7 +52,7 @@ public class GorgonChunkTests
     }
 
     [TestMethod]
-    public void GorgonChunk_InequalityOperator_ShouldReturnTrueForUnequalChunks()
+    public void GorgonChunkInequalityOperatorShouldReturnTrueForUnequalChunks()
     {
         GorgonChunk chunk1 = new("CHNKID01".ChunkID(), 456, 789);
         GorgonChunk chunk2 = new("CHNKID02".ChunkID(), 654, 987);
@@ -61,7 +61,7 @@ public class GorgonChunkTests
     }
 
     [TestMethod]
-    public void GorgonChunk_InequalityOperator_ShouldReturnFalseForEqualChunks()
+    public void GorgonChunkInequalityOperatorShouldReturnFalseForEqualChunks()
     {
         GorgonChunk chunk1 = new("CHNKID01".ChunkID(), 456, 789);
         GorgonChunk chunk2 = new("CHNKID01".ChunkID(), 456, 789);

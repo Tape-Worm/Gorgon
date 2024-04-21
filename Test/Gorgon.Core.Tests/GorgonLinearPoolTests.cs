@@ -9,10 +9,7 @@ namespace Gorgon.Core.Tests;
 public class GorgonLinearPoolTests
 {
     [TestMethod]
-    public void ShouldThrowWhenMaxObjectCountLessThanOne()
-    {
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() => new GorgonLinearPool<string>(0, () => "Test"));
-    }
+    public void ShouldThrowWhenMaxObjectCountLessThanOne() => Assert.ThrowsException<ArgumentOutOfRangeException>(() => new GorgonLinearPool<string>(0, () => "Test"));
 
     [TestMethod]
     public void ShouldThrowWhenPoolIsFull()
@@ -31,7 +28,7 @@ public class GorgonLinearPoolTests
     public void ShouldRecycleWhenFullAndReset()
     {
         const int poolSize = 3;
-        List<DisposableObject> list = new();
+        List<DisposableObject> list = [];
         GorgonLinearPool<DisposableObject> pool = new(poolSize, () => new DisposableObject());
         for (int i = 0; i < poolSize; i++)
         {
@@ -71,7 +68,7 @@ public class GorgonLinearPoolTests
         const int poolSize = 5;
         GorgonLinearPool<string> pool = new(poolSize, () => Guid.NewGuid().ToString());
 
-        List<string> allocatedItems = new();
+        List<string> allocatedItems = [];
         for (int i = 0; i < poolSize; i++)
         {
             allocatedItems.Add(pool.Allocate());
@@ -82,10 +79,10 @@ public class GorgonLinearPoolTests
     }
 
     [TestMethod]
-    public void ShouldAllocateMultipleItems_WithInitializer()
+    public void ShouldAllocateMultipleItemsWithInitializer()
     {
         GorgonLinearPool<DisposableObject> pool = new(5, () => new());
-        List<DisposableObject> items = new List<DisposableObject>();
+        List<DisposableObject> items = [];
 
         for (int i = 0; i < 5; i++)
         {
@@ -110,7 +107,7 @@ public class GorgonLinearPoolTests
         Assert.ThrowsException<GorgonException>(() => pool.Allocate());
     }
 
-    private class DisposableObject : IDisposable
+    private sealed class DisposableObject : IDisposable
     {
         public string Text
         {
@@ -123,10 +120,7 @@ public class GorgonLinearPoolTests
             get; private set;
         }
 
-        public void Dispose()
-        {
-            IsDisposed = true;
-        }
+        public void Dispose() => IsDisposed = true;
     }
 
 }
