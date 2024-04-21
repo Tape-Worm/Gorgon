@@ -291,6 +291,7 @@ csharp_style_prefer_readonly_struct = true:suggestion
 csharp_style_prefer_readonly_struct_member = true:suggestion
 csharp_style_prefer_extended_property_pattern = true:suggestion
 csharp_style_implicit_object_creation_when_type_is_apparent = true:warning
+dotnet_diagnostic.CA1311.severity = none
 
 [*.{cs,vb}]
 dotnet_diagnostic.CA1063.severity=silent
@@ -349,3 +350,4 @@ dotnet_style_qualification_for_field = false:silent
 dotnet_style_qualification_for_property = false:silent
 dotnet_style_qualification_for_method = false:silent
 dotnet_style_qualification_for_event = false:silent
+dotnet_diagnostic.CA1304.severity = none

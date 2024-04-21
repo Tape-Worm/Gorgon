@@ -7,7 +7,7 @@ namespace Gorgon.Core.Tests;
 public class GorgonPtrTests
 {
     [TestMethod]
-    public unsafe void Constructor_NullPointer_ThrowsNullReferenceException()
+    public unsafe void ConstructorNullPointerThrowsNullReferenceException()
     {
         int* nullPtr = null;
 
@@ -17,7 +17,7 @@ public class GorgonPtrTests
     }
 
     [TestMethod]
-    public unsafe void Constructor_NegativeCount_ThrowsArgumentException()
+    public unsafe void ConstructorNegativeCountThrowsArgumentException()
     {
         int dummy = 0;
         int* dummyPtr = &dummy;
@@ -30,7 +30,7 @@ public class GorgonPtrTests
     }
 
     [TestMethod]
-    public unsafe void Constructor_ZeroCount_ThrowsArgumentException()
+    public unsafe void ConstructorZeroCountThrowsArgumentException()
     {
         int dummy = 0;
         int* dummyPtr = &dummy;
@@ -43,16 +43,16 @@ public class GorgonPtrTests
     }
 
     [TestMethod]
-    public unsafe void Constructor_ValidParameters_ConstructsCorrectly()
+    public unsafe void ConstructorValidParametersConstructsCorrectly()
     {
         int dummy = 0;
         int* dummyPtr = &dummy;
         nint dummyNint = (nint)dummyPtr;
         nuint dummyNuint = (nuint)dummyPtr;
 
-        var gorgonPtrFromPointer = new GorgonPtr<int>(dummyPtr, 1);
-        var gorgonPtrFromNint = new GorgonPtr<int>(dummyNint, 1);
-        var gorgonPtrFromNuint = new GorgonPtr<int>(dummyNuint, 1);
+        GorgonPtr<int> gorgonPtrFromPointer = new(dummyPtr, 1);
+        GorgonPtr<int> gorgonPtrFromNint = new(dummyNint, 1);
+        GorgonPtr<int> gorgonPtrFromNuint = new(dummyNuint, 1);
 
         Assert.IsTrue(dummyPtr == (int*)gorgonPtrFromPointer, "Expected pointers to be equal.");
         Assert.AreEqual(dummyNint, (nint)gorgonPtrFromNint, "Expected nints to be equal.");
@@ -64,13 +64,13 @@ public class GorgonPtrTests
     }
 
     [TestMethod]
-    public unsafe void AddSubtract_ExtendsBeyondBounds()
+    public unsafe void AddSubtractExtendsBeyondBounds()
     {
-        int[] dummyArray = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+        int[] dummyArray = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
         fixed (int* dummyPtr = dummyArray)
         {
-            var gorgonPtr = new GorgonPtr<int>(dummyPtr, dummyArray.Length);
+            GorgonPtr<int> gorgonPtr = new(dummyPtr, dummyArray.Length);
 
             for (int i = 0; i < 15; i++)
             {
@@ -91,13 +91,13 @@ public class GorgonPtrTests
     }
 
     [TestMethod]
-    public unsafe void Operator_IncrementAndDecrement_ChangesPointerCorrectly()
+    public unsafe void OperatorIncrementAndDecrementChangesPointerCorrectly()
     {
-        int[] dummyArray = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+        int[] dummyArray = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
         fixed (int* dummyPtr = dummyArray)
         {
-            var gorgonPtr = new GorgonPtr<int>(dummyPtr, dummyArray.Length);
+            GorgonPtr<int> gorgonPtr = new(dummyPtr, dummyArray.Length);
 
             for (int i = 0; i < 4; i++)
             {
@@ -114,13 +114,13 @@ public class GorgonPtrTests
     }
 
     [TestMethod]
-    public unsafe void Operator_AdditionAndSubtraction_ChangesPointerCorrectly()
+    public unsafe void OperatorAdditionAndSubtractionChangesPointerCorrectly()
     {
-        int[] dummyArray = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+        int[] dummyArray = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
         fixed (int* dummyPtr = dummyArray)
         {
-            var gorgonPtr = new GorgonPtr<int>(dummyPtr, dummyArray.Length);
+            GorgonPtr<int> gorgonPtr = new(dummyPtr, dummyArray.Length);
 
             for (int i = 0; i < 4; i++)
             {
@@ -143,14 +143,14 @@ public class GorgonPtrTests
     }
 
     [TestMethod]
-    public unsafe void SubtractMethod_CorrectlySubtractsPointers()
+    public unsafe void SubtractMethodCorrectlySubtractsPointers()
     {
-        int[] dummyArray = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+        int[] dummyArray = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 
         fixed (int* dummyPtr = dummyArray)
         {
-            var gorgonPtr1 = new GorgonPtr<int>(dummyPtr, dummyArray.Length);
-            var gorgonPtr2 = new GorgonPtr<int>(dummyPtr + 5, dummyArray.Length - 5);
+            GorgonPtr<int> gorgonPtr1 = new(dummyPtr, dummyArray.Length);
+            GorgonPtr<int> gorgonPtr2 = new(dummyPtr + 5, dummyArray.Length - 5);
 
             // Subtract pointers
             long result = gorgonPtr2 - gorgonPtr1;
@@ -161,15 +161,15 @@ public class GorgonPtrTests
     }
 
     [TestMethod]
-    public unsafe void Operator_EqualityAndInequality_And_EqualsMethod_CorrectlyComparesPointers()
+    public unsafe void OperatorEqualityAndInequalityAndEqualsMethodCorrectlyComparesPointers()
     {
-        int[] dummyArray = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+        int[] dummyArray = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 
         fixed (int* dummyPtr = dummyArray)
         {
-            var gorgonPtr1 = new GorgonPtr<int>(dummyPtr, dummyArray.Length);
-            var gorgonPtr2 = new GorgonPtr<int>(dummyPtr, dummyArray.Length);
-            var gorgonPtr3 = new GorgonPtr<int>(dummyPtr + 1, dummyArray.Length - 1);
+            GorgonPtr<int> gorgonPtr1 = new(dummyPtr, dummyArray.Length);
+            GorgonPtr<int> gorgonPtr2 = new(dummyPtr, dummyArray.Length);
+            GorgonPtr<int> gorgonPtr3 = new(dummyPtr + 1, dummyArray.Length - 1);
 
             // Test equality and inequality operators
             Assert.IsTrue(gorgonPtr1 == gorgonPtr2, "Expected pointers to be equal.");
@@ -185,14 +185,14 @@ public class GorgonPtrTests
     }
 
     [TestMethod]
-    public unsafe void Operator_LessThanAndGreaterThan_CorrectlyComparesPointers()
+    public unsafe void OperatorLessThanAndGreaterThanCorrectlyComparesPointers()
     {
-        int[] dummyArray = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+        int[] dummyArray = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 
         fixed (int* dummyPtr = dummyArray)
         {
-            var gorgonPtr1 = new GorgonPtr<int>(dummyPtr, dummyArray.Length);
-            var gorgonPtr2 = new GorgonPtr<int>(dummyPtr + 1, dummyArray.Length - 1);
+            GorgonPtr<int> gorgonPtr1 = new(dummyPtr, dummyArray.Length);
+            GorgonPtr<int> gorgonPtr2 = new(dummyPtr + 1, dummyArray.Length - 1);
 
             Assert.IsTrue(gorgonPtr1 < gorgonPtr2, "Expected gorgonPtr1 to be less than gorgonPtr2.");
             Assert.IsFalse(gorgonPtr1 > gorgonPtr2, "Expected gorgonPtr1 not to be greater than gorgonPtr2.");
@@ -203,15 +203,15 @@ public class GorgonPtrTests
     }
 
     [TestMethod]
-    public unsafe void Operator_LessThanOrEqualToAndGreaterThanOrEqualTo_CorrectlyComparesPointers()
+    public unsafe void OperatorLessThanOrEqualToAndGreaterThanOrEqualToCorrectlyComparesPointers()
     {
-        int[] dummyArray = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+        int[] dummyArray = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 
         fixed (int* dummyPtr = dummyArray)
         {
-            var gorgonPtr1 = new GorgonPtr<int>(dummyPtr, dummyArray.Length);
-            var gorgonPtr2 = new GorgonPtr<int>(dummyPtr, dummyArray.Length);
-            var gorgonPtr3 = new GorgonPtr<int>(dummyPtr + 1, dummyArray.Length - 1);
+            GorgonPtr<int> gorgonPtr1 = new(dummyPtr, dummyArray.Length);
+            GorgonPtr<int> gorgonPtr2 = new(dummyPtr, dummyArray.Length);
+            GorgonPtr<int> gorgonPtr3 = new(dummyPtr + 1, dummyArray.Length - 1);
 
             Assert.IsTrue(gorgonPtr1 <= gorgonPtr2, "Expected gorgonPtr1 to be less than or equal to gorgonPtr2.");
             Assert.IsTrue(gorgonPtr1 >= gorgonPtr2, "Expected gorgonPtr1 to be greater than or equal to gorgonPtr2.");
@@ -225,13 +225,13 @@ public class GorgonPtrTests
     }
 
     [TestMethod]
-    public unsafe void ConversionOperators_CorrectlyConvertsGorgonPtr()
+    public unsafe void ConversionOperatorsCorrectlyConvertsGorgonPtr()
     {
-        int[] dummyArray = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+        int[] dummyArray = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 
         fixed (int* dummyPtr = dummyArray)
         {
-            var gorgonPtr = new GorgonPtr<int>(dummyPtr, dummyArray.Length);
+            GorgonPtr<int> gorgonPtr = new(dummyPtr, dummyArray.Length);
 
             // Test conversion to Span<T>
             Span<int> span = gorgonPtr;
@@ -272,13 +272,13 @@ public class GorgonPtrTests
     }
 
     [TestMethod]
-    public unsafe void IndexerProperty_ChangesAndReadsValueCorrectly()
+    public unsafe void IndexerPropertyChangesAndReadsValueCorrectly()
     {
-        int[] dummyArray = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+        int[] dummyArray = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 
         fixed (int* dummyPtr = dummyArray)
         {
-            var gorgonPtr = new GorgonPtr<int>(dummyPtr, dummyArray.Length);
+            GorgonPtr<int> gorgonPtr = new(dummyPtr, dummyArray.Length);
 
             // Change a value at index 5 using ref return
             ref int valueAt5 = ref gorgonPtr[5];
@@ -300,10 +300,10 @@ public class GorgonPtrTests
     }
 
     [TestMethod]
-    public unsafe void Indexer_ReturnsCorrectSlice_WhenRangeIsValid()
+    public unsafe void IndexerReturnsCorrectSliceWhenRangeIsValid()
     {
-        int[] data = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-        int[] expectedSlice = { 4, 5, 6, 7 };
+        int[] data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+        int[] expectedSlice = [4, 5, 6, 7];
         fixed (int* dataPtr = data)
         {
             GorgonPtr<int> tenItems = new(dataPtr, data.Length);
@@ -318,20 +318,20 @@ public class GorgonPtrTests
     }
 
     [TestMethod]
-    public unsafe void Indexer_ThrowsArgumentOutOfRangeException_WhenRangeIsInvalid()
+    public unsafe void IndexerThrowsArgumentOutOfRangeExceptionWhenRangeIsInvalid()
     {
-        int[] data = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+        int[] data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
         fixed (int* dataPtr = data)
         {
             GorgonPtr<int> tenItems = new(dataPtr, data.Length);
 
-            Assert.ThrowsException<ArgumentOutOfRangeException>(() => { var _ = tenItems[-1..5]; });
-            Assert.ThrowsException<ArgumentOutOfRangeException>(() => { var _ = tenItems[10..15]; });
+            Assert.ThrowsException<ArgumentOutOfRangeException>(() => { GorgonPtr<int> _ = tenItems[-1..5]; });
+            Assert.ThrowsException<ArgumentOutOfRangeException>(() => { GorgonPtr<int> _ = tenItems[10..15]; });
         }
     }
 
     [TestMethod]
-    public void Indexer_ReturnsNullPtr_WhenPtrIsNull()
+    public void IndexerReturnsNullPtrWhenPtrIsNull()
     {
         GorgonPtr<int> nullPtr = GorgonPtr<int>.NullPtr;
         GorgonPtr<int> sliced = nullPtr[3..7];
@@ -340,13 +340,13 @@ public class GorgonPtrTests
     }
 
     [TestMethod]
-    public unsafe void ToMethod_CorrectlyConvertsGorgonPtr()
+    public unsafe void ToMethodCorrectlyConvertsGorgonPtr()
     {
-        int[] dummyArray = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+        int[] dummyArray = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 
         fixed (int* dummyPtr = dummyArray)
         {
-            var gorgonPtrInt = new GorgonPtr<int>(dummyPtr, dummyArray.Length);
+            GorgonPtr<int> gorgonPtrInt = new(dummyPtr, dummyArray.Length);
 
             // Convert GorgonPtr<int> to GorgonPtr<byte>
             GorgonPtr<byte> gorgonPtrByte = GorgonPtr<int>.To<byte>(gorgonPtrInt);
@@ -373,11 +373,11 @@ public class GorgonPtrTests
     }
 
     [TestMethod]
-    public unsafe void ToMethod_CorrectlyConvertsIntToByte()
+    public unsafe void ToMethodCorrectlyConvertsIntToByte()
     {
         int dummyInt = 123456789;
 
-        var gorgonPtrInt = new GorgonPtr<int>(&dummyInt, 1);
+        GorgonPtr<int> gorgonPtrInt = new(&dummyInt, 1);
 
         // Convert GorgonPtr<int> to GorgonPtr<byte>
         GorgonPtr<byte> gorgonPtrByte = GorgonPtr<int>.To<byte>(gorgonPtrInt);
@@ -394,11 +394,11 @@ public class GorgonPtrTests
     }
 
     [TestMethod]
-    public unsafe void AsRefMethod_CorrectlyReinterpretsMemory()
+    public unsafe void AsRefMethodCorrectlyReinterpretsMemory()
     {
         int dummyInt = 123456789;
 
-        var gorgonPtrInt = new GorgonPtr<int>(&dummyInt, 1);
+        GorgonPtr<int> gorgonPtrInt = new(&dummyInt, 1);
 
         // Reinterpret GorgonPtr<int> as byte and check the first byte
         ref byte gorgonPtrByteRef = ref gorgonPtrInt.AsRef<byte>();
@@ -423,7 +423,7 @@ public class GorgonPtrTests
     }
 
     [TestMethod]
-    public void AsRefMethod_ThrowsExceptionWhenPointerIsNull()
+    public void AsRefMethodThrowsExceptionWhenPointerIsNull()
     {
         // Create a null GorgonPtr<int>
         GorgonPtr<int> gorgonPtrInt = GorgonPtr<int>.NullPtr;
@@ -433,35 +433,35 @@ public class GorgonPtrTests
     }
 
     [TestMethod]
-    public unsafe void AsRefMethod_ThrowsExceptionWhenOffsetIsOutOfRange()
+    public unsafe void AsRefMethodThrowsExceptionWhenOffsetIsOutOfRange()
     {
         int dummyInt = 123456789;
 
-        var gorgonPtrInt = new GorgonPtr<int>(&dummyInt, 1);
+        GorgonPtr<int> gorgonPtrInt = new(&dummyInt, 1);
 
         // Expect an ArgumentOutOfRangeException when trying to reinterpret the GorgonPtr<int> with an offset that is out of range
         Assert.ThrowsException<ArgumentOutOfRangeException>(() => gorgonPtrInt.AsRef<byte>(sizeof(int)));
     }
 
     [TestMethod]
-    public unsafe void AsRefMethod_ThrowsExceptionWhenOffsetIsLessThanZero()
+    public unsafe void AsRefMethodThrowsExceptionWhenOffsetIsLessThanZero()
     {
         int dummyInt = 123456789;
 
-        var gorgonPtrInt = new GorgonPtr<int>(&dummyInt, 1);
+        GorgonPtr<int> gorgonPtrInt = new(&dummyInt, 1);
 
         // Expect an ArgumentOutOfRangeException when trying to reinterpret the GorgonPtr<int> with an offset that is less than 0
         Assert.ThrowsException<ArgumentOutOfRangeException>(() => gorgonPtrInt.AsRef<byte>(-1));
     }
 
     [TestMethod]
-    public unsafe void FillMethod_CorrectlyFillsMemory()
+    public unsafe void FillMethodCorrectlyFillsMemory()
     {
         byte[] dummyArray = new byte[10];
 
         fixed (byte* dummyPtr = dummyArray)
         {
-            var gorgonPtrByte = new GorgonPtr<byte>(dummyPtr, dummyArray.Length);
+            GorgonPtr<byte> gorgonPtrByte = new(dummyPtr, dummyArray.Length);
 
             // Fill GorgonPtr<byte> with 0x7F
             gorgonPtrByte.Fill(0x7F);
@@ -475,7 +475,7 @@ public class GorgonPtrTests
     }
 
     [TestMethod]
-    public void FillMethod_ThrowsExceptionWhenPointerIsNull()
+    public void FillMethodThrowsExceptionWhenPointerIsNull()
     {
         // Create a null GorgonPtr<byte>
         GorgonPtr<byte> gorgonPtrByte = GorgonPtr<byte>.NullPtr;
@@ -485,7 +485,7 @@ public class GorgonPtrTests
     }
 
     [TestMethod]
-    public void ToMethod_ThrowsExceptionWhenPointerIsNull()
+    public void ToMethodThrowsExceptionWhenPointerIsNull()
     {
         // Create a null GorgonPtr<int>
         GorgonPtr<int> gorgonPtrInt = GorgonPtr<int>.NullPtr;
@@ -495,25 +495,25 @@ public class GorgonPtrTests
     }
 
     [TestMethod]
-    public unsafe void ToMethod_ThrowsInvalidCastException()
+    public unsafe void ToMethodThrowsInvalidCastException()
     {
         byte dummyArray = 0x7f;
 
-        var gorgonPtrByte = new GorgonPtr<byte>(&dummyArray, 1);
+        GorgonPtr<byte> gorgonPtrByte = new(&dummyArray, 1);
 
         // Expect an InvalidCastException when trying to convert GorgonPtr<byte> to GorgonPtr<int>
         Assert.ThrowsException<InvalidCastException>(() => GorgonPtr<byte>.To<int>(gorgonPtrByte));
     }
 
     [TestMethod]
-    public unsafe void IComparable_CorrectlyComparesGorgonPtrs()
+    public unsafe void IComparableCorrectlyComparesGorgonPtrs()
     {
         int dummyInt = 123456789;
 
-        var gorgonPtrInt1 = new GorgonPtr<int>(&dummyInt, 1);
-        var gorgonPtrInt2 = new GorgonPtr<int>(&dummyInt + 1, 1);
-        var gorgonPtrInt3 = new GorgonPtr<int>(&dummyInt - 1, 1);
-        var gorgonPtrInt4 = new GorgonPtr<int>(&dummyInt, 1); // Points to the same address as gorgonPtrInt1
+        GorgonPtr<int> gorgonPtrInt1 = new(&dummyInt, 1);
+        GorgonPtr<int> gorgonPtrInt2 = new(&dummyInt + 1, 1);
+        GorgonPtr<int> gorgonPtrInt3 = new(&dummyInt - 1, 1);
+        GorgonPtr<int> gorgonPtrInt4 = new(&dummyInt, 1); // Points to the same address as gorgonPtrInt1
 
         // Check the IComparable implementation
         Assert.IsTrue(gorgonPtrInt1.CompareTo(gorgonPtrInt2) < 0, "Expected the address of gorgonPtrInt1 to be less than the address of gorgonPtrInt2.");
@@ -523,13 +523,13 @@ public class GorgonPtrTests
     }
 
     [TestMethod]
-    public unsafe void ToArray_CorrectlyConvertsGorgonPtrToArray()
+    public unsafe void ToArrayCorrectlyConvertsGorgonPtrToArray()
     {
-        int[] dummyArray = new int[] { 1, 2, 3, 4, 5 };
+        int[] dummyArray = [1, 2, 3, 4, 5];
 
         fixed (int* dummyPtr = dummyArray)
         {
-            var gorgonPtrInt = new GorgonPtr<int>(dummyPtr, dummyArray.Length);
+            GorgonPtr<int> gorgonPtrInt = new(dummyPtr, dummyArray.Length);
 
             // Convert GorgonPtr<int> to array
             int[] resultArray = gorgonPtrInt.ToArray();
@@ -543,15 +543,15 @@ public class GorgonPtrTests
     }
 
     [TestMethod]
-    public unsafe void CompareMemory_ReturnsTrueWhenDataIsSame()
+    public unsafe void CompareMemoryReturnsTrueWhenDataIsSame()
     {
-        int[] dummyArray1 = new int[] { 1, 2, 3, 4, 5 };
-        int[] dummyArray2 = new int[] { 1, 2, 3, 4, 5 };
+        int[] dummyArray1 = [1, 2, 3, 4, 5];
+        int[] dummyArray2 = [1, 2, 3, 4, 5];
 
         fixed (int* dummyPtr1 = dummyArray1, dummyPtr2 = dummyArray2)
         {
-            var gorgonPtrInt1 = new GorgonPtr<int>(dummyPtr1, dummyArray1.Length);
-            var gorgonPtrInt2 = new GorgonPtr<int>(dummyPtr2, dummyArray2.Length);
+            GorgonPtr<int> gorgonPtrInt1 = new(dummyPtr1, dummyArray1.Length);
+            GorgonPtr<int> gorgonPtrInt2 = new(dummyPtr2, dummyArray2.Length);
 
             // Check the CompareMemory method
             Assert.IsTrue(gorgonPtrInt1.CompareMemory(gorgonPtrInt2), "Expected the data pointed at by gorgonPtrInt1 and gorgonPtrInt2 to be the same.");
@@ -559,15 +559,15 @@ public class GorgonPtrTests
     }
 
     [TestMethod]
-    public unsafe void CompareMemory_ReturnsFalseWhenDataIsDifferent()
+    public unsafe void CompareMemoryReturnsFalseWhenDataIsDifferent()
     {
-        int[] dummyArray1 = new int[] { 1, 2, 3, 4, 5 };
-        int[] dummyArray2 = new int[] { 5, 4, 3, 2, 1 };
+        int[] dummyArray1 = [1, 2, 3, 4, 5];
+        int[] dummyArray2 = [5, 4, 3, 2, 1];
 
         fixed (int* dummyPtr1 = dummyArray1, dummyPtr2 = dummyArray2)
         {
-            var gorgonPtrInt1 = new GorgonPtr<int>(dummyPtr1, dummyArray1.Length);
-            var gorgonPtrInt2 = new GorgonPtr<int>(dummyPtr2, dummyArray2.Length);
+            GorgonPtr<int> gorgonPtrInt1 = new(dummyPtr1, dummyArray1.Length);
+            GorgonPtr<int> gorgonPtrInt2 = new(dummyPtr2, dummyArray2.Length);
 
             // Check the CompareMemory method
             Assert.IsFalse(gorgonPtrInt1.CompareMemory(gorgonPtrInt2), "Expected the data pointed at by gorgonPtrInt1 and gorgonPtrInt2 to be different.");
@@ -575,14 +575,14 @@ public class GorgonPtrTests
     }
 
     [TestMethod]
-    public unsafe void CompareMemory_ReturnsTrueWhenPointersAreSame()
+    public unsafe void CompareMemoryReturnsTrueWhenPointersAreSame()
     {
-        int[] dummyArray = new int[] { 1, 2, 3, 4, 5 };
+        int[] dummyArray = [1, 2, 3, 4, 5];
 
         fixed (int* dummyPtr = dummyArray)
         {
-            var gorgonPtrInt1 = new GorgonPtr<int>(dummyPtr, dummyArray.Length);
-            var gorgonPtrInt2 = new GorgonPtr<int>(dummyPtr, dummyArray.Length); // Points to the same memory address as gorgonPtrInt1
+            GorgonPtr<int> gorgonPtrInt1 = new(dummyPtr, dummyArray.Length);
+            GorgonPtr<int> gorgonPtrInt2 = new(dummyPtr, dummyArray.Length); // Points to the same memory address as gorgonPtrInt1
 
             // Check the CompareMemory method
             Assert.IsTrue(gorgonPtrInt1.CompareMemory(gorgonPtrInt2), "Expected the data pointed at by gorgonPtrInt1 and gorgonPtrInt2 to be the same because they point to the same memory address.");
@@ -590,15 +590,15 @@ public class GorgonPtrTests
     }
 
     [TestMethod]
-    public unsafe void CopyTo_GorgonPtr_CopiesCorrectly()
+    public unsafe void CopyToGorgonPtrCopiesCorrectly()
     {
-        int[] sourceArray = new int[] { 1, 2, 3, 4, 5 };
+        int[] sourceArray = [1, 2, 3, 4, 5];
         int[] destinationArray = new int[5];
 
         fixed (int* sourcePtr = sourceArray, destinationPtr = destinationArray)
         {
-            var gorgonPtrSource = new GorgonPtr<int>(sourcePtr, sourceArray.Length);
-            var gorgonPtrDestination = new GorgonPtr<int>(destinationPtr, destinationArray.Length);
+            GorgonPtr<int> gorgonPtrSource = new(sourcePtr, sourceArray.Length);
+            GorgonPtr<int> gorgonPtrDestination = new(destinationPtr, destinationArray.Length);
 
             // Copy the memory
             gorgonPtrSource.CopyTo(gorgonPtrDestination);
@@ -612,14 +612,14 @@ public class GorgonPtrTests
     }
 
     [TestMethod]
-    public unsafe void CopyTo_Span_CopiesCorrectly()
+    public unsafe void CopyToSpanCopiesCorrectly()
     {
-        int[] sourceArray = new int[] { 1, 2, 3, 4, 5 };
+        int[] sourceArray = [1, 2, 3, 4, 5];
         Span<int> destinationSpan = new int[5];
 
         fixed (int* sourcePtr = sourceArray)
         {
-            var gorgonPtrSource = new GorgonPtr<int>(sourcePtr, sourceArray.Length);
+            GorgonPtr<int> gorgonPtrSource = new(sourcePtr, sourceArray.Length);
 
             // Copy the memory
             gorgonPtrSource.CopyTo(destinationSpan);
@@ -633,14 +633,14 @@ public class GorgonPtrTests
     }
 
     [TestMethod]
-    public unsafe void CopyTo_Array_CopiesCorrectly()
+    public unsafe void CopyToArrayCopiesCorrectly()
     {
-        int[] sourceArray = new int[] { 1, 2, 3, 4, 5 };
+        int[] sourceArray = [1, 2, 3, 4, 5];
         int[] destinationArray = new int[5];
 
         fixed (int* sourcePtr = sourceArray)
         {
-            var gorgonPtrSource = new GorgonPtr<int>(sourcePtr, sourceArray.Length);
+            GorgonPtr<int> gorgonPtrSource = new(sourcePtr, sourceArray.Length);
 
             // Copy the memory
             gorgonPtrSource.CopyTo(destinationArray);
@@ -654,13 +654,13 @@ public class GorgonPtrTests
     }
 
     [TestMethod]
-    public unsafe void CopyTo_ThrowsException_WhenSourceIsNull()
+    public unsafe void CopyToThrowsExceptionWhenSourceIsNull()
     {
         int[] destinationArray = new int[5];
 
         fixed (int* destinationPtr = destinationArray)
         {
-            var gorgonPtrDestination = new GorgonPtr<int>(destinationPtr, destinationArray.Length);
+            GorgonPtr<int> gorgonPtrDestination = new(destinationPtr, destinationArray.Length);
 
             // Create a null GorgonPtr<int>
             GorgonPtr<int> gorgonPtrSource = GorgonPtr<int>.NullPtr;
@@ -671,13 +671,13 @@ public class GorgonPtrTests
     }
 
     [TestMethod]
-    public unsafe void CopyTo_ThrowsException_WhenDestinationIsNull()
+    public unsafe void CopyToThrowsExceptionWhenDestinationIsNull()
     {
-        int[] sourceArray = new int[] { 1, 2, 3, 4, 5 };
+        int[] sourceArray = [1, 2, 3, 4, 5];
 
         fixed (int* sourcePtr = sourceArray)
         {
-            var gorgonPtrSource = new GorgonPtr<int>(sourcePtr, sourceArray.Length);
+            GorgonPtr<int> gorgonPtrSource = new(sourcePtr, sourceArray.Length);
 
             // Create a null GorgonPtr<int>
             GorgonPtr<int> gorgonPtrDestination = GorgonPtr<int>.NullPtr;
@@ -688,15 +688,15 @@ public class GorgonPtrTests
     }
 
     [TestMethod]
-    public unsafe void CopyTo_ThrowsException_WhenDestinationSpanIsEmpty()
+    public unsafe void CopyToThrowsExceptionWhenDestinationSpanIsEmpty()
     {
-        int[] sourceArray = new int[] { 1, 2, 3, 4, 5 };
-        Span<int> destinationSpan = Span<int>.Empty;
+        int[] sourceArray = [1, 2, 3, 4, 5];
+        Span<int> destinationSpan = [];
         bool exceptionThrown = false;
 
         fixed (int* sourcePtr = sourceArray)
         {
-            var gorgonPtrSource = new GorgonPtr<int>(sourcePtr, sourceArray.Length);
+            GorgonPtr<int> gorgonPtrSource = new(sourcePtr, sourceArray.Length);
 
             try
             {
@@ -715,14 +715,14 @@ public class GorgonPtrTests
     }
 
     [TestMethod]
-    public unsafe void CopyTo_Span_CopiesCorrectly_WithVaryingCountsAndOffsets()
+    public unsafe void CopyToSpanCopiesCorrectlyWithVaryingCountsAndOffsets()
     {
-        int[] sourceArray = new int[] { 1, 2, 3, 4, 5 };
+        int[] sourceArray = [1, 2, 3, 4, 5];
         Span<int> destinationSpan = new int[5];
 
         fixed (int* sourcePtr = sourceArray)
         {
-            var gorgonPtrSource = new GorgonPtr<int>(sourcePtr + 1, sourceArray.Length - 1);
+            GorgonPtr<int> gorgonPtrSource = new(sourcePtr + 1, sourceArray.Length - 1);
 
             // Copy the memory
             gorgonPtrSource[..2].CopyTo(destinationSpan.Slice(2, 2));

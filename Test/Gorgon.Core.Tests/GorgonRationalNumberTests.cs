@@ -9,13 +9,13 @@ public class GorgonRationalNumberTests
     public void TestEquals()
     {
         // Arrange
-        var rational1 = new GorgonRationalNumber(1, 2);
-        var rational2 = new GorgonRationalNumber(1, 2);
-        var rational3 = new GorgonRationalNumber(2, 3);
+        GorgonRationalNumber rational1 = new(1, 2);
+        GorgonRationalNumber rational2 = new(1, 2);
+        GorgonRationalNumber rational3 = new(2, 3);
 
         // Act
-        var result1 = rational1.Equals(rational2);
-        var result2 = rational1.Equals(rational3);
+        bool result1 = rational1.Equals(rational2);
+        bool result2 = rational1.Equals(rational3);
 
         // Assert
         Assert.IsTrue(result1);
@@ -26,14 +26,14 @@ public class GorgonRationalNumberTests
     public void TestCompareTo()
     {
         // Arrange
-        var rational1 = new GorgonRationalNumber(1, 2);
-        var rational2 = new GorgonRationalNumber(2, 3);
-        var rational3 = new GorgonRationalNumber(3, 4);
+        GorgonRationalNumber rational1 = new(1, 2);
+        GorgonRationalNumber rational2 = new(2, 3);
+        GorgonRationalNumber rational3 = new(3, 4);
 
         // Act
-        var result1 = rational1.CompareTo(rational2);
-        var result2 = rational2.CompareTo(rational3);
-        var result3 = rational3.CompareTo(rational1);
+        int result1 = rational1.CompareTo(rational2);
+        int result2 = rational2.CompareTo(rational3);
+        int result3 = rational3.CompareTo(rational1);
 
         // Assert
         Assert.AreEqual(-1, result1);
@@ -45,17 +45,17 @@ public class GorgonRationalNumberTests
     public void TestOperators()
     {
         // Arrange
-        var rational1 = new GorgonRationalNumber(1, 2);
-        var rational2 = new GorgonRationalNumber(2, 3);
-        var rational3 = new GorgonRationalNumber(3, 4);
+        GorgonRationalNumber rational1 = new(1, 2);
+        GorgonRationalNumber rational2 = new(2, 3);
+        GorgonRationalNumber rational3 = new(3, 4);
 
         // Act
-        var result1 = rational1 == rational2;
-        var result2 = rational1 != rational2;
-        var result3 = rational2 < rational3;
-        var result4 = rational2 <= rational3;
-        var result5 = rational3 > rational1;
-        var result6 = rational3 >= rational1;
+        bool result1 = rational1 == rational2;
+        bool result2 = rational1 != rational2;
+        bool result3 = rational2 < rational3;
+        bool result4 = rational2 <= rational3;
+        bool result5 = rational3 > rational1;
+        bool result6 = rational3 >= rational1;
 
         // Assert
         Assert.IsFalse(result1);
@@ -70,7 +70,7 @@ public class GorgonRationalNumberTests
     public void TestConversions()
     {
         // Arrange
-        var rational = new GorgonRationalNumber(3, 2);
+        GorgonRationalNumber rational = new(3, 2);
 
         // Act
         decimal decimalValue = rational;

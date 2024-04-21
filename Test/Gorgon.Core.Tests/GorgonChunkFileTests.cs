@@ -25,7 +25,7 @@ public class GorgonChunkFileTests
     [TestMethod]
     public void ShouldThrowExceptionWhenAppSpecificIdsIsEmpty()
     {
-        using MemoryStream stream = new MemoryStream(new byte[100]);
+        using MemoryStream stream = new(new byte[100]);
         Assert.ThrowsException<ArgumentEmptyException>(() => new GorgonChunkFileReader(stream, []));
     }
 
@@ -66,13 +66,13 @@ public class GorgonChunkFileTests
 
         Assert.ThrowsException<GorgonException>(() =>
         {
-            using GorgonChunkFileReader reader = new GorgonChunkFileReader(stream, new ulong[] { 0x12345679 });
+            using GorgonChunkFileReader reader = new(stream, new ulong[] { 0x12345679 });
             reader.Open();
         });
     }
 
     [TestMethod]
-    public void OpenChunk_ShouldThrowException_WhenFileNotOpen()
+    public void OpenChunkShouldThrowExceptionWhenFileNotOpen()
     {
         using MemoryStream stream = new();
         using GorgonChunkFileWriter writer = new(stream, 0xBAADBEEFBAADF00D);
@@ -83,7 +83,7 @@ public class GorgonChunkFileTests
     }
 
     [TestMethod]
-    public void OpenChunk_MultipleChunks_InOrder()
+    public void OpenChunkMultipleChunksInOrder()
     {
         using MemoryStream stream = new();
         using GorgonChunkFileWriter writer = new(stream, 0xBAADBEEFBAADF00D);
@@ -115,7 +115,7 @@ public class GorgonChunkFileTests
     }
 
     [TestMethod]
-    public void OpenChunk_MultipleChunks_OutOfOrder()
+    public void OpenChunkMultipleChunksOutOfOrder()
     {
         using MemoryStream stream = new();
         using GorgonChunkFileWriter writer = new(stream, 0xBAADBEEFBAADF00D);
@@ -147,7 +147,7 @@ public class GorgonChunkFileTests
     }
 
     [TestMethod]
-    public void OpenChunk_ShouldThrowException_WhenAnotherChunkIsOpen()
+    public void OpenChunkShouldThrowExceptionWhenAnotherChunkIsOpen()
     {
         using MemoryStream stream = new();
         using GorgonChunkFileWriter writer = new(stream, 0xBAADBEEFBAADF00D);

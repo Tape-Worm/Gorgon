@@ -29,7 +29,7 @@ public class GorgonTimingTests
     public void TestTimingValues()
     {
         IGorgonTimer timer = Mock.Of<IGorgonTimer>(x => x.IsHighResolution == true);
-        Mock<IGorgonTimer> mock = Mock.Get<IGorgonTimer>(timer);
+        Mock<IGorgonTimer> mock = Mock.Get(timer);
         mock.SetupGet(x => x.Milliseconds)
             .Returns(() => Time.GetTime());
 

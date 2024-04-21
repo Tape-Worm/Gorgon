@@ -214,13 +214,13 @@ public class GorgonBoxTests
     [TestMethod]
     public void Operators()
     {
-        GorgonBox box1 = new GorgonBox(-10, -10, -10, 20, 20, 20);
-        GorgonBox box2 = new GorgonBox(-10, -10, -10, 20, 20, 20);
-        GorgonBox box3 = new GorgonBox(-5, -5, -5, 10, 10, 10);
+        GorgonBox box1 = new(-10, -10, -10, 20, 20, 20);
+        GorgonBox box2 = new(-10, -10, -10, 20, 20, 20);
+        GorgonBox box3 = new(-5, -5, -5, 10, 10, 10);
 
-        GorgonBoxF boxf1 = new GorgonBoxF(-10.5f, -10.25f, -10.0f, 20.25f, 20.5f, 20.125f);
-        GorgonBoxF boxf2 = new GorgonBoxF(-10.5f, -10.25f, -10.0f, 20.25f, 20.5f, 20.125f);
-        GorgonBoxF boxf3 = new GorgonBoxF(-5.5f, -5.25f, -5.0f, 10.25f, 10.5f, 10.125f);
+        GorgonBoxF boxf1 = new(-10.5f, -10.25f, -10.0f, 20.25f, 20.5f, 20.125f);
+        GorgonBoxF boxf2 = new(-10.5f, -10.25f, -10.0f, 20.25f, 20.5f, 20.125f);
+        GorgonBoxF boxf3 = new(-5.5f, -5.25f, -5.0f, 10.25f, 10.5f, 10.125f);
 
         Assert.IsTrue(box1 == box2);
         Assert.IsTrue(boxf1 == boxf2);
@@ -362,30 +362,30 @@ public class GorgonBoxTests
     public void Union()
     {
         // Test case 1: Two boxes with no intersection
-        GorgonBox box1 = new GorgonBox(0, 0, 0, 10, 10, 10);
-        GorgonBox box2 = new GorgonBox(20, 20, 20, 10, 10, 10);
-        GorgonBox expected1 = new GorgonBox(0, 0, 0, 30, 30, 30);
+        GorgonBox box1 = new(0, 0, 0, 10, 10, 10);
+        GorgonBox box2 = new(20, 20, 20, 10, 10, 10);
+        GorgonBox expected1 = new(0, 0, 0, 30, 30, 30);
         GorgonBox result1 = GorgonBox.Union(box1, box2);
         Assert.AreEqual(expected1, result1);
 
         // Test case 2: Two boxes with partial intersection
-        GorgonBox box3 = new GorgonBox(0, 0, 0, 10, 10, 10);
-        GorgonBox box4 = new GorgonBox(5, 5, 5, 10, 10, 10);
-        GorgonBox expected2 = new GorgonBox(0, 0, 0, 15, 15, 15);
+        GorgonBox box3 = new(0, 0, 0, 10, 10, 10);
+        GorgonBox box4 = new(5, 5, 5, 10, 10, 10);
+        GorgonBox expected2 = new(0, 0, 0, 15, 15, 15);
         GorgonBox result2 = GorgonBox.Union(box3, box4);
         Assert.AreEqual(expected2, result2);
 
         // Test case 3: Two boxes with complete intersection
-        GorgonBox box5 = new GorgonBox(0, 0, 0, 10, 10, 10);
-        GorgonBox box6 = new GorgonBox(5, 5, 5, 5, 5, 5);
-        GorgonBox expected3 = new GorgonBox(0, 0, 0, 10, 10, 10);
+        GorgonBox box5 = new(0, 0, 0, 10, 10, 10);
+        GorgonBox box6 = new(5, 5, 5, 5, 5, 5);
+        GorgonBox expected3 = new(0, 0, 0, 10, 10, 10);
         GorgonBox result3 = GorgonBox.Union(box5, box6);
         Assert.AreEqual(expected3, result3);
 
         // Test case 4: Two boxes with one box completely inside the other
-        GorgonBox box7 = new GorgonBox(0, 0, 0, 20, 20, 20);
-        GorgonBox box8 = new GorgonBox(5, 5, 5, 10, 10, 10);
-        GorgonBox expected4 = new GorgonBox(0, 0, 0, 20, 20, 20);
+        GorgonBox box7 = new(0, 0, 0, 20, 20, 20);
+        GorgonBox box8 = new(5, 5, 5, 10, 10, 10);
+        GorgonBox expected4 = new(0, 0, 0, 20, 20, 20);
         GorgonBox result4 = GorgonBox.Union(box7, box8);
         Assert.AreEqual(expected4, result4);
     }
@@ -394,30 +394,30 @@ public class GorgonBoxTests
     public void Intersect()
     {
         // Test case 1: Two boxes with no intersection
-        GorgonBox box1 = new GorgonBox(0, 0, 0, 10, 10, 10);
-        GorgonBox box2 = new GorgonBox(20, 20, 20, 10, 10, 10);
+        GorgonBox box1 = new(0, 0, 0, 10, 10, 10);
+        GorgonBox box2 = new(20, 20, 20, 10, 10, 10);
         GorgonBox expected1 = GorgonBox.Empty;
         GorgonBox result1 = GorgonBox.Intersect(box1, box2);
         Assert.AreEqual(expected1, result1);
 
         // Test case 2: Two boxes with partial intersection
-        GorgonBox box3 = new GorgonBox(0, 0, 0, 10, 10, 10);
-        GorgonBox box4 = new GorgonBox(5, 5, 5, 10, 10, 10);
-        GorgonBox expected2 = new GorgonBox(5, 5, 5, 5, 5, 5);
+        GorgonBox box3 = new(0, 0, 0, 10, 10, 10);
+        GorgonBox box4 = new(5, 5, 5, 10, 10, 10);
+        GorgonBox expected2 = new(5, 5, 5, 5, 5, 5);
         GorgonBox result2 = GorgonBox.Intersect(box3, box4);
         Assert.AreEqual(expected2, result2);
 
         // Test case 3: Two boxes with complete intersection
-        GorgonBox box5 = new GorgonBox(0, 0, 0, 10, 10, 10);
-        GorgonBox box6 = new GorgonBox(5, 5, 5, 5, 5, 5);
-        GorgonBox expected3 = new GorgonBox(5, 5, 5, 5, 5, 5);
+        GorgonBox box5 = new(0, 0, 0, 10, 10, 10);
+        GorgonBox box6 = new(5, 5, 5, 5, 5, 5);
+        GorgonBox expected3 = new(5, 5, 5, 5, 5, 5);
         GorgonBox result3 = GorgonBox.Intersect(box5, box6);
         Assert.AreEqual(expected3, result3);
 
         // Test case 4: Two boxes with one box completely inside the other
-        GorgonBox box7 = new GorgonBox(0, 0, 0, 20, 20, 20);
-        GorgonBox box8 = new GorgonBox(5, 5, 5, 10, 10, 10);
-        GorgonBox expected4 = new GorgonBox(5, 5, 5, 10, 10, 10);
+        GorgonBox box7 = new(0, 0, 0, 20, 20, 20);
+        GorgonBox box8 = new(5, 5, 5, 10, 10, 10);
+        GorgonBox expected4 = new(5, 5, 5, 10, 10, 10);
         GorgonBox result4 = GorgonBox.Intersect(box7, box8);
         Assert.AreEqual(expected4, result4);
     }
@@ -425,7 +425,7 @@ public class GorgonBoxTests
     [TestMethod]
     public void TupleDeconstruction()
     {
-        GorgonBoxF box = new GorgonBoxF(0, 0, 0, 10, 10, 10);
+        GorgonBoxF box = new(0, 0, 0, 10, 10, 10);
         (float x, float y, float z, float width, float height, float depth) = box;
 
         Assert.AreEqual(0, x);
@@ -440,17 +440,17 @@ public class GorgonBoxTests
     public void FromLTFRBB()
     {
         // Test case 1: Valid input
-        GorgonBoxF expected1 = new GorgonBoxF(-30, -30, -30, 40, 40, 40);
+        GorgonBoxF expected1 = new(-30, -30, -30, 40, 40, 40);
         GorgonBoxF result1 = GorgonBoxF.FromLTFRBB(-30, -30, -30, 10, 10, 10);
         Assert.AreEqual(expected1, result1);
 
         // Test case 2: Zero width, height, and depth
-        GorgonBoxF expected2 = new GorgonBoxF(-30, -30, -30, 0, 0, 0);
+        GorgonBoxF expected2 = new(-30, -30, -30, 0, 0, 0);
         GorgonBoxF result2 = GorgonBoxF.FromLTFRBB(-30, -30, -30, 0, 0, 0);
         Assert.AreNotEqual(expected2, result2);
 
         // Test case 3: Negative width, height, and depth
-        GorgonBoxF expected3 = new GorgonBoxF(-30, -30, -30, -10, -10, -10);
+        GorgonBoxF expected3 = new(-30, -30, -30, -10, -10, -10);
         GorgonBoxF result3 = GorgonBoxF.FromLTFRBB(-30, -30, -30, -10, -10, -10);
         Assert.AreNotEqual(expected3, result3);
     }
@@ -459,60 +459,60 @@ public class GorgonBoxTests
     public void Contains()
     {
         // Test case 1: Box contains a point
-        GorgonBox box1 = new GorgonBox(0, 0, 0, 10, 10, 10);
+        GorgonBox box1 = new(0, 0, 0, 10, 10, 10);
         Assert.IsTrue(box1.Contains(5, 5, 5));
 
         // Test case 2: Box does not contain a point
-        GorgonBox box2 = new GorgonBox(0, 0, 0, 10, 10, 10);
+        GorgonBox box2 = new(0, 0, 0, 10, 10, 10);
         Assert.IsFalse(box2.Contains(15, 15, 15));
 
         // Test case 3: Box contains another box
-        GorgonBox box3 = new GorgonBox(0, 0, 0, 10, 10, 10);
-        GorgonBox containedBox = new GorgonBox(2, 2, 2, 6, 6, 6);
+        GorgonBox box3 = new(0, 0, 0, 10, 10, 10);
+        GorgonBox containedBox = new(2, 2, 2, 6, 6, 6);
         Assert.IsTrue(box3.Contains(in containedBox));
 
         // Test case 4: Box does not contain another box
-        GorgonBox box4 = new GorgonBox(0, 0, 0, 10, 10, 10);
-        GorgonBox notContainedBox = new GorgonBox(12, 12, 12, 6, 6, 6);
+        GorgonBox box4 = new(0, 0, 0, 10, 10, 10);
+        GorgonBox notContainedBox = new(12, 12, 12, 6, 6, 6);
         Assert.IsFalse(box4.Contains(in notContainedBox));
 
         // Test case 5: Box contains a point with float coordinates
-        GorgonBoxF box5 = new GorgonBoxF(0, 0, 0, 10, 10, 10);
+        GorgonBoxF box5 = new(0, 0, 0, 10, 10, 10);
         Assert.IsTrue(box5.Contains(5.5f, 5.5f, 5.5f));
 
         // Test case 6: Box does not contain a point with float coordinates
-        GorgonBoxF box6 = new GorgonBoxF(0, 0, 0, 10, 10, 10);
+        GorgonBoxF box6 = new(0, 0, 0, 10, 10, 10);
         Assert.IsFalse(box6.Contains(15.5f, 15.5f, 15.5f));
 
         // Test case 7: Box contains another box with float coordinates
-        GorgonBoxF box7 = new GorgonBoxF(0, 0, 0, 10, 10, 10);
-        GorgonBoxF containedBoxF = new GorgonBoxF(2, 2, 2, 6, 6, 6);
+        GorgonBoxF box7 = new(0, 0, 0, 10, 10, 10);
+        GorgonBoxF containedBoxF = new(2, 2, 2, 6, 6, 6);
         Assert.IsTrue(box7.Contains(in containedBoxF));
 
         // Test case 8: Box does not contain another box with float coordinates
-        GorgonBoxF box8 = new GorgonBoxF(0, 0, 0, 10, 10, 10);
-        GorgonBoxF notContainedBoxF = new GorgonBoxF(12, 12, 12, 6, 6, 6);
+        GorgonBoxF box8 = new(0, 0, 0, 10, 10, 10);
+        GorgonBoxF notContainedBoxF = new(12, 12, 12, 6, 6, 6);
         Assert.IsFalse(box8.Contains(in notContainedBoxF));
 
         // Test case 9: Box contains a point with Vector3 parameter
-        GorgonBoxF box9 = new GorgonBoxF(0, 0, 0, 10, 10, 10);
-        Vector3 point = new Vector3(5, 5, 5);
+        GorgonBoxF box9 = new(0, 0, 0, 10, 10, 10);
+        Vector3 point = new(5, 5, 5);
         Assert.IsTrue(box9.Contains(point));
 
         // Test case 10: Box does not contain a point with Vector3 parameter
-        GorgonBoxF box10 = new GorgonBoxF(0, 0, 0, 10, 10, 10);
-        Vector3 point1 = new Vector3(15, 15, 15);
+        GorgonBoxF box10 = new(0, 0, 0, 10, 10, 10);
+        Vector3 point1 = new(15, 15, 15);
         Assert.IsFalse(box10.Contains(point1));
 
         // Test case 11: Box contains a point with GorgonPoint parameter
-        GorgonBox box11 = new GorgonBox(0, 0, 0, 10, 10, 10);
-        GorgonPoint point2 = new GorgonPoint(5, 5);
+        GorgonBox box11 = new(0, 0, 0, 10, 10, 10);
+        GorgonPoint point2 = new(5, 5);
         Assert.IsTrue(box11.Contains(point2, 5));
 
         // Test case 12: Box contains a point with GorgonPoint parameter
-        GorgonBox box12 = new GorgonBox(0, 0, 0, 10, 10, 10);
-        GorgonPoint point3 = new GorgonPoint(15, 15);
-        Assert.IsFalse(box11.Contains(point2, 15));
+        GorgonBox box12 = new(0, 0, 0, 10, 10, 10);
+        GorgonPoint point3 = new(15, 15);
+        Assert.IsFalse(box12.Contains(point3, 15));
     }
 
     [TestMethod]

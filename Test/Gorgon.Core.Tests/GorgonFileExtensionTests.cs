@@ -6,211 +6,208 @@ namespace Gorgon.Core.Tests;
 public class GorgonFileExtensionTests
 {
     [TestMethod]
-    public void GorgonFileExtension_Constructor_ShouldInitializeCorrectly_WithDescription()
+    public void GorgonFileExtensionConstructorShouldInitializeCorrectlyWithDescription()
     {
-        GorgonFileExtension fileExtension = new GorgonFileExtension(".txt", "Text File");
+        GorgonFileExtension fileExtension = new(".txt", "Text File");
         Assert.AreEqual("txt", fileExtension.Extension);
         Assert.AreEqual(".txt", fileExtension.FullExtension);
         Assert.AreEqual("Text File", fileExtension.Description);
     }
 
     [TestMethod]
-    public void GorgonFileExtension_Constructor_ShouldInitializeCorrectly_WithoutDescription()
+    public void GorgonFileExtensionConstructorShouldInitializeCorrectlyWithoutDescription()
     {
-        GorgonFileExtension fileExtension = new GorgonFileExtension(".txt");
+        GorgonFileExtension fileExtension = new(".txt");
         Assert.AreEqual("txt", fileExtension.Extension);
         Assert.AreEqual(".txt", fileExtension.FullExtension);
         Assert.AreEqual(string.Empty, fileExtension.Description);
     }
 
     [TestMethod]
-    public void GorgonFileExtension_Constructor_ShouldThrowException_WhenExtensionIsEmpty()
-    {
-        Assert.ThrowsException<ArgumentEmptyException>(() => new GorgonFileExtension(string.Empty));
-    }
+    public void GorgonFileExtensionConstructorShouldThrowExceptionWhenExtensionIsEmpty() => Assert.ThrowsException<ArgumentEmptyException>(() => new GorgonFileExtension(string.Empty));
 
     [TestMethod]
-    public void GorgonFileExtension_Constructor_ShouldRemoveLeadingPeriodFromExtension()
+    public void GorgonFileExtensionConstructorShouldRemoveLeadingPeriodFromExtension()
     {
-        GorgonFileExtension fileExtension = new GorgonFileExtension(".txt");
+        GorgonFileExtension fileExtension = new(".txt");
         Assert.AreEqual("txt", fileExtension.Extension);
     }
 
     [TestMethod]
-    public void GorgonFileExtension_Constructor_ShouldHandleNullDescription()
+    public void GorgonFileExtensionConstructorShouldHandleNullDescription()
     {
-        GorgonFileExtension fileExtension = new GorgonFileExtension(".txt", null);
+        GorgonFileExtension fileExtension = new(".txt", null);
         Assert.AreEqual("txt", fileExtension.Extension);
         Assert.AreEqual(".txt", fileExtension.FullExtension);
         Assert.AreEqual(string.Empty, fileExtension.Description);
     }
 
     [TestMethod]
-    public void OperatorEquals_ShouldReturnTrue_WhenExtensionsAreEqual()
+    public void OperatorEqualsShouldReturnTrueWhenExtensionsAreEqual()
     {
-        GorgonFileExtension fileExtension1 = new GorgonFileExtension(".txt", "Text File");
-        GorgonFileExtension fileExtension2 = new GorgonFileExtension(".txt", "Text Document");
+        GorgonFileExtension fileExtension1 = new(".txt", "Text File");
+        GorgonFileExtension fileExtension2 = new(".txt", "Text Document");
         Assert.IsTrue(fileExtension1 == fileExtension2);
     }
 
     [TestMethod]
-    public void OperatorNotEquals_ShouldReturnFalse_WhenExtensionsAreEqual()
+    public void OperatorNotEqualsShouldReturnFalseWhenExtensionsAreEqual()
     {
-        GorgonFileExtension fileExtension1 = new GorgonFileExtension(".txt", "Text File");
-        GorgonFileExtension fileExtension2 = new GorgonFileExtension(".txt", "Text Document");
+        GorgonFileExtension fileExtension1 = new(".txt", "Text File");
+        GorgonFileExtension fileExtension2 = new(".txt", "Text Document");
         Assert.IsFalse(fileExtension1 != fileExtension2);
     }
 
     [TestMethod]
-    public void OperatorLessThan_ShouldReturnTrue_WhenLeftIsLessThanRight()
+    public void OperatorLessThanShouldReturnTrueWhenLeftIsLessThanRight()
     {
-        GorgonFileExtension fileExtension1 = new GorgonFileExtension(".txt", "Text File");
-        GorgonFileExtension fileExtension2 = new GorgonFileExtension(".doc", "Document");
+        GorgonFileExtension fileExtension1 = new(".txt", "Text File");
+        GorgonFileExtension fileExtension2 = new(".doc", "Document");
         Assert.IsFalse(fileExtension2 > fileExtension1);
     }
 
     [TestMethod]
-    public void OperatorGreaterThan_ShouldReturnFalse_WhenLeftIsLessThanRight()
+    public void OperatorGreaterThanShouldReturnFalseWhenLeftIsLessThanRight()
     {
-        GorgonFileExtension fileExtension1 = new GorgonFileExtension(".txt", "Text File");
-        GorgonFileExtension fileExtension2 = new GorgonFileExtension(".doc", "Document");
+        GorgonFileExtension fileExtension1 = new(".txt", "Text File");
+        GorgonFileExtension fileExtension2 = new(".doc", "Document");
         Assert.IsTrue(fileExtension2 < fileExtension1);
     }
 
     [TestMethod]
-    public void OperatorLessThanOrEqual_ShouldReturnTrue_WhenLeftIsLessThanOrEqualRight()
+    public void OperatorLessThanOrEqualShouldReturnTrueWhenLeftIsLessThanOrEqualRight()
     {
-        GorgonFileExtension fileExtension1 = new GorgonFileExtension(".txt", "Text File");
-        GorgonFileExtension fileExtension2 = new GorgonFileExtension(".txt", "Text Document");
+        GorgonFileExtension fileExtension1 = new(".txt", "Text File");
+        GorgonFileExtension fileExtension2 = new(".txt", "Text Document");
         Assert.IsTrue(fileExtension1 <= fileExtension2);
     }
 
     [TestMethod]
-    public void OperatorGreaterThanOrEqual_ShouldReturnTrue_WhenLeftIsGreaterThanOrEqualRight()
+    public void OperatorGreaterThanOrEqualShouldReturnTrueWhenLeftIsGreaterThanOrEqualRight()
     {
-        GorgonFileExtension fileExtension1 = new GorgonFileExtension(".txt", "Text File");
-        GorgonFileExtension fileExtension2 = new GorgonFileExtension(".txt", "Text Document");
+        GorgonFileExtension fileExtension1 = new(".txt", "Text File");
+        GorgonFileExtension fileExtension2 = new(".txt", "Text Document");
         Assert.IsTrue(fileExtension1 >= fileExtension2);
     }
 
     [TestMethod]
-    public void OperatorEquals_ShouldReturnTrue_WhenExtensionEqualsString()
+    public void OperatorEqualsShouldReturnTrueWhenExtensionEqualsString()
     {
-        GorgonFileExtension fileExtension = new GorgonFileExtension(".txt", "Text File");
+        GorgonFileExtension fileExtension = new(".txt", "Text File");
         Assert.IsTrue(fileExtension == ".txt");
     }
 
     [TestMethod]
-    public void OperatorNotEquals_ShouldReturnFalse_WhenExtensionEqualsString()
+    public void OperatorNotEqualsShouldReturnFalseWhenExtensionEqualsString()
     {
-        GorgonFileExtension fileExtension = new GorgonFileExtension(".txt", "Text File");
+        GorgonFileExtension fileExtension = new(".txt", "Text File");
         Assert.IsFalse(fileExtension != ".txt");
     }
 
     [TestMethod]
-    public void OperatorLessThan_ShouldReturnTrue_WhenExtensionIsLessThanString()
+    public void OperatorLessThanShouldReturnTrueWhenExtensionIsLessThanString()
     {
-        GorgonFileExtension fileExtension = new GorgonFileExtension(".txt", "Text File");
+        GorgonFileExtension fileExtension = new(".txt", "Text File");
         Assert.IsFalse(fileExtension < ".doc");
     }
 
     [TestMethod]
-    public void OperatorGreaterThan_ShouldReturnFalse_WhenExtensionIsLessThanString()
+    public void OperatorGreaterThanShouldReturnFalseWhenExtensionIsLessThanString()
     {
-        GorgonFileExtension fileExtension = new GorgonFileExtension(".txt", "Text File");
+        GorgonFileExtension fileExtension = new(".txt", "Text File");
         Assert.IsFalse(".doc" > fileExtension);
     }
 
     [TestMethod]
-    public void OperatorLessThanOrEqual_ShouldReturnTrue_WhenExtensionIsLessThanOrEqualString()
+    public void OperatorLessThanOrEqualShouldReturnTrueWhenExtensionIsLessThanOrEqualString()
     {
-        GorgonFileExtension fileExtension = new GorgonFileExtension(".txt", "Text File");
+        GorgonFileExtension fileExtension = new(".txt", "Text File");
         Assert.IsTrue(fileExtension <= ".txt");
     }
 
     [TestMethod]
-    public void OperatorGreaterThanOrEqual_ShouldReturnTrue_WhenExtensionIsGreaterThanOrEqualString()
+    public void OperatorGreaterThanOrEqualShouldReturnTrueWhenExtensionIsGreaterThanOrEqualString()
     {
-        GorgonFileExtension fileExtension = new GorgonFileExtension(".txt", "Text File");
+        GorgonFileExtension fileExtension = new(".txt", "Text File");
         Assert.IsTrue(fileExtension >= ".txt");
     }
 
     [TestMethod]
-    public void Equals_GorgonFileExtension_ShouldReturnTrueWhenEqual()
+    public void EqualsGorgonFileExtensionShouldReturnTrueWhenEqual()
     {
-        GorgonFileExtension extension1 = new GorgonFileExtension("txt");
-        GorgonFileExtension extension2 = new GorgonFileExtension("txt");
+        GorgonFileExtension extension1 = new("txt");
+        GorgonFileExtension extension2 = new("txt");
 
         Assert.IsTrue(extension1.Equals(extension2));
     }
 
     [TestMethod]
-    public void Equals_GorgonFileExtension_ShouldReturnFalseWhenNotEqual()
+    public void EqualsGorgonFileExtensionShouldReturnFalseWhenNotEqual()
     {
-        GorgonFileExtension extension1 = new GorgonFileExtension("txt");
-        GorgonFileExtension extension2 = new GorgonFileExtension("doc");
+        GorgonFileExtension extension1 = new("txt");
+        GorgonFileExtension extension2 = new("doc");
 
         Assert.IsFalse(extension1.Equals(extension2));
     }
 
     [TestMethod]
-    public void CompareTo_GorgonFileExtension_ShouldReturnZeroWhenEqual()
+    public void CompareToGorgonFileExtensionShouldReturnZeroWhenEqual()
     {
-        GorgonFileExtension extension1 = new GorgonFileExtension("txt");
-        GorgonFileExtension extension2 = new GorgonFileExtension("txt");
+        GorgonFileExtension extension1 = new("txt");
+        GorgonFileExtension extension2 = new("txt");
 
         Assert.AreEqual(0, extension1.CompareTo(extension2));
     }
 
     [TestMethod]
-    public void CompareTo_GorgonFileExtension_ShouldReturnNonZeroWhenNotEqual()
+    public void CompareToGorgonFileExtensionShouldReturnNonZeroWhenNotEqual()
     {
-        GorgonFileExtension extension1 = new GorgonFileExtension("txt");
-        GorgonFileExtension extension2 = new GorgonFileExtension("doc");
+        GorgonFileExtension extension1 = new("txt");
+        GorgonFileExtension extension2 = new("doc");
 
         Assert.AreNotEqual(0, extension1.CompareTo(extension2));
     }
 
     [TestMethod]
-    public void Equals_String_ShouldReturnTrueWhenEqual()
+    public void EqualsStringShouldReturnTrueWhenEqual()
     {
-        GorgonFileExtension extension = new GorgonFileExtension("txt");
+        GorgonFileExtension extension = new("txt");
 
         Assert.IsTrue(extension.Equals("txt"));
         Assert.IsTrue(extension.Equals(".txt"));
     }
 
     [TestMethod]
-    public void Equals_String_ShouldReturnFalseWhenNotEqual()
+    public void EqualsStringShouldReturnFalseWhenNotEqual()
     {
-        GorgonFileExtension extension = new GorgonFileExtension("txt");
+        GorgonFileExtension extension = new("txt");
 
         Assert.IsFalse(extension.Equals("doc"));
         Assert.IsFalse(extension.Equals(".doc"));
     }
 
     [TestMethod]
-    public void CompareTo_String_ShouldReturnZeroWhenEqual()
+    public void CompareToStringShouldReturnZeroWhenEqual()
     {
-        GorgonFileExtension extension = new GorgonFileExtension("txt");
+        GorgonFileExtension extension = new("txt");
 
         Assert.AreEqual(0, extension.CompareTo("txt"));
         Assert.AreEqual(0, extension.CompareTo(".txt"));
     }
 
     [TestMethod]
-    public void CompareTo_String_ShouldReturnNonZeroWhenNotEqual()
+    public void CompareToStringShouldReturnNonZeroWhenNotEqual()
     {
-        GorgonFileExtension extension = new GorgonFileExtension("txt");
+        GorgonFileExtension extension = new("txt");
 
         Assert.AreNotEqual(0, extension.CompareTo("doc"));
         Assert.AreNotEqual(0, extension.CompareTo(".doc"));
     }
 
     [TestMethod]
-    public void CompareTo_String_ShouldReturnPositiveWhenOtherIsNull()
+    public void CompareToStringShouldReturnPositiveWhenOtherIsNull()
     {
-        GorgonFileExtension extension = new GorgonFileExtension("txt");
+        GorgonFileExtension extension = new("txt");
 
         Assert.AreEqual(1, extension.CompareTo(null));
     }

@@ -8,11 +8,12 @@
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
     <IsPublishable>False</IsPublishable>
-    <RunAnalyzersDuringBuild>False</RunAnalyzersDuringBuild>
-    <RunAnalyzersDuringLiveAnalysis>False</RunAnalyzersDuringLiveAnalysis>
-    <EnableNETAnalyzers>False</EnableNETAnalyzers>
+    <RunAnalyzersDuringBuild>True</RunAnalyzersDuringBuild>
+    <RunAnalyzersDuringLiveAnalysis>True</RunAnalyzersDuringLiveAnalysis>
+    <EnableNETAnalyzers>True</EnableNETAnalyzers>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-    <AnalysisLevel>none</AnalysisLevel>
+    <AnalysisLevel>latest-recommended</AnalysisLevel>
+    <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
   </PropertyGroup>
 
   <ItemGroup>
@@ -28,10 +29,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Gorgon\Gorgon.Core\Gorgon.Core.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="TODO\" />
   </ItemGroup>
 
 </Project>
