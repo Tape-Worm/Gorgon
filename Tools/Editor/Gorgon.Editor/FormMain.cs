@@ -993,7 +993,7 @@ internal partial class FormMain
     /// <summary>
     /// Function to update the icons used for the "new" buttons.
     /// </summary>
-    /// <param name="metadata">The metadata for plug ins that can create content.</param>
+    /// <param name="metadata">The metadata for plug-ins that can create content.</param>
     private void AddNewIcons(IEnumerable<IContentPlugInMetadata> metadata)
     {
         if (metadata is null)

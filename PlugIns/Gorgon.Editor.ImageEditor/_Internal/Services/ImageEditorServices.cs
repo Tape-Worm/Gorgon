@@ -29,7 +29,7 @@ using Gorgon.Editor.Services;
 namespace Gorgon.Editor.ImageEditor;
 
 /// <summary>
-/// A list of services required for the image plug in
+/// A list of services required for the image plug-in
 /// </summary>
 internal class ImageEditorServices
 {

@@ -35,7 +35,7 @@ internal class SpritePickMaskEditor
     : HostedPanelViewModelBase<SpritePickMaskEditorParameters>, ISpritePickMaskEditor
 {
 
-    // The settings for the plug in.
+    // The settings for the plug-in.
     private ISettings _pluginSettings;
 
     /// <summary>Property to set or return the type of masking to perform when picking a sprite using the sprite picker tool.</summary>

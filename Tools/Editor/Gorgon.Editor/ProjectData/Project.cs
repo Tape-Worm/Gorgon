@@ -61,7 +61,7 @@ internal class Project
     /// Property to return the temporary directory for the project.
     /// </summary>
     /// <remarks>
-    /// The temporary directory is for plug ins and the editor to store transitory data that only needs to exist during the lifetime of the application or plug in. Nothing in this directory is saved 
+    /// The temporary directory is for plug-ins and the editor to store transitory data that only needs to exist during the lifetime of the application or plug-in. Nothing in this directory is saved 
     /// into the project.
     /// </remarks>
     [JsonIgnore]

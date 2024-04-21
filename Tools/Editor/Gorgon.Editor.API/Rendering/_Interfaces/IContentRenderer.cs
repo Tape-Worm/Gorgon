@@ -31,7 +31,7 @@ using Gorgon.Graphics;
 namespace Gorgon.Editor.Rendering;
 
 /// <summary>
-/// Defines a rendering interface for rendering content in content editor plug in views
+/// Defines a rendering interface for rendering content in content editor plug-in views
 /// </summary>
 /// <remarks>
 /// <para>

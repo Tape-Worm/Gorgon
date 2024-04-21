@@ -35,7 +35,7 @@ namespace Gorgon.Editor.ImageAtlasTool;
 /// </summary>
 /// <remarks>Initializes a new instance of the <see cref="ImageAtlasParameters"/> class.</remarks>
 /// <param name="imageFiles">The view model for the image loader UI.</param>
-/// <param name="settings">The settings for the texture atlas plug in.</param>
+/// <param name="settings">The settings for the texture atlas plug-in.</param>
 /// <param name="atlasGenerator">The service used to generate texture atlases.</param>
 /// <param name="fileIO">The service used to manage the atlas files.</param>
 /// <param name="fileManager">The file manager for the project file system.</param>
@@ -58,7 +58,7 @@ internal class ImageAtlasParameters(IImageFiles imageFiles,
     } = imageFiles ?? throw new ArgumentNullException(nameof(imageFiles));
 
     /// <summary>
-    /// Property to return the settings for the plug in.
+    /// Property to return the settings for the plug-in.
     /// </summary>
     public TextureAtlasSettings Settings
     {

@@ -49,8 +49,8 @@ namespace Gorgon.Examples;
 /// 
 /// The VFS object in Gorgon comes with the ability to mount a directory as a root of a VFS.  However, it's possible to mount a
 /// zip file, or the old Gorgon BZip2 Pack file format as a VFS.  This is done through file system providers.  Similar to the
-/// input factories, these providers are plug ins and can be loaded into a file system object to give access to these types of 
-/// files.  A provider plug in can be written to pull data from a SQL server, or a network stream or any access point that can
+/// input factories, these providers are plug-ins and can be loaded into a file system object to give access to these types of 
+/// files.  A provider plug-in can be written to pull data from a SQL server, or a network stream or any access point that can
 /// stream data
 /// 
 /// In this example, we'll show how to load some of these providers
@@ -66,7 +66,7 @@ internal static class Program
     private static IGorgonLog _log;
 
     /// <summary>
-    /// Property to return the path to the plug ins.
+    /// Property to return the path to the plug-ins.
     /// </summary>
     public static string PlugInPath
     {
@@ -95,7 +95,7 @@ internal static class Program
     /// <summary>
     /// Function to retrieve the directory that contains the plugins for an application.
     /// </summary>
-    /// <param name="pluginDirectory">The directory containing the plug ins.</param>
+    /// <param name="pluginDirectory">The directory containing the plug-ins.</param>
     /// <returns>A directory information object for the plugin path.</returns>
     private static DirectoryInfo GetPlugInPath(DirectoryInfo pluginDirectory)
     {
@@ -103,7 +103,7 @@ internal static class Program
 
         if (string.IsNullOrWhiteSpace(path))
         {
-            throw new IOException("No plug in path has been assigned.");
+            throw new IOException("No plug-in path has been assigned.");
         }
 
         if (path.Contains("{0}"))
@@ -126,8 +126,8 @@ internal static class Program
     /// <summary>
     /// Function to load the file system providers.
     /// </summary>
-    /// <param name="pluginDirectory">The directory containing the plug ins.</param>
-    /// <returns>The number of file system provider plug ins.</returns>
+    /// <param name="pluginDirectory">The directory containing the plug-ins.</param>
+    /// <returns>The number of file system provider plug-ins.</returns>
     private static int LoadFileSystemProviders(DirectoryInfo pluginDirectory)
     {
         // Get the file system provider factory so we can retrieve our newly loaded providers.
@@ -167,7 +167,7 @@ internal static class Program
             Console.ForegroundColor = ConsoleColor.White;
 
             // Get our file system providers.                
-            Console.WriteLine("Found {0} external file system plug ins.\n", LoadFileSystemProviders(plugInLocationDirectory));
+            Console.WriteLine("Found {0} external file system plug-ins.\n", LoadFileSystemProviders(plugInLocationDirectory));
 
             // Loop through each provider and print some info.
             for (int i = 0; i < _providers.Count; ++i)

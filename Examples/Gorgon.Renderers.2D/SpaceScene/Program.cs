@@ -47,7 +47,7 @@ namespace Gorgon.Examples;
 static class Program
 {
 
-    // The cache for our plug in assemblies.
+    // The cache for our plug-in assemblies.
     private static GorgonMefPlugInCache _assemblyCache;
     // The primary graphics interface.
     private static GorgonGraphics _graphics;
@@ -280,7 +280,7 @@ static class Program
             GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
             GorgonExample.PlugInLocationDirectory = new DirectoryInfo(ExampleConfig.Default.PlugInLocation);
 
-            // Load our packed file system plug in.
+            // Load our packed file system plug-in.
             window.UpdateStatus("Loading plugins...");
 
             _assemblyCache = new GorgonMefPlugInCache(GorgonApplication.Log);

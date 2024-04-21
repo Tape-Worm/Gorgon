@@ -29,7 +29,7 @@ using Gorgon.Editor.Services;
 namespace Gorgon.Editor.PlugIns;
 
 /// <summary>
-/// A list of services passed from the host application to plug ins
+/// A list of services passed from the host application to plug-ins
 /// </summary>
 public interface IHostServices
 {

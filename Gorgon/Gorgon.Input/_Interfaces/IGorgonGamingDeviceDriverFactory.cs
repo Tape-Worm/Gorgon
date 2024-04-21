@@ -31,17 +31,17 @@ namespace Gorgon.Input;
 public interface IGorgonGamingDeviceDriverFactory
 {
     /// <summary>
-    /// Function to load all drivers from the plug in assemblies that are currently loaded.
+    /// Function to load all drivers from the plug-in assemblies that are currently loaded.
     /// </summary>
-    /// <param name="assemblyPath">The path to the assembly containing the gaming driver plug ins.</param>
+    /// <param name="assemblyPath">The path to the assembly containing the gaming driver plug-ins.</param>
     /// <returns>A read only list containing an instance of each driver.</returns>
     IReadOnlyList<IGorgonGamingDeviceDriver> LoadAllDrivers(string assemblyPath);
 
     /// <summary>
-    /// Function to load a gaming device driver from any loaded plug in assembly.
+    /// Function to load a gaming device driver from any loaded plug-in assembly.
     /// </summary>
-    /// <param name="assemblyPath">The path to the assembly containing the gaming driver plug ins.</param>
+    /// <param name="assemblyPath">The path to the assembly containing the gaming driver plug-ins.</param>
     /// <param name="driverType">The fully qualified type name of the driver to load.</param>
-    /// <returns>The gaming device driver plug in.</returns>
+    /// <returns>The gaming device driver plug-in.</returns>
     IGorgonGamingDeviceDriver LoadDriver(string assemblyPath, string driverType);
 }

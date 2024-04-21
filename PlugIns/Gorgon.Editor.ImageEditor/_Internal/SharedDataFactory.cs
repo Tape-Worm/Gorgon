@@ -39,7 +39,7 @@ internal static class SharedDataFactory
 
     // A weak reference to the common services in the application.
     private static WeakReference<IHostContentServices> _hostServices;
-    // The service used to handling content plug ins.
+    // The service used to handling content plug-ins.
     // We will keep this alive and undisposed since it's meant to live for the lifetime of the application.
     private static readonly Lazy<GorgonMefPlugInCache> _plugInCache;
     // The factory that creates/loads the settings.
@@ -50,9 +50,9 @@ internal static class SharedDataFactory
     private static readonly Lazy<(Settings settings, SettingsPlugins pluginSettings)> _settingsViewModelFactory;
 
     /// <summary>
-    /// Function to retrieve the common plug in cache.
+    /// Function to retrieve the common plug-in cache.
     /// </summary>
-    /// <returns>The plug in cache.</returns>
+    /// <returns>The plug-in cache.</returns>
     private static GorgonMefPlugInCache GetPlugInCache() => !_hostServices.TryGetTarget(out IHostContentServices commonServices)
             ? throw new GorgonException(GorgonResult.CannotCreate)
             : new GorgonMefPlugInCache(commonServices.Log);
@@ -60,7 +60,7 @@ internal static class SharedDataFactory
     /// <summary>
     /// Function to load the settings for the image editor/importer.
     /// </summary>
-    /// <returns>The settings for both plug ins.</returns>
+    /// <returns>The settings for both plug-ins.</returns>
     private static ImageEditorSettings LoadSettings()
     {
         if (!_hostServices.TryGetTarget(out IHostContentServices commonServices))
@@ -116,7 +116,7 @@ internal static class SharedDataFactory
     }
 
     /// <summary>
-    /// Function to retrieve the shared data for the plug ins in this assembly.
+    /// Function to retrieve the shared data for the plug-ins in this assembly.
     /// </summary>
     /// <param name="hostServices">The services passed from the host application.</param>
     /// <returns>A tuple containing the shared codec registry and the settings view models.</returns>

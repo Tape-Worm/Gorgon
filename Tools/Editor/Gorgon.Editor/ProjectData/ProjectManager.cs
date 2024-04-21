@@ -47,7 +47,7 @@ namespace Gorgon.Editor.ProjectData;
 /// Initializes a new instance of the <see cref="ProjectManager"/> class
 /// </remarks>
 /// <param name="providers">The file system providers used to read and write project files.</param>
-/// <param name="contentPlugIns">The plug in service used to manage content.</param>
+/// <param name="contentPlugIns">The plug-in service used to manage content.</param>
 /// <param name="log">The log interface for debug messages.</param>
 /// <exception cref="ArgumentNullException">Thrown when the <paramref name="providers"/> parameter is <b>null</b>.</exception>
 internal class ProjectManager(FileSystemProviders providers, IGorgonLog log)
@@ -616,7 +616,7 @@ internal class ProjectManager(FileSystemProviders providers, IGorgonLog log)
     /// </summary>
     /// <param name="project">The project to save.</param>
     /// <param name="path">The path to the project file.</param>
-    /// <param name="writer">The writer plug in used to write the file data.</param>
+    /// <param name="writer">The writer plug-in used to write the file data.</param>
     /// <param name="progressCallback">The callback method that reports the saving progress to the UI.</param>
     /// <param name="cancelToken">The token used for cancellation of the operation.</param>
     /// <returns>A task for asynchronous operation.</returns>

@@ -40,7 +40,7 @@ namespace Gorgon.IO.GorPack;
 /// The BZip2 compressed pack files are written by an older (1.x) version of Gorgon.  This provider will enable the new file system interface to be able to read these files
 /// </remarks>
 internal class GorPackProvider
-    : GorgonFileSystemProvider
+    : GorgonFileSystemProviderPlugIn
 {
     /// <summary>
     /// The pack file header.
@@ -207,7 +207,7 @@ internal class GorPackProvider
     /// <c>/MyMount/MyDirectory/MyTextFile.txt</c>.
     /// </para>
     /// <para>
-    /// Implementors of a <see cref="GorgonFileSystemProvider"/> plug in can override this method to read the list of files from another type of file system, like a Zip file.
+    /// Implementors of a <see cref="GorgonFileSystemProvider"/> plug-in can override this method to read the list of files from another type of file system, like a Zip file.
     /// </para>
     /// <para>
     /// Implementors of a <see cref="GorgonFileSystemProvider"/> should override this method to read the list of directories and files from another type of file system, like a Zip file. 
@@ -234,7 +234,7 @@ internal class GorPackProvider
     /// <param name="physicalLocation">The physical location containing files to enumerate.</param>
     /// <param name="mountPoint">A <see cref="IGorgonVirtualDirectory" /> that the files from the physical file system will be mounted into.</param>
     /// <returns>A list of files contained within the physical file system.</returns>
-    /// <exception cref="NotSupportedException">This plug in provider does not support this functionality.</exception>
+    /// <exception cref="NotSupportedException">This plug-in provider does not support this functionality.</exception>
     protected override IReadOnlyDictionary<string, IGorgonPhysicalFileInfo> OnEnumerateFiles(string physicalLocation, IGorgonVirtualDirectory mountPoint)
         => throw new NotSupportedException();
 
@@ -259,7 +259,7 @@ internal class GorPackProvider
     /// If the file does not exist in the physical file system, this method should return <b>null</b>.
     /// </para>
     /// <para>
-    /// Implementors of a <see cref="GorgonFileSystemProvider"/> plug in can overload this method to return a stream into a file within their specific native provider (e.g. a Zip file provider will 
+    /// Implementors of a <see cref="GorgonFileSystemProvider"/> plug-in can overload this method to return a stream into a file within their specific native provider (e.g. a Zip file provider will 
     /// return a stream into the zip file positioned at the location of the compressed file within the zip file).
     /// </para>
     /// </remarks>

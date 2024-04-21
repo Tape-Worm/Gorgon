@@ -501,7 +501,7 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to An error occurred while loading the plug in.
+        ///   Looks up a localized string similar to An error occurred while loading the plug-in.
         ///Exception: {0}.
         /// </summary>
         internal static string GOREDIT_DISABLE_CONTENT_PLUGIN_EXCEPTION {
@@ -511,7 +511,7 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to An error occurred while loading the plug in.
+        ///   Looks up a localized string similar to An error occurred while loading the plug-in.
         ///Exception: {0}.
         /// </summary>
         internal static string GOREDIT_DISABLE_FILE_PROVIDER_EXCEPTION {
@@ -928,7 +928,7 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There was an error selecting the plug in.
+        ///   Looks up a localized string similar to There was an error selecting the plug-in.
         ///
         ///Please try again..
         /// </summary>
@@ -1087,7 +1087,7 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No reason was given by the plug in author..
+        ///   Looks up a localized string similar to No reason was given by the plug-in author..
         /// </summary>
         internal static string GOREDIT_TEXT_DISABLED_PLUGIN_DEFAULT_TEXT {
             get {
@@ -1150,7 +1150,7 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Loading content plug ins....
+        ///   Looks up a localized string similar to Loading content plug-ins....
         /// </summary>
         internal static string GOREDIT_TEXT_LOADING_CONTENT_PLUGINS {
             get {
@@ -1159,7 +1159,7 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Loading file system plug ins....
+        ///   Looks up a localized string similar to Loading file system plug-ins....
         /// </summary>
         internal static string GOREDIT_TEXT_LOADING_FILESYSTEM_PLUGINS {
             get {
@@ -1168,7 +1168,7 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Loading tool plug ins....
+        ///   Looks up a localized string similar to Loading tool plug-ins....
         /// </summary>
         internal static string GOREDIT_TEXT_LOADING_TOOL_PLUGINS {
             get {

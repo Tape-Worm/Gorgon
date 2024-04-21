@@ -29,7 +29,7 @@ using Gorgon.Graphics;
 namespace Gorgon.Editor.SpriteEditor;
 
 /// <summary>
-/// The view model used to manipulate the settings for the sprite editor plug in
+/// The view model used to manipulate the settings for the sprite editor plug-in
 /// </summary>
 internal interface ISettings
     : IViewModel

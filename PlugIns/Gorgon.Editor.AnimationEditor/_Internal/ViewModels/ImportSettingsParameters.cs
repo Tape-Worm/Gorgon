@@ -34,17 +34,17 @@ namespace Gorgon.Editor.AnimationEditor;
 /// The parameters to pass to the <see cref="Settings"/> view model
 /// </summary>
 /// <remarks>Initializes a new instance of the <see cref="ImportSettingsParameters"/> class.</remarks>
-/// <param name="settings">The plug in settings.</param>
+/// <param name="settings">The plug-in settings.</param>
 /// <param name="codecs">The codec registry.</param>
-/// <param name="openCodecDialog">The service used to locate plug in assemblies for loading.</param>
-/// <param name="plugInCache">The cache for plug in assemblies.</param>
+/// <param name="openCodecDialog">The service used to locate plug-in assemblies for loading.</param>
+/// <param name="plugInCache">The cache for plug-in assemblies.</param>
 /// <param name="hostServices">Common application services.</param>
 /// <exception cref="ArgumentNullException">Thrown when any parameter is <strong>null</strong>.</exception>
 internal class ImportSettingsParameters(AnimationImportSettings settings, CodecRegistry codecs, IFileDialogService openCodecDialog, GorgonMefPlugInCache plugInCache, IHostContentServices hostServices)
         : PlugInsCategoryViewModelParameters(openCodecDialog, plugInCache, hostServices)
 {
     /// <summary>
-    /// Property to return the settings for the plug in.
+    /// Property to return the settings for the plug-in.
     /// </summary>
     public AnimationImportSettings Settings
     {

@@ -63,8 +63,8 @@ namespace Gorgon.IO;
 /// </para>
 /// <para>
 /// By default, a new file system instance will only have access to the directories and files of the hard drive via the default provider. File systems that are in packed files (e.g. Zip files) can be 
-/// loaded into the file system by way of a <see cref="GorgonFileSystemProvider"/>. Providers are typically plug in objects that are loaded into the file system via the <see cref="GorgonFileSystemProviderFactory"/>.  
-/// Once a provider plug in is loaded, then the contents of that file system can be mounted like a standard directory. 
+/// loaded into the file system by way of a <see cref="GorgonFileSystemProvider"/>. Providers are typically plug-in objects that are loaded into the file system via the <see cref="GorgonFileSystemProviderFactory"/>.  
+/// Once a provider plug-in is loaded, then the contents of that file system can be mounted like a standard directory. 
 /// </para>
 /// <para>
 /// When a file system provider is added to the virtual file system object upon creation, the object will contain 2 providers, the default provider is always available with any additional providers
@@ -84,13 +84,13 @@ namespace Gorgon.IO;
 /// This example shows how to load a provider from the provider factory and use it with the file system:
 /// <code language="csharp">
 /// <![CDATA[
-/// // First we need to load the assembly with the provider plug in
+/// // First we need to load the assembly with the provider plug-in
 /// using (GorgonPlugInAssemblyCache assemblies = new GorgonPlugInAssemblyCache())
 /// {
 ///		assemblies.Load(@"C:\PlugIns\GorgonFileSystem.Zip.dll"); 
 ///		GorgonPlugInService plugInService = new GorgonPlugInService(assemblies);
 /// 
-///		// We'll use the factory to get the zip plug in provider
+///		// We'll use the factory to get the zip plug-in provider
 ///		IGorgonFileSystemProviderFactory factory = new GorgonFileSystemProviderFactory(plugInService);
 ///		
 ///		IGorgonFileSystemProvider zipProvider = factory.CreateProvider("Gorgon.IO.Zip.ZipProvider");
@@ -481,13 +481,13 @@ public interface IGorgonFileSystem
     /// This example shows how to load a provider from the provider factory and use it with the file system:
     /// <code language="csharp">
     /// <![CDATA[
-    /// // First we need to load the assembly with the provider plug in.
+    /// // First we need to load the assembly with the provider plug-in.
     /// using (GorgonPlugInAssemblyCache assemblies = new GorgonPlugInAssemblyCache())
     /// {
     ///		assemblies.Load(@"C:\PlugIns\GorgonFileSystem.Zip.dll"); 
     ///		GorgonPlugInService plugInService = new GorgonPlugInService(assemblies);
     /// 
-    ///		// We'll use the factory to get the zip plug in provider.
+    ///		// We'll use the factory to get the zip plug-in provider.
     ///		IGorgonFileSystemProviderFactory factory = new GorgonFileSystemProviderFactory(plugInService);
     ///		
     ///		IGorgonFileSystemProvider zipProvider = factory.CreateProvider("Gorgon.IO.Zip.ZipProvider");

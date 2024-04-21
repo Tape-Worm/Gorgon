@@ -44,7 +44,7 @@ namespace Gorgon.Examples;
 static class Program
 {
 
-    // The plug in assembly cache.
+    // The plug-in assembly cache.
     private static GorgonMefPlugInCache _assemblyCache;
     // The core graphics functionality.
     private static GorgonGraphics _graphics;
@@ -76,7 +76,7 @@ static class Program
     /// <returns>The file system provider.</returns>
     private static IGorgonFileSystemProvider LoadGorPackProvider()
     {
-        // The Gorgon packed file provider plug in dll.
+        // The Gorgon packed file provider plug-in dll.
         const string gorPackDll = "Gorgon.FileSystem.GorPack.dll";
         // The name of the Gorgon packed file plugin.
         const string gorPackPlugInName = "Gorgon.IO.GorPack.GorPackProvider";
@@ -137,10 +137,10 @@ static class Program
 
         try
         {
-            // Load our packed file system plug in.
+            // Load our packed file system plug-in.
             window.UpdateStatus("Loading plugins...");
 
-            // Load in the plug in that will allow us to read a packed file system.
+            // Load in the plug-in that will allow us to read a packed file system.
             IGorgonFileSystemProvider provider = await Task.Run(LoadGorPackProvider);
 
             // Load the file system.

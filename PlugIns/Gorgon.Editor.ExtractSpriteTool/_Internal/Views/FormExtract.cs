@@ -50,7 +50,7 @@ internal partial class FormExtract
     }
 
     /// <summary>
-    /// Property to return the settings for the plug in.
+    /// Property to return the settings for the plug-in.
     /// </summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public ExtractSpriteToolSettings Settings
@@ -540,7 +540,7 @@ internal partial class FormExtract
     /// <param name="swapChain">The swap chain used to render into the UI.</param>
     /// <remarks>
     ///   <para>
-    /// This method allows tool plug in implementors to setup additional functionality for custom graphics rendering.
+    /// This method allows tool plug-in implementors to setup additional functionality for custom graphics rendering.
     /// </para>
     ///   <para>
     /// Resources created by this method should be cleaned up in the <see cref="EditorToolBaseForm.OnShutdownGraphics"/> method.

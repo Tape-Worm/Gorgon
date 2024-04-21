@@ -9,7 +9,7 @@
     <Authors>Michael Winsor</Authors>
     <Company>Tape_Worm</Company>
     <Product>Gorgon</Product>
-    <Description>A plug in for the Gorgon Editor that will create a texture atlas tool from a series of sprites.</Description>
+    <Description>A plug-in for the Gorgon Editor that will create a texture atlas tool from a series of sprites.</Description>
     <Copyright>(C)opyright Tape_Worm, 2020</Copyright>
     <PackageProjectUrl>https://www.tape-worm.net</PackageProjectUrl>
     <PackageIcon>g.png</PackageIcon>

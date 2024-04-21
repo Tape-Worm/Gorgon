@@ -28,17 +28,17 @@ using Gorgon.Editor.PlugIns;
 namespace Gorgon.Editor.Services;
 
 /// <summary>
-/// Provides a list of plug ins that were disabled on application start up
+/// Provides a list of plug-ins that were disabled on application start up
 /// </summary>
 /// <remarks>
 /// <para>
-/// Use this interface to determine if a plug in is available for use or not
+/// Use this interface to determine if a plug-in is available for use or not
 /// </para>
 /// </remarks>
 public interface IDisabledPlugInService
 {
     /// <summary>
-    /// Property to return the list of disabled plug ins.
+    /// Property to return the list of disabled plug-ins.
     /// </summary>
     IReadOnlyDictionary<string, IDisabledPlugIn> DisabledPlugIns
     {

@@ -100,7 +100,7 @@ internal partial class EditorSettingsPanel
     }
 
     /// <summary>
-    /// Function to register the settings panels from plug ins.
+    /// Function to register the settings panels from plug-ins.
     /// </summary>
     /// <param name="dataContext">The current data context.</param>
     private void RegisterPlugInSettingsPanels(IEditorSettings dataContext)

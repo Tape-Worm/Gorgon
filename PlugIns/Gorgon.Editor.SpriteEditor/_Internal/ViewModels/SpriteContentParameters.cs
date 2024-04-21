@@ -38,7 +38,7 @@ namespace Gorgon.Editor.SpriteEditor;
 /// <remarks>Initializes a new instance of the <see cref="SpriteContentParameters"/> class.</remarks>
 /// <param name="sprite">The sprite data.</param>
 /// <param name="textureFile">The texture file linked to the sprite.</param>
-/// <param name="settings">The settings for the plug in.</param>
+/// <param name="settings">The settings for the plug-in.</param>
 /// <param name="spriteClipContext">The context for sprite clipping.</param>
 /// <param name="spritePickContext">The context for sprite picking.</param>
 /// <param name="spriteVertexEditContext">The context for sprite vertex editing.</param>

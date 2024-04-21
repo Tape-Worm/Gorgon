@@ -151,7 +151,7 @@ internal class Resources {
     }
 
     /// <summary>
-    ///   Looks up a localized string similar to The file system provider plug in &apos;{0}&apos; was not found..
+    ///   Looks up a localized string similar to The file system provider plug-in &apos;{0}&apos; was not found..
     /// </summary>
     internal static string GORFS_ERR_NO_PROVIDER_PLUGIN {
         get {

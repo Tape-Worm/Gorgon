@@ -40,7 +40,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels;
 /// <param name="fileManager">The file manager for content files.</param>
 /// <param name="file">The file for the image content.</param>
 /// <param name="settings">The settings for the image editor.</param>
-/// <param name="pluginSettings">The plug in settings for the image editor.</param>
+/// <param name="pluginSettings">The plug-in settings for the image editor.</param>
 /// <param name="imagePicker">The image picker used to import image data into the current image.</param>
 /// <param name="cropResizeSettings">The crop/resize settings view model.</param>
 /// <param name="dimensionSettings">The image dimensions settings view model.</param>
@@ -167,7 +167,7 @@ internal class ImageContentParameters(IContentFileManager fileManager,
     } = settings ?? throw new ArgumentNullException(nameof(settings));
 
     /// <summary>
-    /// Property to return the plug in settings for the image editor.
+    /// Property to return the plug-in settings for the image editor.
     /// </summary>
     public ISettingsPlugins PluginSettings
     {

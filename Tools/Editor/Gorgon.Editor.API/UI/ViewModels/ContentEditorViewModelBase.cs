@@ -41,7 +41,7 @@ namespace Gorgon.Editor.UI;
 /// persist the content data and close the content UI. 
 /// </para>
 /// <para>
-/// Content is what the editor defines as the items that users will create/edit with the editor, this could be images, sprites, music, sound, scripts, etc... Developers of content plug ins must inherit 
+/// Content is what the editor defines as the items that users will create/edit with the editor, this could be images, sprites, music, sound, scripts, etc... Developers of content plug-ins must inherit 
 /// from this type so that their content model data is updated from the UI, and returns feedback to the UI
 /// </para>
 /// <para>
@@ -346,7 +346,7 @@ public abstract class ContentEditorViewModelBase<T>
     /// <returns>A task for asynchronous operation.</returns>
     /// <remarks>
     /// <para>
-    /// The <paramref name="workFile"/> is a copy of the original file in the project file system. This working file is managed by a scratch file system passed to the content plug in. By handling 
+    /// The <paramref name="workFile"/> is a copy of the original file in the project file system. This working file is managed by a scratch file system passed to the content plug-in. By handling 
     /// files in this manner, we can ensure that the original file can remain intact should something go wrong, or an undesirable change is included in the content by reverting to the original file.
     /// </para>
     /// </remarks>
@@ -384,7 +384,7 @@ public abstract class ContentEditorViewModelBase<T>
     /// <returns><b>true</b> to continue with closing, <b>false</b> to cancel the close request.</returns>
     /// <remarks>
     /// <para>
-    /// Content plug in developers should override this method so that users are given a chance to save their content data (if it has changed) prior to closing the content. 
+    /// Content plug-in developers should override this method so that users are given a chance to save their content data (if it has changed) prior to closing the content. 
     /// </para>
     /// <para>
     /// This is set up as an asynchronous method so that users may save their data asynchronously to keep the UI usable.

@@ -31,7 +31,7 @@ using Gorgon.Renderers;
 namespace Gorgon.IO;
 
 /// <summary>
-/// A plug in for allowing users to supply their own 3rd party animation codecs
+/// A plug-in for allowing users to supply their own 3rd party animation codecs
 /// </summary>
 /// <remarks>
 /// Initializes a new instance of the <see cref="GorgonAnimationCodecPlugIn"/> class
@@ -46,10 +46,10 @@ public abstract class GorgonAnimationCodecPlugIn(string description)
         : GorgonPlugIn(description)
 {
     /// <summary>
-    /// Property to return the names of the available codecs for this plug in.
+    /// Property to return the names of the available codecs for this plug-in.
     /// </summary>
     /// <remarks>
-    /// This returns a <see cref="IReadOnlyDictionary{TKey,TValue}"/> containing the name of the plug in as its key, and an optional friendly description as its value.
+    /// This returns a <see cref="IReadOnlyDictionary{TKey,TValue}"/> containing the name of the plug-in as its key, and an optional friendly description as its value.
     /// </remarks>
     public abstract IReadOnlyList<GorgonAnimationCodecDescription> Codecs
     {
@@ -59,12 +59,12 @@ public abstract class GorgonAnimationCodecPlugIn(string description)
     /// <summary>
     /// Function to create a new <see cref="IGorgonAnimationCodec"/>.
     /// </summary>
-    /// <param name="codec">The codec to retrieve from the plug in.</param>
+    /// <param name="codec">The codec to retrieve from the plug-in.</param>
     /// <param name="renderer">The renderer used to retrieve textures.</param>
     /// <returns>A new <see cref="IGorgonAnimationCodec"/> object.</returns>
     /// <remarks>
     /// <para>
-    /// Implementors must implement this method to return the codec from the plug in assembly.
+    /// Implementors must implement this method to return the codec from the plug-in assembly.
     /// </para>
     /// </remarks>
     protected abstract IGorgonAnimationCodec OnCreateCodec(string codec, Gorgon2D renderer);
@@ -72,16 +72,16 @@ public abstract class GorgonAnimationCodecPlugIn(string description)
     /// <summary>
     /// Function to create a new image codec object.
     /// </summary>
-    /// <param name="codec">The name of the codec to look up within the plug in.</param>
+    /// <param name="codec">The name of the codec to look up within the plug-in.</param>
     /// <param name="renderer">The renderer used to retrieve textures.</param>
     /// <returns>A new instance of a <see cref="IGorgonAnimationCodec"/>.</returns>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="codec"/>, or the <paramref name="renderer"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="codec"/> parameter is empty.</exception>
-    /// <exception cref="KeyNotFoundException">Thrown when the <paramref name="codec"/> was not found in this plug in.</exception>
+    /// <exception cref="KeyNotFoundException">Thrown when the <paramref name="codec"/> was not found in this plug-in.</exception>
     /// <remarks>
     /// <para>
-    /// If the <paramref name="codec"/> is not found within the plug in, then an exception will be thrown. To determine whether the plug in has the desired <paramref name="codec"/>, check the 
-    /// <see cref="Codecs"/> property on the plug in to locate the plug in name.
+    /// If the <paramref name="codec"/> is not found within the plug-in, then an exception will be thrown. To determine whether the plug-in has the desired <paramref name="codec"/>, check the 
+    /// <see cref="Codecs"/> property on the plug-in to locate the plug-in name.
     /// </para>
     /// </remarks>
     public IGorgonAnimationCodec CreateCodec(string codec, Gorgon2D renderer)

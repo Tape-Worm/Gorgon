@@ -200,12 +200,12 @@ Please select a sprite file and try again.</value>
     <value>..\Resources\anim_first_key_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="GORANM_ERR_CODEC_LOAD_ERRORS_PRESENT" xml:space="preserve">
-    <value>There were errors while trying to load the codec plug in.
+    <value>There were errors while trying to load the codec plug-in.
 
 Please check the Details pane for more information.</value>
   </data>
   <data name="GORANM_CAPTION_SELECT_CODEC_DLL" xml:space="preserve">
-    <value>Select a codec plug in DLL</value>
+    <value>Select a codec plug-in DLL</value>
   </data>
   <data name="GORANM_ERR_SHOW_PROPERTIES" xml:space="preserve">
     <value>There was an error displaying the animation properties panel.
@@ -213,7 +213,7 @@ Please check the Details pane for more information.</value>
 Please try again.</value>
   </data>
   <data name="GORANM_FILTER_SELECT_CODEC" xml:space="preserve">
-    <value>Codec plug in file (*.dll)|*.dll</value>
+    <value>Codec plug-in file (*.dll)|*.dll</value>
   </data>
   <data name="new_content_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\new_content_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -242,7 +242,7 @@ Please try again.</value>
     <value>..\Resources\filmstripbg.dds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="GORANM_CONFIRM_REMOVE_CODECS" xml:space="preserve">
-    <value>This will remove all codecs associated with the '{0}' plug in.
+    <value>This will remove all codecs associated with the '{0}' plug-in.
 
 Are you sure you want to do this?</value>
   </data>
@@ -311,7 +311,7 @@ Please try again.</value>
     <value>Animation</value>
   </data>
   <data name="GORANM_ERR_CODEC_PLUGIN_ALREADY_LOADED" xml:space="preserve">
-    <value>The codec plug in '{0}' was already loaded.</value>
+    <value>The codec plug-in '{0}' was already loaded.</value>
   </data>
   <data name="paste_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\paste_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>

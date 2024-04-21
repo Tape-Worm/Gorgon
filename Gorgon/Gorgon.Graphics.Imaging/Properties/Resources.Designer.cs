@@ -142,7 +142,7 @@ internal class Resources {
     }
 
     /// <summary>
-    ///   Looks up a localized string similar to The codec &apos;{0}&apos; was not found in the plug in..
+    ///   Looks up a localized string similar to The codec &apos;{0}&apos; was not found in the plug-in..
     /// </summary>
     internal static string GORIMG_ERR_CODEC_NOT_IN_PLUGIN {
         get {

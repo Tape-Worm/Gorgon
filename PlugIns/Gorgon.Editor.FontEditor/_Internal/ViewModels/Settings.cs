@@ -34,7 +34,7 @@ internal class Settings
     : SettingsCategoryBase<SettingsParameters>, ISettings
 {
 
-    // The settings data for the plug in.
+    // The settings data for the plug-in.
     private FontEditorSettings _settings;
 
     /// <summary>Property to set or return the default font face.</summary>

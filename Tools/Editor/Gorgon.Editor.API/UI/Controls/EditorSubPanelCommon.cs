@@ -33,7 +33,7 @@ namespace Gorgon.Editor.UI.Controls;
 /// </summary>
 /// <remarks>
 /// <para>
-/// This is a base UI element that allows content plug ins to display a settings/properties panel for a given operation while editing content. Content plug in developers must inherit this type to make 
+/// This is a base UI element that allows content plug-ins to display a settings/properties panel for a given operation while editing content. Content plug-in developers must inherit this type to make 
 /// their content operation properties/settings visible to the user
 /// </para>
 /// <para>

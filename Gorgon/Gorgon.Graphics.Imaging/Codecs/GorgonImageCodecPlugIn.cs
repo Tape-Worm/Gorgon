@@ -30,12 +30,12 @@ using Gorgon.PlugIns;
 namespace Gorgon.Graphics.Imaging.Codecs;
 
 /// <summary>
-/// A plug in to allow for loading of custom image codecs
+/// A plug-in to allow for loading of custom image codecs
 /// </summary>
 /// <remarks>
 /// Initializes a new instance of the <see cref="GorgonImageCodecPlugIn"/> class
 /// </remarks>
-/// <param name="description">Optional description of the plug in.</param>
+/// <param name="description">Optional description of the plug-in.</param>
 /// <remarks>
 /// <para>
 /// Objects that implement this base class should pass in a hard coded description on the base constructor
@@ -45,10 +45,10 @@ public abstract class GorgonImageCodecPlugIn(string description)
         : GorgonPlugIn(description)
 {
     /// <summary>
-    /// Property to return the names of the available codecs for this plug in.
+    /// Property to return the names of the available codecs for this plug-in.
     /// </summary>
     /// <remarks>
-    /// This returns a <see cref="IReadOnlyDictionary{TKey,TValue}"/> containing the name of the plug in as its key, and an optional friendly description as its value.
+    /// This returns a <see cref="IReadOnlyDictionary{TKey,TValue}"/> containing the name of the plug-in as its key, and an optional friendly description as its value.
     /// </remarks>
     public abstract IReadOnlyList<GorgonImageCodecDescription> Codecs
     {
@@ -58,11 +58,11 @@ public abstract class GorgonImageCodecPlugIn(string description)
     /// <summary>
     /// Function to create a new <see cref="IGorgonImageCodec"/>.
     /// </summary>
-    /// <param name="codec">The codec to retrieve from the plug in.</param>
+    /// <param name="codec">The codec to retrieve from the plug-in.</param>
     /// <returns>A new <see cref="IGorgonImageCodec"/> object.</returns>
     /// <remarks>
     /// <para>
-    /// Implementors must implement this method to return the codec from the plug in assembly.
+    /// Implementors must implement this method to return the codec from the plug-in assembly.
     /// </para>
     /// </remarks>
     protected abstract IGorgonImageCodec OnCreateCodec(string codec);
@@ -100,7 +100,7 @@ public abstract class GorgonImageCodecPlugIn(string description)
     /// <returns>A new instance of a <see cref="IGorgonImageCodecEncodingOptions"/> object.</returns>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="codec"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="codec"/> parameter is empty.</exception>
-    /// <exception cref="KeyNotFoundException">Thrown when the <paramref name="codec"/> was not found in this plug in.</exception>
+    /// <exception cref="KeyNotFoundException">Thrown when the <paramref name="codec"/> was not found in this plug-in.</exception>
     /// <remarks>
     /// <para>
     /// If the requested <paramref name="codec"/> has no encoding options, then this method will return <b>null</b>.
@@ -131,7 +131,7 @@ public abstract class GorgonImageCodecPlugIn(string description)
     /// <returns>A new instance of a <see cref="IGorgonImageCodecDecodingOptions"/> object.</returns>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="codec"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="codec"/> parameter is empty.</exception>
-    /// <exception cref="KeyNotFoundException">Thrown when the <paramref name="codec"/> was not found in this plug in.</exception>
+    /// <exception cref="KeyNotFoundException">Thrown when the <paramref name="codec"/> was not found in this plug-in.</exception>
     /// <remarks>
     /// <para>
     /// If the requested <paramref name="codec"/> has no decoding options, then this method will return <b>null</b>.
@@ -158,15 +158,15 @@ public abstract class GorgonImageCodecPlugIn(string description)
     /// <summary>
     /// Function to create a new image codec object.
     /// </summary>
-    /// <param name="codec">The name of the codec to look up within the plug in.</param>
+    /// <param name="codec">The name of the codec to look up within the plug-in.</param>
     /// <returns>A new instance of a <see cref="IGorgonImageCodec"/>.</returns>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="codec"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="codec"/> parameter is empty.</exception>
-    /// <exception cref="KeyNotFoundException">Thrown when the <paramref name="codec"/> was not found in this plug in.</exception>
+    /// <exception cref="KeyNotFoundException">Thrown when the <paramref name="codec"/> was not found in this plug-in.</exception>
     /// <remarks>
     /// <para>
-    /// If the <paramref name="codec"/> is not found within the plug in, then an exception will be thrown. To determine whether the plug in has the desired <paramref name="codec"/>, check the 
-    /// <see cref="Codecs"/> property on the plug in to locate the plug in name.
+    /// If the <paramref name="codec"/> is not found within the plug-in, then an exception will be thrown. To determine whether the plug-in has the desired <paramref name="codec"/>, check the 
+    /// <see cref="Codecs"/> property on the plug-in to locate the plug-in name.
     /// </para>
     /// </remarks>
     public IGorgonImageCodec CreateCodec(string codec)

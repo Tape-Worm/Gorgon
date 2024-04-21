@@ -26,10 +26,10 @@
 namespace Gorgon.Examples;
 
 /// <summary>
-/// The settings for the animation importer plug in
+/// The settings for the animation importer plug-in
 /// </summary>
 /// <remarks>
-/// This is our settings for the plug in. The settings should contain simple primitive types so they can be serialized into/deserialized from 
+/// This is our settings for the plug-in. The settings should contain simple primitive types so they can be serialized into/deserialized from 
 /// JSON data
 /// </remarks>
 internal class TextContentSettings

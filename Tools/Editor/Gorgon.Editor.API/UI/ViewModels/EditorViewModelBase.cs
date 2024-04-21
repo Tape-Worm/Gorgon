@@ -34,7 +34,7 @@ namespace Gorgon.Editor.UI;
 /// <remarks>
 /// <para>
 /// Developers can use this to implement basic view models for various UI elements. This type provides basic common functionality for custom views so developers can have more freedom when implementing 
-/// their own views. For more complete common content functionality, there are several base view model types that wrap up common functionality. For example, when developing a content editor plug in 
+/// their own views. For more complete common content functionality, there are several base view model types that wrap up common functionality. For example, when developing a content editor plug-in 
 /// developers should use the <see cref="ContentEditorViewModelBase{T}"/> as a base view model type
 /// </para>
 /// </remarks>

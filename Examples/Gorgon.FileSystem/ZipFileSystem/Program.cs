@@ -67,7 +67,7 @@ internal static class Program
     /// <summary>
     /// Function to retrieve the directory that contains the plugins for an application.
     /// </summary>
-    /// <param name="pluginDirectory">The directory containing the plug ins.</param>
+    /// <param name="pluginDirectory">The directory containing the plug-ins.</param>
     /// <returns>A directory information object for the plugin path.</returns>
     private static DirectoryInfo GetPlugInPath(DirectoryInfo pluginDirectory)
     {
@@ -75,7 +75,7 @@ internal static class Program
 
         if (string.IsNullOrWhiteSpace(path))
         {
-            throw new IOException("No plug in path has been assigned.");
+            throw new IOException("No plug-in path has been assigned.");
         }
 
         if (path.Contains("{0}"))
@@ -98,7 +98,7 @@ internal static class Program
     /// <summary>
     /// Function to load the zip file provider plugin.
     /// </summary>
-    /// <param name="pluginDirectory">The directory containing the plug ins.</param>
+    /// <param name="pluginDirectory">The directory containing the plug-ins.</param>
     /// <returns><b>true</b> if successfully loaded, <b>false</b> if not.</returns>
     private static bool LoadZipProviderPlugIn(DirectoryInfo pluginDirectory)
     {

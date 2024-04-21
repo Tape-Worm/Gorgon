@@ -86,7 +86,7 @@ internal class XInputDevice
     /// To determine if the device supports vibration, check the <see cref="IGorgonGamingDeviceInfo.Capabilities"/> property for the <see cref="GamingDeviceCapabilityFlags.SupportsVibration"/> flag.
     /// </para>
     /// <para>
-    /// Implementors of a <see cref="GorgonGamingDeviceDriver"/> plug in should ensure that devices that support vibration implement this method. Otherwise, if the device does not support the functionality 
+    /// Implementors of a <see cref="GorgonGamingDeviceDriver"/> plug-in should ensure that devices that support vibration implement this method. Otherwise, if the device does not support the functionality 
     /// then this method can be left alone.
     /// </para>
     /// </remarks>
@@ -199,7 +199,7 @@ internal class XInputDevice
     /// Function to retrieve data from the provider of the physical device.
     /// </summary>
     /// <remarks>
-    /// Implementors of a <see cref="GorgonGamingDeviceDriver"/> plug in must implement this and format their data to populate the values of this object with correct state information.
+    /// Implementors of a <see cref="GorgonGamingDeviceDriver"/> plug-in must implement this and format their data to populate the values of this object with correct state information.
     /// </remarks>
     protected override void OnGetData()
     {

@@ -8,9 +8,9 @@
     <Authors>Michael Winsor</Authors>
     <Company>Tape_Worm</Company>
     <Product>Gorgon</Product>
-    <Description>A unified virtual file system that can mount folders, and through plug ins, packed files as a standard self contained file system.
+    <Description>A unified virtual file system that can mount folders, and through plug-ins, packed files as a standard self contained file system.
 
-This assembly contains a plug in that will read a proprietary BZip packed Gorgon file format as its file system.</Description>
+This assembly contains a plug-in that will read a proprietary BZip packed Gorgon file format as its file system.</Description>
     <Copyright>(C)opyright Tape_Worm, 2020</Copyright>
     <PackageLicenseFile>
     </PackageLicenseFile>

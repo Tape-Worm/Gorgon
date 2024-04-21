@@ -57,9 +57,9 @@ internal class Boot
     private GraphicsContext _graphicsContext;
     // The cache for plugin assemblies.
     private GorgonMefPlugInCache _pluginCache;
-    // The service for managing tool plug ins.
+    // The service for managing tool plug-ins.
     private ToolPlugInService _toolPlugIns;
-    // The service for managing content plug ins.
+    // The service for managing content plug-ins.
     private ContentPlugInService _contentPlugIns;
 
     /// <summary>Handles the AssemblyResolve event of the CurrentDomain control.</summary>
@@ -285,8 +285,8 @@ internal class Boot
     /// <summary>
     /// Function to load any tool plugins.
     /// </summary>
-    /// <param name="plugInDir">The directory containing the plug ins.</param>
-    /// <param name="hostServices">The services to pass to the tool plug ins.</param>
+    /// <param name="plugInDir">The directory containing the plug-ins.</param>
+    /// <param name="hostServices">The services to pass to the tool plug-ins.</param>
     private void LoadToolPlugIns(DirectoryInfo plugInDir, HostContentServices hostServices)
     {
         string toolPlugInsDir = Path.Combine(plugInDir.FullName, "Tools");
@@ -320,8 +320,8 @@ internal class Boot
     /// <summary>
     /// Function to load any content plugins used to create/edit content.
     /// </summary>
-    /// <param name="plugInDir">The directory containing the plug ins.</param>
-    /// <param name="hostServices">The services to pass to the content plug ins.</param>
+    /// <param name="plugInDir">The directory containing the plug-ins.</param>
+    /// <param name="hostServices">The services to pass to the content plug-ins.</param>
     private void LoadContentPlugIns(DirectoryInfo plugInDir, HostContentServices hostServices)
     {
         string contentPlugInsDir = Path.Combine(plugInDir.FullName, "Content");
@@ -355,8 +355,8 @@ internal class Boot
     /// <summary>
     /// Function to load any plugins used to import or export files.
     /// </summary>
-    /// <param name="plugInDir">The directory containing the plug ins.</param>
-    /// <param name="hostServices">The services to pass to the file system plug ins.</param>
+    /// <param name="plugInDir">The directory containing the plug-ins.</param>
+    /// <param name="hostServices">The services to pass to the file system plug-ins.</param>
     private FileSystemProviders LoadFileSystemPlugIns(DirectoryInfo plugInDir, IHostServices hostServices)
     {
         string fileSystemPlugInsDir = Path.Combine(plugInDir.FullName, "Filesystem");
@@ -413,7 +413,7 @@ internal class Boot
             // Get any application settings we might have.
             EditorSettings settings = LoadSettings();
 
-            // Set up the host services that we will pass to our plug ins.
+            // Set up the host services that we will pass to our plug-ins.
             hostServices.BusyService = new WaitCursorBusyState();
             hostServices.MessageDisplay = new MessageBoxService(Program.Log);
             hostServices.ClipboardService = new ClipboardService();
@@ -424,14 +424,14 @@ internal class Boot
 
             if (!plugInLocation.Exists)
             {
-                Program.Log.PrintError($"Plug in path '{plugInLocation.FullName}' was not found.  No plug ins will be loaded.", LoggingLevel.Simple);
+                Program.Log.PrintError($"Plug in path '{plugInLocation.FullName}' was not found.  No plug-ins will be loaded.", LoggingLevel.Simple);
                 GorgonDialogs.ErrorBox(null, Resources.GOREDIT_ERR_LOADING_PLUGINS);
             }
 
             // Load our file system import/export plugins.
             FileSystemProviders fileSystemProviders = LoadFileSystemPlugIns(plugInLocation, hostServices);
 
-            // Load our tool plug ins.
+            // Load our tool plug-ins.
             LoadToolPlugIns(plugInLocation, hostServices);
 
             // Load our content service plugins.

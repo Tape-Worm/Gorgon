@@ -50,9 +50,12 @@ internal class VirtualFileCollection
         {
             fileName = fileName.FormatFileName();
 
-            return !_files.ContainsKey(fileName)
-                ? throw new FileNotFoundException(string.Format(Resources.GORFS_ERR_FILE_NOT_FOUND, fileName))
-                : _files[fileName];
+            if (!_files.TryGetValue(fileName, out VirtualFile value))
+            {
+                throw new FileNotFoundException(string.Format(Resources.GORFS_ERR_FILE_NOT_FOUND, fileName));
+            }
+
+            return value;
         }
         set
         {

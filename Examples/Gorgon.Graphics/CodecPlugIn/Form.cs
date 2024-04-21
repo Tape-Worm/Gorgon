@@ -47,11 +47,11 @@ public partial class Form : System.Windows.Forms.Form
     private GorgonGraphics _graphics;
     // The swap chain to use.
     private GorgonSwapChain _swap;
-    // Image to display, loaded from our plug in.
+    // Image to display, loaded from our plug-in.
     private GorgonTexture2DView _texture;
     // The image in system memory.
     private IGorgonImage _image;
-    // Our custom codec loaded from the plug in.
+    // Our custom codec loaded from the plug-in.
     private IGorgonImageCodec _customCodec;
 
     /// <summary>
@@ -94,7 +94,7 @@ public partial class Form : System.Windows.Forms.Form
     }
 
     /// <summary>
-    /// Function to load our useless image codec plug in.
+    /// Function to load our useless image codec plug-in.
     /// </summary>
     /// <returns><b>true</b> if successful, <b>false</b> if not.</returns>
     private bool LoadCodec()
@@ -103,7 +103,7 @@ public partial class Form : System.Windows.Forms.Form
 
         _pluginCache = new GorgonMefPlugInCache(GorgonApplication.Log);
 
-        // Load our plug in.
+        // Load our plug-in.
         _pluginCache.LoadPlugInAssemblies(GorgonApplication.StartupPath.FullName, "TVImageCodec.dll");
 
         // Activate the plugin service.
@@ -117,7 +117,7 @@ public partial class Form : System.Windows.Forms.Form
             return false;
         }
 
-        // Normally you would enumerate the plug ins, but in this case we know there's only one.
+        // Normally you would enumerate the plug-ins, but in this case we know there's only one.
         _customCodec = plugIn.CreateCodec(plugIn.Codecs[0].Name);
 
         return _customCodec is not null;
@@ -203,7 +203,7 @@ public partial class Form : System.Windows.Forms.Form
             // Load the custom codec.
             if (!LoadCodec())
             {
-                GorgonDialogs.ErrorBox(this, "Unable to load the image codec plug in.");
+                GorgonDialogs.ErrorBox(this, "Unable to load the image codec plug-in.");
                 GorgonApplication.Quit();
                 return;
             }

@@ -43,6 +43,8 @@ internal class VirtualDirectoryCollection(VirtualDirectory parent)
     private readonly Dictionary<string, VirtualDirectory> _directories = new(StringComparer.OrdinalIgnoreCase);
     // The parent directory that owns this collection.
     private readonly VirtualDirectory _parent = parent;
+    // Directory separator value.
+    private static readonly char[] _separator = ['/'];
 
     /// <summary>
     /// Gets the number of elements in the collection.
@@ -72,21 +74,15 @@ internal class VirtualDirectoryCollection(VirtualDirectory parent)
                 ? throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, key))
                 : directory;
         }
-    }
+    }    
 
     /// <summary>
     /// Adds an item to the <see cref="ICollection{T}" />.
     /// </summary>
     /// <param name="item">The object to add to the <see cref="ICollection{T}" />.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="item"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentException">Thrown when this collection already contains a directory with the same name as the <paramref name="item"/> parameter.</exception>
     public void Add(VirtualDirectory item)
     {
-        if (item is null)
-        {
-            throw new ArgumentNullException(nameof(item));
-        }
-
         if (_directories.ContainsKey(item.Name))
         {
             throw new ArgumentException(string.Format(Resources.GORFS_ERR_DIRECTORY_EXISTS, item.Name));
@@ -166,7 +162,7 @@ internal class VirtualDirectoryCollection(VirtualDirectory parent)
             throw new IOException(string.Format(Resources.GORFS_ERR_DIRECTORY_EXISTS, "/"));
         }
 
-        string[] directories = path.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+        string[] directories = path.Split(_separator, StringSplitOptions.RemoveEmptyEntries);
 
         if (directories.Length == 0)
         {

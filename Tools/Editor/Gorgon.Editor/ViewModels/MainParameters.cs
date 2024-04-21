@@ -83,7 +83,7 @@ internal class MainParameters(IHostContentServices hostServices, ViewModelFactor
     }
 
     /// <summary>
-    /// Property to set or return a list of content plug ins that can create their own content.
+    /// Property to set or return a list of content plug-ins that can create their own content.
     /// </summary>
     public IReadOnlyList<IContentPlugInMetadata> ContentCreators
     {

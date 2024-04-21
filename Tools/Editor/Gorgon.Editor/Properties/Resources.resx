@@ -177,7 +177,7 @@ Please try again.</value>
 Gorgon requires a video adapter that is compatible with Direct 3D 11.2 or better.</value>
   </data>
   <data name="GOREDIT_ERR_SELECTING_PLUGIN" xml:space="preserve">
-    <value>There was an error selecting the plug in.
+    <value>There was an error selecting the plug-in.
 
 Please try again.</value>
   </data>
@@ -404,7 +404,7 @@ Please try again.</value>
     <value>The directory '{0}' was not found.</value>
   </data>
   <data name="GOREDIT_TEXT_LOADING_TOOL_PLUGINS" xml:space="preserve">
-    <value>Loading tool plug ins...</value>
+    <value>Loading tool plug-ins...</value>
   </data>
   <data name="GOREDIT_MSG_OPEN_CONTENT_CANT_OVERWRITE_SKIP" xml:space="preserve">
     <value>The file '{0}' is open in the editor and cannot be overwritten.
@@ -420,7 +420,7 @@ Please try again.</value>
 Please try again.</value>
   </data>
   <data name="GOREDIT_DISABLE_CONTENT_PLUGIN_EXCEPTION" xml:space="preserve">
-    <value>An error occurred while loading the plug in.
+    <value>An error occurred while loading the plug-in.
 Exception: {0}</value>
   </data>
   <data name="GOREDIT_ERR_DELETE" xml:space="preserve">
@@ -478,7 +478,7 @@ Please try again.</value>
 The file will still imported into the file system, but the editor may not be able to open it.</value>
   </data>
   <data name="GOREDIT_TEXT_LOADING_FILESYSTEM_PLUGINS" xml:space="preserve">
-    <value>Loading file system plug ins...</value>
+    <value>Loading file system plug-ins...</value>
   </data>
   <data name="export_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\export_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -549,7 +549,7 @@ Selecting No will skip the file.</value>
     <value>New Folder</value>
   </data>
   <data name="GOREDIT_TEXT_LOADING_CONTENT_PLUGINS" xml:space="preserve">
-    <value>Loading content plug ins...</value>
+    <value>Loading content plug-ins...</value>
   </data>
   <data name="clear_fs_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\clear_fs_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -586,7 +586,7 @@ Are you sure you want to do this?</value>
 Please try again.</value>
   </data>
   <data name="GOREDIT_DISABLE_FILE_PROVIDER_EXCEPTION" xml:space="preserve">
-    <value>An error occurred while loading the plug in.
+    <value>An error occurred while loading the plug-in.
 Exception: {0}</value>
   </data>
   <data name="GOREDIT_CONFIRM_OPEN_CONTENT_CANT_OVERWRITE" xml:space="preserve">
@@ -595,7 +595,7 @@ Exception: {0}</value>
 Would you like to make a copy with a different name?</value>
   </data>
   <data name="GOREDIT_TEXT_DISABLED_PLUGIN_DEFAULT_TEXT" xml:space="preserve">
-    <value>No reason was given by the plug in author.</value>
+    <value>No reason was given by the plug-in author.</value>
   </data>
   <data name="GOREDIT_CAPTION_NO_FILE" xml:space="preserve">
     <value>Gorgon Editor</value>

@@ -40,12 +40,12 @@ internal class SettingsPlugins
     : PlugInsCategory<SettingsPluginsParameters>, ISettingsPlugins
 {
 
-    // The underlying settings for the plug in.
+    // The underlying settings for the plug-in.
     private ImageEditorSettings _settings;
     // The registry for image codecs.
     private ICodecRegistry _codecs;
 
-    /// <summary>Property to return the file name that will hold the plug ins.</summary>
+    /// <summary>Property to return the file name that will hold the plug-ins.</summary>
     protected override string SettingsFileName => typeof(ImageEditorPlugIn).FullName;
 
     /// <summary>Gets the name.</summary>
@@ -60,7 +60,7 @@ internal class SettingsPlugins
     } = [];
 
     /// <summary>
-    /// Propery to return the paths to the codec plug ins.
+    /// Propery to return the paths to the codec plug-ins.
     /// </summary>
     public ObservableCollection<CodecSetting> CodecPlugInPaths
     {
@@ -95,16 +95,16 @@ internal class SettingsPlugins
     }
 
     /// <summary>
-    /// Function to determine if the selected plug in assemblies can be unloaded.
+    /// Function to determine if the selected plug-in assemblies can be unloaded.
     /// </summary>
-    /// <returns><b>true</b> if the plug in assemblies can be removed, <b>false</b> if not.</returns>
+    /// <returns><b>true</b> if the plug-in assemblies can be removed, <b>false</b> if not.</returns>
     protected override bool CanUnloadPlugInAssemblies() => SelectedCodecs.Count > 0;
 
     /// <summary>Function to retrieve the underlying object used to hold the settings.</summary>
     /// <returns>The object that holds the settings.</returns>
     protected override object OnGetSettings() => _settings;
 
-    /// <summary>Function to unload previously loaded plug ins.</summary>
+    /// <summary>Function to unload previously loaded plug-ins.</summary>
     /// <returns>
     ///   <b>true</b> to indicate that the operation succeeded, or <b>false</b> if it was cancelled.</returns>
     protected override bool OnUnloadPlugIns()

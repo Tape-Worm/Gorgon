@@ -75,7 +75,7 @@ internal class ProjectEditor
     private IEditorContent _currentContent;
     // The content previewer view model.
     private IContentPreview _contentPreviewer;
-    // The file manager used to manage content through content plug ins.
+    // The file manager used to manage content through content plug-ins.
     private IContentFileManager _contentFileManager;
     // The list of tool buttons.
     private IReadOnlyDictionary<string, IReadOnlyList<IToolPlugInRibbonButton>> _toolButtons = new Dictionary<string, IReadOnlyList<IToolPlugInRibbonButton>>(StringComparer.CurrentCultureIgnoreCase);
@@ -83,13 +83,13 @@ internal class ProjectEditor
     private Editor.EditorSettings _settings;
     // The project save dialog service.
     private EditorFileSaveDialogService _saveDialog;
-    // The list of plug ins that can create content.
+    // The list of plug-ins that can create content.
     private IReadOnlyList<IContentPlugInMetadata> _contentCreators;
     // The current clipboard context.
     private IClipboardHandler _clipboardContext;
 
     /// <summary>
-    /// Property to return the available tool plug in button definitions for the application.
+    /// Property to return the available tool plug-in button definitions for the application.
     /// </summary>
     public IReadOnlyDictionary<string, IReadOnlyList<IToolPlugInRibbonButton>> ToolButtons
     {
@@ -189,7 +189,7 @@ internal class ProjectEditor
     }
 
     /// <summary>
-    /// Property to set or return the content file manager for managing content file systems through content plug ins.
+    /// Property to set or return the content file manager for managing content file systems through content plug-ins.
     /// </summary>
     public IContentFileManager ContentFileManager
     {
@@ -647,7 +647,7 @@ internal class ProjectEditor
                 ShowWaitPanel(string.Format(Resources.GOREDIT_TEXT_OPENING, file.Name));
             }
 
-            // Find the associated plug in.
+            // Find the associated plug-in.
             if (!HostServices.ContentPlugInService.PlugIns.TryGetValue(file.Metadata.PlugInName, out ContentPlugIn plugIn))
             {
                 HostServices.MessageDisplay.ShowError(string.Format(Resources.GOREDIT_ERR_NO_PLUGIN_FOR_CONTENT, file.Name));
@@ -737,9 +737,9 @@ internal class ProjectEditor
             path = Path.GetFullPath(path);
             writer = _saveDialog.CurrentWriter;
 
-            Debug.Assert(writer is not null, "Must have a writer plug in.");
+            Debug.Assert(writer is not null, "Must have a writer plug-in.");
 
-            HostServices.Log.Print($"File writer plug in is: {writer.Name}.", LoggingLevel.Verbose);
+            HostServices.Log.Print($"File writer plug-in is: {writer.Name}.", LoggingLevel.Verbose);
             HostServices.Log.Print($"Saving to '{path}'...", LoggingLevel.Simple);
 
             ProgressPanelUpdateArgs panelUpdateArgs = new()
@@ -823,7 +823,7 @@ internal class ProjectEditor
 
             ContentPlugIn plugin = HostServices.ContentPlugInService.PlugIns.FirstOrDefault(item => item.Value == metadata).Value;
 
-            Debug.Assert(plugin is not null, $"Could not locate the content plug in for {id}.");
+            Debug.Assert(plugin is not null, $"Could not locate the content plug-in for {id}.");
 
             directory = _fileExplorer.SelectedDirectory ?? _fileExplorer.Root;
 

@@ -43,10 +43,10 @@ internal class SpriteImporterPlugIn
     // The image editor settings.
     private IImportSettings _settings;
 
-    // The codecs registered with the plug in.
+    // The codecs registered with the plug-in.
     private CodecRegistry _codecs;
 
-    // The plug in cache for image codecs.
+    // The plug-in cache for image codecs.
     private GorgonMefPlugInCache _pluginCache;
     /// <summary>
     /// The file name for the file that stores the settings.
@@ -82,12 +82,12 @@ internal class SpriteImporterPlugIn
         return results.Select(item => item.codec).FirstOrDefault(item => item.IsReadable(stream));
     }
 
-    /// <summary>Function to retrieve the settings interface for this plug in.</summary>
+    /// <summary>Function to retrieve the settings interface for this plug-in.</summary>
     /// <param name="injector">Objects to inject into the view model.</param>
     /// <returns>The settings interface view model.</returns>
     /// <remarks>
     ///   <para>
-    /// Implementors who wish to supply customizable settings for their plug ins from the main "Settings" area in the application can override this method and return a new view model based on
+    /// Implementors who wish to supply customizable settings for their plug-ins from the main "Settings" area in the application can override this method and return a new view model based on
     /// the base <see cref="ISettingsCategoryViewModel"/> type.
     /// </para>
     ///   <para>
@@ -156,8 +156,8 @@ internal class SpriteImporterPlugIn
     ///   <b>true</b> if the plugin can open the file, or <b>false</b> if not.</returns>
     /// <remarks>
     ///   <para>
-    /// This method is used to determine if the file specified by the <paramref name="filePath" /> passed to the method can be opened by this plug in. If the method returns <b>true</b>, then the host
-    /// application will convert the file using the importer produced by this plug in. Otherwise, if the method returns <b>false</b>, then the file is skipped.
+    /// This method is used to determine if the file specified by the <paramref name="filePath" /> passed to the method can be opened by this plug-in. If the method returns <b>true</b>, then the host
+    /// application will convert the file using the importer produced by this plug-in. Otherwise, if the method returns <b>false</b>, then the file is skipped.
     /// </para>
     ///   <para>
     /// The <paramref name="filePath" /> is a path to the file on the project virtual file system.

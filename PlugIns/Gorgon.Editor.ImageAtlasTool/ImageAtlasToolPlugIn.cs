@@ -36,11 +36,11 @@ using Gorgon.UI;
 namespace Gorgon.Editor.ImageAtlasTool;
 
 /// <summary>
-/// A plug in used to build a texture atlas from a series of individual images, and optionally create images using the resulting texture atlas
+/// A plug-in used to build a texture atlas from a series of individual images, and optionally create images using the resulting texture atlas
 /// </summary>
 /// <remarks>
 /// <para>
-/// This plug in is different from the texture atlas generator tool in that it uses individual image files to create the atlas. This is useful in the case where each separate image file is a sprite  
+/// This plug-in is different from the texture atlas generator tool in that it uses individual image files to create the atlas. This is useful in the case where each separate image file is a sprite  
 /// (like back in the olden DOS days and is not performant with GPUs). This allows content creators just to create a single image for a sprite, without having to build a sprite for each image
 /// </para>
 /// </remarks>
@@ -180,11 +180,11 @@ internal class ImageAtlasToolPlugIn
     /// <returns>A new tool ribbon button instance.</returns>
     /// <remarks>
     ///   <para>
-    /// Tool plug in developers must override this method to return the button which is inserted on the application ribbon, under the "Tools" tab. If the method returns <b>null</b>, then the tool is
+    /// Tool plug-in developers must override this method to return the button which is inserted on the application ribbon, under the "Tools" tab. If the method returns <b>null</b>, then the tool is
     /// ignored.
     /// </para>
     ///   <para>
-    /// The resulting data structure will contain the means to handle the click event for the tool, and as such, is the only means of communication between the main UI and the plug in.
+    /// The resulting data structure will contain the means to handle the click event for the tool, and as such, is the only means of communication between the main UI and the plug-in.
     /// </para>
     /// </remarks>
     protected override IToolPlugInRibbonButton OnGetToolButton()

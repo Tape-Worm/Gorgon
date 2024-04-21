@@ -34,7 +34,7 @@ namespace Gorgon.IO.Providers;
 /// </summary>
 /// <remarks>
 /// <para>
-/// <see cref="IGorgonFileSystemProvider"/> implementors must inherit from this type to create a provider plug in. 
+/// <see cref="IGorgonFileSystemProvider"/> implementors must inherit from this type to create a file system provider. 
 /// </para>
 /// <para>
 /// File system providers provide access to a physical file system, and provides the communications necessary to read data from that physical file system. When used in conjunction with the <see cref="IGorgonFileSystem"/> 
@@ -51,18 +51,14 @@ namespace Gorgon.IO.Providers;
 /// </para>
 /// <para>
 /// When this type is implemented, it can be made to read any type of file system, including those that store their contents in a packed file format (e.g. Zip). And since this type inherits from <see cref="GorgonPlugIn"/>, 
-/// the file system provider can be loaded dynamically through Gorgon's plug in system
+/// the file system provider can be loaded dynamically through Gorgon's plug-in system
 /// </para>
 /// <para>
 /// This type allows the mounting of a directory so that data can be read from the native operating system file system. This is the default provider for any <see cref="IGorgonFileSystem"/>
 /// </para>
 /// </remarks>
-/// <remarks>
-/// Initializes a new instance of the <see cref="GorgonFileSystemProvider"/> class
-/// </remarks>
-/// <param name="providerDescription">The human readable description for the file system provider.</param>
-public abstract class GorgonFileSystemProvider(string providerDescription)
-        : GorgonPlugIn(providerDescription), IGorgonFileSystemProvider
+public abstract class GorgonFileSystemProvider 
+    : IGorgonFileSystemProvider
 {
     /// <summary>
     /// Property to return a memory stream manager for efficient usage of the <see cref="MemoryStream"/> type.
@@ -101,8 +97,24 @@ public abstract class GorgonFileSystemProvider(string providerDescription)
         protected set;
     } = new GorgonFileExtensionCollection();
 
-    /// <summary>Property to return the path to the provider assembly (if applicable).</summary>
-    public string ProviderPath => PlugInPath ?? string.Empty;
+    /// <summary>
+    /// Property to return the human readable description of the provider.
+    /// </summary>
+    public string Description
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the name of this provider.
+    /// </summary>
+    /// <remarks>
+    /// This will be the fully qualified type name of the provider object.
+    /// </remarks>
+    public string Name
+    {
+        get;
+    }
 
     /// <summary>
     /// Function to return the virtual file system path from a physical file system path.
@@ -155,7 +167,7 @@ public abstract class GorgonFileSystemProvider(string providerDescription)
     /// If the file does not exist in the physical file system, this method should return <b>null</b>.
     /// </para>
     /// <para>
-    /// Implementors of a <see cref="GorgonFileSystemProvider"/> plug in can overload this method to return a stream into a file within their specific native provider (e.g. a Zip file provider will 
+    /// Implementors of a <see cref="GorgonFileSystemProvider"/> plug-in can overload this method to return a stream into a file within their specific native provider (e.g. a Zip file provider will 
     /// return a stream into the zip file positioned at the location of the compressed file within the zip file).
     /// </para>
     /// </remarks>
@@ -195,7 +207,7 @@ public abstract class GorgonFileSystemProvider(string providerDescription)
     /// <c>/MyMount/MyDirectory/MyTextFile.txt</c>.
     /// </para>
     /// <para>
-    /// Implementors of a <see cref="GorgonFileSystemProvider"/> plug in can override this method to read the list of files from another type of file system, like a Zip file.
+    /// Implementors of a <see cref="GorgonFileSystemProvider"/> plug-in can override this method to read the list of files from another type of file system, like a Zip file.
     /// </para>
     /// <para>
     /// Implementors of a <see cref="GorgonFileSystemProvider"/> should override this method to read the list of directories and files from another type of file system, like a Zip file. 
@@ -217,7 +229,7 @@ public abstract class GorgonFileSystemProvider(string providerDescription)
     /// <c>c:\SourceFileSystem\MyDirectory\MyTextFile.txt</c>, then the returned value should be <c>/MyMount/MyDirectory/MyTextFile.txt</c>.
     /// </para>
     /// <para>
-    /// Implementors of a <see cref="GorgonFileSystemProvider"/> plug in can override this method to read the list of files from another type of file system, like a Zip file.
+    /// Implementors of a <see cref="GorgonFileSystemProvider"/> plug-in can override this method to read the list of files from another type of file system, like a Zip file.
     /// </para>
     /// </remarks>
     protected abstract IReadOnlyDictionary<string, IGorgonPhysicalFileInfo> OnEnumerateFiles(string physicalLocation, IGorgonVirtualDirectory mountPoint);
@@ -267,7 +279,6 @@ public abstract class GorgonFileSystemProvider(string providerDescription)
     /// <param name="physicalLocation">The physical location containing files and directories to enumerate.</param>
     /// <param name="mountPoint">A <see cref="IGorgonVirtualDirectory"/> that the directories and files from the physical file system will be mounted into.</param>		
     /// <returns>A <see cref="GorgonPhysicalFileSystemData"/> object containing information about the directories and files contained within the physical file system.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="physicalLocation"/>, or the <paramref name="mountPoint"/> parameters are <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="physicalLocation"/> parameter is empty.</exception>
     /// <remarks>
     /// <para>
@@ -277,25 +288,16 @@ public abstract class GorgonFileSystemProvider(string providerDescription)
     /// <c>/MyMount/MyDirectory/MyTextFile.txt</c>.
     /// </para>
     /// <para>
-    /// Implementors of a <see cref="GorgonFileSystemProvider"/> plug in can override this method to read the list of files from another type of file system, like a Zip file.
+    /// Implementors of a <see cref="GorgonFileSystemProvider"/> plug-in can override this method to read the list of files from another type of file system, like a Zip file.
     /// </para>
     /// </remarks>
     public GorgonPhysicalFileSystemData Enumerate(string physicalLocation, IGorgonVirtualDirectory mountPoint)
     {
-        if (physicalLocation is null)
-        {
-            throw new ArgumentNullException(nameof(physicalLocation));
-        }
-
-        if (mountPoint is null)
-        {
-            throw new ArgumentNullException(nameof(mountPoint));
-        }
+        ArgumentEmptyException.ThrowIfNullOrWhiteSpace(physicalLocation);
 
         return string.IsNullOrWhiteSpace(physicalLocation)
             ? throw new ArgumentEmptyException(nameof(physicalLocation))
             : OnEnumerate(physicalLocation, mountPoint);
-
     }
 
     /// <summary>
@@ -304,7 +306,6 @@ public abstract class GorgonFileSystemProvider(string providerDescription)
     /// <param name="physicalLocation">The physical location containing files to enumerate.</param>
     /// <param name="mountPoint">A <see cref="IGorgonVirtualDirectory"/> that the files from the physical file system will be mounted into.</param>		
     /// <returns>A list of files contained within the physical file system.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="physicalLocation"/>, or the <paramref name="mountPoint"/> parameters are <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="physicalLocation"/> parameter is empty.</exception>
     /// <remarks>
     /// <para>
@@ -313,25 +314,16 @@ public abstract class GorgonFileSystemProvider(string providerDescription)
     /// <c>c:\SourceFileSystem\MyDirectory\MyTextFile.txt</c>, then the returned value should be <c>/MyMount/MyDirectory/MyTextFile.txt</c>.
     /// </para>
     /// <para>
-    /// Implementors of a <see cref="GorgonFileSystemProvider"/> plug in can override this method to read the list of files from another type of file system, like a Zip file.
+    /// Implementors of a <see cref="GorgonFileSystemProvider"/> plug-in can override this method to read the list of files from another type of file system, like a Zip file.
     /// </para>
     /// </remarks>
     public IReadOnlyDictionary<string, IGorgonPhysicalFileInfo> EnumerateFiles(string physicalLocation, IGorgonVirtualDirectory mountPoint)
     {
-        if (physicalLocation is null)
-        {
-            throw new ArgumentNullException(nameof(physicalLocation));
-        }
-
-        if (mountPoint is null)
-        {
-            throw new ArgumentNullException(nameof(mountPoint));
-        }
+        ArgumentEmptyException.ThrowIfNullOrWhiteSpace(physicalLocation);
 
         return string.IsNullOrWhiteSpace(physicalLocation)
             ? throw new ArgumentEmptyException(nameof(physicalLocation))
             : OnEnumerateFiles(physicalLocation, mountPoint);
-
     }
 
     /// <summary>
@@ -363,15 +355,17 @@ public abstract class GorgonFileSystemProvider(string providerDescription)
     /// </remarks>
     public bool CanReadFileSystem(string physicalPath)
     {
+        ArgumentEmptyException.ThrowIfNullOrWhiteSpace(physicalPath);
+        return OnCanReadFile(physicalPath);
+    }
 
-        if (physicalPath is null)
-        {
-            throw new ArgumentNullException(nameof(physicalPath));
-        }
-
-        return string.IsNullOrWhiteSpace(physicalPath)
-            ? throw new ArgumentEmptyException(nameof(physicalPath))
-            : OnCanReadFile(physicalPath);
-
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="GorgonFileSystemProvider"/> class
+    /// </remarks>
+    /// <param name="providerDescription">The human readable description for the file system provider.</param>
+    protected GorgonFileSystemProvider(string providerDescription)
+    {
+        Description = providerDescription;
+        Name = GetType().FullName;
     }
 }

@@ -45,13 +45,13 @@ using Drawing = System.Drawing;
 namespace Gorgon.Editor.ImageEditor;
 
 /// <summary>
-/// Gorgon image editor content plug in interface
+/// Gorgon image editor content plug-in interface
 /// </summary>
 internal class ImageEditorPlugIn
     : ContentPlugIn, IContentPlugInMetadata
 {
 
-    // This is the only codec supported by the image plug in.  Images will be converted when imported.
+    // This is the only codec supported by the image plug-in.  Images will be converted when imported.
     private readonly GorgonCodecDds _ddsCodec = new();
 
     // The synchronization lock for threads.
@@ -60,7 +60,7 @@ internal class ImageEditorPlugIn
     // The codec registry.
     private ICodecRegistry _codecs;
 
-    // The plug in settings.
+    // The plug-in settings.
     private ISettings _settings;
     private ISettingsPlugins _pluginSettings;
 
@@ -75,7 +75,7 @@ internal class ImageEditorPlugIn
     /// </summary>
     public static readonly string SettingsName = typeof(ImageEditorPlugIn).FullName;
 
-    /// <summary>Property to return the name of the plug in.</summary>
+    /// <summary>Property to return the name of the plug-in.</summary>
     string IContentPlugInMetadata.PlugInName => Name;
 
     /// <summary>Property to return the description of the plugin.</summary>
@@ -84,16 +84,16 @@ internal class ImageEditorPlugIn
     /// <summary>Property to return whether or not the plugin is capable of creating content.</summary>
     public override bool CanCreateContent => false;
 
-    /// <summary>Property to return the ID of the small icon for this plug in.</summary>
+    /// <summary>Property to return the ID of the small icon for this plug-in.</summary>
     public Guid SmallIconID
     {
         get;
     }
 
-    /// <summary>Property to return the ID of the new icon for this plug in.</summary>
+    /// <summary>Property to return the ID of the new icon for this plug-in.</summary>
     public Guid NewIconID => Guid.Empty;
 
-    /// <summary>Property to return the ID for the type of content produced by this plug in.</summary>
+    /// <summary>Property to return the ID for the type of content produced by this plug-in.</summary>
     public override string ContentTypeID => CommonEditorContentTypes.ImageType;
 
     /// <summary>Property to return the friendly (i.e shown on the UI) name for the type of content.</summary>
@@ -242,20 +242,20 @@ internal class ImageEditorPlugIn
         return needsRefresh;
     }
 
-    /// <summary>Function to register plug in specific search keywords with the system search.</summary>
+    /// <summary>Function to register plug-in specific search keywords with the system search.</summary>
     /// <typeparam name="T">The type of object being searched, must implement <see cref="IGorgonNamedObject"/>.</typeparam>
     /// <param name="searchService">The search service to use for registration.</param>
     protected override void OnRegisterSearchKeywords<T>(ISearchService<T> searchService) => searchService.MapKeywordToContentAttribute(Resources.GORIMG_SEARCH_KEYWORD_CODEC, ImageContent.CodecAttr);
 
-    /// <summary>Function to retrieve the settings interface for this plug in.</summary>
+    /// <summary>Function to retrieve the settings interface for this plug-in.</summary>
     /// <returns>The settings interface view model.</returns>
     /// <remarks>
     ///   <para>
-    /// Implementors who wish to supply customizable settings for their plug ins from the main "Settings" area in the application can override this method and return a new view model based on
-    /// the base <see cref="ISettingsCategory"/> type. Returning <b>null</b> will mean that the plug in does not have settings that can be managed externally.
+    /// Implementors who wish to supply customizable settings for their plug-ins from the main "Settings" area in the application can override this method and return a new view model based on
+    /// the base <see cref="ISettingsCategory"/> type. Returning <b>null</b> will mean that the plug-in does not have settings that can be managed externally.
     /// </para>
     ///   <para>
-    /// Plug ins must register the view associated with their settings panel via the <see cref="ViewFactory.Register{T}(Func{Control})"/> method when the plug in first loaded,
+    /// Plug ins must register the view associated with their settings panel via the <see cref="ViewFactory.Register{T}(Func{Control})"/> method when the plug-in first loaded,
     /// or else the panel will not show in the main settings area.
     /// </para>
     /// </remarks>
@@ -266,11 +266,11 @@ internal class ImageEditorPlugIn
     /// <param name = "fileManager" > The file manager used to access other content files.</param>
     /// <param name="injector">Parameters for injecting dependency objects.</param>
     /// <param name="scratchArea">The file system for the scratch area used to write transitory information.</param>
-    /// <param name="undoService">The undo service for the plug in.</param>
+    /// <param name="undoService">The undo service for the plug-in.</param>
     /// <returns>A new IEditorContent object.</returns>
     /// <remarks>
-    /// The <paramref name="scratchArea" /> parameter is the file system where temporary files to store transitory information for the plug in is stored. This file system is destroyed when the
-    /// application or plug in is shut down, and is not stored with the project.
+    /// The <paramref name="scratchArea" /> parameter is the file system where temporary files to store transitory information for the plug-in is stored. This file system is destroyed when the
+    /// application or plug-in is shut down, and is not stored with the project.
     /// </remarks>
     protected async override Task<IEditorContent> OnOpenContentAsync(IContentFile file, IContentFileManager fileManager, IGorgonFileSystemWriter<Stream> scratchArea, IUndoService undoService)
     {
@@ -436,7 +436,7 @@ internal class ImageEditorPlugIn
     }
 
     /// <summary>
-    /// Function to retrieve the small icon for the content plug in.
+    /// Function to retrieve the small icon for the content plug-in.
     /// </summary>
     /// <returns>An image for the small icon.</returns>
     public Drawing.Image GetSmallIcon() => Resources.image_20x20;

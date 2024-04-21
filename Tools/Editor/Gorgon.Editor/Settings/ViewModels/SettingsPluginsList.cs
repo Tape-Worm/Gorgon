@@ -31,23 +31,23 @@ using Gorgon.Editor.UI;
 namespace Gorgon.Editor.ViewModels;
 
 /// <summary>
-/// The plug in list category for the settings
+/// The plug-in list category for the settings
 /// </summary>
 internal class SettingsPlugInsList
     : ViewModelBase<SettingsPlugInsListParameters, IHostServices>, ISettingsPlugInsList
 {
 
-    // The current plug in.
+    // The current plug-in.
     private ISettingsPlugInListItem _current;
 
-    /// <summary>Property to return the plug ins.</summary>
+    /// <summary>Property to return the plug-ins.</summary>
     public ObservableCollection<ISettingsPlugInListItem> PlugIns
     {
         get;
         private set;
     }
 
-    /// <summary>Property to return the currently selected plug in.</summary>
+    /// <summary>Property to return the currently selected plug-in.</summary>
     public ISettingsPlugInListItem Current
     {
         get => _current;
@@ -78,9 +78,9 @@ internal class SettingsPlugInsList
     public string Name => Resources.GOREDIT_SETTINGS_CATEGORY_PLUGINS;
 
     /// <summary>
-    /// Function to select a plug in from the list.
+    /// Function to select a plug-in from the list.
     /// </summary>
-    /// <param name="index">The index of the plug in.</param>
+    /// <param name="index">The index of the plug-in.</param>
     private void DoSelectPlugIn(int index)
     {
         try

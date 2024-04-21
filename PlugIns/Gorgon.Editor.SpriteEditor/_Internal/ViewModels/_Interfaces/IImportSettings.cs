@@ -29,7 +29,7 @@ using Gorgon.Editor.UI;
 namespace Gorgon.Editor.SpriteEditor;
 
 /// <summary>
-/// The view model for the importer plug in settings
+/// The view model for the importer plug-in settings
 /// </summary>
 internal interface IImportSettings
     : ISettingsCategory
@@ -43,7 +43,7 @@ internal interface IImportSettings
     }
 
     /// <summary>
-    /// Propery to return the paths to the codec plug ins.
+    /// Propery to return the paths to the codec plug-ins.
     /// </summary>
     ObservableCollection<CodecSetting> CodecPlugInPaths
     {
@@ -59,7 +59,7 @@ internal interface IImportSettings
     }
 
     /// <summary>
-    /// Property to return the command for loading a plug in assembly.
+    /// Property to return the command for loading a plug-in assembly.
     /// </summary>
     IEditorCommand<object> LoadPlugInAssemblyCommand
     {
@@ -67,7 +67,7 @@ internal interface IImportSettings
     }
 
     /// <summary>
-    /// Property to return the command to unloading a plug in assembly.
+    /// Property to return the command to unloading a plug-in assembly.
     /// </summary>
     IEditorCommand<object> UnloadPlugInAssembliesCommand
     {

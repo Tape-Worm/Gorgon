@@ -254,7 +254,7 @@ partial class FormMain
         this.ButtonCreate.ImageSmall = global::Gorgon.Editor.Properties.Resources.new_content_16x16;
         this.ButtonCreate.KeyTip = "C";
         this.ButtonCreate.TextLine1 = "Create";
-        this.ButtonCreate.ToolTipValues.Description = "Creates new content items.\r\n\r\nNote that some plug ins do not allow the creation o" +
+        this.ButtonCreate.ToolTipValues.Description = "Creates new content items.\r\n\r\nNote that some plug-ins do not allow the creation o" +
 "f content.";
         // 
         // MenuCreate
@@ -282,7 +282,7 @@ partial class FormMain
         this.ButtonOpenContent.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
         this.ButtonOpenContent.TextLine1 = "Open";
         this.ButtonOpenContent.ToolTipValues.Description = "Opens the currently selected file in the editor.\r\n\r\nIf the file is not handled by" +
-" the editor because it lacks an appropriate plug in, then this button will be di" +
+" the editor because it lacks an appropriate plug-in, then this button will be di" +
 "sabled.";
         this.ButtonOpenContent.Click += new System.EventHandler(this.ButtonOpenContent_Click);
         // 
@@ -440,7 +440,7 @@ partial class FormMain
         this.ButtonFileSystemRefresh.KeyTip = "F";
         this.ButtonFileSystemRefresh.ShortcutKeys = System.Windows.Forms.Keys.F5;
         this.ButtonFileSystemRefresh.TextLine1 = "Refresh";
-        this.ButtonFileSystemRefresh.ToolTipValues.Description = "Refreshes the file system and reassociates content files with their plug ins.";
+        this.ButtonFileSystemRefresh.ToolTipValues.Description = "Refreshes the file system and reassociates content files with their plug-ins.";
         this.ButtonFileSystemRefresh.Click += new System.EventHandler(this.ButtonFileSystemRefresh_Click);
         // 
         // kryptonRibbonGroupLines1

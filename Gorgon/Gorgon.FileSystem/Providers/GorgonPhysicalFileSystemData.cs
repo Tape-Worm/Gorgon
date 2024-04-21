@@ -29,7 +29,7 @@ namespace Gorgon.IO.Providers;
 /// A listing of directories and files present in the physical file system
 /// </summary>
 /// <remarks>
-/// Implementors of the <see cref="GorgonFileSystemProvider"/> plug in will return this type when enumerating directories and files from the physical file system. Gorgon will use this information to 
+/// Implementors of the <see cref="GorgonFileSystemProvider"/> plug-in will return this type when enumerating directories and files from the physical file system. Gorgon will use this information to 
 /// populate the <see cref="IGorgonFileSystem"/> object with <see cref="IGorgonVirtualDirectory"/> and <see cref="IGorgonVirtualFile"/> entries
 /// </remarks>
 /// <remarks>

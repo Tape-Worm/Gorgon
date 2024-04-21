@@ -29,13 +29,13 @@ using Gorgon.Editor.Properties;
 namespace Gorgon.Editor.PlugIns;
 
 /// <summary>
-/// A plug in that was disabled for a reason
+/// A plug-in that was disabled for a reason
 /// </summary>
 internal class DisabledPlugIn
     : IDisabledPlugIn
 {
     /// <summary>
-    /// Property to return the code to indicate how the plug in was disabled.
+    /// Property to return the code to indicate how the plug-in was disabled.
     /// </summary>
     public DisabledReasonCode ReasonCode
     {
@@ -43,7 +43,7 @@ internal class DisabledPlugIn
     }
 
     /// <summary>
-    /// Property to return a description that explains why a plug in was disabled.
+    /// Property to return a description that explains why a plug-in was disabled.
     /// </summary>
     public string Description
     {
@@ -51,7 +51,7 @@ internal class DisabledPlugIn
     }
 
     /// <summary>
-    /// Property to return the name of the disabled plug in.
+    /// Property to return the name of the disabled plug-in.
     /// </summary>
     public string PlugInName
     {
@@ -65,10 +65,10 @@ internal class DisabledPlugIn
     }
 
     /// <summary>Initializes a new instance of the DisabledPlugIn class.</summary>
-    /// <param name="reasonCode">The code to indicate how the plug in was disabled.</param>
+    /// <param name="reasonCode">The code to indicate how the plug-in was disabled.</param>
     /// <param name="pluginName">Name of the plugin that was disabled.</param>
-    /// <param name="desc">The human readable description that explains why the plug in was disabled.</param>
-    /// <param name="path">The path to the plug in assembly.</param>
+    /// <param name="desc">The human readable description that explains why the plug-in was disabled.</param>
+    /// <param name="path">The path to the plug-in assembly.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="pluginName" /> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="pluginName" /> parameter is empty.</exception>
     public DisabledPlugIn(DisabledReasonCode reasonCode, string pluginName, string desc, string path)

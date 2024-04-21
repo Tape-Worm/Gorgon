@@ -29,7 +29,7 @@ using Gorgon.Editor.Services;
 namespace Gorgon.Editor.UI;
 
 /// <summary>
-/// A common view model for a plug ins category
+/// A common view model for a plug-ins category
 /// </summary>
 /// <typeparam name="T">The type of parameters for the view model.</typeparam>
 public abstract class PlugInsCategory<T>
@@ -37,7 +37,7 @@ public abstract class PlugInsCategory<T>
     where T : PlugInsCategoryViewModelParameters
 {
     /// <summary>
-    /// Property to return the dialog used to open plug in assemblies.
+    /// Property to return the dialog used to open plug-in assemblies.
     /// </summary>
     protected IFileDialogService OpenCodecDialog
     {
@@ -46,7 +46,7 @@ public abstract class PlugInsCategory<T>
     }
 
     /// <summary>
-    /// Property to return the file name that will hold the plug ins.
+    /// Property to return the file name that will hold the plug-ins.
     /// </summary>
     protected abstract string SettingsFileName
     {
@@ -62,7 +62,7 @@ public abstract class PlugInsCategory<T>
     }
 
     /// <summary>
-    /// Property to return the command for loading a plug in assembly.
+    /// Property to return the command for loading a plug-in assembly.
     /// </summary>
     public IEditorCommand<object> LoadPlugInAssemblyCommand
     {
@@ -70,7 +70,7 @@ public abstract class PlugInsCategory<T>
     }
 
     /// <summary>
-    /// Property to return the command to unloading a plug in assembly.
+    /// Property to return the command to unloading a plug-in assembly.
     /// </summary>
     public IEditorCommand<object> UnloadPlugInAssembliesCommand
     {
@@ -101,7 +101,7 @@ public abstract class PlugInsCategory<T>
     }
 
     /// <summary>
-    /// Function to unload the selected plug in assemblies.
+    /// Function to unload the selected plug-in assemblies.
     /// </summary>
     private void DoUnloadPlugInAssemblies()
     {
@@ -125,7 +125,7 @@ public abstract class PlugInsCategory<T>
     }
 
     /// <summary>
-    /// Function to load in a plug in assembly.
+    /// Function to load in a plug-in assembly.
     /// </summary>
     private void DoLoadPlugInAssembly()
     {
@@ -156,13 +156,13 @@ public abstract class PlugInsCategory<T>
     protected abstract object OnGetSettings();
 
     /// <summary>
-    /// Function to determine if the selected plug in assemblies can be unloaded.
+    /// Function to determine if the selected plug-in assemblies can be unloaded.
     /// </summary>
-    /// <returns><b>true</b> if the plug in assemblies can be removed, <b>false</b> if not.</returns>
+    /// <returns><b>true</b> if the plug-in assemblies can be removed, <b>false</b> if not.</returns>
     protected abstract bool CanUnloadPlugInAssemblies();
 
     /// <summary>
-    /// Function to unload previously loaded plug ins.
+    /// Function to unload previously loaded plug-ins.
     /// </summary>
     /// <returns><b>true</b> to indicate that the operation succeeded, or <b>false</b> if it was cancelled.</returns>
     protected abstract bool OnUnloadPlugIns();

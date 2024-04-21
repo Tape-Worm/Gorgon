@@ -35,7 +35,7 @@ namespace Gorgon.Editor.PlugIns;
 public interface IContentPlugInMetadata
 {
     /// <summary>
-    /// Property to return the name of the plug in.
+    /// Property to return the name of the plug-in.
     /// </summary>
     string PlugInName
     {
@@ -43,7 +43,7 @@ public interface IContentPlugInMetadata
     }
 
     /// <summary>
-    /// Property to return the user friendly description of the plug in.
+    /// Property to return the user friendly description of the plug-in.
     /// </summary>
     string Description
     {
@@ -51,7 +51,7 @@ public interface IContentPlugInMetadata
     }
 
     /// <summary>
-    /// Property to return the ID of the small icon for this plug in.
+    /// Property to return the ID of the small icon for this plug-in.
     /// </summary>
     Guid SmallIconID
     {
@@ -59,7 +59,7 @@ public interface IContentPlugInMetadata
     }
 
     /// <summary>
-    /// Property to return the ID of the new icon for this plug in.
+    /// Property to return the ID of the new icon for this plug-in.
     /// </summary>
     Guid NewIconID
     {
@@ -75,7 +75,7 @@ public interface IContentPlugInMetadata
     }
 
     /// <summary>
-    /// Property to return the ID for the type of content produced by this plug in.
+    /// Property to return the ID for the type of content produced by this plug-in.
     /// </summary>
     string ContentTypeID
     {
@@ -116,7 +116,7 @@ public interface IContentPlugInMetadata
     bool CanOpenContent(string filePath);
 
     /// <summary>
-    /// Function to retrieve the small icon for the content plug in.
+    /// Function to retrieve the small icon for the content plug-in.
     /// </summary>
     /// <returns>An image for the small icon.</returns>
     Image GetSmallIcon();

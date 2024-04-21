@@ -43,7 +43,7 @@ namespace Gorgon.Editor.ViewModels;
 /// <param name="settings">The settings for the editor.</param>
 /// <param name="projectManager">The project manager for managing the project file.</param>
 /// <param name="fileSystemProviders">The file system providers used to read/write file systems.</param>
-/// <param name="contentServices">Common host services to pass into plug ins.</param>        
+/// <param name="contentServices">Common host services to pass into plug-ins.</param>        
 internal class ViewModelFactory(Editor.EditorSettings settings, ProjectManager projectManager, FileSystemProviders fileSystemProviders, HostContentServices contentServices)
 {
 
@@ -59,7 +59,7 @@ internal class ViewModelFactory(Editor.EditorSettings settings, ProjectManager p
     private readonly ProjectManager _projectManager = projectManager;
     // The synchronization context.
     private SynchronizationContext _syncContext;
-    // The list of content creator plug ins.
+    // The list of content creator plug-ins.
     private IReadOnlyList<IContentPlugInMetadata> _contentCreators = [];
 
     /// <summary>
@@ -81,9 +81,9 @@ internal class ViewModelFactory(Editor.EditorSettings settings, ProjectManager p
     }
 
     /// <summary>
-    /// Function to retrieve a plug in list item view model based on the plug in passed in.
+    /// Function to retrieve a plug-in list item view model based on the plug-in passed in.
     /// </summary>
-    /// <param name="plugin">The plug in to retrieve data from.</param>
+    /// <param name="plugin">The plug-in to retrieve data from.</param>
     /// <returns>The view model.</returns>
     private ISettingsPlugInListItem CreatePlugInListItem(EditorPlugIn plugin)
     {
@@ -93,11 +93,11 @@ internal class ViewModelFactory(Editor.EditorSettings settings, ProjectManager p
     }
 
     /// <summary>
-    /// Function to retrieve a plug in list item view model based on the plug in passed in.
+    /// Function to retrieve a plug-in list item view model based on the plug-in passed in.
     /// </summary>
-    /// <param name="plugin">The plug in to retrieve data from.</param>
+    /// <param name="plugin">The plug-in to retrieve data from.</param>
     /// <returns>The view model.</returns>
-    private ISettingsPlugInListItem CreatePlugInListItem(IGorgonFileSystemProvider plugin)
+    private ISettingsPlugInListItem CreatePlugInListItem(GorgonFileSystemProviderPlugIn plugin)
     {
         SettingsPlugInListItem result = new();
         result.Initialize(new SettingsPlugInListItemParameters(plugin, _hostContentServices));
@@ -105,9 +105,9 @@ internal class ViewModelFactory(Editor.EditorSettings settings, ProjectManager p
     }
 
     /// <summary>
-    /// Function to retrieve a plug in list item view model based on the plug in passed in.
+    /// Function to retrieve a plug-in list item view model based on the plug-in passed in.
     /// </summary>
-    /// <param name="plugin">The plug in to retrieve data from.</param>
+    /// <param name="plugin">The plug-in to retrieve data from.</param>
     /// <returns>The view model.</returns>
     private ISettingsPlugInListItem CreatePlugInListItem(IDisabledPlugIn plugin)
     {
@@ -117,9 +117,9 @@ internal class ViewModelFactory(Editor.EditorSettings settings, ProjectManager p
     }
 
     /// <summary>
-    /// Function to retrieve the list of plug ins view model.
+    /// Function to retrieve the list of plug-ins view model.
     /// </summary>
-    /// <returns>The plug ins list view model.</returns>
+    /// <returns>The plug-ins list view model.</returns>
     private ISettingsPlugInsList CreatePlugInListViewModel()
     {
         IEnumerable<ISettingsPlugInListItem> plugins = _fileSystemProviders.Readers
@@ -141,7 +141,7 @@ internal class ViewModelFactory(Editor.EditorSettings settings, ProjectManager p
     }
 
     /// <summary>
-    /// Function to retrieve the list of settings categories from loaded plug ins.
+    /// Function to retrieve the list of settings categories from loaded plug-ins.
     /// </summary>
     /// <returns>The list of categories.</returns>
     private IEnumerable<ISettingsCategory> GetPlugInSettingsCategories()

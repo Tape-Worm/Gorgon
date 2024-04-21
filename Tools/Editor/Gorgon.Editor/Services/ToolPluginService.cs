@@ -40,40 +40,40 @@ namespace Gorgon.Editor.Services;
 /// The service used for managing the tool plugins
 /// </summary>
 /// <remarks>Initializes a new instance of the ToolPlugInService class.</remarks>
-/// <param name="settingsDirectory">The directory that will contain settings for the content plug ins.</param>
-/// <param name="hostServices">The host appplication services to pass to the plug ins.</param>
+/// <param name="settingsDirectory">The directory that will contain settings for the content plug-ins.</param>
+/// <param name="hostServices">The host appplication services to pass to the plug-ins.</param>
 internal class ToolPlugInService(string settingsDirectory, IHostContentServices hostServices)
         : IToolPlugInService, IDisposable
 {
 
     // The plugin list.
     private readonly Dictionary<string, ToolPlugIn> _plugins = new(StringComparer.OrdinalIgnoreCase);
-    // The list of disabled tool plug ins.
+    // The list of disabled tool plug-ins.
     private readonly Dictionary<string, IDisabledPlugIn> _disabled = new(StringComparer.OrdinalIgnoreCase);
     // The list of ribbon buttons for all tools.
     private readonly Dictionary<string, IReadOnlyList<IToolPlugInRibbonButton>> _ribbonButtons = new(StringComparer.CurrentCultureIgnoreCase);
-    // The directory that contains the settings for the plug ins.
+    // The directory that contains the settings for the plug-ins.
     private readonly string _settingsDir = settingsDirectory;
-    // The host application services to pass to the plug ins.
+    // The host application services to pass to the plug-ins.
     private readonly IHostContentServices _hostServices = hostServices;
 
     /// <summary>Property to return the list of tool plugins loaded in to the application.</summary>
     /// <value>The plugins.</value>
     public IReadOnlyDictionary<string, ToolPlugIn> PlugIns => _plugins;
 
-    /// <summary>Property to return the list of disabled plug ins.</summary>
+    /// <summary>Property to return the list of disabled plug-ins.</summary>
     public IReadOnlyDictionary<string, IDisabledPlugIn> DisabledPlugIns => _disabled;
 
     /// <summary>
-    /// Property to return the UI buttons for the tool plug in.
+    /// Property to return the UI buttons for the tool plug-in.
     /// </summary>
     public IReadOnlyDictionary<string, IReadOnlyList<IToolPlugInRibbonButton>> RibbonButtons => _ribbonButtons;
 
     /// <summary>
-    /// Function to return the file for the content plug in settings.
+    /// Function to return the file for the content plug-in settings.
     /// </summary>
     /// <param name="name">The name of the file.</param>
-    /// <returns>The file containing the plug in settings.</returns>
+    /// <returns>The file containing the plug-in settings.</returns>
     private FileInfo GetContentPlugInSettingsPath(string name) =>
 #if DEBUG
         new(Path.Combine(_settingsDir, name.FormatFileName()) + ".DEBUG.json");
@@ -81,7 +81,7 @@ internal class ToolPlugInService(string settingsDirectory, IHostContentServices 
         new(Path.Combine(_settingsDir, Path.ChangeExtension(name.FormatFileName(), "json")));
 #endif
     /// <summary>
-    /// Function to clear the UI buttons for the plug ins.
+    /// Function to clear the UI buttons for the plug-ins.
     /// </summary>
     private void ClearToolButtons()
     {
@@ -156,10 +156,10 @@ internal class ToolPlugInService(string settingsDirectory, IHostContentServices 
     public void Dispose() => Clear();
 
     /// <summary>
-    /// Function to load all of the tool plug ins into the service.
+    /// Function to load all of the tool plug-ins into the service.
     /// </summary>
-    /// <param name="pluginCache">The plug in assembly cache.</param>
-    /// <param name="pluginDir">The directory that contains the plug ins.</param>
+    /// <param name="pluginCache">The plug-in assembly cache.</param>
+    /// <param name="pluginDir">The directory that contains the plug-ins.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="pluginCache"/>, or the <paramref name="pluginDir"/> parameter is <b>null</b>.</exception>
     public void LoadToolPlugIns(GorgonMefPlugInCache pluginCache, string pluginDir)
     {
@@ -190,18 +190,18 @@ internal class ToolPlugInService(string settingsDirectory, IHostContentServices 
         {
             try
             {
-                Program.Log.Print($"Creating tool plug in '{plugin.Name}'...", LoggingLevel.Simple);
+                Program.Log.Print($"Creating tool plug-in '{plugin.Name}'...", LoggingLevel.Simple);
                 plugin.Initialize(_hostServices);
 
-                // Check to see if this plug in can continue.
+                // Check to see if this plug-in can continue.
                 IReadOnlyList<string> validation = plugin.IsPlugInAvailable();
 
                 if (validation.Count > 0)
                 {
-                    // Shut the plug in down.
+                    // Shut the plug-in down.
                     plugin.Shutdown();
 
-                    Program.Log.PrintWarning($"The tool plug in '{plugin.Name}' is disabled:", LoggingLevel.Simple);
+                    Program.Log.PrintWarning($"The tool plug-in '{plugin.Name}' is disabled:", LoggingLevel.Simple);
                     foreach (string reason in validation)
                     {
                         Program.Log.PrintWarning($"{reason}", LoggingLevel.Verbose);
@@ -209,7 +209,7 @@ internal class ToolPlugInService(string settingsDirectory, IHostContentServices 
 
                     _disabled[plugin.Name] = new DisabledPlugIn(DisabledReasonCode.ValidationError, plugin.Name, string.Join("\r\n", validation), plugin.PlugInPath);
 
-                    // Remove this plug in.
+                    // Remove this plug-in.
                     plugins.Unload(plugin.Name);
                     continue;
                 }
@@ -218,10 +218,10 @@ internal class ToolPlugInService(string settingsDirectory, IHostContentServices 
             }
             catch (Exception ex)
             {
-                // Attempt to gracefully shut the plug in down if we error out.
+                // Attempt to gracefully shut the plug-in down if we error out.
                 plugin.Shutdown();
 
-                Program.Log.PrintError($"Cannot create tool plug in '{plugin.Name}'.", LoggingLevel.Simple);
+                Program.Log.PrintError($"Cannot create tool plug-in '{plugin.Name}'.", LoggingLevel.Simple);
                 Program.Log.LogException(ex);
 
                 _disabled[plugin.Name] = new DisabledPlugIn(DisabledReasonCode.Error, plugin.Name, string.Format(Resources.GOREDIT_DISABLE_CONTENT_PLUGIN_EXCEPTION, ex.Message), plugin.PlugInPath);
@@ -247,11 +247,11 @@ internal class ToolPlugInService(string settingsDirectory, IHostContentServices 
         plugin.Shutdown();
     }
 
-    /// <summary>Funcion to read the settings for a content plug in from a JSON file.</summary>
+    /// <summary>Funcion to read the settings for a content plug-in from a JSON file.</summary>
     /// <typeparam name="T">The type of settings to read. Must be a reference type.</typeparam>
     /// <param name="name">The name of the file.</param>
     /// <param name="converters">A list of JSON data converters.</param>
-    /// <returns>The settings object for the plug in, or <b>null</b> if no settings file was found for the plug in.</returns>
+    /// <returns>The settings object for the plug-in, or <b>null</b> if no settings file was found for the plug-in.</returns>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/>, or the <paramref name="plugin" /> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
     /// <remarks>This will read in the settings for a content plug from the same location where the editor stores its application settings file.</remarks>
@@ -291,14 +291,14 @@ internal class ToolPlugInService(string settingsDirectory, IHostContentServices 
         return JsonSerializer.Deserialize<T>(reader.ReadToEnd(), options);
     }
 
-    /// <summary>Function to write out the settings for a content plug in as a JSON file.</summary>
+    /// <summary>Function to write out the settings for a content plug-in as a JSON file.</summary>
     /// <typeparam name="T">The type of settings to write. Must be a reference type.</typeparam>
     /// <param name="name">The name of the file.</param>
     /// <param name="contentSettings">The content settings to persist as JSON file.</param>
     /// <param name="converters">A list of JSON converters.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/>, <paramref name="plugin" />, or the <paramref name="contentSettings" /> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
-    /// <remarks>This will write out the settings for a content plug in to the same location where the editor stores its application settings file.</remarks>
+    /// <remarks>This will write out the settings for a content plug-in to the same location where the editor stores its application settings file.</remarks>
     public void WriteContentSettings<T>(string name, T contentSettings, params JsonConverter[] converters)
         where T : class
     {

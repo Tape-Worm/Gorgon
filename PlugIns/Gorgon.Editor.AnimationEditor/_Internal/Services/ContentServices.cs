@@ -35,7 +35,7 @@ namespace Gorgon.Editor.AnimationEditor;
 /// <remarks>Initializes a new instance of the <see cref="ContentServices"/> class.</remarks>
 /// <param name="clipboard">The service used to access the clipboard.</param>
 /// <param name="ioService">The io service.</param>
-/// <param name="textureCache">The texture cache for the plug in.</param>
+/// <param name="textureCache">The texture cache for the plug-in.</param>
 /// <param name="undoService">The service used for undo/redo functionality.</param>
 /// <param name="keyProcessor">The key frame processor service.</param>
 /// <param name="newAnimation">The service used to set up a new animation.</param>

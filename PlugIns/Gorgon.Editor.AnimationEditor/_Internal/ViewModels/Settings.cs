@@ -30,12 +30,12 @@ using Gorgon.Graphics;
 namespace Gorgon.Editor.AnimationEditor;
 
 /// <summary>
-/// The view model used to manipulate the settings for the plug in
+/// The view model used to manipulate the settings for the plug-in
 /// </summary>
 internal class Settings
     : SettingsCategoryBase<SettingsParameters>, ISettings
 {
-    // The plug in settings.
+    // The plug-in settings.
     private AnimationEditorSettings _settings;
 
     /// <summary>

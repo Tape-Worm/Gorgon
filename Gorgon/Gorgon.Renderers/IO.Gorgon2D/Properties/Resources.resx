@@ -124,7 +124,7 @@
     <value>The animation version is '{0}', but version '{1}' is expected.</value>
   </data>
   <data name="GOR2DIO_ERR_CODEC_NOT_IN_PLUGIN" xml:space="preserve">
-    <value>The codec '{0}' was not found in the plug in.</value>
+    <value>The codec '{0}' was not found in the plug-in.</value>
   </data>
   <data name="GOR2DIO_ERR_FILE_NOT_FOUND" xml:space="preserve">
     <value>The file '{0}' was not found on any of the physical or virtual file systems.</value>

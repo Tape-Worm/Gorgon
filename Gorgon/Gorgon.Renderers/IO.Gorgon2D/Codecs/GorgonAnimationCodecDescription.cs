@@ -34,7 +34,7 @@ public struct GorgonAnimationCodecDescription
     : IEquatable<GorgonAnimationCodecDescription>
 {
     /// <summary>
-    /// The name of the plug in.  This will be the same as its fully qualified type name.
+    /// The name of the plug-in.  This will be the same as its fully qualified type name.
     /// </summary>
     public readonly string Name;
 

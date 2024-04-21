@@ -28,7 +28,7 @@ using Gorgon.Editor.UI;
 namespace Gorgon.Editor.Tools;
 
 /// <summary>
-/// The base view model for a tool plug in UI
+/// The base view model for a tool plug-in UI
 /// </summary>
 public interface IEditorTool
     : IViewModel

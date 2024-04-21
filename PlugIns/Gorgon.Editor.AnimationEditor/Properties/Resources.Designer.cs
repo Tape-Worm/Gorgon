@@ -450,7 +450,7 @@ internal class Resources {
     }
 
     /// <summary>
-    ///   Looks up a localized string similar to Select a codec plug in DLL.
+    ///   Looks up a localized string similar to Select a codec plug-in DLL.
     /// </summary>
     internal static string GORANM_CAPTION_SELECT_CODEC_DLL {
         get {
@@ -503,7 +503,7 @@ internal class Resources {
     }
 
     /// <summary>
-    ///   Looks up a localized string similar to This will remove all codecs associated with the &apos;{0}&apos; plug in.
+    ///   Looks up a localized string similar to This will remove all codecs associated with the &apos;{0}&apos; plug-in.
     ///
     ///Are you sure you want to do this?.
     /// </summary>
@@ -759,7 +759,7 @@ internal class Resources {
     }
 
     /// <summary>
-    ///   Looks up a localized string similar to There were errors while trying to load the codec plug in.
+    ///   Looks up a localized string similar to There were errors while trying to load the codec plug-in.
     ///
     ///Please check the Details pane for more information..
     /// </summary>
@@ -779,7 +779,7 @@ internal class Resources {
     }
 
     /// <summary>
-    ///   Looks up a localized string similar to The codec plug in &apos;{0}&apos; was already loaded..
+    ///   Looks up a localized string similar to The codec plug-in &apos;{0}&apos; was already loaded..
     /// </summary>
     internal static string GORANM_ERR_CODEC_PLUGIN_ALREADY_LOADED {
         get {
@@ -1015,7 +1015,7 @@ internal class Resources {
     }
 
     /// <summary>
-    ///   Looks up a localized string similar to Codec plug in file (*.dll)|*.dll.
+    ///   Looks up a localized string similar to Codec plug-in file (*.dll)|*.dll.
     /// </summary>
     internal static string GORANM_FILTER_SELECT_CODEC {
         get {

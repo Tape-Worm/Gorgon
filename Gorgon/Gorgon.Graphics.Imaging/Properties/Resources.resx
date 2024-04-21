@@ -145,7 +145,7 @@
     <value>The buffer formats must be same: [{0}].</value>
   </data>
   <data name="GORIMG_ERR_CODEC_NOT_IN_PLUGIN" xml:space="preserve">
-    <value>The codec '{0}' was not found in the plug in.</value>
+    <value>The codec '{0}' was not found in the plug-in.</value>
   </data>
   <data name="GORIMG_ERR_COMPRESSED_SIZE_INCORRECT" xml:space="preserve">
     <value>The compressed image with and height must be a multiple of 4.

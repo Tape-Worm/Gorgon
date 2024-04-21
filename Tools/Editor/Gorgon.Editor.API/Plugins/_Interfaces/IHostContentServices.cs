@@ -29,7 +29,7 @@ using Gorgon.Editor.Services;
 namespace Gorgon.Editor.PlugIns;
 
 /// <summary>
-/// A list of services passed from the host application to tool plug ins
+/// A list of services passed from the host application to tool plug-ins
 /// </summary>
 public interface IHostContentServices
     : IHostServices
@@ -43,7 +43,7 @@ public interface IHostContentServices
     }
 
     /// <summary>
-    /// Property to return the service that allows a conetnt plug in to access tool content plug ins.
+    /// Property to return the service that allows a conetnt plug-in to access tool content plug-ins.
     /// </summary>
     IToolPlugInService ToolPlugInService
     {
@@ -51,7 +51,7 @@ public interface IHostContentServices
     }
 
     /// <summary>
-    /// Property to return the service that allows a content plug in to access other content plug ins.
+    /// Property to return the service that allows a content plug-in to access other content plug-ins.
     /// </summary>
     IContentPlugInService ContentPlugInService
     {

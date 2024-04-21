@@ -184,7 +184,6 @@ internal class VirtualDirectory
     /// </summary>
     /// <param name="fileName">The name of the file to search for.</param>
     /// <returns><b>true</b> if found, <b>false</b> if not.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="fileName"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="fileName"/> parameter is empty.</exception>
     /// <remarks>
     /// Use this to determine if a <see cref="IGorgonVirtualFile"/> exists under this directory or any of its sub directories. This search includes all sub directories for this and child directories. 
@@ -192,15 +191,7 @@ internal class VirtualDirectory
     /// </remarks>
     public bool ContainsFile(string fileName)
     {
-        if (fileName is null)
-        {
-            throw new ArgumentNullException(nameof(fileName));
-        }
-
-        if (string.IsNullOrWhiteSpace(fileName))
-        {
-            throw new ArgumentEmptyException(nameof(fileName));
-        }
+        ArgumentEmptyException.ThrowIfNullOrWhiteSpace(fileName);
 
         if (Files.ContainsKey(fileName))
         {

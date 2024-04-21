@@ -58,7 +58,7 @@ public static class GorgonExample
     private static FormMain _mainForm;
 
     /// <summary>
-    /// Property to set or return the path to the plug in directory.
+    /// Property to set or return the path to the plug-in directory.
     /// </summary>
     public static DirectoryInfo PlugInLocationDirectory
     {
@@ -104,7 +104,7 @@ public static class GorgonExample
 
         if (string.IsNullOrWhiteSpace(path))
         {
-            throw new IOException("No plug in path has been assigned.");
+            throw new IOException("No plug-in path has been assigned.");
         }
 
         if (path.Contains("{0}"))

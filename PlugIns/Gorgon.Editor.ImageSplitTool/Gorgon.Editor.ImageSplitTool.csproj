@@ -9,7 +9,7 @@
     <Authors>Michael Winsor</Authors>
     <Company>Tape_Worm</Company>
     <Product>Gorgon</Product>
-    <Description>A plug in for the Gorgon Editor that will split a texture atlas into smaller images using the sprites associated with that image.</Description>
+    <Description>A plug-in for the Gorgon Editor that will split a texture atlas into smaller images using the sprites associated with that image.</Description>
     <Copyright>(C)opyright Tape_Worm, 2020</Copyright>
     <PackageProjectUrl>https://www.tape-worm.net</PackageProjectUrl>
     <PackageIcon>g.png</PackageIcon>

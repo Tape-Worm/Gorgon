@@ -38,7 +38,7 @@ internal class SpritePickMaskEditorParameters(ISettings pluginSettings, IHostCon
         : HostedPanelViewModelParameters(hostServices)
 {
     /// <summary>
-    /// Property to return the plug in settings.
+    /// Property to return the plug-in settings.
     /// </summary>
     public ISettings PluginSettings
     {

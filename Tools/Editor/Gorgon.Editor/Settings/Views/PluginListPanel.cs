@@ -78,7 +78,7 @@ internal partial class PlugInListPanel
     }
 
     /// <summary>
-    /// Function to fill the list with plug in information.
+    /// Function to fill the list with plug-in information.
     /// </summary>
     /// <param name="dataContext">The data context containing the information.</param>
     private void FillPlugInList(ISettingsPlugInsList dataContext)

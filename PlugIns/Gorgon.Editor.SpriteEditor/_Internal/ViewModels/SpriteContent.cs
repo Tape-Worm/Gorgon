@@ -131,7 +131,7 @@ internal class SpriteContent
     public override string ContentType => CommonEditorContentTypes.SpriteType;
 
     /// <summary>
-    /// Property to return the view model for the plug in settings.
+    /// Property to return the view model for the plug-in settings.
     /// </summary>
     public ISettings Settings
     {

@@ -46,9 +46,9 @@ namespace Gorgon.Editor.AnimationEditor;
 /// <param name="animProperties">The view model for the animation properties.</param>
 /// <param name="keyEditor">The view model for the key editor context.</param>
 /// <param name="controller">The controller for the animation.</param>
-/// <param name="settings">The settings for the animation plug in.</param>
+/// <param name="settings">The settings for the animation plug-in.</param>
 /// <param name="fileManager">The file manager for content files.</param>
-/// <param name="contentServices">The services for the content plug in.</param>
+/// <param name="contentServices">The services for the content plug-in.</param>
 /// <param name="commonServices">The common services for the application.</param>
 /// <exception cref="ArgumentNullException">Thrown when any of the required parameters are <b>null</b>.</exception>
 internal class AnimationContentParameters(IContentFile animationFile,
@@ -66,7 +66,7 @@ internal class AnimationContentParameters(IContentFile animationFile,
         : ContentViewModelInjection(fileManager, animationFile, commonServices)
 {
     /// <summary>
-    /// Property to return the settings for the plug in.
+    /// Property to return the settings for the plug-in.
     /// </summary>
     public ISettings Settings
     {
@@ -107,7 +107,7 @@ internal class AnimationContentParameters(IContentFile animationFile,
     }
 
     /// <summary>
-    /// Property to return the services for the content plug in.
+    /// Property to return the services for the content plug-in.
     /// </summary>
     public ContentServices ContentServices
     {

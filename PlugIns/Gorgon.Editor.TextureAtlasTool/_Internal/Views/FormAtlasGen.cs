@@ -55,7 +55,7 @@ internal partial class FormAtlasGen
     }
 
     /// <summary>
-    /// Property to set or return the settings for the plug in.
+    /// Property to set or return the settings for the plug-in.
     /// </summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public TextureAtlasSettings Settings
@@ -450,7 +450,7 @@ internal partial class FormAtlasGen
     /// <param name="swapChain">The swap chain used to render into the UI.</param>
     /// <remarks>
     ///   <para>
-    /// This method allows tool plug in implementors to setup additional functionality for custom graphics rendering.
+    /// This method allows tool plug-in implementors to setup additional functionality for custom graphics rendering.
     /// </para>
     ///   <para>
     /// Resources created by this method should be cleaned up in the <see cref="EditorToolBaseForm.OnShutdownGraphics"/> method.
@@ -476,7 +476,7 @@ internal partial class FormAtlasGen
     public FormAtlasGen() => InitializeComponent();
 
     /// <summary>Initializes a new instance of the <see cref="FormAtlasGen"/> class.</summary>
-    /// <param name="settings">The settings for the plug in.</param>
+    /// <param name="settings">The settings for the plug-in.</param>
     public FormAtlasGen(TextureAtlasSettings settings)
         : this() => Settings = settings;
 

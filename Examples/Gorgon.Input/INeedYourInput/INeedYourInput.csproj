@@ -10,7 +10,7 @@
     <Authors>Michael Winsor</Authors>
     <Company>Tape_Worm</Company>
     <Product>Gorgon</Product>
-    <Description>Example showing how to use the input plug in.  This was a version 1.x example, converted to version 2.x of Gorgon.</Description>
+    <Description>Example showing how to use the input plug-in.  This was a version 1.x example, converted to version 2.x of Gorgon.</Description>
     <Copyright>(C)opyright Tape_Worm, 2020</Copyright>
     <PackageLicenseFile>
     </PackageLicenseFile>

@@ -30,7 +30,6 @@ using Gorgon.Core;
 using Gorgon.IO.Properties;
 using Gorgon.IO.Providers;
 using Gorgon.Math;
-using Gorgon.PlugIns;
 
 namespace Gorgon.IO;
 
@@ -101,9 +100,8 @@ namespace Gorgon.IO;
 /// </code>
 /// </example>
 public class GorgonFileSystemWriter
-    : GorgonPlugIn, IGorgonFileSystemWriter<FileStream>
+    : IGorgonFileSystemWriter<FileStream>
 {
-
     // The maximum size for the working buffers.
     private const int MaxBufferSize = 262_144;
 
@@ -227,17 +225,18 @@ public class GorgonFileSystemWriter
     /// <param name="dirPath">The path to the physical directory.</param>
     /// <param name="fileName">The desired name for the file.</param>
     /// <returns>The updated file name.</returns>
-    private string GetNewName(string dirPath, string fileName)
+    private static string GetNewName(string dirPath, string fileName)
     {
         string filePath = Path.Combine(dirPath, fileName);
+
         if ((!File.Exists(filePath)) && (!Directory.Exists(filePath)))
         {
             return fileName;
         }
 
         StringBuilder newPath = new(fileName);
-        string file = Path.GetFileNameWithoutExtension(fileName);
-        string ext = Path.GetExtension(fileName);
+        ReadOnlySpan<char> file = Path.GetFileNameWithoutExtension(fileName.AsSpan());
+        ReadOnlySpan<char> ext = Path.GetExtension(fileName.AsSpan());
         int counter = 1;
 
         while ((File.Exists(filePath)) || (Directory.Exists(filePath)))
@@ -247,46 +246,12 @@ public class GorgonFileSystemWriter
             newPath.Append(" (");
             newPath.Append(counter++);
             newPath.Append(')');
-            if (!string.IsNullOrWhiteSpace(ext))
+            if ((!ext.IsEmpty) && (!ext.IsWhiteSpace()))
             {
                 newPath.Append(ext);
             }
 
             filePath = Path.Combine(dirPath, newPath.ToString());
-        }
-
-        return newPath.ToString();
-    }
-
-    /// <summary>
-    /// Function to retrieve a new file name that is guaranteed to not exist.
-    /// </summary>
-    /// <param name="dir">The directory to evaluate.</param>
-    /// <param name="fileName">The desired name for the file.</param>
-    /// <returns>The updated file name.</returns>
-    private string GetNewName(IGorgonVirtualDirectory dir, string fileName)
-    {
-        if (!dir.Files.ContainsKey(fileName))
-        {
-            return fileName;
-        }
-
-        StringBuilder newPath = new(fileName);
-        string file = Path.GetFileNameWithoutExtension(fileName);
-        string ext = Path.GetExtension(fileName);
-        int counter = 1;
-
-        while (dir.Files.ContainsKey(newPath.ToString()))
-        {
-            newPath.Length = 0;
-            newPath.Append(file);
-            newPath.Append(" (");
-            newPath.Append(counter++);
-            newPath.Append(')');
-            if (!string.IsNullOrWhiteSpace(ext))
-            {
-                newPath.Append(ext);
-            }
         }
 
         return newPath.ToString();
@@ -565,7 +530,6 @@ public class GorgonFileSystemWriter
     /// </summary>
     /// <param name="path">Path to the directory (or directories) to create.</param>
     /// <returns>A <see cref="IGorgonVirtualDirectory"/> representing the final directory in the <paramref name="path"/>.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> is <b>null</b>.</exception>
     /// <exception cref="ArgumentException">
     /// Thrown when the <paramref name="path"/> is empty.
     /// <para>-or-</para>
@@ -591,15 +555,7 @@ public class GorgonFileSystemWriter
     /// </remarks>
     public IGorgonVirtualDirectory CreateDirectory(string path)
     {
-        if (path is null)
-        {
-            throw new ArgumentNullException(nameof(path));
-        }
-
-        if (string.IsNullOrWhiteSpace(path))
-        {
-            throw new ArgumentEmptyException(nameof(path));
-        }
+        ArgumentEmptyException.ThrowIfNullOrWhiteSpace(path);
 
         path = path.FormatDirectory('/');
 
@@ -625,8 +581,7 @@ public class GorgonFileSystemWriter
     /// </summary>
     /// <param name="path">The path of the directory to delete.</param>
     /// <param name="onDelete">[Optional] The callback method to execute when a directory, or file is deleted.</param>
-    /// <param name="cancelToken">[Optional] The token used to determine if the operation should be canceled or not.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> is <b>null</b>.</exception>
+    /// <param name="cancelToken">[Optional] The token used to determine if the operation should be canceled or not.</param>    
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> is empty.</exception>
     /// <exception cref="DirectoryNotFoundException">Thrown when the directory specified by the <paramref name="path"/> could not be found.</exception>
     /// <remarks>
@@ -664,15 +619,7 @@ public class GorgonFileSystemWriter
     /// <seealso cref="IGorgonFileSystem.Refresh()"/>        
     public void DeleteDirectory(string path, Action<string> onDelete = null, CancellationToken? cancelToken = null)
     {
-        if (path is null)
-        {
-            throw new ArgumentNullException(nameof(path));
-        }
-
-        if (string.IsNullOrWhiteSpace(path))
-        {
-            throw new ArgumentEmptyException(nameof(path));
-        }
+        ArgumentEmptyException.ThrowIfNullOrWhiteSpace(path);
 
         IGorgonVirtualDirectory directory = FileSystem.GetDirectory(path) ?? throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, path));
 
@@ -779,7 +726,6 @@ public class GorgonFileSystemWriter
     /// Function to delete a file from the file system.
     /// </summary>
     /// <param name="path">The path to the file to delete.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
     /// <exception cref="FileNotFoundException">Thrown if the file specified in the <paramref name="path"/> was not found in the file system.</exception>
     /// <remarks>
@@ -809,15 +755,7 @@ public class GorgonFileSystemWriter
     /// </remarks>
     public void DeleteFile(string path)
     {
-        if (path is null)
-        {
-            throw new ArgumentNullException(nameof(path));
-        }
-
-        if (string.IsNullOrWhiteSpace(path))
-        {
-            throw new ArgumentEmptyException(nameof(path));
-        }
+        ArgumentEmptyException.ThrowIfNullOrWhiteSpace(path);
 
         IGorgonVirtualFile file = FileSystem.GetFile(path) ?? throw new FileNotFoundException(string.Format(Resources.GORFS_ERR_FILE_NOT_FOUND, path));
 
@@ -836,7 +774,6 @@ public class GorgonFileSystemWriter
     /// <param name="paths">The path to the files to delete.</param>
     /// <param name="onDelete">[Optional] The callback method to execute when a directory, or file is deleted.</param>
     /// <param name="cancelToken">[Optional] The token used to determine if the operation should be canceled or not.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="paths"/> parameter is <b>null</b>.</exception>
     /// <exception cref="FileNotFoundException">Thrown if the file specified in the <paramref name="paths"/> was not found in the file system.</exception>
     /// <remarks>
     /// <para>
@@ -869,11 +806,6 @@ public class GorgonFileSystemWriter
     /// </remarks>
     public void DeleteFiles(IEnumerable<string> paths, Action<string> onDelete = null, CancellationToken? cancelToken = null)
     {
-        if (paths is null)
-        {
-            throw new ArgumentNullException(nameof(paths));
-        }
-
         IGorgonVirtualFile[] files = paths.Where(item => !string.IsNullOrWhiteSpace(item))
                                               .Select(item => FileSystem.GetFile(item))
                                               .ToArray();
@@ -918,6 +850,7 @@ public class GorgonFileSystemWriter
     /// </summary>
     /// <param name="path">The path to the file to rename.</param>
     /// <param name="newName">The new name of the file.</param>
+    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="newName"/>, or the <paramref name="path"/> parameter are empty.</exception>
     /// <remarks>
     /// <para>
     /// This will change the name of the specified file in the <paramref name="path" /> to the name specified by <paramref name="newName" />. The <paramref name="newName" /> must only contain the name
@@ -929,25 +862,8 @@ public class GorgonFileSystemWriter
     /// </remarks>
     public void RenameFile(string path, string newName)
     {
-        if (path is null)
-        {
-            throw new ArgumentNullException(nameof(path));
-        }
-
-        if (newName is null)
-        {
-            throw new ArgumentNullException(nameof(path));
-        }
-
-        if (string.IsNullOrWhiteSpace(path))
-        {
-            throw new ArgumentEmptyException(nameof(path));
-        }
-
-        if (string.IsNullOrWhiteSpace(newName))
-        {
-            throw new ArgumentEmptyException(nameof(newName));
-        }
+        ArgumentEmptyException.ThrowIfNullOrWhiteSpace(path);
+        ArgumentEmptyException.ThrowIfNullOrWhiteSpace(newName);
 
         IGorgonVirtualFile file = FileSystem.GetFile(path) ?? throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, path));
 
@@ -985,7 +901,6 @@ public class GorgonFileSystemWriter
     /// </summary>
     /// <param name="path">The path to the directory to rename.</param>
     /// <param name="newName">The new name of the directory.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="newName"/>, or the <paramref name="path"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="newName"/>, or the <paramref name="path"/> parameter is empty.</exception>
     /// <exception cref="IOException">Thrown if the <paramref name="newName"/> is already in use by a file or directory.
     /// <para>-or-</para>
@@ -1003,25 +918,8 @@ public class GorgonFileSystemWriter
     /// </remarks>
     public void RenameDirectory(string path, string newName)
     {
-        if (path is null)
-        {
-            throw new ArgumentNullException(nameof(path));
-        }
-
-        if (newName is null)
-        {
-            throw new ArgumentNullException(nameof(path));
-        }
-
-        if (string.IsNullOrWhiteSpace(path))
-        {
-            throw new ArgumentEmptyException(nameof(path));
-        }
-
-        if (string.IsNullOrWhiteSpace(newName))
-        {
-            throw new ArgumentEmptyException(nameof(newName));
-        }
+        ArgumentEmptyException.ThrowIfNullOrWhiteSpace(path);
+        ArgumentEmptyException.ThrowIfNullOrWhiteSpace(newName);
 
         IGorgonVirtualDirectory directory = FileSystem.GetDirectory(path) ?? throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, path));
 
@@ -1067,7 +965,6 @@ public class GorgonFileSystemWriter
     /// <param name="directoryPath">The path to the directory to move.</param>
     /// <param name="destDirectoryPath">The destination directory path that will receive the moved data.</param>
     /// <param name="options">[Optional] The options used to report progress, support cancelation, etc...</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="directoryPath"/>, or the <paramref name="destDirectoryPath"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="directoryPath"/>, or the <paramref name="destDirectoryPath"/> parameter is empty.</exception>
     /// <exception cref="DirectoryNotFoundException">Thrown if the <paramref name="directoryPath"/>, or the <paramref name="destDirectoryPath"/> could not be located in the file system.</exception>
     /// <exception cref="IOException">Thrown if the <paramref name="directoryPath"/> is an ancestor of the <paramref name="destDirectoryPath"/>.
@@ -1097,25 +994,8 @@ public class GorgonFileSystemWriter
     /// <seealso cref="GorgonCopyCallbackOptions"/>
     public void MoveDirectory(string directoryPath, string destDirectoryPath, GorgonCopyCallbackOptions options = null)
     {
-        if (directoryPath is null)
-        {
-            throw new ArgumentNullException(nameof(directoryPath));
-        }
-
-        if (destDirectoryPath is null)
-        {
-            throw new ArgumentNullException(nameof(destDirectoryPath));
-        }
-
-        if (string.IsNullOrWhiteSpace(directoryPath))
-        {
-            throw new ArgumentEmptyException(nameof(directoryPath));
-        }
-
-        if (string.IsNullOrWhiteSpace(destDirectoryPath))
-        {
-            throw new ArgumentEmptyException(nameof(destDirectoryPath));
-        }
+        ArgumentEmptyException.ThrowIfNullOrWhiteSpace(directoryPath);
+        ArgumentEmptyException.ThrowIfNullOrWhiteSpace(destDirectoryPath);
 
         IGorgonVirtualDirectory srcDirectory = FileSystem.GetDirectory(directoryPath);
         IGorgonVirtualDirectory destDirectory = FileSystem.GetDirectory(destDirectoryPath);
@@ -1151,7 +1031,7 @@ public class GorgonFileSystemWriter
         {
             PrepareWriteArea();
 
-            _writeBuffer = System.Buffers.ArrayPool<byte>.Shared.Rent(MaxBufferSize);
+            _writeBuffer = ArrayPool<byte>.Shared.Rent(MaxBufferSize);
             StringBuilder pathBuffer = new(1024);
             List<(IGorgonVirtualDirectory src, IGorgonVirtualDirectory dest)> dirsCopied = [];
             List<(IGorgonVirtualFile src, IGorgonVirtualFile dest)> filesCopied = [];
@@ -1297,7 +1177,7 @@ public class GorgonFileSystemWriter
         }
         finally
         {
-            System.Buffers.ArrayPool<byte>.Shared.Return(_writeBuffer, true);
+            ArrayPool<byte>.Shared.Return(_writeBuffer, true);
         }
     }
 
@@ -1307,7 +1187,6 @@ public class GorgonFileSystemWriter
     /// <param name="directoryPath">The path to the directory to copy.</param>
     /// <param name="destDirectoryPath">The destination directory path that will receive the copied data.</param>
     /// <param name="options">[Optional] The options used to report progress, support cancelation, etc...</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="directoryPath"/>, or the <paramref name="destDirectoryPath"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="directoryPath"/>, or the <paramref name="destDirectoryPath"/> parameter is empty.</exception>
     /// <exception cref="DirectoryNotFoundException">Thrown if the <paramref name="directoryPath"/>, or the <paramref name="destDirectoryPath"/> could not be located in the file system.</exception>
     /// <remarks>
@@ -1326,25 +1205,8 @@ public class GorgonFileSystemWriter
     /// <seealso cref="GorgonCopyCallbackOptions"/>
     public void CopyDirectory(string directoryPath, string destDirectoryPath, GorgonCopyCallbackOptions options = null)
     {
-        if (directoryPath is null)
-        {
-            throw new ArgumentNullException(nameof(directoryPath));
-        }
-
-        if (destDirectoryPath is null)
-        {
-            throw new ArgumentNullException(nameof(destDirectoryPath));
-        }
-
-        if (string.IsNullOrWhiteSpace(directoryPath))
-        {
-            throw new ArgumentEmptyException(nameof(directoryPath));
-        }
-
-        if (string.IsNullOrWhiteSpace(destDirectoryPath))
-        {
-            throw new ArgumentEmptyException(nameof(destDirectoryPath));
-        }
+        ArgumentEmptyException.ThrowIfNullOrWhiteSpace(directoryPath);
+        ArgumentEmptyException.ThrowIfNullOrWhiteSpace(destDirectoryPath);
 
         IGorgonVirtualDirectory srcDirectory = FileSystem.GetDirectory(directoryPath);
         IGorgonVirtualDirectory destDirectory = FileSystem.GetDirectory(destDirectoryPath);
@@ -1363,7 +1225,7 @@ public class GorgonFileSystemWriter
         {
             PrepareWriteArea();
 
-            _writeBuffer = System.Buffers.ArrayPool<byte>.Shared.Rent(MaxBufferSize);
+            _writeBuffer = ArrayPool<byte>.Shared.Rent(MaxBufferSize);
             StringBuilder pathBuffer = new(1024);
             List<(IGorgonVirtualDirectory src, IGorgonVirtualDirectory dest)> dirsCopied = [];
             List<(IGorgonVirtualFile src, IGorgonVirtualFile dest)> filesCopied = [];
@@ -1457,7 +1319,7 @@ public class GorgonFileSystemWriter
                                 continue;
                             case FileConflictResolution.Rename:
                             case FileConflictResolution.RenameAll:
-                                fileName = GetNewName(destDir, fileName);
+                                fileName = GetNewName(destDir.FullPath, fileName);
                                 destFilePath = destDirPath + fileName;
                                 break;
                             case FileConflictResolution.Cancel:
@@ -1482,7 +1344,7 @@ public class GorgonFileSystemWriter
         }
         finally
         {
-            System.Buffers.ArrayPool<byte>.Shared.Return(_writeBuffer);
+            ArrayPool<byte>.Shared.Return(_writeBuffer);
         }
     }
 
@@ -1492,7 +1354,6 @@ public class GorgonFileSystemWriter
     /// <param name="filePaths">The path to the files to file.</param>
     /// <param name="destDirectoryPath">The destination directory path that will receive the moved data.</param>
     /// <param name="options">[Optional] The options used to report progress, support cancelation, etc...</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="filePaths"/>, or the <paramref name="destDirectoryPath"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="destDirectoryPath"/> parameter is empty.</exception>
     /// <exception cref="FileNotFoundException">Thrown when a file path in the <paramref name="filePaths"/> could not be located in the file system.</exception>
     /// <exception cref="DirectoryNotFoundException">Thrown if the <paramref name="destDirectoryPath"/> could not be located in the file system.</exception>
@@ -1512,20 +1373,7 @@ public class GorgonFileSystemWriter
     /// <seealso cref="GorgonCopyCallbackOptions"/>
     public void MoveFiles(IEnumerable<string> filePaths, string destDirectoryPath, GorgonCopyCallbackOptions options = null)
     {
-        if (filePaths is null)
-        {
-            throw new ArgumentNullException(nameof(filePaths));
-        }
-
-        if (destDirectoryPath is null)
-        {
-            throw new ArgumentNullException(nameof(destDirectoryPath));
-        }
-
-        if (string.IsNullOrWhiteSpace(destDirectoryPath))
-        {
-            throw new ArgumentEmptyException(nameof(destDirectoryPath));
-        }
+        ArgumentEmptyException.ThrowIfNullOrWhiteSpace(destDirectoryPath);
 
         IGorgonVirtualDirectory destDirectory = FileSystem.GetDirectory(destDirectoryPath) ?? throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, destDirectoryPath));
 
@@ -1553,7 +1401,7 @@ public class GorgonFileSystemWriter
         {
             PrepareWriteArea();
 
-            _writeBuffer = System.Buffers.ArrayPool<byte>.Shared.Rent(MaxBufferSize);
+            _writeBuffer = ArrayPool<byte>.Shared.Rent(MaxBufferSize);
             StringBuilder pathBuffer = new(1024);
             List<(IGorgonVirtualFile src, IGorgonVirtualFile dest)> filesCopied = [];
             CancellationToken cancelToken = options?.CancelToken ?? CancellationToken.None;
@@ -1637,7 +1485,7 @@ public class GorgonFileSystemWriter
         }
         finally
         {
-            System.Buffers.ArrayPool<byte>.Shared.Return(_writeBuffer, true);
+            ArrayPool<byte>.Shared.Return(_writeBuffer, true);
         }
     }
 
@@ -1647,7 +1495,6 @@ public class GorgonFileSystemWriter
     /// <param name="filePaths">The path to the files to copy.</param>
     /// <param name="destDirectoryPath">The destination directory path that will receive the copied data.</param>
     /// <param name="options">[Optional] The options used to report progress, support cancelation, etc...</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="filePaths"/>, or the <paramref name="destDirectoryPath"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="destDirectoryPath"/> parameter is empty.</exception>
     /// <exception cref="FileNotFoundException">Thrown when a file path in the <paramref name="filePaths"/> could not be located in the file system.</exception>
     /// <exception cref="DirectoryNotFoundException">Thrown if the <paramref name="destDirectoryPath"/> could not be located in the file system.</exception>
@@ -1667,20 +1514,7 @@ public class GorgonFileSystemWriter
     /// <seealso cref="GorgonCopyCallbackOptions"/>
     public void CopyFiles(IEnumerable<string> filePaths, string destDirectoryPath, GorgonCopyCallbackOptions options = null)
     {
-        if (filePaths is null)
-        {
-            throw new ArgumentNullException(nameof(filePaths));
-        }
-
-        if (destDirectoryPath is null)
-        {
-            throw new ArgumentNullException(nameof(destDirectoryPath));
-        }
-
-        if (string.IsNullOrWhiteSpace(destDirectoryPath))
-        {
-            throw new ArgumentEmptyException(nameof(destDirectoryPath));
-        }
+        ArgumentEmptyException.ThrowIfNullOrWhiteSpace(destDirectoryPath);
 
         IGorgonVirtualDirectory destDirectory = FileSystem.GetDirectory(destDirectoryPath) ?? throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, destDirectoryPath));
 
@@ -1702,7 +1536,7 @@ public class GorgonFileSystemWriter
         {
             PrepareWriteArea();
 
-            _writeBuffer = System.Buffers.ArrayPool<byte>.Shared.Rent(MaxBufferSize);
+            _writeBuffer = ArrayPool<byte>.Shared.Rent(MaxBufferSize);
             StringBuilder pathBuffer = new(1024);
             List<(IGorgonVirtualFile src, IGorgonVirtualFile dest)> filesCopied = [];
             CancellationToken cancelToken = options?.CancelToken ?? CancellationToken.None;
@@ -1768,7 +1602,7 @@ public class GorgonFileSystemWriter
                             continue;
                         case FileConflictResolution.Rename:
                         case FileConflictResolution.RenameAll:
-                            fileName = GetNewName(destDirectory, fileName);
+                            fileName = GetNewName(destDirectory.FullPath, fileName);
                             destFilePath = destDirectory.FullPath + fileName;
                             break;
                         case FileConflictResolution.Cancel:
@@ -1792,7 +1626,7 @@ public class GorgonFileSystemWriter
         }
         finally
         {
-            System.Buffers.ArrayPool<byte>.Shared.Return(_writeBuffer, true);
+            ArrayPool<byte>.Shared.Return(_writeBuffer, true);
         }
     }
 
@@ -1802,7 +1636,6 @@ public class GorgonFileSystemWriter
     /// <param name="filePaths">The path to the files to export.</param>
     /// <param name="destDirectoryPath">The destination directory path on the physical file system that will receive the exported data.</param>
     /// <param name="options">[Optional] The options used to report progress, support cancelation, etc...</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="filePaths"/>, or the <paramref name="destDirectoryPath"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="destDirectoryPath"/> parameter is empty.</exception>
     /// <exception cref="FileNotFoundException">Thrown when a file path in the <paramref name="filePaths"/> could not be located in the file system.</exception>
     /// <exception cref="DirectoryNotFoundException">Thrown if the <paramref name="destDirectoryPath"/> could not be located in the file system.</exception>
@@ -1819,20 +1652,7 @@ public class GorgonFileSystemWriter
     /// <seealso cref="GorgonCopyCallbackOptions"/>
     public void ExportFiles(IEnumerable<string> filePaths, string destDirectoryPath, GorgonCopyCallbackOptions options = null)
     {
-        if (filePaths is null)
-        {
-            throw new ArgumentNullException(nameof(filePaths));
-        }
-
-        if (destDirectoryPath is null)
-        {
-            throw new ArgumentNullException(nameof(destDirectoryPath));
-        }
-
-        if (string.IsNullOrWhiteSpace(destDirectoryPath))
-        {
-            throw new ArgumentEmptyException(nameof(destDirectoryPath));
-        }
+        ArgumentEmptyException.ThrowIfNullOrWhiteSpace(destDirectoryPath);
 
         if (!Directory.Exists(destDirectoryPath))
         {
@@ -1855,7 +1675,7 @@ public class GorgonFileSystemWriter
 
         try
         {
-            _writeBuffer = System.Buffers.ArrayPool<byte>.Shared.Rent(MaxBufferSize);
+            _writeBuffer = ArrayPool<byte>.Shared.Rent(MaxBufferSize);
             StringBuilder pathBuffer = new(1024);
             CancellationToken cancelToken = options?.CancelToken ?? CancellationToken.None;
             Action<string, double> progressCallback = options?.ProgressCallback;
@@ -1912,7 +1732,7 @@ public class GorgonFileSystemWriter
         }
         finally
         {
-            System.Buffers.ArrayPool<byte>.Shared.Return(_writeBuffer, true);
+            ArrayPool<byte>.Shared.Return(_writeBuffer, true);
         }
     }
 
@@ -1922,7 +1742,6 @@ public class GorgonFileSystemWriter
     /// <param name="directoryPath">The path to the directory to export.</param>
     /// <param name="destDirectoryPath">The destination directory path on the physical file system that will receive the exported data.</param>
     /// <param name="options">[Optional] The options used to report progress, support cancelation, etc...</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="directoryPath"/>, or the <paramref name="destDirectoryPath"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="directoryPath"/>, or the <paramref name="destDirectoryPath"/> parameter is empty.</exception>
     /// <exception cref="DirectoryNotFoundException">Thrown if the <paramref name="directoryPath"/>, or the <paramref name="destDirectoryPath"/> could not be located in the file system.</exception>
     /// <remarks>
@@ -1938,25 +1757,8 @@ public class GorgonFileSystemWriter
     /// <seealso cref="GorgonCopyCallbackOptions"/>
     public void ExportDirectory(string directoryPath, string destDirectoryPath, GorgonCopyCallbackOptions options = null)
     {
-        if (directoryPath is null)
-        {
-            throw new ArgumentNullException(nameof(directoryPath));
-        }
-
-        if (destDirectoryPath is null)
-        {
-            throw new ArgumentNullException(nameof(destDirectoryPath));
-        }
-
-        if (string.IsNullOrWhiteSpace(directoryPath))
-        {
-            throw new ArgumentEmptyException(nameof(directoryPath));
-        }
-
-        if (string.IsNullOrWhiteSpace(destDirectoryPath))
-        {
-            throw new ArgumentEmptyException(nameof(destDirectoryPath));
-        }
+        ArgumentEmptyException.ThrowIfNullOrWhiteSpace(directoryPath);
+        ArgumentEmptyException.ThrowIfNullOrWhiteSpace(destDirectoryPath);
 
         IGorgonVirtualDirectory srcDirectory = FileSystem.GetDirectory(directoryPath) ?? throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, directoryPath));
 
@@ -1967,7 +1769,7 @@ public class GorgonFileSystemWriter
 
         try
         {
-            _writeBuffer = System.Buffers.ArrayPool<byte>.Shared.Rent(MaxBufferSize);
+            _writeBuffer = ArrayPool<byte>.Shared.Rent(MaxBufferSize);
             StringBuilder pathBuffer = new(1024);
             CancellationToken cancelToken = options?.CancelToken ?? CancellationToken.None;
             Action<string, double> progressCallback = options?.ProgressCallback;
@@ -2058,7 +1860,7 @@ public class GorgonFileSystemWriter
         }
         finally
         {
-            System.Buffers.ArrayPool<byte>.Shared.Return(_writeBuffer, true);
+            ArrayPool<byte>.Shared.Return(_writeBuffer, true);
         }
     }
 
@@ -2068,7 +1870,6 @@ public class GorgonFileSystemWriter
     /// <param name="paths">The paths to the files/directories on the physical file system to import.</param>
     /// <param name="destDirectoryPath">The destination directory path in the virtual file system that will receive the imported data.</param>
     /// <param name="options">[Optional] The options used to report progress, support cancelation, etc...</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="paths"/>, or the <paramref name="destDirectoryPath"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="destDirectoryPath"/> parameter is empty.</exception>
     /// <exception cref="DirectoryNotFoundException">Thrown if the <paramref name="destDirectoryPath"/> could not be located in the file system.</exception>
     /// <remarks>
@@ -2084,20 +1885,7 @@ public class GorgonFileSystemWriter
     /// <seealso cref="GorgonCopyCallbackOptions"/>
     public void Import(IReadOnlyList<string> paths, string destDirectoryPath, GorgonCopyCallbackOptions options = null)
     {
-        if (paths is null)
-        {
-            throw new ArgumentNullException(nameof(paths));
-        }
-
-        if (destDirectoryPath is null)
-        {
-            throw new ArgumentNullException(nameof(destDirectoryPath));
-        }
-
-        if (string.IsNullOrWhiteSpace(destDirectoryPath))
-        {
-            throw new ArgumentEmptyException(nameof(destDirectoryPath));
-        }
+        ArgumentEmptyException.ThrowIfNullOrWhiteSpace(destDirectoryPath);
 
         if (paths.Count == 0)
         {
@@ -2110,7 +1898,7 @@ public class GorgonFileSystemWriter
         {
             PrepareWriteArea();
 
-            _writeBuffer = System.Buffers.ArrayPool<byte>.Shared.Rent(MaxBufferSize);
+            _writeBuffer = ArrayPool<byte>.Shared.Rent(MaxBufferSize);
             StringBuilder pathBuffer = new(1024);
             List<IGorgonVirtualDirectory> dirsCopied = [];
             List<IGorgonVirtualFile> filesCopied = [];
@@ -2216,7 +2004,7 @@ public class GorgonFileSystemWriter
                                 continue;
                             case FileConflictResolution.Rename:
                             case FileConflictResolution.RenameAll:
-                                fileName = GetNewName(destDir, fileName);
+                                fileName = GetNewName(destDir.FullPath, fileName);
                                 destFilePath = destDir.FullPath + fileName;
                                 break;
                             case FileConflictResolution.Cancel:
@@ -2299,7 +2087,7 @@ public class GorgonFileSystemWriter
         }
         finally
         {
-            System.Buffers.ArrayPool<byte>.Shared.Return(_writeBuffer, true);
+            ArrayPool<byte>.Shared.Return(_writeBuffer, true);
         }
     }
 
@@ -2309,7 +2097,6 @@ public class GorgonFileSystemWriter
     /// <param name="path">The path to the file to read/write.</param>
     /// <param name="mode">The mode to determine how to read/write the file.</param>
     /// <returns>An open <see cref="FileStream"/> to the file.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> is empty.
     /// <para>-or-</para>
     /// <para>Thrown when the <paramref name="path"/> does not contain a file name.</para>
@@ -2335,15 +2122,7 @@ public class GorgonFileSystemWriter
     /// <seealso cref="FileMode"/>
     public FileStream OpenStream(string path, FileMode mode)
     {
-        if (path is null)
-        {
-            throw new ArgumentNullException(nameof(path));
-        }
-
-        if (string.IsNullOrWhiteSpace(path))
-        {
-            throw new ArgumentEmptyException(nameof(path));
-        }
+        ArgumentEmptyException.ThrowIfNullOrWhiteSpace(path);
 
         string directoryPath = Path.GetDirectoryName(path);
         string fileName = Path.GetFileName(path);
@@ -2400,7 +2179,6 @@ public class GorgonFileSystemWriter
     /// <param name="notifier">The notifier used to tell the file system that an update has occurred.</param>
     /// <param name="writeLocation">The directory on the physical file system to actually write data into.</param>
     /// <param name="deleteAction">[Optional] A method that can be used to delete a file system item instead of defaulting to erasing the item.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="fileSystem"/>, <paramref name="notifier"/> or the <paramref name="writeLocation"/> parameters are <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="writeLocation"/> is empty.</exception>
     /// <remarks>
     /// <para>
@@ -2417,21 +2195,12 @@ public class GorgonFileSystemWriter
     /// </para>
     /// </remarks>
     public GorgonFileSystemWriter(IGorgonFileSystem fileSystem, IGorgonFileSystemNotifier notifier, string writeLocation, Func<string, bool> deleteAction = null)
-        : base(Resources.GORFS_FOLDER_WRITER_FS_DESC)
     {
-        if (writeLocation is null)
-        {
-            throw new ArgumentNullException(nameof(writeLocation));
-        }
+        ArgumentEmptyException.ThrowIfNullOrWhiteSpace(writeLocation);
 
-        if (string.IsNullOrWhiteSpace(writeLocation))
-        {
-            throw new ArgumentEmptyException(nameof(writeLocation));
-        }
-
-        FileSystem = fileSystem ?? throw new ArgumentNullException(nameof(fileSystem));
+        FileSystem = fileSystem;
         _deleteAction = deleteAction;
-        _notifier = notifier ?? throw new ArgumentNullException(nameof(notifier));
+        _notifier = notifier;
         WriteLocation = writeLocation.FormatDirectory(Path.DirectorySeparatorChar);
         _mountPoint = new GorgonFileSystemMountPoint(fileSystem.DefaultProvider, WriteLocation, "/");
     }

@@ -32,14 +32,14 @@ namespace Gorgon.Editor.SpriteEditor;
 /// The parameters to pass to the <see cref="IEditorPlugInSettings"/> view model
 /// </summary>
 /// <remarks>Initializes a new instance of the <see cref="SettingsParameters"/> class.</remarks>
-/// <param name="settings">The plug in settings.</param>
+/// <param name="settings">The plug-in settings.</param>
 /// <param name="hostServices">Common application services.</param>
 /// <exception cref="ArgumentNullException">Thrown when the <paramref name="settings" /> parameter is <strong>null</strong>.</exception>
 internal class SettingsParameters(SpriteEditorSettings settings, IHostContentServices hostServices)
         : ViewModelInjection<IHostContentServices>(hostServices)
 {
     /// <summary>
-    /// Property to return the settings for the plug in.
+    /// Property to return the settings for the plug-in.
     /// </summary>
     public SpriteEditorSettings Settings
     {

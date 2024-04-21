@@ -73,7 +73,7 @@ public enum GamingDeviceButtonState
 /// </summary>
 /// <remarks>
 /// <para>
-/// Gaming devices (such as a joystick or game pad) and provided via a driver system using the <see cref="GorgonGamingDeviceDriver"/> object. These drivers may be loaded via a plug in interface through the 
+/// Gaming devices (such as a joystick or game pad) and provided via a driver system using the <see cref="GorgonGamingDeviceDriver"/> object. These drivers may be loaded via a plug-in interface through the 
 /// <see cref="GorgonGamingDeviceDriverFactory"/> object. Once a driver is loaded, it can be used to create an object of this type
 /// </para>
 /// <para>
@@ -92,7 +92,7 @@ public enum GamingDeviceButtonState
 /// device before calling
 /// </para>
 /// <para>
-/// Implementors of a <see cref="GorgonGamingDeviceDriver"/> plug in must inherit this type in order to expose functionality from a native provider (e.g. XInput)
+/// Implementors of a <see cref="GorgonGamingDeviceDriver"/> plug-in must inherit this type in order to expose functionality from a native provider (e.g. XInput)
 /// </para>
 /// </remarks>
 public interface IGorgonGamingDevice
@@ -125,7 +125,7 @@ public interface IGorgonGamingDevice
     /// This property is used to return the current position and dead zone for a given axis. 
     /// </para>
     /// <para>
-    /// <see cref="GorgonGamingDeviceDriver"/> plug in implementors must set this value when device data is retrieved.
+    /// <see cref="GorgonGamingDeviceDriver"/> plug-in implementors must set this value when device data is retrieved.
     /// </para>
     /// </remarks>
     /// <example>
@@ -162,7 +162,7 @@ public interface IGorgonGamingDevice
     /// This will return a <see cref="float"/> value of -1.0f for center, or 0 to 359.9999f to indicate the direction, in degrees, of the POV hat.
     /// </para>
     /// <para>
-    /// <see cref="GorgonGamingDeviceDriver"/> plug in implementors must set this value when device data is retrieved.
+    /// <see cref="GorgonGamingDeviceDriver"/> plug-in implementors must set this value when device data is retrieved.
     /// </para>
     /// </remarks>
     float[] POV
@@ -178,7 +178,7 @@ public interface IGorgonGamingDevice
     /// This will return a list of the available buttons on the gaming device and their corresponding state represented by a <see cref="GamingDeviceButtonState"/> enumeration.
     /// </para>
     /// <para>
-    /// <see cref="GorgonGamingDeviceDriver"/> plug in implementors must set this value when device data is retrieved.
+    /// <see cref="GorgonGamingDeviceDriver"/> plug-in implementors must set this value when device data is retrieved.
     /// </para>
     /// </remarks>
     GamingDeviceButtonState[] Button
@@ -195,7 +195,7 @@ public interface IGorgonGamingDevice
     /// to the system at the time of enumeration. Thus, we have this property to ensure that we know when a gaming device is connected to the system or not. 
     /// </para>
     /// <para>
-    /// <see cref="GorgonGamingDeviceDriver"/> plug in implementors must ensure that this property will update itself when a gaming device is connected or disconnected.
+    /// <see cref="GorgonGamingDeviceDriver"/> plug-in implementors must ensure that this property will update itself when a gaming device is connected or disconnected.
     /// </para>
     /// </remarks>
     bool IsConnected

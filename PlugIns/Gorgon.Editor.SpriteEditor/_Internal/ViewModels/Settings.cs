@@ -30,12 +30,12 @@ using Gorgon.Graphics;
 namespace Gorgon.Editor.SpriteEditor;
 
 /// <summary>
-/// The view model used to manipulate the settings for the plug in
+/// The view model used to manipulate the settings for the plug-in
 /// </summary>
 internal class Settings
     : ViewModelBase<SettingsParameters, IHostContentServices>, ISettings
 {
-    // The plug in settings.
+    // The plug-in settings.
     private SpriteEditorSettings _settings;
 
     /// <summary>

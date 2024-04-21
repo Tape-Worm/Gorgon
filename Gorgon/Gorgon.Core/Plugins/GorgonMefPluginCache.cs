@@ -63,7 +63,7 @@ public enum AssemblyPlatformType
 /// </summary>
 /// <remarks>
 /// <para>
-/// This assembly cache is meant to load/hold a list of plugin assemblies that contain types that implement the <see cref="GorgonPlugIn"/> type and is 
+/// This assembly cache is meant to load/hold a list of plugin assemblies that contain types that implement the <see cref="IGorgonPlugIn"/> type and is 
 /// meant to be used in conjunction with the <see cref="IGorgonPlugInService"/> type
 /// </para>
 /// <para>
@@ -107,8 +107,8 @@ public enum AssemblyPlatformType
 public sealed class GorgonMefPlugInCache
     : IDisposable
 {
-    // The contract name for the plug in.
-    private readonly string _contractName = typeof(GorgonPlugIn).FullName ?? "THIS_SHOULD_NOT_HAPPEN_IF_IT_DOES_WE_RE_IN_TROUBLE";
+    // The contract name for the plug-in.
+    private readonly string _contractName = typeof(IGorgonPlugIn).FullName ?? "THIS_SHOULD_NOT_HAPPEN_IF_IT_DOES_WE_RE_IN_TROUBLE";
     // The root catalog for the plugins.
     private AggregateCatalog? _rootCatalog = new();
     // The container for the plugin definitions.
@@ -277,13 +277,13 @@ public sealed class GorgonMefPlugInCache
     /// Function to enumerate all the plugin names from the assemblies loaded into the cache.
     /// </summary>
     /// <returns>A composition container containing the plugins from the assemblies.</returns>
-    public IEnumerable<Lazy<GorgonPlugIn, IDictionary<string, object>>> EnumeratePlugIns()
+    public IEnumerable<Lazy<IGorgonPlugIn, IDictionary<string, object>>> EnumeratePlugIns()
     {
         lock (_syncLock)
         {
             return _container is null
                 ? ([])
-                : _container.GetExports<GorgonPlugIn, IDictionary<string, object>>(_contractName);
+                : _container.GetExports<IGorgonPlugIn, IDictionary<string, object>>(_contractName);
         }
     }
 
@@ -325,7 +325,7 @@ public sealed class GorgonMefPlugInCache
     /// <summary>
     /// Function to load any DLL assemblies in the specified directory path.
     /// </summary>
-    /// <param name="directoryPath">The path containing the plug in DLLs to load.</param>
+    /// <param name="directoryPath">The path containing the plug-in DLLs to load.</param>
     /// <param name="filePattern">[Optional] The file pattern to search for.</param>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="directoryPath"/> parameter is empty.</exception>
     /// <exception cref="DirectoryNotFoundException">Thrown if the directory specified by <paramref name="directoryPath"/> does not exist.</exception>
@@ -353,7 +353,7 @@ public sealed class GorgonMefPlugInCache
 
         DirectoryInfo directory = new(directoryPath);
 
-        Log.Print($"Searching '{directory.FullName}\\{filePattern}' for plug in assemblies.", LoggingLevel.Simple);
+        Log.Print($"Searching '{directory.FullName}\\{filePattern}' for plug-in assemblies.", LoggingLevel.Simple);
 
         if (!directory.Exists)
         {
@@ -378,7 +378,7 @@ public sealed class GorgonMefPlugInCache
                 catalog = new DirectoryCatalog(directory.FullName, filePattern, _builder);
                 _rootCatalog.Catalogs.Add(catalog);
 
-                Log.Print($"Added {catalog.LoadedFiles.Count} plug in assemblies to cache.", LoggingLevel.Intermediate);
+                Log.Print($"Added {catalog.LoadedFiles.Count} plug-in assemblies to cache.", LoggingLevel.Intermediate);
             }
         }
 
@@ -405,7 +405,7 @@ public sealed class GorgonMefPlugInCache
 
             PlugInAssemblies = [.. assemblyList];
 
-            Log.Print($"{PlugInAssemblies.Count} cached with valid plug in types.", LoggingLevel.Verbose);
+            Log.Print($"{PlugInAssemblies.Count} cached with valid plug-in types.", LoggingLevel.Verbose);
         }
     }
 
@@ -416,7 +416,7 @@ public sealed class GorgonMefPlugInCache
     [RequiresAssemblyFiles("Plug ins will not work with trimming and Native AOT.")]
     public GorgonMefPlugInCache(IGorgonLog? log = null)
     {
-        _builder.ForTypesDerivedFrom<GorgonPlugIn>().Export<GorgonPlugIn>(b =>
+        _builder.ForTypesDerivedFrom<IGorgonPlugIn>().Export<IGorgonPlugIn>(b =>
         {
             b.AddMetadata("Name", t => t.FullName);
             b.AddMetadata("Assembly", t => t.Assembly.GetName());

@@ -52,14 +52,14 @@ namespace Gorgon.Examples;
 /// 
 /// The difference between this example and the folder file system example is that we're loading
 /// a packed file from the previous version of Gorgon as a file system.  The scenario is the same
-/// as loading a zip file:  Load the provider plug in into the file system, and mount the packed
+/// as loading a zip file:  Load the provider plug-in into the file system, and mount the packed
 /// file
 /// </remarks>
 public partial class Form
     : System.Windows.Forms.Form
 {
 
-    // The plug in assembly cache.
+    // The plug-in assembly cache.
     private GorgonMefPlugInCache _assemblyCache;
     // The file system.
     private GorgonFileSystem _fileSystem;
@@ -102,7 +102,7 @@ public partial class Form
     /// <returns>The file system provider.</returns>
     private IGorgonFileSystemProvider LoadGorPackProvider()
     {
-        // The Gorgon packed file provider plug in dll.
+        // The Gorgon packed file provider plug-in dll.
         const string gorPackDll = "Gorgon.FileSystem.GorPack.dll";
         // The name of the Gorgon packed file plugin.
         const string gorPackPlugInName = "Gorgon.IO.GorPack.GorPackProvider";
@@ -113,7 +113,7 @@ public partial class Form
         _assemblyCache.LoadPlugInAssemblies(GorgonExample.GetPlugInPath().FullName, gorPackDll);
 
         GorgonMefPlugInService plugIns = new(_assemblyCache);
-        return plugIns.GetPlugIn<GorgonFileSystemProvider>(gorPackPlugInName);
+        return plugIns.GetPlugIn<GorgonFileSystemProviderPlugIn>(gorPackPlugInName);
     }
 
     /// <summary>

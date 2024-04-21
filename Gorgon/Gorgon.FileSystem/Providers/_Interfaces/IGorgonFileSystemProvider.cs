@@ -47,7 +47,7 @@ namespace Gorgon.IO.Providers;
 /// </para>
 /// <para>
 /// When this type is implemented, it can be made to read any type of file system, including those that store their contents in a packed file format (e.g. Zip). And since this type inherits from <see cref="GorgonPlugIn"/>, 
-/// the file system provider can be loaded dynamically through Gorgon's plug in system
+/// the file system provider can be loaded dynamically through Gorgon's plug-in system
 /// </para>
 /// </remarks>
 public interface IGorgonFileSystemProvider
@@ -57,14 +57,6 @@ public interface IGorgonFileSystemProvider
     /// Property to return whether this provider only gives read only access to the physical file system.
     /// </summary>
     bool IsReadOnly
-    {
-        get;
-    }
-
-    /// <summary>
-    /// Property to return the path to the provider assembly (if applicable).
-    /// </summary>
-    string ProviderPath
     {
         get;
     }
@@ -120,7 +112,7 @@ public interface IGorgonFileSystemProvider
     /// <c>/MyMount/MyDirectory/MyTextFile.txt</c>.
     /// </para>
     /// <para>
-    /// Implementors of a <see cref="GorgonFileSystemProvider"/> plug in can override this method to read the list of files from another type of file system, like a Zip file.
+    /// Implementors of a <see cref="GorgonFileSystemProvider"/> plug-in can override this method to read the list of files from another type of file system, like a Zip file.
     /// </para>
     /// </remarks>
     GorgonPhysicalFileSystemData Enumerate(string physicalLocation, IGorgonVirtualDirectory mountPoint);
@@ -138,7 +130,7 @@ public interface IGorgonFileSystemProvider
     /// <c>c:\SourceFileSystem\MyDirectory\MyTextFile.txt</c>, then the returned value should be <c>/MyMount/MyDirectory/MyTextFile.txt</c>.
     /// </para>
     /// <para>
-    /// Implementors of a <see cref="GorgonFileSystemProvider"/> plug in can override this method to read the list of files from another type of file system, like a Zip file.
+    /// Implementors of a <see cref="GorgonFileSystemProvider"/> plug-in can override this method to read the list of files from another type of file system, like a Zip file.
     /// </para>
     /// </remarks>
     IReadOnlyDictionary<string, IGorgonPhysicalFileInfo> EnumerateFiles(string physicalLocation, IGorgonVirtualDirectory mountPoint);

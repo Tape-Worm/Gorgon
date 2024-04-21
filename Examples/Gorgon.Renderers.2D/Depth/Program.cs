@@ -88,7 +88,7 @@ static class Program
     private static GorgonSpriteAnimationController _controller;
     // The current animation.
     private static AnimationName _current;
-    // The cache for our plug in assemblies.
+    // The cache for our plug-in assemblies.
     private static GorgonMefPlugInCache _assemblyCache;
     // The cache for holding sprite textures.
     private static GorgonTextureCache<GorgonTexture2D> _textureCache;
@@ -363,7 +363,7 @@ static class Program
 
         GorgonExample.LoadResources(_graphics);
 
-        // Load our packed file system plug in.
+        // Load our packed file system plug-in.
         _assemblyCache = new GorgonMefPlugInCache(GorgonApplication.Log);
 
         // Load the file system containing our application data (sprites, images, etc...)

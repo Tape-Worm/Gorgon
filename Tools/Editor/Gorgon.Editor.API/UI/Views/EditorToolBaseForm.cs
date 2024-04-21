@@ -36,11 +36,11 @@ using Gorgon.UI;
 namespace Gorgon.Editor.UI.Views;
 
 /// <summary>
-/// The base form used for krypton tool plug ins
+/// The base form used for krypton tool plug-ins
 /// </summary>
 /// <remarks>
 /// <para>
-/// Developers who use to create tool plug ins for the editor should use this form as the base for their UI.  It provides functionality to make setting up and rendering easier, and will perform any 
+/// Developers who use to create tool plug-ins for the editor should use this form as the base for their UI.  It provides functionality to make setting up and rendering easier, and will perform any 
 /// necessary clean up on behalf of the developer
 /// </para>
 /// </remarks>
@@ -234,7 +234,7 @@ public partial class EditorToolBaseForm
     /// <param name="e">The event arguments.</param>
     /// <remarks>
     /// <para>
-    /// Tool plug in developers can override this method to handle a drag enter event when an item is dragged into the rendering area on the view.
+    /// Tool plug-in developers can override this method to handle a drag enter event when an item is dragged into the rendering area on the view.
     /// </para>
     /// </remarks>
     protected virtual void OnRenderWindowDragEnter(DragEventArgs e)
@@ -247,7 +247,7 @@ public partial class EditorToolBaseForm
     /// <param name="e">The event arguments.</param>
     /// <remarks>
     /// <para>
-    /// Tool plug in developers can override this method to handle a drag over event when an item is dragged over the rendering area on the view.
+    /// Tool plug-in developers can override this method to handle a drag over event when an item is dragged over the rendering area on the view.
     /// </para>
     /// </remarks>
     protected virtual void OnRenderWindowDragOver(DragEventArgs e)
@@ -260,7 +260,7 @@ public partial class EditorToolBaseForm
     /// <param name="e">The event arguments.</param>
     /// <remarks>
     /// <para>
-    /// Tool plug in developers can override this method to handle a drop event when an item is dropped into the rendering area on the view.
+    /// Tool plug-in developers can override this method to handle a drop event when an item is dropped into the rendering area on the view.
     /// </para>
     /// </remarks>
     protected virtual void OnRenderWindowDragDrop(DragEventArgs e)
@@ -340,11 +340,11 @@ public partial class EditorToolBaseForm
     /// <exception cref="ArgumentException">Thrown if a renderer is already registered with the same <paramref name="name"/>.</exception>
     /// <remarks>
     /// <para>
-    /// Some tool plug ins will require the rendered view to change depending on state. For example, a specific tool is selected and the view needs to switch to a portion of the tool UI. In such 
+    /// Some tool plug-ins will require the rendered view to change depending on state. For example, a specific tool is selected and the view needs to switch to a portion of the tool UI. In such 
     /// cases it is not practical to have a single renderer performing all manner of state changes, so this method provides a means of passing different renderer instances to the view.
     /// </para>
     /// <para>
-    /// Developers of the tool plug ins should register these renderers in the <see cref="OnSetupGraphics(IGraphicsContext, GorgonSwapChain)"/> method so that the renderers are available right 
+    /// Developers of the tool plug-ins should register these renderers in the <see cref="OnSetupGraphics(IGraphicsContext, GorgonSwapChain)"/> method so that the renderers are available right 
     /// away. Failure to do so can lead to broken rendering.
     /// </para>
     /// </remarks>
@@ -441,7 +441,7 @@ public partial class EditorToolBaseForm
     /// <param name="swapChain">The swap chain used to render into the UI.</param>
     /// <remarks>
     /// <para>
-    /// This method allows tool plug in implementors to setup additional functionality for custom graphics rendering.
+    /// This method allows tool plug-in implementors to setup additional functionality for custom graphics rendering.
     /// </para>
     /// <para>
     /// Resources created by this method should be cleaned up in the <see cref="OnShutdownGraphics"/> method.
@@ -579,13 +579,13 @@ public partial class EditorToolBaseForm
     /// <summary>
     /// Function to set up the graphics interface for this window.
     /// </summary>
-    /// <param name="context">The application graphics context provided by the plug in.</param>
+    /// <param name="context">The application graphics context provided by the plug-in.</param>
     /// <param name="allowBackgroundRendering">[Optional] <b>true</b> to allow the graphics functionality to render even if the form does not have focus, <b>false</b> to pause rendering.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="context"/> parameter is <b>null</b>.</exception>
     /// <exception cref="GorgonException">Thrown if the <see cref="RenderControl"/> property is not set to a non-<b>null</b> value.</exception>
     /// <remarks>
     /// <para>
-    /// This method will initialize the graphics sub system for the control (if required) so that users may use the Gorgon drawing functionality in their tool plug in. The method should be called 
+    /// This method will initialize the graphics sub system for the control (if required) so that users may use the Gorgon drawing functionality in their tool plug-in. The method should be called 
     /// immediately after creating the form to reduce any possibility of issues.
     /// </para>
     /// <para>

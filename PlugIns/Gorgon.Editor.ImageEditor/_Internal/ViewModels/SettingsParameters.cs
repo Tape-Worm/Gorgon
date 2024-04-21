@@ -35,7 +35,7 @@ namespace Gorgon.Editor.ImageEditor;
 /// <param name="settings">The settings for the image editor.</param>
 /// <param name="codecs">The codecs loaded into the system.</param>
 /// <param name="openCodecDialog">The file dialog used to locate codec assemblies.</param>
-/// <param name="plugInCache">The cache for plug in assemblies.</param>
+/// <param name="plugInCache">The cache for plug-in assemblies.</param>
 /// <param name="hostServices">Common application services.</param>
 /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
 internal class SettingsParameters(ImageEditorSettings settings, IHostContentServices hostServices)

@@ -38,7 +38,7 @@ using Gorgon.UI;
 namespace Gorgon.Editor.ExtractSpriteTool;
 
 /// <summary>
-/// A plug in used to extract sprites from a texture atlas by using an adjustable grid
+/// A plug-in used to extract sprites from a texture atlas by using an adjustable grid
 /// </summary>
 internal class ExtractSpriteToolPlugIn
     : ToolPlugIn
@@ -199,14 +199,14 @@ internal class ExtractSpriteToolPlugIn
     /// <returns>A new tool ribbon button instance.</returns>
     /// <remarks>
     ///   <para>
-    /// Tool plug in developers must override this method to return the button which is inserted on the application ribbon, under the "Tools" tab. If the method returns <b>null</b>, then the tool is
+    /// Tool plug-in developers must override this method to return the button which is inserted on the application ribbon, under the "Tools" tab. If the method returns <b>null</b>, then the tool is
     /// ignored.
     /// </para>
     ///   <para>
-    /// The resulting data structure will contain the means to handle the click event for the tool, and as such, is the only means of communication between the main UI and the plug in.
+    /// The resulting data structure will contain the means to handle the click event for the tool, and as such, is the only means of communication between the main UI and the plug-in.
     /// </para>
     ///   <para>
-    /// The <paramref name="fileManager" /> will allow plug ins to enumerate files in the project file system, create files/directories, and delete files/directories. This allows the plug in a means
+    /// The <paramref name="fileManager" /> will allow plug-ins to enumerate files in the project file system, create files/directories, and delete files/directories. This allows the plug-in a means
     /// to persist any data generated.
     /// </para>
     /// </remarks>

@@ -35,7 +35,7 @@ using Krypton.Toolkit;
 namespace Gorgon.Editor.AnimationEditor;
 
 /// <summary>
-/// Provides a ribbon interface for the plug in view
+/// Provides a ribbon interface for the plug-in view
 /// </summary>
 /// <remarks>
 /// We cannot provide a ribbon on the control directly. For some reason, the krypton components will only allow ribbons on forms

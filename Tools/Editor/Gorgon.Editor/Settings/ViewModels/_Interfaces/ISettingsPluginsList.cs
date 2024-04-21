@@ -29,13 +29,13 @@ using Gorgon.Editor.UI;
 namespace Gorgon.Editor.ViewModels;
 
 /// <summary>
-/// The plug in list category for the settings
+/// The plug-in list category for the settings
 /// </summary>
 internal interface ISettingsPlugInsList
     : ISettingsCategory
 {
     /// <summary>
-    /// Property to return the plug ins.
+    /// Property to return the plug-ins.
     /// </summary>
     ObservableCollection<ISettingsPlugInListItem> PlugIns
     {
@@ -43,7 +43,7 @@ internal interface ISettingsPlugInsList
     }
 
     /// <summary>
-    /// Property to return the currently selected plug in.
+    /// Property to return the currently selected plug-in.
     /// </summary>
     ISettingsPlugInListItem Current
     {
@@ -51,7 +51,7 @@ internal interface ISettingsPlugInsList
     }
 
     /// <summary>
-    /// Property to return the command to execute for selecting plug ins.
+    /// Property to return the command to execute for selecting plug-ins.
     /// </summary>
     IEditorCommand<int> SelectPlugInCommand
     {

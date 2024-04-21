@@ -30,19 +30,19 @@ using Gorgon.IO;
 namespace Gorgon.Editor.PlugIns;
 
 /// <summary>
-/// Base class for a plug in that provides basic utility functionality
+/// Base class for a plug-in that provides basic utility functionality
 /// </summary>
 /// <remarks>
 /// <para>
-/// Tool plug ins, unlike content plug ins, are independent plug ins that provide their own UI (if necessary) that do various jobs in the editor. They will be placed into a tab on the ribbon 
+/// Tool plug-ins, unlike content plug-ins, are independent plug-ins that provide their own UI (if necessary) that do various jobs in the editor. They will be placed into a tab on the ribbon 
 /// called "Tools" and provide global functionality across the editor and don't necessarily have to restrict themselves to one type of content
 /// </para>
 /// <para>
-/// A typical use of a tool plug in would be to display a dialog that allows mass actions on content files.  For example, a dialog that sequentially renames a list of content files so that they're 
-/// postfixed with "original_name (number)" would be a use case for a tool plug in
+/// A typical use of a tool plug-in would be to display a dialog that allows mass actions on content files.  For example, a dialog that sequentially renames a list of content files so that they're 
+/// postfixed with "original_name (number)" would be a use case for a tool plug-in
 /// </para>
 /// <para>
-/// Because these plug ins are independent, there is no interaction with the editor UI beyond providing information to display a button on the ribbon
+/// Because these plug-ins are independent, there is no interaction with the editor UI beyond providing information to display a button on the ribbon
 /// </para>
 /// </remarks>
 /// <remarks>Initializes a new instance of the <see cref="ToolPlugIn"/> class.</remarks>
@@ -61,10 +61,10 @@ public abstract class ToolPlugIn(string description)
     /// </summary>
     /// <remarks>
     /// <para>
-    /// Plug in developers that implement a common plug in type based on this base type, should assign this value to allow access to the common tool services supplied by the host application.
+    /// Plug in developers that implement a common plug-in type based on this base type, should assign this value to allow access to the common tool services supplied by the host application.
     /// </para>
     /// <para>
-    /// This will be assigned during the initialization of the plug in.
+    /// This will be assigned during the initialization of the plug-in.
     /// </para>
     /// </remarks>
     /// <seealso cref="IHostServices"/>
@@ -90,7 +90,7 @@ public abstract class ToolPlugIn(string description)
     /// Property to return the file system used to hold temporary file data.
     /// </summary>
     /// <remarks>
-    /// Importer plug ins can use this to write temporary working data, which is deleted after the project unloads, for use during the import process.
+    /// Importer plug-ins can use this to write temporary working data, which is deleted after the project unloads, for use during the import process.
     /// </remarks>
     protected IGorgonFileSystemWriter<Stream> TemporaryFileSystem
     {
@@ -98,11 +98,11 @@ public abstract class ToolPlugIn(string description)
         private set;
     }
 
-    /// <summary>Property to return the type of this plug in.</summary>
+    /// <summary>Property to return the type of this plug-in.</summary>
     public sealed override PlugInType PlugInType => PlugInType.Tool;
 
     /// <summary>
-    /// Function to allow custom plug ins to implement custom actions when a project is created/opened.
+    /// Function to allow custom plug-ins to implement custom actions when a project is created/opened.
     /// </summary>
     protected virtual void OnProjectOpened()
     {
@@ -110,7 +110,7 @@ public abstract class ToolPlugIn(string description)
     }
 
     /// <summary>
-    /// Function to allow custom plug ins to implement custom actions when a project is closed.
+    /// Function to allow custom plug-ins to implement custom actions when a project is closed.
     /// </summary>
     protected virtual void OnProjectClosed()
     {
@@ -142,11 +142,11 @@ public abstract class ToolPlugIn(string description)
     /// <returns>A new tool ribbon button instance.</returns>
     /// <remarks>
     /// <para>
-    /// Tool plug in developers must override this method to return the button which is inserted on the application ribbon, under the "Tools" tab. If the method returns <b>null</b>, then the tool is 
+    /// Tool plug-in developers must override this method to return the button which is inserted on the application ribbon, under the "Tools" tab. If the method returns <b>null</b>, then the tool is 
     /// ignored.
     /// </para>
     /// <para>
-    /// The resulting data structure will contain the means to handle the click event for the tool, and as such, is the only means of communication between the main UI and the plug in.
+    /// The resulting data structure will contain the means to handle the click event for the tool, and as such, is the only means of communication between the main UI and the plug-in.
     /// </para>
     /// </remarks>
     protected abstract IToolPlugInRibbonButton OnGetToolButton();
@@ -179,7 +179,7 @@ public abstract class ToolPlugIn(string description)
     /// <returns>A new tool ribbon button instance.</returns>
     /// <remarks>
     /// <para>
-    /// This will return data to describe a new button for the tool in the plug in. If the return value is <b>null</b>, then the tool will not be available on the ribbon.
+    /// This will return data to describe a new button for the tool in the plug-in. If the return value is <b>null</b>, then the tool will not be available on the ribbon.
     /// </para>
     /// </remarks>
     public IToolPlugInRibbonButton GetToolButton() => OnGetToolButton();

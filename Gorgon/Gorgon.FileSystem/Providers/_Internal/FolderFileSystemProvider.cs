@@ -35,7 +35,7 @@ namespace Gorgon.IO.Providers;
 /// </summary>
 /// <remarks>
 /// <para>
-/// <see cref="IGorgonFileSystemProvider"/> implementors must inherit from this type to create a provider plug in. 
+/// <see cref="IGorgonFileSystemProvider"/> implementors must inherit from this type to create a provider plug-in. 
 /// </para>
 /// <para>
 /// File system providers provide access to a physical file system, and provides the communications necessary to read data from that physical file system. When used in conjunction with the <see cref="IGorgonFileSystem"/> 
@@ -52,7 +52,7 @@ namespace Gorgon.IO.Providers;
 /// </para>
 /// <para>
 /// When this type is implemented, it can be made to read any type of file system, including those that store their contents in a packed file format (e.g. Zip). And since this type inherits from <see cref="GorgonPlugIn"/>, 
-/// the file system provider can be loaded dynamically through Gorgon's plug in system
+/// the file system provider can be loaded dynamically through Gorgon's plug-in system
 /// </para>
 /// <para>
 /// This type allows the mounting of a directory so that data can be read from the native operating system file system. This is the default provider for any <see cref="IGorgonFileSystem"/>
@@ -71,7 +71,7 @@ internal sealed class FolderFileSystemProvider
     /// <param name="mountPoint">The mount point to remap the file paths to.</param>
     /// <param name="recurse"><b>true</b> to recursively retrieve files, <b>false</b> to retrieve only the files in the physical location.</param>
     /// <returns>A read only list of <see cref="IGorgonPhysicalFileInfo"/> entries.</returns>
-    private static IReadOnlyList<IGorgonPhysicalFileInfo> OnEnumerateFiles(string physicalLocation, IGorgonVirtualDirectory mountPoint, bool recurse)
+    private static IGorgonPhysicalFileInfo[] OnEnumerateFiles(string physicalLocation, IGorgonVirtualDirectory mountPoint, bool recurse)
     {
         DirectoryInfo directoryInfo = new(physicalLocation);
 
@@ -99,7 +99,7 @@ internal sealed class FolderFileSystemProvider
     /// <param name="physicalLocation">The physical file system location to enumerate.</param>
     /// <param name="mountPoint">The mount point to remap the directory paths to.</param>
     /// <returns>A read only list of <see cref="string"/> values representing the mapped directory entries.</returns>
-    private static IReadOnlyList<string> OnEnumerateDirectories(string physicalLocation, IGorgonVirtualDirectory mountPoint)
+    private static string[] OnEnumerateDirectories(string physicalLocation, IGorgonVirtualDirectory mountPoint)
     {
         DirectoryInfo directoryInfo = new(physicalLocation);
 
@@ -131,7 +131,7 @@ internal sealed class FolderFileSystemProvider
     /// If the file does not exist in the physical file system, this method should return <b>null</b>.
     /// </para>
     /// <para>
-    /// Implementors of a <see cref="GorgonFileSystemProvider"/> plug in can overload this method to return a stream into a file within their specific native provider (e.g. a Zip file provider will 
+    /// Implementors of a <see cref="GorgonFileSystemProvider"/> plug-in can overload this method to return a stream into a file within their specific native provider (e.g. a Zip file provider will 
     /// return a stream into the zip file positioned at the location of the compressed file within the zip file).
     /// </para>
     /// </remarks>
@@ -171,7 +171,7 @@ internal sealed class FolderFileSystemProvider
     /// <c>/MyMount/MyDirectory/MyTextFile.txt</c>.
     /// </para>
     /// <para>
-    /// Implementors of a <see cref="GorgonFileSystemProvider"/> plug in can override this method to read the list of files from another type of file system, like a Zip file.
+    /// Implementors of a <see cref="GorgonFileSystemProvider"/> plug-in can override this method to read the list of files from another type of file system, like a Zip file.
     /// </para>
     /// <para>
     /// Implementors of a <see cref="GorgonFileSystemProvider"/> should override this method to read the list of directories and files from another type of file system, like a Zip file. 
@@ -207,7 +207,7 @@ internal sealed class FolderFileSystemProvider
     /// <c>c:\SourceFileSystem\MyDirectory\MyTextFile.txt</c>, then the returned value should be <c>/MyMount/MyDirectory/MyTextFile.txt</c>.
     /// </para>
     ///   <para>
-    /// Implementors of a <see cref="GorgonFileSystemProvider" /> plug in can override this method to read the list of files from another type of file system, like a Zip file.
+    /// Implementors of a <see cref="GorgonFileSystemProvider" /> plug-in can override this method to read the list of files from another type of file system, like a Zip file.
     /// </para>
     /// </remarks>
     protected override IReadOnlyDictionary<string, IGorgonPhysicalFileInfo> OnEnumerateFiles(string physicalLocation, IGorgonVirtualDirectory mountPoint)

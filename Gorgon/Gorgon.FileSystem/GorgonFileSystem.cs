@@ -69,8 +69,8 @@ namespace Gorgon.IO;
 /// </para>
 /// <para>
 /// By default, a new file system instance will only have access to the directories and files of the hard drive via the default provider. File systems that are in packed files (e.g. Zip files) can be 
-/// loaded into the file system by way of a <see cref="GorgonFileSystemProvider"/>. Providers are typically plug in objects that are loaded into the file system via the <see cref="GorgonFileSystemProviderFactory"/>.  
-/// Once a provider plug in is loaded, then the contents of that file system can be mounted like a standard directory. 
+/// loaded into the file system by way of a <see cref="GorgonFileSystemProvider"/>. Providers are typically plug-in objects that are loaded into the file system via the <see cref="GorgonFileSystemProviderFactory"/>.  
+/// Once a provider plug-in is loaded, then the contents of that file system can be mounted like a standard directory. 
 /// </para>
 /// <para>
 /// When a file system provider is added to the virtual file system object upon creation, the object will contain 2 providers, the default provider is always available with any additional providers
@@ -90,13 +90,13 @@ namespace Gorgon.IO;
 /// This example shows how to load a provider from the provider factory and use it with the file system:
 /// <code language="csharp">
 /// <![CDATA[
-/// // First we need to load the assembly with the provider plug in
+/// // First we need to load the assembly with the provider plug-in
 /// using (GorgonPlugInAssemblyCache assemblies = new GorgonPlugInAssemblyCache())
 /// {
 ///		assemblies.Load(@"C:\PlugIns\GorgonFileSystem.Zip.dll"); 
 ///		GorgonPlugInService plugInService = new GorgonPlugInService(assemblies);
 /// 
-///		// We'll use the factory to get the zip plug in provider
+///		// We'll use the factory to get the zip plug-in provider
 ///		IGorgonFileSystemProviderFactory factory = new GorgonFileSystemProviderFactory(plugInService);
 ///		
 ///		IGorgonFileSystemProvider zipProvider = factory.CreateProvider("Gorgon.IO.Zip.ZipProvider");
@@ -115,6 +115,9 @@ public class GorgonFileSystem
     /// Directory separator character.
     /// </summary>
     internal static readonly string PhysicalDirSeparator = Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture);
+
+    // Separator for splitting paths.
+    private static readonly char[] _separator = ['/'];
 
     // Synchronization object.
     private readonly object _syncLock = new();
@@ -179,6 +182,7 @@ public class GorgonFileSystem
     /// </remarks>
     public IGorgonVirtualDirectory RootDirectory => _rootDirectory;
 
+
     /// <summary>
     /// Function to mount a file as a mount point in the virtual file system.
     /// </summary>
@@ -199,10 +203,7 @@ public class GorgonFileSystem
 
         GetFileSystemObjects(mountPoint);
 
-        if (_mountProviders.Contains(mountPoint))
-        {
-            _mountProviders.Remove(mountPoint);
-        }
+        _mountProviders.Remove(mountPoint);
 
         _mountProviders.Add(mountPoint);
 
@@ -234,10 +235,7 @@ public class GorgonFileSystem
 
         GetFileSystemObjects(mountPoint);
 
-        if (_mountProviders.Contains(mountPoint))
-        {
-            _mountProviders.Remove(mountPoint);
-        }
+        _mountProviders.Remove(mountPoint);
 
         // Assign the default provider to the mount point.
         _mountProviders.Add(mountPoint);
@@ -259,10 +257,7 @@ public class GorgonFileSystem
 
         GetFileSystemObjects(mountPoint);
 
-        if (_mountProviders.Contains(mountPoint))
-        {
-            _mountProviders.Remove(mountPoint);
-        }
+        _mountProviders.Remove(mountPoint);
 
         // Assign the default provider to the mount point.
         _mountProviders.Add(mountPoint);
@@ -409,15 +404,7 @@ public class GorgonFileSystem
     /// <returns>An <see cref="IEnumerable{T}"/> containing <see cref="VirtualDirectory"/> objects.</returns>
     private IEnumerable<VirtualDirectory> FindVirtualDirectories(string path, string directoryMask, bool recursive)
     {
-        if (path is null)
-        {
-            throw new ArgumentNullException(nameof(path));
-        }
-
-        if (string.IsNullOrWhiteSpace(path))
-        {
-            throw new ArgumentEmptyException(nameof(path));
-        }
+        ArgumentEmptyException.ThrowIfNullOrWhiteSpace(path);
 
         VirtualDirectory startDirectory = GetVirtualDirectory(path);
         return startDirectory is null
@@ -439,15 +426,7 @@ public class GorgonFileSystem
     /// <returns>An <see cref="IEnumerable{T}"/> containing <see cref="VirtualFile"/> objects.</returns>
     private IEnumerable<VirtualFile> FindVirtualFiles(string path, string fileMask, bool recursive)
     {
-        if (path is null)
-        {
-            throw new ArgumentNullException(nameof(path));
-        }
-
-        if (string.IsNullOrWhiteSpace(path))
-        {
-            throw new ArgumentEmptyException(nameof(path));
-        }
+        ArgumentEmptyException.ThrowIfNullOrWhiteSpace(path);
 
         VirtualDirectory start = GetVirtualDirectory(path);
 
@@ -467,15 +446,7 @@ public class GorgonFileSystem
     /// <returns>The file entry if found, null if not.</returns>
     private VirtualFile GetVirtualFile(string path)
     {
-        if (path is null)
-        {
-            throw new ArgumentNullException(nameof(path));
-        }
-
-        if (string.IsNullOrWhiteSpace(path))
-        {
-            throw new ArgumentEmptyException(nameof(path));
-        }
+        ArgumentEmptyException.ThrowIfNullOrWhiteSpace(path);
 
         if (!path.StartsWith("/", StringComparison.OrdinalIgnoreCase))
         {
@@ -508,15 +479,7 @@ public class GorgonFileSystem
     /// <returns>The directory entry if found, null if not.</returns>
     private VirtualDirectory GetVirtualDirectory(string path)
     {
-        if (path is null)
-        {
-            throw new ArgumentNullException(nameof(path));
-        }
-
-        if (string.IsNullOrWhiteSpace(path))
-        {
-            throw new ArgumentEmptyException(path);
-        }
+        ArgumentEmptyException.ThrowIfNullOrWhiteSpace(path);
 
         path = path.FormatDirectory('/');
 
@@ -531,10 +494,7 @@ public class GorgonFileSystem
             return _rootDirectory;
         }
 
-        string[] directories = path.Split(new[]
-            {
-                '/'
-            }, StringSplitOptions.RemoveEmptyEntries);
+        string[] directories = path.Split(_separator, StringSplitOptions.RemoveEmptyEntries);
 
         if (directories.Length == 0)
         {
@@ -942,7 +902,6 @@ public class GorgonFileSystem
     /// Function to reload all the files and directories within, and optionally, under the specified directory.
     /// </summary> 
     /// <param name="path">The path to the directory to refresh.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="path"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
     /// <exception cref="DirectoryNotFoundException">Thrown when the <paramref name="path"/> points to a directory that does not exist.</exception>
     /// <remarks>
@@ -985,15 +944,7 @@ public class GorgonFileSystem
     /// </remarks>
     public void Refresh(string path)
     {
-        if (path is null)
-        {
-            throw new ArgumentNullException(nameof(path));
-        }
-
-        if (string.IsNullOrWhiteSpace(path))
-        {
-            throw new ArgumentEmptyException(nameof(path));
-        }
+        ArgumentEmptyException.ThrowIfNullOrWhiteSpace(path);
 
         VirtualDirectory directory = GetVirtualDirectory(path) ?? throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, path));
 
@@ -1272,7 +1223,6 @@ public class GorgonFileSystem
     /// </summary>
     /// <param name="physicalPath">Path to the physical file system directory or file that contains the files/directories to enumerate.</param>
     /// <param name="mountPath">[Optional] Virtual directory path to mount into.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="physicalPath"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="physicalPath"/> parameter is an empty string.
     /// <para>-or-</para>
     /// <para>Thrown if mounting a directory and there is no directory in the path.</para>
@@ -1317,13 +1267,13 @@ public class GorgonFileSystem
     /// This example shows how to load a provider from the provider factory and use it with the file system:
     /// <code language="csharp">
     /// <![CDATA[
-    /// // First we need to load the assembly with the provider plug in.
+    /// // First we need to load the assembly with the provider plug-in.
     /// using (GorgonPlugInAssemblyCache assemblies = new GorgonPlugInAssemblyCache())
     /// {
     ///		assemblies.Load(@"C:\PlugIns\GorgonFileSystem.Zip.dll"); 
     ///		GorgonPlugInService plugInService = new GorgonPlugInService(assemblies);
     /// 
-    ///		// We'll use the factory to get the zip plug in provider.
+    ///		// We'll use the factory to get the zip plug-in provider.
     ///		IGorgonFileSystemProviderFactory factory = new GorgonFileSystemProviderFactory(plugInService);
     ///		
     ///		IGorgonFileSystemProvider zipProvider = factory.CreateProvider("Gorgon.IO.Zip.ZipProvider");
@@ -1337,15 +1287,7 @@ public class GorgonFileSystem
     /// </example>
     public GorgonFileSystemMountPoint Mount(string physicalPath, string mountPath = null)
     {
-        if (physicalPath is null)
-        {
-            throw new ArgumentNullException(nameof(physicalPath));
-        }
-
-        if (string.IsNullOrWhiteSpace(physicalPath))
-        {
-            throw new ArgumentEmptyException(nameof(physicalPath));
-        }
+        ArgumentEmptyException.ThrowIfNullOrWhiteSpace(physicalPath);
 
         if (string.IsNullOrWhiteSpace(mountPath))
         {
@@ -1393,7 +1335,7 @@ public class GorgonFileSystem
     /// To retrieve a <paramref name="provider"/>, use the <see cref="GorgonFileSystemProviderFactory.CreateProvider"/> method.
     /// </remarks>
     public GorgonFileSystem(IGorgonFileSystemProvider provider, IGorgonLog log = null)
-        : this(log) => _providers[provider.GetType().FullName ?? throw new ArgumentNullException()] = provider;
+        : this(log) => _providers[provider.Name] = provider;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonFileSystem"/> class.
@@ -1407,19 +1349,10 @@ public class GorgonFileSystem
     public GorgonFileSystem(IEnumerable<IGorgonFileSystemProvider> providers, IGorgonLog log = null)
         : this(log)
     {
-        if (providers is null)
-        {
-            throw new ArgumentNullException(nameof(providers));
-        }
-
         // Get all the providers in the parameter.
         foreach (IGorgonFileSystemProvider provider in providers.Where(item => item is not null))
         {
-            string providerTypeName = provider.GetType().FullName;
-
-            Debug.Assert(providerTypeName is not null, nameof(providerTypeName) + " is null");
-
-            _providers[providerTypeName] = provider;
+            _providers[provider.Name] = provider;
         }
     }
 

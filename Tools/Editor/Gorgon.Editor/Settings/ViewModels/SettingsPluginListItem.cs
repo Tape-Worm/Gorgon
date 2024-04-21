@@ -36,18 +36,18 @@ internal class SettingsPlugInListItem
     : ViewModelBase<SettingsPlugInListItemParameters, IHostServices>, ISettingsPlugInListItem
 {
 
-    // The name of the plug in.
+    // The name of the plug-in.
     private string _name;
-    // The plug in type.
+    // The plug-in type.
     private PlugInType _type;
     // The current state.
     private string _state;
-    // The reason why a plug in is disabled.
+    // The reason why a plug-in is disabled.
     private string _disableReason;
-    // The path to the plug in assembly.
+    // The path to the plug-in assembly.
     private string _path;
 
-    /// <summary>Property to return the name/description for the plug in.</summary>
+    /// <summary>Property to return the name/description for the plug-in.</summary>
     public string Name
     {
         get => _name;
@@ -65,7 +65,7 @@ internal class SettingsPlugInListItem
     }
 
     /// <summary>
-    /// Property to return the path to the plug in.
+    /// Property to return the path to the plug-in.
     /// </summary>
     public string Path
     {
@@ -83,7 +83,7 @@ internal class SettingsPlugInListItem
         }
     }
 
-    /// <summary>Property to return the type for the plug in.</summary>
+    /// <summary>Property to return the type for the plug-in.</summary>
     public PlugInType Type
     {
         get => _type;
@@ -100,7 +100,7 @@ internal class SettingsPlugInListItem
         }
     }
 
-    /// <summary>Property to return the current state of the plug in.</summary>
+    /// <summary>Property to return the current state of the plug-in.</summary>
     public string State
     {
         get => _state;
@@ -117,7 +117,7 @@ internal class SettingsPlugInListItem
         }
     }
 
-    /// <summary>Property to return why the plug in was disabled.</summary>
+    /// <summary>Property to return why the plug-in was disabled.</summary>
     public string DisabledReason
     {
         get => _disableReason;

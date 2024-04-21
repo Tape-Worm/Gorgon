@@ -40,7 +40,7 @@ namespace Gorgon.Editor.Rendering;
 /// <typeparam name="T">The type of view model for the renderer. Must implement the <see cref="IEditorTool"/> interface, and be a reference type.</typeparam>
 /// <remarks>
 /// <para>
-/// This renderer does the bare minimum to present content on the view. Tool plug in UI developers should inherit from this class to take advantage of the default functionality it provides. 
+/// This renderer does the bare minimum to present content on the view. Tool plug-in UI developers should inherit from this class to take advantage of the default functionality it provides. 
 /// </para>
 /// <para>
 /// The default renderer provides basic support for rendering tool specific content

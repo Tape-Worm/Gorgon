@@ -158,7 +158,7 @@ internal class AnimationContent
     }
 
     /// <summary>
-    /// Property to return the settings view model for the plug in.
+    /// Property to return the settings view model for the plug-in.
     /// </summary>
     public ISettings Settings
     {

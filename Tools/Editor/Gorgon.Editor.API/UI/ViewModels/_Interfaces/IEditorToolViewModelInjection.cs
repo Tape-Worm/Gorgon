@@ -29,7 +29,7 @@ using Gorgon.Editor.PlugIns;
 namespace Gorgon.Editor.UI;
 
 /// <summary>
-/// Defines values to inject into tool plug in view models
+/// Defines values to inject into tool plug-in view models
 /// </summary>
 public interface IEditorToolViewModelInjection
     : IViewModelInjection<IHostContentServices>

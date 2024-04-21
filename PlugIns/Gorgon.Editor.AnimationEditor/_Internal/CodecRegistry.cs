@@ -34,18 +34,18 @@ using Gorgon.Renderers;
 namespace Gorgon.Editor.AnimationEditor;
 
 /// <summary>
-/// A registry for the animation codecs used by the plug ins in this assembly
+/// A registry for the animation codecs used by the plug-ins in this assembly
 /// </summary>
 /// <remarks>Initializes a new instance of the <see cref="CodecRegistry"/> class.</remarks>
-/// <param name="pluginCache">The cache of plug in assemblies.</param>
+/// <param name="pluginCache">The cache of plug-in assemblies.</param>
 /// <param name="renderer">The 2D renderer for the application.</param>
 /// <param name="log">The log for debug output.</param>
 internal class CodecRegistry(GorgonMefPlugInCache pluginCache, Gorgon2D renderer, IGorgonLog log)
 {
 
-    // The cache containing the plug in assemblies.
+    // The cache containing the plug-in assemblies.
     private readonly GorgonMefPlugInCache _pluginCache = pluginCache;
-    // The service used to manage the plug ins.
+    // The service used to manage the plug-ins.
     private readonly IGorgonPlugInService _pluginService = new GorgonMefPlugInService(pluginCache);
     // The log.
     private readonly IGorgonLog _log = log;
@@ -69,7 +69,7 @@ internal class CodecRegistry(GorgonMefPlugInCache pluginCache, Gorgon2D renderer
     } = [];
 
     /// <summary>
-    /// Property to return the list of animation codec plug ins.
+    /// Property to return the list of animation codec plug-ins.
     /// </summary>
     public IList<GorgonAnimationCodecPlugIn> CodecPlugIns
     {
@@ -77,9 +77,9 @@ internal class CodecRegistry(GorgonMefPlugInCache pluginCache, Gorgon2D renderer
     } = [];
 
     /// <summary>
-    /// Function to load external animation codec plug ins.
+    /// Function to load external animation codec plug-ins.
     /// </summary>
-    /// <param name="settings">The settings containing the plug in path.</param>
+    /// <param name="settings">The settings containing the plug-in path.</param>
     private void LoadCodecPlugIns(AnimationImportSettings settings)
     {
         if (settings.CodecPlugInPaths.Count == 0)
@@ -93,10 +93,10 @@ internal class CodecRegistry(GorgonMefPlugInCache pluginCache, Gorgon2D renderer
 
         if (assemblies.Count == 0)
         {
-            _log.Print("Animation codec plug in assemblies were not loaded. There may not have been any plug assemblies, or they may already be referenced.", LoggingLevel.Verbose);
+            _log.Print("Animation codec plug-in assemblies were not loaded. There may not have been any plug assemblies, or they may already be referenced.", LoggingLevel.Verbose);
         }
 
-        // Load all the codecs contained within the plug in (a plug in can have multiple codecs).
+        // Load all the codecs contained within the plug-in (a plug-in can have multiple codecs).
         foreach (GorgonAnimationCodecPlugIn plugin in _pluginService.GetPlugIns<GorgonAnimationCodecPlugIn>())
         {
             foreach (GorgonAnimationCodecDescription desc in plugin.Codecs)
@@ -123,9 +123,9 @@ internal class CodecRegistry(GorgonMefPlugInCache pluginCache, Gorgon2D renderer
     }
 
     /// <summary>
-    /// Function to remove an animation codec plug in from the registry.
+    /// Function to remove an animation codec plug-in from the registry.
     /// </summary>
-    /// <param name="plugin">The plug in to remove.</param>
+    /// <param name="plugin">The plug-in to remove.</param>
     public void RemoveCodecPlugIn(GorgonAnimationCodecPlugIn plugin)
     {
         if (plugin is null)
@@ -164,7 +164,7 @@ internal class CodecRegistry(GorgonMefPlugInCache pluginCache, Gorgon2D renderer
     /// Function to add a codec to the registry.
     /// </summary>
     /// <param name="path">The path to the codec assembly.</param>
-    /// <param name="errors">A list of errors if the plug in fails to load.</param>
+    /// <param name="errors">A list of errors if the plug-in fails to load.</param>
     /// <returns>A list of codec plugs ins that were loaded.</returns>
     public IReadOnlyList<GorgonAnimationCodecPlugIn> AddCodecPlugIn(string path, out IReadOnlyList<string> errors)
     {
@@ -193,7 +193,7 @@ internal class CodecRegistry(GorgonMefPlugInCache pluginCache, Gorgon2D renderer
             return result;
         }
 
-        // Since we can't unload an assembly, we'll have to force a rescan of the plug ins. We may have unloaded one prior, and we might need to get it back.
+        // Since we can't unload an assembly, we'll have to force a rescan of the plug-ins. We may have unloaded one prior, and we might need to get it back.
         _pluginService.ScanPlugIns();
         AssemblyName assemblyName = AssemblyName.GetAssemblyName(path);
         IReadOnlyList<GorgonAnimationCodecPlugIn> pluginList = _pluginService.GetPlugIns<GorgonAnimationCodecPlugIn>(assemblyName);
@@ -204,12 +204,12 @@ internal class CodecRegistry(GorgonMefPlugInCache pluginCache, Gorgon2D renderer
             return result;
         }
 
-        // Load all the codecs contained within the plug in (a plug in can have multiple codecs).
+        // Load all the codecs contained within the plug-in (a plug-in can have multiple codecs).
         foreach (GorgonAnimationCodecPlugIn plugin in pluginList)
         {
             if (CodecPlugIns.Any(item => string.Equals(plugin.Name, item.Name, StringComparison.OrdinalIgnoreCase)))
             {
-                _log.PrintWarning($"Codec plug in '{plugin.Name}' is already loaded.", LoggingLevel.Intermediate);
+                _log.PrintWarning($"Codec plug-in '{plugin.Name}' is already loaded.", LoggingLevel.Intermediate);
                 localErrors.Add(string.Format(Resources.GORANM_ERR_CODEC_PLUGIN_ALREADY_LOADED, plugin.Name));
                 continue;
             }
@@ -231,7 +231,7 @@ internal class CodecRegistry(GorgonMefPlugInCache pluginCache, Gorgon2D renderer
 
                 if (animationCodec is null)
                 {
-                    _log.PrintError($"Could not create animation codec '{desc.Name}' from plug in '{plugin.PlugInPath}'.", LoggingLevel.Verbose);
+                    _log.PrintError($"Could not create animation codec '{desc.Name}' from plug-in '{plugin.PlugInPath}'.", LoggingLevel.Verbose);
                     localErrors.Add(string.Format(Resources.GORANM_ERR_CODEC_LOAD_FAIL, desc.Name));
                     --count;
                     continue;
@@ -258,7 +258,7 @@ internal class CodecRegistry(GorgonMefPlugInCache pluginCache, Gorgon2D renderer
     /// <summary>
     /// Function to load the codecs from our settings data.
     /// </summary>
-    /// <param name="settings">The settings containing the plug in paths.</param>
+    /// <param name="settings">The settings containing the plug-in paths.</param>
     public void LoadFromSettings(AnimationImportSettings settings)
     {
         Codecs.Clear();

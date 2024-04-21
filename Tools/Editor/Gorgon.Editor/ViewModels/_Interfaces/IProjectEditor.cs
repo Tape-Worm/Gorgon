@@ -37,7 +37,7 @@ internal interface IProjectEditor
     : IViewModel
 {
     /// <summary>
-    /// Property to return the available tool plug in button definitions for the application.
+    /// Property to return the available tool plug-in button definitions for the application.
     /// </summary>
     IReadOnlyDictionary<string, IReadOnlyList<IToolPlugInRibbonButton>> ToolButtons
     {
@@ -53,7 +53,7 @@ internal interface IProjectEditor
     }
 
     /// <summary>
-    /// Property to return the content file manager for managing content file systems through content plug ins.
+    /// Property to return the content file manager for managing content file systems through content plug-ins.
     /// </summary>
     IContentFileManager ContentFileManager
     {

@@ -36,7 +36,7 @@ namespace Gorgon.Input;
 /// <remarks>
 /// Initializes a new instance of the <see cref="GorgonGamingDeviceDriverFactory"/> class
 /// </remarks>
-/// <param name="pluginCache">The plug in cache that will hold the plug in assemblies.</param>
+/// <param name="pluginCache">The plug-in cache that will hold the plug-in assemblies.</param>
 /// <param name="log">[Optional] The logger used for debugging.</param>
 /// <exception cref="ArgumentNullException">Thrown when the <paramref name="pluginCache"/> is <b>null</b>.</exception>
 public sealed class GorgonGamingDeviceDriverFactory(GorgonMefPlugInCache pluginCache, IGorgonLog log = null)
@@ -45,15 +45,15 @@ public sealed class GorgonGamingDeviceDriverFactory(GorgonMefPlugInCache pluginC
 
     // The logger used for debugging.
     private readonly IGorgonLog _log = log ?? GorgonLog.NullLog;
-    // The plug in service to use when loading drivers.
+    // The plug-in service to use when loading drivers.
     private readonly IGorgonPlugInService _plugInService = new GorgonMefPlugInService(pluginCache);
-    // The cache holding the plug in assemblies.
+    // The cache holding the plug-in assemblies.
     private readonly GorgonMefPlugInCache _plugInCache = pluginCache ?? throw new ArgumentNullException(nameof(pluginCache));
 
     /// <summary>
-    /// Function to load all drivers from the plug in assemblies that are currently loaded.
+    /// Function to load all drivers from the plug-in assemblies that are currently loaded.
     /// </summary>
-    /// <param name="assemblyPath">The path to the assembly containing the gaming driver plug ins.</param>
+    /// <param name="assemblyPath">The path to the assembly containing the gaming driver plug-ins.</param>
     /// <returns>A read only list containing an instance of each driver.</returns>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="assemblyPath"/> parameter is <b>null</b></exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="assemblyPath"/> parameter is empty.</exception>
@@ -87,14 +87,14 @@ public sealed class GorgonGamingDeviceDriverFactory(GorgonMefPlugInCache pluginC
     }
 
     /// <summary>
-    /// Function to load a gaming device driver from any loaded plug in assembly.
+    /// Function to load a gaming device driver from any loaded plug-in assembly.
     /// </summary>
-    /// <param name="assemblyPath">The path to the assembly containing the gaming driver plug ins.</param>
+    /// <param name="assemblyPath">The path to the assembly containing the gaming driver plug-ins.</param>
     /// <param name="driverType">The fully qualified type name of the driver to load.</param>
-    /// <returns>The gaming device driver plug in.</returns>
+    /// <returns>The gaming device driver plug-in.</returns>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="assemblyPath"/>, or the <paramref name="driverType"/> parameter is <b>null</b></exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="assemblyPath"/>, or the <paramref name="driverType"/> parameter is empty.</exception>
-    /// <exception cref="ArgumentException">Thrown when the driver type name specified by <paramref name="driverType"/> was not found in any of the loaded plug in assemblies.
+    /// <exception cref="ArgumentException">Thrown when the driver type name specified by <paramref name="driverType"/> was not found in any of the loaded plug-in assemblies.
     /// <para>-or-</para>
     /// <para>Thrown when the <paramref name="assemblyPath"/> was invalid.</para>
     /// </exception>

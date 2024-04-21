@@ -30,18 +30,18 @@ using Gorgon.PlugIns;
 namespace Gorgon.Editor.UI;
 
 /// <summary>
-/// Parameters for a <see cref="ISettingsCategory"/> specific to loading plug ins for an editor plug in
+/// Parameters for a <see cref="ISettingsCategory"/> specific to loading plug-ins for an editor plug-in
 /// </summary>
 /// <remarks>Initializes a new instance of the <see cref="PlugInsCategoryViewModelParameters"/> class.</remarks>
-/// <param name="openCodecDialog">The service used to locate plug in assemblies for loading.</param>
-/// <param name="plugInCache">The cache for plug in assemblies.</param>
+/// <param name="openCodecDialog">The service used to locate plug-in assemblies for loading.</param>
+/// <param name="plugInCache">The cache for plug-in assemblies.</param>
 /// <param name="hostServices">Services passed down from the host application.</param>
 /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
 public class PlugInsCategoryViewModelParameters(IFileDialogService openCodecDialog, GorgonMefPlugInCache plugInCache, IHostContentServices hostServices)
         : SettingsCategoryViewModelParameters(hostServices)
 {
     /// <summary>
-    /// Property to return the plug in cache.
+    /// Property to return the plug-in cache.
     /// </summary>
     public GorgonMefPlugInCache PlugInCache
     {
@@ -49,7 +49,7 @@ public class PlugInsCategoryViewModelParameters(IFileDialogService openCodecDial
     } = plugInCache ?? throw new ArgumentNullException(nameof(plugInCache));
 
     /// <summary>
-    /// Property to return the service used to locate plug in assemblies for loading.
+    /// Property to return the service used to locate plug-in assemblies for loading.
     /// </summary>
     public IFileDialogService OpenCodecDialog
     {

@@ -101,7 +101,7 @@ partial class Stage
         this.CheckSettings.TabIndex = 7;
         this.CheckSettings.Text = "&Settings";
         this.CheckSettings.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-        this.TipButtons.SetToolTip(this.CheckSettings, "Change the settings for the application and/or various plug ins.");
+        this.TipButtons.SetToolTip(this.CheckSettings, "Change the settings for the application and/or various plug-ins.");
         this.CheckSettings.UseVisualStyleBackColor = true;
         this.CheckSettings.Click += new System.EventHandler(this.CheckSettings_Click);
         // 

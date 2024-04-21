@@ -43,7 +43,7 @@ internal class EditorSettings
     }
 
     /// <summary>
-    /// Property to set or return the path used for the application plug ins.
+    /// Property to set or return the path used for the application plug-ins.
     /// </summary>
     public string PlugInPath
     {

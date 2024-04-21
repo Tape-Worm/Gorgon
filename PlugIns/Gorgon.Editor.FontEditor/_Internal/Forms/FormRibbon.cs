@@ -34,7 +34,7 @@ using Krypton.Toolkit;
 namespace Gorgon.Editor.FontEditor;
 
 /// <summary>
-/// Provides a ribbon interface for the plug in view
+/// Provides a ribbon interface for the plug-in view
 /// </summary>
 internal partial class FormRibbon
     : KryptonForm, IDataContext<IFontContent>

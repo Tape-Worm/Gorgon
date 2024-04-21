@@ -41,7 +41,7 @@ namespace Gorgon.Editor.UI;
 /// and the <see cref="INotifyPropertyChanging"/> interfaces to allow communication with a view. 
 /// </para>
 /// <para>
-/// Common services used by the application, such as a message display service, content plug in service, etc... are provided through the <see cref="HostServices"/> property so that custom 
+/// Common services used by the application, such as a message display service, content plug-in service, etc... are provided through the <see cref="HostServices"/> property so that custom 
 /// view models can use standardized functionality to communicate with the user should the need arise
 /// </para>
 /// <para>

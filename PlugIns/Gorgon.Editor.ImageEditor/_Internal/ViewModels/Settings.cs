@@ -35,7 +35,7 @@ namespace Gorgon.Editor.ImageEditor;
 internal class Settings
     : SettingsCategoryBase<SettingsParameters>, ISettings
 {
-    // The underlying settings for the plug in.
+    // The underlying settings for the plug-in.
     private ImageEditorSettings _settings;
     // The range for the alpha setting funtionality.
     private GorgonRange<int> _alphaRange;

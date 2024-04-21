@@ -34,18 +34,18 @@ using Gorgon.IO;
 namespace Gorgon.Editor.PlugIns;
 
 /// <summary>
-/// A plug in type that performs a custom import for content
+/// A plug-in type that performs a custom import for content
 /// </summary>
 /// <remarks>
 /// <para>
-/// The content importer plug in allows an application to import external content and convert it to a type that the associated <see cref="ContentPlugIn"/> can handle. Content importers should be 
+/// The content importer plug-in allows an application to import external content and convert it to a type that the associated <see cref="ContentPlugIn"/> can handle. Content importers should be 
 /// associated with the content produced by a <see cref="ContentPlugIn"/> in some way, but is not mandatory
 /// </para>
 /// <para>
-/// Content plug ins are automatically run whenever content is imported into the host application
+/// Content plug-ins are automatically run whenever content is imported into the host application
 /// </para>
 /// <para>
-/// The content importer plug in provides an importer object that the host application calls to perform the import operation on file data. This content importer must implement the 
+/// The content importer plug-in provides an importer object that the host application calls to perform the import operation on file data. This content importer must implement the 
 /// <see cref="IEditorContentImporter"/>. The host application will pass along the required objects to manipulate the file system, access the graphics interface, and other sets of functionality
 /// </para>
 /// <para>
@@ -62,7 +62,7 @@ public abstract class ContentImportPlugIn
     /// </summary>
     /// <remarks>
     /// Use this value to provide the original filename (and optionally, full path) for the original content being imported. This is stored in the <see cref="ProjectItemMetadata"/> for informational 
-    /// purposes and should not be used by the plug in.
+    /// purposes and should not be used by the plug-in.
     /// </remarks>
     public const string ImportOriginalFileNameAttr = "ImportOriginalName";
 
@@ -79,10 +79,10 @@ public abstract class ContentImportPlugIn
     /// </summary>
     /// <remarks>
     /// <para>
-    /// Plug in developers that implement a common plug in type based on this base type, should assign this value to allow access to the common content services supplied by the host application.
+    /// Plug in developers that implement a common plug-in type based on this base type, should assign this value to allow access to the common content services supplied by the host application.
     /// </para>
     /// <para>
-    /// This will be assigned during the initialization of the plug in.
+    /// This will be assigned during the initialization of the plug-in.
     /// </para>
     /// </remarks>
     /// <seealso cref="IHostServices"/>
@@ -96,7 +96,7 @@ public abstract class ContentImportPlugIn
     /// Property to return the file system used to hold temporary file data.
     /// </summary>
     /// <remarks>
-    /// Importer plug ins can use this to write temporary working data, which is deleted after the project unloads, for use during the import process.
+    /// Importer plug-ins can use this to write temporary working data, which is deleted after the project unloads, for use during the import process.
     /// </remarks>
     protected IGorgonFileSystemWriter<Stream> TemporaryFileSystem
     {
@@ -108,7 +108,7 @@ public abstract class ContentImportPlugIn
     /// Property to return the file system used by the project.
     /// </summary>
     /// <remarks>
-    /// Importer plug ins can use this to read in dependencies and other content files from the project.
+    /// Importer plug-ins can use this to read in dependencies and other content files from the project.
     /// </remarks>
     protected IGorgonFileSystem ProjectFileSystem
     {
@@ -117,10 +117,10 @@ public abstract class ContentImportPlugIn
     }
 
     /// <summary>
-    /// Property to return the type of this plug in.
+    /// Property to return the type of this plug-in.
     /// </summary>
     /// <remarks>
-    /// The <see cref="PlugIns.PlugInType"/> returned for this property indicates the general plug in functionality. 
+    /// The <see cref="PlugIns.PlugInType"/> returned for this property indicates the general plug-in functionality. 
     /// </remarks>
     /// <seealso cref="PlugIns.PlugInType"/>
     public sealed override PlugInType PlugInType => PlugInType.ContentImporter;
@@ -130,11 +130,11 @@ public abstract class ContentImportPlugIn
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This method provides the means to perform custom initialization for an implementing content plug in type. Plug in developers can override this method to perform their own one-time setup for a 
-    /// custom plug in.
+    /// This method provides the means to perform custom initialization for an implementing content plug-in type. Plug in developers can override this method to perform their own one-time setup for a 
+    /// custom plug-in.
     /// </para>
     /// <para>
-    /// This method will only be called once when the plug in is loaded. It cannot be called after it has been called during load.
+    /// This method will only be called once when the plug-in is loaded. It cannot be called after it has been called during load.
     /// </para>
     /// </remarks>
     protected virtual void OnInitialize()
@@ -146,11 +146,11 @@ public abstract class ContentImportPlugIn
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This method provides the means to perform custom cleanup for an implementing content plug in type. Plug in developers can override this method to perform their own one-time cleanup for a 
-    /// custom plug in.
+    /// This method provides the means to perform custom cleanup for an implementing content plug-in type. Plug in developers can override this method to perform their own one-time cleanup for a 
+    /// custom plug-in.
     /// </para>
     /// <para>
-    /// This method will only be called once when the plug in is unloaded. It cannot be called after it has been called during unload.
+    /// This method will only be called once when the plug-in is unloaded. It cannot be called after it has been called during unload.
     /// </para>
     /// </remarks>
     protected virtual void OnShutdown()
@@ -175,8 +175,8 @@ public abstract class ContentImportPlugIn
     /// <returns><b>true</b> if the plugin can open the file, or <b>false</b> if not.</returns>
     /// <remarks>
     /// <para>
-    /// This method is used to determine if the file specified by the <paramref name="filePath"/> passed to the method can be opened by this plug in. If the method returns <b>true</b>, then the host 
-    /// application will convert the file using the importer produced by this plug in. Otherwise, if the method returns <b>false</b>, then the file is skipped.
+    /// This method is used to determine if the file specified by the <paramref name="filePath"/> passed to the method can be opened by this plug-in. If the method returns <b>true</b>, then the host 
+    /// application will convert the file using the importer produced by this plug-in. Otherwise, if the method returns <b>false</b>, then the file is skipped.
     /// </para>
     /// <para>
     /// The <paramref name="filePath"/> is a path to the file on the project virtual file system.
@@ -188,7 +188,7 @@ public abstract class ContentImportPlugIn
     protected abstract bool OnCanOpenContent(string filePath);
 
     /// <summary>
-    /// Function to allow custom plug ins to implement custom actions when a project is created/opened.
+    /// Function to allow custom plug-ins to implement custom actions when a project is created/opened.
     /// </summary>
     protected virtual void OnProjectOpened()
     {
@@ -196,7 +196,7 @@ public abstract class ContentImportPlugIn
     }
 
     /// <summary>
-    /// Function to allow custom plug ins to implement custom actions when a project is closed.
+    /// Function to allow custom plug-ins to implement custom actions when a project is closed.
     /// </summary>
     protected virtual void OnProjectClosed()
     {
@@ -233,8 +233,8 @@ public abstract class ContentImportPlugIn
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="filePath"/> parameter is empty.</exception>
     /// <remarks>
     /// <para>
-    /// This method is used to determine if the file specified by the <paramref name="filePath"/> passed to the method can be opened by this plug in. If the method returns <b>true</b>, then the host 
-    /// application will convert the file using the importer produced by this plug in. Otherwise, if the method returns <b>false</b>, then the file is skipped.
+    /// This method is used to determine if the file specified by the <paramref name="filePath"/> passed to the method can be opened by this plug-in. If the method returns <b>true</b>, then the host 
+    /// application will convert the file using the importer produced by this plug-in. Otherwise, if the method returns <b>false</b>, then the file is skipped.
     /// </para>
     /// <para>
     /// The <paramref name="filePath"/> is a path to the file on the project virtual file system. Passing a physical file system path to this method will not work.
@@ -282,13 +282,13 @@ public abstract class ContentImportPlugIn
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This method provides the means to perform clean up of internal resources for the plug in.
+    /// This method provides the means to perform clean up of internal resources for the plug-in.
     /// </para>
     /// <para>
-    /// Content plug ins inheriting from this base type can provide custom initialization by implementing the <see cref="OnShutdown"/> method.        
+    /// Content plug-ins inheriting from this base type can provide custom initialization by implementing the <see cref="OnShutdown"/> method.        
     /// </para>
     /// <para>
-    /// This method will only be called during unloading of the plug in (typically when the host application shuts down).
+    /// This method will only be called during unloading of the plug-in (typically when the host application shuts down).
     /// </para>
     /// <para>
     /// <note type="important">
@@ -314,17 +314,17 @@ public abstract class ContentImportPlugIn
     /// <summary>
     /// Function to perform any required initialization for the plugin.
     /// </summary>
-    /// <param name="hostServices">The services passed from the host application to the plug in.</param>
+    /// <param name="hostServices">The services passed from the host application to the plug-in.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="hostServices"/> parameter is <b>null</b>.</exception> 
     /// <remarks>
     /// <para>
-    /// This method provides the means to initialize the content importer plug in and passes functionality from the host application to the plug in.
+    /// This method provides the means to initialize the content importer plug-in and passes functionality from the host application to the plug-in.
     /// </para>
     /// <para>
-    /// Content plug ins inheriting from this base type can provide custom initialization by implementing the <see cref="OnInitialize"/> method.
+    /// Content plug-ins inheriting from this base type can provide custom initialization by implementing the <see cref="OnInitialize"/> method.
     /// </para>
     /// <para>
-    /// This method will only be called once when the plug in is loaded. It cannot and should not be called after it has been called during load. 
+    /// This method will only be called once when the plug-in is loaded. It cannot and should not be called after it has been called during load. 
     /// </para>
     /// <para>
     /// <note type="important">

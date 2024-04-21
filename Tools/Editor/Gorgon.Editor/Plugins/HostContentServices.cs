@@ -30,19 +30,19 @@ using Gorgon.Editor.Services;
 namespace Gorgon.Editor.PlugIns;
 
 /// <summary>
-/// Services from the host application for content plug ins
+/// Services from the host application for content plug-ins
 /// </summary>
 internal class HostContentServices
     : IHostContentServices
 {
-    /// <summary>Property to set or return the service that allows a content plug in to access other content plug ins.</summary>
+    /// <summary>Property to set or return the service that allows a content plug-in to access other content plug-ins.</summary>
     public IContentPlugInService ContentPlugInService
     {
         get;
         set;
     }
 
-    /// <summary>Property to set or return the service that allows a conetnt plug in to access tool content plug ins.</summary>
+    /// <summary>Property to set or return the service that allows a conetnt plug-in to access tool content plug-ins.</summary>
     public IToolPlugInService ToolPlugInService
     {
         get;

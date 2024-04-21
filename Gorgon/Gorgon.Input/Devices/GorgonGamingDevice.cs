@@ -33,7 +33,7 @@ namespace Gorgon.Input;
 /// </summary>
 /// <remarks>
 /// <para>
-/// Gaming devices (such as a joystick or game pad) and provided via a driver system using the <see cref="GorgonGamingDeviceDriver"/> object. These drivers may be loaded via a plug in interface through the 
+/// Gaming devices (such as a joystick or game pad) and provided via a driver system using the <see cref="GorgonGamingDeviceDriver"/> object. These drivers may be loaded via a plug-in interface through the 
 /// <see cref="GorgonGamingDeviceDriverFactory"/> object. Once a driver is loaded, it can be used to create an object of this type
 /// </para>
 /// <para>
@@ -52,7 +52,7 @@ namespace Gorgon.Input;
 /// device before calling
 /// </para>
 /// <para>
-/// Implementors of a <see cref="GorgonGamingDeviceDriver"/> plug in must inherit this type in order to expose functionality from a native provider (e.g. XInput)
+/// Implementors of a <see cref="GorgonGamingDeviceDriver"/> plug-in must inherit this type in order to expose functionality from a native provider (e.g. XInput)
 /// </para>
 /// </remarks>
 public abstract class GorgonGamingDevice
@@ -88,7 +88,7 @@ public abstract class GorgonGamingDevice
     /// This property is used to return the current position and dead zone for a given axis. 
     /// </para>
     /// <para>
-    /// <see cref="GorgonGamingDeviceDriver"/> plug in implementors must set this value when device data is retrieved.
+    /// <see cref="GorgonGamingDeviceDriver"/> plug-in implementors must set this value when device data is retrieved.
     /// </para>
     /// </remarks>
     /// <example>
@@ -125,7 +125,7 @@ public abstract class GorgonGamingDevice
     /// This will return a <see cref="float"/> value of -1.0f for center, or 0 to 359.9999f to indicate the direction, in degrees, of the POV hat.
     /// </para>
     /// <para>
-    /// <see cref="GorgonGamingDeviceDriver"/> plug in implementors must set this value when device data is retrieved.
+    /// <see cref="GorgonGamingDeviceDriver"/> plug-in implementors must set this value when device data is retrieved.
     /// </para>
     /// </remarks>
     public float[] POV
@@ -141,7 +141,7 @@ public abstract class GorgonGamingDevice
     /// This will return a list of the available buttons on the gaming device and their corresponding state represented by a <see cref="GamingDeviceButtonState"/> enumeration.
     /// </para>
     /// <para>
-    /// <see cref="GorgonGamingDeviceDriver"/> plug in implementors must set this value when device data is retrieved.
+    /// <see cref="GorgonGamingDeviceDriver"/> plug-in implementors must set this value when device data is retrieved.
     /// </para>
     /// </remarks>
     public GamingDeviceButtonState[] Button
@@ -158,7 +158,7 @@ public abstract class GorgonGamingDevice
     /// to the system at the time of enumeration. Thus, we have this property to ensure that we know when a gaming device is connected to the system or not. 
     /// </para>
     /// <para>
-    /// <see cref="GorgonGamingDeviceDriver"/> plug in implementors must ensure that this property will update itself when a gaming device is connected or disconnected.
+    /// <see cref="GorgonGamingDeviceDriver"/> plug-in implementors must ensure that this property will update itself when a gaming device is connected or disconnected.
     /// </para>
     /// </remarks>
     public abstract bool IsConnected
@@ -302,7 +302,7 @@ public abstract class GorgonGamingDevice
     /// To determine if the device supports vibration, check the <see cref="IGorgonGamingDeviceInfo.Capabilities"/> property for the <see cref="GamingDeviceCapabilityFlags.SupportsVibration"/> flag.
     /// </para>
     /// <para>
-    /// Implementors of a <see cref="GorgonGamingDeviceDriver"/> plug in should ensure that devices that support vibration implement this method. Otherwise, if the device does not support the functionality 
+    /// Implementors of a <see cref="GorgonGamingDeviceDriver"/> plug-in should ensure that devices that support vibration implement this method. Otherwise, if the device does not support the functionality 
     /// then this method can be left alone.
     /// </para>
     /// </remarks>
@@ -314,7 +314,7 @@ public abstract class GorgonGamingDevice
     /// Function to retrieve data from the provider of the physical device.
     /// </summary>
     /// <remarks>
-    /// Implementors of a <see cref="GorgonGamingDeviceDriver"/> plug in must implement this and format their data to populate the values of this object with correct state information.
+    /// Implementors of a <see cref="GorgonGamingDeviceDriver"/> plug-in must implement this and format their data to populate the values of this object with correct state information.
     /// </remarks>
     protected abstract void OnGetData();
 

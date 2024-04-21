@@ -103,7 +103,7 @@ internal class KeyEditorContext
     private IContentFileManager _fileManager;
     // The list of sprites selected for loading texture keys.
     private readonly List<IContentFile> _selectedSprites = [];
-    // Services from the plug in.
+    // Services from the plug-in.
     private ContentServices _contentServices;
     // The current editor for floating point values.
     private IKeyValueEditor _currentEditor;

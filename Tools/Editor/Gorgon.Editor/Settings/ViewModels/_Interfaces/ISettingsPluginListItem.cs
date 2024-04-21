@@ -35,7 +35,7 @@ internal interface ISettingsPlugInListItem
     : IViewModel
 {
     /// <summary>
-    /// Property to return the name/description for the plug in.
+    /// Property to return the name/description for the plug-in.
     /// </summary>
     string Name
     {
@@ -43,7 +43,7 @@ internal interface ISettingsPlugInListItem
     }
 
     /// <summary>
-    /// Property to return the path to the plug in.
+    /// Property to return the path to the plug-in.
     /// </summary>
     string Path
     {
@@ -51,7 +51,7 @@ internal interface ISettingsPlugInListItem
     }
 
     /// <summary>
-    /// Property to return the type for the plug in.
+    /// Property to return the type for the plug-in.
     /// </summary>
     PlugInType Type
     {
@@ -59,7 +59,7 @@ internal interface ISettingsPlugInListItem
     }
 
     /// <summary>
-    /// Property to return the current state of the plug in.
+    /// Property to return the current state of the plug-in.
     /// </summary>
     string State
     {
@@ -67,7 +67,7 @@ internal interface ISettingsPlugInListItem
     }
 
     /// <summary>
-    /// Property to return why the plug in was disabled.
+    /// Property to return why the plug-in was disabled.
     /// </summary>
     string DisabledReason
     {

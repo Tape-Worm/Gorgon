@@ -60,7 +60,7 @@ internal class ResourceManagement(Gorgon2D renderer, GorgonMefPlugInCache plugIn
     private readonly GorgonGraphics _graphics = renderer.Graphics;
     // The 2D renderer interface for the application.
     private readonly Gorgon2D _renderer = renderer;
-    // The plug in service for the application.
+    // The plug-in service for the application.
     private readonly GorgonMefPlugInCache _plugIns = plugIns;
     // The file system where resources are kept.
     private IGorgonFileSystem _fileSystem;

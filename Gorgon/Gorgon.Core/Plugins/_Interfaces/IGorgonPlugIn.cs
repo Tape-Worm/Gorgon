@@ -1,7 +1,5 @@
-﻿
-// 
-// Gorgon
-// Copyright (C) 2011 Michael Winsor
+﻿// Gorgon.
+// Copyright (C) 2024 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -11,30 +9,32 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software
+// all copies or substantial portions of the Software.
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE
+// THE SOFTWARE.
 // 
-// Created: Thursday, June 23, 2011 11:24:37 AM
-// 
+// Created: April 20, 2024 9:01:55 PM
+//
 
-using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using Gorgon.Core;
 
 namespace Gorgon.PlugIns;
-
 /// <summary>
-/// A base class for <see cref="IGorgonPlugIn"/> types used by the <see cref="IGorgonPlugInService"/>
+/// The base for all plug-ins used by the <see cref="IGorgonPlugInService"/>
 /// </summary>
 /// <remarks>
 /// <para>
-/// This is an abstract convenience class that implements and automatically populates the members of the <see cref="IGorgonPlugIn"/> interface. Use this to quickly get up and running with a plug-in.
+/// Any plug-ins used by the <see cref="IGorgonPlugInService"/> must implement this type. The plug-in service will scan any plug-in assemblies loaded and will enumerate only types that have this interface 
+/// implemented. This interface is used when a plug-in needs manage all of its metadata directly, or in cases where <see cref="GorgonPlugIn"/> can't be used.
+/// </para>
+/// <para>
+/// If a plug-in doesn't need this level of control, then users can opt to use the <see cref="GorgonPlugIn"/> type, which will handle the setup of the interface on their behalf.
 /// </para>
 /// <para>
 /// <h3>Defining your own plugin</h3>
@@ -53,14 +53,41 @@ namespace Gorgon.PlugIns;
 /// 
 /// // This too will go into the host assembly and be overridden in your plugin assembly
 /// public abstract class FunctionalityPlugIn
-///		: GorgonPlugIn
+///		: IGorgonPlugIn
 /// {
+///     // These properties are from IGorgonPlugIn
+///     public string Name
+///     {
+///         get;
+///     }
+///     
+///     public string Description
+///     {
+///         get;
+///     }
+///     
+///     public string PlugInPath
+///     {
+///         get;
+///     }
+///     
+///     public AssemblyName Assembly
+///     {
+///         get;
+///     }
+/// 
 ///		public abstract FunctionalityBase GetNewFunctionality();
 /// 
 ///		protected FunctionalityPlugIn(string description)
-///		    : base(description)
 ///		{
-///		    // All plug-in properties will be set by the base class.
+///		    // Typically the fully qualified type name.
+///		    Name = ... 
+///		    // From the constructor.
+///		    Description = description;
+///		    // The AssemblyName for the assembly that contains this type.
+///		    Assembly = ...
+///		    // The path to the assembly holding the plug-in type.
+///		    PlugInPath = ...
 ///		}
 /// }
 ///	]]>
@@ -102,30 +129,14 @@ namespace Gorgon.PlugIns;
 /// </code>  
 /// </para>
 /// </remarks>
-/// <seealso cref="IGorgonPlugIn"/>.
-public abstract class GorgonPlugIn
-    : IGorgonPlugIn
+/// <seealso cref="GorgonPlugIn"/>
+public interface IGorgonPlugIn
+    : IGorgonNamedObject
 {
-    /// <summary>
-    /// Property to return the name of this object.
-    /// </summary>
-    public string Name
-    {
-        get;
-    }
-
     /// <summary>
     /// Property to return the assembly that contains this plugin.
     /// </summary>
-    public AssemblyName Assembly
-    {
-        get;
-    }
-
-    /// <summary>
-    /// Property to return the path to the plugin assembly.
-    /// </summary>
-    public string PlugInPath
+    AssemblyName Assembly
     {
         get;
     }
@@ -133,26 +144,16 @@ public abstract class GorgonPlugIn
     /// <summary>
     /// Property to return the description of the plugin.
     /// </summary>
-    public string Description
+    string Description
     {
         get;
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonPlugIn"/> class.
+    /// Property to return the path to the plugin assembly.
     /// </summary>
-    /// <param name="description">Optional description of the plugin.</param>
-    /// <remarks>
-    /// Implementors of this base class should pass in a hard coded description to the base constructor.
-    /// </remarks>
-    [RequiresAssemblyFiles("Plug ins will not work with trimming and Native AOT.")]
-    protected GorgonPlugIn(string description)
+    string PlugInPath
     {
-        Description = description ?? string.Empty;
-
-        Assembly = GetType().Assembly.GetName();
-        PlugInPath = GetType().Assembly.ManifestModule.FullyQualifiedName;
-        // This should never happen, but I guess it's possible that the type name is null.
-        Name = GetType().FullName ?? throw new GorgonException(GorgonResult.CannotCreate);
+        get;
     }
 }

@@ -611,7 +611,7 @@ public partial class MainForm
             // Create the raw input interface.
             _input = new GorgonRawInput(this, GorgonApplication.Log);
 
-            // Get available gaming device driver plug ins.
+            // Get available gaming device driver plug-ins.
             _drivers = factory.LoadAllDrivers(Path.Combine(GorgonExample.GetPlugInPath().FullName, "Gorgon.Input.*.dll"));
 
             _joystickList = [];

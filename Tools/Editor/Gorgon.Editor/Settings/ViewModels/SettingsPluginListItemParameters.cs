@@ -37,7 +37,7 @@ internal class SettingsPlugInListItemParameters
     : ViewModelInjection<IHostServices>
 {
     /// <summary>
-    /// Property to return the description/name of the plug in.
+    /// Property to return the description/name of the plug-in.
     /// </summary>
     public string Name
     {
@@ -46,7 +46,7 @@ internal class SettingsPlugInListItemParameters
     }
 
     /// <summary>
-    /// Property to return the type of plug in.
+    /// Property to return the type of plug-in.
     /// </summary>
     public PlugInType Type
     {
@@ -55,7 +55,7 @@ internal class SettingsPlugInListItemParameters
     }
 
     /// <summary>
-    /// Property to return the current state of the plug in.
+    /// Property to return the current state of the plug-in.
     /// </summary>
     public string State
     {
@@ -64,7 +64,7 @@ internal class SettingsPlugInListItemParameters
     }
 
     /// <summary>
-    /// Property to return the reason that the plug in was disabled.
+    /// Property to return the reason that the plug-in was disabled.
     /// </summary>
     public string DisabledReason
     {
@@ -73,7 +73,7 @@ internal class SettingsPlugInListItemParameters
     }
 
     /// <summary>
-    /// Property to return the path to the plug in assembly.
+    /// Property to return the path to the plug-in assembly.
     /// </summary>
     public string Path
     {
@@ -82,7 +82,7 @@ internal class SettingsPlugInListItemParameters
     }
 
     /// <summary>
-    /// Property to return the description of the plug in.
+    /// Property to return the description of the plug-in.
     /// </summary>
     public string Description
     {
@@ -134,7 +134,7 @@ internal class SettingsPlugInListItemParameters
     /// <param name="plugin">The plugin to evaluate.</param>
     /// <param name="hostServices">The host application services.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="plugin"/> is parameter <b>null</b>.</exception>
-    public SettingsPlugInListItemParameters(IGorgonFileSystemProvider plugin, IHostServices hostServices)
+    public SettingsPlugInListItemParameters(GorgonFileSystemProviderPlugIn plugin, IHostServices hostServices)
         : base(hostServices)
     {
         if (plugin is null)

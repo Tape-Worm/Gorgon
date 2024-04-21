@@ -34,11 +34,11 @@ namespace Gorgon.Editor.UI;
 /// <typeparam name="T">The type of parameters for this view model. Must implement <see cref="ISettingsCategory"/>.</typeparam>
 /// <remarks>
 /// <para>
-/// This is a view model that is used provide a settings interface for a plug in. The editor will pick these up and present your custom settings view (along with the view model) so that users can make 
-/// changes to plug in settings. These settings objects are returned to the host editor application by way of the <see cref="EditorPlugIn.OnGetSettings"/> method
+/// This is a view model that is used provide a settings interface for a plug-in. The editor will pick these up and present your custom settings view (along with the view model) so that users can make 
+/// changes to plug-in settings. These settings objects are returned to the host editor application by way of the <see cref="EditorPlugIn.OnGetSettings"/> method
 /// </para>
 /// <para>
-/// To register a settings panel, the developer must inherit this view model type, and create a settings view model for the plug in settings they wish to update. A view must be registered to the 
+/// To register a settings panel, the developer must inherit this view model type, and create a settings view model for the plug-in settings they wish to update. A view must be registered to the 
 /// the view model by using the <see cref="ViewFactory"/>.<see cref="ViewFactory.Register{T}(Func{Control})"/> method
 /// </para>
 /// <para>

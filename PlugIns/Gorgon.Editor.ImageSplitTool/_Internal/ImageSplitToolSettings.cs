@@ -26,7 +26,7 @@
 namespace Gorgon.Editor.ImageSplitTool;
 
 /// <summary>
-/// The settings for the plug in
+/// The settings for the plug-in
 /// </summary>
 internal class ImageSplitToolSettings
 {

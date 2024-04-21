@@ -34,7 +34,7 @@ namespace Gorgon.Editor.UI;
 /// </summary>
 /// <remarks>
 /// <para>
-/// When developing a plug in with a UI, developers have to register their views and view models with the system so that the host application can build up the UI and assign it to the data context. 
+/// When developing a plug-in with a UI, developers have to register their views and view models with the system so that the host application can build up the UI and assign it to the data context. 
 /// </para>
 /// </remarks>
 public static class ViewFactory
@@ -49,12 +49,12 @@ public static class ViewFactory
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="constructor"/> parameter is <b>null</b>.</exception>
     /// <remarks>
     /// <para>
-    /// Content plug in developers must call this so that the UI will be created by the host application. Developers will pass in a function to the <paramref name="constructor"/> that will be used to 
+    /// Content plug-in developers must call this so that the UI will be created by the host application. Developers will pass in a function to the <paramref name="constructor"/> that will be used to 
     /// create the view object (must inherit from <see cref="Control"/>). Typically, this is just a call to <c>new</c> on the object type, although other initialization steps may be passed into the 
     /// callback function.
     /// </para>
     /// <para>
-    /// For best results, this should be called as early in the plug in initialization cycle as possible, typically in the <see cref="ContentPlugIn.OnInitialize"/> method (if the plug in has such a 
+    /// For best results, this should be called as early in the plug-in initialization cycle as possible, typically in the <see cref="ContentPlugIn.OnInitialize"/> method (if the plug-in has such a 
     /// method).
     /// </para>
     /// </remarks>
@@ -67,7 +67,7 @@ public static class ViewFactory
     /// <typeparam name="T">The type of view model. Must implement <see cref="IViewModel"/>.</typeparam>
     /// <remarks>
     /// <para>
-    /// When the plug in is shut down (typically when the plug in UI is closed), this method should be called to remove the registration. This is typically done in the 
+    /// When the plug-in is shut down (typically when the plug-in UI is closed), this method should be called to remove the registration. This is typically done in the 
     /// <see cref="ContentPlugIn.OnShutdown"/> method.
     /// </para>
     /// </remarks>
@@ -84,7 +84,7 @@ public static class ViewFactory
     /// <remarks>
     /// <para>
     /// This will assign a <paramref name="viewModel"/> to the given <paramref name="control"/> (if the control implements <see cref="IDataContext{T}"/>). Users should not need to call this method as 
-    /// it will be done by the editor during plug in UI initialization.
+    /// it will be done by the editor during plug-in UI initialization.
     /// </para>
     /// </remarks>
     public static void AssignViewModel(IViewModel viewModel, Control control)
@@ -169,7 +169,7 @@ public static class ViewFactory
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="viewModel"/> parameter is <b>null</b>.</exception>
     /// <remarks>
     /// <para>
-    /// This method creates a view registered to a <paramref name="viewModel"/>. Users should never need to call this method, the editor will build the view on behalf of the plug in.
+    /// This method creates a view registered to a <paramref name="viewModel"/>. Users should never need to call this method, the editor will build the view on behalf of the plug-in.
     /// </para>
     /// </remarks>
     public static T CreateView<T>(IViewModel viewModel)

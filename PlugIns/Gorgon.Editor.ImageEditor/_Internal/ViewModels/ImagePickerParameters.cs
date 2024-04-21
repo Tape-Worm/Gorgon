@@ -68,7 +68,7 @@ internal class ImagePickerParameters(IContentFileManager fileManager, IContentFi
     }
 
     /// <summary>
-    /// Property to set or return the settings for the editor plug in.
+    /// Property to set or return the settings for the editor plug-in.
     /// </summary>
     public ISettings Settings
     {

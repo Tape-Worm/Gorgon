@@ -73,7 +73,7 @@ public partial class Form
     private Font _textFont;
     // Instructions label.
     private Label _instructions;
-    // File system plug in assembly cache.
+    // File system plug-in assembly cache.
     private GorgonMefPlugInCache _cache;
 
     /// <summary>

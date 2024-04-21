@@ -49,7 +49,7 @@ internal interface IFileExplorer
     }
 
     /// <summary>
-    /// Property to return the metadata for the content plug ins.
+    /// Property to return the metadata for the content plug-ins.
     /// </summary>
     IReadOnlyList<IContentPlugInMetadata> PlugInMetadata
     {

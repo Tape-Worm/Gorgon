@@ -388,7 +388,7 @@ internal class FileExplorer
     }
 
     /// <summary>
-    /// Property to return the metadata for the content plug ins.
+    /// Property to return the metadata for the content plug-ins.
     /// </summary>
     public IReadOnlyList<IContentPlugInMetadata> PlugInMetadata
     {
@@ -496,12 +496,12 @@ internal class FileExplorer
     }
 
     /// <summary>
-    /// Function to set up the content plug in association for a content file.
+    /// Function to set up the content plug-in association for a content file.
     /// </summary>
     /// <param name="filePath">The path to the content file.</param>
     /// <param name="metadata">The metadata to evaluate.</param>
     /// <param name="metadataOnly"><b>true</b> to indicate that only metadata should be used to scan the content file, <b>false</b> to scan, in depth, per plugin (slow).</param>
-    /// <returns><b>true</b> if a content plug in was associated, <b>false</b> if not.</returns>
+    /// <returns><b>true</b> if a content plug-in was associated, <b>false</b> if not.</returns>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="metadata"/> parameter is <b>null</b>.</exception>
     private bool AssignContentPlugIn(string filePath, ProjectItemMetadata metadata, bool metadataOnly)
     {
@@ -538,7 +538,7 @@ internal class FileExplorer
         // Assume that no plugin is available for the node.
         metadata.PlugInName = string.Empty;
 
-        // Attempt to associate a content plug in with the node.            
+        // Attempt to associate a content plug-in with the node.            
         foreach (KeyValuePair<string, ContentPlugIn> servicePlugIn in HostServices.ContentPlugInService.PlugIns)
         {
             if ((servicePlugIn.Value is not IContentPlugInMetadata pluginMetadata)
@@ -555,11 +555,11 @@ internal class FileExplorer
     }
 
     /// <summary>
-    /// Function to set up the content plug in association for a content file.
+    /// Function to set up the content plug-in association for a content file.
     /// </summary>
     /// <param name="contentFile">The content file to evaluate.</param>
     /// <param name="metadataOnly"><b>true</b> to indicate that only metadata should be used to scan the content file, <b>false</b> to scan, in depth, per plugin (slow).</param>
-    /// <returns><b>true</b> if a content plug in was associated, <b>false</b> if not.</returns>
+    /// <returns><b>true</b> if a content plug-in was associated, <b>false</b> if not.</returns>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="contentFile"/> parameter is <b>null</b>.</exception>
     private bool AssignContentPlugIn(IFile contentFile, bool metadataOnly)
     {
@@ -2718,7 +2718,7 @@ internal class FileExplorer
                 importers.Add(importer);
             }
 
-            // If we have no importer plug in for the current file, then leave.
+            // If we have no importer plug-in for the current file, then leave.
             if (importer is null)
             {
                 importedFilePaths[originalPath] = originalPath;
@@ -2873,7 +2873,7 @@ internal class FileExplorer
             {
                 foreach (IFile file in files)
                 {
-                    // Reset so we can get the plug in.
+                    // Reset so we can get the plug-in.
                     file.Metadata.ContentMetadata = null;
                     file.Metadata.PlugInName = null;
                     AssignContentPlugIn(file.FullPath, file.Metadata, false);

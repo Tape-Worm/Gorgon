@@ -38,7 +38,7 @@ using Microsoft.IO;
 namespace Gorgon.Editor.GorPackWriterPlugIn;
 
 /// <summary>
-/// Gorgon packed file writer plug in interface
+/// Gorgon packed file writer plug-in interface
 /// </summary>
 internal class GorPackWriterPlugIn
     : FileWriterPlugIn
@@ -497,7 +497,7 @@ internal class GorPackWriterPlugIn
     }
 
     /// <summary>
-    /// Function to determine if the type of file specified can be written by this plug in.
+    /// Function to determine if the type of file specified can be written by this plug-in.
     /// </summary>
     /// <param name="file">The file to evaluate.</param>
     /// <returns><b>true</b> if the writer can write the type of file, or <b>false</b> if it cannot.</returns>

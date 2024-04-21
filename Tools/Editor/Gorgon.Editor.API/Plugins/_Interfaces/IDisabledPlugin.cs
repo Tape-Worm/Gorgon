@@ -26,31 +26,31 @@
 namespace Gorgon.Editor.PlugIns;
 
 /// <summary>
-/// The reason code for disabling the plug in
+/// The reason code for disabling the plug-in
 /// </summary>
 public enum DisabledReasonCode
 {
     /// <summary>
-    /// User manually disabled plug in.
+    /// User manually disabled plug-in.
     /// </summary>
     User = 0,
     /// <summary>
-    /// An error occurred when loading the plug in.
+    /// An error occurred when loading the plug-in.
     /// </summary>
     Error = 1,
     /// <summary>
-    /// A validation error occurred after the plug in was loaded.
+    /// A validation error occurred after the plug-in was loaded.
     /// </summary>
     ValidationError = 2
 }
 
 /// <summary>
-/// A plug in that was disabled for a reason
+/// A plug-in that was disabled for a reason
 /// </summary>
 public interface IDisabledPlugIn
 {
     /// <summary>
-    /// Property to return a description that explains why a plug in was disabled.
+    /// Property to return a description that explains why a plug-in was disabled.
     /// </summary>
     string Description
     {
@@ -58,7 +58,7 @@ public interface IDisabledPlugIn
     }
 
     /// <summary>
-    /// Property to return the name of the disabled plug in.
+    /// Property to return the name of the disabled plug-in.
     /// </summary>
     string PlugInName
     {
@@ -66,7 +66,7 @@ public interface IDisabledPlugIn
     }
 
     /// <summary>
-    /// Property to return the code to indicate how the plug in was disabled.
+    /// Property to return the code to indicate how the plug-in was disabled.
     /// </summary>
     DisabledReasonCode ReasonCode
     {

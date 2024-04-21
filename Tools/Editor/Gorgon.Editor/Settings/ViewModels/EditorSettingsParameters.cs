@@ -44,7 +44,7 @@ internal class EditorSettingsParameters
     }
 
     /// <summary>
-    /// Property to set or return the list of plug ins for the fixed plug in list category.
+    /// Property to set or return the list of plug-ins for the fixed plug-in list category.
     /// </summary>
     public ISettingsPlugInsList PlugInsList
     {

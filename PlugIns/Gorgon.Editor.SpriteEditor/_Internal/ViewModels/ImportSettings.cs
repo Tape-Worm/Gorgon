@@ -33,7 +33,7 @@ using Gorgon.IO;
 namespace Gorgon.Editor.SpriteEditor;
 
 /// <summary>
-/// The view model for the importer plug in settings
+/// The view model for the importer plug-in settings
 /// </summary>
 internal class ImportSettings
     : PlugInsCategory<ImportSettingsParameters>, IImportSettings
@@ -42,10 +42,10 @@ internal class ImportSettings
     // The backing store for the settings.
     private SpriteImportSettings _settings;
 
-    // The codecs for the plug in.
+    // The codecs for the plug-in.
     private CodecRegistry _codecs;
 
-    /// <summary>Property to return the file name that will hold the plug ins.</summary>
+    /// <summary>Property to return the file name that will hold the plug-ins.</summary>
     protected override string SettingsFileName => SpriteImporterPlugIn.SettingsFilename;
 
     /// <summary>
@@ -57,7 +57,7 @@ internal class ImportSettings
     } = [];
 
     /// <summary>
-    /// Propery to return the paths to the codec plug ins.
+    /// Propery to return the paths to the codec plug-ins.
     /// </summary>
     public ObservableCollection<CodecSetting> CodecPlugInPaths
     {
@@ -95,7 +95,7 @@ internal class ImportSettings
     }
 
     /// <summary>
-    /// Function to unload the selected plug in assemblies.
+    /// Function to unload the selected plug-in assemblies.
     /// </summary>
     protected override bool OnUnloadPlugIns()
     {
@@ -142,7 +142,7 @@ internal class ImportSettings
     }
 
     /// <summary>
-    /// Function to load in a plug in assembly.
+    /// Function to load in a plug-in assembly.
     /// </summary>
     protected override bool OnLoadPlugIns()
     {
@@ -199,9 +199,9 @@ internal class ImportSettings
     }
 
     /// <summary>
-    /// Function to determine if the selected plug in assemblies can be unloaded.
+    /// Function to determine if the selected plug-in assemblies can be unloaded.
     /// </summary>
-    /// <returns><b>true</b> if the plug in assemblies can be removed, <b>false</b> if not.</returns>
+    /// <returns><b>true</b> if the plug-in assemblies can be removed, <b>false</b> if not.</returns>
     protected override bool CanUnloadPlugInAssemblies() => SelectedCodecs.Count > 0;
 
     /// <summary>Function to retrieve the underlying object used to hold the settings.</summary>

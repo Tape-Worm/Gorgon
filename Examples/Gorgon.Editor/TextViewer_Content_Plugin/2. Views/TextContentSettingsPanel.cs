@@ -30,10 +30,10 @@ using Gorgon.Editor.UI.Views;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// The panel used to settings for the text content plug in
+/// The panel used to settings for the text content plug-in
 /// </summary>
 /// <remarks>
-/// As mentioned in the plug in class, we create a panel control for presenting our plug in settings to the user. 
+/// As mentioned in the plug-in class, we create a panel control for presenting our plug-in settings to the user. 
 /// 
 /// To create a settings panel, the class must inherit from the SettingsBaseControl and implement the IDataContext interface
 /// </remarks>

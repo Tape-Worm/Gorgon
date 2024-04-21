@@ -59,7 +59,7 @@ internal class DirectInputDevice
     /// to the system at the time of enumeration. Thus, we have this property to ensure that we know when a gaming device is connected to the system or not. 
     /// </para>
     /// <para>
-    /// <see cref="GorgonGamingDeviceDriver"/> plug in implementors must ensure that this property will update itself when a gaming device is connected or disconnected.
+    /// <see cref="GorgonGamingDeviceDriver"/> plug-in implementors must ensure that this property will update itself when a gaming device is connected or disconnected.
     /// </para>
     /// </remarks>
     public override bool IsConnected => _directInput.IsDeviceAttached(_info.DeviceID);
@@ -216,7 +216,7 @@ internal class DirectInputDevice
     /// Function to retrieve data from the provider of the physical device.
     /// </summary>
     /// <remarks>
-    /// Implementors of a <see cref="GorgonGamingDeviceDriver"/> plug in must implement this and format their data to populate the values of this object with correct state information.
+    /// Implementors of a <see cref="GorgonGamingDeviceDriver"/> plug-in must implement this and format their data to populate the values of this object with correct state information.
     /// </remarks>
     protected override void OnGetData()
     {

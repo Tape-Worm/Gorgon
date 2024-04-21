@@ -30,14 +30,14 @@ using Gorgon.PlugIns;
 namespace Gorgon.Editor.PlugIns;
 
 /// <summary>
-/// Extension functionality relating to editor plug ins
+/// Extension functionality relating to editor plug-ins
 /// </summary>
 public static class EditorPlugInExtensions
 {
     /// <summary>
     /// Function to retrieve a friendly description of a <see cref="PlugInType"/> value.
     /// </summary>
-    /// <param name="pluginType">The plug in type to evaluate.</param>
+    /// <param name="pluginType">The plug-in type to evaluate.</param>
     /// <returns>The friendly description.</returns>
     public static string GetDescription(this PlugInType pluginType)
     {
@@ -53,11 +53,11 @@ public static class EditorPlugInExtensions
         ;
     }
 
-    /// <summary>Function to load all the specified plug in assemblies.</summary>
-    /// <param name="pluginCache">The plugin cache that will hold the plug in assembies.</param>
-    /// <param name="pluginAssemblyFiles">The list of plug in assembly paths to load.</param>
+    /// <summary>Function to load all the specified plug-in assemblies.</summary>
+    /// <param name="pluginCache">The plugin cache that will hold the plug-in assembies.</param>
+    /// <param name="pluginAssemblyFiles">The list of plug-in assembly paths to load.</param>
     /// <param name="log">The application logging interface.</param>
-    /// <returns>A list of <see cref="PlugInAssemblyState"/> objects for each plug in assembly loaded.</returns>
+    /// <returns>A list of <see cref="PlugInAssemblyState"/> objects for each plug-in assembly loaded.</returns>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="pluginAssemblyFiles" /> parameter is <b>null</b></exception>
     public static IReadOnlyList<PlugInAssemblyState> ValidateAndLoadAssemblies(this GorgonMefPlugInCache pluginCache, IEnumerable<string> pluginAssemblyFiles, IGorgonLog log)
     {
@@ -68,7 +68,7 @@ public static class EditorPlugInExtensions
 
         List<PlugInAssemblyState> records = [];
 
-        // We use this to determine whether the plug in can be loaded into the current platform.
+        // We use this to determine whether the plug-in can be loaded into the current platform.
         AssemblyPlatformType currentPlatform = Environment.Is64BitProcess ? AssemblyPlatformType.x64 : AssemblyPlatformType.x86;
 
         foreach (string file in pluginAssemblyFiles.Select(item => Path.GetFullPath(item)))
@@ -114,14 +114,14 @@ public static class EditorPlugInExtensions
 
             try
             {
-                log.Print($"Loading plug in assembly '{file}'...", LoggingLevel.Simple);
+                log.Print($"Loading plug-in assembly '{file}'...", LoggingLevel.Simple);
                 pluginCache.LoadPlugInAssemblies(Path.GetDirectoryName(file), fileName);
 
                 records.Add(new PlugInAssemblyState(file, string.Empty, true));
             }
             catch (Exception ex)
             {
-                log.PrintError($"Cannot load plug in assembly '{file}'.", LoggingLevel.Simple);
+                log.PrintError($"Cannot load plug-in assembly '{file}'.", LoggingLevel.Simple);
                 log.LogException(ex);
                 records.Add(new PlugInAssemblyState(file, string.Format(Resources.GOREDIT_PLUGIN_LOAD_FAIL_EXCEPTION, fileName, ex.Message), true));
             }

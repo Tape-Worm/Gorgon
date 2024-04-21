@@ -9,7 +9,7 @@
     <Authors>Michael Winsor</Authors>
     <Company>Tape_Worm</Company>
     <Product>Gorgon</Product>
-    <Description>A Gorgon Editor plug in that will allow editing of images.</Description>
+    <Description>A Gorgon Editor plug-in that will allow editing of images.</Description>
     <Copyright>(C)opyright Tape_Worm, 2020</Copyright>
     <PackageProjectUrl>https://www.tape-worm.net</PackageProjectUrl>
     <PackageIcon>g.png</PackageIcon>

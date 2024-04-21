@@ -11,7 +11,7 @@
     <Product>Gorgon</Product>
     <Description>Functionality to access the various input devices attached to the system.
 
-This assembly contains a plug in that will use Microsoft XInput to allow access to XBox controllers.</Description>
+This assembly contains a plug-in that will use Microsoft XInput to allow access to XBox controllers.</Description>
     <Copyright>(C)opyright Tape_Worm, 2020</Copyright>
     <PackageLicenseFile>
     </PackageLicenseFile>

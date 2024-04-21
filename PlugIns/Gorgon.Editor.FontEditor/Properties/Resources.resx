@@ -275,9 +275,9 @@ Please choose another font family.</value>
     <value>Set Font Unit Pixels</value>
   </data>
   <data name="DEFAULT_TEXT" xml:space="preserve">
-    <value>This is an example plug in for the Gorgon Editor.
+    <value>This is an example plug-in for the Gorgon Editor.
 
-While this is not the most comprehensive example of using the content plug in system, it should be enough to get you started.
+While this is not the most comprehensive example of using the content plug-in system, it should be enough to get you started.
 
 You'll notice that we've got text displaying in our main area, and a ribbon above with some commands that we can execute against the text content.
 

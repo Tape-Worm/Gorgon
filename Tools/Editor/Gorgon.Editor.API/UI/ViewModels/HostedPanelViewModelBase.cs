@@ -10,11 +10,11 @@ namespace Gorgon.Editor.UI;
 /// <typeparam name="T">The type of view model parameters. Must inherit from <see cref="HostedPanelViewModelParameters"/>.</typeparam>
 /// <remarks>
 /// <para>
-/// This view model is used when an operation requires more information from the user. Content plug ins that have functions that have user defined parameters can use this to present those parameters 
+/// This view model is used when an operation requires more information from the user. Content plug-ins that have functions that have user defined parameters can use this to present those parameters 
 /// within the same view as the content as pop up panel. 
 /// </para>
 /// <para>
-/// To use a hosted panel the plug in must define the panel by inheriting from this view model, and passing in parameters that inherit from <see cref="HostedPanelViewModelParameters"/>. A view must be 
+/// To use a hosted panel the plug-in must define the panel by inheriting from this view model, and passing in parameters that inherit from <see cref="HostedPanelViewModelParameters"/>. A view must be 
 /// registered with the <see cref="ContentBaseControl"/>.<see cref="ContentBaseControl.RegisterChildPanel(string, Control)"/> method
 /// </para>
 /// </remarks>

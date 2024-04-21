@@ -28,26 +28,26 @@ using Gorgon.PlugIns;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Here's where we define the entry point interface for the plug in
+/// Here's where we define the entry point interface for the plug-in
 /// 
-/// This object houses the actual plug in information and is what Gorgon will look for when enumerating
-/// plug in objects from an assembly.  The object inherits from GorgonPlugIn, and this is how Gorgon will
-/// tell if it's a plug in object or not.  This object must be implemented by each plug in assembly so that
-/// it can return the proper objects/information back to the plug in host
+/// This object houses the actual plug-in information and is what Gorgon will look for when enumerating
+/// plug-in objects from an assembly.  The object inherits from GorgonPlugIn, and this is how Gorgon will
+/// tell if it's a plug-in object or not.  This object must be implemented by each plug-in assembly so that
+/// it can return the proper objects/information back to the plug-in host
 /// 
-/// In this example, we use the TextColorPlugIn to create our plug in interfaces which are implemented in our 
-/// plug in assemblies
+/// In this example, we use the TextColorPlugIn to create our plug-in interfaces which are implemented in our 
+/// plug-in assemblies
 /// </summary>	
 /// <remarks>
 /// Initializes a new instance of the <see cref="TextColorPlugIn" /> class
 /// </remarks>
-/// <param name="description">This is a friendly description for the plug in.</param>
+/// <param name="description">This is a friendly description for the plug-in.</param>
 public abstract class TextColorPlugIn(string description)
         : GorgonPlugIn(description)
 {
     /// <summary>
     /// Define our abstract method to create our specified text writers.
     /// </summary>
-    /// <returns>The text color writer specific to the plug in.</returns>
+    /// <returns>The text color writer specific to the plug-in.</returns>
     public abstract TextColorWriter CreateWriter();
 }

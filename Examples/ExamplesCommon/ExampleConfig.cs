@@ -84,7 +84,7 @@ public class ExampleConfig
     }
 
     /// <summary>
-    /// Property to set or return the path to the location for example plug ins.
+    /// Property to set or return the path to the location for example plug-ins.
     /// </summary>
     public string PlugInLocation
     {

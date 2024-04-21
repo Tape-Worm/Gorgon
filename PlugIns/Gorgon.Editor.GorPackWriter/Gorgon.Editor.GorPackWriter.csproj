@@ -9,7 +9,7 @@
     <Authors>Michael Winsor</Authors>
     <Company>Tape_Worm</Company>
     <Product>Gorgon</Product>
-    <Description>A Gorgon Editor plug in that will write out Gorgon packed files.</Description>
+    <Description>A Gorgon Editor plug-in that will write out Gorgon packed files.</Description>
     <Copyright>(C)opyright Tape_Worm, 2020</Copyright>
     <PackageLicenseFile>
     </PackageLicenseFile>

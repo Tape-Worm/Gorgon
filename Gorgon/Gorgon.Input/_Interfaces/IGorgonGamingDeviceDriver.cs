@@ -44,7 +44,7 @@ namespace Gorgon.Input;
 /// </note>
 /// </para>
 /// <para>
-/// These drivers are typically loaded as plug ins from  a <see cref="IGorgonGamingDeviceDriverFactory"/>. The driver is responsible for enumerating the available devices that it supports, and will 
+/// These drivers are typically loaded as plug-ins from  a <see cref="IGorgonGamingDeviceDriverFactory"/>. The driver is responsible for enumerating the available devices that it supports, and will 
 /// create instances of a <see cref="IGorgonGamingDevice"/> that represents the functionality of the gaming device as provided by the underlying native provider. 
 /// </para>
 /// <para>
@@ -67,7 +67,7 @@ namespace Gorgon.Input;
 ///		// Load the assembly for the XInput driver
 ///		assemblies.Load(".\Gorgon.Input.XInput.dll");
 /// 
-///		// Get the correct driver from the plug ins via the factory. 
+///		// Get the correct driver from the plug-ins via the factory. 
 ///		IGorgonGamingDeviceDriver driver = factory.Load("Gorgon.Input.GorgonXInputDriver");
 /// 
 ///		// Get connected devices only. You may change the parameter to false to retrieve all devices

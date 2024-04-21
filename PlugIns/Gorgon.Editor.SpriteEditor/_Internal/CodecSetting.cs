@@ -47,7 +47,7 @@ internal class CodecSetting(string description, GorgonSpriteCodecPlugIn plugin, 
     } = description;
 
     /// <summary>
-    /// Property to return the plug in that contains the codec.
+    /// Property to return the plug-in that contains the codec.
     /// </summary>
     public GorgonSpriteCodecPlugIn PlugIn
     {

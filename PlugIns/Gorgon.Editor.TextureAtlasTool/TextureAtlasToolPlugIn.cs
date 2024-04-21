@@ -36,11 +36,11 @@ using Gorgon.UI;
 namespace Gorgon.Editor.TextureAtlasTool;
 
 /// <summary>
-/// A plug in used to create a texture atlas
+/// A plug-in used to create a texture atlas
 /// </summary>
 /// <remarks>
 /// <para>
-/// This plug in varies from the Image atlas tool in that it uses sprites that are already defined and bound to separate images
+/// This plug-in varies from the Image atlas tool in that it uses sprites that are already defined and bound to separate images
 /// </para>
 /// </remarks>
 internal class TextureAtlasToolPlugIn
@@ -179,11 +179,11 @@ internal class TextureAtlasToolPlugIn
     /// <returns>A new tool ribbon button instance.</returns>
     /// <remarks>
     ///   <para>
-    /// Tool plug in developers must override this method to return the button which is inserted on the application ribbon, under the "Tools" tab. If the method returns <b>null</b>, then the tool is
+    /// Tool plug-in developers must override this method to return the button which is inserted on the application ribbon, under the "Tools" tab. If the method returns <b>null</b>, then the tool is
     /// ignored.
     /// </para>
     ///   <para>
-    /// The resulting data structure will contain the means to handle the click event for the tool, and as such, is the only means of communication between the main UI and the plug in.
+    /// The resulting data structure will contain the means to handle the click event for the tool, and as such, is the only means of communication between the main UI and the plug-in.
     /// </para>
     /// </remarks>
     protected override IToolPlugInRibbonButton OnGetToolButton()

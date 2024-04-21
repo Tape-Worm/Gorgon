@@ -6,7 +6,7 @@
     <Authors>Michael Winsor</Authors>
     <Company>Tape_Worm</Company>
     <Product>Gorgon</Product>
-    <Description>A unified virtual file system that can mount folders, and through plug ins, packed files as a standard self contained file system.</Description>
+    <Description>A unified virtual file system that can mount folders, and through plug-ins, packed files as a standard self contained file system.</Description>
     <Copyright>(C)opyright Tape_Worm, 2020</Copyright>
     <PackageLicenseFile>
     </PackageLicenseFile>
@@ -29,7 +29,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
     <EmbeddedResourceUseDependentUponConvention>true</EmbeddedResourceUseDependentUponConvention>
-    <Nullable>enable</Nullable>
+    <Nullable>disable</Nullable>
     <IsAotCompatible>true</IsAotCompatible>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

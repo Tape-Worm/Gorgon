@@ -28,12 +28,12 @@ using Gorgon.Core;
 namespace Gorgon.Editor.PlugIns;
 
 /// <summary>
-/// A record providing plug in state information
+/// A record providing plug-in state information
 /// </summary>
 public class PlugInAssemblyState
 {
     /// <summary>
-    /// Property to returnt he path to the plug in.
+    /// Property to returnt he path to the plug-in.
     /// </summary>
     public string Path
     {

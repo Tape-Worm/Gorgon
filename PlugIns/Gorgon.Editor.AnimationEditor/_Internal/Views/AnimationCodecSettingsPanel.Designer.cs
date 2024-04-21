@@ -72,7 +72,7 @@ partial class AnimationCodecSettingsPanel
         this.ButtonAddCodec.Name = "ButtonAddCodec";
         this.ButtonAddCodec.Size = new System.Drawing.Size(90, 26);
         this.ButtonAddCodec.Text = "Add codec";
-        this.ButtonAddCodec.ToolTipText = "Adds a new codec plug in to the list.";
+        this.ButtonAddCodec.ToolTipText = "Adds a new codec plug-in to the list.";
         this.ButtonAddCodec.Click += new System.EventHandler(this.ButtonAddCodec_Click);
         // 
         // ButtonRemoveCodecs

@@ -31,16 +31,16 @@ namespace Gorgon.Examples;
 /// Our entry point into the TV image codec
 /// </summary>
 /// <remarks>
-/// This plug in will encode/decode images as 1 pixel per channel.  This will give the image an appearance similar to the line patterns on a CRT TV screen.  Well, somewhat
+/// This plug-in will encode/decode images as 1 pixel per channel.  This will give the image an appearance similar to the line patterns on a CRT TV screen.  Well, somewhat
 /// </remarks>
 public class TvImageCodecPlugIn
     : GorgonImageCodecPlugIn
 {
     /// <summary>
-    /// Property to return the names of the available codecs for this plug in.
+    /// Property to return the names of the available codecs for this plug-in.
     /// </summary>
     /// <remarks>
-    /// This returns a <see cref="IReadOnlyDictionary{TKey,TValue}"/> containing the name of the plug in as its key, and an optional friendly description as its value.
+    /// This returns a <see cref="IReadOnlyDictionary{TKey,TValue}"/> containing the name of the plug-in as its key, and an optional friendly description as its value.
     /// </remarks>
     public override IReadOnlyList<GorgonImageCodecDescription> Codecs
     {
@@ -50,11 +50,11 @@ public class TvImageCodecPlugIn
     /// <summary>
     /// Function to create a new <see cref="IGorgonImageCodec"/>.
     /// </summary>
-    /// <param name="codec">The codec to retrieve from the plug in.</param>
+    /// <param name="codec">The codec to retrieve from the plug-in.</param>
     /// <returns>A new <see cref="IGorgonImageCodec"/> object.</returns>
     /// <remarks>
     /// <para>
-    /// Implementors must implement this method to return the codec from the plug in assembly.
+    /// Implementors must implement this method to return the codec from the plug-in assembly.
     /// </para>
     /// </remarks>
     protected override IGorgonImageCodec OnCreateCodec(string codec) => new TvImageCodec();

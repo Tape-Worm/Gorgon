@@ -23,12 +23,13 @@
 // Created: Saturday, September 19, 2015 11:40:20 PM
 // 
 
+using System.Diagnostics.CodeAnalysis;
 using Gorgon.PlugIns;
 
 namespace Gorgon.IO.Providers;
 
 /// <summary>
-/// A factory object used to create file system provider plug ins
+/// A factory object used to create file system provider plug-ins
 /// </summary>
 /// <remarks>
 /// <para>
@@ -37,7 +38,7 @@ namespace Gorgon.IO.Providers;
 /// file types
 /// </para>
 /// <para>
-/// File system providers are plug ins, and should have their assemblies loaded by the <see cref="GorgonMefPlugInCache"/> before using this method and a <see cref="IGorgonPlugInService"/> should be 
+/// File system providers are plug-ins, and should have their assemblies loaded by the <see cref="GorgonMefPlugInCache"/> before using this method and a <see cref="IGorgonPlugInService"/> should be 
 /// created in order to pass it to this factory
 /// </para>
 /// </remarks>
@@ -45,7 +46,7 @@ namespace Gorgon.IO.Providers;
 /// The following example shows how to use the provider factory:
 /// <code language="csharp"> 
 /// <![CDATA[
-/// // In a real world application, you would keep your cache for as long as you need your plug ins
+/// // In a real world application, you would keep your cache for as long as you need your plug-ins
 /// // Premature disposal can cause errors
 /// using (GorgonMefPlugInCache cache = new GorgonMefPlugInCache())
 /// {
@@ -70,15 +71,17 @@ public interface IGorgonFileSystemProviderFactory
     /// <summary>
     /// Function to create a new file system provider.
     /// </summary>
-    /// <param name="path">The path to the file system plug in assemblies.</param>
+    /// <param name="path">The path to the file system plug-in assemblies.</param>
     /// <param name="providerPlugInName">The fully qualified type name of the plugin that contains the file system provider.</param>
     /// <returns>The new file system provider object, or if it was previously created, the previously created instance.</returns>
-    GorgonFileSystemProvider CreateProvider(string path, string providerPlugInName);
+    [RequiresAssemblyFiles("Plug ins will not work with trimming and Native AOT.")]
+    GorgonFileSystemProviderPlugIn CreateProvider(string path, string providerPlugInName);
 
     /// <summary>
     /// Function to retrieve all the file system providers from the available plugins in the plugin service.
     /// </summary>
-    /// <param name="path">The path to the file system plug in assemblies.</param>
+    /// <param name="path">The path to the file system plug-in assemblies.</param>
     /// <returns>A list of file system providers</returns>
-    IReadOnlyList<GorgonFileSystemProvider> CreateProviders(string path);
+    [RequiresAssemblyFiles("Plug ins will not work with trimming and Native AOT.")]
+    IReadOnlyList<GorgonFileSystemProviderPlugIn> CreateProviders(string path);
 }

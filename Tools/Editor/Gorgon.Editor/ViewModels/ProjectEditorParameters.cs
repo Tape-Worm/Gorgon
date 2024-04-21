@@ -50,7 +50,7 @@ internal class ProjectEditorParameters(IHostContentServices hostServices, ViewMo
     }
 
     /// <summary>
-    /// Property to set or return the file manager for content plug ins.
+    /// Property to set or return the file manager for content plug-ins.
     /// </summary>
     public IContentFileManager ContentFileManager
     {
@@ -77,7 +77,7 @@ internal class ProjectEditorParameters(IHostContentServices hostServices, ViewMo
     }
 
     /// <summary>
-    /// Property to set or return the list of content creator plug ins.
+    /// Property to set or return the list of content creator plug-ins.
     /// </summary>
     public IReadOnlyList<IContentPlugInMetadata> ContentCreators
     {

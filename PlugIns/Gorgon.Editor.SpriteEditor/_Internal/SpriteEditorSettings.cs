@@ -28,12 +28,12 @@ using Gorgon.Graphics;
 namespace Gorgon.Editor.SpriteEditor;
 
 /// <summary>
-/// The settings for the sprite importer plug in
+/// The settings for the sprite importer plug-in
 /// </summary>
 internal class SpriteImportSettings
 {
     /// <summary>
-    /// Property to return the list of additional sprite codec plug ins to load.
+    /// Property to return the list of additional sprite codec plug-ins to load.
     /// </summary>
     public Dictionary<string, string> CodecPlugInPaths
     {
@@ -42,7 +42,7 @@ internal class SpriteImportSettings
     } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
     /// <summary>
-    /// Property to set or return the last codec plug in path.
+    /// Property to set or return the last codec plug-in path.
     /// </summary>
     public string LastCodecPlugInPath
     {
@@ -52,7 +52,7 @@ internal class SpriteImportSettings
 }
 
 /// <summary>
-/// The settings for the sprite editor plug in
+/// The settings for the sprite editor plug-in
 /// </summary>
 internal class SpriteEditorSettings
 {

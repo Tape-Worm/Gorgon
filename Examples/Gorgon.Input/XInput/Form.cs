@@ -36,13 +36,13 @@ namespace Gorgon.Examples;
 /// <remarks>
 /// This example is exclusively for the XBox controller (although it could be made to work with a regular controller).  
 /// 
-/// Here we will load the XInput plug in which will give us access to the functionality in the XBox controllers.  
+/// Here we will load the XInput plug-in which will give us access to the functionality in the XBox controllers.  
 /// 
 /// The XBox controller interface will always return 4 controllers, even if there is only 1 controller connected.  Here
 /// we make use of all 4 controllers (if connected) to give a sort of multi-player drawing example.  We do this by 
 /// tracking the state of each controller in our idle loop.  
 /// 
-/// The set up is similar to the other input examples:  Load the driver plug in assembly, create the xinput driver and 
+/// The set up is similar to the other input examples:  Load the driver plug-in assembly, create the xinput driver and 
 /// create each controller as needed.  Then in the idle loop, we poll the controller for input.  If no XBox controller is 
 /// found a prompt to plug one in is shown
 /// 
@@ -64,7 +64,7 @@ public partial class Form : System.Windows.Forms.Form
     private SprayCan[] _sprayStates;
     // Surface to draw on.
     private DrawingSurface _surface;
-    // The assembly cache for the plug ins
+    // The assembly cache for the plug-ins
     private GorgonMefPlugInCache _assemblies = null;
 
     /// <summary>

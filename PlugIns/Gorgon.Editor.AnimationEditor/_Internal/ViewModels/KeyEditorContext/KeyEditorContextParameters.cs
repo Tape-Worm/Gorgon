@@ -38,7 +38,7 @@ namespace Gorgon.Editor.AnimationEditor;
 /// <param name="fileManager">The file manager for the project.</param>
 /// <param name="floatValueKeyEditor">The key editor for floating point values</param>
 /// <param name="controller">The sprite animation controller.</param>
-/// <param name="contentServices">The services hosted by the plug in.</param>
+/// <param name="contentServices">The services hosted by the plug-in.</param>
 /// <param name="hostServices">The services from the host application.</param>
 /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
 internal class KeyEditorContextParameters(IAnimationContent content, IContentFileManager fileManager, IKeyValueEditor floatValueKeyEditor, IColorValueEditor colorValueKeyEditor, GorgonSpriteAnimationController controller, ContentServices contentServices, IHostContentServices hostServices)
@@ -61,7 +61,7 @@ internal class KeyEditorContextParameters(IAnimationContent content, IContentFil
     } = fileManager ?? throw new ArgumentNullException(nameof(fileManager));
 
     /// <summary>
-    /// Property to return the services hosted by the plug in.
+    /// Property to return the services hosted by the plug-in.
     /// </summary>
     public ContentServices ContentServices
     {
