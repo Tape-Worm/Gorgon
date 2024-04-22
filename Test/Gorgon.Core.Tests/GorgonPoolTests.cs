@@ -7,7 +7,7 @@ namespace Gorgon.Core.Tests;
 [TestClass]
 public class GorgonPoolTests
 {
-    private class DisposableObject
+    private sealed class DisposableObject
         : IDisposable
     {
         public string Text
@@ -26,10 +26,7 @@ public class GorgonPoolTests
     }
 
     [TestMethod]
-    public void ShouldThrowWhenMaxObjectCountLessThanOne()
-    {
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() => new GorgonPool<string>(0, () => Guid.NewGuid().ToString()));
-    }
+    public void ShouldThrowWhenMaxObjectCountLessThanOne() => Assert.ThrowsException<ArgumentOutOfRangeException>(() => new GorgonPool<string>(0, () => Guid.NewGuid().ToString()));
 
     [TestMethod]
     public void ShouldThrowWhenItemAllocatorReturnsNull()
@@ -39,10 +36,10 @@ public class GorgonPoolTests
     }
 
     [TestMethod]
-    public void ShouldAllocateMultipleItems_WithInitializer()
+    public void ShouldAllocateMultipleItemsWithInitializer()
     {
         GorgonPool<DisposableObject> pool = new(5, () => new());
-        List<DisposableObject> items = new List<DisposableObject>();
+        List<DisposableObject> items = [];
 
         for (int i = 0; i < 5; i++)
         {
@@ -64,7 +61,7 @@ public class GorgonPoolTests
     public void ShouldAllocateMultipleItems()
     {
         GorgonPool<string> pool = new(5, () => Guid.NewGuid().ToString());
-        List<string> items = new List<string>();
+        List<string> items = [];
 
         for (int i = 0; i < 5; i++)
         {
@@ -91,14 +88,14 @@ public class GorgonPoolTests
     public void ShouldDeallocateMultipleItems()
     {
         GorgonPool<string> pool = new(5, () => Guid.NewGuid().ToString());
-        List<string?> items = new List<string?>();
+        List<string?> items = [];
 
         for (int i = 0; i < 5; i++)
         {
             items.Add(pool.Allocate());
         }
 
-        foreach (var item in items)
+        foreach (string? item in items)
         {
             string? tempItem = item;
             pool.Deallocate(ref tempItem);
@@ -108,10 +105,10 @@ public class GorgonPoolTests
     }
 
     [TestMethod]
-    public void ShouldDeallocateMultipleItems_Finalizer()
+    public void ShouldDeallocateMultipleItemsFinalizer()
     {
         GorgonPool<DisposableObject> pool = new(5, () => new());
-        List<DisposableObject> items = new List<DisposableObject>();
+        List<DisposableObject> items = [];
 
         for (int i = 0; i < 5; i++)
         {

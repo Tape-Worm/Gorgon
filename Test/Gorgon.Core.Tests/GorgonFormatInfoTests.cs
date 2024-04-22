@@ -59,25 +59,25 @@ public class GorgonFormatInfoTests
     {
         Dictionary<BufferFormat, List<BufferFormat>> groupedFormats = new()
         {
-            [BufferFormat.R32G32B32A32_Typeless] = new() { BufferFormat.R32G32B32A32_Float, BufferFormat.R32G32B32A32_UInt, BufferFormat.R32G32B32A32_SInt },
-            [BufferFormat.R32G32B32_Typeless] = new() { BufferFormat.R32G32B32_Float, BufferFormat.R32G32B32_UInt, BufferFormat.R32G32B32_SInt },
-            [BufferFormat.R16G16B16A16_Typeless] = new() { BufferFormat.R16G16B16A16_Float, BufferFormat.R16G16B16A16_UNorm, BufferFormat.R16G16B16A16_UInt, BufferFormat.R16G16B16A16_SNorm, BufferFormat.R16G16B16A16_SInt },
-            [BufferFormat.R32G32_Typeless] = new() { BufferFormat.R32G32_Float, BufferFormat.R32G32_UInt, BufferFormat.R32G32_SInt },
-            [BufferFormat.R10G10B10A2_Typeless] = new() { BufferFormat.R10G10B10A2_UNorm, BufferFormat.R10G10B10A2_UInt },
-            [BufferFormat.R8G8B8A8_Typeless] = new() { BufferFormat.R8G8B8A8_UNorm, BufferFormat.R8G8B8A8_UNorm_SRgb, BufferFormat.R8G8B8A8_UInt, BufferFormat.R8G8B8A8_SNorm, BufferFormat.R8G8B8A8_SInt },
-            [BufferFormat.R16G16_Typeless] = new() { BufferFormat.R16G16_Float, BufferFormat.R16G16_UNorm, BufferFormat.R16G16_UInt, BufferFormat.R16G16_SNorm, BufferFormat.R16G16_SInt },
-            [BufferFormat.R32_Typeless] = new() { BufferFormat.R32_Float, BufferFormat.R32_UInt, BufferFormat.R32_SInt },
-            [BufferFormat.R8G8_Typeless] = new() { BufferFormat.R8G8_UNorm, BufferFormat.R8G8_UInt, BufferFormat.R8G8_SNorm, BufferFormat.R8G8_SInt },
-            [BufferFormat.R16_Typeless] = new() { BufferFormat.R16_Float, BufferFormat.R16_UNorm, BufferFormat.R16_UInt, BufferFormat.R16_SNorm, BufferFormat.R16_SInt },
-            [BufferFormat.R8_Typeless] = new() { BufferFormat.R8_UNorm, BufferFormat.R8_UInt, BufferFormat.R8_SNorm, BufferFormat.R8_SInt },
-            [BufferFormat.BC1_Typeless] = new() { BufferFormat.BC1_UNorm, BufferFormat.BC1_UNorm_SRgb },
-            [BufferFormat.BC2_Typeless] = new() { BufferFormat.BC2_UNorm, BufferFormat.BC2_UNorm_SRgb },
-            [BufferFormat.BC3_Typeless] = new() { BufferFormat.BC3_UNorm, BufferFormat.BC3_UNorm_SRgb },
-            [BufferFormat.BC4_Typeless] = new() { BufferFormat.BC4_UNorm, BufferFormat.BC4_SNorm },
-            [BufferFormat.BC5_Typeless] = new() { BufferFormat.BC5_UNorm, BufferFormat.BC5_SNorm },
-            [BufferFormat.B8G8R8A8_Typeless] = new() { BufferFormat.B8G8R8A8_UNorm, BufferFormat.B8G8R8A8_UNorm_SRgb },
-            [BufferFormat.B8G8R8X8_Typeless] = new() { BufferFormat.B8G8R8X8_UNorm, BufferFormat.B8G8R8X8_UNorm_SRgb },
-            [BufferFormat.BC7_Typeless] = new() { BufferFormat.BC7_UNorm, BufferFormat.BC7_UNorm_SRgb }
+            [BufferFormat.R32G32B32A32_Typeless] = [BufferFormat.R32G32B32A32_Float, BufferFormat.R32G32B32A32_UInt, BufferFormat.R32G32B32A32_SInt],
+            [BufferFormat.R32G32B32_Typeless] = [BufferFormat.R32G32B32_Float, BufferFormat.R32G32B32_UInt, BufferFormat.R32G32B32_SInt],
+            [BufferFormat.R16G16B16A16_Typeless] = [BufferFormat.R16G16B16A16_Float, BufferFormat.R16G16B16A16_UNorm, BufferFormat.R16G16B16A16_UInt, BufferFormat.R16G16B16A16_SNorm, BufferFormat.R16G16B16A16_SInt],
+            [BufferFormat.R32G32_Typeless] = [BufferFormat.R32G32_Float, BufferFormat.R32G32_UInt, BufferFormat.R32G32_SInt],
+            [BufferFormat.R10G10B10A2_Typeless] = [BufferFormat.R10G10B10A2_UNorm, BufferFormat.R10G10B10A2_UInt],
+            [BufferFormat.R8G8B8A8_Typeless] = [BufferFormat.R8G8B8A8_UNorm, BufferFormat.R8G8B8A8_UNorm_SRgb, BufferFormat.R8G8B8A8_UInt, BufferFormat.R8G8B8A8_SNorm, BufferFormat.R8G8B8A8_SInt],
+            [BufferFormat.R16G16_Typeless] = [BufferFormat.R16G16_Float, BufferFormat.R16G16_UNorm, BufferFormat.R16G16_UInt, BufferFormat.R16G16_SNorm, BufferFormat.R16G16_SInt],
+            [BufferFormat.R32_Typeless] = [BufferFormat.R32_Float, BufferFormat.R32_UInt, BufferFormat.R32_SInt],
+            [BufferFormat.R8G8_Typeless] = [BufferFormat.R8G8_UNorm, BufferFormat.R8G8_UInt, BufferFormat.R8G8_SNorm, BufferFormat.R8G8_SInt],
+            [BufferFormat.R16_Typeless] = [BufferFormat.R16_Float, BufferFormat.R16_UNorm, BufferFormat.R16_UInt, BufferFormat.R16_SNorm, BufferFormat.R16_SInt],
+            [BufferFormat.R8_Typeless] = [BufferFormat.R8_UNorm, BufferFormat.R8_UInt, BufferFormat.R8_SNorm, BufferFormat.R8_SInt],
+            [BufferFormat.BC1_Typeless] = [BufferFormat.BC1_UNorm, BufferFormat.BC1_UNorm_SRgb],
+            [BufferFormat.BC2_Typeless] = [BufferFormat.BC2_UNorm, BufferFormat.BC2_UNorm_SRgb],
+            [BufferFormat.BC3_Typeless] = [BufferFormat.BC3_UNorm, BufferFormat.BC3_UNorm_SRgb],
+            [BufferFormat.BC4_Typeless] = [BufferFormat.BC4_UNorm, BufferFormat.BC4_SNorm],
+            [BufferFormat.BC5_Typeless] = [BufferFormat.BC5_UNorm, BufferFormat.BC5_SNorm],
+            [BufferFormat.B8G8R8A8_Typeless] = [BufferFormat.B8G8R8A8_UNorm, BufferFormat.B8G8R8A8_UNorm_SRgb],
+            [BufferFormat.B8G8R8X8_Typeless] = [BufferFormat.B8G8R8X8_UNorm, BufferFormat.B8G8R8X8_UNorm_SRgb],
+            [BufferFormat.BC7_Typeless] = [BufferFormat.BC7_UNorm, BufferFormat.BC7_UNorm_SRgb]
         };
 
         foreach (BufferFormat format in groupedFormats.SelectMany(item => item.Value))
@@ -163,13 +163,14 @@ public class GorgonFormatInfoTests
         }
     }
 
+    [TestMethod]
     public void IsPalettized()
     {
         BufferFormat[] formats =
-        {
+        [
             BufferFormat.P8,
             BufferFormat.A8P8,
-        };
+        ];
 
         foreach (BufferFormat format in formats)
         {

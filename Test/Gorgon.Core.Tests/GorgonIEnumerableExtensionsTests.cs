@@ -16,7 +16,7 @@ public class Node
     public List<Node> Children
     {
         get;
-    } = new List<Node>();
+    } = [];
 }
 
 [TestClass]
@@ -65,7 +65,7 @@ public class GorgonIEnumerableExtensionsTests
     };
 
     [TestMethod]
-    public void TraverseDepthFirst_IEnumerable()
+    public void TraverseDepthFirstIEnumerable()
     {
         List<string> expected =
         [
@@ -77,15 +77,13 @@ public class GorgonIEnumerableExtensionsTests
                 "GrandChild 3",
             "Child 2"
         ];
-        List<string> actual = new();
-
-        actual.AddRange(_root.Children.TraverseDepthFirst(x => x.Children).Select(x => x.Name));
+        List<string> actual = [.. _root.Children.TraverseDepthFirst(x => x.Children).Select(x => x.Name)];
 
         Assert.IsTrue(expected.SequenceEqual(actual));
     }
 
     [TestMethod]
-    public void TraverseBreadthFirst_IEnumerable()
+    public void TraverseBreadthFirstIEnumerable()
     {
         List<string> expected =
         [
@@ -97,9 +95,7 @@ public class GorgonIEnumerableExtensionsTests
             "Great GrandChild 1",
             "Great GrandChild 2",
         ];
-        List<string> actual = new();
-
-        actual.AddRange(_root.Children.TraverseBreadthFirst(x => x.Children).Select(x => x.Name));
+        List<string> actual = [.. _root.Children.TraverseBreadthFirst(x => x.Children).Select(x => x.Name)];
 
         Assert.IsTrue(expected.SequenceEqual(actual));
     }
@@ -107,9 +103,9 @@ public class GorgonIEnumerableExtensionsTests
     [TestMethod]
     public void ToGorgonArray()
     {
-        List<int> expected = new()
-        {
-        1, 2, 3, 4, 5 };
+        List<int> expected =
+        [
+        1, 2, 3, 4, 5 ];
         GorgonArray<int> actual = expected.ToGorgonArray();
 
         Assert.AreEqual(expected.Count, actual.Length);

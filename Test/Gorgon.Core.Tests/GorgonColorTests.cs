@@ -202,10 +202,10 @@ public class GorgonColorTests
         System.Drawing.Color drawingColor = System.Drawing.Color.FromArgb(255, 127, 191, 63);
         GorgonColor color = GorgonColor.FromColor(drawingColor);
 
-        Assert.AreEqual(127, drawingColor.R);
-        Assert.AreEqual(191, drawingColor.G);
-        Assert.AreEqual(63, drawingColor.B);
-        Assert.AreEqual(255, drawingColor.A);
+        Assert.AreEqual(0.498039216f, color.Red);
+        Assert.AreEqual(0.7490196f, color.Green);
+        Assert.AreEqual(0.247058824f, color.Blue);
+        Assert.AreEqual(1.0f, color.Alpha);
     }
 
     [TestMethod]
@@ -225,9 +225,9 @@ public class GorgonColorTests
         Vector3 rgb = new(0.5f, 0.75f, 0.25f);
         GorgonColor color = GorgonColor.FromVector3(rgb);
 
-        Assert.AreEqual(0.5f, rgb.X);
-        Assert.AreEqual(0.75, rgb.Y);
-        Assert.AreEqual(0.25f, rgb.Z);
+        Assert.AreEqual(rgb.X, color.Red);
+        Assert.AreEqual(rgb.Y, color.Green);
+        Assert.AreEqual(rgb.Z, color.Blue);
     }
 
     [TestMethod]
@@ -248,10 +248,10 @@ public class GorgonColorTests
         Vector4 rgba = new(0.5f, 0.75f, 0.25f, 1.0f);
         GorgonColor color = GorgonColor.FromVector4(rgba);
 
-        Assert.AreEqual(0.5f, rgba.X);
-        Assert.AreEqual(0.75, rgba.Y);
-        Assert.AreEqual(0.25f, rgba.Z);
-        Assert.AreEqual(1.0f, rgba.W);
+        Assert.AreEqual(rgba.X, color.Red);
+        Assert.AreEqual(rgba.Y, color.Green);
+        Assert.AreEqual(rgba.Z, color.Blue);
+        Assert.AreEqual(rgba.W, color.Alpha);
     }
 
     [TestMethod]
@@ -264,7 +264,7 @@ public class GorgonColorTests
     [TestMethod]
     public void ToLinear()
     {
-        GorgonColor color = new GorgonColor(0.76431364f, 0, 0, 1);
+        GorgonColor color = new(0.76431364f, 0, 0, 1);
         color = GorgonColor.ToLinear(color);
 
         Assert.AreEqual(0.545098f, color.Red);
@@ -285,7 +285,7 @@ public class GorgonColorTests
     [TestMethod]
     public void Clamp()
     {
-        GorgonColor color = new GorgonColor(-1, 0, 5, 1);
+        GorgonColor color = new(-1, 0, 5, 1);
         GorgonColor result = GorgonColor.Clamp(color);
 
         Assert.AreEqual(0.0f, result.Red);

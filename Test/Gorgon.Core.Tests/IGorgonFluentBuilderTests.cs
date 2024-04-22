@@ -5,21 +5,19 @@ using Gorgon.Patterns;
 
 namespace Gorgon.Core.Tests;
 
-public class TestClass
+public class TestClass(int value)
 {
     public int Value
     {
         get;
         set;
-    }
-
-    public TestClass(int value) => Value = value;
+    } = value;
 }
 
 public class DumbAllocator
     : IGorgonAllocator<TestClass>
 {
-    private readonly List<TestClass> _objects = new();
+    private readonly List<TestClass> _objects = [];
 
     public int Count => _objects.Count;
 
@@ -87,13 +85,19 @@ public class IGorgonFluentBuilderTests
         Assert.AreEqual(10, obj.Value);
 
         obj = builder.SetValue(1024)
-                     .Build<DumbAllocator>(allocator);
+                     .Build(allocator);
+
+        Assert.AreEqual(1, allocator.Count);
+        Assert.AreEqual(1024, obj.Value);
 
         obj = builder.SetValue(2048)
-                    .Build<DumbAllocator>(allocator);
+                    .Build(allocator);
+
+        Assert.AreEqual(2, allocator.Count);
+        Assert.AreEqual(2048, obj.Value);
 
         obj = builder.SetValue(3072)
-                     .Build<DumbAllocator>(allocator);
+                     .Build(allocator);
 
         Assert.AreEqual(3, allocator.Count);
         Assert.AreEqual(3072, obj.Value);

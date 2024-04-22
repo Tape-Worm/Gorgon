@@ -111,10 +111,11 @@ Duis convallis convallis tellus id interdum velit laoreet. Auctor elit sed vulpu
 Rutrum tellus pellentesque eu tincidunt tortor aliquam. Nunc pulvinar sapien et ligula. Scelerisque in dictum non consectetur. Mauris rhoncus aenean vel elit scelerisque mauris. Mi eget mauris pharetra et ultrices. In egestas erat imperdiet sed euismod. Donec ultrices tincidunt arcu non sodales neque. Eget est lorem ipsum dolor. Vulputate sapien nec sagittis aliquam malesuada bibendum arcu. Sed viverra tellus in hac habitasse platea dictumst vestibulum. Mauris a diam maecenas sed enim ut sem viverra. Natoque penatibus et magnis dis parturient montes. Elementum curabitur vitae nunc sed velit dignissim sodales ut.
 
 Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucibus turpis in. Amet nisl suscipit adipiscing bibendum est. Vitae sapien pellentesque habitant morbi tristique senectus et netus. Massa ultricies mi quis hendrerit dolor. Dictumst quisque sagittis purus sit amet. Tincidunt vitae semper quis lectus nulla at volutpat diam. Facilisi cras fermentum odio eu feugiat pretium nibh ipsum. Neque sodales ut etiam sit. Orci eu lobortis elementum nibh tellus. Eu lobortis elementum nibh tellus molestie nunc non blandit massa. Ac auctor augue mauris augue neque gravida in. Id ornare arcu odio ut sem nulla. Lacus sed viverra tellus in hac habitasse platea dictumst. Congue nisi vitae suscipit tellus mauris a diam. Vitae proin sagittis nisl rhoncus mattis rhoncus.";
+    private static readonly string[] _expected = ["C:", "Some", "Path"];
     #endregion
 
     [TestMethod]
-    public void CopyToStream_ShouldCopyDataCorrectly()
+    public void CopyToStreamShouldCopyDataCorrectly()
     {
         // Arrange
         string testData = "Hello, World!";
@@ -145,7 +146,7 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
     }
 
     [TestMethod]
-    public void CopyToStream_ShouldReturnZero_WhenSourceStreamIsEmpty()
+    public void CopyToStreamShouldReturnZeroWhenSourceStreamIsEmpty()
     {
         // Arrange
         string testData = "";
@@ -160,19 +161,19 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
     }
 
     [TestMethod]
-    public void CopyToStream_ShouldThrowArgumentException_WhenDestinationStreamIsReadOnly()
+    public void CopyToStreamShouldThrowArgumentExceptionWhenDestinationStreamIsReadOnly()
     {
         // Arrange
         string testData = "Hello, World!";
         using MemoryStream sourceStream = new(Encoding.UTF8.GetBytes(testData));
-        using MemoryStream destinationStream = new(new byte[0], false); // Read-only stream
+        using MemoryStream destinationStream = new([], false); // Read-only stream
 
         // Act & Assert
         Assert.ThrowsException<ArgumentException>(() => sourceStream.CopyToStream(destinationStream, testData.Length));
     }
 
     [TestMethod]
-    public void CopyToStream_ShouldCopyDataInChunks()
+    public void CopyToStreamShouldCopyDataInChunks()
     {
         // Arrange
         string testData = "Exercitationem fugiat voluptatum est adipisci. Quia doloribus inventore explicabo quaerat. Et esse facilis esse et qui in non aut.\n\nEos qui repudiandae aut nesciunt et voluptatem deleniti debitis. At magnam ea dolorem ea veritatis. Minus ab eos id laudantium cumque dolorum.";
@@ -192,7 +193,7 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
     }
 
     [TestMethod]
-    public async Task CopyToStreamAsync_ShouldCopyDataCorrectly()
+    public async Task CopyToStreamAsyncShouldCopyDataCorrectly()
     {
         // Arrange
         string testData = "Hello, World!";
@@ -211,7 +212,7 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
     }
 
     [TestMethod]
-    public async Task CopyToStreamAsync_ShouldReturnZero_WhenSourceStreamIsEmpty()
+    public async Task CopyToStreamAsyncShouldReturnZeroWhenSourceStreamIsEmpty()
     {
         // Arrange
         string testData = "";
@@ -226,19 +227,19 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
     }
 
     [TestMethod]
-    public async Task CopyToStreamAsync_ShouldThrowArgumentException_WhenDestinationStreamIsReadOnly()
+    public async Task CopyToStreamAsyncShouldThrowArgumentExceptionWhenDestinationStreamIsReadOnly()
     {
         // Arrange
         string testData = "Hello, World!";
         using MemoryStream sourceStream = new(Encoding.UTF8.GetBytes(testData));
-        using MemoryStream destinationStream = new(new byte[0], false); // Read-only stream
+        using MemoryStream destinationStream = new([], false); // Read-only stream
 
         // Act & Assert
         await Assert.ThrowsExceptionAsync<ArgumentException>(() => sourceStream.CopyToStreamAsync(destinationStream, testData.Length));
     }
 
     [TestMethod]
-    public async Task CopyToStreamAsync_ShouldThrowArgumentException_WhenBufferSizeIsLessThanOne()
+    public async Task CopyToStreamAsyncShouldThrowArgumentExceptionWhenBufferSizeIsLessThanOne()
     {
         // Arrange
         string testData = "Hello, World!";
@@ -278,15 +279,15 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
     */
 
     [TestMethod]
-    public unsafe void WriteFromPointer_WritesCorrectData()
+    public unsafe void WriteFromPointerWritesCorrectData()
     {
         // Arrange
         byte[] data = Encoding.ASCII.GetBytes("Test a string that we can write to a stream.");
-        using MemoryStream stream = new MemoryStream();
-        using BinaryWriter writer = new BinaryWriter(stream);
+        using MemoryStream stream = new();
+        using BinaryWriter writer = new(stream);
         fixed (byte* pData = data)
         {
-            GorgonPtr<byte> srcBuffer = new GorgonPtr<byte>(pData, data.Length);
+            GorgonPtr<byte> srcBuffer = new(pData, data.Length);
 
             // Act
             writer.WriteFromPointer(srcBuffer);
@@ -298,11 +299,11 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
     }
 
     [TestMethod]
-    public void WriteFromPointer_DoesNothing_WhenPointerIsNull()
+    public void WriteFromPointerDoesNothingWhenPointerIsNull()
     {
         // Arrange
-        using MemoryStream stream = new MemoryStream();
-        using BinaryWriter writer = new BinaryWriter(stream);
+        using MemoryStream stream = new();
+        using BinaryWriter writer = new(stream);
         GorgonPtr<byte> nullPointer = GorgonPtr<byte>.NullPtr;
 
         // Act
@@ -313,16 +314,16 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
     }
 
     [TestMethod]
-    public unsafe void ReadToPointer_ReadsCorrectData()
+    public unsafe void ReadToPointerReadsCorrectData()
     {
         // Arrange
         byte[] data = Encoding.ASCII.GetBytes("Test a string that we can read from a stream.");
-        using MemoryStream stream = new MemoryStream(data);
-        using BinaryReader reader = new BinaryReader(stream);
+        using MemoryStream stream = new(data);
+        using BinaryReader reader = new(stream);
         byte[] buffer = new byte[data.Length];
         fixed (byte* pBuffer = buffer)
         {
-            GorgonPtr<byte> destBuffer = new GorgonPtr<byte>(pBuffer, buffer.Length);
+            GorgonPtr<byte> destBuffer = new(pBuffer, buffer.Length);
 
             // Act
             reader.ReadToPointer(destBuffer);
@@ -333,16 +334,16 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
     }
 
     [TestMethod]
-    public unsafe void ReadToPointer_ThrowsEndOfStreamException_WhenPointerIsTooLarge()
+    public unsafe void ReadToPointerThrowsEndOfStreamExceptionWhenPointerIsTooLarge()
     {
         // Arrange
         byte[] data = Encoding.ASCII.GetBytes("Test a string that we can read from a stream.");
-        using MemoryStream stream = new MemoryStream(data);
-        using BinaryReader reader = new BinaryReader(stream);
+        using MemoryStream stream = new(data);
+        using BinaryReader reader = new(stream);
         byte[] buffer = new byte[data.Length + 1]; // Buffer is larger than the stream.
         fixed (byte* pBuffer = buffer)
         {
-            GorgonPtr<byte> destBuffer = new GorgonPtr<byte>(pBuffer, buffer.Length);
+            GorgonPtr<byte> destBuffer = new(pBuffer, buffer.Length);
 
             // Act & Assert
             Assert.ThrowsException<EndOfStreamException>(() => reader.ReadToPointer(destBuffer));
@@ -350,12 +351,12 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
     }
 
     [TestMethod]
-    public void ReadToPointer_ThrowsNullReferenceException_WhenPointerIsNull()
+    public void ReadToPointerThrowsNullReferenceExceptionWhenPointerIsNull()
     {
         // Arrange
         byte[] data = Encoding.ASCII.GetBytes("Test a string that we can read from a stream.");
-        using MemoryStream stream = new MemoryStream(data);
-        using BinaryReader reader = new BinaryReader(stream);
+        using MemoryStream stream = new(data);
+        using BinaryReader reader = new(stream);
         GorgonPtr<byte> nullPointer = GorgonPtr<byte>.NullPtr;
 
         // Act & Assert
@@ -363,19 +364,19 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
     }
 
     [TestMethod]
-    public void ReadValue_ReadsCorrectData()
+    public void ReadValueReadsCorrectData()
     {
         // Arrange
-        GorgonPoint data = new GorgonPoint(123, 456);
-        using MemoryStream stream = new MemoryStream();
-        using BinaryWriter writer = new BinaryWriter(stream, Encoding.Default, true); // leaveOpen is set to true.
+        GorgonPoint data = new(123, 456);
+        using MemoryStream stream = new();
+        using BinaryWriter writer = new(stream, Encoding.Default, true); // leaveOpen is set to true.
         writer.Write(data.X);
         writer.Write(data.Y);
         stream.Position = 0;
-        using BinaryReader reader = new BinaryReader(stream);
+        using BinaryReader reader = new(stream);
 
         // Act
-        reader.ReadValue<GorgonPoint>(out GorgonPoint result);
+        reader.ReadValue(out GorgonPoint result);
         stream.Position = 0; // Reset the stream position.
         GorgonPoint result2 = reader.ReadValue<GorgonPoint>();
 
@@ -385,23 +386,23 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
     }
 
     [TestMethod]
-    public void ReadValue_ThrowsEndOfStreamException_WhenStreamIsTooSmall()
+    public void ReadValueThrowsEndOfStreamExceptionWhenStreamIsTooSmall()
     {
         // Arrange
-        using MemoryStream stream = new MemoryStream(new byte[1]); // Stream is too small to hold a GorgonPoint.
-        using BinaryReader reader = new BinaryReader(stream);
+        using MemoryStream stream = new(new byte[1]); // Stream is too small to hold a GorgonPoint.
+        using BinaryReader reader = new(stream);
 
         // Act & Assert
         Assert.ThrowsException<EndOfStreamException>(() => reader.ReadValue<GorgonPoint>(out _));
     }
 
     [TestMethod]
-    public void WriteValue_WritesCorrectData()
+    public void WriteValueWritesCorrectData()
     {
         // Arrange
-        GorgonPoint data = new GorgonPoint(123, 456);
-        using MemoryStream stream = new MemoryStream();
-        using BinaryWriter writer = new BinaryWriter(stream, Encoding.Default, true); // leaveOpen is set to true.
+        GorgonPoint data = new(123, 456);
+        using MemoryStream stream = new();
+        using BinaryWriter writer = new(stream, Encoding.Default, true); // leaveOpen is set to true.
 
         // Act
         writer.WriteValue(data);
@@ -409,48 +410,48 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
 
         // Assert
         stream.Position = 0; // Reset the stream position.
-        using BinaryReader reader = new BinaryReader(stream);
-        GorgonPoint result = new GorgonPoint(reader.ReadInt32(), reader.ReadInt32());
+        using BinaryReader reader = new(stream);
+        GorgonPoint result = new(reader.ReadInt32(), reader.ReadInt32());
         Assert.AreEqual(data, result);
 
-        GorgonPoint result2 = new GorgonPoint(reader.ReadInt32(), reader.ReadInt32());
+        GorgonPoint result2 = new(reader.ReadInt32(), reader.ReadInt32());
         Assert.AreEqual(data, result2);
     }
 
     [TestMethod]
-    public void WriteRange_WritesCorrectData()
+    public void WriteRangeWritesCorrectData()
     {
         // Arrange
-        GorgonPoint[] data = { new GorgonPoint(123, 456), new GorgonPoint(789, 012) };
-        using MemoryStream stream = new MemoryStream();
-        using BinaryWriter writer = new BinaryWriter(stream, Encoding.Default, true); // leaveOpen is set to true.
+        GorgonPoint[] data = [new(123, 456), new(789, 012)];
+        using MemoryStream stream = new();
+        using BinaryWriter writer = new(stream, Encoding.Default, true); // leaveOpen is set to true.
 
         // Act
         writer.WriteRange<GorgonPoint>(data);
 
         // Assert
         stream.Position = 0; // Reset the stream position.
-        using BinaryReader reader = new BinaryReader(stream);
-        GorgonPoint result1 = new GorgonPoint(reader.ReadInt32(), reader.ReadInt32());
-        GorgonPoint result2 = new GorgonPoint(reader.ReadInt32(), reader.ReadInt32());
+        using BinaryReader reader = new(stream);
+        GorgonPoint result1 = new(reader.ReadInt32(), reader.ReadInt32());
+        GorgonPoint result2 = new(reader.ReadInt32(), reader.ReadInt32());
         Assert.AreEqual(data[0], result1);
         Assert.AreEqual(data[1], result2);
     }
 
     [TestMethod]
-    public void ReadRange_ReadsCorrectData()
+    public void ReadRangeReadsCorrectData()
     {
         // Arrange
-        GorgonPoint[] data = new GorgonPoint[] { new GorgonPoint(123, 456), new GorgonPoint(789, 012) };
-        using MemoryStream stream = new MemoryStream();
-        using BinaryWriter writer = new BinaryWriter(stream, Encoding.Default, true); // leaveOpen is set to true.
+        GorgonPoint[] data = [new(123, 456), new(789, 012)];
+        using MemoryStream stream = new();
+        using BinaryWriter writer = new(stream, Encoding.Default, true); // leaveOpen is set to true.
         foreach (GorgonPoint point in data)
         {
             writer.Write(point.X);
             writer.Write(point.Y);
         }
         stream.Position = 0; // Reset the stream position.
-        using BinaryReader reader = new BinaryReader(stream);
+        using BinaryReader reader = new(stream);
         GorgonPoint[] result = new GorgonPoint[2];
 
         // Act
@@ -462,55 +463,55 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
     }
 
     [TestMethod]
-    public void ReadRange_ThrowsArgumentEmptyException_WhenValuesIsEmpty()
+    public void ReadRangeThrowsArgumentEmptyExceptionWhenValuesIsEmpty()
     {
         // Arrange
-        using MemoryStream stream = new MemoryStream();
-        using BinaryReader reader = new BinaryReader(stream);
-        GorgonPoint[] result = new GorgonPoint[0];
+        using MemoryStream stream = new();
+        using BinaryReader reader = new(stream);
+        GorgonPoint[] result = [];
 
         // Act & Assert
         Assert.ThrowsException<ArgumentEmptyException>(() => reader.ReadRange<GorgonPoint>(result));
     }
 
     [TestMethod]
-    public void WriteString_WritesCorrectData()
+    public void WriteStringWritesCorrectData()
     {
         // Arrange
         string data = "Test string";
-        using MemoryStream stream = new MemoryStream();
+        using MemoryStream stream = new();
 
         // Act
         int bytesWritten = stream.WriteString(data);
 
         // Assert
         stream.Position = 0; // Reset the stream position.
-        using BinaryReader reader = new BinaryReader(stream, Encoding.UTF8);
+        using BinaryReader reader = new(stream, Encoding.UTF8);
         int length = reader.Read7BitEncodedInt(); // Read the length prefix.
-        string result = new string(reader.ReadChars(length));
+        string result = new(reader.ReadChars(length));
         Assert.AreEqual(data, result);
         Assert.AreEqual(Encoding.UTF8.GetByteCount(data) + 1, bytesWritten);
     }
 
     [TestMethod]
-    public void WriteString_ThrowsIOException_WhenStreamIsReadOnly()
+    public void WriteStringThrowsIOExceptionWhenStreamIsReadOnly()
     {
         // Arrange
         string data = "Test string";
-        using MemoryStream stream = new MemoryStream(new byte[100], false); // Write-only stream.
+        using MemoryStream stream = new(new byte[100], false); // Write-only stream.
 
         // Act & Assert
         Assert.ThrowsException<IOException>(() => stream.WriteString(data));
     }
 
     [TestMethod]
-    public void ReadString_ReadsCorrectData()
+    public void ReadStringReadsCorrectData()
     {
         // Arrange
         string data = "Test string";
         Encoding encoding = Encoding.UTF8;
-        using MemoryStream stream = new MemoryStream();
-        using BinaryWriter writer = new BinaryWriter(stream, encoding, true); // leaveOpen is set to true.
+        using MemoryStream stream = new();
+        using BinaryWriter writer = new(stream, encoding, true); // leaveOpen is set to true.
         writer.Write(data); // Write the string data.
         stream.Position = 0; // Reset the stream position.
 
@@ -522,13 +523,13 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
     }
 
     [TestMethod]
-    public void ReadString_ReadsCorrectDataLargeString()
+    public void ReadStringReadsCorrectDataLargeString()
     {
         // Arrange
 
         Encoding encoding = Encoding.UTF8;
-        using MemoryStream stream = new MemoryStream();
-        using BinaryWriter writer = new BinaryWriter(stream, encoding, true); // leaveOpen is set to true.
+        using MemoryStream stream = new();
+        using BinaryWriter writer = new(stream, encoding, true); // leaveOpen is set to true.
         writer.Write(LoremIpsum); // Write the string data.
         stream.Position = 0; // Reset the stream position.
 
@@ -540,13 +541,13 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
     }
 
     [TestMethod]
-    public void ReadString_ReadsCorrectDataLargeString_Unicode()
+    public void ReadStringReadsCorrectDataLargeStringUnicode()
     {
         // Arrange
 
         Encoding encoding = Encoding.Unicode;
-        using MemoryStream stream = new MemoryStream();
-        using BinaryWriter writer = new BinaryWriter(stream, encoding, true); // leaveOpen is set to true.
+        using MemoryStream stream = new();
+        using BinaryWriter writer = new(stream, encoding, true); // leaveOpen is set to true.
         writer.Write(LoremIpsum); // Write the string data.
         stream.Position = 0; // Reset the stream position.
 
@@ -592,23 +593,23 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
     }
 
     [TestMethod]
-    public void ReadString_ThrowsIOException_WhenStreamIsAtEnd()
+    public void ReadStringThrowsIOExceptionWhenStreamIsAtEnd()
     {
         // Arrange
-        using MemoryStream stream = new MemoryStream();
+        using MemoryStream stream = new();
 
         // Act & Assert
         Assert.ThrowsException<IOException>(() => stream.ReadString());
     }
 
     [TestMethod]
-    public void WriteAndReadString_WithDifferentEncodings()
+    public void WriteAndReadStringWithDifferentEncodings()
     {
         // Arrange
         string data = "Test string";
         Encoding encoding1 = Encoding.UTF8;
         Encoding encoding2 = Encoding.ASCII;
-        using MemoryStream stream = new MemoryStream();
+        using MemoryStream stream = new();
 
         // Act
         int bytesWritten1 = stream.WriteString(data, encoding1);
@@ -628,7 +629,7 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
     }
 
     [TestMethod]
-    public void FormatFileName_EmptyInput_ReturnsEmptyString()
+    public void FormatFileNameEmptyInputReturnsEmptyString()
     {
         string path = string.Empty;
         string result = path.FormatFileName();
@@ -636,7 +637,7 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
     }
 
     [TestMethod]
-    public void FormatFileName_PathWithoutFilename_ReturnsEmptyString()
+    public void FormatFileNamePathWithoutFilenameReturnsEmptyString()
     {
         string path = "C:\\Some\\Path\\";
         string result = path.FormatFileName();
@@ -644,7 +645,7 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
     }
 
     [TestMethod]
-    public void FormatFileName_PathWithIllegalCharacters_ReturnsSanitizedFilename()
+    public void FormatFileNamePathWithIllegalCharactersReturnsSanitizedFilename()
     {
         string path = "C:\\Some\\Path\\file*name.txt";
         string result = path.FormatFileName();
@@ -652,7 +653,7 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
     }
 
     [TestMethod]
-    public void FormatFileName_PathWithLegalCharacters_ReturnsSameFilename()
+    public void FormatFileNamePathWithLegalCharactersReturnsSameFilename()
     {
         string path = "C:\\Some\\Path\\filename.txt";
         string result = path.FormatFileName();
@@ -660,7 +661,7 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
     }
 
     [TestMethod]
-    public void FormatFileName_PathWithAlternateDivider_ReturnsCorrectFilename()
+    public void FormatFileNamePathWithAlternateDividerReturnsCorrectFilename()
     {
         string path = "C:/Some/Path/filename.txt";
         string result = path.FormatFileName();
@@ -668,7 +669,7 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
     }
 
     [TestMethod]
-    public void FormatDirectory_EmptyInput_ReturnsEmptyString()
+    public void FormatDirectoryEmptyInputReturnsEmptyString()
     {
         string path = string.Empty;
         string result = path.FormatDirectory(Path.DirectorySeparatorChar);
@@ -676,7 +677,7 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
     }
 
     [TestMethod]
-    public void FormatDirectory_PathWithIllegalCharacters_ReturnsSanitizedPath()
+    public void FormatDirectoryPathWithIllegalCharactersReturnsSanitizedPath()
     {
         string path = @"C:\Some\Invalid*Path\";
         string result = path.FormatDirectory(Path.DirectorySeparatorChar);
@@ -684,7 +685,7 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
     }
 
     [TestMethod]
-    public void FormatDirectory_PathWithAlternateSeparator_ReturnsPathWithStandardSeparator()
+    public void FormatDirectoryPathWithAlternateSeparatorReturnsPathWithStandardSeparator()
     {
         string path = @"C:/Some/Path/";
         string result = path.FormatDirectory(Path.DirectorySeparatorChar);
@@ -692,7 +693,7 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
     }
 
     [TestMethod]
-    public void FormatDirectory_PathWithDoubledSeparators_ReturnsPathWithSingleSeparators()
+    public void FormatDirectoryPathWithDoubledSeparatorsReturnsPathWithSingleSeparators()
     {
         string path = @"C:\Some\\Path\";
         string result = path.FormatDirectory(Path.DirectorySeparatorChar);
@@ -700,7 +701,7 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
     }
 
     [TestMethod]
-    public void FormatDirectory_PathWithMultipleConsecutiveSeparatorsInMiddle_ReturnsPathWithSingleSeparators()
+    public void FormatDirectoryPathWithMultipleConsecutiveSeparatorsInMiddleReturnsPathWithSingleSeparators()
     {
         string path = @"C:\//Some\\\\\Path\/";
         string result = path.FormatDirectory(Path.DirectorySeparatorChar);
@@ -708,7 +709,7 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
     }
 
     [TestMethod]
-    public void FormatDirectory_EmptyInput_AltSeparator_ReturnsEmptyString()
+    public void FormatDirectoryEmptyInputAltSeparatorReturnsEmptyString()
     {
         string path = string.Empty;
         string result = path.FormatDirectory(Path.AltDirectorySeparatorChar);
@@ -716,7 +717,7 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
     }
 
     [TestMethod]
-    public void FormatDirectory_PathWithIllegalCharacters_AltSeparator_ReturnsSanitizedPath()
+    public void FormatDirectoryPathWithIllegalCharactersAltSeparatorReturnsSanitizedPath()
     {
         string path = @"C:/Some/Invalid*Path/";
         string result = path.FormatDirectory(Path.AltDirectorySeparatorChar);
@@ -724,7 +725,7 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
     }
 
     [TestMethod]
-    public void FormatDirectory_PathWithAlternateSeparator_AltSeparator_ReturnsPathWithStandardSeparator()
+    public void FormatDirectoryPathWithAlternateSeparatorAltSeparatorReturnsPathWithStandardSeparator()
     {
         string path = @"C:\Some\Path\";
         string result = path.FormatDirectory(Path.AltDirectorySeparatorChar);
@@ -732,7 +733,7 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
     }
 
     [TestMethod]
-    public void FormatDirectory_PathWithDoubledSeparators_AltSeparator_ReturnsPathWithSingleSeparators()
+    public void FormatDirectoryPathWithDoubledSeparatorsAltSeparatorReturnsPathWithSingleSeparators()
     {
         string path = @"C:/Some//Path/";
         string result = path.FormatDirectory(Path.AltDirectorySeparatorChar);
@@ -740,7 +741,7 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
     }
 
     [TestMethod]
-    public void FormatDirectory_PathWithMultipleConsecutiveSeparatorsInMiddle_AltSeparator_ReturnsPathWithSingleSeparators()
+    public void FormatDirectoryPathWithMultipleConsecutiveSeparatorsInMiddleAltSeparatorReturnsPathWithSingleSeparators()
     {
         string path = @"C:/Some/////Path/";
         string result = path.FormatDirectory(Path.AltDirectorySeparatorChar);
@@ -748,7 +749,7 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
     }
 
     [TestMethod]
-    public void FormatPathPart_EmptyInput_ReturnsEmptyString()
+    public void FormatPathPartEmptyInputReturnsEmptyString()
     {
         string path = string.Empty;
         string result = path.FormatPathPart();
@@ -756,7 +757,7 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
     }
 
     [TestMethod]
-    public void FormatPathPart_PathWithIllegalCharacters_ReturnsSanitizedPath()
+    public void FormatPathPartPathWithIllegalCharactersReturnsSanitizedPath()
     {
         string path = "Invalid*Path";
         string result = path.FormatPathPart();
@@ -764,7 +765,7 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
     }
 
     [TestMethod]
-    public void FormatPathPart_PathWithDirectorySeparator_ReturnsPathWithUnderscores()
+    public void FormatPathPartPathWithDirectorySeparatorReturnsPathWithUnderscores()
     {
         string path = "Some\\Path";
         string result = path.FormatPathPart();
@@ -772,7 +773,7 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
     }
 
     [TestMethod]
-    public void FormatPathPart_PathWithAltDirectorySeparator_ReturnsPathWithUnderscores()
+    public void FormatPathPartPathWithAltDirectorySeparatorReturnsPathWithUnderscores()
     {
         string path = "Some/Path";
         string result = path.FormatPathPart();
@@ -780,7 +781,7 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
     }
 
     [TestMethod]
-    public void GetPathParts_EmptyInput_ReturnsEmptyArray()
+    public void GetPathPartsEmptyInputReturnsEmptyArray()
     {
         string path = string.Empty;
         string[] result = path.GetPathParts(Path.DirectorySeparatorChar);
@@ -788,23 +789,23 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
     }
 
     [TestMethod]
-    public void GetPathParts_PathWithDirectorySeparator_ReturnsPathParts()
+    public void GetPathPartsPathWithDirectorySeparatorReturnsPathParts()
     {
         string path = @"C:\Some\Path";
         string[] result = path.GetPathParts(Path.DirectorySeparatorChar);
-        CollectionAssert.AreEqual(new[] { "C:", "Some", "Path" }, result);
+        CollectionAssert.AreEqual(_expected, result);
     }
 
     [TestMethod]
-    public void GetPathParts_PathWithAltDirectorySeparator_ReturnsPathParts()
+    public void GetPathPartsPathWithAltDirectorySeparatorReturnsPathParts()
     {
         string path = @"C:/Some/Path";
         string[] result = path.GetPathParts(Path.AltDirectorySeparatorChar);
-        CollectionAssert.AreEqual(new[] { "C:", "Some", "Path" }, result);
+        CollectionAssert.AreEqual(_expected, result);
     }
 
     [TestMethod]
-    public void FormatPath_EmptyInput_ReturnsEmptyString()
+    public void FormatPathEmptyInputReturnsEmptyString()
     {
         string path = string.Empty;
         string result = path.FormatPath(Path.DirectorySeparatorChar);
@@ -828,7 +829,7 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
     }
 
     [TestMethod]
-    public void FormatPath_PathWithIllegalCharacters_ReturnsSanitizedPath()
+    public void FormatPathPathWithIllegalCharactersReturnsSanitizedPath()
     {
         string path = @"C:\Some\Invalid*Path\file.txt";
         string result = path.FormatPath(Path.DirectorySeparatorChar);
@@ -836,7 +837,7 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
     }
 
     [TestMethod]
-    public void FormatPath_PathWithAltDirectorySeparator_ReturnsSanitizedPath()
+    public void FormatPathPathWithAltDirectorySeparatorReturnsSanitizedPath()
     {
         string path = @"C:/Some/Invalid*Path/file.txt";
         string result = path.FormatPath(Path.AltDirectorySeparatorChar);
@@ -844,7 +845,7 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
     }
 
     [TestMethod]
-    public void FormatPath_PathWithIllegalCharactersInFileName_ReturnsSanitizedPath()
+    public void FormatPathPathWithIllegalCharactersInFileNameReturnsSanitizedPath()
     {
         string path = @"C:\Some\Path\Invalid*file.txt";
         string result = path.FormatPath(Path.DirectorySeparatorChar);
@@ -852,7 +853,7 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
     }
 
     [TestMethod]
-    public void FormatPath_PathWithAltDirectorySeparatorAndIllegalCharactersInFileName_ReturnsSanitizedPath()
+    public void FormatPathPathWithAltDirectorySeparatorAndIllegalCharactersInFileNameReturnsSanitizedPath()
     {
         string path = @"C:/Some/Path/Invalid*file.txt";
         string result = path.FormatPath(Path.AltDirectorySeparatorChar);
@@ -860,7 +861,7 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
     }
 
     [TestMethod]
-    public void FormatPath_PathWithDoubledSeparators_ReturnsSanitizedPath()
+    public void FormatPathPathWithDoubledSeparatorsReturnsSanitizedPath()
     {
         string path = @"C:\\Some\\Path\\file.txt";
         string result = path.FormatPath(Path.DirectorySeparatorChar);
@@ -868,7 +869,7 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
     }
 
     [TestMethod]
-    public void FormatPath_PathWithAltDoubledSeparators_ReturnsSanitizedPath()
+    public void FormatPathPathWithAltDoubledSeparatorsReturnsSanitizedPath()
     {
         string path = @"C://Some//Path//file.txt";
         string result = path.FormatPath(Path.AltDirectorySeparatorChar);
@@ -876,14 +877,14 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
     }
 
     [TestMethod]
-    public void ChunkID_EmptyInput_ThrowsArgumentEmptyException()
+    public void ChunkIDEmptyInputThrowsArgumentEmptyException()
     {
         string chunkName = string.Empty;
         Assert.ThrowsException<ArgumentEmptyException>(() => chunkName.ChunkID());
     }
 
     [TestMethod]
-    public void ChunkID_ShortInput_ReturnsCorrectChunkID()
+    public void ChunkIDShortInputReturnsCorrectChunkID()
     {
         string chunkName = "Short";
         ulong result = chunkName.ChunkID();
@@ -891,7 +892,7 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
     }
 
     [TestMethod]
-    public void ChunkID_ExactLengthInput_ReturnsCorrectChunkID()
+    public void ChunkIDExactLengthInputReturnsCorrectChunkID()
     {
         string chunkName = "ExactLen";
         ulong result = chunkName.ChunkID();
@@ -899,7 +900,7 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
     }
 
     [TestMethod]
-    public void ChunkID_LongInput_ReturnsCorrectChunkID()
+    public void ChunkIDLongInputReturnsCorrectChunkID()
     {
         string chunkName = "TooLongInput";
         ulong result = chunkName.ChunkID();

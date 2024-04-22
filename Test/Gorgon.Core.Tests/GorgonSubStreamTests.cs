@@ -32,133 +32,138 @@ public class GorgonSubStreamTests
     }
 
     [TestMethod]
-    public async Task FlushAsync_ShouldThrowNotSupportedException()
+    public async Task FlushAsyncShouldThrowNotSupportedException()
     {
         // Arrange
-        var parentStream = new MemoryStream(new byte[100]);
-        var wrapper = new GorgonSubStream(parentStream, 0, 50, true);
+        MemoryStream parentStream = new(new byte[100]);
+        GorgonSubStream wrapper = new(parentStream, 0, 50, true);
 
         // Act and Assert
         await Assert.ThrowsExceptionAsync<NotSupportedException>(() => wrapper.FlushAsync());
     }
 
     [TestMethod]
-    public async Task CopyToAsync_ShouldThrowNotSupportedException()
+    public async Task CopyToAsyncShouldThrowNotSupportedException()
     {
         // Arrange
-        var parentStream = new MemoryStream(new byte[100]);
-        var wrapper = new GorgonSubStream(parentStream, 0, 50, true);
+        MemoryStream parentStream = new(new byte[100]);
+        GorgonSubStream wrapper = new(parentStream, 0, 50, true);
 
         // Act and Assert
         await Assert.ThrowsExceptionAsync<NotSupportedException>(() => wrapper.CopyToAsync(new MemoryStream(), 1024));
     }
 
     [TestMethod]
-    public async Task ReadAsync_ShouldThrowNotSupportedException()
+    public async Task ReadAsyncShouldThrowNotSupportedException()
     {
         // Arrange
-        var parentStream = new MemoryStream(new byte[100]);
-        var wrapper = new GorgonSubStream(parentStream, 0, 50, true);
+        MemoryStream parentStream = new(new byte[100]);
+        GorgonSubStream wrapper = new(parentStream, 0, 50, true);
 
         // Act and Assert
         await Assert.ThrowsExceptionAsync<NotSupportedException>(() => wrapper.ReadAsync(new byte[50], 0, 50));
     }
 
     [TestMethod]
-    public async Task ReadAsyncMemory_ShouldThrowNotSupportedException()
+    public async Task ReadAsyncMemoryShouldThrowNotSupportedException()
     {
         // Arrange
-        var parentStream = new MemoryStream(new byte[100]);
-        var wrapper = new GorgonSubStream(parentStream, 0, 50, true);
+        MemoryStream parentStream = new(new byte[100]);
+        GorgonSubStream wrapper = new(parentStream, 0, 50, true);
 
         // Act and Assert
         await Assert.ThrowsExceptionAsync<NotSupportedException>(() => wrapper.ReadAsync(new Memory<byte>(new byte[50])).AsTask());
     }
 
     [TestMethod]
-    public async Task WriteAsync_ShouldThrowNotSupportedException()
+    public async Task WriteAsyncShouldThrowNotSupportedException()
     {
         // Arrange
-        var parentStream = new MemoryStream(new byte[100]);
-        var wrapper = new GorgonSubStream(parentStream, 0, 50, true);
+        MemoryStream parentStream = new(new byte[100]);
+        GorgonSubStream wrapper = new(parentStream, 0, 50, true);
 
         // Act and Assert
         await Assert.ThrowsExceptionAsync<NotSupportedException>(() => wrapper.WriteAsync(new byte[50], 0, 50));
     }
 
     [TestMethod]
-    public async Task WriteAsyncMemory_ShouldThrowNotSupportedException()
+    public async Task WriteAsyncMemoryShouldThrowNotSupportedException()
     {
         // Arrange
-        var parentStream = new MemoryStream(new byte[100]);
-        var wrapper = new GorgonSubStream(parentStream, 0, 50, true);
+        MemoryStream parentStream = new(new byte[100]);
+        GorgonSubStream wrapper = new(parentStream, 0, 50, true);
 
         // Act and Assert
         await Assert.ThrowsExceptionAsync<NotSupportedException>(() => wrapper.WriteAsync(new ReadOnlyMemory<byte>(new byte[50])).AsTask());
     }
 
     [TestMethod]
-    public void Position_SetWithinRange_ShouldUpdatePosition()
+    public void PositionSetWithinRangeShouldUpdatePosition()
     {
         // Arrange
-        var parentStream = new MemoryStream(new byte[100]);
-        var wrapper = new GorgonSubStream(parentStream, 0, 50, true);
-
-        // Act
-        wrapper.Position = 25;
+        MemoryStream parentStream = new(new byte[100]);
+        GorgonSubStream wrapper = new(parentStream, 0, 50, true)
+        {
+            // Act
+            Position = 25
+        };
 
         // Assert
         Assert.AreEqual(25, wrapper.Position);
     }
 
     [TestMethod]
-    public void Position_SetBeyondRange_ShouldSetToEnd()
+    public void PositionSetBeyondRangeShouldSetToEnd()
     {
         // Arrange
-        var parentStream = new MemoryStream(new byte[100]);
-        var wrapper = new GorgonSubStream(parentStream, 0, 50, true);
-
-        // Act
-        wrapper.Position = 60;
+        MemoryStream parentStream = new(new byte[100]);
+        GorgonSubStream wrapper = new(parentStream, 0, 50, true)
+        {
+            // Act
+            Position = 60
+        };
 
         // Assert
         Assert.AreEqual(50, wrapper.Position);
     }
 
     [TestMethod]
-    public void Position_SetNegative_ShouldSetToStart()
+    public void PositionSetNegativeShouldSetToStart()
     {
         // Arrange
-        var parentStream = new MemoryStream(new byte[100]);
-        var wrapper = new GorgonSubStream(parentStream, 0, 50, true);
-
-        // Act
-        wrapper.Position = -10;
+        MemoryStream parentStream = new(new byte[100]);
+        GorgonSubStream wrapper = new(parentStream, 0, 50, true)
+        {
+            // Act
+            Position = -10
+        };
 
         // Assert
         Assert.AreEqual(0, wrapper.Position);
     }
 
     [TestMethod]
-    public void Position_Get_ShouldReturnCurrentPosition()
+    public void PositionGetShouldReturnCurrentPosition()
     {
         // Arrange
-        var parentStream = new MemoryStream(new byte[100]);
-        var wrapper = new GorgonSubStream(parentStream, 0, 50, true);
-        wrapper.Position = 25;
+        MemoryStream parentStream = new(new byte[100]);
+        GorgonSubStream wrapper = new(parentStream, 0, 50, true)
+        {
+            Position = 25
+        };
 
         // Act
-        var position = wrapper.Position;
+        long position = wrapper.Position;
 
         // Assert
         Assert.AreEqual(25, position);
     }
 
     [TestMethod]
-    public void WriteByte_Success()
+    public void WriteByteSuccess()
     {
-        using MemoryStream parentStream = new MemoryStream();
-        GorgonSubStream subStream = new GorgonSubStream(parentStream);
+        using MemoryStream parentStream = new();
+        GorgonSubStream subStream = new(parentStream);
 
         byte value = 123;
         subStream.WriteByte(value);
@@ -170,10 +175,10 @@ public class GorgonSubStreamTests
     }
 
     [TestMethod]
-    public void WriteByte_AdvancesPosition()
+    public void WriteByteAdvancesPosition()
     {
-        using MemoryStream parentStream = new MemoryStream();
-        GorgonSubStream subStream = new GorgonSubStream(parentStream);
+        using MemoryStream parentStream = new();
+        GorgonSubStream subStream = new(parentStream);
 
         byte value1 = 123;
         byte value2 = 124;
@@ -190,19 +195,19 @@ public class GorgonSubStreamTests
     }
 
     [TestMethod]
-    public void WriteByte_StreamDoesNotSupportWriting_ThrowsException()
+    public void WriteByteStreamDoesNotSupportWritingThrowsException()
     {
-        using MemoryStream readOnlyStream = new MemoryStream(new byte[0]);
-        GorgonSubStream subStream = new GorgonSubStream(readOnlyStream, allowWrite: false);
+        using MemoryStream readOnlyStream = new([]);
+        GorgonSubStream subStream = new(readOnlyStream, allowWrite: false);
 
         Assert.ThrowsException<NotSupportedException>(() => subStream.WriteByte(123));
     }
 
     [TestMethod]
-    public void WriteByte_Subsection_Success()
+    public void WriteByteSubsectionSuccess()
     {
-        using MemoryStream parentStream = new MemoryStream(new byte[64]);
-        GorgonSubStream subStream = new GorgonSubStream(parentStream, 6, 24);
+        using MemoryStream parentStream = new(new byte[64]);
+        GorgonSubStream subStream = new(parentStream, 6, 24);
 
         byte value = 123;
         subStream.WriteByte(value);
@@ -214,10 +219,10 @@ public class GorgonSubStreamTests
     }
 
     [TestMethod]
-    public void WriteByte_Subsection_AdvancesPosition()
+    public void WriteByteSubsectionAdvancesPosition()
     {
-        using MemoryStream parentStream = new MemoryStream(new byte[64]);
-        GorgonSubStream subStream = new GorgonSubStream(parentStream, 6, 24);
+        using MemoryStream parentStream = new(new byte[64]);
+        GorgonSubStream subStream = new(parentStream, 6, 24);
 
         byte value1 = 123;
         byte value2 = 124;
@@ -234,10 +239,10 @@ public class GorgonSubStreamTests
     }
 
     [TestMethod]
-    public void WriteByte_Subsection_ExceedsLength_Grows()
+    public void WriteByteSubsectionExceedsLengthGrows()
     {
-        using MemoryStream parentStream = new MemoryStream(new byte[64]);
-        GorgonSubStream subStream = new GorgonSubStream(parentStream, 6, 24);
+        using MemoryStream parentStream = new(new byte[64]);
+        GorgonSubStream subStream = new(parentStream, 6, 24);
 
         for (int i = 0; i < 24; i++)
         {
@@ -257,10 +262,10 @@ public class GorgonSubStreamTests
     }
 
     [TestMethod]
-    public void ReadByte_WithinBounds_ReturnsByte()
+    public void ReadByteWithinBoundsReturnsByte()
     {
-        using MemoryStream parentStream = new MemoryStream(new byte[] { 1, 2, 3, 4, 5 });
-        GorgonSubStream subStream = new GorgonSubStream(parentStream, 1, 3);
+        using MemoryStream parentStream = new([1, 2, 3, 4, 5]);
+        GorgonSubStream subStream = new(parentStream, 1, 3);
 
         int result = subStream.ReadByte();
 
@@ -268,10 +273,10 @@ public class GorgonSubStreamTests
     }
 
     [TestMethod]
-    public void ReadByte_AtEnd_ReturnsMinusOne()
+    public void ReadByteAtEndReturnsMinusOne()
     {
-        using MemoryStream parentStream = new MemoryStream(new byte[] { 1, 2, 3, 4, 5 });
-        GorgonSubStream subStream = new GorgonSubStream(parentStream, 1, 3);
+        using MemoryStream parentStream = new([1, 2, 3, 4, 5]);
+        GorgonSubStream subStream = new(parentStream, 1, 3);
 
         subStream.ReadByte();
         subStream.ReadByte();
@@ -283,10 +288,10 @@ public class GorgonSubStreamTests
     }
 
     [TestMethod]
-    public void ReadByte_AfterEnd_ReturnsMinusOne()
+    public void ReadByteAfterEndReturnsMinusOne()
     {
-        using MemoryStream parentStream = new MemoryStream(new byte[] { 1, 2, 3, 4, 5 });
-        GorgonSubStream subStream = new GorgonSubStream(parentStream, 1, 3);
+        using MemoryStream parentStream = new([1, 2, 3, 4, 5]);
+        GorgonSubStream subStream = new(parentStream, 1, 3);
 
         subStream.ReadByte();
         subStream.ReadByte();
@@ -299,40 +304,40 @@ public class GorgonSubStreamTests
     }
 
     [TestMethod]
-    public void Read_WhenOffsetIsNegative_ThrowsArgumentOutOfRangeException()
+    public void ReadWhenOffsetIsNegativeThrowsArgumentOutOfRangeException()
     {
-        using MemoryStream parentStream = new MemoryStream();
-        using GorgonSubStream subStream = new GorgonSubStream(parentStream);
+        using MemoryStream parentStream = new();
+        using GorgonSubStream subStream = new(parentStream);
 
         byte[] buffer = new byte[10];
         Assert.ThrowsException<ArgumentOutOfRangeException>(() => subStream.Read(buffer, -1, 0));
     }
 
     [TestMethod]
-    public void Read_WhenCountIsNegative_ThrowsArgumentOutOfRangeException()
+    public void ReadWhenCountIsNegativeThrowsArgumentOutOfRangeException()
     {
-        using MemoryStream parentStream = new MemoryStream();
-        using GorgonSubStream subStream = new GorgonSubStream(parentStream);
+        using MemoryStream parentStream = new();
+        using GorgonSubStream subStream = new(parentStream);
 
         byte[] buffer = new byte[10];
         Assert.ThrowsException<ArgumentOutOfRangeException>(() => subStream.Read(buffer, 0, -1));
     }
 
     [TestMethod]
-    public void Read_WhenOffsetAndCountAreLargerThanBufferLength_ThrowsArgumentException()
+    public void ReadWhenOffsetAndCountAreLargerThanBufferLengthThrowsArgumentException()
     {
-        using MemoryStream parentStream = new MemoryStream();
-        using GorgonSubStream subStream = new GorgonSubStream(parentStream);
+        using MemoryStream parentStream = new();
+        using GorgonSubStream subStream = new(parentStream);
 
         byte[] buffer = new byte[10];
         Assert.ThrowsException<ArgumentException>(() => subStream.Read(buffer, 5, 6));
     }
 
     [TestMethod]
-    public void Read_WhenActualCountIsZero_ReturnsZero()
+    public void ReadWhenActualCountIsZeroReturnsZero()
     {
-        using MemoryStream parentStream = new MemoryStream();
-        using GorgonSubStream subStream = new GorgonSubStream(parentStream);
+        using MemoryStream parentStream = new();
+        using GorgonSubStream subStream = new(parentStream);
 
         byte[] buffer = new byte[10];
         int bytesRead = subStream.Read(buffer, 0, 10);
@@ -341,10 +346,10 @@ public class GorgonSubStreamTests
     }
 
     [TestMethod]
-    public void Read_WhenActualCountIsGreaterThanZero_ReturnsNumberOfBytesRead()
+    public void ReadWhenActualCountIsGreaterThanZeroReturnsNumberOfBytesRead()
     {
-        using MemoryStream parentStream = new MemoryStream(new byte[20], 0, 20);
-        using GorgonSubStream subStream = new GorgonSubStream(parentStream);
+        using MemoryStream parentStream = new(new byte[20], 0, 20);
+        using GorgonSubStream subStream = new(parentStream);
 
         byte[] buffer = new byte[10];
         int bytesRead = subStream.Read(buffer, 0, 10);
@@ -353,23 +358,23 @@ public class GorgonSubStreamTests
     }
 
     [TestMethod]
-    public void Read_WhenBufferIsEmpty_ShouldReturnZero()
+    public void ReadWhenBufferIsEmptyShouldReturnZero()
     {
-        using MemoryStream parentStream = new MemoryStream(Encoding.UTF8.GetBytes("Hello, World!"));
-        using GorgonSubStream subStream = new GorgonSubStream(parentStream, 0, parentStream.Length);
+        using MemoryStream parentStream = new(Encoding.UTF8.GetBytes("Hello, World!"));
+        using GorgonSubStream subStream = new(parentStream, 0, parentStream.Length);
 
-        int bytesRead = subStream.Read(Span<byte>.Empty);
+        int bytesRead = subStream.Read([]);
 
         Assert.AreEqual(0, bytesRead);
     }
 
     [TestMethod]
-    public void Read_WhenBufferIsNotEmpty_ShouldReturnNumberOfBytesRead()
+    public void ReadWhenBufferIsNotEmptyShouldReturnNumberOfBytesRead()
     {
-        using MemoryStream parentStream = new MemoryStream(Encoding.UTF8.GetBytes("Hello, World!"));
-        using GorgonSubStream subStream = new GorgonSubStream(parentStream, 0, parentStream.Length);
+        using MemoryStream parentStream = new(Encoding.UTF8.GetBytes("Hello, World!"));
+        using GorgonSubStream subStream = new(parentStream, 0, parentStream.Length);
 
-        var buffer = new Span<byte>(new byte[5]);
+        Span<byte> buffer = new(new byte[5]);
 
         int bytesRead = subStream.Read(buffer);
 
@@ -378,24 +383,24 @@ public class GorgonSubStreamTests
     }
 
     [TestMethod]
-    public void Read_WhenBufferIsLargerThanStream_ShouldReturnActualNumberOfBytesRead()
+    public void ReadWhenBufferIsLargerThanStreamShouldReturnActualNumberOfBytesRead()
     {
-        using MemoryStream parentStream = new MemoryStream(Encoding.UTF8.GetBytes("Hello, World!"));
-        using GorgonSubStream subStream = new GorgonSubStream(parentStream, 0, parentStream.Length);
+        using MemoryStream parentStream = new(Encoding.UTF8.GetBytes("Hello, World!"));
+        using GorgonSubStream subStream = new(parentStream, 0, parentStream.Length);
 
-        var buffer = new Span<byte>(new byte[50]);
+        Span<byte> buffer = new(new byte[50]);
 
         int bytesRead = subStream.Read(buffer);
 
         Assert.AreEqual(13, bytesRead); // "Hello, World!" is 13 bytes long
-        Assert.AreEqual("Hello, World!", Encoding.UTF8.GetString(buffer.Slice(0, bytesRead).ToArray()));
+        Assert.AreEqual("Hello, World!", Encoding.UTF8.GetString(buffer[..bytesRead].ToArray()));
     }
 
     [TestMethod]
-    public void Seek_FromBegin_ShouldSetPositionCorrectly()
+    public void SeekFromBeginShouldSetPositionCorrectly()
     {
-        MemoryStream parentStream = new MemoryStream(new byte[100]);
-        GorgonSubStream subStream = new GorgonSubStream(parentStream);
+        MemoryStream parentStream = new(new byte[100]);
+        GorgonSubStream subStream = new(parentStream);
         long newPosition = subStream.Seek(50, SeekOrigin.Begin);
         Assert.AreEqual(50, newPosition);
         subStream.Dispose();
@@ -403,10 +408,10 @@ public class GorgonSubStreamTests
     }
 
     [TestMethod]
-    public void Seek_FromEnd_ShouldSetPositionCorrectly()
+    public void SeekFromEndShouldSetPositionCorrectly()
     {
-        MemoryStream parentStream = new MemoryStream(new byte[100]);
-        GorgonSubStream subStream = new GorgonSubStream(parentStream);
+        MemoryStream parentStream = new(new byte[100]);
+        GorgonSubStream subStream = new(parentStream);
         long newPosition = subStream.Seek(-50, SeekOrigin.End);
         Assert.AreEqual(50, newPosition);
         subStream.Dispose();
@@ -414,10 +419,10 @@ public class GorgonSubStreamTests
     }
 
     [TestMethod]
-    public void Seek_FromCurrent_ShouldSetPositionCorrectly()
+    public void SeekFromCurrentShouldSetPositionCorrectly()
     {
-        MemoryStream parentStream = new MemoryStream(new byte[100]);
-        GorgonSubStream subStream = new GorgonSubStream(parentStream);
+        MemoryStream parentStream = new(new byte[100]);
+        GorgonSubStream subStream = new(parentStream);
         subStream.Seek(50, SeekOrigin.Begin);
         long newPosition = subStream.Seek(10, SeekOrigin.Current);
         Assert.AreEqual(60, newPosition);
@@ -426,10 +431,10 @@ public class GorgonSubStreamTests
     }
 
     [TestMethod]
-    public void Seek_BeyondBounds_ShouldSetPositionToBoundary()
+    public void SeekBeyondBoundsShouldSetPositionToBoundary()
     {
-        MemoryStream parentStream = new MemoryStream(new byte[100]);
-        GorgonSubStream subStream = new GorgonSubStream(parentStream);
+        MemoryStream parentStream = new(new byte[100]);
+        GorgonSubStream subStream = new(parentStream);
         long newPosition = subStream.Seek(200, SeekOrigin.Begin);
         Assert.AreEqual(100, newPosition);
         newPosition = subStream.Seek(-200, SeekOrigin.Begin);
@@ -439,45 +444,45 @@ public class GorgonSubStreamTests
     }
 
     [TestMethod]
-    public void SetLength_ShouldSetLengthCorrectly()
+    public void SetLengthShouldSetLengthCorrectly()
     {
-        using MemoryStream parentStream = new MemoryStream(new byte[100]);
-        using GorgonSubStream subStream = new GorgonSubStream(parentStream);
+        using MemoryStream parentStream = new(new byte[100]);
+        using GorgonSubStream subStream = new(parentStream);
         subStream.SetLength(50);
         Assert.AreEqual(50, subStream.Length);
     }
 
     [TestMethod]
-    public void SetLength_ShouldSetLengthToZero_WhenNegativeValueProvided()
+    public void SetLengthShouldSetLengthToZeroWhenNegativeValueProvided()
     {
-        using MemoryStream parentStream = new MemoryStream(new byte[100]);
-        using GorgonSubStream subStream = new GorgonSubStream(parentStream);
+        using MemoryStream parentStream = new(new byte[100]);
+        using GorgonSubStream subStream = new(parentStream);
         subStream.SetLength(-50);
         Assert.AreEqual(0, subStream.Length);
     }
 
     [TestMethod]
-    public void SetLength_ShouldSetLengthToParentStreamLength_WhenValueExceedsParentStreamLength()
+    public void SetLengthShouldSetLengthToParentStreamLengthWhenValueExceedsParentStreamLength()
     {
-        using MemoryStream parentStream = new MemoryStream(new byte[100]);
-        using GorgonSubStream subStream = new GorgonSubStream(parentStream);
+        using MemoryStream parentStream = new(new byte[100]);
+        using GorgonSubStream subStream = new(parentStream);
         subStream.SetLength(200);
         Assert.AreEqual(100, subStream.Length);
     }
 
     [TestMethod]
-    public void SetLength_ShouldThrowIOException_WhenStreamIsReadOnly()
+    public void SetLengthShouldThrowIOExceptionWhenStreamIsReadOnly()
     {
-        using MemoryStream parentStream = new MemoryStream(new byte[100]);
-        using GorgonSubStream subStream = new GorgonSubStream(parentStream, allowWrite: false);
+        using MemoryStream parentStream = new(new byte[100]);
+        using GorgonSubStream subStream = new(parentStream, allowWrite: false);
         Assert.ThrowsException<IOException>(() => subStream.SetLength(50));
     }
 
     [TestMethod]
-    public void Write_ShouldWriteDataCorrectly()
+    public void WriteShouldWriteDataCorrectly()
     {
-        using MemoryStream parentStream = new MemoryStream(new byte[100]);
-        using GorgonSubStream subStream = new GorgonSubStream(parentStream);
+        using MemoryStream parentStream = new(new byte[100]);
+        using GorgonSubStream subStream = new(parentStream);
         byte[] data = Encoding.UTF8.GetBytes("Hello, World!");
         subStream.Write(data, 0, data.Length);
         parentStream.Position = 0;
@@ -487,90 +492,90 @@ public class GorgonSubStreamTests
     }
 
     [TestMethod]
-    public void Write_ShouldThrowException_WhenOffsetAndCountAreNegative()
+    public void WriteShouldThrowExceptionWhenOffsetAndCountAreNegative()
     {
-        using MemoryStream parentStream = new MemoryStream(new byte[100]);
-        using GorgonSubStream subStream = new GorgonSubStream(parentStream);
+        using MemoryStream parentStream = new(new byte[100]);
+        using GorgonSubStream subStream = new(parentStream);
         byte[] data = Encoding.UTF8.GetBytes("Hello, World!");
         Assert.ThrowsException<ArgumentOutOfRangeException>(() => subStream.Write(data, -1, -1));
     }
 
     [TestMethod]
-    public void Write_ShouldThrowException_WhenSumOfOffsetAndCountExceedsBufferLength()
+    public void WriteShouldThrowExceptionWhenSumOfOffsetAndCountExceedsBufferLength()
     {
-        using MemoryStream parentStream = new MemoryStream(new byte[100]);
-        using GorgonSubStream subStream = new GorgonSubStream(parentStream);
+        using MemoryStream parentStream = new(new byte[100]);
+        using GorgonSubStream subStream = new(parentStream);
         byte[] data = Encoding.UTF8.GetBytes("Hello, World!");
         Assert.ThrowsException<ArgumentException>(() => subStream.Write(data, 0, data.Length + 1));
     }
 
     [TestMethod]
-    public void Write_ShouldThrowException_WhenStreamIsReadOnly()
+    public void WriteShouldThrowExceptionWhenStreamIsReadOnly()
     {
-        using MemoryStream parentStream = new MemoryStream(new byte[100]);
-        using GorgonSubStream subStream = new GorgonSubStream(parentStream, allowWrite: false);
+        using MemoryStream parentStream = new(new byte[100]);
+        using GorgonSubStream subStream = new(parentStream, allowWrite: false);
         byte[] data = Encoding.UTF8.GetBytes("Hello, World!");
         Assert.ThrowsException<IOException>(() => subStream.Write(data, 0, data.Length));
     }
 
     [TestMethod]
-    public void Constructor_ShouldInitializeCorrectly()
+    public void ConstructorShouldInitializeCorrectly()
     {
-        using MemoryStream parentStream = new MemoryStream(new byte[100]);
-        using GorgonSubStream subStream = new GorgonSubStream(parentStream, 10, 50, true);
+        using MemoryStream parentStream = new(new byte[100]);
+        using GorgonSubStream subStream = new(parentStream, 10, 50, true);
         Assert.AreEqual(50, subStream.Length);
         Assert.AreEqual(0, subStream.Position);
         Assert.IsTrue(subStream.CanWrite);
     }
 
     [TestMethod]
-    public void Constructor_ShouldThrowException_WhenStreamStartIsNegative()
+    public void ConstructorShouldThrowExceptionWhenStreamStartIsNegative()
     {
-        using MemoryStream parentStream = new MemoryStream(new byte[100]);
+        using MemoryStream parentStream = new(new byte[100]);
         Assert.ThrowsException<ArgumentOutOfRangeException>(() => new GorgonSubStream(parentStream, -1));
     }
 
     [TestMethod]
-    public void Constructor_ShouldThrowException_WhenStreamSizeIsNegative()
+    public void ConstructorShouldThrowExceptionWhenStreamSizeIsNegative()
     {
-        using MemoryStream parentStream = new MemoryStream(new byte[100]);
+        using MemoryStream parentStream = new(new byte[100]);
         Assert.ThrowsException<ArgumentOutOfRangeException>(() => new GorgonSubStream(parentStream, 0, -1));
     }
 
     [TestMethod]
-    public void Constructor_ShouldThrowException_WhenStreamStartExceedsParentStreamLength()
+    public void ConstructorShouldThrowExceptionWhenStreamStartExceedsParentStreamLength()
     {
-        using MemoryStream parentStream = new MemoryStream(new byte[100]);
+        using MemoryStream parentStream = new(new byte[100]);
         Assert.ThrowsException<EndOfStreamException>(() => new GorgonSubStream(parentStream, 200));
     }
 
     [TestMethod]
-    public void Constructor_ShouldThrowException_WhenParentStreamCannotSeek()
+    public void ConstructorShouldThrowExceptionWhenParentStreamCannotSeek()
     {
         using Stream dummy = Mock.Of<Stream>(x => x.CanSeek == false);
         Assert.ThrowsException<ArgumentException>(() => new GorgonSubStream(dummy));
     }
 
     [TestMethod]
-    public void Constructor_ShouldThrowException_WhenParentStreamIsReadOnlyAndAllowWriteIsTrue()
+    public void ConstructorShouldThrowExceptionWhenParentStreamIsReadOnlyAndAllowWriteIsTrue()
     {
-        using MemoryStream parentStream = new MemoryStream(new byte[100], false);
+        using MemoryStream parentStream = new(new byte[100], false);
         Assert.ThrowsException<IOException>(() => new GorgonSubStream(parentStream, 0, null, true));
     }
 
     [TestMethod]
-    public void Constructor_ShouldThrowException_WhenStreamSizeExceedsRemainingParentStreamLength()
+    public void ConstructorShouldThrowExceptionWhenStreamSizeExceedsRemainingParentStreamLength()
     {
-        using MemoryStream parentStream = new MemoryStream(new byte[100]);
+        using MemoryStream parentStream = new(new byte[100]);
         Assert.ThrowsException<EndOfStreamException>(() => new GorgonSubStream(parentStream, 50, 60));
     }
 
     [TestMethod]
-    public void Constructor_ShouldStartAtCurrentParentStreamPosition_WhenStreamStartIsNotDefined()
+    public void ConstructorShouldStartAtCurrentParentStreamPositionWhenStreamStartIsNotDefined()
     {
-        using MemoryStream parentStream = new MemoryStream(new byte[100]);
+        using MemoryStream parentStream = new(new byte[100]);
         parentStream.Position = 50;
-        using GorgonSubStream subStream = new GorgonSubStream(parentStream);
+        using GorgonSubStream subStream = new(parentStream);
         byte[] data = Encoding.UTF8.GetBytes("Hello, World!");
         subStream.Write(data, 0, data.Length);
         parentStream.Position = 50;
@@ -580,18 +585,18 @@ public class GorgonSubStreamTests
     }
 
     [TestMethod]
-    public void Constructor_ShouldCoverEntireParentStream_WhenStreamSizeIsNotDefined()
+    public void ConstructorShouldCoverEntireParentStreamWhenStreamSizeIsNotDefined()
     {
-        using MemoryStream parentStream = new MemoryStream(new byte[100]);
-        using GorgonSubStream subStream = new GorgonSubStream(parentStream);
+        using MemoryStream parentStream = new(new byte[100]);
+        using GorgonSubStream subStream = new(parentStream);
         Assert.AreEqual(100, subStream.Length);
     }
 
     [TestMethod]
-    public void Constructor_ShouldMakeStreamReadOnly_WhenAllowWriteIsFalse()
+    public void ConstructorShouldMakeStreamReadOnlyWhenAllowWriteIsFalse()
     {
-        using MemoryStream parentStream = new MemoryStream(new byte[100]);
-        using GorgonSubStream subStream = new GorgonSubStream(parentStream, 0, null, false);
+        using MemoryStream parentStream = new(new byte[100]);
+        using GorgonSubStream subStream = new(parentStream, 0, null, false);
         Assert.IsFalse(subStream.CanWrite);
     }
 }

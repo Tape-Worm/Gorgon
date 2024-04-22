@@ -8,10 +8,10 @@ namespace Gorgon.Core.Tests;
 public class GorgonCatmullRomSplineTests
 {
     [TestMethod]
-    public void GetInterpolatedValue_StartPointIndexInRange_ReturnsInterpolatedValue()
+    public void GetInterpolatedValueStartPointIndexInRangeReturnsInterpolatedValue()
     {
         // Arrange
-        var spline = new GorgonCatmullRomSpline();
+        GorgonCatmullRomSpline spline = new();
         spline.Points.Add(new Vector4(0, 0, 0, 0));
         spline.Points.Add(new Vector4(1.5f, -1.2f, 1, 1));
         spline.Points.Add(new Vector4(1.8f, 0.5f, 2, 2));
@@ -19,17 +19,17 @@ public class GorgonCatmullRomSplineTests
         spline.UpdateTangents();
 
         // Act
-        var result = spline.GetInterpolatedValue(1, 0.5f);
+        Vector4 result = spline.GetInterpolatedValue(1, 0.5f);
 
         // Assert
         Assert.AreEqual(new Vector4(1.6687499f, -0.45624995f, 1.5f, 1.5f), result);
     }
 
     [TestMethod]
-    public void GetInterpolatedValue_StartPointIndexOutOfRange_ThrowsArgumentOutOfRangeException()
+    public void GetInterpolatedValueStartPointIndexOutOfRangeThrowsArgumentOutOfRangeException()
     {
         // Arrange
-        var spline = new GorgonCatmullRomSpline();
+        GorgonCatmullRomSpline spline = new();
         spline.Points.Add(new Vector4(0, 0, 0, 0));
         spline.Points.Add(new Vector4(1, 1, 1, 1));
         spline.Points.Add(new Vector4(2, 2, 2, 2));
@@ -41,10 +41,10 @@ public class GorgonCatmullRomSplineTests
     }
 
     [TestMethod]
-    public void GetInterpolatedValue_DeltaEqualsZero_ReturnsStartPoint()
+    public void GetInterpolatedValueDeltaEqualsZeroReturnsStartPoint()
     {
         // Arrange
-        var spline = new GorgonCatmullRomSpline();
+        GorgonCatmullRomSpline spline = new();
         spline.Points.Add(new Vector4(0, 0, 0, 0));
         spline.Points.Add(new Vector4(1, 1, 1, 1));
         spline.Points.Add(new Vector4(2, 2, 2, 2));
@@ -52,17 +52,17 @@ public class GorgonCatmullRomSplineTests
         spline.UpdateTangents();
 
         // Act
-        var result = spline.GetInterpolatedValue(1, 0.0f);
+        Vector4 result = spline.GetInterpolatedValue(1, 0.0f);
 
         // Assert
         Assert.AreEqual(new Vector4(1, 1, 1, 1), result);
     }
 
     [TestMethod]
-    public void GetInterpolatedValue_DeltaEqualsOne_ReturnsExactPoint()
+    public void GetInterpolatedValueDeltaEqualsOneReturnsExactPoint()
     {
         // Arrange
-        var spline = new GorgonCatmullRomSpline();
+        GorgonCatmullRomSpline spline = new();
         spline.Points.Add(new Vector4(0, 0, 0, 0));
         spline.Points.Add(new Vector4(1.5f, -1.2f, 1, 1));
         spline.Points.Add(new Vector4(1.8f, 0.5f, 2, 2));
@@ -70,17 +70,17 @@ public class GorgonCatmullRomSplineTests
         spline.UpdateTangents();
 
         // Act
-        var result = spline.GetInterpolatedValue(1, 1.0f);
+        Vector4 result = spline.GetInterpolatedValue(1, 1.0f);
 
         // Assert
         Assert.AreEqual(new Vector4(1.8f, 0.5f, 2, 2), result);
     }
 
     [TestMethod]
-    public void GetInterpolatedValue_Delta()
+    public void GetInterpolatedValueDelta()
     {
         // Arrange
-        var spline = new GorgonCatmullRomSpline();
+        GorgonCatmullRomSpline spline = new();
         spline.Points.Add(new Vector4(0, 0, 0, 0));
         spline.Points.Add(new Vector4(1.5f, -1.2f, 1, 1));
         spline.Points.Add(new Vector4(1.8f, 0.5f, 2, 2));
@@ -88,7 +88,7 @@ public class GorgonCatmullRomSplineTests
         spline.UpdateTangents();
 
         // Act
-        var result = spline.GetInterpolatedValue(1, -0.5f);
+        Vector4 result = spline.GetInterpolatedValue(1, -0.5f);
 
         // Assert
         Assert.AreEqual(new Vector4(0.5062499f, -0.1937499f, 0.5f, 0.5f), result);

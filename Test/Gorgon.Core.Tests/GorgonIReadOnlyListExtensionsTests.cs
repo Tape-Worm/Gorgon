@@ -62,7 +62,7 @@ public class GorgonIReadOnlyListExtensionsTests
     }
 
     [TestMethod]
-    public void TestCopyTo_ArrayTooSmall()
+    public void TestCopyToArrayTooSmall()
     {
         IReadOnlyList<int> list = new List<int> { 1, 2, 3, 2, 1 };
         int[] array = new int[4];

@@ -29,6 +29,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
     <Nullable>enable</Nullable>
+    <IsAotCompatible>true</IsAotCompatible>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DocumentationFile>bin\Release\Gorgon.Core.xml</DocumentationFile>
@@ -42,9 +43,6 @@
     <DebugSymbols>true</DebugSymbols>
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
-<PropertyGroup>
-  <IsAotCompatible>true</IsAotCompatible>
-</PropertyGroup>
   <ItemGroup>
     <PackageReference Include="CenterCLR.XorRandomGenerator">
       <Version>1.1.0</Version>

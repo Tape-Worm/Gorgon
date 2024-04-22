@@ -29,7 +29,7 @@ public class GorgonNullExtensionsTests
         Assert.AreNotEqual(42, intValue.IfNull(42));
     }
 
-    public enum TestEnum
+    public enum TestEnumeration
     {
         E1,
         E2,
@@ -49,16 +49,16 @@ public class GorgonNullExtensionsTests
         numericValue = 1;
         Assert.IsInstanceOfType<int?>(numericValue.AsNullable<int>());
 
-        numericValue = TestEnum.E3;
-        TestEnum? asNull = numericValue.AsNullable<TestEnum>();
+        numericValue = TestEnumeration.E3;
+        TestEnumeration? asNull = numericValue.AsNullable<TestEnumeration>();
 
         Assert.IsNotNull(asNull);
-        Assert.AreEqual(TestEnum.E3, asNull.Value);
+        Assert.AreEqual(TestEnumeration.E3, asNull.Value);
 
         numericValue = 4;
-        asNull = numericValue.AsNullable<TestEnum>();
+        asNull = numericValue.AsNullable<TestEnumeration>();
 
         Assert.IsNotNull(asNull);
-        Assert.AreEqual(TestEnum.E5, asNull.Value);
+        Assert.AreEqual(TestEnumeration.E5, asNull.Value);
     }
 }
