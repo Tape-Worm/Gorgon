@@ -25,9 +25,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
-using Gorgon.Core;
 using Gorgon.PlugIns;
-using Microsoft.IO;
 
 namespace Gorgon.IO.Providers;
 

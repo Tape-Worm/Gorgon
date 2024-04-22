@@ -23,7 +23,6 @@
 // Created: Monday, June 27, 2011 8:54:59 AM
 // 
 
-using System.Diagnostics;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using Gorgon.Collections;
@@ -181,7 +180,6 @@ public class GorgonFileSystem
     /// </para>
     /// </remarks>
     public IGorgonVirtualDirectory RootDirectory => _rootDirectory;
-
 
     /// <summary>
     /// Function to mount a file as a mount point in the virtual file system.

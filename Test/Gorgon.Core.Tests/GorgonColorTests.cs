@@ -337,7 +337,6 @@ public class GorgonColorTests
 
         Assert.AreEqual(expected, json);
 
-
         actual = JsonSerializer.Deserialize<JsonData>(json, options);
         Assert.IsNotNull(actual);
         Assert.IsNull(actual.NullableColor);

@@ -312,7 +312,10 @@ public class GorgonNativeExtensionsTests
     {
         // Arrange
         Point value = new()
-        { X = 10, Y = 20 };
+        {
+            X = 10,
+            Y = 20
+        };
 
         // Act
         using GorgonNativeBuffer<byte> buffer = value.PinAsNativeByteBuffer();

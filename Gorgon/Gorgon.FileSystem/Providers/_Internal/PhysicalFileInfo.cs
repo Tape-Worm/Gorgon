@@ -1,5 +1,4 @@
-﻿
-// 
+﻿// 
 // Gorgon
 // Copyright (C) 2015 Michael Winsor
 // 
@@ -22,8 +21,6 @@
 // 
 // Created: Saturday, September 19, 2015 8:34:24 PM
 // 
-
-using System.Text;
 
 namespace Gorgon.IO.Providers;
 

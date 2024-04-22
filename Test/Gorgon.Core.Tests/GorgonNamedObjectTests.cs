@@ -32,7 +32,7 @@ public class GorgonNamedObjectTests
     }
 
     [TestMethod]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1862:Use the 'StringComparison' method overloads to perform case-insensitive string comparisons", 
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1862:Use the 'StringComparison' method overloads to perform case-insensitive string comparisons",
         Justification = "MOQ does not work with String.Equals")]
     public void LinqExtensions()
     {

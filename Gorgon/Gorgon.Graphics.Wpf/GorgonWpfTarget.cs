@@ -361,7 +361,7 @@ public class GorgonWpfTarget
         if (Interlocked.Exchange(ref _started, 0) == 0)
         {
             return;
-        }        
+        }
 
         CompositionTarget.Rendering -= CompositionTarget_Rendering;
     }

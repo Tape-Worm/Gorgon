@@ -1,5 +1,4 @@
-﻿using System;
-using System.Text;
+﻿using System.Text;
 using System.Xml.Linq;
 
 namespace Gorgon.Core.Tests;

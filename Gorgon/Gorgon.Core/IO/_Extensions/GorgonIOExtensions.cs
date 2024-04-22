@@ -22,7 +22,6 @@
 //
 
 using System.Buffers;
-using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -1032,7 +1031,7 @@ public static class GorgonIOExtensions
                 result++;
             }
 
-            stream.WriteByte((byte)size);            
+            stream.WriteByte((byte)size);
 
             while ((totalSize > 0) && (start < value.Length))
             {

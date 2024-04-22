@@ -23,7 +23,6 @@
 // Created: Monday, June 27, 2011 9:00:18 AM
 // 
 
-using System.Text;
 using Gorgon.Core;
 using Gorgon.IO.Properties;
 using Gorgon.PlugIns;

@@ -74,7 +74,7 @@ internal class VirtualDirectoryCollection(VirtualDirectory parent)
                 ? throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, key))
                 : directory;
         }
-    }    
+    }
 
     /// <summary>
     /// Adds an item to the <see cref="ICollection{T}" />.

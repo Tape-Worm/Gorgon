@@ -24,7 +24,6 @@
 // 
 
 using System.Buffers;
-using System.Text;
 using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.IO.Properties;

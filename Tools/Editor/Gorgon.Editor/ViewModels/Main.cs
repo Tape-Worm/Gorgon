@@ -36,7 +36,6 @@ using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.Views;
 using Gorgon.IO;
-using Gorgon.Json;
 
 namespace Gorgon.Editor.ViewModels;
 
