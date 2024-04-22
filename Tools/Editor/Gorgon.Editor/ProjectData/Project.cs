@@ -37,6 +37,7 @@ internal class Project
     /// <summary>
     /// Property to return the version for the project file.
     /// </summary>    
+    [JsonInclude]
     public string Version
     {
         get;
@@ -103,6 +104,7 @@ internal class Project
     /// <summary>
     /// Property to return the list of project items.
     /// </summary>
+    [JsonInclude]
     public Dictionary<string, ProjectItemMetadata> ProjectItems
     {
         get;

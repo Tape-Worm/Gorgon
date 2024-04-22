@@ -53,6 +53,7 @@ public class ProjectItemMetadata
     /// <remarks>
     /// If this value is <b>null</b>, then the plugin hasn't been set.  If it's an empty string, then no plugin is associated with this metadata.
     /// </remarks>
+    [JsonInclude]
     public string PlugInName
     {
         get;
@@ -62,6 +63,7 @@ public class ProjectItemMetadata
     /// <summary>
     /// Property to return the custom attributes for this metadata.
     /// </summary>
+    [JsonInclude]
     public Dictionary<string, string> Attributes
     {
         get;
@@ -71,7 +73,7 @@ public class ProjectItemMetadata
     /// <summary>
     /// Property to return the list of item paths that this item depends on.
     /// </summary>
-    [JsonPropertyName("Dependencies")]
+    [JsonInclude, JsonPropertyName("Dependencies")]
     public Dictionary<string, List<string>> DependsOn
     {
         get;

@@ -23,6 +23,7 @@
 // Created: March 22, 2019 10:06:04 AM
 // 
 
+using System.Text.Json.Serialization;
 using Gorgon.Graphics;
 
 namespace Gorgon.Editor.SpriteEditor;
@@ -35,6 +36,7 @@ internal class SpriteImportSettings
     /// <summary>
     /// Property to return the list of additional sprite codec plug-ins to load.
     /// </summary>
+    [JsonInclude]
     public Dictionary<string, string> CodecPlugInPaths
     {
         get;
@@ -44,6 +46,7 @@ internal class SpriteImportSettings
     /// <summary>
     /// Property to set or return the last codec plug-in path.
     /// </summary>
+    [JsonInclude]
     public string LastCodecPlugInPath
     {
         get;
@@ -59,6 +62,7 @@ internal class SpriteEditorSettings
     /// <summary>
     /// Property to set or return the position of the manual rectangle editor window.
     /// </summary>
+    [JsonInclude]
     public GorgonRectangle? ManualRectangleEditorBounds
     {
         get;
@@ -68,6 +72,7 @@ internal class SpriteEditorSettings
     /// <summary>
     /// Property to set or return the position of the manual vertex editor window.
     /// </summary>
+    [JsonInclude]
     public GorgonRectangle? ManualVertexEditorBounds
     {
         get;
@@ -77,6 +82,7 @@ internal class SpriteEditorSettings
     /// <summary>
     /// Property to set or return whether to show a warning dialog for large images.
     /// </summary>
+    [JsonInclude]
     public bool ShowImageSizeWarning
     {
         get;
@@ -86,6 +92,7 @@ internal class SpriteEditorSettings
     /// <summary>
     /// Property to set or return the type of masking to perform when picking and clipping.
     /// </summary>
+    [JsonInclude]
     public ClipMask ClipMaskType
     {
         get;
@@ -95,6 +102,7 @@ internal class SpriteEditorSettings
     /// <summary>
     /// Property to set or return the sprite picker mask color.
     /// </summary>
+    [JsonInclude]
     public int ClipMaskValue
     {
         get;

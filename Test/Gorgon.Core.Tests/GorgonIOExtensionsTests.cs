@@ -559,6 +559,40 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
     }
 
     [TestMethod]
+    public void WriteStringWritesCorrectDataLargeString()
+    {
+        // Arrange
+
+        Encoding encoding = Encoding.UTF8;
+        using MemoryStream stream = new MemoryStream();
+        stream.WriteString(LoremIpsum, encoding);
+        stream.Position = 0;
+
+        using BinaryReader reader = new BinaryReader(stream, encoding); // leaveOpen is set to true.
+        string result = reader.ReadString(); // Write the string data.
+
+        // Assert
+        Assert.AreEqual(LoremIpsum, result);
+    }
+
+    [TestMethod]
+    public void WriteStringWritesCorrectDataLargeStringUnicode()
+    {
+        // Arrange
+
+        Encoding encoding = Encoding.Unicode;
+        using MemoryStream stream = new MemoryStream();
+        stream.WriteString(LoremIpsum, encoding);
+        stream.Position = 0;
+
+        using BinaryReader reader = new BinaryReader(stream, encoding); // leaveOpen is set to true.
+        string result = reader.ReadString(); // Write the string data.
+
+        // Assert
+        Assert.AreEqual(LoremIpsum, result);
+    }
+
+    [TestMethod]
     public void ReadStringThrowsIOExceptionWhenStreamIsAtEnd()
     {
         // Arrange
@@ -592,14 +626,6 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
         Assert.AreEqual(encoding1.GetByteCount(data) + 1, bytesWritten1);
         Assert.AreEqual(data, readData2);
         Assert.AreEqual(encoding2.GetByteCount(data) + 1, bytesWritten2);
-    }
-
-    [TestMethod]
-    public void FormatFileNameNullInputReturnsEmptyString()
-    {
-        string? path = null;
-        string result = path.FormatFileName();
-        Assert.AreEqual(string.Empty, result);
     }
 
     [TestMethod]
@@ -643,14 +669,6 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
     }
 
     [TestMethod]
-    public void FormatDirectoryNullInputReturnsEmptyString()
-    {
-        string? path = null;
-        string result = path.FormatDirectory(Path.DirectorySeparatorChar);
-        Assert.AreEqual(string.Empty, result);
-    }
-
-    [TestMethod]
     public void FormatDirectoryEmptyInputReturnsEmptyString()
     {
         string path = string.Empty;
@@ -685,17 +703,9 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
     [TestMethod]
     public void FormatDirectoryPathWithMultipleConsecutiveSeparatorsInMiddleReturnsPathWithSingleSeparators()
     {
-        string path = @"C:\Some\\\\\Path\";
+        string path = @"C:\//Some\\\\\Path\/";
         string result = path.FormatDirectory(Path.DirectorySeparatorChar);
         Assert.AreEqual(@"C:\Some\Path\", result);
-    }
-
-    [TestMethod]
-    public void FormatDirectoryNullInputAltSeparatorReturnsEmptyString()
-    {
-        string? path = null;
-        string result = path.FormatDirectory(Path.AltDirectorySeparatorChar);
-        Assert.AreEqual(string.Empty, result);
     }
 
     [TestMethod]
@@ -739,14 +749,6 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
     }
 
     [TestMethod]
-    public void FormatPathPartNullInputReturnsEmptyString()
-    {
-        string? path = null;
-        string result = path.FormatPathPart();
-        Assert.AreEqual(string.Empty, result);
-    }
-
-    [TestMethod]
     public void FormatPathPartEmptyInputReturnsEmptyString()
     {
         string path = string.Empty;
@@ -779,14 +781,6 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
     }
 
     [TestMethod]
-    public void GetPathPartsNullInputReturnsEmptyArray()
-    {
-        string? path = null;
-        string[] result = path.GetPathParts(Path.DirectorySeparatorChar);
-        Assert.AreEqual(0, result.Length);
-    }
-
-    [TestMethod]
     public void GetPathPartsEmptyInputReturnsEmptyArray()
     {
         string path = string.Empty;
@@ -811,19 +805,27 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
     }
 
     [TestMethod]
-    public void FormatPathNullInputReturnsEmptyString()
-    {
-        string? path = null;
-        string result = path.FormatPath(Path.DirectorySeparatorChar);
-        Assert.AreEqual(string.Empty, result);
-    }
-
-    [TestMethod]
     public void FormatPathEmptyInputReturnsEmptyString()
     {
         string path = string.Empty;
         string result = path.FormatPath(Path.DirectorySeparatorChar);
         Assert.AreEqual(string.Empty, result);
+    }
+
+    [TestMethod]
+    public void FormatPathWithoutDirectoryName()
+    {
+        string path = @"file.txt";
+        string result = path.FormatPath(Path.DirectorySeparatorChar);
+        Assert.AreEqual(@"file.txt", result);
+    }
+
+    [TestMethod]
+    public void FormatPathWithoutFileName()
+    {
+        string path = @"c:\some\path\";
+        string result = path.FormatPath(Path.DirectorySeparatorChar);
+        Assert.AreEqual(@"c:\some\path\", result);
     }
 
     [TestMethod]

@@ -23,6 +23,7 @@
 // Created: March 22, 2019 10:06:04 AM
 // 
 
+using System.Text.Json.Serialization;
 using Gorgon.Graphics;
 
 namespace Gorgon.Editor.AnimationEditor;
@@ -35,6 +36,7 @@ internal class AnimationImportSettings
     /// <summary>
     /// Property to return the list of additional animation codec plug-ins to load.
     /// </summary>
+    [JsonInclude]
     public Dictionary<string, string> CodecPlugInPaths
     {
         get;
@@ -44,6 +46,7 @@ internal class AnimationImportSettings
     /// <summary>
     /// Property to set or return the last codec plug-in path.
     /// </summary>
+    [JsonInclude]
     public string LastCodecPlugInPath
     {
         get;
@@ -59,6 +62,7 @@ internal class AnimationEditorSettings
     /// <summary>
     /// Property to set or return the offset, in pixels, of the splitter on the editor view.
     /// </summary>
+    [JsonInclude]
     public int SplitOffset
     {
         get;
@@ -68,6 +72,7 @@ internal class AnimationEditorSettings
     /// <summary>
     /// Property to set or return whether the background image should be animated when no primary sprite is present.
     /// </summary>
+    [JsonInclude]
     public bool AnimateBgNoPrimary
     {
         get;
@@ -77,6 +82,7 @@ internal class AnimationEditorSettings
     /// <summary>
     /// Property to set or return whether to use onion skinning.
     /// </summary>
+    [JsonInclude]
     public bool UseOnionSkin
     {
         get;
@@ -86,6 +92,7 @@ internal class AnimationEditorSettings
     /// <summary>
     /// Property to set or return the default screen resolution for the animation.
     /// </summary>
+    [JsonInclude]
     public GorgonPoint DefaultResolution
     {
         get;
@@ -95,6 +102,7 @@ internal class AnimationEditorSettings
     /// <summary>
     /// Property to set or return whether to create a texture track in an empty animation on primary sprite assignment.
     /// </summary>
+    [JsonInclude]
     public bool AddTextureTrackForPrimarySprite
     {
         get;
@@ -104,6 +112,7 @@ internal class AnimationEditorSettings
     /// <summary>
     /// Property to set or return whether a warning will be shown when an animation with unsupported tracks is loaded.
     /// </summary>
+    [JsonInclude]
     public bool WarnUnsupportedTracks
     {
         get;

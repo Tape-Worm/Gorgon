@@ -22,6 +22,7 @@
 //
 
 using System.Buffers;
+using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -42,10 +43,13 @@ public static class GorgonIOExtensions
     private static readonly string _directoryPathSeparator = Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture);
     // The system alternate path separator.
     private static readonly string _altPathSeparator = Path.AltDirectorySeparatorChar.ToString(CultureInfo.InvariantCulture);
-    // Illegal path characters.
-    private static readonly char[] _illegalPathChars = Path.GetInvalidPathChars();
-    // Illegal file name characters.
-    private static readonly char[] _illegalFileChars = Path.GetInvalidFileNameChars();
+    // All illegal characters.
+    private static readonly char[] _allIllegalChars = Path.GetInvalidPathChars().Concat(Path.GetInvalidFileNameChars())
+                                                                                .Distinct()
+                                                                                .ToArray();
+    // All illegal directory characters.
+    private static readonly char[] _illegalDirectoryChars = _allIllegalChars.Where(c => c != Path.DirectorySeparatorChar && c != Path.AltDirectorySeparatorChar)
+                                                                            .ToArray();
 
     /// <summary>
     /// Function to write the contents of the memory pointed at by a <see cref="GorgonPtr{T}"/> to a stream.
@@ -142,6 +146,150 @@ public static class GorgonIOExtensions
             ptrValueByte = reader.ReadByte();
             --size;
             ++offset;
+        }
+    }
+
+    /// <summary>
+    /// Function to calculate the length of a directory path without multiple separators (e.g. c:\\\\\\\Directory).
+    /// </summary>
+    /// <param name="path">The path to evaluate.</param>
+    /// <returns>The length of the actual directory path.</returns>
+    private static int GetDirectoryNameLengthWithoutMultipleSeparators(ReadOnlySpan<char> path)
+    {
+        // Get the size of the string without doubled up separators.
+        int length = 0;
+        int i = 0;
+
+        while (i < path.Length)
+        {
+            char c = path[i];
+            if ((c != Path.DirectorySeparatorChar) && (c != Path.AltDirectorySeparatorChar))
+            {
+                ++i;
+                ++length;
+                continue;
+            }
+
+            if (i == path.Length - 1)
+            {
+                break;
+            }
+
+            // Check to see if the next character is a separator.
+            // If it is, move on.
+            char nc = path[i + 1];
+
+            if ((nc == Path.DirectorySeparatorChar) || (nc == Path.AltDirectorySeparatorChar))
+            {
+                ++i;
+                continue;
+            }
+
+            // Otherwise, it's legit and we can increment the length.
+            ++i;
+            ++length;
+        }
+
+        // Always increment to capture the last separator.
+        ++length;
+
+        return length;
+    }
+
+    /// <summary>
+    /// Function to replace illegal characters in a directory path, and format the directory path correctly.
+    /// </summary>
+    /// <param name="path">The path to the directory to evaluate and update.</param>
+    /// <param name="directorySeparator">The directory separator to use.</param>
+    /// <param name="destination">The destination span to write into.</param>
+    private static void ReplaceIllegalCharsAndFormatDirectory(ReadOnlySpan<char> path, char directorySeparator, Span<char> destination)
+    {
+        if (path.IsEmpty)
+        {
+            return;
+        }
+
+        if (_illegalDirectoryChars.Contains(directorySeparator))
+        {
+            directorySeparator = Path.DirectorySeparatorChar;
+        }
+
+        int pathRootLength = Path.GetPathRoot(path).Length;
+
+        char oppositeSeparator = directorySeparator == Path.DirectorySeparatorChar ? Path.AltDirectorySeparatorChar : Path.DirectorySeparatorChar;
+
+        int destIndex = 0;
+        for (int i = 0; i < path.Length; ++i)
+        {
+            char ch = path[i];
+
+            if (ch == oppositeSeparator)
+            {
+                ch = directorySeparator;
+            }
+
+            if (ch != directorySeparator)
+            {
+                if ((i >= pathRootLength) && (Array.IndexOf(_illegalDirectoryChars, ch) != -1))
+                {
+                    ch = '_';
+                }
+
+                destination[destIndex++] = ch;
+                continue;
+            }
+
+            int nextIndex = i + 1;
+
+            if (nextIndex == path.Length)
+            {
+                break;
+            }
+
+            char nextCh = path[nextIndex];
+
+            if (nextCh == oppositeSeparator)
+            {
+                nextCh = directorySeparator;
+            }
+
+            // If we have a 2nd separator, then skip it.
+            if (nextCh == directorySeparator)
+            {
+                continue;
+            }
+
+            destination[destIndex++] = directorySeparator;
+        }
+
+        // Always append the directory separator at the end.
+        destination[^1] = directorySeparator;
+    }
+
+    /// <summary>
+    /// Function to replace illegal characters in a path part.
+    /// </summary>
+    /// <param name="path">The path part to evaluate and update.</param>
+    /// <param name="destination">The destination span to write into.</param>
+    /// <returns>A new string containing the updated characters.</returns>
+    private static void ReplaceIllegalChars(ReadOnlySpan<char> path, Span<char> destination)
+    {
+        if ((path.IsEmpty) || (destination.Length < path.Length))
+        {
+            return;
+        }
+
+        for (int i = 0; i < path.Length; ++i)
+        {
+            char pathChar = path[i];
+
+            if (Array.IndexOf(_allIllegalChars, pathChar) != -1)
+            {
+                destination[i] = '_';
+                continue;
+            }
+
+            destination[i] = pathChar;
         }
     }
 
@@ -284,7 +432,7 @@ public static class GorgonIOExtensions
 
         int result = 0;
         int bytesRead;
-        Span<byte> bufferSpan = buffer.AsSpan(0, buffer.Length.Min(count));
+        Span<byte> bufferSpan = buffer.AsSpan(..buffer.Length.Min(count));
 
         while ((count > 0) && ((bytesRead = stream.Read(bufferSpan)) != 0))
         {
@@ -860,22 +1008,54 @@ public static class GorgonIOExtensions
 
         encoding ??= Encoding.UTF8;
 
-        byte[] stringData = encoding.GetBytes(value);
-        int size = stringData.Length;
-        int result = size + 1;
+        int maxCharCount = value.Length.Min(4096);
+        char[] charData = ArrayPool<char>.Shared.Rent(maxCharCount);
+        Array.Clear(charData);
 
-        // Build the 7 bit encoded length.
-        while (size >= 0x80)
+        int byteCount = encoding.GetByteCount(charData.AsSpan(..maxCharCount));
+        int size = encoding.GetByteCount(value);
+
+        ArrayPool<byte> bytePool = GorgonArrayPools<byte>.GetBestPool(byteCount);
+        byte[] stringData = bytePool.Rent(byteCount);
+
+        try
         {
-            stream.WriteByte((byte)((size | 0x80) & 0xFF));
-            size >>= 7;
-            result++;
+            int start = 0;
+            int totalSize = size;
+            int result = size + 1;
+
+            // Build the 7 bit encoded length.
+            while (size >= 0x80)
+            {
+                stream.WriteByte((byte)((size | 0x80) & 0xFF));
+                size >>= 7;
+                result++;
+            }
+
+            stream.WriteByte((byte)size);            
+
+            while ((totalSize > 0) && (start < value.Length))
+            {
+                int charsRemaining = maxCharCount.Min(value.Length - start);
+                int bytesEncoded = encoding.GetBytes(value.AsSpan(start, charsRemaining), stringData.AsSpan(..byteCount));
+
+                if (bytesEncoded == 0)
+                {
+                    break;
+                }
+
+                totalSize -= bytesEncoded;
+                start += charsRemaining;
+                stream.Write(stringData.AsSpan(..bytesEncoded));
+            }
+
+            return result;
         }
-
-        stream.WriteByte((byte)size);
-        stream.Write(stringData, 0, stringData.Length);
-
-        return result;
+        finally
+        {
+            ArrayPool<char>.Shared.Return(charData, true);
+            bytePool.Return(stringData, true);
+        }
     }
 
     /// <summary>
@@ -927,13 +1107,15 @@ public static class GorgonIOExtensions
         // Find the number of bytes required for up to 4096 characters.
         int charCount = stringLength.Min(4096);
         char[] charBuffer = ArrayPool<char>.Shared.Rent(charCount);
-        Span<char> charSpan = charBuffer.AsSpan(0, charCount);
+        Span<char> charSpan = charBuffer.AsSpan(..charCount);
 
         // Empty the buffer, if not, the get byte count will get screwy.
         charSpan.Clear();
 
         int maxByteCount = encoding.GetByteCount(charSpan);
-        byte[] buffer = GorgonArrayPools<byte>.GetBestPool(maxByteCount).Rent(maxByteCount);
+        ArrayPool<byte> bytePool = GorgonArrayPools<byte>.GetBestPool(maxByteCount);
+
+        byte[] buffer = bytePool.Rent(maxByteCount);
 
         try
         {
@@ -953,7 +1135,7 @@ public static class GorgonIOExtensions
                 }
 
                 // Get the characters.
-                int charsRead = encoding.GetChars(buffer.AsSpan(0, bytesRead), charSpan);
+                int charsRead = encoding.GetChars(buffer.AsSpan(..bytesRead), charSpan);
 
                 // If we've already read the entire string, just dump it back out now.
                 if ((counter == 0) && (bytesRead == stringLength))
@@ -974,7 +1156,7 @@ public static class GorgonIOExtensions
         }
         finally
         {
-            ArrayPool<byte>.Shared.Return(buffer, true);
+            bytePool.Return(buffer, true);
             ArrayPool<char>.Shared.Return(charBuffer, true);
         }
     }
@@ -993,30 +1175,76 @@ public static class GorgonIOExtensions
     /// filename, then an empty string will be returned as well.
     /// </para>
     /// </remarks>
-    public static string FormatFileName(this string? path)
+    public static ReadOnlySpan<char> FormatFileName(this ReadOnlySpan<char> path)
     {
-        if (string.IsNullOrWhiteSpace(path))
+        if (path.IsEmpty)
+        {
+            return [];
+        }
+
+        ReadOnlySpan<char> fileName = Path.GetFileName(path);
+
+        if (fileName.IsEmpty)
         {
             return string.Empty;
         }
 
-        var output = new StringBuilder(path);
+        char[] dest = new char[fileName.Length];
+        Span<char> result = dest.AsSpan();
 
-        output = _illegalPathChars.Aggregate(output, (current, illegalChar) => current.Replace(illegalChar, '_'));
+        ReplaceIllegalChars(fileName, result);
 
-        string fileName = Path.GetFileName(output.ToString());
+        return result;
+    }
 
-        if (string.IsNullOrWhiteSpace(fileName))
+    /// <summary>
+    /// Function to format a filename with safe characters.
+    /// </summary>
+    /// <param name="path">The path containing the filename to evaluate.</param>
+    /// <returns>A safe filename formatted with placeholder characters if invalid characters are found.</returns>
+    /// <remarks>
+    /// <para>
+    /// This will replace any illegal filename characters with the underscore character.
+    /// </para>
+    /// <para>
+    /// If <b>null</b> or <see cref="string.Empty"/> are passed to this method, then an empty string will be returned. If the path does not contain a 
+    /// filename, then an empty string will be returned as well.
+    /// </para>
+    /// </remarks>
+    public static string FormatFileName(this string path) => FormatFileName(path.AsSpan()).ToString();
+
+    /// <summary>
+    /// Function to format a directory path with safe characters.
+    /// </summary>
+    /// <param name="path">The directory path to evaluate..</param>
+    /// <param name="directorySeparator">Directory separator character to use.</param>
+    /// <returns>A safe directory path formatted with placeholder characters if invalid characters are found. Directory separators will be replaced with the specified separator passed 
+    /// to <paramref name="directorySeparator"/>.</returns> 
+    /// <remarks>
+    /// <para>
+    /// This will replace any illegal path characters with the underscore character. Any doubled up directory separators (e.g. // or \\) will be replaced with the directory separator 
+    /// passed to <paramref name="directorySeparator"/>.
+    /// </para>
+    /// <para>
+    /// If <b>null</b> or <see cref="string.Empty"/> are passed to this method, then an empty string will be returned. If the path contains only a filename, 
+    /// that string will be formatted as though it were a directory path.
+    /// </para>
+    /// </remarks>
+    public static ReadOnlySpan<char> FormatDirectory(this ReadOnlySpan<char> path, char directorySeparator)
+    {
+        if (path.IsEmpty)
         {
-            return string.Empty;
+            return [];
         }
 
-        output.Length = 0;
-        output.Append(fileName);
+        int pathLength = GetDirectoryNameLengthWithoutMultipleSeparators(path);
 
-        output = _illegalFileChars.Aggregate(output, (current, illegalChar) => current.Replace(illegalChar, '_'));
+        char[] dest = new char[pathLength];
+        Span<char> result = dest.AsSpan();
 
-        return output.ToString();
+        ReplaceIllegalCharsAndFormatDirectory(path, directorySeparator, result);
+
+        return result;
     }
 
     /// <summary>
@@ -1036,71 +1264,32 @@ public static class GorgonIOExtensions
     /// that string will be formatted as though it were a directory path.
     /// </para>
     /// </remarks>
-    public static string FormatDirectory(this string? path, char directorySeparator)
+    public static string FormatDirectory(this string path, char directorySeparator) => FormatDirectory(path.AsSpan(), directorySeparator).ToString();
+
+    /// <summary>
+    /// Function to format a specific piece of a path.
+    /// </summary>
+    /// <param name="path">The path part to evaluate and repair.</param>
+    /// <returns>A safe path part with placeholder characters if invalid characters are found.</returns>
+    /// <remarks>
+    /// <para>
+    /// This method removes illegal symbols from the <paramref name="path"/> and replaces them with an underscore character. It will not respect path separators and will consider those characters 
+    /// as illegal if provided in the <paramref name="path"/> parameter.
+    /// </para>
+    /// </remarks>
+    public static ReadOnlySpan<char> FormatPathPart(this ReadOnlySpan<char> path)
     {
-        string directorySep = _directoryPathSeparator;
-        string doubleSeparator = new(new[] { directorySeparator, directorySeparator });
-
-        if (string.IsNullOrWhiteSpace(path))
+        if (path.IsEmpty)
         {
-            return string.Empty;
+            return [];
         }
 
-        if ((char.IsWhiteSpace(directorySeparator)) || (_illegalPathChars.Contains(directorySeparator)))
-        {
-            directorySeparator = Path.DirectorySeparatorChar;
-        }
-        string? pathRoot = Path.GetPathRoot(path) ?? string.Empty;
-        var output = new StringBuilder(path[pathRoot.Length..]);
+        char[] dest = new char[path.Length];
+        Span<char> result = dest.AsSpan();
 
-        output = _illegalPathChars.Concat(_illegalFileChars)
-                                  .Distinct()
-                                  .Where(c => c != Path.DirectorySeparatorChar && c != Path.AltDirectorySeparatorChar)
-                                  .Aggregate(output, (current, illegalChar) => current.Replace(illegalChar, '_'));
+        ReplaceIllegalChars(path, result);
 
-        output.Insert(0, pathRoot);
-
-        if (directorySeparator != Path.AltDirectorySeparatorChar)
-        {
-            output = output.Replace(Path.AltDirectorySeparatorChar, directorySeparator);
-        }
-        else
-        {
-            output = output.Replace(Path.DirectorySeparatorChar, directorySeparator);
-            directorySep = _altPathSeparator;
-        }
-
-        if (output[^1] != directorySeparator)
-        {
-            output.Append(directorySeparator);
-        }
-
-        // Remove doubled up separators.
-        int i = 0;
-
-        while (i < output.Length)
-        {
-            if (output[i] != directorySeparator)
-            {
-                ++i;
-                continue;
-            }
-
-            if (i == output.Length - 1)
-            {
-                break;
-            }
-
-            if (output[i + 1] == directorySeparator)
-            {
-                output.Remove(i, 1);
-                continue;
-            }
-
-            ++i;
-        }
-
-        return output.ToString();
+        return result;
     }
 
     /// <summary>
@@ -1114,21 +1303,7 @@ public static class GorgonIOExtensions
     /// as illegal if provided in the <paramref name="path"/> parameter.
     /// </para>
     /// </remarks>
-    public static string FormatPathPart(this string? path)
-    {
-        if (string.IsNullOrWhiteSpace(path))
-        {
-            return string.Empty;
-        }
-
-        var output = new StringBuilder(path);
-
-        output = _illegalPathChars.Concat(_illegalFileChars)
-                                  .Distinct()
-                                  .Aggregate(output, (current, illegalChar) => current.Replace(illegalChar, '_'));
-
-        return output.ToString();
-    }
+    public static string FormatPathPart(this string path) => FormatPathPart(path.AsSpan()).ToString();
 
     /// <summary>
     /// Function to split a path into component parts.
@@ -1158,13 +1333,13 @@ public static class GorgonIOExtensions
     /// </remarks>
     public static string[] GetPathParts(this string? path, char directorySeparator)
     {
-        path = path.FormatPath(directorySeparator);
+        path = path?.FormatPath(directorySeparator);
 
-        return path.Split(new[]
+        return path?.Split(new[]
                           {
                               directorySeparator
                           },
-                          StringSplitOptions.RemoveEmptyEntries);
+                          StringSplitOptions.RemoveEmptyEntries) ?? [];
     }
 
     /// <summary>
@@ -1175,8 +1350,8 @@ public static class GorgonIOExtensions
     /// <returns>A safe path formatted with placeholder characters if invalid characters are found.</returns>
     /// <remarks>
     /// <para>
-    /// If the path contains directories, they will be formatted according to the formatting applied by <see cref="FormatDirectory"/>, and if the path contains a filename, it will be 
-    /// formatted according to the formatting applied by the <see cref="FormatFileName"/> method.
+    /// If the path contains directories, they will be formatted according to the formatting applied by <see cref="FormatDirectory(string?, char)"/>, and if the path contains a filename, it will be 
+    /// formatted according to the formatting applied by the <see cref="FormatFileName(string?)"/> method.
     /// </para>
     /// <para>
     /// If the last character in <paramref name="path"/> is not the same as the <paramref name="directorySeparator"/> parameter, then that last part of the path will be treated as a file. 
@@ -1185,36 +1360,63 @@ public static class GorgonIOExtensions
     /// If no directories are present in the path, then the see <paramref name="directorySeparator"/> is ignored.
     /// </para>
     /// </remarks>
-    public static string FormatPath(this string? path, char directorySeparator)
+    public static ReadOnlySpan<char> FormatPath(this ReadOnlySpan<char> path, char directorySeparator)
     {
-        if (string.IsNullOrWhiteSpace(path))
+        if (path.IsEmpty)
         {
-            return string.Empty;
+            return [];
         }
 
-        // Filter out bad characters.
-        StringBuilder output = new(path);
-        output = _illegalPathChars.Aggregate(output, (current, illegalChar) => current.Replace(illegalChar, '_'));
+        ReadOnlySpan<char> directoryPath = Path.GetDirectoryName(path);
+        ReadOnlySpan<char> fileName = Path.GetFileName(path);
 
-        StringBuilder filePath = new(FormatDirectory(Path.GetDirectoryName(output.ToString()), directorySeparator));
-
-        path = output.ToString();
-
-        // Try to get the filename portion.
-        output.Length = 0;
-        output.Append(Path.GetFileName(path));
-
-        if (output.Length == 0)
+        if ((fileName.IsEmpty) && (directoryPath.IsEmpty))
         {
-            return filePath.ToString();
+            return [];
         }
 
-        output = _illegalFileChars.Aggregate(output, (current, illegalChar) => current.Replace(illegalChar, '_'));
+        int dirPathLength = 0;
 
-        filePath.Append(output);
+        if (!directoryPath.IsEmpty)
+        {
+            dirPathLength = GetDirectoryNameLengthWithoutMultipleSeparators(directoryPath);
+        }
 
-        return filePath.ToString();
+        char[] dest = new char[dirPathLength + fileName.Length];
+        Span<char> result = dest.AsSpan();
+
+        if (!directoryPath.IsEmpty)
+        {
+            ReplaceIllegalCharsAndFormatDirectory(directoryPath, directorySeparator, result[..dirPathLength]);
+        }
+
+        if (!fileName.IsEmpty)
+        {
+            ReplaceIllegalChars(fileName, result[dirPathLength..]);
+        }
+
+        return result;
     }
+
+    /// <summary>
+    /// Function to format a path with safe characters.
+    /// </summary>
+    /// <param name="path">Path to the file or folder to format.</param>
+    /// <param name="directorySeparator">Directory separator character to use.</param>
+    /// <returns>A safe path formatted with placeholder characters if invalid characters are found.</returns>
+    /// <remarks>
+    /// <para>
+    /// If the path contains directories, they will be formatted according to the formatting applied by <see cref="FormatDirectory(string?, char)"/>, and if the path contains a filename, it will be 
+    /// formatted according to the formatting applied by the <see cref="FormatFileName(string?)"/> method.
+    /// </para>
+    /// <para>
+    /// If the last character in <paramref name="path"/> is not the same as the <paramref name="directorySeparator"/> parameter, then that last part of the path will be treated as a file. 
+    /// </para>
+    /// <para>
+    /// If no directories are present in the path, then the see <paramref name="directorySeparator"/> is ignored.
+    /// </para>
+    /// </remarks>
+    public static string FormatPath(this string path, char directorySeparator) => FormatPath(path.AsSpan(), directorySeparator).ToString();
 
     /// <summary>
     /// Function to return the chunk ID based on the name of the chunk passed to this method.
