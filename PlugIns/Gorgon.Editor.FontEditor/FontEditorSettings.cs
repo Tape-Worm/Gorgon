@@ -23,6 +23,8 @@
 // Created: August 28, 2021 7:27:16 PM
 // 
 
+using System.Text.Json.Serialization;
+
 namespace Gorgon.Editor.FontEditor;
 
 /// <summary>
@@ -37,6 +39,7 @@ internal class FontEditorSettings
     /// <summary>
     /// Property to set or return the default font for the text.
     /// </summary>
+    [JsonInclude]
     public string DefaultFont
     {
         get;

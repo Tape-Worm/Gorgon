@@ -210,13 +210,7 @@ internal class Main
         {
             writer = new StreamWriter(settingsFile.FullName, false, Encoding.UTF8);
 
-            writer.Write(JsonSerializer.Serialize(Settings, new JsonSerializerOptions
-            {
-                Converters =
-                {
-                    new GorgonRectangleJsonConverter()
-                }
-            }));
+            writer.Write(JsonSerializer.Serialize(Settings));
         }
         catch (Exception ex)
         {

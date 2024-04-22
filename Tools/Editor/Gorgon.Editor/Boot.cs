@@ -210,7 +210,8 @@ internal class Boot
             {
                 Program.Log.Print($"Loading application settings from '{settingsFile.FullName}'", LoggingLevel.Intermediate);
                 reader = new StreamReader(settingsFile.FullName, Encoding.UTF8, true);
-                result = JsonSerializer.Deserialize<EditorSettings>(reader.ReadToEnd());
+                string json = reader.ReadToEnd();
+                result = JsonSerializer.Deserialize<EditorSettings>(json);
                 Program.Log.Print("Application settings loaded.", LoggingLevel.Intermediate);
             }
             catch (JsonException jEx)

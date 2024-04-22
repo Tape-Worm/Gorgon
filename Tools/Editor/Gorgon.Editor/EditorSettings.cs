@@ -23,6 +23,7 @@
 // Created: August 26, 2018 8:19:04 PM
 // 
 
+using System.Text.Json.Serialization;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Graphics;
 
@@ -36,6 +37,7 @@ internal class EditorSettings
     /// <summary>
     /// Property to set or return the window boundaries.
     /// </summary>
+    [JsonInclude]
     public GorgonRectangle? WindowBounds
     {
         get;
@@ -45,6 +47,7 @@ internal class EditorSettings
     /// <summary>
     /// Property to set or return the path used for the application plug ins.
     /// </summary>
+    [JsonInclude]
     public string PlugInPath
     {
         get;
@@ -54,6 +57,7 @@ internal class EditorSettings
     /// <summary>
     /// Property to set or return the last file open/save path.
     /// </summary>
+    [JsonInclude]
     public string LastOpenSavePath
     {
         get;
@@ -63,6 +67,7 @@ internal class EditorSettings
     /// <summary>
     /// Property to set or return the previous project working directory.
     /// </summary>
+    [JsonInclude]
     public string LastProjectWorkingDirectory
     {
         get;
@@ -72,6 +77,7 @@ internal class EditorSettings
     /// <summary>
     /// Property to set or return the last window state.
     /// </summary>
+    [JsonInclude]
     public int WindowState
     {
         get;
@@ -81,6 +87,7 @@ internal class EditorSettings
     /// <summary>
     /// Property to return the list of recent file items.
     /// </summary>
+    [JsonInclude]
     public List<RecentItem> RecentFiles
     {
         get;
@@ -90,6 +97,7 @@ internal class EditorSettings
     /// <summary>
     /// Property to set or return the flag to indicate that the file explorer is visible.
     /// </summary>
+    [JsonInclude]
     public bool ShowFileExplorer
     {
         get;
@@ -99,6 +107,7 @@ internal class EditorSettings
     /// <summary>
     /// Property to set or return the flag to indicate that the content preview is visible.
     /// </summary>
+    [JsonInclude]
     public bool ShowContentPreview
     {
         get;
@@ -111,6 +120,7 @@ internal class EditorSettings
     /// <remarks>
     /// This value is a percentage value between 1 - 99.
     /// </remarks>
+    [JsonInclude]
     public int SplitMainDistance
     {
         get;
@@ -123,6 +133,7 @@ internal class EditorSettings
     /// <remarks>
     /// This value is a percentage value between 1 - 99.
     /// </remarks>
+    [JsonInclude]
     public int SplitPreviewDistance
     {
         get;
@@ -132,6 +143,7 @@ internal class EditorSettings
     /// <summary>
     /// Property to set or return the distance between the directory listing and the file listing in the file explorer panel.
     /// </summary>
+    [JsonInclude]
     public int SplitDirFileDistance
     {
         get;

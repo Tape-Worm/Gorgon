@@ -168,12 +168,11 @@ public abstract class GorgonLog
     /// <param name="resultMessage">The resulting message.</param>
     private static void FormatMessage(string message, string indicator, StringBuilder resultMessage)
     {
-        if (string.IsNullOrEmpty(message))
+        if (string.IsNullOrWhiteSpace(message))
         {
             return;
         }
 
-        message = message.Replace('\t', ' ');
         string[] lines = message.Split(_newLineSeparators,
                                        StringSplitOptions.RemoveEmptyEntries);
 
@@ -181,6 +180,8 @@ public abstract class GorgonLog
         {
             resultMessage.AppendFormat(i == 0 ? "{1}{2}: {0}\r\n" : "{1}           {0}\r\n", lines[i], indicator, Resources.GOR_LOG_EXCEPTION);
         }
+
+        resultMessage.Replace('\t', ' ');
     }
 
     /// <summary>

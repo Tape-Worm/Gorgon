@@ -23,6 +23,7 @@
 // Created: April 25, 2019 9:37:40 AM
 // 
 
+using System.Text.Json.Serialization;
 using Gorgon.Graphics;
 
 namespace Gorgon.Editor.ExtractSpriteTool;
@@ -35,6 +36,7 @@ internal class ExtractSpriteToolSettings
     /// <summary>
     /// Property to set or return whether to allow the skipping of empty sprites.
     /// </summary>
+    [JsonInclude]
     public bool AllowEmptySpriteSkip
     {
         get;
@@ -44,6 +46,7 @@ internal class ExtractSpriteToolSettings
     /// <summary>
     /// Property to set or return the color to use when skipping empty sprites.
     /// </summary>
+    [JsonInclude]
     public int SkipColor
     {
         get;
@@ -53,6 +56,7 @@ internal class ExtractSpriteToolSettings
     /// <summary>
     /// Property to set or return the last directory path used to output sprites into.
     /// </summary>
+    [JsonInclude]
     public string LastOutputDir
     {
         get;
@@ -62,6 +66,7 @@ internal class ExtractSpriteToolSettings
     /// <summary>
     /// Property to set or return whether the window is in a maximized state or not.
     /// </summary>
+    [JsonInclude]
     public bool IsMaximized
     {
         get;
@@ -71,6 +76,7 @@ internal class ExtractSpriteToolSettings
     /// <summary>
     /// Property to set or return the size, in pixels, of a single cell in the grid.
     /// </summary>
+    [JsonInclude]
     public GorgonPoint GridCellSize
     {
         get;
