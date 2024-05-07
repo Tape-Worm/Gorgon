@@ -87,7 +87,7 @@ public class GorgonCopyCallbackOptions
     /// normalized percentage (e.g. 0 - 1.0). 
     /// </para>
     /// </remarks>
-    public Action<string, double> ProgressCallback
+    public Action<string, double>? ProgressCallback
     {
         get;
         set;
@@ -103,7 +103,7 @@ public class GorgonCopyCallbackOptions
     /// </para>
     /// </remarks>
     /// <seealso cref="FileConflictResolution"/>
-    public Func<string, string, FileConflictResolution> ConflictResolutionCallback
+    public Func<string, string, FileConflictResolution>? ConflictResolutionCallback
     {
         get;
         set;

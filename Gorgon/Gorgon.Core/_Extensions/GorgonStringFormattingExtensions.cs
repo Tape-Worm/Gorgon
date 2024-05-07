@@ -22,6 +22,7 @@
 //
 
 using System.Xml.Linq;
+using Gorgon.Collections;
 
 namespace Gorgon.Core;
 
@@ -30,6 +31,20 @@ namespace Gorgon.Core;
 /// </summary>
 public static class GorgonStringFormattingExtension
 {
+    /// <summary>
+    /// Function to provide an enumerator that allows the splitting of a string using the specified separators.
+    /// </summary>
+    /// <param name="text">The string containing the characters to evaluate.</param>
+    /// <param name="separators">The separators to use.</param>
+    /// <param name="includeBlanks">[Optional] <b>true</b> to keep empty entries, <b>false</b> to skip.</param>
+    /// <returns>The <see cref="GorgonSpanCharEnumerator"/> that will enumerate the string.</returns>
+    /// <remarks>
+    /// <para>
+    /// This provides an enumerator that does not perform any allocations, which will deliver a more performant way to split strings.
+    /// </para>
+    /// </remarks>
+    public static GorgonSpanCharEnumerator GetSplitEnumerator(this string text, ReadOnlySpan<char> separators, bool includeBlanks = false) => new(text.AsSpan(), separators, includeBlanks);
+
     /// <summary>
     /// Function to break a string into an array of strings based on the newline control characters present in the text.
     /// </summary>

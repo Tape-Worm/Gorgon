@@ -25,6 +25,8 @@
 
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
+using Gorgon.Collections;
+using Gorgon.Core;
 using Gorgon.IO.Properties;
 
 namespace Gorgon.IO;
@@ -43,8 +45,6 @@ internal class VirtualDirectoryCollection(VirtualDirectory parent)
     private readonly Dictionary<string, VirtualDirectory> _directories = new(StringComparer.OrdinalIgnoreCase);
     // The parent directory that owns this collection.
     private readonly VirtualDirectory _parent = parent;
-    // Directory separator value.
-    private static readonly char[] _separator = ['/'];
 
     /// <summary>
     /// Gets the number of elements in the collection.
@@ -70,7 +70,7 @@ internal class VirtualDirectoryCollection(VirtualDirectory parent)
             // Ensure the key is formatted to remove illegal path characters.
             key = key.FormatPathPart();
 
-            return !_directories.TryGetValue(key, out VirtualDirectory directory)
+            return !_directories.TryGetValue(key, out VirtualDirectory? directory)
                 ? throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, key))
                 : directory;
         }
@@ -116,13 +116,15 @@ internal class VirtualDirectoryCollection(VirtualDirectory parent)
     /// <returns>
     ///   <b>true</b> if the directory was found, <b>false</b> if not.
     /// </returns>
-    public bool TryGetValue(string name, [MaybeNullWhen(false)] out VirtualDirectory value)
+    public bool TryGetValue(string name, [NotNullWhen(true)] out VirtualDirectory? value)
     {
-        value = null;
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            value = null;
+            return false;
+        }
 
-        name = name.FormatPathPart();
-
-        return !string.IsNullOrWhiteSpace(name) && _directories.TryGetValue(name, out value);
+        return _directories.TryGetValue(name, out value);
     }
 
     /// <summary>
@@ -150,45 +152,52 @@ internal class VirtualDirectoryCollection(VirtualDirectory parent)
     /// <param name="path">The path to the directory.</param>
     public VirtualDirectory Add(GorgonFileSystemMountPoint mountPoint, string path)
     {
-        path = path.FormatDirectory('/');
-
-        if (!path.StartsWith("/", StringComparison.OrdinalIgnoreCase))
-        {
-            path = "/" + path;
-        }
-
-        if (path == "/")
+        if (string.Equals(path, GorgonFileSystem.SeparatorString, StringComparison.OrdinalIgnoreCase))
         {
             throw new IOException(string.Format(Resources.GORFS_ERR_DIRECTORY_EXISTS, "/"));
         }
 
-        string[] directories = path.Split(_separator, StringSplitOptions.RemoveEmptyEntries);
-
-        if (directories.Length == 0)
+        if (path[0] != GorgonFileSystem.DirectorySeparator)
         {
-            throw new ArgumentException(string.Format(Resources.GORFS_ERR_PATH_INVALID, path), nameof(path));
+            path = GorgonFileSystem.SeparatorString + path;
         }
+
+        ReadOnlySpan<char> dirPath = path.AsSpan();
+
+        if (dirPath[^1] != GorgonFileSystem.DirectorySeparator)
+        {
+            dirPath = dirPath.FormatDirectory(GorgonFileSystem.DirectorySeparator);
+        }
+
+        GorgonSpanCharEnumerator directories = dirPath.Split(GorgonFileSystem.Separator);
 
         VirtualDirectory directory = _parent;
 
-        foreach (string item in directories)
+        foreach (ReadOnlySpan<char> item in directories)
         {
+            string pathItem = item.FormatPathPart().ToString();
+
             // If there's a file with the same name as the directory, then we can't continue.
-            if (directory.Files.ContainsKey(item))
+            if (directory.Files.ContainsKey(pathItem))
             {
-                throw new IOException(string.Format(Resources.GORFS_ERR_FILE_EXISTS, directory.Files[item].FullPath));
+                throw new IOException(string.Format(Resources.GORFS_ERR_FILE_EXISTS, directory.Files[pathItem].FullPath));
             }
 
-            if (directory.Directories.TryGetValue(item, out VirtualDirectory childDirectory))
+            if (directory.Directories.TryGetValue(pathItem, out VirtualDirectory? childDirectory))
             {
                 directory = childDirectory;
             }
             else
             {
-                VirtualDirectory newDirectoryInfo = new(mountPoint, _parent.FileSystem, directory, item);
+                VirtualDirectory newDirectoryInfo = new(mountPoint, _parent.FileSystem, directory, pathItem);
                 directory.Directories.Add(newDirectoryInfo);
                 directory = newDirectoryInfo;
             }
+        }
+
+        if (directory == _parent)
+        {
+            throw new ArgumentException(string.Format(Resources.GORFS_ERR_PATH_INVALID, path), nameof(path));
         }
 
         return directory;
@@ -219,7 +228,7 @@ internal class VirtualDirectoryCollection(VirtualDirectory parent)
     /// <returns><b>true</b> if the item was found, <b>false</b> if not.</returns>
     bool IReadOnlyDictionary<string, IGorgonVirtualDirectory>.TryGetValue(string name, [MaybeNullWhen(false)] out IGorgonVirtualDirectory value)
     {
-        if (!TryGetValue(name, out VirtualDirectory directory))
+        if (!TryGetValue(name, out VirtualDirectory? directory))
         {
             value = null;
             return false;

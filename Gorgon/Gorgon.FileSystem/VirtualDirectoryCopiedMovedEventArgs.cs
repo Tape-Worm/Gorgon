@@ -34,7 +34,7 @@ public class VirtualDirectoryCopiedMovedEventArgs
     /// <summary>
     /// Property to return the virtual directories that were moved.
     /// </summary>
-    public IReadOnlyList<(IGorgonVirtualDirectory src, IGorgonVirtualDirectory dest)> VirtualDirectories
+    public IReadOnlyList<(IGorgonVirtualDirectory src, IGorgonVirtualDirectory? dest)> VirtualDirectories
     {
         get;
     }
@@ -60,7 +60,7 @@ public class VirtualDirectoryCopiedMovedEventArgs
     /// <param name="directories">The list of virtual directories that were moved.</param>
     /// <param name="files">The list of virtual files that were moved.</param>
     internal VirtualDirectoryCopiedMovedEventArgs(IGorgonVirtualDirectory dest,
-                                            IReadOnlyList<(IGorgonVirtualDirectory src, IGorgonVirtualDirectory dest)> directories,
+                                            IReadOnlyList<(IGorgonVirtualDirectory src, IGorgonVirtualDirectory? dest)> directories,
                                             IReadOnlyList<(IGorgonVirtualFile src, IGorgonVirtualFile dest)> files)
     {
         Destination = dest;

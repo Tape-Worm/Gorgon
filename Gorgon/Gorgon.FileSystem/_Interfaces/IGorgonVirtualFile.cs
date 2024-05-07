@@ -164,7 +164,9 @@ public interface IGorgonVirtualFile
     /// </summary>
     /// <returns>The open <see cref="Stream"/> object.</returns>
     /// <remarks>
+    /// <para>
     /// This will open a <see cref="Stream"/> to the physical file for reading. Applications that open a stream to a file are responsible for closing the <see cref="Stream"/> when they are done.
+    /// </para>
     /// </remarks>
-    Stream OpenStream();
+    Stream? OpenStream();
 }

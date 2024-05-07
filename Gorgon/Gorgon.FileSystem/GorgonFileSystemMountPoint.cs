@@ -32,61 +32,44 @@ namespace Gorgon.IO;
 /// <summary>
 /// A mount point for the virtual file system
 /// </summary>
-public readonly struct GorgonFileSystemMountPoint
-    : IGorgonEquatableByRef<GorgonFileSystemMountPoint>
+public record GorgonFileSystemMountPoint
 {
     /// <summary>
-    /// Flag to indicate whether the mount point is a fake mount point or not (i.e. it has no real physical location).
+    /// An empty mount point.
     /// </summary>
-    internal readonly bool IsFakeMount;
+    public static readonly GorgonFileSystemMountPoint Empty = new(null!, string.Empty, GorgonFileSystem.SeparatorString, true);
 
     /// <summary>
-    /// The provider for this mount point.
+    /// Property to return the flag to indicate whether the mount point is a fake mount point or not (i.e. it has no real physical location).
     /// </summary>
-    public readonly IGorgonFileSystemProvider Provider;
-    /// <summary>
-    /// The physical location of the mount point.
-    /// </summary>
-    public readonly string PhysicalPath;
-    /// <summary>
-    /// The virtual location of the mount point.
-    /// </summary>
-    public readonly string MountLocation;
+    internal bool IsFakeMount
+    {
+        get;
+    }
 
     /// <summary>
-    /// Function to determine if two instances are equal.
+    /// Property to return the provider for this mount point.
     /// </summary>
-    /// <param name="left">Left instance to compare.</param>
-    /// <param name="right">Right instance to compare.</param>
-    /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-    public static bool Equals(ref readonly GorgonFileSystemMountPoint left, ref readonly GorgonFileSystemMountPoint right) => (left.Provider == right.Provider)
-                && (left.IsFakeMount == right.IsFakeMount)
-                && (string.Equals(left.MountLocation, right.MountLocation, StringComparison.OrdinalIgnoreCase))
-                && (string.Equals(left.PhysicalPath, right.PhysicalPath, StringComparison.OrdinalIgnoreCase));
+    public IGorgonFileSystemProvider Provider
+    {
+        get;
+    }
 
     /// <summary>
-    /// Determines whether the specified <see cref="object" /> is equal to this instance.
+    /// Property to return the physical location of the mount point.
     /// </summary>
-    /// <param name="obj">The <see cref="object" /> to compare with this instance.</param>
-    /// <returns>
-    ///   <b>true</b> if the specified <see cref="object" /> is equal to this instance; otherwise, <b>false</b>.
-    /// </returns>
-    public override bool Equals(object obj) => obj is GorgonFileSystemMountPoint mountPoint ? mountPoint.Equals(this) : base.Equals(obj);
+    public string PhysicalPath
+    {
+        get;
+    }
 
     /// <summary>
-    /// Function to determine if this instance is equal to another instance.
+    /// Property to return the virtual location of the mount point.
     /// </summary>
-    /// <param name="other">The other instance to compare.</param>
-    /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-    public bool Equals(ref readonly GorgonFileSystemMountPoint other) => Equals(in this, in other);
-
-    /// <summary>
-    /// Function to compare this instance with another.
-    /// </summary>
-    /// <param name="other">The other instance to use for comparison.</param>
-    /// <returns>
-    ///   <b>true</b> if equal, <b>false</b> if not.</returns>
-    public bool Equals(GorgonFileSystemMountPoint other) => Equals(in this, in other);
+    public string MountLocation
+    {
+        get;
+    }
 
     /// <summary>
     /// Returns a <see cref="string" /> that represents this instance.
@@ -105,37 +88,18 @@ public readonly struct GorgonFileSystemMountPoint
     public override int GetHashCode() => HashCode.Combine(Provider, PhysicalPath, MountLocation);
 
     /// <summary>
-    /// Equality operator.
-    /// </summary>
-    /// <param name="left">Left instance to compare.</param>
-    /// <param name="right">Right instance to compare.</param>
-    /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-    public static bool operator ==(GorgonFileSystemMountPoint left, GorgonFileSystemMountPoint right) => Equals(in left, in right);
-
-    /// <summary>
-    /// Inequality operator.
-    /// </summary>
-    /// <param name="left">Left instance to compare.</param>
-    /// <param name="right">Right instance to compare.</param>
-    /// <returns><b>true</b> if not equal, <b>false</b> if equal.</returns>
-    public static bool operator !=(GorgonFileSystemMountPoint left, GorgonFileSystemMountPoint right) => !Equals(in left, in right);
-
-    /// <summary>
     /// Initializes a new instance of the <see cref="GorgonFileSystemMountPoint" /> struct.
     /// </summary>
     /// <param name="provider">The provider for this mount point.</param>
     /// <param name="physicalPath">The physical path.</param>
     /// <param name="mountLocation">[Optional] The mount location.</param>
     /// <param name="isFakeMountPoint">[Optional] <b>true</b> if the mount point doesn't use a real physical location, or <b>false</b> if it does.</param>
-    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="physicalPath"/>, or the <paramref name="mountLocation"/> parameter is empty.</exception>
-    internal GorgonFileSystemMountPoint(IGorgonFileSystemProvider provider, string physicalPath, string mountLocation, bool isFakeMountPoint = false)
+    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="physicalPath"/> parameter is empty.</exception>
+    internal GorgonFileSystemMountPoint(IGorgonFileSystemProvider provider, string physicalPath, string? mountLocation = null, bool isFakeMountPoint = false)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(physicalPath);
-        ArgumentException.ThrowIfNullOrWhiteSpace(mountLocation);
-
-        Provider = provider ?? throw new ArgumentNullException(nameof(provider));
+        Provider = provider;
         PhysicalPath = physicalPath;
-        MountLocation = mountLocation;
+        MountLocation = (mountLocation ?? string.Empty).FormatDirectory(GorgonFileSystem.DirectorySeparator);
         IsFakeMount = isFakeMountPoint;
     }
 }

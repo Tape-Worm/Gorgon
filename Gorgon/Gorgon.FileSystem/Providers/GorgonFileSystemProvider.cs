@@ -23,6 +23,7 @@
 // Created: Monday, June 27, 2011 9:00:18 AM
 // 
 
+using System.Diagnostics;
 using Gorgon.Core;
 using Gorgon.PlugIns;
 using Microsoft.IO;
@@ -76,6 +77,15 @@ public abstract class GorgonFileSystemProvider
     });
 
     /// <summary>
+    /// Property to return the character used to separate path parts on the physical file system.
+    /// </summary>
+    public char PhysicalPathSeparator
+    {
+        get;
+        protected set;
+    } = Path.DirectorySeparatorChar;
+
+    /// <summary>
     /// Property to return whether this provider only gives read only access to the physical file system.
     /// </summary>
     public abstract bool IsReadOnly
@@ -120,37 +130,9 @@ public abstract class GorgonFileSystemProvider
     /// Function to return the virtual file system path from a physical file system path.
     /// </summary>
     /// <param name="physicalPath">Physical path to the file/folder.</param>
-    /// <param name="physicalRoot">Location of the physical folder holding the root for the virtual file system.</param>
-    /// <param name="mountPoint">Path to the mount point.</param>
+    /// <param name="mountPoint">The mount point used to map the physical path.</param>
     /// <returns>The virtual file system path.</returns>
-    protected private static string MapToVirtualPath(string physicalPath, string physicalRoot, string mountPoint)
-    {
-        if ((string.IsNullOrWhiteSpace(physicalPath))
-            || (string.IsNullOrWhiteSpace(physicalRoot))
-            || (string.IsNullOrWhiteSpace(mountPoint)))
-        {
-            return string.Empty;
-        }
-
-        if (!Path.IsPathRooted(physicalPath))
-        {
-            physicalPath = Path.GetFullPath(physicalPath);
-        }
-
-        physicalPath = mountPoint + physicalPath.Replace(physicalRoot, string.Empty);
-
-        if (physicalPath.EndsWith(GorgonFileSystem.PhysicalDirSeparator, StringComparison.OrdinalIgnoreCase))
-        {
-            physicalPath = physicalPath.FormatDirectory('/');
-        }
-        else
-        {
-            physicalPath = Path.GetDirectoryName(physicalPath).FormatDirectory('/') +
-                           Path.GetFileName(physicalPath).FormatFileName();
-        }
-
-        return physicalPath;
-    }
+    protected abstract ReadOnlySpan<char> OnMapToVirtualPath(ReadOnlySpan<char> physicalPath, GorgonFileSystemMountPoint mountPoint);
 
     /// <summary>
     /// Function to open a stream to a file on the physical file system from the <see cref="IGorgonVirtualFile"/> passed in.
@@ -171,7 +153,7 @@ public abstract class GorgonFileSystemProvider
     /// return a stream into the zip file positioned at the location of the compressed file within the zip file).
     /// </para>
     /// </remarks>
-    protected abstract GorgonFileSystemStream OnOpenFileStream(IGorgonVirtualFile file);
+    protected abstract GorgonFileSystemStream? OnOpenFileStream(IGorgonVirtualFile file);
 
     /// <summary>
     /// Function to determine if a physical file system can be read by this provider.
@@ -240,7 +222,7 @@ public abstract class GorgonFileSystemProvider
     /// <param name="virtualPath">Virtual path to the file/folder.</param>
     /// <param name="mountPoint">The mount point used to map the physical path.</param>
     /// <returns>The physical file system path.</returns>
-    protected abstract string OnGetPhysicalPath(string virtualPath, GorgonFileSystemMountPoint mountPoint);
+    protected abstract ReadOnlySpan<char> OnGetPhysicalPath(ReadOnlySpan<char> virtualPath, GorgonFileSystemMountPoint mountPoint);
 
     /// <summary>
     /// Function to return the virtual file system path from a physical file system path.
@@ -248,7 +230,7 @@ public abstract class GorgonFileSystemProvider
     /// <param name="physicalPath">Physical path to the file/folder.</param>
     /// <param name="mountPoint">The mount point used to map the physical path.</param>
     /// <returns>The virtual file system path.</returns>
-    public string MapToVirtualPath(string physicalPath, GorgonFileSystemMountPoint mountPoint) => MapToVirtualPath(physicalPath, mountPoint.PhysicalPath, mountPoint.MountLocation);
+    public ReadOnlySpan<char> MapToVirtualPath(ReadOnlySpan<char> physicalPath, GorgonFileSystemMountPoint mountPoint) => OnMapToVirtualPath(physicalPath, mountPoint);
 
     /// <summary>
     /// Function to return the physical file system path from a virtual file system path.
@@ -256,21 +238,26 @@ public abstract class GorgonFileSystemProvider
     /// <param name="virtualPath">Virtual path to the file/folder.</param>
     /// <param name="mountPoint">The mount point used to map the physical path.</param>
     /// <returns>The physical file system path.</returns>
-    public string MapToPhysicalPath(string virtualPath, GorgonFileSystemMountPoint mountPoint)
+    public ReadOnlySpan<char> MapToPhysicalPath(ReadOnlySpan<char> virtualPath, GorgonFileSystemMountPoint mountPoint)
     {
-        if ((string.IsNullOrWhiteSpace(virtualPath))
+        if ((virtualPath.IsEmpty)
             || (string.IsNullOrWhiteSpace(mountPoint.PhysicalPath))
             || (string.IsNullOrWhiteSpace(mountPoint.MountLocation)))
         {
-            return string.Empty;
+            return [];
         }
 
-        if (virtualPath.StartsWith("/", StringComparison.OrdinalIgnoreCase))
+        if (virtualPath.StartsWith(GorgonFileSystem.Separator, StringComparison.Ordinal))
         {
             virtualPath = virtualPath[1..];
         }
 
-        return string.IsNullOrWhiteSpace(virtualPath) ? mountPoint.PhysicalPath : OnGetPhysicalPath(virtualPath, mountPoint);
+        if (virtualPath.IsEmpty)
+        {
+            return mountPoint.PhysicalPath.AsSpan();
+        }
+
+        return OnGetPhysicalPath(virtualPath, mountPoint);
     }
 
     /// <summary>
@@ -338,7 +325,7 @@ public abstract class GorgonFileSystemProvider
     /// responsibility of the user to close the stream when finished.
     /// </para>
     /// </remarks>
-    public Stream OpenFileStream(IGorgonVirtualFile file) => file is null ? throw new ArgumentNullException(nameof(file)) : OnOpenFileStream(file);
+    public Stream? OpenFileStream(IGorgonVirtualFile file) => file is null ? throw new ArgumentNullException(nameof(file)) : OnOpenFileStream(file);
 
     /// <summary>
     /// Function to determine if a physical file system can be read by this provider.
@@ -366,6 +353,11 @@ public abstract class GorgonFileSystemProvider
     protected GorgonFileSystemProvider(string providerDescription)
     {
         Description = providerDescription;
-        Name = GetType().FullName;
+
+        string? name = GetType().FullName;
+
+        Debug.Assert(name is not null, "The type name should not be null.");
+
+        Name = name;
     }
 }

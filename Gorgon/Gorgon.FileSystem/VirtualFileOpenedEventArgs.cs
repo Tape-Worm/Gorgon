@@ -32,9 +32,12 @@ public class VirtualFileOpenedEventArgs
     : EventArgs
 {
     /// <summary>
-    /// Property to return the virtual file that represents the physical file.
+    /// Property to return the virtual file that is being opened.
     /// </summary>
-    public IGorgonVirtualFile VirtualFile
+    /// <remarks>
+    /// If this value is <b>null</b>, then the file system does not have an entry for it. This can happen when a file is being created by the file system writer.
+    /// </remarks>
+    public IGorgonVirtualFile? VirtualFile
     {
         get;
     }
@@ -50,7 +53,7 @@ public class VirtualFileOpenedEventArgs
     /// <summary>Initializes a new instance of the <see cref="VirtualFileOpenedEventArgs"/> class.</summary>
     /// <param name="file">The virtual file that was opened.</param>
     /// <param name="stream">The stream for the opened file.</param>
-    internal VirtualFileOpenedEventArgs(IGorgonVirtualFile file, Stream stream)
+    internal VirtualFileOpenedEventArgs(IGorgonVirtualFile? file, Stream stream)
     {
         VirtualFile = file;
         Stream = stream;

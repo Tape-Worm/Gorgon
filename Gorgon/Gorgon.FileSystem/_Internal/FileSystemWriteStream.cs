@@ -51,7 +51,7 @@ internal class FileSystemWriteStream(string writePath, FileMode fileMode)
     /// <summary>
     /// Property to set or return the callback to execute once the stream is closed.
     /// </summary>
-    public Action<FileStream> OnCloseCallback
+    public Action<FileStream>? OnCloseCallback
     {
         get;
         set;
@@ -61,7 +61,7 @@ internal class FileSystemWriteStream(string writePath, FileMode fileMode)
     /// Releases the unmanaged resources used by the <see cref="FileStream"/> and optionally releases the managed resources.
     /// </summary>
     /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources. </param>
-    protected override void Dispose(bool disposing)
+    protected sealed override void Dispose(bool disposing)
     {
         try
         {

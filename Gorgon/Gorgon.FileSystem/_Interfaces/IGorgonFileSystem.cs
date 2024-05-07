@@ -250,7 +250,7 @@ public interface IGorgonFileSystem
     /// ]]>
     /// </code>
     /// </example>
-    IGorgonVirtualFile GetFile(string path);
+    IGorgonVirtualFile? GetFile(string path);
 
     /// <summary>
     /// Function to retrieve a directory from the file system.
@@ -286,7 +286,7 @@ public interface IGorgonFileSystem
     /// ]]>
     /// </code>
     /// </example>
-    IGorgonVirtualDirectory GetDirectory(string path);
+    IGorgonVirtualDirectory? GetDirectory(string path);
 
     /// <summary>
     /// Function to reload all the files and directories in the file system.
@@ -499,6 +499,5 @@ public interface IGorgonFileSystem
     /// ]]>
     /// </code>
     /// </example>
-    GorgonFileSystemMountPoint Mount(string physicalPath, string mountPath = null);
-
+    GorgonFileSystemMountPoint Mount(string physicalPath, string? mountPath = null);
 }

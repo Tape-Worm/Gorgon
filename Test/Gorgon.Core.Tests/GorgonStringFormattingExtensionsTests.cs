@@ -1,4 +1,6 @@
-﻿using System.Text;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 using System.Xml.Linq;
 
 namespace Gorgon.Core.Tests;
@@ -6,6 +8,80 @@ namespace Gorgon.Core.Tests;
 [TestClass]
 public class GorgonStringFormattingExtensionsTests
 {
+    private static readonly char[] _separator = ['\\'];
+    private static readonly char[] _separator2 = ['\\', '/'];
+
+    [TestMethod]
+    public void SplitEnumerator()
+    {
+        string dir = @"d:\my path\is quite\long\you\see\look\at_this.file";
+
+        List<string> parts = [];
+        List<string> actual = ["d:", "my path", "is quite", "long", "you", "see", "look", "at_this.file"];
+
+        foreach (ReadOnlySpan<char> part in dir.GetSplitEnumerator(_separator))
+        {
+            parts.Add(part.ToString());
+        }
+
+        CollectionAssert.AreEqual(actual, parts);
+
+        parts.Clear();
+        dir = @"d:/my path\is quite/long\you/see\look/at_this.file";
+        actual = ["d:", "my path", "is quite", "long", "you", "see", "look", "at_this.file"];
+
+        foreach (ReadOnlySpan<char> part in dir.GetSplitEnumerator(_separator2))
+        {
+            parts.Add(part.ToString());
+        }
+
+        CollectionAssert.AreEqual(actual, parts);
+
+        parts.Clear();
+        dir = @"\d:\my path\\is quite\\\long\you\see\look\at_this.file";
+        actual = ["d:", "my path", "is quite", "long", "you", "see", "look", "at_this.file"];
+
+        foreach (ReadOnlySpan<char> part in dir.GetSplitEnumerator(_separator))
+        {
+            parts.Add(part.ToString());
+        }
+
+        CollectionAssert.AreEqual(actual, parts);
+
+        parts.Clear();
+        dir = @"\d:\my path\\is quite\\\long\you\see\look\at_this.file";
+        actual = [string.Empty, "d:", "my path", string.Empty, "is quite", string.Empty, string.Empty, "long", "you", "see", "look", "at_this.file"];
+
+        foreach (ReadOnlySpan<char> part in dir.GetSplitEnumerator(_separator, true))
+        {
+            parts.Add(part.ToString());
+        }
+
+        CollectionAssert.AreEqual(actual, parts);
+
+        parts.Clear();
+        dir = @"d:\my path\is quite\long\you\see\look\at_this_directory\";
+        actual = ["d:", "my path", "is quite", "long", "you", "see", "look", "at_this_directory"];
+
+        foreach (ReadOnlySpan<char> part in dir.GetSplitEnumerator(_separator))
+        {
+            parts.Add(part.ToString());
+        }
+
+        CollectionAssert.AreEqual(actual, parts);
+
+        parts.Clear();
+        dir = @"This has nothing to split.";
+        actual = ["This has nothing to split."];
+
+        foreach (ReadOnlySpan<char> part in dir.GetSplitEnumerator(_separator))
+        {
+            parts.Add(part.ToString());
+        }
+
+        CollectionAssert.AreEqual(actual, parts);
+    }
+
     [TestMethod]
     public void GetLines()
     {

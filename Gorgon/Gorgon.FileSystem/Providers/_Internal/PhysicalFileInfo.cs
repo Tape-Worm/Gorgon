@@ -22,6 +22,9 @@
 // Created: Saturday, September 19, 2015 8:34:24 PM
 // 
 
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+
 namespace Gorgon.IO.Providers;
 
 /// <summary>
@@ -116,18 +119,34 @@ internal class PhysicalFileInfo
     public bool IsEncrypted => false;
 
     /// <summary>Function to refresh the file information.</summary>
+    [MemberNotNull(nameof(VirtualPath))]
     public void Refresh()
     {
         _fileInfo.Refresh();
 
-        // Rebuild the virtual path name.
-        _pathBuffer.Length = 0;
-        _pathBuffer.Append(_fileInfo.DirectoryName.FormatDirectory(Path.DirectorySeparatorChar));
-        _pathBuffer.Remove(0, _physicalRoot.Length - 1);
-        _pathBuffer.Replace(Path.DirectorySeparatorChar, '/');
-        _pathBuffer.Append(_fileInfo.Name);
+        Debug.Assert(_fileInfo.DirectoryName is not null, $"The file {_fileInfo.Name} does not have a parent directory.");
 
-        VirtualPath = _pathBuffer.ToString();
+        ReadOnlySpan<char> pathBuffer = _fileInfo.DirectoryName.AsSpan().FormatDirectory(Path.DirectorySeparatorChar);
+        ReadOnlySpan<char> fileName = _fileInfo.Name.AsSpan();
+        scoped Span<char> pathSpan;
+
+        int stringLen = pathBuffer.Length + fileName.Length;
+        int newLen = stringLen - (_physicalRoot.Length - 1);
+
+        if (stringLen > 1024)
+        {
+            pathSpan = new char[newLen];
+        }
+        else
+        {
+            pathSpan = stackalloc char[newLen];
+        }
+
+        pathBuffer[(_physicalRoot.Length - 1)..].CopyTo(pathSpan);
+        fileName.CopyTo(pathSpan[(newLen - fileName.Length)..]);
+        pathSpan.Replace(Path.DirectorySeparatorChar, GorgonFileSystem.DirectorySeparator);
+
+        VirtualPath = pathSpan.ToString();
     }
 
     /// <summary>

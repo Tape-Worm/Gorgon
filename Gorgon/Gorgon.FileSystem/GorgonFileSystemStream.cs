@@ -1,5 +1,4 @@
-﻿
-// 
+﻿// 
 // Gorgon
 // Copyright (C) 2011 Michael Winsor
 // 
@@ -31,9 +30,8 @@ namespace Gorgon.IO;
 public class GorgonFileSystemStream
     : Stream
 {
-
     // Base stream to use.
-    private Stream _baseStream;
+    private Stream _baseStream = Null;
 
     /// <summary>
     /// Property to set or return whether to close the underlying stream when this stream is closed.
@@ -142,7 +140,8 @@ public class GorgonFileSystemStream
                     _baseStream.Dispose();
                 }
             }
-            _baseStream = null;
+
+            _baseStream = Null;
         }
 
         base.Dispose(disposing);
@@ -163,7 +162,7 @@ public class GorgonFileSystemStream
     /// <exception cref="ArgumentException">One or more of the arguments is invalid. </exception>
     /// <exception cref="ObjectDisposedException">Methods were called after the stream was closed. </exception>
     /// <exception cref="NotSupportedException">The current Stream implementation does not support the read operation. </exception>
-    public override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback callback, object state) => _baseStream.BeginRead(buffer, offset, count, callback, state);
+    public override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state) => _baseStream.BeginRead(buffer, offset, count, callback, state);
 
     /// <summary>
     /// Begins an asynchronous write operation.
@@ -180,7 +179,7 @@ public class GorgonFileSystemStream
     /// <exception cref="ArgumentException">One or more of the arguments is invalid. </exception>
     /// <exception cref="ObjectDisposedException">Methods were called after the stream was closed. </exception>
     /// <exception cref="NotSupportedException">The current Stream implementation does not support the write operation. </exception>
-    public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback callback, object state) => _baseStream.BeginWrite(buffer, offset, count, callback, state);
+    public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state) => _baseStream.BeginWrite(buffer, offset, count, callback, state);
 
     /// <summary>
     /// Waits for the pending asynchronous read to complete.
@@ -213,6 +212,9 @@ public class GorgonFileSystemStream
     /// <exception cref="IOException">An I/O error occurs. </exception>
     public override void Flush() => _baseStream.Flush();
 
+    /// <inheritdoc/>
+    public override Task FlushAsync(CancellationToken cancellationToken) => _baseStream.FlushAsync(cancellationToken);
+
     /// <summary>
     /// When overridden in a derived class, reads a sequence of bytes from the current stream and advances the position within the stream by the number of bytes read.
     /// </summary>
@@ -230,7 +232,16 @@ public class GorgonFileSystemStream
     /// <exception cref="IOException">An I/O error occurs. </exception>
     /// <exception cref="NotSupportedException">The stream does not support reading. </exception>
     /// <exception cref="ObjectDisposedException">Methods were called after the stream was closed. </exception>
-    public override int Read(byte[] buffer, int offset, int count) => _baseStream.Read(buffer, offset, count);
+    public override int Read(byte[] buffer, int offset, int count) => Read(buffer.AsSpan(offset, count));
+
+    /// <inheritdoc/>
+    public override int Read(Span<byte> buffer) => _baseStream.Read(buffer);
+
+    /// <inheritdoc/>
+    public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken) => _baseStream.ReadAsync(buffer, offset, count, cancellationToken);
+
+    /// <inheritdoc/>
+    public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default) => _baseStream.ReadAsync(buffer, cancellationToken);
 
     /// <summary>
     /// Reads a byte from the stream and advances the position within the stream by one byte, or returns -1 if at the end of the stream.
@@ -278,7 +289,16 @@ public class GorgonFileSystemStream
     /// <exception cref="IOException">An I/O error occurs. </exception>
     /// <exception cref="NotSupportedException">The stream does not support writing. </exception>
     /// <exception cref="ObjectDisposedException">Methods were called after the stream was closed. </exception>
-    public override void Write(byte[] buffer, int offset, int count) => _baseStream.Write(buffer, offset, count);
+    public override void Write(byte[] buffer, int offset, int count) => Write(buffer.AsSpan(offset, count));
+
+    /// <inheritdoc/>
+    public override void Write(ReadOnlySpan<byte> buffer) => _baseStream.Write(buffer);
+
+    /// <inheritdoc/>
+    public override ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken = default) => _baseStream.WriteAsync(buffer, cancellationToken);
+
+    /// <inheritdoc/>
+    public override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken) => _baseStream.WriteAsync(buffer, offset, count, cancellationToken);
 
     /// <summary>
     /// Writes a byte to the current position in the stream and advances the position within the stream by one byte.
@@ -289,17 +309,22 @@ public class GorgonFileSystemStream
     /// <exception cref="ObjectDisposedException">Methods were called after the stream was closed. </exception>
     public override void WriteByte(byte value) => _baseStream.WriteByte(value);
 
+    /// <inheritdoc/>
+    public override void CopyTo(Stream destination, int bufferSize) => _baseStream.CopyTo(destination, bufferSize);
+
+    /// <inheritdoc/>
+    public override Task CopyToAsync(Stream destination, int bufferSize, CancellationToken cancellationToken) => _baseStream.CopyToAsync(destination, bufferSize, cancellationToken);
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonFileSystemStream"/> class.
     /// </summary>
     /// <param name="file">File being read/written.</param>
     /// <param name="baseStream">The underlying stream to use for this stream.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="baseStream"/> or the <paramref name="file"/> parameter is <b>null</b>.</exception>
     protected internal GorgonFileSystemStream(IGorgonVirtualFile file, Stream baseStream)
     {
         CloseUnderlyingStream = true;
-        _baseStream = baseStream ?? throw new ArgumentNullException(nameof(baseStream));
-        FileEntry = file ?? throw new ArgumentNullException(nameof(file));
+        _baseStream = baseStream;
+        FileEntry = file;
 
         // Reset the position to the beginning.
         if (_baseStream.CanSeek)

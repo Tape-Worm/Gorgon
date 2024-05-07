@@ -23,6 +23,7 @@
 // Created: Monday, June 27, 2011 8:58:26 AM
 // 
 
+using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.IO.Providers;
 
@@ -105,7 +106,7 @@ internal class VirtualDirectory
     /// <remarks>
     /// If this value is <b>null</b>, then this will be the root directory for the file system.
     /// </remarks>
-    IGorgonVirtualDirectory IGorgonVirtualDirectory.Parent => Parent;
+    IGorgonVirtualDirectory? IGorgonVirtualDirectory.Parent => Parent;
 
     /// <summary>
     /// Property to return the parent of this directory.
@@ -113,7 +114,7 @@ internal class VirtualDirectory
     /// <remarks>
     /// If this value is <b>null</b>, then this will be the root directory for the file system.
     /// </remarks>
-    public VirtualDirectory Parent
+    public VirtualDirectory? Parent
     {
         get;
     }
@@ -121,7 +122,51 @@ internal class VirtualDirectory
     /// <summary>
     /// Property to return the full path to the directory.
     /// </summary>
-    public string FullPath => Parent is null ? "/" : Parent.FullPath + Name + "/";
+    public string FullPath
+    {
+        get;
+        private set;
+    }
+
+    /// <summary>
+    /// Function to refresh the information about the directory.
+    /// </summary>
+    public void Refresh()
+    {
+        if (Parent is null)
+        {
+            FullPath = GorgonFileSystem.SeparatorString;
+            return;
+        }
+
+        int stringLen = Parent.FullPath.Length + Name.Length + 1; // +1 for the directory separator.
+
+        if (stringLen > 1024)
+        {
+            FullPath = Parent.FullPath + Name + GorgonFileSystem.SeparatorString;
+        }
+        else
+        {
+            Span<char> chars = stackalloc char[stringLen];
+
+            Parent.FullPath.AsSpan().CopyTo(chars);
+            Name.AsSpan().CopyTo(chars[Parent.FullPath.Length..]);
+            chars[stringLen - 1] = GorgonFileSystem.DirectorySeparator;
+
+            FullPath = chars.ToString();
+        }
+
+        foreach (VirtualDirectory subDir in Directories.EnumerateVirtualDirectories()
+                                                       .TraverseBreadthFirst(c => c.Directories.EnumerateVirtualDirectories()))
+        {
+            subDir.Refresh();
+        }
+
+        foreach (VirtualFile file in Files.EnumerateVirtualFiles())
+        {
+            file.Refresh();
+        }
+    }
 
     /// <summary>
     /// Function to return all the parents up to the root directory.
@@ -132,7 +177,7 @@ internal class VirtualDirectory
     /// </remarks>
     public IEnumerable<IGorgonVirtualDirectory> GetParents()
     {
-        IGorgonVirtualDirectory parent = Parent;
+        IGorgonVirtualDirectory? parent = Parent;
 
         if (parent is null)
         {
@@ -210,11 +255,12 @@ internal class VirtualDirectory
     /// <param name="fileSystem">The file system that contains the directory.</param>
     /// <param name="parentDirectory">The parent of this directory.</param>
     /// <param name="name">The name of the directory.</param>
-    public VirtualDirectory(GorgonFileSystemMountPoint mountPoint, IGorgonFileSystem fileSystem, VirtualDirectory parentDirectory, string name)
+    public VirtualDirectory(GorgonFileSystemMountPoint mountPoint, IGorgonFileSystem fileSystem, VirtualDirectory? parentDirectory, string name)
     {
         MountPoint = mountPoint;
         FileSystem = fileSystem;
-        Name = name != "/" ? name.FormatPathPart() : name;
+        Name = name[0] != GorgonFileSystem.DirectorySeparator ? name.FormatPathPart() : name;
+        FullPath = parentDirectory is null ? GorgonFileSystem.SeparatorString : parentDirectory.FullPath + Name + GorgonFileSystem.SeparatorString;
         Parent = parentDirectory;
         Directories = new VirtualDirectoryCollection(this);
         Files = new VirtualFileCollection(this);

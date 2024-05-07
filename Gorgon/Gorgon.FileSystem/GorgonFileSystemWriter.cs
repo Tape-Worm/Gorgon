@@ -24,6 +24,7 @@
 // 
 
 using System.Buffers;
+using System.Diagnostics;
 using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.IO.Properties;
@@ -107,59 +108,59 @@ public class GorgonFileSystemWriter
     /// <summary>
     /// Event triggered when a virtual directory has been added to the file system.
     /// </summary>
-    public event EventHandler<VirtualDirectoryAddedEventArgs> VirtualDirectoryAdded;
+    public event EventHandler<VirtualDirectoryAddedEventArgs>? VirtualDirectoryAdded;
     /// <summary>
     /// Event triggered when a virtual directory has been deleted from the file system.
     /// </summary>
-    public event EventHandler<VirtualDirectoryDeletedEventArgs> VirtualDirectoryDeleted;
+    public event EventHandler<VirtualDirectoryDeletedEventArgs>? VirtualDirectoryDeleted;
     /// <summary>
     /// Event triggered when a virtual directory has been renamed.
     /// </summary>
-    public event EventHandler<VirtualDirectoryRenamedEventArgs> VirtualDirectoryRenamed;
+    public event EventHandler<VirtualDirectoryRenamedEventArgs>? VirtualDirectoryRenamed;
     /// <summary>
     /// Event triggered when a virtual directory has been copied.
     /// </summary>
-    public event EventHandler<VirtualDirectoryCopiedMovedEventArgs> VirtualDirectoryCopied;
+    public event EventHandler<VirtualDirectoryCopiedMovedEventArgs>? VirtualDirectoryCopied;
     /// <summary>
     /// Event triggered when a virtual directory has been moved.
     /// </summary>
-    public event EventHandler<VirtualDirectoryCopiedMovedEventArgs> VirtualDirectoryMoved;
+    public event EventHandler<VirtualDirectoryCopiedMovedEventArgs>? VirtualDirectoryMoved;
     /// <summary>
     /// Event triggered before a phsyical file is imported into the file system.
     /// </summary>
-    public event EventHandler<FileImportingArgs> FileImporting;
+    public event EventHandler<FileImportingArgs>? FileImporting;
     /// <summary>
     /// Event triggered after a physical file is imported into the file system.
     /// </summary>
-    public event EventHandler<FileImportedArgs> FileImported;
+    public event EventHandler<FileImportedArgs>? FileImported;
     /// <summary>
     /// Event triggered when directories, and files have been imported.
     /// </summary>
-    public event EventHandler<ImportedEventArgs> Imported;
+    public event EventHandler<ImportedEventArgs>? Imported;
     /// <summary>
     /// Event triggered when virtual files were copied.
     /// </summary>
-    public event EventHandler<VirtualFileCopiedMovedEventArgs> VirtualFileCopied;
+    public event EventHandler<VirtualFileCopiedMovedEventArgs>? VirtualFileCopied;
     /// <summary>
     /// Event triggered when a virtual file has been deleted from the file system.
     /// </summary>
-    public event EventHandler<VirtualFileDeletedEventArgs> VirtualFileDeleted;
+    public event EventHandler<VirtualFileDeletedEventArgs>? VirtualFileDeleted;
     /// <summary>
     /// Event triggered when a virtual file has been opened for writing on the file system.
     /// </summary>
-    public event EventHandler<VirtualFileOpenedEventArgs> VirtualFileOpened;
+    public event EventHandler<VirtualFileOpenedEventArgs>? VirtualFileOpened;
     /// <summary>
     /// Event triggered when a virtual file has had its write stream closed.
     /// </summary>
-    public event EventHandler<VirtualFileClosedEventArgs> VirtualFileClosed;
+    public event EventHandler<VirtualFileClosedEventArgs>? VirtualFileClosed;
     /// <summary>
     /// Event triggered when a virtual file has been renamed.
     /// </summary>
-    public event EventHandler<VirtualFileRenamedEventArgs> VirtualFileRenamed;
+    public event EventHandler<VirtualFileRenamedEventArgs>? VirtualFileRenamed;
     /// <summary>
     /// Event triggered when virtual files were moved.
     /// </summary>
-    public event EventHandler<VirtualFileCopiedMovedEventArgs> VirtualFileMoved;
+    public event EventHandler<VirtualFileCopiedMovedEventArgs>? VirtualFileMoved;
 
     // The list of invalid file name characters.
     private readonly char[] _invalidFileNameChars = Path.GetInvalidFileNameChars();
@@ -170,11 +171,7 @@ public class GorgonFileSystemWriter
     // The notifier used to update the file system.
     private readonly IGorgonFileSystemNotifier _notifier;
     // The callback used to delete file system items.
-    private readonly Func<string, bool> _deleteAction;
-    // The buffer used to block copy a file.
-    private byte[] _writeBuffer;
-    // The buffer used for building a path.
-    private readonly StringBuilder _pathBuffer = new(1024);
+    private readonly Func<string, bool>? _deleteAction;
 
     /// <summary>
     /// Property to return the file system linked to this writable area.
@@ -201,21 +198,21 @@ public class GorgonFileSystemWriter
     /// <param name="dirToUpdate">The directory that will have its path updated.</param>
     /// <param name="pathToReplace">The path to replace.</param>
     /// <param name="pathReplacement">The path to use as the replacement.</param>
+    /// <param name="pathBuffer">The buffer used to generate the new path.</param>
     /// <returns>The updated path.</returns>
-    private string ReplacePath(IGorgonVirtualDirectory dirToUpdate, string pathToReplace, string pathReplacement)
+    private static string ReplacePath(IGorgonVirtualDirectory dirToUpdate, string pathToReplace, string pathReplacement, StringBuilder pathBuffer)
     {
-        _pathBuffer.Length = 0;
+        pathBuffer.Length = 0;
 
         if (dirToUpdate.Parent is not null)
         {
-            _pathBuffer.Append(dirToUpdate.FullPath);
-            _pathBuffer.Remove(0, pathToReplace.Length);
+            pathBuffer.Append(dirToUpdate.FullPath);
+            pathBuffer.Remove(0, pathToReplace.Length);
         }
 
-        // For the root directory, we only need to copy the files.
-        _pathBuffer.Insert(0, pathReplacement);
+        pathBuffer.Insert(0, pathReplacement);
 
-        return _pathBuffer.ToString();
+        return pathBuffer.ToString();
     }
 
     /// <summary>
@@ -264,6 +261,7 @@ public class GorgonFileSystemWriter
     /// <param name="virtDestPath">The virtual path for the destination.</param>
     /// <param name="inStream">The source stream to copy.</param>
     /// <param name="outStream">The destination stream for the file data.</param>
+    /// <param name="writeBuffer">The buffer used to hold a block of byte data for writing.</param>
     /// <param name="progressCallback">The callback method used to report progress.</param>
     /// <param name="cancelToken">The token used to cancel the operation.</param>
     /// <remarks>
@@ -271,9 +269,9 @@ public class GorgonFileSystemWriter
     /// This performs a block copy of a file from one location to another. These locations can be anywhere on the physical file system(s) and are not checked.  
     /// </para>
     /// </remarks>
-    private void BlockCopyStreams(string srcPath, string destPath, string virtDestPath, Stream inStream, Stream outStream, Action<string, double> progressCallback, CancellationToken cancelToken)
+    private void BlockCopyStreams(string srcPath, string destPath, string virtDestPath, Stream inStream, Stream outStream, byte[] writeBuffer, Action<string, double>? progressCallback, CancellationToken cancelToken)
     {
-        long maxBlockSize = _writeBuffer.Length;
+        long maxBlockSize = MaxBufferSize;
 
         progressCallback?.Invoke(srcPath, 0);
 
@@ -285,15 +283,15 @@ public class GorgonFileSystemWriter
         long fileSize = inStream.Length;
 
         // If we're under the size of the write buffer, then we can copy as-is, and we can report a 1:1 file copy.
-        if (fileSize <= maxBlockSize)
+        if (fileSize <= MaxBufferSize)
         {
-            inStream.CopyToStream(outStream, (int)fileSize, _writeBuffer);
+            inStream.CopyToStream(outStream, (int)fileSize, writeBuffer);
             progressCallback?.Invoke(srcPath, 1.0);
             return;
         }
 
         // Otherwise, we need to break up the file into chunks to get reporting of file copy progress.
-        long blockSize = (maxBlockSize.Min(fileSize));
+        long blockSize = maxBlockSize.Min(fileSize);
 
         while (fileSize > 0)
         {
@@ -319,7 +317,7 @@ public class GorgonFileSystemWriter
                 return;
             }
 
-            inStream.CopyToStream(outStream, (int)blockSize, _writeBuffer);
+            inStream.CopyToStream(outStream, (int)blockSize, writeBuffer);
             fileSize -= blockSize;
             blockSize = maxBlockSize.Min(fileSize);
 
@@ -332,6 +330,7 @@ public class GorgonFileSystemWriter
     /// </summary>
     /// <param name="srcFile">The file to copy.</param>
     /// <param name="destPath">The destination path on the physical file system to copy the file into.</param>
+    /// <param name="writeBuffer">The buffer used to hold a block of byte data.</param>
     /// <param name="progressCallback">The callback method used to report progress.</param>
     /// <param name="cancelToken">The token used to cancel the operation.</param>
     /// <remarks>
@@ -339,11 +338,15 @@ public class GorgonFileSystemWriter
     /// This performs a block copy of a file from one location to another. These locations can be anywhere on the physical file system(s) and are not checked.  
     /// </para>
     /// </remarks>
-    private void BlockCopyFileToPhysical(IGorgonVirtualFile srcFile, string destPath, Action<string, double> progressCallback, CancellationToken cancelToken)
+    private void BlockCopyFileToPhysical(IGorgonVirtualFile srcFile, string destPath, byte[] writeBuffer, Action<string, double>? progressCallback, CancellationToken cancelToken)
     {
-        using Stream inStream = srcFile.OpenStream();
+        using Stream? inStream = srcFile.OpenStream();
+
+        Debug.Assert(inStream is not null, $"File not found: {srcFile.FullPath}");
+
         using Stream outStream = File.Open(destPath, FileMode.Create, FileAccess.Write, FileShare.None);
-        BlockCopyStreams(srcFile.FullPath, destPath, null, inStream, outStream, progressCallback, cancelToken);
+
+        BlockCopyStreams(srcFile.FullPath, destPath, string.Empty, inStream, outStream, writeBuffer, progressCallback, cancelToken);
     }
 
     /// <summary>
@@ -351,6 +354,7 @@ public class GorgonFileSystemWriter
     /// </summary>
     /// <param name="srcFile">The file to copy from the physical file system.</param>
     /// <param name="destPath">The destination path on the virtual file system to copy the file into.</param>
+    /// <param name="writeBuffer">The buffer used to hold a block of byte data.</param>
     /// <param name="progressCallback">The callback method used to report progress.</param>
     /// <param name="cancelToken">The token used to cancel the operation.</param>
     /// <remarks>
@@ -358,11 +362,16 @@ public class GorgonFileSystemWriter
     /// This performs a block copy of a file from one location to another. These locations can be anywhere on the physical file system(s) and are not checked.  
     /// </para>
     /// </remarks>
-    private void BlockCopyFileFromPhysical(string srcFile, string destPath, Action<string, double> progressCallback, CancellationToken cancelToken)
+    private void BlockCopyFileFromPhysical(string srcFile, string destPath, byte[] writeBuffer, Action<string, double>? progressCallback, CancellationToken cancelToken)
     {
         using Stream inStream = File.Open(srcFile, FileMode.Open, FileAccess.Read, FileShare.Read);
         using Stream outStream = OpenStream(destPath, FileMode.Create);
-        BlockCopyStreams(srcFile, GetWriteFilePath(Path.GetDirectoryName(destPath), Path.GetFileName(destPath)), destPath, inStream, outStream, progressCallback, cancelToken);
+
+        string? dest = Path.GetDirectoryName(destPath);
+
+        Debug.Assert(dest is not null, "Destination path is null.");
+
+        BlockCopyStreams(srcFile, GetWriteFilePath(dest, Path.GetFileName(destPath)), destPath, inStream, outStream, writeBuffer, progressCallback, cancelToken);
     }
 
     /// <summary>
@@ -370,6 +379,7 @@ public class GorgonFileSystemWriter
     /// </summary>
     /// <param name="srcFile">The file to copy.</param>
     /// <param name="destPath">The destination path on the virtual file system to copy the file into.</param>
+    /// <param name="writeBuffer">The buffer used to hold a block of byte data.</param>
     /// <param name="progressCallback">The callback method used to report progress.</param>
     /// <param name="cancelToken">The token used to cancel the operation.</param>
     /// <remarks>
@@ -377,11 +387,19 @@ public class GorgonFileSystemWriter
     /// This performs a block copy of a file from one location to another. These locations can be anywhere on the physical file system(s) and are not checked.  
     /// </para>
     /// </remarks>
-    private void BlockCopyFile(IGorgonVirtualFile srcFile, string destPath, Action<string, double> progressCallback, CancellationToken cancelToken)
+    private void BlockCopyFile(IGorgonVirtualFile srcFile, string destPath, byte[] writeBuffer, Action<string, double>? progressCallback, CancellationToken cancelToken)
     {
-        using Stream inStream = srcFile.OpenStream();
+        using Stream? inStream = srcFile.OpenStream();
+
+        Debug.Assert(inStream is not null, $"File not found: {srcFile.FullPath}");
+
         using Stream outStream = OpenStream(destPath, FileMode.Create);
-        BlockCopyStreams(srcFile.FullPath, GetWriteFilePath(Path.GetDirectoryName(destPath), Path.GetFileName(destPath)), destPath, inStream, outStream, progressCallback, cancelToken);
+
+        string? dest = Path.GetDirectoryName(destPath);
+
+        Debug.Assert(dest is not null, "Destination path is null.");
+
+        BlockCopyStreams(srcFile.FullPath, GetWriteFilePath(dest, Path.GetFileName(destPath)), destPath, inStream, outStream, writeBuffer, progressCallback, cancelToken);
     }
 
     /// <summary>
@@ -569,7 +587,7 @@ public class GorgonFileSystemWriter
 
         IGorgonVirtualDirectory result = _notifier.NotifyDirectoryAdded(_mountPoint, path);
 
-        EventHandler<VirtualDirectoryAddedEventArgs> handler = VirtualDirectoryAdded;
+        EventHandler<VirtualDirectoryAddedEventArgs>? handler = VirtualDirectoryAdded;
         handler?.Invoke(this, new VirtualDirectoryAddedEventArgs(result));
 
         return result;
@@ -616,7 +634,7 @@ public class GorgonFileSystemWriter
     /// </para>
     /// </remarks>
     /// <seealso cref="IGorgonFileSystem.Refresh()"/>        
-    public void DeleteDirectory(string path, Action<string> onDelete = null, CancellationToken? cancelToken = null)
+    public void DeleteDirectory(string path, Action<string>? onDelete = null, CancellationToken? cancelToken = null)
     {
         ArgumentEmptyException.ThrowIfNullOrWhiteSpace(path);
 
@@ -649,7 +667,7 @@ public class GorgonFileSystemWriter
         {
             if (deletedFiles.Count > 0)
             {
-                EventHandler<VirtualFileDeletedEventArgs> fileDeleteHandler = VirtualFileDeleted;
+                EventHandler<VirtualFileDeletedEventArgs>? fileDeleteHandler = VirtualFileDeleted;
                 fileDeleteHandler?.Invoke(this, new VirtualFileDeletedEventArgs(deletedFiles));
             }
 
@@ -658,7 +676,7 @@ public class GorgonFileSystemWriter
                 return;
             }
 
-            EventHandler<VirtualDirectoryDeletedEventArgs> dirDeleteHandler = VirtualDirectoryDeleted;
+            EventHandler<VirtualDirectoryDeletedEventArgs>? dirDeleteHandler = VirtualDirectoryDeleted;
             dirDeleteHandler?.Invoke(this, new VirtualDirectoryDeletedEventArgs(deletedDirectories));
         }
 
@@ -763,7 +781,7 @@ public class GorgonFileSystemWriter
             return;
         }
 
-        EventHandler<VirtualFileDeletedEventArgs> handler = VirtualFileDeleted;
+        EventHandler<VirtualFileDeletedEventArgs>? handler = VirtualFileDeleted;
         handler?.Invoke(this, new VirtualFileDeletedEventArgs([file]));
     }
 
@@ -803,36 +821,21 @@ public class GorgonFileSystemWriter
     /// Calling this method will trigger the <see cref="VirtualFileDeleted"/> event.
     /// </para>
     /// </remarks>
-    public void DeleteFiles(IEnumerable<string> paths, Action<string> onDelete = null, CancellationToken? cancelToken = null)
+    public void DeleteFiles(IEnumerable<string> paths, Action<string>? onDelete = null, CancellationToken? cancelToken = null)
     {
-        IGorgonVirtualFile[] files = paths.Where(item => !string.IsNullOrWhiteSpace(item))
-                                              .Select(item => FileSystem.GetFile(item))
-                                              .ToArray();
-
-        if (files.Length == 0)
-        {
-            return;
-        }
-
         List<IGorgonVirtualFile> deletedFiles = [];
         cancelToken ??= CancellationToken.None;
 
-        for (int i = 0; i < files.Length; ++i)
+        foreach (string path in paths)
         {
             if (cancelToken.Value.IsCancellationRequested)
             {
                 break;
             }
 
-            IGorgonVirtualFile file = files[i];
+            IGorgonVirtualFile? file = FileSystem.GetFile(path) ?? throw new FileNotFoundException(string.Format(Resources.GORFS_ERR_FILE_NOT_FOUND, path));
+
             onDelete?.Invoke(file.FullPath);
-
-            if (file is null)
-            {
-                throw new FileNotFoundException(string.Format(Resources.GORFS_ERR_FILE_NOT_FOUND, file.FullPath));
-            }
-
-            string physicalPath = GetWriteFilePath(file.Directory.FullPath, file.Name);
 
             if (DeleteVirtualFile(file))
             {
@@ -840,7 +843,7 @@ public class GorgonFileSystemWriter
             }
         }
 
-        EventHandler<VirtualFileDeletedEventArgs> handler = VirtualFileDeleted;
+        EventHandler<VirtualFileDeletedEventArgs>? handler = VirtualFileDeleted;
         handler?.Invoke(this, new VirtualFileDeletedEventArgs(deletedFiles));
     }
 
@@ -891,7 +894,7 @@ public class GorgonFileSystemWriter
             _notifier.NotifyFileRenamed(_mountPoint, oldPath, new PhysicalFileInfo(_mountPoint, newPhysicalPath));
         }
 
-        EventHandler<VirtualFileRenamedEventArgs> handler = VirtualFileRenamed;
+        EventHandler<VirtualFileRenamedEventArgs>? handler = VirtualFileRenamed;
         handler?.Invoke(this, new VirtualFileRenamedEventArgs(file, oldName));
     }
 
@@ -954,7 +957,7 @@ public class GorgonFileSystemWriter
             _notifier.NotifyDirectoryRenamed(_mountPoint, oldPath, newPhysicalPath, newName);
         }
 
-        EventHandler<VirtualDirectoryRenamedEventArgs> handler = VirtualDirectoryRenamed;
+        EventHandler<VirtualDirectoryRenamedEventArgs>? handler = VirtualDirectoryRenamed;
         handler?.Invoke(this, new VirtualDirectoryRenamedEventArgs(directory, oldName));
     }
 
@@ -991,13 +994,13 @@ public class GorgonFileSystemWriter
     /// </para>
     /// </remarks>
     /// <seealso cref="GorgonCopyCallbackOptions"/>
-    public void MoveDirectory(string directoryPath, string destDirectoryPath, GorgonCopyCallbackOptions options = null)
+    public void MoveDirectory(string directoryPath, string destDirectoryPath, GorgonCopyCallbackOptions? options = null)
     {
         ArgumentEmptyException.ThrowIfNullOrWhiteSpace(directoryPath);
         ArgumentEmptyException.ThrowIfNullOrWhiteSpace(destDirectoryPath);
 
-        IGorgonVirtualDirectory srcDirectory = FileSystem.GetDirectory(directoryPath);
-        IGorgonVirtualDirectory destDirectory = FileSystem.GetDirectory(destDirectoryPath);
+        IGorgonVirtualDirectory? srcDirectory = FileSystem.GetDirectory(directoryPath);
+        IGorgonVirtualDirectory? destDirectory = FileSystem.GetDirectory(destDirectoryPath);
 
         if (srcDirectory is null)
         {
@@ -1026,18 +1029,18 @@ public class GorgonFileSystemWriter
             return;
         }
 
+        byte[] writeBuffer = ArrayPool<byte>.Shared.Rent(MaxBufferSize);
+        StringBuilder pathBuffer = new(1024);
+        List<(IGorgonVirtualDirectory src, IGorgonVirtualDirectory? dest)> dirsCopied = [];
+        List<(IGorgonVirtualFile src, IGorgonVirtualFile dest)> filesCopied = [];
+        CancellationToken cancelToken = options?.CancelToken ?? CancellationToken.None;
+        Action<string, double>? progressCallback = options?.ProgressCallback;
+        Func<string, string, FileConflictResolution>? conflictCallback = options?.ConflictResolutionCallback;
+        FileConflictResolution conflictRes = FileConflictResolution.Overwrite;
+
         try
         {
             PrepareWriteArea();
-
-            _writeBuffer = ArrayPool<byte>.Shared.Rent(MaxBufferSize);
-            StringBuilder pathBuffer = new(1024);
-            List<(IGorgonVirtualDirectory src, IGorgonVirtualDirectory dest)> dirsCopied = [];
-            List<(IGorgonVirtualFile src, IGorgonVirtualFile dest)> filesCopied = [];
-            CancellationToken cancelToken = options?.CancelToken ?? CancellationToken.None;
-            Action<string, double> progressCallback = options?.ProgressCallback;
-            Func<string, string, FileConflictResolution> conflictCallback = options?.ConflictResolutionCallback;
-            FileConflictResolution conflictRes = FileConflictResolution.Overwrite;
 
             // Function to fire the event when the move operation completes.
             void OnMoveComplete()
@@ -1047,7 +1050,7 @@ public class GorgonFileSystemWriter
                     return;
                 }
 
-                EventHandler<VirtualDirectoryCopiedMovedEventArgs> handler = VirtualDirectoryMoved;
+                EventHandler<VirtualDirectoryCopiedMovedEventArgs>? handler = VirtualDirectoryMoved;
                 handler?.Invoke(this, new VirtualDirectoryCopiedMovedEventArgs(destDirectory, dirsCopied, filesCopied));
             }
 
@@ -1077,12 +1080,12 @@ public class GorgonFileSystemWriter
                 }
 
                 IGorgonVirtualDirectory srcDir = dirsToCopy[i];
-                string destDirPath = ReplacePath(srcDir, (srcDirectory.Parent?.FullPath ?? srcDirectory.FullPath), destDirectory.FullPath);
+                string destDirPath = ReplacePath(srcDir, (srcDirectory.Parent?.FullPath ?? srcDirectory.FullPath), destDirectory.FullPath, pathBuffer);
 
                 progressCallback?.Invoke(srcDir.FullPath, 0);
 
                 // Create a new path for the copied files.
-                IGorgonVirtualDirectory destDir = FileSystem.GetDirectory(destDirPath);
+                IGorgonVirtualDirectory? destDir = FileSystem.GetDirectory(destDirPath);
 
                 if (destDir is null)
                 {
@@ -1090,7 +1093,7 @@ public class GorgonFileSystemWriter
                     dirsCopied.Add((srcDir, destDir));
                 }
 
-                if (!filesToCopy.TryGetValue(srcDir, out IEnumerable<IGorgonVirtualFile> files))
+                if (!filesToCopy.TryGetValue(srcDir, out IEnumerable<IGorgonVirtualFile>? files))
                 {
                     continue;
                 }
@@ -1130,7 +1133,7 @@ public class GorgonFileSystemWriter
                         }
                     }
 
-                    BlockCopyFile(srcFile, destFilePath, progressCallback, cancelToken);
+                    BlockCopyFile(srcFile, destFilePath, writeBuffer, progressCallback, cancelToken);
 
                     // Delete the source file, we won't need it anymore.                        
                     if ((File.Exists(srcFile.PhysicalFile.FullPath)) && (!_mountPoint.Provider.IsReadOnly))
@@ -1139,7 +1142,7 @@ public class GorgonFileSystemWriter
                     }
                     _notifier.NotifyFileDeleted(srcFile.FullPath);
 
-                    IGorgonVirtualFile destFile = FileSystem.GetFile(destFilePath);
+                    IGorgonVirtualFile? destFile = FileSystem.GetFile(destFilePath);
 
                     if ((destFile is not null) && (!cancelToken.IsCancellationRequested))
                     {
@@ -1156,14 +1159,14 @@ public class GorgonFileSystemWriter
                     continue;
                 }
 
-                string physicalPath = _mountPoint.Provider.MapToPhysicalPath(srcDir.FullPath, _mountPoint);
+                string physicalPath = _mountPoint.Provider.MapToPhysicalPath(srcDir.FullPath.AsSpan(), _mountPoint).ToString();
                 if ((Directory.Exists(physicalPath)) && (!_mountPoint.Provider.IsReadOnly))
                 {
                     Directory.Delete(physicalPath);
                 }
 
-                // If we deleted the directory and we haven't created one (because it probably already existed), then just add a src directory 
-                // so we can update the UI.
+                // If we deleted the directory and we haven't created one (because it probably already existed), then just add a src directory to the list to reflect
+                // the current state of the physical file system.
                 if (!dirsCopied.Contains((srcDir, null)))
                 {
                     dirsCopied.Add((srcDir, null));
@@ -1176,7 +1179,7 @@ public class GorgonFileSystemWriter
         }
         finally
         {
-            ArrayPool<byte>.Shared.Return(_writeBuffer, true);
+            ArrayPool<byte>.Shared.Return(writeBuffer, true);
         }
     }
 
@@ -1202,13 +1205,13 @@ public class GorgonFileSystemWriter
     /// </para>
     /// </remarks>
     /// <seealso cref="GorgonCopyCallbackOptions"/>
-    public void CopyDirectory(string directoryPath, string destDirectoryPath, GorgonCopyCallbackOptions options = null)
+    public void CopyDirectory(string directoryPath, string destDirectoryPath, GorgonCopyCallbackOptions? options = null)
     {
         ArgumentEmptyException.ThrowIfNullOrWhiteSpace(directoryPath);
         ArgumentEmptyException.ThrowIfNullOrWhiteSpace(destDirectoryPath);
 
-        IGorgonVirtualDirectory srcDirectory = FileSystem.GetDirectory(directoryPath);
-        IGorgonVirtualDirectory destDirectory = FileSystem.GetDirectory(destDirectoryPath);
+        IGorgonVirtualDirectory? srcDirectory = FileSystem.GetDirectory(directoryPath);
+        IGorgonVirtualDirectory? destDirectory = FileSystem.GetDirectory(destDirectoryPath);
 
         if (srcDirectory is null)
         {
@@ -1220,18 +1223,18 @@ public class GorgonFileSystemWriter
             throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, destDirectoryPath));
         }
 
+        byte[] writeBuffer = ArrayPool<byte>.Shared.Rent(MaxBufferSize);
+        StringBuilder pathBuffer = new(1024);
+        List<(IGorgonVirtualDirectory src, IGorgonVirtualDirectory? dest)> dirsCopied = [];
+        List<(IGorgonVirtualFile src, IGorgonVirtualFile dest)> filesCopied = [];
+        CancellationToken cancelToken = options?.CancelToken ?? CancellationToken.None;
+        Action<string, double>? progressCallback = options?.ProgressCallback;
+        Func<string, string, FileConflictResolution>? conflictCallback = options?.ConflictResolutionCallback;
+        FileConflictResolution conflictRes = FileConflictResolution.Overwrite;
+
         try
         {
             PrepareWriteArea();
-
-            _writeBuffer = ArrayPool<byte>.Shared.Rent(MaxBufferSize);
-            StringBuilder pathBuffer = new(1024);
-            List<(IGorgonVirtualDirectory src, IGorgonVirtualDirectory dest)> dirsCopied = [];
-            List<(IGorgonVirtualFile src, IGorgonVirtualFile dest)> filesCopied = [];
-            CancellationToken cancelToken = options?.CancelToken ?? CancellationToken.None;
-            Action<string, double> progressCallback = options?.ProgressCallback;
-            Func<string, string, FileConflictResolution> conflictCallback = options?.ConflictResolutionCallback;
-            FileConflictResolution conflictRes = FileConflictResolution.Overwrite;
 
             // Function to fire the event when the copy operation completes.
             void OnCopyComplete()
@@ -1241,7 +1244,7 @@ public class GorgonFileSystemWriter
                     return;
                 }
 
-                EventHandler<VirtualDirectoryCopiedMovedEventArgs> handler = VirtualDirectoryCopied;
+                EventHandler<VirtualDirectoryCopiedMovedEventArgs>? handler = VirtualDirectoryCopied;
                 handler?.Invoke(this, new VirtualDirectoryCopiedMovedEventArgs(destDirectory, dirsCopied, filesCopied));
             }
 
@@ -1271,12 +1274,12 @@ public class GorgonFileSystemWriter
                 }
 
                 IGorgonVirtualDirectory srcDir = dirsToCopy[i];
-                string destDirPath = ReplacePath(srcDir, (srcDirectory.Parent?.FullPath ?? srcDirectory.FullPath), destDirectory.FullPath);
+                string destDirPath = ReplacePath(srcDir, (srcDirectory.Parent?.FullPath ?? srcDirectory.FullPath), destDirectory.FullPath, pathBuffer);
 
                 progressCallback?.Invoke(srcDir.FullPath, 0);
 
                 // Create a new path for the copied files.
-                IGorgonVirtualDirectory destDir = FileSystem.GetDirectory(destDirPath);
+                IGorgonVirtualDirectory? destDir = FileSystem.GetDirectory(destDirPath);
 
                 if (destDir is null)
                 {
@@ -1284,7 +1287,7 @@ public class GorgonFileSystemWriter
                     dirsCopied.Add((srcDir, destDir));
                 }
 
-                if (!filesToCopy.TryGetValue(srcDir, out IEnumerable<IGorgonVirtualFile> files))
+                if (!filesToCopy.TryGetValue(srcDir, out IEnumerable<IGorgonVirtualFile>? files))
                 {
                     continue;
                 }
@@ -1329,8 +1332,8 @@ public class GorgonFileSystemWriter
                         }
                     }
 
-                    BlockCopyFile(file, destFilePath, progressCallback, cancelToken);
-                    IGorgonVirtualFile destFile = FileSystem.GetFile(destFilePath);
+                    BlockCopyFile(file, destFilePath, writeBuffer, progressCallback, cancelToken);
+                    IGorgonVirtualFile? destFile = FileSystem.GetFile(destFilePath);
 
                     if ((destFile is not null) && (!cancelToken.IsCancellationRequested))
                     {
@@ -1343,7 +1346,7 @@ public class GorgonFileSystemWriter
         }
         finally
         {
-            ArrayPool<byte>.Shared.Return(_writeBuffer);
+            ArrayPool<byte>.Shared.Return(writeBuffer);
         }
     }
 
@@ -1370,7 +1373,7 @@ public class GorgonFileSystemWriter
     /// </para>
     /// </remarks>
     /// <seealso cref="GorgonCopyCallbackOptions"/>
-    public void MoveFiles(IEnumerable<string> filePaths, string destDirectoryPath, GorgonCopyCallbackOptions options = null)
+    public void MoveFiles(IEnumerable<string> filePaths, string destDirectoryPath, GorgonCopyCallbackOptions? options = null)
     {
         ArgumentEmptyException.ThrowIfNullOrWhiteSpace(destDirectoryPath);
 
@@ -1396,17 +1399,16 @@ public class GorgonFileSystemWriter
             return;
         }
 
+        byte[] writeBuffer = ArrayPool<byte>.Shared.Rent(MaxBufferSize);
+        List<(IGorgonVirtualFile src, IGorgonVirtualFile dest)> filesCopied = [];
+        CancellationToken cancelToken = options?.CancelToken ?? CancellationToken.None;
+        Action<string, double>? progressCallback = options?.ProgressCallback;
+        Func<string, string, FileConflictResolution>? conflictCallback = options?.ConflictResolutionCallback;
+        FileConflictResolution conflictRes = FileConflictResolution.Overwrite;
+
         try
         {
             PrepareWriteArea();
-
-            _writeBuffer = ArrayPool<byte>.Shared.Rent(MaxBufferSize);
-            StringBuilder pathBuffer = new(1024);
-            List<(IGorgonVirtualFile src, IGorgonVirtualFile dest)> filesCopied = [];
-            CancellationToken cancelToken = options?.CancelToken ?? CancellationToken.None;
-            Action<string, double> progressCallback = options?.ProgressCallback;
-            Func<string, string, FileConflictResolution> conflictCallback = options?.ConflictResolutionCallback;
-            FileConflictResolution conflictRes = FileConflictResolution.Overwrite;
 
             // Function to fire the event when the move operation completes.
             void OnMoveComplete()
@@ -1416,7 +1418,7 @@ public class GorgonFileSystemWriter
                     return;
                 }
 
-                EventHandler<VirtualFileCopiedMovedEventArgs> handler = VirtualFileMoved;
+                EventHandler<VirtualFileCopiedMovedEventArgs>? handler = VirtualFileMoved;
                 handler?.Invoke(this, new VirtualFileCopiedMovedEventArgs(destDirectory, filesCopied));
             }
 
@@ -1463,7 +1465,7 @@ public class GorgonFileSystemWriter
                     }
                 }
 
-                BlockCopyFile(srcFile, destFilePath, progressCallback, cancelToken);
+                BlockCopyFile(srcFile, destFilePath, writeBuffer, progressCallback, cancelToken);
 
                 // Delete the source file, we won't need it anymore.                        
                 if ((File.Exists(srcFile.PhysicalFile.FullPath)) && (!_mountPoint.Provider.IsReadOnly))
@@ -1472,7 +1474,7 @@ public class GorgonFileSystemWriter
                 }
                 _notifier.NotifyFileDeleted(srcFile.FullPath);
 
-                IGorgonVirtualFile destFile = FileSystem.GetFile(destFilePath);
+                IGorgonVirtualFile? destFile = FileSystem.GetFile(destFilePath);
 
                 if ((destFile is not null) && (!cancelToken.IsCancellationRequested))
                 {
@@ -1484,7 +1486,7 @@ public class GorgonFileSystemWriter
         }
         finally
         {
-            ArrayPool<byte>.Shared.Return(_writeBuffer, true);
+            ArrayPool<byte>.Shared.Return(writeBuffer, true);
         }
     }
 
@@ -1511,7 +1513,7 @@ public class GorgonFileSystemWriter
     /// </para>
     /// </remarks>
     /// <seealso cref="GorgonCopyCallbackOptions"/>
-    public void CopyFiles(IEnumerable<string> filePaths, string destDirectoryPath, GorgonCopyCallbackOptions options = null)
+    public void CopyFiles(IEnumerable<string> filePaths, string destDirectoryPath, GorgonCopyCallbackOptions? options = null)
     {
         ArgumentEmptyException.ThrowIfNullOrWhiteSpace(destDirectoryPath);
 
@@ -1531,17 +1533,16 @@ public class GorgonFileSystemWriter
             return;
         }
 
+        byte[] writeBuffer = ArrayPool<byte>.Shared.Rent(MaxBufferSize);
+        List<(IGorgonVirtualFile src, IGorgonVirtualFile dest)> filesCopied = [];
+        CancellationToken cancelToken = options?.CancelToken ?? CancellationToken.None;
+        Action<string, double>? progressCallback = options?.ProgressCallback;
+        Func<string, string, FileConflictResolution>? conflictCallback = options?.ConflictResolutionCallback;
+        FileConflictResolution conflictRes = FileConflictResolution.Overwrite;
+
         try
         {
             PrepareWriteArea();
-
-            _writeBuffer = ArrayPool<byte>.Shared.Rent(MaxBufferSize);
-            StringBuilder pathBuffer = new(1024);
-            List<(IGorgonVirtualFile src, IGorgonVirtualFile dest)> filesCopied = [];
-            CancellationToken cancelToken = options?.CancelToken ?? CancellationToken.None;
-            Action<string, double> progressCallback = options?.ProgressCallback;
-            Func<string, string, FileConflictResolution> conflictCallback = options?.ConflictResolutionCallback;
-            FileConflictResolution conflictRes = FileConflictResolution.Overwrite;
 
             // Function to fire the event when the copy operation completes.
             void OnCopyComplete()
@@ -1551,7 +1552,7 @@ public class GorgonFileSystemWriter
                     return;
                 }
 
-                EventHandler<VirtualFileCopiedMovedEventArgs> handler = VirtualFileCopied;
+                EventHandler<VirtualFileCopiedMovedEventArgs>? handler = VirtualFileCopied;
                 handler?.Invoke(this, new VirtualFileCopiedMovedEventArgs(destDirectory, filesCopied));
             }
 
@@ -1612,8 +1613,8 @@ public class GorgonFileSystemWriter
                     }
                 }
 
-                BlockCopyFile(file, destFilePath, progressCallback, cancelToken);
-                IGorgonVirtualFile destFile = FileSystem.GetFile(destFilePath);
+                BlockCopyFile(file, destFilePath, writeBuffer, progressCallback, cancelToken);
+                IGorgonVirtualFile? destFile = FileSystem.GetFile(destFilePath);
 
                 if ((destFile is not null) && (!cancelToken.IsCancellationRequested))
                 {
@@ -1625,7 +1626,7 @@ public class GorgonFileSystemWriter
         }
         finally
         {
-            ArrayPool<byte>.Shared.Return(_writeBuffer, true);
+            ArrayPool<byte>.Shared.Return(writeBuffer, true);
         }
     }
 
@@ -1649,7 +1650,7 @@ public class GorgonFileSystemWriter
     /// </para>
     /// </remarks>
     /// <seealso cref="GorgonCopyCallbackOptions"/>
-    public void ExportFiles(IEnumerable<string> filePaths, string destDirectoryPath, GorgonCopyCallbackOptions options = null)
+    public void ExportFiles(IEnumerable<string> filePaths, string destDirectoryPath, GorgonCopyCallbackOptions? options = null)
     {
         ArgumentEmptyException.ThrowIfNullOrWhiteSpace(destDirectoryPath);
 
@@ -1672,15 +1673,14 @@ public class GorgonFileSystemWriter
             return;
         }
 
+        byte[] writeBuffer = ArrayPool<byte>.Shared.Rent(MaxBufferSize);
+        CancellationToken cancelToken = options?.CancelToken ?? CancellationToken.None;
+        Action<string, double>? progressCallback = options?.ProgressCallback;
+        Func<string, string, FileConflictResolution>? conflictCallback = options?.ConflictResolutionCallback;
+        FileConflictResolution conflictRes = FileConflictResolution.Overwrite;
+
         try
         {
-            _writeBuffer = ArrayPool<byte>.Shared.Rent(MaxBufferSize);
-            StringBuilder pathBuffer = new(1024);
-            CancellationToken cancelToken = options?.CancelToken ?? CancellationToken.None;
-            Action<string, double> progressCallback = options?.ProgressCallback;
-            Func<string, string, FileConflictResolution> conflictCallback = options?.ConflictResolutionCallback;
-            FileConflictResolution conflictRes = FileConflictResolution.Overwrite;
-
             progressCallback?.Invoke(files[0].FullPath, 0);
 
             if (cancelToken.IsCancellationRequested)
@@ -1726,12 +1726,12 @@ public class GorgonFileSystemWriter
                     }
                 }
 
-                BlockCopyFileToPhysical(file, destFilePath, progressCallback, cancelToken);
+                BlockCopyFileToPhysical(file, destFilePath, writeBuffer, progressCallback, cancelToken);
             }
         }
         finally
         {
-            ArrayPool<byte>.Shared.Return(_writeBuffer, true);
+            ArrayPool<byte>.Shared.Return(writeBuffer, true);
         }
     }
 
@@ -1754,7 +1754,7 @@ public class GorgonFileSystemWriter
     /// </para>
     /// </remarks>
     /// <seealso cref="GorgonCopyCallbackOptions"/>
-    public void ExportDirectory(string directoryPath, string destDirectoryPath, GorgonCopyCallbackOptions options = null)
+    public void ExportDirectory(string directoryPath, string destDirectoryPath, GorgonCopyCallbackOptions? options = null)
     {
         ArgumentEmptyException.ThrowIfNullOrWhiteSpace(directoryPath);
         ArgumentEmptyException.ThrowIfNullOrWhiteSpace(destDirectoryPath);
@@ -1766,15 +1766,14 @@ public class GorgonFileSystemWriter
             throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, destDirectoryPath));
         }
 
+        byte[] writeBuffer = ArrayPool<byte>.Shared.Rent(MaxBufferSize);
+        CancellationToken cancelToken = options?.CancelToken ?? CancellationToken.None;
+        Action<string, double>? progressCallback = options?.ProgressCallback;
+        Func<string, string, FileConflictResolution>? conflictCallback = options?.ConflictResolutionCallback;
+        FileConflictResolution conflictRes = FileConflictResolution.Overwrite;
+
         try
         {
-            _writeBuffer = ArrayPool<byte>.Shared.Rent(MaxBufferSize);
-            StringBuilder pathBuffer = new(1024);
-            CancellationToken cancelToken = options?.CancelToken ?? CancellationToken.None;
-            Action<string, double> progressCallback = options?.ProgressCallback;
-            Func<string, string, FileConflictResolution> conflictCallback = options?.ConflictResolutionCallback;
-            FileConflictResolution conflictRes = FileConflictResolution.Overwrite;
-
             progressCallback?.Invoke(srcDirectory.FullPath, 0);
 
             if (cancelToken.IsCancellationRequested)
@@ -1809,7 +1808,7 @@ public class GorgonFileSystemWriter
                     Directory.CreateDirectory(destDirPath);
                 }
 
-                if (!filesToCopy.TryGetValue(srcDir, out IEnumerable<IGorgonVirtualFile> files))
+                if (!filesToCopy.TryGetValue(srcDir, out IEnumerable<IGorgonVirtualFile>? files))
                 {
                     continue;
                 }
@@ -1853,13 +1852,13 @@ public class GorgonFileSystemWriter
                         }
                     }
 
-                    BlockCopyFileToPhysical(file, destFilePath, progressCallback, cancelToken);
+                    BlockCopyFileToPhysical(file, destFilePath, writeBuffer, progressCallback, cancelToken);
                 }
             }
         }
         finally
         {
-            ArrayPool<byte>.Shared.Return(_writeBuffer, true);
+            ArrayPool<byte>.Shared.Return(writeBuffer, true);
         }
     }
 
@@ -1882,7 +1881,7 @@ public class GorgonFileSystemWriter
     /// </para>
     /// </remarks>
     /// <seealso cref="GorgonCopyCallbackOptions"/>
-    public void Import(IReadOnlyList<string> paths, string destDirectoryPath, GorgonCopyCallbackOptions options = null)
+    public void Import(IReadOnlyList<string> paths, string destDirectoryPath, GorgonCopyCallbackOptions? options = null)
     {
         ArgumentEmptyException.ThrowIfNullOrWhiteSpace(destDirectoryPath);
 
@@ -1893,18 +1892,17 @@ public class GorgonFileSystemWriter
 
         IGorgonVirtualDirectory destDirectory = FileSystem.GetDirectory(destDirectoryPath) ?? throw new DirectoryNotFoundException(string.Format(Resources.GORFS_ERR_DIRECTORY_NOT_FOUND, destDirectoryPath));
 
+        byte[] writeBuffer = ArrayPool<byte>.Shared.Rent(MaxBufferSize);
+        List<IGorgonVirtualDirectory> dirsCopied = [];
+        List<IGorgonVirtualFile> filesCopied = [];
+        CancellationToken cancelToken = options?.CancelToken ?? CancellationToken.None;
+        Action<string, double>? progressCallback = options?.ProgressCallback;
+        Func<string, string, FileConflictResolution>? conflictCallback = options?.ConflictResolutionCallback;
+        FileConflictResolution conflictRes = FileConflictResolution.Overwrite;
+
         try
         {
             PrepareWriteArea();
-
-            _writeBuffer = ArrayPool<byte>.Shared.Rent(MaxBufferSize);
-            StringBuilder pathBuffer = new(1024);
-            List<IGorgonVirtualDirectory> dirsCopied = [];
-            List<IGorgonVirtualFile> filesCopied = [];
-            CancellationToken cancelToken = options?.CancelToken ?? CancellationToken.None;
-            Action<string, double> progressCallback = options?.ProgressCallback;
-            Func<string, string, FileConflictResolution> conflictCallback = options?.ConflictResolutionCallback;
-            FileConflictResolution conflictRes = FileConflictResolution.Overwrite;
 
             // Function to fire the event when the copy operation completes.
             void OnCopyComplete()
@@ -1914,7 +1912,7 @@ public class GorgonFileSystemWriter
                     return;
                 }
 
-                EventHandler<ImportedEventArgs> handler = Imported;
+                EventHandler<ImportedEventArgs>? handler = Imported;
                 handler?.Invoke(this, new ImportedEventArgs(destDirectory, dirsCopied, filesCopied));
             }
 
@@ -1952,11 +1950,14 @@ public class GorgonFileSystemWriter
                 return;
             }
 
-            DirectoryInfo importParent = dirsToCopy.Count == 0 ? filesToCopy[0].Directory : dirsToCopy[0].Parent;
+            DirectoryInfo? importParent = dirsToCopy.Count == 0 ? filesToCopy[0].Directory : dirsToCopy[0].Parent;
+
+            Debug.Assert(importParent is not null, "The parent import directory was not found.");
+
             FileImportingArgs beforeArgs = new();
 
             // Copies the files from the import directory.
-            bool CopyFiles(DirectoryInfo parent, IReadOnlyList<FileInfo> files, IGorgonVirtualDirectory destDir)
+            bool CopyFiles(IReadOnlyList<FileInfo> files, IGorgonVirtualDirectory destDir)
             {
                 // Copy files for the current directory.
                 foreach (FileInfo file in files)
@@ -1966,7 +1967,7 @@ public class GorgonFileSystemWriter
                         return false;
                     }
 
-                    EventHandler<FileImportingArgs> beforeHandler = FileImporting;
+                    EventHandler<FileImportingArgs>? beforeHandler = FileImporting;
                     beforeArgs.PhysicalFilePath = file.FullName;
 
                     if (beforeHandler is not null)
@@ -2013,12 +2014,12 @@ public class GorgonFileSystemWriter
                         }
                     }
 
-                    BlockCopyFileFromPhysical(beforeArgs.PhysicalFilePath, destFilePath, progressCallback, cancelToken);
-                    IGorgonVirtualFile destFile = FileSystem.GetFile(destFilePath);
+                    BlockCopyFileFromPhysical(beforeArgs.PhysicalFilePath, destFilePath, writeBuffer, progressCallback, cancelToken);
+                    IGorgonVirtualFile? destFile = FileSystem.GetFile(destFilePath);
 
                     if ((destFile is not null) && (!cancelToken.IsCancellationRequested))
                     {
-                        EventHandler<FileImportedArgs> afterHandler = FileImported;
+                        EventHandler<FileImportedArgs>? afterHandler = FileImported;
                         afterHandler?.Invoke(this, new FileImportedArgs(beforeArgs.PhysicalFilePath, destFile));
                         filesCopied.Add(destFile);
                     }
@@ -2029,7 +2030,7 @@ public class GorgonFileSystemWriter
 
             if (filesToCopy.Count > 0)
             {
-                if (!CopyFiles(importParent, filesToCopy, destDirectory))
+                if (!CopyFiles(filesToCopy, destDirectory))
                 {
                     dirsToCopy.Clear();
                 }
@@ -2062,7 +2063,7 @@ public class GorgonFileSystemWriter
                 progressCallback?.Invoke(srcDir.FullName, 0);
 
                 // Create a new path for the copied files.
-                IGorgonVirtualDirectory destDir = FileSystem.GetDirectory(destDirPath);
+                IGorgonVirtualDirectory? destDir = FileSystem.GetDirectory(destDirPath);
 
                 if (destDir is null)
                 {
@@ -2075,7 +2076,7 @@ public class GorgonFileSystemWriter
 
                 if (filesToCopy.Count != 0)
                 {
-                    if (!CopyFiles(srcDir, filesToCopy, destDir))
+                    if (!CopyFiles(filesToCopy, destDir))
                     {
                         break;
                     }
@@ -2086,7 +2087,7 @@ public class GorgonFileSystemWriter
         }
         finally
         {
-            ArrayPool<byte>.Shared.Return(_writeBuffer, true);
+            ArrayPool<byte>.Shared.Return(writeBuffer, true);
         }
     }
 
@@ -2123,7 +2124,7 @@ public class GorgonFileSystemWriter
     {
         ArgumentEmptyException.ThrowIfNullOrWhiteSpace(path);
 
-        string directoryPath = Path.GetDirectoryName(path);
+        string? directoryPath = Path.GetDirectoryName(path);
         string fileName = Path.GetFileName(path);
 
         directoryPath = string.IsNullOrWhiteSpace(directoryPath) ? "/" : directoryPath.FormatDirectory('/');
@@ -2137,7 +2138,7 @@ public class GorgonFileSystemWriter
 
         fileName = fileName.FormatFileName();
 
-        IGorgonVirtualFile file = FileSystem.GetFile(path);
+        IGorgonVirtualFile? file = FileSystem.GetFile(path);
 
         // We're opening an existing file, so check it if we require the file to be present.
         if ((file is null) && ((mode == FileMode.Truncate) || (mode == FileMode.Open)))
@@ -2152,20 +2153,18 @@ public class GorgonFileSystemWriter
             IGorgonPhysicalFileInfo fileInfo = new PhysicalFileInfo(_mountPoint, stream.Name);
             IGorgonVirtualFile updatedFile = _notifier.NotifyFileWriteStreamClosed(_mountPoint, fileInfo);
 
-            EventHandler<VirtualFileClosedEventArgs> closeHandler = VirtualFileClosed;
+            EventHandler<VirtualFileClosedEventArgs>? closeHandler = VirtualFileClosed;
             closeHandler?.Invoke(this, new VirtualFileClosedEventArgs(updatedFile, file is null));
         }
 
         PrepareWriteArea();
 
-        FileStream result = null;
-
-        result = new FileSystemWriteStream(GetWriteFilePath(directory.FullPath, fileName), mode)
+        FileStream result = new FileSystemWriteStream(GetWriteFilePath(directory.FullPath, fileName), mode)
         {
             OnCloseCallback = OnStreamClose
         };
 
-        EventHandler<VirtualFileOpenedEventArgs> handler = VirtualFileOpened;
+        EventHandler<VirtualFileOpenedEventArgs>? handler = VirtualFileOpened;
         handler?.Invoke(this, new VirtualFileOpenedEventArgs(file, result));
 
         return result;
@@ -2193,7 +2192,7 @@ public class GorgonFileSystemWriter
     /// If the <paramref name="deleteAction"/> is left as <b>null</b>, then the file system item is erased from the file system.
     /// </para>
     /// </remarks>
-    public GorgonFileSystemWriter(IGorgonFileSystem fileSystem, IGorgonFileSystemNotifier notifier, string writeLocation, Func<string, bool> deleteAction = null)
+    public GorgonFileSystemWriter(IGorgonFileSystem fileSystem, IGorgonFileSystemNotifier notifier, string writeLocation, Func<string, bool>? deleteAction = null)
     {
         ArgumentEmptyException.ThrowIfNullOrWhiteSpace(writeLocation);
 

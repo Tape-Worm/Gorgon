@@ -23,6 +23,7 @@
 // Created: Monday, June 27, 2011 9:00:18 AM
 // 
 
+using System.Buffers;
 using Gorgon.Core;
 using Gorgon.IO.Properties;
 using Gorgon.PlugIns;
@@ -60,6 +61,9 @@ namespace Gorgon.IO.Providers;
 internal sealed class FolderFileSystemProvider
     : GorgonFileSystemProvider
 {
+    // The physical file system path separator.
+    private static readonly char[] _physicalSeparator = [Path.DirectorySeparatorChar];
+
     /// <summary>Property to return whether this provider only gives read only access to the physical file system.</summary>
     public override bool IsReadOnly => false;
 
@@ -70,7 +74,7 @@ internal sealed class FolderFileSystemProvider
     /// <param name="mountPoint">The mount point to remap the file paths to.</param>
     /// <param name="recurse"><b>true</b> to recursively retrieve files, <b>false</b> to retrieve only the files in the physical location.</param>
     /// <returns>A read only list of <see cref="IGorgonPhysicalFileInfo"/> entries.</returns>
-    private static IGorgonPhysicalFileInfo[] OnEnumerateFiles(string physicalLocation, IGorgonVirtualDirectory mountPoint, bool recurse)
+    private IGorgonPhysicalFileInfo[] OnEnumerateFiles(string physicalLocation, IGorgonVirtualDirectory mountPoint, bool recurse)
     {
         DirectoryInfo directoryInfo = new(physicalLocation);
 
@@ -85,9 +89,9 @@ internal sealed class FolderFileSystemProvider
         return files.Select(file =>
                             new PhysicalFileInfo(file,
                                                  physicalLocation,
-                                                 MapToVirtualPath(file.DirectoryName.FormatDirectory(Path.DirectorySeparatorChar) + file.Name,
-                                                                  physicalLocation,
-                                                                  mountPoint.FullPath)))
+                                                 MapToVirtualPath(file.FullName.AsSpan().FormatPath(PhysicalPathSeparator),
+                                                                  physicalLocation.AsSpan(),
+                                                                  mountPoint.FullPath.AsSpan()).ToString()))
                     .Cast<IGorgonPhysicalFileInfo>()
                     .ToArray();
     }
@@ -109,11 +113,62 @@ internal sealed class FolderFileSystemProvider
                              (item.Attributes & FileAttributes.Hidden) != FileAttributes.Hidden &&
                              (item.Attributes & FileAttributes.System) != FileAttributes.System);
 
-        return directories.Select(item => MapToVirtualPath(item.FullName.FormatDirectory(Path.DirectorySeparatorChar),
-                                                           physicalLocation,
-                                                           mountPoint.FullPath))
+        return directories.Select(item => MapToVirtualPath(item.FullName.AsSpan().FormatDirectory(Path.DirectorySeparatorChar),
+                                                           physicalLocation.AsSpan(),
+                                                           mountPoint.FullPath.AsSpan()).ToString())
                           .ToArray();
     }
+
+    /// <summary>
+    /// Function to return the virtual file system path from a physical file system path.
+    /// </summary>
+    /// <param name="physicalPath">Physical path to the file/folder.</param>
+    /// <param name="physicalRoot">Location of the physical folder holding the root for the virtual file system.</param>
+    /// <param name="mountPoint">Path to the mount point.</param>
+    /// <returns>The virtual file system path.</returns>
+    private static ReadOnlySpan<char> MapToVirtualPath(ReadOnlySpan<char> physicalPath, ReadOnlySpan<char> physicalRoot, ReadOnlySpan<char> mountPoint)
+    {
+        if ((physicalPath.IsEmpty)
+            || (physicalRoot.IsEmpty)
+            || (mountPoint.IsEmpty))
+        {
+            return [];
+        }
+
+        if (!Path.IsPathRooted(physicalPath))
+        {
+            physicalPath = Path.GetFullPath(physicalPath.ToString()).AsSpan();
+        }
+
+        physicalPath = physicalPath[physicalRoot.Length..];
+        char[] buffer = new char[mountPoint.Length + physicalPath.Length];
+        Span<char> result = buffer.AsSpan();
+
+        mountPoint.CopyTo(result);
+        physicalPath.CopyTo(result[mountPoint.Length..]);
+
+        // We can only format on read only spans.
+        physicalPath = result;
+
+        if (physicalPath.EndsWith(_physicalSeparator, StringComparison.Ordinal))
+        {
+            physicalPath = physicalPath.FormatDirectory(GorgonFileSystem.DirectorySeparator);
+        }
+        else
+        {
+            physicalPath = physicalPath.FormatPath(GorgonFileSystem.DirectorySeparator);
+        }
+
+        return physicalPath;
+    }
+
+    /// <summary>
+    /// Function to return the virtual file system path from a physical file system path.
+    /// </summary>
+    /// <param name="physicalPath">Physical path to the file/folder.</param>
+    /// <param name="mountPoint">The mount point used to map the physical path.</param>
+    /// <returns>The virtual file system path.</returns>
+    protected override ReadOnlySpan<char> OnMapToVirtualPath(ReadOnlySpan<char> physicalPath, GorgonFileSystemMountPoint mountPoint) => MapToVirtualPath(physicalPath, mountPoint.PhysicalPath.AsSpan(), mountPoint.MountLocation.AsSpan());
 
     /// <summary>
     /// Function to open a stream to a file on the physical file system from the <see cref="IGorgonVirtualFile"/> passed in.
@@ -134,7 +189,7 @@ internal sealed class FolderFileSystemProvider
     /// return a stream into the zip file positioned at the location of the compressed file within the zip file).
     /// </para>
     /// </remarks>
-    protected override GorgonFileSystemStream OnOpenFileStream(IGorgonVirtualFile file) => !File.Exists(file.PhysicalFile.FullPath) ? null : new GorgonFileSystemStream(file, File.Open(file.PhysicalFile.FullPath, FileMode.Open, FileAccess.Read, FileShare.Read));
+    protected override GorgonFileSystemStream? OnOpenFileStream(IGorgonVirtualFile file) => !File.Exists(file.PhysicalFile.FullPath) ? null : new GorgonFileSystemStream(file, File.Open(file.PhysicalFile.FullPath, FileMode.Open, FileAccess.Read, FileShare.Read));
 
     /// <summary>
     /// Function to determine if a physical file system can be read by this provider.
@@ -185,14 +240,19 @@ internal sealed class FolderFileSystemProvider
     /// <param name="virtualPath">Virtual path to the file/folder.</param>
     /// <param name="mountPoint">The mount point used to map the physical path.</param>
     /// <returns>The physical file system path.</returns>
-    protected override string OnGetPhysicalPath(string virtualPath, GorgonFileSystemMountPoint mountPoint)
+    protected override ReadOnlySpan<char> OnGetPhysicalPath(ReadOnlySpan<char> virtualPath, GorgonFileSystemMountPoint mountPoint)
     {
-        StringBuilder result = new(virtualPath, 256);
+        ReadOnlySpan<char> mountPointPhysPath = mountPoint.PhysicalPath.AsSpan().FormatDirectory(PhysicalPathSeparator);
+        int stringSize = virtualPath.Length + mountPointPhysPath.Length;
 
-        result.Replace("/", GorgonFileSystem.PhysicalDirSeparator);
-        result.Insert(0, mountPoint.PhysicalPath.FormatDirectory(GorgonFileSystem.PhysicalDirSeparator[0]));
+        char[] buffer = new char[stringSize];
+        Span<char> result = buffer.AsSpan();
 
-        return result.ToString();
+        virtualPath.CopyTo(result[mountPointPhysPath.Length..]);
+        result.Replace(GorgonFileSystem.DirectorySeparator, PhysicalPathSeparator);
+        mountPointPhysPath.CopyTo(result);
+
+        return result;
     }
 
     /// <summary>Function to enumerate the files for a given directory.</summary>
@@ -221,9 +281,9 @@ internal sealed class FolderFileSystemProvider
                                     (item.Attributes & FileAttributes.Encrypted) != FileAttributes.Encrypted &&
                                     (item.Attributes & FileAttributes.Device) != FileAttributes.Device)
                             .Select(item => new PhysicalFileInfo(item, physicalLocation,
-                                                                MapToVirtualPath(item.DirectoryName.FormatDirectory(Path.DirectorySeparatorChar) + item.Name,
-                                                                physicalLocation,
-                                                                mountPoint.FullPath)))
+                                                                MapToVirtualPath(item.FullName.AsSpan().FormatPath(PhysicalPathSeparator),
+                                                                physicalLocation.AsSpan(),
+                                                                mountPoint.FullPath.AsSpan()).ToString()))
                             .ToDictionary(k => k.VirtualPath, v => (IGorgonPhysicalFileInfo)v, StringComparer.OrdinalIgnoreCase);
     }
 

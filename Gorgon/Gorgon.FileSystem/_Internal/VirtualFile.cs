@@ -75,7 +75,7 @@ internal class VirtualFile
     /// <summary>
     /// Property to return the file system that owns this file.
     /// </summary>
-    public IGorgonFileSystem FileSystem => Directory?.FileSystem;
+    public IGorgonFileSystem FileSystem => Directory.FileSystem;
 
     /// <summary>
     /// Property to return the physical file information for this virtual file.
@@ -92,7 +92,11 @@ internal class VirtualFile
     /// <summary>
     /// Property to return the full path to the file in the <see cref="IGorgonFileSystem"/>.
     /// </summary>
-    public string FullPath => Directory is null ? Name : Directory.FullPath + Name;
+    public string FullPath
+    {
+        get;
+        private set;
+    }
 
     /// <summary>
     /// Property to return the mount point for this file.
@@ -155,10 +159,6 @@ internal class VirtualFile
     /// <summary>
     /// Property to return the name of this object.
     /// </summary>
-    /// <remarks>
-    /// For best practises, the name should only be set once during the lifetime of an object. Hence, this interface only provides a read-only implementation of this 
-    /// property.
-    /// </remarks>
     public string Name => PhysicalFile.Name;
 
     /// <summary>
@@ -168,7 +168,28 @@ internal class VirtualFile
     /// <remarks>
     /// This will open a <see cref="Stream"/> to the physical file for reading. Applications that open a stream to a file are responsible for closing the <see cref="Stream"/> when they are done.
     /// </remarks>
-    public Stream OpenStream() => MountPoint.Provider.OpenFileStream(this);
+    public Stream? OpenStream() => MountPoint.Provider.OpenFileStream(this);
+
+    /// <summary>
+    /// Function to refresh the file information.
+    /// </summary>
+    public void Refresh()
+    {
+        int stringLen = Directory.FullPath.Length + Name.Length;
+
+        if (stringLen > 1024)
+        {
+            FullPath = Directory.FullPath + Name;
+            return;
+        }
+
+        Span<char> result = stackalloc char[stringLen];
+
+        Directory.FullPath.AsSpan().CopyTo(result);
+        Name.AsSpan().CopyTo(result[stringLen..]);
+
+        FullPath = result.ToString();
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="VirtualFile"/> class.
@@ -184,5 +205,6 @@ internal class VirtualFile
         Extension = Path.GetExtension(fileInfo.Name);
         BaseFileName = Path.GetFileNameWithoutExtension(fileInfo.Name);
         MountPoint = mountPoint;
+        FullPath = parent.FullPath + Name;
     }
 }

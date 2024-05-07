@@ -38,5 +38,5 @@ public class FileImportingArgs
     {
         get;
         set;
-    }
+    } = string.Empty;
 }

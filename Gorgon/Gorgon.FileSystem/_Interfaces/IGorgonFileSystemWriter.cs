@@ -101,59 +101,59 @@ public interface IGorgonFileSystemWriter<out T>
     /// <summary>
     /// Event triggered when a virtual directory has been added to the file system.
     /// </summary>
-    event EventHandler<VirtualDirectoryAddedEventArgs> VirtualDirectoryAdded;
+    event EventHandler<VirtualDirectoryAddedEventArgs>? VirtualDirectoryAdded;
     /// <summary>
     /// Event triggered when a virtual directory has been deleted from the file system.
     /// </summary>
-    event EventHandler<VirtualDirectoryDeletedEventArgs> VirtualDirectoryDeleted;
+    event EventHandler<VirtualDirectoryDeletedEventArgs>? VirtualDirectoryDeleted;
     /// <summary>
     /// Event triggered when a virtual directory has been renamed.
     /// </summary>
-    event EventHandler<VirtualDirectoryRenamedEventArgs> VirtualDirectoryRenamed;
+    event EventHandler<VirtualDirectoryRenamedEventArgs>? VirtualDirectoryRenamed;
     /// <summary>
     /// Event triggered when a virtual directory has been copied.
     /// </summary>
-    event EventHandler<VirtualDirectoryCopiedMovedEventArgs> VirtualDirectoryCopied;
+    event EventHandler<VirtualDirectoryCopiedMovedEventArgs>? VirtualDirectoryCopied;
     /// <summary>
     /// Event triggered when a virtual directory has been moved.
     /// </summary>
-    event EventHandler<VirtualDirectoryCopiedMovedEventArgs> VirtualDirectoryMoved;
+    event EventHandler<VirtualDirectoryCopiedMovedEventArgs>? VirtualDirectoryMoved;
     /// <summary>
     /// Event triggered before a phsyical file is imported into the file system.
     /// </summary>
-    event EventHandler<FileImportingArgs> FileImporting;
+    event EventHandler<FileImportingArgs>? FileImporting;
     /// <summary>
     /// Event triggered after a physical file is imported into the file system.
     /// </summary>
-    event EventHandler<FileImportedArgs> FileImported;
+    event EventHandler<FileImportedArgs>? FileImported;
     /// <summary>
     /// Event triggered when directories, and files have been imported.
     /// </summary>
-    event EventHandler<ImportedEventArgs> Imported;
+    event EventHandler<ImportedEventArgs>? Imported;
     /// <summary>
     /// Event triggered when a virtual file has been deleted from the file system.
     /// </summary>
-    event EventHandler<VirtualFileDeletedEventArgs> VirtualFileDeleted;
+    event EventHandler<VirtualFileDeletedEventArgs>? VirtualFileDeleted;
     /// <summary>
     /// Event triggered when a virtual file has been opened for writing on the file system.
     /// </summary>
-    event EventHandler<VirtualFileOpenedEventArgs> VirtualFileOpened;
+    event EventHandler<VirtualFileOpenedEventArgs>? VirtualFileOpened;
     /// <summary>
     /// Event triggered when a virtual file has had its write stream closed.
     /// </summary>
-    event EventHandler<VirtualFileClosedEventArgs> VirtualFileClosed;
+    event EventHandler<VirtualFileClosedEventArgs>? VirtualFileClosed;
     /// <summary>
     /// Event triggered when a virtual file has been renamed.
     /// </summary>
-    event EventHandler<VirtualFileRenamedEventArgs> VirtualFileRenamed;
+    event EventHandler<VirtualFileRenamedEventArgs>? VirtualFileRenamed;
     /// <summary>
     /// Event triggered when virtual files were copied.
     /// </summary>
-    event EventHandler<VirtualFileCopiedMovedEventArgs> VirtualFileCopied;
+    event EventHandler<VirtualFileCopiedMovedEventArgs>? VirtualFileCopied;
     /// <summary>
     /// Event triggered when virtual files were moved.
     /// </summary>
-    event EventHandler<VirtualFileCopiedMovedEventArgs> VirtualFileMoved;
+    event EventHandler<VirtualFileCopiedMovedEventArgs>? VirtualFileMoved;
 
     /// <summary>
     /// Property to return the location on the physical file system to use as the writable area for a <see cref="IGorgonFileSystem"/>.
@@ -238,7 +238,7 @@ public interface IGorgonFileSystemWriter<out T>
     /// </para>
     /// </remarks>
     /// <seealso cref="IGorgonFileSystem.Refresh()"/>        
-    void DeleteDirectory(string path, Action<string> onDelete = null, CancellationToken? cancelToken = null);
+    void DeleteDirectory(string path, Action<string>? onDelete = null, CancellationToken? cancelToken = null);
 
     /// <summary>
     /// Function to delete a file from the file system.
@@ -306,7 +306,7 @@ public interface IGorgonFileSystemWriter<out T>
     /// Calling this method will trigger the <see cref="VirtualFileDeleted"/> event.
     /// </para>
     /// </remarks>
-    void DeleteFiles(IEnumerable<string> paths, Action<string> onDelete = null, CancellationToken? cancelToken = null);
+    void DeleteFiles(IEnumerable<string> paths, Action<string>? onDelete = null, CancellationToken? cancelToken = null);
 
     /// <summary>
     /// Function to rename a directory.
@@ -360,7 +360,7 @@ public interface IGorgonFileSystemWriter<out T>
     /// </para>
     /// </remarks>
     /// <seealso cref="GorgonCopyCallbackOptions"/>
-    void CopyFiles(IEnumerable<string> filePaths, string destDirectoryPath, GorgonCopyCallbackOptions options = null);
+    void CopyFiles(IEnumerable<string> filePaths, string destDirectoryPath, GorgonCopyCallbackOptions? options = null);
 
     /// <summary>
     /// Function to move files to another directory.
@@ -382,7 +382,7 @@ public interface IGorgonFileSystemWriter<out T>
     /// </para>
     /// </remarks>
     /// <seealso cref="GorgonCopyCallbackOptions"/>
-    void MoveFiles(IEnumerable<string> filePaths, string destDirectoryPath, GorgonCopyCallbackOptions options = null);
+    void MoveFiles(IEnumerable<string> filePaths, string destDirectoryPath, GorgonCopyCallbackOptions? options = null);
 
     /// <summary>
     /// Function to copy a directory to another directory.
@@ -404,7 +404,7 @@ public interface IGorgonFileSystemWriter<out T>
     /// </para>
     /// </remarks>
     /// <seealso cref="GorgonCopyCallbackOptions"/>
-    void CopyDirectory(string directoryPath, string destDirectoryPath, GorgonCopyCallbackOptions options = null);
+    void CopyDirectory(string directoryPath, string destDirectoryPath, GorgonCopyCallbackOptions? options = null);
 
     /// <summary>
     /// Function to move a directory to another directory.
@@ -433,7 +433,7 @@ public interface IGorgonFileSystemWriter<out T>
     /// </para>
     /// </remarks>
     /// <seealso cref="GorgonCopyCallbackOptions"/>
-    void MoveDirectory(string directoryPath, string destDirectoryPath, GorgonCopyCallbackOptions options = null);
+    void MoveDirectory(string directoryPath, string destDirectoryPath, GorgonCopyCallbackOptions? options = null);
 
     /// <summary>
     /// Function to export a directory from the virtual file system to a directory on the physical file system.
@@ -452,7 +452,7 @@ public interface IGorgonFileSystemWriter<out T>
     /// </para>
     /// </remarks>
     /// <seealso cref="GorgonCopyCallbackOptions"/>
-    void ExportDirectory(string directoryPath, string destDirectoryPath, GorgonCopyCallbackOptions options = null);
+    void ExportDirectory(string directoryPath, string destDirectoryPath, GorgonCopyCallbackOptions? options = null);
 
     /// <summary>
     /// Function to import files/directories from the physical file system to a directory on the virtual file system.
@@ -471,7 +471,7 @@ public interface IGorgonFileSystemWriter<out T>
     /// </para>
     /// </remarks>
     /// <seealso cref="GorgonCopyCallbackOptions"/>
-    void Import(IReadOnlyList<string> paths, string destDirectoryPath, GorgonCopyCallbackOptions options = null);
+    void Import(IReadOnlyList<string> paths, string destDirectoryPath, GorgonCopyCallbackOptions? options = null);
 
     /// <summary>
     /// Function to export files from the virtual file system to a directory on the physical file system.
@@ -490,7 +490,7 @@ public interface IGorgonFileSystemWriter<out T>
     /// </para>
     /// </remarks>
     /// <seealso cref="GorgonCopyCallbackOptions"/>
-    void ExportFiles(IEnumerable<string> filePaths, string destDirectoryPath, GorgonCopyCallbackOptions options = null);
+    void ExportFiles(IEnumerable<string> filePaths, string destDirectoryPath, GorgonCopyCallbackOptions? options = null);
 
     /// <summary>
     /// Function to open a file for reading or for writing.

@@ -42,6 +42,9 @@ namespace Gorgon.IO.GorPack;
 internal class GorPackProvider
     : GorgonFileSystemProviderPlugIn
 {
+    // Empty collection for the EnumerateFiles method.
+    private readonly static IReadOnlyDictionary<string, IGorgonPhysicalFileInfo> _emptyFiles = new Dictionary<string, IGorgonPhysicalFileInfo>();
+
     /// <summary>
     /// The pack file header.
     /// </summary>
@@ -235,14 +238,21 @@ internal class GorPackProvider
     /// <param name="mountPoint">A <see cref="IGorgonVirtualDirectory" /> that the files from the physical file system will be mounted into.</param>
     /// <returns>A list of files contained within the physical file system.</returns>
     /// <exception cref="NotSupportedException">This plug-in provider does not support this functionality.</exception>
-    protected override IReadOnlyDictionary<string, IGorgonPhysicalFileInfo> OnEnumerateFiles(string physicalLocation, IGorgonVirtualDirectory mountPoint)
-        => throw new NotSupportedException();
+    protected override IReadOnlyDictionary<string, IGorgonPhysicalFileInfo> OnEnumerateFiles(string physicalLocation, IGorgonVirtualDirectory mountPoint) => _emptyFiles;
+
+    /// <summary>
+    /// Function to return the virtual file system path from a physical file system path.
+    /// </summary>
+    /// <param name="physicalPath">Physical path to the file/folder.</param>
+    /// <param name="mountPoint">The mount point used to map the physical path.</param>
+    /// <returns>The virtual file system path.</returns>
+    protected override ReadOnlySpan<char> OnMapToVirtualPath(ReadOnlySpan<char> physicalPath, GorgonFileSystemMountPoint mountPoint) => physicalPath;
 
     /// <summary>Function to return the physical file system path from a virtual file system path.</summary>
     /// <param name="virtualPath">Virtual path to the file/folder.</param>
     /// <param name="mountPoint">The mount point used to map the physical path.</param>
     /// <returns>The physical file system path.</returns>
-    protected override string OnGetPhysicalPath(string virtualPath, GorgonFileSystemMountPoint mountPoint) => mountPoint.PhysicalPath;
+    protected override ReadOnlySpan<char> OnGetPhysicalPath(ReadOnlySpan<char> virtualPath, GorgonFileSystemMountPoint mountPoint) => mountPoint.PhysicalPath.AsSpan();
 
     /// <summary>
     /// Function to open a stream to a file on the physical file system from the <see cref="IGorgonVirtualFile"/> passed in.

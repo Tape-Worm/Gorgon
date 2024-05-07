@@ -564,11 +564,11 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
         // Arrange
 
         Encoding encoding = Encoding.UTF8;
-        using MemoryStream stream = new MemoryStream();
+        using MemoryStream stream = new();
         stream.WriteString(LoremIpsum, encoding);
         stream.Position = 0;
 
-        using BinaryReader reader = new BinaryReader(stream, encoding); // leaveOpen is set to true.
+        using BinaryReader reader = new(stream, encoding); // leaveOpen is set to true.
         string result = reader.ReadString(); // Write the string data.
 
         // Assert
@@ -581,11 +581,11 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
         // Arrange
 
         Encoding encoding = Encoding.Unicode;
-        using MemoryStream stream = new MemoryStream();
+        using MemoryStream stream = new();
         stream.WriteString(LoremIpsum, encoding);
         stream.Position = 0;
 
-        using BinaryReader reader = new BinaryReader(stream, encoding); // leaveOpen is set to true.
+        using BinaryReader reader = new(stream, encoding); // leaveOpen is set to true.
         string result = reader.ReadString(); // Write the string data.
 
         // Assert

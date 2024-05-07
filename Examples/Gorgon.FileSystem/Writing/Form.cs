@@ -230,6 +230,8 @@ public partial class Form
 
             // Create our virtual file system.
             _fileSystem = new GorgonFileSystem(Program.Log);
+            _fileSystem.Mount(@"D:\Unpak\scratch\AnotherTest\");
+            _fileSystem.RootDirectory.Files.First().Value.PhysicalFile.Refresh();
             _writer = new GorgonFileSystemWriter(_fileSystem, _fileSystem, Program.WriteDirectory.FullName);
 
             LoadText();

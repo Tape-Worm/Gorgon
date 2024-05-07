@@ -93,7 +93,7 @@ public interface IGorgonVirtualDirectory
     /// <remarks>
     /// If this value is <b>null</b>, then this will be the root directory for the file system.
     /// </remarks>
-    IGorgonVirtualDirectory Parent
+    IGorgonVirtualDirectory? Parent
     {
         get;
     }

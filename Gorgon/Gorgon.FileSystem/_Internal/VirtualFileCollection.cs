@@ -50,7 +50,7 @@ internal class VirtualFileCollection
         {
             fileName = fileName.FormatFileName();
 
-            if (!_files.TryGetValue(fileName, out VirtualFile value))
+            if (!_files.TryGetValue(fileName, out VirtualFile? value))
             {
                 throw new FileNotFoundException(string.Format(Resources.GORFS_ERR_FILE_NOT_FOUND, fileName));
             }
@@ -112,7 +112,7 @@ internal class VirtualFileCollection
     /// <returns><b>true</b> if the item was found, <b>false</b> if not.</returns>
     bool IReadOnlyDictionary<string, IGorgonVirtualFile>.TryGetValue(string name, [MaybeNullWhen(false)] out IGorgonVirtualFile value)
     {
-        if (!TryGetVirtualDirectory(name, out VirtualFile file))
+        if (!TryGetVirtualFile(name.AsSpan(), out VirtualFile? file))
         {
             value = null;
             return false;
@@ -128,13 +128,27 @@ internal class VirtualFileCollection
     /// <param name="name">The name of the file entry to look up.</param>
     /// <param name="value">The file entry, if found, or <b>null</b> if not.</param>
     /// <returns><b>true</b> if the file was found, <b>false</b> if not.</returns>
-    public bool TryGetVirtualDirectory(string name, [MaybeNullWhen(false)] out VirtualFile value)
+    [Obsolete("Use readonly span version.")]
+    public bool TryGetVirtualFile(string name, [NotNullWhen(true)] out VirtualFile? value)
     {
         value = null;
 
         name = name.FormatFileName();
 
         return !string.IsNullOrWhiteSpace(name) && _files.TryGetValue(name, out value);
+    }
+
+    /// <summary>
+    /// Function to return a concrete file object from the collection.
+    /// </summary>
+    /// <param name="name">The name of the file entry to look up.</param>
+    /// <param name="value">The file entry, if found, or <b>null</b> if not.</param>
+    /// <returns><b>true</b> if the file was found, <b>false</b> if not.</returns>
+    public bool TryGetVirtualFile(ReadOnlySpan<char> name, [NotNullWhen(true)] out VirtualFile? value)
+    {
+        value = null;
+
+        return !name.IsEmpty && _files.TryGetValue(name.ToString(), out value);
     }
 
     /// <summary>

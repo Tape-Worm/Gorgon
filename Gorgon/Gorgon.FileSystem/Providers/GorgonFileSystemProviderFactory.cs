@@ -75,10 +75,9 @@ namespace Gorgon.IO.Providers;
 /// <param name="plugInCache">The cache used to load and store plugin assemblies.</param>
 /// <param name="log">[Optional] The application log file.</param>
 /// <exception cref="ArgumentNullException">Thrown when the <paramref name="plugInCache"/> parameter is <b>null</b>.</exception>
-public sealed class GorgonFileSystemProviderFactory(GorgonMefPlugInCache plugInCache, IGorgonLog log = null)
+public sealed class GorgonFileSystemProviderFactory(GorgonMefPlugInCache plugInCache, IGorgonLog? log = null)
         : IGorgonFileSystemProviderFactory
 {
-
     // The service for locating plug-ins.
     private readonly GorgonMefPlugInCache _plugInCache = plugInCache ?? throw new ArgumentNullException(nameof(plugInCache));
     // The application log file.
@@ -101,7 +100,7 @@ public sealed class GorgonFileSystemProviderFactory(GorgonMefPlugInCache plugInC
         ArgumentEmptyException.ThrowIfNullOrWhiteSpace(path);
         ArgumentEmptyException.ThrowIfNullOrWhiteSpace(providerPlugInName);
 
-        string dirName = Path.GetDirectoryName(path);
+        string dirName = Path.GetDirectoryName(path) ?? string.Empty;
         if (string.IsNullOrWhiteSpace(dirName))
         {
             dirName = Directory.GetCurrentDirectory();
@@ -119,7 +118,7 @@ public sealed class GorgonFileSystemProviderFactory(GorgonMefPlugInCache plugInC
 
         GorgonMefPlugInService plugInService = new(_plugInCache);
 
-        GorgonFileSystemProviderPlugIn plugin = plugInService.GetPlugIn<GorgonFileSystemProviderPlugIn>(providerPlugInName);
+        GorgonFileSystemProviderPlugIn? plugin = plugInService.GetPlugIn<GorgonFileSystemProviderPlugIn>(providerPlugInName);
 
         return plugin ?? throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORFS_ERR_NO_PROVIDER_PLUGIN, providerPlugInName));
     }
@@ -139,7 +138,7 @@ public sealed class GorgonFileSystemProviderFactory(GorgonMefPlugInCache plugInC
 
         ArgumentEmptyException.ThrowIfNullOrWhiteSpace(path);
 
-        string dirName = Path.GetDirectoryName(path);
+        string dirName = Path.GetDirectoryName(path) ?? string.Empty;
         if (string.IsNullOrWhiteSpace(dirName))
         {
             dirName = Directory.GetCurrentDirectory();

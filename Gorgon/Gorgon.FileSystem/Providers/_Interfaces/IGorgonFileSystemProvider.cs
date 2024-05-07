@@ -62,6 +62,14 @@ public interface IGorgonFileSystemProvider
     }
 
     /// <summary>
+    /// Property to return the character used to separate path parts on the physical file system.
+    /// </summary>
+    char PhysicalPathSeparator
+    {
+        get;
+    }
+
+    /// <summary>
     /// Property to return a list of preferred file extensions (if applicable).
     /// </summary>
     /// <remarks>
@@ -88,7 +96,7 @@ public interface IGorgonFileSystemProvider
     /// <param name="physicalPath">Physical path to the file/folder.</param>
     /// <param name="mountPoint">The mount point used to map the physical path.</param>
     /// <returns>The virtual file system path.</returns>
-    string MapToVirtualPath(string physicalPath, GorgonFileSystemMountPoint mountPoint);
+    ReadOnlySpan<char> MapToVirtualPath(ReadOnlySpan<char> physicalPath, GorgonFileSystemMountPoint mountPoint);
 
     /// <summary>
     /// Function to return the physical file system path from a virtual file system path.
@@ -96,7 +104,7 @@ public interface IGorgonFileSystemProvider
     /// <param name="virtualPath">Virtual path to the file/folder.</param>
     /// <param name="mountPoint">The mount point used to map the physical path.</param>
     /// <returns>The physical file system path.</returns>
-    string MapToPhysicalPath(string virtualPath, GorgonFileSystemMountPoint mountPoint);
+    ReadOnlySpan<char> MapToPhysicalPath(ReadOnlySpan<char> virtualPath, GorgonFileSystemMountPoint mountPoint);
 
     /// <summary>
     /// Function to enumerate the files and directories from a physical location and map it to a virtual location.
@@ -147,7 +155,7 @@ public interface IGorgonFileSystemProvider
     /// responsibility of the user to close the stream when finished.
     /// </para>
     /// </remarks>
-    Stream OpenFileStream(IGorgonVirtualFile file);
+    Stream? OpenFileStream(IGorgonVirtualFile file);
 
     /// <summary>
     /// Function to determine if a physical file system can be read by this provider.
