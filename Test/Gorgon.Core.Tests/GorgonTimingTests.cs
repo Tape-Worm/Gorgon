@@ -41,7 +41,7 @@ public class GorgonTimingTests
             {
                 Time.Delta = (1.0 / 16) * 1000;
             }
-            else if ((i > 400) && (i < 460))
+            else if (i is > 400 and < 460)
             {
                 Time.Delta = (1.0 / 60) * 1000;
             }

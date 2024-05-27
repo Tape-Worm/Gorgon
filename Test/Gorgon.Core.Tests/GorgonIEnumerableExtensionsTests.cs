@@ -22,7 +22,7 @@ public class Node
 [TestClass]
 public class GorgonIEnumerableExtensionsTests
 {
-    private Node _root = new()
+    private readonly Node _root = new()
     {
         Name = "Root",
         Children =

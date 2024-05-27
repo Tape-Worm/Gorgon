@@ -14,7 +14,7 @@ public class GorgonOptionBagTests
         IGorgonOption option = GorgonOption.CreateOption("TestOption", "Default");
 
         // Act
-        GorgonOptionBag optionBag = new(new[] { option });
+        GorgonOptionBag optionBag = new([option]);
 
         // Assert
         Assert.AreEqual(1, optionBag.Count);
@@ -29,7 +29,7 @@ public class GorgonOptionBagTests
         IGorgonOption option2 = GorgonOption.CreateOption("TestOption", "Default");
 
         // Act and Assert
-        Assert.ThrowsException<ArgumentException>(() => new GorgonOptionBag(new[] { option1, option2 }));
+        Assert.ThrowsException<ArgumentException>(() => new GorgonOptionBag([option1, option2]));
     }
 
     [TestMethod]
@@ -39,7 +39,7 @@ public class GorgonOptionBagTests
         string optionName = "TestOption";
         string defaultValue = "Default";
         IGorgonOption option = GorgonOption.CreateOption(optionName, defaultValue);
-        GorgonOptionBag optionBag = new(new[] { option });
+        GorgonOptionBag optionBag = new([option]);
 
         // Act
         string? result = optionBag.GetOptionValue<string>(optionName);
@@ -53,7 +53,7 @@ public class GorgonOptionBagTests
     {
         // Arrange
         IGorgonOption option = GorgonOption.CreateOption("TestOption", "Default");
-        GorgonOptionBag optionBag = new(new[] { option });
+        GorgonOptionBag optionBag = new([option]);
 
         // Act and Assert
         Assert.ThrowsException<KeyNotFoundException>(() => optionBag.GetOptionValue<string>("InvalidOptionName"));
@@ -67,7 +67,7 @@ public class GorgonOptionBagTests
         string defaultValue = "Default";
         string newValue = "New Value";
         IGorgonOption option = GorgonOption.CreateOption(optionName, defaultValue);
-        GorgonOptionBag optionBag = new(new[] { option });
+        GorgonOptionBag optionBag = new([option]);
 
         // Act
         optionBag.SetOptionValue(optionName, newValue);
@@ -81,7 +81,7 @@ public class GorgonOptionBagTests
     {
         // Arrange
         IGorgonOption option = GorgonOption.CreateOption("TestOption", "Default");
-        GorgonOptionBag optionBag = new(new[] { option });
+        GorgonOptionBag optionBag = new([option]);
 
         // Act and Assert
         Assert.ThrowsException<KeyNotFoundException>(() => optionBag.SetOptionValue("InvalidOptionName", "New Value"));
@@ -92,7 +92,7 @@ public class GorgonOptionBagTests
     {
         // Arrange
         IGorgonOption option = GorgonOption.CreateOption("TestOption", "Default");
-        GorgonOptionBag optionBag = new(new[] { option });
+        GorgonOptionBag optionBag = new([option]);
 
         // Act
         int index = optionBag.IndexOf(option);
@@ -107,7 +107,7 @@ public class GorgonOptionBagTests
         // Arrange
         IGorgonOption option1 = GorgonOption.CreateOption("TestOption", "Default");
         IGorgonOption option2 = GorgonOption.CreateOption("InvalidOption", "Default");
-        GorgonOptionBag optionBag = new(new[] { option1 });
+        GorgonOptionBag optionBag = new([option1]);
 
         // Act
         int index = optionBag.IndexOf(option2);
@@ -121,7 +121,7 @@ public class GorgonOptionBagTests
     {
         // Arrange
         IGorgonOption option = GorgonOption.CreateOption("TestOption", "Default");
-        GorgonOptionBag optionBag = new(new[] { option });
+        GorgonOptionBag optionBag = new([option]);
 
         // Act
         bool contains = optionBag.Contains(option);
@@ -136,7 +136,7 @@ public class GorgonOptionBagTests
         // Arrange
         IGorgonOption option1 = GorgonOption.CreateOption("TestOption", "Default");
         IGorgonOption option2 = GorgonOption.CreateOption("InvalidOption", "Default");
-        GorgonOptionBag optionBag = new(new[] { option1 });
+        GorgonOptionBag optionBag = new([option1]);
 
         // Act
         bool contains = optionBag.Contains(option2);
@@ -151,7 +151,7 @@ public class GorgonOptionBagTests
         // Arrange
         string optionName = "TestOption";
         IGorgonOption option = GorgonOption.CreateOption(optionName, "Default");
-        GorgonOptionBag optionBag = new(new[] { option });
+        GorgonOptionBag optionBag = new([option]);
 
         // Act
         IGorgonOption result = optionBag.GetByName(optionName);
@@ -165,7 +165,7 @@ public class GorgonOptionBagTests
     {
         // Arrange
         IGorgonOption option = GorgonOption.CreateOption("TestOption", "Default");
-        GorgonOptionBag optionBag = new(new[] { option });
+        GorgonOptionBag optionBag = new([option]);
 
         // Act and Assert
         Assert.ThrowsException<KeyNotFoundException>(() => optionBag.GetByName("InvalidOptionName"));
@@ -177,7 +177,7 @@ public class GorgonOptionBagTests
         // Arrange
         string optionName = "TestOption";
         IGorgonOption option = GorgonOption.CreateOption(optionName, "Default");
-        GorgonOptionBag optionBag = new(new[] { option });
+        GorgonOptionBag optionBag = new([option]);
 
         // Act
         int index = optionBag.IndexOfName(optionName);
@@ -191,7 +191,7 @@ public class GorgonOptionBagTests
     {
         // Arrange
         IGorgonOption option = GorgonOption.CreateOption("TestOption", "Default");
-        GorgonOptionBag optionBag = new(new[] { option });
+        GorgonOptionBag optionBag = new([option]);
 
         // Act
         int index = optionBag.IndexOfName("InvalidOptionName");
@@ -206,7 +206,7 @@ public class GorgonOptionBagTests
         // Arrange
         string optionName = "TestOption";
         IGorgonOption option = GorgonOption.CreateOption(optionName, "Default");
-        GorgonOptionBag optionBag = new(new[] { option });
+        GorgonOptionBag optionBag = new([option]);
 
         // Act
         bool contains = optionBag.ContainsName(optionName);
@@ -220,7 +220,7 @@ public class GorgonOptionBagTests
     {
         // Arrange
         IGorgonOption option = GorgonOption.CreateOption("TestOption", "Default");
-        GorgonOptionBag optionBag = new(new[] { option });
+        GorgonOptionBag optionBag = new([option]);
 
         // Act
         bool contains = optionBag.ContainsName("InvalidOptionName");
@@ -236,7 +236,7 @@ public class GorgonOptionBagTests
         string optionName = "TestOption";
         long defaultValue = 10;
         IGorgonOption option = GorgonOption.CreateOption(optionName, defaultValue);
-        GorgonOptionBag optionBag = new(new[] { option });
+        GorgonOptionBag optionBag = new([option]);
 
         long newValue = 15;
         optionBag.SetOptionValue(optionName, newValue);
@@ -262,7 +262,7 @@ public class GorgonOptionBagTests
         IGorgonOption optionDouble = GorgonOption.CreateOption("OptionDouble", 8.0);
         IGorgonOption optionDecimal = GorgonOption.CreateOption("OptionDecimal", 9.0m);
         IGorgonOption optionDateTime = GorgonOption.CreateOption("OptionDateTime", new DateTime(2022, 1, 1));
-        GorgonOptionBag optionBag = new(new[] { optionInt16, optionInt32, optionInt64, optionUInt16, optionUInt32, optionUInt64, optionFloat, optionDouble, optionDecimal, optionDateTime });
+        GorgonOptionBag optionBag = new([optionInt16, optionInt32, optionInt64, optionUInt16, optionUInt32, optionUInt64, optionFloat, optionDouble, optionDecimal, optionDateTime]);
 
         // Act
         short retrievedInt16 = optionBag.GetOptionValue<short>("OptionInt16");
@@ -298,7 +298,7 @@ public class GorgonOptionBagTests
         byte maxValue = 127;
         byte defaultValue = 64;
         IGorgonOption option = GorgonOption.CreateByteOption(optionName, defaultValue, null, minValue, maxValue);
-        GorgonOptionBag optionBag = new(new[] { option });
+        GorgonOptionBag optionBag = new([option]);
 
         byte newValue = 60;
 
@@ -319,7 +319,7 @@ public class GorgonOptionBagTests
         byte maxValue = 127;
         byte defaultValue = 64;
         IGorgonOption option = GorgonOption.CreateByteOption(optionName, defaultValue, null, minValue, maxValue);
-        GorgonOptionBag optionBag = new(new[] { option });
+        GorgonOptionBag optionBag = new([option]);
 
         byte newValue = 130;
 

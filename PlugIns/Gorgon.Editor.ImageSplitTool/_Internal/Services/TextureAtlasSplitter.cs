@@ -84,7 +84,7 @@ internal class TextureAtlasSplitter
         {
             if (cancelToken.IsCancellationRequested)
             {
-                return Array.Empty<(IContentFile, GorgonSprite)>();
+                return [];
             }
 
             using Stream stream = _fileManager.OpenStream(file.Path, FileMode.Open);
@@ -230,7 +230,7 @@ internal class TextureAtlasSplitter
 
             if (response == ConfirmationResult.Cancel)
             {
-                return Array.Empty<(string, IGorgonImage, string, GorgonSprite)>();
+                return [];
             }
 
             response = CheckFileExists(outputDirectory, file.Name, spriteFileExtension, response);
@@ -242,7 +242,7 @@ internal class TextureAtlasSplitter
 
             if (response == ConfirmationResult.Cancel)
             {
-                return Array.Empty<(string, IGorgonImage, string, GorgonSprite)>();
+                return [];
             }
 
             string newImageName = GetNewPath(outputDirectory, imageFileName, imageFileExtension);

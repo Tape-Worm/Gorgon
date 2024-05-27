@@ -19,7 +19,7 @@ public class GorgonChunkFileTests
         chunk.Close();
         writer.Close();
 
-        Assert.ThrowsException<EndOfStreamException>(() => new GorgonChunkFileReader(stream, new ulong[] { 0x12345678 }));
+        Assert.ThrowsException<EndOfStreamException>(() => new GorgonChunkFileReader(stream, [0x12345678]));
     }
 
     [TestMethod]
@@ -45,7 +45,7 @@ public class GorgonChunkFileTests
 
         stream.Position = 0;
 
-        using GorgonChunkFileReader reader = new(stream, new ulong[] { 0x12345679 });
+        using GorgonChunkFileReader reader = new(stream, [0x12345679]);
         Assert.ThrowsException<GorgonException>(() => reader.Open());
     }
 
@@ -66,7 +66,7 @@ public class GorgonChunkFileTests
 
         Assert.ThrowsException<GorgonException>(() =>
         {
-            using GorgonChunkFileReader reader = new(stream, new ulong[] { 0x12345679 });
+            using GorgonChunkFileReader reader = new(stream, [0x12345679]);
             reader.Open();
         });
     }

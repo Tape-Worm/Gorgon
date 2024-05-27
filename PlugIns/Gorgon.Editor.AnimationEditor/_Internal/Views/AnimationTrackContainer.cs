@@ -458,9 +458,9 @@ internal partial class AnimationTrackContainer
                 GridTrackKeys.ClearSelection();
                 GridTrackKeys.Rows[lastSelRowIndex].Cells[0].Selected = true;
             }
-            return new[] {
+            return [
                 (lastSelRowIndex, (IReadOnlyList<int>)[])
-            };
+            ];
         }
 
         List<int> keyIndices = null;

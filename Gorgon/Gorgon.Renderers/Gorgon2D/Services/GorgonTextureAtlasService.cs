@@ -443,7 +443,7 @@ public class GorgonTextureAtlasService
 
         if (regions.Count == 0)
         {
-            return new GorgonTextureAtlas([], Array.Empty<(GorgonSprite, GorgonSprite)>());
+            return new GorgonTextureAtlas([], []);
         }
 
         // Get the total number of textures.

@@ -52,7 +52,7 @@ public class GorgonRingPool<T>
     // The items in the pool.
     private readonly T[] _items;
     // The action executed when the allocator wraps around.
-    private Action? _wrapAroundNotifier;
+    private readonly Action? _wrapAroundNotifier;
 
     /// <summary>
     /// Property to set the allocator to use when creating new instances of an object.

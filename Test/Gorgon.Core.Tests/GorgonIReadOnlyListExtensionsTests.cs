@@ -11,10 +11,10 @@ public class GorgonIReadOnlyListExtensionsTests
     [TestMethod]
     public void TestFindLastIndex()
     {
-        IReadOnlyList<int> list = new List<int> { 1, 2, 3, 2, 1 };
-        Predicate<int> predicate = x => x == 2;
+        IReadOnlyList<int> list = [1, 2, 3, 2, 1];
+        static bool Predicate(int x) => x == 2;
 
-        int result = list.FindLastIndex(predicate);
+        int result = list.FindLastIndex(Predicate);
 
         Assert.AreEqual(3, result);
     }
@@ -22,10 +22,10 @@ public class GorgonIReadOnlyListExtensionsTests
     [TestMethod]
     public void TestFindIndex()
     {
-        IReadOnlyList<int> list = new List<int> { 1, 2, 3, 2, 1 };
-        Predicate<int> predicate = x => x == 2;
+        IReadOnlyList<int> list = [1, 2, 3, 2, 1];
+        static bool Predicate(int x) => x == 2;
 
-        int result = list.FindIndex(predicate);
+        int result = list.FindIndex(Predicate);
 
         Assert.AreEqual(1, result);
     }
@@ -33,7 +33,7 @@ public class GorgonIReadOnlyListExtensionsTests
     [TestMethod]
     public void TestContains()
     {
-        IReadOnlyList<int> list = new List<int> { 1, 2, 3, 2, 1 };
+        IReadOnlyList<int> list = [1, 2, 3, 2, 1];
 
         bool result = list.Contains(3);
 
@@ -43,7 +43,7 @@ public class GorgonIReadOnlyListExtensionsTests
     [TestMethod]
     public void TestIndexOf()
     {
-        IReadOnlyList<int> list = new List<int> { 1, 2, 3, 2, 1 };
+        IReadOnlyList<int> list = [1, 2, 3, 2, 1];
 
         int result = list.IndexOf(3);
 
@@ -53,7 +53,7 @@ public class GorgonIReadOnlyListExtensionsTests
     [TestMethod]
     public void TestCopyTo()
     {
-        IReadOnlyList<int> list = new List<int> { 1, 2, 3, 2, 1 };
+        IReadOnlyList<int> list = [1, 2, 3, 2, 1];
         int[] array = new int[5];
 
         list.CopyTo(array);
@@ -64,7 +64,7 @@ public class GorgonIReadOnlyListExtensionsTests
     [TestMethod]
     public void TestCopyToArrayTooSmall()
     {
-        IReadOnlyList<int> list = new List<int> { 1, 2, 3, 2, 1 };
+        IReadOnlyList<int> list = [1, 2, 3, 2, 1];
         int[] array = new int[4];
 
         Assert.ThrowsException<ArgumentException>(() => list.CopyTo(array));

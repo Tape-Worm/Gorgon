@@ -108,7 +108,7 @@ internal class EditorFileOpenDialogService(EditorSettings settings, FileSystemPr
         StringBuilder filter = new();
         StringBuilder allFilter = new();
 
-        IReadOnlyList<(string, IReadOnlyList<GorgonFileExtension>)> extensions = Providers.GetReaderFileExtensions().ToArray();
+        IReadOnlyList<(string, IReadOnlyList<GorgonFileExtension>)> extensions = [.. Providers.GetReaderFileExtensions()];
 
         if (extensions.Count == 0)
         {

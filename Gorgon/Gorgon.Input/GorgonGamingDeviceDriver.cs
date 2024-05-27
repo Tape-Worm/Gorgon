@@ -143,7 +143,7 @@ public abstract class GorgonGamingDeviceDriver(string description)
 
         if ((infoList is null) || (infoList.Count == 0))
         {
-            return Array.Empty<GorgonGamingDevice>();
+            return [];
         }
 
         List<IGorgonGamingDevice> result = [];

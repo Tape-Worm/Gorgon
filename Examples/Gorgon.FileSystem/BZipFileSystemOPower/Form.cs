@@ -325,8 +325,8 @@ public partial class Form
         _sprites = new GorgonSprite[3];
 
         // The sprites are in the v2 format.
-        IEnumerable<IGorgonSpriteCodec> v2Codec = new[] { new GorgonV2SpriteCodec(_renderer) };
-        IEnumerable<IGorgonImageCodec> pngCodec = new[] { new GorgonCodecPng() };
+        IEnumerable<IGorgonSpriteCodec> v2Codec = [new GorgonV2SpriteCodec(_renderer)];
+        IEnumerable<IGorgonImageCodec> pngCodec = [new GorgonCodecPng()];
         _sprites[0] = _fileSystem.LoadSpriteFromFileSystem(_renderer, "/Sprites/base.gorSprite", spriteCodecs: v2Codec, imageCodecs: pngCodec);
         _sprites[1] = _fileSystem.LoadSpriteFromFileSystem(_renderer, "/Sprites/Mother.gorSprite", spriteCodecs: v2Codec, imageCodecs: pngCodec);
         _sprites[2] = _fileSystem.LoadSpriteFromFileSystem(_renderer, "/Sprites/Mother2c.gorSprite", spriteCodecs: v2Codec, imageCodecs: pngCodec);

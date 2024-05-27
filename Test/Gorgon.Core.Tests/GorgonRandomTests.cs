@@ -10,7 +10,7 @@ public class GorgonRandomTests
     {
         float seed = 0.5f;
         float result = GorgonRandom.SimplexNoise(seed);
-        Assert.IsTrue(result >= -1.0f && result <= 1.0f);
+        Assert.IsTrue(result is >= (-1.0f) and <= 1.0f);
     }
 
     [TestMethod]
@@ -18,7 +18,7 @@ public class GorgonRandomTests
     {
         Vector2 seed = new(0.5f, 0.5f);
         float result = GorgonRandom.SimplexNoise(seed);
-        Assert.IsTrue(result >= -1.0f && result <= 1.0f);
+        Assert.IsTrue(result is >= (-1.0f) and <= 1.0f);
     }
 
     [TestMethod]
@@ -26,7 +26,7 @@ public class GorgonRandomTests
     {
         Vector3 seed = new(0.5f, 0.5f, 0.5f);
         float result = GorgonRandom.SimplexNoise(seed);
-        Assert.IsTrue(result >= -1.0f && result <= 1.0f);
+        Assert.IsTrue(result is >= (-1.0f) and <= 1.0f);
     }
 
     [TestMethod]

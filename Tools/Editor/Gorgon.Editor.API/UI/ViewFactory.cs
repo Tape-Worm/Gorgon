@@ -104,7 +104,7 @@ public static class ViewFactory
         }
 
         MethodInfo method = controlInterface.GetMethod("SetDataContext");
-        method?.Invoke(control, new[] { viewModel });
+        method?.Invoke(control, [viewModel]);
     }
 
     /// <summary>
