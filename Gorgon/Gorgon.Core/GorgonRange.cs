@@ -47,7 +47,7 @@ namespace Gorgon.Core;
 /// </remarks>
 [StructLayout(LayoutKind.Sequential, Pack = 4)]
 public readonly struct GorgonRange<T>
-    : IEquatable<GorgonRange<T>>, IComparable<GorgonRange<T>>
+    : IComparable<GorgonRange<T>>, IGorgonEquatableByRef<GorgonRange<T>>
     where T : struct, INumber<T>
 {
     /// <summary>
@@ -236,7 +236,7 @@ public readonly struct GorgonRange<T>
     /// <returns>
     /// true if <paramref name="obj"/> and this instance are the same type and represent the same value; otherwise, false.
     /// </returns>
-    public override readonly bool Equals(object? obj) => obj is GorgonRange<T> range ? Equals(this, range) : base.Equals(obj);
+    public override readonly bool Equals(object? obj) => obj is GorgonRange<T> range ? Equals(in this, in range) : base.Equals(obj);
 
     /// <summary>
     /// Returns the hash code for this instance.
@@ -260,7 +260,7 @@ public readonly struct GorgonRange<T>
     /// <param name="left">The left instance to compare.</param>
     /// <param name="right">The right instance to compare.</param>
     /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-    public static bool Equals(GorgonRange<T> left, GorgonRange<T> right) => (left.Minimum.Equals(right.Minimum)) && (left.Maximum.Equals(right.Maximum));
+    public static bool Equals(ref readonly GorgonRange<T> left, ref readonly GorgonRange<T> right) => (left.Minimum.Equals(right.Minimum)) && (left.Maximum.Equals(right.Maximum));
 
     /// <summary>
     /// Indicates whether the current object is equal to another object of the same type.
@@ -270,7 +270,17 @@ public readonly struct GorgonRange<T>
     /// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
     /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public readonly bool Equals(GorgonRange<T> other) => Equals(this, other);
+    public readonly bool Equals(GorgonRange<T> other) => Equals(in this, in other);
+
+    /// <summary>
+    /// Indicates whether the current object is equal to another object of the same type.
+    /// </summary>
+    /// <param name="other">An object to compare with this object.</param>
+    /// <returns>
+    /// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
+    /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public readonly bool Equals(ref readonly GorgonRange<T> other) => Equals(in this, in other);
 
     /// <summary>
     /// Compares the current object with another object of the same type.
@@ -317,7 +327,7 @@ public readonly struct GorgonRange<T>
     /// <param name="left">The left.</param>
     /// <param name="right">The right.</param>
     /// <returns>The result of the operator.</returns>
-    public static bool operator ==(GorgonRange<T> left, GorgonRange<T> right) => Equals(left, right);
+    public static bool operator ==(in GorgonRange<T> left, in GorgonRange<T> right) => Equals(in left, in right);
 
     /// <summary>
     /// Implements the operator ==.
@@ -325,7 +335,7 @@ public readonly struct GorgonRange<T>
     /// <param name="left">The left.</param>
     /// <param name="right">The right.</param>
     /// <returns>The result of the operator.</returns>
-    public static bool operator !=(GorgonRange<T> left, GorgonRange<T> right) => !Equals(left, right);
+    public static bool operator !=(in GorgonRange<T> left, in GorgonRange<T> right) => !Equals(in left, in right);
 
     /// <summary>
     /// Implements the operator >.
@@ -333,7 +343,7 @@ public readonly struct GorgonRange<T>
     /// <param name="left">The left instance to compare.</param>
     /// <param name="right">The right instance to compare.</param>
     /// <returns><b>true</b> if left is greater than right.</returns>
-    public static bool operator >(GorgonRange<T> left, GorgonRange<T> right) => left.Range > right.Range;
+    public static bool operator >(in GorgonRange<T> left, in GorgonRange<T> right) => left.Range > right.Range;
 
     /// <summary>
     /// Implements the operator >=.
@@ -341,7 +351,7 @@ public readonly struct GorgonRange<T>
     /// <param name="left">The left instance to compare.</param>
     /// <param name="right">The right instance to compare.</param>
     /// <returns><b>true</b> if left is greater than right.</returns>
-    public static bool operator >=(GorgonRange<T> left, GorgonRange<T> right) => left.Range >= right.Range;
+    public static bool operator >=(in GorgonRange<T> left, in GorgonRange<T> right) => left.Range >= right.Range;
 
     /// <summary>
     /// Implements the operator >.
@@ -349,7 +359,7 @@ public readonly struct GorgonRange<T>
     /// <param name="left">The left instance to compare.</param>
     /// <param name="right">The right instance to compare.</param>
     /// <returns><b>true</b> if left is greater than right.</returns>
-    public static bool operator <(GorgonRange<T> left, GorgonRange<T> right) => left.Range < right.Range;
+    public static bool operator <(in GorgonRange<T> left, in GorgonRange<T> right) => left.Range < right.Range;
 
     /// <summary>
     /// Implements the operator >=.
@@ -357,14 +367,14 @@ public readonly struct GorgonRange<T>
     /// <param name="left">The left instance to compare.</param>
     /// <param name="right">The right instance to compare.</param>
     /// <returns><b>true</b> if left is greater than right.</returns>
-    public static bool operator <=(GorgonRange<T> left, GorgonRange<T> right) => left.Range <= right.Range;
+    public static bool operator <=(in GorgonRange<T> left, in GorgonRange<T> right) => left.Range <= right.Range;
 
     /// <summary>
     /// Explicit operator to convert a <see cref="GorgonRange{T}"/> to a <see cref="Range"/> value.
     /// </summary>
     /// <param name="range">The Gorgon range value to convert.</param>
     /// <returns>The range type.</returns>
-    public static explicit operator Range(GorgonRange<T> range) => ToRange(range);
+    public static explicit operator Range(in GorgonRange<T> range) => ToRange(in range);
 
     /// <summary>
     /// Explicit operator to convert a <see cref="Range"/> to a <see cref="GorgonRange{T}"/> value.
@@ -378,7 +388,7 @@ public readonly struct GorgonRange<T>
     /// </summary>
     /// <param name="range">The Gorgon range value to convert.</param>
     /// <returns>The range type.</returns>
-    public static Range ToRange(GorgonRange<T> range) => new(int.CreateChecked(range.Minimum), int.CreateChecked(range.Maximum));
+    public static Range ToRange(ref readonly GorgonRange<T> range) => new(int.CreateChecked(range.Minimum), int.CreateChecked(range.Maximum));
 
     /// <summary>
     /// Explicit operator to convert a <see cref="Range"/> to a <see cref="GorgonRange{T}"/> value.
