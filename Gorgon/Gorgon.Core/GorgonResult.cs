@@ -29,7 +29,7 @@ namespace Gorgon.Core;
 /// An error code message that is usually sent along with a <see cref="GorgonException"/>.
 /// </summary>
 public readonly struct GorgonResult
-    : IGorgonNamedObject, IEquatable<GorgonResult>
+    : IGorgonNamedObject, IGorgonEquatableByRef<GorgonResult>
 {
     // Base error code.
     private const int ErrorBase = 0x7FF000;
@@ -131,7 +131,10 @@ public readonly struct GorgonResult
     /// <returns>
     /// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
     /// </returns>
-    public readonly bool Equals(GorgonResult other) => Equals(this, other);
+    public readonly bool Equals(GorgonResult other) => Equals(in this, in other);
+
+    /// <inheritdoc/>
+    public bool Equals(ref readonly GorgonResult other) => Equals(in this, in other);
 
     /// <summary>
     /// Function to compare two instances for equality.
@@ -139,7 +142,7 @@ public readonly struct GorgonResult
     /// <param name="left">The left instance to compare.</param>
     /// <param name="right">The right instance to compare.</param>
     /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-    public static bool Equals(GorgonResult left, GorgonResult right) => ((left.Code == right.Code) && (string.Equals(left.Name, right.Name, StringComparison.OrdinalIgnoreCase)));
+    public static bool Equals(ref readonly GorgonResult left, ref readonly GorgonResult right) => ((left.Code == right.Code) && (string.Equals(left.Name, right.Name, StringComparison.OrdinalIgnoreCase)));
 
     /// <summary>
     /// Indicates whether this instance and a specified object are equal.
@@ -148,7 +151,7 @@ public readonly struct GorgonResult
     /// <returns>
     /// true if <paramref name="obj"/> and this instance are the same type and represent the same value; otherwise, false.
     /// </returns>
-    public override readonly bool Equals(object? obj) => obj is GorgonResult result ? Equals(this, result) : base.Equals(obj);
+    public override readonly bool Equals(object? obj) => obj is GorgonResult result ? Equals(in this, in result) : base.Equals(obj);
 
     /// <summary>
     /// Returns the fully qualified type name of this instance.
@@ -172,7 +175,7 @@ public readonly struct GorgonResult
     /// <param name="left">The left item to test.</param>
     /// <param name="right">The right item to test.</param>
     /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-    public static bool operator ==(GorgonResult left, GorgonResult right) => Equals(left, right);
+    public static bool operator ==(in GorgonResult left, in GorgonResult right) => Equals(in left, in right);
 
     /// <summary>
     /// Operator to test for inequality.
@@ -180,7 +183,7 @@ public readonly struct GorgonResult
     /// <param name="left">The left item to test.</param>
     /// <param name="right">The right item to test.</param>
     /// <returns><b>true</b> if not equal, <b>false</b> if the items are equal.</returns>
-    public static bool operator !=(GorgonResult left, GorgonResult right) => !Equals(left, right);
+    public static bool operator !=(in GorgonResult left, in GorgonResult right) => !Equals(in left, in right);
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonResult"/> struct.
