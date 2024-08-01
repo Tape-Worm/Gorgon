@@ -65,7 +65,7 @@
                   <Setter.Value>
                       <TransformGroup>
                           <ScaleTransform ScaleX="6" ScaleY="3"/>
-                          <SkewTransform AngleX="-10" AngleY="-24"/>
+                          <SkewTransform AngleX="-5" AngleY="-12"/>
                           <RotateTransform/>
                           <TranslateTransform/>
                       </TransformGroup>

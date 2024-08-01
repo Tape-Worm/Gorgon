@@ -277,6 +277,11 @@ public partial class MainWindow : Window
     /// <param name="e">The parameters for the event.</param>
     private async void Window_Loaded(object sender, RoutedEventArgs e)
     {
+        if (Design.IsDesignMode)
+        {
+            return;
+        }
+
         GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
         IReadOnlyList<IGorgonVideoAdapterInfo> adapters = GorgonGraphics.EnumerateAdapters();
 
