@@ -54,7 +54,7 @@
     <AdditionalFiles Remove="..\..\..\Examples\app.manifest" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Krypton.Ribbon.Lite" Version="85.24.6.176" />
+    <PackageReference Include="Krypton.Ribbon.Lite" Version="85.24.7.204" />
     <PackageReference Include="Microsoft.SourceLink.GitHub">
       <Version>8.0.0</Version>      
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
