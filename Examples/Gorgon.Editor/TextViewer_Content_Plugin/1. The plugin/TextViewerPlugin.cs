@@ -280,7 +280,7 @@ internal class TextViewerPlugin
         // example, so we'll use the default name provided by the editor.
 
         byte[] defaultText = Encoding.UTF8.GetBytes(Resources.DEFAULT_TEXT);
-        RecyclableMemoryStream stream = CommonEditorResources.MemoryStreamManager.GetStream(defaultText) as RecyclableMemoryStream;
+        RecyclableMemoryStream stream = CommonEditorResources.MemoryStreamManager.GetStream(defaultText);
 
         return Task.FromResult<(string, RecyclableMemoryStream)>((generatedName, stream));
     }

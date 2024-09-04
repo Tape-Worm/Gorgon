@@ -170,7 +170,7 @@ internal class Model
     private void ImportData(GorgonGraphics graphics, Scene scene, IReadOnlyList<Material> materials)
     {
         int vertexCount = scene.Meshes.Sum(item => item.VertexCount);
-        int indexCount = scene.Meshes.Sum(item => item.Faces.Sum(item2 => item2.IndexCount));
+        int indexCount = scene.Meshes.SelectMany(item => item.Faces).Sum(item => item.IndexCount);
 
         VertexData = new GorgonVertexBuffer(graphics, new GorgonVertexBufferInfo(vertexCount * GorgonVertexPosNormColorUv.SizeInBytes));
         IndexData = new GorgonIndexBuffer(graphics, new GorgonIndexBufferInfo(indexCount)

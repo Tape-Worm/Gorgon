@@ -23,7 +23,7 @@
         
         <Canvas Grid.ColumnSpan="2">
           <Canvas.Background>
-            <RadialGradientBrush Opacity="1" Center="50%,50%" GradientOrigin="50%,50%" Radius="0.5">
+            <RadialGradientBrush Opacity="1" Center="50%,50%" GradientOrigin="50%,50%" RadiusX="50%" RadiusY="50%">
               <RadialGradientBrush.GradientStops>
                   <GradientStop Color="#00000000" Offset="0"/>              
                   <GradientStop Color="#00000000" Offset="0.314"/>

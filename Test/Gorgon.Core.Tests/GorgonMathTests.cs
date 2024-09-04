@@ -232,7 +232,7 @@ public class GorgonMathTests
 
         int shortVal = ((short)-192).Abs();
 
-        Assert.AreEqual((short)192, shortVal);
+        Assert.AreEqual(192, shortVal);
     }
 
     [TestMethod]

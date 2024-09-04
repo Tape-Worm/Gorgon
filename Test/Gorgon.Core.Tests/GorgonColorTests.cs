@@ -146,7 +146,7 @@ public class GorgonColorTests
 
         unchecked
         {
-            Assert.AreEqual((int)0x7fbf3fff, signedRgba);
+            Assert.AreEqual(0x7fbf3fff, signedRgba);
         }
     }
 
@@ -169,7 +169,7 @@ public class GorgonColorTests
 
         unchecked
         {
-            Assert.AreEqual((int)0x3fbf7fff, signedBgra);
+            Assert.AreEqual(0x3fbf7fff, signedBgra);
         }
     }
 

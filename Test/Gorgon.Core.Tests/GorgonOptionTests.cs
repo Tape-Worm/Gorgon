@@ -1721,6 +1721,6 @@ public class GorgonOptionTests
         double retrievedValue = option.GetValue<double>();
 
         // Assert
-        Assert.AreEqual((double)newValue, retrievedValue);
+        Assert.AreEqual(newValue, retrievedValue);
     }
 }

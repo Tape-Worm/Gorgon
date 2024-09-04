@@ -902,7 +902,7 @@ internal class AnimationEditorPlugIn
 
             IGorgonAnimation animation = builder.Build(currentDirectory + name.FormatFileName(), fps, length);
 
-            RecyclableMemoryStream stream = CommonEditorResources.MemoryStreamManager.GetStream() as RecyclableMemoryStream;
+            RecyclableMemoryStream stream = CommonEditorResources.MemoryStreamManager.GetStream();
             _defaultCodec.Save(animation, stream);
             return stream;
         }
@@ -1005,7 +1005,7 @@ internal class AnimationEditorPlugIn
     /// <returns>A new <see cref="IKeyFrame"/> object.</returns>
     async Task<IKeyFrame> IViewModelFactory.CreateTextureKeyFrameAsync(float time, IContentFile spriteFile)
     {
-        IViewModelFactory factory = (IViewModelFactory)this;
+        IViewModelFactory factory = this;
         TextureValue textureValue;
 
         if (!_ioService.IsContentSprite(spriteFile))
@@ -1047,7 +1047,7 @@ internal class AnimationEditorPlugIn
             return null;
         }
 
-        IViewModelFactory factory = (IViewModelFactory)this;
+        IViewModelFactory factory = this;
         IKeyFrame[] keyFrames = null;
 
         try

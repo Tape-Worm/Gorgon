@@ -685,7 +685,7 @@ internal class SpriteEditorPlugIn
 
             metadata.Attributes[CodecAttr] = _defaultCodec.GetType().FullName;
 
-            RecyclableMemoryStream stream = CommonEditorResources.MemoryStreamManager.GetStream() as RecyclableMemoryStream;
+            RecyclableMemoryStream stream = CommonEditorResources.MemoryStreamManager.GetStream();
             _defaultCodec.Save(sprite, stream);
             // We don't need this now.
             sprite.Texture?.Dispose();

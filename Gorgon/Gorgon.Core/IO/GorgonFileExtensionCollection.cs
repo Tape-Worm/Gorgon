@@ -45,7 +45,7 @@ public class GorgonFileExtensionCollection
     ICollection<GorgonFileExtension> IDictionary<string, GorgonFileExtension>.Values => _extensions.Values;
 
     /// <inheritdoc/>
-    public int Count => throw new NotImplementedException();
+    public int Count => _extensions.Count;
 
     /// <inheritdoc/>
     bool ICollection<KeyValuePair<string, GorgonFileExtension>>.IsReadOnly => false;

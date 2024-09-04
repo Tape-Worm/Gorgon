@@ -33,6 +33,7 @@ using Gorgon.Editor.GorPackWriter.Properties;
 using Gorgon.Editor.PlugIns;
 using Gorgon.IO;
 using Gorgon.Math;
+using ICSharpCode.SharpZipLib.BZip2;
 using Microsoft.IO;
 
 namespace Gorgon.Editor.GorPackWriterPlugIn;
@@ -116,7 +117,9 @@ internal class GorPackWriterPlugIn
     {
         Debug.Assert(outStream is not null, "outStream is not null");
 
-        using Ionic.BZip2.ParallelBZip2OutputStream bzStream = new(outStream, compressionRate, true);
+        using BZip2OutputStream bzStream = new(outStream, compressionRate);
+        bzStream.IsStreamOwner = false;
+        
         long streamSize = inStream.Length;
 
         while (streamSize > 0)
@@ -146,6 +149,11 @@ internal class GorPackWriterPlugIn
                 {
                     return;
                 }
+            }
+            else
+            {
+                bzStream.Flush();
+                break;
             }
 
             streamSize -= readSize;
@@ -286,10 +294,9 @@ internal class GorPackWriterPlugIn
             outputFile = result.Open(FileMode.Create, FileAccess.Write, FileShare.None);
             fileStream = file.Open(FileMode.Open, FileAccess.Read, FileShare.Read);
 
-            // Just copy if we have no compression, or if the file is less than 4K - Not much sense to compress something so small.
-            if ((compressionRate == 0) || (file.Length <= 4096))
+            // Just copy if we have no compression, or if the file is less than 8K - Not much sense to compress something so small.
+            if ((compressionRate == 0) || (file.Length <= 8192))
             {
-
                 BlockCopyStream(fileStream, outputFile, writeBuffer, cancelToken);
             }
             else
@@ -353,7 +360,7 @@ internal class GorPackWriterPlugIn
                 try
                 {
                     outputStream = tempFile.Open(FileMode.Create, FileAccess.Write, FileShare.None);
-                    foreach ((XElement node, FileInfo file) in files.OrderByDescending(item => item.file.Length))
+                    foreach ((XElement node, FileInfo file) in files)
                     {
                         if (cancelToken.IsCancellationRequested)
                         {

@@ -250,7 +250,7 @@ public class GorgonV31AnimationBinaryCodec(Gorgon2D renderer)
 
                 // SharpDX rectangle data was stored as LTRB, so we need to convert it to keep compatibility.
                 GorgonRectangleF tempRect = new(key.TextureCoordinates.Left, key.TextureCoordinates.Top, key.TextureCoordinates.Right, key.TextureCoordinates.Bottom);
-                binWriter.WriteValue(in key.TextureCoordinates);
+                binWriter.WriteValue(in tempRect);
                 binWriter.WriteInt32(key.TextureArrayIndex);
             }
         }
@@ -414,7 +414,7 @@ public class GorgonV31AnimationBinaryCodec(Gorgon2D renderer)
             binWriter = writer.OpenChunk(VersionData);
             binWriter.WriteByte((byte)Version.Major);
             binWriter.WriteByte((byte)Version.Minor);
-            writer.Close();
+            binWriter.Close();
 
             binWriter = writer.OpenChunk(AnimationData);
             binWriter.WriteString("NA");
@@ -422,7 +422,7 @@ public class GorgonV31AnimationBinaryCodec(Gorgon2D renderer)
             binWriter.WriteSingle(animation.Fps);
             binWriter.WriteBool(animation.IsLooped);
             binWriter.WriteInt32(animation.LoopCount);
-            writer.Close();
+            binWriter.Close();
 
             // Write tracks with value type data.
             WriteTrackValues(writer, SingleData, animation.SingleTracks, k => k.Value);

@@ -435,7 +435,7 @@ public class Gorgon2DCompositor(Gorgon2D renderer)
 
         _passes[passIndex] = null;
         _passes.Insert(newPassIndex, pass);
-        _passes.Remove((CompositionPass)null);
+        _passes.Remove(null);
 
         for (int i = 0; i < _passes.Count; ++i)
         {

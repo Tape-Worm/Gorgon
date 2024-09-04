@@ -246,7 +246,7 @@ internal class FontEditorPlugin
 
         using GorgonFont font = _fontFactory.GetFont(fontInfo);
 
-        RecyclableMemoryStream stream = CommonEditorResources.MemoryStreamManager.GetStream() as RecyclableMemoryStream;
+        RecyclableMemoryStream stream = CommonEditorResources.MemoryStreamManager.GetStream();
         _defaultCodec.Save(font, stream);
 
         return Task.FromResult<(string, RecyclableMemoryStream)>((newName, stream));

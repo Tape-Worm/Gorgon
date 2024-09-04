@@ -459,7 +459,7 @@ internal partial class AnimationTrackContainer
                 GridTrackKeys.Rows[lastSelRowIndex].Cells[0].Selected = true;
             }
             return [
-                (lastSelRowIndex, (IReadOnlyList<int>)[])
+                (lastSelRowIndex, [])
             ];
         }
 

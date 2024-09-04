@@ -61,7 +61,7 @@ internal class GorPackProvider
     private RecyclableMemoryStream Decompress(byte[] data)
     {
         using MemoryStream sourceStream = MemoryStreamManager.GetStream(data);
-        RecyclableMemoryStream decompressedStream = MemoryStreamManager.GetStream() as RecyclableMemoryStream;
+        RecyclableMemoryStream decompressedStream = MemoryStreamManager.GetStream();
         BZip2.Decompress(sourceStream, decompressedStream, false);
         return decompressedStream;
     }

@@ -251,7 +251,7 @@ internal class ProjectManager(FileSystemProviders providers, IGorgonLog log)
 
         void CopyFile(FileCopyJob job)
         {
-            foreach (IGorgonVirtualFile file in job.Files)
+            foreach (IGorgonVirtualFile file in job.Files.OrderByDescending(item => item.Size))
             {
                 string outPath = Path.Combine(fileSystemDir, file.Directory.FullPath.FormatDirectory(Path.DirectorySeparatorChar)[1..], file.Name);
 
@@ -309,7 +309,7 @@ internal class ProjectManager(FileSystemProviders providers, IGorgonLog log)
         Stream writeStream = File.Open(metaDataOutput, FileMode.Create, FileAccess.Write, FileShare.None);
         try
         {
-            readStream.CopyToStream(writeStream, blockSize, writeBuffer);
+            readStream.CopyToStream(writeStream, (int)metaData.Size, writeBuffer);
         }
         finally
         {
