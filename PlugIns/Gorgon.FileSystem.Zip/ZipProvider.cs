@@ -82,7 +82,7 @@ internal class ZipProvider
             {
                 if (!entry.IsDirectory)
                 {
-                    string directoryName = Path.GetDirectoryName(entry.Name).FormatDirectory('/');
+                    string directoryName = Path.GetDirectoryName(entry.Name)?.FormatDirectory('/') ?? string.Empty;
 
                     directoryName = mountPoint.FullPath + directoryName;
 

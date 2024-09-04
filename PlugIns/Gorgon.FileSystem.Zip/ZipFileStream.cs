@@ -23,6 +23,7 @@
 // Created: Monday, June 27, 2011 9:31:05 AM
 // 
 
+using System.Diagnostics.CodeAnalysis;
 using Gorgon.IO.Zip.Properties;
 using ICSharpCode.SharpZipLib.Zip;
 
@@ -36,10 +37,10 @@ internal class ZipFileStream
 {
     // Flag to inidcate that the object was disposed.
     private bool _disposed;
-    private ZipInputStream _zipStream;      // Input stream for the zip file.
-    private long _position;                 // Position in the stream.
-    private long _basePosition;             // Base position in the stream.
-    private long _length;                   // File length.
+    // Input stream for the zip file.
+    private ZipInputStream _zipStream;
+    // Position in the stream.
+    private long _position;
 
     /// <inheritdoc/>
     public override bool CanWrite => false;
@@ -48,47 +49,42 @@ internal class ZipFileStream
     public override bool CanRead => true;
 
     /// <inheritdoc/>
-    public override bool CanSeek => _zipStream.CanSeek;
+    public override bool CanSeek => false;
 
     /// <inheritdoc/>
-    public override bool CanTimeout => _zipStream.CanTimeout;
+    public override bool CanTimeout => false;
 
     /// <inheritdoc/>
-    public override long Length => _length;
+    public override long Length => FileEntry.Size;
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Property to return the currrent position within the stream.
+    /// </summary>
+    /// <exception cref="NotSupportedException">Thrown if the property is set.</exception>
     public override long Position
     {
         get => _position;
-        set
-        {
-            if (value < 0)
-            {
-                value = 0;
-            }
-            if (value >= Length)
-            {
-                value = Length;
-            }
-
-            _position = value;
-
-            _zipStream.Position = _basePosition + _position;
-        }
+        set => throw new NotSupportedException();
     }
 
+    /// <summary>
+    /// Not supported by this stream.
+    /// </summary>
     /// <inheritdoc/>
     public override int WriteTimeout
     {
-        get => _zipStream.WriteTimeout;
-        set => _zipStream.WriteTimeout = value;
+        get => throw new NotSupportedException();
+        set => throw new NotSupportedException();
     }
 
+    /// <summary>
+    /// Not supported by this stream.
+    /// </summary>
     /// <inheritdoc/>
     public override int ReadTimeout
     {
-        get => _zipStream.ReadTimeout;
-        set => _zipStream.ReadTimeout = value;
+        get => throw new NotSupportedException();
+        set => throw new NotSupportedException();
     }
 
     /// <summary>
@@ -96,6 +92,7 @@ internal class ZipFileStream
     /// </summary>
     /// <param name="file">File in the zip file to read.</param>
     /// <param name="stream">Stream to the zip file.</param>
+    [MemberNotNull(nameof(_zipStream))]
     private void GetZipEntryStream(IGorgonVirtualFile file, Stream stream)
     {
         ZipEntry entry;
@@ -122,8 +119,6 @@ internal class ZipFileStream
                 continue;
             }
 
-            _length = _zipStream.Length;
-            _basePosition = _zipStream.Position;
             return;
         }
 
@@ -170,7 +165,7 @@ internal class ZipFileStream
     /// Not supported by this stream.
     /// </summary>
     /// <inheritdoc/>
-    public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback callback, object state) => throw new NotSupportedException();
+    public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state) => throw new NotSupportedException();
 
     /// <summary>
     /// Not supported by this stream.
@@ -178,11 +173,11 @@ internal class ZipFileStream
     /// <inheritdoc/>
     public override void EndWrite(IAsyncResult asyncResult) => throw new NotSupportedException();
 
-    /// <summary>
-    /// Not supported by this stream.
-    /// </summary>
     /// <inheritdoc/>
-    public override void Flush() => throw new NotSupportedException();
+    public override void Flush() => _zipStream.Flush();
+
+    /// <inheritdoc/>
+    public override Task FlushAsync(CancellationToken cancellationToken) => _zipStream.FlushAsync();
 
     /// <summary>
     /// Not supported by this stream.
@@ -196,27 +191,53 @@ internal class ZipFileStream
     /// <inheritdoc/>
     public override ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken = default) => throw new NotSupportedException();
 
+    /// <summary>
+    /// Not supported by this stream.
+    /// </summary>
     /// <inheritdoc/>
-    public override void CopyTo(Stream destination, int bufferSize) => _zipStream.CopyTo(destination, bufferSize);
+    public override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken) => throw new NotSupportedException();
 
     /// <inheritdoc/>
-    public override Task CopyToAsync(Stream destination, int bufferSize, CancellationToken cancellationToken) => _zipStream.CopyToAsync(destination, bufferSize, cancellationToken);
+    public override void CopyTo(Stream destination, int bufferSize)
+    {
+        _zipStream.CopyTo(destination, bufferSize);
+        _position = Length;
+    }
 
     /// <inheritdoc/>
-    public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default) => _zipStream.ReadAsync(buffer, cancellationToken);
+    public override async Task CopyToAsync(Stream destination, int bufferSize, CancellationToken cancellationToken)
+    {
+        await _zipStream.CopyToAsync(destination, bufferSize, cancellationToken).ConfigureAwait(false);
+        _position = Length;
+    }
 
     /// <inheritdoc/>
-    public override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback callback, object state) => _zipStream.BeginRead(buffer, offset, count, callback, state);
+    public override async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
+    {
+        int result = await _zipStream.ReadAsync(buffer, cancellationToken).ConfigureAwait(false);
+        _position += result;
+        return result;
+    }
 
     /// <inheritdoc/>
-    public override int EndRead(IAsyncResult asyncResult) => _zipStream.EndRead(asyncResult);
+    public override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state) => _zipStream.BeginRead(buffer, offset, count, callback, state);
+
+    /// <inheritdoc/>
+    public override int EndRead(IAsyncResult asyncResult)
+    {
+        int result = _zipStream.EndRead(asyncResult);
+
+        _position += result;
+
+        return result;
+    }
 
     /// <inheritdoc/>
     public override int Read(Span<byte> buffer)
     {
         if (_position >= Length)
         {
-            return 0;
+            return -1;
         }
 
         int result = _zipStream.Read(buffer);
@@ -225,36 +246,11 @@ internal class ZipFileStream
         return result;
     }
 
+    /// <summary>
+    /// Not supported by this stream.
+    /// </summary>
     /// <inheritdoc/>
-    public override long Seek(long offset, SeekOrigin origin)
-    {
-        switch (origin)
-        {
-            case SeekOrigin.Begin:
-                _position = offset;
-                break;
-            case SeekOrigin.Current:
-                _position += offset;
-                break;
-            case SeekOrigin.End:
-                _position = Length + offset;
-                break;
-        }
-
-        if (_position > Length)
-        {
-            throw new EndOfStreamException(Resources.GORFS_ZIP_ERR_EOS);
-        }
-
-        if (_position < 0)
-        {
-            throw new EndOfStreamException(Resources.GORFS_ZIP_ERR_BOS);
-        }
-
-        _zipStream.Position = _position + _basePosition;
-
-        return _position;
-    }
+    public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
 
     /// <inheritdoc/>
     public override int ReadByte()
@@ -277,6 +273,6 @@ internal class ZipFileStream
     /// <param name="file">The file.</param>
     /// <param name="stream">The stream.</param>
     internal ZipFileStream(IGorgonVirtualFile file, Stream stream)
-        : base(file, stream) => GetZipEntryStream(file, stream);
+        : base(file, Null) => GetZipEntryStream(file, stream);
 
 }

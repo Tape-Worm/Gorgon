@@ -26,6 +26,7 @@
 using System.Globalization;
 using System.Text;
 using System.Xml.Linq;
+using Gorgon.Core;
 using Gorgon.IO.GorPack.Properties;
 using Gorgon.IO.Providers;
 using ICSharpCode.SharpZipLib.BZip2;
@@ -79,9 +80,9 @@ internal class GorPackProvider
 
         foreach (XElement directoryNode in directories)
         {
-            XAttribute pathAttrib = directoryNode.Attribute("FullPath");
+            XAttribute pathAttrib = directoryNode.Attribute("FullPath") ?? throw new FileLoadException(Resources.GORFS_GORPACK_ERR_FILEINDEX_CORRUPT);
 
-            if (string.IsNullOrWhiteSpace(pathAttrib?.Value))
+            if (string.IsNullOrWhiteSpace(pathAttrib.Value))
             {
                 throw new FileLoadException(Resources.GORFS_GORPACK_ERR_FILEINDEX_CORRUPT);
             }
@@ -108,19 +109,17 @@ internal class GorPackProvider
 
         foreach (XElement file in files)
         {
-            XElement fileNameNode = file.Element("Filename");
-            XElement fileExtensionNode = file.Element("Extension");
-            XElement fileOffsetNode = file.Element("Offset");
-            XElement fileCompressedSizeNode = file.Element("CompressedSize");
-            XElement fileSizeNode = file.Element("Size");
-            XElement fileDateNode = file.Element("FileDate");
-            XElement fileLastModNode = file.Element("LastModDate");
-            string parentDirectoryPath = file.Parent?.Attribute("FullPath")?.Value;
+            XElement fileNameNode = file.Element("Filename") ?? throw new FileLoadException(Resources.GORFS_GORPACK_ERR_FILEINDEX_CORRUPT);
+            XElement? fileExtensionNode = file.Element("Extension");
+            XElement fileOffsetNode = file.Element("Offset") ?? throw new FileLoadException(Resources.GORFS_GORPACK_ERR_FILEINDEX_CORRUPT);
+            XElement? fileCompressedSizeNode = file.Element("CompressedSize");
+            XElement fileSizeNode = file.Element("Size") ?? throw new GorgonException(GorgonResult.CannotRead);
+            XElement fileDateNode = file.Element("FileDate") ?? throw new GorgonException(GorgonResult.CannotRead);
+            XElement? fileLastModNode = file.Element("LastModDate");
+            string? parentDirectoryPath = file.Parent?.Attribute("FullPath")?.Value;
 
             // We need these nodes.
-            if ((fileNameNode is null) || (fileOffsetNode is null)
-                || (fileSizeNode is null) || (fileDateNode is null)
-                || ((string.IsNullOrWhiteSpace(fileNameNode.Value)) && (string.IsNullOrWhiteSpace(fileExtensionNode.Value)))
+            if (((string.IsNullOrWhiteSpace(fileNameNode.Value)) && (string.IsNullOrWhiteSpace(fileExtensionNode?.Value)))
                 || (string.IsNullOrWhiteSpace(fileDateNode.Value))
                 || (string.IsNullOrWhiteSpace(parentDirectoryPath)))
             {
@@ -155,7 +154,7 @@ internal class GorPackProvider
                 throw new FileLoadException(Resources.GORFS_GORPACK_ERR_FILEINDEX_CORRUPT);
             }
 
-            string fileExtension = fileExtensionNode.Value ?? string.Empty;
+            string fileExtension = fileExtensionNode?.Value ?? string.Empty;
 
             if (!string.IsNullOrWhiteSpace(fileName))
             {

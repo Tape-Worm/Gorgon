@@ -122,16 +122,19 @@ public class GorgonPtrTests
         {
             GorgonPtr<int> gorgonPtr = new(dummyPtr, dummyArray.Length);
 
-#pragma warning disable IDE0054 // Use '--' operator
             for (int i = 0; i < 4; i++)
             {
                 Assert.AreEqual(dummyArray[i], gorgonPtr[0], $"Expected element at index 0 to be {i} before addition.");
+#pragma warning disable IDE0054 // Use '++' operator
                 gorgonPtr = gorgonPtr + 1;
+#pragma warning restore IDE0054 // Use '++' operator
             }
 
             for (int i = 3; i >= 0; i--)
             {
+#pragma warning disable IDE0054 // Use '--' operator
                 gorgonPtr = gorgonPtr - 1;
+#pragma warning restore IDE0054 // Use '--' operator
                 Assert.AreEqual(dummyArray[i], gorgonPtr[0], $"Expected element at index 0 to be {i} after subtraction.");
             }
 
@@ -140,7 +143,6 @@ public class GorgonPtrTests
                 Assert.AreEqual(dummyArray[i], gorgonPtr[0], $"Expected element at index 0 to be {i} before addition.");
                 gorgonPtr = 1 + gorgonPtr;
             }
-#pragma warning restore IDE0054 // Use '--' operator
         }
     }
 

@@ -119,7 +119,7 @@ internal class GorPackWriterPlugIn
 
         using BZip2OutputStream bzStream = new(outStream, compressionRate);
         bzStream.IsStreamOwner = false;
-        
+
         long streamSize = inStream.Length;
 
         while (streamSize > 0)

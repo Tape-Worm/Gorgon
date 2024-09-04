@@ -142,7 +142,7 @@ internal class ZipPhysicalFileInfo
     /// <param name="mountPoint">Mount point path.</param>
     public ZipPhysicalFileInfo(ZipEntry entry, string physicalLocation, IGorgonVirtualDirectory mountPoint)
     {
-        string directory = Path.GetDirectoryName(entry.Name);
+        string directory = Path.GetDirectoryName(entry.Name) ?? string.Empty;
 
         directory = mountPoint.FullPath + directory;
 

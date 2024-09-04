@@ -23,7 +23,6 @@
 // Created: Sunday, July 03, 2011 9:26:17 AM
 // 
 
-using Gorgon.IO.GorPack.Properties;
 using ICSharpCode.SharpZipLib.BZip2;
 
 namespace Gorgon.IO.GorPack;
@@ -41,8 +40,6 @@ internal class GorPackFileStream
     private readonly Stream _bzipStream;
     // Position in the stream.		    
     private long _position;
-    // Base position in the stream.
-    private readonly long _basePosition;
 
     /// <inheritdoc/>
     public override bool CanWrite => false;
@@ -51,51 +48,42 @@ internal class GorPackFileStream
     public override bool CanRead => true;
 
     /// <inheritdoc/>
-    public override bool CanSeek => _bzipStream.CanSeek;
+    public override bool CanSeek => false;
 
     /// <inheritdoc/>
-    public override bool CanTimeout => _bzipStream.CanTimeout;
+    public override bool CanTimeout => false;
 
     /// <inheritdoc/>
-    public override long Length
-    {
-        get;
-    }
+    public override long Length => FileEntry.Size;
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Property to return the currrent position within the stream.
+    /// </summary>
+    /// <exception cref="NotSupportedException">Thrown if the property is set.</exception>
     public override long Position
     {
         get => _position;
-        set
-        {
-            if (value < 0)
-            {
-                value = 0;
-            }
-
-            if (value >= Length)
-            {
-                value = Length;
-            }
-
-            _position = value;
-
-            _bzipStream.Position = _basePosition + _position;
-        }
+        set => throw new NotSupportedException();
     }
 
+    /// <summary>
+    /// Not supported by this stream.
+    /// </summary>
     /// <inheritdoc/>
     public override int WriteTimeout
     {
-        get => _bzipStream.WriteTimeout;
-        set => _bzipStream.WriteTimeout = value;
+        get => throw new NotSupportedException();
+        set => throw new NotSupportedException();
     }
 
+    /// <summary>
+    /// Not supported by this stream.
+    /// </summary>
     /// <inheritdoc/>
     public override int ReadTimeout
     {
-        get => _bzipStream.ReadTimeout;
-        set => _bzipStream.ReadTimeout = value;
+        get => throw new NotSupportedException();
+        set => throw new NotSupportedException();
     }
 
     /// <inheritdoc/>
@@ -127,25 +115,25 @@ internal class GorPackFileStream
     /// Not supported by this stream.
     /// </summary>
     /// <inheritdoc/>
+    public override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken) => throw new NotSupportedException();
+
+    /// <summary>
+    /// Not supported by this stream.
+    /// </summary>
+    /// <inheritdoc/>
     public override void Write(ReadOnlySpan<byte> buffer) => throw new NotSupportedException();
 
-    /// <summary>
-    /// Not supported by this stream.
-    /// </summary>
     /// <inheritdoc/>
-    public override void Flush() => throw new NotSupportedException();
+    public override void Flush() => _bzipStream.Flush();
+
+    /// <inheritdoc/>
+    public override Task FlushAsync(CancellationToken cancellationToken) => _bzipStream.FlushAsync();
 
     /// <summary>
     /// Not supported by this stream.
     /// </summary>
     /// <inheritdoc/>
-    public override Task FlushAsync(CancellationToken cancellationToken) => throw new NotSupportedException();
-
-    /// <summary>
-    /// Not supported by this stream.
-    /// </summary>
-    /// <inheritdoc/>
-    public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback callback, object state) => throw new NotSupportedException();
+    public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state) => throw new NotSupportedException();
 
     /// <summary>
     /// Not supported by this stream.
@@ -169,19 +157,39 @@ internal class GorPackFileStream
     public override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state) => _bzipStream.BeginRead(buffer, offset, count, callback, state);
 
     /// <inheritdoc/>
-    public override int EndRead(IAsyncResult asyncResult) => _bzipStream.EndRead(asyncResult);
+    public override int EndRead(IAsyncResult asyncResult)
+    {
+        int read = _bzipStream.EndRead(asyncResult);
+        _position += read;
+
+        return read;
+    }
 
     /// <inheritdoc/>
     public override void Close() => _bzipStream.Close();
 
     /// <inheritdoc/>
-    public override void CopyTo(Stream destination, int bufferSize) => _bzipStream.CopyTo(destination, bufferSize);
+    public override void CopyTo(Stream destination, int bufferSize)
+    {
+        _bzipStream.CopyTo(destination, bufferSize);
+        _position = Length;
+    }
 
     /// <inheritdoc/>
-    public override Task CopyToAsync(Stream destination, int bufferSize, CancellationToken cancellationToken) => _bzipStream.CopyToAsync(destination, bufferSize, cancellationToken);
+    public override async Task CopyToAsync(Stream destination, int bufferSize, CancellationToken cancellationToken)
+    {
+        await _bzipStream.CopyToAsync(destination, bufferSize, cancellationToken).ConfigureAwait(false);
+        _position = Length;
+    }
 
     /// <inheritdoc/>
-    public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default) => _bzipStream.ReadAsync(buffer, cancellationToken);
+    public override async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
+    {
+        int result = await _bzipStream.ReadAsync(buffer, cancellationToken).ConfigureAwait(false);
+
+        _position += result;
+        return result;
+    }
 
     /// <inheritdoc/>
     public override int Read(Span<byte> buffer)
@@ -199,45 +207,13 @@ internal class GorPackFileStream
         return result;
     }
 
-    /// <inheritdoc/>
-    public override long Seek(long offset, SeekOrigin origin)
-    {
-        switch (origin)
-        {
-            case SeekOrigin.Begin:
-                _position = offset;
-                break;
-            case SeekOrigin.Current:
-                _position += offset;
-                break;
-            case SeekOrigin.End:
-                _position = Length + offset;
-                break;
-        }
-
-        if (_position > Length)
-        {
-            throw new EndOfStreamException(Resources.GORFS_GORPACK_ERR_EOS);
-        }
-
-        if (_position < 0)
-        {
-            throw new EndOfStreamException(Resources.GORFS_GORPACK_ERR_BOS);
-        }
-
-        _bzipStream.Position = _basePosition + _position;
-
-        return _position;
-    }
-
     /// <summary>
-    /// Reads a byte from the stream and advances the position within the stream by one byte, or returns -1 if at the end of the stream.
+    /// Not supported by this stream.
     /// </summary>
-    /// <returns>
-    /// The unsigned byte cast to an Int32, or -1 if at the end of the stream.
-    /// </returns>
-    /// <exception cref="NotSupportedException">The stream does not support reading. </exception>
-    /// <exception cref="ObjectDisposedException">Methods were called after the stream was closed. </exception>
+    /// <inheritdoc/>
+    public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
+
+    /// <inheritdoc/>
     public override int ReadByte()
     {
         if (_position >= Length)
@@ -259,12 +235,10 @@ internal class GorPackFileStream
     /// <param name="stream">The stream.</param>
     /// <param name="compressedSize">Compression size for the file.</param>
     internal GorPackFileStream(IGorgonVirtualFile file, Stream stream, long? compressedSize)
-        : base(file, stream)
+        : base(file, Null)
     {
         stream.Position = file.PhysicalFile.Offset;     // Set the offset here.
 
         _bzipStream = compressedSize is not null ? new BZip2InputStream(stream) : stream;
-        Length = file.Size;
-        _basePosition = stream.Position;
     }
 }

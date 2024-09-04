@@ -15,7 +15,7 @@ This assembly contains a plug-in that will read a zip file as a file system.</De
     <PackageLicenseFile>
     </PackageLicenseFile>
     <PackageProjectUrl>https://www.tape-worm.net</PackageProjectUrl>
-    <PackageIcon>g.png</PackageIcon>
+    <PackageIcon>..\..\Gorgon\g.png</PackageIcon>
     <RepositoryUrl>https://github.com/Tape-Worm/Gorgon</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
     <PackageTags>C#, .NET Framework, Direct 3D, SharpDX, Winforms</PackageTags>
@@ -33,6 +33,7 @@ This assembly contains a plug-in that will read a zip file as a file system.</De
   </PropertyGroup>
   <PropertyGroup>
     <EmbeddedResourceUseDependentUponConvention>true</EmbeddedResourceUseDependentUponConvention>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -53,13 +54,6 @@ This assembly contains a plug-in that will read a zip file as a file system.</De
     <PackageReference Include="SharpZipLib">
       <Version>1.4.2</Version>
     </PackageReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\Gorgon\g.png">
-      <Pack>True</Pack>
-      <PackagePath>
-      </PackagePath>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Gorgon\Gorgon.FileSystem\Gorgon.FileSystem.csproj" />

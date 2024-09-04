@@ -59,11 +59,7 @@ public class GorgonFileSystemStream
     /// <inheritdoc/>
     public override bool CanSeek => _baseStream.CanSeek;
 
-    /// <summary>
-    /// Gets a value that determines whether the current stream can time out.
-    /// </summary>
-    /// <value></value>
-    /// <returns>A value that determines whether the current stream can time out.</returns>
+    /// <inheritdoc/>
     public override bool CanTimeout => _baseStream.CanTimeout;
 
     /// <inheritdoc/>
@@ -134,7 +130,7 @@ public class GorgonFileSystemStream
     public override int Read(Span<byte> buffer) => _baseStream.Read(buffer);
 
     /// <inheritdoc/>
-    public sealed override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken) => ReadAsync(buffer.AsMemory(offset, count), cancellationToken).AsTask();
+    public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken) => _baseStream.ReadAsync(buffer, offset, count, cancellationToken);
 
     /// <inheritdoc/>
     public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default) => _baseStream.ReadAsync(buffer, cancellationToken);
@@ -158,7 +154,7 @@ public class GorgonFileSystemStream
     public override ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken = default) => _baseStream.WriteAsync(buffer, cancellationToken);
 
     /// <inheritdoc/>
-    public sealed override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken) => WriteAsync(buffer.AsMemory(offset, count), cancellationToken).AsTask();
+    public override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken) => _baseStream.WriteAsync(buffer, offset, count, cancellationToken);
 
     /// <inheritdoc/>
     public override void WriteByte(byte value) => _baseStream.WriteByte(value);
@@ -176,9 +172,9 @@ public class GorgonFileSystemStream
     /// <param name="baseStream">The underlying stream to use for this stream.</param>
     protected internal GorgonFileSystemStream(IGorgonVirtualFile file, Stream baseStream)
     {
+        FileEntry = file;
         CloseUnderlyingStream = true;
         _baseStream = baseStream;
-        FileEntry = file;
 
         // Reset the position to the beginning.
         if (_baseStream.CanSeek)
