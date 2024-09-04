@@ -539,6 +539,8 @@ internal class Main
             HostServices.Log.Print($"Opening '{path}'...", LoggingLevel.Simple);
 
             // Create the project by copying data into the folder structure.
+            // If the editor file flag is True, it means that we're importing data from an editor built packed file, otherwise, the system will import the data
+            // and generate the metadata (which may lead to undesired results).
             bool isEditorFile = await _projectManager.ExtractPackFileProjectAsync(path, target);
 
             if (!System.IO.Directory.Exists(target))
@@ -547,7 +549,7 @@ internal class Main
                 return;
             }
 
-            await OpenProjectAsync(target, true);
+            await OpenProjectAsync(target, !isEditorFile);
         }
         catch (Exception ex)
         {
