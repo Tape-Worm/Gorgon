@@ -33,7 +33,7 @@ namespace Gorgon.Examples;
         // 
         // MainForm
         // 
-        this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
+        this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
         this.ClientSize = new System.Drawing.Size(1264, 761);
         
         this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));

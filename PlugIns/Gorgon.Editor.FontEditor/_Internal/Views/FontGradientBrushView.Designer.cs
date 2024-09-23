@@ -462,8 +462,8 @@ namespace Gorgon.Editor.FontEditor;
         // 
         // FontGradientBrushView
         // 
-        this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
-        this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+        this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+        this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
         this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
         this.Name = "FontGradientBrushView";
         this.Size = new System.Drawing.Size(364, 682);

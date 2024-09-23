@@ -130,8 +130,8 @@ namespace Gorgon.Editor;
         // 
         // FormSplash
         // 
-        AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
-        AutoScaleMode = AutoScaleMode.Dpi;
+        this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+        AutoScaleMode = AutoScaleMode.Font;
         BackColor = System.Drawing.Color.White;
         BackgroundImageLayout = ImageLayout.Center;
         ClientSize = new System.Drawing.Size(621, 158);

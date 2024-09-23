@@ -328,8 +328,8 @@ partial class GorgonFolderBrowser
         // 
         // GorgonFolderBrowser
         // 
-        AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
-        AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+        AutoScaleDimensions = new SizeF(7F, 15F);
+        AutoScaleMode = AutoScaleMode.Font;
         BackColor = System.Drawing.Color.FromArgb(204, 204, 204);
         Controls.Add(PanelDirectories);
         Controls.Add(PanelDirectoryName);

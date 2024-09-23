@@ -230,7 +230,7 @@ partial class GorgonAlignmentPicker
         // 
         // GorgonAlignmentPicker
         // 
-        this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
+        this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
         this.Controls.Add(this.panelAnchor);
         this.Name = "GorgonAlignmentPicker";
         this.Size = new System.Drawing.Size(105, 105);

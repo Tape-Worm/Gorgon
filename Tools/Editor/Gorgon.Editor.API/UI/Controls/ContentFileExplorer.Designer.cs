@@ -231,8 +231,8 @@ partial class ContentFileExplorer
         // 
         // ContentFileExplorer
         // 
-        this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
-        this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+        this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+        this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
         this.Controls.Add(this.LabelNoFiles);
         this.Controls.Add(this.tableLayoutPanel1);
         this.Name = "ContentFileExplorer";

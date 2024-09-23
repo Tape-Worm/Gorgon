@@ -106,8 +106,8 @@ namespace Gorgon.UI;
         // 
         // ConfirmationDialog
         // 
-        AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
-        AutoScaleMode = AutoScaleMode.Dpi;
+        this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+        AutoScaleMode = AutoScaleMode.Font;
         ClientSize = new System.Drawing.Size(303, 130);
         Controls.Add(buttonNo);
         Controls.Add(buttonCancel);

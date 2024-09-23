@@ -89,8 +89,8 @@ partial class BaseDialog
         // BaseDialog
         // 
         AcceptButton = buttonOK;
-        AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
-        AutoScaleMode = AutoScaleMode.Dpi;
+        this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+        AutoScaleMode = AutoScaleMode.Font;
         ClientSize = new System.Drawing.Size(304, 134);
         Controls.Add(pictureDialog);
         Controls.Add(buttonOK);

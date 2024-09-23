@@ -106,8 +106,8 @@ partial class Form
         // 
         // Form
         // 
-        AutoScaleDimensions = new SizeF(96F, 96F);
-        AutoScaleMode = AutoScaleMode.Dpi;
+        AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+        AutoScaleMode = AutoScaleMode.Font;
         BackColor = Color.White;
         ClientSize = new Size(1106, 571);
         Controls.Add(SplitViews);

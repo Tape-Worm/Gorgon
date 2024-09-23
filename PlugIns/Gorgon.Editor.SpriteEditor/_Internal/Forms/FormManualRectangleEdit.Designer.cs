@@ -236,7 +236,7 @@ partial class FormManualRectangleEdit
         // 
         // FormManualRectangleEdit
         // 
-        this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
+        this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
         this.AutoSize = true;
         this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
         this.ClientSize = new System.Drawing.Size(358, 243);

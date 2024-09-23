@@ -68,7 +68,7 @@ partial class GorgonWaitMessagePanel
         // GorgonWaitMessagePanel
         // 
         resources.ApplyResources(this, "$this");
-        this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+        this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
         this.BackColor = System.Drawing.Color.White;
         this.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
         this.Controls.Add(this.PanelWait);
