@@ -410,66 +410,72 @@ public partial class ContentBaseControl
             throw new ArgumentNullException(nameof(control));
         }
 
-        Control hostParent = PanelHostControls;
+        control.Visible = true;
 
-        try
-        {
-            while (hostParent is not null)
-            {
-                hostParent.SuspendLayout();
-                hostParent = hostParent.Parent;
-            }
+        PanelHostControls.Visible = PanelHost.Visible = true;
 
-            control.SuspendLayout();
+        CurrentHostedPanel = control;
 
-            foreach (Control hostControl in PanelHostControls.Controls.OfType<Control>().Where(item => item != control))
-            {
-                hostControl.Visible = false;
-            }
+        ////Control hostParent = PanelHostControls;
 
-            control.Left = 0;
-            control.Top = 0;
-            float dpiScale = 1;
-            int maxSize = ClientSize.Width - (Margin.Left + Margin.Right);
+        ////try
+        ////{
+        ////    while (hostParent is not null)
+        ////    {
+        ////        hostParent.SuspendLayout();
+        ////        hostParent = hostParent.Parent;
+        ////    }
 
-            if (DeviceDpi != 96)
-            {
-                dpiScale = DeviceDpi / 96.0f;
-            }
+        ////    control.SuspendLayout();
 
-            // Our control width should be within this range.  
-            if (control.Width > maxSize)
-            {
-                control.Width = maxSize;
-            }
+        ////    foreach (Control hostControl in PanelHostControls.Controls.OfType<Control>().Where(item => item != control))
+        ////    {
+        ////        hostControl.Visible = false;
+        ////    }
 
-            if (control.Width < (int)(300 * dpiScale).FastFloor())
-            {
-                control.Width = (int)(300 * dpiScale).FastFloor();
-            }
+        ////    control.Left = 0;
+        ////    control.Top = 0;
+        ////    float dpiScale = 1;
+        ////    int maxSize = ClientSize.Width - (Margin.Left + Margin.Right);
 
-            int newWidth = control.Width + PanelHost.Padding.Left;
-            if (control.Height > PanelHostControls.ClientSize.Height)
-            {
-                newWidth += SystemInformation.VerticalScrollBarWidth;
-            }
+        ////    if (DeviceDpi != 96)
+        ////    {
+        ////        dpiScale = DeviceDpi / 96.0f;
+        ////    }
 
-            PanelHost.Width = newWidth;
-            PanelHostControls.Visible = PanelHost.Visible = true;
-            control.Visible = true;
-            PanelHostControls.AutoScrollMinSize = new Size(0, control.Height);
+        ////    // Our control width should be within this range.  
+        ////    if (control.Width > maxSize)
+        ////    {
+        ////        control.Width = maxSize;
+        ////    }
 
-            CurrentHostedPanel = control;
-        }
-        finally
-        {
-            hostParent = control;
-            while (hostParent is not null)
-            {
-                hostParent.ResumeLayout();
-                hostParent = hostParent.Parent;
-            }
-        }
+        ////    if (control.Width < (int)(300 * dpiScale).FastFloor())
+        ////    {
+        ////        control.Width = (int)(300 * dpiScale).FastFloor();
+        ////    }
+
+        ////    int newWidth = control.Width + PanelHost.Padding.Left;
+        ////    if (control.Height > PanelHostControls.ClientSize.Height)
+        ////    {
+        ////        newWidth += SystemInformation.VerticalScrollBarWidth;
+        ////    }
+
+        ////    PanelHost.Width = newWidth;
+        ////    PanelHostControls.Visible = PanelHost.Visible = true;
+        ////    control.Visible = true;
+        ////    PanelHostControls.AutoScrollMinSize = new Size(0, control.Height);
+
+        ////    CurrentHostedPanel = control;
+        ////}
+        ////finally
+        ////{
+        ////    hostParent = control;
+        ////    while (hostParent is not null)
+        ////    {
+        ////        hostParent.ResumeLayout();
+        ////        hostParent = hostParent.Parent;
+        ////    }
+        ////}
     }
 
     /// <summary>

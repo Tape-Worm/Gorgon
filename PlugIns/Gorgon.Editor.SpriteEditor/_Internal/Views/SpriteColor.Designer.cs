@@ -35,42 +35,41 @@ partial class SpriteColor
     /// </summary>
     private void InitializeComponent()
     {
-            this.Picker = new Gorgon.Editor.UI.Controls.ColorPicker();
-            this.PanelBody.SuspendLayout();
-            this.SuspendLayout();
-            // 
-            // PanelBody
-            // 
-            this.PanelBody.Controls.Add(this.Picker);
-            this.PanelBody.Size = new System.Drawing.Size(364, 411);
-            // 
-            // Picker
-            // 
-            this.Picker.AutoSize = true;
-            this.Picker.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.Picker.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.Picker.Location = new System.Drawing.Point(0, 0);
-            this.Picker.Name = "Picker";
-            this.Picker.Size = new System.Drawing.Size(364, 411);
-            this.Picker.TabIndex = 0;
-            this.Picker.ColorChanged += new System.EventHandler<Gorgon.Editor.UI.Controls.ColorChangedEventArgs>(this.Picker_ColorChanged);
-            // 
-            // SpriteColor
-            // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ForeColor = System.Drawing.Color.White;
-            this.Name = "SpriteColor";
-            this.Size = new System.Drawing.Size(364, 468);
-            this.Text = "Sprite Color";
-            this.PanelBody.ResumeLayout(false);
-            this.PanelBody.PerformLayout();
-            this.ResumeLayout(false);
-            this.PerformLayout();
-
+        Picker = new UI.Controls.ColorPicker();
+        PanelBody.SuspendLayout();
+        SuspendLayout();
+        // 
+        // PanelBody
+        // 
+        PanelBody.Controls.Add(Picker);
+        PanelBody.Size = new Size(360, 288);
+        // 
+        // Picker
+        // 
+        Picker.AutoSize = true;
+        Picker.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+        Picker.Dock = DockStyle.Fill;
+        Picker.Font = new Font("Segoe UI", 9F);
+        Picker.Location = new Point(0, 0);
+        Picker.Name = "Picker";
+        Picker.Size = new Size(360, 288);
+        Picker.TabIndex = 0;
+        Picker.ColorChanged += Picker_ColorChanged;
+        // 
+        // SpriteColor
+        // 
+        AutoScaleDimensions = new SizeF(7F, 15F);
+        AutoScaleMode = AutoScaleMode.Font;
+        AutoSize = true;
+        AutoSizeMode = AutoSizeMode.GrowAndShrink;
+        Name = "SpriteColor";
+        Size = new Size(360, 345);
+        Text = "Sprite Color";
+        PanelBody.ResumeLayout(false);
+        PanelBody.PerformLayout();
+        ResumeLayout(false);
+        PerformLayout();
     }
-
-
 
     private UI.Controls.ColorPicker Picker;
 }
