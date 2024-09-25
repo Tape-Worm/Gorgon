@@ -303,6 +303,12 @@ public class ColorSlider : UserControl
         designSerializeColor = false;
     }
     private bool ShouldSerializeMinimum() => designSerializeColor;
+
+    private void InitializeComponent()
+    {
+
+    }
+
     private bool ShouldSerializeMaximum() => designSerializeColor;
 }
 

@@ -429,5 +429,11 @@ public class ColorPanel : UserControl
     private bool ShouldSerializeTopLeftColor() => designSerializeColor;
     private bool ShouldSerializeTopRightColor() => designSerializeColor;
     private bool ShouldSerializeBottomLeftColor() => designSerializeColor;
+
+    private void InitializeComponent()
+    {
+
+    }
+
     private bool ShouldSerializeBottomRightColor() => designSerializeColor;
 }
