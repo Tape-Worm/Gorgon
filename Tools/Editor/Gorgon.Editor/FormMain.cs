@@ -1415,7 +1415,6 @@ internal partial class FormMain
             _progressForm = new ProgressPanelDisplay(this);
         }
 
-        RibbonMain.AllowFormIntegrate = false;
         PanelProject.MainRibbon = RibbonMain;
         _ribbonMerger.FixGroupWidths();
     }

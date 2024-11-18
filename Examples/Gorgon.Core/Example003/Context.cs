@@ -104,6 +104,7 @@ internal class Context
         {
             _timer.Reset();
             _splashScreen.Show();
+            _splashScreen.Refresh();
             _splashScreen.UpdateText("This is the splash screen.");
 
             // Fade in the splash screen about 10% every 7 milliseconds.

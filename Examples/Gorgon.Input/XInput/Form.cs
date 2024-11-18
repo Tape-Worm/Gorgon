@@ -315,7 +315,7 @@ public partial class Form : System.Windows.Forms.Form
                                                  (item.Capabilities & GamingDeviceCapabilityFlags.SupportsVibration) == GamingDeviceCapabilityFlags.SupportsVibration &&
                                                  (item.Capabilities & GamingDeviceCapabilityFlags.SupportsRudder) == GamingDeviceCapabilityFlags.SupportsRudder)
                                   .Take(3)
-                                  .Select(item => _driver.CreateGamingDevice(item)).ToArray();
+                                  .Select(_driver.CreateGamingDevice).ToArray();
 
         for (int i = 0; i < _controllers.Count; i++)
         {

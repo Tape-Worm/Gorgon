@@ -119,7 +119,6 @@ partial class FormRibbon
         // 
         // RibbonTextContent
         // 
-        this.RibbonTextContent.AllowFormIntegrate = true;
         this.RibbonTextContent.InDesignHelperMode = true;
         this.RibbonTextContent.Name = "RibbonTextContent";
         this.RibbonTextContent.RibbonContexts.AddRange(new Krypton.Ribbon.KryptonRibbonContext[] {

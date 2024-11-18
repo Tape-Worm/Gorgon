@@ -858,7 +858,7 @@ internal class ImageContent
 
         IReadOnlyList<string> selectedFiles = ContentFileManager.GetSelectedFiles();
 
-        return selectedFiles.Select(file => ContentFileManager.GetFile(file))
+        return selectedFiles.Select(ContentFileManager.GetFile)
                     .Where(file => file is not null)
                     .Any(file => (file.Metadata.ContentMetadata is not null)
                                 && (file.Metadata.Attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out string dataType))
@@ -2209,7 +2209,7 @@ internal class ImageContent
             return false;
         }
 
-        return args.ContentFilePaths.Select(file => ContentFileManager.GetFile(file))
+        return args.ContentFilePaths.Select(ContentFileManager.GetFile)
                     .Where(file => file is not null)
                     .Any(file => (file.Metadata.ContentMetadata is not null)
                                 && (file.Metadata.Attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out string dataType))
@@ -2404,7 +2404,7 @@ internal class ImageContent
         try
         {
             // Get our list of image files.
-            IContentFile[] imageFiles = args.ContentFilePaths.Select(imageFile => ContentFileManager.GetFile(imageFile))
+            IContentFile[] imageFiles = args.ContentFilePaths.Select(ContentFileManager.GetFile)
                                                              .Where(imageFile => (imageFile?.Metadata.ContentMetadata is not null)
                                                                     && (imageFile.Metadata.Attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out string dataType))
                                                                     && (string.Equals(dataType, CommonEditorContentTypes.ImageType, StringComparison.OrdinalIgnoreCase)))
@@ -3217,6 +3217,6 @@ internal class ImageContent
         PremultipliedAlphaCommand = new EditorAsyncCommand<bool>(DoSetPremultipliedAlphaAsync, CanSetPremultipliedAlpha);
         ShowSetAlphaCommand = new EditorCommand<object>(DoShowSetAlphaValue, CanShowSetAlphaValue);
         CopyToImageCommand = new EditorAsyncCommand<CopyToImageArgs>(DoCopyToImageAsync, CanCopyToImage);
-        ShowFxCommand = new EditorCommand<object>(() => DoShowFx(), CanShowFx);
+        ShowFxCommand = new EditorCommand<object>(DoShowFx, CanShowFx);
     }
 }

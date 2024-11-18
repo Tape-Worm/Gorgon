@@ -263,7 +263,12 @@ internal partial class StageRecent
     {
         base.OnLoad(e);
 
-        ViewModel?.Load();
+        if ((IsDesignTime) || (ViewModel is null))
+        {
+            return;
+        }
+
+        ViewModel.Load();
 
         FillList();
     }

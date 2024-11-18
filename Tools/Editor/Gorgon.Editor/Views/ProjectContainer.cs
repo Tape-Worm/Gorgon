@@ -1,5 +1,4 @@
-﻿
-// 
+﻿// 
 // Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
@@ -30,7 +29,7 @@ using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Views;
 using Gorgon.Editor.ViewModels;
 using Gorgon.Math;
-using Krypton.Ribbon;
+using KR =Krypton.Ribbon;
 
 namespace Gorgon.Editor.Views;
 
@@ -186,7 +185,7 @@ internal partial class ProjectContainer
     // Flag to indicate that the data context load should be deferred.
     private bool _deferDataContextLoad = true;
     // The current ribbon for the current content.
-    private KryptonRibbon _currentContentRibbon;
+    private KR.KryptonRibbon _currentContentRibbon;
     // The current content control.
     private ContentBaseControl _contentControl;
     // The graphics context for the application.
@@ -216,7 +215,7 @@ internal partial class ProjectContainer
     /// Property to set or return the main ribbon interface on the parent control.
     /// </summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public KryptonRibbon MainRibbon
+    public KR.KryptonRibbon MainRibbon
     {
         get;
         set;
@@ -403,7 +402,7 @@ internal partial class ProjectContainer
     /// <param name="dataContext">The current data context.</param>
     private void SetupContent(IProjectEditor dataContext)
     {
-        KryptonRibbon ribbon = Interlocked.Exchange(ref _currentContentRibbon, null);
+        KR.KryptonRibbon ribbon = Interlocked.Exchange(ref _currentContentRibbon, null);
         if (ribbon is not null)
         {
             EventHandler<ContentRibbonEventArgs> handler = null;

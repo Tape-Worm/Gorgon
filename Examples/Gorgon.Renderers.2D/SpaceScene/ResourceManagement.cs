@@ -382,9 +382,9 @@ internal class ResourceManagement(Gorgon2D renderer, GorgonMefPlugInCache plugIn
             _pixelShaders["PlanetCloudPS"] = GorgonShaderFactory.Compile<GorgonPixelShader>(_graphics, Resources.Shaders3D, "PrimPSNoBump", GorgonGraphics.IsDebugEnabled);
         });
 
-        await Task.Run(() => Generate3DModels());
+        await Task.Run(Generate3DModels);
 
-        await Task.Run(() => BuildPostProcessCompositors());
+        await Task.Run(BuildPostProcessCompositors);
 
         // No need to make this async, should be plenty fast.
         GenerateAnimations();

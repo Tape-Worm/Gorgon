@@ -82,15 +82,14 @@ partial class FormMain
         // 
         // RibbonMain
         // 
-        this.RibbonMain.AllowFormIntegrate = true;
         this.RibbonMain.AllowMinimizedChange = false;
         this.RibbonMain.InDesignHelperMode = true;
         this.RibbonMain.Name = "RibbonMain";
-        this.RibbonMain.Palette = this.MainPalette;
         this.RibbonMain.PaletteMode = Krypton.Toolkit.PaletteMode.Custom;
         this.RibbonMain.QATLocation = Krypton.Ribbon.QATLocation.Hidden;
         this.RibbonMain.QATUserChange = false;
-        this.RibbonMain.RibbonAppButton.AppButtonShowRecentDocs = false;
+        this.RibbonMain.RibbonFileAppButton.AppButtonShowRecentDocs = false;
+        this.RibbonMain.RibbonFileAppButton.FormCloseBoxVisible = true;
         this.RibbonMain.RibbonStyles.BackInactiveStyle = Krypton.Toolkit.PaletteBackStyle.ButtonCalendarDay;
         this.RibbonMain.RibbonStyles.BackStyle = Krypton.Toolkit.PaletteBackStyle.ButtonCalendarDay;
         this.RibbonMain.RibbonTabs.AddRange(new Krypton.Ribbon.KryptonRibbonTab[] {
@@ -176,7 +175,6 @@ partial class FormMain
         // 
         // MainPalette
         // 
-        this.MainPalette.BasePaletteMode = Krypton.Toolkit.PaletteMode.Microsoft365Black;
         this.MainPalette.ButtonStyles.ButtonButtonSpec.OverrideDefault.Border.Draw = Krypton.Toolkit.InheritBool.False;
         this.MainPalette.ButtonStyles.ButtonButtonSpec.OverrideDefault.Border.DrawBorders = Krypton.Toolkit.PaletteDrawBorders.None;
         this.MainPalette.ButtonStyles.ButtonButtonSpec.OverrideFocus.Border.Draw = Krypton.Toolkit.InheritBool.False;

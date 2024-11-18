@@ -71,7 +71,7 @@ public static class EditorPlugInExtensions
         // We use this to determine whether the plug-in can be loaded into the current platform.
         AssemblyPlatformType currentPlatform = Environment.Is64BitProcess ? AssemblyPlatformType.x64 : AssemblyPlatformType.x86;
 
-        foreach (string file in pluginAssemblyFiles.Select(item => Path.GetFullPath(item)))
+        foreach (string file in pluginAssemblyFiles.Select(Path.GetFullPath))
         {
             string fileName = Path.GetFileName(file);
 

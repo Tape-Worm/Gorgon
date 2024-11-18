@@ -124,7 +124,6 @@ partial class FormRibbon
         // 
         // RibbonAnimationContent
         // 
-        this.RibbonAnimationContent.AllowFormIntegrate = true;
         this.RibbonAnimationContent.InDesignHelperMode = true;
         this.RibbonAnimationContent.Name = "RibbonAnimationContent";
         this.RibbonAnimationContent.RibbonContexts.AddRange(new Krypton.Ribbon.KryptonRibbonContext[] {

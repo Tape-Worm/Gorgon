@@ -59,10 +59,10 @@ internal static class GamingDeviceRegistryInfo
         }
 
         // Take the HID path, and split it out until we get the appropriate sub key name.
-        string[] parts = hidDeviceInfo.HIDPath.Split(new[]
-                                                     {
+        string[] parts = hidDeviceInfo.HIDPath.Split(
+                                                     [
                                                          '#'
-                                                     },
+                                                     ],
                                                      StringSplitOptions.RemoveEmptyEntries);
 
         if ((parts.Length < 2) || (string.IsNullOrWhiteSpace(parts[1])))

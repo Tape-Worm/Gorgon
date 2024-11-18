@@ -254,7 +254,7 @@ public class GorgonCodecBmFont
 
         if (spacing.Length > 0)
         {
-            string[] values = spacing.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            string[] values = spacing.Split([','], StringSplitOptions.RemoveEmptyEntries);
             if (values.Length > 0)
             {
                 packSpacing = Convert.ToInt32(values[0]);

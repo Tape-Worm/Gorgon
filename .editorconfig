@@ -292,6 +292,7 @@ csharp_style_prefer_readonly_struct_member = true:suggestion
 csharp_style_prefer_extended_property_pattern = true:suggestion
 csharp_style_implicit_object_creation_when_type_is_apparent = true:warning
 dotnet_diagnostic.CA1311.severity = none
+csharp_prefer_system_threading_lock = true:suggestion
 
 [*.{cs,vb}]
 dotnet_diagnostic.CA1063.severity=silent

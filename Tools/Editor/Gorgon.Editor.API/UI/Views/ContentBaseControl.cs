@@ -30,7 +30,7 @@ using Gorgon.Editor.Rendering;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.UI;
-using Krypton.Ribbon;
+using KR = Krypton.Ribbon;
 
 namespace Gorgon.Editor.UI.Views;
 
@@ -219,7 +219,7 @@ public partial class ContentBaseControl
     /// Property to return the ribbon for the content view.
     /// </summary>
     [Browsable(false)]
-    public KryptonRibbon Ribbon
+    public KR.KryptonRibbon Ribbon
     {
         get;
         protected set;

@@ -311,6 +311,7 @@ public partial class Form
         try
         {
             Show();
+            Refresh();
 
             Cursor.Current = Cursors.WaitCursor;
 

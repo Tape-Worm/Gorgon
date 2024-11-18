@@ -42,20 +42,18 @@ public static class PolygonHullParser
     /// <param name="builder">The polygonal sprite builder used to create the sprite.</param>
     private static void ParseString(string data, GorgonPolySpriteBuilder builder)
     {
-        string[] lines = data.Split(new[]
-                                    {
+        string[] lines = data.Split([
                                         "\n"
-                                    },
+                                    ],
                                     StringSplitOptions.RemoveEmptyEntries);
 
         for (int i = 0; i < lines.Length; ++i)
         {
             string line = lines[i].Replace("\r", string.Empty).Trim();
 
-            string[] components = line.Split(new[]
-                                             {
+            string[] components = line.Split([
                                                  ','
-                                             },
+                                             ],
                                              StringSplitOptions.None);
 
             // If this line lacks at least 4 components, then we cannot use it.

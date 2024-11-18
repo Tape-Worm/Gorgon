@@ -30,7 +30,7 @@ using Gorgon.Editor.SpriteEditor.Properties;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
-using Krypton.Ribbon;
+using KR = Krypton.Ribbon;
 using Krypton.Toolkit;
 
 namespace Gorgon.Editor.SpriteEditor;
@@ -48,11 +48,11 @@ internal partial class FormRibbon
     // The list of menu items associated with the zoom level.
     private readonly Dictionary<ZoomLevels, ToolStripMenuItem> _menuItems = [];
     // The buttons on the ribbon.
-    private readonly List<WeakReference<KryptonRibbonGroupButton>> _ribbonButtons = [];
+    private readonly List<WeakReference<KR.KryptonRibbonGroupButton>> _ribbonButtons = [];
     // The numeric controls on the ribbon.
-    private readonly List<WeakReference<KryptonRibbonGroupNumericUpDown>> _ribbonNumerics = [];
+    private readonly List<WeakReference<KR.KryptonRibbonGroupNumericUpDown>> _ribbonNumerics = [];
     // A list of buttons mapped to the tool structure.
-    private readonly Dictionary<string, WeakReference<KryptonRibbonGroupButton>> _toolButtons = new(StringComparer.OrdinalIgnoreCase);
+    private readonly Dictionary<string, WeakReference<KR.KryptonRibbonGroupButton>> _toolButtons = new(StringComparer.OrdinalIgnoreCase);
     // The currently selected zoom level
     private ZoomLevels _zoomLevel = ZoomLevels.ToWindow;
     // The renderer for the content.
@@ -144,11 +144,11 @@ internal partial class FormRibbon
     /// <param name="dataContext">The current data context.</param>
     private void SetToolStates(ISpriteContent dataContext)
     {
-        KryptonRibbonGroupButton button;
+        KR.KryptonRibbonGroupButton button;
 
         if (dataContext.CommandContext is null)
         {
-            foreach (KeyValuePair<string, WeakReference<KryptonRibbonGroupButton>> buttonItem in _toolButtons)
+            foreach (KeyValuePair<string, WeakReference<KR.KryptonRibbonGroupButton>> buttonItem in _toolButtons)
             {
                 if (buttonItem.Value.TryGetTarget(out button))
                 {
@@ -159,7 +159,7 @@ internal partial class FormRibbon
             return;
         }
 
-        if (!_toolButtons.TryGetValue(dataContext.CommandContext.Name, out WeakReference<KryptonRibbonGroupButton> buttonRef))
+        if (!_toolButtons.TryGetValue(dataContext.CommandContext.Name, out WeakReference<KR.KryptonRibbonGroupButton> buttonRef))
         {
             return;
         }
@@ -603,42 +603,42 @@ internal partial class FormRibbon
     /// </summary>
     private void GetRibbonButtons()
     {
-        foreach (KryptonRibbonTab tab in RibbonSpriteContent.RibbonTabs)
+        foreach (KR.KryptonRibbonTab tab in RibbonSpriteContent.RibbonTabs)
         {
-            foreach (KryptonRibbonGroup grp in tab.Groups)
+            foreach (KR.KryptonRibbonGroup grp in tab.Groups)
             {
                 // They really don't make it easy to get at the buttons do they?
-                foreach (KryptonRibbonGroupLines container in grp.Items.OfType<KryptonRibbonGroupLines>())
+                foreach (KR.KryptonRibbonGroupLines container in grp.Items.OfType<KR.KryptonRibbonGroupLines>())
                 {
-                    foreach (KryptonRibbonGroupButton item in container.Items.OfType<KryptonRibbonGroupButton>())
+                    foreach (KR.KryptonRibbonGroupButton item in container.Items.OfType<KR.KryptonRibbonGroupButton>())
                     {
-                        _ribbonButtons.Add(new WeakReference<KryptonRibbonGroupButton>(item));
+                        _ribbonButtons.Add(new WeakReference<KR.KryptonRibbonGroupButton>(item));
                     }
 
-                    foreach (KryptonRibbonGroupNumericUpDown item in container.Items.OfType<KryptonRibbonGroupNumericUpDown>())
+                    foreach (KR.KryptonRibbonGroupNumericUpDown item in container.Items.OfType<KR.KryptonRibbonGroupNumericUpDown>())
                     {
-                        _ribbonNumerics.Add(new WeakReference<KryptonRibbonGroupNumericUpDown>(item));
+                        _ribbonNumerics.Add(new WeakReference<KR.KryptonRibbonGroupNumericUpDown>(item));
                     }
                 }
 
-                foreach (KryptonRibbonGroupTriple container in grp.Items.OfType<KryptonRibbonGroupTriple>())
+                foreach (KR.KryptonRibbonGroupTriple container in grp.Items.OfType<KR.KryptonRibbonGroupTriple>())
                 {
-                    foreach (KryptonRibbonGroupButton item in container.Items.OfType<KryptonRibbonGroupButton>())
+                    foreach (KR.KryptonRibbonGroupButton item in container.Items.OfType<KR.KryptonRibbonGroupButton>())
                     {
-                        _ribbonButtons.Add(new WeakReference<KryptonRibbonGroupButton>(item));
+                        _ribbonButtons.Add(new WeakReference<KR.KryptonRibbonGroupButton>(item));
                     }
 
-                    foreach (KryptonRibbonGroupNumericUpDown item in container.Items.OfType<KryptonRibbonGroupNumericUpDown>())
+                    foreach (KR.KryptonRibbonGroupNumericUpDown item in container.Items.OfType<KR.KryptonRibbonGroupNumericUpDown>())
                     {
-                        _ribbonNumerics.Add(new WeakReference<KryptonRibbonGroupNumericUpDown>(item));
+                        _ribbonNumerics.Add(new WeakReference<KR.KryptonRibbonGroupNumericUpDown>(item));
                     }
                 }
             }
         }
 
-        _toolButtons[nameof(SpriteClipContext)] = new WeakReference<KryptonRibbonGroupButton>(ButtonClipSprite);
-        _toolButtons[nameof(SpritePickContext)] = new WeakReference<KryptonRibbonGroupButton>(ButtonPickSprite);
-        _toolButtons[nameof(SpriteVertexEditContext)] = new WeakReference<KryptonRibbonGroupButton>(ButtonSpriteVertexOffsets);
+        _toolButtons[nameof(SpriteClipContext)] = new WeakReference<KR.KryptonRibbonGroupButton>(ButtonClipSprite);
+        _toolButtons[nameof(SpritePickContext)] = new WeakReference<KR.KryptonRibbonGroupButton>(ButtonPickSprite);
+        _toolButtons[nameof(SpriteVertexEditContext)] = new WeakReference<KR.KryptonRibbonGroupButton>(ButtonSpriteVertexOffsets);
     }
 
     /// <summary>
@@ -647,9 +647,9 @@ internal partial class FormRibbon
     /// <param name="enable"><b>true</b> to enable all buttons, <b>false</b> to disable.</param>
     private void EnableRibbon(bool enable)
     {
-        foreach (WeakReference<KryptonRibbonGroupButton> item in _ribbonButtons)
+        foreach (WeakReference<KR.KryptonRibbonGroupButton> item in _ribbonButtons)
         {
-            if (!item.TryGetTarget(out KryptonRibbonGroupButton button))
+            if (!item.TryGetTarget(out KR.KryptonRibbonGroupButton button))
             {
                 continue;
             }
@@ -657,9 +657,9 @@ internal partial class FormRibbon
             button.Enabled = enable;
         }
 
-        foreach (WeakReference<KryptonRibbonGroupNumericUpDown> item in _ribbonNumerics)
+        foreach (WeakReference<KR.KryptonRibbonGroupNumericUpDown> item in _ribbonNumerics)
         {
-            if (!item.TryGetTarget(out KryptonRibbonGroupNumericUpDown numeric))
+            if (!item.TryGetTarget(out KR.KryptonRibbonGroupNumericUpDown numeric))
             {
                 continue;
             }

@@ -177,11 +177,10 @@ internal class LogConsoleProvider
     /// <returns>The array containing each line.</returns>
     private static string[] GetLines(string message) => string.IsNullOrWhiteSpace(message)
             ? []
-            : message.Split(new[]
-                             {
+            : message.Split([
                                  '\r',
                                  '\n'
-                             },
+                             ],
                              StringSplitOptions.RemoveEmptyEntries);
 
     /// <summary>

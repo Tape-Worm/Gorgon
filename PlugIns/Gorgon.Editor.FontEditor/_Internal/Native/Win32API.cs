@@ -79,7 +79,7 @@ internal static partial class Win32API
     /// </summary>
     private static void BuildUnicodeRangeList()
     {
-        IList<string> rangeLines = Resources.UnicodeBlocks.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+        IList<string> rangeLines = Resources.UnicodeBlocks.Split(['\n'], StringSplitOptions.RemoveEmptyEntries);
         _ranges = new SortedDictionary<string, GorgonRange<int>>();
 
         // Break out the lines.
@@ -142,7 +142,7 @@ internal static partial class Win32API
     {
         if (_codePointNames == null)
         {
-            IList<string> lines = Resources.UnicodeData.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+            IList<string> lines = Resources.UnicodeData.Split(['\n'], StringSplitOptions.RemoveEmptyEntries);
 
             _codePointNames = new Dictionary<int, string>();
 

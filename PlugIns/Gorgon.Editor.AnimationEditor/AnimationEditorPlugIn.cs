@@ -333,7 +333,7 @@ internal class AnimationEditorPlugIn
         // Check for all textures. If they're all there then we don't need to update anything.
         if ((dependencyList.TryGetValue(CommonEditorContentTypes.ImageType, out List<string> textureNames))
             && (textureNames is not null)
-            && (textureNames.All(item => ContentFileManager.FileExists(item))))
+            && (textureNames.All(ContentFileManager.FileExists)))
         {
             return;
         }

@@ -29,43 +29,63 @@ partial class FormSplash
     /// </summary>
     private void InitializeComponent()
     {
-        var resources = new ComponentResourceManager(typeof(FormSplash));
-        panel1 = new Panel();
+        ComponentResourceManager resources = new ComponentResourceManager(typeof(FormSplash));
         labelText = new Label();
+        pictureBox1 = new PictureBox();
+        tableLayoutPanel1 = new TableLayoutPanel();
+        ((ISupportInitialize)pictureBox1).BeginInit();
+        tableLayoutPanel1.SuspendLayout();
         SuspendLayout();
-        // 
-        // panel1
-        // 
-        panel1.BackgroundImage = Properties.Resources.Gorgon_2_x_Logo_Full;
-        panel1.BackgroundImageLayout = ImageLayout.Stretch;
-        panel1.BorderStyle = BorderStyle.FixedSingle;
-        panel1.Dock = DockStyle.Fill;
-        panel1.Location = new System.Drawing.Point(0, 0);
-        panel1.Name = "panel1";
-        panel1.Size = new System.Drawing.Size(622, 123);
-        panel1.TabIndex = 2;
         // 
         // labelText
         // 
-        labelText.BackColor = System.Drawing.Color.White;
-        labelText.Dock = DockStyle.Bottom;
-        labelText.Location = new System.Drawing.Point(0, 123);
+        labelText.Anchor = AnchorStyles.Left;
+        labelText.AutoSize = true;
+        labelText.Location = new System.Drawing.Point(3, 125);
         labelText.Name = "labelText";
-        labelText.Size = new System.Drawing.Size(622, 27);
+        labelText.Size = new System.Drawing.Size(171, 15);
         labelText.TabIndex = 2;
         labelText.Text = "Here's some splash screen text!";
         labelText.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+        // 
+        // pictureBox1
+        // 
+        pictureBox1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+        pictureBox1.Image = Properties.Resources.Gorgon_2_x_Logo_Full;
+        pictureBox1.Location = new System.Drawing.Point(0, 0);
+        pictureBox1.Margin = new Padding(0);
+        pictureBox1.MaximumSize = new System.Drawing.Size(620, 124);
+        pictureBox1.MinimumSize = new System.Drawing.Size(620, 124);
+        pictureBox1.Name = "pictureBox1";
+        pictureBox1.Size = new System.Drawing.Size(620, 124);
+        pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
+        pictureBox1.TabIndex = 0;
+        pictureBox1.TabStop = false;
+        // 
+        // tableLayoutPanel1
+        // 
+        tableLayoutPanel1.AutoSize = true;
+        tableLayoutPanel1.ColumnCount = 1;
+        tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+        tableLayoutPanel1.Controls.Add(pictureBox1, 0, 0);
+        tableLayoutPanel1.Controls.Add(labelText, 0, 1);
+        tableLayoutPanel1.Dock = DockStyle.Fill;
+        tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
+        tableLayoutPanel1.Name = "tableLayoutPanel1";
+        tableLayoutPanel1.RowCount = 2;
+        tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 124F));
+        tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+        tableLayoutPanel1.Size = new System.Drawing.Size(620, 142);
+        tableLayoutPanel1.TabIndex = 3;
         // 
         // FormSplash
         // 
         AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
         AutoScaleMode = AutoScaleMode.Dpi;
         BackColor = System.Drawing.Color.White;
-        BackgroundImageLayout = ImageLayout.Center;
-        ClientSize = new System.Drawing.Size(622, 150);
+        ClientSize = new System.Drawing.Size(620, 142);
         ControlBox = false;
-        Controls.Add(panel1);
-        Controls.Add(labelText);
+        Controls.Add(tableLayoutPanel1);
         FormBorderStyle = FormBorderStyle.None;
         Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
         MaximizeBox = false;
@@ -76,12 +96,14 @@ partial class FormSplash
         ShowInTaskbar = false;
         StartPosition = FormStartPosition.CenterScreen;
         Text = "Gorgon Editor";
+        ((ISupportInitialize)pictureBox1).EndInit();
+        tableLayoutPanel1.ResumeLayout(false);
+        tableLayoutPanel1.PerformLayout();
         ResumeLayout(false);
+        PerformLayout();
     }
 
-
-
-    private Panel panel1;
     private Label labelText;
-
+    private PictureBox pictureBox1;
+    private TableLayoutPanel tableLayoutPanel1;
 }

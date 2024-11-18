@@ -285,7 +285,7 @@ internal class AnimationIOService(IContentFileManager fileManager, ITextureCache
         }
 
         List<IContentFile> files = new(dependencies.Where(item => (!string.IsNullOrWhiteSpace(item)) && (_fileManager.FileExists(item)))
-                                                       .Select(item => _fileManager.GetFile(item)));
+                                                       .Select(_fileManager.GetFile));
 
         if (files.Count == 0)
         {

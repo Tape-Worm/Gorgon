@@ -31,24 +31,13 @@ public class GorgonTimingTests
         IGorgonTimer timer = Mock.Of<IGorgonTimer>(x => x.IsHighResolution == true);
         Mock<IGorgonTimer> mock = Mock.Get(timer);
         mock.SetupGet(x => x.Milliseconds)
-            .Returns(() => Time.GetTime());
+            .Returns(Time.GetTime);
 
         GorgonTiming.StartTiming(timer);
 
         for (int i = 0; i < 1000; ++i)
         {
-            if (i < 100)
-            {
-                Time.Delta = (1.0 / 16) * 1000;
-            }
-            else if (i is > 400 and < 460)
-            {
-                Time.Delta = (1.0 / 60) * 1000;
-            }
-            else
-            {
-                Time.Delta = (1.0 / 30) * 1000;
-            }
+            Time.Delta = i < 100 ? (1.0 / 16) * 1000 : i is > 400 and < 460 ? (1.0 / 60) * 1000 : (1.0 / 30) * 1000;
             GorgonTiming.Update();
         }
 

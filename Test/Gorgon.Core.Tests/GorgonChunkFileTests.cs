@@ -46,7 +46,7 @@ public class GorgonChunkFileTests
         stream.Position = 0;
 
         using GorgonChunkFileReader reader = new(stream, [0x12345679]);
-        Assert.ThrowsException<GorgonException>(() => reader.Open());
+        Assert.ThrowsException<GorgonException>(reader.Open);
     }
 
     [TestMethod]

@@ -159,6 +159,11 @@ internal partial class Stage
     {
         base.OnLoad(e);
 
+        if (IsDesignTime)
+        {
+            return;
+        }
+
         // If we have recent items, then start with the recent items list instead of the new project item.
         if (Recent.HasItems)
         {

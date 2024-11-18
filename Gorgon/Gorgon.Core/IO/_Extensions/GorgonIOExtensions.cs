@@ -1334,10 +1334,10 @@ public static class GorgonIOExtensions
     {
         path = path?.FormatPath(directorySeparator);
 
-        return path?.Split(new[]
-                          {
+        return path?.Split(
+                          [
                               directorySeparator
-                          },
+                          ],
                           StringSplitOptions.RemoveEmptyEntries) ?? [];
     }
 

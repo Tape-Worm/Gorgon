@@ -863,7 +863,7 @@ internal class KeyEditorContext
         // If any of the selected tracks are texture tracks, and we have no files, then don't allow the operation.
         if (_content.Selected[0].SelectedKeys.Any(item => item.Track.KeyType == AnimationTrackKeyType.Texture2D))
         {
-            _selectedSprites.AddRange(_fileManager.GetSelectedFiles().Select(item => _fileManager.GetFile(item)));
+            _selectedSprites.AddRange(_fileManager.GetSelectedFiles().Select(_fileManager.GetFile));
 
             // If we have sprites selected, and none of them are sprites.
             if ((_selectedSprites.Count == 0) || (_selectedSprites.Any(item => (item is null) || (!_contentServices.IOService.IsContentSprite(item)))))
@@ -896,7 +896,7 @@ internal class KeyEditorContext
             {
                 _selectedSprites.AddRange(_fileManager.GetSelectedFiles()
                                                       .Reverse()
-                                                      .Select(item => _fileManager.GetFile(item))
+                                                      .Select(_fileManager.GetFile)
                                                       .Where(item => (item is not null) && (_contentServices.IOService.IsContentSprite(item))));
             }
             else
@@ -925,7 +925,7 @@ internal class KeyEditorContext
         }
 
         IEnumerable<IContentFile> files = paths.Where(item => !string.IsNullOrWhiteSpace(item))
-                                               .Select(item => _fileManager.GetFile(item));
+                                               .Select(_fileManager.GetFile);
 
         return files.All(item => (item is not null) && (_contentServices.IOService.IsContentSprite(item)));
     }
@@ -942,7 +942,7 @@ internal class KeyEditorContext
             // Retrieve the selected file(s).
             _selectedSprites.Clear();
             _selectedSprites.AddRange(paths.Reverse()
-                                           .Select(item => _fileManager.GetFile(item)));
+                                           .Select(_fileManager.GetFile));
             await SetKeyAsync(_selectedSprites, null);
         }
         catch (Exception ex)

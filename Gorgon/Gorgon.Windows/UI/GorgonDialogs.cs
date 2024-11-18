@@ -80,7 +80,7 @@ public static class GorgonDialogs
             return string.Empty;
         }
 
-        string[] lines = stackTrace.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+        string[] lines = stackTrace.Split(['\n', '\r'], StringSplitOptions.RemoveEmptyEntries);
 
         result.AppendFormat("\n{0}\n", Resources.GOR_EXCEPT_STACK_TRACE);
 

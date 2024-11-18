@@ -258,7 +258,7 @@ internal class ContentLoader2D(IGorgonFileSystem fileSystem, IProjectMetadata me
                 dependencies[item.Key] = files;
             }
 
-            files.AddRange(item.Value.Select(item => _fileSystem.GetFile(item))
+            files.AddRange(item.Value.Select(_fileSystem.GetFile)
                                      .Where(item => item != null));
         }
 

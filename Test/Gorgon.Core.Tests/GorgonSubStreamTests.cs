@@ -39,7 +39,7 @@ public class GorgonSubStreamTests
         GorgonSubStream wrapper = new(parentStream, 0, 50, true);
 
         // Act and Assert
-        await Assert.ThrowsExceptionAsync<NotSupportedException>(() => wrapper.FlushAsync());
+        await Assert.ThrowsExceptionAsync<NotSupportedException>(wrapper.FlushAsync);
     }
 
     [TestMethod]
