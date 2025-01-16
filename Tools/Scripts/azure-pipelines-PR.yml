@@ -8,7 +8,7 @@ name: 4.0.$(Rev:r).$(DayOfYear)
 pr:
   branches:
     include:
-      - feature/*
+      - develop
 
 jobs:
   - job: 'PR_Build'
@@ -27,7 +27,7 @@ jobs:
       - task: CmdLine@2
         displayName: 'Updating version to $(Build.BuildNumber)'
         inputs:
-          script: '$(Build.SourcesDirectory)/CsProjVersionUpdater.exe $(Build.BuildNumber)'
+          script: '$(Build.SourcesDirectory)/Tools/CsProjVersionUpdater/CsProjVersionUpdater.exe $(Build.BuildNumber)'
 
       - task: NuGetToolInstaller@1
         inputs:
