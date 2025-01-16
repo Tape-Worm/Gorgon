@@ -16,7 +16,7 @@ Building applications with Gorgon requires that you write code. There's no nodes
 
 Gorgon is meant for people that want to write their own functionality, get down into the guts of their applications and not have to deal with a black boxed scripting system, or editor. In short, it's more work, but more customizable.
 
-For those that want a more complete (and polished) package to build their applications there's [Unity](https://unity.com/), [Unreal](https://www.unrealengine.com/en-US/), [Godot](https://godotengine.org/) or [Stride (formally Xenko)](https://github.com/stride3d/stride).
+For those that want a more complete (and polished) package to build their applications there's ~~Unity~~ ([after the crap they've pulled](https://www.theguardian.com/games/2023/sep/12/unity-engine-fees-backlash-response), no one should be using Unity), [Unreal](https://www.unrealengine.com/en-US/), [Godot](https://godotengine.org/) or [Stride (formally Xenko)](https://github.com/stride3d/stride).
 
 Documentation
 =============
@@ -74,7 +74,7 @@ Gorgon provides a set of libraries that are capable of handling pretty much any 
 
   - [x] __[Gorgon.Graphics.Avalonia](Gorgon/Gorgon.Graphics.Avalonia)__ 
   
-  Functionality to allow Gorgon to render onto an Avalonia surface. This allows interoperabilty between Gorgon and Avalonia.
+  Functionality to allow Gorgon to render onto an Avalonia surface. This allows interoperabilty between Gorgon and [Avalonia](https://www.avaloniaui.net/).
 
   - [x] __[Gorgon.Graphics.Imaging](Gorgon/Gorgon.Graphics.Imaging)__ 
   

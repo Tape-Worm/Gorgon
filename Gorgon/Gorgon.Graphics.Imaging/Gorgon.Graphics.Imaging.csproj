@@ -47,7 +47,7 @@
     <None Include="..\g.png" Link="g.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Dependencies\BCnEncoder.NET\BCnEnc.Net\BCnEncoder.csproj" />
+    <ProjectReference Include="..\..\Dependencies\Gorgon.BCnEncoder.NET\Gorgon.BCnEncoder.NET\Gorgon.BCnEncoder.Net.csproj" />
     <ProjectReference Include="..\Gorgon.Core\Gorgon.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
