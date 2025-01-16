@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,63 +11,57 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Friday, January 18, 2013 8:47:30 AM
 // 
-#endregion
 
-using System;
-using System.IO;
 using System.Text;
 using Gorgon.Core;
-using Gorgon.IO;
+using Gorgon.IO.FileSystem;
 using Gorgon.UI;
 
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Main application interface.
+/// Main application interface
 /// </summary>
 /// <remarks>
 /// In this example we will show how to write to the file system.  
 /// 
 /// Whenever we create a file system, it's created as a read-only file system.  This is fine for most uses, but we need to be
 /// able to write data into it.  The problem is that the file system data could be on read only media like a DVD or CD.  Gorgon's 
-/// virtual file system is based on PhysicsFS (http://icculus.org/physfs/), it uses the concept of a write directory.
+/// virtual file system is based on PhysicsFS (http://icculus.org/physfs/), it uses the concept of a write directory
 /// This means when you update a file or add one, it will get rerouted to the write directory.  The write directory MUST be a 
-/// physical directory on your hard drive and must be able to be written into.
+/// physical directory on your hard drive and must be able to be written into
 /// 
 /// Setting up a write directory is fairly simple: Create an instance of a GorgonFileSystemWriter and pass in the file system 
 /// that you wish to set up for writing, and the physical location on the windows file system where the data will be written into. 
 /// Once a writer is setup, the files in it will take precedenceover all files in the file system.  So, for example, if 
 /// SomeText.txt exists in root of the mounted folder, and the same file name exists in the physical file system directory, then 
-/// the version in the physical file system directory will be used for file I/O operations.
+/// the version in the physical file system directory will be used for file I/O operations
 /// 
 /// Here, we do exactly this.  We take the file from the root of the directory and read it in.  
 /// </remarks>
 public partial class Form
     : System.Windows.Forms.Form
 {
-    #region Variables.
     // Our file system.
     private GorgonFileSystem _fileSystem;
-    // The file system writer.
-    private GorgonFileSystemWriter _writer;
+    // The mount point for our writable file system area.
+    private GorgonFileSystemMountPoint _writeMount = GorgonFileSystemMountPoint.Empty;
     // Original text.
     private string _originalText = string.Empty;
     // Changed text.
     private string _changedText = string.Empty;
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Handles the TextChanged event of the textDisplay control.
     /// </summary>
@@ -93,23 +87,52 @@ public partial class Form
 
             if (string.IsNullOrEmpty(textDisplay.Text))
             {
-                _writer.DeleteFile("/SomeText.txt");
+                _fileSystem.DeleteFile("/SomeText.txt");
                 LoadText();
                 return;
             }
 
-            using Stream stream = _writer.OpenStream("/SomeText.txt", FileMode.Create);
+            using Stream stream = _fileSystem.OpenStream("/SomeText.txt", true);
             byte[] data = Encoding.UTF8.GetBytes(textDisplay.Text);
             stream.Write(data, 0, data.Length);
             _changedText = textDisplay.Text;
         }
         catch (Exception ex)
         {
-            ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), Program.Log);
+            ex.Handle(e => GorgonDialogs.ErrorBox(this, e), Program.Log);
         }
         finally
         {
             textDisplay.Enabled = true;
+            CommandEnable(!string.Equals(_originalText, _changedText, StringComparison.CurrentCulture));
+            UpdateInfo();
+        }
+    }
+
+    /// <summary>
+    /// Handles the Click even of the itemDeleteChanged control.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
+
+    private void ItemDeleteChanged_Click(object sender, EventArgs e)
+    {
+        try
+        {
+            CommandEnable(false);
+            if (_fileSystem.GetFile("/SomeText.txt") is null)
+            {
+                return;
+            }
+            _fileSystem.DeleteFile("/SomeText.txt");
+            LoadText();
+        }
+        catch (Exception ex)
+        {
+            ex.Handle(e => GorgonDialogs.ErrorBox(this, e), Program.Log);
+        }
+        finally
+        {
             CommandEnable(!string.Equals(_originalText, _changedText, StringComparison.CurrentCulture));
             UpdateInfo();
         }
@@ -129,7 +152,7 @@ public partial class Form
         }
         catch (Exception ex)
         {
-            ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), Program.Log);
+            ex.Handle(e => GorgonDialogs.ErrorBox(this, e), Program.Log);
         }
         finally
         {
@@ -153,7 +176,7 @@ public partial class Form
         }
         catch (Exception ex)
         {
-            ex.Catch(except => GorgonDialogs.ErrorBox(this, except), Program.Log);
+            ex.Handle(e => GorgonDialogs.ErrorBox(this, e), Program.Log);
         }
         finally
         {
@@ -161,25 +184,23 @@ public partial class Form
             UpdateInfo();
         }
     }
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to enable or disable the command buttons.
     /// </summary>
     /// <param name="value"><b>true</b> to enable the command buttons, <b>false</b> to disable.</param>
     private void CommandEnable(bool value)
     {
-        itemLoadChanged.Enabled = itemLoadOriginal.Enabled = value;
+        itemDeleteChanged.Enabled = itemLoadChanged.Enabled = itemLoadOriginal.Enabled = value;
         buttonSave.Enabled = !string.Equals(textDisplay.Text, _originalText, StringComparison.CurrentCulture);
     }
 
     /// <summary>
-		/// Function to update the information label.
-		/// </summary>
-		private void UpdateInfo() => labelInfo.Text = string.Equals(_originalText, textDisplay.Text, StringComparison.CurrentCulture)
-                             ? $"Using original text from {GorgonExample.GetResourcePath(@"FileSystems\FolderSystem\").FullName.Ellipses(100, true)}"
-                             : $"Using modified text from {Program.WriteDirectory.FullName.Ellipses(100, true)}";
+    /// Function to update the information label.
+    /// </summary>
+    private void UpdateInfo() => labelInfo.Text = string.Equals(_originalText, textDisplay.Text, StringComparison.CurrentCulture)
+                         ? $"Using original text from {GorgonExample.GetResourcePath(@"FileSystems\FolderSystem\").FullName.Ellipses(100, true)}"
+                         : $"Using modified text from {Program.WriteDirectory.FullName.Ellipses(100, true)}";
 
     /// <summary>
     /// Function to load the text into the file system.
@@ -188,38 +209,37 @@ public partial class Form
     {
         DirectoryInfo physicalPath = GorgonExample.GetResourcePath(@"FileSystems\FolderSystem\");
 
-        // Unload the mounted files.
-        _writer.Unmount();
-        _fileSystem.Unmount(physicalPath.FullName);
+        if (_writeMount != GorgonFileSystemMountPoint.Empty)
+        {
+            _fileSystem.Unmount(_writeMount);
+        }
 
-        _fileSystem.Mount(physicalPath.FullName);
+        if (!_fileSystem.MountPoints.Any(item => string.Equals(item.PhysicalPath, physicalPath.FullName, StringComparison.OrdinalIgnoreCase)))
+        {
+            _fileSystem.Mount(physicalPath.FullName);
+        }
 
         // Load the original before we mount the write directory.
         IGorgonVirtualFile file = _fileSystem.GetFile("/SomeText.txt");
 
-        using (Stream stream = file.OpenStream())
-        {
-            byte[] textData = new byte[stream.Length];
+        using Stream stream = _fileSystem.OpenStream("/SomeText.txt", false);
+        byte[] textData = new byte[stream.Length];
 
-            stream.Read(textData, 0, textData.Length);
-            _originalText = Encoding.UTF8.GetString(textData);
-        }
+        stream.Read(textData, 0, textData.Length);
+        _originalText = Encoding.UTF8.GetString(textData);
 
         // Set the write location to the users app data folder.
-        _writer.Mount();
+        _writeMount = _fileSystem.MountWriteArea(Program.WriteDirectory.FullName);
 
         // Load the modified version (if it exists, if it doesn't, the original will be loaded instead).
-        file = _fileSystem.GetFile("/SomeText.txt");
 
-        using (Stream stream = file.OpenStream())
-        {
-            byte[] textData = new byte[stream.Length];
+        using Stream otherStream = _fileSystem.OpenStream("/SomeText.txt", false);
+        textData = new byte[otherStream.Length];
 
-            stream.Read(textData, 0, textData.Length);
-            _changedText = Encoding.UTF8.GetString(textData);
+        otherStream.Read(textData, 0, textData.Length);
+        _changedText = Encoding.UTF8.GetString(textData);
 
-            textDisplay.Text = string.Equals(_changedText, _originalText, StringComparison.CurrentCulture) ? _originalText : _changedText;
-        }
+        textDisplay.Text = string.Equals(_changedText, _originalText, StringComparison.CurrentCulture) ? _originalText : _changedText;
     }
 
     /// <summary>
@@ -237,7 +257,6 @@ public partial class Form
 
             // Create our virtual file system.
             _fileSystem = new GorgonFileSystem(Program.Log);
-            _writer = new GorgonFileSystemWriter(_fileSystem, _fileSystem, Program.WriteDirectory.FullName);
 
             LoadText();
 
@@ -255,12 +274,9 @@ public partial class Form
             UpdateInfo();
         }
     }
-    #endregion
 
-    #region Constructor/Destructor.
     /// <summary>
     /// Initializes a new instance of the <see cref="Form" /> class.
     /// </summary>
     public Form() => InitializeComponent();
-    #endregion
 }

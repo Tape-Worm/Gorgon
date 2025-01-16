@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,25 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 2, 2020 1:12:20 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using Gorgon.Animation;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
@@ -40,12 +34,13 @@ using Gorgon.Editor.Properties;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
+using Gorgon.IO.FileSystem;
 using Gorgon.Renderers;
 
 namespace Gorgon.IO;
 
 /// <summary>
-/// Loads <see cref="Gorgon2D"/> specific content from an editor file system.
+/// Loads <see cref="Gorgon2D"/> specific content from an editor file system
 /// </summary>
 /// <remarks>
 /// <para>
@@ -54,63 +49,64 @@ namespace Gorgon.IO;
 /// <para>
 /// <note type="important">
 /// <para>
-/// These methods load the data using the layout and metadata information as provided by the default plug ins for the editor.  Custom plug ins for sprite data, etc... may not work with these methods 
-/// unless those plug ins follow the same file layout as the default plug ins.
+/// These methods load the data using the layout and metadata information as provided by the default plug-ins for the editor.  Custom plug-ins for sprite data, etc... may not work with these methods 
+/// unless those plug-ins follow the same file layout as the default plug-ins
 /// </para>
 /// </note>
 /// </para>
 /// </remarks>
-internal class ContentLoader2D
-    : IGorgonContentLoader
+/// <remarks>Initializes a new instance of the <see cref="ContentLoader2D"/> class.</remarks>
+/// <param name="fileSystem">The file system containing the content.</param>
+/// <param name="metadata">The metadata from the editor, containing dependencies.</param>
+/// <param name="renderer">The renderer.</param>
+/// <param name="textureCache">The texture cache.</param>
+internal class ContentLoader2D(IGorgonFileSystem fileSystem, IProjectMetadata metadata, Gorgon2D renderer, GorgonTextureCache<GorgonTexture2D> textureCache)
+        : IGorgonContentLoader
 {
-    #region Variables.
-    // The renderer used to handle loading.
-    private readonly Gorgon2D _renderer;
-    // The graphics interface used to handle loading textures.
-    private readonly GorgonGraphics _graphics;
-    // The file system containing the content data.
-    private readonly IGorgonFileSystem _fileSystem;
-    // The metadata from the editor.
-    private readonly IProjectMetadata _metadata;
-    #endregion
 
-    #region Properties.
+    // The renderer used to handle loading.
+    private readonly Gorgon2D _renderer = renderer;
+    // The graphics interface used to handle loading textures.
+    private readonly GorgonGraphics _graphics = renderer.Graphics;
+    // The file system containing the content data.
+    private readonly IGorgonFileSystem _fileSystem = fileSystem;
+    // The metadata from the editor.
+    private readonly IProjectMetadata _metadata = metadata;
+
     /// <summary>Property to return a list of codecs that can be used to load animation content data.</summary>
     /// <remarks>Codecs added here are for external codecs. All built-in codecs for Gorgon will not appear in this list and are always used when loading files.</remarks>
     public IList<IGorgonAnimationCodec> ExternalAnimationCodecs
     {
         get;
-    } = new List<IGorgonAnimationCodec>();
+    } = [];
 
     /// <summary>Property to return a list of codecs that can be used to load image content data.</summary>
     /// <remarks>Codecs added here are for external codecs. All built-in codecs for Gorgon will not appear in this list and are always used when loading files.</remarks>
     public IList<IGorgonImageCodec> ExternalImageCodecs
     {
         get;
-    } = new List<IGorgonImageCodec>();
+    } = [];
 
     /// <summary>Property to return a list of codecs that can be used to load sprite content data.</summary>
     /// <remarks>Codecs added here are for external codecs. All built-in codecs for Gorgon will not appear in this list and are always used when loading files.</remarks>
     public IList<IGorgonSpriteCodec> ExternalSpriteCodecs
     {
         get;
-    } = new List<IGorgonSpriteCodec>();
+    } = [];
 
     /// <summary>Property to return the texture cache for the loader.</summary>
     public GorgonTextureCache<GorgonTexture2D> TextureCache
     {
         get;
-    }
-    #endregion
+    } = textureCache;
 
-    #region Methods.
     /// <summary>
     /// Function to retrieve the list of available codecs for loading animation data.
     /// </summary>
     /// <returns>A list of animation codecs by type name.</returns>
     private IReadOnlyDictionary<string, IGorgonAnimationCodec> GetAnimationCodecs()
     {
-        var result = new Dictionary<string, IGorgonAnimationCodec>(StringComparer.OrdinalIgnoreCase)
+        Dictionary<string, IGorgonAnimationCodec> result = new(StringComparer.OrdinalIgnoreCase)
         {
             { typeof(GorgonV31AnimationBinaryCodec).FullName, new GorgonV31AnimationBinaryCodec(_renderer) },
             { typeof(GorgonV31AnimationJsonCodec).FullName, new GorgonV31AnimationJsonCodec(_renderer) }
@@ -131,14 +127,14 @@ internal class ContentLoader2D
     /// <returns>A list of sprite codecs by type name.</returns>
     private IReadOnlyDictionary<string, IGorgonSpriteCodec> GetSpriteCodecs()
     {
-        var result = new Dictionary<string, IGorgonSpriteCodec>(StringComparer.OrdinalIgnoreCase)
+        Dictionary<string, IGorgonSpriteCodec> result = new(StringComparer.OrdinalIgnoreCase)
         {
             { typeof(GorgonV3SpriteBinaryCodec).FullName, new GorgonV3SpriteBinaryCodec(_renderer) },
             { typeof(GorgonV3SpriteJsonCodec).FullName, new GorgonV3SpriteJsonCodec(_renderer) },
             { typeof(GorgonV2SpriteCodec).FullName, new GorgonV2SpriteCodec(_renderer) },
             { typeof(GorgonV1SpriteBinaryCodec).FullName, new GorgonV1SpriteBinaryCodec(_renderer) }
         };
-        
+
         foreach (IGorgonSpriteCodec codec in ExternalSpriteCodecs)
         {
             string typeName = codec.GetType().FullName;
@@ -154,7 +150,7 @@ internal class ContentLoader2D
     /// <returns>A list of image codecs by type name.</returns>
     private IReadOnlyDictionary<string, IGorgonImageCodec> GetImageCodecs()
     {
-        var result = new Dictionary<string, IGorgonImageCodec>(StringComparer.OrdinalIgnoreCase)
+        Dictionary<string, IGorgonImageCodec> result = new(StringComparer.OrdinalIgnoreCase)
         {
             { typeof(GorgonCodecDds).FullName, new GorgonCodecDds() },
             { typeof(GorgonCodecPng).FullName, new GorgonCodecPng() },
@@ -184,14 +180,13 @@ internal class ContentLoader2D
 
         if ((file is null) || (!_metadata.ProjectItems.TryGetValue(path, out ProjectItemMetadata metadata)))
         {
-            _graphics.Log.Print($"WARNING: The texture '{path}' was not found in the editor file system.", LoggingLevel.Intermediate);
+            _graphics.Log.PrintWarning($"The texture '{path}' was not found in the editor file system.", LoggingLevel.Intermediate);
             return null;
         }
 
-
         if (!metadata.Attributes.TryGetValue("ImageCodec", out string codecName))
         {
-            _graphics.Log.Print($"WARNING: The codec for the texture '{path}' is empty or not found.", LoggingLevel.Intermediate);
+            _graphics.Log.PrintWarning($"The codec for the texture '{path}' is empty or not found.", LoggingLevel.Intermediate);
             return null;
         }
 
@@ -199,13 +194,13 @@ internal class ContentLoader2D
 
         if (!imageCodecs.TryGetValue(codecName, out IGorgonImageCodec codec))
         {
-            _graphics.Log.Print($"WARNING: The image codec '{codecName}' is unknown.", LoggingLevel.Intermediate);
+            _graphics.Log.PrintWarning($"The image codec '{codecName}' is unknown.", LoggingLevel.Intermediate);
             return null;
         }
 
         IGorgonImage image = await Task.Run(() =>
         {
-            using Stream stream = file.OpenStream();
+            using Stream stream = _fileSystem.OpenStream(file.FullPath, false);
             return codec.FromStream(stream);
         });
 
@@ -215,7 +210,7 @@ internal class ContentLoader2D
             {
                 Name = path,
                 Binding = TextureBinding.ShaderResource,
-                IsTextureCube = image.ImageType == ImageType.ImageCube,
+                IsTextureCube = image.ImageType == ImageDataType.ImageCube,
                 Usage = ResourceUsage.Immutable
             });
         }
@@ -254,21 +249,21 @@ internal class ContentLoader2D
             throw new FileNotFoundException(string.Format(Resources.GOREDIT_ERR_FILE_NOT_FOUND, path));
         }
 
-        var dependencies = new Dictionary<string, List<IGorgonVirtualFile>>(StringComparer.OrdinalIgnoreCase);
+        Dictionary<string, List<IGorgonVirtualFile>> dependencies = new(StringComparer.OrdinalIgnoreCase);
 
         foreach (KeyValuePair<string, List<string>> item in metadata.DependsOn)
         {
             if (!dependencies.TryGetValue(item.Key, out List<IGorgonVirtualFile> files))
             {
-                files = new List<IGorgonVirtualFile>();
+                files = [];
                 dependencies[item.Key] = files;
             }
 
-            files.AddRange(item.Value.Select(item => _fileSystem.GetFile(item))
+            files.AddRange(item.Value.Select(_fileSystem.GetFile)
                                      .Where(item => item != null));
         }
 
-        return dependencies.ToDictionary(k => k.Key, 
+        return dependencies.ToDictionary(k => k.Key,
                                         v => (IReadOnlyList<IGorgonVirtualFile>)v.Value, StringComparer.OrdinalIgnoreCase);
     }
 
@@ -319,7 +314,7 @@ internal class ContentLoader2D
     /// </para>
     /// <para>
     /// If the animation is not in a format known by Gorgon, then users should add the <see cref="IGorgonAnimationCodec"/> for reading the sprite data to the <see cref="ExternalAnimationCodecs"/> list. 
-    /// Doing this will allow a user to create a custom image codec plug in and use that to read animation data.
+    /// Doing this will allow a user to create a custom image codec plug-in and use that to read animation data.
     /// </para>
     /// <para>
     /// When the <paramref name="textureOverrides"/> contains a list of textures, the loader will override any matching textures in any texture tracks within the animation. This allows user defined pre 
@@ -377,7 +372,7 @@ internal class ContentLoader2D
 
         _graphics.Log.Print($"Loading animation '{path}'...", LoggingLevel.Verbose);
 
-        if ((metadata.DependsOn.TryGetValue(CommonEditorContentTypes.ImageType, out List<string> paths)) 
+        if ((metadata.DependsOn.TryGetValue(CommonEditorContentTypes.ImageType, out List<string> paths))
             && (paths is not null)
             && (paths.Count > 0))
         {
@@ -402,10 +397,10 @@ internal class ContentLoader2D
             else
             {
                 textureOverrides = textureOverrides.Concat(dependencyTasks.Select(item => item.Result.GetShaderResourceView()));
-            }                
+            }
         }
 
-        using Stream stream = animationFile.OpenStream();
+        using Stream stream = _fileSystem.OpenStream(animationFile.FullPath, false);
         return animationCodec.FromStream(stream, textureOverrides: textureOverrides);
     }
 
@@ -423,7 +418,7 @@ internal class ContentLoader2D
     /// </para>
     /// <para>
     /// If the image is not in a format known by Gorgon, then users should add the <see cref="IGorgonImageCodec"/> for reading the sprite data to the <see cref="ExternalImageCodecs"/> list. 
-    /// Doing this will allow a user to create a custom image codec plug in and use that to read image data.
+    /// Doing this will allow a user to create a custom image codec plug-in and use that to read image data.
     /// </para>
     /// <para>
     /// <h2>Technical info</h2>
@@ -480,7 +475,7 @@ internal class ContentLoader2D
 
         _graphics.Log.Print($"Loading image data for '{path}'...", LoggingLevel.Verbose);
 
-        using Stream stream = file.OpenStream();
+        using Stream stream = _fileSystem.OpenStream(file.FullPath, false);
         return imageCodec.FromStream(stream, (int)file.Size);
     }
 
@@ -499,7 +494,7 @@ internal class ContentLoader2D
     /// </para>
     /// <para>
     /// If the texture image is not in a format known by Gorgon, then users should add the <see cref="IGorgonImageCodec"/> for reading the sprite data to the <see cref="ExternalImageCodecs"/> list. 
-    /// Doing this will allow a user to create a custom image codec plug in and use that to read image data.
+    /// Doing this will allow a user to create a custom image codec plug-in and use that to read image data.
     /// </para>
     /// <para>
     /// If the <paramref name="cache"/> parameter is set to <b>true</b>, then this method will load the data from the <see cref="TextureCache"/>. If the texture data is not in the cache, then it will 
@@ -572,7 +567,7 @@ internal class ContentLoader2D
             {
                 Name = path,
                 Binding = TextureBinding.ShaderResource,
-                IsTextureCube = image.ImageType == ImageType.ImageCube,
+                IsTextureCube = image.ImageType == ImageDataType.ImageCube,
                 Usage = ResourceUsage.Immutable
             });
         }
@@ -598,7 +593,7 @@ internal class ContentLoader2D
     /// </para>
     /// <para>
     /// If the sprite is not in a format known by Gorgon, then users should add the <see cref="IGorgonSpriteCodec"/> for reading the sprite data to the <see cref="ExternalSpriteCodecs"/> list. 
-    /// Doing this will allow a user to create a custom sprite codec plug in and use that to read sprite data.
+    /// Doing this will allow a user to create a custom sprite codec plug-in and use that to read sprite data.
     /// </para>
     /// <para>
     /// <h2>Technical info</h2>
@@ -682,7 +677,7 @@ internal class ContentLoader2D
             _graphics.Log.Print($"Sprite texture has been overridden with texture '{overrideTexture.Resource.Name}'.", LoggingLevel.Verbose);
         }
 
-        using Stream stream = spriteFile.OpenStream();
+        using Stream stream = _fileSystem.OpenStream(spriteFile.FullPath, false);
         return spriteCodec.FromStream(stream, overrideTexture);
     }
 
@@ -712,7 +707,7 @@ internal class ContentLoader2D
             throw new ArgumentEmptyException(nameof(path));
         }
 
-        IGorgonVirtualDirectory directory = _fileSystem.GetDirectory(path) ?? throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIR_NOT_FOUND, path));
+        IGorgonVirtualDirectory _ = _fileSystem.GetDirectory(path) ?? throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIR_NOT_FOUND, path));
 
         if (!_metadata.ProjectItems.TryGetValue(path, out ProjectItemMetadata metadata))
         {
@@ -726,21 +721,4 @@ internal class ContentLoader2D
 
         return Convert.ToBoolean(excluded, CultureInfo.InvariantCulture);
     }
-    #endregion
-
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="ContentLoader2D"/> class.</summary>
-    /// <param name="fileSystem">The file system containing the content.</param>
-    /// <param name="metadata">The metadata from the editor, containing dependencies.</param>
-    /// <param name="renderer">The renderer.</param>
-    /// <param name="textureCache">The texture cache.</param>
-    public ContentLoader2D(IGorgonFileSystem fileSystem, IProjectMetadata metadata, Gorgon2D renderer, GorgonTextureCache<GorgonTexture2D> textureCache)
-    {
-        _fileSystem = fileSystem;
-        _metadata = metadata;            
-        _renderer = renderer;
-        _graphics = renderer.Graphics;
-        TextureCache = textureCache;
-    }        
-    #endregion
 }

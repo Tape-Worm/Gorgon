@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,42 +11,36 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: September 5, 2018 12:35:20 PM
 // 
-#endregion
 
-
-using System;
-using System.Collections.Generic;
+using System.Text.Json.Serialization;
 using Gorgon.Editor.PlugIns;
-using Newtonsoft.Json;
 
 namespace Gorgon.Editor.Metadata;
 
 /// <summary>
-/// Metadata for a project item that is included in the project.
+/// Metadata for a project item that is included in the project
 /// </summary>
-[JsonObject(MemberSerialization = MemberSerialization.OptIn)]
 public class ProjectItemMetadata
 {
-    #region Variables.
+
     // The metadata for a content plugin.
     private IContentPlugInMetadata _contentMetadata;
-    #endregion
 
-    #region Properties.        
     /// <summary>
     /// Property to return the ID for the item.
     /// </summary>        
+    [JsonIgnore]
     public string ID
     {
         get;
@@ -59,7 +53,7 @@ public class ProjectItemMetadata
     /// <remarks>
     /// If this value is <b>null</b>, then the plugin hasn't been set.  If it's an empty string, then no plugin is associated with this metadata.
     /// </remarks>
-    [JsonProperty]
+    [JsonInclude]
     public string PlugInName
     {
         get;
@@ -69,7 +63,7 @@ public class ProjectItemMetadata
     /// <summary>
     /// Property to return the custom attributes for this metadata.
     /// </summary>
-    [JsonProperty]
+    [JsonInclude]
     public Dictionary<string, string> Attributes
     {
         get;
@@ -79,7 +73,7 @@ public class ProjectItemMetadata
     /// <summary>
     /// Property to return the list of item paths that this item depends on.
     /// </summary>
-    [JsonProperty(PropertyName = "Dependencies")]
+    [JsonInclude, JsonPropertyName("Dependencies")]
     public Dictionary<string, List<string>> DependsOn
     {
         get;
@@ -89,6 +83,7 @@ public class ProjectItemMetadata
     /// <summary>
     /// Property to set or return the name of the thumbnail associated with the project item.
     /// </summary>
+    [JsonIgnore]
     public string Thumbnail
     {
         get;
@@ -103,6 +98,7 @@ public class ProjectItemMetadata
     /// Setting this value will set the value for <see cref="PlugInName"/>.
     /// </para>
     /// </remarks>        
+    [JsonIgnore]
     public IContentPlugInMetadata ContentMetadata
     {
         get => _contentMetadata;
@@ -112,9 +108,7 @@ public class ProjectItemMetadata
             _contentMetadata = value;
         }
     }
-    #endregion
 
-    #region Constructor.
     /// <summary>Initializes a new instance of the <see cref="ProjectItemMetadata"/> class.</summary>
     /// <param name="oldVersion">The old version of project metadata.</param>
     internal ProjectItemMetadata(ProjectItemMetadata30 oldVersion)
@@ -128,10 +122,10 @@ public class ProjectItemMetadata
 
         foreach (KeyValuePair<string, string> dependency in oldVersion.DependsOn)
         {
-            DependsOn[dependency.Key] = new List<string>
-            {
+            DependsOn[dependency.Key] =
+            [
                 dependency.Value
-            };
+            ];
         }
     }
 
@@ -164,6 +158,6 @@ public class ProjectItemMetadata
     /// <summary>
     /// Initializes a new instance of the <see cref="ProjectItemMetadata"/> class.
     /// </summary>
+    [JsonConstructor]
     public ProjectItemMetadata() => ID = Guid.NewGuid().ToString("N");
-    #endregion
 }

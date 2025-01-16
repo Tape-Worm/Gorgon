@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,24 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 18, 2020 11:10:05 AM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.ImageSplitTool.Properties;
@@ -40,16 +34,15 @@ using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
 using Gorgon.Renderers;
 using Gorgon.UI;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.ImageSplitTool;
 
 /// <summary>
-/// A service used to split an atlas texture into smaller images by using the associated sprite regions to define the image size.
+/// A service used to split an atlas texture into smaller images by using the associated sprite regions to define the image size
 /// </summary>
 internal class TextureAtlasSplitter
 {
-    #region Variables.
+
     // The core graphics interface from the editor.
     private readonly GorgonGraphics _graphics;
     // The renderer used for rendering the image data.
@@ -64,13 +57,7 @@ internal class TextureAtlasSplitter
     private readonly IGorgonLog _log;
     // The list of image and sprite files.
     private readonly IReadOnlyDictionary<IContentFile, IReadOnlyList<IContentFile>> _imagesAndSprites;
-    #endregion
 
-    #region Properties.
-
-    #endregion
-
-    #region Methods.
     /// <summary>
     /// Function to load the image data.
     /// </summary>
@@ -91,13 +78,13 @@ internal class TextureAtlasSplitter
     /// <returns>A list of sprites.</returns>
     private IReadOnlyList<(IContentFile file, GorgonSprite sprite)> LoadSprites(IReadOnlyList<IContentFile> spriteFiles, GorgonTexture2DView texture, CancellationToken cancelToken)
     {
-        var result = new List<(IContentFile, GorgonSprite)>();
+        List<(IContentFile, GorgonSprite)> result = [];
 
         foreach (IContentFile file in spriteFiles)
         {
             if (cancelToken.IsCancellationRequested)
             {
-                return Array.Empty<(IContentFile, GorgonSprite)>();
+                return [];
             }
 
             using Stream stream = _fileManager.OpenStream(file.Path, FileMode.Open);
@@ -105,7 +92,7 @@ internal class TextureAtlasSplitter
 
             if (sprite.Texture != texture)
             {
-                _log.Print($"WARNING: The sprite '{file.Path}' has texture '{sprite.Texture?.Texture.Name}' when it should have '{texture.Texture.Name}'. Skipping this sprite.", LoggingLevel.Intermediate);
+                _log.PrintWarning($"The sprite '{file.Path}' has texture '{sprite.Texture?.Texture.Name}' when it should have '{texture.Texture.Name}'. Skipping this sprite.", LoggingLevel.Intermediate);
                 continue;
             }
 
@@ -194,8 +181,8 @@ internal class TextureAtlasSplitter
             format = sprite.Texture.Format;
         }
 
-        using var target = GorgonRenderTarget2DView.CreateRenderTarget(_graphics, new GorgonTexture2DInfo((int)sprite.Size.Width,
-                                                                                                                                   (int)sprite.Size.Height,
+        using GorgonRenderTarget2DView target = GorgonRenderTarget2DView.CreateRenderTarget(_graphics, new GorgonTexture2DInfo((int)sprite.Size.X,
+                                                                                                                                   (int)sprite.Size.Y,
                                                                                                                                    format)
         {
             Binding = TextureBinding.RenderTarget
@@ -203,9 +190,9 @@ internal class TextureAtlasSplitter
         GorgonRenderTargetView currentTarget = _graphics.RenderTargets[0];
 
         _graphics.SetRenderTarget(target);
-        target.Clear(GorgonColor.BlackTransparent);
+        target.Clear(GorgonColors.BlackTransparent);
         _renderer.Begin();
-        _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, target.Width, target.Height), GorgonColor.White,
+        _renderer.DrawFilledRectangle(new GorgonRectangleF(0, 0, target.Width, target.Height), GorgonColors.White,
                                       sprite.Texture,
                                       sprite.TextureRegion,
                                       sprite.TextureArrayIndex,
@@ -225,7 +212,7 @@ internal class TextureAtlasSplitter
     private IReadOnlyList<(string newImagePath, IGorgonImage image, string newSpritePath, GorgonSprite sprite)> SplitImage(IReadOnlyList<(IContentFile file, GorgonSprite sprite)> sprites, string outputDirectory, ref ConfirmationResult response)
     {
         // The list of images from the sprites.
-        var result = new List<(string newImagePath, IGorgonImage image, string newSpritePath, GorgonSprite sprite)>();            
+        List<(string newImagePath, IGorgonImage image, string newSpritePath, GorgonSprite sprite)> result = [];
         string imageFileExtension = _imageCodec.CodecCommonExtensions.Count > 0 ? _imageCodec.CodecCommonExtensions[0] : string.Empty;
         string spriteFileExtension = _spriteCodec.FileExtensions.Count > 0 ? _spriteCodec.FileExtensions[0].Extension : string.Empty;
 
@@ -243,7 +230,7 @@ internal class TextureAtlasSplitter
 
             if (response == ConfirmationResult.Cancel)
             {
-                return Array.Empty<(string, IGorgonImage, string, GorgonSprite)>();
+                return [];
             }
 
             response = CheckFileExists(outputDirectory, file.Name, spriteFileExtension, response);
@@ -255,7 +242,7 @@ internal class TextureAtlasSplitter
 
             if (response == ConfirmationResult.Cancel)
             {
-                return Array.Empty<(string, IGorgonImage, string, GorgonSprite)>();
+                return [];
             }
 
             string newImageName = GetNewPath(outputDirectory, imageFileName, imageFileExtension);
@@ -274,9 +261,9 @@ internal class TextureAtlasSplitter
                 MipLevels = 1,
                 IsCubeMap = false
             }, newImage);
-                                
+
             sprite.TextureArrayIndex = 0;
-            sprite.TextureRegion = new DX.RectangleF(0, 0, 1, 1);
+            sprite.TextureRegion = new GorgonRectangleF(0, 0, 1, 1);
         }
 
         return result;
@@ -330,13 +317,13 @@ internal class TextureAtlasSplitter
 
             if (imageFile is null)
             {
-                _log.Print($"WARNING: The image file '{imageFile.Path}' is missing!", LoggingLevel.Intermediate);
+                _log.PrintWarning($"The image file '{imageFile.Path}' is missing!", LoggingLevel.Intermediate);
                 continue;
             }
 
             if (!_imagesAndSprites.TryGetValue(imageFile, out IReadOnlyList<IContentFile> spriteFiles))
             {
-                _log.Print($"WARNING: The image file '{imageFile.Path}' is not a texture atlas!", LoggingLevel.Intermediate);
+                _log.PrintWarning($"The image file '{imageFile.Path}' is not a texture atlas!", LoggingLevel.Intermediate);
                 continue;
             }
 
@@ -361,7 +348,7 @@ internal class TextureAtlasSplitter
                     Name = imageFile.Name,
                     MipLevels = imageData.MipCount,
                     ArrayCount = imageData.ArrayCount
-                }, imageData);                    
+                }, imageData);
 
                 // Retrieve any sprites associated with the texture atlas.
                 sprites = await Task.Run(() => LoadSprites(spriteFiles, textureAtlas, cancelToken), cancelToken);
@@ -400,12 +387,10 @@ internal class TextureAtlasSplitter
                 }
                 imageData?.Dispose();
                 textureAtlas?.Dispose();
-            }                
+            }
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
     /// <summary>Initializes a new instance of the <see cref="TextureAtlasSplitter"/> class.</summary>
     /// <param name="renderer">The renderer used to generate image data.</param>
     /// <param name="imagesAndSprites">The list of image and sprite dependency files</param>
@@ -423,5 +408,4 @@ internal class TextureAtlasSplitter
         _spriteCodec = spriteCodec;
         _log = log;
     }
-    #endregion        
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,64 +11,60 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 18, 2019 8:48:54 AM
 // 
-#endregion
 
-using System;
-using System.IO;
-using System.Threading;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
-using Gorgon.IO;
+using Gorgon.IO.FileSystem;
 
 namespace Gorgon.Editor.PlugIns;
 
 /// <summary>
-/// Base class for a plug in that provides basic utility functionality.
+/// Base class for a plug-in that provides basic utility functionality
 /// </summary>
 /// <remarks>
 /// <para>
-/// Tool plug ins, unlike content plug ins, are independent plug ins that provide their own UI (if necessary) that do various jobs in the editor. They will be placed into a tab on the ribbon 
-/// called "Tools" and provide global functionality across the editor and don't necessarily have to restrict themselves to one type of content.
+/// Tool plug-ins, unlike content plug-ins, are independent plug-ins that provide their own UI (if necessary) that do various jobs in the editor. They will be placed into a tab on the ribbon 
+/// called "Tools" and provide global functionality across the editor and don't necessarily have to restrict themselves to one type of content
 /// </para>
 /// <para>
-/// A typical use of a tool plug in would be to display a dialog that allows mass actions on content files.  For example, a dialog that sequentially renames a list of content files so that they're 
-/// postfixed with "original_name (number)" would be a use case for a tool plug in.
+/// A typical use of a tool plug-in would be to display a dialog that allows mass actions on content files.  For example, a dialog that sequentially renames a list of content files so that they're 
+/// postfixed with "original_name (number)" would be a use case for a tool plug-in
 /// </para>
 /// <para>
-/// Because these plug ins are independent, there is no interaction with the editor UI beyond providing information to display a button on the ribbon.
+/// Because these plug-ins are independent, there is no interaction with the editor UI beyond providing information to display a button on the ribbon
 /// </para>
 /// </remarks>
-public abstract class ToolPlugIn
-    : EditorPlugIn
+/// <remarks>Initializes a new instance of the <see cref="ToolPlugIn"/> class.</remarks>
+/// <param name="description">Optional description of the plugin.</param>
+public abstract class ToolPlugIn(string description)
+        : EditorPlugIn(description)
 {
-    #region Variables.
+
     // Flag to indicate that the plugin is initialized.
     private int _initialized;
     // Tool services passed in from the host application.
     private IHostContentServices _hostToolServices;
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to return the services from the host application.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// Plug in developers that implement a common plug in type based on this base type, should assign this value to allow access to the common tool services supplied by the host application.
+    /// Plug in developers that implement a common plug-in type based on this base type, should assign this value to allow access to the common tool services supplied by the host application.
     /// </para>
     /// <para>
-    /// This will be assigned during the initialization of the plug in.
+    /// This will be assigned during the initialization of the plug-in.
     /// </para>
     /// </remarks>
     /// <seealso cref="IHostServices"/>
@@ -94,21 +90,19 @@ public abstract class ToolPlugIn
     /// Property to return the file system used to hold temporary file data.
     /// </summary>
     /// <remarks>
-    /// Importer plug ins can use this to write temporary working data, which is deleted after the project unloads, for use during the import process.
+    /// Importer plug-ins can use this to write temporary working data, which is deleted after the project unloads, for use during the import process.
     /// </remarks>
-    protected IGorgonFileSystemWriter<Stream> TemporaryFileSystem
+    protected IGorgonFileSystem TemporaryFileSystem
     {
         get;
         private set;
     }
 
-    /// <summary>Property to return the type of this plug in.</summary>
+    /// <summary>Property to return the type of this plug-in.</summary>
     public sealed override PlugInType PlugInType => PlugInType.Tool;
-    #endregion
 
-    #region Methods.
     /// <summary>
-    /// Function to allow custom plug ins to implement custom actions when a project is created/opened.
+    /// Function to allow custom plug-ins to implement custom actions when a project is created/opened.
     /// </summary>
     protected virtual void OnProjectOpened()
     {
@@ -116,7 +110,7 @@ public abstract class ToolPlugIn
     }
 
     /// <summary>
-    /// Function to allow custom plug ins to implement custom actions when a project is closed.
+    /// Function to allow custom plug-ins to implement custom actions when a project is closed.
     /// </summary>
     protected virtual void OnProjectClosed()
     {
@@ -148,11 +142,11 @@ public abstract class ToolPlugIn
     /// <returns>A new tool ribbon button instance.</returns>
     /// <remarks>
     /// <para>
-    /// Tool plug in developers must override this method to return the button which is inserted on the application ribbon, under the "Tools" tab. If the method returns <b>null</b>, then the tool is 
+    /// Tool plug-in developers must override this method to return the button which is inserted on the application ribbon, under the "Tools" tab. If the method returns <b>null</b>, then the tool is 
     /// ignored.
     /// </para>
     /// <para>
-    /// The resulting data structure will contain the means to handle the click event for the tool, and as such, is the only means of communication between the main UI and the plug in.
+    /// The resulting data structure will contain the means to handle the click event for the tool, and as such, is the only means of communication between the main UI and the plug-in.
     /// </para>
     /// </remarks>
     protected abstract IToolPlugInRibbonButton OnGetToolButton();
@@ -162,7 +156,7 @@ public abstract class ToolPlugIn
     /// </summary>
     /// <param name="fileManager">The file manager for the project file system.</param>
     /// <param name="tempFileSystem">The file system used to hold temporary working data.</param>
-    public void ProjectOpened(IContentFileManager fileManager, IGorgonFileSystemWriter<Stream> tempFileSystem)
+    public void ProjectOpened(IContentFileManager fileManager, IGorgonFileSystem tempFileSystem)
     {
         ContentFileManager = fileManager;
         TemporaryFileSystem = tempFileSystem;
@@ -185,7 +179,7 @@ public abstract class ToolPlugIn
     /// <returns>A new tool ribbon button instance.</returns>
     /// <remarks>
     /// <para>
-    /// This will return data to describe a new button for the tool in the plug in. If the return value is <b>null</b>, then the tool will not be available on the ribbon.
+    /// This will return data to describe a new button for the tool in the plug-in. If the return value is <b>null</b>, then the tool will not be available on the ribbon.
     /// </para>
     /// </remarks>
     public IToolPlugInRibbonButton GetToolButton() => OnGetToolButton();
@@ -205,7 +199,6 @@ public abstract class ToolPlugIn
 
         HostToolServices = null;
     }
-
 
     /// <summary>
     /// Function to perform any required initialization for the plugin.
@@ -229,16 +222,4 @@ public abstract class ToolPlugIn
 
         OnInitialize();
     }
-    #endregion
-
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="ToolPlugIn"/> class.</summary>
-    /// <param name="description">Optional description of the plugin.</param>
-    protected ToolPlugIn(string description)
-        : base(description)
-    {
-
-    }
-    #endregion
-
 }

@@ -1,6 +1,6 @@
-#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2016 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,28 +11,25 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 29, 2016 9:43:51 PM
 // 
-#endregion
 
-using System;
 using Gorgon.Core;
 using Gorgon.Native;
-using DX = SharpDX;
 
 namespace Gorgon.Graphics.Imaging;
 
 /// <summary>
-/// An image buffer containing data about a part of a <see cref="IGorgonImage"/>.
+/// An image buffer containing data about a part of a <see cref="IGorgonImage"/>
 /// </summary>
 public interface IGorgonImageBuffer
 {
@@ -138,7 +135,7 @@ public interface IGorgonImageBuffer
     /// If the <paramref name="region"/> is not specified, then the entire buffer is updated, otherwise only the values within the <paramref name="region"/> are updated. 
     /// </para>
     /// </remarks>
-    void SetAlpha(float alphaValue, GorgonRangeF? updateAlphaRange = null, DX.Rectangle? region = null);
+    void SetAlpha(float alphaValue, GorgonRange<float>? updateAlphaRange = null, GorgonRectangle? region = null);
 
     /// <summary>
     /// Function to copy the image buffer data from this buffer into another.
@@ -167,7 +164,7 @@ public interface IGorgonImageBuffer
     /// The destination buffer must be the same format as the source buffer.  If it is not, then an exception will be thrown.
     /// </para>
     /// </remarks>
-    void CopyTo(IGorgonImageBuffer buffer, in DX.Rectangle? sourceRegion = null, int destX = 0, int destY = 0);
+    void CopyTo(IGorgonImageBuffer buffer, GorgonRectangle? sourceRegion = null, int destX = 0, int destY = 0);
 
     /// <summary>
     /// Function to create a sub region from the current image data contained within this buffer.
@@ -197,11 +194,11 @@ public interface IGorgonImageBuffer
     /// </para> 
     /// </remarks>
     /// <seealso cref="IGorgonImage"/>
-	    IGorgonImageBuffer GetRegion(in DX.Rectangle clipRegion);
+    IGorgonImageBuffer GetRegion(GorgonRectangle clipRegion);
 
     /// <summary>
     /// Function to fill the entire buffer with the specified byte value.
     /// </summary>
     /// <param name="value">The byte value used to fill the buffer.</param>
-	    void Fill(byte value);
+    void Fill(byte value);
 }

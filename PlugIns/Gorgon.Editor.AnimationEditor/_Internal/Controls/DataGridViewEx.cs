@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,48 +11,39 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 10, 2020 12:23:33 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing;
-using System.Linq;
-using System.Threading;
-using System.Windows.Forms;
 using Gorgon.Math;
 
 namespace Gorgon.Editor.AnimationEditor;
 
 /// <summary>
-/// A data grid view with extended functionality.
+/// A data grid view with extended functionality
 /// </summary>
 internal class DataGridViewEx
     : DataGridView
 {
-    #region Variables.
+
     // The region for dragging.
     private Rectangle _dragRegion;
     // Pass through event arguments.
     private MouseEventArgs _passThruEventArgs;
     // The list of rows for dragging.
-    private readonly List<DataGridViewCell> _dragCells = new();
+    private readonly List<DataGridViewCell> _dragCells = [];
     // Flag to indicate that the selection changed event should be fired or not.
     private int _noFireSelectEvent;
-    #endregion
 
-    #region Events.
     // The true event that is fired when selected cells are dragged.        
     private event EventHandler<CellsDragEventArgs> CellsDragEvent;
 
@@ -82,9 +73,7 @@ internal class DataGridViewEx
             CellsDragEvent -= value;
         }
     }
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to set or return the message to display when no data is present.
     /// </summary>
@@ -104,9 +93,7 @@ internal class DataGridViewEx
         get;
         set;
     }
-    #endregion
 
-    #region Methods.
     /// <summary>Raises the <see cref="Control.MouseMove"/> event.</summary>
     /// <param name="e">A <see cref="MouseEventArgs"/> that contains the event data.</param>
     protected override void OnMouseMove(MouseEventArgs e)
@@ -119,12 +106,12 @@ internal class DataGridViewEx
             handler?.Invoke(this, new CellsDragEventArgs(_dragCells, e.Button));
 
             _dragRegion = Rectangle.Empty;
-            _dragCells.Clear();                
+            _dragCells.Clear();
         }
 
         // Disable the "drag to select".
         if ((SelectedCells.Count > 0) && (e.Button != MouseButtons.None))
-        {                
+        {
             return;
         }
 
@@ -164,7 +151,7 @@ internal class DataGridViewEx
         {
             base.OnMouseDown(e);
             return;
-        }            
+        }
 
         DataGridViewCell cell = Rows[hit.RowIndex].Cells[hit.ColumnIndex];
 
@@ -177,15 +164,15 @@ internal class DataGridViewEx
             ClearSelection();
             Interlocked.Exchange(ref _noFireSelectEvent, 0);
 
-            cell.Selected = true;                
+            cell.Selected = true;
         }
 
         if ((SelectedCells.Count > 0) && (cell.Selected))
         {
             _passThruEventArgs = e;
             float dpiScale = DeviceDpi / 96.0f;
-            var dragSize = new Size((int)(SystemInformation.DragSize.Width * dpiScale).FastCeiling() * 2, (int)(SystemInformation.DragSize.Height * dpiScale).FastCeiling() * 2);
-            var dragLocation = new Point((int)(e.Location.X - dragSize.Width / 2.0f).FastFloor(), (int)(e.Location.Y - dragSize.Height / 2.0f).FastFloor());
+            Size dragSize = new((int)(SystemInformation.DragSize.Width * dpiScale).FastCeiling() * 2, (int)(SystemInformation.DragSize.Height * dpiScale).FastCeiling() * 2);
+            Point dragLocation = new((int)(e.Location.X - dragSize.Width / 2.0f).FastFloor(), (int)(e.Location.Y - dragSize.Height / 2.0f).FastFloor());
             _dragRegion = new Rectangle(dragLocation, dragSize);
             return;
         }
@@ -239,9 +226,9 @@ internal class DataGridViewEx
         {
             return;
         }
-                    
+
         SizeF textSize = e.Graphics.MeasureString(NoDataMessage, Font, new SizeF(ClientSize.Width, ClientSize.Height));
-        var pos = new PointF(ClientSize.Width * 0.5f - textSize.Width * 0.5f, ClientSize.Height * 0.5f - textSize.Height * 0.5f);
+        PointF pos = new(ClientSize.Width * 0.5f - textSize.Width * 0.5f, ClientSize.Height * 0.5f - textSize.Height * 0.5f);
         using Brush brush = new SolidBrush(ForeColor);
         e.Graphics.DrawString(NoDataMessage, Font, brush, pos);
     }
@@ -267,10 +254,8 @@ internal class DataGridViewEx
 
         base.Dispose(disposing);
     }
-    #endregion
 
-    #region Constructor.
     /// <summary>Initializes a new instance of the <see cref="DataGridViewEx"/> class.</summary>
     public DataGridViewEx() => DoubleBuffered = true;
-    #endregion
+
 }

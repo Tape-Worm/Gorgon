@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,23 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: October 29, 2018 9:04:44 PM
 // 
-#endregion
 
-using System;
-using System.Drawing;
-using System.Threading;
-using System.Threading.Tasks;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics.Imaging;
@@ -35,13 +30,12 @@ using Gorgon.Graphics.Imaging;
 namespace Gorgon.Editor.PlugIns;
 
 /// <summary>
-/// Provides metadata for a plugin.
+/// Provides metadata for a plugin
 /// </summary>
 public interface IContentPlugInMetadata
 {
-    #region Properties.
     /// <summary>
-    /// Property to return the name of the plug in.
+    /// Property to return the name of the plug-in.
     /// </summary>
     string PlugInName
     {
@@ -49,7 +43,7 @@ public interface IContentPlugInMetadata
     }
 
     /// <summary>
-    /// Property to return the user friendly description of the plug in.
+    /// Property to return the user friendly description of the plug-in.
     /// </summary>
     string Description
     {
@@ -57,7 +51,7 @@ public interface IContentPlugInMetadata
     }
 
     /// <summary>
-    /// Property to return the ID of the small icon for this plug in.
+    /// Property to return the ID of the small icon for this plug-in.
     /// </summary>
     Guid SmallIconID
     {
@@ -65,7 +59,7 @@ public interface IContentPlugInMetadata
     }
 
     /// <summary>
-    /// Property to return the ID of the new icon for this plug in.
+    /// Property to return the ID of the new icon for this plug-in.
     /// </summary>
     Guid NewIconID
     {
@@ -81,7 +75,7 @@ public interface IContentPlugInMetadata
     }
 
     /// <summary>
-    /// Property to return the ID for the type of content produced by this plug in.
+    /// Property to return the ID for the type of content produced by this plug-in.
     /// </summary>
     string ContentTypeID
     {
@@ -95,9 +89,7 @@ public interface IContentPlugInMetadata
     {
         get;
     }
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to retrieve a thumbnail for the content.
     /// </summary>
@@ -116,7 +108,6 @@ public interface IContentPlugInMetadata
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="file"/> parameter is <b>null</b>.</exception>
     bool CanOpenInPlace(IContentFile file, IEditorContent currentContent);
 
-
     /// <summary>
     /// Function to determine if the content plugin can open the specified file.
     /// </summary>
@@ -125,7 +116,7 @@ public interface IContentPlugInMetadata
     bool CanOpenContent(string filePath);
 
     /// <summary>
-    /// Function to retrieve the small icon for the content plug in.
+    /// Function to retrieve the small icon for the content plug-in.
     /// </summary>
     /// <returns>An image for the small icon.</returns>
     Image GetSmallIcon();
@@ -140,5 +131,5 @@ public interface IContentPlugInMetadata
     /// </para>
     /// </remarks>
     Image GetNewIcon();
-    #endregion
+
 }

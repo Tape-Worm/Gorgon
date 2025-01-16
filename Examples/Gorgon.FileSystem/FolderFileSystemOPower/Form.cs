@@ -1,6 +1,6 @@
-#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,27 +11,20 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Saturday, January 19, 2013 7:32:49 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
-using System.Linq;
 using System.Numerics;
 using System.Text;
-using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -39,30 +32,29 @@ using Gorgon.Graphics.Fonts;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
 using Gorgon.IO.Extensions;
+using Gorgon.IO.FileSystem;
 using Gorgon.Math;
 using Gorgon.Renderers;
 using Gorgon.Timing;
 using Gorgon.UI;
-using DX = SharpDX;
-using FontStyle = Gorgon.Graphics.Fonts.FontStyle;
 
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Main application form.
+/// Main application form
 /// </summary>
 /// <remarks>
-/// This example is a port of the Gorgon 1.x folder file system example into Gorgon 3.x.
+/// This example is a port of the Gorgon 1.x folder file system example into Gorgon 3.x
 /// 
 /// In this example we mount a folder as a virtual file system and pull in an image, some Gorgon 2.0 sprites, the 
-/// backing sprite image and some text for display.
+/// backing sprite image and some text for display
 /// </remarks>
 public partial class Form
     : System.Windows.Forms.Form
 {
-    #region Variables.
+
     // The file system.
-    private GorgonFileSystem _fileSystem;
+    private IGorgonFileSystem _fileSystem;
     // The graphics interface.		
     private GorgonGraphics _graphics;
     // The swap chain that represents our screen.
@@ -95,9 +87,7 @@ public partial class Form
     private bool _showHelp = true;
     // Show rendering statistics.	
     private bool _showStats;
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to reset the blur targets to the original image.
     /// </summary>
@@ -111,12 +101,12 @@ public partial class Form
         //
         // See http://tape-worm.net/?page_id=277 for more info.
 
-        _sprites[2].Position = new Vector2(((_blurredImage[0].Width / 2.0f) - (_sprites[2].Size.Width / 2.0f)).FastFloor(),
-                                              ((_blurredImage[0].Height / 2.0f) - (_sprites[2].Size.Height / 2.0f)).FastFloor());
+        _sprites[2].Position = new Vector2(((_blurredImage[0].Width / 2.0f) - (_sprites[2].Size.X / 2.0f)).FastFloor(),
+                                              ((_blurredImage[0].Height / 2.0f) - (_sprites[2].Size.Y / 2.0f)).FastFloor());
 
         for (int i = 0; i < _blurredTarget.Length; ++i)
         {
-            _blurredTarget[i].Clear(GorgonColor.BlackTransparent);
+            _blurredTarget[i].Clear(GorgonColors.BlackTransparent);
             _graphics.SetRenderTarget(_blurredTarget[i]);
             _renderer.Begin();
             _renderer.DrawSprite(_sprites[2]);
@@ -136,7 +126,7 @@ public partial class Form
         _screen.RenderTargetView.Clear(Color.FromArgb(250, 245, 220));
 
         // Reset the text position.
-        if (_poetry.Position.Y < -_poetry.Size.Height)
+        if (_poetry.Position.Y < -_poetry.Size.Y)
         {
             _textPosition = new Vector2(0, height + _textFont.LineHeight);
         }
@@ -177,7 +167,6 @@ public partial class Form
         // Switch back to our screen for rendering.
         _graphics.SetRenderTarget(_screen.RenderTargetView);
 
-
         // Draw the base.
         _renderer.Begin();
 
@@ -194,13 +183,13 @@ public partial class Form
         _renderer.DrawSprite(_sprites[1]);
 
         // Draw our blurred image (we could have used a sprite here as well, but this works just as well).
-        _renderer.DrawFilledRectangle(new DX.RectangleF((width / 2) - (_blurredImage[0].Width / 2.0f),
+        _renderer.DrawFilledRectangle(new GorgonRectangleF((width / 2) - (_blurredImage[0].Width / 2.0f),
                                                         (height / 2) - (_blurredImage[0].Height / 2.0f),
                                                         _blurredImage[0].Width,
                                                         _blurredImage[0].Height),
-                                      GorgonColor.White,
+                                      GorgonColors.White,
                                       _blurredImage[index],
-                                      new DX.RectangleF(0, 0, 1, 1));
+                                      new GorgonRectangleF(0, 0, 1, 1));
 
         // Draw help text.
         if (_showHelp)
@@ -211,13 +200,13 @@ public partial class Form
         // Show our rendering statistics.
         if (_showStats)
         {
-            var rectPosition = new DX.RectangleF(0, 0, width, (_helpFont.FontHeight * 2.0f) + 2.0f);
+            GorgonRectangleF rectPosition = new(0, 0, width, (_helpFont.FontHeight * 2.0f) + 2.0f);
             _renderer.DrawFilledRectangle(rectPosition, Color.FromArgb(192, Color.Black));
             _renderer.DrawLine(rectPosition.X, rectPosition.Bottom, rectPosition.Width, rectPosition.Bottom, Color.White);
             _renderer.DrawString($"FPS: {GorgonTiming.FPS:0.0}\nFrame Delta: {(GorgonTiming.Delta * 1000):0.0##} msec.",
                                  Vector2.Zero,
                                  _helpFont,
-                                 GorgonColor.White);
+                                 GorgonColors.White);
         }
 
         _renderer.End();
@@ -238,7 +227,7 @@ public partial class Form
     {
         IGorgonVirtualFile file = _fileSystem.GetFile(path) ?? throw new FileNotFoundException($"The file '{path}' was not found in the file system.");
 
-        using Stream stream = file.OpenStream();
+        using Stream stream = _fileSystem.OpenStream(file.FullPath, false);
         byte[] result = new byte[stream.Length];
 
         stream.Read(result, 0, result.Length);
@@ -254,8 +243,8 @@ public partial class Form
         GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
 
         // Resize and center the screen.
-        var screen = Screen.FromHandle(Handle);
-        ClientSize = new Size(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height);
+        Screen screen = Screen.FromHandle(Handle);
+        ClientSize = new Size(ExampleConfig.Default.Resolution.X, ExampleConfig.Default.Resolution.Y);
         Location = new Point(screen.Bounds.Left + (screen.WorkingArea.Width / 2) - (ClientSize.Width / 2),
                              screen.Bounds.Top + (screen.WorkingArea.Height / 2) - (ClientSize.Height / 2));
 
@@ -289,10 +278,10 @@ public partial class Form
         GorgonExample.LoadResources(_graphics);
 
         // Create fonts.
-        _textFont = GorgonExample.Fonts.GetFont(new GorgonFontInfo("GiGi", 24.0f, FontHeightMode.Points)
+        _textFont = GorgonExample.Fonts.GetFont(new GorgonFontInfo("GiGi", 24.0f, GorgonFontHeightMode.Points)
         {
             Name = "GiGi_24pt",
-            AntiAliasingMode = FontAntiAliasMode.AntiAlias,
+            AntiAliasingMode = GorgonFontAntiAliasMode.AntiAlias,
             TextureWidth = 512,
             TextureHeight = 256
         });
@@ -300,11 +289,11 @@ public partial class Form
         // Use the form font for this one.
         _helpFont = GorgonExample.Fonts.GetFont(new GorgonFontInfo(Font.FontFamily.Name,
                                                             Font.Size,
-                                                            Font.Unit == GraphicsUnit.Pixel ? FontHeightMode.Pixels : FontHeightMode.Points)
+                                                            Font.Unit == GraphicsUnit.Pixel ? GorgonFontHeightMode.Pixels : GorgonFontHeightMode.Points)
         {
             Name = "Form Font",
-            AntiAliasingMode = FontAntiAliasMode.AntiAlias,
-            FontStyle = FontStyle.Bold
+            AntiAliasingMode = GorgonFontAntiAliasMode.AntiAlias,
+            FontStyle = GorgonFontStyle.Bold
         });
 
         // Create our file system and mount the resources.
@@ -316,8 +305,8 @@ public partial class Form
         _sprites = new GorgonSprite[3];
 
         // The sprites are in the v2 format.
-        IEnumerable<IGorgonSpriteCodec> v2Codec = new[] { new GorgonV2SpriteCodec(_renderer) };
-        IEnumerable<IGorgonImageCodec> pngCodec = new[] { new GorgonCodecPng() };
+        IEnumerable<IGorgonSpriteCodec> v2Codec = [new GorgonV2SpriteCodec(_renderer)];
+        IEnumerable<IGorgonImageCodec> pngCodec = [new GorgonCodecPng()];
         _sprites[0] = _fileSystem.LoadSpriteFromFileSystem(_renderer, "/Sprites/base.gorSprite", spriteCodecs: v2Codec, imageCodecs: pngCodec);
         _sprites[1] = _fileSystem.LoadSpriteFromFileSystem(_renderer, "/Sprites/Mother.gorSprite", spriteCodecs: v2Codec, imageCodecs: pngCodec);
         _sprites[2] = _fileSystem.LoadSpriteFromFileSystem(_renderer, "/Sprites/Mother2c.gorSprite", spriteCodecs: v2Codec, imageCodecs: pngCodec);
@@ -325,14 +314,14 @@ public partial class Form
         // This is how you would get the sprites in v2 of Gorgon:
         /*_spriteImage = _graphics.Textures.FromMemory<GorgonTexture2D>("0_HardVacuum", LoadFile("/Images/0_HardVacuum.png"), new GorgonCodecPNG());
 
-		    // Get the sprites.
-		    // The sprites in the file system are from version 1.0 of Gorgon.
-		    // This version is backwards compatible and can load any version
-		    // of the sprites produced by older versions of Gorgon.
-		    _sprites = new GorgonSprite[3];
-		    _sprites[0] = _renderer.Renderables.FromMemory<GorgonSprite>("Base", LoadFile("/Sprites/base.gorSprite"));
-		    _sprites[1] = _renderer.Renderables.FromMemory<GorgonSprite>("Mother", LoadFile("/Sprites/Mother.gorSprite"));
-		    _sprites[2] = _renderer.Renderables.FromMemory<GorgonSprite>("Mother2c", LoadFile("/Sprites/Mother2c.gorSprite"));
+            // Get the sprites.
+            // The sprites in the file system are from version 1.0 of Gorgon.
+            // This version is backwards compatible and can load any version
+            // of the sprites produced by older versions of Gorgon.
+            _sprites = new GorgonSprite[3];
+            _sprites[0] = _renderer.Renderables.FromMemory<GorgonSprite>("Base", LoadFile("/Sprites/base.gorSprite"));
+            _sprites[1] = _renderer.Renderables.FromMemory<GorgonSprite>("Mother", LoadFile("/Sprites/Mother.gorSprite"));
+            _sprites[2] = _renderer.Renderables.FromMemory<GorgonSprite>("Mother2c", LoadFile("/Sprites/Mother2c.gorSprite"));
         */
 
         // Get poetry.            
@@ -341,26 +330,26 @@ public partial class Form
         _poetry = new GorgonTextSprite(_textFont, Encoding.UTF8.GetString(LoadFile("/SomeText.txt")))
         {
             Position = _textPosition,
-            Color = Color.Black
+            Color = GorgonColors.Black
         };
 
         // Set up help text.
         _helpText = new GorgonTextSprite(_helpFont, "F1 - Show/hide this help text.\nS - Show frame statistics.\nESC - Exit.")
         {
-            Color = Color.Blue,
+            Color = GorgonColors.Blue,
             Position = new Vector2(3, 3)
         };
 
         // Unlike the old example, we'll blend to render targets, ping-ponging back and forth, for a much better quality image and smoother transition.
         _blurEffect = new Gorgon2DGaussBlurEffect(_renderer, 3)
         {
-            BlurRenderTargetsSize = new DX.Size2((int)_sprites[2].Size.Width * 2, (int)_sprites[2].Size.Height * 2),
+            BlurRenderTargetsSize = new GorgonPoint((int)_sprites[2].Size.X * 2, (int)_sprites[2].Size.Y * 2),
             PreserveAlpha = false
         };
         _blurEffect.Precache();
 
-        _blurredTarget[0] = GorgonRenderTarget2DView.CreateRenderTarget(_graphics, new GorgonTexture2DInfo(_blurEffect.BlurRenderTargetsSize.Width,
-                                                                                                                _blurEffect.BlurRenderTargetsSize.Height,
+        _blurredTarget[0] = GorgonRenderTarget2DView.CreateRenderTarget(_graphics, new GorgonTexture2DInfo(_blurEffect.BlurRenderTargetsSize.X,
+                                                                                                                _blurEffect.BlurRenderTargetsSize.Y,
                                                                                                                 BufferFormat.R8G8B8A8_UNorm)
         {
             Name = "Blurred RTV",
@@ -436,7 +425,7 @@ public partial class Form
         }
         catch (Exception ex)
         {
-            ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), GorgonApplication.Log);
+            ex.Handle(e => GorgonDialogs.ErrorBox(this, e), GorgonApplication.Log);
             GorgonApplication.Quit();
         }
         finally
@@ -444,12 +433,10 @@ public partial class Form
             Cursor = Cursors.Default;
         }
     }
-    #endregion
 
-    #region Constructor/Destructor.
     /// <summary>
     /// Constructor.
     /// </summary>
     public Form() => InitializeComponent();
-    #endregion
+
 }

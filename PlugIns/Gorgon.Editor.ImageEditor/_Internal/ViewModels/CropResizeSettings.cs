@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,40 +11,38 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: January 16, 2019 8:44:21 AM
 // 
-#endregion
 
-using System;
 using Gorgon.Editor.UI;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Imaging;
 using Gorgon.UI;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.ImageEditor.ViewModels;
 
 /// <summary>
-/// The view model for the image cropping/resizing settings view.
+/// The view model for the image cropping/resizing settings view
 /// </summary>
 internal class CropResizeSettings
     : HostedPanelViewModelBase<HostedPanelViewModelParameters>, ICropResizeSettings
 {
-    #region Variables.
+
     // The file being imported.
     private string _importFile;
     // The imported image.
     private IGorgonImage _importImage;
     // The size of the target image.
-    private DX.Size2 _targetImageSize;
+    private GorgonPoint _targetImageSize;
     // Flag to indicate which modes are allowed.
     private CropResizeMode _allowedModes = CropResizeMode.Crop | CropResizeMode.Resize;
     // Flag to indicate that resizing is allowed.
@@ -57,9 +55,7 @@ internal class CropResizeSettings
     private ImageFilter _imageFilter = ImageFilter.Point;
     // The directory for the imported file.
     private string _importFileDirectory;
-    #endregion
 
-    #region Properties.
     /// <summary>Property to return whether the panel is modal.</summary>
     public override bool IsModal => true;
 
@@ -158,7 +154,7 @@ internal class CropResizeSettings
     }
 
     /// <summary>Property to set or return the width/height of the target image.</summary>
-    public DX.Size2 TargetImageSize
+    public GorgonPoint TargetImageSize
     {
         get => _targetImageSize;
         set
@@ -230,9 +226,7 @@ internal class CropResizeSettings
             OnPropertyChanged();
         }
     }
-    #endregion
 
-    #region Methods.
     /// <summary>Function to inject dependencies for the view model.</summary>
     /// <param name="injectionParameters">The parameters to inject.</param>
     /// <remarks>
@@ -241,5 +235,4 @@ internal class CropResizeSettings
     protected override void OnInitialize(HostedPanelViewModelParameters injectionParameters)
     {
     }
-    #endregion
 }

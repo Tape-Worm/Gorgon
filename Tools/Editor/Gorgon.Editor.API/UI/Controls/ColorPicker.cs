@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,33 +11,30 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 28, 2019 9:37:16 AM
 // 
-#endregion
 
-using System;
 using System.ComponentModel;
-using System.Windows.Forms;
 using Gorgon.Graphics;
 
 namespace Gorgon.Editor.UI.Controls;
 
 /// <summary>
-/// A control used to select a color value.
+/// A control used to select a color value
 /// </summary>
 public partial class ColorPicker
     : UserControl
 {
-    #region Events.
+
     // Event triggered when the color is changed on the control.
     private event EventHandler<ColorChangedEventArgs> ColorChangedEvent;
 
@@ -67,17 +64,15 @@ public partial class ColorPicker
             ColorChangedEvent -= value;
         }
     }
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to set or return the color selection.
     /// </summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public GorgonColor SelectedColor
     {
-        get => Picker.SelectedColor;
-        set => Picker.SelectedColor = value;
+        get => GorgonColor.FromColor(Picker.SelectedColor);
+        set => Picker.SelectedColor = GorgonColor.ToColor(value);
     }
 
     /// <summary>
@@ -86,12 +81,10 @@ public partial class ColorPicker
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public GorgonColor OriginalColor
     {
-        get => Picker.OldColor;
-        set => Picker.OldColor = value;
+        get => GorgonColor.FromColor(Picker.OldColor);
+        set => Picker.OldColor = GorgonColor.ToColor(value);
     }
-    #endregion
 
-    #region Methods.
     /// <summary>Handles the ColorChanged event of the Picker control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
@@ -100,10 +93,8 @@ public partial class ColorPicker
         EventHandler<ColorChangedEventArgs> handler = ColorChangedEvent;
         handler?.Invoke(this, new ColorChangedEventArgs(SelectedColor, OriginalColor));
     }
-    #endregion
 
-    #region Constructor/Finalizer.
     /// <summary>Initializes a new instance of the <see cref="ColorPicker"/> class.</summary>
     public ColorPicker() => InitializeComponent();
-    #endregion
+
 }

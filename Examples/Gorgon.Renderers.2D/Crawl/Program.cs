@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,25 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 18, 2018 4:04:19 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Numerics;
-using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
@@ -38,16 +32,15 @@ using Gorgon.Graphics.Fonts;
 using Gorgon.Renderers;
 using Gorgon.Timing;
 using Gorgon.UI;
-using DX = SharpDX;
 
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Our example entry point.
+/// Our example entry point
 /// </summary>
 static class Program
 {
-    #region Variables.
+
     // The core graphics functionality.
     private static GorgonGraphics _graphics;
     // Our swap chain that represents our "Screen".
@@ -68,13 +61,7 @@ static class Program
     private static GorgonTextSprite _crawlText;
     // The position of the crawl text.
     private static Vector2 _crawlPosition;
-    #endregion
 
-    #region Properties.
-
-    #endregion
-
-    #region Methods.
     /// <summary>
     /// Function to create the render targets to display.
     /// </summary>
@@ -96,10 +83,10 @@ static class Program
         {
             Name = "Crawl Text Target"
         });
-        _crawlRtv.Clear(GorgonColor.BlackTransparent);
+        _crawlRtv.Clear(GorgonColors.BlackTransparent);
         _crawl = _crawlRtv.GetShaderResourceView();
 
-        _spaceBackgroundRtv.Clear(GorgonColor.Black);
+        _spaceBackgroundRtv.Clear(GorgonColors.Black);
 
         _graphics.SetRenderTarget(_spaceBackgroundRtv);
         _renderer.Begin();
@@ -107,8 +94,8 @@ static class Program
         for (int i = 0; i < 1024; ++i)
         {
             float brightness = GorgonRandom.RandomSingle(0.05f, 1.0f);
-            var pos = new Vector2(GorgonRandom.RandomSingle(0, _spaceBackground.Width), GorgonRandom.RandomSingle(0, _spaceBackground.Height));
-            _renderer.DrawFilledRectangle(new DX.RectangleF(pos.X, pos.Y, 1, 1), new GorgonColor(brightness, brightness, brightness));
+            Vector2 pos = new(GorgonRandom.RandomSingle(0, _spaceBackground.Width), GorgonRandom.RandomSingle(0, _spaceBackground.Height));
+            _renderer.DrawFilledRectangle(new GorgonRectangleF(pos.X, pos.Y, 1, 1), new GorgonColor(brightness, brightness, brightness));
         }
 
         _renderer.End();
@@ -118,18 +105,18 @@ static class Program
         _crawlSprite = new GorgonSprite
         {
             Texture = _crawl,
-            TextureRegion = new DX.RectangleF(0, 0, 1, 1),
-            Size = new DX.Size2F(_crawl.Width * 1.25f, _crawl.Height),
+            TextureRegion = new GorgonRectangleF(0, 0, 1, 1),
+            Size = new Vector2(_crawl.Width * 1.25f, _crawl.Height),
             Position = new Vector2(-_crawl.Width * 0.125f, 0)
         };
         _crawlSprite.CornerOffsets.UpperLeft = new Vector3(_crawl.Width * 0.55f - 16, _crawl.Height * 0.5f - 64, 0);
         _crawlSprite.CornerOffsets.UpperRight = new Vector3(-_crawl.Width * 0.55f + 16, _crawl.Height * 0.5f - 64, 0);
-        _crawlSprite.CornerColors.UpperLeft = GorgonColor.BlackTransparent;
-        _crawlSprite.CornerColors.UpperRight = GorgonColor.BlackTransparent;
+        _crawlSprite.CornerColors.UpperLeft = GorgonColors.BlackTransparent;
+        _crawlSprite.CornerColors.UpperRight = GorgonColors.BlackTransparent;
 
         if (_crawlText is not null)
         {
-            _crawlText.LayoutArea = new DX.Size2F(_crawlRtv.Width, _crawlRtv.Height);
+            _crawlText.LayoutArea = new Vector2(_crawlRtv.Width, _crawlRtv.Height);
             _crawlText.Text = Resources.CrawlText.WordWrap(_crawlText.Font, _crawlRtv.Width - 50);
         }
     }
@@ -143,14 +130,14 @@ static class Program
         _crawlPosition = new Vector2(0, _crawlPosition.Y - (_crawlRtv.Height * 0.025f * GorgonTiming.Delta));
 
         // Once the bottom of the text is past the 0 alpha point, flip it back to start over.
-        if ((_crawlText.Size.Height + _crawlText.Position.Y) < _crawlRtv.Height * 0.35f)
+        if ((_crawlText.Size.Y + _crawlText.Position.Y) < _crawlRtv.Height * 0.35f)
         {
             _crawlPosition = new Vector2(0, _crawlRtv.Height);
         }
 
         // Render the text to the crawling render target.
         _graphics.SetRenderTarget(_crawlRtv);
-        _crawlRtv.Clear(GorgonColor.BlackTransparent);
+        _crawlRtv.Clear(GorgonColors.BlackTransparent);
         _renderer.Begin();
         _crawlText.Position = _crawlPosition;
         _renderer.DrawTextSprite(_crawlText);
@@ -159,9 +146,9 @@ static class Program
         // Compose the scene with our starry background and the skewed sprite.
         _graphics.SetRenderTarget(_screen.RenderTargetView);
         _renderer.Begin();
-        _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _screen.Width, _screen.Height), GorgonColor.White, _spaceBackground);
+        _renderer.DrawFilledRectangle(new GorgonRectangleF(0, 0, _screen.Width, _screen.Height), GorgonColors.White, _spaceBackground);
         // Uncomment this line to see the scrolling text without deformation.
-        //_renderer.DrawFilledRectangle(new DX.RectangleF(0, 64, _screen.Width * 0.25f, _screen.Height * 0.25f), GorgonColor.White, _crawl, new DX.RectangleF(0, 0, 1, 1));
+        //_renderer.DrawFilledRectangle(new GorgonRectangleF(0, 64, _screen.Width * 0.25f, _screen.Height * 0.25f), GorgonColors.White, _crawl, new GorgonRectangleF(0, 0, 1, 1));
         _renderer.DrawSprite(_crawlSprite);
         _renderer.End();
 
@@ -181,7 +168,7 @@ static class Program
         GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
 
         // Create the window, and size it to our resolution.
-        FormMain window = GorgonExample.Initialize(new DX.Size2(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height), "Opening Crawl");
+        FormMain window = GorgonExample.Initialize(new GorgonPoint(ExampleConfig.Default.Resolution.X, ExampleConfig.Default.Resolution.Y), "Opening Crawl");
 
         try
         {
@@ -198,8 +185,8 @@ static class Program
 
             _screen = new GorgonSwapChain(_graphics,
                                           window,
-                                          new GorgonSwapChainInfo(ExampleConfig.Default.Resolution.Width,
-                                                                       ExampleConfig.Default.Resolution.Height,
+                                          new GorgonSwapChainInfo(ExampleConfig.Default.Resolution.X,
+                                                                       ExampleConfig.Default.Resolution.Y,
                                                                        BufferFormat.R8G8B8A8_UNorm)
                                           {
                                               Name = "Gorgon2D Sprites Example Swap Chain"
@@ -217,19 +204,19 @@ static class Program
             CreateTargets();
 
             // Set up our text sprite so we can render formatted text to the render target.
-            _crawlText = new GorgonTextSprite(GorgonExample.Fonts.GetFont(new GorgonFontInfo("Arial", 36.0f, FontHeightMode.Points)
+            _crawlText = new GorgonTextSprite(GorgonExample.Fonts.GetFont(new GorgonFontInfo("Arial", 36.0f, GorgonFontHeightMode.Points)
             {
                 Name = "Arial SW",
-                FontStyle = FontStyle.Bold,
+                FontStyle = GorgonFontStyle.Bold,
                 Characters = Resources.CrawlText.Distinct()
             }))
             {
                 Alignment = Alignment.UpperCenter,
-                Color = GorgonColor.YellowPure,
-                LayoutArea = new DX.Size2F(_screen.Width, _screen.Height),
+                Color = GorgonColors.Yellow,
+                LayoutArea = new Vector2(_screen.Width, _screen.Height),
                 AllowColorCodes = true
             };
-                            
+
             _crawlText.Text = Resources.CrawlText.WordWrap(_crawlText.Font, _crawlRtv.Width - 50);
             _crawlPosition = new Vector2(0, _crawlRtv.Height);
 
@@ -269,9 +256,7 @@ static class Program
     {
         try
         {
-#if NET6_0_OR_GREATER
             Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
-#endif
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
@@ -296,5 +281,4 @@ static class Program
             _graphics?.Dispose();
         }
     }
-    #endregion
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,22 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 1, 2017 9:35:50 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Gorgon.Examples.Properties;
@@ -37,7 +33,7 @@ using Gorgon.Math;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// The output data returned from the shader.
+/// The output data returned from the shader
 /// </summary>
 [StructLayout(LayoutKind.Sequential, Pack = 4)]
 internal struct OutputData
@@ -53,7 +49,7 @@ internal struct OutputData
 }
 
 /// <summary>
-/// An example showing how to use the Compute engine functionality for Gorgon.
+/// An example showing how to use the Compute engine functionality for Gorgon
 /// </summary>
 /// <remarks>
 /// This is a very simple example showing how to access the compute engine functionality in Gorgon. 
@@ -62,23 +58,21 @@ internal struct OutputData
 /// fast number crunching device, and this functionality allows us to offload otherwise expensive computations from the CPU to the GPU. 
 /// 
 /// The compute shaders on the GPU perform their tasks uses multiple groups of multiple threads to allow many operations to be performed in parallel, 
-/// this is a major component in delivering high performance throughput.
+/// this is a major component in delivering high performance throughput
 /// 
 /// For this example, we'll upload two sets of values to the GPU and the compute engine will perform a simple mathematical operation on each sets of 
-/// values to produce another set of values stored as a structured buffer.
+/// values to produce another set of values stored as a structured buffer
 /// 
 /// To do this, we first create a graphics interface so we can access the GPU from the compute engine, then we create the compute engine itself and 
 /// bind the buffers containing the input values and the output buffer. Then, finally, we execute the compute shader and retrieve the result values from 
-/// the output buffer into a buffer that the CPU can read and test them for accuracy.
+/// the output buffer into a buffer that the CPU can read and test them for accuracy
 /// </remarks>
 internal class Program
 {
-    #region Constants.
+
     // The maximum number of elements to send and receive.
     private const int MaxValues = 10000;
-    #endregion
 
-    #region Variables.
     // The graphics device used to by the compute engine.
     private static GorgonGraphics _graphics;
     // The compute shader to run.
@@ -92,10 +86,8 @@ internal class Program
     // The compute engine.
     private static GorgonComputeEngine _engine;
     // The dispatch call builder.
-    private static readonly GorgonDispatchCallBuilder _dispatchBuilder = new();
-    #endregion
+    private static GorgonDispatchCallBuilder _dispatchBuilder;
 
-    #region Methods.
     /// <summary>
     /// A function to create our input/input buffers and populate the input buffers with the data to send to the GPU.
     /// </summary>
@@ -109,7 +101,7 @@ internal class Program
                                          new GorgonBufferInfo(Unsafe.SizeOf<OutputData>() * MaxValues)
                                          {
                                              Name = "OutputData",
-                                             Usage = ResourceUsage.Default,                                                 
+                                             Usage = ResourceUsage.Default,
                                              Binding = BufferBinding.ReadWrite,
                                              StructureSize = Unsafe.SizeOf<OutputData>(),
                                              AllowCpuRead = true
@@ -182,6 +174,8 @@ internal class Program
         Console.WriteLine("Compiling the compute shader (SimpleCompute)...");
         _computeShader = GorgonShaderFactory.Compile<GorgonComputeShader>(_graphics, Resources.ComputeShader, "SimpleCompute");
 
+        _dispatchBuilder = new GorgonDispatchCallBuilder(_computeShader);
+
         // Finally, the star of the show, the compute engine.
         Console.WriteLine("Creating compute engine...");
         _engine = new GorgonComputeEngine(_graphics);
@@ -194,9 +188,10 @@ internal class Program
     private static OutputData[] Execute()
     {
         // The first step is to provide the compute shader with the information it needs to do its job.
+        GorgonReadWriteViewBinding resourceView = new(_outputBuffer.GetStructuredReadWriteView());
         GorgonDispatchCall dispatch = _dispatchBuilder.ShaderResource(_intBuffer.GetShaderResourceView(BufferFormat.R32_SInt))
                                                       .ShaderResource(_floatBuffer.GetShaderResourceView(BufferFormat.R32_Float), 1)
-                                                      .ReadWriteView(new GorgonReadWriteViewBinding(_outputBuffer.GetStructuredReadWriteView()))
+                                                      .ReadWriteView(in resourceView)
                                                       .ComputeShader(_computeShader)
                                                       .Build();
 
@@ -215,7 +210,7 @@ internal class Program
     /// <returns>A list of errors if any were found, or an empty list if the operation was completely successful.</returns>
     private static IReadOnlyList<(int Index, OutputData Expected, OutputData Actual)> TestResults(OutputData[] results)
     {
-        var errors = new List<(int Index, OutputData Expected, OutputData Actual)>();
+        List<(int Index, OutputData Expected, OutputData Actual)> errors = [];
 
         // Compare the results.
         for (int i = 0; i < MaxValues; ++i)
@@ -316,5 +311,4 @@ internal class Program
         Console.WriteLine("Press any key to exit.");
         Console.ReadKey();
     }
-    #endregion
 }

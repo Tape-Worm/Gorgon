@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,37 +11,33 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 9, 2018 8:45:09 AM
 // 
-#endregion
 
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
+using Gorgon.Patterns;
 using Gorgon.Renderers.Geometry;
 using Gorgon.Renderers.Properties;
 using GorgonTriangulator;
-using DX = SharpDX;
 
 namespace Gorgon.Renderers;
 
 /// <summary>
-/// A builder used to create a new <see cref="GorgonPolySprite"/> object.
+/// A builder used to create a new <see cref="GorgonPolySprite"/> object
 /// </summary>
 /// <remarks>
 /// <para>
@@ -50,34 +46,35 @@ namespace Gorgon.Renderers;
 /// <para>
 /// The polygonal sprite created by this builder is built up by adding multiple <see cref="GorgonPolySpriteVertex"/> objects to the builder and calling the <see cref="Build"/> method. These vertices 
 /// make up the "hull" of the polygon (basically the outer shape of the polygon), which gets turned into triangles so it can be rendered by Gorgon. Vertex manipulation is not the only functionality 
-/// provided by the builder, other initial values may also be assigned for the created sprite as well.
+/// provided by the builder, other initial values may also be assigned for the created sprite as well
 /// <para>
 /// <note type="important">
-/// A minimum of 3 vertices are required to build a polygonal sprite. Attempting to do so with less will cause an exception.
+/// A minimum of 3 vertices are required to build a polygonal sprite. Attempting to do so with less will cause an exception
 /// </note>
 /// </para>
 /// </para>
 /// <para>
 /// This builder is not the only way to create a polygonal sprite, users can define a series of triangle vertices and indices and use 
-/// <see cref="GorgonPolySprite.Create(GorgonGraphics, IReadOnlyList{GorgonPolySpriteVertex}, IReadOnlyList{int})"/> on the <see cref="GorgonPolySprite"/>.
+/// <see cref="GorgonPolySprite.Create(GorgonGraphics, IReadOnlyList{GorgonPolySpriteVertex}, IReadOnlyList{int})"/> on the <see cref="GorgonPolySprite"/>
 /// </para>
 /// <para>
-/// The resulting polygonal sprite from this builder implements <see cref="IDisposable"/>. Therefore, it is the user's responsibility to dispose of the object when they are done with it.
+/// The resulting polygonal sprite from this builder implements <see cref="IDisposable"/>. Therefore, it is the user's responsibility to dispose of the object when they are done with it
 /// </para>
 /// </remarks>
 /// <seealso cref="GorgonPolySpriteVertex"/>
 /// <seealso cref="GorgonPolySprite"/>
-public class GorgonPolySpriteBuilder
-    : IGorgonFluentBuilder<GorgonPolySpriteBuilder, GorgonPolySprite>, IEnumerable<GorgonPolySpriteVertex>, IGorgonGraphicsObject
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonPolySpriteBuilder" /> class
+/// </remarks>
+/// <param name="renderer">The renderer interface to use for building the polygon sprite.</param>
+public class GorgonPolySpriteBuilder(Gorgon2D renderer)
+        : IGorgonFluentBuilder<GorgonPolySpriteBuilder, GorgonPolySprite>, IEnumerable<GorgonPolySpriteVertex>, IGorgonGraphicsObject
 {
-    #region Variables.
     // The working sprite.
     private readonly GorgonPolySprite _workingSprite = new();
     // The triangulator used to convert the polygon into a triangle mesh.
     private readonly Triangulator _triangulator = new(null);
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to return the number of vertices in the polysprite.
     /// </summary>
@@ -89,10 +86,8 @@ public class GorgonPolySpriteBuilder
     public GorgonGraphics Graphics
     {
         get;
-    }
-    #endregion
+    } = renderer?.Graphics ?? throw new ArgumentNullException(nameof(renderer));
 
-    #region Methods.
     /// <summary>
     /// Function to copy the values from one sprite to another.
     /// </summary>
@@ -101,7 +96,7 @@ public class GorgonPolySpriteBuilder
     private static void CopySprite(GorgonPolySprite dest, GorgonPolySprite src)
     {
         dest.RwVertices.Clear();
-        dest.RwIndices = Array.Empty<int>();
+        dest.RwIndices = [];
 
         for (int i = 0; i < src.RwVertices.Count; ++i)
         {
@@ -135,7 +130,7 @@ public class GorgonPolySpriteBuilder
     /// If the <paramref name="alphaTest"/> value is <b>null</b>, then alpha testing will be turned off for the sprite.
     /// </para>
     /// </remarks>
-    public GorgonPolySpriteBuilder AlphaTest(GorgonRangeF? alphaTest = null)
+    public GorgonPolySpriteBuilder AlphaTest(GorgonRange<float>? alphaTest = null)
     {
         _workingSprite.AlphaTest = alphaTest;
         return this;
@@ -485,7 +480,7 @@ public class GorgonPolySpriteBuilder
             throw new GorgonException(GorgonResult.CannotCreate, Resources.GOR2D_ERR_POLY_SPRITE_NOT_ENOUGH_VERTS);
         }
 
-        var newSprite = new GorgonPolySprite();
+        GorgonPolySprite newSprite = new();
 
         CopySprite(newSprite, _workingSprite);
 
@@ -504,7 +499,7 @@ public class GorgonPolySpriteBuilder
         _triangulator.EnsureWindingOrder(newSprite.Renderable.Vertices, WindingOrder.CounterClockwise);
 
         // Split the polygon hull into triangles.
-        (int[] indices, DX.RectangleF bounds) = _triangulator.Triangulate(newSprite.Renderable.Vertices, WindingOrder.CounterClockwise);            
+        (int[] indices, GorgonRectangleF bounds) = _triangulator.Triangulate(newSprite.Renderable.Vertices, WindingOrder.CounterClockwise);
 
         newSprite.RwIndices = indices;
 
@@ -521,7 +516,7 @@ public class GorgonPolySpriteBuilder
         }, newSprite.Renderable.Vertices);
         newSprite.Renderable.ActualVertexCount = newSprite.RwVertices.Count;
         newSprite.Renderable.IndexCount = indices.Length;
-        newSprite.Bounds = new DX.RectangleF(newSprite.Position.X, newSprite.Position.Y, bounds.Width, bounds.Height);
+        newSprite.Bounds = new GorgonRectangleF(newSprite.Position.X, newSprite.Position.Y, bounds.Width, bounds.Height);
 
         return newSprite;
     }
@@ -536,11 +531,11 @@ public class GorgonPolySpriteBuilder
         _workingSprite.Renderable.ActualVertexCount = 0;
         _workingSprite.Renderable.IndexCount = 0;
         _workingSprite.Position = Vector2.Zero;
-        _workingSprite.AlphaTest = GorgonRangeF.Empty;
+        _workingSprite.AlphaTest = GorgonRange<float>.Empty;
         _workingSprite.Anchor = Vector2.Zero;
         _workingSprite.Angle = 0.0f;
-        _workingSprite.Bounds = DX.RectangleF.Empty;
-        _workingSprite.Color = GorgonColor.White;
+        _workingSprite.Bounds = GorgonRectangleF.Empty;
+        _workingSprite.Color = GorgonColors.White;
         _workingSprite.Depth = 0.0f;
         _workingSprite.HorizontalFlip = false;
         _workingSprite.VerticalFlip = false;
@@ -578,13 +573,5 @@ public class GorgonPolySpriteBuilder
     /// </summary>
     /// <returns>An <see cref="IEnumerator" /> object that can be used to iterate through the collection.</returns>
     IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)_workingSprite.RwVertices).GetEnumerator();
-    #endregion
 
-    #region Constructor.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonPolySpriteBuilder" /> class.
-    /// </summary>
-    /// <param name="renderer">The renderer interface to use for building the polygon sprite.</param>
-    public GorgonPolySpriteBuilder(Gorgon2D renderer) => Graphics = renderer?.Graphics ?? throw new ArgumentNullException(nameof(renderer));
-    #endregion
 }

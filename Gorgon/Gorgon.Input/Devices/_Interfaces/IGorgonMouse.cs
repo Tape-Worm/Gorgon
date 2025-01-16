@@ -1,4 +1,4 @@
-#region MIT
+﻿
 // 
 // Gorgon
 // Copyright (C) 2015 Michael Winsor
@@ -11,27 +11,25 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Thursday, September 10, 2015 10:00:48 PM
 // 
-#endregion
 
-using System;
 using Gorgon.Core;
-using DX = SharpDX;
+using Gorgon.Graphics;
 
 namespace Gorgon.Input;
 
 /// <summary>
-/// Enumeration for mouse buttons.
+/// Enumeration for mouse buttons
 /// </summary>
 [Flags]
 public enum MouseButtons
@@ -75,12 +73,11 @@ public enum MouseButtons
 }
 
 /// <summary>
-/// Provides events and state for mouse data from a physical mouse.
+/// Provides events and state for mouse data from a physical mouse
 /// </summary>
 public interface IGorgonMouse
     : IGorgonRawInputDevice, IGorgonRawInputDeviceData<GorgonRawMouseData>
 {
-    #region Events.
     /// <summary>
     /// Event triggered when the mouse is moved.
     /// </summary>
@@ -105,9 +102,7 @@ public interface IGorgonMouse
     /// Event triggered when a double click is performed on a mouse button.
     /// </summary>
     event EventHandler<GorgonMouseEventArgs> MouseDoubleClicked;
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to set or return the last reported relative position movement offset.
     /// </summary>
@@ -119,7 +114,7 @@ public interface IGorgonMouse
     /// Users should reset this value when they are done with it. Otherwise, it will not be reset until the next <see cref="MouseWheelMove"/> event.
     /// </para>
     /// </remarks>
-    DX.Point RelativePositionOffset
+    GorgonPoint RelativePositionOffset
     {
         get;
         set;
@@ -171,25 +166,25 @@ public interface IGorgonMouse
     /// Passing <c>Rectangle.Empty</c> to this property will remove the constraint on the position.
     /// </para>
     /// </remarks>
-    DX.Rectangle PositionConstraint
+    GorgonRectangle PositionConstraint
     {
         get;
         set;
     }
 
     /// <summary>
-    /// Property to set or return the <see cref="GorgonRange"/> used to constrain the mouse <see cref="WheelPosition"/>.
+    /// Property to set or return the <see cref="GorgonRange{T}"/> used to constrain the mouse <see cref="WheelPosition"/>.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// If a mouse wheel exists on the device, this will constrain the value of the <see cref="WheelPosition"/> within the specified <see cref="GorgonRange"/>. This means that a wheel with a position of  
+    /// If a mouse wheel exists on the device, this will constrain the value of the <see cref="WheelPosition"/> within the specified <see cref="GorgonRange{T}"/>. This means that a wheel with a position of  
     /// 160, with a constraint of 180-190 will make the <see cref="WheelPosition"/> property return 180.
     /// </para>
     /// <para>
-    /// Passing <see cref="GorgonRange.Empty"/> to this property will remove the constraint on the position.
+    /// Passing <see cref="GorgonRange{T}.Empty"/> to this property will remove the constraint on the position.
     /// </para>
     /// </remarks>
-    GorgonRange WheelConstraint
+    GorgonRange<int> WheelConstraint
     {
         get;
         set;
@@ -208,7 +203,7 @@ public interface IGorgonMouse
     /// Passing <c>Size.Empty</c> to this property will disable double clicking.
     /// </para>
     /// </remarks>
-    DX.Size2 DoubleClickSize
+    GorgonPoint DoubleClickSize
     {
         get;
         set;
@@ -222,7 +217,7 @@ public interface IGorgonMouse
     /// This property is affected by the <see cref="PositionConstraint"/> value.
     /// </para>
     /// </remarks>
-    DX.Point Position
+    GorgonPoint Position
     {
         get;
         set;
@@ -248,5 +243,4 @@ public interface IGorgonMouse
         get;
         set;
     }
-    #endregion
 }

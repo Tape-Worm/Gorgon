@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,28 +11,21 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: September 4, 2018 10:43:51 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
@@ -44,24 +37,22 @@ using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics.Core;
 using Gorgon.IO;
-using Gorgon.Renderers;
+using Gorgon.IO.FileSystem;
 using Gorgon.Timing;
 
 namespace Gorgon.Editor.ViewModels;
 
 /// <summary>
-/// The file explorer view model.
+/// The file explorer view model
 /// </summary>
 internal class FileExplorer
     : ViewModelBase<FileExplorerParameters, IHostContentServices>, IFileExplorer, IContentFileManager
 {
-    #region Constants.
+
     // The amount of time, in milliseconds, to pause an operation so the user can cancel the operation.
     private const int MaxUserInteractionTimeMilliseconds = 50;
     private const int MinUserInteractionTimeMilliseconds = 5;
-    #endregion
 
-    #region Events.
     // Internal event for the file system updated event.
     private event EventHandler FileSystemUpdatedEvent;
     // Event triggered when the SelectedFileCount changes.
@@ -128,14 +119,12 @@ internal class FileExplorer
             }
         }
     }
-    #endregion
 
-    #region Variables.
     // The synchronization locks for the file system events.
     private readonly object _fsUpdatedEventLock = new();
     private readonly object _selectedChangedEventLock = new();
     // The project file system and writer.
-    private IGorgonFileSystemWriter<FileStream> _fileSystemWriter;
+    private IGorgonFileSystem _fileSystemWriter;
     // The directory locator dialog service.
     private IDirectoryLocateService _directoryLocator;
     // The factory used to build view models.
@@ -156,16 +145,14 @@ internal class FileExplorer
     // The application settings.
     private Editor.EditorSettings _settings;
     // The list of selected files.
-    private ObservableCollection<IFile> _selectedFiles = new();
+    private ObservableCollection<IFile> _selectedFiles = [];
     // The clipboard handler.
     private IClipboardHandler _clipboardHandler;
     // Timer used to determine how long it takes to update UI.
     private int _userInteractionTimeMilliseconds = MaxUserInteractionTimeMilliseconds;
     private readonly IGorgonTimer _uiTimer = GorgonTimerQpc.SupportsQpc() ? new GorgonTimerQpc() : new GorgonTimerMultimedia();
     private double _lastTime = -1;
-    #endregion
 
-    #region Properties.
     /// <summary>Property to return the current directory.</summary>
     string IContentFileManager.CurrentDirectory => SelectedDirectory?.FullPath ?? Root.FullPath;
 
@@ -274,7 +261,6 @@ internal class FileExplorer
         get;
     }
 
-
     /// <summary>
     /// Property to return the command used to create a new directory.
     /// </summary>
@@ -352,7 +338,7 @@ internal class FileExplorer
     /// <summary>
     /// Property to return the list of search results for a filtered node list.
     /// </summary>
-    public IReadOnlyList<IFile> SearchResults 
+    public IReadOnlyList<IFile> SearchResults
     {
         get => _searchFiles;
         private set
@@ -403,7 +389,7 @@ internal class FileExplorer
     }
 
     /// <summary>
-    /// Property to return the metadata for the content plug ins.
+    /// Property to return the metadata for the content plug-ins.
     /// </summary>
     public IReadOnlyList<IContentPlugInMetadata> PlugInMetadata
     {
@@ -422,9 +408,7 @@ internal class FileExplorer
     {
         get;
     }
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to call the <see cref="SelectedFilesChangedEvent"/>
     /// </summary>
@@ -449,7 +433,7 @@ internal class FileExplorer
 
         lock (_fsUpdatedEventLock)
         {
-           handler = FileSystemUpdatedEvent;
+            handler = FileSystemUpdatedEvent;
         }
 
         handler?.Invoke(this, EventArgs.Empty);
@@ -476,7 +460,7 @@ internal class FileExplorer
         {
             directory = Root;
         }
-        else 
+        else
         {
             directory = _directories.Values.FirstOrDefault(item => string.Equals(item.FullPath, directoryPath, StringComparison.OrdinalIgnoreCase));
 
@@ -513,12 +497,12 @@ internal class FileExplorer
     }
 
     /// <summary>
-    /// Function to set up the content plug in association for a content file.
+    /// Function to set up the content plug-in association for a content file.
     /// </summary>
     /// <param name="filePath">The path to the content file.</param>
     /// <param name="metadata">The metadata to evaluate.</param>
     /// <param name="metadataOnly"><b>true</b> to indicate that only metadata should be used to scan the content file, <b>false</b> to scan, in depth, per plugin (slow).</param>
-    /// <returns><b>true</b> if a content plug in was associated, <b>false</b> if not.</returns>
+    /// <returns><b>true</b> if a content plug-in was associated, <b>false</b> if not.</returns>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="metadata"/> parameter is <b>null</b>.</exception>
     private bool AssignContentPlugIn(string filePath, ProjectItemMetadata metadata, bool metadataOnly)
     {
@@ -555,7 +539,7 @@ internal class FileExplorer
         // Assume that no plugin is available for the node.
         metadata.PlugInName = string.Empty;
 
-        // Attempt to associate a content plug in with the node.            
+        // Attempt to associate a content plug-in with the node.            
         foreach (KeyValuePair<string, ContentPlugIn> servicePlugIn in HostServices.ContentPlugInService.PlugIns)
         {
             if ((servicePlugIn.Value is not IContentPlugInMetadata pluginMetadata)
@@ -572,11 +556,11 @@ internal class FileExplorer
     }
 
     /// <summary>
-    /// Function to set up the content plug in association for a content file.
+    /// Function to set up the content plug-in association for a content file.
     /// </summary>
     /// <param name="contentFile">The content file to evaluate.</param>
     /// <param name="metadataOnly"><b>true</b> to indicate that only metadata should be used to scan the content file, <b>false</b> to scan, in depth, per plugin (slow).</param>
-    /// <returns><b>true</b> if a content plug in was associated, <b>false</b> if not.</returns>
+    /// <returns><b>true</b> if a content plug-in was associated, <b>false</b> if not.</returns>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="contentFile"/> parameter is <b>null</b>.</exception>
     private bool AssignContentPlugIn(IFile contentFile, bool metadataOnly)
     {
@@ -588,7 +572,7 @@ internal class FileExplorer
         bool result = AssignContentPlugIn(contentFile.FullPath, contentFile.Metadata, metadataOnly);
 
         if ((result) && (contentFile.RefreshCommand is not null) && (contentFile.RefreshCommand.CanExecute(null)))
-        {            
+        {
             contentFile.RefreshCommand.Execute(null);
         }
 
@@ -601,10 +585,10 @@ internal class FileExplorer
     /// <param name="directory">The directory to start searching from.</param>
     /// <returns>The <see cref="IFile"/> that is open, or <b>null</b> if not file is open.</returns>
     private IFile CheckForOpenFile(IDirectory directory) => directory.Files
-                                                                     .Concat(directory.Directories.Traverse(d => d.Directories)
+                                                                     .Concat(directory.Directories.TraverseBreadthFirst(d => d.Directories)
                                                                                                   .SelectMany(item => item.Files))
                                                                      .FirstOrDefault(item => item.IsOpen);
-
+    /*
     /// <summary>
     /// Function called when there is a conflict when copying files.
     /// </summary>
@@ -659,7 +643,7 @@ internal class FileExplorer
                     }
                 }
 
-                string fileName; 
+                string fileName;
                 string dirName;
 
                 if (destFile is null)
@@ -729,7 +713,7 @@ internal class FileExplorer
 
             try
             {
-                string destDirectoryPath = destItem.FormatDirectory(Path.DirectorySeparatorChar);                    
+                string destDirectoryPath = destItem.FormatDirectory(Path.DirectorySeparatorChar);
 
                 if (System.IO.Directory.Exists(destDirectoryPath))
                 {
@@ -786,7 +770,7 @@ internal class FileExplorer
 
         return result;
     }
-
+    */
     /// <summary>
     /// Function called when there is a conflict when moving files.
     /// </summary>
@@ -870,16 +854,16 @@ internal class FileExplorer
     /// <param name="directory">The directory to remove from the cache.</param>
     private void RemoveDirectoryFromCache(IDirectory directory)
     {
-        var dirIDList = new List<IDirectory>();
-        var fileIDList = new List<IFile>();
+        List<IDirectory> dirIDList = [];
+        List<IFile> fileIDList = [];
 
         if (directory != Root)
         {
             dirIDList.Add(directory);
         }
-        
+
         fileIDList.AddRange(directory.Files);
-        IEnumerable<IDirectory> directories = _directories.Values.Traverse(d => d.Directories);
+        IEnumerable<IDirectory> directories = _directories.Values.TraverseBreadthFirst(d => d.Directories);
 
         dirIDList.AddRange(directories);
         fileIDList.AddRange(directories.SelectMany(d => d.Files));
@@ -904,8 +888,7 @@ internal class FileExplorer
     /// <param name="directory">The directory containing the files to remove from the cache.</param>
     private void RemoveFilesFromCache(IDirectory directory)
     {
-        var fileIDs = new List<IFile>();
-        fileIDs.AddRange(directory.Files);
+        List<IFile> fileIDs = [.. directory.Files];
 
         foreach (IFile file in fileIDs)
         {
@@ -923,7 +906,7 @@ internal class FileExplorer
     /// <param name="e">The <see cref="NotifyCollectionChangedEventArgs"/> instance containing the event data.</param>
     private void Directories_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
     {
-        var directories = (IReadOnlyList<IDirectory>)sender;
+        IReadOnlyList<IDirectory> directories = (IReadOnlyList<IDirectory>)sender;
         IDirectory dir;
 
         switch (e.Action)
@@ -957,7 +940,7 @@ internal class FileExplorer
     /// <param name="e">The <see cref="NotifyCollectionChangedEventArgs"/> instance containing the event data.</param>
     private void Files_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
     {
-        var files = (IReadOnlyList<IFile>)sender;
+        IReadOnlyList<IFile> files = (IReadOnlyList<IFile>)sender;
         IFile file;
 
         switch (e.Action)
@@ -984,7 +967,7 @@ internal class FileExplorer
                 if (parent is not null)
                 {
                     RemoveFilesFromCache(parent);
-                }                    
+                }
                 break;
         }
     }
@@ -1077,7 +1060,7 @@ internal class FileExplorer
             _files[file.ID] = file;
         }
 
-        foreach (IDirectory subDir in directory.Directories.Traverse(d => d.Directories))
+        foreach (IDirectory subDir in directory.Directories.TraverseBreadthFirst(d => d.Directories))
         {
             _directories[subDir.ID] = subDir;
 
@@ -1088,7 +1071,6 @@ internal class FileExplorer
             }
         }
     }
-
 
     /// <summary>
     /// Function to update directory view models after a copy or move operation.
@@ -1118,7 +1100,7 @@ internal class FileExplorer
     /// <param name="updateSelections"><b>true</b> to update file selections, <b>false</b> to leave as-is.</param>
     private void UpdateFileViewModels(IReadOnlyList<(IGorgonVirtualFile src, IGorgonVirtualFile dest)> files, IDirectory destDirectory, bool updateSelections)
     {
-        var selected = new ObservableCollection<IFile>();
+        ObservableCollection<IFile> selected = [];
 
         foreach ((IGorgonVirtualFile src, IGorgonVirtualFile dest) in files)
         {
@@ -1136,7 +1118,7 @@ internal class FileExplorer
             }
 
             // If we've got the same file name in here, then we'll need to remove it prior to adding.
-            IFile existingFile = parentDir.Files.FirstOrDefault(item => string.Equals(item.FullPath, dest.FullPath, StringComparison.OrdinalIgnoreCase));                
+            IFile existingFile = parentDir.Files.FirstOrDefault(item => string.Equals(item.FullPath, dest.FullPath, StringComparison.OrdinalIgnoreCase));
 
             if (existingFile is null)
             {
@@ -1179,7 +1161,7 @@ internal class FileExplorer
             string result = originalName;
             int count = 0;
 
-            while ((parent.Directories.Any(item => string.Equals(item.Name, result, StringComparison.OrdinalIgnoreCase))) 
+            while ((parent.Directories.Any(item => string.Equals(item.Name, result, StringComparison.OrdinalIgnoreCase)))
                 || (parent.Files.Any(item => string.Equals(item.Name, result, StringComparison.OrdinalIgnoreCase))))
             {
                 result = $"{result} ({++count})";
@@ -1237,7 +1219,7 @@ internal class FileExplorer
     /// <param name="cancelToken">The token used to cancel the operation.</param>
     private void DeleteDirectory(IDirectory directory, Action<string> progressCallback, CancellationToken cancelToken)
     {
-        _fileSystemWriter.DeleteDirectory(directory.FullPath, progressCallback, cancelToken);            
+        _fileSystemWriter.DeleteDirectory(directory.FullPath, new GorgonFileSystemDeleteOptions(progressCallback, cancelToken));
 
         // If we've provided a progress callback, then we don't need to to use the code below.
         // Otherwise we'd end up with a cross thread error as the UI would be updated on a separate thread.
@@ -1286,7 +1268,7 @@ internal class FileExplorer
                 _userInteractionTimeMilliseconds = MaxUserInteractionTimeMilliseconds / 5;
             }
         }
-        
+
         Thread.Sleep(_userInteractionTimeMilliseconds);
     }
 
@@ -1296,9 +1278,9 @@ internal class FileExplorer
     /// <param name="args">The arguments for the command.</param>
     private async Task DoDeleteDirectoryAsync(DeleteArgs args)
     {
-        var cancelSource = new CancellationTokenSource();
-        var deletedDirs = new List<IDirectory>();
-        var deletedFiles = new List<IFile>();
+        CancellationTokenSource cancelSource = new();
+        List<IDirectory> deletedDirs = [];
+        List<IFile> deletedFiles = [];
 
         // Event handlers to track which directories and files were successfully deleted.
         void DirectoriesDeleted(object sender, VirtualDirectoryDeletedEventArgs e)
@@ -1363,12 +1345,12 @@ internal class FileExplorer
 
             if (openFile is not null)
             {
-                HostServices.MessageDisplay.ShowError(string.Format(Resources.GOREDIT_ERR_DIRECTORY_LOCKED, directory.FullPath, openFile.Name));                    
+                HostServices.MessageDisplay.ShowError(string.Format(Resources.GOREDIT_ERR_DIRECTORY_LOCKED, directory.FullPath, openFile.Name));
                 return;
             }
 
             // Ensure file linkages are noticed.
-            foreach (IFile selectedFile in directory.Files.Concat(directory.Directories.Traverse(d => d.Directories)
+            foreach (IFile selectedFile in directory.Files.Concat(directory.Directories.TraverseBreadthFirst(d => d.Directories)
                                                           .SelectMany(item => item.Files)))
             {
                 if (!IsFileLinked(selectedFile))
@@ -1377,7 +1359,7 @@ internal class FileExplorer
                 }
 
                 if (HostServices.MessageDisplay.ShowConfirmation(Resources.GOREDIT_CONFIRM_FILE_LINKED) == MessageResponse.No)
-                {                        
+                {
                     return;
                 }
                 else
@@ -1410,7 +1392,7 @@ internal class FileExplorer
 
             _fileSystemWriter.VirtualDirectoryDeleted += DirectoriesDeleted;
             _fileSystemWriter.VirtualFileDeleted += FilesDeleted;
-            await Task.Run(() => DeleteDirectory(directory, ProgressCallback, cancelSource.Token));                
+            await Task.Run(() => DeleteDirectory(directory, ProgressCallback, cancelSource.Token));
             _fileSystemWriter.VirtualDirectoryDeleted -= DirectoriesDeleted;
             _fileSystemWriter.VirtualFileDeleted -= FilesDeleted;
 
@@ -1419,7 +1401,7 @@ internal class FileExplorer
             if (!args.ItemsDeleted)
             {
                 return;
-            }                
+            }
 
             foreach (IFile file in deletedFiles)
             {
@@ -1429,7 +1411,7 @@ internal class FileExplorer
             foreach (IDirectory dir in deletedDirs)
             {
                 dir.Parent.Directories.Remove(dir);
-            }                
+            }
         }
         catch (OperationCanceledException)
         {
@@ -1437,7 +1419,7 @@ internal class FileExplorer
         }
         catch (Exception ex)
         {
-            args.ItemsDeleted = (deletedFiles.Count > 0) || (deletedDirs.Count > 0);                
+            args.ItemsDeleted = (deletedFiles.Count > 0) || (deletedDirs.Count > 0);
             HostServices.MessageDisplay.ShowError(ex, string.Format(Resources.GOREDIT_ERR_DELETE, directory?.FullPath ?? string.Empty));
         }
         finally
@@ -1473,9 +1455,9 @@ internal class FileExplorer
     {
         CancellationTokenSource cancelSource = null;
         string currentFilePath = string.Empty;
-        var deletedFiles = new List<IFile>(); 
+        List<IFile> deletedFiles = [];
 
-        // Update the progress of the delete operation.
+        /*// Update the progress of the delete operation.
         void ProgressUpdate(string filePath)
         {
             currentFilePath = filePath;
@@ -1488,7 +1470,7 @@ internal class FileExplorer
 
             // Wait for a bit in order to give users time to react.
             SleepUI();
-        }
+        }*/
 
         // Function called to locate the file view model.
         void OnDeleted(object sender, VirtualFileDeletedEventArgs e)
@@ -1552,7 +1534,9 @@ internal class FileExplorer
             {
                 cancelSource = new CancellationTokenSource();
                 UpdateMarequeeProgress(Resources.GOREDIT_TEXT_PLEASE_WAIT);
-                await Task.Run(() => _fileSystemWriter.DeleteFiles(SelectedFiles.Select(item => item.FullPath), ProgressUpdate, cancelSource.Token));
+                await Task.CompletedTask;
+                throw new NotSupportedException("This needs reimplementation.");
+                //await Task.Run(() => _fileSystemWriter.DeleteFiles(SelectedFiles.Select(item => item.FullPath), ProgressUpdate, cancelSource.Token));
             }
             else
             {
@@ -1578,7 +1562,7 @@ internal class FileExplorer
                     if (_searchFiles.Remove(file))
                     {
                         searchUpdate = true;
-                    }                        
+                    }
                 }
             }
 
@@ -1614,7 +1598,6 @@ internal class FileExplorer
         }
     }
 
-
     /// <summary>
     /// Function to determine if a directory can be selected or not.
     /// </summary>
@@ -1624,7 +1607,7 @@ internal class FileExplorer
     private bool CanSelectDirectory(string id)
     {
         if (string.IsNullOrWhiteSpace(id))
-        {                
+        {
             return SelectedDirectory is not null;
         }
 
@@ -1688,11 +1671,11 @@ internal class FileExplorer
     /// <param name="ids">The list of file IDs to select.</param>
     private void DoSelectFile(IReadOnlyList<string> ids)
     {
-        string errorPath = string.Empty;           
+        string errorPath = string.Empty;
 
         try
         {
-            var selected = new ObservableCollection<IFile>();
+            ObservableCollection<IFile> selected = [];
 
             foreach (string id in ids)
             {
@@ -1747,7 +1730,7 @@ internal class FileExplorer
                 HostServices.MessageDisplay.ShowError(string.Format(Resources.GOREDIT_ERR_NODE_EXISTS, args.NewName));
                 args.Cancel = true;
                 return;
-            }                
+            }
 
             if (selected.IsOpen)
             {
@@ -1764,7 +1747,7 @@ internal class FileExplorer
 
             // Update the directory in our file system.
             string originalName = selected.FullPath;
-            _fileSystemWriter.RenameFile(originalName, args.NewName);                
+            _fileSystemWriter.RenameFile(originalName, args.NewName);
 
             selected.RenameCommand.Execute(args);
 
@@ -1815,7 +1798,7 @@ internal class FileExplorer
             }
 
             if (((selected.Parent.Directories.Any(item => (item != selected) && (string.Equals(item.Name, args.NewName, StringComparison.CurrentCultureIgnoreCase)))))
-                || (selected.Parent.Files.Any(item => (item != selected) && (string.Equals(item.Name, args.NewName, StringComparison.CurrentCultureIgnoreCase))))) 
+                || (selected.Parent.Files.Any(item => (item != selected) && (string.Equals(item.Name, args.NewName, StringComparison.CurrentCultureIgnoreCase)))))
             {
                 HostServices.MessageDisplay.ShowError(string.Format(Resources.GOREDIT_ERR_NODE_EXISTS, args.NewName));
                 args.Cancel = true;
@@ -1839,12 +1822,12 @@ internal class FileExplorer
             }
 
             // Update the directory in our file system.
-            (string originalPath, IFile file)[] originalPaths = selected.Files.Concat(selected.Directories.Traverse(d => d.Directories)
+            (string originalPath, IFile file)[] originalPaths = selected.Files.Concat(selected.Directories.TraverseBreadthFirst(d => d.Directories)
                                                                                                           .SelectMany(d => d.Files))
                                                                                                           .Select(item => (item.FullPath, item))
                                                                               .ToArray();
             _fileSystemWriter.RenameDirectory(selected.FullPath, args.NewName);
-            
+
             selected.RenameCommand.Execute(args);
 
             foreach ((string originalPath, IFile file) in originalPaths)
@@ -1873,7 +1856,6 @@ internal class FileExplorer
         {
             return false;
         }
-
 
         // Ensure that:
         // 1. We can move.
@@ -1917,7 +1899,7 @@ internal class FileExplorer
     /// <param name="copyData">The source and destination directory.</param>
     private async Task DoMoveDirectoryAsync(IDirectoryCopyMoveData copyData)
     {
-        var cancelSource = new CancellationTokenSource();
+        CancellationTokenSource cancelSource = new();
         IReadOnlyList<(IGorgonVirtualDirectory src, IGorgonVirtualDirectory dest)> movedDirs = null;
         IReadOnlyList<(IGorgonVirtualFile src, IGorgonVirtualFile dest)> movedFiles = null;
 
@@ -1941,7 +1923,7 @@ internal class FileExplorer
 
             if (string.IsNullOrWhiteSpace(virtualPath))
             {
-                HostServices.Log.Print($"ERROR: The current path is empty/null. Cannot copy.", LoggingLevel.All);
+                HostServices.Log.PrintError($"The current path is empty/null. Cannot copy.", LoggingLevel.All);
                 return;
             }
 
@@ -1976,7 +1958,7 @@ internal class FileExplorer
             IFile openFile = CheckForOpenFile(srcDirectory);
 
             if (openFile is not null)
-            {                    
+            {
                 HostServices.MessageDisplay.ShowError(string.Format(Resources.GOREDIT_ERR_CANNOT_MOVE_DIR_OPEN_FILE, srcDirectory.Name, openFile.Name));
                 return;
             }
@@ -1985,12 +1967,7 @@ internal class FileExplorer
 
             _fileSystemWriter.VirtualDirectoryMoved += DirectoryMoved;
             await Task.Run(() => _fileSystemWriter.MoveDirectory(srcDirectory.FullPath, destDirectory.FullPath,
-            new GorgonCopyCallbackOptions
-            {
-                CancelToken = cancelSource.Token,
-                ProgressCallback = ProgressCallback,
-                ConflictResolutionCallback = MoveFileSystemConflictHandler
-            }));
+            new GorgonFileSystemCopyOptions(ProgressCallback, MoveFileSystemConflictHandler, cancelSource.Token)));
             _fileSystemWriter.VirtualDirectoryMoved -= DirectoryMoved;
             HideProgress();
 
@@ -2005,7 +1982,7 @@ internal class FileExplorer
 
             UpdateDirectoryViewModels(movedDirs.Where(item => item.dest is not null).Select(item => item.dest), destDirectory);
             UpdateFileViewModels(movedFiles, destDirectory, false);
-            
+
             // Remove the source files/directories from the view if it's subscribed.
             foreach ((IGorgonVirtualFile movedFile, IGorgonVirtualFile newFile) in movedFiles)
             {
@@ -2016,7 +1993,7 @@ internal class FileExplorer
                 {
                     continue;
                 }
-                                    
+
                 file.Parent.Files.Remove(file);
                 RepairFileLinkage(file.FullPath, newFile.FullPath);
             }
@@ -2054,7 +2031,7 @@ internal class FileExplorer
             cancelSource?.Dispose();
             _lastTime = -1;
         }
-    }        
+    }
 
     /// <summary>
     /// Function to determine if the file(s) can be copied or moved.
@@ -2092,9 +2069,10 @@ internal class FileExplorer
     {
         string currentFile = string.Empty;
 
-        var cancelSource = new CancellationTokenSource();
+        CancellationTokenSource cancelSource = new();
         IReadOnlyList<(IGorgonVirtualFile src, IGorgonVirtualFile dest)> movedFiles = null;
 
+        /*
         // Progress reporting.
         void ProgressCallback(string path, double percent)
         {
@@ -2102,13 +2080,13 @@ internal class FileExplorer
             {
                 return;
             }
-            
-            IFile file = _files.Values.FirstOrDefault(item => string.Equals(item.FullPath, path, StringComparison.OrdinalIgnoreCase));                
+
+            IFile file = _files.Values.FirstOrDefault(item => string.Equals(item.FullPath, path, StringComparison.OrdinalIgnoreCase));
             string virtualPath = currentFile = file?.FullPath ?? string.Empty;
 
             if (string.IsNullOrWhiteSpace(virtualPath))
             {
-                HostServices.Log.Print($"ERROR: The current path is empty/null. Cannot copy.", LoggingLevel.All);
+                HostServices.Log.PrintError($"The current path is empty/null. Cannot copy.", LoggingLevel.All);
                 return;
             }
 
@@ -2123,14 +2101,15 @@ internal class FileExplorer
             // Give our UI time to update.  
             // We do this here so the user is able to click the Cancel button should they need it.
             SleepUI();
-        }
+        }        
 
         // Event handler to retrieve the list of source and destination directories, and source and destination files that were moved.
         void FilesMoved(object sender, VirtualFileCopiedMovedEventArgs e) => movedFiles = e.VirtualFiles;
+        */
 
         IDirectory destDirectory = null;
 
-        var srcFiles = new List<IFile>();
+        List<IFile> srcFiles = [];
 
         try
         {
@@ -2139,7 +2118,7 @@ internal class FileExplorer
                 if (!_files.TryGetValue(id, out IFile file))
                 {
                     continue;
-                }                    
+                }
 
                 srcFiles.Add(file);
             }
@@ -2148,7 +2127,7 @@ internal class FileExplorer
 
             if (openFile is not null)
             {
-                HostServices.MessageDisplay.ShowError(string.Format(Resources.GOREDIT_ERR_CANNOT_MOVE_FILE_OPEN_FILE, openFile.Name));                    
+                HostServices.MessageDisplay.ShowError(string.Format(Resources.GOREDIT_ERR_CANNOT_MOVE_FILE_OPEN_FILE, openFile.Name));
                 return;
             }
 
@@ -2156,26 +2135,25 @@ internal class FileExplorer
 
             UpdateProgress(srcFiles[0].FullPath, 0, Resources.GOREDIT_TEXT_MOVING, cancelSource.Cancel);
 
-            _fileSystemWriter.VirtualFileMoved += FilesMoved;
+            //_fileSystemWriter.VirtualFileMoved += FilesMoved;
+            await Task.CompletedTask;
+            throw new NotSupportedException("This needs reimplementation.");
+            /*
             await Task.Run(() => _fileSystemWriter.MoveFiles(srcFiles.Select(item => item.FullPath), destDirectory.FullPath,
-            new GorgonCopyCallbackOptions
-            {
-                CancelToken = cancelSource.Token,
-                ProgressCallback = ProgressCallback,
-                ConflictResolutionCallback = MoveFileSystemConflictHandler
-            }));
+                new GorgonFileSystemCopyOptions(ProgressCallback, MoveFileSystemConflictHandler, cancelSource.Token)));
+            
             _fileSystemWriter.VirtualFileMoved -= FilesMoved;
             HideProgress();
 
             args.FilesCopied = (movedFiles is not null) && (movedFiles.Count > 0);
-            
+
             if (!args.FilesCopied)
             {
                 return;
-            }                
+            }
 
             // Change to a different progress screen for our enumeration.
-            UpdateMarequeeProgress(Resources.GOREDIT_TEXT_MOVING);                                
+            UpdateMarequeeProgress(Resources.GOREDIT_TEXT_MOVING);
             UpdateFileViewModels(movedFiles, destDirectory, true);
 
             // Remove the source files/directories from the view if it's subscribed.
@@ -2184,14 +2162,15 @@ internal class FileExplorer
                 // Since the file system service uses absolute physical paths, we'll have to associate by physical path names.
                 IFile sourceFile = _files.Values.FirstOrDefault(item => string.Equals(item.FullPath, movedFile.FullPath, StringComparison.OrdinalIgnoreCase));
 
-                if (sourceFile is null) 
+                if (sourceFile is null)
                 {
                     continue;
-                }                   
+                }
 
                 RepairFileLinkage(movedFile.FullPath, newFile.FullPath);
                 sourceFile.Parent.Files.Remove(sourceFile);
             }
+            */
         }
         catch (OperationCanceledException)
         {
@@ -2209,7 +2188,7 @@ internal class FileExplorer
                 OnFileSystemUpdated();
             }
 
-            _fileSystemWriter.VirtualFileMoved -= FilesMoved;
+            //_fileSystemWriter.VirtualFileMoved -= FilesMoved;
             HideProgress();
             cancelSource?.Dispose();
             _lastTime = -1;
@@ -2225,9 +2204,9 @@ internal class FileExplorer
     {
         string currentFile = string.Empty;
 
-        var cancelSource = new CancellationTokenSource();
-        IReadOnlyList<(IGorgonVirtualFile src, IGorgonVirtualFile dest)> copiedFiles = Array.Empty<(IGorgonVirtualFile src, IGorgonVirtualFile dest)>();
-
+        CancellationTokenSource cancelSource = new();
+        IReadOnlyList<(IGorgonVirtualFile src, IGorgonVirtualFile dest)> copiedFiles = [];
+        /*
         // Progress reporting.
         void ProgressCallback(string path, double percent)
         {
@@ -2236,13 +2215,13 @@ internal class FileExplorer
                 return;
             }
 
-            IFile file = _files.Values.FirstOrDefault(item => string.Equals(item.FullPath, path, StringComparison.OrdinalIgnoreCase));               
+            IFile file = _files.Values.FirstOrDefault(item => string.Equals(item.FullPath, path, StringComparison.OrdinalIgnoreCase));
 
             string virtualPath = currentFile = file?.FullPath;
 
             if (string.IsNullOrWhiteSpace(virtualPath))
             {
-                HostServices.Log.Print($"ERROR: The current path is empty/null. Cannot copy.", LoggingLevel.All);
+                HostServices.Log.PrintError($"The current path is empty/null. Cannot copy.", LoggingLevel.All);
                 return;
             }
 
@@ -2261,9 +2240,10 @@ internal class FileExplorer
 
         // Event handler to retrieve the list of files that were copied.
         void FilesCopied(object sender, VirtualFileCopiedMovedEventArgs e) => copiedFiles = e.VirtualFiles;
+        */
 
         IDirectory destDirectory = null;
-        var srcFiles = new List<IFile>();
+        List<IFile> srcFiles = [];
 
         try
         {
@@ -2281,14 +2261,13 @@ internal class FileExplorer
 
             UpdateProgress(srcFiles[0].FullPath, 0, Resources.GOREDIT_TEXT_COPYING, cancelSource.Cancel);
 
+            await Task.CompletedTask;
+            throw new NotSupportedException("This needs reimplementation.");
+
+            /*
             _fileSystemWriter.VirtualFileCopied += FilesCopied;
             await Task.Run(() => _fileSystemWriter.CopyFiles(srcFiles.Select(item => item.FullPath), destDirectory.FullPath,
-            new GorgonCopyCallbackOptions
-            {
-                CancelToken = cancelSource.Token,
-                ProgressCallback = ProgressCallback,
-                ConflictResolutionCallback = CopyFileSystemConflictHandler
-            }));
+            new GorgonFileSystemCopyOptions(ProgressCallback, MoveFileSystemConflictHandler, cancelSource.Token)));
             _fileSystemWriter.VirtualFileCopied -= FilesCopied;
             HideProgress();
 
@@ -2297,11 +2276,12 @@ internal class FileExplorer
 
             args.FilesCopied = (copiedFiles is not null) && (copiedFiles.Count > 0);
             if (!args.FilesCopied)
-            {                    
+            {
                 return;
             }
-            
+
             UpdateFileViewModels(copiedFiles, destDirectory, false);
+            */
         }
         catch (OperationCanceledException)
         {
@@ -2310,29 +2290,27 @@ internal class FileExplorer
         catch (Exception ex)
         {
             args.FilesCopied = (copiedFiles is not null) && (copiedFiles.Count > 0);
-            HostServices.MessageDisplay.ShowError(ex, string.Format(Resources.GOREDIT_ERR_CANNOT_COPY, currentFile, args.DestinationDirectory));                
+            HostServices.MessageDisplay.ShowError(ex, string.Format(Resources.GOREDIT_ERR_CANNOT_COPY, currentFile, args.DestinationDirectory));
         }
         finally
         {
             if (args.FilesCopied)
             {
-                OnFileSystemUpdated();                
+                OnFileSystemUpdated();
             }
-            _fileSystemWriter.VirtualFileCopied -= FilesCopied;
+            //_fileSystemWriter.VirtualFileCopied -= FilesCopied;
             HideProgress();
             cancelSource?.Dispose();
             _lastTime = -1;
         }
     }
 
-
     /// <summary>
     /// Function to determine if the directory can be copied.
     /// </summary>
     /// <param name="copyData">The source and destination directory.</param>
-    /// <returns><b>true</b> if the directory can be dropped, <b>false</b> if not.</returns>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0046:Convert to conditional expression", Justification = "<Pending>")]
-    private bool CanCopyDirectory(IDirectoryCopyMoveData copyData) 
+    /// <returns><b>true</b> if the directory can be dropped, <b>false</b> if not.</returns>    
+    private bool CanCopyDirectory(IDirectoryCopyMoveData copyData)
     {
         if ((!_directories.TryGetValue(copyData.SourceDirectory, out IDirectory srcDirectory))
             || (!_directories.TryGetValue(copyData.DestinationDirectory, out IDirectory destDirectory))
@@ -2350,9 +2328,9 @@ internal class FileExplorer
     /// <param name="copyData">The source and destination directory.</param>
     private async Task DoCopyDirectoryAsync(IDirectoryCopyMoveData copyData)
     {
-        var cancelSource = new CancellationTokenSource();
-        IReadOnlyList<(IGorgonVirtualDirectory src, IGorgonVirtualDirectory dest)> copiedDirs = Array.Empty<(IGorgonVirtualDirectory src, IGorgonVirtualDirectory dest)>();
-        IReadOnlyList<(IGorgonVirtualFile src, IGorgonVirtualFile dest)> copiedFiles = Array.Empty<(IGorgonVirtualFile src, IGorgonVirtualFile dest)>();
+        CancellationTokenSource cancelSource = new();
+        IReadOnlyList<(IGorgonVirtualDirectory src, IGorgonVirtualDirectory dest)> copiedDirs = [];
+        IReadOnlyList<(IGorgonVirtualFile src, IGorgonVirtualFile dest)> copiedFiles = [];
 
         // Progress reporting.
         void ProgressCallback(string path, double percent)
@@ -2374,7 +2352,7 @@ internal class FileExplorer
 
             if (string.IsNullOrWhiteSpace(virtualPath))
             {
-                HostServices.Log.Print($"ERROR: The current path is empty/null. Cannot copy.", LoggingLevel.All);
+                HostServices.Log.PrintError($"The current path is empty/null. Cannot copy.", LoggingLevel.All);
                 return;
             }
 
@@ -2409,15 +2387,10 @@ internal class FileExplorer
             UpdateProgress(srcDirectory.FullPath, 0, Resources.GOREDIT_TEXT_COPYING, cancelSource.Cancel);
 
             _fileSystemWriter.VirtualDirectoryCopied += DirectoryCopied;
-            await Task.Run(() => _fileSystemWriter.CopyDirectory(srcDirectory.FullPath, destDirectory.FullPath, 
-            new GorgonCopyCallbackOptions
-            {
-               CancelToken = cancelSource.Token,
-               ProgressCallback = ProgressCallback,
-               ConflictResolutionCallback = CopyFileSystemConflictHandler
-            }));
+            await Task.Run(() => _fileSystemWriter.CopyDirectory(srcDirectory.FullPath, destDirectory.FullPath,
+            new GorgonFileSystemCopyOptions(ProgressCallback, MoveFileSystemConflictHandler, cancelSource.Token)));
             _fileSystemWriter.VirtualDirectoryCopied -= DirectoryCopied;
-            HideProgress();                
+            HideProgress();
 
             // Change to a different progress screen for our enumeration.
             UpdateMarequeeProgress(Resources.GOREDIT_TEXT_COPYING);
@@ -2487,8 +2460,8 @@ internal class FileExplorer
     /// Function to determine if the selected files can be exported.
     /// </summary>
     /// <returns><b>true</b> if the selected files can be exported, <b>false</b> if not.</returns>
-    private bool CanExportFiles() => (SelectedDirectory is not null) 
-                                    && (_directories.ContainsKey(SelectedDirectory.ID)) 
+    private bool CanExportFiles() => (SelectedDirectory is not null)
+                                    && (_directories.ContainsKey(SelectedDirectory.ID))
                                     && (SelectedFiles.Count != 0)
                                     && (SelectedFiles.All(item => _files.ContainsKey(item.ID)));
 
@@ -2500,8 +2473,8 @@ internal class FileExplorer
     {
         string currentFile = string.Empty;
 
-        var cancelSource = new CancellationTokenSource();            
-
+        CancellationTokenSource cancelSource = new();
+        /*
         // Progress reporting.
         void ProgressCallback(string path, double percent)
         {
@@ -2516,7 +2489,7 @@ internal class FileExplorer
 
             if (string.IsNullOrWhiteSpace(virtualPath))
             {
-                HostServices.Log.Print($"ERROR: The current path is empty/null. Cannot copy.", LoggingLevel.All);
+                HostServices.Log.PrintError($"The current path is empty/null. Cannot copy.", LoggingLevel.All);
                 return;
             }
 
@@ -2532,7 +2505,7 @@ internal class FileExplorer
             // We do this here so the user is able to click the Cancel button should they need it.
             SleepUI();
         }
-
+        */
         try
         {
             string initialPathTemp = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments).FormatDirectory(Path.DirectorySeparatorChar);
@@ -2544,8 +2517,11 @@ internal class FileExplorer
                 return;
             }
 
-            UpdateProgress(SelectedFiles[0].FullPath, 0, Resources.GOREDIT_TEXT_COPYING, cancelSource.Cancel);
+            await Task.CompletedTask;
+            throw new NotSupportedException("This needs reimplementation.");
 
+            /*
+            UpdateProgress(SelectedFiles[0].FullPath, 0, Resources.GOREDIT_TEXT_COPYING, cancelSource.Cancel);
             await Task.Run(() => _fileSystemWriter.ExportFiles(SelectedFiles.Select(item => item.FullPath), destDirectory.FullName,
             new GorgonCopyCallbackOptions
             {
@@ -2553,7 +2529,9 @@ internal class FileExplorer
                 ProgressCallback = ProgressCallback,
                 ConflictResolutionCallback = ExportConflictHandler
             }));
+            
             HideProgress();
+            */
         }
         catch (OperationCanceledException)
         {
@@ -2571,12 +2549,11 @@ internal class FileExplorer
         }
     }
 
-
     /// <summary>
     /// Function to determine if a directory can be exported.
     /// </summary>
     /// <returns><b>true</b> if the directory can be exported, <b>false</b> if not.</returns>
-    private bool CanExportDirectory() => (SelectedDirectory is not null) && (_directories.ContainsKey(SelectedDirectory.ID)) 
+    private bool CanExportDirectory() => (SelectedDirectory is not null) && (_directories.ContainsKey(SelectedDirectory.ID))
                                     && ((SelectedDirectory.Directories.Count > 0) || (SelectedDirectory.Files.Count > 0));
 
     /// <summary>
@@ -2585,11 +2562,12 @@ internal class FileExplorer
     /// <returns>A task for asynchronous operation.</returns>
     private async Task DoExportDirectoryAsync()
     {
-        var cancelSource = new CancellationTokenSource();
+        CancellationTokenSource cancelSource = new();
 
         IDirectory srcDir = SelectedDirectory;
         DirectoryInfo destDir = null;
 
+        /*
         // Progress reporting.
         void ProgressCallback(string path, double percent)
         {
@@ -2610,7 +2588,7 @@ internal class FileExplorer
 
             if (string.IsNullOrWhiteSpace(virtualPath))
             {
-                HostServices.Log.Print($"ERROR: The current path is empty/null. Cannot export.", LoggingLevel.All);
+                HostServices.Log.PrintError($"The current path is empty/null. Cannot export.", LoggingLevel.All);
                 return;
             }
 
@@ -2626,7 +2604,7 @@ internal class FileExplorer
             // We do this here so the user is able to click the Cancel button should they need it.
             SleepUI();
         }
-
+        */
         try
         {
             destDir = _directoryLocator.GetDirectory(new DirectoryInfo(_settings.LastOpenSavePath.FormatDirectory(Path.DirectorySeparatorChar)), Resources.GOREDIT_TEXT_EXPORT_TO);
@@ -2636,6 +2614,9 @@ internal class FileExplorer
                 return;
             }
 
+            await Task.CompletedTask;
+            throw new NotSupportedException("This needs reimplementation.");
+            /*
             UpdateProgress(srcDir.FullPath, 0, Resources.GOREDIT_TEXT_EXPORTING, cancelSource.Cancel);
 
             await Task.Run(() => _fileSystemWriter.ExportDirectory(srcDir.FullPath, destDir.FullName,
@@ -2646,7 +2627,7 @@ internal class FileExplorer
                 ConflictResolutionCallback = ExportConflictHandler
             }));
 
-            _settings.LastOpenSavePath = destDir.FullName.FormatDirectory(Path.DirectorySeparatorChar);
+            _settings.LastOpenSavePath = destDir.FullName.FormatDirectory(Path.DirectorySeparatorChar);*/
         }
         catch (OperationCanceledException)
         {
@@ -2680,12 +2661,12 @@ internal class FileExplorer
     /// <returns>A task for asynchronous operation.</returns>
     private async Task DoImportAsync(IImportData args)
     {
-        var cancelSource = new CancellationTokenSource();
-        IReadOnlyList<IGorgonVirtualDirectory> copiedDirs = Array.Empty<IGorgonVirtualDirectory>();
-        IReadOnlyList<IGorgonVirtualFile> copiedFiles = Array.Empty<IGorgonVirtualFile>();
-        var importers = new HashSet<IEditorContentImporter>();
-        var importedFilePaths = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-
+        CancellationTokenSource cancelSource = new();
+        IReadOnlyList<IGorgonVirtualDirectory> copiedDirs = [];
+        IReadOnlyList<IGorgonVirtualFile> copiedFiles = [];
+        HashSet<IEditorContentImporter> importers = [];
+        Dictionary<string, string> importedFilePaths = new(StringComparer.OrdinalIgnoreCase);
+        /*
         // Progress reporting.
         void ProgressCallback(string path, double percent)
         {
@@ -2718,7 +2699,7 @@ internal class FileExplorer
             copiedDirs = e.VirtualDirectories;
             copiedFiles = e.VirtualFiles;
         }
-                    
+        
         // Event handler to perform a file conversion on import (if applicable).
         void BeforeFileImport(object sender, FileImportingArgs e)
         {
@@ -2741,7 +2722,7 @@ internal class FileExplorer
                 importers.Add(importer);
             }
 
-            // If we have no importer plug in for the current file, then leave.
+            // If we have no importer plug-in for the current file, then leave.
             if (importer is null)
             {
                 importedFilePaths[originalPath] = originalPath;
@@ -2762,7 +2743,7 @@ internal class FileExplorer
                 e.PhysicalFilePath = file.PhysicalFile.FullPath;
                 importedFilePaths[e.PhysicalFilePath] = originalPath;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 if ((_syncContext != SynchronizationContext.Current) && (!string.IsNullOrWhiteSpace(originalPath)))
                 {
@@ -2770,7 +2751,7 @@ internal class FileExplorer
                 }
             }
         }
-
+        */
         IDirectory destDirectory = null;
         DirectoryInfo sourceDir = null;
 
@@ -2781,10 +2762,10 @@ internal class FileExplorer
                 sourceDir = _directoryLocator.GetDirectory(new DirectoryInfo(_settings.LastOpenSavePath.FormatDirectory(Path.DirectorySeparatorChar)), Resources.GOREDIT_TEXT_IMPORT_FROM);
 
                 if (sourceDir is null)
-                {                        
+                {
                     return;
                 }
-                
+
                 args.PhysicalPaths.AddRange(sourceDir.EnumerateFileSystemInfos().Select(item => item.FullName));
 
                 if (args.PhysicalPaths.Count == 0)
@@ -2792,9 +2773,13 @@ internal class FileExplorer
                     return;
                 }
             }
-            
+
             destDirectory = _directories[args.DestinationDirectory];
 
+            await Task.CompletedTask;
+            throw new NotSupportedException("This needs reimplementation.");
+
+            /*
             UpdateProgress(args.PhysicalPaths[0], 0, Resources.GOREDIT_TEXT_IMPORTING, cancelSource.Cancel);
 
             _fileSystemWriter.Imported += Imported;
@@ -2827,7 +2812,7 @@ internal class FileExplorer
 
             UpdateDirectoryViewModels(copiedDirs, destDirectory);
 
-            var selected = new ObservableCollection<IFile>();
+            ObservableCollection<IFile> selected = [];
 
             IReadOnlyList<IFile> files = _factory.CreateFiles(copiedFiles, destDirectory);
 
@@ -2836,7 +2821,7 @@ internal class FileExplorer
                 if (!_directories.TryGetValue(file.Parent.ID, out IDirectory parentDir))
                 {
                     continue;
-                }                                       
+                }
 
                 // If we've got the same file name in here, then we need to refresh it. We won't need to add it to the list since it's already there, but the information about the file will 
                 // probably have changed.
@@ -2846,14 +2831,14 @@ internal class FileExplorer
                 {
                     parentDir.Files.Add(file);
                     existingFile = file;
-                }                    
+                }
 
                 AssignContentPlugIn(existingFile, false);
 
                 selected.Add(existingFile);
             }
 
-            SelectedFiles = selected;
+            SelectedFiles = selected;*/
         }
         catch (OperationCanceledException)
         {
@@ -2871,8 +2856,8 @@ internal class FileExplorer
                 OnFileSystemUpdated();
             }
 
-            _fileSystemWriter.FileImporting -= BeforeFileImport;
-            _fileSystemWriter.Imported -= Imported;
+            //            _fileSystemWriter.FileImporting -= BeforeFileImport;
+            //            _fileSystemWriter.Imported -= Imported;
             HideProgress();
             cancelSource?.Dispose();
             _lastTime = -1;
@@ -2896,7 +2881,7 @@ internal class FileExplorer
             {
                 foreach (IFile file in files)
                 {
-                    // Reset so we can get the plug in.
+                    // Reset so we can get the plug-in.
                     file.Metadata.ContentMetadata = null;
                     file.Metadata.PlugInName = null;
                     AssignContentPlugIn(file.FullPath, file.Metadata, false);
@@ -2923,7 +2908,7 @@ internal class FileExplorer
         }
         catch (Exception ex)
         {
-            HostServices.Log.Print("ERROR: Failed to refresh the file system.", LoggingLevel.Simple);
+            HostServices.Log.PrintError("Failed to refresh the file system.", LoggingLevel.Simple);
             HostServices.Log.LogException(ex);
         }
         finally
@@ -2981,7 +2966,7 @@ internal class FileExplorer
 
         // We should be on the main thread here.
         _syncContext = injectionParameters.SyncContext;
-        
+
         EnumerateChildren(Root);
 
         _selectedDir = Root;
@@ -3000,17 +2985,17 @@ internal class FileExplorer
         base.OnLoad();
 
         Root.Directories.CollectionChanged += Directories_CollectionChanged;
-        Root.Files.CollectionChanged += Files_CollectionChanged;            
+        Root.Files.CollectionChanged += Files_CollectionChanged;
 
         // Hook the sub directory and file collections.
-        foreach (IDirectory subDir in Root.Directories.Traverse(d => d.Directories))
+        foreach (IDirectory subDir in Root.Directories.TraverseBreadthFirst(d => d.Directories))
         {
             subDir.Files.CollectionChanged += Files_CollectionChanged;
             subDir.Directories.CollectionChanged += Directories_CollectionChanged;
         }
 
         Clipboard.PropertyChanging += Clipboard_PropertyChanging;
-    }        
+    }
 
     /// <summary>Function called when the associated view is unloaded.</summary>
     protected override void OnUnload()
@@ -3021,15 +3006,15 @@ internal class FileExplorer
         Clipboard.PropertyChanging -= Clipboard_PropertyChanging;
 
         // Unhook the sub directories/files.
-        foreach (IDirectory subDir in Root.Directories.Traverse(d => d.Directories))
+        foreach (IDirectory subDir in Root.Directories.TraverseBreadthFirst(d => d.Directories))
         {
             subDir.Directories.CollectionChanged -= Directories_CollectionChanged;
-            subDir.Files.CollectionChanged -= Files_CollectionChanged;                
+            subDir.Files.CollectionChanged -= Files_CollectionChanged;
         }
 
         Root.Directories.CollectionChanged -= Directories_CollectionChanged;
         Root.Files.CollectionChanged -= Files_CollectionChanged;
-                    
+
         base.OnUnload();
     }
 
@@ -3065,24 +3050,24 @@ internal class FileExplorer
         }
 
         string filePath = directory[0..^1];
-        if (_fileSystemWriter.FileSystem.GetFile(filePath) is not null)
+        if (_fileSystemWriter.GetFile(filePath) is not null)
         {
             throw new IOException(string.Format(Resources.GOREDIT_ERR_PATH_IS_FILE, filePath));
         }
 
-        IGorgonVirtualDirectory virtDirectory = _fileSystemWriter.FileSystem.GetDirectory(directory);
+        IGorgonVirtualDirectory virtDirectory = _fileSystemWriter.GetDirectory(directory);
 
         if (virtDirectory is not null)
         {
             return true;
         }
-            
+
         virtDirectory = _fileSystemWriter.CreateDirectory(directory);
 
         // Function to update the UI.
         void UpdateUI(object context)
         {
-            var newDir = (IGorgonVirtualDirectory)context;
+            IGorgonVirtualDirectory newDir = (IGorgonVirtualDirectory)context;
 
             IDirectory parentDir = _directories.Values.FirstOrDefault(item => string.Equals(item.FullPath, newDir.Parent.FullPath, StringComparison.OrdinalIgnoreCase));
             _factory.CreateDirectory((IGorgonVirtualDirectory)context, parentDir);
@@ -3098,7 +3083,7 @@ internal class FileExplorer
         {
             UpdateUI(directory);
         }
-        
+
         return true;
     }
 
@@ -3133,7 +3118,7 @@ internal class FileExplorer
         {
             return false;
         }
-        
+
         _fileSystemWriter.DeleteDirectory(dir.FullPath);
 
         // Update the UI.
@@ -3159,14 +3144,14 @@ internal class FileExplorer
     /// <param name="path">The path to the directory.</param>
     /// <returns>
     ///   <b>true</b> if the directory exists, <b>false</b> if not.</returns>
-    bool IContentFileManager.DirectoryExists(string path) => _fileSystemWriter.FileSystem.GetDirectory(path) is not null;
+    bool IContentFileManager.DirectoryExists(string path) => _fileSystemWriter.GetDirectory(path) is not null;
 
     /// <summary>
     /// Function to determine if a file exists or not.
     /// </summary>
     /// <param name="path">The path to the file.</param>
     /// <returns><b>true</b> if the file exists, <b>false</b> if not.</returns>
-    bool IContentFileManager.FileExists(string path) => _fileSystemWriter.FileSystem.GetFile(path) is not null;
+    bool IContentFileManager.FileExists(string path) => _fileSystemWriter.GetFile(path) is not null;
 
     /// <summary>Function to retrieve a file based on the path specified.</summary>
     /// <param name="path">The path to the file.</param>
@@ -3175,7 +3160,7 @@ internal class FileExplorer
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
     IContentFile IContentFileManager.GetFile(string path)
     {
-#pragma warning disable IDE0046 // Convert to conditional expression
+
         if (path is null)
         {
             throw new ArgumentNullException(nameof(path));
@@ -3184,7 +3169,7 @@ internal class FileExplorer
         return string.IsNullOrWhiteSpace(path)
             ? throw new ArgumentEmptyException(nameof(path))
             : _files.Values.FirstOrDefault(item => string.Equals(item.FullPath, path, StringComparison.OrdinalIgnoreCase)) as IContentFile;
-#pragma warning restore IDE0046 // Convert to conditional expression
+
     }
 
     /// <summary>
@@ -3207,13 +3192,13 @@ internal class FileExplorer
         if (string.IsNullOrWhiteSpace(path))
         {
             throw new ArgumentEmptyException(nameof(path));
-        }            
+        }
 
         if (mode is FileMode.Open or FileMode.OpenOrCreate)
         {
-            IGorgonVirtualFile file = _fileSystemWriter.FileSystem.GetFile(path);
+            IGorgonVirtualFile file = _fileSystemWriter.GetFile(path);
 
-            return file is null ? throw new FileNotFoundException(string.Format(Resources.GOREDIT_ERR_FILE_NOT_FOUND, path)) : file.OpenStream();
+            return file is null ? throw new FileNotFoundException(string.Format(Resources.GOREDIT_ERR_FILE_NOT_FOUND, path)) : _fileSystemWriter.OpenStream(file.FullPath, false);
         }
 
         // We cannot write to a file that's already open for editing.
@@ -3227,14 +3212,14 @@ internal class FileExplorer
         // Updates the UI.
         void UpdateUI(object ctx)
         {
-            var e = (VirtualFileClosedEventArgs)ctx;
-            IDirectory parent = _directories.Values.FirstOrDefault(item => string.Equals(item.FullPath, e.VirtualFile.Directory.FullPath, StringComparison.OrdinalIgnoreCase));                
+            (IGorgonVirtualFile virtualFile, FileStreamStatus status) = ((IGorgonVirtualFile virtualFile, FileStreamStatus status))ctx;
+            IDirectory parent = _directories.Values.FirstOrDefault(item => string.Equals(item.FullPath, virtualFile.Directory.FullPath, StringComparison.OrdinalIgnoreCase));
 
             if (fileViewModel is null)
             {
-                if ((parent is not null) && (e.Created))
+                if ((parent is not null) && (status == FileStreamStatus.NewFile))
                 {
-                    fileViewModel = _factory.CreateFile(e.VirtualFile, parent);
+                    fileViewModel = _factory.CreateFile(virtualFile, parent);
 
                     if (fileViewModel is null)
                     {
@@ -3246,37 +3231,34 @@ internal class FileExplorer
                     AssignContentPlugIn(fileViewModel, false);
                 }
                 else
-                {                    
+                {
                     return;
                 }
             }
 
             if ((fileViewModel.RefreshCommand is not null) && (fileViewModel.RefreshCommand.CanExecute(null)))
             {
-                fileViewModel.RefreshCommand.Execute(null);                    
+                fileViewModel.RefreshCommand.Execute(null);
             }
 
             OnFileSystemUpdated();
-        }            
+        }
 
         // When the file is closed, update the UI.
-        void FileClosed(object sender, VirtualFileClosedEventArgs e)
+        void FileClosed(IGorgonVirtualFile file, FileStreamStatus status)
         {
-            _fileSystemWriter.VirtualFileClosed -= FileClosed;
-
             // Ensure we execute the UI update on the main thread.
             if (_syncContext != SynchronizationContext.Current)
             {
-                _syncContext.Send(UpdateUI, e);
+                _syncContext.Send(UpdateUI, (file, status));
             }
             else
             {
-                UpdateUI(e);
+                UpdateUI((file, status));
             }
         }
 
-        _fileSystemWriter.VirtualFileClosed += FileClosed;
-        return _fileSystemWriter.OpenStream(path, mode);
+        return _fileSystemWriter.OpenStream(path, true, FileClosed);
     }
 
     /// <summary>Function to retrieve the content files for a given directory path.</summary>
@@ -3319,7 +3301,7 @@ internal class FileExplorer
         if (recursive)
         {
             paths = paths.Concat(parentDir.Directories
-                                          .Traverse(d => d.Directories)
+                                          .TraverseBreadthFirst(d => d.Directories)
                                           .SelectMany(item => item.Files)
                                           .Cast<IContentFile>());
         }
@@ -3369,7 +3351,7 @@ internal class FileExplorer
         (string mask, int searchPatternState, IDirectory parentDir, bool usePattern) = GetSearchState(directoryPath, searchMask);
 
         IEnumerable<IDirectory> paths = recursive ? parentDir.Directories
-                                                             .Traverse(d => d.Directories)
+                                                             .TraverseBreadthFirst(d => d.Directories)
                                                   : parentDir.Directories;
 
         return searchPatternState switch
@@ -3415,10 +3397,10 @@ internal class FileExplorer
             searchMask = "*";
         }
 
-        (string mask, int searchPatternState, IDirectory parentDir, bool usePattern) = GetSearchState(directoryPath, searchMask);            
+        (string mask, int searchPatternState, IDirectory parentDir, bool usePattern) = GetSearchState(directoryPath, searchMask);
 
         IEnumerable<IDirectory> paths = recursive ? parentDir.Directories
-                                                             .Traverse(d => d.Directories)
+                                                             .TraverseBreadthFirst(d => d.Directories)
                                                   : parentDir.Directories;
 
         var allPaths = parentDir.Files.Select(item => new { item.FullPath, item.Name })
@@ -3460,7 +3442,7 @@ internal class FileExplorer
             throw new GorgonException(GorgonResult.AccessDenied, string.Format(Resources.GOREDIT_ERR_FILE_LOCKED, path));
         }
 
-        _fileSystemWriter.DeleteFile(file.FullPath);            
+        _fileSystemWriter.DeleteFile(file.FullPath);
 
         // Update UI.
         void UpdateUI(object context)
@@ -3490,7 +3472,7 @@ internal class FileExplorer
     /// Function to retrieve a list of the file paths that are selected on the file system.
     /// </summary>
     /// <returns>The list of selected file paths.</returns>
-    IReadOnlyList<string> IContentFileManager.GetSelectedFiles() => SelectedFiles?.Select(item => item.FullPath).ToArray() ?? Array.Empty<string>();
+    IReadOnlyList<string> IContentFileManager.GetSelectedFiles() => SelectedFiles?.Select(item => item.FullPath).ToArray() ?? [];
 
     /// <summary>
     /// Function to notify the application that the metadata for the file system should be flushed back to the disk.
@@ -3502,13 +3484,7 @@ internal class FileExplorer
     /// </summary>
     /// <param name="textureCache">The cache used to hold texture data.</param>
     /// <returns>A new content loader interface.</returns>
-    IGorgonContentLoader IContentFileManager.GetContentLoader(GorgonTextureCache<GorgonTexture2D> textureCache) => _fileSystemWriter.FileSystem.CreateContentLoader(HostServices.GraphicsContext.Renderer2D, textureCache);
-
-    /// <summary>
-    /// Function to convert the content file manager to a standard read-only Gorgon virtual file system.
-    /// </summary>
-    /// <returns>The <see cref="IGorgonFileSystem"/> for this content manager.</returns>
-    IGorgonFileSystem IContentFileManager.ToGorgonFileSystem() => _fileSystemWriter.FileSystem;
+    IGorgonContentLoader IContentFileManager.GetContentLoader(GorgonTextureCache<GorgonTexture2D> textureCache) => _fileSystemWriter.CreateContentLoader(HostServices.GraphicsContext.Renderer2D, textureCache);
 
     /// <summary>
     /// Function to determine if a directory is excluded from a packed file.
@@ -3547,9 +3523,7 @@ internal class FileExplorer
 
         return excluder.IsExcluded;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
     /// <summary>
     /// Initializes a new instance of the <see cref="FileExplorer"/> class.
     /// </summary>
@@ -3559,7 +3533,7 @@ internal class FileExplorer
         SelectFileCommand = new EditorCommand<IReadOnlyList<string>>(DoSelectFile, CanSelectFile);
         RenameDirectoryCommand = new EditorCommand<RenameArgs>(DoRenameDirectory, CanRenameDirectory);
         CreateDirectoryCommand = new EditorCommand<CreateDirectoryArgs>(DoCreateDirectory, CanCreateDirectory);
-        DeleteDirectoryCommand = new EditorAsyncCommand<DeleteArgs>(DoDeleteDirectoryAsync, CanDeleteDirectory);            
+        DeleteDirectoryCommand = new EditorAsyncCommand<DeleteArgs>(DoDeleteDirectoryAsync, CanDeleteDirectory);
         CopyDirectoryCommand = new EditorAsyncCommand<IDirectoryCopyMoveData>(DoCopyDirectoryAsync, CanCopyDirectory);
         MoveDirectoryCommand = new EditorAsyncCommand<IDirectoryCopyMoveData>(DoMoveDirectoryAsync, CanMoveDirectory);
         CopyFileCommand = new EditorAsyncCommand<IFileCopyMoveData>(DoCopyFilesAsync, CanCopyOrMoveFiles);
@@ -3573,5 +3547,4 @@ internal class FileExplorer
         RefreshCommand = new EditorAsyncCommand<object>(DoRefreshAsync);
         GetDirectoryCommand = new EditorCommand<GetDirectoryArgs>(DoGetDirectory, CanGetDirectory);
     }
-    #endregion
 }

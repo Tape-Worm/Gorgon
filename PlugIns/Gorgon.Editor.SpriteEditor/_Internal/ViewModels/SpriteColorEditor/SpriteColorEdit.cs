@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,33 +11,30 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 4, 2019 8:59:29 PM
 // 
-#endregion
 
-using System.Collections.Generic;
-using System.Linq;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 
 namespace Gorgon.Editor.SpriteEditor;
 
 /// <summary>
-/// The view model for the sprite color editor.
+/// The view model for the sprite color editor
 /// </summary>
 internal class SpriteColorEdit
     : HostedPanelViewModelBase<HostedPanelViewModelParameters>, ISpriteColorEdit
 {
-    #region Variables.
+
     // The original color for the sprite.
     private readonly GorgonColor[] _originalColor = new GorgonColor[4];
     // The current color for the sprite.
@@ -45,10 +42,8 @@ internal class SpriteColorEdit
     // The currently selected vertex.
     private readonly bool[] _selectedVertex = new bool[4];
     // The currently selected color.
-    private GorgonColor _selectedColor = GorgonColor.BlackTransparent;
-    #endregion
+    private GorgonColor _selectedColor = GorgonColors.BlackTransparent;
 
-    #region Properties.
     /// <summary>
     /// Property to set or return the currently selected color for an individual vertex.
     /// </summary>
@@ -57,7 +52,7 @@ internal class SpriteColorEdit
         get => _selectedColor;
         set
         {
-            if (_selectedColor.Equals(in value))
+            if (_selectedColor.Equals(value))
             {
                 return;
             }
@@ -116,7 +111,7 @@ internal class SpriteColorEdit
             OnPropertyChanging();
             for (int i = 0; i < _color.Length; ++i)
             {
-                _color[i] = i < value.Count ? value[i] : GorgonColor.BlackTransparent;
+                _color[i] = i < value.Count ? value[i] : GorgonColors.BlackTransparent;
             }
             OnPropertyChanged();
         }
@@ -141,7 +136,7 @@ internal class SpriteColorEdit
             OnPropertyChanging();
             for (int i = 0; i < _originalColor.Length; ++i)
             {
-                _originalColor[i] = i < value.Count ? value[i] : GorgonColor.BlackTransparent;
+                _originalColor[i] = i < value.Count ? value[i] : GorgonColors.BlackTransparent;
             }
             OnPropertyChanged();
         }
@@ -149,9 +144,7 @@ internal class SpriteColorEdit
 
     /// <summary>Property to return whether the panel is modal.</summary>
     public override bool IsModal => true;
-    #endregion
 
-    #region Methods.
     /// <summary>Function to inject dependencies for the view model.</summary>
     /// <param name="injectionParameters">The parameters to inject.</param>
     /// <remarks>
@@ -161,17 +154,14 @@ internal class SpriteColorEdit
     {
         // Nothing to inject.
     }
-    #endregion
 
-    #region Constructor.
     /// <summary>Initializes a new instance of the <see cref="SpriteColorEdit"/> class.</summary>
     public SpriteColorEdit()
     {
         for (int i = 0; i < 4; ++i)
         {
             _selectedVertex[i] = true;
-            _color[i] = _originalColor[i] = GorgonColor.BlackTransparent;
+            _color[i] = _originalColor[i] = GorgonColors.BlackTransparent;
         }
     }
-    #endregion
 }

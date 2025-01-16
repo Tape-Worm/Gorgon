@@ -27,7 +27,7 @@ partial class FormSpriteSelector
         base.Dispose(disposing);
     }
 
-    #region Windows Form Designer generated code
+
 
     /// <summary>
     /// Required method for Designer support - do not modify
@@ -247,7 +247,7 @@ partial class FormSpriteSelector
         this.ClientSize = new System.Drawing.Size(784, 561);
         this.Controls.Add(this.SplitFileSelector);
         this.Controls.Add(this.PanelDialogControls);
-        this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+        
         this.ForeColor = System.Drawing.Color.White;
         this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
         this.MinimizeBox = false;
@@ -274,7 +274,7 @@ partial class FormSpriteSelector
 
     }
 
-    #endregion
+
 
     private System.Windows.Forms.TableLayoutPanel TableFileSelection;
     private System.Windows.Forms.Button ButtonCancel;

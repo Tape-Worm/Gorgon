@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2016 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,42 +11,36 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 20, 2016 10:52:04 PM
 // 
-#endregion
 
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using Gorgon.Diagnostics;
 using Gorgon.Math;
 using Gorgon.Native;
 
 namespace Gorgon.Graphics.Imaging;
 
 /// <summary>
-/// A container for a list of image buffers.
+/// A container for a list of image buffers
 /// </summary>
 class ImageBufferList
     : IGorgonImageBufferList
 {
-    #region Variables.
+
     // List of buffers.
     private IGorgonImageBuffer[] _buffers;
     // Image that owns this buffer.
     private readonly IGorgonImageInfo _imageInfo;
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to return the offsets of the mip map levels.
     /// </summary>
@@ -70,10 +64,10 @@ class ImageBufferList
     /// <summary>
     /// Property to return the buffer for the given mip map level and depth slice.
     /// </summary>
-    /// <exception cref="ArgumentOutOfRangeException">Thrown when the array index or the depth slice parameters are larger than their respective boundaries, or less than 0. Only thrown when this assembly is compiled in DEBUG mode.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when the array index or the depth slice parameters are larger than their respective boundaries, or less than 0.</exception>
     /// <remarks>
     /// <para>
-    /// To get the array length, or the mip map count, use the <see cref="P:Gorgon.Graphics.GorgonImageData.Settings">Settings</see> property.
+    /// To get the array length, or the mip map count, use the <see cref="IGorgonImageInfo.ArrayCount"/> or <see cref="IGorgonImageInfo.MipCount"/> property.
     /// </para>
     /// <para>
     /// To get the depth slice count, use the <see cref="IGorgonImage.GetDepthCount"/> method.
@@ -88,31 +82,34 @@ class ImageBufferList
         {
             (int, int) offsetSize;
 
-            mipLevel.ValidateRange(nameof(mipLevel), 0, _imageInfo.MipCount);
+            ArgumentOutOfRangeException.ThrowIfLessThan(mipLevel, 0);
+            ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(mipLevel, _imageInfo.MipCount);
 
-            if (_imageInfo.ImageType == ImageType.Image3D)
+            if (_imageInfo.ImageType == ImageDataType.Image3D)
             {
-                depthSliceOrArrayIndex.ValidateRange("arrayIndexDepthSlice", 0, _imageInfo.Depth);
+                ArgumentOutOfRangeException.ThrowIfLessThan(depthSliceOrArrayIndex, 0);
+                ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(depthSliceOrArrayIndex, _imageInfo.Depth);
+
                 offsetSize = MipOffsetSize[mipLevel];
                 return _buffers[offsetSize.Item1 + depthSliceOrArrayIndex];
             }
 
-            depthSliceOrArrayIndex.ValidateRange("arrayIndexDepthSlice", 0, _imageInfo.ArrayCount);
+            ArgumentOutOfRangeException.ThrowIfLessThan(depthSliceOrArrayIndex, 0);
+            ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(depthSliceOrArrayIndex, _imageInfo.ArrayCount);
+
             offsetSize = MipOffsetSize[mipLevel + (depthSliceOrArrayIndex * _imageInfo.MipCount)];
             return _buffers[offsetSize.Item1];
         }
     }
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to create a list of buffers to use.
     /// </summary>
     /// <param name="data">Data to copy/reference.</param>
-    internal void CreateBuffers(in GorgonPtr<byte> data)
+    internal void CreateBuffers(GorgonPtr<byte> data)
     {
         int bufferIndex = 0;
-        var formatInfo = new GorgonFormatInfo(_imageInfo.Format);   // Format information.
+        GorgonFormatInfo formatInfo = new(_imageInfo.Format);   // Format information.
 
         // Allocate enough room for the array and mip levels.
         _buffers = new IGorgonImageBuffer[GorgonImage.CalculateDepthSliceCount(_imageInfo.Depth, _imageInfo.MipCount) * _imageInfo.ArrayCount];
@@ -142,7 +139,7 @@ class ImageBufferList
                 for (int depth = 0; depth < mipDepth; depth++)
                 {
                     // Get mip information.						
-                    _buffers[bufferIndex] = new GorgonImageBuffer(new GorgonPtr<byte>(dataAddress, pitchInformation.SlicePitch),
+                    _buffers[bufferIndex] = new GorgonImageBuffer(dataAddress[..pitchInformation.SlicePitch],
                                                                     pitchInformation,
                                                                     mip,
                                                                     array,
@@ -217,7 +214,7 @@ class ImageBufferList
 
         mipLevel = mipLevel.Max(0).Min(_imageInfo.MipCount - 1);
 
-        if (_imageInfo.ImageType == ImageType.Image3D)
+        if (_imageInfo.ImageType == ImageDataType.Image3D)
         {
             depthSliceOrArrayIndex = depthSliceOrArrayIndex.Max(0).Min(_imageInfo.Depth - 1);
             offsetSize = MipOffsetSize[mipLevel];
@@ -237,9 +234,7 @@ class ImageBufferList
     /// <param name="depthSliceOrArrayIndex">[Optional] The depth slice (for 3D images) or array index (for 1D or 2D images) to look up.</param>
     /// <returns></returns>
     public bool Contains(int mipLevel, int depthSliceOrArrayIndex = 0) => IndexOf(mipLevel, depthSliceOrArrayIndex) != -1;
-    #endregion
 
-    #region Constructor/Destructor.
     /// <summary>
     /// Initializes a new instance of the <see cref="ImageBufferList"/> class.
     /// </summary>
@@ -247,7 +242,6 @@ class ImageBufferList
     internal ImageBufferList(IGorgonImageInfo imageInfo)
     {
         _imageInfo = imageInfo;
-        _buffers = Array.Empty<IGorgonImageBuffer>();
+        _buffers = [];
     }
-    #endregion
 }

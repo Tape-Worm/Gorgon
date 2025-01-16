@@ -1,7 +1,5 @@
-﻿#region MIT.
-// 
-// Gorgon.
-// Copyright (C) 2011 Michael Winsor
+﻿// Gorgon.
+// Copyright (C) 2024 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,11 +18,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Tuesday, June 14, 2011 8:58:43 PM
-// 
-#endregion
-
-using System.Collections.Generic;
+// Created: November 17, 2023 3:15:59 PM
+//
 
 namespace Gorgon.Core;
 

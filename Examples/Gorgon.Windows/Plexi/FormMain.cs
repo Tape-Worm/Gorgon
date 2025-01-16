@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,23 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: December 5, 2020 3:34:58 PM
 // 
-#endregion
 
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using Gorgon.Graphics;
 using Gorgon.Timing;
 using Gorgon.UI;
@@ -35,37 +30,35 @@ using Gorgon.UI;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Main example window.
+/// Main example window
 /// </summary>
 /// <remarks>
 /// <para>
 /// This example shows how to use the overlay objects to create a "plexi-glass" appearance over the window, or any of its child controls. 
 /// Similar to how web or WPF applications show a loading screen where the background dims or lightens to indicate that the controls 
-/// behind are inaccessible. Often this is displayed with an accompanying control that the user can interact with.
+/// behind are inaccessible. Often this is displayed with an accompanying control that the user can interact with
 /// 
 /// Gorgon has 3 of these overlay object types:
-/// 1. GorgonOverlay - Displays a translucent layer on top of the form/control.
+/// 1. GorgonOverlay - Displays a translucent layer on top of the form/control
 /// 2. GorgonWaitOverlay - Displays the translucent layer on top of the form/control, plus a window that shows a customizable "please wait" 
-///    dialog with an animated icon.
+///    dialog with an animated icon
 /// 3. GorgonProgressOverlay - Displays the translucent layer on top of the form/control, plus a window that shows a customizable progress  
-///    meter used to show a long running operation's progress.
+///    meter used to show a long running operation's progress
 ///    
 /// The amount of translucency, and color of these overlay objects can be adjusted by the user for all panels, and each panel type has its 
-/// own set of customizable parameters to update the display as needed.
+/// own set of customizable parameters to update the display as needed
 /// </para>
 /// </remarks>
 public partial class FormMain
     : Form
 {
-    #region Variables.
+
     // An overlay without any other windows or decoration, just sits on top of the control.
     private readonly GorgonOverlay _overlay = new()
     {
         TransparencyPercent = 75
     };
-    #endregion
 
-    #region Methods.
     /// <summary>Handles the Click event of the ButtonOverlayForm control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
@@ -77,10 +70,10 @@ public partial class FormMain
 
         bool isRunning = true;  // Normally you'd use a CancellationToken here, but that's overkill for this stupid example.
 
-        var progress = new GorgonProgressOverlay
+        GorgonProgressOverlay progress = new()
         {
             TransparencyPercent = 25,
-            OverlayColor = GorgonColor.PurplePure
+            OverlayColor = GorgonColors.Purple
         };
         progress.Show(this, "Progress Meter", cancelAction: () => isRunning = false, meterStyle: ProgressBarStyle.Continuous);
         Text = "Plexi - Showing overlay for 10 seconds...";
@@ -88,9 +81,9 @@ public partial class FormMain
         // Simulate work.
         await Task.Run(() =>
         {
-            var timer = new GorgonTimerQpc();
+            GorgonTimerQpc timer = new();
             int count = 0;
-            var wait = new SpinWait();                
+            SpinWait wait = new();
 
             while ((isRunning) && (count < 10))
             {
@@ -136,7 +129,7 @@ public partial class FormMain
             _overlay.Hide();
             return;
         }
-                               
+
         IWin32Window overlay = _overlay.Show(PanelPlexi);
 
         // We pass back the overlay window to the dialog to ensure it gets placed on top.
@@ -152,7 +145,7 @@ public partial class FormMain
         // with default values. Notice that by passing a null value to the progress title, the progress 
         // window adjusts to remove the space for the title.
 
-        var progress = new GorgonProgressOverlay();
+        GorgonProgressOverlay progress = new();
         progress.Show(this, null, message: "This is a really long time just to set a date right?");
 
         await Task.Delay(10000);
@@ -168,10 +161,10 @@ public partial class FormMain
         // This shows a "please wait" panel with a spinning image (default) to indicate that the system 
         // is busy. It modifies the overlay to be 25% transparent, and gives it a blue tint.
 
-        var wait = new GorgonWaitOverlay
+        GorgonWaitOverlay wait = new()
         {
             TransparencyPercent = 25,
-            OverlayColor = GorgonColor.BluePure
+            OverlayColor = GorgonColors.Blue
         };
         wait.Show(CheckList, string.Empty, "Really? This long? For a checkbox?");
 
@@ -193,10 +186,10 @@ public partial class FormMain
             return;
         }
 
-        var wait = new GorgonWaitOverlay
+        GorgonWaitOverlay wait = new()
         {
             TransparencyPercent = 30,
-            OverlayColor = GorgonColor.White
+            OverlayColor = GorgonColors.White
         };
 
         wait.Show(LabelPlexi, "Updating...", "Sending text to label...");
@@ -207,10 +200,8 @@ public partial class FormMain
 
         wait.Hide();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
     /// <summary>Initializes a new instance of the <see cref="FormMain" /> class.</summary>
     public FormMain() => InitializeComponent();
-    #endregion
+
 }

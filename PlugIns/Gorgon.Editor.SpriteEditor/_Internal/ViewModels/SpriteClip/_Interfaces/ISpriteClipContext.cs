@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,26 +11,26 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 4, 2020 12:12:25 AM
 // 
-#endregion
 
+using System.Numerics;
 using Gorgon.Editor.UI;
-using DX = SharpDX;
+using Gorgon.Graphics;
 
 namespace Gorgon.Editor.SpriteEditor;
 
 /// <summary>
-/// The context view model for the sprite clipping context options.
+/// The context view model for the sprite clipping context options
 /// </summary>
 internal interface ISpriteClipContext
     : IEditorContext, IArrayUpdate
@@ -38,7 +38,7 @@ internal interface ISpriteClipContext
     /// <summary>
     /// Property to set or return the rectangle representing the sprite.
     /// </summary>
-    DX.RectangleF SpriteRectangle
+    GorgonRectangleF SpriteRectangle
     {
         get;
         set;
@@ -47,7 +47,7 @@ internal interface ISpriteClipContext
     /// <summary>
     /// Property to return the size of the fixed width and height for sprite clipping.
     /// </summary>
-    DX.Size2F? FixedSize
+    Vector2? FixedSize
     {
         get;
     }
@@ -63,7 +63,7 @@ internal interface ISpriteClipContext
     /// <summary>
     /// Property to return the command used to enable or disable fixed size clipping.
     /// </summary>
-    IEditorCommand<DX.Size2F?> FixedSizeCommand
+    IEditorCommand<Vector2?> FixedSizeCommand
     {
         get;
     }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,20 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 1, 2017 9:44:33 PM
 // 
-#endregion
 
-using System;
 using System.Drawing;
 using System.Drawing.Imaging;
 using Gorgon.Core;
@@ -44,7 +42,7 @@ public static class GdiPlusExtensions
     /// </summary>
     /// <param name="bitmapLock">The lock on the bitmap to transfer from.</param>
     /// <param name="buffer">The buffer to transfer into.</param>
-	    private static void Transfer32Argb(BitmapData bitmapLock, IGorgonImageBuffer buffer)
+    private static void Transfer32Argb(BitmapData bitmapLock, IGorgonImageBuffer buffer)
     {
         unsafe
         {
@@ -63,9 +61,9 @@ public static class GdiPlusExtensions
                     // So, we must convert to ABGR even though the DXGI format is RGBA. The memory layout is from lowest 
                     // (R at byte 0) to the highest byte (A at byte 3).
                     // Thus, R is the lowest byte, and A is the highest: A(24), B(16), G(8), R(0).
-                    var color = new GorgonColor(*offset);
+                    GorgonColor color = GorgonColor.FromARGB(*offset);
                     ref int destBuffer = ref buffer.Data.AsRef<int>(destOffset);
-                    destBuffer = color.ToABGR();
+                    destBuffer = GorgonColor.ToABGR(color);
                     offset++;
                     destOffset += 4;
                 }
@@ -101,9 +99,9 @@ public static class GdiPlusExtensions
                     byte g = *offset++;
                     byte r = *offset++;
 
-                    var color = new GorgonColor(r / 255.0f, g / 255.0f, b / 255.0f, 1.0f);
+                    GorgonColor color = new(r / 255.0f, g / 255.0f, b / 255.0f, 1.0f);
                     ref int destBuffer = ref buffer.Data.AsRef<int>(destOffset);
-                    destBuffer = color.ToABGR();
+                    destBuffer = GorgonColor.ToABGR(color);
                     destOffset += 4;
                 }
             }
@@ -178,7 +176,7 @@ public static class GdiPlusExtensions
     /// If the source <paramref name="buffer"/> does not support any of the formats on the lists, then an exception will be thrown.
     /// </para>
     /// </remarks>
-	    public static Bitmap ToBitmap(this IGorgonImageBuffer buffer)
+    public static Bitmap ToBitmap(this IGorgonImageBuffer buffer)
     {
         if (buffer is null)
         {
@@ -213,7 +211,7 @@ public static class GdiPlusExtensions
                 throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, buffer.Format));
         }
 
-        var result = new Bitmap(buffer.Width, buffer.Height, pixelFormat);
+        Bitmap result = new(buffer.Width, buffer.Height, pixelFormat);
 
         unsafe
         {
@@ -231,7 +229,9 @@ public static class GdiPlusExtensions
                         case PixelFormat.Format32bppArgb:
                             if (!needsSwizzle)
                             {
-                                src.CopyTo(dest, count: destData.Stride.Min(buffer.PitchInformation.RowPitch));
+                                int length = destData.Stride.Min(buffer.PitchInformation.RowPitch);
+
+                                src[..length].CopyTo(dest[..length]);
                                 continue;
                             }
 
@@ -315,7 +315,7 @@ public static class GdiPlusExtensions
     /// If the source <paramref name="buffer"/> does not support any of the formats on the lists, then an exception will be thrown.
     /// </para>
     /// </remarks>
-	    public static void CopyTo(this IGorgonImageBuffer buffer, Bitmap bitmap)
+    public static void CopyTo(this IGorgonImageBuffer buffer, Bitmap bitmap)
     {
         if (buffer is null)
         {
@@ -354,11 +354,13 @@ public static class GdiPlusExtensions
 
                 if (!needsSwizzle)
                 {
-                    src.CopyTo(dest, count: destData.Stride.Min(buffer.PitchInformation.RowPitch));
+                    int length = destData.Stride.Min(buffer.PitchInformation.RowPitch);
+
+                    src[..length].CopyTo(dest[..length]);
                     continue;
                 }
 
-                ImageUtilities.SwizzleScanline(in src, buffer.PitchInformation.RowPitch, in dest, destData.Stride, buffer.Format, ImageBitFlags.None);
+                ImageUtilities.SwizzleScanline(src, buffer.PitchInformation.RowPitch, dest, destData.Stride, buffer.Format, ImageBitFlags.None);
             }
         }
         finally
@@ -430,7 +432,7 @@ public static class GdiPlusExtensions
     /// If the source <paramref name="buffer"/> does not support any of the formats on the lists, then an exception will be thrown.
     /// </para>
     /// </remarks>
-	    public static void CopyTo(this Bitmap bitmap, IGorgonImageBuffer buffer)
+    public static void CopyTo(this Bitmap bitmap, IGorgonImageBuffer buffer)
     {
         if (bitmap is null)
         {
@@ -469,11 +471,12 @@ public static class GdiPlusExtensions
 
                 if (!needsSwizzle)
                 {
-                    srcPtr.CopyTo(destPtr, count: srcData.Stride.Min(buffer.PitchInformation.RowPitch));
+                    int length = srcData.Stride.Min(buffer.PitchInformation.RowPitch);
+                    srcPtr[..length].CopyTo(destPtr[..length]);
                     continue;
                 }
 
-                ImageUtilities.SwizzleScanline(in srcPtr, buffer.PitchInformation.RowPitch, in destPtr, srcData.Stride, buffer.Format, ImageBitFlags.None);
+                ImageUtilities.SwizzleScanline(srcPtr, buffer.PitchInformation.RowPitch, destPtr, srcData.Stride, buffer.Format, ImageBitFlags.None);
             }
         }
         finally
@@ -526,7 +529,7 @@ public static class GdiPlusExtensions
             throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, bitmap.PixelFormat));
         }
 
-        var info = new GorgonImageInfo(ImageType.Image2D, BufferFormat.R8G8B8A8_UNorm)
+        GorgonImageInfo info = new(ImageDataType.Image2D, BufferFormat.R8G8B8A8_UNorm)
         {
             Width = bitmap.Width,
             Height = bitmap.Height

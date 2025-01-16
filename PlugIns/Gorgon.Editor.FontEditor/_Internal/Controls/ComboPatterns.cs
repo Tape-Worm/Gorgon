@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2021 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,44 +11,37 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: September 6, 2021 12:44:34 AM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Text;
 using System.Text;
-using System.Windows.Forms;
 
 namespace Gorgon.Editor.FontEditor;
 
 /// <summary>
-/// A combo box for displaying hatch patterns.
+/// A combo box for displaying hatch patterns
 /// </summary>
 internal class ComboPatterns
     : ComboBox
 {
-    #region Variables.
+
     // List of patterns.
     private readonly SortedDictionary<string, HatchStyle> _patternList = new(StringComparer.OrdinalIgnoreCase);
     // Proper name buffer.
-    private readonly StringBuilder _properName = new(128);													                    
-    #endregion
+    private readonly StringBuilder _properName = new(128);
 
-    #region Properties.
     /// <summary>
     /// N/A
     /// </summary>
@@ -87,9 +80,7 @@ internal class ComboPatterns
             SelectedIndex = Items.IndexOf(properName);
         }
     }
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to separate an enumeration name at capital letters and numeric values with a space.
     /// </summary>
@@ -149,8 +140,8 @@ internal class ComboPatterns
         }
 
         e.Graphics.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
-        var textBounds = new Rectangle(26 + e.Bounds.Left, e.Bounds.Top, e.Bounds.Width, e.Bounds.Height);
-        var patternBounds = new Rectangle(e.Bounds.Left + 2, e.Bounds.Top + 2, 22, e.Bounds.Height - 4);
+        Rectangle textBounds = new(26 + e.Bounds.Left, e.Bounds.Top, e.Bounds.Width, e.Bounds.Height);
+        Rectangle patternBounds = new(e.Bounds.Left + 2, e.Bounds.Top + 2, 22, e.Bounds.Height - 4);
 
         using Brush brush = new HatchBrush(style, e.ForeColor, e.BackColor);
         TextRenderer.DrawText(e.Graphics, patternName, Font, textBounds, e.ForeColor, e.BackColor, flags);
@@ -164,7 +155,7 @@ internal class ComboPatterns
     public void RefreshPatterns()
     {
         string[] patterns = Enum.GetNames(typeof(HatchStyle));
-        var styles = (HatchStyle[])Enum.GetValues(typeof(HatchStyle));
+        HatchStyle[] styles = (HatchStyle[])Enum.GetValues(typeof(HatchStyle));
         Items.Clear();
         _patternList.Clear();
 
@@ -178,9 +169,7 @@ internal class ComboPatterns
             Items.Add(pattern.Key);
         }
     }
-    #endregion
 
-    #region Constructor/Destructor.
     /// <summary>
     /// Initializes a new instance of the <see cref="ComboPatterns"/> class.
     /// </summary>
@@ -189,5 +178,4 @@ internal class ComboPatterns
         base.DrawMode = DrawMode.OwnerDrawVariable;
         base.Sorted = true;
     }
-    #endregion
 }

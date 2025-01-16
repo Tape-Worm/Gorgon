@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2014 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,25 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Thursday, August 7, 2014 9:38:25 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
 using System.Numerics;
-using System.Windows.Forms;
 using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -43,17 +37,16 @@ using Gorgon.Renderers.Geometry;
 using Gorgon.Renderers.Lights;
 using Gorgon.Timing;
 using Gorgon.UI;
-using DX = SharpDX;
 using GI = Gorgon.Input;
 
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Our application entry point.
+/// Our application entry point
 /// </summary>
 internal static class Program
 {
-    #region Variables.
+
     // The main application window.
     private static FormMain _window;
     // Camera.
@@ -100,7 +93,6 @@ internal static class Program
     private static GorgonFont _font;
     // The text sprite used to display our info.
     private static GorgonTextSprite _textSprite;
-    #endregion
 
     /// <summary>
     /// Main application loop.
@@ -163,7 +155,7 @@ internal static class Program
     /// <summary>
     /// Function to process the keyboard commands.
     /// </summary>
-		private static void ProcessKeys()
+    private static void ProcessKeys()
     {
         Vector3 cameraDir = Vector3.Zero;
 
@@ -220,9 +212,9 @@ internal static class Program
 
         Vector3 pos = _sphere.Position;
         Quaternion camRotationQ = _camera.Rotation;
-        var camRotation = Matrix4x4.CreateFromQuaternion(camRotationQ);
+        Matrix4x4 camRotation = Matrix4x4.CreateFromQuaternion(camRotationQ);
         Vector3 unitZ = Vector3.UnitZ;
-        var forward = Vector3.Transform(unitZ, camRotation);
+        Vector3 forward = Vector3.Transform(unitZ, camRotation);
         Vector3 right;
 
         if (!_lock)
@@ -234,7 +226,7 @@ internal static class Program
         {
             right = Vector3.Transform(pos, camRotation);
         }
-        var up = Vector3.Cross(forward, right);
+        Vector3 up = Vector3.Cross(forward, right);
 
         right = Vector3.Multiply(right, cameraDir.X);
         _camera.Position = Vector3.Add(_camera.Position, right);
@@ -364,7 +356,7 @@ internal static class Program
     /// <param name="e">The <see cref="GI.GorgonMouseEventArgs" /> instance containing the event data.</param>
     private static void RawMouse_MouseMove(object sender, GI.GorgonMouseEventArgs e)
     {
-        DX.Point delta = e.RelativePosition;
+        GorgonPoint delta = e.RelativePosition;
         _cameraRotation.X += delta.Y.Sign() * (_sensitivity);
         _cameraRotation.Y += delta.X.Sign() * (_sensitivity);
     }
@@ -404,7 +396,7 @@ internal static class Program
     /// </summary>
     /// <param name="width">The width of the depth buffer.</param>
     /// <param name="height">The height of the depth buffer.</param>
-	    private static void BuildDepthBuffer(int width, int height)
+    private static void BuildDepthBuffer(int width, int height)
     {
         _depthBuffer?.Dispose();
         _depthBuffer = GorgonDepthStencil2DView.CreateDepthStencil(_graphics,
@@ -419,7 +411,7 @@ internal static class Program
     /// <summary>
     /// Function to build the shaders required for the application.
     /// </summary>
-	    private static void LoadShaders()
+    private static void LoadShaders()
     {
         _renderer.ShaderCache["VertexShader"] = GorgonShaderFactory.Compile<GorgonVertexShader>(_graphics, Resources.Shaders, "PrimVS", true);
         _renderer.ShaderCache["PixelShader"] = GorgonShaderFactory.Compile<GorgonPixelShader>(_graphics, Resources.Shaders, "PrimPS", true);
@@ -430,7 +422,7 @@ internal static class Program
     /// <summary>
     /// Function to load textures from application resources.
     /// </summary>
-	    private static void LoadTextures()
+    private static void LoadTextures()
     {
         // Load standard images from the resource section.
         _renderer.TextureCache["Black"] = Resources.black_2x2.ToTexture2D(_graphics,
@@ -470,9 +462,9 @@ internal static class Program
                                                                                     }).GetShaderResourceView();
 
         // The following images are DDS encoded and require an encoder to read them from the resources.
-        var dds = new GorgonCodecDds();
+        GorgonCodecDds dds = new();
 
-        using (var stream = new MemoryStream(Resources.Rain_Height_NRM))
+        using (MemoryStream stream = new(Resources.Rain_Height_NRM))
         using (IGorgonImage image = dds.FromStream(stream))
         {
             _renderer.TextureCache["Water_Normal"] = image.ToTexture2D(_graphics,
@@ -482,7 +474,7 @@ internal static class Program
                                                                        }).GetShaderResourceView();
         }
 
-        using (var stream = new MemoryStream(Resources.Rain_Height_SPEC))
+        using (MemoryStream stream = new(Resources.Rain_Height_SPEC))
         using (IGorgonImage image = dds.FromStream(stream))
         {
             _renderer.TextureCache["Water_Specular"] = image.ToTexture2D(_graphics,
@@ -492,7 +484,7 @@ internal static class Program
                                                                          }).GetShaderResourceView();
         }
 
-        using (var stream = new MemoryStream(Resources.earthbump1k_NRM))
+        using (MemoryStream stream = new(Resources.earthbump1k_NRM))
         using (IGorgonImage image = dds.FromStream(stream))
         {
             _renderer.TextureCache["Earth_Normal"] = image.ToTexture2D(_graphics,
@@ -506,11 +498,11 @@ internal static class Program
     /// <summary>
     /// Function to build the meshes.
     /// </summary>
-	    private static void BuildMeshes()
+    private static void BuildMeshes()
     {
-        var fnU = new Vector3(0.5f, 1.0f, 0);
-        var fnV = new Vector3(1.0f, 1.0f, 0);
-        var faceNormal = Vector3.Cross(fnU, fnV);
+        Vector3 fnU = new(0.5f, 1.0f, 0);
+        Vector3 fnV = new(1.0f, 1.0f, 0);
+        Vector3 faceNormal = Vector3.Cross(fnU, fnV);
         faceNormal = Vector3.Normalize(faceNormal);
 
         _triangle = new Triangle(_graphics,
@@ -599,7 +591,7 @@ internal static class Program
         };
         _renderer.Meshes.Add(_sphere);
 
-        _icoSphere = new IcoSphere(_graphics, 5.0f, new DX.RectangleF(0, 0, 1, 1), Vector3.Zero, 3)
+        _icoSphere = new IcoSphere(_graphics, 5.0f, new GorgonRectangleF(0, 0, 1, 1), Vector3.Zero, 3)
         {
             Rotation = new Vector3(0, -45.0f, 0),
             Position = new Vector3(10, 2, 9.5f),
@@ -637,7 +629,7 @@ internal static class Program
     /// <summary>
     /// Function to initialize the lights.
     /// </summary>
-	    private static void BuildLights()
+    private static void BuildLights()
     {
         _renderer.Lights[0] = new GorgonPointLight
         {
@@ -650,7 +642,7 @@ internal static class Program
         _renderer.Lights[1] = new GorgonPointLight
         {
             Position = new Vector3(-5.0f, 5.0f, 4.5f),
-            Color = Color.Yellow,
+            Color = GorgonColors.Yellow,
             SpecularPower = 1024.0f,
             ConstantAttenuation = 1.0f,
             LinearAttenuation = 0.09f,
@@ -661,7 +653,7 @@ internal static class Program
         _renderer.Lights[2] = new GorgonPointLight
         {
             Position = new Vector3(5.0f, 5.25f, 9.5f),
-            Color = Color.Red,                
+            Color = GorgonColors.Red,
             SpecularPower = 0.0f,
             ConstantAttenuation = 0,
             QuadraticAttenuation = 0.25f
@@ -674,7 +666,7 @@ internal static class Program
     private static void Initialize()
     {
         GorgonExample.ShowStatistics = false;
-        _window = GorgonExample.Initialize(new DX.Size2(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height), "Primitives");
+        _window = GorgonExample.Initialize(new GorgonPoint(ExampleConfig.Default.Resolution.X, ExampleConfig.Default.Resolution.Y), "Primitives");
 
         try
         {
@@ -709,7 +701,7 @@ internal static class Program
 
             BuildMeshes();
 
-            _renderer.Camera = _camera = new GorgonPerspectiveCamera(_graphics, new DX.Size2F(_swapChain.Width, _swapChain.Height))
+            _renderer.Camera = _camera = new GorgonPerspectiveCamera(_graphics, new Vector2(_swapChain.Width, _swapChain.Height))
             {
                 Fov = 75.0f
             };
@@ -728,9 +720,9 @@ internal static class Program
             // When we resize, update the projection and viewport to match our client size.
             _swapChain.SwapChainResized += (sender, args) =>
                                                 {
-                                                    _camera.ViewDimensions = args.Size.ToSize2F();
+                                                    _camera.ViewDimensions = args.Size;
 
-                                                    BuildDepthBuffer(args.Size.Width, args.Size.Height);
+                                                    BuildDepthBuffer(args.Size.X, args.Size.Y);
 
                                                     _graphics.SetDepthStencil(_depthBuffer);
                                                 };
@@ -740,12 +732,12 @@ internal static class Program
             GorgonExample.LoadResources(_graphics);
 
             // Create a font so we can render some text.
-            _font = GorgonExample.Fonts.GetFont(new GorgonFontInfo("Segoe UI", 14.0f, FontHeightMode.Points)
+            _font = GorgonExample.Fonts.GetFont(new GorgonFontInfo("Segoe UI", 14.0f, GorgonFontHeightMode.Points)
             {
                 Name = "Segoe UI 14pt",
                 OutlineSize = 2,
-                OutlineColor1 = GorgonColor.Black,
-                OutlineColor2 = GorgonColor.Black
+                OutlineColor1 = GorgonColors.Black,
+                OutlineColor2 = GorgonColors.Black
             });
 
             _textSprite = new GorgonTextSprite(_font)
@@ -765,9 +757,7 @@ internal static class Program
     [STAThread]
     private static void Main()
     {
-#if NET6_0_OR_GREATER
         Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
-#endif
         Application.EnableVisualStyles();
         Application.SetCompatibleTextRenderingDefault(false);
 

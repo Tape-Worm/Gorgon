@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,24 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 25, 2018 10:57:09 AM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Numerics;
-using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -37,16 +32,15 @@ using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
 using Gorgon.Renderers;
 using Gorgon.UI;
-using DX = SharpDX;
 
 namespace Gorgon.Examples;
 
 /// <summary>
-/// The entry point for the example application.
+/// The entry point for the example application
 /// </summary>
 static class Program
 {
-    #region Constants.
+
     // Text to display for "help".
     private const string HelpText = @"Help:
 F1 - Show/hide this text.
@@ -54,9 +48,7 @@ S - Show frame stats.
 Click - move other ship into foreground.
 Mousewheel - blur/sharpen background.
 ESC - Quit.";
-    #endregion
 
-    #region Variables.
     // The graphics interface.
     private static GorgonGraphics _graphics;
     // Our swap chain representing our "screen".
@@ -92,13 +84,7 @@ ESC - Quit.";
     private static GorgonFont _helpFont;
     // Flag to indicate that the help text should be visible.
     private static bool _showHelp = true;
-    #endregion
 
-    #region Properties.
-
-    #endregion
-
-    #region Methods.
     /// <summary>
     /// Function to draw the lower layer.
     /// </summary>
@@ -106,7 +92,7 @@ ESC - Quit.";
     {
         GorgonSprite shadowSprite = _bgSprite == _sprite2 ? _shadowSprites[1] : _shadowSprites[0];
 
-        _layer1Target.Clear(GorgonColor.BlackTransparent);
+        _layer1Target.Clear(GorgonColors.BlackTransparent);
         _graphics.SetRenderTarget(_layer1Target);
 
         _renderer.Begin(_rtvBlendState);
@@ -118,11 +104,11 @@ ESC - Quit.";
         shadowSprite.Position = _bgSprite.Position +
                                 (new Vector2(_bgSprite.Position.X - (_screen.Width / 2.0f), _bgSprite.Position.Y - (_screen.Height / 2.0f)) * _bgSprite.Scale * 0.075f);
 
-        var bgRegion = new DX.RectangleF(0, 0, _screen.Width, _screen.Height);
+        GorgonRectangleF bgRegion = new(0, 0, _screen.Width, _screen.Height);
         _renderer.DrawFilledRectangle(bgRegion,
-                                      GorgonColor.White,
+                                      GorgonColors.White,
                                       _backgroundTexture,
-                                      new DX.RectangleF(0,
+                                      new GorgonRectangleF(0,
                                                         0,
                                                         (float)_screen.Width / _backgroundTexture.Width,
                                                         (float)_screen.Height / _backgroundTexture.Height),
@@ -144,10 +130,10 @@ ESC - Quit.";
 
         // Send the background layer to our blur target so we have an initial image to blur.
         _renderer.Begin();
-        _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _blurTexture.Width, _blurTexture.Height),
-                                      GorgonColor.White,
+        _renderer.DrawFilledRectangle(new GorgonRectangleF(0, 0, _blurTexture.Width, _blurTexture.Height),
+                                      GorgonColors.White,
                                       _layer1Texture,
-                                      new DX.RectangleF(0, 0, 1, 1));
+                                      new GorgonRectangleF(0, 0, 1, 1));
         _renderer.End();
 
         // If we have no blurring, then we are done.
@@ -187,14 +173,14 @@ ESC - Quit.";
         _renderer.Begin();
 
         // Draw our blurred (or not) background.
-        _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _screen.Width, _screen.Height),
-                                      GorgonColor.White,
+        _renderer.DrawFilledRectangle(new GorgonRectangleF(0, 0, _screen.Width, _screen.Height),
+                                      GorgonColors.White,
                                       _blurTexture,
-                                      new DX.RectangleF(0, 0, 1, 1));
+                                      new GorgonRectangleF(0, 0, 1, 1));
 
         // Draw an ellipse to indicate our light source.
-        var lightPosition = new DX.RectangleF((_screen.Width / 2.0f) - 10, (_screen.Height / 2.0f) - 10, 20, 20);
-        _renderer.DrawFilledEllipse(lightPosition, GorgonColor.White, 0.5f);
+        GorgonRectangleF lightPosition = new((_screen.Width / 2.0f) - 10, (_screen.Height / 2.0f) - 10, 20, 20);
+        _renderer.DrawFilledEllipse(lightPosition, GorgonColors.White, 0.5f);
 
         // Draw the sprite and its corresponding shadow.
         // We'll adjust the shadow position to be altered by our distance from the light source, and the quadrant of the screen that we're in.
@@ -205,7 +191,7 @@ ESC - Quit.";
 
         if (_showHelp)
         {
-            _renderer.DrawString(HelpText, new Vector2(2, 2), _helpFont, GorgonColor.White);
+            _renderer.DrawString(HelpText, new Vector2(2, 2), _helpFont, GorgonColors.White);
         }
 
         _renderer.End();
@@ -221,10 +207,10 @@ ESC - Quit.";
     /// Function to build our render targets and textures.
     /// </summary>
     /// <param name="size">The size of the render targets.</param>
-    private static void BuildRenderTargets(DX.Size2 size)
+    private static void BuildRenderTargets(GorgonPoint size)
     {
         _layer1Target = GorgonRenderTarget2DView.CreateRenderTarget(_graphics,
-                                                                    new GorgonTexture2DInfo(size.Width, size.Height, BufferFormat.R8G8B8A8_UNorm)
+                                                                    new GorgonTexture2DInfo(size.X, size.Y, BufferFormat.R8G8B8A8_UNorm)
                                                                     {
                                                                         Name = "Layer 1",
                                                                         Binding = TextureBinding.ShaderResource,
@@ -248,7 +234,7 @@ ESC - Quit.";
         GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
         GorgonExample.ShowStatistics = false;
 
-        FormMain window = GorgonExample.Initialize(new DX.Size2(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height), "The Shadow Gn0s");
+        FormMain window = GorgonExample.Initialize(new GorgonPoint(ExampleConfig.Default.Resolution.X, ExampleConfig.Default.Resolution.Y), "The Shadow Gn0s");
 
         try
         {
@@ -263,15 +249,14 @@ ESC - Quit.";
             _graphics = new GorgonGraphics(adapters[0], log: GorgonApplication.Log);
 
             // Create our "screen".
-            _screen = new GorgonSwapChain(_graphics, window, new GorgonSwapChainInfo(ExampleConfig.Default.Resolution.Width, 
-                                                                                          ExampleConfig.Default.Resolution.Height, 
+            _screen = new GorgonSwapChain(_graphics, window, new GorgonSwapChainInfo(ExampleConfig.Default.Resolution.X,
+                                                                                          ExampleConfig.Default.Resolution.Y,
                                                                                           BufferFormat.R8G8B8A8_UNorm)
             {
                 Name = "TheShadowGn0s Screen Swap chain"
             });
 
-            BuildRenderTargets(new DX.Size2(_screen.Width, _screen.Height));
-
+            BuildRenderTargets(new GorgonPoint(_screen.Width, _screen.Height));
 
             _backgroundTexture = GorgonTexture2DView.FromFile(_graphics,
                                                               Path.Combine(GorgonExample.GetResourcePath(@"Textures\TheShadowGn0s\").FullName,
@@ -298,22 +283,22 @@ ESC - Quit.";
                                                               Usage = ResourceUsage.Immutable
                                                           });
 
-            var spriteCodec = new GorgonV2SpriteCodec(_renderer);
+            GorgonV2SpriteCodec spriteCodec = new(_renderer);
             _sprite1 = spriteCodec.FromFile(Path.Combine(GorgonExample.GetResourcePath(@"Sprites\TheShadowGn0s\").FullName, "Mother.gorSprite"));
             _sprite2 = spriteCodec.FromFile(Path.Combine(GorgonExample.GetResourcePath(@"Sprites\TheShadowGn0s\").FullName, "Mother2c.gorSprite"));
 
             _gaussBlur = new Gorgon2DGaussBlurEffect(_renderer, 9)
             {
-                BlurRenderTargetsSize = new DX.Size2(_screen.Width / 2, _screen.Height / 2)
+                BlurRenderTargetsSize = new GorgonPoint(_screen.Width / 2, _screen.Height / 2)
             };
 
-            var shadowBuilder = new ShadowBuilder(_renderer, _gaussBlur, _sprite1, _sprite2);
+            ShadowBuilder shadowBuilder = new(_renderer, _gaussBlur, _sprite1, _sprite2);
             (GorgonSprite[] shadowSprites, GorgonTexture2DView shadowTexture) = shadowBuilder.Build();
             _shadowSprites = shadowSprites;
             _shadowTexture = shadowTexture;
 
-            var batchStateBuilder = new Gorgon2DBatchStateBuilder();
-            var blendStateBuilder = new GorgonBlendStateBuilder();
+            Gorgon2DBatchStateBuilder batchStateBuilder = new();
+            GorgonBlendStateBuilder blendStateBuilder = new();
             _rtvBlendState = batchStateBuilder
                              .BlendState(blendStateBuilder
                                          .ResetTo(GorgonBlendState.Default)
@@ -343,12 +328,12 @@ ESC - Quit.";
 
             GorgonExample.LoadResources(_graphics);
 
-            _helpFont = GorgonExample.Fonts.GetFont(new GorgonFontInfo("Segoe UI", 12.0f, FontHeightMode.Points)
+            _helpFont = GorgonExample.Fonts.GetFont(new GorgonFontInfo("Segoe UI", 12.0f, GorgonFontHeightMode.Points)
             {
                 Name = "Segoe UI 12pt Bold, Outlined",
-                FontStyle = FontStyle.Bold,
-                OutlineColor2 = GorgonColor.Black,
-                OutlineColor1 = GorgonColor.Black,
+                FontStyle = GorgonFontStyle.Bold,
+                OutlineColor2 = GorgonColors.Black,
+                OutlineColor1 = GorgonColors.Black,
                 OutlineSize = 2,
                 TextureWidth = 512,
                 TextureHeight = 256
@@ -438,9 +423,7 @@ ESC - Quit.";
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
     private static void Window_MouseMove(object sender, MouseEventArgs e) => _fgSprite.Position = new Vector2(e.X, e.Y);
-    #endregion
 
-    #region Constructor/Finalizer.
     /// <summary>
     /// The main entry point for the application.
     /// </summary>
@@ -449,9 +432,7 @@ ESC - Quit.";
     {
         try
         {
-#if NET6_0_OR_GREATER
             Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
-#endif
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
@@ -479,5 +460,4 @@ ESC - Quit.";
             _graphics?.Dispose();
         }
     }
-    #endregion
 }

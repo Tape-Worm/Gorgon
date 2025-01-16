@@ -568,4 +568,13 @@ Textures must be configured to share their data when they are first created.</va
   <data name="GORGFX_ERR_CANNOT_GET_KEYED_MUTEX" xml:space="preserve">
     <value>Could not retrieve a keyed mutex from the resource.</value>
   </data>
+  <data name="GORGFX_TOSTR_AABB" xml:space="preserve">
+    <value>Axis Aligned Bounding Box.  Min: {0},{1},{2}, Max: {3}, {4}, {5}</value>
+  </data>
+  <data name="GORGFX_TOSTR_BOUNDING_SPHERE" xml:space="preserve">
+    <value>Bounding Sphere. Center: {0}, {1}, {2}, Radius: {3}</value>
+  </data>
+  <data name="GORGFX_TOSTR_RAY" xml:space="preserve">
+    <value>Ray: Start ({0}, {1}, {2}) Direction ({3}, {4}, {5}).</value>
+  </data>
 </root>

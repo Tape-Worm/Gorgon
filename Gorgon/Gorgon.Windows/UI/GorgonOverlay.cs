@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,24 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: December 5, 2020 3:41:43 PM
 // 
-#endregion
 
-using System;
-using System.Drawing;
-using System.Linq;
-using System.Threading;
-using System.Windows.Forms;
 using Gorgon.Collections;
 using Gorgon.Graphics;
 using Gorgon.Math;
@@ -36,13 +30,13 @@ using Gorgon.Math;
 namespace Gorgon.UI;
 
 /// <summary>
-/// Functionality to display a translucent (like plexi-glass) panel on top of a control or form.
+/// Functionality to display a translucent (like plexi-glass) panel on top of a control or form
 /// </summary>
 public class GorgonOverlay
 {
-    #region Variables.
+
     // The form used to display the overlay.
-    private FormOverlay _overlayForm;        
+    private FormOverlay _overlayForm;
 
     // The parent control for the overlay.
     private WeakReference<Control> _parent;
@@ -52,9 +46,7 @@ public class GorgonOverlay
 
     // The amount of transparency.
     private int _transparencyPercent = 50;
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to return whether the overlay is active or not.
     /// </summary>
@@ -76,10 +68,8 @@ public class GorgonOverlay
     {
         get;
         set;
-    } = GorgonColor.Black;
-    #endregion
+    } = GorgonColors.Black;
 
-    #region Methods.
     /// <summary>Handles the GotFocus event of the Parent control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
@@ -253,7 +243,7 @@ public class GorgonOverlay
         {
             Location = parent.PointToScreen(new Point(0, 0)),
             Size = parent.ClientSize,
-            BackColor = OverlayColor
+            BackColor = GorgonColor.ToColor(OverlayColor)
         };
 
         _parent = new WeakReference<Control>(parent);
@@ -273,7 +263,7 @@ public class GorgonOverlay
         parent.HandleDestroyed += Parent_HandleDestroyed;
         parent.GotFocus += Parent_GotFocus;
 
-        foreach (Control child in parent.Controls.OfType<Control>().Traverse(c => c.Controls.OfType<Control>()))
+        foreach (Control child in parent.Controls.OfType<Control>().TraverseBreadthFirst(c => c.Controls.OfType<Control>()))
         {
             child.GotFocus += Parent_GotFocus;
         }
@@ -284,7 +274,7 @@ public class GorgonOverlay
             parentForm.Move += ParentForm_Move;
             parentForm.Layout += ParentForm_Layout;
         }
-                                
+
         _overlayForm.Show(parentForm ?? parent);
         _overlayForm.Opacity = TransparencyPercent / 100.0;
 
@@ -320,7 +310,7 @@ public class GorgonOverlay
 
         if (parent is not null)
         {
-            foreach (Control child in parent.Controls.OfType<Control>().Traverse(c => c.Controls.OfType<Control>()))
+            foreach (Control child in parent.Controls.OfType<Control>().TraverseBreadthFirst(c => c.Controls.OfType<Control>()))
             {
                 child.GotFocus -= Parent_GotFocus;
             }
@@ -335,5 +325,4 @@ public class GorgonOverlay
 
         overlayForm?.Dispose();
     }
-    #endregion
 }

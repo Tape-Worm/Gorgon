@@ -1,6 +1,5 @@
-#region MIT
-// 
-// Gorgon.
+﻿// 
+// Gorgon
 // Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,42 +10,42 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: February 23, 2017 9:49:20 PM
 // 
-#endregion
 
-using DX = SharpDX;
+using Gorgon.Graphics;
 
 namespace Gorgon.Renderers.Services;
 
 /// <summary>
-/// A node for the sprite packing.
+/// A node for the sprite packing
 /// </summary>
-internal class SpriteNode
+/// <remarks>
+/// Initializes a new instance of the <see cref="SpriteNode"/> class
+/// </remarks>
+/// <param name="parentNode">The parent node.</param>
+internal class SpriteNode(SpriteNode parentNode)
 {
-    #region Variables.
     // Flag to indicate that we have no more space.
     private bool _noMoreRoom;
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to set or return the region that this node occupies on the image.
     /// </summary>
-    public DX.Rectangle Region
+    public GorgonRectangle Region
     {
         get;
         set;
-    }
+    } = GorgonRectangle.Empty;
 
     /// <summary>
     /// Property to return the parent node for this node.
@@ -54,7 +53,7 @@ internal class SpriteNode
     public SpriteNode Parent
     {
         get;
-    }
+    } = parentNode;
 
     /// <summary>
     /// Property to set or return the node to the left of this one.
@@ -78,14 +77,12 @@ internal class SpriteNode
     /// Property to return whether this node is a leaf node.
     /// </summary>
     public bool IsLeaf => ((Left is null) && (Right is null));
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to add a node as a child to this node.
     /// </summary>
     /// <param name="dimensions">Dimensions that the node will occupy.</param>
-    public SpriteNode AddNode(DX.Size2 dimensions)
+    public SpriteNode AddNode(GorgonPoint dimensions)
     {
         if (!IsLeaf)
         {
@@ -100,13 +97,13 @@ internal class SpriteNode
         }
 
         // Ensure we can fit this node.
-        if ((dimensions.Width > Region.Width) || (dimensions.Height > Region.Height))
+        if ((dimensions.X > Region.X) || (dimensions.Y > Region.Y))
         {
             return null;
         }
 
         // We have an exact fit, so there will be no more room for other nodes.
-        if ((dimensions.Width == Region.Width) && (dimensions.Height == Region.Height))
+        if ((dimensions.X == Region.X) && (dimensions.Y == Region.Y))
         {
             _noMoreRoom = true;
             return this;
@@ -117,32 +114,19 @@ internal class SpriteNode
         Right = new SpriteNode(this);
 
         // Subdivide.
-        var delta = new DX.Size2(Region.Width - dimensions.Width, Region.Height - dimensions.Height);
+        GorgonPoint delta = new(Region.X - dimensions.X, Region.Y - dimensions.Y);
 
-        if (delta.Height <= 0) //(delta.Width > delta.Height)
+        if (delta.Y <= 0)
         {
-            Left.Region = new DX.Rectangle(Region.Left, Region.Top, dimensions.Width, Region.Height);
-            Right.Region = new DX.Rectangle(Region.Left + dimensions.Width, Region.Top, delta.Width, Region.Height);
+            Left.Region = new GorgonRectangle(Region.Left, Region.Top, dimensions.X, Region.Y);
+            Right.Region = new GorgonRectangle(Region.Left + dimensions.X, Region.Top, delta.X, Region.Y);
         }
         else
         {
-            Left.Region = new DX.Rectangle(Region.Left, Region.Top, Region.Width, dimensions.Height);
-            Right.Region = new DX.Rectangle(Region.Left, Region.Top + dimensions.Height, Region.Width, delta.Height);
+            Left.Region = new GorgonRectangle(Region.Left, Region.Top, Region.X, dimensions.Y);
+            Right.Region = new GorgonRectangle(Region.Left, Region.Top + dimensions.Y, Region.X, delta.Y);
         }
 
         return Left.AddNode(dimensions) ?? Right.AddNode(dimensions);
     }
-    #endregion
-
-    #region Constructor/Destructor.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="SpriteNode"/> class.
-    /// </summary>
-    /// <param name="parentNode">The parent node.</param>
-    public SpriteNode(SpriteNode parentNode)
-    {
-        Region = DX.Rectangle.Empty;
-        Parent = parentNode;
-    }
-    #endregion
 }

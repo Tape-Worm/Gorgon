@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,20 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Sunday, January 13, 2013 5:59:29 PM
 // 
-#endregion
 
-using System.Drawing;
 using Gorgon.Core;
 using Gorgon.Input;
 using Gorgon.Math;
@@ -33,11 +31,11 @@ using Gorgon.Timing;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// The spray can effect state object.
+/// The spray can effect state object
 /// </summary>
 internal class SprayCan
 {
-    #region Variables.
+
     private float _time;                    // Current time.
     private float _maxTime;                 // Maximum time.
     private bool _isActive;                 // Flag to indicate that the spray is active.
@@ -48,9 +46,7 @@ internal class SprayCan
     private float _vibMax;                  // Maximum vibration.
     private float _sprayAmount;             // Spray amount.
     private float _sprayMax;                // Maximum spray amount.			
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to return the point size for the spray.
     /// </summary>
@@ -228,9 +224,7 @@ internal class SprayCan
             _maxAlpha = _alpha;
         }
     }
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to update the sprayer.
     /// </summary>
@@ -246,14 +240,14 @@ internal class SprayCan
         Controller.Vibrate(1, (int)_vibAmount);
 
         // Get the spray vector in a -1 .. 1 range.
-        var sprayVector = new PointF(Controller.Axis[GamingDeviceAxis.RightStickX].Value - Controller.Info.AxisInfo[GamingDeviceAxis.RightStickX].Range.Minimum,
+        PointF sprayVector = new(Controller.Axis[GamingDeviceAxis.RightStickX].Value - Controller.Info.AxisInfo[GamingDeviceAxis.RightStickX].Range.Minimum,
                                     Controller.Axis[GamingDeviceAxis.RightStickY].Value - Controller.Info.AxisInfo[GamingDeviceAxis.RightStickY].Range.Minimum);
 
         sprayVector = new PointF(((sprayVector.X / (Controller.Info.AxisInfo[GamingDeviceAxis.RightStickX].Range.Range + 1)) * 2.0f) - 1.0f,
-                                 -(((sprayVector.Y / (Controller.Info.AxisInfo[GamingDeviceAxis.RightStickY].Range.Range + 1)) * 2.0f) - 1.0f));
+                                 (((sprayVector.Y / (Controller.Info.AxisInfo[GamingDeviceAxis.RightStickY].Range.Range + 1)) * 2.0f) - 1.0f));
 
         // Calculate angle without magnitude.
-        var sprayVectorDelta = new PointF(sprayVector.X, sprayVector.Y);
+        PointF sprayVectorDelta = new(sprayVector.X, sprayVector.Y);
         float sprayAngle = 0.0f;
 
         // Ensure that we get the correct angle.
@@ -311,7 +305,7 @@ internal class SprayCan
         sprayVector = new PointF(_sprayAmount * (cos - sin), _sprayAmount * (sin + cos));
 
         // Update the spray position.
-        var jitter = new PointF(GorgonRandom.RandomSingle(-_sprayAmount / _sprayMax * throttleValue / 10.0f, _sprayAmount / _sprayMax * throttleValue / 10.0f),
+        PointF jitter = new(GorgonRandom.RandomSingle(-_sprayAmount / _sprayMax * throttleValue / 10.0f, _sprayAmount / _sprayMax * throttleValue / 10.0f),
                                     GorgonRandom.RandomSingle(-_sprayAmount / _sprayMax * throttleValue / 10.0f, _sprayAmount / _sprayMax * throttleValue / 10.0f));
         Position = new PointF(Origin.X + sprayVector.X + jitter.X, Origin.Y + sprayVector.Y + jitter.Y);
     }
@@ -326,9 +320,7 @@ internal class SprayCan
             Controller.Vibrate(1, 0);
         }
     }
-    #endregion
 
-    #region Constructor.
     /// <summary>
     /// Initializes a new instance of the <see cref="SprayCan" /> struct.
     /// </summary>
@@ -345,5 +337,4 @@ internal class SprayCan
         SprayAlpha = 255.0f;
         IsActive = false;
     }
-    #endregion
 }

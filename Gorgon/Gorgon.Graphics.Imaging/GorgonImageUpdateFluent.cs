@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,35 +11,30 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: December 27, 2020 4:49:31 PM
 // 
-#endregion
 
-using System;
 using System.Collections.Concurrent;
-using System.Linq;
-using System.Threading;
 using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Properties;
 using Gorgon.Math;
 using Gorgon.Native;
 using Gorgon.UI;
-using BCnEncode = BCnEncoder.Encoder;
-using DX = SharpDX;
+using BCnEncode = Gorgon.BCnEncoder.Encoder;
 
 namespace Gorgon.Graphics.Imaging;
 
 /// <summary>
-/// An anchor for repositioning the image after the image has been expanded.
+/// An anchor for repositioning the image after the image has been expanded
 /// </summary>
 public enum ImageExpandAnchor
 {
@@ -82,19 +77,17 @@ public enum ImageExpandAnchor
 }
 
 /// <summary>
-/// Operations for the <see cref="IGorgonImageUpdateFluent"/> interface.
+/// Operations for the <see cref="IGorgonImageUpdateFluent"/> interface
 /// </summary>
 public partial class GorgonImage
     : IGorgonImageUpdateFluent
 {
-    #region Variables.
+
     // Commands to execute when EndUpdate is called.
     private readonly ConcurrentQueue<Action> _commands = new();
     // WIC utility functions for editing the image.
     private WicUtilities _wic;
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to perform image format conversion.
     /// </summary>
@@ -121,7 +114,7 @@ public partial class GorgonImage
             return;
         }
 
-        var destInfo = new GorgonFormatInfo(format);
+        GorgonFormatInfo destInfo = new(format);
 
         GorgonImage newImage = _wic.ConvertToFormat(this, format, dithering, FormatInfo.IsSRgb, destInfo.IsSRgb);
 
@@ -139,7 +132,7 @@ public partial class GorgonImage
         SizeInBytes = CalculateSizeInBytes(_imageInfo);
         FormatInfo = new GorgonFormatInfo(_imageInfo.Format);
 
-        _imagePtr = _imageData = newImage._imageData;
+        _imagePtr = (GorgonPtr<byte>)(_imageData = newImage._imageData);
         _imageBuffers = newImage._imageBuffers;
 
         // Don't allow usage of this image after we're done.  It no longer owns the pointer.
@@ -231,7 +224,7 @@ public partial class GorgonImage
         BufferFormat tempFormat = (destFormat is not BufferFormat.B8G8R8A8_UNorm and not BufferFormat.R8G8B8A8_UNorm) ? BufferFormat.B8G8R8A8_UNorm : destFormat;
 
         // Create an worker image in B8G8R8A8 format.
-        var destInfo = new GorgonImageInfo(ImageType, tempFormat)
+        GorgonImageInfo destInfo = new(ImageType, tempFormat)
         {
             Depth = Depth,
             Height = Height,
@@ -241,7 +234,7 @@ public partial class GorgonImage
         };
 
         // Our destination image for B8G8R8A8 or R8G8B8A8.
-        var destImage = new GorgonImage(destInfo);
+        GorgonImage destImage = new(destInfo);
 
         // We have to manually upsample from R4G4B4A4 to B8R8G8A8.
         // Because we're doing this manually, dithering won't be an option unless 
@@ -253,8 +246,8 @@ public partial class GorgonImage
 
                 for (int depth = 0; depth < depthCount; depth++)
                 {
-                    IGorgonImageBuffer destBuffer = destImage.Buffers[mip, ImageType == ImageType.Image3D ? depth : array];
-                    IGorgonImageBuffer srcBuffer = Buffers[mip, ImageType == ImageType.Image3D ? depth : array];
+                    IGorgonImageBuffer destBuffer = destImage.Buffers[mip, ImageType == ImageDataType.Image3D ? depth : array];
+                    IGorgonImageBuffer srcBuffer = Buffers[mip, ImageType == ImageDataType.Image3D ? depth : array];
 
                     ConvertPixelsFromB4G4R4A4(destBuffer, srcBuffer);
                 }
@@ -279,7 +272,7 @@ public partial class GorgonImage
     /// <returns>The updated image.</returns>
     private GorgonImage ConvertToB4G4R4A4(ImageDithering dithering)
     {
-        var destInfo = new GorgonImageInfo(ImageType, BufferFormat.B4G4R4A4_UNorm)
+        GorgonImageInfo destInfo = new(ImageType, BufferFormat.B4G4R4A4_UNorm)
         {
             Depth = Depth,
             Height = Height,
@@ -289,7 +282,7 @@ public partial class GorgonImage
         };
 
         // This is our working buffer for B4G4R4A4.
-        var workingImage = new GorgonImage(destInfo);
+        GorgonImage workingImage = new(destInfo);
         GorgonImage tempBuffer = null;
 
         try
@@ -317,8 +310,8 @@ public partial class GorgonImage
 
                     for (int depth = 0; depth < depthCount; depth++)
                     {
-                        IGorgonImageBuffer destBuffer = workingImage.Buffers[mip, destInfo.ImageType == ImageType.Image3D ? depth : array];
-                        IGorgonImageBuffer srcBuffer = tempBuffer.Buffers[mip, tempBuffer.ImageType == ImageType.Image3D ? depth : array];
+                        IGorgonImageBuffer destBuffer = workingImage.Buffers[mip, destInfo.ImageType == ImageDataType.Image3D ? depth : array];
+                        IGorgonImageBuffer srcBuffer = tempBuffer.Buffers[mip, tempBuffer.ImageType == ImageDataType.Image3D ? depth : array];
 
                         ConvertPixelsToB4G4R4A4(destBuffer, srcBuffer);
                     }
@@ -377,19 +370,19 @@ public partial class GorgonImage
                 return;
             }
 
-            var destSettings = new GorgonImageInfo(this)
+            GorgonImageInfo destSettings = new(this)
             {
                 MipCount = mipCount
             };
 
-            var newImage = new GorgonImage(destSettings);
+            GorgonImage newImage = new(destSettings);
 
             // Copy the top mip level from the source image to the dest image.
             for (int array = 0; array < ArrayCount; ++array)
             {
                 GorgonPtr<byte> buffer = newImage.Buffers[0, array].Data;
                 int size = buffer.SizeInBytes;
-                Buffers[0, array].Data.CopyTo(buffer, count: size);
+                Buffers[0, array].Data[..size].CopyTo(buffer[..size]);
             }
 
             // If we have 4 bits per channel, then we need to convert to 8 bit per channel to make WIC happy.
@@ -421,7 +414,7 @@ public partial class GorgonImage
     /// Function to crop the image to the rectangle passed to the parameters.
     /// </summary>
     /// <param name="cropRect">The rectangle that will be used to crop the image.</param>
-    /// <param name="newDepth">The new depth for the image (for <see cref="ImageType.Image3D"/> images).</param>
+    /// <param name="newDepth">The new depth for the image (for <see cref="ImageDataType.Image3D"/> images).</param>
     /// <returns>A <see cref="IGorgonImage"/> containing the resized image.</returns>
     /// <exception cref="ArgumentOutOfRangeException">Thrown if the <paramref name="newDepth"/> parameter is less than 1.</exception>
     /// <remarks>
@@ -430,11 +423,11 @@ public partial class GorgonImage
     /// of the original image, then no changes will be made.
     /// </para>
     /// </remarks>
-    IGorgonImageUpdateFluent IGorgonImageUpdateFluent.Crop(DX.Rectangle cropRect, int? newDepth)
+    IGorgonImageUpdateFluent IGorgonImageUpdateFluent.Crop(GorgonRectangle cropRect, int? newDepth)
     {
         newDepth ??= Depth.Max(1);
 
-        if ((newDepth < 1) && (ImageType == ImageType.Image3D))
+        if ((newDepth < 1) && (ImageType == ImageDataType.Image3D))
         {
             throw new ArgumentOutOfRangeException(Resources.GORIMG_ERR_IMAGE_DEPTH_TOO_SMALL, nameof(newDepth));
         }
@@ -444,20 +437,20 @@ public partial class GorgonImage
             // Only use the appropriate dimensions.
             switch (ImageType)
             {
-                case ImageType.Image1D:
+                case ImageDataType.Image1D:
                     cropRect.Height = Height;
                     break;
-                case ImageType.Image2D:
-                case ImageType.ImageCube:
+                case ImageDataType.Image2D:
+                case ImageDataType.ImageCube:
                     newDepth = Depth;
                     break;
             }
 
             // If the intersection of the crop rectangle and the source buffer are the same (and the depth is the same), then we don't need to crop.
-            var bufferRect = new DX.Rectangle(0, 0, Width, Height);
-            var clipRect = DX.Rectangle.Intersect(cropRect, bufferRect);
+            GorgonRectangle bufferRect = new(0, 0, Width, Height);
+            GorgonRectangle clipRect = GorgonRectangle.Intersect(cropRect, bufferRect);
 
-            if ((bufferRect.Equals(ref clipRect)) && (newDepth == Depth))
+            if ((bufferRect.Equals(clipRect)) && (newDepth == Depth))
             {
                 return;
             }
@@ -517,11 +510,11 @@ public partial class GorgonImage
             // Only use the appropriate dimensions.
             switch (ImageType)
             {
-                case ImageType.Image1D:
+                case ImageDataType.Image1D:
                     newHeight = Height;
                     break;
-                case ImageType.Image2D:
-                case ImageType.ImageCube:
+                case ImageDataType.Image2D:
+                case ImageDataType.ImageCube:
                     newDepth = Depth;
                     break;
             }
@@ -532,33 +525,33 @@ public partial class GorgonImage
                 return;
             }
 
-            DX.Point position = DX.Point.Zero;
+            GorgonPoint position = GorgonPoint.Zero;
 
             switch (anchor)
             {
                 case ImageExpandAnchor.UpperMiddle:
-                    position = new DX.Point((newWidth / 2) - (Width / 2), 0);
+                    position = new GorgonPoint((newWidth / 2) - (Width / 2), 0);
                     break;
                 case ImageExpandAnchor.UpperRight:
-                    position = new DX.Point(newWidth - Width, 0);
+                    position = new GorgonPoint(newWidth - Width, 0);
                     break;
                 case ImageExpandAnchor.MiddleLeft:
-                    position = new DX.Point(0, (newHeight / 2) - (Height / 2));
+                    position = new GorgonPoint(0, (newHeight / 2) - (Height / 2));
                     break;
                 case ImageExpandAnchor.Center:
-                    position = new DX.Point((newWidth / 2) - (Width / 2), (newHeight / 2) - (Height / 2));
+                    position = new GorgonPoint((newWidth / 2) - (Width / 2), (newHeight / 2) - (Height / 2));
                     break;
                 case ImageExpandAnchor.MiddleRight:
-                    position = new DX.Point(newWidth - Width, (newHeight / 2) - (Height / 2));
+                    position = new GorgonPoint(newWidth - Width, (newHeight / 2) - (Height / 2));
                     break;
                 case ImageExpandAnchor.BottomLeft:
-                    position = new DX.Point(0, newHeight - Height);
+                    position = new GorgonPoint(0, newHeight - Height);
                     break;
                 case ImageExpandAnchor.BottomMiddle:
-                    position = new DX.Point((newWidth / 2) - (Width / 2), newHeight - Height);
+                    position = new GorgonPoint((newWidth / 2) - (Width / 2), newHeight - Height);
                     break;
                 case ImageExpandAnchor.BottomRight:
-                    position = new DX.Point(newWidth - Width, newHeight - Height);
+                    position = new GorgonPoint(newWidth - Width, newHeight - Height);
                     break;
             }
 
@@ -585,8 +578,8 @@ public partial class GorgonImage
     /// Function to resize the image to a new width, height and/or depth.
     /// </summary>
     /// <param name="newWidth">The new width for the image.</param>
-    /// <param name="newHeight">The new height for the image (for <see cref="ImageType.Image2D"/> and <see cref="ImageType.ImageCube"/> images).</param>
-    /// <param name="newDepth">The new depth for the image (for <see cref="ImageType.Image3D"/> images).</param>
+    /// <param name="newHeight">The new height for the image (for <see cref="ImageDataType.Image2D"/> and <see cref="ImageDataType.ImageCube"/> images).</param>
+    /// <param name="newDepth">The new depth for the image (for <see cref="ImageDataType.Image3D"/> images).</param>
     /// <param name="filter">[Optional] The type of filtering to apply to the scaled image to help smooth larger and smaller images.</param>
     /// <returns>A <see cref="IGorgonImage"/> containing the resized image.</returns>
     /// <exception cref="ArgumentOutOfRangeException">Thrown if the <paramref name="newWidth"/>, <paramref name="newHeight"/>, or <paramref name="newDepth"/> parameters are less than 1.</exception>
@@ -605,12 +598,12 @@ public partial class GorgonImage
 
         newDepth ??= Depth.Max(1);
 
-        if ((newHeight < 1) && ((ImageType == ImageType.Image2D) || (ImageType == ImageType.ImageCube)))
+        if ((newHeight < 1) && ((ImageType == ImageDataType.Image2D) || (ImageType == ImageDataType.ImageCube)))
         {
             throw new ArgumentOutOfRangeException(Resources.GORIMG_ERR_IMAGE_HEIGHT_TOO_SMALL, nameof(newHeight));
         }
 
-        if ((newDepth < 1) && (ImageType == ImageType.Image3D))
+        if ((newDepth < 1) && (ImageType == ImageDataType.Image3D))
         {
             throw new ArgumentOutOfRangeException(Resources.GORIMG_ERR_IMAGE_DEPTH_TOO_SMALL, nameof(newDepth));
         }
@@ -620,11 +613,11 @@ public partial class GorgonImage
             // Only use the appropriate dimensions.
             switch (ImageType)
             {
-                case ImageType.Image1D:
+                case ImageDataType.Image1D:
                     newHeight = Height;
                     break;
-                case ImageType.Image2D:
-                case ImageType.ImageCube:
+                case ImageDataType.Image2D:
+                case ImageDataType.ImageCube:
                     newDepth = Depth;
                     break;
             }
@@ -709,14 +702,12 @@ public partial class GorgonImage
                 return;
             }
 
-#if NET6_0_OR_GREATER
             _imageInfo = _imageInfo with
             {
                 HasPreMultipliedAlpha = false
             };
-#endif
 
-            int arrayOrDepth = ImageType == ImageType.Image3D ? Depth : ArrayCount;
+            int arrayOrDepth = ImageType == ImageDataType.Image3D ? Depth : ArrayCount;
 
             for (int mip = 0; mip < MipCount; ++mip)
             {
@@ -728,7 +719,7 @@ public partial class GorgonImage
 
                     for (int y = 0; y < buffer.Height; ++y)
                     {
-                        ImageUtilities.RemovePremultipliedScanline(in ptr, rowPitch, in ptr, rowPitch, buffer.Format);
+                        ImageUtilities.RemovePremultipliedScanline(ptr, rowPitch, ptr, rowPitch, buffer.Format);
                         ptr += rowPitch;
                     }
                 }
@@ -761,14 +752,12 @@ public partial class GorgonImage
                 return;
             }
 
-#if NET6_0_OR_GREATER
             _imageInfo = _imageInfo with
             {
                 HasPreMultipliedAlpha = true
             };
-#endif
 
-            int arrayOrDepth = ImageType == ImageType.Image3D ? Depth : ArrayCount;
+            int arrayOrDepth = ImageType == ImageDataType.Image3D ? Depth : ArrayCount;
 
             for (int mip = 0; mip < MipCount; ++mip)
             {
@@ -780,7 +769,7 @@ public partial class GorgonImage
 
                     for (int y = 0; y < buffer.Height; ++y)
                     {
-                        ImageUtilities.SetPremultipliedScanline(in ptr, rowPitch, in ptr, rowPitch, buffer.Format);
+                        ImageUtilities.SetPremultipliedScanline(ptr, rowPitch, ptr, rowPitch, buffer.Format);
                         ptr += rowPitch;
                     }
                 }
@@ -849,7 +838,7 @@ public partial class GorgonImage
     /// <seealso cref="Decompress"/>
     IGorgonImageUpdateFinalize IGorgonImageUpdateFluent.Compress(BufferFormat compressionFormat, bool useBC1Alpha, BcCompressionQuality quality, bool multithreadCompression)
     {
-        var formatInfo = new GorgonFormatInfo(compressionFormat);
+        GorgonFormatInfo formatInfo = new(compressionFormat);
 
         if ((!formatInfo.IsCompressed) || (formatInfo.IsTypeless) || (compressionFormat == BufferFormat.BC6H_Sf16) || (compressionFormat == BufferFormat.BC6H_Uf16))
         {
@@ -875,12 +864,12 @@ public partial class GorgonImage
                          .EndUpdate();
             }
 
-            var encoder = new BCnEncode.BcEncoder
+            BCnEncode.BcEncoder encoder = new()
             {
                 LuminanceAsRed = true
             };
 
-            var info = new GorgonImageInfo(ImageType, compressionFormat)
+            GorgonImageInfo info = new(ImageType, compressionFormat)
             {
                 MipCount = MipCount,
                 ArrayCount = ArrayCount,
@@ -890,13 +879,13 @@ public partial class GorgonImage
                 Height = Height
             };
 
-            var newBuffer = new GorgonNativeBuffer<byte>(CalculateSizeInBytes(info));
+            GorgonNativeBuffer<byte> newBuffer = new(CalculateSizeInBytes(info));
             ImageBufferList bufferList;
 
             try
             {
                 bufferList = new ImageBufferList(info);
-                bufferList.CreateBuffers(newBuffer.Pointer);
+                bufferList.CreateBuffers((GorgonPtr<byte>)newBuffer);
 
                 for (int arrayIndex = 0; arrayIndex < ArrayCount; ++arrayIndex)
                 {
@@ -904,7 +893,7 @@ public partial class GorgonImage
                     {
                         for (int depthSlice = 0; depthSlice < GetDepthCount(mip); ++depthSlice)
                         {
-                            int depthArrayIndex = ImageType != ImageType.Image3D ? arrayIndex : depthSlice;
+                            int depthArrayIndex = ImageType != ImageDataType.Image3D ? arrayIndex : depthSlice;
                             IGorgonImageBuffer buffer = workImage.Buffers[mip, depthArrayIndex];
                             using GorgonNativeBuffer<byte> compressedData = encoder.EncodeToRawBytes(buffer.Data,
                                                                                                       buffer.Width,
@@ -934,12 +923,13 @@ public partial class GorgonImage
             }
 
             _imageData?.Dispose();
-            _imagePtr = _imageData = null;
+            _imageData = null;
+            _imagePtr = GorgonPtr<byte>.NullPtr;
 
             SanitizeInfo(info);
             FormatInfo = new GorgonFormatInfo(info.Format);
             SizeInBytes = newBuffer.SizeInBytes;
-            _imagePtr = _imageData = newBuffer;
+            _imagePtr = (GorgonPtr<byte>)(_imageData = newBuffer);
             _imageBuffers = bufferList;
         }
 
@@ -974,5 +964,4 @@ public partial class GorgonImage
         }
         return this;
     }
-    #endregion
 }

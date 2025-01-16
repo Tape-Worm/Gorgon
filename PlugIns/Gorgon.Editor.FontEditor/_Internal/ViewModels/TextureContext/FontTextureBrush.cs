@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2021 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,50 +11,39 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: September 10, 2021 12:45:27 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.Drawing.Drawing2D;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DX = SharpDX;
-using Gorgon.Editor.Services;
+using Gorgon.Editor.FontEditor.Properties;
 using Gorgon.Editor.UI;
-using Gorgon.Graphics.Core;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Fonts;
 using Gorgon.Graphics.Imaging;
-using Gorgon.Editor.Content;
-using Gorgon.Editor.FontEditor.Properties;
 using Gorgon.Math;
 
 namespace Gorgon.Editor.FontEditor;
 
 /// <summary>
-/// The view model for the texture brush editor.
+/// The view model for the texture brush editor
 /// </summary>
 internal class FontTextureBrush
     : HostedPanelViewModelBase<FontTextureBrushParameters>, IFontTextureBrush, IFontBrush
 {
-    #region Variables.
     // The brush used to paint the glyphs.
     private GorgonGlyphTextureBrush _brush;
     // The texture for the brush.
     private IGorgonImage _texture;
     // The area on the texture to clip.
-    private DX.RectangleF _region;
+    private GorgonRectangleF _region;
     // The wrapping mode for the edges of the texture.
     private GlyphBrushWrapMode _wrapMode = GlyphBrushWrapMode.Tile;
     // The file manager for the application.
@@ -64,9 +53,7 @@ internal class FontTextureBrush
     /// The default brush.
     /// </summary>
     public static readonly GorgonGlyphTextureBrush DefaultBrush = new(null);
-    #endregion
 
-    #region Properties.
     /// <summary>Property to return whether the panel is modal.</summary>
     public override bool IsModal => true;
 
@@ -94,18 +81,18 @@ internal class FontTextureBrush
     public IGorgonImage Texture => _texture;
 
     /// <summary>Property to return the region on the texture.</summary>
-    public DX.RectangleF Region
+    public GorgonRectangleF Region
     {
         get => _region;
         private set
         {
-            if (_region.Equals(ref value))
+            if (_region.Equals(value))
             {
                 return;
             }
 
             OnPropertyChanging();
-            _region = value;                
+            _region = value;
             OnPropertyChanged();
         }
     }
@@ -128,7 +115,7 @@ internal class FontTextureBrush
     }
 
     /// <summary>Property to return the command used to assign the boundaries for the texture.</summary>
-    public IEditorCommand<DX.RectangleF> SetRegionCommand
+    public IEditorCommand<GorgonRectangleF> SetRegionCommand
     {
         get;
         private set;
@@ -150,9 +137,7 @@ internal class FontTextureBrush
     /// Property to set or return the brush used to render the glyphs.
     /// </summary>
     GorgonGlyphBrush IFontBrush.Brush => Brush;
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to extract the information from the current brush.
     /// </summary>
@@ -166,14 +151,14 @@ internal class FontTextureBrush
 
         if (_texture is not null)
         {
-            Region = new DX.RectangleF(brush.TextureRegion.X * _texture.Width, brush.TextureRegion.Y * _texture.Height, brush.TextureRegion.Width * _texture.Width, brush.TextureRegion.Height * _texture.Height);
+            Region = new GorgonRectangleF(brush.TextureRegion.X * _texture.Width, brush.TextureRegion.Y * _texture.Height, brush.TextureRegion.Width * _texture.Width, brush.TextureRegion.Height * _texture.Height);
         }
         else
         {
-            Region = new DX.RectangleF(0, 0, 1, 1);
+            Region = new GorgonRectangleF(0, 0, 1, 1);
         }
-        
-        WrapMode = brush.WrapMode;   
+
+        WrapMode = brush.WrapMode;
     }
 
     /// <summary>
@@ -185,10 +170,10 @@ internal class FontTextureBrush
         {
             return;
         }
-        
+
         GorgonGlyphTextureBrush brush = new(_texture)
         {
-            TextureRegion = new DX.RectangleF(_region.X / _texture.Width, _region.Y / _texture.Height, _region.Width / _texture.Width, _region.Height / _texture.Height),
+            TextureRegion = new GorgonRectangleF(_region.X / _texture.Width, _region.Y / _texture.Height, _region.Width / _texture.Width, _region.Height / _texture.Height),
             WrapMode = _wrapMode
         };
 
@@ -254,13 +239,13 @@ internal class FontTextureBrush
     /// </summary>
     /// <param name="region">The region to set.</param>
     /// <returns><b>true</b> if the region can be set, <b>false</b> if not.</returns>
-    private bool CanSetRegion(DX.RectangleF region) => (!region.Width.EqualsEpsilon(0)) && (!region.Height.EqualsEpsilon(0));
+    private bool CanSetRegion(GorgonRectangleF region) => (!region.Width.EqualsEpsilon(0)) && (!region.Height.EqualsEpsilon(0));
 
     /// <summary>
     /// Function to set the region for the texture.
     /// </summary>
     /// <param name="region">The region to set.</param>
-    private void DoSetRegion(DX.RectangleF region)
+    private void DoSetRegion(GorgonRectangleF region)
     {
         try
         {
@@ -316,15 +301,12 @@ internal class FontTextureBrush
 
         base.OnUnload();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
     /// <summary>Initializes a new instance of the <see cref="FontTextureBrush" /> class.</summary>
     public FontTextureBrush()
     {
         LoadTextureCommand = new EditorAsyncCommand<SetTextureArgs>(DoLoadTextureAsync, CanLoadTexture);
-        SetRegionCommand = new EditorCommand<DX.RectangleF>(DoSetRegion, CanSetRegion);
+        SetRegionCommand = new EditorCommand<GorgonRectangleF>(DoSetRegion, CanSetRegion);
         SetWrappingModeCommand = new EditorCommand<GlyphBrushWrapMode>(DoSetWrapMode);
     }
-    #endregion
 }

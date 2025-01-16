@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,20 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 4, 2017 10:05:54 PM
 // 
-#endregion
 
-using System;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
@@ -34,24 +32,19 @@ using D3D11 = SharpDX.Direct3D11;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// A generic buffer for holding data to pass to shaders on the GPU.
+/// A generic buffer for holding data to pass to shaders on the GPU
 /// </summary>
 public sealed class GorgonBuffer
     : GorgonBufferCommon, IGorgonBufferInfo
 {
-    #region Constants.
     /// <summary>
     /// The prefix to assign to a default name.
     /// </summary>
     internal const string NamePrefix = nameof(GorgonBuffer);
-    #endregion
 
-    #region Variables.
     // The information used to create the buffer.
     private GorgonBufferInfo _info;
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to return the bind flags used for the D3D 11 resource.
     /// </summary>
@@ -104,7 +97,6 @@ public sealed class GorgonBuffer
     public override bool IsCpuReadable =>
         ((_info.AllowCpuRead) && (Usage == ResourceUsage.Default) && ((Binding & BufferBinding.Shader) == BufferBinding.Shader))
         || (Usage == ResourceUsage.Staging);
-
 
     /// <summary>
     /// Property to set or return whether to allow the CPU read access to the buffer.
@@ -163,9 +155,7 @@ public sealed class GorgonBuffer
     /// </remarks>
     public bool IndirectArgs => (_info.IndirectArgs) && (((Binding & BufferBinding.Shader) == BufferBinding.Shader) ||
                                                          ((Binding & BufferBinding.ReadWrite) == BufferBinding.ReadWrite));
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to retrieve the binding flags for the buffer.
     /// </summary>
@@ -201,7 +191,7 @@ public sealed class GorgonBuffer
     private D3D11.BufferDescription BuildBufferDesc(ref GorgonBufferInfo bufferInfo)
     {
         D3D11.BindFlags bindFlags = GetBindingFlags(bufferInfo.Binding);
-        var resourceUsage = (D3D11.ResourceUsage)bufferInfo.Usage;
+        D3D11.ResourceUsage resourceUsage = (D3D11.ResourceUsage)bufferInfo.Usage;
 
         // Round up to the nearest multiple of 4.
         int structureSize = (bufferInfo.StructureSize + 3) & ~3;
@@ -239,13 +229,11 @@ public sealed class GorgonBuffer
 
         if ((bufferInfo.SizeInBytes != sizeInBytes) || (bufferInfo.StructureSize != structureSize))
         {
-#if NET6_0_OR_GREATER
             bufferInfo = bufferInfo with
             {
                 StructureSize = structureSize,
                 SizeInBytes = sizeInBytes
             };
-#endif
         }
 
         return new D3D11.BufferDescription
@@ -318,12 +306,10 @@ public sealed class GorgonBuffer
         // Implicitly allow reading for staging resources.
         if (_info.Usage == ResourceUsage.Staging)
         {
-#if NET6_0_OR_GREATER
             _info = _info with
             {
                 AllowCpuRead = true
             };
-#endif
         }
 
         Log.Print($"{Name} Generic Buffer: Creating D3D11 buffer. Size: {SizeInBytes} bytes", LoggingLevel.Simple);
@@ -343,7 +329,7 @@ public sealed class GorgonBuffer
     /// <returns>The staging buffer to retrieve.</returns>
     public GorgonBuffer GetStaging()
     {
-        var buffer = new GorgonBuffer(Graphics,
+        GorgonBuffer buffer = new(Graphics,
                                                new GorgonBufferInfo(_info)
                                                {
                                                    Name = $"{Name} Staging",
@@ -367,7 +353,6 @@ public sealed class GorgonBuffer
     /// </para>
     /// </remarks>
     public int GetTotalElementCount(BufferFormat format) => format == BufferFormat.Unknown ? 0 : GetTotalElementCount(new GorgonFormatInfo(format));
-
 
     /// <summary>
     /// Function to retrieve the total number of structured elements in a buffer.
@@ -442,7 +427,7 @@ public sealed class GorgonBuffer
             throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_BUFFER_INCORRECT_BINDING, BufferBinding.Shader));
         }
 
-        var formatInfo = new GorgonFormatInfo(format);
+        GorgonFormatInfo formatInfo = new(format);
 
         if (formatInfo.IsTypeless)
         {
@@ -460,7 +445,7 @@ public sealed class GorgonBuffer
 
         elementCount = elementCount.Min(totalElementCount - startElement).Max(1);
 
-        var key = new BufferShaderViewKey(startElement, elementCount, format);
+        BufferShaderViewKey key = new(startElement, elementCount, format);
         if (GetView(key) is GorgonBufferView view)
         {
             return view;
@@ -516,7 +501,7 @@ public sealed class GorgonBuffer
 
         elementCount = elementCount.Min(totalElementCount - startElement).Max(1);
 
-        var key = new BufferShaderViewKey(startElement, elementCount, 0);
+        BufferShaderViewKey key = new(startElement, elementCount, 0);
 
         if (GetView(key) is GorgonStructuredView view)
         {
@@ -574,7 +559,7 @@ public sealed class GorgonBuffer
         }
 
         // Ensure the size of the data type fits the requested format.
-        var info = new GorgonFormatInfo(format);
+        GorgonFormatInfo info = new(format);
 
         if (info.IsTypeless)
         {
@@ -592,7 +577,7 @@ public sealed class GorgonBuffer
 
         elementCount = elementCount.Min(totalElementCount - startElement).Max(1);
 
-        var key = new BufferShaderViewKey(startElement, elementCount, format);
+        BufferShaderViewKey key = new(startElement, elementCount, format);
         GorgonBufferReadWriteView result = GetReadWriteView<GorgonBufferReadWriteView>(key);
 
         if (result is not null)
@@ -657,7 +642,7 @@ public sealed class GorgonBuffer
 
         elementCount = elementCount.Min(totalElementCount - startElement).Max(1);
 
-        var key = new BufferShaderViewKey(startElement, elementCount, (int)uavType);
+        BufferShaderViewKey key = new(startElement, elementCount, (int)uavType);
         GorgonStructuredReadWriteView result = GetReadWriteView<GorgonStructuredReadWriteView>(key);
 
         if (result is not null)
@@ -722,7 +707,7 @@ public sealed class GorgonBuffer
 
         elementCount = elementCount.Min(totalElementCount - startElement).Max(1);
 
-        var key = new BufferShaderViewKey(startElement, elementCount, elementType);
+        BufferShaderViewKey key = new(startElement, elementCount, elementType);
 
         if (GetView(key) is GorgonRawView view)
         {
@@ -786,7 +771,7 @@ public sealed class GorgonBuffer
 
         elementCount = elementCount.Min(totalElementCount - startElement).Max(1);
 
-        var key = new BufferShaderViewKey(startElement, elementCount, elementType);
+        BufferShaderViewKey key = new(startElement, elementCount, elementType);
         GorgonRawReadWriteView result = GetReadWriteView<GorgonRawReadWriteView>(key);
 
         if (result is not null)
@@ -800,9 +785,7 @@ public sealed class GorgonBuffer
 
         return result;
     }
-    #endregion
 
-    #region Constructor.
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonBuffer" /> class.
     /// </summary>
@@ -822,5 +805,5 @@ public sealed class GorgonBuffer
 
         Initialize(initialData);
     }
-    #endregion
+
 }

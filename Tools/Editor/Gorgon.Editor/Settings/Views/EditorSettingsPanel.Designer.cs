@@ -26,7 +26,7 @@ partial class EditorSettingsPanel
         base.Dispose(disposing);
     }
 
-    #region Component Designer generated code
+
 
     /// <summary> 
     /// Required method for Designer support - do not modify 
@@ -159,7 +159,7 @@ partial class EditorSettingsPanel
 
     }
 
-    #endregion
+
 
     private System.Windows.Forms.Panel panel2;
     private System.Windows.Forms.Panel panel3;

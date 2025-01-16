@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,36 +11,33 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 20, 2019 11:17:43 AM
 // 
-#endregion
 
-using System;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.UI.ViewModels;
-using Gorgon.IO.Providers;
+using Gorgon.IO.FileSystem.Providers;
 
 namespace Gorgon.Editor.ViewModels;
 
 /// <summary>
-/// The parameters for the <see cref="ISettingsPlugInListItem"/> view model.
+/// The parameters for the <see cref="ISettingsPlugInListItem"/> view model
 /// </summary>
 internal class SettingsPlugInListItemParameters
     : ViewModelInjection<IHostServices>
 {
-    #region Properties.
     /// <summary>
-    /// Property to return the description/name of the plug in.
+    /// Property to return the description/name of the plug-in.
     /// </summary>
     public string Name
     {
@@ -49,7 +46,7 @@ internal class SettingsPlugInListItemParameters
     }
 
     /// <summary>
-    /// Property to return the type of plug in.
+    /// Property to return the type of plug-in.
     /// </summary>
     public PlugInType Type
     {
@@ -58,7 +55,7 @@ internal class SettingsPlugInListItemParameters
     }
 
     /// <summary>
-    /// Property to return the current state of the plug in.
+    /// Property to return the current state of the plug-in.
     /// </summary>
     public string State
     {
@@ -67,7 +64,7 @@ internal class SettingsPlugInListItemParameters
     }
 
     /// <summary>
-    /// Property to return the reason that the plug in was disabled.
+    /// Property to return the reason that the plug-in was disabled.
     /// </summary>
     public string DisabledReason
     {
@@ -76,7 +73,7 @@ internal class SettingsPlugInListItemParameters
     }
 
     /// <summary>
-    /// Property to return the path to the plug in assembly.
+    /// Property to return the path to the plug-in assembly.
     /// </summary>
     public string Path
     {
@@ -85,16 +82,14 @@ internal class SettingsPlugInListItemParameters
     }
 
     /// <summary>
-    /// Property to return the description of the plug in.
+    /// Property to return the description of the plug-in.
     /// </summary>
     public string Description
     {
         get;
         private set;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
     /// <summary>Initializes a new instance of the <see cref="SettingsPlugInListItemParameters"/> class.</summary>
     /// <param name="plugin">The plugin to evaluate.</param>
     /// <param name="hostServices">The host application services.</param>
@@ -139,7 +134,7 @@ internal class SettingsPlugInListItemParameters
     /// <param name="plugin">The plugin to evaluate.</param>
     /// <param name="hostServices">The host application services.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="plugin"/> is parameter <b>null</b>.</exception>
-    public SettingsPlugInListItemParameters(IGorgonFileSystemProvider plugin, IHostServices hostServices)
+    public SettingsPlugInListItemParameters(GorgonFileSystemProviderPlugIn plugin, IHostServices hostServices)
         : base(hostServices)
     {
         if (plugin is null)
@@ -151,8 +146,7 @@ internal class SettingsPlugInListItemParameters
         Type = PlugInType.Reader;
         State = Resources.GOREDIT_PLUGIN_STATE_LOADED;
         DisabledReason = string.Empty;
-        Path = plugin.ProviderPath;
+        Path = plugin.PlugInPath;
         Description = plugin.Description;
     }
-    #endregion
 }

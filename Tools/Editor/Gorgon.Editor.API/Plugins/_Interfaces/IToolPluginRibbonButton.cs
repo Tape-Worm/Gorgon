@@ -1,16 +1,13 @@
-﻿using System;
-using System.Drawing;
-using Gorgon.Core;
+﻿using Gorgon.Core;
 
 namespace Gorgon.Editor.PlugIns;
 
 /// <summary>
-/// Defines a button to display on the ribbon bar, in the tools area.
+/// Defines a button to display on the ribbon bar, in the tools area
 /// </summary>
 public interface IToolPlugInRibbonButton
     : IGorgonNamedObject
 {
-    #region Properties.
     /// <summary>
     /// Property to return the action to perform when the button is clicked.
     /// </summary>
@@ -42,7 +39,6 @@ public interface IToolPlugInRibbonButton
     {
         get;
     }
-
 
     /// <summary>
     /// Property to return whether this button should start a separator.
@@ -84,12 +80,10 @@ public interface IToolPlugInRibbonButton
         get;
         set;
     }
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to validate the button to ensure it'll be displayed correctly on the ribbon.
     /// </summary>
     void ValidateButton();
-    #endregion
+
 }

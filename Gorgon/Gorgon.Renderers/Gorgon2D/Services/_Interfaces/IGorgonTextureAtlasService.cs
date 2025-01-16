@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,44 +11,40 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 2, 2019 9:11:18 AM
 // 
-#endregion
 
-using System.Collections.Generic;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
-using DX = SharpDX;
 
 namespace Gorgon.Renderers.Services;
 
 /// <summary>
-/// A service used to generate a 2D texture atlas from a series of separate sprites.
+/// A service used to generate a 2D texture atlas from a series of separate sprites
 /// </summary>
 /// <remarks>
 /// <para>
 /// To get the best performance when rendering sprites, batching is essential. In order to achieve this, rendering sprites that use the same texture is necessary. This is where building a texture atlas 
 /// comes in. A texture atlas is a combination of multiple sprite images into a single texture, each sprite that is embedded into the atlas uses a different set of texture coordinates. When rendering 
-/// these sprites with the atlas, only a single texture change is required.
+/// these sprites with the atlas, only a single texture change is required
 /// </para>
 /// <para>
 /// When generating an atlas, a series of existing sprites, that reference different textures is fed to the service and each sprite's dimensions is fit into a texture region, with the image from the 
 /// original sprite texture transferred and packed into the new atlas texture. Should the texture not have enough empty space for the sprites, array indices will be used to store the extra sprites. 
-/// In the worst case, multiple textures will be generated.
+/// In the worst case, multiple textures will be generated
 /// </para>
 /// </remarks>
 public interface IGorgonTextureAtlasService
 {
-    #region Properties.
     /// <summary>
     /// Property to set or return the amount of padding, in pixels, to place around each sprite.
     /// </summary>
@@ -65,7 +61,7 @@ public interface IGorgonTextureAtlasService
     /// The maximum texture size is limited to the <see cref="IGorgonVideoAdapterInfo.MaxTextureWidth"/>, and <see cref="IGorgonVideoAdapterInfo.MaxTextureHeight"/> supported by the video adapter, and 
     /// the minimum is 256x256.
     /// </remarks>
-    DX.Size2 TextureSize
+    GorgonPoint TextureSize
     {
         get;
         set;
@@ -89,9 +85,7 @@ public interface IGorgonTextureAtlasService
         get;
         set;
     }
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to generate the textures and sprites for the texture atlas.
     /// </summary>
@@ -118,7 +112,7 @@ public interface IGorgonTextureAtlasService
     /// </remarks>
     /// <seealso cref="GetSpriteRegions(IEnumerable{GorgonSprite})"/>
     /// <seealso cref="GorgonTextureAtlas"/>
-    GorgonTextureAtlas GenerateAtlas(IReadOnlyDictionary<GorgonSprite, (int textureIndex, DX.Rectangle region, int arrayIndex)> regions, BufferFormat textureFormat);
+    GorgonTextureAtlas GenerateAtlas(IReadOnlyDictionary<GorgonSprite, (int textureIndex, GorgonRectangle region, int arrayIndex)> regions, BufferFormat textureFormat);
 
     /// <summary>
     /// Function to retrieve a list of all the regions occupied by the provided sprites on the texture.
@@ -146,7 +140,7 @@ public interface IGorgonTextureAtlasService
     /// </para>
     /// </remarks>
     /// <seealso cref="GetBestFit"/>
-    IReadOnlyDictionary<GorgonSprite, (int textureIndex, DX.Rectangle region, int arrayIndex)> GetSpriteRegions(IEnumerable<GorgonSprite> sprites);
+    IReadOnlyDictionary<GorgonSprite, (int textureIndex, GorgonRectangle region, int arrayIndex)> GetSpriteRegions(IEnumerable<GorgonSprite> sprites);
 
     /// <summary>
     /// Function to determine the best texture size and array count for the texture atlas based on the sprites passed in.
@@ -171,6 +165,6 @@ public interface IGorgonTextureAtlasService
     /// the array count will be 0.
     /// </para>
     /// </remarks>
-    (DX.Size2 textureSize, int arrayCount) GetBestFit(IEnumerable<GorgonSprite> sprites, DX.Size2 minTextureSize, int minArrayCount);
-    #endregion
+    (GorgonPoint textureSize, int arrayCount) GetBestFit(IEnumerable<GorgonSprite> sprites, GorgonPoint minTextureSize, int minArrayCount);
+
 }

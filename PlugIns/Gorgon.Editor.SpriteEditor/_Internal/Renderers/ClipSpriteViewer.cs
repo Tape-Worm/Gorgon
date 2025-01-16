@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,42 +11,38 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 4, 2020 9:35:21 PM
 // 
-#endregion
 
-using System;
 using System.ComponentModel;
 using System.Numerics;
-using System.Threading;
-using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
+using Gorgon.Math;
 using Gorgon.Renderers;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor;
 
 /// <summary>
-/// A renderer used to render the current sprite along with its texture and providing feedback for clipping.
+/// A renderer used to render the current sprite along with its texture and providing feedback for clipping
 /// </summary>
 internal class ClipSpriteViewer
     : SpriteViewer
 {
-    #region Events.
+
     // Event triggered when toggling the manual input UI.
     private event EventHandler ToggleManualInputEvent;
 
@@ -75,9 +71,7 @@ internal class ClipSpriteViewer
             ToggleManualInputEvent -= value;
         }
     }
-    #endregion
 
-    #region Variables.
     // Marching ants rectangle.
     private readonly IRectClipperService _clipper;
     // The render target for the sprite texture.
@@ -86,9 +80,7 @@ internal class ClipSpriteViewer
     private GorgonTexture2DView _spriteTexture;
     // The sprite to render.
     private readonly GorgonSprite _sprite;
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to release the texture resources.
     /// </summary>
@@ -125,24 +117,24 @@ internal class ClipSpriteViewer
     private void RenderSpriteTexture()
     {
         GorgonRenderTargetView prevTarget = Graphics.RenderTargets[0];
-        GorgonRangeF? prevAlphaTest = Renderer.PrimitiveAlphaTestRange;            
-        var clearRegion = _sprite.Texture.ToPixel(_sprite.TextureRegion).ToRectangleF();
+        GorgonRange<float>? prevAlphaTest = Renderer.PrimitiveAlphaTestRange;
+        GorgonRectangleF clearRegion = _sprite.Texture.ToPixel(_sprite.TextureRegion);
 
-        _spriteTarget.Clear(GorgonColor.BlackTransparent);
+        _spriteTarget.Clear(GorgonColors.BlackTransparent);
 
         Graphics.SetRenderTarget(_spriteTarget);
         Renderer.PrimitiveAlphaTestRange = null;
         Renderer.Begin();
 
-        Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _sprite.Texture.Width, _sprite.Texture.Height),
-                                     GorgonColor.White,
+        Renderer.DrawFilledRectangle(new GorgonRectangleF(0, 0, _sprite.Texture.Width, _sprite.Texture.Height),
+                                     GorgonColors.White,
                                      _sprite.Texture,
-                                     new DX.RectangleF(0, 0, 1, 1),
+                                     new GorgonRectangleF(0, 0, 1, 1),
                                      DataContext.SpriteClipContext.ArrayIndex,
                                      GorgonSamplerState.PointFiltering);
-        
+
         // Remove the area where the sprite is located.
-        Renderer.DrawFilledRectangle(clearRegion, GorgonColor.BlackTransparent);            
+        Renderer.DrawFilledRectangle(clearRegion, GorgonColors.BlackTransparent);
 
         Renderer.End();
         Renderer.PrimitiveAlphaTestRange = prevAlphaTest;
@@ -162,7 +154,7 @@ internal class ClipSpriteViewer
         switch (e.PropertyName)
         {
             case nameof(ISpriteClipContext.FixedSize):
-                DX.Size2F? size = DataContext.SpriteClipContext.FixedSize;
+                Vector2? size = DataContext.SpriteClipContext.FixedSize;
 
                 _clipper.AllowResize = size is null;
 
@@ -171,10 +163,10 @@ internal class ClipSpriteViewer
                     break;
                 }
 
-                var rect = new DX.RectangleF(DataContext.SpriteClipContext.SpriteRectangle.Left,
+                GorgonRectangleF rect = new(DataContext.SpriteClipContext.SpriteRectangle.Left,
                                              DataContext.SpriteClipContext.SpriteRectangle.Top,
-                                             size.Value.Width,
-                                             size.Value.Height);
+                                             size.Value.X,
+                                             size.Value.Y);
 
                 // Ensure our fixed area doesn't exceed the bounds of the texture.
                 if (rect.Right > _clipper.Bounds.Right)
@@ -215,11 +207,11 @@ internal class ClipSpriteViewer
     {
         _clipper.Rectangle = DataContext.SpriteClipContext.SpriteRectangle;
         _sprite.TextureArrayIndex = DataContext.SpriteClipContext.ArrayIndex;
-        _sprite.TextureRegion = _sprite.Texture.ToTexel(_clipper.Rectangle.ToRectangle());
+        _sprite.TextureRegion = _sprite.Texture.ToTexel((GorgonRectangle)_clipper.Rectangle);
         _sprite.Size = _clipper.Rectangle.Size.Truncate();
         _sprite.Position = new Vector2(_clipper.Rectangle.X - (RenderRegion.Width * 0.5f),
-                                          _clipper.Rectangle.Y - (RenderRegion.Height * 0.5f))
-                                 .Truncate();
+                                       _clipper.Rectangle.Y - (RenderRegion.Height * 0.5f))
+                                       .Truncate();
     }
 
     /// <summary>Handles the KeyboardIconClicked event of the Clipper control.</summary>
@@ -259,14 +251,14 @@ internal class ClipSpriteViewer
     /// <param name="disposing">
     ///   <c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
     protected override void Dispose(bool disposing)
-    {           
+    {
         if (disposing)
         {
             ToggleManualInputEvent = null;
         }
 
         base.Dispose(disposing);
-    }        
+    }
 
     /// <summary>Function to handle a mouse move event.</summary>
     /// <param name="args">The arguments for the event.</param>
@@ -300,7 +292,7 @@ internal class ClipSpriteViewer
     /// <remarks>Developers can override this method to handle a preview key down event in their own content view.</remarks>
     protected override void OnPreviewKeyDown(PreviewKeyDownEventArgs args)
     {
-        args.IsInputKey = _clipper.KeyDown(args.KeyCode, args.Modifiers);            
+        args.IsInputKey = _clipper.KeyDown(args.KeyCode, args.Modifiers);
         base.OnPreviewKeyDown(args);
     }
 
@@ -316,7 +308,7 @@ internal class ClipSpriteViewer
 
         base.OnLoad();
 
-        RenderRegion = new DX.RectangleF(0, 0, DataContext.Texture.Width, DataContext.Texture.Height);
+        RenderRegion = new GorgonRectangleF(0, 0, DataContext.Texture.Width, DataContext.Texture.Height);
 
         CreateSpriteTexture();
 
@@ -324,27 +316,27 @@ internal class ClipSpriteViewer
         _clipper.RectChanged += Clipper_RectChanged;
         _clipper.Bounds = RenderRegion;
 
-        _sprite.Color = GorgonColor.White;
+        _sprite.Color = GorgonColors.White;
         _sprite.Texture = DataContext.Texture;
         _sprite.TextureArrayIndex = DataContext.ArrayIndex;
         _sprite.TextureSampler = GorgonSamplerState.PointFiltering;
 
-        DataContext.SpriteClipContext.SpriteRectangle = DataContext.Texture.ToPixel(DataContext.TextureCoordinates).ToRectangleF();
+        DataContext.SpriteClipContext.SpriteRectangle = DataContext.Texture.ToPixel(DataContext.TextureCoordinates);
 
         UpdateWorkingSprite();
 
         DataContext.SpriteClipContext.PropertyChanged += SpriteClipContext_PropertyChanged;
         _clipper.KeyboardIconClicked += Clipper_KeyboardIconClicked;
-    }        
+    }
 
     /// <summary>Function called when the renderer needs to clean up any resource data.</summary>
     /// <remarks>Developers should always override this method if they've overridden the <see cref="DefaultContentRenderer{T}.OnLoad"/> method. Failure to do so can cause memory leakage.</remarks>
     protected override void OnUnload()
     {
         DataContext.SpriteClipContext.PropertyChanged -= SpriteClipContext_PropertyChanged;
-        _clipper.RectChanged -= Clipper_RectChanged;            
-        _clipper.KeyboardIconClicked -= Clipper_KeyboardIconClicked;                        
-        
+        _clipper.RectChanged -= Clipper_RectChanged;
+        _clipper.KeyboardIconClicked -= Clipper_KeyboardIconClicked;
+
         DestroySpriteTexture();
         base.OnUnload();
     }
@@ -352,22 +344,22 @@ internal class ClipSpriteViewer
     /// <summary>Function to draw the sprite.</summary>
     protected override void DrawSprite()
     {
-        var halfRegion = new Vector2(RenderRegion.Width * -0.5f, RenderRegion.Height * -0.5f);            
+        Vector2 halfRegion = new(RenderRegion.Width * -0.5f, RenderRegion.Height * -0.5f);
 
         RenderSpriteTexture();
 
         Renderer.Begin(camera: Camera);
-        Renderer.DrawFilledRectangle(new DX.RectangleF(halfRegion.X,
+        Renderer.DrawFilledRectangle(new GorgonRectangleF(halfRegion.X,
                                                        halfRegion.Y,
                                                        RenderRegion.Width,
                                                        RenderRegion.Height),
-                                    new GorgonColor(GorgonColor.White, TextureOpacity),
+                                    new GorgonColor(GorgonColors.White, TextureOpacity),
                                     _spriteTexture,
-                                    new DX.RectangleF(0, 0, 1, 1),                                        
+                                    new GorgonRectangleF(0, 0, 1, 1),
                                     textureSampler: GorgonSamplerState.PointFiltering);
-        
+
         Renderer.DrawSprite(_sprite);
-        Renderer.End();            
+        Renderer.End();
 
         // Draw in client space.
         Renderer.Begin();
@@ -383,17 +375,14 @@ internal class ClipSpriteViewer
             return;
         }
 
-        DX.RectangleF region = _sprite.Bounds;
-        region.Inflate(32, 32);
+        GorgonRectangleF region = GorgonRectangleF.Expand(_sprite.Bounds, 32);
         ZoomLevels spriteZoomLevel = GetNearestZoomFromRectangle(region);
 
         Vector3 spritePosition = Camera.Unproject(new Vector3(region.X + region.Width * 0.5f, region.Y + region.Height * 0.5f, 0));
 
         MoveTo(new Vector2(spritePosition.X, spritePosition.Y), spriteZoomLevel.GetScale());
     }
-    #endregion
 
-    #region Constructor/Finalizer.
     /// <summary>Initializes a new instance of the <see cref="ClipSpriteViewer"/> class.</summary>
     /// <param name="renderer">The main renderer for the content view.</param>
     /// <param name="swapChain">The swap chain for the content view.</param>
@@ -406,7 +395,6 @@ internal class ClipSpriteViewer
         TextureOpacity = 0.5f;
 
         _sprite = new GorgonSprite();
-        _clipper = selectionRect;            
+        _clipper = selectionRect;
     }
-    #endregion
 }

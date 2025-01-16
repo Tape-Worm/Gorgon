@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,30 +11,28 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 24, 2019 4:50:37 PM
 // 
-#endregion
 
 using System.Numerics;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
-using Gorgon.Math;
 using Gorgon.Renderers;
 using Gorgon.Renderers.Lights;
 
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Function to build the layers for our example.
+/// Function to build the layers for our example
 /// </summary>
 /// <remarks>
 /// This is here for convenience. In a real game, we'd load this as data and build our scene from that.  
@@ -49,7 +47,7 @@ internal static class LayerBuilder
     /// <returns>The background layer.</returns>
     public static BgStarLayer GetBackgroundLayer(Gorgon2D renderer, ResourceManagement resources)
     {
-        var backgroundLayer = new BgStarLayer(renderer)
+        BgStarLayer backgroundLayer = new(renderer)
         {
             PostProcessGroup = "Final Pass",					// These post process groups allow us to assign which sprite layers end up in post processing, and which are blitted immediately.
             StarsTexture = resources.Textures["/images/StarsNoAlpha"].GetShaderResourceView()
@@ -68,7 +66,7 @@ internal static class LayerBuilder
     public static SpritesLayer GetSunLayer(Gorgon2D renderer, ResourceManagement resources)
     {
         GorgonSprite sunSprite = resources.Sprites["/sprites/Star"];
-        var sunLayer = new SpritesLayer(renderer, resources.Effects)
+        SpritesLayer sunLayer = new(renderer, resources.Effects)
         {
             ParallaxLevel = 2980.0f,			// The sun is pretty far away the last I checked.
             Sprites =
@@ -85,7 +83,7 @@ internal static class LayerBuilder
                 new Light(new GorgonPointLight
                 {
                     LinearAttenuation = 1.0f,
-                    Color = GorgonColor.White,
+                    Color = GorgonColors.White,
                     SpecularPower = 6.0f,
                     Intensity = 13.07f
                 })
@@ -108,13 +106,13 @@ internal static class LayerBuilder
     public static PlanetLayer GetPlanetLayer(GorgonGraphics graphics, ResourceManagement resources)
     {
         // Create our planet.
-        var planetLayer = new PlanetLayer(graphics, resources)
+        PlanetLayer planetLayer = new(graphics, resources)
         {
             ParallaxLevel = 50,		// Kinda far away.
             Planets =
             {
-                new Planet(new PlanetaryLayer[]
-                {
+                new Planet(
+                [
                     new PlanetaryLayer(resources.Meshes["earthSphere"])
                     {
                         Animation = resources.Animations["PlanetRotation"]
@@ -123,7 +121,7 @@ internal static class LayerBuilder
                     {
                         Animation = resources.Animations["CloudRotation"]
                     },
-                })
+                ])
                 {
                     Position = new Vector3(-30, -15, 4.0f)
                 }
@@ -134,7 +132,7 @@ internal static class LayerBuilder
         planetLayer.Lights.Add(new Light(new GorgonPointLight
         {
             LinearAttenuation = 1.0f,
-            Color = GorgonColor.White,
+            Color = GorgonColors.White,
             SpecularPower = 0.0f,
             Intensity = 0.37f
         })
@@ -142,7 +140,7 @@ internal static class LayerBuilder
             LocalLightPosition = new Vector3(0, 0, -10000.0f),
             Layers =
             {
-                planetLayer 
+                planetLayer
             }
         });
 
@@ -160,7 +158,7 @@ internal static class LayerBuilder
     /// <returns>The sprite layer containing our ship.</returns>
     public static SpritesLayer GetShipLayer(Gorgon2D renderer, ResourceManagement resources)
     {
-        var ship = new SpritesLayer(renderer, resources.Effects)
+        SpritesLayer ship = new(renderer, resources.Effects)
         {
             DeferredLighter = resources.Effects["deferredLighting"] as Gorgon2DLightingEffect,
             GBuffer = resources.Effects["gbuffer"] as Gorgon2DGBuffer,
@@ -169,7 +167,7 @@ internal static class LayerBuilder
                 new SpriteEntity("BigShip")
                 {
                     Sprite = resources.Sprites["/sprites/BigShip"],
-                    Color = GorgonColor.White,
+                    Color = GorgonColors.White,
                     Rotation = -95.0f,
                     IsLit = true,
                     Visible = false
@@ -177,7 +175,7 @@ internal static class LayerBuilder
                 new SpriteEntity("BigShip_Illum")
                 {
                     Sprite = resources.Sprites["/sprites/BigShip_Illum"],
-                    Color = GorgonColor.YellowPure * 0.7f,
+                    Color = GorgonColors.Yellow * 0.7f,
                     Rotation = -95.0f,
                     IsLit = false,
                     Visible = false,
@@ -186,7 +184,7 @@ internal static class LayerBuilder
                 new SpriteEntity("EngineGlow")
                 {
                     Sprite = resources.Sprites["/sprites/Fighter_Engine_F0"],
-                    Color = new GorgonColor(GorgonColor.CyanPure, 0),
+                    Color = new GorgonColor(GorgonColors.Cyan, 0),
                     Rotation = -45.0f,
                     Anchor = new Vector2(0.5f, -1.5f),
                     Animation = resources.Animations["EngineGlow"]
@@ -194,7 +192,7 @@ internal static class LayerBuilder
                 new SpriteEntity("Fighter")
                 {
                     Sprite = resources.Sprites["/sprites/Fighter"],
-                    Color = GorgonColor.White,
+                    Color = GorgonColors.White,
                     Rotation = -45.0f,
                     IsLit = true
                 }
@@ -205,11 +203,11 @@ internal static class LayerBuilder
             {
                 new Light(new GorgonDirectionalLight
                 {
-                    Intensity = 0.5f,                        
+                    Intensity = 0.5f,
                     LightDirection = new Vector3(1.0f, 0.0f, 0.7071068f),
                     SpecularEnabled = true,
                     SpecularPower = 512.0f,
-                    Color = GorgonColor.White,
+                    Color = GorgonColors.White,
                 })
             }
         };

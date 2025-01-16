@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2016 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,39 +11,36 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 27, 2016 7:02:11 PM
 // 
-#endregion
 
-using System;
-using Gorgon.Core;
 using Gorgon.Math;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Describes how primitive data (i.e. triangles, lines, etc...) are rasterized by the GPU.
+/// Describes how primitive data (i.e. triangles, lines, etc...) are rasterized by the GPU
 /// </summary>
 /// <remarks>
 /// <para>
-/// This will define how a triangle, line, point, etc... is rasterized by the GPU when rendering. Clipping, vertex ordering, culling, etc... are all affected by this state.
+/// This will define how a triangle, line, point, etc... is rasterized by the GPU when rendering. Clipping, vertex ordering, culling, etc... are all affected by this state
 /// </para>
 /// <para>
 /// The rasterizer state contains 4 common raster states used by applications: <see cref="Default"/> (backface culling, solid fill, etc...), <see cref="WireFrameNoCulling"/> (no culling, wireframe fill, 
-/// etc...), <see cref="CullFrontFace"/> (front face culling, solid fill, etc...), and <see cref="NoCulling"/> (no culling, solid fill, etc...).
+/// etc...), <see cref="CullFrontFace"/> (front face culling, solid fill, etc...), and <see cref="NoCulling"/> (no culling, solid fill, etc...)
 /// </para>
 /// <para>
-/// A raster state is an immutable object, and as such can only be created by using a <see cref="GorgonRasterStateBuilder"/>.
+/// A raster state is an immutable object, and as such can only be created by using a <see cref="GorgonRasterStateBuilder"/>
 /// </para>
 /// </remarks>
 /// <seealso cref="GorgonGraphics"/>
@@ -52,7 +49,6 @@ namespace Gorgon.Graphics.Core;
 public class GorgonRasterState
     : IEquatable<GorgonRasterState>
 {
-    #region Common States
     /// <summary>
     /// The default raster state.
     /// </summary>
@@ -67,7 +63,7 @@ public class GorgonRasterState
     public static GorgonRasterState ScissorRectanglesEnabled
     {
         get;
-    } =new GorgonRasterState
+    } = new GorgonRasterState
     {
         ScissorRectsEnabled = true
     };
@@ -105,9 +101,7 @@ public class GorgonRasterState
     {
         CullMode = CullingMode.None
     };
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to return the current culling mode.
     /// </summary>
@@ -216,7 +210,6 @@ public class GorgonRasterState
         get;
         internal set;
     }
-
 
     /// <summary>
     /// Property to return whether depth/clipping is enabled or not.
@@ -333,9 +326,7 @@ public class GorgonRasterState
         get;
         internal set;
     }
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to retrieve the Direct 3D 11 rasterizer state object.
     /// </summary>
@@ -343,7 +334,7 @@ public class GorgonRasterState
     /// <returns>The D3D 11 rasterizer state object.</returns>
     internal D3D11.RasterizerState2 GetD3D11RasterState(D3D11.Device5 device)
     {
-        var desc = new D3D11.RasterizerStateDescription2
+        D3D11.RasterizerStateDescription2 desc = new()
         {
             CullMode = (D3D11.CullMode)CullMode,
             ConservativeRasterizationMode =
@@ -402,38 +393,16 @@ public class GorgonRasterState
         hashCode.Add(IsAntialiasedLineEnabled);
         hashCode.Add(CullMode);
         hashCode.Add(DepthBias);
-        hashCode.Add(DepthBiasClamp);   
-        hashCode.Add(IsDepthClippingEnabled);   
-        hashCode.Add(FillMode); 
-        hashCode.Add(ForcedReadWriteViewSampleCount);  
+        hashCode.Add(DepthBiasClamp);
+        hashCode.Add(IsDepthClippingEnabled);
+        hashCode.Add(FillMode);
+        hashCode.Add(ForcedReadWriteViewSampleCount);
         hashCode.Add(IsFrontCounterClockwise);
         hashCode.Add(IsMultisamplingEnabled);
         hashCode.Add(ScissorRectsEnabled);
         hashCode.Add(SlopeScaledDepthBias);
         hashCode.Add(UseConservativeRasterization);
         return hashCode.ToHashCode();
-    }
-    #endregion
-
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonRasterState"/> class.
-    /// </summary>
-    /// <param name="state">The state to copy.</param>
-    internal GorgonRasterState(GorgonRasterState state)
-    {
-        IsAntialiasedLineEnabled = state.IsAntialiasedLineEnabled;
-        CullMode = state.CullMode;
-        DepthBias = state.DepthBias;
-        DepthBiasClamp = state.DepthBiasClamp;
-        IsDepthClippingEnabled = state.IsDepthClippingEnabled;
-        FillMode = state.FillMode;
-        ForcedReadWriteViewSampleCount = state.ForcedReadWriteViewSampleCount;
-        IsFrontCounterClockwise = state.IsFrontCounterClockwise;
-        IsMultisamplingEnabled = state.IsMultisamplingEnabled;
-        SlopeScaledDepthBias = state.SlopeScaledDepthBias;
-        UseConservativeRasterization = state.UseConservativeRasterization;
-        ScissorRectsEnabled = state.ScissorRectsEnabled;
     }
 
     /// <summary>
@@ -445,5 +414,4 @@ public class GorgonRasterState
         FillMode = FillMode.Solid;
         IsDepthClippingEnabled = true;
     }
-    #endregion
 }

@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2011 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,40 +11,39 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Saturday, June 18, 2011 10:29:46 AM
 // 
-#endregion
 
-using System.Threading;
 using Gorgon.Math;
 
 namespace Gorgon.Timing;
 
 /// <summary>
-/// Timing data for code within a Gorgon Idle loop.
+/// Timing data for code within a Gorgon Idle loop
 /// </summary>
 /// <remarks>
 /// <para>
 /// This class is used to calculate the time it takes for a single iteration an idle loop to execute. It will gather statistics such as the frames per second, the time elapsed since the application started 
-/// and peaks, lows and averages for those values.
+/// and peaks, lows and averages for those values
 /// </para>
 /// <para>
-/// To use this in a custom idle processing loop the user should initialize using the <see cref="StartTiming{T}"/> method, and then, in the loop, call the <see cref="Update"/> method to populate the data 
-/// with the most recent timings.
+/// To use this in a custom idle processing loop the user should initialize using the <see cref="StartTiming"/> method, and then, in the loop, call the <see cref="Update"/> method to populate the data 
+/// with the most recent timings
 /// </para>
 /// </remarks>
 /// <example>
 /// When using the <c>Gorgon.UI.GorgonApplication</c> class, the timing code is automatically updated by its own idle loop:
-/// <code>
+/// <code lang="csharp">
+/// <![CDATA[
 ///	public static bool MyLoop()
 /// {
 ///     Console.CursorLeft = 0;
@@ -58,31 +57,33 @@ namespace Gorgon.Timing;
 /// {
 ///		GorgonApplication.Run(MyLoop);
 /// }
+/// ]]>
 /// </code> 
 /// And here is a a custom application loop using the <see cref="GorgonTiming"/> class:
-/// <code>
-/// // This assumes the Win32 API call to PeekMessage is imported.
+/// <code lang="csharp">
+/// <![CDATA[
+/// // This assumes the Win32 API call to PeekMessage is imported
 /// public void DoLoop()
 /// {
-///		MSG message;  // Win32 Message structure.
+///		MSG message;  // Win32 Message structure
 /// 
-///		// Before loop execution.
-///     GorgonTiming.StartTiming&lt;GorgonTimerQpc&gt;();
+///		// Before loop execution
+///     GorgonTiming.StartTiming(new GorgonTimerQpc());
 /// 
 ///		while (!API.PeekMessage(out message, IntPtr.Zero, 0, 0, PeekMessage.NoRemove))
 ///     {
 ///			GorgonTiming.Update();
 /// 
-///			// Do your processing.
+///			// Do your processing
 ///		}
 /// }
+/// ]]>
 /// </code>
 /// </example>
 public static class GorgonTiming
 {
-    #region Variables.
     // Timer used in calculations.
-    private static IGorgonTimer _timer;
+    private static IGorgonTimer? _timer;
     // The value to indicate how long the application has been running.
     private static decimal _appTimer;
     // Frame counter.
@@ -107,9 +108,7 @@ public static class GorgonTiming
     private static float? _lowestFps;
     // The lowest frame delta.
     private static float? _lowestDelta;
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to set or return the maximum frame delta, in seconds.
     /// </summary>
@@ -124,7 +123,7 @@ public static class GorgonTiming
     } = 0.333333333;
 
     /// <summary>
-    /// Property to return whether or not the timing has been started by <see cref="StartTiming{T}"/>.
+    /// Property to return whether or not the timing has been started by <see cref="StartTiming"/>.
     /// </summary>
     public static bool TimingStarted => _timingStarted != 0;
 
@@ -136,7 +135,7 @@ public static class GorgonTiming
     {
         get;
         set;
-    }
+    } = 1.0f;
 
     /// <summary>
     /// Property to return the number of seconds since a Gorgon application was started.
@@ -371,15 +370,13 @@ public static class GorgonTiming
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to gather timing data.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// Ensure that the <see cref="StartTiming{T}"/> was called prior to calling this method, or no meaningful data will be collected.
+    /// Ensure that the <see cref="StartTiming"/> was called prior to calling this method, or no meaningful data will be collected.
     /// </para>
     /// <para>
     /// <note type="tip">
@@ -412,7 +409,7 @@ public static class GorgonTiming
             frameDelta = maxDelta;
         }
 
-        UnscaledDelta = (float)frameDelta / 1000.0f;            
+        UnscaledDelta = (float)frameDelta / 1000.0f;
 
         // If the delta is 0, then put in the smallest possible positive value.
         if (Delta < 1e-6f)
@@ -486,29 +483,22 @@ public static class GorgonTiming
     }
 
     /// <summary>
-    /// Function to initialize the timing data.
+    /// Function to initialize the timing data with an existing timer.
     /// </summary>
-    /// <typeparam name="T">The type of timer to use. Must be a class, implement <see cref="IGorgonTimer"/> and have a parameterless constructor.</typeparam>
+    /// <param name="timer">The timer to use for the timing data.</param>
     /// <remarks>
     /// <para>
     /// Applications must call this method prior to using this class. Otherwise, no data will be present.
     /// </para>
-    /// <para>
-    /// <note type="tip">
-    /// If you are using the <c>Gorgon.Windows.GorgonApplication</c> class, you do not need to call this method since it contains its own idle processing and therefore will 
-    /// call this method on your behalf.
-    /// </note>
-    /// </para>
     /// </remarks>
-    public static void StartTiming<T>()
-        where T : class, IGorgonTimer, new()
+    public static void StartTiming(IGorgonTimer timer)
     {
         if (Interlocked.CompareExchange(ref _timingStarted, 1, 0) == 1)
         {
             return;
         }
 
-        _timer = new T();
+        _timer = timer;
 
         Reset();
     }
@@ -542,7 +532,7 @@ public static class GorgonTiming
         _lastTime = 0.0;
         _lastTimerValue = 0.0;
         _averageFPSTotal = 0.0f;
-        _averageUnscaledDeltaTotal = 0.0f;            
+        _averageUnscaledDeltaTotal = 0.0f;
 
         _timer?.Reset();
     }
@@ -560,12 +550,4 @@ public static class GorgonTiming
     /// <param name="fps">Desired frames per second.</param>
     /// <returns>Frames per second in microseconds.</returns>
     public static double FpsToMicroseconds(double fps) => fps > 0 ? 1000000 / fps : 0;
-    #endregion
-
-    #region Constructor/Destructor.
-    /// <summary>
-    /// Initializes the <see cref="GorgonTiming"/> class.
-    /// </summary>
-    static GorgonTiming() => TimeScale = 1;
-    #endregion
 }

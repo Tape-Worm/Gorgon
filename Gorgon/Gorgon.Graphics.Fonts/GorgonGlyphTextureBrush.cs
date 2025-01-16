@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,38 +11,31 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Saturday, October 12, 2013 10:28:27 PM
 // 
-#endregion
 
-using System;
-using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.IO;
-using System.Linq;
+using System.Text;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts.Properties;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Graphics.Imaging.GdiPlus;
 using Gorgon.IO;
-using Gorgon.Memory;
-using Gorgon.Native;
-using DX = SharpDX;
 
 namespace Gorgon.Graphics.Fonts;
 
 /// <summary>
-/// Defines how to draw the <see cref="GorgonGlyphTextureBrush"/>, or <see cref="GorgonGlyphPathGradientBrush"/> if the paint area is larger than the texture region.
+/// Defines how to draw the <see cref="GorgonGlyphTextureBrush"/>, or <see cref="GorgonGlyphPathGradientBrush"/> if the paint area is larger than the texture region
 /// </summary>
 public enum GlyphBrushWrapMode
 {
@@ -69,7 +62,7 @@ public enum GlyphBrushWrapMode
 }
 
 /// <summary>
-/// A brush used to draw glyphs using a texture.
+/// A brush used to draw glyphs using a texture
 /// </summary>
 /// <remarks>
 /// <para>
@@ -77,7 +70,7 @@ public enum GlyphBrushWrapMode
 /// </para>
 /// <para>
 /// The texture used by this brush is a <see cref="IGorgonImage"/> and not a <see cref="GorgonTexture2D"/>, and must be a 2D image, and have a format of <c>R8G8B8A8_UNorm_SRgb</c>,
-/// <c>BufferFormat.R8G8B8A8_UNorm</c>, <c>BufferFormat.B8G8R8A8_UNorm</c>, or <c>BufferFormat.B8G8R8A8_UNorm_SRgb</c>.
+/// <c>BufferFormat.R8G8B8A8_UNorm</c>, <c>BufferFormat.B8G8R8A8_UNorm</c>, or <c>BufferFormat.B8G8R8A8_UNorm_SRgb</c>
 /// </para>
 /// </remarks>
 /// <seealso cref="GorgonGlyphSolidBrush"/>
@@ -87,15 +80,13 @@ public enum GlyphBrushWrapMode
 public class GorgonGlyphTextureBrush
     : GorgonGlyphBrush
 {
-    #region Variables.
+
     // The data for the image.
-    private byte[] _imageData = Array.Empty<byte>();
+    private byte[] _imageData = [];
     // The width and height of the texture.
     private int _width;
     private int _height;
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to return the type of brush.
     /// </summary>
@@ -126,7 +117,7 @@ public class GorgonGlyphTextureBrush
     /// <remarks>
     /// This value is in relative texture coordinates.
     /// </remarks>
-    public DX.RectangleF TextureRegion
+    public GorgonRectangleF TextureRegion
     {
         get;
         set;
@@ -136,58 +127,71 @@ public class GorgonGlyphTextureBrush
     /// Property to return the image data to apply to the brush.
     /// </summary>
     public Span<byte> Image => _imageData;
-    #endregion
 
-    #region Methods.
     /// <summary>Function to write out the specifics of the font brush data to a file writer.</summary>
     /// <param name="writer">The writer used to write the brush data.</param>
-    internal override void WriteBrushData(GorgonBinaryWriter writer)
+    internal override void WriteBrushData(IGorgonChunkWriter writer)
     {
-        writer.Write((int)WrapMode);
+        static void SerializeImageData(IGorgonImage image, Stream stream)
+        {
+            using BinaryWriter binWriter = new(stream, Encoding.UTF8, true);
+
+            // Store a place holder for the image size, in bytes.
+            long storedPosition = stream.Position - sizeof(int);
+
+            long size = stream.Length;
+
+            GorgonCodecPng codec = new();
+            codec.Save(image, stream);
+
+            // Return the size of the image data, in bytes.
+            size = stream.Length - size;
+
+            // Update the place holder with the actual size.
+            stream.Position = storedPosition;
+            binWriter.Write((int)size);
+        }
+
+        writer.WriteInt32((int)WrapMode);
         writer.WriteValue(TextureRegion);
 
-        // Mark this as the size.
-        long sizePosition = writer.BaseStream.Position;
-        writer.Write(0);
-
-        // Encode the texture brush as a PNG stream.
-        long size = writer.BaseStream.Length;
-        var codec = new GorgonCodecPng();
+        // The placeholder value for the size of the image data.
+        writer.WriteInt32(0);
 
         using IGorgonImage image = ToGorgonImage();
-        codec.Save(image, writer.BaseStream);
 
-        // Calculate the number of bytes written.
-        size = writer.BaseStream.Length - size;
-
-        // Move back and write the size of the image data.
-        writer.BaseStream.Position = sizePosition;
-        writer.Write((int)size);
-
-        // Return to the end of the stream.
-        writer.BaseStream.Position = writer.BaseStream.Length;
+        writer.Serialize(image, SerializeImageData);
     }
 
     /// <summary>Function to read back the specifics of the font brush data from a file reader.</summary>
     /// <param name="reader">The reader used to read the brush data.</param>
-    internal override void ReadBrushData(GorgonBinaryReader reader)
+    internal override void ReadBrushData(IGorgonChunkReader reader)
     {
-        WrapMode = (GlyphBrushWrapMode)reader.ReadInt32();
-        TextureRegion = reader.ReadValue<DX.RectangleF>();
-        int imageSize = reader.ReadInt32();
-                    
-        var codec = new GorgonCodecPng();
-        using IGorgonImage image = codec.FromStream(reader.BaseStream, imageSize);
+        int imageSize;
 
-        if (image.Format != BufferFormat.R8G8B8A8_UNorm)
+        IGorgonImage DeserializeImageData(Stream stream)
         {
-            image.BeginUpdate()
-                 .ConvertToFormat(BufferFormat.R8G8B8A8_UNorm)
-                 .EndUpdate();
+            GorgonCodecPng codec = new();
+            using IGorgonImage image = codec.FromStream(stream, imageSize);
+
+            if (image.Format != BufferFormat.R8G8B8A8_UNorm)
+            {
+                image.BeginUpdate()
+                     .ConvertToFormat(BufferFormat.R8G8B8A8_UNorm)
+                     .EndUpdate();
+            }
+
+            return image;
         }
 
+        WrapMode = (GlyphBrushWrapMode)reader.ReadInt32();
+        TextureRegion = reader.ReadValue<GorgonRectangleF>();
+        imageSize = reader.ReadInt32();
+
+        using IGorgonImage image = reader.Deserialize(DeserializeImageData);
+
         _imageData = new byte[image.Buffers[0].PitchInformation.SlicePitch];
-        image.Buffers[0].Data.CopyTo(_imageData.AsSpan());
+        image.Buffers[0].Data.CopyTo(_imageData);
 
         _width = image.Width;
         _height = image.Height;
@@ -208,8 +212,8 @@ public class GorgonGlyphTextureBrush
             using IGorgonImage image = ToGorgonImage();
             brushBitmap = image.Buffers[0].ToBitmap();
 
-            var textureRect = new RectangleF(0, 0, image.Width, image.Height);
-            var imageRect = new RectangleF(TextureRegion.X * textureRect.Width,
+            RectangleF textureRect = new(0, 0, image.Width, image.Height);
+            RectangleF imageRect = new(TextureRegion.X * textureRect.Width,
                                            TextureRegion.Y * textureRect.Height,
                                            TextureRegion.Width * textureRect.Width,
                                            TextureRegion.Height * textureRect.Height);
@@ -236,7 +240,7 @@ public class GorgonGlyphTextureBrush
     /// Function to convert this brush into a regular image.
     /// </summary>
     /// <returns>A new <see cref="IGorgonImage"/> containing the brush image data.</returns>
-    public IGorgonImage ToGorgonImage() => new GorgonImage(new GorgonImageInfo(ImageType.Image2D, BufferFormat.R8G8B8A8_UNorm)
+    public IGorgonImage ToGorgonImage() => new GorgonImage(new GorgonImageInfo(ImageDataType.Image2D, BufferFormat.R8G8B8A8_UNorm)
     {
         Width = _width,
         Height = _height
@@ -276,18 +280,16 @@ public class GorgonGlyphTextureBrush
     /// </returns>
     public override bool Equals(GorgonGlyphBrush other)
     {
-        var brush = other as GorgonGlyphTextureBrush;
+        GorgonGlyphTextureBrush brush = other as GorgonGlyphTextureBrush;
 
         return ((brush == this) || ((brush is not null)
             && (brush.WrapMode == WrapMode)
             && (brush.TextureRegion.Equals(TextureRegion))
             && (brush.Image.SequenceEqual(Image))));
     }
-    #endregion
 
-    #region Constructor
     /// <summary>Initializes a new instance of the <see cref="GorgonGlyphTextureBrush"/> class.</summary>
-    internal GorgonGlyphTextureBrush() => TextureRegion = new DX.RectangleF(0, 0, 1, 1);
+    internal GorgonGlyphTextureBrush() => TextureRegion = new GorgonRectangleF(0, 0, 1, 1);
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonGlyphPathGradientBrush"/> class.
@@ -307,8 +309,8 @@ public class GorgonGlyphTextureBrush
     {
         if (textureImage is null)
         {
-            _imageData = Array.Empty<byte>();
-            TextureRegion = new DX.RectangleF(0, 0, 1, 1);
+            _imageData = [];
+            TextureRegion = new GorgonRectangleF(0, 0, 1, 1);
             WrapMode = GlyphBrushWrapMode.Clamp;
             return;
         }
@@ -320,7 +322,7 @@ public class GorgonGlyphTextureBrush
             throw new ArgumentException(string.Format(Resources.GORGFX_ERR_FORMAT_NOT_SUPPORTED, textureImage.Format), nameof(textureImage));
         }
 
-        if (textureImage.ImageType != ImageType.Image2D)
+        if (textureImage.ImageType != ImageDataType.Image2D)
         {
             throw new ArgumentException(Resources.GORGFX_ERR_FONT_GLYPH_IMAGE_NOT_2D, nameof(textureImage));
         }
@@ -343,8 +345,7 @@ public class GorgonGlyphTextureBrush
         _height = tempImage.Height;
 
         _imageData = new byte[tempImage.Buffers[0].PitchInformation.SlicePitch];
-        tempImage.Buffers[0].Data.CopyTo(_imageData.AsSpan());            
-        TextureRegion = new DX.RectangleF(0, 0, 1, 1);
+        tempImage.Buffers[0].Data.CopyTo(_imageData);
+        TextureRegion = new GorgonRectangleF(0, 0, 1, 1);
     }
-    #endregion
 }

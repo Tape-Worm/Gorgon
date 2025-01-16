@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,41 +11,41 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 18, 2018 10:39:26 AM
 // 
-#endregion
 
-using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
 using Gorgon.Core;
-using Gorgon.Math;
+using Gorgon.Graphics;
 
 namespace Gorgon.Animation;
 
 /// <summary>
-/// A track that stores 3D vectors representing various properties in an animation.
+/// A track that stores 3D vectors representing various properties in an animation
 /// </summary>
 internal class Vector3Track
-    : GorgonNamedObject, IGorgonAnimationTrack<GorgonKeyVector3>
+    : IGorgonNamedObject, IGorgonAnimationTrack<GorgonKeyVector3>
 {
-    #region Variables.
     // The interpolation mode for the track.
     private TrackInterpolationMode _interpolationMode = TrackInterpolationMode.Linear;
     // The spline controller for the track.
     private readonly GorgonCatmullRomSpline _splineController = new();
-    #endregion
 
-    #region Properties.
+    /// <inheritdoc/>
+    public string Name
+    {
+        get;
+    }
+
     /// <summary>Property to return the type of key frame data stored in this track.</summary>
     public AnimationTrackKeyType KeyFrameDataType => AnimationTrackKeyType.Vector3;
 
@@ -57,7 +57,7 @@ internal class Vector3Track
     /// <summary>
     /// Property to return the spline controller (if applicable) for the track.
     /// </summary>
-    public IGorgonSplineCalculation SplineController => _splineController;
+    public IGorgonSpline SplineController => _splineController;
 
     /// <summary>
     /// Property to set or return the interpolation mode.
@@ -93,7 +93,6 @@ internal class Vector3Track
         get;
         set;
     } = true;
-    #endregion
 
     /// <summary>
     /// Function to retrieve the value at the specified time index.
@@ -129,15 +128,14 @@ internal class Vector3Track
         return new GorgonKeyVector3(timeIndex, vec);
     }
 
-    #region Constructor/Finalizer.
     /// <summary>
     /// Initializes a new instance of the <see cref="Vector3Track"/> class.
     /// </summary>
     /// <param name="keyFrames">The list of key frames for the track.</param>
     /// <param name="name">The name of the track.</param>
     internal Vector3Track(IReadOnlyList<GorgonKeyVector3> keyFrames, string name)
-        : base(name)
     {
+        Name = name;
         KeyFrames = keyFrames;
 
         // Build the spline for the track.
@@ -148,5 +146,4 @@ internal class Vector3Track
 
         _splineController.UpdateTangents();
     }
-    #endregion
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,25 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: October 12, 2018 1:08:11 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
-using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.Editor.Properties;
 using Gorgon.IO;
@@ -37,7 +30,7 @@ using Gorgon.IO;
 namespace Gorgon.Editor.PlugIns;
 
 /// <summary>
-/// Flags to indicate the capabilities of the writer.
+/// Flags to indicate the capabilities of the writer
 /// </summary>
 [Flags]
 public enum WriterCapabilities
@@ -57,17 +50,15 @@ public enum WriterCapabilities
 }
 
 /// <summary>
-/// An interface for file output plug ins.
+/// An interface for file output plug-ins
 /// </summary>
 public abstract class FileWriterPlugIn
     : EditorPlugIn
 {
-    #region Variables.
-    // Default compression amount.
-    private float _compressAmount = 0.5f;        
-    #endregion
 
-    #region Properties.
+    // Default compression amount.
+    private float _compressAmount = 0.5f;
+
     /// <summary>
     /// Property to return the equivalent type name for v2 of the Gorgon file writer plugin.
     /// </summary>
@@ -122,21 +113,19 @@ public abstract class FileWriterPlugIn
     /// Property to return the file extensions (and descriptions) for this content type.
     /// </summary>
     /// <remarks>
-    /// Plug in developers must provide common file extensions supported by the plug in type, or else this plug in cannot be used.
+    /// Plug in developers must provide common file extensions supported by the plug-in type, or else this plug-in cannot be used.
     /// </remarks>
-    public IGorgonNamedObjectReadOnlyDictionary<GorgonFileExtension> FileExtensions
+    public IReadOnlyDictionary<string, GorgonFileExtension> FileExtensions
     {
         get;
         private set;
     }
 
     /// <summary>
-    /// Property to return the type of plug in.
+    /// Property to return the type of plug-in.
     /// </summary>
     public sealed override PlugInType PlugInType => PlugInType.Writer;
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to write the file to the specified path.
     /// </summary>
@@ -165,7 +154,7 @@ public abstract class FileWriterPlugIn
     protected abstract Task OnWriteAsync(string filePath, DirectoryInfo workspace, Action<int, int, bool> progressCallback, CancellationToken cancelToken);
 
     /// <summary>
-    /// Function to determine if the type of file specified can be written by this plug in.
+    /// Function to determine if the type of file specified can be written by this plug-in.
     /// </summary>
     /// <param name="filePath">The path to the file to evaluate.</param>
     /// <returns><b>true</b> if the writer can write the type of file, or <b>false</b> if it cannot.</returns>
@@ -235,7 +224,6 @@ public abstract class FileWriterPlugIn
             throw new ArgumentNullException(nameof(filePath));
         }
 
-#pragma warning disable IDE0046 // Convert to conditional expression
         if (workspace is null)
         {
             throw new ArgumentNullException(nameof(workspace));
@@ -244,22 +232,20 @@ public abstract class FileWriterPlugIn
         return !workspace.Exists
             ? throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIR_NOT_FOUND, workspace.FullName))
             : OnWriteAsync(filePath, workspace, progressCallback, cancelToken);
-#pragma warning restore IDE0046 // Convert to conditional expression
+
     }
 
     /// <summary>
-    /// Function to initialize the plug in.
+    /// Function to initialize the plug-in.
     /// </summary>
-    /// <param name="hostServices">The services to pass from the host application to the plug in.</param>
+    /// <param name="hostServices">The services to pass from the host application to the plug-in.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="hostServices"/> parameter is <b>null</b>.</exception>
     public void Initialize(IHostServices hostServices) => HostServices = hostServices ?? throw new ArgumentNullException(nameof(hostServices));
-    #endregion
 
-    #region Constructor/Destructor.
     /// <summary>
     /// Initializes a new instance of the <see cref="FileWriterPlugIn"/> class.
     /// </summary>
-    /// <param name="description">Friendly description of the plug in.</param>
+    /// <param name="description">Friendly description of the plug-in.</param>
     /// <param name="fileExtensions">The file of common file name extensions supported by this writer.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="fileExtensions"/> parameter is <b>null</b>.</exception>
     protected FileWriterPlugIn(string description, IEnumerable<GorgonFileExtension> fileExtensions)
@@ -270,7 +256,7 @@ public abstract class FileWriterPlugIn
             throw new ArgumentNullException(nameof(fileExtensions));
         }
 
-        var extensions = new GorgonFileExtensionCollection();
+        GorgonFileExtensionCollection extensions = [];
 
         foreach (GorgonFileExtension extension in fileExtensions)
         {
@@ -279,5 +265,4 @@ public abstract class FileWriterPlugIn
 
         FileExtensions = extensions;
     }
-    #endregion
 }

@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2014 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,20 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Saturday, August 9, 2014 10:47:56 AM
 // 
-#endregion
 
-using System.Drawing;
 using System.Numerics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
@@ -33,17 +31,15 @@ using Gorgon.Renderers.Geometry;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// A mesh representing a 2D plane.
+/// A mesh representing a 2D plane
 /// </summary>
 internal class Plane
     : MoveableMesh
 {
-    #region Variables.
+
     // Initial orientation.
     private Matrix4x4 _orientation;
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to build the plane vertices.
     /// </summary>
@@ -65,7 +61,7 @@ internal class Plane
         {
             for (int x = 0; x <= columns; ++x)
             {
-                var vertexPos = new Vector3(((x * columnWidth) - 0.5f) * size.X,
+                Vector3 vertexPos = new(((x * columnWidth) - 0.5f) * size.X,
                                                ((y * columnHeight) - 0.5f) * size.Y,
                                                0);
 
@@ -112,9 +108,7 @@ internal class Plane
             }
         }
     }
-    #endregion
 
-    #region Constructor/Destructor.
     /// <summary>
     /// Initializes a new instance of the <see cref="Plane" /> class.
     /// </summary>
@@ -132,10 +126,10 @@ internal class Plane
         IndexCount = ((columns * rows) * 6) + (rows - 1);
         TriangleCount = (IndexCount - (rows - 1)) / 3;
 
-        var orientation = Quaternion.CreateFromYawPitchRoll(angle.Y.ToRadians(), angle.X.ToRadians(), angle.Z.ToRadians());
+        Quaternion orientation = Quaternion.CreateFromYawPitchRoll(angle.Y.ToRadians(), angle.X.ToRadians(), angle.Z.ToRadians());
         _orientation = Matrix4x4.CreateFromQuaternion(orientation);
 
-        var vertexData = new GorgonVertexPosNormUvTangent[VertexCount];
+        GorgonVertexPosNormUvTangent[] vertexData = new GorgonVertexPosNormUvTangent[VertexCount];
         int[] indexData = new int[IndexCount];
 
         GetVertices(vertexData, size, textureCoordinates, columns, rows);
@@ -160,5 +154,4 @@ internal class Plane
 
         UpdateAabb(vertexData);
     }
-    #endregion
 }

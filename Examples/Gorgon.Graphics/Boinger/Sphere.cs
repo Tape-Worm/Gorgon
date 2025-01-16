@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2012 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,34 +11,31 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Sunday, December 30, 2012 10:25:22 AM
 // 
-#endregion
 
 using System.Numerics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Renderers.Geometry;
-using DX = SharpDX;
 
 namespace Gorgon.Examples;
 
 /// <summary>
-/// A sphere object.
+/// A sphere object
 /// </summary>
 internal class Sphere
     : Model
 {
-    #region Properties.
     /// <summary>
     /// Property to return the radius of the sphere.
     /// </summary>
@@ -46,9 +43,7 @@ internal class Sphere
     {
         get;
     }
-    #endregion
 
-    #region Constructor/Destructor.
     /// <summary>
     /// Initializes a new instance of the <see cref="Sphere" /> class.
     /// </summary>
@@ -63,7 +58,7 @@ internal class Sphere
                   GorgonInputLayout inputLayout,
                   float radius,
                   Vector2 textureOffset,
-                  DX.Size2F textureScale,
+                  Vector2 textureScale,
                   int ringCount = 8,
                   int segmentCount = 16)
         : base(inputLayout)
@@ -89,19 +84,19 @@ internal class Sphere
         {
             float angle = deltaRingAngle * ring;
             float ringSin = angle.Sin();
-            var position = new Vector3(0, angle.Cos() * radius, 0);
+            Vector3 position = new(0, angle.Cos() * radius, 0);
 
             for (int segment = 0; segment <= segmentCount; segment++)
             {
-                var textureDelta = new Vector2(1.0f - (segment / (float)segmentCount), 1.0f - (ring / (float)ringCount));
+                Vector2 textureDelta = new(1.0f - (segment / (float)segmentCount), 1.0f - (ring / (float)ringCount));
                 float segmentAngle = deltaSegAngle * segment;
 
                 position.X = ringSin * segmentAngle.Sin() * radius;
                 position.Z = ringSin * segmentAngle.Cos() * radius;
 
                 // Create the vertex.
-                textureDelta.X *= textureScale.Width;
-                textureDelta.Y *= textureScale.Height;
+                textureDelta.X *= textureScale.X;
+                textureDelta.Y *= textureScale.Y;
                 textureDelta.X += textureOffset.X;
                 textureDelta.Y += textureOffset.Y;
 
@@ -130,7 +125,7 @@ internal class Sphere
         VertexBufferBindings[0] = GorgonVertexBufferBinding.CreateVertexBuffer<GorgonVertexPosUv>(graphics,
                                                                                 new GorgonVertexBufferInfo(Vertices.Length * GorgonVertexPosUv.SizeInBytes)
                                                                                 {
-                                                                                    Name = "Sphere Vertex Buffer",                                                                                        
+                                                                                    Name = "Sphere Vertex Buffer",
                                                                                     Usage = ResourceUsage.Immutable
                                                                                 },
                                                                                 Vertices);
@@ -143,5 +138,4 @@ internal class Sphere
                                             },
                                             Indices);
     }
-    #endregion
 }

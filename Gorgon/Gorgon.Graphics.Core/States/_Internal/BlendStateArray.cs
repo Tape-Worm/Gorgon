@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2021 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,17 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: January 4, 2021 2:30:19 PM
 // 
-#endregion
 
 using Gorgon.Collections;
 using D3D11 = SharpDX.Direct3D11;
@@ -30,12 +29,11 @@ using D3D11 = SharpDX.Direct3D11;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// The array for holding blend state information.
+/// The array for holding blend state information
 /// </summary>
 internal class BlendStateArray
     : GorgonArray<GorgonBlendState>
 {
-    #region Methods.
     /// <summary>
     /// Function to build the D3D11 blend state.
     /// </summary>
@@ -44,16 +42,22 @@ internal class BlendStateArray
     /// <param name="isIndependentBlendEnabled">Flag to enable/disable independent blend targets.</param>
     public D3D11.BlendState1 BuildD3D11BlendState(D3D11.Device5 device, bool isAlphaToCoverageEnabled, bool isIndependentBlendEnabled)
     {
-        ref readonly (int start, int count) indices = ref GetDirtyItems();
-        var desc = new D3D11.BlendStateDescription1
+        ReadOnlySpan<GorgonBlendState> indices = GetDirtySpan();
+
+        if (indices.IsEmpty)
+        {
+            return null;
+        }
+
+        D3D11.BlendStateDescription1 desc = new()
         {
             AlphaToCoverageEnable = isAlphaToCoverageEnabled,
             IndependentBlendEnable = isIndependentBlendEnabled
         };
 
-        for (int i = 0; i < indices.count; ++i)
+        for (int i = 0; i <= indices.Length; ++i)
         {
-            GorgonBlendState state = this[indices.start + i];
+            GorgonBlendState state = this[i];
 
             if (state is null)
             {
@@ -80,13 +84,10 @@ internal class BlendStateArray
             DebugName = nameof(GorgonBlendState)
         };
     }
-    #endregion
 
-    #region Constructor/Finalizer.
     /// <summary>Initializes a new instance of the <see cref="BlendStateArray" /> class.</summary>
     internal BlendStateArray()
         : base(D3D11.OutputMergerStage.SimultaneousRenderTargetCount)
     {
     }
-    #endregion        
 }

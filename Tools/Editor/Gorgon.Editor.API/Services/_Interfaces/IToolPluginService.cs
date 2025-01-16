@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,35 +11,31 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: October 29, 2018 1:04:03 PM
 // 
-#endregion
 
-using System.Collections.Generic;
-using System.IO;
+using System.Text.Json.Serialization;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.PlugIns;
-using Gorgon.IO;
-using Newtonsoft.Json;
+using Gorgon.IO.FileSystem;
 
 namespace Gorgon.Editor.Services;
 
 /// <summary>
-/// Provides access to the various tool plugins in the application.
+/// Provides access to the various tool plugins in the application
 /// </summary>
 public interface IToolPlugInService
     : IDisabledPlugInService
 {
-    #region Properties.
     /// <summary>
     /// Property to return the list of tool plugins loaded in to the application.
     /// </summary>
@@ -49,21 +45,19 @@ public interface IToolPlugInService
     }
 
     /// <summary>
-    /// Property to return the UI buttons for the tool plug in.
+    /// Property to return the UI buttons for the tool plug-in.
     /// </summary>
     IReadOnlyDictionary<string, IReadOnlyList<IToolPlugInRibbonButton>> RibbonButtons
     {
         get;
     }
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function called when a project is loaded/created.
     /// </summary>
     /// <param name="fileManager">The content file manager for the project.</param>
     /// <param name="temporaryFileSystem">The file system used to hold temporary working data.</param>
-    void ProjectActivated(IContentFileManager fileManager, IGorgonFileSystemWriter<Stream> temporaryFileSystem);
+    void ProjectActivated(IContentFileManager fileManager, IGorgonFileSystem temporaryFileSystem);
 
     /// <summary>
     /// Function called when a project is unloaded.
@@ -71,12 +65,12 @@ public interface IToolPlugInService
     void ProjectDeactivated();
 
     /// <summary>
-    /// Funcion to read the settings for a content plug in from a JSON file.
+    /// Funcion to read the settings for a content plug-in from a JSON file.
     /// </summary>
     /// <typeparam name="T">The type of settings to read. Must be a reference type.</typeparam>
     /// <param name="name">The name of the file.</param>
     /// <param name="converters">A list of JSON data converters.</param>
-    /// <returns>The settings object for the plug in, or <b>null</b> if no settings file was found for the plug in.</returns>
+    /// <returns>The settings object for the plug-in, or <b>null</b> if no settings file was found for the plug-in.</returns>
     /// <remarks>
     /// <para>
     /// This will read in the settings for a content plug from the same location where the editor stores its application settings file.
@@ -85,7 +79,7 @@ public interface IToolPlugInService
     T ReadContentSettings<T>(string name, params JsonConverter[] converters) where T : class;
 
     /// <summary>
-    /// Function to write out the settings for a content plug in as a JSON file.
+    /// Function to write out the settings for a content plug-in as a JSON file.
     /// </summary>
     /// <typeparam name="T">The type of settings to write. Must be a reference type.</typeparam>
     /// <param name="name">The name of the file.</param>
@@ -93,9 +87,9 @@ public interface IToolPlugInService
     /// <param name="converters">A list of JSON converters.</param>
     /// <remarks>
     /// <para>
-    /// This will write out the settings for a content plug in to the same location where the editor stores its application settings file.
+    /// This will write out the settings for a content plug-in to the same location where the editor stores its application settings file.
     /// </para>
     /// </remarks>
     void WriteContentSettings<T>(string name, T contentSettings, params JsonConverter[] converters) where T : class;
-    #endregion
+
 }

@@ -21,13 +21,13 @@ partial class SpriteAnchor
         if (disposing)
         {
             UnassignEvents();
-            DataContext?.Unload();
+            ViewModel?.Unload();
         }
 
         base.Dispose(disposing);
     }
 
-    #region Component Designer generated code
+
 
     /// <summary> 
     /// Required method for Designer support - do not modify 
@@ -217,7 +217,7 @@ partial class SpriteAnchor
 
     }
 
-    #endregion
+
     private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
     private Gorgon.UI.GorgonAlignmentPicker Alignment;
     private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;

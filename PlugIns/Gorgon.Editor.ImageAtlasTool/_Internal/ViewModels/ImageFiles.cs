@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,26 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 7, 2019 11:50:04 AM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.ImageAtlasTool.Properties;
@@ -39,26 +32,24 @@ using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Controls;
 using Gorgon.Graphics.Imaging;
-using Gorgon.IO;
+using Gorgon.IO.FileSystem;
 
 namespace Gorgon.Editor.ImageAtlasTool;
 
 /// <summary>
-/// The image file list view model.
+/// The image file list view model
 /// </summary>
 internal class ImageFiles
     : ViewModelBase<ImageFilesParameters, IHostContentServices>, IImageFiles
 {
-    #region Constants.
+
     // The directory path for thumbnails this session.
     private const string ThumbnailPath = "/Thumbnails/";
-    #endregion
 
-    #region Variables.
     // The service used to search through the files.
     private ISearchService<IContentFileExplorerSearchEntry> _searchService;
     // The list of selected files.
-    private readonly List<ContentFileExplorerFileEntry> _selected = new();
+    private readonly List<ContentFileExplorerFileEntry> _selected = [];
     // The task used to load the preview.
     private Task<IGorgonImage> _loadPreviewTask;
     // The cancellation source.
@@ -66,12 +57,10 @@ internal class ImageFiles
     // The image used for preview.
     private IGorgonImage _previewImage;
     // The file system used for writing temporary data.
-    private IGorgonFileSystemWriter<Stream> _tempFileSystem;
+    private IGorgonFileSystem _tempFileSystem;
     // The name of the image that is currently loading.
     private string _loadingImage;
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to set or return the name of the image that is currently loading.
     /// </summary>
@@ -106,7 +95,7 @@ internal class ImageFiles
         get => _selected;
         private set
         {
-            value ??= Array.Empty<ContentFileExplorerFileEntry>();
+            value ??= [];
 
             if (value.SequenceEqual(_selected))
             {
@@ -127,7 +116,6 @@ internal class ImageFiles
     {
         get;
     }
-
 
     /// <summary>Property to return the command used to search through the file list.</summary>
     public IEditorCommand<string> SearchCommand
@@ -165,15 +153,13 @@ internal class ImageFiles
         get;
         set;
     }
-    #endregion
 
-    #region Methods.
     /// <summary>Handles the PropertyChanged event of the File control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
     private void File_PropertyChanged(object sender, PropertyChangedEventArgs e)
     {
-        var entry = (ContentFileExplorerFileEntry)sender;
+        ContentFileExplorerFileEntry entry = (ContentFileExplorerFileEntry)sender;
 
         switch (e.PropertyName)
         {
@@ -206,7 +192,7 @@ internal class ImageFiles
     {
         try
         {
-            IGorgonVirtualDirectory thumbDirectory = _tempFileSystem.FileSystem.GetDirectory(ThumbnailPath);
+            IGorgonVirtualDirectory thumbDirectory = _tempFileSystem.GetDirectory(ThumbnailPath);
 
             thumbDirectory ??= _tempFileSystem.CreateDirectory(ThumbnailPath);
 
@@ -222,10 +208,10 @@ internal class ImageFiles
 
                 _cancelSource?.Cancel();
                 (await _loadPreviewTask)?.Dispose();
-                _loadPreviewTask = null;                    
+                _loadPreviewTask = null;
             }
 
-            PreviewImage?.Dispose();                
+            PreviewImage?.Dispose();
 
             if ((files is null) || (files.Count == 0))
             {
@@ -265,7 +251,7 @@ internal class ImageFiles
         }
         catch (Exception ex)
         {
-            HostServices.Log.Print("ERROR: There was an error generating the image preview data.", LoggingLevel.Simple);
+            HostServices.Log.PrintError("There was an error generating the image preview data.", LoggingLevel.Simple);
             HostServices.Log.LogException(ex);
         }
     }
@@ -284,7 +270,7 @@ internal class ImageFiles
     private void DoSearch(string text)
     {
         HostServices.BusyService.SetBusy();
-        
+
         try
         {
             IEnumerable<IContentFileExplorerSearchEntry> results = _searchService.Search(text);
@@ -366,20 +352,17 @@ internal class ImageFiles
 
         _cancelSource?.Cancel();
 
-        IGorgonImage currentImage = Interlocked.Exchange(ref _previewImage, null);            
-        Interlocked.Exchange(ref _loadPreviewTask, null);            
+        IGorgonImage currentImage = Interlocked.Exchange(ref _previewImage, null);
+        Interlocked.Exchange(ref _loadPreviewTask, null);
         currentImage?.Dispose();
 
         base.OnUnload();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
     /// <summary>Initializes a new instance of the <see cref="ImageFiles"/> class.</summary>
     public ImageFiles()
     {
         SearchCommand = new EditorCommand<string>(DoSearch, CanSearch);
         RefreshImagePreviewCommand = new EditorAsyncCommand<IReadOnlyList<ContentFileExplorerFileEntry>>(DoRefreshPreviewAsync);
     }
-    #endregion
 }

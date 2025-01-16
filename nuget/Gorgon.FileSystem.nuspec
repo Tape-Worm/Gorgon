@@ -12,11 +12,11 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Contains functionality for a unified virtual file system for Gorgon.</description>
     <releaseNotes></releaseNotes>
-    <copyright>Copyright 2023 Tape_Worm</copyright>
+    <copyright>Copyright 2024 Tape_Worm</copyright>
 
     <tags>Gorgon C# .NET</tags>
     <dependencies>
-      <group targetFramework="net6.0" >
+      <group targetFramework="net8.0" >
         <dependency id="Gorgon.Core" version="$version$"/>
       </group>
     </dependencies>
@@ -24,8 +24,8 @@
   <files>
     <file src=".\icon.png" target="images\Gorgon_Icon_64x64.png" />
     <file src=".\Gorgon.FileSystem.targets" target="build\Gorgon.FileSystem.targets" />
-    <file src="..\lib\Gorgon.FileSystem.dll" target="lib\net6.0\Gorgon.FileSystem.dll" />
-    <file src="..\lib\Gorgon.FileSystem.xml" target="lib\net6.0\Gorgon.FileSystem.xml" />
+    <file src="..\lib\Gorgon.FileSystem.dll" target="lib\net8.0\Gorgon.FileSystem.dll" />
+    <file src="..\lib\Gorgon.FileSystem.xml" target="lib\net8.0\Gorgon.FileSystem.xml" />
     <file src="..\PlugIns\Gorgon.FileSystem.GorPack.dll" target="build\plugins\Gorgon.FileSystem.GorPack.dll" />
     <file src="..\PlugIns\Gorgon.FileSystem.Zip.dll" target="build\plugins\Gorgon.FileSystem.Zip.dll" />
     <file src="..\PlugIns\ICSharpCode.SharpZipLib.dll" target="build\plugins\ICSharpCode.SharpZipLib.dll" />    

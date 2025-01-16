@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2012 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,20 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Tuesday, September 18, 2012 8:01:47 PM
 // 
-#endregion
 
-using System;
 using System.Drawing;
 using System.Drawing.Text;
 using System.Windows.Forms;
@@ -35,28 +33,23 @@ using DrawingGraphics = System.Drawing.Graphics;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Our form for the example.
+/// Our form for the example
 /// </summary>
 public partial class FormMain : Form
 {
-    #region Variables.
+
     // GDI+ form graphics interface.
     private DrawingGraphics _formGraphics;
     // GDI+ graphics interface.
     private DrawingGraphics _graphics;
     // Image for our form.
     private Bitmap _bitmap;
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to return the size of the graphics canvas.
     /// </summary>
     public Size GraphicsSize => _bitmap.Size;
 
-    #endregion
-
-    #region Methods.
     /// <summary>
     /// Raises the <see cref="E:System.Windows.Forms.Form.Load" /> event.
     /// </summary>
@@ -75,7 +68,7 @@ public partial class FormMain : Form
         }
         catch (Exception ex)
         {
-            ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), GorgonApplication.Log);
+            ex.Handle(e => GorgonDialogs.ErrorBox(this, e), GorgonApplication.Log);
         }
     }
 
@@ -107,10 +100,9 @@ public partial class FormMain : Form
         }
         catch (Exception ex)
         {
-            ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), GorgonApplication.Log);
+            ex.Handle(e => GorgonDialogs.ErrorBox(this, e), GorgonApplication.Log);
         }
     }
-
 
     /// <summary>
     /// Raises the <see cref="E:System.Windows.Forms.Form.FormClosing" /> event.
@@ -148,7 +140,7 @@ public partial class FormMain : Form
         }
         else
         {
-            using var pen = new Pen(color);
+            using Pen pen = new(color);
             _graphics.DrawLine(pen, new Point(lastX, lastY), new Point(x, y));
         }
     }
@@ -168,12 +160,9 @@ public partial class FormMain : Form
     /// Function to clear the buffer.
     /// </summary>
     public void Clear() => _graphics.Clear(Color.Black);
-    #endregion
 
-    #region Constructor/Destructor.
     /// <summary>
     /// Initializes a new instance of the <see cref="FormMain" /> class.
     /// </summary>
     public FormMain() => InitializeComponent();
-    #endregion
 }

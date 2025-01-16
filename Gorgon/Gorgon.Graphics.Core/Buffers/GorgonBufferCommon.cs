@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2016 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,23 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 9, 2016 3:54:15 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using System.Threading;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
@@ -38,7 +34,7 @@ using DX = SharpDX;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// The types of elements that the view will interpret the raw data as.
+/// The types of elements that the view will interpret the raw data as
 /// </summary>
 public enum RawBufferElementType
 {
@@ -57,19 +53,17 @@ public enum RawBufferElementType
 }
 
 /// <summary>
-/// A base class that provides functionality that is common across any buffer type.
+/// A base class that provides functionality that is common across any buffer type
 /// </summary>
 public abstract class GorgonBufferCommon
     : GorgonGraphicsResource
 {
-    #region Variables.
-    // A cache of shader views for the buffer.
-    private Dictionary<BufferShaderViewKey, GorgonShaderResourceView> _shaderViews = new();
-    // A cache of unordered access views for the buffer.
-    private Dictionary<BufferShaderViewKey, GorgonReadWriteView> _uavs = new();
-    #endregion
 
-    #region Properties.
+    // A cache of shader views for the buffer.
+    private Dictionary<BufferShaderViewKey, GorgonShaderResourceView> _shaderViews = [];
+    // A cache of unordered access views for the buffer.
+    private Dictionary<BufferShaderViewKey, GorgonReadWriteView> _uavs = [];
+
     /// <summary>
     /// Property to return the log used to log debug messages.
     /// </summary>
@@ -120,9 +114,7 @@ public abstract class GorgonBufferCommon
     {
         get;
     }
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to validate the bindings for a given buffer.
     /// </summary>
@@ -300,7 +292,6 @@ public abstract class GorgonBufferCommon
             throw new ArgumentException(string.Format(Resources.GORGFX_ERR_DEST_INDEX_AND_COUNT_TOO_LARGE, (destOffset + copySize), destSize));
         }
     }
-
 
     /// <summary>
     /// Function to read the contents of this buffer into memory pointed at by a pointer.
@@ -729,7 +720,7 @@ public abstract class GorgonBufferCommon
         ValidateGetSetData(sourceOffset, 0, size.Value, SizeInBytes, size.Value);
 #endif
 
-        var result = new T[arraySize];
+        T[] result = new T[arraySize];
 
         fixed (T* resultPtr = &result[0])
         {
@@ -843,7 +834,7 @@ public abstract class GorgonBufferCommon
         int typeSize = sizeof(T);
 
         size ??= SizeInBytes - sourceOffset;
-        
+
 #if DEBUG
         ValidateGetSetData(sourceOffset, 0, size.Value, SizeInBytes, destination.Length * typeSize);
 #endif
@@ -1003,9 +994,6 @@ public abstract class GorgonBufferCommon
     /// </remarks>
     public void CopyTo(GorgonBufferCommon destinationBuffer, int sourceOffset = 0, int byteCount = 0, int destOffset = 0, CopyMode copyMode = CopyMode.None)
     {
-        destinationBuffer.ValidateObject(nameof(destinationBuffer));
-
-
 #if DEBUG
         if (destinationBuffer.Native.Description.Usage == D3D11.ResourceUsage.Immutable)
         {
@@ -1107,9 +1095,7 @@ public abstract class GorgonBufferCommon
         Native = null;
         base.Dispose();
     }
-    #endregion
 
-    #region Constructor.
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonBufferCommon" /> class.
     /// </summary>
@@ -1122,5 +1108,4 @@ public abstract class GorgonBufferCommon
 
         this.RegisterDisposable(graphics);
     }
-    #endregion
 }

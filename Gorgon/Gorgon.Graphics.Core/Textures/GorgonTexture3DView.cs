@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2016 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,21 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 19, 2016 1:29:59 PM
 // 
-#endregion
 
-using System;
-using System.IO;
 using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
@@ -34,17 +31,16 @@ using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Math;
 using D3D = SharpDX.Direct3D;
 using D3D11 = SharpDX.Direct3D11;
-using DX = SharpDX;
 using DXGI = SharpDX.DXGI;
 
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// A shader view for textures.
+/// A shader view for textures
 /// </summary>
 /// <remarks>
 /// <para>
-/// This is a texture shader view to allow a <see cref="GorgonTexture3D"/> to be bound to the GPU pipeline as a shader resource.
+/// This is a texture shader view to allow a <see cref="GorgonTexture3D"/> to be bound to the GPU pipeline as a shader resource
 /// </para>
 /// <para>
 /// Use a resource view to allow a shader access to the contents of a resource (or sub resource).  When the resource is created with a typeless format, this will allow the resource to be cast to any 
@@ -54,11 +50,10 @@ namespace Gorgon.Graphics.Core;
 public sealed class GorgonTexture3DView
     : GorgonShaderResourceView, IGorgonTexture3DInfo, IGorgonImageInfo
 {
-    #region Properties.
     /// <summary>
     /// Property to return the type of image data.
     /// </summary>
-    ImageType IGorgonImageInfo.ImageType => ImageType.Image3D;
+    ImageDataType IGorgonImageInfo.ImageType => ImageDataType.Image3D;
 
     /// <summary>
     /// Property to return whether the image data is using premultiplied alpha.
@@ -178,9 +173,7 @@ public sealed class GorgonTexture3DView
     /// Property to return the flags to determine how the texture will be bound with the pipeline when rendering.
     /// </summary>
     public TextureBinding Binding => Texture?.Binding ?? TextureBinding.None;
-    #endregion
 
-    #region Methods.
     /// <summary>Function to retrieve the necessary parameters to create the native view.</summary>
     /// <returns>A shader resource view descriptor.</returns>
     private protected override ref readonly D3D11.ShaderResourceViewDescription1 OnGetSrvParams()
@@ -221,20 +214,20 @@ public sealed class GorgonTexture3DView
     /// for the underlying <see cref="Texture"/> is used.
     /// </para>
     /// </remarks>
-    public (DX.Point, int) ToPixel(Vector3 texelCoordinates, int? mipLevel = null)
+    public (GorgonPoint Position, int Depth) ToPixel(Vector3 texelCoordinates, int? mipLevel = null)
     {
         float width = Texture.Width;
         float height = Texture.Height;
 
         if (mipLevel is null)
         {
-            return (new DX.Point((int)(texelCoordinates.X * width), (int)(texelCoordinates.Y * height)), (int)(texelCoordinates.Z * Depth));
+            return (new GorgonPoint((int)(texelCoordinates.X * width), (int)(texelCoordinates.Y * height)), (int)(texelCoordinates.Z * Depth));
         }
 
         width = GetMipWidth(mipLevel.Value);
         height = GetMipHeight(mipLevel.Value);
 
-        return (new DX.Point((int)(texelCoordinates.X * width), (int)(texelCoordinates.Y * height)), (int)(texelCoordinates.Z * Depth));
+        return (new GorgonPoint((int)(texelCoordinates.X * width), (int)(texelCoordinates.Y * height)), (int)(texelCoordinates.Z * Depth));
     }
 
     /// <summary>
@@ -250,7 +243,7 @@ public sealed class GorgonTexture3DView
     /// for the underlying <see cref="Texture"/> is used.
     /// </para>
     /// </remarks>
-    public Vector3 ToTexel(DX.Point pixelCoordinates, int? mipLevel = null)
+    public Vector3 ToTexel(GorgonPoint pixelCoordinates, int? mipLevel = null)
     {
         float width = Texture.Width;
         float height = Texture.Height;
@@ -265,63 +258,6 @@ public sealed class GorgonTexture3DView
 
         return new Vector3(pixelCoordinates.X / width, pixelCoordinates.Y / height, Depth / (float)Depth);
     }
-
-    /// <summary>
-    /// Function to convert a texel size into a pixel size.
-    /// </summary>
-    /// <param name="texelCoordinates">The texel size to convert.</param>
-    /// <param name="mipLevel">[Optional] The mip level to use.</param>
-    /// <returns>The pixel size.</returns>
-    /// <remarks>
-    /// <para>
-    /// If specified, the <paramref name="mipLevel"/> only applies to the <see cref="MipSlice"/> and <see cref="MipCount"/> for this view, it will be constrained if it falls outside of that range.
-    /// Because of this, the coordinates returned may not be the exact size of the texture bound to the view at mip level 0. If the <paramref name="mipLevel"/> is omitted, then the first mip level
-    /// for the underlying <see cref="Texture"/> is used.
-    /// </para>
-    /// </remarks>
-    public DX.Size2 ToPixel(DX.Size2F texelCoordinates, int? mipLevel = null)
-    {
-        float width = Texture.Width;
-        float height = Texture.Height;
-
-        if (mipLevel is null)
-        {
-            return new DX.Size2((int)(texelCoordinates.Width * width), (int)(texelCoordinates.Height * height));
-        }
-
-        width = GetMipWidth(mipLevel.Value);
-        height = GetMipHeight(mipLevel.Value);
-        return new DX.Size2((int)(texelCoordinates.Width * width), (int)(texelCoordinates.Height * height));
-    }
-
-    /// <summary>
-    /// Function to convert a pixel size into a texel size.
-    /// </summary>
-    /// <param name="pixelCoordinates">The pixel size to convert.</param>
-    /// <param name="mipLevel">[Optional] The mip level to use.</param>
-    /// <returns>The texel size.</returns>
-    /// <remarks>
-    /// <para>
-    /// If specified, the <paramref name="mipLevel"/> only applies to the <see cref="MipSlice"/> and <see cref="MipCount"/> for this view, it will be constrained if it falls outside of that range.
-    /// Because of this, the coordinates returned may not be the exact size of the texture bound to the view at mip level 0. If the <paramref name="mipLevel"/> is omitted, then the first mip level
-    /// for the underlying <see cref="Texture"/> is used.
-    /// </para>
-    /// </remarks>
-    public DX.Size2F ToTexel(DX.Size2 pixelCoordinates, int? mipLevel = null)
-    {
-        float width = Texture.Width;
-        float height = Texture.Height;
-
-        if (mipLevel is null)
-        {
-            return new DX.Size2F(pixelCoordinates.Width / width, pixelCoordinates.Height / height);
-        }
-
-        width = GetMipWidth(mipLevel.Value);
-        height = GetMipHeight(mipLevel.Value);
-        return new DX.Size2F(pixelCoordinates.Width / width, pixelCoordinates.Height / height);
-    }
-
 
     /// <summary>
     /// Function to return the width of the texture at the current <see cref="MipSlice"/> in pixels.
@@ -394,7 +330,7 @@ public sealed class GorgonTexture3DView
             throw new ArgumentNullException(nameof(info));
         }
 
-        var newInfo = new GorgonTexture3DInfo(info)
+        GorgonTexture3DInfo newInfo = new(info)
         {
             Usage = info.Usage == ResourceUsage.Staging ? ResourceUsage.Default : info.Usage,
             Binding = (info.Binding & TextureBinding.ShaderResource) != TextureBinding.ShaderResource
@@ -418,7 +354,7 @@ public sealed class GorgonTexture3DView
                  || (initialData.Depth > info.Depth))
             {
                 initialData = initialData.BeginUpdate()
-                                         .Crop(new DX.Rectangle(0, 0, info.Width, info.Height), info.Depth)
+                                         .Crop(new GorgonRectangle(0, 0, info.Width, info.Height), info.Depth)
                                          .EndUpdate();
             }
         }
@@ -593,9 +529,7 @@ public sealed class GorgonTexture3DView
         view.OwnsResource = true;
         return view;
     }
-    #endregion
 
-    #region Constructor/Destructor.
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonTexture3DView"/> class.
     /// </summary>
@@ -618,5 +552,4 @@ public sealed class GorgonTexture3DView
         MipSlice = firstMipLevel;
         MipCount = mipCount;
     }
-    #endregion
 }

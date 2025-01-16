@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,29 +11,22 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 26, 2018 5:37:32 PM
 // 
-#endregion
 
-using System;
-using System.Drawing;
-using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Threading;
-using System.Windows.Forms;
+using System.Text.Json;
 using Gorgon.Diagnostics;
-using Gorgon.Editor.Converters;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Properties;
@@ -41,22 +34,21 @@ using Gorgon.Editor.Rendering;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.ViewModels;
+using Gorgon.Graphics;
 using Gorgon.IO;
 using Gorgon.Math;
 using Gorgon.PlugIns;
 using Gorgon.UI;
-using Newtonsoft.Json;
-using DX = SharpDX;
 
 namespace Gorgon.Editor;
 
 /// <summary>
-/// Bootstrap functionality for the application.
+/// Bootstrap functionality for the application
 /// </summary>
 internal class Boot
     : ApplicationContext
 {
-    #region Variables.
+
     // Splash screen.
     private FormSplash _splash;
     // The main application form.
@@ -65,13 +57,11 @@ internal class Boot
     private GraphicsContext _graphicsContext;
     // The cache for plugin assemblies.
     private GorgonMefPlugInCache _pluginCache;
-    // The service for managing tool plug ins.
+    // The service for managing tool plug-ins.
     private ToolPlugInService _toolPlugIns;
-    // The service for managing content plug ins.
+    // The service for managing content plug-ins.
     private ContentPlugInService _contentPlugIns;
-    #endregion
 
-    #region Methods.
     /// <summary>Handles the AssemblyResolve event of the CurrentDomain control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="args">The <see cref="ResolveEventArgs"/> instance containing the event data.</param>
@@ -96,13 +86,13 @@ internal class Boot
         }
 
         string[] paths =
-        {
+        [
             args.RequestingAssembly.Location,
             GorgonApplication.StartupPath.FullName
-        };
+        ];
 
         // Step 2. - We did not locate the assembly in the loaded assembly list.  Check the local directory for the assembly requesting the reference.
-        var name = new AssemblyName(args.Name);
+        AssemblyName name = new(args.Name);
 
         foreach (string path in paths)
         {
@@ -112,11 +102,11 @@ internal class Boot
                 continue;
             }
 
-            var file = new FileInfo(Path.Combine(path, name.Name));
+            FileInfo file = new(Path.Combine(path, name.Name));
 
             if (file.Exists)
             {
-                var assembly = Assembly.LoadFile(file.FullName);
+                Assembly assembly = Assembly.LoadFile(file.FullName);
                 AssemblyName loadedName = assembly.GetName();
 
                 if (AssemblyName.ReferenceMatchesDefinition(loadedName, name))
@@ -135,7 +125,7 @@ internal class Boot
     protected override void Dispose(bool disposing)
     {
         AppDomain.CurrentDomain.AssemblyResolve -= CurrentDomain_AssemblyResolve;
-                    
+
         ToolPlugInService toolPlugIns = Interlocked.Exchange(ref _toolPlugIns, null);
         ContentPlugInService contentPlugIns = Interlocked.Exchange(ref _contentPlugIns, null);
         GraphicsContext context = Interlocked.Exchange(ref _graphicsContext, null);
@@ -185,7 +175,7 @@ internal class Boot
     private EditorSettings LoadSettings()
     {
 #if DEBUG
-        var settingsFile = new FileInfo(Path.Combine(Program.ApplicationUserDirectory.FullName, "Gorgon.Editor.Settings.DEBUG.json"));
+        FileInfo settingsFile = new(Path.Combine(Program.ApplicationUserDirectory.FullName, "Gorgon.Editor.Settings.DEBUG.json"));
 #else
         var settingsFile = new FileInfo(Path.Combine(Program.ApplicationUserDirectory.FullName, "Gorgon.Editor.Settings.json"));
 #endif
@@ -193,16 +183,16 @@ internal class Boot
 
         _splash.InfoText = "Loading application settings...";
 
-        var defaultSize = new Size(1280.Min(Screen.PrimaryScreen.WorkingArea.Width), 800.Min(Screen.PrimaryScreen.WorkingArea.Height));
-        var defaultLocation = new Point((Screen.PrimaryScreen.WorkingArea.Width / 2) - (defaultSize.Width / 2) + Screen.PrimaryScreen.WorkingArea.X,
+        Size defaultSize = new(1280.Min(Screen.PrimaryScreen.WorkingArea.Width), 800.Min(Screen.PrimaryScreen.WorkingArea.Height));
+        Point defaultLocation = new((Screen.PrimaryScreen.WorkingArea.Width / 2) - (defaultSize.Width / 2) + Screen.PrimaryScreen.WorkingArea.X,
                                           (Screen.PrimaryScreen.WorkingArea.Height / 2) - (defaultSize.Height / 2) + Screen.PrimaryScreen.WorkingArea.Y);
 
         EditorSettings CreateEditorSettings() => new()
         {
-            WindowBounds = new DX.Rectangle(defaultLocation.X,
-                                                       defaultLocation.Y,
-                                                       defaultSize.Width,
-                                                       defaultSize.Height),
+            WindowBounds = new GorgonRectangle(defaultLocation.X,
+                                               defaultLocation.Y,
+                                               defaultSize.Width,
+                                               defaultSize.Height),
             WindowState = (int)FormWindowState.Maximized,
             LastOpenSavePath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments).FormatDirectory(Path.DirectorySeparatorChar),
             LastProjectWorkingDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments).FormatDirectory(Path.DirectorySeparatorChar)
@@ -220,15 +210,8 @@ internal class Boot
             {
                 Program.Log.Print($"Loading application settings from '{settingsFile.FullName}'", LoggingLevel.Intermediate);
                 reader = new StreamReader(settingsFile.FullName, Encoding.UTF8, true);
-                var settings = new JsonSerializerSettings();
-                settings.Converters.Add(new JsonSharpDxRectConverter());
-                settings.Error = (o, e) =>
-                {
-                    Program.Log.Print("ERROR: Could not read the settings data.", LoggingLevel.Simple);
-                    Program.Log.LogException(e.ErrorContext.Error);
-                    e.ErrorContext.Handled = true;
-                };
-                result = JsonConvert.DeserializeObject<EditorSettings>(reader.ReadToEnd(), settings);
+                string json = reader.ReadToEnd();
+                result = JsonSerializer.Deserialize<EditorSettings>(json);
                 Program.Log.Print("Application settings loaded.", LoggingLevel.Intermediate);
             }
             catch (JsonException jEx)
@@ -256,7 +239,7 @@ internal class Boot
             result.LastOpenSavePath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments).FormatDirectory(Path.DirectorySeparatorChar);
         }
 
-        var lastOpenSavePath = new DirectoryInfo(result.LastOpenSavePath);
+        DirectoryInfo lastOpenSavePath = new(result.LastOpenSavePath);
 
         if (!lastOpenSavePath.Exists)
         {
@@ -271,11 +254,11 @@ internal class Boot
         // If we're not on one of the screens, then default to the main screen.
         if (result.WindowBounds is not null)
         {
-            var rect = new Rectangle(result.WindowBounds.Value.X,
+            Rectangle rect = new(result.WindowBounds.Value.X,
                                      result.WindowBounds.Value.Y,
                                      result.WindowBounds.Value.Width,
                                      result.WindowBounds.Value.Height);
-            var onScreen = Screen.FromRectangle(rect);
+            Screen onScreen = Screen.FromRectangle(rect);
 
             // If we detected that we're on the primary screen (meaning we aren't on any of the others), but we don't intersect with the working area,
             // then we need to reset.
@@ -283,7 +266,7 @@ internal class Boot
             rect.Inflate(-50, -50);
             if ((onScreen == Screen.PrimaryScreen) && (!onScreen.WorkingArea.IntersectsWith(rect)))
             {
-                result.WindowBounds = new DX.Rectangle(defaultLocation.X,
+                result.WindowBounds = new GorgonRectangle(defaultLocation.X,
                                                        defaultLocation.Y,
                                                        defaultSize.Width,
                                                        defaultSize.Height);
@@ -291,7 +274,7 @@ internal class Boot
         }
         else
         {
-            result.WindowBounds = new DX.Rectangle(defaultLocation.X,
+            result.WindowBounds = new GorgonRectangle(defaultLocation.X,
                                                    defaultLocation.Y,
                                                    defaultSize.Width,
                                                    defaultSize.Height);
@@ -303,14 +286,14 @@ internal class Boot
     /// <summary>
     /// Function to load any tool plugins.
     /// </summary>
-    /// <param name="plugInDir">The directory containing the plug ins.</param>
-    /// <param name="hostServices">The services to pass to the tool plug ins.</param>
+    /// <param name="plugInDir">The directory containing the plug-ins.</param>
+    /// <param name="hostServices">The services to pass to the tool plug-ins.</param>
     private void LoadToolPlugIns(DirectoryInfo plugInDir, HostContentServices hostServices)
     {
         string toolPlugInsDir = Path.Combine(plugInDir.FullName, "Tools");
         string toolPlugInSettingsDir = Path.Combine(Program.ApplicationUserDirectory.FullName, "ToolPlugIns");
         _toolPlugIns = new ToolPlugInService(toolPlugInSettingsDir, hostServices);
-        
+
         hostServices.ToolPlugInService = _toolPlugIns;
 
         if (!System.IO.Directory.Exists(toolPlugInsDir))
@@ -332,14 +315,14 @@ internal class Boot
         {
             Program.Log.LogException(ex);
             GorgonDialogs.ErrorBox(_splash, Resources.GOREDIT_ERR_LOADING_PLUGINS, Resources.GOREDIT_ERR_ERROR, ex);
-        }            
+        }
     }
 
     /// <summary>
     /// Function to load any content plugins used to create/edit content.
     /// </summary>
-    /// <param name="plugInDir">The directory containing the plug ins.</param>
-    /// <param name="hostServices">The services to pass to the content plug ins.</param>
+    /// <param name="plugInDir">The directory containing the plug-ins.</param>
+    /// <param name="hostServices">The services to pass to the content plug-ins.</param>
     private void LoadContentPlugIns(DirectoryInfo plugInDir, HostContentServices hostServices)
     {
         string contentPlugInsDir = Path.Combine(plugInDir.FullName, "Content");
@@ -359,7 +342,7 @@ internal class Boot
         }
 
         try
-        {                
+        {
             _splash.InfoText = Resources.GOREDIT_TEXT_LOADING_CONTENT_PLUGINS;
             _contentPlugIns.LoadContentPlugIns(_pluginCache, contentPlugInsDir);
         }
@@ -373,12 +356,12 @@ internal class Boot
     /// <summary>
     /// Function to load any plugins used to import or export files.
     /// </summary>
-    /// <param name="plugInDir">The directory containing the plug ins.</param>
-    /// <param name="hostServices">The services to pass to the file system plug ins.</param>
+    /// <param name="plugInDir">The directory containing the plug-ins.</param>
+    /// <param name="hostServices">The services to pass to the file system plug-ins.</param>
     private FileSystemProviders LoadFileSystemPlugIns(DirectoryInfo plugInDir, IHostServices hostServices)
     {
         string fileSystemPlugInsDir = Path.Combine(plugInDir.FullName, "Filesystem");
-        var result = new FileSystemProviders(hostServices);
+        FileSystemProviders result = new(hostServices);
 
         if (!System.IO.Directory.Exists(fileSystemPlugInsDir))
         {
@@ -420,46 +403,46 @@ internal class Boot
             // Initalize the common resources.
             CommonEditorResources.LoadResources();
 
-            var hostServices = new HostContentServices
+            HostContentServices hostServices = new()
             {
                 Log = Program.Log
             };
-            
+
             _pluginCache = new GorgonMefPlugInCache(Program.Log);
             _graphicsContext = GraphicsContext.Create(Program.Log);
 
             // Get any application settings we might have.
             EditorSettings settings = LoadSettings();
 
-            // Set up the host services that we will pass to our plug ins.
+            // Set up the host services that we will pass to our plug-ins.
             hostServices.BusyService = new WaitCursorBusyState();
             hostServices.MessageDisplay = new MessageBoxService(Program.Log);
             hostServices.ClipboardService = new ClipboardService();
             hostServices.ColorPicker = new ColorPickerService();
             hostServices.GraphicsContext = _graphicsContext;
 
-            var plugInLocation = new DirectoryInfo(Path.Combine(GorgonApplication.StartupPath.FullName, "PlugIns"));
+            DirectoryInfo plugInLocation = new(Path.Combine(GorgonApplication.StartupPath.FullName, "PlugIns"));
 
             if (!plugInLocation.Exists)
             {
-                Program.Log.Print($"ERROR: Plug in path '{plugInLocation.FullName}' was not found.  No plug ins will be loaded.", LoggingLevel.Simple);
+                Program.Log.PrintError($"Plug in path '{plugInLocation.FullName}' was not found.  No plug-ins will be loaded.", LoggingLevel.Simple);
                 GorgonDialogs.ErrorBox(null, Resources.GOREDIT_ERR_LOADING_PLUGINS);
             }
 
             // Load our file system import/export plugins.
             FileSystemProviders fileSystemProviders = LoadFileSystemPlugIns(plugInLocation, hostServices);
-            
-            // Load our tool plug ins.
+
+            // Load our tool plug-ins.
             LoadToolPlugIns(plugInLocation, hostServices);
 
             // Load our content service plugins.
             LoadContentPlugIns(plugInLocation, hostServices);
 
             // Create the project manager for the application
-            var projectManager = new ProjectManager(fileSystemProviders, Program.Log);
+            ProjectManager projectManager = new(fileSystemProviders, Program.Log);
 
             // Setup the factory used to build view models for the application.
-            var factory = new ViewModelFactory(settings, projectManager, fileSystemProviders, hostServices);
+            ViewModelFactory factory = new(settings, projectManager, fileSystemProviders, hostServices);
 
             // Show our main interface.
             _mainForm = new FormMain(settings);
@@ -478,7 +461,7 @@ internal class Boot
             else
             {
                 windowState = (FormWindowState)settings.WindowState;
-            }                
+            }
 
             _mainForm.SetDataContext(mainViewModel);
 
@@ -499,5 +482,4 @@ internal class Boot
             Cursor.Current = Cursors.Default;
         }
     }
-    #endregion
 }

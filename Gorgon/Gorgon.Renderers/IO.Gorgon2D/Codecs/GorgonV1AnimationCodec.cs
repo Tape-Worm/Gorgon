@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,24 +11,20 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 25, 2018 2:43:32 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Numerics;
+using System.Text;
 using Gorgon.Animation;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
@@ -36,21 +32,15 @@ using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.IO.Properties;
 using Gorgon.Renderers;
-using DX = SharpDX;
 
 namespace Gorgon.IO;
 
 /// <summary>
-/// A codec used to import sprite animations from version 1 of Gorgon.
+/// A codec used to import sprite animations from version 1 of Gorgon
 /// </summary>
 public class GorgonV1AnimationCodec
     : GorgonAnimationCodecCommon
 {
-    #region Variables.
-
-    #endregion
-
-    #region Properties.
     /// <summary>
     /// Property to return whether or not the codec can decode animation data.
     /// </summary>
@@ -68,9 +58,7 @@ public class GorgonV1AnimationCodec
     {
         get;
     } = new Version(1, 2);
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to save the animation data to a stream.
     /// </summary>
@@ -83,7 +71,7 @@ public class GorgonV1AnimationCodec
     /// </summary>
     /// <param name="reader">The binary reader for the stream.</param>
     /// <param name="version">The version of the sprite.</param>
-    private static void SkipToAnimationSection(GorgonBinaryReader reader, Version version)
+    private static void SkipToAnimationSection(BinaryReader reader, Version version)
     {
         // We don't need the sprite name.
         reader.ReadString();
@@ -288,9 +276,9 @@ public class GorgonV1AnimationCodec
     /// <param name="reader">The reader containing the track data.</param>
     /// <param name="keyCount">The number of keys to read.</param>
     /// <returns>A list of track times and vector2 values.</returns>
-    private static IReadOnlyList<(float time, Vector2 value)> ReadVec2(GorgonBinaryReader reader, int keyCount)
+    private static IReadOnlyList<(float time, Vector2 value)> ReadVec2(BinaryReader reader, int keyCount)
     {
-        var keys = new (float, Vector2)[keyCount];
+        (float, Vector2)[] keys = new (float, Vector2)[keyCount];
 
         for (int i = 0; i < keyCount; ++i)
         {
@@ -309,9 +297,9 @@ public class GorgonV1AnimationCodec
     /// <param name="reader">The reader containing the track data.</param>
     /// <param name="keyCount">The number of keys to read.</param>
     /// <returns>A list of track times and float values.</returns>
-    private static IReadOnlyList<(float time, float value)> ReadFloat(GorgonBinaryReader reader, int keyCount)
+    private static IReadOnlyList<(float time, float value)> ReadFloat(BinaryReader reader, int keyCount)
     {
-        var keys = new (float, float)[keyCount];
+        (float, float)[] keys = new (float, float)[keyCount];
 
         for (int i = 0; i < keyCount; ++i)
         {
@@ -330,9 +318,9 @@ public class GorgonV1AnimationCodec
     /// <param name="reader">The reader containing the track data.</param>
     /// <param name="keyCount">The number of keys to read.</param>
     /// <returns>A list of track times and int32 values.</returns>
-    private static IReadOnlyList<(float time, int value)> ReadInt32(GorgonBinaryReader reader, int keyCount)
+    private static IReadOnlyList<(float time, int value)> ReadInt32(BinaryReader reader, int keyCount)
     {
-        var keys = new (float, int)[keyCount];
+        (float, int)[] keys = new (float, int)[keyCount];
 
         for (int i = 0; i < keyCount; ++i)
         {
@@ -351,9 +339,9 @@ public class GorgonV1AnimationCodec
     /// <param name="reader">The reader containing the track data.</param>
     /// <param name="keyCount">The number of keys to read.</param>
     /// <returns>A list of track keys.</returns>
-    private IReadOnlyList<(float time, GorgonTexture2DView texture, DX.RectangleF uv, string textureName)> ReadTexture(GorgonBinaryReader reader, int keyCount)
+    private IReadOnlyList<(float time, GorgonTexture2DView texture, GorgonRectangleF uv, string textureName)> ReadTexture(BinaryReader reader, int keyCount)
     {
-        var keys = new List<(float, GorgonTexture2DView, DX.RectangleF, string)>(keyCount);
+        List<(float, GorgonTexture2DView, GorgonRectangleF, string)> keys = new(keyCount);
 
         for (int i = 0; i < keyCount; ++i)
         {
@@ -374,11 +362,11 @@ public class GorgonV1AnimationCodec
                 continue;
             }
 
-            DX.RectangleF uv;
+            GorgonRectangleF uv;
 
             if (view is not null)
             {
-                uv = new DX.RectangleF(uvOffset.X / texture.Width,
+                uv = new GorgonRectangleF(uvOffset.X / texture.Width,
                                        uvOffset.Y / texture.Height,
                                        uvSize.X / texture.Width,
                                        uvSize.Y / texture.Height);
@@ -389,7 +377,7 @@ public class GorgonV1AnimationCodec
             {
                 Graphics.Log.Print($"The animation has texture keys, but the texture '{name}' was not found. A deferred texture key will be returned, but note that the texture coordinates will be incorrect until manually updated.",
                                    LoggingLevel.Verbose);
-                uv = new DX.RectangleF(uvOffset.X,
+                uv = new GorgonRectangleF(uvOffset.X,
                                        uvOffset.Y,
                                        uvSize.X,
                                        uvSize.Y);
@@ -408,9 +396,9 @@ public class GorgonV1AnimationCodec
     /// <param name="builder">The animation builder.</param>
     /// <param name="count">The number of animations.</param>
     /// <returns>The animations in the sprite data.</returns>>
-    private IReadOnlyList<IGorgonAnimation> ReadLatestVersion(GorgonBinaryReader reader, GorgonAnimationBuilder builder, int count)
+    private IReadOnlyList<IGorgonAnimation> ReadLatestVersion(BinaryReader reader, GorgonAnimationBuilder builder, int count)
     {
-        var result = new IGorgonAnimation[count];
+        IGorgonAnimation[] result = new IGorgonAnimation[count];
 
         for (int i = 0; i < count; ++i)
         {
@@ -502,7 +490,7 @@ public class GorgonV1AnimationCodec
                         {
                             builder.EditColor("Color")
                                    .SetInterpolationMode(interpMode)
-                                   .SetKeys(colors.Select(item => new GorgonKeyGorgonColor(item.time, new GorgonColor(item.argb))))
+                                   .SetKeys(colors.Select(item => new GorgonKeyGorgonColor(item.time, GorgonColor.FromARGB(item.argb))))
                                    .EndEdit();
                         }
                         break;
@@ -519,7 +507,7 @@ public class GorgonV1AnimationCodec
                         break;
                     case "IMAGE":
                         reader.ReadInt32(); // We don't support interpolation.
-                        IReadOnlyList<(float time, GorgonTexture2DView texture, DX.RectangleF uv, string name)> textures = ReadTexture(reader, keyCount);
+                        IReadOnlyList<(float time, GorgonTexture2DView texture, GorgonRectangleF uv, string name)> textures = ReadTexture(reader, keyCount);
                         if (textures.Count > 0)
                         {
                             builder.Edit2DTexture("Texture")
@@ -569,7 +557,6 @@ public class GorgonV1AnimationCodec
                         continue;
                 }
 
-
             }
 
             result[i] = builder.Build(name, length);
@@ -587,9 +574,9 @@ public class GorgonV1AnimationCodec
     /// <returns>A new <see cref="IGorgonAnimation"/>.</returns>
     private IReadOnlyList<IGorgonAnimation> OnReadMultipleFromStream(Stream stream, bool firstOnly)
     {
-        var builder = new GorgonAnimationBuilder();
+        GorgonAnimationBuilder builder = new();
 
-        using var reader = new GorgonBinaryReader(stream, true);
+        using BinaryReader reader = new(stream, Encoding.UTF8, true);
         string headerVersion = reader.ReadString();
         if ((!headerVersion.StartsWith("GORSPR", StringComparison.OrdinalIgnoreCase))
             || (headerVersion.Length < 7)
@@ -649,9 +636,9 @@ public class GorgonV1AnimationCodec
     /// <param name="builder">The animation builder.</param>
     /// <param name="count">The number of animations.</param>
     /// <returns>The animations in the sprite data.</returns>>
-    private IReadOnlyList<IGorgonAnimation> ReadV10AnimationData(GorgonBinaryReader reader, GorgonAnimationBuilder builder, int count)
+    private IReadOnlyList<IGorgonAnimation> ReadV10AnimationData(BinaryReader reader, GorgonAnimationBuilder builder, int count)
     {
-        var result = new IGorgonAnimation[count];
+        IGorgonAnimation[] result = new IGorgonAnimation[count];
 
         for (int i = 0; i < count; ++i)
         {
@@ -721,7 +708,7 @@ public class GorgonV1AnimationCodec
                     interpSet = true;
                 }
 
-                var color = new GorgonColor(reader.ReadInt32());
+                GorgonColor color = GorgonColor.FromARGB(reader.ReadInt32());
                 // We don't use alpha mask value.
                 reader.ReadInt32();
 
@@ -741,7 +728,7 @@ public class GorgonV1AnimationCodec
                 GorgonTexture2DView view = null;
                 Vector2 imageOffset = Vector2.Zero;
                 Vector2 imageSize = Vector2.One;
-                var texCoords = new DX.RectangleF(imageOffset.X, imageOffset.Y, imageSize.X, imageSize.Y);
+                GorgonRectangleF texCoords = new(imageOffset.X, imageOffset.Y, imageSize.X, imageSize.Y);
 
                 if (!string.IsNullOrWhiteSpace(imageName))
                 {
@@ -760,7 +747,7 @@ public class GorgonV1AnimationCodec
                 }
                 else
                 {
-                    texCoords = new DX.RectangleF(imageOffset.X / view.Width, imageOffset.Y / view.Height, imageSize.X / view.Width, imageSize.Y / view.Height);
+                    texCoords = new GorgonRectangleF(imageOffset.X / view.Width, imageOffset.Y / view.Height, imageSize.X / view.Width, imageSize.Y / view.Height);
                 }
 
                 builder.Edit2DTexture("Texture")
@@ -789,18 +776,17 @@ public class GorgonV1AnimationCodec
     {
         if ((textureOverrides is not null) && (textureOverrides.Any()))
         {
-            Graphics.Log.Print("WARNING: The texture overrides parameter is not supported for version 1.x files. Textures will not be overridden.", LoggingLevel.Intermediate);
+            Graphics.Log.PrintWarning("The texture overrides parameter is not supported for version 1.x files. Textures will not be overridden.", LoggingLevel.Intermediate);
         }
 
         return OnReadMultipleFromStream(stream, true)[0];
     }
 
-
     /// <summary>Function to retrieve the names of the associated textures.</summary>
     /// <param name="stream">The stream containing the texture data.</param>
     /// <returns>The names of the texture associated with the animations, or an empty list if no textures were found.</returns>
     /// <remarks>This implementation does not do anything.</remarks>
-    protected override IReadOnlyList<string> OnGetAssociatedTextureNames(Stream stream) => Array.Empty<string>();
+    protected override IReadOnlyList<string> OnGetAssociatedTextureNames(Stream stream) => [];
 
     /// <summary>
     /// Function to determine the number of animations in the sprite.
@@ -816,7 +802,7 @@ public class GorgonV1AnimationCodec
 
         try
         {
-            var reader = new GorgonBinaryReader(stream, true);
+            BinaryReader reader = new(stream, Encoding.UTF8, true);
 
             // If we don't have at least 10 bytes, then this file is not valid.
             if ((stream.Length - stream.Position) < 16)
@@ -887,7 +873,7 @@ public class GorgonV1AnimationCodec
     /// <returns><b>true</b> if the data can be read, or <b>false</b> if not.</returns>
     protected override bool OnIsReadable(Stream stream)
     {
-        using var reader = new GorgonBinaryReader(stream, true);
+        using BinaryReader reader = new(stream, Encoding.UTF8, true);
         // If we don't have at least 10 bytes, then this file is not valid.
         if ((stream.Length - stream.Position) < 16)
         {
@@ -990,18 +976,16 @@ public class GorgonV1AnimationCodec
             ? throw new EndOfStreamException()
             : OnReadMultipleFromStream(stream, false);
     }
-    #endregion
 
-    #region Constructor/Finalizer.
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonV1AnimationCodec"/> class.
     /// </summary>
     /// <param name="renderer">The renderer used for resource handling.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/> is <b>null</b>.</exception>
     public GorgonV1AnimationCodec(Gorgon2D renderer)
-        : base(renderer, Resources.GOR2DIO_V1_ANIM_CODEC, Resources.GOR2DIO_V1_ANIM_CODEC_DESCRIPTION) => FileExtensions = new[]
-                         {
+        : base(renderer, Resources.GOR2DIO_V1_ANIM_CODEC, Resources.GOR2DIO_V1_ANIM_CODEC_DESCRIPTION) => FileExtensions =
+                         [
                              new GorgonFileExtension(".gorSprite", Resources.GOR2DIO_SPRITE_FILE_EXTENSION_DESC),
-                         };
-    #endregion
+                         ];
+
 }

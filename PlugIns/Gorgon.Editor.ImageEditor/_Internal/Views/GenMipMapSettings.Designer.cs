@@ -25,7 +25,7 @@ partial class GenMipMapSettings
         base.Dispose(disposing);
     }
 
-    #region Component Designer generated code
+
 
     /// <summary> 
     /// Required method for Designer support - do not modify 
@@ -162,7 +162,7 @@ partial class GenMipMapSettings
 
     }
 
-    #endregion
+
     private System.Windows.Forms.TableLayoutPanel TableBody;
     private System.Windows.Forms.Label LabelMipLevels;
     private System.Windows.Forms.NumericUpDown NumericMipLevels;

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,46 +11,44 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 11, 2018 3:43:13 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Numerics;
+using System.Text;
 using Gorgon.Animation;
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.IO.Properties;
 using Gorgon.Renderers;
-using DX = SharpDX;
 
 namespace Gorgon.IO;
 
 /// <summary>
-/// A codec that can read version 1 sprite data.
+/// A codec that can read version 1 sprite data
 /// </summary>
-public class GorgonV1SpriteBinaryCodec
-    : GorgonSpriteCodecCommon
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonV1SpriteBinaryCodec"/> class
+/// </remarks>
+/// <param name="renderer">The renderer used for resource handling.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/> parameter is <b>null</b>.</exception>
+public class GorgonV1SpriteBinaryCodec(Gorgon2D renderer)
+        : GorgonSpriteCodecCommon(renderer, Resources.GOR2DIO_V1_CODEC, Resources.GOR2DIO_V1_CODEC_DESCRIPTION)
 {
-    #region Variables.
-    // The animation codec for the sprite.
-    private readonly GorgonV1AnimationCodec _animationCodec;
-    #endregion
 
-    #region Properties.
+    // The animation codec for the sprite.
+    private readonly GorgonV1AnimationCodec _animationCodec = new(renderer);
+
     /// <summary>
     /// Property to return whether or not the codec can decode sprite data.
     /// </summary>
@@ -68,9 +66,7 @@ public class GorgonV1SpriteBinaryCodec
     {
         get;
     } = new Version(1, 2);
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to convert Gorgon 1.x image smoothing to 2.x texture filtering values.
     /// </summary>
@@ -107,16 +103,16 @@ public class GorgonV1SpriteBinaryCodec
     /// <param name="hWrap">Horizontal wrapping mode.</param>
     /// <param name="vWrap">Vertical wrapping mode.</param>
     /// <returns>The sampler state.</returns>
-	    private static GorgonSamplerState CreateSamplerState(GorgonGraphics graphics, SampleFilter filter, GorgonColor borderColor, TextureWrap hWrap, TextureWrap vWrap)
+    private static GorgonSamplerState CreateSamplerState(GorgonGraphics graphics, SampleFilter filter, GorgonColor borderColor, TextureWrap hWrap, TextureWrap vWrap)
     {
-        var builder = new GorgonSamplerStateBuilder(graphics);
+        GorgonSamplerStateBuilder builder = new(graphics);
 
         return filter switch
         {
-            SampleFilter.MinMagMipLinear when (hWrap == TextureWrap.Clamp) && (vWrap == TextureWrap.Clamp) && (borderColor == GorgonColor.White) => null,
-            SampleFilter.MinMagMipPoint when (hWrap == TextureWrap.Clamp) && (vWrap == TextureWrap.Clamp) && (borderColor == GorgonColor.White) => GorgonSamplerState.PointFiltering,
-            SampleFilter.MinMagMipLinear when (hWrap == TextureWrap.Wrap) && (vWrap == TextureWrap.Wrap) && (borderColor == GorgonColor.White) => GorgonSamplerState.Wrapping,
-            SampleFilter.MinMagMipPoint when (hWrap == TextureWrap.Wrap) && (vWrap == TextureWrap.Wrap) && (borderColor == GorgonColor.White) => GorgonSamplerState.PointFilteringWrapping,
+            SampleFilter.MinMagMipLinear when (hWrap == TextureWrap.Clamp) && (vWrap == TextureWrap.Clamp) && (borderColor == GorgonColors.White) => null,
+            SampleFilter.MinMagMipPoint when (hWrap == TextureWrap.Clamp) && (vWrap == TextureWrap.Clamp) && (borderColor == GorgonColors.White) => GorgonSamplerState.PointFiltering,
+            SampleFilter.MinMagMipLinear when (hWrap == TextureWrap.Wrap) && (vWrap == TextureWrap.Wrap) && (borderColor == GorgonColors.White) => GorgonSamplerState.Wrapping,
+            SampleFilter.MinMagMipPoint when (hWrap == TextureWrap.Wrap) && (vWrap == TextureWrap.Wrap) && (borderColor == GorgonColors.White) => GorgonSamplerState.PointFilteringWrapping,
             _ => builder.Wrapping(hWrap, vWrap, borderColor: borderColor)
 .Filter(filter)
 .Build(),
@@ -130,7 +126,7 @@ public class GorgonV1SpriteBinaryCodec
     /// <param name="reader">Binary reader to use to read in the data.</param>
     /// <param name="overrideTexture">The texture to assign to the sprite instead of the texture associated with the name stored in the file.</param>
     /// <returns>The sprite from the stream data.</returns>
-    private static GorgonSprite LoadSprite(GorgonGraphics graphics, GorgonBinaryReader reader, GorgonTexture2DView overrideTexture)
+    private static GorgonSprite LoadSprite(GorgonGraphics graphics, BinaryReader reader, GorgonTexture2DView overrideTexture)
     {
         string imageName = string.Empty;
 
@@ -142,7 +138,7 @@ public class GorgonV1SpriteBinaryCodec
             throw new GorgonException(GorgonResult.CannotRead, Resources.GOR2DIO_ERR_INVALID_HEADER);
         }
 
-        var sprite = new GorgonSprite();
+        GorgonSprite sprite = new();
         Version version = headerVersion.ToUpperInvariant() switch
         {
             "GORSPR1" => new Version(1, 0),
@@ -201,18 +197,18 @@ public class GorgonV1SpriteBinaryCodec
         }
 
         // Get the size of the sprite.
-        sprite.Size = new DX.Size2F(reader.ReadSingle(), reader.ReadSingle());
+        sprite.Size = new Vector2(reader.ReadSingle(), reader.ReadSingle());
 
         // Older versions of the sprite object used pixel space for their texture coordinates.  We will have to 
         // fix up these coordinates into texture space once we have a texture loaded.  At this point, there's no guarantee 
         // that the texture was loaded safely, so we'll have to defer it until later.
         // Also, older versions used the size the determine the area on the texture to cover.  So use the size to
         // get the texture bounds.
-        var textureOffset = new Vector2(reader.ReadSingle(), reader.ReadSingle());
+        Vector2 textureOffset = new(reader.ReadSingle(), reader.ReadSingle());
 
         // Read the anchor.
         // Gorgon v3 anchors are relative, so we need to convert them based on our sprite size.
-        sprite.Anchor = new Vector2(reader.ReadSingle() / sprite.Size.Width, reader.ReadSingle() / sprite.Size.Height);
+        sprite.Anchor = new Vector2(reader.ReadSingle() / sprite.Size.X, reader.ReadSingle() / sprite.Size.Y);
 
         // Get vertex offsets.
         sprite.CornerOffsets.UpperLeft = new Vector3(reader.ReadSingle(), reader.ReadSingle(), 0);
@@ -221,10 +217,10 @@ public class GorgonV1SpriteBinaryCodec
         sprite.CornerOffsets.LowerLeft = new Vector3(reader.ReadSingle(), reader.ReadSingle(), 0);
 
         // Get vertex colors.
-        sprite.CornerColors.UpperLeft = new GorgonColor(reader.ReadInt32());
-        sprite.CornerColors.UpperRight = new GorgonColor(reader.ReadInt32());
-        sprite.CornerColors.LowerLeft = new GorgonColor(reader.ReadInt32());
-        sprite.CornerColors.LowerRight = new GorgonColor(reader.ReadInt32());
+        sprite.CornerColors.UpperLeft = GorgonColor.FromARGB(reader.ReadInt32());
+        sprite.CornerColors.UpperRight = GorgonColor.FromARGB(reader.ReadInt32());
+        sprite.CornerColors.LowerLeft = GorgonColor.FromARGB(reader.ReadInt32());
+        sprite.CornerColors.LowerRight = GorgonColor.FromARGB(reader.ReadInt32());
 
         // Skip shader information.  Version 1.0 had shader information attached to the sprite.
         if ((version.Major == 1) && (version.Minor < 1))
@@ -250,7 +246,7 @@ public class GorgonV1SpriteBinaryCodec
         {
             // Direct 3D 9 used a value from 0..255 for alpha masking, we use
             // a scalar value so convert to a scalar.
-            sprite.AlphaTest = new GorgonRangeF(0.0f, reader.ReadInt32() / 255.0f);
+            sprite.AlphaTest = new GorgonRange<float>(0.0f, reader.ReadInt32() / 255.0f);
         }
 
         // Set the blending mode.
@@ -273,7 +269,7 @@ public class GorgonV1SpriteBinaryCodec
         TextureWrap hWrap = TextureWrap.Clamp;
         TextureWrap vWrap = TextureWrap.Clamp;
         SampleFilter filter = SampleFilter.MinMagMipLinear;
-        GorgonColor samplerBorder = GorgonColor.White;
+        GorgonColor samplerBorder = GorgonColors.White;
 
         // Get horizontal wrapping mode.
         if (!InheritHorizontalWrapping)
@@ -349,12 +345,12 @@ public class GorgonV1SpriteBinaryCodec
                 reader.ReadBoolean();
             }
 
-            samplerBorder = new GorgonColor(reader.ReadInt32());
+            samplerBorder = GorgonColor.FromARGB(reader.ReadInt32());
 
             // The border in the older version defaults to black.  To make it more performant, reverse this value to white.
-            if (samplerBorder == GorgonColor.Black)
+            if (samplerBorder == GorgonColors.Black)
             {
-                samplerBorder = GorgonColor.White;
+                samplerBorder = GorgonColors.White;
             }
         }
 
@@ -378,14 +374,14 @@ public class GorgonV1SpriteBinaryCodec
         // If we cannot load the image, then fall back to the standard coordinates.            
         if (textureView is null)
         {
-            sprite.TextureRegion = new DX.RectangleF(0, 0, 1, 1);
+            sprite.TextureRegion = new GorgonRectangleF(0, 0, 1, 1);
         }
         else
         {
-            sprite.TextureRegion = new DX.RectangleF(textureOffset.X / textureView.Width,
+            sprite.TextureRegion = new GorgonRectangleF(textureOffset.X / textureView.Width,
                                                      textureOffset.Y / textureView.Height,
-                                                     sprite.Size.Width / textureView.Width,
-                                                     sprite.Size.Height / textureView.Height);
+                                                     sprite.Size.X / textureView.Width,
+                                                     sprite.Size.Y / textureView.Height);
             sprite.TextureSampler = CreateSamplerState(graphics, filter, samplerBorder, hWrap, vWrap);
         }
 
@@ -401,7 +397,7 @@ public class GorgonV1SpriteBinaryCodec
     /// <returns><b>true</b> if the data can be read, or <b>false</b> if not.</returns>
     protected override bool OnIsReadable(Stream stream)
     {
-        using var reader = new GorgonBinaryReader(stream, true);
+        using BinaryReader reader = new(stream, Encoding.UTF8, true);
         // If we don't have at least 10 bytes, then this file is not valid.
         if ((stream.Length - stream.Position) < 16)
         {
@@ -431,7 +427,7 @@ public class GorgonV1SpriteBinaryCodec
     /// <returns>The name of the texture associated with the sprite, or <b>null</b> if no texture was found.</returns>
     protected override string OnGetAssociatedTextureName(Stream stream)
     {
-        using var reader = new GorgonBinaryReader(stream, true);
+        using BinaryReader reader = new(stream, Encoding.UTF8, true);
         string headerVersion = reader.ReadString();
         if ((!headerVersion.StartsWith("GORSPR", StringComparison.OrdinalIgnoreCase))
             || (headerVersion.Length < 7)
@@ -473,7 +469,7 @@ public class GorgonV1SpriteBinaryCodec
     /// <returns>A new <see cref="GorgonSprite"/>.</returns>
     protected override GorgonSprite OnReadFromStream(Stream stream, int byteCount, GorgonTexture2DView overrideTexture)
     {
-        using var reader = new GorgonBinaryReader(stream, true);
+        using BinaryReader reader = new(stream, Encoding.UTF8, true);
         // We don't need the byte count here.
         return LoadSprite(Graphics, reader, overrideTexture);
     }
@@ -514,16 +510,5 @@ public class GorgonV1SpriteBinaryCodec
     /// <exception cref="GorgonException">Thrown if the <paramref name="stream"/> is write only.</exception>
     /// <exception cref="EndOfStreamException">Thrown if the current <paramref name="stream"/> position, plus the size of the data exceeds the length of the stream.</exception>
     public int GetAnimationCount(Stream stream) => _animationCodec.GetAnimationCount(stream);
-    #endregion
-
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonV1SpriteBinaryCodec"/> class.
-    /// </summary>
-    /// <param name="renderer">The renderer used for resource handling.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/> parameter is <b>null</b>.</exception>
-    public GorgonV1SpriteBinaryCodec(Gorgon2D renderer)
-        : base(renderer, Resources.GOR2DIO_V1_CODEC, Resources.GOR2DIO_V1_CODEC_DESCRIPTION) => _animationCodec = new GorgonV1AnimationCodec(renderer);
-    #endregion
 
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,38 +11,33 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 18, 2019 5:09:46 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers;
 using Gorgon.Renderers.Cameras;
-using DX = SharpDX;
 
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Provides rendering functionality for the appilcation.
+/// Provides rendering functionality for the appilcation
 /// </summary>
 internal class SceneRenderer
     : IDisposable
 {
-    #region Variables.
+
     // The main graphics interface.
     private readonly GorgonGraphics _graphics;
     // The 2D renderer.
@@ -54,13 +49,11 @@ internal class SceneRenderer
     // The screen buffer.
     private GorgonRenderTarget2DView _screen;
     // The list of layers to render.
-    private readonly List<Layer> _layers = new();
+    private readonly List<Layer> _layers = [];
     // Post processing groups.  Use to render specific layers with post processing effects.
-    private readonly List<(string name, Gorgon2DCompositor compositor)> _postProcessGroups = new();
+    private readonly List<(string name, Gorgon2DCompositor compositor)> _postProcessGroups = [];
     private readonly Dictionary<string, List<Layer>> _postProcessLayers = new(StringComparer.OrdinalIgnoreCase);
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to copy the contents of a texture to the screen buffer.
     /// </summary>
@@ -69,10 +62,10 @@ internal class SceneRenderer
     {
         _graphics.SetRenderTarget(_screen);
         _renderer.Begin();
-        _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _screen.Width, _screen.Height),
-                                    GorgonColor.White,
+        _renderer.DrawFilledRectangle(new GorgonRectangleF(0, 0, _screen.Width, _screen.Height),
+                                    GorgonColors.White,
                                     src,
-                                    new DX.RectangleF(0, 0, 1, 1),
+                                    new GorgonRectangleF(0, 0, 1, 1),
                                     textureSampler: GorgonSamplerState.Default);
 
         _renderer.End();
@@ -128,7 +121,7 @@ internal class SceneRenderer
 
         ApplyLightingToLayers();
 
-        _screen.Clear(GorgonColor.BlackTransparent);
+        _screen.Clear(GorgonColors.BlackTransparent);
 
         // If we have no post processing, then just blit to the screen target.
         if (_postProcessGroups.Count == 0)
@@ -139,7 +132,7 @@ internal class SceneRenderer
             }
 
             FlipToScreen(sceneSrv);
-        }            
+        }
         else
         {
             for (int i = 0; i < _postProcessGroups.Count; ++i)
@@ -152,7 +145,7 @@ internal class SceneRenderer
                     continue;
                 }
 
-                sceneBuffer.Clear(GorgonColor.BlackTransparent);
+                sceneBuffer.Clear(GorgonColors.BlackTransparent);
                 _graphics.SetRenderTarget(sceneBuffer);
 
                 // Render the data.
@@ -200,8 +193,8 @@ internal class SceneRenderer
 
         // Adjust the viewable area to match our aspect ratio.
         // This will give our view a range of -1x-1 - 1x1.
-        //_camera.ViewDimensions = new DX.Size2F(2 * aspect.X, 2 * aspect.Y);
-        _camera.ViewDimensions = new DX.Size2F(2 * aspect.X, 2 * aspect.Y);
+        //_camera.ViewDimensions = new Vector2(2 * aspect.X, 2 * aspect.Y);
+        _camera.ViewDimensions = new Vector2(2 * aspect.X, 2 * aspect.Y);
 
         // All of our sprites are in pixel size, in order to bring them into resolution independent space, we need to adjust their sizes
         // (else they'll be massive).
@@ -209,27 +202,26 @@ internal class SceneRenderer
         {
             // Since we're altering the size of the sprites, we'll need to get the original width/height from another place.
             // This can be extracted from the sprite texture region (assuming the region is 1:1 with pixel space, scaling the texture coordinates will mess this up).
-            var size = sprite.Texture.ToPixel(sprite.TextureRegion.Size).ToSize2F();
+            Vector2 size = sprite.Texture.ToPixel(sprite.TextureRegion.Size);
 
             // Scale the size of the sprite to match our base resolution of 1920x1080.
-            var newSize = new DX.Size2F(size.Width / screen.Width * _camera.ViewDimensions.Width * 0.75f, size.Height / screen.Height * _camera.ViewDimensions.Height * 0.75f);
+            Vector2 newSize = new(size.X / screen.Width * _camera.ViewDimensions.X * 0.75f, size.Y / screen.Height * _camera.ViewDimensions.Y * 0.75f);
 
             sprite.Size = newSize;
         }
 
         foreach (Layer layer in _layers)
         {
-            layer.OnResize(new DX.Size2(screen.Width, screen.Height));
+            layer.OnResize(new GorgonPoint(screen.Width, screen.Height));
         }
     }
-
 
     /// <summary>
     /// Function to load the resources for the renderer.
     /// </summary>
     public void LoadResources()
     {
-        _postProcessLayers["__NULL__"] = new List<Layer>();
+        _postProcessLayers["__NULL__"] = [];
         _postProcessGroups.Add(("Final Pass", _resources.PostProcessCompositors["Final Pass"]));
         _postProcessGroups.Add(("Space Ships", null));
 
@@ -244,7 +236,7 @@ internal class SceneRenderer
 
             if (!_postProcessLayers.TryGetValue(layer.PostProcessGroup, out List<Layer> layers))
             {
-                _postProcessLayers[layer.PostProcessGroup] = layers = new List<Layer>();
+                _postProcessLayers[layer.PostProcessGroup] = layers = [];
             }
 
             layers.Add(layer);
@@ -262,9 +254,7 @@ internal class SceneRenderer
             layer.Dispose();
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
     /// <summary>Initializes a new instance of the <see cref="Examples.Renderer"/> class.</summary>
     /// <param name="renderer">The renderer.</param>
     /// <param name="resources">The resources.</param>
@@ -279,5 +269,4 @@ internal class SceneRenderer
         _layers.AddRange(layerController.Layers);
         _camera = camera;
     }
-    #endregion
 }

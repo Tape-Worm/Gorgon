@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,42 +11,33 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 29, 2018 8:19:12 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
+using System.Text.Json.Serialization;
 using Gorgon.Editor.Metadata;
-using Newtonsoft.Json;
 
 namespace Gorgon.Editor.ProjectData;
 
 /// <summary>
-/// The project data.
+/// The project data
 /// </summary>
 internal class Project
     : IProject
 {
-    #region Variables.
-
-    #endregion
-
-    #region Properties.
     /// <summary>
     /// Property to return the version for the project file.
-    /// </summary>
-    [JsonProperty]
+    /// </summary>    
+    [JsonInclude]
     public string Version
     {
         get;
@@ -71,7 +62,7 @@ internal class Project
     /// Property to return the temporary directory for the project.
     /// </summary>
     /// <remarks>
-    /// The temporary directory is for plug ins and the editor to store transitory data that only needs to exist during the lifetime of the application or plug in. Nothing in this directory is saved 
+    /// The temporary directory is for plug-ins and the editor to store transitory data that only needs to exist during the lifetime of the application or plug-in. Nothing in this directory is saved 
     /// into the project.
     /// </remarks>
     [JsonIgnore]
@@ -113,14 +104,13 @@ internal class Project
     /// <summary>
     /// Property to return the list of project items.
     /// </summary>
+    [JsonInclude]
     public Dictionary<string, ProjectItemMetadata> ProjectItems
     {
         get;
         private set;
     } = new Dictionary<string, ProjectItemMetadata>(StringComparer.OrdinalIgnoreCase);
-    #endregion
 
-    #region Constructor/Finalizer.        
     /// <summary>Initializes a new instance of the Project class.</summary>
     [JsonConstructor]
     public Project()
@@ -134,7 +124,7 @@ internal class Project
     {
         foreach (KeyValuePair<string, Project30ItemMetadata> item in project.ProjectItems)
         {
-            var newItem = new ProjectItemMetadata
+            ProjectItemMetadata newItem = new()
             {
                 PlugInName = item.Value.PlugInName
             };
@@ -148,7 +138,7 @@ internal class Project
             {
                 if (!newItem.DependsOn.TryGetValue(dependency.Key, out List<string> items))
                 {
-                    newItem.DependsOn[dependency.Key] = items = new List<string>();
+                    newItem.DependsOn[dependency.Key] = items = [];
                 }
 
                 if (!items.Contains(dependency.Value))
@@ -176,5 +166,4 @@ internal class Project
         FileSystemDirectory = fileSystemDir ?? throw new ArgumentNullException(nameof(fileSystemDir));
         SourceDirectory = srcDirectory ?? throw new ArgumentNullException(nameof(srcDirectory));
     }
-    #endregion
 }

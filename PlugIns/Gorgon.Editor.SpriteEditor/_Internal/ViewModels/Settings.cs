@@ -1,6 +1,5 @@
-﻿#region MIT
-// 
-// Gorgon.
+﻿// 
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,38 +10,34 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 25, 2019 9:58:48 AM
 // 
-#endregion
 
+using Gorgon.Core;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor;
 
 /// <summary>
-/// The view model used to manipulate the settings for the plug in.
+/// The view model used to manipulate the settings for the plug-in
 /// </summary>
 internal class Settings
     : ViewModelBase<SettingsParameters, IHostContentServices>, ISettings
 {
-    #region Variables.
-    // The plug in settings.
+    // The plug-in settings.
     private SpriteEditorSettings _settings;
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to set or return the type of masking to perform when picking a sprite using the <see cref="SpriteEditTool.SpritePick"/> tool.
     /// </summary>
@@ -70,7 +65,7 @@ internal class Settings
         get => GorgonColor.FromRGBA(_settings.ClipMaskValue);
         set
         {
-            int intValue = value.ToRGBA();
+            int intValue = GorgonColor.ToRGBA(value);
 
             if (intValue == _settings.ClipMaskValue)
             {
@@ -86,7 +81,7 @@ internal class Settings
     /// <summary>
     /// Property to set or return the position of the manual input window.
     /// </summary>
-    public DX.Rectangle? ManualRectangleEditorBounds
+    public GorgonRectangle? ManualRectangleEditorBounds
     {
         get => _settings.ManualRectangleEditorBounds;
         set
@@ -103,7 +98,7 @@ internal class Settings
     }
 
     /// <summary>property to set or return the position of the manual vertex editor window.</summary>
-    public DX.Rectangle? ManualVertexEditorBounds
+    public GorgonRectangle? ManualVertexEditorBounds
     {
         get => _settings.ManualVertexEditorBounds;
         set
@@ -137,9 +132,7 @@ internal class Settings
             OnPropertyChanged();
         }
     }
-    #endregion
 
-    #region Methods.
     /// <summary>Function to inject dependencies for the view model.</summary>
     /// <param name="injectionParameters">The parameters to inject.</param>
     /// <exception cref="ArgumentMissingException">Thrown when required parameters are missing.</exception>
@@ -147,5 +140,4 @@ internal class Settings
     /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
     /// </remarks>
     protected override void OnInitialize(SettingsParameters injectionParameters) => _settings = injectionParameters.Settings ?? throw new ArgumentMissingException(nameof(SettingsParameters.Settings), nameof(injectionParameters));
-    #endregion
 }

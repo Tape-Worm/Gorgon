@@ -25,7 +25,7 @@ partial class Fx1BitSettings
         base.Dispose(disposing);
     }
 
-    #region Component Designer generated code
+
 
     /// <summary> 
     /// Required method for Designer support - do not modify 
@@ -206,7 +206,7 @@ partial class Fx1BitSettings
 
     }
 
-    #endregion
+
 
     private System.Windows.Forms.TableLayoutPanel TableOptions;
     private System.Windows.Forms.CheckBox CheckInvert;

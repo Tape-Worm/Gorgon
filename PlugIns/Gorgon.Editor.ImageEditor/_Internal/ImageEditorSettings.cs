@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,34 +11,31 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: November 7, 2018 1:33:38 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace Gorgon.Editor.ImageEditor;
 
 /// <summary>
-/// The settings for the image editor plug in.
+/// The settings for the image editor plug-in
 /// </summary>
 internal class ImageEditorSettings
 {
     /// <summary>
-    /// Property to return the list of additional image codec plug ins to load.
+    /// Property to return the list of additional image codec plug-ins to load.
     /// </summary>
-    [JsonProperty]
+    [JsonInclude]
     public Dictionary<string, string> CodecPlugInPaths
     {
         get;
@@ -46,9 +43,9 @@ internal class ImageEditorSettings
     } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
     /// <summary>
-    /// Property to set or return the last codec plug in path.
+    /// Property to set or return the last codec plug-in path.
     /// </summary>
-    [JsonProperty]
+    [JsonInclude]
     public string LastCodecPlugInPath
     {
         get;
@@ -58,7 +55,7 @@ internal class ImageEditorSettings
     /// <summary>
     /// Property to set or return the to the directory that was last used for importing/exporting.
     /// </summary>
-    [JsonProperty]
+    [JsonInclude]
     public string LastImportExportPath
     {
         get;
@@ -68,7 +65,7 @@ internal class ImageEditorSettings
     /// <summary>
     /// Property to set or return the last used alpha value when setting an alpha channel.
     /// </summary>
-    [JsonProperty]
+    [JsonInclude]
     public int AlphaValue
     {
         get;
@@ -78,7 +75,7 @@ internal class ImageEditorSettings
     /// <summary>
     /// Property to set or return the last used alpha value minimum when setting an alpha channel.
     /// </summary>
-    [JsonProperty]
+    [JsonInclude]
     public int AlphaRangeMin
     {
         get;
@@ -88,7 +85,7 @@ internal class ImageEditorSettings
     /// <summary>
     /// Property to set or return the last used alpha value maximum when setting an alpha channel.
     /// </summary>
-    [JsonProperty]
+    [JsonInclude]
     public int AlphaRangeMax
     {
         get;
@@ -96,7 +93,7 @@ internal class ImageEditorSettings
     } = 255;
 
     /// <summary>Property to set or return the width of the picker window.</summary>
-    [JsonProperty]
+    [JsonInclude]
     public int PickerWidth
     {
         get;
@@ -104,7 +101,7 @@ internal class ImageEditorSettings
     } = 900;
 
     /// <summary>Property to set or return the height of the picker window.</summary>
-    [JsonProperty]
+    [JsonInclude]
     public int PickerHeight
     {
         get;
@@ -112,7 +109,7 @@ internal class ImageEditorSettings
     } = 600;
 
     /// <summary>Property to set or return the state of the picker window.</summary>
-    [JsonProperty]
+    [JsonInclude]
     public int PickerWindowState
     {
         get;
@@ -122,7 +119,7 @@ internal class ImageEditorSettings
     /// <summary>
     /// Property to set or return the path to the image editor to use when editing the texture.
     /// </summary>
-    [JsonProperty]
+    [JsonInclude]
     public string ImageEditorApplicationPath
     {
         get;

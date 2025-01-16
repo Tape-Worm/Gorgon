@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,45 +11,34 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 12, 2018 12:37:25 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
-using Gorgon.Core;
 using Gorgon.Graphics;
 
 namespace Gorgon.Renderers;
 
 /// <summary>
-/// A parser used to analyze text with embedded codes.
+/// A parser used to analyze text with embedded codes
 /// </summary>
 internal class TextCodeParser
 {
-    #region Variables.
     // Buffer used to parse the string.
     private readonly StringBuilder _colorBuffer = new(16);
     // Buffer used to parse the string.
     private readonly StringBuilder _parseBuffer = new(256);
-    #endregion
 
-    #region Properties.
-
-    #endregion
-
-    #region Methods.
     /// <summary>
     /// Function to retrieve the color value from a hex code.
     /// </summary>
@@ -71,7 +60,48 @@ internal class TextCodeParser
 
         return !int.TryParse(_colorBuffer.ToString(), NumberStyles.AllowHexSpecifier, CultureInfo.CurrentCulture, out int color)
             ? null
-            : new GorgonColor(color);
+            : GorgonColor.FromARGB(color);
+    }
+
+    /// <summary>
+    /// Function to find the index of the control characters in a string builder.
+    /// </summary>
+    /// <param name="line">The line containing the text to evaluate.</param>
+    /// <param name="value">The string value to look for.</param>
+    /// <param name="startIndex">The starting index within the line to start searching from.</param>
+    /// <returns>The index of the control character, or -1 if not found.</returns>
+    private int IndexOfControlChars(StringBuilder line, string value, int startIndex)
+    {
+        if (line.Length < value.Length)
+        {
+            return -1;
+        }
+
+        int charCount = 0;
+
+        for (int i = 0; i < value.Length; ++i)
+        {
+            char c = value[i];
+
+            for (int j = startIndex; j < line.Length; ++j)
+            {
+                if (char.ToUpperInvariant(c) != char.ToUpperInvariant(line[j]))
+                {
+                    continue;
+                }
+
+                startIndex = j;
+                ++charCount;
+                break;
+            }
+
+            if (charCount == value.Length)
+            {
+                return (startIndex - charCount) + 1;
+            }
+        }
+
+        return -1;
     }
 
     /// <summary>
@@ -86,19 +116,19 @@ internal class TextCodeParser
             return (encodedText, new List<ColorBlock>());
         }
 
-        var blocks = new List<ColorBlock>();
+        List<ColorBlock> blocks = [];
         int startTagIndex;
         _parseBuffer.Length = 0;
         _parseBuffer.Append(encodedText);
 
         do
         {
-            startTagIndex = _parseBuffer.IndexOf("[c", comparison: StringComparison.CurrentCultureIgnoreCase);
+            startTagIndex = IndexOfControlChars(_parseBuffer, "[c", 0);
 
             int endTagIndex;
             if (startTagIndex != -1)
             {
-                endTagIndex = _parseBuffer.IndexOf("]", startTagIndex, StringComparison.CurrentCulture);
+                endTagIndex = IndexOfControlChars(_parseBuffer, "]", startTagIndex);
             }
             else
             {
@@ -108,7 +138,7 @@ internal class TextCodeParser
             int closeTagIndex;
             if (endTagIndex != -1)
             {
-                closeTagIndex = _parseBuffer.IndexOf("[/c]", endTagIndex, StringComparison.CurrentCultureIgnoreCase);
+                closeTagIndex = IndexOfControlChars(_parseBuffer, "[/c]", endTagIndex);
             }
             else
             {
@@ -142,5 +172,4 @@ internal class TextCodeParser
 
         return (_parseBuffer.ToString(), blocks);
     }
-    #endregion
 }

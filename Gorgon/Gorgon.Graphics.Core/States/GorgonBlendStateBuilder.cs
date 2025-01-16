@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,44 +11,44 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 24, 2018 4:10:30 PM
 // 
-#endregion
+
+using Gorgon.Memory;
 
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// A builder for a <see cref="GorgonBlendState"/> object.
+/// A builder for a <see cref="GorgonBlendState"/> object
 /// </summary>
 /// <remarks>
 /// <para>
-/// Use this builder to create a new immutable <see cref="GorgonBlendState"/> to pass to a <see cref="GorgonPipelineState"/>. This object provides a fluent interface to help build up a blend state.
+/// Use this builder to create a new immutable <see cref="GorgonBlendState"/> to pass to a <see cref="GorgonPipelineState"/>. This object provides a fluent interface to help build up a blend state
 /// </para>
 /// <para>
 /// A blend state will define how rasterized data is blended with the current render target(s). The ability to disable blending, define how blending operations are performed, etc... are all done through 
 /// this state. This state also defines how blending is performed between adjacent render target(s) in the <see cref="GorgonGraphics.RenderTargets"/>. This is controlled by the 
-/// <see cref="GorgonPipelineState.IsIndependentBlendingEnabled"/> flag on the <see cref="GorgonPipelineState"/> object.
+/// <see cref="GorgonPipelineState.IsIndependentBlendingEnabled"/> flag on the <see cref="GorgonPipelineState"/> object
 /// </para>
 /// <para>
-/// A blend state is an immutable object, and as such can only be created by using this object.
+/// A blend state is an immutable object, and as such can only be created by using this object
 /// </para>
 /// </remarks>
 /// <seealso cref="GorgonGraphics"/>
 /// <seealso cref="GorgonPipelineState"/>
 /// <seealso cref="GorgonBlendState"/>
 public class GorgonBlendStateBuilder
-    : GorgonStateBuilderAllocator<GorgonBlendStateBuilder, GorgonBlendState>
+    : GorgonStateBuilderCommon<GorgonBlendStateBuilder, GorgonBlendState>
 {
-    #region Methods.
     /// <summary>
     /// Function to copy the state settings from the source state into the destination.
     /// </summary>
@@ -68,14 +68,23 @@ public class GorgonBlendStateBuilder
     }
 
     /// <summary>
-    /// Function to update the properties of the state from the working copy to the final copy.
+    /// Function to create a new state object.
     /// </summary>
-    /// <returns>The fluent builder interface.</returns>
-    protected override GorgonBlendState OnCreateState() => new(WorkingState);
+    /// <param name="allocator">The allocator used to create the object.</param>
+    /// <returns>The new render state.</returns>
+    /// <remarks>
+    /// <para>
+    /// This method should be used to create the object only, the state information will be copied into the object by the <see cref="OnUpdate"/> method.
+    /// </para>
+    /// <para>
+    /// If the <paramref name="allocator"/> is null, the application should create the object using the <c>new</c> keyword. Otherwise, the <paramref name="allocator"/> should be used to create the object.
+    /// </para>
+    /// </remarks>
+    protected override GorgonBlendState OnCreate(IGorgonAllocator<GorgonBlendState>? allocator) => allocator?.Allocate() ?? new();
 
     /// <summary>Function to update the properties of the state, allocated from an allocator, from the working copy.</summary>
     /// <param name="state">The state to update.</param>
-    protected override void OnUpdate(GorgonBlendState state) => CopyState(WorkingState, state);
+    protected override void OnUpdate(GorgonBlendState state) => CopyState(state, WorkingState);
 
     /// <summary>
     /// Function to reset the builder to the specified state.
@@ -92,7 +101,7 @@ public class GorgonBlendStateBuilder
     /// Function to clear the working state for the builder.
     /// </summary>
     /// <returns>The fluent builder interface.</returns>
-    protected override GorgonBlendStateBuilder OnClearState()
+    protected override GorgonBlendStateBuilder OnClear()
     {
         CopyState(WorkingState, GorgonBlendState.Default);
         return this;
@@ -202,16 +211,13 @@ public class GorgonBlendStateBuilder
 
         return this;
     }
-    #endregion
 
-    #region Constructor.
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonBlendStateBuilder"/> class.
     /// </summary>
     public GorgonBlendStateBuilder()
         : base(new GorgonBlendState())
     {
-        
+
     }
-    #endregion
 }

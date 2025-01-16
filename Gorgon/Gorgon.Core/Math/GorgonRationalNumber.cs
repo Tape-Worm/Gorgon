@@ -1,7 +1,6 @@
-﻿#region MIT
-// 
+﻿// 
 // Gorgon.
-// Copyright (C) 2015 Michael Winsor
+// Copyright (C) 2024 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,10 +21,7 @@
 // 
 // Created: Sunday, October 11, 2015 11:51:54 PM
 // 
-#endregion
 
-using System;
-using Gorgon.Core;
 using Gorgon.Properties;
 
 namespace Gorgon.Math;
@@ -36,11 +32,10 @@ namespace Gorgon.Math;
 public readonly struct GorgonRationalNumber
     : IEquatable<GorgonRationalNumber>, IComparable<GorgonRationalNumber>
 {
-    #region Variables.
     /// <summary>
     /// An empty rational number.
     /// </summary>
-    public static readonly GorgonRationalNumber Empty;
+    public static readonly GorgonRationalNumber Empty = new();
 
     /// <summary>
     /// The numerator for the number.
@@ -51,9 +46,7 @@ public readonly struct GorgonRationalNumber
     /// The denominator for the number.
     /// </summary>
     public readonly int Denominator;
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to compare two instances for equality.
     /// </summary>
@@ -91,7 +84,7 @@ public readonly struct GorgonRationalNumber
     /// </returns>
     /// <param name="obj">The object to compare with the current object. </param>
     /// <filterpriority>2</filterpriority>
-    public override bool Equals(object obj) => obj is GorgonRationalNumber rational ? rational.Equals(this) : base.Equals(obj);
+    public override bool Equals(object? obj) => obj is GorgonRationalNumber rational ? rational.Equals(this) : base.Equals(obj);
 
     /// <summary>
     /// Indicates whether the current object is equal to another object of the same type.
@@ -110,9 +103,7 @@ public readonly struct GorgonRationalNumber
     /// </returns>
     /// <param name="other">An object to compare with this instance. </param>
     public int CompareTo(GorgonRationalNumber other) => Equals(this, other) ? 0 : this < other ? -1 : 1;
-    #endregion
 
-    #region Operators.
     /// <summary>
     /// Performs an implicit conversion from <see cref="GorgonRationalNumber"/> to <see cref="decimal"/>.
     /// </summary>
@@ -140,20 +131,6 @@ public readonly struct GorgonRationalNumber
     /// <param name="value">The value convert.</param>
     /// <returns>The result of the conversion.</returns>
     public static explicit operator int(GorgonRationalNumber value) => ToInt32(value);
-
-    /// <summary>
-    /// Performs an implicit conversion from <see cref="int"/> to <see cref="GorgonRationalNumber"/>.
-    /// </summary>
-    /// <param name="value">The value to convert.</param>
-    /// <returns>The result of the conversion.</returns>
-    public static implicit operator GorgonRationalNumber(int value) => ToGorgonRationalNumber(value);
-
-    /// <summary>
-    /// Function to perform an implicit conversion from <see cref="int"/> to <see cref="GorgonRationalNumber"/>.
-    /// </summary>
-    /// <param name="value">The value to convert.</param>
-    /// <returns>The result of the conversion.</returns>
-    public static GorgonRationalNumber ToGorgonRationalNumber(int value) => new(value, 1);
 
     /// <summary>
     /// Function to perform an explicit conversion from <see cref="GorgonRationalNumber"/> to <see cref="int"/>.
@@ -238,7 +215,7 @@ public readonly struct GorgonRationalNumber
         decimal leftRational = left;
         decimal rightRational = right;
 
-        return leftRational < rightRational;
+        return leftRational > rightRational;
     }
 
     /// <summary>
@@ -254,9 +231,7 @@ public readonly struct GorgonRationalNumber
 
         return leftRational >= rightRational;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonRationalNumber"/> struct.
     /// </summary>
@@ -273,5 +248,4 @@ public readonly struct GorgonRationalNumber
         Numerator = numerator;
         Denominator = denominator;
     }
-    #endregion
 }

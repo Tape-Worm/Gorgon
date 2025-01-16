@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,38 +11,34 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 11, 2020 9:51:23 PM
 // 
-#endregion
 
-using System;
 using System.Numerics;
-using System.Windows.Forms;
 using Gorgon.Animation;
 using Gorgon.Editor.Rendering;
 using Gorgon.Graphics;
 using Gorgon.Math;
 using Gorgon.Renderers;
 using Gorgon.Renderers.Cameras;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.Services;
 
 /// <summary>
-/// A service used to edit an anchor point on a sprite.
+/// A service used to edit an anchor point on a sprite
 /// </summary>
 public class AnchorEditService : IAnchorEditService
 {
-    #region Variables.
+
     // The icon for the anchor.
     private readonly GorgonSprite _anchorIcon;
     // The 2D renderer for the application.
@@ -60,19 +56,15 @@ public class AnchorEditService : IAnchorEditService
     // The current mouse position.
     private Vector2 _mousePosition;
     // The boundaries for the anchor point.
-    private DX.Rectangle _bounds;
+    private GorgonRectangle _bounds;
     // Flag to indicate that the mouse cursor is hidden.
     private bool _cursorHidden;
-    #endregion
 
-    #region Events.
     /// <summary>
     /// Event triggered when the anchor position is updated.
     /// </summary>
     public event EventHandler AnchorChanged;
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to set or return the camera for the renderer.
     /// </summary>
@@ -110,9 +102,7 @@ public class AnchorEditService : IAnchorEditService
         get;
         set;
     }
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to assign the anchor position.
     /// </summary>
@@ -133,12 +123,12 @@ public class AnchorEditService : IAnchorEditService
     /// </summary>
     private void UpdateCursor()
     {
-        if (IsDragging) 
+        if (IsDragging)
         {
             return;
         }
 
-        DX.RectangleF iconBounds = _renderer.MeasureSprite(_anchorIcon);
+        GorgonRectangleF iconBounds = _renderer.MeasureSprite(_anchorIcon);
         Cursor cursor = Cursors.Default;
 
         if (iconBounds.Contains(_mousePosition.X, _mousePosition.Y))
@@ -165,8 +155,8 @@ public class AnchorEditService : IAnchorEditService
             _cursorHidden = false;
         }
 
-        _mousePosition = args.ClientPosition.ToVector2();
-        DX.RectangleF iconBounds = _renderer.MeasureSprite(_anchorIcon);
+        _mousePosition = args.ClientPosition;
+        GorgonRectangleF iconBounds = _renderer.MeasureSprite(_anchorIcon);
 
         if (!iconBounds.Contains(_mousePosition.X, _mousePosition.Y))
         {
@@ -189,7 +179,7 @@ public class AnchorEditService : IAnchorEditService
     ///   <b>true</b> if the mouse event was handled, <b>false</b> if it was not.</returns>
     public bool MouseMove(MouseArgs args)
     {
-        _mousePosition = args.ClientPosition.ToVector2();
+        _mousePosition = args.ClientPosition;
         if (args.MouseButtons != MouseButtons.Left)
         {
             if (_cursorHidden)
@@ -208,7 +198,7 @@ public class AnchorEditService : IAnchorEditService
         }
 
         Vector2 mouse = args.CameraSpacePosition;
-        var dragDelta = Vector2.Subtract(mouse, _dragStart);
+        Vector2 dragDelta = Vector2.Subtract(mouse, _dragStart);
         AnchorPosition = (new Vector2(_dragStartPosition.X + dragDelta.X, _dragStartPosition.Y + dragDelta.Y)).Truncate();
 
         return true;
@@ -229,7 +219,7 @@ public class AnchorEditService : IAnchorEditService
         UpdateCursor();
 
         if (IsDragging)
-        {                
+        {
             IsDragging = false;
             return true;
         }
@@ -306,46 +296,43 @@ public class AnchorEditService : IAnchorEditService
 
         UpdateCursor();
 
-        Vector2 position = AnchorPosition - CenterPosition;
+        Vector3 position = new(AnchorPosition - CenterPosition, 0);
         Vector3 screenAnchor = default;
-        Camera?.Unproject(new Vector3(position.X, position.Y, 0), out screenAnchor);
+        Camera?.Unproject(position, out screenAnchor);
         _anchorIcon.Position = (new Vector2(screenAnchor.X, screenAnchor.Y)).Truncate();
 
         _renderer.DrawSprite(_anchorIcon);
-        _renderer.DrawFilledRectangle(new DX.RectangleF(_anchorIcon.Position.X - 4, _anchorIcon.Position.Y - 1, 9, 3), GorgonColor.Black);
-        _renderer.DrawFilledRectangle(new DX.RectangleF(_anchorIcon.Position.X - 1, _anchorIcon.Position.Y - 4, 3, 9), GorgonColor.Black);
-        _renderer.DrawLine(_anchorIcon.Position.X - 3, _anchorIcon.Position.Y, _anchorIcon.Position.X + 4, _anchorIcon.Position.Y, GorgonColor.White);
-        _renderer.DrawLine(_anchorIcon.Position.X, _anchorIcon.Position.Y - 3, _anchorIcon.Position.X, _anchorIcon.Position.Y + 4, GorgonColor.White);
+        _renderer.DrawFilledRectangle(new GorgonRectangleF(_anchorIcon.Position.X - 4, _anchorIcon.Position.Y - 1, 9, 3), GorgonColors.Black);
+        _renderer.DrawFilledRectangle(new GorgonRectangleF(_anchorIcon.Position.X - 1, _anchorIcon.Position.Y - 4, 3, 9), GorgonColors.Black);
+        _renderer.DrawLine(_anchorIcon.Position.X - 3, _anchorIcon.Position.Y, _anchorIcon.Position.X + 4, _anchorIcon.Position.Y, GorgonColors.White);
+        _renderer.DrawLine(_anchorIcon.Position.X, _anchorIcon.Position.Y - 3, _anchorIcon.Position.X, _anchorIcon.Position.Y + 4, GorgonColors.White);
 
         _animController.Update();
     }
-    #endregion
 
-    #region Constructor.
     /// <summary>Initializes a new instance of the <see cref="AnchorEditService"/> class.</summary>
     /// <param name="renderer">The 2D renderer for the application.</param>
     /// <param name="anchorSprite">The sprite representing the anchor icon.</param>
     /// <param name="bounds">The boundaries for the anchor point.</param>
-    public AnchorEditService(Gorgon2D renderer, GorgonSprite anchorSprite, DX.Rectangle bounds)
+    public AnchorEditService(Gorgon2D renderer, GorgonSprite anchorSprite, GorgonRectangle bounds)
     {
         _renderer = renderer;
         _anchorIcon = anchorSprite;
         _bounds = bounds;
 
-        var builder = new GorgonAnimationBuilder();
+        GorgonAnimationBuilder builder = new();
 
         _animation = builder.EditColor("Color")
-            .SetKey(new GorgonKeyGorgonColor(0.0f, GorgonColor.White))
-            .SetKey(new GorgonKeyGorgonColor(2.0f, new GorgonColor(GorgonColor.White, 0.3f)))
-            .SetKey(new GorgonKeyGorgonColor(4.0f, new GorgonColor(GorgonColor.LightRed, 0.6f)))
-            .SetKey(new GorgonKeyGorgonColor(6.0f, new GorgonColor(GorgonColor.LightRed, 0.3f)))
-            .SetKey(new GorgonKeyGorgonColor(8.0f, new GorgonColor(GorgonColor.LightGreen, 0.6f)))
-            .SetKey(new GorgonKeyGorgonColor(10.0f, new GorgonColor(GorgonColor.LightGreen, 0.3f)))
-            .SetKey(new GorgonKeyGorgonColor(12.0f, new GorgonColor(GorgonColor.LightBlue, 0.6f)))
-            .SetKey(new GorgonKeyGorgonColor(14.0f, new GorgonColor(GorgonColor.LightBlue, 0.3f)))
-            .SetKey(new GorgonKeyGorgonColor(16.0f, GorgonColor.White))
+            .SetKey(new GorgonKeyGorgonColor(0.0f, GorgonColors.White))
+            .SetKey(new GorgonKeyGorgonColor(2.0f, new GorgonColor(GorgonColors.White, 0.3f)))
+            .SetKey(new GorgonKeyGorgonColor(4.0f, new GorgonColor(GorgonColors.LightRed, 0.6f)))
+            .SetKey(new GorgonKeyGorgonColor(6.0f, new GorgonColor(GorgonColors.LightRed, 0.3f)))
+            .SetKey(new GorgonKeyGorgonColor(8.0f, new GorgonColor(GorgonColors.LightGreen, 0.6f)))
+            .SetKey(new GorgonKeyGorgonColor(10.0f, new GorgonColor(GorgonColors.LightGreen, 0.3f)))
+            .SetKey(new GorgonKeyGorgonColor(12.0f, new GorgonColor(GorgonColors.LightBlue, 0.6f)))
+            .SetKey(new GorgonKeyGorgonColor(14.0f, new GorgonColor(GorgonColors.LightBlue, 0.3f)))
+            .SetKey(new GorgonKeyGorgonColor(16.0f, GorgonColors.White))
             .EndEdit()
             .Build("Icon Opacity");
     }
-    #endregion
 }

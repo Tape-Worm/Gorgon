@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2021 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,36 +11,29 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 22, 2021 1:37:20 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Gorgon.Editor.UI;
 
 namespace Gorgon.Editor.ImageEditor;
 
 /// <summary>
-/// The settings interface for plug ins.
+/// The settings interface for plug-ins
 /// </summary>
 internal interface ISettingsPlugins
     : ISettingsCategory
 {
-
     /// <summary>
     /// Property to return the list of selected codecs.
     /// </summary>
@@ -50,7 +43,7 @@ internal interface ISettingsPlugins
     }
 
     /// <summary>
-    /// Propery to return the paths to the codec plug ins.
+    /// Propery to return the paths to the codec plug-ins.
     /// </summary>
     ObservableCollection<CodecSetting> CodecPlugInPaths
     {
@@ -66,7 +59,7 @@ internal interface ISettingsPlugins
     }
 
     /// <summary>
-    /// Property to return the command for loading a plug in assembly.
+    /// Property to return the command for loading a plug-in assembly.
     /// </summary>
     IEditorCommand<object> LoadPlugInAssemblyCommand
     {
@@ -74,7 +67,7 @@ internal interface ISettingsPlugins
     }
 
     /// <summary>
-    /// Property to return the command to unloading a plug in assembly.
+    /// Property to return the command to unloading a plug-in assembly.
     /// </summary>
     IEditorCommand<object> UnloadPlugInAssembliesCommand
     {

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,25 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 18, 2018 4:04:19 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Numerics;
-using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -37,7 +31,6 @@ using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Renderers;
 using Gorgon.Timing;
 using Gorgon.UI;
-using DX = SharpDX;
 
 namespace Gorgon.Examples;
 
@@ -47,11 +40,11 @@ namespace Gorgon.Examples;
 // be used with, or in place of the standard Gorgon2D renderer.
 
 /// <summary>
-/// Our example entry point.
+/// Our example entry point
 /// </summary>
 static class Program
 {
-    #region Variables.
+
     // The core graphics functionality.
     private static GorgonGraphics _graphics;
     // Our swap chain that represents our "Screen".
@@ -78,13 +71,7 @@ static class Program
     private static bool _floatLeft = true;
     // The offset for the floating ship.
     private static float _floatOffset;
-    #endregion
 
-    #region Properties.
-
-    #endregion
-
-    #region Methods.
     /// <summary>
     /// Function called during CPU idle time.
     /// </summary>
@@ -140,12 +127,12 @@ static class Program
                         return true;
                     }
 
-                    var position = new Vector2(star.X * _screen.Width, star.Y * _screen.Height);
+                    Vector2 position = new(star.X * _screen.Width, star.Y * _screen.Height);
 
                     float starColorValue = GorgonRandom.RandomSingle(0.35f, 1.0f);
-                    var starColor = new GorgonColor(starColorValue, starColorValue, starColorValue, 1.0f);
+                    GorgonColor starColor = new(starColorValue, starColorValue, starColorValue, 1.0f);
 
-                    r.DrawFilledRectangle(new DX.RectangleF(position.X, position.Y, 1, 1), starColor);
+                    r.DrawFilledRectangle(new GorgonRectangleF(position.X, position.Y, 1, 1), starColor);
 
                     return true;
                 })
@@ -187,7 +174,7 @@ static class Program
         GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
 
         // Create the window, and size it to our resolution.
-        FormMain window = GorgonExample.Initialize(new DX.Size2(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height), "Sprites");
+        FormMain window = GorgonExample.Initialize(new GorgonPoint(ExampleConfig.Default.Resolution.X, ExampleConfig.Default.Resolution.Y), "Sprites");
 
         try
         {
@@ -204,8 +191,8 @@ static class Program
 
             _screen = new GorgonSwapChain(_graphics,
                                           window,
-                                          new GorgonSwapChainInfo(ExampleConfig.Default.Resolution.Width,
-                                                                       ExampleConfig.Default.Resolution.Height,
+                                          new GorgonSwapChainInfo(ExampleConfig.Default.Resolution.X,
+                                                                       ExampleConfig.Default.Resolution.Y,
                                                                        BufferFormat.R8G8B8A8_UNorm)
                                           {
                                               Name = "Gorgon2D Sprites Example Swap Chain"
@@ -237,40 +224,40 @@ static class Program
 
             _ship = new GorgonSprite
             {
-                Bounds = new DX.RectangleF(0, 0, 206, 369),
+                Bounds = new GorgonRectangleF(0, 0, 206, 369),
                 Texture = _shipTexture,
                 // Calculate the ship texture coordinates.
-                TextureRegion = _shipTexture.Texture.ToTexel(new DX.Rectangle(34, 10, 206, 369)),
+                TextureRegion = _shipTexture.Texture.ToTexel(new GorgonRectangle(34, 10, 206, 369)),
                 Anchor = new Vector2(0.5f, 1.0f)
             };
             _engineGlow[0] = new GorgonSprite
             {
-                Bounds = new DX.RectangleF(0, 0, 250, 85),
+                Bounds = new GorgonRectangleF(0, 0, 250, 85),
                 Texture = _shipTexture,
-                TextureRegion = _shipTexture.Texture.ToTexel(new DX.Rectangle(512, 11, 250, 85))
+                TextureRegion = _shipTexture.Texture.ToTexel(new GorgonRectangle(512, 11, 250, 85))
             };
             _engineGlow[1] = new GorgonSprite
             {
-                Bounds = new DX.RectangleF(0, 0, 250, 85),
+                Bounds = new GorgonRectangleF(0, 0, 250, 85),
                 Texture = _shipTexture,
-                TextureRegion = _shipTexture.Texture.ToTexel(new DX.Rectangle(512, 114, 250, 85))
+                TextureRegion = _shipTexture.Texture.ToTexel(new GorgonRectangle(512, 114, 250, 85))
             };
             _engineGlow[2] = new GorgonSprite
             {
-                Bounds = new DX.RectangleF(0, 0, 250, 85),
+                Bounds = new GorgonRectangleF(0, 0, 250, 85),
                 Texture = _shipTexture,
-                TextureRegion = _shipTexture.Texture.ToTexel(new DX.Rectangle(512, 207, 250, 85))
+                TextureRegion = _shipTexture.Texture.ToTexel(new GorgonRectangle(512, 207, 250, 85))
             };
 
             // Space background sprite texture positioning.
             _background = new GorgonSprite
             {
                 Texture = _spaceBackground,
-                Bounds = new DX.RectangleF(_screen.Width / 2,
+                Bounds = new GorgonRectangleF(_screen.Width / 2,
                                                          _screen.Height,
                                                          _spaceBackground.Width,
                                                          _spaceBackground.Height),
-                TextureRegion = new DX.RectangleF(0, 0, 1, 1),
+                TextureRegion = new GorgonRectangleF(0, 0, 1, 1),
                 Anchor = new Vector2(0.5f, 1.0f)
             };
 
@@ -300,7 +287,7 @@ static class Program
     /// <param name="e">The <see cref="SwapChainResizedEventArgs"/> instance containing the event data.</param>
     private static void Screen_AfterSwapChainResized(object sender, SwapChainResizedEventArgs e) =>
         // We'll need to readjust the background scroller.
-        _background.Position = new Vector2(_background.Position.X, e.Size.Height + (_background.Position.Y - e.OldSize.Height));
+        _background.Position = new Vector2(_background.Position.X, e.Size.Y + (_background.Position.Y - e.OldSize.Y));
 
     /// <summary>
     /// The main entry point for the application.
@@ -310,9 +297,7 @@ static class Program
     {
         try
         {
-#if NET6_0_OR_GREATER
             Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
-#endif
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
@@ -332,5 +317,4 @@ static class Program
             _graphics?.Dispose();
         }
     }
-    #endregion
 }

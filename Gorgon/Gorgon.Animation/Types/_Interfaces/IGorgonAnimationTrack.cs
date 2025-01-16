@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,29 +11,26 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 18, 2018 10:51:40 AM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
+using System.Text.Json.Serialization;
 using Gorgon.Core;
-using Gorgon.Math;
-using Newtonsoft.Json;
+using Gorgon.Graphics;
 
 namespace Gorgon.Animation;
 
 /// <summary>
-/// Interpolation mode for animating between key frames.
+/// Interpolation mode for animating between key frames
 /// </summary>
 [Flags]
 public enum TrackInterpolationMode
@@ -53,12 +50,12 @@ public enum TrackInterpolationMode
 }
 
 /// <summary>
-/// A track for a <see cref="IGorgonAnimation"/>.
+/// A track for a <see cref="IGorgonAnimation"/>
 /// </summary>
 /// <typeparam name="T">The type of key frame, must implement <see cref="IGorgonKeyFrame"/></typeparam>
 /// <remarks>
 /// <para>
-/// Tracks contain a list of values in time, called key frames. These key frames tell the animation what the value for a property should be at the specified time.
+/// Tracks contain a list of values in time, called key frames. These key frames tell the animation what the value for a property should be at the specified time
 /// </para>
 /// </remarks>
 /// <seealso cref="IGorgonKeyFrame"/>
@@ -66,12 +63,11 @@ public interface IGorgonAnimationTrack<out T>
     : IGorgonNamedObject
     where T : IGorgonKeyFrame
 {
-    #region Properties.
     /// <summary>
     /// Property to return the spline controller (if applicable) for the track.
     /// </summary>
     [JsonIgnore]
-    IGorgonSplineCalculation SplineController
+    IGorgonSpline SplineController
     {
         get;
     }
@@ -109,7 +105,7 @@ public interface IGorgonAnimationTrack<out T>
     /// <summary>
     /// Property to return the key frames for the track.
     /// </summary>
-    [JsonProperty("keyframes")]
+    [JsonPropertyName("keyframes")]
     IReadOnlyList<T> KeyFrames
     {
         get;
@@ -118,15 +114,13 @@ public interface IGorgonAnimationTrack<out T>
     /// <summary>
     /// Property to set or return whether this track is enabled during animation.
     /// </summary>
-    [JsonProperty("isEnabled")]
+    [JsonPropertyName("isEnabled")]
     bool IsEnabled
     {
         get;
         set;
     }
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to retrieve the value at the specified time index.
     /// </summary>
@@ -138,5 +132,5 @@ public interface IGorgonAnimationTrack<out T>
     /// </para>
     /// </remarks>
     T GetValueAtTime(float timeIndex);
-    #endregion
+
 }

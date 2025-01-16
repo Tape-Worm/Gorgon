@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,46 +11,40 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: October 12, 2018 1:38:47 PM
 // 
-#endregion
 
-using System;
 using System.Buffers;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
-using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Xml.Linq;
 using Gorgon.Core;
 using Gorgon.Editor.GorPackWriter.Properties;
 using Gorgon.Editor.PlugIns;
 using Gorgon.IO;
 using Gorgon.Math;
+using ICSharpCode.SharpZipLib.BZip2;
 using Microsoft.IO;
 
 namespace Gorgon.Editor.GorPackWriterPlugIn;
 
 /// <summary>
-/// Gorgon packed file writer plug in interface.
+/// Gorgon packed file writer plug-in interface
 /// </summary>
 internal class GorPackWriterPlugIn
     : FileWriterPlugIn
 {
-    #region Constants.
+
     // The header for the file.
     private const string FileHeader = "GORPACK1.SharpZip.BZ2";
     // The type name for v2 of the Gorgon file writer plugin.
@@ -59,16 +53,16 @@ internal class GorPackWriterPlugIn
     /// The maximum size of a write transfer buffer, in bytes.
     /// </summary>
     public const int MaxBufferSize = 1048575;
-    #endregion
 
-    #region Variables.
     // The memory stream manager for efficient memory usage.
-    private static readonly RecyclableMemoryStreamManager _memStreamManager = new(1_048_576, 16_777_216);
+    private static readonly RecyclableMemoryStreamManager _memStreamManager = new(new RecyclableMemoryStreamManager.Options
+    {
+        MaximumSmallPoolFreeBytes = 1_048_576,
+        MaximumLargePoolFreeBytes = 16_777_216
+    });
     // The global buffer used to write out data to a stream.
     private byte[] _globalWriteBuffer;
-    #endregion
 
-    #region Properties.
     /// <summary>Property to return the equivalent type name for v2 of the Gorgon file writer plugin.</summary>
     /// <remarks>This is here to facilitate importing of file metadata from v2 of the gorgon editor files. Only specify a compatible type here, otherwise things will go wrong.</remarks>
     public override string V2PlugInName => EquivV2PlugIn;
@@ -78,9 +72,7 @@ internal class GorPackWriterPlugIn
     /// </summary>
     /// <value>The capabilities.</value>
     public override WriterCapabilities Capabilities => WriterCapabilities.Compression;
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to create a new path node.
     /// </summary>
@@ -101,7 +93,7 @@ internal class GorPackWriterPlugIn
     /// <param name="file">File to retrieve information from.</param>
     /// <param name="position">Position of the file in the packed data.</param>
     /// <param name="size">Size of the compressed file in the packed data.</param>
-		/// <param name="compressedSize">Compressed size of the file.</param>
+    /// <param name="compressedSize">Compressed size of the file.</param>
     /// <returns>A new node element with the file information.</returns>
     private static XElement CreateFileNode(FileInfo file, long position, long size, long compressedSize) =>
                             new("File",
@@ -125,7 +117,9 @@ internal class GorPackWriterPlugIn
     {
         Debug.Assert(outStream is not null, "outStream is not null");
 
-        using var bzStream = new Ionic.BZip2.ParallelBZip2OutputStream(outStream, compressionRate, true);
+        using BZip2OutputStream bzStream = new(outStream, compressionRate);
+        bzStream.IsStreamOwner = false;
+
         long streamSize = inStream.Length;
 
         while (streamSize > 0)
@@ -156,6 +150,11 @@ internal class GorPackWriterPlugIn
                     return;
                 }
             }
+            else
+            {
+                bzStream.Flush();
+                break;
+            }
 
             streamSize -= readSize;
         }
@@ -169,11 +168,11 @@ internal class GorPackWriterPlugIn
     /// <returns>A list of all elements that represent files for compression.</returns>
     private List<(XElement fileNode, FileInfo physicalPath)> BuildFatXml(DirectoryInfo workspace, XElement fatRoot, CancellationToken cancelToken)
     {
-        var subDirs = new Queue<DirectoryInfo>();
+        Queue<DirectoryInfo> subDirs = new();
         subDirs.Enqueue(workspace);
-        var parentNodes = new Queue<XElement>();
+        Queue<XElement> parentNodes = new();
         parentNodes.Enqueue(fatRoot);
-        var fileNodes = new List<(XElement fileNode, FileInfo physicalPath)>();
+        List<(XElement fileNode, FileInfo physicalPath)> fileNodes = [];
 
         if (cancelToken.IsCancellationRequested)
         {
@@ -280,7 +279,7 @@ internal class GorPackWriterPlugIn
 
         long compressSize = 0;
         string filePath = Path.Combine(outDirectory.FullName, Path.GetFileNameWithoutExtension(file.Name) + Guid.NewGuid().ToString("N") + file.Extension);
-        var result = new FileInfo(filePath);
+        FileInfo result = new(filePath);
         Stream outputFile = null;
         Stream fileStream = null;
         byte[] writeBuffer = ArrayPool<byte>.Shared.Rent(MaxBufferSize);
@@ -295,10 +294,9 @@ internal class GorPackWriterPlugIn
             outputFile = result.Open(FileMode.Create, FileAccess.Write, FileShare.None);
             fileStream = file.Open(FileMode.Open, FileAccess.Read, FileShare.Read);
 
-            // Just copy if we have no compression, or if the file is less than 4K - Not much sense to compress something so small.
-            if ((compressionRate == 0) || (file.Length <= 4096))
+            // Just copy if we have no compression, or if the file is less than 8K - Not much sense to compress something so small.
+            if ((compressionRate == 0) || (file.Length <= 8192))
             {
-
                 BlockCopyStream(fileStream, outputFile, writeBuffer, cancelToken);
             }
             else
@@ -362,7 +360,7 @@ internal class GorPackWriterPlugIn
                 try
                 {
                     outputStream = tempFile.Open(FileMode.Create, FileAccess.Write, FileShare.None);
-                    foreach ((XElement node, FileInfo file) in files.OrderByDescending(item => item.file.Length))
+                    foreach ((XElement node, FileInfo file) in files)
                     {
                         if (cancelToken.IsCancellationRequested)
                         {
@@ -405,7 +403,7 @@ internal class GorPackWriterPlugIn
         }
 
         // Initialize our file allocation table.
-        var fat = new XDocument(new XDeclaration("1.0", "utf-8", "yes"),
+        XDocument fat = new(new XDeclaration("1.0", "utf-8", "yes"),
                              new XElement("FileSystem",
                                  new XElement("Header", "GORFS1.0")));
 
@@ -427,7 +425,7 @@ internal class GorPackWriterPlugIn
         int fileCount = 0;
         int totalFileCount = fileNodes.Count;
         int filesPerJob = (int)((float)totalFileCount / maxJobCount).FastCeiling();
-        var jobs = new List<Task<CompressJob>>();
+        List<Task<CompressJob>> jobs = [];
 
         if ((totalFileCount <= 100) || (maxJobCount < 2))
         {
@@ -470,7 +468,7 @@ internal class GorPackWriterPlugIn
         // Build up the tasks for our jobs.
         while (fileNodes.Count > 0)
         {
-            var jobData = new CompressJob();
+            CompressJob jobData = new();
 
             // Copy the file information to the compression job data.
             int length = filesPerJob.Min(fileNodes.Count);
@@ -506,7 +504,7 @@ internal class GorPackWriterPlugIn
     }
 
     /// <summary>
-    /// Function to determine if the type of file specified can be written by this plug in.
+    /// Function to determine if the type of file specified can be written by this plug-in.
     /// </summary>
     /// <param name="file">The file to evaluate.</param>
     /// <returns><b>true</b> if the writer can write the type of file, or <b>false</b> if it cannot.</returns>
@@ -558,7 +556,7 @@ internal class GorPackWriterPlugIn
     protected override async Task OnWriteAsync(string file, DirectoryInfo workspace, Action<int, int, bool> progressCallback, CancellationToken cancelToken)
     {
         // We will dump our file data into a temporary work space.
-        var tempFolderPath = new DirectoryInfo(Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N")));
+        DirectoryInfo tempFolderPath = new(Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N")));
 
         if (!tempFolderPath.Exists)
         {
@@ -566,8 +564,8 @@ internal class GorPackWriterPlugIn
             tempFolderPath.Refresh();
         }
 
-        var tempFile = new FileInfo(Path.Combine(tempFolderPath.FullName, "working_file"));
-        GorgonBinaryWriter writer = null;
+        FileInfo tempFile = new(Path.Combine(tempFolderPath.FullName, "working_file"));
+        BinaryWriter writer = null;
         FileStream inStream = null;
         FileStream outStream = null;
         MemoryStream fatStream = null;
@@ -597,7 +595,7 @@ internal class GorPackWriterPlugIn
             // Copy file layout to a compressed data block.
             byte[] fatData = Encoding.UTF8.GetBytes(fat.ToStringWithDeclaration());
             fatStream = _memStreamManager.GetStream(fatData);
-            compressedFatStream =_memStreamManager.GetStream();
+            compressedFatStream = _memStreamManager.GetStream();
 
             CompressData(fatStream, compressedFatStream, _globalWriteBuffer, (int)(Compression * 9), cancelToken);
 
@@ -611,7 +609,7 @@ internal class GorPackWriterPlugIn
 
             inStream = tempFile.Open(FileMode.Open, FileAccess.Read, FileShare.None);
             outStream = File.Open(file, FileMode.Create, FileAccess.Write, FileShare.None);
-            writer = new GorgonBinaryWriter(outStream);
+            writer = new BinaryWriter(outStream);
             writer.Write(FileHeader);
             writer.Write((int)compressedFatStream.Length);
 
@@ -643,15 +641,12 @@ internal class GorPackWriterPlugIn
             }
         }
     }
-    #endregion
 
-    #region Constructor/Destructor.
     /// <summary>
     /// Initializes a new instance of the <see cref="GorPackWriterPlugIn"/> class.
     /// </summary>
     public GorPackWriterPlugIn()
-        : base(Resources.GORPKW_DESC, new[] { new GorgonFileExtension("gorPack", Resources.GORPKW_GORPACK_FILE_EXT_DESC) })
+        : base(Resources.GORPKW_DESC, [new GorgonFileExtension("gorPack", Resources.GORPKW_GORPACK_FILE_EXT_DESC)])
     {
     }
-    #endregion
 }

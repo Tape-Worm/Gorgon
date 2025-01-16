@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,41 +11,37 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 7, 2018 3:41:52 PM
 // 
-#endregion
 
-using System.Windows.Markup;
-using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Memory;
+using Gorgon.Patterns;
 
 namespace Gorgon.Renderers;
 
 /// <summary>
-/// A builder which will buld <see cref="Gorgon2DBatchState"/> objects to pass to the <see cref="Gorgon2D.Begin"/> method.
+/// A builder which will buld <see cref="Gorgon2DBatchState"/> objects to pass to the <see cref="Gorgon2D.Begin"/> method
 /// </summary>
 /// <seealso cref="Gorgon2DBatchState"/>
 /// <seealso cref="Gorgon2D"/>
 public class Gorgon2DBatchStateBuilder
-    : IGorgonFluentBuilderAllocator<Gorgon2DBatchStateBuilder, Gorgon2DBatchState, IGorgonAllocator<Gorgon2DBatchState>>
+    : IGorgonFluentBuilder<Gorgon2DBatchStateBuilder, Gorgon2DBatchState, IGorgonAllocator<Gorgon2DBatchState>>
 {
-    #region Variables.
+
     // The state that will be edited.
     private readonly Gorgon2DBatchState _worker = new();
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Function to assign a blending factor used to modulate with the pixel shader, current render target or both.
     /// </summary>
@@ -56,7 +52,7 @@ public class Gorgon2DBatchStateBuilder
     /// This property is read/write on the <see cref="Gorgon2DBatchState"/>, so it can be changed at any time.
     /// </para>
     /// <para>
-    /// The default value is <see cref="GorgonColor.White"/>.
+    /// The default value is <see cref="GorgonColors.White"/>.
     /// </para>
     /// </remarks>
     public Gorgon2DBatchStateBuilder BlendFactor(GorgonColor factor)
@@ -212,29 +208,6 @@ public class Gorgon2DBatchStateBuilder
         _worker.VertexShaderState = shader;
         return this;
     }
-    #endregion
-
-    #region Methods.
-    /// <summary>
-    /// Function to return the object.
-    /// </summary>
-    /// <returns>The object created or updated by this builder.</returns>
-    public Gorgon2DBatchState Build()
-    {
-        var result = new Gorgon2DBatchState
-        {
-            PixelShaderState = _worker.PixelShaderState,
-            VertexShaderState = _worker.VertexShaderState,
-            BlendState = _worker.BlendState,
-            DepthStencilState = _worker.DepthStencilState,
-            RasterState = _worker.RasterState,
-            BlendFactor = _worker.BlendFactor,
-            BlendSampleMask = _worker.BlendSampleMask,
-            StencilReference = _worker.StencilReference
-        };
-
-        return result;
-    }
 
     /// <summary>
     /// Function to clear the builder to a default state.
@@ -247,7 +220,7 @@ public class Gorgon2DBatchStateBuilder
         _worker.BlendState = null;
         _worker.DepthStencilState = null;
         _worker.RasterState = null;
-        _worker.BlendFactor = GorgonColor.White;
+        _worker.BlendFactor = GorgonColors.White;
         _worker.BlendSampleMask = int.MinValue;
         _worker.StencilReference = 0;
         return this;
@@ -298,7 +271,7 @@ public class Gorgon2DBatchStateBuilder
     }
 
     /// <summary>Function to return the object.</summary>
-    /// <param name="allocator">The allocator used to create an instance of the object</param>
+    /// <param name="allocator">[Optional] The allocator used to create an instance of the object.</param>
     /// <returns>The object created or updated by this builder.</returns>
     /// <remarks>
     ///   <para>
@@ -309,14 +282,9 @@ public class Gorgon2DBatchStateBuilder
     /// around for as long as we need them, instead of creating objects that can potentially end up in the large object heap or in Gen 2.
     /// </para>
     /// </remarks>
-    public Gorgon2DBatchState Build(IGorgonAllocator<Gorgon2DBatchState> allocator)
+    public Gorgon2DBatchState Build(IGorgonAllocator<Gorgon2DBatchState>? allocator = null)
     {
-        if (allocator is null)
-        {
-            return Build();
-        }
-
-        Gorgon2DBatchState state = allocator.Allocate();
+        Gorgon2DBatchState state = allocator?.Allocate() ?? new Gorgon2DBatchState();
 
         state.PixelShaderState = _worker.PixelShaderState;
         state.VertexShaderState = _worker.VertexShaderState;
@@ -329,5 +297,4 @@ public class Gorgon2DBatchStateBuilder
 
         return state;
     }
-    #endregion
 }

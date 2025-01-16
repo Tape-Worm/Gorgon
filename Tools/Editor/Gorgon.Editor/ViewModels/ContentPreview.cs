@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,42 +11,37 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: December 23, 2018 2:15:44 PM
 // 
-#endregion
 
-using System;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics.Imaging;
-using Gorgon.IO;
+using Gorgon.IO.FileSystem;
 
 namespace Gorgon.Editor.ViewModels;
 
 /// <summary>
-/// The view model for the content previewer.
+/// The view model for the content previewer
 /// </summary>
 internal class ContentPreview
     : ViewModelBase<ContentPreviewParameters, IHostServices>, IContentPreview
 {
-    #region Variables.
+
     // The directory path for thumbnails this session.
     private readonly static string _thumbnailPath = $"/Thumbnails/";
     // The file explorer view model, used to track selection changes.
@@ -64,7 +59,7 @@ internal class ContentPreview
     // The currently selected content file.
     private IContentFile _contentFile;
     // The file system for handling temporary file data.
-    private IGorgonFileSystemWriter<Stream> _tempFileSystem;
+    private IGorgonFileSystem _tempFileSystem;
     // Flag to indicate that file events have been assigned.
     private int _fileEventsHooked;
     // Flag to enable or disable the preview.
@@ -73,9 +68,7 @@ internal class ContentPreview
     private bool _forceRefresh;
     // Flag to indicate whether the preview is loading or not.
     private bool _loading;
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to return the task used for loading the image preview.
     /// </summary>
@@ -166,9 +159,7 @@ internal class ContentPreview
             OnPropertyChanged();
         }
     }
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to load the preview thumbnail.
     /// </summary>
@@ -242,19 +233,19 @@ internal class ContentPreview
             }
 
             PreviewImage?.Dispose();
-            PreviewImage = image;                
+            PreviewImage = image;
 
             _contentFile = file;
         }
         catch (Exception ex)
         {
             Title = Resources.GOREDIT_ERR_ERROR;
-            HostServices.Log.Print($"ERROR: Error loading thumbnail for '{file.Path}'.", LoggingLevel.Simple);
+            HostServices.Log.PrintError($"Error loading thumbnail for '{file.Path}'.", LoggingLevel.Simple);
             HostServices.Log.LogException(ex);
         }
         finally
         {
-            
+
             IsLoading = false;
         }
     }
@@ -264,7 +255,7 @@ internal class ContentPreview
     /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
     private void File_PropertyChanged(object sender, PropertyChangedEventArgs e)
     {
-        var file = (IFile)sender;
+        IFile file = (IFile)sender;
 
         switch (e.PropertyName)
         {
@@ -283,14 +274,14 @@ internal class ContentPreview
         {
             case nameof(IFileExplorer.SelectedFiles):
                 IContentFile file = null;
-                
+
                 if (_fileExplorer.SelectedFiles.Count > 0)
                 {
-                    file = _contentFileManager.GetFile(_fileExplorer.SelectedFiles[^1].FullPath);                        
+                    file = _contentFileManager.GetFile(_fileExplorer.SelectedFiles[^1].FullPath);
                 }
 
                 _fileExplorer.SelectedFiles.CollectionChanged += SelectedFiles_CollectionChanged;
-                await LoadImagePreviewAsync(file);                    
+                await LoadImagePreviewAsync(file);
                 break;
             case nameof(IFileExplorer.SelectedDirectory):
                 HookFileEvents();
@@ -354,7 +345,7 @@ internal class ContentPreview
         try
         {
             IContentFile file = _contentFileManager.GetFile(filePath);
-            IGorgonVirtualDirectory thumbDirectory = _tempFileSystem.FileSystem.GetDirectory(_thumbnailPath);
+            IGorgonVirtualDirectory thumbDirectory = _tempFileSystem.GetDirectory(_thumbnailPath);
 
             thumbDirectory ??= _tempFileSystem.CreateDirectory(_thumbnailPath);
 
@@ -362,7 +353,7 @@ internal class ContentPreview
             string thumbnailName = file.Metadata.Thumbnail;
             if (!string.IsNullOrWhiteSpace(thumbnailName))
             {
-                IGorgonVirtualFile thumbnailFile = _tempFileSystem.FileSystem.GetFile(thumbDirectory.FullPath + thumbnailName);
+                IGorgonVirtualFile thumbnailFile = _tempFileSystem.GetFile(thumbDirectory.FullPath + thumbnailName);
 
                 if (thumbnailFile is not null)
                 {
@@ -385,7 +376,7 @@ internal class ContentPreview
         }
         catch (Exception ex)
         {
-            HostServices.Log.Print($"Error refreshing the preview image for '{filePath}'.", LoggingLevel.Simple);
+            HostServices.Log.PrintError($"Error refreshing the preview image for '{filePath}'.", LoggingLevel.Simple);
             HostServices.Log.LogException(ex);
         }
     }
@@ -403,7 +394,7 @@ internal class ContentPreview
         }
         catch (Exception ex)
         {
-            HostServices.Log.Print($"Error resetting the preview image.", LoggingLevel.Simple);
+            HostServices.Log.PrintError($"Error resetting the preview image.", LoggingLevel.Simple);
             HostServices.Log.LogException(ex);
         }
     }
@@ -448,7 +439,7 @@ internal class ContentPreview
         foreach (IFile file in directory.Files)
         {
             file.PropertyChanged += File_PropertyChanged;
-        }            
+        }
     }
 
     /// <summary>Function to inject dependencies for the view model.</summary>
@@ -475,7 +466,7 @@ internal class ContentPreview
         {
             return;
         }
-        
+
         string path = _fileExplorer.SelectedFiles[0].FullPath;
 
         await LoadImagePreviewAsync(_contentFileManager.GetFile(path));
@@ -486,19 +477,16 @@ internal class ContentPreview
     {
         _cancelSource?.Cancel();
 
-        UnhookFileEvents();            
+        UnhookFileEvents();
         _fileExplorer.SelectedFiles.CollectionChanged -= SelectedFiles_CollectionChanged;
         _fileExplorer.PropertyChanged -= FileExplorer_PropertyChanged;
         _fileExplorer.PropertyChanging -= FileExplorer_PropertyChanging;
     }
-    #endregion
 
-    #region Constructor.
     /// <summary>Initializes a new instance of the <see cref="ContentPreview"/> class.</summary>
     public ContentPreview()
     {
         RefreshPreviewCommand = new EditorAsyncCommand<string>(DoRefreshPreview);
         ResetPreviewCommand = new EditorAsyncCommand<object>(DoResetPreview);
     }
-    #endregion
 }

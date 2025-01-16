@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,31 +11,29 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 30, 2018 10:25:39 PM
 // 
-#endregion
 
-using System;
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// A binding for a <see cref="GorgonReadWriteView"/>.
+/// A binding for a <see cref="GorgonReadWriteView"/>
 /// </summary>
 /// <remarks>
 /// <para>
-/// This allows a <see cref="GorgonReadWriteView"/> to be bound to the GPU pipeline for access by a <see cref="GorgonPixelShader"/>.
+/// This allows a <see cref="GorgonReadWriteView"/> to be bound to the GPU pipeline for access by a <see cref="GorgonPixelShader"/>
 /// </para>
 /// </remarks>
 /// <seealso cref="GorgonReadWriteView"/>
@@ -43,7 +41,7 @@ namespace Gorgon.Graphics.Core;
 public readonly struct GorgonReadWriteViewBinding
     : IGorgonEquatableByRef<GorgonReadWriteViewBinding>
 {
-    #region Variables.
+
     // A structured buffer unordered access view for quick access.
     private readonly GorgonStructuredReadWriteView _structuredUav;
 
@@ -65,16 +63,12 @@ public readonly struct GorgonReadWriteViewBinding
     /// The unordered access view to bind.
     /// </summary>
     public readonly GorgonReadWriteView ReadWriteView;
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to return the type of UAV if the UAV is for a structured buffer.
     /// </summary>
     public StructuredBufferReadWriteViewType ReadWriteViewType => _structuredUav?.ReadWriteViewType ?? StructuredBufferReadWriteViewType.None;
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Returns a <see cref="string" /> that represents this instance.
     /// </summary>
@@ -93,7 +87,7 @@ public readonly struct GorgonReadWriteViewBinding
     /// <param name="left">The left instance to compare.</param>
     /// <param name="right">The right instance to compare.</param>
     /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-    public static bool Equals(in GorgonReadWriteViewBinding left, in GorgonReadWriteViewBinding right) => (left.InitialCount == right.InitialCount) && (left.ReadWriteView == right.ReadWriteView);
+    public static bool Equals(ref readonly GorgonReadWriteViewBinding left, ref readonly GorgonReadWriteViewBinding right) => (left.InitialCount == right.InitialCount) && (left.ReadWriteView == right.ReadWriteView);
 
     /// <summary>Indicates whether this instance and a specified object are equal.</summary>
     /// <param name="obj">The object to compare with the current instance. </param>
@@ -106,7 +100,7 @@ public readonly struct GorgonReadWriteViewBinding
     /// </summary>
     /// <param name="other">The other instance to use for comparison.</param>
     /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-    public bool Equals(in GorgonReadWriteViewBinding other) => Equals(in this, in other);
+    public bool Equals(ref readonly GorgonReadWriteViewBinding other) => Equals(in this, in other);
 
     /// <summary>
     /// Function to compare this instance with another.
@@ -121,7 +115,7 @@ public readonly struct GorgonReadWriteViewBinding
     /// <param name="left">The left instance to compare.</param>
     /// <param name="right">The right instance to compare.</param>
     /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-    public static bool operator ==(in GorgonReadWriteViewBinding left, in GorgonReadWriteViewBinding right) => Equals(in left, in right);
+    public static bool operator ==(GorgonReadWriteViewBinding left, GorgonReadWriteViewBinding right) => Equals(in left, in right);
 
     /// <summary>
     /// Operator to determine inequality between two instances.
@@ -129,10 +123,8 @@ public readonly struct GorgonReadWriteViewBinding
     /// <param name="left">The left instance to compare.</param>
     /// <param name="right">The right instance to compare.</param>
     /// <returns><b>true</b> if not equal, <b>false</b> if equal.</returns>
-    public static bool operator !=(in GorgonReadWriteViewBinding left, in GorgonReadWriteViewBinding right) => !Equals(in left, in right);
-    #endregion
+    public static bool operator !=(GorgonReadWriteViewBinding left, GorgonReadWriteViewBinding right) => !Equals(in left, in right);
 
-    #region Constructor
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonReadWriteViewBinding"/> struct.
     /// </summary>
@@ -155,5 +147,4 @@ public readonly struct GorgonReadWriteViewBinding
         _structuredUav = readWriteView;
         InitialCount = initialCount;
     }
-    #endregion
 }

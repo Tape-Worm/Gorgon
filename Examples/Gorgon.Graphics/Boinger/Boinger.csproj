@@ -2,10 +2,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net6.0-windows</TargetFramework>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <ForceDesignerDpiUnaware>true</ForceDesignerDpiUnaware>
     <UseWindowsForms>true</UseWindowsForms>
     <ApplicationIcon>AmigaBall.ico</ApplicationIcon>
-    <Version>3.2.0</Version>
+    <Version>4.0.0</Version>
     <Authors>Michael Winsor</Authors>
     <Company>Tape_Worm</Company>
     <Product>Gorgon</Product>
@@ -14,7 +15,8 @@
     <PackageLicenseFile>
     </PackageLicenseFile>
     <PackageProjectUrl>https://www.tape-worm.net</PackageProjectUrl>
-    <PackageIcon>g.png</PackageIcon>
+
+
     <RepositoryUrl>https://github.com/Tape-Worm/Gorgon</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
     <PackageTags>C#, .NET Framework, Direct 3D, SharpDX, Winforms</PackageTags>
@@ -23,15 +25,16 @@
     <NeutralLanguage>
     </NeutralLanguage>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <ApplicationManifest>..\..\app.manifest</ApplicationManifest>
+    
     <StartupObject>
     </StartupObject>
     <SignAssembly>false</SignAssembly>
     <AssemblyOriginatorKeyFile>
     </AssemblyOriginatorKeyFile>
     <DelaySign>false</DelaySign>
-    <AssemblyVersion>3.2.0.0</AssemblyVersion>
-    <FileVersion>3.2.0.0</FileVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+    <FileVersion>4.0.0.0</FileVersion>
   </PropertyGroup>
   <PropertyGroup>
     <EmbeddedResourceUseDependentUponConvention>true</EmbeddedResourceUseDependentUponConvention>
@@ -47,6 +50,9 @@
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
+    <AdditionalFiles Remove="..\..\app.manifest" />
+  </ItemGroup>
+  <ItemGroup>
     <None Remove="Resources\Shader.hlsl" />
     <None Remove="Resources\Texture.png" />
   </ItemGroup>
@@ -55,19 +61,11 @@
     <EmbeddedResource Include="Resources\Texture.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\Gorgon\g.png">
-      <Pack>True</Pack>
-      <PackagePath>
-      </PackagePath>
-    </None>
-    <None Include="..\..\app.manifest" Link="app.manifest" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\..\ExamplesCommon\ExamplesCommon.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="SharpDX.Mathematics" Version="4.2.0" />    
-    <PackageReference Include="System.Drawing.Common" Version="7.0.0" />
+    <PackageReference Include="System.Drawing.Common" Version="9.0.0" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Update="Properties\Resources.resx">

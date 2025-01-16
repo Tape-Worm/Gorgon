@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2012 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,49 +11,44 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Monday, April 02, 2012 2:59:16 PM
 // 
-#endregion
 
-using System.Threading;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers.Cameras;
 using Gorgon.Renderers.Properties;
-using DX = SharpDX;
 
 namespace Gorgon.Renderers;
 
 /// <summary>
-/// An effect that renders the silhouette of an image.
+/// An effect that renders the silhouette of an image
 /// </summary>
 /// <remarks>
 /// <para>
-/// This effect renders a silhouette image by using the vertex colors instead of the texture colors, while respecting the alpha of the texture (and vertex).
+/// This effect renders a silhouette image by using the vertex colors instead of the texture colors, while respecting the alpha of the texture (and vertex)
 /// </para>
 /// </remarks>
 public class Gorgon2DSilhouetteEffect
     : Gorgon2DEffect, IGorgon2DCompositorEffect
 {
-    #region Variables.
+
     // The pixel shader for the effect.
     private GorgonPixelShader _shader;
     // The shader used to render the image.
     private Gorgon2DShaderState<GorgonPixelShader> _shaderState;
     // The batch state to render.
     private Gorgon2DBatchState _batchState;
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function called to initialize the effect.
     /// </summary>
@@ -153,20 +148,18 @@ public class Gorgon2DSilhouetteEffect
 
         Begin(GorgonBlendState.Default, GorgonDepthStencilState.Default, GorgonRasterState.Default, null);
 
-        Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, output.Width, output.Height),
-                                        GorgonColor.White,
+        Renderer.DrawFilledRectangle(new GorgonRectangleF(0, 0, output.Width, output.Height),
+                                        GorgonColors.White,
                                         texture,
-                                        new DX.RectangleF(0, 0, 1, 1));
+                                        new GorgonRectangleF(0, 0, 1, 1));
         End();
     }
-    #endregion
 
-    #region Constructor/Destructor.
     /// <summary>
     /// Initializes a new instance of the <see cref="Gorgon2DSilhouetteEffect"/> class.
     /// </summary>
     /// <param name="renderer">The renderer used to draw the effect.</param>
     public Gorgon2DSilhouetteEffect(Gorgon2D renderer)
         : base(renderer, Resources.GOR2D_EFFECT_SILHOUETTE, Resources.GOR2D_EFFECT_SILHOUETTE_DESC, 1) => Macros.Add(new GorgonShaderMacro("SILHOUETTE_EFFECT"));
-    #endregion
+
 }

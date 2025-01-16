@@ -23,13 +23,13 @@ partial class ContentPreviewPanel
             _previewTexture?.Dispose();
             _previewTexture = null;
             CleanupResources();
-            DataContext?.Unload();
+            ViewModel?.Unload();
             UnassignEvents();
         }
         base.Dispose(disposing);
     }
 
-    #region Component Designer generated code
+
 
     /// <summary> 
     /// Required method for Designer support - do not modify 
@@ -60,7 +60,7 @@ partial class ContentPreviewPanel
 
     }
 
-    #endregion
+
 
     private Gorgon.UI.GorgonSelectablePanel PanelDisplay;
 }

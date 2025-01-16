@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2016 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,23 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 27, 2016 7:53:02 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Properties;
 using Gorgon.IO;
@@ -36,14 +31,14 @@ using DX = SharpDX;
 namespace Gorgon.Graphics.Imaging.Codecs;
 
 /// <summary>
-/// Base class for the WIC based file formats (PNG, JPG, and BMP).
+/// Base class for the WIC based file formats (PNG, JPG, and BMP)
 /// </summary>
 /// <typeparam name="TWicEncOpt">The type of the options object used to provide options when encoding an image. Must be a reference type and implement <see cref="IGorgonWicEncodingOptions"/>.</typeparam>
 /// <typeparam name="TWicDecOpt">The type of the options object used to provide options when decoding an image. Must be a reference type and implement <see cref="IGorgonWicDecodingOptions"/>.</typeparam>
 /// <remarks>
 /// <para>
 /// A codec allows for reading and/or writing of data in an encoded format.  Users may inherit from this object to define their own 
-/// image formats, or use one of the predefined image codecs available in Gorgon.
+/// image formats, or use one of the predefined image codecs available in Gorgon
 /// </para>
 /// </remarks>
 public abstract class GorgonCodecWic<TWicEncOpt, TWicDecOpt>
@@ -51,17 +46,15 @@ public abstract class GorgonCodecWic<TWicEncOpt, TWicDecOpt>
     where TWicEncOpt : class, IGorgonWicEncodingOptions
     where TWicDecOpt : class, IGorgonWicDecodingOptions
 {
-    #region Variables.
+
     // Supported formats.
     private readonly BufferFormat[] _supportedFormats =
-    {
+    [
         BufferFormat.R8G8B8A8_UNorm,
         BufferFormat.B8G8R8A8_UNorm,
         BufferFormat.B8G8R8X8_UNorm
-    };
-    #endregion
+    ];
 
-    #region Properties
     /// <summary>
     /// Property to return the list of names used to locate frame offsets in metadata.
     /// </summary>
@@ -113,9 +106,7 @@ public abstract class GorgonCodecWic<TWicEncOpt, TWicDecOpt>
     /// Property to return the supported pixel formats for this codec.
     /// </summary>
     public override IReadOnlyList<BufferFormat> SupportedPixelFormats => _supportedFormats;
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to retrieve custom metadata when encoding an image frame.
     /// </summary>
@@ -133,7 +124,7 @@ public abstract class GorgonCodecWic<TWicEncOpt, TWicDecOpt>
     /// <exception cref="GorgonException">Thrown when the image data in the stream has a pixel format that is unsupported.</exception>
     protected override IGorgonImage OnDecodeFromStream(Stream stream, long size)
     {
-        var wic = new WicUtilities();
+        WicUtilities wic = new();
         Stream streamAlias = stream;
 
         try
@@ -143,7 +134,7 @@ public abstract class GorgonCodecWic<TWicEncOpt, TWicDecOpt>
             // exception when the stream position is not exactly 0. 
             if (streamAlias.Position != 0)
             {
-                streamAlias = new GorgonStreamWrapper(stream, 0, size);
+                streamAlias = new GorgonSubStream(stream, 0, size, stream.CanWrite);
             }
 
             IGorgonImage result = wic.DecodeImageData(streamAlias, size, SupportedFileFormat, DecodingOptions, FrameOffsetMetadataNames) ?? throw new IOException(string.Format(Resources.GORIMG_ERR_FILE_FORMAT_NOT_CORRECT, Codec));
@@ -197,7 +188,7 @@ public abstract class GorgonCodecWic<TWicEncOpt, TWicDecOpt>
             throw new IOException(string.Format(Resources.GORIMG_ERR_STREAM_IS_READONLY));
         }
 
-        var wic = new WicUtilities();
+        WicUtilities wic = new();
 
         try
         {
@@ -268,7 +259,7 @@ public abstract class GorgonCodecWic<TWicEncOpt, TWicDecOpt>
             throw new IOException(Resources.GORIMG_ERR_STREAM_CANNOT_SEEK);
         }
 
-        var wic = new WicUtilities();
+        WicUtilities wic = new();
 
         try
         {
@@ -303,7 +294,7 @@ public abstract class GorgonCodecWic<TWicEncOpt, TWicDecOpt>
     /// multiple frames, or the codec does not support multiple frames, then an empty list is returned.
     /// </para>
     /// </remarks>
-    public IReadOnlyList<DX.Point> GetFrameOffsets(string fileName)
+    public IReadOnlyList<GorgonPoint> GetFrameOffsets(string fileName)
     {
         if (fileName is null)
         {
@@ -336,23 +327,23 @@ public abstract class GorgonCodecWic<TWicEncOpt, TWicDecOpt>
     /// multiple frames, or the codec does not support multiple frames, then an empty list is returned.
     /// </para>
     /// </remarks>
-    public IReadOnlyList<DX.Point> GetFrameOffsets(Stream stream)
+    public IReadOnlyList<GorgonPoint> GetFrameOffsets(Stream stream)
     {
         if (!SupportsMultipleFrames)
         {
-            return Array.Empty<DX.Point>();
+            return [];
         }
 
-        var wic = new WicUtilities();
+        WicUtilities wic = new();
 
         try
         {
             if ((FrameOffsetMetadataNames is null) || (FrameOffsetMetadataNames.Count == 0))
             {
-                return Array.Empty<DX.Point>();
+                return [];
             }
 
-            IReadOnlyList<DX.Point> result = wic.GetFrameOffsetMetadata(stream, SupportedFileFormat, FrameOffsetMetadataNames);
+            IReadOnlyList<GorgonPoint> result = wic.GetFrameOffsetMetadata(stream, SupportedFileFormat, FrameOffsetMetadataNames);
 
             return result ?? throw new IOException(string.Format(Resources.GORIMG_ERR_FILE_FORMAT_NOT_CORRECT, Codec));
         }
@@ -396,7 +387,7 @@ public abstract class GorgonCodecWic<TWicEncOpt, TWicDecOpt>
             throw new IOException(Resources.GORIMG_ERR_STREAM_CANNOT_SEEK);
         }
 
-        var wic = new WicUtilities();
+        WicUtilities wic = new();
 
         try
         {
@@ -413,9 +404,7 @@ public abstract class GorgonCodecWic<TWicEncOpt, TWicDecOpt>
             wic.Dispose();
         }
     }
-    #endregion
 
-    #region Constructor/Destructor.
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonCodecWic{TWicEncOpt, TWicDecOpt}" /> class.
     /// </summary>
@@ -442,8 +431,7 @@ public abstract class GorgonCodecWic<TWicEncOpt, TWicDecOpt>
 
         Codec = codec;
         CodecDescription = description ?? string.Empty;
-        CodecCommonExtensions = extensions ?? Array.Empty<string>();
+        CodecCommonExtensions = extensions ?? [];
         SupportedFileFormat = containerGUID;
     }
-    #endregion
 }

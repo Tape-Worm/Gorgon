@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,50 +11,50 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 19, 2020 12:37:42 PM
 // 
-#endregion
 
-using System;
 using System.Buffers;
 using System.ComponentModel;
 using System.Numerics;
-using System.Windows.Forms;
 using Gorgon.Animation;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.Services;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
+using Gorgon.Math;
 using Gorgon.Renderers;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor;
 
 /// <summary>
-/// A renderer used to render the current sprite for editing the anchor point.
+/// A renderer used to render the current sprite for editing the anchor point
 /// </summary>
-internal class AnchorEditViewer
-    : SingleSpriteViewer
+/// <remarks>Initializes a new instance of the <see cref="AnchorEditViewer"/> class.</remarks>
+/// <param name="dataContext">The sprite view model.</param>        
+/// <param name="swapChain">The swap chain for the render area.</param>
+/// <param name="renderer">The 2D renderer for the application.</param>
+/// <param name="anchorService">The service used to modify the anchor.</param>
+internal class AnchorEditViewer(Gorgon2D renderer, GorgonSwapChain swapChain, ISpriteContent dataContext, IAnchorEditService anchorService)
+        : SingleSpriteViewer(typeof(SpriteAnchorEdit).FullName, renderer, swapChain, dataContext)
 {
-    #region Variables.
+
     // The service used for modifying the anchor.
-    private readonly IAnchorEditService _anchorService;
+    private readonly IAnchorEditService _anchorService = anchorService;
     // The controller for our animations.
-    private readonly GorgonSpriteAnimationController _controller;
+    private readonly GorgonSpriteAnimationController _controller = new();
     // The scaling/rotation animation.
     private IGorgonAnimation _scaleRotateAnim;
-    #endregion
 
-    #region Methods.
     /// <summary>Handles the AnchorChanged event of the AnchorService control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
@@ -159,7 +159,7 @@ internal class AnchorEditViewer
                 args.IsInputKey = _anchorService.KeyDown(args);
                 break;
         }
-        
+
         base.OnPreviewKeyDown(args);
     }
 
@@ -169,12 +169,12 @@ internal class AnchorEditViewer
     {
         base.OnRenderBackground();
 
-        var spriteTopLeft = new Vector3(SpriteRegion.TopLeft.X, SpriteRegion.TopLeft.Y, 0);
-        var spriteBottomRight = new Vector3(SpriteRegion.BottomRight.X, SpriteRegion.BottomRight.Y, 0);
-        Camera.Unproject(in spriteTopLeft, out Vector3 transformedTopLeft);
-        Camera.Unproject(in spriteBottomRight, out Vector3 transformedBottomRight);
+        Vector3 spriteTopLeft = new(SpriteRegion.TopLeft.X, SpriteRegion.TopLeft.Y, 0);
+        Vector3 spriteBottomRight = new(SpriteRegion.BottomRight.X, SpriteRegion.BottomRight.Y, 0);
+        Camera.Unproject(spriteTopLeft, out Vector3 transformedTopLeft);
+        Camera.Unproject(spriteBottomRight, out Vector3 transformedBottomRight);
 
-        var bounds = new DX.RectangleF
+        GorgonRectangleF bounds = new()
         {
             Left = transformedTopLeft.X,
             Top = transformedTopLeft.Y,
@@ -183,16 +183,16 @@ internal class AnchorEditViewer
         };
 
         Renderer.Begin();
-        Renderer.DrawRectangle(bounds, new GorgonColor(GorgonColor.Black, 0.30f), 4);
+        Renderer.DrawRectangle(bounds, new GorgonColor(GorgonColors.Black, 0.30f), 4);
         Renderer.End();
     }
 
     /// <summary>Function to draw the sprite.</summary>
     protected override void DrawSprite()
     {
-        var halfSize = new Vector2(Sprite.Size.Width * 0.5f, Sprite.Size.Height * 0.5f);
-        Sprite.Anchor = new Vector2((DataContext.AnchorEditor.Anchor.X + halfSize.X) / DataContext.Size.Width,
-                                       (DataContext.AnchorEditor.Anchor.Y + halfSize.Y) / DataContext.Size.Height);
+        Vector2 halfSize = new(Sprite.Size.X * 0.5f, Sprite.Size.Y * 0.5f);
+        Sprite.Anchor = new Vector2((DataContext.AnchorEditor.Anchor.X + halfSize.X) / DataContext.Size.X,
+                                       (DataContext.AnchorEditor.Anchor.Y + halfSize.Y) / DataContext.Size.Y);
         Sprite.Position = DataContext.AnchorEditor.Anchor;
 
         base.DrawSprite();
@@ -211,7 +211,7 @@ internal class AnchorEditViewer
 
         _anchorService.Camera = Camera;
         RenderRegion = SpriteRegion;
-        var halfSize = new Vector2(Sprite.Size.Width * 0.5f, Sprite.Size.Height * 0.5f);
+        Vector2 halfSize = new(Sprite.Size.X * 0.5f, Sprite.Size.Y * 0.5f);
         Vector2[] vertices = ArrayPool<Vector2>.Shared.Rent(4);
         vertices[0] = new Vector2(Sprite.CornerOffsets.UpperLeft.X - halfSize.X, Sprite.CornerOffsets.UpperLeft.Y - halfSize.Y).Truncate();
         vertices[1] = new Vector2(Sprite.CornerOffsets.UpperRight.X + halfSize.X, Sprite.CornerOffsets.UpperRight.Y - halfSize.Y).Truncate();
@@ -220,10 +220,10 @@ internal class AnchorEditViewer
         DataContext.AnchorEditor.SpriteBounds = vertices;
         ArrayPool<Vector2>.Shared.Return(vertices, true);
 
-        DataContext.AnchorEditor.Anchor = _anchorService.AnchorPosition = new Vector2(DataContext.Size.Width * DataContext.Anchor.X - halfSize.X,
-                                                                                         DataContext.Size.Height * DataContext.Anchor.Y - halfSize.Y);
+        DataContext.AnchorEditor.Anchor = _anchorService.AnchorPosition = new Vector2(DataContext.Size.X * DataContext.Anchor.X - halfSize.X,
+                                                                                         DataContext.Size.Y * DataContext.Anchor.Y - halfSize.Y);
 
-        var builder = new GorgonAnimationBuilder();
+        GorgonAnimationBuilder builder = new();
         _scaleRotateAnim = builder.EditVector2(GorgonSpriteAnimationController.ScaleTrack.TrackName)
               .SetInterpolationMode(TrackInterpolationMode.Spline)
               .Disabled()
@@ -261,19 +261,4 @@ internal class AnchorEditViewer
         DataContext.AnchorEditor.PropertyChanged -= AnchorEditor_PropertyChanged;
         base.OnUnload();
     }
-    #endregion
-
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="AnchorEditViewer"/> class.</summary>
-    /// <param name="dataContext">The sprite view model.</param>        
-    /// <param name="swapChain">The swap chain for the render area.</param>
-    /// <param name="renderer">The 2D renderer for the application.</param>
-    /// <param name="anchorService">The service used to modify the anchor.</param>
-    public AnchorEditViewer(Gorgon2D renderer, GorgonSwapChain swapChain, ISpriteContent dataContext, IAnchorEditService anchorService)
-        : base(typeof(SpriteAnchorEdit).FullName, renderer, swapChain, dataContext)
-    {            
-        _anchorService = anchorService;
-        _controller = new GorgonSpriteAnimationController();          
-    }
-    #endregion
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,36 +11,32 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 22, 2019 10:06:04 AM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.Windows.Forms;
-using Newtonsoft.Json;
-using DX = SharpDX;
+using System.Text.Json.Serialization;
+using Gorgon.Graphics;
 
 namespace Gorgon.Editor.AnimationEditor;
 
 /// <summary>
-/// The settings for the animation importer plug in.
+/// The settings for the animation importer plug-in
 /// </summary>
 internal class AnimationImportSettings
 {
     /// <summary>
-    /// Property to return the list of additional animation codec plug ins to load.
+    /// Property to return the list of additional animation codec plug-ins to load.
     /// </summary>
-    [JsonProperty]
+    [JsonInclude]
     public Dictionary<string, string> CodecPlugInPaths
     {
         get;
@@ -48,9 +44,9 @@ internal class AnimationImportSettings
     } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
     /// <summary>
-    /// Property to set or return the last codec plug in path.
+    /// Property to set or return the last codec plug-in path.
     /// </summary>
-    [JsonProperty]
+    [JsonInclude]
     public string LastCodecPlugInPath
     {
         get;
@@ -59,14 +55,14 @@ internal class AnimationImportSettings
 }
 
 /// <summary>
-/// The settings for the sprite editor plug in.
+/// The settings for the sprite editor plug-in
 /// </summary>
 internal class AnimationEditorSettings
 {
     /// <summary>
     /// Property to set or return the offset, in pixels, of the splitter on the editor view.
     /// </summary>
-    [JsonProperty]
+    [JsonInclude]
     public int SplitOffset
     {
         get;
@@ -76,7 +72,7 @@ internal class AnimationEditorSettings
     /// <summary>
     /// Property to set or return whether the background image should be animated when no primary sprite is present.
     /// </summary>
-    [JsonProperty]
+    [JsonInclude]
     public bool AnimateBgNoPrimary
     {
         get;
@@ -86,7 +82,7 @@ internal class AnimationEditorSettings
     /// <summary>
     /// Property to set or return whether to use onion skinning.
     /// </summary>
-    [JsonProperty]
+    [JsonInclude]
     public bool UseOnionSkin
     {
         get;
@@ -96,8 +92,8 @@ internal class AnimationEditorSettings
     /// <summary>
     /// Property to set or return the default screen resolution for the animation.
     /// </summary>
-    [JsonProperty]
-    public DX.Size2 DefaultResolution
+    [JsonInclude]
+    public GorgonPoint DefaultResolution
     {
         get;
         set;
@@ -106,7 +102,7 @@ internal class AnimationEditorSettings
     /// <summary>
     /// Property to set or return whether to create a texture track in an empty animation on primary sprite assignment.
     /// </summary>
-    [JsonProperty]
+    [JsonInclude]
     public bool AddTextureTrackForPrimarySprite
     {
         get;
@@ -116,6 +112,7 @@ internal class AnimationEditorSettings
     /// <summary>
     /// Property to set or return whether a warning will be shown when an animation with unsupported tracks is loaded.
     /// </summary>
+    [JsonInclude]
     public bool WarnUnsupportedTracks
     {
         get;
@@ -123,5 +120,5 @@ internal class AnimationEditorSettings
     } = true;
 
     /// <summary>Initializes a new instance of the <see cref="AnimationEditorSettings"/> class.</summary>
-    public AnimationEditorSettings() => DefaultResolution = new DX.Size2(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height);
+    public AnimationEditorSettings() => DefaultResolution = new GorgonPoint(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height);
 }

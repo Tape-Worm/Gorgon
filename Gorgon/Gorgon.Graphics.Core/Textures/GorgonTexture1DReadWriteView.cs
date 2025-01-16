@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,49 +11,45 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 16, 2018 11:19:23 PM
 // 
-#endregion
 
-using System;
-using System.IO;
+using System.Buffers;
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Math;
-using Gorgon.Memory;
 using SharpDX.DXGI;
 using SharpDX.Mathematics.Interop;
 using D3D11 = SharpDX.Direct3D11;
-using DX = SharpDX;
 
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Provides a read/write (unordered access) view for a <see cref="GorgonTexture1D"/>.
+/// Provides a read/write (unordered access) view for a <see cref="GorgonTexture1D"/>
 /// </summary>
 /// <remarks>
 /// <para>
 /// This type of view allows for unordered access to a <see cref="GorgonTexture1D"/>. The texture must have been created with the <see cref="TextureBinding.ReadWriteView"/> flag in its 
-/// <see cref="IGorgonTexture1DInfo.Binding"/> property.
+/// <see cref="IGorgonTexture1DInfo.Binding"/> property
 /// </para>
 /// <para>
 /// The unordered access allows a shader to read/write any part of a <see cref="GorgonGraphicsResource"/> by multiple threads without memory contention. This is done through the use of 
-/// <a target="_blank" href="https://msdn.microsoft.com/en-us/library/windows/desktop/ff476334(v=vs.85).aspx">atomic functions</a>.
+/// <a target="_blank" href="https://msdn.microsoft.com/en-us/library/windows/desktop/ff476334(v=vs.85).aspx">atomic functions</a>
 /// </para>
 /// <para>
 /// These types of views are most useful for <see cref="GorgonComputeShader"/> shaders, but can also be used by a <see cref="GorgonPixelShader"/> by passing a list of these views in to a 
-/// <see cref="GorgonDrawCallCommon">draw call</see>.
+/// <see cref="GorgonDrawCallCommon">draw call</see>
 /// </para>
 /// </remarks>
 /// <seealso cref="GorgonGraphicsResource"/>
@@ -65,11 +61,10 @@ namespace Gorgon.Graphics.Core;
 public sealed class GorgonTexture1DReadWriteView
     : GorgonReadWriteView, IGorgonTexture1DInfo, IGorgonImageInfo
 {
-    #region Properties.
     /// <summary>
     /// Property to return the type of image data.
     /// </summary>
-    ImageType IGorgonImageInfo.ImageType => ImageType.Image1D;
+    ImageDataType IGorgonImageInfo.ImageType => ImageDataType.Image1D;
 
     /// <summary>
     /// Property to return the height of an image, in pixels.
@@ -185,7 +180,7 @@ public sealed class GorgonTexture1DReadWriteView
     /// <remarks>
     /// This value is the full bounding range of the first mip map level for the texture associated with the view.
     /// </remarks>
-    public GorgonRange Bounds
+    public GorgonRange<int> Bounds
     {
         get;
     }
@@ -212,9 +207,7 @@ public sealed class GorgonTexture1DReadWriteView
     /// Property to return the flags to determine how the texture will be bound with the pipeline when rendering.
     /// </summary>
     public TextureBinding Binding => Texture?.Binding ?? TextureBinding.None;
-    #endregion
 
-    #region Methods.
     /// <summary>Function to retrieve the necessary parameters to create the native view.</summary>
     /// <returns>The D3D11 UAV descriptor.</returns>
     private protected override ref readonly D3D11.UnorderedAccessViewDescription1 OnGetUavParams()
@@ -237,11 +230,11 @@ public sealed class GorgonTexture1DReadWriteView
     }
 
     /// <summary>
-    /// Function to convert a <see cref="GorgonRangeF"/> of texel coordinates to pixel space.
+    /// Function to convert a <see cref="GorgonRange{T}"/> of texel coordinates to pixel space.
     /// </summary>
     /// <param name="texelCoordinates">The texel coordinates to convert.</param>
     /// <param name="mipLevel">[Optional] The mip level to use.</param>
-    /// <returns>A <see cref="GorgonRange"/> containing the pixel space coordinates.</returns>
+    /// <returns>A <see cref="GorgonRange{T}"/> containing the pixel space coordinates.</returns>
     /// <remarks>
     /// <para>
     /// If specified, the <paramref name="mipLevel"/> only applies to the <see cref="MipSlice"/> for this view, it will be constrained if it falls outside of that range.
@@ -249,26 +242,26 @@ public sealed class GorgonTexture1DReadWriteView
     /// for the underlying <see cref="Texture"/> is used.
     /// </para>
     /// </remarks>
-    public GorgonRange ToPixel(GorgonRangeF texelCoordinates, int? mipLevel = null)
+    public GorgonRange<int> ToPixel(GorgonRange<float> texelCoordinates, int? mipLevel = null)
     {
         float width = Texture.Width;
 
         if (mipLevel is null)
         {
-            return new GorgonRange((int)(texelCoordinates.Minimum * width), (int)(texelCoordinates.Maximum * width));
+            return new GorgonRange<int>((int)(texelCoordinates.Minimum * width), (int)(texelCoordinates.Maximum * width));
         }
 
         width = GetMipWidth(mipLevel.Value);
 
-        return new GorgonRange((int)(texelCoordinates.Minimum * width), (int)(texelCoordinates.Maximum * width));
+        return new GorgonRange<int>((int)(texelCoordinates.Minimum * width), (int)(texelCoordinates.Maximum * width));
     }
 
     /// <summary>
-    /// Function to convert a <see cref="GorgonRange"/> of pixel coordinates to texel space.
+    /// Function to convert a <see cref="GorgonRange{T}"/> of pixel coordinates to texel space.
     /// </summary>
     /// <param name="pixelCoordinates">The pixel coordinates to convert.</param>
     /// <param name="mipLevel">[Optional] The mip level to use.</param>
-    /// <returns>A <see cref="GorgonRangeF"/> containing the texel space coordinates.</returns>
+    /// <returns>A <see cref="GorgonRange{T}"/> containing the texel space coordinates.</returns>
     /// <remarks>
     /// <para>
     /// If specified, the <paramref name="mipLevel"/> only applies to the <see cref="MipSlice"/> for this view, it will be constrained if it falls outside of that range.
@@ -276,18 +269,18 @@ public sealed class GorgonTexture1DReadWriteView
     /// for the underlying <see cref="Texture"/> is used.
     /// </para>
     /// </remarks>
-    public GorgonRangeF ToTexel(GorgonRange pixelCoordinates, int? mipLevel = null)
+    public GorgonRange<float> ToTexel(GorgonRange<int> pixelCoordinates, int? mipLevel = null)
     {
         float width = Texture.Width;
 
         if (mipLevel is null)
         {
-            return new GorgonRangeF(pixelCoordinates.Minimum / width, pixelCoordinates.Maximum / width);
+            return new GorgonRange<float>(pixelCoordinates.Minimum / width, pixelCoordinates.Maximum / width);
         }
 
         width = GetMipWidth(mipLevel.Value);
 
-        return new GorgonRangeF(pixelCoordinates.Minimum / width, pixelCoordinates.Maximum / width);
+        return new GorgonRange<float>(pixelCoordinates.Minimum / width, pixelCoordinates.Maximum / width);
     }
 
     /// <summary>
@@ -367,7 +360,7 @@ public sealed class GorgonTexture1DReadWriteView
     /// If this method is called with a 3D texture bound to the view, and with regions specified, then the regions are ignored.
     /// </para>
     /// </remarks>
-    public void Clear(in GorgonColor color, ReadOnlySpan<DX.Rectangle> rectangles)
+    public void Clear(GorgonColor color, ReadOnlySpan<GorgonRectangle> rectangles)
     {
         if (rectangles.IsEmpty)
         {
@@ -375,20 +368,20 @@ public sealed class GorgonTexture1DReadWriteView
             return;
         }
 
-        RawRectangle[] clearRects = GorgonArrayPool<RawRectangle>.SharedTiny.Rent(rectangles.Length);
+        RawRectangle[] clearRects = ArrayPool<RawRectangle>.Shared.Rent(rectangles.Length);
 
         try
         {
             for (int i = 0; i < rectangles.Length; ++i)
             {
-                clearRects[i] = rectangles[i];
+                clearRects[i] = rectangles[i].ToSharpDXRawRectangle();
             }
 
             Resource.Graphics.D3DDeviceContext.ClearView(Native, color.ToRawColor4(), clearRects, rectangles.Length);
         }
         finally
         {
-            GorgonArrayPool<RawRectangle>.SharedTiny.Return(clearRects, true);
+            ArrayPool<RawRectangle>.Shared.Return(clearRects, true);
         }
     }
 
@@ -428,7 +421,7 @@ public sealed class GorgonTexture1DReadWriteView
             throw new ArgumentNullException(nameof(info));
         }
 
-        var newInfo = new GorgonTexture1DInfo(info)
+        GorgonTexture1DInfo newInfo = new(info)
         {
             Usage = info.Usage == ResourceUsage.Staging ? ResourceUsage.Default : info.Usage,
             Binding = (((info.Binding & TextureBinding.ReadWriteView) != TextureBinding.ReadWriteView)
@@ -606,9 +599,7 @@ public sealed class GorgonTexture1DReadWriteView
         view.OwnsResource = true;
         return view;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonTexture1DReadWriteView"/> class.
     /// </summary>
@@ -630,10 +621,9 @@ public sealed class GorgonTexture1DReadWriteView
         FormatInformation = formatInfo ?? throw new ArgumentNullException(nameof(formatInfo));
         Format = format;
         Texture = texture;
-        Bounds = new GorgonRange(0, Width);
+        Bounds = new GorgonRange<int>(0, Width);
         MipSlice = firstMipLevel;
         ArrayIndex = arrayIndex;
         ArrayCount = arrayCount;
     }
-    #endregion
 }

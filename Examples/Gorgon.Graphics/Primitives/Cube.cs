@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2014 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,21 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Sunday, August 10, 2014 10:49:01 PM
 // 
-#endregion
 
-using System;
-using System.Drawing;
 using System.Numerics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
@@ -34,17 +31,15 @@ using Gorgon.Renderers.Geometry;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// A mesh representing a solid cube.
+/// A mesh representing a solid cube
 /// </summary>
 internal class Cube
     : MoveableMesh
 {
-    #region Variables.
+
     // Initial orientation.
     private Matrix4x4 _orientation;
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to build the plane vertices.
     /// </summary>
@@ -62,22 +57,22 @@ internal class Cube
         float columnHeight = 1.0f / rows;
         Matrix4x4 rotation = Matrix4x4.Identity;
 
-        var orientVector = Vector3.Cross(normal, up);
-        var translate = Vector3.Multiply(normal, 0.5f);
+        Vector3 orientVector = Vector3.Cross(normal, up);
+        Vector3 translate = Vector3.Multiply(normal, 0.5f);
 
         rotation.SetRow(0, new Vector4(orientVector, 0));
         rotation.SetRow(1, new Vector4(up, 0));
         rotation.SetRow(2, new Vector4(normal, 0));
         rotation.SetRow(3, new Vector4(translate, 1));
 
-        var transformNormal = Vector3.Transform(normal, _orientation);
+        Vector3 transformNormal = Vector3.Transform(normal, _orientation);
         transformNormal = Vector3.Normalize(transformNormal);
 
         for (int y = 0; y <= rows; ++y)
         {
             for (int x = 0; x <= columns; ++x)
             {
-                var vertexPos = new Vector3(((x * columnWidth) - 0.5f) * size.X,
+                Vector3 vertexPos = new(((x * columnWidth) - 0.5f) * size.X,
                                             ((y * columnHeight) - 0.5f) * size.Y,
                                             0);
 
@@ -121,9 +116,7 @@ internal class Cube
             }
         }
     }
-    #endregion
 
-    #region Constructor/Destructor.
     /// <summary>
     /// Initializes a new instance of the <see cref="Cube" /> class.
     /// </summary>
@@ -143,10 +136,10 @@ internal class Cube
         IndexCount = faceIndexCount * 6;
         TriangleCount = IndexCount / 3;
 
-        var orientation = Quaternion.CreateFromYawPitchRoll(angle.Y.ToRadians(), angle.X.ToRadians(), angle.Z.ToRadians());
+        Quaternion orientation = Quaternion.CreateFromYawPitchRoll(angle.Y.ToRadians(), angle.X.ToRadians(), angle.Z.ToRadians());
         _orientation = Matrix4x4.CreateFromQuaternion(orientation);
 
-        var vertexData = new GorgonVertexPosNormUvTangent[VertexCount];
+        GorgonVertexPosNormUvTangent[] vertexData = new GorgonVertexPosNormUvTangent[VertexCount];
         int[] indexData = new int[IndexCount];
 
         // Front.
@@ -170,15 +163,14 @@ internal class Cube
         GetIndices(indexData, faceIndexCount * 5, faceVertexCount * 5, columnsPerFace, rowsPerFace);
 
         CalculateTangents(vertexData, indexData);
-                    
+
         VertexBuffer = GorgonVertexBuffer.Create<GorgonVertexPosNormUvTangent>(graphics,
                                                  new GorgonVertexBufferInfo(GorgonVertexPosNormUvTangent.SizeInBytes * vertexData.Length)
                                                  {
-                                                    Name = "CubeVB",
-                                                    Usage = ResourceUsage.Immutable
+                                                     Name = "CubeVB",
+                                                     Usage = ResourceUsage.Immutable
                                                  },
                                                  vertexData);
-
 
         IndexBuffer = new GorgonIndexBuffer(graphics,
                                             new GorgonIndexBufferInfo(IndexCount)
@@ -190,5 +182,4 @@ internal class Cube
 
         UpdateAabb(vertexData);
     }
-    #endregion
 }

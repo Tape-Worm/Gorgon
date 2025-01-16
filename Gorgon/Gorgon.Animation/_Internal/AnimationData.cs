@@ -1,6 +1,5 @@
-﻿#region MIT
-// 
-// Gorgon.
+﻿// 
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,22 +10,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 15, 2018 11:01:36 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Math;
@@ -34,17 +29,20 @@ using Gorgon.Math;
 namespace Gorgon.Animation;
 
 /// <summary>
-/// A base class for a <see cref="IGorgonAnimation"/> implementation.
+/// A base class for a <see cref="IGorgonAnimation"/> implementation
 /// </summary>
 public class AnimationData
-    : GorgonNamedObject, IGorgonAnimation
+    : IGorgonNamedObject, IGorgonAnimation
 {
-    #region Variables.
     // Number of loops for the animation.
     private int _loopCount;
-    #endregion
 
-    #region Properties.
+    /// <inheritdoc/>
+    public string Name
+    {
+        get;
+    }
+
     /// <summary>
     /// Property to set or return the number of times to loop an animation.
     /// </summary>
@@ -65,9 +63,9 @@ public class AnimationData
     } = 1.0f;
 
     /// <summary>
-		/// Property to return the length of the animation (in seconds).
-		/// </summary>
-		public float Length
+    /// Property to return the length of the animation (in seconds).
+    /// </summary>
+    public float Length
     {
         get;
     }
@@ -143,10 +141,8 @@ public class AnimationData
     public float Fps
     {
         get;
-    } = 60.0f;
-    #endregion
+    }
 
-    #region Methods.
     /// <summary>
     /// Function to retrieve the maximum number of key frames across all tracks.
     /// </summary>
@@ -162,11 +158,9 @@ public class AnimationData
         result = result.Max(RectangleTracks.Select(item => item.Value).DefaultIfEmpty().Max(key => key?.KeyFrames.Count ?? 0));
         return result.Max(Texture2DTracks.Select(item => item.Value).DefaultIfEmpty().Max(key => key?.KeyFrames.Count ?? 0));
     }
-    #endregion
 
-    #region Constructor/Destructor.
     /// <summary>
-    /// Initializes a new instance of the <see cref="AnimationData" /> class.
+    /// Initializes a new instance of the <see cref="AnimationData" /> class
     /// </summary>
     /// <param name="name">The name of the track.</param>
     /// <param name="fps">The frames per second for the animation.</param>
@@ -174,10 +168,19 @@ public class AnimationData
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
     public AnimationData(string name, float fps, float length)
-        : base(name)
     {
+        if (name is null)
+        {
+            throw new ArgumentNullException(nameof(name));
+        }
+
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            throw new ArgumentEmptyException(nameof(name));
+        }
+
+        Name = name;
         Length = length.Max(0);
         Fps = fps.Max(1);
     }
-    #endregion
 }

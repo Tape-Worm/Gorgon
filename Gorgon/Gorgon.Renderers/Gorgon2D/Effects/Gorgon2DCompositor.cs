@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,47 +11,45 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 2, 2018 12:25:08 PM
 // 
-#endregion
 
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Threading;
-using Gorgon.Collections.Specialized;
 using Gorgon.Core;
-using Gorgon.Diagnostics;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Renderers.Cameras;
-using DX = SharpDX;
 
 namespace Gorgon.Renderers;
 
 /// <summary>
-/// A compositor system used to chain multiple effects together.
+/// A compositor system used to chain multiple effects together
 /// </summary>
 /// <remarks>
 /// <para>
 /// This processor will take a scene and composite it using a series of effects (or plain rendering without effects).  The results of these effects will be passed on to the next effect and rendered
-/// until all effects are processed. The final image is then output to a render target specified by the user.
+/// until all effects are processed. The final image is then output to a render target specified by the user
 /// </para>
 /// </remarks>
-public class Gorgon2DCompositor
-    : IDisposable, IGorgonGraphicsObject, IReadOnlyList<IGorgon2DCompositorPass>
+/// <remarks>
+/// Initializes a new instance of the <see cref="Gorgon2DCompositor"/> class
+/// </remarks>
+/// <param name="renderer">The renderer to use when rendering the effects.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/> parameter is <b>null</b>.</exception>
+public class Gorgon2DCompositor(Gorgon2D renderer)
+        : IDisposable, IGorgonGraphicsObject, IReadOnlyList<IGorgon2DCompositorPass>
 {
-    #region Variables.
+
     // The ping render target in the ping-pong target scheme.
     private GorgonRenderTarget2DView _pingTarget;
     // The pong render target in the ping-pong target scheme.
@@ -61,23 +59,21 @@ public class Gorgon2DCompositor
     // The texture view for the pong target.
     private GorgonTexture2DView _pongTexture;
     // The ordered list where the actual passes are stored.
-    private readonly GorgonNamedObjectList<CompositionPass> _passes = new();
+    private readonly List<CompositionPass> _passes = [];
     // The unique list of effects
     private readonly Dictionary<string, int> _passLookup = new(StringComparer.OrdinalIgnoreCase);
     // The color used to clear the initial render target.
-    private GorgonColor? _initialClear = GorgonColor.BlackTransparent;
+    private GorgonColor? _initialClear = GorgonColors.BlackTransparent;
     // The color used to clear the final render target.
-    private GorgonColor? _finalClear = GorgonColor.BlackTransparent;
-    #endregion
+    private GorgonColor? _finalClear = GorgonColors.BlackTransparent;
 
-    #region Properties.
     /// <summary>
     /// Property to return the graphics interface that built this object.
     /// </summary>
     public GorgonGraphics Graphics
     {
         get;
-    }
+    } = renderer.Graphics;
 
     /// <summary>
     /// Property to return the renderer to use when rendering the scene.
@@ -85,7 +81,7 @@ public class Gorgon2DCompositor
     public Gorgon2D Renderer
     {
         get;
-    }
+    } = renderer ?? throw new ArgumentNullException(nameof(renderer));
 
     /// <summary>
     /// Property to return the number of passes.
@@ -96,7 +92,6 @@ public class Gorgon2DCompositor
     /// Property to return the passes registered within the compositor by index.
     /// </summary>
     public IGorgon2DCompositorPass this[int index] => _passes[index];
-
 
     /// <summary>
     /// Property to return the passes registered within the compositor by name.
@@ -114,9 +109,7 @@ public class Gorgon2DCompositor
             return this[index];
         }
     }
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to free any resources allocated by the compositor.
     /// </summary>
@@ -145,8 +138,8 @@ public class Gorgon2DCompositor
     private void CreateResources(GorgonRenderTargetView outputTarget)
     {
         FreeResources();
-        
-        _pingTarget = Graphics.TemporaryTargets.Rent(new GorgonTexture2DInfo(outputTarget.Width, outputTarget.Height, outputTarget.Format) 
+
+        _pingTarget = Graphics.TemporaryTargets.Rent(new GorgonTexture2DInfo(outputTarget.Width, outputTarget.Height, outputTarget.Format)
         {
             Name = "Gorgon 2D Post Process Ping Render Target",
             Binding = TextureBinding.ShaderResource
@@ -176,10 +169,10 @@ public class Gorgon2DCompositor
 
         // Copy the composited output into the final render target specified by the user.
         Renderer.Begin(Gorgon2DBatchState.NoBlend);
-        Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, lastTargetTexture.Width, lastTargetTexture.Height),
-                                     GorgonColor.White,
+        Renderer.DrawFilledRectangle(new GorgonRectangleF(0, 0, lastTargetTexture.Width, lastTargetTexture.Height),
+                                     GorgonColors.White,
                                      lastTargetTexture,
-                                     new DX.RectangleF(0, 0, 1, 1));
+                                     new GorgonRectangleF(0, 0, 1, 1));
         Renderer.End();
     }
 
@@ -244,7 +237,7 @@ public class Gorgon2DCompositor
     /// cleared at all.
     /// </para>
     /// <para>
-    /// The default value is <see cref="GorgonColor.BlackTransparent"/>.
+    /// The default value is <see cref="GorgonColors.BlackTransparent"/>.
     /// </para>
     /// </remarks>
     public Gorgon2DCompositor InitialClearColor(GorgonColor? value)
@@ -264,7 +257,7 @@ public class Gorgon2DCompositor
     /// specified. If the value is <b>null</b>, then the render target will not be cleared at all.
     /// </para>
     /// <para>
-    /// The default value is <see cref="GorgonColor.BlackTransparent"/>.
+    /// The default value is <see cref="GorgonColors.BlackTransparent"/>.
     /// </para>
     /// </remarks>
     public Gorgon2DCompositor FinalClearColor(GorgonColor? value)
@@ -297,7 +290,7 @@ public class Gorgon2DCompositor
         }
 
         CompositionPass pass = _passes[index];
-        _passes.Remove(index);
+        _passes.RemoveAt(index);
         _passLookup.Remove(pass.Name);
         return this;
     }
@@ -319,11 +312,10 @@ public class Gorgon2DCompositor
             return this;
         }
 
-        _passes.Remove(index);
+        _passes.RemoveAt(index);
         _passLookup.Remove(effectName);
         return this;
     }
-
 
     /// <summary>
     /// Function to add an effect, and an optional rendering action to the compositor queue.
@@ -389,7 +381,7 @@ public class Gorgon2DCompositor
         {
             throw new ArgumentNullException(nameof(renderMethod));
         }
-        
+
         if (_passLookup.TryGetValue(name, out int prevIndex))
         {
             _passes[prevIndex] = new CompositionPass(name)
@@ -409,7 +401,7 @@ public class Gorgon2DCompositor
                 Camera = camera
             });
         }
-        
+
         return this;
     }
 
@@ -443,7 +435,7 @@ public class Gorgon2DCompositor
 
         _passes[passIndex] = null;
         _passes.Insert(newPassIndex, pass);
-        _passes.Remove((CompositionPass)null);
+        _passes.Remove(null);
 
         for (int i = 0; i < _passes.Count; ++i)
         {
@@ -536,9 +528,6 @@ public class Gorgon2DCompositor
     /// <returns>The fluent interface for the effects processor.</returns>
     public Gorgon2DCompositor Render(GorgonTexture2DView source, GorgonRenderTargetView output)
     {
-        source.ValidateObject(nameof(source));
-        output.ValidateObject(nameof(output));
-
         // We cannot copy a texture to itself, and it's pointless to do so, so just leave.
         if ((source.Resource == output.Resource)
             && (_passLookup.Count == 0))
@@ -610,18 +599,5 @@ public class Gorgon2DCompositor
     /// <summary>Returns an enumerator that iterates through a collection.</summary>
     /// <returns>An <see cref="IEnumerator"/> object that can be used to iterate through the collection.</returns>
     IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)_passes).GetEnumerator();
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Gorgon2DCompositor"/> class.
-    /// </summary>
-    /// <param name="renderer">The renderer to use when rendering the effects.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/> parameter is <b>null</b>.</exception>
-    public Gorgon2DCompositor(Gorgon2D renderer)
-    {
-        Renderer = renderer ?? throw new ArgumentNullException(nameof(renderer));
-        Graphics = renderer.Graphics;
-    }
-    #endregion
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,29 +11,27 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 11, 2018 4:07:20 PM
 // 
-#endregion
 
-using System.Collections.Generic;
+using System.Numerics;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Fonts;
 using Gorgon.UI;
-using DX = SharpDX;
 
 namespace Gorgon.Renderers;
 
 /// <summary>
-/// A renderable containing extra information for text items.
+/// A renderable containing extra information for text items
 /// </summary>
 internal class TextRenderable
     : BatchRenderable
@@ -51,7 +49,7 @@ internal class TextRenderable
     /// <summary>
     /// The area in which text can be laid out.
     /// </summary>
-    public DX.Size2F LayoutArea;
+    public Vector2 LayoutArea;
 
     /// <summary>
     /// A multiplier used to define the amount of space between each line of text.
@@ -71,7 +69,7 @@ internal class TextRenderable
     /// <summary>
     /// The color used to tint the outline (if the font supports it and outlining is enabled).
     /// </summary>
-    public GorgonColor OutlineTint = GorgonColor.White;
+    public GorgonColor OutlineTint = GorgonColors.White;
 
     /// <summary>
     /// The number of spaces to use when rendering a tab control character.
@@ -86,22 +84,22 @@ internal class TextRenderable
     /// <summary>
     /// The color of the upper left corner of the renderable.
     /// </summary>
-    public GorgonColor UpperLeftColor = GorgonColor.White;
+    public GorgonColor UpperLeftColor = GorgonColors.White;
 
     /// <summary>
     /// The color of the upper right corner of the renderable.
     /// </summary>
-    public GorgonColor UpperRightColor = GorgonColor.White;
+    public GorgonColor UpperRightColor = GorgonColors.White;
 
     /// <summary>
     /// The color of the lower left corner of the renderable.
     /// </summary>
-    public GorgonColor LowerLeftColor = GorgonColor.White;
+    public GorgonColor LowerLeftColor = GorgonColors.White;
 
     /// <summary>
     /// The color of the lower right corner of the renderable.
     /// </summary>
-    public GorgonColor LowerRightColor = GorgonColor.White;
+    public GorgonColor LowerRightColor = GorgonColors.White;
 
     /// <summary>
     /// A flag to indicate whether the colors of the individual corners of the renderable have changed.
@@ -111,5 +109,5 @@ internal class TextRenderable
     /// <summary>
     /// A list of blocks of text to colorize using embedded codes.
     /// </summary>
-    public List<ColorBlock> ColorBlocks = new();
+    public List<ColorBlock> ColorBlocks = [];
 }

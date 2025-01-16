@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,17 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 21, 2019 11:43:27 AM
 // 
-#endregion
 
 using System.Numerics;
 using Gorgon.Animation;
@@ -34,12 +33,18 @@ using Gorgon.Renderers;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// An entity for a sprite layer.
+/// An entity for a sprite layer
 /// </summary>
+/// <remarks>Initializes a new instance of the <see cref="SpriteEntity"/> class.</remarks>
 public class SpriteEntity
-    : GorgonNamedObject
+    : IGorgonNamedObject
 {
-    #region Properties.
+    /// <inheritdoc/>
+    public string Name
+    {
+        get;
+    }
+
     /// <summary>
     /// Property to set or return the sprite attached to this entity.
     /// </summary>
@@ -107,7 +112,7 @@ public class SpriteEntity
     {
         get;
         set;
-    } = GorgonColor.White;
+    } = GorgonColors.White;
 
     /// <summary>
     /// Property to set or return whether the sprite is lit by deferred lighting.
@@ -144,14 +149,25 @@ public class SpriteEntity
         get;
         set;
     } = true;
-    #endregion
 
-    #region Constructor
-    /// <summary>Initializes a new instance of the <see cref="SpriteEntity"/> class.</summary>
-    /// <param name="name">The name of this object.</param>
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SpriteEntity"/> class.
+    /// </summary>
+    /// <param name="name">The name of the entity.</param>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/> parameter is <b>null</b>.</exception>
+    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
     public SpriteEntity(string name)
-        : base(name)
     {
+        if (name is null)
+        {
+            throw new ArgumentNullException(nameof(name));
+        }
+
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            throw new ArgumentEmptyException(nameof(name));
+        }
+
+        Name = name;
     }
-    #endregion
 }

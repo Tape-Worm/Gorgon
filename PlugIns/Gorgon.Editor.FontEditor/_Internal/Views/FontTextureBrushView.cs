@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2021 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,26 +11,23 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: September 10, 2021 2:37:30 AM
 // 
-#endregion
 
-using System;
 using System.ComponentModel;
-using System.Threading;
-using DX = SharpDX;
 using Gorgon.Editor.FontEditor.Properties;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Controls;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Fonts;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
@@ -38,29 +35,25 @@ using Gorgon.Math;
 namespace Gorgon.Editor.FontEditor;
 
 /// <summary>
-/// The view for editing a glyph texture brush.
+/// The view for editing a glyph texture brush
 /// </summary>
 internal partial class FontTextureBrushView
     : EditorSubPanelCommon, IDataContext<IFontTextureBrush>
 {
-    #region Variables.
+
     // The event hook counter.
     private int _eventHook;
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to return the data context for the view.
     /// </summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public IFontTextureBrush DataContext
+    public IFontTextureBrush ViewModel
     {
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to unhook the events.
     /// </summary>
@@ -76,7 +69,7 @@ internal partial class FontTextureBrushView
         NumericRight.ValueChanged -= Numeric_ValueChanged;
         NumericBottom.ValueChanged -= Numeric_ValueChanged;
         ComboWrapMode.SelectedIndexChanged -= ComboWrapMode_SelectedIndexChanged;
-    }        
+    }
 
     /// <summary>
     /// Function to hook events.
@@ -102,21 +95,21 @@ internal partial class FontTextureBrushView
     /// <param name="e">The event parameters.</param>
     private void Numeric_ValueChanged(object sender, EventArgs e)
     {
-        DX.RectangleF rect = new()
+        GorgonRectangleF rect = new()
         {
             Left = (float)NumericLeft.Value,
             Top = (float)NumericTop.Value,
             Right = (float)NumericRight.Value,
             Bottom = (float)NumericBottom.Value
         };
-        
-        if ((DataContext?.SetRegionCommand is null) || (!DataContext.SetRegionCommand.CanExecute(rect)))
+
+        if ((ViewModel?.SetRegionCommand is null) || (!ViewModel.SetRegionCommand.CanExecute(rect)))
         {
             return;
         }
 
-        DataContext.SetRegionCommand.Execute(rect);
-        SetNumericMaxValues(DataContext.Texture, DataContext.Region);
+        ViewModel.SetRegionCommand.Execute(rect);
+        SetNumericMaxValues(ViewModel.Texture, ViewModel.Region);
 
         ValidateControls();
     }
@@ -126,14 +119,14 @@ internal partial class FontTextureBrushView
     /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
     private void ComboWrapMode_SelectedIndexChanged(object sender, EventArgs e)
     {
-        var item = (WrapModeComboItem)ComboWrapMode.SelectedItem;            
+        WrapModeComboItem item = (WrapModeComboItem)ComboWrapMode.SelectedItem;
 
-        if ((DataContext?.SetWrappingModeCommand is null) || (!DataContext.SetWrappingModeCommand.CanExecute(item.WrapMode)))
+        if ((ViewModel?.SetWrappingModeCommand is null) || (!ViewModel.SetWrappingModeCommand.CanExecute(item.WrapMode)))
         {
             return;
         }
 
-        DataContext.SetWrappingModeCommand.Execute(item.WrapMode);
+        ViewModel.SetWrappingModeCommand.Execute(item.WrapMode);
     }
 
     /// <summary>
@@ -141,13 +134,13 @@ internal partial class FontTextureBrushView
     /// </summary>
     private void ValidateControls()
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             TableControls.Enabled = false;
             return;
         }
 
-        TableControls.Enabled = DataContext.Texture is not null;
+        TableControls.Enabled = ViewModel.Texture is not null;
 
         ValidateOk();
     }
@@ -159,12 +152,12 @@ internal partial class FontTextureBrushView
     {
         UnhookEvents();
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged -= DataContext_PropertyChanged;
+        ViewModel.PropertyChanged -= DataContext_PropertyChanged;
     }
 
     /// <summary>
@@ -172,7 +165,7 @@ internal partial class FontTextureBrushView
     /// </summary>
     /// <param name="image">The image to base the upper bounds on.</param>
     /// <param name="region">The current region.</param>
-    private void SetNumericMaxValues(IGorgonImage image, DX.RectangleF region)
+    private void SetNumericMaxValues(IGorgonImage image, GorgonRectangleF region)
     {
         if (image is null)
         {
@@ -211,10 +204,10 @@ internal partial class FontTextureBrushView
         {
             case nameof(IFontTextureBrush.Region):
             case nameof(IFontTextureBrush.Texture):
-                SetNumericMaxValues(DataContext.Texture, DataContext.Region);
+                SetNumericMaxValues(ViewModel.Texture, ViewModel.Region);
                 break;
             case nameof(IFontTextureBrush.WrapMode):
-                ComboWrapMode.SelectedItem = new WrapModeComboItem(DataContext.WrapMode);
+                ComboWrapMode.SelectedItem = new WrapModeComboItem(ViewModel.WrapMode);
                 break;
         }
 
@@ -229,7 +222,7 @@ internal partial class FontTextureBrushView
     private void ResetDataContext()
     {
         UnassignEvents();
-        SetNumericMaxValues(null, new DX.RectangleF(0, 0, 1, 1));
+        SetNumericMaxValues(null, new GorgonRectangleF(0, 0, 1, 1));
         ComboWrapMode.SelectedIndex = 0;
     }
 
@@ -254,20 +247,20 @@ internal partial class FontTextureBrushView
     ///   <b>true</b> if the OK button is valid, <b>false</b> if not.</returns>
     protected override bool OnValidateOk()
     {
-        if (DataContext?.OkCommand is not null)
+        if (ViewModel?.OkCommand is not null)
         {
-            return DataContext.OkCommand.CanExecute(null);
+            return ViewModel.OkCommand.CanExecute(null);
         }
 
         return base.OnValidateOk();
     }
 
     /// <summary>Function to cancel the change.</summary>
-    protected override void OnCancel() 
+    protected override void OnCancel()
     {
-        if (DataContext is not null)
+        if (ViewModel is not null)
         {
-            DataContext.IsActive = false;
+            ViewModel.IsActive = false;
         }
     }
 
@@ -276,15 +269,15 @@ internal partial class FontTextureBrushView
     {
         base.OnSubmit();
 
-        if ((DataContext?.OkCommand is null) || (!DataContext.OkCommand.CanExecute(null)))
+        if ((ViewModel?.OkCommand is null) || (!ViewModel.OkCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.OkCommand.Execute(null);
+        ViewModel.OkCommand.Execute(null);
     }
 
-    /// <summary>Raises the <see cref="System.Windows.Forms.UserControl.Load"/> event.</summary>
+    /// <summary>Raises the <see cref="UserControl.Load"/> event.</summary>
     /// <param name="e">An <see cref="EventArgs"/> that contains the event data.</param>
     protected override void OnLoad(EventArgs e)
     {
@@ -295,13 +288,13 @@ internal partial class FontTextureBrushView
             return;
         }
 
-        DataContext?.Load();
-                    
+        ViewModel?.Load();
+
         NumericTop.Select();
 
         ValidateControls();
     }
-    
+
     /// <summary>Function to assign a data context to the view as a view model.</summary>
     /// <param name="dataContext">The data context to assign.</param>
     /// <remarks>Data contexts should be nullable, in that, they should reset the view back to its original state when the context is null.</remarks>
@@ -311,9 +304,9 @@ internal partial class FontTextureBrushView
 
         InitializeFromDataContext(dataContext);
 
-        DataContext = dataContext;
+        ViewModel = dataContext;
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             ValidateControls();
             return;
@@ -321,14 +314,12 @@ internal partial class FontTextureBrushView
 
         HookEvents();
 
-        DataContext.PropertyChanged += DataContext_PropertyChanged;
+        ViewModel.PropertyChanged += DataContext_PropertyChanged;
         ValidateControls();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
     /// <summary>Initializes a new instance of the <see cref="FontTextureBrushView"/> class.</summary>
-    public FontTextureBrushView() 
+    public FontTextureBrushView()
     {
         InitializeComponent();
 
@@ -340,5 +331,4 @@ internal partial class FontTextureBrushView
         ComboWrapMode.Items.Add(new WrapModeComboItem(GlyphBrushWrapMode.TileFlipXandY, Resources.GORFNT_TEXT_TILE_FLIP));
         ComboWrapMode.SelectedIndex = 0;
     }
-    #endregion
 }

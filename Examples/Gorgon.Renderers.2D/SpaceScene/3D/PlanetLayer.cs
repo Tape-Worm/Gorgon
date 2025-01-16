@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,22 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 18, 2019 7:32:37 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -35,31 +31,31 @@ using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Renderers.Data;
 using Gorgon.Renderers.Geometry;
-using DX = SharpDX;
 
 namespace Gorgon.Examples;
 
 /// <summary>
-/// The layer responsible for rendering our planet entities.
+/// The layer responsible for rendering our planet entities
 /// </summary>
 /// <remarks>
 /// <para>
-/// This is the layer responsible for rendering our planet(s) using a 3D renderer.
+/// This is the layer responsible for rendering our planet(s) using a 3D renderer
 /// </para>
 /// <para>
 /// This kind of a mini 3D renderer, but I want to stress: <b>IN NO WAY</b> is this the best way to do this. And in fact, it's set up just for this example so many liberties and shortcuts were 
-/// taken. Please do not use this in your own code.
+/// taken. Please do not use this in your own code
 /// </para>
 /// </remarks>
-internal class PlanetLayer
-    : Layer, IDisposable
+/// <remarks>Initializes a new instance of the <see cref="PlanetLayer"/> class.</remarks>
+/// <param name="graphics">The graphics interface for the application.</param>
+/// <param name="resources">The resources for the application.</param>
+internal class PlanetLayer(GorgonGraphics graphics, ResourceManagement resources)
+        : Layer, IDisposable
 {
-    #region Constants.
+
     // The maximum number of available lights.
     private const int MaxLights = 8;
-    #endregion
 
-    #region Value Types.
     /// <summary>
     /// Material data.
     /// </summary>
@@ -81,19 +77,17 @@ internal class PlanetLayer
         /// </summary>
         public float SpecularPower;
     }
-    #endregion
 
-    #region Variables.
     // The application graphics interface.
-    private readonly GorgonGraphics _graphics;
+    private readonly GorgonGraphics _graphics = graphics;
     // The application resources.
-    private readonly ResourceManagement _resources;
+    private readonly ResourceManagement _resources = resources;
     // The layout for a 3D vertex.
     private GorgonInputLayout _vertexLayout;
     // The pipeline state for rendering the planet.
-    private readonly GorgonPipelineStateBuilder _stateBuilder;
+    private readonly GorgonPipelineStateBuilder _stateBuilder = new(graphics);
     // The builder for create a draw call.
-    private readonly GorgonDrawIndexCallBuilder _drawCallBuilder;
+    private readonly GorgonDrawIndexCallBuilder _drawCallBuilder = new();
     // A constant buffer for holding the projection*view matrix.
     private GorgonConstantBufferView _viewProjectionBuffer;
     // A constant buffer for holding the world transformation matrix.
@@ -114,20 +108,16 @@ internal class PlanetLayer
     // A combination of both matrices. This is calculated on every frame update when the view/projection is updated.
     private Matrix4x4 _viewProjection;
     // Flag to indicate that we can draw the planet or not.
-    private readonly List<Planet> _drawPlanets = new();
-    #endregion
+    private readonly List<Planet> _drawPlanets = [];
 
-    #region Properties.
     /// <summary>
     /// Property to return a list of 3D planets to render.
     /// </summary>
     public IList<Planet> Planets
     {
         get;
-    } = new List<Planet>();
-    #endregion
+    } = [];
 
-    #region Methods.
     /// <summary>
     /// Function to build up the constant buffer data for our shaders.
     /// </summary>
@@ -135,9 +125,9 @@ internal class PlanetLayer
     {
         Matrix4x4 worldMatrix = Matrix4x4.Identity;
         Vector3 cameraPos = _viewMatrix.GetTranslation();
-        var emptyMaterial = new Material
+        Material emptyMaterial = new()
         {
-            Albedo = GorgonColor.White,
+            Albedo = GorgonColors.White,
             SpecularPower = 1.0f,
             UVOffset = Vector2.Zero
         };
@@ -151,7 +141,7 @@ internal class PlanetLayer
                                                 new GorgonConstantBufferInfo(Unsafe.SizeOf<GorgonGpuLightData>() * MaxLights)
                                                 {
                                                     Name = "LightDataBuffer",
-                                                    Usage = ResourceUsage.Default                                                        
+                                                    Usage = ResourceUsage.Default
                                                 });
     }
 
@@ -162,7 +152,7 @@ internal class PlanetLayer
     private void UpdateMaterial(MoveableMesh mesh)
     {
         // Send the material data over to the shader.
-        var materialData = new Material
+        Material materialData = new()
         {
             UVOffset = mesh.Material.TextureOffset,
             SpecularPower = mesh.Material.SpecularPower
@@ -178,7 +168,7 @@ internal class PlanetLayer
     private void UpdateMeshWorldMatrix(MoveableMesh mesh)
     {
         Vector3 newPosition = mesh.Position + new Vector3(Offset, 0);
-        var position = new Vector2(newPosition.X, newPosition.Y);
+        Vector2 position = new(newPosition.X, newPosition.Y);
         Vector2 transformed = position;
 
         mesh.Position = new Vector3(transformed / ParallaxLevel, mesh.Position.Z);
@@ -207,7 +197,7 @@ internal class PlanetLayer
             Planet planet = Planets[i];
             planet.Update();
 
-            DX.RectangleF aabb = DX.RectangleF.Empty;
+            GorgonRectangleF aabb = GorgonRectangleF.Empty;
             for (int j = 0; j < planet.Layers.Count; ++j)
             {
                 PlanetaryLayer layer = planet.Layers[j];
@@ -215,7 +205,7 @@ internal class PlanetLayer
 
                 UpdateMeshWorldMatrix(layer.Mesh);
 
-                DX.RectangleF meshAabb = layer.Mesh.GetAABB();
+                GorgonRectangleF meshAabb = layer.Mesh.GetAABB();
 
                 if (!meshAabb.IsEmpty)
                 {
@@ -225,7 +215,7 @@ internal class PlanetLayer
                     }
                     else
                     {
-                        aabb = DX.RectangleF.Union(meshAabb, aabb);
+                        aabb = GorgonRectangleF.Union(meshAabb, aabb);
                     }
                 }
 
@@ -233,7 +223,7 @@ internal class PlanetLayer
             }
 
             // Cull the planet if it's outside of our view.
-            if (Camera.ViewableRegion.Intersects(aabb))
+            if (Camera.ViewableRegion.IntersectsWith(aabb))
             {
                 _drawPlanets.Add(planet);
             }
@@ -292,7 +282,7 @@ internal class PlanetLayer
     /// </summary>
     public override void LoadResources()
     {
-        _drawCalls = new List<GorgonDrawIndexCall>();
+        _drawCalls = [];
         BuildConstantBuffers();
 
         for (int i = 0; i < Planets.Count; ++i)
@@ -307,7 +297,7 @@ internal class PlanetLayer
                 GorgonPixelShader pixelShader = _resources.PixelShaders[layer.Mesh.Material.PixelShader];
 
                 // Create our vertex layout now.
-                _vertexLayout ??= _vertexLayout = GorgonInputLayout.CreateUsingType<GorgonVertexPosNormUvTangent>(_graphics, vertexShader);
+                _vertexLayout ??= _vertexLayout = GorgonInputLayout.CreateUsingType<GorgonVertexPosNormUvTangent>(_graphics, nameof(GorgonVertexPosNormUvTangent), vertexShader);
 
                 // Set up a pipeline state for the mesh.
                 GorgonPipelineState pipelineState = _stateBuilder.Clear()
@@ -326,11 +316,11 @@ internal class PlanetLayer
                             .ConstantBuffer(ShaderType.Pixel, _lightBuffer, 1)
                             .ConstantBuffer(ShaderType.Pixel, _materialBuffer, 2);
 
-                (int startTexture, int textureCount) = layer.Mesh.Material.Textures.GetDirtyItems();
+                ReadOnlySpan<string> range = layer.Mesh.Material.Textures.GetDirtySpan();
 
-                for (int k = startTexture; k < startTexture + textureCount; ++k)
+                for (int k = 0; k < range.Length; ++k)
                 {
-                    GorgonTexture2DView texture = _resources.Textures[layer.Mesh.Material.Textures[k]].GetShaderResourceView();
+                    GorgonTexture2DView texture = _resources.Textures[range[k]].GetShaderResourceView();
                     _drawCallBuilder.ShaderResource(ShaderType.Pixel, texture, k);
                     // We should have this in the material, but since we know what we've got here, this will be fine.
                     _drawCallBuilder.SamplerState(ShaderType.Pixel, GorgonSamplerState.Wrapping, k);
@@ -353,7 +343,7 @@ internal class PlanetLayer
     /// "interesting" issues.  But since we're not making a complex scene here, just set it as-is.
     /// </para>
     /// </remarks>
-    private void SetView(in Matrix4x4 view)
+    private void SetView(ref readonly Matrix4x4 view)
     {
         _viewMatrix = view;
         _viewProjection = Matrix4x4.Transpose(Matrix4x4.Multiply(_viewMatrix, _projectionMatrix));
@@ -379,7 +369,7 @@ internal class PlanetLayer
     /// "interesting" issues.  But since we're not making a complex scene here, just set it as-is.
     /// </para>
     /// </remarks>
-    private void SetProjection(in Matrix4x4 projection)
+    private void SetProjection(ref readonly Matrix4x4 projection)
     {
         _projectionMatrix = projection;
         _viewProjectionBuffer?.Buffer.SetData(in _viewProjection);
@@ -395,19 +385,4 @@ internal class PlanetLayer
         _lightBuffer?.Dispose();
         _vertexLayout?.Dispose();
     }
-    #endregion
-
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="PlanetLayer"/> class.</summary>
-    /// <param name="graphics">The graphics interface for the application.</param>
-    /// <param name="resources">The resources for the application.</param>
-    public PlanetLayer(GorgonGraphics graphics, ResourceManagement resources)
-    {
-        _graphics = graphics;
-        _resources = resources;
-
-        _stateBuilder = new GorgonPipelineStateBuilder(graphics);
-        _drawCallBuilder = new GorgonDrawIndexCallBuilder();
-    }
-    #endregion
 }

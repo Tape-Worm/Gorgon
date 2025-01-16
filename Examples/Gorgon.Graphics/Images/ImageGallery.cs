@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,25 +11,20 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 4, 2018 9:39:05 PM
 // 
-#endregion
 
-using System;
-using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
-using System.IO;
-using System.Threading;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
@@ -39,25 +34,25 @@ using Gorgon.Math;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// A gallery for displaying the example images.
+/// A gallery for displaying the example images
 /// </summary>
 class ImageGallery
     : IDisposable
 {
-    #region Variables.
+
     // The content font with bolding.
     private readonly Font _boldContentFont;
     // Our image list.
     private readonly IGorgonImage[] _images = new IGorgonImage[6];
     // Descriptions for each image.
-    private readonly string[] _descriptions = {
+    private readonly string[] _descriptions = [
                                                   "User Drawn Image",
                                                   "Direct Draw Surface (DDS) Image",
                                                   "16bpp TGA Image",
                                                   "Animated GIF",
                                                   "PNG Image (w/alpha)",
                                                   "BMP Image"
-                                              };
+                                              ];
     // The size of the image.
     private Size _imageSize;
     // The destination bitmap to draw on the screen.
@@ -74,13 +69,7 @@ class ImageGallery
     private Point _gifPosition;
     // Counter for drawing frames.
     private int _isDrawing;
-    #endregion
 
-    #region Properties.
-
-    #endregion
-
-    #region Methods.
     /// <summary>
     /// Function to provide a quick and dirty method of drawing outlined text.
     /// </summary>
@@ -107,7 +96,7 @@ class ImageGallery
     private void CreateCustomImage()
     {
         // Create the image at the original size.
-        var sourceImage = new GorgonImage(new GorgonImageInfo(ImageType.Image2D, BufferFormat.R8G8B8A8_UNorm)
+        GorgonImage sourceImage = new(new GorgonImageInfo(ImageDataType.Image2D, BufferFormat.R8G8B8A8_UNorm)
         {
             Width = 320,
             Height = 240
@@ -128,14 +117,14 @@ class ImageGallery
                 int pixelStride = sourceImage.Buffers[0].PitchInformation.RowPitch / sourceImage.Buffers[0].Width;
                 // This is the position inside of the buffer, in bytes.
                 int position = (y * sourceImage.Buffers[0].PitchInformation.RowPitch) + (x * pixelStride);
-                var color = new GorgonColor(rColorFade, 1.0f - rColorFade, bColorFade, 1.0f);
+                GorgonColor color = new(rColorFade, 1.0f - rColorFade, bColorFade, 1.0f);
 
                 // Notice we're using AsRef here.  This allows us to read a value as another type.  In this case, we've chosen an 
                 // int32 value to represent an ARGB pixel. Because this value is a reference to the location in memory, we can assign 
                 // a new value to it. 
                 //
                 // Do note that the position is a byte address, and not an int address (i.e. position = 1 is 1 byte, not 1 int).
-                sourceImage.Buffers[0].Data.AsRef<int>(position) = color.ToABGR();
+                sourceImage.Buffers[0].Data.AsRef<int>(position) = GorgonColor.ToABGR(color);
             }
         }
 
@@ -163,7 +152,7 @@ class ImageGallery
     {
         // Note here that we're passing in codec specific options into the codec.
         // In this case, we're telling the codec to read all the frames from the animated GIF.
-        var gifCodec = new GorgonCodecGif(decodingOptions: new GorgonGifDecodingOptions
+        GorgonCodecGif gifCodec = new(decodingOptions: new GorgonGifDecodingOptions
         {
             ReadAllFrames = true
         });
@@ -175,7 +164,7 @@ class ImageGallery
         _gifGraphics = System.Drawing.Graphics.FromImage(_gifBuffer);
 
         float imageAspect = _images[3].Height / (float)_images[3].Width;
-        var newSize = new Size(_imageSize.Width, (int)(_imageSize.Width * imageAspect));
+        Size newSize = new(_imageSize.Width, (int)(_imageSize.Width * imageAspect));
 
         // With this one, the source image isn't in the same aspect ratio as our thumbnail size.
         // So we need to expand the image boundaries to fit.  The expand method will do just that.
@@ -232,12 +221,12 @@ class ImageGallery
         // This will create a new image, and draw custom data to that image.
         CreateCustomImage();
 
-        var imageDirectory = new DirectoryInfo(Path.Combine(path, "Images"));
-        var ddsFileInfo = new FileInfo(Path.Combine(imageDirectory.FullName, "colleen.dds"));
-        var tgaFileInfo = new FileInfo(Path.Combine(imageDirectory.FullName, "colleen2.tga"));
-        var gifFileInfo = new FileInfo(Path.Combine(imageDirectory.FullName, "rain.gif"));
-        var pngFileInfo = new FileInfo(Path.Combine(imageDirectory.FullName, "skull.png"));
-        var bmpFileInfo = new FileInfo(Path.Combine(imageDirectory.FullName, "nebula1.bmp"));
+        DirectoryInfo imageDirectory = new(Path.Combine(path, "Images"));
+        FileInfo ddsFileInfo = new(Path.Combine(imageDirectory.FullName, "colleen.dds"));
+        FileInfo tgaFileInfo = new(Path.Combine(imageDirectory.FullName, "colleen2.tga"));
+        FileInfo gifFileInfo = new(Path.Combine(imageDirectory.FullName, "rain.gif"));
+        FileInfo pngFileInfo = new(Path.Combine(imageDirectory.FullName, "skull.png"));
+        FileInfo bmpFileInfo = new(Path.Combine(imageDirectory.FullName, "nebula1.bmp"));
 
         // Load each image and resize to the requested width & height.
         // Here we see how to use an image codec to read image data from a file.
@@ -297,7 +286,7 @@ class ImageGallery
             Interlocked.Increment(ref _isDrawing);
 
             // Our position for the current image.
-            var position = new Point(0, 0);
+            Point position = new(0, 0);
 
             for (int i = 0; i < _images.Length; ++i)
             {
@@ -349,9 +338,7 @@ class ImageGallery
         _gifBuffer.Dispose();
         _destBitmap?.Dispose();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
     /// <summary>
     /// Initializes a new instance of the <see cref="ImageGallery"/> class.
     /// </summary>
@@ -370,8 +357,7 @@ class ImageGallery
         _boldContentFont = new Font(baseFont, FontStyle.Bold);
         _dpi = 96.Max(deviceDpi);
         float newScaleWidth = deviceDpi / 96.0f;
-        var dpiScale = new SizeF(newScaleWidth, newScaleWidth);
+        SizeF dpiScale = new(newScaleWidth, newScaleWidth);
         _imageSize = new Size((int)(dpiScale.Width * 320), (int)(dpiScale.Height * 240));
     }
-    #endregion
 }

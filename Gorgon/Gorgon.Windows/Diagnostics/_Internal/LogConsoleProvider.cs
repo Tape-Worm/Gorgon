@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,24 +11,20 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 22, 2018 11:34:55 AM
 // 
-#endregion
 
-using System;
 using System.Diagnostics;
-using System.IO;
 using System.Text;
-using System.Threading;
 using Gorgon.Native;
 using Gorgon.Windows.Properties;
 using Microsoft.Win32.SafeHandles;
@@ -36,12 +32,11 @@ using Microsoft.Win32.SafeHandles;
 namespace Gorgon.Diagnostics.LogProviders;
 
 /// <summary>
-/// A provider used to store logging messages to a console window.
+/// A provider used to store logging messages to a console window
 /// </summary>
 internal class LogConsoleProvider
     : IGorgonLogProvider
 {
-    #region Enums.
     /// <summary>
     /// The type of message to display.
     /// </summary>
@@ -62,28 +57,19 @@ internal class LogConsoleProvider
         /// <summary>
         /// A warning message.
         /// </summary>
-        Warning,
-        /// <summary>
-        /// Another type of warning message.
-        /// </summary>
-        Warning2
+        Warning
     }
-    #endregion
 
-    #region Variables.
     // Message strings used to determine the type of message.
-    private readonly string _exceptionLine = $"\t{Resources.GOR_LOG_EXCEPTION.ToUpper()}!!";
-    private readonly string _errorLine = $"] {Resources.GOR_LOG_ERROR}";
-    private readonly string _warnLine1 = $"] {Resources.GOR_LOG_WARNING}";
-    private readonly string _warnLine2 = $"] {Resources.GOR_LOG_WARNING2}";
+    private readonly string _exceptionLine = $"] [{Resources.GOR_LOG_EXCEPTION}]: ";
+    private readonly string _errorLine = $"] [{Resources.GOR_LOG_ERROR}]: ";
+    private readonly string _warnLine = $"] [{Resources.GOR_LOG_WARNING}]: ";
 
     // Flag to indicate that the app has a console window.
     private int _hasConsole;
     // Flag to indicate that we own the console window.
     private bool _ownsConsole;
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to close the data store for writing.
     /// </summary>
@@ -152,7 +138,7 @@ internal class LogConsoleProvider
                                                    (uint)FileMode.Open,
                                                    0,
                                                    IntPtr.Zero);
-            var handle = new SafeFileHandle(filePtr, true);
+            SafeFileHandle handle = new(filePtr, true);
             if (handle.IsInvalid)
             {
                 handle.Dispose();
@@ -161,8 +147,8 @@ internal class LogConsoleProvider
 
             KernelApi.SetStdHandle(KernelApi.StdOutputHandle, filePtr);
 
-            var stream = new FileStream(handle, FileAccess.Write);
-            var writer = new StreamWriter(stream, Encoding.Default)
+            FileStream stream = new(handle, FileAccess.Write);
+            StreamWriter writer = new(stream, Encoding.Default)
             {
                 AutoFlush = true
             };
@@ -190,12 +176,11 @@ internal class LogConsoleProvider
     /// <param name="message">The message to parse.</param>
     /// <returns>The array containing each line.</returns>
     private static string[] GetLines(string message) => string.IsNullOrWhiteSpace(message)
-            ? Array.Empty<string>()
-            : message.Split(new[]
-                             {
+            ? []
+            : message.Split([
                                  '\r',
                                  '\n'
-                             },
+                             ],
                              StringSplitOptions.RemoveEmptyEntries);
 
     /// <summary>
@@ -215,10 +200,10 @@ internal class LogConsoleProvider
         }
 
         Console.ForegroundColor = color;
-        Console.Write(" " + word);
+        Console.Write($" [{word}]:");
         Console.ResetColor();
 
-        return line[(start + word.Length)..];
+        return line[(start + word.Length + 2)..];
     }
 
     /// <summary>
@@ -240,7 +225,7 @@ internal class LogConsoleProvider
                 line = (line.Length - end) > 0 ? line[end..] : string.Empty;
 
                 Console.ForegroundColor = ConsoleColor.Green;
-                Console.Write(dateTime);
+                Console.Write($"{dateTime}");
                 Console.ResetColor();
             }
         }
@@ -255,9 +240,6 @@ internal class LogConsoleProvider
                 break;
             case MessageType.Warning:
                 line = HilightWord(line, Resources.GOR_LOG_WARNING, ConsoleColor.Yellow);
-                break;
-            case MessageType.Warning2:
-                line = HilightWord(line, Resources.GOR_LOG_WARNING2, ConsoleColor.Yellow);
                 break;
             default:
                 Console.ResetColor();
@@ -288,10 +270,9 @@ internal class LogConsoleProvider
         }
         else
         {
-            lines = new[]
-                    {
+            lines = [
                         message
-                    };
+                    ];
         }
 
         MessageType messageType = MessageType.Normal;
@@ -304,13 +285,9 @@ internal class LogConsoleProvider
         {
             messageType = MessageType.Error;
         }
-        else if (message.Contains(_warnLine1))
+        else if (message.Contains(_warnLine))
         {
             messageType = MessageType.Warning;
-        }
-        else if (message.Contains(_warnLine2))
-        {
-            messageType = MessageType.Warning2;
         }
 
         for (int i = 0; i < lines.Length; i++)
@@ -318,5 +295,4 @@ internal class LogConsoleProvider
             FormatLine(lines[i], messageType);
         }
     }
-    #endregion
 }

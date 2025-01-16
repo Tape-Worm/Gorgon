@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,28 +11,20 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 8, 2018 8:17:22 PM
 // 
-#endregion
 
-using System;
-
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net.Mail;
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using System.Threading;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
@@ -46,54 +38,43 @@ using DXGI = SharpDX.DXGI;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// A texture used to project an image onto a graphic primitive such as a triangle.
+/// A texture used to project an image onto a graphic primitive such as a triangle
 /// </summary>
 public sealed class GorgonTexture2D
     : GorgonGraphicsResource, IGorgonTexture2DInfo, IGorgonTextureResource, IGorgonSharedResource
 {
-    #region Constants.
     /// <summary>
     /// The prefix used for generated names.
     /// </summary>
     internal const string NamePrefix = nameof(GorgonTexture2D);
-    #endregion
 
-    #region Variables.
     // Default texture loading options.
     private static readonly GorgonTexture2DLoadOptions _defaultLoadOptions = new();
     // The ID number of the texture.
     private static int _textureID;
     // The list of cached texture unordered access views.
-    private Dictionary<TextureViewKey, GorgonTexture2DReadWriteView> _cachedReadWriteViews = new();
+    private Dictionary<TextureViewKey, GorgonTexture2DReadWriteView> _cachedReadWriteViews = [];
     // The list of cached texture shader resource views.
-    private Dictionary<TextureViewKey, GorgonTexture2DView> _cachedSrvs = new();
+    private Dictionary<TextureViewKey, GorgonTexture2DView> _cachedSrvs = [];
     // The list of cached render target resource views.
-    private Dictionary<TextureViewKey, GorgonRenderTarget2DView> _cachedRtvs = new();
+    private Dictionary<TextureViewKey, GorgonRenderTarget2DView> _cachedRtvs = [];
     // The list of cached depth/stencil resource views.
-    private Dictionary<TextureViewKey, GorgonDepthStencil2DView> _cachedDsvs = new();
-#if NET48_OR_GREATER
-#pragma warning disable IDE0044 // Add readonly modifier
-#endif
+    private Dictionary<TextureViewKey, GorgonDepthStencil2DView> _cachedDsvs = [];
     // The information used to create the texture.
     private GorgonTexture2DInfo _info;
-#if NET48_OR_GREATER
-#pragma warning restore IDE0044 // Add readonly modifier
-#endif
     // List of typeless formats that are compatible with a depth view format.
-    private static readonly HashSet<BufferFormat> _typelessDepthFormats = new()
-    {
+    private static readonly HashSet<BufferFormat> _typelessDepthFormats =
+    [
         BufferFormat.R16_Typeless,
         BufferFormat.R32_Typeless,
         BufferFormat.R24G8_Typeless,
         BufferFormat.R32G8X24_Typeless
-    };
+    ];
     // The shared resource for this texture.
     private DXGI.Resource _sharedResource;
     // The keyed mutex for the shared resource.
     private DXGI.KeyedMutex _keyedMutex;
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to return the bind flags used for the D3D 11 resource.
     /// </summary>
@@ -102,7 +83,7 @@ public sealed class GorgonTexture2D
     /// <summary>
     /// Property to return the type of image data.
     /// </summary>
-    ImageType IGorgonImageInfo.ImageType => IsCubeMap ? ImageType.ImageCube : ImageType.Image2D;
+    ImageDataType IGorgonImageInfo.ImageType => IsCubeMap ? ImageDataType.ImageCube : ImageDataType.Image2D;
 
     /// <summary>
     /// Property to return the depth of an image, in pixels.
@@ -233,10 +214,8 @@ public sealed class GorgonTexture2D
     /// <remarks>
     /// Settings this flag to <b>true</b> allows the texture to be used with external graphics interfaces such as a Direct3D device. This is useful for providing interoperation between systems.
     /// </remarks>
-    public TextureSharingOptions Shared =>_info.Shared;
-    #endregion
+    public TextureSharingOptions Shared => _info.Shared;
 
-    #region Methods.
     /// <summary>
     /// Function to transfer texture data into an image buffer.
     /// </summary>
@@ -379,7 +358,7 @@ public sealed class GorgonTexture2D
     /// </summary>
     private void ValidateTextureSettings()
     {
-        var formatInfo = new GorgonFormatInfo(Format);
+        GorgonFormatInfo formatInfo = new(Format);
 
         if (Usage == ResourceUsage.Dynamic)
         {
@@ -410,7 +389,7 @@ public sealed class GorgonTexture2D
         }
 
         // Ensure that we can actually use our requested format as a texture.
-        if ((Format == BufferFormat.Unknown) || (!Graphics.FormatSupport[Format].IsTextureFormat(ImageType.Image2D)))
+        if ((Format == BufferFormat.Unknown) || (!Graphics.FormatSupport[Format].IsTextureFormat(ImageDataType.Image2D)))
         {
             throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_TEXTURE_FORMAT_NOT_SUPPORTED, Format, @"2D"));
         }
@@ -486,7 +465,6 @@ public sealed class GorgonTexture2D
                                                     Format));
         }
 
-#if NET6_0_OR_GREATER
         if ((arrayCount == _info.ArrayCount) && (mipLevels == _info.MipLevels))
         {
             return;
@@ -497,7 +475,6 @@ public sealed class GorgonTexture2D
             MipLevels = mipLevels,
             ArrayCount = arrayCount
         };
-#endif
     }
 
     /// <summary>
@@ -534,7 +511,7 @@ public sealed class GorgonTexture2D
         }
 
         D3D11.ResourceOptionFlags options = Shared switch
-        {            
+        {
             TextureSharingOptions.Shared => D3D11.ResourceOptionFlags.Shared,
             TextureSharingOptions.SharedKeyedMutex => D3D11.ResourceOptionFlags.SharedKeyedmutex,
             _ => D3D11.ResourceOptionFlags.None
@@ -545,7 +522,7 @@ public sealed class GorgonTexture2D
             options |= D3D11.ResourceOptionFlags.TextureCube;
         }
 
-        var tex2DDesc = new D3D11.Texture2DDescription1
+        D3D11.Texture2DDescription1 tex2DDesc = new()
         {
             Format = (DXGI.Format)Format,
             Width = Width,
@@ -581,7 +558,7 @@ public sealed class GorgonTexture2D
     /// <remarks>
     /// <para>
     /// This method copies the contents of this texture into the texture specified by the <paramref name="destTexture"/> parameter. If a sub resource for the <paramref name="destTexture"/> must be 
-    /// copied, use the <see cref="CopyTo(GorgonTexture2D, in DX.Rectangle?, int, int, int, int, int, int, CopyMode)"/> method.
+    /// copied, use the <see cref="CopyTo(GorgonTexture2D, GorgonRectangle?, int, int, int, int, int, int, CopyMode)"/> method.
     /// </para>
     /// <para>
     /// This method does not perform stretching, filtering or clipping.
@@ -611,8 +588,6 @@ public sealed class GorgonTexture2D
         {
             return;
         }
-
-        destTexture.ValidateObject(nameof(destTexture));
 
 #if DEBUG
         if (destTexture.ResourceType != ResourceType)
@@ -655,7 +630,7 @@ public sealed class GorgonTexture2D
     /// <param name="mipCount">The number of mip map levels.</param>
     /// <param name="isCubeMap"><b>true</b> if the texture is meant to be used as a cube map, or <b>false</b> if not.</param>
     /// <returns>The number of bytes for the texture.</returns>
-    public static int CalculateSizeInBytes(int width, int height, int arrayCount, BufferFormat format, int mipCount, bool isCubeMap) => GorgonImage.CalculateSizeInBytes(isCubeMap ? ImageType.ImageCube : ImageType.Image2D,
+    public static int CalculateSizeInBytes(int width, int height, int arrayCount, BufferFormat format, int mipCount, bool isCubeMap) => GorgonImage.CalculateSizeInBytes(isCubeMap ? ImageDataType.ImageCube : ImageDataType.Image2D,
                                                 width,
                                                 height,
                                                 arrayCount,
@@ -702,7 +677,7 @@ public sealed class GorgonTexture2D
         {
             return _sharedResource.SharedHandle;
         }
-        
+
         DXGI.Resource resource = D3DResource.QueryInterface<DXGI.Resource>() ?? throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_SHARED_RES_NOT_AVAILABLE, Name));
 
         Interlocked.Exchange(ref _sharedResource, resource);
@@ -755,10 +730,8 @@ public sealed class GorgonTexture2D
     /// </note>
     /// </para>
     /// </remarks>
-    public void CopyTo(GorgonTexture1D destinationTexture, GorgonRange? sourceRange = null, int sourceY = 0, int sourceArrayIndex = 0, int sourceMipLevel = 0, int destX = 0, int destArrayIndex = 0, int destMipLevel = 0, CopyMode copyMode = CopyMode.None)
+    public void CopyTo(GorgonTexture1D destinationTexture, GorgonRange<int>? sourceRange = null, int sourceY = 0, int sourceArrayIndex = 0, int sourceMipLevel = 0, int destX = 0, int destArrayIndex = 0, int destMipLevel = 0, CopyMode copyMode = CopyMode.None)
     {
-        destinationTexture.ValidateObject(nameof(destinationTexture));
-
         // If we're trying to place the image data outside of this texture, then leave.
         if ((destX >= destinationTexture.Width)
             || (sourceY < 0)
@@ -767,16 +740,16 @@ public sealed class GorgonTexture2D
             return;
         }
 
-        DX.Rectangle rect;
+        GorgonRectangle rect;
 
         // If we didn't specify a box to copy from, then create one.
         if (sourceRange is null)
         {
-            rect = new DX.Rectangle(0, sourceY, Width.Min(destinationTexture.Width).Max(1), 1);
+            rect = new GorgonRectangle(0, sourceY, Width.Min(destinationTexture.Width).Max(1), 1);
         }
         else
         {
-            rect = new DX.Rectangle((sourceRange.Value.Minimum.Min(destinationTexture.Width - 1).Max(0)).Min(Width - 1), sourceY,
+            rect = new GorgonRectangle((sourceRange.Value.Minimum.Min(destinationTexture.Width - 1).Max(0)).Min(Width - 1), sourceY,
                                    (sourceRange.Value.Maximum.Min(destinationTexture.Width).Max(1)).Min(Width), 1);
         }
 
@@ -819,7 +792,7 @@ public sealed class GorgonTexture2D
         int left = rect.Left.Min(destinationTexture.Width - 1).Max(0);
         int right = rect.Right.Min(destinationTexture.Width + left).Max(1);
 
-        rect = new DX.Rectangle
+        rect = new GorgonRectangle
         {
             Left = left,
             Top = sourceY,
@@ -896,10 +869,8 @@ public sealed class GorgonTexture2D
     /// </note>
     /// </para>
     /// </remarks>
-    public void CopyTo(GorgonTexture2D destinationTexture, in DX.Rectangle? sourceRectangle = null, int sourceArrayIndex = 0, int sourceMipLevel = 0, int destX = 0, int destY = 0, int destArrayIndex = 0, int destMipLevel = 0, CopyMode copyMode = CopyMode.None)
+    public void CopyTo(GorgonTexture2D destinationTexture, GorgonRectangle? sourceRectangle = null, int sourceArrayIndex = 0, int sourceMipLevel = 0, int destX = 0, int destY = 0, int destArrayIndex = 0, int destMipLevel = 0, CopyMode copyMode = CopyMode.None)
     {
-        destinationTexture.ValidateObject(nameof(destinationTexture));
-
         // If we're trying to place the image data outside of the destination texture, then leave.
         if ((destX >= destinationTexture.Width)
             || (destY >= destinationTexture.Height))
@@ -918,16 +889,16 @@ public sealed class GorgonTexture2D
             return;
         }
 
-        DX.Rectangle rect;
+        GorgonRectangle rect;
 
         // If we didn't specify a box to copy from, then create one.
         if (sourceRectangle is null)
         {
-            rect = new DX.Rectangle(0, 0, Width.Min(destinationTexture.Width).Max(1), Height.Min(destinationTexture.Height).Max(1));
+            rect = new GorgonRectangle(0, 0, Width.Min(destinationTexture.Width).Max(1), Height.Min(destinationTexture.Height).Max(1));
         }
         else
         {
-            rect = new DX.Rectangle((sourceRectangle.Value.Left.Min(destinationTexture.Width - 1).Max(0)).Min(Width - 1),
+            rect = new GorgonRectangle((sourceRectangle.Value.Left.Min(destinationTexture.Width - 1).Max(0)).Min(Width - 1),
                                    (sourceRectangle.Value.Top.Min(destinationTexture.Height - 1).Max(0)).Min(Height - 1),
                                    (sourceRectangle.Value.Width.Min(destinationTexture.Width).Max(1)).Min(Width),
                                    (sourceRectangle.Value.Height.Min(destinationTexture.Height).Max(1)).Min(Height));
@@ -985,7 +956,7 @@ public sealed class GorgonTexture2D
         int right = rect.Right.Min(Width + left).Max(1);
         int bottom = rect.Bottom.Min(Height + top).Max(1);
 
-        rect = new DX.Rectangle
+        rect = new GorgonRectangle
         {
             Left = left,
             Top = top,
@@ -1062,10 +1033,8 @@ public sealed class GorgonTexture2D
     /// </note>
     /// </para>
     /// </remarks>
-    public void CopyTo(GorgonTexture3D destinationTexture, in DX.Rectangle? sourceRectangle = null, int sourceArrayIndex = 0, int sourceMipLevel = 0, int destX = 0, int destY = 0, int destZ = 0, int destMipLevel = 0, CopyMode copyMode = CopyMode.None)
+    public void CopyTo(GorgonTexture3D destinationTexture, GorgonRectangle? sourceRectangle = null, int sourceArrayIndex = 0, int sourceMipLevel = 0, int destX = 0, int destY = 0, int destZ = 0, int destMipLevel = 0, CopyMode copyMode = CopyMode.None)
     {
-        destinationTexture.ValidateObject(nameof(destinationTexture));
-
         // If we're trying to place the image data outside of this texture, then leave.
         if ((destX >= destinationTexture.Width)
             || (destY >= destinationTexture.Height)
@@ -1075,16 +1044,16 @@ public sealed class GorgonTexture2D
             return;
         }
 
-        DX.Rectangle rect;
+        GorgonRectangle rect;
 
         // If we didn't specify a box to copy from, then create one.
         if (sourceRectangle is null)
         {
-            rect = new DX.Rectangle(0, 0, Width.Min(destinationTexture.Width).Max(1), Height.Min(destinationTexture.Height).Max(1));
+            rect = new GorgonRectangle(0, 0, Width.Min(destinationTexture.Width).Max(1), Height.Min(destinationTexture.Height).Max(1));
         }
         else
         {
-            rect = new DX.Rectangle((sourceRectangle.Value.Left.Min(destinationTexture.Width - 1).Max(0)).Min(Width - 1),
+            rect = new GorgonRectangle((sourceRectangle.Value.Left.Min(destinationTexture.Width - 1).Max(0)).Min(Width - 1),
                                    (sourceRectangle.Value.Top.Min(destinationTexture.Height - 1).Max(0)).Min(Height - 1),
                                    (sourceRectangle.Value.Width.Min(destinationTexture.Width).Max(1)).Min(Width),
                                    (sourceRectangle.Value.Height.Min(destinationTexture.Height).Max(1)).Min(Height));
@@ -1137,7 +1106,7 @@ public sealed class GorgonTexture2D
         int right = rect.Right.Min(Width + left).Max(1);
         int bottom = rect.Bottom.Min(Height + top).Max(1);
 
-        rect = new DX.Rectangle
+        rect = new GorgonRectangle
         {
             Left = left,
             Top = top,
@@ -1201,8 +1170,6 @@ public sealed class GorgonTexture2D
     /// </remarks>
     public void ResolveTo(GorgonTexture2D destination, BufferFormat resolveFormat = BufferFormat.Unknown, int destArrayIndex = 0, int destMipLevel = 0, int srcArrayIndex = 0, int srcMipLevel = 0)
     {
-        destination.ValidateObject(nameof(destination));
-
         destArrayIndex = destArrayIndex.Min(destination.ArrayCount - 1).Max(0);
         destMipLevel = destMipLevel.Min(destination.MipLevels - 1).Max(0);
         srcArrayIndex = srcArrayIndex.Min(ArrayCount - 1).Max(0);
@@ -1226,7 +1193,7 @@ public sealed class GorgonTexture2D
             throw new NotSupportedException(string.Format(Resources.GORGFX_ERR_TEXTURE_RESOLVE_DEST_NOT_DEFAULT, destination.Name));
         }
 
-        var resolveFormatInfo = new GorgonFormatInfo(resolveFormat);
+        GorgonFormatInfo resolveFormatInfo = new(resolveFormat);
 
         // If we have typed formats, and they're not the same, then that's an error according to the D3D docs.
         if ((!FormatInformation.IsTypeless) && (!destination.FormatInformation.IsTypeless))
@@ -1286,13 +1253,13 @@ public sealed class GorgonTexture2D
     /// </remarks>
     public GorgonTexture2D GetStagingTexture()
     {
-        var info = new GorgonTexture2DInfo(_info)
+        GorgonTexture2DInfo info = new(_info)
         {
             Name = $"{Name}_[Staging]",
             Usage = ResourceUsage.Staging,
             Binding = TextureBinding.None
         };
-        var staging = new GorgonTexture2D(Graphics, info);
+        GorgonTexture2D staging = new(Graphics, info);
 
         // Copy the data from this texture into the new staging texture.
         CopyTo(staging);
@@ -1380,14 +1347,14 @@ public sealed class GorgonTexture2D
     ///
     /// // Set the image to the 3rd array index, and 2nd mip level, at position 10x10 on the texture, with a width and height of 50x50.
     /// // Also, set it so that we're copying to another
-    /// texture.SetData(image.Buffers[0], new DX.Rectangle(10, 10, 50, 50), 2, 2, copyMode: CopyMode.NoOverwrite);
+    /// texture.SetData(image.Buffers[0], new GorgonRectangle(10, 10, 50, 50), 2, 2, copyMode: CopyMode.NoOverwrite);
     /// 
     /// // Set a portion of the source image.
-    /// texture.SetData(image.Buffers[0].GetRegion(new DX.Rectangle(10, 10, 50, 50));
+    /// texture.SetData(image.Buffers[0].GetRegion(new GorgonRectangle(10, 10, 50, 50));
     /// ]]>
     /// </code>
     /// </example>
-    public void SetData(IGorgonImageBuffer imageBuffer, in DX.Rectangle? destRectangle = null, int destArrayIndex = 0, int destMipLevel = 0, CopyMode copyMode = CopyMode.None)
+    public void SetData(IGorgonImageBuffer imageBuffer, GorgonRectangle? destRectangle = null, int destArrayIndex = 0, int destMipLevel = 0, CopyMode copyMode = CopyMode.None)
     {
 #if DEBUG
         if (Usage == ResourceUsage.Immutable)
@@ -1421,11 +1388,11 @@ public sealed class GorgonTexture2D
         int height = (Height >> destMipLevel).Max(1);
 
         // Clip the destination rectangle against our texture size.
-        DX.Rectangle destRect = destRectangle ?? new DX.Rectangle(0, 0, width, height);
-        var maxRect = new DX.Rectangle(0, 0, width, height);
-        DX.Rectangle.Intersect(ref destRect, ref maxRect, out DX.Rectangle destBounds);
+        GorgonRectangle destRect = destRectangle ?? new GorgonRectangle(0, 0, width, height);
+        GorgonRectangle maxRect = new(0, 0, width, height);
+        GorgonRectangle destBounds = GorgonRectangle.Intersect(destRect, maxRect);
 
-        var finalBounds = new DX.Rectangle(destBounds.X, destBounds.Y, imageBuffer.Width.Min(destBounds.Width), imageBuffer.Height.Min(destBounds.Height));
+        GorgonRectangle finalBounds = new(destBounds.X, destBounds.Y, imageBuffer.Width.Min(destBounds.Width), imageBuffer.Height.Min(destBounds.Height));
 
         unsafe
         {
@@ -1443,7 +1410,7 @@ public sealed class GorgonTexture2D
                                                                  Right = finalBounds.Right,
                                                                  Bottom = finalBounds.Bottom
                                                              },
-                                                             imageBuffer.Data,
+                                                             (nint)imageBuffer.Data,
                                                              imageBuffer.PitchInformation.RowPitch,
                                                              imageBuffer.PitchInformation.SlicePitch,
                                                              (int)copyMode);
@@ -1538,7 +1505,7 @@ public sealed class GorgonTexture2D
                 index = arrayIndex.Value.Min(ArrayCount - 1).Max(0);
             }
 
-            ImageType imageType = stagingTexture.IsCubeMap ? ImageType.ImageCube : ImageType.Image2D;
+            ImageDataType imageType = stagingTexture.IsCubeMap ? ImageDataType.ImageCube : ImageDataType.Image2D;
 
             image = new GorgonImage(new GorgonImageInfo(imageType, stagingTexture.Format)
             {
@@ -1548,7 +1515,6 @@ public sealed class GorgonTexture2D
                 ArrayCount = arrayIndex is null ? 1 : ArrayCount - index,
                 MipCount = 1
             });
-
 
             // Copy the data from the texture.
             for (int i = index; i < image.ArrayCount; ++i)
@@ -1573,11 +1539,11 @@ public sealed class GorgonTexture2D
     }
 
     /// <summary>
-		/// Function to convert this texture to a <see cref="IGorgonImage"/>.
-		/// </summary>
-		/// <returns>A new <see cref="IGorgonImage"/> containing the texture data.</returns>
-		/// <exception cref="GorgonException">Thrown when this texture has a <see cref="GorgonGraphicsResource.Usage"/> set to <see cref="ResourceUsage.Immutable"/>.</exception>
-		public IGorgonImage ToImage()
+    /// Function to convert this texture to a <see cref="IGorgonImage"/>.
+    /// </summary>
+    /// <returns>A new <see cref="IGorgonImage"/> containing the texture data.</returns>
+    /// <exception cref="GorgonException">Thrown when this texture has a <see cref="GorgonGraphicsResource.Usage"/> set to <see cref="ResourceUsage.Immutable"/>.</exception>
+    public IGorgonImage ToImage()
     {
         GorgonTexture2D stagingTexture = this;
         GorgonImage image = null;
@@ -1589,7 +1555,7 @@ public sealed class GorgonTexture2D
                 stagingTexture = GetStagingTexture();
             }
 
-            ImageType imageType = stagingTexture.IsCubeMap ? ImageType.ImageCube : ImageType.Image2D;
+            ImageDataType imageType = stagingTexture.IsCubeMap ? ImageDataType.ImageCube : ImageDataType.Image2D;
 
             image = new GorgonImage(new GorgonImageInfo(imageType, stagingTexture.Format)
             {
@@ -1633,42 +1599,21 @@ public sealed class GorgonTexture2D
     /// </summary>
     /// <param name="texelCoordinates">The texel coordinates to convert.</param>
     /// <returns>The pixel coordinates.</returns>
-    public DX.Point ToPixel(Vector2 texelCoordinates) => new((int)(texelCoordinates.X * Width), (int)(texelCoordinates.Y * Height));
+    public GorgonPoint ToPixel(Vector2 texelCoordinates) => new((int)(texelCoordinates.X * Width), (int)(texelCoordinates.Y * Height));
 
     /// <summary>
     /// Function to convert a pixel coordinate into a texel coordinate.
     /// </summary>
     /// <param name="pixelCoordinates">The pixel coordinate to convert.</param>
     /// <returns>The texel coordinates.</returns>
-    public Vector2 ToTexel(DX.Point pixelCoordinates) => new(pixelCoordinates.X / (float)Width, pixelCoordinates.Y / (float)Height);
-
-    /// <summary>
-    /// Function to convert a pixel coordinate into a texel coordinate.
-    /// </summary>
-    /// <param name="pixelCoordinates">The pixel coordinate to convert.</param>
-    /// <returns>The texel coordinates.</returns>
-    public Vector2 ToTexel(Vector2 pixelCoordinates) => new(pixelCoordinates.X / Width, pixelCoordinates.Y / Height);
-
-    /// <summary>
-    /// Function to convert a texel size into a pixel size.
-    /// </summary>
-    /// <param name="texelCoordinates">The texel size to convert.</param>
-    /// <returns>The pixel size.</returns>
-    public DX.Size2 ToPixel(DX.Size2F texelCoordinates) => new((int)(texelCoordinates.Width * Width), (int)(texelCoordinates.Height * Height));
-
-    /// <summary>
-    /// Function to convert a pixel size into a texel size.
-    /// </summary>
-    /// <param name="pixelCoordinates">The pixel size to convert.</param>
-    /// <returns>The texel size.</returns>
-    public DX.Size2F ToTexel(DX.Size2 pixelCoordinates) => new(pixelCoordinates.Width / (float)Width, pixelCoordinates.Height / (float)Height);
+    public Vector2 ToTexel(GorgonPoint pixelCoordinates) => new(pixelCoordinates.X / (float)Width, pixelCoordinates.Y / (float)Height);
 
     /// <summary>
     /// Function to convert a texel rectangle into a pixel rectangle.
     /// </summary>
     /// <param name="texelCoordinates">The texel rectangle to convert.</param>
     /// <returns>The pixel rectangle.</returns>
-    public DX.Rectangle ToPixel(DX.RectangleF texelCoordinates) => new()
+    public GorgonRectangle ToPixel(GorgonRectangleF texelCoordinates) => new()
     {
         Left = (int)(texelCoordinates.Left * Width),
         Top = (int)(texelCoordinates.Top * Height),
@@ -1681,7 +1626,7 @@ public sealed class GorgonTexture2D
     /// </summary>
     /// <param name="pixelCoordinates">The pixel rectangle to convert.</param>
     /// <returns>The texel rectangle.</returns>
-    public DX.RectangleF ToTexel(DX.Rectangle pixelCoordinates) => new()
+    public GorgonRectangleF ToTexel(GorgonRectangle pixelCoordinates) => new()
     {
         Left = pixelCoordinates.Left / (float)Width,
         Top = pixelCoordinates.Top / (float)Height,
@@ -1724,7 +1669,7 @@ public sealed class GorgonTexture2D
     /// are left at 0, then all array indices will be accessible. 
     /// </para>
     /// </remarks>
-	    public GorgonTexture2DView GetShaderResourceView(BufferFormat format = BufferFormat.Unknown, int firstMipLevel = 0, int mipCount = 0, int arrayIndex = 0, int arrayCount = 0)
+    public GorgonTexture2DView GetShaderResourceView(BufferFormat format = BufferFormat.Unknown, int firstMipLevel = 0, int mipCount = 0, int arrayIndex = 0, int arrayCount = 0)
     {
         if (format == BufferFormat.Unknown)
         {
@@ -1776,7 +1721,7 @@ public sealed class GorgonTexture2D
 
         arrayCount = (arrayCount.Min(ArrayCount - arrayIndex)).Max(1);
 
-        var key = new TextureViewKey(format, firstMipLevel, mipCount, arrayIndex, arrayCount);
+        TextureViewKey key = new(format, firstMipLevel, mipCount, arrayIndex, arrayCount);
 
         if ((_cachedSrvs.TryGetValue(key, out GorgonTexture2DView view))
             && (view.Native is not null))
@@ -1853,7 +1798,7 @@ public sealed class GorgonTexture2D
         }
 
         // Ensure the size of the data type fits the requested format.
-        var info = new GorgonFormatInfo(format);
+        GorgonFormatInfo info = new(format);
 
         if (info.IsTypeless)
         {
@@ -1878,7 +1823,7 @@ public sealed class GorgonTexture2D
 
         arrayCount = arrayCount.Min(ArrayCount - arrayIndex).Max(1);
 
-        var key = new TextureViewKey(format, firstMipLevel, _info.MipLevels, arrayIndex, arrayCount);
+        TextureViewKey key = new(format, firstMipLevel, _info.MipLevels, arrayIndex, arrayCount);
 
         if ((_cachedReadWriteViews.TryGetValue(key, out GorgonTexture2DReadWriteView view))
             && (view.Native is not null))
@@ -1977,7 +1922,7 @@ public sealed class GorgonTexture2D
         arrayCount = arrayCount.Min(_info.ArrayCount - arrayIndex).Max(1);
 
         // Since we don't use the mip count, we can repurpose it to store the flag settings.
-        var key = new TextureViewKey(format, firstMipLevel, (int)flags, arrayIndex, arrayCount);
+        TextureViewKey key = new(format, firstMipLevel, (int)flags, arrayIndex, arrayCount);
 
         if ((_cachedDsvs.TryGetValue(key, out GorgonDepthStencil2DView view))
             && (view.Native is not null))
@@ -2066,7 +2011,7 @@ public sealed class GorgonTexture2D
 
         arrayCount = arrayCount.Min(_info.ArrayCount - arrayIndex).Max(1);
 
-        var key = new TextureViewKey(format, firstMipLevel, 1, arrayIndex, arrayCount);
+        TextureViewKey key = new(format, firstMipLevel, 1, arrayIndex, arrayCount);
 
         if ((_cachedRtvs.TryGetValue(key, out GorgonRenderTarget2DView view))
             && (view.Native is not null))
@@ -2362,9 +2307,7 @@ public sealed class GorgonTexture2D
     /// </para>
     /// </remarks>
     void IGorgonSharedResource.Release(long key) => _keyedMutex?.Release(key);
-    #endregion
 
-    #region Constructor/Finalizer.
     /// <summary>Initializes a new instance of the <see cref="GorgonTexture2D" /> class.</summary>
     /// <param name="graphics">The graphics interface used to create this texture.</param>
     /// <param name="surface">The pointer to an external rendering surface.</param>
@@ -2373,7 +2316,7 @@ public sealed class GorgonTexture2D
     {
         D3D11.Texture2DDescription desc;
 
-        using (var com = new DX.ComObject(surface))
+        using (DX.ComObject com = new(surface))
         {
             if (com is null)
             {
@@ -2411,7 +2354,7 @@ public sealed class GorgonTexture2D
             Binding = (TextureBinding)desc.BindFlags,
             Shared = TextureSharingOptions.Shared
         };
-        
+
         FormatInformation = new GorgonFormatInfo(Format);
         TextureID = Interlocked.Increment(ref _textureID);
         SizeInBytes = CalculateSizeInBytes(_info);
@@ -2474,7 +2417,7 @@ public sealed class GorgonTexture2D
         bool isCubeMap;
         if (options.IsTextureCube is null)
         {
-            isCubeMap = image.ImageType == ImageType.ImageCube;
+            isCubeMap = image.ImageType == ImageDataType.ImageCube;
         }
         else
         {
@@ -2528,8 +2471,6 @@ public sealed class GorgonTexture2D
 
         SizeInBytes = CalculateSizeInBytes(_info);
 
-
         this.RegisterDisposable(graphics);
     }
-    #endregion
 }

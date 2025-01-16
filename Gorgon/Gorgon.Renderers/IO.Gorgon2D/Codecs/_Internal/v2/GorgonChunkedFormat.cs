@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,21 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Monday, January 21, 2013 9:19:55 AM
 // 
-#endregion
 
-using System;
-using System.IO;
+using System.Text;
 using Gorgon.Core;
 using Gorgon.IO;
 using Gorgon.IO.Properties;
@@ -33,7 +31,7 @@ using Gorgon.IO.Properties;
 namespace GorgonLibrary.IO;
 
 /// <summary>
-/// The access mode for the file chunking object.
+/// The access mode for the file chunking object
 /// </summary>
 internal enum ChunkAccessMode
 {
@@ -48,7 +46,7 @@ internal enum ChunkAccessMode
 }
 
 /// <summary>
-/// Reads/writes Gorgon chunked formatted data.
+/// Reads/writes Gorgon chunked formatted data
 /// </summary>
 /// <remarks>This object will take data and turn it into chunks of data.  This is similar to the old IFF format in that 
 /// it allows Gorgon's file formats to be future proof.  That is, if a later version of Gorgon has support for a feature
@@ -57,26 +55,21 @@ internal enum ChunkAccessMode
 internal abstract class GorgonChunkedFormat
     : IDisposable
 {
-    #region Constants.
     /// <summary>
     /// The size of the temporary buffer for large data reads/writes.
     /// </summary>
     protected internal const int TempBufferSize = 65536;
-    #endregion
 
-    #region Variables.
     private bool _disposed;                                                 // Flag to indicate that the object was disposed.
     private ulong _currentChunk;                                            // Our current chunk.
     private long _chunkStart;                                               // The start of the current chunk.
     private long _chunkEnd;                                                 // The end of the current chunk.
-    private uint _chunkSize;												// Size of the chunk.
-    #endregion
+    private uint _chunkSize;                                                // Size of the chunk.
 
-    #region Properties.
     /// <summary>
     /// Property to set or return the temporary buffer for large reads/writes.
     /// </summary>
-		protected byte[] TempBuffer
+    protected byte[] TempBuffer
     {
         get;
         set;
@@ -85,7 +78,7 @@ internal abstract class GorgonChunkedFormat
     /// <summary>
     /// Property to return the writer for our stream.
     /// </summary>
-    protected GorgonBinaryWriter Writer
+    protected BinaryWriter Writer
     {
         get;
         private set;
@@ -94,7 +87,7 @@ internal abstract class GorgonChunkedFormat
     /// <summary>
     /// Property to return the reade for our stream.
     /// </summary>
-    protected GorgonBinaryReader Reader
+    protected BinaryReader Reader
     {
         get;
         private set;
@@ -112,9 +105,7 @@ internal abstract class GorgonChunkedFormat
     /// Property to return the underlying stream for the chunking object.
     /// </summary>
     public Stream BaseStream => ChunkAccessMode == ChunkAccessMode.Write ? Writer.BaseStream : Reader.BaseStream;
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to validate the access mode.
     /// </summary>
@@ -271,9 +262,7 @@ internal abstract class GorgonChunkedFormat
             Writer.BaseStream.Seek(byteCount, SeekOrigin.Current);
         }
     }
-    #endregion
 
-    #region Constructor/Destructor.
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonChunkedFormat" /> class.
     /// </summary>
@@ -307,7 +296,7 @@ internal abstract class GorgonChunkedFormat
                 throw new ArgumentException(Resources.GOR2DIO_ERR_STREAM_IS_READ_ONLY, nameof(accessMode));
             }
 
-            Writer = new GorgonBinaryWriter(stream, true);
+            Writer = new BinaryWriter(stream, Encoding.UTF8, true);
         }
         else
         {
@@ -316,12 +305,10 @@ internal abstract class GorgonChunkedFormat
                 throw new ArgumentException(Resources.GOR2DIO_ERR_STREAM_IS_WRITE_ONLY, nameof(accessMode));
             }
 
-            Reader = new GorgonBinaryReader(stream, true);
+            Reader = new BinaryReader(stream, Encoding.UTF8, true);
         }
     }
-    #endregion
 
-    #region IDisposable Members
     /// <summary>
     /// Releases unmanaged and - optionally - managed resources.
     /// </summary>
@@ -353,5 +340,4 @@ internal abstract class GorgonChunkedFormat
         Dispose(true);
         GC.SuppressFinalize(this);
     }
-    #endregion
 }

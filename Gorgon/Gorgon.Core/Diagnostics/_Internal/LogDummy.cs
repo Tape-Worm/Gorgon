@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2015 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,32 +11,30 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Friday, May 23, 2015 3:09:45 PM
 // 
-#endregion
 
-using System;
-using System.Threading;
+using System.Diagnostics;
 using Gorgon.Diagnostics.LogProviders;
 
 namespace Gorgon.Diagnostics;
 
 /// <summary>
-/// An implementation of the <see cref="IGorgonThreadedLog"/> type that does nothing.
+/// An implementation of the <see cref="IGorgonLog"/> type that does nothing.
 /// </summary>
+[DebuggerStepThrough()]
 internal class LogDummy
-    : IGorgonThreadedLog
+    : IGorgonLog
 {
-    #region Properties.
     /// <summary>
     /// Property to return the ID of the thread that created the log object.
     /// </summary>
@@ -62,10 +60,11 @@ internal class LogDummy
     /// <summary>
     /// Property to return the provider for this log.
     /// </summary>
-    public IGorgonLogProvider Provider => null;
-    #endregion
+    public IGorgonLogProvider Provider
+    {
+        get;
+    } = new DummyLogProvider();
 
-    #region Methods.
     /// <summary>
     /// Function to send an exception to the log.
     /// </summary>
@@ -84,10 +83,21 @@ internal class LogDummy
     /// <summary>
     /// Function to print a formatted line of text to the log.
     /// </summary>
-    /// <param name="formatSpecifier">Format specifier for the line.</param>
+    /// <param name="message">The message to write to the log.</param>
     /// <param name="level">Level that this message falls under.</param>
-    /// <param name="arguments">List of optional arguments.</param>
-    public void Print(string formatSpecifier, LoggingLevel level, params object[] arguments)
+    public void Print(string message, LoggingLevel level)
+    {
+        // Intentionally left blank.
+    }
+
+    /// <inheritdoc/>
+    public void PrintError(string message, LoggingLevel level)
+    {
+        // Intentionally left blank.
+    }
+
+    /// <inheritdoc/>
+    public void PrintWarning(string message, LoggingLevel level)
     {
         // Intentionally left blank.
     }
@@ -107,12 +117,9 @@ internal class LogDummy
     {
         // Intentionally left blank.
     }
-    #endregion
 
-    #region Constructor.
     /// <summary>
     /// Initializes a new instance of the <see cref="LogDummy"/> class.
     /// </summary>
-    public LogDummy() => ThreadID = Thread.CurrentThread.ManagedThreadId;
-    #endregion
+    public LogDummy() => ThreadID = Environment.CurrentManagedThreadId;
 }

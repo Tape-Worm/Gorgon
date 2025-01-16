@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,39 +11,34 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: February 8, 2017 7:22:29 PM
 // 
-#endregion
 
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Gorgon.Graphics;
 
 namespace Gorgon.Renderers;
 
 /// <summary>
-/// Defines the colors for each corner of a sprite rectangle.
+/// Defines the colors for each corner of a sprite rectangle
 /// </summary>
 public class GorgonSpriteColors
     : IReadOnlyList<GorgonColor>
 {
-    #region Variables.
+
     // The renderable that owns this object.
     private readonly BatchRenderable _renderable;
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to set or return the corner color by index.
     /// </summary>
@@ -93,7 +88,7 @@ public class GorgonSpriteColors
         {
             ref GorgonColor color = ref _renderable.Vertices[0].Color;
 
-            if (GorgonColor.Equals(in value, in color))
+            if (GorgonColor.Equals(value, color))
             {
                 return;
             }
@@ -112,7 +107,7 @@ public class GorgonSpriteColors
         {
             ref GorgonColor color = ref _renderable.Vertices[1].Color;
 
-            if (GorgonColor.Equals(in value, in color))
+            if (GorgonColor.Equals(value, color))
             {
                 return;
             }
@@ -131,7 +126,7 @@ public class GorgonSpriteColors
         {
             ref GorgonColor color = ref _renderable.Vertices[2].Color;
 
-            if (GorgonColor.Equals(in value, in color))
+            if (GorgonColor.Equals(value, color))
             {
                 return;
             }
@@ -150,7 +145,7 @@ public class GorgonSpriteColors
         {
             ref GorgonColor color = ref _renderable.Vertices[3].Color;
 
-            if (GorgonColor.Equals(in value, in color))
+            if (GorgonColor.Equals(value, color))
             {
                 return;
             }
@@ -161,30 +156,28 @@ public class GorgonSpriteColors
 
     /// <summary>Gets the number of elements in the collection.</summary>
     public int Count => 4;
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to assign a single color to all corners.
     /// </summary>
     /// <param name="color">The color to assign.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void SetAll(in GorgonColor color)
+    public void SetAll(GorgonColor color)
     {
         ref GorgonColor llColor = ref _renderable.Vertices[2].Color;
         ref GorgonColor lrColor = ref _renderable.Vertices[3].Color;
         ref GorgonColor ulColor = ref _renderable.Vertices[0].Color;
         ref GorgonColor urColor = ref _renderable.Vertices[1].Color;
 
-        if ((GorgonColor.Equals(in color, in llColor))
-            && (GorgonColor.Equals(in color, in lrColor))
-            && (GorgonColor.Equals(in color, in ulColor))
-            && (GorgonColor.Equals(in color, in urColor)))
+        if ((GorgonColor.Equals(color, llColor))
+            && (GorgonColor.Equals(color, lrColor))
+            && (GorgonColor.Equals(color, ulColor))
+            && (GorgonColor.Equals(color, urColor)))
         {
             return;
         }
 
-       ulColor = urColor = llColor = lrColor = color;
+        ulColor = urColor = llColor = lrColor = color;
     }
 
     /// <summary>
@@ -224,9 +217,7 @@ public class GorgonSpriteColors
             yield return this[i];
         }
     }
-    #endregion
 
-    #region Constructor
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonSpriteColors"/> class.
     /// </summary>
@@ -237,5 +228,4 @@ public class GorgonSpriteColors
         _renderable = renderable;
         SetAll(defaultColor);
     }
-    #endregion
 }

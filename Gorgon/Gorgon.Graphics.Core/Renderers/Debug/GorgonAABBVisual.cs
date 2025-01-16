@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2021 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,35 +11,32 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: January 15, 2021 2:48:43 PM
 // 
-#endregion
 
-using System;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Core.Properties;
-using Gorgon.Renderers.Data;
 
 namespace Gorgon.Renderers.Debug;
 
 /// <summary>
-/// Provides a visual wireframe box to display a bounding box for debug purposes.
+/// Provides a visual wireframe box to display a bounding box for debug purposes
 /// </summary>
 public class GorgonAABBVisual
     : IGorgonGraphicsObject, IDisposable
 {
-    #region Variables.        
+
     // The builders used to build draw calls.
     private readonly GorgonDrawCallBuilder _builder = new();
     private GorgonPipelineStateBuilder _psoBuilder;
@@ -57,17 +54,13 @@ public class GorgonAABBVisual
     private GorgonVertexShader _vertexShader;
     // The pixel shader.
     private GorgonPixelShader _pixelShader;
-    #endregion
 
-    #region Properties.
     /// <summary>Property to return the graphics interface that built this object.</summary>
     public GorgonGraphics Graphics
     {
         get;
     }
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to build the draw call.
     /// </summary>
@@ -88,9 +81,9 @@ public class GorgonAABBVisual
     /// </summary>
     private void Initialize()
     {
-        var vertexBuffer = new GorgonVertexBuffer(Graphics, new GorgonVertexBufferInfo(_lineVertices.Length * Unsafe.SizeOf<Vector3>())
+        GorgonVertexBuffer vertexBuffer = new(Graphics, new GorgonVertexBufferInfo(_lineVertices.Length * Unsafe.SizeOf<Vector3>())
         {
-            Name = "AABB Visual VertexBuffer",                
+            Name = "AABB Visual VertexBuffer",
             Usage = ResourceUsage.Dynamic
         });
 
@@ -98,17 +91,17 @@ public class GorgonAABBVisual
 
         _constantBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, new GorgonConstantBufferInfo(Unsafe.SizeOf<Matrix4x4>())
         {
-            Name = "AABB Visual ConstantBufer",                
+            Name = "AABB Visual ConstantBufer",
             Usage = ResourceUsage.Dynamic
         });
 
         _vertexShader = GorgonShaderFactory.Compile<GorgonVertexShader>(Graphics, Resources.GraphicsShaders, "GorgonDebugVertexShader", GorgonGraphics.IsDebugEnabled);
         _pixelShader = GorgonShaderFactory.Compile<GorgonPixelShader>(Graphics, Resources.GraphicsShaders, "GorgonDebugPixelShader", GorgonGraphics.IsDebugEnabled);
 
-        _inputLayout = new GorgonInputLayout(Graphics, "AABB Line Vertex Input Layout", _vertexShader, new[]
-        {
+        _inputLayout = new GorgonInputLayout(Graphics, "AABB Line Vertex Input Layout", _vertexShader,
+        [
             new GorgonInputElement("SV_POSITION", Gorgon.Graphics.BufferFormat.R32G32B32_Float, 0)
-        });
+        ]);
 
         _psoBuilder = new GorgonPipelineStateBuilder(Graphics);
 
@@ -119,13 +112,13 @@ public class GorgonAABBVisual
     /// Function to build the AABB visual.
     /// </summary>
     /// <param name="aabb">The axis aligned bounding box to visualize.</param>
-    private void BuildBox(in GorgonBoundingBox aabb)
+    private void BuildBox(ref readonly GorgonBoundingBox aabb)
     {
         // Left
         _lineVertices[0] = aabb.BottomLeftBack;
         _lineVertices[2] = _lineVertices[1] = aabb.TopLeftBack;
         _lineVertices[4] = _lineVertices[3] = aabb.TopLeftFront;
-        _lineVertices[6] = _lineVertices[5] = aabb.BottomLeftFront;                
+        _lineVertices[6] = _lineVertices[5] = aabb.BottomLeftFront;
         _lineVertices[7] = _lineVertices[0];
 
         // Right
@@ -155,7 +148,7 @@ public class GorgonAABBVisual
     /// <param name="viewMatrix">The current view matrix.</param>
     /// <param name="projectionMatrix">The current projection matrix.</param>
     /// <param name="depthStencilState">[Optional] The depth/stencil state to apply when drawing.</param>
-    public void Draw(in GorgonBoundingBox aabb, in Matrix4x4 viewMatrix, in Matrix4x4 projectionMatrix, GorgonDepthStencilState depthStencilState = null)
+    public void Draw(ref readonly GorgonBoundingBox aabb, ref readonly Matrix4x4 viewMatrix, ref readonly Matrix4x4 projectionMatrix, GorgonDepthStencilState depthStencilState = null)
     {
         if ((_drawCall is not null) && (_drawCall.PipelineState.DepthStencilState != depthStencilState))
         {
@@ -166,7 +159,7 @@ public class GorgonAABBVisual
 
         _vertexBuffer.VertexBuffer.SetData<Vector3>(_lineVertices);
 
-        var viewProj = Matrix4x4.Multiply(viewMatrix, projectionMatrix);
+        Matrix4x4 viewProj = Matrix4x4.Multiply(viewMatrix, projectionMatrix);
         viewProj = Matrix4x4.Transpose(viewProj);
         _constantBuffer.Buffer.SetData(in viewProj);
 
@@ -182,9 +175,7 @@ public class GorgonAABBVisual
         _vertexBuffer.VertexBuffer?.Dispose();
         _inputLayout?.Dispose();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
     /// <summary>Initializes a new instance of the <see cref="GorgonAABBVisual" /> class.</summary>
     /// <param name="graphics">The graphics interface to update.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/> parameter is <b>null</b>.</exception>
@@ -193,5 +184,4 @@ public class GorgonAABBVisual
         Graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
         Initialize();
     }
-    #endregion
 }

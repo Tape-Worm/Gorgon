@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,21 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 1, 2020 8:12:59 PM
 // 
-#endregion
 
-using System.Linq;
-using System.Threading;
+using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Editor.Rendering;
 using Gorgon.Graphics;
@@ -33,19 +31,20 @@ using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
 using Gorgon.Renderers;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.ImageEditor;
 
 /// <summary>
-/// The service used to generate the effects to apply to the image currently being edited.
+/// The service used to generate the effects to apply to the image currently being edited
 /// </summary>
-internal class FxService
-    : IFxService, IFxPreviewer
+/// <remarks>Initializes a new instance of the <see cref="FxService"/> class.</remarks>
+/// <param name="graphics">The graphics context for the application.</param>
+internal class FxService(IGraphicsContext graphics)
+        : IFxService, IFxPreviewer
 {
-    #region Variables.
+
     // The graphics context for the application.
-    private readonly IGraphicsContext _graphics;
+    private readonly IGraphicsContext _graphics = graphics;
     // The blur effect shader.
     private Gorgon2DGaussBlurEffect _blur;
     // The gray scale effect.
@@ -71,9 +70,7 @@ internal class FxService
     private GorgonTexture2DView _texture;
     // The working image that our textures are based on.
     private IGorgonImage _workingImage;
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to return the image that will contain the effect output.
     /// </summary>
@@ -92,9 +89,7 @@ internal class FxService
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to destroy the texture data.
     /// </summary>
@@ -113,7 +108,7 @@ internal class FxService
         tv?.Dispose();
 
         PreviewTexture = null;
-        _blur.BlurRenderTargetsSize = new DX.Size2(256, 256);
+        _blur.BlurRenderTargetsSize = new GorgonPoint(256, 256);
     }
 
     /// <summary>
@@ -152,7 +147,7 @@ internal class FxService
 
         int size = ((_texture.Width > _texture.Height) ? _texture.Width : _texture.Height);
         _blur.BlurTargetFormat = _texture.Format;
-        _blur.BlurRenderTargetsSize = new DX.Size2(size, size);
+        _blur.BlurRenderTargetsSize = new GorgonPoint(size, size);
     }
 
     /// <summary>
@@ -246,7 +241,7 @@ internal class FxService
         // Reset to the original texture.
         GorgonRenderTargetView originalRtv = _graphics.Graphics.RenderTargets[0];
 
-        _effectTargetPing.Clear(GorgonColor.BlackTransparent);
+        _effectTargetPing.Clear(GorgonColors.BlackTransparent);
 
         _edgeDetect.EdgeThreshold = (threshold / 100.0f);
         _edgeDetect.LineColor = color;
@@ -257,14 +252,14 @@ internal class FxService
         if (overlay)
         {
             _graphics.Renderer2D.Begin();
-            _graphics.Renderer2D.DrawFilledRectangle(new DX.RectangleF(0, 0, _texture.Width, _texture.Height), GorgonColor.White, _texture, new DX.RectangleF(0, 0, 1, 1));
+            _graphics.Renderer2D.DrawFilledRectangle(new GorgonRectangleF(0, 0, _texture.Width, _texture.Height), GorgonColors.White, _texture, new GorgonRectangleF(0, 0, 1, 1));
             _graphics.Renderer2D.End();
         }
 
         _edgeDetect.Begin();
-        _graphics.Renderer2D.DrawFilledRectangle(new DX.RectangleF(0, 0, _texture.Width, _texture.Height), GorgonColor.White, _texture, new DX.RectangleF(0, 0, 1, 1));
+        _graphics.Renderer2D.DrawFilledRectangle(new GorgonRectangleF(0, 0, _texture.Width, _texture.Height), GorgonColors.White, _texture, new GorgonRectangleF(0, 0, 1, 1));
         _edgeDetect.End();
-        
+
         PreviewTexture = _effectTexturePing;
 
         _graphics.Graphics.SetRenderTarget(originalRtv);
@@ -283,8 +278,8 @@ internal class FxService
 
         // Reset to the original texture.
         PreviewTexture = _texture;
-        _effectTargetPing.Clear(GorgonColor.BlackTransparent);
-        _effectTargetPong.Clear(GorgonColor.BlackTransparent);
+        _effectTargetPing.Clear(GorgonColors.BlackTransparent);
+        _effectTargetPong.Clear(GorgonColors.BlackTransparent);
         GorgonRenderTarget2DView outputTarget = _effectTargetPing;
 
         GorgonRenderTargetView originalRtv = _graphics.Graphics.RenderTargets[0];
@@ -298,7 +293,7 @@ internal class FxService
 
             _blur.BlurRadius = (int)pow.FastCeiling();
 
-            outputTarget.Clear(GorgonColor.Transparent);
+            outputTarget.Clear(GorgonColors.Transparent);
 
             _blur.Render(PreviewTexture, outputTarget);
 
@@ -322,7 +317,7 @@ internal class FxService
 
         GorgonRenderTargetView originalRtv = _graphics.Graphics.RenderTargets[0];
 
-        _effectTargetPing.Clear(GorgonColor.BlackTransparent);
+        _effectTargetPing.Clear(GorgonColors.BlackTransparent);
 
         _posterizeEffect.ColorCount = amount;
         _posterizeEffect.Render(_texture, _effectTargetPing);
@@ -346,7 +341,7 @@ internal class FxService
         // Reset to the original texture.
         GorgonRenderTargetView originalRtv = _graphics.Graphics.RenderTargets[0];
 
-        _effectTargetPing.Clear(GorgonColor.BlackTransparent);
+        _effectTargetPing.Clear(GorgonColors.BlackTransparent);
 
         _sharpEmboss.UseEmbossing = emboss;
         _sharpEmboss.Amount = amount / 100.0f;
@@ -360,7 +355,7 @@ internal class FxService
     /// <param name="range">The threshold range of colors to consider as "on".</param>
     /// <param name="invert">
     ///   <b>true</b> to invert the colors, <b>false</b> to leave as-is.</param>
-    public void GenerateOneBitPreview(GorgonRangeF range, bool invert)
+    public void GenerateOneBitPreview(GorgonRange<float> range, bool invert)
     {
         if (_texture is null)
         {
@@ -369,8 +364,8 @@ internal class FxService
 
         GorgonRenderTargetView originalRtv = _graphics.Graphics.RenderTargets[0];
 
-        _effectTargetPing.Clear(GorgonColor.BlackTransparent);
-                    
+        _effectTargetPing.Clear(GorgonColors.BlackTransparent);
+
         _oneBitEffect.Threshold = range;
         _oneBitEffect.Invert = invert;
         _oneBitEffect.Render(_texture, _effectTargetPing);
@@ -418,7 +413,7 @@ internal class FxService
             srcBuffer.CopyTo(_workingImage.Buffers[0]);
         }
 
-        _edgeDetect.TextureSize = _sharpEmboss.TextureSize = new DX.Size2F(_workingImage.Width, _workingImage.Height);   
+        _edgeDetect.TextureSize = _sharpEmboss.TextureSize = new Vector2(_workingImage.Width, _workingImage.Height);
 
         CreateTexture();
     }
@@ -442,7 +437,7 @@ internal class FxService
         {
             EdgeThreshold = 0.5f,
             LineThickness = 1.0f,
-            LineColor = GorgonColor.Black                
+            LineColor = GorgonColors.Black
         };
         _blur = new Gorgon2DGaussBlurEffect(_graphics.Renderer2D, 9)
         {
@@ -473,11 +468,4 @@ internal class FxService
         invert?.Dispose();
         blur?.Dispose();
     }
-    #endregion
-
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="FxService"/> class.</summary>
-    /// <param name="graphics">The graphics context for the application.</param>
-    public FxService(IGraphicsContext graphics) => _graphics = graphics;
-    #endregion
 }

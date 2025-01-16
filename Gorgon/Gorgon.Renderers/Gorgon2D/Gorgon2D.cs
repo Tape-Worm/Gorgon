@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,27 +11,23 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 6, 2018 12:53:53 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics;
@@ -48,7 +44,7 @@ using DX = SharpDX;
 namespace Gorgon.Renderers;
 
 /// <summary>
-/// Provides 2D rendering functionality.
+/// Provides 2D rendering functionality
 /// </summary>
 /// <remarks>
 /// <para>
@@ -56,7 +52,7 @@ namespace Gorgon.Renderers;
 /// </para>
 /// <para>
 /// This is a batching renderer, which means that items that need to be drawn are done as a group of items sharing a common global state during rendering (this includes pixel and vertex shaders). Which 
-/// global states/shaders are applied can be defined by the user via the <see cref="Gorgon2DBatchState"/> object which is passed to the <see cref="Begin"/> method.
+/// global states/shaders are applied can be defined by the user via the <see cref="Gorgon2DBatchState"/> object which is passed to the <see cref="Begin"/> method
 /// </para>
 /// <para>
 /// Because this is a batching renderer, applications must inform the renderer when to start rendering items via the <see cref="Begin"/> method, and when to end rendering using the <see cref="End"/> 
@@ -67,7 +63,7 @@ namespace Gorgon.Renderers;
 /// <para>
 /// While all drawing must be done between these calls. Changing the current render target, viewport and/or depth/stencil on the <see cref="GorgonGraphics"/> interface while rendering is not allowed 
 /// and will generate an exception if an attempt to change those items is made.  This means that applications must perform target changes, viewport changes, and/or depth/stencil changes prior to 
-/// calling <see cref="Begin"/>, or after <see cref="End"/>.
+/// calling <see cref="Begin"/>, or after <see cref="End"/>
 /// </para>
 /// </note>
 /// </para>
@@ -75,13 +71,13 @@ namespace Gorgon.Renderers;
 /// To render, an application must start the process by calling the <see cref="Begin"/> method, draw the desired items, and then call the <see cref="End"/> method. This render block segregates drawing 
 /// by global states.  So, for example, if the user wishes to change the blending mode, a call to <see cref="Begin"/> with the <see cref="Gorgon2DBatchState"/> set up for the appropriate blending mode 
 /// is made. When finished, the user will call the <see cref="End"/> method. These blocks batch all rendering commands until the <see cref="End"/> method is called, and this allows for high performance 
-/// 2D rendering.
+/// 2D rendering
 /// </para>
 /// <para>
 /// Because this renderer uses batching to achieve its performance, it is worth noting that calls to draw items will share the same global state via the <see cref="GorgonBlendState"/>,
 /// <see cref="GorgonDepthStencilState"/> and <see cref="GorgonRasterState"/> state objects. This includes pixel shaders and vertex shaders, and their associated resources.  And users can send custom
 /// states and shaders to the <see cref="Begin"/> method. However, when a new item is drawn with a different <see cref="GorgonTexture2DView"/>, or <see cref="GorgonSamplerState"/>, a state change will 
-/// be performaned on behalf of the user (for sake of convenience). This means that too many texture/sampler changes between sprites may cause a performance issue.
+/// be performaned on behalf of the user (for sake of convenience). This means that too many texture/sampler changes between sprites may cause a performance issue
 /// </para>
 /// </remarks>
 /// <seealso cref="GorgonGraphics"/>
@@ -89,7 +85,6 @@ namespace Gorgon.Renderers;
 public sealed class Gorgon2D
     : IGorgon2DFluent, IGorgon2DDrawingFluent, IGorgonGraphicsObject
 {
-    #region Value Types.
     /// <summary>
     /// The common miscellaneous values to pass to the shaders.
     /// </summary>
@@ -119,7 +114,7 @@ public sealed class Gorgon2D
         /// <param name="other">The other instance to use for comparison.</param>
         /// <returns>
         ///   <b>true</b> if equal, <b>false</b> if not.</returns>
-        public bool Equals(in MiscValues other) => (Viewport.Equals(other.Viewport)) && (DepthTarget.Equals(other.DepthTarget)) && (Texture0.Equals(other.Texture0));
+        public bool Equals(ref readonly MiscValues other) => (Viewport.Equals(other.Viewport)) && (DepthTarget.Equals(other.DepthTarget)) && (Texture0.Equals(other.Texture0));
 
         /// <summary>Function to compare this instance with another.</summary>
         /// <param name="other">The other instance to use for comparison.</param>
@@ -138,14 +133,12 @@ public sealed class Gorgon2D
             Viewport = new Vector4(view.X, view.Y, view.Width, view.Height);
             DepthTarget = new Vector4(view.MinDepth, view.MaxDepth, target?.Width ?? -1, target?.Height ?? -1);
 
-            var srv = batchState?.PixelShaderState?.RwSrvs?[0] as GorgonTexture2DView;
+            GorgonTexture2DView srv = batchState?.PixelShaderState?.RwSrvs?[0] as GorgonTexture2DView;
 
             Texture0 = new Vector2(srv?.Width ?? -1, srv?.Height ?? -1);
         }
     }
-    #endregion
 
-    #region Constants.        
     // The renderer is not initialized.        
     private const int Uninitialized = 0;
 
@@ -179,9 +172,7 @@ public sealed class Gorgon2D
     /// The name of the shaders used by the <see cref="Gorgon2DLightingEffect"/>.
     /// </summary>
     public const string GorgonLightingShaderIncludeName = "Gorgon2DLightingShader";
-    #endregion
 
-    #region Variables.
     // The flag to indicate that the renderer is initialized.
     private int _initialized = Uninitialized;
     // World matrix vertex shader.
@@ -233,13 +224,13 @@ public sealed class Gorgon2D
     // The renderable for primitives (lines, rectangles, etc...)
     private readonly BatchRenderable _primitiveRenderable = new()
     {
-        Vertices = new Gorgon2DVertex[]
-        {
-            new Gorgon2DVertex(Vector2.Zero, GorgonColor.White, Vector4.Zero, new Vector2(1, 0)),
-            new Gorgon2DVertex(Vector2.Zero, GorgonColor.White, Vector4.Zero, new Vector2(1, 0)),
-            new Gorgon2DVertex(Vector2.Zero, GorgonColor.White, Vector4.Zero, new Vector2(1, 0)),
-            new Gorgon2DVertex(Vector2.Zero, GorgonColor.White, Vector4.Zero, new Vector2(1, 0)),
-        }
+        Vertices =
+        [
+            new(Vector2.Zero, GorgonColors.White, Vector4.Zero, new Vector2(1, 0)),
+            new(Vector2.Zero, GorgonColors.White, Vector4.Zero, new Vector2(1, 0)),
+            new(Vector2.Zero, GorgonColors.White, Vector4.Zero, new Vector2(1, 0)),
+            new(Vector2.Zero, GorgonColors.White, Vector4.Zero, new Vector2(1, 0)),
+        ]
     };
     // The 2D camera used to render the data.
     private GorgonCameraCommon _defaultCamera;
@@ -257,9 +248,7 @@ public sealed class Gorgon2D
     private Vector4 _currentTimingValues;
     // The previous frame count.
     private ulong _lastFrameCount;
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to return a black texture to pass to shaders when no texture is specified.
     /// </summary>
@@ -299,31 +288,31 @@ public sealed class Gorgon2D
     /// </summary>
     /// <remarks>
     /// <para>
-    /// Setting this value with a <see cref="GorgonRangeF"/> will exclude any alpha values within the range when rendering, this will improve performance. If this value is <b>null</b>, then alpha 
+    /// Setting this value with a <see cref="GorgonRange{T}"/> will exclude any alpha values within the range when rendering, this will improve performance. If this value is <b>null</b>, then alpha 
     /// testing is disabled and all pixel values will be rendered.
     /// </para>
     /// <para>
     /// Currently, the default is set to a minimum of 0 and a maximum of 0. This means that alpha values with a value of 0 will not be rendered.
     /// </para>
     /// <para>
-    /// This applies to methods like <see cref="DrawFilledRectangle(DX.RectangleF, GorgonColor, GorgonTexture2DView, DX.RectangleF?, int, GorgonSamplerState, float)"/>, 
-    /// <see cref="DrawRectangle(DX.RectangleF, GorgonColor, float, GorgonTexture2DView, DX.RectangleF?, int, GorgonSamplerState, float)"/>, etc... 
+    /// This applies to methods like <see cref="DrawFilledRectangle(GorgonRectangleF, GorgonColor, GorgonTexture2DView, GorgonRectangleF?, int, GorgonSamplerState, float)"/>, 
+    /// <see cref="DrawRectangle(GorgonRectangleF, GorgonColor, float, GorgonTexture2DView, GorgonRectangleF?, int, GorgonSamplerState, float)"/>, etc... 
     /// <see cref="DrawSprite(GorgonSprite)"/> and <see cref="DrawTextSprite(GorgonTextSprite)"/> have their own alpha test ranges and are not affected by this property.
     /// </para>
     /// </remarks>
-    /// <seealso cref="DrawLine(float, float, float, float, GorgonColor, float, GorgonTexture2DView, DX.RectangleF?, int, GorgonSamplerState, float, float)"/>
-    /// <seealso cref="DrawRectangle(DX.RectangleF, GorgonColor, float, GorgonTexture2DView, DX.RectangleF?, int, GorgonSamplerState, float)"/>
-    /// <seealso cref="DrawEllipse(DX.RectangleF, GorgonColor, float, float, GorgonTexture2DView, DX.RectangleF?, int, GorgonSamplerState, float)"/>
-    /// <seealso cref="DrawArc(DX.RectangleF, GorgonColor, float, float, float, float, GorgonTexture2DView, DX.RectangleF?, int, GorgonSamplerState, float)"/>        
-    /// <seealso cref="DrawTriangle(in GorgonTriangleVertex, in GorgonTriangleVertex, in GorgonTriangleVertex, GorgonTexture2DView, DX.RectangleF?, int, GorgonSamplerState, float)"/>
-    /// <seealso cref="DrawFilledRectangle(DX.RectangleF, GorgonColor, GorgonTexture2DView, DX.RectangleF?, int, GorgonSamplerState, float)"/>
-    /// <seealso cref="DrawFilledEllipse(DX.RectangleF, GorgonColor, float, GorgonTexture2DView, DX.RectangleF?, int, GorgonSamplerState, float)"/>
-    /// <seealso cref="DrawFilledArc(DX.RectangleF, GorgonColor, float, float, float, GorgonTexture2DView, DX.RectangleF?, int, GorgonSamplerState, float)"/>
-    public GorgonRangeF? PrimitiveAlphaTestRange
+    /// <seealso cref="DrawLine(float, float, float, float, GorgonColor, float, GorgonTexture2DView, GorgonRectangleF?, int, GorgonSamplerState, float, float)"/>
+    /// <seealso cref="DrawRectangle(GorgonRectangleF, GorgonColor, float, GorgonTexture2DView, GorgonRectangleF?, int, GorgonSamplerState, float)"/>
+    /// <seealso cref="DrawEllipse(GorgonRectangleF, GorgonColor, float, float, GorgonTexture2DView, GorgonRectangleF?, int, GorgonSamplerState, float)"/>
+    /// <seealso cref="DrawArc(GorgonRectangleF, GorgonColor, float, float, float, float, GorgonTexture2DView, GorgonRectangleF?, int, GorgonSamplerState, float)"/>        
+    /// <seealso cref="DrawTriangle(ref readonly GorgonTriangleVertex, ref readonly GorgonTriangleVertex, ref readonly GorgonTriangleVertex, GorgonTexture2DView, GorgonRectangleF?, int, GorgonSamplerState, float)"/>
+    /// <seealso cref="DrawFilledRectangle(GorgonRectangleF, GorgonColor, GorgonTexture2DView, GorgonRectangleF?, int, GorgonSamplerState, float)"/>
+    /// <seealso cref="DrawFilledEllipse(GorgonRectangleF, GorgonColor, float, GorgonTexture2DView, GorgonRectangleF?, int, GorgonSamplerState, float)"/>
+    /// <seealso cref="DrawFilledArc(GorgonRectangleF, GorgonColor, float, float, float, GorgonTexture2DView, GorgonRectangleF?, int, GorgonSamplerState, float)"/>
+    public GorgonRange<float>? PrimitiveAlphaTestRange
     {
         get;
         set;
-    } = new GorgonRangeF(0, 0);
+    } = new GorgonRange<float>(0, 0);
 
     /// <summary>
     /// Property to return whether the renderer is currently rendering.
@@ -342,9 +331,7 @@ public sealed class Gorgon2D
     {
         get;
     }
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to flush the queued up changes to the GPU.
     /// </summary>
@@ -410,12 +397,12 @@ public sealed class Gorgon2D
         if ((!flush)
             && (((useIndices) && (_currentDrawIndexCall is not null)) || ((!useIndices) && (_currentDrawCall is not null))))
         {
-            if ((_lastRenderable is not null) && (renderable is not null) && (BatchRenderable.AreStatesSame(_lastRenderable, renderable)))                    
+            if ((_lastRenderable is not null) && (renderable is not null) && (BatchRenderable.AreStatesSame(_lastRenderable, renderable)))
             {
                 return;
             }
         }
-        
+
         // Flush any pending draw calls.
         Flush();
 
@@ -437,7 +424,6 @@ public sealed class Gorgon2D
         {
             _currentDrawCall = _drawCallFactory.GetDrawCall(renderable, _currentBatchState, _batchRenderer);
         }
-
 
         _lastRenderable = renderable;
         // All states are reconciled, so reset the change flag.
@@ -494,7 +480,7 @@ public sealed class Gorgon2D
     /// <param name="textureSampler">The texture sampler to compare for changes.</param>
     /// <param name="alphaTestData">The alpha testing data to compare for changes.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void CheckPrimitiveStateChange(GorgonTexture2DView texture, GorgonSamplerState textureSampler, in AlphaTestData alphaTestData)
+    private void CheckPrimitiveStateChange(GorgonTexture2DView texture, GorgonSamplerState textureSampler, ref readonly AlphaTestData alphaTestData)
     {
         // The state has already been marked as changed, so we don't need to test further.
         if (_primitiveRenderable.StateChanged)
@@ -504,7 +490,7 @@ public sealed class Gorgon2D
 
         _primitiveRenderable.StateChanged = (texture != _primitiveRenderable.Texture)
                                             || (textureSampler != _primitiveRenderable.TextureSampler)
-                                            || (!AlphaTestData.Equals(in alphaTestData, in _primitiveRenderable.AlphaTestData));
+                                            || (!AlphaTestData.Equals(alphaTestData, _primitiveRenderable.AlphaTestData));
     }
 
     /// <summary>
@@ -513,7 +499,7 @@ public sealed class Gorgon2D
     /// <param name="currentData">The data to write into the buffer.</param>
     private void UpdateAlphaTest(ref AlphaTestData currentData)
     {
-        if (AlphaTestData.Equals(in currentData, in _alphaTestData))
+        if (AlphaTestData.Equals(currentData, _alphaTestData))
         {
             return;
         }
@@ -549,7 +535,7 @@ public sealed class Gorgon2D
             return;
         }
 
-        var timingValues = new Vector4(GorgonTiming.Delta, GorgonTiming.SecondsSinceStart, GorgonTiming.FPS, GorgonTiming.FrameCount);
+        Vector4 timingValues = new(GorgonTiming.Delta, GorgonTiming.SecondsSinceStart, GorgonTiming.FPS, GorgonTiming.FrameCount);
         _timingValuesBuffer.Buffer.SetData(in timingValues);
         _currentTimingValues = timingValues;
         unchecked
@@ -572,7 +558,7 @@ public sealed class Gorgon2D
             return;
         }
 
-        var newMiscValues = new MiscValues(Graphics, _currentBatchState);
+        MiscValues newMiscValues = new(Graphics, _currentBatchState);
 
         if (newMiscValues.Equals(in _currentMiscValues))
         {
@@ -590,7 +576,7 @@ public sealed class Gorgon2D
     /// <returns>The bounds with transformation applied.</returns>
     /// <remarks>This is the equivalent of an axis aligned bounding box.</remarks>   
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private DX.RectangleF GetTransformedBounds(BatchRenderable renderable)
+    private GorgonRectangleF GetTransformedBounds(BatchRenderable renderable)
     {
         float left = float.MaxValue;
         float top = float.MaxValue;
@@ -607,7 +593,7 @@ public sealed class Gorgon2D
             bottom = vertex.Y.Max(bottom);
         }
 
-        return new DX.RectangleF
+        return new GorgonRectangleF
         {
             Left = left,
             Top = top,
@@ -622,7 +608,7 @@ public sealed class Gorgon2D
     private void Initialize()
     {
         // Spin wait until we're fully initialized.
-        var wait = new SpinWait();
+        SpinWait wait = new();
 
         while (Interlocked.CompareExchange(ref _initialized, Initializing, Uninitialized) == Initializing)
         {
@@ -643,7 +629,7 @@ public sealed class Gorgon2D
             _polyTransformVertexState.Shader = _polyTransformVertexShader = GorgonShaderFactory.Compile<GorgonVertexShader>(Graphics, Resources.BasicSprite, "GorgonVertexShaderPoly", GorgonGraphics.IsDebugEnabled);
             _polyPixelState.Shader = _polyPixelShader = GorgonShaderFactory.Compile<GorgonPixelShader>(Graphics, Resources.BasicSprite, "GorgonPixelShaderPoly", GorgonGraphics.IsDebugEnabled);
 
-            _vertexLayout = GorgonInputLayout.CreateUsingType<Gorgon2DVertex>(Graphics, _defaultVertexShader);
+            _vertexLayout = GorgonInputLayout.CreateUsingType<Gorgon2DVertex>(Graphics, nameof(Gorgon2DVertex), _defaultVertexShader);
 
             // We need to ensure that we have a default texture in case we decide not to send a texture in.
             GorgonTexture2D textureResource = Resources.White_2x2.ToTexture2D(Graphics,
@@ -675,7 +661,7 @@ public sealed class Gorgon2D
                                                                });
             _normalTexture = textureResource.GetShaderResourceView();
 
-            _alphaTestData = new AlphaTestData(true, GorgonRangeF.Empty);
+            _alphaTestData = new AlphaTestData(true, GorgonRange<float>.Empty);
             _alphaTest = GorgonConstantBufferView.CreateConstantBuffer(Graphics, in _alphaTestData, "Alpha Test Buffer");
 
             _batchRenderer = new BatchRenderer(Graphics);
@@ -692,7 +678,7 @@ public sealed class Gorgon2D
             _currentBatchState.DepthStencilState = GorgonDepthStencilState.Default;
 
             _defaultCamera ??= new GorgonOrthoCamera(Graphics,
-                                                       new DX.Size2F(Graphics.Viewports[0].Width, Graphics.Viewports[0].Height),
+                                                       new Vector2(Graphics.Viewports[0].Width, Graphics.Viewports[0].Height),
                                                        -100_000.0f,
                                                        100_000.0f,
                                                        "Gorgon2D.Default_Camera");
@@ -700,10 +686,10 @@ public sealed class Gorgon2D
             _cameraController = new CameraController(Graphics);
             _cameraController.UpdateCamera(_defaultCamera);
 
-            var polyData = new PolyVertexShaderData
+            PolyVertexShaderData polyData = new()
             {
                 World = Matrix4x4.Identity,
-                Color = GorgonColor.White,
+                Color = GorgonColors.White,
                 TextureTransform = new Vector4(0, 0, 1, 1),
                 MiscInfo = new Vector4(0, 0, 1, 0)
             };
@@ -872,7 +858,7 @@ public sealed class Gorgon2D
         {
             Initialize();
         }
-        
+
         _cameraController.UpdateCamera(camera ?? _defaultCamera);
         CurrentCamera = camera;
 
@@ -882,7 +868,7 @@ public sealed class Gorgon2D
         _currentBatchState.BlendState = batchState?.BlendState ?? GorgonBlendState.Default;
         _currentBatchState.RasterState = batchState?.RasterState ?? GorgonRasterState.Default;
         _currentBatchState.DepthStencilState = batchState?.DepthStencilState ?? GorgonDepthStencilState.Default;
-        _currentBatchState.BlendFactor = batchState?.BlendFactor ?? GorgonColor.White;
+        _currentBatchState.BlendFactor = batchState?.BlendFactor ?? GorgonColors.White;
         _currentBatchState.BlendSampleMask = batchState?.BlendSampleMask ?? int.MinValue;
         _currentBatchState.StencilReference = batchState?.StencilReference ?? 0;
 
@@ -905,7 +891,7 @@ public sealed class Gorgon2D
         if (_timingValuesBuffer is not null)
         {
             if (_currentBatchState.PixelShaderState.RwConstantBuffers[12] is null)
-            {                    
+            {
                 _currentBatchState.PixelShaderState.RwConstantBuffers[12] = _timingValuesBuffer;
             }
 
@@ -1025,8 +1011,6 @@ public sealed class Gorgon2D
     /// <seealso cref="GorgonSprite"/>
     public IGorgon2DDrawingFluent DrawPolygonSprite(GorgonPolySprite sprite)
     {
-        sprite.ValidateObject(nameof(sprite));
-
 #if DEBUG
         if (_beginCalled == 0)
         {
@@ -1057,7 +1041,7 @@ public sealed class Gorgon2D
         }
 
         _polyTransformer.Transform(renderable, out float sinValue, out float cosValue);
-        var polyData = new PolyVertexShaderData
+        PolyVertexShaderData polyData = new()
         {
             World = renderable.WorldMatrix,
             Color = sprite.Color,
@@ -1102,10 +1086,8 @@ public sealed class Gorgon2D
     /// <param name="sprite">The sprite to retrieve the boundaries from.</param>
     /// <returns>The bounds with transformation applied.</returns>
     /// <remarks>This is the equivalent of an axis aligned bounding box.</remarks>        
-    public DX.RectangleF MeasureSprite(GorgonSprite sprite)
+    public GorgonRectangleF MeasureSprite(GorgonSprite sprite)
     {
-        sprite.ValidateObject(nameof(sprite));
-
         if (_initialized != Initialized)
         {
             Initialize();
@@ -1125,7 +1107,7 @@ public sealed class Gorgon2D
     /// <param name="sprite">The sprite to retrieve the boundaries from.</param>
     /// <returns>The bounds with transformation applied.</returns>
     /// <remarks>This is the equivalent of an axis aligned bounding box.</remarks>        
-    public DX.RectangleF MeasureSprite(GorgonTextSprite sprite)
+    public GorgonRectangleF MeasureSprite(GorgonTextSprite sprite)
     {
         // The number of characters evaluated.
         int charCount = 0;
@@ -1133,8 +1115,6 @@ public sealed class Gorgon2D
         int vertexOffset = 0;
         // The position of the current glyph.
         Vector2 position = Vector2.Zero;
-
-        sprite.ValidateObject(nameof(sprite));
 
         if (_initialized != Initialized)
         {
@@ -1149,7 +1129,7 @@ public sealed class Gorgon2D
             // If there's no text, then there's nothing to render.
             if (textLength == 0)
             {
-                return DX.RectangleF.Empty;
+                return GorgonRectangleF.Empty;
             }
 
             TextRenderable renderable = sprite.Renderable;
@@ -1172,7 +1152,7 @@ public sealed class Gorgon2D
                 string textLine = sprite.Lines[line];
                 textLength = textLine.Length;
 
-                DX.Size2F lineMeasure = DX.Size2F.Empty;
+                Vector2 lineMeasure = Vector2.Zero;
 
                 if (alignment != Alignment.UpperLeft)
                 {
@@ -1217,10 +1197,9 @@ public sealed class Gorgon2D
 
                     if ((hasKerning) && (i < textLength - 1))
                     {
-                        var kernPair = new GorgonKerningPair(character, textLine[i + 1]);
+                        GorgonKerningPair kernPair = new(character, textLine[i + 1]);
                         kerningValues.TryGetValue(kernPair, out kernAmount);
                     }
-
 
                     _batchRenderer.TextSpriteTransformer.Transform(renderable,
                                                                     glyph,
@@ -1228,7 +1207,7 @@ public sealed class Gorgon2D
                                                                     in position,
                                                                     vertexOffset,
                                                                     drawOutlines,
-                                                                    lineMeasure.Width);
+                                                                    lineMeasure.X);
 
                     vertexOffset += 4;
                     position.X += glyph.Advance + kernAmount;
@@ -1247,7 +1226,7 @@ public sealed class Gorgon2D
 
             if (renderable.IndexCount == 0)
             {
-                return DX.RectangleF.Empty;
+                return GorgonRectangleF.Empty;
             }
 
             renderable.VertexCountChanged = false;
@@ -1264,7 +1243,7 @@ public sealed class Gorgon2D
     /// <param name="sprite">The sprite to retrieve the boundaries from.</param>
     /// <returns>The bounds with transformation applied.</returns>
     /// <remarks>This is the equivalent of an axis aligned bounding box.</remarks>           
-    public DX.RectangleF MeasureSprite(GorgonPolySprite sprite)
+    public GorgonRectangleF MeasureSprite(GorgonPolySprite sprite)
     {
         if (_initialized != Initialized)
         {
@@ -1297,8 +1276,6 @@ public sealed class Gorgon2D
     /// <seealso cref="GorgonSprite"/>
     public IGorgon2DDrawingFluent DrawSprite(GorgonSprite sprite)
     {
-        sprite.ValidateObject(nameof(sprite));
-
 #if DEBUG
         if (_beginCalled == 0)
         {
@@ -1365,7 +1342,7 @@ public sealed class Gorgon2D
     /// If the <paramref name="font"/> parameter is not specified, then the <see cref="DefaultFont"/> is used to render the text.
     /// </para>
     /// <para>
-    /// If the <paramref name="color"/> parameter is not specified, then the <see cref="GorgonColor.White"/> color is used.
+    /// If the <paramref name="color"/> parameter is not specified, then the <see cref="GorgonColors.White"/> color is used.
     /// </para>
     /// </remarks>
     public IGorgon2DDrawingFluent DrawString(string text, Vector2 position, GorgonFont font = null, GorgonColor? color = null)
@@ -1380,7 +1357,7 @@ public sealed class Gorgon2D
         // then an error can occur because the font is no longer valid. By setting the font first, we are assured that we always have a valid font.
         _defaultTextSprite.Font = font ?? _defaultFontFactory.Value.DefaultFont;
         _defaultTextSprite.Text = text;
-        _defaultTextSprite.Color = color ?? GorgonColor.White;
+        _defaultTextSprite.Color = color ?? GorgonColors.White;
         _defaultTextSprite.Position = position;
         _defaultTextSprite.DrawMode = _defaultTextSprite.Font.HasOutline ? TextDrawMode.OutlinedGlyphs : TextDrawMode.GlyphsOnly;
         _defaultTextSprite.AllowColorCodes = (text.IndexOf("[c", StringComparison.CurrentCultureIgnoreCase) > -1)
@@ -1412,7 +1389,6 @@ public sealed class Gorgon2D
     /// <seealso cref="GorgonSprite"/>
     public IGorgon2DDrawingFluent DrawTextSprite(GorgonTextSprite sprite)
     {
-        sprite.ValidateObject(nameof(sprite));
 #if DEBUG
         if (_beginCalled == 0)
         {
@@ -1426,8 +1402,6 @@ public sealed class Gorgon2D
         int vertexOffset = 0;
         // The position of the current glyph.
         Vector2 position = Vector2.Zero;
-
-        sprite.ValidateObject(nameof(sprite));
 
         _textBuffer.Length = 0;
         int textLength = sprite.Text.Length;
@@ -1469,7 +1443,7 @@ public sealed class Gorgon2D
             {
                 bool isOutlinePass = (drawOutlines) && (dc == 0);
 
-                DX.Size2F lineMeasure = DX.Size2F.Empty;
+                Vector2 lineMeasure = Vector2.Zero;
 
                 if (alignment != Alignment.UpperLeft)
                 {
@@ -1544,10 +1518,9 @@ public sealed class Gorgon2D
 
                         if ((hasKerning) && (i < textLength - 1))
                         {
-                            var kernPair = new GorgonKerningPair(character, textLine[i + 1]);
+                            GorgonKerningPair kernPair = new(character, textLine[i + 1]);
                             kerningValues.TryGetValue(kernPair, out kernAmount);
                         }
-
 
                         _batchRenderer.TextSpriteTransformer.Transform(renderable,
                                                                         glyph,
@@ -1555,7 +1528,7 @@ public sealed class Gorgon2D
                                                                         in position,
                                                                         vertexOffset,
                                                                         isOutlinePass,
-                                                                        lineMeasure.Width);
+                                                                        lineMeasure.X);
 
                         vertexOffset += 4;
                         position.X += glyph.Advance + kernAmount;
@@ -1604,7 +1577,7 @@ public sealed class Gorgon2D
     /// <param name="depth">[Optional] The depth value for the rectangle.</param>
     /// <returns>The fluent drawing interface.</returns>
     /// <exception cref="InvalidOperationException">Thrown if this method was called without having called <see cref="Begin"/> first.</exception>
-    public IGorgon2DDrawingFluent DrawFilledRectangle(DX.RectangleF region, GorgonColor color, GorgonTexture2DView texture = null, DX.RectangleF? textureRegion = null, int textureArrayIndex = 0, GorgonSamplerState textureSampler = null, float depth = 0)
+    public IGorgon2DDrawingFluent DrawFilledRectangle(GorgonRectangleF region, GorgonColor color, GorgonTexture2DView texture = null, GorgonRectangleF? textureRegion = null, int textureArrayIndex = 0, GorgonSamplerState textureSampler = null, float depth = 0)
     {
 #if DEBUG
         if (_beginCalled == 0)
@@ -1666,7 +1639,7 @@ public sealed class Gorgon2D
         v2.Position = new Vector4(region.Left, region.Bottom, depth, 1.0f);
         v3.Position = new Vector4(region.Right, region.Bottom, depth, 1.0f);
 
-        AlphaTestData alphaTestData = PrimitiveAlphaTestRange is null ? new AlphaTestData(false, GorgonRangeF.Empty) : new AlphaTestData(true, PrimitiveAlphaTestRange.Value);
+        AlphaTestData alphaTestData = PrimitiveAlphaTestRange is null ? new AlphaTestData(false, GorgonRange<float>.Empty) : new AlphaTestData(true, PrimitiveAlphaTestRange.Value);
         CheckPrimitiveStateChange(texture, textureSampler, in alphaTestData);
 
         _primitiveRenderable.PrimitiveType = PrimitiveType.TriangleList;
@@ -1697,7 +1670,7 @@ public sealed class Gorgon2D
     /// <param name="depth">[Optional] The depth value for the rectangle.</param>
     /// <returns>The fluent drawing interface.</returns>
     /// <exception cref="InvalidOperationException">Thrown if this method was called without having called <see cref="Begin"/> first.</exception>
-    public IGorgon2DDrawingFluent DrawTriangle(in GorgonTriangleVertex point1, in GorgonTriangleVertex point2, in GorgonTriangleVertex point3, GorgonTexture2DView texture = null, DX.RectangleF? textureRegion = null, int textureArrayIndex = 0, GorgonSamplerState textureSampler = null, float depth = 0)
+    public IGorgon2DDrawingFluent DrawTriangle(ref readonly GorgonTriangleVertex point1, ref readonly GorgonTriangleVertex point2, ref readonly GorgonTriangleVertex point3, GorgonTexture2DView texture = null, GorgonRectangleF? textureRegion = null, int textureArrayIndex = 0, GorgonSamplerState textureSampler = null, float depth = 0)
     {
 #if DEBUG
         if (_beginCalled == 0)
@@ -1707,7 +1680,7 @@ public sealed class Gorgon2D
 #endif
         textureSampler ??= GorgonSamplerState.Wrapping;
 
-        AlphaTestData alphaTestData = PrimitiveAlphaTestRange is null ? new AlphaTestData(false, GorgonRangeF.Empty) : new AlphaTestData(true, PrimitiveAlphaTestRange.Value);
+        AlphaTestData alphaTestData = PrimitiveAlphaTestRange is null ? new AlphaTestData(false, GorgonRange<float>.Empty) : new AlphaTestData(true, PrimitiveAlphaTestRange.Value);
         CheckPrimitiveStateChange(texture, textureSampler, in alphaTestData);
 
         _primitiveRenderable.ActualVertexCount = 3;
@@ -1757,11 +1730,11 @@ public sealed class Gorgon2D
     /// <param name="depth">[Optional] The depth value for the rectangle.</param>
     /// <returns>The fluent drawing interface.</returns>
     /// <exception cref="InvalidOperationException">Thrown if this method was called without having called <see cref="Begin"/> first.</exception>
-    public IGorgon2DDrawingFluent DrawRectangle(DX.RectangleF region,
+    public IGorgon2DDrawingFluent DrawRectangle(GorgonRectangleF region,
                               GorgonColor color,
                               float thickness = 1.0f,
                               GorgonTexture2DView texture = null,
-                              DX.RectangleF? textureRegion = null,
+                              GorgonRectangleF? textureRegion = null,
                               int textureArrayIndex = 0,
                               GorgonSamplerState textureSampler = null,
                               float depth = 0)
@@ -1782,25 +1755,25 @@ public sealed class Gorgon2D
         //// Push borders to the outside.
         if (thickness > 1.0f)
         {
-            region.Inflate(thickness / 2.0f, thickness / 2.0f);
+            region = GorgonRectangleF.Expand(region, thickness / 2.0f);
         }
 
-        DX.RectangleF? topAcross = null;
-        DX.RectangleF? bottomAcross = null;
-        DX.RectangleF? leftDown = null;
-        DX.RectangleF? rightDown = null;
+        GorgonRectangleF? topAcross = null;
+        GorgonRectangleF? bottomAcross = null;
+        GorgonRectangleF? leftDown = null;
+        GorgonRectangleF? rightDown = null;
 
         // If we supply our own texture coordinates, then ensure that the individual lines are mapped appropriately.
-        if (texture is not null and not null)
+        if ((texture is not null) && (textureRegion is not null))
         {
-            var innerRect = new DX.RectangleF(thickness, thickness, region.Width - (thickness * 2), region.Height - (thickness * 2));
+            GorgonRectangleF innerRect = new(thickness, thickness, region.Width - (thickness * 2), region.Height - (thickness * 2));
 
             innerRect.Left = ((innerRect.Left / region.Width) * textureRegion.Value.Width) + textureRegion.Value.Left;
             innerRect.Top = ((innerRect.Top / region.Height) * textureRegion.Value.Height) + textureRegion.Value.Top;
             innerRect.Right = (innerRect.Right / region.Width) * textureRegion.Value.Right;
             innerRect.Bottom = (innerRect.Bottom / region.Height) * textureRegion.Value.Bottom;
 
-            topAcross = new DX.RectangleF
+            topAcross = new GorgonRectangleF
             {
                 Left = textureRegion.Value.Left,
                 Top = textureRegion.Value.Top,
@@ -1808,7 +1781,7 @@ public sealed class Gorgon2D
                 Bottom = innerRect.Top
             };
 
-            rightDown = new DX.RectangleF
+            rightDown = new GorgonRectangleF
             {
                 Left = innerRect.Right,
                 Top = innerRect.Top,
@@ -1816,7 +1789,7 @@ public sealed class Gorgon2D
                 Bottom = innerRect.Bottom
             };
 
-            bottomAcross = new DX.RectangleF
+            bottomAcross = new GorgonRectangleF
             {
                 Left = textureRegion.Value.Left,
                 Top = innerRect.Bottom,
@@ -1824,7 +1797,7 @@ public sealed class Gorgon2D
                 Bottom = textureRegion.Value.Bottom
             };
 
-            leftDown = new DX.RectangleF
+            leftDown = new GorgonRectangleF
             {
                 Left = textureRegion.Value.Left,
                 Top = innerRect.Top,
@@ -1834,7 +1807,7 @@ public sealed class Gorgon2D
         }
 
         // Top Across.
-        DrawFilledRectangle(new DX.RectangleF(region.Left, region.Top, region.Width, thickness),
+        DrawFilledRectangle(new GorgonRectangleF(region.Left, region.Top, region.Width, thickness),
                             color,
                             texture,
                             topAcross,
@@ -1843,7 +1816,7 @@ public sealed class Gorgon2D
                             depth);
 
         // Right down.
-        DrawFilledRectangle(new DX.RectangleF(region.Right - thickness, region.Top + thickness, thickness, region.Height - (thickness * 2)),
+        DrawFilledRectangle(new GorgonRectangleF(region.Right - thickness, region.Top + thickness, thickness, region.Height - (thickness * 2)),
                             color,
                             texture,
                             rightDown,
@@ -1852,7 +1825,7 @@ public sealed class Gorgon2D
                             depth);
 
         // Bottom across.
-        DrawFilledRectangle(new DX.RectangleF(region.Left, region.Bottom - thickness, region.Width, thickness),
+        DrawFilledRectangle(new GorgonRectangleF(region.Left, region.Bottom - thickness, region.Width, thickness),
                             color,
                             texture,
                             bottomAcross,
@@ -1861,7 +1834,7 @@ public sealed class Gorgon2D
                             depth);
 
         // Left down.
-        DrawFilledRectangle(new DX.RectangleF(region.Left, region.Top + thickness, thickness, region.Height - (thickness * 2)),
+        DrawFilledRectangle(new GorgonRectangleF(region.Left, region.Top + thickness, thickness, region.Height - (thickness * 2)),
                             color,
                             texture,
                             leftDown,
@@ -1889,7 +1862,7 @@ public sealed class Gorgon2D
     /// <param name="endDepth">[Optional] The depth value for the ending point of the line.</param>
     /// <returns>The fluent drawing interface.</returns>
     /// <exception cref="InvalidOperationException">Thrown if this method was called without having called <see cref="Begin"/> first.</exception>
-    public IGorgon2DDrawingFluent DrawLine(float x1, float y1, float x2, float y2, GorgonColor color, float thickness = 1.0f, GorgonTexture2DView texture = null, DX.RectangleF? textureRegion = null, int textureArrayIndex = 0, GorgonSamplerState textureSampler = null, float startDepth = 0, float endDepth = 0)
+    public IGorgon2DDrawingFluent DrawLine(float x1, float y1, float x2, float y2, GorgonColor color, float thickness = 1.0f, GorgonTexture2DView texture = null, GorgonRectangleF? textureRegion = null, int textureArrayIndex = 0, GorgonSamplerState textureSampler = null, float startDepth = 0, float endDepth = 0)
     {
 #if DEBUG
         if (_beginCalled == 0)
@@ -1911,7 +1884,7 @@ public sealed class Gorgon2D
 
         textureSampler ??= GorgonSamplerState.Wrapping;
 
-        var bounds = new DX.RectangleF
+        GorgonRectangleF bounds = new()
         {
             Left = x1,
             Top = y1,
@@ -1920,12 +1893,12 @@ public sealed class Gorgon2D
         };
 
         // Get cross products of start and end points.
-        var cross = Vector2.Multiply(Vector2.Normalize(new Vector2(bounds.Height, -bounds.Width)), thickness * 0.5f);            
+        Vector2 cross = Vector2.Multiply(Vector2.Normalize(new Vector2(bounds.Height, -bounds.Width)), thickness * 0.5f);
 
-        var start1 = new Vector2((x1 + cross.X).FastCeiling(), (y1 + cross.Y).FastCeiling());
-        var end1 = new Vector2((x2 + cross.X).FastCeiling(), (y2 + cross.Y).FastCeiling());
-        var start2 = new Vector2((x1 - cross.X).FastCeiling(), (y1 - cross.Y).FastCeiling());
-        var end2 = new Vector2((x2 - cross.X).FastCeiling(), (y2 - cross.Y).FastCeiling());
+        Vector2 start1 = new((x1 + cross.X).FastCeiling(), (y1 + cross.Y).FastCeiling());
+        Vector2 end1 = new((x2 + cross.X).FastCeiling(), (y2 + cross.Y).FastCeiling());
+        Vector2 start2 = new((x1 - cross.X).FastCeiling(), (y1 - cross.Y).FastCeiling());
+        Vector2 end2 = new((x2 - cross.X).FastCeiling(), (y2 - cross.Y).FastCeiling());
 
         v0.Position = new Vector4(start1, startDepth, 1.0f);
         v1.Position = new Vector4(end1, endDepth, 1.0f);
@@ -1948,7 +1921,7 @@ public sealed class Gorgon2D
             {
                 // To perform the same kind of texture mapping on a line as we have on other primitives, we need to 
                 // find the min and max of the line vertices.
-                bounds = new DX.RectangleF
+                bounds = new GorgonRectangleF
                 {
                     Left = float.MaxValue,
                     Top = float.MaxValue,
@@ -1988,13 +1961,12 @@ public sealed class Gorgon2D
             texture = _defaultTexture;
         }
 
-
         v0.Color = color;
         v1.Color = color;
         v2.Color = color;
         v3.Color = color;
 
-        AlphaTestData alphaTestData = PrimitiveAlphaTestRange is null ? new AlphaTestData(false, GorgonRangeF.Empty) : new AlphaTestData(true, PrimitiveAlphaTestRange.Value);
+        AlphaTestData alphaTestData = PrimitiveAlphaTestRange is null ? new AlphaTestData(false, GorgonRange<float>.Empty) : new AlphaTestData(true, PrimitiveAlphaTestRange.Value);
         CheckPrimitiveStateChange(texture, textureSampler, in alphaTestData);
 
         _primitiveRenderable.PrimitiveType = PrimitiveType.TriangleList;
@@ -2023,7 +1995,7 @@ public sealed class Gorgon2D
     /// <param name="textureSampler">[Optional] The texture sampler to apply to the texture.</param>
     /// <param name="depth">[Optional] The depth value for the ellipse.</param>
     /// <exception cref="InvalidOperationException">Thrown if this method was called without having called <see cref="Begin"/> first.</exception>
-    public IGorgon2DDrawingFluent DrawFilledEllipse(DX.RectangleF region, GorgonColor color, float smoothness = 1.0f, GorgonTexture2DView texture = null, DX.RectangleF? textureRegion = null, int textureArrayIndex = 0, GorgonSamplerState textureSampler = null, float depth = 0)
+    public IGorgon2DDrawingFluent DrawFilledEllipse(GorgonRectangleF region, GorgonColor color, float smoothness = 1.0f, GorgonTexture2DView texture = null, GorgonRectangleF? textureRegion = null, int textureArrayIndex = 0, GorgonSamplerState textureSampler = null, float depth = 0)
     {
 #if DEBUG
         if (_beginCalled == 0)
@@ -2051,9 +2023,9 @@ public sealed class Gorgon2D
             _primitiveRenderable.Vertices = new Gorgon2DVertex[_primitiveRenderable.ActualVertexCount * 2];
         }
 
-        var centerPoint = new Vector2(region.Center.X, region.Center.Y);
+        Vector2 centerPoint = new(region.Center.X, region.Center.Y);
 
-        var radius = new Vector2(region.Width * 0.5f, region.Height * 0.5f);
+        Vector2 radius = new(region.Width * 0.5f, region.Height * 0.5f);
 
         Vector4 uvCenter = Vector4.UnitW;
 
@@ -2074,7 +2046,7 @@ public sealed class Gorgon2D
             float sin = angle.FastSin();
             float cos = angle.FastCos();
 
-            var point = new Vector2((sin * radius.X) + centerPoint.X, (cos * radius.Y) + centerPoint.Y);
+            Vector2 point = new((sin * radius.X) + centerPoint.X, (cos * radius.Y) + centerPoint.Y);
 
             Vector4 uv = Vector4.UnitW;
 
@@ -2105,7 +2077,7 @@ public sealed class Gorgon2D
 
         textureSampler ??= GorgonSamplerState.Wrapping;
 
-        AlphaTestData alphaTestData = PrimitiveAlphaTestRange is null ? new AlphaTestData(false, GorgonRangeF.Empty) : new AlphaTestData(true, PrimitiveAlphaTestRange.Value);
+        AlphaTestData alphaTestData = PrimitiveAlphaTestRange is null ? new AlphaTestData(false, GorgonRange<float>.Empty) : new AlphaTestData(true, PrimitiveAlphaTestRange.Value);
         CheckPrimitiveStateChange(texture, textureSampler, in alphaTestData);
         _primitiveRenderable.Texture = texture ?? _defaultTexture;
         _primitiveRenderable.TextureSampler = textureSampler;
@@ -2134,7 +2106,7 @@ public sealed class Gorgon2D
     /// <param name="depth">[Optional] The depth value for the ellipse.</param>
     /// <returns>The fluent drawing interface.</returns>
     /// <exception cref="InvalidOperationException">Thrown if this method was called without having called <see cref="Begin"/> first.</exception>
-    public IGorgon2DDrawingFluent DrawArc(DX.RectangleF region, GorgonColor color, float startAngle, float endAngle, float smoothness = 1.0f, float thickness = 1.0f, GorgonTexture2DView texture = null, DX.RectangleF? textureRegion = null, int textureArrayIndex = 0, GorgonSamplerState textureSampler = null, float depth = 0)
+    public IGorgon2DDrawingFluent DrawArc(GorgonRectangleF region, GorgonColor color, float startAngle, float endAngle, float smoothness = 1.0f, float thickness = 1.0f, GorgonTexture2DView texture = null, GorgonRectangleF? textureRegion = null, int textureArrayIndex = 0, GorgonSamplerState textureSampler = null, float depth = 0)
     {
 #if DEBUG
         if (_beginCalled == 0)
@@ -2164,11 +2136,10 @@ public sealed class Gorgon2D
             _primitiveRenderable.Vertices = new Gorgon2DVertex[_primitiveRenderable.ActualVertexCount * 2];
         }
 
-        var centerPoint = new Vector2(region.Center.X, region.Center.Y);
+        Vector2 centerPoint = new(region.Center.X, region.Center.Y);
 
-        var outerRadius = new Vector2((region.Width * 0.5f) + (thickness * 0.5f), (region.Height * 0.5f) + (thickness * 0.5f));
-        var innerRadius = new Vector2((region.Width * 0.5f) - (thickness * 0.5f), (region.Height * 0.5f) - (thickness * 0.5f));
-
+        Vector2 outerRadius = new((region.Width * 0.5f) + (thickness * 0.5f), (region.Height * 0.5f) + (thickness * 0.5f));
+        Vector2 innerRadius = new((region.Width * 0.5f) - (thickness * 0.5f), (region.Height * 0.5f) - (thickness * 0.5f));
 
         int vertexIndex = 0;
         for (int i = 0; i <= quality; ++i)
@@ -2177,8 +2148,8 @@ public sealed class Gorgon2D
             float sin = angle.FastSin();
             float cos = angle.FastCos();
 
-            var innerPoint = new Vector2((sin * innerRadius.X) + centerPoint.X, (cos * innerRadius.Y) + centerPoint.Y);
-            var outerPoint = new Vector2((sin * outerRadius.X) + centerPoint.X, (cos * outerRadius.Y) + centerPoint.Y);
+            Vector2 innerPoint = new((sin * innerRadius.X) + centerPoint.X, (cos * innerRadius.Y) + centerPoint.Y);
+            Vector2 outerPoint = new((sin * outerRadius.X) + centerPoint.X, (cos * outerRadius.Y) + centerPoint.Y);
 
             Vector4 uvInner = Vector4.UnitW;
             Vector4 uvOuter = Vector4.UnitW;
@@ -2196,8 +2167,8 @@ public sealed class Gorgon2D
                 }
                 else
                 {
-                    DX.RectangleF scaleRegion = region;
-                    scaleRegion.Inflate(thickness * 0.5f, thickness * 0.5f);
+                    GorgonRectangleF scaleRegion = GorgonRectangleF.Expand(region, thickness * 0.5f);
+
                     uvOuter = new Vector4((((outerPoint.X - scaleRegion.Left) / scaleRegion.Width) * textureRegion.Value.Width) + textureRegion.Value.Left,
                                              (((outerPoint.Y - scaleRegion.Top) / scaleRegion.Height) * textureRegion.Value.Height) + textureRegion.Value.Top,
                                              textureArrayIndex, 1);
@@ -2223,7 +2194,7 @@ public sealed class Gorgon2D
 
         textureSampler ??= GorgonSamplerState.Wrapping;
 
-        AlphaTestData alphaTestData = PrimitiveAlphaTestRange is null ? new AlphaTestData(false, GorgonRangeF.Empty) : new AlphaTestData(true, PrimitiveAlphaTestRange.Value);
+        AlphaTestData alphaTestData = PrimitiveAlphaTestRange is null ? new AlphaTestData(false, GorgonRange<float>.Empty) : new AlphaTestData(true, PrimitiveAlphaTestRange.Value);
         CheckPrimitiveStateChange(texture, textureSampler, in alphaTestData);
         _primitiveRenderable.Texture = texture ?? _defaultTexture;
         _primitiveRenderable.TextureSampler = textureSampler;
@@ -2251,7 +2222,7 @@ public sealed class Gorgon2D
     /// <param name="depth">[Optional] The depth value for the ellipse.</param>
     /// <returns>The fluent drawing interface.</returns>
     /// <exception cref="InvalidOperationException">Thrown if this method was called without having called <see cref="Begin"/> first.</exception>
-    public IGorgon2DDrawingFluent DrawFilledArc(DX.RectangleF region, GorgonColor color, float startAngle, float endAngle, float smoothness = 1.0f, GorgonTexture2DView texture = null, DX.RectangleF? textureRegion = null, int textureArrayIndex = 0, GorgonSamplerState textureSampler = null, float depth = 0)
+    public IGorgon2DDrawingFluent DrawFilledArc(GorgonRectangleF region, GorgonColor color, float startAngle, float endAngle, float smoothness = 1.0f, GorgonTexture2DView texture = null, GorgonRectangleF? textureRegion = null, int textureArrayIndex = 0, GorgonSamplerState textureSampler = null, float depth = 0)
     {
 #if DEBUG
         if (_beginCalled == 0)
@@ -2281,9 +2252,9 @@ public sealed class Gorgon2D
             _primitiveRenderable.Vertices = new Gorgon2DVertex[_primitiveRenderable.ActualVertexCount * 2];
         }
 
-        var centerPoint = new Vector2(region.Center.X, region.Center.Y);
+        Vector2 centerPoint = new(region.Center.X, region.Center.Y);
 
-        var radius = new Vector2(region.Width * 0.5f, region.Height * 0.5f);
+        Vector2 radius = new(region.Width * 0.5f, region.Height * 0.5f);
 
         Vector4 uvCenter = Vector4.UnitW;
 
@@ -2304,7 +2275,7 @@ public sealed class Gorgon2D
             float sin = angle.FastSin();
             float cos = angle.FastCos();
 
-            var point = new Vector2((sin * radius.X) + centerPoint.X, (cos * radius.Y) + centerPoint.Y);
+            Vector2 point = new((sin * radius.X) + centerPoint.X, (cos * radius.Y) + centerPoint.Y);
 
             Vector4 uv = Vector4.UnitW;
 
@@ -2335,7 +2306,7 @@ public sealed class Gorgon2D
 
         textureSampler ??= GorgonSamplerState.Wrapping;
 
-        AlphaTestData alphaTestData = PrimitiveAlphaTestRange is null ? new AlphaTestData(false, GorgonRangeF.Empty) : new AlphaTestData(true, PrimitiveAlphaTestRange.Value);
+        AlphaTestData alphaTestData = PrimitiveAlphaTestRange is null ? new AlphaTestData(false, GorgonRange<float>.Empty) : new AlphaTestData(true, PrimitiveAlphaTestRange.Value);
         CheckPrimitiveStateChange(texture, textureSampler, in alphaTestData);
         _primitiveRenderable.Texture = texture ?? _defaultTexture;
         _primitiveRenderable.TextureSampler = textureSampler;
@@ -2362,7 +2333,7 @@ public sealed class Gorgon2D
     /// <param name="depth">[Optional] The depth value for the ellipse.</param>
     /// <returns>The fluent drawing interface.</returns>
     /// <exception cref="InvalidOperationException">Thrown if this method was called without having called <see cref="Begin"/> first.</exception>
-    public IGorgon2DDrawingFluent DrawEllipse(DX.RectangleF region, GorgonColor color, float smoothness = 1.0f, float thickness = 1.0f, GorgonTexture2DView texture = null, DX.RectangleF? textureRegion = null, int textureArrayIndex = 0, GorgonSamplerState textureSampler = null, float depth = 0)
+    public IGorgon2DDrawingFluent DrawEllipse(GorgonRectangleF region, GorgonColor color, float smoothness = 1.0f, float thickness = 1.0f, GorgonTexture2DView texture = null, GorgonRectangleF? textureRegion = null, int textureArrayIndex = 0, GorgonSamplerState textureSampler = null, float depth = 0)
     {
 #if DEBUG
         if (_beginCalled == 0)
@@ -2390,10 +2361,10 @@ public sealed class Gorgon2D
             _primitiveRenderable.Vertices = new Gorgon2DVertex[_primitiveRenderable.ActualVertexCount * 2];
         }
 
-        var centerPoint = new Vector2(region.Center.X, region.Center.Y);
+        Vector2 centerPoint = new(region.Center.X, region.Center.Y);
 
-        var outerRadius = new Vector2((region.Width * 0.5f) + (thickness * 0.5f), (region.Height * 0.5f) + (thickness * 0.5f));
-        var innerRadius = new Vector2((region.Width * 0.5f) - (thickness * 0.5f), (region.Height * 0.5f) - (thickness * 0.5f));
+        Vector2 outerRadius = new((region.Width * 0.5f) + (thickness * 0.5f), (region.Height * 0.5f) + (thickness * 0.5f));
+        Vector2 innerRadius = new((region.Width * 0.5f) - (thickness * 0.5f), (region.Height * 0.5f) - (thickness * 0.5f));
 
         int vertexIndex = 0;
         for (int i = 0; i <= quality; ++i)
@@ -2402,8 +2373,8 @@ public sealed class Gorgon2D
             float sin = angle.FastSin();
             float cos = angle.FastCos();
 
-            var innerPoint = new Vector2((sin * innerRadius.X) + centerPoint.X, (cos * innerRadius.Y) + centerPoint.Y);
-            var outerPoint = new Vector2((sin * outerRadius.X) + centerPoint.X, (cos * outerRadius.Y) + centerPoint.Y);
+            Vector2 innerPoint = new((sin * innerRadius.X) + centerPoint.X, (cos * innerRadius.Y) + centerPoint.Y);
+            Vector2 outerPoint = new((sin * outerRadius.X) + centerPoint.X, (cos * outerRadius.Y) + centerPoint.Y);
 
             Vector4 uvInner = Vector4.UnitW;
             Vector4 uvOuter = Vector4.UnitW;
@@ -2421,8 +2392,8 @@ public sealed class Gorgon2D
                 }
                 else
                 {
-                    DX.RectangleF scaleRegion = region;
-                    scaleRegion.Inflate(thickness * 0.5f, thickness * 0.5f);
+                    GorgonRectangleF scaleRegion = GorgonRectangleF.Expand(region, thickness * 0.5f);
+
                     uvOuter = new Vector4((((outerPoint.X - scaleRegion.Left) / scaleRegion.Width) * textureRegion.Value.Width) + textureRegion.Value.Left,
                                              (((outerPoint.Y - scaleRegion.Top) / scaleRegion.Height) * textureRegion.Value.Height) + textureRegion.Value.Top,
                                              textureArrayIndex, 1);
@@ -2448,7 +2419,7 @@ public sealed class Gorgon2D
 
         textureSampler ??= GorgonSamplerState.Wrapping;
 
-        AlphaTestData alphaTestData = PrimitiveAlphaTestRange is null ? new AlphaTestData(false, GorgonRangeF.Empty) : new AlphaTestData(true, PrimitiveAlphaTestRange.Value);
+        AlphaTestData alphaTestData = PrimitiveAlphaTestRange is null ? new AlphaTestData(false, GorgonRange<float>.Empty) : new AlphaTestData(true, PrimitiveAlphaTestRange.Value);
         CheckPrimitiveStateChange(texture, textureSampler, in alphaTestData);
         _primitiveRenderable.Texture = texture ?? _defaultTexture;
         _primitiveRenderable.TextureSampler = textureSampler;
@@ -2511,7 +2482,6 @@ public sealed class Gorgon2D
         Interlocked.Exchange(ref _initialized, Uninitialized);
     }
 
-    #region Fluent
     /// <summary>
     /// Function to perform an arbitrary update of any required logic while rendering.
     /// </summary>
@@ -2539,7 +2509,7 @@ public sealed class Gorgon2D
     /// <param name="result">The measurement result.</param>
     /// <returns>The fluent interface for the 2D interface.</returns>
     /// <remarks>This is the equivalent of an axis aligned bounding box.</remarks>
-    IGorgon2DFluent IGorgon2DFluent.MeasureSprite(GorgonPolySprite sprite, out DX.RectangleF result)
+    IGorgon2DFluent IGorgon2DFluent.MeasureSprite(GorgonPolySprite sprite, out GorgonRectangleF result)
     {
         result = MeasureSprite(sprite);
         return this;
@@ -2550,7 +2520,7 @@ public sealed class Gorgon2D
     /// <param name="result">The measurement result.</param>
     /// <returns>The fluent interface for the 2D interface.</returns>
     /// <remarks>This is the equivalent of an axis aligned bounding box.</remarks>
-    IGorgon2DFluent IGorgon2DFluent.MeasureSprite(GorgonTextSprite sprite, out DX.RectangleF result)
+    IGorgon2DFluent IGorgon2DFluent.MeasureSprite(GorgonTextSprite sprite, out GorgonRectangleF result)
     {
         result = MeasureSprite(sprite);
         return this;
@@ -2561,7 +2531,7 @@ public sealed class Gorgon2D
     /// <param name="result">The measurement result.</param>
     /// <returns>The fluent interface for the 2D interface.</returns>
     /// <remarks>This is the equivalent of an axis aligned bounding box.</remarks>
-    IGorgon2DFluent IGorgon2DFluent.MeasureSprite(GorgonSprite sprite, out DX.RectangleF result)
+    IGorgon2DFluent IGorgon2DFluent.MeasureSprite(GorgonSprite sprite, out GorgonRectangleF result)
     {
         result = MeasureSprite(sprite);
         return this;
@@ -2572,7 +2542,7 @@ public sealed class Gorgon2D
     /// <param name="result">The measurement result.</param>
     /// <returns>The fluent interface for drawing.</returns>
     /// <remarks>This is the equivalent of an axis aligned bounding box.</remarks>
-    IGorgon2DDrawingFluent IGorgon2DDrawingFluent.MeasureSprite(GorgonPolySprite sprite, out DX.RectangleF result)
+    IGorgon2DDrawingFluent IGorgon2DDrawingFluent.MeasureSprite(GorgonPolySprite sprite, out GorgonRectangleF result)
     {
         result = MeasureSprite(sprite);
         return this;
@@ -2583,7 +2553,7 @@ public sealed class Gorgon2D
     /// <param name="result">The measurement result.</param>
     /// <returns>The fluent interface for drawing.</returns>
     /// <remarks>This is the equivalent of an axis aligned bounding box.</remarks>
-    IGorgon2DDrawingFluent IGorgon2DDrawingFluent.MeasureSprite(GorgonTextSprite sprite, out DX.RectangleF result)
+    IGorgon2DDrawingFluent IGorgon2DDrawingFluent.MeasureSprite(GorgonTextSprite sprite, out GorgonRectangleF result)
     {
         result = MeasureSprite(sprite);
         return this;
@@ -2594,7 +2564,7 @@ public sealed class Gorgon2D
     /// <param name="result">The measurement result.</param>
     /// <returns>The fluent interface for drawing.</returns>
     /// <remarks>This is the equivalent of an axis aligned bounding box.</remarks>
-    IGorgon2DDrawingFluent IGorgon2DDrawingFluent.MeasureSprite(GorgonSprite sprite, out DX.RectangleF result)
+    IGorgon2DDrawingFluent IGorgon2DDrawingFluent.MeasureSprite(GorgonSprite sprite, out GorgonRectangleF result)
     {
         result = MeasureSprite(sprite);
         return this;
@@ -2688,10 +2658,7 @@ public sealed class Gorgon2D
 
         return this;
     }
-    #endregion
-    #endregion
 
-    #region Constructor/Finalizer.
     /// <summary>
     /// Initializes a new instance of the <see cref="Gorgon2D"/> class.
     /// </summary>
@@ -2721,5 +2688,4 @@ public sealed class Gorgon2D
 
         _defaultCamera = defaultCamera;
     }
-    #endregion
 }

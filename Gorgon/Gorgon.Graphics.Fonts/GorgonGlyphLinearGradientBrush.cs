@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,35 +11,30 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Saturday, October 12, 2013 10:08:08 PM
 // 
-#endregion
 
-using System.Collections.Generic;
-using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Linq;
 using Gorgon.IO;
 using Gorgon.Math;
-using DX = SharpDX;
 
 namespace Gorgon.Graphics.Fonts;
 
 /// <summary>
-/// A brush used to draw glyphs using a linear gradient value.
+/// A brush used to draw glyphs using a linear gradient value
 /// </summary>
 /// <remarks>
 /// <para>
-/// This allows glyphs to be drawn using multiple colors that fade into one another.
+/// This allows glyphs to be drawn using multiple colors that fade into one another
 /// </para>
 /// </remarks>
 /// <seealso cref="GorgonGlyphSolidBrush"/>
@@ -49,11 +44,10 @@ namespace Gorgon.Graphics.Fonts;
 public class GorgonGlyphLinearGradientBrush
     : GorgonGlyphBrush
 {
-    #region Properties.
     /// <summary>
     /// Property to set or return the region for the gradient.
     /// </summary>
-    internal DX.Rectangle GradientRegion
+    internal GorgonRectangle GradientRegion
     {
         get;
         set;
@@ -74,14 +68,14 @@ public class GorgonGlyphLinearGradientBrush
             // ReSharper disable once InvertIf
             if (Interpolation.Count == 0)
             {
-                return GorgonColor.BlackTransparent;
+                return GorgonColors.BlackTransparent;
             }
 
             return Interpolation[0].Color;
         }
         set
         {
-            var newValue = new GorgonGlyphBrushInterpolator(0, value);
+            GorgonGlyphBrushInterpolator newValue = new(0, value);
 
             if (Interpolation.Count == 0)
             {
@@ -103,19 +97,19 @@ public class GorgonGlyphLinearGradientBrush
         {
             if (Interpolation.Count == 0)
             {
-                return GorgonColor.BlackTransparent;
+                return GorgonColors.BlackTransparent;
             }
 
             return Interpolation[^1].Color;
         }
         set
         {
-            var newValue = new GorgonGlyphBrushInterpolator(1, value);
+            GorgonGlyphBrushInterpolator newValue = new(1, value);
 
             switch (Interpolation.Count)
             {
                 case 0:
-                    Interpolation.Add(new GorgonGlyphBrushInterpolator(0, GorgonColor.Black));
+                    Interpolation.Add(new GorgonGlyphBrushInterpolator(0, GorgonColors.Black));
                     Interpolation.Add(newValue);
                     break;
                 case 1:
@@ -162,32 +156,30 @@ public class GorgonGlyphLinearGradientBrush
     {
         get;
     }
-    #endregion
 
-    #region Methods.
     /// <summary>Function to write out the specifics of the font brush data to a file writer.</summary>
     /// <param name="writer">The writer used to write the brush data.</param>
-    internal override void WriteBrushData(GorgonBinaryWriter writer)
+    internal override void WriteBrushData(IGorgonChunkWriter writer)
     {
-        writer.Write(Angle);
-        writer.Write(ScaleAngle);
-        writer.Write(GammaCorrection);
-        writer.Write(Interpolation.Count);
+        writer.WriteSingle(Angle);
+        writer.WriteBool(ScaleAngle);
+        writer.WriteBool(GammaCorrection);
+        writer.WriteInt32(Interpolation.Count);
         for (int i = 0; i < Interpolation.Count; ++i)
         {
             GorgonGlyphBrushInterpolator interp = Interpolation[i];
-            writer.Write(interp.Weight);
-            writer.Write(interp.Color.ToARGB());
+            writer.WriteSingle(interp.Weight);
+            writer.WriteInt32(GorgonColor.ToARGB(interp.Color));
         }
     }
 
     /// <summary>Function to read back the specifics of the font brush data from a file reader.</summary>
     /// <param name="reader">The reader used to read the brush data.</param>
-    internal override void ReadBrushData(GorgonBinaryReader reader)
+    internal override void ReadBrushData(IGorgonChunkReader reader)
     {
         Angle = reader.ReadSingle();
-        ScaleAngle = reader.ReadBoolean();
-        GammaCorrection = reader.ReadBoolean();
+        ScaleAngle = reader.ReadBool();
+        GammaCorrection = reader.ReadBool();
 
         int interpCount = reader.ReadInt32();
         if (interpCount == 0)
@@ -199,7 +191,7 @@ public class GorgonGlyphLinearGradientBrush
 
         for (int i = 0; i < interpCount; ++i)
         {
-            Interpolation.Add(new GorgonGlyphBrushInterpolator(reader.ReadSingle(), new GorgonColor(reader.ReadInt32())));
+            Interpolation.Add(new GorgonGlyphBrushInterpolator(reader.ReadSingle(), GorgonColor.FromARGB(reader.ReadInt32())));
         }
     }
 
@@ -211,7 +203,7 @@ public class GorgonGlyphLinearGradientBrush
     /// </returns>
     internal override Brush ToGDIBrush()
     {
-        var result = new LinearGradientBrush(new Rectangle(GradientRegion.X, GradientRegion.Y, GradientRegion.Width, GradientRegion.Height),
+        LinearGradientBrush result = new(new Rectangle(GradientRegion.X, GradientRegion.Y, GradientRegion.Width, GradientRegion.Height),
                                              StartColor,
                                              EndColor,
                                              Angle,
@@ -220,7 +212,7 @@ public class GorgonGlyphLinearGradientBrush
             GammaCorrection = GammaCorrection
         };
 
-        var interpolationColors = new ColorBlend(Interpolation.Count);
+        ColorBlend interpolationColors = new(Interpolation.Count);
 
         for (int i = 0; i < Interpolation.Count; i++)
         {
@@ -237,7 +229,7 @@ public class GorgonGlyphLinearGradientBrush
     /// <returns>The cloned object.</returns>
     public override GorgonGlyphBrush Clone()
     {
-        var brush = new GorgonGlyphLinearGradientBrush
+        GorgonGlyphLinearGradientBrush brush = new()
         {
             Angle = Angle,
             ScaleAngle = ScaleAngle,
@@ -268,7 +260,7 @@ public class GorgonGlyphLinearGradientBrush
     /// </returns>
     public override bool Equals(GorgonGlyphBrush other)
     {
-        var brush = other as GorgonGlyphLinearGradientBrush;
+        GorgonGlyphLinearGradientBrush brush = other as GorgonGlyphLinearGradientBrush;
 
         return ((brush == this) || ((brush is not null)
             && (brush.Angle.EqualsEpsilon(Angle))
@@ -276,16 +268,14 @@ public class GorgonGlyphLinearGradientBrush
             && (brush.GammaCorrection == GammaCorrection)
             && (brush.Interpolation.SequenceEqual(Interpolation))));
     }
-    #endregion
 
-    #region Constructor
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonGlyphPathGradientBrush"/> class.
     /// </summary>
-    public GorgonGlyphLinearGradientBrush() => Interpolation = new List<GorgonGlyphBrushInterpolator>
-                        {
-                            new GorgonGlyphBrushInterpolator(0, GorgonColor.Black),
-                            new GorgonGlyphBrushInterpolator(1, GorgonColor.White)
-                        };
-    #endregion
+    public GorgonGlyphLinearGradientBrush() => Interpolation =
+                        [
+                            new(0, GorgonColors.Black),
+                            new(1, GorgonColors.White)
+                        ];
+
 }

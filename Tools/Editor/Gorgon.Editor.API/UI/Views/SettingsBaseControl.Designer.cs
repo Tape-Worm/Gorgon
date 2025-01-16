@@ -20,7 +20,7 @@ partial class SettingsBaseControl
         base.Dispose(disposing);
     }
 
-    #region Component Designer generated code
+
 
     /// <summary> 
     /// Required method for Designer support - do not modify 
@@ -80,7 +80,7 @@ partial class SettingsBaseControl
 
     }
 
-    #endregion
+
 
     private System.Windows.Forms.Panel PanelCaption;
     private System.Windows.Forms.Label LabelCaption;        

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,21 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 10, 2018 7:34:05 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
 using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
@@ -33,12 +30,11 @@ using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts;
 using Gorgon.Renderers.Cameras;
-using DX = SharpDX;
 
 namespace Gorgon.Renderers;
 
 /// <summary>
-/// A fluent interface for the <see cref="Gorgon2D"/> object.
+/// A fluent interface for the <see cref="Gorgon2D"/> object
 /// </summary>
 public interface IGorgon2DFluent
     : IDisposable
@@ -161,7 +157,7 @@ public interface IGorgon2DFluent
     /// <param name="result">The measurement result.</param>
     /// <returns>The fluent interface for the 2D interface.</returns>
     /// <remarks>This is the equivalent of an axis aligned bounding box.</remarks>        
-    IGorgon2DFluent MeasureSprite(GorgonPolySprite sprite, out DX.RectangleF result);
+    IGorgon2DFluent MeasureSprite(GorgonPolySprite sprite, out GorgonRectangleF result);
 
     /// <summary>
     /// Property to return the bounds of the sprite, with transformation applied.
@@ -170,7 +166,7 @@ public interface IGorgon2DFluent
     /// <param name="result">The measurement result.</param>
     /// <returns>The fluent interface for the 2D interface.</returns>
     /// <remarks>This is the equivalent of an axis aligned bounding box.</remarks>        
-    IGorgon2DFluent MeasureSprite(GorgonTextSprite sprite, out DX.RectangleF result);
+    IGorgon2DFluent MeasureSprite(GorgonTextSprite sprite, out GorgonRectangleF result);
 
     /// <summary>
     /// Property to return the bounds of the sprite, with transformation applied.
@@ -179,11 +175,11 @@ public interface IGorgon2DFluent
     /// <param name="result">The measurement result.</param>
     /// <returns>The fluent interface for the 2D interface.</returns>
     /// <remarks>This is the equivalent of an axis aligned bounding box.</remarks>        
-    IGorgon2DFluent MeasureSprite(GorgonSprite sprite, out DX.RectangleF result);
+    IGorgon2DFluent MeasureSprite(GorgonSprite sprite, out GorgonRectangleF result);
 }
 
 /// <summary>
-/// A fluent interface for drawing commands on a <see cref="Gorgon2D"/> object.
+/// A fluent interface for drawing commands on a <see cref="Gorgon2D"/> object
 /// </summary>
 public interface IGorgon2DDrawingFluent
 {
@@ -299,7 +295,7 @@ public interface IGorgon2DDrawingFluent
     /// If the <paramref name="font"/> parameter is not specified, then the <see cref="Gorgon2D.DefaultFont"/> is used to render the text.
     /// </para>
     /// <para>
-    /// If the <paramref name="color"/> parameter is not specified, then the <see cref="GorgonColor.White"/> color is used.
+    /// If the <paramref name="color"/> parameter is not specified, then the <see cref="GorgonColors.White"/> color is used.
     /// </para>
     /// </remarks>
     IGorgon2DDrawingFluent DrawString(string text, Vector2 position, GorgonFont font = null, GorgonColor? color = null);
@@ -334,10 +330,10 @@ public interface IGorgon2DDrawingFluent
     /// <param name="textureSampler">[Optional] The texture sampler to apply to the texture.</param>
     /// <param name="depth">[Optional] The depth value for the rectangle.</param>
     /// <returns>The fluent interface for drawing.</returns>
-    IGorgon2DDrawingFluent DrawFilledRectangle(DX.RectangleF region,
+    IGorgon2DDrawingFluent DrawFilledRectangle(GorgonRectangleF region,
                                                GorgonColor color,
                                                GorgonTexture2DView texture = null,
-                                               DX.RectangleF? textureRegion = null,
+                                               GorgonRectangleF? textureRegion = null,
                                                int textureArrayIndex = 0,
                                                GorgonSamplerState textureSampler = null,
                                                float depth = 0);
@@ -354,11 +350,11 @@ public interface IGorgon2DDrawingFluent
     /// <param name="textureSampler">[Optional] The texture sampler to apply to the texture.</param>
     /// <param name="depth">[Optional] The depth value for the rectangle.</param>
     /// <returns>The fluent interface for drawing.</returns>
-    IGorgon2DDrawingFluent DrawTriangle(in GorgonTriangleVertex point1,
-                                        in GorgonTriangleVertex point2,
-                                        in GorgonTriangleVertex point3,
+    IGorgon2DDrawingFluent DrawTriangle(ref readonly GorgonTriangleVertex point1,
+                                        ref readonly GorgonTriangleVertex point2,
+                                        ref readonly GorgonTriangleVertex point3,
                                         GorgonTexture2DView texture = null,
-                                        DX.RectangleF? textureRegion = null,
+                                        GorgonRectangleF? textureRegion = null,
                                         int textureArrayIndex = 0,
                                         GorgonSamplerState textureSampler = null,
                                         float depth = 0);
@@ -375,11 +371,11 @@ public interface IGorgon2DDrawingFluent
     /// <param name="textureSampler">[Optional] The texture sampler to apply to the texture.</param>
     /// <param name="depth">[Optional] The depth value for the rectangle.</param>
     /// <returns>The fluent interface for drawing.</returns>        
-    IGorgon2DDrawingFluent DrawRectangle(DX.RectangleF region,
+    IGorgon2DDrawingFluent DrawRectangle(GorgonRectangleF region,
                                          GorgonColor color,
                                          float thickness = 1.0f,
                                          GorgonTexture2DView texture = null,
-                                         DX.RectangleF? textureRegion = null,
+                                         GorgonRectangleF? textureRegion = null,
                                          int textureArrayIndex = 0,
                                          GorgonSamplerState textureSampler = null,
                                          float depth = 0);
@@ -407,7 +403,7 @@ public interface IGorgon2DDrawingFluent
                                     GorgonColor color,
                                     float thickness = 1.0f,
                                     GorgonTexture2DView texture = null,
-                                    DX.RectangleF? textureRegion = null,
+                                    GorgonRectangleF? textureRegion = null,
                                     int textureArrayIndex = 0,
                                     GorgonSamplerState textureSampler = null,
                                     float startDepth = 0,
@@ -425,11 +421,11 @@ public interface IGorgon2DDrawingFluent
     /// <param name="textureSampler">[Optional] The texture sampler to apply to the texture.</param>
     /// <param name="depth">[Optional] The depth value for the ellipse.</param>
     /// <returns>The fluent interface for drawing.</returns>
-    IGorgon2DDrawingFluent DrawFilledEllipse(DX.RectangleF region,
+    IGorgon2DDrawingFluent DrawFilledEllipse(GorgonRectangleF region,
                                              GorgonColor color,
                                              float smoothness = 1.0f,
                                              GorgonTexture2DView texture = null,
-                                             DX.RectangleF? textureRegion = null,
+                                             GorgonRectangleF? textureRegion = null,
                                              int textureArrayIndex = 0,
                                              GorgonSamplerState textureSampler = null,
                                              float depth = 0);
@@ -449,14 +445,14 @@ public interface IGorgon2DDrawingFluent
     /// <param name="textureSampler">[Optional] The texture sampler to apply to the texture.</param>
     /// <param name="depth">[Optional] The depth value for the ellipse.</param>
     /// <returns>The fluent interface for drawing.</returns>        
-    IGorgon2DDrawingFluent DrawArc(DX.RectangleF region,
+    IGorgon2DDrawingFluent DrawArc(GorgonRectangleF region,
                                    GorgonColor color,
                                    float startAngle,
                                    float endAngle,
                                    float smoothness = 1.0f,
                                    float thickness = 1.0f,
                                    GorgonTexture2DView texture = null,
-                                   DX.RectangleF? textureRegion = null,
+                                   GorgonRectangleF? textureRegion = null,
                                    int textureArrayIndex = 0,
                                    GorgonSamplerState textureSampler = null,
                                    float depth = 0);
@@ -475,13 +471,13 @@ public interface IGorgon2DDrawingFluent
     /// <param name="textureSampler">[Optional] The texture sampler to apply to the texture.</param>
     /// <param name="depth">[Optional] The depth value for the ellipse.</param>
     /// <returns>The fluent interface for drawing.</returns>
-    IGorgon2DDrawingFluent DrawFilledArc(DX.RectangleF region,
+    IGorgon2DDrawingFluent DrawFilledArc(GorgonRectangleF region,
                                          GorgonColor color,
                                          float startAngle,
                                          float endAngle,
                                          float smoothness = 1.0f,
                                          GorgonTexture2DView texture = null,
-                                         DX.RectangleF? textureRegion = null,
+                                         GorgonRectangleF? textureRegion = null,
                                          int textureArrayIndex = 0,
                                          GorgonSamplerState textureSampler = null,
                                          float depth = 0);
@@ -499,12 +495,12 @@ public interface IGorgon2DDrawingFluent
     /// <param name="textureSampler">[Optional] The texture sampler to apply to the texture.</param>
     /// <param name="depth">[Optional] The depth value for the ellipse.</param>
     /// <returns>The fluent interface for drawing.</returns>        
-    IGorgon2DDrawingFluent DrawEllipse(DX.RectangleF region,
+    IGorgon2DDrawingFluent DrawEllipse(GorgonRectangleF region,
                                        GorgonColor color,
                                        float smoothness = 1.0f,
                                        float thickness = 1.0f,
                                        GorgonTexture2DView texture = null,
-                                       DX.RectangleF? textureRegion = null,
+                                       GorgonRectangleF? textureRegion = null,
                                        int textureArrayIndex = 0,
                                        GorgonSamplerState textureSampler = null,
                                        float depth = 0);
@@ -516,7 +512,7 @@ public interface IGorgon2DDrawingFluent
     /// <param name="result">The measurement result.</param>
     /// <returns>The fluent interface for drawing.</returns>        
     /// <remarks>This is the equivalent of an axis aligned bounding box.</remarks>        
-    IGorgon2DDrawingFluent MeasureSprite(GorgonPolySprite sprite, out DX.RectangleF result);
+    IGorgon2DDrawingFluent MeasureSprite(GorgonPolySprite sprite, out GorgonRectangleF result);
 
     /// <summary>
     /// Property to return the bounds of the sprite, with transformation applied.
@@ -525,7 +521,7 @@ public interface IGorgon2DDrawingFluent
     /// <param name="result">The measurement result.</param>
     /// <returns>The fluent interface for drawing.</returns>        
     /// <remarks>This is the equivalent of an axis aligned bounding box.</remarks>        
-    IGorgon2DDrawingFluent MeasureSprite(GorgonTextSprite sprite, out DX.RectangleF result);
+    IGorgon2DDrawingFluent MeasureSprite(GorgonTextSprite sprite, out GorgonRectangleF result);
 
     /// <summary>
     /// Property to return the bounds of the sprite, with transformation applied.
@@ -534,7 +530,7 @@ public interface IGorgon2DDrawingFluent
     /// <param name="result">The measurement result.</param>
     /// <returns>The fluent interface for drawing.</returns>        
     /// <remarks>This is the equivalent of an axis aligned bounding box.</remarks>        
-    IGorgon2DDrawingFluent MeasureSprite(GorgonSprite sprite, out DX.RectangleF result);
+    IGorgon2DDrawingFluent MeasureSprite(GorgonSprite sprite, out GorgonRectangleF result);
 
     /// <summary>
     /// Function to end rendering.

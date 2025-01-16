@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,33 +11,28 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: October 29, 2018 4:15:09 PM
 // 
-#endregion
 
-using System;
-using System.IO;
-using System.Threading.Tasks;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.UI.Views;
-using Gorgon.IO;
-using SharpDX.IO;
+using Gorgon.IO.FileSystem;
 
 namespace Gorgon.Editor.UI;
 
 /// <summary>
-/// Common functionality for a content view model.
+/// Common functionality for a content view model
 /// </summary>
 /// <typeparam name="T">The type of dependency injection object. Must be a class, and implement <see cref="IContentViewModelInjection"/>.</typeparam>
 /// <remarks>
@@ -46,16 +41,16 @@ namespace Gorgon.Editor.UI;
 /// persist the content data and close the content UI. 
 /// </para>
 /// <para>
-/// Content is what the editor defines as the items that users will create/edit with the editor, this could be images, sprites, music, sound, scripts, etc... Developers of content plug ins must inherit 
-/// from this type so that their content model data is updated from the UI, and returns feedback to the UI.
+/// Content is what the editor defines as the items that users will create/edit with the editor, this could be images, sprites, music, sound, scripts, etc... Developers of content plug-ins must inherit 
+/// from this type so that their content model data is updated from the UI, and returns feedback to the UI
 /// </para>
 /// <para>
 /// As an example, if you wanted to create a very simple text editor, you would define a view with a multi-line textbox control on it, and then create a TextEditorContent view model based on this type 
-/// and add a command to recieve updates from the UI (e.g. when text is entered), and a property to return the current text stored in the data.
+/// and add a command to recieve updates from the UI (e.g. when text is entered), and a property to return the current text stored in the data
 /// </para>
 /// <para>
 /// Views that are associated with view models derived from this type must inherit from the <see cref="ContentBaseControl"/>. And developers must register their content views using the 
-/// <see cref="ViewFactory"/>.<see cref="ViewFactory.Register{T}(Func{System.Windows.Forms.Control})"/> method so that the host editor application can present the UI to the end user. 
+/// <see cref="ViewFactory"/>.<see cref="ViewFactory.Register{T}(Func{Control})"/> method so that the host editor application can present the UI to the end user. 
 /// </para>
 /// </remarks>
 /// <seealso cref="ViewFactory"/>
@@ -64,7 +59,7 @@ public abstract class ContentEditorViewModelBase<T>
     : ViewModelBase<T, IHostContentServices>, IEditorContent
     where T : class, IContentViewModelInjection
 {
-    #region Variables.
+
     // The command used to close the content.
     private IEditorAsyncCommand<CloseContentArgs> _closeCommand;
 
@@ -85,9 +80,7 @@ public abstract class ContentEditorViewModelBase<T>
 
     // The number of files selected in the project file explorer.
     private bool _filesSelected;
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to return the file manager used to manage content files.
     /// </summary>
@@ -299,9 +292,7 @@ public abstract class ContentEditorViewModelBase<T>
             OnPropertyChanged();
         }
     }
-    #endregion
 
-    #region Methods.
     /// <summary>Handles the Renamed event of the File control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="ContentFileRenamedEventArgs"/> instance containing the event data.</param>
@@ -352,14 +343,15 @@ public abstract class ContentEditorViewModelBase<T>
     /// Function to save the content from a working file to the actual file on the file system.
     /// </summary>
     /// <param name="workFile">The working file for the content.</param>
+    /// <param name="workFileSystem"></param>
     /// <returns>A task for asynchronous operation.</returns>
     /// <remarks>
     /// <para>
-    /// The <paramref name="workFile"/> is a copy of the original file in the project file system. This working file is managed by a scratch file system passed to the content plug in. By handling 
+    /// The <paramref name="workFile"/> is a copy of the original file in the project file system. This working file is managed by a scratch file system passed to the content plug-in. By handling 
     /// files in this manner, we can ensure that the original file can remain intact should something go wrong, or an undesirable change is included in the content by reverting to the original file.
     /// </para>
     /// </remarks>
-    protected async Task SaveContentFileAsync(IGorgonVirtualFile workFile)
+    protected async Task SaveContentFileAsync(IGorgonVirtualFile workFile, IGorgonFileSystem workFileSystem)
     {
         if (File is null)
         {
@@ -371,7 +363,7 @@ public abstract class ContentEditorViewModelBase<T>
 
         try
         {
-            inStream = workFile.OpenStream();
+            inStream = workFileSystem.OpenStream(workFile.FullPath, false);
             File.IsOpen = false;
             outStream = ContentFileManager.OpenStream(File.Path, FileMode.Create);
             File.IsOpen = true;
@@ -393,7 +385,7 @@ public abstract class ContentEditorViewModelBase<T>
     /// <returns><b>true</b> to continue with closing, <b>false</b> to cancel the close request.</returns>
     /// <remarks>
     /// <para>
-    /// Content plug in developers should override this method so that users are given a chance to save their content data (if it has changed) prior to closing the content. 
+    /// Content plug-in developers should override this method so that users are given a chance to save their content data (if it has changed) prior to closing the content. 
     /// </para>
     /// <para>
     /// This is set up as an asynchronous method so that users may save their data asynchronously to keep the UI usable.
@@ -428,7 +420,7 @@ public abstract class ContentEditorViewModelBase<T>
 
         ContentFileManager = injectionParameters.ContentFileManager;
         _filesSelected = ContentFileManager.GetSelectedFiles().Count > 0;
-        _file = injectionParameters.File;            
+        _file = injectionParameters.File;
 
         if (_file is null)
         {
@@ -443,7 +435,7 @@ public abstract class ContentEditorViewModelBase<T>
         _file.Renamed += File_Renamed;
         ContentFileManager.SelectedFilesChanged += ContentFileManager_SelectedFilesChanged;
 
-    }        
+    }
 
     /// <summary>Function called when the associated view is unloaded.</summary>
     /// <remarks>This method is used to perform tear down and clean up of resources.</remarks>
@@ -458,10 +450,8 @@ public abstract class ContentEditorViewModelBase<T>
         _file.IsOpen = false;
         _file.IsChanged = false;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
     /// <summary>Initializes a new instance of the EditorContentCommon class.</summary>
     protected ContentEditorViewModelBase() => CloseContentCommand = new EditorAsyncCommand<CloseContentArgs>(DoCloseContentAsync);
-    #endregion
+
 }

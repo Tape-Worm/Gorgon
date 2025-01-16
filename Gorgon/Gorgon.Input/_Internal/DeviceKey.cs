@@ -1,4 +1,4 @@
-﻿#region MIT
+﻿
 // 
 // Gorgon
 // Copyright (C) 2015 Michael Winsor
@@ -11,26 +11,22 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Thursday, September 10, 2015 10:51:19 PM
 // 
-#endregion
-
-using System;
-using Gorgon.Core;
 
 namespace Gorgon.Input;
 
 /// <summary>
-/// A key used to identify a device in a dictionary.
+/// A key used to identify a device in a dictionary
 /// </summary>
 internal struct DeviceKey
     : IEquatable<DeviceKey>
@@ -50,7 +46,7 @@ internal struct DeviceKey
     /// <param name="left">Left instance to compare.</param>
     /// <param name="right">Right instance to compare.</param>
     /// <returns>true if equal, false if not.</returns>
-    public static bool Equals(ref DeviceKey left, ref DeviceKey right) => left.DeviceType == right.DeviceType && left.DeviceHandle == right.DeviceHandle;
+    public static bool Equals(DeviceKey left, DeviceKey right) => left.DeviceType == right.DeviceType && left.DeviceHandle == right.DeviceHandle;
 
     /// <summary>
     /// Indicates whether this instance and a specified object are equal.
@@ -77,5 +73,5 @@ internal struct DeviceKey
     /// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
     /// </returns>
     /// <param name="other">An object to compare with this object.</param>
-    public bool Equals(DeviceKey other) => Equals(ref this, ref other);
+    public readonly bool Equals(DeviceKey other) => Equals(this, other);
 }

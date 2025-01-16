@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,54 +11,52 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 16, 2019 11:31:06 AM
 // 
-#endregion
 
-using System;
 using System.ComponentModel;
 using System.Numerics;
-using System.Windows.Forms;
 using Gorgon.Editor.Rendering;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor;
 
 /// <summary>
-/// The renderer used when updating a sprites colors.
+/// The renderer used when updating a sprites colors
 /// </summary>
-internal class ColorEditViewer
-    : SingleSpriteViewer
+/// <remarks>Initializes a new instance of the <see cref="ColorEditViewer"/> class.</remarks>
+/// <param name="renderer">The 2D renderer for the application.</param>
+/// <param name="swapChain">The swap chain for the render area.</param>
+/// <param name="dataContext">The sprite view model.</param>
+internal class ColorEditViewer(Gorgon2D renderer, GorgonSwapChain swapChain, ISpriteContent dataContext)
+        : SingleSpriteViewer(typeof(SpriteColorEdit).FullName, renderer, swapChain, dataContext)
 {
-    #region Variables.
+
     // The handles for corner selection.
-    private readonly DX.RectangleF[] _handles = new DX.RectangleF[5];
+    private readonly GorgonRectangleF[] _handles = new GorgonRectangleF[5];
     // The handles that are selected.
     private readonly bool[] _selected = new bool[4];
     // The currently active handle.
     private int _activeHandleIndex = -1;
     // Working color set.
     private readonly GorgonColor[] _colors = new GorgonColor[4];
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to set the selected colors.
     /// </summary>
     private void SetSelectedColors()
-    {            
+    {
         for (int i = 0; i < _selected.Length; ++i)
         {
             if (_selected[i])
@@ -80,7 +78,7 @@ internal class ColorEditViewer
 
         for (int i = 0; i < _handles.Length; ++i)
         {
-            DX.RectangleF handle = _handles[i];
+            GorgonRectangleF handle = _handles[i];
 
             if (handle.IsEmpty)
             {
@@ -188,7 +186,7 @@ internal class ColorEditViewer
     {
         base.OnMouseUp(args);
 
-        GetActiveHandle(args.ClientPosition.ToVector2());
+        GetActiveHandle(args.ClientPosition);
 
         for (int i = 0; i < _selected.Length; ++i)
         {
@@ -220,7 +218,7 @@ internal class ColorEditViewer
         {
             return;
         }
-                    
+
         for (int i = 0; i < _selected.Length; ++i)
         {
             if (_selected[i])
@@ -238,7 +236,7 @@ internal class ColorEditViewer
     protected override void OnMouseMove(MouseArgs args)
     {
         base.OnMouseMove(args);
-        GetActiveHandle(args.ClientPosition.ToVector2());
+        GetActiveHandle(args.ClientPosition);
     }
 
     /// <summary>Handles the PropertyChanged event of the ColorEditor control.</summary>
@@ -264,12 +262,12 @@ internal class ColorEditViewer
             return;
         }
 
-        var spriteTopLeft = new Vector3(SpriteRegion.Left, SpriteRegion.Top, 0);
-        var spriteBottomRight = new Vector3(SpriteRegion.Right, SpriteRegion.Bottom, 0);
-        Camera.Unproject(in spriteTopLeft, out Vector3 transformedTopLeft);
-        Camera.Unproject(in spriteBottomRight, out Vector3 transformedBottomRight);
+        Vector3 spriteTopLeft = new(SpriteRegion.Left, SpriteRegion.Top, 0);
+        Vector3 spriteBottomRight = new(SpriteRegion.Right, SpriteRegion.Bottom, 0);
+        Camera.Unproject(spriteTopLeft, out Vector3 transformedTopLeft);
+        Camera.Unproject(spriteBottomRight, out Vector3 transformedBottomRight);
 
-        var screenRect = new DX.RectangleF
+        GorgonRectangleF screenRect = new()
         {
             Left = transformedTopLeft.X,
             Top = transformedTopLeft.Y,
@@ -277,18 +275,18 @@ internal class ColorEditViewer
             Bottom = transformedBottomRight.Y
         };
 
-        _handles[0] = new DX.RectangleF(screenRect.Left - 8, screenRect.Top - 8, 8, 8);
-        _handles[1] = new DX.RectangleF(screenRect.Right, screenRect.Top - 8, 8, 8);
-        _handles[2] = new DX.RectangleF(screenRect.Right, screenRect.Bottom, 8, 8);
-        _handles[3] = new DX.RectangleF(screenRect.Left - 8, screenRect.Bottom, 8, 8);
+        _handles[0] = new GorgonRectangleF(screenRect.Left - 8, screenRect.Top - 8, 8, 8);
+        _handles[1] = new GorgonRectangleF(screenRect.Right, screenRect.Top - 8, 8, 8);
+        _handles[2] = new GorgonRectangleF(screenRect.Right, screenRect.Bottom, 8, 8);
+        _handles[3] = new GorgonRectangleF(screenRect.Left - 8, screenRect.Bottom, 8, 8);
 
         if ((screenRect.Width >= 48) && (screenRect.Height >= 48))
         {
-            _handles[4] = new DX.RectangleF((screenRect.Left - 16) + screenRect.Width * 0.5f, (screenRect.Top - 16) + screenRect.Height * 0.5f, 32, 32);
+            _handles[4] = new GorgonRectangleF((screenRect.Left - 16) + screenRect.Width * 0.5f, (screenRect.Top - 16) + screenRect.Height * 0.5f, 32, 32);
         }
         else
         {
-            _handles[4] = DX.RectangleF.Empty;
+            _handles[4] = GorgonRectangleF.Empty;
         }
     }
 
@@ -319,13 +317,13 @@ internal class ColorEditViewer
     /// <summary>Function called to render the sprite data.</summary>
     protected override void DrawSprite()
     {
-        base.DrawSprite();                       
+        base.DrawSprite();
 
         Renderer.Begin();
 
         for (int i = 0; i < _handles.Length; ++i)
         {
-            DX.RectangleF handleBounds = _handles[i];
+            GorgonRectangleF handleBounds = _handles[i];
 
             if (handleBounds.IsEmpty)
             {
@@ -335,19 +333,19 @@ internal class ColorEditViewer
             // Hilight our active handle.
             if (_activeHandleIndex == i)
             {
-                Renderer.DrawFilledRectangle(handleBounds, new GorgonColor(GorgonColor.RedPure, 0.7f));
+                Renderer.DrawFilledRectangle(handleBounds, new GorgonColor(GorgonColors.Red, 0.7f));
             }
 
-            Renderer.DrawRectangle(handleBounds, GorgonColor.Black);
-            var inner = new DX.RectangleF(handleBounds.Left + 1, handleBounds.Top + 1, handleBounds.Width - 2, handleBounds.Height - 2);
-            Renderer.DrawRectangle(inner, GorgonColor.White);
+            Renderer.DrawRectangle(handleBounds, GorgonColors.Black);
+            GorgonRectangleF inner = new(handleBounds.Left + 1, handleBounds.Top + 1, handleBounds.Width - 2, handleBounds.Height - 2);
+            Renderer.DrawRectangle(inner, GorgonColors.White);
 
             if ((i < 4) && (_selected[i]))
             {
-                inner = new DX.RectangleF(handleBounds.Left - 4, handleBounds.Top - 4, handleBounds.Width + 8, handleBounds.Height + 8);
-                Renderer.DrawEllipse(inner, GorgonColor.Black);
-                inner.Inflate(-1, -1);
-                Renderer.DrawEllipse(inner, GorgonColor.White);
+                inner = new GorgonRectangleF(handleBounds.Left - 4, handleBounds.Top - 4, handleBounds.Width + 8, handleBounds.Height + 8);
+                Renderer.DrawEllipse(inner, GorgonColors.Black);
+                inner = GorgonRectangleF.Expand(inner, -1);
+                Renderer.DrawEllipse(inner, GorgonColors.White);
             }
         }
 
@@ -389,16 +387,4 @@ internal class ColorEditViewer
 
         DataContext.ColorEditor.PropertyChanged += ColorEditor_PropertyChanged;
     }
-    #endregion
-
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="ColorEditViewer"/> class.</summary>
-    /// <param name="renderer">The 2D renderer for the application.</param>
-    /// <param name="swapChain">The swap chain for the render area.</param>
-    /// <param name="dataContext">The sprite view model.</param>
-    public ColorEditViewer(Gorgon2D renderer, GorgonSwapChain swapChain, ISpriteContent dataContext)
-        : base(typeof(SpriteColorEdit).FullName, renderer, swapChain, dataContext)
-    {
-    }
-    #endregion
 }

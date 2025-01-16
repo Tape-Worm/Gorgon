@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2014 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,50 +11,50 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Tuesday, March 11, 2014 9:18:52 PM
 // 
-#endregion
 
-using System;
 using System.Drawing.Drawing2D;
-using Gorgon.Core;
 using Gorgon.Graphics.Fonts;
 
 namespace Gorgon.Editor.FontEditor;
 
 /// <summary>
-/// A wrap mode combo box item.
+/// A wrap mode combo box item
 /// </summary>
-internal struct WrapModeComboItem
-    : IEquatable<WrapModeComboItem>
+/// <remarks>
+/// Initializes a new instance of the <see cref="WrapModeComboItem"/> class
+/// </remarks>
+/// <param name="wrapMode">The wrap mode.</param>
+/// <param name="text">The text.</param>
+internal readonly struct WrapModeComboItem(GlyphBrushWrapMode wrapMode, string text)
+        : IEquatable<WrapModeComboItem>
 {
-    #region Variables.
+
     // Item text.
-    private readonly string _text;			
+    private readonly string _text = text;
 
     /// <summary>
     /// The wrapping mode.
     /// </summary>
-    public readonly GlyphBrushWrapMode WrapMode;
-    #endregion
+    public readonly GlyphBrushWrapMode WrapMode = wrapMode;
 
-    #region Methods.
     /// <summary>
     /// Operator to determine if two instances are equal.
     /// </summary>
     /// <param name="left">Left instance to compare.</param>
     /// <param name="right">Right instance to compare.</param>
     /// <returns>TRUE if equal, FALSE if not.</returns>
-    public static bool operator ==(WrapModeComboItem left, WrapModeComboItem right) => Equals(ref left, ref right);
+    public static bool operator ==(WrapModeComboItem left, WrapModeComboItem right) => Equals(left, right);
 
     /// <summary>
     /// Operator to determine if two instances are not equal.
@@ -62,7 +62,7 @@ internal struct WrapModeComboItem
     /// <param name="left">Left instance to compare.</param>
     /// <param name="right">Right instance to compare.</param>
     /// <returns>TRUE if not equal, FALSE if equal.</returns>
-    public static bool operator !=(WrapModeComboItem left, WrapModeComboItem right) => !Equals(ref left, ref right);
+    public static bool operator !=(WrapModeComboItem left, WrapModeComboItem right) => !Equals(left, right);
 
     /// <summary>
     /// Function to determine if two instances are equal.
@@ -70,7 +70,7 @@ internal struct WrapModeComboItem
     /// <param name="left">Left instance to compare.</param>
     /// <param name="right">Right instance to compare.</param>
     /// <returns>TRUE if equal, FALSE if not.</returns>
-    public static bool Equals(ref WrapModeComboItem left, ref WrapModeComboItem right) => left.WrapMode == right.WrapMode;
+    public static bool Equals(WrapModeComboItem left, WrapModeComboItem right) => left.WrapMode == right.WrapMode;
 
     /// <summary>
     /// Function to perform an explicit conversion between a Drawing wrap mode and this wrap mode item.
@@ -110,19 +110,6 @@ internal struct WrapModeComboItem
     /// A <see cref="string" /> that represents this instance.
     /// </returns>
     public override readonly string ToString() => _text;
-    #endregion
-
-    #region Constructor/Destructor.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="WrapModeComboItem"/> class.
-    /// </summary>
-    /// <param name="wrapMode">The wrap mode.</param>
-    /// <param name="text">The text.</param>
-    public WrapModeComboItem(GlyphBrushWrapMode wrapMode, string text)
-    {
-        WrapMode = wrapMode;
-        _text = text;
-    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="WrapModeComboItem"/> struct.
@@ -132,9 +119,7 @@ internal struct WrapModeComboItem
         : this(wrapMode, string.Empty)
     {
     }
-    #endregion
 
-    #region IEquatable<WrapModeComboItem> Members
     /// <summary>
     /// Indicates whether the current object is equal to another object of the same type.
     /// </summary>
@@ -142,6 +127,6 @@ internal struct WrapModeComboItem
     /// <returns>
     /// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
     /// </returns>
-    public bool Equals(WrapModeComboItem other) => Equals(ref this, ref other);
-    #endregion
+    public bool Equals(WrapModeComboItem other) => Equals(this, other);
+
 }

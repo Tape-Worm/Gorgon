@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2021 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,27 +11,25 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: February 7, 2021 12:31:53 AM
 // 
-#endregion
 
-using System;
+using Gorgon.Graphics;
 using Microsoft.Extensions.Configuration;
-using DX = SharpDX;
 
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Configuration information for the example application.
+/// Configuration information for the example application
 /// </summary>
 public class ExampleConfig
 {
@@ -86,7 +84,7 @@ public class ExampleConfig
     }
 
     /// <summary>
-    /// Property to set or return the path to the location for example plug ins.
+    /// Property to set or return the path to the location for example plug-ins.
     /// </summary>
     public string PlugInLocation
     {
@@ -97,11 +95,11 @@ public class ExampleConfig
     /// <summary>
     /// Property to set or return the desired window resolution.
     /// </summary>
-    public DX.Size2 Resolution
+    public GorgonPoint Resolution
     {
         get;
         set;
-    } = new DX.Size2(1280, 800);
+    } = new GorgonPoint(1280, 800);
 
     /// <summary>
     /// Property to set or return whether the example runs in windowed mode, or full screen mode.

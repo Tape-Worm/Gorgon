@@ -37,7 +37,7 @@ partial class CharacterPicker
         base.Dispose(disposing);
     }
 
-    #region Component Designer generated code
+
 
     /// <summary> 
     /// Required method for Designer support - do not modify 
@@ -1266,7 +1266,7 @@ partial class CharacterPicker
 
     }
 
-    #endregion
+
     private System.Windows.Forms.Button ButtonSelectAll;
     private System.Windows.Forms.ListView ListCharacterRanges;
     private System.Windows.Forms.ColumnHeader columnRange;

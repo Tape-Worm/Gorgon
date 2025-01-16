@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,21 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: September 4, 2018 11:11:06 AM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.PlugIns;
@@ -34,14 +31,13 @@ using Gorgon.Editor.UI;
 namespace Gorgon.Editor.ViewModels;
 
 /// <summary>
-/// The view model for interacting with the project data.
+/// The view model for interacting with the project data
 /// </summary>
 internal interface IProjectEditor
     : IViewModel
 {
-    #region Properties.
     /// <summary>
-    /// Property to return the available tool plug in button definitions for the application.
+    /// Property to return the available tool plug-in button definitions for the application.
     /// </summary>
     IReadOnlyDictionary<string, IReadOnlyList<IToolPlugInRibbonButton>> ToolButtons
     {
@@ -57,7 +53,7 @@ internal interface IProjectEditor
     }
 
     /// <summary>
-    /// Property to return the content file manager for managing content file systems through content plug ins.
+    /// Property to return the content file manager for managing content file systems through content plug-ins.
     /// </summary>
     IContentFileManager ContentFileManager
     {
@@ -152,5 +148,4 @@ internal interface IProjectEditor
     {
         get;
     }
-    #endregion
 }

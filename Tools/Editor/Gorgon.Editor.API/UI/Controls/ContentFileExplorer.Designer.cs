@@ -32,7 +32,7 @@ partial class ContentFileExplorer
         base.Dispose(disposing);
     }
 
-    #region Component Designer generated code
+
 
     /// <summary> 
     /// Required method for Designer support - do not modify 
@@ -247,7 +247,7 @@ partial class ContentFileExplorer
 
     }
 
-    #endregion
+
 
     private System.Windows.Forms.DataGridView GridFiles;
     private System.Windows.Forms.DataGridViewCheckBoxColumn ColumnSelected;

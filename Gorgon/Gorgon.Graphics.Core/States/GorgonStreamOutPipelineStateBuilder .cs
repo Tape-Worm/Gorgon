@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,47 +11,44 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 24, 2018 7:24:06 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Memory;
+using Gorgon.Patterns;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// A builder used to create pipeline render state objects.
+/// A builder used to create pipeline render state objects
 /// </summary>
 /// <remarks>
 /// <para>
-/// Use this builder to create an immutable <see cref="GorgonStreamOutPipelineState"/>. This object will provide a fluent interface to build up the pipeline state.
+/// Use this builder to create an immutable <see cref="GorgonStreamOutPipelineState"/>. This object will provide a fluent interface to build up the pipeline state
 /// </para>
 /// <para>
 /// A pipeline state object is used to define the state of the pipeline prior to drawing anything. It can be used to assign shaders, and various other states that will affect how data is rasterized on 
-/// the GPU.
+/// the GPU
 /// </para>
 /// <para>
-/// This pipeline state is similar to a <see cref="GorgonPipelineState"/>, except that it only contains the necessary states that it can use when rendering a stream out buffer.
+/// This pipeline state is similar to a <see cref="GorgonPipelineState"/>, except that it only contains the necessary states that it can use when rendering a stream out buffer
 /// </para>
 /// <para>
-/// The pipeline state object is immutable, and as such cannot be changed directly. To create a new pipeline state object, this object must be used.
+/// The pipeline state object is immutable, and as such cannot be changed directly. To create a new pipeline state object, this object must be used
 /// </para>
 /// <para>
-/// Pipeline states are assigned to a <see cref="GorgonStreamOutCall"/>.
+/// Pipeline states are assigned to a <see cref="GorgonStreamOutCall"/>
 /// </para>
 /// </remarks>
 /// <seealso cref="GorgonPipelineStateBuilder"/>
@@ -59,17 +56,15 @@ namespace Gorgon.Graphics.Core;
 /// <seealso cref="GorgonStreamOutCall"/>
 /// <seealso cref="GorgonStreamOutPipelineState"/>
 public class GorgonStreamOutPipelineStateBuilder
-    : IGorgonGraphicsObject, IGorgonFluentBuilderAllocator<GorgonStreamOutPipelineStateBuilder, GorgonStreamOutPipelineState, IGorgonAllocator<GorgonStreamOutPipelineState>>
+    : IGorgonGraphicsObject, IGorgonFluentBuilder<GorgonStreamOutPipelineStateBuilder, GorgonStreamOutPipelineState, IGorgonAllocator<GorgonStreamOutPipelineState>>
 {
-    #region Variables.
+
     // The working state.
     private readonly GorgonStreamOutPipelineState _workState = new(new GorgonPipelineState
     {
         PrimitiveType = Core.PrimitiveType.TriangleList
     });
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to return the graphics interface used to build the pipeline state.
     /// </summary>
@@ -77,9 +72,7 @@ public class GorgonStreamOutPipelineStateBuilder
     {
         get;
     }
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to set primitive topology for the draw call.
     /// </summary>
@@ -263,7 +256,7 @@ public class GorgonStreamOutPipelineStateBuilder
     /// <summary>
     /// Function to build a pipeline state.
     /// </summary>
-    /// <param name="allocator">The allocator used to create an instance of the object</param>
+    /// <param name="allocator">[Optionak] The allocator used to create an instance of the object.</param>
     /// <returns>The object created or updated by this builder.</returns>
     /// <remarks>
     ///   <para>
@@ -274,7 +267,7 @@ public class GorgonStreamOutPipelineStateBuilder
     /// around for as long as we need them, instead of creating objects that can potentially end up in the large object heap or in Gen 2.
     /// </para>
     /// </remarks>
-    public GorgonStreamOutPipelineState Build(IGorgonAllocator<GorgonStreamOutPipelineState> allocator)
+    public GorgonStreamOutPipelineState Build(IGorgonAllocator<GorgonStreamOutPipelineState>? allocator = null)
     {
         if (allocator is null)
         {
@@ -283,18 +276,10 @@ public class GorgonStreamOutPipelineStateBuilder
 
         // Caches the state info.
         void CacheState(GorgonStreamOutPipelineState state) => Graphics.PipelineStateCache.Cache(state.PipelineState);
-        
+
         return allocator.Allocate(CacheState);
     }
 
-    /// <summary>
-    /// Function to build a pipeline state.
-    /// </summary>
-    /// <returns>A new pipeline state.</returns>
-    public GorgonStreamOutPipelineState Build() => Build(null);
-    #endregion
-
-    #region Constructor.
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonStreamOutPipelineStateBuilder"/> class.
     /// </summary>
@@ -308,5 +293,4 @@ public class GorgonStreamOutPipelineStateBuilder
         _workState.PipelineState.DepthStencilState = GorgonDepthStencilState.Default;
         _workState.PipelineState.PrimitiveType = Core.PrimitiveType.TriangleList;
     }
-    #endregion
 }

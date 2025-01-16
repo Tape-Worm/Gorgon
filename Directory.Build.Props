@@ -1,0 +1,6 @@
+<Project>
+  <!-- SharpDX, which will be dropped, has vulnerabilities because of its dependence on netstandard1.6. We can't do anything about that, so ignore transitive issues for now. -->
+  <PropertyGroup>
+    <NuGetAuditMode>Direct</NuGetAuditMode>
+  </PropertyGroup>
+</Project>

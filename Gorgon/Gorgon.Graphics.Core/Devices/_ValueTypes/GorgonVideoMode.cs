@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,30 +11,27 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: November 7, 2017 12:57:57 PM
 // 
-#endregion
 
-using System;
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Math;
 using SharpDX.DXGI;
-using DX = SharpDX;
 
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Defines how the display mode should be scaled when the mode is not native to the display.
+/// Defines how the display mode should be scaled when the mode is not native to the display
 /// </summary>
 public enum ModeScaling
 {
@@ -53,7 +50,7 @@ public enum ModeScaling
 }
 
 /// <summary>
-/// Defines the ordering of the scanlines on the display for a video mode.
+/// Defines the ordering of the scanlines on the display for a video mode
 /// </summary>
 public enum ModeScanlineOrder
 {
@@ -76,12 +73,11 @@ public enum ModeScanlineOrder
 }
 
 /// <summary>
-/// Information about a full screen video mode provided by a <see cref="IGorgonVideoOutputInfo"/>.
+/// Information about a full screen video mode provided by a <see cref="IGorgonVideoOutputInfo"/>
 /// </summary>
 public readonly struct GorgonVideoMode
     : IGorgonEquatableByRef<GorgonVideoMode>, IComparable<GorgonVideoMode>
 {
-    #region Variables.
     /// <summary>
     /// A representation of an invalid video mode.
     /// </summary>
@@ -115,23 +111,19 @@ public readonly struct GorgonVideoMode
     /// The type of scanline ordering performed when drawing the image on the display for this mode.
     /// </summary>
     public readonly ModeScanlineOrder ScanlineOrder;
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to return the size for the video mode.
     /// </summary>
-    public DX.Size2 Size => new(Width, Height);
-    #endregion
+    public GorgonPoint Size => new(Width, Height);
 
-    #region Methods.
     /// <summary>
     /// Function to determine if two instances are equal or not.
     /// </summary>
     /// <param name="left">The left value to compare.</param>
     /// <param name="right">The right value to compare.</param>
     /// <returns><b>true</b> if the modes are equal, <b>false</b> if not.</returns>
-    public static bool Equals(in GorgonVideoMode left, in GorgonVideoMode right) => left.Width == right.Width
+    public static bool Equals(ref readonly GorgonVideoMode left, ref readonly GorgonVideoMode right) => left.Width == right.Width
                && left.Height == right.Height
                && left.Format == right.Format
                && left.RefreshRate.Equals(right.RefreshRate)
@@ -159,7 +151,7 @@ public readonly struct GorgonVideoMode
     /// </summary>
     /// <param name="other">The other instance to use for comparison.</param>
     /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-    public bool Equals(in GorgonVideoMode other) => Equals(in this, in other);
+    public bool Equals(ref readonly GorgonVideoMode other) => Equals(in this, in other);
 
     /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
     /// <param name="other">An object to compare with this object.</param>
@@ -171,7 +163,7 @@ public readonly struct GorgonVideoMode
     /// <param name="left">The left instance to compare.</param>
     /// <param name="right">The right instance to compare.</param>
     /// <returns>A value that indicates the relative order of the objects being compared. The return value has these meanings: Value Meaning Less than zero the left instance precedes the right in the sort order.  Zero the left instance occurs in the same position in the sort order as the right. Greater than zero the left instance follows the right in the sort order. </returns>
-    public static int CompareTo(in GorgonVideoMode left, in GorgonVideoMode right) => Equals(in left, in right)
+    public static int CompareTo(ref readonly GorgonVideoMode left, ref readonly GorgonVideoMode right) => Equals(in left, in right)
             ? 0
             : ((left.Width < right.Width)
             || (left.Height < right.Height)
@@ -233,9 +225,7 @@ public readonly struct GorgonVideoMode
     /// <param name="right">The right instance to compare.</param>
     /// <returns><b>true</b> if not equal, <b>false</b> if equal.</returns>
     public static bool operator !=(GorgonVideoMode left, GorgonVideoMode right) => !Equals(in left, in right);
-    #endregion
 
-    #region Constructor/Finalizer.
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonVideoMode" /> struct.
     /// </summary>
@@ -277,5 +267,4 @@ public readonly struct GorgonVideoMode
         ScanlineOrder = scanlineOrder;
         SupportsStereo = steroSupport;
     }
-    #endregion
 }

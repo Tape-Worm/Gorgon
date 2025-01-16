@@ -1,4 +1,4 @@
-﻿#region MIT
+﻿
 // 
 // Gorgon
 // Copyright (C) 2015 Michael Winsor
@@ -11,36 +11,30 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Tuesday, September 08, 2015 12:31:48 AM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Windows.Forms;
+using Gorgon.Graphics;
 using Gorgon.Input;
-using DX = SharpDX;
-
 
 namespace Gorgon.Native;
 
 /// <summary>
-/// Provides a window hook in order to filter raw input messages.
+/// Provides a window hook in order to filter raw input messages
 /// </summary>
 internal class RawInputMessageFilter
     : IDisposable
 {
-    #region Variables.
+
     // Flag to indicate that the message hook has been installed.
     private static int _hookInstalled;
     // The window handle to hook into.
@@ -49,9 +43,7 @@ internal class RawInputMessageFilter
     private readonly Dictionary<DeviceKey, IGorgonRawInputDeviceData<GorgonRawKeyboardData>> _keyboardDevices;
     private readonly Dictionary<DeviceKey, IGorgonRawInputDeviceData<GorgonRawMouseData>> _mouseDevices;
     private readonly Dictionary<DeviceKey, IGorgonRawInputDeviceData<GorgonRawHIDData>> _hidDevices;
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to retrieve a raw input HID.
     /// </summary>
@@ -113,7 +105,7 @@ internal class RawInputMessageFilter
     /// <param name="rawData">Raw input data to translate.</param>
     private static void Dispatch(IGorgonRawInputDeviceData<GorgonRawHIDData> device, ref RAWINPUTHID rawData)
     {
-        var data = new GorgonRawHIDData(new GorgonPtr<byte>(rawData.Data, rawData.Size * rawData.Count), rawData.Size);
+        GorgonRawHIDData data = new(new GorgonPtr<byte>(rawData.Data, rawData.Size * rawData.Count), rawData.Size);
         device.ProcessData(in data);
     }
 
@@ -182,7 +174,7 @@ internal class RawInputMessageFilter
             state = MouseButtonState.Button5Up;
         }
 
-        var data = new GorgonRawMouseData(new DX.Point(rawData.LastX, rawData.LastY),
+        GorgonRawMouseData data = new(new GorgonPoint(rawData.LastX, rawData.LastY),
                                           wheelDelta,
                                           state,
                                           ((rawData.Flags & RawMouseFlags.MoveAbsolute) != RawMouseFlags.MoveAbsolute));
@@ -220,7 +212,7 @@ internal class RawInputMessageFilter
             flags |= rawData.MakeCode == 0x36 ? KeyboardDataFlags.RightKey : KeyboardDataFlags.LeftKey;
         }
 
-        var data = new GorgonRawKeyboardData(rawData.MakeCode, flags, (Keys)rawData.VirtualKey);
+        GorgonRawKeyboardData data = new(rawData.MakeCode, flags, (Keys)rawData.VirtualKey);
 
         device.ProcessData(in data);
     }
@@ -252,7 +244,7 @@ internal class RawInputMessageFilter
 
         RAWINPUT _rawInput = default;
         RawInputApi.GetRawInputData(m.LParam, ref _rawInput);
-        var key = new DeviceKey
+        DeviceKey key = new()
         {
             DeviceType = _rawInput.Header.Type,
             DeviceHandle = IntPtr.Zero
@@ -294,9 +286,7 @@ internal class RawInputMessageFilter
 
         return true;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
     /// <summary>
     /// Initializes a new instance of the <see cref="RawInputMessageFilter"/> class.
     /// </summary>
@@ -327,5 +317,4 @@ internal class RawInputMessageFilter
     {
         Dispose();
     }
-    #endregion
 }

@@ -1,6 +1,5 @@
-﻿#region MIT
-// 
-// Gorgon.
+﻿// 
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,35 +10,31 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 27, 2019 10:49:22 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
+using System.Text.Json.Serialization;
 using Gorgon.Editor.Metadata;
 using Gorgon.Editor.ProjectData;
-using Newtonsoft.Json;
 
 namespace Gorgon.Editor.Support;
 
 /// <summary>
-/// The project data for an editor project.
+/// The project data for an editor project
 /// </summary>        
 internal class EditorProjectMetadata31
     : IProjectMetadata
 {
     /// <summary>Property to return the version for the project file.</summary>                
-    [JsonProperty]
     public string Version
     {
         get;
@@ -47,7 +42,6 @@ internal class EditorProjectMetadata31
     } = CommonEditorConstants.EditorCurrentProjectVersion;
 
     /// <summary>Property to return the list of project items.</summary>        
-    [JsonProperty]
     public Dictionary<string, ProjectItemMetadata> ProjectItems
     {
         get;
@@ -65,7 +59,7 @@ internal class EditorProjectMetadata31
     {
         foreach (KeyValuePair<string, ProjectItemMetadata30> item in oldVersion.ProjectItems)
         {
-            var newItem = new ProjectItemMetadata(item.Value);
+            ProjectItemMetadata newItem = new(item.Value);
             ProjectItems[item.Key] = newItem;
         }
     }

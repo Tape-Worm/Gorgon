@@ -1,6 +1,6 @@
-#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,28 +11,21 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Sunday, January 13, 2013 6:49:00 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
-using System.IO;
-using System.Linq;
 using System.Numerics;
 using System.Reflection;
-using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -43,39 +36,38 @@ using Gorgon.Math;
 using Gorgon.PlugIns;
 using Gorgon.Renderers;
 using Gorgon.UI;
-using DX = SharpDX;
-using FontStyle = Gorgon.Graphics.Fonts.FontStyle;
+
 using GorgonMouseButtons = Gorgon.Input.MouseButtons;
 
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Main application form.
+/// Main application form
 /// </summary>
 /// <remarks>
-/// This is an updated version of the INeedYourInput example from the previous version of Gorgon.
+/// This is an updated version of the INeedYourInput example from the previous version of Gorgon
 /// 
 /// The keys for the example are as follows:
-/// F - Switch between full screen and windowed mode.
-/// Up arrow - Increase pen radius.
-/// Down arrow - Decrease pen radius.
-/// F1, F2, F3 - Switch between modulated, additive and no blending respectively.
-/// C - Clear the buffer.
-/// J - Switch to raw input and joysticks (if available).  Press J to cycle through joysticks and to get back to the win forms keyboard/mouse interface.
-/// ESC - Close the example.
+/// F - Switch between full screen and windowed mode
+/// Up arrow - Increase pen radius
+/// Down arrow - Decrease pen radius
+/// F1, F2, F3 - Switch between modulated, additive and no blending respectively
+/// C - Clear the buffer
+/// J - Switch to raw input and joysticks (if available).  Press J to cycle through joysticks and to get back to the win forms keyboard/mouse interface
+/// ESC - Close the example
 /// 
 /// Mouse controls:
-/// Left mouse button - Draw with blue pen.
-/// Right mouse button - Draw with red pen.
-/// Scroll wheel - Increase/decrease pen size.
+/// Left mouse button - Draw with blue pen
+/// Right mouse button - Draw with red pen
+/// Scroll wheel - Increase/decrease pen size
 /// 
 /// Joystick control:
-/// Primary button - Draw with black pen.
+/// Primary button - Draw with black pen
 /// </remarks>
 public partial class MainForm
     : Form
 {
-    #region Variables.
+
     // The graphics interface.
     private GorgonGraphics _graphics;
     // Primary swap chain.
@@ -126,9 +118,7 @@ public partial class MainForm
     private readonly Gorgon2DBatchStateBuilder _blendBuilder = new();
     // Our assembly cache for our plugins.
     private GorgonMefPlugInCache _assemblyCache;
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Handles the <see cref="E:KeyDown" /> event.
     /// </summary>
@@ -175,7 +165,7 @@ public partial class MainForm
                 break;
             case Keys.C:
                 // Fill the back up image with white
-                _backBuffer.Clear(GorgonColor.White);
+                _backBuffer.Clear(GorgonColors.White);
                 _backBuffer.Texture.CopyTo(_backupImage);
                 break;
             case Keys.J:
@@ -186,9 +176,9 @@ public partial class MainForm
                 {
                     // Clip the mouse cursor to our client area.
                     Rectangle screenRect = Cursor.Clip = RectangleToScreen(ClientRectangle);
-                    _mouse.PositionConstraint = new DX.Rectangle(screenRect.Left, screenRect.Top, screenRect.Width, screenRect.Height);
+                    _mouse.PositionConstraint = new GorgonRectangle(screenRect.Left, screenRect.Top, screenRect.Width, screenRect.Height);
                     // Set the position to the current mouse position.
-                    _mouse.Position = new DX.Point(Cursor.Position.X, Cursor.Position.Y);
+                    _mouse.Position = new GorgonPoint(Cursor.Position.X, Cursor.Position.Y);
 
                     _input.RegisterDevice(_mouse);
                     _useWinFormsInput = false;
@@ -276,7 +266,7 @@ public partial class MainForm
             buttons |= GorgonMouseButtons.Right;
         }
 
-        MouseInput(this, new GorgonMouseEventArgs(buttons, GorgonMouseButtons.None, new DX.Point(e.Location.X, e.Location.Y), e.Delta, DX.Point.Zero, e.Delta, 0, false));
+        MouseInput(this, new GorgonMouseEventArgs(buttons, GorgonMouseButtons.None, new GorgonPoint(e.Location.X, e.Location.Y), e.Delta, GorgonPoint.Zero, e.Delta, 0, false));
     }
 
     /// <summary>
@@ -304,7 +294,7 @@ public partial class MainForm
             buttons |= GorgonMouseButtons.Right;
         }
 
-        MouseInput(this, new GorgonMouseEventArgs(buttons, GorgonMouseButtons.None, new DX.Point(e.Location.X, e.Location.Y), e.Delta, DX.Point.Zero, e.Delta, 0, false));
+        MouseInput(this, new GorgonMouseEventArgs(buttons, GorgonMouseButtons.None, new GorgonPoint(e.Location.X, e.Location.Y), e.Delta, GorgonPoint.Zero, e.Delta, 0, false));
     }
 
     /// <summary>
@@ -320,9 +310,9 @@ public partial class MainForm
         {
             _radius = 2.0f;
         }
-        if (_radius > 10.0f)
+        if (_radius > 50.0f)
         {
-            _radius = 10.0f;
+            _radius = 50.0f;
         }
     }
 
@@ -339,7 +329,7 @@ public partial class MainForm
         }
 
         Color drawColor = Color.Black;      // Drawing color.
-        var mousePos = new Point(e.Position.X, e.Position.Y);
+        Point mousePos = new(e.Position.X, e.Position.Y);
         Point position = _useWinFormsInput ? mousePos : PointToClient(mousePos);
 
         if (e.Buttons == GorgonMouseButtons.None)
@@ -361,7 +351,7 @@ public partial class MainForm
         }
 
         // Draw the pen.
-        var penPosition = new DX.RectangleF(position.X - (_radius / 2.0f), position.Y - (_radius / 2.0f), _radius, _radius);
+        GorgonRectangleF penPosition = new(position.X - (_radius / 2.0f), position.Y - (_radius / 2.0f), _radius, _radius);
         if (_radius > 3.0f)
         {
             _2D.DrawFilledEllipse(penPosition, drawColor);
@@ -388,7 +378,7 @@ public partial class MainForm
                                                                       Name = "Backbuffer"
                                                                   });
         _backBuffer.Clear(Color.White);
-        _backupImage.CopyTo(_backBuffer.Texture, new DX.Rectangle(0, 0, _backBuffer.Width, _backBuffer.Height));
+        _backupImage.CopyTo(_backBuffer.Texture, new GorgonRectangle(0, 0, _backBuffer.Width, _backBuffer.Height));
 
         _backBufferView = _backBuffer.GetShaderResourceView();
     }
@@ -402,7 +392,7 @@ public partial class MainForm
     {
         // Copy the render target texture to a temporary buffer and resize the main buffer.
         // The copy the temporary buffer back to the main buffer.
-        _backBuffer.Texture.CopyTo(_backupImage, new DX.Rectangle(0, 0, e.NewSize.Width, e.NewSize.Height));
+        _backBuffer.Texture.CopyTo(_backupImage, new GorgonRectangle(0, 0, e.NewSize.X, e.NewSize.Y));
         _backBufferView.Dispose();
         _backBuffer.Dispose();
     }
@@ -415,7 +405,7 @@ public partial class MainForm
     {
         // Cursor position.
         Point mousePosition = PointToClient(!_useWinFormsInput ? new Point(_mouse.Position.X, _mouse.Position.Y) : Cursor.Position);
-        var cursorPosition = new Vector2(mousePosition.X, mousePosition.Y);
+        Vector2 cursorPosition = new(mousePosition.X, mousePosition.Y);
 
         if (!_useWinFormsInput)
         {
@@ -424,7 +414,7 @@ public partial class MainForm
 
         // Dump to the screen.
         _2D.Begin(_noBlending);
-        _2D.DrawFilledRectangle(new DX.RectangleF(0, 0, _backBuffer.Width, _backBuffer.Height), GorgonColor.White, _backBufferView, new DX.RectangleF(0, 0, 1, 1));
+        _2D.DrawFilledRectangle(new GorgonRectangleF(0, 0, _backBuffer.Width, _backBuffer.Height), GorgonColors.White, _backBufferView, new GorgonRectangleF(0, 0, 1, 1));
         _2D.End();
 
         if (_joystick is not null)
@@ -432,9 +422,9 @@ public partial class MainForm
             // Poll the joystick.
             _joystick.Poll();
 
-            GorgonRange xAxisRange = _joystick.Info.AxisInfo[GamingDeviceAxis.XAxis].Range;
-            GorgonRange yAxisRange = _joystick.Info.AxisInfo[GamingDeviceAxis.YAxis].Range;
-            GorgonRange throttleRange = GorgonRange.Empty;
+            GorgonRange<int> xAxisRange = _joystick.Info.AxisInfo[GamingDeviceAxis.XAxis].Range;
+            GorgonRange<int> yAxisRange = _joystick.Info.AxisInfo[GamingDeviceAxis.YAxis].Range;
+            GorgonRange<int> throttleRange = GorgonRange<int>.Empty;
 
             if (_joystick.Info.AxisInfo.TryGetValue(GamingDeviceAxis.Throttle, out GorgonGamingDeviceAxisInfo info))
             {
@@ -444,32 +434,32 @@ public partial class MainForm
             // Adjust position to match screen coordinates.
             cursorPosition = new Vector2(_joystick.Axis[GamingDeviceAxis.XAxis].Value - xAxisRange.Minimum,
                                          _joystick.Axis[GamingDeviceAxis.YAxis].Value - yAxisRange.Minimum);
+
             cursorPosition.X = cursorPosition.X / (xAxisRange.Range + 1) * _screen.Width;
-            cursorPosition.Y = _screen.Height - (cursorPosition.Y / (yAxisRange.Range + 1) * _screen.Height);
+            cursorPosition.Y = cursorPosition.Y / (yAxisRange.Range + 1) * _screen.Height;
 
             if (throttleRange.Range != 0)
             {
-                _radius = ((1.0f - (_joystick.Axis[GamingDeviceAxis.Throttle].Value / (float)throttleRange.Range)) * 8) + 2;
+                _radius = ((1.0f - (_joystick.Axis[GamingDeviceAxis.Throttle].Value / (float)throttleRange.Range)) * 48) + 2;
             }
         }
-
 
         // Draw cursor.
         _2D.Begin(_inverted);
         if (_radius > 3.0f)
         {
-            _2D.DrawFilledEllipse(new DX.RectangleF(cursorPosition.X - (_radius / 2.0f), cursorPosition.Y - (_radius / 2.0f), _radius, _radius), Color.White);
+            _2D.DrawFilledEllipse(new GorgonRectangleF(cursorPosition.X - (_radius / 2.0f), cursorPosition.Y - (_radius / 2.0f), _radius, _radius), Color.White);
         }
         else
         {
-            _2D.DrawFilledRectangle(new DX.RectangleF(cursorPosition.X - (_radius / 2.0f), cursorPosition.Y - (_radius / 2.0f), _radius, _radius), Color.White);
+            _2D.DrawFilledRectangle(new GorgonRectangleF(cursorPosition.X - (_radius / 2.0f), cursorPosition.Y - (_radius / 2.0f), _radius, _radius), Color.White);
         }
         _2D.End();
 
         // If we have a joystick button down, then draw a black dot.
         if ((_joystick is not null) && (_joystick.Button[0] == GamingDeviceButtonState.Down))
         {
-            var penPosition = new DX.RectangleF(cursorPosition.X - (_radius / 2.0f), cursorPosition.Y - (_radius / 2.0f), _radius, _radius);
+            GorgonRectangleF penPosition = new(cursorPosition.X - (_radius / 2.0f), cursorPosition.Y - (_radius / 2.0f), _radius, _radius);
             _graphics.SetRenderTarget(_backBuffer);
             _2D.Begin();
 
@@ -517,11 +507,11 @@ public partial class MainForm
     {
         base.OnResizeEnd(e);
 
-        var currentImageSize = new Size(_backBuffer.Width, _backBuffer.Height);
+        Size currentImageSize = new(_backBuffer.Width, _backBuffer.Height);
 
         // Copy the render target texture to a temporary buffer and resize the main buffer.
         // The copy the temporary buffer back to the main buffer.
-        _backBuffer.Texture.CopyTo(_backupImage, new DX.Rectangle(0, 0, currentImageSize.Width, currentImageSize.Height));
+        _backBuffer.Texture.CopyTo(_backupImage, new GorgonRectangle(0, 0, currentImageSize.Width, currentImageSize.Height));
         _backBufferView.Dispose();
         _backBuffer.Dispose();
         _backBuffer = GorgonRenderTarget2DView.CreateRenderTarget(_graphics,
@@ -530,7 +520,7 @@ public partial class MainForm
                                                                       Name = "Backbuffer"
                                                                   });
         _backBuffer.Clear(Color.White);
-        _backupImage.CopyTo(_backBuffer.Texture, new DX.Rectangle(0, 0, _backBuffer.Width, _backBuffer.Height));
+        _backupImage.CopyTo(_backBuffer.Texture, new GorgonRectangle(0, 0, _backBuffer.Width, _backBuffer.Height));
 
         _backBufferView = _backBuffer.GetShaderResourceView();
     }
@@ -616,15 +606,15 @@ public partial class MainForm
             IGorgonPlugInService plugInService = new GorgonMefPlugInService(_assemblyCache);
 
             // Create the factory to retrieve gaming device drivers.
-            var factory = new GorgonGamingDeviceDriverFactory(_assemblyCache);
+            GorgonGamingDeviceDriverFactory factory = new(_assemblyCache);
 
             // Create the raw input interface.
             _input = new GorgonRawInput(this, GorgonApplication.Log);
 
-            // Get available gaming device driver plug ins.
+            // Get available gaming device driver plug-ins.
             _drivers = factory.LoadAllDrivers(Path.Combine(GorgonExample.GetPlugInPath().FullName, "Gorgon.Input.*.dll"));
 
-            _joystickList = new List<IGorgonGamingDevice>();
+            _joystickList = [];
 
             // Get all gaming devices from the drivers.
             foreach (IGorgonGamingDeviceDriver driver in _drivers)
@@ -638,7 +628,7 @@ public partial class MainForm
                     // Turn off dead zones for this example.
                     foreach (IGorgonGamingDeviceAxis axis in device.Axis)
                     {
-                        axis.DeadZone = GorgonRange.Empty;
+                        axis.DeadZone = GorgonRange<int>.Empty;
                     }
 
                     _joystickList.Add(device);
@@ -649,12 +639,12 @@ public partial class MainForm
             _mouse = new GorgonRawMouse();
 
             // Create the graphics interface.
-            ClientSize = new Size(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height);
+            ClientSize = new Size(ExampleConfig.Default.Resolution.X, ExampleConfig.Default.Resolution.Y);
 
             IReadOnlyList<IGorgonVideoAdapterInfo> adapters = GorgonGraphics.EnumerateAdapters();
             _graphics = new GorgonGraphics(adapters[0], log: GorgonApplication.Log);
-            _screen = new GorgonSwapChain(_graphics, this, new GorgonSwapChainInfo(ExampleConfig.Default.Resolution.Width,
-                                                                                        ExampleConfig.Default.Resolution.Height,
+            _screen = new GorgonSwapChain(_graphics, this, new GorgonSwapChainInfo(ExampleConfig.Default.Resolution.X,
+                                                                                        ExampleConfig.Default.Resolution.Y,
                                                                                         BufferFormat.R8G8B8A8_UNorm)
             {
                 Name = "INeedYourInput Swapchain"
@@ -667,29 +657,28 @@ public partial class MainForm
             }
 
             // For the backup image. Used to make it as large as the monitor that we're on.
-            var currentScreen = Screen.FromHandle(Handle);
+            Screen currentScreen = Screen.FromHandle(Handle);
 
             // Relocate the window to the center of the screen.				
             Location = new Point(currentScreen.Bounds.Left + (currentScreen.WorkingArea.Width / 2) - (ClientSize.Width / 2),
                                  currentScreen.Bounds.Top + (currentScreen.WorkingArea.Height / 2) - (ClientSize.Height / 2));
-
 
             // Create the 2D renderer.
             _2D = new Gorgon2D(_graphics);
 
             // Create the text font.
             _fontFactory = new GorgonFontFactory(_graphics);
-            _font = _fontFactory.GetFont(new GorgonFontInfo("Arial", 9.0f, FontHeightMode.Points)
+            _font = _fontFactory.GetFont(new GorgonFontInfo("Arial", 9.0f, GorgonFontHeightMode.Points)
             {
                 Name = "Arial 9pt",
-                FontStyle = FontStyle.Bold,
-                AntiAliasingMode = FontAntiAliasMode.AntiAlias
+                FontStyle = GorgonFontStyle.Bold,
+                AntiAliasingMode = GorgonFontAntiAliasMode.AntiAlias
             });
 
             // Create text sprite.
             _messageSprite = new GorgonTextSprite(_font, "Using mouse and keyboard (Windows Forms).")
             {
-                Color = Color.Black
+                Color = GorgonColors.Black
             };
 
             // Create a back buffer.
@@ -697,11 +686,11 @@ public partial class MainForm
             {
                 Name = "Backbuffer storage"
             });
-            _backBuffer.Clear(Color.White);
+            _backBuffer.Clear(GorgonColors.White);
             _backBufferView = _backBuffer.GetShaderResourceView();
 
             // Clear our backup image to white to match our primary screen.
-            using (IGorgonImage image = new GorgonImage(new GorgonImageInfo(ImageType.Image2D, _screen.Format)
+            using (IGorgonImage image = new GorgonImage(new GorgonImageInfo(ImageDataType.Image2D, _screen.Format)
             {
                 Width = _screen.Width,
                 Height = _screen.Height,
@@ -728,7 +717,7 @@ public partial class MainForm
             _mouse.MouseWheelMove += Mouse_MouseWheelMove;
 
             // Set the mouse position.
-            _mouse.Position = new DX.Point(ClientSize.Width / 2, ClientSize.Height / 2);
+            _mouse.Position = new GorgonPoint(ClientSize.Width / 2, ClientSize.Height / 2);
 
             _noBlending = _blendBuilder.BlendState(GorgonBlendState.NoBlending)
                                            .Build();
@@ -736,7 +725,7 @@ public partial class MainForm
                                          .Build();
 
             // Set up blending states for our pen.
-            var blendStateBuilder = new GorgonBlendStateBuilder();
+            GorgonBlendStateBuilder blendStateBuilder = new();
             _currentBlend = _drawModulatedBlend = _blendBuilder.BlendState(blendStateBuilder
                                                                            .ResetTo(GorgonBlendState.Default)
                                                                            .DestinationBlend(alpha: Blend.One)
@@ -768,12 +757,10 @@ public partial class MainForm
             GorgonApplication.Quit();
         }
     }
-    #endregion
 
-    #region Constructor/Destructor.
     /// <summary>
     /// Constructor.
     /// </summary>
     public MainForm() => InitializeComponent();
-    #endregion
+
 }

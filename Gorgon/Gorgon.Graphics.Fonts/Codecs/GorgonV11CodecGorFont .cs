@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,22 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: February 23, 2017 11:39:19 PM
 // 
-#endregion
 
-using System;
-using System.IO;
-using System.Threading.Tasks;
+using System.Text;
 using Gorgon.Core;
 using Gorgon.Graphics.Fonts.Properties;
 using Gorgon.IO;
@@ -34,20 +31,20 @@ using Gorgon.IO;
 namespace Gorgon.Graphics.Fonts.Codecs;
 
 /// <summary>
-/// A font codec used to read/write font data using the standard Gorgon Font format.
+/// A font codec used to read/write font data using the standard Gorgon Font format
 /// </summary>
 /// <remarks>
 /// <para>
 /// This codec will create binary font data using the native font file format for Gorgon. 
 /// </para>
 /// <para>
-/// The version number of 1.1 does not represent the version of Gorgon, but the version of the format.
+/// The version number of 1.1 does not represent the version of Gorgon, but the version of the format
 /// </para>
 /// </remarks>
 public sealed class GorgonCodecGorFont
     : GorgonFontCodec
 {
-    #region Constants.
+
     // BRSHDATA chunk.
     private const string BrushChunk = "BRSHDATA";
     // FONTINFO chunk.
@@ -56,9 +53,7 @@ public sealed class GorgonCodecGorFont
     private const string TextureInfoChunk = "TXTRINFO";
     // Header for a Gorgon font file.
     private const string FileHeader = "GORFNT11";
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to return the default filename extension for font files.
     /// </summary>
@@ -94,9 +89,7 @@ public sealed class GorgonCodecGorFont
     /// Property to return the abbreviated name of the codec (e.g. GorFont).
     /// </summary>
     public override string Codec => "GorFont";
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to read the chunk containing the font information.
     /// </summary>
@@ -105,40 +98,49 @@ public sealed class GorgonCodecGorFont
     /// <returns>A new <seealso cref="GorgonFontInfo"/> containing information about the font.</returns>
     private static GorgonFontInfo GetFontInfo(GorgonChunkFileReader fontFile, string name)
     {
-        GorgonBinaryReader reader = fontFile.OpenChunk(FontInfoChunk);
-        var info = new GorgonFontInfo(reader.ReadString(), reader.ReadSingle(), reader.ReadValue<FontHeightMode>())
-        {
-            Name = name,
-            FontStyle = reader.ReadValue<FontStyle>(),
-            DefaultCharacter = reader.ReadChar(),
-            Characters = reader.ReadString(),
-            AntiAliasingMode = reader.ReadValue<FontAntiAliasMode>(),
-            OutlineColor1 = new GorgonColor(reader.ReadInt32()),
-            OutlineColor2 = new GorgonColor(reader.ReadInt32()),
-            OutlineSize = reader.ReadInt32(),
-            UseKerningPairs = reader.ReadBoolean()
-        };
+        IGorgonChunkReader? reader = null;
 
-        fontFile.CloseChunk();
-
-        if (!fontFile.Chunks.Contains(TextureInfoChunk))
+        try
         {
-            throw new GorgonException(GorgonResult.CannotRead, Resources.GORGFX_ERR_FONT_FILE_FORMAT_INVALID);
+            reader = fontFile.OpenChunk(FontInfoChunk);
+            GorgonFontInfo info = new(reader.ReadString(), reader.ReadSingle(), reader.ReadValue<GorgonFontHeightMode>())
+            {
+                Name = name,
+                FontStyle = reader.ReadValue<GorgonFontStyle>(),
+                DefaultCharacter = reader.ReadChar(),
+                Characters = reader.ReadString(),
+                AntiAliasingMode = reader.ReadValue<GorgonFontAntiAliasMode>(),
+                OutlineColor1 = GorgonColor.FromARGB(reader.ReadInt32()),
+                OutlineColor2 = GorgonColor.FromARGB(reader.ReadInt32()),
+                OutlineSize = reader.ReadInt32(),
+                UseKerningPairs = reader.ReadBool()
+            };
+
+            reader.Close();
+
+            if (!fontFile.Chunks.Contains(TextureInfoChunk))
+            {
+                throw new GorgonException(GorgonResult.CannotRead, Resources.GORGFX_ERR_FONT_FILE_FORMAT_INVALID);
+            }
+
+            reader = fontFile.OpenChunk(TextureInfoChunk);
+
+            info = info with
+            {
+                PackingSpacing = reader.ReadInt32(),
+                TextureWidth = reader.ReadInt32(),
+                TextureHeight = reader.ReadInt32(),
+                UsePremultipliedTextures = reader.ReadBool()
+            };
+
+            reader.Close();
+
+            return info;
         }
-
-        reader = fontFile.OpenChunk(TextureInfoChunk);
-#if NET6_0_OR_GREATER
-        info = info with
+        finally
         {
-            PackingSpacing = reader.ReadInt32(),
-            TextureWidth = reader.ReadInt32(),
-            TextureHeight = reader.ReadInt32(),
-            UsePremultipliedTextures = reader.ReadBoolean()
-        };
-#endif
-        fontFile.CloseChunk();
-
-        return info;
+            reader?.Close();
+        }
     }
 
     /// <summary>
@@ -153,45 +155,50 @@ public sealed class GorgonCodecGorFont
     /// </remarks>
     protected override void OnWriteFontData(GorgonFont fontData, Stream stream)
     {
-        var fontFile = new GorgonChunkFileWriter(stream, FileHeader.ChunkID());
+        GorgonChunkFileWriter fontFile = new(stream, FileHeader.ChunkID());
         IGorgonFontInfo fontInfo = fontData;
+        IGorgonChunkWriter? writer = null;
 
         try
         {
             fontFile.Open();
-            
-            GorgonBinaryWriter writer = fontFile.OpenChunk(FontInfoChunk);
 
-            writer.Write(fontInfo.FontFamilyName);
-            writer.Write(fontInfo.Size);
+            writer = fontFile.OpenChunk(FontInfoChunk);
+
+            writer.WriteString(fontInfo.FontFamilyName);
+            writer.WriteValue(fontInfo.Size);
             writer.WriteValue(fontInfo.FontHeightMode);
             writer.WriteValue(fontInfo.FontStyle);
-            writer.Write(fontInfo.DefaultCharacter);
-            writer.Write(string.Join(string.Empty, fontInfo.Characters));
+            writer.WriteChar(fontInfo.DefaultCharacter);
+            writer.WriteString(string.Join(string.Empty, fontInfo.Characters));
             writer.WriteValue(fontInfo.AntiAliasingMode);
-            writer.Write(fontInfo.OutlineColor1.ToARGB());
-            writer.Write(fontInfo.OutlineColor2.ToARGB());
-            writer.Write(fontInfo.OutlineSize);
-            writer.Write(fontInfo.UseKerningPairs);
-            fontFile.CloseChunk();
+            writer.WriteInt32(GorgonColor.ToARGB(fontInfo.OutlineColor1));
+            writer.WriteInt32(GorgonColor.ToARGB(fontInfo.OutlineColor2));
+            writer.WriteInt32(fontInfo.OutlineSize);
+            writer.WriteBool(fontInfo.UseKerningPairs);
+
+            writer.Close();
 
             writer = fontFile.OpenChunk(TextureInfoChunk);
-            writer.Write(fontInfo.PackingSpacing);
-            writer.Write(fontInfo.TextureWidth);
-            writer.Write(fontInfo.TextureHeight);
-            writer.Write(fontInfo.UsePremultipliedTextures);                
-            fontFile.CloseChunk();
+            writer.WriteInt32(fontInfo.PackingSpacing);
+            writer.WriteInt32(fontInfo.TextureWidth);
+            writer.WriteInt32(fontInfo.TextureHeight);
+            writer.WriteBool(fontInfo.UsePremultipliedTextures);
+
+            writer.Close();
 
             if (fontInfo.Brush is not null)
             {
                 writer = fontFile.OpenChunk(BrushChunk);
-                writer.Write((int)fontInfo.Brush.BrushType);
+                writer.WriteInt32((int)fontInfo.Brush.BrushType);
                 fontInfo.Brush.WriteBrushData(writer);
-                fontFile.CloseChunk();
+
+                writer.Close();
             }
         }
         finally
         {
+            writer?.Close();
             fontFile.Close();
         }
     }
@@ -210,10 +217,9 @@ public sealed class GorgonCodecGorFont
         try
         {
             fontFile = new GorgonChunkFileReader(stream,
-                                                 new[]
-                                                 {
+                                                 [
                                                      FileHeader.ChunkID()
-                                                 });
+                                                 ]);
             fontFile.Open();
 
             return GetFontInfo(fontFile, null);
@@ -232,12 +238,12 @@ public sealed class GorgonCodecGorFont
     /// <seealso cref="GorgonFontFactory" />
     protected override async Task<GorgonFont> OnLoadFromStreamAsync(string name, Stream stream)
     {
-        var fontFile = new GorgonChunkFileReader(stream,
-                                                 new[]
-                                                 {
+        GorgonChunkFileReader fontFile = new(stream,
+                                                 [
                                                      FileHeader.ChunkID()
-                                                 });
+                                                 ]);
         GorgonFontInfo fontInfo = null;
+        IGorgonChunkReader? reader = null;
 
         try
         {
@@ -251,13 +257,12 @@ public sealed class GorgonCodecGorFont
                 return Factory.GetFont(fontInfo);
             }
 
-            GorgonBinaryReader reader = null;
             GorgonGlyphBrush fontBrush = null;
 
             if (fontFile.Chunks.Contains(BrushChunk))
             {
                 reader = fontFile.OpenChunk(BrushChunk);
-                var brushType = (GlyphBrushType)reader.ReadInt32();
+                GlyphBrushType brushType = (GlyphBrushType)reader.ReadInt32();
 
                 fontBrush = brushType switch
                 {
@@ -268,26 +273,25 @@ public sealed class GorgonCodecGorFont
                     _ => new GorgonGlyphSolidBrush(),
                 };
                 fontBrush.ReadBrushData(reader);
-                fontFile.CloseChunk();
+                reader.Close();
             }
             else
             {
                 fontBrush = new GorgonGlyphSolidBrush();
             }
 
-#if NET6_0_OR_GREATER
             fontInfo = fontInfo with
             {
                 Brush = fontBrush
             };
-#endif
 
             return await Factory.GetFontAsync(fontInfo);
         }
         finally
         {
-            var brush = fontInfo?.Brush as IDisposable;
+            IDisposable brush = fontInfo?.Brush as IDisposable;
             brush?.Dispose();
+            reader?.Dispose();
             fontFile.Close();
         }
     }
@@ -300,13 +304,12 @@ public sealed class GorgonCodecGorFont
     /// <returns>A new <seealso cref="GorgonFont"/>, or, an existing font from the <seealso cref="GorgonFontFactory"/> cache.</returns>
     protected override GorgonFont OnLoadFromStream(string name, Stream stream)
     {
-        var fontFile = new GorgonChunkFileReader(stream,
-                                                 new[]
-                                                 {
+        GorgonChunkFileReader fontFile = new(stream,
+                                                 [
                                                      FileHeader.ChunkID()
-                                                 });
+                                                 ]);
         GorgonFontInfo fontInfo = null;
-
+        IGorgonChunkReader? reader = null;
 
         try
         {
@@ -320,13 +323,12 @@ public sealed class GorgonCodecGorFont
                 return Factory.GetFont(fontInfo);
             }
 
-            GorgonBinaryReader reader = null;
             GorgonGlyphBrush fontBrush = null;
 
             if (fontFile.Chunks.Contains(BrushChunk))
             {
                 reader = fontFile.OpenChunk(BrushChunk);
-                var brushType = (GlyphBrushType)reader.ReadInt32();
+                GlyphBrushType brushType = (GlyphBrushType)reader.ReadInt32();
 
                 fontBrush = brushType switch
                 {
@@ -337,26 +339,25 @@ public sealed class GorgonCodecGorFont
                     _ => new GorgonGlyphSolidBrush(),
                 };
                 fontBrush.ReadBrushData(reader);
-                fontFile.CloseChunk();
+                reader.Close();
             }
             else
             {
                 fontBrush = new GorgonGlyphSolidBrush();
             }
 
-#if NET6_0_OR_GREATER
             fontInfo = fontInfo with
             {
                 Brush = fontBrush
             };
-#endif
 
             return Factory.GetFont(fontInfo);
         }
         finally
         {
-            var brush = fontInfo?.Brush as IDisposable;
+            IDisposable brush = fontInfo?.Brush as IDisposable;
             brush?.Dispose();
+            reader?.Close();
             fontFile.Close();
         }
     }
@@ -399,7 +400,7 @@ public sealed class GorgonCodecGorFont
         }
 
         long position = stream.Position;
-        var reader = new GorgonBinaryReader(stream, true);
+        BinaryReader reader = new(stream, Encoding.UTF8, true);
 
         try
         {
@@ -420,18 +421,16 @@ public sealed class GorgonCodecGorFont
             stream.Position = position;
         }
     }
-    #endregion
 
-    #region Constructor.
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonCodecGorFont"/> class.
     /// </summary>
     /// <param name="factory">The font factory that holds cached font information.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="factory"/> parameter is <b>null</b>.</exception>
     public GorgonCodecGorFont(GorgonFontFactory factory)
-        : base(factory) => CodecCommonExtensions = new[]
-                                {
+        : base(factory) => CodecCommonExtensions =
+                                [
                                     ".gorFont"
-                                };
-    #endregion
+                                ];
+
 }

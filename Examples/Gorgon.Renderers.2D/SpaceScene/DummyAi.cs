@@ -3,11 +3,10 @@
 namespace Gorgon.Examples;
 
 /// <summary>
-/// A very dumb AI that does nothing but increase the engine burn after 10 seconds and slow down and stop after 40.
+/// A very dumb AI that does nothing but increase the engine burn after 10 seconds and slow down and stop after 40
 /// </summary>
 internal class DummyAi
 {
-    #region Properties.
     /// <summary>
     /// Property to set or return the ship to control.
     /// </summary>
@@ -19,9 +18,7 @@ internal class DummyAi
         get;
         set;
     }
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to perform an update from the so called "AI".
     /// </summary>
@@ -45,5 +42,4 @@ internal class DummyAi
             Ship.HardStop();
         }
     }
-    #endregion
 }

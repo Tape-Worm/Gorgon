@@ -1,6 +1,5 @@
-﻿#region MIT
-// 
-// Gorgon.
+﻿// 
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,34 +10,29 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 4, 2018 9:54:28 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Gorgon.Core;
-using Gorgon.Diagnostics;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Renderers.Cameras;
 using Gorgon.Renderers.Properties;
-using DX = SharpDX;
 
 namespace Gorgon.Renderers;
 
 /// <summary>
-/// A state that tells the effect how to proceed prior to rendering a pass.
+/// A state that tells the effect how to proceed prior to rendering a pass
 /// </summary>
 public enum PassContinuationState
 {
@@ -57,7 +51,7 @@ public enum PassContinuationState
 }
 
 /// <summary>
-/// A base class used to implement special effects for 2D rendering.
+/// A base class used to implement special effects for 2D rendering
 /// </summary>
 /// <remarks>
 /// <para>
@@ -67,7 +61,7 @@ public enum PassContinuationState
 /// Effects can operate in any way the developer deems appropriate as long as the internal code executes in the correct order. In Gorgon, the predefined effects such as Guassian Blur operate in 
 /// one of 3 modes: Immediate, Render texture, or both. The immediate mode works in the same way as the <see cref="Gorgon2D"/> renderer, by calling a Begin and End method and rendering the various 
 /// graphics types in between the Begin/End calls. The Render Texture mode will take a <see cref="GorgonTexture2DView"/> (often the output of a render target) and render it into a 
-/// <see cref="GorgonRenderTargetView"/>. This mode would usually be used in post processing.
+/// <see cref="GorgonRenderTargetView"/>. This mode would usually be used in post processing
 /// </para>
 /// <para>
 /// Rendering in an effect is usually done in 1 or more passes. With each pass usually building on the result of the previous pass. Developers are free to expose each pass to the end user for 
@@ -75,20 +69,19 @@ public enum PassContinuationState
 /// </para>
 /// <para>
 /// To create a custom effect, applications should inherit this class and override the appropriate methods to set up state, and perform rendering pass(es). Gorgon has multiple predefined effects 
-/// that developers can examine for reference.
+/// that developers can examine for reference
 /// </para>
 /// </remarks>
 /// <seealso cref="Gorgon2D"/>
 /// <seealso cref="GorgonTexture2DView"/>
 /// <seealso cref="GorgonRenderTargetView"/>
 public abstract class Gorgon2DEffect
-    : GorgonNamedObject, IDisposable, IGorgonGraphicsObject
+    : IGorgonNamedObject, IDisposable, IGorgonGraphicsObject
 {
-    #region Variables.
     // Flag to indicate that the effect is initialized.
     private bool _isInitialized;
     // The previous size of the output.
-    private DX.Size2 _prevOutputSize;
+    private GorgonPoint _prevOutputSize;
     // The builders used to manage state for the effect.
     private readonly EffectBuilders _effectBuilders = new();
     // Flag to indicate that the batch state for the effect pass needs updating.
@@ -105,9 +98,7 @@ public abstract class Gorgon2DEffect
     private GorgonDepthStencilState _depthStencilStateOverride;
     // The state used to override the default raster state for the effect.
     private GorgonRasterState _rasterStateOverride;
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to return the allocator to use with batch states.
     /// </summary>
@@ -153,7 +144,13 @@ public abstract class Gorgon2DEffect
     protected List<GorgonShaderMacro> Macros
     {
         get;
-    } = new List<GorgonShaderMacro>();
+    } = [];
+
+    /// <inheritdoc/>
+    public string Name
+    {
+        get;
+    }
 
     /// <summary>
     /// Property to return the renderer used to render the effect.
@@ -186,9 +183,7 @@ public abstract class Gorgon2DEffect
     {
         get;
     }
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to set up state prior to rendering.
     /// </summary>
@@ -390,8 +385,6 @@ public abstract class Gorgon2DEffect
     /// </remarks>
     protected void BeginRender(GorgonRenderTargetView output, GorgonBlendState blendState = null, GorgonDepthStencilState depthStencilState = null, GorgonRasterState rasterState = null)
     {
-        output.ValidateObject(nameof(output));
-
         if (_currentEffect is not null)
         {
             throw new GorgonException(GorgonResult.AlreadyInitialized, string.Format(Resources.GOR2D_ERR_EFFECT_BEGIN_RENDER_CALLED, _currentEffect));
@@ -406,10 +399,10 @@ public abstract class Gorgon2DEffect
         _currentEffect = Name;
         bool outputSizeChanged = false;
 
-        if ((_prevOutputSize.Width != output.Width)
-            || (_prevOutputSize.Height != output.Height))
+        if ((_prevOutputSize.X != output.Width)
+            || (_prevOutputSize.Y != output.Height))
         {
-            _prevOutputSize = new DX.Size2(output.Width, output.Height);
+            _prevOutputSize = new GorgonPoint(output.Width, output.Height);
             outputSizeChanged = true;
         }
 
@@ -426,7 +419,6 @@ public abstract class Gorgon2DEffect
     /// <param name="output">The render target that will receive the rendering.</param>
     /// <param name="camera">[Optional] The camera to use while rendering.</param>
     /// <returns>A <see cref="PassContinuationState"/> value describing how to continue on to the next pass (if applicable).</returns>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="output"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> parameter is less than 0, or not less than <see cref="PassCount"/>.</exception>
     /// <exception cref="GorgonException">Thrown if this method is has been called once before and called again without calling <see cref="EndPass"/>.
     /// <para>-or-</para>
@@ -464,8 +456,10 @@ public abstract class Gorgon2DEffect
     /// <seealso cref="BeginRender"/>
     protected PassContinuationState BeginPass(int index, GorgonRenderTargetView output, GorgonCameraCommon camera = null)
     {
-        output.ValidateObject(nameof(output));
-        index.ValidateRange(nameof(index), 0, PassCount);
+#if DEBUG
+        ArgumentOutOfRangeException.ThrowIfLessThan(index, 0);
+        ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, PassCount);
+#endif
 
         if (_currentEffect is null)
         {
@@ -518,7 +512,10 @@ public abstract class Gorgon2DEffect
     /// <seealso cref="BeginRender"/>
     protected void EndPass(int index, GorgonRenderTargetView output)
     {
-        index.ValidateRange(nameof(index), 0, PassCount);
+#if DEBUG
+        ArgumentOutOfRangeException.ThrowIfLessThan(index, 0);
+        ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, PassCount);
+#endif
 
         if ((!_isRenderingPass) || (_currentEffect is null))
         {
@@ -542,7 +539,7 @@ public abstract class Gorgon2DEffect
                 OnAfterRenderPass(index, output);
             }
 
-            _passResultState = PassContinuationState.Stop;                
+            _passResultState = PassContinuationState.Stop;
         }
         finally
         {
@@ -636,26 +633,31 @@ public abstract class Gorgon2DEffect
         Dispose(true);
         GC.SuppressFinalize(this);
     }
-    #endregion
 
-    #region Constructor/Finalizer.
     /// <summary>
-    /// Initializes a new instance of the <see cref="Gorgon2DEffect"/> class.
+    /// Initializes a new instance of the <see cref="Gorgon2DEffect"/> class
     /// </summary>
     /// <param name="renderer">The 2D renderer used to render the effect.</param>
     /// <param name="effectName">Name of the effect.</param>
     /// <param name="effectDescription">The effect description.</param>
     /// <param name="passCount">The number of passes required to render the effect.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/>, or the <paramref name="effectName"/> parameter is <b>null</b>.</exception>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/> or the <paramref name="effectName"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="effectName"/> parameter is empty.</exception>
     protected Gorgon2DEffect(Gorgon2D renderer, string effectName, string effectDescription, int passCount)
-        : base(effectName)
     {
-        Renderer = renderer ?? throw new ArgumentNullException(nameof(renderer));
+        if (effectName is null)
+        {
+            throw new ArgumentNullException(nameof(effectName));
+        }
 
-        // Ensure no less than 1 pass.
+        if (string.IsNullOrWhiteSpace(effectName))
+        {
+            throw new ArgumentEmptyException(nameof(effectName));
+        }
+
+        Name = effectName;
+        Renderer = renderer ?? throw new ArgumentNullException(nameof(renderer));
         PassCount = passCount.Max(1);
         Description = effectDescription ?? string.Empty;
     }
-    #endregion
 }

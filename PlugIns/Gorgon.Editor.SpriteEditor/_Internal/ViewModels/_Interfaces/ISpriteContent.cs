@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,35 +11,31 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 14, 2019 11:39:34 AM
 // 
-#endregion
 
-using System.Collections.Generic;
 using System.Numerics;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor;
 
 /// <summary>
-/// The view model for sprite content.
+/// The view model for sprite content
 /// </summary>
 internal interface ISpriteContent
     : IVisualEditorContent, IUndoHandler, ISpriteInfo
 {
-    #region Properties.
     /// <summary>
     /// Property to return the editor used to modify the texture wrapping state for a sprite.
     /// </summary>
@@ -65,7 +61,7 @@ internal interface ISpriteContent
     }
 
     /// <summary>
-    /// Property to return the view model for the plug in settings.
+    /// Property to return the view model for the plug-in settings.
     /// </summary>
     ISettings Settings
     {
@@ -107,7 +103,7 @@ internal interface ISpriteContent
     /// <summary>
     /// Property to set or return the texture coordinates used by the sprite.
     /// </summary>
-    DX.RectangleF TextureCoordinates
+    GorgonRectangleF TextureCoordinates
     {
         get;
     }
@@ -115,7 +111,7 @@ internal interface ISpriteContent
     /// <summary>
     /// Property to return the size of the sprite.
     /// </summary>
-    DX.Size2F Size
+    Vector2 Size
     {
         get;
     }
@@ -240,5 +236,4 @@ internal interface ISpriteContent
     {
         get;
     }
-    #endregion
 }

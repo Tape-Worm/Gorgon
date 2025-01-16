@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,30 +11,29 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 9, 2018 12:42:34 AM
 // 
-#endregion
 
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Gorgon.Core;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers.Geometry;
-using DX = SharpDX;
 
 namespace Gorgon.Renderers;
 
 /// <summary>
-/// A base class for a 2D renderable object.
+/// A base class for a 2D renderable object
 /// </summary>
 internal class BatchRenderable
 {
@@ -83,7 +82,7 @@ internal class BatchRenderable
     /// <summary>
     /// Property to set or return the rectangle bounds for this renderable item.
     /// </summary>
-    public DX.RectangleF Bounds;
+    public GorgonRectangleF Bounds;
 
     /// <summary>
     /// Property to set or return the depth value for this sprite.
@@ -104,7 +103,7 @@ internal class BatchRenderable
     /// <remarks>
     /// These values are in texel coordinates.
     /// </remarks>
-    public DX.RectangleF TextureRegion = new(0, 0, 1, 1);
+    public GorgonRectangleF TextureRegion = new(0, 0, 1, 1);
 
     /// <summary>
     /// Property to set or return the scale factor to apply to the sprite.
@@ -145,7 +144,7 @@ internal class BatchRenderable
     /// <summary>
     /// Property to set or return the alpha test data.
     /// </summary>
-    public AlphaTestData AlphaTestData = new(true, GorgonRangeF.Empty);
+    public AlphaTestData AlphaTestData = new(true, GorgonRange<float>.Empty);
 
     /// <summary>
     /// Property to set or return the vertices for this renderable.
@@ -191,7 +190,7 @@ internal class BatchRenderable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool AreStatesSame(BatchRenderable left, BatchRenderable right)
     {
-#pragma warning disable IDE0046 // Convert to conditional expression
+
         if ((left == right) && (left.StateChanged))
         {
             return false;
@@ -200,7 +199,7 @@ internal class BatchRenderable
         return (left.PrimitiveType == right.PrimitiveType)
                && (left.Texture == right.Texture)
                && (left.TextureSampler == right.TextureSampler)
-               && (AlphaTestData.Equals(in left.AlphaTestData, in right.AlphaTestData));
-#pragma warning restore IDE0046 // Convert to conditional expression
+               && (AlphaTestData.Equals(left.AlphaTestData, right.AlphaTestData));
+
     }
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2021 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,45 +11,36 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 28, 2021 9:09:37 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using Drawing = System.Drawing;
-using System.Linq;
-using System.Windows.Forms;
-using Gorgon.Editor.FontEditor.Properties;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Fonts;
 using Gorgon.IO;
 using Gorgon.UI;
-using Gorgon.Graphics;
-using System.Xml.XPath;
+using Drawing = System.Drawing;
 
 namespace Gorgon.Editor.FontEditor;
 
 /// <summary>
-/// Font creation form.
+/// Font creation form
 /// </summary>
 internal partial class FormNewFont
     : Form, IGorgonFontInfo
 {
-    #region Variables.
-    // Font used for preview.
-    private Drawing.Font _font;
-    #endregion
 
-    #region Properties.                
+    // Font used for preview.
+    private Font _font;
+
     /// <summary>
     /// Property to return the font name.
     /// </summary>
@@ -71,10 +62,10 @@ internal partial class FormNewFont
     /// <summary>
     /// Property to return whether to use points or pixels for the font size.
     /// </summary>
-    public FontHeightMode FontHeightMode
+    public GorgonFontHeightMode FontHeightMode
     {
-        get => RadioPoints.Checked ? FontHeightMode.Points : FontHeightMode.Pixels;
-        set => RadioPoints.Checked = value != FontHeightMode.Pixels;
+        get => RadioPoints.Checked ? GorgonFontHeightMode.Points : GorgonFontHeightMode.Pixels;
+        set => RadioPoints.Checked = value != GorgonFontHeightMode.Pixels;
     }
 
     /// <summary>
@@ -94,24 +85,24 @@ internal partial class FormNewFont
     /// <summary>
     /// Property to return the font style.
     /// </summary>
-    public FontStyle FontStyle
+    public GorgonFontStyle FontStyle
     {
         get
         {
-            FontStyle result = FontStyle.Normal;
+            GorgonFontStyle result = GorgonFontStyle.Normal;
 
             if ((CheckItalics.Checked) && (CheckBold.Checked))
             {
-                result = FontStyle.BoldItalics;
+                result = GorgonFontStyle.BoldItalics;
             }
             else if (CheckBold.Checked)
             {
-                result = FontStyle.Bold;
-            } 
+                result = GorgonFontStyle.Bold;
+            }
             else if (CheckItalics.Checked)
             {
-                result = FontStyle.Italics;
-            }                
+                result = GorgonFontStyle.Italics;
+            }
 
             return result;
         }
@@ -119,15 +110,15 @@ internal partial class FormNewFont
         {
             switch (value)
             {
-                case FontStyle.BoldItalics:
+                case GorgonFontStyle.BoldItalics:
                     CheckBold.Checked = true;
                     CheckItalics.Checked = true;
                     break;
-                case FontStyle.Bold:
+                case GorgonFontStyle.Bold:
                     CheckBold.Checked = true;
                     CheckItalics.Checked = false;
                     break;
-                case FontStyle.Italics:
+                case GorgonFontStyle.Italics:
                     CheckBold.Checked = false;
                     CheckItalics.Checked = true;
                     break;
@@ -208,10 +199,10 @@ internal partial class FormNewFont
     /// The default value is <see cref="F:Gorgon.Graphics.Fonts.FontAntiAliasMode.AntiAlias" />.
     /// </para>
     /// </remarks>
-    public FontAntiAliasMode AntiAliasingMode
+    public GorgonFontAntiAliasMode AntiAliasingMode
     {
-        get => CheckAntiAliased.Checked ? FontAntiAliasMode.AntiAlias : FontAntiAliasMode.None;
-        set => CheckAntiAliased.Checked = value == FontAntiAliasMode.AntiAlias;
+        get => CheckAntiAliased.Checked ? GorgonFontAntiAliasMode.AntiAlias : GorgonFontAntiAliasMode.None;
+        set => CheckAntiAliased.Checked = value == GorgonFontAntiAliasMode.AntiAlias;
     }
 
     /// <summary>Property to return the size of an outline.</summary>
@@ -235,10 +226,10 @@ internal partial class FormNewFont
     /// if the <see cref="IGorgonFontInfo.OutlineSize" /> value is not greater than 0.
     /// </para>
     ///   <para>
-    /// The default value is <see cref="GorgonColor.Transparent" /> (A=1.0f, R=0.0f, G=0.0f, B=0.0f).
+    /// The default value is <see cref="GorgonColors.Transparent" /> (A=1.0f, R=0.0f, G=0.0f, B=0.0f).
     /// </para>
     /// </remarks>
-    GorgonColor IGorgonFontInfo.OutlineColor1 => GorgonColor.BlackTransparent;
+    GorgonColor IGorgonFontInfo.OutlineColor1 => GorgonColors.BlackTransparent;
 
     /// <summary>Property to return the ending color of the outline.</summary>
     /// <remarks>
@@ -250,10 +241,10 @@ internal partial class FormNewFont
     /// if the <see cref="IGorgonFontInfo.OutlineSize" /> value is not greater than 3.
     /// </para>
     ///   <para>
-    /// The default value is <see cref="GorgonColor.Transparent" /> (A=1.0f, R=0.0f, G=0.0f, B=0.0f).
+    /// The default value is <see cref="GorgonColors.Transparent" /> (A=1.0f, R=0.0f, G=0.0f, B=0.0f).
     /// </para>
     /// </remarks>
-    GorgonColor IGorgonFontInfo.OutlineColor2 => GorgonColor.BlackTransparent;
+    GorgonColor IGorgonFontInfo.OutlineColor2 => GorgonColors.BlackTransparent;
 
     /// <summary>Property to return whether premultiplied textures are used when generating the glyphs for the font.</summary>
     /// <remarks>
@@ -270,10 +261,10 @@ internal partial class FormNewFont
     /// </remarks>
     bool IGorgonFontInfo.UsePremultipliedTextures => true;
 
-    /// <summary>Property to return a <see cref="Graphics.Fonts.GorgonGlyphBrush" /> to use for special effects on the glyphs for the font.</summary>
+    /// <summary>Property to return a <see cref="GorgonGlyphBrush" /> to use for special effects on the glyphs for the font.</summary>
     /// <remarks>
     ///   <para>
-    /// This value can be used to define how a glyph is rendered when the <see cref="Graphics.Fonts.GorgonFont" /> is generated. Applications can use brushes for gradients, textures, etc... to render the glyphs to give
+    /// This value can be used to define how a glyph is rendered when the <see cref="GorgonFont" /> is generated. Applications can use brushes for gradients, textures, etc... to render the glyphs to give
     /// them a unique look.
     /// </para>
     ///   <para>
@@ -310,7 +301,7 @@ internal partial class FormNewFont
     /// <summary>Property to return whether to include kerning pair information in the font.</summary>
     /// <remarks>
     ///   <para>
-    /// Kerning pairs are used to define spacing between 2 characters in a font.  When this value is set to <b>true</b> the kerning information of the font is retrieved and added to the <see cref="Graphics.Fonts.GorgonFont" />
+    /// Kerning pairs are used to define spacing between 2 characters in a font.  When this value is set to <b>true</b> the kerning information of the font is retrieved and added to the <see cref="GorgonFont" />
     /// for use when rendering. This can be used to resolve rendering issues regarding horizontal font spacing.
     /// </para>
     ///   <para>
@@ -325,9 +316,7 @@ internal partial class FormNewFont
     /// </para>
     /// </remarks>
     bool IGorgonFontInfo.UseKerningPairs => true;
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to validate the controls on the form.
     /// </summary>
@@ -342,7 +331,7 @@ internal partial class FormNewFont
         }
         else
         {
-            Drawing.FontFamily family = Drawing.FontFamily.Families.SingleOrDefault(item => string.Equals(item.Name, ComboFontFamilies.Text, StringComparison.OrdinalIgnoreCase));
+            FontFamily family = FontFamily.Families.SingleOrDefault(item => string.Equals(item.Name, ComboFontFamilies.Text, StringComparison.OrdinalIgnoreCase));
 
             ButtonCharacters.Enabled = true;
 
@@ -352,8 +341,8 @@ internal partial class FormNewFont
             }
             else
             {
-                CheckBold.Enabled = family.IsStyleAvailable(Drawing.FontStyle.Bold) && family.IsStyleAvailable(Drawing.FontStyle.Regular);                    
-                CheckItalics.Enabled = family.IsStyleAvailable(Drawing.FontStyle.Italic) && family.IsStyleAvailable(Drawing.FontStyle.Regular);                    
+                CheckBold.Enabled = family.IsStyleAvailable(Drawing.FontStyle.Bold) && family.IsStyleAvailable(Drawing.FontStyle.Regular);
+                CheckItalics.Enabled = family.IsStyleAvailable(Drawing.FontStyle.Italic) && family.IsStyleAvailable(Drawing.FontStyle.Regular);
 
                 ButtonOK.Enabled = TextFontName.Text.Length > 0;
             }
@@ -375,7 +364,7 @@ internal partial class FormNewFont
     /// </summary>
     private void UpdatePreview()
     {
-        Drawing.FontStyle style = Drawing.FontStyle.Regular;
+        FontStyle style = Drawing.FontStyle.Regular;
 
         labelPreview.Font = Font;
         _font?.Dispose();
@@ -391,7 +380,7 @@ internal partial class FormNewFont
             style |= Drawing.FontStyle.Italic;
         }
 
-        _font = new Drawing.Font(ComboFontFamilies.Text, FontSize, style, FontHeightMode == FontHeightMode.Pixels ? Drawing.GraphicsUnit.Pixel : Drawing.GraphicsUnit.Point);
+        _font = new Font(ComboFontFamilies.Text, FontSize, style, FontHeightMode == GorgonFontHeightMode.Pixels ? GraphicsUnit.Pixel : GraphicsUnit.Point);
         labelPreview.Font = _font;
     }
 
@@ -419,12 +408,12 @@ internal partial class FormNewFont
     /// <param name="e">The <see cref="EventArgs">EventArgs</see> instance containing the event data.</param>
     private void ButtonCharacters_Click(object sender, EventArgs e)
     {
-        Drawing.Font currentFont = null;
+        Font currentFont = null;
         FormCharacterPicker picker = null;
 
         try
         {
-            currentFont = new Drawing.Font(ComboFontFamilies.Text, 16.0f, Drawing.GraphicsUnit.Pixel);
+            currentFont = new Font(ComboFontFamilies.Text, 16.0f, GraphicsUnit.Pixel);
 
             picker = new FormCharacterPicker
             {
@@ -478,14 +467,12 @@ internal partial class FormNewFont
         RadioPoints.Checked = true;
         NumericTextureWidth.Value = 512;
         NumericTextureHeight.Value = 512;
-        
+
         ValidateControls();
 
         ComboFontFamilies.Select();
     }
-    #endregion
 
-    #region Constructor/Destructor.
     /// <summary>
     /// Initializes a new instance of the <see cref="FormNewFont"/> class.
     /// </summary>
@@ -495,6 +482,4 @@ internal partial class FormNewFont
 
         ComboFontFamilies.RefreshFonts(true);
     }
-    #endregion
-
 }

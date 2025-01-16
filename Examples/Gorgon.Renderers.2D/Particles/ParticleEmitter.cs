@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,21 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 14, 2020 10:12:30 AM
 // 
-#endregion
 
-using System;
-using System.Linq;
 using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Graphics;
@@ -36,24 +33,23 @@ using Gorgon.Timing;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Object representing a particle system emitter.
+/// Object representing a particle system emitter
 /// </summary>
 /// <remarks>
 /// <para>
-/// The emitter is responsible for creating and managing the lifetime of the particles.
+/// The emitter is responsible for creating and managing the lifetime of the particles
 /// 
 /// This code was adapted from the HGE particle system code available at https://github.com/kvakvs/hge/
 /// </para>
 /// </remarks>
 public class ParticleEmitter
 {
-    #region Classes.
     /// <summary>
     /// Object representing a particle.
     /// </summary>
     private class Particle
     {
-        #region Variables.
+
         /// <summary>
         /// Position of the particle.
         /// </summary>
@@ -106,9 +102,7 @@ public class ParticleEmitter
         /// Terminal age of the particle.
         /// </summary>
         public float TerminalAge;
-        #endregion
 
-        #region Methods
         /// <summary>
         /// Function to copy the contents of this particle to another particle.
         /// </summary>
@@ -129,11 +123,9 @@ public class ParticleEmitter
             particle.Age = Age;
             particle.TerminalAge = TerminalAge;
         }
-        #endregion
-    }
-    #endregion
 
-    #region Variables.
+    }
+
     // List of particles.
     private Particle[] _particles = null;
     // Previous position.
@@ -146,9 +138,7 @@ public class ParticleEmitter
     private int _aliveCount;
     // The fractional remainder for the particle allocation calculation.
     private float _remainder;
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to set or return the scale for the emitter.
     /// </summary>
@@ -355,9 +345,7 @@ public class ParticleEmitter
         get;
         set;
     }
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to create and initialize the particles.
     /// </summary>
@@ -378,17 +366,17 @@ public class ParticleEmitter
 
             if (particle.TerminalAge > 0.0f)
             {
-                var posDelta = Vector2.Subtract(_position, _previousPosition);
-                var posVar = Vector2.Multiply(posDelta, GorgonRandom.RandomSingle());
+                Vector2 posDelta = Vector2.Subtract(_position, _previousPosition);
+                Vector2 posVar = Vector2.Multiply(posDelta, GorgonRandom.RandomSingle());
                 particle.Position = Vector2.Add(_previousPosition, posVar);
                 particle.Position.X += GorgonRandom.RandomSingle(-2, 2);
                 particle.Position.Y += GorgonRandom.RandomSingle(-2, 2);
-                
+
                 float spreadRad = Spread.ToRadians();
                 float angle = Direction.ToRadians() - pi2 + GorgonRandom.RandomSingle(0, spreadRad) - spreadRad * 0.5f;
                 if (Relative)
                 {
-                    var diff = Vector2.Subtract(_previousPosition, _position);                        
+                    Vector2 diff = Vector2.Subtract(_previousPosition, _position);
                     angle += diff.Y.ATan(diff.X) + pi2;
                 }
 
@@ -432,9 +420,9 @@ public class ParticleEmitter
     /// <param name="y">Vertical position.</param>
     public void Move(float x, float y)
     {
-        var offset = new Vector2(x, y);
+        Vector2 offset = new(x, y);
 
-        var delta = Vector2.Subtract(offset, _position);
+        Vector2 delta = Vector2.Subtract(offset, _position);
 
         for (int i = 0; i < _aliveCount; i++)
         {
@@ -483,19 +471,19 @@ public class ParticleEmitter
                 continue;
             }
 
-            var acceleration = Vector2.Normalize(Vector2.Subtract(particle.Position, _position));
+            Vector2 acceleration = Vector2.Normalize(Vector2.Subtract(particle.Position, _position));
 
-            var crossAcceleration = new Vector2(-acceleration.Y, acceleration.X);
+            Vector2 crossAcceleration = new(-acceleration.Y, acceleration.X);
 
-            var radialAcceleration = Vector2.Multiply(acceleration, particle.RadialAcceleration);
-            var tangentAcceleration = Vector2.Multiply(crossAcceleration, particle.TangentialAcceleration);
+            Vector2 radialAcceleration = Vector2.Multiply(acceleration, particle.RadialAcceleration);
+            Vector2 tangentAcceleration = Vector2.Multiply(crossAcceleration, particle.TangentialAcceleration);
 
-            var totalAccel = Vector2.Add(radialAcceleration, tangentAcceleration);
-            var finalAccel = Vector2.Multiply(totalAccel, frameDelta);
+            Vector2 totalAccel = Vector2.Add(radialAcceleration, tangentAcceleration);
+            Vector2 finalAccel = Vector2.Multiply(totalAccel, frameDelta);
             particle.Velocity = Vector2.Add(particle.Velocity, finalAccel);
             particle.Velocity.Y += particle.Gravity * frameDelta;
 
-            var finalVel = Vector2.Multiply(particle.Velocity, frameDelta);
+            Vector2 finalVel = Vector2.Multiply(particle.Velocity, frameDelta);
             particle.Position = Vector2.Add(particle.Position, finalVel);
 
             particle.Spin += particle.SpinDelta * frameDelta;
@@ -538,9 +526,7 @@ public class ParticleEmitter
             _renderer.DrawSprite(ParticleSprite);
         }
     }
-    #endregion
 
-    #region Constructor/Destructor.
     /// <summary>
     /// Initializes a new instance of the <see cref="ParticleEmitter"/> class.
     /// </summary>
@@ -574,11 +560,10 @@ public class ParticleEmitter
         RadialAccelerationRange = (0.0f, 0.0f);
         ParticleRotationRange = (0.0f, 0.0f);
         Spread = 360.0f;
-        Direction = 0.0f;            
-        ColorRange = (GorgonColor.LightYellow, new GorgonColor(GorgonColor.OrangeRed, 0.0f));            
+        Direction = 0.0f;
+        ColorRange = (GorgonColors.LightYellow, new GorgonColor(GorgonColors.OrangeRed, 0.0f));
 
         // Force particle creation (assume 60 FPS).
         CreateParticles(1 / 60.0f);
     }
-    #endregion
 }

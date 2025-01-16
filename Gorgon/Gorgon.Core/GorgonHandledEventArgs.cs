@@ -1,7 +1,5 @@
-﻿#region MIT.
-// 
-// Gorgon.
-// Copyright (C) 2011 Michael Winsor
+﻿// Gorgon.
+// Copyright (C) 2024 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,11 +18,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Wednesday, November 02, 2011 6:22:27 AM
-// 
-#endregion
-
-using System;
+// Created: November 17, 2023 5:05:16 PM
+//
 
 namespace Gorgon.Core;
 
@@ -34,7 +29,6 @@ namespace Gorgon.Core;
 public class GorgonHandledEventArgs
     : EventArgs
 {
-    #region Properties.
     /// <summary>
     /// Property to set or return whether the event was handled or not.
     /// </summary>
@@ -43,5 +37,4 @@ public class GorgonHandledEventArgs
         get;
         set;
     }
-    #endregion
 }

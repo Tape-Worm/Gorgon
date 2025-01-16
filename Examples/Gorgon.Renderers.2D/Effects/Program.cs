@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,25 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 17, 2018 3:12:16 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Numerics;
-using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -37,22 +31,18 @@ using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Math;
 using Gorgon.Renderers;
 using Gorgon.UI;
-using DX = SharpDX;
-
 
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Our example entry point.
+/// Our example entry point
 /// </summary>
 static class Program
 {
-    #region Constants.
+
     // Help text.
     private const string HelpText = "F1 - Show/hide the help text.\nC - Cloak or uncloak the ship\nMouse wheel - Rotate the ship.\nEscape - Close this example.";
-    #endregion
 
-    #region Variables.
     // Our 2D renderer.
     private static Gorgon2D _renderer;
     // The primary graphics interface.
@@ -93,28 +83,26 @@ static class Program
     private static readonly CloakController _cloakController = new();
     // Final render target brightness.
     private static float _finalBrightness = 1.0f;
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to perform operations while the CPU is idle.
     /// </summary>
     /// <returns><b>true</b> to continue processing, <b>false</b> to stop.</returns>
     private static bool Idle()
     {
-        _postTarget1.Clear(GorgonColor.BlackTransparent);
-        _postTarget2.Clear(GorgonColor.BlackTransparent);
+        _postTarget1.Clear(GorgonColors.BlackTransparent);
+        _postTarget2.Clear(GorgonColors.BlackTransparent);
 
-        Vector2 textureSize = _background.Texture.ToTexel(new Vector2(_postTarget1.Width, _postTarget1.Height));
+        Vector2 textureSize = _background.Texture.ToTexel(new GorgonPoint(_postTarget1.Width, _postTarget1.Height));
 
         // Blit the background texture.
         _graphics.SetRenderTarget(_postTarget1);
         _renderer.Begin();
-        _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _postTarget1.Width, _postTarget1.Height),
-                                      GorgonColor.White,
+        _renderer.DrawFilledRectangle(new GorgonRectangleF(0, 0, _postTarget1.Width, _postTarget1.Height),
+                                      GorgonColors.White,
                                       _background,
-                                      new DX.RectangleF(_backgroundOffset.X, _backgroundOffset.Y, textureSize.X, textureSize.Y));
-        _shipSprite.Color = new GorgonColor(GorgonColor.White, _cloakController.Opacity);
+                                      new GorgonRectangleF(_backgroundOffset.X, _backgroundOffset.Y, textureSize.X, textureSize.Y));
+        _shipSprite.Color = new GorgonColor(GorgonColors.White, _cloakController.Opacity);
         _renderer.DrawSprite(_shipSprite);
         _renderer.End();
 
@@ -123,7 +111,7 @@ static class Program
 
         if (strength > 0.0f)
         {
-            _shipSprite.Color = GorgonColor.White;
+            _shipSprite.Color = GorgonColors.White;
             _displacement.Strength = strength;
             _displacement.ChromaticAberrationScale = new Vector2(_shipSprite.Angle.ToRadians().Cos() * 0.5f + 1.0f, _shipSprite.Angle.ToRadians().Sin() * 0.5f + 1.0f);
 
@@ -133,7 +121,7 @@ static class Program
 
             _graphics.SetRenderTarget(_postTarget1);
             _renderer.Begin();
-            _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _postTarget1.Width, _postTarget1.Height), GorgonColor.White, _postView2, new DX.RectangleF(0, 0, 1, 1));
+            _renderer.DrawFilledRectangle(new GorgonRectangleF(0, 0, _postTarget1.Width, _postTarget1.Height), GorgonColors.White, _postView2, new GorgonRectangleF(0, 0, 1, 1));
             _renderer.End();
         }
 
@@ -164,7 +152,7 @@ static class Program
         _oldFilm.Render(_postView2, _postTarget1);
 
         // Send to our screen.
-        _screen.RenderTargetView.Clear(GorgonColor.Black);
+        _screen.RenderTargetView.Clear(GorgonColors.Black);
         _graphics.SetRenderTarget(_screen.RenderTargetView);
 
         _renderer.Begin(Gorgon2DBatchState.NoBlend);
@@ -173,10 +161,10 @@ static class Program
             _finalBrightness = GorgonRandom.RandomSingle(0.65f, 1.0f);
         }
 
-        _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _finalView.Width, _finalView.Height),
+        _renderer.DrawFilledRectangle(new GorgonRectangleF(0, 0, _finalView.Width, _finalView.Height),
                                       new GorgonColor(_finalBrightness, _finalBrightness, _finalBrightness, 1.0f),
                                       _postView1,
-                                      new DX.RectangleF(0, 0, 1, 1));
+                                      new GorgonRectangleF(0, 0, 1, 1));
         _renderer.End();
 
         _renderer.Begin();
@@ -226,7 +214,7 @@ static class Program
         }
 
         // Convert to texels.
-        _backgroundOffset = _background.Texture.ToTexel(_randomOffset.Value);
+        _backgroundOffset = _background.Texture.ToTexel((GorgonPoint)_randomOffset.Value);
     }
 
     /// <summary>
@@ -239,7 +227,7 @@ static class Program
         BuildRenderTargets();
         InitializeBackgroundTexturePositioning();
 
-        _gaussBlur.BlurRenderTargetsSize = new DX.Size2(_screen.Width / 2, _screen.Height / 2);
+        _gaussBlur.BlurRenderTargetsSize = new GorgonPoint(_screen.Width / 2, _screen.Height / 2);
     }
 
     /// <summary>
@@ -273,7 +261,7 @@ static class Program
     private static FormMain Initialize()
     {
         GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
-        FormMain window = GorgonExample.Initialize(new DX.Size2(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height), "Effects");
+        FormMain window = GorgonExample.Initialize(new GorgonPoint(ExampleConfig.Default.Resolution.X, ExampleConfig.Default.Resolution.Y), "Effects");
 
         try
         {
@@ -290,8 +278,8 @@ static class Program
 
             _screen = new GorgonSwapChain(_graphics,
                                           window,
-                                          new GorgonSwapChainInfo(ExampleConfig.Default.Resolution.Width,
-                                                                       ExampleConfig.Default.Resolution.Height,
+                                          new GorgonSwapChainInfo(ExampleConfig.Default.Resolution.X,
+                                                                       ExampleConfig.Default.Resolution.Y,
                                                                        BufferFormat.R8G8B8A8_UNorm)
                                           {
                                               Name = "Gorgon2D Effects Example Swap Chain"
@@ -319,7 +307,7 @@ static class Program
             // Create the gaussian blur effect for that "soft" look.
             _gaussBlur = new Gorgon2DGaussBlurEffect(_renderer, 9)
             {
-                BlurRenderTargetsSize = new DX.Size2(_screen.Width / 2, _screen.Height / 2),
+                BlurRenderTargetsSize = new GorgonPoint(_screen.Width / 2, _screen.Height / 2),
                 BlurRadius = 1
             };
             // The higher # of taps on the blur shader will introduce a stutter on first render, so precache its setup data.
@@ -347,10 +335,10 @@ static class Program
             _shipSprite = new GorgonSprite
             {
                 Texture = _spaceShipTexture,
-                TextureRegion = new DX.RectangleF(0, 0, 1, 1),
+                TextureRegion = new GorgonRectangleF(0, 0, 1, 1),
                 Anchor = new Vector2(0.5f, 0.5f),
                 Position = new Vector2(_screen.Width / 2.0f, _screen.Height / 2.0f),
-                Size = new DX.Size2F(_spaceShipTexture.Width, _spaceShipTexture.Height)
+                Size = new Vector2(_spaceShipTexture.Width, _spaceShipTexture.Height)
             };
 
             BuildRenderTargets();
@@ -495,5 +483,4 @@ static class Program
             _graphics?.Dispose();
         }
     }
-    #endregion
 }

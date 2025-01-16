@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,17 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: February 8, 2020 9:27:54 PM
 // 
-#endregion
 
 using System.ComponentModel;
 using Gorgon.Core;
@@ -32,24 +31,20 @@ using Gorgon.Editor.Rendering;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.ImageEditor;
 
 /// <summary>
-/// A renderer used to display texture content with effects.
+/// A renderer used to display texture content with effects
 /// </summary>
 internal class TextureFxViewer
     : TextureViewer
 {
-    #region Constants.
     /// <summary>
     /// The effects renderer.
     /// </summary>
     public const string ViewerName = "ContextFx";
-    #endregion
 
-    #region Variables.
     // The number of blur passes.
     private int _passes = 1;
     // The amount to sharpen.
@@ -61,7 +56,7 @@ internal class TextureFxViewer
     // The offset for the edge detect lines.
     private float _edgeOffset = 1.0f;
     // The color for the lines in the edge detect effect.
-    private GorgonColor _edgeColor = GorgonColor.Black;
+    private GorgonColor _edgeColor = GorgonColors.Black;
     // Flag to indicate that the edge detection effect is overlaid on top of the original image.
     private bool _edgeOverlay = true;
     // The amount to posterize.
@@ -73,9 +68,7 @@ internal class TextureFxViewer
     private bool _oneBitInvert;
     // The service used to apply effects.
     private readonly IFxPreviewer _fxPreviewer;
-    #endregion
 
-    #region Methods.
     /// <summary>Handles the BitSettingsPropertyChanged event.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
@@ -86,7 +79,7 @@ internal class TextureFxViewer
             case nameof(IFxOneBit.MinWhiteThreshold):
                 _oneBitMin = DataContext.FxContext.OneBitSettings.MinWhiteThreshold;
                 break;
-            case nameof(IFxOneBit.MaxWhiteThreshold):                    
+            case nameof(IFxOneBit.MaxWhiteThreshold):
                 _oneBitMax = DataContext.FxContext.OneBitSettings.MaxWhiteThreshold;
                 break;
             case nameof(IFxOneBit.Invert):
@@ -172,7 +165,7 @@ internal class TextureFxViewer
                 _passes = DataContext.FxContext.BlurSettings.BlurAmount;
                 RenderFx();
                 break;
-        }            
+        }
     }
 
     /// <summary>
@@ -202,7 +195,7 @@ internal class TextureFxViewer
         }
         else if (DataContext.CurrentPanel == DataContext.FxContext.OneBitSettings)
         {
-            _fxPreviewer.GenerateOneBitPreview(new GorgonRangeF(_oneBitMin / 255.0f, _oneBitMax / 255.0f), _oneBitInvert);
+            _fxPreviewer.GenerateOneBitPreview(new GorgonRange<float>(_oneBitMin / 255.0f, _oneBitMax / 255.0f), _oneBitInvert);
         }
     }
 
@@ -227,16 +220,16 @@ internal class TextureFxViewer
     {
         Graphics.SetRenderTarget(MainRenderTarget);
 
-        var color = new GorgonColor(GorgonColor.White, Opacity);            
+        GorgonColor color = new(GorgonColors.White, Opacity);
 
         Renderer.Begin(BatchState, Camera);
-        Renderer.DrawFilledRectangle(new DX.RectangleF(RenderRegion.Width * -0.5f,
+        Renderer.DrawFilledRectangle(new GorgonRectangleF(RenderRegion.Width * -0.5f,
                                                        RenderRegion.Height * -0.5f,
                                                        RenderRegion.Width,
                                                        RenderRegion.Height),
                                     color,
                                     DataContext.CurrentPanel is null ? _fxPreviewer.OriginalTexture : _fxPreviewer.PreviewTexture,
-                                    new DX.RectangleF(0, 0, 1, 1),
+                                    new GorgonRectangleF(0, 0, 1, 1),
                                     DataContext.CurrentArrayIndex,
                                     textureSampler: GorgonSamplerState.PointFiltering);
         Renderer.End();
@@ -250,7 +243,7 @@ internal class TextureFxViewer
             return;
         }
 
-        RenderRegion = new DX.RectangleF(0, 0, _fxPreviewer.PreviewTexture.Width, _fxPreviewer.PreviewTexture.Height);
+        RenderRegion = new GorgonRectangleF(0, 0, _fxPreviewer.PreviewTexture.Width, _fxPreviewer.PreviewTexture.Height);
 
         // Render previews.
         RenderFx();
@@ -292,9 +285,7 @@ internal class TextureFxViewer
         DataContext.FxContext.PosterizeSettings.PropertyChanged += PosterizeSettings_PropertyChanged;
         DataContext.FxContext.OneBitSettings.PropertyChanged += OneBitSettings_PropertyChanged;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
     /// <summary>Initializes a new instance of the <see cref="TextureFxViewer"/> class.</summary>
     /// <param name="renderer">The main renderer for the content view.</param>
     /// <param name="swapChain">The swap chain for the content view.</param>
@@ -306,5 +297,4 @@ internal class TextureFxViewer
         AllowArrayDepthChange = false;
         AllowMipChange = false;
     }
-    #endregion
 }

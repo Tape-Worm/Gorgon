@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2011 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,20 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Wednesday, November 23, 2011 9:54:30 AM
 // 
-#endregion
 
-using System;
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 using SharpDX.DXGI;
@@ -33,20 +31,19 @@ using D3D11 = SharpDX.Direct3D11;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// An input element for a buffer.
+/// An input element for a buffer
 /// </summary>
 /// <remarks>
 /// <para>
-/// This defines a single element within a <see cref="GorgonInputLayout"/>, and its relationship with other elements in that layout.
+/// This defines a single element within a <see cref="GorgonInputLayout"/>, and its relationship with other elements in that layout
 /// </para>
 /// <para>
-/// A <see cref="GorgonInputLayout"/> will use an array of these items to define individual elements for an input slot.
+/// A <see cref="GorgonInputLayout"/> will use an array of these items to define individual elements for an input slot
 /// </para>
 /// </remarks>
 public readonly struct GorgonInputElement
     : IGorgonNamedObject, IGorgonEquatableByRef<GorgonInputElement>
 {
-    #region Variables.
     /// <summary>
     /// The Direct 3D 11 Input Element that is wrapped by this type.
     /// </summary>
@@ -61,9 +58,7 @@ public readonly struct GorgonInputElement
     /// </para>
     /// </remarks>
     public readonly int SizeInBytes;
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to return the name of this object.
     /// </summary>
@@ -142,9 +137,7 @@ public readonly struct GorgonInputElement
     /// </para>
     /// </remarks>
     public int InstanceCount => D3DInputElement.Classification == D3D11.InputClassification.PerInstanceData ? D3DInputElement.InstanceDataStepRate : 0;
-    #endregion
 
-    #region Method.
     /// <summary>
     /// Determines whether the specified <see cref="object"/> is equal to this instance.
     /// </summary>
@@ -160,7 +153,7 @@ public readonly struct GorgonInputElement
     /// <param name="left">The first instance to compare.</param>
     /// <param name="right">The second instance to compare.</param>
     /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-    public static bool Equals(in GorgonInputElement left, in GorgonInputElement right) => (string.Equals(left.Context, right.Context, StringComparison.OrdinalIgnoreCase)) && (left.Format == right.Format) && (left.Index == right.Index) &&
+    public static bool Equals(ref readonly GorgonInputElement left, ref readonly GorgonInputElement right) => (string.Equals(left.Context, right.Context, StringComparison.OrdinalIgnoreCase)) && (left.Format == right.Format) && (left.Index == right.Index) &&
                (left.InstanceCount == right.InstanceCount) && (left.Instanced == right.Instanced) && (left.Offset == right.Offset) &&
                (left.SizeInBytes == right.SizeInBytes) && (left.Slot == right.Slot);
 
@@ -172,7 +165,7 @@ public readonly struct GorgonInputElement
     /// <returns>
     /// The result of the operator.
     /// </returns>
-    public static bool operator ==(in GorgonInputElement left, in GorgonInputElement right) => Equals(in left, in right);
+    public static bool operator ==(GorgonInputElement left, GorgonInputElement right) => Equals(in left, in right);
 
     /// <summary>
     /// Implements the operator !=.
@@ -182,7 +175,7 @@ public readonly struct GorgonInputElement
     /// <returns>
     /// The result of the operator.
     /// </returns>
-    public static bool operator !=(in GorgonInputElement left, in GorgonInputElement right) => !Equals(in left, in right);
+    public static bool operator !=(GorgonInputElement left, GorgonInputElement right) => !Equals(in left, in right);
 
     /// <summary>
     /// Returns a hash code for this instance.
@@ -206,10 +199,8 @@ public readonly struct GorgonInputElement
     /// </summary>
     /// <param name="other">The other instance to use for comparison.</param>
     /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
-    public bool Equals(in GorgonInputElement other) => Equals(in this, in other);
-    #endregion
+    public bool Equals(ref readonly GorgonInputElement other) => Equals(in this, in other);
 
-    #region Constructor/Destructor.
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonInputElement"/> class.
     /// </summary>
@@ -241,7 +232,7 @@ public readonly struct GorgonInputElement
             throw new ArgumentEmptyException(nameof(context));
         }
 
-        var formatInfo = new GorgonFormatInfo(format);
+        GorgonFormatInfo formatInfo = new(format);
 
         if (formatInfo.BitDepth == 0)
         {
@@ -263,5 +254,4 @@ public readonly struct GorgonInputElement
                                                  instanced ? instanceCount : 0);
         SizeInBytes = formatInfo.SizeInBytes;
     }
-    #endregion
 }

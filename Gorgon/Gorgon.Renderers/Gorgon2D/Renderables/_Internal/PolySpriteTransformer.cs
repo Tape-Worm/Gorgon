@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,27 +11,26 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 9, 2018 10:57:03 AM
 // 
-#endregion
 
 using System.Numerics;
+using Gorgon.Graphics;
 using Gorgon.Math;
-using DX = SharpDX;
 
 namespace Gorgon.Renderers;
 
 /// <summary>
-/// Provides functionality for transforming renderable vertices.
+/// Provides functionality for transforming renderable vertices
 /// </summary>
 internal class PolySpriteTransformer
 {
@@ -47,7 +46,7 @@ internal class PolySpriteTransformer
     /// <param name="depth">The depth value for the renderable.</param>
     /// <param name="worldMatrix">The world matrix.</param>
     private static void TransformVertices(ref Vector2 anchor,
-                                          ref DX.RectangleF bounds,
+                                          ref GorgonRectangleF bounds,
                                           ref Vector2 scale,
                                           bool hasRotation,
                                           float angleSin,
@@ -78,8 +77,8 @@ internal class PolySpriteTransformer
         transMat.M42 = bounds.Top;
         transMat.M43 = depth;
 
-        var tempMat = Matrix4x4.Multiply(anchorMat, scaleMat);
-        var tempMat2 = Matrix4x4.Multiply(tempMat, rotMat);
+        Matrix4x4 tempMat = Matrix4x4.Multiply(anchorMat, scaleMat);
+        Matrix4x4 tempMat2 = Matrix4x4.Multiply(tempMat, rotMat);
         worldMatrix = Matrix4x4.Multiply(tempMat2, transMat);
     }
 
@@ -107,8 +106,6 @@ internal class PolySpriteTransformer
         {
             return;
         }
-
-        
 
         TransformVertices(ref renderable.Anchor,
                           ref renderable.Bounds,

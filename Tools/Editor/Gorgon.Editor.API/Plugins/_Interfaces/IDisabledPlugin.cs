@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,47 +11,46 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: November 10, 2018 8:45:04 PM
 // 
-#endregion
 
 namespace Gorgon.Editor.PlugIns;
 
 /// <summary>
-/// The reason code for disabling the plug in.
+/// The reason code for disabling the plug-in
 /// </summary>
 public enum DisabledReasonCode
 {
     /// <summary>
-    /// User manually disabled plug in.
+    /// User manually disabled plug-in.
     /// </summary>
     User = 0,
     /// <summary>
-    /// An error occurred when loading the plug in.
+    /// An error occurred when loading the plug-in.
     /// </summary>
     Error = 1,
     /// <summary>
-    /// A validation error occurred after the plug in was loaded.
+    /// A validation error occurred after the plug-in was loaded.
     /// </summary>
     ValidationError = 2
 }
 
 /// <summary>
-/// A plug in that was disabled for a reason.
+/// A plug-in that was disabled for a reason
 /// </summary>
 public interface IDisabledPlugIn
 {
     /// <summary>
-    /// Property to return a description that explains why a plug in was disabled.
+    /// Property to return a description that explains why a plug-in was disabled.
     /// </summary>
     string Description
     {
@@ -59,7 +58,7 @@ public interface IDisabledPlugIn
     }
 
     /// <summary>
-    /// Property to return the name of the disabled plug in.
+    /// Property to return the name of the disabled plug-in.
     /// </summary>
     string PlugInName
     {
@@ -67,7 +66,7 @@ public interface IDisabledPlugIn
     }
 
     /// <summary>
-    /// Property to return the code to indicate how the plug in was disabled.
+    /// Property to return the code to indicate how the plug-in was disabled.
     /// </summary>
     DisabledReasonCode ReasonCode
     {

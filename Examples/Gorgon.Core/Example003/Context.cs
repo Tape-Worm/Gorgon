@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2012 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,20 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Tuesday, September 18, 2012 8:03:43 PM
 // 
-#endregion
 
-using System;
 using System.Drawing;
 using System.Windows.Forms;
 using Gorgon.Diagnostics;
@@ -34,20 +32,20 @@ using Gorgon.UI;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// The application context.
+/// The application context
 /// </summary>
 /// <remarks>We'll use this to display our splash screen, and then our main form and still use the idle loop.</remarks>
 internal class Context
     : ApplicationContext
 {
-    #region Variables.
+
     // A timer for the splash screen.
     private readonly IGorgonTimer _timer;
     // A splash screen.
     private FormSplash _splashScreen;
-    #endregion
+    // The log for the application.
+    private readonly IGorgonLog _log;
 
-    #region Methods.
     /// <summary>
     /// Handles the KeyDown event of the MainForm control.
     /// </summary>
@@ -56,20 +54,30 @@ internal class Context
     /// <exception cref="NotSupportedException"></exception>
     private void MainForm_KeyDown(object sender, KeyEventArgs e)
     {
-        if (e.KeyCode != Keys.Space)
+        switch (e.KeyCode)
         {
-            return;
-        }
+            case Keys.Space:
+                ((FormMain)MainForm).Clear();
+                if (GorgonApplication.IdleMethod == Program.Idle)
+                {
 
-        ((FormMain)MainForm).Clear();
+                    GorgonApplication.IdleMethod = Program.NewIdle;
+                }
+                else
+                {
 
-        if (GorgonApplication.IdleMethod == Program.Idle)
-        {
-            GorgonApplication.IdleMethod = Program.NewIdle;
-        }
-        else
-        {
-            GorgonApplication.IdleMethod = Program.Idle;
+                    GorgonApplication.IdleMethod = Program.Idle;
+                }
+                break;
+            case Keys.E:
+                _log.PrintError("This is an error.", LoggingLevel.Simple);
+                break;
+            case Keys.W:
+                _log.PrintWarning("This is a warning.", LoggingLevel.Simple);
+                break;
+            case Keys.X:
+                _log.LogException(new Exception("This is an exception."));
+                break;
         }
     }
 
@@ -96,6 +104,7 @@ internal class Context
         {
             _timer.Reset();
             _splashScreen.Show();
+            _splashScreen.Refresh();
             _splashScreen.UpdateText("This is the splash screen.");
 
             // Fade in the splash screen about 10% every 7 milliseconds.
@@ -164,14 +173,15 @@ internal class Context
             _splashScreen = null;
         }
     }
-    #endregion
 
-    #region Constructor/Destructor.
     /// <summary>
     /// Initializes a new instance of the <see cref="Context" /> class.
     /// </summary>
-    public Context()
+    /// <param name="log">The log for the application.</param>
+    public Context(IGorgonLog log)
     {
+        _log = log;
+
         // Create our timer object.
         if (GorgonTimerQpc.SupportsQpc())
         {
@@ -189,5 +199,4 @@ internal class Context
 
         RunMe();
     }
-    #endregion
 }

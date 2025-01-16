@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2012 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,44 +11,50 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Monday, March 05, 2012 10:34:16 AM
 // 
-#endregion
 
-using System;
 using System.Numerics;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
-using DX = SharpDX;
 
 namespace Gorgon.Renderers.Cameras;
 
 /// <summary>
-/// A camera that performs perspective (3D) projection.
+/// A camera that performs perspective (3D) projection
 /// </summary>
 /// <remarks>
 /// <para>
-/// This camera is used to bring depth to a 2D scene.  Sprites and other renderables can use their Depth property to determine how far away the object is from the camera.
+/// This camera is used to bring depth to a 2D scene.  Sprites and other renderables can use their Depth property to determine how far away the object is from the camera
 /// </para>
 /// <para>
 /// This camera object works in 3 dimensions, so it can be moved further into a scene, and further out.  It also makes use of the near and far clip planes.  Note that the near clip plane should be as
 /// large as is tolerable because it will have the greatest impact on the depth precision.  For more information about depth clip planes, please consult
-/// http://www.sjbaker.org/steve/omniv/love_your_z_buffer.html.
+/// http://www.sjbaker.org/steve/omniv/love_your_z_buffer.html
 /// </para>
 /// </remarks>
-public class GorgonPerspectiveCamera
-    : GorgonCameraCommon
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonPerspectiveCamera"/> class
+/// </remarks>
+/// <param name="graphics">The graphics interface to use with this object.</param>
+/// <param name="viewDimensions">The view dimensions.</param>
+/// <param name="minDepth">[Optional] The minimum depth value.</param>
+/// <param name="maximumDepth">[Optional] The maximum depth value.</param>
+/// <param name="name">[Optional] The name of the camera.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/> parameter is <b>null</b>.</exception>
+public class GorgonPerspectiveCamera(GorgonGraphics graphics, Vector2 viewDimensions, float minDepth = 0.1f, float maximumDepth = 1000.0f, string name = null)
+        : GorgonCameraCommon(graphics, viewDimensions, minDepth, maximumDepth, name)
 {
-    #region Variables.
     // The rotation matrix.
     private Matrix4x4 _rotation = Matrix4x4.Identity;
     // The translation matrix.
@@ -57,9 +63,7 @@ public class GorgonPerspectiveCamera
     private Quaternion _rotationQuat;
     // The field of view for the camera.
     private float _fov = 75.0f;
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to set or return the field of view, in degrees, for the camera.
     /// </summary>
@@ -101,20 +105,18 @@ public class GorgonPerspectiveCamera
     /// This represents the boundaries of viewable space for the camera using its coordinate system. The upper left of the region corresponds with the upper left of the active render target at minimum
     /// Z depth, and the lower right of the region corresponds with the lower right of the active render target at minimum Z depth.
     /// </remarks>
-    public override DX.RectangleF ViewableRegion => new(-1, -1, 2, 2);
-    #endregion
+    public override GorgonRectangleF ViewableRegion => new(-1, -1, 2, 2);
 
-    #region Methods.
     /// <summary>
     /// Function to update the view matrix.
     /// </summary>
     protected override void UpdateViewMatrix(ref Matrix4x4 viewMatrix)
-    {               
+    {
         bool hasRotation = (Changes & CameraChange.Rotation) == CameraChange.Rotation;
         bool hasTranslate = (Changes & CameraChange.Position) == CameraChange.Position;
         // There is no scaling for this camera type.
         Changes &= ~CameraChange.Scale;
-        
+
         if ((!hasRotation) && (!hasTranslate))
         {
             return;
@@ -180,7 +182,7 @@ public class GorgonPerspectiveCamera
     /// Function to set the camera rotation using a rotation matrix.
     /// </summary>
     /// <param name="rotation">The matrix used for rotation.</param>
-    public void AssignRotationMatrix(in Matrix4x4 rotation)
+    public void AssignRotationMatrix(ref readonly Matrix4x4 rotation)
     {
         _rotationQuat = Quaternion.Conjugate(Quaternion.CreateFromRotationMatrix(rotation));
         Changes |= CameraChange.View | CameraChange.Rotation;
@@ -200,10 +202,10 @@ public class GorgonPerspectiveCamera
     {
         Vector3 up = upVector ?? Vector3.UnitY;
 
-        var zaxis = Vector3.Normalize(target - PositionRef);
-        var xaxis = Vector3.Normalize(Vector3.Cross(up, zaxis));
-        var yaxis = Vector3.Cross(zaxis, xaxis);
-        var lookMatrix = default(Matrix4x4);
+        Vector3 zaxis = Vector3.Normalize(target - PositionRef);
+        Vector3 xaxis = Vector3.Normalize(Vector3.Cross(up, zaxis));
+        Vector3 yaxis = Vector3.Cross(zaxis, xaxis);
+        Matrix4x4 lookMatrix = default;
         lookMatrix.M11 = xaxis.X;
         lookMatrix.M12 = yaxis.X;
         lookMatrix.M13 = zaxis.X;
@@ -218,24 +220,7 @@ public class GorgonPerspectiveCamera
         lookMatrix.M43 = -Vector3.Dot(zaxis, PositionRef);
         lookMatrix.M44 = 1f;
 
-        _rotationQuat = Quaternion.Conjugate(Quaternion.CreateFromRotationMatrix(lookMatrix));            
+        _rotationQuat = Quaternion.Conjugate(Quaternion.CreateFromRotationMatrix(lookMatrix));
         Changes |= CameraChange.View | CameraChange.Rotation;
     }
-    #endregion
-
-    #region Constructor/Destructor.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonPerspectiveCamera"/> class.
-    /// </summary>
-    /// <param name="graphics">The graphics interface to use with this object.</param>
-    /// <param name="viewDimensions">The view dimensions.</param>
-    /// <param name="minDepth">[Optional] The minimum depth value.</param>
-    /// <param name="maximumDepth">[Optional] The maximum depth value.</param>
-    /// <param name="name">[Optional] The name of the camera.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="graphics"/> parameter is <b>null</b>.</exception>
-    public GorgonPerspectiveCamera(GorgonGraphics graphics, DX.Size2F viewDimensions, float minDepth = 0.1f, float maximumDepth = 1000.0f, string name = null)
-        : base(graphics, viewDimensions, minDepth, maximumDepth, name)
-    {
-    }
-    #endregion
 }

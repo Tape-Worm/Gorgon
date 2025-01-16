@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,21 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 15, 2019 10:54:42 PM
 // 
-#endregion
 
-using System;
-using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -34,43 +31,42 @@ using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Renderers.Cameras;
 using Gorgon.Renderers.Properties;
-using DX = SharpDX;
 
 namespace Gorgon.Renderers;
 
 /// <summary>An effect that renders a bloom (glow) effect for a scene.</summary>
 /// <remarks>
 ///   <para>
-/// Bloom is an effect that helps make light sources or bright areas look more intense and vibrant by surrounding them in a glow.
+/// Bloom is an effect that helps make light sources or bright areas look more intense and vibrant by surrounding them in a glow
 /// </para>
 ///   <para>
 /// It does this by finding the bright areas above a certain threshold in a render target, and then blurring that image while down sampling and up sampling and applying the result to the original
-/// scene using an additive blend. Depending on the settings your scene could be given a dream-like hazy look, or an overbright image for very intense light sources (e.g. a star).
+/// scene using an additive blend. Depending on the settings your scene could be given a dream-like hazy look, or an overbright image for very intense light sources (e.g. a star)
 /// </para>
 ///   <para>
 /// To facilitate the quality of the resulting bloom image, rendering will be performed on a mini HDR (High Dynamic Range) pipeline, and all render targets will use a floating point buffer format
 /// (<see cref="BufferFormat.R16G16B16A16_Float"/>). This means that this effect will use a lot of memory, and consume a fair bit of bandwidth. This means that developers should take target hardware
-/// capabilities into considering before using this effect.
+/// capabilities into considering before using this effect
 /// </para>
 ///   <para>
 /// While this effect employs HDR, it does not provide a means of performing Tone Mapping (a means of converting the large range of color values from floating point into LDR values that map from
-/// 0..1/0..255 per channel), so the resulting image may not appear as desired. Tone mapping is a very subjective process, and as such, there is no "right" tone mapping.
+/// 0..1/0..255 per channel), so the resulting image may not appear as desired. Tone mapping is a very subjective process, and as such, there is no "right" tone mapping
 /// </para>
 ///   <para>
 /// When using this effect, be aware that all blending is turned off except on the first pass. The best practice in this case would be to render the contents of your original render target (or swap 
 /// chain) using a call to <see cref="Gorgon2D.DrawFilledRectangle"/> or 
-/// <see cref="Gorgon2D.DrawSprite(GorgonSprite)"/>.
+/// <see cref="Gorgon2D.DrawSprite(GorgonSprite)"/>
 /// </para>
 ///   <para>The rendering is split out over multiple passes:</para>
 ///   <list type="number">
 ///     <item>
-///       Copy pass - This copies the data into an internal render target for processing.
+///       Copy pass - This copies the data into an internal render target for processing
 ///     </item>
 ///     <item>
-///       Filter down/up sample pass - This isolates all bright areas above a certain <see cref="Threshold"/> and performs the down/up sampling of the image to blur it.
+///       Filter down/up sample pass - This isolates all bright areas above a certain <see cref="Threshold"/> and performs the down/up sampling of the image to blur it
 ///     </item>
 ///     <item>
-///       Combine pass - Combines the resulting blurred image with the original source image using an additive function.
+///       Combine pass - Combines the resulting blurred image with the original source image using an additive function
 ///     </item>
 ///     <item>
 ///       [Optional] Dirt - Applies a lens dirt texture. 
@@ -81,20 +77,19 @@ namespace Gorgon.Renderers;
 ///   </list>
 /// <para>
 /// This effect is based on the work of Jorge Jimenez from his SIGGRAPH 2014 presentation on advances in realtime rendering.<br/>
-/// The website for this presentation is located <a target="_blank" href="http://www.iryoku.com/next-generation-post-processing-in-call-of-duty-advanced-warfare">here</a>.
+/// The website for this presentation is located <a target="_blank" href="http://www.iryoku.com/next-generation-post-processing-in-call-of-duty-advanced-warfare">here</a>
 /// </para>
 /// <para>
-/// The PowerPoint presentation is <a target="_blank" href="http://www.iryoku.com/downloads/Next-Generation-Post-Processing-in-Call-of-Duty-Advanced-Warfare-v18.pptx">here</a> (it's a big'un).
+/// The PowerPoint presentation is <a target="_blank" href="http://www.iryoku.com/downloads/Next-Generation-Post-Processing-in-Call-of-Duty-Advanced-Warfare-v18.pptx">here</a> (it's a big'un)
 /// </para>
 /// </remarks>
-/// <seealso cref="Gorgon2D.DrawFilledRectangle(DX.RectangleF, GorgonColor, GorgonTexture2DView, DX.RectangleF?, int, GorgonSamplerState, float)"/>
+/// <seealso cref="Gorgon2D.DrawFilledRectangle(GorgonRectangleF, GorgonColor, GorgonTexture2DView, GorgonRectangleF?, int, GorgonSamplerState, float)"/>
 /// <seealso cref="Gorgon2D.DrawSprite"/>
 /// <seealso cref="BufferFormat"/>
 /// <seealso cref="Threshold"/>
 public class Gorgon2DBloomEffect
     : Gorgon2DEffect, IGorgon2DCompositorEffect
 {
-    #region Value Types.
     /// <summary>
     /// Settings to apply when bright pass filtering.
     /// </summary>
@@ -118,14 +113,10 @@ public class Gorgon2DBloomEffect
         /// </summary>
         public Vector4 DirtTransform;
     }
-    #endregion
 
-    #region Constants.
     // The maximum number of iterations for sampling.
     private const int MaxIterations = 16;
-    #endregion
 
-    #region Variables.
     // Macro used to define low quality bloom code.
     private readonly GorgonShaderMacro _lowQualityMacro = new("LOW_QUALITY_BLOOM");
     // The shader that applies bright pass filtering.
@@ -174,9 +165,7 @@ public class Gorgon2DBloomEffect
     private readonly BloomTextureInfo _blurTargetInfo;
     // Flag to use lower quality functions to improve performance.
     private bool _lowQuality;
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to set or return whether to use lower quality rendering to improve performance.
     /// </summary>
@@ -246,7 +235,7 @@ public class Gorgon2DBloomEffect
     {
         get;
         set;
-    } = GorgonColor.White;
+    } = GorgonColors.White;
 
     /// <summary>
     /// Property to set or return the intensity of the color.
@@ -283,9 +272,7 @@ public class Gorgon2DBloomEffect
         get;
         set;
     }
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to return the down/upsampling targets to the pool.
     /// </summary>
@@ -311,26 +298,26 @@ public class Gorgon2DBloomEffect
     /// Function to set up for the filtering/blurring pass.
     /// </summary>
     /// <param name="outputSize">The width and height of the final output.</param>
-    private void SetupFilterAndBlur(DX.Size2 outputSize)
+    private void SetupFilterAndBlur(GorgonPoint outputSize)
     {
         ref BloomSettings settings = ref _settings;
 
         float linearThreshold = Threshold.Pow(2.2f);
-        int maxSize = (outputSize.Width / 2).Max(outputSize.Height / 2);
+        int maxSize = (outputSize.X / 2).Max(outputSize.Y / 2);
 
         float logSize = ((float)maxSize).Log(2) + BlurAmount - 10;
         float floorLog = logSize.FastFloor();
 
-        int sampleIterations = (int)floorLog.Min(MaxIterations).Max(1);            
+        int sampleIterations = (int)floorLog.Min(MaxIterations).Max(1);
         float knee = linearThreshold * BrightPassCurveKnee + 1e-5f;
 
         settings.FilterValues = new Vector4(linearThreshold, linearThreshold - knee, knee * 2, 0.25f / knee);
-        settings.BloomColor = Color.ApplyGamma(ColorIntensity).ToLinear();
+        settings.BloomColor = GorgonColor.ToLinear(GorgonColor.ApplyGamma(Color, ColorIntensity));
         settings.BlurAndIntensity = new Vector4(0.5f + logSize - floorLog, (2.0f.Pow(BloomIntensity / 10.0f)) - 1.0f, DirtIntensity, 0);
 
         GorgonTexture2DView dirtTexture = DirtTexture ?? Renderer.EmptyBlackTexture;
 
-        float screenAspect = outputSize.Width / (float)outputSize.Height;
+        float screenAspect = outputSize.X / (float)outputSize.Y;
         float dirtAspect = dirtTexture.Width / (float)dirtTexture.Height;
         ref Vector4 dirtTransform = ref _settings.DirtTransform;
         dirtTransform = new Vector4(0, 0, 1, 1);
@@ -373,16 +360,16 @@ public class Gorgon2DBloomEffect
             (GorgonRenderTarget2DView up, GorgonRenderTarget2DView down) targets = (i == 0 ? _blurRtv : Graphics.TemporaryTargets.Rent(_targetInfo, $"UpSample_{i}", false),
                                                                                                         Graphics.TemporaryTargets.Rent(_targetInfo, $"DownSample_{i}", false));
 
-            var texelSize = new Vector2(1.0f / src.Width, 1.0f / src.Height);
+            Vector2 texelSize = new(1.0f / src.Width, 1.0f / src.Height);
             _textureSettingsBuffer.Buffer.SetData(in texelSize);
 
             Graphics.SetRenderTarget(targets.down);
 
             Renderer.Begin(i == 0 ? _filterBatchState : _downSampleBatchState);
-            Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, targets.down.Width, targets.down.Height),
-                                        GorgonColor.White,
+            Renderer.DrawFilledRectangle(new GorgonRectangleF(0, 0, targets.down.Width, targets.down.Height),
+                                        GorgonColors.White,
                                         src,
-                                        new DX.RectangleF(0, 0, 1, 1),
+                                        new GorgonRectangleF(0, 0, 1, 1),
                                         textureSampler: GorgonSamplerState.Default);
             Renderer.End();
 
@@ -421,16 +408,16 @@ public class Gorgon2DBloomEffect
         {
             (GorgonRenderTarget2DView up, GorgonRenderTarget2DView _) = _sampleTargets[i];
 
-            var texelSize = new Vector2(1.0f / src.Width, 1.0f / src.Height);
+            Vector2 texelSize = new(1.0f / src.Width, 1.0f / src.Height);
             _textureSettingsBuffer.Buffer.SetData(in texelSize);
 
             Graphics.SetRenderTarget(up);
 
             Renderer.Begin(_sampleTargetStates[i]);
-            Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, up.Width, up.Height),
-                GorgonColor.White,
+            Renderer.DrawFilledRectangle(new GorgonRectangleF(0, 0, up.Width, up.Height),
+                GorgonColors.White,
                 src,
-                new DX.RectangleF(0, 0, 1, 1),
+                new GorgonRectangleF(0, 0, 1, 1),
                 textureSampler: GorgonSamplerState.Default);
             Renderer.End();
 
@@ -535,7 +522,7 @@ public class Gorgon2DBloomEffect
 
                 return _pass0State;
             case 1:
-                if ((_finalPassBatchState is not null) 
+                if ((_finalPassBatchState is not null)
                     && (_finalPassBatchState.PixelShaderState.ShaderResources[1] == _blurSrv)
                     && (_finalPassBatchState.PixelShaderState.ShaderResources[2] == DirtTexture))
                 {
@@ -598,7 +585,7 @@ public class Gorgon2DBloomEffect
             _blurSrv = _blurRtv.GetShaderResourceView();
         }
 
-        _sceneRtv.Clear(GorgonColor.BlackTransparent);
+        _sceneRtv.Clear(GorgonColors.BlackTransparent);
 
         _targetInfo.Width = (_sceneSrv.Width >> 1).Max(1);
         _targetInfo.Height = (_sceneSrv.Height >> 1).Max(1);
@@ -623,7 +610,7 @@ public class Gorgon2DBloomEffect
                 Graphics.SetRenderTarget(_sceneRtv);
                 break;
             case 1:
-                var texelSize = new Vector2(1.0f / _blurRtv.Width, 1.0f / _blurRtv.Height);
+                Vector2 texelSize = new(1.0f / _blurRtv.Width, 1.0f / _blurRtv.Height);
                 _textureSettingsBuffer.Buffer.SetData(in texelSize);
 
                 Graphics.SetRenderTarget(output);
@@ -645,10 +632,10 @@ public class Gorgon2DBloomEffect
         // Filter down and up prior to sending out the effect.
         if (BeginPass(0, _sceneRtv) == PassContinuationState.Continue)
         {
-            Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _sceneRtv.Width, _sceneRtv.Height),
-                                         GorgonColor.White,
+            Renderer.DrawFilledRectangle(new GorgonRectangleF(0, 0, _sceneRtv.Width, _sceneRtv.Height),
+                                         GorgonColors.White,
                                          texture,
-                                         new DX.RectangleF(0, 0, 1, 1));
+                                         new GorgonRectangleF(0, 0, 1, 1));
             EndPass(0, _sceneRtv);
         }
         else
@@ -657,17 +644,17 @@ public class Gorgon2DBloomEffect
             return;
         }
 
-        SetupFilterAndBlur(new DX.Size2(output.Width, output.Height));
+        SetupFilterAndBlur(new GorgonPoint(output.Width, output.Height));
         FilterAndDownSample();
         UpSample();
         ReturnSampleTargets();
 
         if (BeginPass(1, output) == PassContinuationState.Continue)
         {
-            Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, output.Width, output.Height),
-                                         GorgonColor.White,
+            Renderer.DrawFilledRectangle(new GorgonRectangleF(0, 0, output.Width, output.Height),
+                                         GorgonColors.White,
                                          _sceneSrv,
-                                         new DX.RectangleF(0, 0, 1, 1),
+                                         new GorgonRectangleF(0, 0, 1, 1),
                                          textureSampler: GorgonSamplerState.Default);
             EndPass(1, output);
             EndRender(output);
@@ -675,7 +662,7 @@ public class Gorgon2DBloomEffect
         else
         {
             EndRender(null);
-        }            
+        }
     }
 
     /// <summary>Function called to initialize the effect.</summary>
@@ -685,15 +672,13 @@ public class Gorgon2DBloomEffect
         _settingsBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, in _settings, "Bloom Settings Buffer");
         _textureSettingsBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, new GorgonConstantBufferInfo(Unsafe.SizeOf<Vector2>())
         {
-            Name = "Texture Settings Buffer",                
+            Name = "Texture Settings Buffer",
             Usage = ResourceUsage.Dynamic
         });
 
         CompileShaders();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
     /// <summary>
     /// Initializes a new instance of the <see cref="Gorgon2DBloomEffect" /> class.
     /// </summary>
@@ -709,6 +694,5 @@ public class Gorgon2DBloomEffect
 
         _sceneTargetInfo = new BloomTextureInfo(_targetInfo, "Bloom Source Image");
         _blurTargetInfo = new BloomTextureInfo(_targetInfo, "Blurred/Filtered Target");
-    }    
-    #endregion
+    }
 }
