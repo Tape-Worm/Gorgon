@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,39 +11,36 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 13, 2018 4:17:02 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
 using Gorgon.Collections;
-using Gorgon.Core;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Memory;
+using Gorgon.Patterns;
 using Gorgon.Renderers.Cameras;
 using Gorgon.Renderers.Properties;
 
 namespace Gorgon.Renderers;
 
 /// <summary>
-/// A fluent interface used to create shader states for use with a <see cref="Gorgon2DBatchState"/>.
+/// A fluent interface used to create shader states for use with a <see cref="Gorgon2DBatchState"/>
 /// </summary>
 /// <typeparam name="T">The type of shader.</typeparam>
 /// <remarks>
 /// <para>
 /// This builder creates shader states for state information wrapped around shaders based on <see cref="GorgonShader"/>. States built by this type are used for passing shader programs and related states 
-/// to the <see cref="Gorgon2DBatchState"/> when setting up a batch render via <see cref="Gorgon2D.Begin(Gorgon2DBatchState, GorgonCameraCommon)"/>.
+/// to the <see cref="Gorgon2DBatchState"/> when setting up a batch render via <see cref="Gorgon2D.Begin(Gorgon2DBatchState, GorgonCameraCommon)"/>
 /// </para>
 /// <para>
 /// If a custom pixel or vertex shader is assigned to the state, then developers should note which resource slots, and constant buffer slots are used by the 2D renderer itself. Gorgon will allow 
@@ -101,7 +98,7 @@ namespace Gorgon.Renderers;
 ///		</item>
 /// </list>
 /// </para>
-/// Following this list, a developer can use any texture slot from 2 and up, and any constant buffer slots between 2 (or 1 for pixel shaders) and 11 for their own data.
+/// Following this list, a developer can use any texture slot from 2 and up, and any constant buffer slots between 2 (or 1 for pixel shaders) and 11 for their own data
 /// </para>    
 /// </remarks>
 /// <seealso cref="GorgonPipelineState"/>
@@ -109,15 +106,13 @@ namespace Gorgon.Renderers;
 /// <seealso cref="Gorgon2DBatchState"/>
 /// <seealso cref="GorgonShader"/>
 public class Gorgon2DShaderStateBuilder<T>
-    : IGorgonFluentBuilderAllocator<Gorgon2DShaderStateBuilder<T>, Gorgon2DShaderState<T>, IGorgonAllocator<Gorgon2DShaderState<T>>>
+    : IGorgonFluentBuilder<Gorgon2DShaderStateBuilder<T>, Gorgon2DShaderState<T>, IGorgonAllocator<Gorgon2DShaderState<T>>>
     where T : GorgonShader
 {
-    #region Variables.
+
     // The shader to build.
     private readonly Gorgon2DShaderState<T> _workingShader = new();
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to copy a list of items.
     /// </summary>
@@ -279,12 +274,6 @@ public class Gorgon2DShaderStateBuilder<T>
     }
 
     /// <summary>
-    /// Function to return the object.
-    /// </summary>
-    /// <returns>The object created or updated by this builder.</returns>
-    public Gorgon2DShaderState<T> Build() => Build(null);
-
-    /// <summary>
     /// Function to clear the builder to a default state.
     /// </summary>
     /// <returns>The fluent builder interface.</returns>
@@ -322,7 +311,7 @@ public class Gorgon2DShaderStateBuilder<T>
     /// <summary>
     /// Function to return the object.
     /// </summary>
-    /// <param name="allocator">The allocator used to create an instance of the object</param>
+    /// <param name="allocator">[Optional] The allocator used to create an instance of the object.</param>
     /// <returns>The object created or updated by this builder.</returns>
     /// <remarks>
     ///   <para>
@@ -333,18 +322,9 @@ public class Gorgon2DShaderStateBuilder<T>
     /// around for as long as we need them, instead of creating objects that can potentially end up in the large object heap or in Gen 2.
     /// </para>
     /// </remarks>
-    public Gorgon2DShaderState<T> Build(IGorgonAllocator<Gorgon2DShaderState<T>> allocator)
+    public Gorgon2DShaderState<T> Build(IGorgonAllocator<Gorgon2DShaderState<T>>? allocator = null)
     {
-        Gorgon2DShaderState<T> shader;
-
-        if (allocator is null)
-        {
-            shader = new Gorgon2DShaderState<T>();
-        }
-        else
-        {
-            shader = allocator.Allocate();
-        }
+        Gorgon2DShaderState<T> shader = allocator?.Allocate() ?? new();
 
         Copy(shader.RwConstantBuffers, _workingShader.RwConstantBuffers, 0);
         Copy(shader.RwSrvs, _workingShader.RwSrvs, 0);
@@ -352,5 +332,4 @@ public class Gorgon2DShaderStateBuilder<T>
         shader.Shader = _workingShader.Shader;
         return shader;
     }
-    #endregion
 }

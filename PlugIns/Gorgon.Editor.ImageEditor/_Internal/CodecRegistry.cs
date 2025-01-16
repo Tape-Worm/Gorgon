@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
+﻿using System.Reflection;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.ImageEditor.Properties;
 using Gorgon.Editor.PlugIns;
@@ -13,28 +9,29 @@ using Gorgon.PlugIns;
 namespace Gorgon.Editor.ImageEditor;
 
 /// <summary>
-/// A registry for the image codecs used by the plug ins in this assembly.
+/// A registry for the image codecs used by the plug-ins in this assembly
 /// </summary>
-internal class CodecRegistry
-    : ICodecRegistry
+/// <remarks>Initializes a new instance of the <see cref="CodecRegistry"/> class.</remarks>
+/// <param name="pluginCache">The cache of plug-in assemblies.</param>
+/// <param name="log">The log for debug output.</param>
+internal class CodecRegistry(GorgonMefPlugInCache pluginCache, IGorgonLog log)
+        : ICodecRegistry
 {
-    #region Variables.
-    // The cache containing the plug in assemblies.
-    private readonly GorgonMefPlugInCache _pluginCache;
-    // The service used to manage the plug ins.
-    private readonly IGorgonPlugInService _pluginService;
-    // The log.
-    private readonly IGorgonLog _log;
-    #endregion
 
-    #region Properties.
+    // The cache containing the plug-in assemblies.
+    private readonly GorgonMefPlugInCache _pluginCache = pluginCache;
+    // The service used to manage the plug-ins.
+    private readonly IGorgonPlugInService _pluginService = new GorgonMefPlugInService(pluginCache);
+    // The log.
+    private readonly IGorgonLog _log = log;
+
     /// <summary>
     /// Property to return the list of codecs.
     /// </summary>
     public IList<IGorgonImageCodec> Codecs
     {
         get;
-    } = new List<IGorgonImageCodec>();
+    } = [];
 
     /// <summary>
     /// Property to return the codecs cross referenced with known file extension types.
@@ -42,22 +39,20 @@ internal class CodecRegistry
     public IList<(GorgonFileExtension extension, IGorgonImageCodec codec)> CodecFileTypes
     {
         get;
-    } = new List<(GorgonFileExtension extension, IGorgonImageCodec codec)>();
+    } = [];
 
     /// <summary>
-    /// Property to return the list of image codec plug ins.
+    /// Property to return the list of image codec plug-ins.
     /// </summary>
     public IList<GorgonImageCodecPlugIn> CodecPlugIns
     {
         get;
-    } = new List<GorgonImageCodecPlugIn>();
-    #endregion
+    } = [];
 
-    #region Methods.
     /// <summary>
-    /// Function to load external image codec plug ins.
+    /// Function to load external image codec plug-ins.
     /// </summary>
-    /// <param name="settings">The settings containing the plug in path.</param>
+    /// <param name="settings">The settings containing the plug-in path.</param>
     private void LoadCodecPlugIns(ImageEditorSettings settings)
     {
         if (settings.CodecPlugInPaths.Count == 0)
@@ -71,10 +66,10 @@ internal class CodecRegistry
 
         if (assemblies.Count == 0)
         {
-            _log.Print("Image codec plug in assemblies were not loaded. There may not have been any plug assemblies, or they may already be referenced.", LoggingLevel.Verbose);
+            _log.Print("Image codec plug-in assemblies were not loaded. There may not have been any plug assemblies, or they may already be referenced.", LoggingLevel.Verbose);
         }
 
-        // Load all the codecs contained within the plug in (a plug in can have multiple codecs).
+        // Load all the codecs contained within the plug-in (a plug-in can have multiple codecs).
         foreach (GorgonImageCodecPlugIn plugin in _pluginService.GetPlugIns<GorgonImageCodecPlugIn>())
         {
             foreach (GorgonImageCodecDescription desc in plugin.Codecs)
@@ -83,7 +78,7 @@ internal class CodecRegistry
 
                 if (Codecs.Any(item => string.Equals(item.GetType().FullName, desc.Name, StringComparison.OrdinalIgnoreCase)))
                 {
-                    _log.Print($"WARNING: The image codec '{desc.Name}' is already loaded, skipping this one...", LoggingLevel.Verbose);
+                    _log.PrintWarning($"The image codec '{desc.Name}' is already loaded, skipping this one...", LoggingLevel.Verbose);
                     continue;
                 }
 
@@ -91,7 +86,7 @@ internal class CodecRegistry
 
                 if (codec is null)
                 {
-                    _log.Print($"ERROR: The image codec '{desc.Name}' was not created (returned NULL).", LoggingLevel.Simple);
+                    _log.PrintError($"The image codec '{desc.Name}' was not created (returned NULL).", LoggingLevel.Simple);
                     continue;
                 }
 
@@ -101,9 +96,9 @@ internal class CodecRegistry
     }
 
     /// <summary>
-    /// Function to remove an image codec plug in from the registry.
+    /// Function to remove an image codec plug-in from the registry.
     /// </summary>
-    /// <param name="plugin">The plug in to remove.</param>
+    /// <param name="plugin">The plug-in to remove.</param>
     public void RemoveCodecPlugIn(GorgonImageCodecPlugIn plugin)
     {
         if (plugin is null)
@@ -142,17 +137,17 @@ internal class CodecRegistry
     /// Function to add a codec to the registry.
     /// </summary>
     /// <param name="path">The path to the codec assembly.</param>
-    /// <param name="errors">A list of errors if the plug in fails to load.</param>
+    /// <param name="errors">A list of errors if the plug-in fails to load.</param>
     /// <returns>A list of codec plugs ins that were loaded.</returns>
     public IReadOnlyList<GorgonImageCodecPlugIn> AddCodecPlugIn(string path, out IReadOnlyList<string> errors)
     {
-        var localErrors = new List<string>();
+        List<string> localErrors = [];
         errors = localErrors;
 
-        var result = new List<GorgonImageCodecPlugIn>();
+        List<GorgonImageCodecPlugIn> result = [];
         _log.Print("Loading image codecs...", LoggingLevel.Intermediate);
 
-        IReadOnlyList<PlugInAssemblyState> assemblies = _pluginCache.ValidateAndLoadAssemblies(new[] { path }, _log);
+        IReadOnlyList<PlugInAssemblyState> assemblies = _pluginCache.ValidateAndLoadAssemblies([path], _log);
 
         if (assemblies.Count == 0)
         {
@@ -171,9 +166,9 @@ internal class CodecRegistry
             return result;
         }
 
-        // Since we can't unload an assembly, we'll have to force a rescan of the plug ins. We may have unloaded one prior, and we might need to get it back.
+        // Since we can't unload an assembly, we'll have to force a rescan of the plug-ins. We may have unloaded one prior, and we might need to get it back.
         _pluginService.ScanPlugIns();
-        var assemblyName = AssemblyName.GetAssemblyName(path);
+        AssemblyName assemblyName = AssemblyName.GetAssemblyName(path);
         IReadOnlyList<GorgonImageCodecPlugIn> pluginList = _pluginService.GetPlugIns<GorgonImageCodecPlugIn>(assemblyName);
 
         if (pluginList.Count == 0)
@@ -182,12 +177,12 @@ internal class CodecRegistry
             return result;
         }
 
-        // Load all the codecs contained within the plug in (a plug in can have multiple codecs).
+        // Load all the codecs contained within the plug-in (a plug-in can have multiple codecs).
         foreach (GorgonImageCodecPlugIn plugin in pluginList)
         {
             if (CodecPlugIns.Any(item => string.Equals(plugin.Name, item.Name, StringComparison.OrdinalIgnoreCase)))
             {
-                _log.Print($"WARNING: Codec plug in '{plugin.Name}' is already loaded.", LoggingLevel.Intermediate);
+                _log.PrintWarning($"Codec plug-in '{plugin.Name}' is already loaded.", LoggingLevel.Intermediate);
                 localErrors.Add(string.Format(Resources.GORIMG_ERR_CODEC_PLUGIN_ALREADY_LOADED, plugin.Name));
                 continue;
             }
@@ -199,7 +194,7 @@ internal class CodecRegistry
             {
                 if (Codecs.Any(item => string.Equals(desc.Name, item.Name, StringComparison.OrdinalIgnoreCase)))
                 {
-                    _log.Print($"WARNING: Codec '{desc.Name}' is already loaded.", LoggingLevel.Intermediate);
+                    _log.PrintWarning($"Codec '{desc.Name}' is already loaded.", LoggingLevel.Intermediate);
                     localErrors.Add(string.Format(Resources.GORIMG_ERR_CODEC_ALREADY_LOADED, desc.Name));
                     --count;
                     continue;
@@ -209,7 +204,7 @@ internal class CodecRegistry
 
                 if (imageCodec is null)
                 {
-                    _log.Print($"ERROR: Could not create image codec '{desc.Name}' from plug in '{plugin.PlugInPath}'.", LoggingLevel.Verbose);
+                    _log.PrintError($"Could not create image codec '{desc.Name}' from plug-in '{plugin.PlugInPath}'.", LoggingLevel.Verbose);
                     localErrors.Add(string.Format(Resources.GORIMG_ERR_CODEC_LOAD_FAIL, desc.Name));
                     --count;
                     continue;
@@ -223,7 +218,7 @@ internal class CodecRegistry
 
                     if (CodecFileTypes.Any(item => item.extension.Equals(codecExtension.fileExtension)))
                     {
-                        _log.Print($"WARNING: Another previously loaded codec already uses the file extension '{extension}'.  This file extension will not be registered to the '{imageCodec.Name}' codec.", LoggingLevel.Verbose);
+                        _log.PrintWarning($"Another previously loaded codec already uses the file extension '{extension}'.  This file extension will not be registered to the '{imageCodec.Name}' codec.", LoggingLevel.Verbose);
                         continue;
                     }
 
@@ -243,7 +238,7 @@ internal class CodecRegistry
     /// <summary>
     /// Function to load the codecs from our settings data.
     /// </summary>
-    /// <param name="settings">The settings containing the plug in paths.</param>
+    /// <param name="settings">The settings containing the plug-in paths.</param>
     public void LoadFromSettings(ImageEditorSettings settings)
     {
         Codecs.Clear();
@@ -266,7 +261,7 @@ internal class CodecRegistry
 
                 if (CodecFileTypes.Any(item => item.extension.Equals(codecExtension.fileExtension)))
                 {
-                    _log.Print($"WARNING: Another previously loaded codec already uses the file extension '{extension}'.  This file extension will not be registered to the '{codec.Name}' codec.", LoggingLevel.Verbose);
+                    _log.PrintWarning($"Another previously loaded codec already uses the file extension '{extension}'.  This file extension will not be registered to the '{codec.Name}' codec.", LoggingLevel.Verbose);
                     continue;
                 }
 
@@ -274,17 +269,4 @@ internal class CodecRegistry
             }
         }
     }
-    #endregion
-
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="CodecRegistry"/> class.</summary>
-    /// <param name="pluginCache">The cache of plug in assemblies.</param>
-    /// <param name="log">The log for debug output.</param>
-    public CodecRegistry(GorgonMefPlugInCache pluginCache, IGorgonLog log)
-    {
-        _pluginCache = pluginCache;
-        _pluginService = new GorgonMefPlugInService(pluginCache);
-        _log = log;
-    }
-    #endregion
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,23 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 26, 2018 6:59:36 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Properties;
@@ -39,17 +34,15 @@ using Gorgon.Renderers;
 namespace Gorgon.Editor.Rendering;
 
 /// <summary>
-/// A graphics context containing the current graphics interface and renderer.
+/// A graphics context containing the current graphics interface and renderer
 /// </summary>
 internal class GraphicsContext
     : IGraphicsContext, IDisposable
 {
-    #region Variables.
+
     // Leases for a swap chain.
     private readonly Dictionary<string, WeakReference<GorgonSwapChain>> _swapChainLeases = new(StringComparer.OrdinalIgnoreCase);
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to return information about the video adapter selected.
     /// </summary>
@@ -84,9 +77,7 @@ internal class GraphicsContext
     {
         get;
     }
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to return a leased out swap chain.
     /// </summary>
@@ -164,7 +155,7 @@ internal class GraphicsContext
             _swapChainLeases.Remove(control.Name);
         }
 
-        var resultSwap = new GorgonSwapChain(Graphics, control,
+        GorgonSwapChain resultSwap = new(Graphics, control,
                                                          new GorgonSwapChainInfo(control.ClientSize.Width, control.ClientSize.Height, BufferFormat.R8G8B8A8_UNorm)
                                                          {
                                                              Name = $"{control.Name} Swap Chain"
@@ -193,9 +184,9 @@ internal class GraphicsContext
         // Choose the adapter with the highest feature level.
         IGorgonVideoAdapterInfo adapter = adapters.OrderByDescending(item => item.FeatureSet).First();
 
-        var graphics = new GorgonGraphics(adapter, log: log);
-        var fontFactory = new GorgonFontFactory(graphics);
-        var blitter = new GorgonTextureBlitter(graphics);
+        GorgonGraphics graphics = new(adapter, log: log);
+        GorgonFontFactory fontFactory = new(graphics);
+        GorgonTextureBlitter blitter = new(graphics);
 
         return new GraphicsContext(graphics, blitter, fontFactory);
     }
@@ -219,9 +210,7 @@ internal class GraphicsContext
         Renderer2D?.Dispose();
         Graphics?.Dispose();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
     /// <summary>
     /// Initializes a new instance of the <see cref="GraphicsContext"/> class.
     /// </summary>
@@ -235,6 +224,4 @@ internal class GraphicsContext
         FontFactory = fontFactory;
         Renderer2D = new Gorgon2D(graphics);
     }
-    #endregion
-
 }

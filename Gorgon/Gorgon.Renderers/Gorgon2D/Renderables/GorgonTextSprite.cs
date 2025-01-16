@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,22 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 7, 2018 3:13:51 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
 using System.Text;
 using Gorgon.Core;
@@ -35,13 +31,11 @@ using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts;
 using Gorgon.Math;
 using Gorgon.UI;
-using DX = SharpDX;
-
 
 namespace Gorgon.Renderers;
 
 /// <summary>
-/// Determines how text should be rendered.
+/// Determines how text should be rendered
 /// </summary>
 public enum TextDrawMode
 {
@@ -70,11 +64,10 @@ public enum TextDrawMode
 }
 
 /// <summary>
-/// A class that defines a sprite that is used to display text.
+/// A class that defines a sprite that is used to display text
 /// </summary>
 public class GorgonTextSprite
 {
-    #region Variables.
     // The text to render.
     private string _text;
     // Text with embedded codes.
@@ -82,7 +75,7 @@ public class GorgonTextSprite
     // The formatted text.
     private readonly StringBuilder _formattedText = new(256);
     // The area for used for text layout.
-    private DX.Size2F? _layoutArea;
+    private Vector2? _layoutArea;
     // Flag to allow or disallow control codes in the text.
     private bool _allowCodes;
     // The parser used to parse out the codes from text assigned to this object.
@@ -93,9 +86,7 @@ public class GorgonTextSprite
     /// It is exposed an internal variable (which goes against C# best practices) for performance reasons (property accesses add up over time).
     /// </summary>
     internal readonly TextRenderable Renderable = new();
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to return whether or not the sprite has had its position, size, texture information, or object space vertices updated since it was last drawn.
     /// </summary>
@@ -181,7 +172,7 @@ public class GorgonTextSprite
     /// but, when this property is defined, the layout region can be larger or smaller than the sprite <see cref="Bounds"/>.
     /// </para>
     /// </remarks>
-    public DX.Size2F? LayoutArea
+    public Vector2? LayoutArea
     {
         get => _layoutArea;
         set
@@ -337,7 +328,7 @@ public class GorgonTextSprite
     public GorgonColor Color
     {
         get => GlyphCornerColors.UpperLeft;
-        set => GlyphCornerColors.SetAll(in value);
+        set => GlyphCornerColors.SetAll(value);
     }
 
     /// <summary>
@@ -353,7 +344,7 @@ public class GorgonTextSprite
         get => Renderable.OutlineTint;
         set
         {
-            if (GorgonColor.Equals(in Renderable.OutlineTint, in value))
+            if (GorgonColor.Equals(Renderable.OutlineTint, value))
             {
                 return;
             }
@@ -411,7 +402,7 @@ public class GorgonTextSprite
     /// <summary>
     /// Property to return the boundaries of the sprite.
     /// </summary>
-    public DX.RectangleF Bounds => Renderable.Bounds;
+    public GorgonRectangleF Bounds => Renderable.Bounds;
 
     /// <summary>
     /// Property to set or return the position of the sprite.
@@ -421,7 +412,7 @@ public class GorgonTextSprite
         get => new(Renderable.Bounds.Left, Renderable.Bounds.Top);
         set
         {
-            ref DX.RectangleF bounds = ref Renderable.Bounds;
+            ref GorgonRectangleF bounds = ref Renderable.Bounds;
 
             if ((bounds.Left == value.X)
                 && (bounds.Top == value.Y))
@@ -429,7 +420,7 @@ public class GorgonTextSprite
                 return;
             }
 
-            bounds = new DX.RectangleF(value.X, value.Y, bounds.Width, bounds.Height);
+            bounds = new GorgonRectangleF(value.X, value.Y, bounds.Width, bounds.Height);
             Renderable.HasTransformChanges = true;
         }
     }
@@ -478,7 +469,7 @@ public class GorgonTextSprite
     /// <summary>
     /// Property to return the size of the sprite.
     /// </summary>
-    public DX.Size2F Size => Renderable.Bounds.Size;
+    public Vector2 Size => Renderable.Bounds.Size;
 
     /// <summary>
     /// Property to set or return the size of the renderable after scaling has been applied.
@@ -487,19 +478,19 @@ public class GorgonTextSprite
     /// This property will set or return the actual size of the renderable.  This means that if a <see cref="Scale"/> has been set, then this property will return the size of the renderable with
     /// multiplied by the scale.  When assigning a value, the scale be set on value derived from the current size of the renderable.
     /// </remarks>
-    public DX.Size2F ScaledSize
+    public Vector2 ScaledSize
     {
         get
         {
-            ref DX.RectangleF bounds = ref Renderable.Bounds;
+            ref GorgonRectangleF bounds = ref Renderable.Bounds;
             ref Vector2 scale = ref Renderable.Scale;
-            return new DX.Size2F(scale.X * bounds.Width, scale.Y * bounds.Height);
+            return new Vector2(scale.X * bounds.Width, scale.Y * bounds.Height);
         }
         set
         {
-            ref DX.RectangleF bounds = ref Renderable.Bounds;
+            ref GorgonRectangleF bounds = ref Renderable.Bounds;
             ref Vector2 scale = ref Renderable.Scale;
-            scale = new Vector2(value.Width / bounds.Width, value.Height / bounds.Height);
+            scale = new Vector2(value.X / bounds.Width, value.Y / bounds.Height);
             Renderable.HasTransformChanges = true;
         }
     }
@@ -552,14 +543,14 @@ public class GorgonTextSprite
     /// To disable alpha testing outright, set this property to <b>null</b>.
     /// </para>
     /// </remarks>
-    public GorgonRangeF? AlphaTest
+    public GorgonRange<float>? AlphaTest
     {
         get
         {
             BatchRenderable renderable = Renderable;
             return renderable.AlphaTestData.IsEnabled == 0
                 ? null
-                : new GorgonRangeF(renderable.AlphaTestData.LowerAlpha, renderable.AlphaTestData.UpperAlpha);
+                : new GorgonRange<float>(renderable.AlphaTestData.LowerAlpha, renderable.AlphaTestData.UpperAlpha);
         }
         set
         {
@@ -572,7 +563,7 @@ public class GorgonTextSprite
                     return;
                 }
 
-                renderable.AlphaTestData = new AlphaTestData(false, new GorgonRangeF(renderable.AlphaTestData.LowerAlpha, renderable.AlphaTestData.UpperAlpha));
+                renderable.AlphaTestData = new AlphaTestData(false, new GorgonRange<float>(renderable.AlphaTestData.LowerAlpha, renderable.AlphaTestData.UpperAlpha));
                 renderable.StateChanged = true;
                 return;
             }
@@ -581,20 +572,18 @@ public class GorgonTextSprite
             renderable.StateChanged = true;
         }
     }
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to update the boundaries on the text sprite.
     /// </summary>
     private void UpdateBounds()
     {
-        DX.Size2F size = _formattedText.ToString().MeasureText(Renderable.Font,
+        Vector2 size = _formattedText.ToString().MeasureText(Renderable.Font,
                                                      DrawMode != TextDrawMode.GlyphsOnly,
                                                      Renderable.TabSpaceCount,
                                                      Renderable.LineSpaceMultiplier);
 
-        Renderable.Bounds = new DX.RectangleF(Renderable.Bounds.Left, Renderable.Bounds.Top, size.Width, size.Height);
+        Renderable.Bounds = new GorgonRectangleF(Renderable.Bounds.Left, Renderable.Bounds.Top, size.X, size.Y);
         Renderable.LayoutArea = _layoutArea ?? size;
     }
 
@@ -605,7 +594,7 @@ public class GorgonTextSprite
     {
         if (_formattedText.Length == 0)
         {
-            Renderable.Lines = Array.Empty<string>();
+            Renderable.Lines = [];
             return;
         }
 
@@ -617,9 +606,7 @@ public class GorgonTextSprite
         Renderable.HasVertexChanges = true;
         Renderable.VertexCountChanged = (Renderable.Vertices is null) || (estimatedVertexCount > Renderable.Vertices.Length);
     }
-    #endregion
 
-    #region Constructor/Finalizer.
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonTextSprite"/> class.
     /// </summary>
@@ -630,7 +617,6 @@ public class GorgonTextSprite
     {
         Font = font ?? throw new ArgumentNullException(nameof(font));
         Text = text ?? string.Empty;
-        GlyphCornerColors = new GorgonGlyphColors(GorgonColor.White, Renderable);
+        GlyphCornerColors = new GorgonGlyphColors(GorgonColors.White, Renderable);
     }
-    #endregion
 }

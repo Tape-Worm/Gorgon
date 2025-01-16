@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,21 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 8, 2018 1:44:13 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
 using SharpDX.Direct3D;
 using SharpDX.DXGI;
 using D3D11 = SharpDX.Direct3D11;
@@ -33,7 +30,7 @@ using D3D11 = SharpDX.Direct3D11;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Extension methods for collections.
+/// Extension methods for collections
 /// </summary>
 public static class GorgonCollectionExtensions
 {
@@ -77,7 +74,7 @@ public static class GorgonCollectionExtensions
     /// </note>
     /// </para>
     /// </remarks>
-    public static void FindNearestVideoMode(this IReadOnlyList<GorgonVideoMode> videoModes, IGorgonVideoOutputInfo output, in GorgonVideoMode videoMode, out GorgonVideoMode suggestedMode)
+    public static void FindNearestVideoMode(this IReadOnlyList<GorgonVideoMode> videoModes, IGorgonVideoOutputInfo output, ref readonly GorgonVideoMode videoMode, out GorgonVideoMode suggestedMode)
     {
         ref readonly GorgonVideoMode result = ref _invalidMode;
 
@@ -93,11 +90,11 @@ public static class GorgonCollectionExtensions
             return;
         }
 
-        using var factory = new Factory1();
+        using Factory1 factory = new();
         using Adapter1 adapter = factory.GetAdapter1(output.Adapter.Index);
         using Output giOutput = adapter.GetOutput(output.Index);
         using Output1 giOutput1 = giOutput.QueryInterface<Output1>();
-        using var device = new D3D11.Device(adapter,
+        using D3D11.Device device = new(adapter,
                                                         GorgonGraphics.IsDebugEnabled
                                                             ? D3D11.DeviceCreationFlags.Debug
                                                             : D3D11.DeviceCreationFlags.None,

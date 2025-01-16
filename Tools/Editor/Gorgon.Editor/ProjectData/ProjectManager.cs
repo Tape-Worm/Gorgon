@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,28 +11,22 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: September 1, 2018 8:41:18 PM
 // 
-#endregion
 
-using System;
 using System.Buffers;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+using System.Text.Json;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Metadata;
@@ -41,36 +35,39 @@ using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Services;
 using Gorgon.IO;
-using Gorgon.IO.Providers;
+using Gorgon.IO.FileSystem;
+using Gorgon.IO.FileSystem.Providers;
 using Gorgon.Math;
-using Newtonsoft.Json;
 
 namespace Gorgon.Editor.ProjectData;
 
 /// <summary>
-/// A project manager used to create, destroy, load and save a project.
+/// A project manager used to create, destroy, load and save a project
 /// </summary>
-internal class ProjectManager
+/// <remarks>
+/// Initializes a new instance of the <see cref="ProjectManager"/> class
+/// </remarks>
+/// <param name="providers">The file system providers used to read and write project files.</param>
+/// <param name="contentPlugIns">The plug-in service used to manage content.</param>
+/// <param name="log">The log interface for debug messages.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="providers"/> parameter is <b>null</b>.</exception>
+internal class ProjectManager(FileSystemProviders providers, IGorgonLog log)
 {
-    #region Constants
+
     // The temporary directory name.
     private const string TemporaryDirectoryName = "tmp";
     // The source directory name.
     private const string SourceDirectoryName = "src";
     // The file system directory name.
     private const string FileSystemDirectoryName = "fs";
-    #endregion
 
-    #region Variables.
     // The stream used for the lock file.
     private Stream _lockStream;
     // The log interface for debug messages.
-    private readonly IGorgonLog _log;
+    private readonly IGorgonLog _log = log ?? GorgonLog.NullLog;
     // The provider service for handling reading and writing project files.
-    private readonly FileSystemProviders _providers;
-    #endregion
+    private readonly FileSystemProviders _providers = providers ?? throw new ArgumentNullException(nameof(providers));
 
-    #region Methods.
     /// <summary>
     /// Function to set up the required project directories.
     /// </summary>
@@ -78,14 +75,14 @@ internal class ProjectManager
     /// <returns>The required folders for the project.</returns>
     private (DirectoryInfo workspace, DirectoryInfo fileSystemDir, DirectoryInfo tempDir, DirectoryInfo srcDir) SetupProjectFolders(string basePath)
     {
-        var workspace = new DirectoryInfo(basePath);
+        DirectoryInfo workspace = new(basePath);
 
         workspace.Create();
         workspace.Refresh();
 
-        var fileSystemDir = new DirectoryInfo(Path.Combine(workspace.FullName, FileSystemDirectoryName));
-        var tempDir = new DirectoryInfo(Path.Combine(workspace.FullName, TemporaryDirectoryName));
-        var srcDir = new DirectoryInfo(Path.Combine(workspace.FullName, SourceDirectoryName));
+        DirectoryInfo fileSystemDir = new(Path.Combine(workspace.FullName, FileSystemDirectoryName));
+        DirectoryInfo tempDir = new(Path.Combine(workspace.FullName, TemporaryDirectoryName));
+        DirectoryInfo srcDir = new(Path.Combine(workspace.FullName, SourceDirectoryName));
 
         tempDir.Create();
         fileSystemDir.Create();
@@ -185,7 +182,7 @@ internal class ProjectManager
                 if (recycle)
                 {
                     _log.Print($"Moving '{prevDirectory}' to the recycle bin...", LoggingLevel.Intermediate);
-                    Shell32.SendToRecycleBin(prevDirectory, Shell32.FileOperationFlags.FOF_SILENT | Shell32.FileOperationFlags.FOF_NOCONFIRMATION | Shell32.FileOperationFlags.FOF_WANTNUKEWARNING);
+                    Shell32.SendToRecycleBin(prevDirectory, FileOperationFlags.FOF_SILENT | FileOperationFlags.FOF_NOCONFIRMATION | FileOperationFlags.FOF_WANTNUKEWARNING);
                 }
                 else
                 {
@@ -215,9 +212,9 @@ internal class ProjectManager
     private async Task<string> CopyFileSystemAsync(string fileSystemFile, IGorgonFileSystemProvider provider, string fileSystemDir)
     {
         const int blockSize = 524288;
-        IGorgonFileSystem fileSystem = new GorgonFileSystem(provider, _log);
+        IGorgonFileSystem fileSystem = new GorgonFileSystem(_log);
 
-        fileSystem.Mount(fileSystemFile);
+        fileSystem.Mount(fileSystemFile, provider: provider);
 
         IGorgonVirtualFile metaData = fileSystem.GetFile(Path.Combine("/", CommonEditorConstants.EditorMetadataFileName));
 
@@ -227,7 +224,7 @@ internal class ProjectManager
 
         foreach (IGorgonVirtualDirectory directory in directories)
         {
-            string dirPath = Path.Combine(fileSystemDir, directory.FullPath.FormatDirectory(Path.DirectorySeparatorChar)[1..]);                
+            string dirPath = Path.Combine(fileSystemDir, directory.FullPath.FormatDirectory(Path.DirectorySeparatorChar)[1..]);
 
             if (Directory.Exists(dirPath))
             {
@@ -238,14 +235,13 @@ internal class ProjectManager
         }
 
         // Copy all files into the directories we just created.
-        var files = fileSystem.FindFiles("/", "*")
+        List<IGorgonVirtualFile> files = [.. fileSystem.FindFiles("/", "*")
                             .Where(item => item != metaData)
-                            .OrderByDescending(item => item.Size)
-                            .ToList();
+                            .OrderByDescending(item => item.Size)];
 
         int maxJobCount = (Environment.ProcessorCount * 2).Min(32).Max(1);
         int filesPerJob = (int)((float)files.Count / maxJobCount).FastCeiling();
-        var jobs = new List<Task>();
+        List<Task> jobs = [];
 
         if ((files.Count <= 100) || (maxJobCount < 2))
         {
@@ -256,22 +252,22 @@ internal class ProjectManager
 
         void CopyFile(FileCopyJob job)
         {
-            foreach (IGorgonVirtualFile file in job.Files)
+            foreach (IGorgonVirtualFile file in job.Files.OrderByDescending(item => item.Size))
             {
                 string outPath = Path.Combine(fileSystemDir, file.Directory.FullPath.FormatDirectory(Path.DirectorySeparatorChar)[1..], file.Name);
 
-                using Stream readJobStream = file.OpenStream();
+                using Stream readJobStream = fileSystem.OpenStream(file.FullPath, false);
                 using Stream writeJobStream = File.Open(outPath, FileMode.Create, FileAccess.Write, FileShare.None);
                 readJobStream.CopyToStream(writeJobStream, (int)readJobStream.Length, job.ReadBuffer);
             }
         }
 
-        var buffers = new List<byte[]>(files.Count);
+        List<byte[]> buffers = new(files.Count);
 
         // Build up the tasks for our jobs.
         while (files.Count > 0)
         {
-            var jobData = new FileCopyJob
+            FileCopyJob jobData = new()
             {
                 ReadBuffer = ArrayPool<byte>.Shared.Rent(blockSize)
             };
@@ -308,13 +304,13 @@ internal class ProjectManager
         }
 
         _log.Print($"'{fileSystemFile}' has metadata. Copying to the .", LoggingLevel.Verbose);
-                    
+
         byte[] writeBuffer = ArrayPool<byte>.Shared.Rent(blockSize);
-        Stream readStream = metaData.OpenStream();
+        Stream readStream = fileSystem.OpenStream(metaData.FullPath, false);
         Stream writeStream = File.Open(metaDataOutput, FileMode.Create, FileAccess.Write, FileShare.None);
         try
         {
-            readStream.CopyToStream(writeStream, blockSize, writeBuffer);
+            readStream.CopyToStream(writeStream, (int)metaData.Size, writeBuffer);
         }
         finally
         {
@@ -331,27 +327,22 @@ internal class ProjectManager
     /// <summary>
     /// Function to retrieve the version from the database file.
     /// </summary>
-    /// <param name="metaDataFile">The path to the metadata file.</param>
+    /// <param name="json">The JSON document to parse.</param>
     /// <param name="location">The directory containing the metadata file.</param>
     /// <returns>The version of the project.</returns>
     /// <exception cref="GorgonException">Thrown if the project was not a valid editor project.</exception>
-    private string GetVersion(string metaDataFile, string location)
+    private string GetVersion(JsonDocument json, string location)
     {
-        using var reader = new StreamReader(metaDataFile, Encoding.UTF8);
-        using var jsonReader = new JsonTextReader(reader);
-        // First property must be the version #.
-        if ((!jsonReader.Read()) || (!jsonReader.Read()))
+        JsonProperty versionElement = json.RootElement.EnumerateObject().FirstOrDefault();
+
+        // If the first element is not the version, then this is not a valid project.
+        if (!string.Equals(versionElement.Name, nameof(IProjectMetadata.Version), StringComparison.Ordinal))
         {
             throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_DIRECTORY_NO_PROJECT, location));
         }
 
-        if ((jsonReader.TokenType != JsonToken.PropertyName)
-            || (!string.Equals(jsonReader.Value.ToString(), nameof(IProjectMetadata.Version), StringComparison.Ordinal)))
-        {
-            throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_DIRECTORY_NO_PROJECT, location));
-        }
+        string version = versionElement.Value.GetString();
 
-        string version = jsonReader.ReadAsString();
         return !version.StartsWith(CommonEditorConstants.EditorProjectHeader, StringComparison.Ordinal)
             ? throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_DIRECTORY_NO_PROJECT, location))
             : version;
@@ -369,20 +360,19 @@ internal class ProjectManager
 
         _log.Print("Loading project metadata.", LoggingLevel.Verbose);
 
-        string projectVersion = GetVersion(metaDataFile, location);
-
-        using (var reader = new StreamReader(metaDataFile, Encoding.UTF8))
+        using (StreamReader reader = new(metaDataFile, Encoding.UTF8))
         {
-            string readJsonData = reader.ReadToEnd();                
+            using JsonDocument jsonDoc = JsonDocument.Parse(reader.ReadToEnd());
+            string projectVersion = GetVersion(jsonDoc, location);
 
             switch (projectVersion)
             {
                 case CommonEditorConstants.Editor30ProjectVersion:
-                    Project30 project30 = JsonConvert.DeserializeObject<Project30>(readJsonData);
+                    Project30 project30 = jsonDoc.Deserialize<Project30>();
                     result = new Project(project30);
                     break;
                 case CommonEditorConstants.EditorCurrentProjectVersion:
-                    result = JsonConvert.DeserializeObject<Project>(readJsonData);
+                    result = jsonDoc.Deserialize<Project>();
                     break;
                 default:
                     throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_DIRECTORY_NO_PROJECT, location));
@@ -395,14 +385,14 @@ internal class ProjectManager
 
             if (!result.FileSystemDirectory.Exists)
             {
-                _log.Print("WARNING: The file system directory was not found.", LoggingLevel.Verbose);
+                _log.PrintWarning("The file system directory was not found.", LoggingLevel.Verbose);
                 result.FileSystemDirectory.Create();
                 result.FileSystemDirectory.Refresh();
             }
 
             if (!result.TempDirectory.Exists)
             {
-                _log.Print("WARNING: The temporary directory was not found.", LoggingLevel.Verbose);
+                _log.PrintWarning("The temporary directory was not found.", LoggingLevel.Verbose);
                 result.TempDirectory.Create();
                 result.TempDirectory.Refresh();
             }
@@ -470,7 +460,6 @@ internal class ProjectManager
         }
 
         workspace = Path.GetFullPath(workspace).FormatDirectory(Path.DirectorySeparatorChar);
-
 
         if (!Directory.Exists(workspace))
         {
@@ -592,7 +581,7 @@ internal class ProjectManager
 
         string metadataFile = Path.Combine(projectWorkspace.FullName, CommonEditorConstants.EditorMetadataFileName);
 
-        var result = new Project(projectWorkspace, projectTemp, projectFileSystem, projectSource);
+        Project result = new(projectWorkspace, projectTemp, projectFileSystem, projectSource);
 
         BuildMetadataDatabase(result, metadataFile);
 
@@ -628,7 +617,7 @@ internal class ProjectManager
     /// </summary>
     /// <param name="project">The project to save.</param>
     /// <param name="path">The path to the project file.</param>
-    /// <param name="writer">The writer plug in used to write the file data.</param>
+    /// <param name="writer">The writer plug-in used to write the file data.</param>
     /// <param name="progressCallback">The callback method that reports the saving progress to the UI.</param>
     /// <param name="cancelToken">The token used for cancellation of the operation.</param>
     /// <returns>A task for asynchronous operation.</returns>
@@ -665,7 +654,7 @@ internal class ProjectManager
 
         try
         {
-            var excludedPaths = new List<(string virtDir, string physDir)>();
+            List<(string virtDir, string physDir)> excludedPaths = [];
 
             foreach (KeyValuePair<string, ProjectItemMetadata> metaData in project.ProjectItems)
             {
@@ -818,7 +807,7 @@ internal class ProjectManager
             _log.Print("No metadata file exists. A new one will be created.", LoggingLevel.Verbose);
 
             // Create a dummy project, so we have something to serialize.
-            var dummyProject = new Project(new DirectoryInfo(workspace), tempDir, fsDir, srcDir);
+            Project dummyProject = new(new DirectoryInfo(workspace), tempDir, fsDir, srcDir);
 
             // If we have v2 meatdata, upgrade the file.
             string v2Metadata = Path.Combine(fsDir.FullName, V2MetadataImporter.V2MetadataFilename);
@@ -829,7 +818,7 @@ internal class ProjectManager
                 return false;
             }
 
-            var importer = new V2MetadataImporter(v2Metadata, _log);
+            V2MetadataImporter importer = new(v2Metadata, _log);
             importer.Import(dummyProject);
             PersistMetadata(dummyProject, CancellationToken.None);
 
@@ -865,7 +854,7 @@ internal class ProjectManager
         {
             // Write to a transactional file first so we don't corrupt the original.
             jsonWriter = new StreamWriter(File.Open(tempPath, FileMode.Create, FileAccess.Write, FileShare.None), Encoding.UTF8, 81920, false);
-            jsonWriter.Write(JsonConvert.SerializeObject(project));
+            jsonWriter.Write(JsonSerializer.Serialize(project));
             jsonWriter.Flush();
             jsonWriter.Close();
 
@@ -950,23 +939,7 @@ internal class ProjectManager
         }
 
         // Send the project to the recycle bin so we can recover it if need be.
-        Shell32.SendToRecycleBin(projectPath, Shell32.FileOperationFlags.FOF_SILENT | Shell32.FileOperationFlags.FOF_NOCONFIRMATION | Shell32.FileOperationFlags.FOF_WANTNUKEWARNING);
+        Shell32.SendToRecycleBin(projectPath, FileOperationFlags.FOF_SILENT | FileOperationFlags.FOF_NOCONFIRMATION | FileOperationFlags.FOF_WANTNUKEWARNING);
         return true;
     }
-    #endregion
-
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ProjectManager"/> class.
-    /// </summary>
-    /// <param name="providers">The file system providers used to read and write project files.</param>
-    /// <param name="contentPlugIns">The plug in service used to manage content.</param>
-    /// <param name="log">The log interface for debug messages.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="providers"/> parameter is <b>null</b>.</exception>
-    public ProjectManager(FileSystemProviders providers, IGorgonLog log)
-    {
-        _log = log ?? GorgonLog.NullLog;            
-        _providers = providers ?? throw new ArgumentNullException(nameof(providers));
-    }
-    #endregion
 }

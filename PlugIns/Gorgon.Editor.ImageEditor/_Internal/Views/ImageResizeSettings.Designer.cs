@@ -25,7 +25,7 @@ partial class ImageResizeSettings
         base.Dispose(disposing);
     }
 
-    #region Component Designer generated code
+
 
     /// <summary> 
     /// Required method for Designer support - do not modify 
@@ -274,7 +274,7 @@ partial class ImageResizeSettings
 
     }
 
-    #endregion
+
 
     private System.Windows.Forms.TableLayoutPanel TableBody;
     private System.Windows.Forms.Label LabelDesc;

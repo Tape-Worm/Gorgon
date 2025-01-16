@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,28 +11,20 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 31, 2020 10:49:39 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+using System.Numerics;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.SpriteEditor.Properties;
 using Gorgon.Editor.UI;
@@ -43,19 +35,17 @@ using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Graphics.Imaging.GdiPlus;
 using Gorgon.IO;
 using Gorgon.Math;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor;
 
 /// <summary>
-/// A form used to set up a new sprite.
+/// A form used to set up a new sprite
 /// </summary>
 internal partial class FormNewSprite
     : Form
 {
-    #region Variables.
     // The list of textures.
-    private IReadOnlyList<IContentFile> _textures = Array.Empty<IContentFile>();
+    private IReadOnlyList<IContentFile> _textures = [];
     // The preview image for the selected texture.
     private Image _previewImage;
     // The cancellation token source for the preview thread.
@@ -63,12 +53,10 @@ internal partial class FormNewSprite
     // The task used to load the preview image.
     private Task<IGorgonImage> _previewTask;
     // The original size for the sprite.
-    private DX.Size2F? _originalSize;
+    private Vector2? _originalSize;
     // The path to the preview directory.
     private static readonly string _previewDirPath = $"/Thumbnails/";
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to set or return the image codec for sprites.
     /// </summary>
@@ -112,7 +100,7 @@ internal partial class FormNewSprite
     /// <summary>
     /// Property to return the width and height for the sprite.
     /// </summary>
-    public DX.Size2F SpriteSize => new((float)NumericWidth.Value, (float)NumericHeight.Value);
+    public Vector2 SpriteSize => new((float)NumericWidth.Value, (float)NumericHeight.Value);
 
     /// <summary>
     /// Property to return the selected texture file.
@@ -122,14 +110,12 @@ internal partial class FormNewSprite
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
     /// <summary>Handles the FileEntrySelected event of the FileTextures control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="ContentFileEntrySelectedEventArgs"/> instance containing the event data.</param>
     private async void FileTextures_FileEntrySelected(object sender, ContentFileEntrySelectedEventArgs e)
-    {            
+    {
         IGorgonImage image = null;
         Stream imageStream = null;
 
@@ -234,7 +220,7 @@ internal partial class FormNewSprite
             FillTextureList(_textures);
             return;
         }
-        
+
         FillTextureList(_textures.Where(item => item.Name.IndexOf(e.SearchText, StringComparison.CurrentCultureIgnoreCase) > -1).ToArray());
     }
 
@@ -302,7 +288,7 @@ internal partial class FormNewSprite
     private void FillTextureList(IReadOnlyList<IContentFile> textures)
     {
         ContentFileExplorerFileEntry selectedTexture = null;
-        var dirs = new Dictionary<string, ContentFileExplorerDirectoryEntry>(StringComparer.OrdinalIgnoreCase);
+        Dictionary<string, ContentFileExplorerDirectoryEntry> dirs = new(StringComparer.OrdinalIgnoreCase);
 
         foreach (IContentFile texture in textures.OrderBy(item => item.Path))
         {
@@ -311,7 +297,7 @@ internal partial class FormNewSprite
 
             if (!dirs.TryGetValue(dirName, out ContentFileExplorerDirectoryEntry dirEntry))
             {
-                fileEntries = new List<ContentFileExplorerFileEntry>();
+                fileEntries = [];
                 dirEntry = new ContentFileExplorerDirectoryEntry(dirName, fileEntries);
                 dirs[dirName] = dirEntry;
             }
@@ -320,7 +306,7 @@ internal partial class FormNewSprite
                 fileEntries = (List<ContentFileExplorerFileEntry>)dirEntry.Files;
             }
 
-            var file = new ContentFileExplorerFileEntry(texture, dirEntry);
+            ContentFileExplorerFileEntry file = new(texture, dirEntry);
 
             if (TextureFile == texture)
             {
@@ -331,7 +317,7 @@ internal partial class FormNewSprite
             fileEntries.Add(file);
         }
 
-        FileTextures.Entries = dirs.Values.ToArray();
+        FileTextures.Entries = [.. dirs.Values];
 
         if (selectedTexture is null)
         {
@@ -367,20 +353,17 @@ internal partial class FormNewSprite
     /// Function to assign the original size for the sprite.
     /// </summary>
     /// <param name="size">The size to assign, or <b>null</b> to automatically size.</param>
-    public void SetOriginalSize(DX.Size2F? size)
+    public void SetOriginalSize(Vector2? size)
     {
         _originalSize = size;
 
         if (_originalSize is not null)
         {
-            NumericWidth.Value = (int)_originalSize.Value.Width.Max(1).Min((int)NumericWidth.Maximum);
-            NumericHeight.Value = (int)_originalSize.Value.Height.Max(1).Min((int)NumericHeight.Maximum);
+            NumericWidth.Value = (int)_originalSize.Value.X.Max(1).Min((int)NumericWidth.Maximum);
+            NumericHeight.Value = (int)_originalSize.Value.Y.Max(1).Min((int)NumericHeight.Maximum);
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
     /// <summary>Initializes a new instance of the <see cref="FormNewSprite"/> class.</summary>
     public FormNewSprite() => InitializeComponent();
-    #endregion
 }

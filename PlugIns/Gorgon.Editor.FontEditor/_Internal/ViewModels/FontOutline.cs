@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2021 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,45 +11,41 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 30, 2021 11:38:42 PM
 // 
-#endregion
 
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
-using Gorgon.Graphics.Fonts;
 
 namespace Gorgon.Editor.FontEditor;
 
 /// <summary>
-/// The view model for the text color editor.
+/// The view model for the text color editor
 /// </summary>
 internal class FontOutline
     : HostedPanelViewModelBase<HostedPanelViewModelParameters>, IFontOutline
 {
-    #region Variables.
+
     // The original color for the sprite.
-    private GorgonColor _originalStartColor = GorgonColor.Black;
+    private GorgonColor _originalStartColor = GorgonColors.Black;
     // The current color for the sprite.
-    private GorgonColor _startColor = GorgonColor.Black;
+    private GorgonColor _startColor = GorgonColors.Black;
     // The original color for the sprite.
-    private GorgonColor _originalEndColor = GorgonColor.Black;
+    private GorgonColor _originalEndColor = GorgonColors.Black;
     // The current color for the sprite.
-    private GorgonColor _endColor = GorgonColor.Black;
+    private GorgonColor _endColor = GorgonColors.Black;
     // The size of the outline.
     private int _outlineSize;
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to set or return the size of the outline.
     /// </summary>
@@ -75,7 +71,7 @@ internal class FontOutline
         get => _startColor;
         set
         {
-            if (_startColor.Equals(in value))
+            if (_startColor.Equals(value))
             {
                 return;
             }
@@ -94,7 +90,7 @@ internal class FontOutline
         get => _originalStartColor;
         set
         {
-            if (_originalStartColor.Equals(in value))
+            if (_originalStartColor.Equals(value))
             {
                 return;
             }
@@ -113,7 +109,7 @@ internal class FontOutline
         get => _originalEndColor;
         set
         {
-            if (_originalEndColor.Equals(in value))
+            if (_originalEndColor.Equals(value))
             {
                 return;
             }
@@ -132,7 +128,7 @@ internal class FontOutline
         get => _outlineSize < 3 ? _startColor : _endColor;
         set
         {
-            if (_endColor.Equals(in value))
+            if (_endColor.Equals(value))
             {
                 return;
             }
@@ -145,9 +141,7 @@ internal class FontOutline
 
     /// <summary>Property to return whether the panel is modal.</summary>
     public override bool IsModal => true;
-    #endregion
 
-    #region Methods.
     /// <summary>Function to inject dependencies for the view model.</summary>
     /// <param name="injectionParameters">The parameters to inject.</param>
     /// <remarks>
@@ -157,5 +151,4 @@ internal class FontOutline
     {
         // Nothing to inject.
     }
-    #endregion
 }

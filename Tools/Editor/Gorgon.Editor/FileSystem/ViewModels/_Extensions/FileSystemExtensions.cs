@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,25 +11,22 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: December 4, 2019 12:31:48 PM
 // 
-#endregion
-
-using System.Collections.Generic;
 
 namespace Gorgon.Editor.ViewModels;
 
 /// <summary>
-/// Extension method(s) for the file system.
+/// Extension method(s) for the file system
 /// </summary>
 internal static class FileSystemExtensions
 {
@@ -43,13 +40,13 @@ internal static class FileSystemExtensions
     /// Only hidden and system files are excluded from the editor file system.
     /// </para>
     /// </remarks>
-    public static bool IsValidFile(this System.IO.FileInfo file)
-    {            
-        System.IO.FileAttributes attribs = file.Attributes;
+    public static bool IsValidFile(this FileInfo file)
+    {
+        FileAttributes attribs = file.Attributes;
 
-        return (((attribs & System.IO.FileAttributes.Hidden) != System.IO.FileAttributes.Hidden)
-            && ((attribs & System.IO.FileAttributes.System) != System.IO.FileAttributes.System)
-            && ((attribs & System.IO.FileAttributes.Directory) != System.IO.FileAttributes.Directory));
+        return (((attribs & FileAttributes.Hidden) != FileAttributes.Hidden)
+            && ((attribs & FileAttributes.System) != FileAttributes.System)
+            && ((attribs & FileAttributes.Directory) != FileAttributes.Directory));
     }
 
     /// <summary>
@@ -61,13 +58,13 @@ internal static class FileSystemExtensions
     public static long GetTotalByteCount(this IDirectory directory, bool recursive)
     {
         long result = 0;
-        IEnumerable<string> files = System.IO.Directory.EnumerateFiles(directory.PhysicalPath, "*", 
-            recursive ? System.IO.SearchOption.AllDirectories : System.IO.SearchOption.TopDirectoryOnly);
+        IEnumerable<string> files = System.IO.Directory.EnumerateFiles(directory.PhysicalPath, "*",
+            recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
 
         foreach (string filePath in files)
         {
-            var fileInfo = new System.IO.FileInfo(filePath);
-            System.IO.FileAttributes attribs = fileInfo.Attributes;
+            FileInfo fileInfo = new(filePath);
+            FileAttributes attribs = fileInfo.Attributes;
 
             if (!IsValidFile(fileInfo))
             {

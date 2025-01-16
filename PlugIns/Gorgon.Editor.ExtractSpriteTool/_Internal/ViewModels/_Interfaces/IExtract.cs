@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,32 +11,29 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 24, 2020 11:25:55 PM
 // 
-#endregion
 
-using System.Collections.Generic;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.Tools;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.ExtractSpriteTool;
 
 /// <summary>
-/// The view model for the main UI.
+/// The view model for the main UI
 /// </summary>
 internal interface IExtract
     : IEditorTool
@@ -68,7 +65,7 @@ internal interface IExtract
     /// <summary>
     /// Property to set or return the number of columns/rows in the grid.
     /// </summary>
-    DX.Size2 GridSize
+    GorgonPoint GridSize
     {
         get;
         set;
@@ -77,7 +74,7 @@ internal interface IExtract
     /// <summary>
     /// Property to return the maximum columns and rows allowed in the grid.
     /// </summary>
-    DX.Size2 MaxGridSize
+    GorgonPoint MaxGridSize
     {
         get;
     }
@@ -85,7 +82,7 @@ internal interface IExtract
     /// <summary>
     /// Property to set or return the offset of the grid, in pixels.
     /// </summary>
-    DX.Point GridOffset
+    GorgonPoint GridOffset
     {
         get;
         set;
@@ -94,7 +91,7 @@ internal interface IExtract
     /// <summary>
     /// Property to set or return the size of a grid cell.
     /// </summary>
-    DX.Size2 CellSize
+    GorgonPoint CellSize
     {
         get;
         set;
@@ -194,7 +191,6 @@ internal interface IExtract
     {
         get;
     }
-
 
     /// <summary>
     /// Property to return the command used to go to the next preview sprite.

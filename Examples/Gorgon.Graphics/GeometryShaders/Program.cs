@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,27 +11,21 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 3, 2018 11:04:26 AM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
-using System.IO;
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using System.Windows.Forms;
 using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -40,22 +34,21 @@ using Gorgon.Math;
 using Gorgon.Renderers.Cameras;
 using Gorgon.Timing;
 using Gorgon.UI;
-using DX = SharpDX;
 
 namespace Gorgon.Examples;
 
 /// <summary>
-/// This example shows how to use a geometry shader with the Gorgon core graphics library.
+/// This example shows how to use a geometry shader with the Gorgon core graphics library
 ///
 /// A geometry shader is used to generate primitive data based on incoming primitive vertices (e.g. a set of vertices for a triangle, a single point, etc...). Using this, 
-/// we can dynamically build geometry on the GPU.
+/// we can dynamically build geometry on the GPU
 ///
 /// This example will take a single triangle, and build a fully 3D pyramid along with some animation in the geometry shader. It will also show how an application can build
-/// geometry without using an input layout, or vertex buffer.
+/// geometry without using an input layout, or vertex buffer
 /// </summary>
 static class Program
 {
-    #region Variables.
+
     // The main application form.
     private static FormMain _mainForm;
     // The graphics interface for the application.
@@ -90,9 +83,7 @@ static class Program
     private static float _angle;
     // The height offset.
     private static float _heightOffset;
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to update the world project matrix.
     /// </summary>
@@ -100,7 +91,7 @@ static class Program
     {
         // Update the animated offset for the center point.  We need to put this into a Vector4 because our data needs to be 
         // aligned to a 16 byte boundary for constant buffers.
-        var offset = new Vector4(_heightOffset, 0, 0, 0);
+        Vector4 offset = new(_heightOffset, 0, 0, 0);
 
         _worldMatrix = Matrix4x4.CreateRotationY(_angle.ToRadians());
         _worldMatrix.SetRow(3, new Vector4(0, 0, 2.0f, 1.0f));
@@ -128,8 +119,8 @@ static class Program
         _graphics.SetDepthStencil(_depthStencil);
 
         // When we resize, the projection matrix will go out of date, so we need to update our constant buffer with an updated projection.
-        _camera.ViewDimensions = e.Size.ToSize2F();            
-        ref readonly Matrix4x4 projection = ref _camera.GetProjectionMatrix();            
+        _camera.ViewDimensions = e.Size;
+        ref readonly Matrix4x4 projection = ref _camera.GetProjectionMatrix();
         _vsConstants.Buffer.SetData(in projection);
     }
 
@@ -173,7 +164,6 @@ static class Program
             _angle -= 360.0f;
         }
 
-
         // This will allow us to animate the center point of our pyramid.
         _heightOffset = _angle.ToRadians().FastSin().Abs();
 
@@ -202,7 +192,7 @@ static class Program
         GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
 
         // Build the form so we can actually show something.
-        _mainForm = GorgonExample.Initialize(new DX.Size2(1280, 800), "Geometry Shaders");
+        _mainForm = GorgonExample.Initialize(new GorgonPoint(1280, 800), "Geometry Shaders");
 
         try
         {
@@ -286,15 +276,15 @@ static class Program
             _graphics.SetRenderTarget(_swap.RenderTargetView, _depthStencil);
 
             // Create a constant buffer so we can adjust the positioning of the data.
-            _camera = new GorgonPerspectiveCamera(_graphics, new DX.Size2F(_swap.Width, _swap.Height), 0.125f, 1000.0f)
+            _camera = new GorgonPerspectiveCamera(_graphics, new Vector2(_swap.Width, _swap.Height), 0.125f, 1000.0f)
             {
                 Fov = 65.0f
             };
-            
+
             _vsConstants = GorgonConstantBufferView.CreateConstantBuffer(_graphics,
                                                                          new GorgonConstantBufferInfo((Unsafe.SizeOf<Matrix4x4>() * 2) + Unsafe.SizeOf<Vector4>())
                                                                          {
-                                                                             Name = "WorldProjection CBuffer"                                                                                 
+                                                                             Name = "WorldProjection CBuffer"
                                                                          });
             _vsConstants.Buffer.SetData(in _camera.GetProjectionMatrix(), copyMode: CopyMode.Discard);
             _vsConstants.Buffer.SetData(in _worldMatrix, 64, CopyMode.NoOverwrite);
@@ -326,9 +316,7 @@ static class Program
     {
         try
         {
-#if NET6_0_OR_GREATER
             Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
-#endif
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
@@ -357,5 +345,4 @@ static class Program
             _graphics?.Dispose();
         }
     }
-    #endregion
 }

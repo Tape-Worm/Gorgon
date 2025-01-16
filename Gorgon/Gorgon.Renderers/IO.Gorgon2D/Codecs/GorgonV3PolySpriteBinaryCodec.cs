@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,21 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 11, 2018 3:43:13 PM
 // 
-#endregion
 
-using System;
-using System.IO;
 using System.Numerics;
 using Gorgon.Core;
 using Gorgon.Graphics;
@@ -36,12 +33,16 @@ using Gorgon.Renderers;
 namespace Gorgon.IO;
 
 /// <summary>
-/// A codec that can read and write a binary formatted version of Gorgon v3 polygonal sprite data.
+/// A codec that can read and write a binary formatted version of Gorgon v3 polygonal sprite data
 /// </summary>
-public class GorgonV3PolySpriteBinaryCodec
-    : GorgonPolySpriteCodecCommon
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonV3PolySpriteBinaryCodec"/> class
+/// </remarks>
+/// <param name="renderer">The renderer used for resource handling.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/> parameter is <b>null</b>.</exception>
+public class GorgonV3PolySpriteBinaryCodec(Gorgon2D renderer)
+        : GorgonPolySpriteCodecCommon(renderer, Resources.GOR2DIO_V3_POLYSPRITE_BIN_CODEC, Resources.GOR2DIO_V3_POLYSPRITE_BIN_CODEC_DESCRIPTION)
 {
-    #region Properties.
     /// <summary>
     /// The sprite data chunk ID.
     /// </summary>
@@ -81,9 +82,7 @@ public class GorgonV3PolySpriteBinaryCodec
     /// Property to return the version of sprite data that the codec supports.
     /// </summary>
     public override Version Version => CurrentVersion;
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to load the texture information.
     /// </summary>
@@ -93,7 +92,7 @@ public class GorgonV3PolySpriteBinaryCodec
     /// <param name="textureScale">The texture transform scale.</param>
     /// <param name="textureArrayIndex">The texture array index.</param>
     /// <returns>The texture attached to the sprite.</returns>
-    private GorgonTexture2DView LoadTexture(GorgonBinaryReader reader, GorgonTexture2DView overrideTexture, out Vector2 textureOffset, out Vector2 textureScale, out int textureArrayIndex)
+    private GorgonTexture2DView LoadTexture(IGorgonChunkReader reader, GorgonTexture2DView overrideTexture, out Vector2 textureOffset, out Vector2 textureScale, out int textureArrayIndex)
     {
         // Write out as much info about the texture as we can so we can look it up based on these values when loading.
         string textureName = reader.ReadString();
@@ -149,12 +148,11 @@ public class GorgonV3PolySpriteBinaryCodec
     /// <returns>A new <see cref="GorgonPolySprite"/>.</returns>
     protected override GorgonPolySprite OnReadFromStream(Stream stream, int byteCount, GorgonTexture2DView overrideTexture)
     {
-        var reader = new GorgonChunkFileReader(stream,
-                                               new[]
-                                               {
+        GorgonChunkFileReader reader = new(stream,
+                                               [
                                                    CurrentFileHeader
-                                               });
-        GorgonBinaryReader binReader = null;            
+                                               ]);
+        IGorgonChunkReader binReader = null;
         GorgonPolySpriteVertex[] vertices;
         int[] indices = null;
 
@@ -165,13 +163,13 @@ public class GorgonV3PolySpriteBinaryCodec
             Vector2 anchor = binReader.ReadValue<Vector2>();
 
             // If we do not have alpha test information, then skip writing its data.
-            GorgonRangeF? alphaRange = null;
-            if (binReader.ReadBoolean())
+            GorgonRange<float>? alphaRange = null;
+            if (binReader.ReadBool())
             {
-                alphaRange = binReader.ReadValue<GorgonRangeF>();
+                alphaRange = binReader.ReadValue<GorgonRange<float>>();
             }
 
-            reader.CloseChunk();
+            binReader.Close();
 
             binReader = reader.OpenChunk(VertexData);
 
@@ -184,7 +182,7 @@ public class GorgonV3PolySpriteBinaryCodec
                                                             binReader.ReadValue<Vector2>());
             }
 
-            reader.CloseChunk();
+            binReader.Close();
 
             if (reader.Chunks.Contains(IndexData))
             {
@@ -196,7 +194,7 @@ public class GorgonV3PolySpriteBinaryCodec
                     indices[i] = binReader.ReadInt32();
                 }
 
-                reader.CloseChunk();
+                binReader.Close();
             }
 
             GorgonTexture2DView texture = null;
@@ -208,13 +206,13 @@ public class GorgonV3PolySpriteBinaryCodec
             {
                 binReader = reader.OpenChunk(TextureData);
                 texture = LoadTexture(binReader, overrideTexture, out textureOffset, out textureScale, out textureArrayIndex);
-                reader.CloseChunk();
-            }                
+                binReader.Close();
+            }
 
             GorgonSamplerState samplerState = null;
             if (reader.Chunks.Contains(TextureSamplerData))
             {
-                var builder = new GorgonSamplerStateBuilder(Renderer.Graphics);
+                GorgonSamplerStateBuilder builder = new(Renderer.Graphics);
                 binReader = reader.OpenChunk(TextureSamplerData);
                 binReader.ReadValue(out SampleFilter filter);
                 binReader.ReadValue(out GorgonColor borderColor);
@@ -226,7 +224,7 @@ public class GorgonV3PolySpriteBinaryCodec
                 binReader.ReadValue(out float minLod);
                 binReader.ReadValue(out float maxLod);
                 binReader.ReadValue(out float mipLodBias);
-                reader.CloseChunk();
+                binReader.Close();
 
                 samplerState = builder.Wrapping(wrapU, wrapV, wrapW, borderColor)
                                                .Filter(filter)
@@ -238,7 +236,7 @@ public class GorgonV3PolySpriteBinaryCodec
 
             if ((indices is null) || (indices.Length == 0))
             {
-                var builder = new GorgonPolySpriteBuilder(Renderer);
+                GorgonPolySpriteBuilder builder = new(Renderer);
                 return builder.AddVertices(vertices)
                               .Anchor(anchor)
                               .AlphaTest(alphaRange)
@@ -249,7 +247,7 @@ public class GorgonV3PolySpriteBinaryCodec
                               .Build();
             }
 
-            var sprite = GorgonPolySprite.Create(Renderer, vertices, indices);
+            GorgonPolySprite sprite = GorgonPolySprite.Create(Renderer, vertices, indices);
             sprite.Anchor = anchor;
             sprite.AlphaTest = alphaRange;
             sprite.Texture = texture;
@@ -262,7 +260,7 @@ public class GorgonV3PolySpriteBinaryCodec
         }
         finally
         {
-            binReader?.Dispose();
+            binReader?.Close();
             reader.Close();
         }
     }
@@ -274,33 +272,33 @@ public class GorgonV3PolySpriteBinaryCodec
     /// <param name="stream">The stream that will contain the sprite.</param>
     protected override void OnSaveToStream(GorgonPolySprite sprite, Stream stream)
     {
-        var writer = new GorgonChunkFileWriter(stream, CurrentFileHeader);
-        GorgonBinaryWriter binWriter = null;
+        GorgonChunkFileWriter writer = new(stream, CurrentFileHeader);
+        IGorgonChunkWriter binWriter = null;
 
         try
         {
             writer.Open();
             binWriter = writer.OpenChunk(VersionData);
-            binWriter.Write((byte)Version.Major);
-            binWriter.Write((byte)Version.Minor);
-            writer.CloseChunk();
+            binWriter.WriteByte((byte)Version.Major);
+            binWriter.WriteByte((byte)Version.Minor);
+            binWriter.Close();
 
             binWriter = writer.OpenChunk(SpriteData);
 
             binWriter.WriteValue(sprite.Anchor);
 
             // If we do not have alpha test information, then skip writing its data.
-            binWriter.Write(sprite.AlphaTest is not null);
+            binWriter.WriteBool(sprite.AlphaTest is not null);
             if (sprite.AlphaTest is not null)
             {
                 binWriter.WriteValue(sprite.AlphaTest.Value);
             }
 
-            writer.CloseChunk();
+            binWriter.Close();
 
             binWriter = writer.OpenChunk(VertexData);
 
-            binWriter.Write(sprite.Vertices.Count);
+            binWriter.WriteInt32(sprite.Vertices.Count);
 
             foreach (GorgonPolySpriteVertex vertex in sprite.Vertices)
             {
@@ -309,40 +307,40 @@ public class GorgonV3PolySpriteBinaryCodec
                 binWriter.WriteValue(vertex.TextureCoordinate);
             }
 
-            writer.CloseChunk();
+            binWriter.Close();
 
             if (sprite.Indices.Count > 0)
             {
                 binWriter = writer.OpenChunk(IndexData);
 
-                binWriter.Write(sprite.Indices.Count);
+                binWriter.WriteInt32(sprite.Indices.Count);
 
                 for (int i = 0; i < sprite.Indices.Count; ++i)
                 {
-                    binWriter.Write(sprite.Indices[i]);
+                    binWriter.WriteInt32(sprite.Indices[i]);
                 }
 
-                writer.CloseChunk();
+                binWriter.Close();
             }
 
             // We have no texture data, so don't bother writing out that chunk.
             if (sprite.Texture is not null)
             {
                 binWriter = writer.OpenChunk(TextureData);
-                binWriter.Write(sprite.Texture.Texture.Name);
+                binWriter.WriteString(sprite.Texture.Texture.Name);
                 binWriter.WriteValue(sprite.TextureOffset);
                 binWriter.WriteValue(sprite.TextureScale);
                 binWriter.WriteValue(sprite.TextureArrayIndex);
                 // Write out as much info about the texture as we can so we can look it up based on these values when loading.
-                binWriter.Write(sprite.Texture.Texture.Width);
-                binWriter.Write(sprite.Texture.Texture.Height);
+                binWriter.WriteInt32(sprite.Texture.Texture.Width);
+                binWriter.WriteInt32(sprite.Texture.Texture.Height);
                 binWriter.WriteValue(sprite.Texture.Texture.Format);
-                binWriter.Write(sprite.Texture.Texture.ArrayCount);
-                binWriter.Write(sprite.Texture.Texture.MipLevels);
-                binWriter.Write(sprite.Texture.ArrayIndex);
-                binWriter.Write(sprite.Texture.ArrayCount);
-                binWriter.Write(sprite.Texture.MipSlice);
-                binWriter.Write(sprite.Texture.MipCount);
+                binWriter.WriteInt32(sprite.Texture.Texture.ArrayCount);
+                binWriter.WriteInt32(sprite.Texture.Texture.MipLevels);
+                binWriter.WriteInt32(sprite.Texture.ArrayIndex);
+                binWriter.WriteInt32(sprite.Texture.ArrayCount);
+                binWriter.WriteInt32(sprite.Texture.MipSlice);
+                binWriter.WriteInt32(sprite.Texture.MipCount);
                 binWriter.WriteValue(sprite.Texture.Format);
                 binWriter.Close();
             }
@@ -360,11 +358,11 @@ public class GorgonV3PolySpriteBinaryCodec
             binWriter.WriteValue(sprite.TextureSampler.WrapU);
             binWriter.WriteValue(sprite.TextureSampler.WrapV);
             binWriter.WriteValue(sprite.TextureSampler.WrapW);
-            binWriter.Write(sprite.TextureSampler.MaxAnisotropy);
-            binWriter.Write(sprite.TextureSampler.MinimumLevelOfDetail);
-            binWriter.Write(sprite.TextureSampler.MaximumLevelOfDetail);
-            binWriter.Write(sprite.TextureSampler.MipLevelOfDetailBias);
-            writer.CloseChunk();
+            binWriter.WriteInt32(sprite.TextureSampler.MaxAnisotropy);
+            binWriter.WriteSingle(sprite.TextureSampler.MinimumLevelOfDetail);
+            binWriter.WriteSingle(sprite.TextureSampler.MaximumLevelOfDetail);
+            binWriter.WriteSingle(sprite.TextureSampler.MipLevelOfDetailBias);
+            binWriter.Close();
         }
         finally
         {
@@ -387,9 +385,8 @@ public class GorgonV3PolySpriteBinaryCodec
             return false;
         }
 
-        using GorgonBinaryReader binReader = reader.OpenChunk(VersionData);
-        var fileVersion = new Version(binReader.ReadByte(), binReader.ReadByte());
-        reader.CloseChunk();
+        using IGorgonChunkReader binReader = reader.OpenChunk(VersionData);
+        Version fileVersion = new(binReader.ReadByte(), binReader.ReadByte());
 
         return Version.Equals(fileVersion);
     }
@@ -405,7 +402,15 @@ public class GorgonV3PolySpriteBinaryCodec
 
         try
         {
-            reader = new GorgonChunkFileReader(stream, new[] { CurrentFileHeader });
+            ulong[] appIDs = [CurrentFileHeader];
+
+            if (!GorgonChunkFileReader.IsReadable(stream, appIDs))
+            {
+                return false;
+            }
+
+            reader = new GorgonChunkFileReader(stream, appIDs);
+
             reader.Open();
             return IsReadableChunkFile(reader);
         }
@@ -426,48 +431,23 @@ public class GorgonV3PolySpriteBinaryCodec
     /// <returns>The name of the texture associated with the sprite, or <b>null</b> if no texture was found.</returns>
     protected override string OnGetAssociatedTextureName(Stream stream)
     {
-        GorgonChunkFileReader reader = null;
-        GorgonBinaryReader binReader = null;
+        using GorgonChunkFileReader reader = new(stream, [CurrentFileHeader]);
 
-        try
+        reader.Open();
+        if (!IsReadableChunkFile(reader))
         {
-            reader = new GorgonChunkFileReader(stream, new[] { CurrentFileHeader });
-            reader.Open();
-            if (!IsReadableChunkFile(reader))
-            {
-                return null;
-            }
-
-            // No texture data in this file.
-            if (!reader.Chunks.Contains(TextureData))
-            {
-                return null;
-            }
-
-            binReader = reader.OpenChunk(TextureData);
-            string result = binReader.ReadString();
-            reader.CloseChunk();
-
-            return result;
+            return null;
         }
-        finally
+
+        // No texture data in this file.
+        if (!reader.Chunks.Contains(TextureData))
         {
-            binReader?.Dispose();
-            reader?.Close();
+            return null;
         }
-    }
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonV3PolySpriteBinaryCodec"/> class.
-    /// </summary>
-    /// <param name="renderer">The renderer used for resource handling.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/> parameter is <b>null</b>.</exception>
-    public GorgonV3PolySpriteBinaryCodec(Gorgon2D renderer)
-        : base(renderer, Resources.GOR2DIO_V3_POLYSPRITE_BIN_CODEC, Resources.GOR2DIO_V3_POLYSPRITE_BIN_CODEC_DESCRIPTION)
-    {
+        using IGorgonChunkReader binReader = reader.OpenChunk(TextureData);
+        string result = binReader.ReadString();
 
+        return result;
     }
-    #endregion
 }

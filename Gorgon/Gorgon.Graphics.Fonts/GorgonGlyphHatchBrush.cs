@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,27 +11,25 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Saturday, October 12, 2013 11:22:36 PM
 // 
-#endregion
 
-using System.Drawing;
 using System.Drawing.Drawing2D;
 using Gorgon.IO;
 
 namespace Gorgon.Graphics.Fonts;
 
 /// <summary>
-/// The patterns used to draw the glyphs.
+/// The patterns used to draw the glyphs
 /// </summary>
 public enum GlyphBrushHatchStyle
 {
@@ -317,7 +315,7 @@ public enum GlyphBrushHatchStyle
 }
 
 /// <summary>
-/// A brush used to draw glyphs using a hatching patterns.
+/// A brush used to draw glyphs using a hatching patterns
 /// </summary>
 /// <seealso cref="GorgonGlyphSolidBrush"/>
 /// <seealso cref="GorgonGlyphLinearGradientBrush"/>
@@ -326,7 +324,6 @@ public enum GlyphBrushHatchStyle
 public class GorgonGlyphHatchBrush
     : GorgonGlyphBrush
 {
-    #region Properties.
     /// <summary>
     /// Property to return the type of brush.
     /// </summary>
@@ -358,9 +355,7 @@ public class GorgonGlyphHatchBrush
         get;
         set;
     }
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to convert this brush to the equivalent GDI+ brush type.
     /// </summary>
@@ -371,20 +366,20 @@ public class GorgonGlyphHatchBrush
 
     /// <summary>Function to write out the specifics of the font brush data to a file writer.</summary>
     /// <param name="writer">The writer used to write the brush data.</param>
-    internal override void WriteBrushData(GorgonBinaryWriter writer)
+    internal override void WriteBrushData(IGorgonChunkWriter writer)
     {
-        writer.Write((int)HatchStyle);
-        writer.Write(ForegroundColor.ToARGB());
-        writer.Write(BackgroundColor.ToARGB());
+        writer.WriteInt32((int)HatchStyle);
+        writer.WriteInt32(GorgonColor.ToARGB(ForegroundColor));
+        writer.WriteInt32(GorgonColor.ToARGB(BackgroundColor));
     }
 
     /// <summary>Function to read back the specifics of the font brush data from a file reader.</summary>
     /// <param name="reader">The reader used to read the brush data.</param>
-    internal override void ReadBrushData(GorgonBinaryReader reader)
+    internal override void ReadBrushData(IGorgonChunkReader reader)
     {
         HatchStyle = (GlyphBrushHatchStyle)reader.ReadInt32();
-        ForegroundColor = new GorgonColor(reader.ReadInt32());
-        BackgroundColor = new GorgonColor(reader.ReadInt32());
+        ForegroundColor = GorgonColor.FromARGB(reader.ReadInt32());
+        BackgroundColor = GorgonColor.FromARGB(reader.ReadInt32());
     }
 
     /// <summary>Function to clone an object.</summary>
@@ -411,12 +406,11 @@ public class GorgonGlyphHatchBrush
     /// </returns>
     public override bool Equals(GorgonGlyphBrush other)
     {
-        var brush = other as GorgonGlyphHatchBrush;
+        GorgonGlyphHatchBrush brush = other as GorgonGlyphHatchBrush;
 
         return ((brush == this) || ((brush is not null)
             && (brush.HatchStyle == HatchStyle)
             && (brush.BackgroundColor == BackgroundColor)
             && (brush.ForegroundColor == ForegroundColor)));
     }
-    #endregion
 }

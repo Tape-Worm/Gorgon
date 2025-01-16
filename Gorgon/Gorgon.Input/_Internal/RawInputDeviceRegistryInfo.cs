@@ -1,4 +1,4 @@
-﻿#region MIT
+﻿
 // 
 // Gorgon
 // Copyright (C) 2015 Michael Winsor
@@ -11,20 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Tuesday, September 07, 2015 2:15:24 PM
 // 
-#endregion
 
-using System;
 using Gorgon.Diagnostics;
 using Gorgon.Input.Properties;
 using Gorgon.Native;
@@ -33,7 +31,7 @@ using Microsoft.Win32;
 namespace Gorgon.Input;
 
 /// <summary>
-/// Retrieves device information from the windows registry for a given device name.
+/// Retrieves device information from the windows registry for a given device name
 /// </summary>
 internal static class RawInputDeviceRegistryInfo
 {
@@ -59,7 +57,7 @@ internal static class RawInputDeviceRegistryInfo
             (regValue.Length > 0) &&
             (regValue[1].StartsWith("RDP_", StringComparison.OrdinalIgnoreCase)))
         {
-            log.Print("WARNING: This is an RDP device.  Raw input in Gorgon is not supported under RDP.  Skipping this device.", LoggingLevel.Verbose);
+            log.PrintWarning("This is an RDP device.  Raw input in Gorgon is not supported under RDP.  Skipping this device.", LoggingLevel.Verbose);
             return string.Empty;
         }
 
@@ -97,7 +95,7 @@ internal static class RawInputDeviceRegistryInfo
             (regValue.Length > 0) &&
             (regValue[1].StartsWith("RDP_", StringComparison.OrdinalIgnoreCase)))
         {
-            log.Print("WARNING: This is an RDP device.  Raw input in Gorgon is not supported under RDP.  Skipping this device.", LoggingLevel.Verbose);
+            log.PrintWarning("This is an RDP device.  Raw input in Gorgon is not supported under RDP.  Skipping this device.", LoggingLevel.Verbose);
             return string.Empty;
         }
 

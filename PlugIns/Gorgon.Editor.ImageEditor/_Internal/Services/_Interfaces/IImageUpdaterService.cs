@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,28 +11,27 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: January 21, 2019 8:58:05 AM
 // 
-#endregion
 
 using Gorgon.Core;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Imaging;
 using Gorgon.UI;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.ImageEditor;
 
 /// <summary>
-/// Provides functionality to update an image.
+/// Provides functionality to update an image
 /// </summary>
 internal interface IImageUpdaterService
 {
@@ -54,7 +53,7 @@ internal interface IImageUpdaterService
     /// <param name="newSize">The new size for the image.</param>
     /// <param name="filter">The filter to apply when resizing.</param>
     /// <param name="preserveAspect"><b>true</b> to preserve the aspect ratio of the image, <b>false</b> to ignore it.</param>
-    void Resize(IGorgonImage resizeImage, DX.Size2 newSize, ImageFilter filter, bool preserveAspect);
+    void Resize(IGorgonImage resizeImage, GorgonPoint newSize, ImageFilter filter, bool preserveAspect);
 
     /// <summary>
     /// Function to crop an image.
@@ -62,7 +61,7 @@ internal interface IImageUpdaterService
     /// <param name="cropImage">The image to crop.</param>
     /// <param name="destSize">The new size of the image.</param>
     /// <param name="alignment">The location to start cropping from.</param>
-    void CropTo(IGorgonImage cropImage, DX.Size2 destSize, Alignment alignment);
+    void CropTo(IGorgonImage cropImage, GorgonPoint destSize, Alignment alignment);
 
     /// <summary>
     /// Function to update the number of mip levels on an image.
@@ -128,5 +127,5 @@ internal interface IImageUpdaterService
     /// <param name="value">The value to assign.</param>
     /// <param name="inclusionRange">The range of alpha values to update.</param>
     /// <returns>A new image with the updated alpha.</returns>
-    IGorgonImage SetAlphaValue(IGorgonImage sourceImage, int currentMipLevel, int currentArrayOrDepth, int value, GorgonRange inclusionRange);
+    IGorgonImage SetAlphaValue(IGorgonImage sourceImage, int currentMipLevel, int currentArrayOrDepth, int value, GorgonRange<int> inclusionRange);
 }

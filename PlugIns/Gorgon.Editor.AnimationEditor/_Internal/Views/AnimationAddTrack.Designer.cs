@@ -21,13 +21,13 @@ partial class AnimationAddTrack
         if (disposing)
         {
             UnassignEvents();
-            DataContext?.Unload();
+            ViewModel?.Unload();
         }
 
         base.Dispose(disposing);
     }
 
-    #region Component Designer generated code
+
 
     /// <summary> 
     /// Required method for Designer support - do not modify 
@@ -76,7 +76,7 @@ partial class AnimationAddTrack
 
     }
 
-    #endregion
+
 
     private System.Windows.Forms.ListBox ListTracks;
 }

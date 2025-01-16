@@ -20,13 +20,13 @@ partial class ImageSettingsPanel
 
         if (disposing)
         {
-            DataContext?.Unload();
+            ViewModel?.Unload();
         }
 
         base.Dispose(disposing);
     }
 
-    #region Component Designer generated code
+
 
     /// <summary> 
     /// Required method for Designer support - do not modify 
@@ -177,7 +177,7 @@ partial class ImageSettingsPanel
 
     }
 
-    #endregion
+
     private System.Windows.Forms.ToolTip TipSettings;
     private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
     private System.Windows.Forms.Label label1;

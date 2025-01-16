@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,37 +11,33 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: September 5, 2018 1:49:40 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
-using System.Linq;
 using System.Text;
+using System.Text.Json;
 using Gorgon.Core;
 using Gorgon.Editor;
 using Gorgon.Editor.Metadata;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Support;
-using Newtonsoft.Json;
+using Gorgon.IO.FileSystem;
 
 namespace Gorgon.IO;
 
 /// <summary>
-/// Extension methods for IO functionality.
+/// Extension methods for IO functionality
 /// </summary>
 public static class IOExtensions
 {
@@ -78,49 +74,39 @@ public static class IOExtensions
         int expectedVersion = Convert.ToInt32(CommonEditorConstants.EditorCurrentProjectVersion.Replace("GOREDIT", string.Empty));
         int fileVersion = int.MaxValue;
 
-        using (Stream stream = externalProjectData is null ? jsonMetaDataFile.OpenStream() : externalProjectData.Open(FileMode.Open, FileAccess.Read, FileShare.Read))
-        using (var reader = new StreamReader(stream, Encoding.UTF8))
-        using (var jsonReader = new JsonTextReader(reader))
+        using Stream stream = externalProjectData is null ? fileSystem.OpenStream(jsonMetaDataFile.FullPath, false) : externalProjectData.Open(FileMode.Open, FileAccess.Read, FileShare.Read);
+        using StreamReader reader = new(stream, Encoding.UTF8);
+        using JsonDocument doc = JsonDocument.Parse(reader.ReadToEnd());
+
+        JsonProperty versionProp = doc.RootElement.EnumerateObject().FirstOrDefault();
+
+        if (!string.Equals(versionProp.Name, nameof(IProjectMetadata.Version), StringComparison.Ordinal))
         {
-            // First property must be the version #.
-            if ((!jsonReader.Read()) || (!jsonReader.Read()))
-            {
-                throw new GorgonException(GorgonResult.CannotRead, Resources.GOREDIT_ERR_NOT_EDITOR_PROJECT);
-            }
-
-            if ((jsonReader.TokenType != JsonToken.PropertyName)
-                || (!string.Equals(jsonReader.Value.ToString(), nameof(IProjectMetadata.Version), StringComparison.Ordinal)))
-            {
-                throw new GorgonException(GorgonResult.CannotRead, Resources.GOREDIT_ERR_NOT_EDITOR_PROJECT);
-            }
-
-            if (!int.TryParse(jsonReader.ReadAsString().Replace("GOREDIT", string.Empty), NumberStyles.Integer, CultureInfo.InvariantCulture, out fileVersion))
-            {
-                throw new GorgonException(GorgonResult.CannotRead, Resources.GOREDIT_ERR_NOT_EDITOR_PROJECT);
-            }
-
-            // Ensure we have the correct version.
-            if (expectedVersion < fileVersion)
-            {
-                throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_VERSION_MISMATCH, fileVersion, expectedVersion));
-            }
+            throw new GorgonException(GorgonResult.CannotRead, Resources.GOREDIT_ERR_NOT_EDITOR_PROJECT);
         }
 
-        using (Stream stream = externalProjectData is null ? jsonMetaDataFile.OpenStream() : externalProjectData.Open(FileMode.Open, FileAccess.Read, FileShare.Read))
-        using (var reader = new StreamReader(stream, Encoding.UTF8))
-        {
-            string jsonString = reader.ReadToEnd();
+        string version = versionProp.Value.GetString();
 
-            switch (fileVersion)
-            {
-                case 30:
-                    EditorProjectMetadata30 oldProjectData = JsonConvert.DeserializeObject<EditorProjectMetadata30>(jsonString);
-                    return new EditorProjectMetadata31(oldProjectData);
-                case 31:
-                    return JsonConvert.DeserializeObject<EditorProjectMetadata31>(jsonString);
-                default:
-                    throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_VERSION_MISMATCH, fileVersion, expectedVersion));
-            }
+        if (!int.TryParse(version.Replace("GOREDIT", string.Empty), NumberStyles.Integer, CultureInfo.InvariantCulture, out fileVersion))
+        {
+            throw new GorgonException(GorgonResult.CannotRead, Resources.GOREDIT_ERR_NOT_EDITOR_PROJECT);
+        }
+
+        // Ensure we have the correct version.
+        if (expectedVersion < fileVersion)
+        {
+            throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_VERSION_MISMATCH, fileVersion, expectedVersion));
+        }
+
+        switch (fileVersion)
+        {
+            case 30:
+                EditorProjectMetadata30 oldProjectData = doc.Deserialize<EditorProjectMetadata30>();
+                return new EditorProjectMetadata31(oldProjectData);
+            case 31:
+                return doc.Deserialize<EditorProjectMetadata31>();
+            default:
+                throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GOREDIT_ERR_VERSION_MISMATCH, fileVersion, expectedVersion));
         }
     }
 
@@ -169,7 +155,7 @@ public static class IOExtensions
             return pathSeparator.ToString();
         }
 
-        var pathBuilder = new StringBuilder();
+        StringBuilder pathBuilder = new();
         pathBuilder.Append(pathSeparator);
         pathBuilder.Append(dirPath, rootDirPath.Length, dirPath.Length - rootDirPath.Length);
         if (pathSeparator != Path.DirectorySeparatorChar)
@@ -197,7 +183,7 @@ public static class IOExtensions
     /// </remarks>
     public static IReadOnlyList<IGorgonVirtualFile> GetContentItems(this IGorgonFileSystem fileSystem, string path, string contentType, string searchMask = "*", bool recursive = false)
     {
-        var result = new List<IGorgonVirtualFile>();
+        List<IGorgonVirtualFile> result = [];
 
         if (fileSystem is null)
         {

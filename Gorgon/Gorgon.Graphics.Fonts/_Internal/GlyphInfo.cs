@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,69 +11,74 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: February 15, 2017 9:07:03 PM
 // 
-#endregion
-using System.Drawing;
+
 using Gorgon.Graphics.Core;
-using DX = SharpDX;
 
 namespace Gorgon.Graphics.Fonts;
 
 /// <summary>
-/// Information about a glyph.
+/// Information about a glyph
 /// </summary>
-internal class GlyphInfo
+/// <remarks>
+/// Initializes a new instance of the <see cref="GlyphInfo"/> class
+/// </remarks>
+/// <param name="glyphBitmap">The glyph bitmap.</param>
+/// <param name="region">The region.</param>
+/// <param name="offset">The offset.</param>
+/// <param name="outlineRegion">The outline region.</param>
+/// <param name="outlineOffset">The outline offset.</param>
+internal class GlyphInfo(Bitmap glyphBitmap, GorgonRectangle region, GorgonPoint offset, GorgonRectangle outlineRegion, GorgonPoint outlineOffset)
 {
-    #region Properties.
     /// <summary>
     /// Property to return the packed bitmap associated with the glyph.
     /// </summary>
     public Bitmap GlyphBitmap
     {
         get;
-    }
+    } = glyphBitmap;
 
     /// <summary>
     /// Property to return the region for the glyph.
     /// </summary>
-    public DX.Rectangle Region
+    public GorgonRectangle Region
     {
         get;
-    }
+    } = region;
 
     /// <summary>
     /// Property to return the region for the glyph outline (if applicable).
     /// </summary>
-    public DX.Rectangle OutlineRegion
+    public GorgonRectangle OutlineRegion
     {
         get;
-    }
+    } = outlineRegion;
 
     /// <summary>
     /// Property to return the offset used to adjust the glyph when rendering an outline.
     /// </summary>
-    public DX.Point OutlineOffset
+    public GorgonPoint OutlineOffset
     {
         get;
-    }
+    } = outlineOffset;
 
     /// <summary>
     /// Property to return the offset used to adjust the glyph when rendering a string.
     /// </summary>
-    public DX.Point Offset
+    public GorgonPoint Offset
     {
         get;
-    }
+    } = offset;
 
     /// <summary>
     /// Property to set or return the texture assigned to the glyph.
@@ -92,24 +97,4 @@ internal class GlyphInfo
         get;
         set;
     }
-    #endregion
-
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GlyphInfo"/> class.
-    /// </summary>
-    /// <param name="glyphBitmap">The glyph bitmap.</param>
-    /// <param name="region">The region.</param>
-    /// <param name="offset">The offset.</param>
-    /// <param name="outlineRegion">The outline region.</param>
-    /// <param name="outlineOffset">The outline offset.</param>
-    public GlyphInfo(Bitmap glyphBitmap, DX.Rectangle region, DX.Point offset, DX.Rectangle outlineRegion, DX.Point outlineOffset)
-    {
-        GlyphBitmap = glyphBitmap;
-        Region = region;
-        Offset = offset;
-        OutlineRegion = outlineRegion;
-        OutlineOffset = outlineOffset;
-    }
-    #endregion
 }

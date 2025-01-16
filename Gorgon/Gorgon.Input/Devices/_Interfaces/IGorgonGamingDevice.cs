@@ -1,4 +1,4 @@
-#region MIT
+﻿
 // 
 // Gorgon
 // Copyright (C) 2015 Michael Winsor
@@ -11,27 +11,22 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Wednesday, September 16, 2015 11:20:25 PM
 // 
-#endregion
-
-using System;
-using System.Collections.Generic;
-using System.Windows.Forms;
 
 namespace Gorgon.Input;
 
 /// <summary>
-/// Enumeration for point-of-view hat directions.
+/// Enumeration for point-of-view hat directions
 /// </summary>
 [Flags]
 public enum POVDirection
@@ -59,7 +54,7 @@ public enum POVDirection
 }
 
 /// <summary>
-/// The state of a gaming device button.
+/// The state of a gaming device button
 /// </summary>
 public enum GamingDeviceButtonState
 {
@@ -74,30 +69,30 @@ public enum GamingDeviceButtonState
 }
 
 /// <summary>
-/// Provides state for gaming device data from a physical gaming device.
+/// Provides state for gaming device data from a physical gaming device
 /// </summary>
 /// <remarks>
 /// <para>
-/// Gaming devices (such as a joystick or game pad) and provided via a driver system using the <see cref="GorgonGamingDeviceDriver"/> object. These drivers may be loaded via a plug in interface through the 
-/// <see cref="GorgonGamingDeviceDriverFactory"/> object. Once a driver is loaded, it can be used to create an object of this type.
+/// Gaming devices (such as a joystick or game pad) and provided via a driver system using the <see cref="GorgonGamingDeviceDriver"/> object. These drivers may be loaded via a plug-in interface through the 
+/// <see cref="GorgonGamingDeviceDriverFactory"/> object. Once a driver is loaded, it can be used to create an object of this type
 /// </para>
 /// <para>
 /// The gaming devices can support a variable number of axes, and this is reflected within the <see cref="Axis"/> property to make available only those axes which are supported by the device. For example, 
 /// if the device supports a single horizontal axis and that axis is mapped to the secondary axis (<see cref="GamingDeviceAxis.XAxis2"/>), then the <see cref="Axis"/> collection will only contain a member 
 /// for the <see cref="GamingDeviceAxis.XAxis2"/> value.  Likewise, if it supports many axes, then all of those axes will be made available. To determine which axes are supported, use the <see cref="GorgonGamingDeviceAxisList{T}.Contains"/>
-/// method on the <see cref="Info"/>.<see cref="IGorgonGamingDeviceInfo.AxisInfo"/> property or the on the <see cref="Axis"/> property.
+/// method on the <see cref="Info"/>.<see cref="IGorgonGamingDeviceInfo.AxisInfo"/> property or the on the <see cref="Axis"/> property
 /// </para>
 /// <para>
 /// <see cref="GorgonGamingDevice"/> objects require that the device be polled via a call to the <see cref="Poll"/> method. This will capture the latest state from the physical device and store it within 
-/// this type for use by an application.
+/// this type for use by an application
 /// </para>
 /// <para>
 /// Some gaming devices (such as XInput controllers) offer special functionality like vibration. This object supports sending data to the physical device to activate the special functionality. If the device 
 /// does not support the functionality, an exception is typically thrown. Use the <see cref="IGorgonGamingDeviceInfo.Capabilities"/> property to determine if these special functions are supported by the 
-/// device before calling.
+/// device before calling
 /// </para>
 /// <para>
-/// Implementors of a <see cref="GorgonGamingDeviceDriver"/> plug in must inherit this type in order to expose functionality from a native provider (e.g. XInput).
+/// Implementors of a <see cref="GorgonGamingDeviceDriver"/> plug-in must inherit this type in order to expose functionality from a native provider (e.g. XInput)
 /// </para>
 /// </remarks>
 public interface IGorgonGamingDevice
@@ -130,7 +125,7 @@ public interface IGorgonGamingDevice
     /// This property is used to return the current position and dead zone for a given axis. 
     /// </para>
     /// <para>
-    /// <see cref="GorgonGamingDeviceDriver"/> plug in implementors must set this value when device data is retrieved.
+    /// <see cref="GorgonGamingDeviceDriver"/> plug-in implementors must set this value when device data is retrieved.
     /// </para>
     /// </remarks>
     /// <example>
@@ -167,7 +162,7 @@ public interface IGorgonGamingDevice
     /// This will return a <see cref="float"/> value of -1.0f for center, or 0 to 359.9999f to indicate the direction, in degrees, of the POV hat.
     /// </para>
     /// <para>
-    /// <see cref="GorgonGamingDeviceDriver"/> plug in implementors must set this value when device data is retrieved.
+    /// <see cref="GorgonGamingDeviceDriver"/> plug-in implementors must set this value when device data is retrieved.
     /// </para>
     /// </remarks>
     float[] POV
@@ -183,7 +178,7 @@ public interface IGorgonGamingDevice
     /// This will return a list of the available buttons on the gaming device and their corresponding state represented by a <see cref="GamingDeviceButtonState"/> enumeration.
     /// </para>
     /// <para>
-    /// <see cref="GorgonGamingDeviceDriver"/> plug in implementors must set this value when device data is retrieved.
+    /// <see cref="GorgonGamingDeviceDriver"/> plug-in implementors must set this value when device data is retrieved.
     /// </para>
     /// </remarks>
     GamingDeviceButtonState[] Button
@@ -200,7 +195,7 @@ public interface IGorgonGamingDevice
     /// to the system at the time of enumeration. Thus, we have this property to ensure that we know when a gaming device is connected to the system or not. 
     /// </para>
     /// <para>
-    /// <see cref="GorgonGamingDeviceDriver"/> plug in implementors must ensure that this property will update itself when a gaming device is connected or disconnected.
+    /// <see cref="GorgonGamingDeviceDriver"/> plug-in implementors must ensure that this property will update itself when a gaming device is connected or disconnected.
     /// </para>
     /// </remarks>
     bool IsConnected

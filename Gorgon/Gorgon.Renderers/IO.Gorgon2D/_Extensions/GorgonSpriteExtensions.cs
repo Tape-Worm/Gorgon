@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,32 +11,30 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 13, 2018 1:01:46 PM
 // 
-#endregion
 
-using System;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using Gorgon.IO;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using Gorgon.Json;
 
 namespace Gorgon.Renderers;
 
 /// <summary>
-/// Extension methods for the <see cref="GorgonSprite"/> object.
+/// Extension methods for the <see cref="GorgonSprite"/> object
 /// </summary>
 public static class GorgonSpriteExtensions
 {
-    #region Constants.
     /// <summary>
     /// The property name for the header value.
     /// </summary>
@@ -45,9 +43,7 @@ public static class GorgonSpriteExtensions
     /// The property name for the header value.
     /// </summary>
     internal const string JsonVersionProp = "version";
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to convert a sprite into a JSON formatted string.
     /// </summary>
@@ -63,26 +59,32 @@ public static class GorgonSpriteExtensions
             throw new ArgumentNullException(nameof(sprite));
         }
 
-        var serializer = new JsonSerializer
+        JsonSerializerOptions options = new()
         {
-            CheckAdditionalContent = false,
-            Formatting = prettyFormat ? Formatting.Indented : Formatting.None
+            Converters =
+            {
+                new Vector2JsonConverter(),
+                new Vector3JsonConverter(),
+                new GorgonColorJsonConverter(),
+                new GorgonRectangleFJsonConverter(),
+                new GorgonRangeFloatJsonConverter(),
+                new JsonSamplerConverter(null),
+                new JsonTexture2DConverter(null, null)
+            },
+            WriteIndented = prettyFormat
         };
 
-        serializer.Converters.Add(new JsonVector2Converter());
-        serializer.Converters.Add(new JsonVector3Converter());
-        serializer.Converters.Add(new JsonSize2FConverter());
-        serializer.Converters.Add(new JsonGorgonColorConverter());
-        serializer.Converters.Add(new JsonRectangleFConverter());
-        serializer.Converters.Add(new JsonSamplerConverter(null));
-        serializer.Converters.Add(new JsonTexture2DConverter(null, null));
+        JsonObject? node = JsonSerializer.SerializeToNode(sprite, options).AsObject();
 
-        var jsonObj = JObject.FromObject(sprite, serializer);
-        JToken firstProp = jsonObj.First;
-        firstProp.AddBeforeSelf(new JProperty(JsonHeaderProp, GorgonSpriteCodecCommon.CurrentFileHeader));
-        firstProp.AddBeforeSelf(new JProperty(JsonVersionProp, GorgonSpriteCodecCommon.CurrentVersion.ToString(2)));
+        if (node is null)
+        {
+            return string.Empty;
+        }
 
-        return jsonObj.ToString(prettyFormat ? Formatting.Indented : Formatting.None);
+        node[JsonHeaderProp] = GorgonSpriteCodecCommon.CurrentFileHeader;
+        node[JsonVersionProp] = GorgonSpriteCodecCommon.CurrentVersion.ToString(2);
+
+        return node.ToJsonString(options);
     }
 
     /// <summary>
@@ -100,26 +102,32 @@ public static class GorgonSpriteExtensions
             throw new ArgumentNullException(nameof(sprite));
         }
 
-        var serializer = new JsonSerializer
+        JsonSerializerOptions options = new()
         {
-            CheckAdditionalContent = false,
-            Formatting = prettyFormat ? Formatting.Indented : Formatting.None
+            Converters =
+            {
+                new Vector2JsonConverter(),
+                new Vector3JsonConverter(),
+                new GorgonColorJsonConverter(),
+                new GorgonRectangleFJsonConverter(),
+                new GorgonRangeFloatJsonConverter(),
+                new JsonSamplerConverter(null),
+                new JsonTexture2DConverter(null, null),
+                new GorgonPolySpriteVertexJsonConverter()
+            },
+            WriteIndented = prettyFormat
         };
 
-        serializer.Converters.Add(new JsonVector2Converter());
-        serializer.Converters.Add(new JsonVector3Converter());
-        serializer.Converters.Add(new JsonSize2FConverter());
-        serializer.Converters.Add(new JsonGorgonColorConverter());
-        serializer.Converters.Add(new JsonRectangleFConverter());
-        serializer.Converters.Add(new JsonSamplerConverter(null));
-        serializer.Converters.Add(new JsonTexture2DConverter(null, null));
+        JsonObject? node = JsonSerializer.SerializeToNode(sprite, options).AsObject();
 
-        var jsonObj = JObject.FromObject(sprite, serializer);
-        JToken firstProp = jsonObj.First;
-        firstProp.AddBeforeSelf(new JProperty(JsonHeaderProp, GorgonPolySpriteCodecCommon.CurrentFileHeader));
-        firstProp.AddBeforeSelf(new JProperty(JsonVersionProp, GorgonPolySpriteCodecCommon.CurrentVersion.ToString(2)));
+        if (node is null)
+        {
+            return string.Empty;
+        }
 
-        return jsonObj.ToString(prettyFormat ? Formatting.Indented : Formatting.None);
+        node[JsonHeaderProp] = GorgonPolySpriteCodecCommon.CurrentFileHeader;
+        node[JsonVersionProp] = GorgonPolySpriteCodecCommon.CurrentVersion.ToString(2);
+
+        return node.ToJsonString(options);
     }
-    #endregion
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,36 +11,28 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 26, 2018 12:49:15 PM
 // 
-#endregion
 
-using System;
-using System.Diagnostics;
-using System.IO;
-using System.Windows.Forms;
-using Gorgon.Core;
 using Gorgon.Diagnostics;
-using Gorgon.Editor.Properties;
 using Gorgon.UI;
 
 namespace Gorgon.Editor;
 
 /// <summary>
-/// The main entry point for the editor.
+/// The main entry point for the editor
 /// </summary>
 static class Program
 {
-    #region Properties.
     /// <summary>
     /// Property to return the directory used by the application for settings and other functionality.
     /// </summary>
@@ -63,9 +55,7 @@ static class Program
         get;
         private set;
     }
-    #endregion
-
-    #region Methods.
+    /*
     /// <summary>
     /// Function to locate a command line argument, and its subsequent value (if applicable).
     /// </summary>
@@ -95,7 +85,7 @@ static class Program
 
         return (false, string.Empty);
     }
-
+    
     /// <summary>
     /// Function to start the logging for the application.
     /// </summary>
@@ -166,7 +156,7 @@ static class Program
     /// </summary>
     private static void InitApplicationUserDirectory()
     {
-        var dir = new DirectoryInfo(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Tape_Worm", "Gorgon.Editor"));
+        DirectoryInfo dir = new(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Tape_Worm", "Gorgon.Editor"));
 
         if (!dir.Exists)
         {
@@ -175,20 +165,23 @@ static class Program
 
         ApplicationUserDirectory = dir;
     }
-
+    */
     /// <summary>
     /// The main entry point for the application.
     /// </summary>
     /// <param name="args">Command line arguments.</param>
     [STAThread]
-    static void Main(string[] args)
+    static void Main()
     {
-        Boot booter = null;
-#if NET6_0_OR_GREATER
+        //Boot booter = null;
+
         Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
-#endif
         Application.EnableVisualStyles();
         Application.SetCompatibleTextRenderingDefault(false);
+
+        MessageBox.Show("This application is not ready for use. Using it now will corrupt file systems.", "Go away", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        return;
+        /*
 
         try
         {
@@ -202,7 +195,7 @@ static class Program
         }
         catch (Exception ex)
         {
-            ex.Catch(_ => GorgonDialogs.ErrorBox(null, Resources.GOREDIT_ERR_GENERAL_ERROR, Resources.GOREDIT_ERR_ERROR, ex), Log);
+            ex.Handle(e => GorgonDialogs.ErrorBox(null, Resources.GOREDIT_ERR_GENERAL_ERROR, Resources.GOREDIT_ERR_ERROR, e), Log);
         }
         finally
         {
@@ -210,7 +203,6 @@ static class Program
             booter?.Dispose();
 
             CommonEditorResources.UnloadResources();
-        }
+        }*/
     }
-#endregion
 }

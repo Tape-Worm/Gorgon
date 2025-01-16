@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,23 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: December 12, 2018 4:43:24 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.Editor.Properties;
@@ -36,14 +31,17 @@ using Gorgon.Editor.ViewModels;
 namespace Gorgon.Editor.Services;
 
 /// <summary>
-/// A system used to search through the file system for files.
+/// A system used to search through the file system for files
 /// </summary>
-internal class FileSystemSearchSystem
-    : ISearchService<IFile>
+/// <remarks>Initializes a new instance of the <see cref="FileSystemSearchSystem"/> class.</remarks>
+/// <param name="rootDirectory">The root directory for the file system.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="rootDirectory" /> parameter is <strong>null</strong>.</exception>
+internal class FileSystemSearchSystem(IDirectory rootDirectory)
+        : ISearchService<IFile>
 {
-    #region Variables.
+
     // The root of the file system.
-    private readonly IDirectory _rootDirectory;
+    private readonly IDirectory _rootDirectory = rootDirectory ?? throw new ArgumentNullException(nameof(rootDirectory));
     // The type of search keywords that can be used.
     private readonly Dictionary<string, string> _searchKeywords = new(StringComparer.CurrentCultureIgnoreCase)
     {
@@ -58,11 +56,9 @@ internal class FileSystemSearchSystem
         {
             Resources.GOREDIT_SEARCH_KEYWORD_DEPENDS_ON,
             Resources.GOREDIT_SEARCH_KEYWORD_DEPENDS_ON
-        }        
+        }
     };
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to parse the search text passed from the user to extract specific keywords.
     /// </summary>
@@ -70,7 +66,7 @@ internal class FileSystemSearchSystem
     /// <returns>A tuple containing the type of keyword, the keyword value, and the search string.</returns>
     private (string keyword, string value, string search) ParseSearchString(string searchText)
     {
-        var searchKeyword = new KeyValuePair<string, string>(string.Empty, string.Empty);
+        KeyValuePair<string, string> searchKeyword = new(string.Empty, string.Empty);
 
         foreach (KeyValuePair<string, string> keyword in _searchKeywords)
         {
@@ -141,7 +137,6 @@ internal class FileSystemSearchSystem
 
         _searchKeywords[keyword] = attribute;
     }
-    
 
     /// <summary>
     /// Function to check if the requested keyword value is within the attribute metadata for the file node content.
@@ -221,7 +216,7 @@ internal class FileSystemSearchSystem
             case SearchMode.EndsWith when file.Name.EndsWith(modeSearchText, StringComparison.CurrentCultureIgnoreCase):
             case SearchMode.Contains when (file.Name.IndexOf(modeSearchText, StringComparison.CurrentCultureIgnoreCase) != -1):
             case SearchMode.All:
-                return true;                    
+                return true;
         }
 
         return false;
@@ -237,7 +232,7 @@ internal class FileSystemSearchSystem
     /// <returns><b>true</b> if regular search should be stopped, <b>false</b> if it should continue.</returns>
     private bool CheckKeyword(string keyword, SearchMode mode, string modeSearchText, List<IFile> searchResults)
     {
-        IEnumerable<IFile> files = _rootDirectory.Directories.Traverse(d => d.Directories).SelectMany(f => f.Files).Concat(_rootDirectory.Files);
+        IEnumerable<IFile> files = _rootDirectory.Directories.TraverseBreadthFirst(d => d.Directories).SelectMany(f => f.Files).Concat(_rootDirectory.Files);
 
         if (string.Equals(keyword, Resources.GOREDIT_SEARCH_KEYWORD_DEPENDENCIES, StringComparison.CurrentCultureIgnoreCase))
         {
@@ -258,7 +253,7 @@ internal class FileSystemSearchSystem
                     searchResults.Add(dependencyFile);
                 }
             }
-            
+
             return true;
         }
 
@@ -299,7 +294,7 @@ internal class FileSystemSearchSystem
     {
         if (string.IsNullOrWhiteSpace(searchText))
         {
-            return Array.Empty<IFile>();
+            return [];
         }
 
         // Extract any keyword that might be embedded in the start of the search text.
@@ -310,18 +305,18 @@ internal class FileSystemSearchSystem
         {
             searchText = updatedSearchText;
         }
-                    
+
         (SearchMode mode, string modeSearchText) = ExtractSearchMode(string.IsNullOrWhiteSpace(searchText) ? keywordValue : searchText);
 
         // Test code for search:
-        var searchResults = new List<IFile>();
+        List<IFile> searchResults = [];
 
         if ((!string.IsNullOrWhiteSpace(keyword)) && (CheckKeyword(keyword, mode, modeSearchText, searchResults)))
         {
             return searchResults;
         }
 
-        foreach (IFile node in _rootDirectory.Directories.Traverse(d => d.Directories).SelectMany(f => f.Files).Concat(_rootDirectory.Files))
+        foreach (IFile node in _rootDirectory.Directories.TraverseBreadthFirst(d => d.Directories).SelectMany(f => f.Files).Concat(_rootDirectory.Files))
         {
             if (searchResults.Contains(node))
             {
@@ -331,7 +326,7 @@ internal class FileSystemSearchSystem
             if ((!string.IsNullOrWhiteSpace(keyword)) && (!CheckItemAttribute(node, keyword, keywordValue)))
             {
                 continue;
-            }                
+            }
 
             if (MatchesWildcard(mode, node, modeSearchText))
             {
@@ -341,12 +336,4 @@ internal class FileSystemSearchSystem
 
         return searchResults;
     }
-    #endregion
-
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="FileSystemSearchSystem"/> class.</summary>
-    /// <param name="rootDirectory">The root directory for the file system.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="rootDirectory" /> parameter is <strong>null</strong>.</exception>
-    public FileSystemSearchSystem(IDirectory rootDirectory) => _rootDirectory = rootDirectory ?? throw new ArgumentNullException(nameof(rootDirectory));
-    #endregion
 }

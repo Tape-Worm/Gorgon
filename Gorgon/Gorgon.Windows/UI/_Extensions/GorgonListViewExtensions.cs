@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2012 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,19 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Thursday, May 31, 2012 9:08:49 AM
 // 
 // This code was adapted from the stack overflow answer at http://stackoverflow.com/questions/254129/how-to-i-display-a-sort-arrow-in-the-header-of-a-list-view-column-using-c
-#endregion
 
 using Gorgon.Core;
 using Gorgon.Native;
@@ -31,11 +30,11 @@ using Gorgon.Native;
 namespace System.Windows.Forms;
 
 /// <summary>
-/// Extensions used for the list view object.
+/// Extensions used for the list view object
 /// </summary>
 public static class GorgonListViewExtensions
 {
-    #region Constants.
+
     // List view message to return the header.
     private const uint LvmGetHeader = 0x101F;
     // Header message used to retrieve an item.
@@ -48,38 +47,36 @@ public static class GorgonListViewExtensions
     private const int HeaderSortDown = 0x200;
     // Flag to make the column sort descending.
     private const int HeaderSortUp = 0x400;
-    #endregion
 
     /// <summary>
     /// Function to retrieve the boundaries for the header on a list view.
     /// </summary>
     /// <param name="listView">The list view to use.</param>
     /// <returns>A rectangle containing the client area boundaries for the header.</returns>
-    public static Drawing.Rectangle GetHeaderBounds(this ListView listView)
+    public static Rectangle GetHeaderBounds(this ListView listView)
     {
         if (listView.HeaderStyle == ColumnHeaderStyle.None)
         {
-            return Drawing.Rectangle.Empty;
+            return Rectangle.Empty;
         }
 
         if (listView.View != View.Details)
         {
-            return Drawing.Rectangle.Empty;
+            return Rectangle.Empty;
         }
 
         nint columnHeader = UserApi.SendMessage(listView.Handle, LvmGetHeader, IntPtr.Zero, IntPtr.Zero);
         UserApi.GetWindowRect(columnHeader, out RECT winRect);
 
-        return listView.RectangleToClient(Drawing.Rectangle.FromLTRB(winRect.left, winRect.top, winRect.right, winRect.bottom));
+        return listView.RectangleToClient(Rectangle.FromLTRB(winRect.left, winRect.top, winRect.right, winRect.bottom));
     }
-
 
     /// <summary>
     /// Function to paint the non-client area of the list view header with a specific color.
     /// </summary>
     /// <param name="listView">The listview to update.</param>
     /// <param name="brush">The brush to use when painting.</param>
-    public static void PaintNcHeader(this ListView listView, Drawing.Brush brush)
+    public static void PaintNcHeader(this ListView listView, Brush brush)
     {
         if ((listView.HeaderStyle == ColumnHeaderStyle.None) || (listView.View != View.Details) || (listView.Columns.Count == 0))
         {
@@ -88,13 +85,13 @@ public static class GorgonListViewExtensions
 
         nint columnHeader = UserApi.SendMessage(listView.Handle, LvmGetHeader, IntPtr.Zero, IntPtr.Zero);
         nint dc = UserApi.GetDC(columnHeader);
-        var g = Drawing.Graphics.FromHdc(dc);
+        Graphics g = Graphics.FromHdc(dc);
 
         try
         {
             ColumnHeader header = listView.Columns[^1];
-            Drawing.Rectangle bounds = GetHeaderBounds(listView);
-            var ncBounds = Drawing.Rectangle.FromLTRB(bounds.Right - header.Width, bounds.Top, bounds.Right, bounds.Height);
+            Rectangle bounds = GetHeaderBounds(listView);
+            Rectangle ncBounds = Rectangle.FromLTRB(bounds.Right - header.Width, bounds.Top, bounds.Right, bounds.Height);
             g.FillRectangle(brush, ncBounds);
         }
         finally
@@ -109,7 +106,7 @@ public static class GorgonListViewExtensions
     /// </summary>
     /// <param name="headerDrawEventArgs">The event arguments from the list view header owner draw event.</param>
     /// <param name="brush">The brush to use when painting.</param>
-    public static void PaintNcHeader(this DrawListViewColumnHeaderEventArgs headerDrawEventArgs, Drawing.Brush brush) => PaintNcHeader(headerDrawEventArgs.Header.ListView, brush);
+    public static void PaintNcHeader(this DrawListViewColumnHeaderEventArgs headerDrawEventArgs, Brush brush) => PaintNcHeader(headerDrawEventArgs.Header.ListView, brush);
 
     /// <summary>
     /// Function to set the sorting icon on the list view control.
@@ -127,7 +124,7 @@ public static class GorgonListViewExtensions
         for (int columnNumber = 0; columnNumber < listViewControl.Columns.Count; columnNumber++)
         {
             nint columnPtr = columnNumber;
-            var item = new HDITEM
+            HDITEM item = new()
             {
                 mask = HeaderFormatMask
             };

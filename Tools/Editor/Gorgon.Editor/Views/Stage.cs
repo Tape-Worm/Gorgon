@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,32 +11,29 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: December 5, 2018 9:37:55 PM
 // 
-#endregion
 
-using System;
 using System.ComponentModel;
 using Gorgon.Editor.UI.Views;
 
 namespace Gorgon.Editor.Views;
 
 /// <summary>
-/// The main staging view for accessing file operations, settings, etc...
+/// The main staging view for accessing file operations, settings, etc..
 /// </summary>
 internal partial class Stage
     : EditorBaseControl
 {
-    #region Events.
     /// <summary>
     /// Event triggered when the back button is clicked.
     /// </summary>
@@ -53,14 +50,10 @@ internal partial class Stage
     /// Event triggered when the Save As button is clicked, or a new project is saved for the first time.
     /// </summary>
     public event EventHandler<SaveEventArgs> SaveClicked;
-    #endregion
 
-    #region Variables.
     // Flag to indicate that we're in start up mode.
     private bool _isStartup = true;
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to set or return whether the stage should be shown in start up configuration or not.
     /// </summary>
@@ -96,9 +89,7 @@ internal partial class Stage
         get => ButtonOpenPackFile.Enabled;
         set => ButtonOpenPackFile.Enabled = value;
     }
-    #endregion
 
-    #region Methods.
     /// <summary>Function to update the current view state.</summary>
     private void SetViewState()
     {
@@ -162,11 +153,16 @@ internal partial class Stage
         handler?.Invoke(this, EventArgs.Empty);
     }
 
-    /// <summary>Raises the <see cref="System.Windows.Forms.UserControl.Load"/> event.</summary>
+    /// <summary>Raises the <see cref="UserControl.Load"/> event.</summary>
     /// <param name="e">An <see cref="EventArgs"/> that contains the event data.</param>
     protected override void OnLoad(EventArgs e)
     {
         base.OnLoad(e);
+
+        if (IsDesignTime)
+        {
+            return;
+        }
 
         // If we have recent items, then start with the recent items list instead of the new project item.
         if (Recent.HasItems)
@@ -178,10 +174,8 @@ internal partial class Stage
             CheckNew.PerformClick();
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
     /// <summary>Initializes a new instance of the <see cref="Stage"/> class.</summary>
     public Stage() => InitializeComponent();
-    #endregion
+
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,20 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: February 23, 2020 12:42:33 PM
 // 
-#endregion
 
-using System;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.ImageEditor.Properties;
 using Gorgon.Editor.ImageEditor.ViewModels;
@@ -35,12 +33,12 @@ using Gorgon.Graphics.Imaging;
 namespace Gorgon.Editor.ImageEditor.Fx;
 
 /// <summary>
-/// The context controller for the FX context.
+/// The context controller for the FX context
 /// </summary>
 internal class FxContext
     : EditorContext<FxContextParameters>, IFxContext
 {
-    #region Variables.
+
     // The image content view model.
     private IImageContent _imageContent;
     // The services from the host application.
@@ -49,9 +47,7 @@ internal class FxContext
     private bool _effectsApplied;
     // The effects service used to apply effects to the image or generate previews.
     private IFxService _fxService;
-    #endregion
 
-    #region Properties.        
     /// <summary>
     /// Property to return the view model for the blur fx settings.
     /// </summary>
@@ -245,9 +241,7 @@ internal class FxContext
     {
         get;
     }
-    #endregion
 
-    #region Methods.        
     /// <summary>
     /// Function to set the working image for the blur effect.
     /// </summary>
@@ -258,7 +252,7 @@ internal class FxContext
 
         try
         {
-            _fxService.SetImage(imageData, _imageContent.ImageType == ImageType.Image3D ? _imageContent.CurrentDepthSlice : _imageContent.CurrentArrayIndex, _imageContent.CurrentMipLevel);
+            _fxService.SetImage(imageData, _imageContent.ImageType == ImageDataType.Image3D ? _imageContent.CurrentDepthSlice : _imageContent.CurrentArrayIndex, _imageContent.CurrentMipLevel);
         }
         catch (Exception ex)
         {
@@ -310,7 +304,7 @@ internal class FxContext
         }
         catch (Exception ex)
         {
-            _hostServices.Log.Print("ERROR: Cannot cancel the effects operation.", LoggingLevel.Simple);
+            _hostServices.Log.PrintError("Cannot cancel the effects operation.", LoggingLevel.Simple);
             _hostServices.Log.LogException(ex);
         }
     }
@@ -578,7 +572,7 @@ internal class FxContext
     protected override void OnInitialize(FxContextParameters injectionParameters)
     {
         _imageContent = injectionParameters.ImageContent;
-        _hostServices = injectionParameters.HostServices;            
+        _hostServices = injectionParameters.HostServices;
         _fxService = injectionParameters.FxService;
 
         BlurSettings = injectionParameters.BlurSettings;
@@ -611,9 +605,7 @@ internal class FxContext
 
         base.OnUnload();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
     /// <summary>Initializes a new instance of the <see cref="FxContext"/> class.</summary>
     /// <param name="imageContent">The image content view model.</param>
     /// <param name="blur">The blur Fx view model.</param>
@@ -633,5 +625,4 @@ internal class FxContext
         ShowPosterizeCommand = new EditorCommand<object>(DoShowPosterize, CanShowPosterize);
         ShowOneBitCommand = new EditorCommand<object>(DoShowOneBit, CanShowOneBit);
     }
-    #endregion
 }

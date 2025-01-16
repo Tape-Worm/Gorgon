@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,30 +11,24 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 6, 2018 8:15:10 AM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using System.Threading;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
-using Gorgon.Memory;
-using Gorgon.Native;
 using Gorgon.Timing;
 using SharpDX.DXGI;
 using D3D = SharpDX.Direct3D;
@@ -44,7 +38,7 @@ using DX = SharpDX;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// The primary object for the Gorgon Graphics system.
+/// The primary object for the Gorgon Graphics system
 /// </summary>
 /// <remarks>
 /// <para>
@@ -52,23 +46,23 @@ namespace Gorgon.Graphics.Core;
 /// </para>
 /// <para>
 /// Typically, a graphics object is assigned to a single <see cref="IGorgonVideoAdapterInfo"/> to provide access to the functionality of that video adapter. If the system has more than once video adapter 
-/// installed then access to subsequent devices can be given by creating a new instance of this object with the appropriate <see cref="IGorgonVideoAdapterInfo"/>.
+/// installed then access to subsequent devices can be given by creating a new instance of this object with the appropriate <see cref="IGorgonVideoAdapterInfo"/>
 /// </para>
 /// <para>
 /// <note type="tip">
 /// <para>
 /// To determine what devices are attached to the system, use a <see cref="EnumerateAdapters"/> method to retreive a list of applicable video adapters. This will contain a list of 
-/// <see cref="IGorgonVideoAdapterInfo"/> objects suitable for construction of the graphics object.
+/// <see cref="IGorgonVideoAdapterInfo"/> objects suitable for construction of the graphics object
 /// </para>
 /// </note>
 /// </para>
 /// <para>
 /// When creating a graphics object, the user can choose which feature set they will support for a given <see cref="IGorgonVideoAdapterInfo"/> so that older devices may be used. The actual feature set 
-/// support is provided by the <see cref="IGorgonVideoAdapterInfo.FeatureSet"/> on the <see cref="IGorgonVideoAdapterInfo"/> interface.
+/// support is provided by the <see cref="IGorgonVideoAdapterInfo.FeatureSet"/> on the <see cref="IGorgonVideoAdapterInfo"/> interface
 /// </para>
 /// <para>
 /// This object is quite simple in its functionality. It provides some state assignment, and a means to submit a <see cref="GorgonDrawCallCommon">draw call</see> so that graphics information can be 
-/// rendered.
+/// rendered
 /// </para>
 /// <para><h3>Rendering</h3></para>
 /// <para>
@@ -83,7 +77,7 @@ namespace Gorgon.Graphics.Core;
 /// <para>
 /// When drawing, Gorgon will determine the minimum required state to send with the final draw call, ensuring no redundant states are set. This type of rendering provides a performance gain since it will 
 /// only set the absolute minimum unique state it needs when the draw call is actually sent to the GPU. This means the user can set the state for a draw call as much as they want without that state being 
-/// sent to the GPU.
+/// sent to the GPU
 /// </para>
 /// <para>
 /// <h3>Debugging Support</h3>
@@ -91,15 +85,15 @@ namespace Gorgon.Graphics.Core;
 /// <para>
 /// Applications can enable Direct 3D debugging by setting to the <see cref="IsDebugEnabled"/> property to <b>true</b>. This will allow developers to examine underlying failures when rendering using 
 /// Direct 3D. Gorgon also provides memory tracking for any underlying Direct 3D objects when the <see cref="IsObjectTrackingEnabled"/> is set to <b>true</b>. This is useful if a 
-/// <see cref="IDisposable.Dispose"/> call was forgotten by the developer.
+/// <see cref="IDisposable.Dispose"/> call was forgotten by the developer
 /// </para>
 /// <para>
 /// However, it is not enough to just set these flags to <b>true</b> to enable debugging. Users must also use the DirectX control panel (<c>Debug -> Graphics -> DirectX Control Panel</c>) provided by 
 /// Visual Studio in order to turn on debugging. Finally, the user must then turn on Native debugging in the Project properties of their application (under the <b>Debug</b> tab) so that any debug 
-/// output can be seen in the Output window while running the application.
+/// output can be seen in the Output window while running the application
 /// </para>
 /// <para>
-/// If using a <b>DEBUG</b> compiled version of Gorgon (recommended for development), then the <see cref="IsDebugEnabled"/> property will automatically be set to <b>true</b>.
+/// If using a <b>DEBUG</b> compiled version of Gorgon (recommended for development), then the <see cref="IsDebugEnabled"/> property will automatically be set to <b>true</b>
 /// </para>
 /// </remarks>
 /// <seealso cref="IGorgonVideoAdapterInfo"/>
@@ -108,7 +102,6 @@ namespace Gorgon.Graphics.Core;
 public sealed class GorgonGraphics
     : IGorgonNativeResource, IDisposable
 {
-    #region Events.
     /// <summary>
     /// Event triggered before a render target is changed.
     /// </summary>
@@ -138,9 +131,7 @@ public sealed class GorgonGraphics
     /// Event triggered when the depth/stencil buffer has been changed.
     /// </summary>
     public event EventHandler DepthStencilChanged;
-    #endregion
 
-    #region Constants.
     /// <summary>
     /// The minimum build number required for the Windows 10 operating system.
     /// </summary>
@@ -150,9 +141,6 @@ public sealed class GorgonGraphics
     /// The name of the shader file data used for include files that wish to use the include shader.
     /// </summary>
     public const string BlitterShaderIncludeFileName = "__Gorgon_TextureBlitter_Shader__";
-    #endregion
-
-    #region Variables.
 
     // The D3D 11.x device context.
     private D3D11.DeviceContext4 _deviceContext;
@@ -181,9 +169,7 @@ public sealed class GorgonGraphics
 
     // The timer used to trigger a clean up of cached render targets.
     private readonly GorgonTimerQpc _rtExpireTimer = new();
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to return the Direct 3D 11.x device context for this graphics instance.
     /// </summary>
@@ -383,9 +369,7 @@ public sealed class GorgonGraphics
     /// </para>
     /// </remarks>        
     nint IGorgonNativeResource.Handle => D3DDevice.NativePointer;
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to retrieve the multi sample maximum quality level support for a given format.
     /// </summary>
@@ -410,7 +394,7 @@ public sealed class GorgonGraphics
         }
         catch (DX.SharpDXException sdEx)
         {
-            Log.Print($"ERROR: Could not retrieve a multisample quality level max for format: [{format}]. Exception: {sdEx.Message}", LoggingLevel.Verbose);
+            Log.PrintError($"Could not retrieve a multisample quality level max for format: [{format}]. Exception: {sdEx.Message}", LoggingLevel.Verbose);
         }
 
         return GorgonMultisampleInfo.NoMultiSampling;
@@ -429,16 +413,16 @@ public sealed class GorgonGraphics
         Adapter4 resultAdapter;
         D3D11.Device5 resultDevice;
 
-        using (var factory2 = new Factory2(IsDebugEnabled))
+        using (Factory2 factory2 = new(IsDebugEnabled))
         {
-            resultFactory = factory2.QueryInterface<Factory5>();                
+            resultFactory = factory2.QueryInterface<Factory5>();
 
             using Adapter adapter = (adapterInfo.VideoDeviceType == VideoDeviceType.Hardware
                                           ? resultFactory.GetAdapter1(adapterInfo.Index)
                                           : resultFactory.GetWarpAdapter());
             resultAdapter = adapter.QueryInterface<Adapter4>();
 
-            using var device = new D3D11.Device(resultAdapter, flags, requestedFeatureLevel)
+            using D3D11.Device device = new(resultAdapter, flags, requestedFeatureLevel)
             {
                 DebugName = $"'{adapterInfo.Name}' D3D {requestedFeatureLevel.D3DVersion()} {(adapterInfo.VideoDeviceType == VideoDeviceType.Software ? "Software Adapter" : "Adapter")}"
             };
@@ -459,12 +443,12 @@ public sealed class GorgonGraphics
     private IReadOnlyDictionary<BufferFormat, IGorgonFormatSupportInfo> EnumerateFormatSupport(D3D11.Device5 device)
     {
         IEnumerable<BufferFormat> formats = (BufferFormat[])Enum.GetValues(typeof(BufferFormat));
-        var result = new Dictionary<BufferFormat, IGorgonFormatSupportInfo>();
+        Dictionary<BufferFormat, IGorgonFormatSupportInfo> result = [];
 
         // Get support values for each format.
         foreach (BufferFormat format in formats)
         {
-            var dxgiFormat = (Format)format;
+            Format dxgiFormat = (Format)format;
 
             // NOTE: NV12 seems to come back as value of -92093664, no idea what the extra flags might be, the documentation for D3D doesn't
             //       specify the flags.
@@ -498,7 +482,7 @@ public sealed class GorgonGraphics
             return true;
         }
 
-        var cancelArgs = new CancelEventArgs();
+        CancelEventArgs cancelArgs = new();
         cancelHandler(this, cancelArgs);
 
         return !cancelArgs.Cancel;
@@ -523,7 +507,7 @@ public sealed class GorgonGraphics
             return rtvsUpdated;
         }
 
-        var cancelArgs = new CancelEventArgs();
+        CancelEventArgs cancelArgs = new();
         cancelHandler(this, cancelArgs);
 
         return !cancelArgs.Cancel;
@@ -553,7 +537,7 @@ public sealed class GorgonGraphics
             return dsvUpdated;
         }
 
-        var cancelArgs = new CancelEventArgs();
+        CancelEventArgs cancelArgs = new();
         cancelHandler(this, cancelArgs);
 
         return !cancelArgs.Cancel;
@@ -573,7 +557,7 @@ public sealed class GorgonGraphics
     /// <param name="blendSampleMask">The blend sample mask.</param>
     /// <param name="stencilReference">The stencil reference.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void SetDrawStates(D3DState state, in GorgonColor factor, int blendSampleMask, int stencilReference)
+    private void SetDrawStates(D3DState state, GorgonColor factor, int blendSampleMask, int stencilReference)
     {
         // Before we draw, flush any expired render targets that are cached in the system.
         if ((_rtExpireTimer.Seconds > 30) && (_rtvFactory.AvailableCount > 0))
@@ -582,8 +566,8 @@ public sealed class GorgonGraphics
             _rtExpireTimer.Reset();
         }
 
-        PipelineStateChanges stateChanges = _stateEvaluator.GetPipelineStateChanges(state.PipelineState, in factor, blendSampleMask, stencilReference);
-        _stateApplicator.ApplyPipelineState(state.PipelineState, stateChanges, in factor, blendSampleMask, stencilReference);
+        PipelineStateChanges stateChanges = _stateEvaluator.GetPipelineStateChanges(state.PipelineState, factor, blendSampleMask, stencilReference);
+        _stateApplicator.ApplyPipelineState(state.PipelineState, stateChanges, factor, blendSampleMask, stencilReference);
 
         ResourceRanges resourceChanges = _stateEvaluator.GetResourceStateChanges(state, stateChanges);
         _stateApplicator.BindResourceState(resourceChanges, state);
@@ -594,7 +578,7 @@ public sealed class GorgonGraphics
     /// </summary>
     private void ReportLiveObjectsInternal(D3D11.Device device)
     {
-        using D3D11.DeviceDebug debugDevice = new(device);            
+        using D3D11.DeviceDebug debugDevice = new(device);
         debugDevice.ReportLiveDeviceObjects(D3D11.ReportingLevel.IgnoreInternal);
     }
 
@@ -603,7 +587,7 @@ public sealed class GorgonGraphics
     /// </summary>
     internal static void CheckMinimumOperatingSystem()
     {
-        if (!Win32API.IsWindows10OrGreater(MinWin10Build))
+        if (!OperatingSystem.IsOSPlatformVersionAtLeast("Windows", 10, 0, MinWin10Build))
         {
             throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_INVALID_OS, MinWin10Build));
         }
@@ -618,12 +602,16 @@ public sealed class GorgonGraphics
     /// <param name="threadGroupCountZ">The number of thread groups to dispatch in the Z direction.</param>
     internal void Dispatch(GorgonDispatchCall dispatchCall, int threadGroupCountX, int threadGroupCountY, int threadGroupCountZ)
     {
-        dispatchCall.ValidateObject(nameof(dispatchCall));
-        threadGroupCountX.ValidateRange(nameof(threadGroupCountX), 0, GorgonComputeEngine.MaxThreadGroupCount);
-        threadGroupCountY.ValidateRange(nameof(threadGroupCountY), 0, GorgonComputeEngine.MaxThreadGroupCount);
-        threadGroupCountZ.ValidateRange(nameof(threadGroupCountZ), 0, GorgonComputeEngine.MaxThreadGroupCount);
+#if DEBUG
+        ArgumentOutOfRangeException.ThrowIfLessThan(threadGroupCountX, 0);
+        ArgumentOutOfRangeException.ThrowIfLessThan(threadGroupCountY, 0);
+        ArgumentOutOfRangeException.ThrowIfLessThan(threadGroupCountZ, 0);
+        ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(threadGroupCountX, GorgonComputeEngine.MaxThreadGroupCount);
+        ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(threadGroupCountY, GorgonComputeEngine.MaxThreadGroupCount);
+        ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(threadGroupCountZ, GorgonComputeEngine.MaxThreadGroupCount);
+#endif
 
-        SetDrawStates(dispatchCall.D3DState, GorgonColor.White, int.MinValue, 0);
+        SetDrawStates(dispatchCall.D3DState, GorgonColors.White, int.MinValue, 0);
         D3DDeviceContext.Dispatch(threadGroupCountX, threadGroupCountY, threadGroupCountZ);
     }
 
@@ -635,11 +623,12 @@ public sealed class GorgonGraphics
     /// <param name="threadGroupOffset">[Optional] The offset within the buffer, in bytes, to where the arguments are stored.</param>
     internal void Dispatch(GorgonDispatchCall dispatchCall, GorgonBufferCommon indirectArgs, int threadGroupOffset = 0)
     {
-        dispatchCall.ValidateObject(nameof(dispatchCall));
-        indirectArgs.ValidateObject(nameof(indirectArgs));
-        threadGroupOffset.ValidateRange(nameof(threadGroupOffset), 0, int.MaxValue);
+#if DEBUG
+        ArgumentOutOfRangeException.ThrowIfLessThan(threadGroupOffset, 0);
+        ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(threadGroupOffset, int.MaxValue);
+#endif
 
-        SetDrawStates(dispatchCall.D3DState, GorgonColor.White, int.MinValue, 0);
+        SetDrawStates(dispatchCall.D3DState, GorgonColors.White, int.MinValue, 0);
         D3DDeviceContext.DispatchIndirect(indirectArgs.Native, threadGroupOffset);
     }
 
@@ -758,7 +747,7 @@ public sealed class GorgonGraphics
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void SetRenderTarget(GorgonRenderTargetView renderTarget, GorgonDepthStencil2DView depthStencil = null)
     {
-        GorgonRenderTargetView[] renderTargets = GorgonArrayPool<GorgonRenderTargetView>.SharedTiny.Rent(1);
+        GorgonRenderTargetView[] renderTargets = System.Buffers.ArrayPool<GorgonRenderTargetView>.Shared.Rent(1);
 
         try
         {
@@ -767,7 +756,7 @@ public sealed class GorgonGraphics
         }
         finally
         {
-            GorgonArrayPool<GorgonRenderTargetView>.SharedTiny.Return(renderTargets, true);
+            System.Buffers.ArrayPool<GorgonRenderTargetView>.Shared.Return(renderTargets, true);
         }
     }
 
@@ -860,9 +849,9 @@ public sealed class GorgonGraphics
     /// </remarks>
     /// <seealso cref="GorgonRasterState"/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void SetScissorRect(DX.Rectangle rect)
+    public void SetScissorRect(GorgonRectangle rect)
     {
-        DX.Rectangle[] rects = GorgonArrayPool<DX.Rectangle>.SharedTiny.Rent(1);
+        GorgonRectangle[] rects = System.Buffers.ArrayPool<GorgonRectangle>.Shared.Rent(1);
 
         try
         {
@@ -871,7 +860,7 @@ public sealed class GorgonGraphics
         }
         finally
         {
-            GorgonArrayPool<DX.Rectangle>.SharedTiny.Return(rects, true);
+            System.Buffers.ArrayPool<GorgonRectangle>.Shared.Return(rects, true);
         }
     }
 
@@ -895,7 +884,7 @@ public sealed class GorgonGraphics
     /// </remarks>
     /// <seealso cref="GorgonRasterState"/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void SetScissorRects(ReadOnlySpan<DX.Rectangle> rects)
+    public void SetScissorRects(ReadOnlySpan<GorgonRectangle> rects)
     {
         if (!_stateEvaluator.GetScissorRectChange(rects))
         {
@@ -917,7 +906,7 @@ public sealed class GorgonGraphics
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void SetViewport(DX.ViewportF viewport)
     {
-        DX.ViewportF[] viewports = GorgonArrayPool<DX.ViewportF>.SharedTiny.Rent(1);
+        DX.ViewportF[] viewports = System.Buffers.ArrayPool<DX.ViewportF>.Shared.Rent(1);
 
         try
         {
@@ -926,7 +915,7 @@ public sealed class GorgonGraphics
         }
         finally
         {
-            GorgonArrayPool<DX.ViewportF>.SharedTiny.Return(viewports, true);
+            System.Buffers.ArrayPool<DX.ViewportF>.Shared.Return(viewports, true);
         }
     }
 
@@ -1010,10 +999,9 @@ public sealed class GorgonGraphics
     /// <param name="blendSampleMask">[Optional] The mask used to define which samples get updated in the active render targets.</param>
     /// <param name="stencilReference">[Optional] The stencil reference value used when performing a stencil test.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="drawCall"/> parameter is <b>null</b>.</exception>
-    public void Submit(GorgonDrawCall drawCall, in GorgonColor? blendFactor = null, int blendSampleMask = int.MinValue, int stencilReference = 0)
+    public void Submit(GorgonDrawCall drawCall, GorgonColor? blendFactor = null, int blendSampleMask = int.MinValue, int stencilReference = 0)
     {
-        drawCall.ValidateObject(nameof(drawCall));
-        SetDrawStates(drawCall.D3DState, blendFactor ?? GorgonColor.White, blendSampleMask, stencilReference);
+        SetDrawStates(drawCall.D3DState, blendFactor ?? GorgonColors.White, blendSampleMask, stencilReference);
         D3DDeviceContext.Draw(drawCall.VertexCount, drawCall.VertexStartIndex);
         unchecked
         {
@@ -1032,10 +1020,9 @@ public sealed class GorgonGraphics
     /// <param name="blendSampleMask">[Optional] The mask used to define which samples get updated in the active render targets.</param>
     /// <param name="stencilReference">[Optional] The stencil reference value used when performing a stencil test.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="drawCall"/> parameter is <b>null</b>.</exception>
-    public void SubmitInstance(GorgonDrawCall drawCall, int instanceCount, int startInstanceIndex = 0, in GorgonColor? blendFactor = null, int blendSampleMask = int.MinValue, int stencilReference = 0)
+    public void SubmitInstance(GorgonDrawCall drawCall, int instanceCount, int startInstanceIndex = 0, GorgonColor? blendFactor = null, int blendSampleMask = int.MinValue, int stencilReference = 0)
     {
-        drawCall.ValidateObject(nameof(drawCall));
-        SetDrawStates(drawCall.D3DState, blendFactor ?? GorgonColor.White, blendSampleMask, stencilReference);
+        SetDrawStates(drawCall.D3DState, blendFactor ?? GorgonColors.White, blendSampleMask, stencilReference);
         D3DDeviceContext.DrawInstanced(drawCall.VertexCount, instanceCount, drawCall.VertexStartIndex, startInstanceIndex);
         unchecked
         {
@@ -1053,12 +1040,11 @@ public sealed class GorgonGraphics
     /// <param name="stencilReference">[Optional] The stencil reference value used when performing a stencil test.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="drawIndexCall"/> parameter is <b>null</b>.</exception>
     public void Submit(GorgonDrawIndexCall drawIndexCall,
-                       in GorgonColor? blendFactor = null,
+                       GorgonColor? blendFactor = null,
                        int blendSampleMask = int.MinValue,
                        int stencilReference = 0)
     {
-        drawIndexCall.ValidateObject(nameof(drawIndexCall));
-        SetDrawStates(drawIndexCall.D3DState, blendFactor ?? GorgonColor.White, blendSampleMask, stencilReference);
+        SetDrawStates(drawIndexCall.D3DState, blendFactor ?? GorgonColors.White, blendSampleMask, stencilReference);
         D3DDeviceContext.DrawIndexed(drawIndexCall.IndexCount, drawIndexCall.IndexStart, drawIndexCall.BaseVertexIndex);
         unchecked
         {
@@ -1077,12 +1063,11 @@ public sealed class GorgonGraphics
     /// <param name="blendSampleMask">[Optional] The mask used to define which samples get updated in the active render targets.</param>
     /// <param name="stencilReference">[Optional] The stencil reference value used when performing a stencil test.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="drawIndexCall"/> parameter is <b>null</b>.</exception>
-    public void SubmitInstance(GorgonDrawIndexCall drawIndexCall, int instanceCount, int startInstanceLocation = 0, in GorgonColor? blendFactor = null, int blendSampleMask = int.MinValue, int stencilReference = 0)
+    public void SubmitInstance(GorgonDrawIndexCall drawIndexCall, int instanceCount, int startInstanceLocation = 0, GorgonColor? blendFactor = null, int blendSampleMask = int.MinValue, int stencilReference = 0)
     {
-        drawIndexCall.ValidateObject(nameof(drawIndexCall));
-        SetDrawStates(drawIndexCall.D3DState, blendFactor ?? GorgonColor.White, blendSampleMask, stencilReference);
+        SetDrawStates(drawIndexCall.D3DState, blendFactor ?? GorgonColors.White, blendSampleMask, stencilReference);
         D3DDeviceContext.DrawIndexedInstanced(drawIndexCall.IndexCount,
-                                              instanceCount,                                                  
+                                              instanceCount,
                                               drawIndexCall.IndexStart,
                                               drawIndexCall.BaseVertexIndex,
                                               startInstanceLocation);
@@ -1094,22 +1079,22 @@ public sealed class GorgonGraphics
     }
 
     /// <summary>
-    /// Function to submit a <see cref="GorgonDrawCallCommon"/> to the GPU using a <see cref="GorgonBuffer"/> to pass in variable sized arguments.
+    /// Function to submit a <see cref="GorgonDrawIndexCall"/> to the GPU to generate instanced data.
     /// </summary>
     /// <param name="drawCall">The draw call to submit.</param>
-    /// <param name="indirectArgs">The buffer containing the draw call arguments to pass.</param>
-    /// <param name="argumentOffset">[Optional] The offset, in bytes, within the buffer to start reading the arguments from.</param>
+    /// <param name="indirectArgs">The buffer containing the GPU generated instance data.</param>
+    /// <param name="argumentOffset">[Optional] The offset, in bytes, within the buffer to start reading the primitive data from.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="drawCall"/>, or the <paramref name="indirectArgs"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="argumentOffset"/> parameter is less than 0.</exception>
     /// <exception cref="GorgonException">Thrown if the <paramref name="indirectArgs"/> was not created with the <see cref="IGorgonBufferInfo.IndirectArgs"/> flag set to <b>true</b>.</exception>
     /// <remarks>
     /// <para>
-    /// This allows submitting a <see cref="GorgonDrawCallCommon"/> with variable arguments without having to perform a read back of that data from the GPU and therefore avoid a stall. 
+    /// This allows submitting a <see cref="GorgonDrawIndexCall"/> with GPU generated instance data stored in a <see cref="GorgonBuffer"/>. 
     /// </para>
     /// <para>
-    /// Like the <see cref="SubmitStreamOut"/> method, this is useful when a shader generates an arbitrary amount of data within a buffer. Retrieving the size, or the data itself from the buffer will 
-    /// cause a stall when swtiching back to the CPU. So, to counter this, this method will pass the buffer with the arguments for the draw call straight through without having to get the CPU to read 
-    /// the data back, thus avoiding the stall.
+    /// Instead of pulling the instancing parameters from the <see cref="GorgonDrawIndexCall"/>, this method will use the instance data stored in the <paramref name="indirectArgs"/> buffer. The first four 
+    /// bytes are <c>IndexCountPerInstance</c>, the next 4 bytes represent <c>InstanceCount</c>, the next 4 represent <c>StartIndexLocation</c>, the next 4 represent <c>BaseVertexLocation</c>, and the last 
+    /// 4 byte represent <c>StartInstanceLocation</c>. The location of these values may be offset by <paramref name="argumentOffset"/>. 
     /// </para>
     /// <para>
     /// <note type="important">
@@ -1119,12 +1104,9 @@ public sealed class GorgonGraphics
     /// </note>
     /// </para>
     /// </remarks>
-    /// <seealso cref="GorgonDrawCallCommon"/>
-    public void SubmitIndirect(GorgonDrawCallCommon drawCall, GorgonBuffer indirectArgs, int argumentOffset = 0)
+    /// <seealso cref="GorgonDrawIndexCall"/>
+    public void SubmitInstanceIndirect(GorgonDrawIndexCall drawCall, GorgonBuffer indirectArgs, int argumentOffset = 0)
     {
-        drawCall.ValidateObject(nameof(drawCall));
-        indirectArgs.ValidateObject(nameof(indirectArgs));
-
 #if DEBUG
         if (argumentOffset < 0)
         {
@@ -1137,7 +1119,7 @@ public sealed class GorgonGraphics
         }
 #endif
 
-        SetDrawStates(drawCall.D3DState, GorgonColor.White, int.MinValue, 0);
+        SetDrawStates(drawCall.D3DState, GorgonColors.White, int.MinValue, 0);
         D3DDeviceContext.DrawIndexedInstancedIndirect(indirectArgs.Native, argumentOffset);
         unchecked
         {
@@ -1146,7 +1128,56 @@ public sealed class GorgonGraphics
     }
 
     /// <summary>
-    /// Function to submit a <see cref="GorgonDrawCallCommon"/> to the GPU.
+    /// Function to submit a <see cref="GorgonDrawCall"/> to the GPU to generate instanced data.
+    /// </summary>
+    /// <param name="drawCall">The draw call to submit.</param>
+    /// <param name="indirectArgs">The buffer containing the GPU generated instance data.</param>
+    /// <param name="argumentOffset">[Optional] The offset, in bytes, within the buffer to start reading the primitive data from.</param>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="drawCall"/>, or the <paramref name="indirectArgs"/> parameter is <b>null</b>.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="argumentOffset"/> parameter is less than 0.</exception>
+    /// <exception cref="GorgonException">Thrown if the <paramref name="indirectArgs"/> was not created with the <see cref="IGorgonBufferInfo.IndirectArgs"/> flag set to <b>true</b>.</exception>
+    /// <remarks>
+    /// <para>
+    /// This allows submitting a <see cref="GorgonDrawCall"/> with GPU generated instance data stored in a <see cref="GorgonBuffer"/>. 
+    /// </para>
+    /// <para>
+    /// Instead of pulling the instancing parameters from the <see cref="GorgonDrawCall"/>, this method will use the instance data stored in the <paramref name="indirectArgs"/> buffer. The first four 
+    /// bytes are <c>VertexCountPerInstance</c>, the next 4 bytes represent <c>InstanceCount</c>, the next 4 represent <c>StartVertexLocation</c>, the and the last 4 represent <c>StartInstanceLocation</c>.
+    /// The location of these values may be offset by <paramref name="argumentOffset"/>. 
+    /// </para>
+    /// <para>
+    /// <note type="important">
+    /// <para>
+    /// For performance reasons, any exceptions thrown from this method will only be thrown when Gorgon is compiled as DEBUG.
+    /// </para>
+    /// </note>
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="GorgonDrawCall"/>
+    public void SubmitInstanceIndirect(GorgonDrawCall drawCall, GorgonBuffer indirectArgs, int argumentOffset = 0)
+    {
+#if DEBUG
+        if (argumentOffset < 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(argumentOffset), Resources.GORGFX_ERR_PARAMETER_LESS_THAN_ZERO);
+        }
+
+        if (!indirectArgs.IndirectArgs)
+        {
+            throw new GorgonException(GorgonResult.AccessDenied, string.Format(Resources.GORGFX_ERR_BUFFER_NOT_INDIRECTARGS, indirectArgs.Name));
+        }
+#endif
+
+        SetDrawStates(drawCall.D3DState, GorgonColors.White, int.MinValue, 0);
+        D3DDeviceContext.DrawInstancedIndirect(indirectArgs.Native, argumentOffset);
+        unchecked
+        {
+            ++_stats._indirectCount;
+        }
+    }
+
+    /// <summary>
+    /// Function to submit a <see cref="GorgonStreamOutCall"/> to the GPU.
     /// </summary>
     /// <param name="drawCall">The draw call to submit.</param>
     /// <param name="blendFactor">[Optional] The factor used to modulate the pixel shader, render target or both.</param>
@@ -1155,8 +1186,8 @@ public sealed class GorgonGraphics
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="drawCall"/> parameter is <b>null</b>.</exception>
     /// <remarks>
     /// <para>
-    /// This method sends a series of state changes and resource bindings to the GPU. However, unlike the <see cref="Submit(GorgonDrawIndexCall, in GorgonColor?, int, int)"/> command, this command uses 
-    /// pre-processed data from the vertex and stream out stages. This means that the <see cref="GorgonVertexBuffer"/> attached to the draw call must have been assigned to the  previous
+    /// This method sends a series of state changes and resource bindings to the GPU. However, unlike the <see cref="Submit(GorgonDrawIndexCall, GorgonColor?, int, int)"/> command, this command uses 
+    /// pre-processed data from the vertex and stream out stages. This means that the <see cref="GorgonVertexBuffer"/> attached to the draw call must have been assigned to the previous
     /// <see cref="GorgonDrawCallCommon.StreamOutBufferBindings"/> and had data deposited into it from the stream out stage. After that, it should be be assigned to a <see cref="GorgonStreamOutCall"/>
     /// passed to this method.
     /// </para>
@@ -1172,12 +1203,10 @@ public sealed class GorgonGraphics
     /// </para>
     /// </remarks>
     public void SubmitStreamOut(GorgonStreamOutCall drawCall,
-                                in GorgonColor? blendFactor = null,
+                                GorgonColor? blendFactor = null,
                                 int blendSampleMask = int.MinValue,
                                 int stencilReference = 0)
     {
-        drawCall.ValidateObject(nameof(drawCall));
-
 #if DEBUG
         if (drawCall.PipelineState.VertexShader is null)
         {
@@ -1185,7 +1214,7 @@ public sealed class GorgonGraphics
         }
 #endif
 
-        SetDrawStates(drawCall.D3DState, blendFactor ?? GorgonColor.White, blendSampleMask, stencilReference);
+        SetDrawStates(drawCall.D3DState, blendFactor ?? GorgonColors.White, blendSampleMask, stencilReference);
         D3DDeviceContext.DrawAuto();
         unchecked
         {
@@ -1269,9 +1298,7 @@ public sealed class GorgonGraphics
         }
 #endif
     }
-    #endregion
 
-    #region Constructor/Destructor.
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonGraphics"/> class.
     /// </summary>
@@ -1382,5 +1409,4 @@ public sealed class GorgonGraphics
         IsDebugEnabled = true;
 #endif
     }
-    #endregion
 }

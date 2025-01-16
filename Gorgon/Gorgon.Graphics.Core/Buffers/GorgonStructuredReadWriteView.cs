@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,29 +11,26 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 22, 2017 10:31:48 AM
 // 
-#endregion
 
-using System;
 using Gorgon.Core;
-using Gorgon.Diagnostics;
 using D3D11 = SharpDX.Direct3D11;
 using DXGI = SharpDX.DXGI;
 
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// The type of unordered access view for a <see cref="GorgonStructuredReadWriteView"/>.
+/// The type of unordered access view for a <see cref="GorgonStructuredReadWriteView"/>
 /// </summary>
 [Flags]
 public enum StructuredBufferReadWriteViewType
@@ -53,25 +50,25 @@ public enum StructuredBufferReadWriteViewType
 }
 
 /// <summary>
-/// Provides a read/write (unordered access) view for a <see cref="GorgonBuffer"/> containing structured data.
+/// Provides a read/write (unordered access) view for a <see cref="GorgonBuffer"/> containing structured data
 /// </summary>
 /// <remarks>
 /// <para>
 /// This type of view allows for unordered access to a <see cref="GorgonBuffer"/>. The buffer must have been created with the <see cref="BufferBinding.ReadWrite"/> flag in its 
-/// <see cref="IGorgonBufferInfo.Binding"/> property, and have a <see cref="IGorgonBufferInfo.StructureSize"/> greater than 0.
+/// <see cref="IGorgonBufferInfo.Binding"/> property, and have a <see cref="IGorgonBufferInfo.StructureSize"/> greater than 0
 /// </para>
 /// <para>
 /// The unordered access allows a shader to read/write any part of a <see cref="GorgonGraphicsResource"/> by multiple threads without memory contention. This is done through the use of 
-/// <a target="_blank" href="https://msdn.microsoft.com/en-us/library/windows/desktop/ff476334(v=vs.85).aspx">atomic functions</a>.
+/// <a target="_blank" href="https://msdn.microsoft.com/en-us/library/windows/desktop/ff476334(v=vs.85).aspx">atomic functions</a>
 /// </para>
 /// <para>
 /// These types of views are most useful for <see cref="GorgonComputeShader"/> shaders, but can also be used by a <see cref="GorgonPixelShader"/> by passing a list of these views in to a 
-/// <see cref="GorgonDrawCallCommon">draw call</see>.
+/// <see cref="GorgonDrawCallCommon">draw call</see>
 /// </para>
 /// <para>
 /// <note type="warning">
 /// <para>
-/// Unordered access views do not support multisampled <see cref="GorgonTexture2D"/>s.
+/// Unordered access views do not support multisampled <see cref="GorgonTexture2D"/>s
 /// </para>
 /// </note>
 /// </para>
@@ -83,7 +80,6 @@ public enum StructuredBufferReadWriteViewType
 public sealed class GorgonStructuredReadWriteView
     : GorgonBufferReadWriteViewCommon<GorgonBuffer>, IGorgonBufferInfo
 {
-    #region Properties.
     /// <summary>
     /// Property to return the size of an element, in bytes.
     /// </summary>
@@ -160,9 +156,7 @@ public sealed class GorgonStructuredReadWriteView
     /// Property to return the name of this object.
     /// </summary>
     string IGorgonNamedObject.Name => Buffer?.Name;
-    #endregion
 
-    #region Methods.
     /// <summary>Function to retrieve the necessary parameters to create the native view.</summary>
     /// <returns>The D3D11 UAV descriptor.</returns>
     private protected override ref readonly D3D11.UnorderedAccessViewDescription1 OnGetUavParams()
@@ -187,11 +181,13 @@ public sealed class GorgonStructuredReadWriteView
     /// </summary>
     /// <param name="buffer">The buffer that will receive the data.</param>
     /// <param name="offset">[Optional] The offset, in bytes, within the buffer attached to this view to start reading from.</param>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="offset"/> parameter is less than 0, or greater than or equal to the 
+    /// <see cref="GorgonGraphicsResource.SizeInBytes"/><c>-4</c> of the <paramref name="buffer"/>.</exception>
     /// <remarks>
     /// <para>
-    /// When the structure unordered access view is set up with a <see cref="StructuredBufferReadWriteViewType.Append"/>, or <see cref="StructuredBufferReadWriteViewType.Counter"/>, the values updated by these flags are 
-    /// not readily accessible from the CPU. To retrieve these values, this method must be called to retrieve the values. These values are copied into the <paramref name="buffer"/> provided to the 
-    /// method so that applications can make use of data generated on the GPU. Note that this value will be written out as a 32 bit unsigned integer.
+    /// When the structure unordered access view is set up with a <see cref="StructuredBufferReadWriteViewType.Append"/>, or <see cref="StructuredBufferReadWriteViewType.Counter"/>, the values updated by 
+    /// these flags are not readily accessible from the CPU. To retrieve these values, this method must be called to retrieve the values. These values are copied into the <paramref name="buffer"/> provided 
+    /// to the method so that applications can make use of data generated on the GPU. Note that this value will be written out as a 32 bit unsigned integer.
     /// </para>
     /// <para>
     /// If the unordered access view does not specify the appropriate values on the <see cref="ReadWriteViewType"/>, then this method will do nothing.
@@ -206,14 +202,14 @@ public sealed class GorgonStructuredReadWriteView
     /// </remarks>
     public void CopyStructureCount(GorgonBufferCommon buffer, int offset = 0)
     {
-        buffer.ValidateObject(nameof(buffer));
-        offset.ValidateRange(nameof(offset), 0, Buffer.SizeInBytes - 4);
+#if DEBUG
+        ArgumentOutOfRangeException.ThrowIfLessThan(offset, 0);
+        ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(offset, buffer.SizeInBytes - 4);
+#endif
 
         buffer.Graphics.D3DDeviceContext.CopyStructureCount(buffer.Native, offset, Native);
     }
-    #endregion
 
-    #region Constructor/Finalizer.
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonStructuredReadWriteView"/> class.
     /// </summary>
@@ -228,5 +224,4 @@ public sealed class GorgonStructuredReadWriteView
                                  int elementCount,
                                  int totalElementCount)
         : base(buffer, elementStart, elementCount, totalElementCount) => ReadWriteViewType = uavType;
-    #endregion
 }

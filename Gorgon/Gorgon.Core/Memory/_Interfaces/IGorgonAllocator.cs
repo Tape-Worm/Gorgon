@@ -1,7 +1,6 @@
-﻿#region MIT
-// 
+﻿// 
 // Gorgon.
-// Copyright (C) 2019 Michael Winsor
+// Copyright (C) 2024 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,9 +21,6 @@
 // 
 // Created: September 24, 2019 9:34:01 AM
 // 
-#endregion
-
-using System;
 
 namespace Gorgon.Memory;
 
@@ -32,6 +28,11 @@ namespace Gorgon.Memory;
 /// Defines a memory allocator strategy.
 /// </summary>
 /// <typeparam name="T">The type of object allocated by this allocator. Must be a reference type.</typeparam>
+/// <remarks>
+/// <para>
+/// This interface is meant to be implemented by objects that will perform custom memory allocations using a specific strategy (e.g. a pool allocator, or a stack allocator). 
+/// </para>
+/// </remarks>
 public interface IGorgonAllocator<T>
     where T : class
 {
@@ -43,8 +44,8 @@ public interface IGorgonAllocator<T>
     /// <remarks>
     /// <para>
     /// If the <paramref name="initializer"/> parameter is supplied, then this callback method can be used to initialize the new object before returning it from the allocator. If the object returned 
-    /// is <b>null</b> (because an allocator was not supplied to the constructor), then this parameter will be ignored.
+    /// is <b>null</b>, then this parameter will be ignored.
     /// </para>
     /// </remarks>
-    T Allocate(Action<T> initializer = null);
+    T Allocate(Action<T>? initializer = null);
 }

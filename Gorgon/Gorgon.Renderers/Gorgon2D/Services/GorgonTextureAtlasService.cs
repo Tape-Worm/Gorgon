@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,61 +11,53 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 2, 2019 9:24:26 AM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Renderers.Properties;
-using DX = SharpDX;
 
 namespace Gorgon.Renderers.Services;
 
 /// <summary>
-/// A service used to generate a 2D texture atlas from a series of separate sprites.
+/// A service used to generate a 2D texture atlas from a series of separate sprites
 /// </summary>
 /// <remarks>
 /// <para>
 /// To get the best performance when rendering sprites, batching is essential. In order to achieve this, rendering sprites that use the same texture is necessary. This is where building a texture atlas 
 /// comes in. A texture atlas is a combination of multiple sprite images into a single texture, each sprite that is embedded into the atlas uses a different set of texture coordinates. When rendering 
-/// these sprites with the atlas, only a single texture change is required.
+/// these sprites with the atlas, only a single texture change is required
 /// </para>
 /// <para>
 /// When generating an atlas, a series of existing sprites, that reference different textures is fed to the service and each sprite's dimensions is fit into a texture region, with the image from the 
 /// original sprite texture transferred and packed into the new atlas texture. Should the texture not have enough empty space for the sprites, array indices will be used to store the extra sprites. 
-/// In the worst case, multiple textures will be generated.
+/// In the worst case, multiple textures will be generated
 /// </para>
 /// </remarks>
 public class GorgonTextureAtlasService
     : IGorgonTextureAtlasService
 {
-    #region Variables.
     // The 2D renderer used to generate the data.
     private readonly Gorgon2D _renderer;
     // The graphics interface used to generate the data.
     private readonly GorgonGraphics _graphics;
     // The size of the texture to generate.
-    private DX.Size2 _textureSize = new(1024, 1024);
+    private GorgonPoint _textureSize = new(1024, 1024);
     // The number of array indices in the texture to generate.
     private int _arrayCount;
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to set or return the size of the texture to generate.
     /// </summary>
@@ -73,11 +65,11 @@ public class GorgonTextureAtlasService
     /// The maximum texture size is limited to the <see cref="IGorgonVideoAdapterInfo.MaxTextureWidth"/>, and <see cref="IGorgonVideoAdapterInfo.MaxTextureHeight"/> supported by the video adapter, and 
     /// the minimum is 256x256.
     /// </remarks>
-    public DX.Size2 TextureSize
+    public GorgonPoint TextureSize
     {
         get => _textureSize;
-        set => _textureSize = new DX.Size2(value.Width.Min(_graphics.VideoAdapter.MaxTextureWidth).Max(256),
-                                        value.Height.Min(_graphics.VideoAdapter.MaxTextureHeight).Max(256));
+        set => _textureSize = new GorgonPoint(value.X.Min(_graphics.VideoAdapter.MaxTextureWidth).Max(256),
+                                        value.Y.Min(_graphics.VideoAdapter.MaxTextureHeight).Max(256));
     }
 
     /// <summary>Property to set or return the number of array indices available in the generated texture.</summary>
@@ -105,29 +97,27 @@ public class GorgonTextureAtlasService
         get;
         set;
     }
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to calculate the size to the next power of two.
     /// </summary>
     /// <param name="size">The size to evaluate.</param>
     /// <returns>The power of 2 size.</returns>
-    private DX.Size2 CalcPowerOfTwo(DX.Size2 size)
+    private GorgonPoint CalcPowerOfTwo(GorgonPoint size)
     {
         int w = 1;
         int h = 1;
-        while (w < size.Width)
+        while (w < size.X)
         {
             w <<= 1;
         }
 
-        while (h < size.Height)
+        while (h < size.Y)
         {
             h <<= 1;
         }
 
-        return new DX.Size2(w, h);
+        return new GorgonPoint(w, h);
     }
 
     /// <summary>
@@ -136,38 +126,38 @@ public class GorgonTextureAtlasService
     /// <param name="sprites">The sprites to evaluate.</param>
     /// <param name="maxTextureSize">The current maximum texture size.</param>
     /// <returns></returns>
-    private DX.Size2 GetMaxTextureSize(IEnumerable<GorgonSprite> sprites, DX.Size2 maxTextureSize)
+    private GorgonPoint GetMaxTextureSize(IEnumerable<GorgonSprite> sprites, GorgonPoint maxTextureSize)
     {
         // Get all texture regions.
-        IEnumerable<DX.Rectangle> spriteRegions = sprites.Select(item =>
+        IEnumerable<GorgonRectangle> spriteRegions = sprites.Select(item =>
         {
-            DX.Rectangle pixelRegion = item.Texture.Texture.ToPixel(item.TextureRegion);
+            GorgonRectangle pixelRegion = item.Texture.Texture.ToPixel(item.TextureRegion);
             if (Padding != 0)
             {
-                pixelRegion.Inflate(Padding, Padding);
+                pixelRegion = GorgonRectangle.Expand(pixelRegion, Padding);
             }
             return pixelRegion;
         })
         .OrderByDescending(item => item.Height);
 
         // If we have a sprite that's too large, then expand the total texture bounds.
-        foreach (DX.Rectangle rect in spriteRegions)
+        foreach (GorgonRectangle rect in spriteRegions)
         {
-            if ((rect.Width <= maxTextureSize.Width) && (rect.Height <= maxTextureSize.Height))
+            if ((rect.Width <= maxTextureSize.X) && (rect.Height <= maxTextureSize.Y))
             {
                 continue;
             }
 
-            DX.Size2 newMaxSize = CalcPowerOfTwo(new DX.Size2(rect.Width, rect.Height));
+            GorgonPoint newMaxSize = CalcPowerOfTwo(new GorgonPoint(rect.Width, rect.Height));
 
-            if ((newMaxSize.Width - rect.Width) < rect.Width / 4)
+            if ((newMaxSize.X - rect.Width) < rect.Width / 4)
             {
-                newMaxSize.Width *= 2;
+                newMaxSize.X *= 2;
             }
 
-            if ((newMaxSize.Height - rect.Height) < rect.Height / 4)
+            if ((newMaxSize.Y - rect.Height) < rect.Height / 4)
             {
-                newMaxSize.Height *= 2;
+                newMaxSize.Y *= 2;
             }
 
             maxTextureSize = newMaxSize;
@@ -183,15 +173,13 @@ public class GorgonTextureAtlasService
     /// <param name="maxTextureSize">The maximum size for a texture atlas.</param>
     /// <param name="maxArrayCount">The maximum number of array indices for an atlas.</param>
     /// <returns>The list of rectangles/array indices and a flag to indicate whether the sprites were already on an atlas or not.</returns>
-    private (IReadOnlyList<IReadOnlyDictionary<int, TextureRects>> rects, bool noChange) CalculateRegions(IReadOnlyList<GorgonSprite> sprites, DX.Size2 maxTextureSize, int maxArrayCount)
+    private (IReadOnlyList<IReadOnlyDictionary<int, TextureRects>> rects, bool noChange) CalculateRegions(IReadOnlyList<GorgonSprite> sprites, GorgonPoint maxTextureSize, int maxArrayCount)
     {
-        var result = new List<IReadOnlyDictionary<int, TextureRects>>();
-        var rects = new Dictionary<int, TextureRects>();
-        DX.Rectangle spriteRegion;
+        List<IReadOnlyDictionary<int, TextureRects>> result = [];
+        Dictionary<int, TextureRects> rects = [];
+        GorgonRectangle spriteRegion;
         TextureRects newRect = null;
-        var textureBounds = new DX.Rectangle(0, 0, maxTextureSize.Width, maxTextureSize.Height);
-
-
+        GorgonRectangle textureBounds = new(0, 0, maxTextureSize.X, maxTextureSize.Y);
 
         // Scan for same texture.
         if (sprites.All(item => item.Texture.Texture == sprites[0].Texture.Texture))
@@ -201,7 +189,7 @@ public class GorgonTextureAtlasService
             {
                 if (!rects.TryGetValue(sprite.TextureArrayIndex, out newRect))
                 {
-                    rects[sprite.TextureArrayIndex] = newRect = new TextureRects(new DX.Rectangle(0, 0, sprite.Texture.Texture.Width, sprite.Texture.Texture.Height), sprite.TextureArrayIndex);
+                    rects[sprite.TextureArrayIndex] = newRect = new TextureRects(new GorgonRectangle(0, 0, sprite.Texture.Texture.Width, sprite.Texture.Texture.Height), sprite.TextureArrayIndex);
                 }
 
                 newRect.SpriteRegion[sprite] = sprite.Texture.Texture.ToPixel(sprite.TextureRegion);
@@ -212,19 +200,18 @@ public class GorgonTextureAtlasService
         }
 
         // Get all texture regions.
-        List<(GorgonSprite sprite, DX.Rectangle spriteRegion)> spriteRegions = sprites.Select(item =>
+        List<(GorgonSprite sprite, GorgonRectangle spriteRegion)> spriteRegions = [.. sprites.Select(item =>
         {
-            DX.Rectangle region = item.Texture.Texture.ToPixel(item.TextureRegion);
+            GorgonRectangle region = item.Texture.Texture.ToPixel(item.TextureRegion);
 
             if (Padding != 0)
             {
-                region.Inflate(Padding, Padding);
+                region = GorgonRectangle.Expand(region, Padding);
             }
 
             return (item, region);
         })
-        .OrderByDescending(item => item.region.Height)
-        .ToList();
+        .OrderByDescending(item => item.region.Height)];
 
         int array = 0;
         result.Add(rects);
@@ -232,10 +219,10 @@ public class GorgonTextureAtlasService
         while (spriteRegions.Count > 0)
         {
             SpritePacker.CreateRoot(textureBounds.Width, textureBounds.Height);
-            (GorgonSprite sprite, DX.Rectangle region)[] activeRegions = spriteRegions.ToArray();
+            (GorgonSprite sprite, GorgonRectangle region)[] activeRegions = [.. spriteRegions];
 
             // Pack as many as possible into the current array/texture rect list.
-            foreach ((GorgonSprite sprite, DX.Rectangle region) sprite in activeRegions)
+            foreach ((GorgonSprite sprite, GorgonRectangle region) sprite in activeRegions)
             {
                 // If a sprite can't find into the actual texture size, then stop right away.
                 // Better to not have anything come back than have a single sprite missing out of many.
@@ -245,7 +232,7 @@ public class GorgonTextureAtlasService
                     return (result, false);
                 }
 
-                DX.Rectangle? newRegion = SpritePacker.Add(new DX.Size2(sprite.region.Width, sprite.region.Height));
+                GorgonRectangle? newRegion = SpritePacker.Add(new GorgonPoint(sprite.region.Width, sprite.region.Height));
 
                 if ((newRegion is null) || (newRegion.Value.Width == 0) || (newRegion.Value.Height == 0))
                 {
@@ -261,7 +248,7 @@ public class GorgonTextureAtlasService
 
                 if (Padding != 0)
                 {
-                    spriteRegion.Inflate(-Padding, -Padding);
+                    spriteRegion = GorgonRectangle.Expand(spriteRegion, -Padding);
                 }
 
                 newRect.SpriteRegion[sprite.sprite] = spriteRegion;
@@ -280,7 +267,7 @@ public class GorgonTextureAtlasService
             if (array >= maxArrayCount)
             {
                 array = 0;
-                rects = new Dictionary<int, TextureRects>();
+                rects = [];
                 result.Add(rects);
             }
         }
@@ -316,7 +303,7 @@ public class GorgonTextureAtlasService
     /// </para>
     /// </remarks>
     /// <seealso cref="GetBestFit"/>
-    public IReadOnlyDictionary<GorgonSprite, (int textureIndex, DX.Rectangle region, int arrayIndex)> GetSpriteRegions(IEnumerable<GorgonSprite> sprites)
+    public IReadOnlyDictionary<GorgonSprite, (int textureIndex, GorgonRectangle region, int arrayIndex)> GetSpriteRegions(IEnumerable<GorgonSprite> sprites)
     {
         if (sprites is null)
         {
@@ -328,7 +315,7 @@ public class GorgonTextureAtlasService
                                                       .Distinct()
                                                       .ToArray();
 
-        var result = new Dictionary<GorgonSprite, (int textureIndex, DX.Rectangle rect, int arrayindex)>();
+        Dictionary<GorgonSprite, (int textureIndex, GorgonRectangle rect, int arrayindex)> result = [];
 
         (IReadOnlyList<IReadOnlyDictionary<int, TextureRects>> rects, _) = CalculateRegions(filtered, TextureSize, ArrayCount);
 
@@ -337,7 +324,7 @@ public class GorgonTextureAtlasService
             IReadOnlyDictionary<int, TextureRects> rectList = rects[i];
             foreach (KeyValuePair<int, TextureRects> item in rectList.Where(item => item.Key < ArrayCount))
             {
-                foreach (KeyValuePair<GorgonSprite, DX.Rectangle> region in item.Value.SpriteRegion)
+                foreach (KeyValuePair<GorgonSprite, GorgonRectangle> region in item.Value.SpriteRegion)
                 {
                     result[region.Key] = (i, region.Value, item.Value.ArrayIndex);
                 }
@@ -346,7 +333,6 @@ public class GorgonTextureAtlasService
 
         return result;
     }
-
 
     /// <summary>
     /// Function to determine the best texture size and array count for the texture atlas based on the sprites passed in.
@@ -373,7 +359,7 @@ public class GorgonTextureAtlasService
     /// </para>
     /// </remarks>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0046:Convert to conditional expression", Justification = "<Pending>")]
-    public (DX.Size2 textureSize, int arrayCount) GetBestFit(IEnumerable<GorgonSprite> sprites, DX.Size2 minTextureSize, int minArrayCount)
+    public (GorgonPoint textureSize, int arrayCount) GetBestFit(IEnumerable<GorgonSprite> sprites, GorgonPoint minTextureSize, int minArrayCount)
     {
         if (sprites is null)
         {
@@ -388,18 +374,18 @@ public class GorgonTextureAtlasService
         // If we've got all empty sprites, then leave, there's nothing to calculate.
         if (filtered.Count == 0)
         {
-            return (DX.Size2.Zero, 0);
+            return (GorgonPoint.Zero, 0);
         }
 
         minArrayCount = minArrayCount.Max(1).Min(_graphics.VideoAdapter.MaxTextureArrayCount);
-        minTextureSize = new DX.Size2(minTextureSize.Width.Max(16).Min(_graphics.VideoAdapter.MaxTextureWidth),
-                                      minTextureSize.Height.Max(16).Min(_graphics.VideoAdapter.MaxTextureHeight));
+        minTextureSize = new GorgonPoint(minTextureSize.X.Max(16).Min(_graphics.VideoAdapter.MaxTextureWidth),
+                                      minTextureSize.Y.Max(16).Min(_graphics.VideoAdapter.MaxTextureHeight));
 
-        DX.Size2 maxSize = GetMaxTextureSize(filtered, minTextureSize);
+        GorgonPoint maxSize = GetMaxTextureSize(filtered, minTextureSize);
 
-        if ((maxSize.Width > _graphics.VideoAdapter.MaxTextureWidth) || (maxSize.Height > _graphics.VideoAdapter.MaxTextureHeight))
+        if ((maxSize.X > _graphics.VideoAdapter.MaxTextureWidth) || (maxSize.Y > _graphics.VideoAdapter.MaxTextureHeight))
         {
-            return (DX.Size2.Zero, 0);
+            return (GorgonPoint.Zero, 0);
         }
 
         (IReadOnlyList<IReadOnlyDictionary<int, TextureRects>> rects, bool noChange) = CalculateRegions(filtered, maxSize, 1);
@@ -409,7 +395,7 @@ public class GorgonTextureAtlasService
             return (maxSize, 0);
         }
 
-        return rects.Count == 0 ? (DX.Size2.Zero, 0) : (maxSize, rects.Count.Max(minArrayCount));
+        return rects.Count == 0 ? (GorgonPoint.Zero, 0) : (maxSize, rects.Count.Max(minArrayCount));
     }
 
     /// <summary>
@@ -441,7 +427,7 @@ public class GorgonTextureAtlasService
     /// <seealso cref="IGorgonFormatSupportInfo"/>
     /// <seealso cref="GetSpriteRegions(IEnumerable{GorgonSprite})"/>
     /// <seealso cref="GorgonTextureAtlas"/>
-    public GorgonTextureAtlas GenerateAtlas(IReadOnlyDictionary<GorgonSprite, (int textureIndex, DX.Rectangle region, int arrayIndex)> regions, BufferFormat textureFormat)
+    public GorgonTextureAtlas GenerateAtlas(IReadOnlyDictionary<GorgonSprite, (int textureIndex, GorgonRectangle region, int arrayIndex)> regions, BufferFormat textureFormat)
     {
         if (regions is null)
         {
@@ -457,16 +443,16 @@ public class GorgonTextureAtlasService
 
         if (regions.Count == 0)
         {
-            return new GorgonTextureAtlas(Array.Empty<GorgonTexture2DView>(), Array.Empty<(GorgonSprite, GorgonSprite)>());
+            return new GorgonTextureAtlas([], []);
         }
 
         // Get the total number of textures.
         int textureCount = regions.Max(item => item.Value.textureIndex) + 1;
-        var srvs = new GorgonTexture2DView[textureCount];
+        GorgonTexture2DView[] srvs = new GorgonTexture2DView[textureCount];
         GorgonRenderTarget2DView rtv = null;
         GorgonRenderTargetView original = _graphics.RenderTargets[0];
-        var sprites = new List<(GorgonSprite, GorgonSprite)>(regions.Count);
-        var rtvs = new HashSet<GorgonRenderTargetView>();
+        List<(GorgonSprite, GorgonSprite)> sprites = new(regions.Count);
+        HashSet<GorgonRenderTargetView> rtvs = [];
         string textureName = $"{(string.IsNullOrWhiteSpace(BaseTextureName) ? "texture_atlas" : BaseTextureName)}_{{0}}.dds";
 
         try
@@ -474,7 +460,7 @@ public class GorgonTextureAtlasService
             // Create the new destinations.
             for (int textureIndex = 0; textureIndex < textureCount; ++textureIndex)
             {
-                srvs[textureIndex] = GorgonTexture2DView.CreateTexture(_graphics, new GorgonTexture2DInfo(TextureSize.Width, TextureSize.Height, textureFormat)
+                srvs[textureIndex] = GorgonTexture2DView.CreateTexture(_graphics, new GorgonTexture2DInfo(TextureSize.X, TextureSize.Y, textureFormat)
                 {
                     Name = string.Format(textureName, textureIndex),
                     ArrayCount = ArrayCount,
@@ -483,14 +469,14 @@ public class GorgonTextureAtlasService
                 });
             }
 
-            foreach (KeyValuePair<GorgonSprite, (int textureIndex, DX.Rectangle spriteRegion, int arrayIndex)> region in regions)
+            foreach (KeyValuePair<GorgonSprite, (int textureIndex, GorgonRectangle spriteRegion, int arrayIndex)> region in regions)
             {
                 GorgonTexture2DView srv = srvs[region.Value.textureIndex];
                 rtv = srv.Texture.GetRenderTargetView(arrayIndex: region.Value.arrayIndex);
 
                 if (!rtvs.Contains(rtv))
                 {
-                    rtv.Clear(GorgonColor.BlackTransparent);
+                    rtv.Clear(GorgonColors.BlackTransparent);
                     rtvs.Add(rtv);
                 }
 
@@ -498,8 +484,8 @@ public class GorgonTextureAtlasService
 
                 _renderer.Begin(Gorgon2DBatchState.NoBlend);
 
-                _renderer.DrawFilledRectangle(region.Value.spriteRegion.ToRectangleF(),
-                                            GorgonColor.White,
+                _renderer.DrawFilledRectangle(region.Value.spriteRegion,
+                                            GorgonColors.White,
                                             region.Key.Texture,
                                             region.Key.TextureRegion,
                                             region.Key.TextureArrayIndex,
@@ -529,9 +515,7 @@ public class GorgonTextureAtlasService
             _graphics.SetRenderTarget(original);
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
     /// <summary>Initializes a new instance of the <see cref="GorgonTextureAtlasService"/> class.</summary>
     /// <param name="renderer">The 2D renderer to use when generating the atlas data.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/> parameter is <strong>null</strong>.</exception>
@@ -540,5 +524,4 @@ public class GorgonTextureAtlasService
         _renderer = renderer ?? throw new ArgumentNullException(nameof(renderer));
         _graphics = _renderer.Graphics;
     }
-    #endregion
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,38 +11,30 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 21, 2020 12:18:20 AM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.Properties;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
-using Gorgon.IO;
+using Gorgon.IO.FileSystem;
 
 namespace Gorgon.Editor.Rendering;
 
-
 /// <summary>
-/// A texture cache used to keep textures resident for use over a user defined lifetime.
+/// A texture cache used to keep textures resident for use over a user defined lifetime
 /// </summary>
 /// <remarks>
 /// <para>
@@ -52,18 +44,24 @@ namespace Gorgon.Editor.Rendering;
 /// <para>
 /// This is where the texture cache can be used to solve the problem. A texture cache will keep the textures resident in memory as long as they're being used. When a texture is requested by passing in 
 /// its <see cref="IContentFile"/> it will load the texture if it is not previously cached, or if the actual texture object was disposed. If the texture was previously cached, then the cached texture 
-/// will be returned, incrementing an internal count, which is used to determine how many items are using the texture.
+/// will be returned, incrementing an internal count, which is used to determine how many items are using the texture
 /// </para>
 /// <para>
 /// When a texture is no longer required, the texture should <b>not</b> be disposed. Instead, use the texture cache to return the texture which will automatically dispose of it when no more objects 
-/// are using it. If the texture is required again, then retrieving it from the texture cache will load the texture again.
+/// are using it. If the texture is required again, then retrieving it from the texture cache will load the texture again
 /// </para>
 /// </remarks>
 /// <seealso cref="IContentFile"/>
-public class TextureCache
-    : ITextureCache
+/// <remarks>Initializes a new instance of the <see cref="TextureCache"/> class.</remarks>
+/// <param name="graphics">The graphics interface used to create textures.</param>
+/// <param name="fileManager">The file manager for the project file system.</param>
+/// <param name="tempWriter">The temporary writer used to write temporary data.</param>
+/// <param name="codec">The image codec.</param>
+/// <param name="log">The logging interface for capturing debug messages.</param>
+/// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
+public class TextureCache(GorgonGraphics graphics, IContentFileManager fileManager, IGorgonFileSystem tempWriter, IGorgonImageCodec codec, IGorgonLog log)
+        : ITextureCache
 {
-    #region Classes.
     /// <summary>
     /// An entry in the texture cache.
     /// </summary>
@@ -100,31 +98,25 @@ public class TextureCache
             texture?.Dispose();
         }
     }
-    #endregion
 
-    #region Constants.
     // The path to the texture cache directory.
     private const string CacheDirectory = "/Gorgon.Editor/TextureCache/";
-    #endregion
 
-    #region Variables.
     // The graphics interface used to create the textures.
-    private readonly GorgonGraphics _graphics;
+    private readonly GorgonGraphics _graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
     // The project file system manager.
-    private readonly IContentFileManager _fileManager;
+    private readonly IContentFileManager _fileManager = fileManager ?? throw new ArgumentNullException(nameof(fileManager));
     // The writer used to write files to the temporary area.
-    private readonly IGorgonFileSystemWriter<Stream> _tempWriter;
+    private readonly IGorgonFileSystem _tempWriter = tempWriter ?? throw new ArgumentNullException(nameof(tempWriter));
     // The cache that holds the textures and redirected file name.
-    private readonly Dictionary<IContentFile, TextureEntry> _cache = new();
+    private readonly Dictionary<IContentFile, TextureEntry> _cache = [];
     // The codec used to load the image.
-    private readonly IGorgonImageCodec _codec;
+    private readonly IGorgonImageCodec _codec = codec ?? throw new ArgumentNullException(nameof(codec));
     // The directory for the cached files.
     private IGorgonVirtualDirectory _cacheDirectory;
     // The log interface for capturing debug messages.
-    private readonly IGorgonLog _log;
-    #endregion
+    private readonly IGorgonLog _log = log ?? throw new ArgumentNullException(nameof(log));
 
-    #region Methods.
     /// <summary>
     /// Function to load a texture for the texture cache.
     /// </summary>
@@ -133,7 +125,7 @@ public class TextureCache
     private async Task<GorgonTexture2DView> LoadTextureAsync(TextureEntry entry)
     {
         // If, for some reason, the file does not exist, then we need to remove the cache entry and rebuild it.
-        if (_tempWriter.FileSystem.GetFile(entry.CachedFile.FullPath) is null)
+        if (_tempWriter.GetFile(entry.CachedFile.FullPath) is null)
         {
             _log.Print($"Texture '{entry.TextureFile.Path}' exists in cache, but the cache file was not found. Rebuilding cache entry.", LoggingLevel.Verbose);
             _cache.Remove(entry.TextureFile);
@@ -156,10 +148,10 @@ public class TextureCache
 
         IGorgonImage image = await Task.Run(() =>
         {
-            using Stream textureStream = _tempWriter.OpenStream(entry.CachedFile.FullPath, FileMode.Open);
+            using Stream textureStream = _tempWriter.OpenStream(entry.CachedFile.FullPath, false);
             if (!_codec.IsReadable(textureStream))
             {
-                _log.Print($"ERROR: Texture '{entry.TextureFile.Path}' is not a {_codec.Name} file.", LoggingLevel.Verbose);
+                _log.PrintError($"Texture '{entry.TextureFile.Path}' is not a {_codec.Name} file.", LoggingLevel.Verbose);
             }
 
             return _codec.FromStream(textureStream);
@@ -194,7 +186,7 @@ public class TextureCache
     {
         if (!_fileManager.FileExists(file.Path))
         {
-            _log.Print($"ERROR: File '{file.Path}' does not exist. No texture will be available for this file.", LoggingLevel.Verbose);
+            _log.PrintError($"File '{file.Path}' does not exist. No texture will be available for this file.", LoggingLevel.Verbose);
             return null;
         }
 
@@ -209,7 +201,7 @@ public class TextureCache
             _log.Print($"Texture '{file.Path}' was already loaded, but not in the cache. Added to cache with 1 user.", LoggingLevel.Verbose);
             _cache[file] = new TextureEntry
             {
-                CachedFile = _tempWriter.FileSystem.GetFile(cacheFilePath),
+                CachedFile = _tempWriter.GetFile(cacheFilePath),
                 Texture = new WeakReference<GorgonTexture2DView>(result),
                 TextureFile = file,
                 Users = 1
@@ -221,18 +213,18 @@ public class TextureCache
         {
             _log.Print($"Copying texture '{file.Path}' to temporary cache area '{cacheFilePath}'.", LoggingLevel.Verbose);
             using (Stream inStream = _fileManager.OpenStream(file.Path, FileMode.Open))
-            using (Stream outStream = _tempWriter.OpenStream(cacheFilePath, FileMode.Create))
+            using (Stream outStream = _tempWriter.OpenStream(cacheFilePath, true))
             {
                 if (!_codec.IsReadable(inStream))
                 {
-                    _log.Print($"ERROR: Texture '{file.Path}' is not a {_codec.Name} file.", LoggingLevel.Verbose);
+                    _log.PrintError($"Texture '{file.Path}' is not a {_codec.Name} file.", LoggingLevel.Verbose);
                     return null;
                 }
 
                 inStream.CopyTo(outStream);
             }
 
-            using Stream textureStream = _tempWriter.OpenStream(cacheFilePath, FileMode.Open);
+            using Stream textureStream = _tempWriter.OpenStream(cacheFilePath, false);
             return _codec.FromStream(textureStream);
         });
 
@@ -257,7 +249,7 @@ public class TextureCache
         _log.Print($"Texture '{file.Path}' added to cache with 1 user.", LoggingLevel.Verbose);
         _cache[file] = new TextureEntry
         {
-            CachedFile = _tempWriter.FileSystem.GetFile(cacheFilePath),
+            CachedFile = _tempWriter.GetFile(cacheFilePath),
             Texture = new WeakReference<GorgonTexture2DView>(result),
             TextureFile = file,
             Users = 1
@@ -290,14 +282,14 @@ public class TextureCache
             return false;
         }
 
-        TextureEntry entry = _cache.Values.FirstOrDefault(item => (item.Texture is not null) 
-                                                               && (item.Texture.TryGetTarget(out GorgonTexture2DView itemTexture)) 
-                                                               && (itemTexture == texture) 
+        TextureEntry entry = _cache.Values.FirstOrDefault(item => (item.Texture is not null)
+                                                               && (item.Texture.TryGetTarget(out GorgonTexture2DView itemTexture))
+                                                               && (itemTexture == texture)
                                                                && (itemTexture.Texture is not null));
 
         if (entry is null)
         {
-            _log.Print($"WARNING: Texture '{texture?.Texture?.Name}' not found in cache.", LoggingLevel.Verbose);
+            _log.PrintWarning($"Texture '{texture?.Texture?.Name}' not found in cache.", LoggingLevel.Verbose);
             return false;
         }
 
@@ -372,7 +364,7 @@ public class TextureCache
         }
 
         // Ensure that the cache directory is available.
-        _cacheDirectory = _tempWriter.FileSystem.GetDirectory(CacheDirectory);
+        _cacheDirectory = _tempWriter.GetDirectory(CacheDirectory);
 
         _cacheDirectory ??= _tempWriter.CreateDirectory(CacheDirectory);
 
@@ -412,7 +404,7 @@ public class TextureCache
         {
             try
             {
-                if (_tempWriter.FileSystem.GetDirectory(dir.FullPath) is not null)
+                if (_tempWriter.GetDirectory(dir.FullPath) is not null)
                 {
                     _tempWriter.DeleteDirectory(dir.FullPath);
                 }
@@ -423,7 +415,7 @@ public class TextureCache
             {
                 if (counter == 4)
                 {
-                    _log.Print("WARNING: There was an error deleting the temporary cache directory.", LoggingLevel.Verbose);
+                    _log.PrintWarning("There was an error deleting the temporary cache directory.", LoggingLevel.Verbose);
                     _log.LogException(ex);
                 }
                 else
@@ -466,7 +458,7 @@ public class TextureCache
 
         if (file is null)
         {
-            _log.Print($"ERROR: File '{texture.Texture.Name}' does not exist.", LoggingLevel.Verbose);
+            _log.PrintError($"File '{texture.Texture.Name}' does not exist.", LoggingLevel.Verbose);
             throw new FileNotFoundException(string.Format(Resources.GOREDIT_ERR_FILE_NOT_FOUND, texture.Texture.Name));
         }
 
@@ -479,7 +471,7 @@ public class TextureCache
                 _log.Print($"Texture '{file.Path}' exists in cache with {entry.Users} users.", LoggingLevel.Verbose);
                 return entry.Users;
             }
-            
+
             Interlocked.Exchange(ref entry.Texture, new WeakReference<GorgonTexture2DView>(texture));
             _log.Print($"Texture '{file.Path}' exists in cache, but has been collected. Refreshing with {entry.Users} users.", LoggingLevel.Verbose);
             return entry.Users;
@@ -491,11 +483,11 @@ public class TextureCache
         {
             _log.Print($"Copying texture '{file.Path}' to temporary cache area '{cacheFilePath}'.", LoggingLevel.Verbose);
             using Stream inStream = _fileManager.OpenStream(file.Path, FileMode.Open);
-            using Stream outStream = _tempWriter.OpenStream(cacheFilePath, FileMode.Create);
+            using Stream outStream = _tempWriter.OpenStream(cacheFilePath, true);
 
             if (!_codec.IsReadable(inStream))
             {
-                _log.Print($"ERROR: Texture '{file.Path}' is not a {_codec.Name} file.", LoggingLevel.Verbose);
+                _log.PrintError($"Texture '{file.Path}' is not a {_codec.Name} file.", LoggingLevel.Verbose);
                 return false;
             }
 
@@ -513,7 +505,7 @@ public class TextureCache
         _log.Print($"Texture '{file.Path}' adding to cache with 1 user.", LoggingLevel.Verbose);
         entry = new TextureEntry
         {
-            CachedFile = _tempWriter.FileSystem.GetFile(cacheFilePath),
+            CachedFile = _tempWriter.GetFile(cacheFilePath),
             Texture = new WeakReference<GorgonTexture2DView>(texture),
             TextureFile = file,
             Users = 1
@@ -555,23 +547,4 @@ public class TextureCache
 
         return entry.Users;
     }
-    #endregion
-
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="TextureCache"/> class.</summary>
-    /// <param name="graphics">The graphics interface used to create textures.</param>
-    /// <param name="fileManager">The file manager for the project file system.</param>
-    /// <param name="tempWriter">The temporary writer used to write temporary data.</param>
-    /// <param name="codec">The image codec.</param>
-    /// <param name="log">The logging interface for capturing debug messages.</param>
-    /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-    public TextureCache(GorgonGraphics graphics, IContentFileManager fileManager, IGorgonFileSystemWriter<Stream> tempWriter, IGorgonImageCodec codec, IGorgonLog log)
-    {
-        _graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
-        _fileManager = fileManager ?? throw new ArgumentNullException(nameof(fileManager));
-        _tempWriter = tempWriter ?? throw new ArgumentNullException(nameof(tempWriter));
-        _codec = codec ?? throw new ArgumentNullException(nameof(codec));
-        _log = log ?? throw new ArgumentNullException(nameof(log));
-    }
-    #endregion
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,25 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 8, 2019 9:27:07 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
-using System.Threading;
-using System.Windows.Forms;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.Services;
 using Gorgon.Graphics;
@@ -37,31 +31,30 @@ using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Renderers;
 using Gorgon.Renderers.Cameras;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor;
 
 /// <summary>
-/// The service used to edit sprite vertices.
+/// The service used to edit sprite vertices
 /// </summary>
 internal class SpriteVertexEditService
 {
-    #region Variables.
+
     // The renderer used to draw the UI.
     private readonly Gorgon2D _renderer;
     // The list of vertices to update.
     private readonly Vector2[] _vertices = new Vector2[4];
     // The handles for grabbing.
     private readonly RectHandle[] _handles =
-    {
-        new RectHandle(),
-        new RectHandle(),
-        new RectHandle(),
-        new RectHandle(),
-        new RectHandle()
-    };
+    [
+        new(),
+        new(),
+        new(),
+        new(),
+        new()
+    ];
     // The sprite boundaries, in texture space (but in pixels).
-    private DX.RectangleF _spriteBounds;
+    private GorgonRectangleF _spriteBounds;
     // The state used to draw inverted items.
     private readonly Gorgon2DBatchState _invertedState;
     // The vertex positions, in screen space.
@@ -80,9 +73,7 @@ internal class SpriteVertexEditService
     private int _selectedVertexIndex = -1;
     // The camera used to render the UI.
     private GorgonOrthoCamera _camera;
-    #endregion
 
-    #region Events.
     // Event triggered when the keyboard icon is clicked.
     private event EventHandler KeyboardIconClickedEvent;
 
@@ -169,9 +160,7 @@ internal class SpriteVertexEditService
             KeyboardIconClickedEvent -= value;
         }
     }
-    #endregion
 
-    #region Properties.		
     /// <summary>
     /// Property to set or return the camera being used.
     /// </summary>
@@ -221,14 +210,14 @@ internal class SpriteVertexEditService
     }
 
     /// <summary>Property to set or return the rectangular boundaries for the sprite.</summary>
-    public DX.RectangleF SpriteBounds
+    public GorgonRectangleF SpriteBounds
     {
         get => _spriteBounds;
         set
         {
-            value = value.Truncate();
+            value = GorgonRectangleF.Truncate(value);
 
-            if (_spriteBounds.Equals(ref value))
+            if (_spriteBounds.Equals(value))
             {
                 return;
             }
@@ -259,9 +248,7 @@ internal class SpriteVertexEditService
             SetupHandles();
         }
     }
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to raise the <see cref="VerticesChangedEvent"/> event.
     /// </summary>
@@ -282,8 +269,8 @@ internal class SpriteVertexEditService
             return;
         }
 
-        var dragDelta = Vector2.Subtract(localMousePos, _localStartDrag);
-        var newPos = new Vector2(_dragHandlePos.X + dragDelta.X, _dragHandlePos.Y + dragDelta.Y);
+        Vector2 dragDelta = Vector2.Subtract(localMousePos, _localStartDrag);
+        Vector2 newPos = new(_dragHandlePos.X + dragDelta.X, _dragHandlePos.Y + dragDelta.Y);
         _vertices[SelectedVertexIndex] = newPos.Truncate();
         SetupHandles();
 
@@ -306,7 +293,7 @@ internal class SpriteVertexEditService
 
         for (int i = 0; i < _handles.Length; ++i)
         {
-            DX.RectangleF handleBounds = _handles[i].HandleBounds;
+            GorgonRectangleF handleBounds = _handles[i].HandleBounds;
 
             if (handleBounds.IsEmpty)
             {
@@ -340,7 +327,7 @@ internal class SpriteVertexEditService
         // Convert to client space.
         if (Camera is not null)
         {
-            var half = new Vector3(SpriteBounds.Width * 0.5f, SpriteBounds.Height * 0.5f, 0);
+            Vector3 half = new(SpriteBounds.Width * 0.5f, SpriteBounds.Height * 0.5f, 0);
 
             for (int i = 0; i < _screenVertices.Length; ++i)
             {
@@ -356,7 +343,7 @@ internal class SpriteVertexEditService
             _screenVertices[3] = new Vector2(_vertices[3].X, _vertices[3].Y);
         }
 
-        var aabb = new DX.RectangleF
+        GorgonRectangleF aabb = new()
         {
             Left = float.MaxValue,
             Top = float.MaxValue,
@@ -366,7 +353,7 @@ internal class SpriteVertexEditService
 
         for (int i = 0; i < _screenVertices.Length; ++i)
         {
-            aabb = new DX.RectangleF
+            aabb = new GorgonRectangleF
             {
                 Left = aabb.Left.Min(_screenVertices[i].X),
                 Top = aabb.Top.Min(_screenVertices[i].Y),
@@ -375,25 +362,24 @@ internal class SpriteVertexEditService
             };
         }
 
-        _handles[0].HandleBounds = new DX.RectangleF(_screenVertices[0].X - 8, _screenVertices[0].Y - 8, 8, 8);
-        _handles[1].HandleBounds = new DX.RectangleF(_screenVertices[1].X, _screenVertices[1].Y - 8, 8, 8);
-        _handles[2].HandleBounds = new DX.RectangleF(_screenVertices[2].X, _screenVertices[2].Y, 8, 8);
-        _handles[3].HandleBounds = new DX.RectangleF(_screenVertices[3].X - 8, _screenVertices[3].Y, 8, 8);
+        _handles[0].HandleBounds = new GorgonRectangleF(_screenVertices[0].X - 8, _screenVertices[0].Y - 8, 8, 8);
+        _handles[1].HandleBounds = new GorgonRectangleF(_screenVertices[1].X, _screenVertices[1].Y - 8, 8, 8);
+        _handles[2].HandleBounds = new GorgonRectangleF(_screenVertices[2].X, _screenVertices[2].Y, 8, 8);
+        _handles[3].HandleBounds = new GorgonRectangleF(_screenVertices[3].X - 8, _screenVertices[3].Y, 8, 8);
         if ((aabb.Width >= _keyboardIcon.Value.Width * 2) && (aabb.Height >= _keyboardIcon.Value.Height * 2) && (SelectedVertexIndex != -1))
         {
             Vector2 keyPos = new Vector2(_screenVertices[SelectedVertexIndex].X + 8, _screenVertices[SelectedVertexIndex].Y + 8).Truncate();
 
-            _handles[4].HandleBounds = new DX.RectangleF(keyPos.X, keyPos.Y, _keyboardIcon.Value.Width, _keyboardIcon.Value.Height);
+            _handles[4].HandleBounds = new GorgonRectangleF(keyPos.X, keyPos.Y, _keyboardIcon.Value.Width, _keyboardIcon.Value.Height);
             _handles[4].Texture = _keyboardIcon.Value;
         }
         else
         {
-            _handles[4].HandleBounds = DX.RectangleF.Empty;
+            _handles[4].HandleBounds = GorgonRectangleF.Empty;
         }
 
         GetActiveHandle();
     }
-
 
     /// <summary>
     /// Function called when a key is held down.
@@ -450,7 +436,7 @@ internal class SpriteVertexEditService
                 _dragHandlePos = Vector2.Zero;
                 _localStartDrag = Vector2.Zero;
                 IsDragging = false;
-                return true;                    
+                return true;
             case Keys.D1:
                 SelectedVertexIndex = 0;
                 _dragHandlePos = Vector2.Zero;
@@ -524,7 +510,7 @@ internal class SpriteVertexEditService
     /// <returns><b>true</b> if the event is handled, <b>false</b> if not.</returns>
     public bool MouseMove(MouseArgs args)
     {
-        _mousePos = args.ClientPosition.ToVector2();
+        _mousePos = args.ClientPosition;
         GetActiveHandle();
 
         if (SelectedVertexIndex == -1)
@@ -540,7 +526,7 @@ internal class SpriteVertexEditService
 
         if ((args.MouseButtons == MouseButtons.Left) && (_activeHandleIndex != -1) && (_activeHandleIndex != 4) && (!IsDragging))
         {
-            var delta = new Vector2(_localStartDrag.X - args.CameraSpacePosition.X, _localStartDrag.Y - args.CameraSpacePosition.Y);
+            Vector2 delta = new(_localStartDrag.X - args.CameraSpacePosition.X, _localStartDrag.Y - args.CameraSpacePosition.Y);
             ref Vector2 vertexPosition = ref _vertices[SelectedVertexIndex];
             vertexPosition = new Vector2(vertexPosition.X + delta.X, vertexPosition.Y + delta.Y);
             _localStartDrag = args.CameraSpacePosition;
@@ -566,7 +552,7 @@ internal class SpriteVertexEditService
     /// <param name="args">The arguments for the mouse down event.</param>
     public bool MouseDown(MouseArgs args)
     {
-        _mousePos = args.ClientPosition.ToVector2();
+        _mousePos = args.ClientPosition;
         GetActiveHandle();
 
         if (_activeHandleIndex == 4)
@@ -592,7 +578,7 @@ internal class SpriteVertexEditService
     /// <returns><b>true</b> if the mouse event was handled, <b>false</b> if it was not.</returns>
     public bool MouseUp(MouseArgs args)
     {
-        _mousePos = args.ClientPosition.ToVector2();
+        _mousePos = args.ClientPosition;
         GetActiveHandle();
 
         if ((_activeHandleIndex == 4) && (!IsDragging))
@@ -603,7 +589,7 @@ internal class SpriteVertexEditService
         }
 
         if (SelectedVertexIndex == -1)
-        {                
+        {
             return false;
         }
 
@@ -631,10 +617,10 @@ internal class SpriteVertexEditService
 
         _renderer.Begin(_invertedState);
 
-        _renderer.DrawLine(_screenVertices[0].X, _screenVertices[0].Y, _screenVertices[1].X - 1, _screenVertices[1].Y, GorgonColor.White);
-        _renderer.DrawLine(_screenVertices[1].X - 1, _screenVertices[1].Y, _screenVertices[2].X - 1, _screenVertices[2].Y - 1, GorgonColor.White);
-        _renderer.DrawLine(_screenVertices[2].X, _screenVertices[2].Y - 1, _screenVertices[3].X + 1, _screenVertices[3].Y - 1, GorgonColor.White);
-        _renderer.DrawLine(_screenVertices[3].X, _screenVertices[3].Y, _screenVertices[0].X, _screenVertices[0].Y + 1, GorgonColor.White);
+        _renderer.DrawLine(_screenVertices[0].X, _screenVertices[0].Y, _screenVertices[1].X - 1, _screenVertices[1].Y, GorgonColors.White);
+        _renderer.DrawLine(_screenVertices[1].X - 1, _screenVertices[1].Y, _screenVertices[2].X - 1, _screenVertices[2].Y - 1, GorgonColors.White);
+        _renderer.DrawLine(_screenVertices[2].X, _screenVertices[2].Y - 1, _screenVertices[3].X + 1, _screenVertices[3].Y - 1, GorgonColors.White);
+        _renderer.DrawLine(_screenVertices[3].X, _screenVertices[3].Y, _screenVertices[0].X, _screenVertices[0].Y + 1, GorgonColors.White);
 
         _renderer.End();
 
@@ -644,7 +630,7 @@ internal class SpriteVertexEditService
         for (int i = 0; i < _handles.Length; ++i)
         {
             GorgonTexture2DView texture = _handles[i].Texture;
-            DX.RectangleF handleBounds = _handles[i].HandleBounds;
+            GorgonRectangleF handleBounds = _handles[i].HandleBounds;
 
             if (handleBounds.IsEmpty)
             {
@@ -660,26 +646,25 @@ internal class SpriteVertexEditService
             // Hilight our active handle.
             if (_activeHandleIndex == i)
             {
-                _renderer.DrawFilledRectangle(handleBounds, new GorgonColor(GorgonColor.RedPure, 0.7f));
+                _renderer.DrawFilledRectangle(handleBounds, new GorgonColor(GorgonColors.Red, 0.7f));
             }
 
             if (texture is null)
             {
-                _renderer.DrawRectangle(handleBounds, GorgonColor.Black);
-                _renderer.DrawRectangle(new DX.RectangleF(handleBounds.X + 1, handleBounds.Y + 1, handleBounds.Width - 2, handleBounds.Height - 2), GorgonColor.White);
+                _renderer.DrawRectangle(handleBounds, GorgonColors.Black);
+                _renderer.DrawRectangle(new GorgonRectangleF(handleBounds.X + 1, handleBounds.Y + 1, handleBounds.Width - 2, handleBounds.Height - 2), GorgonColors.White);
             }
             else
             {
-                _renderer.DrawFilledRectangle(handleBounds, GorgonColor.White, texture, new DX.RectangleF(0, 0, 1, 1));
+                _renderer.DrawFilledRectangle(handleBounds, GorgonColors.White, texture, new GorgonRectangleF(0, 0, 1, 1));
             }
-
 
             if (SelectedVertexIndex == i)
             {
-                handleBounds.Inflate(4, 4);
-                _renderer.DrawEllipse(handleBounds, GorgonColor.Black, thickness: 2);
-                handleBounds.Inflate(-1, -1);
-                _renderer.DrawEllipse(handleBounds, GorgonColor.White);
+                handleBounds = GorgonRectangleF.Expand(handleBounds, 4);
+                _renderer.DrawEllipse(handleBounds, GorgonColors.Black, thickness: 2);
+                handleBounds = GorgonRectangleF.Expand(handleBounds, -1);
+                _renderer.DrawEllipse(handleBounds, GorgonColors.White);
             }
         }
     }
@@ -703,16 +688,14 @@ internal class SpriteVertexEditService
             keyIcon.Value.Dispose();
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
     /// <summary>Initializes a new instance of the <see cref="SpriteVertexEditService"/> class.</summary>
     /// <param name="renderer">The 2D renderer for the application.</param>
     public SpriteVertexEditService(Gorgon2D renderer)
     {
         _renderer = renderer;
 
-        var builder = new Gorgon2DBatchStateBuilder();
+        Gorgon2DBatchStateBuilder builder = new();
         _invertedState = builder.BlendState(GorgonBlendState.Inverted)
                                 .Build();
 
@@ -727,5 +710,4 @@ internal class SpriteVertexEditService
             Name = "VertexEditor_KeyboardIcon"
         }, CommonEditorResources.KeyboardIcon), true);
     }
-    #endregion
 }

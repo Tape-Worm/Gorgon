@@ -1,4 +1,4 @@
-﻿#region MIT
+﻿
 // 
 // Gorgon
 // Copyright (C) 2015 Michael Winsor
@@ -11,23 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Sunday, September 13, 2015 8:59:22 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Input.DirectInput.Properties;
 using Gorgon.UI;
@@ -37,12 +33,12 @@ using DX = SharpDX;
 namespace Gorgon.Input.DirectInput;
 
 /// <summary>
-/// DirectInput gaming device.
+/// DirectInput gaming device
 /// </summary>
 internal class DirectInputDevice
     : GorgonGamingDevice
 {
-    #region Variables.
+
     // The direct input joystick interface.
     private Lazy<DI.Joystick> _joystick;
     // Direct input device.
@@ -53,9 +49,7 @@ internal class DirectInputDevice
     private DI.JoystickState _state = new();
     // The axis to Direct Input property mappings.
     private readonly IReadOnlyDictionary<GamingDeviceAxis, DI.DeviceObjectId> _axisMappings;
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to return whether the gaming device is connected or not.
     /// </summary> 
@@ -65,13 +59,11 @@ internal class DirectInputDevice
     /// to the system at the time of enumeration. Thus, we have this property to ensure that we know when a gaming device is connected to the system or not. 
     /// </para>
     /// <para>
-    /// <see cref="GorgonGamingDeviceDriver"/> plug in implementors must ensure that this property will update itself when a gaming device is connected or disconnected.
+    /// <see cref="GorgonGamingDeviceDriver"/> plug-in implementors must ensure that this property will update itself when a gaming device is connected or disconnected.
     /// </para>
     /// </remarks>
     public override bool IsConnected => _directInput.IsDeviceAttached(_info.DeviceID);
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to acquire a gaming device.
     /// </summary>
@@ -127,7 +119,7 @@ internal class DirectInputDevice
     /// <returns>The DirectInput joystick object.</returns>
     private DI.Joystick CreateJoystick(DI.DirectInput directInput, IGorgonGamingDeviceInfo deviceInfo)
     {
-        var result = new DI.Joystick(directInput, deviceInfo.DeviceID);
+        DI.Joystick result = new(directInput, deviceInfo.DeviceID);
 
         nint mainWindow = FindMainApplicationWindow();
 
@@ -166,7 +158,7 @@ internal class DirectInputDevice
             float deadZone = axis.Axis == GamingDeviceAxis.Throttle ? 0.02f : 0.10f;
             int deadZoneActual = (int)(info.Range.Range * deadZone);
 
-            axis.DeadZone = new GorgonRange(info.DefaultValue - deadZoneActual, info.DefaultValue + deadZoneActual);
+            axis.DeadZone = new GorgonRange<int>(info.DefaultValue - deadZoneActual, info.DefaultValue + deadZoneActual);
         }
 
         return result;
@@ -224,7 +216,7 @@ internal class DirectInputDevice
     /// Function to retrieve data from the provider of the physical device.
     /// </summary>
     /// <remarks>
-    /// Implementors of a <see cref="GorgonGamingDeviceDriver"/> plug in must implement this and format their data to populate the values of this object with correct state information.
+    /// Implementors of a <see cref="GorgonGamingDeviceDriver"/> plug-in must implement this and format their data to populate the values of this object with correct state information.
     /// </remarks>
     protected override void OnGetData()
     {
@@ -329,9 +321,7 @@ internal class DirectInputDevice
 
         base.Dispose();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
     /// <summary>
     /// Initializes a new instance of the <see cref="DirectInputDevice"/> class.
     /// </summary>
@@ -346,5 +336,4 @@ internal class DirectInputDevice
         _joystick = new Lazy<DI.Joystick>(() => CreateJoystick(directInput, deviceInfo), true);
         _axisMappings = axisMappings;
     }
-    #endregion
 }

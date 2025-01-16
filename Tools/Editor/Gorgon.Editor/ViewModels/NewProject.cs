@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,23 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 27, 2018 8:51:39 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Security;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
@@ -41,12 +36,12 @@ using Gorgon.IO;
 namespace Gorgon.Editor.ViewModels;
 
 /// <summary>
-/// A view model for the new project interface.
+/// A view model for the new project interface
 /// </summary>
 internal class NewProject
     : ViewModelBase<NewProjectParameters, IHostContentServices>, INewProject
 {
-    #region Variables.
+
     // The list of invalid characters for a directory.
     private readonly IEnumerable<char> _invalidDirCharacters;
 
@@ -72,9 +67,7 @@ internal class NewProject
     private string _invalidPathReason;
     // The default path for projects.
     private readonly string _defaultProjectPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Gorgon", "Projects");
-    #endregion
 
-    #region Properties.
     /// <summary>Property to return the reason that a workspace path may be invalid.</summary>
     public string InvalidPathReason
     {
@@ -216,9 +209,7 @@ internal class NewProject
     {
         get;
     }
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to validate the selected workspace directory.
     /// </summary>
@@ -241,7 +232,7 @@ internal class NewProject
         // Do not allow us to write to the main windows or system folders, that'd be bad.
         if ((forbiddenPaths.Any(item => string.Equals(directory, item, StringComparison.OrdinalIgnoreCase)))
             || (System.IO.Directory.GetParent(directory) is null))
-        {                
+        {
             InvalidPathReason = string.Format(Resources.GOREDIT_ERR_NOT_AUTHORIZED, directory.Ellipses(45, true));
             return false;
         }
@@ -306,7 +297,7 @@ internal class NewProject
             {
                 if (!string.IsNullOrWhiteSpace(lastPath))
                 {
-                    var parentDir = new DirectoryInfo(lastPath);
+                    DirectoryInfo parentDir = new(lastPath);
 
                     if (parentDir.Parent is not null)
                     {
@@ -448,7 +439,7 @@ internal class NewProject
                 path = Path.Combine(System.IO.Directory.GetCurrentDirectory(), path);
             }
 
-            var dir = new DirectoryInfo(path);
+            DirectoryInfo dir = new(path);
 
             if (!ValidateDirectory(dir.FullName))
             {
@@ -485,7 +476,7 @@ internal class NewProject
     protected override void OnInitialize(NewProjectParameters injectionParameters)
     {
         _settings = injectionParameters.EditorSettings;
-        _projectManager = injectionParameters.ProjectManager;            
+        _projectManager = injectionParameters.ProjectManager;
         _directoryLocator = injectionParameters.DirectoryLocator;
 
         string lastWorkspace = Path.GetFullPath(string.IsNullOrWhiteSpace(_settings.LastProjectWorkingDirectory) ? _defaultProjectPath : _settings.LastProjectWorkingDirectory);
@@ -503,9 +494,7 @@ internal class NewProject
         _availableSpace = (ulong)(new DriveInfo(Path.GetPathRoot(lastWorkspace))).AvailableFreeSpace;
         _computerInfo = new GorgonComputerInfo();
     }
-    #endregion
 
-    #region Constructor.
     /// <summary>Initializes a new instance of the <see cref="NewProject"/> class.</summary>
     public NewProject()
     {
@@ -513,5 +502,4 @@ internal class NewProject
         SetProjectWorkspaceCommand = new EditorCommand<SetProjectWorkspaceArgs>(DoSetProjectWorkspace, CanSetProjectWorkspace);
         SelectProjectWorkspaceCommand = new EditorCommand<object>(DoSelectProjectWorkspace);
     }
-    #endregion
 }

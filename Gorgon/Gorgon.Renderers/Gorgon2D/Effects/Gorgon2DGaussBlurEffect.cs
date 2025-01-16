@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,40 +11,36 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 2, 2018 11:17:53 AM
 // 
-#endregion
 
-using System;
 using System.Globalization;
 using System.Numerics;
-using System.Threading;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Native;
 using Gorgon.Renderers.Cameras;
 using Gorgon.Renderers.Properties;
-using DX = SharpDX;
 
 namespace Gorgon.Renderers;
 
 /// <summary>
-/// A gaussian blur effect.
+/// A gaussian blur effect
 /// </summary>
 public class Gorgon2DGaussBlurEffect
     : Gorgon2DEffect, IGorgon2DCompositorEffect
 {
-    #region Variables.
+
     // The shader used for blurring.
     private GorgonPixelShader _blurShader;
     private Gorgon2DShaderState<GorgonPixelShader> _blurState;
@@ -68,7 +64,7 @@ public class Gorgon2DGaussBlurEffect
     // Radius for the blur.
     private int _blurRadius;
     // The size of the render targets used to blur.
-    private DX.Size2 _renderTargetSize = new(256, 256);
+    private GorgonPoint _renderTargetSize = new(256, 256);
 
     // Flag to indicate that the kernel data needs updating.
     private bool _needKernelUpdate = true;
@@ -83,9 +79,7 @@ public class Gorgon2DGaussBlurEffect
     private GorgonTexture2DInfo _blurRtvInfo;
     // The blur render target pixel format.
     private BufferFormat _blurTargetFormat = BufferFormat.R8G8B8A8_UNorm;
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to return the size of the convolution kernel used to apply weighting against pixel samples when blurring.
     /// </summary>
@@ -213,12 +207,11 @@ public class Gorgon2DGaussBlurEffect
             }
 
             _blurTargetFormat = value;
-#if NET6_0_OR_GREATER
+
             _blurRtvInfo = _blurRtvInfo with
             {
                 Format = value
             };
-#endif
         }
     }
     /// <summary>
@@ -243,7 +236,7 @@ public class Gorgon2DGaussBlurEffect
     /// </note>
     /// </para>
     /// </remarks>
-    public DX.Size2 BlurRenderTargetsSize
+    public GorgonPoint BlurRenderTargetsSize
     {
         get => _renderTargetSize;
         set
@@ -254,27 +247,23 @@ public class Gorgon2DGaussBlurEffect
             }
 
             // Constrain the size.
-            value.Width = value.Width.Max(3).Min(Graphics.VideoAdapter.MaxTextureWidth);
-            value.Height = value.Height.Max(3).Min(Graphics.VideoAdapter.MaxTextureHeight);
+            value.X = value.X.Max(3).Min(Graphics.VideoAdapter.MaxTextureWidth);
+            value.Y = value.Y.Max(3).Min(Graphics.VideoAdapter.MaxTextureHeight);
 
-#if NET6_0_OR_GREATER
             if (_blurRtvInfo is not null)
             {
                 _blurRtvInfo = _blurRtvInfo with
                 {
-                    Width = value.Width,
-                    Height = value.Height
+                    Width = value.X,
+                    Height = value.Y
                 };
             }
-#endif
 
             _renderTargetSize = value;
             _needOffsetUpdate = true;
         }
     }
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to update the render target.
     /// </summary>
@@ -298,7 +287,7 @@ public class Gorgon2DGaussBlurEffect
     private void UpdateOffsets()
     {
         // This adjusts just how far from the texel the blurring can occur.
-        var unitSize = new Vector2(1.0f / BlurRenderTargetsSize.Width, 1.0f / BlurRenderTargetsSize.Height);
+        Vector2 unitSize = new(1.0f / BlurRenderTargetsSize.X, 1.0f / BlurRenderTargetsSize.Y);
 
         int pointerOffset = 0;
         int yOffset = (((_blurRadius) * 2) + 1);
@@ -312,7 +301,7 @@ public class Gorgon2DGaussBlurEffect
             pointerOffset++;
         }
 
-        _blurBufferKernel.Buffer.SetData<float>(_blurKernelData.ToSpan());
+        _blurBufferKernel.Buffer.SetData([.. _blurKernelData]);
         _needOffsetUpdate = false;
     }
 
@@ -430,11 +419,11 @@ public class Gorgon2DGaussBlurEffect
         switch (passIndex)
         {
             case 0:
-                Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _hPassView.Width, _hPassView.Height), GorgonColor.White, texture, new DX.RectangleF(0, 0, 1, 1), textureSampler: GorgonSamplerState.Default);
+                Renderer.DrawFilledRectangle(new GorgonRectangleF(0, 0, _hPassView.Width, _hPassView.Height), GorgonColors.White, texture, new GorgonRectangleF(0, 0, 1, 1), textureSampler: GorgonSamplerState.Default);
                 ;
                 break;
             case 1:
-                Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _vPassView.Width, _vPassView.Height), GorgonColor.White, _hPassView, new DX.RectangleF(0, 0, 1, 1), textureSampler: GorgonSamplerState.Default);
+                Renderer.DrawFilledRectangle(new GorgonRectangleF(0, 0, _vPassView.Width, _vPassView.Height), GorgonColors.White, _hPassView, new GorgonRectangleF(0, 0, 1, 1), textureSampler: GorgonSamplerState.Default);
                 break;
         }
     }
@@ -467,7 +456,7 @@ public class Gorgon2DGaussBlurEffect
 
         _blurShaderNoAlpha = CompileShader<GorgonPixelShader>(Resources.BasicSprite, "GorgonPixelShaderGaussBlurNoAlpha");
 
-        _blurRtvInfo = new(_renderTargetSize.Width, _renderTargetSize.Height, BlurTargetFormat);
+        _blurRtvInfo = new(_renderTargetSize.X, _renderTargetSize.Y, BlurTargetFormat);
 
         UpdateKernelWeights();
         UpdateOffsets();
@@ -552,7 +541,7 @@ public class Gorgon2DGaussBlurEffect
         }
 
         Renderer.Begin(Gorgon2DBatchState.NoBlend);
-        Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, output.Width, output.Height), GorgonColor.White, _vPassView, new DX.RectangleF(0, 0, 1, 1));
+        Renderer.DrawFilledRectangle(new GorgonRectangleF(0, 0, output.Width, output.Height), GorgonColors.White, _vPassView, new GorgonRectangleF(0, 0, 1, 1));
         Renderer.End();
 
         FreeTargets();
@@ -622,9 +611,7 @@ public class Gorgon2DGaussBlurEffect
 
         EndRender(output);
     }
-    #endregion
 
-    #region Constructor/Finalizer.
     /// <summary>
     /// Initializes a new instance of the <see cref="Gorgon2DGaussBlurEffect"/> class.
     /// </summary>
@@ -668,5 +655,4 @@ public class Gorgon2DGaussBlurEffect
         Macros.Add(new GorgonShaderMacro("GAUSS_BLUR_EFFECT"));
         Macros.Add(new GorgonShaderMacro("MAX_KERNEL_SIZE", KernelSize.ToString(CultureInfo.InvariantCulture)));
     }
-    #endregion
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,17 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 9, 2018 8:35:23 AM
 // 
-#endregion
 
 using System.Numerics;
 using Gorgon.Graphics;
@@ -31,24 +30,21 @@ using Gorgon.Renderers.Geometry;
 namespace Gorgon.Renderers;
 
 /// <summary>
-/// Represents an immutable vertex for a <see cref="GorgonPolySprite"/>.
+/// Represents an immutable vertex for a <see cref="GorgonPolySprite"/>
 /// </summary>
 public class GorgonPolySpriteVertex
 {
-    #region Variables.
     // The actual vertex for the sprite.
     internal Gorgon2DVertex Vertex;
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to return the position of the vertex in space.
-    /// </summary>
+    /// </summary>    
     public Vector2 Position => new(Vertex.Position.X, Vertex.Position.Y);
 
     /// <summary>
     /// Property to return the color of the vertex.
-    /// </summary>
+    /// </summary>    
     public GorgonColor Color
     {
         get => Vertex.Color;
@@ -57,26 +53,23 @@ public class GorgonPolySpriteVertex
 
     /// <summary>
     /// Property to return the texture coordinate (in texel space).
-    /// </summary>
+    /// </summary>    
     public Vector2 TextureCoordinate
     {
         get => new(Vertex.UV.X, Vertex.UV.Y);
         internal set => Vertex.UV = new Vector4(value, Vertex.UV.Z, 0);
     }
-    #endregion
 
-    #region Constructor/Finalizer.
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonPolySpriteVertex" /> class.
     /// </summary>
     /// <param name="position">The position of the vertex.</param>
     /// <param name="color">The color for the vertex.</param>
-    /// <param name="textureCoordinate">The texture coordinates.</param>
+    /// <param name="textureCoordinate">The texture coordinates.</param>    
     public GorgonPolySpriteVertex(Vector2 position, GorgonColor color, Vector2 textureCoordinate) => Vertex = new Gorgon2DVertex
     {
         Position = new Vector4(position, 0, 1.0f),
         Color = color,
         UV = new Vector4(textureCoordinate, 0, 0)
     };
-    #endregion
 }

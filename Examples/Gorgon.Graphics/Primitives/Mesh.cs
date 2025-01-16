@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2014 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,47 +11,45 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Thursday, September 18, 2014 2:11:22 AM
 // 
-#endregion
 
-using System;
 using System.Numerics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
-using Gorgon.Renderers.Data;
 using Gorgon.Renderers.Geometry;
 
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Base class for a mesh object.
+/// Base class for a mesh object
 /// </summary>
-internal abstract class Mesh
-    : IDisposable
+/// <remarks>
+/// Initializes a new instance of the <see cref="Mesh"/> class
+/// </remarks>
+/// <param name="graphics">The graphics interface that owns this object.</param>
+internal abstract class Mesh(GorgonGraphics graphics)
+        : IDisposable
 {
-    #region Variables.
     // The axis aligned bounding box for the mesh.
     private GorgonBoundingBox _aabb;
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to return the material for this mesh.
     /// </summary>
     public MeshMaterial Material
     {
         get;
-    }
+    } = new MeshMaterial();
 
     /// <summary>
     /// Property to return the graphics interface that owns this object.
@@ -59,7 +57,7 @@ internal abstract class Mesh
     public GorgonGraphics Graphics
     {
         get;
-    }
+    } = graphics;
 
     /// <summary>
     /// Property to return the type of primitive used to draw the object.
@@ -127,10 +125,8 @@ internal abstract class Mesh
     {
         get;
         set;
-    }
-    #endregion
+    } = true;
 
-    #region Methods.
     /// <summary>
     /// Function to update the axis aligned bounding box for the mesh.
     /// </summary>
@@ -163,8 +159,8 @@ internal abstract class Mesh
     /// <param name="indexData">Buffer holding the indices.</param>
     protected void CalculateTangents(GorgonVertexPosNormUvTangent[] vertexData, int[] indexData)
     {
-        var biTanData = new Vector3[VertexCount];
-        var tanData = new Vector3[VertexCount];
+        Vector3[] biTanData = new Vector3[VertexCount];
+        Vector3[] tanData = new Vector3[VertexCount];
         int indexOffset = 0;
 
         for (int i = 0; i < TriangleCount; ++i)
@@ -185,11 +181,11 @@ internal abstract class Mesh
             GorgonVertexPosNormUvTangent vertex2 = vertexData[index2];
             GorgonVertexPosNormUvTangent vertex3 = vertexData[index3];
 
-            var deltaPos1 = Vector4.Subtract(vertex2.Position, vertex1.Position);
-            var deltaPos2 = Vector4.Subtract(vertex3.Position, vertex1.Position);
+            Vector4 deltaPos1 = Vector4.Subtract(vertex2.Position, vertex1.Position);
+            Vector4 deltaPos2 = Vector4.Subtract(vertex3.Position, vertex1.Position);
 
-            var deltaUV1 = Vector2.Subtract(vertex2.UV, vertex1.UV);
-            var deltaUV2 = Vector2.Subtract(vertex3.UV, vertex1.UV);
+            Vector2 deltaUV1 = Vector2.Subtract(vertex2.UV, vertex1.UV);
+            Vector2 deltaUV2 = Vector2.Subtract(vertex3.UV, vertex1.UV);
 
             float denom = ((deltaUV1.X * deltaUV2.Y) - (deltaUV1.Y * deltaUV2.X));
             float r = 0.0f;
@@ -199,11 +195,11 @@ internal abstract class Mesh
                 r = 1.0f / denom;
             }
 
-            var tangent = new Vector3(((deltaUV2.Y * deltaPos1.X) - (deltaUV1.Y * deltaPos2.X)) * r,
+            Vector3 tangent = new(((deltaUV2.Y * deltaPos1.X) - (deltaUV1.Y * deltaPos2.X)) * r,
                                       ((deltaUV2.Y * deltaPos1.Y) - (deltaUV1.Y * deltaPos2.Y)) * r,
                                       ((deltaUV2.Y * deltaPos1.Z) - (deltaUV1.Y * deltaPos2.Z)) * r);
 
-            var biTangent = new Vector3(((deltaUV1.X * deltaPos2.X) - (deltaUV2.X * deltaPos1.X)) * r,
+            Vector3 biTangent = new(((deltaUV1.X * deltaPos2.X) - (deltaUV2.X * deltaPos1.X)) * r,
                                         ((deltaUV1.X * deltaPos2.Y) - (deltaUV2.X * deltaPos1.Y)) * r,
                                         ((deltaUV1.X * deltaPos2.Z) - (deltaUV2.X * deltaPos1.Z)) * r);
 
@@ -221,11 +217,11 @@ internal abstract class Mesh
             GorgonVertexPosNormUvTangent vertex = vertexData[i];
 
             float dot = Vector3.Dot(vertex.Normal, tanData[i]);
-            var tangent = Vector3.Multiply(vertex.Normal, dot);
+            Vector3 tangent = Vector3.Multiply(vertex.Normal, dot);
             tangent = Vector3.Subtract(tanData[i], tangent);
             tangent = Vector3.Normalize(tangent);
 
-            var cross = Vector3.Cross(vertex.Normal, tanData[i]);
+            Vector3 cross = Vector3.Cross(vertex.Normal, tanData[i]);
             dot = Vector3.Dot(cross, biTanData[i]);
 
             vertexData[i] = new GorgonVertexPosNormUvTangent
@@ -246,18 +242,4 @@ internal abstract class Mesh
         VertexBuffer?.Dispose();
         IndexBuffer?.Dispose();
     }
-    #endregion
-
-    #region Constructor.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Mesh"/> class.
-    /// </summary>
-    /// <param name="graphics">The graphics interface that owns this object.</param>
-    protected Mesh(GorgonGraphics graphics)
-    {
-        Material = new MeshMaterial();
-        IsDepthWriteEnabled = true;
-        Graphics = graphics;
-    }
-    #endregion
 }

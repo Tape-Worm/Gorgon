@@ -130,7 +130,7 @@ Please try again.</value>
     <value>..\Resources\no_thumb_sprite_64x64.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="GORSPR_CAPTION_SELECT_CODEC_DLL" xml:space="preserve">
-    <value>Select a codec plug in DLL</value>
+    <value>Select a codec plug-in DLL</value>
   </data>
   <data name="GORSPR_ERR_FILESYSTEM_ITEM_EXISTS" xml:space="preserve">
     <value>There is already file or directory on the file system with the name '{0}'.
@@ -171,7 +171,7 @@ Please try again.</value>
     <value>..\Resources\sprite_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="GORSPR_ERR_CODEC_PLUGIN_ALREADY_LOADED" xml:space="preserve">
-    <value>The codec plug in '{0}' was already loaded.</value>
+    <value>The codec plug-in '{0}' was already loaded.</value>
   </data>
   <data name="GORSPR_CONFIRM_CLOSE" xml:space="preserve">
     <value>The sprite '{0}' has unsaved changes. 
@@ -230,7 +230,7 @@ Please try again.</value>
     <value>..\Resources\save_content_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="GORSPR_CONFIRM_REMOVE_CODECS" xml:space="preserve">
-    <value>This will remove all codecs associated with the '{0}' plug in.
+    <value>This will remove all codecs associated with the '{0}' plug-in.
 
 Are you sure you want to do this?</value>
   </data>
@@ -287,7 +287,7 @@ Please select a 2D image and try again.</value>
     <value>..\Resources\filtering_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="GORSPR_ERR_CODEC_LOAD_ERRORS_PRESENT" xml:space="preserve">
-    <value>There were errors while trying to load the codec plug in.
+    <value>There were errors while trying to load the codec plug-in.
 
 Please check the Details pane for more information.</value>
   </data>
@@ -399,7 +399,7 @@ The performance of the current tool may be impacted by this.</value>
     <value>Sprite clipping</value>
   </data>
   <data name="GORSPR_FILTER_SELECT_CODEC" xml:space="preserve">
-    <value>Codec plug in file (*.dll)|*.dll</value>
+    <value>Codec plug-in file (*.dll)|*.dll</value>
   </data>
   <data name="Transparency_Pattern" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Transparency_Pattern.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>

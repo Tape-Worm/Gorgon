@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2021 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,21 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: January 30, 2021 10:36:37 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Windows;
@@ -39,22 +36,21 @@ using Gorgon.Math;
 using Gorgon.Renderers.Cameras;
 using Gorgon.Renderers.Geometry;
 using Gorgon.Timing;
-using DX = SharpDX;
 
 namespace Gorgon.Examples;
 
 /// <summary>
 /// GlassCube WPF
 /// 
-/// This is a WPF version of the GlassCube example. The purpose here is to show how to interoperate Gorgon with WPF.
+/// This is a WPF version of the GlassCube example. The purpose here is to show how to interoperate Gorgon with WPF
 /// 
 /// For the most part, the code for rendering is exactly the same as the original WinForms code. But, unlike the WinForms version, no swap chain is required 
 /// to display the image. Instead, WPF uses an Image control, with a D3D11Image as its image source. This setup gives us a render target that we can render 
-/// into like normal.
+/// into like normal
 /// 
 /// To enable WPF rendering, place an Image control in your XAML (inside of a grid, canvas, whatever, doesn't matter). Then, add a reference to the 
 /// Microsoft.Wpf.Interop.DirectX.dll (included in the Dependencies directory) assembly, and assign the D3D11Image to the ImageSource property of the Image 
-/// control. Ensure that your Image control has a name (x:Name attribute on the XAML). To see an example setup for this, look at the MainWindow.xaml file.
+/// control. Ensure that your Image control has a name (x:Name attribute on the XAML). To see an example setup for this, look at the MainWindow.xaml file
 /// 
 /// Once that is done, we create an instance of the GorgonWpfTarget object after we initialize the GorgonGraphics object and assign the Image control via the  
 /// constructor. 
@@ -63,30 +59,28 @@ namespace Gorgon.Examples;
 /// rendering we cannot just assign the Idle property on GorgonApplication. Instead, we assign the rendering method by calling the Run method on the 
 /// GorgonWPFTarget. 
 /// 
-/// When rendering, just pass the GorgonWPFTarget.RenderTargetView to the GorgonGraphics.SetRenderTarget method and you're off the races.
+/// When rendering, just pass the GorgonWPFTarget.RenderTargetView to the GorgonGraphics.SetRenderTarget method and you're off the races
 /// 
-/// And that is all that's required to get Gorgon working with WPF.
+/// And that is all that's required to get Gorgon working with WPF
 /// 
 /// Now, for the bad news. There are several limitations due to the nature of WPF:
 /// * This example, and anything using the Microsoft.Wpf.Interop.DirectX assembly MUST be compiled as x64. The assembly is compiled to x64 by default. If x86 
 ///   is required, developers can grab the source for the assembly from https://github.com/Microsoft/WPFDXInterop and compile it as x86. Then replace the x64 
-///   reference with the x86 reference in the Gorgon.Graphics.WPF project and then recompile that as x86. This, however, is not recommended and unsupported.
+///   reference with the x86 reference in the Gorgon.Graphics.WPF project and then recompile that as x86. This, however, is not recommended and unsupported
 ///   
-/// * No exclusive full screen support. However, windowed full screen should still be possible if the Window is setup correctly.
+/// * No exclusive full screen support. However, windowed full screen should still be possible if the Window is setup correctly
 /// 
-/// * Only the 32 bit BGRA format is supported for the render target. This is enforced by WPF.
+/// * Only the 32 bit BGRA format is supported for the render target. This is enforced by WPF
 /// 
-/// * A maximum frame rate of 60 frames per second is enforced by WPF. There is no stable way around this at this time.
+/// * A maximum frame rate of 60 frames per second is enforced by WPF. There is no stable way around this at this time
 /// </summary>
-public partial class MainWindow 
+public partial class MainWindow
     : Window
 {
-    #region Constants.
+
     // The target delta time.
     private const float TargetDelta = 1 / 60.0f;
-    #endregion
 
-    #region Variables.
     // The primary graphics interface.
     private GorgonGraphics _graphics;
     // The WPF render target. This is where we'll send our rendering.
@@ -118,12 +112,10 @@ public partial class MainWindow
     // The timer used for updating the text block.
     private IGorgonTimer _timer;
     // The starting point for dragging.
-    private Point? _dragStart;        
+    private Point? _dragStart;
     // Flag to indicate that the window is being dragged.
     private bool _isDragging;
-    #endregion
 
-    #region Methods.
     /// <summary>Handles the SizeChanged event of the grid control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="SizeChangedEventArgs" /> instance containing the event data.</param>
@@ -134,7 +126,7 @@ public partial class MainWindow
             return;
         }
 
-        _camera.ViewDimensions = new DX.Size2F((float)D3DImage.RenderSize.Width, (float)D3DImage.RenderSize.Height);
+        _camera.ViewDimensions = new Vector2((float)D3DImage.RenderSize.Width, (float)D3DImage.RenderSize.Height);
     }
 
     /// <summary>
@@ -147,7 +139,7 @@ public partial class MainWindow
     /// model and project them into 2D space on your render target.
     /// </para>
     /// </remarks>
-    private void UpdateWVP(in Matrix4x4 world)
+    private void UpdateWVP(ref readonly Matrix4x4 world)
     {
         // Get the view and projection from the camera.
         // These values are cached and returned as read only references for performance.
@@ -156,20 +148,20 @@ public partial class MainWindow
 
         // Build our world/vi ew/projection matrix to send to
         // the shader.
-        var temp = Matrix4x4.Multiply(world, viewMatrix);
+        Matrix4x4 temp = Matrix4x4.Multiply(world, viewMatrix);
         // Direct 3D 11 requires that we transpose our matrix 
         // before sending it to the shader.
-        var wvp = Matrix4x4.Transpose(Matrix4x4.Multiply(temp, projMatrix));
+        Matrix4x4 wvp = Matrix4x4.Transpose(Matrix4x4.Multiply(temp, projMatrix));
 
         // Update the constant buffer.
         _wvpBuffer.Buffer.SetData(in wvp);
     }
 
     /// <summary>
-		/// Function to handle idle time for the application.
-		/// </summary>
-		/// <returns><b>true</b> to continue processing, <b>false</b> to stop.</returns>
-		private bool Idle()
+    /// Function to handle idle time for the application.
+    /// </summary>
+    /// <returns><b>true</b> to continue processing, <b>false</b> to stop.</returns>
+    private bool Idle()
     {
         int jitter1 = GorgonRandom.RandomInt32(1, 3);
         int jitter2 = GorgonRandom.RandomInt32(1, 3);
@@ -182,7 +174,7 @@ public partial class MainWindow
         }
 
         // Do nothing here.  When we need to update, we will.
-        _target.RenderTargetView.Clear(GorgonColor.BlackTransparent);
+        _target.RenderTargetView.Clear(GorgonColors.BlackTransparent);
 
         // In order to get our rendering to show up in WPF, we need to render to the render target view provided to us by the 
         // WPF render target.
@@ -257,16 +249,16 @@ public partial class MainWindow
         _pixelShader = GorgonShaderFactory.Compile<GorgonPixelShader>(_graphics, Properties.Resources.GlassCubeShaders, "GlassCubePS");
 
         // Create the input layout for a cube vertex.
-        _inputLayout = GorgonInputLayout.CreateUsingType<GorgonVertexPosUv>(_graphics, _vertexShader);
+        _inputLayout = GorgonInputLayout.CreateUsingType<GorgonVertexPosUv>(_graphics, nameof(GorgonVertexPosUv), _vertexShader);
 
         // Create our constant buffer so we can send our transformation information to the shader.
         _wvpBuffer = GorgonConstantBufferView.CreateConstantBuffer(_graphics, new GorgonConstantBufferInfo(Unsafe.SizeOf<Matrix4x4>())
         {
-            Name = "GlassCube WVP Constant Buffer"                
+            Name = "GlassCube WVP Constant Buffer"
         });
 
         // Pull the camera back 1.5 units on the Z axis. Otherwise, we'd end up inside of the cube.
-        _camera = new GorgonPerspectiveCamera(_graphics, new DX.Size2F((float)D3DImage.RenderSize.Width, (float)D3DImage.RenderSize.Height), 0.1f, 1000.0f, "GlassCube Camera")
+        _camera = new GorgonPerspectiveCamera(_graphics, new Vector2((float)D3DImage.RenderSize.Width, (float)D3DImage.RenderSize.Height), 0.1f, 1000.0f, "GlassCube Camera")
         {
             Fov = 60.0f,
             Position = new Vector3(0.0f, 0, -1.5f)
@@ -278,8 +270,8 @@ public partial class MainWindow
         //_graphics.SetRenderTarget(_swap.RenderTargetView);
 
         // Set up the pipeline to draw the cube.
-        var drawCallBuilder = new GorgonDrawIndexCallBuilder();
-        var stateBuilder = new GorgonPipelineStateBuilder(_graphics);
+        GorgonDrawIndexCallBuilder drawCallBuilder = new();
+        GorgonPipelineStateBuilder stateBuilder = new(_graphics);
 
         // This draw call will use point filtering on the texture.
         _drawCall = _drawCallPixel = drawCallBuilder.VertexBuffer(_inputLayout, _cube.VertexBuffer[0])
@@ -307,7 +299,7 @@ public partial class MainWindow
     {
         try
         {
-            GorgonExample.ResourceBaseDirectory = new System.IO.DirectoryInfo(ExampleConfig.Default.ResourceLocation);                
+            GorgonExample.ResourceBaseDirectory = new System.IO.DirectoryInfo(ExampleConfig.Default.ResourceLocation);
 
             // Initialize Gorgon as we have in the other examples.
             // Find out which devices we have installed in the system.
@@ -315,9 +307,9 @@ public partial class MainWindow
 
             if (deviceList.Count == 0)
             {
-                MessageBox.Show("There are no suitable video adapters available in the system. This example is unable to continue and will now exit.", 
-                                "Error", 
-                                MessageBoxButton.OK, 
+                MessageBox.Show("There are no suitable video adapters available in the system. This example is unable to continue and will now exit.",
+                                "Error",
+                                MessageBoxButton.OK,
                                 MessageBoxImage.Error);
 
                 Close();
@@ -332,7 +324,7 @@ public partial class MainWindow
             // The D3DImage object we're passing in is a standard WPF Image control with a D3D11Image object assigned to 
             // its ImageSource property.
             _target = new GorgonWpfTarget(_graphics, new GorgonWpfTargetInfo(D3DImage, "WPF Render Target"));
-                            
+
             Initialize();
 
             // This is where we kick off our rendering. And again, unlike the Windows Forms version of the example, we 
@@ -433,7 +425,7 @@ public partial class MainWindow
 
         if (!_isDragging)
         {
-            var delta = new Point(pos.X - _dragStart.Value.X, pos.Y - _dragStart.Value.Y);
+            Point delta = new(pos.X - _dragStart.Value.X, pos.Y - _dragStart.Value.Y);
 
             if ((delta.X.Abs() >= SystemParameters.MinimumHorizontalDragDistance * 2)
                 || (delta.Y.Abs() >= SystemParameters.MinimumVerticalDragDistance * 2))
@@ -452,10 +444,7 @@ public partial class MainWindow
         _isDragging = false;
         _dragStart = null;
     }
-    #endregion
 
-    #region Constructor.
     /// <summary>Initializes a new instance of the <see cref="MainWindow" /> class.</summary>
     public MainWindow() => InitializeComponent();
-    #endregion
 }

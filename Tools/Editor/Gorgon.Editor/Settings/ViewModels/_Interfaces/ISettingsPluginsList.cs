@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,18 +11,17 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 20, 2019 11:01:31 AM
 // 
-#endregion
 
 using System.Collections.ObjectModel;
 using Gorgon.Editor.UI;
@@ -30,13 +29,13 @@ using Gorgon.Editor.UI;
 namespace Gorgon.Editor.ViewModels;
 
 /// <summary>
-/// The plug in list category for the settings.
+/// The plug-in list category for the settings
 /// </summary>
 internal interface ISettingsPlugInsList
     : ISettingsCategory
 {
     /// <summary>
-    /// Property to return the plug ins.
+    /// Property to return the plug-ins.
     /// </summary>
     ObservableCollection<ISettingsPlugInListItem> PlugIns
     {
@@ -44,7 +43,7 @@ internal interface ISettingsPlugInsList
     }
 
     /// <summary>
-    /// Property to return the currently selected plug in.
+    /// Property to return the currently selected plug-in.
     /// </summary>
     ISettingsPlugInListItem Current
     {
@@ -52,7 +51,7 @@ internal interface ISettingsPlugInsList
     }
 
     /// <summary>
-    /// Property to return the command to execute for selecting plug ins.
+    /// Property to return the command to execute for selecting plug-ins.
     /// </summary>
     IEditorCommand<int> SelectPlugInCommand
     {

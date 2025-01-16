@@ -1,4 +1,4 @@
-﻿#region MIT
+﻿
 // 
 // Gorgon
 // Copyright (C) 2015 Michael Winsor
@@ -11,33 +11,29 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Wednesday, September 9, 2015 8:21:31 PM
 // 
-#endregion
 
-using System;
-using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Input.Properties;
 using Gorgon.Math;
 using Gorgon.Native;
 using Gorgon.Timing;
-using DX = SharpDX;
 
 namespace Gorgon.Input;
 
 /// <summary>
-/// Provides events and state for mouse data returned from Raw Input.
+/// Provides events and state for mouse data returned from Raw Input
 /// </summary>
 /// <remarks>
 /// <para>
@@ -52,13 +48,13 @@ namespace Gorgon.Input;
 /// <para>
 /// Because there is no concept of a window (or screen dimensions either) for Raw Input, the data is usually received as relative. That is, the values received from raw input are vectors based on the last 
 /// known position of the mouse. In some cases this data may be absolute (e.g. a touch device), and in this case the position is given in the coordinates for the device. To see these values, an application 
-/// can read the <see cref="Position"/> or <see cref="RelativePositionOffset"/> properties.
+/// can read the <see cref="Position"/> or <see cref="RelativePositionOffset"/> properties
 /// </para>
 /// <para>
 /// <note type="tip">
 /// <para>
 /// This object is ideal for things like rotating a camera, as cursor ballistics may cause strange behaviour when moving. It is not recommended to use this object for things like a GUI as cursor ballistics 
-/// are not applied, and the positioning is not relative to any window or control. For those scenarios, the standard windows event mechanism is preferred.
+/// are not applied, and the positioning is not relative to any window or control. For those scenarios, the standard windows event mechanism is preferred
 /// </para>
 /// </note>
 /// </para>
@@ -66,23 +62,22 @@ namespace Gorgon.Input;
 public class GorgonRawMouse
     : IGorgonMouse
 {
-    #region Variables.
     // Range that a double click is valid within.
-    private DX.Size2 _doubleClickSize;
+    private GorgonPoint _doubleClickSize;
     // Mouse horizontal and vertical position.
-    private DX.Point _position;
+    private GorgonPoint _position;
     // Mouse wheel position.
     private int _wheel;
     // Constraints for the pointing device position.
-    private DX.Rectangle _positionConstraint;
+    private GorgonRectangle _positionConstraint;
     // Constraints for the pointing device wheel.
-    private GorgonRange _wheelConstraint;
+    private GorgonRange<int> _wheelConstraint;
     // The delay, in milliseconds, between clicks for a double click event.
     private int _doubleClickDelay;
     // The number of times a button was fully clicked.
     private int _clickCount;
     // The recorded position for a double click.
-    private DX.Point _doubleClickPosition;
+    private GorgonPoint _doubleClickPosition;
     // The button used for a double click.
     private MouseButtons _doubleClickButton;
     // The timer used for a double click.
@@ -90,14 +85,12 @@ public class GorgonRawMouse
     // The absolute position of the wheel.
     private int _wheelPosition;
     // The last known position for the mouse.
-    private DX.Point? _lastPosition;
+    private GorgonPoint? _lastPosition;
     // A synchronization object for multiple threads.
     private static readonly object _syncLock = new();
     // The device handle.
     private readonly nint _deviceHandle;
-    #endregion
 
-    #region Events.
     /// <summary>
     /// Event triggered when the mouse is moved.
     /// </summary>
@@ -122,9 +115,7 @@ public class GorgonRawMouse
     /// Event triggered when a double click is performed on a mouse button.
     /// </summary>
     public event EventHandler<GorgonMouseEventArgs> MouseDoubleClicked;
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to return the type of device.
     /// </summary>
@@ -156,7 +147,7 @@ public class GorgonRawMouse
     /// point of reference to derive the relative offset from. 
     /// </para>
     /// </remarks>
-    public DX.Point RelativePositionOffset
+    public GorgonPoint RelativePositionOffset
     {
         get;
         set;
@@ -246,7 +237,7 @@ public class GorgonRawMouse
     /// </para>
     /// </note>
     /// </remarks>
-    public DX.Rectangle PositionConstraint
+    public GorgonRectangle PositionConstraint
     {
         get => _positionConstraint;
         set
@@ -257,18 +248,18 @@ public class GorgonRawMouse
     }
 
     /// <summary>
-    /// Property to set or return the <see cref="GorgonRange"/> used to constrain the mouse <see cref="IGorgonMouse.WheelPosition"/>.
+    /// Property to set or return the <see cref="GorgonRange{T}"/> used to constrain the mouse <see cref="IGorgonMouse.WheelPosition"/>.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// If a mouse wheel exists on the device, this will constrain the value of the <see cref="IGorgonMouse.WheelPosition"/> within the specified <see cref="GorgonRange"/>. This means that a wheel with a position of  
+    /// If a mouse wheel exists on the device, this will constrain the value of the <see cref="IGorgonMouse.WheelPosition"/> within the specified <see cref="GorgonRange{T}"/>. This means that a wheel with a position of  
     /// 160, with a constraint of 180-190 will make the <see cref="IGorgonMouse.WheelPosition"/> property return 180.
     /// </para>
     /// <para>
-    /// Passing <see cref="GorgonRange.Empty"/> to this property will remove the constraint on the position.
+    /// Passing <see cref="GorgonRange{T}.Empty"/> to this property will remove the constraint on the position.
     /// </para>
     /// </remarks>
-    public GorgonRange WheelConstraint
+    public GorgonRange<int> WheelConstraint
     {
         get => _wheelConstraint;
         set
@@ -289,15 +280,15 @@ public class GorgonRawMouse
     /// Passing <c>Size.Empty</c> to this property will disable double clicking.
     /// </para>
     /// </remarks>
-    public DX.Size2 DoubleClickSize
+    public GorgonPoint DoubleClickSize
     {
         get => _doubleClickSize;
-        set => _doubleClickSize = new DX.Size2(value.Width.Abs(), value.Height.Abs());
+        set => _doubleClickSize = new GorgonPoint(value.X.Abs(), value.Y.Abs());
     }
 
     /// <summary>Property to set or return the position of the mouse.</summary>
     /// <remarks>This property is affected by the <see cref="PositionConstraint" /> value.</remarks>
-    public DX.Point Position
+    public GorgonPoint Position
     {
         get => _position;
         set => _position = ConstrainPositionData(value);
@@ -327,9 +318,7 @@ public class GorgonRawMouse
         get;
         set;
     }
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to initiate a double click.
     /// </summary>
@@ -352,7 +341,6 @@ public class GorgonRawMouse
         _doubleClickPosition = Position;
         _doubleClickButton = button;
     }
-
 
     /// <summary>
     /// Function to handle mouse down button events.
@@ -444,12 +432,12 @@ public class GorgonRawMouse
             return button;
         }
 
-        var doubleClickArea = new DX.Rectangle(_doubleClickPosition.X - (DoubleClickSize.Width / 2),
-                                                  _doubleClickPosition.Y - (DoubleClickSize.Height / 2),
-                                                  DoubleClickSize.Width,
-                                                  DoubleClickSize.Height);
+        GorgonRectangle doubleClickArea = new(_doubleClickPosition.X - (DoubleClickSize.X / 2),
+                                                  _doubleClickPosition.Y - (DoubleClickSize.Y / 2),
+                                                  DoubleClickSize.X,
+                                                  DoubleClickSize.Y);
 
-        if ((!doubleClickArea.Contains(Position)) || (_doubleClickButton != button) || (_doubleClickTimer.Milliseconds > DoubleClickDelay))
+        if ((!doubleClickArea.Contains(Position.X, Position.Y)) || (_doubleClickButton != button) || (_doubleClickTimer.Milliseconds > DoubleClickDelay))
         {
             _doubleClickTimer.Reset();
             _clickCount = 0;
@@ -488,20 +476,20 @@ public class GorgonRawMouse
     /// <returns><b>true</b> if the mouse moved, <b>false</b> if not.</returns>
     private bool HandleMouseMove(int x, int y, bool relative)
     {
-        DX.Point newPosition;
+        GorgonPoint newPosition;
 
         if (relative)
         {
-            RelativePositionOffset = new DX.Point(x, y);
-            newPosition = new DX.Point(_position.X + x, _position.Y + y);
+            RelativePositionOffset = new GorgonPoint(x, y);
+            newPosition = new GorgonPoint(_position.X + x, _position.Y + y);
         }
         else
         {
-            newPosition = new DX.Point(x, y);
+            newPosition = new GorgonPoint(x, y);
 
             if (_lastPosition is not null)
             {
-                RelativePositionOffset = new DX.Point((newPosition.X - _lastPosition.Value.X), ((newPosition.Y - _lastPosition.Value.Y)));
+                RelativePositionOffset = new GorgonPoint((newPosition.X - _lastPosition.Value.X), ((newPosition.Y - _lastPosition.Value.Y)));
             }
         }
 
@@ -555,7 +543,7 @@ public class GorgonRawMouse
     /// </summary>
     /// <param name="position">The position to constrain.</param>
     /// <returns>The constrained position.</returns>
-    private DX.Point ConstrainPositionData(DX.Point position)
+    private GorgonPoint ConstrainPositionData(GorgonPoint position)
     {
         if (_positionConstraint.IsEmpty)
         {
@@ -565,19 +553,19 @@ public class GorgonRawMouse
         // Limit positioning.
         if (position.X < _positionConstraint.X)
         {
-            RelativePositionOffset = new DX.Point(0, RelativePositionOffset.Y);
+            RelativePositionOffset = new GorgonPoint(0, RelativePositionOffset.Y);
             position.X = _positionConstraint.X;
         }
 
         if (position.Y < _positionConstraint.Y)
         {
-            RelativePositionOffset = new DX.Point(RelativePositionOffset.X, 0);
+            RelativePositionOffset = new GorgonPoint(RelativePositionOffset.X, 0);
             position.Y = _positionConstraint.Y;
         }
 
         if (position.X > _positionConstraint.Right)
         {
-            RelativePositionOffset = new DX.Point(0, RelativePositionOffset.Y);
+            RelativePositionOffset = new GorgonPoint(0, RelativePositionOffset.Y);
             position.X = _positionConstraint.Right;
         }
 
@@ -586,7 +574,7 @@ public class GorgonRawMouse
             return position;
         }
 
-        RelativePositionOffset = new DX.Point(RelativePositionOffset.X, 0);
+        RelativePositionOffset = new GorgonPoint(RelativePositionOffset.X, 0);
         position.Y = _positionConstraint.Bottom;
 
         return position;
@@ -597,7 +585,7 @@ public class GorgonRawMouse
     /// </summary>
     private void ConstrainWheelData()
     {
-        if (_wheelConstraint == GorgonRange.Empty)
+        if (_wheelConstraint == GorgonRange<int>.Empty)
         {
             return;
         }
@@ -618,7 +606,7 @@ public class GorgonRawMouse
     /// Function to process the Gorgon raw input data into device state data and appropriate events.
     /// </summary>
     /// <param name="rawInputData">The data to process.</param>
-    void IGorgonRawInputDeviceData<GorgonRawMouseData>.ProcessData(in GorgonRawMouseData rawInputData)
+    void IGorgonRawInputDeviceData<GorgonRawMouseData>.ProcessData(ref readonly GorgonRawMouseData rawInputData)
     {
         // Gather the event information.
         MouseButtons downButtons = MouseButtons.None;
@@ -646,7 +634,7 @@ public class GorgonRawMouse
 
         if (upButtons != MouseButtons.None)
         {
-            var e = new GorgonMouseEventArgs(upButtons, Buttons, _position, _wheelPosition, RelativePositionOffset, RelativeWheelDelta, _clickCount, !rawInputData.IsRelative);
+            GorgonMouseEventArgs e = new(upButtons, Buttons, _position, _wheelPosition, RelativePositionOffset, RelativeWheelDelta, _clickCount, !rawInputData.IsRelative);
 
             MouseButtonUp?.Invoke(this, e);
 
@@ -667,9 +655,7 @@ public class GorgonRawMouse
             MouseMove?.Invoke(this, new GorgonMouseEventArgs(Buttons, MouseButtons.None, _position, _wheelPosition, RelativePositionOffset, RelativeWheelDelta, 0, !rawInputData.IsRelative));
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonRawMouse" /> class.
     /// </summary>
@@ -695,6 +681,4 @@ public class GorgonRawMouse
         _deviceHandle = mouseInfo.Handle;
         Info = mouseInfo;
     }
-    #endregion
-
 }

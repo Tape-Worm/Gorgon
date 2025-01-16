@@ -1,6 +1,6 @@
-#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2016 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,28 +11,25 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 29, 2016 10:41:14 PM
 // 
-#endregion
 
-using System.Collections.Generic;
 using Gorgon.Core;
 using SharpDX.DXGI;
-using DX = SharpDX;
 
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// An enumeration that indicates how the back buffers should be rotated to fit the physical rotation of a monitor.
+/// An enumeration that indicates how the back buffers should be rotated to fit the physical rotation of a monitor
 /// </summary>
 public enum RotationMode
 {
@@ -59,10 +56,10 @@ public enum RotationMode
 }
 
 /// <summary>
-/// Provides information about an output on a <see cref="IGorgonVideoAdapterInfo"/>.
+/// Provides information about an output on a <see cref="IGorgonVideoAdapterInfo"/>
 /// </summary>
 /// <remarks>
-/// An output is typically a physical connection between the video adapter and another device.
+/// An output is typically a physical connection between the video adapter and another device
 /// </remarks>
 public interface IGorgonVideoOutputInfo
     : IGorgonNamedObject
@@ -78,7 +75,7 @@ public interface IGorgonVideoOutputInfo
     /// <summary>
     /// Property to return the adapter that owns this output.
     /// </summary>
-	    IGorgonVideoAdapterInfo Adapter
+    IGorgonVideoAdapterInfo Adapter
     {
         get;
     }
@@ -97,7 +94,7 @@ public interface IGorgonVideoOutputInfo
     /// <remarks>
     /// The desktop coordinates depend on the dots per inch (DPI) of the desktop. For more information about writing DPI-aware Win32 applications, see <a target="_blank" href="https://msdn.microsoft.com/en-us/library/bb173068.aspx">High DPI</a>.
     /// </remarks>
-    DX.Rectangle DesktopBounds
+    GorgonRectangle DesktopBounds
     {
         get;
     }

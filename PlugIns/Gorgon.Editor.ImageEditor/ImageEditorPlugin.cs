@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,28 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: October 29, 2018 2:52:09 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using Drawing = System.Drawing;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
@@ -48,20 +39,20 @@ using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Graphics.Imaging.GdiPlus;
 using Gorgon.IO;
+using Gorgon.IO.FileSystem;
 using Gorgon.Math;
-using Gorgon.Editor.ImageEditor.Native;
-using DX = SharpDX;
+using Drawing = System.Drawing;
 
 namespace Gorgon.Editor.ImageEditor;
 
 /// <summary>
-/// Gorgon image editor content plug in interface.
+/// Gorgon image editor content plug-in interface
 /// </summary>
 internal class ImageEditorPlugIn
     : ContentPlugIn, IContentPlugInMetadata
 {
-    #region Variables.
-    // This is the only codec supported by the image plug in.  Images will be converted when imported.
+
+    // This is the only codec supported by the image plug-in.  Images will be converted when imported.
     private readonly GorgonCodecDds _ddsCodec = new();
 
     // The synchronization lock for threads.
@@ -70,7 +61,7 @@ internal class ImageEditorPlugIn
     // The codec registry.
     private ICodecRegistry _codecs;
 
-    // The plug in settings.
+    // The plug-in settings.
     private ISettings _settings;
     private ISettingsPlugins _pluginSettings;
 
@@ -84,10 +75,8 @@ internal class ImageEditorPlugIn
     /// The name of the settings file.
     /// </summary>
     public static readonly string SettingsName = typeof(ImageEditorPlugIn).FullName;
-    #endregion
 
-    #region Properties.
-    /// <summary>Property to return the name of the plug in.</summary>
+    /// <summary>Property to return the name of the plug-in.</summary>
     string IContentPlugInMetadata.PlugInName => Name;
 
     /// <summary>Property to return the description of the plugin.</summary>
@@ -96,23 +85,21 @@ internal class ImageEditorPlugIn
     /// <summary>Property to return whether or not the plugin is capable of creating content.</summary>
     public override bool CanCreateContent => false;
 
-    /// <summary>Property to return the ID of the small icon for this plug in.</summary>
+    /// <summary>Property to return the ID of the small icon for this plug-in.</summary>
     public Guid SmallIconID
     {
         get;
     }
 
-    /// <summary>Property to return the ID of the new icon for this plug in.</summary>
+    /// <summary>Property to return the ID of the new icon for this plug-in.</summary>
     public Guid NewIconID => Guid.Empty;
 
-    /// <summary>Property to return the ID for the type of content produced by this plug in.</summary>
+    /// <summary>Property to return the ID for the type of content produced by this plug-in.</summary>
     public override string ContentTypeID => CommonEditorContentTypes.ImageType;
 
     /// <summary>Property to return the friendly (i.e shown on the UI) name for the type of content.</summary>
-    public string ContentType => Resources.GORIMG_CONTENT_TYPE;        
-    #endregion
+    public string ContentType => Resources.GORIMG_CONTENT_TYPE;
 
-    #region Methods.
     /// <summary>
     /// Function to render the thumbnail into the image passed in.
     /// </summary>
@@ -127,7 +114,7 @@ internal class ImageEditorPlugIn
                 Usage = ResourceUsage.Immutable,
                 IsTextureCube = false
             });
-            using var rtv = GorgonRenderTarget2DView.CreateRenderTarget(HostContentServices.GraphicsContext.Graphics, new GorgonTexture2DInfo((int)(image.Width * scale),
+            using GorgonRenderTarget2DView rtv = GorgonRenderTarget2DView.CreateRenderTarget(HostContentServices.GraphicsContext.Graphics, new GorgonTexture2DInfo((int)(image.Width * scale),
                                                                                                                                                                        (int)(image.Height * scale),
                                                                                                                                                                        BufferFormat.R8G8B8A8_UNorm)
             {
@@ -137,9 +124,9 @@ internal class ImageEditorPlugIn
                 Usage = ResourceUsage.Default
             });
             GorgonTexture2DView view = texture.GetShaderResourceView(mipCount: 1, arrayCount: 1);
-            rtv.Clear(GorgonColor.BlackTransparent);
+            rtv.Clear(GorgonColors.BlackTransparent);
             HostContentServices.GraphicsContext.Graphics.SetRenderTarget(rtv);
-            HostContentServices.GraphicsContext.Blitter.Blit(view, new DX.Rectangle(0, 0, rtv.Width, rtv.Height), blendState: GorgonBlendState.Default, samplerState: GorgonSamplerState.Default);
+            HostContentServices.GraphicsContext.Blitter.Blit(view, new GorgonRectangle(0, 0, rtv.Width, rtv.Height), blendState: GorgonBlendState.Default, samplerState: GorgonSamplerState.Default);
             HostContentServices.GraphicsContext.Graphics.SetRenderTarget(null);
 
             image?.Dispose();
@@ -157,12 +144,12 @@ internal class ImageEditorPlugIn
 
         // The availability of texconv.exe determines whether or not we can use block compressed formats or not.
         HostContentServices.Log.Print("Checking for texconv.exe...", LoggingLevel.Simple);
-        var pluginDir = new DirectoryInfo(Path.GetDirectoryName(GetType().Assembly.Location));
+        DirectoryInfo pluginDir = new(Path.GetDirectoryName(GetType().Assembly.Location));
         result = new FileInfo(Path.Combine(pluginDir.FullName, "texconv.exe"));
 
         if (!result.Exists)
         {
-            HostContentServices.Log.Print($"WARNING: Texconv.exe was not found at {pluginDir.FullName}. Block compressed formats will be unavailable.", LoggingLevel.Simple);
+            HostContentServices.Log.PrintWarning($"Texconv.exe was not found at {pluginDir.FullName}. Block compressed formats will be unavailable.", LoggingLevel.Simple);
         }
         else
         {
@@ -187,12 +174,12 @@ internal class ImageEditorPlugIn
 
         try
         {
-            IGorgonVirtualFile file = TemporaryFileSystem.FileSystem.GetFile(thumbnailFile);
+            IGorgonVirtualFile file = TemporaryFileSystem.GetFile(thumbnailFile);
 
             // If we've already got the file, then leave.
             if (file is not null)
             {
-                inStream = file.OpenStream();
+                inStream = TemporaryFileSystem.OpenStream(file.FullPath, false);
                 result = thumbnailCodec.FromStream(inStream);
 
                 return cancelToken.IsCancellationRequested ? (null, false) : (result, false);
@@ -205,7 +192,7 @@ internal class ImageEditorPlugIn
         }
         catch (Exception ex)
         {
-            HostContentServices.Log.Print($"ERROR: Cannot create thumbnail for '{content.Path}'", LoggingLevel.Intermediate);
+            HostContentServices.Log.PrintError($"Cannot create thumbnail for '{content.Path}'", LoggingLevel.Intermediate);
             HostContentServices.Log.LogException(ex);
             return (null, false);
         }
@@ -256,21 +243,20 @@ internal class ImageEditorPlugIn
         return needsRefresh;
     }
 
-    /// <summary>Function to register plug in specific search keywords with the system search.</summary>
+    /// <summary>Function to register plug-in specific search keywords with the system search.</summary>
     /// <typeparam name="T">The type of object being searched, must implement <see cref="IGorgonNamedObject"/>.</typeparam>
     /// <param name="searchService">The search service to use for registration.</param>
     protected override void OnRegisterSearchKeywords<T>(ISearchService<T> searchService) => searchService.MapKeywordToContentAttribute(Resources.GORIMG_SEARCH_KEYWORD_CODEC, ImageContent.CodecAttr);
 
-
-    /// <summary>Function to retrieve the settings interface for this plug in.</summary>
+    /// <summary>Function to retrieve the settings interface for this plug-in.</summary>
     /// <returns>The settings interface view model.</returns>
     /// <remarks>
     ///   <para>
-    /// Implementors who wish to supply customizable settings for their plug ins from the main "Settings" area in the application can override this method and return a new view model based on
-    /// the base <see cref="ISettingsCategory"/> type. Returning <b>null</b> will mean that the plug in does not have settings that can be managed externally.
+    /// Implementors who wish to supply customizable settings for their plug-ins from the main "Settings" area in the application can override this method and return a new view model based on
+    /// the base <see cref="ISettingsCategory"/> type. Returning <b>null</b> will mean that the plug-in does not have settings that can be managed externally.
     /// </para>
     ///   <para>
-    /// Plug ins must register the view associated with their settings panel via the <see cref="ViewFactory.Register{T}(Func{Control})"/> method when the plug in first loaded,
+    /// Plug ins must register the view associated with their settings panel via the <see cref="ViewFactory.Register{T}(Func{Control})"/> method when the plug-in first loaded,
     /// or else the panel will not show in the main settings area.
     /// </para>
     /// </remarks>
@@ -281,13 +267,13 @@ internal class ImageEditorPlugIn
     /// <param name = "fileManager" > The file manager used to access other content files.</param>
     /// <param name="injector">Parameters for injecting dependency objects.</param>
     /// <param name="scratchArea">The file system for the scratch area used to write transitory information.</param>
-    /// <param name="undoService">The undo service for the plug in.</param>
+    /// <param name="undoService">The undo service for the plug-in.</param>
     /// <returns>A new IEditorContent object.</returns>
     /// <remarks>
-    /// The <paramref name="scratchArea" /> parameter is the file system where temporary files to store transitory information for the plug in is stored. This file system is destroyed when the
-    /// application or plug in is shut down, and is not stored with the project.
+    /// The <paramref name="scratchArea" /> parameter is the file system where temporary files to store transitory information for the plug-in is stored. This file system is destroyed when the
+    /// application or plug-in is shut down, and is not stored with the project.
     /// </remarks>
-    protected async override Task<IEditorContent> OnOpenContentAsync(IContentFile file, IContentFileManager fileManager, IGorgonFileSystemWriter<Stream> scratchArea, IUndoService undoService)
+    protected async override Task<IEditorContent> OnOpenContentAsync(IContentFile file, IContentFileManager fileManager, IGorgonFileSystem scratchArea, IUndoService undoService)
     {
         FileInfo texConvExe = GetTexConvExe();
         TexConvCompressor compressor = null;
@@ -297,7 +283,7 @@ internal class ImageEditorPlugIn
             compressor = new TexConvCompressor(texConvExe, scratchArea, _ddsCodec);
         }
 
-        var imageIO = new ImageIOService(_ddsCodec,
+        ImageIOService imageIO = new(_ddsCodec,
             _codecs,
             new ExportImageDialogService(_settings),
             new ImportImageDialogService(_settings, _codecs),
@@ -307,14 +293,14 @@ internal class ImageEditorPlugIn
             compressor,
             HostContentServices.Log);
 
-        var imageData = await Task.Run(() =>
+        (IGorgonImage image, IGorgonVirtualFile workingFile, BufferFormat originalFormat) imageData = await Task.Run(() =>
         {
             using Stream inStream = ContentFileManager.OpenStream(file.Path, FileMode.Open);
             return imageIO.LoadImageFile(inStream, file.Name);
         });
 
-        var services = new ImageEditorServices
-        {                
+        ImageEditorServices services = new()
+        {
             HostContentServices = HostContentServices,
             ImageIO = imageIO,
             UndoService = undoService,
@@ -322,36 +308,35 @@ internal class ImageEditorPlugIn
             ExternalEditorService = new ImageExternalEditService(HostContentServices.Log)
         };
 
-        var imagePicker = new ImagePicker();
-        var sourceImagePicker = new SourceImagePicker();
-        var cropResizeSettings = new CropResizeSettings();
-        var dimensionSettings = new DimensionSettings();
-        var mipSettings = new MipMapSettings();
-        var alphaSettings = new AlphaSettings
+        ImagePicker imagePicker = new();
+        SourceImagePicker sourceImagePicker = new();
+        CropResizeSettings cropResizeSettings = new();
+        DimensionSettings dimensionSettings = new();
+        MipMapSettings mipSettings = new();
+        AlphaSettings alphaSettings = new()
         {
             AlphaValue = _settings.LastAlphaValue,
             UpdateRange = _settings.LastAlphaRange
         };
-        var blurSettings = new FxBlur();
-        var sharpenSettings = new FxSharpen();
-        var embossSettings = new FxEmboss();
-        var edgeDetectSettings = new FxEdgeDetect();
-        var posterizeSettings = new FxPosterize();
-        var oneBitSettings = new FxOneBit();
+        FxBlur blurSettings = new();
+        FxSharpen sharpenSettings = new();
+        FxEmboss embossSettings = new();
+        FxEdgeDetect edgeDetectSettings = new();
+        FxPosterize posterizeSettings = new();
+        FxOneBit oneBitSettings = new();
 
-        var injector = new HostedPanelViewModelParameters(HostContentServices);
-        
+        HostedPanelViewModelParameters injector = new(HostContentServices);
+
         cropResizeSettings.Initialize(injector);
         dimensionSettings.Initialize(new DimensionSettingsParameters(HostContentServices));
         mipSettings.Initialize(injector);
-        sourceImagePicker.Initialize(new SourceImagePickerParameters(HostContentServices));            
+        sourceImagePicker.Initialize(new SourceImagePickerParameters(HostContentServices));
         blurSettings.Initialize(injector);
         sharpenSettings.Initialize(injector);
         embossSettings.Initialize(injector);
         edgeDetectSettings.Initialize(injector);
         posterizeSettings.Initialize(injector);
 
-        
         imagePicker.Initialize(new ImagePickerParameters(fileManager, file, HostContentServices)
         {
             ImageServices = services,
@@ -360,8 +345,8 @@ internal class ImageEditorPlugIn
             SourceImagePicker = sourceImagePicker
         });
 
-        var content = new ImageContent();
-        var fxContext = new FxContext();
+        ImageContent content = new();
+        FxContext fxContext = new();
 
         fxContext.Initialize(new FxContextParameters(content, _fxServices, blurSettings, sharpenSettings, embossSettings, edgeDetectSettings, posterizeSettings, oneBitSettings, HostContentServices));
         content.Initialize(new ImageContentParameters(fileManager,
@@ -442,7 +427,7 @@ internal class ImageEditorPlugIn
         IGorgonImageInfo metadata = _ddsCodec.GetMetaData(stream);
 
         // We won't be supporting 1D images in this editor.
-        if (metadata.ImageType is ImageType.Image1D or ImageType.Unknown)
+        if (metadata.ImageType is ImageDataType.Image1D or ImageDataType.Unknown)
         {
             return false;
         }
@@ -452,7 +437,7 @@ internal class ImageEditorPlugIn
     }
 
     /// <summary>
-    /// Function to retrieve the small icon for the content plug in.
+    /// Function to retrieve the small icon for the content plug-in.
     /// </summary>
     /// <returns>An image for the small icon.</returns>
     public Drawing.Image GetSmallIcon() => Resources.image_20x20;
@@ -489,7 +474,7 @@ internal class ImageEditorPlugIn
         }
 
         string fileDirectoryPath = Path.GetDirectoryName(filePath).FormatDirectory('/');
-        IGorgonVirtualDirectory directory = TemporaryFileSystem.FileSystem.GetDirectory(fileDirectoryPath);
+        IGorgonVirtualDirectory directory = TemporaryFileSystem.GetDirectory(fileDirectoryPath);
 
         directory ??= TemporaryFileSystem.CreateDirectory(fileDirectoryPath);
 
@@ -524,8 +509,9 @@ internal class ImageEditorPlugIn
             // We're done on the main thread, we can switch to another thread to write the image.
             Cursor.Current = Cursors.Default;
 
-            await Task.Run(() => {
-                using Stream stream = TemporaryFileSystem.OpenStream(filePath, FileMode.Create);
+            await Task.Run(() =>
+            {
+                using Stream stream = TemporaryFileSystem.OpenStream(filePath, true);
                 pngCodec.Save(thumbImage, stream);
             }, cancelToken);
 
@@ -539,7 +525,7 @@ internal class ImageEditorPlugIn
         }
         catch (Exception ex)
         {
-            HostContentServices.Log.Print($"ERROR: Cannot create thumbnail for '{contentFile.Path}'", LoggingLevel.Intermediate);
+            HostContentServices.Log.PrintError($"Cannot create thumbnail for '{contentFile.Path}'", LoggingLevel.Intermediate);
             HostContentServices.Log.LogException(ex);
             return null;
         }
@@ -552,11 +538,9 @@ internal class ImageEditorPlugIn
     /// <summary>Function to retrieve the icon used for new content creation.</summary>
     /// <returns>An image for the icon.</returns>
     public Drawing.Image GetNewIcon() => null;
-    #endregion
 
-    #region Constructor/Finalizer.
     /// <summary>Initializes a new instance of the ImageEditorPlugIn class.</summary>
     public ImageEditorPlugIn()
         : base(Resources.GORIMG_DESC) => SmallIconID = Guid.NewGuid();
-    #endregion
+
 }

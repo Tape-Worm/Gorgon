@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,34 +11,30 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 19, 2019 2:03:55 PM
 // 
-#endregion
 
-using System;
-using System.Windows.Forms;
 using Gorgon.Editor.Rendering;
+using Gorgon.Graphics;
 using Gorgon.Renderers.Cameras;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.Services;
 
 /// <summary>
-/// A service used to clip a rectangular area from an image.
+/// A service used to clip a rectangular area from an image
 /// </summary>
 public interface IRectClipperService
     : IDisposable
 {
-    #region Events.
     /// <summary>
     /// Event triggered when the keyboard icon is clicked.
     /// </summary>
@@ -48,9 +44,7 @@ public interface IRectClipperService
     /// Event triggered when the rectangle coordinates have been altered.
     /// </summary>
     event EventHandler RectChanged;
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to set or return the camera being used.
     /// </summary>
@@ -89,7 +83,7 @@ public interface IRectClipperService
     /// <summary>
     /// Property to set or return the rectangular region marked for clipping.
     /// </summary>
-    DX.RectangleF Rectangle
+    GorgonRectangleF Rectangle
     {
         get;
         set;
@@ -98,7 +92,7 @@ public interface IRectClipperService
     /// <summary>
     /// Property to set or return the boundaries for the clipping rectangle.
     /// </summary>
-    DX.RectangleF Bounds
+    GorgonRectangleF Bounds
     {
         get;
         set;
@@ -121,9 +115,7 @@ public interface IRectClipperService
         get;
         set;
     }
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to force a refresh of the service.
     /// </summary>
@@ -162,5 +154,4 @@ public interface IRectClipperService
     /// <param name="modifiers">The modifier keys held down with the <paramref name="key"/>.</param>
     /// <returns><b>true</b> if the key was handled, <b>false</b> if it was not.</returns>
     bool KeyDown(Keys key, Keys modifiers);
-    #endregion
 }

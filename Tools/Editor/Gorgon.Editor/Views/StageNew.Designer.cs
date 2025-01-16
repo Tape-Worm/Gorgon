@@ -18,7 +18,7 @@ partial class StageNew
     {
         if (disposing)
         {
-            DataContext?.Unload();
+            ViewModel?.Unload();
 
             UnassignEvents();
         }
@@ -31,7 +31,7 @@ partial class StageNew
         base.Dispose(disposing);
     }
 
-    #region Component Designer generated code
+
 
     /// <summary> 
     /// Required method for Designer support - do not modify 
@@ -408,7 +408,7 @@ partial class StageNew
 
     }
 
-    #endregion
+
 
     private System.Windows.Forms.Panel PanelNew;
     private System.Windows.Forms.Label LabelHeader;

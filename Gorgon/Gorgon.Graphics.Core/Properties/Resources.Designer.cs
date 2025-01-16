@@ -1293,9 +1293,36 @@ namespace Gorgon.Graphics.Core.Properties {
         // Comment stripped.
         // Comment stripped.
         // Comment stripped.
+        internal static string GORGFX_TOSTR_AABB {
+            get {
+                return ResourceManager.GetString("GORGFX_TOSTR_AABB", resourceCulture);
+            }
+        }
+        
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
+        internal static string GORGFX_TOSTR_BOUNDING_SPHERE {
+            get {
+                return ResourceManager.GetString("GORGFX_TOSTR_BOUNDING_SPHERE", resourceCulture);
+            }
+        }
+        
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
         internal static string GORGFX_TOSTR_MULTISAMPLEINFO {
             get {
                 return ResourceManager.GetString("GORGFX_TOSTR_MULTISAMPLEINFO", resourceCulture);
+            }
+        }
+        
+        // Comment stripped.
+        // Comment stripped.
+        // Comment stripped.
+        internal static string GORGFX_TOSTR_RAY {
+            get {
+                return ResourceManager.GetString("GORGFX_TOSTR_RAY", resourceCulture);
             }
         }
         

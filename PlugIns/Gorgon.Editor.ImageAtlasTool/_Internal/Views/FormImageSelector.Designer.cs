@@ -27,7 +27,7 @@ partial class FormImageSelector
         base.Dispose(disposing);
     }
 
-    #region Windows Form Designer generated code
+
 
     /// <summary>
     /// Required method for Designer support - do not modify
@@ -258,7 +258,7 @@ partial class FormImageSelector
         this.Controls.Add(this.SplitFileSelector);
         this.Controls.Add(this.PanelDialogControls);
         this.Controls.Add(this.LabelLoading);
-        this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+        
         this.ForeColor = System.Drawing.Color.White;
         this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
         this.MinimizeBox = false;
@@ -285,7 +285,7 @@ partial class FormImageSelector
 
     }
 
-    #endregion
+
 
     private System.Windows.Forms.TableLayoutPanel TableFileSelection;
     private System.Windows.Forms.Button ButtonCancel;

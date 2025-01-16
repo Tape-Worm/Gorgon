@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,28 +11,20 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: September 4, 2018 12:46:15 PM
 // 
-#endregion
 
-using System;
-using System.Buffers;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Gorgon.Collections;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
@@ -48,7 +40,7 @@ using Microsoft.IO;
 namespace Gorgon.Editor.ViewModels;
 
 /// <summary>
-/// The type of project item stored in the project metadata.
+/// The type of project item stored in the project metadata
 /// </summary>
 internal enum ProjectItemType
 {
@@ -63,19 +55,16 @@ internal enum ProjectItemType
 }
 
 /// <summary>
-/// The view model for the project editor interface.
+/// The view model for the project editor interface
 /// </summary>
 internal class ProjectEditor
     : ViewModelBase<ProjectEditorParameters, IHostContentServices>, IProjectEditor
 {
-    #region Constants.        
     /// <summary>
     /// Metadata naming for the project item type attribute.
     /// </summary>
     public const string ProjectItemTypeAttrName = "ProjectItemType";
-    #endregion
 
-    #region Variables.
     // The project data for the view model.
     private IProject _projectData;
     // The file explorer view model.
@@ -86,7 +75,7 @@ internal class ProjectEditor
     private IEditorContent _currentContent;
     // The content previewer view model.
     private IContentPreview _contentPreviewer;
-    // The file manager used to manage content through content plug ins.
+    // The file manager used to manage content through content plug-ins.
     private IContentFileManager _contentFileManager;
     // The list of tool buttons.
     private IReadOnlyDictionary<string, IReadOnlyList<IToolPlugInRibbonButton>> _toolButtons = new Dictionary<string, IReadOnlyList<IToolPlugInRibbonButton>>(StringComparer.CurrentCultureIgnoreCase);
@@ -94,17 +83,15 @@ internal class ProjectEditor
     private Editor.EditorSettings _settings;
     // The project save dialog service.
     private EditorFileSaveDialogService _saveDialog;
-    // The list of plug ins that can create content.
+    // The list of plug-ins that can create content.
     private IReadOnlyList<IContentPlugInMetadata> _contentCreators;
     // The current clipboard context.
     private IClipboardHandler _clipboardContext;
-    #endregion
 
-    #region Properties.
     /// <summary>
-    /// Property to return the available tool plug in button definitions for the application.
+    /// Property to return the available tool plug-in button definitions for the application.
     /// </summary>
-    public IReadOnlyDictionary<string, IReadOnlyList<IToolPlugInRibbonButton>> ToolButtons 
+    public IReadOnlyDictionary<string, IReadOnlyList<IToolPlugInRibbonButton>> ToolButtons
     {
         get => _toolButtons;
         private set
@@ -202,7 +189,7 @@ internal class ProjectEditor
     }
 
     /// <summary>
-    /// Property to set or return the content file manager for managing content file systems through content plug ins.
+    /// Property to set or return the content file manager for managing content file systems through content plug-ins.
     /// </summary>
     public IContentFileManager ContentFileManager
     {
@@ -280,7 +267,7 @@ internal class ProjectEditor
     /// </summary>
     public IEditorAsyncCommand<CancelEventArgs> SaveProjectToPackFileCommand
     {
-        get;            
+        get;
     }
 
     /// <summary>
@@ -298,9 +285,7 @@ internal class ProjectEditor
     {
         get;
     }
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to persist the project metadata to the disk.
     /// </summary>
@@ -340,7 +325,7 @@ internal class ProjectEditor
         SaveMetadata(_fileExplorer.Root);
 
         // Evaluate each directory in the file system.
-        foreach (IDirectory directory in _fileExplorer.Root.Directories.Traverse(d => d.Directories))
+        foreach (IDirectory directory in _fileExplorer.Root.Directories.TraverseBreadthFirst(d => d.Directories))
         {
             SaveMetadata(directory);
         }
@@ -443,7 +428,7 @@ internal class ProjectEditor
                 if (CurrentContent.ContentState == ContentState.Unmodified)
                 {
                     // If the state turns to unmodified, then refresh the thumbnail.
-                    RefreshFilePreview(CurrentContent.File.Path);                            
+                    RefreshFilePreview(CurrentContent.File.Path);
                 }
                 break;
             case nameof(IEditorContent.CommandContext):
@@ -569,7 +554,7 @@ internal class ProjectEditor
         }
         catch (Exception ex)
         {
-            HostServices.Log.Print("ERROR: Could not save the project metadata due to an exception!!", LoggingLevel.Simple);
+            HostServices.Log.PrintError("Could not save the project metadata due to an exception!!", LoggingLevel.Simple);
             HostServices.Log.LogException(ex);
         }
         finally
@@ -588,14 +573,14 @@ internal class ProjectEditor
         try
         {
             bool result = await UpdateChangedContentAsync(SaveReason.AppProjectShutdown);
-            
+
             SaveProjectMetadata();
 
             args.Cancel = !result;
         }
         catch (Exception ex)
         {
-            HostServices.Log.Print("Error closing the application.", LoggingLevel.Simple);
+            HostServices.Log.PrintError("Error closing the application.", LoggingLevel.Simple);
             HostServices.Log.LogException(ex);
         }
     }
@@ -611,7 +596,7 @@ internal class ProjectEditor
         }
         catch (Exception ex)
         {
-            HostServices.Log.Print("Error closing the application.", LoggingLevel.Simple);
+            HostServices.Log.PrintError("Error closing the application.", LoggingLevel.Simple);
             HostServices.Log.LogException(ex);
         }
     }
@@ -662,7 +647,7 @@ internal class ProjectEditor
                 ShowWaitPanel(string.Format(Resources.GOREDIT_TEXT_OPENING, file.Name));
             }
 
-            // Find the associated plug in.
+            // Find the associated plug-in.
             if (!HostServices.ContentPlugInService.PlugIns.TryGetValue(file.Metadata.PlugInName, out ContentPlugIn plugIn))
             {
                 HostServices.MessageDisplay.ShowError(string.Format(Resources.GOREDIT_ERR_NO_PLUGIN_FOR_CONTENT, file.Name));
@@ -723,7 +708,7 @@ internal class ProjectEditor
     /// <param name="args">The arguments for the command.</param>
     private async Task DoSaveProjectToPackFile(CancelEventArgs args)
     {
-        var cancelSource = new CancellationTokenSource();
+        CancellationTokenSource cancelSource = new();
         FileWriterPlugIn writer = null;
 
         try
@@ -731,7 +716,7 @@ internal class ProjectEditor
             // Function used to cancel the save operation.
             void CancelOperation() => cancelSource.Cancel();
 
-            var lastSaveDir = new DirectoryInfo(_settings.LastOpenSavePath);
+            DirectoryInfo lastSaveDir = new(_settings.LastOpenSavePath);
 
             if (!lastSaveDir.Exists)
             {
@@ -752,12 +737,12 @@ internal class ProjectEditor
             path = Path.GetFullPath(path);
             writer = _saveDialog.CurrentWriter;
 
-            Debug.Assert(writer is not null, "Must have a writer plug in.");
+            Debug.Assert(writer is not null, "Must have a writer plug-in.");
 
-            HostServices.Log.Print($"File writer plug in is: {writer.Name}.", LoggingLevel.Verbose);
+            HostServices.Log.Print($"File writer plug-in is: {writer.Name}.", LoggingLevel.Verbose);
             HostServices.Log.Print($"Saving to '{path}'...", LoggingLevel.Simple);
 
-            var panelUpdateArgs = new ProgressPanelUpdateArgs
+            ProgressPanelUpdateArgs panelUpdateArgs = new()
             {
                 Title = Resources.GOREDIT_TEXT_PLEASE_WAIT,
                 Message = string.Format(Resources.GOREDIT_TEXT_SAVING, ProjectTitle)
@@ -829,19 +814,18 @@ internal class ProjectEditor
         string contentName = null;
 
         try
-        {                
+        {
             IContentPlugInMetadata metadata = _contentCreators.FirstOrDefault(item => id == item.NewIconID);
 
             Debug.Assert(metadata is not null, $"Could not locate the content plugin metadata for {id}.");
 
-            ShowWaitPanel(string.Format(Resources.GOREDIT_TEXT_CREATING_CONTENT, metadata.ContentType));                                
-            
+            ShowWaitPanel(string.Format(Resources.GOREDIT_TEXT_CREATING_CONTENT, metadata.ContentType));
+
             ContentPlugIn plugin = HostServices.ContentPlugInService.PlugIns.FirstOrDefault(item => item.Value == metadata).Value;
 
-            Debug.Assert(plugin is not null, $"Could not locate the content plug in for {id}.");
-            
-            directory = _fileExplorer.SelectedDirectory ?? _fileExplorer.Root;
+            Debug.Assert(plugin is not null, $"Could not locate the content plug-in for {id}.");
 
+            directory = _fileExplorer.SelectedDirectory ?? _fileExplorer.Root;
 
             ShowWaitPanel(string.Format(Resources.GOREDIT_TEXT_CREATING_CONTENT, metadata.ContentType));
 
@@ -881,7 +865,7 @@ internal class ProjectEditor
             foreach (ReadOnlyMemory<byte> memory in contentData.GetReadOnlySequence())
             {
                 contentStream.Write(memory.Span);
-            }                
+            }
             contentStream.Dispose();
 
             file = ContentFileManager.GetFile(path);
@@ -898,13 +882,13 @@ internal class ProjectEditor
             foreach (KeyValuePair<string, List<string>> dependency in contentMetadata.DependsOn)
             {
                 file.Metadata.DependsOn[dependency.Key] = new List<string>(dependency.Value);
-            }                
-            
+            }
+
             // Indicate that this file is new.
             file.Metadata.Attributes[CommonEditorConstants.IsNewAttr] = bool.TrueString;
             file.RefreshMetadata();
 
-            SaveProjectMetadata();                    
+            SaveProjectMetadata();
         }
         catch (Exception ex)
         {
@@ -919,7 +903,7 @@ internal class ProjectEditor
         }
         finally
         {
-            contentStream?.Dispose();   
+            contentStream?.Dispose();
             HideWaitPanel();
         }
 
@@ -947,7 +931,7 @@ internal class ProjectEditor
         // There should be no chance of this happening.
         Debug.Assert(virtualFile is not null, $"File not {file.Path} found in file system.");
 
-        IReadOnlyList<string> selectedFile = new[] { virtualFile.ID };
+        IReadOnlyList<string> selectedFile = [virtualFile.ID];
         if ((FileExplorer.SelectFileCommand is not null) && (FileExplorer.SelectFileCommand.CanExecute(selectedFile)))
         {
             FileExplorer.SelectFileCommand.Execute(selectedFile);
@@ -982,7 +966,7 @@ internal class ProjectEditor
         _contentPreviewer = injectionParameters.ContentPreviewer;
         _saveDialog = injectionParameters.SaveDialog;
         _contentCreators = injectionParameters.ContentCreators;
-        
+
         AssignEvents();
 
         ProjectTitle = _projectData.ProjectWorkSpace.Name;
@@ -999,7 +983,7 @@ internal class ProjectEditor
     {
         base.OnLoad();
 
-        HostServices.BusyService.SetBusy();            
+        HostServices.BusyService.SetBusy();
 
         try
         {
@@ -1009,14 +993,14 @@ internal class ProjectEditor
 
                 FileExplorer.FileSystemUpdated += FileExplorer_FileSystemUpdated;
             }
-            
+
             if (ContentPreviewer is not null)
             {
                 ContentPreviewer.Load();
                 ContentPreviewer.IsEnabled = _settings.ShowContentPreview;
             }
-            
-            AssignEvents();                
+
+            AssignEvents();
         }
         catch (Exception ex)
         {
@@ -1026,7 +1010,7 @@ internal class ProjectEditor
         {
             HostServices.BusyService.SetIdle();
         }
-    }        
+    }
 
     /// <summary>
     /// Function called when the associated view is unloaded.
@@ -1050,11 +1034,9 @@ internal class ProjectEditor
 
         base.OnUnload();
     }
-    #endregion
 
-    #region Constructor.
     /// <summary>Initializes a new instance of the <see cref="ProjectEditor"/> class.</summary>
-    public ProjectEditor() 
+    public ProjectEditor()
     {
         BeforeCloseCommand = new EditorAsyncCommand<CancelEventArgs>(DoBeforeCloseAsync);
         AfterCloseCommand = new EditorCommand<object>(DoAfterClose);
@@ -1063,5 +1045,4 @@ internal class ProjectEditor
         CreateContentCommand = new EditorAsyncCommand<Guid>(DoCreateContentAsync, CanCreateContent);
         ContentClosedCommand = new EditorCommand<object>(DoContentClosed);
     }
-    #endregion
 }

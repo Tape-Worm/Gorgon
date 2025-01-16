@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,30 +11,28 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Saturday, October 12, 2013 11:22:36 PM
 // 
-#endregion
 
-using System.Drawing;
 using Gorgon.IO;
 
 namespace Gorgon.Graphics.Fonts;
 
 /// <summary>
-/// A brush used to draw glyphs using a solid fill color.
+/// A brush used to draw glyphs using a solid fill color
 /// </summary>
 /// <remarks>
 /// <para>
-/// This is the default brush type used when no brush is specified when creating font glyphs.
+/// This is the default brush type used when no brush is specified when creating font glyphs
 /// </para>
 /// </remarks>
 /// <seealso cref="GorgonGlyphTextureBrush"/>
@@ -44,7 +42,6 @@ namespace Gorgon.Graphics.Fonts;
 public class GorgonGlyphSolidBrush
     : GorgonGlyphBrush
 {
-    #region Properties.
     /// <summary>
     /// Property to return the type of brush.
     /// </summary>
@@ -58,16 +55,14 @@ public class GorgonGlyphSolidBrush
         get;
         set;
     }
-    #endregion
 
-    #region Methods.
     /// <summary>Function to write out the specifics of the font brush data to a file writer.</summary>
     /// <param name="writer">The writer used to write the brush data.</param>
-    internal override void WriteBrushData(GorgonBinaryWriter writer) => writer.Write(Color.ToARGB());
+    internal override void WriteBrushData(IGorgonChunkWriter writer) => writer.WriteInt32(GorgonColor.ToARGB(Color));
 
     /// <summary>Function to read back the specifics of the font brush data from a file reader.</summary>
     /// <param name="reader">The reader used to read the brush data.</param>
-    internal override void ReadBrushData(GorgonBinaryReader reader) => Color = new GorgonColor(reader.ReadInt32());
+    internal override void ReadBrushData(IGorgonChunkReader reader) => Color = GorgonColor.FromARGB(reader.ReadInt32());
 
     /// <summary>
     /// Function to convert this brush to the equivalent GDI+ brush type.
@@ -84,7 +79,6 @@ public class GorgonGlyphSolidBrush
         Color = Color
     };
 
-
     /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
     /// <param name="other">An object to compare with this object.</param>
     /// <returns>
@@ -100,17 +94,14 @@ public class GorgonGlyphSolidBrush
     /// </returns>
     public override bool Equals(GorgonGlyphBrush other)
     {
-        var brush = other as GorgonGlyphSolidBrush;
+        GorgonGlyphSolidBrush brush = other as GorgonGlyphSolidBrush;
 
         return ((brush == this) || ((brush is not null) && (brush.Color == Color)));
     }
 
-    #endregion
-
-    #region Constructor.
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonGlyphSolidBrush"/> class.
     /// </summary>
-    public GorgonGlyphSolidBrush() => Color = GorgonColor.White;
-    #endregion
+    public GorgonGlyphSolidBrush() => Color = GorgonColors.White;
+
 }

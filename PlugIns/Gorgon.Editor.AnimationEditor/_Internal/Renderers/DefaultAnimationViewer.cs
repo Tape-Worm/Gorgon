@@ -1,6 +1,5 @@
-﻿#region MIT
-// 
-// Gorgon.
+﻿// 
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,20 +10,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 10, 2020 6:38:49 AM
 // 
-#endregion
 
-using System.Linq;
 using System.Numerics;
 using Gorgon.Editor.AnimationEditor.Properties;
 using Gorgon.Editor.Rendering;
@@ -32,36 +29,36 @@ using Gorgon.Editor.Services;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts;
+using Gorgon.Math;
 using Gorgon.Renderers;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.AnimationEditor;
 
 /// <summary>
-/// The default viewer for an aniamtion.
+/// The default viewer for an aniamtion
 /// </summary>
-internal class DefaultAnimationViewer
-    : AnimationViewer
+/// <remarks>Initializes a new instance of the <see cref="DefaultAnimationViewer"/> class.</remarks>
+/// <param name="renderer">The main renderer for the content view.</param>
+/// <param name="swapChain">The swap chain for the content view.</param>
+/// <param name="dataContext">The view model to assign to the renderer.</param>        
+/// <param name="clipper">The service used to clip rectangular areas of an image.</param>
+internal class DefaultAnimationViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IAnimationContent dataContext, IRectClipperService clipper)
+        : AnimationViewer(ViewerName, renderer, swapChain, dataContext, clipper, false)
 {
-    #region Constants.
     /// <summary>
     /// The name of the viewer.
     /// </summary>
     public const string ViewerName = "AnimationDefaultRenderer";
-    #endregion
 
-    #region Variables.
     // The font used to rendering instructional text.
     private GorgonFont _font;
     // The set key frame instructions.
     private GorgonTextSprite _instructions;
     // The size of the text sprite.
-    private DX.Size2F _textSize;
+    private Vector2 _textSize;
     // Flag to indicate that we'll allow movement of the sprite.
     private bool _allowMove;
-    #endregion
 
-    #region Methods.
     /// <summary>Function called when the camera is panned.</summary>
     /// <remarks>Developers can override this method to implement a custom action when the camera is panned around the view.</remarks>
     protected override void OnCameraMoved() => Clipper?.Refresh();
@@ -112,14 +109,14 @@ internal class DefaultAnimationViewer
     {
         base.OnLoad();
 
-        _font = Fonts.GetFont(new GorgonFontInfo("Segoe UI", 18.0f, FontHeightMode.Points)
+        _font = Fonts.GetFont(new GorgonFontInfo("Segoe UI", 18.0f, GorgonFontHeightMode.Points)
         {
             Name = "Segoe UI 18 pt",
-            FontStyle = FontStyle.Bold,
+            FontStyle = GorgonFontStyle.Bold,
             Characters = Resources.GORANM_TEXT_TEXTURE_KEY_ASSIGN.Distinct(),
-            OutlineColor1 = GorgonColor.Black,
-            OutlineColor2 = GorgonColor.Black,
-            AntiAliasingMode = FontAntiAliasMode.AntiAlias,
+            OutlineColor1 = GorgonColors.Black,
+            OutlineColor2 = GorgonColors.Black,
+            AntiAliasingMode = GorgonFontAntiAliasMode.AntiAlias,
             OutlineSize = 3
         });
 
@@ -127,10 +124,10 @@ internal class DefaultAnimationViewer
         {
             Alignment = Gorgon.UI.Alignment.LowerCenter,
             DrawMode = TextDrawMode.OutlinedGlyphs,
-            LayoutArea = new DX.Size2F(ClientSize.Width, ClientSize.Height),
-            Text = Resources.GORANM_TEXT_TEXTURE_KEY_ASSIGN.WordWrap(_font, ClientSize.Width)
+            LayoutArea = new Vector2(ClientSize.X, ClientSize.Y),
+            Text = Resources.GORANM_TEXT_TEXTURE_KEY_ASSIGN.WordWrap(_font, ClientSize.X)
         };
-        _textSize = _instructions.Text.MeasureText(_font, true, wordWrapWidth: ClientSize.Width);
+        _textSize = _instructions.Text.MeasureText(_font, true, wordWrapWidth: ClientSize.X);
 
         if (Clipper is not null)
         {
@@ -140,7 +137,7 @@ internal class DefaultAnimationViewer
             Clipper.AllowMove = true;
             Clipper.ClipAgainstBoundaries = false;
             Clipper.Bounds = RenderRegion;
-            Clipper.Rectangle = Renderer.MeasureSprite(Sprite).Truncate();
+            Clipper.Rectangle = GorgonRectangleF.Truncate(Renderer.MeasureSprite(Sprite));
             Clipper.RectChanged += Clipper_RectChanged;
         }
     }
@@ -148,7 +145,7 @@ internal class DefaultAnimationViewer
     /// <summary>Handles the RectChanged event of the Clipper control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="T:System.EventArgs">EventArgs</see> instance containing the event data.</param>
-    private void Clipper_RectChanged(object sender, System.EventArgs e)
+    private void Clipper_RectChanged(object sender, EventArgs e)
     {
         if (!_allowMove)
         {
@@ -163,10 +160,10 @@ internal class DefaultAnimationViewer
     /// <remarks>Developers can override this method to handle cases where the view window is resized and the content has size dependent data (e.g. render targets).</remarks>
     protected override void OnResizeEnd()
     {
-        _instructions.LayoutArea = new DX.Size2F(ClientSize.Width, ClientSize.Height);
+        _instructions.LayoutArea = new Vector2(ClientSize.X, ClientSize.Y);
 
-        _instructions.Text = Resources.GORANM_TEXT_TEXTURE_KEY_ASSIGN.WordWrap(_font, ClientSize.Width);
-        _textSize = _instructions.Text.MeasureText(_font, true, wordWrapWidth: ClientSize.Width);
+        _instructions.Text = Resources.GORANM_TEXT_TEXTURE_KEY_ASSIGN.WordWrap(_font, ClientSize.X);
+        _textSize = _instructions.Text.MeasureText(_font, true, wordWrapWidth: ClientSize.X);
 
         Clipper?.Refresh();
 
@@ -180,8 +177,8 @@ internal class DefaultAnimationViewer
     {
         if ((Clipper is not null) && (!Clipper.IsDragging))
         {
-            DX.RectangleF bounds = Renderer.MeasureSprite(Sprite);
-            var half = new Vector3(RenderRegion.Width * 0.5f, RenderRegion.Height * 0.5f, 0);
+            GorgonRectangleF bounds = Renderer.MeasureSprite(Sprite);
+            Vector3 half = new(RenderRegion.Width * 0.5f, RenderRegion.Height * 0.5f, 0);
             Vector3 upperLeft = new Vector3(bounds.Left, bounds.Top, 0) - half;
             Vector3 lowerRight = new Vector3(bounds.Right, bounds.Bottom, 0) - half;
 
@@ -193,7 +190,7 @@ internal class DefaultAnimationViewer
             bounds.Right = lowerRight.X;
             bounds.Bottom = lowerRight.Y;
 
-            if (bounds.Contains(args.ClientPosition))
+            if (bounds.Contains(args.ClientPosition.X, args.ClientPosition.Y))
             {
                 _allowMove = true;
             }
@@ -227,7 +224,7 @@ internal class DefaultAnimationViewer
     /// <summary>Function to handle a mouse up event.</summary>
     /// <param name="args">The arguments for the event.</param>
     /// <remarks>Developers can override this method to handle a mouse up event in their own content view.</remarks>
-    protected override void OnMouseUp(MouseArgs args) 
+    protected override void OnMouseUp(MouseArgs args)
     {
         if ((_allowMove) && (Clipper?.MouseUp(args) ?? false))
         {
@@ -257,7 +254,7 @@ internal class DefaultAnimationViewer
         _instructions.Position = new Vector2(0, 0);
 
         Renderer.Begin();
-        Renderer.DrawFilledRectangle(new DX.RectangleF(0, ClientSize.Height - _textSize.Height, ClientSize.Width, _textSize.Height), new GorgonColor(GorgonColor.Black, 0.65f));
+        Renderer.DrawFilledRectangle(new GorgonRectangleF(0, ClientSize.Y - _textSize.Y, ClientSize.X, _textSize.Y), new GorgonColor(GorgonColors.Black, 0.65f));
         Renderer.DrawTextSprite(_instructions);
         Renderer.End();
     }
@@ -275,7 +272,7 @@ internal class DefaultAnimationViewer
         }
 
         DataContext.UpdateAnimationPreviewCommand.Execute(null);
-    }        
+    }
 
     /// <summary>Function to set the default zoom/offset for the viewer.</summary>
     public override void DefaultZoom()
@@ -287,17 +284,4 @@ internal class DefaultAnimationViewer
 
         ZoomToSprite(Sprite);
     }
-    #endregion
-
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="DefaultAnimationViewer"/> class.</summary>
-    /// <param name="renderer">The main renderer for the content view.</param>
-    /// <param name="swapChain">The swap chain for the content view.</param>
-    /// <param name="dataContext">The view model to assign to the renderer.</param>        
-    /// <param name="clipper">The service used to clip rectangular areas of an image.</param>
-    public DefaultAnimationViewer(Gorgon2D renderer, GorgonSwapChain swapChain, IAnimationContent dataContext, IRectClipperService clipper)
-        : base(ViewerName, renderer, swapChain, dataContext, clipper, false)
-    {            
-    }        
-    #endregion
 }

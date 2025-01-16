@@ -1,6 +1,6 @@
 ﻿Text Viewer Content Example
 ---------------------------
 
-This is a plug in for the Gorgon Editor. To use it, just copy it into the Tools\Plugins\Content directory in the location that you installed Gorgon into.  
+This is a plug-in for the Gorgon Editor. To use it, just copy it into the Tools\Plugins\Content directory in the location that you installed Gorgon into.  
 
 For example: If you installed Gorgon to C:\Gorgon, then you would copy the DLL to C:\Gorgon\Tools\Plugins\Content directory.

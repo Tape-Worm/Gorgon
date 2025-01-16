@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,22 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Thursday, January 3, 2013 9:43:42 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
 using Gorgon.Core;
 using Gorgon.Input;
 using Gorgon.PlugIns;
@@ -35,59 +31,57 @@ using Gorgon.UI;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Entry point class.
+/// Entry point class
 /// </summary>
 /// <remarks>
-/// The first step in loading a gaming device driver is to create a plug in assembly cache and plug in service to load the driver. 
-/// After that, use the GorgonGamingDeviceDriverFactory object to load the driver plug in from the loaded assemblies. In this example 
+/// The first step in loading a gaming device driver is to create a plug-in assembly cache and plug-in service to load the driver. 
+/// After that, use the GorgonGamingDeviceDriverFactory object to load the driver plug-in from the loaded assemblies. In this example 
 /// we will load the both the XInput and Direct Input drivers and display the supported gaming devices for these drivers in the 
-/// console window. The example will load the DLLs for these drivers from the plug ins directory (which is configured in the app.config 
+/// console window. The example will load the DLLs for these drivers from the plug-ins directory (which is configured in the app.config 
 /// file). It is important to note that this is done for the example only, in most cases the developer will know the DLL and plugin 
 /// type and create it directly.  For example:
 /// 
-/// // Load the Xinput plugin DLL.
+/// // Load the Xinput plugin DLL
 /// GorgonGamingDeviceDriver xInputDriver;
 /// 
 /// using (var assemblyCache = new GorgonPlugInAssemblyCache())
 /// {
 ///		assemblyCache.Load("[directory for plugins]\Gorgon.Input.XInput.DLL"); 
 /// 
-///		// Create the plugin service.
+///		// Create the plugin service
 ///		var pluginService = new GorgonPlugInService(assemblyCache);
 ///
-///		// Create the factory for loading the drivers and load the driver.
+///		// Create the factory for loading the drivers and load the driver
 ///		var driverFactory = new GorgonGamingDeviceDriverFactory(inputServiceFactory);
 /// 
-///		// Finally, create the input service. Note the use of the fully qualified type name for the plugin name.
+///		// Finally, create the input service. Note the use of the fully qualified type name for the plugin name
 ///		xInputDriver = driverFactory.LoadDriver("Gorgon.Input.GorgonXInputDriver");
 /// }
 /// 
 /// While this is more complex than the previous version of Gorgon, it's also far more flexible when dealing with object composition 
-/// techniques like dependency injection.
+/// techniques like dependency injection
 /// </remarks>
 internal static class Program
 {
-    #region Variables.
+
     // The cache that will hold our plugin instances.
     private static GorgonMefPlugInCache _pluginCache;
-    #endregion
 
-    #region Methods.
     /// <summary>
-    /// Function to load in the gaming device driver plug ins.
+    /// Function to load in the gaming device driver plug-ins.
     /// </summary>
-    /// <returns>A list of gaming device driver plug ins.</returns>
+    /// <returns>A list of gaming device driver plug-ins.</returns>
     private static IReadOnlyList<IGorgonGamingDeviceDriver> GetGamingDeviceDrivers()
     {
         GorgonExample.PlugInLocationDirectory = new DirectoryInfo(ExampleConfig.Default.PlugInLocation);
 
-        // Create a plug in assembly cache for our input assemblies.
+        // Create a plug-in assembly cache for our input assemblies.
         _pluginCache = new GorgonMefPlugInCache(GorgonApplication.Log);
 
         // Create our input service factory.
-        var factory = new GorgonGamingDeviceDriverFactory(_pluginCache, GorgonApplication.Log);
+        GorgonGamingDeviceDriverFactory factory = new(_pluginCache, GorgonApplication.Log);
 
-        // Retrieve the list of driver plug ins from the input service factory.
+        // Retrieve the list of driver plug-ins from the input service factory.
         return factory.LoadAllDrivers(Path.Combine(GorgonExample.GetPlugInPath().FullName, "Gorgon.Input.*.dll"));
     }
 
@@ -106,7 +100,7 @@ internal static class Program
             Console.WriteLine("In this example we will perform the first step in accessing Gorgon's gaming");
             Console.WriteLine("device driver API. These drivers will allow access to any gaming device (e.g. a ");
             Console.WriteLine("joystick, game pad, etc...) that is supported by its underlying native provider.");
-            Console.WriteLine("These drivers are loaded as plug ins and can be used to mix and match various");
+            Console.WriteLine("These drivers are loaded as plug-ins and can be used to mix and match various");
             Console.WriteLine("types of gaming devices.");
             Console.WriteLine();
             Console.WriteLine("Only connected gaming device drivers will be reported by this example.");
@@ -124,13 +118,13 @@ internal static class Program
             if (inputPlugIns.Count == 0)
             {
                 Console.ResetColor();
-                Console.WriteLine("Could not find any gaming device driver plug ins.");
+                Console.WriteLine("Could not find any gaming device driver plug-ins.");
                 return;
             }
 
             // Display the plugin information.
             Console.WriteLine();
-            Console.WriteLine($"{inputPlugIns.Count} gaming device driver plug ins found:");
+            Console.WriteLine($"{inputPlugIns.Count} gaming device driver plug-ins found:");
             foreach (IGorgonGamingDeviceDriver plugIn in inputPlugIns)
             {
                 Console.ForegroundColor = ConsoleColor.Cyan;
@@ -162,7 +156,7 @@ internal static class Program
         }
         catch (Exception ex)
         {
-            ex.Catch(e =>
+            ex.Handle(e =>
                      {
                          Console.Clear();
                          Console.ForegroundColor = ConsoleColor.Red;
@@ -176,5 +170,4 @@ internal static class Program
             _pluginCache?.Dispose();
         }
     }
-    #endregion
 }

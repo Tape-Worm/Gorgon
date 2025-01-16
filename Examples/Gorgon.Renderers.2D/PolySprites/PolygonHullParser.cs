@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,20 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 10, 2018 9:35:21 PM
 // 
-#endregion
 
-using System;
 using System.Globalization;
 using System.Numerics;
 using Gorgon.Graphics;
@@ -33,7 +31,7 @@ using Gorgon.Renderers;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Provides functionality to parse a string containing polygon hull coordinates.
+/// Provides functionality to parse a string containing polygon hull coordinates
 /// </summary>
 public static class PolygonHullParser
 {
@@ -44,20 +42,18 @@ public static class PolygonHullParser
     /// <param name="builder">The polygonal sprite builder used to create the sprite.</param>
     private static void ParseString(string data, GorgonPolySpriteBuilder builder)
     {
-        string[] lines = data.Split(new[]
-                                    {
+        string[] lines = data.Split([
                                         "\n"
-                                    },
+                                    ],
                                     StringSplitOptions.RemoveEmptyEntries);
 
         for (int i = 0; i < lines.Length; ++i)
         {
             string line = lines[i].Replace("\r", string.Empty).Trim();
 
-            string[] components = line.Split(new[]
-                                             {
+            string[] components = line.Split([
                                                  ','
-                                             },
+                                             ],
                                              StringSplitOptions.None);
 
             // If this line lacks at least 4 components, then we cannot use it.
@@ -71,7 +67,7 @@ public static class PolygonHullParser
             float.TryParse(components[2], NumberStyles.Float, CultureInfo.InvariantCulture, out float u);
             float.TryParse(components[3], NumberStyles.Float, CultureInfo.InvariantCulture, out float v);
 
-            builder.AddVertex(new GorgonPolySpriteVertex(new Vector2(x, y), GorgonColor.White, new Vector2(u, v)));
+            builder.AddVertex(new GorgonPolySpriteVertex(new Vector2(x, y), GorgonColors.White, new Vector2(u, v)));
         }
     }
 
@@ -83,7 +79,7 @@ public static class PolygonHullParser
     /// <returns>The polygon sprite from the polygon hull data.</returns>
     public static GorgonPolySprite ParsePolygonHullString(Gorgon2D renderer, string polygonHull)
     {
-        var builder = new GorgonPolySpriteBuilder(renderer);
+        GorgonPolySpriteBuilder builder = new(renderer);
 
         ParseString(polygonHull, builder);
 

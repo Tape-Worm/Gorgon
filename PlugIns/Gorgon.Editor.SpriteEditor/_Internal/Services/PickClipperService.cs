@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,31 +11,27 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 24, 2019 10:22:58 AM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
 using System.Numerics;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor;
 
 /// <summary>
-/// Defines what data to use as a mask when determining clip boundaries.
+/// Defines what data to use as a mask when determining clip boundaries
 /// </summary>
 internal enum ClipMask
 {
@@ -50,11 +46,10 @@ internal enum ClipMask
 }
 
 /// <summary>
-/// A clipper that automatically defines the bounds of the sprite based on pixel data.
+/// A clipper that automatically defines the bounds of the sprite based on pixel data
 /// </summary>
 internal class PickClipperService
 {
-    #region Value Types.
     /// <summary>
     /// Stores a span of lines that form the boundaries of where to clip.
     /// </summary>
@@ -73,25 +68,21 @@ internal class PickClipperService
         /// </summary>
         public int Y;
     }
-    #endregion
 
-    #region Variables.
     // A list of pixels that have been checked by the clipper.
-    private bool[] _pixels = Array.Empty<bool>();
+    private bool[] _pixels = [];
     // The image data.
     private IGorgonImageBuffer _imageData;
     // The padding for the rectangle.
     private int _padding;
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to set or return the padding for the clipping rectangle.
     /// </summary>
     public int Padding
     {
-        get => _padding;            
-        set => _padding = value.Max(0).Min(16);                
+        get => _padding;
+        set => _padding = value.Max(0).Min(16);
     }
 
     /// <summary>
@@ -111,16 +102,14 @@ internal class PickClipperService
 
             if (value is null)
             {
-                _pixels = Array.Empty<bool>();
+                _pixels = [];
                 return;
             }
 
             _pixels = new bool[_imageData.Width * _imageData.Height];
         }
     }
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to determine if the pixel at the specified location is a value that falls within the mask.
     /// </summary>
@@ -128,9 +117,9 @@ internal class PickClipperService
     /// <param name="clipMask">Determines how to use the clip color when detecting rectangular boundaries.</param>
     /// <param name="clipColor">The color used to determine the boundaries of the rectangular region.</param>
     /// <returns><b>true</b> if the pixel is a masked value, or <b>false</b> if not.</returns>
-    private bool IsMaskValue(DX.Point position, ClipMask clipMask, GorgonColor clipColor)
+    private bool IsMaskValue(GorgonPoint position, ClipMask clipMask, GorgonColor clipColor)
     {
-        int color = clipMask == ClipMask.Alpha ? (int)(clipColor.Alpha * 255) : clipColor.ToABGR();
+        int color = clipMask == ClipMask.Alpha ? (int)(clipColor.Alpha * 255) : GorgonColor.ToABGR(clipColor);
 
         // The linear memory address.
         int location = (position.X * ImageData.FormatInformation.SizeInBytes) + (position.Y * ImageData.PitchInformation.RowPitch);
@@ -154,7 +143,7 @@ internal class PickClipperService
     /// <param name="clipMask">Determines how to use the clip color when detecting rectangular boundaries.</param>
     /// <param name="clipColor">The color used to determine the boundaries of the rectangular region.</param>
     /// <returns>A new span value.</returns>
-    private ClipSpan GetSpan(DX.Point position, ClipMask clipMask, GorgonColor clipColor)
+    private ClipSpan GetSpan(GorgonPoint position, ClipMask clipMask, GorgonColor clipColor)
     {
         int left = position.X;
         int right = position.X;
@@ -168,7 +157,7 @@ internal class PickClipperService
 
             index--;
 
-            if ((left < 0) || (IsMaskValue(new DX.Point(left, position.Y), clipMask, clipColor)) || (_pixels[index]))
+            if ((left < 0) || (IsMaskValue(new GorgonPoint(left, position.Y), clipMask, clipColor)) || (_pixels[index]))
             {
                 break;
             }
@@ -186,7 +175,7 @@ internal class PickClipperService
 
             index++;
 
-            if ((right >= ImageData.Width) || (IsMaskValue(new DX.Point(right, position.Y), clipMask, clipColor)) || (_pixels[index]))
+            if ((right >= ImageData.Width) || (IsMaskValue(new GorgonPoint(right, position.Y), clipMask, clipColor)) || (_pixels[index]))
             {
                 break;
             }
@@ -225,14 +214,14 @@ internal class PickClipperService
     /// If the position is not contained within this region, <b>null</b> will be returned signifying that no rectangular region could be found.
     /// </para>
     /// </remarks>
-    public DX.RectangleF? Pick(Vector2 imagePosition, GorgonColor maskColor, ClipMask clipMask = ClipMask.Alpha)
+    public GorgonRectangleF? Pick(Vector2 imagePosition, GorgonColor maskColor, ClipMask clipMask = ClipMask.Alpha)
     {
         if (ImageData is null)
         {
             return null;
         }
 
-        var imageBounds = new DX.RectangleF(0, 0, ImageData.Width, ImageData.Height);
+        GorgonRectangleF imageBounds = new(0, 0, ImageData.Width, ImageData.Height);
 
         // If we clicked outside of the image, then there's nothing to click.
         if (!imageBounds.Contains(imagePosition.X, imagePosition.Y))
@@ -240,7 +229,7 @@ internal class PickClipperService
             return null;
         }
 
-        var imagePoint = imagePosition.ToPoint();
+        GorgonPoint imagePoint = (GorgonPoint)imagePosition;
 
         // We clicked on an area that has the masking value under our cursor, so we can't build anything.
         // In this case, do not change the current rectangle.
@@ -249,8 +238,8 @@ internal class PickClipperService
             return null;
         }
 
-        var spanQueue = new Queue<ClipSpan>();
-        var clipRegion = new DX.RectangleF
+        Queue<ClipSpan> spanQueue = new();
+        GorgonRectangleF clipRegion = new()
         {
             Left = imagePoint.X,
             Top = imagePoint.Y,
@@ -259,10 +248,10 @@ internal class PickClipperService
         };
 
         Array.Clear(_pixels, 0, _pixels.Length);
-        ClipSpan span = GetSpan(new DX.Point((int)clipRegion.Left, (int)clipRegion.Top), clipMask, maskColor);
+        ClipSpan span = GetSpan(new GorgonPoint((int)clipRegion.Left, (int)clipRegion.Top), clipMask, maskColor);
 
         // If we have an empty span, then leave.
-        if (span.Start >= span.End)
+        if (((span.End - span.Start) + 1) <= 0)
         {
             return null;
         }
@@ -273,7 +262,7 @@ internal class PickClipperService
         {
             span = spanQueue.Dequeue();
 
-            var spanRegion = new DX.Rectangle
+            GorgonRectangle spanRegion = new()
             {
                 Left = span.Start,
                 Top = span.Y - 1,
@@ -285,17 +274,17 @@ internal class PickClipperService
             for (int x = spanRegion.Left; x <= spanRegion.Right; ++x)
             {
                 int pixelindex = ImageData.Width * spanRegion.Top + x;
-                var topSpan = new DX.Point(x, spanRegion.Top);
-                var bottomSpan = new DX.Point(x, spanRegion.Bottom);
+                GorgonPoint topSpan = new(x, spanRegion.Top);
+                GorgonPoint bottomSpan = new(x, spanRegion.Bottom);
                 ClipSpan vertSpan;
 
-                if ((span.Y > 0) && (!IsMaskValue(topSpan, clipMask, maskColor)) && (!_pixels[pixelindex]))
+                if ((span.Y >= 0) && (!IsMaskValue(topSpan, clipMask, maskColor)) && (!_pixels[pixelindex]))
                 {
                     vertSpan = GetSpan(topSpan, clipMask, maskColor);
 
-                    if (vertSpan.Start >= vertSpan.End)
+                    if (((vertSpan.End - vertSpan.Start) + 1) <= 0)
                     {
-                        continue;
+                        return null;
                     }
 
                     spanQueue.Enqueue(vertSpan);
@@ -310,22 +299,20 @@ internal class PickClipperService
 
                 vertSpan = GetSpan(bottomSpan, clipMask, maskColor);
 
-                if (vertSpan.Start >= vertSpan.End)
+                if (((vertSpan.End - vertSpan.Start) + 1) <= 0)
                 {
-                    continue;
+                    return null;
                 }
 
                 spanQueue.Enqueue(vertSpan);
             }
 
             // Update the boundaries.
-            clipRegion.Left = spanRegion.Left.Min((int)clipRegion.Left);
-            clipRegion.Right = (spanRegion.Right + 1).Max((int)clipRegion.Right);
-            clipRegion.Top = (spanRegion.Top + 1).Min((int)clipRegion.Top);
-            clipRegion.Bottom = spanRegion.Bottom.Max((int)clipRegion.Bottom);
+            clipRegion = GorgonRectangleF.FromLTRB(spanRegion.Left.Min((int)clipRegion.Left), (spanRegion.Top + 1).Min((int)clipRegion.Top),
+                                                   (spanRegion.Right + 1).Max((int)clipRegion.Right), spanRegion.Bottom.Max((int)clipRegion.Bottom));
         }
 
-        clipRegion.Inflate(Padding, Padding);
+        clipRegion = GorgonRectangleF.Expand(clipRegion, Padding);
 
         if (clipRegion.Left < 0)
         {
@@ -350,5 +337,4 @@ internal class PickClipperService
         // Ensure that we don't get a degenerate rectangle.
         return ((clipRegion.IsEmpty) || (clipRegion.Width < 0) || (clipRegion.Height < 0)) ? null : clipRegion;
     }
-    #endregion
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,29 +11,27 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: February 9, 2020 6:58:59 PM
 // 
-#endregion
 
 using System.Numerics;
 using Gorgon.Animation;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor;
 
 /// <summary>
-/// An animation controller for the sprite view texture.
+/// An animation controller for the sprite view texture
 /// </summary>
 internal class ImageAnimationController
     : GorgonAnimationController<ISpriteViewer>
@@ -68,7 +66,7 @@ internal class ImageAnimationController
     /// <param name="animObject">The object to update.</param>
     /// <param name="value">The value to apply.</param>
     protected override void OnVector2ValueUpdate(GorgonTrackRegistration track, ISpriteViewer animObject, Vector2 value)
-    {        
+    {
     }
 
     /// <summary>Function called when a 3D vector value needs to be updated on the animated object.</summary>
@@ -99,7 +97,7 @@ internal class ImageAnimationController
     /// <param name="track">The track currently being processed.</param>
     /// <param name="animObject">The object to update.</param>
     /// <param name="value">The value to apply.</param>
-    protected override void OnRectangleUpdate(GorgonTrackRegistration track, ISpriteViewer animObject, DX.RectangleF value)
+    protected override void OnRectangleUpdate(GorgonTrackRegistration track, ISpriteViewer animObject, GorgonRectangleF value)
     {
     }
 
@@ -109,7 +107,7 @@ internal class ImageAnimationController
     /// <param name="texture">The texture to switch to.</param>
     /// <param name="textureCoordinates">The new texture coordinates to apply.</param>
     /// <param name="textureArrayIndex">The texture array index.</param>
-    protected override void OnTexture2DUpdate(GorgonTrackRegistration track, ISpriteViewer animObject, GorgonTexture2DView texture, DX.RectangleF textureCoordinates, int textureArrayIndex)
+    protected override void OnTexture2DUpdate(GorgonTrackRegistration track, ISpriteViewer animObject, GorgonTexture2DView texture, GorgonRectangleF textureCoordinates, int textureArrayIndex)
     {
     }
 

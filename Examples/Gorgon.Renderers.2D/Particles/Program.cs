@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,41 +11,34 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 16, 2020 11:22:55 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Numerics;
-using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Renderers;
 using Gorgon.UI;
-using DX = SharpDX;
 
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Our example entry point.
+/// Our example entry point
 /// </summary>
 static class Program
 {
-    #region Variables.
+
     // The core graphics functionality.
     private static GorgonGraphics _graphics;
     // Our swap chain that represents our "Screen".
@@ -68,9 +61,7 @@ static class Program
     private static bool _showHelp = true;
     // Particles emit an explosion effect.
     private static bool _explosion = true;
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to update the emitter to change the particle effect.
     /// </summary>
@@ -96,7 +87,7 @@ static class Program
         _emitter.RadialAccelerationRange = (-1, 1);
         _emitter.Reset();
     }
-    
+
     /// <summary>
     /// Function to build the render target for blooming.
     /// </summary>
@@ -122,7 +113,7 @@ static class Program
     {
         _emitter.Update();
 
-        _rtv.Clear(GorgonColor.Black);
+        _rtv.Clear(GorgonColors.Black);
 
         // Draw our particles into the render target.
         _graphics.SetRenderTarget(_rtv);
@@ -140,14 +131,14 @@ static class Program
             _graphics.SetRenderTarget(_screen.RenderTargetView);
 
             _renderer.Begin(Gorgon2DBatchState.NoBlend);
-            _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _srv.Width, _srv.Height), GorgonColor.White, _srv, new DX.RectangleF(0, 0, 1, 1));
+            _renderer.DrawFilledRectangle(new GorgonRectangleF(0, 0, _srv.Width, _srv.Height), GorgonColors.White, _srv, new GorgonRectangleF(0, 0, 1, 1));
             _renderer.End();
         }
 
         if (_showHelp)
         {
             _renderer.Begin();
-            _renderer.DrawString("Example help:\nF1 - Show/hide help.\nF2 - Change emitter type.\nSpace - Pause/unpause.\nLeft Mouse Button - Restart emitter at mouse cursor.\nRight Mouse Button (while moving cursor) - Drag emitter.\nMiddle Mouse Button - Enable/Disable bloom effect.", new Vector2(0, 72), color: GorgonColor.YellowPure);
+            _renderer.DrawString("Example help:\nF1 - Show/hide help.\nF2 - Change emitter type.\nSpace - Pause/unpause.\nLeft Mouse Button - Restart emitter at mouse cursor.\nRight Mouse Button (while moving cursor) - Drag emitter.\nMiddle Mouse Button - Enable/Disable bloom effect.", new Vector2(0, 72), color: GorgonColors.Yellow);
             _renderer.End();
         }
 
@@ -167,7 +158,7 @@ static class Program
         GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
 
         // Create the window, and size it to our resolution.
-        FormMain window = GorgonExample.Initialize(new DX.Size2(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height), "Particles");
+        FormMain window = GorgonExample.Initialize(new GorgonPoint(ExampleConfig.Default.Resolution.X, ExampleConfig.Default.Resolution.Y), "Particles");
 
         try
         {
@@ -184,8 +175,8 @@ static class Program
 
             _screen = new GorgonSwapChain(_graphics,
                                           window,
-                                          new GorgonSwapChainInfo(ExampleConfig.Default.Resolution.Width,
-                                                                       ExampleConfig.Default.Resolution.Height,
+                                          new GorgonSwapChainInfo(ExampleConfig.Default.Resolution.X,
+                                                                       ExampleConfig.Default.Resolution.Y,
                                                                        BufferFormat.R8G8B8A8_UNorm)
                                           {
                                               Name = "Gorgon2D Sprites Example Swap Chain"
@@ -212,10 +203,10 @@ static class Program
             // This is the sprite we'll use for each particle.
             _particleSprite = new GorgonSprite
             {
-                Bounds = new DX.RectangleF(0, 0, _circleTexture.Width, _circleTexture.Height),
+                Bounds = new GorgonRectangleF(0, 0, _circleTexture.Width, _circleTexture.Height),
                 Texture = _circleTexture,
                 // Calculate the ship texture coordinates.
-                TextureRegion = new DX.RectangleF(0, 0, 1, 1),
+                TextureRegion = new GorgonRectangleF(0, 0, 1, 1),
                 Anchor = new Vector2(0.5f, 0.5f)
             };
 
@@ -227,11 +218,11 @@ static class Program
             _bloom = new Gorgon2DBloomEffect(_renderer)
             {
                 BloomIntensity = 3.125f,
-                BlurAmount = 4.0f,                    
+                BlurAmount = 4.0f,
                 ColorIntensity = 2.0f,
                 Threshold = 1.02f,
             };
-              
+
             _bloom.Precache();
 
             GorgonExample.LoadResources(_graphics);
@@ -323,13 +314,11 @@ static class Program
     {
         try
         {
-#if NET6_0_OR_GREATER
             Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
-#endif
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            GorgonApplication.Run(Initialize(), Idle);                
+            GorgonApplication.Run(Initialize(), Idle);
         }
         catch (Exception ex)
         {
@@ -347,5 +336,4 @@ static class Program
             _graphics?.Dispose();
         }
     }
-    #endregion
 }

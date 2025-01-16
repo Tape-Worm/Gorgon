@@ -34,7 +34,7 @@ partial class FormImagePicker
         base.Dispose(disposing);
     }
 
-    #region Windows Form Designer generated code
+
 
     /// <summary>
     /// Required method for Designer support - do not modify
@@ -985,7 +985,7 @@ partial class FormImagePicker
         this.Controls.Add(this.TableResize);
         this.Controls.Add(this.TablePickSourceImage);
         this.Controls.Add(this.PanelDialogButtons);
-        this.Font = new System.Drawing.Font("Segoe UI", 9F);
+        
         this.ForeColor = System.Drawing.Color.White;
         this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
         this.KeyPreview = true;
@@ -1019,7 +1019,7 @@ partial class FormImagePicker
 
     }
 
-    #endregion
+
 
     private System.Windows.Forms.Panel PanelDialogButtons;
     private System.Windows.Forms.Button ButtonOK;

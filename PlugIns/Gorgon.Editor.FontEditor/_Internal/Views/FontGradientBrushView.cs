@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2014 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,47 +11,36 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Sunday, March 2, 2014 8:52:44 PM
 // 
-#endregion
 
-using System;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
-using System.Linq;
-using System.Threading;
-using System.Windows.Forms;
-using Gorgon.Core;
 using Gorgon.Editor.FontEditor.Properties;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Controls;
 using Gorgon.Graphics;
-using Gorgon.Graphics.Fonts;
-using Gorgon.Math;
-using Gorgon.Memory;
-using Gorgon.UI;
 
 namespace Gorgon.Editor.FontEditor;
 
 /// <summary>
-/// A panel that will allow for editing of a linear gradient brush.
+/// A panel that will allow for editing of a linear gradient brush
 /// </summary>
-internal partial class FontGradientBrushView 
+internal partial class FontGradientBrushView
     : EditorSubPanelCommon, IDataContext<IFontGradientBrush>
 {
-    #region Variables.
+
     // Flag to indicate that the node is being dragged.
     private bool _nodeDrag;
     // Node dragging cursor offset.
@@ -68,18 +57,14 @@ internal partial class FontGradientBrushView
     private int _eventLock;
     // Points for drawing a triangle.
     private readonly PointF[] _trianglePoints = new PointF[3];
-    #endregion
 
-    #region Properties.
     /// <summary>Property to return the data context assigned to this view.</summary>
-    public IFontGradientBrush DataContext
+    public IFontGradientBrush ViewModel
     {
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
     /// <summary>Handles the PropertyChanged event of the DataContext control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="PropertyChangedEventArgs" /> instance containing the event data.</param>
@@ -90,23 +75,23 @@ internal partial class FontGradientBrushView
         switch (e.PropertyName)
         {
             case nameof(IFontGradientBrush.UseGamma):
-                CheckUseGamma.Checked = DataContext.UseGamma;
+                CheckUseGamma.Checked = ViewModel.UseGamma;
                 break;
             case nameof(IFontGradientBrush.ScaleAngle):
-                CheckScaleAngle.Checked = DataContext.ScaleAngle;
+                CheckScaleAngle.Checked = ViewModel.ScaleAngle;
                 break;
             case nameof(IFontGradientBrush.Angle):
-                NumericAngle.Value = (decimal)DataContext.Angle;
+                NumericAngle.Value = (decimal)ViewModel.Angle;
                 break;
             case nameof(IFontGradientBrush.SelectedNode):
-                if (DataContext.SelectedNode is not null)
+                if (ViewModel.SelectedNode is not null)
                 {
-                    PickerNodeColor.SelectedColor = PickerNodeColor.OriginalColor = DataContext.SelectedNode.Color;
-                    NumericSelectedWeight.Value = (decimal)DataContext.SelectedNode.Weight;
+                    PickerNodeColor.SelectedColor = PickerNodeColor.OriginalColor = ViewModel.SelectedNode.Color;
+                    NumericSelectedWeight.Value = (decimal)ViewModel.SelectedNode.Weight;
                 }
                 else
                 {
-                    PickerNodeColor.SelectedColor = PickerNodeColor.OriginalColor = GorgonColor.BlackTransparent;
+                    PickerNodeColor.SelectedColor = PickerNodeColor.OriginalColor = GorgonColors.BlackTransparent;
                     NumericSelectedWeight.Value = 0M;
                 }
                 break;
@@ -116,7 +101,7 @@ internal partial class FontGradientBrushView
         DrawGradientDisplay();
         DrawControls();
         ValidateControls();
-        HookEvents();            
+        HookEvents();
     }
 
     /// <summary>Handles the ColorChanged event of the PickerNodeColor control.</summary>
@@ -124,12 +109,12 @@ internal partial class FontGradientBrushView
     /// <param name="e">The <see cref="ColorChangedEventArgs" /> instance containing the event data.</param>
     private void PickerNodeColor_ColorChanged(object sender, ColorChangedEventArgs e)
     {
-        if ((DataContext?.SetColorCommand is null) || (!DataContext.SetColorCommand.CanExecute(e.Color)))
+        if ((ViewModel?.SetColorCommand is null) || (!ViewModel.SetColorCommand.CanExecute(e.Color)))
         {
             return;
         }
 
-        DataContext.SetColorCommand.Execute(e.Color);
+        ViewModel.SetColorCommand.Execute(e.Color);
 
         DrawGradientDisplay();
         DrawControls();
@@ -144,12 +129,12 @@ internal partial class FontGradientBrushView
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonClearNodes_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.ClearNodesCommand is null) || (!DataContext.ClearNodesCommand.CanExecute(null)))
+        if ((ViewModel?.ClearNodesCommand is null) || (!ViewModel.ClearNodesCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.ClearNodesCommand.Execute(null);
+        ViewModel.ClearNodesCommand.Execute(null);
 
         DrawGradientDisplay();
         DrawControls();
@@ -162,7 +147,7 @@ internal partial class FontGradientBrushView
     /// </summary>
     private void ValidateControls()
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             TableControls.Enabled = false;
             return;
@@ -172,15 +157,14 @@ internal partial class FontGradientBrushView
             TableControls.Enabled = true;
         }
 
-        ItemRemoveNode.Enabled = ButtonRemoveNode.Enabled = DataContext.DeleteNodeCommand?.CanExecute(null) ?? false;
-        NumericSelectedWeight.Enabled = DataContext.SetWeightCommand?.CanExecute((float)NumericSelectedWeight.Value) ?? false;
-        ItemDuplicateNode.Enabled = ButtonDuplicateNode.Enabled = DataContext.DuplicateNodeCommand?.CanExecute(null) ?? false;
-        ButtonClearNodes.Enabled = DataContext.ClearNodesCommand?.CanExecute(null) ?? false;
-        LabelNodeColor.Visible = PickerNodeColor.Visible = DataContext.SetColorCommand?.CanExecute(PickerNodeColor.SelectedColor) ?? false;
+        ItemRemoveNode.Enabled = ButtonRemoveNode.Enabled = ViewModel.DeleteNodeCommand?.CanExecute(null) ?? false;
+        NumericSelectedWeight.Enabled = ViewModel.SetWeightCommand?.CanExecute((float)NumericSelectedWeight.Value) ?? false;
+        ItemDuplicateNode.Enabled = ButtonDuplicateNode.Enabled = ViewModel.DuplicateNodeCommand?.CanExecute(null) ?? false;
+        ButtonClearNodes.Enabled = ViewModel.ClearNodesCommand?.CanExecute(null) ?? false;
+        LabelNodeColor.Visible = PickerNodeColor.Visible = ViewModel.SetColorCommand?.CanExecute(PickerNodeColor.SelectedColor) ?? false;
 
         ValidateOk();
     }
-
 
     /// <summary>
     /// Function to draw the weight node.
@@ -191,7 +175,7 @@ internal partial class FontGradientBrushView
     /// <param name="isInteractive">TRUE to draw as an interactive node, FALSE to draw as a static node.</param>
     private void DrawHandle(WeightHandle handle, System.Drawing.Graphics g, Rectangle region, bool isInteractive)
     {
-        Debug.Assert(DataContext is not null, "No data context. Should have one here");
+        Debug.Assert(ViewModel is not null, "No data context. Should have one here");
 
         float horizontalPosition = (region.Width - 1) * handle.Weight;
 
@@ -211,9 +195,9 @@ internal partial class FontGradientBrushView
             }
         }
 
-        Color outlineColor = DataContext.SelectedNode == handle ? Color.Blue : Color.Black;
+        Color outlineColor = ViewModel.SelectedNode == handle ? Color.Blue : Color.Black;
 
-        using var pen = new Pen(outlineColor);
+        using Pen pen = new(outlineColor);
         if (isInteractive)
         {
             g.DrawPolygon(pen, _trianglePoints);
@@ -235,21 +219,21 @@ internal partial class FontGradientBrushView
     /// <param name="panelGraphics">Graphics interface for the panel.</param>
     private void DrawControls(System.Drawing.Graphics panelGraphics = null)
     {
-        if ((_controlPanelImage is null) || (DataContext is null) || (DataContext.Nodes.Count == 0))
+        if ((_controlPanelImage is null) || (ViewModel is null) || (ViewModel.Nodes.Count == 0))
         {
             return;
         }
-        
-        using (var g = System.Drawing.Graphics.FromImage(_controlPanelImage))
+
+        using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(_controlPanelImage))
         {
             g.Clear(PanelGradControls.BackColor);
 
-            DrawHandle(DataContext.Nodes[0], g, new Rectangle(0, 0, _controlPanelImage.Width, _controlPanelImage.Height), false);
-            DrawHandle(DataContext.Nodes[^1], g, new Rectangle(0, 0, _controlPanelImage.Width, _controlPanelImage.Height), false);
+            DrawHandle(ViewModel.Nodes[0], g, new Rectangle(0, 0, _controlPanelImage.Width, _controlPanelImage.Height), false);
+            DrawHandle(ViewModel.Nodes[^1], g, new Rectangle(0, 0, _controlPanelImage.Width, _controlPanelImage.Height), false);
 
-            for (int i = 1; i < DataContext.Nodes.Count - 1; ++i)
+            for (int i = 1; i < ViewModel.Nodes.Count - 1; ++i)
             {
-                DrawHandle(DataContext.Nodes[i], g, new Rectangle(0, 0, _controlPanelImage.Width, _controlPanelImage.Height), true);
+                DrawHandle(ViewModel.Nodes[i], g, new Rectangle(0, 0, _controlPanelImage.Width, _controlPanelImage.Height), true);
             }
         }
 
@@ -261,7 +245,7 @@ internal partial class FontGradientBrushView
             {
                 graphicsSurface = PanelGradControls.CreateGraphics();
             }
-            
+
             graphicsSurface.DrawImage(_controlPanelImage, new Point(0, 0));
         }
         finally
@@ -270,7 +254,7 @@ internal partial class FontGradientBrushView
             {
                 graphicsSurface.Dispose();
             }
-        }            
+        }
     }
 
     /// <summary>
@@ -279,14 +263,14 @@ internal partial class FontGradientBrushView
     /// <param name="panelGraphics">Graphics interface for the panel.</param>
     private void DrawGradientDisplay(System.Drawing.Graphics panelGraphics = null)
     {
-        if ((_gradDisplayImage is null) || (DataContext is null))
+        if ((_gradDisplayImage is null) || (ViewModel is null))
         {
             return;
         }
 
-        var region = new Rectangle(0, 0, _gradDisplayImage.Width, _gradDisplayImage.Height);
+        Rectangle region = new(0, 0, _gradDisplayImage.Width, _gradDisplayImage.Height);
 
-        using (var gradLayer = System.Drawing.Graphics.FromImage(_gradientImage))
+        using (System.Drawing.Graphics gradLayer = System.Drawing.Graphics.FromImage(_gradientImage))
         {
             using Brush brush = UpdateBrush(PanelGradientDisplay.ClientRectangle, false);
 
@@ -303,8 +287,8 @@ internal partial class FontGradientBrushView
                 gradLayer.FillRectangle(brush, region);
             }
         }
-        
-        using (var g = System.Drawing.Graphics.FromImage(_gradDisplayImage))
+
+        using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(_gradDisplayImage))
         {
             g.InterpolationMode = InterpolationMode.High;
             g.CompositingMode = CompositingMode.SourceOver;
@@ -342,14 +326,14 @@ internal partial class FontGradientBrushView
     /// <param name="panelGraphics">Graphics interface for the panel.</param>
     private void DrawPreview(System.Drawing.Graphics panelGraphics = null)
     {
-        if ((_gradPreviewImage is null) || (DataContext is null))
+        if ((_gradPreviewImage is null) || (ViewModel is null))
         {
             return;
         }
 
         Rectangle region = new(0, 0, _gradPreviewImage.Width, _gradPreviewImage.Height);
 
-        using (var g = System.Drawing.Graphics.FromImage(_gradPreviewImage))
+        using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(_gradPreviewImage))
         {
             using Brush backBrush = new TextureBrush(Resources.Transparency_Pattern, WrapMode.Tile);
             using Brush brush = UpdateBrush(PanelPreview.ClientRectangle, true);
@@ -392,12 +376,12 @@ internal partial class FontGradientBrushView
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void NumericSelectedWeight_ValueChanged(object sender, EventArgs e)
     {
-        if ((_nodeDrag) || (DataContext?.SetWeightCommand is null) || (!DataContext.SetWeightCommand.CanExecute((float)NumericSelectedWeight.Value)))
+        if ((_nodeDrag) || (ViewModel?.SetWeightCommand is null) || (!ViewModel.SetWeightCommand.CanExecute((float)NumericSelectedWeight.Value)))
         {
             return;
         }
 
-        DataContext.SetWeightCommand.Execute((float)NumericSelectedWeight.Value);
+        ViewModel.SetWeightCommand.Execute((float)NumericSelectedWeight.Value);
 
         DrawGradientDisplay();
         DrawControls();
@@ -412,13 +396,13 @@ internal partial class FontGradientBrushView
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void CheckUseGamma_CheckedChanged(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.UseGamma = CheckUseGamma.Checked;
-        
+        ViewModel.UseGamma = CheckUseGamma.Checked;
+
         DrawGradientDisplay();
         DrawPreview();
         ValidateControls();
@@ -431,14 +415,14 @@ internal partial class FontGradientBrushView
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void CheckScaleAngle_Click(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.ScaleAngle = CheckScaleAngle.Checked;
-        
-        DrawPreview();            
+        ViewModel.ScaleAngle = CheckScaleAngle.Checked;
+
+        DrawPreview();
         ValidateControls();
     }
 
@@ -449,13 +433,13 @@ internal partial class FontGradientBrushView
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void NumericAngle_ValueChanged(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.Angle = (float)NumericAngle.Value;
-        DrawPreview();            
+        ViewModel.Angle = (float)NumericAngle.Value;
+        DrawPreview();
     }
 
     /// <summary>
@@ -465,18 +449,18 @@ internal partial class FontGradientBrushView
     /// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
     private void PanelGradientDisplay_MouseDoubleClick(object sender, MouseEventArgs e)
     {
-        if ((DataContext is null) || (_gradDisplayImage is null))
+        if ((ViewModel is null) || (_gradDisplayImage is null))
         {
             return;
         }
 
         float weight = (float)e.X / (PanelGradientDisplay.ClientSize.Width - 1);
         // Get the color of the pixel at the selected point.
-        GorgonColor color = _gradientImage.GetPixel(e.X, PanelGradientDisplay.ClientSize.Height / 2);
+        GorgonColor color = GorgonColor.FromColor(_gradientImage.GetPixel(e.X, PanelGradientDisplay.ClientSize.Height / 2));
 
-        if ((DataContext.AddNodeCommand is not null) && (DataContext.AddNodeCommand.CanExecute((weight, color))))
+        if ((ViewModel.AddNodeCommand is not null) && (ViewModel.AddNodeCommand.CanExecute((weight, color))))
         {
-            DataContext.AddNodeCommand.Execute((weight, color));
+            ViewModel.AddNodeCommand.Execute((weight, color));
         }
 
         DrawControls();
@@ -492,12 +476,12 @@ internal partial class FontGradientBrushView
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ItemDuplicateNode_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.DuplicateNodeCommand is null) || (!DataContext.DuplicateNodeCommand.CanExecute(null)))
+        if ((ViewModel?.DuplicateNodeCommand is null) || (!ViewModel.DuplicateNodeCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.DuplicateNodeCommand.Execute(null);
+        ViewModel.DuplicateNodeCommand.Execute(null);
 
         DrawControls();
         DrawGradientDisplay();
@@ -533,12 +517,12 @@ internal partial class FontGradientBrushView
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ItemRemoveNode_Click(object sender, EventArgs e)
     {
-        if ((DataContext?.DeleteNodeCommand is null) || (!DataContext.DeleteNodeCommand.CanExecute(null)))
+        if ((ViewModel?.DeleteNodeCommand is null) || (!ViewModel.DeleteNodeCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.DeleteNodeCommand.Execute(null);
+        ViewModel.DeleteNodeCommand.Execute(null);
         DrawControls();
         DrawGradientDisplay();
         DrawPreview();
@@ -552,7 +536,7 @@ internal partial class FontGradientBrushView
     /// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
     private void PanelGradControls_MouseDown(object sender, MouseEventArgs e)
     {
-        if ((_nodeDrag) || (DataContext is null))
+        if ((_nodeDrag) || (ViewModel is null))
         {
             return;
         }
@@ -562,34 +546,34 @@ internal partial class FontGradientBrushView
         {
             float horizontalPosition = (region.Width - 1) * node.Weight;
 
-            var hitBox = new RectangleF(horizontalPosition - 8, 0, 16, region.Height);
+            RectangleF hitBox = new(horizontalPosition - 8, 0, 16, region.Height);
 
             return hitBox.Contains(mouseCursor);
         }
 
         // Select nodes that are not the static nodes first.
-        WeightHandle selectedNode = DataContext.Nodes.FirstOrDefault(item => HitTest(item, e.Location, PanelGradControls.ClientRectangle) && (item.Index > 0) && (item.Index < DataContext.Nodes.Count - 1));
+        WeightHandle selectedNode = ViewModel.Nodes.FirstOrDefault(item => HitTest(item, e.Location, PanelGradControls.ClientRectangle) && (item.Index > 0) && (item.Index < ViewModel.Nodes.Count - 1));
 
         // If we didn't select a node that can be dragged, then check the first/last nodes for a hit.
         if (selectedNode is null)
         {
-            selectedNode = HitTest(DataContext.Nodes[0], e.Location, PanelGradControls.ClientRectangle) ? DataContext.Nodes[0] : null;
+            selectedNode = HitTest(ViewModel.Nodes[0], e.Location, PanelGradControls.ClientRectangle) ? ViewModel.Nodes[0] : null;
 
-            selectedNode ??= HitTest(DataContext.Nodes[^1], e.Location, PanelGradControls.ClientRectangle) ? DataContext.Nodes[^1] : null;
+            selectedNode ??= HitTest(ViewModel.Nodes[^1], e.Location, PanelGradControls.ClientRectangle) ? ViewModel.Nodes[^1] : null;
         }
 
         switch (e.Button)
         {
             case MouseButtons.Left:
-                if ((DataContext.SelectNodeCommand is not null) && (DataContext.SelectNodeCommand.CanExecute(selectedNode)))
+                if ((ViewModel.SelectNodeCommand is not null) && (ViewModel.SelectNodeCommand.CanExecute(selectedNode)))
                 {
-                    DataContext.SelectNodeCommand.Execute(selectedNode);
+                    ViewModel.SelectNodeCommand.Execute(selectedNode);
                 }
 
-                if (DataContext.SelectedNode is not null)
+                if (ViewModel.SelectedNode is not null)
                 {
-                    _nodeDragOffset = (int)((PanelGradControls.Width - 1) * DataContext.SelectedNode.Weight) - e.Location.X;
-                    _nodeDrag = ((DataContext.SelectedNode.Index > 0) && (DataContext.SelectedNode.Index < DataContext.Nodes.Count - 1));
+                    _nodeDragOffset = (int)((PanelGradControls.Width - 1) * ViewModel.SelectedNode.Weight) - e.Location.X;
+                    _nodeDrag = ((ViewModel.SelectedNode.Index > 0) && (ViewModel.SelectedNode.Index < ViewModel.Nodes.Count - 1));
                 }
                 else
                 {
@@ -614,7 +598,7 @@ internal partial class FontGradientBrushView
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ItemAddNode_Click(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
@@ -627,9 +611,9 @@ internal partial class FontGradientBrushView
         }
 
         // Adjust position to be near the selected node if a node is selected.
-        if ((DataContext.SelectedNode is not null) && (_controlPanelImage is not null))
+        if ((ViewModel.SelectedNode is not null) && (_controlPanelImage is not null))
         {
-            weightPosition = DataContext.SelectedNode.Weight * _controlPanelImage.Width;
+            weightPosition = ViewModel.SelectedNode.Weight * _controlPanelImage.Width;
 
             if (weightPosition < _controlPanelImage.Width - 16)
             {
@@ -668,9 +652,9 @@ internal partial class FontGradientBrushView
             newWeight = 1.0f;
         }
 
-        if ((DataContext?.SetWeightCommand is not null) && (DataContext.SetWeightCommand.CanExecute(newWeight)))
+        if ((ViewModel?.SetWeightCommand is not null) && (ViewModel.SetWeightCommand.CanExecute(newWeight)))
         {
-            DataContext.SetWeightCommand.Execute(newWeight);
+            ViewModel.SetWeightCommand.Execute(newWeight);
         }
 
         DrawControls();
@@ -708,27 +692,27 @@ internal partial class FontGradientBrushView
     /// <param name="rotate">TRUE to rotate the gradient, FALSE to keep it oriented as is.</param>
     private Brush UpdateBrush(RectangleF destRect, bool rotate)
     {
-        if ((DataContext is null) || (DataContext.Nodes.Count == 0))
+        if ((ViewModel is null) || (ViewModel.Nodes.Count == 0))
         {
             return null;
         }
 
-        var linearBrush = new LinearGradientBrush(destRect,
-                                                  DataContext.Nodes[0].Color,
-                                                  DataContext.Nodes[^1].Color,
-                                                  rotate ? DataContext.Angle : 0,
-                                                  DataContext.ScaleAngle)
+        LinearGradientBrush linearBrush = new(destRect,
+                                                  GorgonColor.ToColor(ViewModel.Nodes[0].Color),
+                                                  GorgonColor.ToColor(ViewModel.Nodes[^1].Color),
+                                                  rotate ? ViewModel.Angle : 0,
+                                                  ViewModel.ScaleAngle)
         {
-            GammaCorrection = DataContext.UseGamma,
+            GammaCorrection = ViewModel.UseGamma,
             WrapMode = WrapMode.Tile
         };
 
-        var interpColors = new ColorBlend(DataContext.Nodes.Count);
+        ColorBlend interpColors = new(ViewModel.Nodes.Count);
 
         int counter = 0;
-        foreach(WeightHandle handle in DataContext.Nodes)
+        foreach (WeightHandle handle in ViewModel.Nodes)
         {
-            interpColors.Colors[counter] = handle.Color;
+            interpColors.Colors[counter] = GorgonColor.ToColor(handle.Color);
             interpColors.Positions[counter] = handle.Weight;
             ++counter;
         }
@@ -779,12 +763,12 @@ internal partial class FontGradientBrushView
     {
         UnhookEvents();
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged -= DataContext_PropertyChanged;
+        ViewModel.PropertyChanged -= DataContext_PropertyChanged;
     }
 
     /// <summary>
@@ -792,10 +776,10 @@ internal partial class FontGradientBrushView
     /// </summary>
     private void ResetDataContext()
     {
-        CheckUseGamma.Checked = 
+        CheckUseGamma.Checked =
         CheckScaleAngle.Checked = false;
         NumericSelectedWeight.Value =
-        NumericAngle.Value = 0M;            
+        NumericAngle.Value = 0M;
     }
 
     /// <summary>
@@ -821,9 +805,9 @@ internal partial class FontGradientBrushView
     ///   <b>true</b> if the OK button is valid, <b>false</b> if not.</returns>
     protected override bool OnValidateOk()
     {
-        if (DataContext?.OkCommand is not null)
+        if (ViewModel?.OkCommand is not null)
         {
-            return DataContext.OkCommand.CanExecute(null);
+            return ViewModel.OkCommand.CanExecute(null);
         }
 
         return base.OnValidateOk();
@@ -832,9 +816,9 @@ internal partial class FontGradientBrushView
     /// <summary>Function to cancel the change.</summary>
     protected override void OnCancel()
     {
-        if (DataContext is not null)
+        if (ViewModel is not null)
         {
-            DataContext.IsActive = false;
+            ViewModel.IsActive = false;
         }
     }
 
@@ -843,12 +827,12 @@ internal partial class FontGradientBrushView
     {
         base.OnSubmit();
 
-        if ((DataContext?.OkCommand is null) || (!DataContext.OkCommand.CanExecute(null)))
+        if ((ViewModel?.OkCommand is null) || (!ViewModel.OkCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.OkCommand.Execute(null);
+        ViewModel.OkCommand.Execute(null);
     }
 
     /// <summary>
@@ -858,7 +842,6 @@ internal partial class FontGradientBrushView
     protected override void OnLoad(EventArgs e)
     {
         base.OnLoad(e);
-
 
         _controlPanelImage = new Bitmap(PanelGradControls.ClientSize.Width,
                                         PanelGradControls.ClientSize.Height,
@@ -889,26 +872,24 @@ internal partial class FontGradientBrushView
 
         InitializeDataContext(dataContext);
 
-        DataContext = dataContext;
+        ViewModel = dataContext;
 
         DrawGradientDisplay();
         DrawControls();
         DrawPreview();
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.PropertyChanged += DataContext_PropertyChanged;
+        ViewModel.PropertyChanged += DataContext_PropertyChanged;
         HookEvents();
     }
-    #endregion
 
-    #region Constructor/Destructor.
     /// <summary>
     /// Initializes a new instance of the <see cref="FontGradientBrushView"/> class.
     /// </summary>
     public FontGradientBrushView() => InitializeComponent();
-    #endregion
+
 }

@@ -20,13 +20,13 @@ partial class AnimationSettingsPanel
 
         if (disposing)
         {
-            DataContext?.Unload();
+            ViewModel?.Unload();
         }
 
         base.Dispose(disposing);
     }
 
-    #region Component Designer generated code
+
 
     /// <summary> 
     /// Required method for Designer support - do not modify 
@@ -288,7 +288,7 @@ partial class AnimationSettingsPanel
 
     }
 
-    #endregion
+
     private System.Windows.Forms.CheckBox CheckAnimatePrimaryBg;
     private System.Windows.Forms.CheckBox CheckOnionSkin;
     private System.Windows.Forms.Panel panel1;

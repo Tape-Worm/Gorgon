@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,57 +11,48 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 9, 2019 5:34:12 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Numerics;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using Gorgon.Animation;
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.IO;
-using Gorgon.IO.Providers;
+using Gorgon.IO.FileSystem;
+using Gorgon.IO.FileSystem.Providers;
 using Gorgon.PlugIns;
 using Gorgon.Renderers;
 using Gorgon.Timing;
 using Gorgon.UI;
-using DX = SharpDX;
 
 namespace Gorgon.Examples;
 
 /// <summary>
-/// This is an updated version of the "DeepAsAPuddle" example from Gorgon v1.x.
+/// This is an updated version of the "DeepAsAPuddle" example from Gorgon v1.x
 /// 
 /// This example shows how to use the depth buffer in conjunction with 2D graphics to provide the illusion of a scene with 
-/// depth by having a character walk behind an obstacle (similar to old Sierra/Lucasarts adventure games).
+/// depth by having a character walk behind an obstacle (similar to old Sierra/Lucasarts adventure games)
 /// 
 /// By using a depth buffer, the order in which we draw our sprites no longer matters because the Depth property is used to 
 /// determine how far "in" a sprite is within the scene. For example, 2 sprites, A and B, where A has a depth of 0.2 and B 
-/// has a depth of 0.1 will always have B render before A (depending on depth stencil state).
+/// has a depth of 0.1 will always have B render before A (depending on depth stencil state)
 /// 
 /// Be aware there are limitations with this trick. If you render a sprite with translucency with a lower depth value before 
-/// a sprite with a high depth value, the pixels will overwrite what's behind it.
+/// a sprite with a high depth value, the pixels will overwrite what's behind it
 /// </summary>
 static class Program
 {
-    #region Enums.
     /// <summary>
     /// The name of an animation.
     /// </summary>
@@ -71,9 +62,7 @@ static class Program
         Turn = 1,
         WalkLeft = 2
     }
-    #endregion
 
-    #region Variables.
     // The primary graphics interface.
     private static GorgonGraphics _graphics;
     // The main "screen" for the application.
@@ -83,9 +72,9 @@ static class Program
     // Our 2D renderer.
     private static Gorgon2D _renderer;
     // The list of textures for the sprite.
-    private static readonly List<GorgonTexture2D> _textures = new();
+    private static readonly List<GorgonTexture2D> _textures = [];
     // The size of the tiled screen.
-    private static DX.Size2 _tileSize;
+    private static GorgonPoint _tileSize;
     // The tile used for the snow layer.
     private static GorgonSprite _snowTile;
     // The sprite for the guy.
@@ -95,28 +84,26 @@ static class Program
     // The position of the guy.
     private static Vector2 _guyPosition;
     // Up animation.
-    private static readonly Dictionary<AnimationName, IGorgonAnimation> _animations = new();
+    private static readonly Dictionary<AnimationName, IGorgonAnimation> _animations = [];
     // The animation controller.
     private static GorgonSpriteAnimationController _controller;
     // The current animation.
     private static AnimationName _current;
-    // The cache for our plug in assemblies.
+    // The cache for our plug-in assemblies.
     private static GorgonMefPlugInCache _assemblyCache;
     // The cache for holding sprite textures.
     private static GorgonTextureCache<GorgonTexture2D> _textureCache;
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to draw the background layer.
     /// </summary>
     private static void DrawBackground()
     {
-        for (int y = 0; y < _tileSize.Height + 1; y++)
+        for (int y = 0; y < _tileSize.Y + 1; y++)
         {
-            for (int x = 0; x < _tileSize.Width + 1; x++)
+            for (int x = 0; x < _tileSize.X + 1; x++)
             {
-                _snowTile.Position = new Vector2(x * _snowTile.ScaledSize.Width, y * _snowTile.ScaledSize.Height);
+                _snowTile.Position = new Vector2(x * _snowTile.ScaledSize.X, y * _snowTile.ScaledSize.Y);
                 _renderer.DrawSprite(_snowTile);
             }
         }
@@ -127,7 +114,7 @@ static class Program
     /// </summary>
     private static void DrawIcicle()
     {
-        _icicle.Position = new Vector2(((_tileSize.Width - 2) / 2) * _snowTile.ScaledSize.Width, ((_tileSize.Height - 2) / 2) * _snowTile.ScaledSize.Height);
+        _icicle.Position = new Vector2(((_tileSize.X - 2) / 2) * _snowTile.ScaledSize.X, ((_tileSize.Y - 2) / 2) * _snowTile.ScaledSize.Y);
         _renderer.DrawSprite(_icicle);
     }
 
@@ -153,7 +140,7 @@ static class Program
                 {
                     _controller.Play(_guySprite, _animations[_current]);
                 }
-                _guyPosition.Y -= (_guySprite.ScaledSize.Height / 4.0f) * GorgonTiming.Delta;
+                _guyPosition.Y -= (_guySprite.ScaledSize.Y / 4.0f) * GorgonTiming.Delta;
 
                 if (_guySprite.Position.Y < _icicle.Position.Y + 16)
                 {
@@ -178,22 +165,22 @@ static class Program
                 {
                     _controller.Play(_guySprite, _animations[_current]);
                 }
-                _guyPosition.X -= (_guySprite.ScaledSize.Width / 2.25f) * GorgonTiming.Delta;
+                _guyPosition.X -= (_guySprite.ScaledSize.X / 2.25f) * GorgonTiming.Delta;
 
-                if (_guySprite.Position.X < -_guySprite.ScaledSize.Width * 1.25f)
+                if (_guySprite.Position.X < -_guySprite.ScaledSize.X * 1.25f)
                 {
                     _controller.Stop();
 
                     // If we reach the extreme left of the screen (and we're off screen), then move to the right side and continue this animation.						
-                    if (_guyPosition.Y < _icicle.Position.Y + _snowTile.ScaledSize.Height)
+                    if (_guyPosition.Y < _icicle.Position.Y + _snowTile.ScaledSize.Y)
                     {
-                        _guyPosition = new Vector2(_screen.Width + _guySprite.ScaledSize.Width * 1.25f, _icicle.Position.Y + _icicle.ScaledSize.Height / 2.0f);
+                        _guyPosition = new Vector2(_screen.Width + _guySprite.ScaledSize.X * 1.25f, _icicle.Position.Y + _icicle.ScaledSize.Y / 2.0f);
                     }
                     else
                     {
                         // Otherwise, reset and start over.
                         _current = AnimationName.WalkUp;
-                        _guyPosition = new Vector2(_screen.Width / 2 + _guySprite.ScaledSize.Width * 1.25f, _screen.Height + _snowTile.ScaledSize.Height);
+                        _guyPosition = new Vector2(_screen.Width / 2 + _guySprite.ScaledSize.X * 1.25f, _screen.Height + _snowTile.ScaledSize.Y);
                     }
 
                     // Ensure that the guy's depth value is less than the icicle so he'll appear in front of it.
@@ -215,9 +202,9 @@ static class Program
             return true;
         }
 
-        _tileSize = new DX.Size2((int)(_screen.Width / _snowTile.ScaledSize.Width), (int)(_screen.Height / _snowTile.ScaledSize.Height));
+        _tileSize = new GorgonPoint((int)(_screen.Width / _snowTile.ScaledSize.X), (int)(_screen.Height / _snowTile.ScaledSize.Y));
 
-        _screen.RenderTargetView.Clear(GorgonColor.White);
+        _screen.RenderTargetView.Clear(GorgonColors.White);
         _depthBuffer.Clear(1.0f, 0);
 
         // We have to pass in a state that allows depth writing and testing. Otherwise the depth buffer won't be used.
@@ -251,7 +238,7 @@ static class Program
     /// <param name="sprites">The list of sprites loaded from the file system.</param>
     private static void BuildAnimations(IReadOnlyDictionary<string, GorgonSprite> sprites)
     {
-        var animBuilder = new GorgonAnimationBuilder();
+        GorgonAnimationBuilder animBuilder = new();
 
         // Extract the sprites that have the animation frames.
         // We'll use the name of the sprite to determine the type of animation and ordering.
@@ -264,7 +251,7 @@ static class Program
                                                        .Where(item => item.Key.StartsWith("Guy_Turn_", StringComparison.OrdinalIgnoreCase))
                                                        .Select(item => item.Value);
 
-        var walkLeftFrames = sprites.OrderBy(item => item.Key)
+        List<GorgonSprite> walkLeftFrames = sprites.OrderBy(item => item.Key)
                                                             .Where(item => item.Key.StartsWith("Guy_Left_", StringComparison.OrdinalIgnoreCase))
                                                             .Select(item => item.Value)
                                                             .ToList();
@@ -272,7 +259,7 @@ static class Program
         walkLeftFrames.RemoveAt(5); // This frame is broken.
         walkLeftFrames.Add(walkLeftFrames[3]); // We need to repeat these frames to get fluid motion.
         walkLeftFrames.Insert(3, walkLeftFrames[0]);
-        walkLeftFrames.Insert(3, walkLeftFrames[1]);            
+        walkLeftFrames.Insert(3, walkLeftFrames[1]);
 
         float time = 0;
 
@@ -303,7 +290,6 @@ static class Program
         _animations[AnimationName.WalkUp] = animBuilder.Build("Walk Up", 6.666667f);
         _animations[AnimationName.WalkUp].IsLooped = true;
 
-
         // Build animation for turning left.
         time = 0;
         animBuilder.Clear();
@@ -321,7 +307,7 @@ static class Program
         time = 0;
         animBuilder.Clear();
         foreach (GorgonSprite sprite in walkLeftFrames)
-        {                
+        {
             animBuilder.Edit2DTexture("Texture")
                         .SetKey(new GorgonKeyTexture2D(time, sprite.Texture, sprite.TextureRegion, 0))
                         .EndEdit();
@@ -357,8 +343,8 @@ static class Program
 
         _screen = new GorgonSwapChain(_graphics,
                                         window,
-                                        new GorgonSwapChainInfo(ExampleConfig.Default.Resolution.Width,
-                                                                     ExampleConfig.Default.Resolution.Height,
+                                        new GorgonSwapChainInfo(ExampleConfig.Default.Resolution.X,
+                                                                     ExampleConfig.Default.Resolution.Y,
                                                                      BufferFormat.R8G8B8A8_UNorm)
                                         {
                                             Name = "Gorgon2D Depth Buffer Example"
@@ -378,13 +364,13 @@ static class Program
 
         GorgonExample.LoadResources(_graphics);
 
-        // Load our packed file system plug in.
+        // Load our packed file system plug-in.
         _assemblyCache = new GorgonMefPlugInCache(GorgonApplication.Log);
 
         // Load the file system containing our application data (sprites, images, etc...)
         IGorgonFileSystemProviderFactory providerFactory = new GorgonFileSystemProviderFactory(_assemblyCache, GorgonApplication.Log);
         IGorgonFileSystemProvider provider = providerFactory.CreateProvider(Path.Combine(GorgonExample.GetPlugInPath().FullName, "Gorgon.FileSystem.GorPack.dll"), "Gorgon.IO.GorPack.GorPackProvider");
-        IGorgonFileSystem fileSystem = new GorgonFileSystem(provider, GorgonApplication.Log);
+        IGorgonFileSystem fileSystem = new GorgonFileSystem(GorgonApplication.Log);
 
         // We can load the editor file system directly.
         // This is handy for switching a production environment where your data may be stored 
@@ -393,7 +379,7 @@ static class Program
         // fileSystem.Mount(@"D:\unpak\scratch\DeepAsAPuddle.gorPack\fs\");
 
         // For now though, we'll load the packed file.
-        fileSystem.Mount(Path.Combine(GorgonExample.GetResourcePath(@"FileSystems").FullName, "Depth.gorPack"));
+        fileSystem.Mount(Path.Combine(GorgonExample.GetResourcePath(@"FileSystems").FullName, "Depth.gorPack"), provider: provider);
 
         // Get our sprites.  These make up the frames of animation for our Guy.
         // If and when there's an animation editor, we'll only need to create a single sprite and load the animation.
@@ -404,7 +390,7 @@ static class Program
         IGorgonContentLoader loader = fileSystem.CreateContentLoader(_renderer, _textureCache);
 
         // Load our sprite data (any associated textures will be loaded as well).
-        var sprites = new Dictionary<string, GorgonSprite>(StringComparer.OrdinalIgnoreCase);
+        Dictionary<string, GorgonSprite> sprites = new(StringComparer.OrdinalIgnoreCase);
 
         for (int i = 0; i < spriteFiles.Length; i++)
         {
@@ -424,15 +410,13 @@ static class Program
 
         _guySprite = sprites["Guy_Up_0"];
         _guySprite.Depth = 0.1f;
-        _guyPosition = new Vector2(_screen.Width / 2 + _guySprite.ScaledSize.Width * 1.25f, _screen.Height / 2 + _guySprite.ScaledSize.Height);
+        _guyPosition = new Vector2(_screen.Width / 2 + _guySprite.ScaledSize.X * 1.25f, _screen.Height / 2 + _guySprite.ScaledSize.Y);
 
         BuildAnimations(sprites);
 
         GorgonExample.EndInit();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
     /// <summary>
     /// The main entry point for the application.
     /// </summary>
@@ -441,9 +425,7 @@ static class Program
     {
         try
         {
-#if NET6_0_OR_GREATER
             Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
-#endif
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
@@ -451,7 +433,7 @@ static class Program
             WindowsFormsSynchronizationContext.AutoInstall = false;
             SynchronizationContext.SetSynchronizationContext(new WindowsFormsSynchronizationContext());
 
-            FormMain window = GorgonExample.Initialize(new DX.Size2(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height), "Depth", 
+            FormMain window = GorgonExample.Initialize(new GorgonPoint(ExampleConfig.Default.Resolution.X, ExampleConfig.Default.Resolution.Y), "Depth",
                                                        async (o, _) => await InitializeAsync((FormMain)o));
 
             GorgonApplication.Run(window, Idle);
@@ -477,5 +459,4 @@ static class Program
             _assemblyCache?.Dispose();
         }
     }
-    #endregion
 }

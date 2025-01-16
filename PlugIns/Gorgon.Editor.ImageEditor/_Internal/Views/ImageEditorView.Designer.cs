@@ -20,9 +20,9 @@ partial class ImageEditorView
 
         if (disposing)
         {
-            if (DataContext != null)
+            if (ViewModel != null)
             {
-                DataContext.ImagePicker.PropertyChanged -= ImagePicker_PropertyChanged;
+                ViewModel.ImagePicker.PropertyChanged -= ImagePicker_PropertyChanged;
             }
 
             _imagePickerForm?.Dispose();
@@ -32,7 +32,7 @@ partial class ImageEditorView
         base.Dispose(disposing);
     }
 
-    #region Component Designer generated code
+
 
     /// <summary> 
     /// Required method for Designer support - do not modify 
@@ -512,7 +512,7 @@ partial class ImageEditorView
 
     }
 
-    #endregion
+
 
     private System.Windows.Forms.TableLayoutPanel PanelImageViewControls;
     private System.Windows.Forms.Label LabelImageSize;

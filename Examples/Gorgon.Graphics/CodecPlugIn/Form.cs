@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,23 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 5, 2017 10:33:01 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Windows.Forms;
+using System.Numerics;
 using Gorgon.Examples;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -36,60 +32,57 @@ using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
 using Gorgon.PlugIns;
 using Gorgon.UI;
-using DX = SharpDX;
 
 namespace Graphics.Examples;
 
 /// <summary>
-/// Our main UI window for the example.
+/// Our main UI window for the example
 /// </summary>
 public partial class Form : System.Windows.Forms.Form
 {
-    #region Variables.
+
     // The cache that holds plugin information.
     private GorgonMefPlugInCache _pluginCache;
     // The main graphics interface.
     private GorgonGraphics _graphics;
     // The swap chain to use.
     private GorgonSwapChain _swap;
-    // Image to display, loaded from our plug in.
+    // Image to display, loaded from our plug-in.
     private GorgonTexture2DView _texture;
     // The image in system memory.
     private IGorgonImage _image;
-    // Our custom codec loaded from the plug in.
+    // Our custom codec loaded from the plug-in.
     private IGorgonImageCodec _customCodec;
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function called during idle time.
     /// </summary>
     /// <returns><b>true</b> to continue execution, <b>false</b> to stop.</returns>
     private bool Idle()
     {
-        _swap.RenderTargetView.Clear(GorgonColor.White);
+        _swap.RenderTargetView.Clear(GorgonColors.White);
 
-        var windowSize = new DX.Size2F(ClientSize.Width, ClientSize.Height);
-        var imageSize = new DX.Size2F(_texture.Width, _texture.Height);
+        Vector2 windowSize = new(ClientSize.Width, ClientSize.Height);
+        Vector2 imageSize = new(_texture.Width, _texture.Height);
 
         // Calculate the scale between the images.
-        var scale = new DX.Size2F(windowSize.Width / imageSize.Width, windowSize.Height / imageSize.Height);
+        Vector2 scale = new(windowSize.X / imageSize.X, windowSize.Y / imageSize.Y);
 
         // Only scale on a single axis if we don't have a 1:1 aspect ratio.
-        if (scale.Height > scale.Width)
+        if (scale.Y > scale.X)
         {
-            scale.Height = scale.Width;
+            scale.Y = scale.X;
         }
         else
         {
-            scale.Width = scale.Height;
+            scale.X = scale.Y;
         }
 
         // Scale the image.
-        var size = new DX.Size2((int)(scale.Width * imageSize.Width), (int)(scale.Height * imageSize.Height));
+        GorgonPoint size = new((int)(scale.X * imageSize.X), (int)(scale.Y * imageSize.Y));
 
         // Find the position.
-        var bounds = new DX.Rectangle((int)((windowSize.Width / 2) - (size.Width / 2)), (int)((windowSize.Height / 2) - (size.Height / 2)), size.Width, size.Height);
+        GorgonRectangle bounds = new((int)((windowSize.X / 2) - (size.X / 2)), (int)((windowSize.Y / 2) - (size.Y / 2)), size.X, size.Y);
 
         GorgonExample.Blitter.Blit(_texture, bounds);
 
@@ -101,7 +94,7 @@ public partial class Form : System.Windows.Forms.Form
     }
 
     /// <summary>
-    /// Function to load our useless image codec plug in.
+    /// Function to load our useless image codec plug-in.
     /// </summary>
     /// <returns><b>true</b> if successful, <b>false</b> if not.</returns>
     private bool LoadCodec()
@@ -110,7 +103,7 @@ public partial class Form : System.Windows.Forms.Form
 
         _pluginCache = new GorgonMefPlugInCache(GorgonApplication.Log);
 
-        // Load our plug in.
+        // Load our plug-in.
         _pluginCache.LoadPlugInAssemblies(GorgonApplication.StartupPath.FullName, "TVImageCodec.dll");
 
         // Activate the plugin service.
@@ -124,7 +117,7 @@ public partial class Form : System.Windows.Forms.Form
             return false;
         }
 
-        // Normally you would enumerate the plug ins, but in this case we know there's only one.
+        // Normally you would enumerate the plug-ins, but in this case we know there's only one.
         _customCodec = plugIn.CreateCodec(plugIn.Codecs[0].Name);
 
         return _customCodec is not null;
@@ -186,7 +179,7 @@ public partial class Form : System.Windows.Forms.Form
 
         GorgonExample.UnloadResources();
 
-        _pluginCache?.Dispose();            
+        _pluginCache?.Dispose();
         _texture?.Dispose();
         _swap?.Dispose();
         _graphics?.Dispose();
@@ -210,11 +203,10 @@ public partial class Form : System.Windows.Forms.Form
             // Load the custom codec.
             if (!LoadCodec())
             {
-                GorgonDialogs.ErrorBox(this, "Unable to load the image codec plug in.");
+                GorgonDialogs.ErrorBox(this, "Unable to load the image codec plug-in.");
                 GorgonApplication.Quit();
                 return;
             }
-
 
             // Set up the graphics interface.
             // Find out which devices we have installed in the system.
@@ -258,12 +250,10 @@ public partial class Form : System.Windows.Forms.Form
             Cursor.Current = Cursors.Default;
         }
     }
-    #endregion
 
-    #region Constructor/Destructor.
     /// <summary>
     /// Initializes a new instance of the <see cref="Form"/> class.
     /// </summary>
     public Form() => InitializeComponent();
-    #endregion
+
 }

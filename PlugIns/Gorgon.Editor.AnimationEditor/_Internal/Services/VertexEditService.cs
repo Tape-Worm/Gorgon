@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,51 +11,46 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 19, 2020 12:02:56 AM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
-using System.Windows.Forms;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.Services;
 using Gorgon.Graphics;
+using Gorgon.Math;
 using Gorgon.Renderers;
 using Gorgon.Renderers.Cameras;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.AnimationEditor;
 
 /// <summary>
-/// The service used to edit sprite vertices for an animation.
+/// The service used to edit sprite vertices for an animation
 /// </summary>
 internal class VertexEditService
 {
-    #region Variables.
+
     // The renderer used to draw the UI.
     private readonly Gorgon2D _renderer;
     // The list of vertices to update.
     private readonly Vector2[] _vertices = new Vector2[4];
     // The handles for grabbing.
     private readonly RectHandle[] _handles =
-    {
-        new RectHandle(),
-        new RectHandle(),
-        new RectHandle(),
-        new RectHandle()
-    };
+    [
+        new(),
+        new(),
+        new(),
+        new()
+    ];
     // The vertex positions, in screen space.
     private readonly Vector2[] _screenVertices = new Vector2[4];
     // The currently selected corner.
@@ -70,9 +65,7 @@ internal class VertexEditService
     private Vector2 _dragHandlePos;
     // The camera used to render the UI.
     private GorgonOrthoCamera _camera;
-    #endregion
 
-    #region Events.
     // Event triggered when the vertex coordinates have been altered.        
     private event EventHandler<VertexChangedEventArgs> VerticesChangedEvent;
 
@@ -101,9 +94,7 @@ internal class VertexEditService
             VerticesChangedEvent -= value;
         }
     }
-    #endregion
 
-    #region Properties.		
     /// <summary>
     /// Property to set or return the camera being used.
     /// </summary>
@@ -182,9 +173,7 @@ internal class VertexEditService
             SetupHandles();
         }
     }
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to raise the <see cref="VerticesChangedEvent"/> event.
     /// </summary>
@@ -223,7 +212,7 @@ internal class VertexEditService
         }
 
         Vector2 currentPosition = _vertices[vertexIndex];
-        var dragDelta = Vector2.Subtract(localMousePos, _localStartDrag);
+        Vector2 dragDelta = Vector2.Subtract(localMousePos, _localStartDrag);
         _vertices[vertexIndex] = (new Vector2(_dragHandlePos.X + dragDelta.X, _dragHandlePos.Y + dragDelta.Y)).Truncate();
         SetupHandles();
 
@@ -250,7 +239,7 @@ internal class VertexEditService
             return;
         }
 
-        DX.RectangleF handleBounds = _handles[vertexIndex].HandleBounds;
+        GorgonRectangleF handleBounds = _handles[vertexIndex].HandleBounds;
 
         if ((handleBounds.IsEmpty) || (!handleBounds.Contains(_mousePos.X, _mousePos.Y)))
         {
@@ -295,14 +284,13 @@ internal class VertexEditService
             _screenVertices[3] = new Vector2(_vertices[3].X, _vertices[3].Y);
         }
 
-        _handles[0].HandleBounds = new DX.RectangleF(_screenVertices[0].X - 8, _screenVertices[0].Y - 8, 8, 8);
-        _handles[1].HandleBounds = new DX.RectangleF(_screenVertices[1].X, _screenVertices[1].Y - 8, 8, 8);
-        _handles[2].HandleBounds = new DX.RectangleF(_screenVertices[2].X, _screenVertices[2].Y, 8, 8);
-        _handles[3].HandleBounds = new DX.RectangleF(_screenVertices[3].X - 8, _screenVertices[3].Y, 8, 8);
+        _handles[0].HandleBounds = new GorgonRectangleF(_screenVertices[0].X - 8, _screenVertices[0].Y - 8, 8, 8);
+        _handles[1].HandleBounds = new GorgonRectangleF(_screenVertices[1].X, _screenVertices[1].Y - 8, 8, 8);
+        _handles[2].HandleBounds = new GorgonRectangleF(_screenVertices[2].X, _screenVertices[2].Y, 8, 8);
+        _handles[3].HandleBounds = new GorgonRectangleF(_screenVertices[3].X - 8, _screenVertices[3].Y, 8, 8);
 
         GetActiveHandle();
     }
-
 
     /// <summary>
     /// Function called when a key is held down.
@@ -385,7 +373,7 @@ internal class VertexEditService
     {
         int vertexIndex = GetIndex();
 
-        _mousePos = args.ClientPosition.ToVector2();
+        _mousePos = args.ClientPosition;
         GetActiveHandle();
 
         if (vertexIndex == -1)
@@ -401,7 +389,7 @@ internal class VertexEditService
 
         if ((args.MouseButtons == MouseButtons.Left) && (vertexIndex != -1) && (!IsDragging))
         {
-            var delta = new Vector2(args.CameraSpacePosition.X - _localStartDrag.X, args.CameraSpacePosition.Y - _localStartDrag.Y);
+            Vector2 delta = new(args.CameraSpacePosition.X - _localStartDrag.X, args.CameraSpacePosition.Y - _localStartDrag.Y);
             ref Vector2 vertexPosition = ref _vertices[vertexIndex];
             _localStartDrag = args.CameraSpacePosition;
             _dragHandlePos = new Vector2(vertexPosition.X + delta.X, vertexPosition.Y + delta.Y);
@@ -428,7 +416,7 @@ internal class VertexEditService
     {
         int vertexIndex = GetIndex();
 
-        _mousePos = args.ClientPosition.ToVector2();
+        _mousePos = args.ClientPosition;
         GetActiveHandle();
 
         if (args.MouseButtons != MouseButtons.Left)
@@ -437,7 +425,7 @@ internal class VertexEditService
         }
 
         if (vertexIndex == -1)
-        {                
+        {
             return false;
         }
 
@@ -454,11 +442,11 @@ internal class VertexEditService
     {
         int vertexIndex = GetIndex();
 
-        _mousePos = args.ClientPosition.ToVector2();
+        _mousePos = args.ClientPosition;
         GetActiveHandle();
 
         if ((args.MouseButtons != MouseButtons.Left) || (vertexIndex == -1))
-        {                
+        {
             return false;
         }
 
@@ -481,10 +469,10 @@ internal class VertexEditService
 
         _renderer.Begin(Gorgon2DBatchState.InvertedBlend);
 
-        _renderer.DrawLine(_screenVertices[0].X, _screenVertices[0].Y, _screenVertices[1].X - 1, _screenVertices[1].Y, GorgonColor.White, 1.25f);
-        _renderer.DrawLine(_screenVertices[1].X - 1, _screenVertices[1].Y, _screenVertices[2].X - 1, _screenVertices[2].Y - 1, GorgonColor.White, 1.25f);
-        _renderer.DrawLine(_screenVertices[2].X, _screenVertices[2].Y - 1, _screenVertices[3].X + 1, _screenVertices[3].Y - 1, GorgonColor.White, 1.25f);
-        _renderer.DrawLine(_screenVertices[3].X, _screenVertices[3].Y, _screenVertices[0].X, _screenVertices[0].Y + 1, GorgonColor.White, 1.25f);
+        _renderer.DrawLine(_screenVertices[0].X, _screenVertices[0].Y, _screenVertices[1].X - 1, _screenVertices[1].Y, GorgonColors.White, 1.25f);
+        _renderer.DrawLine(_screenVertices[1].X - 1, _screenVertices[1].Y, _screenVertices[2].X - 1, _screenVertices[2].Y - 1, GorgonColors.White, 1.25f);
+        _renderer.DrawLine(_screenVertices[2].X, _screenVertices[2].Y - 1, _screenVertices[3].X + 1, _screenVertices[3].Y - 1, GorgonColors.White, 1.25f);
+        _renderer.DrawLine(_screenVertices[3].X, _screenVertices[3].Y, _screenVertices[0].X, _screenVertices[0].Y + 1, GorgonColors.White, 1.25f);
 
         _renderer.End();
 
@@ -495,7 +483,7 @@ internal class VertexEditService
 
         if (vertexIndex != -1)
         {
-            DX.RectangleF handleBounds = _handles[vertexIndex].HandleBounds;
+            GorgonRectangleF handleBounds = _handles[vertexIndex].HandleBounds;
 
             if (handleBounds.IsEmpty)
             {
@@ -505,11 +493,11 @@ internal class VertexEditService
             // Hilight our active handle.
             if (_selectedCorner == _activeCorner)
             {
-                _renderer.DrawFilledRectangle(handleBounds, new GorgonColor(GorgonColor.RedPure, 0.7f));
+                _renderer.DrawFilledRectangle(handleBounds, new GorgonColor(GorgonColors.Red, 0.7f));
             }
 
-            _renderer.DrawRectangle(handleBounds, GorgonColor.Black);
-            _renderer.DrawRectangle(new DX.RectangleF(handleBounds.X + 1, handleBounds.Y + 1, handleBounds.Width - 2, handleBounds.Height - 2), GorgonColor.White);
+            _renderer.DrawRectangle(handleBounds, GorgonColors.Black);
+            _renderer.DrawRectangle(new GorgonRectangleF(handleBounds.X + 1, handleBounds.Y + 1, handleBounds.Width - 2, handleBounds.Height - 2), GorgonColors.White);
         }
     }
 
@@ -520,9 +508,7 @@ internal class VertexEditService
 
     /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
     public void Dispose() => VerticesChangedEvent = null;
-    #endregion
 
-    #region Constructor/Finalizer.
     /// <summary>Initializes a new instance of the <see cref="VertexEditService"/> class.</summary>
     /// <param name="renderer">The 2D renderer for the application.</param>
     public VertexEditService(Gorgon2D renderer)
@@ -530,7 +516,6 @@ internal class VertexEditService
         _renderer = renderer;
 
         _handles[2].HandleCursor = _handles[0].HandleCursor =
-        _handles[3].HandleCursor = _handles[1].HandleCursor = Cursors.Cross;            
+        _handles[3].HandleCursor = _handles[1].HandleCursor = Cursors.Cross;
     }
-    #endregion
 }

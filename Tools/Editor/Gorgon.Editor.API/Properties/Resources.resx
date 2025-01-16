@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="GOREDIT_PLUGIN_TYPE_UNKNOWN" xml:space="preserve">
-    <value>Unknown plug in type.</value>
+    <value>Unknown plug-in type.</value>
   </data>
   <data name="GOREDIT_ERR_NOT_IMAGE" xml:space="preserve">
     <value>The file '{0}' is not an image.</value>
@@ -209,7 +209,7 @@ Please try again.</value>
     <value>The file '{0}' was not found on the file system.</value>
   </data>
   <data name="GOREDIT_ERR_NO_CONTENT_IMPORTER_FROM_PLUGIN" xml:space="preserve">
-    <value>The plug in '{0}' did not produce any importers.</value>
+    <value>The plug-in '{0}' did not produce any importers.</value>
   </data>
   <data name="GOREDIT_PLUGIN_TYPE_CONTENT" xml:space="preserve">
     <value>Editor content</value>
@@ -221,7 +221,7 @@ Please try again.</value>
     <value>..\Resources\drive_cdrom_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="GOREDIT_ERR_NO_CONTENT_FROM_PLUGIN" xml:space="preserve">
-    <value>The plug in '{0}' did not produce any content.</value>
+    <value>The plug-in '{0}' did not produce any content.</value>
   </data>
   <data name="drive_remove_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\drive_remove_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -288,7 +288,7 @@ Please try again.</value>
     <value>Open a file...</value>
   </data>
   <data name="GOREDIT_ERR_UNABLE_TO_UNLOAD_PLUGINS" xml:space="preserve">
-    <value>There was an error while unloading the plug ins.</value>
+    <value>There was an error while unloading the plug-ins.</value>
   </data>
   <data name="GOREDIT_ERR_CONTENT_RENDERER_EXISTS" xml:space="preserve">
     <value>The content renderer '{0}' already exists.</value>
@@ -312,7 +312,7 @@ Please try again.</value>
     <value>Select a directory...</value>
   </data>
   <data name="GOREDIT_ERR_UNABLE_TO_LOAD_PLUGINS" xml:space="preserve">
-    <value>There was an error while loading the plug ins.</value>
+    <value>There was an error while loading the plug-ins.</value>
   </data>
   <data name="GOREDIT_PLUGIN_LOAD_FAIL_NOT_DOT_NET" xml:space="preserve">
     <value>The file '{0}' is not a .NET assembly.</value>

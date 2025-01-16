@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,44 +11,39 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 27, 2019 11:35:57 AM
 // 
-#endregion
 
-using System;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.Services;
 
 /// <summary>
-/// Data used to extract sprites from a texture using a grid.
+/// Data used to extract sprites from a texture using a grid
 /// </summary>
 /// <remarks>
 /// <para>
-/// Developers can use this to extract sprite information using a fixed size grid to retrieve texture coordinates from a texture passed to the service.
+/// Developers can use this to extract sprite information using a fixed size grid to retrieve texture coordinates from a texture passed to the service
 /// </para>
 /// </remarks>
 /// <seealso cref="ISpriteExtractorService"/>
 public class SpriteExtractionData
 {
-    #region Variables.
+
     // A weak reference to the texture so we don't hang onto it for eternity.
     private WeakReference<GorgonTexture2DView> _textureRef;
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to set or return whether to skip empty sprites.
     /// </summary>
@@ -65,7 +60,7 @@ public class SpriteExtractionData
     {
         get;
         set;
-    } = GorgonColor.BlackTransparent;
+    } = GorgonColors.BlackTransparent;
 
     /// <summary>
     /// Property to set or return the texture that is to be rendered.
@@ -88,7 +83,7 @@ public class SpriteExtractionData
     /// <summary>
     /// Property to set or return the offset of the grid, in pixels.
     /// </summary>
-    public DX.Point GridOffset
+    public GorgonPoint GridOffset
     {
         get;
         set;
@@ -97,16 +92,16 @@ public class SpriteExtractionData
     /// <summary>
     /// Property to set or return the size of a grid cell.
     /// </summary>
-    public DX.Size2 CellSize
+    public GorgonPoint CellSize
     {
         get;
         set;
-    } = new DX.Size2(32, 32);
+    } = new GorgonPoint(32, 32);
 
     /// <summary>
     /// Property to set or return the number of columns/rows in the grid.
     /// </summary>
-    public DX.Size2 GridSize
+    public GorgonPoint GridSize
     {
         get;
         set;
@@ -133,14 +128,14 @@ public class SpriteExtractionData
     /// <summary>
     /// Property to return the maximum columns and rows allowed in the grid.
     /// </summary>
-    public DX.Size2 MaxGridSize => ((!_textureRef.TryGetTarget(out GorgonTexture2DView texture))
-                || (CellSize.Width == 0) || (CellSize.Height == 0))
-                ? new DX.Size2(1, 1)
-                : new DX.Size2((texture.Width - GridOffset.X) / CellSize.Width, (texture.Height - GridOffset.Y) / CellSize.Height);
+    public GorgonPoint MaxGridSize => ((!_textureRef.TryGetTarget(out GorgonTexture2DView texture))
+                || (CellSize.X == 0) || (CellSize.Y == 0))
+                ? new GorgonPoint(1, 1)
+                : new GorgonPoint((texture.Width - GridOffset.X) / CellSize.X, (texture.Height - GridOffset.Y) / CellSize.Y);
 
     /// <summary>
     /// Property to return the number of sprites that will be extracted.
     /// </summary>
-    public int SpriteCount => _textureRef is null ? 0 : (GridSize.Width.Min(MaxGridSize.Width).Max(1) * GridSize.Height.Min(MaxGridSize.Height).Max(1)) * ArrayCount;
-    #endregion
+    public int SpriteCount => _textureRef is null ? 0 : (GridSize.X.Min(MaxGridSize.X).Max(1) * GridSize.Y.Min(MaxGridSize.Y).Max(1)) * ArrayCount;
+
 }

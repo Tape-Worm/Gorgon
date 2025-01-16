@@ -20,8 +20,6 @@ partial class FormTextEditor
         base.Dispose(disposing);
     }
 
-    #region Windows Form Designer generated code
-
     /// <summary>
     /// Required method for Designer support - do not modify
     /// the contents of this method with the code editor.
@@ -107,7 +105,7 @@ partial class FormTextEditor
         this.ClientSize = new System.Drawing.Size(784, 561);
         this.Controls.Add(this.TextContent);
         this.Controls.Add(this.panel1);
-        this.Font = new System.Drawing.Font("Segoe UI", 9F);
+        
         this.ForeColor = System.Drawing.Color.White;
         this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
         this.Name = "FormTextEditor";
@@ -120,7 +118,7 @@ partial class FormTextEditor
 
     }
 
-    #endregion
+
 
     private System.Windows.Forms.TextBox TextContent;
     private System.Windows.Forms.Panel panel1;

@@ -1,7 +1,6 @@
-﻿#region MIT
-// 
+﻿// 
 // Gorgon.
-// Copyright (C) 2017 Michael Winsor
+// Copyright (C) 2024 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,9 +21,7 @@
 // 
 // Created: November 8, 2017 2:10:42 PM
 // 
-#endregion
 
-// ReSharper disable InconsistentNaming
 namespace Gorgon.Graphics;
 
 /// <summary>
@@ -445,7 +442,7 @@ public enum BufferFormat
     /// There is no sign bit, and there is a shared 5-bit biased (15) exponent and a 9-bit mantissa for each channel, as shown in the following illustration.
     /// </para>
     /// </summary>
-    R9G9B9E5_Sharedexp = 67,
+    R9G9B9E5_SharedExp = 67,
     /// <summary>
     /// <para>
     /// A four-component, 32-bit unsigned-normalized-integer format. This packed RGB format is analogous to the UYVY format. Each 32-bit block describes a pair of pixels: (R8, G8, B8) and (R8, G8, B8) where the R8/B8 values are repeated, and the G8 values are unique to each pixel. ³

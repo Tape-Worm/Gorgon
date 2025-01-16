@@ -1,7 +1,6 @@
-﻿#region MIT
-// 
+﻿// 
 // Gorgon.
-// Copyright (C) 2020 Michael Winsor
+// Copyright (C) 2024 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,23 +21,18 @@
 // 
 // Created: December 1, 2020 9:29:00 PM
 // 
-#endregion
 
-using System;
-using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Gorgon.Core;
-using Gorgon.IO;
-using Gorgon.Math;
 using Gorgon.Properties;
-using DX = SharpDX;
 
 namespace Gorgon.Native;
 
 /// <summary>
 /// A value type representing a pointer to native (unmanaged) memory.
 /// </summary>
+/// <typeparam name="T">The type of data stored in the memory pointed at by the pointer. Must be an unmanaged value type.</typeparam>
 /// <remarks>
 /// <para>
 /// This is a pointer access type that allows safe access to pre-existing blocks of native memory. It does this by wrapping other the native pointer to the memory block and provides safety checks to 
@@ -49,22 +43,29 @@ namespace Gorgon.Native;
 /// copying of the memory pointed at by the pointer to another type of data. 
 /// </para>
 /// <para>
+/// This type is suitable when the type of data stored in native memory is known. If the type of data in memory is not known (e.g. <c>void *</c>), or refers to an opaque handle (e.g. <c>HWND</c>), 
+/// an <c>nint</c> should be used instead. 
+/// </para>
+/// <para>
 /// This pointer type only wraps a native pointer to previously allocated memory, therefore it does <b>not</b> perform any memory allocation on its own. Gorgon includes the 
 /// <see cref="GorgonNativeBuffer{T}"/> for that purpose. The <see cref="GorgonNativeBuffer{T}"/> will implicitly convert to this type, so it can be used in situations where this type is required.
 /// </para>
 /// <para>
-/// <note type="information">
+/// <note type="important">
 /// <para>
-/// This type is suitable when the type of data stored in native memory is known. If the type of data in memory is not known (e.g. <c>void *</c>), or refers to an opaque handle (e.g. <c>HWND</c>), 
-/// an <c>nint</c> should be used instead. 
+/// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
+/// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
+/// </para>
+/// <para>
+/// Value types with marshalling attributes (<see cref="MarshalAsAttribute"/>) are <i>not</i> supported and will not be read correctly.
 /// </para>
 /// </note>
 /// </para>
 /// <para>
 /// <note type="important">
 /// <para>
-/// This type is ~3x slower for access than a regular native pointer (x64). This is due to the safety features available to ensure the pointer does not cause a buffer over/underrun. For pure speed, 
-/// nothing beats a native pointer (or <c>nint</c>) and if your code is sensitive to microsecond timings (i.e. it needs to be near realtime/blazing fast), then use a native pointer instead 
+/// This type is a little slower for access than a regular native pointer (x64). This is due to the safety features available to ensure the pointer does not cause a buffer over/underrun. For pure speed, 
+/// nothing beats a native pointer (or <c>nint</c>) and if your code is sensitive to microsecond timings (i.e. it needs to be blazing fast), then use a native pointer instead 
 /// (developers can cast this type to a native pointer). But do so with the understanding that all safety is off and memory corruption is a very real possibility.
 /// </para>
 /// <para>
@@ -79,7 +80,6 @@ public unsafe readonly struct GorgonPtr<T>
     : IEquatable<GorgonPtr<T>>, IComparable<GorgonPtr<T>>
     where T : unmanaged
 {
-    #region Variables.
     /// <summary>
     /// Represents a null pointer.
     /// </summary>
@@ -88,16 +88,14 @@ public unsafe readonly struct GorgonPtr<T>
     // The actual unsafe pointer to the memory.
     private readonly T* _ptr;
 
-    // The offset in indices for the pointer from the beginning of memory.
-    private readonly int _index;
+    // The offset from the start of the memory block that this pointer is pointing at.
+    private readonly int _indexOffset;
 
     /// <summary>
     /// The number of items of type <typeparamref name="T"/> stored within the memory block. 
     /// </summary>
     public readonly int Length;
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to return the size, in bytes, of the type represented by <typeparamref name="T"/>.
     /// </summary>
@@ -122,6 +120,11 @@ public unsafe readonly struct GorgonPtr<T>
     /// int newValue = 123;
     /// 
     /// ptr[2] = newValue;
+    /// 
+    /// // or
+    /// 
+    /// ref int oldValue = ref ptr[2];
+    /// oldValue = 456;
     /// ]]>
     /// </code>
     /// </para>
@@ -130,22 +133,67 @@ public unsafe readonly struct GorgonPtr<T>
     {
         get
         {
-            if (_ptr == null)
+            if (_ptr is null)
             {
                 throw new NullReferenceException();
             }
 
             if ((index < 0) || (index >= Length))
             {
-                throw new ArgumentOutOfRangeException(nameof(index), string.Format(Resources.GOR_ERR_INDEX_OUT_OF_RANGE, index, 0, Length));
+                throw new IndexOutOfRangeException(string.Format(Resources.GOR_ERR_INDEX_OUT_OF_RANGE, index, 0, Length));
             }
-            
+
             return ref Unsafe.AsRef<T>(_ptr + index);
         }
     }
-    #endregion
 
-    #region Methods.
+    /// <summary>
+    /// Property to return a slice of this pointer's memory block by a given range.
+    /// </summary>
+    /// <param name="range">The range of indices to cover.</param>
+    /// <returns>The slice of the memory as a <see cref="GorgonPtr{T}"/>.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown if the <paramref name="range"/> is less than 0, or greater than/equal to <see cref="Length"/>.</exception>
+    /// <remarks>
+    /// This indexer can be used to create a slice of a pointer. For example, if a pointer points to 10 items, and we want to create a pointer that points to the 3rd item and 4 items in the memory block 
+    /// pointed at by this pointer, we can do the following:
+    /// <code lang="csharp">
+    /// <![CDATA[
+    /// int[] data = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+    /// 
+    /// unsafe
+    /// {
+    ///     fixed(int* dataPtr = data)
+    ///     {
+    ///         GorgonPtr<int> tenItems = new(data);    
+    ///         // Add 3 items to the pointer, and then take 4 items from that point.
+    ///         GorgonPtr<int> sliced = tenItems[3..7];
+    /// 
+    ///         // 'sliced' will now point to: 4, 5, 6, 7
+    ///     }
+    /// }
+    /// ]]>
+    /// </code>
+    /// </remarks>
+    public GorgonPtr<T> this[Range range]
+    {
+        get
+        {
+            if (_ptr is null)
+            {
+                return GorgonPtr<T>.NullPtr;
+            }
+
+            (int offset, int length) = range.GetOffsetAndLength(Length);
+
+            if ((offset < 0) || (offset >= Length))
+            {
+                throw new ArgumentOutOfRangeException(nameof(range), string.Format(Resources.GOR_ERR_INDEX_OUT_OF_RANGE, offset, 0, Length));
+            }
+
+            return new GorgonPtr<T>(_ptr + offset, length);
+        }
+    }
+
     /// <summary>
     /// Operator to determine if one pointer address is less than another.
     /// </summary>
@@ -215,52 +263,11 @@ public unsafe readonly struct GorgonPtr<T>
     public static implicit operator ReadOnlySpan<T>(GorgonPtr<T> ptr) => ToSpan(ptr);
 
     /// <summary>
-    /// Operator to convert this SharpDX data buffer into a <see cref="GorgonPtr{T}"/>.
-    /// </summary>
-    /// <param name="buffer">The data buffer to convert.</param>
-    /// <returns>A pointer wrapping the buffer data.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static implicit operator GorgonPtr<T>(DX.DataBuffer buffer) => new(buffer);
-
-    /// <summary>
-    /// Operator to convert this SharpDX data stream into a <see cref="GorgonPtr{T}"/>..
-    /// </summary>
-    /// <param name="stream">The data stream convert.</param>
-    /// <returns>The pointer wrapping the stream data.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static implicit operator GorgonPtr<T>(DX.DataStream stream) => new(stream);
-
-    /// <summary>
-    /// Operator to convert this SharpDX data pointer.
+    /// Operator to explicitly convert this pointer to a <see cref="GorgonPtr{Byte}"/> type.
     /// </summary>
     /// <param name="ptr">The pointer to convert.</param>
-    /// <returns>A pointer wrapping the SharpDX Pointer data.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static implicit operator GorgonPtr<T>(DX.DataPointer ptr) => new(ptr);
-
-    /// <summary>
-    /// Operator to convert this buffer to a SharpDX data buffer.
-    /// </summary>
-    /// <param name="ptr">The pointer to convert.</param>
-    /// <returns>A SharpDX DataBuffer wrapping the buffer data.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static implicit operator DX.DataBuffer(GorgonPtr<T> ptr) => ToDataBuffer(ptr);
-
-    /// <summary>
-    /// Operator to convert this pointer to a SharpDX data stream.
-    /// </summary>
-    /// <param name="ptr">The pointer to convert.</param>
-    /// <returns>The SharpDX DataStream wrapping the pointer data.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static implicit operator DX.DataStream(GorgonPtr<T> ptr) => ToDataStream(ptr);
-
-    /// <summary>
-    /// Operator to convert this pointer to a SharpDX data pointer.
-    /// </summary>
-    /// <param name="ptr">The pointer to convert.</param>
-    /// <returns>A SharpDX DataPointer wrapping the pointer data.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static implicit operator DX.DataPointer(GorgonPtr<T> ptr) => ToDataPointer(ptr);
+    public static explicit operator GorgonPtr<byte>(GorgonPtr<T> ptr) => ToBytePointer(ptr);
 
     /// <summary>
     /// Operator to convert this pointer to a native pointer.
@@ -282,9 +289,9 @@ public unsafe readonly struct GorgonPtr<T>
     /// </para>
     /// </note>
     /// </para>
-    /// </remarks>
+    /// </remarks>    
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static implicit operator void*(GorgonPtr<T> ptr) => ToPointer(ptr);
+    public static explicit operator void*(GorgonPtr<T> ptr) => ToPointer(ptr);
 
     /// <summary>
     /// Operator to convert this pointer to a <see cref="long"/> value representing the memory address of the block of memory being pointed at.
@@ -292,15 +299,15 @@ public unsafe readonly struct GorgonPtr<T>
     /// <param name="ptr">The pointer to convert.</param>
     /// <returns>The memory address as a <see cref="long"/> value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static explicit operator long(GorgonPtr<T> ptr) => (long)ptr._ptr;
+    public static explicit operator long(GorgonPtr<T> ptr) => ToInt64(ptr);
 
     /// <summary>
     /// Operator to convert this pointer to a <see cref="ulong"/> value representing the memory address of the block of memory being pointed at.
     /// </summary>
     /// <param name="ptr">The pointer to convert.</param>
-    /// <returns>The memory address as a <see cref="ulong"/> value.</returns>
+    /// <returns>The memory address as a <see cref="ulong"/> value.</returns>    
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static explicit operator ulong(GorgonPtr<T> ptr) => (ulong)ptr._ptr;
+    public static explicit operator ulong(GorgonPtr<T> ptr) => ToUInt64(ptr);
 
     /// <summary>
     /// Operator to convert this pointer to a native pointer.
@@ -324,21 +331,31 @@ public unsafe readonly struct GorgonPtr<T>
     /// </para>
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static implicit operator nint(GorgonPtr<T> ptr) => Tonint(ptr);
-
-    /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
-    /// <param name="other">An object to compare with this object.</param>
-    /// <returns>true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool Equals(GorgonPtr<T> other) => _ptr == other._ptr;
+    public static explicit operator nint(GorgonPtr<T> ptr) => ToIntPtr(ptr);
 
     /// <summary>
-    /// Function to cast this pointer to another pointer type.
+    /// Operator to convert this pointer to a native pointer.
     /// </summary>
-    /// <typeparam name="Tc">The type to convert to. Must be an unmanaged value type.</typeparam>
-    /// <returns>The casted pointer.</returns>
+    /// <param name="ptr">The pointer to convert.</param>
+    /// <returns>A native pointer.</returns>
+    /// <remarks>
+    /// <para>
+    /// <note type="warning">
+    /// <para>
+    /// This operator returns the pointer to the memory address of this pointer. Developers should only use this for interop scenarios where a native call needs a pointer. Manipulation of this pointer is 
+    /// not advisable and may cause harm. 
+    /// </para>
+    /// <para>
+    /// No safety checks are done on this pointer, and as such, memory corruption is possible if the pointer is used without due care.
+    /// </para>
+    /// <para>
+    /// <h2><font color="#FF0000">Use this at your own risk.</font></h2>
+    /// </para>
+    /// </note>
+    /// </para>
+    /// </remarks>    
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public GorgonPtr<Tc> To<Tc>() where Tc : unmanaged => new((Tc *)_ptr, SizeInBytes / Unsafe.SizeOf<Tc>());
+    public static explicit operator nuint(GorgonPtr<T> ptr) => ToUIntPtr(ptr);
 
     /// <summary>
     /// Operator to increment the pointer by the given index offset.
@@ -353,7 +370,22 @@ public unsafe readonly struct GorgonPtr<T>
     /// </para>
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static GorgonPtr<T> operator +(in GorgonPtr<T> ptr, int indexOffset) => Add(in ptr, indexOffset);
+    public static GorgonPtr<T> operator +(GorgonPtr<T> ptr, int indexOffset) => Add(ptr, indexOffset);
+
+    /// <summary>
+    /// Operator to increment the pointer by the given index offset.
+    /// </summary>
+    /// <param name="indexOffset">The number of indices to offset by.</param>
+    /// <param name="ptr">The pointer to increment.</param>
+    /// <returns>A new <see cref="GorgonPtr{T}"/> starting at the updated index offset.</returns>
+    /// <remarks>
+    /// <para>
+    /// If the pointer is incremented beyond the beginning, or end of the memory block that it points at, then the return value will be <see cref="GorgonPtr{T}.NullPtr"/> rather than throw an exception. 
+    /// This is done this way for performance reasons. So users should check that their pointer is not <b>null</b> when iterating to ensure that the pointer is still valid.
+    /// </para>
+    /// </remarks>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static GorgonPtr<T> operator +(int indexOffset, GorgonPtr<T> ptr) => Add(ptr, indexOffset);
 
     /// <summary>
     /// Function to subtract two pointers to return the number of bytes between them.
@@ -362,7 +394,7 @@ public unsafe readonly struct GorgonPtr<T>
     /// <param name="right">The right pointer to subtract.</param>
     /// <returns>The difference in bytes between the two pointers.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static long operator -(in GorgonPtr<T> left, in GorgonPtr<T> right) => Subtract(in left, in right);
+    public static long operator -(GorgonPtr<T> left, GorgonPtr<T> right) => Subtract(left, right);
 
     /// <summary>
     /// Operator to decrement the pointer by the given index offset.
@@ -377,7 +409,7 @@ public unsafe readonly struct GorgonPtr<T>
     /// </para>
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static GorgonPtr<T> operator -(in GorgonPtr<T> ptr, int indexOffset) => Add(in ptr, -indexOffset);
+    public static GorgonPtr<T> operator -(GorgonPtr<T> ptr, int indexOffset) => Subtract(ptr, indexOffset);
 
     /// <summary>
     /// Operator to increment the pointer by one index.
@@ -391,19 +423,7 @@ public unsafe readonly struct GorgonPtr<T>
     /// </para>
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static GorgonPtr<T> operator ++(in GorgonPtr<T> ptr)
-    {
-        if (ptr == NullPtr)
-        {
-            return NullPtr;
-        }
-
-        int newIndex = ptr._index + 1;
-
-        // If the new length is negative or zero, then we've extended beyond the length of the memory block.
-        // For the sake of performance (yes, it's an actual hit), we'll return a null pointer instead of throwing.
-        return (newIndex >= ptr.Length) ? NullPtr : new GorgonPtr<T>(ptr._ptr + 1, newIndex, ptr.Length - 1);
-    }
+    public static GorgonPtr<T> operator ++(GorgonPtr<T> ptr) => Add(ptr, 1);
 
     /// <summary>
     /// Operator to decrement the pointer by one index.
@@ -417,19 +437,7 @@ public unsafe readonly struct GorgonPtr<T>
     /// </para>
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static GorgonPtr<T> operator --(in GorgonPtr<T> ptr)
-    {
-        if (ptr == NullPtr)
-        {
-            return NullPtr;
-        }
-
-        int newIndex = ptr._index - 1;
-
-        // If the new length is negative or zero, then we've extended beyond the length of the memory block.
-        // For the sake of performance (yes, it's an actual hit), we'll return a null pointer instead of throwing.
-        return (newIndex < 0) ? NullPtr : new GorgonPtr<T>(ptr._ptr - 1, newIndex, ptr.Length + 1);
-    }
+    public static GorgonPtr<T> operator --(GorgonPtr<T> ptr) => Subtract(ptr, 1);
 
     /// <summary>
     /// Function to subtract two pointers to return the number of bytes between them.
@@ -437,7 +445,7 @@ public unsafe readonly struct GorgonPtr<T>
     /// <param name="left">The left pointer to subtract.</param>
     /// <param name="right">The right pointer to subtract.</param>
     /// <returns>The difference in bytes between the two pointers.</returns>
-    public static long Subtract(in GorgonPtr<T> left, in GorgonPtr<T> right) => ((byte*)left._ptr) - ((byte*)right._ptr);
+    public static long Subtract(GorgonPtr<T> left, GorgonPtr<T> right) => ((byte*)left._ptr) - ((byte*)right._ptr);
 
     /// <summary>
     /// Function to increment the pointer by the given index offset.
@@ -452,20 +460,21 @@ public unsafe readonly struct GorgonPtr<T>
     /// </para>
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static GorgonPtr<T> Add(in GorgonPtr<T> ptr, int indexOffset)
+    public static GorgonPtr<T> Add(GorgonPtr<T> ptr, int indexOffset)
     {
         if (ptr == NullPtr)
         {
             return NullPtr;
         }
 
-        int newIndex = ptr._index + indexOffset;
+        int newIndex = ptr._indexOffset + indexOffset;
 
-        // If the new length is negative or zero, then we've extended beyond the length of the memory block.
-        // For the sake of performance (yes, it's an actual hit), we'll return a null pointer instead of throwing.
-        return (newIndex < 0) || (newIndex >= ptr.Length)
-            ? NullPtr
-            : new GorgonPtr<T>(ptr._ptr + indexOffset, newIndex, ptr.Length);
+        if ((newIndex < 0) || (newIndex >= ptr.Length + ptr._indexOffset))
+        {
+            return NullPtr;
+        }
+
+        return new(ptr._ptr + indexOffset, newIndex, ptr.Length - indexOffset);
     }
 
     /// <summary>
@@ -481,38 +490,137 @@ public unsafe readonly struct GorgonPtr<T>
     /// </para>
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static GorgonPtr<T> Subtract(in GorgonPtr<T> ptr, int indexOffset) => Add(ptr, -indexOffset);
+    public static GorgonPtr<T> Subtract(GorgonPtr<T> ptr, int indexOffset)
+    {
+        if (ptr == NullPtr)
+        {
+            return NullPtr;
+        }
+
+        int newIndex = ptr._indexOffset - indexOffset;
+
+        if ((newIndex < 0) || (newIndex >= ptr.Length + ptr._indexOffset))
+        {
+            return NullPtr;
+        }
+
+        return new(ptr._ptr - indexOffset, newIndex, ptr.Length + indexOffset);
+    }
 
     /// <summary>
-    /// Function to return the pointer as a reference value.
+    /// Function to convert a pointer to another pointer type.
     /// </summary>
-    /// <typeparam name="Tc">The type of value. Must be an unmanaged value type, and can be different than <typeparamref name="T"/>.</typeparam>
-    /// <param name="offset">[Optional] The offset, in bytes, within the memory pointed at this pointer to start at.</param>
-    /// <exception cref="NullReferenceException">Thrown when this pointer is <b>null</b>.</exception>
-    /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="offset"/> is less than 0, or greater than, or equal to, the <see cref="SizeInBytes"/>.</exception>
-    /// <returns>The refernce to the value at the index.</returns>
+    /// <typeparam name="TTo">The type to convert to. Must be an unmanaged value type, and can be different than <typeparamref name="T"/>.</typeparam>
+    /// <param name="ptr">The pointer to convert.</param>
+    /// <exception cref="NullReferenceException">Thrown when the pointer is <b>null</b>.</exception>
+    /// <exception cref="InvalidCastException">Thrown if the <see cref="SizeInBytes"/> is smaller than the size (in bytes) of the type <typeparamref name="TTo"/>.</exception>
+    /// <returns>The casted pointer.</returns>
     /// <remarks>
     /// <para>
-    /// This is meant for converting the data to another type while accessing memory. If the type of data specified by <typeparamref name="T"/> is the same as <typeparamref name="Tc"/>, then use the 
-    /// indexing property instead for better performance.
+    /// This is the equivalent of casting the pointer to another pointer type (e.g. <c>byte* ptr = (byte *)ptr2</c>). This is useful for remapping data types within the memory pointed at by the pointer.
+    /// </para>
+    /// <para>
+    /// <para>
+    /// <note type="important">
+    /// <para>
+    /// The type referenced by <typeparamref name="TTo"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
+    /// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
+    /// </para>
+    /// <para>
+    /// Value types with marshalling attributes (<see cref="MarshalAsAttribute"/>) are <i>not</i> supported and will not be read correctly.
+    /// </para>
+    /// </note>
+    /// </para>
+    /// <note type="warning">
+    /// <para>
+    /// Note that this method does not perform widening. That is, converting a pointer that points to a memory block that has a size of 4 bytes, to a pointer with a type that has a size of 8 bytes (e.g. 
+    /// converting a <see cref="int"/> to <see cref="double"/>) will throw an exception. 
+    /// </para>
+    /// <para>
+    /// Because of this, it is best practice that the pointer memory size be evenly divisible by the size of the <typeparamref name="TTo"/> type when converting.
+    /// </para>
+    /// </note>
+    /// </para>
+    /// <para>
+    /// For example:
+    /// <code lang="csharp">
+    /// <![CDATA[
+    /// GorgonPtr<byte> ptr = ...;
+    /// GorgonPtr<int> ptr2 = ...;
+    /// 
+    /// // This is the same as converting byte* ptr = (byte *)ptr2.
+    /// ptr = ptr2.To<byte>();
+    /// ]]>
+    /// </code>
+    /// </para>
+    /// </remarks>
+    public static GorgonPtr<TTo> To<TTo>(GorgonPtr<T> ptr)
+        where TTo : unmanaged
+    {
+        if (ptr._ptr is null)
+        {
+            throw new NullReferenceException();
+        }
+
+        int toSize = Unsafe.SizeOf<TTo>();
+        int newSize = ptr.SizeInBytes / toSize;
+
+        if ((newSize == 0) || ((newSize * toSize) > ptr.SizeInBytes))
+        {
+            throw new InvalidCastException(string.Format(Resources.GOR_ERR_PTR_CONVERT_WIDENING, toSize, ptr.SizeInBytes));
+        }
+
+        return new((TTo*)ptr._ptr, newSize);
+    }
+
+    /// <summary>
+    /// Function to return a reference, of the specified type, to the memory pointed at by the pointer.
+    /// </summary>
+    /// <typeparam name="TTo">The type of reference value to interpret the data as. Must be an unmanaged value type, and can be different than pointer type <typeparamref name="T"/>.</typeparam>
+    /// <param name="offset">[Optional] The offset, in bytes, within the memory pointed at this pointer.</param>
+    /// <exception cref="NullReferenceException">Thrown when the pointer is <b>null</b>.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="offset"/> is less than 0, or greater than, or equal to, the pointer <see cref="SizeInBytes"/>.</exception>
+    /// <returns>The refernce to the value at the specified index.</returns>
+    /// <remarks>
+    /// <para>
+    /// This is meant for converting the data to another type while accessing memory. If the type of data specified by <typeparamref name="T"/> is the same as <typeparamref name="TTo"/>, then use the 
+    /// indexing property on the pointer for better performance.
+    /// </para>
+    /// <para>
+    /// The <paramref name="offset"/> parameter allows the reference the value at the specified byte offset within the memory pointed at by the pointer. For example, if the <paramref name="offset"/> 
+    /// is 4, then the returned reference value will be the value at 4 bytes into the memory pointed at by the pointer.
+    /// </para>
+    /// <para>
+    /// <note type="important">
+    /// <para>
+    /// The type referenced by <typeparamref name="TTo"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
+    /// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
+    /// </para>
+    /// <para>
+    /// Value types with marshalling attributes (<see cref="MarshalAsAttribute"/>) are <i>not</i> supported and will not be read correctly.
+    /// </para>
+    /// </note>
     /// </para>
     /// <para>
     /// This value is returned as a reference, and as such, it can be assigned to as well. For example:
     /// <code lang="csharp">
     /// <![CDATA[
     /// GorgonPtr<int> ptr = ...;
-    /// byte newValue = 123;
+    /// byte newValue = 0x7f;
     /// 
-    /// // This will write the byte value 123 at the 2nd byte in the first integer (since the pointer expects a int values).
-    /// ptr.AsRef<byte>(1) = newValue;
+    /// // This will write the byte value 0x7f at the 2nd byte in the integer data stored in 
+    /// // the memory pointed at by the pointer. (e.g. the memory will contain 0x00007F00).
+    /// ref byte oldValue = ref ptr.AsRef<byte>(1);
+    /// oldValue = newValue;
     /// ]]>
     /// </code>
     /// </para>
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public ref Tc AsRef<Tc>(int offset = 0) where Tc : unmanaged
+    public ref TTo AsRef<TTo>(int offset = 0)
+        where TTo : unmanaged
     {
-        if (_ptr == null)
+        if (_ptr is null)
         {
             throw new NullReferenceException();
         }
@@ -524,328 +632,10 @@ public unsafe readonly struct GorgonPtr<T>
 
         if (offset >= SizeInBytes)
         {
-            throw new ArgumentOutOfRangeException(nameof(SizeInBytes), string.Format(Resources.GOR_ERR_INDEX_OUT_OF_RANGE, 0, SizeInBytes));
+            throw new ArgumentOutOfRangeException(nameof(offset), string.Format(Resources.GOR_ERR_INDEX_OUT_OF_RANGE, 0, SizeInBytes));
         }
 
-        return ref Unsafe.AsRef<Tc>(offset + (byte *)_ptr);
-    }
-
-    /// <summary>
-    /// Function to fill the memory pointed at by this pointer with a specific value.
-    /// </summary>
-    /// <param name="clearValue">The value used to fill the memory.</param>
-    /// <exception cref="NullReferenceException">Thrown when this pointer is <b>null</b>.</exception>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Fill(byte clearValue)
-    {
-        if (_ptr == null)
-        {
-            throw new NullReferenceException();
-        }
-
-        Unsafe.InitBlock(_ptr, clearValue, (uint)SizeInBytes);
-    }
-
-    /// <summary>
-    /// Function to copy the memory pointed at by this pointer into another pointer.
-    /// </summary>
-    /// <param name="destination">The destination pointer that will receive the data.</param>
-    /// <param name="sourceIndex">[Optional] The first index to start copying from.</param>
-    /// <param name="count">[Optional] The number of items to copy.</param>
-    /// <param name="destIndex">[Optional] The destination index in the destination pointer to start copying into.</param>
-    /// <exception cref="NullReferenceException">Thrown when this pointer is <b>null</b>.</exception>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="destination"/> parameter is <b>null</b>.</exception>
-    /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="sourceIndex"/>, or the <paramref name="destIndex"/> parameter is less than 0.</exception>
-    /// <exception cref="ArgumentException">
-    /// <para>Thrown when the <paramref name="sourceIndex"/> + <paramref name="count"/> is too big for the memory block.</para>
-    /// <para>-or-</para>
-    /// <para>Thrown when the <paramref name="destIndex"/> + <paramref name="count"/> is too big for the memory block.</para>
-    /// </exception>
-    /// <remarks>
-    /// <para>
-    /// If the <paramref name="count"/> parameter is ommitted, then the full length of the memory block, minus the <paramref name="sourceIndex"/> is used. Ensure that there is enough space in the 
-    /// <paramref name="destination"/> memory block to accomodate the amount of data required.
-    /// </para>
-    /// </remarks>
-    public void CopyTo(in GorgonPtr<T> destination, int sourceIndex = 0, int? count = null, int destIndex = 0)
-    {
-        if (_ptr == null)
-        {
-            throw new NullReferenceException();
-        }
-
-        if (destination == NullPtr)
-        {
-            throw new ArgumentNullException(nameof(destination));
-        }
-
-        if (sourceIndex < 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(sourceIndex), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
-        }
-
-        if (destIndex < 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(destIndex), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
-        }
-
-        count ??= Length - sourceIndex;
-
-        if (count < 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(count), Resources.GOR_ERR_DATABUFF_SIZE_TOO_SMALL);
-        }
-
-        if (sourceIndex + count.Value > Length)
-        {
-            throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, sourceIndex, count.Value));
-        }
-
-        if (destIndex + count.Value > destination.Length)
-        {
-            throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, destIndex, count.Value));
-        }
-
-        Unsafe.CopyBlock(destination._ptr + destIndex, _ptr + sourceIndex, (uint)(count * sizeof(T)));
-    }
-
-    /// <summary>
-    /// Function to copy the contents of this buffer into other.
-    /// </summary>
-    /// <param name="destination">The destination buffer that will receive the data.</param>
-    /// <param name="sourceIndex">[Optional] The first index to start copying from.</param>
-    /// <param name="count">[Optional] The number of items to copy.</param>
-    /// <param name="destIndex">[Optional] The destination index in the destination buffer to start copying into.</param>
-    /// <exception cref="NullReferenceException">Thrown when this pointer is <b>null</b>.</exception>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="destination"/> parameter is <b>null</b>.</exception>
-    /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="sourceIndex"/>, or the <paramref name="destIndex"/> parameter is less than 0.</exception>
-    /// <exception cref="ArgumentException">
-    /// <para>Thrown when the <paramref name="sourceIndex"/> + <paramref name="count"/> is too big for this buffer.</para>
-    /// <para>-or-</para>
-    /// <para>Thrown when the <paramref name="destIndex"/> + <paramref name="count"/> is too big for the <paramref name="destination"/> buffer.</para>
-    /// </exception>
-    /// <remarks>
-    /// <para>
-    /// If the <paramref name="count"/> parameter is ommitted, then the full length of the source buffer, minus the <paramref name="sourceIndex"/> is used. Ensure that there is enough space in the 
-    /// <paramref name="destination"/> buffer to accomodate the amount of data required.
-    /// </para>
-    /// </remarks>
-    public void CopyTo(GorgonNativeBuffer<T> destination, int sourceIndex = 0, int? count = null, int destIndex = 0)
-    {
-        if (_ptr == null)
-        {
-            throw new NullReferenceException();
-        }
-
-        if (destination == null)
-        {
-            throw new ArgumentNullException(nameof(destination));
-        }
-
-        if (sourceIndex < 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(sourceIndex), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
-        }
-
-        if (destIndex < 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(destIndex), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
-        }
-
-        count ??= Length - sourceIndex;
-
-        if (count < 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(count), Resources.GOR_ERR_DATABUFF_SIZE_TOO_SMALL);
-        }
-
-        if (sourceIndex + count.Value > Length)
-        {
-            throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, sourceIndex, count.Value));
-        }
-
-        if (destIndex + count.Value > destination.Length)
-        {
-            throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, destIndex, count.Value));
-        }
-
-        Unsafe.CopyBlock((T*)destination + destIndex, _ptr + sourceIndex, (uint)(count * sizeof(T)));
-    }
-
-    /// <summary>
-    /// Function to copy the contents of memory pointed at by this pointer into an array of type <typeparamref name="T"/>.
-    /// </summary>
-    /// <param name="destination">The destination array that will receive the data.</param>
-    /// <param name="sourceIndex">[Optional] The first index to start copying from.</param>
-    /// <param name="count">[Optional] The number of items to copy.</param>
-    /// <param name="destIndex">[Optional] The destination index in the destination array to start copying into.</param>
-    /// <exception cref="NullReferenceException">Thrown when this pointer is <b>null</b>.</exception>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="destination"/> parameter is <b>null</b>.</exception>
-    /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="sourceIndex"/>, or the <paramref name="destIndex"/> parameter is less than 0.</exception>
-    /// <exception cref="ArgumentException">
-    /// <para>Thrown when the <paramref name="sourceIndex"/> + <paramref name="count"/> is too big for this memory block.</para>
-    /// <para>-or-</para>
-    /// <para>Thrown when the <paramref name="destIndex"/> + <paramref name="count"/> is too big for the <paramref name="destination"/> memory block.</para>
-    /// </exception>
-    /// <remarks>
-    /// <para>
-    /// If the <paramref name="count"/> parameter is ommitted, then the full length of the source memory block, minus the <paramref name="sourceIndex"/> is used. Ensure that there is enough 
-    /// space in the <paramref name="destination"/> memory block to accomodate the amount of data required.
-    /// </para>
-    /// </remarks>
-    public void CopyTo(T[] destination, int sourceIndex = 0, int? count = null, int destIndex = 0)
-    {
-        if (_ptr == null)
-        {
-            throw new NullReferenceException();
-        }
-
-        if (destination == null)
-        {
-            throw new ArgumentNullException(nameof(destination));
-        }
-
-        if (sourceIndex < 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(sourceIndex), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
-        }
-
-        if (destIndex < 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(destIndex), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
-        }
-
-        count ??= Length - sourceIndex;
-
-        if (count < 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(count), Resources.GOR_ERR_DATABUFF_SIZE_TOO_SMALL);
-        }
-
-        if (sourceIndex + count.Value > Length)
-        {
-            throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, sourceIndex, count.Value));
-        }
-
-        if (destIndex + count.Value > destination.Length)
-        {
-            throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, destIndex, count.Value));
-        }
-
-        fixed (T* destPtr = &destination[destIndex])
-        {
-            int typeSize = sizeof(T);
-            Unsafe.CopyBlock(destPtr, _ptr + sourceIndex , (uint)(count * typeSize));
-        }
-    }
-
-    /// <summary>
-    /// Function to copy the contents of the memory pointed at this pointer into a stream.
-    /// </summary>
-    /// <param name="stream">The stream to write into.</param>
-    /// <param name="startIndex">[Optional] The index in the pointer to start copying from.</param>
-    /// <param name="count">[Optional] The maximum number of items to read.</param>
-    /// <exception cref="NullReferenceException">Thrown when this pointer is <b>null</b>.</exception>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>
-    /// <exception cref="IOException">Thrown when the <paramref name="stream"/> is read only.</exception>
-    /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="startIndex"/> is less than 0.</exception>
-    /// <exception cref="ArgumentException">Thrown when the <paramref name="startIndex"/> + <paramref name="count"/> are equal to or greater than the <see cref="Length"/>.</exception>
-    /// <remarks>
-    /// <para>
-    /// If the <paramref name="count"/> parameter is ommitted, then the full length of the memory block, minus the <paramref name="startIndex"/> is used. Ensure that there is enough space in the 
-    /// <paramref name="stream"/> to accomodate the amount of data required.
-    /// </para>
-    /// </remarks>
-    /// <seealso cref="ToStream(int, int?)"/>
-    public void CopyTo(Stream stream, int startIndex = 0, int? count = null)
-    {
-        if (_ptr == null)
-        {
-            throw new NullReferenceException();
-        }
-
-        if (stream == null)
-        {
-            throw new ArgumentNullException(nameof(stream));
-        }
-
-        if (!stream.CanWrite)
-        {
-            throw new IOException(Resources.GOR_ERR_STREAM_IS_READONLY);
-        }
-
-        if (startIndex < 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(startIndex), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
-        }
-
-        count ??= Length - startIndex;
-
-        if (count < 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(count), Resources.GOR_ERR_DATABUFF_SIZE_TOO_SMALL);
-        }
-
-        if (startIndex + count.Value > Length)
-        {
-            throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, startIndex, count.Value));
-        }
-
-        using var writer = new GorgonBinaryWriter(stream, true);
-        for (int i = 0; i < count.Value; ++i)
-        {
-            writer.WriteValue(ref this[i + startIndex]);
-        }
-    }
-
-    /// <summary>
-    /// Function to return a stream wrapping this pointer.
-    /// </summary>
-    /// <param name="index">[Optional] The index in the pointer memory to map to the beginning of the stream.</param>
-    /// <param name="count">[Optional] The number of items to wrap in the stream.</param>
-    /// <returns>A new <see cref="Stream"/> which will wrap the contents of the memory pointed at by this pointer.</returns>
-    /// <exception cref="NullReferenceException">Thrown when this pointer is <b>null</b>.</exception>
-    /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="index"/>, or the <paramref name="count"/> parameter is less than 0.</exception>
-    /// <exception cref="ArgumentException">Thrown when the <paramref name="index"/> plus the <paramref name="count"/> exceeds the size of the memory block.</exception>
-    /// <remarks>
-    /// <para>
-    /// This method takes the unmanaged memory pointed at by this pointer and wraps it in a <see cref="Stream"/>. The stream returned is not a copy of the memory, so it is important to 
-    /// ensure that the stream lifetime is managed in conjunction with the lifetime of the memory. Disposing of the memory and using the returned stream will result in undefined behavior 
-    /// and potential memory access violations.
-    /// </para>
-    /// <para>
-    /// A portion of the buffer can be wrapped by the stream by supplying a value for <paramref name="index"/> and/or <paramref name="count"/>.  If the count is omitted, all data from 
-    /// <paramref name="index"/> up to the end of the memory block is wrapped by the stream.  Likewise, if <paramref name="index"/> is omitted, all data from the beginning of the memory block up to the 
-    /// <paramref name="count"/> is wrapped. If no parameters are supplied, then the entire memory block is wrapped.
-    /// </para>
-    /// </remarks>        
-    public Stream ToStream(int index = 0, int? count = null)
-    {
-        if (_ptr == null)
-        {
-            throw new NullReferenceException();
-        }
-
-        if (index < 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(index), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
-        }
-
-        count ??= Length - index;
-
-        if (count < 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(count), Resources.GOR_ERR_DATABUFF_SIZE_TOO_SMALL);
-        }
-
-        if (index + count.Value > Length)
-        {
-            throw new ArgumentException(Resources.GOR_ERR_DATABUFF_BUFFER_OVERRUN);
-        }
-
-        count *= sizeof(T);
-
-        return new UnmanagedMemoryStream((byte *)(_ptr + index), count.Value, count.Value, FileAccess.ReadWrite);
+        return ref Unsafe.AsRef<TTo>(offset + (byte*)_ptr);
     }
 
     /// <summary>
@@ -878,7 +668,7 @@ public unsafe readonly struct GorgonPtr<T>
     /// <param name="ptr">The pointer to convert.</param>
     /// <returns>The memory address as a <see cref="long"/> value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static long ToLong(GorgonPtr<T> ptr) => (long)ptr._ptr;
+    public static long ToInt64(GorgonPtr<T> ptr) => (long)ptr._ptr;
 
     /// <summary>
     /// Function to convert a pointer to a <see cref="ulong"/> value representing the memory address of the block of memory being pointed at.
@@ -886,7 +676,7 @@ public unsafe readonly struct GorgonPtr<T>
     /// <param name="ptr">The pointer to convert.</param>
     /// <returns>The memory address as a <see cref="ulong"/> value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ulong ToUnsignedLong(GorgonPtr<T> ptr) => (ulong)ptr._ptr;
+    public static ulong ToUInt64(GorgonPtr<T> ptr) => (ulong)ptr._ptr;
 
     /// <summary>
     /// Function to convert pointer to a native pointer.
@@ -910,321 +700,63 @@ public unsafe readonly struct GorgonPtr<T>
     /// </para>
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static nint Tonint(GorgonPtr<T> ptr) => (nint)ptr._ptr;
+    public static nint ToIntPtr(GorgonPtr<T> ptr) => (nint)ptr._ptr;
 
     /// <summary>
-    /// Function to return a SharpDX DataStream wrapping the memory pointed at by this pointer.
+    /// Function to convert pointer to a native pointer.
     /// </summary>
-    /// <param name="ptr">The pointer to wrap.</param>
-    /// <returns>A new SharpDX DataStream which will wrap the contents of the memory block.</returns>
+    /// <param name="ptr">The pointer to convert.</param>
+    /// <returns>The native pointer.</returns>
     /// <remarks>
     /// <para>
-    /// This method takes the unmanaged memory pointed at by this pointer and wraps it in a SharpDX DataStream. The SharpDX DataStream returned is not a copy of the memory, so it is important to 
-    /// ensure that the SharpDX DataStream lifetime is managed in conjunction with the lifetime of the memory. Disposing of the memory and using the returned SharpDX DataStream will result in 
-    /// undefined behavior and potential memory access violations.
+    /// <note type="warning">
+    /// <para>
+    /// This operator returns the pointer to the memory address of this pointer. Developers should only use this for interop scenarios where a native call needs a pointer. Manipulation of this pointer is 
+    /// not advisable and may cause harm. 
+    /// </para>
+    /// <para>
+    /// No safety checks are done on this pointer, and as such, memory corruption is possible if the pointer is used without due care.
+    /// </para>
+    /// <para>
+    /// <h2><font color="#FF0000">Use this at your own risk.</font></h2>
+    /// </para>
+    /// </note>
     /// </para>
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static DX.DataStream ToDataStream(GorgonPtr<T> ptr) => ptr.ToDataStream();
-
-    /// <summary>
-    /// Function to return a SharpDX DataStream wrapping the memory pointed at by this pointer.
-    /// </summary>
-    /// <param name="index">[Optional] The index in the buffer to map to the beginning of the SharpDX DataStream.</param>
-    /// <param name="count">[Optional] The number of items to wrap in the SharpDX DataStream.</param>
-    /// <returns>A new SharpDX DataStream which will wrap the contents of the memory block.</returns>
-    /// <exception cref="NullReferenceException">Thrown when this pointer is <b>null</b>.</exception>
-    /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="index"/>, or the <paramref name="count"/> parameter is less than 0.</exception>
-    /// <exception cref="ArgumentException">Thrown when the <paramref name="index"/> plus the <paramref name="count"/> exceeds the size of the memory block.</exception>
-    /// <remarks>
-    /// <para>
-    /// This method takes the unmanaged memory pointed at by this pointer and wraps it in a SharpDX DataStream. The SharpDX DataStream returned is not a copy of the memory, so it is important to 
-    /// ensure that the SharpDX DataStream lifetime is managed in conjunction with the lifetime of the memory. Disposing of the memory and using the returned SharpDX DataStream will result in 
-    /// undefined behavior and potential memory access violations.
-    /// </para>
-    /// <para>
-    /// A portion of the memory block can be wrapped by the SharpDX DataStream by supplying a value for <paramref name="index"/> and/or <paramref name="count"/>.  If the count is omitted, all data from 
-    /// <paramref name="index"/> up to the end of the memory block is wrapped by the SharpDX DataStream.  Likewise, if <paramref name="index"/> is omitted, all data from the beginning of the memory block up to the 
-    /// <paramref name="count"/> is wrapped. If no parameters are supplied, then the entire memory block is wrapped.
-    /// </para>
-    /// </remarks>        
-    public DX.DataStream ToDataStream(int index = 0, int? count = null)
-    {
-        if (_ptr == null)
-        {
-            throw new NullReferenceException();
-        }
-
-        if (index < 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(index), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
-        }
-
-        count ??= Length - index;
-
-        if (count < 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(count), Resources.GOR_ERR_DATABUFF_SIZE_TOO_SMALL);
-        }
-
-#pragma warning disable IDE0046 // Convert to conditional expression
-        if (index + count.Value > Length)
-        {
-            throw new ArgumentException(Resources.GOR_ERR_DATABUFF_BUFFER_OVERRUN);
-        }
-
-        return new DX.DataStream((nint)(_ptr + index), count.Value * sizeof(T), true, true);
-#pragma warning restore IDE0046 // Convert to conditional expression
-    }
-
-    /// <summary>
-    /// Function to return a SharpDX DataBuffer wrapping this pointer.
-    /// </summary>
-    /// <returns>A new SharpDX DataBuffer which will wrap the contents of the pointer.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="ptr"/> parameter is <b>null</b>.</exception>
-    /// <remarks>
-    /// <para>
-    /// This method takes the unmanaged memory used by the buffer and wraps it in a SharpDX DataBuffer. The SharpDX DataBuffer returned is not a copy of the memory used by the buffer, so it is important to 
-    /// ensure that the SharpDX DataBuffer lifetime is managed in conjunction with the lifetime of the buffer. Disposing of the buffer and using the returned SharpDX DataBuffer will result in undefined behavior and potential 
-    /// memory access violations.
-    /// </para>
-    /// </remarks>        
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static DX.DataBuffer ToDataBuffer(GorgonPtr<T> ptr) => ptr.ToDataBuffer();
-
-    /// <summary>
-    /// Function to return a SharpDX DataBuffer wrapping the memory pointed at by this pointer.
-    /// </summary>
-    /// <param name="index">[Optional] The index in the buffer to map to the beginning of the SharpDX DataBuffer.</param>
-    /// <param name="count">[Optional] The number of items to wrap in the SharpDX DataBuffer.</param>
-    /// <returns>A new SharpDX DataBuffer which will wrap the contents of the memory block.</returns>
-    /// <exception cref="NullReferenceException">Thrown when this pointer is <b>null</b>.</exception>
-    /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="index"/>, or the <paramref name="count"/> parameter is less than 0.</exception>
-    /// <exception cref="ArgumentException">Thrown when the <paramref name="index"/> plus the <paramref name="count"/> exceeds the size of the memory block.</exception>
-    /// <remarks>
-    /// <para>
-    /// This method takes the unmanaged memory pointed at by this pointer and wraps it in a SharpDX DataBuffer. The SharpDX DataBuffer returned is not a copy of the memory, so it is important to 
-    /// ensure that the SharpDX DataBuffer lifetime is managed in conjunction with the lifetime of the memory. Disposing of the memory and using the returned SharpDX DataBuffer will result in 
-    /// undefined behavior and potential memory access violations.
-    /// </para>
-    /// <para>
-    /// A portion of the memory block can be wrapped by the SharpDX DataBuffer by supplying a value for <paramref name="index"/> and/or <paramref name="count"/>.  If the count is omitted, all data from 
-    /// <paramref name="index"/> up to the end of the memory block is wrapped by the SharpDX DataBuffer.  Likewise, if <paramref name="index"/> is omitted, all data from the beginning of the memory block up to the 
-    /// <paramref name="count"/> is wrapped. If no parameters are supplied, then the entire memory block is wrapped.
-    /// </para>
-    /// </remarks>        
-    public DX.DataBuffer ToDataBuffer(int index = 0, int? count = null)
-    {
-        if (_ptr == null)
-        {
-            throw new NullReferenceException();
-        }
-
-        if (index < 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(index), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
-        }
-
-        count ??= Length - index;
-
-        if (count < 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(count), Resources.GOR_ERR_DATABUFF_SIZE_TOO_SMALL);
-        }
-
-#pragma warning disable IDE0046 // Convert to conditional expression
-        if (index + count.Value > Length)
-        {
-            throw new ArgumentException(Resources.GOR_ERR_DATABUFF_BUFFER_OVERRUN);
-        }
-
-        return new DX.DataBuffer((nint)(_ptr + index), count.Value * sizeof(T));
-#pragma warning restore IDE0046 // Convert to conditional expression
-    }
-
-    /// <summary>
-    /// Function to return a SharpDX DataPointer wrapping the memory pointed at by this pointer.
-    /// </summary>
-    /// <param name="ptr">The pointer to wrap.</param>
-    /// <returns>A new SharpDX DataPointer which will wrap the contents of the memory block.</returns>
-    /// <remarks>
-    /// <para>
-    /// This method takes the unmanaged memory pointed at by this pointer and wraps it in a SharpDX DataPointer. The SharpDX DataPointer returned is not a copy of the memory, so it is important to 
-    /// ensure that the SharpDX DataPointer lifetime is managed in conjunction with the lifetime of the memory. Disposing of the memory and using the returned SharpDX DataPointer will result in 
-    /// undefined behavior and potential memory access violations.
-    /// </para>
-    /// </remarks>      
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static DX.DataPointer ToDataPointer(GorgonPtr<T> ptr) => ptr.ToDataPointer();
-
-    /// <summary>
-    /// Function to return a SharpDX DataPointer wrapping the memory pointed at by this pointer.
-    /// </summary>
-    /// <param name="index">[Optional] The index in the buffer to map to the beginning of the SharpDX DataPointer.</param>
-    /// <param name="count">[Optional] The number of items to wrap in the SharpDX DataPointer.</param>
-    /// <returns>A new SharpDX DataPointer which will wrap the contents of the memory block.</returns>
-    /// <exception cref="NullReferenceException">Thrown when this pointer is <b>null</b>.</exception>
-    /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="index"/>, or the <paramref name="count"/> parameter is less than 0.</exception>
-    /// <exception cref="ArgumentException">Thrown when the <paramref name="index"/> plus the <paramref name="count"/> exceeds the size of the memory block.</exception>
-    /// <remarks>
-    /// <para>
-    /// This method takes the unmanaged memory pointed at by this pointer and wraps it in a SharpDX DataPointer. The SharpDX DataPointer returned is not a copy of the memory, so it is important to 
-    /// ensure that the SharpDX DataPointer lifetime is managed in conjunction with the lifetime of the memory. Disposing of the memory and using the returned SharpDX DataPointer will result in 
-    /// undefined behavior and potential memory access violations.
-    /// </para>
-    /// <para>
-    /// A portion of the memory block can be wrapped by the SharpDX DataPointer by supplying a value for <paramref name="index"/> and/or <paramref name="count"/>.  If the count is omitted, all data from 
-    /// <paramref name="index"/> up to the end of the memory block is wrapped by the SharpDX DataPointer.  Likewise, if <paramref name="index"/> is omitted, all data from the beginning of the memory block up to the 
-    /// <paramref name="count"/> is wrapped. If no parameters are supplied, then the entire memory block is wrapped.
-    /// </para>
-    /// </remarks>        
-    public DX.DataPointer ToDataPointer(int index = 0, int? count = null)
-    {
-        if (_ptr == null)
-        {
-            throw new NullReferenceException();
-        }
-
-        if (index < 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(index), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
-        }
-
-        count ??= Length - index;
-
-        if (count < 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(count), Resources.GOR_ERR_DATABUFF_SIZE_TOO_SMALL);
-        }
-
-#pragma warning disable IDE0046 // Convert to conditional expression
-        if (index + count.Value > Length)
-        {
-            throw new ArgumentException(Resources.GOR_ERR_DATABUFF_BUFFER_OVERRUN);
-        }
-
-        return new DX.DataPointer((nint)(_ptr + index), count.Value * sizeof(T));
-#pragma warning restore IDE0046 // Convert to conditional expression
-    }
+    public static nuint ToUIntPtr(GorgonPtr<T> ptr) => (nuint)ptr._ptr;
 
     /// <summary>
     /// Function to access native data as a span slice.
     /// </summary>
+    /// <param name="ptr">The pointer to convert.</param>
     /// <returns>A span for the pointer.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Span<T> ToSpan(GorgonPtr<T> ptr) => ptr.ToSpan();
-
-    /// <summary>
-    /// Function to access native data as a span slice.
-    /// </summary>
-    /// <param name="index">The index of the item to start slicing at.</param>
-    /// <param name="count">[Optional] The number of items to slice.</param>
-    /// <returns>A span for the pointer.</returns>
-    /// <exception cref="NullReferenceException">Thrown when this pointer is <b>null</b>.</exception>
-    /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="index"/>, or the <paramref name="count"/> parameter is less than 0.</exception>
-    public Span<T> ToSpan(int index = 0, int? count = null)
+    /// <exception cref="NullReferenceException">Thrown when this pointer is <see cref="GorgonPtr{T}.NullPtr"/>.</exception>
+    public static Span<T> ToSpan(GorgonPtr<T> ptr)
     {
-        if (_ptr == null)
+        if (ptr._ptr is null)
         {
             throw new NullReferenceException();
         }
 
-        if (index < 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(index), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
-        }
-
-        count ??= Length - index;
-
-        if (count < 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(count), Resources.GOR_ERR_DATABUFF_SIZE_TOO_SMALL);
-        }
-
-#pragma warning disable IDE0046 // Convert to conditional expression
-        if (index + count.Value > Length)
-        {
-            throw new ArgumentException(Resources.GOR_ERR_DATABUFF_BUFFER_OVERRUN);
-        }
-
-        return new Span<T>(_ptr + index, count.Value);
-#pragma warning restore IDE0046 // Convert to conditional expression
+        return new(ptr._ptr, ptr.Length);
     }
 
     /// <summary>
-    /// Function to access native data as a read only span slice.
+    /// Function to convert a pointer into a byte based pointer.
     /// </summary>
-    /// <returns>A span for the pointer.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ReadOnlySpan<T> ToReadOnlySpan(GorgonPtr<T> ptr) => ToSpan(ptr);
-
-    /// <summary>
-    /// Function to access native data as a read only span slice.
-    /// </summary>
-    /// <param name="index">The index of the item to start slicing at.</param>
-    /// <param name="count">[Optional] The number of items to slice.</param>
-    /// <returns>A span for the pointer.</returns>
-    /// <exception cref="NullReferenceException">Thrown when this pointer is <b>null</b>.</exception>
-    /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="index"/>, or the <paramref name="count"/> parameter is less than 0.</exception>
-    public ReadOnlySpan<T> ToReadOnlySpan(int index, int? count = null) => ToSpan(index, count);
-
-    /// <summary>
-    /// Function to convert this pointer into a byte based pointer.
-    /// </summary>
-    /// <param name="offset">[Optional] The number of bytes to offset by.</param>
+    /// <param name="ptr">The pointer to convert.</param>
     /// <returns>A new byte pointer starting at the pointer address with the offset applied.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">Thrown if the <paramref name="offset"/> would cause a buffer overrun.</exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public GorgonPtr<byte> ToBytePointer(int offset = 0)
+    public static GorgonPtr<byte> ToBytePointer(GorgonPtr<T> ptr)
     {
-        if (_ptr == null)
+        if (ptr._ptr is null)
         {
             return GorgonPtr<byte>.NullPtr;
         }
 
-        if (offset == 0)
-        {
-            return new GorgonPtr<byte>((byte *)_ptr, SizeInBytes);
-        }
-
-        int sizeInBytes = SizeInBytes;
-
-        return (offset < 0) || (offset >= sizeInBytes)
-            ? throw new ArgumentOutOfRangeException(nameof(offset))
-            : new GorgonPtr<byte>(((byte*)_ptr) + offset, SizeInBytes - offset);
+        return new((byte*)ptr._ptr, ptr.SizeInBytes);
     }
-
-    /// <summary>
-    /// Function to copy the contents of the memory pointed at by this pointer into a span.
-    /// </summary>
-    /// <param name="span">The span to write into.</param>
-    /// <param name="index">[Optional] The index within the pointer to start reading from.</param>
-    /// <exception cref="NullReferenceException">Thrown when this pointer is <b>null</b>.</exception>
-    /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is less than 0.</exception>
-    public void CopyTo(Span<T> span, int index = 0)
-    {
-        if (_ptr == null)
-        {
-            throw new NullReferenceException();
-        }
-
-        if (index < 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(index), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
-        }
-
-        int count = span.Length.Min(Length - index);
-
-        Unsafe.CopyBlock(ref Unsafe.As<T, byte>(ref span[0]), ref Unsafe.AsRef<byte>(_ptr), (uint)(count * sizeof(T)));
-    }
-
-    /// <summary>
-    /// Function to copy the contents of this buffer into a span.
-    /// </summary>
-    /// <param name="memory">The span to write into.</param>
-    /// <param name="srcOffset">[Optional] The offset within the buffer to start reading from.</param>
-    /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="srcOffset"/> is less than 0.</exception>
-    public void CopyTo(Memory<T> memory, int srcOffset = 0) => CopyTo(memory.Span, srcOffset);
 
     /// <summary>Returns a <see cref="string" /> that represents this instance.</summary>
     /// <returns>A <see cref="string" /> that represents this instance.</returns>
@@ -1238,7 +770,143 @@ public unsafe readonly struct GorgonPtr<T>
     /// <param name="obj">The object to compare with the current instance.</param>
     /// <returns>
     ///   <c>true</c> if the specified <see cref="object" /> is equal to this instance; otherwise, <c>false</c>.</returns>
-    public override bool Equals(object obj) => (obj is GorgonPtr<T> ptr) ? ptr.Equals(this) : base.Equals(obj);
+    public override bool Equals(object? obj) => (obj is GorgonPtr<T> ptr) ? Equals(ptr) : base.Equals(obj);
+
+    /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+    /// <param name="other">An object to compare with this object.</param>
+    /// <returns>true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool Equals(GorgonPtr<T> other) => _ptr == other._ptr;
+
+    /// <summary>
+    /// Function to fill the memory pointed at by a pointer with a specific byte value.
+    /// </summary>
+    /// <param name="value">The value used to fill the memory.</param>
+    /// <exception cref="NullReferenceException">Thrown when the pointer is <b>null</b>.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Fill(byte value)
+    {
+        if (_ptr is null)
+        {
+            throw new NullReferenceException();
+        }
+
+        Unsafe.InitBlock(_ptr, value, (uint)SizeInBytes);
+    }
+
+    /// <summary>
+    /// Function to copy the memory pointed at by this pointer into another pointer.
+    /// </summary>
+    /// <param name="destination">The destination pointer that will receive the data.</param>
+    /// <exception cref="NullReferenceException">Thrown when this pointer is <see cref="GorgonPtr{T}.NullPtr"/>.</exception>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="destination"/> parameter is <see cref="GorgonPtr{T}.NullPtr"/>.</exception>
+    /// <exception cref="ArgumentException">Thrown when the <see cref="Length"/> is too big for the memory block of the memory pointed at the <paramref name="destination"/>.</exception>
+    /// <remarks>
+    /// <para>
+    /// Use this method to copy memory from one location to another. When the copy is performed, the entire memory block in this pointer will be copied to the <paramref name="destination"/> pointer. If the 
+    /// <see cref="Length"/> is too large to accomodate the memory block in the <paramref name="destination"/> pointer, then an exception will be thrown.
+    /// </para>
+    /// <para>
+    /// In order to copy a specified portion to the <paramref name="destination"/>, one may use the range operator like so:
+    /// <code lang="csharp">
+    /// <![CDATA[
+    /// GorgonPtr<byte> source = ...;
+    /// GorgonPtr<byte> destination = ...;
+    /// 
+    /// src[..10].CopyTo(destination);
+    /// 
+    /// // Or even a portion of the source buffer to an offset within the destination buffer.
+    /// src[5..10].CopyTo(destination[10..]);
+    /// ]]>
+    /// </code>
+    /// </para>
+    /// </remarks>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void CopyTo(GorgonPtr<T> destination)
+    {
+        if (_ptr is null)
+        {
+            throw new NullReferenceException();
+        }
+
+        ArgumentNullException.ThrowIfNull(destination._ptr, nameof(destination));
+
+        if (Length > destination.Length)
+        {
+            throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, 0, Length), nameof(destination));
+        }
+
+        Unsafe.CopyBlock(destination._ptr, _ptr, (uint)SizeInBytes);
+    }
+
+    /// <summary>
+    /// Function to copy the memory pointed at by this pointer into a <see cref="Span{T}"/>.
+    /// </summary>
+    /// <param name="destination">The destination pointer that will receive the data.</param>
+    /// <exception cref="NullReferenceException">Thrown when this pointer is <see cref="GorgonPtr{T}.NullPtr"/>.</exception>
+    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="destination"/> is empty.</exception>
+    /// <exception cref="ArgumentException">Thrown when the <see cref="Length"/> is too big for the memory block of the memory pointed at by the <paramref name="destination"/>.</exception>
+    /// <remarks>
+    /// <para>
+    /// Use this method to copy memory from one location to another. When the copy is performed, the entire memory block in this pointer will be copied to the <paramref name="destination"/> span. If the 
+    /// <see cref="Length"/> is too large to accomodate the memory block in the <paramref name="destination"/> span, then an exception will be thrown.
+    /// </para>
+    /// <para>
+    /// In order to copy a specified portion to the <paramref name="destination"/>, one may use the range operator like so:
+    /// <code lang="csharp">
+    /// <![CDATA[
+    /// GorgonPtr<byte> source = ...;
+    /// Span<byte> destination = new byte[512];
+    /// 
+    /// src[..10].CopyTo(destination);
+    /// 
+    /// // Or even a portion of the source buffer to an offset within the destination buffer.
+    /// src[5..10].CopyTo(destination[10..]);
+    /// ]]>
+    /// </code>
+    /// </para>
+    /// </remarks>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void CopyTo(Span<T> destination)
+    {
+        if (_ptr is null)
+        {
+            throw new NullReferenceException();
+        }
+
+        if (destination.IsEmpty)
+        {
+            throw new ArgumentEmptyException(nameof(destination));
+        }
+
+        if (Length > destination.Length)
+        {
+            throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, 0, Length), nameof(destination));
+        }
+
+        Unsafe.CopyBlock(ref Unsafe.As<T, byte>(ref destination[0]), ref Unsafe.AsRef<byte>(_ptr), (uint)(SizeInBytes));
+    }
+
+    /// <summary>
+    /// Function to create a new array and copy the contents of the memory pointed at by this pointer into it.
+    /// </summary>
+    /// <returns>The populated array.</returns>
+    /// <remarks>
+    /// <para>
+    /// If this pointer is <b>null</b>, then the resulting array will be empty.
+    /// </para>
+    /// </remarks>
+    public T[] ToArray()
+    {
+        if (_ptr is null)
+        {
+            return [];
+        }
+
+        var result = new T[Length];
+        CopyTo(result);
+        return result;
+    }
 
     /// <summary>
     /// Function to compare this pointer with another.
@@ -1260,7 +928,7 @@ public unsafe readonly struct GorgonPtr<T>
     /// will always return <b>true</b>.
     /// </para>
     /// </remarks>
-    public bool CompareData(GorgonPtr<T> other)
+    public bool CompareMemory(GorgonPtr<T> other)
     {
         if (other.Equals(this))
         {
@@ -1269,19 +937,25 @@ public unsafe readonly struct GorgonPtr<T>
 
         unsafe
         {
-            if ((_ptr == null) || (other._ptr == null))
+            if ((_ptr is null) || (other._ptr is null))
             {
                 return false;
             }
 
-            byte* leftData = (byte *)_ptr;
+            int dataLength = SizeInBytes;
+
+            if (dataLength != other.SizeInBytes)
+            {
+                return false;
+            }
+
+            byte* leftData = (byte*)_ptr;
             byte* rightData = (byte*)other._ptr;
-            int dataLength = SizeInBytes - (_index * TypeSize).Min(other.SizeInBytes - (other._index * TypeSize));
 
             while (dataLength > 0)
-            { 
-                if (dataLength > sizeof(long))
-                {                        
+            {
+                if (dataLength >= sizeof(long))
+                {
                     long left = *((long*)leftData);
                     long right = *((long*)rightData);
 
@@ -1296,10 +970,10 @@ public unsafe readonly struct GorgonPtr<T>
                     continue;
                 }
 
-                if (dataLength > sizeof(int))
+                if (dataLength >= sizeof(int))
                 {
-                    int left = *((int *)leftData);
-                    int right = *((int *)rightData);
+                    int left = *((int*)leftData);
+                    int right = *((int*)rightData);
 
                     if (left != right)
                     {
@@ -1312,10 +986,10 @@ public unsafe readonly struct GorgonPtr<T>
                     continue;
                 }
 
-                if (dataLength > sizeof(short))
+                if (dataLength >= sizeof(short))
                 {
-                    short left = *((short *)leftData);
-                    short right = *((short *)rightData);
+                    short left = *((short*)leftData);
+                    short right = *((short*)rightData);
 
                     if (left != right)
                     {
@@ -1328,7 +1002,7 @@ public unsafe readonly struct GorgonPtr<T>
                     continue;
                 }
 
-                if (*leftData != *rightData)
+                if ((*leftData) != (*rightData))
                 {
                     return false;
                 }
@@ -1341,124 +1015,18 @@ public unsafe readonly struct GorgonPtr<T>
 
         return true;
     }
-    #endregion
 
-    #region Constructor/Finalizer.       
-    /// <summary>Initializes a new instance of the <see cref="GorgonPtr{T}" /> struct.</summary>
-    /// <param name="ptr">The pointer to wrap.</param>
-    /// <param name="indexOffset">The offset, in indices of this pointer within the memory block.</param>
-    /// <param name="count">The number of items in the memory block.</param>
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GorgonPtr{T}" /> struct.
+    /// </summary>
+    /// <param name="ptr">The pointer to memory to wrap with this pointer.</param>
+    /// <param name="indexOffset">The offset within the memory block to point at.</param>
+    /// <param name="count">The number of items of type <typeparamref name="T"/> to wrap.</param>
     private GorgonPtr(T* ptr, int indexOffset, int count)
     {
         _ptr = ptr;
-        _index = indexOffset;
+        _indexOffset = indexOffset;
         Length = count;
-    }
-
-    /// <summary>Initializes a new instance of the <see cref="GorgonPtr{T}"/> struct by cloning another pointer.</summary>
-    /// <param name="dataPtr">The pointer to clone.</param>
-    public GorgonPtr(GorgonPtr<T> dataPtr)
-    {
-        _index = 0;
-        _ptr = dataPtr._ptr;
-        Length = dataPtr.Length / sizeof(T);
-    }
-
-    /// <summary>Initializes a new instance of the <see cref="GorgonPtr{T}" /> struct.</summary>
-    /// <param name="dataPtr">The SharpDX pointer to wrap within this pointer.</param>
-    /// <exception cref="ArgumentNullException">Thrown if the <paramref name="dataPtr"/> is <b>NULL</b>.</exception>
-    /// <remarks>
-    /// <para>
-    /// This constructor wraps the pointer provided by the SharpDX pointer <paramref name="dataPtr"/>. 
-    /// </para>
-    /// </remarks>
-    public GorgonPtr(DX.DataPointer dataPtr)
-    {
-        if (dataPtr.IsEmpty)
-        {
-            throw new ArgumentNullException(nameof(dataPtr));
-        }
-
-        _index = 0;
-        _ptr = (T*)dataPtr.Pointer;
-        Length = dataPtr.Size / sizeof(T);
-    }
-
-    /// <summary>Initializes a new instance of the <see cref="GorgonPtr{T}" /> struct.</summary>
-    /// <param name="dataBuffer">The SharpDX buffer to wrap within this pointer.</param>
-    /// <exception cref="ArgumentNullException">Thrown if the <paramref name="dataBuffer"/> is <b>NULL</b>.</exception>
-    /// <remarks>
-    /// <para>
-    /// This constructor wraps the pointer provided by the SharpDX buffer <paramref name="dataBuffer"/>. 
-    /// </para>
-    /// </remarks>
-    public GorgonPtr(DX.DataBuffer dataBuffer)
-    {
-        if (dataBuffer == null)
-        {
-            throw new ArgumentNullException(nameof(dataBuffer));
-        }
-
-        _index = 0;
-        _ptr = (T*)dataBuffer.DataPointer;
-        Length = dataBuffer.Size / sizeof(T);
-    }
-
-    /// <summary>Initializes a new instance of the <see cref="GorgonPtr{T}" /> struct.</summary>
-    /// <param name="dataStream">The SharpDX stream to wrap within this pointer.</param>
-    /// <exception cref="ArgumentNullException">Thrown if the <paramref name="dataStream"/> is <b>NULL</b>.</exception>
-    /// <remarks>
-    /// <para>
-    /// This constructor wraps the pointer provided by the SharpDX pointer <paramref name="dataStream"/>. This pointer will <b>not</b> change the stream position when read, written, 
-    /// or incremented/decremented.
-    /// </para>
-    /// </remarks>
-    public GorgonPtr(DX.DataStream dataStream)
-    {
-        if (dataStream == null)
-        {
-            throw new ArgumentNullException(nameof(dataStream));
-        }
-
-        _index = 0;
-        _ptr = (T*)dataStream.DataPointer;            
-        Length = (int)dataStream.Length / sizeof(T);
-    }
-
-    /// <summary>Initializes a new instance of the <see cref="GorgonPtr{T}" /> struct.</summary>
-    /// <param name="buffer">The native buffer to wrap within this pointer.</param>
-    /// <param name="index">[Optional] The index within the native buffer to start at.</param>
-    /// <param name="count">[Optional] The number of items within the native buffer to point at.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="buffer"/> parameter is <b>null</b>.</exception>
-    /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="index"/>, or <paramref name="count"/> parameter is less than 0.</exception>
-    /// <exception cref="ArgumentException">Thrown when the <paramref name="index"/> plus the <paramref name="count"/> is larger than the capacity of the <paramref name="buffer"/>.</exception>
-    public GorgonPtr(GorgonNativeBuffer<T> buffer, int index = 0, int? count = null)
-    {
-        if (buffer == null)
-        {
-            throw new ArgumentNullException(nameof(buffer));
-        }
-
-        if (index < 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(index), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
-        }
-
-        count ??= buffer.Length - index;
-
-        if (count <= 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(count));
-        }
-
-        if ((index + count) > buffer.Length)
-        {
-            throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, index, count));
-        }
-
-        _index = index;
-        _ptr = ((T *)buffer + index);
-        Length = count.Value;
     }
 
     /// <summary>Initializes a new instance of the <see cref="GorgonPtr{T}" /> struct.</summary>
@@ -1481,12 +1049,42 @@ public unsafe readonly struct GorgonPtr<T>
             throw new NullReferenceException(Resources.GOR_ERR_PTR_NULL);
         }
 
-        if (count <= 0)
+        if (count < 1)
         {
             throw new ArgumentException(Resources.GOR_ERR_DATABUFF_SIZE_TOO_SMALL, nameof(count));
         }
 
-        _index = 0;
+        _indexOffset = 0;
+        _ptr = (T*)pointer;
+        Length = count;
+    }
+
+    /// <summary>Initializes a new instance of the <see cref="GorgonPtr{T}" /> struct.</summary>
+    /// <param name="pointer">The pointer to memory to wrap with this pointer.</param>
+    /// <param name="count">The number of items of type <typeparamref name="T"/> to wrap.</param>
+    /// <exception cref="NullReferenceException">Thrown when the pointer is <b>NULL</b>.</exception>
+    /// <exception cref="ArgumentException">Thrown if the <paramref name="count"/> parameter is less than 1.</exception>
+    /// <remarks>
+    /// <para>
+    /// <note type="important">
+    /// This takes a native memory pointer and wraps it for safety. It is important that the <paramref name="count"/> is correct, otherwise memory access violations may occur when the pointer is 
+    /// used beyond the memory region that the original <paramref name="pointer"/> is assigned to.
+    /// </note>
+    /// </para>
+    /// </remarks>
+    public GorgonPtr(nuint pointer, int count)
+    {
+        if (pointer == UIntPtr.Zero)
+        {
+            throw new NullReferenceException(Resources.GOR_ERR_PTR_NULL);
+        }
+
+        if (count < 1)
+        {
+            throw new ArgumentException(Resources.GOR_ERR_DATABUFF_SIZE_TOO_SMALL, nameof(count));
+        }
+
+        _indexOffset = 0;
         _ptr = (T*)pointer;
         Length = count;
     }
@@ -1506,19 +1104,18 @@ public unsafe readonly struct GorgonPtr<T>
     /// </remarks>
     public GorgonPtr(T* pointer, int count)
     {
-        if (pointer == null)
+        if (pointer is null)
         {
             throw new NullReferenceException(Resources.GOR_ERR_PTR_NULL);
         }
 
-        if (count <= 0)
+        if (count < 1)
         {
             throw new ArgumentException(Resources.GOR_ERR_DATABUFF_SIZE_TOO_SMALL, nameof(count));
         }
 
-        _index = 0;
+        _indexOffset = 0;
         _ptr = pointer;
         Length = count;
     }
-    #endregion       
 }

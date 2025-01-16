@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2017 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,56 +11,49 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 2, 2017 7:46:50 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
 using System.Numerics;
-using System.Windows.Forms;
 using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Renderers.Cameras;
 using Gorgon.UI;
-using DX = SharpDX;
 
 namespace Gorgon.Examples;
 
 /// <summary>
-	/// This is an example based on the MiniTri example that will draw a single triangle with a texture.
-	/// 
-	/// Like the MiniTri example, we'll be drawing a single triangle, but instead of using a single color per vertex on the triangle, we'll be applying a texture to the triangle. 
-	/// 
-	/// To map the location within the texture to a point in the triangle, we'll change our vertex structure to use a Vector2 called UV. This is the UV coordinates for mapping the texture to the vertex. 
-	/// This value is in Texel space, and has a range of 0.0f - 1.0f, where 0.0 is the top/left, and 1.0f is the right/bottom. Larger values than 1.0f will either be clamped (the default), wrapped, or 
-	/// have a border color drawn.
-	/// 
-	/// To assign a texture, we modify our draw call to assign the texture's resource view to the PixelShaderResources on the draw call.
-	/// 
-	/// To properly sample the texture in the pixel shader, we'll also create a texture sampler which defines how the texture data should be read when processing in the pixel shader. This example uses 
-	/// default sampling which uses a bilinear filter to smooth the texture when it is zoomed in or out. Like the texture resource view, we assign this sampler to the PixelShaderSamplers on the draw 
-	/// call. 
-	/// 
-	/// One final note: The textures and samplers are assigned to slots. These slots must correspond to the slots declared in the pixel shader. So, for example, if we have declared a texture at slot 4 
-	/// in out pixel shader, then slot 4 on the PixelShaderResources must contain the texture, likewise for samplers.
-	/// </summary>
+/// This is an example based on the MiniTri example that will draw a single triangle with a texture
+/// 
+/// Like the MiniTri example, we'll be drawing a single triangle, but instead of using a single color per vertex on the triangle, we'll be applying a texture to the triangle. 
+/// 
+/// To map the location within the texture to a point in the triangle, we'll change our vertex structure to use a Vector2 called UV. This is the UV coordinates for mapping the texture to the vertex. 
+/// This value is in Texel space, and has a range of 0.0f - 1.0f, where 0.0 is the top/left, and 1.0f is the right/bottom. Larger values than 1.0f will either be clamped (the default), wrapped, or 
+/// have a border color drawn
+/// 
+/// To assign a texture, we modify our draw call to assign the texture's resource view to the PixelShaderResources on the draw call
+/// 
+/// To properly sample the texture in the pixel shader, we'll also create a texture sampler which defines how the texture data should be read when processing in the pixel shader. This example uses 
+/// default sampling which uses a bilinear filter to smooth the texture when it is zoomed in or out. Like the texture resource view, we assign this sampler to the PixelShaderSamplers on the draw 
+/// call. 
+/// 
+/// One final note: The textures and samplers are assigned to slots. These slots must correspond to the slots declared in the pixel shader. So, for example, if we have declared a texture at slot 4 
+/// in out pixel shader, then slot 4 on the PixelShaderResources must contain the texture, likewise for samplers
+/// </summary>
 internal static class Program
 {
-    #region Variables.
+
     // The graphics interface for the application.
     private static GorgonGraphics _graphics;
     // Our primary swap chain.
@@ -82,9 +75,7 @@ internal static class Program
     // A draw call tells the GPU what to draw, and what special states to apply when rendering. This will be submitted to our GorgonGraphics object so that the 
     // GPU can queue up the data for rendering.
     private static GorgonDrawCall _drawCall;
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to handle idle time for the application.
     /// </summary>
@@ -128,13 +119,13 @@ internal static class Program
     {
         // Define the points that make up our triangle.
         // We'll push it back half a unit along the Z-Axis so that we can see it.
-        MiniTriVertex[] vertices = {
-							   // Note that we're assigning the texture coordinates in pixel space. The ToTexel function on the texture will convert these into 
-							   // texel space for us.
-				               new MiniTriVertex(new Vector3(0, 0.5f, 1.0f), _texture.ToTexel(new DX.Point(128, 3))),
-                           new MiniTriVertex(new Vector3(0.5f, -0.5f, 1.0f), _texture.ToTexel(new DX.Point(230, 252))),
-                           new MiniTriVertex(new Vector3(-0.5f, -0.5f, 1.0f), _texture.ToTexel(new DX.Point(23, 252)))
-                       };
+        MiniTriVertex[] vertices = [
+                               // Note that we're assigning the texture coordinates in pixel space. The ToTexel function on the texture will convert these into 
+                               // texel space for us.
+                               new MiniTriVertex(new Vector3(0, 0.5f, 1.0f), _texture.ToTexel(new GorgonPoint(128, 3))),
+                           new MiniTriVertex(new Vector3(0.5f, -0.5f, 1.0f), _texture.ToTexel(new GorgonPoint(230, 252))),
+                           new MiniTriVertex(new Vector3(-0.5f, -0.5f, 1.0f), _texture.ToTexel(new GorgonPoint(23, 252)))
+                       ];
 
         // Create the vertex buffer.
         //
@@ -163,7 +154,7 @@ internal static class Program
         // Note that we depth a depth range from 0.001f up to 1000.0f.  This provides a near and far plane for clipping.  
         // These clipping values must have the world transformed vertex data inside of it or else it will not render. Note that the near/far plane is not a 
         // linear range and Z accuracy can get worse the further from the near plane that you get (particularly with depth buffers).
-        var camera = new GorgonPerspectiveCamera(_graphics, new DX.Size2F(window.ClientSize.Width, window.ClientSize.Height), 0.125f, 1000.0f)
+        GorgonPerspectiveCamera camera = new(_graphics, new Vector2(window.ClientSize.Width, window.ClientSize.Height), 0.125f, 1000.0f)
         {
             Fov = 65.0f
         };
@@ -183,7 +174,7 @@ internal static class Program
         GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
 
         // Create our form and center on the primary monitor.
-        FormMain window = GorgonExample.Initialize(new DX.Size2(1280, 800), "Gorgon MiniTri - Now with 100% more textures.");
+        FormMain window = GorgonExample.Initialize(new GorgonPoint(1280, 800), "Gorgon MiniTri - Now with 100% more textures.");
 
         try
         {
@@ -247,7 +238,7 @@ internal static class Program
             // We'll be using this to describe to Direct 3D how the elements of a vertex is laid out in memory. 
             // In order to provide synchronization between the layout on the CPU side and the GPU side, we have to pass the vertex shader because it will contain the vertex 
             // layout to match with our C# input layout.
-            _inputLayout = GorgonInputLayout.CreateUsingType<MiniTriVertex>(_graphics, _vertexShader);
+            _inputLayout = GorgonInputLayout.CreateUsingType<MiniTriVertex>(_graphics, nameof(MiniTriVertex), _vertexShader);
 
             // Load our texture so that we can apply it to our triangle.
             //
@@ -276,8 +267,8 @@ internal static class Program
             //
             // Builders work on a fluent interface.  Much like LINQ and can be used to create multiple draw calls from the same 
             // builder.
-            var drawCallBuilder = new GorgonDrawCallBuilder();
-            var pipelineStateBuilder = new GorgonPipelineStateBuilder(_graphics);
+            GorgonDrawCallBuilder drawCallBuilder = new();
+            GorgonPipelineStateBuilder pipelineStateBuilder = new(_graphics);
 
             _drawCall = drawCallBuilder.VertexBuffer(_inputLayout, _vertexBuffer)
                                        .VertexRange(0, 3)
@@ -298,7 +289,6 @@ internal static class Program
             GorgonExample.EndInit();
         }
     }
-    #endregion
 
     /// <summary>
     /// The main entry point for the application.
@@ -306,9 +296,7 @@ internal static class Program
     [STAThread]
     private static void Main()
     {
-#if NET6_0_OR_GREATER
         Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
-#endif
         Application.EnableVisualStyles();
         Application.SetCompatibleTextRenderingDefault(false);
 

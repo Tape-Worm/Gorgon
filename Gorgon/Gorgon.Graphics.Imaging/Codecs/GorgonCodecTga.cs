@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2016 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,14 +11,14 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Tuesday, February 12, 2013 8:49:57 PM
 // 
@@ -27,7 +27,6 @@
 // SharpDX by Alexandre Mutel (http://sharpdx.org)
 // DirectXTex by Chuck Walburn (http://directxtex.codeplex.com)
 
-#region SharpDX/DirectXTex licenses
 // Copyright (c) 2010-2016 SharpDX - Alexandre Mutel
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -38,7 +37,7 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -46,7 +45,7 @@
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // -----------------------------------------------------------------------------
 // The following code is a port of DirectXTex http://directxtex.codeplex.com
 // -----------------------------------------------------------------------------
@@ -54,58 +53,54 @@
 //
 // This license governs use of the accompanying software. If you use the 
 // software, you accept this license. If you do not accept the license, do not
-// use the software.
+// use the software
 //
 // 1. Definitions
 // The terms "reproduce," "reproduction," "derivative works," and 
-// "distribution" have the same meaning here as under U.S. copyright law.
+// "distribution" have the same meaning here as under U.S. copyright law
 // A "contribution" is the original software, or any additions or changes to 
-// the software.
+// the software
 // A "contributor" is any person that distributes its contribution under this 
-// license.
+// license
 // "Licensed patents" are a contributor's patent claims that read directly on 
-// its contribution.
+// its contribution
 //
 // 2. Grant of Rights
 // (A) Copyright Grant- Subject to the terms of this license, including the 
 // license conditions and limitations in section 3, each contributor grants 
 // you a non-exclusive, worldwide, royalty-free copyright license to reproduce
 // its contribution, prepare derivative works of its contribution, and 
-// distribute its contribution or any derivative works that you create.
+// distribute its contribution or any derivative works that you create
 // (B) Patent Grant- Subject to the terms of this license, including the license
 // conditions and limitations in section 3, each contributor grants you a 
 // non-exclusive, worldwide, royalty-free license under its licensed patents to
 // make, have made, use, sell, offer for sale, import, and/or otherwise dispose
 // of its contribution in the software or derivative works of the contribution 
-// in the software.
+// in the software
 //
 // 3. Conditions and Limitations
 // (A) No Trademark License- This license does not grant you rights to use any 
-// contributors' name, logo, or trademarks.
+// contributors' name, logo, or trademarks
 // (B) If you bring a patent claim against any contributor over patents that 
 // you claim are infringed by the software, your patent license from such 
-// contributor to the software ends automatically.
+// contributor to the software ends automatically
 // (C) If you distribute any portion of the software, you must retain all 
 // copyright, patent, trademark, and attribution notices that are present in the
-// software.
+// software
 // (D) If you distribute any portion of the software in source code form, you 
 // may do so only under this license by including a complete copy of this 
 // license with your distribution. If you distribute any portion of the software
 // in compiled or object code form, you may only do so under a license that 
-// complies with this license.
+// complies with this license
 // (E) The software is licensed "as-is." You bear the risk of using it. The
 // contributors give no express warranties, guarantees or conditions. You may
 // have additional consumer rights under your local laws which this license 
 // cannot change. To the extent permitted under your local laws, the 
 // contributors exclude the implied warranties of merchantability, fitness for a
 // particular purpose and non-infringement.
-#endregion
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Runtime.CompilerServices;
+using System.Text;
 using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Properties;
 using Gorgon.IO;
@@ -114,7 +109,7 @@ using Gorgon.Native;
 namespace Gorgon.Graphics.Imaging.Codecs;
 
 /// <summary>
-/// TGA specific conversion flags.
+/// TGA specific conversion flags
 /// </summary>
 [Flags]
 internal enum TGAConversionFlags
@@ -154,11 +149,11 @@ internal enum TGAConversionFlags
 }
 
 /// <summary>
-/// A codec to handle reading/writing Truevision TGA files.
+/// A codec to handle reading/writing Truevision TGA files
 /// </summary>
 /// <remarks>
 /// <para>
-/// This codec will read RLE compressed and uncompressed files, and write compressed files using the Truevision Targa (TGA) format.
+/// This codec will read RLE compressed and uncompressed files, and write compressed files using the Truevision Targa (TGA) format
 /// </para>
 /// <para>
 /// Most 16/24/32 bit TGA files will be readable using this codec, however the following limitations may keep the file from being decoded by this codec:
@@ -178,23 +173,21 @@ internal enum TGAConversionFlags
 public sealed class GorgonCodecTga
     : GorgonImageCodec<IGorgonImageCodecEncodingOptions, GorgonTgaDecodingOptions>
 {
-    #region Variables.
+
     // List of supported image formats.
     private readonly BufferFormat[] _supportedFormats =
-    {
-			// 8 bit grayscale.
-			BufferFormat.R8_UNorm,
+    [
+            // 8 bit grayscale.
+            BufferFormat.R8_UNorm,
         BufferFormat.A8_UNorm,
-			// 16 bit (only supports 5 bit color and 1 bit alpha).
-			BufferFormat.B5G5R5A1_UNorm,
-			// 24/32 bit.
-			BufferFormat.R8G8B8A8_UNorm,
+            // 16 bit (only supports 5 bit color and 1 bit alpha).
+            BufferFormat.B5G5R5A1_UNorm,
+            // 24/32 bit.
+            BufferFormat.R8G8B8A8_UNorm,
         BufferFormat.B8G8R8A8_UNorm,
         BufferFormat.B8G8R8X8_UNorm
-    };
-    #endregion
+    ];
 
-    #region Properties.
     /// <summary>
     /// Property to return the pixel formats supported by the codec.
     /// </summary>
@@ -229,16 +222,14 @@ public sealed class GorgonCodecTga
     /// Property to return whether the image codec supports a depth component for volume textures.
     /// </summary>
     public override bool SupportsDepth => false;
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to read in the TGA header from a stream.
     /// </summary>
     /// <param name="reader">The reader used to read the stream containing the data.</param>
     /// <param name="conversionFlags">Flags for conversion.</param>
     /// <returns>New image settings.</returns>
-    private static GorgonImageInfo ReadHeader(GorgonBinaryReader reader, out TGAConversionFlags conversionFlags)
+    private static GorgonImageInfo ReadHeader(BinaryReader reader, out TGAConversionFlags conversionFlags)
     {
         conversionFlags = TGAConversionFlags.None;
 
@@ -299,7 +290,7 @@ public sealed class GorgonCodecTga
                 throw new IOException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, header.ImageType));
         }
 
-        var settings = new GorgonImageInfo(ImageType.Image2D, pixelFormat)
+        GorgonImageInfo settings = new(ImageDataType.Image2D, pixelFormat)
         {
             MipCount = 1,
             ArrayCount = 1,
@@ -407,7 +398,7 @@ public sealed class GorgonCodecTga
     /// <param name="flipHorizontal"><b>true</b> to decode the pixels from right to left, or <b>false</b> to decode from left to right.</param>
     /// <param name="format">The pixel format.</param>
     /// <returns><b>true</b> if the run contains entirely transparent pixels, or <b>false</b> if not.</returns>
-    private unsafe bool DecodeRleEncodedRun(GorgonBinaryReader reader, ref byte* dest, ref int x, int runLength, int width, bool expand, bool flipHorizontal, BufferFormat format)
+    private unsafe bool DecodeRleEncodedRun(BinaryReader reader, ref byte* dest, ref int x, int runLength, int width, bool expand, bool flipHorizontal, BufferFormat format)
     {
         bool result = true;
 
@@ -520,7 +511,7 @@ public sealed class GorgonCodecTga
     /// <param name="flipHorizontal"><b>true</b> to decode the pixels from right to left, or <b>false</b> to decode from left to right.</param>
     /// <param name="format">The pixel format.</param>
     /// <returns><b>true</b> if the run contains entirely transparent pixels, or <b>false</b> if not.</returns>
-    private unsafe bool DecodeUncompressedRun(GorgonBinaryReader reader, ref byte* dest, ref int x, int runLength, int width, bool expand, bool flipHorizontal, BufferFormat format)
+    private unsafe bool DecodeUncompressedRun(BinaryReader reader, ref byte* dest, ref int x, int runLength, int width, bool expand, bool flipHorizontal, BufferFormat format)
     {
         bool result = true;
 
@@ -633,12 +624,12 @@ public sealed class GorgonCodecTga
     /// <param name="dest">Destination buffer pointner</param>
     /// <param name="format">Format of the destination buffer.</param>
     /// <param name="conversionFlags">Flags used for conversion.</param>
-    private unsafe bool ReadCompressed(GorgonBinaryReader reader, int width, in GorgonPtr<byte> dest, BufferFormat format, TGAConversionFlags conversionFlags)
+    private unsafe bool ReadCompressed(BinaryReader reader, int width, GorgonPtr<byte> dest, BufferFormat format, TGAConversionFlags conversionFlags)
     {
         bool setOpaque = true;
         bool flipHorizontal = (conversionFlags & TGAConversionFlags.InvertX) == TGAConversionFlags.InvertX;
         bool expand = (conversionFlags & TGAConversionFlags.Expand) == TGAConversionFlags.Expand;
-        byte* destPtr = (byte *)dest;
+        byte* destPtr = (byte*)dest;
 
         for (int x = 0; x < width;)
         {
@@ -675,7 +666,7 @@ public sealed class GorgonCodecTga
     /// <param name="dest">Destination buffer pointner</param>
     /// <param name="format">Format of the destination buffer.</param>
     /// <param name="conversionFlags">Flags used for conversion.</param>
-    private static bool ReadUncompressed(in GorgonPtr<byte> src, int srcPitch, in GorgonPtr<byte> dest, BufferFormat format, TGAConversionFlags conversionFlags)
+    private static bool ReadUncompressed(GorgonPtr<byte> src, int srcPitch, GorgonPtr<byte> dest, BufferFormat format, TGAConversionFlags conversionFlags)
     {
         bool flipHorizontal = (conversionFlags & TGAConversionFlags.InvertX) == TGAConversionFlags.InvertX;
 
@@ -683,14 +674,14 @@ public sealed class GorgonCodecTga
         {
             case BufferFormat.R8_UNorm:
             case BufferFormat.B5G5R5A1_UNorm:
-                return ImageUtilities.CopyScanline(in src, srcPitch, in dest, format, flipHorizontal);
+                return ImageUtilities.CopyScanline(src, srcPitch, dest, format, flipHorizontal);
             case BufferFormat.R8G8B8A8_UNorm:
                 if ((conversionFlags & TGAConversionFlags.Expand) != TGAConversionFlags.Expand)
                 {
-                    return ImageUtilities.CopyScanline(in src, srcPitch, in dest, format, flipHorizontal);
+                    return ImageUtilities.CopyScanline(src, srcPitch, dest, format, flipHorizontal);
                 }
 
-                ImageUtilities.Expand24BPPScanLine(in src, srcPitch, in dest, flipHorizontal);
+                ImageUtilities.Expand24BPPScanLine(src, srcPitch, dest, flipHorizontal);
 
                 // We're already opaque by virtue of being 24 bit.
                 return false;
@@ -705,13 +696,13 @@ public sealed class GorgonCodecTga
     /// <param name="reader">A reader used to read the data from the source stream.</param>
     /// <param name="image">Image data.</param>
     /// <param name="conversionFlags">Flags used to convert the image.</param>
-    private void CopyImageData(GorgonBinaryReader reader, IGorgonImage image, TGAConversionFlags conversionFlags)
+    private void CopyImageData(BinaryReader reader, IGorgonImage image, TGAConversionFlags conversionFlags)
     {
         // TGA only supports 1 array level, and 1 mip level, so we only need to get the first buffer.
         IGorgonImageBuffer buffer = image.Buffers[0];
 
         // Determine how large a row is, in bytes.
-        var formatInfo = new GorgonFormatInfo(image.Format);
+        GorgonFormatInfo formatInfo = new(image.Format);
 
         GorgonPitchLayout srcPitch = (conversionFlags & TGAConversionFlags.Expand) == TGAConversionFlags.Expand
                                          ? new GorgonPitchLayout(image.Width * 3, image.Width * 3 * image.Height)
@@ -744,18 +735,16 @@ public sealed class GorgonCodecTga
 
                 if ((conversionFlags & TGAConversionFlags.RLE) == TGAConversionFlags.RLE)
                 {
-                    lineHasZeroAlpha = ReadCompressed(reader, image.Width, in destPtr, image.Format, conversionFlags);
+                    lineHasZeroAlpha = ReadCompressed(reader, image.Width, destPtr, image.Format, conversionFlags);
                 }
                 else
                 {
                     // Read the current scanline into memory.
                     lineBuffer ??= new GorgonNativeBuffer<byte>(srcPitch.RowPitch);
 
-                    ref readonly GorgonPtr<byte> linePtr = ref lineBuffer.Pointer;
+                    reader.ReadRange<byte>((GorgonPtr<byte>)lineBuffer);
 
-                    reader.ReadRange(linePtr, count: srcPitch.RowPitch);
-
-                    lineHasZeroAlpha = ReadUncompressed(in linePtr, srcPitch.RowPitch, in destPtr, image.Format, conversionFlags);
+                    lineHasZeroAlpha = ReadUncompressed(lineBuffer, srcPitch.RowPitch, destPtr, image.Format, conversionFlags);
                 }
 
                 if ((lineHasZeroAlpha) && ((conversionFlags & TGAConversionFlags.SetOpaqueAlpha) == TGAConversionFlags.SetOpaqueAlpha))
@@ -767,9 +756,9 @@ public sealed class GorgonCodecTga
                 //if (formatInfo.BitDepth == 32)
                 if ((conversionFlags & TGAConversionFlags.RGB888) != TGAConversionFlags.RGB888)
                 {
-                    ImageUtilities.SwizzleScanline(in destPtr,
+                    ImageUtilities.SwizzleScanline(destPtr,
                                                     buffer.PitchInformation.RowPitch,
-                                                    in destPtr,
+                                                    destPtr,
                                                     buffer.PitchInformation.RowPitch,
                                                     image.Format,
                                                     ImageBitFlags.None);
@@ -799,12 +788,13 @@ public sealed class GorgonCodecTga
         destPtr = buffer.Data;
         for (int y = 0; y < image.Height; y++)
         {
-            ImageUtilities.CopyScanline(in destPtr,
+            ImageUtilities.CopyScanline(destPtr,
                                         buffer.PitchInformation.RowPitch,
-                                        in destPtr,
+                                        destPtr,
                                         buffer.PitchInformation.RowPitch,
                                         image.Format,
                                         ImageBitFlags.OpaqueAlpha);
+
             destPtr += buffer.PitchInformation.RowPitch;
         }
     }
@@ -823,7 +813,7 @@ public sealed class GorgonCodecTga
             throw new EndOfStreamException();
         }
 
-        using var reader = new GorgonBinaryReader(stream, true);
+        using BinaryReader reader = new(stream, Encoding.UTF8, true);
         GorgonImageInfo info = ReadHeader(reader, out TGAConversionFlags flags);
 
         IGorgonImage image = new GorgonImage(info);
@@ -863,7 +853,7 @@ public sealed class GorgonCodecTga
             throw new NotSupportedException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, imageData.Format));
         }
 
-        using var writer = new GorgonBinaryWriter(stream, true);
+        using BinaryWriter writer = new(stream, Encoding.UTF8, true);
         // Write the header for the file before we dump the file contents.
         TgaHeader header = GetHeader(imageData, out TGAConversionFlags conversionFlags);
 
@@ -875,7 +865,7 @@ public sealed class GorgonCodecTga
         }
         else
         {
-            var formatInfo = new GorgonFormatInfo(imageData.Format);
+            GorgonFormatInfo formatInfo = new(imageData.Format);
             destPitch = formatInfo.GetPitchForFormat(imageData.Width, imageData.Height);
         }
 
@@ -884,45 +874,43 @@ public sealed class GorgonCodecTga
         // If the two pitches are equal and we have no conversion requirements, then just write out the buffer.
         if ((destPitch == srcPitch) && (conversionFlags == TGAConversionFlags.None))
         {
-            writer.WriteValue(ref header);
-            writer.WriteRange(imageData.Buffers[0].Data, count: srcPitch.SlicePitch);
+            writer.WriteValue(in header);
+            writer.WriteRange<byte>(imageData.Buffers[0].Data[..srcPitch.SlicePitch]);
             return;
         }
 
         // Get the pointer to the first mip/array/depth level.
         GorgonPtr<byte> srcPointer = imageData.Buffers[0].Data;
-        var lineBuffer = new GorgonNativeBuffer<byte>(srcPitch.RowPitch);
+        GorgonNativeBuffer<byte> lineBuffer = new(srcPitch.RowPitch);
 
         try
         {
             // Persist the working buffer to the stream.
-            writer.WriteValue(ref header);
+            writer.WriteValue(in header);
 
             // Write out each scan line.					
             for (int y = 0; y < imageData.Height; y++)
             {
-                ref readonly GorgonPtr<byte> destPtr = ref lineBuffer.Pointer;
-
                 if ((conversionFlags & TGAConversionFlags.RGB888) == TGAConversionFlags.RGB888)
                 {
-                    ImageUtilities.Compress24BPPScanLine(in srcPointer,
+                    ImageUtilities.Compress24BPPScanLine(srcPointer,
                                                             srcPitch.RowPitch,
-                                                            in destPtr,
+                                                            (GorgonPtr<byte>)lineBuffer,
                                                             destPitch.RowPitch,
                                                             (conversionFlags & TGAConversionFlags.Swizzle) == TGAConversionFlags.Swizzle);
                 }
                 else if ((conversionFlags & TGAConversionFlags.Swizzle) == TGAConversionFlags.Swizzle)
                 {
-                    ImageUtilities.SwizzleScanline(in srcPointer, srcPitch.RowPitch, in destPtr, destPitch.RowPitch, imageData.Format, ImageBitFlags.None);
+                    ImageUtilities.SwizzleScanline(srcPointer, srcPitch.RowPitch, (GorgonPtr<byte>)lineBuffer, destPitch.RowPitch, imageData.Format, ImageBitFlags.None);
                 }
                 else
                 {
-                    ImageUtilities.CopyScanline(in srcPointer, srcPitch.RowPitch, in destPtr, destPitch.RowPitch, imageData.Format, ImageBitFlags.None);
+                    ImageUtilities.CopyScanline(srcPointer, srcPitch.RowPitch, (GorgonPtr<byte>)lineBuffer, destPitch.RowPitch, imageData.Format, ImageBitFlags.None);
                 }
 
                 srcPointer += srcPitch.RowPitch;
 
-                writer.WriteRange<byte>(lineBuffer, count: destPitch.RowPitch);
+                writer.WriteRange<byte>(lineBuffer[..destPitch.RowPitch]);
             }
         }
         finally
@@ -956,7 +944,6 @@ public sealed class GorgonCodecTga
         int headerSize = Unsafe.SizeOf<TgaHeader>();
         long position = 0;
 
-
         if (stream is null)
         {
             throw new ArgumentNullException(nameof(stream));
@@ -977,12 +964,12 @@ public sealed class GorgonCodecTga
             throw new EndOfStreamException();
         }
 
-        GorgonBinaryReader reader = null;
+        BinaryReader reader = null;
 
         try
         {
             position = stream.Position;
-            reader = new GorgonBinaryReader(stream, true);
+            reader = new BinaryReader(stream, Encoding.UTF8, true);
             return ReadHeader(reader, out _);
         }
         finally
@@ -991,7 +978,6 @@ public sealed class GorgonCodecTga
             reader?.Dispose();
         }
     }
-
 
     /// <summary>
     /// Function to determine if this codec can read the image data within the stream or not.
@@ -1029,7 +1015,7 @@ public sealed class GorgonCodecTga
         try
         {
             position = stream.Position;
-            var reader = new GorgonBinaryReader(stream, true);
+            BinaryReader reader = new(stream, Encoding.UTF8, true);
             header = reader.ReadValue<TgaHeader>();
         }
         finally
@@ -1059,14 +1045,12 @@ public sealed class GorgonCodecTga
 
         return (header.ImageType is not TgaImageType.BlackAndWhite and not TgaImageType.BlackAndWhiteRLE) || (header.BPP is 8);
     }
-    #endregion
 
-    #region Constructor/Destructor.
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonCodecTga" /> class.
     /// </summary>
     /// <param name="decodingOptions">[Optional] Codec specific options to use when decoding image data.</param>
     public GorgonCodecTga(GorgonTgaDecodingOptions decodingOptions = null)
-        : base(null, decodingOptions) => CodecCommonExtensions = new[] { "tga", "tpic" };
-    #endregion
+        : base(null, decodingOptions) => CodecCommonExtensions = ["tga", "tpic"];
+
 }

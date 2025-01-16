@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,25 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 28, 2018 11:33:52 AM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Numerics;
-using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -39,19 +33,18 @@ using Gorgon.Renderers.Cameras;
 using Gorgon.Renderers.Lights;
 using Gorgon.Timing;
 using Gorgon.UI;
-using DX = SharpDX;
 
 namespace Gorgon.Examples;
 
 /// <summary>
-/// The main entry point for the application.
+/// The main entry point for the application
 /// </summary>
 /// <remarks>
-/// This example shows how to use the G-Buffer and Lighting effect to provide lighting for your sprites.
+/// This example shows how to use the G-Buffer and Lighting effect to provide lighting for your sprites
 /// </remarks>
 static class Program
 {
-    #region Variables.
+
     // The primary graphics interface.
     private static GorgonGraphics _graphics;
     // The main "screen" for the application.
@@ -75,7 +68,7 @@ static class Program
     // The actual light color value.
     private static float _lightValue = 0.5f;
     // The min and max bounds for the lighting values.
-    private static readonly GorgonRangeF _lightMinMax = new(0.75f, 1.0f);
+    private static readonly GorgonRange<float> _lightMinMax = new(0.75f, 1.0f);
     // The timer for switching torch frames.
     private static IGorgonTimer _torchFrameTime;
     // The point light that we control.
@@ -83,9 +76,7 @@ static class Program
     private static GorgonOrthoCamera _camera;
     // Flag to indicate we should rotate the logo.
     private static bool _rotate;
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function called when the application goes into an idle state.
     /// </summary>
@@ -104,7 +95,7 @@ static class Program
         if (_torchFrameTime.Milliseconds > 175)
         {
             _torchSprite.TextureRegion =
-                _torchTexture.Texture.ToTexel(new DX.Rectangle(_torchSprite.TextureRegion.Left == 0 ? 56 : 0, 0, 55, _torchTexture.Height));
+                _torchTexture.Texture.ToTexel(new GorgonRectangle(_torchSprite.TextureRegion.Left == 0 ? 56 : 0, 0, 55, _torchTexture.Height));
             _torchFrameTime.Reset();
 
             _lightValue = _torchSprite.TextureRegion.Left == 0 ? _lightMinMax.Maximum : _lightMinMax.Minimum;
@@ -126,7 +117,7 @@ static class Program
         _light.SpecularPower = (1.0f - (_lightValue / 1.2f)) * 256;
 
         // Clear our buffers each frame.
-        _screen.RenderTargetView.Clear(GorgonColor.Black);
+        _screen.RenderTargetView.Clear(GorgonColors.Black);
         _gbuffer.ClearGBuffer();
 
         // Gorgon uses a G-Buffer, a collection of render targets used to facilitate lighting and other effects in order 
@@ -164,17 +155,17 @@ static class Program
         if (_logoSprite.Angle > 360.0f)
         {
             _logoSprite.Angle -= 360.0f;
-        }                        
+        }
 
         // Draw the rest of the UI.
         _renderer.Begin();
 
         _renderer.DrawSprite(_torchSprite);
 
-        _renderer.DrawString($"Specular Power: {_light.SpecularPower:0.0}\n" + 
-                             $"Light [c #{GorgonColor.CornFlowerBlue.ToHex()}]Z/z[/c]: {_light.Position.Z:0}\n" + 
-                             $"Camera Position: {_camera.Position.X:0}, {_camera.Position.Y:0} ([c #{GorgonColor.CornFlowerBlue.ToHex()}]W[/c], [c #{GorgonColor.CornFlowerBlue.ToHex()}]A[/c], [c #{GorgonColor.CornFlowerBlue.ToHex()}]S[/c], [c #{GorgonColor.CornFlowerBlue.ToHex()}]D[/c])\n" + 
-                             $"[c #{GorgonColor.CornFlowerBlue.ToHex()}]R[/c]otation: {(_rotate ? "Yes" : "No")}",
+        _renderer.DrawString($"Specular Power: {_light.SpecularPower:0.0}\n" +
+                             $"Light [c #{GorgonColors.CornFlowerBlue.ToHex()}]Z/z[/c]: {_light.Position.Z:0}\n" +
+                             $"Camera Position: {_camera.Position.X:0}, {_camera.Position.Y:0} ([c #{GorgonColors.CornFlowerBlue.ToHex()}]W[/c], [c #{GorgonColors.CornFlowerBlue.ToHex()}]A[/c], [c #{GorgonColors.CornFlowerBlue.ToHex()}]S[/c], [c #{GorgonColors.CornFlowerBlue.ToHex()}]D[/c])\n" +
+                             $"[c #{GorgonColors.CornFlowerBlue.ToHex()}]R[/c]otation: {(_rotate ? "Yes" : "No")}",
                              new Vector2(0, 64));
         _renderer.End();
 
@@ -192,7 +183,7 @@ static class Program
     {
         GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
 
-        FormMain window = GorgonExample.Initialize(new DX.Size2(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height), "Lights");
+        FormMain window = GorgonExample.Initialize(new GorgonPoint(ExampleConfig.Default.Resolution.X, ExampleConfig.Default.Resolution.Y), "Lights");
 
         try
         {
@@ -209,16 +200,16 @@ static class Program
 
             _screen = new GorgonSwapChain(_graphics,
                                           window,
-                                          new GorgonSwapChainInfo(ExampleConfig.Default.Resolution.Width,
-                                                                       ExampleConfig.Default.Resolution.Height,
+                                          new GorgonSwapChainInfo(ExampleConfig.Default.Resolution.X,
+                                                                       ExampleConfig.Default.Resolution.Y,
                                                                        BufferFormat.R8G8B8A8_UNorm)
                                           {
                                               Name = "Gorgon2D Effects Example Swap Chain"
                                           });
 
-            _screen.SwapChainResized += Screen_SwapChainResized;                
+            _screen.SwapChainResized += Screen_SwapChainResized;
 
-            _camera = new GorgonOrthoCamera(_graphics, new DX.Size2F(_screen.Width, _screen.Height))
+            _camera = new GorgonOrthoCamera(_graphics, new Vector2(_screen.Width, _screen.Height))
             {
                 Anchor = new Vector2(0.5f, 0.5f),
                 Position = new Vector3(0, 0, -70),
@@ -257,16 +248,16 @@ static class Program
             _logoSprite = new GorgonSprite
             {
                 Texture = _backgroundLogoTexture,
-                Bounds = new DX.RectangleF(0, 0, _backgroundLogoTexture.Width, _backgroundLogoTexture.Height),
-                TextureRegion = new DX.RectangleF(0, 0, 1, 1),
+                Bounds = new GorgonRectangleF(0, 0, _backgroundLogoTexture.Width, _backgroundLogoTexture.Height),
+                TextureRegion = new GorgonRectangleF(0, 0, 1, 1),
                 Anchor = new Vector2(0.5f, 0.5f)
             };
 
             _torchSprite = new GorgonSprite
             {
                 Texture = _torchTexture,
-                Bounds = new DX.RectangleF(0, 0, 55, _torchTexture.Height),
-                TextureRegion = _torchTexture.Texture.ToTexel(new DX.Rectangle(0, 0, 55, _torchTexture.Height)),
+                Bounds = new GorgonRectangleF(0, 0, 55, _torchTexture.Height),
+                TextureRegion = _torchTexture.Texture.ToTexel(new GorgonRectangle(0, 0, 55, _torchTexture.Height)),
             };
 
             // This is the light we'll control with the mouse.
@@ -275,7 +266,7 @@ static class Program
                 ConstantAttenuation = 0,
                 LinearAttenuation = 0.007f,
                 QuadraticAttenuation = 0.0002f,
-                Color = GorgonColor.White,
+                Color = GorgonColors.White,
                 SpecularEnabled = true,
                 SpecularPower = 6.0f,
                 Intensity = 2,
@@ -313,8 +304,8 @@ static class Program
     /// <param name="e">The <see cref="SwapChainResizedEventArgs" /> instance containing the event data.</param>
     private static void Screen_SwapChainResized(object sender, SwapChainResizedEventArgs e)
     {
-        _gbuffer.Resize(e.Size.Width, e.Size.Height);
-        _camera.ViewDimensions = e.Size.ToSize2F();
+        _gbuffer.Resize(e.Size.X, e.Size.Y);
+        _camera.ViewDimensions = e.Size;
     }
 
     /// <summary>
@@ -324,8 +315,8 @@ static class Program
     /// <param name="e">The <see cref="KeyEventArgs" /> instance containing the event data.</param>
     private static void Window_KeyDown(object sender, KeyEventArgs e)
     {
-        var window = (Control)sender;
-        System.Drawing.Point cursor = window.PointToClient(Cursor.Position);
+        Control window = (Control)sender;
+        Point cursor = window.PointToClient(Cursor.Position);
 
         switch (e.KeyCode)
         {
@@ -338,8 +329,8 @@ static class Program
             case Keys.C:
                 _lightEffect.CheckLightDepth = !_lightEffect.CheckLightDepth;
                 break;
-            case Keys.Z:                     
-                _light.Position = 
+            case Keys.Z:
+                _light.Position =
                     !e.Shift
                         ? new Vector3(_light.Position.X, _light.Position.Y, _light.Position.Z + 1.0f)
                         : new Vector3(_light.Position.X, _light.Position.Y, _light.Position.Z - 1.0f);
@@ -397,9 +388,7 @@ static class Program
     {
         try
         {
-#if NET6_0_OR_GREATER
             Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
-#endif
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
@@ -421,5 +410,4 @@ static class Program
             _graphics?.Dispose();
         }
     }
-    #endregion
 }

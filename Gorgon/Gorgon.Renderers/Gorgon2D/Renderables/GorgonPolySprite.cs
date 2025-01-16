@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,23 +11,20 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: June 7, 2018 3:13:51 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
 using System.Numerics;
-using System.Threading;
+using System.Text.Json.Serialization;
 using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.Graphics;
@@ -36,18 +33,16 @@ using Gorgon.Math;
 using Gorgon.Native;
 using Gorgon.Renderers.Geometry;
 using Gorgon.Renderers.Properties;
-using Newtonsoft.Json;
-using DX = SharpDX;
 
 namespace Gorgon.Renderers;
 
 /// <summary>
-/// A class that defines a polygonal region to display a 2D image.
+/// A class that defines a polygonal region to display a 2D image
 /// </summary>
 public class GorgonPolySprite
     : IDisposable
 {
-    #region Variables.
+
     // The renderable data for this sprite.
     // It is exposed as an internal variable (which goes against C# best practices) for performance reasons (property accesses add up over time).
     internal PolySpriteRenderable Renderable = new()
@@ -55,27 +50,26 @@ public class GorgonPolySprite
         WorldMatrix = Matrix4x4.Identity,
         TextureTransform = new Vector4(0, 0, 1, 1)
     };
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to return the read/write list of vertices for the poly sprite.
     /// </summary>
-    [JsonProperty("verts")]
+    [JsonPropertyName("verts"), JsonInclude]
     internal List<GorgonPolySpriteVertex> RwVertices
     {
         get;
-    } = new List<GorgonPolySpriteVertex>(256);
+        set;
+    } = new(256);
 
     /// <summary>
     /// Property to set or return the read/write list of indices for the poly sprite.
     /// </summary>
-    [JsonProperty("indices")]
+    [JsonPropertyName("indices"), JsonInclude]
     internal int[] RwIndices
     {
         get;
         set;
-    } = Array.Empty<int>();
+    } = [];
 
     /// <summary>
     /// Property to return the list of vertices used by the poly sprite.
@@ -95,7 +89,7 @@ public class GorgonPolySprite
     /// Property to return whether this sprite contains any index data.
     /// </summary>
     [JsonIgnore]
-    public IReadOnlyList<int> Indices => RwIndices ?? Array.Empty<int>();
+    public IReadOnlyList<int> Indices => RwIndices ?? [];
 
     /// <summary>
     /// Property to set or return the color of the sprite.
@@ -104,7 +98,7 @@ public class GorgonPolySprite
     {
         get;
         set;
-    } = GorgonColor.White;
+    } = GorgonColors.White;
 
     /// <summary>
     /// Property to set or return the texture array index for the sprite.
@@ -202,12 +196,12 @@ public class GorgonPolySprite
     /// Property to return the boundaries of the sprite.
     /// </summary>
     [JsonIgnore]
-    public DX.RectangleF Bounds
+    public GorgonRectangleF Bounds
     {
         get => Renderable.Bounds;
         internal set
         {
-            ref DX.RectangleF bounds = ref Renderable.Bounds;
+            ref GorgonRectangleF bounds = ref Renderable.Bounds;
 
             if ((bounds.Left == value.Left)
                 && (bounds.Right == value.Right)
@@ -230,7 +224,7 @@ public class GorgonPolySprite
         get => new(Renderable.Bounds.Left, Renderable.Bounds.Top);
         set
         {
-            ref DX.RectangleF bounds = ref Renderable.Bounds;
+            ref GorgonRectangleF bounds = ref Renderable.Bounds;
             if ((bounds.X == value.X)
                 && (bounds.Y == value.Y))
             {
@@ -290,7 +284,7 @@ public class GorgonPolySprite
     /// Property to return the size of the sprite.
     /// </summary>
     [JsonIgnore]
-    public DX.Size2F Size => Bounds.Size;
+    public Vector2 Size => Bounds.Size;
 
     /// <summary>
     /// Property to set or return the size of the renderable after scaling has been applied.
@@ -300,19 +294,19 @@ public class GorgonPolySprite
     /// multiplied by the scale.  When assigning a value, the scale be set on value derived from the current size of the renderable.
     /// </remarks>
     [JsonIgnore]
-    public DX.Size2F ScaledSize
+    public Vector2 ScaledSize
     {
         get
         {
-            ref DX.RectangleF bounds = ref Renderable.Bounds;
+            ref GorgonRectangleF bounds = ref Renderable.Bounds;
             ref Vector2 scale = ref Renderable.Scale;
-            return new DX.Size2F(scale.X * bounds.Width, scale.Y * bounds.Height);
+            return new Vector2(scale.X * bounds.Width, scale.Y * bounds.Height);
         }
         set
         {
-            ref DX.RectangleF bounds = ref Renderable.Bounds;
+            ref GorgonRectangleF bounds = ref Renderable.Bounds;
             ref Vector2 scale = ref Renderable.Scale;
-            scale = new Vector2(value.Width / bounds.Width, value.Height / bounds.Height);
+            scale = new Vector2(value.X / bounds.Width, value.Y / bounds.Height);
             Renderable.HasTransformChanges = true;
         }
     }
@@ -372,11 +366,11 @@ public class GorgonPolySprite
     /// To disable alpha testing outright, set this property to <b>null</b>.
     /// </para>
     /// </remarks>
-    public GorgonRangeF? AlphaTest
+    public GorgonRange<float>? AlphaTest
     {
         get => Renderable.AlphaTestData.IsEnabled == 0
                 ? null
-                : new GorgonRangeF(Renderable.AlphaTestData.LowerAlpha, Renderable.AlphaTestData.UpperAlpha);
+                : new GorgonRange<float>(Renderable.AlphaTestData.LowerAlpha, Renderable.AlphaTestData.UpperAlpha);
         set
         {
             // ReSharper disable once ConvertIfStatementToSwitchStatement
@@ -387,7 +381,7 @@ public class GorgonPolySprite
                     return;
                 }
 
-                Renderable.AlphaTestData = new AlphaTestData(false, new GorgonRangeF(Renderable.AlphaTestData.LowerAlpha, Renderable.AlphaTestData.UpperAlpha));
+                Renderable.AlphaTestData = new AlphaTestData(false, new GorgonRange<float>(Renderable.AlphaTestData.LowerAlpha, Renderable.AlphaTestData.UpperAlpha));
                 Renderable.StateChanged = true;
                 return;
             }
@@ -438,9 +432,7 @@ public class GorgonPolySprite
             Renderable.HasTextureChanges = true;
         }
     }
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
     /// </summary>
@@ -620,13 +612,12 @@ public class GorgonPolySprite
             throw new ArgumentNullException(nameof(indices));
         }
 
-
         if ((vertices.Count < 3) || (indices.Count < 3))
         {
             throw new GorgonException(GorgonResult.CannotCreate, Resources.GOR2D_ERR_POLY_SPRITE_NOT_ENOUGH_VERTS);
         }
 
-        var newSprite = new GorgonPolySprite();
+        GorgonPolySprite newSprite = new();
 
         // Send the vertices into the sprite.
         newSprite.RwVertices.AddRange(vertices);
@@ -647,7 +638,7 @@ public class GorgonPolySprite
             maxY = maxY.Max(vertex.Position.Y);
         }
 
-        newSprite.Bounds = new DX.RectangleF(0, 0, maxX - minX, maxY - minY);
+        newSprite.Bounds = new GorgonRectangleF(0, 0, maxX - minX, maxY - minY);
 
         // Split the polygon hull into triangles.            
         newSprite.Renderable.IndexBuffer = new GorgonIndexBuffer(graphics, new GorgonIndexBufferInfo(newSprite.RwIndices.Length)
@@ -659,19 +650,17 @@ public class GorgonPolySprite
         newSprite.Renderable.VertexBuffer = GorgonVertexBufferBinding.CreateVertexBuffer<Gorgon2DVertex>(graphics, new GorgonVertexBufferInfo(newSprite.Renderable.Vertices.Length * Gorgon2DVertex.SizeInBytes)
         {
             Usage = ResourceUsage.Immutable,
-            Binding = VertexIndexBufferBinding.None                
-        }, newSprite.Renderable.Vertices);                
+            Binding = VertexIndexBufferBinding.None
+        }, newSprite.Renderable.Vertices);
 
         return newSprite;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonPolySprite"/> class.
     /// </summary>
+    [JsonConstructor]
     internal GorgonPolySprite()
     {
-    }        
-    #endregion
+    }
 }

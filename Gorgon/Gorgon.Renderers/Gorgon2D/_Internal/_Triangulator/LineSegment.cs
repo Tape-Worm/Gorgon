@@ -1,7 +1,7 @@
-// Triangulator source code by Nick Gravelyn.
+﻿// Triangulator source code by Nick Gravelyn
 // https://github.com/nickgravelyn/Triangulator
 //
-// Licensed under the MIT license.
+// Licensed under the MIT license
 // https://github.com/nickgravelyn/Triangulator/blob/master/LICENSE
 
 using System.Numerics;
@@ -9,21 +9,15 @@ using Gorgon.Math;
 
 namespace GorgonTriangulator;
 
-internal struct LineSegment
+internal struct LineSegment(Vertex a, Vertex b)
 {
-    public Vertex A;
-    public Vertex B;
-
-    public LineSegment(Vertex a, Vertex b)
-    {
-        A = a;
-        B = b;
-    }
+    public Vertex A = a;
+    public Vertex B = b;
 
     public readonly float? IntersectsWithRay(Vector2 origin, Vector2 direction)
     {
         float largestDistance = (A.Position.X - origin.X).Max(B.Position.X - origin.X) * 2.0f;
-        var raySegment = new LineSegment(new Vertex(origin, 0), new Vertex(origin + (direction * largestDistance), 0));
+        LineSegment raySegment = new(new Vertex(origin, 0), new Vertex(origin + (direction * largestDistance), 0));
 
         Vector2? intersection = FindIntersection(this, raySegment);
         float? value = null;
@@ -54,7 +48,6 @@ internal struct LineSegment
 
         float ua = uaNum / denom;
         float ub = ubNum / denom;
-
 
         // ReSharper disable CompareOfFloatsByEqualityOperator
         if (ua.Clamp(0, 1) != ua || ub.Clamp(0f, 1f) != ub)

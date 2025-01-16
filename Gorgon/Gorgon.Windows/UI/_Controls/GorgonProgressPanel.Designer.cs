@@ -26,7 +26,7 @@ partial class GorgonProgressPanel
         base.Dispose(disposing);
     }
 
-    #region Component Designer generated code
+
 
     /// <summary> 
     /// Required method for Designer support - do not modify 
@@ -120,7 +120,7 @@ partial class GorgonProgressPanel
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
         this.BackColor = System.Drawing.Color.White;
         this.Controls.Add(this.PanelLayout);
-        this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+        
         this.ForeColor = System.Drawing.Color.Black;
         this.Margin = new System.Windows.Forms.Padding(0);
         this.MaximumSize = new System.Drawing.Size(512, 128);
@@ -133,7 +133,7 @@ partial class GorgonProgressPanel
 
     }
 
-    #endregion
+
     private System.Windows.Forms.FlowLayoutPanel PanelLayout;
     private System.Windows.Forms.ProgressBar ProgressMeter;
     private System.Windows.Forms.Button ButtonCancel;

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,33 +11,31 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: November 10, 2018 8:32:44 PM
 // 
-#endregion
 
-using System;
 using Gorgon.Core;
 using Gorgon.Editor.Properties;
 
 namespace Gorgon.Editor.PlugIns;
 
 /// <summary>
-/// A plug in that was disabled for a reason.
+/// A plug-in that was disabled for a reason
 /// </summary>
 internal class DisabledPlugIn
     : IDisabledPlugIn
 {
     /// <summary>
-    /// Property to return the code to indicate how the plug in was disabled.
+    /// Property to return the code to indicate how the plug-in was disabled.
     /// </summary>
     public DisabledReasonCode ReasonCode
     {
@@ -45,7 +43,7 @@ internal class DisabledPlugIn
     }
 
     /// <summary>
-    /// Property to return a description that explains why a plug in was disabled.
+    /// Property to return a description that explains why a plug-in was disabled.
     /// </summary>
     public string Description
     {
@@ -53,7 +51,7 @@ internal class DisabledPlugIn
     }
 
     /// <summary>
-    /// Property to return the name of the disabled plug in.
+    /// Property to return the name of the disabled plug-in.
     /// </summary>
     public string PlugInName
     {
@@ -67,10 +65,10 @@ internal class DisabledPlugIn
     }
 
     /// <summary>Initializes a new instance of the DisabledPlugIn class.</summary>
-    /// <param name="reasonCode">The code to indicate how the plug in was disabled.</param>
+    /// <param name="reasonCode">The code to indicate how the plug-in was disabled.</param>
     /// <param name="pluginName">Name of the plugin that was disabled.</param>
-    /// <param name="desc">The human readable description that explains why the plug in was disabled.</param>
-    /// <param name="path">The path to the plug in assembly.</param>
+    /// <param name="desc">The human readable description that explains why the plug-in was disabled.</param>
+    /// <param name="path">The path to the plug-in assembly.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="pluginName" /> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="pluginName" /> parameter is empty.</exception>
     public DisabledPlugIn(DisabledReasonCode reasonCode, string pluginName, string desc, string path)

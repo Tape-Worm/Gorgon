@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,25 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 9, 2019 12:38:19 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Rendering;
@@ -42,18 +36,18 @@ using Gorgon.UI;
 namespace Gorgon.Editor.UI.Views;
 
 /// <summary>
-/// The base form used for krypton tool plug ins.
+/// The base form used for krypton tool plug-ins
 /// </summary>
 /// <remarks>
 /// <para>
-/// Developers who use to create tool plug ins for the editor should use this form as the base for their UI.  It provides functionality to make setting up and rendering easier, and will perform any 
-/// necessary clean up on behalf of the developer.
+/// Developers who use to create tool plug-ins for the editor should use this form as the base for their UI.  It provides functionality to make setting up and rendering easier, and will perform any 
+/// necessary clean up on behalf of the developer
 /// </para>
 /// </remarks>
 public partial class EditorToolBaseForm
     : Form
 {
-    #region Variables.
+
     // A list of renderers used to draw our content to the UI.
     private readonly Dictionary<string, IToolRenderer> _renderers = new(StringComparer.OrdinalIgnoreCase);
     // The control that will receive rendering output.
@@ -70,9 +64,7 @@ public partial class EditorToolBaseForm
     private IEditorTool _dataContext;
     // The state for the close procedure.
     private int _closeState;
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to return the currently active tool renderer.
     /// </summary>
@@ -126,10 +118,8 @@ public partial class EditorToolBaseForm
 
             _renderControl = value;
         }
-    }        
-    #endregion
+    }
 
-    #region Methods.
     /// <summary>Handles the PropertyChanging event of the DataContext control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="PropertyChangingEventArgs"/> instance containing the event data.</param>
@@ -192,14 +182,14 @@ public partial class EditorToolBaseForm
         OnShutdownGraphics();
 
         foreach (IToolRenderer renderer in _renderers.Values)
-        {                
+        {
             renderer.Dispose();
         }
 
         _renderers.Clear();
 
         GorgonSwapChain swapChain = Interlocked.Exchange(ref _swapChain, null);
-        IGraphicsContext context = Interlocked.Exchange(ref _graphicsContext, null);            
+        IGraphicsContext context = Interlocked.Exchange(ref _graphicsContext, null);
 
         GorgonApplication.AllowBackground = _oldBackgroundState;
 
@@ -238,14 +228,13 @@ public partial class EditorToolBaseForm
         _dataContext.PropertyChanged -= DataContext_PropertyChanged;
     }
 
-
     /// <summary>
     /// Function to handle a drag enter event on the render control.
     /// </summary>
     /// <param name="e">The event arguments.</param>
     /// <remarks>
     /// <para>
-    /// Tool plug in developers can override this method to handle a drag enter event when an item is dragged into the rendering area on the view.
+    /// Tool plug-in developers can override this method to handle a drag enter event when an item is dragged into the rendering area on the view.
     /// </para>
     /// </remarks>
     protected virtual void OnRenderWindowDragEnter(DragEventArgs e)
@@ -258,7 +247,7 @@ public partial class EditorToolBaseForm
     /// <param name="e">The event arguments.</param>
     /// <remarks>
     /// <para>
-    /// Tool plug in developers can override this method to handle a drag over event when an item is dragged over the rendering area on the view.
+    /// Tool plug-in developers can override this method to handle a drag over event when an item is dragged over the rendering area on the view.
     /// </para>
     /// </remarks>
     protected virtual void OnRenderWindowDragOver(DragEventArgs e)
@@ -271,11 +260,11 @@ public partial class EditorToolBaseForm
     /// <param name="e">The event arguments.</param>
     /// <remarks>
     /// <para>
-    /// Tool plug in developers can override this method to handle a drop event when an item is dropped into the rendering area on the view.
+    /// Tool plug-in developers can override this method to handle a drop event when an item is dropped into the rendering area on the view.
     /// </para>
     /// </remarks>
     protected virtual void OnRenderWindowDragDrop(DragEventArgs e)
-    {        
+    {
     }
 
     /// <summary>
@@ -324,7 +313,7 @@ public partial class EditorToolBaseForm
     /// </remarks>
     protected virtual void OnPropertyChanging(string propertyName)
     {
-    
+
     }
 
     /// <summary>
@@ -351,11 +340,11 @@ public partial class EditorToolBaseForm
     /// <exception cref="ArgumentException">Thrown if a renderer is already registered with the same <paramref name="name"/>.</exception>
     /// <remarks>
     /// <para>
-    /// Some tool plug ins will require the rendered view to change depending on state. For example, a specific tool is selected and the view needs to switch to a portion of the tool UI. In such 
+    /// Some tool plug-ins will require the rendered view to change depending on state. For example, a specific tool is selected and the view needs to switch to a portion of the tool UI. In such 
     /// cases it is not practical to have a single renderer performing all manner of state changes, so this method provides a means of passing different renderer instances to the view.
     /// </para>
     /// <para>
-    /// Developers of the tool plug ins should register these renderers in the <see cref="OnSetupGraphics(IGraphicsContext, GorgonSwapChain)"/> method so that the renderers are available right 
+    /// Developers of the tool plug-ins should register these renderers in the <see cref="OnSetupGraphics(IGraphicsContext, GorgonSwapChain)"/> method so that the renderers are available right 
     /// away. Failure to do so can lead to broken rendering.
     /// </para>
     /// </remarks>
@@ -387,14 +376,14 @@ public partial class EditorToolBaseForm
     /// <returns><b>true</b> if the renderer is registered, <b>false</b> if not.</returns>
     protected bool HasRenderer(string name)
     {
-#pragma warning disable IDE0046 // Convert to conditional expression
+
         if (name is null)
         {
             throw new ArgumentNullException(nameof(name));
         }
 
         return string.IsNullOrWhiteSpace(name) ? throw new ArgumentEmptyException(nameof(name)) : _renderers.ContainsKey(name);
-#pragma warning restore IDE0046 // Convert to conditional expression
+
     }
 
     /// <summary>
@@ -452,7 +441,7 @@ public partial class EditorToolBaseForm
     /// <param name="swapChain">The swap chain used to render into the UI.</param>
     /// <remarks>
     /// <para>
-    /// This method allows tool plug in implementors to setup additional functionality for custom graphics rendering.
+    /// This method allows tool plug-in implementors to setup additional functionality for custom graphics rendering.
     /// </para>
     /// <para>
     /// Resources created by this method should be cleaned up in the <see cref="OnShutdownGraphics"/> method.
@@ -486,7 +475,7 @@ public partial class EditorToolBaseForm
     /// </remarks>
     protected virtual void OnUnassignEvents()
     {
-    
+
     }
 
     /// <summary>
@@ -499,7 +488,7 @@ public partial class EditorToolBaseForm
     /// </remarks>
     protected virtual void OnResetDataContext()
     {
-        
+
     }
 
     /// <summary>
@@ -543,7 +532,7 @@ public partial class EditorToolBaseForm
         Interlocked.Exchange(ref _closeState, 1);
         e.Cancel = true;
 
-        var args = new CloseToolArgs(true);
+        CloseToolArgs args = new(true);
 
         if ((_dataContext?.CloseToolCommand is not null) && (_dataContext.CloseToolCommand.CanExecute(args)))
         {
@@ -590,13 +579,13 @@ public partial class EditorToolBaseForm
     /// <summary>
     /// Function to set up the graphics interface for this window.
     /// </summary>
-    /// <param name="context">The application graphics context provided by the plug in.</param>
+    /// <param name="context">The application graphics context provided by the plug-in.</param>
     /// <param name="allowBackgroundRendering">[Optional] <b>true</b> to allow the graphics functionality to render even if the form does not have focus, <b>false</b> to pause rendering.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="context"/> parameter is <b>null</b>.</exception>
     /// <exception cref="GorgonException">Thrown if the <see cref="RenderControl"/> property is not set to a non-<b>null</b> value.</exception>
     /// <remarks>
     /// <para>
-    /// This method will initialize the graphics sub system for the control (if required) so that users may use the Gorgon drawing functionality in their tool plug in. The method should be called 
+    /// This method will initialize the graphics sub system for the control (if required) so that users may use the Gorgon drawing functionality in their tool plug-in. The method should be called 
     /// immediately after creating the form to reduce any possibility of issues.
     /// </para>
     /// <para>
@@ -634,7 +623,7 @@ public partial class EditorToolBaseForm
             _graphicsContext?.ReturnSwapPresenter(ref _swapChain);
             _graphicsContext = null;
         }
-                    
+
         GorgonSwapChain swapChain = context.LeaseSwapPresenter(RenderControl);
 
         // Always insert the default renderer.
@@ -642,7 +631,7 @@ public partial class EditorToolBaseForm
 
         foreach (IToolRenderer renderer in _renderers.Values)
         {
-            renderer.BackgroundColor = RenderControl?.BackColor ?? GorgonColor.White;
+            renderer.BackgroundColor = GorgonColor.FromColor(RenderControl?.BackColor ?? Color.FromKnownColor(KnownColor.White));
         }
 
         // If we didn't register any renderers, then do not switch to anything (nothing will be rendered).
@@ -673,9 +662,7 @@ public partial class EditorToolBaseForm
         _graphicsContext = context;
         _swapChain = swapChain;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
     /// <summary>Initializes a new instance of the <see cref="EditorToolBaseForm"/> class.</summary>
     public EditorToolBaseForm()
     {
@@ -683,5 +670,4 @@ public partial class EditorToolBaseForm
 
         InitializeComponent();
     }
-    #endregion
 }

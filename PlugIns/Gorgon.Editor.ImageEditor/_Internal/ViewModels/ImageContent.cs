@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,35 +11,28 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: October 30, 2018 7:58:37 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Globalization;
-using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Drawing = System.Drawing;
 using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
+using Gorgon.Editor.ImageEditor.Native;
 using Gorgon.Editor.ImageEditor.Properties;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
@@ -48,20 +41,19 @@ using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
+using Gorgon.IO.FileSystem;
 using Gorgon.Math;
 using Gorgon.UI;
-using DX = SharpDX;
-using Gorgon.Editor.ImageEditor.Native;
+using Drawing = System.Drawing;
 
 namespace Gorgon.Editor.ImageEditor.ViewModels;
 
 /// <summary>
-/// The image editor content.
+/// The image editor content
 /// </summary>
 internal class ImageContent
     : ContentEditorViewModelBase<ImageContentParameters>, IImageContent
 {
-    #region Undo Args.
     /// <summary>
     /// The arguments used to undo/redo a conversion.
     /// </summary>
@@ -96,7 +88,7 @@ internal class ImageContent
         /// <summary>
         /// The minimum/maximum alpha threshold.
         /// </summary>
-        public GorgonRange MinMax;
+        public GorgonRange<int> MinMax;
 
         /// <summary>
         /// The mip level used when setting alpha.
@@ -154,7 +146,7 @@ internal class ImageContent
         /// <summary>
         /// The type of image for redo.
         /// </summary>
-        public ImageType ImageType;
+        public ImageDataType ImageType;
     }
 
     /// <summary>
@@ -167,9 +159,7 @@ internal class ImageContent
         /// </summary>
         public bool IsPremultiplied;
     }
-    #endregion
 
-    #region Constants.
     /// <summary>
     /// The attribute key name for the image codec attribute.
     /// </summary>
@@ -182,17 +172,15 @@ internal class ImageContent
     /// The attribute key name for the premultiplied alpha flag.
     /// </summary>
     public const string PremultipliedAttr = "Premultiplied";
-    #endregion
 
-    #region Variables.
     // The list of available codecs matched by extension.
-    private readonly List<(GorgonFileExtension extension, IGorgonImageCodec codec)> _codecs = new();
+    private readonly List<(GorgonFileExtension extension, IGorgonImageCodec codec)> _codecs = [];
     // The directory to store the undo cache data.
     private IGorgonVirtualDirectory _undoCacheDir;
     // The format support information for the current video card.
     private IReadOnlyDictionary<BufferFormat, IGorgonFormatSupportInfo> _formatSupport;
     // The available pixel formats, based on codec.
-    private ObservableCollection<BufferFormat> _pixelFormats = new();
+    private ObservableCollection<BufferFormat> _pixelFormats = [];
     // The settings for the image editor plugin.
     private ISettingsPlugins _pluginSettings;
     // The file used for working changes.
@@ -231,9 +219,7 @@ internal class ImageContent
     private (string ExePath, string FriendlyName, Drawing.Bitmap IconLarge, Drawing.Bitmap IconSmall) _externalEditorInfo;
     // Information for the user defined editor.
     private (string ExePath, string FriendlyName, Drawing.Bitmap IconLarge, Drawing.Bitmap IconSmall) _userEditorInfo;
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to return the settings for the image editor plugin.
     /// </summary>
@@ -297,7 +283,7 @@ internal class ImageContent
     public ObservableCollection<IGorgonImageCodec> Codecs
     {
         get;
-    } = new ObservableCollection<IGorgonImageCodec>();
+    } = [];
 
     /// <summary>
     /// Property to return the list of available image pixel formats (based on codec).
@@ -394,7 +380,7 @@ internal class ImageContent
     }
 
     /// <summary>Property to return the type of image that is loaded.</summary>
-    public ImageType ImageType => ImageData?.ImageType ?? ImageType.Unknown;
+    public ImageDataType ImageType => ImageData?.ImageType ?? ImageDataType.Unknown;
 
     /// <summary>Property to return the number of mip maps in the image.</summary>
     public int MipCount => ImageData.MipCount;
@@ -425,7 +411,7 @@ internal class ImageContent
             _currentMipLevel = value;
             OnPropertyChanged();
 
-            if (ImageType != ImageType.Image3D)
+            if (ImageType != ImageDataType.Image3D)
             {
                 return;
             }
@@ -612,7 +598,7 @@ internal class ImageContent
 
     /// <summary>Property to return the command to execute when changing the image type.</summary>
     /// <value>The change image type command.</value>
-    public IEditorCommand<ImageType> ChangeImageTypeCommand
+    public IEditorCommand<ImageDataType> ChangeImageTypeCommand
     {
         get;
     }
@@ -674,9 +660,7 @@ internal class ImageContent
     {
         get;
     }
-    #endregion
 
-    #region Methods.        
     /// <summary>Handles the CollectionChanged event of the CodecPlugInPaths control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="NotifyCollectionChangedEventArgs"/> instance containing the event data.</param>
@@ -712,7 +696,6 @@ internal class ImageContent
         ContentState = ContentState.Modified;
     }
 
-
     /// <summary>
     /// Function to perform the image import by bringing in a new image to replace the current mip level and array index, or depth slice. 
     /// </summary>
@@ -739,7 +722,7 @@ internal class ImageContent
                     return Task.CompletedTask;
                 }
 
-                inStream = undoArgs.UndoFile.OpenStream();
+                inStream = _imageIO.ScratchArea.OpenStream(undoArgs.UndoFile.FullPath, false);
                 (IGorgonImage image, _, _) = _imageIO.LoadImageFile(inStream, _workingFile.Name);
                 ImageData.Dispose();
 
@@ -776,10 +759,10 @@ internal class ImageContent
             {
                 HostServices.BusyService.SetBusy();
 
-                int startArrayOrDepth = ImageType == ImageType.Image3D ? CurrentDepthSlice : CurrentArrayIndex;
+                int startArrayOrDepth = ImageType == ImageDataType.Image3D ? CurrentDepthSlice : CurrentArrayIndex;
                 int width = ImageData.Buffers[CurrentMipLevel, startArrayOrDepth].Width;
                 int height = ImageData.Buffers[CurrentMipLevel, startArrayOrDepth].Height;
-                var newSize = new DX.Size2(width, height);
+                GorgonPoint newSize = new(width, height);
 
                 NotifyPropertyChanging(nameof(ImageData));
 
@@ -787,7 +770,7 @@ internal class ImageContent
                 if (redoArgs?.RedoFile is not null)
                 {
                     // Just reuse the image data in the redo cache item.                        
-                    redoFileStream = redoArgs.RedoFile.OpenStream();
+                    redoFileStream = _imageIO.ScratchArea.OpenStream(redoArgs.RedoFile.FullPath, false);
                     (IGorgonImage redoImage, _, _) = _imageIO.LoadImageFile(redoFileStream, _workingFile.Name);
                     redoFileStream.Dispose();
 
@@ -867,16 +850,16 @@ internal class ImageContent
     /// </summary>
     /// <param name="_">Not used.</param>
     /// <returns><b>true</b> if the image can be imported, <b>false</b> if not.</returns>
-    private bool CanImportFile(float _) 
+    private bool CanImportFile(float _)
     {
         if ((ImageData is null) || (CurrentPanel is not null) || (CommandContext is not null))
         {
             return false;
         }
-        
+
         IReadOnlyList<string> selectedFiles = ContentFileManager.GetSelectedFiles();
 
-        return selectedFiles.Select(file => ContentFileManager.GetFile(file))
+        return selectedFiles.Select(ContentFileManager.GetFile)
                     .Where(file => file is not null)
                     .Any(file => (file.Metadata.ContentMetadata is not null)
                                 && (file.Metadata.Attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out string dataType))
@@ -893,11 +876,11 @@ internal class ImageContent
 
         switch (ImageType)
         {
-            case ImageType.Image2D:
-            case ImageType.ImageCube:
+            case ImageDataType.Image2D:
+            case ImageDataType.ImageCube:
                 confirmMessage = string.Format(Resources.GORIMG_CONFIRM_OVERWRITE_ARRAY_INDEX, CurrentArrayIndex + 1, CurrentMipLevel + 1);
                 break;
-            case ImageType.Image3D:
+            case ImageDataType.Image3D:
                 confirmMessage = string.Format(Resources.GORIMG_CONFIRM_OVERWRITE_DEPTH_SLICE, CurrentDepthSlice + 1, CurrentMipLevel + 1);
                 break;
         }
@@ -913,7 +896,7 @@ internal class ImageContent
     /// <returns><b>true</b> to cropping/resizing is required, <b>false</b> if not.</returns>
     private bool CheckForCropResize(IGorgonImage importImage, string imageFileName)
     {
-        int arrayOrDepth = ImageType == ImageType.Image3D ? CurrentDepthSlice : CurrentArrayIndex;
+        int arrayOrDepth = ImageType == ImageDataType.Image3D ? CurrentDepthSlice : CurrentArrayIndex;
         int width = ImageData.Buffers[CurrentMipLevel, arrayOrDepth].Width;
         int height = ImageData.Buffers[CurrentMipLevel, arrayOrDepth].Height;
 
@@ -937,7 +920,7 @@ internal class ImageContent
         CropOrResizeSettings.ImportFile = imageFileName;
         // Take a copy of the image here because we'll need to destroy it later.
         CropOrResizeSettings.ImportImage = importImage.Clone();
-        CropOrResizeSettings.TargetImageSize = new DX.Size2(width, height);
+        CropOrResizeSettings.TargetImageSize = new GorgonPoint(width, height);
         CurrentPanel = CropOrResizeSettings;
 
         return true;
@@ -1051,7 +1034,7 @@ internal class ImageContent
             // Persist the image to a new working file so that block compression won't be applied to our current working file.   
             workFile = await Task.Run(() => _imageIO.SaveImageFile(Guid.NewGuid().ToString("N"), ImageData, CurrentPixelFormat));
 
-            await SaveContentFileAsync(workFile);
+            await SaveContentFileAsync(workFile, _imageIO.ScratchArea);
 
             // Remove the old flag so we don't get the image picked up as premultiplied when it isn't.
             File.Metadata.Attributes.Remove(OldPremultipliedAttr);
@@ -1132,20 +1115,19 @@ internal class ImageContent
     /// <returns>A list of formats.</returns>
     private ObservableCollection<BufferFormat> GetFilteredFormats()
     {
-        var result = new ObservableCollection<BufferFormat>();
+        ObservableCollection<BufferFormat> result = [];
         IReadOnlyList<BufferFormat> supportedFormats = _imageIO.DefaultCodec.SupportedPixelFormats;
 
         if (ImageData.FormatInfo.IsCompressed)
         {
             // Assume our block compressed format expands to R8G8B8A8                
-            supportedFormats = ImageData.CanConvertToFormats(supportedFormats);                
+            supportedFormats = ImageData.CanConvertToFormats(supportedFormats);
 
             // Do not provide block compressed formats if we can't convert them.
             if (_imageIO.CanHandleBlockCompression)
             {
-                supportedFormats = supportedFormats
-                    .Concat(supportedFormats.Where(item => (new GorgonFormatInfo(item)).IsCompressed))
-                    .ToArray();
+                supportedFormats = [.. supportedFormats
+, .. supportedFormats.Where(item => (new GorgonFormatInfo(item)).IsCompressed)];
             }
         }
 
@@ -1158,7 +1140,7 @@ internal class ImageContent
                 continue;
             }
 
-            var formatInfo = new GorgonFormatInfo(format);
+            GorgonFormatInfo formatInfo = new(format);
 
             if ((formatInfo.IsPacked) || (formatInfo.IsTypeless))
             {
@@ -1181,7 +1163,6 @@ internal class ImageContent
         return result;
     }
 
-
     /// <summary>
     /// Function to determine if format conversion can happen.
     /// </summary>
@@ -1196,13 +1177,13 @@ internal class ImageContent
     private IGorgonVirtualFile CreateUndoCacheFile()
     {
         string undoFilePath = Path.Combine(_undoCacheDir.FullPath, $"u_{Guid.NewGuid():N}");
-        using (Stream outStream = _imageIO.ScratchArea.OpenStream(undoFilePath, FileMode.Create))
-        using (Stream inStream = _workingFile.OpenStream())
+        using (Stream outStream = _imageIO.ScratchArea.OpenStream(undoFilePath, true))
+        using (Stream inStream = _imageIO.ScratchArea.OpenStream(_workingFile.FullPath, false))
         {
             inStream.CopyTo(outStream);
         }
 
-        return _imageIO.ScratchArea.FileSystem.GetFile(undoFilePath);
+        return _imageIO.ScratchArea.GetFile(undoFilePath);
     }
 
     /// <summary>
@@ -1223,7 +1204,7 @@ internal class ImageContent
         }
         catch (Exception ex)
         {
-            HostServices.Log.Print($"ERROR: Unable to delete the undo cache file at '{undoFile.PhysicalFile.FullPath}'.", LoggingLevel.Simple);
+            HostServices.Log.PrintError($"Unable to delete the undo cache file at '{undoFile.PhysicalFile.FullPath}'.", LoggingLevel.Simple);
             HostServices.Log.LogException(ex);
         }
     }
@@ -1249,7 +1230,7 @@ internal class ImageContent
                     return Task.CompletedTask;
                 }
 
-                inStream = undoArgs.UndoFile.OpenStream();
+                inStream = _imageIO.ScratchArea.OpenStream(undoArgs.UndoFile.FullPath, false);
                 (IGorgonImage image, _, _) = _imageIO.LoadImageFile(inStream, _workingFile.Name);
                 ImageData.Dispose();
 
@@ -1294,7 +1275,7 @@ internal class ImageContent
                     return Task.FromException(new InvalidCastException("Will not see me"));
                 }
 
-                var destFormat = new GorgonFormatInfo(format);
+                GorgonFormatInfo destFormat = new(format);
 
                 // Ensure that we can actually convert.
                 if (!destFormat.IsCompressed)
@@ -1363,7 +1344,7 @@ internal class ImageContent
     /// <param name="codec">The codec to use when exporting.</param>
     private void DoExportImage(IGorgonImageCodec codec)
     {
-        var missingSupport = new StringBuilder();
+        StringBuilder missingSupport = new();
         IGorgonImage exportImage = ImageData.Clone();
         IGorgonImage workImage = exportImage;
 
@@ -1407,7 +1388,7 @@ internal class ImageContent
                 workImage.Dispose();
                 workImage = exportImage;
             }
-            else if ((!codec.SupportsDepth) && (workImage.ImageType == ImageType.Image3D))
+            else if ((!codec.SupportsDepth) && (workImage.ImageType == ImageDataType.Image3D))
             {
                 if (missingSupport.Length > 0)
                 {
@@ -1503,7 +1484,7 @@ internal class ImageContent
     /// <returns><b>true</b> if the image can be cropped or resized, <b>false</b> if not.</returns>
     private bool CanUpdateDimensions() => ImageData is not null && ImageData.ImageType switch
     {
-        ImageType.Image3D => (ImageData.Width != DimensionSettings.Width)
+        ImageDataType.Image3D => (ImageData.Width != DimensionSettings.Width)
                                || (ImageData.Height != DimensionSettings.Height)
                                || (ImageData.MipCount != DimensionSettings.MipLevels)
                                || (ImageData.Depth != DimensionSettings.DepthSlicesOrArrayIndices),
@@ -1531,9 +1512,9 @@ internal class ImageContent
                 if (undoArgs.UndoFile is null)
                 {
                     return Task.CompletedTask;
-                }                    
+                }
 
-                inStream = undoArgs.UndoFile.OpenStream();
+                inStream = _imageIO.ScratchArea.OpenStream(undoArgs.UndoFile.FullPath, false);
                 (IGorgonImage image, _, _) = _imageIO.LoadImageFile(inStream, _workingFile.Name);
                 ImageData.Dispose();
                 NotifyPropertyChanging(nameof(ImageData));
@@ -1584,11 +1565,11 @@ internal class ImageContent
             IGorgonVirtualFile undoFile = null;
             IGorgonVirtualFile redoFile = null;
             IGorgonImage newImage = null;
-            int arrayOrDepthCount = ImageData.ImageType == ImageType.Image3D ? ImageData.Depth : ImageData.ArrayCount;
+            int arrayOrDepthCount = ImageData.ImageType == ImageDataType.Image3D ? ImageData.Depth : ImageData.ArrayCount;
 
             try
             {
-                var formatInfo = new GorgonFormatInfo(CurrentPixelFormat);
+                GorgonFormatInfo formatInfo = new(CurrentPixelFormat);
 
                 // Block compressed files must be a multiple of 4 for width and height. 
                 if ((formatInfo.IsCompressed) &&
@@ -1616,7 +1597,7 @@ internal class ImageContent
                 if (redoArgs?.RedoFile is not null)
                 {
                     // Just reuse the image data in the redo cache item.                        
-                    redoFileStream = redoArgs.RedoFile.OpenStream();
+                    redoFileStream = _imageIO.ScratchArea.OpenStream(redoArgs.UndoFile.FullPath, false);
                     (IGorgonImage redoImage, _, _) = _imageIO.LoadImageFile(redoFileStream, _workingFile.Name);
                     redoFileStream.Dispose();
 
@@ -1644,12 +1625,12 @@ internal class ImageContent
                         if ((DimensionSettings.Width <= ImageData.Width)
                             || (DimensionSettings.Height <= ImageData.Height))
                         {
-                            _imageUpdater.CropTo(ImageData, new DX.Size2(DimensionSettings.Width, DimensionSettings.Height), DimensionSettings.CropAlignment);
+                            _imageUpdater.CropTo(ImageData, new GorgonPoint(DimensionSettings.Width, DimensionSettings.Height), DimensionSettings.CropAlignment);
                         }
                     }
                     else
                     {
-                        _imageUpdater.Resize(ImageData, new DX.Size2(DimensionSettings.Width, DimensionSettings.Height), DimensionSettings.ImageFilter, false);
+                        _imageUpdater.Resize(ImageData, new GorgonPoint(DimensionSettings.Width, DimensionSettings.Height), DimensionSettings.ImageFilter, false);
                     }
 
                     // Handle depth slices/array indices.
@@ -1685,7 +1666,7 @@ internal class ImageContent
                 }
 
                 // Update the current values to fit within our updated ranges.
-                if (ImageType == ImageType.Image3D)
+                if (ImageType == ImageDataType.Image3D)
                 {
                     if (CurrentDepthSlice >= DepthCount)
                     {
@@ -1787,7 +1768,7 @@ internal class ImageContent
 
                 NotifyPropertyChanging(nameof(ImageData));
 
-                inStream = undoArgs.UndoFile.OpenStream();
+                inStream = _imageIO.ScratchArea.OpenStream(undoArgs.UndoFile.FullPath, false);
                 (IGorgonImage image, _, _) = _imageIO.LoadImageFile(inStream, _workingFile.Name);
                 ImageData.Dispose();
                 NotifyPropertyChanging(nameof(ImageData));
@@ -1838,7 +1819,7 @@ internal class ImageContent
                 if (redoArgs?.RedoFile is not null)
                 {
                     // Just reuse the image data in the redo cache item.                        
-                    redoFileStream = redoArgs.RedoFile.OpenStream();
+                    redoFileStream = _imageIO.ScratchArea.OpenStream(redoArgs.UndoFile.FullPath, false);
                     (IGorgonImage redoImage, _, _) = _imageIO.LoadImageFile(redoFileStream, _workingFile.Name);
                     redoFileStream.Dispose();
 
@@ -1902,7 +1883,7 @@ internal class ImageContent
             finally
             {
                 redoFileStream?.Dispose();
-                HostServices.BusyService.SetIdle();                    
+                HostServices.BusyService.SetIdle();
             }
         }
 
@@ -1922,7 +1903,7 @@ internal class ImageContent
     /// </summary>
     /// <param name="imageType">The type of image.</param>
     /// <returns><b>true</b> if the image can change types, <b>false</b> if not.</returns>
-    private bool CanChangeImageType(ImageType imageType)
+    private bool CanChangeImageType(ImageDataType imageType)
     {
         if ((CurrentPanel is not null) || (CommandContext is not null))
         {
@@ -1936,11 +1917,11 @@ internal class ImageContent
 
         switch (imageType)
         {
-            case ImageType.ImageCube when ((_formatSupport[CurrentPixelFormat].FormatSupport & BufferFormatSupport.TextureCube) != BufferFormatSupport.TextureCube):
-            case ImageType.Image3D when ((Width > _videoAdapter.MaxTexture3DWidth) || (Height > _videoAdapter.MaxTexture3DHeight)):
+            case ImageDataType.ImageCube when ((_formatSupport[CurrentPixelFormat].FormatSupport & BufferFormatSupport.TextureCube) != BufferFormatSupport.TextureCube):
+            case ImageDataType.Image3D when ((Width > _videoAdapter.MaxTexture3DWidth) || (Height > _videoAdapter.MaxTexture3DHeight)):
                 return false;
-            case ImageType.Image2D when ImageType == ImageType.ImageCube:
-            case ImageType.ImageCube when ImageType == ImageType.Image2D:
+            case ImageDataType.Image2D when ImageType == ImageDataType.ImageCube:
+            case ImageDataType.ImageCube when ImageType == ImageDataType.Image2D:
                 return true;
             default:
                 return _formatSupport[CurrentPixelFormat].IsTextureFormat(ImageType);
@@ -1951,7 +1932,7 @@ internal class ImageContent
     /// Function to convert the image type to another type.
     /// </summary>
     /// <param name="newImageType">The type to convert into.</param>
-    private void DoChangeImageType(ImageType newImageType)
+    private void DoChangeImageType(ImageDataType newImageType)
     {
         ImageTypeUndoArgs imageTypeUndoArgs = null;
 
@@ -1973,7 +1954,7 @@ internal class ImageContent
                     return Task.CompletedTask;
                 }
 
-                inStream = undoArgs.UndoFile.OpenStream();
+                inStream = _imageIO.ScratchArea.OpenStream(undoArgs.UndoFile.FullPath, false);
                 (IGorgonImage image, _, _) = _imageIO.LoadImageFile(inStream, _workingFile.Name);
                 ImageData.Dispose();
 
@@ -2009,8 +1990,8 @@ internal class ImageContent
             {
                 switch (newImageType)
                 {
-                    case ImageType.ImageCube:
-                    case ImageType.Image2D:
+                    case ImageDataType.ImageCube:
+                    case ImageDataType.Image2D:
                         if ((DepthCount > 1)
                             && (HostServices.MessageDisplay.ShowConfirmation(Resources.GORIMG_CONFIRM_3D_TO_2D) == MessageResponse.No))
                         {
@@ -2018,9 +1999,9 @@ internal class ImageContent
                         }
 
                         HostServices.BusyService.SetBusy();
-                        newImage = _imageUpdater.ConvertTo2D(ImageData, newImageType == ImageType.ImageCube);
+                        newImage = _imageUpdater.ConvertTo2D(ImageData, newImageType == ImageDataType.ImageCube);
                         break;
-                    case ImageType.Image3D:
+                    case ImageDataType.Image3D:
                         if ((ArrayCount > 1)
                             && (HostServices.MessageDisplay.ShowConfirmation(Resources.GORIMG_CONFIRM_ARRAY_TO_VOLUME) == MessageResponse.No))
                         {
@@ -2094,11 +2075,11 @@ internal class ImageContent
         {
             return System.IO.File.Exists(exePath);
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             HostServices.Log.LogException(ex);
             return false;
-        }            
+        }
     }
 
     /// <summary>
@@ -2118,9 +2099,9 @@ internal class ImageContent
             // We will extract the buffer for the current array/depth and mip and edit that.
             // Most apps won't support editing images with volume data, array data, or mip levels, so we'll let them work on the image part one at a time.
             // This should give us the most flexibility.
-            IGorgonImageBuffer buffer = ImageData.Buffers[CurrentMipLevel, ImageType == ImageType.Image3D ? CurrentDepthSlice : CurrentArrayIndex];
+            IGorgonImageBuffer buffer = ImageData.Buffers[CurrentMipLevel, ImageType == ImageDataType.Image3D ? CurrentDepthSlice : CurrentArrayIndex];
 
-            workImage = new GorgonImage(new GorgonImageInfo(ImageType.Image2D, ImageData.Format)
+            workImage = new GorgonImage(new GorgonImageInfo(ImageDataType.Image2D, ImageData.Format)
             {
                 Depth = 1,
                 ArrayCount = 1,
@@ -2153,7 +2134,7 @@ internal class ImageContent
             // Finally, write out the image data so the external image editor can have at it.
             string fileName = $"{File.Name}_extern_edit.png";
             workImageFile = _imageIO.SaveImageFile(fileName, workImage, workImage.Format, codec);
-                            
+
             workImage.Dispose();
 
             // Launch the editor.                
@@ -2163,7 +2144,7 @@ internal class ImageContent
             }
 
             // Reload the image.
-            imageStream = workImageFile.OpenStream();
+            imageStream = _imageIO.ScratchArea.OpenStream(workImageFile.FullPath, false);
             workImage = codec.FromStream(imageStream);
             imageStream.Dispose();
 
@@ -2206,7 +2187,7 @@ internal class ImageContent
                 }
                 catch (Exception ex)
                 {
-                    HostServices.Log.Print("Error deleting working image file.", LoggingLevel.All);
+                    HostServices.Log.PrintError("Error deleting working image file.", LoggingLevel.All);
                     HostServices.Log.LogException(ex);
                 }
             }
@@ -2229,7 +2210,7 @@ internal class ImageContent
             return false;
         }
 
-        return args.ContentFilePaths.Select(file => ContentFileManager.GetFile(file))
+        return args.ContentFilePaths.Select(ContentFileManager.GetFile)
                     .Where(file => file is not null)
                     .Any(file => (file.Metadata.ContentMetadata is not null)
                                 && (file.Metadata.Attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out string dataType))
@@ -2253,9 +2234,9 @@ internal class ImageContent
         ShowWaitPanel(Resources.GORIMG_TEXT_IMPORTING);
         await Task.Run(() =>
         {
-            var ddsCodec = new GorgonCodecDds();
+            GorgonCodecDds ddsCodec = new();
 
-            using (Stream imageStream = _imageIO.ScratchArea.OpenStream(importItem.FromFile.FullPath, FileMode.Open))
+            using (Stream imageStream = _imageIO.ScratchArea.OpenStream(importItem.FromFile.FullPath, false))
             {
                 (importImage, _, _) = _imageIO.LoadImageFile(imageStream, $"/Import/Import_{importItem.FromFile.Name}_{Guid.NewGuid():N}");
             }
@@ -2264,7 +2245,7 @@ internal class ImageContent
                        .ConvertToFormat(ImageData.Format)
                        .EndUpdate();
         });
-        
+
         ImportImageData(Path.GetFileName(importItem.OriginalFilePath), importImage, CropResizeMode.None, Alignment.UpperLeft, ImageFilter.Point, false);
         HideWaitPanel();
 
@@ -2297,7 +2278,7 @@ internal class ImageContent
                     return Task.CompletedTask;
                 }
 
-                inStream = undoArgs.UndoFile.OpenStream();
+                inStream = _imageIO.ScratchArea.OpenStream(undoArgs.UndoFile.FullPath, false);
                 (IGorgonImage image, _, _) = _imageIO.LoadImageFile(inStream, _workingFile.Name);
                 ImageData.Dispose();
 
@@ -2340,7 +2321,7 @@ internal class ImageContent
                 if (redoArgs?.RedoFile is not null)
                 {
                     // Just reuse the image data in the redo cache item.                        
-                    redoFileStream = redoArgs.RedoFile.OpenStream();
+                    redoFileStream = _imageIO.ScratchArea.OpenStream(redoArgs.UndoFile.FullPath, false);
                     (IGorgonImage redoImage, _, _) = _imageIO.LoadImageFile(redoFileStream, _workingFile.Name);
                     redoFileStream.Dispose();
 
@@ -2416,15 +2397,15 @@ internal class ImageContent
         IGorgonImage importImage = null;
         IGorgonVirtualFile tempFile = null;
         Stream imageStream = null;
-        var cancelSource = new CancellationTokenSource();            
-        IReadOnlyList<ImagePickerImportData> imports = Array.Empty<ImagePickerImportData>();
+        CancellationTokenSource cancelSource = new();
+        IReadOnlyList<ImagePickerImportData> imports = [];
 
         void CancelAction() => cancelSource?.Cancel();
 
         try
         {
             // Get our list of image files.
-            IContentFile[] imageFiles = args.ContentFilePaths.Select(imageFile => ContentFileManager.GetFile(imageFile))
+            IContentFile[] imageFiles = args.ContentFilePaths.Select(ContentFileManager.GetFile)
                                                              .Where(imageFile => (imageFile?.Metadata.ContentMetadata is not null)
                                                                     && (imageFile.Metadata.Attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out string dataType))
                                                                     && (string.Equals(dataType, CommonEditorContentTypes.ImageType, StringComparison.OrdinalIgnoreCase)))
@@ -2435,7 +2416,7 @@ internal class ImageContent
             imports = await Task.Run(() =>
             {
                 Stream stream = null;
-                var importedFiles = new List<ImagePickerImportData>();
+                List<ImagePickerImportData> importedFiles = [];
                 IGorgonImageInfo originalMetadata;
 
                 _imageIO.ScratchArea.CreateDirectory("/Import/");
@@ -2465,7 +2446,7 @@ internal class ImageContent
                     finally
                     {
                         stream?.Close();
-                    }                        
+                    }
                 }
 
                 return importedFiles;
@@ -2480,22 +2461,22 @@ internal class ImageContent
 
             // If we've only imported a single image, and its width/height is the same as this image and depth/array/mip count is 1 for both, then there's no need for the picker.
             // So just straight up import it.
-            if ((imports.Count == 1) 
-                && (imports[0].OriginalMetadata.Width == Width) 
-                && (imports[0].OriginalMetadata.Height == Height) 
+            if ((imports.Count == 1)
+                && (imports[0].OriginalMetadata.Width == Width)
+                && (imports[0].OriginalMetadata.Height == Height)
                 && (imports[0].OriginalMetadata.ArrayCount == 1)
                 && (imports[0].OriginalMetadata.Depth == 1)
                 && (imports[0].OriginalMetadata.MipCount == 1))
-            {                    
+            {
                 await ImportSingleImageSameSizeAsync(imports[0]);
                 return;
             }
 
             // If we have more than 1 image selected, or the import image is not the same size as the destination image, then we can use the 
             // picker to update the image.
-            var imgPickerArgs = new ActivateImagePickerArgs(imports, ImageData)
+            ActivateImagePickerArgs imgPickerArgs = new(imports, ImageData)
             {
-                CurrentArrayIndexDepthSlice = ImageType == ImageType.Image3D ? _currentDepthSlice : _currentArrayindex,
+                CurrentArrayIndexDepthSlice = ImageType == ImageDataType.Image3D ? _currentDepthSlice : _currentArrayindex,
                 MipLevel = _currentMipLevel
             };
             if ((ImagePicker.ActivateCommand is null) || (!ImagePicker.ActivateCommand.CanExecute(imgPickerArgs)))
@@ -2544,8 +2525,8 @@ internal class ImageContent
             HideWaitPanel();
             imageStream?.Dispose();
 
-            if ((tempFile is not null) && (_imageIO.ScratchArea.FileSystem.GetFile(tempFile.FullPath) is not null))
-            {                                        
+            if ((tempFile is not null) && (_imageIO.ScratchArea.GetFile(tempFile.FullPath) is not null))
+            {
                 _imageIO.ScratchArea.DeleteFile(tempFile.FullPath);
             }
 
@@ -2567,13 +2548,13 @@ internal class ImageContent
 
         if (image is null)
         {
-            HostServices.Log.Print("WARNING: No image was found.", LoggingLevel.Simple);
+            HostServices.Log.PrintWarning("No image was found.", LoggingLevel.Simple);
             return;
         }
 
         if (_imageIO.InstalledCodecs.Codecs.Count == 0)
         {
-            HostServices.Log.Print("WARNING: No image codecs were found.  This should not happen.", LoggingLevel.Simple);
+            HostServices.Log.PrintWarning("No image codecs were found.  This should not happen.", LoggingLevel.Simple);
             return;
         }
 
@@ -2640,7 +2621,7 @@ internal class ImageContent
 
                 NotifyPropertyChanging(nameof(ImageData));
 
-                inStream = undoArgs.UndoFile.OpenStream();
+                inStream = _imageIO.ScratchArea.OpenStream(undoArgs.UndoFile.FullPath, false);
                 (IGorgonImage image, _, _) = _imageIO.LoadImageFile(inStream, _workingFile.Name);
                 ImageData.Dispose();
                 NotifyPropertyChanging(nameof(ImageData));
@@ -2689,7 +2670,7 @@ internal class ImageContent
                         Alpha = AlphaSettings.AlphaValue,
                         MinMax = AlphaSettings.UpdateRange,
                         MipLevel = CurrentMipLevel,
-                        ArrayIndex = ImageType == ImageType.Image3D ? CurrentDepthSlice : CurrentArrayIndex
+                        ArrayIndex = ImageType == ImageDataType.Image3D ? CurrentDepthSlice : CurrentArrayIndex
                     };
 
                     Settings.LastAlphaValue = redoArgs.Alpha;
@@ -2736,7 +2717,7 @@ internal class ImageContent
             finally
             {
                 redoFileStream?.Dispose();
-                HostServices.BusyService.SetIdle();                    
+                HostServices.BusyService.SetIdle();
             }
         }
 
@@ -2767,11 +2748,11 @@ internal class ImageContent
     /// <returns>A task for asynchronous operation.</returns>
     private async Task DoSetPremultipliedAlphaAsync(bool value)
     {
-        var premultipliedUndoArgs = new PremultipliedUndoArgs
+        PremultipliedUndoArgs premultipliedUndoArgs = new()
         {
             IsPremultiplied = !value
         };
-        var premultipliedRedoArgs = new PremultipliedUndoArgs
+        PremultipliedUndoArgs premultipliedRedoArgs = new()
         {
             IsPremultiplied = value
         };
@@ -2852,15 +2833,14 @@ internal class ImageContent
 
         try
         {
-            CommandContext = FxContext;               
+            CommandContext = FxContext;
         }
         catch (Exception ex)
         {
-            HostServices.Log.Print("ERROR: Error showing fx options.", LoggingLevel.Simple);
+            HostServices.Log.PrintError("Error showing fx options.", LoggingLevel.Simple);
             HostServices.Log.LogException(ex);
         }
     }
-
 
     /// <summary>
     /// Function to determine if the effects can be applied to the main image.
@@ -2888,7 +2868,7 @@ internal class ImageContent
                     return Task.CompletedTask;
                 }
 
-                inStream = undoArgs.UndoFile.OpenStream();
+                inStream = _imageIO.ScratchArea.OpenStream(undoArgs.UndoFile.FullPath, false);
                 (IGorgonImage image, _, _) = _imageIO.LoadImageFile(inStream, _workingFile.Name);
                 ImageData.Dispose();
 
@@ -2932,7 +2912,7 @@ internal class ImageContent
                 if (redoArgs?.RedoFile is not null)
                 {
                     // Just reuse the image data in the redo cache item.                        
-                    redoFileStream = redoArgs.RedoFile.OpenStream();
+                    redoFileStream = _imageIO.ScratchArea.OpenStream(redoArgs.UndoFile.FullPath, false);
                     (IGorgonImage redoImage, _, _) = _imageIO.LoadImageFile(redoFileStream, _workingFile.Name);
                     redoFileStream.Dispose();
 
@@ -2943,7 +2923,7 @@ internal class ImageContent
                 }
                 else
                 {
-                    int arrayDepth = ImageType == ImageType.Image3D ? CurrentDepthSlice : CurrentArrayIndex;                        
+                    int arrayDepth = ImageType == ImageDataType.Image3D ? CurrentDepthSlice : CurrentArrayIndex;
                     FxContext.FxService.EffectImage.Buffers[0].CopyTo(ImageData.Buffers[CurrentMipLevel, arrayDepth]);
                     // We are done with the data for now, so we can deallocate it.
                     FxContext.FxService.SetImage(null, 0, 0);
@@ -3023,7 +3003,7 @@ internal class ImageContent
     /// <param name="scratchArea">The scratch area used to write a dummy image.</param>
     /// <param name="exePath">[Optional] The path to the image editor if we already know it.</param>
     /// <returns>The path to the image editor Exe file, the friendly application name, the large 32x32 icon, and the small 16x16 icon.</returns>
-    private (string ExePath, string FriendlyName, Drawing.Bitmap IconLg, Drawing.Bitmap IconSm) GetImageEditorAndIcon(IGorgonFileSystemWriter<Stream> scratchArea, string exePath = null)
+    private (string ExePath, string FriendlyName, Drawing.Bitmap IconLg, Drawing.Bitmap IconSm) GetImageEditorAndIcon(IGorgonFileSystem scratchArea, string exePath = null)
     {
         Drawing.Bitmap bitmap;
         Drawing.Bitmap bitmapSm;
@@ -3031,29 +3011,29 @@ internal class ImageContent
         if (string.IsNullOrWhiteSpace(exePath))
         {
             using Drawing.Bitmap fakePng = new(32, 32);
-            using Stream stream = scratchArea.OpenStream("/Dummy.png", FileMode.Create);
+            using Stream stream = scratchArea.OpenStream("/Dummy.png", true);
             fakePng.Save(stream, Drawing.Imaging.ImageFormat.Png);
             stream.Close();
 
             HostServices.Log.Print($"Retrieving associated executable for files.", LoggingLevel.Verbose);
-            IGorgonVirtualFile pngFile = scratchArea.FileSystem.GetFile("/Dummy.png");
+            IGorgonVirtualFile pngFile = scratchArea.GetFile("/Dummy.png");
             exePath = Win32API.GetAssociatedExecutable(pngFile.PhysicalFile.FullPath);
 
             if (string.IsNullOrWhiteSpace(exePath))
             {
-                HostServices.Log.Print($"WARNING: No executable found for files of type 'PNG'. Check to see if the UWP photo app hasn't messed with file registrations for 'PNG' files.", LoggingLevel.Verbose);
+                HostServices.Log.PrintWarning($"No executable found for files of type 'PNG'. Check to see if the UWP photo app hasn't messed with file registrations for 'PNG' files.", LoggingLevel.Verbose);
                 return (string.Empty, string.Empty, null, null);
             }
 
             HostServices.Log.Print($"Found executable path {exePath}.", LoggingLevel.Verbose);
 
-            using var icon = Drawing.Icon.ExtractAssociatedIcon(exePath);
+            using Icon icon = Drawing.Icon.ExtractAssociatedIcon(exePath);
             bitmap = Drawing.Bitmap.FromHicon(icon.Handle);
             bitmapSm = new(bitmap, 16, 16);
         }
         else
         {
-            using var icon = Drawing.Icon.ExtractAssociatedIcon(exePath);
+            using Icon icon = Drawing.Icon.ExtractAssociatedIcon(exePath);
             bitmap = Drawing.Bitmap.FromHicon(icon.Handle);
             bitmapSm = new(bitmap, 16, 16);
         }
@@ -3138,7 +3118,7 @@ internal class ImageContent
         _videoAdapter = injectionParameters.VideoAdapterInfo;
         _externalEditor = injectionParameters.ExternalEditorService;
         _format = injectionParameters.OriginalFormat;
-        
+
         _cropResizeSettings.OkCommand = new EditorCommand<object>(DoCropResize, CanCropResize);
         _dimensionSettings.OkCommand = new EditorCommand<object>(DoUpdateImageDimensions, CanUpdateDimensions);
         _mipMapSettings.OkCommand = new EditorCommand<object>(DoGenMips, CanGenMips);
@@ -3221,9 +3201,7 @@ internal class ImageContent
             base.OnUnload();
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
     /// <summary>Initializes a new instance of the ImageContent class.</summary>
     public ImageContent()
     {
@@ -3232,7 +3210,7 @@ internal class ImageContent
         ExportImageCommand = new EditorCommand<IGorgonImageCodec>(DoExportImage, CanExportImage);
         ConvertFormatCommand = new EditorCommand<BufferFormat>(DoConvertFormat, CanConvertFormat);
         SaveContentCommand = new EditorAsyncCommand<SaveReason>(DoSaveImageTask, CanSaveImage);
-        ChangeImageTypeCommand = new EditorCommand<ImageType>(DoChangeImageType, CanChangeImageType);
+        ChangeImageTypeCommand = new EditorCommand<ImageDataType>(DoChangeImageType, CanChangeImageType);
         ImportFileCommand = new EditorAsyncCommand<float>(DoImportFileAsync, CanImportFile);
         ShowImageDimensionsCommand = new EditorCommand<object>(DoShowImageDimensions, CanShowImageDimensions);
         ShowMipGenerationCommand = new EditorCommand<object>(DoShowMipGeneration, CanShowMipGeneration);
@@ -3240,7 +3218,6 @@ internal class ImageContent
         PremultipliedAlphaCommand = new EditorAsyncCommand<bool>(DoSetPremultipliedAlphaAsync, CanSetPremultipliedAlpha);
         ShowSetAlphaCommand = new EditorCommand<object>(DoShowSetAlphaValue, CanShowSetAlphaValue);
         CopyToImageCommand = new EditorAsyncCommand<CopyToImageArgs>(DoCopyToImageAsync, CanCopyToImage);
-        ShowFxCommand = new EditorCommand<object>(() => DoShowFx(), CanShowFx);            
+        ShowFxCommand = new EditorCommand<object>(DoShowFx, CanShowFx);
     }
-    #endregion
 }

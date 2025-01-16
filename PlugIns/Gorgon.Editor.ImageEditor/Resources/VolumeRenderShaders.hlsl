@@ -53,7 +53,7 @@ VolumeVertexOut VolumeVS(VolumeVertex vertex)
 	// Transform from object space into world space by multiplying the vertex position by the world/view/projection matrix.	
 	output.position = mul(vertex.position * scaleFactor, WVP);	
 	output.worldPosition = output.position;
-	output.uvw = float3((vertex.position.x  + 0.5f) * scaleFactor.x, (-vertex.position.y + 0.5f) * scaleFactor.y, (vertex.position.z + 0.5f) * scaleFactor.z);
+	output.uvw = float3((vertex.position.x  + 0.5f) * scaleFactor.x, (-vertex.position.y + 0.5f) * scaleFactor.y, (-vertex.position.z + 0.5f) * scaleFactor.z);
 
 	return output;
 }

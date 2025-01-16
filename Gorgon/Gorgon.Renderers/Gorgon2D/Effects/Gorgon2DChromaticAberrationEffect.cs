@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,60 +11,57 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 18, 2019 9:24:40 AM
 // 
-#endregion
 
-using System;
 using System.Numerics;
-using System.Threading;
-using Gorgon.Diagnostics;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Renderers.Cameras;
 using Gorgon.Renderers.Properties;
-using DX = SharpDX;
 
 namespace Gorgon.Renderers;
 
 /// <summary>
-/// An effect that simulates lens imperfection.
+/// An effect that simulates lens imperfection
 /// </summary>
 /// <remarks>
 /// <para>
-/// A chromatic aberration is the failure of a lens to focus all wavelengths of light to the same point.  This results in a prism-like effect around the edges of an image.
+/// A chromatic aberration is the failure of a lens to focus all wavelengths of light to the same point.  This results in a prism-like effect around the edges of an image
 /// </para>
 /// <para>
 /// This implementation of chromatic aberration simulates the effect around the corners of the screen to give the appearance of an actual lens, but when setting its <see cref="FullScreen"/> 
-/// property to <b>true</b>, the effect is applied evenly across the screen (and is also cheaper for performance).
+/// property to <b>true</b>, the effect is applied evenly across the screen (and is also cheaper for performance)
 /// </para>
 /// <para>
 /// If you wish to modify the color spectrum used, setting a new <see cref="GorgonTexture1DView"/> on the <see cref="LookupTexture"/> property will let the effect use your custom texture when 
-/// processing the image.
+/// processing the image
 /// </para>
 /// <para>
 /// This effect is based on the presentation by Mikkel Gjoel 
 /// (<a target="_blank" href="https://github.com/playdeadgames/publications/tree/master/INSIDE">https://github.com/playdeadgames/publications/tree/master/INSIDE</a>) and the code of Erik Faye Lund 
-/// (@kusma) (<a target="_blank" href="https://github.com/kusma/vlee/blob/master/data/postprocess.fx">https://github.com/kusma/vlee/blob/master/data/postprocess.fx</a>).
+/// (@kusma) (<a target="_blank" href="https://github.com/kusma/vlee/blob/master/data/postprocess.fx">https://github.com/kusma/vlee/blob/master/data/postprocess.fx</a>)
 /// </para>
 /// </remarks>
 /// <seealso cref="GorgonTexture1DView"/>
 /// <seealso cref="LookupTexture"/>
 /// <seealso cref="FullScreen"/>
-public class Gorgon2DChromaticAberrationEffect
-    : Gorgon2DEffect, IGorgon2DCompositorEffect
+/// <remarks>Initializes a new instance of the <see cref="Gorgon2DChromaticAberrationEffect"/> class.</remarks>
+/// <param name="renderer">The 2D renderer used to render the effect.</param>
+public class Gorgon2DChromaticAberrationEffect(Gorgon2D renderer)
+        : Gorgon2DEffect(renderer, Resources.GOR2D_EFFECT_CHROMATIC_ABBERATION, Resources.GOR2D_EFFECT_CHROMATIC_ABBERATION_DESC, 1), IGorgon2DCompositorEffect
 {
-    #region Variables.
+
     // The default texture to use for look up.
     private GorgonTexture1DView _defaultLut;
     // The default texture to use for look up.
@@ -85,9 +82,7 @@ public class Gorgon2DChromaticAberrationEffect
     private GorgonTexture1DView _lookupTexture;
     // Flag to indicate whether to aberrate the entire screen, or just the corners.
     private bool _fullScreen;
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to set or return the texture for look up.
     /// </summary>
@@ -142,9 +137,7 @@ public class Gorgon2DChromaticAberrationEffect
             _chromeAbShaderState = null;
         }
     }
-    #endregion
 
-    #region Methods.
     /// <summary>Releases unmanaged and - optionally - managed resources.</summary>
     /// <param name="disposing">
     ///   <c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
@@ -186,7 +179,6 @@ public class Gorgon2DChromaticAberrationEffect
                                                                   .Build(PixelShaderAllocator);
             }
 
-
             _chromeAbBatchState = builders.BatchBuilder.Clear()
                                                        .BlendState(GorgonBlendState.Premultiplied)
                                                        .PixelShaderState(_chromeAbShaderState)
@@ -221,14 +213,14 @@ public class Gorgon2DChromaticAberrationEffect
     protected override void OnInitialize()
     {
         // Initialize the default look up table.
-        using (IGorgonImage image = new GorgonImage(new GorgonImageInfo(ImageType.Image1D, BufferFormat.R8G8B8A8_UNorm)
+        using (IGorgonImage image = new GorgonImage(new GorgonImageInfo(ImageDataType.Image1D, BufferFormat.R8G8B8A8_UNorm)
         {
             Width = 3
         }))
         {
-            image.ImageData.AsRef<int>(0) = GorgonColor.RedPure.ToABGR();
-            image.ImageData.AsRef<int>(4) = GorgonColor.BluePure.ToABGR();
-            image.ImageData.AsRef<int>(8) = GorgonColor.GreenPure.ToABGR();
+            image.ImageData.AsRef<int>(0) = GorgonColor.ToABGR(GorgonColors.Red);
+            image.ImageData.AsRef<int>(4) = GorgonColor.ToABGR(GorgonColors.Blue);
+            image.ImageData.AsRef<int>(8) = GorgonColor.ToABGR(GorgonColors.Green);
 
             _defaultLut = GorgonTexture1DView.CreateTexture(Graphics, new GorgonTexture1DInfo(3, image.Format)
             {
@@ -265,23 +257,10 @@ public class Gorgon2DChromaticAberrationEffect
     /// </remarks>
     public void Render(GorgonTexture2DView texture, GorgonRenderTargetView output)
     {
-        texture.ValidateObject(nameof(texture));
-        output.ValidateObject(nameof(output));
-
         BeginRender(output);
         BeginPass(0, output);
-        Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, output.Width, output.Height), GorgonColor.White, texture, new DX.RectangleF(0, 0, 1, 1));
+        Renderer.DrawFilledRectangle(new GorgonRectangleF(0, 0, output.Width, output.Height), GorgonColors.White, texture, new GorgonRectangleF(0, 0, 1, 1));
         EndPass(0, output);
         EndRender(output);
     }
-    #endregion
-
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="Gorgon2DChromaticAberrationEffect"/> class.</summary>
-    /// <param name="renderer">The 2D renderer used to render the effect.</param>
-    public Gorgon2DChromaticAberrationEffect(Gorgon2D renderer)
-        : base(renderer, Resources.GOR2D_EFFECT_CHROMATIC_ABBERATION, Resources.GOR2D_EFFECT_CHROMATIC_ABBERATION_DESC, 1)
-    {
-    }
-    #endregion
 }

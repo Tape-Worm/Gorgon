@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2021 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,36 +11,29 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 28, 2021 9:17:30 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing;
 using System.Drawing.Text;
-using System.Linq;
-using System.Windows.Forms;
 
 namespace Gorgon.Editor.FontEditor;
 
 /// <summary>
-/// A combo box for displaying fonts.
+/// A combo box for displaying fonts
 /// </summary>
 internal class ComboFonts
     : ComboBox
 {
-    #region Properties.
     /// <summary>
     /// N/A
     /// </summary>
@@ -59,9 +52,7 @@ internal class ComboFonts
     /// </summary>
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden), Browsable(false), EditorBrowsable(EditorBrowsableState.Never)]
     public new bool Sorted => true;
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Raises the <see cref="E:System.Windows.Forms.ComboBox.MeasureItem" /> event.
     /// </summary>
@@ -113,8 +104,8 @@ internal class ComboFonts
 
         e.Graphics.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
         Size measure = TextRenderer.MeasureText(e.Graphics, fontName, Font, e.Bounds.Size, flags);
-        var textBounds = new Rectangle(e.Bounds.Width - measure.Width + e.Bounds.Left, e.Bounds.Top, e.Bounds.Width, e.Bounds.Height);
-        var fontBounds = new Rectangle(e.Bounds.Left, e.Bounds.Top, textBounds.X - 2, e.Bounds.Height);
+        Rectangle textBounds = new(e.Bounds.Width - measure.Width + e.Bounds.Left, e.Bounds.Top, e.Bounds.Width, e.Bounds.Height);
+        Rectangle fontBounds = new(e.Bounds.Left, e.Bounds.Top, textBounds.X - 2, e.Bounds.Height);
         TextRenderer.DrawText(e.Graphics, fontName, font, fontBounds, Enabled ? e.ForeColor : Color.DimGray, e.BackColor, flags);
         TextRenderer.DrawText(e.Graphics, fontName, Font, textBounds, Enabled ? e.ForeColor : Color.DimGray, e.BackColor, flags);
     }
@@ -155,14 +146,14 @@ internal class ComboFonts
             IEnumerable<string> items = Items.Cast<string>()
                                              .Where(item => !families.Any(subItem => string.Equals(subItem, item, StringComparison.CurrentCultureIgnoreCase)))
                                              .ToArray();
-            
+
             foreach (string item in items)
             {
                 Items.Remove(item);
             }
 
             families = families.Where(item => !Items.Cast<string>().Any(subItem => string.Equals(subItem, item, StringComparison.CurrentCultureIgnoreCase)))
-                               .OrderBy(item => item, StringComparer.CurrentCultureIgnoreCase);                
+                               .OrderBy(item => item, StringComparer.CurrentCultureIgnoreCase);
         }
 
         foreach (string font in families)
@@ -175,9 +166,7 @@ internal class ComboFonts
             Items.Add(font);
         }
     }
-    #endregion
 
-    #region Constructor/Destructor.
     /// <summary>
     /// Initializes a new instance of the <see cref="ComboFonts"/> class.
     /// </summary>
@@ -186,5 +175,4 @@ internal class ComboFonts
         base.DrawMode = DrawMode.OwnerDrawVariable;
         base.Sorted = true;
     }
-    #endregion
 }

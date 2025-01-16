@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,61 +11,57 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 28, 2018 12:43:55 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Gorgon.Collections;
 using Gorgon.Editor.Metadata;
-using Gorgon.Editor.Native;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
 using Gorgon.IO;
-using Gorgon.IO.Providers;
+using Gorgon.IO.FileSystem;
+using Gorgon.IO.FileSystem.Providers;
 
 namespace Gorgon.Editor.ViewModels;
 
 /// <summary>
-/// A factory for generating view models and their dependencies.
+/// A factory for generating view models and their dependencies
 /// </summary>
-internal class ViewModelFactory
+/// <remarks>Initializes a new instance of the <see cref="ViewModelFactory"/> class.</remarks>
+/// <param name="settings">The settings for the editor.</param>
+/// <param name="projectManager">The project manager for managing the project file.</param>
+/// <param name="fileSystemProviders">The file system providers used to read/write file systems.</param>
+/// <param name="contentServices">Common host services to pass into plug-ins.</param>        
+internal class ViewModelFactory(Editor.EditorSettings settings, ProjectManager projectManager, FileSystemProviders fileSystemProviders, HostContentServices contentServices)
 {
-    #region Variables.        
+
     // The buffer to hold directory paths.
     private readonly Dictionary<string, IDirectory> _directoryBuffer = new(StringComparer.OrdinalIgnoreCase);
     // The host content services.
-    private readonly HostContentServices _hostContentServices;
+    private readonly HostContentServices _hostContentServices = contentServices;
     // The file system providers for reading/writing file systems.
-    private readonly FileSystemProviders _fileSystemProviders;
+    private readonly FileSystemProviders _fileSystemProviders = fileSystemProviders;
     // The settings for the editor.
-    private readonly Editor.EditorSettings _settings;
+    private readonly Editor.EditorSettings _settings = settings;
     // The project manager.
-    private readonly ProjectManager _projectManager;
+    private readonly ProjectManager _projectManager = projectManager;
     // The synchronization context.
     private SynchronizationContext _syncContext;
-    // The list of content creator plug ins.
-    private IReadOnlyList<IContentPlugInMetadata> _contentCreators = Array.Empty<IContentPlugInMetadata>();
-    #endregion
-
-    #region Methods.
+    // The list of content creator plug-ins.
+    private IReadOnlyList<IContentPlugInMetadata> _contentCreators = [];
+    /*
     /// <summary>
     /// Function to send the item specified in the path to the recycle bin.
     /// </summary>
@@ -76,58 +72,58 @@ internal class ViewModelFactory
     {
         bool isDirectory = (System.IO.File.GetAttributes(path) & FileAttributes.Directory) == FileAttributes.Directory;
 
-        if (!Shell32.SendToRecycleBin(path, Shell32.FileOperationFlags.FOF_SILENT | Shell32.FileOperationFlags.FOF_NOCONFIRMATION | Shell32.FileOperationFlags.FOF_WANTNUKEWARNING))
+        if (!Shell32.SendToRecycleBin(path, FileOperationFlags.FOF_SILENT | FileOperationFlags.FOF_NOCONFIRMATION | FileOperationFlags.FOF_WANTNUKEWARNING))
         {
             return false;
         }
 
         return !(isDirectory ? System.IO.Directory.Exists(path) : System.IO.File.Exists(path));
     }
-
+    */
     /// <summary>
-    /// Function to retrieve a plug in list item view model based on the plug in passed in.
+    /// Function to retrieve a plug-in list item view model based on the plug-in passed in.
     /// </summary>
-    /// <param name="plugin">The plug in to retrieve data from.</param>
+    /// <param name="plugin">The plug-in to retrieve data from.</param>
     /// <returns>The view model.</returns>
     private ISettingsPlugInListItem CreatePlugInListItem(EditorPlugIn plugin)
     {
-        var result = new SettingsPlugInListItem();
+        SettingsPlugInListItem result = new();
         result.Initialize(new SettingsPlugInListItemParameters(plugin, _hostContentServices));
         return result;
     }
 
     /// <summary>
-    /// Function to retrieve a plug in list item view model based on the plug in passed in.
+    /// Function to retrieve a plug-in list item view model based on the plug-in passed in.
     /// </summary>
-    /// <param name="plugin">The plug in to retrieve data from.</param>
+    /// <param name="plugin">The plug-in to retrieve data from.</param>
     /// <returns>The view model.</returns>
-    private ISettingsPlugInListItem CreatePlugInListItem(IGorgonFileSystemProvider plugin)
+    private ISettingsPlugInListItem CreatePlugInListItem(GorgonFileSystemProviderPlugIn plugin)
     {
-        var result = new SettingsPlugInListItem();
+        SettingsPlugInListItem result = new();
         result.Initialize(new SettingsPlugInListItemParameters(plugin, _hostContentServices));
         return result;
     }
 
     /// <summary>
-    /// Function to retrieve a plug in list item view model based on the plug in passed in.
+    /// Function to retrieve a plug-in list item view model based on the plug-in passed in.
     /// </summary>
-    /// <param name="plugin">The plug in to retrieve data from.</param>
+    /// <param name="plugin">The plug-in to retrieve data from.</param>
     /// <returns>The view model.</returns>
     private ISettingsPlugInListItem CreatePlugInListItem(IDisabledPlugIn plugin)
     {
-        var result = new SettingsPlugInListItem();
+        SettingsPlugInListItem result = new();
         result.Initialize(new SettingsPlugInListItemParameters(plugin, _hostContentServices));
         return result;
     }
 
     /// <summary>
-    /// Function to retrieve the list of plug ins view model.
+    /// Function to retrieve the list of plug-ins view model.
     /// </summary>
-    /// <returns>The plug ins list view model.</returns>
+    /// <returns>The plug-ins list view model.</returns>
     private ISettingsPlugInsList CreatePlugInListViewModel()
     {
         IEnumerable<ISettingsPlugInListItem> plugins = _fileSystemProviders.Readers
-            .Select(item => CreatePlugInListItem(item.Value))
+            .Select(item => CreatePlugInListItem(item.Value.PlugIn))
             .Concat(_fileSystemProviders.Writers.Select(item => CreatePlugInListItem(item.Value)))
             .Concat(_hostContentServices.ContentPlugInService.PlugIns.Select(item => CreatePlugInListItem(item.Value)))
             .Concat(_hostContentServices.ContentPlugInService.Importers.Select(item => CreatePlugInListItem(item.Value)))
@@ -136,7 +132,7 @@ internal class ViewModelFactory
             .Concat(_hostContentServices.ContentPlugInService.DisabledPlugIns.Select(item => CreatePlugInListItem(item.Value)))
             .Concat(_hostContentServices.ToolPlugInService.DisabledPlugIns.Select(item => CreatePlugInListItem(item.Value)));
 
-        var result = new SettingsPlugInsList();
+        SettingsPlugInsList result = new();
         result.Initialize(new SettingsPlugInsListParameters(_hostContentServices)
         {
             PlugIns = plugins
@@ -145,12 +141,12 @@ internal class ViewModelFactory
     }
 
     /// <summary>
-    /// Function to retrieve the list of settings categories from loaded plug ins.
+    /// Function to retrieve the list of settings categories from loaded plug-ins.
     /// </summary>
     /// <returns>The list of categories.</returns>
     private IEnumerable<ISettingsCategory> GetPlugInSettingsCategories()
     {
-        var result = new List<ISettingsCategory>();
+        List<ISettingsCategory> result = [];
 
         IEnumerable<EditorPlugIn> plugins = _fileSystemProviders.Writers.Select(item => (EditorPlugIn)item.Value)
             .Concat(_hostContentServices.ContentPlugInService.PlugIns.Select(item => item.Value))
@@ -196,24 +192,24 @@ internal class ViewModelFactory
             throw new ArgumentNullException(nameof(project));
         }
 
-        var directories = new Dictionary<string, IDirectory>(StringComparer.OrdinalIgnoreCase)
+        Dictionary<string, IDirectory> directories = new(StringComparer.OrdinalIgnoreCase)
         {
             [parent.FullPath] = parent
         };
 
         IGorgonVirtualDirectory parentVirtDir = fileSystem.GetDirectory(parent.FullPath) ?? throw new DirectoryNotFoundException(string.Format(Resources.GOREDIT_ERR_DIRECTORY_NOT_FOUND, parent.FullPath));
 
-        var subDirs = new List<IGorgonVirtualDirectory>
-        {
-            parentVirtDir
-        };
-        subDirs.AddRange(parentVirtDir.Directories.Traverse(d => d.Directories));
+        List<IGorgonVirtualDirectory> subDirs =
+        [
+            parentVirtDir, .. parentVirtDir.Directories.TraverseBreadthFirst(d => d.Value.Directories)
+                                                       .Select(d => d.Value)
+        ];
 
         for (int i = 0; i < subDirs.Count; ++i)
         {
             IGorgonVirtualDirectory subDir = subDirs[i];
             IDirectory subDirParent = null;
-            IDirectory fileDir = null;                
+            IDirectory fileDir = null;
 
             if (subDir.Parent is not null)
             {
@@ -223,7 +219,7 @@ internal class ViewModelFactory
                     continue;
                 }
 
-                var newDir = new Directory();
+                Directory newDir = new();
                 newDir.Initialize(new DirectoryParameters(_hostContentServices, this)
                 {
                     VirtualDirectory = subDir,
@@ -250,11 +246,12 @@ internal class ViewModelFactory
             }
 
             // Add file view models.
-            foreach (IGorgonVirtualFile file in subDir.Files.OrderBy(item => item.Name))
+            foreach (IGorgonVirtualFile file in subDir.Files.OrderBy(item => item.Value.Name)
+                                                            .Select(f => f.Value))
             {
                 project.ProjectItems.TryGetValue(file.FullPath, out ProjectItemMetadata metaData);
 
-                var newFile = new File();
+                File newFile = new();
                 newFile.Initialize(new FileParameters(_hostContentServices, this)
                 {
                     VirtualFile = file,
@@ -272,23 +269,23 @@ internal class ViewModelFactory
     /// <param name="project">The current project.</param>
     /// <param name="fileSystem">The file system for the project.</param>
     /// <returns>A new file explorer view model.</returns>
-    private FileExplorer CreateFileExplorer(IProject project, IGorgonFileSystemWriter<FileStream> fileSystem)
+    private FileExplorer CreateFileExplorer(IProject project, IGorgonFileSystem fileSystem)
     {
-        var root = new RootDirectory();
+        RootDirectory root = new();
         root.Initialize(new RootDirectoryParameters(_hostContentServices, this)
         {
-            RootDirectory = fileSystem.FileSystem.RootDirectory,
+            RootDirectory = fileSystem.RootDirectory,
             Project = project,
             Path = project.FileSystemDirectory.FullName.FormatDirectory(Path.DirectorySeparatorChar)
         });
 
         // Create view models for all directories/files.
-        EnumerateFileSystemObjects(fileSystem.FileSystem, root, project);
+        EnumerateFileSystemObjects(fileSystem, root, project);
 
-        var searchService = new FileSystemSearchSystem(root);
+        FileSystemSearchSystem searchService = new(root);
 
-        var result = new FileExplorer();
-        var clipboardHandler = new FileSystemClipboardHandler(result, _hostContentServices.ClipboardService, _hostContentServices.Log);
+        FileExplorer result = new();
+        FileSystemClipboardHandler clipboardHandler = new(result, _hostContentServices.ClipboardService, _hostContentServices.Log);
         result.Initialize(new FileExplorerParameters(_hostContentServices, this)
         {
             Root = root,
@@ -303,7 +300,7 @@ internal class ViewModelFactory
 
         foreach (ContentPlugIn plugIn in _hostContentServices.ContentPlugInService.PlugIns.Values)
         {
-            plugIn.RegisterSearchKeywords(searchService);                
+            plugIn.RegisterSearchKeywords(searchService);
         }
 
         return result;
@@ -321,7 +318,7 @@ internal class ViewModelFactory
         _directoryBuffer.Clear();
         _directoryBuffer[parent.FullPath] = parent;
 
-        foreach (IDirectory dir in parent.Directories.Traverse(d => d.Directories))
+        foreach (IDirectory dir in parent.Directories.TraverseBreadthFirst(d => d.Directories))
         {
             _directoryBuffer[dir.FullPath] = dir;
         }
@@ -331,7 +328,7 @@ internal class ViewModelFactory
             throw new DirectoryNotFoundException();
         }
 
-        var newFile = new File();
+        File newFile = new();
         newFile.Initialize(new FileParameters(_hostContentServices, this)
         {
             VirtualFile = destFile,
@@ -350,7 +347,7 @@ internal class ViewModelFactory
     /// <returns>The file view model.</returns>
     public IFile CreateFile(IGorgonVirtualFile file, IDirectory parent)
     {
-        var newFile = new File();
+        File newFile = new();
         newFile.Initialize(new FileParameters(_hostContentServices, this)
         {
             VirtualFile = file,
@@ -372,12 +369,12 @@ internal class ViewModelFactory
         _directoryBuffer.Clear();
         _directoryBuffer[parent.FullPath] = parent;
 
-        foreach (IDirectory dir in parent.Directories.Traverse(d => d.Directories))
+        foreach (IDirectory dir in parent.Directories.TraverseBreadthFirst(d => d.Directories))
         {
             _directoryBuffer[dir.FullPath] = dir;
         }
 
-        var result = new List<IFile>();
+        List<IFile> result = [];
 
         foreach (IGorgonVirtualFile file in files)
         {
@@ -386,7 +383,7 @@ internal class ViewModelFactory
                 throw new DirectoryNotFoundException();
             }
 
-            var newFile = new File();
+            File newFile = new();
             newFile.Initialize(new FileParameters(_hostContentServices, this)
             {
                 VirtualFile = file,
@@ -407,7 +404,7 @@ internal class ViewModelFactory
     /// <returns>A new directory view model.</returns>
     public IDirectory CreateDirectory(IGorgonVirtualDirectory directory, IDirectory parent)
     {
-        var newDir = new Directory();
+        Directory newDir = new();
         newDir.Initialize(new DirectoryParameters(_hostContentServices, this)
         {
             VirtualDirectory = directory,
@@ -417,7 +414,7 @@ internal class ViewModelFactory
 
         if (parent is IExcludable excludeParent)
         {
-            newDir.IsExcluded = excludeParent.IsExcluded; 
+            newDir.IsExcluded = excludeParent.IsExcluded;
         }
 
         parent.Directories.Add(newDir);
@@ -437,12 +434,12 @@ internal class ViewModelFactory
 
         // Ensure all children are present so we have the proper parent directory when creating the new directory.
         // For example, if we create A/B/C and A/B already exists, then C's parent should return A/B as it should already exist.
-        foreach (IDirectory child in parent.Directories.Traverse(d => d.Directories))
+        foreach (IDirectory child in parent.Directories.TraverseBreadthFirst(d => d.Directories))
         {
             _directoryBuffer[child.FullPath] = child;
         }
 
-        var result = new List<IDirectory>();
+        List<IDirectory> result = [];
 
         bool isExcluded = false;
         if (parent is IExcludable excludeParent)
@@ -457,7 +454,7 @@ internal class ViewModelFactory
                 continue;
             }
 
-            var newDir = new Directory();
+            Directory newDir = new();
             newDir.Initialize(new DirectoryParameters(_hostContentServices, this)
             {
                 VirtualDirectory = virtDir,
@@ -479,7 +476,7 @@ internal class ViewModelFactory
     /// <param name="gpuName">The name of the GPU used by the application.</param>
     /// <returns>A new instance of the main view model.</returns>
     public IMain CreateMainViewModel(string gpuName)
-    {            
+    {
         IDirectoryLocateService dirLocator = new DirectoryLocateService();
         ISettingsPlugInsList pluginList = CreatePlugInListViewModel();
 
@@ -490,7 +487,7 @@ internal class ViewModelFactory
                                                                             .OfType<IContentPlugInMetadata>()
                                                                             .ToArray();
 
-        var settingsVm = new EditorSettings();
+        EditorSettings settingsVm = new();
         IEnumerable<ISettingsCategory> categories = GetPlugInSettingsCategories();
         settingsVm.Initialize(new EditorSettingsParameters
         {
@@ -499,13 +496,13 @@ internal class ViewModelFactory
             HostServices = _hostContentServices
         });
 
-        var newProjectVm = new NewProject
+        NewProject newProjectVm = new()
         {
-            GPUName = gpuName,                
+            GPUName = gpuName,
         };
-        var recentFilesVm = new Recent();
+        Recent recentFilesVm = new();
 
-        var mainVm = new Main();
+        Main mainVm = new();
 
         newProjectVm.Initialize(new NewProjectParameters(_hostContentServices, this)
         {
@@ -527,8 +524,8 @@ internal class ViewModelFactory
             NewProject = newProjectVm,
             Settings = settingsVm,
             RecentFiles = recentFilesVm,
-            ProjectManager = _projectManager,                
-            OpenDialog = new EditorFileOpenDialogService(_settings, _fileSystemProviders)                        
+            ProjectManager = _projectManager,
+            OpenDialog = new EditorFileOpenDialogService(_settings, _fileSystemProviders)
         });
 
         return mainVm;
@@ -551,31 +548,28 @@ internal class ViewModelFactory
         _hostContentServices.ContentPlugInService.ProjectDeactivated();
 
         FileExplorer fileExplorer = null;
-        var result = new ProjectEditor();
-        var tempFileSystem = new GorgonFileSystem(_hostContentServices.Log);
+        ProjectEditor result = new();
+        GorgonFileSystem tempFileSystem = new(_hostContentServices.Log);
         GorgonFileSystem fileSystem = null;
-        IGorgonFileSystemWriter<Stream> tempWriter = null;
+        IGorgonFileSystem tempWriter = null;
 
         await Task.Run(() =>
         {
             // Create the temporary file system.
             string writeLocation = projectData.TempDirectory.FullName.FormatDirectory(Path.DirectorySeparatorChar);
 
-            tempWriter = new GorgonFileSystemWriter(tempFileSystem, tempFileSystem, writeLocation);
+            tempWriter = new GorgonFileSystem(_hostContentServices.Log);
+            tempWriter.MountWriteArea(writeLocation);
             tempFileSystem.Mount(projectData.TempDirectory.FullName.FormatDirectory(Path.DirectorySeparatorChar), "/");
-            tempWriter.Mount();
             fileSystem = new GorgonFileSystem(_hostContentServices.Log);
-            IGorgonFileSystemWriter<FileStream> writer = new GorgonFileSystemWriter(fileSystem,
-                                                                                    fileSystem,
-                                                                                    projectData.FileSystemDirectory.FullName.FormatDirectory(Path.DirectorySeparatorChar),
-                                                                                    RecycleFileSystemItem);
+            IGorgonFileSystem writer = new GorgonFileSystem(_hostContentServices.Log);
+            writer.MountWriteArea(projectData.FileSystemDirectory.FullName.FormatDirectory(Path.DirectorySeparatorChar));
             fileSystem.Mount(projectData.FileSystemDirectory.FullName.FormatDirectory(Path.DirectorySeparatorChar));
-            writer.Mount();
 
             fileExplorer = CreateFileExplorer(projectData, writer);
         });
 
-        var previewer = new ContentPreview();
+        ContentPreview previewer = new();
         previewer.Initialize(new ContentPreviewParameters(_hostContentServices, this)
         {
             FileExplorer = fileExplorer,
@@ -588,7 +582,7 @@ internal class ViewModelFactory
             SaveDialog = new EditorFileSaveDialogService(_settings, _fileSystemProviders),
             FileExplorer = fileExplorer,
             ContentFileManager = fileExplorer,
-            ContentPreviewer = previewer,                
+            ContentPreviewer = previewer,
             EditorSettings = _settings,
             Project = projectData,
             ProjectManager = _projectManager,
@@ -603,20 +597,4 @@ internal class ViewModelFactory
 
         return result;
     }
-    #endregion
-
-    #region Constructor.
-    /// <summary>Initializes a new instance of the <see cref="ViewModelFactory"/> class.</summary>
-    /// <param name="settings">The settings for the editor.</param>
-    /// <param name="projectManager">The project manager for managing the project file.</param>
-    /// <param name="fileSystemProviders">The file system providers used to read/write file systems.</param>
-    /// <param name="contentServices">Common host services to pass into plug ins.</param>        
-    public ViewModelFactory(Editor.EditorSettings settings, ProjectManager projectManager, FileSystemProviders fileSystemProviders, HostContentServices contentServices)
-    {
-        _settings = settings;
-        _projectManager = projectManager;
-        _fileSystemProviders = fileSystemProviders;
-        _hostContentServices = contentServices;
-    }
-    #endregion
 }

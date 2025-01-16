@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,29 +11,25 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: November 17, 2018 3:29:06 PM
 // 
-#endregion
 
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Gorgon.Core;
 using Gorgon.Editor.Services;
 
 namespace Gorgon.Editor.UI;
 
 /// <summary>
-/// An editor command with undo capability.
+/// An editor command with undo capability
 /// </summary>
 /// <typeparam name="TU">The type of undo arguments.</typeparam>
 /// <typeparam name="TR">The type of redo arguments.</typeparam>
@@ -42,7 +38,7 @@ internal class UndoCommand<TU, TR>
     where TU : class
     where TR : class
 {
-    #region Variables.
+
     // Flag to indicate that the undo operation is executing.
     private int _isExecuting;
     // The undo command parameters.
@@ -53,9 +49,7 @@ internal class UndoCommand<TU, TR>
     private readonly Func<TU, CancellationToken, Task> _undoAction;
     // The action to execute when redoing instead of a command.
     private readonly Func<TR, CancellationToken, Task> _redoAction;
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to return the service that owns this command.
     /// </summary>
@@ -76,9 +70,7 @@ internal class UndoCommand<TU, TR>
     {
         get;
     }
-    #endregion
 
-    #region Methods.
     /// <summary>Function to undo the changes performed by this command.</summary>
     /// <param name="cancelToken">A cancellation token for canceling the operation.</param>
     /// <returns>A the task representing the executing undo operation.</returns>
@@ -125,15 +117,13 @@ internal class UndoCommand<TU, TR>
         TU undoArgs = Interlocked.Exchange(ref _undoArgs, null);
         TR redoArgs = Interlocked.Exchange(ref _redoArgs, null);
 
-        var disposeUndo = undoArgs as IDisposable;
-        var disposeRedo = redoArgs as IDisposable;
+        IDisposable disposeUndo = undoArgs as IDisposable;
+        IDisposable disposeRedo = redoArgs as IDisposable;
 
         disposeUndo?.Dispose();
         disposeRedo?.Dispose();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
     /// <summary>
     /// Initializes a new instance of the <see cref="EditorCommand{T}"/> class.
     /// </summary>        
@@ -165,5 +155,4 @@ internal class UndoCommand<TU, TR>
         _redoArgs = redoArgs;
         _undoArgs = undoArgs;
     }
-    #endregion
 }

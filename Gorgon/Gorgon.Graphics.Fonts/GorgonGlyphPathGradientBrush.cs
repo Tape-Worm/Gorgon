@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,23 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Saturday, October 12, 2013 9:10:02 PM
 // 
-#endregion
 
-using System.Collections.Generic;
-using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Linq;
 using System.Numerics;
 using Gorgon.IO;
 using Gorgon.Math;
@@ -35,11 +31,11 @@ using Gorgon.Math;
 namespace Gorgon.Graphics.Fonts;
 
 /// <summary>
-/// A brush that paints the font glyphs using a gradient that follows a specific path.
+/// A brush that paints the font glyphs using a gradient that follows a specific path
 /// </summary>
 /// <remarks>
 /// <para>
-/// This allows glyphs to be drawn using multiple colors that fade into one another.
+/// This allows glyphs to be drawn using multiple colors that fade into one another
 /// </para>
 /// </remarks>
 /// <seealso cref="GorgonGlyphSolidBrush"/>
@@ -49,7 +45,6 @@ namespace Gorgon.Graphics.Fonts;
 public class GorgonGlyphPathGradientBrush
     : GorgonGlyphBrush
 {
-    #region Properties.
     /// <summary>
     /// Property to return the type of brush.
     /// </summary>
@@ -130,59 +125,57 @@ public class GorgonGlyphPathGradientBrush
     {
         get;
     }
-    #endregion
 
-    #region Methods.
     /// <summary>Function to write out the specifics of the font brush data to a file writer.</summary>
     /// <param name="writer">The writer used to write the brush data.</param>
-    internal override void WriteBrushData(GorgonBinaryWriter writer)
+    internal override void WriteBrushData(IGorgonChunkWriter writer)
     {
-        writer.Write((int)WrapMode);
+        writer.WriteInt32((int)WrapMode);
 
-        writer.Write(Points.Count);
+        writer.WriteInt32(Points.Count);
 
         for (int i = 0; i < Points.Count; ++i)
         {
             writer.WriteValue(Points[i]);
         }
 
-        writer.Write(BlendFactors.Count);
+        writer.WriteInt32(BlendFactors.Count);
 
         for (int i = 0; i < BlendFactors.Count; ++i)
         {
-            writer.Write(BlendFactors[i]);
+            writer.WriteSingle(BlendFactors[i]);
         }
 
-        writer.Write(BlendPositions.Count);
+        writer.WriteInt32(BlendPositions.Count);
 
         for (int i = 0; i < BlendPositions.Count; ++i)
         {
-            writer.Write(BlendPositions[i]);
+            writer.WriteSingle(BlendPositions[i]);
         }
 
-        writer.Write(CenterColor.ToARGB());
+        writer.WriteInt32(GorgonColor.ToARGB(CenterColor));
         writer.WriteValue(CenterPoint);
         writer.WriteValue(FocusScales);
 
-        writer.Write(Interpolation.Count);
+        writer.WriteInt32(Interpolation.Count);
         for (int i = 0; i < Interpolation.Count; ++i)
         {
             GorgonGlyphBrushInterpolator interp = Interpolation[i];
-            writer.Write(interp.Weight);
-            writer.Write(interp.Color.ToARGB());
+            writer.WriteSingle(interp.Weight);
+            writer.WriteInt32(GorgonColor.ToARGB(interp.Color));
         }
 
-        writer.Write(SurroundColors.Count);
+        writer.WriteInt32(SurroundColors.Count);
 
         for (int i = 0; i < SurroundColors.Count; ++i)
         {
-            writer.Write(SurroundColors[i].ToARGB());
+            writer.WriteInt32(GorgonColor.ToARGB(SurroundColors[i]));
         }
     }
 
     /// <summary>Function to read back the specifics of the font brush data from a file reader.</summary>
     /// <param name="reader">The reader used to read the brush data.</param>
-    internal override void ReadBrushData(GorgonBinaryReader reader)
+    internal override void ReadBrushData(IGorgonChunkReader reader)
     {
         WrapMode = (GlyphBrushWrapMode)reader.ReadInt32();
         int count = reader.ReadInt32();
@@ -207,7 +200,7 @@ public class GorgonGlyphPathGradientBrush
             BlendPositions.Add(reader.ReadSingle());
         }
 
-        CenterColor = new GorgonColor(reader.ReadInt32());
+        CenterColor = GorgonColor.FromARGB(reader.ReadInt32());
         CenterPoint = reader.ReadValue<Vector2>();
         FocusScales = reader.ReadValue<Vector2>();
 
@@ -216,7 +209,7 @@ public class GorgonGlyphPathGradientBrush
 
         for (int i = 0; i < count; ++i)
         {
-            Interpolation.Add(new GorgonGlyphBrushInterpolator(reader.ReadSingle(), new GorgonColor(reader.ReadInt32())));
+            Interpolation.Add(new GorgonGlyphBrushInterpolator(reader.ReadSingle(), GorgonColor.FromARGB(reader.ReadInt32())));
         }
 
         count = reader.ReadInt32();
@@ -224,7 +217,7 @@ public class GorgonGlyphPathGradientBrush
 
         for (int i = 0; i < count; ++i)
         {
-            SurroundColors.Add(new GorgonColor(reader.ReadInt32()));
+            SurroundColors.Add(GorgonColor.FromARGB(reader.ReadInt32()));
         }
     }
 
@@ -236,13 +229,13 @@ public class GorgonGlyphPathGradientBrush
     /// </returns>
     internal override Brush ToGDIBrush()
     {
-        var result = new PathGradientBrush(Points.Select(item => new PointF(item.X, item.Y)).ToArray(), (WrapMode)WrapMode);
+        PathGradientBrush result = new(Points.Select(item => new PointF(item.X, item.Y)).ToArray(), (WrapMode)WrapMode);
 
-        var blend = new Blend(BlendFactors.Count.Max(BlendPositions.Count).Max(1));
+        Blend blend = new(BlendFactors.Count.Max(BlendPositions.Count).Max(1));
 
         if (Interpolation.Count > 2)
         {
-            var interpolationColors = new ColorBlend(Interpolation.Count);
+            ColorBlend interpolationColors = new(Interpolation.Count);
 
             for (int i = 0; i < Interpolation.Count; i++)
             {
@@ -267,11 +260,11 @@ public class GorgonGlyphPathGradientBrush
         }
 
         result.Blend = blend;
-        result.CenterColor = CenterColor;
+        result.CenterColor = GorgonColor.ToColor(CenterColor);
         result.CenterPoint = new PointF(CenterPoint.X, CenterPoint.Y);
         result.FocusScales = new PointF(FocusScales.X, FocusScales.Y);
 
-        result.SurroundColors = SurroundColors.Select(item => item.ToColor()).ToArray();
+        result.SurroundColors = SurroundColors.Select(GorgonColor.ToColor).ToArray();
 
         return result;
     }
@@ -280,7 +273,7 @@ public class GorgonGlyphPathGradientBrush
     /// <returns>The cloned object.</returns>
     public override GorgonGlyphBrush Clone()
     {
-        var brush = new GorgonGlyphPathGradientBrush
+        GorgonGlyphPathGradientBrush brush = new()
         {
             WrapMode = WrapMode,
             CenterColor = CenterColor,
@@ -331,7 +324,7 @@ public class GorgonGlyphPathGradientBrush
     /// </returns>
     public override bool Equals(GorgonGlyphBrush other)
     {
-        var brush = other as GorgonGlyphPathGradientBrush;
+        GorgonGlyphPathGradientBrush brush = other as GorgonGlyphPathGradientBrush;
 
         return ((brush == this) || ((brush is not null)
             && (brush.WrapMode == WrapMode)
@@ -344,19 +337,16 @@ public class GorgonGlyphPathGradientBrush
             && (brush.Interpolation.SequenceEqual(Interpolation))
             && (brush.SurroundColors.SequenceEqual(SurroundColors))));
     }
-    #endregion
 
-    #region Constructor
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonGlyphPathGradientBrush"/> class.
     /// </summary>
     public GorgonGlyphPathGradientBrush()
     {
-        Points = new List<Vector2>();
-        BlendFactors = new List<float>();
-        BlendPositions = new List<float>();
-        Interpolation = new List<GorgonGlyphBrushInterpolator>();
-        SurroundColors = new List<GorgonColor>();
+        Points = [];
+        BlendFactors = [];
+        BlendPositions = [];
+        Interpolation = [];
+        SurroundColors = [];
     }
-    #endregion
 }

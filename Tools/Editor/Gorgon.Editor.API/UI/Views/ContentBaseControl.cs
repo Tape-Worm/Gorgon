@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,42 +11,36 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: October 29, 2018 4:12:28 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing;
-using System.Linq;
-using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Rendering;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.UI;
-using Krypton.Ribbon;
+using KR = Krypton.Ribbon;
 
 namespace Gorgon.Editor.UI.Views;
 
 /// <summary>
-/// The base control used to render content.
+/// The base control used to render content
 /// </summary>
 public partial class ContentBaseControl
     : EditorBaseControl, IRendererControl
 {
-    #region Variables.
+
     // Synchronization objects for events.
     private readonly object _closeEventLock = new();
     private readonly object _dragEnterEventLock = new();
@@ -58,9 +52,7 @@ public partial class ContentBaseControl
     private IEditorContent _dataContext;
     // A list of child panel views identified by name.
     private readonly Dictionary<string, Control> _panelViews = new(StringComparer.OrdinalIgnoreCase);
-    #endregion
 
-    #region Events.
     // Event triggered when the content is closed.
     private event EventHandler ContentClosedEvent;
     // Event triggered when a drag enter operation is bubbled up to the parent.
@@ -201,9 +193,7 @@ public partial class ContentBaseControl
             }
         }
     }
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to return the currently hosted panel in the <see cref="HostPanelControls"/>.
     /// </summary>
@@ -229,7 +219,7 @@ public partial class ContentBaseControl
     /// Property to return the ribbon for the content view.
     /// </summary>
     [Browsable(false)]
-    public KryptonRibbon Ribbon
+    public KR.KryptonRibbon Ribbon
     {
         get;
         protected set;
@@ -290,16 +280,14 @@ public partial class ContentBaseControl
     /// <summary>Property to return the swap chain assigned to the control.</summary>
     [Browsable(false)]
     public GorgonSwapChain SwapChain => _swapChain;
-    #endregion
 
-    #region Methods.
     /// <summary>Handles the Click event of the ButtonClose control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The [EventArgs] instance containing the event data.</param>
     private async void ButtonClose_Click(object sender, EventArgs e)
     {
         EventHandler handler = null;
-        var args = new CloseContentArgs(true);
+        CloseContentArgs args = new(true);
 
         if ((_dataContext?.CloseContentCommand is not null) && (_dataContext.CloseContentCommand.CanExecute(args)))
         {
@@ -437,7 +425,7 @@ public partial class ContentBaseControl
             foreach (Control hostControl in PanelHostControls.Controls.OfType<Control>().Where(item => item != control))
             {
                 hostControl.Visible = false;
-            }                
+            }
 
             control.Left = 0;
             control.Top = 0;
@@ -579,7 +567,7 @@ public partial class ContentBaseControl
 
         Type dataContextType = typeof(IDataContext<>);
         Type controlType = CurrentHostedPanel.GetType();
-        Type controlInterface = controlType.GetInterface(dataContextType.FullName) ?? throw new InvalidCastException(string.Format(Resources.GOREDIT_ERR_HOSTED_CTL_NOT_DATACONTEXT, CurrentHostedPanel.Name));
+        Type _ = controlType.GetInterface(dataContextType.FullName) ?? throw new InvalidCastException(string.Format(Resources.GOREDIT_ERR_HOSTED_CTL_NOT_DATACONTEXT, CurrentHostedPanel.Name));
 
         if ((!overrideCurrentDc) && (ViewFactory.GetViewModel(CurrentHostedPanel) is not null))
         {
@@ -606,7 +594,7 @@ public partial class ContentBaseControl
         {
             handler = BubbleDragEnterEvent;
         }
-        
+
         handler?.Invoke(this, e);
     }
 
@@ -646,7 +634,7 @@ public partial class ContentBaseControl
         {
             handler = BubbleDragDropEvent;
         }
-        
+
         handler?.Invoke(this, e);
     }
 
@@ -763,7 +751,7 @@ public partial class ContentBaseControl
     protected T GetRegisteredPanel<T>(string id)
         where T : Control
     {
-#pragma warning disable IDE0046 // Convert to conditional expression
+
         if (id is null)
         {
             throw new ArgumentNullException(nameof(id));
@@ -775,7 +763,7 @@ public partial class ContentBaseControl
         }
 
         return (!_panelViews.TryGetValue(id, out Control result)) ? null : (T)result;
-#pragma warning restore IDE0046 // Convert to conditional expression
+
     }
 
     /// <summary>
@@ -902,10 +890,8 @@ public partial class ContentBaseControl
         GraphicsContext = context;
         _swapChain = swapChain;
     }
-    #endregion
 
-    #region Constructor/Finalizer.
     /// <summary>Initializes a new instance of the ContentBaseControl class.</summary>
     public ContentBaseControl() => InitializeComponent();
-    #endregion
+
 }

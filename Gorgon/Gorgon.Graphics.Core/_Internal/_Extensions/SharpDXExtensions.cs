@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2015 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,27 +11,28 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Monday, December 14, 2015 8:41:48 PM
 // 
-#endregion
 
+using System.Runtime.CompilerServices;
 using Gorgon.Math;
 using SharpDX.DXGI;
+using SharpDX.Mathematics.Interop;
 using D3D11 = SharpDX.Direct3D11;
 
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Extension methods for SharpDX object conversion.
+/// Extension methods for SharpDX object conversion
 /// </summary>
 internal static class SharpDXExtensions
 {
@@ -41,9 +42,9 @@ internal static class SharpDXExtensions
     /// <param name="desc">The description to convert.</param>
     /// <param name="name">The name of the swap chain.</param>
     /// <returns>A new <see cref="GorgonSwapChainInfo"/>.</returns>
-	    public static GorgonSwapChainInfo ToSwapChainInfo(this SwapChainDescription1 desc, string name) => new(desc.Width, desc.Height, (BufferFormat)desc.Format)
+    public static GorgonSwapChainInfo ToSwapChainInfo(this SwapChainDescription1 desc, string name) => new(desc.Width, desc.Height, (BufferFormat)desc.Format)
     {
-        Name = name,            
+        Name = name,
         StretchBackBuffer = desc.Scaling != Scaling.None
     };
 
@@ -164,11 +165,27 @@ internal static class SharpDXExtensions
     };
 
     /// <summary>
+    /// Function to convert a SharpDX raw rectangle to a <see cref="GorgonRectangle"/>.
+    /// </summary>
+    /// <param name="rectangle">The rectangle to convert.</param>
+    /// <returns>The converted rectangle.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static GorgonRectangle ToGorgonRectangle(this RawRectangle rectangle) => GorgonRectangle.FromLTRB(rectangle.Left, rectangle.Top, rectangle.Right, rectangle.Bottom);
+
+    /// <summary>
+    /// Function to convert a <see cref="GorgonRectangle"/> to a SharpDX raw rectangle.
+    /// </summary>
+    /// <param name="rectangle">The rectangle to convert.</param>
+    /// <returns>The converted rectangle.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static RawRectangle ToSharpDXRawRectangle(this GorgonRectangle rectangle) => new(rectangle.Left, rectangle.Top, rectangle.Right, rectangle.Bottom);
+
+    /// <summary>
     /// Function to convert a GorgonVertexBufferBinding to a D3D11 vertex buffer binding.
     /// </summary>
     /// <param name="binding">The binding to convert.</param>
     /// <returns>The D3D11 vertex buffer binding.</returns>
-	    public static D3D11.VertexBufferBinding ToVertexBufferBinding(this in GorgonVertexBufferBinding binding) => new(binding.VertexBuffer?.Native, binding.Stride, binding.Offset);
+    public static D3D11.VertexBufferBinding ToVertexBufferBinding(this ref readonly GorgonVertexBufferBinding binding) => new(binding.VertexBuffer?.Native, binding.Stride, binding.Offset);
 
     /// <summary>
     /// Function to convert a <see cref="GorgonMultisampleInfo"/> to a DXGI multi sample description.

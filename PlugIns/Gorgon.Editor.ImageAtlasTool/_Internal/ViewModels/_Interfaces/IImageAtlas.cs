@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,32 +11,30 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 24, 2019 10:54:18 PM
 // 
-#endregion
 
-using System.Collections.Generic;
 using System.ComponentModel;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.Tools;
 using Gorgon.Editor.UI;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Renderers.Services;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.ImageAtlasTool;
 
 /// <summary>
-/// The view model for the main UI.
+/// The view model for the main UI
 /// </summary>
 internal interface IImageAtlas
     : IEditorTool
@@ -80,7 +78,7 @@ internal interface IImageAtlas
     }
 
     /// <summary>Property to set or return the maximum size for the atlas texture.</summary>
-    DX.Size2 MaxTextureSize
+    GorgonPoint MaxTextureSize
     {
         get;
         set;

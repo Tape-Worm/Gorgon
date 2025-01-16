@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,35 +11,31 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Thursday, August 22, 2013 11:54:51 PM
 // 
-#endregion
 
-using System;
 using System.Numerics;
 using System.Runtime.InteropServices;
-using System.Threading;
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
 using Gorgon.Renderers.Properties;
-using DX = SharpDX;
 
 namespace Gorgon.Renderers;
 
 /// <summary>
-/// A post process effect to give an old scratched film effect.
+/// A post process effect to give an old scratched film effect
 /// </summary>
 /// <remarks>
 /// <para>
@@ -49,14 +45,11 @@ namespace Gorgon.Renderers;
 public class Gorgon2DOldFilmEffect
     : Gorgon2DEffect, IGorgon2DCompositorEffect
 {
-    #region Constants.
     /// <summary>
     /// The name of the shader include for Gorgon's <see cref="Gorgon2DOldFilmEffect"/>.
     /// </summary>
     public const string Gorgon2DFilmGrainIncludeName = "FilmGrainShaders";
-    #endregion
 
-    #region Value Types.
     /// <summary>
     /// Settings for scratches.
     /// </summary>
@@ -105,9 +98,7 @@ public class Gorgon2DOldFilmEffect
         /// </summary>
         public float SepiaToneAmount;
     }
-    #endregion
 
-    #region Variables.
     // Texture used to hold random noise for the shader.
     private GorgonTexture2DView _randomTexture;
     // Flag to indicate whether the effect has updated parameters or not.
@@ -129,9 +120,7 @@ public class Gorgon2DOldFilmEffect
     private Gorgon2DShaderState<GorgonPixelShader> _filmState;
     // The batch state to use when rendering.
     private Gorgon2DBatchState _batchState;
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to set or return the noise frequency used in generating scratches in the film.
     /// </summary>
@@ -288,7 +277,7 @@ public class Gorgon2DOldFilmEffect
         get => _sepiaSettings.SepiaLightColor;
         set
         {
-            if (GorgonColor.Equals(in _sepiaSettings.SepiaLightColor, in value))
+            if (GorgonColor.Equals(_sepiaSettings.SepiaLightColor, value))
             {
                 return;
             }
@@ -306,7 +295,7 @@ public class Gorgon2DOldFilmEffect
         get => _sepiaSettings.SepiaDarkColor;
         set
         {
-            if (GorgonColor.Equals(in _sepiaSettings.SepiaDarkColor, in value))
+            if (GorgonColor.Equals(_sepiaSettings.SepiaDarkColor, value))
             {
                 return;
             }
@@ -351,7 +340,7 @@ public class Gorgon2DOldFilmEffect
     /// <remarks>
     /// If this value is <b>null</b>, then the entire output render target region is used to draw the dirt/hair.
     /// </remarks>
-	    public DX.RectangleF? DirtRegion
+    public GorgonRectangleF? DirtRegion
     {
         get;
         set;
@@ -365,9 +354,7 @@ public class Gorgon2DOldFilmEffect
         get;
         set;
     }
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Funciton to generate random noise for the effect.
     /// </summary>
@@ -375,7 +362,7 @@ public class Gorgon2DOldFilmEffect
     {
         int textureSize = NoiseTextureSize.Min(128).Max(16);
 
-        using var image = new GorgonImage(new GorgonImageInfo(ImageType.Image2D, BufferFormat.R8_UNorm)
+        using GorgonImage image = new(new GorgonImageInfo(ImageDataType.Image2D, BufferFormat.R8_UNorm)
         {
             Width = textureSize,
             Height = textureSize
@@ -386,7 +373,7 @@ public class Gorgon2DOldFilmEffect
         {
             for (int x = 0; x < textureSize; ++x)
             {
-                float simplexNoise = GorgonRandom.SimplexNoise(x * (1.0f / _noiseFrequency), y * (1.0f / _noiseFrequency));
+                float simplexNoise = GorgonRandom.SimplexNoise(new Vector2(x * (1.0f / _noiseFrequency), y * (1.0f / _noiseFrequency)));
 
                 if (simplexNoise < -0.75f)
                 {
@@ -401,7 +388,6 @@ public class Gorgon2DOldFilmEffect
                 {
                     simplexNoise = 0.0f;
                 }
-
 
                 image.Buffers[0].Data[(y * imageBuffer.PitchInformation.RowPitch) + x] = (byte)(simplexNoise * 255.0f);
             }
@@ -512,7 +498,7 @@ public class Gorgon2DOldFilmEffect
             Graphics.SetRenderTarget(output, Graphics.DepthStencilView);
         }
 
-        DX.RectangleF region = DirtRegion ?? new DX.RectangleF(0, 0, output.Width, output.Height);
+        GorgonRectangleF region = DirtRegion ?? new GorgonRectangleF(0, 0, output.Width, output.Height);
 
         // If we've specified no region, then don't draw anything.
         if ((region.Width.EqualsEpsilon(0))
@@ -526,10 +512,10 @@ public class Gorgon2DOldFilmEffect
         for (int i = 0; i < DirtAmount; ++i)
         {
             float grayDust = GorgonRandom.RandomSingle(0.1f, 0.25f);
-            var dustColor = new GorgonColor(grayDust, grayDust, grayDust, GorgonRandom.RandomSingle(0.25f, 0.95f));
+            GorgonColor dustColor = new(grayDust, grayDust, grayDust, GorgonRandom.RandomSingle(0.25f, 0.95f));
 
             // Render dust points.
-            Renderer.DrawFilledRectangle(new DX.RectangleF(GorgonRandom.RandomSingle(region.Left, region.Right),
+            Renderer.DrawFilledRectangle(new GorgonRectangleF(GorgonRandom.RandomSingle(region.Left, region.Right),
                                                            GorgonRandom.RandomSingle(region.Top, region.Bottom),
                                                            1,
                                                            1),
@@ -541,7 +527,7 @@ public class Gorgon2DOldFilmEffect
             }
 
             // Render dirt/hair lines.
-            var dirtStart = new Vector2(GorgonRandom.RandomSingle(region.Left, region.Right),
+            Vector2 dirtStart = new(GorgonRandom.RandomSingle(region.Left, region.Right),
                                            GorgonRandom.RandomSingle(region.Top, region.Bottom));
 
             float dirtWidth = GorgonRandom.RandomSingle(1.0f, 3.0f);
@@ -553,8 +539,8 @@ public class Gorgon2DOldFilmEffect
 
             for (int j = 0; j < GorgonRandom.RandomInt32(4, (int)(region.Width * 0.10f).Min(4)); j++)
             {
-                DX.Size2F size = isHair ? new DX.Size2F(1, 1) : new DX.Size2F(dirtWidth, dirtWidth);
-                Renderer.DrawFilledRectangle(new DX.RectangleF(dirtStart.X, dirtStart.Y, size.Width, size.Height), dustColor);
+                Vector2 size = isHair ? new Vector2(1, 1) : new Vector2(dirtWidth, dirtWidth);
+                Renderer.DrawFilledRectangle(new GorgonRectangleF(dirtStart.X, dirtStart.Y, size.X, size.Y), dustColor);
 
                 if ((!isHair) || (isHairVertical))
                 {
@@ -650,20 +636,18 @@ public class Gorgon2DOldFilmEffect
         switch (BeginPass(0, output))
         {
             case PassContinuationState.Continue:
-                Renderer.DrawFilledRectangle(new DX.RectangleF(ShakeOffset.X, ShakeOffset.Y, output.Width, output.Height), GorgonColor.White, texture, new DX.RectangleF(0, 0, 1, 1));                    
+                Renderer.DrawFilledRectangle(new GorgonRectangleF(ShakeOffset.X, ShakeOffset.Y, output.Width, output.Height), GorgonColors.White, texture, new GorgonRectangleF(0, 0, 1, 1));
                 break;
             default:
                 EndRender(null);
                 return;
         }
 
-        EndPass(0, output);            
+        EndPass(0, output);
 
         EndRender(output);
     }
-    #endregion
 
-    #region Constructor/Destructor.
     /// <summary>
     /// Initializes a new instance of the <see cref="Gorgon2DOldFilmEffect"/> class.
     /// </summary>
@@ -696,5 +680,4 @@ public class Gorgon2DOldFilmEffect
             SepiaDarkColor = new GorgonColor(0.2f, 0.102f, 0, 1.0f)
         };
     }
-    #endregion
 }

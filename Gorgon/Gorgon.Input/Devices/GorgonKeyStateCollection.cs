@@ -1,4 +1,4 @@
-#region MIT
+﻿
 // 
 // Gorgon
 // Copyright (C) 2015 Michael Winsor
@@ -11,23 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Thursday, September 10, 2015 10:11:39 PM
 // 
-#endregion
 
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Windows.Forms;
 
 namespace Gorgon.Input;
 
@@ -37,12 +33,10 @@ namespace Gorgon.Input;
 public class GorgonKeyStateCollection
     : ICollection<KeyState>
 {
-    #region Variables.
+
     // Keyboard key state.
     private readonly Dictionary<Keys, KeyState> _keys = new(new GorgonKeysEqualityComparer());
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to return the state of a given key.
     /// </summary>
@@ -62,15 +56,13 @@ public class GorgonKeyStateCollection
         }
         set => _keys[key] = value;
     }
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to reset the key states.
     /// </summary>
     public void Reset()
     {
-        var keys = (Keys[])Enum.GetValues(typeof(Keys));
+        Keys[] keys = (Keys[])Enum.GetValues(typeof(Keys));
 
         foreach (Keys key in keys)
         {
@@ -96,19 +88,14 @@ public class GorgonKeyStateCollection
         this[Keys.Control] = KeyState.Up;
         this[Keys.Shift] = KeyState.Up;
     }
-    #endregion
 
-    #region Constructor/Destructor.
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonKeyStateCollection"/> class.
     /// </summary>
     internal GorgonKeyStateCollection()
     {
     }
-    #endregion
 
-    #region ICollection<KeyState> Members
-    #region Properties.
     /// <summary>
     /// Gets the number of elements contained in the <see cref="ICollection{T}"></see>.
     /// </summary>
@@ -121,9 +108,6 @@ public class GorgonKeyStateCollection
     /// <returns>true if the <see cref="ICollection{T}"></see> is read-only; otherwise, false.</returns>
     public bool IsReadOnly => true;
 
-    #endregion
-
-    #region Methods.
     /// <summary>
     /// Adds an item to the <see cref="ICollection{T}"></see>.
     /// </summary>
@@ -162,10 +146,7 @@ public class GorgonKeyStateCollection
     /// </returns>
     /// <exception cref="NotSupportedException"></exception>
     bool ICollection<KeyState>.Remove(KeyState item) => false;
-    #endregion
-    #endregion
 
-    #region IEnumerable<KeyState> Members
     /// <summary>
     /// Returns an enumerator that iterates through the collection.
     /// </summary>
@@ -180,9 +161,7 @@ public class GorgonKeyStateCollection
             yield return state.Value;
         }
     }
-    #endregion
 
-    #region IEnumerable Members
     /// <summary>
     /// Returns an enumerator that iterates through a collection.
     /// </summary>
@@ -190,5 +169,5 @@ public class GorgonKeyStateCollection
     /// An <see cref="IEnumerator" /> object that can be used to iterate through the collection.
     /// </returns>
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-    #endregion
+
 }

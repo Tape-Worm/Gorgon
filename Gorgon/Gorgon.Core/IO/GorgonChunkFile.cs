@@ -1,7 +1,5 @@
-﻿#region MIT
-// 
-// Gorgon.
-// Copyright (C) 2015 Michael Winsor
+﻿// Gorgon.
+// Copyright (C) 2024 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,21 +18,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: Sunday, June 14, 2015 2:26:21 PM
-// 
-#endregion
+// Created: February 8, 2024 10:04:56 PM
+//
 
-using System;
-using System.IO;
 using Gorgon.Core;
 using Gorgon.Properties;
 
 namespace Gorgon.IO;
 
 /// <summary>
-/// Base class for a Gorgon chunked formatted data readers/writers.
+/// Abstract base class for a Gorgon chunked formatted data readers/writers.
 /// </summary>
-/// <typeparam name="T">The type of read/writer to use when deserializing or serializing the data.</typeparam>
 /// <remarks>
 /// <para>
 /// This allows access to a file format that uses the concept of grouping sections of an object together into a grouping called a chunk. This chunk will hold binary data associated with an object allows 
@@ -61,32 +55,30 @@ namespace Gorgon.IO;
 /// <seealso cref="GorgonChunkFileReader"/>
 /// <seealso cref="GorgonChunkFileWriter"/>
 /// <conceptualLink target="7b81343e-e2fc-4f0f-926a-d9193ae481fe">Gorgon Chunk File Format (GCFF) details</conceptualLink>
-public abstract class GorgonChunkFile<T>
+public abstract class GorgonChunkFile
+    : IDisposable
 {
-    #region Constants.
     /// <summary>
     /// The header ID for the 1.0 version of the chunk file format. (GCFF0100)
     /// </summary>
-    public const ulong FileFormatHeaderIDv0100 = 0x3030313046464347;
+    public const long FileFormatHeaderIDv0100 = 0x3030313046464347;
     /// <summary>
     /// The chunk table chunk ID (CHUNKTBL)
     /// </summary>
-    public const ulong ChunkTableID = 0x4C42544B4E554843;
-    #endregion
+    public const long ChunkTableID = 0x4C42544B4E554843;
 
-    #region Properties.
     /// <summary>
     /// Property to return an editable list of chunks.
     /// </summary>
-    internal GorgonChunkCollection ChunkList
+    private protected ChunkCollection ChunkList
     {
         get;
-    }
+    } = [];
 
     /// <summary>
-    /// Property to return the <see cref="GorgonStreamWrapper"/> that contains the chunked file.
+    /// Property to return the <see cref="GorgonSubStream"/> that contains the chunked file.
     /// </summary>
-    public GorgonStreamWrapper Stream
+    private protected GorgonSubStream Stream
     {
         get;
     }
@@ -94,7 +86,7 @@ public abstract class GorgonChunkFile<T>
     /// <summary>
     /// Property to return whether or not the file is open.
     /// </summary>
-	    public bool IsOpen
+    public bool IsOpen
     {
         get;
         private set;
@@ -107,15 +99,27 @@ public abstract class GorgonChunkFile<T>
     /// Use this property to determine if a chunk exists when reading a chunk file.
     /// </remarks>
     public IGorgonReadOnlyChunkCollection Chunks => ChunkList;
-    #endregion
 
-    #region Methods.
+    /// <summary>
+    /// Function called to dispose of managed and unmanaged resources.
+    /// </summary>
+    /// <param name="disposing"><b>true</b> to dispose both managed and unmanaged resources, <b>false</b> to dispose unmanaged only.</param>
+    private void Dispose(bool disposing)
+    {
+        if (!disposing)
+        {
+            return;
+        }
+
+        Close();
+    }
+
     /// <summary>
     /// Function to perform validation against the requested chunk ID and the list of reserved values.
     /// </summary>
     /// <param name="chunkId">Chunk ID to evaluate.</param>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="chunkId"/> is the same as one of the reserved chunk IDs.</exception>
-    protected void ValidateChunkID(ulong chunkId)
+    protected static void ValidateChunkID(ulong chunkId)
     {
         switch (chunkId)
         {
@@ -182,27 +186,6 @@ public abstract class GorgonChunkFile<T>
     }
 
     /// <summary>
-    /// Function to close an open chunk.
-    /// </summary>
-    /// <remarks>
-    /// This method should always be called when one of the <see cref="GorgonChunkFile{T}.OpenChunk(ulong)"/> methods are called. Failure to do so may cause file corruption.
-    /// </remarks>
-    public abstract void CloseChunk();
-
-    /// <summary>
-    /// Function to open a chunk for reading or writing.
-    /// </summary>
-    /// <param name="chunkId">The ID of the chunk to open.</param>
-    /// <returns>A <see cref="GorgonBinaryReader"/>, or <see cref="GorgonBinaryWriter"/> that will allow reading or writing within the chunk.</returns>
-    /// <remarks>
-    /// See the <see cref="GorgonChunkFileReader.OpenChunk(ulong)"/>, or the <see cref="GorgonChunkFileWriter.OpenChunk(ulong)"/> methods for detailed information on what this method does during reading/writing 
-    /// contexts.
-    /// </remarks>
-    /// <seealso cref="GorgonChunkFileReader.OpenChunk(ulong)"/>
-    /// <seealso cref="GorgonChunkFileWriter.OpenChunk(ulong)"/>
-    public abstract T OpenChunk(ulong chunkId);
-
-    /// <summary>
     /// Function to close an open chunk file in the stream.
     /// </summary>
     /// <remarks>
@@ -224,26 +207,15 @@ public abstract class GorgonChunkFile<T>
         Stream.ParentStream.Position += OnClose();
     }
 
-    /// <summary>
-    /// Function to open a chunk, by the text representation of its ID, for reading or writing.
-    /// </summary>
-    /// <param name="chunkName">The name of the chunk.</param>
-    /// <returns>A <see cref="GorgonBinaryReader"/>, or <see cref="GorgonBinaryWriter"/> that will allow reading or writing within the chunk.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="chunkName"/> parameter is <b>null</b>.</exception>
-    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="chunkName"/> parameter is empty.</exception>
-    /// <remarks>
-    /// See the <see cref="GorgonChunkFileReader.OpenChunk(ulong)"/>, or the <see cref="GorgonChunkFileWriter.OpenChunk(ulong)"/> method for more information.
-    /// </remarks>
-    /// <seealso cref="GorgonChunkFileReader.OpenChunk(ulong)"/>
-    /// <seealso cref="GorgonChunkFileWriter.OpenChunk(ulong)"/>
-    public T OpenChunk(string chunkName) => chunkName is null
-            ? throw new ArgumentNullException(nameof(chunkName))
-            : string.IsNullOrEmpty(chunkName) ? throw new ArgumentEmptyException(nameof(chunkName)) : OpenChunk(chunkName.ChunkID());
-    #endregion
+    /// <inheritdoc/>
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
 
-    #region Constructor/Finalizer.
     /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonChunkFile{T}"/> class.
+    /// Initializes a new instance of the <see cref="GorgonChunkFile"/> class.
     /// </summary>
     /// <param name="stream">The stream that contains the chunk file to read or write.</param>
     /// <remarks>
@@ -253,18 +225,11 @@ public abstract class GorgonChunkFile<T>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="stream"/> is has its <see cref="Stream.CanSeek"/> property set to <b>false</b>.</exception>
     protected GorgonChunkFile(Stream stream)
     {
-        if (stream is null)
-        {
-            throw new ArgumentNullException(nameof(stream));
-        }
-
         if (!stream.CanSeek)
         {
             throw new ArgumentException(Resources.GOR_ERR_STREAM_NOT_SEEKABLE, nameof(stream));
         }
 
-        ChunkList = new GorgonChunkCollection();
-        Stream = new GorgonStreamWrapper(stream);
+        Stream = new GorgonSubStream(stream, allowWrite: stream.CanWrite);
     }
-    #endregion
 }

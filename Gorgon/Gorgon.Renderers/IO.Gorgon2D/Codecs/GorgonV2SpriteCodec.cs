@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,41 +11,41 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 11, 2018 3:43:13 PM
 // 
-#endregion
 
-using System;
-using System.IO;
-using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Text;
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.IO.Properties;
 using Gorgon.Renderers;
 using GorgonLibrary.IO;
-using DX = SharpDX;
 
 namespace Gorgon.IO;
 
 /// <summary>
-/// A codec that can read version 2 sprite data.
+/// A codec that can read version 2 sprite data
 /// </summary>
-public class GorgonV2SpriteCodec
-    : GorgonSpriteCodecCommon
+/// <remarks>
+/// Initializes a new instance of the <see cref="GorgonV2SpriteCodec"/> class
+/// </remarks>
+/// <param name="renderer">The renderer used for resource handling.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/> parameter is <b>null</b>.</exception>
+public class GorgonV2SpriteCodec(Gorgon2D renderer)
+        : GorgonSpriteCodecCommon(renderer, Resources.GOR2DIO_V2_CODEC, Resources.GOR2DIO_V2_CODEC_DESCRIPTION)
 {
-    #region Enums.
     /// <summary>
     /// Filtering to apply to a texture.
     /// </summary>
@@ -95,9 +95,7 @@ public class GorgonV2SpriteCodec
         /// <remarks>This flag is mutually exclusive and applies to minification, magnification and mip mapping.</remarks>
         CompareAnisotropic = 131072,
     }
-    #endregion
 
-    #region Constants.
     // Sprite texture data chunk.
     private const string TextureDataChunk = "TXTRDATA";
     // Sprite render data chunk.
@@ -109,9 +107,7 @@ public class GorgonV2SpriteCodec
     /// Header for the Gorgon sprite file.
     /// </summary>		
     public const string FileHeader = "GORSPR20";
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to return whether or not the codec can decode sprite data.
     /// </summary>
@@ -129,9 +125,7 @@ public class GorgonV2SpriteCodec
     {
         get;
     } = new Version(2, 0);
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to convert Gorgon 2.x texture filtering to 3.x texture filtering values.
     /// </summary>
@@ -275,11 +269,11 @@ public class GorgonV2SpriteCodec
     }
 
     /// <summary>
-		/// Function to convert Gorgon 1.x image addressing values to 2.x texture addressing values.
-		/// </summary>
-		/// <param name="imageAddress">Image addressing values.</param>
-		/// <returns>Texture addressing values.</returns>
-		private static TextureWrap ConvertV2TextureWrapToTextureAddress(int imageAddress) => imageAddress switch
+    /// Function to convert Gorgon 1.x image addressing values to 2.x texture addressing values.
+    /// </summary>
+    /// <param name="imageAddress">Image addressing values.</param>
+    /// <returns>Texture addressing values.</returns>
+    private static TextureWrap ConvertV2TextureWrapToTextureAddress(int imageAddress) => imageAddress switch
     {
         1 => TextureWrap.Wrap,
         2 => TextureWrap.Mirror,
@@ -297,16 +291,16 @@ public class GorgonV2SpriteCodec
     /// <param name="hWrap">Horizontal wrapping mode.</param>
     /// <param name="vWrap">Vertical wrapping mode.</param>
     /// <returns>The sampler state.</returns>
-	    private static GorgonSamplerState CreateSamplerState(GorgonGraphics graphics, SampleFilter filter, GorgonColor borderColor, TextureWrap hWrap, TextureWrap vWrap)
+    private static GorgonSamplerState CreateSamplerState(GorgonGraphics graphics, SampleFilter filter, GorgonColor borderColor, TextureWrap hWrap, TextureWrap vWrap)
     {
-        var builder = new GorgonSamplerStateBuilder(graphics);
+        GorgonSamplerStateBuilder builder = new(graphics);
 
         return filter switch
         {
-            SampleFilter.MinMagMipLinear when (hWrap == TextureWrap.Clamp) && (vWrap == TextureWrap.Clamp) && (borderColor == GorgonColor.White) => null,
-            SampleFilter.MinMagMipPoint when (hWrap == TextureWrap.Clamp) && (vWrap == TextureWrap.Clamp) && (borderColor == GorgonColor.White) => GorgonSamplerState.PointFiltering,
-            SampleFilter.MinMagMipLinear when (hWrap == TextureWrap.Wrap) && (vWrap == TextureWrap.Wrap) && (borderColor == GorgonColor.White) => GorgonSamplerState.Wrapping,
-            SampleFilter.MinMagMipPoint when (hWrap == TextureWrap.Wrap) && (vWrap == TextureWrap.Wrap) && (borderColor == GorgonColor.White) => GorgonSamplerState.PointFilteringWrapping,
+            SampleFilter.MinMagMipLinear when (hWrap == TextureWrap.Clamp) && (vWrap == TextureWrap.Clamp) && (borderColor == GorgonColors.White) => null,
+            SampleFilter.MinMagMipPoint when (hWrap == TextureWrap.Clamp) && (vWrap == TextureWrap.Clamp) && (borderColor == GorgonColors.White) => GorgonSamplerState.PointFiltering,
+            SampleFilter.MinMagMipLinear when (hWrap == TextureWrap.Wrap) && (vWrap == TextureWrap.Wrap) && (borderColor == GorgonColors.White) => GorgonSamplerState.Wrapping,
+            SampleFilter.MinMagMipPoint when (hWrap == TextureWrap.Wrap) && (vWrap == TextureWrap.Wrap) && (borderColor == GorgonColors.White) => GorgonSamplerState.PointFilteringWrapping,
             _ => builder.Wrapping(hWrap, vWrap, borderColor: borderColor)
 .Filter(filter)
 .Build(),
@@ -322,7 +316,7 @@ public class GorgonV2SpriteCodec
     /// <returns>The sprite from the stream data.</returns>
     private static GorgonSprite LoadSprite(GorgonGraphics graphics, GorgonChunkReader reader, GorgonTexture2DView overrideTexture)
     {
-        var sprite = new GorgonSprite();
+        GorgonSprite sprite = new();
 
         if (!reader.HasChunk(FileHeader))
         {
@@ -333,8 +327,8 @@ public class GorgonV2SpriteCodec
         reader.Begin(SpriteDataChunk);
 
         sprite.Anchor = reader.Read<Vector2>();
-        sprite.Size = reader.Read<DX.Size2F>();
-        sprite.Anchor = new Vector2(sprite.Anchor.X / sprite.Size.Width, sprite.Anchor.Y / sprite.Size.Height);
+        sprite.Size = reader.Read<Vector2>();
+        sprite.Anchor = new Vector2(sprite.Anchor.X / sprite.Size.X, sprite.Anchor.Y / sprite.Size.Y);
 
         sprite.HorizontalFlip = reader.ReadBoolean();
         sprite.VerticalFlip = reader.ReadBoolean();
@@ -358,7 +352,7 @@ public class GorgonV2SpriteCodec
 
         // Culling mode is not per-sprite anymore.
         reader.SkipBytes(Unsafe.SizeOf<CullingMode>());
-        sprite.AlphaTest = reader.Read<GorgonRangeF>();
+        sprite.AlphaTest = reader.Read<GorgonRange<float>>();
 
         // Blending values are not per-sprite anymore.
         // Depth/stencil values are not per-sprite anymore.
@@ -400,9 +394,9 @@ public class GorgonV2SpriteCodec
         if (textureView is not null)
         {
             // V2 used black transparent by default, so convert it to our default so we can keep from creating unnecessary states.
-            if (borderColor == GorgonColor.BlackTransparent)
+            if (borderColor == GorgonColors.BlackTransparent)
             {
-                borderColor = GorgonColor.White;
+                borderColor = GorgonColors.White;
             }
 
             sprite.Texture = textureView;
@@ -422,7 +416,7 @@ public class GorgonV2SpriteCodec
     /// <returns><b>true</b> if the data can be read, or <b>false</b> if not.</returns>
     protected override bool OnIsReadable(Stream stream)
     {
-        using var reader = new GorgonBinaryReader(stream, true);
+        using BinaryReader reader = new(stream, Encoding.UTF8, true);
         if ((stream.Length - stream.Position) < sizeof(ulong) * 2)
         {
             return false;
@@ -443,7 +437,7 @@ public class GorgonV2SpriteCodec
     /// <returns>The name of the texture associated with the sprite, or <b>null</b> if no texture was found.</returns>
     protected override string OnGetAssociatedTextureName(Stream stream)
     {
-        using var reader = new GorgonChunkReader(stream);
+        using GorgonChunkReader reader = new(stream);
         if (!reader.HasChunk(FileHeader))
         {
             throw new GorgonException(GorgonResult.CannotRead, Resources.GOR2DIO_ERR_INVALID_HEADER);
@@ -452,7 +446,7 @@ public class GorgonV2SpriteCodec
         reader.Begin(FileHeader);
         reader.Begin(SpriteDataChunk);
         reader.SkipBytes(Unsafe.SizeOf<Vector2>()
-                         + Unsafe.SizeOf<DX.Size2F>()
+                         + Unsafe.SizeOf<Vector2>()
                          + (sizeof(bool) * 2)
                          + (GorgonColor.SizeInBytes * 4)
                          + (Unsafe.SizeOf<Vector2>() * 4));
@@ -460,7 +454,7 @@ public class GorgonV2SpriteCodec
 
         // Read rendering information.
         reader.Begin(RenderDataChunk);
-        reader.SkipBytes(Unsafe.SizeOf<CullingMode>() + Unsafe.SizeOf<GorgonRangeF>() + 91);
+        reader.SkipBytes(Unsafe.SizeOf<CullingMode>() + GorgonRange<float>.SizeInBytes + 91);
         reader.End();
 
         // Read texture information.
@@ -478,7 +472,7 @@ public class GorgonV2SpriteCodec
     /// <returns>A new <see cref="GorgonSprite"/>.</returns>
     protected override GorgonSprite OnReadFromStream(Stream stream, int byteCount, GorgonTexture2DView overrideTexture)
     {
-        var reader = new GorgonChunkReader(stream);
+        GorgonChunkReader reader = new(stream);
 
         try
         {
@@ -497,17 +491,5 @@ public class GorgonV2SpriteCodec
     /// <param name="sprite">The sprite to serialize into the stream.</param>
     /// <param name="stream">The stream that will contain the sprite.</param>
     protected override void OnSaveToStream(GorgonSprite sprite, Stream stream) => throw new NotSupportedException();
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonV2SpriteCodec"/> class.
-    /// </summary>
-    /// <param name="renderer">The renderer used for resource handling.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="renderer"/> parameter is <b>null</b>.</exception>
-    public GorgonV2SpriteCodec(Gorgon2D renderer)
-        : base(renderer, Resources.GOR2DIO_V2_CODEC, Resources.GOR2DIO_V2_CODEC_DESCRIPTION)
-    {
-    }
-    #endregion
 }

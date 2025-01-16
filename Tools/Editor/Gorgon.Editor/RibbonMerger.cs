@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,57 +11,53 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: September 28, 2018 9:03:32 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
-using System.Linq;
-using System.Windows.Forms;
-using Drawing = System.Drawing;
 using Gorgon.Math;
-using Krypton.Ribbon;
+using Drawing = System.Drawing;
+using KR = Krypton.Ribbon;
 
 namespace Gorgon.Editor;
 
 /// <summary>
-/// Merges a krypton ribbon with another ribbon.
+/// Merges a krypton ribbon with another ribbon
 /// </summary>
 /// <remarks>
 /// <para>
-/// To affect the order of the merged groups and tabs, set the Tag property to a value from 0 to n, where n is the count of the target group minus 1.
+/// To affect the order of the merged groups and tabs, set the Tag property to a value from 0 to n, where n is the count of the target group minus 1
 /// </para>
 /// </remarks>
-internal class RibbonMerger
+/// <remarks>
+/// Initializes a new instance of the <see cref="RibbonMerger"/> class
+/// </remarks>
+/// <param name="targetRibbon">The target ribbon that will receive the items from the merged ribbon.</param>
+/// <exception cref="ArgumentNullException">Thrown when the <paramref name="targetRibbon"/> is <b>null</b>.</exception>
+internal class RibbonMerger(KR.KryptonRibbon targetRibbon)
 {
-    #region Variables.
-    // The list of merged items.
-    private readonly HashSet<Component> _mergedItems = new();
-    #endregion
 
-    #region Properties.
+    // The list of merged items.
+    private readonly HashSet<Component> _mergedItems = [];
+
     /// <summary>
     /// Property to return the target ribbon that will receive the merged items.
     /// </summary>
-    public KryptonRibbon TargetRibbon
+    public KR.KryptonRibbon TargetRibbon
     {
         get;
-    }
-    #endregion
+    } = targetRibbon ?? throw new ArgumentNullException(nameof(targetRibbon));
 
-    #region Methods.
     /// <summary>
     /// Function to retrieve the sorting index from the items tag.
     /// </summary>
@@ -96,11 +92,11 @@ internal class RibbonMerger
     /// </summary>
     /// <param name="sourceItems">The source items to unmerge.</param>
     /// <param name="targetItems">The destination items to unmerge.</param>
-    private void UnmergeGroupItems(KryptonRibbonGroupContainerCollection sourceItems, KryptonRibbonGroupContainerCollection targetItems)
+    private void UnmergeGroupItems(KR.KryptonRibbonGroupContainerCollection sourceItems, KR.KryptonRibbonGroupContainerCollection targetItems)
     {
-        IEnumerable<KryptonRibbonGroupContainer> items = targetItems.ToArray();
+        IEnumerable<KR.KryptonRibbonGroupContainer> items = [.. targetItems];
 
-        foreach (KryptonRibbonGroupContainer item in items)
+        foreach (KR.KryptonRibbonGroupContainer item in items)
         {
             if (!_mergedItems.Contains(item))
             {
@@ -118,11 +114,11 @@ internal class RibbonMerger
     /// </summary>
     /// <param name="sourceItems">The source items to merge.</param>
     /// <param name="targetItems">The destination items to merge.</param>
-    private void MergeGroupItems(KryptonRibbonGroupContainerCollection sourceItems, KryptonRibbonGroupContainerCollection targetItems)
+    private void MergeGroupItems(KR.KryptonRibbonGroupContainerCollection sourceItems, KR.KryptonRibbonGroupContainerCollection targetItems)
     {
-        IEnumerable<KryptonRibbonGroupContainer> items = sourceItems.ToArray();
+        IEnumerable<KR.KryptonRibbonGroupContainer> items = [.. sourceItems];
 
-        foreach (KryptonRibbonGroupContainer sourceItem in items)
+        foreach (KR.KryptonRibbonGroupContainer sourceItem in items)
         {
             if (targetItems.Contains(sourceItem))
             {
@@ -145,15 +141,15 @@ internal class RibbonMerger
     /// </summary>
     /// <param name="sourceGroups">The source groups to unmerge.</param>
     /// <param name="targetGroups">The destination groups to unmerge.</param>
-    private void UnmergeGroups(KryptonRibbonGroupCollection sourceGroups, KryptonRibbonGroupCollection targetGroups)
+    private void UnmergeGroups(KR.KryptonRibbonGroupCollection sourceGroups, KR.KryptonRibbonGroupCollection targetGroups)
     {
-        IEnumerable<KryptonRibbonGroup> groups = targetGroups.ToArray();
+        IEnumerable<KR.KryptonRibbonGroup> groups = [.. targetGroups];
 
-        foreach (KryptonRibbonGroup grp in groups)
+        foreach (KR.KryptonRibbonGroup grp in groups)
         {
             if (!_mergedItems.Contains(grp))
             {
-                KryptonRibbonGroup existingGroup = sourceGroups.FirstOrDefault(item => (string.Equals(item.TextLine1, grp.TextLine1, StringComparison.CurrentCulture))
+                KR.KryptonRibbonGroup existingGroup = sourceGroups.FirstOrDefault(item => (string.Equals(item.TextLine1, grp.TextLine1, StringComparison.CurrentCulture))
                                                                                     && (string.Equals(item.TextLine2, grp.TextLine2, StringComparison.CurrentCulture)));
 
                 if (existingGroup is not null)
@@ -175,13 +171,13 @@ internal class RibbonMerger
     /// </summary>
     /// <param name="sourceGroups">The source groups to merge.</param>
     /// <param name="targetGroups">The destination groups to merge.</param>
-    private void MergeGroups(KryptonRibbonGroupCollection sourceGroups, KryptonRibbonGroupCollection targetGroups)
+    private void MergeGroups(KR.KryptonRibbonGroupCollection sourceGroups, KR.KryptonRibbonGroupCollection targetGroups)
     {
-        IEnumerable<KryptonRibbonGroup> groups = sourceGroups.ToArray();
+        IEnumerable<KR.KryptonRibbonGroup> groups = [.. sourceGroups];
 
-        foreach (KryptonRibbonGroup sourceGroup in groups)
+        foreach (KR.KryptonRibbonGroup sourceGroup in groups)
         {
-            KryptonRibbonGroup existingGroup = targetGroups.FirstOrDefault(item => (string.Equals(item.TextLine1, sourceGroup.TextLine1, StringComparison.CurrentCulture))
+            KR.KryptonRibbonGroup existingGroup = targetGroups.FirstOrDefault(item => (string.Equals(item.TextLine1, sourceGroup.TextLine1, StringComparison.CurrentCulture))
                                                                                 && (string.Equals(item.TextLine2, sourceGroup.TextLine2, StringComparison.CurrentCulture)));
 
             if ((existingGroup is null) && (!targetGroups.Contains(sourceGroup)))
@@ -207,13 +203,13 @@ internal class RibbonMerger
     /// </summary>
     /// <param name="sourceRibbon">The ribbon to merge.</param>
     /// <param name="targetRibbon">The ribbon to be merged into.</param>
-    private void MergeTabs(KryptonRibbon sourceRibbon, KryptonRibbon targetRibbon)
+    private void MergeTabs(KR.KryptonRibbon sourceRibbon, KR.KryptonRibbon targetRibbon)
     {
-        IEnumerable<KryptonRibbonTab> sourceTabs = sourceRibbon.RibbonTabs.ToArray();
+        IEnumerable<KR.KryptonRibbonTab> sourceTabs = [.. sourceRibbon.RibbonTabs];
 
-        foreach (KryptonRibbonTab tab in sourceTabs)
+        foreach (KR.KryptonRibbonTab tab in sourceTabs)
         {
-            KryptonRibbonTab existingTab = targetRibbon.RibbonTabs.FirstOrDefault(item => string.Equals(item.Text, tab.Text, StringComparison.CurrentCulture));
+            KR.KryptonRibbonTab existingTab = targetRibbon.RibbonTabs.FirstOrDefault(item => string.Equals(item.Text, tab.Text, StringComparison.CurrentCulture));
 
             // The tab doesn't exist, so just add it
             if ((existingTab is null) && (!targetRibbon.RibbonTabs.Contains(tab)))
@@ -240,18 +236,18 @@ internal class RibbonMerger
     /// </summary>
     /// <param name="sourceRibbon">The ribbon to unmerge.</param>
     /// <param name="targetRibbon">The ribbon to be unmerged from.</param>
-    private void UnmergeContexts(KryptonRibbon sourceRibbon, KryptonRibbon targetRibbon)
+    private void UnmergeContexts(KR.KryptonRibbon sourceRibbon, KR.KryptonRibbon targetRibbon)
     {
-        IEnumerable<KryptonRibbonContext> contexts = targetRibbon.RibbonContexts.ToArray();
+        IEnumerable<KR.KryptonRibbonContext> contexts = [.. targetRibbon.RibbonContexts];
 
-        foreach (KryptonRibbonContext context in contexts)
+        foreach (KR.KryptonRibbonContext context in contexts)
         {
             if (!_mergedItems.Contains(context))
             {
                 continue;
             }
 
-            KryptonRibbonContext existing = sourceRibbon.RibbonContexts.FirstOrDefault(item => string.Equals(item.ContextTitle, context.ContextTitle, StringComparison.CurrentCulture));
+            KR.KryptonRibbonContext existing = sourceRibbon.RibbonContexts.FirstOrDefault(item => string.Equals(item.ContextTitle, context.ContextTitle, StringComparison.CurrentCulture));
 
             // The tab doesn't exist, so just add it
             if ((existing is not null) || (sourceRibbon.RibbonContexts.Contains(context)))
@@ -270,13 +266,13 @@ internal class RibbonMerger
     /// </summary>
     /// <param name="sourceRibbon">The ribbon to merge.</param>
     /// <param name="targetRibbon">The ribbon to be merged into.</param>
-    private void MergeContexts(KryptonRibbon sourceRibbon, KryptonRibbon targetRibbon)
+    private void MergeContexts(KR.KryptonRibbon sourceRibbon, KR.KryptonRibbon targetRibbon)
     {
-        IEnumerable<KryptonRibbonContext> contexts = sourceRibbon.RibbonContexts.ToArray();
+        IEnumerable<KR.KryptonRibbonContext> contexts = [.. sourceRibbon.RibbonContexts];
 
-        foreach (KryptonRibbonContext context in contexts)
+        foreach (KR.KryptonRibbonContext context in contexts)
         {
-            KryptonRibbonContext existing = targetRibbon.RibbonContexts.FirstOrDefault(item => string.Equals(item.ContextTitle, context.ContextTitle, StringComparison.CurrentCulture));
+            KR.KryptonRibbonContext existing = targetRibbon.RibbonContexts.FirstOrDefault(item => string.Equals(item.ContextTitle, context.ContextTitle, StringComparison.CurrentCulture));
 
             // The tab doesn't exist, so just add it
             if ((existing is not null) || (targetRibbon.RibbonContexts.Contains(context)))
@@ -301,15 +297,15 @@ internal class RibbonMerger
     /// </summary>
     /// <param name="sourceRibbon">The ribbon to merge into.</param>
     /// <param name="targetRibbon">The ribbon to be unmerged from.</param>
-    private void UnmergeTabs(KryptonRibbon sourceRibbon, KryptonRibbon targetRibbon)
+    private void UnmergeTabs(KR.KryptonRibbon sourceRibbon, KR.KryptonRibbon targetRibbon)
     {
-        IEnumerable<KryptonRibbonTab> tabs = targetRibbon.RibbonTabs.ToArray();
+        IEnumerable<KR.KryptonRibbonTab> tabs = [.. targetRibbon.RibbonTabs];
 
-        foreach (KryptonRibbonTab tab in tabs)
+        foreach (KR.KryptonRibbonTab tab in tabs)
         {
             if (!_mergedItems.Contains(tab))
             {
-                KryptonRibbonTab existingTab = sourceRibbon.RibbonTabs.FirstOrDefault(item => string.Equals(item.Text, tab.Text, StringComparison.CurrentCulture));
+                KR.KryptonRibbonTab existingTab = sourceRibbon.RibbonTabs.FirstOrDefault(item => string.Equals(item.Text, tab.Text, StringComparison.CurrentCulture));
 
                 if (existingTab is not null)
                 {
@@ -328,7 +324,7 @@ internal class RibbonMerger
     /// Function to merge a ribbon with the target ribbon
     /// </summary>
     /// <param name="ribbon">The ribbon to merge.</param>
-    public void Merge(KryptonRibbon ribbon)
+    public void Merge(KR.KryptonRibbon ribbon)
     {
         if (ribbon is null)
         {
@@ -336,7 +332,7 @@ internal class RibbonMerger
         }
 
         string selectedContext = TargetRibbon.SelectedContext;
-        KryptonRibbonTab selectedTab = TargetRibbon.SelectedTab;
+        KR.KryptonRibbonTab selectedTab = TargetRibbon.SelectedTab;
 
         MergeTabs(ribbon, TargetRibbon);
         MergeContexts(ribbon, TargetRibbon);
@@ -356,14 +352,14 @@ internal class RibbonMerger
     /// Function to unmerge the specified ribbon from the target ribbon.
     /// </summary>
     /// <param name="ribbon">The ribbon to unmerge.</param>
-    public void Unmerge(KryptonRibbon ribbon)
+    public void Unmerge(KR.KryptonRibbon ribbon)
     {
         if (ribbon is null)
         {
             return;
         }
 
-        KryptonRibbonTab selected = TargetRibbon.SelectedTab;
+        KR.KryptonRibbonTab selected = TargetRibbon.SelectedTab;
 
         UnmergeContexts(ribbon, TargetRibbon);
         UnmergeTabs(ribbon, TargetRibbon);
@@ -388,26 +384,16 @@ internal class RibbonMerger
     /// </summary>
     public void FixGroupWidths()
     {
-        using var g = Drawing.Graphics.FromHwnd(TargetRibbon.Parent.Handle);
+        using Drawing.Graphics g = Drawing.Graphics.FromHwnd(TargetRibbon.Parent.Handle);
         double dpi = g.DpiY / 96.0;
 
-        foreach (KryptonRibbonTab tab in TargetRibbon.RibbonTabs)
+        foreach (KR.KryptonRibbonTab tab in TargetRibbon.RibbonTabs)
         {
-            foreach (KryptonRibbonGroup grp in tab.Groups)
+            foreach (KR.KryptonRibbonGroup grp in tab.Groups)
             {
-                Drawing.Size size = TextRenderer.MeasureText(g, grp.TextLine1 + (string.IsNullOrWhiteSpace(grp.TextLine2) ? " " + grp.TextLine2 : string.Empty), TargetRibbon.Parent.Font);
+                Size size = TextRenderer.MeasureText(g, grp.TextLine1 + (string.IsNullOrWhiteSpace(grp.TextLine2) ? " " + grp.TextLine2 : string.Empty), TargetRibbon.Parent.Font);
                 grp.MinimumWidth = size.Width + (int)(8 * dpi);
             }
         }
     }
-    #endregion
-
-    #region Constructor/Finalizer.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="RibbonMerger"/> class.
-    /// </summary>
-    /// <param name="targetRibbon">The target ribbon that will receive the items from the merged ribbon.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="targetRibbon"/> is <b>null</b>.</exception>
-    public RibbonMerger(KryptonRibbon targetRibbon) => TargetRibbon = targetRibbon ?? throw new ArgumentNullException(nameof(targetRibbon));
-    #endregion
 }

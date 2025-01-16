@@ -1,6 +1,5 @@
-﻿#region MIT.
-// 
-// Gorgon.
+﻿// 
+// Gorgon
 // Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,26 +10,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Friday, January 11, 2013 8:27:21 AM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Input;
 using Gorgon.PlugIns;
@@ -40,29 +31,29 @@ using Gorgon.UI;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Our main form for the example.
+/// Our main form for the example
 /// </summary>
 /// <remarks>
 /// This example is exclusively for the XBox controller (although it could be made to work with a regular controller).  
 /// 
-/// Here we will load the XInput plug in which will give us access to the functionality in the XBox controllers.  
+/// Here we will load the XInput plug-in which will give us access to the functionality in the XBox controllers.  
 /// 
 /// The XBox controller interface will always return 4 controllers, even if there is only 1 controller connected.  Here
 /// we make use of all 4 controllers (if connected) to give a sort of multi-player drawing example.  We do this by 
 /// tracking the state of each controller in our idle loop.  
 /// 
-/// The set up is similar to the other input examples:  Load the driver plug in assembly, create the xinput driver and 
+/// The set up is similar to the other input examples:  Load the driver plug-in assembly, create the xinput driver and 
 /// create each controller as needed.  Then in the idle loop, we poll the controller for input.  If no XBox controller is 
-/// found a prompt to plug one in is shown.
+/// found a prompt to plug one in is shown
 /// 
-/// This example also shows how to use vibration and how to make a pressure sensitive trigger on the XBox controllers.
+/// This example also shows how to use vibration and how to make a pressure sensitive trigger on the XBox controllers
 /// 
 /// To activate the spray can effect press the trigger.  The harder it's pushed, the darker the color and the quicker 
 /// the trigger is pushed, the thicker the spray.  Use the secondary directional stick to spray in a given direction.  
 /// </remarks>
 public partial class Form : System.Windows.Forms.Form
 {
-    #region Variables.
+
     // Our XInput driver.
     private IGorgonGamingDeviceDriver _driver;
     // Our XBox controllers.
@@ -73,11 +64,9 @@ public partial class Form : System.Windows.Forms.Form
     private SprayCan[] _sprayStates;
     // Surface to draw on.
     private DrawingSurface _surface;
-    // The assembly cache for the plug ins
+    // The assembly cache for the plug-ins
     private GorgonMefPlugInCache _assemblies = null;
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function called during the paint event of the controls that display controller information.
     /// </summary>
@@ -98,8 +87,8 @@ public partial class Form : System.Windows.Forms.Form
     /// <param name="index">Index of the controller.</param>
     private void UpdateControllerLabels(IGorgonGamingDevice device, int index)
     {
-        var panel = (Panel)panelControllers.Controls["panelController" + index];
-        var label = (Label)panel.Controls["labelController" + index];
+        Panel panel = (Panel)panelControllers.Controls["panelController" + index];
+        Label label = (Label)panel.Controls["labelController" + index];
 
         // Update the label visibility for the controller.
         if (device.IsConnected)
@@ -142,7 +131,7 @@ public partial class Form : System.Windows.Forms.Form
         // Update the origin of the spray.
         state.Origin = _stickPosition[index];
 
-        GorgonRange throttleRange = device.Info.AxisInfo[GamingDeviceAxis.RightTrigger].Range;
+        GorgonRange<int> throttleRange = device.Info.AxisInfo[GamingDeviceAxis.RightTrigger].Range;
 
         // Find out if we're spraying.
         if (device.Axis[GamingDeviceAxis.RightTrigger].Value > throttleRange.Minimum)
@@ -183,13 +172,13 @@ public partial class Form : System.Windows.Forms.Form
     /// <param name="index">Index of the controller.</param>
     private void DrawControllerCursor(IGorgonGamingDevice controller, int index)
     {
-        GorgonRange xRange = controller.Info.AxisInfo[GamingDeviceAxis.LeftStickX].Range;
-        GorgonRange yRange = controller.Info.AxisInfo[GamingDeviceAxis.LeftStickY].Range;
+        GorgonRange<int> xRange = controller.Info.AxisInfo[GamingDeviceAxis.LeftStickX].Range;
+        GorgonRange<int> yRange = controller.Info.AxisInfo[GamingDeviceAxis.LeftStickY].Range;
         int playerColorValue = (int)(((uint)0xFF << (index * 8)) | 0xFF000000);                     // Get the color based on the controller index.			
-        var cursorSize = new Size(_surface.CursorSize.Width / 2, _surface.CursorSize.Height / 2);   // Get the cursor size with offset.
+        Size cursorSize = new(_surface.CursorSize.Width / 2, _surface.CursorSize.Height / 2);   // Get the cursor size with offset.
 
         // Transform the axis into a -1 .. 1 range.				
-        var moveVector = new PointF(controller.Axis[GamingDeviceAxis.LeftStickX].Value - (float)xRange.Minimum,
+        PointF moveVector = new(controller.Axis[GamingDeviceAxis.LeftStickX].Value - (float)xRange.Minimum,
                                         controller.Axis[GamingDeviceAxis.LeftStickY].Value - (float)yRange.Minimum);
 
         moveVector = new PointF((moveVector.X / (xRange.Range + 1) * 2.0f) - 1.0f,
@@ -197,9 +186,8 @@ public partial class Form : System.Windows.Forms.Form
 
         // Move at 100 units per second 
         float speed = panelDisplay.ClientSize.Width / 2.0f * GorgonTiming.Delta;
-        var position = new PointF((speed * moveVector.X) + _stickPosition[index].X,
-                                    (speed * -moveVector.Y) + _stickPosition[index].Y);
-
+        PointF position = new((speed * moveVector.X) + _stickPosition[index].X,
+                                    (speed * moveVector.Y) + _stickPosition[index].Y);
 
         // Limit the range of the positioning.
         if (position.X < -cursorSize.Width)
@@ -327,7 +315,7 @@ public partial class Form : System.Windows.Forms.Form
                                                  (item.Capabilities & GamingDeviceCapabilityFlags.SupportsVibration) == GamingDeviceCapabilityFlags.SupportsVibration &&
                                                  (item.Capabilities & GamingDeviceCapabilityFlags.SupportsRudder) == GamingDeviceCapabilityFlags.SupportsRudder)
                                   .Take(3)
-                                  .Select(item => _driver.CreateGamingDevice(item)).ToArray();
+                                  .Select(_driver.CreateGamingDevice).ToArray();
 
         for (int i = 0; i < _controllers.Count; i++)
         {
@@ -361,7 +349,7 @@ public partial class Form : System.Windows.Forms.Form
             _assemblies = new GorgonMefPlugInCache(GorgonApplication.Log);
 
             // Create the gaming device driver factory.
-            var factory = new GorgonGamingDeviceDriverFactory(_assemblies, GorgonApplication.Log);
+            GorgonGamingDeviceDriverFactory factory = new(_assemblies, GorgonApplication.Log);
 
             // Create our factory.
             _driver = factory.LoadDriver(Path.Combine(GorgonExample.GetPlugInPath().FullName, "Gorgon.Input.XInput.dll"), "Gorgon.Input.XInput.GorgonXInputDriver");
@@ -416,12 +404,10 @@ public partial class Form : System.Windows.Forms.Form
         _surface.Dispose();
         _surface = null;
     }
-    #endregion
 
-    #region Constructor/Destructor.
     /// <summary>
     /// Initializes a new instance of the <see cref="Form" /> class.
     /// </summary>
     public Form() => InitializeComponent();
-    #endregion
+
 }

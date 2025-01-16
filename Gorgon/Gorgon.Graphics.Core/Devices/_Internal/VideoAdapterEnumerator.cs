@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,23 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Saturday, February 23, 2013 4:00:19 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using SharpDX.DXGI;
@@ -37,7 +32,7 @@ using D3D11 = SharpDX.Direct3D11;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Functionality to retrieve information about the installed video adapters on the system.
+/// Functionality to retrieve information about the installed video adapters on the system
 /// </summary>
 internal class VideoAdapterEnumerator
 {
@@ -59,17 +54,17 @@ internal class VideoAdapterEnumerator
 
         using Adapter warp = factory.GetWarpAdapter();
         using Adapter4 warpAdapter4 = warp.QueryInterface<Adapter4>();
-        using var D3DDevice = new D3D11.Device(warpAdapter4, flags);
+        using D3D11.Device D3DDevice = new(warpAdapter4, flags);
         using D3D11.Device5 D3DDevice5 = D3DDevice.QueryInterface<D3D11.Device5>();
         FeatureSet? featureSet = GetFeatureLevel(D3DDevice5);
 
         if (featureSet is null)
         {
-            log.Print("WARNING: The WARP software adapter does not support the minimum feature set of 12.0. This device will be excluded.", LoggingLevel.All);
+            log.PrintWarning("The WARP software adapter does not support the minimum feature set of 12.0. This device will be excluded.", LoggingLevel.All);
             return null;
         }
 
-        var result = new VideoAdapterInfo(index, warpAdapter4, featureSet.Value, new Dictionary<string, VideoOutputInfo>(), VideoDeviceType.Software);
+        VideoAdapterInfo result = new(index, warpAdapter4, featureSet.Value, [], VideoDeviceType.Software);
 
         PrintLog(result, log);
 
@@ -134,7 +129,7 @@ internal class VideoAdapterEnumerator
             .Where(item => (d3dDevice.CheckFormatSupport(item) & D3D11.FormatSupport.Display) == D3D11.FormatSupport.Display)
             .ToArray();
 
-        IEnumerable<ModeDescription1> result = Enumerable.Empty<ModeDescription1>();
+        IEnumerable<ModeDescription1> result = [];
 
         // Test each format for display compatibility.
         return formats.Aggregate(result,
@@ -172,7 +167,7 @@ internal class VideoAdapterEnumerator
     /// <returns>A list if video output info values.</returns>
     private static Dictionary<string, VideoOutputInfo> GetOutputs(D3D11.Device5 device, Adapter4 adapter, int outputCount, IGorgonLog log)
     {
-        var result = new Dictionary<string, VideoOutputInfo>(StringComparer.OrdinalIgnoreCase);
+        Dictionary<string, VideoOutputInfo> result = new(StringComparer.OrdinalIgnoreCase);
 
         // Devices created under RDP/TS do not support output selection.
         if (SystemInformation.TerminalServerSession)
@@ -185,7 +180,7 @@ internal class VideoAdapterEnumerator
         {
             using Output output = adapter.GetOutput(i);
             using Output6 output6 = output.QueryInterface<Output6>();
-            var outputInfo = new VideoOutputInfo(i, output6, GetVideoModes(device, output6));
+            VideoOutputInfo outputInfo = new(i, output6, GetVideoModes(device, output6));
 
             if (outputInfo.VideoModes.Count == 0)
             {
@@ -217,11 +212,11 @@ internal class VideoAdapterEnumerator
     /// </remarks>
     public static IReadOnlyList<IGorgonVideoAdapterInfo> Enumerate(bool enumerateWARPDevice, IGorgonLog log)
     {
-        var devices = new List<IGorgonVideoAdapterInfo>();
+        List<IGorgonVideoAdapterInfo> devices = [];
 
         log ??= GorgonLog.NullLog;
 
-        using (var factory2 = new Factory2(GorgonGraphics.IsDebugEnabled))
+        using (Factory2 factory2 = new(GorgonGraphics.IsDebugEnabled))
         using (Factory5 factory5 = factory2.QueryInterface<Factory5>())
         {
             int adapterCount = factory5.GetAdapterCount1();
@@ -250,7 +245,7 @@ internal class VideoAdapterEnumerator
                 }
 
                 // We create a D3D device here to filter out unsupported video modes from the format list.
-                using var D3DDevice = new D3D11.Device(adapter, flags, D3D.FeatureLevel.Level_12_1,
+                using D3D11.Device D3DDevice = new(adapter, flags, D3D.FeatureLevel.Level_12_1,
                                                                         D3D.FeatureLevel.Level_12_0,
                                                                         D3D.FeatureLevel.Level_11_1,
                                                                         D3D.FeatureLevel.Level_11_0,
@@ -268,7 +263,7 @@ internal class VideoAdapterEnumerator
                 // Do not enumerate this device if its feature set is not supported.
                 if (featureSet is null)
                 {
-                    log.Print($"WARNING: The video adapter '{adapterName}' (max. feature level [{D3DDevice5.FeatureLevel}]) is not supported by Gorgon and will be skipped.", LoggingLevel.Verbose);
+                    log.PrintWarning($"The video adapter '{adapterName}' (max. feature level [{D3DDevice5.FeatureLevel}]) is not supported by Gorgon and will be skipped.", LoggingLevel.Verbose);
                     continue;
                 }
 
@@ -276,10 +271,10 @@ internal class VideoAdapterEnumerator
 
                 if (outputs.Count <= 0)
                 {
-                    log.Print($"WARNING:  Video adapter '{adapterName}' has no outputs. Full screen mode will not be possible.", LoggingLevel.Verbose);
+                    log.PrintWarning($" Video adapter '{adapterName}' has no outputs. Full screen mode will not be possible.", LoggingLevel.Verbose);
                 }
 
-                var videoAdapter = new VideoAdapterInfo(i, adapter, featureSet.Value, outputs, VideoDeviceType.Hardware);
+                VideoAdapterInfo videoAdapter = new(i, adapter, featureSet.Value, outputs, VideoDeviceType.Hardware);
 
                 devices.Add(videoAdapter);
                 PrintLog(videoAdapter, log);
@@ -299,7 +294,7 @@ internal class VideoAdapterEnumerator
             }
         }
 
-        log.Print("Found {0} video adapters.", LoggingLevel.Simple, devices.Count);
+        log.Print($"Found {devices.Count} video adapters.", LoggingLevel.Simple);
 
         return devices;
     }

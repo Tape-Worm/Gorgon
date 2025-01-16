@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2016 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,21 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 9, 2016 3:47:30 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
 using Gorgon.Collections;
 using Gorgon.Math;
 using D3D11 = SharpDX.Direct3D11;
@@ -33,7 +30,7 @@ using D3D11 = SharpDX.Direct3D11;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// A list of constant buffers used for shaders.
+/// A list of constant buffers used for shaders
 /// </summary>
 /// <remarks>
 /// <para>
@@ -44,14 +41,11 @@ namespace Gorgon.Graphics.Core;
 public sealed class GorgonConstantBuffers
     : GorgonArray<GorgonConstantBufferView>
 {
-    #region Constants.
     /// <summary>
     /// The maximum size for a constant buffer binding list.
     /// </summary>
     public const int MaximumConstantBufferCount = D3D11.CommonShaderStage.ConstantBufferApiSlotCount;
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to return the native buffers.
     /// </summary>
@@ -63,7 +57,7 @@ public sealed class GorgonConstantBuffers
     /// <summary>
     /// Property to return the start of the view.
     /// </summary>
-	    internal int[] ViewStart
+    internal int[] ViewStart
     {
         get;
     } = new int[MaximumConstantBufferCount];
@@ -75,19 +69,14 @@ public sealed class GorgonConstantBuffers
     {
         get;
     } = new int[MaximumConstantBufferCount];
-    #endregion
 
-    #region Methods.
-    /// <summary>
-    /// Function called when a dirty item is found and added.
-    /// </summary>
-    /// <param name="dirtyIndex">The index that is considered dirty.</param>
-    /// <param name="value">The dirty value.</param>
-    protected override void OnAssignDirtyItem(int dirtyIndex, GorgonConstantBufferView value)
+    /// <inheritdoc/>
+    protected override void OnMapDirtyItem(int index, int rangeIndex, bool isDirty)
     {
-        Native[dirtyIndex] = value?.Buffer?.Native;
-        ViewStart[dirtyIndex] = value?.StartElement * 16 ?? 0;
-        ViewCount[dirtyIndex] = value?.ElementCount * 16 ?? 0;
+        GorgonConstantBufferView value = this[index];
+        Native[rangeIndex] = value?.Buffer?.Native;
+        ViewStart[rangeIndex] = value?.StartElement * 16 ?? 0;
+        ViewCount[rangeIndex] = value?.ElementCount * 16 ?? 0;
     }
 
     /// <summary>
@@ -100,30 +89,6 @@ public sealed class GorgonConstantBuffers
         Array.Clear(ViewCount, 0, ViewCount.Length);
     }
 
-    /// <summary>
-    /// Function to find the index of the resource in the array.
-    /// </summary>
-    /// <param name="resource">The resource to look up.</param>
-    /// <returns>The index, if found. -1 if not.</returns>
-	    internal int IndexOf(GorgonGraphicsResource resource)
-    {
-        (int start, int count) = GetDirtyItems(true);
-
-        for (int i = 0; i < count; ++i)
-        {
-            GorgonConstantBuffer buffer = BackingArray[i + start]?.Buffer;
-
-            if (buffer == resource)
-            {
-                return i + start;
-            }
-        }
-
-        return -1;
-    }
-    #endregion
-
-    #region Constructor
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonConstantBuffers"/> class.
     /// </summary>
@@ -141,5 +106,4 @@ public sealed class GorgonConstantBuffers
             this[i] = bufferViews[i];
         }
     }
-    #endregion
 }

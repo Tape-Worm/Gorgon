@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,25 +11,20 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 24, 2019 11:16:33 AM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.IO;
-using System.Linq;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.SpriteEditor.Properties;
 using Gorgon.Editor.UI;
@@ -38,21 +33,19 @@ using Gorgon.IO;
 namespace Gorgon.Editor.SpriteEditor;
 
 /// <summary>
-/// The view model for the importer plug in settings.
+/// The view model for the importer plug-in settings
 /// </summary>
 internal class ImportSettings
     : PlugInsCategory<ImportSettingsParameters>, IImportSettings
 {
-    #region Variables.
+
     // The backing store for the settings.
     private SpriteImportSettings _settings;
 
-    // The codecs for the plug in.
+    // The codecs for the plug-in.
     private CodecRegistry _codecs;
-    #endregion
 
-    #region Properties.
-    /// <summary>Property to return the file name that will hold the plug ins.</summary>
+    /// <summary>Property to return the file name that will hold the plug-ins.</summary>
     protected override string SettingsFileName => SpriteImporterPlugIn.SettingsFilename;
 
     /// <summary>
@@ -61,21 +54,19 @@ internal class ImportSettings
     public ObservableCollection<CodecSetting> SelectedCodecs
     {
         get;
-    } = new ObservableCollection<CodecSetting>();
+    } = [];
 
     /// <summary>
-    /// Propery to return the paths to the codec plug ins.
+    /// Propery to return the paths to the codec plug-ins.
     /// </summary>
     public ObservableCollection<CodecSetting> CodecPlugInPaths
     {
         get;
-    } = new ObservableCollection<CodecSetting>();
+    } = [];
 
     /// <summary>Property to return the name of this object.</summary>
     public override string Name => Resources.GORSPR_IMPORT_DESC;
-    #endregion
 
-    #region Methods.
     /// <summary>Handles the CollectionChanged event of the CodecPlugInPaths control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="NotifyCollectionChangedEventArgs"/> instance containing the event data.</param>
@@ -104,11 +95,11 @@ internal class ImportSettings
     }
 
     /// <summary>
-    /// Function to unload the selected plug in assemblies.
+    /// Function to unload the selected plug-in assemblies.
     /// </summary>
     protected override bool OnUnloadPlugIns()
     {
-        IReadOnlyList<CodecSetting> selected = SelectedCodecs.ToArray();
+        IReadOnlyList<CodecSetting> selected = [.. SelectedCodecs];
         IReadOnlyList<GorgonSpriteCodecPlugIn> plugIns = selected.Select(item => item.PlugIn).ToArray();
         MessageResponse response = MessageResponse.None;
 
@@ -151,7 +142,7 @@ internal class ImportSettings
     }
 
     /// <summary>
-    /// Function to load in a plug in assembly.
+    /// Function to load in a plug-in assembly.
     /// </summary>
     protected override bool OnLoadPlugIns()
     {
@@ -208,9 +199,9 @@ internal class ImportSettings
     }
 
     /// <summary>
-    /// Function to determine if the selected plug in assemblies can be unloaded.
+    /// Function to determine if the selected plug-in assemblies can be unloaded.
     /// </summary>
-    /// <returns><b>true</b> if the plug in assemblies can be removed, <b>false</b> if not.</returns>
+    /// <returns><b>true</b> if the plug-in assemblies can be removed, <b>false</b> if not.</returns>
     protected override bool CanUnloadPlugInAssemblies() => SelectedCodecs.Count > 0;
 
     /// <summary>Function to retrieve the underlying object used to hold the settings.</summary>
@@ -264,5 +255,4 @@ internal class ImportSettings
 
         base.OnUnload();
     }
-    #endregion
 }

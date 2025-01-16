@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2012 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,36 +11,32 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Friday, April 13, 2012 7:12:15 AM
 // 
-#endregion
 
-using System;
 using System.Globalization;
 using Gorgon.Core;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts.Properties;
 using Gorgon.Math;
-using DX = SharpDX;
 
 namespace Gorgon.Graphics.Fonts;
 
 /// <summary>
-/// A glyph used to define a character in a <see cref="GorgonFont"/>.
+/// A glyph used to define a character in a <see cref="GorgonFont"/>
 /// </summary>
 public sealed class GorgonGlyph
     : IGorgonNamedObject, IEquatable<GorgonGlyph>
 {
-    #region Properties.
     /// <summary>
     /// Property to return the name of this object.
     /// </summary>
@@ -66,7 +62,7 @@ public sealed class GorgonGlyph
     /// <summary>
     /// Property to return the coordinates, in pixel space, of the glyph.
     /// </summary>
-    public DX.Rectangle GlyphCoordinates
+    public GorgonRectangle GlyphCoordinates
     {
         get;
         private set;
@@ -78,7 +74,7 @@ public sealed class GorgonGlyph
     /// <remarks>
     /// This property will only be assigned if a <see cref="GorgonFont"/> has an outline.
     /// </remarks>
-    public DX.Rectangle OutlineCoordinates
+    public GorgonRectangle OutlineCoordinates
     {
         get;
         private set;
@@ -87,7 +83,7 @@ public sealed class GorgonGlyph
     /// <summary>
     /// Property to return the texture coordinates for the glyph.
     /// </summary>
-    public DX.RectangleF TextureCoordinates
+    public GorgonRectangleF TextureCoordinates
     {
         get;
         private set;
@@ -99,7 +95,7 @@ public sealed class GorgonGlyph
     /// <remarks>
     /// This property will only be assigned if a <see cref="GorgonFont"/> has an outline.
     /// </remarks>
-    public DX.RectangleF OutlineTextureCoordinates
+    public GorgonRectangleF OutlineTextureCoordinates
     {
         get;
         private set;
@@ -133,7 +129,7 @@ public sealed class GorgonGlyph
     /// The offset of a glyph is the distance from the glyph black box (i.e. the bounds of the glyph pixels) to the actual starting point of the glyph.  For example, if 'g' has an offset of 
     /// 4, 6 and we change the offset to 3, 4 then the 'g' glyph will be shifted left by 1 pixel and up by 2 pixels when rendering.
     /// </remarks>
-    public DX.Point Offset
+    public GorgonPoint Offset
     {
         get;
         set;
@@ -151,14 +147,12 @@ public sealed class GorgonGlyph
     /// This property will only be assigned if a <see cref="GorgonFont"/> has an outline.
     /// </para>
     /// </remarks>
-    public DX.Point OutlineOffset
+    public GorgonPoint OutlineOffset
     {
         get;
         set;
     }
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to change the texture pointed at by this glyph.
     /// </summary>
@@ -184,7 +178,7 @@ public sealed class GorgonGlyph
     /// If the <see cref="GorgonFont"/> for this glyph does not have an outline, then the <paramref name="outlineCoordinates"/> should be set to empty.
     /// </para>
     /// </remarks>
-    public void UpdateTexture(GorgonTexture2D texture, DX.Rectangle glyphCoordinates, DX.Rectangle outlineCoordinates, int textureArrayIndex)
+    public void UpdateTexture(GorgonTexture2D texture, GorgonRectangle glyphCoordinates, GorgonRectangle outlineCoordinates, int textureArrayIndex)
     {
         if (texture is null)
         {
@@ -254,9 +248,7 @@ public sealed class GorgonGlyph
     /// <param name="obj">An object to compare with this object.</param>
     /// <returns><see langword="true" /> if the current object is equal to the <paramref name="obj" /> parameter; otherwise, <see langword="false" />.</returns>
     public override bool Equals(object obj) => Equals(obj as GorgonGlyph);
-    #endregion
 
-    #region Constructor/Destructor.
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonGlyph"/> class.
     /// </summary>
@@ -272,5 +264,4 @@ public sealed class GorgonGlyph
         Character = character;
         Advance = advance;
     }
-    #endregion
 }

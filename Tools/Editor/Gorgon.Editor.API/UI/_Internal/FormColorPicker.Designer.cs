@@ -20,7 +20,7 @@ partial class FormColorPicker
         base.Dispose(disposing);
     }
 
-    #region Windows Form Designer generated code
+
 
     /// <summary>
     /// Required method for Designer support - do not modify
@@ -124,7 +124,7 @@ partial class FormColorPicker
         this.CancelButton = this.ButtonCancel;
         this.ClientSize = new System.Drawing.Size(400, 327);
         this.Controls.Add(this.tableLayoutPanel1);
-        this.Font = new System.Drawing.Font("Segoe UI", 9F);
+        
         this.ForeColor = System.Drawing.Color.White;
         this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
         this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -141,7 +141,7 @@ partial class FormColorPicker
 
     }
 
-    #endregion
+
 
     private UI.Controls.ColorPicker Picker;
     private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;

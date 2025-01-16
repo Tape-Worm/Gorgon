@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2016 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,22 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: July 7, 2016 11:53:48 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Text;
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
@@ -34,11 +30,10 @@ using Gorgon.Graphics.Core.Properties;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// A processor used to analyze shader source code and inject any special #GorgonInclude directives.
+/// A processor used to analyze shader source code and inject any special #GorgonInclude directives
 /// </summary>
 internal class ShaderProcessor
 {
-    #region Properties.
     /// <summary>
     /// Property to return the list of cached include files.
     /// </summary>
@@ -46,9 +41,7 @@ internal class ShaderProcessor
     {
         get;
     }
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to trim whitespace from the beginning and end of a line.
     /// </summary>
@@ -80,7 +73,7 @@ internal class ShaderProcessor
     private static GorgonShaderInclude ParseIncludeLine(StringBuilder includeLine, bool checkFileExists)
     {
         int length = "#GorgonInclude".Length;
-        var line = new StringBuilder(includeLine.ToString(), length, includeLine.Length - length, includeLine.Length - length);
+        StringBuilder line = new(includeLine.ToString(), length, includeLine.Length - length, includeLine.Length - length);
 
         TrimLine(line);
 
@@ -143,7 +136,6 @@ internal class ShaderProcessor
 
         string includePath = Path.GetFullPath(line.ToString(1, endQuote - 1));
 
-#pragma warning disable IDE0046 // Convert to conditional expression
         if (includePath.Length == 0)
         {
             throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORGFX_ERR_SHADER_INCLUDE_PATH_INVALID, includeLine));
@@ -152,7 +144,7 @@ internal class ShaderProcessor
         return (checkFileExists) && (!File.Exists(includePath))
             ? throw new IOException(string.Format(Resources.GORGFX_ERR_FILE_NOT_FOUND, includeName))
             : new GorgonShaderInclude(includeName, includePath);
-#pragma warning restore IDE0046 // Convert to conditional expression
+
     }
 
     /// <summary>
@@ -162,10 +154,10 @@ internal class ShaderProcessor
     /// <returns>The processed shader source.</returns>
     public string Process(string sourceCode)
     {
-        var result = new StringBuilder();
+        StringBuilder result = new();
 
         // Replace carriage returns with new lines.
-        var code = new StringBuilder(sourceCode);
+        StringBuilder code = new(sourceCode);
         code.Replace("\r\n", "\n");
         code.Replace("\n\r", "\n");
         code.Replace("\r", "\n");
@@ -173,19 +165,19 @@ internal class ShaderProcessor
         IList<string> lines = code.ToString().Split('\n');
         int i = 0;
 
-        var includeLine = new StringBuilder();
+        StringBuilder includeLine = new();
 
         while (i < lines.Count)
         {
-            includeLine.Length = 0;
-            includeLine.Append(lines[i]);
-            TrimLine(includeLine);
-
-            if (includeLine.IndexOf("#GorgonInclude", comparison: StringComparison.OrdinalIgnoreCase) != 0)
+            if (lines[i].IndexOf("#GorgonInclude", StringComparison.OrdinalIgnoreCase) != 0)
             {
                 result.Append($"{lines[i++]}\r\n");
                 continue;
             }
+
+            includeLine.Length = 0;
+            includeLine.Append(lines[i]);
+            TrimLine(includeLine);
 
             ++i;
             GorgonShaderInclude includeFile = ParseIncludeLine(includeLine, false);
@@ -227,12 +219,10 @@ internal class ShaderProcessor
 
         return result.ToString();
     }
-    #endregion
 
-    #region Constructor
     /// <summary>
     /// Initializes a new instance of the <see cref="ShaderProcessor"/> class.
     /// </summary>
-    public ShaderProcessor() => CachedIncludes = new Dictionary<string, GorgonShaderInclude>();
-    #endregion
+    public ShaderProcessor() => CachedIncludes = [];
+
 }

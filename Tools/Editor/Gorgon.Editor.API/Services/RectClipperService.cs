@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,43 +11,36 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 19, 2019 2:09:29 PM
 // 
-#endregion
 
-using System;
-using System.Linq;
 using System.Numerics;
-using System.Threading;
-using System.Windows.Forms;
 using Gorgon.Editor.Rendering;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Renderers;
 using Gorgon.Renderers.Cameras;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.Services;
 
 /// <summary>
-/// A service used to clip a rectangular area from an image.
+/// A service used to clip a rectangular area from an image
 /// </summary>
 public class RectClipperService
     : IRectClipperService
 {
-    #region Variables.
     // The clipped area.
-    private DX.RectangleF _clipRect;
+    private GorgonRectangleF _clipRect;
     // The marching ants rectangle.
     private readonly IMarchingAnts _marchingAnts;
     // The 2D renderer.
@@ -59,7 +52,7 @@ public class RectClipperService
     // Starting drag position.
     private Vector2 _startDrag;
     // The rectangle dimensions when dragging has begun.
-    private DX.RectangleF _dragRect;
+    private GorgonRectangleF _dragRect;
     // The icon used for keyboard manual input.
     private Lazy<GorgonTexture2DView> _keyboardIcon;
     // Flag to indicate that the selection can be moved.
@@ -73,14 +66,12 @@ public class RectClipperService
     // The mouse position in local clipping space.
     private Vector2 _localMousePosition;
     // The rectangle in screen coordinates.
-    private DX.RectangleF _screenRect;
+    private GorgonRectangleF _screenRect;
     // The camera for rendering.
     private GorgonOrthoCamera _camera;
     // Flag to indicate that the rectangle should be clipped against the boundaries.
     private bool _clipBounds = true;
-    #endregion
 
-    #region Events.
     // Event for rectangle updates.        
     private event EventHandler RectChangedEvent;
 
@@ -136,9 +127,7 @@ public class RectClipperService
             RectChangedEvent -= value;
         }
     }
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to set or return the camera being used.
     /// </summary>
@@ -164,7 +153,7 @@ public class RectClipperService
     /// <summary>
     /// Property to set or return the boundaries for the clipping rectangle.
     /// </summary>
-    public DX.RectangleF Bounds
+    public GorgonRectangleF Bounds
     {
         get;
         set;
@@ -225,13 +214,13 @@ public class RectClipperService
     /// <summary>
     /// Property to return the rectangular region marked for clipping.
     /// </summary>
-    public DX.RectangleF Rectangle
+    public GorgonRectangleF Rectangle
     {
         get => _clipRect;
         set
         {
             // Do nothing if the coordinates haven't changed.
-            if (_clipRect.Equals(ref value))
+            if (_clipRect.Equals(value))
             {
                 return;
             }
@@ -254,11 +243,9 @@ public class RectClipperService
 
             if ((_clipBounds) && (!Bounds.IsEmpty))
             {
-                Bounds.Contains(ref value, out bool contains);
-
-                if (!contains)
+                if (!Bounds.Contains(value))
                 {
-                    value = DX.RectangleF.Intersect(Bounds, value);
+                    value = GorgonRectangleF.Intersect(Bounds, value);
 
                     if (value.Width < 1)
                     {
@@ -272,7 +259,7 @@ public class RectClipperService
                 }
             }
 
-            _clipRect = value.Truncate();
+            _clipRect = GorgonRectangleF.Truncate(value);
             SetupHandles();
             OnRectChanged();
         }
@@ -286,9 +273,7 @@ public class RectClipperService
         get;
         set;
     } = true;
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function called when the rectangle dimensions have been updated.
     /// </summary>
@@ -307,19 +292,19 @@ public class RectClipperService
         {
             for (int i = 0; i < _handles.Length; ++i)
             {
-                _handles[i].HandleBounds = DX.RectangleF.Empty;
+                _handles[i].HandleBounds = GorgonRectangleF.Empty;
             }
             Cursor.Current = Cursors.Default;
             return;
         }
 
-        var half = new Vector3(Bounds.Width * 0.5f, Bounds.Height * 0.5f, 0);
+        Vector3 half = new(Bounds.Width * 0.5f, Bounds.Height * 0.5f, 0);
         Vector3 spriteTopLeft = new Vector3(Rectangle.Left, Rectangle.Top, 0) - half;
         Vector3 spriteBottomRight = new Vector3(Rectangle.Right, Rectangle.Bottom, 0) - half;
-        _camera.Unproject(in spriteTopLeft, out Vector3 transformedTopLeft);
-        _camera.Unproject(in spriteBottomRight, out Vector3 transformedBottomRight);
+        _camera.Unproject(spriteTopLeft, out Vector3 transformedTopLeft);
+        _camera.Unproject(spriteBottomRight, out Vector3 transformedBottomRight);
 
-        _screenRect = new DX.RectangleF
+        _screenRect = new GorgonRectangleF
         {
             Left = transformedTopLeft.X,
             Top = transformedTopLeft.Y,
@@ -327,23 +312,23 @@ public class RectClipperService
             Bottom = transformedBottomRight.Y
         };
 
-        _handles[0].HandleBounds = AllowResize ? new DX.RectangleF(_screenRect.Left - 8, _screenRect.Top - 8, 8, 8) : DX.RectangleF.Empty;
-        _handles[1].HandleBounds = AllowResize ? new DX.RectangleF(_screenRect.Right, _screenRect.Top - 8, 8, 8) : DX.RectangleF.Empty;
-        _handles[2].HandleBounds = AllowResize ? new DX.RectangleF(_screenRect.Right, _screenRect.Bottom, 8, 8) : DX.RectangleF.Empty;
-        _handles[3].HandleBounds = AllowResize ? new DX.RectangleF(_screenRect.Left - 8, _screenRect.Bottom, 8, 8) : DX.RectangleF.Empty;
-        _handles[4].HandleBounds = (AllowResize) && (_screenRect.Width >= 16) ? new DX.RectangleF(_screenRect.Left + (_screenRect.Width / 2.0f) - 4, _screenRect.Top - 8, 8, 8) : DX.RectangleF.Empty;
-        _handles[5].HandleBounds = (AllowResize) && (_screenRect.Width >= 16) ? new DX.RectangleF(_screenRect.Left + (_screenRect.Width / 2.0f) - 4, _screenRect.Bottom, 8, 8) : DX.RectangleF.Empty;
-        _handles[6].HandleBounds = (AllowResize) && (_screenRect.Height >= 16) ? new DX.RectangleF(_screenRect.Right, _screenRect.Top + (_screenRect.Height / 2.0f) - 4, 8, 8) : DX.RectangleF.Empty;
-        _handles[7].HandleBounds = (AllowResize) && (_screenRect.Height >= 16) ? new DX.RectangleF(_screenRect.Left - 8, _screenRect.Top + (_screenRect.Height / 2.0f) - 4, 8, 8) : DX.RectangleF.Empty;
+        _handles[0].HandleBounds = AllowResize ? new GorgonRectangleF(_screenRect.Left - 8, _screenRect.Top - 8, 8, 8) : GorgonRectangleF.Empty;
+        _handles[1].HandleBounds = AllowResize ? new GorgonRectangleF(_screenRect.Right, _screenRect.Top - 8, 8, 8) : GorgonRectangleF.Empty;
+        _handles[2].HandleBounds = AllowResize ? new GorgonRectangleF(_screenRect.Right, _screenRect.Bottom, 8, 8) : GorgonRectangleF.Empty;
+        _handles[3].HandleBounds = AllowResize ? new GorgonRectangleF(_screenRect.Left - 8, _screenRect.Bottom, 8, 8) : GorgonRectangleF.Empty;
+        _handles[4].HandleBounds = (AllowResize) && (_screenRect.Width >= 16) ? new GorgonRectangleF(_screenRect.Left + (_screenRect.Width / 2.0f) - 4, _screenRect.Top - 8, 8, 8) : GorgonRectangleF.Empty;
+        _handles[5].HandleBounds = (AllowResize) && (_screenRect.Width >= 16) ? new GorgonRectangleF(_screenRect.Left + (_screenRect.Width / 2.0f) - 4, _screenRect.Bottom, 8, 8) : GorgonRectangleF.Empty;
+        _handles[6].HandleBounds = (AllowResize) && (_screenRect.Height >= 16) ? new GorgonRectangleF(_screenRect.Right, _screenRect.Top + (_screenRect.Height / 2.0f) - 4, 8, 8) : GorgonRectangleF.Empty;
+        _handles[7].HandleBounds = (AllowResize) && (_screenRect.Height >= 16) ? new GorgonRectangleF(_screenRect.Left - 8, _screenRect.Top + (_screenRect.Height / 2.0f) - 4, 8, 8) : GorgonRectangleF.Empty;
         _handles[8].HandleBounds = (AllowMove) && (_screenRect.Width >= 32) && (_screenRect.Height >= 32) ?
-            new DX.RectangleF((_screenRect.Width / 2.0f) + _screenRect.Left - 8, (_screenRect.Height / 2.0f) + _screenRect.Top - 8, 16, 16)
-            : DX.RectangleF.Empty;
+            new GorgonRectangleF((_screenRect.Width / 2.0f) + _screenRect.Left - 8, (_screenRect.Height / 2.0f) + _screenRect.Top - 8, 16, 16)
+            : GorgonRectangleF.Empty;
         _handles[9].Texture = _keyboardIcon.Value;
 
-        var keyBounds = new DX.RectangleF(_screenRect.Left + 8, _screenRect.Top + 8, _keyboardIcon.Value.Width, _keyboardIcon.Value.Height);
+        GorgonRectangleF keyBounds = new(_screenRect.Left + 8, _screenRect.Top + 8, _keyboardIcon.Value.Width, _keyboardIcon.Value.Height);
         _handles[9].HandleBounds = (ShowManualInput)
-            && ((_handles[8].HandleBounds.IsEmpty) || (!_handles[8].HandleBounds.Intersects(keyBounds)))
-            && ((_screenRect.Width >= _keyboardIcon.Value.Width * 2) && (_screenRect.Height >= _keyboardIcon.Value.Height * 2)) ? keyBounds : DX.RectangleF.Empty;
+            && ((_handles[8].HandleBounds.IsEmpty) || (!_handles[8].HandleBounds.IntersectsWith(keyBounds)))
+            && ((_screenRect.Width >= _keyboardIcon.Value.Width * 2) && (_screenRect.Height >= _keyboardIcon.Value.Height * 2)) ? keyBounds : GorgonRectangleF.Empty;
 
         GetActiveHandle();
     }
@@ -353,14 +338,14 @@ public class RectClipperService
     /// </summary>
     private void DragHandles()
     {
-        var dragDelta = Vector2.Subtract(_localMousePosition, _startDrag);
+        Vector2 dragDelta = Vector2.Subtract(_localMousePosition, _startDrag);
         dragDelta = dragDelta.Ceiling();
 
         switch (_activeHandleIndex)
         {
             // NW
             case 0:
-                Rectangle = new DX.RectangleF
+                Rectangle = new GorgonRectangleF
                 {
                     Left = (_dragRect.Left + dragDelta.X).Min(_clipRect.Right - 1),
                     Top = (_dragRect.Top + dragDelta.Y).Min(_clipRect.Bottom - 1),
@@ -370,7 +355,7 @@ public class RectClipperService
                 break;
             // NE
             case 1:
-                Rectangle = new DX.RectangleF
+                Rectangle = new GorgonRectangleF
                 {
                     Left = _clipRect.Left,
                     Top = (_dragRect.Top + dragDelta.Y).Min(_clipRect.Bottom - 1),
@@ -380,7 +365,7 @@ public class RectClipperService
                 break;
             // SE
             case 2:
-                Rectangle = new DX.RectangleF
+                Rectangle = new GorgonRectangleF
                 {
                     Left = _clipRect.Left,
                     Top = _clipRect.Top,
@@ -390,7 +375,7 @@ public class RectClipperService
                 break;
             // SW
             case 3:
-                Rectangle = new DX.RectangleF
+                Rectangle = new GorgonRectangleF
                 {
                     Left = (_dragRect.Left + dragDelta.X).Min(_clipRect.Right - 1),
                     Top = _clipRect.Top,
@@ -400,7 +385,7 @@ public class RectClipperService
                 break;
             // N
             case 4:
-                Rectangle = new DX.RectangleF
+                Rectangle = new GorgonRectangleF
                 {
                     Left = _clipRect.Left,
                     Top = (_dragRect.Top + dragDelta.Y).Min(_clipRect.Bottom - 1),
@@ -410,7 +395,7 @@ public class RectClipperService
                 break;
             // S
             case 5:
-                Rectangle = new DX.RectangleF
+                Rectangle = new GorgonRectangleF
                 {
                     Left = _clipRect.Left,
                     Top = _clipRect.Top,
@@ -420,7 +405,7 @@ public class RectClipperService
                 break;
             // E
             case 6:
-                Rectangle = new DX.RectangleF
+                Rectangle = new GorgonRectangleF
                 {
                     Left = _clipRect.Left,
                     Top = _clipRect.Top,
@@ -430,7 +415,7 @@ public class RectClipperService
                 break;
             // W
             case 7:
-                Rectangle = new DX.RectangleF
+                Rectangle = new GorgonRectangleF
                 {
                     Left = (_dragRect.Left + dragDelta.X).Min(_clipRect.Right - 1),
                     Top = _clipRect.Top,
@@ -440,8 +425,8 @@ public class RectClipperService
                 break;
             // Drag body.
             case 8:
-                DX.Size2F size = _clipRect.Size;
-                var moveRect = new DX.RectangleF
+                Vector2 size = _clipRect.Size;
+                GorgonRectangleF moveRect = new()
                 {
                     Left = _dragRect.Left + dragDelta.X,
                     Top = _dragRect.Top + dragDelta.Y,
@@ -450,30 +435,30 @@ public class RectClipperService
                 };
 
                 if ((_clipBounds) && (!Bounds.IsEmpty))
-                {                        
+                {
                     if (moveRect.Left < Bounds.Left)
                     {
                         moveRect.Left = Bounds.Left;
-                        moveRect.Width = size.Width;
+                        moveRect.Width = size.X;
                     }
 
                     if (moveRect.Top < Bounds.Top)
                     {
                         moveRect.Top = Bounds.Top;
-                        moveRect.Height = size.Height;
+                        moveRect.Height = size.Y;
                     }
 
                     if (moveRect.Right > Bounds.Right)
-                    {                            
-                        moveRect.Left = Bounds.Right - size.Width;
-                        moveRect.Width = size.Width;
+                    {
+                        moveRect.Left = Bounds.Right - size.X;
+                        moveRect.Width = size.X;
                     }
 
                     if (moveRect.Bottom > Bounds.Bottom)
                     {
-                        moveRect.Top = Bounds.Bottom - size.Height;
-                        moveRect.Height = size.Height;
-                    }                        
+                        moveRect.Top = Bounds.Bottom - size.Y;
+                        moveRect.Height = size.Y;
+                    }
                 }
 
                 Rectangle = moveRect;
@@ -497,7 +482,7 @@ public class RectClipperService
 
         for (int i = 0; i < _handles.Length; ++i)
         {
-            DX.RectangleF handleBounds = _handles[i].HandleBounds;
+            GorgonRectangleF handleBounds = _handles[i].HandleBounds;
 
             if (handleBounds.IsEmpty)
             {
@@ -530,7 +515,7 @@ public class RectClipperService
     /// <returns><b>true</b> if the mouse event was handled, <b>false</b> if it was not.</returns>
     public bool MouseMove(MouseArgs mouseArgs)
     {
-        _mousePosition = mouseArgs.ClientPosition.ToVector2();
+        _mousePosition = mouseArgs.ClientPosition;
         _localMousePosition = mouseArgs.CameraSpacePosition;
 
         GetActiveHandle();
@@ -560,7 +545,7 @@ public class RectClipperService
     /// <returns><b>true</b> if the mouse event was handled, <b>false</b> if it was not.</returns>
     public bool MouseDown(MouseArgs mouseArgs)
     {
-        _mousePosition = mouseArgs.ClientPosition.ToVector2();
+        _mousePosition = mouseArgs.ClientPosition;
         _localMousePosition = mouseArgs.CameraSpacePosition;
         GetActiveHandle();
 
@@ -583,7 +568,7 @@ public class RectClipperService
     /// <returns><b>true</b> if the mouse event was handled, <b>false</b> if it was not.</returns>
     public bool MouseUp(MouseArgs mouseArgs)
     {
-        _mousePosition = mouseArgs.ClientPosition.ToVector2();
+        _mousePosition = mouseArgs.ClientPosition;
         _localMousePosition = mouseArgs.CameraSpacePosition;
         GetActiveHandle();
 
@@ -601,7 +586,7 @@ public class RectClipperService
         if (mouseArgs.MouseButtons == MouseButtons.Left)
         {
             _startDrag = Vector2.Zero;
-            _dragRect = DX.RectangleF.Empty;
+            _dragRect = GorgonRectangleF.Empty;
             IsDragging = false;
         }
 
@@ -642,7 +627,7 @@ public class RectClipperService
         switch (key)
         {
             case Keys.Up:
-            case Keys.NumPad8:                                       
+            case Keys.NumPad8:
                 _localMousePosition = new Vector2(_localMousePosition.X, _localMousePosition.Y - offset);
                 break;
             case Keys.Down:
@@ -675,10 +660,10 @@ public class RectClipperService
 
         DragHandles();
 
-        DX.RectangleF handleRect = _handles[handle].HandleBounds;
-        var clientPos = new Vector2(handleRect.X + (handleRect.Width * 0.5f), handleRect.Y + (handleRect.Height * 0.5f));
+        GorgonRectangleF handleRect = _handles[handle].HandleBounds;
+        Vector2 clientPos = new(handleRect.X + (handleRect.Width * 0.5f), handleRect.Y + (handleRect.Height * 0.5f));
         _mousePosition = clientPos;
-                    
+
         return true;
     }
 
@@ -705,7 +690,7 @@ public class RectClipperService
         for (int i = 0; i < _handles.Length; ++i)
         {
             GorgonTexture2DView texture = _handles[i].Texture;
-            DX.RectangleF handleBounds = _handles[i].HandleBounds;
+            GorgonRectangleF handleBounds = _handles[i].HandleBounds;
 
             if (handleBounds.IsEmpty)
             {
@@ -721,17 +706,17 @@ public class RectClipperService
             // Hilight our active handle.
             if (_activeHandleIndex == i)
             {
-                _renderer.DrawFilledRectangle(handleBounds, new GorgonColor(GorgonColor.RedPure, 0.7f));
+                _renderer.DrawFilledRectangle(handleBounds, new GorgonColor(GorgonColors.Red, 0.7f));
             }
 
             if (texture is null)
             {
-                _renderer.DrawRectangle(handleBounds, GorgonColor.Black);
-                _renderer.DrawRectangle(new DX.RectangleF(handleBounds.X + 1, handleBounds.Y + 1, handleBounds.Width - 2, handleBounds.Height - 2), GorgonColor.White);
+                _renderer.DrawRectangle(handleBounds, GorgonColors.Black);
+                _renderer.DrawRectangle(new GorgonRectangleF(handleBounds.X + 1, handleBounds.Y + 1, handleBounds.Width - 2, handleBounds.Height - 2), GorgonColors.White);
             }
             else if (AllowManualInput)
             {
-                _renderer.DrawFilledRectangle(handleBounds, GorgonColor.White, texture, new DX.RectangleF(0, 0, 1, 1));
+                _renderer.DrawFilledRectangle(handleBounds, GorgonColors.White, texture, new GorgonRectangleF(0, 0, 1, 1));
             }
         }
     }
@@ -749,9 +734,7 @@ public class RectClipperService
             keyIcon.Value.Dispose();
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
     /// <summary>Initializes a new instance of the <see cref="RectClipperService"/> class.</summary>
     /// <param name="renderer">The 2D renderer for the application.</param>
     /// <param name="marchingAnts">The marching ants rectangle used to display the selection region.</param>
@@ -779,5 +762,4 @@ public class RectClipperService
             Name = "RectClipper_KeyboardIcon"
         }, CommonEditorResources.KeyboardIcon), true);
     }
-    #endregion
 }

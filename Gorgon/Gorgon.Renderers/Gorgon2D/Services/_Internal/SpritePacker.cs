@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2012 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,29 +11,27 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Saturday, April 14, 2012 10:56:23 AM
 // 
-#endregion
 
-using DX = SharpDX;
+using Gorgon.Graphics;
 
 namespace Gorgon.Renderers.Services;
 
 /// <summary>
-/// Used to determine where sprites should be packed onto a texture.
+/// Used to determine where sprites should be packed onto a texture
 /// </summary>
 internal static class SpritePacker
 {
-    #region Properties.
     /// <summary>
     /// Property to return the root node.
     /// </summary>
@@ -42,9 +40,7 @@ internal static class SpritePacker
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to create the root node.
     /// </summary>
@@ -52,7 +48,7 @@ internal static class SpritePacker
     /// <param name="textureHeight">The height of the texture.</param>
     public static void CreateRoot(int textureWidth, int textureHeight) => Root = new SpriteNode(null)
     {
-        Region = new DX.Rectangle(0, 0, textureWidth, textureHeight)
+        Region = new GorgonRectangle(0, 0, textureWidth, textureHeight)
     };
 
     /// <summary>
@@ -60,22 +56,21 @@ internal static class SpritePacker
     /// </summary>
     /// <param name="dimensions">The sprite dimensions.</param>
     /// <returns>A rectangle for the area on the image that the sprite will be located at, or <b>null</b> if there's no room.</returns>
-    public static DX.Rectangle? Add(DX.Size2 dimensions)
+    public static GorgonRectangle? Add(GorgonPoint dimensions)
     {
-        if ((dimensions.Width > Root.Region.Width) || (dimensions.Height > Root.Region.Height))
+        if ((dimensions.X > Root.Region.Width) || (dimensions.Y > Root.Region.Height))
         {
             return null;
         }
 
         // Do nothing here.
-        if ((dimensions.Width == 0) || (dimensions.Height == 0))
+        if ((dimensions.X == 0) || (dimensions.Y == 0))
         {
-            return DX.Rectangle.Empty;
+            return GorgonRectangle.Empty;
         }
 
         SpriteNode newNode = Root.AddNode(dimensions);
 
         return newNode?.Region;
     }
-    #endregion
 }

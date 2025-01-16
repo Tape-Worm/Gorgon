@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,21 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 16, 2018 11:19:12 PM
 // 
-#endregion
 
-using System;
-using System.IO;
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Graphics.Imaging;
@@ -34,16 +31,15 @@ using Gorgon.Math;
 using SharpDX.DXGI;
 using D3D = SharpDX.Direct3D;
 using D3D11 = SharpDX.Direct3D11;
-using DX = SharpDX;
 
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// A shader view for textures.
+/// A shader view for textures
 /// </summary>
 /// <remarks>
 /// <para>
-/// This is a texture shader view to allow a <see cref="GorgonTexture1D"/> to be bound to the GPU pipeline as a shader resource.
+/// This is a texture shader view to allow a <see cref="GorgonTexture1D"/> to be bound to the GPU pipeline as a shader resource
 /// </para>
 /// <para>
 /// Use a resource view to allow a shader access to the contents of a resource (or sub resource).  When the resource is created with a typeless format, this will allow the resource to be cast to any 
@@ -53,11 +49,10 @@ namespace Gorgon.Graphics.Core;
 public sealed class GorgonTexture1DView
     : GorgonShaderResourceView, IGorgonTexture1DInfo, IGorgonImageInfo
 {
-    #region Properties.
     /// <summary>
     /// Property to return the type of image data.
     /// </summary>
-    ImageType IGorgonImageInfo.ImageType => ImageType.Image1D;
+    ImageDataType IGorgonImageInfo.ImageType => ImageDataType.Image1D;
 
     /// <summary>
     /// Property to return the height of an image, in pixels.
@@ -181,7 +176,7 @@ public sealed class GorgonTexture1DView
     /// <remarks>
     /// This value is the full bounding range of the first mip map level for the texture associated with the view.
     /// </remarks>
-    public GorgonRange Bounds
+    public GorgonRange<int> Bounds
     {
         get;
     }
@@ -208,9 +203,7 @@ public sealed class GorgonTexture1DView
     /// Property to return the flags to determine how the texture will be bound with the pipeline when rendering.
     /// </summary>
     public TextureBinding Binding => Texture?.Binding ?? TextureBinding.None;
-    #endregion
 
-    #region Methods.
     /// <summary>Function to retrieve the necessary parameters to create the native view.</summary>
     /// <returns>A shader resource view descriptor.</returns>
     private protected override ref readonly D3D11.ShaderResourceViewDescription1 OnGetSrvParams()
@@ -221,7 +214,7 @@ public sealed class GorgonTexture1DView
             Dimension = Texture.ArrayCount > 1
                                        ? D3D.ShaderResourceViewDimension.Texture1DArray
                                        : D3D.ShaderResourceViewDimension.Texture1D,
-            Texture1DArray = 
+            Texture1DArray =
                         {
                            MipLevels = MipCount,
                            MostDetailedMip = MipSlice,
@@ -242,13 +235,12 @@ public sealed class GorgonTexture1DView
         base.Dispose();
     }
 
-
     /// <summary>
-    /// Function to convert a <see cref="GorgonRangeF"/> of texel coordinates to pixel space.
+    /// Function to convert a <see cref="GorgonRange{T}"/> of texel coordinates to pixel space.
     /// </summary>
     /// <param name="texelCoordinates">The texel coordinates to convert.</param>
     /// <param name="mipLevel">[Optional] The mip level to use.</param>
-    /// <returns>A <see cref="GorgonRange"/> containing the pixel space coordinates.</returns>
+    /// <returns>A <see cref="GorgonRange{T}"/> containing the pixel space coordinates.</returns>
     /// <remarks>
     /// <para>
     /// If specified, the <paramref name="mipLevel"/> only applies to the <see cref="MipSlice"/> and <see cref="MipCount"/> for this view, it will be constrained if it falls outside of that range.
@@ -256,26 +248,26 @@ public sealed class GorgonTexture1DView
     /// for the underlying <see cref="Texture"/> is used.
     /// </para>
     /// </remarks>
-    public GorgonRange ToPixel(GorgonRangeF texelCoordinates, int? mipLevel = null)
+    public GorgonRange<int> ToPixel(GorgonRange<float> texelCoordinates, int? mipLevel = null)
     {
         float width = Texture.Width;
 
         if (mipLevel is null)
         {
-            return new GorgonRange((int)(texelCoordinates.Minimum * width), (int)(texelCoordinates.Maximum * width));
+            return new GorgonRange<int>((int)(texelCoordinates.Minimum * width), (int)(texelCoordinates.Maximum * width));
         }
 
         width = GetMipWidth(mipLevel.Value);
 
-        return new GorgonRange((int)(texelCoordinates.Minimum * width), (int)(texelCoordinates.Maximum * width));
+        return new GorgonRange<int>((int)(texelCoordinates.Minimum * width), (int)(texelCoordinates.Maximum * width));
     }
 
     /// <summary>
-    /// Function to convert a <see cref="GorgonRange"/> of pixel coordinates to texel space.
+    /// Function to convert a <see cref="GorgonRange{T}"/> of pixel coordinates to texel space.
     /// </summary>
     /// <param name="pixelCoordinates">The pixel coordinates to convert.</param>
     /// <param name="mipLevel">[Optional] The mip level to use.</param>
-    /// <returns>A <see cref="GorgonRangeF"/> containing the texel space coordinates.</returns>
+    /// <returns>A <see cref="GorgonRange{T}"/> containing the texel space coordinates.</returns>
     /// <remarks>
     /// <para>
     /// If specified, the <paramref name="mipLevel"/> only applies to the <see cref="MipSlice"/> and <see cref="MipCount"/> for this view, it will be constrained if it falls outside of that range.
@@ -283,18 +275,18 @@ public sealed class GorgonTexture1DView
     /// for the underlying <see cref="Texture"/> is used.
     /// </para>
     /// </remarks>
-    public GorgonRangeF ToTexel(GorgonRange pixelCoordinates, int? mipLevel = null)
+    public GorgonRange<float> ToTexel(GorgonRange<int> pixelCoordinates, int? mipLevel = null)
     {
         float width = Texture.Width;
 
         if (mipLevel is null)
         {
-            return new GorgonRangeF(pixelCoordinates.Minimum / width, pixelCoordinates.Maximum / width);
+            return new GorgonRange<float>(pixelCoordinates.Minimum / width, pixelCoordinates.Maximum / width);
         }
 
         width = GetMipWidth(mipLevel.Value);
 
-        return new GorgonRangeF(pixelCoordinates.Minimum / width, pixelCoordinates.Maximum / width);
+        return new GorgonRange<float>(pixelCoordinates.Minimum / width, pixelCoordinates.Maximum / width);
     }
 
     /// <summary>
@@ -384,7 +376,7 @@ public sealed class GorgonTexture1DView
             throw new ArgumentNullException(nameof(info));
         }
 
-        var newInfo = new GorgonTexture1DInfo(info)
+        GorgonTexture1DInfo newInfo = new(info)
         {
             Usage = info.Usage == ResourceUsage.Staging ? ResourceUsage.Default : info.Usage,
             Binding = ((info.Binding & TextureBinding.ShaderResource) != TextureBinding.ShaderResource
@@ -404,7 +396,7 @@ public sealed class GorgonTexture1DView
             if (initialData.Width > info.Width)
             {
                 initialData = initialData.BeginUpdate()
-                                         .Crop(new DX.Rectangle(0, 0, info.Width, 1), 1)
+                                         .Crop(new GorgonRectangle(0, 0, info.Width, 1), 1)
                                          .EndUpdate();
             }
         }
@@ -579,9 +571,7 @@ public sealed class GorgonTexture1DView
         view.OwnsResource = true;
         return view;
     }
-    #endregion
 
-    #region Constructor/Destructor.
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonTexture1DView" /> class.
     /// </summary>
@@ -605,11 +595,10 @@ public sealed class GorgonTexture1DView
         FormatInformation = formatInfo ?? throw new ArgumentNullException(nameof(formatInfo));
         Format = format;
         Texture = texture;
-        Bounds = new GorgonRange(0, Width);
+        Bounds = new GorgonRange<int>(0, Width);
         MipSlice = firstMipLevel;
         MipCount = mipCount;
         ArrayIndex = arrayIndex;
         ArrayCount = arrayCount;
     }
-    #endregion
 }

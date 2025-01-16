@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,26 +11,19 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 19, 2018 10:22:18 AM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Numerics;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using Gorgon.Animation;
 using Gorgon.Core;
 using Gorgon.Graphics;
@@ -39,16 +32,15 @@ using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Math;
 using Gorgon.Renderers;
 using Gorgon.UI;
-using DX = SharpDX;
 
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Our example entry point.
+/// Our example entry point
 /// </summary>
 static class Program
 {
-    #region Variables.
+
     // The primary graphics interface.
     private static GorgonGraphics _graphics;
     // Our swap chain representing our screen.
@@ -77,21 +69,19 @@ static class Program
     private static readonly AudioPlayback _mp3Player = new();
     // The task used while playing audio.
     private static Task _audioTask;
-    #endregion
 
-    #region Methods.
     // ReSharper disable once InconsistentNaming
     /// <summary>
     /// Function to build our animation... like an 80's music video... this is going to be ugly.
     /// </summary>
     private static void MakeAn80sMusicVideo()
     {
-        var animBuilder = new GorgonAnimationBuilder();
+        GorgonAnimationBuilder animBuilder = new();
 
         // When building animations, you can create your own animation tracks to handle which properties on the 
         // sprite get updated. These often correspond to property names, so passing "Position" as the name will 
         // update the Position property on the sprite.
-        
+
         // Set up some scaling...            
         animBuilder.EditVector2("Scale")
                    .SetInterpolationMode(TrackInterpolationMode.Spline)
@@ -116,12 +106,12 @@ static class Program
                    // Set up some colors...By changing the alpha, we can simulate a motion blur effect.
                    .EditColor("Color")
                    .SetInterpolationMode(TrackInterpolationMode.Spline)
-                   .SetKey(new GorgonKeyGorgonColor(0, GorgonColor.Black))
-                   .SetKey(new GorgonKeyGorgonColor(2, new GorgonColor(GorgonColor.RedPure, 0.25f)))
-                   .SetKey(new GorgonKeyGorgonColor(4, new GorgonColor(GorgonColor.GreenPure, 0.5f)))
-                   .SetKey(new GorgonKeyGorgonColor(6, new GorgonColor(GorgonColor.BluePure, 0.25f)))
-                   .SetKey(new GorgonKeyGorgonColor(8, new GorgonColor(GorgonColor.LightCyan, 0.25f)))
-                   .SetKey(new GorgonKeyGorgonColor(10, new GorgonColor(GorgonColor.Black, 1.0f)))
+                   .SetKey(new GorgonKeyGorgonColor(0, GorgonColors.Black))
+                   .SetKey(new GorgonKeyGorgonColor(2, new GorgonColor(GorgonColors.Red, 0.25f)))
+                   .SetKey(new GorgonKeyGorgonColor(4, new GorgonColor(GorgonColors.Green, 0.5f)))
+                   .SetKey(new GorgonKeyGorgonColor(6, new GorgonColor(GorgonColors.Blue, 0.25f)))
+                   .SetKey(new GorgonKeyGorgonColor(8, new GorgonColor(GorgonColors.LightCyan, 0.25f)))
+                   .SetKey(new GorgonKeyGorgonColor(10, new GorgonColor(GorgonColors.Black, 1.0f)))
                    .EndEdit()
                    // And finally, some MuchMusic/MTV style rotation... because.
                    .EditSingle("Angle")
@@ -138,42 +128,42 @@ static class Program
         // Now, add the animation frames from our GIF.
         for (int i = 0; i < _metal.ArrayCount; ++i)
         {
-            trackBuilder.SetKey(new GorgonKeyTexture2D(time, _metal, new DX.RectangleF(0, 0, 1, 1), i));
+            trackBuilder.SetKey(new GorgonKeyTexture2D(time, _metal, new GorgonRectangleF(0, 0, 1, 1), i));
             time += _frameDelays[i];
         }
 
         float delay = (10.0f - time).Max(0) / 15.0f;
 
         // Now add in a texture switch with coordinate update... because.
-        trackBuilder.SetKey(new GorgonKeyTexture2D(time, _trooper, new DX.RectangleF(0.25f, 0.25f, 0.5f, 0.5f), 0));
+        trackBuilder.SetKey(new GorgonKeyTexture2D(time, _trooper, new GorgonRectangleF(0.25f, 0.25f, 0.5f, 0.5f), 0));
         time += delay;
-        trackBuilder.SetKey(new GorgonKeyTexture2D(time, _trooper, new DX.RectangleF(0.125f, 0.125f, 0.75f, 0.75f), 0));
+        trackBuilder.SetKey(new GorgonKeyTexture2D(time, _trooper, new GorgonRectangleF(0.125f, 0.125f, 0.75f, 0.75f), 0));
         time += delay;
-        trackBuilder.SetKey(new GorgonKeyTexture2D(time, _trooper, new DX.RectangleF(0, 0, 1, 1), 0));
+        trackBuilder.SetKey(new GorgonKeyTexture2D(time, _trooper, new GorgonRectangleF(0, 0, 1, 1), 0));
         time += delay;
-        trackBuilder.SetKey(new GorgonKeyTexture2D(time, _trooper, new DX.RectangleF(0.125f, 0.125f, 0.75f, 0.75f), 0));
+        trackBuilder.SetKey(new GorgonKeyTexture2D(time, _trooper, new GorgonRectangleF(0.125f, 0.125f, 0.75f, 0.75f), 0));
         time += delay;
-        trackBuilder.SetKey(new GorgonKeyTexture2D(time, _trooper, new DX.RectangleF(0.25f, 0.25f, 0.5f, 0.5f), 0));
+        trackBuilder.SetKey(new GorgonKeyTexture2D(time, _trooper, new GorgonRectangleF(0.25f, 0.25f, 0.5f, 0.5f), 0));
         time += delay;
-        trackBuilder.SetKey(new GorgonKeyTexture2D(time, _trooper, new DX.RectangleF(0.125f, 0.125f, 0.75f, 0.75f), 0));
+        trackBuilder.SetKey(new GorgonKeyTexture2D(time, _trooper, new GorgonRectangleF(0.125f, 0.125f, 0.75f, 0.75f), 0));
         time += delay;
-        trackBuilder.SetKey(new GorgonKeyTexture2D(time, _trooper, new DX.RectangleF(0, 0, 1, 1), 0));
+        trackBuilder.SetKey(new GorgonKeyTexture2D(time, _trooper, new GorgonRectangleF(0, 0, 1, 1), 0));
         time += delay;
-        trackBuilder.SetKey(new GorgonKeyTexture2D(time, _trooper, new DX.RectangleF(0.125f, 0.125f, 0.75f, 0.75f), 0));
+        trackBuilder.SetKey(new GorgonKeyTexture2D(time, _trooper, new GorgonRectangleF(0.125f, 0.125f, 0.75f, 0.75f), 0));
         time += delay;
-        trackBuilder.SetKey(new GorgonKeyTexture2D(time, _trooper, new DX.RectangleF(0.25f, 0.25f, 0.5f, 0.5f), 0));
+        trackBuilder.SetKey(new GorgonKeyTexture2D(time, _trooper, new GorgonRectangleF(0.25f, 0.25f, 0.5f, 0.5f), 0));
         time += delay;
-        trackBuilder.SetKey(new GorgonKeyTexture2D(time, _trooper, new DX.RectangleF(0.125f, 0.125f, 0.75f, 0.75f), 0));
+        trackBuilder.SetKey(new GorgonKeyTexture2D(time, _trooper, new GorgonRectangleF(0.125f, 0.125f, 0.75f, 0.75f), 0));
         time += delay;
-        trackBuilder.SetKey(new GorgonKeyTexture2D(time, _trooper, new DX.RectangleF(0, 0, 1, 1), 0));
+        trackBuilder.SetKey(new GorgonKeyTexture2D(time, _trooper, new GorgonRectangleF(0, 0, 1, 1), 0));
         time += delay;
-        trackBuilder.SetKey(new GorgonKeyTexture2D(time, _trooper, new DX.RectangleF(0.125f, 0.125f, 0.75f, 0.75f), 0));
+        trackBuilder.SetKey(new GorgonKeyTexture2D(time, _trooper, new GorgonRectangleF(0.125f, 0.125f, 0.75f, 0.75f), 0));
         time += delay;
-        trackBuilder.SetKey(new GorgonKeyTexture2D(time, _trooper, new DX.RectangleF(0.25f, 0.25f, 0.5f, 0.5f), 0));
+        trackBuilder.SetKey(new GorgonKeyTexture2D(time, _trooper, new GorgonRectangleF(0.25f, 0.25f, 0.5f, 0.5f), 0));
         time += delay;
-        trackBuilder.SetKey(new GorgonKeyTexture2D(time, _trooper, new DX.RectangleF(0.125f, 0.125f, 0.75f, 0.75f), 0));
+        trackBuilder.SetKey(new GorgonKeyTexture2D(time, _trooper, new GorgonRectangleF(0.125f, 0.125f, 0.75f, 0.75f), 0));
         time += delay;
-        trackBuilder.SetKey(new GorgonKeyTexture2D(time, _trooper, new DX.RectangleF(0, 0, 1, 1), 0));
+        trackBuilder.SetKey(new GorgonKeyTexture2D(time, _trooper, new GorgonRectangleF(0, 0, 1, 1), 0));
 
         trackBuilder.EndEdit();
 
@@ -190,7 +180,7 @@ static class Program
     private static FormMain Initialize()
     {
         GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
-        FormMain window = GorgonExample.Initialize(new DX.Size2(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height), "Animation");
+        FormMain window = GorgonExample.Initialize(new GorgonPoint(ExampleConfig.Default.Resolution.X, ExampleConfig.Default.Resolution.Y), "Animation");
 
         try
         {
@@ -207,8 +197,8 @@ static class Program
 
             _screen = new GorgonSwapChain(_graphics,
                                           window,
-                                          new GorgonSwapChainInfo(ExampleConfig.Default.Resolution.Width,
-                                                                       ExampleConfig.Default.Resolution.Height,
+                                          new GorgonSwapChainInfo(ExampleConfig.Default.Resolution.X,
+                                                                       ExampleConfig.Default.Resolution.Y,
                                                                        BufferFormat.R8G8B8A8_UNorm)
                                           {
                                               Name = "Gorgon2D Animation Example Swap Chain"
@@ -220,10 +210,10 @@ static class Program
                 Binding = TextureBinding.ShaderResource
             });
             _targetView = _target.GetShaderResourceView();
-            _target.Clear(GorgonColor.CornFlowerBlue);
+            _target.Clear(GorgonColors.CornFlowerBlue);
 
             // Load our textures.
-            var gif = new GorgonCodecGif(decodingOptions: new GorgonGifDecodingOptions
+            GorgonCodecGif gif = new(decodingOptions: new GorgonGifDecodingOptions
             {
                 ReadAllFrames = true
             });
@@ -258,15 +248,15 @@ static class Program
             _animatedSprite = new GorgonSprite
             {
                 Position = new Vector2(_screen.Width / 2, _screen.Height / 2),
-                Size = new DX.Size2F(_metal.Width, _metal.Height),
+                Size = new Vector2(_metal.Width, _metal.Height),
                 Anchor = new Vector2(0.5f, 0.5f)
             };
 
             MakeAn80sMusicVideo();
 
             // We need to set up a blend state so that the alpha in the render target doesn't get overwritten.
-            var builder = new Gorgon2DBatchStateBuilder();
-            var blendBuilder = new GorgonBlendStateBuilder();
+            Gorgon2DBatchStateBuilder builder = new();
+            GorgonBlendStateBuilder blendBuilder = new();
             _targetBatchState = builder.BlendState(blendBuilder
                                                    .ResetTo(GorgonBlendState.Default)
                                                    .DestinationBlend(alpha: Blend.DestinationAlpha)
@@ -301,7 +291,7 @@ static class Program
     private static bool Idle()
     {
         // Set the initial background color, we won't be clearing again...
-        _screen.RenderTargetView.Clear(GorgonColor.CornFlowerBlue);
+        _screen.RenderTargetView.Clear(GorgonColors.CornFlowerBlue);
 
         if (!_mp3Player.IsPlaying)
         {
@@ -320,10 +310,10 @@ static class Program
 
         _graphics.SetRenderTarget(_screen.RenderTargetView);
         _renderer.Begin();
-        _renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _screen.Width, _screen.Height),
-                                      GorgonColor.White,
+        _renderer.DrawFilledRectangle(new GorgonRectangleF(0, 0, _screen.Width, _screen.Height),
+                                      GorgonColors.White,
                                       _targetView,
-                                      new DX.RectangleF(0, 0, 1, 1));
+                                      new GorgonRectangleF(0, 0, 1, 1));
         _renderer.End();
 
         GorgonExample.DrawStatsAndLogo(_renderer);
@@ -335,7 +325,6 @@ static class Program
 
         return true;
     }
-    #endregion
 
     /// <summary>
     /// The main entry point for the application.
@@ -345,9 +334,7 @@ static class Program
     {
         try
         {
-#if NET6_0_OR_GREATER
             Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
-#endif
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 

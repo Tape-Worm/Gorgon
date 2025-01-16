@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2012 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,20 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Sunday, December 30, 2012 10:25:22 AM
 // 
-#endregion
 
-using System.Drawing;
 using System.Numerics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
@@ -33,17 +31,15 @@ using Gorgon.Renderers.Geometry;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// A sphere object.
+/// A sphere object
 /// </summary>
 internal class Sphere
     : MoveableMesh
 {
-    #region Variables.
+
     // Initial orientation.
     private Matrix4x4 _orientation;
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to return the radius of the sphere.
     /// </summary>
@@ -52,9 +48,7 @@ internal class Sphere
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to create the vertex data for the sphere.
     /// </summary>
@@ -83,14 +77,14 @@ internal class Sphere
 
             for (int segment = 0; segment <= segmentCount; segment++)
             {
-                var textureDelta = new Vector2(1.0f - (segment / (float)segmentCount), ring / (float)ringCount);
+                Vector2 textureDelta = new(1.0f - (segment / (float)segmentCount), ring / (float)ringCount);
                 float segmentAngle = deltaSegAngle * segment;
 
-                var position = new Vector3(radius * segmentAngle.Sin(), radiusY, radius * segmentAngle.Cos());
+                Vector3 position = new(radius * segmentAngle.Sin(), radiusY, radius * segmentAngle.Cos());
 
-                var normal = Vector3.Multiply(position, 2.0f);
+                Vector3 normal = Vector3.Multiply(position, 2.0f);
                 position = Vector3.Transform(position, _orientation);
-                normal = Vector3.Normalize(Vector3.Transform(normal, _orientation));                    
+                normal = Vector3.Normalize(Vector3.Transform(normal, _orientation));
 
                 // Create the vertex.
                 textureDelta.X *= textureCoordinates.Width;
@@ -122,9 +116,7 @@ internal class Sphere
             }
         }
     }
-    #endregion
 
-    #region Constructor/Destructor.
     /// <summary>
     /// Initializes a new instance of the <see cref="Sphere" /> class.
     /// </summary>
@@ -144,10 +136,10 @@ internal class Sphere
         IndexCount = 6 * ringCount * (segmentCount + 1);
         TriangleCount = IndexCount / 3;
 
-        var orientation = Quaternion.CreateFromYawPitchRoll(angle.Y.ToRadians(), angle.X.ToRadians(), angle.Z.ToRadians());
+        Quaternion orientation = Quaternion.CreateFromYawPitchRoll(angle.Y.ToRadians(), angle.X.ToRadians(), angle.Z.ToRadians());
         _orientation = Matrix4x4.CreateFromQuaternion(orientation);
 
-        var vertexData = new GorgonVertexPosNormUvTangent[VertexCount];
+        GorgonVertexPosNormUvTangent[] vertexData = new GorgonVertexPosNormUvTangent[VertexCount];
         int[] indexData = new int[IndexCount];
 
         GetVertices(vertexData,
@@ -175,5 +167,4 @@ internal class Sphere
 
         UpdateAabb(vertexData);
     }
-    #endregion
 }

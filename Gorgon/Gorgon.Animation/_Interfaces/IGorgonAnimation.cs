@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,43 +11,41 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 16, 2018 2:23:22 PM
 // 
-#endregion
 
-using System.Collections.Generic;
+using System.Text.Json.Serialization;
 using Gorgon.Core;
 using Gorgon.Graphics;
-using Newtonsoft.Json;
 
 namespace Gorgon.Animation;
 
 /// <summary>
-/// The interface that defines an animation.
+/// The interface that defines an animation
 /// </summary>
 /// <remarks>
 /// <para>
 /// An animation is composed of multiple <see cref="IGorgonAnimationTrack{T}">tracks</see> that represent various properties on an object that can be changed over time. Each track is itself composed of multiple
-/// markers in time called <see cref="IGorgonKeyFrame">key frames</see>. These markers indicate what the value of a property should be at a given time.
+/// markers in time called <see cref="IGorgonKeyFrame">key frames</see>. These markers indicate what the value of a property should be at a given time
 /// </para>
 /// <para>
 /// To create an animation, a <see cref="GorgonAnimationBuilder"/> is used to build up the key frames for each track that is to be animated. Because of this, the animation tracks and key frames are
-/// immutable.
+/// immutable
 /// </para>
 /// <para>
-/// The available tracks on an animation are for common usage scenarios such as moving, scaling, rotating, etc... Please note that some animation controllers will not make use of some track types.
+/// The available tracks on an animation are for common usage scenarios such as moving, scaling, rotating, etc... Please note that some animation controllers will not make use of some track types
 /// </para>
 /// <para>
-/// In order to play an animation, a <see cref="GorgonAnimationController{T}"/> must be used.
+/// In order to play an animation, a <see cref="GorgonAnimationController{T}"/> must be used
 /// </para>
 /// </remarks>
 /// <seealso cref="IGorgonAnimationTrack{T}"/>
@@ -56,7 +54,6 @@ namespace Gorgon.Animation;
 public interface IGorgonAnimation
     : IGorgonNamedObject
 {
-    #region Properties.
     /// <summary>
     /// Property to set or return the number of times to loop an animation.
     /// </summary>
@@ -97,7 +94,7 @@ public interface IGorgonAnimation
     /// <summary>
     /// Property to return the frames per second for this animation.
     /// </summary>
-    [JsonProperty("FPS")]
+    [JsonPropertyName("FPS")]
     float Fps
     {
         get;
@@ -106,7 +103,7 @@ public interface IGorgonAnimation
     /// <summary>
     /// Property to return the tracks used to update any values using a single floating point value.
     /// </summary>
-    [JsonProperty("singletracks")]
+    [JsonPropertyName("singletracks")]
     IReadOnlyDictionary<string, IGorgonAnimationTrack<GorgonKeySingle>> SingleTracks
     {
         get;
@@ -115,7 +112,7 @@ public interface IGorgonAnimation
     /// <summary>
     /// Property to return the tracks used to update any values using a 2D vector.
     /// </summary>
-    [JsonProperty("vector2tracks")]
+    [JsonPropertyName("vector2tracks")]
     IReadOnlyDictionary<string, IGorgonAnimationTrack<GorgonKeyVector2>> Vector2Tracks
     {
         get;
@@ -124,7 +121,7 @@ public interface IGorgonAnimation
     /// <summary>
     /// Property to return the track used to update any values using a 3D vector.
     /// </summary>
-    [JsonProperty("vector3tracks")]
+    [JsonPropertyName("vector3tracks")]
     IReadOnlyDictionary<string, IGorgonAnimationTrack<GorgonKeyVector3>> Vector3Tracks
     {
         get;
@@ -133,7 +130,7 @@ public interface IGorgonAnimation
     /// <summary>
     /// Property to return the track used to update any values using a 4D vector.
     /// </summary>
-    [JsonProperty("vector4tracks")]
+    [JsonPropertyName("vector4tracks")]
     IReadOnlyDictionary<string, IGorgonAnimationTrack<GorgonKeyVector4>> Vector4Tracks
     {
         get;
@@ -142,7 +139,7 @@ public interface IGorgonAnimation
     /// <summary>
     /// Property to return the track used to update any values using a Quaternion.
     /// </summary>
-    [JsonProperty("quaterniontracks")]
+    [JsonPropertyName("quaterniontracks")]
     IReadOnlyDictionary<string, IGorgonAnimationTrack<GorgonKeyQuaternion>> QuaternionTracks
     {
         get;
@@ -151,7 +148,7 @@ public interface IGorgonAnimation
     /// <summary>
     /// Property to return the track used to update any values using a <see cref="GorgonColor"/>.
     /// </summary>
-    [JsonProperty("colortracks")]
+    [JsonPropertyName("colortracks")]
     IReadOnlyDictionary<string, IGorgonAnimationTrack<GorgonKeyGorgonColor>> ColorTracks
     {
         get;
@@ -160,7 +157,7 @@ public interface IGorgonAnimation
     /// <summary>
     /// Property to return the track used to update any values using a SharpDX <c>RectangleF</c>.
     /// </summary>
-    [JsonProperty("recttracks")]
+    [JsonPropertyName("recttracks")]
     IReadOnlyDictionary<string, IGorgonAnimationTrack<GorgonKeyRectangle>> RectangleTracks
     {
         get;
@@ -169,18 +166,16 @@ public interface IGorgonAnimation
     /// <summary>
     /// Property to return the tracks used for updating a 2D texture on an object.
     /// </summary>
-    [JsonProperty("textures")]
+    [JsonPropertyName("textures")]
     IReadOnlyDictionary<string, IGorgonAnimationTrack<GorgonKeyTexture2D>> Texture2DTracks
     {
         get;
     }
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to retrieve the maximum number of key frames across all tracks.
     /// </summary>
     /// <returns>The maximum number of key frames across all tracks.</returns>
     int GetMaxKeyFrameCount();
-    #endregion
+
 }

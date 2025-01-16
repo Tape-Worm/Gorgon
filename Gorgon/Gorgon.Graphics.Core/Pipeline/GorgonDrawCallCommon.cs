@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,39 +11,37 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 23, 2018 12:18:45 PM
 // 
-#endregion
 
 using Gorgon.Collections;
 
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Common values for a draw call.
+/// Common values for a draw call
 /// </summary>
 /// <remarks>
 /// <para>
 /// A draw call is an immutable object that contains all of the state required to render mesh information. For each mesh an application needs to render, an single draw call should be issued via the
-/// <see cref="GorgonGraphics.Submit(GorgonDrawCall, in GorgonColor?, int, int)"/> method.  
+/// <see cref="GorgonGraphics.Submit(GorgonDrawCall, GorgonColor?, int, int)"/> method.  
 /// </para>
 /// <para>
-/// State management is handled internally by Gorgon so that duplicate states are not set and thus, performance is not impacted by redundant states.
+/// State management is handled internally by Gorgon so that duplicate states are not set and thus, performance is not impacted by redundant states
 /// </para>
 /// </remarks>
 /// <seealso cref="GorgonGraphics"/>
 public abstract class GorgonDrawCallCommon
 {
-    #region Properties.
     /// <summary>
     /// Property to return the internal D3D state.
     /// </summary>
@@ -119,9 +117,7 @@ public abstract class GorgonDrawCallCommon
     /// Property to return the list of unordered access views for the shader.
     /// </summary>
     public IGorgonReadOnlyArray<GorgonReadWriteViewBinding> ReadWriteViews => D3DState.ReadWriteViews;
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to set up shader resource views for each shader.
     /// </summary>
@@ -162,9 +158,7 @@ public abstract class GorgonDrawCallCommon
         DomainShader.ConstantBuffers = D3DState.DsConstantBuffers = new GorgonConstantBuffers();
         D3DState.CsConstantBuffers = new GorgonConstantBuffers();
     }
-    #endregion
 
-    #region Constructor.
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonDrawCallCommon"/> class.
     /// </summary>
@@ -176,5 +170,4 @@ public abstract class GorgonDrawCallCommon
         DomainShader = new GorgonShaderResources();
         HullShader = new GorgonShaderResources();
     }
-    #endregion
 }

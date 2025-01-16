@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,38 +11,33 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: January 4, 2019 12:19:03 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Text;
 using Gorgon.Core;
 using Gorgon.Editor.Properties;
 
 namespace Gorgon.Editor;
 
 /// <summary>
-/// A base class used to monitor properties for changes.
+/// A base class used to monitor properties for changes
 /// </summary>
 public abstract class PropertyMonitor
     : INotifyPropertyChanging, INotifyPropertyChanged
 {
-    #region Events.
     /// <summary>
     /// Event triggered when a property is changed.
     /// </summary>
@@ -52,14 +47,10 @@ public abstract class PropertyMonitor
     /// Event triggered before a property is changed.
     /// </summary>
     public event PropertyChangingEventHandler PropertyChanging;
-    #endregion
 
-    #region Variables.
     // The list of properties to use.
     private HashSet<string> _properties;
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to set or return whether to use property name validation when evaluating property changes.
     /// </summary>
@@ -77,13 +68,10 @@ public abstract class PropertyMonitor
 #else
     }
 #endif
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to retrieve all property names.
-    /// </summary>
-    [DebuggerStepThrough]
+    /// </summary>    
     private void GetProperties()
     {
         if (_properties is not null)
@@ -107,21 +95,17 @@ public abstract class PropertyMonitor
         // Get any explicitly implemented properties from interfaces.
         props = GetType().GetProperties(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
 
-        var name = new StringBuilder(128);
-
         foreach (PropertyInfo prop in props)
         {
             // We only care about the member name, not which interface owns it, so strip off the declaring part.
-            name.Length = 0;
-            name.Append(prop.Name);
-            int lastIndex = name.LastIndexOf('.');
+            string finalName = prop.Name;
 
-            if ((lastIndex != -1) && (lastIndex < name.Length - 1))
+            int lastIndex = finalName.LastIndexOf('.');
+
+            if ((lastIndex != -1) && (lastIndex < finalName.Length - 1))
             {
-                name.Remove(0, lastIndex + 1);
+                finalName = prop.Name[(lastIndex + 1)..];
             }
-
-            string finalName = name.ToString();
 
             if (!_properties.Contains(finalName))
             {
@@ -135,8 +119,7 @@ public abstract class PropertyMonitor
     /// <summary>
     /// Function to validate whether the specified property exists on this object.
     /// </summary>
-    /// <param name="propertyName">Name of the property to look up.</param>
-    [DebuggerStepThrough]
+    /// <param name="propertyName">Name of the property to look up.</param>    
     private void ValidatePropertyName(string propertyName)
     {
         GetProperties();
@@ -239,7 +222,7 @@ public abstract class PropertyMonitor
     /// </para>
     /// </note>
     /// </para>
-    /// </remarks>
+    /// </remarks>    
     [DebuggerStepThrough]
     public void NotifyPropertyChanging(string propertyName)
     {
@@ -290,5 +273,4 @@ public abstract class PropertyMonitor
             handler?.Invoke(this, new PropertyChangedEventArgs(propName));
         }
     }
-    #endregion
 }

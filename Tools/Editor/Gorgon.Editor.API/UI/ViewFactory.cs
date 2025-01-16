@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,57 +11,50 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: November 11, 2018 12:43:46 AM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Windows.Forms;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Properties;
 
 namespace Gorgon.Editor.UI;
 
 /// <summary>
-/// A factory used to create views based on view model types.
+/// A factory used to create views based on view model types
 /// </summary>
 /// <remarks>
 /// <para>
-/// When developing a plug in with a UI, developers have to register their views and view models with the system so that the host application can build up the UI and assign it to the data context. 
+/// When developing a plug-in with a UI, developers have to register their views and view models with the system so that the host application can build up the UI and assign it to the data context. 
 /// </para>
 /// </remarks>
 public static class ViewFactory
 {
-    #region Variables.
+
     // A list of view builders used to create views.
     private static readonly Dictionary<string, Func<Control>> _viewBuilders = new(StringComparer.OrdinalIgnoreCase);
-    #endregion
 
-    #region Methods.
     /// <summary>Function to register the specified view model with a view builder.</summary>
     /// <typeparam name="T">The type of view model. Must implement <see cref="IViewModel"/>.</typeparam>
     /// <param name="constructor">The function that will create and return the view.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="constructor"/> parameter is <b>null</b>.</exception>
     /// <remarks>
     /// <para>
-    /// Content plug in developers must call this so that the UI will be created by the host application. Developers will pass in a function to the <paramref name="constructor"/> that will be used to 
+    /// Content plug-in developers must call this so that the UI will be created by the host application. Developers will pass in a function to the <paramref name="constructor"/> that will be used to 
     /// create the view object (must inherit from <see cref="Control"/>). Typically, this is just a call to <c>new</c> on the object type, although other initialization steps may be passed into the 
     /// callback function.
     /// </para>
     /// <para>
-    /// For best results, this should be called as early in the plug in initialization cycle as possible, typically in the <see cref="ContentPlugIn.OnInitialize"/> method (if the plug in has such a 
+    /// For best results, this should be called as early in the plug-in initialization cycle as possible, typically in the <see cref="ContentPlugIn.OnInitialize"/> method (if the plug-in has such a 
     /// method).
     /// </para>
     /// </remarks>
@@ -74,7 +67,7 @@ public static class ViewFactory
     /// <typeparam name="T">The type of view model. Must implement <see cref="IViewModel"/>.</typeparam>
     /// <remarks>
     /// <para>
-    /// When the plug in is shut down (typically when the plug in UI is closed), this method should be called to remove the registration. This is typically done in the 
+    /// When the plug-in is shut down (typically when the plug-in UI is closed), this method should be called to remove the registration. This is typically done in the 
     /// <see cref="ContentPlugIn.OnShutdown"/> method.
     /// </para>
     /// </remarks>
@@ -91,7 +84,7 @@ public static class ViewFactory
     /// <remarks>
     /// <para>
     /// This will assign a <paramref name="viewModel"/> to the given <paramref name="control"/> (if the control implements <see cref="IDataContext{T}"/>). Users should not need to call this method as 
-    /// it will be done by the editor during plug in UI initialization.
+    /// it will be done by the editor during plug-in UI initialization.
     /// </para>
     /// </remarks>
     public static void AssignViewModel(IViewModel viewModel, Control control)
@@ -111,7 +104,7 @@ public static class ViewFactory
         }
 
         MethodInfo method = controlInterface.GetMethod("SetDataContext");
-        method?.Invoke(control, new[] { viewModel });
+        method?.Invoke(control, [viewModel]);
     }
 
     /// <summary>
@@ -176,7 +169,7 @@ public static class ViewFactory
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="viewModel"/> parameter is <b>null</b>.</exception>
     /// <remarks>
     /// <para>
-    /// This method creates a view registered to a <paramref name="viewModel"/>. Users should never need to call this method, the editor will build the view on behalf of the plug in.
+    /// This method creates a view registered to a <paramref name="viewModel"/>. Users should never need to call this method, the editor will build the view on behalf of the plug-in.
     /// </para>
     /// </remarks>
     public static T CreateView<T>(IViewModel viewModel)
@@ -203,5 +196,4 @@ public static class ViewFactory
             ? throw new KeyNotFoundException(string.Format(Resources.GOREDIT_ERR_CANNOT_FIND_VIEW_FACTORY, typeName))
             : (T)_viewBuilders[interfaceType.AssemblyQualifiedName]();
     }
-    #endregion
 }

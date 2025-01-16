@@ -20,8 +20,6 @@ partial class FormMain
         base.Dispose(disposing);
     }
 
-    #region Windows Form Designer generated code
-
     /// <summary>
     /// Required method for Designer support - do not modify
     /// the contents of this method with the code editor.
@@ -49,15 +47,12 @@ partial class FormMain
         this.BackColor = System.Drawing.Color.White;
         this.ClientSize = new System.Drawing.Size(1280, 800);
         this.Controls.Add(this.LabelPleaseWait);
-        this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
         this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
         this.Name = "FormMain";
         this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
         this.Text = "EXAMPLE TITLE GOES HERE";
         this.ResumeLayout(false);
     }
-
-    #endregion
 
     private System.Windows.Forms.Label LabelPleaseWait;
 }

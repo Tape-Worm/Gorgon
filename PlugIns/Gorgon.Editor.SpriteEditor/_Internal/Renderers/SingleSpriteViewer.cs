@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,20 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: April 2, 2019 5:24:26 PM
 // 
-#endregion
 
-using System.Linq;
 using System.Numerics;
 using Gorgon.Animation;
 using Gorgon.Editor.UI;
@@ -32,24 +30,21 @@ using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Renderers;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor;
 
 /// <summary>
-/// A renderer for a single sprite (without background).
+/// A renderer for a single sprite (without background)
 /// </summary>
 internal class SingleSpriteViewer
     : SpriteViewer
 {
-    #region Variables.
+
     // The controller for animating the content.
     private readonly ImageAnimationController _animController = new();
     private IGorgonAnimation _opacityAnimation;
     private readonly GorgonAnimationBuilder _animationBuilder = new();
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to return whether the opactiy animation is playing.
     /// </summary>
@@ -58,7 +53,7 @@ internal class SingleSpriteViewer
     /// <summary>
     /// Property to return the boundaries of the sprite.
     /// </summary>
-    protected DX.RectangleF SpriteRegion
+    protected GorgonRectangleF SpriteRegion
     {
         get;
         set;
@@ -72,9 +67,7 @@ internal class SingleSpriteViewer
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to update the sprite colors.
     /// </summary>
@@ -138,15 +131,15 @@ internal class SingleSpriteViewer
     /// <remarks>Developers can override this method to render a custom background.</remarks>
     protected override void OnRenderBackground()
     {
-        var textureSize = new DX.RectangleF(0, 0, RenderRegion.Width / BackgroundPattern.Width * Camera.Zoom.X, RenderRegion.Height / BackgroundPattern.Height * Camera.Zoom.X);
+        GorgonRectangleF textureSize = new(0, 0, RenderRegion.Width / BackgroundPattern.Width * Camera.Zoom.X, RenderRegion.Height / BackgroundPattern.Height * Camera.Zoom.X);
 
         Renderer.Begin(camera: Camera);
-        Renderer.DrawFilledRectangle(new DX.RectangleF(RenderRegion.Width * -0.5f, RenderRegion.Height * -0.5f, RenderRegion.Width, RenderRegion.Height), new GorgonColor(GorgonColor.White, TextureOpacity), BackgroundPattern, textureSize);            
+        Renderer.DrawFilledRectangle(new GorgonRectangleF(RenderRegion.Width * -0.5f, RenderRegion.Height * -0.5f, RenderRegion.Width, RenderRegion.Height), new GorgonColor(GorgonColors.White, TextureOpacity), BackgroundPattern, textureSize);
         Renderer.End();
 
         Renderer.Begin();
-        textureSize = new DX.RectangleF(0, 0, ClientSize.Width / BackgroundPattern.Width, ClientSize.Height / BackgroundPattern.Height);
-        Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, ClientSize.Width, ClientSize.Height), new GorgonColor(GorgonColor.White, 1.0f - TextureOpacity), BackgroundPattern, textureSize);
+        textureSize = new GorgonRectangleF(0, 0, ClientSize.X / BackgroundPattern.Width, ClientSize.Y / BackgroundPattern.Height);
+        Renderer.DrawFilledRectangle(new GorgonRectangleF(0, 0, ClientSize.X, ClientSize.Y), new GorgonColor(GorgonColors.White, 1.0f - TextureOpacity), BackgroundPattern, textureSize);
         Renderer.End();
     }
 
@@ -155,17 +148,16 @@ internal class SingleSpriteViewer
     {
         base.DrawSprite();
 
-        var halfRegion = new Vector2(DataContext.Texture.Width * -0.5f, DataContext.Texture.Height * -0.5f);
-
+        Vector2 halfRegion = new(DataContext.Texture.Width * -0.5f, DataContext.Texture.Height * -0.5f);
 
         Renderer.Begin(camera: Camera);
-        Renderer.DrawFilledRectangle(new DX.RectangleF(halfRegion.X,
+        Renderer.DrawFilledRectangle(new GorgonRectangleF(halfRegion.X,
                                                        halfRegion.Y,
                                                        DataContext.Texture.Width,
                                                        DataContext.Texture.Height),
-                                    new GorgonColor(GorgonColor.White, TextureOpacity),
+                                    new GorgonColor(GorgonColors.White, TextureOpacity),
                                     Sprite.Texture,
-                                    new DX.RectangleF(0, 0, 1, 1),
+                                    new GorgonRectangleF(0, 0, 1, 1),
                                     textureSampler: GorgonSamplerState.PointFiltering);
 
         Renderer.DrawSprite(Sprite);
@@ -188,7 +180,7 @@ internal class SingleSpriteViewer
 
         base.OnLoad();
 
-        RenderRegion = new DX.RectangleF(0, 0, DataContext.Texture.Width, DataContext.Texture.Height);
+        RenderRegion = new GorgonRectangleF(0, 0, DataContext.Texture.Width, DataContext.Texture.Height);
 
         UpdateSprite();
     }
@@ -201,8 +193,8 @@ internal class SingleSpriteViewer
             return;
         }
 
-        DX.RectangleF zoomRect = SpriteRegion;
-        zoomRect.Inflate(zoomRect.Width * 0.25f, zoomRect.Height * 0.25f);
+        GorgonRectangleF zoomRect = SpriteRegion;
+        zoomRect = new GorgonRectangleF(zoomRect.TopLeft, new Vector2(zoomRect.Width * 0.25f, zoomRect.Height * 0.25f));
 
         ZoomLevels spriteZoomLevel = GetNearestZoomFromRectangle(zoomRect);
 
@@ -210,15 +202,13 @@ internal class SingleSpriteViewer
 
         ForceMoveTo(new Vector2(spritePosition.X, spritePosition.Y), spriteZoomLevel.GetScale(), true);
     }
-    #endregion
 
-    #region Constructor/Finalizer.
     /// <summary>Initializes a new instance of the <see cref="SingleSpriteViewer"/> class.</summary>
     /// <param name="name">The name of the renderer.</param>
     /// <param name="renderer">The 2D renderer for the application </param>
     /// <param name="swapChain">The swap chain for the render area.</param>
     /// <param name="dataContext">The graphics interface for the application.</param>
     protected SingleSpriteViewer(string name, Gorgon2D renderer, GorgonSwapChain swapChain, ISpriteContent dataContext)
-        : base(name, renderer, swapChain, dataContext) => Sprite = new GorgonSprite();            
-    #endregion
+        : base(name, renderer, swapChain, dataContext) => Sprite = new GorgonSprite();
+
 }

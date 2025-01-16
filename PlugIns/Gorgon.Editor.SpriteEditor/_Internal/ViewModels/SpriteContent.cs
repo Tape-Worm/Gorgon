@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,27 +11,20 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 2, 2019 2:09:04 AM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.IO;
-using System.Linq;
 using System.Numerics;
-using System.Threading;
-using System.Threading.Tasks;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.SpriteEditor.Properties;
@@ -42,17 +35,15 @@ using Gorgon.Graphics.Imaging;
 using Gorgon.IO;
 using Gorgon.Math;
 using Gorgon.Renderers;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.SpriteEditor;
 
 /// <summary>
-/// Content view model for a sprite.
+/// Content view model for a sprite
 /// </summary>
 internal class SpriteContent
     : ContentEditorViewModelBase<SpriteContentParameters>, ISpriteContent
 {
-    #region Classes.
     /// <summary>
     /// Arguments for an undo/redo operation.
     /// </summary>
@@ -61,7 +52,7 @@ internal class SpriteContent
         /// <summary>
         /// The sprite texture coordinates, in pixel space.
         /// </summary>
-        public DX.RectangleF TextureCoordinates;
+        public GorgonRectangleF TextureCoordinates;
         /// <summary>
         /// The path to the current texture file associated with the sprite.
         /// </summary>
@@ -87,17 +78,15 @@ internal class SpriteContent
         /// </summary>
         public GorgonSamplerState SamplerState;
     }
-    #endregion
 
-    #region Variables.
     // The default color for a sprite.
-    private static readonly GorgonColor[] _defaultColor = new GorgonColor[]
-    {
-        GorgonColor.White,
-        GorgonColor.White,
-        GorgonColor.White,
-        GorgonColor.White
-    };
+    private static readonly GorgonColor[] _defaultColor =
+    [
+        GorgonColors.White,
+        GorgonColors.White,
+        GorgonColors.White,
+        GorgonColors.White
+    ];
 
     // The sprite content services.
     private SpriteContentServices _contentServices;
@@ -111,9 +100,7 @@ internal class SpriteContent
     private IContentFile _originalTexture;
     // The currently active panel.
     private IHostedPanelViewModel _currentPanel;
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to return the sprite color editor.
     /// </summary>
@@ -144,7 +131,7 @@ internal class SpriteContent
     public override string ContentType => CommonEditorContentTypes.SpriteType;
 
     /// <summary>
-    /// Property to return the view model for the plug in settings.
+    /// Property to return the view model for the plug-in settings.
     /// </summary>
     public ISettings Settings
     {
@@ -164,12 +151,12 @@ internal class SpriteContent
     /// <summary>
     /// Property to set or return the texture coordinates used by the sprite.
     /// </summary>
-    public DX.RectangleF TextureCoordinates
+    public GorgonRectangleF TextureCoordinates
     {
         get => _sprite.TextureRegion;
         private set
         {
-            if (_sprite.TextureRegion.Equals(ref value))
+            if (_sprite.TextureRegion.Equals(value))
             {
                 return;
             }
@@ -185,7 +172,6 @@ internal class SpriteContent
             NotifyPropertyChanged(nameof(SpriteInfo));
         }
     }
-
 
     /// <summary>
     /// Property to return the index of the texture array that the sprite uses.
@@ -250,7 +236,7 @@ internal class SpriteContent
             OnPropertyChanging();
             for (int i = 0; i < _sprite.CornerColors.Count; ++i)
             {
-                _sprite.CornerColors[i] = i >= value.Count ? GorgonColor.White : value[i];
+                _sprite.CornerColors[i] = i >= value.Count ? GorgonColors.White : value[i];
             }
             OnPropertyChanged();
         }
@@ -308,7 +294,7 @@ internal class SpriteContent
     /// <summary>
     /// Property to set or return the size of the sprite.
     /// </summary>
-    public DX.Size2F Size
+    public Vector2 Size
     {
         get => _sprite.Size;
         private set
@@ -472,7 +458,7 @@ internal class SpriteContent
                 return string.Empty;
             }
 
-            DX.Rectangle rect = Texture.ToPixel(TextureCoordinates);
+            GorgonRectangle rect = Texture.ToPixel(TextureCoordinates);
             return string.Format(Resources.GORSPR_TEXT_SPRITE_INFO, rect.Left, rect.Top, rect.Right, rect.Bottom, rect.Width, rect.Height);
         }
     }
@@ -497,9 +483,7 @@ internal class SpriteContent
         get;
         private set;
     }
-    #endregion
 
-    #region Methods.
     /// <summary>Handles the PropertyChanged event of the ColorEditor control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
@@ -562,7 +546,7 @@ internal class SpriteContent
 
         IGorgonImageInfo metadata = _contentServices.TextureService.GetImageMetadata(file);
 
-        args.Cancel = metadata.ImageType is not ImageType.Image2D and not ImageType.ImageCube;
+        args.Cancel = metadata.ImageType is not ImageDataType.Image2D and not ImageDataType.ImageCube;
 
         return !args.Cancel;
     }
@@ -587,7 +571,7 @@ internal class SpriteContent
             return false;
         }
 
-        if (imageInfo.ImageType is ImageType.Image1D or ImageType.Image3D)
+        if (imageInfo.ImageType is ImageDataType.Image1D or ImageDataType.Image3D)
         {
             HostServices.MessageDisplay.ShowError(Resources.GORSPR_ERR_NOT_2D_IMAGE);
             return false;
@@ -622,8 +606,8 @@ internal class SpriteContent
         ArrayIndex = arrayIndex;
 
         // Adjust the texture coordinates so that they appear in the correct place on the texture.
-        TextureCoordinates = texture.ToTexel(new DX.Rectangle((int)(TextureCoordinates.X * texture.Width), (int)(TextureCoordinates.Y * texture.Height),
-                                                              (int)Size.Width, (int)Size.Height));
+        TextureCoordinates = texture.ToTexel(new GorgonRectangle((int)(TextureCoordinates.X * texture.Width), (int)(TextureCoordinates.Y * texture.Height),
+                                                              (int)Size.X, (int)Size.Y));
 
         return true;
     }
@@ -779,7 +763,7 @@ internal class SpriteContent
                 }
             }
 
-            (string newName, IContentFile textureFile, DX.Size2F size) = _contentServices.NewSpriteService.GetNewSpriteName(File, _textureFile, _sprite.Size);
+            (string newName, IContentFile textureFile, Vector2 size) = _contentServices.NewSpriteService.GetNewSpriteName(File, _textureFile, _sprite.Size);
 
             if (newName is null)
             {
@@ -834,7 +818,7 @@ internal class SpriteContent
             if (Size != size)
             {
                 Size = size;
-                TextureCoordinates = new DX.RectangleF(TextureCoordinates.X, TextureCoordinates.Y, size.Width / _sprite.Texture.Width, size.Height / _sprite.Texture.Height);                    
+                TextureCoordinates = new GorgonRectangleF(TextureCoordinates.X, TextureCoordinates.Y, size.X / _sprite.Texture.Width, size.Y / _sprite.Texture.Height);
                 ContentState = ContentState.Modified;
             }
 
@@ -876,7 +860,6 @@ internal class SpriteContent
             HideWaitPanel();
         }
     }
-
 
     /// <summary>
     /// Function to determine if the current color can be comitted.
@@ -920,14 +903,14 @@ internal class SpriteContent
             return Task.CompletedTask;
         }
 
-        var colorUndoArgs = new SpriteUndoArgs
+        SpriteUndoArgs colorUndoArgs = new()
         {
-            VertexColor = _sprite.CornerColors.ToArray()
+            VertexColor = [.. _sprite.CornerColors]
         };
 
-        var colorRedoArgs = new SpriteUndoArgs
+        SpriteUndoArgs colorRedoArgs = new()
         {
-            VertexColor = ColorEditor.SpriteColor.ToArray()
+            VertexColor = [.. ColorEditor.SpriteColor]
         };
 
         if (!SetColor(colorRedoArgs.VertexColor))
@@ -943,7 +926,7 @@ internal class SpriteContent
     /// Function to determine if the current vertex offset changes can be comitted.
     /// </summary>
     /// <returns><b>true</b> if the vertex offset changes can be comitted, <b>false</b> if not.</returns>
-    private bool CanCommitVertexOffsets() => (CurrentPanel is null) 
+    private bool CanCommitVertexOffsets() => (CurrentPanel is null)
                                           && (!_sprite.CornerOffsets.Select(item => new Vector2(item.X, item.Y))
                                                                     .SequenceEqual(SpriteVertexEditContext.Vertices));
 
@@ -982,14 +965,14 @@ internal class SpriteContent
             return Task.CompletedTask;
         }
 
-        var vtxUndoArgs = new SpriteUndoArgs
+        SpriteUndoArgs vtxUndoArgs = new()
         {
-            VertexOffset = _sprite.CornerOffsets.ToArray()
+            VertexOffset = [.. _sprite.CornerOffsets]
         };
 
         Vector3[] verts = SpriteVertexEditContext.Vertices.Select(item => new Vector3(item.X, item.Y, 0)).ToArray();
 
-        var vtxRedoArgs = new SpriteUndoArgs
+        SpriteUndoArgs vtxRedoArgs = new()
         {
             VertexOffset = verts
         };
@@ -1068,9 +1051,9 @@ internal class SpriteContent
             return false;
         }
 
-        DX.RectangleF texCoords = Texture.ToTexel(SpritePickContext.SpriteRectangle.ToRectangle());
+        GorgonRectangleF texCoords = Texture.ToTexel((GorgonRectangle)SpritePickContext.SpriteRectangle);
 
-        return ((!_sprite.TextureRegion.Equals(ref texCoords)) || (_sprite.TextureArrayIndex != SpritePickContext.ArrayIndex));
+        return ((!_sprite.TextureRegion.Equals(texCoords)) || (_sprite.TextureArrayIndex != SpritePickContext.ArrayIndex));
     }
 
     /// <summary>
@@ -1078,14 +1061,14 @@ internal class SpriteContent
     /// </summary>
     private void DoApplyPick()
     {
-        bool SetTextureCoordinates(DX.RectangleF coordinates, int index, IReadOnlyList<Vector3> vertexOffsets)
+        bool SetTextureCoordinates(GorgonRectangleF coordinates, int index, IReadOnlyList<Vector3> vertexOffsets)
         {
             try
             {
-                var textureRect = coordinates.ToRectangle();
-                textureRect.Inflate(SpritePickContext.Padding, SpritePickContext.Padding);
+                GorgonRectangle textureRect = (GorgonRectangle)coordinates;
+                textureRect = GorgonRectangle.Expand(textureRect, SpritePickContext.Padding);
                 TextureCoordinates = Texture.ToTexel(textureRect);
-                Size = new DX.Size2F((int)coordinates.Size.Width, (int)coordinates.Size.Height);
+                Size = new Vector2((int)coordinates.Size.Y, (int)coordinates.Size.Y);
                 ArrayIndex = index;
                 VertexOffsets = vertexOffsets;
 
@@ -1113,13 +1096,13 @@ internal class SpriteContent
             return Task.CompletedTask;
         }
 
-        var texCoordUndoArgs = new SpriteUndoArgs
+        SpriteUndoArgs texCoordUndoArgs = new()
         {
-            TextureCoordinates = Texture.ToPixel(TextureCoordinates).ToRectangleF(),
+            TextureCoordinates = Texture.ToPixel(TextureCoordinates),
             ArrayIndex = ArrayIndex,
-            VertexOffset = _sprite.CornerOffsets.ToArray()
+            VertexOffset = [.. _sprite.CornerOffsets]
         };
-        var texCoordRedoArgs = new SpriteUndoArgs
+        SpriteUndoArgs texCoordRedoArgs = new()
         {
             TextureCoordinates = SpritePickContext.SpriteRectangle,
             ArrayIndex = SpritePickContext.ArrayIndex,
@@ -1146,9 +1129,9 @@ internal class SpriteContent
             return false;
         }
 
-        DX.RectangleF texCoords = Texture.ToTexel(SpriteClipContext.SpriteRectangle.ToRectangle());
+        GorgonRectangleF texCoords = Texture.ToTexel((GorgonRectangle)SpriteClipContext.SpriteRectangle);
 
-        return ((!_sprite.TextureRegion.Equals(ref texCoords)) || (_sprite.TextureArrayIndex != SpriteClipContext.ArrayIndex));
+        return ((!_sprite.TextureRegion.Equals(texCoords)) || (_sprite.TextureArrayIndex != SpriteClipContext.ArrayIndex));
     }
 
     /// <summary>
@@ -1156,12 +1139,12 @@ internal class SpriteContent
     /// </summary>
     private void DoApplyClip()
     {
-        bool SetTextureCoordinates(DX.RectangleF coordinates, int index, IReadOnlyList<Vector3> vertexOffsets)
+        bool SetTextureCoordinates(GorgonRectangleF coordinates, int index, IReadOnlyList<Vector3> vertexOffsets)
         {
             try
             {
-                TextureCoordinates = Texture.ToTexel(coordinates.ToRectangle());
-                Size = new DX.Size2F((int)coordinates.Size.Width, (int)coordinates.Size.Height);
+                TextureCoordinates = Texture.ToTexel((GorgonRectangle)coordinates);
+                Size = new Vector2((int)coordinates.Size.X, (int)coordinates.Size.Y);
                 ArrayIndex = index;
                 VertexOffsets = vertexOffsets;
 
@@ -1189,13 +1172,13 @@ internal class SpriteContent
             return Task.CompletedTask;
         }
 
-        var texCoordUndoArgs = new SpriteUndoArgs
+        SpriteUndoArgs texCoordUndoArgs = new()
         {
-            TextureCoordinates = Texture.ToPixel(TextureCoordinates).ToRectangleF(),
+            TextureCoordinates = Texture.ToPixel(TextureCoordinates),
             ArrayIndex = ArrayIndex,
-            VertexOffset = _sprite.CornerOffsets.ToArray()
+            VertexOffset = [.. _sprite.CornerOffsets]
         };
-        var texCoordRedoArgs = new SpriteUndoArgs
+        SpriteUndoArgs texCoordRedoArgs = new()
         {
             TextureCoordinates = SpriteClipContext.SpriteRectangle,
             ArrayIndex = SpriteClipContext.ArrayIndex,
@@ -1381,7 +1364,7 @@ internal class SpriteContent
     /// Function to determine if the changes to sprite texture wrapping can be committed back to the sprite.
     /// </summary>
     /// <returns><b>true</b> if the changes can be committed, <b>false</b> if not.</returns>
-    private bool CanCommitWrappingChange() => ((WrappingEditor is not null) && (Texture is not null) 
+    private bool CanCommitWrappingChange() => ((WrappingEditor is not null) && (Texture is not null)
         && ((SamplerState.WrapU != WrappingEditor.HorizontalWrapping)
              || (SamplerState.WrapV != WrappingEditor.VerticalWrapping)
              || (!SamplerState.BorderColor.Equals(WrappingEditor.BorderColor))));
@@ -1422,12 +1405,12 @@ internal class SpriteContent
             return Task.CompletedTask;
         }
 
-        var wrapUndoArgs = new SpriteUndoArgs
+        SpriteUndoArgs wrapUndoArgs = new()
         {
             SamplerState = SamplerState
         };
 
-        var wrapRedoArgs = new SpriteUndoArgs
+        SpriteUndoArgs wrapRedoArgs = new()
         {
             SamplerState = WrappingEditor.CurrentSampler
         };
@@ -1452,9 +1435,9 @@ internal class SpriteContent
             return false;
         }
 
-        var halfSprite = new Vector2(Size.Width * 0.5f, Size.Height * 0.5f);
-        Vector2 anchorPosition = new Vector2(_sprite.Anchor.X * Size.Width - halfSprite.X, 
-                                                   _sprite.Anchor.Y * Size.Height - halfSprite.Y).Truncate();
+        Vector2 halfSprite = new(Size.X * 0.5f, Size.Y * 0.5f);
+        Vector2 anchorPosition = new Vector2(_sprite.Anchor.X * Size.X - halfSprite.X,
+                                                   _sprite.Anchor.Y * Size.Y - halfSprite.Y).Truncate();
         return (!AnchorEditor.Anchor.Equals(anchorPosition));
     }
 
@@ -1463,7 +1446,7 @@ internal class SpriteContent
     /// </summary>
     private void DoCommitAnchorChange()
     {
-        var halfSprite = new Vector2(Size.Width * 0.5f, Size.Height * 0.5f);
+        Vector2 halfSprite = new(Size.X * 0.5f, Size.Y * 0.5f);
 
         bool SetAnchor(Vector2 anchor)
         {
@@ -1494,16 +1477,16 @@ internal class SpriteContent
             SetAnchor(redoArgs.Anchor);
             return Task.CompletedTask;
         }
-                    
-        var anchorUndoArgs = new SpriteUndoArgs
+
+        SpriteUndoArgs anchorUndoArgs = new()
         {
             Anchor = _sprite.Anchor
         };
 
-        var anchorRedoArgs = new SpriteUndoArgs
+        SpriteUndoArgs anchorRedoArgs = new()
         {
-            Anchor = new Vector2((AnchorEditor.Anchor.X + halfSprite.X) / Size.Width,
-                                    (AnchorEditor.Anchor.Y + halfSprite.Y) / Size.Height)
+            Anchor = new Vector2((AnchorEditor.Anchor.X + halfSprite.X) / Size.X,
+                                    (AnchorEditor.Anchor.Y + halfSprite.Y) / Size.Y)
         };
 
         if (!SetAnchor(anchorRedoArgs.Anchor))
@@ -1575,14 +1558,14 @@ internal class SpriteContent
                                                                   .Build();
                 }
                 break;
-        }                                  
+        }
 
-        var anchorUndoArgs = new SpriteUndoArgs
+        SpriteUndoArgs anchorUndoArgs = new()
         {
             SamplerState = SamplerState
         };
 
-        var anchorRedoArgs = new SpriteUndoArgs
+        SpriteUndoArgs anchorRedoArgs = new()
         {
             SamplerState = newState
         };
@@ -1773,9 +1756,7 @@ internal class SpriteContent
                 return true;
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
     /// <summary>Initializes a new instance of the <see cref="SpriteContent"/> class.</summary>
     public SpriteContent()
     {
@@ -1789,8 +1770,7 @@ internal class SpriteContent
         SpriteVertexOffsetCommand = new EditorCommand<object>(DoSpriteVertexOffset, CanSpriteVertexOffset);
         ShowAnchorEditorCommand = new EditorCommand<object>(DoShowSpriteAnchorEditor, CanShowAnchorEditor);
         ShowWrappingEditorCommand = new EditorCommand<object>(DoShowWrappingEditor, CanShowWrappingEditor);
-        SetTextureFilteringCommand = new EditorCommand<SampleFilter>(DoSetTextureFilter, CanSetTextureFilter);            
+        SetTextureFilteringCommand = new EditorCommand<SampleFilter>(DoSetTextureFilter, CanSetTextureFilter);
         SetTextureCommand = new EditorAsyncCommand<SetTextureArgs>(DoSetTexture, CanSetTexture);
     }
-    #endregion
 }

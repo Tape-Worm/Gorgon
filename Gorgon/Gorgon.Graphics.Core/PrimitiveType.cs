@@ -3,7 +3,7 @@
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Specifies the type of primitive geometry to render from vertex data bound to the pipeline.
+/// Specifies the type of primitive geometry to render from vertex data bound to the pipeline
 /// </summary>
 public enum PrimitiveType
 {

@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2011 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,26 +11,22 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Tuesday, June 14, 2011 8:50:49 PM
 // 
-#endregion
 
-using System;
 using System.Collections;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using Gorgon.Core;
 using Gorgon.Diagnostics.LogProviders;
 using Gorgon.Properties;
@@ -38,12 +34,37 @@ using Gorgon.Properties;
 namespace Gorgon.Diagnostics;
 
 /// <summary>
-/// Base class for logging objects.
+/// Base class for logging objects
 /// </summary>
 public abstract class GorgonLog
-    : IGorgonThreadedLog
+    : IGorgonLog
 {
-    #region Variables.
+    /// <summary>
+    /// The type of message being sent to the log.
+    /// </summary>
+    protected enum MessageType
+    {
+        /// <summary>
+        /// General information.
+        /// </summary>
+        Info = 0,
+        /// <summary>
+        /// A warning message.
+        /// </summary>
+        Warning = 1,
+        /// <summary>
+        /// An error message.
+        /// </summary>
+        Error = 2,
+        /// <summary>
+        /// A critical exception.
+        /// </summary>
+        Critical = 3
+    }
+
+    // List of separators for new lines.
+    private static readonly char[] _newLineSeparators = ['\n', '\r'];
+
     // Logging filter.
     private LoggingLevel _filterLevel = LoggingLevel.All;
     // Buffer used to send data to the log file.
@@ -53,18 +74,13 @@ public abstract class GorgonLog
     // Synchronization lock for multiple threads.
     private readonly object _syncLock = new();
     // The application version.
-    private readonly Version _appVersion;
+    private readonly Version? _appVersion;
 
-    #region Variables.
     /// <summary>
     /// An instance of a log that does no logging and merely contains empty methods.
     /// </summary>
     public static readonly IGorgonLog NullLog = new LogDummy();
-    #endregion
 
-    #endregion
-
-    #region Properties.
     /// <summary>
     /// Property to return the ID of the thread that created the log object.
     /// </summary>
@@ -102,25 +118,21 @@ public abstract class GorgonLog
     /// Property to return the provider for this log.
     /// </summary>
     /// <remarks>
-    /// <para>
     /// Logging implementations that inherit from this class will be able to assign their own provider in the base constructor.
-    /// </para>
     /// </remarks>
     public IGorgonLogProvider Provider
     {
         get;
         protected set;
-    }
-    #endregion
+    } = DummyLogProvider.NullProvider;
 
-    #region Methods.
     /// <summary>
     /// Function to format a stack trace to be more presentable.
     /// </summary>
     /// <param name="stack">Stack trace to format.</param>
     /// <param name="indicator">Inner exception indicator.</param>
     /// <param name="resultMessage">The resulting message.</param>
-    private static void FormatStackTrace(string stack, string indicator, StringBuilder resultMessage)
+    private static void FormatStackTrace(string? stack, string indicator, StringBuilder resultMessage)
     {
         if (string.IsNullOrEmpty(stack))
         {
@@ -128,14 +140,14 @@ public abstract class GorgonLog
         }
 
         stack = stack.Replace('\t', ' ');
-        string[] lines = stack.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+        string[] lines = stack.Split(_newLineSeparators, StringSplitOptions.RemoveEmptyEntries);
 
         // Output to each log file.
         resultMessage.AppendFormat("{0}Stack trace:\r\n", indicator);
         for (int i = lines.Length - 1; i >= 0; i--)
         {
             int inIndex = lines[i].LastIndexOf(") in ", StringComparison.Ordinal);
-            int pathIndex = lines[i].LastIndexOf(@"\", StringComparison.Ordinal);
+            int pathIndex = lines[i].LastIndexOf('\\');
 
             if ((inIndex > -1) && (pathIndex > -1))
             {
@@ -156,23 +168,41 @@ public abstract class GorgonLog
     /// <param name="resultMessage">The resulting message.</param>
     private static void FormatMessage(string message, string indicator, StringBuilder resultMessage)
     {
-        if (string.IsNullOrEmpty(message))
+        if (string.IsNullOrWhiteSpace(message))
         {
             return;
         }
 
-        message = message.Replace('\t', ' ');
-        string[] lines = message.Split(new[]
-                                       {
-                                           '\n',
-                                           '\r'
-                                       },
+        string[] lines = message.Split(_newLineSeparators,
                                        StringSplitOptions.RemoveEmptyEntries);
 
         for (int i = 0; i < lines.Length; i++)
         {
             resultMessage.AppendFormat(i == 0 ? "{1}{2}: {0}\r\n" : "{1}           {0}\r\n", lines[i], indicator, Resources.GOR_LOG_EXCEPTION);
         }
+
+        resultMessage.Replace('\t', ' ');
+    }
+
+    /// <summary>
+    /// Function to add target site information to the exception message.
+    /// </summary>
+    /// <param name="resultMessage">The message to update.</param>
+    /// <param name="indicator">The indicator for the message.</param>
+    /// <param name="ex">The exception being evaluated.</param>
+    [RequiresUnreferencedCode("Calls System.Exception.TargetSite")]
+    private static void AddTargetSite(StringBuilder resultMessage, string indicator, Exception ex)
+    {
+        if (ex.TargetSite?.DeclaringType is null)
+        {
+            return;
+        }
+
+        resultMessage.AppendFormat("{2}{3}: {0}.{1}\r\n",
+                    ex.TargetSite.DeclaringType.FullName,
+                    ex.TargetSite.Name,
+                    indicator,
+                    Resources.GOR_EXCEPT_TARGET_SITE);
     }
 
     /// <summary>
@@ -184,12 +214,14 @@ public abstract class GorgonLog
     /// If the <see cref="LogFilterLevel"/> is set to <c>LoggingLevel.NoLogging</c>, then the exception will not be logged. If the filter is set to any other setting, it will be logged 
     /// regardless of filter level.
     /// </para>
-    /// </remarks>
+    /// </remarks>    
+    [UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code",
+                                  Justification = "Using RuntimeFeature.IsDynamicCodeSupported flag to skip the code.")]
     public void LogException(Exception ex)
     {
         string indicator = string.Empty; // Inner exception indicator.
         string branch = string.Empty; // Branching character.
-        var exception = new StringBuilder(1024);
+        StringBuilder exception = new(1024);
 
         if ((ex is null)
             || (LogFilterLevel == LoggingLevel.NoLogging))
@@ -204,7 +236,7 @@ public abstract class GorgonLog
             exception.AppendFormat("\t{0}!!\r\n", Resources.GOR_LOG_EXCEPTION.ToUpper());
             exception.Append("================================================\r\n");
 
-            Exception inner = ex;
+            Exception? inner = ex;
 
             while (inner is not null)
             {
@@ -223,13 +255,9 @@ public abstract class GorgonLog
                         exception.AppendFormat("{1}{2}: {0}\r\n", inner.Source, indicator, Resources.GOR_EXCEPT_SRC);
                     }
 
-                    if (inner.TargetSite?.DeclaringType is not null)
+                    if (RuntimeFeature.IsDynamicCodeSupported)
                     {
-                        exception.AppendFormat("{2}{3}: {0}.{1}\r\n",
-                                    inner.TargetSite.DeclaringType.FullName,
-                                    inner.TargetSite.Name,
-                                    indicator,
-                                    Resources.GOR_EXCEPT_TARGET_SITE);
+                        AddTargetSite(exception, indicator, inner);
                     }
 
                     if (inner is GorgonException gorgonException)
@@ -294,7 +322,7 @@ public abstract class GorgonLog
 
             exception.Append(" \r\n");
 
-            SendToLog(exception.ToString());
+            SendToLog(exception.ToString(), MessageType.Critical);
         }
     }
 
@@ -304,11 +332,6 @@ public abstract class GorgonLog
     /// <param name="lines">The lines to flush out</param>
     private void FlushLines(List<string> lines)
     {
-        if (lines is null)
-        {
-            return;
-        }
-
         string finalLines;
 
         if (ThreadID != Environment.CurrentManagedThreadId)
@@ -342,54 +365,48 @@ public abstract class GorgonLog
     /// <summary>
     /// Function to append a line of logging text to the log file.
     /// </summary>
-    /// <param name="formatSpecifier">The pre-formatted text message.</param>
-    /// <param name="arguments">The arguments to pass to the pre-formatted text.</param>
-    private void SendToLog(string formatSpecifier, params object[] arguments)
+    /// <param name="message">The pre-formatted text message.</param>
+    /// <param name="messageType">The type of message being sent to the log.</param>
+    private void SendToLog(string message, MessageType messageType)
     {
         List<string> lines = _outputBuffer;
 
         if (ThreadID != Environment.CurrentManagedThreadId)
         {
             lines = _threadBuffers.GetOrAdd(Environment.CurrentManagedThreadId,
-                                            id => new List<string>());
+                                            id => []);
         }
 
-        if ((string.IsNullOrEmpty(formatSpecifier)) || (formatSpecifier == "\n") || (formatSpecifier == "\r"))
+        string prefix = messageType switch
+        {
+            MessageType.Info => string.Empty,
+            MessageType.Warning => " [Warning]:",
+            MessageType.Error => " [Error]:",
+            MessageType.Critical => " [Exception]:",
+            _ => string.Empty,
+        };
+
+        if ((string.IsNullOrEmpty(message)) || (message == "\n") || (message == "\r"))
         {
             lines.Add($"[{DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}]");
         }
         else
         {
             // Get a list of lines.
-            string[] formattedLines = formatSpecifier.Split(new[]
-                                                            {
-                                                                '\r',
-                                                                '\n'
-                                                            },
+            string[] formattedLines = message.Split(_newLineSeparators,
                                                             StringSplitOptions.RemoveEmptyEntries);
 
             foreach (string line in formattedLines)
             {
-                string lineToPrint = line;
-                if ((arguments is not null) && (arguments.Length > 0))
-                {
-                    lineToPrint = string.Format(line, arguments);
-                }
-
-                lines.Add($"[{DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}] {lineToPrint}");
+                lines.Add($"[{DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}]{prefix} {line}");
             }
         }
 
         FlushLines(lines);
     }
 
-    /// <summary>
-    /// Function to print a formatted line of text to the log.
-    /// </summary>
-    /// <param name="formatSpecifier">Format specifier for the line.</param>
-    /// <param name="level">Level that this message falls under.</param>
-    /// <param name="arguments">List of optional arguments.</param>
-    public void Print(string formatSpecifier, LoggingLevel level, params object[] arguments)
+    /// <inheritdoc/>
+    public void PrintError(string message, LoggingLevel level)
     {
         if ((LogFilterLevel == LoggingLevel.NoLogging) ||
             ((LogFilterLevel != LoggingLevel.All) && (level != LoggingLevel.All) && (level < LogFilterLevel)))
@@ -399,7 +416,41 @@ public abstract class GorgonLog
 
         lock (_syncLock)
         {
-            SendToLog(formatSpecifier, arguments);
+            SendToLog(message, MessageType.Error);
+        }
+    }
+
+    /// <inheritdoc/>
+    public void PrintWarning(string message, LoggingLevel level)
+    {
+        if ((LogFilterLevel == LoggingLevel.NoLogging) ||
+            ((LogFilterLevel != LoggingLevel.All) && (level != LoggingLevel.All) && (level < LogFilterLevel)))
+        {
+            return;
+        }
+
+        lock (_syncLock)
+        {
+            SendToLog(message, MessageType.Warning);
+        }
+    }
+
+    /// <summary>
+    /// Function to print a formatted line of text to the log.
+    /// </summary>
+    /// <param name="message">The message to write to the log.</param>
+    /// <param name="level">Level that this message falls under.</param>
+    public void Print(string message, LoggingLevel level)
+    {
+        if ((LogFilterLevel == LoggingLevel.NoLogging) ||
+            ((LogFilterLevel != LoggingLevel.All) && (level != LoggingLevel.All) && (level < LogFilterLevel)))
+        {
+            return;
+        }
+
+        lock (_syncLock)
+        {
+            SendToLog(message, MessageType.Info);
         }
     }
 
@@ -421,7 +472,6 @@ public abstract class GorgonLog
         }
     }
 
-
     /// <summary>
     /// Function to perform any one time inital logging.
     /// </summary>
@@ -439,38 +489,26 @@ public abstract class GorgonLog
 
         Provider.Open($"**** {LogApplication} (Version {_appVersion?.ToString() ?? "N/A"}) logging begins on thread ID 0x{ThreadID.FormatHex()} ****\r\n{(LogFilterLevel != LoggingLevel.NoLogging ? $"**** Filter level: {LogFilterLevel}\r\n" : string.Empty)}");
     }
-    #endregion
 
-    #region Constructor/Destructor.
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonLog"/> class.
     /// </summary>
     /// <param name="appName">File name for the log file.</param>
     /// <param name="version">[Optional] The version of the application that is logging.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="appName"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="appName"/> parameter is empty.</exception>
     /// <remarks>
     /// <para>
     /// This constructor is meant for developers to implement their own logging implementation without having to recreate all functionality in the <see cref="IGorgonLog"/> interface.
     /// </para>
     /// </remarks>
-    protected GorgonLog(string appName, Version version = null)
+    protected GorgonLog(string appName, Version? version = null)
     {
-        if (appName is null)
-        {
-            throw new ArgumentNullException(nameof(appName));
-        }
+        ArgumentEmptyException.ThrowIfNullOrWhiteSpace(appName);
 
-        if (string.IsNullOrWhiteSpace(appName))
-        {
-            throw new ArgumentEmptyException(nameof(appName));
-        }
-
-        ThreadID = Thread.CurrentThread.ManagedThreadId;
+        ThreadID = Environment.CurrentManagedThreadId;
 
         LogApplication = appName;
 
         _appVersion = version;
     }
-    #endregion
 }

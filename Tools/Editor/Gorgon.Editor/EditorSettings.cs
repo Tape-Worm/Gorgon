@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,43 +11,43 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 26, 2018 8:19:04 PM
 // 
-#endregion
 
-using System.Collections.Generic;
-using System.Windows.Forms;
+using System.Text.Json.Serialization;
 using Gorgon.Editor.ProjectData;
-using DX = SharpDX;
+using Gorgon.Graphics;
 
 namespace Gorgon.Editor;
 
 /// <summary>
-/// The settings used by the editor.
+/// The settings used by the editor
 /// </summary>
 internal class EditorSettings
 {
     /// <summary>
     /// Property to set or return the window boundaries.
     /// </summary>
-    public DX.Rectangle? WindowBounds
+    [JsonInclude]
+    public GorgonRectangle? WindowBounds
     {
         get;
         set;
     }
 
     /// <summary>
-    /// Property to set or return the path used for the application plug ins.
+    /// Property to set or return the path used for the application plug-ins.
     /// </summary>
+    [JsonInclude]
     public string PlugInPath
     {
         get;
@@ -57,6 +57,7 @@ internal class EditorSettings
     /// <summary>
     /// Property to set or return the last file open/save path.
     /// </summary>
+    [JsonInclude]
     public string LastOpenSavePath
     {
         get;
@@ -66,6 +67,7 @@ internal class EditorSettings
     /// <summary>
     /// Property to set or return the previous project working directory.
     /// </summary>
+    [JsonInclude]
     public string LastProjectWorkingDirectory
     {
         get;
@@ -75,6 +77,7 @@ internal class EditorSettings
     /// <summary>
     /// Property to set or return the last window state.
     /// </summary>
+    [JsonInclude]
     public int WindowState
     {
         get;
@@ -84,15 +87,17 @@ internal class EditorSettings
     /// <summary>
     /// Property to return the list of recent file items.
     /// </summary>
+    [JsonInclude]
     public List<RecentItem> RecentFiles
     {
         get;
         private set;
-    } = new List<RecentItem>();
+    } = [];
 
     /// <summary>
     /// Property to set or return the flag to indicate that the file explorer is visible.
     /// </summary>
+    [JsonInclude]
     public bool ShowFileExplorer
     {
         get;
@@ -102,6 +107,7 @@ internal class EditorSettings
     /// <summary>
     /// Property to set or return the flag to indicate that the content preview is visible.
     /// </summary>
+    [JsonInclude]
     public bool ShowContentPreview
     {
         get;
@@ -114,6 +120,7 @@ internal class EditorSettings
     /// <remarks>
     /// This value is a percentage value between 1 - 99.
     /// </remarks>
+    [JsonInclude]
     public int SplitMainDistance
     {
         get;
@@ -126,6 +133,7 @@ internal class EditorSettings
     /// <remarks>
     /// This value is a percentage value between 1 - 99.
     /// </remarks>
+    [JsonInclude]
     public int SplitPreviewDistance
     {
         get;
@@ -135,6 +143,7 @@ internal class EditorSettings
     /// <summary>
     /// Property to set or return the distance between the directory listing and the file listing in the file explorer panel.
     /// </summary>
+    [JsonInclude]
     public int SplitDirFileDistance
     {
         get;

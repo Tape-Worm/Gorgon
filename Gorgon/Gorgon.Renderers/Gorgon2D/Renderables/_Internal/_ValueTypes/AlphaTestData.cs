@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,64 +11,64 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Friday, August 9, 2013 3:16:00 PM
 // 
-#endregion
 
-using System;
 using System.Runtime.InteropServices;
 using Gorgon.Core;
+using Gorgon.Math;
 
 namespace Gorgon.Renderers;
 
 /// <summary>
-/// An immutable value for alpha testing.
+/// An immutable value for alpha testing
 /// </summary>
 /// <remarks>This will define the range of alpha values to clip.  An alpha value that falls between the lower and upper range will not be rendered.</remarks>
+/// <remarks>
+/// Initializes a new instance of the <see cref="AlphaTestData"/> struct
+/// </remarks>
+/// <param name="isEnabled"><b>true</b> to enable alpha testing, <b>false</b> to disable.</param>
+/// <param name="alphaRange">The alpha range to clip.</param>
 [StructLayout(LayoutKind.Sequential, Pack = 1, Size = 16)]
-internal readonly struct AlphaTestData
-    : IEquatable<AlphaTestData>
+internal readonly struct AlphaTestData(bool isEnabled, GorgonRange<float> alphaRange)
+        : IEquatable<AlphaTestData>
 {
-    #region Variables.
     /// <summary>
     /// 4 byte compatiable flag for constant buffer.
     /// </summary>
-    public readonly int IsEnabled;
+    public readonly int IsEnabled = isEnabled ? 1 : 0;
 
     /// <summary>
     /// Lower alpha value.
     /// </summary>
     /// <remarks>If the alpha is higher than this value, it will be clipped.</remarks>
-    public readonly float LowerAlpha;
+    public readonly float LowerAlpha = alphaRange.Minimum;
 
     /// <summary>
     /// Upper alpha value.
     /// </summary>
     /// <remarks>If the alpha is lower than this value, it will be clipped.</remarks>
-    public readonly float UpperAlpha;
-    #endregion
+    public readonly float UpperAlpha = alphaRange.Maximum;
 
-    #region Methods.
     /// <summary>
     /// Function to determine equality between two instances.
     /// </summary>
-    /// <param name="left"></param>
-    /// <param name="right"></param>
-    /// <returns></returns>
-    public static bool Equals(in AlphaTestData left, in AlphaTestData right) =>
-        // ReSharper disable CompareOfFloatsByEqualityOperator
-        ((left.IsEnabled == right.IsEnabled)
-                && (left.UpperAlpha == right.UpperAlpha)
-                && (left.LowerAlpha == right.LowerAlpha));// ReSharper restore CompareOfFloatsByEqualityOperator
+    /// <param name="left">The left value to compare.</param>
+    /// <param name="right">The right value to compare.</param>
+    /// <returns><b>true</b> if equal, <b>false</b> if not.</returns>
+    public static bool Equals(AlphaTestData left, AlphaTestData right) =>
+                (left.IsEnabled == right.IsEnabled)
+                && (left.UpperAlpha.EqualsEpsilon(right.UpperAlpha))
+                && (left.LowerAlpha.EqualsEpsilon(right.LowerAlpha));
 
     /// <summary>
     /// Determines whether the specified <see cref="object" /> is equal to this instance.
@@ -86,23 +86,7 @@ internal readonly struct AlphaTestData
     /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
     /// </returns>
     public override int GetHashCode() => HashCode.Combine(IsEnabled, LowerAlpha, UpperAlpha);
-    #endregion
 
-    #region Constructor/Destructor.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="AlphaTestData"/> struct.
-    /// </summary>
-    /// <param name="isEnabled"><b>true</b> to enable alpha testing, <b>false</b> to disable.</param>
-    /// <param name="alphaRange">The alpha range to clip.</param>
-    public AlphaTestData(bool isEnabled, GorgonRangeF alphaRange)
-    {
-        IsEnabled = isEnabled ? 1 : 0;
-        LowerAlpha = alphaRange.Minimum;
-        UpperAlpha = alphaRange.Maximum;
-    }
-    #endregion
-
-    #region IEquatable<Gorgon2DAlphaTest> Members
     /// <summary>
     /// Indicates whether the current object is equal to another object of the same type.
     /// </summary>
@@ -110,6 +94,5 @@ internal readonly struct AlphaTestData
     /// <returns>
     /// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
     /// </returns>
-    public bool Equals(AlphaTestData other) => Equals(in this, in other);
-    #endregion
+    public bool Equals(AlphaTestData other) => Equals(this, other);
 }

@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,20 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 22, 2020 7:15:42 PM
 // 
-#endregion
 
-using System;
 using Gorgon.Editor.SpriteEditor.Properties;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
@@ -38,7 +36,7 @@ namespace Gorgon.Editor.SpriteEditor;
 internal class SpriteTextureWrapEdit
     : HostedPanelViewModelBase<SpriteTextureWrapEditParameters>, ISpriteTextureWrapEdit
 {
-    #region Variables.
+
     // The builder used to create samplers.
     private GorgonSamplerStateBuilder _samplerBuilder;
     // The current sampler state for the sprite.
@@ -48,10 +46,8 @@ internal class SpriteTextureWrapEdit
     // Vertical wrapping state.
     private TextureWrap _vWrap = TextureWrap.Clamp;
     // The current color for the border.
-    private GorgonColor _border = GorgonColor.White;
-    #endregion
+    private GorgonColor _border = GorgonColors.White;
 
-    #region Properties.
     /// <summary>Property to return whether the panel is modal.</summary>
     public override bool IsModal => false;
 
@@ -97,7 +93,7 @@ internal class SpriteTextureWrapEdit
         get => _border;
         set
         {
-            if (_border.Equals(in value))
+            if (_border.Equals(value))
             {
                 return;
             }
@@ -131,9 +127,7 @@ internal class SpriteTextureWrapEdit
             OnPropertyChanged();
         }
     }
-    #endregion        
 
-    #region Methods.
     /// <summary>
     /// Function to build a sampler based on state.
     /// </summary>
@@ -186,5 +180,5 @@ internal class SpriteTextureWrapEdit
     /// </para>
     /// </remarks>
     protected override void OnInitialize(SpriteTextureWrapEditParameters injectionParameters) => _samplerBuilder = injectionParameters.SamplerStateBuilder;
-    #endregion
+
 }

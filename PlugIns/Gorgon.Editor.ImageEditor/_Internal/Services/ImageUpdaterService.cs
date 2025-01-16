@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,34 +11,31 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: January 21, 2019 8:31:11 AM
 // 
-#endregion
 
-using System.Linq;
 using Gorgon.Core;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
 using Gorgon.UI;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.ImageEditor;
 
 /// <summary>
-/// Provides functionality to update an image.
+/// Provides functionality to update an image
 /// </summary>
 internal class ImageUpdaterService : IImageUpdaterService
 {
-    #region Methods.
     /// <summary>
     /// Function to retrieve the starting point for an operaiton based on an alignment.
     /// </summary>
@@ -46,30 +43,30 @@ internal class ImageUpdaterService : IImageUpdaterService
     /// <param name="destSize">The new size for the image.</param>
     /// <param name="alignment">The alignment of the image for the operation.</param>
     /// <returns></returns>
-    private DX.Point GetAnchorStart(DX.Size2 srcSize, ref DX.Size2 destSize, Alignment alignment)
+    private GorgonPoint GetAnchorStart(GorgonPoint srcSize, ref GorgonPoint destSize, Alignment alignment)
     {
         // Limit the extents if the destination is larger in one direction than the source.
-        if (srcSize.Height < destSize.Height)
+        if (srcSize.Y < destSize.Y)
         {
-            destSize.Height = srcSize.Height;
+            destSize.Y = srcSize.Y;
         }
 
-        if (srcSize.Width < destSize.Width)
+        if (srcSize.X < destSize.X)
         {
-            destSize.Width = srcSize.Width;
+            destSize.X = srcSize.X;
         }
 
         return alignment switch
         {
-            Alignment.UpperCenter => new DX.Point(srcSize.Width / 2 - destSize.Width / 2, 0),
-            Alignment.UpperRight => new DX.Point(srcSize.Width - destSize.Width, 0),
-            Alignment.CenterLeft => new DX.Point(0, srcSize.Height / 2 - destSize.Height / 2),
-            Alignment.Center => new DX.Point(srcSize.Width / 2 - destSize.Width / 2, srcSize.Height / 2 - destSize.Height / 2),
-            Alignment.CenterRight => new DX.Point(srcSize.Width - destSize.Width, srcSize.Height / 2 - destSize.Height / 2),
-            Alignment.LowerLeft => new DX.Point(0, srcSize.Height - destSize.Height),
-            Alignment.LowerCenter => new DX.Point(srcSize.Width / 2 - destSize.Width / 2, srcSize.Height - destSize.Height),
-            Alignment.LowerRight => new DX.Point(srcSize.Width - destSize.Width, srcSize.Height - destSize.Height),
-            _ => DX.Point.Zero,
+            Alignment.UpperCenter => new GorgonPoint(srcSize.X / 2 - destSize.X / 2, 0),
+            Alignment.UpperRight => new GorgonPoint(srcSize.X - destSize.X, 0),
+            Alignment.CenterLeft => new GorgonPoint(0, srcSize.Y / 2 - destSize.Y / 2),
+            Alignment.Center => new GorgonPoint(srcSize.X / 2 - destSize.X / 2, srcSize.Y / 2 - destSize.Y / 2),
+            Alignment.CenterRight => new GorgonPoint(srcSize.X - destSize.X, srcSize.Y / 2 - destSize.Y / 2),
+            Alignment.LowerLeft => new GorgonPoint(0, srcSize.Y - destSize.Y),
+            Alignment.LowerCenter => new GorgonPoint(srcSize.X / 2 - destSize.X / 2, srcSize.Y - destSize.Y),
+            Alignment.LowerRight => new GorgonPoint(srcSize.X - destSize.X, srcSize.Y - destSize.Y),
+            _ => GorgonPoint.Zero,
         };
     }
 
@@ -82,19 +79,19 @@ internal class ImageUpdaterService : IImageUpdaterService
     public IGorgonImage ConvertTo2D(IGorgonImage image, bool isCubeMap)
     {
         IGorgonImage result = null;
-#if NET6_0_OR_GREATER
+
         try
         {
-            var info = new GorgonImageInfo(image)
+            GorgonImageInfo info = new(image)
             {
-                ImageType = isCubeMap ? ImageType.ImageCube : ImageType.Image2D,
+                ImageType = isCubeMap ? ImageDataType.ImageCube : ImageDataType.Image2D,
                 ArrayCount = image.ArrayCount,
                 Depth = 1
             };
 
             if ((isCubeMap) && ((image.ArrayCount % 6) != 0))
             {
-                int arrayCount = image.ArrayCount;                    
+                int arrayCount = image.ArrayCount;
 
                 while ((arrayCount % 6) != 0)
                 {
@@ -123,7 +120,7 @@ internal class ImageUpdaterService : IImageUpdaterService
             result?.Dispose();
             throw;
         }
-#endif
+
         return result;
     }
 
@@ -138,7 +135,7 @@ internal class ImageUpdaterService : IImageUpdaterService
         {
             result = new GorgonImage(new GorgonImageInfo(image)
             {
-                ImageType = ImageType.Image3D,
+                ImageType = ImageDataType.Image3D,
                 ArrayCount = 1,
                 Depth = 1
             });
@@ -164,11 +161,11 @@ internal class ImageUpdaterService : IImageUpdaterService
     /// <param name="cropImage">The image to crop.</param>
     /// <param name="destSize">The new size of the image.</param>
     /// <param name="alignment">The location to start cropping from.</param>
-    public void CropTo(IGorgonImage cropImage, DX.Size2 destSize, Alignment alignment)
+    public void CropTo(IGorgonImage cropImage, GorgonPoint destSize, Alignment alignment)
     {
-        DX.Point startLoc = GetAnchorStart(new DX.Size2(cropImage.Width, cropImage.Height), ref destSize, alignment);
+        GorgonPoint startLoc = GetAnchorStart(new GorgonPoint(cropImage.Width, cropImage.Height), ref destSize, alignment);
         cropImage.BeginUpdate()
-                 .Crop(new DX.Rectangle(startLoc.X, startLoc.Y, destSize.Width, destSize.Height), cropImage.Depth)
+                 .Crop(new GorgonRectangle(startLoc.X, startLoc.Y, destSize.X, destSize.Y), cropImage.Depth)
                  .EndUpdate();
     }
 
@@ -177,16 +174,16 @@ internal class ImageUpdaterService : IImageUpdaterService
     /// <param name="newSize">The new size for the image.</param>
     /// <param name="filter">The filter to apply when resizing.</param>
     /// <param name="preserveAspect"><b>true</b> to preserve the aspect ratio of the image, <b>false</b> to ignore it.</param>
-    public void Resize(IGorgonImage resizeImage, DX.Size2 newSize, ImageFilter filter, bool preserveAspect)
+    public void Resize(IGorgonImage resizeImage, GorgonPoint newSize, ImageFilter filter, bool preserveAspect)
     {
         if (preserveAspect)
         {
-            float imageScale = ((float)newSize.Width / resizeImage.Width).Min((float)newSize.Height / resizeImage.Height);
-            newSize = new DX.Size2((int)(resizeImage.Width * imageScale), (int)(resizeImage.Height * imageScale));
+            float imageScale = ((float)newSize.X / resizeImage.Width).Min((float)newSize.Y / resizeImage.Height);
+            newSize = new GorgonPoint((int)(resizeImage.Width * imageScale), (int)(resizeImage.Height * imageScale));
         }
 
         resizeImage.BeginUpdate()
-                   .Resize(newSize.Width, newSize.Height, resizeImage.Depth, filter)
+                   .Resize(newSize.X, newSize.Y, resizeImage.Depth, filter)
                    .EndUpdate();
     }
 
@@ -198,9 +195,9 @@ internal class ImageUpdaterService : IImageUpdaterService
     /// <returns>A new image with the specified depth/array count, or the same image if no changes were made.</returns>
     public IGorgonImage ChangeArrayOrDepthCount(IGorgonImage sourceImage, int arrayOrDepthCount)
     {
-        int currentArrayOrDepth = sourceImage.ImageType == ImageType.Image3D ? sourceImage.Depth : sourceImage.ArrayCount;
-        int depthCount = sourceImage.ImageType == ImageType.Image3D ? arrayOrDepthCount : 1;
-        int arrayCount = sourceImage.ImageType != ImageType.Image3D ? arrayOrDepthCount : 1;
+        int currentArrayOrDepth = sourceImage.ImageType == ImageDataType.Image3D ? sourceImage.Depth : sourceImage.ArrayCount;
+        int depthCount = sourceImage.ImageType == ImageDataType.Image3D ? arrayOrDepthCount : 1;
+        int arrayCount = sourceImage.ImageType != ImageDataType.Image3D ? arrayOrDepthCount : 1;
 
         if (currentArrayOrDepth == arrayOrDepthCount)
         {
@@ -219,8 +216,8 @@ internal class ImageUpdaterService : IImageUpdaterService
             {
                 for (int depth = 0; depth < depthCount.Min(sourceImage.GetDepthCount(mip)); ++depth)
                 {
-                    IGorgonImageBuffer srcBuffer = sourceImage.Buffers[mip, sourceImage.ImageType == ImageType.Image3D ? depth : array];
-                    IGorgonImageBuffer destBuffer = newImage.Buffers[mip, sourceImage.ImageType == ImageType.Image3D ? depth : array];
+                    IGorgonImageBuffer srcBuffer = sourceImage.Buffers[mip, sourceImage.ImageType == ImageDataType.Image3D ? depth : array];
+                    IGorgonImageBuffer destBuffer = newImage.Buffers[mip, sourceImage.ImageType == ImageDataType.Image3D ? depth : array];
                     srcBuffer.CopyTo(destBuffer);
                 }
 
@@ -251,7 +248,7 @@ internal class ImageUpdaterService : IImageUpdaterService
 
         int depthCount = 1;
 
-        if (sourceImage.ImageType == ImageType.Image3D)
+        if (sourceImage.ImageType == ImageDataType.Image3D)
         {
             depthCount = sourceImage.GetDepthCount(currentMipLevel);
         }
@@ -268,8 +265,8 @@ internal class ImageUpdaterService : IImageUpdaterService
         {
             for (int depth = 0; depth < result.Depth; ++depth)
             {
-                IGorgonImageBuffer srcBuffer = sourceImage.Buffers[currentMipLevel, sourceImage.ImageType == ImageType.Image3D ? depth : array];
-                IGorgonImageBuffer destBuffer = result.Buffers[0, sourceImage.ImageType == ImageType.Image3D ? depth : array];
+                IGorgonImageBuffer srcBuffer = sourceImage.Buffers[currentMipLevel, sourceImage.ImageType == ImageDataType.Image3D ? depth : array];
+                IGorgonImageBuffer destBuffer = result.Buffers[0, sourceImage.ImageType == ImageDataType.Image3D ? depth : array];
 
                 srcBuffer.CopyTo(destBuffer);
             }
@@ -293,7 +290,7 @@ internal class ImageUpdaterService : IImageUpdaterService
 
         IGorgonImage result = new GorgonImage(new GorgonImageInfo(sourceImage)
         {
-            ImageType = ImageType.Image2D,
+            ImageType = ImageDataType.Image2D,
             Depth = 1
         });
 
@@ -373,7 +370,7 @@ internal class ImageUpdaterService : IImageUpdaterService
             {
                 for (int depth = 0; depth < maxDepth; ++depth)
                 {
-                    int depthOrArray = sourceImage.ImageType == ImageType.Image3D ? depth : array;
+                    int depthOrArray = sourceImage.ImageType == ImageDataType.Image3D ? depth : array;
                     IGorgonImageBuffer src = sourceImage.Buffers[mip, depthOrArray];
                     IGorgonImageBuffer dest = result.Buffers[mip, depthOrArray];
                     src.CopyTo(dest);
@@ -402,12 +399,12 @@ internal class ImageUpdaterService : IImageUpdaterService
     public void CopyTo(IGorgonImage srcImage, IGorgonImage destImage, int startMip, int startArrayOrDepth, Alignment alignment, bool clearDestination = true)
     {
         int mipCount = destImage.MipCount - startMip;
-        int arrayCount = destImage.ArrayCount - (destImage.ImageType == ImageType.Image3D ? 0 : startArrayOrDepth);
+        int arrayCount = destImage.ArrayCount - (destImage.ImageType == ImageDataType.Image3D ? 0 : startArrayOrDepth);
 
         int minMipCount = mipCount.Min(srcImage.MipCount);
         int minArrayCount = arrayCount.Min(srcImage.ArrayCount);
 
-        var size = new DX.Size2(srcImage.Width, srcImage.Height);
+        GorgonPoint size = new(srcImage.Width, srcImage.Height);
 
         for (int array = 0; array < minArrayCount; ++array)
         {
@@ -419,7 +416,7 @@ internal class ImageUpdaterService : IImageUpdaterService
                 for (int depth = 0; depth < minDepth; ++depth)
                 {
                     int destOffset;
-                    if (destImage.ImageType == ImageType.Image3D)
+                    if (destImage.ImageType == ImageDataType.Image3D)
                     {
                         destOffset = depth + startArrayOrDepth;
 
@@ -434,7 +431,7 @@ internal class ImageUpdaterService : IImageUpdaterService
                         destOffset = array + startArrayOrDepth;
                     }
 
-                    IGorgonImageBuffer srcBuffer = srcImage.Buffers[mip, srcImage.ImageType == ImageType.Image3D ? depth : array];
+                    IGorgonImageBuffer srcBuffer = srcImage.Buffers[mip, srcImage.ImageType == ImageDataType.Image3D ? depth : array];
                     IGorgonImageBuffer destBuffer = destImage.Buffers[mip + startMip, destOffset];
 
                     // Clear the destination buffer before copying.
@@ -445,9 +442,9 @@ internal class ImageUpdaterService : IImageUpdaterService
 
                     int maxWidth = destBuffer.Width.Max(srcBuffer.Width);
                     int maxHeight = destBuffer.Height.Max(srcBuffer.Height);
-                    var copyRegion = new DX.Rectangle(0, 0, srcBuffer.Width, srcBuffer.Height);
+                    GorgonRectangle copyRegion = new(0, 0, srcBuffer.Width, srcBuffer.Height);
 
-                    DX.Point startLoc = GetAnchorStart(new DX.Size2(maxWidth, maxHeight), ref size, alignment);
+                    GorgonPoint startLoc = GetAnchorStart(new GorgonPoint(maxWidth, maxHeight), ref size, alignment);
 
                     srcBuffer.CopyTo(destBuffer, copyRegion, startLoc.X, startLoc.Y);
                 }
@@ -464,14 +461,13 @@ internal class ImageUpdaterService : IImageUpdaterService
     /// <param name="value">The value to assign.</param>
     /// <param name="inclusionRange">The range of alpha values to update.</param>
     /// <returns>A new image with the updated alpha.</returns>
-    public IGorgonImage SetAlphaValue(IGorgonImage sourceImage, int currentMipLevel, int currentArrayOrDepth, int value, GorgonRange inclusionRange)
+    public IGorgonImage SetAlphaValue(IGorgonImage sourceImage, int currentMipLevel, int currentArrayOrDepth, int value, GorgonRange<int> inclusionRange)
     {
         IGorgonImage result = sourceImage.Clone();
 
         result.Buffers[currentMipLevel, currentArrayOrDepth]
-              .SetAlpha(value / 255.0f, new GorgonRangeF(inclusionRange.Minimum / 255.0f, inclusionRange.Maximum / 255.0f));
+              .SetAlpha(value / 255.0f, new GorgonRange<float>(inclusionRange.Minimum / 255.0f, inclusionRange.Maximum / 255.0f));
 
         return result;
     }
-#endregion
 }

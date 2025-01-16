@@ -26,7 +26,7 @@ partial class FxEmbossSettings
         base.Dispose(disposing);
     }
 
-    #region Component Designer generated code
+
 
     /// <summary> 
     /// Required method for Designer support - do not modify 
@@ -83,7 +83,7 @@ partial class FxEmbossSettings
 
     }
 
-    #endregion
+
 
     private System.Windows.Forms.NumericUpDown NumericEmbossAmount;
     private System.Windows.Forms.Label label1;

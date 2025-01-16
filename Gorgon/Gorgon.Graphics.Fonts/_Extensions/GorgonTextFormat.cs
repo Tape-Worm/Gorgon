@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2021 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,34 +11,35 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: January 26, 2021 1:16:56 PM
 // 
-#endregion
 
-using System;
-using System.Linq;
+using System.Numerics;
 using System.Text;
 using Gorgon.Core;
 using Gorgon.Graphics.Fonts.Properties;
 using Gorgon.Math;
-using DX = SharpDX;
 
 namespace Gorgon.Graphics.Fonts;
 
 /// <summary>
-/// Functionality for formatting text using a <see cref="GorgonFont"/>.
+/// Functionality for formatting text using a <see cref="GorgonFont"/>
 /// </summary>
 public static class GorgonTextFormat
 {
+    // Buffers used for working with text. (Not thread safe)
+    private static readonly StringBuilder _workingBuffer = new(256);
+    private static readonly StringBuilder _wordWrapBuffer = new(256);
+
     /// <summary>
     /// Function to measure the width of an individual line of text.
     /// </summary>
@@ -103,7 +104,7 @@ public static class GorgonTextFormat
                 continue;
             }
 
-            var kerning = new GorgonKerningPair(character, line[i + 1]);
+            GorgonKerningPair kerning = new(character, line[i + 1]);
 
             if (font.KerningPairs.TryGetValue(kerning, out int kernAmount))
             {
@@ -127,24 +128,33 @@ public static class GorgonTextFormat
     /// <para>
     /// If the <paramref name="tabSpacing"/> parameter is changed from its default of 4, then that will be the number of spaces substituted for the tab control character.
     /// </para>
+    /// <para>
+    /// <note type="warning">
+    /// <para>
+    /// This method is <b>NOT</b> thread safe.
+    /// </para>
+    /// </note>
+    /// </para>
     /// </remarks>
     public static string FormatStringForRendering(this string renderText, int tabSpacing = 4)
-    {            
+    {
         if (string.IsNullOrEmpty(renderText))
         {
             return string.Empty;
         }
 
-        var workingBuffer = new StringBuilder(renderText);
+        _workingBuffer.Length = 0;
+        _workingBuffer.Append(renderText);
+
         tabSpacing = tabSpacing.Max(1);
 
         // Strip all carriage returns.
-        workingBuffer.Replace("\r", string.Empty);
+        _workingBuffer.Replace("\r", string.Empty);
 
         // Convert tabs to spaces.
-        workingBuffer.Replace("\t", new string(' ', tabSpacing));
+        _workingBuffer.Replace("\t", new string(' ', tabSpacing));
 
-        return workingBuffer.ToString();
+        return _workingBuffer.ToString();
     }
 
     /// <summary>
@@ -161,6 +171,13 @@ public static class GorgonTextFormat
     /// The <paramref name="wordWrapWidth"/> is the maximum number of pixels required for word wrapping, if an individual font glyph cell width (the <see cref="GorgonGlyph.Offset"/> + 
     /// <see cref="GorgonGlyph.Advance"/>) exceeds that of the <paramref name="wordWrapWidth"/>, then the parameter value is updated to glyph cell width.
     /// </para>
+    /// <para>
+    /// <note type="warning">
+    /// <para>
+    /// This method is <b>NOT</b> thread safe.
+    /// </para>
+    /// </note>
+    /// </para>
     /// </remarks>
     public static string WordWrap(this string text, GorgonFont font, float wordWrapWidth)
     {
@@ -174,21 +191,22 @@ public static class GorgonTextFormat
             return text;
         }
 
-        var wordText = new StringBuilder(text);
+        _wordWrapBuffer.Length = 0;
+        _wordWrapBuffer.Append(text);
 
         if (!font.TryGetDefaultGlyph(out GorgonGlyph defaultGlyph))
         {
             throw new GorgonException(GorgonResult.CannotEnumerate, string.Format(Resources.GORGFX_ERR_FONT_DEFAULT_CHAR_NOT_VALID, font.DefaultCharacter));
         }
 
-        int maxLength = wordText.Length;
+        int maxLength = _wordWrapBuffer.Length;
         int index = 0;
         float position = 0.0f;
         bool firstChar = true;
 
         while (index < maxLength)
         {
-            char character = wordText[index];
+            char character = _wordWrapBuffer[index];
 
             // Don't count newline or carriage return.
             if (character is '\n' or '\r')
@@ -198,7 +216,6 @@ public static class GorgonTextFormat
                 ++index;
                 continue;
             }
-
 
             if (!font.Glyphs.TryGetValue(character, out GorgonGlyph glyph))
             {
@@ -217,7 +234,7 @@ public static class GorgonTextFormat
             if ((font.UseKerningPairs)
                 && (index < maxLength - 1))
             {
-                if (font.KerningPairs.TryGetValue(new GorgonKerningPair(character, wordText[index + 1]), out int kernValue))
+                if (font.KerningPairs.TryGetValue(new GorgonKerningPair(character, _wordWrapBuffer[index + 1]), out int kernValue))
                 {
                     glyphCellWidth += kernValue;
                 }
@@ -243,7 +260,7 @@ public static class GorgonTextFormat
             // If we hit the max width, then we need to find the previous whitespace and inject a newline.
             while ((whiteSpaceIndex <= index) && (whiteSpaceIndex >= 0))
             {
-                char breakChar = wordText[whiteSpaceIndex];
+                char breakChar = _wordWrapBuffer[whiteSpaceIndex];
 
                 if ((char.IsWhiteSpace(breakChar))
                     && (breakChar != '\n')
@@ -261,8 +278,8 @@ public static class GorgonTextFormat
             {
                 if (index != 0)
                 {
-                    wordText.Insert(index, '\n');
-                    maxLength = wordText.Length;
+                    _wordWrapBuffer.Insert(index, '\n');
+                    maxLength = _wordWrapBuffer.Length;
                     ++index;
                 }
                 position = 0;
@@ -273,13 +290,13 @@ public static class GorgonTextFormat
             }
 
             // Extract the space.
-            wordText[whiteSpaceIndex] = '\n';
+            _wordWrapBuffer[whiteSpaceIndex] = '\n';
             position = 0;
             firstChar = true;
             index = whiteSpaceIndex + 1;
         }
 
-        return wordText.ToString();
+        return _wordWrapBuffer.ToString();
     }
 
     /// <summary>
@@ -308,7 +325,7 @@ public static class GorgonTextFormat
     /// </para>
     /// </remarks>
     /// <seealso cref="MeasureText"/>
-    public static DX.Size2F MeasureLine(this string text, GorgonFont font, bool useOutline = false, float lineSpacing = 1.0f)
+    public static Vector2 MeasureLine(this string text, GorgonFont font, bool useOutline = false, float lineSpacing = 1.0f)
     {
         if (font is null)
         {
@@ -317,7 +334,7 @@ public static class GorgonTextFormat
 
         if (string.IsNullOrEmpty(text))
         {
-            return DX.Size2F.Zero;
+            return Vector2.Zero;
         }
 
         float lineWidth = GetLineWidth(font, text, useOutline);
@@ -327,7 +344,7 @@ public static class GorgonTextFormat
             lineWidth += font.OutlineSize;
         }
 
-        return new DX.Size2F(lineWidth, font.FontHeight.FastFloor() * lineSpacing);
+        return new Vector2(lineWidth, font.FontHeight.FastFloor() * lineSpacing);
     }
 
     /// <summary>
@@ -361,9 +378,16 @@ public static class GorgonTextFormat
     /// <para>
     /// If measuring a single line of text with no breaks (i.e. newline or carriage return), and no word wrapping, then call the <see cref="MeasureLine"/> method instead for better performance.
     /// </para>
+    /// <para>
+    /// <note type="warning">
+    /// <para>
+    /// This method is <b>NOT</b> thread safe.
+    /// </para>
+    /// </note>
+    /// </para>
     /// </remarks>
     /// <seealso cref="MeasureLine"/>
-    public static DX.Size2F MeasureText(this string text, GorgonFont font, bool useOutline = false, int tabSpaceCount = 4, float lineSpacing = 1.0f, float? wordWrapWidth = null)
+    public static Vector2 MeasureText(this string text, GorgonFont font, bool useOutline = false, int tabSpaceCount = 4, float lineSpacing = 1.0f, float? wordWrapWidth = null)
     {
         if (font is null)
         {
@@ -372,17 +396,17 @@ public static class GorgonTextFormat
 
         if (string.IsNullOrEmpty(text))
         {
-            return DX.Size2F.Zero;
+            return Vector2.Zero;
         }
 
         string formattedText = FormatStringForRendering(text, tabSpaceCount);
 
         if (string.IsNullOrEmpty(formattedText))
         {
-            return DX.Size2F.Zero;
+            return Vector2.Zero;
         }
 
-        DX.Size2F result = DX.Size2F.Zero;
+        Vector2 result = Vector2.Zero;
 
         if (wordWrapWidth is not null)
         {
@@ -399,17 +423,17 @@ public static class GorgonTextFormat
 
         if (lineSpacing.EqualsEpsilon(1.0f))
         {
-            result.Height = lines.Length * fontHeight;
+            result.Y = lines.Length * fontHeight;
         }
         else
         {
             // For a modified line spacing, we have to adjust for the last line not being affected by the line spacing.
-            result.Height = ((lines.Length - 1) * (fontHeight * lineSpacing)) + fontHeight;
+            result.Y = ((lines.Length - 1) * (fontHeight * lineSpacing)) + fontHeight;
         }
 
         if ((font.HasOutline) && (useOutline))
         {
-            result.Height += font.OutlineSize * 0.5f;
+            result.Y += font.OutlineSize * 0.5f;
         }
 
         // Get width.
@@ -423,7 +447,7 @@ public static class GorgonTextFormat
                 lineWidth += font.OutlineSize;
             }
 
-            result.Width = result.Width.Max(lineWidth);
+            result.X = result.X.Max(lineWidth);
         }
 
         return result;

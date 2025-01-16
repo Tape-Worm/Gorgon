@@ -1,7 +1,6 @@
-﻿#region MIT
-// 
+﻿// 
 // Gorgon.
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2024 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,14 +21,14 @@
 // 
 // Created: September 4, 2018 9:49:20 AM
 // 
-#endregion
 
-using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 
 namespace Gorgon.Core;
 
 /// <summary>
-/// Extension methods for null checking on reference types and nullable types.
+/// Extension methods for null checking on reference types and nullable value types.
 /// </summary>
 public static class GorgonNullExtensions
 {
@@ -43,7 +42,8 @@ public static class GorgonNullExtensions
     /// This will check an object for <b>null</b> and <see cref="DBNull"/>.
     /// </para>
     /// </remarks>
-    public static bool IsNull(this object value) => (value is null) || (value == DBNull.Value);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool IsNull([NotNullWhen(false)] this object? value) => (value is null) || (value == DBNull.Value);
 
     /// <summary>
     /// Function to check an object for <b>null</b> or <see cref="DBNull"/> and return a substitute value.
@@ -52,7 +52,8 @@ public static class GorgonNullExtensions
     /// <param name="value">The value to check.</param>
     /// <param name="substitutionValue">The value used to replace the return value if the original value is <b>null</b> or <see cref="DBNull"/>.</param>
     /// <returns>The original <paramref name="value"/> if not <b>null</b> (or <see cref="DBNull"/>), or the <paramref name="substitutionValue"/> otherwise.</returns>
-    public static T IfNull<T>(this object value, T substitutionValue) => !IsNull(value) ? (T)value : substitutionValue;
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static T IfNull<T>(this object? value, T substitutionValue) => !IsNull(value) ? (T)value : substitutionValue;
 
     /// <summary>
     /// Function to return the value as a nullable type.
@@ -60,6 +61,21 @@ public static class GorgonNullExtensions
     /// <typeparam name="T">The type of value to convert to, must be a value type.</typeparam>
     /// <param name="value">The value to convert.</param>
     /// <returns>The value as a nullable value type.</returns>
-    public static T? AsNullable<T>(this object value)
-        where T : struct => (T?)Convert.ChangeType(value, typeof(T));
+    public static T? AsNullable<T>(this object? value)
+        where T : struct
+    {
+        if ((value is null) || (value == DBNull.Value))
+        {
+            return null;
+        }
+
+        Type type = typeof(T);
+
+        if ((type.IsEnum) && (type.IsEnumDefined(value)))
+        {
+            return (T)value;
+        }
+
+        return (T)Convert.ChangeType(value, type);
+    }
 }

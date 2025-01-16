@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,46 +11,38 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 26, 2018 8:51:04 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Drawing;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.ViewModels;
 using Gorgon.Editor.Views;
+using Gorgon.Graphics;
 using Krypton.Ribbon;
 using Krypton.Toolkit;
-using DX = SharpDX;
 
 namespace Gorgon.Editor;
 
 /// <summary>
-/// The main application form.
+/// The main application form
 /// </summary>
 internal partial class FormMain
     : KryptonForm, IDataContext<IMain>
 {
-    #region Enumerations.
     /// <summary>
     /// States for the closing handler.
     /// </summary>
@@ -69,9 +61,7 @@ internal partial class FormMain
         /// </summary>
         Closed = 2
     }
-    #endregion
 
-    #region Variables.
     // The context for a clipboard handler object.
     private IClipboardHandler _clipboardContext;
     // The flag to indicate that the application is already closing.
@@ -83,14 +73,14 @@ internal partial class FormMain
     // The list of groups on the tools tab.
     private readonly Dictionary<string, KryptonRibbonGroup> _toolGroups = new(StringComparer.OrdinalIgnoreCase);
     // The list of line groups for the tools tab.
-    private readonly List<KryptonRibbonGroupLines> _toolLines = new();
+    private readonly List<KryptonRibbonGroupLines> _toolLines = [];
     // The list of triple groups for the tools tab.
-    private readonly List<KryptonRibbonGroupTriple> _toolTriples = new();
+    private readonly List<KryptonRibbonGroupTriple> _toolTriples = [];
     // The list of buttons for the tools tab.
-    private readonly Dictionary<KryptonRibbonGroupButton, KryptonRibbonGroup> _toolGroupButtons = new();
+    private readonly Dictionary<KryptonRibbonGroupButton, KryptonRibbonGroup> _toolGroupButtons = [];
     private readonly Dictionary<string, KryptonRibbonGroupButton> _toolButtons = new(StringComparer.OrdinalIgnoreCase);
     // The list of separators for the tools tab.
-    private readonly List<KryptonRibbonGroupSeparator> _toolSeparators = new();
+    private readonly List<KryptonRibbonGroupSeparator> _toolSeparators = [];
     // Default event arguments for button validation.
     private readonly CreateDirectoryArgs _createDirArgs = new();
     private readonly DeleteArgs _deleteValidationArgs = new(null);
@@ -102,14 +92,12 @@ internal partial class FormMain
     private readonly ProgressPanelDisplay _progressForm;
     // The application settings.
     private readonly EditorSettings _settings;
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to return the data context assigned to this view.
     /// </summary>
     [Browsable(false)]
-    public IMain DataContext
+    public IMain ViewModel
     {
         get;
         private set;
@@ -124,9 +112,7 @@ internal partial class FormMain
         get => PanelProject.GraphicsContext;
         set => PanelProject.GraphicsContext = value;
     }
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to release all tool ribbon items.
     /// </summary>
@@ -211,7 +197,7 @@ internal partial class FormMain
                 // Add a separator if ask for one (as long as it's not the first item in the group).
                 if ((button.IsSeparator) && (button != buttonItem.Value[0]))
                 {
-                    var sep = new KryptonRibbonGroupSeparator();
+                    KryptonRibbonGroupSeparator sep = new();
                     _toolSeparators.Add(sep);
                     ribGroup.Items.Add(sep);
                 }
@@ -251,7 +237,7 @@ internal partial class FormMain
                     lines = null;
                 }
 
-                var newButton = new KryptonRibbonGroupButton
+                KryptonRibbonGroupButton newButton = new()
                 {
                     TextLine1 = button.DisplayText,
                     ButtonType = GroupButtonType.Push,
@@ -263,8 +249,8 @@ internal partial class FormMain
 
                 if (!string.IsNullOrWhiteSpace(button.Description))
                 {
-                    newButton.ToolTipTitle = button.DisplayText;
-                    newButton.ToolTipBody = button.Description;
+                    newButton.ToolTipValues.Heading = button.DisplayText;
+                    newButton.ToolTipValues.Description = button.Description;
                 }
 
                 newButton.Click += ToolButton_Click;
@@ -309,12 +295,12 @@ internal partial class FormMain
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private async void ToolButton_Click(object sender, EventArgs e)
     {
-        if (DataContext?.CurrentProject is null)
+        if (ViewModel?.CurrentProject is null)
         {
             return;
         }
 
-        var button = (KryptonRibbonGroupButton)sender;
+        KryptonRibbonGroupButton button = (KryptonRibbonGroupButton)sender;
 
         string name = button.Tag?.ToString() ?? string.Empty;
 
@@ -323,7 +309,7 @@ internal partial class FormMain
             return;
         }
 
-        if (!DataContext.CurrentProject.ToolButtons.TryGetValue(ribbonGroup.TextLine1, out IReadOnlyList<IToolPlugInRibbonButton> buttons))
+        if (!ViewModel.CurrentProject.ToolButtons.TryGetValue(ribbonGroup.TextLine1, out IReadOnlyList<IToolPlugInRibbonButton> buttons))
         {
             return;
         }
@@ -333,20 +319,20 @@ internal partial class FormMain
         toolButton?.ClickCallback();
 
         IFile selectedFile = null;
-        if (DataContext.CurrentProject.FileExplorer is null)
+        if (ViewModel.CurrentProject.FileExplorer is null)
         {
             return;
         }
 
-        if (DataContext.CurrentProject.FileExplorer.SelectedFiles.Count > 0)
+        if (ViewModel.CurrentProject.FileExplorer.SelectedFiles.Count > 0)
         {
-            selectedFile = DataContext.CurrentProject.FileExplorer.SelectedFiles[0];
+            selectedFile = ViewModel.CurrentProject.FileExplorer.SelectedFiles[0];
         }
 
-        if ((DataContext.CurrentProject.ContentPreviewer?.ResetPreviewCommand is not null)
-            && (DataContext.CurrentProject.ContentPreviewer.ResetPreviewCommand.CanExecute(null)))
+        if ((ViewModel.CurrentProject.ContentPreviewer?.ResetPreviewCommand is not null)
+            && (ViewModel.CurrentProject.ContentPreviewer.ResetPreviewCommand.CanExecute(null)))
         {
-            await DataContext.CurrentProject.ContentPreviewer.ResetPreviewCommand.ExecuteAsync(null);
+            await ViewModel.CurrentProject.ContentPreviewer.ResetPreviewCommand.ExecuteAsync(null);
         }
 
         if (selectedFile is null)
@@ -354,13 +340,13 @@ internal partial class FormMain
             return;
         }
 
-        if ((DataContext.CurrentProject.ContentPreviewer?.RefreshPreviewCommand is null)
-            || (!DataContext.CurrentProject.ContentPreviewer.RefreshPreviewCommand.CanExecute(selectedFile.FullPath)))                
+        if ((ViewModel.CurrentProject.ContentPreviewer?.RefreshPreviewCommand is null)
+            || (!ViewModel.CurrentProject.ContentPreviewer.RefreshPreviewCommand.CanExecute(selectedFile.FullPath)))
         {
             return;
         }
 
-        await DataContext.CurrentProject.ContentPreviewer.RefreshPreviewCommand.ExecuteAsync(selectedFile.FullPath);
+        await ViewModel.CurrentProject.ContentPreviewer.RefreshPreviewCommand.ExecuteAsync(selectedFile.FullPath);
     }
 
     /// <summary>Handles the Click event of the ButtonOpenContent control.</summary>
@@ -368,7 +354,7 @@ internal partial class FormMain
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonOpenContent_Click(object sender, EventArgs e)
     {
-        IProjectEditor project = DataContext?.CurrentProject;
+        IProjectEditor project = ViewModel?.CurrentProject;
         IFileExplorer fileExplorer = project?.FileExplorer;
         string currentFilePath = fileExplorer?.SelectedFiles[0].FullPath;
 
@@ -380,13 +366,12 @@ internal partial class FormMain
         fileExplorer.OpenContentFileCommand.Execute(currentFilePath);
     }
 
-
     /// <summary>Handles the Click event of the ButtonFileSystemRefresh control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private async void ButtonFileSystemRefresh_Click(object sender, EventArgs e)
     {
-        IProjectEditor project = DataContext?.CurrentProject;
+        IProjectEditor project = ViewModel?.CurrentProject;
         IFileExplorer fileExplorer = project?.FileExplorer;
         IContentPreview preview = project?.ContentPreviewer;
 
@@ -501,11 +486,11 @@ internal partial class FormMain
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonFileSystemDeleteAll_Click(object sender, EventArgs e)
     {
-        IFileExplorer fileExplorer = DataContext?.CurrentProject?.FileExplorer;
+        IFileExplorer fileExplorer = ViewModel?.CurrentProject?.FileExplorer;
 
         try
         {
-            var args = new DeleteArgs(fileExplorer.Root.ID);
+            DeleteArgs args = new(fileExplorer.Root.ID);
             if ((fileExplorer?.DeleteDirectoryCommand is null) || (!fileExplorer.DeleteDirectoryCommand.CanExecute(args)))
             {
                 return;
@@ -524,12 +509,12 @@ internal partial class FormMain
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void Stage_OpenClicked(object sender, EventArgs e)
     {
-        if ((DataContext?.OpenPackFileCommand is null) || (!DataContext.OpenPackFileCommand.CanExecute(null)))
+        if ((ViewModel?.OpenPackFileCommand is null) || (!ViewModel.OpenPackFileCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.OpenPackFileCommand.Execute(null);
+        ViewModel.OpenPackFileCommand.Execute(null);
     }
 
     /// <summary>Handles the BrowseClicked event of the StageLive control.</summary>
@@ -537,12 +522,12 @@ internal partial class FormMain
     /// <param name="e">The [EventArgs] instance containing the event data.</param>
     private void StageLive_BrowseClicked(object sender, EventArgs e)
     {
-        if ((DataContext?.BrowseProjectCommand is null) || (!DataContext.BrowseProjectCommand.CanExecute(null)))
+        if ((ViewModel?.BrowseProjectCommand is null) || (!ViewModel.BrowseProjectCommand.CanExecute(null)))
         {
             return;
         }
 
-        DataContext.BrowseProjectCommand.Execute(null);
+        ViewModel.BrowseProjectCommand.Execute(null);
     }
 
     /// <summary>
@@ -552,7 +537,7 @@ internal partial class FormMain
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void FormMain_Activated(object sender, EventArgs e)
     {
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
@@ -565,12 +550,12 @@ internal partial class FormMain
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonSave_Click(object sender, EventArgs e)
     {
-        if (DataContext?.CurrentProject is null)
+        if (ViewModel?.CurrentProject is null)
         {
             return;
         }
 
-        var args = new SaveEventArgs(false);
+        SaveEventArgs args = new(false);
         StageLive_Save(this, args);
     }
 
@@ -579,7 +564,7 @@ internal partial class FormMain
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonFileSystemPanel_Click(object sender, EventArgs e)
     {
-        if (DataContext?.CurrentProject is null)
+        if (ViewModel?.CurrentProject is null)
         {
             return;
         }
@@ -593,7 +578,7 @@ internal partial class FormMain
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonFileSystemPreview_Click(object sender, EventArgs e)
     {
-        if (DataContext?.CurrentProject is null)
+        if (ViewModel?.CurrentProject is null)
         {
             return;
         }
@@ -617,7 +602,7 @@ internal partial class FormMain
     /// </summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-    private void StageLive_BackClicked(object sender, EventArgs e) => NavigateToProjectView(DataContext);
+    private void StageLive_BackClicked(object sender, EventArgs e) => NavigateToProjectView(ViewModel);
 
     /// <summary>
     /// Handles the Save event of the StageLive control.
@@ -626,22 +611,22 @@ internal partial class FormMain
     /// <param name="e">The <see cref="SaveEventArgs" /> instance containing the event data.</param>
     private async void StageLive_Save(object sender, SaveEventArgs e)
     {
-        if (DataContext?.CurrentProject?.SaveProjectToPackFileCommand is null)
+        if (ViewModel?.CurrentProject?.SaveProjectToPackFileCommand is null)
         {
             return;
         }
 
-        var args = new CancelEventArgs();
+        CancelEventArgs args = new();
 
-        if (!DataContext.CurrentProject.SaveProjectToPackFileCommand.CanExecute(args))
+        if (!ViewModel.CurrentProject.SaveProjectToPackFileCommand.CanExecute(args))
         {
-            NavigateToProjectView(DataContext);
+            NavigateToProjectView(ViewModel);
             return;
         }
 
-        await DataContext.CurrentProject.SaveProjectToPackFileCommand.ExecuteAsync(args);
+        await ViewModel.CurrentProject.SaveProjectToPackFileCommand.ExecuteAsync(args);
 
-        NavigateToProjectView(DataContext);
+        NavigateToProjectView(ViewModel);
     }
 
     /// <summary>
@@ -660,7 +645,7 @@ internal partial class FormMain
     /// </summary>
     private void ValidateRibbonButtons()
     {
-        IProjectEditor project = DataContext?.CurrentProject;
+        IProjectEditor project = ViewModel?.CurrentProject;
         IFileExplorer fileExplorer = project?.FileExplorer;
 
         if ((project is null) || (fileExplorer is null))
@@ -675,13 +660,13 @@ internal partial class FormMain
 
         ButtonFileSystemPanel.Enabled = project is not null;
         ButtonFileSystemPreview.Enabled = (ButtonFileSystemPanel.Enabled) && (_settings.ShowFileExplorer);
-        ButtonFileSystemNewDirectory.Enabled = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer.CreateDirectoryCommand?.CanExecute(_createDirArgs) ?? false);            
-        ButtonImport.Enabled = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer.ImportCommand?.CanExecute(_defaultImportData) ?? false);            
+        ButtonFileSystemNewDirectory.Enabled = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer.CreateDirectoryCommand?.CanExecute(_createDirArgs) ?? false);
+        ButtonImport.Enabled = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer.ImportCommand?.CanExecute(_defaultImportData) ?? false);
         ButtonOpenContent.Enabled = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer.OpenContentFileCommand?.CanExecute(null) ?? false);
         PanelProject.FileExplorer.MenuItemDirCreateContent.Available =
         PanelProject.FileExplorer.MenuItemFileCreateContent.Available =
-        GroupCreate.Visible = SepCreate.Visible = DataContext.ContentCreators.Count > 0;
-        ButtonFileSystemRefresh.Enabled = !PanelProject.FileExplorer.IsRenaming;                        
+        GroupCreate.Visible = SepCreate.Visible = ViewModel.ContentCreators.Count > 0;
+        ButtonFileSystemRefresh.Enabled = !PanelProject.FileExplorer.IsRenaming;
 
         foreach (ToolStripItem item in MenuCreate.Items)
         {
@@ -694,11 +679,11 @@ internal partial class FormMain
         switch (PanelProject.FileExplorer.ControlContext)
         {
             case FileExplorerContext.None:
-                ButtonExport.Enabled = 
-                ButtonFileSystemDelete.Enabled = 
-                ButtonFileSystemRename.Enabled = 
+                ButtonExport.Enabled =
+                ButtonFileSystemDelete.Enabled =
+                ButtonFileSystemRename.Enabled =
                 ButtonFileSystemPaste.Enabled =
-                ButtonFileSystemCopy.Enabled = 
+                ButtonFileSystemCopy.Enabled =
                 ButtonFileSystemCut.Enabled = false;
                 break;
             case FileExplorerContext.DirectoryTree:
@@ -719,7 +704,7 @@ internal partial class FormMain
                                             }) ?? false));
                 ButtonFileSystemPaste.Enabled = (!PanelProject.FileExplorer.IsRenaming)
                                             && (_clipboardContext?.PasteDataCommand?.CanExecute(null) ?? false);
-                ButtonFileSystemDeleteAll.Enabled = 
+                ButtonFileSystemDeleteAll.Enabled =
                 ButtonFileSystemDelete.Enabled = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer.DeleteDirectoryCommand?.CanExecute(_deleteValidationArgs) ?? false);
                 ButtonFileSystemDeleteAll.Enabled = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer.DeleteDirectoryCommand?.CanExecute(_deleteAllValidationArgs) ?? false);
                 ButtonFileSystemRename.Enabled = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer.RenameDirectoryCommand?.CanExecute(null) ?? false);
@@ -779,11 +764,11 @@ internal partial class FormMain
         Stage.Visible = false;
         RibbonMain.Visible = true;
         PanelWorkSpace.Visible = true;
-        Text = DataContext.Text;
+        Text = ViewModel.Text;
 
         PanelWorkSpace.BringToFront();
 
-        if (PanelProject.DataContext != dataContext?.CurrentProject)
+        if (PanelProject.ViewModel != dataContext?.CurrentProject)
         {
             PanelProject.SetDataContext(dataContext?.CurrentProject);
         }
@@ -799,10 +784,10 @@ internal partial class FormMain
     /// </summary>
     private void NavigateToStagingView()
     {
-        if (DataContext?.CurrentProject?.SaveProjectToPackFileCommand is not null)
+        if (ViewModel?.CurrentProject?.SaveProjectToPackFileCommand is not null)
         {
-            var saveAsArgs = new CancelEventArgs();
-            Stage.CanSavePackedFile = DataContext.CurrentProject.SaveProjectToPackFileCommand.CanExecute(saveAsArgs);
+            CancelEventArgs saveAsArgs = new();
+            Stage.CanSavePackedFile = ViewModel.CurrentProject.SaveProjectToPackFileCommand.CanExecute(saveAsArgs);
         }
         else
         {
@@ -811,7 +796,7 @@ internal partial class FormMain
 
         Text = string.Empty;
         Stage.IsStartup = false;
-        Stage.CanOpen = (DataContext.OpenPackFileCommand is not null) && (DataContext.OpenPackFileCommand.CanExecute(null));
+        Stage.CanOpen = (ViewModel.OpenPackFileCommand is not null) && (ViewModel.OpenPackFileCommand.CanExecute(null));
 
         Stage.Visible = true;
         _clipboardContext = null;
@@ -836,15 +821,15 @@ internal partial class FormMain
                 _deleteAllValidationArgs = null;
                 RibbonMain.SelectedContext = string.Empty;
 
-                if (DataContext.CurrentProject is not null)
+                if (ViewModel.CurrentProject is not null)
                 {
-                    DataContext.CurrentProject.PropertyChanging -= CurrentProject_PropertyChanging;
-                    DataContext.CurrentProject.PropertyChanged -= CurrentProject_PropertyChanged;
-                    if (DataContext.CurrentProject.FileExplorer is not null)
+                    ViewModel.CurrentProject.PropertyChanging -= CurrentProject_PropertyChanging;
+                    ViewModel.CurrentProject.PropertyChanged -= CurrentProject_PropertyChanged;
+                    if (ViewModel.CurrentProject.FileExplorer is not null)
                     {
-                        DataContext.CurrentProject.FileExplorer.FileSystemUpdated -= FileExplorer_FileSystemUpdated;
-                        DataContext.CurrentProject.FileExplorer.PropertyChanged -= FileExplorer_PropertyChanged;
-                        DataContext.CurrentProject.FileExplorer.SelectedFiles.CollectionChanged -= SelectedFiles_CollectionChanged;
+                        ViewModel.CurrentProject.FileExplorer.FileSystemUpdated -= FileExplorer_FileSystemUpdated;
+                        ViewModel.CurrentProject.FileExplorer.PropertyChanged -= FileExplorer_PropertyChanged;
+                        ViewModel.CurrentProject.FileExplorer.SelectedFiles.CollectionChanged -= SelectedFiles_CollectionChanged;
                     }
                 }
 
@@ -864,7 +849,7 @@ internal partial class FormMain
         switch (e.PropertyName)
         {
             case nameof(IProjectEditor.CommandContext):
-                if (string.IsNullOrWhiteSpace(DataContext.CurrentProject.CommandContext))
+                if (string.IsNullOrWhiteSpace(ViewModel.CurrentProject.CommandContext))
                 {
                     _prevTabBeforeContext = RibbonMain.SelectedTab;
                 }
@@ -880,9 +865,9 @@ internal partial class FormMain
         switch (e.PropertyName)
         {
             case nameof(IProjectEditor.CommandContext):
-                RibbonMain.SelectedContext = DataContext.CurrentProject.CommandContext;
+                RibbonMain.SelectedContext = ViewModel.CurrentProject.CommandContext;
 
-                if (string.IsNullOrWhiteSpace(DataContext.CurrentProject.CommandContext))
+                if (string.IsNullOrWhiteSpace(ViewModel.CurrentProject.CommandContext))
                 {
                     if (_prevTabBeforeContext is not null)
                     {
@@ -892,7 +877,7 @@ internal partial class FormMain
                 else
                 {
                     // Find the first tab associated with this context.
-                    KryptonRibbonTab contextTab = RibbonMain.RibbonTabs.FirstOrDefault(item => string.Equals(DataContext.CurrentProject.CommandContext, item.ContextName, StringComparison.OrdinalIgnoreCase));
+                    KryptonRibbonTab contextTab = RibbonMain.RibbonTabs.FirstOrDefault(item => string.Equals(ViewModel.CurrentProject.CommandContext, item.ContextName, StringComparison.OrdinalIgnoreCase));
                     if (contextTab is not null)
                     {
                         RibbonMain.SelectedTab = contextTab;
@@ -950,39 +935,39 @@ internal partial class FormMain
         switch (e.PropertyName)
         {
             case nameof(IMain.Text):
-                Text = DataContext.Text;
+                Text = ViewModel.Text;
                 ValidateRibbonButtons();
                 break;
             case nameof(IMain.ClipboardContext):
-                _clipboardContext = DataContext.ClipboardContext;
+                _clipboardContext = ViewModel.ClipboardContext;
                 break;
             case nameof(IMain.CurrentProject):
-                NavigateToProjectView(DataContext);
+                NavigateToProjectView(ViewModel);
 
-                if (DataContext.CurrentProject is null)
+                if (ViewModel.CurrentProject is null)
                 {
                     break;
                 }
 
-                DataContext.CurrentProject.PropertyChanging += CurrentProject_PropertyChanging;
-                DataContext.CurrentProject.PropertyChanged += CurrentProject_PropertyChanged;
+                ViewModel.CurrentProject.PropertyChanging += CurrentProject_PropertyChanging;
+                ViewModel.CurrentProject.PropertyChanged += CurrentProject_PropertyChanged;
 
-                if (DataContext.CurrentProject.FileExplorer is not null)
+                if (ViewModel.CurrentProject.FileExplorer is not null)
                 {
-                    DataContext.CurrentProject.FileExplorer.FileSystemUpdated += FileExplorer_FileSystemUpdated;
-                    DataContext.CurrentProject.FileExplorer.PropertyChanged += FileExplorer_PropertyChanged;
-                    DataContext.CurrentProject.FileExplorer.SelectedFiles.CollectionChanged += SelectedFiles_CollectionChanged;
+                    ViewModel.CurrentProject.FileExplorer.FileSystemUpdated += FileExplorer_FileSystemUpdated;
+                    ViewModel.CurrentProject.FileExplorer.PropertyChanged += FileExplorer_PropertyChanged;
+                    ViewModel.CurrentProject.FileExplorer.SelectedFiles.CollectionChanged += SelectedFiles_CollectionChanged;
                 }
 
-                RibbonMain.SelectedContext = DataContext.CurrentProject.CommandContext;
+                RibbonMain.SelectedContext = ViewModel.CurrentProject.CommandContext;
 
                 TabFileSystem.Visible = true;
-                UpdateToolsTab(DataContext.CurrentProject.ToolButtons);
+                UpdateToolsTab(ViewModel.CurrentProject.ToolButtons);
 
-                _deleteAllValidationArgs = new DeleteArgs(DataContext.CurrentProject.FileExplorer.Root.ID);
+                _deleteAllValidationArgs = new DeleteArgs(ViewModel.CurrentProject.FileExplorer.Root.ID);
                 ButtonFileSystemPanel.Checked = _settings.ShowFileExplorer;
                 ButtonFileSystemPreview.Checked = _settings.ShowContentPreview;
-                break;                
+                break;
         }
 
         ValidateRibbonButtons();
@@ -1008,7 +993,7 @@ internal partial class FormMain
     /// <summary>
     /// Function to update the icons used for the "new" buttons.
     /// </summary>
-    /// <param name="metadata">The metadata for plug ins that can create content.</param>
+    /// <param name="metadata">The metadata for plug-ins that can create content.</param>
     private void AddNewIcons(IEnumerable<IContentPlugInMetadata> metadata)
     {
         if (metadata is null)
@@ -1027,21 +1012,21 @@ internal partial class FormMain
                 continue;
             }
 
-            var menuItem = new ToolStripMenuItem(string.Format(Resources.GOREDIT_CREATE_NEW, item.ContentType), icon)
+            ToolStripMenuItem menuItem = new(string.Format(Resources.GOREDIT_CREATE_NEW, item.ContentType), icon)
             {
                 Name = id,
                 Tag = item.NewIconID
             };
             menuItem.Click += NewItem_Click;
 
-            var dirCreateMenuItem = new ToolStripMenuItem(string.Format(Resources.GOREDIT_CREATE_NEW, item.ContentType), icon)
+            ToolStripMenuItem dirCreateMenuItem = new(string.Format(Resources.GOREDIT_CREATE_NEW, item.ContentType), icon)
             {
                 Name = id,
                 Tag = item.NewIconID
             };
             dirCreateMenuItem.Click += NewItem_Click;
 
-            var fileCreateMenuItem = new ToolStripMenuItem(string.Format(Resources.GOREDIT_CREATE_NEW, item.ContentType), icon)
+            ToolStripMenuItem fileCreateMenuItem = new(string.Format(Resources.GOREDIT_CREATE_NEW, item.ContentType), icon)
             {
                 Name = id,
                 Tag = item.NewIconID
@@ -1061,15 +1046,15 @@ internal partial class FormMain
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void NewItem_Click(object sender, EventArgs e)
     {
-        var item = (ToolStripItem)sender;
-        var id = (Guid)item.Tag;
+        ToolStripItem item = (ToolStripItem)sender;
+        Guid id = (Guid)item.Tag;
 
-        if ((DataContext?.CurrentProject?.CreateContentCommand is null) || (!DataContext.CurrentProject.CreateContentCommand.CanExecute(id)))
+        if ((ViewModel?.CurrentProject?.CreateContentCommand is null) || (!ViewModel.CurrentProject.CreateContentCommand.CanExecute(id)))
         {
             return;
         }
 
-        DataContext.CurrentProject.CreateContentCommand.Execute(id);
+        ViewModel.CurrentProject.CreateContentCommand.Execute(id);
     }
 
     /// <summary>
@@ -1113,26 +1098,26 @@ internal partial class FormMain
     {
         _progressForm.SetDataContext(null);
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        if (DataContext.CurrentProject is not null)
+        if (ViewModel.CurrentProject is not null)
         {
-            DataContext.CurrentProject.PropertyChanging -= CurrentProject_PropertyChanging;
-            DataContext.CurrentProject.PropertyChanged -= CurrentProject_PropertyChanged;
+            ViewModel.CurrentProject.PropertyChanging -= CurrentProject_PropertyChanging;
+            ViewModel.CurrentProject.PropertyChanged -= CurrentProject_PropertyChanged;
 
-            if (DataContext.CurrentProject.FileExplorer is not null)
+            if (ViewModel.CurrentProject.FileExplorer is not null)
             {
-                DataContext.CurrentProject.FileExplorer.FileSystemUpdated -= FileExplorer_FileSystemUpdated;
-                DataContext.CurrentProject.FileExplorer.PropertyChanged -= FileExplorer_PropertyChanged;
-                DataContext.CurrentProject.FileExplorer.SelectedFiles.CollectionChanged -= SelectedFiles_CollectionChanged;
+                ViewModel.CurrentProject.FileExplorer.FileSystemUpdated -= FileExplorer_FileSystemUpdated;
+                ViewModel.CurrentProject.FileExplorer.PropertyChanged -= FileExplorer_PropertyChanged;
+                ViewModel.CurrentProject.FileExplorer.SelectedFiles.CollectionChanged -= SelectedFiles_CollectionChanged;
             }
         }
 
-        DataContext.PropertyChanged -= DataContext_PropertyChanged;
-        DataContext.PropertyChanging -= DataContext_PropertyChanging;
+        ViewModel.PropertyChanged -= DataContext_PropertyChanged;
+        ViewModel.PropertyChanging -= DataContext_PropertyChanging;
     }
 
     /// <summary>
@@ -1161,7 +1146,7 @@ internal partial class FormMain
     {
         try
         {
-            switch(PanelProject.FileExplorer.ControlContext)
+            switch (PanelProject.FileExplorer.ControlContext)
             {
                 case FileExplorerContext.DirectoryTree:
                     PanelProject.FileExplorer.RenameDirectory();
@@ -1227,7 +1212,6 @@ internal partial class FormMain
         ValidateRibbonButtons();
     }
 
-
     /// <summary>
     /// Handles the Click event of the ButtonFileSystemPaste control.
     /// </summary>
@@ -1250,7 +1234,7 @@ internal partial class FormMain
     /// </summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-    private void ButtonFileSystemCopy_Click(object sender, EventArgs e) 
+    private void ButtonFileSystemCopy_Click(object sender, EventArgs e)
     {
         if (_clipboardContext?.CopyDataCommand is null)
         {
@@ -1274,12 +1258,12 @@ internal partial class FormMain
     /// <param name="e">A <see cref="EventArgs"/> that contains the event data.</param>
     protected override void OnResizeEnd(EventArgs e)
     {
-        if ((WindowState != FormWindowState.Normal) || (DataContext is null))
+        if ((WindowState != FormWindowState.Normal) || (ViewModel is null))
         {
             return;
         }
 
-        DataContext.Settings.WindowBounds = new DX.Rectangle(DesktopBounds.X, DesktopBounds.Y, DesktopBounds.Width, DesktopBounds.Height);
+        ViewModel.Settings.WindowBounds = new GorgonRectangle(DesktopBounds.X, DesktopBounds.Y, DesktopBounds.Width, DesktopBounds.Height);
     }
 
     /// <summary>Raises the <see cref="E:System.Windows.Forms.Form.Load" /> event.</summary>
@@ -1288,14 +1272,14 @@ internal partial class FormMain
     {
         base.OnLoad(e);
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
 
-        DataContext.Load();
+        ViewModel.Load();
 
-        Stage.CanOpen = (DataContext.OpenPackFileCommand is not null) && (DataContext.OpenPackFileCommand.CanExecute(null));
+        Stage.CanOpen = (ViewModel.OpenPackFileCommand is not null) && (ViewModel.OpenPackFileCommand.CanExecute(null));
 
         Focus();
     }
@@ -1306,7 +1290,7 @@ internal partial class FormMain
     {
         base.OnFormClosing(e);
 
-        if (DataContext is null)
+        if (ViewModel is null)
         {
             return;
         }
@@ -1322,32 +1306,32 @@ internal partial class FormMain
                 _closeFlag = CloseStates.Closing;
                 e.Cancel = true;
 
-                DX.Rectangle windowDimensions;
+                GorgonRectangle windowDimensions;
                 int windowState;
                 switch (WindowState)
                 {
                     case FormWindowState.Normal:
                     case FormWindowState.Maximized:
-                        windowDimensions = new DX.Rectangle(Location.X, Location.Y, Size.Width, Size.Height);
+                        windowDimensions = new GorgonRectangle(Location.X, Location.Y, Size.Width, Size.Height);
                         windowState = (int)WindowState;
                         break;
                     default:
-                        windowDimensions = new DX.Rectangle(RestoreBounds.X, RestoreBounds.Y, RestoreBounds.Width, RestoreBounds.Height);
+                        windowDimensions = new GorgonRectangle(RestoreBounds.X, RestoreBounds.Y, RestoreBounds.Width, RestoreBounds.Height);
                         windowState = (int)FormWindowState.Normal;
                         break;
                 }
 
-                var args = new AppCloseArgs(windowDimensions, windowState);
+                AppCloseArgs args = new(windowDimensions, windowState);
 
                 // If we don't have anything to handle the shut down, then just shut it all down.
-                if ((DataContext.AppClosingAsyncCommand is null) || (!DataContext.AppClosingAsyncCommand.CanExecute(args)))
+                if ((ViewModel.AppClosingAsyncCommand is null) || (!ViewModel.AppClosingAsyncCommand.CanExecute(args)))
                 {
                     _closeFlag = CloseStates.NotClosing;
                     e.Cancel = false;
                     return;
                 }
 
-                await DataContext.AppClosingAsyncCommand.ExecuteAsync(args);
+                await ViewModel.AppClosingAsyncCommand.ExecuteAsync(args);
 
                 if (args.Cancel)
                 {
@@ -1383,49 +1367,47 @@ internal partial class FormMain
             Stage.IsStartup = true;
 
             InitializeFromDataContext(dataContext);
-            DataContext = dataContext;
+            ViewModel = dataContext;
 
-            _waitForm.SetDataContext(DataContext);
-            _progressForm.SetDataContext(DataContext);
+            _waitForm.SetDataContext(ViewModel);
+            _progressForm.SetDataContext(ViewModel);
 
-            if (DataContext is null)
+            if (ViewModel is null)
             {
                 return;
             }
 
-            if (DataContext.CurrentProject is not null)
+            if (ViewModel.CurrentProject is not null)
             {
-                DataContext.CurrentProject.PropertyChanging += CurrentProject_PropertyChanging;
-                DataContext.CurrentProject.PropertyChanged += CurrentProject_PropertyChanged;
+                ViewModel.CurrentProject.PropertyChanging += CurrentProject_PropertyChanging;
+                ViewModel.CurrentProject.PropertyChanged += CurrentProject_PropertyChanged;
 
-                if (DataContext.CurrentProject.FileExplorer is not null)
+                if (ViewModel.CurrentProject.FileExplorer is not null)
                 {
-                    DataContext.CurrentProject.FileExplorer.PropertyChanged += FileExplorer_PropertyChanged;
-                    DataContext.CurrentProject.FileExplorer.SelectedFiles.CollectionChanged += SelectedFiles_CollectionChanged;
-                    DataContext.CurrentProject.FileExplorer.FileSystemUpdated += FileExplorer_FileSystemUpdated;
+                    ViewModel.CurrentProject.FileExplorer.PropertyChanged += FileExplorer_PropertyChanged;
+                    ViewModel.CurrentProject.FileExplorer.SelectedFiles.CollectionChanged += SelectedFiles_CollectionChanged;
+                    ViewModel.CurrentProject.FileExplorer.FileSystemUpdated += FileExplorer_FileSystemUpdated;
                 }
 
-                _deleteAllValidationArgs = new DeleteArgs(DataContext.CurrentProject.FileExplorer.Root.ID);
+                _deleteAllValidationArgs = new DeleteArgs(ViewModel.CurrentProject.FileExplorer.Root.ID);
             }
 
-            DataContext.PropertyChanged += DataContext_PropertyChanged;
-            DataContext.PropertyChanging += DataContext_PropertyChanging;
+            ViewModel.PropertyChanged += DataContext_PropertyChanged;
+            ViewModel.PropertyChanging += DataContext_PropertyChanging;
         }
         finally
         {
             ValidateRibbonButtons();
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
     /// <summary>
     /// Initializes a new instance of the <see cref="FormMain"/> class.
     /// </summary>
     public FormMain()
     {
-        InitializeComponent();            
-        
+        InitializeComponent();
+
         if (LicenseManager.UsageMode != LicenseUsageMode.Designtime)
         {
             _ribbonMerger = new RibbonMerger(RibbonMain);
@@ -1433,7 +1415,6 @@ internal partial class FormMain
             _progressForm = new ProgressPanelDisplay(this);
         }
 
-        RibbonMain.AllowFormIntegrate = false;
         PanelProject.MainRibbon = RibbonMain;
         _ribbonMerger.FixGroupWidths();
     }
@@ -1441,6 +1422,5 @@ internal partial class FormMain
     /// <summary>Initializes a new instance of the <see cref="FormMain"/> class.</summary>
     /// <param name="settings">The settings for the application.</param>
     public FormMain(EditorSettings settings)
-        : this() =>PanelProject.Settings = _settings = settings;
-    #endregion
+        : this() => PanelProject.Settings = _settings = settings;
 }

@@ -1,31 +1,22 @@
-using System;
-using System.Numerics;
-using System.Collections.Generic;
-using System.Windows.Forms;
+﻿using System.Numerics;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
-using Gorgon.Renderers.Geometry;
-using Gorgon.UI;
-using DX = SharpDX;
-using Gorgon.Renderers.Cameras;
-using System.Runtime.CompilerServices;
-using Gorgon.Math;
-using Gorgon.Timing;
-using Gorgon.Graphics.Imaging.Codecs;
-using Gorgon.Graphics.Imaging;
-using System.IO;
 using Gorgon.Renderers;
-using System.Runtime.InteropServices;
+using Gorgon.Renderers.Cameras;
+using Gorgon.Renderers.Geometry;
+using Gorgon.Timing;
+using Gorgon.UI;
 
 namespace Gorgon.Examples;
 
 /// <summary>
-/// The main application class.
+/// The main application class
 /// </summary>
 internal static class Program
 {
-    #region Value Types.
     /// <summary>
     /// GPU data for sending the world and WVP matrices.
     /// </summary>
@@ -65,9 +56,7 @@ internal static class Program
         /// </summary>
         public Vector3 CameraPos;
     }
-    #endregion
 
-    #region Variables.
     // The form for the application.
     private static FormMain _mainForm;
     // The primary graphics interface.
@@ -91,7 +80,7 @@ internal static class Program
     // The camera.
     private static GorgonPerspectiveCamera _camera;
     // The draw calls for the model.
-    private static readonly Dictionary<Material, GorgonDrawIndexCall> _drawCall = new();
+    private static readonly Dictionary<Material, GorgonDrawIndexCall> _drawCall = [];
     // The depth buffer.
     private static GorgonDepthStencil2DView _depthBuffer;
     // The list of textures for the model.
@@ -100,17 +89,15 @@ internal static class Program
     private static MaterialGpuData _materialGpu = new();
     // The matrix data to the send to the GPU.
     private static MatrixGpuData _matrixGpu = new();
-    #endregion
 
-    #region Methods.
     /// <summary>Handles the SwapChainResized event of the Screen control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="SwapChainResizedEventArgs" /> instance containing the event data.</param>
     private static void Screen_SwapChainResized(object sender, SwapChainResizedEventArgs e)
     {
         // If we resize the window, ensure that the depth buffer is resized as well.
-        BuildDepthBuffer(e.Size.Width, e.Size.Height);
-        _camera.ViewDimensions = new DX.Size2F(e.Size.Width, e.Size.Height);
+        BuildDepthBuffer(e.Size.X, e.Size.X);
+        _camera.ViewDimensions = e.Size;
     }
 
     /// <summary>
@@ -118,7 +105,7 @@ internal static class Program
     /// </summary>
     /// <param name="width">The width of the depth buffer.</param>
     /// <param name="height">The height of the depth buffer.</param>
-	    private static void BuildDepthBuffer(int width, int height)
+    private static void BuildDepthBuffer(int width, int height)
     {
         _graphics.SetDepthStencil(null);
         _depthBuffer?.Dispose();
@@ -140,15 +127,15 @@ internal static class Program
     /// model and project them into 2D space on your render target.
     /// </para>
     /// </remarks>
-    private static void UpdateWVP(in Matrix4x4 world)
+    private static void UpdateWVP(ref readonly Matrix4x4 world)
     {
         // Build our world/view/projection matrix to send to
         // the shader.
         ref readonly Matrix4x4 viewMatrix = ref _camera.GetViewMatrix();
         ref readonly Matrix4x4 projMatrix = ref _camera.GetProjectionMatrix();
 
-        var temp = Matrix4x4.Multiply(world, viewMatrix);
-        var wvp = Matrix4x4.Multiply(temp, projMatrix);                       
+        Matrix4x4 temp = Matrix4x4.Multiply(world, viewMatrix);
+        Matrix4x4 wvp = Matrix4x4.Multiply(temp, projMatrix);
 
         ref Matrix4x4 gpuWorld = ref _matrixGpu.WorldMatrix;
         ref Matrix4x4 gpuWvp = ref _matrixGpu.WvpMatrix;
@@ -164,10 +151,10 @@ internal static class Program
     }
 
     /// <summary>
-		/// Function to handle idle time for the application.
-		/// </summary>
-		/// <returns><b>true</b> to continue processing, <b>false</b> to stop.</returns>
-		private static bool Idle()
+    /// Function to handle idle time for the application.
+    /// </summary>
+    /// <returns><b>true</b> to continue processing, <b>false</b> to stop.</returns>
+    private static bool Idle()
     {
         // Send our matrices to the GPU.
         UpdateWVP(in _model.GetWorldMatrix());
@@ -180,10 +167,10 @@ internal static class Program
         {
             _model.RotateY -= 360.0f;
         }
-                    
-        _screen.RenderTargetView.Clear(GorgonColor.CornFlowerBlue);
+
+        _screen.RenderTargetView.Clear(GorgonColors.CornFlowerBlue);
         _depthBuffer.Clear(1.0f, 0);
-        
+
         _graphics.SetRenderTarget(_screen.RenderTargetView, _depthBuffer);
 
         // Get a reference to the GPU data.
@@ -235,10 +222,10 @@ internal static class Program
     /// <summary>
     /// Function to initialize the states for the objects to draw.
     /// </summary>
-	    private static void InitializeStates()
+    private static void InitializeStates()
     {
-        var drawBuilder = new GorgonDrawIndexCallBuilder();
-        var stateBuilder = new GorgonPipelineStateBuilder(_graphics);
+        GorgonDrawIndexCallBuilder drawBuilder = new();
+        GorgonPipelineStateBuilder stateBuilder = new(_graphics);
 
         // This will initialize the 2D renderer early so we can get access to its default white texture.
         _renderer2d.Begin();
@@ -255,13 +242,13 @@ internal static class Program
                                              .ConstantBuffer(ShaderType.Pixel, _materialBuffer)
                                              .PipelineState(stateBuilder.DepthStencilState(GorgonDepthStencilState.DepthStencilEnabled)
                                                                         .PrimitiveType(PrimitiveType.TriangleList)
-                                                                        .PixelShader(_pixelShader)                                                              
+                                                                        .PixelShader(_pixelShader)
                                                                         .VertexShader(_vertexShader))
                                              .Build();
         }
-        
+
         // Set up our camera.
-        _camera = new GorgonPerspectiveCamera(_graphics, new DX.Size2F(_screen.Width, _screen.Height), 0.125f, 500.0f)
+        _camera = new GorgonPerspectiveCamera(_graphics, new Vector2(_screen.Width, _screen.Height), 0.125f, 500.0f)
         {
             Fov = 75,
             // Position the camera to center on the model using its AABB.
@@ -279,7 +266,7 @@ internal static class Program
         try
         {
             // Create our form.
-            _mainForm = GorgonExample.Initialize(new DX.Size2(ExampleConfig.Default.Resolution.Width, ExampleConfig.Default.Resolution.Height), "Asset Importer");
+            _mainForm = GorgonExample.Initialize(new GorgonPoint(ExampleConfig.Default.Resolution.X, ExampleConfig.Default.Resolution.Y), "Asset Importer");
 
             // Find out which devices we have installed in the system.
             IReadOnlyList<IGorgonVideoAdapterInfo> deviceList = GorgonGraphics.EnumerateAdapters();
@@ -297,12 +284,12 @@ internal static class Program
             // We can modify the resolution in the config file for the application, but like other Gorgon examples, the default is 1280x800.
             _screen = new GorgonSwapChain(_graphics,
                                           _mainForm,
-                                          new GorgonSwapChainInfo(ExampleConfig.Default.Resolution.Width,
-                                                                     ExampleConfig.Default.Resolution.Height,
+                                          new GorgonSwapChainInfo(ExampleConfig.Default.Resolution.X,
+                                                                     ExampleConfig.Default.Resolution.Y,
                                                                      BufferFormat.R8G8B8A8_UNorm)
-                                               {
-                                                   Name = "Main"
-                                               });
+                                          {
+                                              Name = "Main"
+                                          });
 
             // Create a 2D renderer so we can draw information.
             _renderer2d = new Gorgon2D(_graphics);
@@ -319,7 +306,7 @@ internal static class Program
             // Create the vertex input layout.
             // We need to create a layout for our vertex type because the shader won't know how to interpret the data we're sending it otherwise.  
             // This is why we need a vertex shader before we even create the layout.
-            _inputLayout = GorgonInputLayout.CreateUsingType<GorgonVertexPosNormColorUv>(_graphics, _vertexShader);
+            _inputLayout = GorgonInputLayout.CreateUsingType<GorgonVertexPosNormColorUv>(_graphics, nameof(GorgonVertexPosNormColorUv), _vertexShader);
 
             // Create our constant buffers.			
             // Our constant buffers are how we send data to our shaders.  This one in particular will be responsible for sending our world/view/projection matrix 
@@ -342,7 +329,7 @@ internal static class Program
             // Create a depth buffer so that the model draws correctly.
             BuildDepthBuffer(_screen.Width, _screen.Height);
 
-            _model = Model.Load(_graphics, Path.Combine(GorgonExample.GetResourcePath(@"Models\AssImp").FullName, "NCC1701A.ms3d"), _textureList);                
+            _model = Model.Load(_graphics, Path.Combine(GorgonExample.GetResourcePath(@"Models\AssImp").FullName, "NCC1701A.ms3d"), _textureList);
 
             // Set up stuff.
             InitializeStates();
@@ -390,5 +377,4 @@ internal static class Program
             GorgonExample.UnloadResources();
         }
     }
-    #endregion
 }

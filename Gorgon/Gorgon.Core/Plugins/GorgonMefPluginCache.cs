@@ -1,7 +1,7 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
-// Copyright (C) 2011 Michael Winsor
+// Gorgon
+// Copyright (C) 2024 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -11,37 +11,32 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Thursday, June 23, 2011 11:22:58 AM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Composition.Primitives;
 using System.ComponentModel.Composition.Registration;
-using System.IO;
-using System.Linq;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
-using System.Runtime.InteropServices;
+using System.Reflection.PortableExecutable;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
-using Gorgon.IO;
 using Gorgon.Properties;
 
 namespace Gorgon.PlugIns;
 
 /// <summary>
-/// The type of platform that the code in the assembly is expected to run on.
+/// The type of platform that the code in the assembly is expected to run on
 /// </summary>
 public enum AssemblyPlatformType
 {
@@ -64,23 +59,23 @@ public enum AssemblyPlatformType
 }
 
 /// <summary>
-/// A cache to hold MEF plugin assemblies.
+/// A cache to hold MEF plugin assemblies
 /// </summary>
 /// <remarks>
 /// <para>
-/// This assembly cache is meant to load/hold a list of plugin assemblies that contain types that implement the <see cref="GorgonPlugIn"/> type and is 
-/// meant to be used in conjunction with the <see cref="IGorgonPlugInService"/> type.
+/// This assembly cache is meant to load/hold a list of plugin assemblies that contain types that implement the <see cref="IGorgonPlugIn"/> type and is 
+/// meant to be used in conjunction with the <see cref="IGorgonPlugInService"/> type
 /// </para>
 /// <para>
 /// The cache attempts to ensure that the application only loads an assembly once during the lifetime of the application in order to cut down on 
-/// overhead and potential errors that can come up when multiple assemblies with the same qualified name are loaded into the same context.
+/// overhead and potential errors that can come up when multiple assemblies with the same qualified name are loaded into the same context
 /// </para>
 /// </remarks>
 /// <example>
 /// This example shows how to load a plugin and get its plugin instance. It will use the <c>ConcreteFunctionalityPlugIn</c> above:
 /// <code language="csharp"> 
 /// <![CDATA[
-/// // Our base functionality.
+/// // Our base functionality
 /// private FunctionalityBase _functionality;
 /// private GorgonMefPlugInCache _assemblies;
 /// 
@@ -88,10 +83,10 @@ public enum AssemblyPlatformType
 /// {
 ///		assemblies = new GorgonMefPlugInCache();
 ///		
-///		// For brevity, we've omitted checking to see if the assembly is valid and such.
+///		// For brevity, we've omitted checking to see if the assembly is valid and such
 ///		// In the real world, you should always determine whether the assembly can be loaded 
-///		// before calling the Load method.
-///		_assemblies.LoadPlugInAssemblies(@"Your\Directory\Here", "file search pattern");  // You can pass a wild card like *.dll, *.exe, etc..., or an absolute file name like "MyPlugin.dll".
+///		// before calling the Load method
+///		_assemblies.LoadPlugInAssemblies(@"Your\Directory\Here", "file search pattern");  // You can pass a wild card like *.dll, *.exe, etc..., or an absolute file name like "MyPlugin.dll"
 /// 			
 ///		IGorgonPlugInService pluginService = new GorgonMefPlugInService(_assemblies);
 /// 
@@ -112,29 +107,17 @@ public enum AssemblyPlatformType
 public sealed class GorgonMefPlugInCache
     : IDisposable
 {
-    #region Constants.
-    // The signature for a portable executable header.
-    private const uint PeHeaderSignature = 0x4550;
-    // 32 bit file.
-    private const ushort Pe32Bit = 0x10b;
-    // 64 bit file.
-    private const ushort Pe64bit = 0x20b;
-    #endregion
-
-    #region Variables.
-    // The contract name for the plug in.
-    private readonly string _contractName = typeof(GorgonPlugIn).FullName;
+    // The contract name for the plug-in.
+    private readonly string _contractName = typeof(IGorgonPlugIn).FullName ?? "THIS_SHOULD_NOT_HAPPEN_IF_IT_DOES_WE_RE_IN_TROUBLE";
     // The root catalog for the plugins.
-    private AggregateCatalog _rootCatalog = new();
+    private AggregateCatalog? _rootCatalog = new();
     // The container for the plugin definitions.
-    private CompositionContainer _container;
+    private CompositionContainer? _container;
     // The synchronization lock for multiple threads..
     private static readonly object _syncLock = new();
     // The builder used for type registration.
     private readonly RegistrationBuilder _builder = new();
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to return the logging interface for debug logging.
     /// </summary>
@@ -150,10 +133,8 @@ public sealed class GorgonMefPlugInCache
     {
         get;
         private set;
-    }
-    #endregion
+    } = [];
 
-    #region Methods.
     /// <summary>
     /// Function to update the list of assemblies.
     /// </summary>
@@ -177,7 +158,6 @@ public sealed class GorgonMefPlugInCache
         }
     }
 
-
     /// <summary>
     /// Function to determine if the assembly defined in the assembly path is a .NET managed assembly or not.
     /// </summary>
@@ -190,89 +170,40 @@ public sealed class GorgonMefPlugInCache
             return (false, AssemblyPlatformType.Unknown);
         }
 
-        uint cor2HeaderPtr = 0;
         AssemblyPlatformType platformType;
 
-        // For this, we'll go into the guts of the file and read the data required instead of loading the assembly data and using exceptions to determine 
-        // the assembly type.
-        //
-        // This code is adapted from this stack overflow answer: 
-        // https://stackoverflow.com/questions/367761/how-to-determine-whether-a-dll-is-a-managed-assembly-or-native-prevent-loading
+        using FileStream stream = File.Open(assemblyPath, FileMode.Open, FileAccess.Read, FileShare.Read);
 
-        using (FileStream stream = File.Open(assemblyPath, FileMode.Open, FileAccess.Read, FileShare.Read))
-        using (var reader = new GorgonBinaryReader(stream, false))
+        // File is less than 64 bytes, not a portable executable.
+        if (stream.Length < 64)
         {
-            // File is less than 64 bytes, not a portable executable.
-            if (stream.Length < 64)
-            {
-                return (false, AssemblyPlatformType.Unknown);
-            }
-
-            stream.Position = 0x3C;
-            uint headerPointer = reader.ReadUInt32();
-
-            if (headerPointer == 0)
-            {
-                headerPointer = 0x80;
-            }
-
-            if (headerPointer > stream.Length - 256)
-            {
-                return (false, AssemblyPlatformType.Unknown);
-            }
-
-            stream.Position = headerPointer;
-            uint signature = reader.ReadUInt32();
-
-            if (signature != PeHeaderSignature)
-            {
-                return (false, AssemblyPlatformType.Unknown);
-            }
-
-            stream.Position += 20;
-
-            ushort exePlatform = reader.ReadUInt16();
-
-            if (exePlatform is not Pe32Bit and not Pe64bit)
-            {
-                return (false, AssemblyPlatformType.Unknown);
-            }
-
-            uint rvaPointer = 0;
-
-            switch (exePlatform)
-            {
-                case Pe32Bit:
-                    platformType = AssemblyPlatformType.x86;
-                    rvaPointer = headerPointer + 232;
-                    break;
-                case Pe64bit:
-                    platformType = AssemblyPlatformType.x64;
-                    rvaPointer = headerPointer + 248;
-                    break;
-                default:
-                    return (false, AssemblyPlatformType.Unknown);
-            }
-
-            stream.Position = rvaPointer;
-            cor2HeaderPtr = reader.ReadUInt32();
+            return (false, AssemblyPlatformType.Unknown);
         }
 
-        // AnyCPU assemblies are marked as x86.  We need to read the cor20 header, but I'm lazy and it's a lot of work.
-        // So, we'll use the old tried and true method of reading the assembly metadata.  We shouldn't exception here because 
-        // we've already determined that we're not using a native DLL.  GetAssemblyName doesn't care if our executing platform 
-        // environment is x64 or x86 and our DLL doesn't match, it just reads the metadata (tested and confirmed).
-        if ((cor2HeaderPtr != 0) && (platformType == AssemblyPlatformType.x86))
-        {
-            var name = AssemblyName.GetAssemblyName(assemblyPath);
+        using PEReader peReader = new(stream);
+        Machine machine = peReader.PEHeaders.CoffHeader.Machine;
 
-            if (name.ProcessorArchitecture == ProcessorArchitecture.MSIL)
-            {
-                platformType = AssemblyPlatformType.AnyCpu;
-            }
+        // No COR header, then this is not a .NET assembly.
+        if (peReader.PEHeaders.CorHeader is null)
+        {
+            return (false, AssemblyPlatformType.Unknown);
         }
 
-        return (cor2HeaderPtr != 0, platformType);
+        if ((peReader.PEHeaders.CorHeader.Flags & CorFlags.ILOnly) == CorFlags.ILOnly)
+        {
+            platformType = AssemblyPlatformType.AnyCpu;
+        }
+        else
+        {
+            platformType = machine switch
+            {
+                Machine.IA64 or Machine.Amd64 => AssemblyPlatformType.x64,
+                Machine.I386 => AssemblyPlatformType.x86,
+                _ => AssemblyPlatformType.Unknown
+            };
+        }
+
+        return (true, platformType);
     }
 
     /// <summary>
@@ -322,7 +253,7 @@ public sealed class GorgonMefPlugInCache
     /// </note>
     /// </para>
     /// </remarks>
-    public static AssemblySigningResults VerifyAssemblyStrongName(string assemblyPath, byte[] publicKey = null)
+    public static AssemblySigningResults VerifyAssemblyStrongName(string assemblyPath, byte[]? publicKey = null)
     {
         if ((string.IsNullOrWhiteSpace(assemblyPath)) || (!File.Exists(assemblyPath)))
         {
@@ -334,8 +265,8 @@ public sealed class GorgonMefPlugInCache
             return AssemblySigningResults.NotSigned;
         }
 
-        var assemblyName = AssemblyName.GetAssemblyName(assemblyPath);
-        byte[] compareToken = assemblyName.GetPublicKey();
+        AssemblyName assemblyName = AssemblyName.GetAssemblyName(assemblyPath);
+        byte[]? compareToken = assemblyName.GetPublicKey();
 
         return (compareToken is null) || (publicKey.Length != compareToken.Length) || (!publicKey.SequenceEqual(compareToken))
             ? AssemblySigningResults.Signed | AssemblySigningResults.KeyMismatch
@@ -346,13 +277,13 @@ public sealed class GorgonMefPlugInCache
     /// Function to enumerate all the plugin names from the assemblies loaded into the cache.
     /// </summary>
     /// <returns>A composition container containing the plugins from the assemblies.</returns>
-    public IEnumerable<Lazy<GorgonPlugIn, IDictionary<string, object>>> EnumeratePlugIns()
+    public IEnumerable<Lazy<IGorgonPlugIn, IDictionary<string, object>>> EnumeratePlugIns()
     {
         lock (_syncLock)
         {
             return _container is null
-                ? (Array.Empty<Lazy<GorgonPlugIn, IDictionary<string, object>>>())
-                : _container.GetExports<GorgonPlugIn, IDictionary<string, object>>(_contractName);
+                ? ([])
+                : _container.GetExports<IGorgonPlugIn, IDictionary<string, object>>(_contractName);
         }
     }
 
@@ -374,7 +305,7 @@ public sealed class GorgonMefPlugInCache
     /// </remarks>
     public void Dispose()
     {
-        Log.Print("Unloading MEF plugin container and catalogs.", LoggingLevel.Intermediate);
+        Log.Print("Unloading MEF plugin container and catalogs.", LoggingLevel.Verbose);
 
         _container?.Dispose();
         _container = null;
@@ -394,9 +325,8 @@ public sealed class GorgonMefPlugInCache
     /// <summary>
     /// Function to load any DLL assemblies in the specified directory path.
     /// </summary>
-    /// <param name="directoryPath">The path containing the plug in DLLs to load.</param>
+    /// <param name="directoryPath">The path containing the plug-in DLLs to load.</param>
     /// <param name="filePattern">[Optional] The file pattern to search for.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="directoryPath"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="directoryPath"/> parameter is empty.</exception>
     /// <exception cref="DirectoryNotFoundException">Thrown if the directory specified by <paramref name="directoryPath"/> does not exist.</exception>
     /// <remarks>
@@ -406,15 +336,12 @@ public sealed class GorgonMefPlugInCache
     /// </remarks>
     public void LoadPlugInAssemblies(string directoryPath, string filePattern = "*.dll")
     {
-        if (directoryPath is null)
+        if (_rootCatalog is null)
         {
-            throw new ArgumentNullException(nameof(directoryPath));
+            throw new GorgonException(GorgonResult.CannotRead, Resources.GOR_ERR_PLUGIN_TYPE_LOAD_FAILURE);
         }
 
-        if (string.IsNullOrWhiteSpace(directoryPath))
-        {
-            throw new ArgumentEmptyException(nameof(directoryPath));
-        }
+        ArgumentEmptyException.ThrowIfNullOrWhiteSpace(directoryPath);
 
         // Ensure we send in a file search pattern.
         filePattern = Path.GetFileName(filePattern);
@@ -424,9 +351,9 @@ public sealed class GorgonMefPlugInCache
             filePattern = "*.dll";
         }
 
-        var directory = new DirectoryInfo(directoryPath);
+        DirectoryInfo directory = new(directoryPath);
 
-        Log.Print($"Searching '{directory.FullName}\\{filePattern}' for plug in assemblies.", LoggingLevel.Simple);
+        Log.Print($"Searching '{directory.FullName}\\{filePattern}' for plug-in assemblies.", LoggingLevel.Simple);
 
         if (!directory.Exists)
         {
@@ -436,7 +363,7 @@ public sealed class GorgonMefPlugInCache
         lock (_syncLock)
         {
             // Check to see if we have this directory and search pattern already.
-            DirectoryCatalog catalog = _rootCatalog.Catalogs.OfType<DirectoryCatalog>()
+            DirectoryCatalog? catalog = _rootCatalog.Catalogs.OfType<DirectoryCatalog>()
                                                             .FirstOrDefault(item => string.Equals(item.FullPath, directoryPath, StringComparison.OrdinalIgnoreCase)
                                                                                  && string.Equals(item.SearchPattern, filePattern, StringComparison.OrdinalIgnoreCase));
 
@@ -450,8 +377,8 @@ public sealed class GorgonMefPlugInCache
             {
                 catalog = new DirectoryCatalog(directory.FullName, filePattern, _builder);
                 _rootCatalog.Catalogs.Add(catalog);
-                
-                Log.Print($"Added {catalog.LoadedFiles.Count} plug in assemblies to cache.", LoggingLevel.Verbose);
+
+                Log.Print($"Added {catalog.LoadedFiles.Count} plug-in assemblies to cache.", LoggingLevel.Intermediate);
             }
         }
 
@@ -463,36 +390,39 @@ public sealed class GorgonMefPlugInCache
     /// </summary>
     public void Refresh()
     {
+        if (_rootCatalog is null)
+        {
+            throw new GorgonException(GorgonResult.CannotRead, Resources.GOR_ERR_PLUGIN_TYPE_LOAD_FAILURE);
+        }
+
         lock (_syncLock)
         {
-            var assemblyList = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            HashSet<string> assemblyList = new(StringComparer.OrdinalIgnoreCase);
             foreach (DirectoryCatalog catalog in _rootCatalog.Catalogs.OfType<DirectoryCatalog>())
             {
                 UpdateAssemblyList(catalog, assemblyList);
             }
 
-            PlugInAssemblies = assemblyList.ToArray();
+            PlugInAssemblies = [.. assemblyList];
 
-            Log.Print($"{PlugInAssemblies.Count} cached with valid plug in types.", LoggingLevel.Simple);
+            Log.Print($"{PlugInAssemblies.Count} cached with valid plug-in types.", LoggingLevel.Verbose);
         }
     }
-    #endregion
 
-    #region Constructor/Finalizer.
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonMefPlugInCache"/> class.
     /// </summary>
     /// <param name="log">[Optional] The application log file to use.</param>
-    public GorgonMefPlugInCache(IGorgonLog log = null)
+    [RequiresAssemblyFiles("Plug ins will not work with trimming and Native AOT.")]
+    public GorgonMefPlugInCache(IGorgonLog? log = null)
     {
-        _builder.ForTypesDerivedFrom<GorgonPlugIn>().Export<GorgonPlugIn>(b =>
-                                                                          {
-                                                                              b.AddMetadata("Name", t => t.FullName);
-                                                                              b.AddMetadata("Assembly", t => t.Assembly.GetName());
-                                                                              b.Inherited();
-                                                                          });
+        _builder.ForTypesDerivedFrom<IGorgonPlugIn>().Export<IGorgonPlugIn>(b =>
+        {
+            b.AddMetadata("Name", t => t.FullName);
+            b.AddMetadata("Assembly", t => t.Assembly.GetName());
+            b.Inherited();
+        });
         Log = log ?? GorgonLog.NullLog;
         _container = new CompositionContainer(_rootCatalog, CompositionOptions.DisableSilentRejection | CompositionOptions.IsThreadSafe);
     }
-    #endregion
 }

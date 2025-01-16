@@ -1,6 +1,6 @@
-#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2023 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,22 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: February 19, 2023 1:30:47 PM
 // 
-#endregion
 
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Avalonia.Controls;
@@ -39,14 +35,13 @@ using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Renderers.Cameras;
 using Gorgon.Renderers.Geometry;
 using Gorgon.Timing;
-using DX = SharpDX;
 
 namespace Gorgon.Examples;
 
 /// <summary>
 /// GlassCube Avalonia
 /// 
-/// This is an Avalonia version of the GlassCube example. The purpose here is to show how to interoperate Gorgon with Avalonia.
+/// This is an Avalonia version of the GlassCube example. The purpose here is to show how to interoperate Gorgon with Avalonia
 /// 
 /// For the most part, the code for rendering is exactly the same as the original WinForms code. But, unlike the WinForms version, we add a new Control to 
 /// the Window called the GorgonAvaloniaSwapChainControl. 
@@ -57,27 +52,25 @@ namespace Gorgon.Examples;
 /// 
 /// Because Avalonia handles things quite differently than WinForms, we do not use the GorgonApplication object. So, to get your code handling idle CPU time 
 /// for rendering we cannot just assign the Idle property on GorgonApplication. The Idle is instead passed to the control directly via the RunAsync method. 
-/// This RunAsync method is, as you can see, asynchronous, so it should be awaited.
+/// This RunAsync method is, as you can see, asynchronous, so it should be awaited
 /// 
 /// When we are rendering in the idle method, we just set the current render target to the target passed to the idle method and things will start appearing 
-/// in amongst the controls of the Avalonia window.
+/// in amongst the controls of the Avalonia window
 /// 
 /// Now, for the bad news. There are several limitations due to the nature of Avalonia:
 ///   
-/// * No exclusive full screen support. However, windowed full screen should still be possible if the Window is setup correctly.
+/// * No exclusive full screen support. However, windowed full screen should still be possible if the Window is setup correctly
 /// 
-/// * Only the 32 bit BGRA format is supported for the render target. This is enforced by Avalonia.
+/// * Only the 32 bit BGRA format is supported for the render target. This is enforced by Avalonia
 /// 
-/// * A maximum frame rate of 60 frames per second is enforced by Avalonia. There is no stable way around this at this time.
+/// * A maximum frame rate of 60 frames per second is enforced by Avalonia. There is no stable way around this at this time
 /// </summary>
 public partial class MainWindow : Window
 {
-    #region Constants.
+
     // The target delta time.
     private const float TargetDelta = 1 / 60.0f;
-    #endregion
 
-    #region Variables.
     // The primary graphics interface.
     private GorgonGraphics _graphics;
     // The layout for a cube vertex.
@@ -106,7 +99,6 @@ public partial class MainWindow : Window
     private float _accumulator;
     // The timer used for updating the text block.
     private IGorgonTimer _timer;
-    #endregion
 
     /// <summary>
     /// Function to update the texture smoothing on the cube.
@@ -127,7 +119,7 @@ public partial class MainWindow : Window
     /// model and project them into 2D space on your render target.
     /// </para>
     /// </remarks>
-    private void UpdateWVP(in Matrix4x4 world)
+    private void UpdateWVP(ref readonly Matrix4x4 world)
     {
         // Get the view and projection from the camera.
         // These values are cached and returned as read only references for performance.
@@ -136,10 +128,10 @@ public partial class MainWindow : Window
 
         // Build our world/vi ew/projection matrix to send to
         // the shader.
-        var temp = Matrix4x4.Multiply(world, viewMatrix);
+        Matrix4x4 temp = Matrix4x4.Multiply(world, viewMatrix);
         // Direct 3D 11 requires that we transpose our matrix 
         // before sending it to the shader.
-        var wvp = Matrix4x4.Transpose(Matrix4x4.Multiply(temp, projMatrix));
+        Matrix4x4 wvp = Matrix4x4.Transpose(Matrix4x4.Multiply(temp, projMatrix));
 
         // Update the constant buffer.
         _wvpBuffer.Buffer.SetData(in wvp);
@@ -165,7 +157,7 @@ public partial class MainWindow : Window
         }
 
         // Do nothing here.  When we need to update, we will.
-        rtv.Clear(GorgonColor.BlackTransparent);
+        rtv.Clear(GorgonColors.BlackTransparent);
 
         // Use a fixed step timing to animate the cube.
         _accumulator += GorgonTiming.Delta;
@@ -211,7 +203,7 @@ public partial class MainWindow : Window
 
         // And, as always, send the cube to the GPU for rendering.
         _graphics.Submit(_drawCall);
-                
+
         GorgonExample.BlitLogo(_graphics);
 
         // Flush the command queue before giving control back to Avalonia.
@@ -238,7 +230,7 @@ public partial class MainWindow : Window
         _pixelShader = GorgonShaderFactory.Compile<GorgonPixelShader>(_graphics, Properties.Resources.GlassCubeShaders, "GlassCubePS");
 
         // Create the input layout for a cube vertex.
-        _inputLayout = GorgonInputLayout.CreateUsingType<GorgonVertexPosUv>(_graphics, _vertexShader);
+        _inputLayout = GorgonInputLayout.CreateUsingType<GorgonVertexPosUv>(_graphics, nameof(GorgonVertexPosUv), _vertexShader);
 
         // Create our constant buffer so we can send our transformation information to the shader.
         _wvpBuffer = GorgonConstantBufferView.CreateConstantBuffer(_graphics, new GorgonConstantBufferInfo(Unsafe.SizeOf<Matrix4x4>())
@@ -247,7 +239,7 @@ public partial class MainWindow : Window
         });
 
         // Pull the camera back 1.5 units on the Z axis. Otherwise, we'd end up inside of the cube.
-        _camera = new GorgonPerspectiveCamera(_graphics, new DX.Size2F((float)ClientSize.Width, (float)ClientSize.Height), 0.1f, 10.0f, "GlassCube Camera")
+        _camera = new GorgonPerspectiveCamera(_graphics, new Vector2((float)ClientSize.Width, (float)ClientSize.Height), 0.1f, 10.0f, "GlassCube Camera")
         {
             Fov = 60.0f,
             Position = new Vector3(0.0f, 0.0f, -1.5f)
@@ -256,8 +248,8 @@ public partial class MainWindow : Window
         _cube = new Cube(_graphics, _inputLayout);
 
         // Set up the pipeline to draw the cube.
-        var drawCallBuilder = new GorgonDrawIndexCallBuilder();
-        var stateBuilder = new GorgonPipelineStateBuilder(_graphics);
+        GorgonDrawIndexCallBuilder drawCallBuilder = new();
+        GorgonPipelineStateBuilder stateBuilder = new(_graphics);
 
         // This draw call will use point filtering on the texture.
         _drawCall = _drawCallPixel = drawCallBuilder.VertexBuffer(_inputLayout, _cube.VertexBuffer[0])
@@ -278,7 +270,6 @@ public partial class MainWindow : Window
         _timer = new GorgonTimerQpc();
     }
 
-
     /// <summary>
     /// Function called when the window is loaded.
     /// </summary>
@@ -286,13 +277,18 @@ public partial class MainWindow : Window
     /// <param name="e">The parameters for the event.</param>
     private async void Window_Loaded(object sender, RoutedEventArgs e)
     {
+        if (Design.IsDesignMode)
+        {
+            return;
+        }
+
         GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
         IReadOnlyList<IGorgonVideoAdapterInfo> adapters = GorgonGraphics.EnumerateAdapters();
 
         _graphics = new GorgonGraphics(adapters[0]);
 
         Initialize();
-                
+
         // Begin running the application.
         await GorgonControl.RunAsync(_graphics, Idle);
     }
@@ -376,7 +372,7 @@ public partial class MainWindow : Window
         }
 
         // When our control is resized, we need the view to resize to avoid distortion.
-        _camera.ViewDimensions = new DX.Size2F((float)ClientSize.Width, (float)ClientSize.Height);
+        _camera.ViewDimensions = new Vector2((float)ClientSize.Width, (float)ClientSize.Height);
     }
 
     /// <summary>

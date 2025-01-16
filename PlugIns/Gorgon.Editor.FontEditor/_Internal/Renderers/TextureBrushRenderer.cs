@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,49 +11,44 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 3, 2020 4:40:15 PM
 // 
-#endregion
 
-using System;
 using System.ComponentModel;
-using System.Drawing;
-using System.Linq;
 using System.Numerics;
-using DX = SharpDX;
-using Gorgon.Editor.FontEditor;
+using Gorgon.Core;
 using Gorgon.Editor.FontEditor.Properties;
 using Gorgon.Editor.Rendering;
-using Gorgon.Editor.UI;
+using Gorgon.Editor.Services;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
-using Gorgon.Graphics.Fonts;
-using Gorgon.Renderers;
-using Gorgon.Math;
-using System.Windows.Forms;
-using System.IO;
 using Gorgon.Graphics.Imaging.Codecs;
-using Gorgon.Core;
-using Gorgon.Editor.Services;
+using Gorgon.Math;
+using Gorgon.Renderers;
 
 namespace Gorgon.Editor.FontEditor;
 
 /// <summary>
-/// This is a renderer that will render the texture used in a texture brush.
+/// This is a renderer that will render the texture used in a texture brush
 /// </summary>
-internal class TextureBrushRenderer
-    : DefaultContentRenderer<IFontContent>
+/// <remarks>Initializes a new instance of the <see cref="FontRenderer"/> class.</remarks>
+/// <param name="renderer">The 2D renderer used to render our font.</param>
+/// <param name="mainRenderTarget">The main render target for the view.</param>
+/// <param name="clipper">The clipper used to cut out a region of the texture.</param>
+/// <param name="dataContext">The view model for our text data.</param>
+internal class TextureBrushRenderer(Gorgon2D renderer, GorgonSwapChain mainRenderTarget, IRectClipperService clipper, IFontContent dataContext)
+        : DefaultContentRenderer<IFontContent>(typeof(FontTextureBrush).FullName, renderer, mainRenderTarget, dataContext)
 {
-    #region Variables.
+
     // The editor context.
     private IFontTextureBrush _context;
     // The texture to display when a sprite lacks a texture association.
@@ -64,10 +59,8 @@ internal class TextureBrushRenderer
     private GorgonRenderTarget2DView _target;
     private GorgonTexture2DView _targetTexture;
     // The clipper used to cut out a part of the texture.
-    private readonly IRectClipperService _clipper;
-    #endregion
+    private readonly IRectClipperService _clipper = clipper;
 
-    #region Methods.
     /// <summary>Handles the PropertyChanging event of the Context control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="PropertyChangingEventArgs" /> instance containing the event data.</param>
@@ -103,11 +96,11 @@ internal class TextureBrushRenderer
                         Usage = ResourceUsage.Immutable
                     });
 
-                    RenderRegion = new DX.RectangleF(0, 0, _image.Width + 32, _image.Height + 32);
+                    RenderRegion = new GorgonRectangleF(0, 0, _image.Width + 32, _image.Height + 32);
                 }
                 else
                 {
-                    RenderRegion = new DX.RectangleF(0, 0, ClientSize.Width, ClientSize.Height);
+                    RenderRegion = new GorgonRectangleF(0, 0, ClientSize.X, ClientSize.Y);
                 }
 
                 _clipper.Bounds = RenderRegion;
@@ -220,21 +213,21 @@ internal class TextureBrushRenderer
         if (_context.Texture is null)
         {
             float newSize = RenderRegion.Width < RenderRegion.Height ? RenderRegion.Width : RenderRegion.Height;
-            var size = new DX.Size2F(newSize.Min(_noImage.Width), newSize.Min(_noImage.Width));
-            var halfClient = new DX.Size2F(RenderRegion.Width * 0.5f, RenderRegion.Height * 0.5f);
-            var pos = new Vector2((int)(halfClient.Width - size.Width * 0.5f), (int)(halfClient.Height - size.Height * 0.5f));
+            Vector2 size = new(newSize.Min(_noImage.Width), newSize.Min(_noImage.Width));
+            Vector2 halfClient = new(RenderRegion.Width * 0.5f, RenderRegion.Height * 0.5f);
+            Vector2 pos = new((int)(halfClient.X - size.X * 0.5f), (int)(halfClient.Y - size.Y * 0.5f));
 
             Renderer.Begin();
-            Renderer.DrawFilledRectangle(new DX.RectangleF(pos.X, pos.Y, size.Width, size.Height), GorgonColor.White, _noImage, new DX.RectangleF(0, 0, 1, 1));
+            Renderer.DrawFilledRectangle(new GorgonRectangleF(pos.X, pos.Y, size.X, size.Y), GorgonColors.White, _noImage, new GorgonRectangleF(0, 0, 1, 1));
             Renderer.End();
 
             return;
         }
 
-        var textureSize = new DX.RectangleF(0, 0, (float)ClientSize.Width / BackgroundPattern.Width, (float)ClientSize.Height / BackgroundPattern.Height);
+        GorgonRectangleF textureSize = new(0, 0, (float)ClientSize.X / BackgroundPattern.Width, (float)ClientSize.Y / BackgroundPattern.Height);
 
         Renderer.Begin();
-        Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, ClientSize.Width, ClientSize.Height), GorgonColor.White, BackgroundPattern, textureSize, textureSampler: GorgonSamplerState.PointFilteringWrapping);
+        Renderer.DrawFilledRectangle(new GorgonRectangleF(0, 0, ClientSize.X, ClientSize.Y), GorgonColors.White, BackgroundPattern, textureSize, textureSampler: GorgonSamplerState.PointFilteringWrapping);
         Renderer.End();
     }
 
@@ -244,24 +237,24 @@ internal class TextureBrushRenderer
     private void RenderTexture()
     {
         GorgonRenderTargetView prevTarget = Graphics.RenderTargets[0];
-        GorgonRangeF? prevAlphaTest = Renderer.PrimitiveAlphaTestRange;
-        var clearRegion = _image.ToPixel(_context.Region).ToRectangleF();
+        GorgonRange<float>? prevAlphaTest = Renderer.PrimitiveAlphaTestRange;
+        GorgonRectangleF clearRegion = _image.ToPixel(_context.Region);
 
-        _target.Clear(GorgonColor.BlackTransparent);
+        _target.Clear(GorgonColors.BlackTransparent);
 
         Graphics.SetRenderTarget(_target);
         Renderer.PrimitiveAlphaTestRange = null;
         Renderer.Begin();
 
-        Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, _image.Width, _image.Height),
-                                     GorgonColor.White,
+        Renderer.DrawFilledRectangle(new GorgonRectangleF(0, 0, _image.Width, _image.Height),
+                                     GorgonColors.White,
                                      _image,
-                                     new DX.RectangleF(0, 0, 1, 1),
+                                     new GorgonRectangleF(0, 0, 1, 1),
                                      0,
                                      GorgonSamplerState.PointFiltering);
 
         // Remove the area where the sprite is located.
-        Renderer.DrawFilledRectangle(clearRegion, GorgonColor.BlackTransparent);
+        Renderer.DrawFilledRectangle(clearRegion, GorgonColors.BlackTransparent);
 
         Renderer.End();
         Renderer.PrimitiveAlphaTestRange = prevAlphaTest;
@@ -277,19 +270,19 @@ internal class TextureBrushRenderer
             return;
         }
 
-        var halfRegion = new Vector2(RenderRegion.Width * -0.5f, RenderRegion.Height * -0.5f);
+        Vector2 halfRegion = new(RenderRegion.Width * -0.5f, RenderRegion.Height * -0.5f);
 
         RenderTexture();
 
         Renderer.Begin(camera: Camera);
-        Renderer.DrawFilledRectangle(new DX.RectangleF(halfRegion.X,
+        Renderer.DrawFilledRectangle(new GorgonRectangleF(halfRegion.X,
                                                        halfRegion.Y,
                                                        RenderRegion.Width,
                                                        RenderRegion.Height),
-                                    GorgonColor.White,
+                                    GorgonColors.White,
                                     _targetTexture,
-                                    new DX.RectangleF(0, 0, 1, 1),
-                                    textureSampler: GorgonSamplerState.PointFiltering);            
+                                    new GorgonRectangleF(0, 0, 1, 1),
+                                    textureSampler: GorgonSamplerState.PointFiltering);
         Renderer.End();
 
         Renderer.Begin();
@@ -304,7 +297,7 @@ internal class TextureBrushRenderer
     /// </remarks>
     protected override void OnLoad()
     {
-        RenderRegion = new DX.RectangleF(0, 0, _context.Texture?.Width ?? ClientSize.Width, _context.Texture?.Height ?? ClientSize.Height);            
+        RenderRegion = new GorgonRectangleF(0, 0, _context.Texture?.Width ?? ClientSize.X, _context.Texture?.Height ?? ClientSize.Y);
 
         if (_context.Texture is not null)
         {
@@ -313,7 +306,7 @@ internal class TextureBrushRenderer
                 Binding = TextureBinding.ShaderResource,
                 Usage = ResourceUsage.Immutable
             });
-            RenderRegion.Inflate(32, 32);
+            RenderRegion = GorgonRectangleF.Expand(RenderRegion, 32);
 
             CreateTarget();
         }
@@ -370,22 +363,12 @@ internal class TextureBrushRenderer
             Usage = ResourceUsage.Immutable
         });
 
-        _context = DataContext.TextureEditor.TextureBrush;            
+        _context = DataContext.TextureEditor.TextureBrush;
     }
 
     /// <summary>
     /// Function to set the view to a default zoom level.
     /// </summary>
     public void DefaultZoom() => MoveTo(Vector2.Zero, 1);
-    #endregion
 
-    #region Constructor/Finalizer.
-    /// <summary>Initializes a new instance of the <see cref="FontRenderer"/> class.</summary>
-    /// <param name="renderer">The 2D renderer used to render our font.</param>
-    /// <param name="mainRenderTarget">The main render target for the view.</param>
-    /// <param name="clipper">The clipper used to cut out a region of the texture.</param>
-    /// <param name="dataContext">The view model for our text data.</param>
-    public TextureBrushRenderer(Gorgon2D renderer, GorgonSwapChain mainRenderTarget, IRectClipperService clipper, IFontContent dataContext)
-        : base(typeof(FontTextureBrush).FullName, renderer, mainRenderTarget, dataContext) => _clipper = clipper;
-    #endregion
 }

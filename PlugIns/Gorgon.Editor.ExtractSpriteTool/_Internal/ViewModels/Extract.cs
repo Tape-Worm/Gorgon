@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2020 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,25 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 25, 2020 9:52:13 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.ExtractSpriteTool.Properties;
@@ -40,20 +33,19 @@ using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
 using Gorgon.Renderers;
-using DX = SharpDX;
 
 namespace Gorgon.Editor.ExtractSpriteTool;
 
 /// <summary>
-/// The extraction UI view model.
+/// The extraction UI view model
 /// </summary>
 internal class Extract
     : EditorToolViewModelBase<ExtractParameters>, IExtract
 {
-    #region Variables.
+
     // The data used for extraction.
     private SpriteExtractionData _extractData;
-    // The settings for the plug in.
+    // The settings for the plug-in.
     private ExtractSpriteToolSettings _settings;
     // The service used to create the sprites.
     private ISpriteExtractorService _extractor;
@@ -73,9 +65,7 @@ internal class Extract
     private int _currentPreviewSprite;
     // The file that contains the texture to extract from.
     private IContentFile _textureFile;
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to return the progress status of the extraction operation.
     /// </summary>
@@ -124,7 +114,6 @@ internal class Extract
         }
     }
 
-
     /// <summary>
     /// Property to return the number of sprites for previewing.
     /// </summary>
@@ -152,7 +141,7 @@ internal class Extract
     /// <summary>
     /// Property to set or return the number of columns/rows in the grid.
     /// </summary>
-    public DX.Size2 GridSize
+    public GorgonPoint GridSize
     {
         get => _extractData.GridSize;
         set
@@ -162,7 +151,7 @@ internal class Extract
                 return;
             }
 
-            OnPropertyChanging();                
+            OnPropertyChanging();
             _extractData.GridSize = value;
             OnPropertyChanged();
         }
@@ -171,12 +160,12 @@ internal class Extract
     /// <summary>
     /// Property to return the maximum columns and rows allowed in the grid.
     /// </summary>
-    public DX.Size2 MaxGridSize => _extractData.MaxGridSize;
+    public GorgonPoint MaxGridSize => _extractData.MaxGridSize;
 
     /// <summary>
     /// Property to set or return the offset of the grid, in pixels.
     /// </summary>
-    public DX.Point GridOffset
+    public GorgonPoint GridOffset
     {
         get => _extractData.GridOffset;
         set
@@ -194,11 +183,10 @@ internal class Extract
         }
     }
 
-
     /// <summary>
     /// Property to set or return the size of a grid cell.
     /// </summary>
-    public DX.Size2 CellSize
+    public GorgonPoint CellSize
     {
         get => _extractData.CellSize;
         set
@@ -250,7 +238,7 @@ internal class Extract
 
             OnPropertyChanging();
             _extractData.SkipColor = value;
-            _settings.SkipColor = value.ToARGB();
+            _settings.SkipColor = GorgonColor.ToARGB(value);
             OnPropertyChanged();
         }
     }
@@ -378,9 +366,7 @@ internal class Extract
     {
         get;
     }
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to assign the color used to mask out empty regions.
     /// </summary>
@@ -472,7 +458,7 @@ internal class Extract
             {
                 return;
             }
-            
+
             _currentTask = spriteGenTask = Task.Run(() => _extractor.ExtractSprites(_extractData, imageData, UpdateProgress, _cancelSource.Token), _cancelSource.Token);
             IReadOnlyList<GorgonSprite> sprites = await spriteGenTask;
 
@@ -487,7 +473,7 @@ internal class Extract
                 CurrentPreviewSprite = sprites.Count - 1;
             }
 
-            Sprites = sprites;                
+            Sprites = sprites;
         }
         catch (OperationCanceledException)
         {
@@ -524,11 +510,10 @@ internal class Extract
         }
         catch (Exception ex)
         {
-            HostServices.Log.Print("ERROR: Error cancelling sprite generation.", LoggingLevel.Simple);
+            HostServices.Log.PrintError("Error cancelling sprite generation.", LoggingLevel.Simple);
             HostServices.Log.LogException(ex);
         }
     }
-
 
     /// <summary>
     /// Function to determine if the sprites can be saved at this time.
@@ -583,13 +568,13 @@ internal class Extract
     ///   <b>true</b> to continue with closing, <b>false</b> to cancel the close request.</returns>
     /// <remarks>
     ///   <para>
-    /// Tool plug in developers can override this method to verify changes, or perform last minute updates as needed.
+    /// Tool plug-in developers can override this method to verify changes, or perform last minute updates as needed.
     /// </para>
     ///   <para>
     /// This is set up as an asynchronous method so that users may save their data asynchronously to keep the UI usable.
     /// </para>
     /// </remarks>
-    protected async override Task<bool> OnCloseToolTaskAsync() 
+    protected async override Task<bool> OnCloseToolTaskAsync()
     {
         // If we're executing a task, wait for it to finish.
         if (_currentTask is null)
@@ -597,7 +582,6 @@ internal class Extract
             return true;
         }
 
-        
         if (HostServices.MessageDisplay.ShowConfirmation(Resources.GOREST_CONFIRM_EXTRACT_IN_PROGRESS) == MessageResponse.No)
         {
             return false;
@@ -612,7 +596,7 @@ internal class Extract
         }
         catch (Exception ex)
         {
-            HostServices.Log.Print("ERROR: Error stopping the extraction process.", LoggingLevel.Simple);
+            HostServices.Log.PrintError("Error stopping the extraction process.", LoggingLevel.Simple);
             HostServices.Log.LogException(ex);
         }
         return true;
@@ -641,26 +625,26 @@ internal class Extract
         _extractor = injectionParameters.Extractor;
         _textureFile = injectionParameters.TextureFile;
 
-        if (_extractData.GridOffset.X > _extractData.Texture.Width - _extractData.CellSize.Width)
+        if (_extractData.GridOffset.X > _extractData.Texture.Width - _extractData.CellSize.X)
         {
-            _extractData.GridOffset = new DX.Point(0, _extractData.GridOffset.Y);
+            _extractData.GridOffset = new GorgonPoint(0, _extractData.GridOffset.Y);
         }
 
-        if (_extractData.GridOffset.Y > _extractData.Texture.Height - _extractData.CellSize.Height)
+        if (_extractData.GridOffset.Y > _extractData.Texture.Height - _extractData.CellSize.Y)
         {
-            _extractData.GridOffset = new DX.Point(_extractData.GridOffset.X, 0);
+            _extractData.GridOffset = new GorgonPoint(_extractData.GridOffset.X, 0);
         }
 
         _extractData.StartArrayIndex = _extractData.StartArrayIndex.Min(_extractData.Texture.ArrayCount - 1);
         _extractData.ArrayCount = _extractData.ArrayCount.Min(_extractData.Texture.ArrayCount - _extractData.StartArrayIndex);
 
-        if ((_extractData.GridSize.Width == 0) || (_extractData.GridSize.Height == 0))
+        if ((_extractData.GridSize.X == 0) || (_extractData.GridSize.Y == 0))
         {
             _extractData.GridSize = MaxGridSize;
         }
         else
         {
-            _extractData.GridSize = new DX.Size2(_extractData.GridSize.Width.Min(MaxGridSize.Width), _extractData.GridSize.Height.Min(MaxGridSize.Height));
+            _extractData.GridSize = new GorgonPoint(_extractData.GridSize.X.Min(MaxGridSize.X), _extractData.GridSize.Y.Min(MaxGridSize.Y));
         }
     }
 
@@ -669,11 +653,9 @@ internal class Extract
     protected override void OnUnload()
     {
         _cancelSource?.Dispose();
-        base.Unload();
+        Unload();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
     /// <summary>Initializes a new instance of the <see cref="Extract"/> class.</summary>
     public Extract()
     {
@@ -684,5 +666,4 @@ internal class Extract
         CancelSpriteGenerationCommand = new EditorCommand<object>(DoCancelSpriteGeneration, CanCancelSpriteGeneration);
         SaveSpritesCommand = new EditorCommand<SaveSpritesArgs>(DoSaveSprites, CanSaveSprites);
     }
-    #endregion
 }

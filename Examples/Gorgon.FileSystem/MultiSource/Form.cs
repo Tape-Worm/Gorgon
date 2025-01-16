@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2013 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,36 +11,29 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Thursday, January 17, 2013 11:07:02 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
-using System.Linq;
 using System.Text;
-using System.Windows.Forms;
 using Gorgon.Core;
-using Gorgon.IO;
-using Gorgon.IO.Providers;
+using Gorgon.IO.FileSystem;
+using Gorgon.IO.FileSystem.Providers;
 using Gorgon.PlugIns;
 using Gorgon.UI;
 
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Main application interface.
+/// Main application interface
 /// </summary>
 /// <remarks>
 /// In this example we will mount two different data sources into a virtual file system.  
@@ -55,21 +48,23 @@ namespace Gorgon.Examples;
 /// are mounted.  If 2 or more data sources contain the same file names, then the data source that was mounted
 /// last will take precedence over the previous file systems.  For example, if D:\directory\filename.txt exists in
 /// the virtual root as "/filename.txt" and we mount a zip file that has filename.txt in the root of the zip file,
-/// then when we open filename.txt from the virtual file system we will be opening the file from the zip file.
+/// then when we open filename.txt from the virtual file system we will be opening the file from the zip file
 /// 
 /// We begin the example by loading the file system provider for zip files, and then mounting a physical folder
 /// and then the zip file into a virtual subdirectory.  From there we enumerate the files and virtual sub directories
 /// into the tree view.  Opening a file can be done either from the file entry as shown in the example, or it can be
 /// opened via the file system interface (allowing the user to pass a full path to the file).  Files can be returned
 /// as a stream (OpenStream) or an array of bytes (ReadFile).  Please note that writing to these file systems is not
-/// supported and can only be done when a write directory is set.  This will be covered in another example.
+/// supported and can only be done when a write directory is set.  This will be covered in another example
 /// </remarks>
 public partial class Form
     : System.Windows.Forms.Form
 {
-    #region Variables.
+
     // Our file system.
-    private GorgonFileSystem _fileSystem;
+    private IGorgonFileSystem _fileSystem;
+    // Zip file system provider.
+    private IGorgonFileSystemProvider _zipProvider;
     // Our picture box.
     private PictureBox _picture;
     // Loaded image.
@@ -80,11 +75,9 @@ public partial class Form
     private Font _textFont;
     // Instructions label.
     private Label _instructions;
-    // File system plug in assembly cache.
+    // File system plug-in assembly cache.
     private GorgonMefPlugInCache _cache;
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Handles the NodeMouseDoubleClick event of the treeFileSystem control.
     /// </summary>
@@ -107,12 +100,12 @@ public partial class Form
 
             _picture.Image = null;
             _textDisplay.Text = string.Empty;
-            var file = (IGorgonVirtualFile)e.Node.Tag;
+            IGorgonVirtualFile file = (IGorgonVirtualFile)e.Node.Tag;
 
             // Here we load the image from the file system.
             // Note that we don't care if it's from the zip file
             // or the folder.  It's all the same to us.
-            using Stream fileStream = file.OpenStream();
+            using Stream fileStream = _fileSystem.OpenStream(file.FullPath, false);
             // If it's a picture, then load it.
             switch (file.Extension.ToLower())
             {
@@ -151,7 +144,7 @@ public partial class Form
         }
         catch (Exception ex)
         {
-            ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), Program.Log);
+            ex.Handle(e => GorgonDialogs.ErrorBox(this, e), Program.Log);
             splitFileSystem.Panel2.Controls.Add(_instructions);
         }
     }
@@ -176,7 +169,7 @@ public partial class Form
         }
         catch (Exception ex)
         {
-            ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), Program.Log);
+            ex.Handle(e => GorgonDialogs.ErrorBox(this, e), Program.Log);
         }
     }
 
@@ -187,7 +180,7 @@ public partial class Form
     /// <param name="e">The <see cref="TreeViewCancelEventArgs" /> instance containing the event data.</param>
     private void TreeFileSystem_BeforeCollapse(object sender, TreeViewCancelEventArgs e)
     {
-        var directory = e.Node.Tag as IGorgonVirtualDirectory;
+        IGorgonVirtualDirectory directory = e.Node.Tag as IGorgonVirtualDirectory;
 
         try
         {
@@ -199,7 +192,7 @@ public partial class Form
         }
         catch (Exception ex)
         {
-            ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), Program.Log);
+            ex.Handle(e => GorgonDialogs.ErrorBox(this, e), Program.Log);
         }
     }
 
@@ -209,17 +202,17 @@ public partial class Form
     private void LoadZipFileSystemProvider()
     {
         // Name of our zip provider plugin.
-        const string zipProviderPlugInName = "Gorgon.IO.Zip.ZipProvider";
+        const string zipProviderPlugInName = "Gorgon.IO.FileSystem.Providers.ZipPlugIn";
 
         // We can load the objects we need and discard the plugin system after.
         // This works because we keep the references to the objects that our 
         // plugin creates, even after the plugin is gone.
         _cache = new GorgonMefPlugInCache(Program.Log);
 
-        var providerFactory = new GorgonFileSystemProviderFactory(_cache, Program.Log);
-        IGorgonFileSystemProvider provider = providerFactory.CreateProvider(Path.Combine(GorgonExample.GetPlugInPath().FullName, "Gorgon.FileSystem.Zip.DLL"), zipProviderPlugInName);
+        GorgonFileSystemProviderFactory providerFactory = new(_cache, Program.Log);
+        _zipProvider = providerFactory.CreateProvider(Path.Combine(GorgonExample.GetPlugInPath().FullName, "Gorgon.IO.FileSystem.Zip.DLL"), zipProviderPlugInName);
 
-        _fileSystem = new GorgonFileSystem(provider, Program.Log);           
+        _fileSystem = new GorgonFileSystem(Program.Log);
     }
 
     /// <summary>
@@ -275,13 +268,16 @@ public partial class Form
             }
 
             // Enumerate the data.  For the purposed of this example, we will filter out known binary files from our file system.				
-            IOrderedEnumerable<IGorgonVirtualDirectory> directories = directory.Directories.OrderBy(item => item.Name);
-            IEnumerable<IGorgonVirtualFile> files = directory.Files.OrderBy(item => item.Name).Where(item => item.Extension is not ".gorSprite" and not ".gal");
+            IEnumerable<IGorgonVirtualDirectory> directories = directory.Directories.Select(d => d.Value)
+                                                                                    .OrderBy(item => item.Name);
+            IEnumerable<IGorgonVirtualFile> files = directory.Files.Select(f => f.Value)
+                                                                   .Where(item => item.Extension is not ".gorSprite" and not ".gal")
+                                                                   .OrderBy(item => item.Name);
 
             // Get directories.
             foreach (IGorgonVirtualDirectory subDirectory in directories)
             {
-                var directoryNode = new TreeNode(subDirectory.Name)
+                TreeNode directoryNode = new(subDirectory.Name)
                 {
                     Name = subDirectory.FullPath,
                     Tag = subDirectory
@@ -302,7 +298,7 @@ public partial class Form
                 }
 
                 // Add a dummy node if there are files or sub directories.
-                if ((subDirectory.Directories.Count > 0) || (subDirectory.Files.Count(item => item.Extension is not ".gorSprite" and not ".gal") > 0))
+                if ((subDirectory.Directories.Count > 0) || (subDirectory.Files.Count() > 0))
                 {
                     directoryNode.Nodes.Add(new TreeNode("This is a dummy node."));
                 }
@@ -318,7 +314,7 @@ public partial class Form
                     continue;
                 }
 
-                var fileNode = new TreeNode(file.Name)
+                TreeNode fileNode = new(file.Name)
                 {
                     Name = file.FullPath,
                     Tag = file
@@ -398,23 +394,28 @@ public partial class Form
             _fileSystem.Mount(GorgonExample.GetResourcePath(@"\FileSystems\VFSRoot\").FullName);
 
             // Mount the zip file into a sub directory.
-            _fileSystem.Mount(Path.Combine(GorgonExample.GetResourcePath(@"\FileSystems").FullName, "VFSRoot.zip"), "/ZipFile");
+            _fileSystem.Mount(Path.Combine(GorgonExample.GetResourcePath(@"\FileSystems").FullName, "VFSRoot.zip"), "/ZipFile", _zipProvider);
 
             // Fill the root of the tree.
             FillTree(null);
         }
         catch (Exception ex)
         {
-            ex.Catch(_ => GorgonDialogs.ErrorBox(this, _), Program.Log);
+            ex.Handle(e => GorgonDialogs.ErrorBox(this, e), Program.Log);
             GorgonApplication.Quit();
         }
     }
-    #endregion
 
-    #region Constructor/Destructor.
     /// <summary>
     /// Initializes a new instance of the <see cref="Form" /> class.
     /// </summary>
-    public Form() => InitializeComponent();
-    #endregion
+    public Form()
+    {
+        InitializeComponent();
+
+        imageTree.ImageSize = new Size(16, 16);
+        imageTree.Images.Add(Properties.Resources.folder_16x16);
+        imageTree.Images.Add(Properties.Resources.document_text_16x16);
+        imageTree.Images.Add(Properties.Resources.packed_file_16x16);
+    }
 }

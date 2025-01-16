@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,39 +11,37 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 23, 2018 12:18:45 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Memory;
+using Gorgon.Patterns;
 
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Common functionality for the a draw call fluent builder.
+/// Common functionality for the a draw call fluent builder
 /// </summary>
 /// <typeparam name="TB">The type of builder.</typeparam>
 /// <typeparam name="TDc">The type of draw call.</typeparam>
 /// <remarks>
 /// <para>
 /// A draw call is an immutable object that contains all of the state required to render mesh information. For each mesh an application needs to render, an single draw call should be issued via the
-/// <see cref="GorgonGraphics.Submit(GorgonDrawCall, in GorgonColor?, int, int)"/> methods.  
+/// <see cref="GorgonGraphics.Submit(GorgonDrawCall, GorgonColor?, int, int)"/> methods.  
 /// </para>
 /// <para>
-/// State management is handled internally by Gorgon so that duplicate states are not set and thus, performance is not impacted by redundant states.
+/// State management is handled internally by Gorgon so that duplicate states are not set and thus, performance is not impacted by redundant states
 /// </para>
 /// <para>
 /// This builder type uses a fluent interface to assemble the draw call, its resources and its <see cref="GorgonPipelineState"/>. 
@@ -51,11 +49,10 @@ namespace Gorgon.Graphics.Core;
 /// </remarks>
 /// <seealso cref="GorgonGraphics"/>
 public abstract class GorgonDrawCallBuilderCommon<TB, TDc>
-    : IGorgonFluentBuilderAllocator<TB, TDc, IGorgonAllocator<TDc>>
+    : IGorgonFluentBuilder<TB, TDc, IGorgonAllocator<TDc>>
     where TB : GorgonDrawCallBuilderCommon<TB, TDc>
     where TDc : GorgonDrawCallCommon
 {
-    #region Properties.
     /// <summary>
     /// Property to return the draw call being edited.
     /// </summary>
@@ -63,15 +60,13 @@ public abstract class GorgonDrawCallBuilderCommon<TB, TDc>
     {
         get;
     }
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to create a new draw call.
     /// </summary>
     /// <param name="allocator">The allocator to use when creating draw call objects.</param>
     /// <returns>A new draw call.</returns>
-    protected abstract TDc OnCreate(IGorgonAllocator<TDc> allocator);
+    protected abstract TDc OnCreate(IGorgonAllocator<TDc>? allocator);
 
     /// <summary>
     /// Function to update the properties of the draw call from the working copy to the final copy.
@@ -223,7 +218,7 @@ public abstract class GorgonDrawCallBuilderCommon<TB, TDc>
     /// <param name="slot">[Optional] The slot for the binding.</param>
     /// <returns>The fluent builder interface.</returns>
     /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="slot"/> parameter is less than 0, or greater than/equal to <see cref="GorgonStreamOutBindings.MaximumStreamOutCount"/>.</exception>
-    public TB StreamOutBuffer(in GorgonStreamOutBinding binding, int slot = 0)
+    public TB StreamOutBuffer(ref readonly GorgonStreamOutBinding binding, int slot = 0)
     {
         if (slot is < 0 or >= GorgonStreamOutBindings.MaximumStreamOutCount)
         {
@@ -279,7 +274,7 @@ public abstract class GorgonDrawCallBuilderCommon<TB, TDc>
     /// <returns>The fluent builder interface.</returns>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="layout"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="slot"/> parameter is less than 0, or greater than/equal to <see cref="GorgonVertexBufferBindings.MaximumVertexBufferCount"/>.</exception>
-    public TB VertexBuffer(GorgonInputLayout layout, in GorgonVertexBufferBinding binding, int slot = 0)
+    public TB VertexBuffer(GorgonInputLayout layout, GorgonVertexBufferBinding binding, int slot = 0)
     {
         if (slot is < 0 or >= GorgonVertexBufferBindings.MaximumVertexBufferCount)
         {
@@ -496,7 +491,7 @@ public abstract class GorgonDrawCallBuilderCommon<TB, TDc>
     /// <param name="slot">[Optional] The slot used to asign the view.</param>
     /// <returns>The fluent builder interface.</returns>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="slot"/> is less than 0, or greater than/equal to <see cref="GorgonShaderResourceViews.MaximumShaderResourceViewCount"/>.</exception>
-    public TB ReadWriteView(in GorgonReadWriteViewBinding resourceView, int slot = 0)
+    public TB ReadWriteView(ref readonly GorgonReadWriteViewBinding resourceView, int slot = 0)
     {
         if (slot is < 0 or >= GorgonShaderResourceViews.MaximumShaderResourceViewCount)
         {
@@ -607,7 +602,7 @@ public abstract class GorgonDrawCallBuilderCommon<TB, TDc>
     /// <summary>
     /// Function to return the draw call.
     /// </summary>
-    /// <param name="allocator">The allocator used to create an instance of the object</param>
+    /// <param name="allocator">[Optional] The allocator used to create an instance of the object.</param>
     /// <returns>The draw call created or updated by this builder.</returns>
     /// <exception cref="GorgonException">Thrown if a <see cref="GorgonVertexShader"/> is not assigned to the <see cref="GorgonPipelineState.VertexShader"/> property with the <see cref="PipelineState(GorgonPipelineStateBuilder)"/> command.</exception>
     /// <remarks>
@@ -622,7 +617,7 @@ public abstract class GorgonDrawCallBuilderCommon<TB, TDc>
     /// A draw call requires that at least a vertex shader be bound. If none is present, then the method will throw an exception.
     /// </para>
     /// </remarks>
-    public TDc Build(IGorgonAllocator<TDc> allocator)
+    public TDc Build(IGorgonAllocator<TDc>? allocator = null)
     {
         TDc final = OnCreate(allocator);
 
@@ -733,15 +728,6 @@ public abstract class GorgonDrawCallBuilderCommon<TB, TDc>
     }
 
     /// <summary>
-    /// Function to return the draw call.
-    /// </summary>
-    /// <returns>The draw call created or updated by this builder.</returns>
-    /// <exception cref="GorgonException">Thrown if a <see cref="GorgonVertexShader"/> is not assigned to the <see cref="GorgonPipelineState.VertexShader"/> property with the <see cref="PipelineState(GorgonPipelineStateBuilder)"/> command.</exception>
-    public TDc Build() => Build(null);
-    #endregion
-
-    #region Constructor/Finalizer.
-    /// <summary>
     /// Initializes a new instance of the <see cref="GorgonDrawCallBuilder"/> class.
     /// </summary>
     /// <param name="drawCall">The worker draw call.</param>
@@ -756,5 +742,4 @@ public abstract class GorgonDrawCallBuilderCommon<TB, TDc>
         DrawCall.D3DState.StreamOutBindings = new GorgonStreamOutBindings();
         DrawCall.D3DState.PipelineState = new GorgonPipelineState();
     }
-    #endregion
 }

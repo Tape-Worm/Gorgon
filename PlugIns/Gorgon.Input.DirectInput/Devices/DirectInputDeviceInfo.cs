@@ -1,5 +1,4 @@
-﻿#region MIT
-// 
+﻿// 
 // Gorgon
 // Copyright (C) 2015 Michael Winsor
 // 
@@ -11,22 +10,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Sunday, September 13, 2015 2:09:21 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Gorgon.Core;
 using Gorgon.Native;
 using DI = SharpDX.DirectInput;
@@ -34,12 +29,15 @@ using DI = SharpDX.DirectInput;
 namespace Gorgon.Input.DirectInput;
 
 /// <summary>
-/// Device information for a DirectInput gaming device.
+/// Device information for a DirectInput gaming device
 /// </summary>
-internal class DirectInputDeviceInfo
-    : IGorgonGamingDeviceInfo
+/// <remarks>
+/// Initializes a new instance of the <see cref="DirectInputDeviceInfo"/> class
+/// </remarks>
+/// <param name="devInstance">The DirectInput device instance.</param>
+internal class DirectInputDeviceInfo(DI.DeviceInstance devInstance)
+        : IGorgonGamingDeviceInfo
 {
-    #region Properties.
     /// <summary>
     /// Property to return the <see cref="GorgonGamingDeviceAxisInfo"/> values for each axis on the gaming device.
     /// </summary>
@@ -76,7 +74,7 @@ internal class DirectInputDeviceInfo
     public string Description
     {
         get;
-    }
+    } = devInstance.ProductName;
 
     /// <summary>
     /// Property to return the ID for the manufacturer of the gaming device.
@@ -107,10 +105,10 @@ internal class DirectInputDeviceInfo
     /// If the device does not support vibration, then this list will be empty.
     /// </para>
     /// </remarks>
-    public IReadOnlyList<GorgonRange> VibrationMotorRanges
+    public IReadOnlyList<GorgonRange<int>> VibrationMotorRanges
     {
         get;
-    }
+    } = [];
 
     /// <summary>
     /// Property to return the number of point of view controls on the gaming device.
@@ -125,10 +123,7 @@ internal class DirectInputDeviceInfo
     public Guid DeviceID
     {
         get;
-    }
-    #endregion
-
-    #region Methods.
+    } = devInstance.InstanceGuid;
 
     /// <summary>
     /// Function to retrieve the capabilities from the DirectInput joystick.
@@ -136,8 +131,8 @@ internal class DirectInputDeviceInfo
     /// <param name="joystick">The DirectInput joystick to evaluate.</param>
     public IReadOnlyDictionary<GamingDeviceAxis, DI.DeviceObjectId> GetDeviceCaps(DI.Joystick joystick)
     {
-        var defaults = new Dictionary<GamingDeviceAxis, int>();
-        var axisRanges = new Dictionary<GamingDeviceAxis, GorgonRange>();
+        Dictionary<GamingDeviceAxis, int> defaults = [];
+        Dictionary<GamingDeviceAxis, GorgonRange<int>> axisRanges = [];
 
         ProductID = joystick.Properties.ProductId;
         ManufacturerID = joystick.Properties.VendorId;
@@ -146,11 +141,11 @@ internal class DirectInputDeviceInfo
         Capabilities = POVCount > 0 ? GamingDeviceCapabilityFlags.SupportsPOV : GamingDeviceCapabilityFlags.None;
 
         IList<DI.DeviceObjectInstance> axisInfo = joystick.GetObjects(DI.DeviceObjectTypeFlags.Axis);
-        var axisMappings = new Dictionary<GamingDeviceAxis, DI.DeviceObjectId>();
+        Dictionary<GamingDeviceAxis, DI.DeviceObjectId> axisMappings = [];
 
         foreach (DI.DeviceObjectInstance axis in axisInfo)
         {
-            var usage = (HIDUsage)axis.Usage;
+            HIDUsage usage = (HIDUsage)axis.Usage;
             DI.ObjectProperties properties = joystick.GetObjectPropertiesById(axis.ObjectId);
 
             // Skip this axis if retrieving the properties results in failure.
@@ -159,7 +154,7 @@ internal class DirectInputDeviceInfo
                 continue;
             }
 
-            var range = new GorgonRange(properties.Range.Minimum, properties.Range.Maximum);
+            GorgonRange<int> range = new(properties.Range.Minimum, properties.Range.Maximum);
             int midPoint = ((range.Range + 1) / 2) + range.Minimum;
 
             switch (usage)
@@ -211,18 +206,4 @@ internal class DirectInputDeviceInfo
 
         return axisMappings;
     }
-    #endregion
-
-    #region Constructor.
-    /// <summary>
-    /// Initializes a new instance of the <see cref="DirectInputDeviceInfo"/> class.
-    /// </summary>
-    /// <param name="devInstance">The DirectInput device instance.</param>
-    public DirectInputDeviceInfo(DI.DeviceInstance devInstance)
-    {
-        VibrationMotorRanges = Array.Empty<GorgonRange>();
-        DeviceID = devInstance.InstanceGuid;
-        Description = devInstance.ProductName;
-    }
-    #endregion
 }

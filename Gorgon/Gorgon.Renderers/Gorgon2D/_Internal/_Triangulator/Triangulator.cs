@@ -1,72 +1,47 @@
-// Triangulator source code by Nick Gravelyn.
+﻿// Triangulator source code by Nick Gravelyn
 // https://github.com/nickgravelyn/Triangulator
 //
-// Licensed under the MIT license.
+// Licensed under the MIT license
 // https://github.com/nickgravelyn/Triangulator/blob/master/LICENSE
 //
 
-using System.Collections.Generic;
 using System.Diagnostics;
-
-/* Unmerged change from project 'Gorgon.Renderers.Gorgon2D (net5.0-windows)'
-Before:
-using System.Text;
-After:
-using System.Numerics;
-using System.Text;
-*/
 using System.Numerics;
 using System.Text;
 using Gorgon.Diagnostics;
+using Gorgon.Graphics;
 using Gorgon.Math;
-using Gorgon.Renderers
-/* Unmerged change from project 'Gorgon.Renderers.Gorgon2D (net5.0-windows)'
-Before:
-using System.Numerics;
-After:
 using Gorgon.Renderers.Geometry;
-*/
-.Geometry;
-using DX = SharpDX;
 
 namespace GorgonTriangulator;
 
 /// <summary>
 /// A class exposing methods for triangulating 2D polygons. This is the sole public
 /// class in the entire library; all other classes/structures are intended as internal-only
-/// objects used only to assist in triangulation.
+/// objects used only to assist in triangulation
 /// 
 /// This class makes use of the DEBUG conditional and produces quite verbose output when built
 /// in Debug mode. This is quite useful for debugging purposes, but can slow the process down
-/// quite a bit. For optimal performance, build the library in Release mode.
+/// quite a bit. For optimal performance, build the library in Release mode
 /// 
 /// The triangulation is also not optimized for garbage sensitive processing. The point of the
 /// library is a robust, yet simple, system for triangulating 2D shapes. It is intended to be
 /// used as part of your content pipeline or at load-time. It is not something you want to be
-/// using each and every frame unless you really don't care about garbage.
+/// using each and every frame unless you really don't care about garbage
 /// </summary>
-internal class Triangulator
+/// <remarks>
+/// Initializes a new instance of the <see cref="Triangulator"/> class
+/// </remarks>
+/// <param name="log">The log used for debug messages..</param>
+internal class Triangulator(IGorgonLog log)
 {
-    #region Fields
     private readonly IndexableCyclicalLinkedList<Vertex> _polygonVertices = new();
     private readonly IndexableCyclicalLinkedList<Vertex> _earVertices = new();
-    private readonly CyclicalList<Vertex> _convexVertices = new();
-    private readonly CyclicalList<Vertex> _reflexVertices = new();
-    private readonly List<Triangle> _triangles = new();
+    private readonly CyclicalList<Vertex> _convexVertices = [];
+    private readonly CyclicalList<Vertex> _reflexVertices = [];
+    private readonly List<Triangle> _triangles = [];
     // The log used for debug messages.
-    private readonly IGorgonLog _log;
-    #endregion
-
-    #region Constructor
-    /// <summary>
-    /// Initializes a new instance of the <see cref="Triangulator"/> class.
-    /// </summary>
-    /// <param name="log">The log used for debug messages..</param>
-    public Triangulator(IGorgonLog log) => _log = log ?? GorgonLog.NullLog;
-    #endregion
-
-
-    #region Public Methods
+    private readonly IGorgonLog _log = log ?? GorgonLog.NullLog;
 
     /// <summary>
     /// Triangulates a 2D polygon produced the indexes required to render the points as a triangle list.
@@ -74,7 +49,7 @@ internal class Triangulator
     /// <param name="inputVertices">The polygon vertices in counter-clockwise winding order.</param>
     /// <param name="desiredWindingOrder">The desired output winding order.</param>
     /// <returns>A tuple containing a list of vertices, indices and bounds.</returns>
-    public (int[] indices, DX.RectangleF bounds) Triangulate(Gorgon2DVertex[] inputVertices, WindingOrder desiredWindingOrder)
+    public (int[] indices, GorgonRectangleF bounds) Triangulate(Gorgon2DVertex[] inputVertices, WindingOrder desiredWindingOrder)
     {
         Log("\nBeginning triangulation...");
 
@@ -142,7 +117,7 @@ internal class Triangulator
             }
         }
 
-        var minMax = new DX.RectangleF();
+        GorgonRectangleF minMax = new();
 
         // Calculate bounds.
         for (int i = 0; i < inputVertices.Length; ++i)
@@ -188,7 +163,7 @@ internal class Triangulator
         Log("\nReversing winding order...");
 
 #if DEBUG
-        var vString = new StringBuilder();
+        StringBuilder vString = new();
         foreach (Gorgon2DVertex v in vertices)
         {
             vString.Append($"{v.Position}, ");
@@ -233,8 +208,8 @@ internal class Triangulator
             Vector4 p2 = vertices[i].Position;
             Vector4 p3 = vertices[(i + 1) % vertices.Length].Position;
 
-            var e1 = Vector4.Subtract(p1, p2);
-            var e2 = Vector4.Subtract(p3, p2);
+            Vector4 e1 = Vector4.Subtract(p1, p2);
+            Vector4 e2 = Vector4.Subtract(p3, p2);
 
             if ((e1.X * e2.Y) - (e1.Y * e2.X) >= 0)
             {
@@ -272,7 +247,7 @@ internal class Triangulator
 
         //write out the states of each of the lists
 #if DEBUG
-        var rString = new StringBuilder();
+        StringBuilder rString = new();
         foreach (Vertex v in _reflexVertices)
         {
             rString.Append($"{v.Index}, ");
@@ -280,7 +255,7 @@ internal class Triangulator
 
         Log("Reflex Vertices: {0}", rString);
 
-        var cString = new StringBuilder();
+        StringBuilder cString = new();
         foreach (Vertex v in _convexVertices)
         {
             cString.Append($"{v.Index}, ");
@@ -288,7 +263,7 @@ internal class Triangulator
 
         Log("Convex Vertices: {0}", cString);
 
-        var eString = new StringBuilder();
+        StringBuilder eString = new();
         foreach (Vertex v in _earVertices)
         {
             eString.Append($"{v.Index}, ");
@@ -406,9 +381,9 @@ internal class Triangulator
         Vertex p = _polygonVertices[_polygonVertices.IndexOf(c) - 1].Value;
         Vertex n = _polygonVertices[_polygonVertices.IndexOf(c) + 1].Value;
 
-        var d1 = Vector2.Normalize(c.Position - p.Position);
-        var d2 = Vector2.Normalize(n.Position - c.Position);
-        var n2 = new Vector2(-d2.Y, d2.X);
+        Vector2 d1 = Vector2.Normalize(c.Position - p.Position);
+        Vector2 d2 = Vector2.Normalize(n.Position - c.Position);
+        Vector2 n2 = new(-d2.Y, d2.X);
 
         return (Vector2.Dot(d1, n2) <= 0f);
     }
@@ -421,23 +396,21 @@ internal class Triangulator
             return;
         }
 
-        _log?.Print(format, LoggingLevel.Verbose, parameters);
+        _log?.Print(string.Format(format, parameters), LoggingLevel.Verbose);
     }
-
-    #endregion
 }
 
 /// <summary>
-/// Specifies a desired winding order for the shape vertices.
+/// Specifies a desired winding order for the shape vertices
 /// </summary>
 internal enum WindingOrder
 {
     /// <summary>
     /// Clockwise winding for vertices.
     /// </summary>
-		Clockwise,
+    Clockwise,
     /// <summary>
     /// Counterclockwise winding for vertices.
     /// </summary>
-		CounterClockwise
+    CounterClockwise
 }

@@ -25,7 +25,7 @@ partial class ImageDimensionSettings
         base.Dispose(disposing);
     }
 
-    #region Component Designer generated code
+
 
     /// <summary> 
     /// Required method for Designer support - do not modify 
@@ -368,7 +368,7 @@ partial class ImageDimensionSettings
 
     }
 
-    #endregion
+
     private System.Windows.Forms.TableLayoutPanel TableBody;
     private System.Windows.Forms.RadioButton RadioCrop;
     private System.Windows.Forms.RadioButton RadioResize;

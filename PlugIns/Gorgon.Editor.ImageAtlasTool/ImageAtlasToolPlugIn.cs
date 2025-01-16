@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2019 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,22 +11,18 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: March 2, 2019 11:15:34 AM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.ImageAtlasTool.Properties;
 using Gorgon.Editor.PlugIns;
@@ -40,18 +36,18 @@ using Gorgon.UI;
 namespace Gorgon.Editor.ImageAtlasTool;
 
 /// <summary>
-/// A plug in used to build a texture atlas from a series of individual images, and optionally create images using the resulting texture atlas.
+/// A plug-in used to build a texture atlas from a series of individual images, and optionally create images using the resulting texture atlas
 /// </summary>
 /// <remarks>
 /// <para>
-/// This plug in is different from the texture atlas generator tool in that it uses individual image files to create the atlas. This is useful in the case where each separate image file is a sprite  
-/// (like back in the olden DOS days and is not performant with GPUs). This allows content creators just to create a single image for a sprite, without having to build a sprite for each image.
+/// This plug-in is different from the texture atlas generator tool in that it uses individual image files to create the atlas. This is useful in the case where each separate image file is a sprite  
+/// (like back in the olden DOS days and is not performant with GPUs). This allows content creators just to create a single image for a sprite, without having to build a sprite for each image
 /// </para>
 /// </remarks>
 internal class ImageAtlasToolPlugIn
     : ToolPlugIn
 {
-    #region Variables.
+
     // The cached button definition.
     private ToolPlugInRibbonButton _button;
     // The default image codec to use.
@@ -62,19 +58,17 @@ internal class ImageAtlasToolPlugIn
     private ImageFiles _fileVm;
     // The texture atlas view model.
     private ImageAtlas _textureAtlas;
-    #endregion
 
-    #region Methods.		
     /// <summary>
     /// Function to retrieve the image file entries from the file system.
     /// </summary>
     /// <returns>The flattened list of entries used for searching and the file system entry hierarchy.</returns>
     private (List<IContentFileExplorerSearchEntry> searchEntries, List<ContentFileExplorerDirectoryEntry> fileSystemEntries) GetFileEntries()
-    {            
-        var searchEntries = new List<IContentFileExplorerSearchEntry>();
-        var fileSystemEntries = new List<ContentFileExplorerDirectoryEntry>();
+    {
+        List<IContentFileExplorerSearchEntry> searchEntries = [];
+        List<ContentFileExplorerDirectoryEntry> fileSystemEntries = [];
         ContentFileExplorerDirectoryEntry dirEntry = null;
-        var fileEntries = new List<ContentFileExplorerFileEntry>();
+        List<ContentFileExplorerFileEntry> fileEntries = [];
         IEnumerable<string> dirs = ContentFileManager.EnumerateDirectories("/", "*", true);
         IEnumerable<IContentFile> imageFiles = ContentFileManager.EnumerateContentFiles("/", "*")
                                             .Where(item => (item.Metadata.Attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out string fileType))
@@ -90,7 +84,7 @@ internal class ImageAtlasToolPlugIn
 
             foreach (IContentFile file in imageFiles)
             {
-                var fileEntry = new ContentFileExplorerFileEntry(file, dirEntry);
+                ContentFileExplorerFileEntry fileEntry = new(file, dirEntry);
                 if (selectedFiles.Any(item => string.Equals(item, file.Path, StringComparison.OrdinalIgnoreCase)))
                 {
                     fileEntry.IsSelected = true;
@@ -111,7 +105,7 @@ internal class ImageAtlasToolPlugIn
                 continue;
             }
 
-            fileEntries = new List<ContentFileExplorerFileEntry>();
+            fileEntries = [];
             dirEntry = new ContentFileExplorerDirectoryEntry(subDir, fileEntries);
 
             fileSystemEntries.Add(dirEntry);
@@ -119,7 +113,7 @@ internal class ImageAtlasToolPlugIn
 
             foreach (IContentFile file in imageFiles)
             {
-                var fileEntry = new ContentFileExplorerFileEntry(file, dirEntry);
+                ContentFileExplorerFileEntry fileEntry = new(file, dirEntry);
                 if (selectedFiles.Any(item => string.Equals(item, file.Path, StringComparison.OrdinalIgnoreCase)))
                 {
                     fileEntry.IsSelected = true;
@@ -155,11 +149,11 @@ internal class ImageAtlasToolPlugIn
             _textureAtlas ??= new ImageAtlas();
 
             _fileVm.Initialize(new ImageFilesParameters(entries, TemporaryFileSystem, new EditorContentSearchService(searchEntries), HostToolServices));
-            _textureAtlas.Initialize(new ImageAtlasParameters(_fileVm, 
+            _textureAtlas.Initialize(new ImageAtlasParameters(_fileVm,
                                                                 settings,
                                                                 new GorgonTextureAtlasService(HostToolServices.GraphicsContext.Renderer2D),
                                                                 new FileIOService(ContentFileManager, _defaultImageCodec, _defaultSpriteCodec),
-                                                                ContentFileManager, 
+                                                                ContentFileManager,
                                                                 HostToolServices));
 
             form = new FormAtlasGen(settings);
@@ -186,11 +180,11 @@ internal class ImageAtlasToolPlugIn
     /// <returns>A new tool ribbon button instance.</returns>
     /// <remarks>
     ///   <para>
-    /// Tool plug in developers must override this method to return the button which is inserted on the application ribbon, under the "Tools" tab. If the method returns <b>null</b>, then the tool is
+    /// Tool plug-in developers must override this method to return the button which is inserted on the application ribbon, under the "Tools" tab. If the method returns <b>null</b>, then the tool is
     /// ignored.
     /// </para>
     ///   <para>
-    /// The resulting data structure will contain the means to handle the click event for the tool, and as such, is the only means of communication between the main UI and the plug in.
+    /// The resulting data structure will contain the means to handle the click event for the tool, and as such, is the only means of communication between the main UI and the plug-in.
     /// </para>
     /// </remarks>
     protected override IToolPlugInRibbonButton OnGetToolButton()
@@ -226,13 +220,10 @@ internal class ImageAtlasToolPlugIn
 
         base.OnShutdown();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
     /// <summary>Initializes a new instance of the <see cref="ImageAtlasToolPlugIn"/> class.</summary>
     public ImageAtlasToolPlugIn()
         : base(Resources.GORIAG_PLUGIN_DESC)
     {
     }
-    #endregion
 }

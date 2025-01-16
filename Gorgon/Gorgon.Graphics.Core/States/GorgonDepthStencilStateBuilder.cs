@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,23 +11,24 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: May 29, 2018 8:57:29 AM
 // 
-#endregion
+
+using Gorgon.Memory;
 
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Defines which face to apply a stencil operation to.
+/// Defines which face to apply a stencil operation to
 /// </summary>
 public enum StencilFace
 {
@@ -42,27 +43,26 @@ public enum StencilFace
 }
 
 /// <summary>
-/// A builder for a <see cref="GorgonDepthStencilState"/> object.
+/// A builder for a <see cref="GorgonDepthStencilState"/> object
 /// </summary>
 /// <remarks>
 /// <para>
 /// Use this builder to create a new immutable <see cref="GorgonDepthStencilState"/> to pass to a <see cref="GorgonPipelineState"/>. This object provides a fluent interface to help build up a 
-/// depth/stencil state.
+/// depth/stencil state
 /// </para>
 /// <para>
-/// This will define how rasterized primitive data is clipped against a depth/stencil buffer. Depth reading, writing, and stencil operations are affected by this state.
+/// This will define how rasterized primitive data is clipped against a depth/stencil buffer. Depth reading, writing, and stencil operations are affected by this state
 /// </para>
 /// <para>
-/// A depth/stencil state is an immutable object, and as such can only be created by using this object.
+/// A depth/stencil state is an immutable object, and as such can only be created by using this object
 /// </para>
 /// </remarks>
 /// <seealso cref="GorgonGraphics"/>
 /// <seealso cref="GorgonPipelineState"/>
 /// <seealso cref="GorgonDepthStencilState"/>
 public class GorgonDepthStencilStateBuilder
-    : GorgonStateBuilderAllocator<GorgonDepthStencilStateBuilder, GorgonDepthStencilState>
+    : GorgonStateBuilderCommon<GorgonDepthStencilStateBuilder, GorgonDepthStencilState>
 {
-    #region Methods.
     /// <summary>
     /// Function to copy the state settings from the source state into the destination.
     /// </summary>
@@ -87,14 +87,23 @@ public class GorgonDepthStencilStateBuilder
     }
 
     /// <summary>
-    /// Function to update the properties of the state from the working copy to the final copy.
+    /// Function to create a new state object.
     /// </summary>
-    /// <returns>The fluent builder interface.</returns>
-    protected override GorgonDepthStencilState OnCreateState() => new(WorkingState);
+    /// <param name="allocator">The allocator used to create the object.</param>
+    /// <returns>The new render state.</returns>
+    /// <remarks>
+    /// <para>
+    /// This method should be used to create the object only, the state information will be copied into the object by the <see cref="OnUpdate"/> method.
+    /// </para>
+    /// <para>
+    /// If the <paramref name="allocator"/> is null, the application should create the object using the <c>new</c> keyword. Otherwise, the <paramref name="allocator"/> should be used to create the object.
+    /// </para>
+    /// </remarks>
+    protected override GorgonDepthStencilState OnCreate(IGorgonAllocator<GorgonDepthStencilState>? allocator) => allocator?.Allocate() ?? new();
 
     /// <summary>Function to update the properties of the state, allocated from an allocator, from the working copy.</summary>
     /// <param name="state">The state to update.</param>
-    protected override void OnUpdate(GorgonDepthStencilState state) => CopyState(WorkingState, state);
+    protected override void OnUpdate(GorgonDepthStencilState state) => CopyState(state, WorkingState);
 
     /// <summary>
     /// Function to reset the builder to the specified state.
@@ -111,7 +120,7 @@ public class GorgonDepthStencilStateBuilder
     /// Function to clear the working state for the builder.
     /// </summary>
     /// <returns>The fluent builder interface.</returns>
-    protected override GorgonDepthStencilStateBuilder OnClearState()
+    protected override GorgonDepthStencilStateBuilder OnClear()
     {
         CopyState(WorkingState, GorgonDepthStencilState.Default);
         return this;
@@ -248,9 +257,7 @@ public class GorgonDepthStencilStateBuilder
         WorkingState.StencilWriteMask = write;
         return this;
     }
-    #endregion
 
-    #region Constructor.
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonDepthStencilStateBuilder"/> class.
     /// </summary>
@@ -258,5 +265,4 @@ public class GorgonDepthStencilStateBuilder
         : base(new GorgonDepthStencilState())
     {
     }
-    #endregion
 }

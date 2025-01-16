@@ -1,6 +1,6 @@
-﻿#region MIT
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2018 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,30 +11,24 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: August 26, 2018 9:43:30 PM
 // 
-#endregion
 
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Text.Json;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
-using Gorgon.Editor.Converters;
 using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Properties;
@@ -42,17 +36,16 @@ using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.Views;
 using Gorgon.IO;
-using Newtonsoft.Json;
 
 namespace Gorgon.Editor.ViewModels;
 
 /// <summary>
-/// The view model for the main window.
+/// The view model for the main window
 /// </summary>
 internal class Main
     : ViewModelBase<MainParameters, IHostContentServices>, IMain
 {
-    #region Variables.
+
     // The project manager used to handle project data.
     private ProjectManager _projectManager;
     // The factory used to create view models.
@@ -63,9 +56,7 @@ internal class Main
     private EditorFileOpenDialogService _openDialog;
     // The directory locator service.
     private IDirectoryLocateService _directoryLocator;
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to return the settings for the application.
     /// </summary>
@@ -186,9 +177,7 @@ internal class Main
     {
         get;
     }
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to save the project metadata.
     /// </summary>
@@ -203,7 +192,7 @@ internal class Main
 
         project.SaveProjectMetadataCommand.Execute(null);
     }
-    
+
     /// <summary>
     /// Function to persist the settings back to the file system.
     /// </summary>
@@ -211,15 +200,16 @@ internal class Main
     {
         StreamWriter writer = null;
 #if DEBUG
-        var settingsFile = new FileInfo(Path.Combine(Program.ApplicationUserDirectory.FullName, $"Gorgon.Editor.Settings.DEBUG.json"));
+        FileInfo settingsFile = new(Path.Combine(Program.ApplicationUserDirectory.FullName, $"Gorgon.Editor.Settings.DEBUG.json"));
 #else
-        var settingsFile = new FileInfo(Path.Combine(Program.ApplicationUserDirectory.FullName, $"Gorgon.Editor.Settings.json"));
+        FileInfo settingsFile = new FileInfo(Path.Combine(Program.ApplicationUserDirectory.FullName, $"Gorgon.Editor.Settings.json"));
 #endif
 
         try
         {
             writer = new StreamWriter(settingsFile.FullName, false, Encoding.UTF8);
-            writer.Write(JsonConvert.SerializeObject(Settings, new JsonSharpDxRectConverter()));
+
+            writer.Write(JsonSerializer.Serialize(Settings));
         }
         catch (Exception ex)
         {
@@ -358,7 +348,7 @@ internal class Main
                 }
                 catch (Exception ex)
                 {
-                    HostServices.Log.Print("ERROR: Cannot delete import working directory.", LoggingLevel.Simple);
+                    HostServices.Log.PrintError("Cannot delete import working directory.", LoggingLevel.Simple);
                     HostServices.Log.LogException(ex);
                 }
             }
@@ -382,7 +372,7 @@ internal class Main
         path = Path.GetFullPath(path).FormatDirectory(Path.DirectorySeparatorChar);
 
         // Check for content/project changes.
-        var args = new CancelEventArgs();
+        CancelEventArgs args = new();
         if ((current?.BeforeCloseCommand is not null) && (current.BeforeCloseCommand.CanExecute(args)))
         {
             await current.BeforeCloseCommand.ExecuteAsync(args);
@@ -417,7 +407,7 @@ internal class Main
 
         if (project is null)
         {
-            HostServices.Log.Print("ERROR: No project was returned from the project manager.", LoggingLevel.Simple);
+            HostServices.Log.PrintError("No project was returned from the project manager.", LoggingLevel.Simple);
             return;
         }
 
@@ -549,15 +539,17 @@ internal class Main
             HostServices.Log.Print($"Opening '{path}'...", LoggingLevel.Simple);
 
             // Create the project by copying data into the folder structure.
+            // If the editor file flag is True, it means that we're importing data from an editor built packed file, otherwise, the system will import the data
+            // and generate the metadata (which may lead to undesired results).
             bool isEditorFile = await _projectManager.ExtractPackFileProjectAsync(path, target);
 
             if (!System.IO.Directory.Exists(target))
             {
-                HostServices.Log.Print("ERROR: No project was returned from the project manager.", LoggingLevel.Simple);
+                HostServices.Log.PrintError("No project was returned from the project manager.", LoggingLevel.Simple);
                 return;
             }
 
-            await OpenProjectAsync(target, true);
+            await OpenProjectAsync(target, !isEditorFile);
         }
         catch (Exception ex)
         {
@@ -577,7 +569,7 @@ internal class Main
     /// <returns>The initial directory.</returns>
     private DirectoryInfo GetInitialProjectDirectory()
     {
-        var dir = new DirectoryInfo(string.IsNullOrEmpty(Settings.LastProjectWorkingDirectory) ? Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) : Settings.LastProjectWorkingDirectory);
+        DirectoryInfo dir = new(string.IsNullOrEmpty(Settings.LastProjectWorkingDirectory) ? Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) : Settings.LastProjectWorkingDirectory);
         dir.Refresh();
 
         if (!dir.Exists)
@@ -640,12 +632,12 @@ internal class Main
     {
         IProjectEditor current = CurrentProject;
 
-        ShowWaitPanel(Resources.GOREDIT_TEXT_CREATING_PROJECT);            
+        ShowWaitPanel(Resources.GOREDIT_TEXT_CREATING_PROJECT);
 
         try
         {
             // Check for content/project changes.
-            var args = new CancelEventArgs();
+            CancelEventArgs args = new();
             if ((current?.BeforeCloseCommand is not null) && (current.BeforeCloseCommand.CanExecute(args)))
             {
                 await current.BeforeCloseCommand.ExecuteAsync(args);
@@ -655,7 +647,7 @@ internal class Main
                     return;
                 }
             }
-            
+
             IProject project = await Task.Run(() => _projectManager.CreateProject(directory));
             CurrentProject = null;
 
@@ -757,7 +749,7 @@ internal class Main
             }
             catch (Exception ex)
             {
-                HostServices.Log.Print("ERROR: Failed to unload main view model!", LoggingLevel.Simple);
+                HostServices.Log.PrintError("Failed to unload main view model!", LoggingLevel.Simple);
                 HostServices.Log.LogException(ex);
             }
 
@@ -824,9 +816,7 @@ internal class Main
 
         base.OnUnload();
     }
-    #endregion
 
-    #region Constructor/Finalizer.
     /// <summary>
     /// Initializes a new instance of the <see cref="Main"/> class.
     /// </summary>
@@ -834,7 +824,6 @@ internal class Main
     {
         BrowseProjectCommand = new EditorCommand<object>(DoOpenProjectAsync);
         OpenPackFileCommand = new EditorCommand<object>(DoOpenPackFileAsync, CanOpenProjects);
-        AppClosingAsyncCommand = new EditorAsyncCommand<AppCloseArgs>(DoAppCloseAsync);            
+        AppClosingAsyncCommand = new EditorAsyncCommand<AppCloseArgs>(DoAppCloseAsync);
     }
-    #endregion
 }

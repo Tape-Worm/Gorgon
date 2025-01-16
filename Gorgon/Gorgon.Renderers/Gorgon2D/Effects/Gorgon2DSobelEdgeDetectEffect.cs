@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2012 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,51 +11,52 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Thursday, April 05, 2012 8:23:51 AM
 // 
-#endregion
 
-using System.Drawing;
 using System.Numerics;
 using System.Runtime.InteropServices;
-using System.Threading;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Renderers.Cameras;
 using Gorgon.Renderers.Properties;
-using DX = SharpDX;
 
 namespace Gorgon.Renderers;
 
 /// <summary>
-/// An effect that renders the edges of an image with Sobel edge detection.
+/// An effect that renders the edges of an image with Sobel edge detection
 /// </summary>
 public class Gorgon2DSobelEdgeDetectEffect
     : Gorgon2DEffect, IGorgon2DCompositorEffect
 {
-    #region Value Types.
     /// <summary>
     /// Settings for the effect shader.
     /// </summary>
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="Settings"/> struct.
+    /// </remarks>
+    /// <param name="linecolor">The linecolor.</param>
+    /// <param name="texelSize">Size of the texel.</param>
+    /// <param name="threshold">The threshold.</param>
     [StructLayout(LayoutKind.Sequential, Pack = 4, Size = 32)]
-    private readonly struct Settings
+    private readonly struct Settings(GorgonColor linecolor, Vector2 texelSize, float threshold)
     {
         // Texel size and threshold.
-        private readonly Vector4 _texelThreshold;
+        private readonly Vector4 _texelThreshold = new(texelSize, threshold, 0);
 
         /// <summary>
         /// Line color.
         /// </summary>
-        public readonly GorgonColor LineColor;
+        public readonly GorgonColor LineColor = linecolor;
 
         /// <summary>
         /// Property to return the size of a texel.
@@ -66,22 +67,8 @@ public class Gorgon2DSobelEdgeDetectEffect
         /// Property to return the threshold for the effect.
         /// </summary>
         public float Threshold => _texelThreshold.Z;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Settings"/> struct.
-        /// </summary>
-        /// <param name="linecolor">The linecolor.</param>
-        /// <param name="texelSize">Size of the texel.</param>
-        /// <param name="threshold">The threshold.</param>
-        public Settings(GorgonColor linecolor, Vector2 texelSize, float threshold)
-        {
-            LineColor = linecolor;
-            _texelThreshold = new Vector4(texelSize, threshold, 0);
-        }
     }
-    #endregion
 
-    #region Variables.
     // Buffer for the sobel edge detection.
     private GorgonConstantBufferView _sobelBuffer;
     // The pixel shader for the effect.
@@ -96,14 +83,12 @@ public class Gorgon2DSobelEdgeDetectEffect
     // The thickness of the lines.
     private float _lineThickness = 1.0f;
     // The texture size used to calculate the line thickness.
-    private DX.Size2F _textureSize = new(512.0f, 512.0f);
-    #endregion
+    private Vector2 _textureSize = new(512.0f, 512.0f);
 
-    #region Properties.
     /// <summary>
     /// Property to set or return the offset of the shapren/embossing edges.
     /// </summary>
-    public DX.Size2F TextureSize
+    public Vector2 TextureSize
     {
         get => _textureSize;
         set
@@ -184,9 +169,7 @@ public class Gorgon2DSobelEdgeDetectEffect
             _isUpdated = true;
         }
     }
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function called when the effect is being initialized.
     /// </summary>
@@ -215,7 +198,7 @@ public class Gorgon2DSobelEdgeDetectEffect
                           .ConstantBuffer(_sobelBuffer, 1)
                           .Shader(_sobelShader)
                           .Build();
-            
+
             _batchState = builders.BatchBuilder
                           .PixelShaderState(_sobelState)
                           .Build(BatchStateAllocator);
@@ -242,7 +225,7 @@ public class Gorgon2DSobelEdgeDetectEffect
             return;
         }
 
-        _settings = new Settings(_settings.LineColor, new Vector2((1.0f / _textureSize.Width) * LineThickness, (1.0f / _textureSize.Height) * LineThickness), _settings.Threshold);
+        _settings = new Settings(_settings.LineColor, new Vector2((1.0f / _textureSize.X) * LineThickness, (1.0f / _textureSize.Y) * LineThickness), _settings.Threshold);
         _sobelBuffer.Buffer.SetData(in _settings);
         _isUpdated = false;
     }
@@ -312,15 +295,13 @@ public class Gorgon2DSobelEdgeDetectEffect
 
         Begin(GorgonBlendState.Default, GorgonDepthStencilState.Default, GorgonRasterState.Default, null);
 
-        Renderer.DrawFilledRectangle(new DX.RectangleF(0, 0, output.Width, output.Height),
-                                        GorgonColor.White,
+        Renderer.DrawFilledRectangle(new GorgonRectangleF(0, 0, output.Width, output.Height),
+                                        GorgonColors.White,
                                         texture,
-                                        new DX.RectangleF(0, 0, 1, 1));
+                                        new GorgonRectangleF(0, 0, 1, 1));
         End();
     }
-    #endregion
 
-    #region Constructor/Destructor.
     /// <summary>
     /// Initializes a new instance of the <see cref="Gorgon2DSobelEdgeDetectEffect"/> class.
     /// </summary>
@@ -331,5 +312,4 @@ public class Gorgon2DSobelEdgeDetectEffect
         _settings = new Settings(Color.Black, Vector2.Zero, 0.75f);
         Macros.Add(new GorgonShaderMacro("SOBEL_EDGE_EFFECT"));
     }
-    #endregion
 }

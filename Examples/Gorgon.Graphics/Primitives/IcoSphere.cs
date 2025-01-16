@@ -1,6 +1,6 @@
-﻿#region MIT.
+﻿
 // 
-// Gorgon.
+// Gorgon
 // Copyright (C) 2012 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -11,44 +11,39 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
 // Created: Sunday, December 30, 2012 10:25:22 AM
 // 
-#endregion
 
-using System.Collections.Generic;
 using System.Numerics;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Renderers.Geometry;
-using DX = SharpDX;
 
 namespace Gorgon.Examples;
 
 /// <summary>
-/// An ico sphere object.
+/// An ico sphere object
 /// </summary>
 internal class IcoSphere
     : MoveableMesh
 {
-    #region Variables.
     // Initial orientation.
     private Matrix4x4 _orientation;
     // A list of previously performed splits.
-    private readonly Dictionary<long, int> _cachedSplits = new();
-    private readonly List<Vector3> _vertices = new();
+    private readonly Dictionary<long, int> _cachedSplits = [];
+    private readonly List<Vector3> _vertices = [];
     private int _index;
-    #endregion
 
-    #region Properties.
     /// <summary>
     /// Property to return the radius of the sphere.
     /// </summary>
@@ -56,16 +51,14 @@ internal class IcoSphere
     {
         get;
     }
-    #endregion
 
-    #region Methods.
     /// <summary>
     /// Function to add a vertex to the list.
     /// </summary>
     /// <param name="pos">Position of the vertex.</param>
     /// <returns>The new index.</returns>
     private int AddVertex(Vector3 pos)
-    {            
+    {
         _vertices.Add(Vector3.Normalize(pos));
         return _index++;
     }
@@ -96,89 +89,69 @@ internal class IcoSphere
     /// Function to return the base indices for the icosphere.
     /// </summary>
     /// <returns>A list of triangle indices.</returns>
-    private static List<int[]> GetBaseIndices() => new()
-    {
-                   new[]
-                   {
+    private static List<int[]> GetBaseIndices() =>
+    [
+                   [
                        0, 11, 5
-                   },
-                   new[]
-                   {
+                   ],
+                   [
                        0, 5, 1
-                   },
-                   new[]
-                   {
+                   ],
+                   [
                        0, 1, 7
-                   },
-                   new[]
-                   {
+                   ],
+                   [
                        0, 7, 10
-                   },
-                   new[]
-                   {
+                   ],
+                   [
                        0, 10, 11
-                   },
-                   new[]
-                   {
+                   ],
+                   [
                        1, 5, 9
-                   },
-                   new[]
-                   {
+                   ],
+                   [
                        5, 11, 4
-                   },
-                   new[]
-                   {
+                   ],
+                   [
                        11, 10, 2
-                   },
-                   new[]
-                   {
+                   ],
+                   [
                        10, 7, 6
-                   },
-                   new[]
-                   {
+                   ],
+                   [
                        7, 1, 8
-                   },
-                   new[]
-                   {
+                   ],
+                   [
                        3, 9, 4
-                   },
-                   new[]
-                   {
+                   ],
+                   [
                        3, 4, 2
-                   },
-                   new []
-                   {
+                   ],
+                   [
                        3, 2, 6
-                   },
-                   new []
-                   {
+                   ],
+                   [
                        3, 6, 8
-                   },
-                   new []
-                   {
+                   ],
+                   [
                        3, 8, 9
-                   },
-                   new []
-                   {
+                   ],
+                   [
                        4, 9, 5
-                   },
-                   new []
-                   {
+                   ],
+                   [
                        2, 4, 11
-                   },
-                   new []
-                   {
+                   ],
+                   [
                        6, 2, 10
-                   },
-                   new []
-                   {
+                   ],
+                   [
                        8, 6, 7
-                   },
-                   new []
-                   {
+                   ],
+                   [
                        9, 8, 1
-                   }
-               };
+                   ]
+               ];
 
     /// <summary>
     /// Function to retrieve the middle point between the two indices.
@@ -215,20 +188,20 @@ internal class IcoSphere
     /// <param name="indexList">List of indices.</param>
     private static void FixSeam(List<GorgonVertexPosNormUvTangent> vertexList, List<int> indexList)
     {
-        var newIndices = new List<int>();
-        var corrections = new Dictionary<int, int>();
+        List<int> newIndices = [];
+        Dictionary<int, int> corrections = [];
 
         for (int i = indexList.Count - 3; i >= 0; i -= 3)
         {
             // see if the texture coordinates appear in counter-clockwise order.
             // If so, the triangle needs to be rectified.
-            var v0 = new Vector3(vertexList[indexList[i + 0]].UV, 0);
-            var v1 = new Vector3(vertexList[indexList[i + 1]].UV, 0);
-            var v2 = new Vector3(vertexList[indexList[i + 2]].UV, 0);
+            Vector3 v0 = new(vertexList[indexList[i + 0]].UV, 0);
+            Vector3 v1 = new(vertexList[indexList[i + 1]].UV, 0);
+            Vector3 v2 = new(vertexList[indexList[i + 2]].UV, 0);
 
-            var diff1 = Vector3.Subtract(v0, v1);
-            var diff2 =Vector3.Subtract(v2, v1);
-            var cross = Vector3.Cross(diff1, diff2);
+            Vector3 diff1 = Vector3.Subtract(v0, v1);
+            Vector3 diff2 = Vector3.Subtract(v2, v1);
+            Vector3 cross = Vector3.Cross(diff1, diff2);
 
             if (cross.Z <= 0)
             {
@@ -246,7 +219,6 @@ internal class IcoSphere
                     newIndices.Add(index);
                     continue;
                 }
-
 
                 if (corrections.TryGetValue(index, out int correctIndex))
                 {
@@ -278,14 +250,14 @@ internal class IcoSphere
     /// <param name="radius">Radius of the sphere.</param>
     /// <param name="tesselation">Tessellation factor for the sphere.</param>
     /// <param name="textureCoordinates">Texture coordinate offset and scale.</param>
-    private void BuildSphere(GorgonGraphics graphics, float radius, int tesselation, DX.RectangleF textureCoordinates)
+    private void BuildSphere(GorgonGraphics graphics, float radius, int tesselation, GorgonRectangleF textureCoordinates)
     {
         GetBaseVertices();
         List<int[]> indices = GetBaseIndices();
 
         for (int i = 0; i < tesselation; ++i)
         {
-            var subIndices = new List<int[]>();
+            List<int[]> subIndices = [];
 
             foreach (int[] index in indices)
             {
@@ -293,34 +265,33 @@ internal class IcoSphere
                 int index1 = GetMiddlePoint(index[1], index[2]);
                 int index2 = GetMiddlePoint(index[2], index[0]);
 
-                subIndices.Add(new[]
-                               {
+                subIndices.Add(
+                               [
                                    index[0],
                                    index0,
                                    index2
-                               });
+                               ]);
 
-                subIndices.Add(new[]
-                               {
+                subIndices.Add(
+                               [
                                    index[1],
                                    index1,
                                    index0
-                               });
+                               ]);
 
-
-                subIndices.Add(new[]
-                               {
+                subIndices.Add(
+                               [
                                    index[2],
                                    index2,
                                    index1
-                               });
+                               ]);
 
-                subIndices.Add(new[]
-                               {
+                subIndices.Add(
+                               [
                                    index0,
                                    index1,
                                    index2
-                               });
+                               ]);
             }
 
             indices = subIndices;
@@ -332,8 +303,8 @@ internal class IcoSphere
         const float pi2Recip = 1.0f / (2.0f * (float)System.Math.PI);
 
         // Final list.
-        var vertexList = new List<GorgonVertexPosNormUvTangent>();
-        var indexList = new List<int>();
+        List<GorgonVertexPosNormUvTangent> vertexList = [];
+        List<int> indexList = [];
 
         foreach (Vector3 vector in _vertices)
         {
@@ -366,9 +337,9 @@ internal class IcoSphere
 
         FixSeam(vertexList, indexList);
 
-        GorgonVertexPosNormUvTangent[] vertexData = vertexList.ToArray();
-        int[] indexData = indexList.ToArray();
-        
+        GorgonVertexPosNormUvTangent[] vertexData = [.. vertexList];
+        int[] indexData = [.. indexList];
+
         VertexCount = vertexList.Count;
         IndexCount = indexList.Count;
         TriangleCount = IndexCount / 3;
@@ -379,7 +350,7 @@ internal class IcoSphere
                                                 new GorgonVertexBufferInfo(vertexData.Length * GorgonVertexPosNormUvTangent.SizeInBytes)
                                                 {
                                                     Name = "IcoSphereVertexBuffer",
-                                                    Usage = ResourceUsage.Immutable                                                        
+                                                    Usage = ResourceUsage.Immutable
                                                 },
                                                 vertexData);
         IndexBuffer = new GorgonIndexBuffer(graphics,
@@ -394,16 +365,8 @@ internal class IcoSphere
 
     /// <summary>Function to retrieve the 2D axis aligned bounding box for the mesh.</summary>
     /// <returns>The rectangle that represents a 2D axis aligned bounding box.</returns>
-    public override DX.RectangleF GetAABB()
-    {
-        var result = new DX.RectangleF(-Radius * 0.5f, -Radius * 0.5f, Radius, Radius);
-        result.Offset(Position.X, Position.Y);
+    public override GorgonRectangleF GetAABB() => new(-Radius * 0.5f + Position.X, -Radius * 0.5f + Position.Y, Radius, Radius);
 
-        return result;
-    }
-    #endregion
-
-    #region Constructor/Destructor.
     /// <summary>
     /// Initializes a new instance of the <see cref="Sphere" /> class.
     /// </summary>
@@ -412,15 +375,14 @@ internal class IcoSphere
     /// <param name="textureCoordinates">The texture coordinates to apply to the sphere.</param>
     /// <param name="angle">The angle of rotation, in degrees.</param>
     /// <param name="subDivisions">The tessellation level for the sphere.</param>
-    public IcoSphere(GorgonGraphics graphics, float radius, DX.RectangleF textureCoordinates, Vector3 angle, int subDivisions = 2)
+    public IcoSphere(GorgonGraphics graphics, float radius, GorgonRectangleF textureCoordinates, Vector3 angle, int subDivisions = 2)
         : base(graphics)
     {
         Radius = radius;
         PrimitiveType = PrimitiveType.TriangleList;
-        var orientation = Quaternion.CreateFromYawPitchRoll(angle.Y.ToRadians(), angle.X.ToRadians(), angle.Z.ToRadians());
+        Quaternion orientation = Quaternion.CreateFromYawPitchRoll(angle.Y.ToRadians(), angle.X.ToRadians(), angle.Z.ToRadians());
         _orientation = Matrix4x4.CreateFromQuaternion(orientation);
 
         BuildSphere(graphics, radius * 0.5f, subDivisions, textureCoordinates);
     }
-    #endregion
 }
