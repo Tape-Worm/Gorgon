@@ -8,7 +8,7 @@ name: 4.0.$(Rev:r).$(DayOfYear)
 pr:
   branches:
     include:
-      - develop
+      - feature/*
 
 jobs:
   - job: 'PR_Build'
