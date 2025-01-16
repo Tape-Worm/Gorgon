@@ -317,7 +317,7 @@ internal interface IImageContent
     /// <summary>
     /// Property to return information about the external editor.
     /// </summary>
-    ref readonly (string ExePath, string FriendlyName, Drawing.Bitmap IconLarge, Drawing.Bitmap IconSmall) ExternalEditorInfo
+    ref readonly (string ExePath, string FriendlyName, Bitmap IconLarge, Bitmap IconSmall) ExternalEditorInfo
     {
         get;
     }
@@ -325,7 +325,7 @@ internal interface IImageContent
     /// <summary>
     /// Property to return information about the user defined editor.
     /// </summary>
-    ref readonly (string ExePath, string FriendlyName, Drawing.Bitmap IconLarge, Drawing.Bitmap IconSmall) UserEditorInfo
+    ref readonly (string ExePath, string FriendlyName, Bitmap IconLarge, Bitmap IconSmall) UserEditorInfo
     {
         get;
     }

@@ -216,9 +216,9 @@ internal class ImageContent
     // Flag to indicate that the image should use premultiplied alpha.
     private bool _isPremultiplied;
     // Information for the external editor.
-    private (string ExePath, string FriendlyName, Drawing.Bitmap IconLarge, Drawing.Bitmap IconSmall) _externalEditorInfo;
+    private (string ExePath, string FriendlyName, Bitmap IconLarge, Bitmap IconSmall) _externalEditorInfo;
     // Information for the user defined editor.
-    private (string ExePath, string FriendlyName, Drawing.Bitmap IconLarge, Drawing.Bitmap IconSmall) _userEditorInfo;
+    private (string ExePath, string FriendlyName, Bitmap IconLarge, Bitmap IconSmall) _userEditorInfo;
 
     /// <summary>
     /// Property to return the settings for the image editor plugin.
@@ -232,12 +232,12 @@ internal class ImageContent
     /// <summary>
     /// Property to return information about the external editor.
     /// </summary>
-    public ref readonly (string ExePath, string FriendlyName, Drawing.Bitmap IconLarge, Drawing.Bitmap IconSmall) ExternalEditorInfo => ref _externalEditorInfo;
+    public ref readonly (string ExePath, string FriendlyName, Bitmap IconLarge, Bitmap IconSmall) ExternalEditorInfo => ref _externalEditorInfo;
 
     /// <summary>
     /// Property to return information about the user defined editor.
     /// </summary>
-    public ref readonly (string ExePath, string FriendlyName, Drawing.Bitmap IconLarge, Drawing.Bitmap IconSmall) UserEditorInfo => ref _userEditorInfo;
+    public ref readonly (string ExePath, string FriendlyName, Bitmap IconLarge, Bitmap IconSmall) UserEditorInfo => ref _userEditorInfo;
 
     /// <summary>
     /// Property to return whether mip maps are supported for the current format.
@@ -3003,14 +3003,14 @@ internal class ImageContent
     /// <param name="scratchArea">The scratch area used to write a dummy image.</param>
     /// <param name="exePath">[Optional] The path to the image editor if we already know it.</param>
     /// <returns>The path to the image editor Exe file, the friendly application name, the large 32x32 icon, and the small 16x16 icon.</returns>
-    private (string ExePath, string FriendlyName, Drawing.Bitmap IconLg, Drawing.Bitmap IconSm) GetImageEditorAndIcon(IGorgonFileSystem scratchArea, string exePath = null)
+    private (string ExePath, string FriendlyName, Bitmap IconLg, Bitmap IconSm) GetImageEditorAndIcon(IGorgonFileSystem scratchArea, string exePath = null)
     {
-        Drawing.Bitmap bitmap;
-        Drawing.Bitmap bitmapSm;
+        Bitmap bitmap;
+        Bitmap bitmapSm;
 
         if (string.IsNullOrWhiteSpace(exePath))
         {
-            using Drawing.Bitmap fakePng = new(32, 32);
+            using Bitmap fakePng = new(32, 32);
             using Stream stream = scratchArea.OpenStream("/Dummy.png", true);
             fakePng.Save(stream, Drawing.Imaging.ImageFormat.Png);
             stream.Close();

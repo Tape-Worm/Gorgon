@@ -274,7 +274,7 @@ internal partial class ImageResizeSettings
     ///   <b>true</b> if the OK button is valid, <b>false</b> if not.</returns>
     protected override bool OnValidateOk() => (ViewModel?.OkCommand is not null) && (ViewModel.OkCommand.CanExecute(null));
 
-    /// <summary>Raises the <see cref="System.Windows.Forms.Control.VisibleChanged"/> event.</summary>
+    /// <summary>Raises the <see cref="Control.VisibleChanged"/> event.</summary>
     /// <param name="e">An <see cref="EventArgs"/> object that contains the event data.</param>
     protected override void OnVisibleChanged(EventArgs e)
     {
@@ -286,7 +286,7 @@ internal partial class ImageResizeSettings
         }
     }
 
-    /// <summary>Raises the <see cref="System.Windows.Forms.UserControl.Load"/> event.</summary>
+    /// <summary>Raises the <see cref="UserControl.Load"/> event.</summary>
     /// <param name="e">An <see cref="EventArgs"/> that contains the event data.</param>
     protected override void OnLoad(EventArgs e)
     {

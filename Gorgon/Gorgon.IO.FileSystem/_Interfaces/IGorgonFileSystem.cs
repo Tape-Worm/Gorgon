@@ -499,10 +499,10 @@ public interface IGorgonFileSystem
     /// This will unmount a physical file system from the virtual file system by removing all directories and files associated with that <paramref name="mountPoint"/>. 
     /// </para>
     /// <para>
-    /// When passing the <paramref name="mountPoint"/> parameter, users should pass the return value from the <see cref="IGorgonFileSystem.Mount"/> method.
+    /// When passing the <paramref name="mountPoint"/> parameter, users should pass the return value from the <see cref="Mount"/> method.
     /// </para>
     /// <para>
-    /// Since the mount order overrides any existing directories or files with the same paths, those files/directories will not be restored. A user should call the <see cref="IGorgonFileSystem.Refresh()"/> method if they 
+    /// Since the mount order overrides any existing directories or files with the same paths, those files/directories will not be restored. A user should call the <see cref="Refresh()"/> method if they 
     /// wish to restore any file/directory entries.
     /// </para>
     /// </remarks>

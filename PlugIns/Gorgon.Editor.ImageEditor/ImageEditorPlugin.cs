@@ -440,7 +440,7 @@ internal class ImageEditorPlugIn
     /// Function to retrieve the small icon for the content plug-in.
     /// </summary>
     /// <returns>An image for the small icon.</returns>
-    public Drawing.Image GetSmallIcon() => Resources.image_20x20;
+    public Image GetSmallIcon() => Resources.image_20x20;
 
     /// <summary>Function to retrieve a thumbnail for the content.</summary>
     /// <param name="contentFile">The content file used to retrieve the data to build the thumbnail with.</param>
@@ -537,7 +537,7 @@ internal class ImageEditorPlugIn
 
     /// <summary>Function to retrieve the icon used for new content creation.</summary>
     /// <returns>An image for the icon.</returns>
-    public Drawing.Image GetNewIcon() => null;
+    public Image GetNewIcon() => null;
 
     /// <summary>Initializes a new instance of the ImageEditorPlugIn class.</summary>
     public ImageEditorPlugIn()
