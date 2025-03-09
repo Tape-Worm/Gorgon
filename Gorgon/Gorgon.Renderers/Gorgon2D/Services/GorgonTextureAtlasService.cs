@@ -311,9 +311,7 @@ public class GorgonTextureAtlasService
         }
 
         // Filter out empty sprites.
-        IReadOnlyList<GorgonSprite> filtered = sprites.Where(item => (item.Texture is not null) && (!item.TextureRegion.Width.EqualsEpsilon(0)) && (!item.TextureRegion.Height.EqualsEpsilon(0)))
-                                                      .Distinct()
-                                                      .ToArray();
+        IReadOnlyList<GorgonSprite> filtered = [.. sprites.Where(item => (item.Texture is not null) && (!item.TextureRegion.Width.EqualsEpsilon(0)) && (!item.TextureRegion.Height.EqualsEpsilon(0))).Distinct()];
 
         Dictionary<GorgonSprite, (int textureIndex, GorgonRectangle rect, int arrayindex)> result = [];
 
@@ -367,9 +365,7 @@ public class GorgonTextureAtlasService
         }
 
         // Filter out empty sprites.
-        IReadOnlyList<GorgonSprite> filtered = sprites.Where(item => (item.Texture is not null) && (!item.TextureRegion.Width.EqualsEpsilon(0)) && (!item.TextureRegion.Height.EqualsEpsilon(0)))
-                                                      .Distinct()
-                                                      .ToArray();
+        IReadOnlyList<GorgonSprite> filtered = [.. sprites.Where(item => (item.Texture is not null) && (!item.TextureRegion.Width.EqualsEpsilon(0)) && (!item.TextureRegion.Height.EqualsEpsilon(0))).Distinct()];
 
         // If we've got all empty sprites, then leave, there's nothing to calculate.
         if (filtered.Count == 0)

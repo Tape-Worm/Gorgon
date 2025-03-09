@@ -1474,9 +1474,9 @@ public sealed class GorgonCodecDds
     {
         CodecCommonExtensions = ["dds"];
 
-        _formats = (from format in (BufferFormat[])Enum.GetValues(typeof(BufferFormat))
+        _formats = [.. (from format in (BufferFormat[])Enum.GetValues(typeof(BufferFormat))
                     let info = new GorgonFormatInfo(format)
                     where format != BufferFormat.Unknown && !info.IsTypeless
-                    select format).ToArray();
+                    select format)];
     }
 }

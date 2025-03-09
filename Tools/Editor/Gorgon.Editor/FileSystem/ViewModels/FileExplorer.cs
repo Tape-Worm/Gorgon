@@ -354,7 +354,7 @@ internal class FileExplorer
             {
                 if (_searchFiles is null)
                 {
-                    _searchFiles = new List<IFile>(value);
+                    _searchFiles = [.. value];
                 }
                 else
                 {
@@ -1822,10 +1822,9 @@ internal class FileExplorer
             }
 
             // Update the directory in our file system.
-            (string originalPath, IFile file)[] originalPaths = selected.Files.Concat(selected.Directories.TraverseBreadthFirst(d => d.Directories)
+            (string originalPath, IFile file)[] originalPaths = [.. selected.Files.Concat(selected.Directories.TraverseBreadthFirst(d => d.Directories)
                                                                                                           .SelectMany(d => d.Files))
-                                                                                                          .Select(item => (item.FullPath, item))
-                                                                              .ToArray();
+                                                                                                          .Select(item => (item.FullPath, item))];
             _fileSystemWriter.RenameDirectory(selected.FullPath, args.NewName);
 
             selected.RenameCommand.Execute(args);
@@ -2874,8 +2873,7 @@ internal class FileExplorer
         {
             ShowWaitPanel(Resources.GOREDIT_TEXT_PLEASE_WAIT);
 
-            IReadOnlyList<IFile> files = _files.Values.Where(item => (item.RefreshCommand is not null) && (item.RefreshCommand.CanExecute(null)))
-                                                      .ToArray();
+            IReadOnlyList<IFile> files = [.. _files.Values.Where(item => (item.RefreshCommand is not null) && (item.RefreshCommand.CanExecute(null)))];
 
             await Task.Run(() =>
             {
@@ -2976,7 +2974,7 @@ internal class FileExplorer
             OnSelectedFileCountChanged();
         }
 
-        PlugInMetadata = new List<IContentPlugInMetadata>(HostServices.ContentPlugInService.PlugIns.Values.OfType<IContentPlugInMetadata>());
+        PlugInMetadata = [.. HostServices.ContentPlugInService.PlugIns.Values.OfType<IContentPlugInMetadata>()];
     }
 
     /// <summary>Function called when the associated view is loaded.</summary>

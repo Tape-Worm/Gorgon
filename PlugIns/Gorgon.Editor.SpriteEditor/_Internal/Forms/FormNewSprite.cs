@@ -221,7 +221,7 @@ internal partial class FormNewSprite
             return;
         }
 
-        FillTextureList(_textures.Where(item => item.Name.IndexOf(e.SearchText, StringComparison.CurrentCultureIgnoreCase) > -1).ToArray());
+        FillTextureList([.. _textures.Where(item => item.Name.IndexOf(e.SearchText, StringComparison.CurrentCultureIgnoreCase) > -1)]);
     }
 
     /// <summary>Handles the Leave event of the TextName control.</summary>

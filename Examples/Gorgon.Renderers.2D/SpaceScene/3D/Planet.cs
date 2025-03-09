@@ -104,7 +104,7 @@ internal class Planet
     /// <param name="layers">The layers for this planet.</param>
     public Planet(IEnumerable<PlanetaryLayer> layers)
     {
-        Layers = layers.ToArray();
+        Layers = [.. layers];
         _animController = [];
 
         for (int i = 0; i < Layers.Count; ++i)

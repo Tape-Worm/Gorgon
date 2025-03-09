@@ -711,7 +711,7 @@ internal partial class FormMain
                 PanelProject.FileExplorer.MenuItemDirCreateContent.Enabled = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer.SelectedDirectory is not null);
                 break;
             case FileExplorerContext.FileList:
-                string[] validationFiles = fileExplorer.SelectedFiles.Select(item => item.ID).ToArray();
+                string[] validationFiles = [.. fileExplorer.SelectedFiles.Select(item => item.ID)];
                 ButtonFileSystemDeleteAll.Visible = false;
                 ButtonFileSystemDelete.Visible = true;
                 ButtonExport.Enabled = (!PanelProject.FileExplorer.IsRenaming) && (fileExplorer.ExportFilesCommand?.CanExecute(null) ?? false);
@@ -978,10 +978,13 @@ internal partial class FormMain
     /// </summary>
     private void RemoveNewIcons()
     {
-        ToolStripMenuItem[] newItems = MenuCreate.Items.OfType<ToolStripMenuItem>()
-                                       .Concat(PanelProject.FileExplorer.MenuItemDirCreateContent.DropDown.Items.OfType<ToolStripMenuItem>())
-                                       .Concat(PanelProject.FileExplorer.MenuItemFileCreateContent.DropDown.Items.OfType<ToolStripMenuItem>())
-                                       .ToArray();
+        ToolStripMenuItem[] newItems =
+        [
+            .. MenuCreate.Items.OfType<ToolStripMenuItem>()
+,
+            .. PanelProject.FileExplorer.MenuItemDirCreateContent.DropDown.Items.OfType<ToolStripMenuItem>(),
+            .. PanelProject.FileExplorer.MenuItemFileCreateContent.DropDown.Items.OfType<ToolStripMenuItem>(),
+        ];
 
         foreach (ToolStripItem item in newItems)
         {

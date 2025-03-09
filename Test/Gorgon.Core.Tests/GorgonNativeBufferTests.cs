@@ -69,6 +69,9 @@ public class GorgonNativeBufferTests
         Assert.ThrowsException<ArgumentException>(() => new GorgonNativeBuffer<int>(0));
 
     [TestMethod]
+    public void AlignmentShouldThrowWhenNotPow2() => Assert.ThrowsException<ArgumentException>(() => new GorgonNativeBuffer<int>(10, 5));
+
+    [TestMethod]
     public void SizeConstructorShouldCreateBufferWhenSizeIsWithinRange()
     {
         // Act
@@ -535,6 +538,131 @@ public class GorgonNativeBufferTests
 
         // Act
         sourceBuffer.CopyTo(destinationSpan, 0, 6);
+    }
+
+    [TestMethod]
+    public void ResizeCountTooSmall()
+    {
+        using GorgonNativeBuffer<byte> buffer = new(5);
+        Assert.ThrowsException<ArgumentException>(() => buffer.Resize(0));
+    }
+
+    [TestMethod]
+    public void ResizeAlignNotPow2()
+    {
+        using GorgonNativeBuffer<byte> buffer = new(5);
+        Assert.ThrowsException<ArgumentException>(() => buffer.Resize(5, 5));
+    }
+
+    [TestMethod]
+    public void ResizeArrayLargerNoPreserve()
+    {
+        using GorgonNativeBuffer<byte> buffer = new(5);
+        for (int i = 0; i < 5; ++i)
+        {
+            buffer[i] = (byte)i;
+        }
+
+        long expectedPos = (long)((GorgonPtr<byte>)buffer);
+
+        buffer.Resize(10);
+
+        long actualPos = (long)((GorgonPtr<byte>)buffer);
+
+        Assert.AreNotEqual(expectedPos, actualPos);
+        Assert.AreEqual(10, buffer.Length);
+    }
+
+    [TestMethod]
+    public void ResizeArrayLargerAlignmentNoPreserve()
+    {
+        using GorgonNativeBuffer<byte> buffer = new(5, 1);
+        for (int i = 0; i < 5; ++i)
+        {
+            buffer[i] = (byte)i;
+        }
+
+        long expectedPos = (long)((GorgonPtr<byte>)buffer);
+
+        buffer.Resize(10, 8);
+
+        long actualPos = (long)((GorgonPtr<byte>)buffer);
+
+        Assert.AreNotEqual(expectedPos, actualPos);
+        Assert.AreEqual(10, buffer.Length);
+        Assert.AreEqual(8, buffer.Alignment);
+    }
+
+    [TestMethod]
+    public void ResizeArrayLargerPreserved()
+    {
+        using GorgonNativeBuffer<byte> buffer = new(5);
+        for (int i = 0; i < 5; ++i)
+        {
+            buffer[i] = (byte)i;
+        }
+
+        long expectedPos = (long)((GorgonPtr<byte>)buffer);
+
+        buffer.Resize(10, preserve: true);
+
+        long actualPos = (long)((GorgonPtr<byte>)buffer);
+
+        Assert.AreNotEqual(expectedPos, actualPos);
+        Assert.AreEqual(10, buffer.Length);
+
+        for (int i = 0; i < 5; ++i)
+        {
+            Assert.AreEqual(i, buffer[i]);
+        }
+
+        for (int i = 5; i < 10; ++i)
+        {
+            Assert.AreEqual(0, buffer[i]);
+        }
+    }
+
+    [TestMethod]
+    public void ResizeArraySmallerNoPreserve()
+    {
+        using GorgonNativeBuffer<byte> buffer = new(5);
+        for (int i = 0; i < 5; ++i)
+        {
+            buffer[i] = (byte)i;
+        }
+
+        long expectedPos = (long)((GorgonPtr<byte>)buffer);
+
+        buffer.Resize(3);
+
+        long actualPos = (long)((GorgonPtr<byte>)buffer);
+
+        Assert.AreNotEqual(expectedPos, actualPos);
+        Assert.AreEqual(3, buffer.Length);
+    }
+
+    [TestMethod]
+    public void ResizeArraySmallerPreserved()
+    {
+        using GorgonNativeBuffer<byte> buffer = new(5);
+        for (int i = 0; i < 5; ++i)
+        {
+            buffer[i] = (byte)i;
+        }
+
+        long expectedPos = (long)((GorgonPtr<byte>)buffer);
+
+        buffer.Resize(3, preserve: true);
+
+        long actualPos = (long)((GorgonPtr<byte>)buffer);
+
+        Assert.AreNotEqual(expectedPos, actualPos);
+        Assert.AreEqual(3, buffer.Length);
+
+        for (int i = 0; i < buffer.Length; ++i)
+        {
+            Assert.AreEqual(i, buffer[i]);
+        }
     }
 #pragma warning restore MSTEST0006 // Avoid '[ExpectedException]'
 }

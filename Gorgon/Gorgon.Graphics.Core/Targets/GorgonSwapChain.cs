@@ -621,7 +621,7 @@ public sealed class GorgonSwapChain
         // Unbind this render target before removing the resources.
         if ((renderTargetViewIndex != -1) && (!disposing))
         {
-            GorgonRenderTargetView[] currentViews = Graphics.RenderTargets.Select(item => item == RenderTargetView ? null : item).ToArray();
+            GorgonRenderTargetView[] currentViews = [.. Graphics.RenderTargets.Select(item => item == RenderTargetView ? null : item)];
             Graphics.SetRenderTargets(currentViews, Graphics.DepthStencilView);
         }
 

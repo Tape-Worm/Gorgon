@@ -125,10 +125,9 @@ internal class GraphicsContext
         }
 
         // Check for swap chains that are no longer connected to their controls.
-        (string name, WeakReference<GorgonSwapChain> swap)[] expiredSwaps = _swapChainLeases.Where(item => (!item.Value.TryGetTarget(out GorgonSwapChain swap))
+        (string name, WeakReference<GorgonSwapChain> swap)[] expiredSwaps = [.. _swapChainLeases.Where(item => (!item.Value.TryGetTarget(out GorgonSwapChain swap))
                                                                                                            || (swap.Window.IsDisposed))
-                                                                                            .Select(item => (item.Key, item.Value))
-                                                                                            .ToArray();
+                                                                                            .Select(item => (item.Key, item.Value))];
 
         // Destroy the swap chain (if necessary, the controls should be doing this themselves).
         foreach ((string name, WeakReference<GorgonSwapChain> swapRef) in expiredSwaps)

@@ -373,7 +373,7 @@ internal class ImageAtlas
             // Unload any current atlas.
             Atlas = null;
 
-            _imageFiles = ImageFiles.SelectedFiles.Select(item => item.File).ToArray();
+            _imageFiles = [.. ImageFiles.SelectedFiles.Select(item => item.File)];
 
             if (string.IsNullOrWhiteSpace(_settings.LastOutputDir))
             {

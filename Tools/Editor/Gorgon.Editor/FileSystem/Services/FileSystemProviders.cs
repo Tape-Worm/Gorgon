@@ -188,7 +188,7 @@ internal class FileSystemProviders(IHostServices hostServices)
             extensions.extensions.AddRange(provider.Value.FileExtensions.Select(item => item.Value).OrderBy(item => item.Extension));
         }
 
-        return result.Where(item => item.Value.Item2.Count > 0).Select(item => (item.Key, item.Value.Item1, (IReadOnlyList<GorgonFileExtension>)item.Value.Item2)).ToArray();
+        return [.. result.Where(item => item.Value.Item2.Count > 0).Select(item => (item.Key, item.Value.Item1, (IReadOnlyList<GorgonFileExtension>)item.Value.Item2))];
     }
 
     /// <summary>
@@ -221,7 +221,7 @@ internal class FileSystemProviders(IHostServices hostServices)
             extensions.AddRange(provider.Value.Provider.PreferredExtensions.Select(item => item.Value).OrderBy(item => item.Extension));
         }
 
-        return result.Where(item => item.Value.Count > 0).Select(item => (item.Key, (IReadOnlyList<GorgonFileExtension>)item.Value)).ToArray();
+        return [.. result.Where(item => item.Value.Count > 0).Select(item => (item.Key, (IReadOnlyList<GorgonFileExtension>)item.Value))];
     }
 
     /// <summary>

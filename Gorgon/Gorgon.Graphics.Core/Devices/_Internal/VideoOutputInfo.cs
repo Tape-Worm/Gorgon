@@ -111,6 +111,6 @@ internal class VideoOutputInfo
         _desc = output.Description;
         Name = _desc.DeviceName.Replace("\0", string.Empty);
         Rotation = (RotationMode)_desc.Rotation;
-        VideoModes = modes.Select(item => new GorgonVideoMode(item)).ToArray();
+        VideoModes = [.. modes.Select(item => new GorgonVideoMode(item))];
     }
 }

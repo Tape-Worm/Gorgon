@@ -299,7 +299,7 @@ internal class TextureAtlas
             // Unload any current atlas.
             Atlas = null;
 
-            _spriteFiles = SpriteFiles.SelectedFiles.Select(item => item.File).ToArray();
+            _spriteFiles = [.. SpriteFiles.SelectedFiles.Select(item => item.File)];
 
             NotifyPropertyChanged(nameof(LoadedSpriteCount));
 

@@ -321,6 +321,47 @@ public struct GorgonRectangleF
     public readonly bool Contains(Vector2 vector) => Contains(vector.X, vector.Y);
 
     /// <summary>
+    /// Function to clamp a point to the constraints of the rectangle.
+    /// </summary>
+    /// <param name="rectangle">The rectangle to test against.</param>
+    /// <param name="point">The point to evaluate.</param>
+    /// <returns>The point, clamped to the rectangle region.</returns>    
+    public static Vector2 Clamp(GorgonRectangleF rectangle, Vector2 point)
+    {
+        Vector2 result = point;
+
+        if ((result.X < rectangle.Left) || (rectangle.Width <= 0))
+        {
+            result.X = rectangle.Left;
+        }
+
+        if ((result.Y < rectangle.Top) || (rectangle.Height <= 0))
+        {
+            result.Y = rectangle.Top;
+        }
+
+        if ((result.X >= rectangle.Right) && (rectangle.Width > 0))
+        {
+            result.X = rectangle.Right - 0.000001f;
+        }
+
+        if ((result.Y >= rectangle.Bottom) && (rectangle.Height > 0))
+        {
+            result.Y = rectangle.Bottom - 0.000001f;
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Function to clamp a point to the constraints of this rectangle.
+    /// </summary>
+    /// <param name="point">The point to evaluate.</param>
+    /// <returns>The point, clamped to the rectangle region.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public readonly Vector2 Clamp(Vector2 point) => Clamp(this, point);
+
+    /// <summary>
     /// Function to determine the union of two <see cref="GorgonRectangleF"/> values.
     /// </summary>
     /// <param name="rectangle1">First rectangle to intersect.</param>

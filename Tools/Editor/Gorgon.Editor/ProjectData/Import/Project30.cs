@@ -23,6 +23,7 @@
 // Created: August 29, 2018 8:19:12 PM
 // 
 
+using System.Text.Json.Serialization;
 using Gorgon.Editor.Metadata;
 
 namespace Gorgon.Editor.ProjectData;
@@ -44,10 +45,10 @@ internal class Project30
     /// <summary>
     /// Property to return the list of project items.
     /// </summary>
+    [JsonInclude, JsonObjectCreationHandling(JsonObjectCreationHandling.Populate)]
     public Dictionary<string, Project30ItemMetadata> ProjectItems
     {
         get;
-        private set;
     } = new Dictionary<string, Project30ItemMetadata>(StringComparer.OrdinalIgnoreCase);
 
     /// <summary>Initializes a new instance of the Project class.</summary>

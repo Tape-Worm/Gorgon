@@ -72,7 +72,7 @@ internal class AnimationImporterPlugIn
         GorgonFileExtension extension = new(fileExtension);
 
         // Since all Gorgon's sprite files use the same extension, we'll have to be a little more aggressive when determining type.
-        (GorgonFileExtension, IGorgonAnimationCodec codec)[] results = codecs.CodecFileTypes.Where(item => item.extension == extension).ToArray();
+        (GorgonFileExtension, IGorgonAnimationCodec codec)[] results = [.. codecs.CodecFileTypes.Where(item => item.extension == extension)];
 
         if (results.Length == 0)
         {

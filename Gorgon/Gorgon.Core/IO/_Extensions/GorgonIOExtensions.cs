@@ -43,12 +43,9 @@ public static class GorgonIOExtensions
     // The system alternate path separator.
     private static readonly string _altPathSeparator = Path.AltDirectorySeparatorChar.ToString(CultureInfo.InvariantCulture);
     // All illegal characters.
-    private static readonly char[] _allIllegalChars = Path.GetInvalidPathChars().Concat(Path.GetInvalidFileNameChars())
-                                                                                .Distinct()
-                                                                                .ToArray();
+    private static readonly char[] _allIllegalChars = [.. Path.GetInvalidPathChars().Concat(Path.GetInvalidFileNameChars()).Distinct()];
     // All illegal directory characters.
-    private static readonly char[] _illegalDirectoryChars = _allIllegalChars.Where(c => c != Path.DirectorySeparatorChar && c != Path.AltDirectorySeparatorChar)
-                                                                            .ToArray();
+    private static readonly char[] _illegalDirectoryChars = [.. _allIllegalChars.Where(c => c != Path.DirectorySeparatorChar && c != Path.AltDirectorySeparatorChar)];
 
     /// <summary>
     /// Function to write the contents of the memory pointed at by a <see cref="GorgonPtr{T}"/> to a stream.

@@ -18,7 +18,7 @@
 
     <RepositoryUrl>https://github.com/Tape-Worm/Gorgon</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
-    <PackageTags>C#, .NET Framework, Direct 3D, SharpDX, Winforms</PackageTags>
+    <PackageTags>Gorgon, C#, .NET Framework, Direct 3D, SharpDX, Winforms</PackageTags>
     <EnableNETAnalyzers>false</EnableNETAnalyzers>
     <RootNamespace>Gorgon.Examples</RootNamespace>
     <NeutralLanguage>
@@ -48,9 +48,6 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="11.2.3" />
     <PackageReference Include="Avalonia.Desktop" Version="11.2.3" />

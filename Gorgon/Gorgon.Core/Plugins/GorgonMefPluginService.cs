@@ -258,7 +258,7 @@ public sealed class GorgonMefPlugInService(GorgonMefPlugInCache mefCache)
 
         return assemblyName is null
             ? _loadedPlugIns.Values.Select(item => item.Value).OfType<T>().ToArray()
-            : _loadedPlugIns.Where(item =>
+            : [.. _loadedPlugIns.Where(item =>
                                     {
                                         Debug.Assert(item.Value.Metadata.ContainsKey("Assembly"), "Assembly info not found.");
 
@@ -269,8 +269,7 @@ public sealed class GorgonMefPlugInService(GorgonMefPlugInCache mefCache)
                                         return AssemblyName.ReferenceMatchesDefinition(name, assemblyName);
                                     })
                              .Select(item => item.Value.Value)
-                             .OfType<T>()
-                             .ToArray();
+                             .OfType<T>()];
     }
 
     /// <summary>
@@ -383,9 +382,7 @@ public sealed class GorgonMefPlugInService(GorgonMefPlugInCache mefCache)
     {
         _log.Print("Unloading all plug-ins.", LoggingLevel.Simple);
 
-        IGorgonPlugIn[] plugins = _loadedPlugIns.Where(item => item.Value.IsValueCreated)
-                                                .Select(item => item.Value.Value)
-                                                .ToArray();
+        IGorgonPlugIn[] plugins = [.. _loadedPlugIns.Where(item => item.Value.IsValueCreated).Select(item => item.Value.Value)];
         _loadedPlugIns.Clear();
 
         foreach (IGorgonPlugIn plugin in plugins)

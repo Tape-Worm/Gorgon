@@ -903,9 +903,7 @@ internal partial class FileExploder
                 directory.Directories.CollectionChanged -= Directories_CollectionChanged;
                 directory.Files.CollectionChanged -= Files_CollectionChanged;
 
-                childNodes = _directoryNodes.Where(item => (item.Key.StartsWith(directoryNode.Name, StringComparison.OrdinalIgnoreCase)) && (item.Value.ViewModel is not null))
-                                            .Select(item => item.Value)
-                                            .ToArray();
+                childNodes = [.. _directoryNodes.Where(item => (item.Key.StartsWith(directoryNode.Name, StringComparison.OrdinalIgnoreCase)) && (item.Value.ViewModel is not null)).Select(item => item.Value)];
 
                 foreach (DirectoryTreeNode node in childNodes)
                 {
@@ -925,10 +923,9 @@ internal partial class FileExploder
                     break;
                 }
 
-                childNodes = _directoryNodes.Where(item => (item.Value != directoryNode) && (item.Value.ViewModel is not null)
+                childNodes = [.. _directoryNodes.Where(item => (item.Value != directoryNode) && (item.Value.ViewModel is not null)
                                                         && (item.Key.StartsWith(directoryNode.Name, StringComparison.OrdinalIgnoreCase)))
-                                            .Select(item => item.Value)
-                                            .ToArray();
+                                            .Select(item => item.Value)];
 
                 foreach (DirectoryTreeNode node in childNodes)
                 {
@@ -1345,9 +1342,7 @@ internal partial class FileExploder
             return;
         }
 
-        DirectoryTreeNode[] childNodes = dirNode.Nodes.OfType<DirectoryTreeNode>()
-                                                      .TraverseBreadthFirst(n => n.Nodes.OfType<DirectoryTreeNode>())
-                                                      .ToArray();
+        DirectoryTreeNode[] childNodes = [.. dirNode.Nodes.OfType<DirectoryTreeNode>().TraverseBreadthFirst(n => n.Nodes.OfType<DirectoryTreeNode>())];
 
         foreach (DirectoryTreeNode treeNode in childNodes)
         {
@@ -1609,11 +1604,10 @@ internal partial class FileExploder
         {
             // Ugh.  Of course, the selected rows are not sorted by the current sorting in the grid.
             // We have to make it match. Lovely.
-            string[] ids = GridFiles.SelectedRows.OfType<DataGridViewRow>()
+            string[] ids = [.. GridFiles.SelectedRows.OfType<DataGridViewRow>()
                                                  .Where(item => !item.Cells[ColumnID.Index].Value.IsNull())
                                                  .Reverse()
-                                                 .Select(item => item.Cells[ColumnID.Index].Value.ToString())
-                                                 .ToArray();
+                                                 .Select(item => item.Cells[ColumnID.Index].Value.ToString())];
 
             if ((ViewModel?.SelectFileCommand is null) || (!ViewModel.SelectFileCommand.CanExecute(ids)))
             {
@@ -3043,7 +3037,7 @@ internal partial class FileExploder
             FileCopyMoveData fileCopyData = new()
             {
                 Operation = operation,
-                SourceFiles = selectedFiles.Select(item => item.ID).ToArray()
+                SourceFiles = [.. selectedFiles.Select(item => item.ID)]
             };
 
             if ((handler.CopyDataCommand is null) || (!handler.CopyDataCommand.CanExecute(fileCopyData)))

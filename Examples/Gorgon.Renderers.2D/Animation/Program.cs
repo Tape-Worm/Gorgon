@@ -220,8 +220,7 @@ static class Program
 
             // Find out how long to display each frame for.
             // We'll also convert it to milliseconds since GIF stores the delays as 1/100th of a second.
-            _frameDelays = gif.GetFrameDelays(Path.Combine(GorgonExample.GetResourcePath(@"\Textures\Animation\").FullName, "metal.gif"))
-                              .Select(item => item / 100.0f).ToArray();
+            _frameDelays = [.. gif.GetFrameDelays(Path.Combine(GorgonExample.GetResourcePath(@"\Textures\Animation\").FullName, "metal.gif")).Select(item => item / 100.0f)];
 
             _metal = GorgonTexture2DView.FromFile(_graphics,
                                                   Path.Combine(GorgonExample.GetResourcePath(@"\Textures\Animation\").FullName, "metal.gif"),

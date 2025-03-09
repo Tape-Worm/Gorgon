@@ -29,11 +29,12 @@ using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts;
-using Gorgon.Input;
 using Gorgon.PlugIns;
 using Gorgon.Renderers;
 using Gorgon.Renderers.Cameras;
 using Gorgon.UI;
+using Gorgon.Windows.Input;
+using Gorgon.Windows.Input.Devices;
 using DX = SharpDX;
 
 namespace Gorgon.Examples;
@@ -70,9 +71,9 @@ static class Program
     // A big ship.
     private static BigShip _bigShip;
     // The user input interface.
-    private static GorgonRawInput _input;
-    // The keyboard input interface.
-    private static GorgonRawKeyboard _keyboard;
+    private static IGorgonInput _input;
+    private static readonly GorgonInputEventBuffer _inputEvents = new();
+    private static IGorgonKeyboard _keyboard;
     // The aspect ratio for the main render target view.
     private static Vector2 _mainRtvAspect = Vector2.Zero;
     // The base resolution for our display.  
@@ -85,32 +86,67 @@ static class Program
     private static GorgonTextSprite _textSprite;
     // Flag to indicate that the instructions be shown.
     private static bool _showInstructions = true;
+    // Keys used in toggle operations.
+    private static readonly HashSet<VirtualKeys> _toggleKeys = [];
 
-    /// <summary>Handles the KeyUp event of the Keyboard control.</summary>
-    /// <param name="sender">The source of the event.</param>
-    /// <param name="e">The <see cref="GorgonKeyboardEventArgs"/> instance containing the event data.</param>
-    private static void Keyboard_KeyUp(object sender, GorgonKeyboardEventArgs e)
+    /// <summary>
+    /// Function to determine if a key has been released so it can be toggled.
+    /// </summary>
+    /// <param name="key">The key to evaluate.</param>
+    /// <returns><b>true</b> if the key has been released, or <b>false</b> if the key is still down or was never down.</returns>
+    static bool ToggleKeyCheck(VirtualKeys key)
     {
-        switch (e.Key)
+        if (!_toggleKeys.Contains(key))
         {
-            case Keys.C:
-                if (_ship.LayerController is not null)
-                {
-                    LayerCamera controller = _ship.LayerController;
-                    _ship.LayerController = null;
-                    _shipDeux.LayerController = controller;
-                }
-                else
-                {
-                    LayerCamera controller = _shipDeux.LayerController;
-                    _shipDeux.LayerController = null;
-                    _ship.LayerController = controller;
-                }
-                break;
-            case Keys.F1:
-                _showInstructions = !_showInstructions;
-                break;
+            return false;
         }
+
+        if (!_keyboard[key])
+        {
+            _toggleKeys.Remove(key);
+            return true;
+        }
+
+        return false;
+    }
+
+    /// <summary>Processes key presses.</summary>
+    /// <returns>The currently pressed key state.</returns>
+    private static ReadOnlySpan<VirtualKeys> ProcessKeys()
+    {
+        _keyboard.ParseData(_inputEvents);
+
+        if (ToggleKeyCheck(VirtualKeys.C))
+        {
+            if (_ship.LayerController is not null)
+            {
+                LayerCamera controller = _ship.LayerController;
+                _ship.LayerController = null;
+                _shipDeux.LayerController = controller;
+            }
+            else
+            {
+                LayerCamera controller = _shipDeux.LayerController;
+                _shipDeux.LayerController = null;
+                _ship.LayerController = controller;
+            }
+        }
+
+        if (ToggleKeyCheck(VirtualKeys.F1))
+        {
+            _showInstructions = !_showInstructions;
+        }
+
+        if (_keyboard[VirtualKeys.C])
+        {
+            _toggleKeys.Add(VirtualKeys.C);
+        }
+        else if (_keyboard[VirtualKeys.F1])
+        {
+            _toggleKeys.Add(VirtualKeys.F1);
+        }
+
+        return _keyboard.GetPressedKeys();
     }
 
     /// <summary>
@@ -159,10 +195,14 @@ static class Program
     /// <returns><b>true</b> to continue, <b>false</b> to stop.</returns>
     private static bool Idle()
     {
-        _shipDeux.UserInput(_keyboard.KeyStates);
+        _input.GetInput(InputDeviceType.Keyboard, _inputEvents);
+
+        ReadOnlySpan<VirtualKeys> keyData = ProcessKeys();
+
+        _shipDeux.UserInput(keyData);
         _shipDeux.Update();
 
-        _ship.UserInput(_keyboard.KeyStates);
+        _ship.UserInput(keyData);
         _ship.Update();
 
         _sceneRenderer.Render();
@@ -323,10 +363,8 @@ static class Program
             _renderer = new Gorgon2D(_graphics);
 
             // Set up our raw input.
-            _input = new GorgonRawInput(window, GorgonApplication.Log);
-            _keyboard = new GorgonRawKeyboard();
-            _keyboard.KeyUp += Keyboard_KeyUp;
-            _input.RegisterDevice(_keyboard);
+            _input = GorgonInput.CreateInput(InputFlags.Keyboard, GorgonApplication.Log);
+            _keyboard = new GorgonKeyboard();
 
             GorgonExample.LoadResources(_graphics);
 
@@ -346,7 +384,7 @@ static class Program
             {
                 Name = "Segoe UI 10pt",
                 OutlineSize = 2,
-                Characters = (Resources.Instructions + "yQHS:1234567890x").Distinct().ToArray(),
+                Characters = [.. (Resources.Instructions + "yQHS:1234567890x").Distinct()],
                 FontStyle = GorgonFontStyle.Bold,
                 AntiAliasingMode = GorgonFontAntiAliasMode.AntiAlias,
                 OutlineColor1 = GorgonColors.Black,
@@ -401,19 +439,11 @@ static class Program
         finally
         {
             // Always perform your clean up.
-            if (_keyboard is not null)
-            {
-                _keyboard.KeyUp -= Keyboard_KeyUp;
-            }
-
             _helpFont?.Dispose();
 
             GorgonExample.UnloadResources();
 
-            if (_keyboard is not null)
-            {
-                _input?.UnregisterDevice(_keyboard);
-            }
+            _inputEvents?.Dispose();
             _input?.Dispose();
             _sceneRenderer?.Dispose();
             _resources?.Dispose();

@@ -694,11 +694,10 @@ internal class SpriteEditorPlugIn
         }
 
         // Find all available textures in our file system.
-        IReadOnlyList<IContentFile> textures = ContentFileManager.EnumerateContentFiles("/", "*", true)
+        IReadOnlyList<IContentFile> textures = [.. ContentFileManager.EnumerateContentFiles("/", "*", true)
                                             .Where(item => (item.Metadata.Attributes.ContainsKey(CommonEditorConstants.ContentTypeAttr))
                                                     && (string.Equals(item.Metadata.Attributes[CommonEditorConstants.ContentTypeAttr], CommonEditorContentTypes.ImageType, StringComparison.OrdinalIgnoreCase))
-                                                    && (Is2DImage(item)))
-                                            .ToArray();
+                                                    && (Is2DImage(item)))];
 
         using (FormNewSprite formName = new()
         {

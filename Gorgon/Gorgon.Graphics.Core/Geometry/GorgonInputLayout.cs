@@ -623,7 +623,7 @@ public sealed class GorgonInputLayout
     /// </summary>
     /// <param name="slot">The slot to look up.</param>
     /// <returns>A list of input elements that belong to the specified slot.</returns>
-    public IReadOnlyList<GorgonInputElement> GetElementsForSlot(int slot) => Elements.Where(item => item.Slot == slot).ToArray();
+    public IReadOnlyList<GorgonInputElement> GetElementsForSlot(int slot) => [.. Elements.Where(item => item.Slot == slot)];
 
     /// <summary>
     /// Function to retrieve any elements for a context.

@@ -26,10 +26,10 @@
 using System.Numerics;
 using Gorgon.Animation;
 using Gorgon.Graphics;
-using Gorgon.Input;
 using Gorgon.Math;
 using Gorgon.Renderers;
 using Gorgon.Timing;
+using Gorgon.Windows.Input.Devices;
 
 namespace Gorgon.Examples;
 
@@ -293,45 +293,40 @@ internal class Ship(SpritesLayer layer)
     /// We use this intercept input from the keyboard. This allows the user to control the ship.  However, if we don't have the layer camera controller attached, 
     /// or we have an AI attached, then this method will have no effect.
     /// </remarks>
-    public void UserInput(GorgonKeyStateCollection keys)
+    public void UserInput(ReadOnlySpan<VirtualKeys> keys)
     {
         if ((_layerController is null) || (_ai is not null))
         {
             return;
         }
 
-        if (keys[Keys.Q] == KeyState.Down)
+        for (int i = 0; i < keys.Length; ++i)
         {
-            Gorgon2DBloomEffect effect = (Gorgon2DBloomEffect)_layer.Effects["bloom"];
-            effect.LowQuality = !effect.LowQuality;
-            Thread.Sleep(2000);
-        }
-
-        if (keys[Keys.Back] == KeyState.Down)
-        {
-            _isSlowing = true;
-        }
-
-        if (keys[Keys.Left] == KeyState.Down)
-        {
-            Rotate(-1);
-        }
-
-        if (keys[Keys.Right] == KeyState.Down)
-        {
-            Rotate(1);
-        }
-
-        if (keys[Keys.Up] == KeyState.Down)
-        {
-            _isSlowing = false;
-            Accelerate();
-        }
-
-        if (keys[Keys.Down] == KeyState.Down)
-        {
-            _isSlowing = false;
-            Decelerate();
+            switch (keys[i])
+            {
+                case VirtualKeys.Q:
+                    Gorgon2DBloomEffect effect = (Gorgon2DBloomEffect)_layer.Effects["bloom"];
+                    effect.LowQuality = !effect.LowQuality;
+                    Thread.Sleep(250);
+                    break;
+                case VirtualKeys.Backspace:
+                    _isSlowing = true;
+                    break;
+                case VirtualKeys.Left:
+                    Rotate(-1);
+                    break;
+                case VirtualKeys.Right:
+                    Rotate(1);
+                    break;
+                case VirtualKeys.Up:
+                    _isSlowing = false;
+                    Accelerate();
+                    break;
+                case VirtualKeys.Down:
+                    _isSlowing = false;
+                    Decelerate();
+                    break;
+            }
         }
     }
 

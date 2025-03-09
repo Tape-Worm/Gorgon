@@ -243,7 +243,7 @@ internal partial class FormNewAnimation
             return;
         }
 
-        FillFileList(_sprites.Where(item => item.Name.IndexOf(e.SearchText, StringComparison.CurrentCultureIgnoreCase) > -1).ToArray(),
+        FillFileList([.. _sprites.Where(item => item.Name.IndexOf(e.SearchText, StringComparison.CurrentCultureIgnoreCase) > -1)],
                      PrimarySpriteFile,
                      FilePrimarySprite,
                      FilePrimarySprite_FileEntrySelected);
@@ -348,7 +348,7 @@ internal partial class FormNewAnimation
             return;
         }
 
-        FillFileList(_textures.Where(item => item.Name.IndexOf(e.SearchText, StringComparison.CurrentCultureIgnoreCase) > -1).ToArray(),
+        FillFileList([.. _textures.Where(item => item.Name.IndexOf(e.SearchText, StringComparison.CurrentCultureIgnoreCase) > -1)],
                      BackgroundTextureFile,
                      FileBgTextures,
                      FileTextures_FileEntrySelected);

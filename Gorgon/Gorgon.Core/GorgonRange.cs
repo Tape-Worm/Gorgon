@@ -74,7 +74,16 @@ public readonly struct GorgonRange<T>
     /// Property to return the range between the two values.
     /// </summary>
     [JsonIgnore]
-    public readonly T Range => Maximum - Minimum;
+    public readonly T Range => (Maximum - Minimum);
+
+    /// <summary>
+    /// Property to return the inclusive length of the range.
+    /// </summary>
+    /// <remarks>
+    /// This value will never be less than 1 because the <see cref="Minimum"/> value is included in the length.
+    /// </remarks>
+    [JsonIgnore]
+    public readonly T Length => Range + T.One;
 
     /// <summary>
     /// Property to return whether the range is empty or not.

@@ -482,10 +482,9 @@ internal class ViewModelFactory(Editor.EditorSettings settings, ProjectManager p
 
         _syncContext = SynchronizationContext.Current;
 
-        _contentCreators = _hostContentServices.ContentPlugInService.PlugIns.Where(item => item.Value.CanCreateContent)
+        _contentCreators = [.. _hostContentServices.ContentPlugInService.PlugIns.Where(item => item.Value.CanCreateContent)
                                                                             .Select(item => item.Value)
-                                                                            .OfType<IContentPlugInMetadata>()
-                                                                            .ToArray();
+                                                                            .OfType<IContentPlugInMetadata>()];
 
         EditorSettings settingsVm = new();
         IEnumerable<ISettingsCategory> categories = GetPlugInSettingsCategories();

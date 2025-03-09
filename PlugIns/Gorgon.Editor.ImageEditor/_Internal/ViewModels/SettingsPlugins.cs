@@ -110,7 +110,7 @@ internal class SettingsPlugins
     protected override bool OnUnloadPlugIns()
     {
         IReadOnlyList<CodecSetting> selected = [.. SelectedCodecs];
-        IReadOnlyList<GorgonImageCodecPlugIn> plugIns = selected.Select(item => item.PlugIn).ToArray();
+        IReadOnlyList<GorgonImageCodecPlugIn> plugIns = [.. selected.Select(item => item.PlugIn)];
         MessageResponse response = MessageResponse.None;
 
         if (plugIns.Count == 0)

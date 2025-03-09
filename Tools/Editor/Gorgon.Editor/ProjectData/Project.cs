@@ -104,11 +104,10 @@ internal class Project
     /// <summary>
     /// Property to return the list of project items.
     /// </summary>
-    [JsonInclude]
+    [JsonInclude, JsonObjectCreationHandling(JsonObjectCreationHandling.Populate)]
     public Dictionary<string, ProjectItemMetadata> ProjectItems
     {
         get;
-        private set;
     } = new Dictionary<string, ProjectItemMetadata>(StringComparer.OrdinalIgnoreCase);
 
     /// <summary>Initializes a new instance of the Project class.</summary>

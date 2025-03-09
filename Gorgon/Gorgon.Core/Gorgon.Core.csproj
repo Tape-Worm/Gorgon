@@ -7,12 +7,12 @@
     <Company>Tape_Worm</Company>
     <Product>Gorgon</Product>
     <Description>Common and utility functionality used by the various Gorgon libraries.</Description>
-    <Copyright>(C)opyright Tape_Worm, 2020</Copyright>
+    <Copyright>(C)opyright Tape_Worm, 2025</Copyright>
     <PackageProjectUrl>https://www.tape-worm.net</PackageProjectUrl>
     <PackageIcon>..\g.png</PackageIcon>
     <RepositoryUrl>https://github.com/Tape-Worm/Gorgon</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
-    <PackageTags>C#, .NET Framework, Direct 3D, SharpDX, Winforms</PackageTags>
+    <PackageTags>Gorgon, C#, .NET Framework, Direct 3D, SharpDX, Winforms</PackageTags>
     <EnableNETAnalyzers>True</EnableNETAnalyzers>
     <RootNamespace>Gorgon</RootNamespace>
     <NeutralLanguage>
@@ -29,16 +29,17 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
     <Nullable>enable</Nullable>
-    <IsAotCompatible>true</IsAotCompatible>
+    <IsAotCompatible>true</IsAotCompatible>    
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <Title>Gorgon Core Functionality</Title>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>bin\Release\Gorgon.Core.xml</DocumentationFile>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">    
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
     <PlatformTarget>AnyCPU</PlatformTarget>

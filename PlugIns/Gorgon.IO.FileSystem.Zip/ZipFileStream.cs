@@ -25,6 +25,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using Gorgon.IO.FileSystem.Providers.Properties;
+using Gorgon.Math;
 using ICSharpCode.SharpZipLib.Zip;
 
 namespace Gorgon.IO.FileSystem.Providers;
@@ -211,6 +212,18 @@ internal class ZipFileStream
     /// <inheritdoc/>
     public override async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
     {
+        if (_position >= Length)
+        {
+            return 0;
+        }
+
+        long totalBytes = (Length - _position).Min(buffer.Length);
+
+        if (totalBytes != buffer.Length)
+        {
+            buffer = buffer[..(int)totalBytes];
+        }
+
         int result = await _zipStream.ReadAsync(buffer, cancellationToken).ConfigureAwait(false);
         _position += result;
         return result;
@@ -234,7 +247,14 @@ internal class ZipFileStream
     {
         if (_position >= Length)
         {
-            return -1;
+            return 0;
+        }
+
+        long totalBytes = (Length - _position).Min(buffer.Length);
+
+        if (totalBytes != buffer.Length)
+        {
+            buffer = buffer[..(int)totalBytes];
         }
 
         int result = _zipStream.Read(buffer);

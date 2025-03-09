@@ -156,28 +156,28 @@ public partial class GorgonFileSystemTests
 
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
 
-        IGorgonVirtualDirectory[] dirs = fileSystem.FindDirectories("/", "*").ToArray();
+        IGorgonVirtualDirectory[] dirs = [.. fileSystem.FindDirectories("/", "*")];
 
         Assert.AreEqual(430, dirs.Length);
 
-        dirs = fileSystem.FindDirectories("/", "*lease").ToArray();
+        dirs = [.. fileSystem.FindDirectories("/", "*lease")];
 
         Assert.IsTrue(dirs.All(d => d.FullPath.EndsWith("Release/", StringComparison.OrdinalIgnoreCase)));
 
-        dirs = fileSystem.FindDirectories("/", "ob*").ToArray();
+        dirs = [.. fileSystem.FindDirectories("/", "ob*")];
 
         Assert.IsTrue(dirs.All(d => d.FullPath.EndsWith("obj/", StringComparison.OrdinalIgnoreCase)));
 
-        dirs = fileSystem.FindDirectories("/", "*_*").ToArray();
+        dirs = [.. fileSystem.FindDirectories("/", "*_*")];
 
         Assert.IsTrue(dirs.All(d => d.FullPath.Contains('_', StringComparison.OrdinalIgnoreCase)));
 
-        dirs = fileSystem.FindDirectories("/", "net*.0").ToArray();
+        dirs = [.. fileSystem.FindDirectories("/", "net*.0")];
 
         Assert.IsTrue(dirs.All(d => d.FullPath.Contains("net8.0", StringComparison.OrdinalIgnoreCase)
                                                    || d.FullPath.Contains("net6.0", StringComparison.OrdinalIgnoreCase)));
 
-        dirs = fileSystem.FindDirectories("/", "Gorgon.FileSystem").ToArray();
+        dirs = [.. fileSystem.FindDirectories("/", "Gorgon.FileSystem")];
 
         Assert.IsTrue(dirs.All(d => d.Name.Equals("Gorgon.FileSystem", StringComparison.OrdinalIgnoreCase)));
     }
@@ -210,28 +210,28 @@ public partial class GorgonFileSystemTests
 
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
 
-        IGorgonVirtualFile[] files = fileSystem.FindFiles("/", "*").ToArray();
+        IGorgonVirtualFile[] files = [.. fileSystem.FindFiles("/", "*")];
 
         Assert.AreEqual(2833, files.Length);
 
-        files = fileSystem.FindFiles("/", "*provider.cs").ToArray();
+        files = [.. fileSystem.FindFiles("/", "*provider.cs")];
 
         Assert.IsTrue(files.All(d => d.Name.EndsWith("Provider.cs", StringComparison.OrdinalIgnoreCase)));
 
-        files = fileSystem.FindFiles("/", "IGorgonFileSystemProvider*").ToArray();
+        files = [.. fileSystem.FindFiles("/", "IGorgonFileSystemProvider*")];
 
         Assert.IsTrue(files.All(d => d.Name.Contains("IGorgonFileSystemProvider", StringComparison.OrdinalIgnoreCase)));
 
-        files = fileSystem.FindFiles("/", "*_*").ToArray();
+        files = [.. fileSystem.FindFiles("/", "*_*")];
 
         Assert.IsTrue(files.All(d => d.Name.Contains('_', StringComparison.OrdinalIgnoreCase)));
 
-        files = fileSystem.FindFiles("/", "Gorgon*.cs").ToArray();
+        files = [.. fileSystem.FindFiles("/", "Gorgon*.cs")];
 
         Assert.IsTrue(files.All(d => d.Name.StartsWith("Gorgon", StringComparison.OrdinalIgnoreCase)
                                                    && d.Name.EndsWith(".cs", StringComparison.OrdinalIgnoreCase)));
 
-        files = fileSystem.FindFiles("/", "Gorgon.FileSystem.dll").ToArray();
+        files = [.. fileSystem.FindFiles("/", "Gorgon.FileSystem.dll")];
 
         Assert.IsTrue(files.All(d => d.Name.Equals("Gorgon.FileSystem.dll", StringComparison.OrdinalIgnoreCase)));
     }

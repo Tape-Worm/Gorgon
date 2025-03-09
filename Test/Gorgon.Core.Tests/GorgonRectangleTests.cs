@@ -802,4 +802,71 @@ public class GorgonRectangleTests
 
         Assert.AreEqual(rectf, deserializedRectangleF);
     }
+
+    [TestMethod]
+    public void ClampPoint()
+    {
+        GorgonRectangle rect = new(5, 5, 10, 10);
+        GorgonRectangleF rectf = new(5.2f, 5.2f, 10.1f, 10.4f);
+        GorgonPoint point = new(18, 18);
+        Vector2 pointf = new(18, 18);
+
+        GorgonPoint actual = rect.Clamp(point);
+
+        Assert.AreEqual(14, actual.X);
+        Assert.AreEqual(14, actual.Y);
+
+        point = new(18, 2);
+        actual = rect.Clamp(point);
+
+        Assert.AreEqual(14, actual.X);
+        Assert.AreEqual(5, actual.Y);
+
+        point = new(2, 2);
+        actual = rect.Clamp(point);
+
+        Assert.AreEqual(5, actual.X);
+        Assert.AreEqual(5, actual.Y);
+
+        point = new(2, 18);
+        actual = rect.Clamp(point);
+
+        Assert.AreEqual(5, actual.X);
+        Assert.AreEqual(14, actual.Y);
+
+        point = new(10, 10);
+        actual = rect.Clamp(point);
+
+        Assert.AreEqual(10, actual.X);
+        Assert.AreEqual(10, actual.Y);
+
+        Vector2 actualf = rectf.Clamp(pointf);
+
+        Assert.AreEqual(15.29999f, actualf.X, 0.00001f);
+        Assert.AreEqual(15.59999f, actualf.Y, 0.00001f);
+
+        pointf = new(18, 2);
+        actualf = rectf.Clamp(pointf);
+
+        Assert.AreEqual(15.29999f, actualf.X, 0.00001f);
+        Assert.AreEqual(5.2, actualf.Y, 0.00001f);
+
+        pointf = new(2, 2);
+        actualf = rectf.Clamp(pointf);
+
+        Assert.AreEqual(5.2, actualf.X, 0.00001f);
+        Assert.AreEqual(5.2, actualf.Y, 0.00001f);
+
+        pointf = new(2, 18);
+        actualf = rectf.Clamp(pointf);
+
+        Assert.AreEqual(5.2, actualf.X, 0.00001f);
+        Assert.AreEqual(15.59999f, actualf.Y, 0.00001f);
+
+        pointf = new(10.25f, 10.15f);
+        actualf = rectf.Clamp(pointf);
+
+        Assert.AreEqual(10.25f, actualf.X, 0.00001f);
+        Assert.AreEqual(10.15f, actualf.Y, 0.00001f);
+    }
 }

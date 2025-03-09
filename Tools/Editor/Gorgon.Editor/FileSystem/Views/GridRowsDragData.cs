@@ -101,13 +101,11 @@ internal class GridRowsDragData
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="fileRows"/> parameter is <b>null</b>.</exception>
     public GridRowsDragData(IReadOnlyList<DataGridViewRow> fileRows, int fileColumnIndex, CopyMoveOperation dragOperation)
     {
-        IFile[] files = fileRows.OfType<DataGridViewRow>()
-                                .Select(item => ((IFile)item.Cells[fileColumnIndex].Value))
-                                .ToArray();
+        IFile[] files = [.. fileRows.OfType<DataGridViewRow>().Select(item => ((IFile)item.Cells[fileColumnIndex].Value))];
 
         GridRows = fileRows ?? throw new ArgumentNullException(nameof(fileRows));
-        SourceFiles = files.Select(item => item.ID).ToArray();
-        _filePaths = files.Select(item => item.FullPath).ToArray();
+        SourceFiles = [.. files.Select(item => item.ID)];
+        _filePaths = [.. files.Select(item => item.FullPath)];
         Operation = dragOperation;
     }
 }

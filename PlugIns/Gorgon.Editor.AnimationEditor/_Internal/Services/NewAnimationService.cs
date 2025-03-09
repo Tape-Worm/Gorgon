@@ -97,17 +97,15 @@ internal class NewAnimationService(IContentFileManager fileManager, IGorgonSprit
         }
 
         // Find all available textures and sprites in our file system.
-        IReadOnlyList<IContentFile> textures = _fileManager.EnumerateContentFiles("/", "*", true)
+        IReadOnlyList<IContentFile> textures = [.. _fileManager.EnumerateContentFiles("/", "*", true)
                                             .Where(item => (item.Metadata.Attributes.ContainsKey(CommonEditorConstants.ContentTypeAttr))
                                                     && (string.Equals(item.Metadata.Attributes[CommonEditorConstants.ContentTypeAttr], CommonEditorContentTypes.ImageType, StringComparison.OrdinalIgnoreCase))
-                                                    && (Is2DImage(item)))
-                                            .ToArray();
+                                                    && (Is2DImage(item)))];
 
-        IReadOnlyList<IContentFile> sprites = _fileManager.EnumerateContentFiles("/", "*", true)
+        IReadOnlyList<IContentFile> sprites = [.. _fileManager.EnumerateContentFiles("/", "*", true)
                                             .Where(item => (item.Metadata.Attributes.ContainsKey(CommonEditorConstants.ContentTypeAttr))
                                                     && (string.Equals(item.Metadata.Attributes[CommonEditorConstants.ContentTypeAttr], CommonEditorContentTypes.SpriteType, StringComparison.OrdinalIgnoreCase))
-                                                    && (IsSprite(item)))
-                                            .ToArray();
+                                                    && (IsSprite(item)))];
 
         using FormNewAnimation newAnimationForm = new()
         {

@@ -195,10 +195,9 @@ internal class ResourceManagement(Gorgon2D renderer, GorgonMefPlugInCache plugIn
         cloudRotation.IsLooped = true;
         _animations[cloudRotation.Name] = cloudRotation;
 
-        GorgonSprite[] frames = Sprites.Where(item => item.Key.StartsWith("/sprites/Fighter_Engine_F", StringComparison.OrdinalIgnoreCase))
+        GorgonSprite[] frames = [.. Sprites.Where(item => item.Key.StartsWith("/sprites/Fighter_Engine_F", StringComparison.OrdinalIgnoreCase))
                                                   .OrderBy(item => item.Key)
-                                                  .Select(item => item.Value)
-                                                  .ToArray();
+                                                  .Select(item => item.Value)];
 
         IGorgonAnimation engineGlow = builder
             .Clear()
@@ -353,8 +352,8 @@ internal class ResourceManagement(Gorgon2D renderer, GorgonMefPlugInCache plugIn
     {
         // Load the file system containing our application data (sprites, images, etc...)
         IGorgonFileSystemProviderFactory providerFactory = new GorgonFileSystemProviderFactory(_plugIns, GorgonApplication.Log);
-        IGorgonFileSystemProvider provider = providerFactory.CreateProvider(Path.Combine(GorgonExample.GetPlugInPath().FullName, "Gorgon.FileSystem.GorPack.dll"),
-                                                                            "Gorgon.IO.GorPack.GorPackProvider");
+        IGorgonFileSystemProvider provider = providerFactory.CreateProvider(Path.Combine(GorgonExample.GetPlugInPath().FullName, "Gorgon.IO.FileSystem.GorPack.dll"),
+                                                                            "Gorgon.IO.FileSystem.Providers.GorPackPlugIn");
         _fileSystem = new GorgonFileSystem(GorgonApplication.Log);
         _fileSystem.Mount(path, provider: provider);
 

@@ -201,7 +201,7 @@ internal static class Program
             Console.ForegroundColor = ConsoleColor.White;
 
             // Get a count of all sub directories and files under the root directory.
-            IGorgonVirtualDirectory[] directoryList = _fileSystem.FindDirectories("/", "*").ToArray();
+            IGorgonVirtualDirectory[] directoryList = [.. _fileSystem.FindDirectories("/", "*")];
 
             // Display directories.
             Console.WriteLine("Virtual file system contents:");

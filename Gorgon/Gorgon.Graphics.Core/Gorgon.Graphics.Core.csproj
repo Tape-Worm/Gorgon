@@ -17,7 +17,7 @@
     <PackageIcon>..\g.png</PackageIcon>
     <RepositoryUrl>https://github.com/Tape-Worm/Gorgon</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
-    <PackageTags>C#, .NET Framework, Direct 3D, SharpDX, Winforms</PackageTags>
+    <PackageTags>Gorgon, C#, .NET Framework, Direct 3D, SharpDX, Winforms</PackageTags>
     <EnableNETAnalyzers>false</EnableNETAnalyzers>
     <RootNamespace>Gorgon.Graphics.Core</RootNamespace>
     <NeutralLanguage>
@@ -54,7 +54,7 @@
     <EmbeddedResource Include="Resources\White_2x2.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Gorgon.Windows\Gorgon.Windows.csproj" />
+    <ProjectReference Include="..\Gorgon.Windows\Platform\Gorgon.Windows.Platform.csproj" />
     <ProjectReference Include="..\Gorgon.Graphics.Imaging\Gorgon.Graphics.Imaging.csproj" />
   </ItemGroup>
   <ItemGroup>

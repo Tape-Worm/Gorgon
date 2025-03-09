@@ -147,7 +147,7 @@ internal class CodecRegistry(GorgonMefPlugInCache pluginCache, Gorgon2D renderer
                 Codecs.Remove(codec);
             }
 
-            (GorgonFileExtension extension, IGorgonSpriteCodec codecType)[] types = CodecFileTypes.Where(item => item.codec == codec).ToArray();
+            (GorgonFileExtension extension, IGorgonSpriteCodec codecType)[] types = [.. CodecFileTypes.Where(item => item.codec == codec)];
 
             foreach ((GorgonFileExtension extension, IGorgonSpriteCodec codecType) type in types)
             {

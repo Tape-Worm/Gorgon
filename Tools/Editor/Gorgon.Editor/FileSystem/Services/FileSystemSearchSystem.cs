@@ -259,7 +259,7 @@ internal class FileSystemSearchSystem(IDirectory rootDirectory)
 
         if (string.Equals(keyword, Resources.GOREDIT_SEARCH_KEYWORD_DEPENDS_ON, StringComparison.CurrentCultureIgnoreCase))
         {
-            IFile[] searchFiles = files.Where(item => MatchesWildcard(mode, item, modeSearchText)).ToArray();
+            IFile[] searchFiles = [.. files.Where(item => MatchesWildcard(mode, item, modeSearchText))];
 
             if (searchFiles.Length == 0)
             {

@@ -143,9 +143,7 @@ internal class ComboFonts
         }
         else
         {
-            IEnumerable<string> items = Items.Cast<string>()
-                                             .Where(item => !families.Any(subItem => string.Equals(subItem, item, StringComparison.CurrentCultureIgnoreCase)))
-                                             .ToArray();
+            IEnumerable<string> items = [.. Items.Cast<string>().Where(item => !families.Any(subItem => string.Equals(subItem, item, StringComparison.CurrentCultureIgnoreCase)))];
 
             foreach (string item in items)
             {

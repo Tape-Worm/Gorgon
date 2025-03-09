@@ -165,7 +165,7 @@ internal class Recent
         _projectManager = injectionParameters.ProjectManager;
 
         // Only capture up to 150 items.
-        Files = new ObservableCollection<RecentItem>(_recentItems.OrderByDescending(item => item.LastUsedDate).Take(150));
+        Files = [.. _recentItems.OrderByDescending(item => item.LastUsedDate).Take(150)];
 
         // If there are more files in the settings than what we have in our list (due to the 150 item limit), then refresh the settings right now.
         if (Files.Count < _recentItems.Count)

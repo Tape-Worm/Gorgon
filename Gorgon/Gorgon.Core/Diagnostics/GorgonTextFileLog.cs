@@ -53,11 +53,27 @@ public class GorgonTextFileLog
     /// <para>
     /// This constructor automatically creates a <see cref="IGorgonLogProvider"/> that outputs to a text file and assigns it to the <see cref="GorgonLog.Provider"/> property.
     /// </para>
+    /// <para>
+    /// For Windows, the log files created by this class will reside in the <c>%LocalAppData%\</c><paramref name="extraPath"/><c>\</c><paramref name="appName"/> directory 
+    /// (e.g. If <paramref name="extraPath"/> is <c>Dir1\Dir2</c> and <paramref name="appName"/> is <c>MyProgram</c> the resulting path will be 
+    /// <c>%LocalAppData%\Dir1\Dir2\MyProgram\ApplicationLogging.txt</c>). The <c>%LocalAppData%</c> environment variable is usually pointed at the 
+    /// <c>c:\users\&lt;username&gt;\AppData\Local\</c> directory.
+    /// </para>
+    /// <para>
+    /// For Linux, the log files will reside in the <c>/home/&lt;username&gt;/.local/share/</c><paramref name="extraPath"/><c>/</c><paramref name="appName"/> directory
+    /// (e.g. If <paramref name="extraPath"/> is <c>Dir1/Dir2</c> and <paramref name="appName"/> is <c>MyProgram</c> the resulting path will be 
+    /// <c>/home/&lt;username&gt;/.local/share/Dir1/Dir2/MyProgram/ApplicationLogging.txt</c>).
+    /// </para>
+    /// <para>
+    /// For Mac, the log files will reside in the <c>/users/&lt;username&gt;/Library/Application/</c><paramref name="extraPath"/><c>/</c><paramref name="appName"/> directory
+    /// (e.g. If <paramref name="extraPath"/> is <c>Dir1/Dir2</c> and <paramref name="appName"/> is <c>MyProgram</c> the resulting path will be 
+    /// <c>/users/&lt;username&gt;/Library/Application/Dir1/Dir2/MyProgram/ApplicationLogging.txt</c>).
+    /// </para>
     /// </remarks>
     public GorgonTextFileLog(string appName, string? extraPath, Version? version = null)
         : base(appName, version)
     {
-        string logPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+        string logPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData, Environment.SpecialFolderOption.Create);
 
         // Verify the extra path information.
         if (!string.IsNullOrWhiteSpace(extraPath))

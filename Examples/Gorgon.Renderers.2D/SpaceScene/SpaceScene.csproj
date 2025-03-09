@@ -19,7 +19,7 @@
 
     <RepositoryUrl>https://github.com/Tape-Worm/Gorgon</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
-    <PackageTags>C#, .NET Framework, Direct 3D, SharpDX, Winforms</PackageTags>
+    <PackageTags>Gorgon, C#, .NET Framework, Direct 3D, SharpDX, Winforms</PackageTags>
     <EnableNETAnalyzers>false</EnableNETAnalyzers>
     <RootNamespace>Gorgon.Examples</RootNamespace>
     <NeutralLanguage>
@@ -65,12 +65,9 @@
     <EmbeddedResource Include="Resources\Shaders3D.hlsl" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Gorgon\Gorgon.Input\Gorgon.Input.csproj" />
+    <ProjectReference Include="..\..\..\Gorgon\Gorgon.Windows\Input\Gorgon.Windows.Input.csproj" />
     <ProjectReference Include="..\..\..\Tools\Editor\Gorgon.Editor.API\Gorgon.Editor.API.csproj" />
     <ProjectReference Include="..\..\ExamplesCommon\ExamplesCommon.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Bcl.HashCode" Version="6.0.0" />

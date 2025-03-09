@@ -47,7 +47,7 @@ internal class LayerCamera(IEnumerable<Layer> layers)
     public IReadOnlyList<Layer> Layers
     {
         get;
-    } = layers.ToArray();
+    } = [.. layers];
 
     /// <summary>
     /// Property to set or return the layer that will be tracked by the controller.

@@ -970,7 +970,7 @@ internal class SpriteContent
             VertexOffset = [.. _sprite.CornerOffsets]
         };
 
-        Vector3[] verts = SpriteVertexEditContext.Vertices.Select(item => new Vector3(item.X, item.Y, 0)).ToArray();
+        Vector3[] verts = [.. SpriteVertexEditContext.Vertices.Select(item => new Vector3(item.X, item.Y, 0))];
 
         SpriteUndoArgs vtxRedoArgs = new()
         {
