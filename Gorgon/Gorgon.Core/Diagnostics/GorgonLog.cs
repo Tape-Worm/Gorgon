@@ -409,7 +409,7 @@ public abstract class GorgonLog
     public void PrintError(string message, LoggingLevel level)
     {
         if ((LogFilterLevel == LoggingLevel.NoLogging) ||
-            ((LogFilterLevel != LoggingLevel.All) && (level != LoggingLevel.All) && (level < LogFilterLevel)))
+            ((LogFilterLevel != LoggingLevel.All) && (level != LoggingLevel.All) && (level > LogFilterLevel)))
         {
             return;
         }
@@ -424,7 +424,7 @@ public abstract class GorgonLog
     public void PrintWarning(string message, LoggingLevel level)
     {
         if ((LogFilterLevel == LoggingLevel.NoLogging) ||
-            ((LogFilterLevel != LoggingLevel.All) && (level != LoggingLevel.All) && (level < LogFilterLevel)))
+            ((LogFilterLevel != LoggingLevel.All) && (level != LoggingLevel.All) && (level > LogFilterLevel)))
         {
             return;
         }
@@ -443,7 +443,7 @@ public abstract class GorgonLog
     public void Print(string message, LoggingLevel level)
     {
         if ((LogFilterLevel == LoggingLevel.NoLogging) ||
-            ((LogFilterLevel != LoggingLevel.All) && (level != LoggingLevel.All) && (level < LogFilterLevel)))
+            ((LogFilterLevel != LoggingLevel.All) && (level != LoggingLevel.All) && (level > LogFilterLevel)))
         {
             return;
         }

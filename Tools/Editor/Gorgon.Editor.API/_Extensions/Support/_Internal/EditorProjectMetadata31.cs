@@ -34,14 +34,16 @@ namespace Gorgon.Editor.Support;
 internal class EditorProjectMetadata31
     : IProjectMetadata
 {
-    /// <summary>Property to return the version for the project file.</summary>                
+    /// <summary>Property to return the version for the project file.</summary>
+    [JsonInclude]
     public string Version
     {
         get;
         private set;
     } = CommonEditorConstants.EditorCurrentProjectVersion;
 
-    /// <summary>Property to return the list of project items.</summary>        
+    /// <summary>Property to return the list of project items.</summary>
+    [JsonInclude, JsonObjectCreationHandling(JsonObjectCreationHandling.Populate)]
     public Dictionary<string, ProjectItemMetadata> ProjectItems
     {
         get;

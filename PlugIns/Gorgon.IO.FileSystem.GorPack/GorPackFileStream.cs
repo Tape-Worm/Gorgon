@@ -23,6 +23,7 @@
 // Created: Sunday, July 03, 2011 9:26:17 AM
 // 
 
+using Gorgon.Math;
 using ICSharpCode.SharpZipLib.BZip2;
 
 namespace Gorgon.IO.FileSystem.Providers.GorPack;
@@ -183,6 +184,19 @@ internal class GorPackFileStream
     /// <inheritdoc/>
     public override async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
     {
+        // If we're at the end of the stream, then leave.
+        if (_position >= Length)
+        {
+            return 0;
+        }
+
+        long totalBytes = (Length - _position).Min(buffer.Length);
+
+        if (totalBytes != buffer.Length)
+        {
+            buffer = buffer[..(int)totalBytes];
+        }
+
         int result = await _bzipStream.ReadAsync(buffer, cancellationToken).ConfigureAwait(false);
 
         _position += result;
@@ -196,6 +210,13 @@ internal class GorPackFileStream
         if (_position >= Length)
         {
             return 0;
+        }
+
+        long totalBytes = (Length - _position).Min(buffer.Length);
+
+        if (totalBytes != buffer.Length)
+        {
+            buffer = buffer[..(int)totalBytes];
         }
 
         int result = _bzipStream.Read(buffer);

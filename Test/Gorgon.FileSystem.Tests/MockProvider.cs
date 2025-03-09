@@ -2986,8 +2986,8 @@ internal sealed class MockProvider()
 
         string filterPath = physicalPath.ToString();
 
-        files = files.Where(f => f.FullPath.StartsWith(filterPath, StringComparison.OrdinalIgnoreCase)).ToArray();
-        dirs = dirs.Where(f => f.Item1.StartsWith(filterPath, StringComparison.OrdinalIgnoreCase)).ToArray();
+        files = [.. files.Where(f => f.FullPath.StartsWith(filterPath, StringComparison.OrdinalIgnoreCase))];
+        dirs = [.. dirs.Where(f => f.Item1.StartsWith(filterPath, StringComparison.OrdinalIgnoreCase))];
 
         return new(dirs, files);
     }

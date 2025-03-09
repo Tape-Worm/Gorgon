@@ -116,7 +116,7 @@ internal class EditorSettings
     /// </remarks>
     protected override void OnInitialize(EditorSettingsParameters injectionParameters)
     {
-        Categories = new ObservableCollection<ISettingsCategory>(injectionParameters.Categories);
+        Categories = [.. injectionParameters.Categories];
         PlugInsList = injectionParameters.PlugInsList;
     }
 

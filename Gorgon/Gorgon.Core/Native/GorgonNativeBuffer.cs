@@ -22,6 +22,7 @@
 //
 
 using System.Collections;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Gorgon.Core;
@@ -118,6 +119,18 @@ public sealed class GorgonNativeBuffer<T>
     /// </summary>
     public int Length => _memoryBlock.Length;
 
+    /// <summary>
+    /// Property to return the alignment of the memory stored in the buffer.
+    /// </summary>
+    /// <remarks>
+    /// This value is only relevant if the memory was allocated by this buffer. If the memory was pinned, or wrapping previously allocated memory, then this value will be 0.
+    /// </remarks>
+    public int Alignment
+    {
+        get;
+        private set;
+    }
+
     /// <summary>Gets the number of elements in the collection.</summary>
     int IReadOnlyCollection<T>.Count => Length;
 
@@ -181,20 +194,23 @@ public sealed class GorgonNativeBuffer<T>
     /// <param name="init"><b>true</b> to initialize the allocated memory, <b>false</b> to leave as-is.</param>
     private unsafe void Allocate(int count, int alignment, bool init)
     {
-        int size = TypeSize * count;
-        int mask = alignment - 1;
+        if (!BitOperations.IsPow2(alignment))
+        {
+            throw new ArgumentException(string.Format(Resources.GOR_ERR_ALIGNMENT_NOT_POW2, alignment), nameof(alignment));
+        }
+
+        nuint size = (nuint)(TypeSize * count);
 
         // Allocate our aligned block.
-        nint ptr = Marshal.AllocHGlobal(size + mask + nint.Size);
+        void* ptr = NativeMemory.AlignedAlloc(size, (nuint)alignment);
 
-        // Get the pointer address we'll expose to the world.
-        long alignedAddr = (long)((byte*)ptr + nint.Size + mask) & ~mask;
-        ((nint*)alignedAddr)[-1] = ptr;
+        _memoryBlock = new GorgonPtr<T>((T*)ptr, count);
 
-        _memoryBlock = new GorgonPtr<T>((nint)alignedAddr, count);
+        Alignment = alignment;
+
         if (init)
         {
-            _memoryBlock.Fill(0);
+            NativeMemory.Clear(ptr, size);
         }
 
         GC.AddMemoryPressure(SizeInBytes);
@@ -203,7 +219,7 @@ public sealed class GorgonNativeBuffer<T>
     /// <summary>
     /// Function to free the memory block for the buffer.
     /// </summary>
-    private unsafe void Free() => Marshal.FreeHGlobal(((nint*)_memoryBlock)[-1]);
+    private unsafe void Free() => NativeMemory.AlignedFree((void*)_memoryBlock);
 
     /// <summary>
     /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
@@ -235,6 +251,88 @@ public sealed class GorgonNativeBuffer<T>
         _memoryBlock = GorgonPtr<T>.NullPtr;
 
         GC.SuppressFinalize(this);
+    }
+
+    /// <summary>
+    /// Function to resize the memory block for the buffer.
+    /// </summary>
+    /// <param name="length">The new numer of items of type T, for the buffer.</param>
+    /// <param name="alignment">[Optional] The alignment for the memory block.</param>    
+    /// <param name="preserve">[Optional] Flag that controls whether memory contents should be preserved or not.</param>
+    /// <exception cref="ArgumentException">Thrown when the <paramref name="length"/> parameter is less than 1.
+    /// <para>-or-</para>
+    /// <para>Thrown when the <paramref name="alignment"/> parameter is not a power of two.</para>
+    /// </exception>
+    /// <exception cref="NullReferenceException">Thrown if the underlying memory was freed.</exception>
+    /// <remarks>
+    /// <para>
+    /// This will reallocate the underlying memory for the buffer to a new size, and, optionally, a new memory alignment. 
+    /// </para>
+    /// <para>
+    /// The <paramref name="length"/> parameter is the number of items of the type <typeparamref name="T"/> to store in the buffer, it can be smaller or greater than the current buffer size. If it is smaller, 
+    /// data loss is inevitable with data at the end of the buffer being truncated.
+    /// </para>
+    /// <para>
+    /// The <paramref name="alignment"/> specifies the memory alignment for the buffer. This is useful for SIMD operations, or for ensuring that the memory is aligned to a specific boundary. If the alignment 
+    /// is not a power of two, then an exception will be thrown.
+    /// </para>
+    /// <para>
+    /// When the <paramref name="preserve"/> flag is <b>false</b>, memory is resized and the contents of the memory will no longer be valid. However, when set to <b>true</b>, the new memory is zeroed, and the 
+    /// previous memory contents will be copied into the new memory. There will be a performance penalty because of the zeroing, and memory copy operations when this value is <b>true</b>.
+    /// copyed
+    /// </para>
+    /// <para>
+    /// If the <paramref name="length"/>, and memory <paramref name="alignment"/> are the same as the current buffer, then this method will do nothing.
+    /// </para>
+    /// </remarks>
+    public void Resize(int length, int alignment = 16, bool preserve = false)
+    {
+        if (_memoryBlock == GorgonPtr<T>.NullPtr)
+        {
+            throw new NullReferenceException();
+        }
+
+        if ((Length == length) && (alignment == Alignment))
+        {
+            return;
+        }
+
+        if (length < 1)
+        {
+            throw new ArgumentException(Resources.GOR_ERR_DATABUFF_SIZE_TOO_SMALL, nameof(length));
+        }
+
+        unsafe
+        {
+            GorgonPtr<T> oldBlock = _memoryBlock;
+            int prevSize = SizeInBytes;
+            int prevLength = Length;
+            bool ownsMemory = _ownsMemory;
+
+            Allocate(length, alignment, preserve);
+
+            if (preserve)
+            {
+                int copyCount = length.Min(prevLength);
+                oldBlock[0..copyCount].CopyTo(_memoryBlock);
+            }
+
+            // Unpin the type we've pinned.
+            if (_pinnedArray.IsAllocated)
+            {
+                _pinnedArray.Free();
+                return;
+            }
+
+            // If we did not allocate this memory, then do not free it because we have no idea who's using the original memory.
+            if (!ownsMemory)
+            {
+                return;
+            }
+
+            NativeMemory.AlignedFree((void*)oldBlock);
+            GC.RemoveMemoryPressure(prevSize);
+        }
     }
 
     /// <summary>
@@ -425,8 +523,8 @@ public sealed class GorgonNativeBuffer<T>
 
         try
         {
-            var src = GorgonPtr<T>.ToBytePointer(_memoryBlock);
-            var dest = GorgonPtr<TTo>.ToBytePointer(result._memoryBlock);
+            GorgonPtr<byte> src = GorgonPtr<T>.ToBytePointer(_memoryBlock);
+            GorgonPtr<byte> dest = GorgonPtr<TTo>.ToBytePointer(result._memoryBlock);
             src[..src.SizeInBytes.Min(dest.SizeInBytes)].CopyTo(dest);
         }
         catch
@@ -609,6 +707,7 @@ public sealed class GorgonNativeBuffer<T>
     {
         _pinnedArray = pinnedData;
         _memoryBlock = new GorgonPtr<T>(_pinnedArray.AddrOfPinnedObject() + (index * TypeSize), count);
+        Alignment = 0;
     }
 
     /// <summary>
@@ -630,33 +729,41 @@ public sealed class GorgonNativeBuffer<T>
         }
 
         _memoryBlock = pointer;
+        Alignment = 0;
     }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonNativeBuffer{T}" /> class.
     /// </summary>
-    /// <param name="count">The number of items of type <typeparamref name="T"/> to allocate in the buffer.</param>
+    /// <param name="length">The number of items of type <typeparamref name="T"/> to allocate in the buffer.</param>
     /// <param name="alignment">[Optional] The alignment of the buffer, in bytes.</param>
     /// <param name="init">[Optional] <b>true</b> to initialize the buffer with a byte value of 0, or <b>false</b> to leave uninitialized.</param>
-    /// <exception cref="ArgumentException">Thrown when the <paramref name="count"/> is less than 0.</exception>
+    /// <exception cref="ArgumentException">Thrown when the <paramref name="length"/> is less than 0.
+    /// <para>-or-</para>
+    /// <para>Thrown when the <paramref name="alignment"/> parameter is not a power of two.</para>
+    /// </exception>
     /// <remarks>
     /// <para>
     /// Use this constructor to create a new buffer backed by native memory of a given size and aligned to a boundary for the most efficient memory access. The contents of this memory are 
     /// automatically cleared on allocation.
     /// </para>
     /// <para>
+    /// This <paramref name="alignment"/> parameter is used to align the memory to a specific boundary. This can be useful for SIMD operations, or for ensuring that the memory is aligned to a cache line. 
+    /// This value <b>must</b> be a power of two or an exception will be thrown.
+    /// </para>
+    /// <para>
     /// The <paramref name="init"/> parameter is used to clear the allocated memory before use when set to <b>true</b>. This is useful for debugging purposes, but can be a performance hit. If the value is 
     /// set to <b>false</b> then the memory will not be initialized and will contain random data. This is useful for performance, but can be a problem for debugging.
     /// </para>
     /// </remarks>
-    public GorgonNativeBuffer(int count, int alignment = 16, bool init = true)
+    public GorgonNativeBuffer(int length, int alignment = 16, bool init = true)
     {
-        if (count < 1)
+        if (length < 1)
         {
-            throw new ArgumentException(Resources.GOR_ERR_DATABUFF_SIZE_TOO_SMALL, nameof(count));
+            throw new ArgumentException(Resources.GOR_ERR_DATABUFF_SIZE_TOO_SMALL, nameof(length));
         }
 
-        Allocate(count, alignment, init);
+        Allocate(length, alignment, init);
         _ownsMemory = true;
     }
 

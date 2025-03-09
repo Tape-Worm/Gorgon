@@ -206,9 +206,7 @@ internal class GorPackWriterPlugIn
 
             parentNode.Add(dirPathNode);
 
-            DirectoryInfo[] childDirs = current.GetDirectories("*", SearchOption.TopDirectoryOnly)
-                                            .Where(item => ((item.Attributes & FileAttributes.Hidden) != FileAttributes.Hidden) && ((item.Attributes & FileAttributes.System) != FileAttributes.System))
-                                            .ToArray();
+            DirectoryInfo[] childDirs = [.. current.GetDirectories("*", SearchOption.TopDirectoryOnly).Where(item => ((item.Attributes & FileAttributes.Hidden) != FileAttributes.Hidden) && ((item.Attributes & FileAttributes.System) != FileAttributes.System))];
 
             foreach (DirectoryInfo child in childDirs)
             {

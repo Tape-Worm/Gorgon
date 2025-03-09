@@ -430,7 +430,7 @@ public sealed class GorgonChunkFileReader
             throw new EndOfStreamException(Resources.GOR_ERR_STREAM_EOS);
         }
 
-        _appSpecificIds = new HashSet<ulong>(appSpecificIds.Distinct().OrderByDescending(item => item));
+        _appSpecificIds = [.. appSpecificIds.Distinct().OrderByDescending(item => item)];
 
         ArgumentEmptyException.ThrowIfNullOrEmpty(_appSpecificIds);
     }

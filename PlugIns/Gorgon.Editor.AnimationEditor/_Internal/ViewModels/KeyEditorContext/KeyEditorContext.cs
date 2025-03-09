@@ -369,14 +369,14 @@ internal class KeyEditorContext
 
         undoArgs = new RemoveKeyUndoRedoArgs
         {
-            SelectedKeys = new List<TrackKeySelection>(selectedKeyFrames.Where(item => item is not null)
-                                                                        .Select(item => new TrackKeySelection(item.TrackIndex, item.Track, item.SelectedKeys.Take(_content.MaxKeyCount).ToArray())))
+            SelectedKeys = [.. selectedKeyFrames.Where(item => item is not null)
+                                                                        .Select(item => new TrackKeySelection(item.TrackIndex, item.Track, [.. item.SelectedKeys.Take(_content.MaxKeyCount)]))]
         };
 
         redoArgs = new RemoveKeyUndoRedoArgs
         {
-            SelectedKeys = new List<TrackKeySelection>(selectedKeyFrames.Where(item => item is not null)
-                                                                        .Select(item => new TrackKeySelection(item.TrackIndex, item.Track, item.SelectedKeys.Take(_content.MaxKeyCount).ToArray())))
+            SelectedKeys = [.. selectedKeyFrames.Where(item => item is not null)
+                                                                        .Select(item => new TrackKeySelection(item.TrackIndex, item.Track, [.. item.SelectedKeys.Take(_content.MaxKeyCount)]))]
         };
 
         if (Remove(redoArgs.SelectedKeys))
@@ -511,7 +511,7 @@ internal class KeyEditorContext
         SetKeyUndoRedoArgs CreateArgs() =>
             new()
             {
-                SelectedKeys = new List<TrackKeySelection.KeySelection>(_content.Selected[0].SelectedKeys.Select(item => new TrackKeySelection.KeySelection(item))),
+                SelectedKeys = [.. _content.Selected[0].SelectedKeys.Select(item => new TrackKeySelection.KeySelection(item))],
             };
 
         void SetupKeyframeBuffer(ITrack track, ref IKeyFrame[] buffer)
@@ -1038,7 +1038,7 @@ internal class KeyEditorContext
             for (int i = 0; i < _content.Tracks.Count; ++i)
             {
                 ITrack track = _content.Tracks[i];
-                selection[i] = new TrackKeySelection(i, track, track.KeyFrames.Select((item, index) => new TrackKeySelection.KeySelection(track, index, _content.Fps)).ToArray());
+                selection[i] = new TrackKeySelection(i, track, [.. track.KeyFrames.Select((item, index) => new TrackKeySelection.KeySelection(track, index, _content.Fps))]);
             }
 
             // Undo/redo functionality is in this method:

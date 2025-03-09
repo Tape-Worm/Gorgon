@@ -100,7 +100,7 @@ internal class ImportSettings
     protected override bool OnUnloadPlugIns()
     {
         IReadOnlyList<CodecSetting> selected = [.. SelectedCodecs];
-        IReadOnlyList<GorgonAnimationCodecPlugIn> plugIns = selected.Select(item => item.PlugIn).ToArray();
+        IReadOnlyList<GorgonAnimationCodecPlugIn> plugIns = [.. selected.Select(item => item.PlugIn)];
         MessageResponse response = MessageResponse.None;
 
         if (plugIns.Count == 0)

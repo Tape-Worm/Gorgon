@@ -269,7 +269,7 @@ internal class AnimationIOService(IContentFileManager fileManager, ITextureCache
         {
             _log.PrintWarning("No sprite texture dependencies found, interrogating animation data...", LoggingLevel.Intermediate);
             using Stream stream = _fileManager.OpenStream(animationFile.Path, FileMode.Open);
-            dependencies = new List<string>(_animationCodec.GetAssociatedTextureNames(stream));
+            dependencies = [.. _animationCodec.GetAssociatedTextureNames(stream)];
 
             if (dependencies.Count == 0)
             {
@@ -281,11 +281,11 @@ internal class AnimationIOService(IContentFileManager fileManager, ITextureCache
         // Check for duplicate texture paths (because of my original stupidity).
         if (dependencies.GroupBy(g => g, StringComparer.OrdinalIgnoreCase).Any(g => g.Skip(1).Any()))
         {
-            dependencies = dependencies.Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+            dependencies = [.. dependencies.Distinct(StringComparer.OrdinalIgnoreCase)];
         }
 
-        List<IContentFile> files = new(dependencies.Where(item => (!string.IsNullOrWhiteSpace(item)) && (_fileManager.FileExists(item)))
-                                                       .Select(_fileManager.GetFile));
+        List<IContentFile> files = [.. dependencies.Where(item => (!string.IsNullOrWhiteSpace(item)) && (_fileManager.FileExists(item)))
+                                                       .Select(_fileManager.GetFile)];
 
         if (files.Count == 0)
         {
@@ -314,7 +314,7 @@ internal class AnimationIOService(IContentFileManager fileManager, ITextureCache
 
         _log.Print($"{textures.Count} textures out of {files.Count} loaded.", LoggingLevel.Verbose);
 
-        return new TextureDependencies(textures.Select(item => item.texture).ToArray(), textures.Select(item => item.file).ToArray());
+        return new TextureDependencies([.. textures.Select(item => item.texture)], [.. textures.Select(item => item.file)]);
     }
 
     /// <summary>

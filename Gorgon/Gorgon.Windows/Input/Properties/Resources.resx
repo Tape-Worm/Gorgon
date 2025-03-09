@@ -1,0 +1,224 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="GORINP_DESC_SYSTEM_KEYBOARD" xml:space="preserve">
+    <value>System keyboard device</value>
+  </data>
+  <data name="GORINP_DESC_SYSTEM_MOUSE" xml:space="preserve">
+    <value>System mouse device</value>
+  </data>
+  <data name="GORINP_ERR_CANNOT_CREATE_INPUT_WINDOW" xml:space="preserve">
+    <value>The input message window could not be created.</value>
+  </data>
+  <data name="GORINP_ERR_CANNOT_REGISTER_INPUT_WINDOW" xml:space="preserve">
+    <value>Cannot register the input window class.</value>
+  </data>
+  <data name="GORINP_ERR_DRIVER_NOT_FOUND" xml:space="preserve">
+    <value>The gaming device driver '{0}' was not found.</value>
+  </data>
+  <data name="GORINP_ERR_INVALID_OS" xml:space="preserve">
+    <value>The Gorgon Windows Input interface requires Windows 10 or better.</value>
+  </data>
+  <data name="GORINP_ERR_INVALID_PATH" xml:space="preserve">
+    <value>The path '{0}' is not valid.</value>
+  </data>
+  <data name="GORINP_ERR_INVALID_WINDOW_HANDLE" xml:space="preserve">
+    <value>The window handle is not valid.</value>
+  </data>
+  <data name="GORINP_ERR_JOYSTICK_AXES_INVALID" xml:space="preserve">
+    <value>There is no gaming device axis at the specified index.</value>
+  </data>
+  <data name="GORINP_ERR_JOYSTICK_MOTOR_NOT_FOUND" xml:space="preserve">
+    <value>There is no motor at index [{0}].</value>
+  </data>
+  <data name="GORINP_ERR_WIN32_CANNOT_GET_WAIT_HANDLE" xml:space="preserve">
+    <value>Unable to acquire the wait handle.</value>
+  </data>
+  <data name="GORINP_ERR_WIN32_CURSOR_INFO" xml:space="preserve">
+    <value>There was an error retrieving the cursor information.
+
+Win32 Error Code: {0}</value>
+  </data>
+  <data name="GORINP_PRODUCT_XBOX_360" xml:space="preserve">
+    <value>XBox 360 Controller</value>
+  </data>
+  <data name="GORINP_PRODUCT_XBOX_360_WIRELESS" xml:space="preserve">
+    <value>XBox 360 Wireless Controller</value>
+  </data>
+  <data name="GORINP_PRODUCT_XBOX_ONE" xml:space="preserve">
+    <value>XBox One Controller</value>
+  </data>
+  <data name="GORINP_PRODUCT_XBOX_ONE_ELITE" xml:space="preserve">
+    <value>XBox One Elite Controller</value>
+  </data>
+  <data name="GORINP_PRODUCT_XBOX_ONE_ELITE_2" xml:space="preserve">
+    <value>XBox One Elite 2 Controller</value>
+  </data>
+  <data name="GORINP_PRODUCT_XBOX_ONE_S" xml:space="preserve">
+    <value>XBox One S Controller</value>
+  </data>
+  <data name="GORINP_PRODUCT_XBOX_SERIES_X" xml:space="preserve">
+    <value>XBox Series X Controller</value>
+  </data>
+  <data name="GORINP_RAW_DESC_SYS_KEYBOARD" xml:space="preserve">
+    <value>System keyboard</value>
+  </data>
+  <data name="GORINP_RAW_DESC_SYS_MOUSE" xml:space="preserve">
+    <value>System mouse</value>
+  </data>
+  <data name="GORINP_RAW_ERR_BUFFER_TOO_SMALL" xml:space="preserve">
+    <value>The buffer returned was too small.</value>
+  </data>
+  <data name="GORINP_RAW_ERR_CANNOT_ENUMERATE_WIN32_ERR" xml:space="preserve">
+    <value>Unable to enumerate the raw input devices.</value>
+  </data>
+  <data name="GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA" xml:space="preserve">
+    <value>Could not read the raw input device data.</value>
+  </data>
+  <data name="GORINP_RAW_ERR_CANNOT_REGISTER" xml:space="preserve">
+    <value>Could not register the raw input device.</value>
+  </data>
+  <data name="GORINP_RAW_ERR_HID_PREPARSED_INVALID" xml:space="preserve">
+    <value>The preparsed data from the input device is invalid.</value>
+  </data>
+  <data name="GORINP_RAW_ERR_INVALID_DEVICE_INFO_TYPE" xml:space="preserve">
+    <value>The type '{0}' is not valid for use with this type '{1}'.</value>
+  </data>
+  <data name="GORINP_RAW_ERR_UNKNOWN_DEVICE_TYPE" xml:space="preserve">
+    <value>The device type '{0}' is unknown.</value>
+  </data>
+  <data name="GORINP_TOSTR_JOYSTICKAXIS" xml:space="preserve">
+    <value>Joystick axis: {0}, Range: {1} - {2}.</value>
+  </data>
+  <data name="GORINP_WIN32_CANNOT_GET_HID_DATA" xml:space="preserve">
+    <value>There was an error retrieving the HID information for device handle {0}.</value>
+  </data>
+  <data name="GORINP_WIN32_CANNOT_GET_IO_DATA" xml:space="preserve">
+    <value>There was an error retrieving the IO data for the device.</value>
+  </data>
+  <data name="GORINP_WIN32_CANNOT_RETRIEVE_MANUFACTURER_DATA" xml:space="preserve">
+    <value>There was an error retrieving the manufacturer data for the device.</value>
+  </data>
+  <data name="GORINP_WIN32_CANNOT_RETRIEVE_PRODUCT_DATA" xml:space="preserve">
+    <value>There was an error retrieving the product name of the device.</value>
+  </data>
+  <data name="GORINP_WIN32_INVALID_DEVICE_HANDLE" xml:space="preserve">
+    <value>The device handle is not valid.</value>
+  </data>
+</root>

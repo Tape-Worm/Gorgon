@@ -1166,7 +1166,7 @@ internal class AnimationContent
 
         addTrackRedoUndoArgs = new AddTrackUndoRedoData
         {
-            Tracks = new List<GorgonTrackRegistration>(AddTrack.SelectedTracks)
+            Tracks = [.. AddTrack.SelectedTracks]
         };
 
         if (AddTracks(addTrackRedoUndoArgs))
@@ -1278,7 +1278,7 @@ internal class AnimationContent
             return Task.CompletedTask;
         }
 
-        List<ITrack> filteredTracks = new(tracks);
+        List<ITrack> filteredTracks = [.. tracks];
 
         removeTrackUndoArgs = new RemoveTrackUndoRedoData
         {
@@ -1829,7 +1829,7 @@ internal class AnimationContent
             for (int i = 0; i < Tracks.Count; ++i)
             {
                 ITrack track = Tracks[i];
-                result[track] = new List<IKeyFrame>(track.KeyFrames);
+                result[track] = [.. track.KeyFrames];
             }
 
             return result;

@@ -69,7 +69,7 @@ public record GorgonFontInfo(string FontFamilyName, float Size, GorgonFontHeight
     // Texture size.
     private GorgonPoint _textureSize = new(256, 256);
     // The list of characters supported by the font.
-    private char[] _characters = Enumerable.Range(32, 224).Select(Convert.ToChar).Where(c => !char.IsControl(c)).ToArray();
+    private char[] _characters = [.. Enumerable.Range(32, 224).Select(Convert.ToChar).Where(c => !char.IsControl(c))];
     // Packing spacing.
     private int _packSpace = 1;
 
@@ -185,7 +185,7 @@ public record GorgonFontInfo(string FontFamilyName, float Size, GorgonFontHeight
                 return;
             }
 
-            _characters = value.ToArray();
+            _characters = [.. value];
 
             if (_characters.Length == 0)
             {

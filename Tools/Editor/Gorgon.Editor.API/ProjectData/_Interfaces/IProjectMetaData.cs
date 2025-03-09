@@ -23,6 +23,7 @@
 // Created: March 27, 2019 10:51:12 PM
 // 
 
+using System.Text.Json.Serialization;
 using Gorgon.Editor.Metadata;
 
 namespace Gorgon.Editor.ProjectData;
@@ -35,6 +36,7 @@ public interface IProjectMetadata
     /// <summary>
     /// Property to return the version for the project file.
     /// </summary>
+    [JsonInclude]
     string Version
     {
         get;
@@ -43,6 +45,7 @@ public interface IProjectMetadata
     /// <summary>
     /// Property to return the list of project items.
     /// </summary>
+    [JsonInclude]
     Dictionary<string, ProjectItemMetadata> ProjectItems
     {
         get;

@@ -189,8 +189,8 @@ internal static class Program
                 // concatenate each preferred extension description into a single string.  
                 //
                 // Note that a provider may have multiple preferred extensions.
-                string[] extensionList = (from preferred in _providers[i].PreferredExtensions
-                                          select $"*.{preferred.Value.Extension}").ToArray();
+                string[] extensionList = [.. (from preferred in _providers[i].PreferredExtensions
+                                          select $"*.{preferred.Value.Extension}")];
 
                 if (extensionList.Length > 0)
                 {

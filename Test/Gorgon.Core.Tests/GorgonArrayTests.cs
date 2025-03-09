@@ -253,7 +253,7 @@ public class GorgonArrayTests
         array.MarkDirty(4);
         array.MarkDirty(7);
 
-        string?[] dirty = array.SelectDirty().ToArray();
+        string?[] dirty = [.. array.SelectDirty()];
 
         Assert.AreEqual(array[3], dirty[0]);
         Assert.AreEqual(array[4], dirty[1]);
@@ -269,7 +269,7 @@ public class GorgonArrayTests
         array.MarkClean(4);
         array.MarkClean(7);
 
-        string?[] dirty = array.SelectClean().ToArray();
+        string?[] dirty = [.. array.SelectClean()];
 
         Assert.AreEqual(array[3], dirty[0]);
         Assert.AreEqual(array[4], dirty[1]);

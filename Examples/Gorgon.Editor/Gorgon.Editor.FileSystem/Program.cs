@@ -78,9 +78,9 @@ static class Program
     private static IGorgonFileSystemProvider LoadGorPackProvider()
     {
         // The Gorgon packed file provider plug-in dll.
-        const string gorPackDll = "Gorgon.FileSystem.GorPack.dll";
+        const string gorPackDll = "Gorgon.IO.FileSystem.GorPack.dll";
         // The name of the Gorgon packed file plugin.
-        const string gorPackPlugInName = "Gorgon.IO.GorPack.GorPackProvider";
+        const string gorPackPlugInName = "Gorgon.IO.FileSystem.Providers.GorPackPlugIn";
 
         // Like the zip file example, we'll just create the plugin infrastructure, grab the provider object 
         // and get rid of the plugin stuff since we won't need it again.

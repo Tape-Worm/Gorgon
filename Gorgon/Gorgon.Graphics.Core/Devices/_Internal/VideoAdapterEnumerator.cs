@@ -125,9 +125,7 @@ internal class VideoAdapterEnumerator
     /// <returns>A list of display compatible full screen video modes.</returns>
     private static IEnumerable<ModeDescription1> GetVideoModes(D3D11.Device1 d3dDevice, Output1 giOutput)
     {
-        Format[] formats = ((Format[])Enum.GetValues(typeof(Format)))
-            .Where(item => (d3dDevice.CheckFormatSupport(item) & D3D11.FormatSupport.Display) == D3D11.FormatSupport.Display)
-            .ToArray();
+        Format[] formats = [.. ((Format[])Enum.GetValues(typeof(Format))).Where(item => (d3dDevice.CheckFormatSupport(item) & D3D11.FormatSupport.Display) == D3D11.FormatSupport.Display)];
 
         IEnumerable<ModeDescription1> result = [];
 

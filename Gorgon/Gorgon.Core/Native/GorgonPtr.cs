@@ -791,7 +791,7 @@ public unsafe readonly struct GorgonPtr<T>
             throw new NullReferenceException();
         }
 
-        Unsafe.InitBlock(_ptr, value, (uint)SizeInBytes);
+        NativeMemory.Fill(_ptr, (nuint)SizeInBytes, value);
     }
 
     /// <summary>

@@ -881,7 +881,7 @@ internal class ProjectEditor
 
             foreach (KeyValuePair<string, List<string>> dependency in contentMetadata.DependsOn)
             {
-                file.Metadata.DependsOn[dependency.Key] = new List<string>(dependency.Value);
+                file.Metadata.DependsOn[dependency.Key] = [.. dependency.Value];
             }
 
             // Indicate that this file is new.

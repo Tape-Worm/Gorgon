@@ -43,7 +43,7 @@ internal class ExplorerImportData(IReadOnlyList<string> explorerPaths)
     public List<string> PhysicalPaths
     {
         get;
-    } = new List<string>(explorerPaths ?? throw new ArgumentNullException(nameof(explorerPaths)));
+    } = [.. explorerPaths ?? throw new ArgumentNullException(nameof(explorerPaths))];
 
     /// <summary>
     /// Property to set or return the node that is the target for the drop operation.

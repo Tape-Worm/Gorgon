@@ -1111,4 +1111,22 @@ public static class GorgonMathExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static decimal Lerp(this decimal from, decimal to, decimal amount) => ((to - from) * amount) + from;
 
+    /// <summary>
+    /// Function to multiply a 32 bit integer by a numerator value, and the divide by its denominator.
+    /// </summary>
+    /// <param name="number">The number to multiply and divide.</param>
+    /// <param name="numerator">The numerator to multiply with the number.</param>
+    /// <param name="denominator">The denominator to divide with.</param>
+    /// <returns>The result of the operation.</returns>
+    /// <remarks>
+    /// <para>
+    /// This is an implementation of Microsoft's MulDiv function as implemented here: https://stackoverflow.com/a/25065519/1045720
+    /// </para>
+    /// <para>
+    /// The return value is the result of the multiplication and division, rounded to the nearest integer. If the result is a positive half integer (ends in .5), it is rounded up. If the result is a negative 
+    /// half integer, it is rounded down. 
+    /// </para>
+    /// </remarks>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int MulDiv(this int number, int numerator, int denominator) => unchecked((int)(((long)number * numerator + denominator >> 1) / denominator));
 }

@@ -79,9 +79,7 @@ internal class TrackKeyBuilder<T>(GorgonAnimationBuilder parent)
     /// <returns>The sorted list as a read only collection.</returns>
     internal IReadOnlyList<T> GetSortedKeys()
     {
-        T[] list = Keys
-                   .Select(item => (T)item.Clone())
-                   .ToArray();
+        T[] list = [.. Keys.Select(item => (T)item.Clone())];
 
         Array.Sort(list, _comparer);
 

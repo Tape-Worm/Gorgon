@@ -120,7 +120,7 @@ internal class CodecRegistry(GorgonMefPlugInCache pluginCache, IGorgonLog log)
                 Codecs.Remove(codec);
             }
 
-            (GorgonFileExtension extension, IGorgonImageCodec codecType)[] types = CodecFileTypes.Where(item => item.codec == codec).ToArray();
+            (GorgonFileExtension extension, IGorgonImageCodec codecType)[] types = [.. CodecFileTypes.Where(item => item.codec == codec)];
 
             foreach ((GorgonFileExtension extension, IGorgonImageCodec codecType) type in types)
             {

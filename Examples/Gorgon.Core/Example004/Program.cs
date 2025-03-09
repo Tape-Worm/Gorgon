@@ -105,10 +105,10 @@ internal static class Program
             IList<TextColorWriter> writers = [];
 
             // Create our plugin instances, we'll limit to 9 entries just for giggles.
-            TextColorPlugIn[] plugins = (from pluginName in pluginService.GetPlugInNames()
+            TextColorPlugIn[] plugins = [.. (from pluginName in pluginService.GetPlugInNames()
                                          let plugin = pluginService.GetPlugIn<TextColorPlugIn>(pluginName)
                                          where plugin is not null
-                                         select plugin).ToArray();
+                                         select plugin)];
 
             // Display a list of the available plugins.
             Console.WriteLine($"\n{plugins.Length} Plug-ins loaded:\n");

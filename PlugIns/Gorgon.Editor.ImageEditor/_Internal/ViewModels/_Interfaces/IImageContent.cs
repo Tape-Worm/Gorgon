@@ -29,7 +29,6 @@ using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
-using Drawing = System.Drawing;
 
 namespace Gorgon.Editor.ImageEditor.ViewModels;
 

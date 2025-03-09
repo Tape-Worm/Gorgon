@@ -1202,10 +1202,10 @@ internal class AnimationEditorPlugIn
             }
 
             // Filter any tracks that we can't really represent in the editor.
-            ObservableCollection<GorgonTrackRegistration> availableTracks = new(controller.RegisteredTracks.Where(item => !tracks.Any(trackItem => item.ID == trackItem.ID)
+            ObservableCollection<GorgonTrackRegistration> availableTracks = [.. controller.RegisteredTracks.Where(item => !tracks.Any(trackItem => item.ID == trackItem.ID)
                                                                                                                 // Skip superfluous tracks and depth related tracks, we have no 
                                                                                                                 // good way to represent them at this time.
-                                                                                                                && (!_excludedTracks.Contains(item))));
+                                                                                                                && (!_excludedTracks.Contains(item)))];
 
             // Set up sub panel view models.
             AddTrack newTrack = new();
@@ -1225,7 +1225,7 @@ internal class AnimationEditorPlugIn
 
             content.Initialize(new AnimationContentParameters(file,
                                                               animation,
-                                                              new ObservableCollection<ITrack>(tracks),
+                                                              [.. tracks],
                                                               excluded,
                                                               newTrack,
                                                               animProperties,

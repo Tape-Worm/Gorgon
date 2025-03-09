@@ -434,8 +434,7 @@ public static class GorgonShaderFactory
 
         if ((macros is not null) && (macros.Count > 0))
         {
-            actualMacros = macros.Select(item => item.D3DShaderMacro)
-                                 .ToArray();
+            actualMacros = [.. macros.Select(item => item.D3DShaderMacro)];
         }
 
         string processedSource = _processor.Process(sourceCode);

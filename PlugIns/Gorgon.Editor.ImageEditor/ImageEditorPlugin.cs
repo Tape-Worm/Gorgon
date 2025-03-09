@@ -41,7 +41,6 @@ using Gorgon.Graphics.Imaging.GdiPlus;
 using Gorgon.IO;
 using Gorgon.IO.FileSystem;
 using Gorgon.Math;
-using Drawing = System.Drawing;
 
 namespace Gorgon.Editor.ImageEditor;
 

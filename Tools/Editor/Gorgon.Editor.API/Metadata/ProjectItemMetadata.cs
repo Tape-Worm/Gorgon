@@ -151,7 +151,7 @@ public class ProjectItemMetadata
         // Copy the dependency data for each file.
         foreach (KeyValuePair<string, List<string>> dependency in metadata.DependsOn)
         {
-            DependsOn[dependency.Key] = new List<string>(dependency.Value);
+            DependsOn[dependency.Key] = [.. dependency.Value];
         }
     }
 

@@ -37,7 +37,9 @@ using Gorgon.Renderers.Geometry;
 using Gorgon.Renderers.Lights;
 using Gorgon.Timing;
 using Gorgon.UI;
-using GI = Gorgon.Input;
+using Gorgon.Windows.Input;
+using Gorgon.Windows.Input.Devices;
+using MouseButtons = Gorgon.Windows.Input.Devices.MouseButtons;
 
 namespace Gorgon.Examples;
 
@@ -55,12 +57,13 @@ internal static class Program
     private static float _objRotation;
     // Rotation value.
     private static float _cloudRotation;
-    // Input factory.
-    private static GI.GorgonRawInput _input;
-    // Keyboard interface.
-    private static GI.GorgonRawKeyboard _keyboard;
-    // Mouse interface.
-    private static GI.GorgonRawMouse _mouse;
+    // Input system.
+    private static IGorgonInput _input;
+    private static GorgonInputEventBuffer _inputEvents;
+    private static IGorgonKeyboard _keyboard;
+    private static IGorgonMouse _mouse;
+    // Keys used for toggle operations.
+    private static readonly HashSet<VirtualKeys> _toggleKeys = [];
     // Camera rotation amount.
     private static Vector3 _cameraRotation;
     // Lock to sphere.
@@ -100,7 +103,10 @@ internal static class Program
     /// <returns><b>true</b> to continue processing, <b>false</b> to stop.</returns>
     private static bool Idle()
     {
+        _input.GetInput(InputDeviceType.Keyboard | InputDeviceType.Mouse, _inputEvents);
+
         ProcessKeys();
+        ProcessMouse();
 
         _swapChain.RenderTargetView.Clear(Color.CornflowerBlue);
         _depthBuffer.Clear(1.0f, 0);
@@ -138,10 +144,10 @@ internal static class Program
         ref readonly GorgonGraphicsStatistics stats = ref _graphics.Statistics;
 
         _2DRenderer.Begin();
-        _textSprite.Text = $@"FPS: {GorgonTiming.FPS:0.0}, Delta: {(GorgonTiming.Delta * 1000):0.000} msec. " +
-                           $@"Tris: {stats.TriangleCount} " +
-                           $@"Draw Calls: {stats.DrawCallCount} " +
-                           $@"CamRot: {_cameraRotation} Mouse: {_mouse?.Position.X:0}x{_mouse?.Position.Y:0} Sensitivity: {_sensitivity:0.0##}";
+        _textSprite.Text = $"FPS: {GorgonTiming.FPS:0.0}, Delta: {(GorgonTiming.Delta * 1000):0.000} msec. \n" +
+                           $"Tris: {stats.TriangleCount} " +
+                           $"Draw Calls: {stats.DrawCallCount} \n" +
+                           $"CamRot: {_cameraRotation} \nMouse: {_mouse?.Position.X:0}x{_mouse?.Position.Y:0} Sensitivity: {_sensitivity:0.0##}";
         _2DRenderer.DrawTextSprite(_textSprite);
         _2DRenderer.End();
 
@@ -153,59 +159,132 @@ internal static class Program
     }
 
     /// <summary>
+    /// Function to process mouse data.
+    /// </summary>
+    private static void ProcessMouse()
+    {
+        if (!_mouse.ParseData(_inputEvents))
+        {
+            return;
+        }
+
+        if ((_mouse.Buttons & MouseButtons.Button2) != MouseButtons.Button2)
+        {
+            Cursor.Clip = Rectangle.Empty;
+            _mouse.CursorVisible = true;
+            return;
+        }
+        else if ((_mouse.Buttons & MouseButtons.Button2) == MouseButtons.Button2)
+        {
+            GorgonPoint delta = _mouse.DeltaPosition;
+            _cameraRotation.X += delta.Y.Sign() * (_sensitivity);
+            _cameraRotation.Y += delta.X.Sign() * (_sensitivity);
+        }
+    }
+
+    /// <summary>
     /// Function to process the keyboard commands.
     /// </summary>
     private static void ProcessKeys()
     {
         Vector3 cameraDir = Vector3.Zero;
 
-        if (_keyboard.KeyStates[Keys.Left] == GI.KeyState.Down)
+        _keyboard.ParseData(_inputEvents);
+
+        // Function to determine the state of key for toggle operations.
+        static bool ToggleKeyCheck(VirtualKeys key)
+        {
+            if (!_toggleKeys.Contains(key))
+            {
+                return false;
+            }
+
+            if (!_keyboard[key])
+            {
+                _toggleKeys.Remove(key);
+                return true;
+            }
+
+            return false;
+        }
+
+        // Handle keys we need to toggle.
+        if (ToggleKeyCheck(VirtualKeys.B))
+        {
+            _renderer.ShowAABB = !_renderer.ShowAABB;
+        }
+
+        if (ToggleKeyCheck(VirtualKeys.L))
+        {
+            _lock = !_lock;
+            if (_lock)
+            {
+                Vector3 spherePos = _sphere.Position;
+                _camera.LookAt(spherePos);
+            }
+        }
+
+        if (_keyboard[VirtualKeys.Escape])
+        {
+            GorgonApplication.Quit();
+            return;
+        }
+
+        if (_keyboard[VirtualKeys.Left])
         {
             _cameraRotation.Y -= 40.0f * GorgonTiming.Delta;
         }
-        else if (_keyboard.KeyStates[Keys.Right] == GI.KeyState.Down)
+        else if (_keyboard[VirtualKeys.Right])
         {
             _cameraRotation.Y += 40.0f * GorgonTiming.Delta;
         }
-        if (_keyboard.KeyStates[Keys.Up] == GI.KeyState.Down)
+        if (_keyboard[VirtualKeys.Up])
         {
             _cameraRotation.X -= 40.0f * GorgonTiming.Delta;
         }
-        else if (_keyboard.KeyStates[Keys.Down] == GI.KeyState.Down)
+        else if (_keyboard[VirtualKeys.Down])
         {
             _cameraRotation.X += 40.0f * GorgonTiming.Delta;
         }
-        if (_keyboard.KeyStates[Keys.PageUp] == GI.KeyState.Down)
+        if (_keyboard[VirtualKeys.PageUp])
         {
             _cameraRotation.Z -= 40.0f * GorgonTiming.Delta;
         }
-        else if (_keyboard.KeyStates[Keys.PageDown] == GI.KeyState.Down)
+        else if (_keyboard[VirtualKeys.PageDown])
         {
             _cameraRotation.Z += 40.0f * GorgonTiming.Delta;
         }
-        if (_keyboard.KeyStates[Keys.D] == GI.KeyState.Down)
+        if (_keyboard[VirtualKeys.D])
         {
             cameraDir.X = 2.0f * GorgonTiming.Delta;
         }
-        else if (_keyboard.KeyStates[Keys.A] == GI.KeyState.Down)
+        else if (_keyboard[VirtualKeys.A])
         {
             cameraDir.X = -2.0f * GorgonTiming.Delta;
         }
-        if (_keyboard.KeyStates[Keys.W] == GI.KeyState.Down)
+        if (_keyboard[VirtualKeys.W])
         {
             cameraDir.Z = 2.0f * GorgonTiming.Delta;
         }
-        else if (_keyboard.KeyStates[Keys.S] == GI.KeyState.Down)
+        else if (_keyboard[VirtualKeys.S])
         {
             cameraDir.Z = -2.0f * GorgonTiming.Delta;
         }
-        if (_keyboard.KeyStates[Keys.Q] == GI.KeyState.Down)
+        if (_keyboard[VirtualKeys.Q])
         {
             cameraDir.Y = 2.0f * GorgonTiming.Delta;
         }
-        else if (_keyboard.KeyStates[Keys.E] == GI.KeyState.Down)
+        else if (_keyboard[VirtualKeys.E])
         {
             cameraDir.Y = -2.0f * GorgonTiming.Delta;
+        }
+        else if (_keyboard[VirtualKeys.B])
+        {
+            _toggleKeys.Add(VirtualKeys.B);
+        }
+        else if (_keyboard[VirtualKeys.L])
+        {
+            _toggleKeys.Add(VirtualKeys.L);
         }
 
         _camera.RotateEuler(_cameraRotation.Y, _cameraRotation.X, _cameraRotation.Z);
@@ -301,94 +380,21 @@ internal static class Program
     }
 
     /// <summary>
-    /// Function called when a key is held down.
-    /// </summary>
-    /// <param name="sender">The sender.</param>
-    /// <param name="e">The <see cref="GI.GorgonKeyboardEventArgs" /> instance containing the event data.</param>
-    private static void Keyboard_KeyDown(object sender, GI.GorgonKeyboardEventArgs e)
-    {
-        if (e.Key == Keys.B)
-        {
-            _renderer.ShowAABB = !_renderer.ShowAABB;
-        }
-
-        if (e.Key != Keys.L)
-        {
-            return;
-        }
-
-        _lock = !_lock;
-        if (_lock)
-        {
-            Vector3 spherePos = _sphere.Position;
-            _camera.LookAt(spherePos);
-        }
-    }
-
-    /// <summary>
     /// Handles the Down event of the Mouse control.
     /// </summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="args">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
     private static void Mouse_Down(object sender, MouseEventArgs args)
     {
-        if ((args.Button is not MouseButtons.Right) || (_mouse is not null))
+        if ((args.Button is not System.Windows.Forms.MouseButtons.Right) || (_mouse is null))
         {
             return;
         }
 
-        GI.GorgonRawMouse.CursorVisible = false;
+        _mouse.CursorVisible = false;
 
         // Capture the cursor so that we can't move it outside the client area.
         Cursor.Clip = _window.RectangleToScreen(new Rectangle(_window.ClientSize.Width / 2, _window.ClientSize.Height / 2, 1, 1));
-
-        _mouse = new GI.GorgonRawMouse();
-        _input.RegisterDevice(_mouse);
-
-        _mouse.MouseButtonUp += Mouse_Up;
-        _mouse.MouseMove += RawMouse_MouseMove;
-    }
-
-    /// <summary>
-    /// Function called when the mouse is moved while in raw input mode.
-    /// </summary>
-    /// <param name="sender">The sender.</param>
-    /// <param name="e">The <see cref="GI.GorgonMouseEventArgs" /> instance containing the event data.</param>
-    private static void RawMouse_MouseMove(object sender, GI.GorgonMouseEventArgs e)
-    {
-        GorgonPoint delta = e.RelativePosition;
-        _cameraRotation.X += delta.Y.Sign() * (_sensitivity);
-        _cameraRotation.Y += delta.X.Sign() * (_sensitivity);
-    }
-
-    /// <summary>
-    /// Handles the Up event of the Mouse control.
-    /// </summary>
-    /// <param name="sender">The source of the event.</param>
-    /// <param name="args">The <see cref="GI.GorgonMouseEventArgs"/> instance containing the event data.</param>
-    private static void Mouse_Up(object sender, GI.GorgonMouseEventArgs args)
-    {
-        if (((args.Buttons & GI.MouseButtons.Right) != GI.MouseButtons.Right)
-            || (_mouse is null))
-        {
-            return;
-        }
-
-        try
-        {
-            _mouse.MouseButtonUp -= Mouse_Up;
-            _mouse.MouseMove -= RawMouse_MouseMove;
-
-            _input.UnregisterDevice(_mouse);
-            _mouse = null;
-
-            Cursor.Clip = Rectangle.Empty;
-            GI.GorgonRawMouse.CursorVisible = true;
-        }
-        catch (Exception ex)
-        {
-            GorgonDialogs.ErrorBox(_window, ex);
-        }
     }
 
     /// <summary>
@@ -706,12 +712,11 @@ internal static class Program
                 Fov = 75.0f
             };
 
-            _input = new GI.GorgonRawInput(_window);
-            _keyboard = new GI.GorgonRawKeyboard();
+            _inputEvents = new GorgonInputEventBuffer();
+            _input = GorgonInput.CreateInput(InputFlags.KeyboardAndMouse, GorgonApplication.Log);
+            _keyboard = new GorgonKeyboard();
+            _mouse = new GorgonMouse();
 
-            _input.RegisterDevice(_keyboard);
-
-            _keyboard.KeyDown += Keyboard_KeyDown;
             _window.MouseDown += Mouse_Down;
             _window.MouseWheel += Mouse_Wheel;
 
@@ -732,9 +737,9 @@ internal static class Program
             GorgonExample.LoadResources(_graphics);
 
             // Create a font so we can render some text.
-            _font = GorgonExample.Fonts.GetFont(new GorgonFontInfo("Segoe UI", 14.0f, GorgonFontHeightMode.Points)
+            _font = GorgonExample.Fonts.GetFont(new GorgonFontInfo("Segoe UI", 12.0f, GorgonFontHeightMode.Points)
             {
-                Name = "Segoe UI 14pt",
+                Name = "Segoe UI 12pt",
                 OutlineSize = 2,
                 OutlineColor1 = GorgonColors.Black,
                 OutlineColor2 = GorgonColors.Black
@@ -776,7 +781,7 @@ internal static class Program
             GorgonExample.UnloadResources();
 
             _2DRenderer?.Dispose();
-
+            _inputEvents?.Dispose();
             _input?.Dispose();
 
             if (_renderer is not null)

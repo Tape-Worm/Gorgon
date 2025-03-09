@@ -97,6 +97,15 @@ namespace Gorgon.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The alignment value {0} is not a power of two..
+        /// </summary>
+        internal static string GOR_ERR_ALIGNMENT_NOT_POW2 {
+            get {
+                return ResourceManager.GetString("GOR_ERR_ALIGNMENT_NOT_POW2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The memory for the allocator is full..
         /// </summary>
         internal static string GOR_ERR_ALLOCATOR_FULL {
@@ -129,6 +138,15 @@ namespace Gorgon.Properties {
         internal static string GOR_ERR_ARRAY_TOO_SMALL {
             get {
                 return ResourceManager.GetString("GOR_ERR_ARRAY_TOO_SMALL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot resize a pinned value..
+        /// </summary>
+        internal static string GOR_ERR_CANNOT_RESIZE_PINNED {
+            get {
+                return ResourceManager.GetString("GOR_ERR_CANNOT_RESIZE_PINNED", resourceCulture);
             }
         }
         

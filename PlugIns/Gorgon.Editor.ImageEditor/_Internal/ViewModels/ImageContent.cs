@@ -2405,11 +2405,10 @@ internal class ImageContent
         try
         {
             // Get our list of image files.
-            IContentFile[] imageFiles = args.ContentFilePaths.Select(ContentFileManager.GetFile)
+            IContentFile[] imageFiles = [.. args.ContentFilePaths.Select(ContentFileManager.GetFile)
                                                              .Where(imageFile => (imageFile?.Metadata.ContentMetadata is not null)
                                                                     && (imageFile.Metadata.Attributes.TryGetValue(CommonEditorConstants.ContentTypeAttr, out string dataType))
-                                                                    && (string.Equals(dataType, CommonEditorContentTypes.ImageType, StringComparison.OrdinalIgnoreCase)))
-                                                             .ToArray();
+                                                                    && (string.Equals(dataType, CommonEditorContentTypes.ImageType, StringComparison.OrdinalIgnoreCase)))];
 
             UpdateProgress(imageFiles[0].Path.Ellipses(45, true), 0, Resources.GORIMG_TEXT_LOADING_IMAGES, CancelAction);
 

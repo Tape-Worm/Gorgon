@@ -137,7 +137,7 @@ internal partial class AnimationAddTrack
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ListTracks_SelectedValueChanged(object sender, EventArgs e)
     {
-        IReadOnlyList<GorgonTrackRegistration> selectedTracks = ListTracks.SelectedItems.OfType<TrackListItem>().Select(item => item.TrackRegistration).ToArray();
+        IReadOnlyList<GorgonTrackRegistration> selectedTracks = [.. ListTracks.SelectedItems.OfType<TrackListItem>().Select(item => item.TrackRegistration)];
 
         if ((ViewModel?.SelectTracksCommand is null) || (!ViewModel.SelectTracksCommand.CanExecute(selectedTracks)))
         {

@@ -264,7 +264,7 @@ public class GorgonGlyphPathGradientBrush
         result.CenterPoint = new PointF(CenterPoint.X, CenterPoint.Y);
         result.FocusScales = new PointF(FocusScales.X, FocusScales.Y);
 
-        result.SurroundColors = SurroundColors.Select(GorgonColor.ToColor).ToArray();
+        result.SurroundColors = [.. SurroundColors.Select(GorgonColor.ToColor)];
 
         return result;
     }

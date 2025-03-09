@@ -217,11 +217,10 @@ internal class NewProject
     /// <returns><b>true</b> if the directory is valid, <b>false</b> if not.</returns>
     private bool ValidateDirectory(string directory)
     {
-        string[] forbiddenPaths = ((Environment.SpecialFolder[])Enum.GetValues(typeof(Environment.SpecialFolder)))
+        string[] forbiddenPaths = [.. ((Environment.SpecialFolder[])Enum.GetValues(typeof(Environment.SpecialFolder)))
                                     .Select(item => Environment.GetFolderPath(item).FormatDirectory(Path.DirectorySeparatorChar))
                                     .Where(item => !string.IsNullOrWhiteSpace(item))
-                                    .Distinct(StringComparer.OrdinalIgnoreCase)
-                                    .ToArray();
+                                    .Distinct(StringComparer.OrdinalIgnoreCase)];
         directory = Path.GetFullPath(directory);
 
         if (!System.IO.Directory.Exists(directory))

@@ -242,19 +242,17 @@ static class Program
 
         // Extract the sprites that have the animation frames.
         // We'll use the name of the sprite to determine the type of animation and ordering.
-        GorgonSprite[] upFrames = sprites.OrderBy(item => item.Key)
+        GorgonSprite[] upFrames = [.. sprites.OrderBy(item => item.Key)
                                           .Where(item => item.Key.StartsWith("Guy_Up_", StringComparison.OrdinalIgnoreCase))
-                                          .Select(item => item.Value)
-                                          .ToArray();
+                                          .Select(item => item.Value)];
 
         IEnumerable<GorgonSprite> turnFrames = sprites.OrderBy(item => item.Key)
                                                        .Where(item => item.Key.StartsWith("Guy_Turn_", StringComparison.OrdinalIgnoreCase))
                                                        .Select(item => item.Value);
 
-        List<GorgonSprite> walkLeftFrames = sprites.OrderBy(item => item.Key)
+        List<GorgonSprite> walkLeftFrames = [.. sprites.OrderBy(item => item.Key)
                                                             .Where(item => item.Key.StartsWith("Guy_Left_", StringComparison.OrdinalIgnoreCase))
-                                                            .Select(item => item.Value)
-                                                            .ToList();
+                                                            .Select(item => item.Value)];
         // The walk left animation is... well, it's messed up (my bad - but it's a good exercise so we'll leave it as is), so let's reorganize the sprites to display in the correct order.
         walkLeftFrames.RemoveAt(5); // This frame is broken.
         walkLeftFrames.Add(walkLeftFrames[3]); // We need to repeat these frames to get fluid motion.
@@ -383,7 +381,7 @@ static class Program
 
         // Get our sprites.  These make up the frames of animation for our Guy.
         // If and when there's an animation editor, we'll only need to create a single sprite and load the animation.
-        IGorgonVirtualFile[] spriteFiles = fileSystem.FindFiles("/Sprites/", "*", true).ToArray();
+        IGorgonVirtualFile[] spriteFiles = [.. fileSystem.FindFiles("/Sprites/", "*", true)];
 
         _textureCache = new GorgonTextureCache<GorgonTexture2D>(_graphics);
 
