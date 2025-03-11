@@ -134,7 +134,7 @@ public class GorgonTextureAtlasService
             GorgonRectangle pixelRegion = item.Texture.Texture.ToPixel(item.TextureRegion);
             if (Padding != 0)
             {
-                pixelRegion = GorgonRectangle.Expand(pixelRegion, Padding);
+                pixelRegion = GorgonRectangle.Expand(pixelRegion, Padding, Padding);
             }
             return pixelRegion;
         })
@@ -206,7 +206,7 @@ public class GorgonTextureAtlasService
 
             if (Padding != 0)
             {
-                region = GorgonRectangle.Expand(region, Padding);
+                region = GorgonRectangle.Expand(region, Padding, Padding);
             }
 
             return (item, region);
@@ -248,7 +248,7 @@ public class GorgonTextureAtlasService
 
                 if (Padding != 0)
                 {
-                    spriteRegion = GorgonRectangle.Expand(spriteRegion, -Padding);
+                    spriteRegion = GorgonRectangle.Expand(spriteRegion, -Padding, -Padding);
                 }
 
                 newRect.SpriteRegion[sprite.sprite] = spriteRegion;

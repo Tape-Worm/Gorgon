@@ -375,7 +375,7 @@ internal class ClipSpriteViewer
             return;
         }
 
-        GorgonRectangleF region = GorgonRectangleF.Expand(_sprite.Bounds, 32);
+        GorgonRectangleF region = GorgonRectangleF.Expand(_sprite.Bounds, 32, 32);
         ZoomLevels spriteZoomLevel = GetNearestZoomFromRectangle(region);
 
         Vector3 spritePosition = Camera.Unproject(new Vector3(region.X + region.Width * 0.5f, region.Y + region.Height * 0.5f, 0));

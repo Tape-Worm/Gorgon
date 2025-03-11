@@ -344,7 +344,7 @@ internal class ColorEditViewer(Gorgon2D renderer, GorgonSwapChain swapChain, ISp
             {
                 inner = new GorgonRectangleF(handleBounds.Left - 4, handleBounds.Top - 4, handleBounds.Width + 8, handleBounds.Height + 8);
                 Renderer.DrawEllipse(inner, GorgonColors.Black);
-                inner = GorgonRectangleF.Expand(inner, -1);
+                inner = GorgonRectangleF.Expand(inner, -1, -1);
                 Renderer.DrawEllipse(inner, GorgonColors.White);
             }
         }

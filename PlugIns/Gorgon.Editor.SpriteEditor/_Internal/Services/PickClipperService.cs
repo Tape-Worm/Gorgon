@@ -312,7 +312,7 @@ internal class PickClipperService
                                                    (spanRegion.Right + 1).Max((int)clipRegion.Right), spanRegion.Bottom.Max((int)clipRegion.Bottom));
         }
 
-        clipRegion = GorgonRectangleF.Expand(clipRegion, Padding);
+        clipRegion = GorgonRectangleF.Expand(clipRegion, Padding, Padding);
 
         if (clipRegion.Left < 0)
         {

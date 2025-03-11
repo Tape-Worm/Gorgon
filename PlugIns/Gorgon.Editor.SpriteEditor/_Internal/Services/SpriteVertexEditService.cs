@@ -661,9 +661,9 @@ internal class SpriteVertexEditService
 
             if (SelectedVertexIndex == i)
             {
-                handleBounds = GorgonRectangleF.Expand(handleBounds, 4);
+                handleBounds = GorgonRectangleF.Expand(handleBounds, 4, 4);
                 _renderer.DrawEllipse(handleBounds, GorgonColors.Black, thickness: 2);
-                handleBounds = GorgonRectangleF.Expand(handleBounds, -1);
+                handleBounds = GorgonRectangleF.Expand(handleBounds, -1, -1);
                 _renderer.DrawEllipse(handleBounds, GorgonColors.White);
             }
         }

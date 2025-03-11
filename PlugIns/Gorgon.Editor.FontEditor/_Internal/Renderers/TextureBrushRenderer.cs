@@ -306,7 +306,7 @@ internal class TextureBrushRenderer(Gorgon2D renderer, GorgonSwapChain mainRende
                 Binding = TextureBinding.ShaderResource,
                 Usage = ResourceUsage.Immutable
             });
-            RenderRegion = GorgonRectangleF.Expand(RenderRegion, 32);
+            RenderRegion = GorgonRectangleF.Expand(RenderRegion, 32, 32);
 
             CreateTarget();
         }

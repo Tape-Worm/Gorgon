@@ -189,6 +189,11 @@ internal class DrawingSurface
     /// <param name="color">Color to use.</param>
     public void DrawCursor(GorgonPoint position, GorgonColor color)
     {
+        if (color == GorgonColors.BlackTransparent)
+        {
+            return;
+        }
+
         position = new GorgonPoint(position.X - (CursorSize.X / 2), position.Y - (CursorSize.Y / 2));
 
         _cursorTint += GorgonTiming.Delta * _cursorFlash;

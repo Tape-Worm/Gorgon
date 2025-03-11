@@ -469,14 +469,43 @@ public struct GorgonRectangle
     /// </para>
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static GorgonRectangle Expand(GorgonRectangle rectangle, int amount)
+    public static GorgonRectangle Expand(GorgonRectangle rectangle, int amount) => Expand(rectangle, amount, amount);
+
+    /// <summary>
+    /// Function to expand or shrink a <see cref="GorgonRectangleF"/>.
+    /// </summary>
+    /// <param name="rectangle">The rectangle to expand or shrink.</param>
+    /// <param name="amount">The amount to expand or shrink by.</param>
+    /// <returns>The expanded/shrunken rectangle.</returns>
+    /// <remarks>
+    /// <para>
+    /// If the <paramref name="amount"/> X or Y value is negative, the rectangle will shrink in size by the amount specified.
+    /// </para>
+    /// </remarks>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static GorgonRectangle Expand(GorgonRectangle rectangle, GorgonPoint amount) => Expand(rectangle, amount.X, amount.Y);
+
+    /// <summary>
+    /// Function to expand or shrink a <see cref="GorgonRectangle"/>.
+    /// </summary>
+    /// <param name="rectangle">The rectangle to expand or shrink.</param>
+    /// <param name="amountX">The horizontal amount to expand or shrink by.</param>
+    /// <param name="amountY">The vertical amount to expand or shrink by.</param>
+    /// <returns>The expanded/shrunken rectangle.</returns>
+    /// <remarks>
+    /// <para>
+    /// If the <paramref name="amountX"/> or <paramref name="amountY"/> value is negative, the rectangle will shrink in size by the amount specified.
+    /// </para>
+    /// </remarks>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static GorgonRectangle Expand(GorgonRectangle rectangle, int amountX, int amountY)
     {
-        if (amount == 0)
+        if ((amountX == 0) && (amountY == 0))
         {
             return rectangle;
         }
 
-        return new(rectangle.X - amount, rectangle.Y - amount, rectangle.Width + amount * 2, rectangle.Height + amount * 2);
+        return new(rectangle.X - amountX, rectangle.Y - amountY, rectangle.Width + amountX * 2, rectangle.Height + amountY * 2);
     }
 
     /// <summary>

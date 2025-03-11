@@ -32,7 +32,7 @@ namespace Gorgon.Examples;
 /// <summary>
 /// Example entry point
 /// </summary>
-/// <remarks>To see a description of this example, look in formMain.cs</remarks>
+/// <remarks>To see a description of this example, look in <see cref="Form"/>.cs</remarks>
 internal static class Program
 {
     /// <summary>

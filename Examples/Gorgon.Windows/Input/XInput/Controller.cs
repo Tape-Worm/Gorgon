@@ -31,10 +31,15 @@ namespace Gorgon.Examples;
 /// </summary>
 /// <param name="Device">The input device for this controller.</param>
 /// <param name="Spray">The spray interface for drawing.</param>
+/// <remarks>
+/// <para>
+/// We use this record to link together the controller device, the spray can object and the position of the controller icon.
+/// </para>
+/// </remarks>
 internal record class Controller(IGorgonGamingDevice Device, SprayCan Spray)
 {
     /// <summary>
-    /// Property to set or return the position of the controller.
+    /// Property to set or return the position of the controller icon.
     /// </summary>
     public Vector2 Position
     {

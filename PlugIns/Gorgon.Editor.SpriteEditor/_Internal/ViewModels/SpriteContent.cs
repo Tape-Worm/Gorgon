@@ -1066,7 +1066,7 @@ internal class SpriteContent
             try
             {
                 GorgonRectangle textureRect = (GorgonRectangle)coordinates;
-                textureRect = GorgonRectangle.Expand(textureRect, SpritePickContext.Padding);
+                textureRect = GorgonRectangle.Expand(textureRect, SpritePickContext.Padding, SpritePickContext.Padding);
                 TextureCoordinates = Texture.ToTexel(textureRect);
                 Size = new Vector2((int)coordinates.Size.Y, (int)coordinates.Size.Y);
                 ArrayIndex = index;

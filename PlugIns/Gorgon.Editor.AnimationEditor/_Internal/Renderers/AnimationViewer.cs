@@ -616,7 +616,7 @@ internal abstract class AnimationViewer(string name, Gorgon2D renderer, GorgonSw
         }
 
         GorgonRectangleF spriteRegion = Renderer.MeasureSprite(sprite);
-        spriteRegion = GorgonRectangleF.Expand(spriteRegion, spriteRegion.Width * 0.5f);
+        spriteRegion = GorgonRectangleF.Expand(spriteRegion, spriteRegion.Width * 0.5f, spriteRegion.Width * 0.5f);
         GorgonRectangleF originalRegion = spriteRegion;
 
         if (spriteRegion.Width > spriteRegion.Height)

@@ -325,10 +325,21 @@ public struct GorgonRectangleF
     /// </summary>
     /// <param name="rectangle">The rectangle to test against.</param>
     /// <param name="point">The point to evaluate.</param>
+    /// <param name="minEpsilon">[Optional] The minimum value to subtract by when hitting the right or bottom edge.</param>
     /// <returns>The point, clamped to the rectangle region.</returns>    
-    public static Vector2 Clamp(GorgonRectangleF rectangle, Vector2 point)
+    /// <remarks>
+    /// <para>
+    /// The <paramref name="minEpsilon"/> value is used to determine how far from the right or bottom edge the point should be moved away when it exceeds or equals those edge values.
+    /// </para>
+    /// </remarks>
+    public static Vector2 Clamp(GorgonRectangleF rectangle, Vector2 point, float minEpsilon = 1)
     {
         Vector2 result = point;
+
+        if (minEpsilon <= 0)
+        {
+            minEpsilon = 0.000001f;
+        }
 
         if ((result.X < rectangle.Left) || (rectangle.Width <= 0))
         {
@@ -342,12 +353,12 @@ public struct GorgonRectangleF
 
         if ((result.X >= rectangle.Right) && (rectangle.Width > 0))
         {
-            result.X = rectangle.Right - 0.000001f;
+            result.X = rectangle.Right - minEpsilon;
         }
 
         if ((result.Y >= rectangle.Bottom) && (rectangle.Height > 0))
         {
-            result.Y = rectangle.Bottom - 0.000001f;
+            result.Y = rectangle.Bottom - minEpsilon;
         }
 
         return result;
@@ -358,8 +369,15 @@ public struct GorgonRectangleF
     /// </summary>
     /// <param name="point">The point to evaluate.</param>
     /// <returns>The point, clamped to the rectangle region.</returns>
+    /// <param name="minEpsilon">[Optional] The minimum value to subtract by when hitting the right or bottom edge.</param>
+    /// <returns>The point, clamped to the rectangle region.</returns>    
+    /// <remarks>
+    /// <para>
+    /// The <paramref name="minEpsilon"/> value is used to determine how far from the right or bottom edge the point should be moved away when it exceeds or equals those edge values.
+    /// </para>
+    /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public readonly Vector2 Clamp(Vector2 point) => Clamp(this, point);
+    public readonly Vector2 Clamp(Vector2 point, float minEpsilon = 1) => Clamp(this, point, minEpsilon);
 
     /// <summary>
     /// Function to determine the union of two <see cref="GorgonRectangleF"/> values.
@@ -476,14 +494,43 @@ public struct GorgonRectangleF
     /// </para>
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static GorgonRectangleF Expand(GorgonRectangleF rectangle, float amount)
+    public static GorgonRectangleF Expand(GorgonRectangleF rectangle, float amount) => Expand(rectangle, amount, amount);
+
+    /// <summary>
+    /// Function to expand or shrink a <see cref="GorgonRectangleF"/>.
+    /// </summary>
+    /// <param name="rectangle">The rectangle to expand or shrink.</param>
+    /// <param name="amount">The amount to expand or shrink by.</param>
+    /// <returns>The expanded/shrunken rectangle.</returns>
+    /// <remarks>
+    /// <para>
+    /// If the <paramref name="amount"/> X or Y value is negative, the rectangle will shrink in size by the amount specified.
+    /// </para>
+    /// </remarks>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static GorgonRectangleF Expand(GorgonRectangleF rectangle, Vector2 amount) => Expand(rectangle, amount.X, amount.Y);
+
+    /// <summary>
+    /// Function to expand or shrink a <see cref="GorgonRectangleF"/>.
+    /// </summary>
+    /// <param name="rectangle">The rectangle to expand or shrink.</param>
+    /// <param name="amountX">The horizontal amount to expand or shrink by.</param>
+    /// <param name="amountY">The vertical amount to expand or shrink by.</param>
+    /// <returns>The expanded/shrunken rectangle.</returns>
+    /// <remarks>
+    /// <para>
+    /// If the <paramref name="amountX"/> or <paramref name="amountY"/> value is negative, the rectangle will shrink in size by the amount specified.
+    /// </para>
+    /// </remarks>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static GorgonRectangleF Expand(GorgonRectangleF rectangle, float amountX, float amountY)
     {
-        if (amount == 0)
+        if ((amountX.EqualsEpsilon(0)) && (amountY.EqualsEpsilon(0)))
         {
             return rectangle;
         }
 
-        return new(rectangle.X - amount, rectangle.Y - amount, rectangle.Width + amount * 2, rectangle.Height + amount * 2);
+        return new(rectangle.X - amountX, rectangle.Y - amountY, rectangle.Width + amountX * 2, rectangle.Height + amountY * 2);
     }
 
     /// <summary>

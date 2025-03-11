@@ -243,6 +243,8 @@ public partial class Form
         // null upon entry.
         Debug.Assert(_spray is not null, "Application has not initialized fully.");
 
+        // This is where we'll pull in the data gathered by the input system for all the devices we're monitoring
+        // and store it in the event buffer.
         _input.GetInput(InputDeviceType.Mouse | InputDeviceType.Keyboard | InputDeviceType.GamingDevice, _events);
 
         HandleGamingDevices();
@@ -1233,9 +1235,6 @@ public partial class Form
     protected override void OnFormClosing(FormClosingEventArgs e)
     {
         base.OnFormClosing(e);
-
-        // Unlock the mouse cursor and make it visible again.
-        Capture = false;
 
         _mouse.CursorVisible = true;
 

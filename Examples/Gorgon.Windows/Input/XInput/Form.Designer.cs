@@ -234,6 +234,7 @@ partial class Form
         Name = "Form";
         StartPosition = FormStartPosition.CenterScreen;
         Text = "Gorgon Example - XInput";
+        Load += Form_Load;
         KeyUp += Form_KeyUp;
         panelDisplay.ResumeLayout(false);
         panelControllers.ResumeLayout(false);

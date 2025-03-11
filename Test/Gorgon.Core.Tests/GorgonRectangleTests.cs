@@ -145,7 +145,7 @@ public class GorgonRectangleTests
         int amount = 5;
 
         // Act
-        GorgonRectangle expandedRectangle = GorgonRectangle.Expand(rectangle, amount);
+        GorgonRectangle expandedRectangle = GorgonRectangle.Expand(rectangle, amount, amount);
 
         // Assert
         Assert.AreEqual(rectangle.X - amount, expandedRectangle.X);
@@ -162,12 +162,38 @@ public class GorgonRectangleTests
         int amount = -5;
 
         // Act
-        GorgonRectangle expandedRectangle = GorgonRectangle.Expand(rectangle, amount);
+        GorgonRectangle expandedRectangle = GorgonRectangle.Expand(rectangle, amount, amount);
 
         // Assert
         Assert.AreEqual(rectangle.X - amount, expandedRectangle.X);
         Assert.AreEqual(rectangle.Y - amount, expandedRectangle.Y);
         Assert.AreEqual(rectangle.Width + amount * 2, expandedRectangle.Width);
+        Assert.AreEqual(rectangle.Height + amount * 2, expandedRectangle.Height);
+    }
+
+    [TestMethod]
+    public void ExpandWithSingleAxis()
+    {
+        // Arrange
+        GorgonRectangle rectangle = new(10, 20, 30, 40);
+        int amount = 5;
+
+        // Act
+        GorgonRectangle expandedRectangle = GorgonRectangle.Expand(rectangle, amount, 0);
+
+        // Assert
+        Assert.AreEqual(rectangle.X - amount, expandedRectangle.X);
+        Assert.AreEqual(rectangle.Y, expandedRectangle.Y);
+        Assert.AreEqual(rectangle.Width + amount * 2, expandedRectangle.Width);
+        Assert.AreEqual(rectangle.Height, expandedRectangle.Height);
+
+        // Act
+        expandedRectangle = GorgonRectangle.Expand(rectangle, 0, amount);
+
+        // Assert
+        Assert.AreEqual(rectangle.X, expandedRectangle.X);
+        Assert.AreEqual(rectangle.Y - amount, expandedRectangle.Y);
+        Assert.AreEqual(rectangle.Width, expandedRectangle.Width);
         Assert.AreEqual(rectangle.Height + amount * 2, expandedRectangle.Height);
     }
 
@@ -179,7 +205,7 @@ public class GorgonRectangleTests
         int amount = 0;
 
         // Act
-        GorgonRectangle expandedRectangle = GorgonRectangle.Expand(rectangle, amount);
+        GorgonRectangle expandedRectangle = GorgonRectangle.Expand(rectangle, amount, amount);
 
         // Assert
         Assert.AreEqual(rectangle, expandedRectangle);
@@ -189,7 +215,7 @@ public class GorgonRectangleTests
         float amount2 = 0.0f;
 
         // Act
-        GorgonRectangleF expandedRectangleF = GorgonRectangleF.Expand(rectangleF, amount2);
+        GorgonRectangleF expandedRectangleF = GorgonRectangleF.Expand(rectangleF, amount2, amount2);
 
         // Assert
         Assert.AreEqual(rectangleF, expandedRectangleF);
@@ -840,31 +866,31 @@ public class GorgonRectangleTests
         Assert.AreEqual(10, actual.X);
         Assert.AreEqual(10, actual.Y);
 
-        Vector2 actualf = rectf.Clamp(pointf);
+        Vector2 actualf = rectf.Clamp(pointf, 0.00001f);
 
         Assert.AreEqual(15.29999f, actualf.X, 0.00001f);
         Assert.AreEqual(15.59999f, actualf.Y, 0.00001f);
 
         pointf = new(18, 2);
-        actualf = rectf.Clamp(pointf);
+        actualf = rectf.Clamp(pointf, 0.00001f);
 
         Assert.AreEqual(15.29999f, actualf.X, 0.00001f);
         Assert.AreEqual(5.2, actualf.Y, 0.00001f);
 
         pointf = new(2, 2);
-        actualf = rectf.Clamp(pointf);
+        actualf = rectf.Clamp(pointf, 0.00001f);
 
         Assert.AreEqual(5.2, actualf.X, 0.00001f);
         Assert.AreEqual(5.2, actualf.Y, 0.00001f);
 
         pointf = new(2, 18);
-        actualf = rectf.Clamp(pointf);
+        actualf = rectf.Clamp(pointf, 0.00001f);
 
         Assert.AreEqual(5.2, actualf.X, 0.00001f);
         Assert.AreEqual(15.59999f, actualf.Y, 0.00001f);
 
         pointf = new(10.25f, 10.15f);
-        actualf = rectf.Clamp(pointf);
+        actualf = rectf.Clamp(pointf, 0.00001f);
 
         Assert.AreEqual(10.25f, actualf.X, 0.00001f);
         Assert.AreEqual(10.15f, actualf.Y, 0.00001f);

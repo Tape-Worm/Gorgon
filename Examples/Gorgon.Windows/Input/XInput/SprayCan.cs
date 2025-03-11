@@ -196,28 +196,18 @@ internal class SprayCan
     /// <summary>
     /// Function to update the sprayer.
     /// </summary>
-    /// <param name="stickValue">The position of the right stick.</param>
-    /// <param name="stickXRange">The horizontal range for the right stick.</param>
-    /// <param name="stickYRange">The vertical range for the right stick.</param>
-    /// <param name="controllerIndex">The active controller index.</param>
-    public void Update(GorgonPoint stickValue, GorgonRange<int> stickXRange, GorgonRange<int> stickYRange, int controllerIndex)
+    /// <param name="sprayVector">The directional vector for the spray.</param>
+    public void Update(Vector2 sprayVector)
     {
         float appTime = GorgonTiming.SecondsSinceStart - _activeStartTime;
 
         // Get unit time.
         float unitTime = (appTime / _maxTime).Max(0).Min(1);
 
-        Vector2 range = new(stickXRange.Range * 0.5f, stickYRange.Range * 0.5f);
-
-        // Get the spray vector as a normalized value.
-        Vector2 sprayVector = new(stickValue.X / range.X, stickValue.Y / range.Y);
-
         float magnitude = (sprayVector.X * sprayVector.X + sprayVector.Y * sprayVector.Y).Sqrt();
 
         // Decrease spray time.
         _time = _maxTime - appTime;
-
-        SprayColor = GorgonColor.FromARGB((int)(((uint)0xFF << (controllerIndex * 8)) | ((uint)SprayAlpha << 24)));
 
         // If we're out of time, then leave.
         if (_time <= 0.0f)
@@ -261,8 +251,10 @@ internal class SprayCan
     /// <summary>
     /// Initializes a new instance of the <see cref="SprayCan" /> struct.
     /// </summary>
-    public SprayCan()
+    /// <param name="spraycColor">The color for this spray can.</param>
+    public SprayCan(GorgonColor spraycColor)
     {
+        SprayColor = spraycColor;
         Position = Vector2.Zero;
         Amount = 0.0f;
         Time = 0.0f;

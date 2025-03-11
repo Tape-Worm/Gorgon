@@ -1755,7 +1755,7 @@ public sealed class Gorgon2D
         //// Push borders to the outside.
         if (thickness > 1.0f)
         {
-            region = GorgonRectangleF.Expand(region, thickness / 2.0f);
+            region = GorgonRectangleF.Expand(region, thickness / 2.0f, thickness / 2.0f);
         }
 
         GorgonRectangleF? topAcross = null;
@@ -2167,7 +2167,7 @@ public sealed class Gorgon2D
                 }
                 else
                 {
-                    GorgonRectangleF scaleRegion = GorgonRectangleF.Expand(region, thickness * 0.5f);
+                    GorgonRectangleF scaleRegion = GorgonRectangleF.Expand(region, thickness * 0.5f, thickness * 0.5f);
 
                     uvOuter = new Vector4((((outerPoint.X - scaleRegion.Left) / scaleRegion.Width) * textureRegion.Value.Width) + textureRegion.Value.Left,
                                              (((outerPoint.Y - scaleRegion.Top) / scaleRegion.Height) * textureRegion.Value.Height) + textureRegion.Value.Top,
@@ -2392,7 +2392,7 @@ public sealed class Gorgon2D
                 }
                 else
                 {
-                    GorgonRectangleF scaleRegion = GorgonRectangleF.Expand(region, thickness * 0.5f);
+                    GorgonRectangleF scaleRegion = GorgonRectangleF.Expand(region, thickness * 0.5f, thickness * 0.5f);
 
                     uvOuter = new Vector4((((outerPoint.X - scaleRegion.Left) / scaleRegion.Width) * textureRegion.Value.Width) + textureRegion.Value.Left,
                                              (((outerPoint.Y - scaleRegion.Top) / scaleRegion.Height) * textureRegion.Value.Height) + textureRegion.Value.Top,
