@@ -83,7 +83,7 @@ partial class Form
         // 
         panelControllers.AutoSize = true;
         panelControllers.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-        panelControllers.BackColor = Color.FromArgb(30,30,30);
+        panelControllers.BackColor = Color.FromArgb(30, 30, 30);
         panelControllers.Controls.Add(panelController0);
         panelControllers.Controls.Add(panelController1);
         panelControllers.Controls.Add(panelController2);
@@ -119,7 +119,7 @@ partial class Form
         // pictureBox1
         // 
         pictureBox1.Dock = DockStyle.Left;
-        pictureBox1.Image = (Image)resources.GetObject("pictureBox1.Image");
+        pictureBox1.Image = Properties.Resources.device_gamepad_16x16;
         pictureBox1.Location = new Point(0, 0);
         pictureBox1.Name = "pictureBox1";
         pictureBox1.Size = new Size(23, 23);
@@ -151,7 +151,7 @@ partial class Form
         // pictureBox2
         // 
         pictureBox2.Dock = DockStyle.Left;
-        pictureBox2.Image = (Image)resources.GetObject("pictureBox2.Image");
+        pictureBox2.Image = Properties.Resources.device_gamepad_16x16;
         pictureBox2.Location = new Point(0, 0);
         pictureBox2.Name = "pictureBox2";
         pictureBox2.Size = new Size(23, 23);
@@ -183,7 +183,7 @@ partial class Form
         // pictureBox3
         // 
         pictureBox3.Dock = DockStyle.Left;
-        pictureBox3.Image = (Image)resources.GetObject("pictureBox3.Image");
+        pictureBox3.Image = Properties.Resources.device_gamepad_16x16;
         pictureBox3.Location = new Point(0, 0);
         pictureBox3.Name = "pictureBox3";
         pictureBox3.Size = new Size(23, 23);
@@ -215,7 +215,7 @@ partial class Form
         // pictureBox4
         // 
         pictureBox4.Dock = DockStyle.Left;
-        pictureBox4.Image = (Image)resources.GetObject("pictureBox4.Image");
+        pictureBox4.Image = Properties.Resources.device_gamepad_16x16;
         pictureBox4.Location = new Point(0, 0);
         pictureBox4.Name = "pictureBox4";
         pictureBox4.Size = new Size(23, 23);
