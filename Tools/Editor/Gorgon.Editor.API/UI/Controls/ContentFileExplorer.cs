@@ -29,7 +29,7 @@ using Gorgon.Core;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.UI.Views;
 using Gorgon.IO;
-using Gorgon.UI;
+using Gorgon.UI.OLDE;
 
 namespace Gorgon.Editor.UI.Controls;
 

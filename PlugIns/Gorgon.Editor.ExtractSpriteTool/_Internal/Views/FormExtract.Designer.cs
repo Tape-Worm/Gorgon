@@ -1,4 +1,4 @@
-﻿using Gorgon.UI;
+﻿using Gorgon.UI.OLDE;
 
 namespace Gorgon.Editor.ExtractSpriteTool;
 
@@ -66,7 +66,7 @@ partial class FormExtract
         this.LabelTextureHeader = new System.Windows.Forms.Label();
         this.panel4 = new System.Windows.Forms.Panel();
         this.label11 = new System.Windows.Forms.Label();
-        this.PanelRender = new Gorgon.UI.GorgonSelectablePanel();
+        this.PanelRender = new Gorgon.UI.OLDE.GorgonSelectablePanel();
         this.ButtonGenerate = new System.Windows.Forms.Button();
         this.TableSpritePreview = new System.Windows.Forms.TableLayoutPanel();
         this.LabelSprite = new System.Windows.Forms.Label();
@@ -863,7 +863,7 @@ partial class FormExtract
 
 
     private System.Windows.Forms.TableLayoutPanel TableExtractControls;
-    private Gorgon.UI.GorgonSelectablePanel PanelRender;
+    private Gorgon.UI.OLDE.GorgonSelectablePanel PanelRender;
     private System.Windows.Forms.ToolTip TipInstructions;
     private System.Windows.Forms.TableLayoutPanel TableExtractParams;
     private System.Windows.Forms.Label label11;

@@ -34,7 +34,7 @@ using Gorgon.IO.FileSystem.Providers;
 using Gorgon.PlugIns;
 using Gorgon.Renderers;
 using Gorgon.Timing;
-using Gorgon.UI;
+using Gorgon.UI.OLDE;
 
 namespace Gorgon.Examples;
 

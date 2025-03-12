@@ -31,7 +31,7 @@ using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
 using Gorgon.PlugIns;
-using Gorgon.UI;
+using Gorgon.UI.OLDE;
 
 namespace Graphics.Examples;
 

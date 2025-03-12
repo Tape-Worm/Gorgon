@@ -52,7 +52,7 @@ partial class ContentFileExplorer
         this.ColumnDirectory = new System.Windows.Forms.DataGridViewCheckBoxColumn();
         this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
         this.PanelSearch = new System.Windows.Forms.Panel();
-        this.TextSearch = new Gorgon.UI.GorgonSearchBox();
+        this.TextSearch = new Gorgon.UI.OLDE.GorgonSearchBox();
         this.TipFullPath = new System.Windows.Forms.ToolTip(this.components);
         this.LabelNoFiles = new System.Windows.Forms.Label();
         ((System.ComponentModel.ISupportInitialize)(this.GridFiles)).BeginInit();
@@ -206,7 +206,7 @@ partial class ContentFileExplorer
         this.TextSearch.ToolTipIcon = System.Windows.Forms.ToolTipIcon.Info;
         this.TextSearch.ToolTipText = resources.GetString("TextSearch.ToolTipText");
         this.TextSearch.ToolTipTitle = "Search";
-        this.TextSearch.Search += new System.EventHandler<Gorgon.UI.GorgonSearchEventArgs>(this.TextSearch_Search);
+        this.TextSearch.Search += new System.EventHandler<Gorgon.UI.OLDE.GorgonSearchEventArgs>(this.TextSearch_Search);
         this.TextSearch.KeyUp += new System.Windows.Forms.KeyEventHandler(this.TextSearch_KeyUp);
         // 
         // TipFullPath
@@ -257,7 +257,7 @@ partial class ContentFileExplorer
     private System.Windows.Forms.DataGridViewCheckBoxColumn ColumnDirectory;
     private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
     private System.Windows.Forms.Panel PanelSearch;
-    private Gorgon.UI.GorgonSearchBox TextSearch;
+    private Gorgon.UI.OLDE.GorgonSearchBox TextSearch;
     private System.Windows.Forms.ToolTip TipFullPath;
     private System.Windows.Forms.Label LabelNoFiles;
 }

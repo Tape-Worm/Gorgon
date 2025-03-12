@@ -234,7 +234,7 @@ internal partial class FormNewAnimation
     /// <summary>Handles the Search event of the FilePrimarySprite control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="Gorgon.UI.GorgonSearchEventArgs"/> instance containing the event data.</param>
-    private void FilePrimarySprite_Search(object sender, Gorgon.UI.GorgonSearchEventArgs e)
+    private void FilePrimarySprite_Search(object sender, Gorgon.UI.OLDE.GorgonSearchEventArgs e)
     {
         if (string.IsNullOrWhiteSpace(e.SearchText))
         {
@@ -340,7 +340,7 @@ internal partial class FormNewAnimation
     /// <summary>Handles the Search event of the FileTextures control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="Gorgon.UI.GorgonSearchEventArgs"/> instance containing the event data.</param>
-    private void FileTextures_Search(object sender, Gorgon.UI.GorgonSearchEventArgs e)
+    private void FileTextures_Search(object sender, Gorgon.UI.OLDE.GorgonSearchEventArgs e)
     {
         if (string.IsNullOrWhiteSpace(e.SearchText))
         {

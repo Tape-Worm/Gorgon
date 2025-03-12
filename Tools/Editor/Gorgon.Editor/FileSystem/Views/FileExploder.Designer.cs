@@ -82,7 +82,7 @@ partial class FileExploder
         MenuItemDeleteFiles = new System.Windows.Forms.ToolStripMenuItem();
         MenuItemRenameFile = new System.Windows.Forms.ToolStripMenuItem();
         panel1 = new System.Windows.Forms.Panel();
-        TextSearch = new Gorgon.UI.GorgonSearchBox();
+        TextSearch = new Gorgon.UI.OLDE.GorgonSearchBox();
         MenuCopyMove = new System.Windows.Forms.ContextMenuStrip(components);
         MenuItemCopyTo = new System.Windows.Forms.ToolStripMenuItem();
         MenuItemMoveTo = new System.Windows.Forms.ToolStripMenuItem();
@@ -601,7 +601,7 @@ partial class FileExploder
     private System.Windows.Forms.ToolStripSeparator MenuSepDirNew;
     private System.Windows.Forms.ToolStripMenuItem MenuItemPasteFiles;
     private System.Windows.Forms.Panel panel1;
-    private Gorgon.UI.GorgonSearchBox TextSearch;
+    private Gorgon.UI.OLDE.GorgonSearchBox TextSearch;
     private System.Windows.Forms.DataGridViewTextBoxColumn ColumnID;
     private System.Windows.Forms.DataGridViewTextBoxColumn ColumnFile;
     private System.Windows.Forms.DataGridViewImageColumn ColumnIcon;

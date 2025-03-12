@@ -8,7 +8,7 @@ using Gorgon.Renderers;
 using Gorgon.Renderers.Cameras;
 using Gorgon.Renderers.Geometry;
 using Gorgon.Timing;
-using Gorgon.UI;
+using Gorgon.UI.OLDE;
 
 namespace Gorgon.Examples;
 

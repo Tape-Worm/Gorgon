@@ -34,7 +34,7 @@ partial class FormFileSystemFolderBrowser
     private void InitializeComponent()
     {
         System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormFileSystemFolderBrowser));
-        this.FolderBrowser = new Gorgon.UI.GorgonFolderBrowser();
+        this.FolderBrowser = new Gorgon.UI.OLDE.GorgonFolderBrowser();
         this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
         this.TableDialogControls = new System.Windows.Forms.TableLayoutPanel();
         this.ButtonCancel = new System.Windows.Forms.Button();
@@ -62,11 +62,11 @@ partial class FormFileSystemFolderBrowser
         this.FolderBrowser.Size = new System.Drawing.Size(682, 425);
         this.FolderBrowser.TabIndex = 0;
         this.FolderBrowser.Text = "Select a folder";
-        this.FolderBrowser.FolderDeleting += new System.EventHandler<Gorgon.UI.FolderDeleteArgs>(this.FolderBrowser_FolderDeleting);
-        this.FolderBrowser.FolderAdding += new System.EventHandler<Gorgon.UI.FolderAddArgs>(this.FolderBrowser_FolderAdding);
-        this.FolderBrowser.FolderRenaming += new System.EventHandler<Gorgon.UI.FolderRenameArgs>(this.FolderBrowser_FolderRenaming);
-        this.FolderBrowser.FolderSelected += new System.EventHandler<Gorgon.UI.FolderSelectedArgs>(this.FolderBrowser_FolderSelected);
-        this.FolderBrowser.FolderEntered += new System.EventHandler<Gorgon.UI.FolderSelectedArgs>(this.FolderBrowser_FolderEntered);
+        this.FolderBrowser.FolderDeleting += new System.EventHandler<Gorgon.UI.OLDE.FolderDeleteArgs>(this.FolderBrowser_FolderDeleting);
+        this.FolderBrowser.FolderAdding += new System.EventHandler<Gorgon.UI.OLDE.FolderAddArgs>(this.FolderBrowser_FolderAdding);
+        this.FolderBrowser.FolderRenaming += new System.EventHandler<Gorgon.UI.OLDE.FolderRenameArgs>(this.FolderBrowser_FolderRenaming);
+        this.FolderBrowser.FolderSelected += new System.EventHandler<Gorgon.UI.OLDE.FolderSelectedArgs>(this.FolderBrowser_FolderSelected);
+        this.FolderBrowser.FolderEntered += new System.EventHandler<Gorgon.UI.OLDE.FolderSelectedArgs>(this.FolderBrowser_FolderEntered);
         // 
         // tableLayoutPanel1
         // 
@@ -162,7 +162,7 @@ partial class FormFileSystemFolderBrowser
 
 
 
-    private Gorgon.UI.GorgonFolderBrowser FolderBrowser;
+    private Gorgon.UI.OLDE.GorgonFolderBrowser FolderBrowser;
     private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
     private System.Windows.Forms.TableLayoutPanel TableDialogControls;
     private System.Windows.Forms.Button ButtonCancel;

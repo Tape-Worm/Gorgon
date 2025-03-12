@@ -169,7 +169,7 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
         using MemoryStream destinationStream = new([], false); // Read-only stream
 
         // Act & Assert
-        Assert.ThrowsException<ArgumentException>(() => sourceStream.CopyToStream(destinationStream, testData.Length));
+        Assert.ThrowsExactly<ArgumentException>(() => _ = sourceStream.CopyToStream(destinationStream, testData.Length));
     }
 
     [TestMethod]
@@ -235,7 +235,7 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
         using MemoryStream destinationStream = new([], false); // Read-only stream
 
         // Act & Assert
-        await Assert.ThrowsExceptionAsync<ArgumentException>(() => sourceStream.CopyToStreamAsync(destinationStream, testData.Length));
+        await Assert.ThrowsExactlyAsync<ArgumentException>(() => sourceStream.CopyToStreamAsync(destinationStream, testData.Length));
     }
 
     [TestMethod]
@@ -247,7 +247,7 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
         using MemoryStream destinationStream = new();
 
         // Act & Assert
-        await Assert.ThrowsExceptionAsync<ArgumentException>(() => sourceStream.CopyToStreamAsync(destinationStream, testData.Length, 0));
+        await Assert.ThrowsExactlyAsync<ArgumentException>(() => sourceStream.CopyToStreamAsync(destinationStream, testData.Length, 0));
     }
 
     /* This test is disabled because we can't reliably test cancellation in a unit test.
@@ -346,7 +346,7 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
             GorgonPtr<byte> destBuffer = new(pBuffer, buffer.Length);
 
             // Act & Assert
-            Assert.ThrowsException<EndOfStreamException>(() => reader.ReadToPointer(destBuffer));
+            Assert.ThrowsExactly<EndOfStreamException>(() => reader.ReadToPointer(destBuffer));
         }
     }
 
@@ -360,7 +360,7 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
         GorgonPtr<byte> nullPointer = GorgonPtr<byte>.NullPtr;
 
         // Act & Assert
-        Assert.ThrowsException<NullReferenceException>(() => reader.ReadToPointer(nullPointer));
+        Assert.ThrowsExactly<NullReferenceException>(() => reader.ReadToPointer(nullPointer));
     }
 
     [TestMethod]
@@ -393,7 +393,7 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
         using BinaryReader reader = new(stream);
 
         // Act & Assert
-        Assert.ThrowsException<EndOfStreamException>(() => reader.ReadValue<GorgonPoint>(out _));
+        Assert.ThrowsExactly<EndOfStreamException>(() => reader.ReadValue<GorgonPoint>(out _));
     }
 
     [TestMethod]
@@ -471,7 +471,7 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
         GorgonPoint[] result = [];
 
         // Act & Assert
-        Assert.ThrowsException<ArgumentEmptyException>(() => reader.ReadRange<GorgonPoint>(result));
+        Assert.ThrowsExactly<ArgumentEmptyException>(() => reader.ReadRange<GorgonPoint>(result));
     }
 
     [TestMethod]
@@ -501,7 +501,7 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
         using MemoryStream stream = new(new byte[100], false); // Write-only stream.
 
         // Act & Assert
-        Assert.ThrowsException<IOException>(() => stream.WriteString(data));
+        Assert.ThrowsExactly<IOException>(() => _ = stream.WriteString(data));
     }
 
     [TestMethod]
@@ -599,7 +599,7 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
         using MemoryStream stream = new();
 
         // Act & Assert
-        Assert.ThrowsException<IOException>(() => stream.ReadString());
+        Assert.ThrowsExactly<IOException>(() => _ = stream.ReadString());
     }
 
     [TestMethod]
@@ -880,7 +880,7 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
     public void ChunkIDEmptyInputThrowsArgumentEmptyException()
     {
         string chunkName = string.Empty;
-        Assert.ThrowsException<ArgumentEmptyException>(() => chunkName.ChunkID());
+        Assert.ThrowsExactly<ArgumentEmptyException>(() => _ = chunkName.ChunkID());
     }
 
     [TestMethod]

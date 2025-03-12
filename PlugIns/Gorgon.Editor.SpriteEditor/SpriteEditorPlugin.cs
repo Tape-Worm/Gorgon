@@ -43,7 +43,7 @@ using Gorgon.IO.FileSystem;
 using Gorgon.Json;
 using Gorgon.Math;
 using Gorgon.Renderers;
-using Gorgon.UI;
+using Gorgon.UI.OLDE;
 using Microsoft.IO;
 
 namespace Gorgon.Editor.SpriteEditor;

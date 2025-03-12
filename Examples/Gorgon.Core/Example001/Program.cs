@@ -25,6 +25,7 @@
 
 using System.Windows.Forms;
 using Gorgon.Timing;
+using Gorgon.Timing.OLDE;
 
 namespace Gorgon.Examples;
 

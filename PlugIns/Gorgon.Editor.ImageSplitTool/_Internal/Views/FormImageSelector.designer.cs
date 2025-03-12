@@ -79,7 +79,7 @@ partial class FormImageSelector
         this.ContentFileExplorer.Name = "ContentFileExplorer";
         this.ContentFileExplorer.Size = new System.Drawing.Size(512, 486);
         this.ContentFileExplorer.TabIndex = 0;
-        this.ContentFileExplorer.Search += new System.EventHandler<Gorgon.UI.GorgonSearchEventArgs>(this.ContentFileExplorer_Search);
+        this.ContentFileExplorer.Search += new System.EventHandler<Gorgon.UI.OLDE.GorgonSearchEventArgs>(this.ContentFileExplorer_Search);
         this.ContentFileExplorer.FileEntriesFocused += new System.EventHandler<Gorgon.Editor.UI.Controls.ContentFileEntriesFocusedArgs>(this.ContentFileExplorer_FileEntriesFocused);
         // 
         // ButtonCancel

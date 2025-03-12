@@ -26,7 +26,7 @@
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Timing;
-using Gorgon.UI;
+using Gorgon.UI.OLDE;
 
 namespace Gorgon.Examples;
 

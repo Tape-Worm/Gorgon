@@ -26,13 +26,13 @@ public class GorgonPoolTests
     }
 
     [TestMethod]
-    public void ShouldThrowWhenMaxObjectCountLessThanOne() => Assert.ThrowsException<ArgumentOutOfRangeException>(() => new GorgonPool<string>(0, () => Guid.NewGuid().ToString()));
+    public void ShouldThrowWhenMaxObjectCountLessThanOne() => Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => _ = new GorgonPool<string>(0, () => Guid.NewGuid().ToString()));
 
     [TestMethod]
     public void ShouldThrowWhenItemAllocatorReturnsNull()
     {
         GorgonPool<string> pool = new(1, () => null!);
-        Assert.ThrowsException<GorgonException>(() => pool.Allocate());
+        Assert.ThrowsExactly<GorgonException>(() => _ = pool.Allocate());
     }
 
     [TestMethod]
@@ -81,7 +81,7 @@ public class GorgonPoolTests
             pool.Allocate();
         }
 
-        Assert.ThrowsException<GorgonException>(() => pool.Allocate());
+        Assert.ThrowsExactly<GorgonException>(() => _ = pool.Allocate());
     }
 
     [TestMethod]

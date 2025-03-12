@@ -24,7 +24,7 @@
 // 
 
 using Gorgon.Graphics;
-using Gorgon.UI;
+using Gorgon.UI.OLDE;
 
 namespace Gorgon.Editor.Services;
 

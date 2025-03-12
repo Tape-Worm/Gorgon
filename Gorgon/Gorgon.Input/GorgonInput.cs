@@ -32,7 +32,7 @@ using Gorgon.Diagnostics;
 using Gorgon.Graphics;
 using Gorgon.Math;
 using Gorgon.Memory;
-using Gorgon.Timing;
+using Gorgon.Timing.OLDE;
 using Gorgon.Input.Devices;
 using Gorgon.Input.Native;
 using Gorgon.Input.Properties;

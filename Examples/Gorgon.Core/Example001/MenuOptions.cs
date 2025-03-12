@@ -25,7 +25,8 @@
 
 using Gorgon.Core;
 using Gorgon.Diagnostics;
-using Gorgon.UI;
+using Gorgon.Diagnostics.OLDE;
+using Gorgon.UI.OLDE;
 
 namespace Gorgon.Examples;
 

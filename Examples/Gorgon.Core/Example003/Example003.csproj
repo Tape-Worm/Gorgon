@@ -46,7 +46,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Gorgon\Gorgon.Windows\Platform\Gorgon.Windows.Platform.csproj" />
+    <ProjectReference Include="..\..\..\Gorgon\OLDE\Platform\Gorgon.Windows.Platform.OLDE.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">

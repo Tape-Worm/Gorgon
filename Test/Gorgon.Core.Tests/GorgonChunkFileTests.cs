@@ -19,14 +19,14 @@ public class GorgonChunkFileTests
         chunk.Close();
         writer.Close();
 
-        Assert.ThrowsException<EndOfStreamException>(() => new GorgonChunkFileReader(stream, [0x12345678]));
+        Assert.ThrowsExactly<EndOfStreamException>(() => _ = new GorgonChunkFileReader(stream, [0x12345678]));
     }
 
     [TestMethod]
     public void ShouldThrowExceptionWhenAppSpecificIdsIsEmpty()
     {
         using MemoryStream stream = new(new byte[100]);
-        Assert.ThrowsException<ArgumentEmptyException>(() => new GorgonChunkFileReader(stream, []));
+        Assert.ThrowsExactly<ArgumentEmptyException>(() => _ = new GorgonChunkFileReader(stream, []));
     }
 
     [TestMethod]
@@ -46,7 +46,7 @@ public class GorgonChunkFileTests
         stream.Position = 0;
 
         using GorgonChunkFileReader reader = new(stream, [0x12345679]);
-        Assert.ThrowsException<GorgonException>(reader.Open);
+        Assert.ThrowsExactly<GorgonException>(reader.Open);
     }
 
     [TestMethod]
@@ -64,7 +64,7 @@ public class GorgonChunkFileTests
 
         stream.Position = 0;
 
-        Assert.ThrowsException<GorgonException>(() =>
+        Assert.ThrowsExactly<GorgonException>(() =>
         {
             using GorgonChunkFileReader reader = new(stream, [0x12345679]);
             reader.Open();
@@ -78,8 +78,8 @@ public class GorgonChunkFileTests
         using GorgonChunkFileWriter writer = new(stream, 0xBAADBEEFBAADF00D);
         using GorgonChunkFileWriter reader = new(stream, 0xBAADBEEFBAADF00D);
 
-        Assert.ThrowsException<IOException>(() => writer.OpenChunk("TESTCHNK"));
-        Assert.ThrowsException<IOException>(() => reader.OpenChunk("TESTCHNK"));
+        Assert.ThrowsExactly<IOException>(() => _ = writer.OpenChunk("TESTCHNK"));
+        Assert.ThrowsExactly<IOException>(() => _ = reader.OpenChunk("TESTCHNK"));
     }
 
     [TestMethod]
@@ -155,7 +155,7 @@ public class GorgonChunkFileTests
         writer.Open();
 
         using IGorgonChunkWriter chunk1 = writer.OpenChunk("TESTCHNK");
-        Assert.ThrowsException<IOException>(() => writer.OpenChunk(9999));
+        Assert.ThrowsExactly<IOException>(() => _ = writer.OpenChunk(9999));
 
         chunk1.WriteInt32(42);
         chunk1.Close();
@@ -168,6 +168,6 @@ public class GorgonChunkFileTests
         reader.Open();
 
         using IGorgonChunkReader chunkReader1 = reader.OpenChunk("TESTCHNK");
-        Assert.ThrowsException<IOException>(() => reader.OpenChunk(9999));
+        Assert.ThrowsExactly<IOException>(() => _ = reader.OpenChunk(9999));
     }
 }

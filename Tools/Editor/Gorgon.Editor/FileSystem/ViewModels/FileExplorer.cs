@@ -39,6 +39,7 @@ using Gorgon.Graphics.Core;
 using Gorgon.IO;
 using Gorgon.IO.FileSystem;
 using Gorgon.Timing;
+using Gorgon.Timing.OLDE;
 
 namespace Gorgon.Editor.ViewModels;
 

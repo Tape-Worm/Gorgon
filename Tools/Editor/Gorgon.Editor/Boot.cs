@@ -38,7 +38,7 @@ using Gorgon.Graphics;
 using Gorgon.IO;
 using Gorgon.Math;
 using Gorgon.PlugIns;
-using Gorgon.UI;
+using Gorgon.UI.OLDE;
 
 namespace Gorgon.Editor;
 

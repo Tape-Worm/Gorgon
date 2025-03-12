@@ -27,7 +27,7 @@ using System.Data;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.Properties;
 using Gorgon.IO;
-using Gorgon.UI;
+using Gorgon.UI.OLDE;
 
 namespace Gorgon.Editor.UI.Controls;
 

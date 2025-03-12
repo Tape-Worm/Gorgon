@@ -37,7 +37,7 @@ partial class ContentPreviewPanel
     /// </summary>
     private void InitializeComponent()
     {
-        this.PanelDisplay = new Gorgon.UI.GorgonSelectablePanel();
+        this.PanelDisplay = new Gorgon.UI.OLDE.GorgonSelectablePanel();
         this.SuspendLayout();
         // 
         // PanelDisplay
@@ -62,5 +62,5 @@ partial class ContentPreviewPanel
 
 
 
-    private Gorgon.UI.GorgonSelectablePanel PanelDisplay;
+    private Gorgon.UI.OLDE.GorgonSelectablePanel PanelDisplay;
 }

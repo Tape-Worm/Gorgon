@@ -32,7 +32,8 @@ using Gorgon.Renderers;
 using Gorgon.Renderers.Cameras;
 using Gorgon.Renderers.Lights;
 using Gorgon.Timing;
-using Gorgon.UI;
+using Gorgon.Timing.OLDE;
+using Gorgon.UI.OLDE;
 
 namespace Gorgon.Examples;
 

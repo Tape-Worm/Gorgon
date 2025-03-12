@@ -36,7 +36,7 @@ partial class SpriteAnchor
     private void InitializeComponent()
     {
         this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-        this.Alignment = new Gorgon.UI.GorgonAlignmentPicker();
+        this.Alignment = new Gorgon.UI.OLDE.GorgonAlignmentPicker();
         this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
         this.NumericHorizontal = new System.Windows.Forms.NumericUpDown();
         this.NumericVertical = new System.Windows.Forms.NumericUpDown();
@@ -219,7 +219,7 @@ partial class SpriteAnchor
 
 
     private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-    private Gorgon.UI.GorgonAlignmentPicker Alignment;
+    private Gorgon.UI.OLDE.GorgonAlignmentPicker Alignment;
     private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
     private System.Windows.Forms.NumericUpDown NumericHorizontal;
     private System.Windows.Forms.NumericUpDown NumericVertical;

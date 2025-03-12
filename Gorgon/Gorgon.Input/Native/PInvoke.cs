@@ -71,18 +71,13 @@ internal static partial class PInvoke
     /// <returns>The character as a string, or an empty string if no character is applicable.</returns>
     public unsafe static string ToUnicodeChar(VirtualKeys key, ReadOnlySpan<byte> states, Span<char> buffer)
     {
-        fixed (char* charPtr = buffer)
+        int result = ToUnicode((uint)key, 0, states, buffer, 0);
+
+        return result switch
         {
-            PWSTR chars = new(charPtr);
-
-            int result = ToUnicode((uint)key, 0, states, chars, 1, 0);
-
-            return result switch
-            {
-                1 => new string(buffer),
-                _ => string.Empty,
-            };
-        }
+            1 => new string(buffer),
+            _ => string.Empty,
+        };
     }
 
     /// <summary>

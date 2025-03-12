@@ -41,7 +41,7 @@ partial class FormNewAnimation
         System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormNewAnimation));
         this.TableName = new System.Windows.Forms.TableLayoutPanel();
         this.PanelName = new System.Windows.Forms.Panel();
-        this.TextName = new Gorgon.UI.GorgonCueTextBox();
+        this.TextName = new Gorgon.UI.OLDE.GorgonCueTextBox();
         this.PanelUnderline = new System.Windows.Forms.Panel();
         this.LabelLength = new System.Windows.Forms.Label();
         this.NumericLength = new System.Windows.Forms.NumericUpDown();
@@ -315,7 +315,7 @@ partial class FormNewAnimation
         this.FilePrimarySprite.Name = "FilePrimarySprite";
         this.FilePrimarySprite.Size = new System.Drawing.Size(386, 313);
         this.FilePrimarySprite.TabIndex = 0;
-        this.FilePrimarySprite.Search += new System.EventHandler<Gorgon.UI.GorgonSearchEventArgs>(this.FilePrimarySprite_Search);
+        this.FilePrimarySprite.Search += new System.EventHandler<Gorgon.UI.OLDE.GorgonSearchEventArgs>(this.FilePrimarySprite_Search);
         this.FilePrimarySprite.FileEntrySelected += new System.EventHandler<Gorgon.Editor.UI.Controls.ContentFileEntrySelectedEventArgs>(this.FilePrimarySprite_FileEntrySelected);
         this.FilePrimarySprite.FileEntryUnselected += new System.EventHandler<Gorgon.Editor.UI.Controls.ContentFileEntrySelectedEventArgs>(this.FilePrimarySprite_FileEntryUnselected);
         // 
@@ -371,7 +371,7 @@ partial class FormNewAnimation
         this.FileBgTextures.Name = "FileBgTextures";
         this.FileBgTextures.Size = new System.Drawing.Size(386, 313);
         this.FileBgTextures.TabIndex = 10;
-        this.FileBgTextures.Search += new System.EventHandler<Gorgon.UI.GorgonSearchEventArgs>(this.FileTextures_Search);
+        this.FileBgTextures.Search += new System.EventHandler<Gorgon.UI.OLDE.GorgonSearchEventArgs>(this.FileTextures_Search);
         this.FileBgTextures.FileEntrySelected += new System.EventHandler<Gorgon.Editor.UI.Controls.ContentFileEntrySelectedEventArgs>(this.FileTextures_FileEntrySelected);
         this.FileBgTextures.FileEntryUnselected += new System.EventHandler<Gorgon.Editor.UI.Controls.ContentFileEntrySelectedEventArgs>(this.FileTextures_FileEntryUnselected);
         // 
@@ -431,7 +431,7 @@ partial class FormNewAnimation
 
 
 
-    private Gorgon.UI.GorgonCueTextBox TextName;
+    private Gorgon.UI.OLDE.GorgonCueTextBox TextName;
     private System.Windows.Forms.TableLayoutPanel TableName;
     private System.Windows.Forms.Panel PanelName;
     private System.Windows.Forms.Panel PanelUnderline;

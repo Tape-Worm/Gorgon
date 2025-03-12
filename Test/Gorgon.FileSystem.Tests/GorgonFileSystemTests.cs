@@ -18,9 +18,9 @@ public partial class GorgonFileSystemTests
         GorgonFileSystem fileSystem = new();
         MockProvider mockProvider = new();
 
-        Assert.ThrowsException<ArgumentEmptyException>(() => fileSystem.Mount(string.Empty, provider: mockProvider));
-        Assert.ThrowsException<FileNotFoundException>(() => fileSystem.Mount(@$".\ThisFileWillNotExist{Guid.NewGuid()}.zip", provider: mockProvider));
-        Assert.ThrowsException<DirectoryNotFoundException>(() => fileSystem.Mount(@$".\ThisDirWillNotExist{Guid.NewGuid()}\", provider: mockProvider));
+        Assert.ThrowsExactly<ArgumentEmptyException>(() => _ = fileSystem.Mount(string.Empty, provider: mockProvider));
+        Assert.ThrowsExactly<FileNotFoundException>(() => _ = fileSystem.Mount(@$".\ThisFileWillNotExist{Guid.NewGuid()}.zip", provider: mockProvider));
+        Assert.ThrowsExactly<DirectoryNotFoundException>(() => _ = fileSystem.Mount(@$".\ThisDirWillNotExist{Guid.NewGuid()}\", provider: mockProvider));
     }
 
     [TestMethod]
@@ -80,7 +80,7 @@ public partial class GorgonFileSystemTests
     {
         GorgonFileSystem fileSystem = new();
 
-        Assert.ThrowsException<ArgumentEmptyException>(() => fileSystem.GetDirectory(string.Empty));
+        Assert.ThrowsExactly<ArgumentEmptyException>(() => _ = fileSystem.GetDirectory(string.Empty));
     }
 
     [TestMethod]
@@ -108,7 +108,7 @@ public partial class GorgonFileSystemTests
 
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
 
-        Assert.ThrowsException<ArgumentEmptyException>(() => fileSystem.GetFile(string.Empty));
+        Assert.ThrowsExactly<ArgumentEmptyException>(() => _ = fileSystem.GetFile(string.Empty));
     }
 
     [TestMethod]
@@ -144,8 +144,8 @@ public partial class GorgonFileSystemTests
             }
         }
 
-        Assert.ThrowsException<ArgumentEmptyException>(() => Body(string.Empty));
-        Assert.ThrowsException<DirectoryNotFoundException>(() => Body("/DoesNotExist/"));
+        Assert.ThrowsExactly<ArgumentEmptyException>(() => Body(string.Empty));
+        Assert.ThrowsExactly<DirectoryNotFoundException>(() => Body("/DoesNotExist/"));
     }
 
     [TestMethod]
@@ -198,8 +198,8 @@ public partial class GorgonFileSystemTests
             }
         }
 
-        Assert.ThrowsException<ArgumentEmptyException>(() => Body(string.Empty));
-        Assert.ThrowsException<DirectoryNotFoundException>(() => Body("/DoesNotExist/"));
+        Assert.ThrowsExactly<ArgumentEmptyException>(() => Body(string.Empty));
+        Assert.ThrowsExactly<DirectoryNotFoundException>(() => Body("/DoesNotExist/"));
     }
 
     [TestMethod]
@@ -244,11 +244,11 @@ public partial class GorgonFileSystemTests
 
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
 
-        Assert.ThrowsException<ArgumentEmptyException>(() => fileSystem.OpenStream(string.Empty, false));
-        Assert.ThrowsException<DirectoryNotFoundException>(() => fileSystem.OpenStream("/FakeDir/File.txt", false));
-        Assert.ThrowsException<FileNotFoundException>(() => fileSystem.OpenStream("/Gorgon.FileSystem/Providers/", false));
-        Assert.ThrowsException<FileNotFoundException>(() => fileSystem.OpenStream("/Gorgon.FileSystem/Providers/DoesNotExist.txt", false));
-        Assert.ThrowsException<GorgonException>(() => fileSystem.OpenStream("/Gorgon.Animation/Gorgon2.ico", true));
+        Assert.ThrowsExactly<ArgumentEmptyException>(() => _ = fileSystem.OpenStream(string.Empty, false));
+        Assert.ThrowsExactly<DirectoryNotFoundException>(() => _ = fileSystem.OpenStream("/FakeDir/File.txt", false));
+        Assert.ThrowsExactly<FileNotFoundException>(() => _ = fileSystem.OpenStream("/Gorgon.FileSystem/Providers/", false));
+        Assert.ThrowsExactly<FileNotFoundException>(() => _ = fileSystem.OpenStream("/Gorgon.FileSystem/Providers/DoesNotExist.txt", false));
+        Assert.ThrowsExactly<GorgonException>(() => _ = fileSystem.OpenStream("/Gorgon.Animation/Gorgon2.ico", true));
     }
 
     [TestMethod]
@@ -351,7 +351,7 @@ public partial class GorgonFileSystemTests
         GorgonFileSystem fileSystem = new(writeProvider: mockProvider);
 
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
-        Assert.ThrowsException<GorgonException>(() => fileSystem.MountWriteArea(@"Not a valid path"));
+        Assert.ThrowsExactly<GorgonException>(() => _ = fileSystem.MountWriteArea(@"Not a valid path"));
     }
 
     [TestMethod]
@@ -383,7 +383,7 @@ public partial class GorgonFileSystemTests
 
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
 
-        Assert.ThrowsException<GorgonException>(() => fileSystem.CreateDirectory("/TestDirectory/Child"));
+        Assert.ThrowsExactly<GorgonException>(() => _ = fileSystem.CreateDirectory("/TestDirectory/Child"));
     }
 
     [TestMethod]
@@ -395,7 +395,7 @@ public partial class GorgonFileSystemTests
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
         fileSystem.MountWriteArea(@"::\\mock");
 
-        Assert.ThrowsException<ArgumentEmptyException>(() => fileSystem.CreateDirectory(string.Empty));
+        Assert.ThrowsExactly<ArgumentEmptyException>(() => _ = fileSystem.CreateDirectory(string.Empty));
     }
 
     [TestMethod]
@@ -407,7 +407,7 @@ public partial class GorgonFileSystemTests
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
         fileSystem.MountWriteArea(@"::\\mock");
 
-        Assert.ThrowsException<IOException>(() => fileSystem.CreateDirectory("/Gorgon.Animation/bin/dummy.txt"));
+        Assert.ThrowsExactly<IOException>(() => _ = fileSystem.CreateDirectory("/Gorgon.Animation/bin/dummy.txt"));
     }
 
     [TestMethod]
@@ -437,7 +437,7 @@ public partial class GorgonFileSystemTests
 
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
 
-        Assert.ThrowsException<GorgonException>(() => fileSystem.DeleteDirectory("/Gorgon.Animation/bin/Debug/net48"));
+        Assert.ThrowsExactly<GorgonException>(() => fileSystem.DeleteDirectory("/Gorgon.Animation/bin/Debug/net48"));
     }
 
     [TestMethod]
@@ -448,7 +448,7 @@ public partial class GorgonFileSystemTests
 
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
 
-        Assert.ThrowsException<ArgumentEmptyException>(() => fileSystem.DeleteDirectory(string.Empty));
+        Assert.ThrowsExactly<ArgumentEmptyException>(() => fileSystem.DeleteDirectory(string.Empty));
     }
 
     [TestMethod]
@@ -460,7 +460,7 @@ public partial class GorgonFileSystemTests
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
         fileSystem.MountWriteArea(@"::\\mock");
 
-        Assert.ThrowsException<DirectoryNotFoundException>(() => fileSystem.DeleteDirectory("/Directory/That/Does/Not/Exist/"));
+        Assert.ThrowsExactly<DirectoryNotFoundException>(() => fileSystem.DeleteDirectory("/Directory/That/Does/Not/Exist/"));
     }
 
     [TestMethod]
@@ -472,7 +472,7 @@ public partial class GorgonFileSystemTests
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
         fileSystem.MountWriteArea(@"::\\AnotherPlace");
 
-        Assert.ThrowsException<GorgonException>(() => fileSystem.DeleteDirectory("/Gorgon.Animation/bin"));
+        Assert.ThrowsExactly<GorgonException>(() => fileSystem.DeleteDirectory("/Gorgon.Animation/bin"));
     }
 
     [TestMethod]
@@ -500,7 +500,7 @@ public partial class GorgonFileSystemTests
 
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
 
-        Assert.ThrowsException<GorgonException>(() => fileSystem.RenameDirectory("/Gorgon.Animation/bin/Debug/net48", "DotNot"));
+        Assert.ThrowsExactly<GorgonException>(() => fileSystem.RenameDirectory("/Gorgon.Animation/bin/Debug/net48", "DotNot"));
     }
 
     [TestMethod]
@@ -512,7 +512,7 @@ public partial class GorgonFileSystemTests
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
         fileSystem.MountWriteArea(@"::\\mock");
 
-        Assert.ThrowsException<ArgumentEmptyException>(() => fileSystem.RenameDirectory(string.Empty, "DotNot"));
+        Assert.ThrowsExactly<ArgumentEmptyException>(() => fileSystem.RenameDirectory(string.Empty, "DotNot"));
     }
 
     [TestMethod]
@@ -524,7 +524,7 @@ public partial class GorgonFileSystemTests
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
         fileSystem.MountWriteArea(@"::\\mock");
 
-        Assert.ThrowsException<ArgumentEmptyException>(() => fileSystem.RenameDirectory("/Gorgon.Animation/bin/Debug/net48", string.Empty));
+        Assert.ThrowsExactly<ArgumentEmptyException>(() => fileSystem.RenameDirectory("/Gorgon.Animation/bin/Debug/net48", string.Empty));
     }
 
     [TestMethod]
@@ -536,7 +536,7 @@ public partial class GorgonFileSystemTests
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
         fileSystem.MountWriteArea(@"::\\Another");
 
-        Assert.ThrowsException<DirectoryNotFoundException>(() => fileSystem.RenameDirectory("/Gorgon.Animation/bin/Debug/nothere", "DotNot"));
+        Assert.ThrowsExactly<DirectoryNotFoundException>(() => fileSystem.RenameDirectory("/Gorgon.Animation/bin/Debug/nothere", "DotNot"));
     }
 
     [TestMethod]
@@ -548,7 +548,7 @@ public partial class GorgonFileSystemTests
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
         fileSystem.MountWriteArea(@"::\\Another");
 
-        Assert.ThrowsException<GorgonException>(() => fileSystem.RenameDirectory("/Gorgon.Animation/bin/Debug/net48", "DotNot"));
+        Assert.ThrowsExactly<GorgonException>(() => fileSystem.RenameDirectory("/Gorgon.Animation/bin/Debug/net48", "DotNot"));
     }
 
     [TestMethod]
@@ -574,7 +574,7 @@ public partial class GorgonFileSystemTests
 
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
 
-        Assert.ThrowsException<GorgonException>(() => fileSystem.CopyDirectory("/Gorgon.Animation/bin/", "/Gorgon.Core/Collections"));
+        Assert.ThrowsExactly<GorgonException>(() => fileSystem.CopyDirectory("/Gorgon.Animation/bin/", "/Gorgon.Core/Collections"));
     }
 
     [TestMethod]
@@ -585,7 +585,7 @@ public partial class GorgonFileSystemTests
 
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
 
-        Assert.ThrowsException<ArgumentEmptyException>(() => fileSystem.CopyDirectory(string.Empty, "/Gorgon.Core/Collections"));
+        Assert.ThrowsExactly<ArgumentEmptyException>(() => fileSystem.CopyDirectory(string.Empty, "/Gorgon.Core/Collections"));
     }
 
     [TestMethod]
@@ -596,7 +596,7 @@ public partial class GorgonFileSystemTests
 
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
 
-        Assert.ThrowsException<ArgumentEmptyException>(() => fileSystem.CopyDirectory("/Gorgon.Animation/bin/", string.Empty));
+        Assert.ThrowsExactly<ArgumentEmptyException>(() => fileSystem.CopyDirectory("/Gorgon.Animation/bin/", string.Empty));
     }
 
     [TestMethod]
@@ -608,7 +608,7 @@ public partial class GorgonFileSystemTests
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
         fileSystem.MountWriteArea(@"::\\mock");
 
-        Assert.ThrowsException<DirectoryNotFoundException>(() => fileSystem.CopyDirectory("/NotFoundDirectory", "/Gorgon.Core/Collections"));
+        Assert.ThrowsExactly<DirectoryNotFoundException>(() => fileSystem.CopyDirectory("/NotFoundDirectory", "/Gorgon.Core/Collections"));
     }
 
     [TestMethod]
@@ -620,7 +620,7 @@ public partial class GorgonFileSystemTests
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
         fileSystem.MountWriteArea(@"::\\mock");
 
-        Assert.ThrowsException<DirectoryNotFoundException>(() => fileSystem.CopyDirectory("/Gorgon.Animation/bin/", "/Gorgon.Core/Collections/NotFoundDestination"));
+        Assert.ThrowsExactly<DirectoryNotFoundException>(() => fileSystem.CopyDirectory("/Gorgon.Animation/bin/", "/Gorgon.Core/Collections/NotFoundDestination"));
     }
 
     [TestMethod]
@@ -632,7 +632,7 @@ public partial class GorgonFileSystemTests
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
         fileSystem.MountWriteArea(@"::\\mock");
 
-        Assert.ThrowsException<IOException>(() => fileSystem.CopyDirectory("/Gorgon.Animation/bin/", "/Gorgon.Animation/bin/Debug"));
+        Assert.ThrowsExactly<IOException>(() => fileSystem.CopyDirectory("/Gorgon.Animation/bin/", "/Gorgon.Animation/bin/Debug"));
     }
 
     [TestMethod]
@@ -644,7 +644,7 @@ public partial class GorgonFileSystemTests
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
         fileSystem.MountWriteArea(@"::\\mock");
 
-        Assert.ThrowsException<IOException>(() => fileSystem.CopyDirectory("/Gorgon.Animation/bin/", "/Gorgon.Animation/"));
+        Assert.ThrowsExactly<IOException>(() => fileSystem.CopyDirectory("/Gorgon.Animation/bin/", "/Gorgon.Animation/"));
     }
 
     [TestMethod]
@@ -702,7 +702,7 @@ public partial class GorgonFileSystemTests
 
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
 
-        Assert.ThrowsException<GorgonException>(() => fileSystem.MoveDirectory("/Gorgon.Animation/bin/", "/Gorgon.Core/Collections"));
+        Assert.ThrowsExactly<GorgonException>(() => fileSystem.MoveDirectory("/Gorgon.Animation/bin/", "/Gorgon.Core/Collections"));
     }
 
     [TestMethod]
@@ -713,7 +713,7 @@ public partial class GorgonFileSystemTests
 
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
 
-        Assert.ThrowsException<ArgumentEmptyException>(() => fileSystem.MoveDirectory(string.Empty, "/Gorgon.Core/Collections"));
+        Assert.ThrowsExactly<ArgumentEmptyException>(() => fileSystem.MoveDirectory(string.Empty, "/Gorgon.Core/Collections"));
     }
 
     [TestMethod]
@@ -724,7 +724,7 @@ public partial class GorgonFileSystemTests
 
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
 
-        Assert.ThrowsException<ArgumentEmptyException>(() => fileSystem.MoveDirectory("/Gorgon.Animation/bin/", string.Empty));
+        Assert.ThrowsExactly<ArgumentEmptyException>(() => fileSystem.MoveDirectory("/Gorgon.Animation/bin/", string.Empty));
     }
 
     [TestMethod]
@@ -736,7 +736,7 @@ public partial class GorgonFileSystemTests
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
         fileSystem.MountWriteArea(@"::\\mock");
 
-        Assert.ThrowsException<DirectoryNotFoundException>(() => fileSystem.MoveDirectory("/NotFoundDirectory", "/Gorgon.Core/Collections"));
+        Assert.ThrowsExactly<DirectoryNotFoundException>(() => fileSystem.MoveDirectory("/NotFoundDirectory", "/Gorgon.Core/Collections"));
     }
 
     [TestMethod]
@@ -748,7 +748,7 @@ public partial class GorgonFileSystemTests
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
         fileSystem.MountWriteArea(@"::\\mock");
 
-        Assert.ThrowsException<DirectoryNotFoundException>(() => fileSystem.MoveDirectory("/Gorgon.Animation/bin/", "/Gorgon.Core/Collections/NotFoundDestination"));
+        Assert.ThrowsExactly<DirectoryNotFoundException>(() => fileSystem.MoveDirectory("/Gorgon.Animation/bin/", "/Gorgon.Core/Collections/NotFoundDestination"));
     }
 
     [TestMethod]
@@ -760,7 +760,7 @@ public partial class GorgonFileSystemTests
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
         fileSystem.MountWriteArea(@"::\\Another");
 
-        Assert.ThrowsException<GorgonException>(() => fileSystem.MoveDirectory("/Gorgon.Animation/bin/", "/Gorgon.Core/Collections"));
+        Assert.ThrowsExactly<GorgonException>(() => fileSystem.MoveDirectory("/Gorgon.Animation/bin/", "/Gorgon.Core/Collections"));
     }
 
     [TestMethod]
@@ -772,7 +772,7 @@ public partial class GorgonFileSystemTests
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
         fileSystem.MountWriteArea(@"::\\mock");
 
-        Assert.ThrowsException<IOException>(() => fileSystem.MoveDirectory("/Gorgon.Animation/bin/", "/Gorgon.Animation/bin/Debug"));
+        Assert.ThrowsExactly<IOException>(() => fileSystem.MoveDirectory("/Gorgon.Animation/bin/", "/Gorgon.Animation/bin/Debug"));
     }
 
     [TestMethod]
@@ -799,7 +799,7 @@ public partial class GorgonFileSystemTests
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
         fileSystem.MountWriteArea(@"::\\mock");
 
-        Assert.ThrowsException<IOException>(() => fileSystem.MoveDirectory("/Gorgon.Animation/bin/", "/Gorgon.Animation/"));
+        Assert.ThrowsExactly<IOException>(() => fileSystem.MoveDirectory("/Gorgon.Animation/bin/", "/Gorgon.Animation/"));
     }
 
     [TestMethod]
@@ -836,7 +836,7 @@ public partial class GorgonFileSystemTests
 
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
 
-        Assert.ThrowsException<GorgonException>(() => fileSystem.OpenStream("/Gorgon.FileSystem/Providers/NewFile.txt", true));
+        Assert.ThrowsExactly<GorgonException>(() => _ = fileSystem.OpenStream("/Gorgon.FileSystem/Providers/NewFile.txt", true));
     }
 
     [TestMethod]
@@ -848,7 +848,7 @@ public partial class GorgonFileSystemTests
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
         fileSystem.MountWriteArea(@"::\\mock");
 
-        Assert.ThrowsException<ArgumentEmptyException>(() => fileSystem.OpenStream(string.Empty, true));
+        Assert.ThrowsExactly<ArgumentEmptyException>(() => _ = fileSystem.OpenStream(string.Empty, true));
     }
 
     [TestMethod]
@@ -860,7 +860,7 @@ public partial class GorgonFileSystemTests
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
         fileSystem.MountWriteArea(@"::\\mock");
 
-        Assert.ThrowsException<DirectoryNotFoundException>(() => fileSystem.OpenStream("/ThisDoesNotExist/Thefile.txt", true));
+        Assert.ThrowsExactly<DirectoryNotFoundException>(() => _ = fileSystem.OpenStream("/ThisDoesNotExist/Thefile.txt", true));
     }
 
     [TestMethod]
@@ -872,8 +872,8 @@ public partial class GorgonFileSystemTests
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
         fileSystem.MountWriteArea(@"::\\mock");
 
-        Assert.ThrowsException<IOException>(() => fileSystem.OpenStream("/Gorgon.Animation/bin/", true));
-        Assert.ThrowsException<IOException>(() => fileSystem.OpenStream("/Gorgon.Animation/bin", true));
+        Assert.ThrowsExactly<IOException>(() => _ = fileSystem.OpenStream("/Gorgon.Animation/bin/", true));
+        Assert.ThrowsExactly<IOException>(() => _ = fileSystem.OpenStream("/Gorgon.Animation/bin", true));
     }
 
     [TestMethod]
@@ -918,7 +918,7 @@ public partial class GorgonFileSystemTests
 
         Assert.AreNotEqual(expectedFile.CreateDate, actualFile.CreateDate);
 
-        Assert.ThrowsException<IOException>(() => fileSystem.CopyFile("/Gorgon.Animation/Gorgon2.ico", "/Gorgon.Animation/Gorgon2_Copy.ico",
+        Assert.ThrowsExactly<IOException>(() => fileSystem.CopyFile("/Gorgon.Animation/Gorgon2.ico", "/Gorgon.Animation/Gorgon2_Copy.ico",
                     new GorgonFileSystemCopyOptions((src, dest) => FileConflictResolution.Exception, CancellationToken.None)));
     }
 
@@ -930,7 +930,7 @@ public partial class GorgonFileSystemTests
 
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
 
-        Assert.ThrowsException<GorgonException>(() => fileSystem.CopyFile("/Gorgon.Animation/Gorgon2.ico", "Gorgon2_Copy.ico"));
+        Assert.ThrowsExactly<GorgonException>(() => fileSystem.CopyFile("/Gorgon.Animation/Gorgon2.ico", "Gorgon2_Copy.ico"));
     }
 
     [TestMethod]
@@ -942,7 +942,7 @@ public partial class GorgonFileSystemTests
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
         fileSystem.MountWriteArea(@"::\\mock");
 
-        Assert.ThrowsException<ArgumentEmptyException>(() => fileSystem.CopyFile(string.Empty, "Gorgon2_Copy.ico"));
+        Assert.ThrowsExactly<ArgumentEmptyException>(() => fileSystem.CopyFile(string.Empty, "Gorgon2_Copy.ico"));
     }
 
     [TestMethod]
@@ -954,7 +954,7 @@ public partial class GorgonFileSystemTests
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
         fileSystem.MountWriteArea(@"::\\mock");
 
-        Assert.ThrowsException<ArgumentEmptyException>(() => fileSystem.CopyFile("/Gorgon.Animation/Gorgon2.ico", string.Empty));
+        Assert.ThrowsExactly<ArgumentEmptyException>(() => fileSystem.CopyFile("/Gorgon.Animation/Gorgon2.ico", string.Empty));
     }
 
     [TestMethod]
@@ -966,7 +966,7 @@ public partial class GorgonFileSystemTests
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
         fileSystem.MountWriteArea(@"::\\mock");
 
-        Assert.ThrowsException<FileNotFoundException>(() => fileSystem.CopyFile("/Gorgon.Animation/DoesNotExist.file", "Gorgon2_Copy.ico"));
+        Assert.ThrowsExactly<FileNotFoundException>(() => fileSystem.CopyFile("/Gorgon.Animation/DoesNotExist.file", "Gorgon2_Copy.ico"));
     }
 
     [TestMethod]
@@ -978,7 +978,7 @@ public partial class GorgonFileSystemTests
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
         fileSystem.MountWriteArea(@"::\\mock");
 
-        Assert.ThrowsException<DirectoryNotFoundException>(() => fileSystem.CopyFile("/Gorgon.Animation.Not.Here.Either/Gorgon2.ico", "Gorgon2_Copy.ico"));
+        Assert.ThrowsExactly<DirectoryNotFoundException>(() => fileSystem.CopyFile("/Gorgon.Animation.Not.Here.Either/Gorgon2.ico", "Gorgon2_Copy.ico"));
     }
 
     [TestMethod]
@@ -990,7 +990,7 @@ public partial class GorgonFileSystemTests
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
         fileSystem.MountWriteArea(@"::\\mock");
 
-        Assert.ThrowsException<DirectoryNotFoundException>(() => fileSystem.CopyFile("/Gorgon.Animation/Gorgon2.ico", "/SomePlaceNotHere/Gorgon2_Copy.ico"));
+        Assert.ThrowsExactly<DirectoryNotFoundException>(() => fileSystem.CopyFile("/Gorgon.Animation/Gorgon2.ico", "/SomePlaceNotHere/Gorgon2_Copy.ico"));
     }
 
     [TestMethod]
@@ -1002,7 +1002,7 @@ public partial class GorgonFileSystemTests
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
         fileSystem.MountWriteArea(@"::\\mock");
 
-        Assert.ThrowsException<FileNotFoundException>(() => fileSystem.CopyFile("/Gorgon.Animation/", "Gorgon2_Copy.ico"));
+        Assert.ThrowsExactly<FileNotFoundException>(() => fileSystem.CopyFile("/Gorgon.Animation/", "Gorgon2_Copy.ico"));
     }
 
     [TestMethod]
@@ -1014,9 +1014,9 @@ public partial class GorgonFileSystemTests
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
         fileSystem.MountWriteArea(@"::\\mock");
 
-        Assert.ThrowsException<IOException>(() => fileSystem.CopyFile("/Gorgon.Animation/Gorgon2.ico", "/Gorgon.Animation/Gorgon2.ico"));
-        Assert.ThrowsException<IOException>(() => fileSystem.CopyFile("/Gorgon.Animation/Gorgon2.ico", "/Gorgon.Animation/"));
-        Assert.ThrowsException<IOException>(() => fileSystem.CopyFile("/Gorgon.Animation/Gorgon2.ico", "Gorgon2.ico"));
+        Assert.ThrowsExactly<IOException>(() => fileSystem.CopyFile("/Gorgon.Animation/Gorgon2.ico", "/Gorgon.Animation/Gorgon2.ico"));
+        Assert.ThrowsExactly<IOException>(() => fileSystem.CopyFile("/Gorgon.Animation/Gorgon2.ico", "/Gorgon.Animation/"));
+        Assert.ThrowsExactly<IOException>(() => fileSystem.CopyFile("/Gorgon.Animation/Gorgon2.ico", "Gorgon2.ico"));
     }
 
     [TestMethod]
@@ -1067,7 +1067,7 @@ public partial class GorgonFileSystemTests
 
         Assert.AreNotEqual(expectedFile.CreateDate, actualFile.CreateDate);
 
-        Assert.ThrowsException<IOException>(() => fileSystem.MoveFile("/Gorgon.Animation/bin/Debug/net48/Gorgon.Animation.dll", "/Gorgon.Animation/bin/Debug/net48/Gorgon.Animation.xml",
+        Assert.ThrowsExactly<IOException>(() => fileSystem.MoveFile("/Gorgon.Animation/bin/Debug/net48/Gorgon.Animation.dll", "/Gorgon.Animation/bin/Debug/net48/Gorgon.Animation.xml",
                     new GorgonFileSystemCopyOptions((src, dest) => FileConflictResolution.Exception, CancellationToken.None)));
     }
 
@@ -1079,7 +1079,7 @@ public partial class GorgonFileSystemTests
 
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
 
-        Assert.ThrowsException<GorgonException>(() => fileSystem.MoveFile("/Gorgon.Animation/Gorgon2.ico", "Gorgon2_Move.ico"));
+        Assert.ThrowsExactly<GorgonException>(() => fileSystem.MoveFile("/Gorgon.Animation/Gorgon2.ico", "Gorgon2_Move.ico"));
     }
 
     [TestMethod]
@@ -1091,7 +1091,7 @@ public partial class GorgonFileSystemTests
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
         fileSystem.MountWriteArea(@"::\\mock");
 
-        Assert.ThrowsException<ArgumentEmptyException>(() => fileSystem.MoveFile(string.Empty, "Gorgon2_Move.ico"));
+        Assert.ThrowsExactly<ArgumentEmptyException>(() => fileSystem.MoveFile(string.Empty, "Gorgon2_Move.ico"));
     }
 
     [TestMethod]
@@ -1103,7 +1103,7 @@ public partial class GorgonFileSystemTests
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
         fileSystem.MountWriteArea(@"::\\mock");
 
-        Assert.ThrowsException<ArgumentEmptyException>(() => fileSystem.MoveFile("/Gorgon.Animation/Gorgon2.ico", string.Empty));
+        Assert.ThrowsExactly<ArgumentEmptyException>(() => fileSystem.MoveFile("/Gorgon.Animation/Gorgon2.ico", string.Empty));
     }
 
     [TestMethod]
@@ -1115,7 +1115,7 @@ public partial class GorgonFileSystemTests
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
         fileSystem.MountWriteArea(@"::\\mock");
 
-        Assert.ThrowsException<FileNotFoundException>(() => fileSystem.MoveFile("/Gorgon.Animation/DoesNotExist.file", "Gorgon2_Move.ico"));
+        Assert.ThrowsExactly<FileNotFoundException>(() => fileSystem.MoveFile("/Gorgon.Animation/DoesNotExist.file", "Gorgon2_Move.ico"));
     }
 
     [TestMethod]
@@ -1127,7 +1127,7 @@ public partial class GorgonFileSystemTests
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
         fileSystem.MountWriteArea(@"::\\mock");
 
-        Assert.ThrowsException<DirectoryNotFoundException>(() => fileSystem.MoveFile("/Gorgon.Animation.Not.Here.Either/Gorgon2.ico", "Gorgon2_Move.ico"));
+        Assert.ThrowsExactly<DirectoryNotFoundException>(() => fileSystem.MoveFile("/Gorgon.Animation.Not.Here.Either/Gorgon2.ico", "Gorgon2_Move.ico"));
     }
 
     [TestMethod]
@@ -1139,7 +1139,7 @@ public partial class GorgonFileSystemTests
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
         fileSystem.MountWriteArea(@"::\\mock");
 
-        Assert.ThrowsException<DirectoryNotFoundException>(() => fileSystem.MoveFile("/Gorgon.Animation/Gorgon2.ico", "/SomePlaceNotHere/Gorgon2_Move.ico"));
+        Assert.ThrowsExactly<DirectoryNotFoundException>(() => fileSystem.MoveFile("/Gorgon.Animation/Gorgon2.ico", "/SomePlaceNotHere/Gorgon2_Move.ico"));
     }
 
     [TestMethod]
@@ -1151,7 +1151,7 @@ public partial class GorgonFileSystemTests
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
         fileSystem.MountWriteArea(@"::\\mock");
 
-        Assert.ThrowsException<FileNotFoundException>(() => fileSystem.MoveFile("/Gorgon.Animation/", "Gorgon2_Move.ico"));
+        Assert.ThrowsExactly<FileNotFoundException>(() => fileSystem.MoveFile("/Gorgon.Animation/", "Gorgon2_Move.ico"));
     }
 
     [TestMethod]
@@ -1163,7 +1163,7 @@ public partial class GorgonFileSystemTests
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
         fileSystem.MountWriteArea(@"::\\Another");
 
-        Assert.ThrowsException<GorgonException>(() => fileSystem.MoveFile("/Gorgon.Animation/Gorgon2.ico", "Gorgon2_Move.ico"));
+        Assert.ThrowsExactly<GorgonException>(() => fileSystem.MoveFile("/Gorgon.Animation/Gorgon2.ico", "Gorgon2_Move.ico"));
     }
 
     [TestMethod]
@@ -1175,9 +1175,9 @@ public partial class GorgonFileSystemTests
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
         fileSystem.MountWriteArea(@"::\\mock");
 
-        Assert.ThrowsException<IOException>(() => fileSystem.MoveFile("/Gorgon.Animation/Gorgon2.ico", "/Gorgon.Animation/Gorgon2.ico"));
-        Assert.ThrowsException<IOException>(() => fileSystem.MoveFile("/Gorgon.Animation/Gorgon2.ico", "/Gorgon.Animation/"));
-        Assert.ThrowsException<IOException>(() => fileSystem.MoveFile("/Gorgon.Animation/Gorgon2.ico", "Gorgon2.ico"));
+        Assert.ThrowsExactly<IOException>(() => fileSystem.MoveFile("/Gorgon.Animation/Gorgon2.ico", "/Gorgon.Animation/Gorgon2.ico"));
+        Assert.ThrowsExactly<IOException>(() => fileSystem.MoveFile("/Gorgon.Animation/Gorgon2.ico", "/Gorgon.Animation/"));
+        Assert.ThrowsExactly<IOException>(() => fileSystem.MoveFile("/Gorgon.Animation/Gorgon2.ico", "Gorgon2.ico"));
     }
 
     [TestMethod]
@@ -1202,7 +1202,7 @@ public partial class GorgonFileSystemTests
 
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
 
-        Assert.ThrowsException<GorgonException>(() => fileSystem.RenameFile("/Gorgon.Animation/Gorgon2.ico", "Gorgon2_Renamed.ico"));
+        Assert.ThrowsExactly<GorgonException>(() => fileSystem.RenameFile("/Gorgon.Animation/Gorgon2.ico", "Gorgon2_Renamed.ico"));
     }
 
     [TestMethod]
@@ -1214,7 +1214,7 @@ public partial class GorgonFileSystemTests
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
         fileSystem.MountWriteArea(@"::\\Another");
 
-        Assert.ThrowsException<GorgonException>(() => fileSystem.RenameFile("/Gorgon.Animation/Gorgon2.ico", "Gorgon2_Renamed.ico"));
+        Assert.ThrowsExactly<GorgonException>(() => fileSystem.RenameFile("/Gorgon.Animation/Gorgon2.ico", "Gorgon2_Renamed.ico"));
     }
 
     [TestMethod]
@@ -1226,7 +1226,7 @@ public partial class GorgonFileSystemTests
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
         fileSystem.MountWriteArea(@"::\\mock");
 
-        Assert.ThrowsException<ArgumentEmptyException>(() => fileSystem.RenameFile(string.Empty, "Gorgon2_Renamed.ico"));
+        Assert.ThrowsExactly<ArgumentEmptyException>(() => fileSystem.RenameFile(string.Empty, "Gorgon2_Renamed.ico"));
     }
 
     [TestMethod]
@@ -1238,7 +1238,7 @@ public partial class GorgonFileSystemTests
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
         fileSystem.MountWriteArea(@"::\\mock");
 
-        Assert.ThrowsException<ArgumentEmptyException>(() => fileSystem.RenameFile("/Gorgon.Animation/Gorgon2.ico", string.Empty));
+        Assert.ThrowsExactly<ArgumentEmptyException>(() => fileSystem.RenameFile("/Gorgon.Animation/Gorgon2.ico", string.Empty));
     }
 
     [TestMethod]
@@ -1250,7 +1250,7 @@ public partial class GorgonFileSystemTests
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
         fileSystem.MountWriteArea(@"::\\mock");
 
-        Assert.ThrowsException<IOException>(() => fileSystem.RenameFile("/Gorgon.Animation/Gorgon2.ico", "Gorgon2.ico"));
+        Assert.ThrowsExactly<IOException>(() => fileSystem.RenameFile("/Gorgon.Animation/Gorgon2.ico", "Gorgon2.ico"));
     }
 
     [TestMethod]
@@ -1262,7 +1262,7 @@ public partial class GorgonFileSystemTests
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
         fileSystem.MountWriteArea(@"::\\mock");
 
-        Assert.ThrowsException<DirectoryNotFoundException>(() => fileSystem.RenameFile("/Gorgon.Animation.NotExist/Gorgon2.ico", "Gorgon2_Rename.ico"));
+        Assert.ThrowsExactly<DirectoryNotFoundException>(() => fileSystem.RenameFile("/Gorgon.Animation.NotExist/Gorgon2.ico", "Gorgon2_Rename.ico"));
     }
 
     [TestMethod]
@@ -1274,8 +1274,8 @@ public partial class GorgonFileSystemTests
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
         fileSystem.MountWriteArea(@"::\\mock");
 
-        Assert.ThrowsException<FileNotFoundException>(() => fileSystem.RenameFile("/Gorgon.Animation/Gorgon2.NotHere", "Gorgon2_Rename.ico"));
-        Assert.ThrowsException<FileNotFoundException>(() => fileSystem.RenameFile("/Gorgon.Animation/", "Gorgon2_Rename.ico"));
+        Assert.ThrowsExactly<FileNotFoundException>(() => fileSystem.RenameFile("/Gorgon.Animation/Gorgon2.NotHere", "Gorgon2_Rename.ico"));
+        Assert.ThrowsExactly<FileNotFoundException>(() => fileSystem.RenameFile("/Gorgon.Animation/", "Gorgon2_Rename.ico"));
     }
 
     [TestMethod]
@@ -1287,7 +1287,7 @@ public partial class GorgonFileSystemTests
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
         fileSystem.MountWriteArea(@"::\\mock");
 
-        Assert.ThrowsException<IOException>(() => fileSystem.RenameFile("/Gorgon.Animation/Gorgon2.ico", "bin"));
+        Assert.ThrowsExactly<IOException>(() => fileSystem.RenameFile("/Gorgon.Animation/Gorgon2.ico", "bin"));
     }
 
     [TestMethod]
@@ -1312,7 +1312,7 @@ public partial class GorgonFileSystemTests
 
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
 
-        Assert.ThrowsException<GorgonException>(() => fileSystem.DeleteFile("/Gorgon.Animation/Gorgon2.ico"));
+        Assert.ThrowsExactly<GorgonException>(() => fileSystem.DeleteFile("/Gorgon.Animation/Gorgon2.ico"));
     }
 
     [TestMethod]
@@ -1324,7 +1324,7 @@ public partial class GorgonFileSystemTests
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
         fileSystem.MountWriteArea(@"::\\Another");
 
-        Assert.ThrowsException<GorgonException>(() => fileSystem.DeleteFile("/Gorgon.Animation/Gorgon2.ico"));
+        Assert.ThrowsExactly<GorgonException>(() => fileSystem.DeleteFile("/Gorgon.Animation/Gorgon2.ico"));
     }
 
     [TestMethod]
@@ -1336,7 +1336,7 @@ public partial class GorgonFileSystemTests
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
         fileSystem.MountWriteArea(@"::\\mock");
 
-        Assert.ThrowsException<ArgumentEmptyException>(() => fileSystem.DeleteFile(string.Empty));
+        Assert.ThrowsExactly<ArgumentEmptyException>(() => fileSystem.DeleteFile(string.Empty));
     }
 
     [TestMethod]
@@ -1348,7 +1348,7 @@ public partial class GorgonFileSystemTests
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
         fileSystem.MountWriteArea(@"::\\mock");
 
-        Assert.ThrowsException<DirectoryNotFoundException>(() => fileSystem.DeleteFile("/Gorgon.Animation.Not.Found/Gorgon2.ico"));
+        Assert.ThrowsExactly<DirectoryNotFoundException>(() => fileSystem.DeleteFile("/Gorgon.Animation.Not.Found/Gorgon2.ico"));
     }
 
     [TestMethod]
@@ -1360,6 +1360,6 @@ public partial class GorgonFileSystemTests
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
         fileSystem.MountWriteArea(@"::\\mock");
 
-        Assert.ThrowsException<FileNotFoundException>(() => fileSystem.DeleteFile("/Gorgon.Animation/Gorgon2.not.here"));
+        Assert.ThrowsExactly<FileNotFoundException>(() => fileSystem.DeleteFile("/Gorgon.Animation/Gorgon2.not.here"));
     }
 }

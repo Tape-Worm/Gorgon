@@ -39,7 +39,7 @@ partial class FormNewSprite
         System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormNewSprite));
         this.TableName = new System.Windows.Forms.TableLayoutPanel();
         this.PanelName = new System.Windows.Forms.Panel();
-        this.TextName = new Gorgon.UI.GorgonCueTextBox();
+        this.TextName = new Gorgon.UI.OLDE.GorgonCueTextBox();
         this.PanelUnderline = new System.Windows.Forms.Panel();
         this.LabelWidth = new System.Windows.Forms.Label();
         this.NumericWidth = new System.Windows.Forms.NumericUpDown();
@@ -284,7 +284,7 @@ partial class FormNewSprite
         this.FileTextures.Name = "FileTextures";
         this.FileTextures.Size = new System.Drawing.Size(344, 327);
         this.FileTextures.TabIndex = 0;
-        this.FileTextures.Search += new System.EventHandler<Gorgon.UI.GorgonSearchEventArgs>(this.FileTextures_Search);
+        this.FileTextures.Search += new System.EventHandler<Gorgon.UI.OLDE.GorgonSearchEventArgs>(this.FileTextures_Search);
         this.FileTextures.FileEntrySelected += new System.EventHandler<Gorgon.Editor.UI.Controls.ContentFileEntrySelectedEventArgs>(this.FileTextures_FileEntrySelected);
         this.FileTextures.FileEntryUnselected += new System.EventHandler<Gorgon.Editor.UI.Controls.ContentFileEntrySelectedEventArgs>(this.FileTextures_FileEntryUnselected);
         // 
@@ -360,7 +360,7 @@ partial class FormNewSprite
 
 
 
-    private Gorgon.UI.GorgonCueTextBox TextName;
+    private Gorgon.UI.OLDE.GorgonCueTextBox TextName;
     private System.Windows.Forms.TableLayoutPanel TableName;
     private System.Windows.Forms.Panel PanelName;
     private System.Windows.Forms.Panel PanelUnderline;

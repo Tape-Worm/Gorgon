@@ -58,7 +58,7 @@ partial class FormDirectoryLocator
         this.panel1 = new System.Windows.Forms.Panel();
         this.ButtonCancel = new System.Windows.Forms.Button();
         this.ButtonOK = new System.Windows.Forms.Button();
-        this.WorkspaceBrowser = new Gorgon.UI.GorgonFolderBrowser();
+        this.WorkspaceBrowser = new Gorgon.UI.OLDE.GorgonFolderBrowser();
         this.panel1.SuspendLayout();
         this.SuspendLayout();
         // 
@@ -131,8 +131,8 @@ partial class FormDirectoryLocator
         this.WorkspaceBrowser.RemovableDriveImage = global::Gorgon.Editor.Properties.Resources.drive_remove_48x48;
         this.WorkspaceBrowser.Size = new System.Drawing.Size(624, 404);
         this.WorkspaceBrowser.TabIndex = 3;
-        this.WorkspaceBrowser.FolderSelected += new System.EventHandler<Gorgon.UI.FolderSelectedArgs>(this.WorkspaceBrowser_FolderSelected);
-        this.WorkspaceBrowser.FolderEntered += new System.EventHandler<Gorgon.UI.FolderSelectedArgs>(this.WorkspaceBrowser_FolderEntered);
+        this.WorkspaceBrowser.FolderSelected += new System.EventHandler<Gorgon.UI.OLDE.FolderSelectedArgs>(this.WorkspaceBrowser_FolderSelected);
+        this.WorkspaceBrowser.FolderEntered += new System.EventHandler<Gorgon.UI.OLDE.FolderSelectedArgs>(this.WorkspaceBrowser_FolderEntered);
         // 
         // FormDirectoryLocator
         // 
@@ -159,7 +159,7 @@ partial class FormDirectoryLocator
     }
 
 
-    private Gorgon.UI.GorgonFolderBrowser WorkspaceBrowser;
+    private Gorgon.UI.OLDE.GorgonFolderBrowser WorkspaceBrowser;
     private System.Windows.Forms.Panel panel1;
     private System.Windows.Forms.Button ButtonCancel;
     private System.Windows.Forms.Button ButtonOK;

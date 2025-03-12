@@ -30,7 +30,8 @@ using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Renderers;
 using Gorgon.Timing;
-using Gorgon.UI;
+using Gorgon.Timing.OLDE;
+using Gorgon.UI.OLDE;
 
 namespace Gorgon.Examples;
 

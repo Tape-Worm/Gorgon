@@ -30,7 +30,7 @@ using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Controls;
 using Gorgon.Editor.UI.Views;
 using Gorgon.Graphics.Core;
-using Gorgon.UI;
+using Gorgon.UI.OLDE;
 
 namespace Gorgon.Editor.ImageSplitTool;
 

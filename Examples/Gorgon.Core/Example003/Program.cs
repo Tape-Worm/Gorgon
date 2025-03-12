@@ -27,8 +27,9 @@ using System.Drawing;
 using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
+using Gorgon.Diagnostics.OLDE;
 using Gorgon.Timing;
-using Gorgon.UI;
+using Gorgon.UI.OLDE;
 
 namespace Gorgon.Examples;
 

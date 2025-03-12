@@ -29,7 +29,7 @@ using Gorgon.Editor.SpriteEditor.Properties;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
-using Gorgon.UI;
+using Gorgon.UI.OLDE;
 
 namespace Gorgon.Editor.SpriteEditor;
 

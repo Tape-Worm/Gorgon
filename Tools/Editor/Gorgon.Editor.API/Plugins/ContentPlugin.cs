@@ -33,7 +33,7 @@ using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
 using Gorgon.IO;
 using Gorgon.IO.FileSystem;
-using Gorgon.UI;
+using Gorgon.UI.OLDE;
 using Microsoft.IO;
 
 namespace Gorgon.Editor.PlugIns;

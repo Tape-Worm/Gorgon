@@ -76,7 +76,7 @@ partial class FormImagePicker
         this.LabelImportImageDimensions = new System.Windows.Forms.Label();
         this.LabelTargetImageDimensions = new System.Windows.Forms.Label();
         this.RadioCrop = new System.Windows.Forms.RadioButton();
-        this.AlignmentPicker = new Gorgon.UI.GorgonAlignmentPicker();
+        this.AlignmentPicker = new Gorgon.UI.OLDE.GorgonAlignmentPicker();
         this.LabelAnchor = new System.Windows.Forms.Label();
         this.RadioResize = new System.Windows.Forms.RadioButton();
         this.PanelFilter = new System.Windows.Forms.Panel();
@@ -84,7 +84,7 @@ partial class FormImagePicker
         this.CheckPreserveAspect = new System.Windows.Forms.CheckBox();
         this.TableResize = new System.Windows.Forms.TableLayoutPanel();
         this.LabelResizeAnchor = new System.Windows.Forms.Label();
-        this.AlignmentResize = new Gorgon.UI.GorgonAlignmentPicker();
+        this.AlignmentResize = new Gorgon.UI.OLDE.GorgonAlignmentPicker();
         this.TablePickSourceImage = new System.Windows.Forms.TableLayoutPanel();
         this.LabelSourceImport = new System.Windows.Forms.Label();
         this.TableSourceArrayDepth = new System.Windows.Forms.TableLayoutPanel();
@@ -1049,7 +1049,7 @@ partial class FormImagePicker
     private System.Windows.Forms.Label LabelImportImageDimensions;
     private System.Windows.Forms.Label LabelTargetImageDimensions;
     private System.Windows.Forms.RadioButton RadioCrop;
-    private Gorgon.UI.GorgonAlignmentPicker AlignmentPicker;
+    private Gorgon.UI.OLDE.GorgonAlignmentPicker AlignmentPicker;
     private System.Windows.Forms.Label LabelAnchor;
     private System.Windows.Forms.RadioButton RadioResize;
     private System.Windows.Forms.Panel PanelFilter;
@@ -1072,6 +1072,6 @@ partial class FormImagePicker
     private System.Windows.Forms.Label LabelSourceArrayDepth;
     private System.Windows.Forms.Label LabelSourceImport;
     private System.Windows.Forms.Label LabelResizeAnchor;
-    private Gorgon.UI.GorgonAlignmentPicker AlignmentResize;
+    private Gorgon.UI.OLDE.GorgonAlignmentPicker AlignmentResize;
     private System.Windows.Forms.ToolTip TipsFiles;
 }

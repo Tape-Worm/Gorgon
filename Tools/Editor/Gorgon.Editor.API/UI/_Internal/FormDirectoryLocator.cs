@@ -25,7 +25,7 @@
 
 using System.ComponentModel;
 using Gorgon.Math;
-using Gorgon.UI;
+using Gorgon.UI.OLDE;
 
 namespace Gorgon.Editor.UI;
 

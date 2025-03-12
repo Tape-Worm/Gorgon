@@ -37,6 +37,7 @@ using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Math;
 using Gorgon.Renderers;
+using Gorgon.UI;
 
 namespace Gorgon.Editor.Views;
 
@@ -160,7 +161,7 @@ internal partial class ContentPreviewPanel
         _titleText = new GorgonTextSprite(_titleFont)
         {
             DrawMode = TextDrawMode.OutlinedGlyphs,
-            Alignment = Gorgon.UI.Alignment.Center,
+            Alignment = Alignment.Center,
             LayoutArea = new Vector2(_swapChain.Width, _swapChain.Height)
         };
 

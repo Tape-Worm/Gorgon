@@ -26,7 +26,7 @@
 using System.ComponentModel;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.ViewModels;
-using Gorgon.UI;
+using Gorgon.UI.OLDE;
 
 namespace Gorgon.Editor;
 

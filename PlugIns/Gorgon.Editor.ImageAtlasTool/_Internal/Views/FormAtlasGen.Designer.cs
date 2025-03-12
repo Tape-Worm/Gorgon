@@ -1,4 +1,4 @@
-﻿using Gorgon.UI;
+﻿using Gorgon.UI.OLDE;
 
 namespace Gorgon.Editor.ImageAtlasTool;
 
@@ -61,7 +61,7 @@ partial class FormAtlasGen
         this.ButtonLoadImages = new System.Windows.Forms.Button();
         this.LabelSpriteCount = new System.Windows.Forms.Label();
         this.TablePreviewControls = new System.Windows.Forms.TableLayoutPanel();
-        this.PanelRender = new Gorgon.UI.GorgonSelectablePanel();
+        this.PanelRender = new Gorgon.UI.OLDE.GorgonSelectablePanel();
         this.TableAtlasParameters = new System.Windows.Forms.TableLayoutPanel();
         this.panel3 = new System.Windows.Forms.Panel();
         this.label11 = new System.Windows.Forms.Label();

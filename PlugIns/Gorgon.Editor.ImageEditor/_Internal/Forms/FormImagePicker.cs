@@ -37,6 +37,7 @@ using Gorgon.Graphics.Imaging.GdiPlus;
 using Gorgon.Math;
 using Gorgon.Renderers;
 using Gorgon.UI;
+using Gorgon.UI.OLDE;
 
 namespace Gorgon.Editor.ImageEditor;
 

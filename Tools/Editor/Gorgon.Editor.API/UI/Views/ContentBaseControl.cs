@@ -29,7 +29,7 @@ using Gorgon.Editor.Properties;
 using Gorgon.Editor.Rendering;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
-using Gorgon.UI;
+using Gorgon.UI.OLDE;
 using KR = Krypton.Ribbon;
 
 namespace Gorgon.Editor.UI.Views;

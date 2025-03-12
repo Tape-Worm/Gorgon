@@ -31,7 +31,7 @@ using Gorgon.Editor.UI.Controls;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
 using Gorgon.Renderers.Services;
-using Gorgon.UI;
+using Gorgon.UI.OLDE;
 
 namespace Gorgon.Editor.ImageAtlasTool;
 

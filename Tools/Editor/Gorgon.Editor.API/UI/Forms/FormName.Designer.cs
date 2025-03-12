@@ -33,7 +33,7 @@ partial class FormName
         this.ButtonCancel = new System.Windows.Forms.Button();
         this.TableName = new System.Windows.Forms.TableLayoutPanel();
         this.PanelButtons = new System.Windows.Forms.Panel();
-        this.TextName = new Gorgon.UI.GorgonCueTextBox();
+        this.TextName = new Gorgon.UI.OLDE.GorgonCueTextBox();
         this.PanelName = new System.Windows.Forms.Panel();
         this.PanelUnderline = new System.Windows.Forms.Panel();
         this.TableName.SuspendLayout();
@@ -185,7 +185,7 @@ partial class FormName
 
 
 
-    private Gorgon.UI.GorgonCueTextBox TextName;
+    private Gorgon.UI.OLDE.GorgonCueTextBox TextName;
     private System.Windows.Forms.Button ButtonOK;
     private System.Windows.Forms.Button ButtonCancel;
     private System.Windows.Forms.TableLayoutPanel TableName;

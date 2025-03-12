@@ -27,7 +27,7 @@ using System.Drawing;
 using System.Drawing.Text;
 using System.Windows.Forms;
 using Gorgon.Core;
-using Gorgon.UI;
+using Gorgon.UI.OLDE;
 using DrawingGraphics = System.Drawing.Graphics;
 
 namespace Gorgon.Examples;

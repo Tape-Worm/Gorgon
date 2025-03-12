@@ -35,6 +35,7 @@ using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Renderers.Cameras;
 using Gorgon.Renderers.Geometry;
 using Gorgon.Timing;
+using Gorgon.Timing.OLDE;
 
 namespace Gorgon.Examples;
 

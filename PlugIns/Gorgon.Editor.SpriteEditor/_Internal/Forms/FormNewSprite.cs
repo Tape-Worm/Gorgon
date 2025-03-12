@@ -213,7 +213,7 @@ internal partial class FormNewSprite
     /// <summary>Handles the Search event of the FileTextures control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="Gorgon.UI.GorgonSearchEventArgs"/> instance containing the event data.</param>
-    private void FileTextures_Search(object sender, Gorgon.UI.GorgonSearchEventArgs e)
+    private void FileTextures_Search(object sender, Gorgon.UI.OLDE.GorgonSearchEventArgs e)
     {
         if (string.IsNullOrWhiteSpace(e.SearchText))
         {

@@ -28,7 +28,7 @@ partial class Main
     private void InitializeComponent()
     {
         System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Main));
-        this.Browser = new Gorgon.UI.GorgonFolderBrowser();
+        this.Browser = new Gorgon.UI.OLDE.GorgonFolderBrowser();
         this.SuspendLayout();
         // 
         // Browser
@@ -44,7 +44,7 @@ partial class Main
         this.Browser.TabIndex = 0;
         this.Browser.Text = "Double click on a folder to change it. Click the \'+\' to create a folder and \'-\' t" +
 "o delete one.";
-        this.Browser.FolderEntered += new System.EventHandler<Gorgon.UI.FolderSelectedArgs>(this.Browser_FolderEntered);
+        this.Browser.FolderEntered += new System.EventHandler<Gorgon.UI.OLDE.FolderSelectedArgs>(this.Browser_FolderEntered);
         // 
         // FormMain
         // 
@@ -64,5 +64,5 @@ partial class Main
 
 
 
-    private UI.GorgonFolderBrowser Browser;
+    private UI.OLDE.GorgonFolderBrowser Browser;
 }

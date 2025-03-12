@@ -31,7 +31,7 @@ partial class VisualContentBaseControl
         this.TableViewControls = new System.Windows.Forms.TableLayoutPanel();
         this.ScrollHorizontal = new System.Windows.Forms.HScrollBar();
         this.ScrollVertical = new System.Windows.Forms.VScrollBar();
-        this.PanelRenderWindow = new Gorgon.UI.GorgonSelectablePanel();
+        this.PanelRenderWindow = new Gorgon.UI.OLDE.GorgonSelectablePanel();
         this.ButtonCenter = new System.Windows.Forms.Button();
         this.PanelStatus = new System.Windows.Forms.Panel();
         this.PresentationPanel.SuspendLayout();
@@ -153,7 +153,7 @@ partial class VisualContentBaseControl
     private System.Windows.Forms.TableLayoutPanel TableViewControls;
     private System.Windows.Forms.HScrollBar ScrollHorizontal;
     [System.Runtime.CompilerServices.AccessedThroughProperty("RenderWindow")]
-    private Gorgon.UI.GorgonSelectablePanel PanelRenderWindow;
+    private Gorgon.UI.OLDE.GorgonSelectablePanel PanelRenderWindow;
     private System.Windows.Forms.Button ButtonCenter;
     private System.Windows.Forms.VScrollBar ScrollVertical;
     [System.Runtime.CompilerServices.AccessedThroughProperty("StatusPanel")]

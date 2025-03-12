@@ -24,7 +24,7 @@
 // 
 
 using Gorgon.Examples;
-using Gorgon.UI;
+using Gorgon.UI.OLDE;
 
 namespace Graphics.Examples;
 

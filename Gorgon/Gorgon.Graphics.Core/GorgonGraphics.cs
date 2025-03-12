@@ -29,7 +29,7 @@ using System.Runtime.CompilerServices;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
-using Gorgon.Timing;
+using Gorgon.Timing.OLDE;
 using SharpDX.DXGI;
 using D3D = SharpDX.Direct3D;
 using D3D11 = SharpDX.Direct3D11;

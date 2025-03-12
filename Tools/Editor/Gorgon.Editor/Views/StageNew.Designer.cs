@@ -1,5 +1,5 @@
 ﻿using System.Windows.Forms;
-using Gorgon.UI;
+using Gorgon.UI.OLDE;
 
 namespace Gorgon.Editor.Views;
 
@@ -47,7 +47,7 @@ partial class StageNew
         this.ButtonCreate = new System.Windows.Forms.Button();
         this.panel6 = new System.Windows.Forms.Panel();
         this.PanelLocateText = new System.Windows.Forms.Panel();
-        this.TextProjectPath = new Gorgon.UI.GorgonCueTextBox();
+        this.TextProjectPath = new Gorgon.UI.OLDE.GorgonCueTextBox();
         this.PanelLocate = new System.Windows.Forms.Panel();
         this.ButtonSelect = new System.Windows.Forms.Button();
         this.PanelWorkspace = new System.Windows.Forms.FlowLayoutPanel();
@@ -414,7 +414,7 @@ partial class StageNew
     private System.Windows.Forms.Label LabelHeader;
     private System.Windows.Forms.Panel panel2;
     private System.Windows.Forms.Panel PanelsControls;
-    private Gorgon.UI.GorgonCueTextBox TextProjectPath;
+    private Gorgon.UI.OLDE.GorgonCueTextBox TextProjectPath;
     private System.Windows.Forms.Panel panel3;
     private System.Windows.Forms.Panel panel4;
     private System.Windows.Forms.Button ButtonCreate;

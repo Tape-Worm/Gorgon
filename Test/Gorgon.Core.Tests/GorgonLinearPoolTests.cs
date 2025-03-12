@@ -9,7 +9,7 @@ namespace Gorgon.Core.Tests;
 public class GorgonLinearPoolTests
 {
     [TestMethod]
-    public void ShouldThrowWhenMaxObjectCountLessThanOne() => Assert.ThrowsException<ArgumentOutOfRangeException>(() => new GorgonLinearPool<string>(0, () => "Test"));
+    public void ShouldThrowWhenMaxObjectCountLessThanOne() => Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => _ = new GorgonLinearPool<string>(0, () => "Test"));
 
     [TestMethod]
     public void ShouldThrowWhenPoolIsFull()
@@ -21,7 +21,7 @@ public class GorgonLinearPoolTests
             pool.Allocate();
         }
         // Now the pool is full, the next allocation should throw an exception.
-        Assert.ThrowsException<GorgonException>(() => pool.Allocate());
+        Assert.ThrowsExactly<GorgonException>(() => _ = pool.Allocate());
     }
 
     [TestMethod]
@@ -104,7 +104,7 @@ public class GorgonLinearPoolTests
     public void ShouldThrowWhenItemAllocatorReturnsNull()
     {
         GorgonLinearPool<string> pool = new(1, () => null!);
-        Assert.ThrowsException<GorgonException>(() => pool.Allocate());
+        Assert.ThrowsExactly<GorgonException>(() => _ = pool.Allocate());
     }
 
     private sealed class DisposableObject : IDisposable

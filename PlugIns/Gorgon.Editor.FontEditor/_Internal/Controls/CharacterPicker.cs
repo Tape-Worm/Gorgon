@@ -29,7 +29,7 @@ using System.Globalization;
 using Gorgon.Core;
 using Gorgon.Editor.FontEditor.Properties;
 using Gorgon.Editor.UI.Views;
-using Gorgon.UI;
+using Gorgon.UI.OLDE;
 
 namespace Gorgon.Editor.FontEditor;
 

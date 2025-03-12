@@ -28,7 +28,7 @@ using Gorgon.Core;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.ViewModels;
 using Gorgon.IO;
-using Gorgon.UI;
+using Gorgon.UI.OLDE;
 
 namespace Gorgon.Editor.Services;
 

@@ -7,6 +7,7 @@ using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Wpf.Properties;
 using Gorgon.Math;
 using Gorgon.Timing;
+using Gorgon.Timing.OLDE;
 using Microsoft.Wpf.Interop.DirectX;
 
 namespace Gorgon.Graphics.Wpf;
