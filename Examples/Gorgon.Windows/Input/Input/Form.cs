@@ -368,28 +368,25 @@ public partial class Form
             UpdateBrushAlpha((float)currentThrottle / maxThrottle, false);
         }
 
+        bool buttonState = false;
+
         for (int i = 0; i < _activeGameDevice.Buttons.Length; ++i)
         {
             bool state = _activeGameDevice.Buttons[i];
 
-            // If the button is not down, then we can leave, and ensure we don't leave the motors active.
             if (!state)
             {
-                if ((_activeGameDevice.Info.Capabilities & GamingDeviceCapabilityFlags.SupportsVibration) == GamingDeviceCapabilityFlags.SupportsVibration)
-                {
-                    _activeGameDevice.SetVibration(0, 0);
-                    _activeGameDevice.SetVibration(1, 0);
-                }
                 continue;
             }
-            else
+
+            // If the button is not down, then we can leave, and ensure we don't leave the motors active.
+            // AND If the device is an XInput compatible device, set the vibration motors active if we've held a button.
+            if ((!buttonState) && ((_activeGameDevice.Info.Capabilities & GamingDeviceCapabilityFlags.SupportsVibration) == GamingDeviceCapabilityFlags.SupportsVibration))
             {
-                // If the device is an XInput compatible device, set the vibration motors active if we've held a button.
-                if ((_activeGameDevice.Info.Capabilities & GamingDeviceCapabilityFlags.SupportsVibration) == GamingDeviceCapabilityFlags.SupportsVibration)
-                {
-                    _activeGameDevice.SetVibration(0, 16384);
-                    _activeGameDevice.SetVibration(1, 16384);
-                }
+                _activeGameDevice.SetVibration(0, 16384);
+                _activeGameDevice.SetVibration(1, 16384);
+
+                buttonState = true;
             }
 
             switch (i)
@@ -443,6 +440,12 @@ public partial class Form
                     _sprayAction = SprayAction.Erase;
                     break;
             }
+        }
+
+        if ((!buttonState) && ((_activeGameDevice.Info.Capabilities & GamingDeviceCapabilityFlags.SupportsVibration) == GamingDeviceCapabilityFlags.SupportsVibration))
+        {
+            _activeGameDevice.SetVibration(0, 0);
+            _activeGameDevice.SetVibration(1, 0);
         }
 
         LabelGamingDevice.Text = _gamingDisplayText.ToString();
