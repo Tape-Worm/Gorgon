@@ -33,8 +33,8 @@ using Gorgon.PlugIns;
 using Gorgon.Renderers;
 using Gorgon.Renderers.Cameras;
 using Gorgon.UI;
-using Gorgon.Windows.Input;
-using Gorgon.Windows.Input.Devices;
+using Gorgon.Input;
+using Gorgon.Input.Devices;
 using DX = SharpDX;
 
 namespace Gorgon.Examples;

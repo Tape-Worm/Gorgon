@@ -23,7 +23,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Example004.BluePlugIn", "Ex
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Example004.GreenAndPurplePlugIn", "Examples\Gorgon.Core\Example004\PlugIns\Example004.GreenAndPurplePlugIn\Example004.GreenAndPurplePlugIn.csproj", "{2E14312F-4E7E-45AD-945A-D91DC5E254CD}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Gorgon.Windows.Input", "Gorgon.Windows.Input", "{E110A495-36C7-44AB-9748-A8C29EFA276C}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Gorgon.Input", "Gorgon.Input", "{E110A495-36C7-44AB-9748-A8C29EFA276C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Gorgon.FileSystem", "Gorgon.FileSystem", "{D4582ECC-614C-484F-9CF9-2D88C4B57EE0}"
 EndProject
@@ -63,7 +63,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gorgon.Graphics.Fonts", "Go
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GeometryShaders", "Examples\Gorgon.Graphics\GeometryShaders\GeometryShaders.csproj", "{23CC5D47-3BAF-48C1-9CCD-ECACBE5BE818}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XInput", "Examples\Gorgon.Windows\Input\XInput\XInput.csproj", "{5993DBFF-AB76-435A-B52F-1A34CEFD5299}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XInput", "Examples\Gorgon.Input\XInput\XInput.csproj", "{5993DBFF-AB76-435A-B52F-1A34CEFD5299}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Boinger", "Examples\Gorgon.Graphics\Boinger\Boinger.csproj", "{256CC806-B7DC-4125-A350-F78F520D9742}"
 EndProject
@@ -226,9 +226,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gorgon.IO.FileSystem.GorPac
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gorgon.IO.FileSystem.Zip", "PlugIns\Gorgon.IO.FileSystem.Zip\Gorgon.IO.FileSystem.Zip.csproj", "{1C4FF72B-B008-4E91-ACD5-12A096EE8590}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Windows.Input", "Gorgon\Gorgon.Windows\Input\Gorgon.Windows.Input.csproj", "{7B7E5690-73C6-486B-96E1-4FA36F31CE59}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Input", "Gorgon\Gorgon.Input\Gorgon.Input.csproj", "{7B7E5690-73C6-486B-96E1-4FA36F31CE59}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Input", "Examples\Gorgon.Windows\Input\Input\Input.csproj", "{58305FA7-FBDC-3EDB-7424-B7B1EECF9F26}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Input", "Examples\Gorgon.Input\Input\Input.csproj", "{58305FA7-FBDC-3EDB-7424-B7B1EECF9F26}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -10,24 +10,20 @@
     <Authors>Michael Winsor</Authors>
     <Company>Tape_Worm</Company>
     <Product>Gorgon</Product>
-    <Description>A 3D example for drawing 3D primitive types using just the base graphics library.</Description>
-    <Copyright>(C)opyright Tape_Worm, 2020</Copyright>
+    <Description>An example showing how to use the XBox controller.</Description>
+    <Copyright>(C)opyright Tape_Worm, 2025</Copyright>
     <PackageLicenseFile>
     </PackageLicenseFile>
     <PackageProjectUrl>https://www.tape-worm.net</PackageProjectUrl>
-
-
     <RepositoryUrl>https://github.com/Tape-Worm/Gorgon</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
-    <PackageTags>Gorgon, C#, .NET Framework, Direct 3D, SharpDX, Winforms</PackageTags>
+    <PackageTags>Gorgon, C#, .NET Framework, Raw Input, XInput, Winforms</PackageTags>
     <EnableNETAnalyzers>false</EnableNETAnalyzers>
     <RootNamespace>Gorgon.Examples</RootNamespace>
     <NeutralLanguage>
     </NeutralLanguage>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    
-    <StartupObject>
-    </StartupObject>
+    <StartupObject>Gorgon.Examples.Program</StartupObject>
     <SignAssembly>false</SignAssembly>
     <AssemblyOriginatorKeyFile>
     </AssemblyOriginatorKeyFile>
@@ -38,6 +34,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <EmbeddedResourceUseDependentUponConvention>true</EmbeddedResourceUseDependentUponConvention>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -50,36 +47,11 @@
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <AdditionalFiles Remove="..\..\app.manifest" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Remove="Resources\earthbump1k_NRM.dds" />
-    <None Remove="Resources\earthcloudmap.png" />
-    <None Remove="Resources\earthmap1k.jpg" />
-    <None Remove="Resources\earthspec1k.jpg" />
-    <None Remove="Resources\normalmap.png" />
-    <None Remove="Resources\Rain_Height_NRM.dds" />
-    <None Remove="Resources\Rain_Height_SPEC.dds" />
-    <None Remove="Resources\Shaders.hlsl" />
-    <None Remove="Resources\UV.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\earthbump1k_NRM.dds" />
-    <EmbeddedResource Include="Resources\earthcloudmap.png" />
-    <EmbeddedResource Include="Resources\earthmap1k.jpg" />
-    <EmbeddedResource Include="Resources\earthspec1k.jpg" />
-    <EmbeddedResource Include="Resources\normalmap.png" />
-    <EmbeddedResource Include="Resources\Rain_Height_NRM.dds" />
-    <EmbeddedResource Include="Resources\Rain_Height_SPEC.dds" />
-    <EmbeddedResource Include="Resources\Shaders.hlsl" />
-    <EmbeddedResource Include="Resources\UV.png" />
+    <Content Include="Gorgon2.ico" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Gorgon\Gorgon.Input\Gorgon.Input.csproj" />
-    <ProjectReference Include="..\..\ExamplesCommon\ExamplesCommon.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="SharpDX.Mathematics" Version="4.2.0" />
+    <ProjectReference Include="..\..\..\Gorgon\Gorgon.Windows\Platform\Gorgon.Windows.Platform.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">
@@ -93,10 +65,5 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <None Update="appsettings.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 </Project>

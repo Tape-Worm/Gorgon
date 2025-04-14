@@ -29,7 +29,7 @@ using Gorgon.Graphics;
 using Gorgon.Math;
 using Gorgon.Renderers;
 using Gorgon.Timing;
-using Gorgon.Windows.Input.Devices;
+using Gorgon.Input.Devices;
 
 namespace Gorgon.Examples;
 

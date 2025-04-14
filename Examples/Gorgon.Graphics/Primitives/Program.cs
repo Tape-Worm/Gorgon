@@ -37,9 +37,9 @@ using Gorgon.Renderers.Geometry;
 using Gorgon.Renderers.Lights;
 using Gorgon.Timing;
 using Gorgon.UI;
-using Gorgon.Windows.Input;
-using Gorgon.Windows.Input.Devices;
-using MouseButtons = Gorgon.Windows.Input.Devices.MouseButtons;
+using Gorgon.Input;
+using Gorgon.Input.Devices;
+using MouseButtons = Gorgon.Input.Devices.MouseButtons;
 
 namespace Gorgon.Examples;
 
