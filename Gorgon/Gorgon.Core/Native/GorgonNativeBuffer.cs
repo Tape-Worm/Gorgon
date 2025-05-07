@@ -1,5 +1,5 @@
 ﻿// Gorgon.
-// Copyright (C) 2024 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -118,6 +118,11 @@ public sealed class GorgonNativeBuffer<T>
     /// Property to return the number of items of type <typeparamref name="T"/> stored in this buffer.
     /// </summary>
     public int Length => _memoryBlock.Length;
+
+    /// <summary>
+    /// Property to return the location in memory where this buffer is located.
+    /// </summary>
+    public long Location => GorgonPtr<T>.ToInt64(_memoryBlock);
 
     /// <summary>
     /// Property to return the alignment of the memory stored in the buffer.

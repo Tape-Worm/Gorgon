@@ -10,7 +10,7 @@
         Loaded="Window_Loaded"
         Closing="Window_Closing"
         KeyDown="Window_KeyDown"
-        WindowStartupLocation="CenterScreen" UseLayoutRounding="True" SnapsToDevicePixels="True" Icon="Gorgon2.ico" AllowsTransparency="True" WindowStyle="None" 
+        WindowStartupLocation="CenterScreen" UseLayoutRounding="True" SnapsToDevicePixels="True" AllowsTransparency="True" WindowStyle="None" Icon="pack://application:,,,/GlassCube.WPF;component/Gorgon2.ico"
         Background="Transparent" MouseLeftButtonDown="Window_MouseLeftButtonDown" MouseMove="Window_MouseMove" MouseLeftButtonUp="Window_MouseLeftButtonUp">
     <Window.Resources>
     </Window.Resources>

@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -26,10 +26,10 @@
 using System.Text.Json.Serialization;
 
 // TODO:
-//Add functionality to add plugin names to the project indicating which plugins were available when the project was created
+//Add functionality to add Plugin names to the project indicating which Plugins were available when the project was created
 //If no names are present - Do a full scan on loading the file system
-//If all plug-in names match in count and names - Quick load
-//If plug-in names differ, or a plug-in is missing, or a new plug-in was added - Do a full scan on loading the file system.
+//If all plugin names match in count and names - Quick load
+//If plugin names differ, or a plugin is missing, or a new plugin was added - Do a full scan on loading the file system.
 
 namespace Gorgon.Editor.ProjectData;
 
@@ -56,7 +56,7 @@ public interface IProject
     /// Property to return the temporary directory for the project.
     /// </summary>
     /// <remarks>
-    /// The temporary directory is for plug-ins and the editor to store transitory data that only needs to exist during the lifetime of the application or plug-in. Nothing in this directory is saved 
+    /// The temporary directory is for plugins and the editor to store transitory data that only needs to exist during the lifetime of the application or plugin. Nothing in this directory is saved 
     /// into the project.
     /// </remarks>
     [JsonIgnore]

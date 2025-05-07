@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -32,7 +32,6 @@ using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
 using Gorgon.Renderers;
 using Gorgon.Timing;
-using Gorgon.UI.OLDE;
 
 namespace Gorgon.Examples;
 
@@ -84,27 +83,27 @@ static class Program
 
         _renderer.DrawString("Polygonal Sprite",
                              new Vector2((_screen.Width / 4.0f) - (_polySprite.Size.X * 0.5f),
-                                            (_screen.Height / 4.0f) - (_polySprite.Size.Y * 0.5f) - _renderer.DefaultFont.LineHeight));
+                                            (_screen.Height / 4.0f) - (_polySprite.Size.Y * 0.5f) - _renderer.DefaultFont.LineHeight + 5));
 
         _renderer.DrawString("Polygonal Sprite (Wireframe)",
                              new Vector2(_screen.Width - (_screen.Width / 4.0f) - (_polySprite.Size.X * 0.5f),
-                                            (_screen.Height / 4.0f) - (_polySprite.Size.Y * 0.5f) - _renderer.DefaultFont.LineHeight));
+                                            (_screen.Height / 4.0f) - (_polySprite.Size.Y * 0.5f) - _renderer.DefaultFont.LineHeight + 5));
 
         _renderer.DrawString("Rectangular Sprite",
                              new Vector2((_screen.Width / 4.0f) - (_polySprite.Size.X * 0.5f),
-                                            _screen.Height - (_screen.Height / 4.0f) - (_polySprite.Size.Y * 0.5f) - _renderer.DefaultFont.LineHeight));
+                                            _screen.Height - (_screen.Height / 4.0f) - (_polySprite.Size.Y * 0.5f) - _renderer.DefaultFont.LineHeight + 5));
 
         _renderer.DrawString("Rectangular Sprite (Wireframe)",
                              new Vector2(_screen.Width - (_screen.Width / 4.0f) - (_polySprite.Size.X * 0.5f),
-                                            _screen.Height - (_screen.Height / 4.0f) - (_polySprite.Size.Y * 0.5f) - _renderer.DefaultFont.LineHeight));
+                                            _screen.Height - (_screen.Height / 4.0f) - (_polySprite.Size.Y * 0.5f) - _renderer.DefaultFont.LineHeight + 5));
 
         _normalSprite.Texture = _texture;
         _normalSprite.Angle = _angle1;
-        _normalSprite.Position = new Vector2(_screen.Width / 4.0f, _screen.Height - (_screen.Height / 4.0f));
+        _normalSprite.Position = new Vector2(_screen.Width / 4.0f, _screen.Height - (_screen.Height / 4.0f) + 5);
 
         _polySprite.Texture = _texture;
         _polySprite.Angle = _angle2;
-        _polySprite.Position = new Vector2(_screen.Width / 4.0f, (_screen.Height / 4.0f));
+        _polySprite.Position = new Vector2(_screen.Width / 4.0f, (_screen.Height / 4.0f) + 5);
 
         _renderer.DrawSprite(_normalSprite);
         _renderer.DrawPolygonSprite(_polySprite);
@@ -116,11 +115,11 @@ static class Program
 
         _normalSprite.Texture = null;
         _normalSprite.Angle = _angle2;
-        _normalSprite.Position = new Vector2(_screen.Width - (_screen.Width / 4.0f), _screen.Height - (_screen.Height / 4.0f));
+        _normalSprite.Position = new Vector2(_screen.Width - (_screen.Width / 4.0f), _screen.Height - (_screen.Height / 4.0f) + 5);
 
         _polySprite.Texture = null;
         _polySprite.Angle = _angle1;
-        _polySprite.Position = new Vector2(_screen.Width - (_screen.Width / 4.0f), (_screen.Height / 4.0f));
+        _polySprite.Position = new Vector2(_screen.Width - (_screen.Width / 4.0f), (_screen.Height / 4.0f) + 5);
 
         _renderer.DrawSprite(_normalSprite);
         _renderer.DrawPolygonSprite(_polySprite);
@@ -163,7 +162,7 @@ static class Program
 
         try
         {
-            IReadOnlyList<IGorgonVideoAdapterInfo> videoDevices = GorgonGraphics.EnumerateAdapters(log: GorgonApplication.Log);
+            IReadOnlyList<IGorgonVideoAdapterInfo> videoDevices = GorgonGraphics.EnumerateAdapters(log: GorgonExample.Log);
 
             if (videoDevices.Count == 0)
             {
@@ -172,7 +171,7 @@ static class Program
             }
 
             // Find the best video device.
-            _graphics = new GorgonGraphics(videoDevices.OrderByDescending(item => item.FeatureSet).First());
+            _graphics = new GorgonGraphics(videoDevices.OrderByDescending(item => item.FeatureSet).First(), log: GorgonExample.Log);
 
             _screen = new GorgonSwapChain(_graphics,
                                           window,
@@ -202,6 +201,8 @@ static class Program
             GorgonExample.LoadResources(_graphics);
 
             CreateSprites();
+
+            GorgonExample.Loop.Run(Idle);
 
             return window;
         }
@@ -254,7 +255,7 @@ static class Program
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            GorgonApplication.Run(Initialize(), Idle);
+            Application.Run(Initialize());
         }
         catch (Exception ex)
         {
@@ -262,12 +263,13 @@ static class Program
         }
         finally
         {
-            GorgonExample.UnloadResources();
             _polySprite?.Dispose();
             _texture?.Dispose();
             _renderer?.Dispose();
             _screen?.Dispose();
             _graphics?.Dispose();
+
+            GorgonExample.ShutDown();
         }
     }
 }

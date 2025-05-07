@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2019 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -29,7 +29,7 @@ using Gorgon.Editor.UI;
 namespace Gorgon.Editor.AnimationEditor;
 
 /// <summary>
-/// The view model for the importer plug-in settings
+/// The view model for the importer plugin settings
 /// </summary>
 internal interface IImportSettings
     : ISettingsCategory
@@ -43,9 +43,9 @@ internal interface IImportSettings
     }
 
     /// <summary>
-    /// Propery to return the paths to the codec plug-ins.
+    /// Propery to return the paths to the codec plugins.
     /// </summary>
-    ObservableCollection<CodecSetting> CodecPlugInPaths
+    ObservableCollection<CodecSetting> CodecPluginPaths
     {
         get;
     }
@@ -59,17 +59,17 @@ internal interface IImportSettings
     }
 
     /// <summary>
-    /// Property to return the command for loading a plug-in assembly.
+    /// Property to return the command for loading a plugin assembly.
     /// </summary>
-    IEditorCommand<object> LoadPlugInAssemblyCommand
+    IEditorCommand<object> LoadPluginAssemblyCommand
     {
         get;
     }
 
     /// <summary>
-    /// Property to return the command to unloading a plug-in assembly.
+    /// Property to return the command to unloading a plugin assembly.
     /// </summary>
-    IEditorCommand<object> UnloadPlugInAssembliesCommand
+    IEditorCommand<object> UnloadPluginAssembliesCommand
     {
         get;
     }

@@ -27,6 +27,9 @@ using Gorgon.Diagnostics.LogProviders;
 
 namespace Gorgon.Diagnostics;
 
+/// <summary>
+/// A default log provider that does nothing.
+/// </summary>
 internal class DummyLogProvider
     : IGorgonLogProvider
 {
@@ -48,7 +51,7 @@ internal class DummyLogProvider
     }
 
     /// <inheritdoc/>
-    public void SendMessage(string message)
+    public void SendMessage(string message, MessageType messageType)
     {
         // Intentionally left blank.
     }

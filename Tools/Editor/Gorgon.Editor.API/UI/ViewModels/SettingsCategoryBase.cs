@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2020 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,7 +23,7 @@
 // Created: February 5, 2020 4:30:08 PM
 // 
 
-using Gorgon.Editor.PlugIns;
+using Gorgon.Editor.Plugins;
 using Gorgon.Editor.UI.Views;
 
 namespace Gorgon.Editor.UI;
@@ -34,18 +34,18 @@ namespace Gorgon.Editor.UI;
 /// <typeparam name="T">The type of parameters for this view model. Must implement <see cref="ISettingsCategory"/>.</typeparam>
 /// <remarks>
 /// <para>
-/// This is a view model that is used provide a settings interface for a plug-in. The editor will pick these up and present your custom settings view (along with the view model) so that users can make 
-/// changes to plug-in settings. These settings objects are returned to the host editor application by way of the <see cref="EditorPlugIn.OnGetSettings"/> method
+/// This is a view model that is used provide a settings interface for a plugin. The editor will pick these up and present your custom settings view (along with the view model) so that users can make 
+/// changes to plugin settings. These settings objects are returned to the host editor application by way of the <see cref="EditorPlugin.OnGetSettings"/> method
 /// </para>
 /// <para>
-/// To register a settings panel, the developer must inherit this view model type, and create a settings view model for the plug-in settings they wish to update. A view must be registered to the 
+/// To register a settings panel, the developer must inherit this view model type, and create a settings view model for the plugin settings they wish to update. A view must be registered to the 
 /// the view model by using the <see cref="ViewFactory"/>.<see cref="ViewFactory.Register{T}(Func{Control})"/> method
 /// </para>
 /// <para>
 /// Any parameters for this view model must inherit from the <see cref="SettingsCategoryViewModelParameters"/> class
 /// </para>
 /// </remarks>
-/// <seealso cref="EditorPlugIn"/>
+/// <seealso cref="EditorPlugin"/>
 /// <seealso cref="ViewFactory"/>
 /// <seealso cref="SettingsCategoryViewModelParameters"/>
 public abstract class SettingsCategoryBase<T>

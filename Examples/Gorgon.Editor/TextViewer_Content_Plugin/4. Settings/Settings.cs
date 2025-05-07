@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2020 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -34,7 +34,7 @@ internal class Settings
     : SettingsCategoryBase<SettingsParameters>, ISettings
 {
 
-    // The settings data for the plug-in.
+    // The settings data for the plugin.
     private TextContentSettings _settings;
 
     /// <summary>Property to set or return the default font face.</summary>

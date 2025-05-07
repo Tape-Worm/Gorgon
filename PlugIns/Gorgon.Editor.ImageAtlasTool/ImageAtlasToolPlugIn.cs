@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2019 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,7 @@
 
 using Gorgon.Editor.Content;
 using Gorgon.Editor.ImageAtlasTool.Properties;
-using Gorgon.Editor.PlugIns;
+using Gorgon.Editor.Plugins;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI.Controls;
 using Gorgon.Graphics.Imaging.Codecs;
@@ -36,20 +36,20 @@ using Gorgon.UI.OLDE;
 namespace Gorgon.Editor.ImageAtlasTool;
 
 /// <summary>
-/// A plug-in used to build a texture atlas from a series of individual images, and optionally create images using the resulting texture atlas
+/// A plugin used to build a texture atlas from a series of individual images, and optionally create images using the resulting texture atlas
 /// </summary>
 /// <remarks>
 /// <para>
-/// This plug-in is different from the texture atlas generator tool in that it uses individual image files to create the atlas. This is useful in the case where each separate image file is a sprite  
+/// This plugin is different from the texture atlas generator tool in that it uses individual image files to create the atlas. This is useful in the case where each separate image file is a sprite  
 /// (like back in the olden DOS days and is not performant with GPUs). This allows content creators just to create a single image for a sprite, without having to build a sprite for each image
 /// </para>
 /// </remarks>
-internal class ImageAtlasToolPlugIn
-    : ToolPlugIn
+internal class ImageAtlasToolPlugin
+    : ToolPlugin
 {
 
     // The cached button definition.
-    private ToolPlugInRibbonButton _button;
+    private ToolPluginRibbonButton _button;
     // The default image codec to use.
     private IGorgonImageCodec _defaultImageCodec;
     // The default image codec to use.
@@ -138,7 +138,7 @@ internal class ImageAtlasToolPlugIn
 
         try
         {
-            settings = HostToolServices.ToolPlugInService.ReadContentSettings<TextureAtlasSettings>(typeof(ImageAtlasToolPlugIn).FullName);
+            settings = HostToolServices.ToolPluginService.ReadContentSettings<TextureAtlasSettings>(typeof(ImageAtlasToolPlugin).FullName);
 
             settings ??= new TextureAtlasSettings();
 
@@ -163,7 +163,7 @@ internal class ImageAtlasToolPlugIn
             HostToolServices.BusyService.SetIdle();
             form.ShowDialog(GorgonApplication.MainForm);
 
-            HostToolServices.ToolPlugInService.WriteContentSettings(typeof(ImageAtlasToolPlugIn).FullName, settings);
+            HostToolServices.ToolPluginService.WriteContentSettings(typeof(ImageAtlasToolPlugin).FullName, settings);
         }
         catch (Exception ex)
         {
@@ -180,35 +180,35 @@ internal class ImageAtlasToolPlugIn
     /// <returns>A new tool ribbon button instance.</returns>
     /// <remarks>
     ///   <para>
-    /// Tool plug-in developers must override this method to return the button which is inserted on the application ribbon, under the "Tools" tab. If the method returns <b>null</b>, then the tool is
+    /// Tool plugin developers must override this method to return the button which is inserted on the application ribbon, under the "Tools" tab. If the method returns <b>null</b>, then the tool is
     /// ignored.
     /// </para>
     ///   <para>
-    /// The resulting data structure will contain the means to handle the click event for the tool, and as such, is the only means of communication between the main UI and the plug-in.
+    /// The resulting data structure will contain the means to handle the click event for the tool, and as such, is the only means of communication between the main UI and the plugin.
     /// </para>
     /// </remarks>
-    protected override IToolPlugInRibbonButton OnGetToolButton()
+    protected override IToolPluginRibbonButton OnGetToolButton()
     {
         _button.ClickCallback ??= ShowForm;
 
         return _button;
     }
 
-    /// <summary>Function to provide initialization for the plugin.</summary>
-    /// <remarks>This method is only called when the plugin is loaded at startup.</remarks>
+    /// <summary>Function to provide initialization for the Plugin.</summary>
+    /// <remarks>This method is only called when the Plugin is loaded at startup.</remarks>
     protected override void OnInitialize()
     {
         _defaultImageCodec = new GorgonCodecDds();
         _defaultSpriteCodec = new GorgonV3SpriteBinaryCodec(HostToolServices.GraphicsContext.Renderer2D);
 
-        _button = new ToolPlugInRibbonButton(Resources.GORIAG_TEXT_BUTTON, Resources.imageatlas_48x48, Resources.imageatlas_16x16, Resources.GORIAG_GROUP_BUTTON)
+        _button = new ToolPluginRibbonButton(Resources.GORIAG_TEXT_BUTTON, Resources.imageatlas_48x48, Resources.imageatlas_16x16, Resources.GORIAG_GROUP_BUTTON)
         {
             Description = Resources.GORIAG_DESC_BUTTON
         };
         _button.ValidateButton();
     }
 
-    /// <summary>Function to provide clean up for the plugin.</summary>
+    /// <summary>Function to provide clean up for the Plugin.</summary>
     protected override void OnShutdown()
     {
         // Disconnect from the button to ensure that we don't get this thing keeping us around longer than we should.
@@ -221,9 +221,9 @@ internal class ImageAtlasToolPlugIn
         base.OnShutdown();
     }
 
-    /// <summary>Initializes a new instance of the <see cref="ImageAtlasToolPlugIn"/> class.</summary>
-    public ImageAtlasToolPlugIn()
-        : base(Resources.GORIAG_PLUGIN_DESC)
+    /// <summary>Initializes a new instance of the <see cref="ImageAtlasToolPlugin"/> class.</summary>
+    public ImageAtlasToolPlugin()
+        : base(Resources.GORIAG_plugin_DESC)
     {
     }
 }

@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2019 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -29,31 +29,31 @@ using Gorgon.Editor.UI;
 namespace Gorgon.Editor.ViewModels;
 
 /// <summary>
-/// The plug-in list category for the settings
+/// The plugin list category for the settings
 /// </summary>
-internal interface ISettingsPlugInsList
+internal interface ISettingsPluginsList
     : ISettingsCategory
 {
     /// <summary>
-    /// Property to return the plug-ins.
+    /// Property to return the plugins.
     /// </summary>
-    ObservableCollection<ISettingsPlugInListItem> PlugIns
+    ObservableCollection<ISettingsPluginListItem> Plugins
     {
         get;
     }
 
     /// <summary>
-    /// Property to return the currently selected plug-in.
+    /// Property to return the currently selected plugin.
     /// </summary>
-    ISettingsPlugInListItem Current
+    ISettingsPluginListItem Current
     {
         get;
     }
 
     /// <summary>
-    /// Property to return the command to execute for selecting plug-ins.
+    /// Property to return the command to execute for selecting plugins.
     /// </summary>
-    IEditorCommand<int> SelectPlugInCommand
+    IEditorCommand<int> SelectPluginCommand
     {
         get;
     }

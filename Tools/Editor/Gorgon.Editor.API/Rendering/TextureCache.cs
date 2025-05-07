@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2020 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -416,7 +416,7 @@ public class TextureCache(GorgonGraphics graphics, IContentFileManager fileManag
                 if (counter == 4)
                 {
                     _log.PrintWarning("There was an error deleting the temporary cache directory.", LoggingLevel.Verbose);
-                    _log.LogException(ex);
+                    _log.PrintException(ex);
                 }
                 else
                 {

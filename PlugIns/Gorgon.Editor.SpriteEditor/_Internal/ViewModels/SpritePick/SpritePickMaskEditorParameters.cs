@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2020 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,7 +23,7 @@
 // Created: May 9, 2020 11:26:04 PM
 // 
 
-using Gorgon.Editor.PlugIns;
+using Gorgon.Editor.Plugins;
 using Gorgon.Editor.UI;
 
 namespace Gorgon.Editor.SpriteEditor;
@@ -32,13 +32,13 @@ namespace Gorgon.Editor.SpriteEditor;
 /// Parameters for the <see cref="ISpritePickMaskEditor"/> view model
 /// </summary>
 /// <remarks>Initializes a new instance of the <see cref="SpritePickMaskEditorParameters"/> class.</remarks>
-/// <param name="pluginSettings">The plugin settings.</param>
+/// <param name="pluginSettings">The Plugin settings.</param>
 /// <param name="hostServices">The host application services.</param>
 internal class SpritePickMaskEditorParameters(ISettings pluginSettings, IHostContentServices hostServices)
         : HostedPanelViewModelParameters(hostServices)
 {
     /// <summary>
-    /// Property to return the plug-in settings.
+    /// Property to return the plugin settings.
     /// </summary>
     public ISettings PluginSettings
     {

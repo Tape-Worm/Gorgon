@@ -1,5 +1,5 @@
 ﻿// Gorgon.
-// Copyright (C) 2024 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -29,7 +29,8 @@ namespace Gorgon.Collections;
 /// <param name="chars">The characters to evaluate.</param>
 /// <param name="separators">The characters to use as separators.</param>
 /// <param name="includeBlanks"><b>true</b> to keep empty entries, <b>false</b> to skip.</param>
-public ref struct GorgonSpanCharEnumerator(ReadOnlySpan<char> chars, ReadOnlySpan<char> separators, bool includeBlanks)
+/// <param name="reverse"><b>true</b> to reverse the enumeration, <b>false</b> to move forward</param>
+public ref struct GorgonSpanCharEnumerator(ReadOnlySpan<char> chars, ReadOnlySpan<char> separators, bool includeBlanks, bool reverse)
 {
     // The list of characters to split
     private ReadOnlySpan<char> _chars = chars;
@@ -37,6 +38,8 @@ public ref struct GorgonSpanCharEnumerator(ReadOnlySpan<char> chars, ReadOnlySpa
     private readonly ReadOnlySpan<char> _separators = separators;
     // Flag to determine if blanks should be kept.
     private readonly bool _includeBlanks = includeBlanks;
+    // Flag to reverse the iterator.
+    private readonly bool _reverse = reverse;
 
     /// <summary>
     /// Property to return the current part of the string that we have split on.
@@ -54,18 +57,12 @@ public ref struct GorgonSpanCharEnumerator(ReadOnlySpan<char> chars, ReadOnlySpa
     public readonly GorgonSpanCharEnumerator GetEnumerator() => this;
 
     /// <summary>
-    /// Function to move to the next part of the string that is split by its separators.
+    /// Function to do a forward iteration.
     /// </summary>
+    /// <param name="current">The current string.</param>
     /// <returns><b>true</b> if more entries exist, or <b>false</b> if done.</returns>
-    public bool MoveNext()
+    private bool Forward(ReadOnlySpan<char> current)
     {
-        ReadOnlySpan<char> current = _chars;
-
-        if (current.IsEmpty)
-        {
-            return false;
-        }
-
         int index = 0;
 
         while (index > -1)
@@ -104,5 +101,68 @@ public ref struct GorgonSpanCharEnumerator(ReadOnlySpan<char> chars, ReadOnlySpa
         }
 
         return false;
+    }
+
+    /// <summary>
+    /// Function to do a backward iteration.
+    /// </summary>
+    /// <param name="current">The current string.</param>
+    /// <returns><b>true</b> if more entries exist, or <b>false</b> if done.</returns>
+    private bool Backward(ReadOnlySpan<char> current)
+    {
+        int index = 0;
+
+        while (index > -1)
+        {
+            index = current.LastIndexOfAny(_separators);
+
+            if (index == -1)
+            {
+                _chars = [];
+                Current = current;
+                return true;
+            }
+
+            if (index < _chars.Length - 1)
+            {
+                _chars = current[..index];
+            }
+            else
+            {
+                _chars = [];
+            }
+
+            ReadOnlySpan<char> item = current[(index + 1)..];
+
+            if (item.Length == 0)
+            {
+                if (!_includeBlanks)
+                {
+                    current = _chars;
+                    continue;
+                }
+            }
+
+            Current = item;
+            return true;
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Function to move to the next part of the string that is split by its separators.
+    /// </summary>
+    /// <returns><b>true</b> if more entries exist, or <b>false</b> if done.</returns>
+    public bool MoveNext()
+    {
+        ReadOnlySpan<char> current = _chars;
+
+        if (current.IsEmpty)
+        {
+            return false;
+        }
+
+        return _reverse ? Backward(current) : Forward(current);
     }
 }

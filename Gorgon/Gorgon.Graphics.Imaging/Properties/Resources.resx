@@ -144,8 +144,8 @@
   <data name="GORIMG_ERR_BUFFER_FORMAT_MISMATCH" xml:space="preserve">
     <value>The buffer formats must be same: [{0}].</value>
   </data>
-  <data name="GORIMG_ERR_CODEC_NOT_IN_PLUGIN" xml:space="preserve">
-    <value>The codec '{0}' was not found in the plug-in.</value>
+  <data name="GORIMG_ERR_CODEC_NOT_IN_plugin" xml:space="preserve">
+    <value>The codec '{0}' was not found in the plugin.</value>
   </data>
   <data name="GORIMG_ERR_COMPRESSED_SIZE_INCORRECT" xml:space="preserve">
     <value>The compressed image with and height must be a multiple of 4.
@@ -255,7 +255,7 @@ Defines how to handle downsampling the pixel data from a higher bit depth so tha
   <data name="GORIMG_TOSTR_IMAGE_CODEC" xml:space="preserve">
     <value>Gorgon {0} Image Codec</value>
   </data>
-  <data name="GORIMG_TOSTR_IMAGE_CODEC_PLUGIN_DESC" xml:space="preserve">
+  <data name="GORIMG_TOSTR_IMAGE_CODEC_plugin_DESC" xml:space="preserve">
     <value>Gorgon Image Codec {0} ({1})</value>
   </data>
 </root>

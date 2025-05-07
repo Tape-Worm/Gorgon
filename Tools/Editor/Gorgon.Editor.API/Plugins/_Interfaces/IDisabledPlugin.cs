@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,34 +23,34 @@
 // Created: November 10, 2018 8:45:04 PM
 // 
 
-namespace Gorgon.Editor.PlugIns;
+namespace Gorgon.Editor.Plugins;
 
 /// <summary>
-/// The reason code for disabling the plug-in
+/// The reason code for disabling the plugin
 /// </summary>
 public enum DisabledReasonCode
 {
     /// <summary>
-    /// User manually disabled plug-in.
+    /// User manually disabled plugin.
     /// </summary>
     User = 0,
     /// <summary>
-    /// An error occurred when loading the plug-in.
+    /// An error occurred when loading the plugin.
     /// </summary>
     Error = 1,
     /// <summary>
-    /// A validation error occurred after the plug-in was loaded.
+    /// A validation error occurred after the plugin was loaded.
     /// </summary>
     ValidationError = 2
 }
 
 /// <summary>
-/// A plug-in that was disabled for a reason
+/// A plugin that was disabled for a reason
 /// </summary>
-public interface IDisabledPlugIn
+public interface IDisabledPlugin
 {
     /// <summary>
-    /// Property to return a description that explains why a plug-in was disabled.
+    /// Property to return a description that explains why a plugin was disabled.
     /// </summary>
     string Description
     {
@@ -58,15 +58,15 @@ public interface IDisabledPlugIn
     }
 
     /// <summary>
-    /// Property to return the name of the disabled plug-in.
+    /// Property to return the name of the disabled plugin.
     /// </summary>
-    string PlugInName
+    string PluginName
     {
         get;
     }
 
     /// <summary>
-    /// Property to return the code to indicate how the plug-in was disabled.
+    /// Property to return the code to indicate how the plugin was disabled.
     /// </summary>
     DisabledReasonCode ReasonCode
     {

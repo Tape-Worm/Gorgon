@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -26,16 +26,16 @@
 using Gorgon.Core;
 using Gorgon.Editor.Properties;
 
-namespace Gorgon.Editor.PlugIns;
+namespace Gorgon.Editor.Plugins;
 
 /// <summary>
-/// A plug-in that was disabled for a reason
+/// A plugin that was disabled for a reason
 /// </summary>
-internal class DisabledPlugIn
-    : IDisabledPlugIn
+internal class DisabledPlugin
+    : IDisabledPlugin
 {
     /// <summary>
-    /// Property to return the code to indicate how the plug-in was disabled.
+    /// Property to return the code to indicate how the plugin was disabled.
     /// </summary>
     public DisabledReasonCode ReasonCode
     {
@@ -43,7 +43,7 @@ internal class DisabledPlugIn
     }
 
     /// <summary>
-    /// Property to return a description that explains why a plug-in was disabled.
+    /// Property to return a description that explains why a plugin was disabled.
     /// </summary>
     public string Description
     {
@@ -51,9 +51,9 @@ internal class DisabledPlugIn
     }
 
     /// <summary>
-    /// Property to return the name of the disabled plug-in.
+    /// Property to return the name of the disabled plugin.
     /// </summary>
-    public string PlugInName
+    public string PluginName
     {
         get;
     }
@@ -64,28 +64,28 @@ internal class DisabledPlugIn
         get;
     }
 
-    /// <summary>Initializes a new instance of the DisabledPlugIn class.</summary>
-    /// <param name="reasonCode">The code to indicate how the plug-in was disabled.</param>
-    /// <param name="pluginName">Name of the plugin that was disabled.</param>
-    /// <param name="desc">The human readable description that explains why the plug-in was disabled.</param>
-    /// <param name="path">The path to the plug-in assembly.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="pluginName" /> parameter is <b>null</b>.</exception>
-    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="pluginName" /> parameter is empty.</exception>
-    public DisabledPlugIn(DisabledReasonCode reasonCode, string pluginName, string desc, string path)
+    /// <summary>Initializes a new instance of the DisabledPlugin class.</summary>
+    /// <param name="reasonCode">The code to indicate how the plugin was disabled.</param>
+    /// <param name="PluginName">Name of the Plugin that was disabled.</param>
+    /// <param name="desc">The human readable description that explains why the plugin was disabled.</param>
+    /// <param name="path">The path to the plugin assembly.</param>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="PluginName" /> parameter is <b>null</b>.</exception>
+    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="PluginName" /> parameter is empty.</exception>
+    public DisabledPlugin(DisabledReasonCode reasonCode, string pluginName, string desc, string path)
     {
-        if (pluginName is null)
+        if (PluginName is null)
         {
-            throw new ArgumentNullException(nameof(pluginName));
+            throw new ArgumentNullException(nameof(PluginName));
         }
 
-        if (string.IsNullOrWhiteSpace(pluginName))
+        if (string.IsNullOrWhiteSpace(PluginName))
         {
-            throw new ArgumentEmptyException(nameof(pluginName));
+            throw new ArgumentEmptyException(nameof(PluginName));
         }
 
         ReasonCode = reasonCode;
-        PlugInName = pluginName;
-        Description = string.IsNullOrWhiteSpace(desc) ? Resources.GOREDIT_TEXT_DISABLED_PLUGIN_DEFAULT_TEXT : desc.Trim();
+        PluginName = pluginName;
+        Description = string.IsNullOrWhiteSpace(desc) ? Resources.GOREDIT_TEXT_DISABLED_plugin_DEFAULT_TEXT : desc.Trim();
         Path = path ?? string.Empty;
     }
 }

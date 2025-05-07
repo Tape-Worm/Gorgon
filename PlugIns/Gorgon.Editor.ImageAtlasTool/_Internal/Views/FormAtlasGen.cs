@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2019 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -56,7 +56,7 @@ internal partial class FormAtlasGen
     }
 
     /// <summary>
-    /// Property to set or return the settings for the plug-in.
+    /// Property to set or return the settings for the plugin.
     /// </summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public TextureAtlasSettings Settings
@@ -467,7 +467,7 @@ internal partial class FormAtlasGen
     /// <param name="swapChain">The swap chain used to render into the UI.</param>
     /// <remarks>
     ///   <para>
-    /// This method allows tool plug-in implementors to setup additional functionality for custom graphics rendering.
+    /// This method allows tool plugin implementors to setup additional functionality for custom graphics rendering.
     /// </para>
     ///   <para>
     /// Resources created by this method should be cleaned up in the <see cref="EditorToolBaseForm.OnShutdownGraphics"/> method.
@@ -493,7 +493,7 @@ internal partial class FormAtlasGen
     public FormAtlasGen() => InitializeComponent();
 
     /// <summary>Initializes a new instance of the <see cref="FormAtlasGen"/> class.</summary>
-    /// <param name="settings">The settings for the plug-in.</param>
+    /// <param name="settings">The settings for the plugin.</param>
     public FormAtlasGen(TextureAtlasSettings settings)
         : this() => Settings = settings;
 

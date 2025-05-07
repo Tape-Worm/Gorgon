@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,8 +24,10 @@
 // 
 
 using System.Numerics;
+using System.Reflection;
 using System.Text;
 using Gorgon.Core;
+using Gorgon.Diagnostics;
 using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -34,7 +36,7 @@ using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
 using Gorgon.Renderers;
 using Gorgon.Timing;
-using Gorgon.UI.OLDE;
+using Gorgon.UI.WindowsForms;
 
 namespace Gorgon.Examples;
 
@@ -56,11 +58,43 @@ public static class GorgonExample
     private static readonly StringBuilder _statsText = new();
     // The main window for the application.
     private static FormMain _mainForm;
+    // The lazy instance of the log file.
+    private readonly static Lazy<IGorgonLog> _lazyLog = new(() =>
+    {
+        Assembly assembly = Assembly.GetEntryAssembly();
+
+        if (assembly is null)
+        {
+            return GorgonLog.NullLog;
+        }
+
+        AssemblyName assemblyName = assembly.GetName();
+
+        string name = assemblyName.Name;
+        Version version = assemblyName.Version;
+
+        GorgonTextFileLog log = new(assembly.GetName().Name ?? "Unknown Example", "Tape_Worm", version);
+        log.LogStart(new GorgonComputerInfo());
+
+        return log;
+    }, LazyThreadSafetyMode.ExecutionAndPublication);
+    // The application loop instance.
+    private readonly static Lazy<GorgonApplicationLoop> _lazyLoop = new(() => GorgonApplicationLoop.Create(Log));
 
     /// <summary>
-    /// Property to set or return the path to the plug-in directory.
+    /// Property to return the logging interface for the example.
     /// </summary>
-    public static DirectoryInfo PlugInLocationDirectory
+    public static IGorgonLog Log => _lazyLog.Value;
+
+    /// <summary>
+    /// Property to return the application loop instance to use for this example.
+    /// </summary>
+    public static GorgonApplicationLoop Loop => _lazyLoop.Value;
+
+    /// <summary>
+    /// Property to set or return the path to the plugin directory.
+    /// </summary>
+    public static DirectoryInfo PluginLocationDirectory
     {
         get;
         set;
@@ -95,16 +129,30 @@ public static class GorgonExample
     public static GorgonFontFactory Fonts => _factory;
 
     /// <summary>
-    /// Function to retrieve the directory that contains the plugins for an application.
+    /// Function called when a key is pressed in the application.
     /// </summary>
-    /// <returns>A directory information object for the plugin path.</returns>
-    public static DirectoryInfo GetPlugInPath()
+    /// <param name="sender">The sender of the event.</param>
+    /// <param name="e">The event parameters.</param>
+    private static void FormKeyDown(object sender, KeyEventArgs e)
     {
-        string path = PlugInLocationDirectory?.FullName;
+        if (e.KeyCode == Keys.Escape)
+        {
+            _mainForm?.Close();
+            e.Handled = true;
+        }
+    }
+
+    /// <summary>
+    /// Function to retrieve the directory that contains the Plugins for an application.
+    /// </summary>
+    /// <returns>A directory information object for the Plugin path.</returns>
+    public static DirectoryInfo GetPluginPath()
+    {
+        string path = PluginLocationDirectory?.FullName;
 
         if (string.IsNullOrWhiteSpace(path))
         {
-            throw new IOException("No plug-in path has been assigned.");
+            throw new IOException("No plugin path has been assigned.");
         }
 
         if (path.Contains("{0}"))
@@ -121,7 +169,11 @@ public static class GorgonExample
             path += Path.DirectorySeparatorChar.ToString();
         }
 
-        return new DirectoryInfo(Path.GetFullPath(path));
+        DirectoryInfo result = new(Path.GetFullPath(path));
+
+        Log.Print($"Example plug in path: {result.FullName}", LoggingLevel.Simple);
+
+        return result;
     }
 
     /// <summary>
@@ -149,7 +201,11 @@ public static class GorgonExample
         path += extraPath.FormatDirectory(Path.DirectorySeparatorChar);
 
         // Ensure that we have an absolute path.
-        return new DirectoryInfo(Path.GetFullPath(path));
+        DirectoryInfo result = new(Path.GetFullPath(path));
+
+        Log.Print($"Example resources path: {result.FullName}", LoggingLevel.Simple);
+
+        return result;
     }
 
     /// <summary>
@@ -194,7 +250,7 @@ public static class GorgonExample
         }
 
         Cursor.Show();
-        ex.Handle(e => GorgonDialogs.ErrorBox(null, "There was an error running the application and it must now close.", "Error", e), GorgonApplication.Log);
+        ex.Handle(e => GorgonDialogs.Error(null, e, "There was an error running the application and it must now close.", "Error"), Log);
     }
 
     /// <summary>
@@ -298,6 +354,24 @@ public static class GorgonExample
     }
 
     /// <summary>
+    /// Function called when the application is shutting down.
+    /// </summary>
+    public static void ShutDown()
+    {
+        UnloadResources();
+
+        if (_lazyLoop.IsValueCreated)
+        {
+            Loop.Dispose();
+        }
+
+        if (_lazyLog.IsValueCreated)
+        {
+            Log.LogEnd();
+        }
+    }
+
+    /// <summary>
     /// Function to load the logo for display in the application.
     /// </summary>
     /// <param name="graphics">The graphics interface to use.</param>
@@ -307,6 +381,8 @@ public static class GorgonExample
         {
             throw new ArgumentNullException(nameof(graphics));
         }
+
+        Log.Print("Loading example resources...", LoggingLevel.Simple);
 
         _blitter = new GorgonTextureBlitter(graphics);
 
@@ -342,11 +418,15 @@ public static class GorgonExample
     /// <returns>The newly created form.</returns>
     public static FormMain Initialize(GorgonPoint resolution, string appTitle, EventHandler formLoad = null)
     {
+        Log.Print("Initializing example...", LoggingLevel.Simple);
+
         _mainForm = new FormMain
         {
             Text = appTitle,
             ClientSize = new Size(resolution.X, resolution.Y)
         };
+
+        _mainForm.KeyDown += FormKeyDown;
 
         if (formLoad is not null)
         {

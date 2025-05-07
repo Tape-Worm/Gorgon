@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2019 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,13 +23,13 @@
 // Created: January 5, 2019 2:46:03 PM
 // 
 
-using Gorgon.Editor.PlugIns;
+using Gorgon.Editor.Plugins;
 using Gorgon.Editor.Services;
 
 namespace Gorgon.Editor.ImageEditor;
 
 /// <summary>
-/// A list of services required for the image plug-in
+/// A list of services required for the image plugin
 /// </summary>
 internal class ImageEditorServices
 {

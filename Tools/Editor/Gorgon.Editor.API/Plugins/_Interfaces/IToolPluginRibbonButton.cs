@@ -1,11 +1,11 @@
 ﻿using Gorgon.Core;
 
-namespace Gorgon.Editor.PlugIns;
+namespace Gorgon.Editor.Plugins;
 
 /// <summary>
 /// Defines a button to display on the ribbon bar, in the tools area
 /// </summary>
-public interface IToolPlugInRibbonButton
+public interface IToolPluginRibbonButton
     : IGorgonNamedObject
 {
     /// <summary>

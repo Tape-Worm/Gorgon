@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2017 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,8 +22,6 @@
 // 
 // Created: March 4, 2017 12:47:54 PM
 // 
-
-using Gorgon.UI.OLDE;
 
 namespace Gorgon.Examples;
 
@@ -61,11 +59,15 @@ internal static class Program
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            GorgonApplication.Run(new Form());
+            Application.Run(new Form());
         }
         catch (Exception ex)
         {
             GorgonExample.HandleException(ex);
+        }
+        finally
+        {
+            GorgonExample.ShutDown();
         }
     }
 }

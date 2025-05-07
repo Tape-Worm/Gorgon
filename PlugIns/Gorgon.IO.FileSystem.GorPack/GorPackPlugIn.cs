@@ -1,5 +1,5 @@
 ﻿// Gorgon.
-// Copyright (C) 2024 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -29,8 +29,8 @@ namespace Gorgon.IO.FileSystem.Providers;
 /// <summary>
 /// The plug in factory for creating a Gorgon Pack file system provider.
 /// </summary>
-internal class GorPackPlugIn()
-    : GorgonFileSystemProviderPlugIn(Resources.GORFS_GORPACK_DESC)
+internal class GorPackPlugin()
+    : GorgonFileSystemProviderPlugin(Resources.GORFS_GORPACK_DESC)
 {
     /// <inheritdoc/>
     public override IGorgonFileSystemProvider CreateProvider(IGorgonLog? log = null) => new GorPackProvider(log ?? GorgonLog.NullLog);

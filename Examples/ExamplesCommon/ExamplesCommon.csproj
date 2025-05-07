@@ -5,65 +5,59 @@
     <ForceDesignerDpiUnaware>true</ForceDesignerDpiUnaware>
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
     <UseWindowsForms>true</UseWindowsForms>
-    <Version>4.0.0</Version>
     <Authors>Michael Winsor</Authors>
     <Company>Tape_Worm</Company>
     <Product>Gorgon</Product>
     <Description>Common functionality for Gorgon example applications.</Description>
     <Copyright>(C)opyright Tape_Worm, 2020</Copyright>
-    <PackageLicenseFile>
-    </PackageLicenseFile>
+    <PackageLicenseFile></PackageLicenseFile>
     <PackageProjectUrl>https://www.tape-worm.net</PackageProjectUrl>
-
-
     <RepositoryUrl>https://github.com/Tape-Worm/Gorgon</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
-    <PackageTags>Gorgon, C#, .NET Framework, Direct 3D, SharpDX, Winforms</PackageTags>
+    <PackageTags>Gorgon, C#, Direct 3D, SharpDX, Winforms</PackageTags>
     <EnableNETAnalyzers>false</EnableNETAnalyzers>
     <RootNamespace>Gorgon.Examples</RootNamespace>
-    <NeutralLanguage>
-    </NeutralLanguage>
+    <NeutralLanguage></NeutralLanguage>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <SignAssembly>false</SignAssembly>
-    <AssemblyOriginatorKeyFile>
-    </AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile></AssemblyOriginatorKeyFile>
     <DelaySign>false</DelaySign>
     <ImplicitUsings>enable</ImplicitUsings>
     <AssemblyVersion>4.0.0.0</AssemblyVersion>
     <FileVersion>4.0.0.0</FileVersion>
+    <VersionPrefix>4.0.0</VersionPrefix>
   </PropertyGroup>
   <PropertyGroup>
     <EmbeddedResourceUseDependentUponConvention>true</EmbeddedResourceUseDependentUponConvention>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>
-    </DocumentationFile>
+    <DocumentationFile></DocumentationFile>
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>
-    </DocumentationFile>
+    <DocumentationFile></DocumentationFile>
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
     <PlatformTarget>AnyCPU</PlatformTarget>
+    <VersionSuffix>Dev</VersionSuffix>
   </PropertyGroup>
   <ItemGroup>
     <None Include="..\..\Gorgon\g.png">
       <Pack>True</Pack>
-      <PackagePath>
-      </PackagePath>
+      <PackagePath></PackagePath>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.3" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.3" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.4" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.4" />
     <PackageReference Include="SharpDX.Mathematics" Version="4.2.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Gorgon\Gorgon.Graphics.Core\Gorgon.Graphics.Core.csproj" />
     <ProjectReference Include="..\..\Gorgon\Gorgon.Graphics.Fonts\Gorgon.Graphics.Fonts.csproj" />
     <ProjectReference Include="..\..\Gorgon\Gorgon.Renderers\Gorgon2D\Gorgon.Renderers.Gorgon2D.csproj" />
+    <ProjectReference Include="..\..\Gorgon\Gorgon.UI\WindowsForms\Gorgon.UI.WindowsForms.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">

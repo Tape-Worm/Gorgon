@@ -130,7 +130,7 @@
   <data name="GORTAG_TEXT_NO_SPRITES" xml:space="preserve">
     <value>No sprites loaded.</value>
   </data>
-  <data name="GORTAG_PLUGIN_DESC" xml:space="preserve">
+  <data name="GORTAG_plugin_DESC" xml:space="preserve">
     <value>Gorgon Texture Atlas</value>
   </data>
   <data name="GORTAG_ERR_LOAD_SPRITES" xml:space="preserve">

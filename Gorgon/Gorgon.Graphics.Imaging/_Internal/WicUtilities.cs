@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2016 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -946,7 +946,7 @@ class WicUtilities
     public IReadOnlyList<GorgonPoint> GetFrameOffsetMetadata(Stream stream, Guid fileFormat, IReadOnlyList<string> metadataNames)
     {
         long oldPosition = stream.Position;
-        GorgonSubStream wrapper = new(stream, allowWrite: false);
+        GorgonStreamSlice wrapper = new(stream, allowWrite: false);
         BitmapDecoder decoder = null;
         WICStream wicStream = null;
         BitmapFrameDecode frame = null;
@@ -1000,7 +1000,7 @@ class WicUtilities
     public GorgonImageInfo GetImageMetaDataFromStream(Stream stream, Guid fileFormat, IGorgonImageCodecDecodingOptions options)
     {
         long oldPosition = stream.Position;
-        GorgonSubStream wrapper = new(stream, allowWrite: false);
+        GorgonStreamSlice wrapper = new(stream, allowWrite: false);
         (GorgonImageInfo ImageInfo,
             BitmapFrameDecode FrameDecoder,
             BitmapDecoder Decoder,
@@ -1336,7 +1336,7 @@ class WicUtilities
     public int[] GetFrameDelays(Stream stream, Guid decoderFormat, string delayMetaDataName)
     {
         long oldPosition = stream.Position;
-        GorgonSubStream wrapper = new(stream, allowWrite: false);
+        GorgonStreamSlice wrapper = new(stream, allowWrite: false);
         BitmapDecoder decoder = null;
         WICStream wicStream = null;
         BitmapFrameDecode frame = null;

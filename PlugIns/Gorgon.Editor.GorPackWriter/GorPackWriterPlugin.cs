@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -30,25 +30,25 @@ using System.Text;
 using System.Xml.Linq;
 using Gorgon.Core;
 using Gorgon.Editor.GorPackWriter.Properties;
-using Gorgon.Editor.PlugIns;
+using Gorgon.Editor.Plugins;
 using Gorgon.IO;
 using Gorgon.Math;
 using ICSharpCode.SharpZipLib.BZip2;
 using Microsoft.IO;
 
-namespace Gorgon.Editor.GorPackWriterPlugIn;
+namespace Gorgon.Editor.GorPackWriterPlugin;
 
 /// <summary>
-/// Gorgon packed file writer plug-in interface
+/// Gorgon packed file writer plugin interface
 /// </summary>
-internal class GorPackWriterPlugIn
-    : FileWriterPlugIn
+internal class GorPackWriterPlugin
+    : FileWriterPlugin
 {
 
     // The header for the file.
     private const string FileHeader = "GORPACK1.SharpZip.BZ2";
-    // The type name for v2 of the Gorgon file writer plugin.
-    private const string EquivV2PlugIn = "GorgonLibrary.Editor.GorPackWriterPlugIn.GorgonGorPackWriterPlugIn";
+    // The type name for v2 of the Gorgon file writer Plugin.
+    private const string EquivV2Plugin = "GorgonLibrary.Editor.GorPackWriterPlugin.GorgonGorPackWriterPlugin";
     /// <summary>
     /// The maximum size of a write transfer buffer, in bytes.
     /// </summary>
@@ -63,9 +63,9 @@ internal class GorPackWriterPlugIn
     // The global buffer used to write out data to a stream.
     private byte[] _globalWriteBuffer;
 
-    /// <summary>Property to return the equivalent type name for v2 of the Gorgon file writer plugin.</summary>
+    /// <summary>Property to return the equivalent type name for v2 of the Gorgon file writer Plugin.</summary>
     /// <remarks>This is here to facilitate importing of file metadata from v2 of the gorgon editor files. Only specify a compatible type here, otherwise things will go wrong.</remarks>
-    public override string V2PlugInName => EquivV2PlugIn;
+    public override string V2PluginName => EquivV2Plugin;
 
     /// <summary>
     /// Property to return the capabilities of the writer.
@@ -502,7 +502,7 @@ internal class GorPackWriterPlugIn
     }
 
     /// <summary>
-    /// Function to determine if the type of file specified can be written by this plug-in.
+    /// Function to determine if the type of file specified can be written by this plugin.
     /// </summary>
     /// <param name="file">The file to evaluate.</param>
     /// <returns><b>true</b> if the writer can write the type of file, or <b>false</b> if it cannot.</returns>
@@ -641,9 +641,9 @@ internal class GorPackWriterPlugIn
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="GorPackWriterPlugIn"/> class.
+    /// Initializes a new instance of the <see cref="GorPackWriterPlugin"/> class.
     /// </summary>
-    public GorPackWriterPlugIn()
+    public GorPackWriterPlugin()
         : base(Resources.GORPKW_DESC, [new GorgonFileExtension("gorPack", Resources.GORPKW_GORPACK_FILE_EXT_DESC)])
     {
     }

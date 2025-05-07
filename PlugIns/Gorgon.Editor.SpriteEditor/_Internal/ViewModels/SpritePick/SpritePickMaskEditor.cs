@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2020 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -35,7 +35,7 @@ internal class SpritePickMaskEditor
     : HostedPanelViewModelBase<SpritePickMaskEditorParameters>, ISpritePickMaskEditor
 {
 
-    // The settings for the plug-in.
+    // The settings for the plugin.
     private ISettings _pluginSettings;
 
     /// <summary>Property to set or return the type of masking to perform when picking a sprite using the sprite picker tool.</summary>

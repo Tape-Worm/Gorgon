@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -2836,7 +2836,7 @@ internal partial class FileExploder
 
             SetSplitterDistance(Settings.SplitDirFileDistance);
 
-            LoadTreeNodeIcons(dataContext.PlugInMetadata.ToDictionary(k => k.SmallIconID, v => v.GetSmallIcon()));
+            LoadTreeNodeIcons(dataContext.PluginMetadata.ToDictionary(k => k.SmallIconID, v => v.GetSmallIcon()));
             RefreshNodes(dataContext.Root);
             FillFiles(dataContext, dataContext.Root, dataContext.Root.Files);
 

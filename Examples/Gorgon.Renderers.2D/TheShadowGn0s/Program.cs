@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -31,7 +31,6 @@ using Gorgon.Graphics.Fonts;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
 using Gorgon.Renderers;
-using Gorgon.UI.OLDE;
 
 namespace Gorgon.Examples;
 
@@ -239,14 +238,14 @@ ESC - Quit.";
         try
         {
             // Create our primary graphics interface.
-            IReadOnlyList<IGorgonVideoAdapterInfo> adapters = GorgonGraphics.EnumerateAdapters(log: GorgonApplication.Log);
+            IReadOnlyList<IGorgonVideoAdapterInfo> adapters = GorgonGraphics.EnumerateAdapters(log: GorgonExample.Log);
 
             if (adapters.Count == 0)
             {
                 throw new GorgonException(GorgonResult.CannotCreate, "This example requires a Direct3D 11.2 capable video card.\nThe application will now close.");
             }
 
-            _graphics = new GorgonGraphics(adapters[0], log: GorgonApplication.Log);
+            _graphics = new GorgonGraphics(adapters.OrderByDescending(item => item.FeatureSet).First(), log: GorgonExample.Log);
 
             // Create our "screen".
             _screen = new GorgonSwapChain(_graphics, window, new GorgonSwapChainInfo(ExampleConfig.Default.Resolution.X,
@@ -339,6 +338,8 @@ ESC - Quit.";
                 TextureHeight = 256
             });
 
+            GorgonExample.Loop.Run(Idle);
+
             return window;
         }
         finally
@@ -361,9 +362,6 @@ ESC - Quit.";
                 break;
             case Keys.S:
                 GorgonExample.ShowStatistics = !GorgonExample.ShowStatistics;
-                break;
-            case Keys.Escape:
-                GorgonApplication.Quit();
                 break;
         }
     }
@@ -436,7 +434,7 @@ ESC - Quit.";
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            GorgonApplication.Run(Initialize(), Idle);
+            Application.Run(Initialize());
         }
         catch (Exception ex)
         {
@@ -444,8 +442,6 @@ ESC - Quit.";
         }
         finally
         {
-            GorgonExample.UnloadResources();
-
             _helpFont?.Dispose();
             _shadowTexture?.Dispose();
             _gaussBlur?.Dispose();
@@ -458,6 +454,8 @@ ESC - Quit.";
             _layer1Target?.Dispose();
             _screen?.Dispose();
             _graphics?.Dispose();
+
+            GorgonExample.ShutDown();
         }
     }
 }

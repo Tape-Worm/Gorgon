@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2020 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -29,7 +29,6 @@ using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Renderers;
-using Gorgon.UI.OLDE;
 
 namespace Gorgon.Examples;
 
@@ -138,7 +137,7 @@ static class Program
         if (_showHelp)
         {
             _renderer.Begin();
-            _renderer.DrawString("Example help:\nF1 - Show/hide help.\nF2 - Change emitter type.\nSpace - Pause/unpause.\nLeft Mouse Button - Restart emitter at mouse cursor.\nRight Mouse Button (while moving cursor) - Drag emitter.\nMiddle Mouse Button - Enable/Disable bloom effect.", new Vector2(0, 72), color: GorgonColors.Yellow);
+            _renderer.DrawString("Example help:\nF1 - Show/hide help.\nF2 - Change emitter type.\nSpace - Pause/unpause.\nLeft Mouse Button - Restart emitter at mouse cursor.\nRight Mouse Button (while moving cursor) - Drag emitter.\nMiddle Mouse Button - Enable/Disable bloom effect.", new Vector2(0, 75), color: GorgonColors.Yellow);
             _renderer.End();
         }
 
@@ -162,7 +161,7 @@ static class Program
 
         try
         {
-            IReadOnlyList<IGorgonVideoAdapterInfo> videoDevices = GorgonGraphics.EnumerateAdapters(log: GorgonApplication.Log);
+            IReadOnlyList<IGorgonVideoAdapterInfo> videoDevices = GorgonGraphics.EnumerateAdapters(log: GorgonExample.Log);
 
             if (videoDevices.Count == 0)
             {
@@ -171,7 +170,7 @@ static class Program
             }
 
             // Find the best video device.
-            _graphics = new GorgonGraphics(videoDevices.OrderByDescending(item => item.FeatureSet).First());
+            _graphics = new GorgonGraphics(videoDevices.OrderByDescending(item => item.FeatureSet).First(), log: GorgonExample.Log);
 
             _screen = new GorgonSwapChain(_graphics,
                                           window,
@@ -232,6 +231,8 @@ static class Program
             window.MouseMove += Window_MouseMove;
             window.KeyUp += Window_KeyUp;
             _screen.SwapChainResized += Screen_SwapChainResized;
+
+            GorgonExample.Loop.Run(Idle);
 
             return window;
         }
@@ -318,7 +319,7 @@ static class Program
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            GorgonApplication.Run(Initialize(), Idle);
+            Application.Run(Initialize());
         }
         catch (Exception ex)
         {
@@ -327,13 +328,16 @@ static class Program
         finally
         {
             _screen.SwapChainResized -= Screen_SwapChainResized;
-            GorgonExample.UnloadResources();
+
             _circleTexture?.Dispose();
             _bloom?.Dispose();
             _renderer?.Dispose();
             _rtv?.Dispose();
             _screen?.Dispose();
             _graphics?.Dispose();
+
+            GorgonExample.ShutDown();
+
         }
     }
 }

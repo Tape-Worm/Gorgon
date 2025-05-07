@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -34,7 +34,6 @@ using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Math;
 using Gorgon.Renderers;
 using Gorgon.Timing;
-using Gorgon.UI.OLDE;
 
 namespace Gorgon.Examples;
 
@@ -359,7 +358,7 @@ static class Program
             // Create our fonts.
             try
             {
-                IReadOnlyList<IGorgonVideoAdapterInfo> videoDevices = await Task.Run(() => GorgonGraphics.EnumerateAdapters(log: GorgonApplication.Log));
+                IReadOnlyList<IGorgonVideoAdapterInfo> videoDevices = await Task.Run(() => GorgonGraphics.EnumerateAdapters(log: GorgonExample.Log));
 
                 if (videoDevices.Count == 0)
                 {
@@ -397,12 +396,12 @@ static class Program
                     LineSpace = 0
                 };
 
-                GorgonApplication.IdleMethod = Idle;
+                GorgonExample.Loop.Run(Idle);
             }
             catch (Exception ex)
             {
-                GorgonDialogs.ErrorBox(form, ex);
-                GorgonApplication.Quit();
+                GorgonExample.HandleException(ex);
+                Application.Exit();
             }
             finally
             {
@@ -425,7 +424,7 @@ static class Program
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            GorgonApplication.Run(Initialize());
+            Application.Run(Initialize());
         }
         catch (Exception ex)
         {
@@ -433,11 +432,11 @@ static class Program
         }
         finally
         {
-            GorgonExample.UnloadResources();
-
             _renderer?.Dispose();
             _screen?.Dispose();
             _graphics?.Dispose();
+
+            GorgonExample.ShutDown();
         }
     }
 }

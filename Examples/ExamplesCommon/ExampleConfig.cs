@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2021 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -84,9 +84,9 @@ public class ExampleConfig
     }
 
     /// <summary>
-    /// Property to set or return the path to the location for example plug-ins.
+    /// Property to set or return the path to the location for example plugins.
     /// </summary>
-    public string PlugInLocation
+    public string PluginLocation
     {
         get;
         set;

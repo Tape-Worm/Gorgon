@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2016 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -134,7 +134,7 @@ public abstract class GorgonCodecWic<TWicEncOpt, TWicDecOpt>
             // exception when the stream position is not exactly 0. 
             if (streamAlias.Position != 0)
             {
-                streamAlias = new GorgonSubStream(stream, 0, size, stream.CanWrite);
+                streamAlias = new GorgonStreamSlice(stream, 0, size, stream.CanWrite);
             }
 
             IGorgonImage result = wic.DecodeImageData(streamAlias, size, SupportedFileFormat, DecodingOptions, FrameOffsetMetadataNames) ?? throw new IOException(string.Format(Resources.GORIMG_ERR_FILE_FORMAT_NOT_CORRECT, Codec));

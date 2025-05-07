@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -32,7 +32,7 @@ using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Math;
 using Gorgon.Renderers;
 using Gorgon.Timing;
-using Gorgon.UI.OLDE;
+using Gorgon.UI.WindowsForms;
 
 namespace Gorgon.Examples;
 
@@ -180,8 +180,8 @@ static class Program
 
         if (files.Length == 0)
         {
-            GorgonDialogs.ErrorBox(null, $"No DDS images found in {dirInfo.FullName}.");
-            GorgonApplication.Quit();
+            GorgonDialogs.Error(null, $"No DDS images found in {dirInfo.FullName}.");
+            Application.Exit();
             return false;
         }
 
@@ -381,7 +381,7 @@ static class Program
 
         try
         {
-            IReadOnlyList<IGorgonVideoAdapterInfo> videoDevices = GorgonGraphics.EnumerateAdapters(log: GorgonApplication.Log);
+            IReadOnlyList<IGorgonVideoAdapterInfo> videoDevices = GorgonGraphics.EnumerateAdapters(log: GorgonExample.Log);
 
             if (videoDevices.Count == 0)
             {
@@ -390,7 +390,7 @@ static class Program
             }
 
             // Find the best video device.
-            _graphics = new GorgonGraphics(videoDevices.OrderByDescending(item => item.FeatureSet).First());
+            _graphics = new GorgonGraphics(videoDevices.OrderByDescending(item => item.FeatureSet).First(), log: GorgonExample.Log);
 
             _screen = new GorgonSwapChain(_graphics,
                                           window,
@@ -431,6 +431,8 @@ static class Program
             window.MouseMove += Window_MouseMove;
             window.MouseDown += Window_MouseDown;
             window.IsLoaded = true;
+
+            GorgonExample.Loop.Run(Idle);
 
             return window;
         }
@@ -567,9 +569,6 @@ static class Program
     {
         switch (e.KeyCode)
         {
-            case Keys.Escape:
-                GorgonApplication.Quit();
-                break;
             case Keys.Right:
                 ++_currentImage;
 
@@ -601,7 +600,7 @@ static class Program
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            GorgonApplication.Run(Initialize(), Idle);
+            Application.Run(Initialize());
         }
         catch (Exception ex)
         {
@@ -609,8 +608,6 @@ static class Program
         }
         finally
         {
-            GorgonExample.UnloadResources();
-
             if (_images is not null)
             {
                 for (int i = 0; i < _images.Length; ++i)
@@ -640,6 +637,8 @@ static class Program
             _renderer?.Dispose();
             _screen?.Dispose();
             _graphics?.Dispose();
+
+            GorgonExample.ShutDown();
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2020 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -27,23 +27,23 @@ using Gorgon.Diagnostics;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.Services;
 
-namespace Gorgon.Editor.PlugIns;
+namespace Gorgon.Editor.Plugins;
 
 /// <summary>
-/// Services from the host application for content plug-ins
+/// Services from the host application for content plugins
 /// </summary>
 internal class HostContentServices
     : IHostContentServices
 {
-    /// <summary>Property to set or return the service that allows a content plug-in to access other content plug-ins.</summary>
-    public IContentPlugInService ContentPlugInService
+    /// <summary>Property to set or return the service that allows a content plugin to access other content plugins.</summary>
+    public IContentPluginService ContentPluginService
     {
         get;
         set;
     }
 
-    /// <summary>Property to set or return the service that allows a conetnt plug-in to access tool content plug-ins.</summary>
-    public IToolPlugInService ToolPlugInService
+    /// <summary>Property to set or return the service that allows a conetnt plugin to access tool content plugins.</summary>
+    public IToolPluginService ToolPluginService
     {
         get;
         set;

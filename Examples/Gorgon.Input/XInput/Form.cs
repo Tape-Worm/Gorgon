@@ -1,6 +1,6 @@
 ﻿// 
 // Gorgon
-// Copyright (C) 2013 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -26,11 +26,12 @@ using System.Diagnostics;
 using System.Numerics;
 using System.Text;
 using Gorgon.Core;
+using Gorgon.Diagnostics;
 using Gorgon.Graphics;
-using Gorgon.Timing;
-using Gorgon.UI.OLDE;
 using Gorgon.Input;
 using Gorgon.Input.Devices;
+using Gorgon.Timing;
+using Gorgon.UI.WindowsForms;
 
 namespace Gorgon.Examples;
 
@@ -55,8 +56,6 @@ public partial class Form
     private readonly List<Controller> _controllers = [];
     // Surface to draw on.
     private DrawingSurface? _surface;
-    // The input system.
-    private readonly IGorgonInput _input;
     // The input event buffer.
     private readonly GorgonInputEventBuffer _events = new();
     // The last throttle amount.
@@ -65,6 +64,33 @@ public partial class Form
     private readonly StringBuilder _labelText = new();
     // The synchronization context used to synchronize other threads with the UI thread.
     private SynchronizationContext? _syncContext;
+
+    /// <summary>
+    /// Property to return the input system.
+    /// </summary>
+    public required IGorgonInput Input
+    {
+        get;
+        init;
+    }
+
+    /// <summary>
+    /// Property to return the application loop.
+    /// </summary>
+    public required GorgonApplicationLoop Loop
+    {
+        get;
+        init;
+    }
+
+    /// <summary>
+    /// Property to return the application log.
+    /// </summary>
+    public required IGorgonLog Log
+    {
+        get;
+        init;
+    }
 
     /// <summary>
     /// Function to handle a key up event on the form.
@@ -237,11 +263,11 @@ public partial class Form
         Vector2 moveVector = new(stickPosition.X / (float)xRange.Maximum, stickPosition.Y / (float)yRange.Maximum);
 
         // Set up our cursor speed.
-        float speed = panelDisplay.ClientSize.Width * 0.5f * GorgonTiming.Delta;        
+        float speed = panelDisplay.ClientSize.Width * 0.5f * GorgonTiming.Delta;
         GorgonRectangleF rect = panelDisplay.DisplayRectangle;
 
         // Lock the cursor position to the display area.
-        Vector2 position = rect.Clamp(new Vector2(((speed * moveVector.X) + controller.Position.X), 
+        Vector2 position = rect.Clamp(new Vector2(((speed * moveVector.X) + controller.Position.X),
                                                         ((speed * moveVector.Y) + controller.Position.Y)));
 
         // Draw our cursor.
@@ -270,12 +296,11 @@ public partial class Form
             return true;
         }
 
-
         labelMessage.Visible = false;
 
         // This is where we'll pull in the data gathered by the input system for our gaming devices that
         // we're monitoring and store it in the event buffer.
-        _input.GetInput(InputDeviceType.GamingDevice, _events);
+        Input.GetInput(InputDeviceType.GamingDevice, _events);
 
         _surface.Clear(Color.White);
 
@@ -331,7 +356,7 @@ public partial class Form
         // at the same time, we only take up to 3 because we're only supporting 3 controllers in this example. 
         //
         // We also apply a filter to the list to only give us XInput compatible controllers.
-        foreach (IGorgonGamingDeviceInfo info in _input.GamingDevices
+        foreach (IGorgonGamingDeviceInfo info in Input.GamingDevices
                                                        .Where(i => (i.Capabilities & GamingDeviceCapabilityFlags.IsXInputDevice) == GamingDeviceCapabilityFlags.IsXInputDevice))
         {
             // Skip any potential duplicates (this is extremely unlikely, but paranoia rules the day).            
@@ -461,17 +486,19 @@ public partial class Form
 
             // Register our callback methods so that we can intercept when XInput
             // devices have been added to or removed from the computer.
-            _input.RegisterDeviceChangeCallbacks(DeviceAttached, DeviceDetached);
+            Input.RegisterDeviceChangeCallbacks(DeviceAttached, DeviceDetached);
 
             // Set up our idle loop.
-            GorgonApplication.IdleMethod = Idle;
+            // Note that we pass in the Close method as the exit callback for the 
+            // loop. This way, when the loop stops, we can close the form.
+            Loop.Run(Idle);
         }
         catch (Exception ex)
         {
             // We do this here instead of just calling the dialog because this
             // function will send the exception to the Gorgon log file.
-            ex.Handle(e => GorgonDialogs.ErrorBox(this, e), GorgonApplication.Log);
-            GorgonApplication.Quit();
+            ex.Handle(e => GorgonDialogs.Error(this, e), Log);
+            Application.Exit();
         }
     }
 
@@ -483,8 +510,6 @@ public partial class Form
     {
         base.OnFormClosing(e);
 
-        // Always dispose the input system. This will disable its background thread and restore our input back to normal.
-        _input.Dispose();
         // Event buffers must be disposed, otherwise resources may be leaked.
         _events.Dispose();
 
@@ -495,14 +520,5 @@ public partial class Form
     /// <summary>
     /// Initializes a new instance of the <see cref="Form" /> class.
     /// </summary>
-    public Form()
-    {
-        InitializeComponent();
-
-        // This is our input system. By passing in the device types in the flags, we can tell the system to immediately start working with 
-        // the devices specified. 
-        //
-        // In this example, we're only interested in XInput gaming devices, so we only bind with gaming devices (we filter for XInput later).
-        _input = GorgonInput.CreateInput(InputFlags.GamingDevices, GorgonApplication.Log);
-    }
+    public Form() => InitializeComponent();
 }

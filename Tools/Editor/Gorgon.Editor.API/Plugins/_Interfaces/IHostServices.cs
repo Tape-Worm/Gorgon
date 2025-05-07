@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2020 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -26,10 +26,10 @@
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Services;
 
-namespace Gorgon.Editor.PlugIns;
+namespace Gorgon.Editor.Plugins;
 
 /// <summary>
-/// A list of services passed from the host application to plug-ins
+/// A list of services passed from the host application to plugins
 /// </summary>
 public interface IHostServices
 {

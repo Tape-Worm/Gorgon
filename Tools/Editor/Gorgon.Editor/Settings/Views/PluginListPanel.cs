@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2019 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,7 @@
 // 
 
 using System.ComponentModel;
-using Gorgon.Editor.PlugIns;
+using Gorgon.Editor.Plugins;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Views;
@@ -35,8 +35,8 @@ namespace Gorgon.Editor.Views;
 /// <summary>
 /// General settings for the application
 /// </summary>
-internal partial class PlugInListPanel
-    : SettingsBaseControl, IDataContext<ISettingsPlugInsList>
+internal partial class PluginListPanel
+    : SettingsBaseControl, IDataContext<ISettingsPluginsList>
 {
     /// <summary>Property to return the ID of the panel.</summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -44,7 +44,7 @@ internal partial class PlugInListPanel
 
     /// <summary>Property to return the data context assigned to this view.</summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public ISettingsPlugInsList ViewModel
+    public ISettingsPluginsList ViewModel
     {
         get;
         private set;
@@ -57,40 +57,40 @@ internal partial class PlugInListPanel
     {
         switch (e.PropertyName)
         {
-            case nameof(ISettingsPlugInsList.Current):
+            case nameof(ISettingsPluginsList.Current):
                 TextStatus.Text = ViewModel.Current?.DisabledReason ?? string.Empty;
                 break;
         }
     }
 
-    /// <summary>Handles the SelectedIndexChanged event of the ListPlugIns control.</summary>
+    /// <summary>Handles the SelectedIndexChanged event of the ListPlugins control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-    private void ListPlugIns_SelectedIndexChanged(object sender, EventArgs e)
+    private void ListPlugins_SelectedIndexChanged(object sender, EventArgs e)
     {
-        int selectedIndex = ListPlugIns.SelectedIndices.Count > 0 ? ListPlugIns.SelectedIndices[0] : -1;
-        if ((ViewModel?.SelectPlugInCommand is null) || (!ViewModel.SelectPlugInCommand.CanExecute(selectedIndex)))
+        int selectedIndex = ListPlugins.SelectedIndices.Count > 0 ? ListPlugins.SelectedIndices[0] : -1;
+        if ((ViewModel?.SelectPluginCommand is null) || (!ViewModel.SelectPluginCommand.CanExecute(selectedIndex)))
         {
             return;
         }
 
-        ViewModel.SelectPlugInCommand.Execute(selectedIndex);
+        ViewModel.SelectPluginCommand.Execute(selectedIndex);
     }
 
     /// <summary>
-    /// Function to fill the list with plug-in information.
+    /// Function to fill the list with plugin information.
     /// </summary>
     /// <param name="dataContext">The data context containing the information.</param>
-    private void FillPlugInList(ISettingsPlugInsList dataContext)
+    private void FillPluginList(ISettingsPluginsList dataContext)
     {
-        ListPlugIns.BeginUpdate();
+        ListPlugins.BeginUpdate();
 
         try
         {
-            ListPlugIns.Items.Clear();
+            ListPlugins.Items.Clear();
             ListViewItem selected = null;
 
-            foreach (ISettingsPlugInListItem item in dataContext.PlugIns)
+            foreach (ISettingsPluginListItem item in dataContext.Plugins)
             {
                 ListViewItem listItem = new()
                 {
@@ -102,7 +102,7 @@ internal partial class PlugInListPanel
                 listItem.SubItems.Add(item.State);
                 listItem.SubItems.Add(item.Path);
 
-                if (!string.Equals(item.State, Resources.GOREDIT_PLUGIN_STATE_LOADED, StringComparison.CurrentCulture))
+                if (!string.Equals(item.State, Resources.GOREDIT_plugin_STATE_LOADED, StringComparison.CurrentCulture))
                 {
                     listItem.ForeColor = Color.DarkRed;
                 }
@@ -112,32 +112,32 @@ internal partial class PlugInListPanel
                     selected = listItem;
                 }
 
-                ListPlugIns.Items.Add(listItem);
+                ListPlugins.Items.Add(listItem);
             }
 
-            if (ListPlugIns.Items.Count == 0)
+            if (ListPlugins.Items.Count == 0)
             {
                 return;
             }
 
-            ListPlugIns.Select();
+            ListPlugins.Select();
 
-            selected ??= ListPlugIns.Items[0];
+            selected ??= ListPlugins.Items[0];
 
             selected.Selected = true;
-            ListPlugIns.SelectedIndices.Add(selected.Index);
+            ListPlugins.SelectedIndices.Add(selected.Index);
 
-            if ((dataContext?.SelectPlugInCommand is null) || (!dataContext.SelectPlugInCommand.CanExecute(selected.Index)))
+            if ((dataContext?.SelectPluginCommand is null) || (!dataContext.SelectPluginCommand.CanExecute(selected.Index)))
             {
                 return;
             }
 
-            dataContext.SelectPlugInCommand.Execute(selected.Index);
+            dataContext.SelectPluginCommand.Execute(selected.Index);
         }
         finally
         {
-            ListPlugIns.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
-            ListPlugIns.EndUpdate();
+            ListPlugins.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
+            ListPlugins.EndUpdate();
         }
     }
 
@@ -159,7 +159,7 @@ internal partial class PlugInListPanel
     /// </summary>
     private void ResetDataContext()
     {
-        ListPlugIns.Items.Clear();
+        ListPlugins.Items.Clear();
         TextStatus.Text = string.Empty;
     }
 
@@ -167,7 +167,7 @@ internal partial class PlugInListPanel
     /// Function to initialize the control from the data context.
     /// </summary>
     /// <param name="dataContext">The current data context.</param>
-    private void InitializeFromDataContext(ISettingsPlugInsList dataContext)
+    private void InitializeFromDataContext(ISettingsPluginsList dataContext)
     {
         if (dataContext is null)
         {
@@ -175,14 +175,14 @@ internal partial class PlugInListPanel
             return;
         }
 
-        FillPlugInList(dataContext);
+        FillPluginList(dataContext);
         TextStatus.Text = dataContext.Current?.DisabledReason ?? string.Empty;
     }
 
     /// <summary>Function to assign a data context to the view as a view model.</summary>
     /// <param name="dataContext">The data context to assign.</param>
     /// <remarks>Data contexts should be nullable, in that, they should reset the view back to its original state when the context is null.</remarks>
-    public void SetDataContext(ISettingsPlugInsList dataContext)
+    public void SetDataContext(ISettingsPluginsList dataContext)
     {
         UnassignEvents();
 
@@ -197,7 +197,7 @@ internal partial class PlugInListPanel
         ViewModel.PropertyChanged += DataContext_PropertyChanged;
     }
 
-    /// <summary>Initializes a new instance of the <see cref="PlugInListPanel"/> class.</summary>
-    public PlugInListPanel() => InitializeComponent();
+    /// <summary>Initializes a new instance of the <see cref="PluginListPanel"/> class.</summary>
+    public PluginListPanel() => InitializeComponent();
 
 }

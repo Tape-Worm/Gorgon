@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2012 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -35,7 +35,6 @@ using Gorgon.IO;
 using Gorgon.Math;
 using Gorgon.Renderers;
 using Gorgon.Timing;
-using Gorgon.UI.OLDE;
 
 namespace Gorgon.Examples;
 
@@ -397,7 +396,7 @@ static class Program
         try
         {
             // Create the graphics interface.
-            IReadOnlyList<IGorgonVideoAdapterInfo> adapters = GorgonGraphics.EnumerateAdapters();
+            IReadOnlyList<IGorgonVideoAdapterInfo> adapters = GorgonGraphics.EnumerateAdapters(log: GorgonExample.Log);
 
             if (adapters.Count == 0)
             {
@@ -406,7 +405,7 @@ static class Program
             }
 
             // Find the best video device.
-            _graphics = new GorgonGraphics(adapters.OrderByDescending(item => item.FeatureSet).First());
+            _graphics = new GorgonGraphics(adapters.OrderByDescending(item => item.FeatureSet).First(), log: GorgonExample.Log);
 
             // Create the primary swap chain.
             _mainScreen = new GorgonSwapChain(_graphics,
@@ -592,6 +591,8 @@ static class Program
 
             // Set our main render target.
             _graphics.SetRenderTarget(_mainScreen.RenderTargetView);
+
+            GorgonExample.Loop.Run(Idle);
         }
         finally
         {
@@ -708,7 +709,7 @@ static class Program
 
             Initialize();
 
-            GorgonApplication.Run(_window, Idle);
+            Application.Run(_window);
         }
         catch (Exception ex)
         {
@@ -716,8 +717,6 @@ static class Program
         }
         finally
         {
-            GorgonExample.UnloadResources();
-
             _ballTexture?.Dispose();
             _ballFont?.Dispose();
             _blur?.Dispose();
@@ -727,6 +726,8 @@ static class Program
             _mainScreen?.Dispose();
             _graphics?.Dispose();
             _window?.Dispose();
+
+            GorgonExample.ShutDown();
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2019 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -26,7 +26,7 @@
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.Metadata;
-using Gorgon.Editor.PlugIns;
+using Gorgon.Editor.Plugins;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.UI;
 using Gorgon.IO.FileSystem;
@@ -295,7 +295,7 @@ internal class File
         catch (Exception ex)
         {
             HostServices.Log.PrintError("Error updating paths.", LoggingLevel.Simple);
-            HostServices.Log.LogException(ex);
+            HostServices.Log.PrintException(ex);
         }
     }
 
@@ -311,7 +311,7 @@ internal class File
         catch (Exception ex)
         {
             HostServices.Log.PrintError("Error refreshing file data.", LoggingLevel.Simple);
-            HostServices.Log.LogException(ex);
+            HostServices.Log.PrintException(ex);
         }
     }
 
@@ -330,7 +330,7 @@ internal class File
         catch (Exception ex)
         {
             HostServices.Log.PrintError("Error renaming file.", LoggingLevel.Simple);
-            HostServices.Log.LogException(ex);
+            HostServices.Log.PrintException(ex);
         }
 
         // Notify content subscribers that the file is renamed.

@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -31,21 +31,21 @@ using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
 using Gorgon.IO.FileSystem;
 
-namespace Gorgon.Editor.PlugIns;
+namespace Gorgon.Editor.Plugins;
 
 /// <summary>
-/// A plug-in type that performs a custom import for content
+/// A plugin type that performs a custom import for content
 /// </summary>
 /// <remarks>
 /// <para>
-/// The content importer plug-in allows an application to import external content and convert it to a type that the associated <see cref="ContentPlugIn"/> can handle. Content importers should be 
-/// associated with the content produced by a <see cref="ContentPlugIn"/> in some way, but is not mandatory
+/// The content importer plugin allows an application to import external content and convert it to a type that the associated <see cref="ContentPlugin"/> can handle. Content importers should be 
+/// associated with the content produced by a <see cref="ContentPlugin"/> in some way, but is not mandatory
 /// </para>
 /// <para>
-/// Content plug-ins are automatically run whenever content is imported into the host application
+/// Content plugins are automatically run whenever content is imported into the host application
 /// </para>
 /// <para>
-/// The content importer plug-in provides an importer object that the host application calls to perform the import operation on file data. This content importer must implement the 
+/// The content importer plugin provides an importer object that the host application calls to perform the import operation on file data. This content importer must implement the 
 /// <see cref="IEditorContentImporter"/>. The host application will pass along the required objects to manipulate the file system, access the graphics interface, and other sets of functionality
 /// </para>
 /// <para>
@@ -53,20 +53,20 @@ namespace Gorgon.Editor.PlugIns;
 /// where a newer format for the content supercedes a previous format. The importer would read the old version, and then upgrade to the later version
 /// </para>
 /// </remarks>
-/// <seealso cref="ContentPlugIn"/>
-public abstract class ContentImportPlugIn
-    : EditorPlugIn
+/// <seealso cref="ContentPlugin"/>
+public abstract class ContentImportPlugin
+    : EditorPlugin
 {
     /// <summary>
     /// An attribute name for the file metadata to indicate that this item was imported.
     /// </summary>
     /// <remarks>
     /// Use this value to provide the original filename (and optionally, full path) for the original content being imported. This is stored in the <see cref="ProjectItemMetadata"/> for informational 
-    /// purposes and should not be used by the plug-in.
+    /// purposes and should not be used by the plugin.
     /// </remarks>
     public const string ImportOriginalFileNameAttr = "ImportOriginalName";
 
-    // Flag to indicate that the plugin is initialized.
+    // Flag to indicate that the Plugin is initialized.
     private int _initialized;
     // The content services passed in from the host application.
     private IHostContentServices _hostContentServices;
@@ -79,10 +79,10 @@ public abstract class ContentImportPlugIn
     /// </summary>
     /// <remarks>
     /// <para>
-    /// Plug in developers that implement a common plug-in type based on this base type, should assign this value to allow access to the common content services supplied by the host application.
+    /// Plug in developers that implement a common plugin type based on this base type, should assign this value to allow access to the common content services supplied by the host application.
     /// </para>
     /// <para>
-    /// This will be assigned during the initialization of the plug-in.
+    /// This will be assigned during the initialization of the plugin.
     /// </para>
     /// </remarks>
     /// <seealso cref="IHostServices"/>
@@ -96,7 +96,7 @@ public abstract class ContentImportPlugIn
     /// Property to return the file system used to hold temporary file data.
     /// </summary>
     /// <remarks>
-    /// Importer plug-ins can use this to write temporary working data, which is deleted after the project unloads, for use during the import process.
+    /// Importer plugins can use this to write temporary working data, which is deleted after the project unloads, for use during the import process.
     /// </remarks>
     protected IGorgonFileSystem TemporaryFileSystem
     {
@@ -108,7 +108,7 @@ public abstract class ContentImportPlugIn
     /// Property to return the file system used by the project.
     /// </summary>
     /// <remarks>
-    /// Importer plug-ins can use this to read in dependencies and other content files from the project.
+    /// Importer plugins can use this to read in dependencies and other content files from the project.
     /// </remarks>
     protected IGorgonFileSystem ProjectFileSystem
     {
@@ -117,24 +117,24 @@ public abstract class ContentImportPlugIn
     }
 
     /// <summary>
-    /// Property to return the type of this plug-in.
+    /// Property to return the type of this plugin.
     /// </summary>
     /// <remarks>
-    /// The <see cref="PlugIns.PlugInType"/> returned for this property indicates the general plug-in functionality. 
+    /// The <see cref="Plugins.PluginType"/> returned for this property indicates the general plugin functionality. 
     /// </remarks>
-    /// <seealso cref="PlugIns.PlugInType"/>
-    public sealed override PlugInType PlugInType => PlugInType.ContentImporter;
+    /// <seealso cref="Plugins.PluginType"/>
+    public sealed override PluginType PluginType => PluginType.ContentImporter;
 
     /// <summary>
-    /// Function to provide custom initialization for the plugin.
+    /// Function to provide custom initialization for the Plugin.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This method provides the means to perform custom initialization for an implementing content plug-in type. Plug in developers can override this method to perform their own one-time setup for a 
-    /// custom plug-in.
+    /// This method provides the means to perform custom initialization for an implementing content plugin type. Plug in developers can override this method to perform their own one-time setup for a 
+    /// custom plugin.
     /// </para>
     /// <para>
-    /// This method will only be called once when the plug-in is loaded. It cannot be called after it has been called during load.
+    /// This method will only be called once when the plugin is loaded. It cannot be called after it has been called during load.
     /// </para>
     /// </remarks>
     protected virtual void OnInitialize()
@@ -142,15 +142,15 @@ public abstract class ContentImportPlugIn
     }
 
     /// <summary>
-    /// Function to provide clean up for the plugin.
+    /// Function to provide clean up for the Plugin.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This method provides the means to perform custom cleanup for an implementing content plug-in type. Plug in developers can override this method to perform their own one-time cleanup for a 
-    /// custom plug-in.
+    /// This method provides the means to perform custom cleanup for an implementing content plugin type. Plug in developers can override this method to perform their own one-time cleanup for a 
+    /// custom plugin.
     /// </para>
     /// <para>
-    /// This method will only be called once when the plug-in is unloaded. It cannot be called after it has been called during unload.
+    /// This method will only be called once when the plugin is unloaded. It cannot be called after it has been called during unload.
     /// </para>
     /// </remarks>
     protected virtual void OnShutdown()
@@ -158,7 +158,7 @@ public abstract class ContentImportPlugIn
     }
 
     /// <summary>
-    /// Function to open a content object from this plugin.
+    /// Function to open a content object from this Plugin.
     /// </summary>
     /// <returns>A new <see cref="IEditorContentImporter"/> object.</returns>
     /// <remarks>
@@ -169,14 +169,14 @@ public abstract class ContentImportPlugIn
     protected abstract IEditorContentImporter OnCreateImporter();
 
     /// <summary>
-    /// Function to determine if the content plugin can open the specified file.
+    /// Function to determine if the content Plugin can open the specified file.
     /// </summary>
     /// <param name="filePath">The path to the file to evaluate.</param>
-    /// <returns><b>true</b> if the plugin can open the file, or <b>false</b> if not.</returns>
+    /// <returns><b>true</b> if the Plugin can open the file, or <b>false</b> if not.</returns>
     /// <remarks>
     /// <para>
-    /// This method is used to determine if the file specified by the <paramref name="filePath"/> passed to the method can be opened by this plug-in. If the method returns <b>true</b>, then the host 
-    /// application will convert the file using the importer produced by this plug-in. Otherwise, if the method returns <b>false</b>, then the file is skipped.
+    /// This method is used to determine if the file specified by the <paramref name="filePath"/> passed to the method can be opened by this plugin. If the method returns <b>true</b>, then the host 
+    /// application will convert the file using the importer produced by this plugin. Otherwise, if the method returns <b>false</b>, then the file is skipped.
     /// </para>
     /// <para>
     /// The <paramref name="filePath"/> is a path to the file on the project virtual file system.
@@ -188,7 +188,7 @@ public abstract class ContentImportPlugIn
     protected abstract bool OnCanOpenContent(string filePath);
 
     /// <summary>
-    /// Function to allow custom plug-ins to implement custom actions when a project is created/opened.
+    /// Function to allow custom plugins to implement custom actions when a project is created/opened.
     /// </summary>
     protected virtual void OnProjectOpened()
     {
@@ -196,7 +196,7 @@ public abstract class ContentImportPlugIn
     }
 
     /// <summary>
-    /// Function to allow custom plug-ins to implement custom actions when a project is closed.
+    /// Function to allow custom plugins to implement custom actions when a project is closed.
     /// </summary>
     protected virtual void OnProjectClosed()
     {
@@ -225,16 +225,16 @@ public abstract class ContentImportPlugIn
     }
 
     /// <summary>
-    /// Function to determine if the content plugin can open the specified file.
+    /// Function to determine if the content Plugin can open the specified file.
     /// </summary>
     /// <param name="filePath">The file to evaluate.</param>
-    /// <returns><b>true</b> if the plugin can open the file, or <b>false</b> if not.</returns>
+    /// <returns><b>true</b> if the Plugin can open the file, or <b>false</b> if not.</returns>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="filePath"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="filePath"/> parameter is empty.</exception>
     /// <remarks>
     /// <para>
-    /// This method is used to determine if the file specified by the <paramref name="filePath"/> passed to the method can be opened by this plug-in. If the method returns <b>true</b>, then the host 
-    /// application will convert the file using the importer produced by this plug-in. Otherwise, if the method returns <b>false</b>, then the file is skipped.
+    /// This method is used to determine if the file specified by the <paramref name="filePath"/> passed to the method can be opened by this plugin. If the method returns <b>true</b>, then the host 
+    /// application will convert the file using the importer produced by this plugin. Otherwise, if the method returns <b>false</b>, then the file is skipped.
     /// </para>
     /// <para>
     /// The <paramref name="filePath"/> is a path to the file on the project virtual file system. Passing a physical file system path to this method will not work.
@@ -274,21 +274,21 @@ public abstract class ContentImportPlugIn
     {
         IEditorContentImporter result = _importerFactory.Value;
 
-        return result ?? throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GOREDIT_ERR_NO_CONTENT_IMPORTER_FROM_PLUGIN, Name));
+        return result ?? throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GOREDIT_ERR_NO_CONTENT_IMPORTER_FROM_plugin, Name));
     }
 
     /// <summary>
-    /// Function to perform any required clean up for the plugin.
+    /// Function to perform any required clean up for the Plugin.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This method provides the means to perform clean up of internal resources for the plug-in.
+    /// This method provides the means to perform clean up of internal resources for the plugin.
     /// </para>
     /// <para>
-    /// Content plug-ins inheriting from this base type can provide custom initialization by implementing the <see cref="OnShutdown"/> method.        
+    /// Content plugins inheriting from this base type can provide custom initialization by implementing the <see cref="OnShutdown"/> method.        
     /// </para>
     /// <para>
-    /// This method will only be called during unloading of the plug-in (typically when the host application shuts down).
+    /// This method will only be called during unloading of the plugin (typically when the host application shuts down).
     /// </para>
     /// <para>
     /// <note type="important">
@@ -312,19 +312,19 @@ public abstract class ContentImportPlugIn
     }
 
     /// <summary>
-    /// Function to perform any required initialization for the plugin.
+    /// Function to perform any required initialization for the Plugin.
     /// </summary>
-    /// <param name="hostServices">The services passed from the host application to the plug-in.</param>
+    /// <param name="hostServices">The services passed from the host application to the plugin.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="hostServices"/> parameter is <b>null</b>.</exception> 
     /// <remarks>
     /// <para>
-    /// This method provides the means to initialize the content importer plug-in and passes functionality from the host application to the plug-in.
+    /// This method provides the means to initialize the content importer plugin and passes functionality from the host application to the plugin.
     /// </para>
     /// <para>
-    /// Content plug-ins inheriting from this base type can provide custom initialization by implementing the <see cref="OnInitialize"/> method.
+    /// Content plugins inheriting from this base type can provide custom initialization by implementing the <see cref="OnInitialize"/> method.
     /// </para>
     /// <para>
-    /// This method will only be called once when the plug-in is loaded. It cannot and should not be called after it has been called during load. 
+    /// This method will only be called once when the plugin is loaded. It cannot and should not be called after it has been called during load. 
     /// </para>
     /// <para>
     /// <note type="important">
@@ -346,9 +346,9 @@ public abstract class ContentImportPlugIn
         OnInitialize();
     }
 
-    /// <summary>Initializes a new instance of the <see cref="ContentImportPlugIn"/> class.</summary>
-    /// <param name="description">Optional description of the plugin.</param>
-    protected ContentImportPlugIn(string description)
+    /// <summary>Initializes a new instance of the <see cref="ContentImportPlugin"/> class.</summary>
+    /// <param name="description">Optional description of the Plugin.</param>
+    protected ContentImportPlugin(string description)
         : base(description) => _importerFactory = new Lazy<IEditorContentImporter>(OnCreateImporter, true);
 
 }

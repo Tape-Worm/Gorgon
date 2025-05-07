@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2013 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -35,10 +35,9 @@ using Gorgon.IO.Extensions;
 using Gorgon.IO.FileSystem;
 using Gorgon.IO.FileSystem.Providers;
 using Gorgon.Math;
-using Gorgon.PlugIns;
+using Gorgon.Plugins;
 using Gorgon.Renderers;
 using Gorgon.Timing;
-using Gorgon.UI.OLDE;
 
 namespace Gorgon.Examples;
 
@@ -53,15 +52,14 @@ namespace Gorgon.Examples;
 /// 
 /// The difference between this example and the folder file system example is that we're loading
 /// a packed file from the previous version of Gorgon as a file system.  The scenario is the same
-/// as loading a zip file:  Load the provider plug-in into the file system, and mount the packed
+/// as loading a zip file:  Load the provider plugin into the file system, and mount the packed
 /// file
 /// </remarks>
 public partial class Form
     : System.Windows.Forms.Form
 {
-
-    // The plug-in assembly cache.
-    private GorgonMefPlugInCache _assemblyCache;
+    // The plugin assembly cache.
+    private GorgonMefPluginCache _assemblyCache;
     // The file system.
     private IGorgonFileSystem _fileSystem;
     // The graphics interface.		
@@ -98,25 +96,25 @@ public partial class Form
     private bool _showStats;
 
     /// <summary>
-    /// Function to load the Gorgon pack file provider plugin.
+    /// Function to load the Gorgon pack file provider Plugin.
     /// </summary>
     /// <returns>The file system provider.</returns>
     private IGorgonFileSystemProvider LoadGorPackProvider()
     {
-        // The Gorgon packed file provider plug-in dll.
+        // The Gorgon packed file provider plugin dll.
         const string gorPackDll = "Gorgon.IO.FileSystem.GorPack.dll";
-        // The name of the Gorgon packed file plugin.
-        const string gorPackPlugInName = "Gorgon.IO.FileSystem.Providers.GorPackPlugIn";
+        // The name of the Gorgon packed file Plugin.
+        const string gorPackPluginName = "Gorgon.IO.FileSystem.Providers.GorPackPlugin";
 
-        // Like the zip file example, we'll just create the plugin infrastructure, grab the provider object 
-        // and get rid of the plugin stuff since we won't need it again.
-        _assemblyCache = new GorgonMefPlugInCache(GorgonApplication.Log);
-        _assemblyCache.LoadPlugInAssemblies(GorgonExample.GetPlugInPath().FullName, gorPackDll);
+        // Like the zip file example, we'll just create the Plugin infrastructure, grab the provider object 
+        // and get rid of the Plugin stuff since we won't need it again.
+        _assemblyCache = new GorgonMefPluginCache(GorgonExample.Log);
+        _assemblyCache.LoadPluginAssemblies(GorgonExample.GetPluginPath().FullName, gorPackDll);
 
-        GorgonMefPlugInService plugIns = new(_assemblyCache);
-        GorgonFileSystemProviderPlugIn plugIn = plugIns.GetPlugIn<GorgonFileSystemProviderPlugIn>(gorPackPlugInName);
+        GorgonMefPluginService Plugins = new(_assemblyCache);
+        GorgonFileSystemProviderPlugin Plugin = Plugins.GetPlugin<GorgonFileSystemProviderPlugin>(gorPackPluginName);
 
-        return plugIn.CreateProvider(GorgonApplication.Log);
+        return Plugin.CreateProvider(GorgonExample.Log);
     }
 
     /// <summary>
@@ -259,7 +257,7 @@ public partial class Form
     /// </summary>
     private void Initialize()
     {
-        GorgonExample.PlugInLocationDirectory = new DirectoryInfo(ExampleConfig.Default.PlugInLocation);
+        GorgonExample.PluginLocationDirectory = new DirectoryInfo(ExampleConfig.Default.PluginLocation);
         GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
 
         // Resize and center the screen.
@@ -269,7 +267,7 @@ public partial class Form
                              screen.Bounds.Top + (screen.WorkingArea.Height / 2) - (ClientSize.Height / 2));
 
         // Initialize our graphics.
-        IReadOnlyList<IGorgonVideoAdapterInfo> videoAdapters = GorgonGraphics.EnumerateAdapters(log: GorgonApplication.Log);
+        IReadOnlyList<IGorgonVideoAdapterInfo> videoAdapters = GorgonGraphics.EnumerateAdapters(log: GorgonExample.Log);
 
         if (videoAdapters.Count == 0)
         {
@@ -318,7 +316,7 @@ public partial class Form
 
         // Get the Gorgon BZip packed file provider and create a file system that we can use it with.
         // Create our file system and mount the resources.
-        _fileSystem = new GorgonFileSystem(GorgonApplication.Log);
+        _fileSystem = new GorgonFileSystem(GorgonExample.Log);
 
         IGorgonFileSystemProvider provider = LoadGorPackProvider();
 
@@ -372,20 +370,17 @@ public partial class Form
         _blurredImage[0] = _blurredTarget[0].GetShaderResourceView();
         _blurredImage[1] = _blurredTarget[1].GetShaderResourceView();
 
-        GorgonApplication.IdleMethod = Idle;
+        GorgonExample.Loop.Run(Idle);
     }
 
-    /// <summary>
-    /// Raises the <see cref="E:System.Windows.Forms.Control.KeyDown" /> event.
-    /// </summary>
-    /// <param name="e">A <see cref="KeyEventArgs" /> that contains the event data.</param>
+    /// <inheritdoc/>
     protected override void OnKeyDown(KeyEventArgs e)
     {
         base.OnKeyDown(e);
 
         if (e.KeyCode == Keys.Escape)
         {
-            GorgonApplication.Quit();
+            Application.Exit();
         }
 
         if (e.KeyCode == Keys.F1)
@@ -399,8 +394,7 @@ public partial class Form
         }
     }
 
-    /// <summary>Raises the <see cref="E:System.Windows.Forms.Form.FormClosing" /> event.</summary>
-    /// <param name="e">A <see cref="FormClosingEventArgs" /> that contains the event data. </param>
+    /// <inheritdoc/>
     protected override void OnFormClosing(FormClosingEventArgs e)
     {
         base.OnFormClosing(e);
@@ -418,10 +412,7 @@ public partial class Form
         _assemblyCache?.Dispose();
     }
 
-    /// <summary>
-    /// Raises the <see cref="E:System.Windows.Forms.Form.Load" /> event.
-    /// </summary>
-    /// <param name="e">An <see cref="EventArgs" /> that contains the event data.</param>
+    /// <inheritdoc/>
     protected override void OnLoad(EventArgs e)
     {
         base.OnLoad(e);
@@ -438,8 +429,8 @@ public partial class Form
         }
         catch (Exception ex)
         {
-            ex.Handle(e => GorgonDialogs.ErrorBox(this, e), GorgonApplication.Log);
-            GorgonApplication.Quit();
+            GorgonExample.HandleException(ex);
+            Application.Exit();
         }
         finally
         {

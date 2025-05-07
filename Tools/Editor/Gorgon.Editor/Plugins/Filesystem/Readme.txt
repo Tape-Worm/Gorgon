@@ -1,1 +1,1 @@
-﻿This folder will contain file system specific plugins.
+﻿This folder will contain file system specific Plugins.

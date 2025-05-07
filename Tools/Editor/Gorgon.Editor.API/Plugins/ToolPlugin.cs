@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2019 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -27,31 +27,31 @@ using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
 using Gorgon.IO.FileSystem;
 
-namespace Gorgon.Editor.PlugIns;
+namespace Gorgon.Editor.Plugins;
 
 /// <summary>
-/// Base class for a plug-in that provides basic utility functionality
+/// Base class for a plugin that provides basic utility functionality
 /// </summary>
 /// <remarks>
 /// <para>
-/// Tool plug-ins, unlike content plug-ins, are independent plug-ins that provide their own UI (if necessary) that do various jobs in the editor. They will be placed into a tab on the ribbon 
+/// Tool plugins, unlike content plugins, are independent plugins that provide their own UI (if necessary) that do various jobs in the editor. They will be placed into a tab on the ribbon 
 /// called "Tools" and provide global functionality across the editor and don't necessarily have to restrict themselves to one type of content
 /// </para>
 /// <para>
-/// A typical use of a tool plug-in would be to display a dialog that allows mass actions on content files.  For example, a dialog that sequentially renames a list of content files so that they're 
-/// postfixed with "original_name (number)" would be a use case for a tool plug-in
+/// A typical use of a tool plugin would be to display a dialog that allows mass actions on content files.  For example, a dialog that sequentially renames a list of content files so that they're 
+/// postfixed with "original_name (number)" would be a use case for a tool plugin
 /// </para>
 /// <para>
-/// Because these plug-ins are independent, there is no interaction with the editor UI beyond providing information to display a button on the ribbon
+/// Because these plugins are independent, there is no interaction with the editor UI beyond providing information to display a button on the ribbon
 /// </para>
 /// </remarks>
-/// <remarks>Initializes a new instance of the <see cref="ToolPlugIn"/> class.</remarks>
-/// <param name="description">Optional description of the plugin.</param>
-public abstract class ToolPlugIn(string description)
-        : EditorPlugIn(description)
+/// <remarks>Initializes a new instance of the <see cref="ToolPlugin"/> class.</remarks>
+/// <param name="description">Optional description of the Plugin.</param>
+public abstract class ToolPlugin(string description)
+        : EditorPlugin(description)
 {
 
-    // Flag to indicate that the plugin is initialized.
+    // Flag to indicate that the Plugin is initialized.
     private int _initialized;
     // Tool services passed in from the host application.
     private IHostContentServices _hostToolServices;
@@ -61,10 +61,10 @@ public abstract class ToolPlugIn(string description)
     /// </summary>
     /// <remarks>
     /// <para>
-    /// Plug in developers that implement a common plug-in type based on this base type, should assign this value to allow access to the common tool services supplied by the host application.
+    /// Plug in developers that implement a common plugin type based on this base type, should assign this value to allow access to the common tool services supplied by the host application.
     /// </para>
     /// <para>
-    /// This will be assigned during the initialization of the plug-in.
+    /// This will be assigned during the initialization of the plugin.
     /// </para>
     /// </remarks>
     /// <seealso cref="IHostServices"/>
@@ -90,7 +90,7 @@ public abstract class ToolPlugIn(string description)
     /// Property to return the file system used to hold temporary file data.
     /// </summary>
     /// <remarks>
-    /// Importer plug-ins can use this to write temporary working data, which is deleted after the project unloads, for use during the import process.
+    /// Importer plugins can use this to write temporary working data, which is deleted after the project unloads, for use during the import process.
     /// </remarks>
     protected IGorgonFileSystem TemporaryFileSystem
     {
@@ -98,11 +98,11 @@ public abstract class ToolPlugIn(string description)
         private set;
     }
 
-    /// <summary>Property to return the type of this plug-in.</summary>
-    public sealed override PlugInType PlugInType => PlugInType.Tool;
+    /// <summary>Property to return the type of this plugin.</summary>
+    public sealed override PluginType PluginType => PluginType.Tool;
 
     /// <summary>
-    /// Function to allow custom plug-ins to implement custom actions when a project is created/opened.
+    /// Function to allow custom plugins to implement custom actions when a project is created/opened.
     /// </summary>
     protected virtual void OnProjectOpened()
     {
@@ -110,7 +110,7 @@ public abstract class ToolPlugIn(string description)
     }
 
     /// <summary>
-    /// Function to allow custom plug-ins to implement custom actions when a project is closed.
+    /// Function to allow custom plugins to implement custom actions when a project is closed.
     /// </summary>
     protected virtual void OnProjectClosed()
     {
@@ -118,11 +118,11 @@ public abstract class ToolPlugIn(string description)
     }
 
     /// <summary>
-    /// Function to provide initialization for the plugin.
+    /// Function to provide initialization for the Plugin.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This method is only called when the plugin is loaded at startup.
+    /// This method is only called when the Plugin is loaded at startup.
     /// </para>
     /// </remarks>
     protected virtual void OnInitialize()
@@ -130,7 +130,7 @@ public abstract class ToolPlugIn(string description)
     }
 
     /// <summary>
-    /// Function to provide clean up for the plugin.
+    /// Function to provide clean up for the Plugin.
     /// </summary>
     protected virtual void OnShutdown()
     {
@@ -142,14 +142,14 @@ public abstract class ToolPlugIn(string description)
     /// <returns>A new tool ribbon button instance.</returns>
     /// <remarks>
     /// <para>
-    /// Tool plug-in developers must override this method to return the button which is inserted on the application ribbon, under the "Tools" tab. If the method returns <b>null</b>, then the tool is 
+    /// Tool plugin developers must override this method to return the button which is inserted on the application ribbon, under the "Tools" tab. If the method returns <b>null</b>, then the tool is 
     /// ignored.
     /// </para>
     /// <para>
-    /// The resulting data structure will contain the means to handle the click event for the tool, and as such, is the only means of communication between the main UI and the plug-in.
+    /// The resulting data structure will contain the means to handle the click event for the tool, and as such, is the only means of communication between the main UI and the plugin.
     /// </para>
     /// </remarks>
-    protected abstract IToolPlugInRibbonButton OnGetToolButton();
+    protected abstract IToolPluginRibbonButton OnGetToolButton();
 
     /// <summary>
     /// Function called when a project is loaded/created.
@@ -179,13 +179,13 @@ public abstract class ToolPlugIn(string description)
     /// <returns>A new tool ribbon button instance.</returns>
     /// <remarks>
     /// <para>
-    /// This will return data to describe a new button for the tool in the plug-in. If the return value is <b>null</b>, then the tool will not be available on the ribbon.
+    /// This will return data to describe a new button for the tool in the plugin. If the return value is <b>null</b>, then the tool will not be available on the ribbon.
     /// </para>
     /// </remarks>
-    public IToolPlugInRibbonButton GetToolButton() => OnGetToolButton();
+    public IToolPluginRibbonButton GetToolButton() => OnGetToolButton();
 
     /// <summary>
-    /// Function to perform any required clean up for the plugin.
+    /// Function to perform any required clean up for the Plugin.
     /// </summary>
     public void Shutdown()
     {
@@ -201,13 +201,13 @@ public abstract class ToolPlugIn(string description)
     }
 
     /// <summary>
-    /// Function to perform any required initialization for the plugin.
+    /// Function to perform any required initialization for the Plugin.
     /// </summary>
     /// <param name="hostServices">The services from the host application.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="hostServices"/> parameter is <b>null</b>.</exception>
     /// <remarks>
     /// <para>
-    /// This method is only called when the plugin is loaded at startup.
+    /// This method is only called when the Plugin is loaded at startup.
     /// </para>
     /// </remarks>
     public void Initialize(IHostContentServices hostServices)

@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -42,7 +42,89 @@ public enum PlatformArchitecture
     x64 = 1
 }
 
-// ReSharper restore InconsistentNaming
+/// <summary>
+/// Provides information about the CPU in the machine.
+/// </summary>
+public interface IGorgonCpuInfo
+{
+    /// <summary>
+    /// Property to return the name of the CPU.
+    /// </summary>
+    string CpuName
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the identifier of the CPU.
+    /// </summary>
+    string CpuIdentifier
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the vendor for the CPU.
+    /// </summary>
+    string CpuVendor
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the number of cores for this CPU.
+    /// </summary>
+    int CoreCount
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the number of cores that have SMT/Hyperthreading for this CPU.
+    /// </summary>
+    int SmtCount
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the efficiency value for each core.
+    /// </summary>
+    /// <remarks>
+    /// The higher the value, the more performance, and less efficiency given by the core. A value of all zeroes means the efficiency ratings are not supported.
+    /// </remarks>
+    IReadOnlyList<int> CoreEfficiency
+    {
+        get;
+    }
+}
+
+/// <summary>
+/// The enum values for the <see cref="IGorgonComputerInfo.OperatingSystem"/> property.
+/// </summary>
+public enum ComputerInfoOperatingSystem
+{
+    /// <summary>
+    /// Unknown operating system.
+    /// </summary>
+    Unknown,
+    /// <summary>
+    /// Windows
+    /// </summary>
+    Windows,
+    /// <summary>
+    /// Linux
+    /// </summary>
+    Linux,
+    /// <summary>
+    /// FreeBSD
+    /// </summary>
+    FreeBSD,
+    /// <summary>
+    /// Apple Mac OS/X.
+    /// </summary>
+    MacOSX
+}
 
 /// <summary>
 /// Provides information about the current platform
@@ -103,9 +185,9 @@ public interface IGorgonComputerInfo
     }
 
     /// <summary>
-    /// Property to return the platform for the Operating System.
+    /// Property to return the Operating System that the application is running on.
     /// </summary>
-    PlatformID OperatingSystemPlatform
+    ComputerInfoOperatingSystem OperatingSystem
     {
         get;
     }
@@ -136,9 +218,12 @@ public interface IGorgonComputerInfo
     }
 
     /// <summary>
-    /// Property to return the number of processors in the computer.
+    /// Property to return the list of information for each physical CPU in the computer.
     /// </summary>
-    int ProcessorCount
+    /// <remarks>
+    /// This contains information for each socketed/soldered CPU on the board. Each CPU may contain one or more cores.
+    /// </remarks>
+    IReadOnlyList<IGorgonCpuInfo> Cpus
     {
         get;
     }

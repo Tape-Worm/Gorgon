@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2020 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,7 @@
 
 using System.Numerics;
 using Gorgon.Diagnostics;
-using Gorgon.Editor.PlugIns;
+using Gorgon.Editor.Plugins;
 using Gorgon.Editor.SpriteEditor.Properties;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
@@ -231,7 +231,7 @@ internal class SpriteClipContext
         catch (Exception ex)
         {
             _hostServices.Log.PrintError("Error cancelling sprite clipping.", LoggingLevel.Verbose);
-            _hostServices.Log.LogException(ex);
+            _hostServices.Log.PrintException(ex);
         }
     }
 

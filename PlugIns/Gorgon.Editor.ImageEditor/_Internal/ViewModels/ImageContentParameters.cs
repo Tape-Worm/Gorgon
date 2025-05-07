@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -40,7 +40,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels;
 /// <param name="fileManager">The file manager for content files.</param>
 /// <param name="file">The file for the image content.</param>
 /// <param name="settings">The settings for the image editor.</param>
-/// <param name="pluginSettings">The plug-in settings for the image editor.</param>
+/// <param name="pluginSettings">The plugin settings for the image editor.</param>
 /// <param name="imagePicker">The image picker used to import image data into the current image.</param>
 /// <param name="cropResizeSettings">The crop/resize settings view model.</param>
 /// <param name="dimensionSettings">The image dimensions settings view model.</param>
@@ -159,7 +159,7 @@ internal class ImageContentParameters(IContentFileManager fileManager,
     } = videoAdapter ?? throw new ArgumentNullException(nameof(videoAdapter));
 
     /// <summary>
-    /// Property to return the settings for the image editor plugin.
+    /// Property to return the settings for the image editor Plugin.
     /// </summary>
     public ISettings Settings
     {
@@ -167,7 +167,7 @@ internal class ImageContentParameters(IContentFileManager fileManager,
     } = settings ?? throw new ArgumentNullException(nameof(settings));
 
     /// <summary>
-    /// Property to return the plug-in settings for the image editor.
+    /// Property to return the plugin settings for the image editor.
     /// </summary>
     public ISettingsPlugins PluginSettings
     {

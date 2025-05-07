@@ -1,0 +1,28 @@
+﻿<Window x:Class="Dialogs.Wpf.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Dialogs.Wpf"
+        mc:Ignorable="d"
+        Title="Dialogs - WPF" 
+        d:Width="800" d:Height="450" FontSize="24" Icon="pack://application:,,,/Dialogs.Wpf;component/Gorgon2.ico" SizeToContent="WidthAndHeight" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <Style TargetType="Button">
+            <Setter Property="Margin" Value="3,0,3,3"/>
+            <Setter Property="MinWidth" Value="640"/>
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <StackPanel Orientation="Vertical">
+            <Button x:Name="ButtonInformation" Click="ButtonInformation_Click">Information</Button>
+            <Button x:Name="ButtonWarning" Click="ButtonWarning_Click">Warning</Button>
+            <Button x:Name="ButtonWarningDetailed" Click="ButtonWarningDetailed_Click">Warning w/Details</Button>
+            <Button x:Name="ButtonError" Click="ButtonError_Click">Error</Button>
+            <Button x:Name="ButtonErrorDetails" Click="ButtonErrorDetails_Click">Error w/Details</Button>
+            <Button x:Name="ButtonConfirm" Click="ButtonConfirm_Click">Confirmation</Button>
+            <Button x:Name="ButtonConfirmCancel" Click="ButtonConfirmCancel_Click">Confirmation w/Cancel</Button>
+            <Button x:Name="ButtonConfirmToAll" Click="ButtonConfirmToAll_Click">Confirmation w/To All</Button>
+        </StackPanel>
+    </Grid>
+</Window>

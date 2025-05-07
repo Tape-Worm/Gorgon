@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2019 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,7 @@
 // 
 
 using Gorgon.Editor.Content;
-using Gorgon.Editor.PlugIns;
+using Gorgon.Editor.Plugins;
 using Gorgon.Editor.UI.ViewModels;
 using Gorgon.Renderers.Services;
 
@@ -35,7 +35,7 @@ namespace Gorgon.Editor.TextureAtlasTool;
 /// </summary>
 /// <remarks>Initializes a new instance of the <see cref="TextureAtlasParameters"/> class.</remarks>
 /// <param name="spriteFiles">The view model for the sprite loader UI.</param>
-/// <param name="settings">The settings for the texture atlas plug-in.</param>
+/// <param name="settings">The settings for the texture atlas plugin.</param>
 /// <param name="atlasGenerator">The service used to generate texture atlases.</param>
 /// <param name="fileIO">The service used to manage the atlas files.</param>
 /// <param name="fileManager">The file manager for the project file system.</param>
@@ -58,7 +58,7 @@ internal class TextureAtlasParameters(ISpriteFiles spriteFiles,
     } = spriteFiles ?? throw new ArgumentNullException(nameof(spriteFiles));
 
     /// <summary>
-    /// Property to return the settings for the plug-in.
+    /// Property to return the settings for the plugin.
     /// </summary>
     public TextureAtlasSettings Settings
     {

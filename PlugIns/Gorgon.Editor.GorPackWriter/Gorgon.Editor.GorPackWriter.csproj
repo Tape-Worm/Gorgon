@@ -5,31 +5,28 @@
     <ForceDesignerDpiUnaware>true</ForceDesignerDpiUnaware>
     <UseWindowsForms>True</UseWindowsForms>
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
-    <Version>4.0.0</Version>
     <Authors>Michael Winsor</Authors>
     <Company>Tape_Worm</Company>
     <Product>Gorgon</Product>
-    <Description>A Gorgon Editor plug-in that will write out Gorgon packed files.</Description>
+    <Description>A Gorgon Editor plugin that will write out Gorgon packed files.</Description>
     <Copyright>(C)opyright Tape_Worm, 2020</Copyright>
-    <PackageLicenseFile>
-    </PackageLicenseFile>
+    <PackageLicenseFile></PackageLicenseFile>
     <PackageProjectUrl>https://www.tape-worm.net</PackageProjectUrl>
     <PackageIcon>g.png</PackageIcon>
     <RepositoryUrl>https://github.com/Tape-Worm/Gorgon</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
-    <PackageTags>Gorgon, C#, .NET Framework, Direct 3D, SharpDX, Winforms</PackageTags>
+    <PackageTags>Gorgon, C#, Direct 3D, SharpDX, Winforms</PackageTags>
     <EnableNETAnalyzers>false</EnableNETAnalyzers>
     <RootNamespace>Gorgon.Editor.GorPackWriter</RootNamespace>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <SignAssembly>false</SignAssembly>
-    <AssemblyOriginatorKeyFile>
-    </AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile></AssemblyOriginatorKeyFile>
     <DelaySign>false</DelaySign>
     <ImplicitUsings>enable</ImplicitUsings>
     <AssemblyVersion>4.0.0.0</AssemblyVersion>
     <FileVersion>4.0.0.0</FileVersion>
-
+    <VersionPrefix>4.0.0</VersionPrefix>
   </PropertyGroup>
   <PropertyGroup>
     <EmbeddedResourceUseDependentUponConvention>true</EmbeddedResourceUseDependentUponConvention>
@@ -43,11 +40,12 @@
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
+    <VersionSuffix>Dev</VersionSuffix>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Bcl.HashCode" Version="6.0.0" />
     <PackageReference Include="Microsoft.SourceLink.GitHub">
-      <Version>8.0.0</Version>      
+      <Version>8.0.0</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
@@ -56,8 +54,7 @@
   <ItemGroup>
     <None Include="..\..\Gorgon\g.png">
       <Pack>True</Pack>
-      <PackagePath>
-      </PackagePath>
+      <PackagePath></PackagePath>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -77,6 +74,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="robocopy &quot;$(TargetDir)\&quot; &quot;$(SolutionDir)Tools\Editor\Gorgon.Editor\$(OutDir)PlugIns\FileSystem&quot; $(TargetFileName) $(TargetName).pdb DotNetZip.dll /Z /R:3 /W:3&#xD;&#xA;&#xD;&#xA;REM Because Robocopy trips up visual studio with its return codes.&#xD;&#xA;&#xD;&#xA;IF %25ERRORLEVEL%25 LSS 8 EXIT 0&#xD;&#xA;" />
+    <Exec Command="robocopy &quot;$(TargetDir)\&quot; &quot;$(SolutionDir)Tools\Editor\Gorgon.Editor\$(OutDir)Plugins\FileSystem&quot; $(TargetFileName) $(TargetName).pdb DotNetZip.dll /Z /R:3 /W:3&#xD;&#xA;&#xD;&#xA;REM Because Robocopy trips up visual studio with its return codes.&#xD;&#xA;&#xD;&#xA;IF %25ERRORLEVEL%25 LSS 8 EXIT 0&#xD;&#xA;" />
   </Target>
 </Project>

@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2019 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,10 +23,10 @@
 // Created: April 20, 2019 5:20:34 PM
 // 
 
-using Gorgon.Editor.PlugIns;
+using Gorgon.Editor.Plugins;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
-using Gorgon.PlugIns;
+using Gorgon.Plugins;
 
 namespace Gorgon.Editor.ImageEditor;
 
@@ -37,14 +37,14 @@ namespace Gorgon.Editor.ImageEditor;
 /// <param name="settings">The settings for the image editor.</param>
 /// <param name="codecs">The codecs loaded into the system.</param>
 /// <param name="openCodecDialog">The file dialog used to locate codec assemblies.</param>
-/// <param name="plugInCache">The cache for plug-in assemblies.</param>
+/// <param name="pluginCache">The cache for plugin assemblies.</param>
 /// <param name="hostServices">Common application services.</param>
 /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-internal class SettingsPluginsParameters(ImageEditorSettings settings, ICodecRegistry codecs, IFileDialogService openCodecDialog, GorgonMefPlugInCache plugInCache, IHostContentServices hostServices)
-        : PlugInsCategoryViewModelParameters(openCodecDialog, plugInCache, hostServices)
+internal class SettingsPluginsParameters(ImageEditorSettings settings, ICodecRegistry codecs, IFileDialogService openCodecDialog, GorgonMefPluginCache pluginCache, IHostContentServices hostServices)
+        : PluginsCategoryViewModelParameters(openCodecDialog, pluginCache, hostServices)
 {
     /// <summary>
-    /// Property to return the settings for the image editor plugin.
+    /// Property to return the settings for the image editor Plugin.
     /// </summary>
     public ImageEditorSettings Settings
     {

@@ -101,7 +101,7 @@ partial class Stage
         this.CheckSettings.TabIndex = 7;
         this.CheckSettings.Text = "&Settings";
         this.CheckSettings.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-        this.TipButtons.SetToolTip(this.CheckSettings, "Change the settings for the application and/or various plug-ins.");
+        this.TipButtons.SetToolTip(this.CheckSettings, "Change the settings for the application and/or various plugins.");
         this.CheckSettings.UseVisualStyleBackColor = true;
         this.CheckSettings.Click += new System.EventHandler(this.CheckSettings_Click);
         // 
@@ -127,7 +127,7 @@ partial class Stage
         this.ButtonOpenPackFile.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
         this.ButtonOpenPackFile.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
         this.TipButtons.SetToolTip(this.ButtonOpenPackFile, "Opens a packaged file and creates a project from it.\r\n\r\nNote: This functionality " +
-    "requires that the appropriate plugin support is available.");
+    "requires that the appropriate Plugin support is available.");
         this.ButtonOpenPackFile.UseVisualStyleBackColor = true;
         this.ButtonOpenPackFile.Click += new System.EventHandler(this.ButtonOpenPackFile_Click);
         // 
@@ -153,7 +153,7 @@ partial class Stage
         this.ButtonSaveAs.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
         this.ButtonSaveAs.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
         this.TipButtons.SetToolTip(this.ButtonSaveAs, "Save the current project as a packaged file.\r\n\r\nNote: This functionality requires" +
-    " that the appropriate plugin support is available.\r\n");
+    " that the appropriate Plugin support is available.\r\n");
         this.ButtonSaveAs.UseVisualStyleBackColor = true;
         this.ButtonSaveAs.Visible = false;
         this.ButtonSaveAs.Click += new System.EventHandler(this.ButtonSaveAs_Click);

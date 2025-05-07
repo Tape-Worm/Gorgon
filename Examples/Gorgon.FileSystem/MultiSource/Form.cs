@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2013 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -27,8 +27,8 @@ using System.Text;
 using Gorgon.Core;
 using Gorgon.IO.FileSystem;
 using Gorgon.IO.FileSystem.Providers;
-using Gorgon.PlugIns;
-using Gorgon.UI.OLDE;
+using Gorgon.Plugins;
+using Gorgon.UI.WindowsForms;
 
 namespace Gorgon.Examples;
 
@@ -60,7 +60,6 @@ namespace Gorgon.Examples;
 public partial class Form
     : System.Windows.Forms.Form
 {
-
     // Our file system.
     private IGorgonFileSystem _fileSystem;
     // Zip file system provider.
@@ -75,8 +74,8 @@ public partial class Form
     private Font _textFont;
     // Instructions label.
     private Label _instructions;
-    // File system plug-in assembly cache.
-    private GorgonMefPlugInCache _cache;
+    // File system plugin assembly cache.
+    private GorgonMefPluginCache _cache;
 
     /// <summary>
     /// Handles the NodeMouseDoubleClick event of the treeFileSystem control.
@@ -144,7 +143,7 @@ public partial class Form
         }
         catch (Exception ex)
         {
-            ex.Handle(e => GorgonDialogs.ErrorBox(this, e), Program.Log);
+            ex.Handle(e => GorgonDialogs.Error(this, e), GorgonExample.Log);
             splitFileSystem.Panel2.Controls.Add(_instructions);
         }
     }
@@ -169,7 +168,7 @@ public partial class Form
         }
         catch (Exception ex)
         {
-            ex.Handle(e => GorgonDialogs.ErrorBox(this, e), Program.Log);
+            ex.Handle(e => GorgonDialogs.Error(this, e), GorgonExample.Log);
         }
     }
 
@@ -192,7 +191,7 @@ public partial class Form
         }
         catch (Exception ex)
         {
-            ex.Handle(e => GorgonDialogs.ErrorBox(this, e), Program.Log);
+            ex.Handle(e => GorgonDialogs.Error(this, e), GorgonExample.Log);
         }
     }
 
@@ -201,18 +200,18 @@ public partial class Form
     /// </summary>
     private void LoadZipFileSystemProvider()
     {
-        // Name of our zip provider plugin.
-        const string zipProviderPlugInName = "Gorgon.IO.FileSystem.Providers.ZipPlugIn";
+        // Name of our zip provider Plugin.
+        const string zipProviderPluginName = "Gorgon.IO.FileSystem.Providers.ZipPlugin";
 
-        // We can load the objects we need and discard the plugin system after.
+        // We can load the objects we need and discard the Plugin system after.
         // This works because we keep the references to the objects that our 
-        // plugin creates, even after the plugin is gone.
-        _cache = new GorgonMefPlugInCache(Program.Log);
+        // Plugin creates, even after the Plugin is gone.
+        _cache = new GorgonMefPluginCache(GorgonExample.Log);
 
-        GorgonFileSystemProviderFactory providerFactory = new(_cache, Program.Log);
-        _zipProvider = providerFactory.CreateProvider(Path.Combine(GorgonExample.GetPlugInPath().FullName, "Gorgon.IO.FileSystem.Zip.DLL"), zipProviderPlugInName);
+        GorgonFileSystemProviderFactory providerFactory = new(_cache, GorgonExample.Log);
+        _zipProvider = providerFactory.CreateProvider(Path.Combine(GorgonExample.GetPluginPath().FullName, "Gorgon.IO.FileSystem.Zip.DLL"), zipProviderPluginName);
 
-        _fileSystem = new GorgonFileSystem(Program.Log);
+        _fileSystem = new GorgonFileSystem(GorgonExample.Log);
     }
 
     /// <summary>
@@ -245,7 +244,7 @@ public partial class Form
             }
             else
             {
-                GorgonDialogs.ErrorBox(this, "Could not find the virtual directory '" + directory.FullPath + "'");
+                GorgonDialogs.Error(this, "Could not find the virtual directory '" + directory.FullPath + "'");
                 return;
             }
         }
@@ -332,10 +331,7 @@ public partial class Form
         }
     }
 
-    /// <summary>
-    /// Raises the <see cref="E:System.Windows.Forms.Form.FormClosing" /> event.
-    /// </summary>
-    /// <param name="e">A <see cref="FormClosingEventArgs" /> that contains the event data.</param>
+    /// <inheritdoc/>
     protected override void OnFormClosing(FormClosingEventArgs e)
     {
         base.OnFormClosing(e);
@@ -347,10 +343,7 @@ public partial class Form
         _textFont?.Dispose();
     }
 
-    /// <summary>
-    /// Raises the <see cref="E:System.Windows.Forms.Form.Load" /> event.
-    /// </summary>
-    /// <param name="e">An <see cref="EventArgs" /> that contains the event data.</param>
+    /// <inheritdoc/>
     protected override void OnLoad(EventArgs e)
     {
         base.OnLoad(e);
@@ -358,7 +351,7 @@ public partial class Form
         try
         {
             GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
-            GorgonExample.PlugInLocationDirectory = new DirectoryInfo(ExampleConfig.Default.PlugInLocation);
+            GorgonExample.PluginLocationDirectory = new DirectoryInfo(ExampleConfig.Default.PluginLocation);
 
             // Picture box.
             _picture = new PictureBox
@@ -401,8 +394,8 @@ public partial class Form
         }
         catch (Exception ex)
         {
-            ex.Handle(e => GorgonDialogs.ErrorBox(this, e), Program.Log);
-            GorgonApplication.Quit();
+            GorgonExample.HandleException(ex);
+            Application.Exit();
         }
     }
 

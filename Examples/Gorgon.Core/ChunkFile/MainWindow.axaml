@@ -1,0 +1,74 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:Gorgon.Examples"
+        mc:Ignorable="d" d:DesignWidth="1280" d:DesignHeight="720"
+        x:Class="Gorgon.Examples.MainWindow"
+        Title="{Binding Title}"
+        Icon="avares://ChunkFile/Gorgon2.ico" 
+        WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource SystemControlBackgroundChromeMediumLowBrush}"
+        Width="1280" Height="720">
+  <Design.DataContext>
+    <vm:ChunkFileViewModel/>
+  </Design.DataContext>
+  <Window.DataContext>
+    <vm:ChunkFileViewModel/>
+  </Window.DataContext>
+  <Window.Resources>
+    <vm:EmptyStringBooleanConverter x:Key="StringDataConverter"/>
+  </Window.Resources>
+  <Window.Styles>
+    <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
+      <Setter Property="Background" Value="{DynamicResource SystemAltLowColor}"/>
+      <Setter Property="BorderThickness" Value="0"/>
+    </Style>    
+    <Style Selector="TextBox:focus /template/ Border#PART_BorderElement">
+      <Setter Property="Background" Value="{DynamicResource SystemAltLowColor}"/>
+      <Setter Property="BorderThickness" Value="0"/>
+    </Style>    
+  </Window.Styles>
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="auto" MaxHeight="100"/>
+      <RowDefinition Height="auto"/>
+      <RowDefinition Height="*"/>
+    </Grid.RowDefinitions>
+    <Border BorderThickness="1" BorderBrush="DarkRed" CornerRadius="10" Margin="3, 3, 3, 3" Background="DarkRed" IsVisible="{Binding ErrorMessage, Converter={StaticResource StringDataConverter}}">
+      <Grid>
+        <TextBlock x:Name="LabelError" Text="{Binding ErrorMessage}" Margin="3, 3, 3, 3" FontWeight="Bold" Foreground="White"  />
+        <Button Command="{Binding CloseErrorCommand}" Margin="3, 3, 3, 3" HorizontalAlignment="Right" VerticalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">x</Button>
+      </Grid>
+    </Border>
+    <Grid Grid.Row="1" x:Name="MenuGrid">
+      <StackPanel Orientation="Horizontal" Margin="3,3,3,3">
+        <Button Command="{Binding LoadChunkFileCommand}">Load Chunked File</Button>
+      </StackPanel>
+    </Grid>
+    <Grid Grid.Row="2" x:Name="BodyGrid">
+      <Grid x:Name ="MainUI">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="auto" MinWidth="320"/>
+          <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <DockPanel Grid.Column="0">
+          <TextBlock Text="File Chunks" DockPanel.Dock="Top" Margin="3,0,3,3"/>
+          <ListBox Grid.Column="0" x:Name="ChunkList" BorderBrush="Black" BorderThickness="0" ItemsSource="{Binding Chunks}"
+                   SelectionMode="Single" Selection="{Binding Selection}" 
+                   Background="{DynamicResource SystemAltLowColor}"
+                   Margin="3, 0, 0, 3" />
+        </DockPanel>
+        <DockPanel Grid.Column="1">
+          <TextBlock Text="Chunk Data" DockPanel.Dock="Top" Margin="3,0,3,3"/>
+          <TextBox x:Name="TextChunkData" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Disabled" 
+                   FontFamily="{OnPlatform Windows='Consolas', Linux='Monospace'}"
+                   IsReadOnly="True" TextWrapping="Wrap" AcceptsReturn="True" Watermark="Chunk data will appear here..." 
+                   Margin="3,0,3,3" BorderThickness="0" Text="{Binding ChunkFileData}"                   
+                   Background="{DynamicResource SystemAltLowColor}">
+          </TextBox>
+        </DockPanel>
+      </Grid>
+    </Grid>
+  </Grid>
+</Window>

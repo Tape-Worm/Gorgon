@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -468,7 +468,7 @@ public sealed class GorgonSwapChain
         }
         catch (Exception ex)
         {
-            Graphics.Log.LogException(ex);
+            Graphics.Log.PrintException(ex);
         }
         finally
         {
@@ -502,7 +502,7 @@ public sealed class GorgonSwapChain
         }
         catch (Exception ex)
         {
-            Graphics.Log.LogException(ex);
+            Graphics.Log.PrintException(ex);
         }
     }
 
@@ -531,7 +531,7 @@ public sealed class GorgonSwapChain
         }
         catch (Exception ex)
         {
-            Graphics.Log.LogException(ex);
+            Graphics.Log.PrintException(ex);
         }
         finally
         {
@@ -599,7 +599,7 @@ public sealed class GorgonSwapChain
         }
         catch (Exception ex)
         {
-            Graphics.Log.LogException(ex);
+            Graphics.Log.PrintException(ex);
             throw;
         }
         finally
@@ -1084,7 +1084,7 @@ public sealed class GorgonSwapChain
         }
         catch (Exception ex)
         {
-            Graphics.Log.LogException(ex);
+            Graphics.Log.PrintException(ex);
             throw;
         }
         finally

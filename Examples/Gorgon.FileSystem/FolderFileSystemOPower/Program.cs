@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2013 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,9 +23,6 @@
 // Created: Saturday, January 19, 2013 7:32:45 PM
 // 
 
-using Gorgon.Core;
-using Gorgon.UI.OLDE;
-
 namespace Gorgon.Examples;
 
 /// <summary>
@@ -45,11 +42,15 @@ static class Program
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            GorgonApplication.Run(new Form());
+            Application.Run(new Form());
         }
         catch (Exception ex)
         {
-            ex.Handle(e => GorgonDialogs.ErrorBox(null, e), GorgonApplication.Log);
+            GorgonExample.HandleException(ex);
+        }
+        finally
+        {
+            GorgonExample.ShutDown();
         }
     }
 }

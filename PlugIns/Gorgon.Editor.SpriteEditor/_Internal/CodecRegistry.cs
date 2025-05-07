@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2019 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,28 +25,28 @@
 
 using System.Reflection;
 using Gorgon.Diagnostics;
-using Gorgon.Editor.PlugIns;
+using Gorgon.Editor.Plugins;
 using Gorgon.Editor.SpriteEditor.Properties;
 using Gorgon.IO;
-using Gorgon.PlugIns;
+using Gorgon.Plugins;
 using Gorgon.Renderers;
 
 namespace Gorgon.Editor.SpriteEditor;
 
 /// <summary>
-/// A registry for the sprite codecs used by the plug-ins in this assembly
+/// A registry for the sprite codecs used by the plugins in this assembly
 /// </summary>
 /// <remarks>Initializes a new instance of the <see cref="CodecRegistry"/> class.</remarks>
-/// <param name="pluginCache">The cache of plug-in assemblies.</param>
+/// <param name="pluginCache">The cache of plugin assemblies.</param>
 /// <param name="renderer">The 2D renderer for the application.</param>
 /// <param name="log">The log for debug output.</param>
-internal class CodecRegistry(GorgonMefPlugInCache pluginCache, Gorgon2D renderer, IGorgonLog log)
+internal class CodecRegistry(GorgonMefPluginCache pluginCache, Gorgon2D renderer, IGorgonLog log)
 {
 
-    // The cache containing the plug-in assemblies.
-    private readonly GorgonMefPlugInCache _pluginCache = pluginCache;
-    // The service used to manage the plug-ins.
-    private readonly IGorgonPlugInService _pluginService = new GorgonMefPlugInService(pluginCache);
+    // The cache containing the plugin assemblies.
+    private readonly GorgonMefPluginCache _pluginCache = pluginCache;
+    // The service used to manage the plugins.
+    private readonly IGorgonPluginService _pluginService = new GorgonMefPluginService(pluginCache);
     // The log.
     private readonly IGorgonLog _log = log;
     // The 2D renderer for the application.
@@ -69,39 +69,39 @@ internal class CodecRegistry(GorgonMefPlugInCache pluginCache, Gorgon2D renderer
     } = [];
 
     /// <summary>
-    /// Property to return the list of sprite codec plug-ins.
+    /// Property to return the list of sprite codec plugins.
     /// </summary>
-    public IList<GorgonSpriteCodecPlugIn> CodecPlugIns
+    public IList<GorgonSpriteCodecPlugin> CodecPlugins
     {
         get;
     } = [];
 
     /// <summary>
-    /// Function to load external sprite codec plug-ins.
+    /// Function to load external sprite codec plugins.
     /// </summary>
-    /// <param name="settings">The settings containing the plug-in path.</param>
-    private void LoadCodecPlugIns(SpriteImportSettings settings)
+    /// <param name="settings">The settings containing the plugin path.</param>
+    private void LoadCodecPlugins(SpriteImportSettings settings)
     {
-        if (settings.CodecPlugInPaths.Count == 0)
+        if (settings.CodecPluginPaths.Count == 0)
         {
             return;
         }
 
         _log.Print("Loading sprite codecs...", LoggingLevel.Intermediate);
 
-        IReadOnlyList<PlugInAssemblyState> assemblies = _pluginCache.ValidateAndLoadAssemblies(settings.CodecPlugInPaths.Select(item => item.Value), _log);
+        IReadOnlyList<PluginAssemblyState> assemblies = _pluginCache.ValidateAndLoadAssemblies(settings.CodecPluginPaths.Select(item => item.Value), _log);
 
         if (assemblies.Count == 0)
         {
-            _log.Print("Sprite codec plug-in assemblies were not loaded. There may not have been any plug assemblies, or they may already be referenced.", LoggingLevel.Verbose);
+            _log.Print("Sprite codec plugin assemblies were not loaded. There may not have been any plug assemblies, or they may already be referenced.", LoggingLevel.Verbose);
         }
 
-        // Load all the codecs contained within the plug-in (a plug-in can have multiple codecs).
-        foreach (GorgonSpriteCodecPlugIn plugin in _pluginService.GetPlugIns<GorgonSpriteCodecPlugIn>())
+        // Load all the codecs contained within the plugin (a plugin can have multiple codecs).
+        foreach (GorgonSpriteCodecPlugin Plugin in _pluginService.GetPlugins<GorgonSpriteCodecPlugin>())
         {
-            foreach (GorgonSpriteCodecDescription desc in plugin.Codecs)
+            foreach (GorgonSpriteCodecDescription desc in Plugin.Codecs)
             {
-                CodecPlugIns.Add(plugin);
+                CodecPlugins.Add(Plugin);
 
                 if (Codecs.Any(item => string.Equals(item.GetType().FullName, desc.Name, StringComparison.OrdinalIgnoreCase)))
                 {
@@ -109,7 +109,7 @@ internal class CodecRegistry(GorgonMefPlugInCache pluginCache, Gorgon2D renderer
                     continue;
                 }
 
-                IGorgonSpriteCodec codec = plugin.CreateCodec(desc.Name, _renderer);
+                IGorgonSpriteCodec codec = Plugin.CreateCodec(desc.Name, _renderer);
 
                 if (codec is null)
                 {
@@ -123,17 +123,17 @@ internal class CodecRegistry(GorgonMefPlugInCache pluginCache, Gorgon2D renderer
     }
 
     /// <summary>
-    /// Function to remove an sprite codec plug-in from the registry.
+    /// Function to remove an sprite codec plugin from the registry.
     /// </summary>
-    /// <param name="plugin">The plug-in to remove.</param>
-    public void RemoveCodecPlugIn(GorgonSpriteCodecPlugIn plugin)
+    /// <param name="plugin">The plugin to remove.</param>
+    public void RemoveCodecPlugin(GorgonSpriteCodecPlugin plugin)
     {
         if (plugin is null)
         {
             throw new ArgumentNullException(nameof(plugin));
         }
 
-        if (!CodecPlugIns.Contains(plugin))
+        if (!CodecPlugins.Contains(plugin))
         {
             return;
         }
@@ -157,33 +157,33 @@ internal class CodecRegistry(GorgonMefPlugInCache pluginCache, Gorgon2D renderer
 
         _pluginService.Unload(plugin.Name);
 
-        CodecPlugIns.Remove(plugin);
+        CodecPlugins.Remove(plugin);
     }
 
     /// <summary>
     /// Function to add a codec to the registry.
     /// </summary>
     /// <param name="path">The path to the codec assembly.</param>
-    /// <param name="errors">A list of errors if the plug-in fails to load.</param>
+    /// <param name="errors">A list of errors if the plugin fails to load.</param>
     /// <returns>A list of codec plugs ins that were loaded.</returns>
-    public IReadOnlyList<GorgonSpriteCodecPlugIn> AddCodecPlugIn(string path, out IReadOnlyList<string> errors)
+    public IReadOnlyList<GorgonSpriteCodecPlugin> AddCodecPlugin(string path, out IReadOnlyList<string> errors)
     {
         List<string> localErrors = [];
         errors = localErrors;
 
-        List<GorgonSpriteCodecPlugIn> result = [];
+        List<GorgonSpriteCodecPlugin> result = [];
         _log.Print("Loading sprite codecs...", LoggingLevel.Intermediate);
 
-        IReadOnlyList<PlugInAssemblyState> assemblies = _pluginCache.ValidateAndLoadAssemblies([path], _log);
+        IReadOnlyList<PluginAssemblyState> assemblies = _pluginCache.ValidateAndLoadAssemblies([path], _log);
 
         if (assemblies.Count == 0)
         {
             _log.Print("Assembly was not loaded. This means that most likely it's already referenced.", LoggingLevel.Verbose);
         }
 
-        IEnumerable<PlugInAssemblyState> failedAssemblies = assemblies.Where(item => !item.IsAssemblyLoaded);
+        IEnumerable<PluginAssemblyState> failedAssemblies = assemblies.Where(item => !item.IsAssemblyLoaded);
 
-        foreach (PlugInAssemblyState failure in failedAssemblies)
+        foreach (PluginAssemblyState failure in failedAssemblies)
         {
             localErrors.Add(failure.LoadFailureReason);
         }
@@ -193,31 +193,31 @@ internal class CodecRegistry(GorgonMefPlugInCache pluginCache, Gorgon2D renderer
             return result;
         }
 
-        // Since we can't unload an assembly, we'll have to force a rescan of the plug-ins. We may have unloaded one prior, and we might need to get it back.
-        _pluginService.ScanPlugIns();
+        // Since we can't unload an assembly, we'll have to force a rescan of the plugins. We may have unloaded one prior, and we might need to get it back.
+        _pluginService.ScanPlugins();
         AssemblyName assemblyName = AssemblyName.GetAssemblyName(path);
-        IReadOnlyList<GorgonSpriteCodecPlugIn> pluginList = _pluginService.GetPlugIns<GorgonSpriteCodecPlugIn>(assemblyName);
+        IReadOnlyList<GorgonSpriteCodecPlugin> PluginList = _pluginService.GetPlugins<GorgonSpriteCodecPlugin>(assemblyName);
 
-        if (pluginList.Count == 0)
+        if (PluginList.Count == 0)
         {
             localErrors.Add(string.Format(Resources.GORSPR_ERR_NO_CODECS, Path.GetFileName(path)));
             return result;
         }
 
-        // Load all the codecs contained within the plug-in (a plug-in can have multiple codecs).
-        foreach (GorgonSpriteCodecPlugIn plugin in pluginList)
+        // Load all the codecs contained within the plugin (a plugin can have multiple codecs).
+        foreach (GorgonSpriteCodecPlugin Plugin in PluginList)
         {
-            if (CodecPlugIns.Any(item => string.Equals(plugin.Name, item.Name, StringComparison.OrdinalIgnoreCase)))
+            if (CodecPlugins.Any(item => string.Equals(Plugin.Name, item.Name, StringComparison.OrdinalIgnoreCase)))
             {
-                _log.PrintWarning($"Codec plug-in '{plugin.Name}' is already loaded.", LoggingLevel.Intermediate);
-                localErrors.Add(string.Format(Resources.GORSPR_ERR_CODEC_PLUGIN_ALREADY_LOADED, plugin.Name));
+                _log.PrintWarning($"Codec plugin '{Plugin.Name}' is already loaded.", LoggingLevel.Intermediate);
+                localErrors.Add(string.Format(Resources.GORSPR_ERR_CODEC_plugin_ALREADY_LOADED, Plugin.Name));
                 continue;
             }
 
-            CodecPlugIns.Add(plugin);
-            int count = plugin.Codecs.Count;
+            CodecPlugins.Add(Plugin);
+            int count = Plugin.Codecs.Count;
 
-            foreach (GorgonSpriteCodecDescription desc in plugin.Codecs)
+            foreach (GorgonSpriteCodecDescription desc in Plugin.Codecs)
             {
                 if (Codecs.Any(item => string.Equals(desc.Name, item.Name, StringComparison.OrdinalIgnoreCase)))
                 {
@@ -227,11 +227,11 @@ internal class CodecRegistry(GorgonMefPlugInCache pluginCache, Gorgon2D renderer
                     continue;
                 }
 
-                IGorgonSpriteCodec spriteCodec = plugin.CreateCodec(desc.Name, _renderer);
+                IGorgonSpriteCodec spriteCodec = Plugin.CreateCodec(desc.Name, _renderer);
 
                 if (spriteCodec is null)
                 {
-                    _log.PrintError($"Could not create sprite codec '{desc.Name}' from plug-in '{plugin.PlugInPath}'.", LoggingLevel.Verbose);
+                    _log.PrintError($"Could not create sprite codec '{desc.Name}' from plugin '{Plugin.PluginPath}'.", LoggingLevel.Verbose);
                     localErrors.Add(string.Format(Resources.GORSPR_ERR_CODEC_LOAD_FAIL, desc.Name));
                     --count;
                     continue;
@@ -248,7 +248,7 @@ internal class CodecRegistry(GorgonMefPlugInCache pluginCache, Gorgon2D renderer
 
             if (count > 0)
             {
-                result.Add(plugin);
+                result.Add(Plugin);
             }
         }
 
@@ -258,7 +258,7 @@ internal class CodecRegistry(GorgonMefPlugInCache pluginCache, Gorgon2D renderer
     /// <summary>
     /// Function to load the codecs from our settings data.
     /// </summary>
-    /// <param name="settings">The settings containing the plug-in paths.</param>
+    /// <param name="settings">The settings containing the plugin paths.</param>
     public void LoadFromSettings(SpriteImportSettings settings)
     {
         Codecs.Clear();
@@ -270,7 +270,7 @@ internal class CodecRegistry(GorgonMefPlugInCache pluginCache, Gorgon2D renderer
         Codecs.Add(new GorgonV2SpriteCodec(_renderer));
         Codecs.Add(new GorgonV1SpriteBinaryCodec(_renderer));
 
-        LoadCodecPlugIns(settings);
+        LoadCodecPlugins(settings);
 
         IEnumerable<(GorgonFileExtension extension, IGorgonSpriteCodec codec)> codecGrouping = from codec in Codecs
                                                                                                from extension in codec.FileExtensions

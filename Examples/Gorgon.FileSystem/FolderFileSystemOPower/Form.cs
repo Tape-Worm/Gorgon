@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2013 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -36,7 +36,6 @@ using Gorgon.IO.FileSystem;
 using Gorgon.Math;
 using Gorgon.Renderers;
 using Gorgon.Timing;
-using Gorgon.UI.OLDE;
 
 namespace Gorgon.Examples;
 
@@ -52,7 +51,6 @@ namespace Gorgon.Examples;
 public partial class Form
     : System.Windows.Forms.Form
 {
-
     // The file system.
     private IGorgonFileSystem _fileSystem;
     // The graphics interface.		
@@ -249,7 +247,7 @@ public partial class Form
                              screen.Bounds.Top + (screen.WorkingArea.Height / 2) - (ClientSize.Height / 2));
 
         // Initialize our graphics.
-        IReadOnlyList<IGorgonVideoAdapterInfo> videoAdapters = GorgonGraphics.EnumerateAdapters(log: GorgonApplication.Log);
+        IReadOnlyList<IGorgonVideoAdapterInfo> videoAdapters = GorgonGraphics.EnumerateAdapters(log: GorgonExample.Log);
 
         if (videoAdapters.Count == 0)
         {
@@ -297,7 +295,7 @@ public partial class Form
         });
 
         // Create our file system and mount the resources.
-        _fileSystem = new GorgonFileSystem(GorgonApplication.Log);
+        _fileSystem = new GorgonFileSystem(GorgonExample.Log);
         _fileSystem.Mount(GorgonExample.GetResourcePath(@"FileSystems\FolderSystem").FullName);
 
         // In the previous versions of Gorgon, we used to load the image first, and then the sprites.
@@ -360,20 +358,17 @@ public partial class Form
         _blurredImage[0] = _blurredTarget[0].GetShaderResourceView();
         _blurredImage[1] = _blurredTarget[1].GetShaderResourceView();
 
-        GorgonApplication.IdleMethod = Idle;
+        GorgonExample.Loop.Run(Idle);
     }
 
-    /// <summary>
-    /// Raises the <see cref="E:System.Windows.Forms.Control.KeyDown" /> event.
-    /// </summary>
-    /// <param name="e">A <see cref="KeyEventArgs" /> that contains the event data.</param>
+    /// <inheritdoc/>
     protected override void OnKeyDown(KeyEventArgs e)
     {
         base.OnKeyDown(e);
 
         if (e.KeyCode == Keys.Escape)
         {
-            GorgonApplication.Quit();
+            Application.Exit();
         }
 
         if (e.KeyCode == Keys.F1)
@@ -387,8 +382,7 @@ public partial class Form
         }
     }
 
-    /// <summary>Raises the <see cref="E:System.Windows.Forms.Form.FormClosing" /> event.</summary>
-    /// <param name="e">A <see cref="FormClosingEventArgs" /> that contains the event data. </param>
+    /// <inheritdoc/>
     protected override void OnFormClosing(FormClosingEventArgs e)
     {
         base.OnFormClosing(e);
@@ -405,10 +399,7 @@ public partial class Form
         _graphics?.Dispose();
     }
 
-    /// <summary>
-    /// Raises the <see cref="E:System.Windows.Forms.Form.Load" /> event.
-    /// </summary>
-    /// <param name="e">An <see cref="EventArgs" /> that contains the event data.</param>
+    /// <inheritdoc/>
     protected override void OnLoad(EventArgs e)
     {
         base.OnLoad(e);
@@ -425,8 +416,8 @@ public partial class Form
         }
         catch (Exception ex)
         {
-            ex.Handle(e => GorgonDialogs.ErrorBox(this, e), GorgonApplication.Log);
-            GorgonApplication.Quit();
+            GorgonExample.HandleException(ex);
+            Application.Exit();
         }
         finally
         {

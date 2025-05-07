@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2019 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -26,7 +26,6 @@
 using Gorgon.Core;
 using Gorgon.Memory;
 using Gorgon.Timing;
-using Gorgon.Timing.OLDE;
 
 namespace Gorgon.Graphics.Core;
 
@@ -73,7 +72,7 @@ internal class RenderTargetFactory(GorgonGraphics graphics)
     // The list used to clean up expired targets.
     private readonly List<GorgonRenderTarget2DView> _cleanupList = [];
     // The timer used to expire the render targets.
-    private readonly IGorgonTimer _expiryTimer = GorgonTimerQpc.SupportsQpc() ? new GorgonTimerQpc() : new GorgonTimerMultimedia();
+    private readonly IGorgonTimer _expiryTimer = new GorgonTimer();
     // An allocator for creating texture info objects.
     private readonly GorgonRingPool<TempTargetTextureInfo> _textureInfoAllocator = new(100, () => new TempTargetTextureInfo());
 
@@ -121,7 +120,7 @@ internal class RenderTargetFactory(GorgonGraphics graphics)
     /// <seealso cref="ExpiryTime"/>
     public void ExpireTargets(bool force = false)
     {
-        double currentMinutes = _expiryTimer.Minutes;
+        double currentMinutes = _expiryTimer.Elapsed.Minutes;
         _cleanupList.Clear();
 
         foreach (KeyValuePair<GorgonRenderTarget2DView, double> time in _expiryTime)
@@ -250,7 +249,7 @@ internal class RenderTargetFactory(GorgonGraphics graphics)
         }
 
         _renderTargets.Add(rtv);
-        _expiryTime[rtv] = _expiryTimer.Minutes + (ExpiryTime < 0 ? 0 : ExpiryTime);
+        _expiryTime[rtv] = _expiryTimer.Elapsed.Minutes + (ExpiryTime < 0 ? 0 : ExpiryTime);
         return true;
     }
 

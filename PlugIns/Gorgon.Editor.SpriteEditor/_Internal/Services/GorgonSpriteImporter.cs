@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -156,7 +156,7 @@ internal class GorgonSpriteImporter(IGorgonFileSystem projectFileSystem, IGorgon
 
             _log.Print("Importing associated texture for sprite...", LoggingLevel.Simple);
 
-            IGorgonSpriteCodec sourceCodec = SpriteImporterPlugIn.GetCodec(physicalFilePath, _codecs);
+            IGorgonSpriteCodec sourceCodec = SpriteImporterPlugin.GetCodec(physicalFilePath, _codecs);
             Debug.Assert(sourceCodec is not null, "We shouldn't be able to get this far without a codec.");
 
             texture = GetTexture(physicalFilePath, sourceCodec);
@@ -222,7 +222,7 @@ internal class GorgonSpriteImporter(IGorgonFileSystem projectFileSystem, IGorgon
         {
             // We'll eat and log this exception, the worst case is we end up with a little more disk usage than we'd like.
             _log.PrintError("Error cleaning up temporary directory.", LoggingLevel.Simple);
-            _log.LogException(ex);
+            _log.PrintException(ex);
         }
     }
 }

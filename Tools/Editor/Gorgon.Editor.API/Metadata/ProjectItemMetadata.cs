@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,7 @@
 // 
 
 using System.Text.Json.Serialization;
-using Gorgon.Editor.PlugIns;
+using Gorgon.Editor.Plugins;
 
 namespace Gorgon.Editor.Metadata;
 
@@ -34,8 +34,8 @@ namespace Gorgon.Editor.Metadata;
 public class ProjectItemMetadata
 {
 
-    // The metadata for a content plugin.
-    private IContentPlugInMetadata _contentMetadata;
+    // The metadata for a content Plugin.
+    private IContentPluginMetadata _contentMetadata;
 
     /// <summary>
     /// Property to return the ID for the item.
@@ -48,13 +48,13 @@ public class ProjectItemMetadata
     }
 
     /// <summary>
-    /// Property to set or return the name of the plugin associated with the metadata file path.
+    /// Property to set or return the name of the Plugin associated with the metadata file path.
     /// </summary>
     /// <remarks>
-    /// If this value is <b>null</b>, then the plugin hasn't been set.  If it's an empty string, then no plugin is associated with this metadata.
+    /// If this value is <b>null</b>, then the Plugin hasn't been set.  If it's an empty string, then no Plugin is associated with this metadata.
     /// </remarks>
     [JsonInclude]
-    public string PlugInName
+    public string PluginName
     {
         get;
         set;
@@ -91,20 +91,20 @@ public class ProjectItemMetadata
     }
 
     /// <summary>
-    /// Property to return the content plugin metadata associated with this project item.
+    /// Property to return the content Plugin metadata associated with this project item.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// Setting this value will set the value for <see cref="PlugInName"/>.
+    /// Setting this value will set the value for <see cref="PluginName"/>.
     /// </para>
     /// </remarks>        
     [JsonIgnore]
-    public IContentPlugInMetadata ContentMetadata
+    public IContentPluginMetadata ContentMetadata
     {
         get => _contentMetadata;
         set
         {
-            PlugInName = value?.PlugInName;
+            PluginName = value?.PluginName;
             _contentMetadata = value;
         }
     }
@@ -113,7 +113,7 @@ public class ProjectItemMetadata
     /// <param name="oldVersion">The old version of project metadata.</param>
     internal ProjectItemMetadata(ProjectItemMetadata30 oldVersion)
     {
-        PlugInName = oldVersion.PlugInName;
+        PluginName = oldVersion.PluginName;
 
         foreach (KeyValuePair<string, string> attr in oldVersion.Attributes)
         {
@@ -141,7 +141,7 @@ public class ProjectItemMetadata
         }
 
         _contentMetadata = metadata.ContentMetadata;
-        PlugInName = metadata.PlugInName;
+        PluginName = metadata.PluginName;
 
         foreach (KeyValuePair<string, string> attribute in metadata.Attributes)
         {

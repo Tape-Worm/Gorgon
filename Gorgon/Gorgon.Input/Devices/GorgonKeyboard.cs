@@ -23,9 +23,9 @@
 
 using System.Buffers;
 using System.Runtime.CompilerServices;
+using Gorgon.Input.Properties;
 using Gorgon.Math;
 using Gorgon.Memory;
-using Gorgon.Input.Properties;
 using Windows.Win32;
 
 namespace Gorgon.Input.Devices;

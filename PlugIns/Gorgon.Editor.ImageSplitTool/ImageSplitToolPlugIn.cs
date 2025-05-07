@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2019 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,7 @@
 
 using Gorgon.Editor.Content;
 using Gorgon.Editor.ImageSplitTool.Properties;
-using Gorgon.Editor.PlugIns;
+using Gorgon.Editor.Plugins;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI.Controls;
 using Gorgon.Graphics.Imaging.Codecs;
@@ -35,14 +35,14 @@ using Gorgon.UI.OLDE;
 namespace Gorgon.Editor.ImageSplitTool;
 
 /// <summary>
-/// A plug-in used to split a texture atlas up by using the sprites associated with it
+/// A plugin used to split a texture atlas up by using the sprites associated with it
 /// </summary>
-internal class ImageSplitToolPlugIn
-    : ToolPlugIn
+internal class ImageSplitToolPlugin
+    : ToolPlugin
 {
 
     // The cached button definition.
-    private ToolPlugInRibbonButton _button;
+    private ToolPluginRibbonButton _button;
 
     /// <summary>
     /// Function to retrieve the sprite file entries from the file system.
@@ -195,7 +195,7 @@ internal class ImageSplitToolPlugIn
 
         try
         {
-            settings = HostToolServices.ToolPlugInService.ReadContentSettings<ImageSplitToolSettings>(typeof(ImageSplitToolPlugIn).FullName);
+            settings = HostToolServices.ToolPluginService.ReadContentSettings<ImageSplitToolSettings>(typeof(ImageSplitToolPlugin).FullName);
 
             settings ??= new ImageSplitToolSettings();
 
@@ -229,7 +229,7 @@ internal class ImageSplitToolPlugIn
             HostToolServices.BusyService.SetIdle();
             form.ShowDialog(GorgonApplication.MainForm);
 
-            HostToolServices.ToolPlugInService.WriteContentSettings(typeof(ImageSplitToolPlugIn).FullName, settings);
+            HostToolServices.ToolPluginService.WriteContentSettings(typeof(ImageSplitToolPlugin).FullName, settings);
         }
         catch (Exception ex)
         {
@@ -248,18 +248,18 @@ internal class ImageSplitToolPlugIn
     /// <returns>A new tool ribbon button instance.</returns>
     /// <remarks>
     ///   <para>
-    /// Tool plug-in developers must override this method to return the button which is inserted on the application ribbon, under the "Tools" tab. If the method returns <b>null</b>, then the tool is
+    /// Tool plugin developers must override this method to return the button which is inserted on the application ribbon, under the "Tools" tab. If the method returns <b>null</b>, then the tool is
     /// ignored.
     /// </para>
     ///   <para>
-    /// The resulting data structure will contain the means to handle the click event for the tool, and as such, is the only means of communication between the main UI and the plug-in.
+    /// The resulting data structure will contain the means to handle the click event for the tool, and as such, is the only means of communication between the main UI and the plugin.
     /// </para>
     ///   <para>
-    /// The <paramref name="fileManager" /> will allow plug-ins to enumerate files in the project file system, create files/directories, and delete files/directories. This allows the plug-in a means
+    /// The <paramref name="fileManager" /> will allow plugins to enumerate files in the project file system, create files/directories, and delete files/directories. This allows the plugin a means
     /// to persist any data generated.
     /// </para>
     /// </remarks>
-    protected override IToolPlugInRibbonButton OnGetToolButton()
+    protected override IToolPluginRibbonButton OnGetToolButton()
     {
         _button.ClickCallback ??= ShowForm;
 
@@ -268,18 +268,18 @@ internal class ImageSplitToolPlugIn
         return _button;
     }
 
-    /// <summary>Function to provide initialization for the plugin.</summary>
-    /// <remarks>This method is only called when the plugin is loaded at startup.</remarks>
+    /// <summary>Function to provide initialization for the Plugin.</summary>
+    /// <remarks>This method is only called when the Plugin is loaded at startup.</remarks>
     protected override void OnInitialize()
     {
-        _button = new ToolPlugInRibbonButton(Resources.GORIST_TEXT_BUTTON, Resources.image_split_48x48, Resources.image_split_16x16, Resources.GORIST_GROUP_BUTTON)
+        _button = new ToolPluginRibbonButton(Resources.GORIST_TEXT_BUTTON, Resources.image_split_48x48, Resources.image_split_16x16, Resources.GORIST_GROUP_BUTTON)
         {
             Description = Resources.GORIST_DESC_BUTTON
         };
         _button.ValidateButton();
     }
 
-    /// <summary>Function to provide clean up for the plugin.</summary>
+    /// <summary>Function to provide clean up for the Plugin.</summary>
     protected override void OnShutdown()
     {
         // Disconnect from the button to ensure that we don't get this thing keeping us around longer than we should.
@@ -293,9 +293,9 @@ internal class ImageSplitToolPlugIn
         base.OnShutdown();
     }
 
-    /// <summary>Initializes a new instance of the <see cref="ImageSplitToolPlugIn"/> class.</summary>
-    public ImageSplitToolPlugIn()
-        : base(Resources.GORIST_PLUGIN_DESC)
+    /// <summary>Initializes a new instance of the <see cref="ImageSplitToolPlugin"/> class.</summary>
+    public ImageSplitToolPlugin()
+        : base(Resources.GORIST_plugin_DESC)
     {
     }
 }

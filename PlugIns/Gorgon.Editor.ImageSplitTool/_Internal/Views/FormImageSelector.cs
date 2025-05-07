@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2019 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -192,7 +192,7 @@ internal partial class FormImageSelector
     /// <param name="swapChain">The swap chain used to render into the UI.</param>
     /// <remarks>
     ///   <para>
-    /// This method allows tool plug-in implementors to setup additional functionality for custom graphics rendering.
+    /// This method allows tool plugin implementors to setup additional functionality for custom graphics rendering.
     /// </para>
     ///   <para>
     /// Resources created by this method should be cleaned up in the <see cref="EditorToolBaseForm.OnShutdownGraphics"/> method.

@@ -1,78 +1,60 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <RootNamespace>Gorgon.Examples</RootNamespace>
     <AssemblyName>GlassCube.WPF</AssemblyName>
     <TargetFramework>net8.0-windows</TargetFramework>
+    <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
     <UseWPF>true</UseWPF>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
-    <Version>4.0.0</Version>
     <Authors>Michael Winsor</Authors>
     <Company>Tape_Worm</Company>
     <Product>Gorgon</Product>
     <Description>An example showing how to interoperate Gorgon with WPF.</Description>
     <Copyright>(C)opyright Tape_Worm, 2021</Copyright>
-    <PackageLicenseFile>
-    </PackageLicenseFile>
+    <PackageLicenseFile></PackageLicenseFile>
     <PackageProjectUrl>https://www.tape-worm.net</PackageProjectUrl>
-
-
     <RepositoryUrl>https://github.com/Tape-Worm/Gorgon</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
-    <PackageTags>Gorgon, C#, .NET Framework, Direct 3D, SharpDX, Winforms</PackageTags>
+    <PackageTags>Gorgon, C#, Direct 3D, SharpDX, Winforms</PackageTags>
     <EnableNETAnalyzers>false</EnableNETAnalyzers>
     <RootNamespace>Gorgon.Examples</RootNamespace>
-    <NeutralLanguage>
-    </NeutralLanguage>
+    <NeutralLanguage></NeutralLanguage>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <AssemblyVersion>4.0.0.0</AssemblyVersion>
     <FileVersion>4.0.0.0</FileVersion>
     <SignAssembly>false</SignAssembly>
-    <AssemblyOriginatorKeyFile>
-    </AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile></AssemblyOriginatorKeyFile>
     <DelaySign>false</DelaySign>
     <ImplicitUsings>enable</ImplicitUsings>
+    <VersionPrefix>4.0.0</VersionPrefix>
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>x64</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
+    <VersionSuffix>Dev</VersionSuffix>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>x64</PlatformTarget>
-    <OutputPath>bin\Release\</OutputPath>
-    <ErrorReport>prompt</ErrorReport>
-  </PropertyGroup>
-  <PropertyGroup>
-    
-    <StartupObject>
-    </StartupObject>
-    <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\GlassCube\Cube.cs" Link="Cube.cs" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="ExampleStyles.xaml">
-      <Generator>
-      </Generator>
+      <Generator></Generator>
     </Resource>
-    <Resource Include="Gorgon2.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\..\Gorgon\g.png" Link="g.png"/>      
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="SharpDX.Mathematics" Version="4.2.0" />
+    <Resource Include="Gorgon2.ico" />    
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Gorgon\Gorgon.Graphics.Wpf\Gorgon.Graphics.Wpf.csproj" />
+    <ProjectReference Include="..\..\..\Gorgon\Gorgon.UI\Wpf\Gorgon.UI.Wpf.csproj" />
     <ProjectReference Include="..\..\ExamplesCommon\ExamplesCommon.csproj" />
   </ItemGroup>
   <ItemGroup>

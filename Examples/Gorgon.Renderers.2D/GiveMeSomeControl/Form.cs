@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -31,7 +31,6 @@ using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Renderers;
-using Gorgon.UI.OLDE;
 
 namespace Gorgon.Examples;
 
@@ -41,7 +40,6 @@ namespace Gorgon.Examples;
 public partial class Form
     : System.Windows.Forms.Form
 {
-
     // Our primary graphics interface.
     private GorgonGraphics _graphics;
     // The swap chain for the left panel.
@@ -146,14 +144,14 @@ public partial class Form
     {
         GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
 
-        IReadOnlyList<IGorgonVideoAdapterInfo> adapters = GorgonGraphics.EnumerateAdapters(log: GorgonApplication.Log);
+        IReadOnlyList<IGorgonVideoAdapterInfo> adapters = GorgonGraphics.EnumerateAdapters(log: GorgonExample.Log);
 
         if (adapters.Count == 0)
         {
             throw new GorgonException(GorgonResult.CannotCreate, "This example requires a Direct3D 11.2 capable video card.\nThe application will now close.");
         }
 
-        _graphics = new GorgonGraphics(adapters[0]);
+        _graphics = new GorgonGraphics(adapters.OrderByDescending(item => item.FeatureSet).First(), log: GorgonExample.Log);
 
         _leftPanel = new GorgonSwapChain(_graphics,
                                          GroupControl1,
@@ -294,8 +292,6 @@ public partial class Form
     {
         base.OnFormClosing(e);
 
-        GorgonExample.UnloadResources();
-
         _renderer?.Dispose();
         _leftPanel?.Dispose();
         _rightPanel?.Dispose();
@@ -310,21 +306,18 @@ public partial class Form
 
         try
         {
-            Show();
-            Refresh();
-
             Cursor.Current = Cursors.WaitCursor;
 
             Initialize();
 
             _originalSize = new Vector2(GroupControl1.ClientSize.Width, GroupControl2.ClientSize.Height);
 
-            GorgonApplication.IdleMethod = Idle;
+            GorgonExample.Loop.Run(Idle);
         }
         catch (Exception ex)
         {
             GorgonExample.HandleException(ex);
-            GorgonApplication.Quit();
+            Application.Exit();
         }
         finally
         {
@@ -336,5 +329,4 @@ public partial class Form
     /// Initializes a new instance of the <see cref="Form"/> class.
     /// </summary>
     public Form() => InitializeComponent();
-
 }

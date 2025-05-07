@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2020 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -28,7 +28,7 @@ using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.ImageEditor.Properties;
-using Gorgon.Editor.PlugIns;
+using Gorgon.Editor.Plugins;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Imaging;
@@ -398,7 +398,7 @@ internal class ImagePicker
         catch (Exception ex)
         {
             HostServices.Log.PrintError("Error cancelling the resize/crop operation.", LoggingLevel.Simple);
-            HostServices.Log.LogException(ex);
+            HostServices.Log.PrintException(ex);
         }
     }
 
@@ -767,7 +767,7 @@ internal class ImagePicker
         catch (Exception ex)
         {
             HostServices.Log.PrintError("Cannot deactivate the image picker.", LoggingLevel.Simple);
-            HostServices.Log.LogException(ex);
+            HostServices.Log.PrintException(ex);
         }
     }
 

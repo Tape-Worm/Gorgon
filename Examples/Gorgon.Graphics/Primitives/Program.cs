@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2014 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -30,15 +30,14 @@ using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
+using Gorgon.Input;
+using Gorgon.Input.Devices;
 using Gorgon.Math;
 using Gorgon.Renderers;
 using Gorgon.Renderers.Cameras;
 using Gorgon.Renderers.Geometry;
 using Gorgon.Renderers.Lights;
 using Gorgon.Timing;
-using Gorgon.UI.OLDE;
-using Gorgon.Input;
-using Gorgon.Input.Devices;
 using MouseButtons = Gorgon.Input.Devices.MouseButtons;
 
 namespace Gorgon.Examples;
@@ -226,7 +225,7 @@ internal static class Program
 
         if (_keyboard[VirtualKeys.Escape])
         {
-            GorgonApplication.Quit();
+            Application.Exit();
             return;
         }
 
@@ -677,7 +676,7 @@ internal static class Program
         try
         {
             // Find out which devices we have installed in the system.
-            IReadOnlyList<IGorgonVideoAdapterInfo> deviceList = GorgonGraphics.EnumerateAdapters();
+            IReadOnlyList<IGorgonVideoAdapterInfo> deviceList = GorgonGraphics.EnumerateAdapters(log: GorgonExample.Log);
 
             if (deviceList.Count == 0)
             {
@@ -685,7 +684,7 @@ internal static class Program
                     NotSupportedException("There are no suitable video adapters available in the system. This example is unable to continue and will now exit.");
             }
 
-            _graphics = new GorgonGraphics(deviceList[0]);
+            _graphics = new GorgonGraphics(deviceList[0], log: GorgonExample.Log);
             _renderer = new SimpleRenderer(_graphics);
 
             _swapChain = new GorgonSwapChain(_graphics,
@@ -713,7 +712,7 @@ internal static class Program
             };
 
             _inputEvents = new GorgonInputEventBuffer();
-            _input = GorgonInput.CreateInput(InputFlags.KeyboardAndMouse, GorgonApplication.Log);
+            _input = GorgonInput.CreateInput(InputFlags.KeyboardAndMouse, GorgonExample.Log);
             _keyboard = new GorgonKeyboard();
             _mouse = new GorgonMouse();
 
@@ -749,6 +748,8 @@ internal static class Program
             {
                 DrawMode = TextDrawMode.OutlinedGlyphs
             };
+
+            GorgonExample.Loop.Run(Idle);
         }
         finally
         {
@@ -770,7 +771,7 @@ internal static class Program
         {
             Initialize();
 
-            GorgonApplication.Run(_window, Idle);
+            Application.Run(_window);
         }
         catch (Exception ex)
         {
@@ -778,8 +779,6 @@ internal static class Program
         }
         finally
         {
-            GorgonExample.UnloadResources();
-
             _2DRenderer?.Dispose();
             _inputEvents?.Dispose();
             _input?.Dispose();
@@ -803,6 +802,8 @@ internal static class Program
 
             _swapChain?.Dispose();
             _graphics?.Dispose();
+
+            GorgonExample.ShutDown();
         }
     }
 }

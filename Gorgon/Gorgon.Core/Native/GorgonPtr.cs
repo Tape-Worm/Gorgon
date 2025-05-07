@@ -1,6 +1,6 @@
 ﻿// 
 // Gorgon.
-// Copyright (C) 2024 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -146,6 +146,11 @@ public unsafe readonly struct GorgonPtr<T>
             return ref Unsafe.AsRef<T>(_ptr + index);
         }
     }
+
+    /// <summary>
+    /// Property to return a reference to the first value pointed at by this pointer.
+    /// </summary>
+    public ref T Value => ref Unsafe.AsRef<T>(_ptr);
 
     /// <summary>
     /// Property to return a slice of this pointer's memory block by a given range.
@@ -563,14 +568,14 @@ public unsafe readonly struct GorgonPtr<T>
         }
 
         int toSize = Unsafe.SizeOf<TTo>();
-        int newSize = ptr.SizeInBytes / toSize;
+        int newCount = ptr.SizeInBytes / toSize;
 
-        if ((newSize == 0) || ((newSize * toSize) > ptr.SizeInBytes))
+        if ((newCount == 0) || ((newCount * toSize) > ptr.SizeInBytes))
         {
             throw new InvalidCastException(string.Format(Resources.GOR_ERR_PTR_CONVERT_WIDENING, toSize, ptr.SizeInBytes));
         }
 
-        return new((TTo*)ptr._ptr, newSize);
+        return new((TTo*)ptr._ptr, newCount);
     }
 
     /// <summary>

@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2021 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -36,7 +36,7 @@ using Gorgon.Math;
 using Gorgon.Renderers.Cameras;
 using Gorgon.Renderers.Geometry;
 using Gorgon.Timing;
-using Gorgon.Timing.OLDE;
+using Gorgon.UI.Wpf;
 
 namespace Gorgon.Examples;
 
@@ -290,7 +290,7 @@ public partial class MainWindow
 
         GorgonExample.LoadResources(_graphics);
 
-        _timer = new GorgonTimerQpc();
+        _timer = new GorgonTimer();
     }
 
     /// <summary>Handles the Loaded event of the Window control.</summary>
@@ -304,20 +304,16 @@ public partial class MainWindow
 
             // Initialize Gorgon as we have in the other examples.
             // Find out which devices we have installed in the system.
-            IReadOnlyList<IGorgonVideoAdapterInfo> deviceList = GorgonGraphics.EnumerateAdapters();
+            IReadOnlyList<IGorgonVideoAdapterInfo> deviceList = GorgonGraphics.EnumerateAdapters(log: GorgonExample.Log);
 
             if (deviceList.Count == 0)
             {
-                MessageBox.Show("There are no suitable video adapters available in the system. This example is unable to continue and will now exit.",
-                                "Error",
-                                MessageBoxButton.OK,
-                                MessageBoxImage.Error);
-
+                GorgonDialogs.Error("There are no suitable video adapters available in the system. This example is unable to continue and will now exit.");
                 Close();
                 return;
             }
 
-            _graphics = new GorgonGraphics(deviceList[0]);
+            _graphics = new GorgonGraphics(deviceList[0], log: GorgonExample.Log);
 
             // Unlike the Windows Forms version of this example, we don't need to use a swap chain. Instead, we use this 
             // render target type to get our rendering to a WPF surface.
@@ -329,13 +325,13 @@ public partial class MainWindow
             Initialize();
 
             // This is where we kick off our rendering. And again, unlike the Windows Forms version of the example, we 
-            // do not need to assign the Idle method to the GorgonApplication class. Instead we pass it to the Run method 
+            // do not need to assign the Idle method to a GorgonApplicationLoop class. Instead we pass it to the Run method 
             // on the GorgonWPFTarget. This will call the Idle method when WPF requires rendering to be performed. 
             _target.Run(Idle);
         }
         catch (Exception ex)
         {
-            MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            GorgonDialogs.Error(ex);
             Close();
         }
     }
@@ -346,8 +342,6 @@ public partial class MainWindow
     private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
     {
         // Always clean up after yourself.
-        GorgonExample.UnloadResources();
-
         _cube?.Dispose();
         _texture?.Dispose();
         _wvpBuffer?.Dispose();
@@ -356,6 +350,8 @@ public partial class MainWindow
         _vertexShader?.Dispose();
         _target?.Dispose();
         _graphics?.Dispose();
+
+        GorgonExample.ShutDown();
     }
 
     /// <summary>

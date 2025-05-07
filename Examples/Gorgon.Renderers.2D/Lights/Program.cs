@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -32,8 +32,6 @@ using Gorgon.Renderers;
 using Gorgon.Renderers.Cameras;
 using Gorgon.Renderers.Lights;
 using Gorgon.Timing;
-using Gorgon.Timing.OLDE;
-using Gorgon.UI.OLDE;
 
 namespace Gorgon.Examples;
 
@@ -167,7 +165,7 @@ static class Program
                              $"Light [c #{GorgonColors.CornFlowerBlue.ToHex()}]Z/z[/c]: {_light.Position.Z:0}\n" +
                              $"Camera Position: {_camera.Position.X:0}, {_camera.Position.Y:0} ([c #{GorgonColors.CornFlowerBlue.ToHex()}]W[/c], [c #{GorgonColors.CornFlowerBlue.ToHex()}]A[/c], [c #{GorgonColors.CornFlowerBlue.ToHex()}]S[/c], [c #{GorgonColors.CornFlowerBlue.ToHex()}]D[/c])\n" +
                              $"[c #{GorgonColors.CornFlowerBlue.ToHex()}]R[/c]otation: {(_rotate ? "Yes" : "No")}",
-                             new Vector2(0, 64));
+                             new Vector2(0, 75));
         _renderer.End();
 
         GorgonExample.DrawStatsAndLogo(_renderer);
@@ -188,7 +186,7 @@ static class Program
 
         try
         {
-            IReadOnlyList<IGorgonVideoAdapterInfo> videoDevices = GorgonGraphics.EnumerateAdapters(log: GorgonApplication.Log);
+            IReadOnlyList<IGorgonVideoAdapterInfo> videoDevices = GorgonGraphics.EnumerateAdapters(log: GorgonExample.Log);
 
             if (videoDevices.Count == 0)
             {
@@ -197,7 +195,7 @@ static class Program
             }
 
             // Find the best video device.
-            _graphics = new GorgonGraphics(videoDevices.OrderByDescending(item => item.FeatureSet).First());
+            _graphics = new GorgonGraphics(videoDevices.OrderByDescending(item => item.FeatureSet).First(), log: GorgonExample.Log);
 
             _screen = new GorgonSwapChain(_graphics,
                                           window,
@@ -290,7 +288,9 @@ static class Program
             window.KeyDown += Window_KeyDown;
             window.MouseWheel += Window_MouseWheel;
 
-            _torchFrameTime = new GorgonTimerQpc();
+            _torchFrameTime = new GorgonTimer();
+
+            GorgonExample.Loop.Run(Idle);
 
             return window;
         }
@@ -317,13 +317,16 @@ static class Program
     private static void Window_KeyDown(object sender, KeyEventArgs e)
     {
         Control window = (Control)sender;
+
+        if (window.IsDisposed)
+        {
+            return;
+        }
+
         Point cursor = window.PointToClient(Cursor.Position);
 
         switch (e.KeyCode)
         {
-            case Keys.Escape:
-                GorgonApplication.Quit();
-                return;
             case Keys.R:
                 _rotate = !_rotate;
                 break;
@@ -393,7 +396,7 @@ static class Program
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            GorgonApplication.Run(Initialize(), Idle);
+            Application.Run(Initialize());
         }
         catch (Exception ex)
         {
@@ -401,14 +404,14 @@ static class Program
         }
         finally
         {
-            GorgonExample.UnloadResources();
-
             _gbuffer?.Dispose();
             _lightEffect?.Dispose();
             _renderer?.Dispose();
             _backgroundLogoTexture?.Dispose();
             _screen?.Dispose();
             _graphics?.Dispose();
+
+            GorgonExample.ShutDown();
         }
     }
 }

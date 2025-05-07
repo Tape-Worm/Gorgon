@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,7 @@
 // 
 
 using System.ComponentModel;
-using Gorgon.Editor.PlugIns;
+using Gorgon.Editor.Plugins;
 using Gorgon.Math;
 
 namespace Gorgon.Editor.UI;
@@ -41,7 +41,7 @@ namespace Gorgon.Editor.UI;
 /// and the <see cref="INotifyPropertyChanging"/> interfaces to allow communication with a view. 
 /// </para>
 /// <para>
-/// Common services used by the application, such as a message display service, content plug-in service, etc... are provided through the <see cref="HostServices"/> property so that custom 
+/// Common services used by the application, such as a message display service, content plugin service, etc... are provided through the <see cref="HostServices"/> property so that custom 
 /// view models can use standardized functionality to communicate with the user should the need arise
 /// </para>
 /// <para>

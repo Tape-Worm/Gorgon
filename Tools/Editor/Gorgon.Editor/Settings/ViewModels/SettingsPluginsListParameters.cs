@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2019 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,23 +23,23 @@
 // Created: April 20, 2019 11:41:30 AM
 // 
 
-using Gorgon.Editor.PlugIns;
+using Gorgon.Editor.Plugins;
 using Gorgon.Editor.UI.ViewModels;
 
 namespace Gorgon.Editor.ViewModels;
 
 /// <summary>
-/// The parameters for the <see cref="ISettingsPlugInsList"/> view model
+/// The parameters for the <see cref="ISettingsPluginsList"/> view model
 /// </summary>
-/// <remarks>Initializes a new instance of the <see cref="SettingsPlugInsListParameters"/> class.</remarks>
+/// <remarks>Initializes a new instance of the <see cref="SettingsPluginsListParameters"/> class.</remarks>
 /// <param name="hostServices">The host application services.</param>
-internal class SettingsPlugInsListParameters(IHostServices hostServices)
+internal class SettingsPluginsListParameters(IHostServices hostServices)
         : ViewModelInjection<IHostServices>(hostServices)
 {
     /// <summary>
-    /// Property to set or return the list of plugins.
+    /// Property to set or return the list of Plugins.
     /// </summary>
-    public IEnumerable<ISettingsPlugInListItem> PlugIns
+    public IEnumerable<ISettingsPluginListItem> Plugins
     {
         get;
         set;

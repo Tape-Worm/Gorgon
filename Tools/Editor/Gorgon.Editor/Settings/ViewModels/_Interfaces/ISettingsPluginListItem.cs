@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2019 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,19 +23,19 @@
 // Created: April 20, 2019 10:58:32 AM
 // 
 
-using Gorgon.Editor.PlugIns;
+using Gorgon.Editor.Plugins;
 using Gorgon.Editor.UI;
 
 namespace Gorgon.Editor.ViewModels;
 
 /// <summary>
-/// An item to display on the <see cref="ISettingsPlugInsList"/> view model
+/// An item to display on the <see cref="ISettingsPluginsList"/> view model
 /// </summary>
-internal interface ISettingsPlugInListItem
+internal interface ISettingsPluginListItem
     : IViewModel
 {
     /// <summary>
-    /// Property to return the name/description for the plug-in.
+    /// Property to return the name/description for the plugin.
     /// </summary>
     string Name
     {
@@ -43,7 +43,7 @@ internal interface ISettingsPlugInListItem
     }
 
     /// <summary>
-    /// Property to return the path to the plug-in.
+    /// Property to return the path to the plugin.
     /// </summary>
     string Path
     {
@@ -51,15 +51,15 @@ internal interface ISettingsPlugInListItem
     }
 
     /// <summary>
-    /// Property to return the type for the plug-in.
+    /// Property to return the type for the plugin.
     /// </summary>
-    PlugInType Type
+    PluginType Type
     {
         get;
     }
 
     /// <summary>
-    /// Property to return the current state of the plug-in.
+    /// Property to return the current state of the plugin.
     /// </summary>
     string State
     {
@@ -67,7 +67,7 @@ internal interface ISettingsPlugInListItem
     }
 
     /// <summary>
-    /// Property to return why the plug-in was disabled.
+    /// Property to return why the plugin was disabled.
     /// </summary>
     string DisabledReason
     {

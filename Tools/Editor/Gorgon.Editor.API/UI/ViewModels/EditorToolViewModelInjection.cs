@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2020 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,7 @@
 // 
 
 using Gorgon.Editor.Content;
-using Gorgon.Editor.PlugIns;
+using Gorgon.Editor.Plugins;
 
 namespace Gorgon.Editor.UI.ViewModels;
 
@@ -34,10 +34,10 @@ namespace Gorgon.Editor.UI.ViewModels;
 /// <remarks>
 /// <para>
 /// These parameters are meant to be passed to a view model based on the <see cref="EditorToolViewModelBase{T}"/> type and will contain services from the host application, and any other information 
-/// required for editor tool plug-in view models
+/// required for editor tool plugin view models
 /// </para>
 /// <para>
-/// Tool plug-in developers will use types derived from this type to pass custom initialization parameters to their tool plug-in view models. 
+/// Tool plugin developers will use types derived from this type to pass custom initialization parameters to their tool plugin view models. 
 /// </para>
 /// </remarks>
 /// <seealso cref="EditorToolViewModelBase{T}"/>

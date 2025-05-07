@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2016 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -28,7 +28,7 @@ using Gorgon.Graphics.Imaging.Properties;
 namespace Gorgon.Graphics.Imaging.Codecs;
 
 /// <summary>
-/// A name and description for an image codec within a <see cref="GorgonImageCodecPlugIn"/>
+/// A name and description for an image codec within a <see cref="GorgonImageCodecPlugin"/>
 /// </summary>
 public struct GorgonImageCodecDescription
     : IEquatable<GorgonImageCodecDescription>
@@ -53,7 +53,7 @@ public struct GorgonImageCodecDescription
 
     /// <summary>Returns the fully qualified type name of this instance.</summary>
     /// <returns>A <see cref="string" /> containing a fully qualified type name.</returns>
-    public override readonly string ToString() => string.Format(Resources.GORIMG_TOSTR_IMAGE_CODEC_PLUGIN_DESC, Name, Description);
+    public override readonly string ToString() => string.Format(Resources.GORIMG_TOSTR_IMAGE_CODEC_plugin_DESC, Name, Description);
 
     /// <summary>Indicates whether this instance and a specified object are equal.</summary>
     /// <returns>true if <paramref name="obj" /> and this instance are the same type and represent the same value; otherwise, false. </returns>

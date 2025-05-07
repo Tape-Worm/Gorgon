@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2020 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -42,7 +42,7 @@ namespace Gorgon.Examples;
 /// EditorBaseControl can be used for more basic/customizable view functionality), and implement the IDataContext{T} interface. This 
 /// provides us with the properties/methods for assigning a view model as the data context for the UI
 /// 
-/// As mentioned in the plug-in class, the UI in the content plug-in (and everywhere else in the editor really) uses the MVVM pattern
+/// As mentioned in the plugin class, the UI in the content plugin (and everywhere else in the editor really) uses the MVVM pattern
 /// (Model-View-View Model), or, rather, a somewhat bastardized version of it. This allows us to provide a separation between the user 
 /// interface and the data that we're working on. In MVVM, the view never works directly on the model data, we use the view model to 
 /// act as a conduit to interact with the data and UI. The view model acts as a presenter by sending the model data to the view, and 

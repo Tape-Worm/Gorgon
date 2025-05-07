@@ -4,16 +4,16 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:ex="clr-namespace:Gorgon.Examples"
         xmlns:gA="clr-namespace:Gorgon.Graphics.Avalonia;assembly=Gorgon.Graphics.Avalonia"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        mc:Ignorable="d" d:DesignWidth="1280" d:DesignHeight="800"
         x:Class="Gorgon.Examples.MainWindow"
-        Icon="/Gorgon2.ico"
+        Icon="avares://GlassCube.Avalonia/Gorgon2.ico"
         Title="Glass Cube Avalonia"
         Height="800" Width="1280"
         Background="Transparent"
         BorderBrush="Transparent"
         WindowStartupLocation="CenterScreen"
         SystemDecorations="None"   
-        Loaded="Window_Loaded" KeyDown="Window_KeyDown"
+        Loaded="Window_Loaded" KeyDown="Window_KeyDown"        
         PointerPressed="Window_PointerPressed">      
     <Grid>
         <Grid.ColumnDefinitions>

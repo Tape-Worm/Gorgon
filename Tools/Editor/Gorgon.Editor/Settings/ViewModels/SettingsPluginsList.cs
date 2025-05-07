@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2019 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,31 +24,31 @@
 // 
 
 using System.Collections.ObjectModel;
-using Gorgon.Editor.PlugIns;
+using Gorgon.Editor.Plugins;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.UI;
 
 namespace Gorgon.Editor.ViewModels;
 
 /// <summary>
-/// The plug-in list category for the settings
+/// The plugin list category for the settings
 /// </summary>
-internal class SettingsPlugInsList
-    : ViewModelBase<SettingsPlugInsListParameters, IHostServices>, ISettingsPlugInsList
+internal class SettingsPluginsList
+    : ViewModelBase<SettingsPluginsListParameters, IHostServices>, ISettingsPluginsList
 {
 
-    // The current plug-in.
-    private ISettingsPlugInListItem _current;
+    // The current plugin.
+    private ISettingsPluginListItem _current;
 
-    /// <summary>Property to return the plug-ins.</summary>
-    public ObservableCollection<ISettingsPlugInListItem> PlugIns
+    /// <summary>Property to return the plugins.</summary>
+    public ObservableCollection<ISettingsPluginListItem> Plugins
     {
         get;
         private set;
     }
 
-    /// <summary>Property to return the currently selected plug-in.</summary>
-    public ISettingsPlugInListItem Current
+    /// <summary>Property to return the currently selected plugin.</summary>
+    public ISettingsPluginListItem Current
     {
         get => _current;
         private set
@@ -64,7 +64,7 @@ internal class SettingsPlugInsList
         }
     }
 
-    public IEditorCommand<int> SelectPlugInCommand
+    public IEditorCommand<int> SelectPluginCommand
     {
         get;
     }
@@ -75,27 +75,27 @@ internal class SettingsPlugInsList
     /// <summary>Property to return the name of this object.</summary>
     /// <remarks>For best practice, the name should only be set once during the lifetime of an object. Hence, this interface only provides a read-only implementation of this
     /// property.</remarks>
-    public string Name => Resources.GOREDIT_SETTINGS_CATEGORY_PLUGINS;
+    public string Name => Resources.GOREDIT_SETTINGS_CATEGORY_pluginS;
 
     /// <summary>
-    /// Function to select a plug-in from the list.
+    /// Function to select a plugin from the list.
     /// </summary>
-    /// <param name="index">The index of the plug-in.</param>
-    private void DoSelectPlugIn(int index)
+    /// <param name="index">The index of the plugin.</param>
+    private void DoSelectPlugin(int index)
     {
         try
         {
-            if ((index < 0) || (index >= PlugIns.Count))
+            if ((index < 0) || (index >= Plugins.Count))
             {
                 Current = null;
                 return;
             }
 
-            Current = PlugIns[index];
+            Current = Plugins[index];
         }
         catch (Exception ex)
         {
-            HostServices.MessageDisplay.ShowError(ex, Resources.GOREDIT_ERR_SELECTING_PLUGIN);
+            HostServices.MessageDisplay.ShowError(ex, Resources.GOREDIT_ERR_SELECTING_plugin);
         }
     }
 
@@ -104,9 +104,9 @@ internal class SettingsPlugInsList
     /// <remarks>
     /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
     /// </remarks>
-    protected override void OnInitialize(SettingsPlugInsListParameters injectionParameters) => PlugIns = [.. injectionParameters.PlugIns?.OrderBy(item => item.Name, StringComparer.CurrentCultureIgnoreCase)];
+    protected override void OnInitialize(SettingsPluginsListParameters injectionParameters) => Plugins = [.. injectionParameters.Plugins?.OrderBy(item => item.Name, StringComparer.CurrentCultureIgnoreCase)];
 
-    /// <summary>Initializes a new instance of the <see cref="SettingsPlugInsList"/> class.</summary>
-    public SettingsPlugInsList() => SelectPlugInCommand = new EditorCommand<int>(DoSelectPlugIn);
+    /// <summary>Initializes a new instance of the <see cref="SettingsPluginsList"/> class.</summary>
+    public SettingsPluginsList() => SelectPluginCommand = new EditorCommand<int>(DoSelectPlugin);
 
 }

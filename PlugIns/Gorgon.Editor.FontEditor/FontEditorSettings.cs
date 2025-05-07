@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2021 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -28,10 +28,10 @@ using System.Text.Json.Serialization;
 namespace Gorgon.Editor.FontEditor;
 
 /// <summary>
-/// The settings for the animation importer plug-in
+/// The settings for the animation importer plugin
 /// </summary>
 /// <remarks>
-/// This is our settings for the plug-in. The settings should contain simple primitive types so they can be serialized into/deserialized from 
+/// This is our settings for the plugin. The settings should contain simple primitive types so they can be serialized into/deserialized from 
 /// JSON data
 /// </remarks>
 internal class FontEditorSettings

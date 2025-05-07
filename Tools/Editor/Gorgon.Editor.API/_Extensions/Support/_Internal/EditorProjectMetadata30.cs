@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2019 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,6 +23,7 @@
 // Created: March 27, 2019 10:49:22 PM
 // 
 
+using System.Text.Json.Serialization;
 using Gorgon.Editor.Metadata;
 
 namespace Gorgon.Editor.Support;
@@ -33,6 +34,7 @@ namespace Gorgon.Editor.Support;
 internal class EditorProjectMetadata30
 {
     /// <summary>Property to return the version for the project file.</summary>                
+    [JsonInclude]
     public string Version
     {
         get;
@@ -40,6 +42,7 @@ internal class EditorProjectMetadata30
     }
 
     /// <summary>Property to return the list of project items.</summary>        
+    [JsonInclude, JsonObjectCreationHandling(JsonObjectCreationHandling.Populate)]
     public Dictionary<string, ProjectItemMetadata30> ProjectItems
     {
         get;

@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -29,7 +29,6 @@ using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Renderers;
-using Gorgon.UI.OLDE;
 
 namespace Gorgon.Examples;
 
@@ -189,14 +188,14 @@ public partial class Form
 
             // Initialize Gorgon
             // Set it up so that we won't be rendering in the background, but allow the screensaver to activate.
-            IReadOnlyList<IGorgonVideoAdapterInfo> adapters = GorgonGraphics.EnumerateAdapters(log: GorgonApplication.Log);
+            IReadOnlyList<IGorgonVideoAdapterInfo> adapters = GorgonGraphics.EnumerateAdapters(log: GorgonExample.Log);
             if (adapters.Count == 0)
             {
                 throw new GorgonException(GorgonResult.CannotCreate,
                                           "No suitable video adapter found in the system.\nGorgon requires a minimum of a Direct3D 11.2 capable video device.");
             }
 
-            _graphics = new GorgonGraphics(adapters[0]);
+            _graphics = new GorgonGraphics(adapters.OrderByDescending(item => item.FeatureSet).First(), log: GorgonExample.Log);
 
             // Set the video mode.
             ClientSize = new Size(640, 400);
@@ -217,13 +216,15 @@ public partial class Form
 
             GorgonExample.LoadResources(_graphics);
 
+            CenterToScreen();
+
             // Draw the image.
             DrawAPrettyPicture();
         }
         catch (Exception ex)
         {
             GorgonExample.HandleException(ex);
-            GorgonApplication.Quit();
+            Application.Exit();
         }
         finally
         {

@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@
 
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
+using Gorgon.Diagnostics;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
@@ -231,12 +232,14 @@ class ImageGallery
         // Load each image and resize to the requested width & height.
         // Here we see how to use an image codec to read image data from a file.
         IGorgonImageCodec codec = new GorgonCodecDds();
+        GorgonExample.Log.Print($"Loading {ddsFileInfo.FullName}", LoggingLevel.Simple);
         _images[1] = codec.FromFile(ddsFileInfo.FullName)
                           .BeginUpdate()
                           .Resize(_imageSize.Width, _imageSize.Height, filter: ImageFilter.Fant)
                           .EndUpdate();
 
         codec = new GorgonCodecTga();
+        GorgonExample.Log.Print($"Loading {tgaFileInfo.FullName}", LoggingLevel.Simple);
         _images[2] = codec.FromFile(tgaFileInfo.FullName)
                           .BeginUpdate()
                           .Resize(_imageSize.Width, _imageSize.Height)
@@ -244,15 +247,18 @@ class ImageGallery
                           .EndUpdate();
 
         // Because the GIF is animated, we need to load it in a special way.
+        GorgonExample.Log.Print($"Loading {gifFileInfo.FullName}", LoggingLevel.Simple);
         LoadAnimatedGif(gifFileInfo.FullName);
 
         codec = new GorgonCodecPng();
+        GorgonExample.Log.Print($"Loading {pngFileInfo.FullName}", LoggingLevel.Simple);
         _images[4] = codec.FromFile(pngFileInfo.FullName)
                           .BeginUpdate()
                           .Resize(_imageSize.Width, _imageSize.Height)
                           .EndUpdate();
 
         codec = new GorgonCodecBmp();
+        GorgonExample.Log.Print($"Loading {bmpFileInfo.FullName}", LoggingLevel.Simple);
         _images[5] = codec.FromFile(bmpFileInfo.FullName)
                           .BeginUpdate()
                           .Resize(_imageSize.Width, _imageSize.Height, 1, ImageFilter.Linear)

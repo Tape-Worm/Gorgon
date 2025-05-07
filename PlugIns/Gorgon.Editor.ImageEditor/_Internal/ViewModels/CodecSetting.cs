@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2019 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -33,9 +33,9 @@ namespace Gorgon.Editor.ImageEditor;
 /// </summary>
 /// <remarks>Initializes a new instance of the <see cref="CodecSetting"/> class.</remarks>
 /// <param name="description">The friendly description of the codec.</param>
-/// <param name="plugin">The plugin for the codec.</param>
+/// <param name="plugin">The Plugin for the codec.</param>
 /// <param name="desc">The description of the codec.</param>
-internal class CodecSetting(string description, GorgonImageCodecPlugIn plugin, GorgonImageCodecDescription desc)
+internal class CodecSetting(string description, GorgonImageCodecPlugin plugin, GorgonImageCodecDescription desc)
         : IGorgonNamedObject
 {
     /// <summary>
@@ -47,9 +47,9 @@ internal class CodecSetting(string description, GorgonImageCodecPlugIn plugin, G
     } = description;
 
     /// <summary>
-    /// Property to return the plug-in that contains the codec.
+    /// Property to return the plugin that contains the codec.
     /// </summary>
-    public GorgonImageCodecPlugIn PlugIn
+    public GorgonImageCodecPlugin Plugin
     {
         get;
     } = plugin;

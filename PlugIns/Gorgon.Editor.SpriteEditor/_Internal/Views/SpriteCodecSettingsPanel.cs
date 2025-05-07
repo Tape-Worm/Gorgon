@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2019 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -60,7 +60,7 @@ internal partial class SpriteCodecSettingsPanel
         }
 
         ButtonAddCodec.Enabled = true;
-        ButtonRemoveCodecs.Enabled = ViewModel.UnloadPlugInAssembliesCommand?.CanExecute(null) ?? false;
+        ButtonRemoveCodecs.Enabled = ViewModel.UnloadPluginAssembliesCommand?.CanExecute(null) ?? false;
     }
 
     /// <summary>
@@ -81,7 +81,7 @@ internal partial class SpriteCodecSettingsPanel
                 return;
             }
 
-            foreach (CodecSetting setting in dataContext.CodecPlugInPaths)
+            foreach (CodecSetting setting in dataContext.CodecPluginPaths)
             {
                 ListViewItem item = new()
                 {
@@ -90,7 +90,7 @@ internal partial class SpriteCodecSettingsPanel
                     Tag = setting
                 };
 
-                item.SubItems.Add(setting.PlugIn.PlugInPath);
+                item.SubItems.Add(setting.Plugin.PluginPath);
 
                 ListCodecs.Items.Add(item);
             }
@@ -132,12 +132,12 @@ internal partial class SpriteCodecSettingsPanel
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonAddCodec_Click(object sender, EventArgs e)
     {
-        if ((ViewModel?.LoadPlugInAssemblyCommand is null) || (!ViewModel.LoadPlugInAssemblyCommand.CanExecute(null)))
+        if ((ViewModel?.LoadPluginAssemblyCommand is null) || (!ViewModel.LoadPluginAssemblyCommand.CanExecute(null)))
         {
             return;
         }
 
-        ViewModel.LoadPlugInAssemblyCommand.Execute(null);
+        ViewModel.LoadPluginAssemblyCommand.Execute(null);
     }
 
     /// <summary>Handles the Click event of the ButtonRemoveCodecs control.</summary>
@@ -145,18 +145,18 @@ internal partial class SpriteCodecSettingsPanel
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonRemoveCodecs_Click(object sender, EventArgs e)
     {
-        if ((ViewModel?.UnloadPlugInAssembliesCommand is null) || (!ViewModel.UnloadPlugInAssembliesCommand.CanExecute(null)))
+        if ((ViewModel?.UnloadPluginAssembliesCommand is null) || (!ViewModel.UnloadPluginAssembliesCommand.CanExecute(null)))
         {
             return;
         }
 
-        ViewModel.UnloadPlugInAssembliesCommand.Execute(null);
+        ViewModel.UnloadPluginAssembliesCommand.Execute(null);
     }
 
-    /// <summary>Handles the CollectionChanged event of the CodecPlugInPaths control.</summary>
+    /// <summary>Handles the CollectionChanged event of the CodecPluginPaths control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="NotifyCollectionChangedEventArgs"/> instance containing the event data.</param>
-    private void CodecPlugInPaths_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+    private void CodecPluginPaths_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
     {
         ListCodecs.BeginUpdate();
         try
@@ -173,7 +173,7 @@ internal partial class SpriteCodecSettingsPanel
                             Tag = setting
                         };
 
-                        item.SubItems.Add(setting.PlugIn.PlugInPath);
+                        item.SubItems.Add(setting.Plugin.PluginPath);
 
                         ListCodecs.Items.Add(item);
                     }
@@ -254,7 +254,7 @@ internal partial class SpriteCodecSettingsPanel
         }
 
         ViewModel.SelectedCodecs.CollectionChanged -= SelectedCodecs_CollectionChanged;
-        ViewModel.CodecPlugInPaths.CollectionChanged -= CodecPlugInPaths_CollectionChanged;
+        ViewModel.CodecPluginPaths.CollectionChanged -= CodecPluginPaths_CollectionChanged;
     }
 
     /// <summary>
@@ -301,7 +301,7 @@ internal partial class SpriteCodecSettingsPanel
             return;
         }
 
-        ViewModel.CodecPlugInPaths.CollectionChanged += CodecPlugInPaths_CollectionChanged;
+        ViewModel.CodecPluginPaths.CollectionChanged += CodecPluginPaths_CollectionChanged;
         ViewModel.SelectedCodecs.CollectionChanged += SelectedCodecs_CollectionChanged;
     }
 

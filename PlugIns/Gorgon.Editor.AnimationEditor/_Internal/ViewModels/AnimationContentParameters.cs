@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2020 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +27,7 @@ using System.Collections.ObjectModel;
 using Gorgon.Animation;
 using Gorgon.Editor.AnimationEditor.Services;
 using Gorgon.Editor.Content;
-using Gorgon.Editor.PlugIns;
+using Gorgon.Editor.Plugins;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics.Core;
 
@@ -46,9 +46,9 @@ namespace Gorgon.Editor.AnimationEditor;
 /// <param name="animProperties">The view model for the animation properties.</param>
 /// <param name="keyEditor">The view model for the key editor context.</param>
 /// <param name="controller">The controller for the animation.</param>
-/// <param name="settings">The settings for the animation plug-in.</param>
+/// <param name="settings">The settings for the animation plugin.</param>
 /// <param name="fileManager">The file manager for content files.</param>
-/// <param name="contentServices">The services for the content plug-in.</param>
+/// <param name="contentServices">The services for the content plugin.</param>
 /// <param name="commonServices">The common services for the application.</param>
 /// <exception cref="ArgumentNullException">Thrown when any of the required parameters are <b>null</b>.</exception>
 internal class AnimationContentParameters(IContentFile animationFile,
@@ -66,7 +66,7 @@ internal class AnimationContentParameters(IContentFile animationFile,
         : ContentViewModelInjection(fileManager, animationFile, commonServices)
 {
     /// <summary>
-    /// Property to return the settings for the plug-in.
+    /// Property to return the settings for the plugin.
     /// </summary>
     public ISettings Settings
     {
@@ -107,7 +107,7 @@ internal class AnimationContentParameters(IContentFile animationFile,
     }
 
     /// <summary>
-    /// Property to return the services for the content plug-in.
+    /// Property to return the services for the content plugin.
     /// </summary>
     public ContentServices ContentServices
     {

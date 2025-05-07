@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2020 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -245,7 +245,7 @@ internal class AnimationIOService(IContentFileManager fileManager, ITextureCache
         catch (Exception ex)
         {
             _log.PrintError($"There was an error loading the sprite '{primarySpriteFile.Path}'.", LoggingLevel.Simple);
-            _log.LogException(ex);
+            _log.PrintException(ex);
 
             return null;
         }
@@ -464,7 +464,7 @@ internal class AnimationIOService(IContentFileManager fileManager, ITextureCache
             animFile.IsOpen = true;
             if (backgroundImage is not null)
             {
-                animFile.Metadata.DependsOn[AnimationEditorPlugIn.BgImageDependencyName] = [backgroundImage.Path];
+                animFile.Metadata.DependsOn[AnimationEditorPlugin.BgImageDependencyName] = [backgroundImage.Path];
             }
 
             animFile.LinkContent(primarySpriteFile);

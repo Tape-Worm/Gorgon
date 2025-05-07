@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2019 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,7 @@
 // 
 
 using Gorgon.Editor.Content;
-using Gorgon.Editor.PlugIns;
+using Gorgon.Editor.Plugins;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI.Controls;
 using Gorgon.Editor.UI.ViewModels;
@@ -40,7 +40,7 @@ namespace Gorgon.Editor.ImageSplitTool;
 /// <param name="searchService">The search service used to search through the image entries.</param>        
 /// <param name="fileManager">The host application file manager.</param>
 /// <param name="tempFileSystem">The file system for the temporary storage area.</param>
-/// <param name="settings">The settings for the plug-in.</param>
+/// <param name="settings">The settings for the plugin.</param>
 /// <param name="textureSplitService">The service used to actually split the files.</param>
 /// <param name="hostServices">The services from the host application.</param>        
 /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
@@ -54,7 +54,7 @@ internal class SplitParameters(IReadOnlyList<ContentFileExplorerDirectoryEntry> 
         : ViewModelInjection<IHostContentServices>(hostServices)
 {
     /// <summary>
-    /// Property to return the settings for the plug-in.
+    /// Property to return the settings for the plugin.
     /// </summary>
     public ImageSplitToolSettings Settings
     {

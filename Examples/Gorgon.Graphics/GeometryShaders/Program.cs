@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -33,7 +33,7 @@ using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Math;
 using Gorgon.Renderers.Cameras;
 using Gorgon.Timing;
-using Gorgon.UI.OLDE;
+using Gorgon.UI.WindowsForms;
 
 namespace Gorgon.Examples;
 
@@ -206,17 +206,17 @@ static class Program
             // Using this method, we could also enumerate the WARP software rasterizer, and/of the D3D Reference device (only if the DEBUG functionality provided by the Windows 
             // SDK is installed). These devices are typically used to determine if there's a driver error, and can be terribly slow to render (reference moreso than WARP). It is 
             // recommended that these only be used in diagnostic scenarios only.
-            IReadOnlyList<IGorgonVideoAdapterInfo> devices = GorgonGraphics.EnumerateAdapters(log: GorgonApplication.Log);
+            IReadOnlyList<IGorgonVideoAdapterInfo> devices = GorgonGraphics.EnumerateAdapters(log: GorgonExample.Log);
 
             if (devices.Count == 0)
             {
-                GorgonDialogs.ErrorBox(_mainForm, "This example requires a video adapter that supports Direct3D 11.2 or better.");
-                GorgonApplication.Quit();
+                GorgonDialogs.Error(_mainForm, "This example requires a video adapter that supports Direct3D 11.2 or better.");
+                Application.Exit();
                 return;
             }
 
             // Now we create the main graphics interface with the first applicable video device.
-            _graphics = new GorgonGraphics(devices[0], log: GorgonApplication.Log);
+            _graphics = new GorgonGraphics(devices[0], log: GorgonExample.Log);
 
             // Check to ensure that we can support the format required for our swap chain.
             // If a video device can't support this format, then the odds are good it won't render anything. Since we're asking for a very common display format, this will 
@@ -227,7 +227,8 @@ static class Program
             if (!_graphics.FormatSupport[BufferFormat.R8G8B8A8_UNorm].IsDisplayFormat)
             {
                 // We should never see this unless you've got some very esoteric hardware.
-                GorgonDialogs.ErrorBox(_mainForm, "We should not see this error.");
+                GorgonDialogs.Error(_mainForm, "We should not see this error.");
+                Application.Exit();
                 return;
             }
 
@@ -249,7 +250,7 @@ static class Program
             // So, first we should check for support of a proper depth/stencil format.  That said, if we don't have this format, then we're likely not running hardware from the last decade or more.
             if (!_graphics.FormatSupport[BufferFormat.D24_UNorm_S8_UInt].IsDepthBufferFormat)
             {
-                GorgonDialogs.ErrorBox(_mainForm, "A 24 bit depth buffer is required for this example.");
+                GorgonDialogs.Error(_mainForm, "A 24 bit depth buffer is required for this example.");
                 return;
             }
 
@@ -301,6 +302,8 @@ static class Program
                                         .Build();
 
             GorgonExample.LoadResources(_graphics);
+
+            GorgonExample.Loop.Run(Idle);
         }
         finally
         {
@@ -322,7 +325,7 @@ static class Program
 
             Initialize();
 
-            GorgonApplication.Run(_mainForm, Idle);
+            Application.Run(_mainForm);
         }
         catch (Exception ex)
         {
@@ -330,8 +333,6 @@ static class Program
         }
         finally
         {
-            GorgonExample.UnloadResources();
-
             // Always clean up when you're done.
             // Since Gorgon uses Direct 3D 11.2, we must be careful to dispose of any objects that implement IDisposable. 
             // Failure to do so can lead to warnings from the Direct 3D runtime when running in DEBUG mode.
@@ -343,6 +344,8 @@ static class Program
             _bufferless?.Dispose();
             _swap?.Dispose();
             _graphics?.Dispose();
+
+            GorgonExample.ShutDown();
         }
     }
 }

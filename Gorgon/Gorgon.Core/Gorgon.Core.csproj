@@ -1,49 +1,57 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
-    <Version>4.0.0</Version>
     <Authors>Michael Winsor</Authors>
     <Company>Tape_Worm</Company>
     <Product>Gorgon</Product>
     <Description>Common and utility functionality used by the various Gorgon libraries.</Description>
     <Copyright>(C)opyright Tape_Worm, 2025</Copyright>
     <PackageProjectUrl>https://www.tape-worm.net</PackageProjectUrl>
-    <PackageIcon>..\g.png</PackageIcon>
+    <PackageIcon>g.png</PackageIcon>
     <RepositoryUrl>https://github.com/Tape-Worm/Gorgon</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
-    <PackageTags>Gorgon, C#, .NET Framework, Direct 3D, SharpDX, Winforms</PackageTags>
+    <PackageTags>Gorgon;C#;.NET</PackageTags>
     <EnableNETAnalyzers>True</EnableNETAnalyzers>
     <RootNamespace>Gorgon</RootNamespace>
-    <NeutralLanguage>
-    </NeutralLanguage>
+    <NeutralLanguage />
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <EmbeddedResourceUseDependentUponConvention>true</EmbeddedResourceUseDependentUponConvention>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <AssemblyVersion>4.0.0.0</AssemblyVersion>
     <FileVersion>4.0.0.0</FileVersion>
     <SignAssembly>false</SignAssembly>
-    <AssemblyOriginatorKeyFile>
-    </AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile></AssemblyOriginatorKeyFile>
     <DelaySign>false</DelaySign>
     <ImplicitUsings>enable</ImplicitUsings>
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
     <Nullable>enable</Nullable>
-    <IsAotCompatible>true</IsAotCompatible>    
+    <IsAotCompatible>true</IsAotCompatible>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <Title>Gorgon Core Functionality</Title>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <PackageOutputPath>$(SolutionDir)nuget\$(Configuration)</PackageOutputPath>
+    <VersionPrefix>4.0.0</VersionPrefix>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">    
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
     <PlatformTarget>AnyCPU</PlatformTarget>
+    <VersionSuffix>Dev</VersionSuffix>
   </PropertyGroup>
+  <ItemGroup>
+    <None Include="g.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="CenterCLR.XorRandomGenerator">
       <Version>1.1.0</Version>
@@ -54,26 +62,6 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="System.ComponentModel.Composition.Registration" Version="9.0.3" Condition="$(TargetFramework) != 'netstandard2.0'" />
-    <PackageReference Include="System.Composition">
-      <Version>9.0.3</Version>
-    </PackageReference>
-    <PackageReference Include="System.Composition.AttributedModel">
-      <Version>9.0.3</Version>
-    </PackageReference>
-    <PackageReference Include="System.Composition.Convention">
-      <Version>9.0.3</Version>
-    </PackageReference>
-    <PackageReference Include="System.Composition.Hosting">
-      <Version>9.0.3</Version>
-    </PackageReference>
-    <PackageReference Include="System.Composition.Runtime">
-      <Version>9.0.3</Version>
-    </PackageReference>
-    <PackageReference Include="System.Composition.TypedParts">
-      <Version>9.0.3</Version>
-    </PackageReference>
-    <PackageReference Include="System.Reflection.Context" Version="9.0.3" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">

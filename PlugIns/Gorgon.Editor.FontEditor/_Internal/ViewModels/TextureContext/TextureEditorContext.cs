@@ -421,7 +421,7 @@ internal class TextureEditorContext
         catch (Exception ex)
         {
             HostServices.Log.Print("There was an error moving to the previous texture.", LoggingLevel.Simple);
-            HostServices.Log.LogException(ex);
+            HostServices.Log.PrintException(ex);
         }
     }
 
@@ -465,7 +465,7 @@ internal class TextureEditorContext
         catch (Exception ex)
         {
             HostServices.Log.Print("There was an error moving to the next texture.", LoggingLevel.Simple);
-            HostServices.Log.LogException(ex);
+            HostServices.Log.PrintException(ex);
         }
     }
 
@@ -488,7 +488,7 @@ internal class TextureEditorContext
         catch (Exception ex)
         {
             HostServices.Log.Print("There was an error moving to the first texture.", LoggingLevel.Simple);
-            HostServices.Log.LogException(ex);
+            HostServices.Log.PrintException(ex);
         }
     }
 
@@ -511,7 +511,7 @@ internal class TextureEditorContext
         catch (Exception ex)
         {
             HostServices.Log.Print("There was an error moving to the last texture.", LoggingLevel.Simple);
-            HostServices.Log.LogException(ex);
+            HostServices.Log.PrintException(ex);
         }
     }
 
@@ -535,7 +535,7 @@ internal class TextureEditorContext
         catch (Exception ex)
         {
             HostServices.Log.Print("There was an error activating the texture size editor.", LoggingLevel.Simple);
-            HostServices.Log.LogException(ex);
+            HostServices.Log.PrintException(ex);
         }
     }
 
@@ -613,7 +613,7 @@ internal class TextureEditorContext
         catch (Exception ex)
         {
             HostServices.Log.Print("There was an error activating the glyph texture padding size editor.", LoggingLevel.Simple);
-            HostServices.Log.LogException(ex);
+            HostServices.Log.PrintException(ex);
         }
     }
 
@@ -700,7 +700,7 @@ internal class TextureEditorContext
         catch (Exception ex)
         {
             HostServices.Log.Print("There was an error activating the brush editor.", LoggingLevel.Simple);
-            HostServices.Log.LogException(ex);
+            HostServices.Log.PrintException(ex);
         }
     }
 
@@ -733,7 +733,7 @@ internal class TextureEditorContext
         catch (Exception ex)
         {
             HostServices.Log.Print("There was an error activating the brush editor.", LoggingLevel.Simple);
-            HostServices.Log.LogException(ex);
+            HostServices.Log.PrintException(ex);
         }
     }
 
@@ -764,7 +764,7 @@ internal class TextureEditorContext
         catch (Exception ex)
         {
             HostServices.Log.Print("There was an error activating the brush editor.", LoggingLevel.Simple);
-            HostServices.Log.LogException(ex);
+            HostServices.Log.PrintException(ex);
         }
     }
 
@@ -795,7 +795,7 @@ internal class TextureEditorContext
         catch (Exception ex)
         {
             HostServices.Log.Print("There was an error activating the brush editor.", LoggingLevel.Simple);
-            HostServices.Log.LogException(ex);
+            HostServices.Log.PrintException(ex);
         }
     }
 

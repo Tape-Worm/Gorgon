@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2023 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,9 @@
 
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Gorgon.Core;
@@ -35,7 +37,7 @@ using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Renderers.Cameras;
 using Gorgon.Renderers.Geometry;
 using Gorgon.Timing;
-using Gorgon.Timing.OLDE;
+using Gorgon.UI.Avalonia;
 
 namespace Gorgon.Examples;
 
@@ -268,7 +270,7 @@ public partial class MainWindow : Window
 
         GorgonExample.LoadResources(_graphics);
 
-        _timer = new GorgonTimerQpc();
+        _timer = new GorgonTimer();
     }
 
     /// <summary>
@@ -283,15 +285,32 @@ public partial class MainWindow : Window
             return;
         }
 
-        GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
-        IReadOnlyList<IGorgonVideoAdapterInfo> adapters = GorgonGraphics.EnumerateAdapters();
+        ClassicDesktopStyleApplicationLifetime desktopLifetime = (ClassicDesktopStyleApplicationLifetime)Application.Current.ApplicationLifetime;
 
-        _graphics = new GorgonGraphics(adapters[0]);
+        try
+        {
+            GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
+            IReadOnlyList<IGorgonVideoAdapterInfo> adapters = GorgonGraphics.EnumerateAdapters(log: GorgonExample.Log);
 
-        Initialize();
+            if (adapters.Count == 0)
+            {
+                await GorgonDialogs.ErrorAsync(desktopLifetime?.MainWindow, "There are no suitable video adapters available in the system. This example is unable to continue and will now exit.");
+                desktopLifetime?.Shutdown();
+                return;
+            }
 
-        // Begin running the application.
-        await GorgonControl.RunAsync(_graphics, Idle);
+            _graphics = new GorgonGraphics(adapters[0], log: GorgonExample.Log);
+
+            Initialize();
+
+            // Begin running the application.
+            await GorgonControl.RunAsync(_graphics, Idle);
+        }
+        catch (Exception ex)
+        {
+            await GorgonDialogs.ErrorAsync(desktopLifetime?.MainWindow, ex);
+            desktopLifetime?.Shutdown();
+        }
     }
 
     /// <summary>
@@ -349,8 +368,6 @@ public partial class MainWindow : Window
     private void GorgonControl_DetachedFromLogicalTree(object sender, Avalonia.LogicalTree.LogicalTreeAttachmentEventArgs e)
     {
         // Always clean up after yourself.
-        GorgonExample.UnloadResources();
-
         _cube?.Dispose();
         _texture?.Dispose();
         _wvpBuffer?.Dispose();
@@ -358,6 +375,8 @@ public partial class MainWindow : Window
         _pixelShader?.Dispose();
         _vertexShader?.Dispose();
         _graphics?.Dispose();
+
+        GorgonExample.ShutDown();
     }
 
     /// <summary>

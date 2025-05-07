@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -38,10 +38,7 @@ internal class LogTextFileProvider
     // The file information for the log file.
     private readonly FileInfo _filePath;
 
-    /// <summary>
-    /// Function to open the data store for writing.
-    /// </summary>
-    /// <param name="initialMessage">[Optional] The initial message to write.</param>
+    /// <inheritdoc/>
     public void Open(string? initialMessage = null)
     {
         Debug.Assert(_filePath.Directory is not null, $"Directory not found for '{_filePath.FullName}'");
@@ -62,11 +59,8 @@ internal class LogTextFileProvider
         stream.Flush();
     }
 
-    /// <summary>
-    /// Function to write a message to the data store.
-    /// </summary>
-    /// <param name="message">The message to write.</param>
-    public void SendMessage(string message)
+    /// <inheritdoc/>
+    public void SendMessage(string message, MessageType messageType)
     {
         if (!_filePath.Exists)
         {
@@ -80,10 +74,7 @@ internal class LogTextFileProvider
         stream.Flush();
     }
 
-    /// <summary>
-    /// Function to close the data store for writing.
-    /// </summary>
-    /// <param name="closingMessage">[Optional] The message to write when closing.</param>
+    /// <inheritdoc/>
     public void Close(string? closingMessage)
     {
         if ((!_filePath.Exists)

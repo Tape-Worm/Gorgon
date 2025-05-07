@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -306,7 +306,7 @@ public class GorgonV31AnimationJsonCodec(Gorgon2D renderer)
     /// <returns>A new <see cref="IGorgonAnimation"/>.</returns>
     protected override IGorgonAnimation OnReadFromStream(string name, Stream stream, int byteCount, IEnumerable<GorgonTexture2DView> textureOverrides)
     {
-        using GorgonSubStream wrappedStream = new(stream, stream.Position, byteCount, false);
+        using GorgonStreamSlice wrappedStream = new(stream, stream.Position, byteCount, false);
         using StreamReader reader = new(wrappedStream, Encoding.UTF8, true, 80192, true);
         string jsonString = reader.ReadToEnd();
         return FromJson(Renderer, name, jsonString, textureOverrides);

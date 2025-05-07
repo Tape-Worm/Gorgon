@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2011 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -31,16 +31,16 @@ namespace Gorgon.IO.FileSystem.Providers;
 /// <summary>
 /// The plug in to create a zip file provider.
 /// </summary>
-internal class ZipPlugIn
-    : GorgonFileSystemProviderPlugIn
+internal class ZipPlugin
+    : GorgonFileSystemProviderPlugin
 {
     /// <inheritdoc/>
     public override IGorgonFileSystemProvider CreateProvider(IGorgonLog? log = null) => new ZipProvider(log ?? GorgonLog.NullLog);
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ZipPlugIn"/> class.
+    /// Initializes a new instance of the <see cref="ZipPlugin"/> class.
     /// </summary>
-    public ZipPlugIn()
+    public ZipPlugin()
         : base(Resources.GORFS_ZIP_DESC)
     {
     }

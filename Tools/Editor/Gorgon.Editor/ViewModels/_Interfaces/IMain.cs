@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,7 +23,7 @@
 // Created: August 26, 2018 9:34:44 PM
 // 
 
-using Gorgon.Editor.PlugIns;
+using Gorgon.Editor.Plugins;
 using Gorgon.Editor.UI;
 
 namespace Gorgon.Editor.ViewModels;
@@ -43,9 +43,9 @@ internal interface IMain
     }
 
     /// <summary>
-    /// Property to return a list of content plugins that can create their own content.
+    /// Property to return a list of content Plugins that can create their own content.
     /// </summary>
-    IReadOnlyList<IContentPlugInMetadata> ContentCreators
+    IReadOnlyList<IContentPluginMetadata> ContentCreators
     {
         get;
     }

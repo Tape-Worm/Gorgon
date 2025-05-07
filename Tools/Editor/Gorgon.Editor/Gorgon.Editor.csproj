@@ -6,35 +6,30 @@
     <ForceDesignerDpiUnaware>true</ForceDesignerDpiUnaware>
     <UseWindowsForms>true</UseWindowsForms>
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
-    <Version>4.0.0</Version>
     <Authors>Michael Winsor</Authors>
     <Company>Tape_Worm</Company>
     <Product>Gorgon</Product>
     <Description>An editor used to create content for Gorgon applications.</Description>
     <Copyright>(C)opyright Tape_Worm, 2020</Copyright>
-    <PackageLicenseFile>
-    </PackageLicenseFile>
+    <PackageLicenseFile></PackageLicenseFile>
     <PackageProjectUrl>https://www.tape-worm.net</PackageProjectUrl>
     <PackageIcon>g.png</PackageIcon>
     <RepositoryUrl>https://github.com/Tape-Worm/Gorgon</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
-    <PackageTags>Gorgon, C#, .NET Framework, Direct 3D, SharpDX, Winforms</PackageTags>
+    <PackageTags>Gorgon, C#, Direct 3D, SharpDX, Winforms</PackageTags>
     <EnableNETAnalyzers>false</EnableNETAnalyzers>
     <RootNamespace>Gorgon.Editor</RootNamespace>
-    <NeutralLanguage>
-    </NeutralLanguage>
+    <NeutralLanguage></NeutralLanguage>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <ApplicationManifest>..\..\..\Examples\app.manifest</ApplicationManifest>
-    <StartupObject>
-    </StartupObject>
+    <StartupObject></StartupObject>
     <SignAssembly>false</SignAssembly>
-    <AssemblyOriginatorKeyFile>
-    </AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile></AssemblyOriginatorKeyFile>
     <DelaySign>false</DelaySign>
     <ImplicitUsings>enable</ImplicitUsings>
     <AssemblyVersion>4.0.0.0</AssemblyVersion>
     <FileVersion>4.0.0.0</FileVersion>
-
+    <VersionPrefix>4.0.0</VersionPrefix>
   </PropertyGroup>
   <PropertyGroup>
     <EmbeddedResourceUseDependentUponConvention>true</EmbeddedResourceUseDependentUponConvention>
@@ -45,6 +40,7 @@
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <VersionSuffix>Dev</VersionSuffix>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -54,13 +50,13 @@
     <AdditionalFiles Remove="..\..\..\Examples\app.manifest" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Krypton.Ribbon.Lite" Version="90.25.2.55" />
+    <PackageReference Include="Krypton.Ribbon.Lite" Version="95.25.4.111" />
     <PackageReference Include="Microsoft.Bcl.HashCode" Version="6.0.0" />
     <PackageReference Include="Microsoft.SourceLink.GitHub">
-      <Version>8.0.0</Version>      
+      <Version>8.0.0</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
-    </PackageReference>    
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Gorgon.Editor.API\Gorgon.Editor.API.csproj" />

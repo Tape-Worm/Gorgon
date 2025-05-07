@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2019 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -40,7 +40,7 @@ namespace Gorgon.Editor.ImageEditor;
 /// Provides I/O functionality for reading/writing image data
 /// </summary>
 /// <remarks>Initializes a new instance of the <see cref="ImageEditor.ImageIO"/> class.</remarks>
-/// <param name="defaultCodec">The default codec used by the plug-in.</param>
+/// <param name="defaultCodec">The default codec used by the plugin.</param>
 /// <param name="installedCodecs">The list of installed codecs.</param>
 /// <param name="importDialog">The dialog service used to export an image.</param>
 /// <param name="exportDialog">The dialog used to export an image.</param>
@@ -74,7 +74,7 @@ internal class ImageIOService(IGorgonImageCodec defaultCodec,
     private readonly IGorgonImage _noThumbImage = noThumbnailImage;
 
     /// <summary>
-    /// Property to return the default plugin codec.
+    /// Property to return the default Plugin codec.
     /// </summary>
     public IGorgonImageCodec DefaultCodec
     {

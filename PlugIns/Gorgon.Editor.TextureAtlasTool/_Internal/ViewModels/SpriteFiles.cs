@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2019 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -26,7 +26,7 @@
 using System.ComponentModel;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
-using Gorgon.Editor.PlugIns;
+using Gorgon.Editor.Plugins;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.TextureAtlasTool.Properties;
 using Gorgon.Editor.UI;
@@ -224,7 +224,7 @@ internal class SpriteFiles
         catch (Exception ex)
         {
             HostServices.Log.PrintError("There was an error generating the sprite preview data.", LoggingLevel.Simple);
-            HostServices.Log.LogException(ex);
+            HostServices.Log.PrintException(ex);
         }
     }
 

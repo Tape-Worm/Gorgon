@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2019 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -33,20 +33,20 @@ using Gorgon.IO;
 namespace Gorgon.Editor.SpriteEditor;
 
 /// <summary>
-/// The view model for the importer plug-in settings
+/// The view model for the importer plugin settings
 /// </summary>
 internal class ImportSettings
-    : PlugInsCategory<ImportSettingsParameters>, IImportSettings
+    : PluginsCategory<ImportSettingsParameters>, IImportSettings
 {
 
     // The backing store for the settings.
     private SpriteImportSettings _settings;
 
-    // The codecs for the plug-in.
+    // The codecs for the plugin.
     private CodecRegistry _codecs;
 
-    /// <summary>Property to return the file name that will hold the plug-ins.</summary>
-    protected override string SettingsFileName => SpriteImporterPlugIn.SettingsFilename;
+    /// <summary>Property to return the file name that will hold the plugins.</summary>
+    protected override string SettingsFileName => SpriteImporterPlugin.SettingsFilename;
 
     /// <summary>
     /// Property to return the list of selected codecs.
@@ -57,9 +57,9 @@ internal class ImportSettings
     } = [];
 
     /// <summary>
-    /// Propery to return the paths to the codec plug-ins.
+    /// Propery to return the paths to the codec plugins.
     /// </summary>
-    public ObservableCollection<CodecSetting> CodecPlugInPaths
+    public ObservableCollection<CodecSetting> CodecPluginPaths
     {
         get;
     } = [];
@@ -67,52 +67,52 @@ internal class ImportSettings
     /// <summary>Property to return the name of this object.</summary>
     public override string Name => Resources.GORSPR_IMPORT_DESC;
 
-    /// <summary>Handles the CollectionChanged event of the CodecPlugInPaths control.</summary>
+    /// <summary>Handles the CollectionChanged event of the CodecPluginPaths control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="NotifyCollectionChangedEventArgs"/> instance containing the event data.</param>
-    private void CodecPlugInPaths_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+    private void CodecPluginPaths_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
     {
         switch (e.Action)
         {
             case NotifyCollectionChangedAction.Add:
                 foreach (CodecSetting codec in e.NewItems.OfType<CodecSetting>())
                 {
-                    _settings.CodecPlugInPaths[codec.Name] = codec.PlugIn.PlugInPath;
+                    _settings.CodecPluginPaths[codec.Name] = codec.Plugin.PluginPath;
                 }
                 break;
             case NotifyCollectionChangedAction.Remove:
                 foreach (CodecSetting codec in e.OldItems.OfType<CodecSetting>())
                 {
-                    if (!_settings.CodecPlugInPaths.ContainsKey(codec.Name))
+                    if (!_settings.CodecPluginPaths.ContainsKey(codec.Name))
                     {
                         continue;
                     }
 
-                    _settings.CodecPlugInPaths.Remove(codec.Name);
+                    _settings.CodecPluginPaths.Remove(codec.Name);
                 }
                 break;
         }
     }
 
     /// <summary>
-    /// Function to unload the selected plug-in assemblies.
+    /// Function to unload the selected plugin assemblies.
     /// </summary>
-    protected override bool OnUnloadPlugIns()
+    protected override bool OnUnloadPlugins()
     {
         IReadOnlyList<CodecSetting> selected = [.. SelectedCodecs];
-        IReadOnlyList<GorgonSpriteCodecPlugIn> plugIns = [.. selected.Select(item => item.PlugIn)];
+        IReadOnlyList<GorgonSpriteCodecPlugin> Plugins = [.. selected.Select(item => item.Plugin)];
         MessageResponse response = MessageResponse.None;
 
-        if (plugIns.Count == 0)
+        if (Plugins.Count == 0)
         {
             return true;
         }
 
-        foreach (GorgonSpriteCodecPlugIn plugIn in plugIns)
+        foreach (GorgonSpriteCodecPlugin Plugin in Plugins)
         {
             if (response is not MessageResponse.YesToAll and not MessageResponse.NoToAll)
             {
-                response = HostServices.MessageDisplay.ShowConfirmation(string.Format(Resources.GORSPR_CONFIRM_REMOVE_CODECS, Path.GetFileName(plugIn.PlugInPath)), toAll: plugIns.Count > 1);
+                response = HostServices.MessageDisplay.ShowConfirmation(string.Format(Resources.GORSPR_CONFIRM_REMOVE_CODECS, Path.GetFileName(Plugin.PluginPath)), toAll: Plugins.Count > 1);
             }
 
             if (response == MessageResponse.NoToAll)
@@ -127,12 +127,12 @@ internal class ImportSettings
                 continue;
             }
 
-            _codecs.RemoveCodecPlugIn(plugIn);
+            _codecs.RemoveCodecPlugin(Plugin);
 
             foreach (CodecSetting setting in selected)
             {
                 SelectedCodecs.Remove(setting);
-                CodecPlugInPaths.Remove(setting);
+                CodecPluginPaths.Remove(setting);
             }
 
             HostServices.BusyService.SetIdle();
@@ -142,11 +142,11 @@ internal class ImportSettings
     }
 
     /// <summary>
-    /// Function to load in a plug-in assembly.
+    /// Function to load in a plugin assembly.
     /// </summary>
-    protected override bool OnLoadPlugIns()
+    protected override bool OnLoadPlugins()
     {
-        string lastCodecPath = _settings.LastCodecPlugInPath.FormatDirectory(Path.DirectorySeparatorChar);
+        string lastCodecPath = _settings.LastCodecPluginPath.FormatDirectory(Path.DirectorySeparatorChar);
 
         if ((string.IsNullOrWhiteSpace(lastCodecPath)) || (!Directory.Exists(lastCodecPath)))
         {
@@ -165,7 +165,7 @@ internal class ImportSettings
         }
 
         HostServices.BusyService.SetBusy();
-        IReadOnlyList<GorgonSpriteCodecPlugIn> codecs = _codecs.AddCodecPlugIn(path, out IReadOnlyList<string> errors);
+        IReadOnlyList<GorgonSpriteCodecPlugin> codecs = _codecs.AddCodecPlugin(path, out IReadOnlyList<string> errors);
 
         if (errors.Count > 0)
         {
@@ -177,9 +177,9 @@ internal class ImportSettings
             }
         }
 
-        foreach (GorgonSpriteCodecPlugIn plugin in codecs)
+        foreach (GorgonSpriteCodecPlugin Plugin in codecs)
         {
-            foreach (GorgonSpriteCodecDescription desc in plugin.Codecs)
+            foreach (GorgonSpriteCodecDescription desc in Plugin.Codecs)
             {
                 IGorgonSpriteCodec codec = _codecs.Codecs.FirstOrDefault(item => string.Equals(item.GetType().FullName, desc.Name, StringComparison.OrdinalIgnoreCase));
 
@@ -188,21 +188,21 @@ internal class ImportSettings
                     continue;
                 }
 
-                CodecPlugInPaths.Add(new CodecSetting(codec.CodecDescription, plugin, desc));
+                CodecPluginPaths.Add(new CodecSetting(codec.CodecDescription, Plugin, desc));
             }
         }
 
-        _settings.LastCodecPlugInPath = Path.GetDirectoryName(path).FormatDirectory(Path.DirectorySeparatorChar);
+        _settings.LastCodecPluginPath = Path.GetDirectoryName(path).FormatDirectory(Path.DirectorySeparatorChar);
 
         // Store the settings now.
         return true;
     }
 
     /// <summary>
-    /// Function to determine if the selected plug-in assemblies can be unloaded.
+    /// Function to determine if the selected plugin assemblies can be unloaded.
     /// </summary>
-    /// <returns><b>true</b> if the plug-in assemblies can be removed, <b>false</b> if not.</returns>
-    protected override bool CanUnloadPlugInAssemblies() => SelectedCodecs.Count > 0;
+    /// <returns><b>true</b> if the plugin assemblies can be removed, <b>false</b> if not.</returns>
+    protected override bool CanUnloadPluginAssemblies() => SelectedCodecs.Count > 0;
 
     /// <summary>Function to retrieve the underlying object used to hold the settings.</summary>
     /// <returns>The object that holds the settings.</returns>
@@ -220,9 +220,9 @@ internal class ImportSettings
         _settings = injectionParameters.Settings;
         _codecs = injectionParameters.Codecs;
 
-        foreach (GorgonSpriteCodecPlugIn plugin in _codecs.CodecPlugIns)
+        foreach (GorgonSpriteCodecPlugin Plugin in _codecs.CodecPlugins)
         {
-            foreach (GorgonSpriteCodecDescription desc in plugin.Codecs)
+            foreach (GorgonSpriteCodecDescription desc in Plugin.Codecs)
             {
                 IGorgonSpriteCodec codec = _codecs.Codecs.FirstOrDefault(item => string.Equals(item.GetType().FullName, desc.Name, StringComparison.OrdinalIgnoreCase));
 
@@ -231,7 +231,7 @@ internal class ImportSettings
                     continue;
                 }
 
-                CodecPlugInPaths.Add(new CodecSetting(codec.CodecDescription, plugin, desc));
+                CodecPluginPaths.Add(new CodecSetting(codec.CodecDescription, Plugin, desc));
             }
         }
     }
@@ -243,7 +243,7 @@ internal class ImportSettings
     {
         base.OnLoad();
 
-        CodecPlugInPaths.CollectionChanged += CodecPlugInPaths_CollectionChanged;
+        CodecPluginPaths.CollectionChanged += CodecPluginPaths_CollectionChanged;
     }
 
     /// <summary>
@@ -251,7 +251,7 @@ internal class ImportSettings
     /// </summary>
     protected override void OnUnload()
     {
-        CodecPlugInPaths.CollectionChanged -= CodecPlugInPaths_CollectionChanged;
+        CodecPluginPaths.CollectionChanged -= CodecPluginPaths_CollectionChanged;
 
         base.OnUnload();
     }

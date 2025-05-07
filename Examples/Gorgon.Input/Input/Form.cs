@@ -25,12 +25,13 @@ using System.Diagnostics;
 using System.Numerics;
 using System.Text;
 using Gorgon.Core;
+using Gorgon.Diagnostics;
 using Gorgon.Graphics;
-using Gorgon.Math;
-using Gorgon.Timing;
-using Gorgon.UI.OLDE;
 using Gorgon.Input;
 using Gorgon.Input.Devices;
+using Gorgon.Math;
+using Gorgon.Timing;
+using Gorgon.UI.WindowsForms;
 using InputMouseButtons = Gorgon.Input.Devices.MouseButtons;
 
 namespace Gorgon.Examples;
@@ -68,8 +69,6 @@ public partial class Form
     // Our mouse cursor.
     private MouseCursor? _cursor;
     private Vector2 _cursorPosition;
-    // Our input service.
-    private readonly IGorgonInput _input;
     // Our mouse interface.
     private readonly IGorgonMouse _mouse = new GorgonMouse();
     // Our keyboard interface.
@@ -95,6 +94,33 @@ public partial class Form
     private bool _helpKeyPressed;
     // The current synchronization context for the application.
     private SynchronizationContext? _currentSyncContext;
+
+    /// <summary>
+    /// Property to return our input service.
+    /// </summary>
+    public required IGorgonInput Input
+    {
+        get;
+        init;
+    }
+
+    /// <summary>
+    /// Property to return the application loop.
+    /// </summary>
+    public required GorgonApplicationLoop Loop
+    {
+        get;
+        init;
+    }
+
+    /// <summary>
+    /// Property to return the log used for debug messages.
+    /// </summary>
+    public required IGorgonLog Log
+    {
+        get;
+        init;
+    }
 
     /// <summary>
     /// Property to return the mid point of the display panel size, in screen space.
@@ -130,7 +156,7 @@ public partial class Form
     /// </summary>
     private void UpdateGamingDeviceDisplay()
     {
-        TableJoysticks.Visible = FlowGamingDevices.Visible = _input.GamingDevices.Count > 0;
+        TableJoysticks.Visible = FlowGamingDevices.Visible = Input.GamingDevices.Count > 0;
 
         if (_activeGameDevice is null)
         {
@@ -245,18 +271,19 @@ public partial class Form
 
         // This is where we'll pull in the data gathered by the input system for all the devices we're monitoring
         // and store it in the event buffer.
-        _input.GetInput(InputDeviceType.Mouse | InputDeviceType.Keyboard | InputDeviceType.GamingDevice, _events);
+        Input.GetInput(InputDeviceType.Mouse | InputDeviceType.Keyboard | InputDeviceType.GamingDevice, _events);
 
         HandleGamingDevices();
         HandleMouseInput();
         if (!HandleKeyboard())
         {
+            Close();
             return false;
         }
 
         // If we' only using the keyboard at this point, no need to move on.
         // This is because we turned off input using the End key.
-        if (_input.Devices == InputFlags.Keyboard)
+        if (Input.Devices == InputFlags.Keyboard)
         {
             return true;
         }
@@ -458,7 +485,7 @@ public partial class Form
     {
         // If there are no mice available then there's nothing to handle, 
         // so we should bail now.
-        if (_input.Mice.Count == 0)
+        if (Input.Mice.Count == 0)
         {
             FlowMouse.Visible = false;
             return;
@@ -587,7 +614,7 @@ public partial class Form
     {
         // If there are no keyboards available then there's nothing to handle, 
         // so we should bail now.
-        if (_input.Keyboards.Count == 0)
+        if (Input.Keyboards.Count == 0)
         {
             FlowKeyboard.Visible = false;
             return true;
@@ -601,7 +628,7 @@ public partial class Form
         // If we disable the input system by pressing End, 
         // then only the keyboard will be enabled, so we'll 
         // only process the escape key in that case.
-        if (_input.Devices == InputFlags.Keyboard)
+        if (Input.Devices == InputFlags.Keyboard)
         {
             FlowKeyboard.Visible = false;
             return !_keyboard[VirtualKeys.Escape];
@@ -794,10 +821,10 @@ public partial class Form
                         _gameDevices[g].Reset();
                     }
 
-                    _input.Disable();
+                    Input.Disable();
 
                     // We will keep the keyboard active, just so we can handle some of the other key presses.
-                    _input.Enable(InputFlags.Keyboard);
+                    Input.Enable(InputFlags.Keyboard);
 
                     _mouse.CursorVisible = true;
                     return true;
@@ -935,7 +962,7 @@ public partial class Form
     private bool HandleInputEvent(GorgonInputEvent inputEvent)
     {
         // Filter out events. We only want gaming devices, all others can be handled during polling.
-        if ((inputEvent.DeviceType != InputDeviceType.GamingDevice) && (_input.GamingDevices.Count > 0))
+        if ((inputEvent.DeviceType != InputDeviceType.GamingDevice) && (Input.GamingDevices.Count > 0))
         {
             return false;
         }
@@ -992,7 +1019,7 @@ public partial class Form
                 }
             }
 
-            UpdateGameInputDeviceList(_input);
+            UpdateGameInputDeviceList(Input);
             HandleGamingDevices();
         }, null);
 
@@ -1046,7 +1073,7 @@ public partial class Form
             _gameDevices.Add(device);
 
             // Update the UI.
-            UpdateGameInputDeviceList(_input);
+            UpdateGameInputDeviceList(Input);
             HandleGamingDevices();
         }, gameDeviceInfo);
     }
@@ -1103,7 +1130,7 @@ public partial class Form
             }
 
             // Update the UI.
-            UpdateGameInputDeviceList(_input);
+            UpdateGameInputDeviceList(Input);
             HandleGamingDevices();
         }, device);
     }
@@ -1117,12 +1144,12 @@ public partial class Form
         try
         {
             // Ensure that we have the necessary input devices.
-            if ((_input.Mice.Count == 0) || (_input.Keyboards.Count == 0))
+            if ((Input.Mice.Count == 0) || (Input.Keyboards.Count == 0))
             {
-                _input.Disable();
+                Input.Disable();
 
-                GorgonDialogs.ErrorBox(this, "This application requires a mouse and keybnoard.");
-                GorgonApplication.Quit();
+                GorgonDialogs.Error(this, "This application requires a mouse and keybnoard.");
+                Application.Exit();
                 return;
             }
 
@@ -1153,25 +1180,27 @@ public partial class Form
 
             // Register our callback methods so that we can intercept when devices 
             // have been added to or removed from the computer.
-            _input.RegisterDeviceChangeCallbacks(DeviceAdded, DeviceRemoved);
+            Input.RegisterDeviceChangeCallbacks(DeviceAdded, DeviceRemoved);
 
             // Register our callback method to intercept when we get an input event 
             // from the system. This will allow us to update our active gaming 
             // device upon use.
-            _input.RegisterInputEventCallback(HandleInputEvent);
+            Input.RegisterInputEventCallback(HandleInputEvent);
 
             // If we have any gaming devices, instance them now.
-            CreateGamingDevices(_input);
+            CreateGamingDevices(Input);
 
             // Set up our idle method.
-            GorgonApplication.IdleMethod = Idle;
+            // Note that we pass in the Close method as the exit callback for the 
+            // loop. This way, when the loop stops, we can close the form.
+            Loop.Run(Idle);
         }
         catch (Exception ex)
         {
             // We do this here instead of just calling the dialog because this
             // function will send the exception to the Gorgon log file.
-            ex.Handle(e => GorgonDialogs.ErrorBox(this, e), GorgonApplication.Log);
-            GorgonApplication.Quit();
+            ex.Handle(e => GorgonDialogs.Error(this, e), Log);
+            Application.Exit();
         }
     }
 
@@ -1185,20 +1214,20 @@ public partial class Form
 
         _mouse.CursorVisible = false;
 
-        if (_input.Devices is not InputFlags.None and not InputFlags.Keyboard)
+        if (Input.Devices is not InputFlags.None and not InputFlags.Keyboard)
         {
             return;
         }
 
         // We can use this to restore or change which devices we've registered (if we've previously disabled).                        
-        _input.Enable(InputFlags.ExclusiveMouse | InputFlags.Keyboard | InputFlags.GamingDevices);
+        Input.Enable(InputFlags.ExclusiveMouse | InputFlags.Keyboard | InputFlags.GamingDevices);
 
         // When we re-enable, we need to recreate our game device objects because the previous gaming device 
         // objects are no longer valid.
         //
         // The keyboard and mouse are not bound to a specific device, so they do not need to be recreated
         // because they will take any keyboard/mouse data from the system and aggregate it.
-        CreateGamingDevices(_input);
+        CreateGamingDevices(Input);
 
         FlowDevices.Visible = true;
         Capture = true;
@@ -1212,7 +1241,7 @@ public partial class Form
     {
         base.OnDeactivate(e);
 
-        if (_input.Devices is InputFlags.None or InputFlags.Keyboard)
+        if (Input.Devices is InputFlags.None or InputFlags.Keyboard)
         {
             return;
         }
@@ -1224,7 +1253,7 @@ public partial class Form
 
         // This turns off input monitoring for every device we previously registered for in the constructor or 
         // the last call to Enable.
-        _input.Disable();
+        Input.Disable();
         _mouse.CursorVisible = true;
 
         TableJoysticks.Visible = false;
@@ -1241,8 +1270,6 @@ public partial class Form
 
         _mouse.CursorVisible = true;
 
-        // Always dispose the input system. This will disable its background thread and restore our input back to normal.
-        _input.Dispose();
         // Event buffers must be disposed, otherwise resources may be leaked.
         _events.Dispose();
 
@@ -1253,20 +1280,5 @@ public partial class Form
     /// <summary>
     /// Initializes a new instance of the <see cref="Form" /> class.
     /// </summary>
-    public Form()
-    {
-        InitializeComponent();
-
-        // This is our input system. By passing in the device types in the flags, we can tell the system to immediately start working with 
-        // the devices specified. 
-        //
-        // You will note the "ExclusiveMouse" flag. This tells the input system that we will be the exclusive owner of all the data from 
-        // the mouse. This means the application will no longer respond to Windows mouse events. Both keyboards and mice can be exclusive 
-        // to the input system, but be warned that the system will not respond to some system key presses like Alt+F4 when the keyboard 
-        // device is exclusive.
-        // 
-        // Also, regardless of whether the mouse or keyboard are exclusive, they will stop sending data if the application is not focused.
-        // Gaming devices however, will always receive data.
-        _input = GorgonInput.CreateInput(InputFlags.ExclusiveMouse | InputFlags.Keyboard | InputFlags.GamingDevices, GorgonApplication.Log);
-    }
+    public Form() => InitializeComponent();
 }

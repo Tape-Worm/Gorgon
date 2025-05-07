@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2019 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -100,10 +100,10 @@ internal partial class EditorSettingsPanel
     }
 
     /// <summary>
-    /// Function to register the settings panels from plug-ins.
+    /// Function to register the settings panels from plugins.
     /// </summary>
     /// <param name="dataContext">The current data context.</param>
-    private void RegisterPlugInSettingsPanels(IEditorSettings dataContext)
+    private void RegisterPluginSettingsPanels(IEditorSettings dataContext)
     {
         SplitSettingsNav.SuspendLayout();
 
@@ -155,7 +155,7 @@ internal partial class EditorSettingsPanel
     /// <param name="clearPanelLookup"><b>true</b> to clear the panel look up, <b>false</b> to leave it alone.</param>
     private void ClearExtraPanels(bool clearPanelLookup)
     {
-        List<SettingsBaseControl> controls = [.. SplitSettingsNav.Panel2.Controls.OfType<SettingsBaseControl>().Where(item => item != PlugInList)];
+        List<SettingsBaseControl> controls = [.. SplitSettingsNav.Panel2.Controls.OfType<SettingsBaseControl>().Where(item => item != PluginList)];
 
         ListCategories.SelectedIndex = 0;
 
@@ -218,7 +218,7 @@ internal partial class EditorSettingsPanel
             return;
         }
 
-        RegisterPlugInSettingsPanels(dataContext);
+        RegisterPluginSettingsPanels(dataContext);
 
         int selectedIndex = 0;
 
@@ -255,7 +255,7 @@ internal partial class EditorSettingsPanel
     /// </remarks>
     public void SetDataContext(IEditorSettings dataContext)
     {
-        PlugInList.SetDataContext(dataContext?.PlugInsList);
+        PluginList.SetDataContext(dataContext?.PluginsList);
 
         InitializeFromDataContext(dataContext);
         ViewModel = dataContext;
@@ -274,7 +274,7 @@ internal partial class EditorSettingsPanel
         InitializeComponent();
 
         // Register our fixed panel(s).
-        _panelLookup[PlugInList.PanelID] = PlugInList;
-        _categoryLookup[ListCategories.Items[0].ToString()] = PlugInList.PanelID;
+        _panelLookup[PluginList.PanelID] = PluginList;
+        _categoryLookup[ListCategories.Items[0].ToString()] = PluginList.PanelID;
     }
 }

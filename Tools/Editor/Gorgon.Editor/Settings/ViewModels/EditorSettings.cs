@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2019 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,7 @@
 // 
 
 using System.Collections.ObjectModel;
-using Gorgon.Editor.PlugIns;
+using Gorgon.Editor.Plugins;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.UI;
 
@@ -65,9 +65,9 @@ internal class EditorSettings
     }
 
     /// <summary>
-    /// Property to return the list of plug-ins for the fixed plug-in list category.
+    /// Property to return the list of plugins for the fixed plugin list category.
     /// </summary>
-    public ISettingsPlugInsList PlugInsList
+    public ISettingsPluginsList PluginsList
     {
         get;
         private set;
@@ -117,7 +117,7 @@ internal class EditorSettings
     protected override void OnInitialize(EditorSettingsParameters injectionParameters)
     {
         Categories = [.. injectionParameters.Categories];
-        PlugInsList = injectionParameters.PlugInsList;
+        PluginsList = injectionParameters.PluginsList;
     }
 
     /// <summary>Initializes a new instance of the <see cref="EditorSettings"/> class.</summary>

@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2019 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -61,7 +61,7 @@ internal interface ISpriteContent
     }
 
     /// <summary>
-    /// Property to return the view model for the plug-in settings.
+    /// Property to return the view model for the plugin settings.
     /// </summary>
     ISettings Settings
     {

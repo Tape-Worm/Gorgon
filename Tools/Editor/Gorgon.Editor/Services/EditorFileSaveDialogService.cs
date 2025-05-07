@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,7 @@
 // 
 
 using System.Text;
-using Gorgon.Editor.PlugIns;
+using Gorgon.Editor.Plugins;
 using Gorgon.Editor.Properties;
 using Gorgon.IO;
 using Gorgon.UI.OLDE;
@@ -101,9 +101,9 @@ internal class EditorFileSaveDialogService(EditorSettings settings, FileSystemPr
     } = settings;
 
     /// <summary>
-    /// Property to set or return the currently active file writer plugin.
+    /// Property to set or return the currently active file writer Plugin.
     /// </summary>        
-    public FileWriterPlugIn CurrentWriter
+    public FileWriterPlugin CurrentWriter
     {
         get;
         set;
@@ -114,12 +114,12 @@ internal class EditorFileSaveDialogService(EditorSettings settings, FileSystemPr
     /// </summary>
     /// <param name="extensions">The extensions used by the available file writers.</param>
     /// <returns>The string containing the file dialog filter.</returns>
-    private string GetWriterDialogFilterString(IReadOnlyList<(string desc, FileWriterPlugIn writer, IReadOnlyList<GorgonFileExtension> extensions)> extensions)
+    private string GetWriterDialogFilterString(IReadOnlyList<(string desc, FileWriterPlugin writer, IReadOnlyList<GorgonFileExtension> extensions)> extensions)
     {
         StringBuilder result = new();
         StringBuilder filter = new();
 
-        foreach ((string desc, FileWriterPlugIn _, IReadOnlyList<GorgonFileExtension> extensions) item in extensions)
+        foreach ((string desc, FileWriterPlugin _, IReadOnlyList<GorgonFileExtension> extensions) item in extensions)
         {
             filter.Length = 0;
 
@@ -160,7 +160,7 @@ internal class EditorFileSaveDialogService(EditorSettings settings, FileSystemPr
     /// Function to find the extension filter index for the currently selected file writer.
     /// </summary>
     /// <param name="extensions">The extensions to evaluate.</param>
-    private void FindCurrentWriterExtensionIndex(IReadOnlyList<(string desc, FileWriterPlugIn writer, IReadOnlyList<GorgonFileExtension> extensions)> extensions)
+    private void FindCurrentWriterExtensionIndex(IReadOnlyList<(string desc, FileWriterPlugin writer, IReadOnlyList<GorgonFileExtension> extensions)> extensions)
     {
         _lastSelectedExtensionIndex = -1;
 
@@ -180,7 +180,7 @@ internal class EditorFileSaveDialogService(EditorSettings settings, FileSystemPr
     /// Function to locate the nearest matching extension index based on previous file name.
     /// </summary>
     /// <param name="extensions">The extensions to evaluate.</param>
-    private void FindNearestExtensionIndex(IReadOnlyList<(string desc, FileWriterPlugIn writer, IReadOnlyList<GorgonFileExtension> extensions)> extensions)
+    private void FindNearestExtensionIndex(IReadOnlyList<(string desc, FileWriterPlugin writer, IReadOnlyList<GorgonFileExtension> extensions)> extensions)
     {
         if ((_lastSelectedExtensionIndex < 0) || (_lastSelectedExtensionIndex >= extensions.Count))
         {
@@ -210,7 +210,7 @@ internal class EditorFileSaveDialogService(EditorSettings settings, FileSystemPr
     /// </summary>
     /// <param name="extensions">The file extensions to evaluate.</param>
     /// <returns>The open file dialog.</returns>
-    private SaveFileDialog GetDialog(IReadOnlyList<(string desc, FileWriterPlugIn writer, IReadOnlyList<GorgonFileExtension> extensions)> extensions)
+    private SaveFileDialog GetDialog(IReadOnlyList<(string desc, FileWriterPlugin writer, IReadOnlyList<GorgonFileExtension> extensions)> extensions)
     {
         DirectoryInfo initialDirectory = InitialDirectory;
 
@@ -263,7 +263,7 @@ internal class EditorFileSaveDialogService(EditorSettings settings, FileSystemPr
 
         try
         {
-            IReadOnlyList<(string desc, FileWriterPlugIn writer, IReadOnlyList<GorgonFileExtension> extensions)> extensions = Providers.GetWriterFileExtensions();
+            IReadOnlyList<(string desc, FileWriterPlugin writer, IReadOnlyList<GorgonFileExtension> extensions)> extensions = Providers.GetWriterFileExtensions();
 
             dialog = GetDialog(extensions);
 

@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2017 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -29,7 +29,7 @@ using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Renderers.Cameras;
-using Gorgon.UI.OLDE;
+using Gorgon.UI.WindowsForms;
 
 namespace Gorgon.Examples;
 
@@ -188,7 +188,7 @@ internal static class Program
             //
             // Using this method, we could also enumerate the software rasterizer. These devices are typically used to determine if there's a driver error, and can be terribly slow to render 
             // It is recommended that these only be used in diagnostic scenarios only.
-            IReadOnlyList<IGorgonVideoAdapterInfo> deviceList = GorgonGraphics.EnumerateAdapters();
+            IReadOnlyList<IGorgonVideoAdapterInfo> deviceList = GorgonGraphics.EnumerateAdapters(log: GorgonExample.Log);
 
             if (deviceList.Count == 0)
             {
@@ -197,7 +197,7 @@ internal static class Program
             }
 
             // Now we create the main graphics interface with the first applicable video device.
-            _graphics = new GorgonGraphics(deviceList[0]);
+            _graphics = new GorgonGraphics(deviceList[0], log: GorgonExample.Log);
 
             // Check to ensure that we can support the format required for our swap chain.
             // If a video device can't support this format, then the odds are good it won't render anything. Since we're asking for a very common display format, this will 
@@ -209,7 +209,7 @@ internal static class Program
             if ((_graphics.FormatSupport[BufferFormat.R8G8B8A8_UNorm].FormatSupport & BufferFormatSupport.Display) != BufferFormatSupport.Display)
             {
                 // We should never see this unless you've performed some form of black magic.
-                GorgonDialogs.ErrorBox(window, "We should not see this error.");
+                GorgonDialogs.Error(window, "We should not see this error.");
                 return window;
             }
 
@@ -282,6 +282,8 @@ internal static class Program
 
             GorgonExample.LoadResources(_graphics);
 
+            GorgonExample.Loop.Run(Idle);
+
             return window;
         }
         finally
@@ -303,7 +305,7 @@ internal static class Program
         try
         {
             // Now begin running the application idle loop.
-            GorgonApplication.Run(Initialize(), Idle);
+            Application.Run(Initialize());
         }
         catch (Exception ex)
         {
@@ -314,8 +316,6 @@ internal static class Program
             // Always clean up when you're done.
             // Since Gorgon uses Direct 3D 11.1, which allocate objects that use native memory and COM objects, we must be careful to dispose of any objects that implement 
             // IDisposable. Failure to do so can lead to warnings from the Direct 3D runtime when running in DEBUG mode.
-            GorgonExample.UnloadResources();
-
             _texture?.Dispose();
             _constantBuffer?.Dispose();
             _vertexBuffer.VertexBuffer?.Dispose();
@@ -324,6 +324,8 @@ internal static class Program
             _pixelShader?.Dispose();
             _swap?.Dispose();
             _graphics?.Dispose();
+
+            GorgonExample.ShutDown();
         }
     }
 }

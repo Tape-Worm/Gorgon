@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,7 +23,7 @@
 // Created: October 29, 2018 4:15:09 PM
 // 
 
-using Gorgon.Editor.PlugIns;
+using Gorgon.Editor.Plugins;
 
 namespace Gorgon.Editor.UI;
 
@@ -34,7 +34,7 @@ namespace Gorgon.Editor.UI;
 /// <remarks>
 /// <para>
 /// Developers can use this to implement basic view models for various UI elements. This type provides basic common functionality for custom views so developers can have more freedom when implementing 
-/// their own views. For more complete common content functionality, there are several base view model types that wrap up common functionality. For example, when developing a content editor plug-in 
+/// their own views. For more complete common content functionality, there are several base view model types that wrap up common functionality. For example, when developing a content editor plugin 
 /// developers should use the <see cref="ContentEditorViewModelBase{T}"/> as a base view model type
 /// </para>
 /// </remarks>

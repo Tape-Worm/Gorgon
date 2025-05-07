@@ -176,8 +176,8 @@ Please try again.</value>
     <value>There is no video adapter on this machine that can be used by Gorgon.
 Gorgon requires a video adapter that is compatible with Direct 3D 11.2 or better.</value>
   </data>
-  <data name="GOREDIT_ERR_SELECTING_PLUGIN" xml:space="preserve">
-    <value>There was an error selecting the plug-in.
+  <data name="GOREDIT_ERR_SELECTING_plugin" xml:space="preserve">
+    <value>There was an error selecting the plugin.
 
 Please try again.</value>
   </data>
@@ -268,7 +268,7 @@ Are you sure?</value>
   <data name="content_preview_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\content_preview_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="GOREDIT_PLUGIN_STATE_LOADED" xml:space="preserve">
+  <data name="GOREDIT_plugin_STATE_LOADED" xml:space="preserve">
     <value>Loaded</value>
   </data>
   <data name="LoadingBg" type="System.Resources.ResXFileRef, System.Windows.Forms">
@@ -366,7 +366,7 @@ Please try again.</value>
 
 Are you absolutely sure you want to do this?</value>
   </data>
-  <data name="GOREDIT_SETTINGS_CATEGORY_PLUGINS" xml:space="preserve">
+  <data name="GOREDIT_SETTINGS_CATEGORY_pluginS" xml:space="preserve">
     <value>Plug ins</value>
   </data>
   <data name="GOREDIT_TEXT_INITIALIZING" xml:space="preserve">
@@ -384,8 +384,8 @@ Are you absolutely sure you want to do this?</value>
 The path must not contain the following characters:
 {1}</value>
   </data>
-  <data name="GOREDIT_ERR_NO_PLUGIN_FOR_CONTENT" xml:space="preserve">
-    <value>There is no plugin loaded that can handle opening the file '{0}'.</value>
+  <data name="GOREDIT_ERR_NO_plugin_FOR_CONTENT" xml:space="preserve">
+    <value>There is no Plugin loaded that can handle opening the file '{0}'.</value>
   </data>
   <data name="GOREDIT_ERR_CONTENT_CREATION" xml:space="preserve">
     <value>There was an error creating the content.
@@ -403,8 +403,8 @@ Please try again.</value>
   <data name="GOREDIT_ERR_DIRECTORY_NOT_FOUND" xml:space="preserve">
     <value>The directory '{0}' was not found.</value>
   </data>
-  <data name="GOREDIT_TEXT_LOADING_TOOL_PLUGINS" xml:space="preserve">
-    <value>Loading tool plug-ins...</value>
+  <data name="GOREDIT_TEXT_LOADING_TOOL_pluginS" xml:space="preserve">
+    <value>Loading tool plugins...</value>
   </data>
   <data name="GOREDIT_MSG_OPEN_CONTENT_CANT_OVERWRITE_SKIP" xml:space="preserve">
     <value>The file '{0}' is open in the editor and cannot be overwritten.
@@ -419,8 +419,8 @@ Please try again.</value>
     <value>There was an error while exporting to '{0}'.
 Please try again.</value>
   </data>
-  <data name="GOREDIT_DISABLE_CONTENT_PLUGIN_EXCEPTION" xml:space="preserve">
-    <value>An error occurred while loading the plug-in.
+  <data name="GOREDIT_DISABLE_CONTENT_plugin_EXCEPTION" xml:space="preserve">
+    <value>An error occurred while loading the plugin.
 Exception: {0}</value>
   </data>
   <data name="GOREDIT_ERR_DELETE" xml:space="preserve">
@@ -477,8 +477,8 @@ Please try again.</value>
 
 The file will still imported into the file system, but the editor may not be able to open it.</value>
   </data>
-  <data name="GOREDIT_TEXT_LOADING_FILESYSTEM_PLUGINS" xml:space="preserve">
-    <value>Loading file system plug-ins...</value>
+  <data name="GOREDIT_TEXT_LOADING_FILESYSTEM_pluginS" xml:space="preserve">
+    <value>Loading file system plugins...</value>
   </data>
   <data name="export_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\export_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -489,7 +489,7 @@ The file will still imported into the file system, but the editor may not be abl
   <data name="GOREDIT_ERR_ERROR" xml:space="preserve">
     <value>Error</value>
   </data>
-  <data name="GOREDIT_TEXT_PLUGIN_LOADED_SUCCESSFULLY" xml:space="preserve">
+  <data name="GOREDIT_TEXT_plugin_LOADED_SUCCESSFULLY" xml:space="preserve">
     <value>Loaded successfully.</value>
   </data>
   <data name="cut_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
@@ -548,14 +548,14 @@ Selecting No will skip the file.</value>
   <data name="GOREDIT_NEW_DIR_NAME" xml:space="preserve">
     <value>New Folder</value>
   </data>
-  <data name="GOREDIT_TEXT_LOADING_CONTENT_PLUGINS" xml:space="preserve">
-    <value>Loading content plug-ins...</value>
+  <data name="GOREDIT_TEXT_LOADING_CONTENT_pluginS" xml:space="preserve">
+    <value>Loading content plugins...</value>
   </data>
   <data name="clear_fs_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\clear_fs_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="GOREDIT_ERR_LOADING_PLUGINS" xml:space="preserve">
-    <value>There was an error loading the plugins.
+  <data name="GOREDIT_ERR_LOADING_pluginS" xml:space="preserve">
+    <value>There was an error loading the Plugins.
 
 The application will continue, but some functionality will be unavailable.</value>
   </data>
@@ -586,7 +586,7 @@ Are you sure you want to do this?</value>
 Please try again.</value>
   </data>
   <data name="GOREDIT_DISABLE_FILE_PROVIDER_EXCEPTION" xml:space="preserve">
-    <value>An error occurred while loading the plug-in.
+    <value>An error occurred while loading the plugin.
 Exception: {0}</value>
   </data>
   <data name="GOREDIT_CONFIRM_OPEN_CONTENT_CANT_OVERWRITE" xml:space="preserve">
@@ -594,8 +594,8 @@ Exception: {0}</value>
 
 Would you like to make a copy with a different name?</value>
   </data>
-  <data name="GOREDIT_TEXT_DISABLED_PLUGIN_DEFAULT_TEXT" xml:space="preserve">
-    <value>No reason was given by the plug-in author.</value>
+  <data name="GOREDIT_TEXT_DISABLED_plugin_DEFAULT_TEXT" xml:space="preserve">
+    <value>No reason was given by the plugin author.</value>
   </data>
   <data name="GOREDIT_CAPTION_NO_FILE" xml:space="preserve">
     <value>Gorgon Editor</value>

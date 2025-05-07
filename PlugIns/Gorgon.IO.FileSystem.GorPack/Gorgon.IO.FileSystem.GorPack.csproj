@@ -4,36 +4,37 @@
     <TargetFramework>net8.0</TargetFramework>
     <ForceDesignerDpiUnaware>true</ForceDesignerDpiUnaware>
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
-    <Version>4.0.0</Version>
     <Authors>Michael Winsor</Authors>
     <Company>Tape_Worm</Company>
     <Product>Gorgon</Product>
-    <Description>A unified virtual file system that can mount folders, and through plug-ins, packed files as a standard self contained file system.
+    <Description>A unified virtual file system that can mount folders, and through plugins, packed files as a standard self contained file system.
 
-This assembly contains a plug-in that will read a proprietary BZip packed Gorgon file format as its file system.</Description>
-    <Copyright>(C)opyright Tape_Worm, 2024</Copyright>
-    <PackageLicenseFile>
-    </PackageLicenseFile>
+This assembly contains a plugin that will read a proprietary BZip packed Gorgon file format as its file system.</Description>
+    <Copyright>(C)opyright Tape_Worm, 2025</Copyright>
+    <PackageLicenseFile></PackageLicenseFile>
     <PackageProjectUrl>https://www.tape-worm.net</PackageProjectUrl>
-    <PackageIcon>..\..\Gorgon\g.png</PackageIcon>
+    <PackageIcon>g.png</PackageIcon>
     <RepositoryUrl>https://github.com/Tape-Worm/Gorgon</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
-    <PackageTags>Gorgon, C#, .NET Framework, Direct 3D, SharpDX, Winforms</PackageTags>
+    <PackageTags>Gorgon;C#;.NET;File System;IO;GorPack;BZip2</PackageTags>
     <EnableNETAnalyzers>True</EnableNETAnalyzers>
     <RootNamespace>Gorgon.IO.FileSystem.Providers</RootNamespace>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <SignAssembly>false</SignAssembly>
-    <AssemblyOriginatorKeyFile>
-    </AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile></AssemblyOriginatorKeyFile>
     <DelaySign>false</DelaySign>
     <ImplicitUsings>enable</ImplicitUsings>
     <AssemblyVersion>4.0.0.0</AssemblyVersion>
     <FileVersion>4.0.0.0</FileVersion>
     <EmbeddedResourceUseDependentUponConvention>true</EmbeddedResourceUseDependentUponConvention>
     <Nullable>enable</Nullable>
-    <Title>Gorgon Gorpack Filesystem Plug-in</Title>
+    <Title>Gorgon GorPack Filesystem Plugin</Title>
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
+    <PackageOutputPath>$(SolutionDir)nuget\$(Configuration)</PackageOutputPath>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <PackageType>Dependency</PackageType>
+    <VersionPrefix>4.0.0</VersionPrefix>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DebugType>full</DebugType>
@@ -44,10 +45,11 @@ This assembly contains a plug-in that will read a proprietary BZip packed Gorgon
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
+    <VersionSuffix>Dev</VersionSuffix>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub">
-      <Version>8.0.0</Version>      
+      <Version>8.0.0</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
@@ -56,7 +58,7 @@ This assembly contains a plug-in that will read a proprietary BZip packed Gorgon
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Gorgon\Gorgon.IO.FileSystem\Gorgon.IO.FileSystem.csproj" />
+    <ProjectReference Include="..\..\Gorgon\Gorgon.IO\FileSystem.Plugins\Gorgon.IO.FileSystem.Plugins.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">
@@ -71,7 +73,13 @@ This assembly contains a plug-in that will read a proprietary BZip packed Gorgon
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup>
+    <None Update="g.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="robocopy &quot;$(TargetDir)\&quot; &quot;$(SolutionDir)PlugIns\Bin\$(ConfigurationName)&quot; $(TargetFileName) $(TargetName).pdb ICSharpCode.SharpZipLib.dll /Z&#xD;&#xA;robocopy &quot;$(TargetDir)\&quot; &quot;$(SolutionDir)Tools\Editor\Gorgon.Editor\$(OutDir)\PlugIns\FileSystem&quot; $(TargetFileName) $(TargetName).pdb ICSharpCode.SharpZipLib.dll /Z&#xD;&#xA;&#xD;&#xA;REM Because Robocopy trips up visual studio with its return codes.&#xD;&#xA;&#xD;&#xA;IF %25ERRORLEVEL%25 LSS 8 EXIT 0" />
+    <Exec Command="robocopy &quot;$(TargetDir)\&quot; &quot;$(SolutionDir)Plugins\Bin\$(ConfigurationName)&quot; $(TargetFileName) $(TargetName).pdb ICSharpCode.SharpZipLib.dll /Z&#xD;&#xA;robocopy &quot;$(TargetDir)\&quot; &quot;$(SolutionDir)Tools\Editor\Gorgon.Editor\$(OutDir)\Plugins\FileSystem&quot; $(TargetFileName) $(TargetName).pdb ICSharpCode.SharpZipLib.dll /Z&#xD;&#xA;&#xD;&#xA;REM Because Robocopy trips up visual studio with its return codes.&#xD;&#xA;&#xD;&#xA;IF %25ERRORLEVEL%25 LSS 8 EXIT 0" />
   </Target>
 </Project>

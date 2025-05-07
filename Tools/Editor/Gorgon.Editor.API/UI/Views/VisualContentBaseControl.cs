@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2020 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -47,8 +47,8 @@ namespace Gorgon.Editor.UI.Views;
 /// <see cref="IVisualEditorContent"/> interface
 /// </para>
 /// <para>
-/// Content plug-in developers should inherit from this control to provide standardized functionality for viewing content via the <see cref="GorgonGraphics"/>, and <see cref="Gorgon2D"/> interfaces. 
-/// This should help simplify plug-in UI development and allow developers to focus on creating UIs for editing their content without having to worry about developing boilerplate code for view 
+/// Content plugin developers should inherit from this control to provide standardized functionality for viewing content via the <see cref="GorgonGraphics"/>, and <see cref="Gorgon2D"/> interfaces. 
+/// This should help simplify plugin UI development and allow developers to focus on creating UIs for editing their content without having to worry about developing boilerplate code for view 
 /// manipulation
 /// </para>
 /// <para>
@@ -471,7 +471,7 @@ public partial class VisualContentBaseControl
     /// <exception cref="ArgumentException">Thrown if a renderer is already registered with the same <paramref name="name"/>.</exception>
     /// <remarks>
     /// <para>
-    /// Some content plug-ins will require the rendered view to change depending on state. For example, a specific tool is selected and the view needs to switch to a portion of the content. In such 
+    /// Some content plugins will require the rendered view to change depending on state. For example, a specific tool is selected and the view needs to switch to a portion of the content. In such 
     /// cases it is not practical to have a single renderer performing all manner of state changes, so this method provides a means of passing different renderer instances to the view.
     /// </para>
     /// <para>

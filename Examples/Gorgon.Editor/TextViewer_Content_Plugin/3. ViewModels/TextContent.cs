@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2020 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -515,7 +515,7 @@ internal class TextContent
     ///   <b>true</b> to continue with closing, <b>false</b> to cancel the close request.</returns>
     /// <remarks>
     ///   <para>
-    /// Content plug-in developers should override this method so that users are given a chance to save their content data (if it has changed) prior to closing the content.
+    /// Content plugin developers should override this method so that users are given a chance to save their content data (if it has changed) prior to closing the content.
     /// </para>
     ///   <para>
     /// This is set up as an asynchronous method so that users may save their data asynchronously to keep the UI usable.

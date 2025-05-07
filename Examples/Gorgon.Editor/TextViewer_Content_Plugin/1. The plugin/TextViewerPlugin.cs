@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2020 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -29,7 +29,7 @@ using Gorgon.Core;
 using Gorgon.Editor;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.Metadata;
-using Gorgon.Editor.PlugIns;
+using Gorgon.Editor.Plugins;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
 using Gorgon.Examples.Properties;
@@ -42,72 +42,72 @@ using Microsoft.IO;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// An example content plug-in for the Gorgon Editor
+/// An example content plugin for the Gorgon Editor
 /// </summary>
 /// <remarks>
 /// 
-/// The Gorgon Editor is able to load in various plug-ins for end user content creation. This allows for flexibility by keeping the content workflow localized to one central application
+/// The Gorgon Editor is able to load in various plugins for end user content creation. This allows for flexibility by keeping the content workflow localized to one central application
 /// 
-/// Content plug-ins produce/edit content files that contain the native data for the content (e.g. an image file will contain image data in a standard format like dds). But along with 
+/// Content plugins produce/edit content files that contain the native data for the content (e.g. an image file will contain image data in a standard format like dds). But along with 
 /// these files metadata is stored so that extraneous data that can't be stored in the file itself can be accessed. The metadata can be attributes which is a key/value string pair that 
 /// can contain things like codec information, state information, etc...  Along with this attribute data, a list of categorized dependency file paths can be stored so that files that the 
 /// content requires to open correctly can be opened by the editor as required
 /// 
-/// In this example, we'll show how to build a simple text viewer for the editor.  This class is the main entry point for the plug-in. The editor calls the code in here to initialize and 
+/// In this example, we'll show how to build a simple text viewer for the editor.  This class is the main entry point for the plugin. The editor calls the code in here to initialize and 
 /// prepare the content for editing, so this is where we need to start
 /// 
 /// Some notes before we begin:
 /// #1 This is a DLL project, for it to work correctly, the resulting DLL must be copied to the Plugins content directory of the Gorgon.Editor install location. For example, 
-/// if the editor is installed in C:\Gorgon\Editor\, then the plug-in should be copied into the C:\Gorgon\Editor\Plugins\Content directory
+/// if the editor is installed in C:\Gorgon\Editor\, then the plugin should be copied into the C:\Gorgon\Editor\Plugins\Content directory
 /// 
-/// #2 Running this plug-in from Visual Studio should automatically copy the plug-in and start up the editor
+/// #2 Running this plugin from Visual Studio should automatically copy the plugin and start up the editor
 /// 
 /// #3 This is not meant for inexperienced developers. If you are a beginner, or just not comfortable with C#, it may be very confusing to understand as there are a lot of pieces to 
-/// building an editor plug-in. Proceed at your own peril
+/// building an editor plugin. Proceed at your own peril
 /// 
-/// There are several parts to a content plug-in:
-/// 1. The plug-in (this file)
+/// There are several parts to a content plugin:
+/// 1. The plugin (this file)
 /// 2. The views (UI for the content editor)
 /// 3. The view models (for MVVM)
 /// 4. The services (functionality to perform various operations using agnostic code)
-/// 5. The settings (global plug-in settings)
+/// 5. The settings (global plugin settings)
 /// 
-/// To start, we need to set up the initial plug-in code to communicate with the host application (our editor).  
+/// To start, we need to set up the initial plugin code to communicate with the host application (our editor).  
 /// 
-/// We begin by creating a class, and inheriting from the ContentPlugIn base class, and implement the IContentPlugInMetadata interface. The base class provides common functionality and 
-/// abstract methods to override that will allow building a preview image, and return information about the plug-in
+/// We begin by creating a class, and inheriting from the ContentPlugin base class, and implement the IContentPluginMetadata interface. The base class provides common functionality and 
+/// abstract methods to override that will allow building a preview image, and return information about the plugin
 /// </remarks>
 internal class TextViewerPlugin
-    : ContentPlugIn, IContentPlugInMetadata
+    : ContentPlugin, IContentPluginMetadata
 {
 
-    // All content plug-ins should provide a type value providing an ID describing what content is produced by this plug-in. This will be stored 
+    // All content plugins should provide a type value providing an ID describing what content is produced by this plugin. This will be stored 
     // in the metadata for the content file and can be used to identify the type of content when it is used as a dependency.
 
     /// <summary>
-    /// The type of content handled by this content plug-in.
+    /// The type of content handled by this content plugin.
     /// </summary>
     public const string ContentTypeValue = "Text";
 
     // No thumbnail image.
     // This is the default image that will be displayed in the preview panel on the main window. 
-    // Some plug-ins will want to render small representation of the content so users can determine 
+    // Some plugins will want to render small representation of the content so users can determine 
     // if the content file contains the data they're looking for. However, in this simple example, 
     // we have no need of it, and we'll define a default image to display (embedded in the 
-    // resources of the plug-in).
+    // resources of the plugin).
     private IGorgonImage _noThumbnail;
 
-    // This contains the global settings for the plug-in. These can contain defaults for the plug-in 
+    // This contains the global settings for the plugin. These can contain defaults for the plugin 
     // and can be changed any time by going into the File tab, and clicking on the Settings button.
     private TextContentSettings _settings = new();
 
     // This the view model for the settings. It is used on the settings panel control supplied by 
-    // our plug-in and is used to persist our settings back to the disk.
+    // our plugin and is used to persist our settings back to the disk.
     private Settings _settingsViewModel;
 
-    // Some plugins will have their own specific settings that should be persisted and reloaded 
-    // when the editor starts up. The typical convention used by editor plug-ins is to use the 
-    // fully qualified type name of the plug-in as the base file name.
+    // Some Plugins will have their own specific settings that should be persisted and reloaded 
+    // when the editor starts up. The typical convention used by editor plugins is to use the 
+    // fully qualified type name of the plugin as the base file name.
     //
     // These files are stored in the %AppData%\Tape_Worm\Gorgon.Editor\ContentPlugins\ directory 
     // as JSON files. 
@@ -119,54 +119,54 @@ internal class TextViewerPlugin
     /// </summary>
     public static readonly string SettingsName = typeof(TextViewerPlugin).FullName;
 
-    // This name is used as an internal identifier for the plug-in. This is typically the fully qualified type name of the plug-in class.
+    // This name is used as an internal identifier for the plugin. This is typically the fully qualified type name of the plugin class.
 
-    /// <summary>Property to return the name of the plug-in.</summary>
-    string IContentPlugInMetadata.PlugInName => Name;
+    /// <summary>Property to return the name of the plugin.</summary>
+    string IContentPluginMetadata.PluginName => Name;
 
-    // This is a friendly description of the plug-in used for display purposes.
+    // This is a friendly description of the plugin used for display purposes.
 
-    /// <summary>Property to return the description of the plugin.</summary>
-    string IContentPlugInMetadata.Description => Description;
+    /// <summary>Property to return the description of the Plugin.</summary>
+    string IContentPluginMetadata.Description => Description;
 
-    // Some plug-ins are only capable of editing existing content, and in those cases this value should return false. For plug-ins that can 
+    // Some plugins are only capable of editing existing content, and in those cases this value should return false. For plugins that can 
     // create new content this property should return true.
 
-    /// <summary>Property to return whether or not the plugin is capable of creating content.</summary>
+    /// <summary>Property to return whether or not the Plugin is capable of creating content.</summary>
     public override bool CanCreateContent => true;
 
-    /// <summary>Property to return the ID of the small icon for this plug-in.</summary>
+    /// <summary>Property to return the ID of the small icon for this plugin.</summary>
     public Guid SmallIconID
     {
         // This is the GUID for the icon that will show in the main file explorer panel 
         // of the editor. This, and other icon IDs are used to index the icon image in 
         // a list of icon images. Because it's used as an ID, it must be unique.
         //
-        // We define this GUID in the constructor of our plug-in (this) class.
+        // We define this GUID in the constructor of our plugin (this) class.
         get;
     }
 
-    /// <summary>Property to return the ID of the new icon for this plug-in.</summary>
+    /// <summary>Property to return the ID of the new icon for this plugin.</summary>
     public Guid NewIconID
     {
-        // For plug-ins with the CanCreateContent property set to true, we should provide 
+        // For plugins with the CanCreateContent property set to true, we should provide 
         // an icon for new content. This icon will be used in menu items for creating a 
         // new content file. 
         //
         // This property works on the same principle as the SmallIconID.
         //
-        // We define this GUID in the constructor of our plug-in (this) class.
+        // We define this GUID in the constructor of our plugin (this) class.
         get;
     }
 
-    /// <summary>Property to return the ID for the type of content produced by this plug-in.</summary>
+    /// <summary>Property to return the ID for the type of content produced by this plugin.</summary>
     public override string ContentTypeID => ContentTypeValue;
 
     /// <summary>Property to return the friendly (i.e shown on the UI) name for the type of content.</summary>
     public string ContentType => "Example Text";
 
     /// <summary>
-    /// Property to return the default file extension used by files generated by this content plug-in.
+    /// Property to return the default file extension used by files generated by this content plugin.
     /// </summary>
     /// <remarks>
     /// Plug in developers can override this to default the file name extension for their content when creating new content with <see cref="GetDefaultContentAsync(string, HashSet{string})"/>.
@@ -174,8 +174,8 @@ internal class TextViewerPlugin
     protected override GorgonFileExtension DefaultFileExtension => new(".txt", "Text files");
 
     // This method is not explicitly required, but is included here to set up default metadata attributes for our content.
-    // It's only called if the plug-in needs to determine if the file can be opened or not. Typically this is done when 
-    // a file has no metadata, and thus no simple means of determining which plug-in can open the file. 
+    // It's only called if the plugin needs to determine if the file can be opened or not. Typically this is done when 
+    // a file has no metadata, and thus no simple means of determining which plugin can open the file. 
 
     /// <summary>
     /// Function to update the metadata for a file that is missing metadata attributes.
@@ -219,37 +219,37 @@ internal class TextViewerPlugin
         return needsRefresh;
     }
 
-    /// <summary>Function to register plug-in specific search keywords with the system search.</summary>
+    /// <summary>Function to register plugin specific search keywords with the system search.</summary>
     /// <typeparam name="T">The type of object being searched, must implement <see cref="IGorgonNamedObject"/>.</typeparam>
     /// <param name="searchService">The search service to use for registration.</param>
     protected override void OnRegisterSearchKeywords<T>(ISearchService<T> searchService)
     {
         // This is used to define specific keywords when searching for files in the main editor window.  
-        // We have none for this specific plug-in type, so for now we leave it empty.
+        // We have none for this specific plugin type, so for now we leave it empty.
     }
 
-    // For plug-ins that have persistent settings, we provide a means of accessing those settings through the Settings menu option
+    // For plugins that have persistent settings, we provide a means of accessing those settings through the Settings menu option
     // on the File tab. 
     //
-    // These plug-in settings systems require a panel with the settings that you wish to allow the user to alter. To activate the 
+    // These plugin settings systems require a panel with the settings that you wish to allow the user to alter. To activate the 
     // settings this method is used to return the view model for the settings. The editor will read this value and create the view 
     // for the settings.
     //
     // This view model can be used by the content view model to update the view based on the settings in real time as needed.
     //
     // As mentioned in the comment below, we must register the view model first so the application knows how to create the view 
-    // (the editor knows absolutely nothing about the content plug-in beyond this interface, and thus doesn't know how to create the 
+    // (the editor knows absolutely nothing about the content plugin beyond this interface, and thus doesn't know how to create the 
     // view). 
 
-    /// <summary>Function to retrieve the settings interface for this plug-in.</summary>
+    /// <summary>Function to retrieve the settings interface for this plugin.</summary>
     /// <returns>The settings interface view model.</returns>
     /// <remarks>
     ///   <para>
-    /// Implementors who wish to supply customizable settings for their plug-ins from the main "Settings" area in the application can override this method and return a new view model based on
-    /// the base <see cref="ISettingsCategory"/> type. Returning <b>null</b> will mean that the plug-in does not have settings that can be managed externally.
+    /// Implementors who wish to supply customizable settings for their plugins from the main "Settings" area in the application can override this method and return a new view model based on
+    /// the base <see cref="ISettingsCategory"/> type. Returning <b>null</b> will mean that the plugin does not have settings that can be managed externally.
     /// </para>
     ///   <para>
-    /// Plug ins must register the view associated with their settings panel via the <see cref="ViewFactory.Register{T}(Func{Control})"/> method when the plug-in first loaded,
+    /// Plug ins must register the view associated with their settings panel via the <see cref="ViewFactory.Register{T}(Func{Control})"/> method when the plugin first loaded,
     /// or else the panel will not show in the main settings area.
     /// </para>
     /// </remarks>
@@ -276,7 +276,7 @@ internal class TextViewerPlugin
         // file system. Since the main application doesn't know anything about handling your content, we have to provide it back in the 
         // most basic form possible, hence we use a byte array.
 
-        // For our example, we'll use some text that we have embedded in the resource section of the plug-in, and dump that back.
+        // For our example, we'll use some text that we have embedded in the resource section of the plugin, and dump that back.
         // Normally you'd want to pop up a dialog of some sort to allow the user to name the content, but that's overkill for this 
         // example, so we'll use the default name provided by the editor.
 
@@ -286,15 +286,15 @@ internal class TextViewerPlugin
         return Task.FromResult<(string, RecyclableMemoryStream)>((generatedName, stream));
     }
 
-    /// <summary>Function to open a content object from this plugin.</summary>
+    /// <summary>Function to open a content object from this Plugin.</summary>
     /// <param name="file">The file that contains the content.</param>
     /// <param name = "fileManager" > The file manager used to access other content files.</param>
     /// <param name="scratchArea">The file system for the scratch area used to write transitory information.</param>
-    /// <param name="undoService">The undo service for the plug-in.</param>
+    /// <param name="undoService">The undo service for the plugin.</param>
     /// <returns>A new IEditorContent object.</returns>
     /// <remarks>
-    /// The <paramref name="scratchArea" /> parameter is the file system where temporary files to store transitory information for the plug-in is stored. This file system is destroyed when the
-    /// application or plug-in is shut down, and is not stored with the project.
+    /// The <paramref name="scratchArea" /> parameter is the file system where temporary files to store transitory information for the plugin is stored. This file system is destroyed when the
+    /// application or plugin is shut down, and is not stored with the project.
     /// </remarks>
     protected async override Task<IEditorContent> OnOpenContentAsync(IContentFile file, IContentFileManager fileManager, IGorgonFileSystem scratchArea, IUndoService undoService)
     {
@@ -352,13 +352,13 @@ internal class TextViewerPlugin
         }
     }
 
-    /// <summary>Function to provide clean up for the plugin.</summary>
+    /// <summary>Function to provide clean up for the Plugin.</summary>
     protected override void OnShutdown()
     {
         // As mentioned in the OnInitialize method, this is where we dispose of resources and 
-        // clean up our plug-in data.
+        // clean up our plugin data.
         //
-        // Like the OnInitialize, this is called one time only when the plug-in is unloaded at 
+        // Like the OnInitialize, this is called one time only when the plugin is unloaded at 
         // application shutdown.
 
         // This being an image resource, we should dispose of it right away.
@@ -368,7 +368,7 @@ internal class TextViewerPlugin
         if (_settings is not null)
         {
             // Persist any settings.
-            HostContentServices.ContentPlugInService.WriteContentSettings(SettingsName, _settings);
+            HostContentServices.ContentPluginService.WriteContentSettings(SettingsName, _settings);
         }
 
         // And finally, always unregister the view model + view linkage.
@@ -378,30 +378,30 @@ internal class TextViewerPlugin
         base.OnShutdown();
     }
 
-    /// <summary>Function to provide initialization for the plugin.</summary>
-    /// <remarks>This method is only called when the plugin is loaded at startup.</remarks>
+    /// <summary>Function to provide initialization for the Plugin.</summary>
+    /// <remarks>This method is only called when the Plugin is loaded at startup.</remarks>
     protected override void OnInitialize()
     {
-        // This is the main initialization function for the plug-in.
-        // This is called once while the plug-in is being loaded at application start up.
+        // This is the main initialization function for the plugin.
+        // This is called once while the plugin is being loaded at application start up.
         // Please note that some functionality may not be present at this time (the 
         // content file system specifically), and will cause an exception if used. 
         //
         // This method is typically meant for one-time initialization of resources or 
-        // data required by the plug-in. For resources that require clean up (e.g. 
-        // IDisposable resources), the plug-in should clean those up in the OnShutDown 
+        // data required by the plugin. For resources that require clean up (e.g. 
+        // IDisposable resources), the plugin should clean those up in the OnShutDown 
         // method.
 
-        // At this point, we'll read in the settings for the plug-in.
-        // This will contain our default configuration for the plug-in and editor(s) contained within.
-        TextContentSettings settings = HostContentServices.ContentPlugInService.ReadContentSettings<TextContentSettings>(SettingsName);
+        // At this point, we'll read in the settings for the plugin.
+        // This will contain our default configuration for the plugin and editor(s) contained within.
+        TextContentSettings settings = HostContentServices.ContentPluginService.ReadContentSettings<TextContentSettings>(SettingsName);
         if (settings is not null)
         {
             _settings = settings;
         }
 
-        // Setup a view model for the plug-in settings.
-        // We can use this to adjust or retrieve the plug-in settings for the plug-in from within our view model(s).
+        // Setup a view model for the plugin settings.
+        // We can use this to adjust or retrieve the plugin settings for the plugin from within our view model(s).
         _settingsViewModel = new Settings();
         _settingsViewModel.Initialize(new SettingsParameters(_settings, HostContentServices));
 
@@ -422,16 +422,16 @@ internal class TextViewerPlugin
         ViewFactory.Register<ISettings>(() => new TextContentSettingsPanel());
     }
 
-    /// <summary>Function to determine if the content plugin can open the specified file.</summary>
+    /// <summary>Function to determine if the content Plugin can open the specified file.</summary>
     /// <param name="filePath">The path to the file to evaluate.</param>
     /// <returns>
-    ///   <b>true</b> if the plugin can open the file, or <b>false</b> if not.</returns>
+    ///   <b>true</b> if the Plugin can open the file, or <b>false</b> if not.</returns>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="filePath" /> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="filePath"/> parameter is empty.</exception>
     public bool CanOpenContent(string filePath)
     {
         // This code will tell the editor whether the content at the specified path can be opened by this 
-        // plugin or not.
+        // Plugin or not.
         //
         // This is necessary because there might be a specific format to the data, or some other unique 
         // property that must exist and examining the filename extension is not extensive enough for that.
@@ -451,7 +451,7 @@ internal class TextViewerPlugin
 
         // Just set up basic metadata for the file.
         // The metadata for a file contains extra information that the editor uses to help determine how 
-        // best handle loading the file data. It can also contain various pieces of plug-in specific 
+        // best handle loading the file data. It can also contain various pieces of plugin specific 
         // information that can be evaluated when the content is opened or being edited.
         UpdateFileMetadataAttributes(file.Metadata.Attributes);
 
@@ -463,7 +463,7 @@ internal class TextViewerPlugin
     // will display this next to the file name.
 
     /// <summary>
-    /// Function to retrieve the small icon for the content plug-in.
+    /// Function to retrieve the small icon for the content plugin.
     /// </summary>
     /// <returns>An image for the small icon.</returns>
     public Image GetSmallIcon() => Resources.text_viewer_example_20x20;
@@ -492,11 +492,11 @@ internal class TextViewerPlugin
         }
 
         // This is where we'd provide a thumbnail for our preview pane in the editor. 
-        // For more complicated plug-ins, we'd build up an image with the representation of our content 
+        // For more complicated plugins, we'd build up an image with the representation of our content 
         // (max of 256x256 resolution) to display in the editor.
         //
         // However, since this example doesn't really need that, just send back the default.
-        // Note that we Clone the image so that the plug-in will retain ownership of the image data.
+        // Note that we Clone the image so that the plugin will retain ownership of the image data.
         // Failure to do so may cause corruption.
 
         return Task.FromResult(_noThumbnail.Clone());
@@ -510,12 +510,12 @@ internal class TextViewerPlugin
     /// <returns>An image for the icon.</returns>
     public Image GetNewIcon() => Resources.textviewer_example_new_24x24;
 
-    // When we construct the plug-in object, we'll need to send back a friendly description 
+    // When we construct the plugin object, we'll need to send back a friendly description 
     // for display purposes.
 
-    /// <summary>Initializes a new instance of the ImageEditorPlugIn class.</summary>
+    /// <summary>Initializes a new instance of the ImageEditorPlugin class.</summary>
     public TextViewerPlugin()
-        : base("An example plugin for the Gorgon Editor that views text.")
+        : base("An example Plugin for the Gorgon Editor that views text.")
     {
         SmallIconID = Guid.NewGuid();
         NewIconID = Guid.NewGuid();

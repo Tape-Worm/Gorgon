@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2019 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +27,7 @@ using System.ComponentModel;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.ImageAtlasTool.Properties;
-using Gorgon.Editor.PlugIns;
+using Gorgon.Editor.Plugins;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
 using Gorgon.Editor.UI.Controls;
@@ -252,7 +252,7 @@ internal class ImageFiles
         catch (Exception ex)
         {
             HostServices.Log.PrintError("There was an error generating the image preview data.", LoggingLevel.Simple);
-            HostServices.Log.LogException(ex);
+            HostServices.Log.PrintException(ex);
         }
     }
 

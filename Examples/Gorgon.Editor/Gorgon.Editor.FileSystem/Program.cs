@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -32,10 +32,9 @@ using Gorgon.Graphics.Core;
 using Gorgon.IO;
 using Gorgon.IO.FileSystem;
 using Gorgon.IO.FileSystem.Providers;
-using Gorgon.PlugIns;
+using Gorgon.Plugins;
 using Gorgon.Renderers;
 using Gorgon.Timing;
-using Gorgon.UI.OLDE;
 
 namespace Gorgon.Examples;
 
@@ -45,8 +44,8 @@ namespace Gorgon.Examples;
 static class Program
 {
 
-    // The plug-in assembly cache.
-    private static GorgonMefPlugInCache _assemblyCache;
+    // The plugin assembly cache.
+    private static GorgonMefPluginCache _assemblyCache;
     // The core graphics functionality.
     private static GorgonGraphics _graphics;
     // Our swap chain that represents our "Screen".
@@ -72,22 +71,22 @@ static class Program
     private static float _pos;
 
     /// <summary>
-    /// Function to load the Gorgon pack file provider plugin.
+    /// Function to load the Gorgon pack file provider Plugin.
     /// </summary>
     /// <returns>The file system provider.</returns>
     private static IGorgonFileSystemProvider LoadGorPackProvider()
     {
-        // The Gorgon packed file provider plug-in dll.
+        // The Gorgon packed file provider plugin dll.
         const string gorPackDll = "Gorgon.IO.FileSystem.GorPack.dll";
-        // The name of the Gorgon packed file plugin.
-        const string gorPackPlugInName = "Gorgon.IO.FileSystem.Providers.GorPackPlugIn";
+        // The name of the Gorgon packed file Plugin.
+        const string gorPackPluginName = "Gorgon.IO.FileSystem.Providers.GorPackPlugin";
 
-        // Like the zip file example, we'll just create the plugin infrastructure, grab the provider object 
-        // and get rid of the plugin stuff since we won't need it again.
-        _assemblyCache = new GorgonMefPlugInCache(GorgonApplication.Log);
+        // Like the zip file example, we'll just create the Plugin infrastructure, grab the provider object 
+        // and get rid of the Plugin stuff since we won't need it again.
+        _assemblyCache = new GorgonMefPluginCache(GorgonExample.Log);
         IGorgonFileSystemProviderFactory factory = new GorgonFileSystemProviderFactory(_assemblyCache);
 
-        return factory.CreateProvider(Path.Combine(GorgonExample.GetPlugInPath().FullName, gorPackDll), gorPackPlugInName);
+        return factory.CreateProvider(Path.Combine(GorgonExample.GetPluginPath().FullName, gorPackDll), gorPackPluginName);
     }
 
     /// <summary>
@@ -134,14 +133,14 @@ static class Program
     private static async Task InitializeAsync(FormMain window)
     {
         GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
-        GorgonExample.PlugInLocationDirectory = new DirectoryInfo(ExampleConfig.Default.PlugInLocation);
+        GorgonExample.PluginLocationDirectory = new DirectoryInfo(ExampleConfig.Default.PluginLocation);
 
         try
         {
-            // Load our packed file system plug-in.
-            window.UpdateStatus("Loading plugins...");
+            // Load our packed file system plugin.
+            window.UpdateStatus("Loading Plugins...");
 
-            // Load in the plug-in that will allow us to read a packed file system.
+            // Load in the plugin that will allow us to read a packed file system.
             IGorgonFileSystemProvider provider = await Task.Run(LoadGorPackProvider);
 
             // Load the file system.
@@ -149,7 +148,7 @@ static class Program
             _fileSystem.Mount(Path.Combine(GorgonExample.GetResourcePath("FileSystems").FullName, "Gorgon.Editor.FileSystem.gorPack"), provider: provider);
 
             window.UpdateStatus("Initializing graphics...");
-            IReadOnlyList<IGorgonVideoAdapterInfo> videoDevices = await Task.Run(() => GorgonGraphics.EnumerateAdapters(log: GorgonApplication.Log));
+            IReadOnlyList<IGorgonVideoAdapterInfo> videoDevices = await Task.Run(() => GorgonGraphics.EnumerateAdapters(log: GorgonExample.Log));
 
             if (videoDevices.Count == 0)
             {
@@ -158,7 +157,7 @@ static class Program
             }
 
             // Find the best video device.
-            _graphics = new GorgonGraphics(videoDevices.OrderByDescending(item => item.FeatureSet).First());
+            _graphics = new GorgonGraphics(videoDevices.OrderByDescending(item => item.FeatureSet).First(), log: GorgonExample.Log);
 
             _screen = new GorgonSwapChain(_graphics,
                                           window,
@@ -221,7 +220,7 @@ static class Program
             _animController = new GorgonSpriteAnimationController();
             _animController.Play(_dudeBro, _animation);
 
-            GorgonApplication.IdleMethod = Idle;
+            GorgonExample.Loop.Run(Idle);
         }
         finally
         {
@@ -251,7 +250,7 @@ static class Program
                                                        "Gorgon.Editor.FileSystem - Loading content from an editor file system example.",
                                                        async (sender, _) => await InitializeAsync(sender as FormMain));
 
-            GorgonApplication.Run(window);
+            Application.Run(window);
         }
         catch (Exception ex)
         {
@@ -259,12 +258,12 @@ static class Program
         }
         finally
         {
-            GorgonExample.UnloadResources();
             _textureCache?.Dispose();
             _renderer?.Dispose();
             _screen?.Dispose();
             _graphics?.Dispose();
             _assemblyCache?.Dispose();
+            GorgonExample.ShutDown();
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2019 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,13 +25,13 @@
 
 using Gorgon.Core;
 
-namespace Gorgon.Editor.PlugIns;
+namespace Gorgon.Editor.Plugins;
 
 /// <summary>
 /// Defines a button to display on the ribbon bar, in the tools area
 /// </summary>
-public class ToolPlugInRibbonButton
-    : IGorgonNamedObject, IDisposable, IToolPlugInRibbonButton
+public class ToolPluginRibbonButton
+    : IGorgonNamedObject, IDisposable, IToolPluginRibbonButton
 {
     // Flag to indicate that we own the large image and are repsonsible for its lifetime.
     private bool _ownsLargeImage;
@@ -158,14 +158,14 @@ public class ToolPlugInRibbonButton
         }
     }
 
-    /// <summary>Initializes a new instance of the <see cref="ToolPlugInRibbonButton"/> class.</summary>
+    /// <summary>Initializes a new instance of the <see cref="ToolPluginRibbonButton"/> class.</summary>
     /// <param name="displayText">The display text.</param>
     /// <param name="largeIcon">The large icon.</param>
     /// <param name="smallIcon">The small icon.</param>
     /// <param name="groupName">Name of the group.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="displayText"/>, or the <paramref name="groupName"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="displayText"/>, or the <paramref name="groupName"/> parameter is empty.</exception>
-    public ToolPlugInRibbonButton(string displayText, Image largeIcon, Image smallIcon, string groupName)
+    public ToolPluginRibbonButton(string displayText, Image largeIcon, Image smallIcon, string groupName)
     {
         if (displayText is null)
         {

@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,50 +25,50 @@
 
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Properties;
-using Gorgon.PlugIns;
+using Gorgon.Plugins;
 
-namespace Gorgon.Editor.PlugIns;
+namespace Gorgon.Editor.Plugins;
 
 /// <summary>
-/// Extension functionality relating to editor plug-ins
+/// Extension functionality relating to editor plugins
 /// </summary>
-public static class EditorPlugInExtensions
+public static class EditorPluginExtensions
 {
     /// <summary>
-    /// Function to retrieve a friendly description of a <see cref="PlugInType"/> value.
+    /// Function to retrieve a friendly description of a <see cref="PluginType"/> value.
     /// </summary>
-    /// <param name="pluginType">The plug-in type to evaluate.</param>
+    /// <param name="pluginType">The plugin type to evaluate.</param>
     /// <returns>The friendly description.</returns>
-    public static string GetDescription(this PlugInType pluginType)
+    public static string GetDescription(this PluginType pluginType)
     {
         return pluginType switch
         {
-            PlugInType.Writer => Resources.GOREDIT_PLUGIN_TYPE_WRITER,
-            PlugInType.Content => Resources.GOREDIT_PLUGIN_TYPE_CONTENT,
-            PlugInType.Tool => Resources.GOREDIT_PLUGIN_TYPE_TOOL,
-            PlugInType.Reader => Resources.GOREDIT_PLUGIN_TYPE_READER,
-            PlugInType.ContentImporter => Resources.GOREDIT_PLUGIN_TYPE_IMPORTER,
-            _ => Resources.GOREDIT_PLUGIN_TYPE_UNKNOWN,
+            PluginType.Writer => Resources.GOREDIT_plugin_TYPE_WRITER,
+            PluginType.Content => Resources.GOREDIT_plugin_TYPE_CONTENT,
+            PluginType.Tool => Resources.GOREDIT_plugin_TYPE_TOOL,
+            PluginType.Reader => Resources.GOREDIT_plugin_TYPE_READER,
+            PluginType.ContentImporter => Resources.GOREDIT_plugin_TYPE_IMPORTER,
+            _ => Resources.GOREDIT_plugin_TYPE_UNKNOWN,
         };
         ;
     }
 
-    /// <summary>Function to load all the specified plug-in assemblies.</summary>
-    /// <param name="pluginCache">The plugin cache that will hold the plug-in assembies.</param>
-    /// <param name="pluginAssemblyFiles">The list of plug-in assembly paths to load.</param>
+    /// <summary>Function to load all the specified plugin assemblies.</summary>
+    /// <param name="pluginCache">The Plugin cache that will hold the plugin assembies.</param>
+    /// <param name="pluginAssemblyFiles">The list of plugin assembly paths to load.</param>
     /// <param name="log">The application logging interface.</param>
-    /// <returns>A list of <see cref="PlugInAssemblyState"/> objects for each plug-in assembly loaded.</returns>
+    /// <returns>A list of <see cref="PluginAssemblyState"/> objects for each plugin assembly loaded.</returns>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="pluginAssemblyFiles" /> parameter is <b>null</b></exception>
-    public static IReadOnlyList<PlugInAssemblyState> ValidateAndLoadAssemblies(this GorgonMefPlugInCache pluginCache, IEnumerable<string> pluginAssemblyFiles, IGorgonLog log)
+    public static IReadOnlyList<PluginAssemblyState> ValidateAndLoadAssemblies(this GorgonMefPluginCache pluginCache, IEnumerable<string> pluginAssemblyFiles, IGorgonLog log)
     {
         if (pluginAssemblyFiles is null)
         {
             throw new ArgumentNullException(nameof(pluginAssemblyFiles));
         }
 
-        List<PlugInAssemblyState> records = [];
+        List<PluginAssemblyState> records = [];
 
-        // We use this to determine whether the plug-in can be loaded into the current platform.
+        // We use this to determine whether the plugin can be loaded into the current platform.
         AssemblyPlatformType currentPlatform = Environment.Is64BitProcess ? AssemblyPlatformType.x64 : AssemblyPlatformType.x86;
 
         foreach (string file in pluginAssemblyFiles.Select(Path.GetFullPath))
@@ -76,7 +76,7 @@ public static class EditorPlugInExtensions
             string fileName = Path.GetFileName(file);
 
             // If we've already got the assembly loaded into this cache, then there's no need to try and load it.
-            if (pluginCache.PlugInAssemblies?.Any(item => string.Equals(item, file, StringComparison.OrdinalIgnoreCase)) ?? false)
+            if (pluginCache.PluginAssemblies?.Any(item => string.Equals(item, file, StringComparison.OrdinalIgnoreCase)) ?? false)
             {
                 continue;
             }
@@ -84,16 +84,16 @@ public static class EditorPlugInExtensions
             if (!File.Exists(file))
             {
                 log.PrintError($"Plug in '{file}' was not found.", LoggingLevel.Verbose);
-                records.Add(new PlugInAssemblyState(file, Resources.GOREDIT_PLUGIN_LOAD_FAIL_NOT_FOUND, false));
+                records.Add(new PluginAssemblyState(file, Resources.GOREDIT_plugin_LOAD_FAIL_NOT_FOUND, false));
                 continue;
             }
 
-            (bool isManaged, AssemblyPlatformType platformType) = GorgonMefPlugInCache.IsManagedAssembly(file);
+            (bool isManaged, AssemblyPlatformType platformType) = GorgonMefPluginCache.IsManagedAssembly(file);
 
             if ((!isManaged) || (platformType == AssemblyPlatformType.Unknown))
             {
                 log.PrintWarning($"Skipping '{file}'. Not a valid .NET assembly.", LoggingLevel.Verbose);
-                records.Add(new PlugInAssemblyState(file, string.Format(Resources.GOREDIT_PLUGIN_LOAD_FAIL_NOT_DOT_NET, fileName), false));
+                records.Add(new PluginAssemblyState(file, string.Format(Resources.GOREDIT_plugin_LOAD_FAIL_NOT_DOT_NET, fileName), false));
                 continue;
             }
 
@@ -101,29 +101,29 @@ public static class EditorPlugInExtensions
             if ((currentPlatform == AssemblyPlatformType.x86) && (platformType == AssemblyPlatformType.x64))
             {
                 log.PrintError($"Cannot load assembly '{file}', currently executing in an x86 environment, but the assembly is x64.", LoggingLevel.Simple);
-                records.Add(new PlugInAssemblyState(file, string.Format(Resources.GOREDIT_PLUGIN_LOAD_FAIL_PLATFORM_MISMATCH, fileName, platformType, currentPlatform), true));
+                records.Add(new PluginAssemblyState(file, string.Format(Resources.GOREDIT_plugin_LOAD_FAIL_PLATFORM_MISMATCH, fileName, platformType, currentPlatform), true));
                 continue;
             }
 
             if ((currentPlatform == AssemblyPlatformType.x64) && (platformType == AssemblyPlatformType.x86))
             {
                 log.PrintError($"Cannot load assembly '{file}', currently executing in an x64 environment, but the assembly is x86.", LoggingLevel.Simple);
-                records.Add(new PlugInAssemblyState(file, string.Format(Resources.GOREDIT_PLUGIN_LOAD_FAIL_PLATFORM_MISMATCH, fileName, platformType, currentPlatform), true));
+                records.Add(new PluginAssemblyState(file, string.Format(Resources.GOREDIT_plugin_LOAD_FAIL_PLATFORM_MISMATCH, fileName, platformType, currentPlatform), true));
                 continue;
             }
 
             try
             {
-                log.Print($"Loading plug-in assembly '{file}'...", LoggingLevel.Simple);
-                pluginCache.LoadPlugInAssemblies(Path.GetDirectoryName(file), fileName);
+                log.Print($"Loading plugin assembly '{file}'...", LoggingLevel.Simple);
+                pluginCache.LoadPluginAssemblies(Path.GetDirectoryName(file), fileName);
 
-                records.Add(new PlugInAssemblyState(file, string.Empty, true));
+                records.Add(new PluginAssemblyState(file, string.Empty, true));
             }
             catch (Exception ex)
             {
-                log.PrintError($"Cannot load plug-in assembly '{file}'.", LoggingLevel.Simple);
-                log.LogException(ex);
-                records.Add(new PlugInAssemblyState(file, string.Format(Resources.GOREDIT_PLUGIN_LOAD_FAIL_EXCEPTION, fileName, ex.Message), true));
+                log.PrintError($"Cannot load plugin assembly '{file}'.", LoggingLevel.Simple);
+                log.PrintException(ex);
+                records.Add(new PluginAssemblyState(file, string.Format(Resources.GOREDIT_plugin_LOAD_FAIL_EXCEPTION, fileName, ex.Message), true));
             }
         }
 

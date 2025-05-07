@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -721,7 +721,7 @@ public sealed class Gorgon2D
             // Get rid of any objects that we've already built.
             Dispose();
 
-            Log.LogException(ex);
+            Log.PrintException(ex);
             throw;
         }
     }

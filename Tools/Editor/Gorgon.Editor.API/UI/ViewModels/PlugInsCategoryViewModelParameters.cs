@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2020 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,33 +23,33 @@
 // Created: March 27, 2020 10:53:09 AM
 // 
 
-using Gorgon.Editor.PlugIns;
+using Gorgon.Editor.Plugins;
 using Gorgon.Editor.Services;
-using Gorgon.PlugIns;
+using Gorgon.Plugins;
 
 namespace Gorgon.Editor.UI;
 
 /// <summary>
-/// Parameters for a <see cref="ISettingsCategory"/> specific to loading plug-ins for an editor plug-in
+/// Parameters for a <see cref="ISettingsCategory"/> specific to loading plugins for an editor plugin
 /// </summary>
-/// <remarks>Initializes a new instance of the <see cref="PlugInsCategoryViewModelParameters"/> class.</remarks>
-/// <param name="openCodecDialog">The service used to locate plug-in assemblies for loading.</param>
-/// <param name="plugInCache">The cache for plug-in assemblies.</param>
+/// <remarks>Initializes a new instance of the <see cref="PluginsCategoryViewModelParameters"/> class.</remarks>
+/// <param name="openCodecDialog">The service used to locate plugin assemblies for loading.</param>
+/// <param name="pluginCache">The cache for plugin assemblies.</param>
 /// <param name="hostServices">Services passed down from the host application.</param>
 /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-public class PlugInsCategoryViewModelParameters(IFileDialogService openCodecDialog, GorgonMefPlugInCache plugInCache, IHostContentServices hostServices)
+public class PluginsCategoryViewModelParameters(IFileDialogService openCodecDialog, GorgonMefPluginCache pluginCache, IHostContentServices hostServices)
         : SettingsCategoryViewModelParameters(hostServices)
 {
     /// <summary>
-    /// Property to return the plug-in cache.
+    /// Property to return the plugin cache.
     /// </summary>
-    public GorgonMefPlugInCache PlugInCache
+    public GorgonMefPluginCache PluginCache
     {
         get;
-    } = plugInCache ?? throw new ArgumentNullException(nameof(plugInCache));
+    } = pluginCache ?? throw new ArgumentNullException(nameof(pluginCache));
 
     /// <summary>
-    /// Property to return the service used to locate plug-in assemblies for loading.
+    /// Property to return the service used to locate plugin assemblies for loading.
     /// </summary>
     public IFileDialogService OpenCodecDialog
     {

@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +27,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
-using Gorgon.Editor.PlugIns;
+using Gorgon.Editor.Plugins;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics.Imaging;
@@ -241,7 +241,7 @@ internal class ContentPreview
         {
             Title = Resources.GOREDIT_ERR_ERROR;
             HostServices.Log.PrintError($"Error loading thumbnail for '{file.Path}'.", LoggingLevel.Simple);
-            HostServices.Log.LogException(ex);
+            HostServices.Log.PrintException(ex);
         }
         finally
         {
@@ -377,7 +377,7 @@ internal class ContentPreview
         catch (Exception ex)
         {
             HostServices.Log.PrintError($"Error refreshing the preview image for '{filePath}'.", LoggingLevel.Simple);
-            HostServices.Log.LogException(ex);
+            HostServices.Log.PrintException(ex);
         }
     }
 
@@ -395,7 +395,7 @@ internal class ContentPreview
         catch (Exception ex)
         {
             HostServices.Log.PrintError($"Error resetting the preview image.", LoggingLevel.Simple);
-            HostServices.Log.LogException(ex);
+            HostServices.Log.PrintException(ex);
         }
     }
 

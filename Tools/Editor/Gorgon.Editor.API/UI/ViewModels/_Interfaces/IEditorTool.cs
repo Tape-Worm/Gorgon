@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2020 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -28,7 +28,7 @@ using Gorgon.Editor.UI;
 namespace Gorgon.Editor.Tools;
 
 /// <summary>
-/// The base view model for a tool plug-in UI
+/// The base view model for a tool plugin UI
 /// </summary>
 public interface IEditorTool
     : IViewModel

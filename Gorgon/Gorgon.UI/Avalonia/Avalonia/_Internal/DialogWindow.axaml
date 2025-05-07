@@ -1,0 +1,55 @@
+<Window x:Class="Gorgon.UI.Avalonia.DialogWindow"
+        xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Gorgon.UI.Avalonia"
+        mc:Ignorable="d"
+        Title="Dialog" MinHeight="159" MinWidth="450" 
+        d:DesignWidth="1280" d:DesignHeight="720" CanResize="False" 
+         UseLayoutRounding="True" SizeToContent="WidthAndHeight" Icon="avares://Gorgon.UI.Avalonia/Gorgon2.ico" Loaded="Window_Loaded" >
+    <Window.Styles>
+      <Style Selector=":is(Button)">
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+      </Style>
+      <Style Selector="TextBox.nofocus">
+        <Style Selector="^ /template/ Border#PART_BorderElement">
+          <Setter Property="BorderBrush" Value="Transparent"/>
+        </Style>
+      </Style>
+    </Window.Styles>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Image x:Name="ImageIcon" Grid.Column="0" VerticalAlignment="Top" Source="avares://Gorgon.UI.Avalonia/Resources/Confirm_48x48.png" Stretch="Uniform" MaxWidth="48" MaxHeight="48"/>
+            <TextBlock x:Name="LabelMessage" Grid.Column="1" VerticalAlignment="Top" MinHeight="115" Margin="3,3,3,3" TextWrapping="Wrap">Message</TextBlock>
+        </Grid>
+        <Grid Grid.Row="1">
+            <Border x:Name="PanelButtons" Background="#20FFFFFF" BorderBrush="Black" BorderThickness="0,1,0,0" >
+                <DockPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <CheckBox IsVisible="False" x:Name="CheckToAll" Margin="3, 3, 3, 3" VerticalContentAlignment="Center">To All</CheckBox>
+                        <ToggleButton IsVisible="False" x:Name="CheckDetail" Margin="3, 3, 3, 3" MinWidth="69" MinHeight="25" VerticalContentAlignment="Center" Click="CheckDetail_Click">Details</ToggleButton>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button IsVisible="True" x:Name="ButtonOK" HorizontalAlignment="Right" MinWidth="69" MinHeight="25" Margin="3, 3, 3, 3" Click="ButtonOK_Click">OK</Button>
+                        <Button IsVisible="False" x:Name="ButtonYes" HorizontalAlignment="Right" MinWidth="69" MinHeight="25" Margin="3, 3, 3, 3" Click="ButtonYes_Click">Yes</Button>
+                        <Button IsVisible="False" x:Name="ButtonNo" HorizontalAlignment="Right" MinWidth="69" MinHeight="25" Margin="3, 3, 3, 3" Click="ButtonNo_Click">No</Button>
+                        <Button IsVisible="False" x:Name="ButtonCancel" HorizontalAlignment="Right" MinWidth="69" MinHeight="25" Margin="3, 3, 3, 3" Click="ButtonCancel_Click" IsCancel="True">Cancel</Button>
+                    </StackPanel>
+                </DockPanel>
+            </Border>
+        </Grid>
+        <Grid Grid.Row="2" MinHeight="200" x:Name="PanelDetails" IsVisible="False" >
+          <TextBox Classes="nofocus" x:Name="TextDetails" BorderThickness="0" BorderBrush="Transparent" IsReadOnly="True" FontFamily="Consolas" FontSize="12" ScrollViewer.HorizontalScrollBarVisibility="Visible" ScrollViewer.VerticalScrollBarVisibility="Visible" Width="{Binding $parent[Window].Width}" />
+        </Grid>
+    </Grid>
+</Window>

@@ -275,9 +275,9 @@ Please choose another font family.</value>
     <value>Set Font Unit Pixels</value>
   </data>
   <data name="DEFAULT_TEXT" xml:space="preserve">
-    <value>This is an example plug-in for the Gorgon Editor.
+    <value>This is an example plugin for the Gorgon Editor.
 
-While this is not the most comprehensive example of using the content plug-in system, it should be enough to get you started.
+While this is not the most comprehensive example of using the content plugin system, it should be enough to get you started.
 
 You'll notice that we've got text displaying in our main area, and a ribbon above with some commands that we can execute against the text content.
 
@@ -331,7 +331,7 @@ Please try again.</value>
 
 Please try again.</value>
   </data>
-  <data name="GORFNT_TEXT_PLUGIN_DESC" xml:space="preserve">
+  <data name="GORFNT_TEXT_plugin_DESC" xml:space="preserve">
     <value>An editor used to create/edit Gorgon fonts.</value>
   </data>
   <data name="export_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">

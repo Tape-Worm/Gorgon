@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2019 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,7 @@
 // 
 
 using Gorgon.Editor.Content;
-using Gorgon.Editor.PlugIns;
+using Gorgon.Editor.Plugins;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics.Core;
 using Gorgon.IO;
@@ -38,7 +38,7 @@ namespace Gorgon.Editor.SpriteEditor;
 /// <remarks>Initializes a new instance of the <see cref="SpriteContentParameters"/> class.</remarks>
 /// <param name="sprite">The sprite data.</param>
 /// <param name="textureFile">The texture file linked to the sprite.</param>
-/// <param name="settings">The settings for the plug-in.</param>
+/// <param name="settings">The settings for the plugin.</param>
 /// <param name="spriteClipContext">The context for sprite clipping.</param>
 /// <param name="spritePickContext">The context for sprite picking.</param>
 /// <param name="spriteVertexEditContext">The context for sprite vertex editing.</param>

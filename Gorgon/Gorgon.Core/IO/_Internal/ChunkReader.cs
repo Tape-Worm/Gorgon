@@ -1,5 +1,5 @@
 ﻿// Gorgon.
-// Copyright (C) 2024 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -36,7 +36,7 @@ internal class ChunkReader(GorgonChunk chunk, Stream parentStream, Action onClos
     : IGorgonChunkReader
 {
     // The binary reader used to read data from the chunk.
-    private readonly BinaryReader _reader = new(new GorgonSubStream(parentStream, 0, chunk.Size, allowWrite: false), Encoding.UTF8);
+    private readonly BinaryReader _reader = new(new GorgonStreamSlice(parentStream, 0, chunk.Size, allowWrite: false), Encoding.UTF8);
     // The current chunk.
     private GorgonChunk _chunk = chunk;
     // The method to call when the chunk is closed.
@@ -241,7 +241,7 @@ internal class ChunkReader(GorgonChunk chunk, Stream parentStream, Action onClos
     {
         CheckIfDeserializing();
 
-        GorgonSubStream? subStream = null;
+        GorgonStreamSlice? subStream = null;
         _inDeserialize = true;
 
         try

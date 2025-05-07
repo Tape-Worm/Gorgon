@@ -1,6 +1,6 @@
 ﻿// 
 // Gorgon
-// Copyright (C) 2024 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -53,7 +53,7 @@ internal static partial class PInvoke
             hCursor = HCURSOR.Null
         };
 
-        if (PInvoke.GetCursorInfo(ref cursorInfo))
+        if (GetCursorInfo(ref cursorInfo))
         {
             return cursorInfo.flags;
         }
@@ -76,7 +76,7 @@ internal static partial class PInvoke
         return result switch
         {
             1 => new string(buffer),
-            _ => string.Empty,
+            _ => string.Empty
         };
     }
 

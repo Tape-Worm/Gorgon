@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -28,25 +28,25 @@ using System.Text.Json.Serialization;
 namespace Gorgon.Editor.ImageEditor;
 
 /// <summary>
-/// The settings for the image editor plug-in
+/// The settings for the image editor plugin
 /// </summary>
 internal class ImageEditorSettings
 {
     /// <summary>
-    /// Property to return the list of additional image codec plug-ins to load.
+    /// Property to return the list of additional image codec plugins to load.
     /// </summary>
     [JsonInclude]
-    public Dictionary<string, string> CodecPlugInPaths
+    public Dictionary<string, string> CodecPluginPaths
     {
         get;
         private set;
     } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
     /// <summary>
-    /// Property to set or return the last codec plug-in path.
+    /// Property to set or return the last codec plugin path.
     /// </summary>
     [JsonInclude]
-    public string LastCodecPlugInPath
+    public string LastCodecPluginPath
     {
         get;
         set;

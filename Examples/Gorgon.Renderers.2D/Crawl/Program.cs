@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -32,7 +32,6 @@ using Gorgon.Graphics.Fonts;
 using Gorgon.Renderers;
 using Gorgon.Timing;
 using Gorgon.UI;
-using Gorgon.UI.OLDE;
 
 namespace Gorgon.Examples;
 
@@ -173,7 +172,7 @@ static class Program
 
         try
         {
-            IReadOnlyList<IGorgonVideoAdapterInfo> videoDevices = GorgonGraphics.EnumerateAdapters(log: GorgonApplication.Log);
+            IReadOnlyList<IGorgonVideoAdapterInfo> videoDevices = GorgonGraphics.EnumerateAdapters(log: GorgonExample.Log);
 
             if (videoDevices.Count == 0)
             {
@@ -182,7 +181,7 @@ static class Program
             }
 
             // Find the best video device.
-            _graphics = new GorgonGraphics(videoDevices.OrderByDescending(item => item.FeatureSet).First());
+            _graphics = new GorgonGraphics(videoDevices.OrderByDescending(item => item.FeatureSet).First(), log: GorgonExample.Log);
 
             _screen = new GorgonSwapChain(_graphics,
                                           window,
@@ -223,6 +222,8 @@ static class Program
 
             window.IsLoaded = true;
 
+            GorgonExample.Loop.Run(Idle);
+
             return window;
         }
         finally
@@ -261,7 +262,7 @@ static class Program
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            GorgonApplication.Run(Initialize(), Idle);
+            Application.Run(Initialize());
         }
         catch (Exception ex)
         {
@@ -272,7 +273,6 @@ static class Program
             _screen.SwapChainResized -= Screen_AfterSwapChainResized;
             _screen.SwapChainResizing -= Screen_BeforeSwapChainResized;
 
-            GorgonExample.UnloadResources();
             _crawl?.Dispose();
             _crawlRtv?.Dispose();
             _spaceBackgroundRtv?.Dispose();
@@ -280,6 +280,8 @@ static class Program
             _renderer?.Dispose();
             _screen?.Dispose();
             _graphics?.Dispose();
+
+            GorgonExample.ShutDown();
         }
     }
 }

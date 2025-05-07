@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2013 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,8 @@
 
 using Gorgon.Core;
 using Gorgon.Diagnostics;
-using Gorgon.UI.OLDE;
+using Gorgon.Input;
+using Gorgon.UI.WindowsForms;
 
 namespace Gorgon.Examples;
 
@@ -41,19 +42,48 @@ internal static class Program
     [STAThread]
     private static void Main()
     {
+        IGorgonLog log = GorgonLog.NullLog;
+        IGorgonInput? input = null;
+        GorgonApplicationLoop? loop = null;
+
         try
         {
             Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            GorgonApplication.Log = new GorgonTextFileLog("XInput", "Tape_Worm", typeof(GorgonApplication).Assembly.GetName().Version);
+            log = new GorgonTextFileLog("XInput", "Tape_Worm", typeof(Program).Assembly.GetName().Version);
+            log.LogStart(new GorgonComputerInfo());
 
-            GorgonApplication.Run(new Form());
+            // This is our input system. By passing in the device types in the flags, we can tell the system to immediately start working with 
+            // the devices specified. 
+            //
+            // In this example, we're only interested in XInput gaming devices, so we only bind with gaming devices (we filter for XInput later).
+            input = GorgonInput.CreateInput(InputFlags.GamingDevices, log);
+
+            // Create our application loop so we can continuously update our window.
+            loop = GorgonApplicationLoop.Create(log);
+
+            Application.Run(new Form()
+            {
+                Log = log,
+                Input = input,
+                Loop = loop
+            });
         }
         catch (Exception ex)
         {
-            ex.Handle(e => GorgonDialogs.ErrorBox(GorgonApplication.MainForm, e), GorgonApplication.Log);
+            ex.Handle(e => GorgonDialogs.Error(null, e), log);
+        }
+        finally
+        {
+            // Shut down the application loop.
+            loop?.Dispose();
+
+            // Always dispose the input system. This will disable its background thread and restore our input back to normal.
+            input?.Dispose();
+
+            log.LogEnd();
         }
     }
 }

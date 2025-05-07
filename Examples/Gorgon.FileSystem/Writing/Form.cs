@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2013 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -26,7 +26,6 @@
 using System.Text;
 using Gorgon.Core;
 using Gorgon.IO.FileSystem;
-using Gorgon.UI.OLDE;
 
 namespace Gorgon.Examples;
 
@@ -99,7 +98,7 @@ public partial class Form
         }
         catch (Exception ex)
         {
-            ex.Handle(e => GorgonDialogs.ErrorBox(this, e), Program.Log);
+            GorgonExample.HandleException(ex);
         }
         finally
         {
@@ -129,7 +128,7 @@ public partial class Form
         }
         catch (Exception ex)
         {
-            ex.Handle(e => GorgonDialogs.ErrorBox(this, e), Program.Log);
+            GorgonExample.HandleException(ex);
         }
         finally
         {
@@ -152,7 +151,7 @@ public partial class Form
         }
         catch (Exception ex)
         {
-            ex.Handle(e => GorgonDialogs.ErrorBox(this, e), Program.Log);
+            GorgonExample.HandleException(ex);
         }
         finally
         {
@@ -176,7 +175,7 @@ public partial class Form
         }
         catch (Exception ex)
         {
-            ex.Handle(e => GorgonDialogs.ErrorBox(this, e), Program.Log);
+            GorgonExample.HandleException(ex);
         }
         finally
         {
@@ -242,21 +241,18 @@ public partial class Form
         textDisplay.Text = string.Equals(_changedText, _originalText, StringComparison.CurrentCulture) ? _originalText : _changedText;
     }
 
-    /// <summary>
-    /// Raises the <see cref="E:System.Windows.Forms.Form.Load" /> event.
-    /// </summary>
-    /// <param name="e">An <see cref="EventArgs" /> that contains the event data.</param>
+    /// <inheritdoc/>
     protected override void OnLoad(EventArgs e)
     {
         base.OnLoad(e);
 
         try
         {
-            GorgonExample.PlugInLocationDirectory = new DirectoryInfo(ExampleConfig.Default.PlugInLocation);
+            GorgonExample.PluginLocationDirectory = new DirectoryInfo(ExampleConfig.Default.PluginLocation);
             GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
 
             // Create our virtual file system.
-            _fileSystem = new GorgonFileSystem(Program.Log);
+            _fileSystem = new GorgonFileSystem(GorgonExample.Log);
 
             LoadText();
 
@@ -266,7 +262,7 @@ public partial class Form
         catch (Exception ex)
         {
             GorgonExample.HandleException(ex);
-            GorgonApplication.Quit();
+            Application.Exit();
         }
         finally
         {

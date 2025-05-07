@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2019 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -30,10 +30,10 @@ using Gorgon.Editor.UI.Views;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// The panel used to settings for the text content plug-in
+/// The panel used to settings for the text content plugin
 /// </summary>
 /// <remarks>
-/// As mentioned in the plug-in class, we create a panel control for presenting our plug-in settings to the user. 
+/// As mentioned in the plugin class, we create a panel control for presenting our plugin settings to the user. 
 /// 
 /// To create a settings panel, the class must inherit from the SettingsBaseControl and implement the IDataContext interface
 /// </remarks>

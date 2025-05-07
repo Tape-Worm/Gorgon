@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2021 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -34,7 +34,7 @@ using Krypton.Toolkit;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Provides a ribbon interface for the plug-in view
+/// Provides a ribbon interface for the plugin view
 /// </summary>
 /// <remarks>
 /// We cannot provide a ribbon on the control directly because, for some reason, the Krypton components will only allow ribbons on forms. 

@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2019 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,7 @@
 // 
 
 using System.ComponentModel;
-using Gorgon.Editor.PlugIns;
+using Gorgon.Editor.Plugins;
 using Gorgon.Editor.Properties;
 using Gorgon.IO;
 
@@ -38,11 +38,11 @@ namespace Gorgon.Editor.UI.Forms;
 /// Plug in developers can use this to present a dialog that will prompt the user for a name
 /// </para>
 /// <para>
-/// An ideal place to use this form would be in the <see cref="ContentPlugIn"/>.<see cref="ContentPlugIn.GetDefaultContentAsync(string, HashSet{string})"/> method so that users 
+/// An ideal place to use this form would be in the <see cref="ContentPlugin"/>.<see cref="ContentPlugin.GetDefaultContentAsync(string, HashSet{string})"/> method so that users 
 /// could be given a chance to name their objects prior to creation
 /// </para>
 /// </remarks>
-/// <seealso cref="ContentPlugIn"/>
+/// <seealso cref="ContentPlugin"/>
 public partial class FormName
     : Form
 {

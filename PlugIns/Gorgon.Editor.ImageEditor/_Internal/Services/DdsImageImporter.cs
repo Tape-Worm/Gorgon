@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -71,7 +71,7 @@ internal class DdsImageImporter(IGorgonFileSystem tempFileSystemWriter, ICodecRe
         {
             // We'll eat and log this exception, the worst case is we end up with a little more disk usage than we'd like.
             _log.PrintError("Error cleaning up temporary directory.", LoggingLevel.Simple);
-            _log.LogException(ex);
+            _log.PrintException(ex);
         }
     }
 
@@ -93,7 +93,7 @@ internal class DdsImageImporter(IGorgonFileSystem tempFileSystemWriter, ICodecRe
             throw new ArgumentEmptyException(nameof(physicalFilePath));
         }
 
-        IGorgonImageCodec sourceCodec = ImageImporterPlugIn.GetCodec(physicalFilePath, _codecs);
+        IGorgonImageCodec sourceCodec = ImageImporterPlugin.GetCodec(physicalFilePath, _codecs);
 
         // This source is the same as the destination codec. So there's nothing to do.
         if (sourceCodec is null)

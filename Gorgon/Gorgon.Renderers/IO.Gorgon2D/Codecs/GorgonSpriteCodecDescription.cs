@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2016 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -28,13 +28,13 @@ using Gorgon.IO.Properties;
 namespace Gorgon.IO;
 
 /// <summary>
-/// A name and description for an image codec within a <see cref="GorgonSpriteCodecPlugIn"/>
+/// A name and description for an image codec within a <see cref="GorgonSpriteCodecPlugin"/>
 /// </summary>
 public struct GorgonSpriteCodecDescription
     : IEquatable<GorgonSpriteCodecDescription>
 {
     /// <summary>
-    /// The name of the plug-in.  This will be the same as its fully qualified type name.
+    /// The name of the plugin.  This will be the same as its fully qualified type name.
     /// </summary>
     public readonly string Name;
 
@@ -53,7 +53,7 @@ public struct GorgonSpriteCodecDescription
 
     /// <summary>Returns the fully qualified type name of this instance.</summary>
     /// <returns>A <see cref="string" /> containing a fully qualified type name.</returns>
-    public override readonly string ToString() => string.Format(Resources.GOR2DIO_TOSTR_SPRITE_CODEC_PLUGIN_DESC, Name, Description);
+    public override readonly string ToString() => string.Format(Resources.GOR2DIO_TOSTR_SPRITE_CODEC_plugin_DESC, Name, Description);
 
     /// <summary>Indicates whether this instance and a specified object are equal.</summary>
     /// <returns>true if <paramref name="obj" /> and this instance are the same type and represent the same value; otherwise, false. </returns>

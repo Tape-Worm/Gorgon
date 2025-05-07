@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -39,7 +39,7 @@ internal interface IImageContent
     : IVisualEditorContent, IUndoHandler
 {
     /// <summary>
-    /// Property to return the settings for the image editor plugin.
+    /// Property to return the settings for the image editor Plugin.
     /// </summary>
     ISettings Settings
     {

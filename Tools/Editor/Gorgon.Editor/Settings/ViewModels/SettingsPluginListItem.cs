@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2019 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,31 +23,31 @@
 // Created: April 20, 2019 10:58:12 AM
 // 
 
-using Gorgon.Editor.PlugIns;
+using Gorgon.Editor.Plugins;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.UI;
 
 namespace Gorgon.Editor.ViewModels;
 
 /// <summary>
-/// An item to display on the <see cref="ISettingsPlugInsList"/> view model
+/// An item to display on the <see cref="ISettingsPluginsList"/> view model
 /// </summary>
-internal class SettingsPlugInListItem
-    : ViewModelBase<SettingsPlugInListItemParameters, IHostServices>, ISettingsPlugInListItem
+internal class SettingsPluginListItem
+    : ViewModelBase<SettingsPluginListItemParameters, IHostServices>, ISettingsPluginListItem
 {
 
-    // The name of the plug-in.
+    // The name of the plugin.
     private string _name;
-    // The plug-in type.
-    private PlugInType _type;
+    // The plugin type.
+    private PluginType _type;
     // The current state.
     private string _state;
-    // The reason why a plug-in is disabled.
+    // The reason why a plugin is disabled.
     private string _disableReason;
-    // The path to the plug-in assembly.
+    // The path to the plugin assembly.
     private string _path;
 
-    /// <summary>Property to return the name/description for the plug-in.</summary>
+    /// <summary>Property to return the name/description for the plugin.</summary>
     public string Name
     {
         get => _name;
@@ -65,7 +65,7 @@ internal class SettingsPlugInListItem
     }
 
     /// <summary>
-    /// Property to return the path to the plug-in.
+    /// Property to return the path to the plugin.
     /// </summary>
     public string Path
     {
@@ -83,8 +83,8 @@ internal class SettingsPlugInListItem
         }
     }
 
-    /// <summary>Property to return the type for the plug-in.</summary>
-    public PlugInType Type
+    /// <summary>Property to return the type for the plugin.</summary>
+    public PluginType Type
     {
         get => _type;
         set
@@ -100,7 +100,7 @@ internal class SettingsPlugInListItem
         }
     }
 
-    /// <summary>Property to return the current state of the plug-in.</summary>
+    /// <summary>Property to return the current state of the plugin.</summary>
     public string State
     {
         get => _state;
@@ -117,7 +117,7 @@ internal class SettingsPlugInListItem
         }
     }
 
-    /// <summary>Property to return why the plug-in was disabled.</summary>
+    /// <summary>Property to return why the plugin was disabled.</summary>
     public string DisabledReason
     {
         get => _disableReason;
@@ -140,12 +140,12 @@ internal class SettingsPlugInListItem
     /// <remarks>
     /// Applications should call this when setting up the view model for complex operations and/or dependency injection. The constructor should only be used for simple set up and initialization of objects.
     /// </remarks>
-    protected override void OnInitialize(SettingsPlugInListItemParameters injectionParameters)
+    protected override void OnInitialize(SettingsPluginListItemParameters injectionParameters)
     {
         Name = injectionParameters.Name;
         Type = injectionParameters.Type;
         State = injectionParameters.State ?? string.Empty;
-        DisabledReason = string.IsNullOrWhiteSpace(injectionParameters.DisabledReason) ? $"{injectionParameters.Description}\r\n\r\n{Resources.GOREDIT_TEXT_PLUGIN_LOADED_SUCCESSFULLY}"
+        DisabledReason = string.IsNullOrWhiteSpace(injectionParameters.DisabledReason) ? $"{injectionParameters.Description}\r\n\r\n{Resources.GOREDIT_TEXT_plugin_LOADED_SUCCESSFULLY}"
                                                                                         : injectionParameters.DisabledReason;
         Path = injectionParameters.Path;
     }

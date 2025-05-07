@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2015 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -35,56 +35,35 @@ namespace Gorgon.Diagnostics;
 internal class LogDummy
     : IGorgonLog
 {
-    /// <summary>
-    /// Property to return the ID of the thread that created the log object.
-    /// </summary>
+    /// <inheritdoc/>
     public int ThreadID
     {
         get;
     }
 
-    /// <summary>
-    /// Property to set or return the filtering level of this log.
-    /// </summary>
+    /// <inheritdoc/>
     public LoggingLevel LogFilterLevel
     {
         get;
         set;
     }
 
-    /// <summary>
-    /// Property to return the name of the application that is being logged.
-    /// </summary>
+    /// <inheritdoc/>
     public string LogApplication => string.Empty;
 
-    /// <summary>
-    /// Property to return the provider for this log.
-    /// </summary>
+    /// <inheritdoc/>
     public IGorgonLogProvider Provider
     {
         get;
     } = new DummyLogProvider();
 
-    /// <summary>
-    /// Function to send an exception to the log.
-    /// </summary>
-    /// <param name="ex">The exception to log.</param>
-    /// <remarks>
-    /// <para>
-    /// If the <see cref="GorgonLog.LogFilterLevel"/> is set to <c>LoggingLevel.NoLogging</c>, then the exception will not be logged. If the filter is set to any other setting, it will be logged 
-    /// regardless of filter level.
-    /// </para>
-    /// </remarks>
-    public void LogException(Exception ex)
+    /// <inheritdoc/>
+    public void PrintException(Exception ex)
     {
         // Intentionally left blank.
     }
 
-    /// <summary>
-    /// Function to print a formatted line of text to the log.
-    /// </summary>
-    /// <param name="message">The message to write to the log.</param>
-    /// <param name="level">Level that this message falls under.</param>
+    /// <inheritdoc/>
     public void Print(string message, LoggingLevel level)
     {
         // Intentionally left blank.
@@ -102,17 +81,13 @@ internal class LogDummy
         // Intentionally left blank.
     }
 
-    /// <summary>
-    /// Function to perform any one time inital logging.
-    /// </summary>
-    public void LogStart()
+    /// <inheritdoc/>
+    public void LogStart(IGorgonComputerInfo? computerInfo = null)
     {
         // Intentionally left blank.
     }
 
-    /// <summary>
-    /// Function to perform any one time final logging.
-    /// </summary>
+    /// <inheritdoc/>
     public void LogEnd()
     {
         // Intentionally left blank.

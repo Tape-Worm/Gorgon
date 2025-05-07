@@ -197,9 +197,9 @@ internal class Resources {
     /// <summary>
     ///   Looks up a localized string similar to Gorgon Image Splitter.
     /// </summary>
-    internal static string GORIST_PLUGIN_DESC {
+    internal static string GORIST_plugin_DESC {
         get {
-            return ResourceManager.GetString("GORIST_PLUGIN_DESC", resourceCulture);
+            return ResourceManager.GetString("GORIST_plugin_DESC", resourceCulture);
         }
     }
 

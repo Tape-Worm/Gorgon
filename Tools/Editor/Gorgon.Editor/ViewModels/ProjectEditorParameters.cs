@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,7 @@
 // 
 
 using Gorgon.Editor.Content;
-using Gorgon.Editor.PlugIns;
+using Gorgon.Editor.Plugins;
 using Gorgon.Editor.Services;
 
 namespace Gorgon.Editor.ViewModels;
@@ -50,7 +50,7 @@ internal class ProjectEditorParameters(IHostContentServices hostServices, ViewMo
     }
 
     /// <summary>
-    /// Property to set or return the file manager for content plug-ins.
+    /// Property to set or return the file manager for content plugins.
     /// </summary>
     public IContentFileManager ContentFileManager
     {
@@ -77,9 +77,9 @@ internal class ProjectEditorParameters(IHostContentServices hostServices, ViewMo
     }
 
     /// <summary>
-    /// Property to set or return the list of content creator plug-ins.
+    /// Property to set or return the list of content creator plugins.
     /// </summary>
-    public IReadOnlyList<IContentPlugInMetadata> ContentCreators
+    public IReadOnlyList<IContentPluginMetadata> ContentCreators
     {
         get;
         set;

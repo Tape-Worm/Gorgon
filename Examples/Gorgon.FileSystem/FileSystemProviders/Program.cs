@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2013 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -26,7 +26,7 @@
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.IO.FileSystem.Providers;
-using Gorgon.PlugIns;
+using Gorgon.Plugins;
 
 namespace Gorgon.Examples;
 
@@ -49,8 +49,8 @@ namespace Gorgon.Examples;
 /// 
 /// The VFS object in Gorgon comes with the ability to mount a directory as a root of a VFS.  However, it's possible to mount a
 /// zip file, or the old Gorgon BZip2 Pack file format as a VFS.  This is done through file system providers.  Similar to the
-/// input factories, these providers are plug-ins and can be loaded into a file system object to give access to these types of 
-/// files.  A provider plug-in can be written to pull data from a SQL server, or a network stream or any access point that can
+/// input factories, these providers are plugins and can be loaded into a file system object to give access to these types of 
+/// files.  A provider plugin can be written to pull data from a SQL server, or a network stream or any access point that can
 /// stream data
 /// 
 /// In this example, we'll show how to load some of these providers
@@ -60,19 +60,19 @@ internal static class Program
 
     // The providers that were loaded.
     private static IReadOnlyList<IGorgonFileSystemProvider> _providers;
-    // The cache that will hold the assemblies where our plugins will live.
-    private static GorgonMefPlugInCache _pluginAssemblies;
+    // The cache that will hold the assemblies where our Plugins will live.
+    private static GorgonMefPluginCache _pluginAssemblies;
     // The log used for debug logging.
     private static IGorgonLog _log;
 
     /// <summary>
-    /// Property to return the path to the plug-ins.
+    /// Property to return the path to the plugins.
     /// </summary>
-    public static string PlugInPath
+    public static string PluginPath
     {
         get
         {
-            string path = ExampleConfig.Default.PlugInLocation;
+            string path = ExampleConfig.Default.PluginLocation;
 
             if (path.Contains("{0}"))
             {
@@ -93,17 +93,17 @@ internal static class Program
     }
 
     /// <summary>
-    /// Function to retrieve the directory that contains the plugins for an application.
+    /// Function to retrieve the directory that contains the Plugins for an application.
     /// </summary>
-    /// <param name="pluginDirectory">The directory containing the plug-ins.</param>
-    /// <returns>A directory information object for the plugin path.</returns>
-    private static DirectoryInfo GetPlugInPath(DirectoryInfo pluginDirectory)
+    /// <param name="pluginDirectory">The directory containing the plugins.</param>
+    /// <returns>A directory information object for the Plugin path.</returns>
+    private static DirectoryInfo GetPluginPath(DirectoryInfo pluginDirectory)
     {
         string path = pluginDirectory.FullName;
 
         if (string.IsNullOrWhiteSpace(path))
         {
-            throw new IOException("No plug-in path has been assigned.");
+            throw new IOException("No plugin path has been assigned.");
         }
 
         if (path.Contains("{0}"))
@@ -126,17 +126,17 @@ internal static class Program
     /// <summary>
     /// Function to load the file system providers.
     /// </summary>
-    /// <param name="pluginDirectory">The directory containing the plug-ins.</param>
-    /// <returns>The number of file system provider plug-ins.</returns>
+    /// <param name="pluginDirectory">The directory containing the plugins.</param>
+    /// <returns>The number of file system provider plugins.</returns>
     private static int LoadFileSystemProviders(DirectoryInfo pluginDirectory)
     {
         // Get the file system provider factory so we can retrieve our newly loaded providers.
         IGorgonFileSystemProviderFactory providerFactory = new GorgonFileSystemProviderFactory(_pluginAssemblies, _log);
 
         // Get all the providers.
-        // We could limit this to a single provider, or to a single plugin assembly if we choose.  But for 
+        // We could limit this to a single provider, or to a single Plugin assembly if we choose.  But for 
         // this example, we'll get everything we've got.
-        _providers = providerFactory.CreateProviders(Path.Combine(GetPlugInPath(pluginDirectory).FullName, "Gorgon.IO.FileSystem.*.dll"));
+        _providers = providerFactory.CreateProviders(Path.Combine(GetPluginPath(pluginDirectory).FullName, "Gorgon.IO.FileSystem.*.dll"));
 
         return _providers.Count;
     }
@@ -146,13 +146,13 @@ internal static class Program
     /// </summary>
     private static void Main()
     {
-        DirectoryInfo plugInLocationDirectory = new(ExampleConfig.Default.PlugInLocation);
+        DirectoryInfo PluginLocationDirectory = new(ExampleConfig.Default.PluginLocation);
 
         _log = new GorgonTextFileLog("FileSystemProviders", "Tape_Worm");
         _log.LogStart();
 
-        // Create a plugin assembly cache to hold our plugin assemblies.
-        _pluginAssemblies = new GorgonMefPlugInCache(_log);
+        // Create a Plugin assembly cache to hold our Plugin assemblies.
+        _pluginAssemblies = new GorgonMefPluginCache(_log);
 
         try
         {
@@ -167,7 +167,7 @@ internal static class Program
             Console.ForegroundColor = ConsoleColor.White;
 
             // Get our file system providers.                
-            Console.WriteLine("Found {0} external file system plug-ins.\n", LoadFileSystemProviders(plugInLocationDirectory));
+            Console.WriteLine("Found {0} external file system plugins.\n", LoadFileSystemProviders(PluginLocationDirectory));
 
             // Loop through each provider and print some info.
             for (int i = 0; i < _providers.Count; ++i)

@@ -1,7 +1,6 @@
-﻿
-// 
+﻿// 
 // Gorgon
-// Copyright (C) 2015 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,8 +22,6 @@
 // Created: Friday, May 23, 2015 2:36:10 PM
 // 
 
-using Gorgon.Diagnostics.LogProviders;
-
 namespace Gorgon.Diagnostics;
 
 /// <summary>
@@ -45,6 +42,29 @@ public enum LoggingLevel
 }
 
 /// <summary>
+/// The type of message being sent to the log.
+/// </summary>
+public enum MessageType
+{
+    /// <summary>
+    /// General information.
+    /// </summary>
+    Info = 0,
+    /// <summary>
+    /// A warning message.
+    /// </summary>
+    Warning = 1,
+    /// <summary>
+    /// An error message.
+    /// </summary>
+    Error = 2,
+    /// <summary>
+    /// A critical error message, usually sent by an exception.
+    /// </summary>
+    Critical = 3
+}
+
+/// <summary>
 /// Provides logging functionality for an application
 /// </summary>
 /// <remarks>
@@ -54,14 +74,6 @@ public enum LoggingLevel
 /// </remarks>
 public interface IGorgonLog
 {
-    /// <summary>
-    /// Property to return the provider for this log.
-    /// </summary>
-    IGorgonLogProvider Provider
-    {
-        get;
-    }
-
     /// <summary>
     /// Property to return the ID of the thread that created the log object.
     /// </summary>
@@ -90,7 +102,8 @@ public interface IGorgonLog
     /// <summary>
     /// Function to perform any one time inital logging.
     /// </summary>
-    void LogStart();
+    /// <param name="computerInfo">[Optional] Information about the computer used to initially populate the log.</param>
+    void LogStart(IGorgonComputerInfo? computerInfo = null);
 
     /// <summary>
     /// Function to perform any one time final logging.
@@ -107,7 +120,7 @@ public interface IGorgonLog
     /// regardless of filter level.
     /// </para>
     /// </remarks>
-    void LogException(Exception ex);
+    void PrintException(Exception ex);
 
     /// <summary>
     /// Function to send an error message to the log.

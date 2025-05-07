@@ -30,6 +30,14 @@ public interface IGorgonTimer
     }
 
     /// <summary>
+    /// Property to return the number of nanoseconds elapsed since the timer was started.
+    /// </summary>
+    double Nanoseconds
+    {
+        get;
+    }
+
+    /// <summary>
     /// Property to return the number of seconds elapsed since the timer was started.
     /// </summary>
     double Seconds
@@ -38,25 +46,9 @@ public interface IGorgonTimer
     }
 
     /// <summary>
-    /// Property to return the number of minutes elapsed since the timer was started.
+    /// Property to return the total time elapsed since the timer was started.
     /// </summary>
-    double Minutes
-    {
-        get;
-    }
-
-    /// <summary>
-    /// Property to return the number of hours elapsed since the timer was started.
-    /// </summary>
-    double Hours
-    {
-        get;
-    }
-
-    /// <summary>
-    /// Property to return the number of days elapsed since the timer was started.
-    /// </summary>
-    double Days
+    TimeSpan Elapsed
     {
         get;
     }

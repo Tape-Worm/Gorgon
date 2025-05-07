@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2013 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,10 +23,6 @@
 // Created: Thursday, January 17, 2013 11:06:54 PM
 // 
 
-using Gorgon.Core;
-using Gorgon.Diagnostics;
-using Gorgon.UI.OLDE;
-
 namespace Gorgon.Examples;
 
 /// <summary>
@@ -36,37 +32,26 @@ namespace Gorgon.Examples;
 internal static class Program
 {
     /// <summary>
-    /// Property to return the log used for debug log messages.
-    /// </summary>
-    public static IGorgonLog Log
-    {
-        get;
-        private set;
-    }
-
-    /// <summary>
     /// The main entry point for the application.
     /// </summary>
     [STAThread]
     private static void Main()
     {
-        Log = new GorgonTextFileLog("MultiSource", "Tape_Worm");
-        Log.LogStart();
-
         try
         {
             Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+
             Application.Run(new Form());
         }
         catch (Exception ex)
         {
-            ex.Handle(e => GorgonDialogs.ErrorBox(null, e), Log);
+            GorgonExample.HandleException(ex);
         }
         finally
         {
-            Log.LogEnd();
+            GorgonExample.ShutDown();
         }
     }
 }

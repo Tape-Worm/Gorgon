@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -41,7 +41,7 @@ namespace Gorgon.Editor.UI;
 /// <note type="important">
 /// <para>
 /// This pattern is not completely correct in the editor since WinForms is not really designed to use it, so some liberties have been taken. And, unfortunately, makes the job of building 
-/// a control for a plug-in a little more work. The results are worth it however as the communication lines between view model and view are rigidly enforced and make it easier to maintain for larger 
+/// a control for a plugin a little more work. The results are worth it however as the communication lines between view model and view are rigidly enforced and make it easier to maintain for larger 
 /// code bases
 /// </para>
 /// </note>

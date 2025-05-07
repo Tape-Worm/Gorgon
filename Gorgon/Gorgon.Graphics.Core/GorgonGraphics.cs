@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -29,7 +29,7 @@ using System.Runtime.CompilerServices;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
-using Gorgon.Timing.OLDE;
+using Gorgon.Timing;
 using SharpDX.DXGI;
 using D3D = SharpDX.Direct3D;
 using D3D11 = SharpDX.Direct3D11;
@@ -168,7 +168,7 @@ public sealed class GorgonGraphics
     private SamplerCache _samplerCache;
 
     // The timer used to trigger a clean up of cached render targets.
-    private readonly GorgonTimerQpc _rtExpireTimer = new();
+    private readonly IGorgonTimer _rtExpireTimer = new GorgonTimer();
 
     /// <summary>
     /// Property to return the Direct 3D 11.x device context for this graphics instance.

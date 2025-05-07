@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2019 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -30,8 +30,8 @@ namespace Gorgon.Editor;
 /// </summary>
 /// <remarks>
 /// <para>
-/// These are the most common types of content data used by Gorgon as-is.  Users can specify their own types for the own data.  However, if a new content editor plug-in replaces the stock editors, then 
-/// the plug-in author should use these type names to ensure compatibility between their plug-in and the other stock plug-ins for Gorgon
+/// These are the most common types of content data used by Gorgon as-is.  Users can specify their own types for the own data.  However, if a new content editor plugin replaces the stock editors, then 
+/// the plugin author should use these type names to ensure compatibility between their plugin and the other stock plugins for Gorgon
 /// </para>
 /// </remarks>
 public static class CommonEditorContentTypes

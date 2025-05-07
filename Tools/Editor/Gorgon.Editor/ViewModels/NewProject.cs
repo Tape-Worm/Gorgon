@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -26,8 +26,7 @@
 using System.Security;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
-using Gorgon.Diagnostics.OLDE;
-using Gorgon.Editor.PlugIns;
+using Gorgon.Editor.Plugins;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Services;
@@ -492,7 +491,7 @@ internal class NewProject
         }
 
         _availableSpace = (ulong)(new DriveInfo(Path.GetPathRoot(lastWorkspace))).AvailableFreeSpace;
-        _computerInfo = new GorgonComputerInfo();
+        _computerInfo = new Diagnostics.OLDE.GorgonComputerInfo();
     }
 
     /// <summary>Initializes a new instance of the <see cref="NewProject"/> class.</summary>

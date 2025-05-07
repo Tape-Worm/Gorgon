@@ -209,9 +209,9 @@ internal class Resources {
     /// <summary>
     ///   Looks up a localized string similar to Gorgon Sprite Extractor.
     /// </summary>
-    internal static string GOREST_PLUGIN_DESC {
+    internal static string GOREST_plugin_DESC {
         get {
-            return ResourceManager.GetString("GOREST_PLUGIN_DESC", resourceCulture);
+            return ResourceManager.GetString("GOREST_plugin_DESC", resourceCulture);
         }
     }
 

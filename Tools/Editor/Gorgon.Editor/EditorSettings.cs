@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -45,10 +45,10 @@ internal class EditorSettings
     }
 
     /// <summary>
-    /// Property to set or return the path used for the application plug-ins.
+    /// Property to set or return the path used for the application plugins.
     /// </summary>
     [JsonInclude]
-    public string PlugInPath
+    public string PluginPath
     {
         get;
         set;

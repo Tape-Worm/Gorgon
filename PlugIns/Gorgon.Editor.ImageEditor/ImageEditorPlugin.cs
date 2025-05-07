@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -30,7 +30,7 @@ using Gorgon.Editor.Content;
 using Gorgon.Editor.ImageEditor.Fx;
 using Gorgon.Editor.ImageEditor.Properties;
 using Gorgon.Editor.ImageEditor.ViewModels;
-using Gorgon.Editor.PlugIns;
+using Gorgon.Editor.Plugins;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
@@ -45,13 +45,13 @@ using Gorgon.Math;
 namespace Gorgon.Editor.ImageEditor;
 
 /// <summary>
-/// Gorgon image editor content plug-in interface
+/// Gorgon image editor content plugin interface
 /// </summary>
-internal class ImageEditorPlugIn
-    : ContentPlugIn, IContentPlugInMetadata
+internal class ImageEditorPlugin
+    : ContentPlugin, IContentPluginMetadata
 {
 
-    // This is the only codec supported by the image plug-in.  Images will be converted when imported.
+    // This is the only codec supported by the image plugin.  Images will be converted when imported.
     private readonly GorgonCodecDds _ddsCodec = new();
 
     // The synchronization lock for threads.
@@ -60,7 +60,7 @@ internal class ImageEditorPlugIn
     // The codec registry.
     private ICodecRegistry _codecs;
 
-    // The plug-in settings.
+    // The plugin settings.
     private ISettings _settings;
     private ISettingsPlugins _pluginSettings;
 
@@ -73,27 +73,27 @@ internal class ImageEditorPlugIn
     /// <summary>
     /// The name of the settings file.
     /// </summary>
-    public static readonly string SettingsName = typeof(ImageEditorPlugIn).FullName;
+    public static readonly string SettingsName = typeof(ImageEditorPlugin).FullName;
 
-    /// <summary>Property to return the name of the plug-in.</summary>
-    string IContentPlugInMetadata.PlugInName => Name;
+    /// <summary>Property to return the name of the plugin.</summary>
+    string IContentPluginMetadata.PluginName => Name;
 
-    /// <summary>Property to return the description of the plugin.</summary>
-    string IContentPlugInMetadata.Description => Description;
+    /// <summary>Property to return the description of the Plugin.</summary>
+    string IContentPluginMetadata.Description => Description;
 
-    /// <summary>Property to return whether or not the plugin is capable of creating content.</summary>
+    /// <summary>Property to return whether or not the Plugin is capable of creating content.</summary>
     public override bool CanCreateContent => false;
 
-    /// <summary>Property to return the ID of the small icon for this plug-in.</summary>
+    /// <summary>Property to return the ID of the small icon for this plugin.</summary>
     public Guid SmallIconID
     {
         get;
     }
 
-    /// <summary>Property to return the ID of the new icon for this plug-in.</summary>
+    /// <summary>Property to return the ID of the new icon for this plugin.</summary>
     public Guid NewIconID => Guid.Empty;
 
-    /// <summary>Property to return the ID for the type of content produced by this plug-in.</summary>
+    /// <summary>Property to return the ID for the type of content produced by this plugin.</summary>
     public override string ContentTypeID => CommonEditorContentTypes.ImageType;
 
     /// <summary>Property to return the friendly (i.e shown on the UI) name for the type of content.</summary>
@@ -143,12 +143,12 @@ internal class ImageEditorPlugIn
 
         // The availability of texconv.exe determines whether or not we can use block compressed formats or not.
         HostContentServices.Log.Print("Checking for texconv.exe...", LoggingLevel.Simple);
-        DirectoryInfo pluginDir = new(Path.GetDirectoryName(GetType().Assembly.Location));
-        result = new FileInfo(Path.Combine(pluginDir.FullName, "texconv.exe"));
+        DirectoryInfo PluginDir = new(Path.GetDirectoryName(GetType().Assembly.Location));
+        result = new FileInfo(Path.Combine(PluginDir.FullName, "texconv.exe"));
 
         if (!result.Exists)
         {
-            HostContentServices.Log.PrintWarning($"Texconv.exe was not found at {pluginDir.FullName}. Block compressed formats will be unavailable.", LoggingLevel.Simple);
+            HostContentServices.Log.PrintWarning($"Texconv.exe was not found at {PluginDir.FullName}. Block compressed formats will be unavailable.", LoggingLevel.Simple);
         }
         else
         {
@@ -192,7 +192,7 @@ internal class ImageEditorPlugIn
         catch (Exception ex)
         {
             HostContentServices.Log.PrintError($"Cannot create thumbnail for '{content.Path}'", LoggingLevel.Intermediate);
-            HostContentServices.Log.LogException(ex);
+            HostContentServices.Log.PrintException(ex);
             return (null, false);
         }
         finally
@@ -242,35 +242,35 @@ internal class ImageEditorPlugIn
         return needsRefresh;
     }
 
-    /// <summary>Function to register plug-in specific search keywords with the system search.</summary>
+    /// <summary>Function to register plugin specific search keywords with the system search.</summary>
     /// <typeparam name="T">The type of object being searched, must implement <see cref="IGorgonNamedObject"/>.</typeparam>
     /// <param name="searchService">The search service to use for registration.</param>
     protected override void OnRegisterSearchKeywords<T>(ISearchService<T> searchService) => searchService.MapKeywordToContentAttribute(Resources.GORIMG_SEARCH_KEYWORD_CODEC, ImageContent.CodecAttr);
 
-    /// <summary>Function to retrieve the settings interface for this plug-in.</summary>
+    /// <summary>Function to retrieve the settings interface for this plugin.</summary>
     /// <returns>The settings interface view model.</returns>
     /// <remarks>
     ///   <para>
-    /// Implementors who wish to supply customizable settings for their plug-ins from the main "Settings" area in the application can override this method and return a new view model based on
-    /// the base <see cref="ISettingsCategory"/> type. Returning <b>null</b> will mean that the plug-in does not have settings that can be managed externally.
+    /// Implementors who wish to supply customizable settings for their plugins from the main "Settings" area in the application can override this method and return a new view model based on
+    /// the base <see cref="ISettingsCategory"/> type. Returning <b>null</b> will mean that the plugin does not have settings that can be managed externally.
     /// </para>
     ///   <para>
-    /// Plug ins must register the view associated with their settings panel via the <see cref="ViewFactory.Register{T}(Func{Control})"/> method when the plug-in first loaded,
+    /// Plug ins must register the view associated with their settings panel via the <see cref="ViewFactory.Register{T}(Func{Control})"/> method when the plugin first loaded,
     /// or else the panel will not show in the main settings area.
     /// </para>
     /// </remarks>
     protected override ISettingsCategory OnGetSettings() => _settings;
 
-    /// <summary>Function to open a content object from this plugin.</summary>
+    /// <summary>Function to open a content object from this Plugin.</summary>
     /// <param name="file">The file that contains the content.</param>
     /// <param name = "fileManager" > The file manager used to access other content files.</param>
     /// <param name="injector">Parameters for injecting dependency objects.</param>
     /// <param name="scratchArea">The file system for the scratch area used to write transitory information.</param>
-    /// <param name="undoService">The undo service for the plug-in.</param>
+    /// <param name="undoService">The undo service for the plugin.</param>
     /// <returns>A new IEditorContent object.</returns>
     /// <remarks>
-    /// The <paramref name="scratchArea" /> parameter is the file system where temporary files to store transitory information for the plug-in is stored. This file system is destroyed when the
-    /// application or plug-in is shut down, and is not stored with the project.
+    /// The <paramref name="scratchArea" /> parameter is the file system where temporary files to store transitory information for the plugin is stored. This file system is destroyed when the
+    /// application or plugin is shut down, and is not stored with the project.
     /// </remarks>
     protected async override Task<IEditorContent> OnOpenContentAsync(IContentFile file, IContentFileManager fileManager, IGorgonFileSystem scratchArea, IUndoService undoService)
     {
@@ -366,13 +366,13 @@ internal class ImageEditorPlugIn
         return content;
     }
 
-    /// <summary>Function to provide clean up for the plugin.</summary>
+    /// <summary>Function to provide clean up for the Plugin.</summary>
     protected override void OnShutdown()
     {
         _fxServices?.Dispose();
         _noThumbnail?.Dispose();
 
-        HostContentServices.ContentPlugInService.WriteContentSettings(typeof(ImageEditorPlugIn).FullName, _settings);
+        HostContentServices.ContentPluginService.WriteContentSettings(typeof(ImageEditorPlugin).FullName, _settings);
 
         ViewFactory.Unregister<IImageContent>();
         ViewFactory.Unregister<ISettings>();
@@ -380,8 +380,8 @@ internal class ImageEditorPlugIn
         base.OnShutdown();
     }
 
-    /// <summary>Function to provide initialization for the plugin.</summary>
-    /// <remarks>This method is only called when the plugin is loaded at startup.</remarks>
+    /// <summary>Function to provide initialization for the Plugin.</summary>
+    /// <remarks>This method is only called when the Plugin is loaded at startup.</remarks>
     protected override void OnInitialize()
     {
         ViewFactory.Register<IImageContent>(() => new ImageEditorView());
@@ -395,10 +395,10 @@ internal class ImageEditorPlugIn
         ViewFactory.Register<ISettings>(() => new ImageSettingsPanel());
     }
 
-    /// <summary>Function to determine if the content plugin can open the specified file.</summary>
+    /// <summary>Function to determine if the content Plugin can open the specified file.</summary>
     /// <param name="filePath">The path to the file to evaluate.</param>
     /// <returns>
-    ///   <b>true</b> if the plugin can open the file, or <b>false</b> if not.</returns>
+    ///   <b>true</b> if the Plugin can open the file, or <b>false</b> if not.</returns>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="filePath" /> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="filePath"/> parameter is empty.</exception>
     public bool CanOpenContent(string filePath)
@@ -436,7 +436,7 @@ internal class ImageEditorPlugIn
     }
 
     /// <summary>
-    /// Function to retrieve the small icon for the content plug-in.
+    /// Function to retrieve the small icon for the content plugin.
     /// </summary>
     /// <returns>An image for the small icon.</returns>
     public Image GetSmallIcon() => Resources.image_20x20;
@@ -525,7 +525,7 @@ internal class ImageEditorPlugIn
         catch (Exception ex)
         {
             HostContentServices.Log.PrintError($"Cannot create thumbnail for '{contentFile.Path}'", LoggingLevel.Intermediate);
-            HostContentServices.Log.LogException(ex);
+            HostContentServices.Log.PrintException(ex);
             return null;
         }
         finally
@@ -538,8 +538,8 @@ internal class ImageEditorPlugIn
     /// <returns>An image for the icon.</returns>
     public Image GetNewIcon() => null;
 
-    /// <summary>Initializes a new instance of the ImageEditorPlugIn class.</summary>
-    public ImageEditorPlugIn()
+    /// <summary>Initializes a new instance of the ImageEditorPlugin class.</summary>
+    public ImageEditorPlugin()
         : base(Resources.GORIMG_DESC) => SmallIconID = Guid.NewGuid();
 
 }

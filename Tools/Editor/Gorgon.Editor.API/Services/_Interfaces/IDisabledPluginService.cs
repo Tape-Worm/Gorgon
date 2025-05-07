@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,24 +23,24 @@
 // Created: November 10, 2018 8:47:16 PM
 // 
 
-using Gorgon.Editor.PlugIns;
+using Gorgon.Editor.Plugins;
 
 namespace Gorgon.Editor.Services;
 
 /// <summary>
-/// Provides a list of plug-ins that were disabled on application start up
+/// Provides a list of plugins that were disabled on application start up
 /// </summary>
 /// <remarks>
 /// <para>
-/// Use this interface to determine if a plug-in is available for use or not
+/// Use this interface to determine if a plugin is available for use or not
 /// </para>
 /// </remarks>
-public interface IDisabledPlugInService
+public interface IDisabledPluginService
 {
     /// <summary>
-    /// Property to return the list of disabled plug-ins.
+    /// Property to return the list of disabled plugins.
     /// </summary>
-    IReadOnlyDictionary<string, IDisabledPlugIn> DisabledPlugIns
+    IReadOnlyDictionary<string, IDisabledPlugin> DisabledPlugins
     {
         get;
     }

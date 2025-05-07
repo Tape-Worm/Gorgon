@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -27,23 +27,23 @@ using Gorgon.Editor.Content;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics.Imaging;
 
-namespace Gorgon.Editor.PlugIns;
+namespace Gorgon.Editor.Plugins;
 
 /// <summary>
-/// Provides metadata for a plugin
+/// Provides metadata for a Plugin
 /// </summary>
-public interface IContentPlugInMetadata
+public interface IContentPluginMetadata
 {
     /// <summary>
-    /// Property to return the name of the plug-in.
+    /// Property to return the name of the plugin.
     /// </summary>
-    string PlugInName
+    string PluginName
     {
         get;
     }
 
     /// <summary>
-    /// Property to return the user friendly description of the plug-in.
+    /// Property to return the user friendly description of the plugin.
     /// </summary>
     string Description
     {
@@ -51,7 +51,7 @@ public interface IContentPlugInMetadata
     }
 
     /// <summary>
-    /// Property to return the ID of the small icon for this plug-in.
+    /// Property to return the ID of the small icon for this plugin.
     /// </summary>
     Guid SmallIconID
     {
@@ -59,7 +59,7 @@ public interface IContentPlugInMetadata
     }
 
     /// <summary>
-    /// Property to return the ID of the new icon for this plug-in.
+    /// Property to return the ID of the new icon for this plugin.
     /// </summary>
     Guid NewIconID
     {
@@ -75,7 +75,7 @@ public interface IContentPlugInMetadata
     }
 
     /// <summary>
-    /// Property to return the ID for the type of content produced by this plug-in.
+    /// Property to return the ID for the type of content produced by this plugin.
     /// </summary>
     string ContentTypeID
     {
@@ -109,14 +109,14 @@ public interface IContentPlugInMetadata
     bool CanOpenInPlace(IContentFile file, IEditorContent currentContent);
 
     /// <summary>
-    /// Function to determine if the content plugin can open the specified file.
+    /// Function to determine if the content Plugin can open the specified file.
     /// </summary>
     /// <param name="filePath">The path to the file to evaluate.</param>
-    /// <returns><b>true</b> if the plugin can open the file, or <b>false</b> if not.</returns>
+    /// <returns><b>true</b> if the Plugin can open the file, or <b>false</b> if not.</returns>
     bool CanOpenContent(string filePath);
 
     /// <summary>
-    /// Function to retrieve the small icon for the content plug-in.
+    /// Function to retrieve the small icon for the content plugin.
     /// </summary>
     /// <returns>An image for the small icon.</returns>
     Image GetSmallIcon();

@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2019 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -29,7 +29,7 @@ using Gorgon.IO;
 namespace Gorgon.Editor.ImageEditor;
 
 /// <summary>
-/// A registry for the image codecs used by the plug-ins in this assembly
+/// A registry for the image codecs used by the plugins in this assembly
 /// </summary>
 internal interface ICodecRegistry
 {
@@ -42,9 +42,9 @@ internal interface ICodecRegistry
     }
 
     /// <summary>
-    /// Property to return the list of image codec plug-ins.
+    /// Property to return the list of image codec plugins.
     /// </summary>
-    IList<GorgonImageCodecPlugIn> CodecPlugIns
+    IList<GorgonImageCodecPlugin> CodecPlugins
     {
         get;
     }
@@ -61,20 +61,20 @@ internal interface ICodecRegistry
     /// Function to add a codec to the registry.
     /// </summary>
     /// <param name="path">The path to the codec assembly.</param>
-    /// <param name="errors">A list of errors if the plug-in fails to load.</param>
+    /// <param name="errors">A list of errors if the plugin fails to load.</param>
     /// <returns>A list of codec plugs ins that were loaded.</returns>
-    IReadOnlyList<GorgonImageCodecPlugIn> AddCodecPlugIn(string path, out IReadOnlyList<string> errors);
+    IReadOnlyList<GorgonImageCodecPlugin> AddCodecPlugin(string path, out IReadOnlyList<string> errors);
 
     /// <summary>
     /// Function to load the codecs from our settings data.
     /// </summary>
-    /// <param name="settings">The settings containing the plug-in paths.</param>
+    /// <param name="settings">The settings containing the plugin paths.</param>
     void LoadFromSettings(ImageEditorSettings settings);
 
     /// <summary>
-    /// Function to remove an image codec plug-in from the registry.
+    /// Function to remove an image codec plugin from the registry.
     /// </summary>
-    /// <param name="plugin">The plug-in to remove.</param>
-    void RemoveCodecPlugIn(GorgonImageCodecPlugIn plugin);
+    /// <param name="plugin">The plugin to remove.</param>
+    void RemoveCodecPlugin(GorgonImageCodecPlugin plugin);
 
 }

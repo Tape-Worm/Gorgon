@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -29,7 +29,7 @@ using System.Text;
 using System.Text.Json;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
-using Gorgon.Editor.PlugIns;
+using Gorgon.Editor.Plugins;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Services;
@@ -67,9 +67,9 @@ internal class Main
     }
 
     /// <summary>
-    /// Property to return a list of content plugins that can create their own content.
+    /// Property to return a list of content Plugins that can create their own content.
     /// </summary>
-    public IReadOnlyList<IContentPlugInMetadata> ContentCreators
+    public IReadOnlyList<IContentPluginMetadata> ContentCreators
     {
         get;
         private set;
@@ -349,7 +349,7 @@ internal class Main
                 catch (Exception ex)
                 {
                     HostServices.Log.PrintError("Cannot delete import working directory.", LoggingLevel.Simple);
-                    HostServices.Log.LogException(ex);
+                    HostServices.Log.PrintException(ex);
                 }
             }
             HostServices.BusyService.SetIdle();
@@ -725,7 +725,7 @@ internal class Main
                 {
                     // If we can't save, then don't stop the close operation.
                     HostServices.Log.Print("Error saving application settings.", LoggingLevel.Simple);
-                    HostServices.Log.LogException(ex);
+                    HostServices.Log.PrintException(ex);
                 }
             }
 
@@ -750,7 +750,7 @@ internal class Main
             catch (Exception ex)
             {
                 HostServices.Log.PrintError("Failed to unload main view model!", LoggingLevel.Simple);
-                HostServices.Log.LogException(ex);
+                HostServices.Log.PrintException(ex);
             }
 
             // Ensure that the project is completely closed.

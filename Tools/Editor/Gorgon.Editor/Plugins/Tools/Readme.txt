@@ -1,1 +1,1 @@
-﻿This folder will contain editor tool specific plugins.
+﻿This folder will contain editor tool specific Plugins.

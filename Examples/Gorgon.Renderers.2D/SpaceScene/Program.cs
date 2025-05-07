@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2019 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -29,12 +29,11 @@ using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts;
-using Gorgon.PlugIns;
-using Gorgon.Renderers;
-using Gorgon.Renderers.Cameras;
-using Gorgon.UI.OLDE;
 using Gorgon.Input;
 using Gorgon.Input.Devices;
+using Gorgon.Plugins;
+using Gorgon.Renderers;
+using Gorgon.Renderers.Cameras;
 using DX = SharpDX;
 
 namespace Gorgon.Examples;
@@ -48,8 +47,8 @@ namespace Gorgon.Examples;
 static class Program
 {
 
-    // The cache for our plug-in assemblies.
-    private static GorgonMefPlugInCache _assemblyCache;
+    // The cache for our plugin assemblies.
+    private static GorgonMefPluginCache _assemblyCache;
     // The primary graphics interface.
     private static GorgonGraphics _graphics;
     // The main "screen" for the application.
@@ -318,18 +317,18 @@ static class Program
         try
         {
             GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
-            GorgonExample.PlugInLocationDirectory = new DirectoryInfo(ExampleConfig.Default.PlugInLocation);
+            GorgonExample.PluginLocationDirectory = new DirectoryInfo(ExampleConfig.Default.PluginLocation);
 
-            // Load our packed file system plug-in.
-            window.UpdateStatus("Loading plugins...");
+            // Load our packed file system plugin.
+            window.UpdateStatus("Loading Plugins...");
 
-            _assemblyCache = new GorgonMefPlugInCache(GorgonApplication.Log);
+            _assemblyCache = new GorgonMefPluginCache(GorgonExample.Log);
 
             window.UpdateStatus("Initializing graphics...");
 
             // Retrieve the list of video adapters. We can do this on a background thread because there's no interaction between other threads and the 
             // underlying D3D backend yet.
-            IReadOnlyList<IGorgonVideoAdapterInfo> videoDevices = await Task.Run(() => GorgonGraphics.EnumerateAdapters(log: GorgonApplication.Log));
+            IReadOnlyList<IGorgonVideoAdapterInfo> videoDevices = await Task.Run(() => GorgonGraphics.EnumerateAdapters(log: GorgonExample.Log));
 
             if (videoDevices.Count == 0)
             {
@@ -338,7 +337,7 @@ static class Program
             }
 
             // Find the best video device.
-            _graphics = new GorgonGraphics(videoDevices.OrderByDescending(item => item.FeatureSet).First());
+            _graphics = new GorgonGraphics(videoDevices.OrderByDescending(item => item.FeatureSet).First(), log: GorgonExample.Log);
 
             _screen = new GorgonSwapChain(_graphics,
                                           window,
@@ -363,7 +362,7 @@ static class Program
             _renderer = new Gorgon2D(_graphics);
 
             // Set up our raw input.
-            _input = GorgonInput.CreateInput(InputFlags.Keyboard, GorgonApplication.Log);
+            _input = GorgonInput.CreateInput(InputFlags.Keyboard, GorgonExample.Log);
             _keyboard = new GorgonKeyboard();
 
             GorgonExample.LoadResources(_graphics);
@@ -393,7 +392,7 @@ static class Program
 
             _textSprite = new GorgonTextSprite(_helpFont)
             {
-                Position = new Vector2(0, 64),
+                Position = new Vector2(0, 75),
                 DrawMode = TextDrawMode.OutlinedGlyphs,
                 Color = GorgonColors.Yellow
             };
@@ -401,7 +400,7 @@ static class Program
             GorgonExample.ShowStatistics = true;
 
             // Set the idle here. We don't want to try and render until we're done loading.
-            GorgonApplication.IdleMethod = Idle;
+            GorgonExample.Loop.Run(Idle);
         }
         finally
         {
@@ -430,7 +429,7 @@ static class Program
             FormMain window = GorgonExample.Initialize(new GorgonPoint(ExampleConfig.Default.Resolution.X, ExampleConfig.Default.Resolution.Y), "Space Scene",
                 async (sender, _) => await InitializeAsync(sender as FormMain));
 
-            GorgonApplication.Run(window);
+            Application.Run(window);
         }
         catch (Exception ex)
         {
@@ -440,9 +439,6 @@ static class Program
         {
             // Always perform your clean up.
             _helpFont?.Dispose();
-
-            GorgonExample.UnloadResources();
-
             _inputEvents?.Dispose();
             _input?.Dispose();
             _sceneRenderer?.Dispose();
@@ -452,6 +448,8 @@ static class Program
             _screen?.Dispose();
             _graphics?.Dispose();
             _assemblyCache?.Dispose();
+
+            GorgonExample.ShutDown();
         }
     }
 }

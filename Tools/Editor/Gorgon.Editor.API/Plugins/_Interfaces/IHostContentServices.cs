@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2020 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -26,10 +26,10 @@
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.Services;
 
-namespace Gorgon.Editor.PlugIns;
+namespace Gorgon.Editor.Plugins;
 
 /// <summary>
-/// A list of services passed from the host application to tool plug-ins
+/// A list of services passed from the host application to tool plugins
 /// </summary>
 public interface IHostContentServices
     : IHostServices
@@ -43,17 +43,17 @@ public interface IHostContentServices
     }
 
     /// <summary>
-    /// Property to return the service that allows a conetnt plug-in to access tool content plug-ins.
+    /// Property to return the service that allows a conetnt plugin to access tool content plugins.
     /// </summary>
-    IToolPlugInService ToolPlugInService
+    IToolPluginService ToolPluginService
     {
         get;
     }
 
     /// <summary>
-    /// Property to return the service that allows a content plug-in to access other content plug-ins.
+    /// Property to return the service that allows a content plugin to access other content plugins.
     /// </summary>
-    IContentPlugInService ContentPlugInService
+    IContentPluginService ContentPluginService
     {
         get;
     }

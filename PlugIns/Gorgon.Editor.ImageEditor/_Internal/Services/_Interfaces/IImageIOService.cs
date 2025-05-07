@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2019 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -53,7 +53,7 @@ internal interface IImageIOService
     }
 
     /// <summary>
-    /// Property to return the default plugin codec.
+    /// Property to return the default Plugin codec.
     /// </summary>
     IGorgonImageCodec DefaultCodec
     {

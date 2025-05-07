@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -181,7 +181,7 @@ internal class ImageContent
     private IReadOnlyDictionary<BufferFormat, IGorgonFormatSupportInfo> _formatSupport;
     // The available pixel formats, based on codec.
     private ObservableCollection<BufferFormat> _pixelFormats = [];
-    // The settings for the image editor plugin.
+    // The settings for the image editor Plugin.
     private ISettingsPlugins _pluginSettings;
     // The file used for working changes.
     private IGorgonVirtualFile _workingFile;
@@ -221,7 +221,7 @@ internal class ImageContent
     private (string ExePath, string FriendlyName, Bitmap IconLarge, Bitmap IconSmall) _userEditorInfo;
 
     /// <summary>
-    /// Property to return the settings for the image editor plugin.
+    /// Property to return the settings for the image editor Plugin.
     /// </summary>
     public ISettings Settings
     {
@@ -661,10 +661,10 @@ internal class ImageContent
         get;
     }
 
-    /// <summary>Handles the CollectionChanged event of the CodecPlugInPaths control.</summary>
+    /// <summary>Handles the CollectionChanged event of the CodecPluginPaths control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="NotifyCollectionChangedEventArgs"/> instance containing the event data.</param>
-    private void CodecPlugInPaths_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) => BuildCodecList(ImageData);
+    private void CodecPluginPaths_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) => BuildCodecList(ImageData);
 
     /// <summary>Handles the PropertyChanged event of the CurrentHostedPanel control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -1205,7 +1205,7 @@ internal class ImageContent
         catch (Exception ex)
         {
             HostServices.Log.PrintError($"Unable to delete the undo cache file at '{undoFile.PhysicalFile.FullPath}'.", LoggingLevel.Simple);
-            HostServices.Log.LogException(ex);
+            HostServices.Log.PrintException(ex);
         }
     }
 
@@ -2077,7 +2077,7 @@ internal class ImageContent
         }
         catch (Exception ex)
         {
-            HostServices.Log.LogException(ex);
+            HostServices.Log.PrintException(ex);
             return false;
         }
     }
@@ -2188,7 +2188,7 @@ internal class ImageContent
                 catch (Exception ex)
                 {
                     HostServices.Log.PrintError("Error deleting working image file.", LoggingLevel.All);
-                    HostServices.Log.LogException(ex);
+                    HostServices.Log.PrintException(ex);
                 }
             }
 
@@ -2837,7 +2837,7 @@ internal class ImageContent
         catch (Exception ex)
         {
             HostServices.Log.PrintError("Error showing fx options.", LoggingLevel.Simple);
-            HostServices.Log.LogException(ex);
+            HostServices.Log.PrintException(ex);
         }
     }
 
@@ -3072,7 +3072,7 @@ internal class ImageContent
     /// <summary>Function to determine the action to take when this content is closing.</summary>
     /// <returns>
     ///   <b>true</b> to continue with closing, <b>false</b> to cancel the close request.</returns>
-    /// <remarks>PlugIn authors should override this method to confirm whether save changed content, continue without saving, or cancel the operation entirely.</remarks>
+    /// <remarks>Plugin authors should override this method to confirm whether save changed content, continue without saving, or cancel the operation entirely.</remarks>
     protected override async Task<bool> OnCloseContentTaskAsync()
     {
         if (ContentState == ContentState.Unmodified)
@@ -3140,9 +3140,9 @@ internal class ImageContent
 
         _dimensionSettings.MipSupport = MipSupport;
 
-        if (_pluginSettings.CodecPlugInPaths is not null)
+        if (_pluginSettings.CodecPluginPaths is not null)
         {
-            _pluginSettings.CodecPlugInPaths.CollectionChanged += CodecPlugInPaths_CollectionChanged;
+            _pluginSettings.CodecPluginPaths.CollectionChanged += CodecPluginPaths_CollectionChanged;
         }
 
         FxContext.ApplyCommand = new EditorCommand<object>(DoApplyFx, CanApplyFx);
@@ -3171,9 +3171,9 @@ internal class ImageContent
 
         try
         {
-            if (_pluginSettings.CodecPlugInPaths is not null)
+            if (_pluginSettings.CodecPluginPaths is not null)
             {
-                _pluginSettings.CodecPlugInPaths.CollectionChanged -= CodecPlugInPaths_CollectionChanged;
+                _pluginSettings.CodecPluginPaths.CollectionChanged -= CodecPluginPaths_CollectionChanged;
             }
 
             CurrentPanel = null;
@@ -3193,7 +3193,7 @@ internal class ImageContent
         catch (Exception ex)
         {
             HostServices.Log.Print("There was an error cleaning up the working file.", LoggingLevel.Verbose);
-            HostServices.Log.LogException(ex);
+            HostServices.Log.PrintException(ex);
         }
         finally
         {

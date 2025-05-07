@@ -428,7 +428,7 @@ internal class FontGradientBrush
         catch (Exception ex)
         {
             HostServices.Log.PrintError("Error selected the gradient node.", LoggingLevel.Simple);
-            HostServices.Log.LogException(ex);
+            HostServices.Log.PrintException(ex);
         }
     }
 

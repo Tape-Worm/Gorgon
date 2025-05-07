@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2019 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -30,12 +30,12 @@ using Gorgon.Graphics;
 namespace Gorgon.Editor.AnimationEditor;
 
 /// <summary>
-/// The view model used to manipulate the settings for the plug-in
+/// The view model used to manipulate the settings for the plugin
 /// </summary>
 internal class Settings
     : SettingsCategoryBase<SettingsParameters>, ISettings
 {
-    // The plug-in settings.
+    // The plugin settings.
     private AnimationEditorSettings _settings;
 
     /// <summary>

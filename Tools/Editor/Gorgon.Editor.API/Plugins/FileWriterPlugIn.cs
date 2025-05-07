@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +27,7 @@ using Gorgon.Core;
 using Gorgon.Editor.Properties;
 using Gorgon.IO;
 
-namespace Gorgon.Editor.PlugIns;
+namespace Gorgon.Editor.Plugins;
 
 /// <summary>
 /// Flags to indicate the capabilities of the writer
@@ -50,24 +50,24 @@ public enum WriterCapabilities
 }
 
 /// <summary>
-/// An interface for file output plug-ins
+/// An interface for file output plugins
 /// </summary>
-public abstract class FileWriterPlugIn
-    : EditorPlugIn
+public abstract class FileWriterPlugin
+    : EditorPlugin
 {
 
     // Default compression amount.
     private float _compressAmount = 0.5f;
 
     /// <summary>
-    /// Property to return the equivalent type name for v2 of the Gorgon file writer plugin.
+    /// Property to return the equivalent type name for v2 of the Gorgon file writer Plugin.
     /// </summary>
     /// <remarks>
     /// <para>
     /// This is here to facilitate importing of file metadata from v2 of the gorgon editor files. Only specify a compatible type here, otherwise things will go wrong.
     /// </para>
     /// </remarks>
-    public virtual string V2PlugInName => string.Empty;
+    public virtual string V2PluginName => string.Empty;
 
     /// <summary>
     /// Property to return the capabilities of the writer.
@@ -113,7 +113,7 @@ public abstract class FileWriterPlugIn
     /// Property to return the file extensions (and descriptions) for this content type.
     /// </summary>
     /// <remarks>
-    /// Plug in developers must provide common file extensions supported by the plug-in type, or else this plug-in cannot be used.
+    /// Plug in developers must provide common file extensions supported by the plugin type, or else this plugin cannot be used.
     /// </remarks>
     public IReadOnlyDictionary<string, GorgonFileExtension> FileExtensions
     {
@@ -122,9 +122,9 @@ public abstract class FileWriterPlugIn
     }
 
     /// <summary>
-    /// Property to return the type of plug-in.
+    /// Property to return the type of plugin.
     /// </summary>
-    public sealed override PlugInType PlugInType => PlugInType.Writer;
+    public sealed override PluginType PluginType => PluginType.Writer;
 
     /// <summary>
     /// Function to write the file to the specified path.
@@ -154,7 +154,7 @@ public abstract class FileWriterPlugIn
     protected abstract Task OnWriteAsync(string filePath, DirectoryInfo workspace, Action<int, int, bool> progressCallback, CancellationToken cancelToken);
 
     /// <summary>
-    /// Function to determine if the type of file specified can be written by this plug-in.
+    /// Function to determine if the type of file specified can be written by this plugin.
     /// </summary>
     /// <param name="filePath">The path to the file to evaluate.</param>
     /// <returns><b>true</b> if the writer can write the type of file, or <b>false</b> if it cannot.</returns>
@@ -236,19 +236,19 @@ public abstract class FileWriterPlugIn
     }
 
     /// <summary>
-    /// Function to initialize the plug-in.
+    /// Function to initialize the plugin.
     /// </summary>
-    /// <param name="hostServices">The services to pass from the host application to the plug-in.</param>
+    /// <param name="hostServices">The services to pass from the host application to the plugin.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="hostServices"/> parameter is <b>null</b>.</exception>
     public void Initialize(IHostServices hostServices) => HostServices = hostServices ?? throw new ArgumentNullException(nameof(hostServices));
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="FileWriterPlugIn"/> class.
+    /// Initializes a new instance of the <see cref="FileWriterPlugin"/> class.
     /// </summary>
-    /// <param name="description">Friendly description of the plug-in.</param>
+    /// <param name="description">Friendly description of the plugin.</param>
     /// <param name="fileExtensions">The file of common file name extensions supported by this writer.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="fileExtensions"/> parameter is <b>null</b>.</exception>
-    protected FileWriterPlugIn(string description, IEnumerable<GorgonFileExtension> fileExtensions)
+    protected FileWriterPlugin(string description, IEnumerable<GorgonFileExtension> fileExtensions)
         : base(description)
     {
         if (fileExtensions is null)

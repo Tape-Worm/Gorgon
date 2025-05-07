@@ -1,4 +1,27 @@
-﻿using System.Numerics;
+﻿// Gorgon.
+// Copyright (C) 2025 Michael Winsor
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+// 
+// Created: April 15, 2025 2:29:16 PM
+//
+
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Gorgon.Examples.Properties;
@@ -8,7 +31,7 @@ using Gorgon.Renderers;
 using Gorgon.Renderers.Cameras;
 using Gorgon.Renderers.Geometry;
 using Gorgon.Timing;
-using Gorgon.UI.OLDE;
+using Gorgon.UI.WindowsForms;
 
 namespace Gorgon.Examples;
 
@@ -273,8 +296,8 @@ internal static class Program
 
             if (deviceList.Count == 0)
             {
-                GorgonDialogs.ErrorBox(_mainForm, "There are no suitable video adapters available in the system. This example is unable to continue and will now exit.");
-                GorgonApplication.Quit();
+                GorgonDialogs.Error(_mainForm, "There are no suitable video adapters available in the system. This example is unable to continue and will now exit.");
+                Application.Exit();
                 return;
             }
 
@@ -357,7 +380,14 @@ internal static class Program
         try
         {
             Initialize();
-            GorgonApplication.Run(_mainForm, Idle);
+
+            GorgonExample.Loop.Run(Idle);
+
+            Application.Run(_mainForm);
+        }
+        catch (Exception ex)
+        {
+            GorgonExample.HandleException(ex);
         }
         finally
         {
@@ -374,7 +404,7 @@ internal static class Program
             _screen?.Dispose();
             _graphics?.Dispose();
 
-            GorgonExample.UnloadResources();
+            GorgonExample.ShutDown();
         }
     }
 }

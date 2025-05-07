@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2020 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -45,7 +45,7 @@ internal class Extract
 
     // The data used for extraction.
     private SpriteExtractionData _extractData;
-    // The settings for the plug-in.
+    // The settings for the plugin.
     private ExtractSpriteToolSettings _settings;
     // The service used to create the sprites.
     private ISpriteExtractorService _extractor;
@@ -511,7 +511,7 @@ internal class Extract
         catch (Exception ex)
         {
             HostServices.Log.PrintError("Error cancelling sprite generation.", LoggingLevel.Simple);
-            HostServices.Log.LogException(ex);
+            HostServices.Log.PrintException(ex);
         }
     }
 
@@ -568,7 +568,7 @@ internal class Extract
     ///   <b>true</b> to continue with closing, <b>false</b> to cancel the close request.</returns>
     /// <remarks>
     ///   <para>
-    /// Tool plug-in developers can override this method to verify changes, or perform last minute updates as needed.
+    /// Tool plugin developers can override this method to verify changes, or perform last minute updates as needed.
     /// </para>
     ///   <para>
     /// This is set up as an asynchronous method so that users may save their data asynchronously to keep the UI usable.
@@ -597,7 +597,7 @@ internal class Extract
         catch (Exception ex)
         {
             HostServices.Log.PrintError("Error stopping the extraction process.", LoggingLevel.Simple);
-            HostServices.Log.LogException(ex);
+            HostServices.Log.PrintException(ex);
         }
         return true;
     }

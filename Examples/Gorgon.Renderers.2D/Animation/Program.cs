@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -31,7 +31,6 @@ using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Math;
 using Gorgon.Renderers;
-using Gorgon.UI.OLDE;
 
 namespace Gorgon.Examples;
 
@@ -184,7 +183,7 @@ static class Program
 
         try
         {
-            IReadOnlyList<IGorgonVideoAdapterInfo> videoDevices = GorgonGraphics.EnumerateAdapters(log: GorgonApplication.Log);
+            IReadOnlyList<IGorgonVideoAdapterInfo> videoDevices = GorgonGraphics.EnumerateAdapters(log: GorgonExample.Log);
 
             if (videoDevices.Count == 0)
             {
@@ -193,7 +192,7 @@ static class Program
             }
 
             // Find the best video device.
-            _graphics = new GorgonGraphics(videoDevices.OrderByDescending(item => item.FeatureSet).First());
+            _graphics = new GorgonGraphics(videoDevices.OrderByDescending(item => item.FeatureSet).First(), log: GorgonExample.Log);
 
             _screen = new GorgonSwapChain(_graphics,
                                           window,
@@ -262,6 +261,8 @@ static class Program
                                                    .Build())
                                        .Build();
 
+            GorgonExample.Loop.Run(Idle);
+
             return window;
         }
         finally
@@ -329,7 +330,7 @@ static class Program
     /// The main entry point for the application.
     /// </summary>
     [STAThread]
-    static void Main()
+    static async Task Main()
     {
         try
         {
@@ -337,9 +338,9 @@ static class Program
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            GorgonApplication.Run(Initialize(), Idle);
+            Application.Run(Initialize());
 
-            _mp3Player?.Stop();
+            await _mp3Player.StopAsync();
         }
         catch (Exception ex)
         {
@@ -347,8 +348,6 @@ static class Program
         }
         finally
         {
-            GorgonExample.UnloadResources();
-
             _mp3Player.Dispose();
             _renderer?.Dispose();
             _trooper?.Dispose();
@@ -357,6 +356,8 @@ static class Program
             _target?.Dispose();
             _screen?.Dispose();
             _graphics?.Dispose();
+
+            GorgonExample.ShutDown();
         }
     }
 }

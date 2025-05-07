@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2017 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -28,7 +28,7 @@ using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
-using Gorgon.UI.OLDE;
+using Gorgon.UI.WindowsForms;
 
 namespace Gorgon.Examples;
 
@@ -123,7 +123,7 @@ public partial class Form
         }
         catch (Exception ex)
         {
-            GorgonDialogs.ErrorBox(this, ex);
+            GorgonDialogs.Error(this, ex);
             TrackThreshold.Enabled = TrackThickness.Enabled = false;
         }
         finally
@@ -175,7 +175,7 @@ public partial class Form
         }
         catch (Exception ex)
         {
-            GorgonDialogs.ErrorBox(this, ex);
+            GorgonDialogs.Error(this, ex);
         }
         finally
         {
@@ -191,7 +191,7 @@ public partial class Form
     {
         base.OnFormClosing(e);
 
-        GorgonApplication.IdleMethod = null;
+        GorgonExample.Loop.Stop();
 
         _sobel?.Dispose();
         _sobelShader?.Dispose();
@@ -214,16 +214,16 @@ public partial class Form
         try
         {
             // Find out which devices we have installed in the system.
-            IReadOnlyList<IGorgonVideoAdapterInfo> deviceList = GorgonGraphics.EnumerateAdapters();
+            IReadOnlyList<IGorgonVideoAdapterInfo> deviceList = GorgonGraphics.EnumerateAdapters(log: GorgonExample.Log);
 
             if (deviceList.Count == 0)
             {
-                GorgonDialogs.ErrorBox(this, "There are no suitable video adapters available in the system. This example is unable to continue and will now exit.");
-                GorgonApplication.Quit();
+                GorgonDialogs.Error(this, "There are no suitable video adapters available in the system. This example is unable to continue and will now exit.");
+                Application.Exit();
                 return;
             }
 
-            _graphics = new GorgonGraphics(deviceList[0]);
+            _graphics = new GorgonGraphics(deviceList[0], log: GorgonExample.Log);
             _renderer = new GraphicsRenderer(_graphics);
             _renderer.SetPanel(PanelDisplay);
 
@@ -237,12 +237,12 @@ public partial class Form
 
             GorgonExample.LoadResources(_graphics);
 
-            GorgonApplication.IdleMethod = Idle;
+            GorgonExample.Loop.Run(Idle);
         }
         catch (Exception ex)
         {
             GorgonExample.HandleException(ex);
-            GorgonApplication.Quit();
+            Application.Exit();
         }
         finally
         {

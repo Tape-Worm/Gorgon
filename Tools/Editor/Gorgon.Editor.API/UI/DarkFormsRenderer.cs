@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2012 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -32,7 +32,7 @@ namespace Gorgon.Editor.UI;
 /// </summary>
 /// <remarks>
 /// <para>
-/// Plug in developers should use this class to ensure that the color theme of the UI for the plug-in matches the rest of the application (as close as possible). 
+/// Plug in developers should use this class to ensure that the color theme of the UI for the plugin matches the rest of the application (as close as possible). 
 /// </para>
 /// <para>
 /// The theme will be applied to any winforms controls that support themed rendering automatically

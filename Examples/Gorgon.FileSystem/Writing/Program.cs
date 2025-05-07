@@ -1,7 +1,6 @@
-﻿
-// 
+﻿// 
 // Gorgon
-// Copyright (C) 2013 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,8 +22,6 @@
 // Created: Friday, January 18, 2013 8:47:05 AM
 // 
 
-using Gorgon.Diagnostics;
-
 namespace Gorgon.Examples;
 
 /// <summary>
@@ -33,15 +30,6 @@ namespace Gorgon.Examples;
 /// <remarks>To see a description of this example, look in formMain.cs</remarks>
 internal static class Program
 {
-    /// <summary>
-    /// Property to return the application log file.
-    /// </summary>
-    public static IGorgonLog Log
-    {
-        get;
-        private set;
-    }
-
     /// <summary>
     /// Property to return the directory where we'll be writing into.
     /// </summary>
@@ -57,10 +45,6 @@ internal static class Program
     [STAThread]
     private static void Main()
     {
-        Log = new GorgonTextFileLog("Writing", "Tape_Worm");
-
-        Log.LogStart();
-
         try
         {
             Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
@@ -83,7 +67,7 @@ internal static class Program
         }
         finally
         {
-            Log.LogEnd();
+            GorgonExample.ShutDown();
         }
     }
 }

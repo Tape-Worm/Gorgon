@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2019 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -29,25 +29,25 @@ using Gorgon.Graphics;
 namespace Gorgon.Editor.SpriteEditor;
 
 /// <summary>
-/// The settings for the sprite importer plug-in
+/// The settings for the sprite importer plugin
 /// </summary>
 internal class SpriteImportSettings
 {
     /// <summary>
-    /// Property to return the list of additional sprite codec plug-ins to load.
+    /// Property to return the list of additional sprite codec plugins to load.
     /// </summary>
     [JsonInclude]
-    public Dictionary<string, string> CodecPlugInPaths
+    public Dictionary<string, string> CodecPluginPaths
     {
         get;
         private set;
     } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
     /// <summary>
-    /// Property to set or return the last codec plug-in path.
+    /// Property to set or return the last codec plugin path.
     /// </summary>
     [JsonInclude]
-    public string LastCodecPlugInPath
+    public string LastCodecPluginPath
     {
         get;
         set;
@@ -55,7 +55,7 @@ internal class SpriteImportSettings
 }
 
 /// <summary>
-/// The settings for the sprite editor plug-in
+/// The settings for the sprite editor plugin
 /// </summary>
 internal class SpriteEditorSettings
 {

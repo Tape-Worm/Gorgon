@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2017 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -33,8 +33,7 @@ using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Renderers.Cameras;
 using Gorgon.Renderers.Geometry;
 using Gorgon.Timing;
-using Gorgon.Timing.OLDE;
-using Gorgon.UI.OLDE;
+using Gorgon.UI.WindowsForms;
 
 namespace Gorgon.Examples;
 
@@ -248,7 +247,7 @@ public partial class Form : System.Windows.Forms.Form
 
         GorgonExample.LoadResources(_graphics);
 
-        _timer = new GorgonTimerQpc();
+        _timer = new GorgonTimer();
     }
 
     /// <summary>Handles the Click event of the CheckSmoothing control.</summary>
@@ -323,16 +322,16 @@ public partial class Form : System.Windows.Forms.Form
 
             // Initialize Gorgon as we have in the other examples.
             // Find out which devices we have installed in the system.
-            IReadOnlyList<IGorgonVideoAdapterInfo> deviceList = GorgonGraphics.EnumerateAdapters();
+            IReadOnlyList<IGorgonVideoAdapterInfo> deviceList = GorgonGraphics.EnumerateAdapters(log: GorgonExample.Log);
 
             if (deviceList.Count == 0)
             {
-                GorgonDialogs.ErrorBox(this, "There are no suitable video adapters available in the system. This example is unable to continue and will now exit.");
-                GorgonApplication.Quit();
+                GorgonDialogs.Error(this, "There are no suitable video adapters available in the system. This example is unable to continue and will now exit.");
+                Application.Exit();
                 return;
             }
 
-            _graphics = new GorgonGraphics(deviceList[0]);
+            _graphics = new GorgonGraphics(deviceList[0], log: GorgonExample.Log);
 
             // Build our swap chain.
             _swap = new GorgonSwapChain(_graphics,
@@ -349,18 +348,17 @@ public partial class Form : System.Windows.Forms.Form
             // We need to do this in order to resize our projection matrix & viewport to match our client area.
             // Also, when a swap chain is resized, it is unbound from the pipeline, and needs to be reassigned to the draw call.
             _swap.SwapChainResized += AfterSwapChain_Resize;
-            ;
 
             // Initialize the app.
             Initialize();
 
             // Assign idle event.
-            GorgonApplication.IdleMethod = Idle;
+            GorgonExample.Loop.Run(Idle);
         }
         catch (Exception ex)
         {
             GorgonExample.HandleException(ex);
-            GorgonApplication.Quit();
+            Application.Exit();
         }
     }
 

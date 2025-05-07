@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2019 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -51,9 +51,9 @@ internal interface IEditorSettings
     }
 
     /// <summary>
-    /// Property to return the list of plug-ins for the fixed plug-in list category.
+    /// Property to return the list of plugins for the fixed plugin list category.
     /// </summary>
-    ISettingsPlugInsList PlugInsList
+    ISettingsPluginsList PluginsList
     {
         get;
     }

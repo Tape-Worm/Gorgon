@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2019 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -31,10 +31,9 @@ using Gorgon.Graphics.Core;
 using Gorgon.IO;
 using Gorgon.IO.FileSystem;
 using Gorgon.IO.FileSystem.Providers;
-using Gorgon.PlugIns;
+using Gorgon.Plugins;
 using Gorgon.Renderers;
 using Gorgon.Timing;
-using Gorgon.UI.OLDE;
 
 namespace Gorgon.Examples;
 
@@ -89,8 +88,8 @@ static class Program
     private static GorgonSpriteAnimationController _controller;
     // The current animation.
     private static AnimationName _current;
-    // The cache for our plug-in assemblies.
-    private static GorgonMefPlugInCache _assemblyCache;
+    // The cache for our plugin assemblies.
+    private static GorgonMefPluginCache _assemblyCache;
     // The cache for holding sprite textures.
     private static GorgonTextureCache<GorgonTexture2D> _textureCache;
 
@@ -326,9 +325,9 @@ static class Program
     private static async Task InitializeAsync(FormMain window)
     {
         GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
-        GorgonExample.PlugInLocationDirectory = new DirectoryInfo(ExampleConfig.Default.PlugInLocation);
+        GorgonExample.PluginLocationDirectory = new DirectoryInfo(ExampleConfig.Default.PluginLocation);
 
-        IReadOnlyList<IGorgonVideoAdapterInfo> videoDevices = GorgonGraphics.EnumerateAdapters(log: GorgonApplication.Log);
+        IReadOnlyList<IGorgonVideoAdapterInfo> videoDevices = GorgonGraphics.EnumerateAdapters(log: GorgonExample.Log);
 
         if (videoDevices.Count == 0)
         {
@@ -362,13 +361,13 @@ static class Program
 
         GorgonExample.LoadResources(_graphics);
 
-        // Load our packed file system plug-in.
-        _assemblyCache = new GorgonMefPlugInCache(GorgonApplication.Log);
+        // Load our packed file system plugin.
+        _assemblyCache = new GorgonMefPluginCache(GorgonExample.Log);
 
         // Load the file system containing our application data (sprites, images, etc...)
-        IGorgonFileSystemProviderFactory providerFactory = new GorgonFileSystemProviderFactory(_assemblyCache, GorgonApplication.Log);
-        IGorgonFileSystemProvider provider = providerFactory.CreateProvider(Path.Combine(GorgonExample.GetPlugInPath().FullName, "Gorgon.FileSystem.GorPack.dll"), "Gorgon.IO.GorPack.GorPackProvider");
-        IGorgonFileSystem fileSystem = new GorgonFileSystem(GorgonApplication.Log);
+        IGorgonFileSystemProviderFactory providerFactory = new GorgonFileSystemProviderFactory(_assemblyCache, GorgonExample.Log);
+        IGorgonFileSystemProvider provider = providerFactory.CreateProvider(Path.Combine(GorgonExample.GetPluginPath().FullName, "Gorgon.IO.FileSystem.GorPack.dll"), "Gorgon.IO.FileSystem.Providers.GorPackPlugin");
+        IGorgonFileSystem fileSystem = new GorgonFileSystem(GorgonExample.Log);
 
         // We can load the editor file system directly.
         // This is handy for switching a production environment where your data may be stored 
@@ -434,7 +433,9 @@ static class Program
             FormMain window = GorgonExample.Initialize(new GorgonPoint(ExampleConfig.Default.Resolution.X, ExampleConfig.Default.Resolution.Y), "Depth",
                                                        async (o, _) => await InitializeAsync((FormMain)o));
 
-            GorgonApplication.Run(window, Idle);
+            GorgonExample.Loop.Run(Idle);
+
+            Application.Run(window);
         }
         catch (Exception ex)
         {
@@ -442,8 +443,6 @@ static class Program
         }
         finally
         {
-            GorgonExample.UnloadResources();
-
             foreach (GorgonTexture2D texture in _textures)
             {
                 texture?.Dispose();
@@ -455,6 +454,8 @@ static class Program
             _screen?.Dispose();
             _graphics?.Dispose();
             _assemblyCache?.Dispose();
+
+            GorgonExample.ShutDown();
         }
     }
 }

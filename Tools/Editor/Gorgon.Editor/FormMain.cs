@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,7 @@
 
 using System.Collections.Specialized;
 using System.ComponentModel;
-using Gorgon.Editor.PlugIns;
+using Gorgon.Editor.Plugins;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Rendering;
 using Gorgon.Editor.UI;
@@ -156,7 +156,7 @@ internal partial class FormMain
     /// Function to update the list of buttons, and groups on the tools tab.
     /// </summary>
     /// <param name="buttons">The buttons to display on the ribbon.</param>
-    private void UpdateToolsTab(IReadOnlyDictionary<string, IReadOnlyList<IToolPlugInRibbonButton>> buttons)
+    private void UpdateToolsTab(IReadOnlyDictionary<string, IReadOnlyList<IToolPluginRibbonButton>> buttons)
     {
         if ((buttons is null) || (buttons.Count == 0))
         {
@@ -164,7 +164,7 @@ internal partial class FormMain
             return;
         }
 
-        foreach (KeyValuePair<string, IReadOnlyList<IToolPlugInRibbonButton>> buttonItem in buttons)
+        foreach (KeyValuePair<string, IReadOnlyList<IToolPluginRibbonButton>> buttonItem in buttons)
         {
             if ((buttonItem.Value is null) || (buttonItem.Value.Count == 0))
             {
@@ -187,7 +187,7 @@ internal partial class FormMain
             KryptonRibbonGroupTriple triple = null;
             KryptonRibbonGroupLines lines = null;
 
-            foreach (IToolPlugInRibbonButton button in buttonItem.Value)
+            foreach (IToolPluginRibbonButton button in buttonItem.Value)
             {
                 if (_toolButtons.ContainsKey(button.Name))
                 {
@@ -309,12 +309,12 @@ internal partial class FormMain
             return;
         }
 
-        if (!ViewModel.CurrentProject.ToolButtons.TryGetValue(ribbonGroup.TextLine1, out IReadOnlyList<IToolPlugInRibbonButton> buttons))
+        if (!ViewModel.CurrentProject.ToolButtons.TryGetValue(ribbonGroup.TextLine1, out IReadOnlyList<IToolPluginRibbonButton> buttons))
         {
             return;
         }
 
-        IToolPlugInRibbonButton toolButton = buttons.FirstOrDefault(item => string.Equals(item.Name, name, StringComparison.Ordinal));
+        IToolPluginRibbonButton toolButton = buttons.FirstOrDefault(item => string.Equals(item.Name, name, StringComparison.Ordinal));
 
         toolButton?.ClickCallback();
 
@@ -737,7 +737,7 @@ internal partial class FormMain
                 break;
         }
 
-        foreach (IToolPlugInRibbonButton button in project.ToolButtons.SelectMany(item => item.Value))
+        foreach (IToolPluginRibbonButton button in project.ToolButtons.SelectMany(item => item.Value))
         {
             if (!_toolButtons.TryGetValue(button.Name, out KryptonRibbonGroupButton ribButton))
             {
@@ -996,15 +996,15 @@ internal partial class FormMain
     /// <summary>
     /// Function to update the icons used for the "new" buttons.
     /// </summary>
-    /// <param name="metadata">The metadata for plug-ins that can create content.</param>
-    private void AddNewIcons(IEnumerable<IContentPlugInMetadata> metadata)
+    /// <param name="metadata">The metadata for plugins that can create content.</param>
+    private void AddNewIcons(IEnumerable<IContentPluginMetadata> metadata)
     {
         if (metadata is null)
         {
             return;
         }
 
-        foreach (IContentPlugInMetadata item in metadata.OrderBy(item => item.ContentType))
+        foreach (IContentPluginMetadata item in metadata.OrderBy(item => item.ContentType))
         {
             string id = item.NewIconID.ToString("N");
             Image icon = item.GetNewIcon();

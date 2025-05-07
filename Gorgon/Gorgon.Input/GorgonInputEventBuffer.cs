@@ -25,8 +25,8 @@ using System.Buffers;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Numerics;
-using Gorgon.Math;
 using Gorgon.Input.Devices;
+using Gorgon.Math;
 
 namespace Gorgon.Input;
 

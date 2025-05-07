@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -88,7 +88,7 @@ internal class V2MetadataImporter(string metadataFile, IGorgonLog log)
 
             ProjectItemMetadata metadata = new()
             {
-                PlugInName = null
+                PluginName = null
             };
 
             project.ProjectItems.Add(filePath, metadata);
@@ -99,7 +99,7 @@ internal class V2MetadataImporter(string metadataFile, IGorgonLog log)
     /// Function to perform the import of the metadata.
     /// </summary>
     /// <param name="project">The project to update.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="project"/>, or the <paramref name="contentPlugIns"/> parameter is <b>null</b>.</exception>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="project"/>, or the <paramref name="contentPlugins"/> parameter is <b>null</b>.</exception>
     public void Import(IProject project)
     {
         if (project is null)

@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -32,7 +32,7 @@ namespace Gorgon.Editor.UI;
 /// </summary>
 /// <remarks>
 /// <para>
-/// When developing a UI for a content plug-in, there will come a time when the user of the content editor will make a mistake. To handle this the undo command interface is used to record steps that 
+/// When developing a UI for a content plugin, there will come a time when the user of the content editor will make a mistake. To handle this the undo command interface is used to record steps that 
 /// will reverse the operation, and, optionally, restore it
 /// </para>
 /// <para>

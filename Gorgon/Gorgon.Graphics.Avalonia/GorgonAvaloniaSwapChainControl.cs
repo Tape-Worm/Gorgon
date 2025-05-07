@@ -10,7 +10,6 @@ using Gorgon.Core;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 using Gorgon.Timing;
-using Gorgon.Timing.OLDE;
 
 namespace Gorgon.Graphics.Avalonia;
 
@@ -220,7 +219,7 @@ public class GorgonAvaloniaSwapChainControl
 
         if (!GorgonTiming.TimingStarted)
         {
-            GorgonTiming.StartTiming(new GorgonTimerQpc());
+            GorgonTiming.StartTiming(new GorgonTimer());
         }
 
         if (_nextFrameQueued)

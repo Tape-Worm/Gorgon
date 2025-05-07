@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -30,7 +30,6 @@ using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Math;
 using Gorgon.Renderers;
-using Gorgon.UI.OLDE;
 
 namespace Gorgon.Examples;
 
@@ -39,7 +38,6 @@ namespace Gorgon.Examples;
 /// </summary>
 static class Program
 {
-
     // Help text.
     private const string HelpText = "F1 - Show/hide the help text.\nC - Cloak or uncloak the ship\nMouse wheel - Rotate the ship.\nEscape - Close this example.";
 
@@ -170,7 +168,7 @@ static class Program
         _renderer.Begin();
         if (_showHelp)
         {
-            _renderer.DrawString(HelpText, new Vector2(0, 64), color: new GorgonColor(1.0f, 1.0f, 0));
+            _renderer.DrawString(HelpText, new Vector2(0, 75), color: new GorgonColor(1.0f, 1.0f, 0));
         }
         _renderer.End();
 
@@ -265,7 +263,7 @@ static class Program
 
         try
         {
-            IReadOnlyList<IGorgonVideoAdapterInfo> videoDevices = GorgonGraphics.EnumerateAdapters(log: GorgonApplication.Log);
+            IReadOnlyList<IGorgonVideoAdapterInfo> videoDevices = GorgonGraphics.EnumerateAdapters(log: GorgonExample.Log);
 
             if (videoDevices.Count == 0)
             {
@@ -274,7 +272,7 @@ static class Program
             }
 
             // Find the best video device.
-            _graphics = new GorgonGraphics(videoDevices.OrderByDescending(item => item.FeatureSet).First());
+            _graphics = new GorgonGraphics(videoDevices.OrderByDescending(item => item.FeatureSet).First(), log: GorgonExample.Log);
 
             _screen = new GorgonSwapChain(_graphics,
                                           window,
@@ -350,6 +348,8 @@ static class Program
             window.MouseWheel += Window_MouseWheel;
             window.KeyUp += Window_KeyUp;
 
+            GorgonExample.Loop.Run(Idle);
+
             return window;
         }
         finally
@@ -385,7 +385,7 @@ static class Program
         switch (e.KeyCode)
         {
             case Keys.Escape:
-                GorgonApplication.Quit();
+                Application.Exit();
                 return;
             case Keys.F1:
                 _showHelp = !_showHelp;
@@ -458,7 +458,7 @@ static class Program
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            GorgonApplication.Run(Initialize(), Idle);
+            Application.Run(Initialize());
         }
         catch (Exception ex)
         {
@@ -466,8 +466,6 @@ static class Program
         }
         finally
         {
-            GorgonExample.UnloadResources();
-
             _gaussBlur?.Dispose();
             _oldFilm?.Dispose();
             _displacement?.Dispose();
@@ -481,6 +479,8 @@ static class Program
             _renderer?.Dispose();
             _screen?.Dispose();
             _graphics?.Dispose();
+
+            GorgonExample.ShutDown();
         }
     }
 }

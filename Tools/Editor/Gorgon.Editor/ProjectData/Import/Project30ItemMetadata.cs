@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -33,12 +33,12 @@ namespace Gorgon.Editor.Metadata;
 public class Project30ItemMetadata
 {
     /// <summary>
-    /// Property to set or return the name of the plugin associated with the metadata file path.
+    /// Property to set or return the name of the Plugin associated with the metadata file path.
     /// </summary>
     /// <remarks>
-    /// If this value is <b>null</b>, then the plugin hasn't been set.  If it's an empty string, then no plugin is associated with this metadata.
+    /// If this value is <b>null</b>, then the Plugin hasn't been set.  If it's an empty string, then no Plugin is associated with this metadata.
     /// </remarks>
-    public string PlugInName
+    public string PluginName
     {
         get;
         set;

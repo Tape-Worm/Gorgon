@@ -1,6 +1,6 @@
 ﻿// 
 // Gorgon
-// Copyright (C) 2020 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -42,7 +42,7 @@ namespace Gorgon.Editor.Rendering;
 /// <typeparam name="T">The type of view model for the renderer. Must implement the <see cref="IVisualEditorContent"/> interface, and be a reference type.</typeparam>
 /// <remarks>
 /// <para>
-/// This renderer does the bare minimum to present content on the view. Content plug-in UI developers should inherit from this class to take advantage of the default functionality it provides. 
+/// This renderer does the bare minimum to present content on the view. Content plugin UI developers should inherit from this class to take advantage of the default functionality it provides. 
 /// </para>
 /// <para>
 /// The default renderer provides support for panning, and zooming on content and will animate those functions. Inherited renderers will receive these functions, but can override them as needed. The 

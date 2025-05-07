@@ -1,5 +1,5 @@
 ﻿// Gorgon.
-// Copyright (C) 2024 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -37,7 +37,7 @@ internal class ChunkWriter(ulong chunkID, Stream parentStream, ulong offset, Act
         : IGorgonChunkWriter
 {
     // The binary writer used to send data to the chunk.
-    private readonly BinaryWriter _writer = new(new GorgonSubStream(parentStream), Encoding.UTF8);
+    private readonly BinaryWriter _writer = new(new GorgonStreamSlice(parentStream), Encoding.UTF8);
     // The current position of the chunk starting from the header of the file.
     private readonly ulong _chunkPosition = offset;
     // Flag to indicate that the serialization method is being used.
@@ -224,7 +224,7 @@ internal class ChunkWriter(ulong chunkID, Stream parentStream, ulong offset, Act
     {
         CheckIfSerializing();
 
-        GorgonSubStream? subStream = null;
+        GorgonStreamSlice? subStream = null;
         _inSerialize = true;
 
         try

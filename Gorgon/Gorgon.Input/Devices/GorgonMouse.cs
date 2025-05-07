@@ -23,8 +23,8 @@
 
 using System.Runtime.CompilerServices;
 using Gorgon.Graphics;
-using Gorgon.Math;
 using Gorgon.Input.Properties;
+using Gorgon.Math;
 using Windows.Win32;
 using Windows.Win32.UI.WindowsAndMessaging;
 

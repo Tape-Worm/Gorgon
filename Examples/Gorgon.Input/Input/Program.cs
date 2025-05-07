@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2013 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,8 @@
 
 using Gorgon.Core;
 using Gorgon.Diagnostics;
-using Gorgon.UI.OLDE;
+using Gorgon.Input;
+using Gorgon.UI.WindowsForms;
 
 namespace Gorgon.Examples;
 
@@ -41,19 +42,54 @@ internal static class Program
     [STAThread]
     private static void Main()
     {
+        IGorgonLog log = GorgonLog.NullLog;
+        GorgonApplicationLoop? loop = null;
+        IGorgonInput? input = null;
+
         try
         {
             Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            GorgonApplication.Log = new GorgonTextFileLog("Input", "Tape_Worm", typeof(GorgonApplication).Assembly.GetName().Version);
+            log = new GorgonTextFileLog("Input", "Tape_Worm", typeof(Program).Assembly.GetName().Version);
+            log.LogStart(new GorgonComputerInfo());
 
-            GorgonApplication.Run(new Form());
+            // This is our input system. By passing in the device types in the flags, we can tell the system to immediately start working with 
+            // the devices specified. 
+            //
+            // You will note the "ExclusiveMouse" flag. This tells the input system that we will be the exclusive owner of all the data from 
+            // the mouse. This means the application will no longer respond to Windows mouse events. Both keyboards and mice can be exclusive 
+            // to the input system, but be warned that the system will not respond to some system key presses like Alt+F4 when the keyboard 
+            // device is exclusive.
+            // 
+            // Also, regardless of whether the mouse or keyboard are exclusive, they will stop sending data if the application is not focused.
+            // Gaming devices however, will always receive data.
+            input = GorgonInput.CreateInput(InputFlags.ExclusiveMouse | InputFlags.Keyboard | InputFlags.GamingDevices, log);
+
+            // Create an application loop so we can update our display continuously.
+            loop = GorgonApplicationLoop.Create(log);
+
+            Application.Run(new Form()
+            {
+                Log = log,
+                Loop = loop,
+                Input = input
+            });
         }
         catch (Exception ex)
         {
-            ex.Handle(e => GorgonDialogs.ErrorBox(GorgonApplication.MainForm, e), GorgonApplication.Log);
+            ex.Handle(e => GorgonDialogs.Error(null, e), log);
+        }
+        finally
+        {
+            // Ensure we drop the application loop.
+            loop?.Dispose();
+
+            // Always dispose the input system. This will disable its background thread and restore our input back to normal.
+            input?.Dispose();
+
+            log.LogEnd();
         }
     }
 }

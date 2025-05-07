@@ -289,9 +289,9 @@ internal class Resources {
     /// <summary>
     ///   Looks up a localized string similar to Gorgon Texture Atlas.
     /// </summary>
-    internal static string GORTAG_PLUGIN_DESC {
+    internal static string GORTAG_plugin_DESC {
         get {
-            return ResourceManager.GetString("GORTAG_PLUGIN_DESC", resourceCulture);
+            return ResourceManager.GetString("GORTAG_plugin_DESC", resourceCulture);
         }
     }
 

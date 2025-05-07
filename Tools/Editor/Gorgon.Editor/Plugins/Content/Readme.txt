@@ -1,1 +1,1 @@
-﻿This folder will contain content specific plugins.
+﻿This folder will contain content specific Plugins.

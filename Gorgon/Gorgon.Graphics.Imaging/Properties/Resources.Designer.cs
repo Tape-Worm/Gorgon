@@ -142,11 +142,11 @@ internal class Resources {
     }
 
     /// <summary>
-    ///   Looks up a localized string similar to The codec &apos;{0}&apos; was not found in the plug-in..
+    ///   Looks up a localized string similar to The codec &apos;{0}&apos; was not found in the plugin..
     /// </summary>
-    internal static string GORIMG_ERR_CODEC_NOT_IN_PLUGIN {
+    internal static string GORIMG_ERR_CODEC_NOT_IN_plugin {
         get {
-            return ResourceManager.GetString("GORIMG_ERR_CODEC_NOT_IN_PLUGIN", resourceCulture);
+            return ResourceManager.GetString("GORIMG_ERR_CODEC_NOT_IN_plugin", resourceCulture);
         }
     }
 
@@ -429,9 +429,9 @@ internal class Resources {
     /// <summary>
     ///   Looks up a localized string similar to Gorgon Image Codec {0} ({1}).
     /// </summary>
-    internal static string GORIMG_TOSTR_IMAGE_CODEC_PLUGIN_DESC {
+    internal static string GORIMG_TOSTR_IMAGE_CODEC_plugin_DESC {
         get {
-            return ResourceManager.GetString("GORIMG_TOSTR_IMAGE_CODEC_PLUGIN_DESC", resourceCulture);
+            return ResourceManager.GetString("GORIMG_TOSTR_IMAGE_CODEC_plugin_DESC", resourceCulture);
         }
     }
 }

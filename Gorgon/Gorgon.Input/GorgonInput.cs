@@ -30,12 +30,12 @@ using System.Runtime.CompilerServices;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics;
-using Gorgon.Math;
-using Gorgon.Memory;
-using Gorgon.Timing.OLDE;
 using Gorgon.Input.Devices;
 using Gorgon.Input.Native;
 using Gorgon.Input.Properties;
+using Gorgon.Math;
+using Gorgon.Memory;
+using Gorgon.Timing;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.Input;
@@ -879,7 +879,7 @@ public sealed class GorgonInput
         Enable(flags);
 
         Queue<RAWINPUT> rawInputBuffer = new();
-        GorgonTimerQpc timer = new();
+        GorgonTimer timer = new();
 
         long lastTime = 0;
 

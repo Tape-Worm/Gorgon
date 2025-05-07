@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -101,7 +101,7 @@ public class MessageBoxService(IGorgonLog log)
         }
 
         _log.PrintError($"{(string.IsNullOrWhiteSpace(message) ? ex.Message : message)}", LoggingLevel.Verbose);
-        _log.LogException(ex);
+        _log.PrintException(ex);
 
         GorgonDialogs.ErrorBox(GetParentForm(), string.IsNullOrWhiteSpace(message) ? ex.Message : message, caption, ex);
     }

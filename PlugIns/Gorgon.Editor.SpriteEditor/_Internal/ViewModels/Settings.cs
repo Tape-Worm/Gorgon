@@ -1,6 +1,6 @@
 ﻿// 
 // Gorgon
-// Copyright (C) 2019 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,19 +23,19 @@
 // 
 
 using Gorgon.Core;
-using Gorgon.Editor.PlugIns;
+using Gorgon.Editor.Plugins;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 
 namespace Gorgon.Editor.SpriteEditor;
 
 /// <summary>
-/// The view model used to manipulate the settings for the plug-in
+/// The view model used to manipulate the settings for the plugin
 /// </summary>
 internal class Settings
     : ViewModelBase<SettingsParameters, IHostContentServices>, ISettings
 {
-    // The plug-in settings.
+    // The plugin settings.
     private SpriteEditorSettings _settings;
 
     /// <summary>

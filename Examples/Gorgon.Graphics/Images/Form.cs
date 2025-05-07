@@ -1,7 +1,6 @@
-﻿
-// 
+﻿// 
 // Gorgon
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,8 +21,6 @@
 // 
 // Created: March 31, 2018 1:12:38 PM
 // 
-
-using Gorgon.UI.OLDE;
 
 namespace Gorgon.Examples;
 
@@ -48,7 +45,7 @@ namespace Gorgon.Examples;
 /// Direct Draw Surface (dds)
 /// Graphics Interface Format (gif) - This one supports animation
 /// 
-/// Users can also add their own codecs by using the GorgonImageCodecPlugIn.  However, this is outside of the scope for this example and is demonstrated 
+/// Users can also add their own codecs by using the GorgonImageCodecPlugin.  However, this is outside of the scope for this example and is demonstrated 
 /// in the TvImageCodec example
 /// 
 /// This example also includes code to show how to load and animate an animated GIF using a background task
@@ -80,7 +77,7 @@ public partial class Form
             Cursor.Current = Cursors.WaitCursor;
 
             // Load our image data.
-            _gallery.LoadImages(GorgonApplication.StartupPath.FullName);
+            _gallery.LoadImages(Application.StartupPath);
 
             _graphics = CreateGraphics();
 
@@ -90,7 +87,7 @@ public partial class Form
         catch (Exception ex)
         {
             GorgonExample.HandleException(ex);
-            GorgonApplication.Quit();
+            Application.Exit();
         }
         finally
         {

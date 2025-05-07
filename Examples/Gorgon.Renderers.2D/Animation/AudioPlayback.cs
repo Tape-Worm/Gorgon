@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2019 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -52,11 +52,16 @@ internal class AudioPlayback
     /// <summary>
     /// Function to stop the audio.
     /// </summary>
-    public void Stop()
+    public async Task StopAsync()
     {
+        if (_currentPlayback is null)
+        {
+            return;
+        }
+
         _tokenSource?.Cancel();
 
-        _currentPlayback?.Wait();
+        await _currentPlayback;
         _currentPlayback = null;
     }
 

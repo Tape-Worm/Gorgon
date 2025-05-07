@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2020 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -31,7 +31,7 @@ using Gorgon.Graphics;
 namespace Gorgon.Editor.Rendering;
 
 /// <summary>
-/// Defines a rendering interface for rendering content in content editor plug-in views
+/// Defines a rendering interface for rendering content in content editor plugin views
 /// </summary>
 /// <remarks>
 /// <para>

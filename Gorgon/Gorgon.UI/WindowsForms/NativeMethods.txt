@@ -1,0 +1,3 @@
+﻿PeekMessage
+GetForegroundWindow
+GetWindowThreadProcessId

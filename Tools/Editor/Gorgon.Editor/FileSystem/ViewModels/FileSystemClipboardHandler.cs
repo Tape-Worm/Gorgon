@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2020 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -201,7 +201,7 @@ internal class FileSystemClipboardHandler
         catch (Exception ex)
         {
             _log.PrintError("Error while pasting data from the clipboard into the file system.", LoggingLevel.Simple);
-            _log.LogException(ex);
+            _log.PrintException(ex);
         }
     }
 
@@ -230,7 +230,7 @@ internal class FileSystemClipboardHandler
         catch (Exception ex)
         {
             _log.PrintError("Error retrieving clipboard data type information.", LoggingLevel.All);
-            _log.LogException(ex);
+            _log.PrintException(ex);
         }
     }
 
@@ -286,7 +286,7 @@ internal class FileSystemClipboardHandler
         catch (Exception ex)
         {
             _log.PrintError("Error copying data into the clipboard.", LoggingLevel.All);
-            _log.LogException(ex);
+            _log.PrintException(ex);
         }
     }
 
@@ -303,7 +303,7 @@ internal class FileSystemClipboardHandler
         catch (Exception ex)
         {
             _log.PrintError("Error clearing the clipboard.", LoggingLevel.All);
-            _log.LogException(ex);
+            _log.PrintException(ex);
         }
     }
 

@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2011 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -100,8 +100,8 @@ public static class GorgonTiming
     private static float _averageUnscaledDeltaTotal;
     // Average delta draw time total.
     private static float _averageDeltaTotal;
-    // Maximum number of iterations for average reset.
-    private static long _maxAverageCount = 500;
+    // Maximum number of samples for average reset.
+    private static long _maxAverageSamples = 500;
     // Flag to indicate that timing has started.
     private static int _timingStarted;
     // The lowest frames per second.
@@ -322,7 +322,7 @@ public static class GorgonTiming
     }
 
     /// <summary>
-    /// Property to set or return the maximum number of iterations before an average value is reset.
+    /// Property to set or return the maximum number of samples before an average value is taken.
     /// </summary>
     /// <remarks>
     /// <para>
@@ -333,17 +333,17 @@ public static class GorgonTiming
     /// iteration of the idle loop.
     /// </para>
     /// </remarks>
-    public static long MaxAverageCount
+    public static long MaximumAverageSamples
     {
-        get => _maxAverageCount;
+        get => _maxAverageSamples;
         set
         {
-            if (_maxAverageCount < 0)
+            if (_maxAverageSamples < 0)
             {
-                _maxAverageCount = 0;
+                _maxAverageSamples = 0;
             }
 
-            _maxAverageCount = value;
+            _maxAverageSamples = value;
         }
     }
 
@@ -377,12 +377,6 @@ public static class GorgonTiming
     /// <remarks>
     /// <para>
     /// Ensure that the <see cref="StartTiming"/> was called prior to calling this method, or no meaningful data will be collected.
-    /// </para>
-    /// <para>
-    /// <note type="tip">
-    /// If you are using the <c>Gorgon.Windows.GorgonApplication</c> class, you do not need to call this method since it contains its own idle processing and therefore will 
-    /// call this method on your behalf.
-    /// </note>
     /// </para>
     /// </remarks>
     public static void Update()
@@ -437,18 +431,19 @@ public static class GorgonTiming
             }
 
             _frameCounter++;
+
             FPS = (float)((_frameCounter / frameDelta) * 1000.0);
+
+            HighestFPS = HighestFPS.Max(FPS);
+            _lowestFps = _lowestFps?.Min(FPS) ?? FPS;
+            HighestDelta = HighestDelta.Max(Delta);
+            _lowestDelta = _lowestDelta?.Min(Delta) ?? FPS;
 
             // Wait until we get one second of information.
             if (frameDelta >= 1000.0)
             {
                 _lastTime = _lastTimerValue;
                 _frameCounter = 0;
-
-                HighestFPS = HighestFPS.Max(FPS);
-                _lowestFps = _lowestFps?.Min(FPS) ?? FPS;
-                HighestDelta = HighestDelta.Max(Delta);
-                _lowestDelta = _lowestDelta?.Min(Delta) ?? FPS;
             }
 
             if (_averageCounter > 0)
@@ -470,7 +465,7 @@ public static class GorgonTiming
             _averageCounter++;
 
             // Reset the average.
-            if (_averageCounter < _maxAverageCount)
+            if (_averageCounter < _maxAverageSamples)
             {
                 return;
             }
@@ -511,7 +506,7 @@ public static class GorgonTiming
     /// Like <see cref="Update"/>, you do not need to call this method unless you have your own mechanism for handling an idle time loop.
     /// </para>
     /// <para>
-    /// Values set by the user (e.g. <see cref="MaxAverageCount"/>, etc...) will not be reset.
+    /// Values set by the user (e.g. <see cref="MaximumAverageSamples"/>, etc...) will not be reset.
     /// </para>
     /// </remarks>
     public static void Reset()

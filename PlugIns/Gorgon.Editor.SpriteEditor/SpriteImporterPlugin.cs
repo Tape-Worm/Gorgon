@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2019 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,35 +23,35 @@
 // Created: March 2, 2019 11:15:34 AM
 // 
 
-using Gorgon.Editor.PlugIns;
+using Gorgon.Editor.Plugins;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.SpriteEditor.Properties;
 using Gorgon.Editor.SpriteEditor.Services;
 using Gorgon.Editor.UI;
 using Gorgon.IO;
-using Gorgon.PlugIns;
+using Gorgon.Plugins;
 
 namespace Gorgon.Editor.SpriteEditor;
 
 /// <summary>
-/// A plugin used to build an importer for sprite data
+/// A Plugin used to build an importer for sprite data
 /// </summary>
-internal class SpriteImporterPlugIn
-    : ContentImportPlugIn
+internal class SpriteImporterPlugin
+    : ContentImportPlugin
 {
 
     // The image editor settings.
     private IImportSettings _settings;
 
-    // The codecs registered with the plug-in.
+    // The codecs registered with the plugin.
     private CodecRegistry _codecs;
 
-    // The plug-in cache for image codecs.
-    private GorgonMefPlugInCache _pluginCache;
+    // The plugin cache for image codecs.
+    private GorgonMefPluginCache _pluginCache;
     /// <summary>
     /// The file name for the file that stores the settings.
     /// </summary>
-    public readonly static string SettingsFilename = typeof(SpriteImporterPlugIn).FullName;
+    public readonly static string SettingsFilename = typeof(SpriteImporterPlugin).FullName;
 
     /// <summary>
     /// Function to retrieve the codec used by the sprite.
@@ -82,12 +82,12 @@ internal class SpriteImporterPlugIn
         return results.Select(item => item.codec).FirstOrDefault(item => item.IsReadable(stream));
     }
 
-    /// <summary>Function to retrieve the settings interface for this plug-in.</summary>
+    /// <summary>Function to retrieve the settings interface for this plugin.</summary>
     /// <param name="injector">Objects to inject into the view model.</param>
     /// <returns>The settings interface view model.</returns>
     /// <remarks>
     ///   <para>
-    /// Implementors who wish to supply customizable settings for their plug-ins from the main "Settings" area in the application can override this method and return a new view model based on
+    /// Implementors who wish to supply customizable settings for their plugins from the main "Settings" area in the application can override this method and return a new view model based on
     /// the base <see cref="ISettingsCategoryViewModel"/> type.
     /// </para>
     ///   <para>
@@ -97,16 +97,16 @@ internal class SpriteImporterPlugIn
     /// </remarks>
     protected override ISettingsCategory OnGetSettings() => _settings;
 
-    /// <summary>Function to provide initialization for the plugin.</summary>
-    /// <param name="pluginService">The plugin service used to access other plugins.</param>
-    /// <remarks>This method is only called when the plugin is loaded at startup.</remarks>
+    /// <summary>Function to provide initialization for the Plugin.</summary>
+    /// <param name="PluginService">The Plugin service used to access other Plugins.</param>
+    /// <remarks>This method is only called when the Plugin is loaded at startup.</remarks>
     protected override void OnInitialize()
     {
         ViewFactory.Register<IImportSettings>(() => new SpriteCodecSettingsPanel());
 
-        _pluginCache = new GorgonMefPlugInCache(HostContentServices.Log);
+        _pluginCache = new GorgonMefPluginCache(HostContentServices.Log);
 
-        SpriteImportSettings settings = HostContentServices.ContentPlugInService.ReadContentSettings<SpriteImportSettings>(SettingsFilename);
+        SpriteImportSettings settings = HostContentServices.ContentPluginService.ReadContentSettings<SpriteImportSettings>(SettingsFilename);
 
         settings ??= new SpriteImportSettings();
 
@@ -118,7 +118,7 @@ internal class SpriteImporterPlugIn
         _settings = settingsVm;
     }
 
-    /// <summary>Function to provide clean up for the plugin.</summary>
+    /// <summary>Function to provide clean up for the Plugin.</summary>
     protected override void OnShutdown()
     {
         try
@@ -141,23 +141,23 @@ internal class SpriteImporterPlugIn
         catch (Exception ex)
         {
             // We don't care if it crashes. The worst thing that'll happen is your settings won't persist.
-            HostContentServices.Log.LogException(ex);
+            HostContentServices.Log.PrintException(ex);
         }
     }
 
-    /// <summary>Function to open a content object from this plugin.</summary>
+    /// <summary>Function to open a content object from this Plugin.</summary>
     /// <returns>A new <see cref="IEditorContentImporter"/> object.</returns>
     /// <remarks>This method creates an instance of the custom content importer. The application will use the object returned to perform the actual import process.</remarks>
     protected override IEditorContentImporter OnCreateImporter() => new GorgonSpriteImporter(ProjectFileSystem, TemporaryFileSystem, _codecs, HostContentServices.GraphicsContext.Renderer2D, HostContentServices.Log);
 
-    /// <summary>Function to determine if the content plugin can open the specified file.</summary>
+    /// <summary>Function to determine if the content Plugin can open the specified file.</summary>
     /// <param name="filePath">The path to the file to evaluate.</param>
     /// <returns>
-    ///   <b>true</b> if the plugin can open the file, or <b>false</b> if not.</returns>
+    ///   <b>true</b> if the Plugin can open the file, or <b>false</b> if not.</returns>
     /// <remarks>
     ///   <para>
-    /// This method is used to determine if the file specified by the <paramref name="filePath" /> passed to the method can be opened by this plug-in. If the method returns <b>true</b>, then the host
-    /// application will convert the file using the importer produced by this plug-in. Otherwise, if the method returns <b>false</b>, then the file is skipped.
+    /// This method is used to determine if the file specified by the <paramref name="filePath" /> passed to the method can be opened by this plugin. If the method returns <b>true</b>, then the host
+    /// application will convert the file using the importer produced by this plugin. Otherwise, if the method returns <b>false</b>, then the file is skipped.
     /// </para>
     ///   <para>
     /// The <paramref name="filePath" /> is a path to the file on the project virtual file system.
@@ -168,8 +168,8 @@ internal class SpriteImporterPlugIn
     /// </remarks>
     protected override bool OnCanOpenContent(string filePath) => GetCodec(filePath, _codecs) is not null;
 
-    /// <summary>Initializes a new instance of the <see cref="SpriteImporterPlugIn"/> class.</summary>
-    public SpriteImporterPlugIn()
+    /// <summary>Initializes a new instance of the <see cref="SpriteImporterPlugin"/> class.</summary>
+    public SpriteImporterPlugin()
         : base(Resources.GORSPR_IMPORT_DESC)
     {
     }

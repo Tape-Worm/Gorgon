@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2020 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -103,7 +103,7 @@ internal class KeyEditorContext
     private IContentFileManager _fileManager;
     // The list of sprites selected for loading texture keys.
     private readonly List<IContentFile> _selectedSprites = [];
-    // Services from the plug-in.
+    // Services from the plugin.
     private ContentServices _contentServices;
     // The current editor for floating point values.
     private IKeyValueEditor _currentEditor;

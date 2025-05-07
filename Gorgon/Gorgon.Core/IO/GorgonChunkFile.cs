@@ -1,5 +1,5 @@
 ﻿// Gorgon.
-// Copyright (C) 2024 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -76,9 +76,9 @@ public abstract class GorgonChunkFile
     } = [];
 
     /// <summary>
-    /// Property to return the <see cref="GorgonSubStream"/> that contains the chunked file.
+    /// Property to return the <see cref="GorgonStreamSlice"/> that contains the chunked file.
     /// </summary>
-    private protected GorgonSubStream Stream
+    private protected GorgonStreamSlice Stream
     {
         get;
     }
@@ -230,6 +230,6 @@ public abstract class GorgonChunkFile
             throw new ArgumentException(Resources.GOR_ERR_STREAM_NOT_SEEKABLE, nameof(stream));
         }
 
-        Stream = new GorgonSubStream(stream, allowWrite: stream.CanWrite);
+        Stream = new GorgonStreamSlice(stream, allowWrite: stream.CanWrite);
     }
 }

@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -31,7 +31,7 @@ using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Metadata;
 using Gorgon.Editor.Native;
-using Gorgon.Editor.PlugIns;
+using Gorgon.Editor.Plugins;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Services;
 using Gorgon.IO;
@@ -48,7 +48,7 @@ namespace Gorgon.Editor.ProjectData;
 /// Initializes a new instance of the <see cref="ProjectManager"/> class
 /// </remarks>
 /// <param name="providers">The file system providers used to read and write project files.</param>
-/// <param name="contentPlugIns">The plug-in service used to manage content.</param>
+/// <param name="contentPlugins">The plugin service used to manage content.</param>
 /// <param name="log">The log interface for debug messages.</param>
 /// <exception cref="ArgumentNullException">Thrown when the <paramref name="providers"/> parameter is <b>null</b>.</exception>
 internal class ProjectManager(FileSystemProviders providers, IGorgonLog log)
@@ -193,7 +193,7 @@ internal class ProjectManager(FileSystemProviders providers, IGorgonLog log)
             }
             catch (Exception ex)
             {
-                _log.LogException(ex);
+                _log.PrintException(ex);
                 ++count;
 
                 // Give the system some time. Sometimes explorer will release its lock.
@@ -531,7 +531,7 @@ internal class ProjectManager(FileSystemProviders providers, IGorgonLog log)
             }
             catch (Exception ex)
             {
-                _log.LogException(ex);
+                _log.PrintException(ex);
                 ++count;
 
                 Thread.Sleep(250);
@@ -617,13 +617,13 @@ internal class ProjectManager(FileSystemProviders providers, IGorgonLog log)
     /// </summary>
     /// <param name="project">The project to save.</param>
     /// <param name="path">The path to the project file.</param>
-    /// <param name="writer">The writer plug-in used to write the file data.</param>
+    /// <param name="writer">The writer plugin used to write the file data.</param>
     /// <param name="progressCallback">The callback method that reports the saving progress to the UI.</param>
     /// <param name="cancelToken">The token used for cancellation of the operation.</param>
     /// <returns>A task for asynchronous operation.</returns>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="project"/>, <paramref name="path"/>, or the <paramref name="writer"/> parameter is <b>null</b>.</exception>        
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
-    public async Task SavePackedFileAsync(IProject project, string path, FileWriterPlugIn writer, Action<int, int, bool> progressCallback, CancellationToken cancelToken)
+    public async Task SavePackedFileAsync(IProject project, string path, FileWriterPlugin writer, Action<int, int, bool> progressCallback, CancellationToken cancelToken)
     {
         if (project is null)
         {

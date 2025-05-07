@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2017 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -35,7 +35,7 @@ using Gorgon.Renderers;
 using Gorgon.Renderers.Cameras;
 using Gorgon.Renderers.Geometry;
 using Gorgon.Timing;
-using Gorgon.UI.OLDE;
+using Gorgon.UI.WindowsForms;
 
 namespace Gorgon.Examples;
 
@@ -321,7 +321,7 @@ internal static class Program
 
         if (deviceList.Count == 0)
         {
-            GorgonDialogs.ErrorBox(_mainForm, "There are no suitable video adapters available in the system. This example is unable to continue and will now exit.");
+            GorgonDialogs.Error(_mainForm, "There are no suitable video adapters available in the system. This example is unable to continue and will now exit.");
             return null;
         }
 
@@ -359,7 +359,7 @@ internal static class Program
             return graphics;
         }
 
-        GorgonDialogs.ErrorBox(_mainForm, $"The selected video device ('{deviceList[0].Name}') does not support a 32, 24 or 16 bit depth buffer.");
+        GorgonDialogs.Error(_mainForm, $"The selected video device ('{deviceList[0].Name}') does not support a 32, 24 or 16 bit depth buffer.");
         return null;
     }
 
@@ -659,7 +659,10 @@ internal static class Program
         try
         {
             Initialize();
-            GorgonApplication.Run(_mainForm, Idle);
+
+            GorgonExample.Loop.Run(Idle);
+
+            Application.Run(_mainForm);
         }
         catch (Exception ex)
         {
@@ -667,8 +670,6 @@ internal static class Program
         }
         finally
         {
-            GorgonExample.UnloadResources();
-
             _2D.Dispose();
 
             // Always call dispose so we can free the native memory allocated for the backing graphics API.
@@ -690,6 +691,8 @@ internal static class Program
             _inputLayout?.Dispose();
             _swap?.Dispose();
             _graphics?.Dispose();
+
+            GorgonExample.ShutDown();
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -40,7 +40,13 @@ public interface IGorgonLogProvider
     /// Function to write a message to the data store.
     /// </summary>
     /// <param name="message">The message to write.</param>
-    void SendMessage(string message);
+    /// <param name="messageType">The type of message being logged.</param>
+    /// <remarks>
+    /// <para>
+    /// Providers can use the <paramref name="messageType"/> value to provide special formatting for the message.
+    /// </para>
+    /// </remarks>
+    void SendMessage(string message, MessageType messageType);
 
     /// <summary>
     /// Function to close the data store for writing.

@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2019 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,15 +25,15 @@
 
 using Gorgon.Core;
 
-namespace Gorgon.Editor.PlugIns;
+namespace Gorgon.Editor.Plugins;
 
 /// <summary>
-/// A record providing plug-in state information
+/// A record providing plugin state information
 /// </summary>
-public class PlugInAssemblyState
+public class PluginAssemblyState
 {
     /// <summary>
-    /// Property to returnt he path to the plug-in.
+    /// Property to returnt he path to the plugin.
     /// </summary>
     public string Path
     {
@@ -64,13 +64,13 @@ public class PlugInAssemblyState
         get;
     }
 
-    /// <summary>Initializes a new instance of the <see cref="PlugInAssemblyState"/> class.</summary>
-    /// <param name="pluginAssemblyPath">The plugin assembly path.</param>
+    /// <summary>Initializes a new instance of the <see cref="PluginAssemblyState"/> class.</summary>
+    /// <param name="pluginAssemblyPath">The Plugin assembly path.</param>
     /// <param name="loadFailure">The reason why the assembly was not loaded.</param>
     /// <param name="isManaged"><b>true</b> if the assembly DLL is managed, <b>false</b> if not.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="pluginAssemblyPath"/> is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrownw hen the <paramref name="pluginAssemblyPath"/> is empty.</exception>
-    public PlugInAssemblyState(string pluginAssemblyPath, string loadFailure, bool isManaged)
+    public PluginAssemblyState(string pluginAssemblyPath, string loadFailure, bool isManaged)
     {
         if (pluginAssemblyPath is null)
         {

@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2020 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -1187,7 +1187,7 @@ internal partial class FormImagePicker
             case nameof(IImagePicker.IsActive):
                 if (_prevIdle is not null)
                 {
-                    GorgonApplication.IdleMethod = _prevIdle;
+                    Gorgon.UI.OLDE.GorgonApplication.IdleMethod = _prevIdle;
                 }
                 CleanupGraphics();
                 break;
@@ -1255,8 +1255,8 @@ internal partial class FormImagePicker
                 SetUIText(ViewModel);
                 InitializeGraphics();
 
-                _prevIdle = GorgonApplication.IdleMethod;
-                GorgonApplication.IdleMethod = Idle;
+                _prevIdle = Gorgon.UI.OLDE.GorgonApplication.IdleMethod;
+                Gorgon.UI.OLDE.GorgonApplication.IdleMethod = Idle;
                 break;
         }
 

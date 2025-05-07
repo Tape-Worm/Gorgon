@@ -79,11 +79,11 @@ namespace Gorgon.IO.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The codec &apos;{0}&apos; was not found in the plug-in..
+        ///   Looks up a localized string similar to The codec &apos;{0}&apos; was not found in the plugin..
         /// </summary>
-        internal static string GOR2DIO_ERR_CODEC_NOT_IN_PLUGIN {
+        internal static string GOR2DIO_ERR_CODEC_NOT_IN_plugin {
             get {
-                return ResourceManager.GetString("GOR2DIO_ERR_CODEC_NOT_IN_PLUGIN", resourceCulture);
+                return ResourceManager.GetString("GOR2DIO_ERR_CODEC_NOT_IN_plugin", resourceCulture);
             }
         }
         
@@ -217,18 +217,18 @@ namespace Gorgon.IO.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Gorgon Animation Codec {0} ({1}).
         /// </summary>
-        internal static string GOR2DIO_TOSTR_ANIMATION_CODEC_PLUGIN_DESC {
+        internal static string GOR2DIO_TOSTR_ANIMATION_CODEC_plugin_DESC {
             get {
-                return ResourceManager.GetString("GOR2DIO_TOSTR_ANIMATION_CODEC_PLUGIN_DESC", resourceCulture);
+                return ResourceManager.GetString("GOR2DIO_TOSTR_ANIMATION_CODEC_plugin_DESC", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Gorgon Sprite Codec {0} ({1}).
         /// </summary>
-        internal static string GOR2DIO_TOSTR_SPRITE_CODEC_PLUGIN_DESC {
+        internal static string GOR2DIO_TOSTR_SPRITE_CODEC_plugin_DESC {
             get {
-                return ResourceManager.GetString("GOR2DIO_TOSTR_SPRITE_CODEC_PLUGIN_DESC", resourceCulture);
+                return ResourceManager.GetString("GOR2DIO_TOSTR_SPRITE_CODEC_plugin_DESC", resourceCulture);
             }
         }
         

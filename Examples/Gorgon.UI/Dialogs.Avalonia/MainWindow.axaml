@@ -1,0 +1,31 @@
+﻿<Window x:Class="Dialogs.Avalonia.MainWindow"
+        xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Dialogs.Avalonia"
+        mc:Ignorable="d"
+        Title="Dialogs - Avalonia" 
+        CanResize="False"
+        d:DesignWidth="800" d:DesignHeight="450" FontSize="24" 
+        Icon="avares://Dialogs.Avalonia/Gorgon2.ico" 
+        SizeToContent="WidthAndHeight" WindowStartupLocation="CenterScreen">
+    <Window.Styles>
+        <Style Selector="Button">
+            <Setter Property="Margin" Value="3,0,3,3"/>
+            <Setter Property="MinWidth" Value="640"/>
+        </Style>
+    </Window.Styles>
+    <Grid>
+        <StackPanel Orientation="Vertical">
+            <Button x:Name="ButtonInformation" Click="ButtonInformation_Click">Information</Button>
+            <Button x:Name="ButtonWarning" Click="ButtonWarning_Click">Warning</Button>
+            <Button x:Name="ButtonWarningDetailed" Click="ButtonWarningDetailed_Click">Warning w/Details</Button>
+            <Button x:Name="ButtonError" Click="ButtonError_Click">Error</Button>
+            <Button x:Name="ButtonErrorDetails" Click="ButtonErrorDetails_Click">Error w/Details</Button>
+            <Button x:Name="ButtonConfirm" Click="ButtonConfirm_Click">Confirmation</Button>
+            <Button x:Name="ButtonConfirmCancel" Click="ButtonConfirmCancel_Click">Confirmation w/Cancel</Button>
+            <Button x:Name="ButtonConfirmToAll" Click="ButtonConfirmToAll_Click">Confirmation w/To All</Button>
+        </StackPanel>
+    </Grid>
+</Window>

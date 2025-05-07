@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -107,7 +107,7 @@ internal class TexConvCompressor(FileInfo texConvFile, IGorgonFileSystem scratch
     private readonly FileInfo _texConv = texConvFile;
     // The file system writer to use.
     private readonly IGorgonFileSystem _writer = scratchWriter;
-    // PlugIn image file codec.
+    // Plugin image file codec.
     private readonly IGorgonImageCodec _codec = codec;
 
     /// <summary>

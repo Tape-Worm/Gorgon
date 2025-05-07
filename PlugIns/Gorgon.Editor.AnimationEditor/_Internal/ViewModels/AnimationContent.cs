@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2019 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -158,7 +158,7 @@ internal class AnimationContent
     }
 
     /// <summary>
-    /// Property to return the settings view model for the plug-in.
+    /// Property to return the settings view model for the plugin.
     /// </summary>
     public ISettings Settings
     {
@@ -946,7 +946,7 @@ internal class AnimationContent
         catch (Exception ex)
         {
             HostServices.Log.PrintError("There was an error updating the animation preview.", LoggingLevel.Verbose);
-            HostServices.Log.LogException(ex);
+            HostServices.Log.PrintException(ex);
         }
     }
 
@@ -971,7 +971,7 @@ internal class AnimationContent
         catch (Exception ex)
         {
             HostServices.Log.PrintError("There was an error retrieving the key frame.", LoggingLevel.Verbose);
-            HostServices.Log.LogException(ex);
+            HostServices.Log.PrintException(ex);
         }
     }
 
@@ -1463,7 +1463,7 @@ internal class AnimationContent
         catch (Exception ex)
         {
             HostServices.Log.PrintError("There was an error selecting the tracks/keys for the animation.", LoggingLevel.Verbose);
-            HostServices.Log.LogException(ex);
+            HostServices.Log.PrintException(ex);
         }
     }
 
@@ -1612,7 +1612,7 @@ internal class AnimationContent
         catch (Exception ex)
         {
             HostServices.Log.PrintError("Failed to move selection to the previous key.", LoggingLevel.Verbose);
-            HostServices.Log.LogException(ex);
+            HostServices.Log.PrintException(ex);
         }
     }
 
@@ -1675,7 +1675,7 @@ internal class AnimationContent
         catch (Exception ex)
         {
             HostServices.Log.PrintError("Failed to move selection to the next key.", LoggingLevel.Verbose);
-            HostServices.Log.LogException(ex);
+            HostServices.Log.PrintException(ex);
         }
     }
 
@@ -1726,7 +1726,7 @@ internal class AnimationContent
         catch (Exception ex)
         {
             HostServices.Log.PrintError("Failed to move selection to the first key.", LoggingLevel.Verbose);
-            HostServices.Log.LogException(ex);
+            HostServices.Log.PrintException(ex);
         }
     }
 
@@ -1787,7 +1787,7 @@ internal class AnimationContent
         catch (Exception ex)
         {
             HostServices.Log.PrintError("Failed to move selection to the last key.", LoggingLevel.Verbose);
-            HostServices.Log.LogException(ex);
+            HostServices.Log.PrintException(ex);
         }
     }
 
@@ -2224,7 +2224,7 @@ internal class AnimationContent
     /// <summary>Function to determine the action to take when this content is closing.</summary>
     /// <returns>
     ///   <b>true</b> to continue with closing, <b>false</b> to cancel the close request.</returns>
-    /// <remarks>PlugIn authors should override this method to confirm whether save changed content, continue without saving, or cancel the operation entirely.</remarks>
+    /// <remarks>Plugin authors should override this method to confirm whether save changed content, continue without saving, or cancel the operation entirely.</remarks>
     protected override async Task<bool> OnCloseContentTaskAsync()
     {
         if (ContentState == ContentState.Unmodified)

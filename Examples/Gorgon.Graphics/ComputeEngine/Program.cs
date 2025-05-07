@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2017 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@
 
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using Gorgon.Diagnostics;
 using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -73,6 +74,8 @@ internal class Program
     // The maximum number of elements to send and receive.
     private const int MaxValues = 10000;
 
+    // The log for the application.
+    private static IGorgonLog _log;
     // The graphics device used to by the compute engine.
     private static GorgonGraphics _graphics;
     // The compute shader to run.
@@ -149,7 +152,7 @@ internal class Program
     {
         // We will need to access the graphics device in order to use compute functionality, so we'll use the first usable device in the system.
         // Find out which devices we have installed in the system.
-        IReadOnlyList<IGorgonVideoAdapterInfo> deviceList = GorgonGraphics.EnumerateAdapters();
+        IReadOnlyList<IGorgonVideoAdapterInfo> deviceList = GorgonGraphics.EnumerateAdapters(log: _log);
 
         Console.WriteLine("Enumerating video devices...");
 
@@ -168,7 +171,7 @@ internal class Program
         Console.WriteLine($"Using the '{firstDevice.Name}' video device.\n");
 
         // We have to create a graphics interface to allow the compute engine to communicate with the GPU.
-        _graphics = new GorgonGraphics(firstDevice);
+        _graphics = new GorgonGraphics(firstDevice, log: _log);
 
         // We will also need to compile a compute shader so we can actually perform the work.
         Console.WriteLine("Compiling the compute shader (SimpleCompute)...");
@@ -249,6 +252,9 @@ internal class Program
             Console.WriteLine("them for accuracy.\n");
             Console.ResetColor();
 
+            _log = new GorgonTextFileLog("ComputeEngine", "Tape_Worm", typeof(Program).Assembly.GetName().Version);
+            _log.LogStart(new GorgonComputerInfo());
+
             // Initialize the required objects.
             Console.WriteLine("Initializing...");
             Initialize();
@@ -305,6 +311,8 @@ internal class Program
             _outputBuffer?.Dispose();
             _computeShader?.Dispose();
             _graphics?.Dispose();
+
+            _log.LogEnd();
         }
 
         // Wait for the user to exit.

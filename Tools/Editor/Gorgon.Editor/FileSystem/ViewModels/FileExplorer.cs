@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -31,7 +31,7 @@ using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.Metadata;
-using Gorgon.Editor.PlugIns;
+using Gorgon.Editor.Plugins;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
@@ -390,9 +390,9 @@ internal class FileExplorer
     }
 
     /// <summary>
-    /// Property to return the metadata for the content plug-ins.
+    /// Property to return the metadata for the content plugins.
     /// </summary>
-    public IReadOnlyList<IContentPlugInMetadata> PlugInMetadata
+    public IReadOnlyList<IContentPluginMetadata> PluginMetadata
     {
         get;
         private set;
@@ -498,14 +498,14 @@ internal class FileExplorer
     }
 
     /// <summary>
-    /// Function to set up the content plug-in association for a content file.
+    /// Function to set up the content plugin association for a content file.
     /// </summary>
     /// <param name="filePath">The path to the content file.</param>
     /// <param name="metadata">The metadata to evaluate.</param>
-    /// <param name="metadataOnly"><b>true</b> to indicate that only metadata should be used to scan the content file, <b>false</b> to scan, in depth, per plugin (slow).</param>
-    /// <returns><b>true</b> if a content plug-in was associated, <b>false</b> if not.</returns>
+    /// <param name="metadataOnly"><b>true</b> to indicate that only metadata should be used to scan the content file, <b>false</b> to scan, in depth, per Plugin (slow).</param>
+    /// <returns><b>true</b> if a content plugin was associated, <b>false</b> if not.</returns>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="metadata"/> parameter is <b>null</b>.</exception>
-    private bool AssignContentPlugIn(string filePath, ProjectItemMetadata metadata, bool metadataOnly)
+    private bool AssignContentPlugin(string filePath, ProjectItemMetadata metadata, bool metadataOnly)
     {
         if (metadata is null)
         {
@@ -518,17 +518,17 @@ internal class FileExplorer
             return false;
         }
 
-        // Check the metadata for the plugin type associated with the node.            
-        (ContentPlugIn plugin, MetadataPlugInState state) = HostServices.ContentPlugInService.GetContentPlugIn(metadata);
+        // Check the metadata for the Plugin type associated with the node.            
+        (ContentPlugin Plugin, MetadataPluginState state) = HostServices.ContentPluginService.GetContentPlugin(metadata);
 
         switch (state)
         {
-            case MetadataPlugInState.NotFound:
+            case MetadataPluginState.NotFound:
                 metadata.ContentMetadata = null;
-                metadata.PlugInName = string.Empty;
+                metadata.PluginName = string.Empty;
                 return true;
-            case MetadataPlugInState.Assigned:
-                metadata.ContentMetadata = plugin as IContentPlugInMetadata;
+            case MetadataPluginState.Assigned:
+                metadata.ContentMetadata = Plugin as IContentPluginMetadata;
                 return true;
         }
 
@@ -537,19 +537,19 @@ internal class FileExplorer
             return true;
         }
 
-        // Assume that no plugin is available for the node.
-        metadata.PlugInName = string.Empty;
+        // Assume that no Plugin is available for the node.
+        metadata.PluginName = string.Empty;
 
-        // Attempt to associate a content plug-in with the node.            
-        foreach (KeyValuePair<string, ContentPlugIn> servicePlugIn in HostServices.ContentPlugInService.PlugIns)
+        // Attempt to associate a content plugin with the node.            
+        foreach (KeyValuePair<string, ContentPlugin> servicePlugin in HostServices.ContentPluginService.Plugins)
         {
-            if ((servicePlugIn.Value is not IContentPlugInMetadata pluginMetadata)
-                || (!pluginMetadata.CanOpenContent(filePath)))
+            if ((servicePlugin.Value is not IContentPluginMetadata PluginMetadata)
+                || (!PluginMetadata.CanOpenContent(filePath)))
             {
                 continue;
             }
 
-            metadata.ContentMetadata = pluginMetadata;
+            metadata.ContentMetadata = PluginMetadata;
             return true;
         }
 
@@ -557,20 +557,20 @@ internal class FileExplorer
     }
 
     /// <summary>
-    /// Function to set up the content plug-in association for a content file.
+    /// Function to set up the content plugin association for a content file.
     /// </summary>
     /// <param name="contentFile">The content file to evaluate.</param>
-    /// <param name="metadataOnly"><b>true</b> to indicate that only metadata should be used to scan the content file, <b>false</b> to scan, in depth, per plugin (slow).</param>
-    /// <returns><b>true</b> if a content plug-in was associated, <b>false</b> if not.</returns>
+    /// <param name="metadataOnly"><b>true</b> to indicate that only metadata should be used to scan the content file, <b>false</b> to scan, in depth, per Plugin (slow).</param>
+    /// <returns><b>true</b> if a content plugin was associated, <b>false</b> if not.</returns>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="contentFile"/> parameter is <b>null</b>.</exception>
-    private bool AssignContentPlugIn(IFile contentFile, bool metadataOnly)
+    private bool AssignContentPlugin(IFile contentFile, bool metadataOnly)
     {
         if (contentFile is null)
         {
             throw new ArgumentNullException(nameof(contentFile));
         }
 
-        bool result = AssignContentPlugIn(contentFile.FullPath, contentFile.Metadata, metadataOnly);
+        bool result = AssignContentPlugin(contentFile.FullPath, contentFile.Metadata, metadataOnly);
 
         if ((result) && (contentFile.RefreshCommand is not null) && (contentFile.RefreshCommand.CanExecute(null)))
         {
@@ -1057,7 +1057,7 @@ internal class FileExplorer
 
         foreach (IFile file in directory.Files)
         {
-            AssignContentPlugIn(file, true);
+            AssignContentPlugin(file, true);
             _files[file.ID] = file;
         }
 
@@ -1067,7 +1067,7 @@ internal class FileExplorer
 
             foreach (IFile file in subDir.Files)
             {
-                AssignContentPlugIn(file, true);
+                AssignContentPlugin(file, true);
                 _files[file.ID] = file;
             }
         }
@@ -2709,7 +2709,7 @@ internal class FileExplorer
             }
 
             string originalPath = e.PhysicalFilePath;
-            IEditorContentImporter importer = HostServices.ContentPlugInService.GetContentImporter(e.PhysicalFilePath);
+            IEditorContentImporter importer = HostServices.ContentPluginService.GetContentImporter(e.PhysicalFilePath);
 
             // No importer, no conversion possible.
             if (importer is null)
@@ -2722,7 +2722,7 @@ internal class FileExplorer
                 importers.Add(importer);
             }
 
-            // If we have no importer plug-in for the current file, then leave.
+            // If we have no importer plugin for the current file, then leave.
             if (importer is null)
             {
                 importedFilePaths[originalPath] = originalPath;
@@ -2833,7 +2833,7 @@ internal class FileExplorer
                     existingFile = file;
                 }
 
-                AssignContentPlugIn(existingFile, false);
+                AssignContentPlugin(existingFile, false);
 
                 selected.Add(existingFile);
             }
@@ -2880,10 +2880,10 @@ internal class FileExplorer
             {
                 foreach (IFile file in files)
                 {
-                    // Reset so we can get the plug-in.
+                    // Reset so we can get the plugin.
                     file.Metadata.ContentMetadata = null;
-                    file.Metadata.PlugInName = null;
-                    AssignContentPlugIn(file.FullPath, file.Metadata, false);
+                    file.Metadata.PluginName = null;
+                    AssignContentPlugin(file.FullPath, file.Metadata, false);
                 }
             });
 
@@ -2908,7 +2908,7 @@ internal class FileExplorer
         catch (Exception ex)
         {
             HostServices.Log.PrintError("Failed to refresh the file system.", LoggingLevel.Simple);
-            HostServices.Log.LogException(ex);
+            HostServices.Log.PrintException(ex);
         }
         finally
         {
@@ -2975,7 +2975,7 @@ internal class FileExplorer
             OnSelectedFileCountChanged();
         }
 
-        PlugInMetadata = [.. HostServices.ContentPlugInService.PlugIns.Values.OfType<IContentPlugInMetadata>()];
+        PluginMetadata = [.. HostServices.ContentPluginService.Plugins.Values.OfType<IContentPluginMetadata>()];
     }
 
     /// <summary>Function called when the associated view is loaded.</summary>
@@ -3227,7 +3227,7 @@ internal class FileExplorer
 
                     parent.Files.Add(fileViewModel);
 
-                    AssignContentPlugIn(fileViewModel, false);
+                    AssignContentPlugin(fileViewModel, false);
                 }
                 else
                 {

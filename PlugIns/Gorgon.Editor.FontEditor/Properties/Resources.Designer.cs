@@ -251,9 +251,9 @@ internal class Resources {
     }
 
     /// <summary>
-    ///   Looks up a localized string similar to This is an example plug-in for the Gorgon Editor.
+    ///   Looks up a localized string similar to This is an example plugin for the Gorgon Editor.
     ///
-    ///While this is not the most comprehensive example of using the content plug-in system, it should be enough to get you started.
+    ///While this is not the most comprehensive example of using the content plugin system, it should be enough to get you started.
     ///
     ///You&apos;ll notice that we&apos;ve got text displaying in our main area, and a ribbon above with some commands that we can execute against the text content.
     ///
@@ -719,9 +719,9 @@ internal class Resources {
     /// <summary>
     ///   Looks up a localized string similar to An editor used to create/edit Gorgon fonts..
     /// </summary>
-    internal static string GORFNT_TEXT_PLUGIN_DESC {
+    internal static string GORFNT_TEXT_plugin_DESC {
         get {
-            return ResourceManager.GetString("GORFNT_TEXT_PLUGIN_DESC", resourceCulture);
+            return ResourceManager.GetString("GORFNT_TEXT_plugin_DESC", resourceCulture);
         }
     }
 

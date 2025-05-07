@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2019 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -35,7 +35,7 @@ namespace Gorgon.Editor.ImageEditor;
 internal class Settings
     : SettingsCategoryBase<SettingsParameters>, ISettings
 {
-    // The underlying settings for the plug-in.
+    // The underlying settings for the plugin.
     private ImageEditorSettings _settings;
     // The range for the alpha setting funtionality.
     private GorgonRange<int> _alphaRange;

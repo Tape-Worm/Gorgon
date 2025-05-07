@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2020 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -29,15 +29,15 @@ using Gorgon.Editor.Services;
 namespace Gorgon.Editor.UI;
 
 /// <summary>
-/// A common view model for a plug-ins category
+/// A common view model for a plugins category
 /// </summary>
 /// <typeparam name="T">The type of parameters for the view model.</typeparam>
-public abstract class PlugInsCategory<T>
+public abstract class PluginsCategory<T>
     : SettingsCategoryBase<T>
-    where T : PlugInsCategoryViewModelParameters
+    where T : PluginsCategoryViewModelParameters
 {
     /// <summary>
-    /// Property to return the dialog used to open plug-in assemblies.
+    /// Property to return the dialog used to open plugin assemblies.
     /// </summary>
     protected IFileDialogService OpenCodecDialog
     {
@@ -46,7 +46,7 @@ public abstract class PlugInsCategory<T>
     }
 
     /// <summary>
-    /// Property to return the file name that will hold the plug-ins.
+    /// Property to return the file name that will hold the plugins.
     /// </summary>
     protected abstract string SettingsFileName
     {
@@ -62,17 +62,17 @@ public abstract class PlugInsCategory<T>
     }
 
     /// <summary>
-    /// Property to return the command for loading a plug-in assembly.
+    /// Property to return the command for loading a plugin assembly.
     /// </summary>
-    public IEditorCommand<object> LoadPlugInAssemblyCommand
+    public IEditorCommand<object> LoadPluginAssemblyCommand
     {
         get;
     }
 
     /// <summary>
-    /// Property to return the command to unloading a plug-in assembly.
+    /// Property to return the command to unloading a plugin assembly.
     /// </summary>
-    public IEditorCommand<object> UnloadPlugInAssembliesCommand
+    public IEditorCommand<object> UnloadPluginAssembliesCommand
     {
         get;
     }
@@ -91,23 +91,23 @@ public abstract class PlugInsCategory<T>
                 return;
             }
 
-            HostServices.ContentPlugInService.WriteContentSettings(SettingsFileName, settingsData);
+            HostServices.ContentPluginService.WriteContentSettings(SettingsFileName, settingsData);
         }
         catch (Exception ex)
         {
             // We don't care if it crashes. The worst thing that'll happen is your settings won't persist.
-            HostServices.Log.LogException(ex);
+            HostServices.Log.PrintException(ex);
         }
     }
 
     /// <summary>
-    /// Function to unload the selected plug-in assemblies.
+    /// Function to unload the selected plugin assemblies.
     /// </summary>
-    private void DoUnloadPlugInAssemblies()
+    private void DoUnloadPluginAssemblies()
     {
         try
         {
-            if (!OnUnloadPlugIns())
+            if (!OnUnloadPlugins())
             {
                 return;
             }
@@ -116,7 +116,7 @@ public abstract class PlugInsCategory<T>
         }
         catch (Exception ex)
         {
-            HostServices.MessageDisplay.ShowError(ex, Resources.GOREDIT_ERR_UNABLE_TO_UNLOAD_PLUGINS);
+            HostServices.MessageDisplay.ShowError(ex, Resources.GOREDIT_ERR_UNABLE_TO_UNLOAD_pluginS);
         }
         finally
         {
@@ -125,13 +125,13 @@ public abstract class PlugInsCategory<T>
     }
 
     /// <summary>
-    /// Function to load in a plug-in assembly.
+    /// Function to load in a plugin assembly.
     /// </summary>
-    private void DoLoadPlugInAssembly()
+    private void DoLoadPluginAssembly()
     {
         try
         {
-            if (!OnLoadPlugIns())
+            if (!OnLoadPlugins())
             {
                 return;
             }
@@ -141,7 +141,7 @@ public abstract class PlugInsCategory<T>
         }
         catch (Exception ex)
         {
-            HostServices.MessageDisplay.ShowError(ex, Resources.GOREDIT_ERR_UNABLE_TO_LOAD_PLUGINS);
+            HostServices.MessageDisplay.ShowError(ex, Resources.GOREDIT_ERR_UNABLE_TO_LOAD_pluginS);
         }
         finally
         {
@@ -156,22 +156,22 @@ public abstract class PlugInsCategory<T>
     protected abstract object OnGetSettings();
 
     /// <summary>
-    /// Function to determine if the selected plug-in assemblies can be unloaded.
+    /// Function to determine if the selected plugin assemblies can be unloaded.
     /// </summary>
-    /// <returns><b>true</b> if the plug-in assemblies can be removed, <b>false</b> if not.</returns>
-    protected abstract bool CanUnloadPlugInAssemblies();
+    /// <returns><b>true</b> if the plugin assemblies can be removed, <b>false</b> if not.</returns>
+    protected abstract bool CanUnloadPluginAssemblies();
 
     /// <summary>
-    /// Function to unload previously loaded plug-ins.
+    /// Function to unload previously loaded plugins.
     /// </summary>
     /// <returns><b>true</b> to indicate that the operation succeeded, or <b>false</b> if it was cancelled.</returns>
-    protected abstract bool OnUnloadPlugIns();
+    protected abstract bool OnUnloadPlugins();
 
     /// <summary>
-    /// Function to load plugins from selected assemblies.
+    /// Function to load Plugins from selected assemblies.
     /// </summary>
     /// <returns><b>true</b> to indicate that the operation succeeded, or <b>false</b> if it was cancelled.</returns>
-    protected abstract bool OnLoadPlugIns();
+    protected abstract bool OnLoadPlugins();
 
     /// <summary>Function to inject dependencies for the view model.</summary>
     /// <param name="injectionParameters">The parameters to inject.</param>
@@ -180,11 +180,11 @@ public abstract class PlugInsCategory<T>
     /// </remarks>
     protected override void OnInitialize(T injectionParameters) => OpenCodecDialog = injectionParameters.OpenCodecDialog;
 
-    /// <summary>Initializes a new instance of the <see cref="PlugInsCategory{T}"/> class.</summary>
-    protected PlugInsCategory()
+    /// <summary>Initializes a new instance of the <see cref="PluginsCategory{T}"/> class.</summary>
+    protected PluginsCategory()
     {
         WriteSettingsCommand = new EditorCommand<object>(DoWriteSettings);
-        LoadPlugInAssemblyCommand = new EditorCommand<object>(DoLoadPlugInAssembly);
-        UnloadPlugInAssembliesCommand = new EditorCommand<object>(DoUnloadPlugInAssemblies, CanUnloadPlugInAssemblies);
+        LoadPluginAssemblyCommand = new EditorCommand<object>(DoLoadPluginAssembly);
+        UnloadPluginAssembliesCommand = new EditorCommand<object>(DoUnloadPluginAssemblies, CanUnloadPluginAssemblies);
     }
 }

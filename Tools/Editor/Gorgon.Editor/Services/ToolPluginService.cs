@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2018 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -29,64 +29,64 @@ using System.Text.Json.Serialization;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
-using Gorgon.Editor.PlugIns;
+using Gorgon.Editor.Plugins;
 using Gorgon.Editor.Properties;
 using Gorgon.IO;
 using Gorgon.IO.FileSystem;
-using Gorgon.PlugIns;
+using Gorgon.Plugins;
 
 namespace Gorgon.Editor.Services;
 
 /// <summary>
-/// The service used for managing the tool plugins
+/// The service used for managing the tool Plugins
 /// </summary>
-/// <remarks>Initializes a new instance of the ToolPlugInService class.</remarks>
-/// <param name="settingsDirectory">The directory that will contain settings for the content plug-ins.</param>
-/// <param name="hostServices">The host appplication services to pass to the plug-ins.</param>
-internal class ToolPlugInService(string settingsDirectory, IHostContentServices hostServices)
-        : IToolPlugInService, IDisposable
+/// <remarks>Initializes a new instance of the ToolPluginService class.</remarks>
+/// <param name="settingsDirectory">The directory that will contain settings for the content plugins.</param>
+/// <param name="hostServices">The host appplication services to pass to the plugins.</param>
+internal class ToolPluginService(string settingsDirectory, IHostContentServices hostServices)
+        : IToolPluginService, IDisposable
 {
 
-    // The plugin list.
-    private readonly Dictionary<string, ToolPlugIn> _plugins = new(StringComparer.OrdinalIgnoreCase);
-    // The list of disabled tool plug-ins.
-    private readonly Dictionary<string, IDisabledPlugIn> _disabled = new(StringComparer.OrdinalIgnoreCase);
+    // The Plugin list.
+    private readonly Dictionary<string, ToolPlugin> _plugins = new(StringComparer.OrdinalIgnoreCase);
+    // The list of disabled tool plugins.
+    private readonly Dictionary<string, IDisabledPlugin> _disabled = new(StringComparer.OrdinalIgnoreCase);
     // The list of ribbon buttons for all tools.
-    private readonly Dictionary<string, IReadOnlyList<IToolPlugInRibbonButton>> _ribbonButtons = new(StringComparer.CurrentCultureIgnoreCase);
-    // The directory that contains the settings for the plug-ins.
+    private readonly Dictionary<string, IReadOnlyList<IToolPluginRibbonButton>> _ribbonButtons = new(StringComparer.CurrentCultureIgnoreCase);
+    // The directory that contains the settings for the plugins.
     private readonly string _settingsDir = settingsDirectory;
-    // The host application services to pass to the plug-ins.
+    // The host application services to pass to the plugins.
     private readonly IHostContentServices _hostServices = hostServices;
 
-    /// <summary>Property to return the list of tool plugins loaded in to the application.</summary>
-    /// <value>The plugins.</value>
-    public IReadOnlyDictionary<string, ToolPlugIn> PlugIns => _plugins;
+    /// <summary>Property to return the list of tool Plugins loaded in to the application.</summary>
+    /// <value>The Plugins.</value>
+    public IReadOnlyDictionary<string, ToolPlugin> Plugins => _plugins;
 
-    /// <summary>Property to return the list of disabled plug-ins.</summary>
-    public IReadOnlyDictionary<string, IDisabledPlugIn> DisabledPlugIns => _disabled;
+    /// <summary>Property to return the list of disabled plugins.</summary>
+    public IReadOnlyDictionary<string, IDisabledPlugin> DisabledPlugins => _disabled;
 
     /// <summary>
-    /// Property to return the UI buttons for the tool plug-in.
+    /// Property to return the UI buttons for the tool plugin.
     /// </summary>
-    public IReadOnlyDictionary<string, IReadOnlyList<IToolPlugInRibbonButton>> RibbonButtons => _ribbonButtons;
+    public IReadOnlyDictionary<string, IReadOnlyList<IToolPluginRibbonButton>> RibbonButtons => _ribbonButtons;
 
     /// <summary>
-    /// Function to return the file for the content plug-in settings.
+    /// Function to return the file for the content plugin settings.
     /// </summary>
     /// <param name="name">The name of the file.</param>
-    /// <returns>The file containing the plug-in settings.</returns>
-    private FileInfo GetContentPlugInSettingsPath(string name) =>
+    /// <returns>The file containing the plugin settings.</returns>
+    private FileInfo GetContentPluginSettingsPath(string name) =>
 #if DEBUG
         new(Path.Combine(_settingsDir, name.FormatFileName()) + ".DEBUG.json");
 #else
         new(Path.Combine(_settingsDir, Path.ChangeExtension(name.FormatFileName(), "json")));
 #endif
     /// <summary>
-    /// Function to clear the UI buttons for the plug-ins.
+    /// Function to clear the UI buttons for the plugins.
     /// </summary>
     private void ClearToolButtons()
     {
-        foreach (KeyValuePair<string, IReadOnlyList<IToolPlugInRibbonButton>> buttonGroup in _ribbonButtons)
+        foreach (KeyValuePair<string, IReadOnlyList<IToolPluginRibbonButton>> buttonGroup in _ribbonButtons)
         {
             foreach (IDisposable button in buttonGroup.Value.OfType<IDisposable>())
             {
@@ -104,16 +104,16 @@ internal class ToolPlugInService(string settingsDirectory, IHostContentServices 
     {
         ClearToolButtons();
 
-        foreach (KeyValuePair<string, ToolPlugIn> plugin in PlugIns)
+        foreach (KeyValuePair<string, ToolPlugin> Plugin in Plugins)
         {
-            IToolPlugInRibbonButton button = plugin.Value.GetToolButton();
+            IToolPluginRibbonButton button = Plugin.Value.GetToolButton();
             button.ValidateButton();
 
-            List<IToolPlugInRibbonButton> buttons;
-            if (_ribbonButtons.TryGetValue(button.GroupName, out IReadOnlyList<IToolPlugInRibbonButton> roButtons))
+            List<IToolPluginRibbonButton> buttons;
+            if (_ribbonButtons.TryGetValue(button.GroupName, out IReadOnlyList<IToolPluginRibbonButton> roButtons))
             {
                 // This is safe because this is the implementation.
-                buttons = (List<IToolPlugInRibbonButton>)roButtons;
+                buttons = (List<IToolPluginRibbonButton>)roButtons;
             }
             else
             {
@@ -124,10 +124,10 @@ internal class ToolPlugInService(string settingsDirectory, IHostContentServices 
         }
     }
 
-    /// <summary>Function to add a tool plugin to the service.</summary>
-    /// <param name="plugin">The plugin to add.</param>
+    /// <summary>Function to add a tool Plugin to the service.</summary>
+    /// <param name="plugin">The Plugin to add.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="plugin"/> parameter is <b>null</b>.</exception>
-    public void AddToolPlugIn(ToolPlugIn plugin)
+    public void AddToolPlugin(ToolPlugin plugin)
     {
         if (plugin is null)
         {
@@ -142,12 +142,12 @@ internal class ToolPlugInService(string settingsDirectory, IHostContentServices 
         _plugins[plugin.Name] = plugin;
     }
 
-    /// <summary>Function to clear all of the tool plugins.</summary>
+    /// <summary>Function to clear all of the tool Plugins.</summary>
     public void Clear()
     {
-        foreach (KeyValuePair<string, ToolPlugIn> plugin in _plugins)
+        foreach (KeyValuePair<string, ToolPlugin> Plugin in _plugins)
         {
-            plugin.Value.Shutdown();
+            Plugin.Value.Shutdown();
         }
 
         _plugins.Clear();
@@ -157,12 +157,12 @@ internal class ToolPlugInService(string settingsDirectory, IHostContentServices 
     public void Dispose() => Clear();
 
     /// <summary>
-    /// Function to load all of the tool plug-ins into the service.
+    /// Function to load all of the tool plugins into the service.
     /// </summary>
-    /// <param name="pluginCache">The plug-in assembly cache.</param>
-    /// <param name="pluginDir">The directory that contains the plug-ins.</param>
+    /// <param name="pluginCache">The plugin assembly cache.</param>
+    /// <param name="pluginDir">The directory that contains the plugins.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="pluginCache"/>, or the <paramref name="pluginDir"/> parameter is <b>null</b>.</exception>
-    public void LoadToolPlugIns(GorgonMefPlugInCache pluginCache, string pluginDir)
+    public void LoadToolPlugins(GorgonMefPluginCache pluginCache, string pluginDir)
     {
         if (pluginCache is null)
         {
@@ -174,65 +174,65 @@ internal class ToolPlugInService(string settingsDirectory, IHostContentServices 
             throw new ArgumentNullException(nameof(pluginDir));
         }
 
-        IReadOnlyList<PlugInAssemblyState> assemblies = pluginCache.ValidateAndLoadAssemblies(Directory.EnumerateFiles(pluginDir, "*.dll", SearchOption.TopDirectoryOnly), Program.Log);
+        IReadOnlyList<PluginAssemblyState> assemblies = pluginCache.ValidateAndLoadAssemblies(Directory.EnumerateFiles(pluginDir, "*.dll", SearchOption.TopDirectoryOnly), Program.Log);
 
         if (assemblies.Count > 0)
         {
-            foreach (PlugInAssemblyState record in assemblies.Where(item => !item.IsAssemblyLoaded && item.IsManaged))
+            foreach (PluginAssemblyState record in assemblies.Where(item => !item.IsAssemblyLoaded && item.IsManaged))
             {
-                _disabled[Path.GetFileName(record.Path)] = new DisabledPlugIn(DisabledReasonCode.Error, Path.GetFileName(record.Path), record.LoadFailureReason, record.Path);
+                _disabled[Path.GetFileName(record.Path)] = new DisabledPlugin(DisabledReasonCode.Error, Path.GetFileName(record.Path), record.LoadFailureReason, record.Path);
             }
         }
 
-        IGorgonPlugInService plugins = new GorgonMefPlugInService(pluginCache);
-        IReadOnlyList<ToolPlugIn> pluginList = plugins.GetPlugIns<ToolPlugIn>();
+        IGorgonPluginService Plugins = new GorgonMefPluginService(pluginCache);
+        IReadOnlyList<ToolPlugin> PluginList = Plugins.GetPlugins<ToolPlugin>();
 
-        foreach (ToolPlugIn plugin in pluginList)
+        foreach (ToolPlugin Plugin in PluginList)
         {
             try
             {
-                Program.Log.Print($"Creating tool plug-in '{plugin.Name}'...", LoggingLevel.Simple);
-                plugin.Initialize(_hostServices);
+                Program.Log.Print($"Creating tool plugin '{Plugin.Name}'...", LoggingLevel.Simple);
+                Plugin.Initialize(_hostServices);
 
-                // Check to see if this plug-in can continue.
-                IReadOnlyList<string> validation = plugin.IsPlugInAvailable();
+                // Check to see if this plugin can continue.
+                IReadOnlyList<string> validation = Plugin.IsPluginAvailable();
 
                 if (validation.Count > 0)
                 {
-                    // Shut the plug-in down.
-                    plugin.Shutdown();
+                    // Shut the plugin down.
+                    Plugin.Shutdown();
 
-                    Program.Log.PrintWarning($"The tool plug-in '{plugin.Name}' is disabled:", LoggingLevel.Simple);
+                    Program.Log.PrintWarning($"The tool plugin '{Plugin.Name}' is disabled:", LoggingLevel.Simple);
                     foreach (string reason in validation)
                     {
                         Program.Log.PrintWarning($"{reason}", LoggingLevel.Verbose);
                     }
 
-                    _disabled[plugin.Name] = new DisabledPlugIn(DisabledReasonCode.ValidationError, plugin.Name, string.Join("\r\n", validation), plugin.PlugInPath);
+                    _disabled[Plugin.Name] = new DisabledPlugin(DisabledReasonCode.ValidationError, Plugin.Name, string.Join("\r\n", validation), Plugin.PluginPath);
 
-                    // Remove this plug-in.
-                    plugins.Unload(plugin.Name);
+                    // Remove this plugin.
+                    Plugins.Unload(Plugin.Name);
                     continue;
                 }
 
-                AddToolPlugIn(plugin);
+                AddToolPlugin(Plugin);
             }
             catch (Exception ex)
             {
-                // Attempt to gracefully shut the plug-in down if we error out.
-                plugin.Shutdown();
+                // Attempt to gracefully shut the plugin down if we error out.
+                Plugin.Shutdown();
 
-                Program.Log.PrintError($"Cannot create tool plug-in '{plugin.Name}'.", LoggingLevel.Simple);
-                Program.Log.LogException(ex);
+                Program.Log.PrintError($"Cannot create tool plugin '{Plugin.Name}'.", LoggingLevel.Simple);
+                Program.Log.PrintException(ex);
 
-                _disabled[plugin.Name] = new DisabledPlugIn(DisabledReasonCode.Error, plugin.Name, string.Format(Resources.GOREDIT_DISABLE_CONTENT_PLUGIN_EXCEPTION, ex.Message), plugin.PlugInPath);
+                _disabled[Plugin.Name] = new DisabledPlugin(DisabledReasonCode.Error, Plugin.Name, string.Format(Resources.GOREDIT_DISABLE_CONTENT_plugin_EXCEPTION, ex.Message), Plugin.PluginPath);
             }
         }
     }
 
-    /// <summary>Function to remove a tool plugin from the service.</summary>
-    /// <param name="plugin">The plugin to remove.</param>
-    public void RemoveToolPlugIn(ToolPlugIn plugin)
+    /// <summary>Function to remove a tool Plugin from the service.</summary>
+    /// <param name="plugin">The Plugin to remove.</param>
+    public void RemoveToolPlugin(ToolPlugin plugin)
     {
         if (plugin is null)
         {
@@ -248,12 +248,12 @@ internal class ToolPlugInService(string settingsDirectory, IHostContentServices 
         plugin.Shutdown();
     }
 
-    /// <summary>Funcion to read the settings for a content plug-in from a JSON file.</summary>
+    /// <summary>Funcion to read the settings for a content plugin from a JSON file.</summary>
     /// <typeparam name="T">The type of settings to read. Must be a reference type.</typeparam>
     /// <param name="name">The name of the file.</param>
     /// <param name="converters">A list of JSON data converters.</param>
-    /// <returns>The settings object for the plug-in, or <b>null</b> if no settings file was found for the plug-in.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/>, or the <paramref name="plugin" /> parameter is <b>null</b>.</exception>
+    /// <returns>The settings object for the plugin, or <b>null</b> if no settings file was found for the plugin.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/>, or the <paramref name="Plugin" /> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
     /// <remarks>This will read in the settings for a content plug from the same location where the editor stores its application settings file.</remarks>
     public T ReadContentSettings<T>(string name, params JsonConverter[] converters)
@@ -269,7 +269,7 @@ internal class ToolPlugInService(string settingsDirectory, IHostContentServices 
             throw new ArgumentEmptyException(nameof(name));
         }
 
-        FileInfo settingsFile = GetContentPlugInSettingsPath(name);
+        FileInfo settingsFile = GetContentPluginSettingsPath(name);
 
         if (!settingsFile.Exists)
         {
@@ -292,14 +292,14 @@ internal class ToolPlugInService(string settingsDirectory, IHostContentServices 
         return JsonSerializer.Deserialize<T>(reader.ReadToEnd(), options);
     }
 
-    /// <summary>Function to write out the settings for a content plug-in as a JSON file.</summary>
+    /// <summary>Function to write out the settings for a content plugin as a JSON file.</summary>
     /// <typeparam name="T">The type of settings to write. Must be a reference type.</typeparam>
     /// <param name="name">The name of the file.</param>
     /// <param name="contentSettings">The content settings to persist as JSON file.</param>
     /// <param name="converters">A list of JSON converters.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/>, <paramref name="plugin" />, or the <paramref name="contentSettings" /> parameter is <b>null</b>.</exception>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="name"/>, <paramref name="Plugin" />, or the <paramref name="contentSettings" /> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
-    /// <remarks>This will write out the settings for a content plug-in to the same location where the editor stores its application settings file.</remarks>
+    /// <remarks>This will write out the settings for a content plugin to the same location where the editor stores its application settings file.</remarks>
     public void WriteContentSettings<T>(string name, T contentSettings, params JsonConverter[] converters)
         where T : class
     {
@@ -318,7 +318,7 @@ internal class ToolPlugInService(string settingsDirectory, IHostContentServices 
             throw new ArgumentNullException(nameof(contentSettings));
         }
 
-        FileInfo settingsFile = GetContentPlugInSettingsPath(name);
+        FileInfo settingsFile = GetContentPluginSettingsPath(name);
         using Stream stream = settingsFile.Open(FileMode.Create, FileAccess.Write, FileShare.None);
         using StreamWriter writer = new(stream, Encoding.UTF8, 80000, false);
 
@@ -342,9 +342,9 @@ internal class ToolPlugInService(string settingsDirectory, IHostContentServices 
     /// <param name="temporaryFileSystem">The file system used to hold temporary working data.</param>
     public void ProjectActivated(IContentFileManager fileManager, IGorgonFileSystem temporaryFileSystem)
     {
-        foreach (ToolPlugIn plugIn in _plugins.Values)
+        foreach (ToolPlugin Plugin in _plugins.Values)
         {
-            plugIn.ProjectOpened(fileManager, temporaryFileSystem);
+            Plugin.ProjectOpened(fileManager, temporaryFileSystem);
         }
 
         GetToolButtons();
@@ -355,9 +355,9 @@ internal class ToolPlugInService(string settingsDirectory, IHostContentServices 
     /// </summary>        
     public void ProjectDeactivated()
     {
-        foreach (ToolPlugIn plugIn in _plugins.Values)
+        foreach (ToolPlugin Plugin in _plugins.Values)
         {
-            plugIn.ProjectClosed();
+            Plugin.ProjectClosed();
         }
 
         ClearToolButtons();

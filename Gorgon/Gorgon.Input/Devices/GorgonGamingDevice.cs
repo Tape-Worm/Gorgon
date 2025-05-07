@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2011 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -28,11 +28,11 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 using Gorgon.Core;
 using Gorgon.Graphics;
-using Gorgon.Math;
-using Gorgon.Memory;
 using Gorgon.Input.Devices;
 using Gorgon.Input.Native;
 using Gorgon.Input.Properties;
+using Gorgon.Math;
+using Gorgon.Memory;
 using Windows.Win32.Devices.HumanInterfaceDevice;
 using Windows.Win32.Foundation;
 

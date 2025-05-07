@@ -148,7 +148,7 @@ Please try again.</value>
 
 Please try again.</value>
   </data>
-  <data name="GORIST_PLUGIN_DESC" xml:space="preserve">
+  <data name="GORIST_plugin_DESC" xml:space="preserve">
     <value>Gorgon Image Splitter</value>
   </data>
   <data name="GORIST_DESC_FOLDER_SELECT" xml:space="preserve">

@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2020 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,7 @@
 // 
 
 using Gorgon.Editor.Content;
-using Gorgon.Editor.PlugIns;
+using Gorgon.Editor.Plugins;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
 
@@ -89,7 +89,7 @@ internal class TextContentParameters(string text, ITextColor textColor, ISetting
     public ISettings Settings
     {
         // The view model for the settings for the settings panel. We pass this to our view model so 
-        // that we can detect changes to the plug-in settings.
+        // that we can detect changes to the plugin settings.
         get;
     } = settings ?? throw new ArgumentNullException(nameof(settings));
 

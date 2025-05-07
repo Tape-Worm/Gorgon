@@ -1,7 +1,7 @@
 ﻿
 // 
 // Gorgon
-// Copyright (C) 2017 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -30,8 +30,8 @@ using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
-using Gorgon.PlugIns;
-using Gorgon.UI.OLDE;
+using Gorgon.Plugins;
+using Gorgon.UI.WindowsForms;
 
 namespace Graphics.Examples;
 
@@ -41,17 +41,17 @@ namespace Graphics.Examples;
 public partial class Form : System.Windows.Forms.Form
 {
 
-    // The cache that holds plugin information.
-    private GorgonMefPlugInCache _pluginCache;
+    // The cache that holds Plugin information.
+    private GorgonMefPluginCache _pluginCache;
     // The main graphics interface.
     private GorgonGraphics _graphics;
     // The swap chain to use.
     private GorgonSwapChain _swap;
-    // Image to display, loaded from our plug-in.
+    // Image to display, loaded from our plugin.
     private GorgonTexture2DView _texture;
     // The image in system memory.
     private IGorgonImage _image;
-    // Our custom codec loaded from the plug-in.
+    // Our custom codec loaded from the plugin.
     private IGorgonImageCodec _customCodec;
 
     /// <summary>
@@ -94,31 +94,31 @@ public partial class Form : System.Windows.Forms.Form
     }
 
     /// <summary>
-    /// Function to load our useless image codec plug-in.
+    /// Function to load our useless image codec plugin.
     /// </summary>
     /// <returns><b>true</b> if successful, <b>false</b> if not.</returns>
     private bool LoadCodec()
     {
-        const string pluginName = "Gorgon.Examples.TvImageCodecPlugIn";
+        const string PluginName = "Gorgon.Examples.TvImageCodecPlugin";
 
-        _pluginCache = new GorgonMefPlugInCache(GorgonApplication.Log);
+        _pluginCache = new GorgonMefPluginCache(GorgonExample.Log);
 
-        // Load our plug-in.
-        _pluginCache.LoadPlugInAssemblies(GorgonApplication.StartupPath.FullName, "TVImageCodec.dll");
+        // Load our plugin.
+        _pluginCache.LoadPluginAssemblies(Application.StartupPath, "TVImageCodec.dll");
 
-        // Activate the plugin service.
-        IGorgonPlugInService pluginService = new GorgonMefPlugInService(_pluginCache);
+        // Activate the Plugin service.
+        IGorgonPluginService PluginService = new GorgonMefPluginService(_pluginCache);
 
-        // Find the plugin.
-        GorgonImageCodecPlugIn plugIn = pluginService.GetPlugIn<GorgonImageCodecPlugIn>(pluginName);
+        // Find the Plugin.
+        GorgonImageCodecPlugin Plugin = PluginService.GetPlugin<GorgonImageCodecPlugin>(PluginName);
 
-        if ((plugIn is null) || (plugIn.Codecs.Count == 0))
+        if ((Plugin is null) || (Plugin.Codecs.Count == 0))
         {
             return false;
         }
 
-        // Normally you would enumerate the plug-ins, but in this case we know there's only one.
-        _customCodec = plugIn.CreateCodec(plugIn.Codecs[0].Name);
+        // Normally you would enumerate the plugins, but in this case we know there's only one.
+        _customCodec = Plugin.CreateCodec(Plugin.Codecs[0].Name);
 
         return _customCodec is not null;
     }
@@ -169,10 +169,18 @@ public partial class Form : System.Windows.Forms.Form
         }
     }
 
-    /// <summary>
-    /// Raises the <see cref="E:System.Windows.Forms.Form.FormClosing" /> event.
-    /// </summary>
-    /// <param name="e">A <see cref="FormClosingEventArgs" /> that contains the event data.</param>
+    /// <inheritdoc/>
+    protected override void OnKeyDown(KeyEventArgs e)
+    {
+        base.OnKeyDown(e);
+
+        if (e.KeyCode == Keys.Escape)
+        {
+            Close();
+        }
+    }
+
+    /// <intheritdoc/>
     protected override void OnFormClosing(FormClosingEventArgs e)
     {
         base.OnFormClosing(e);
@@ -186,10 +194,7 @@ public partial class Form : System.Windows.Forms.Form
         _image?.Dispose();
     }
 
-    /// <summary>
-    /// Raises the <see cref="E:System.Windows.Forms.Form.Load" /> event.
-    /// </summary>
-    /// <param name="e">An <see cref="EventArgs" /> that contains the event data.</param>
+    /// <intheritdoc/>
     protected override void OnLoad(EventArgs e)
     {
         base.OnLoad(e);
@@ -203,8 +208,8 @@ public partial class Form : System.Windows.Forms.Form
             // Load the custom codec.
             if (!LoadCodec())
             {
-                GorgonDialogs.ErrorBox(this, "Unable to load the image codec plug-in.");
-                GorgonApplication.Quit();
+                GorgonDialogs.Error(this, "Unable to load the image codec plugin.");
+                Application.Exit();
                 return;
             }
 
@@ -214,8 +219,8 @@ public partial class Form : System.Windows.Forms.Form
 
             if (deviceList.Count == 0)
             {
-                GorgonDialogs.ErrorBox(this, "There are no suitable video adapters available in the system. This example is unable to continue and will now exit.");
-                GorgonApplication.Quit();
+                GorgonDialogs.Error(this, "There are no suitable video adapters available in the system. This example is unable to continue and will now exit.");
+                Application.Exit();
                 return;
             }
 
@@ -225,25 +230,25 @@ public partial class Form : System.Windows.Forms.Form
                                         this,
                                         new GorgonSwapChainInfo(ClientSize.Width, ClientSize.Height, BufferFormat.R8G8B8A8_UNorm)
                                         {
-                                            Name = "Codec PlugIn SwapChain"
+                                            Name = "Codec Plugin SwapChain"
                                         });
 
             _graphics.SetRenderTarget(_swap.RenderTargetView);
 
             // Load the image to use as a texture.
             IGorgonImageCodec png = new GorgonCodecPng();
-            _image = png.FromFile(Path.Combine(GorgonExample.GetResourcePath(@"Textures\CodecPlugIn\").FullName, "SourceTexture.png"));
+            _image = png.FromFile(Path.Combine(GorgonExample.GetResourcePath(@"Textures\CodecPlugin\").FullName, "SourceTexture.png"));
 
             GorgonExample.LoadResources(_graphics);
 
             ConvertImage();
 
-            GorgonApplication.IdleMethod = Idle;
+            GorgonExample.Loop.Run(Idle);
         }
         catch (Exception ex)
         {
             GorgonExample.HandleException(ex);
-            GorgonApplication.Quit();
+            Application.Exit();
         }
         finally
         {
