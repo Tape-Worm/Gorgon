@@ -30,11 +30,11 @@ using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
-using Gorgon.Graphics.Core;
-using Gorgon.Graphics.Fonts;
+/*using Gorgon.Graphics.Core;
+using Gorgon.Graphics.Fonts;*/
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
-using Gorgon.Renderers;
+//using Gorgon.Renderers;
 using Gorgon.Timing;
 using Gorgon.UI.WindowsForms;
 
@@ -46,14 +46,14 @@ namespace Gorgon.Examples;
 public static class GorgonExample
 {
 
-    // The Gorgon logo.
+/*    // The Gorgon logo.
     private static GorgonTexture2DView _logo;
     // The font factory to use.
     private static GorgonFontFactory _factory;
     // The font used for statistics.
     private static GorgonFont _statsFont;
     // Blitter for displaying rendering.
-    private static GorgonTextureBlitter _blitter;
+    private static GorgonTextureBlitter _blitter;*/
     // The string containing our statistics.
     private static readonly StringBuilder _statsText = new();
     // The main window for the application.
@@ -118,6 +118,7 @@ public static class GorgonExample
         set;
     } = true;
 
+    /*
     /// <summary>
     /// Property to return the blitter used to draw textures on the current render target.
     /// </summary>
@@ -127,7 +128,8 @@ public static class GorgonExample
     /// Property to return the font factory used to handle font creation for our examples.
     /// </summary>
     public static GorgonFontFactory Fonts => _factory;
-
+    */
+    
     /// <summary>
     /// Function called when a key is pressed in the application.
     /// </summary>
@@ -221,6 +223,7 @@ public static class GorgonExample
         Cursor.Current = Cursors.Default;
     }
 
+    /*
     /// <summary>
     /// Function to blit the logo without the aid of the 2D renderer.
     /// </summary>
@@ -237,7 +240,7 @@ public static class GorgonExample
         GorgonRectangle logoRegion = new(currentRtv.Width - _logo.Width - 5, currentRtv.Height - _logo.Height - 2, _logo.Width, _logo.Height);
         _blitter.Blit(_logo, logoRegion, blendState: GorgonBlendState.Default);
     }
-
+    */
     /// <summary>
     /// Function to handle an exception should one occur.
     /// </summary>
@@ -252,7 +255,7 @@ public static class GorgonExample
         Cursor.Show();
         ex.Handle(e => GorgonDialogs.Error(null, e, "There was an error running the application and it must now close.", "Error"), Log);
     }
-
+    /*
     /// <summary>
     /// Function to draw the statistics and the logo for the example.
     /// </summary>
@@ -293,7 +296,7 @@ public static class GorgonExample
             .DrawFilledRectangle(logoRegion, GorgonColors.White, _logo, new GorgonRectangleF(0, 0, 1, 1))
             .End();
     }
-
+    
     /// <summary>
     /// Function to draw the statistics and the logo for the example.
     /// </summary>
@@ -336,13 +339,13 @@ public static class GorgonExample
 
         renderer.End();
     }
-
+    */
     /// <summary>
     /// Function to force the resources for the application to unload.
     /// </summary>
     public static void UnloadResources()
     {
-        GorgonTextureBlitter blitter = Interlocked.Exchange(ref _blitter, null);
+        /*GorgonTextureBlitter blitter = Interlocked.Exchange(ref _blitter, null);
         GorgonTexture2DView logo = Interlocked.Exchange(ref _logo, null);
         GorgonFont font = Interlocked.Exchange(ref _statsFont, null);
         GorgonFontFactory factory = Interlocked.Exchange(ref _factory, null);
@@ -350,9 +353,9 @@ public static class GorgonExample
         blitter?.Dispose();
         logo?.Dispose();
         font?.Dispose();
-        factory?.Dispose();
+        factory?.Dispose();*/
     }
-
+    
     /// <summary>
     /// Function called when the application is shutting down.
     /// </summary>
@@ -370,7 +373,7 @@ public static class GorgonExample
             Log.LogEnd();
         }
     }
-
+    /*
     /// <summary>
     /// Function to load the logo for display in the application.
     /// </summary>
@@ -408,7 +411,7 @@ public static class GorgonExample
             Usage = ResourceUsage.Immutable
         });
     }
-
+    */
     /// <summary>
     /// Function to initialize the application.
     /// </summary>
