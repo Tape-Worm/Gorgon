@@ -23,6 +23,8 @@
 // Created: Thursday, January 17, 2013 11:07:02 PM
 // 
 
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using Gorgon.Core;
 using Gorgon.IO.FileSystem;
@@ -61,21 +63,13 @@ public partial class Form
     : System.Windows.Forms.Form
 {
     // Our file system.
-    private IGorgonFileSystem _fileSystem;
+    private IGorgonFileSystem? _fileSystem;
     // Zip file system provider.
-    private IGorgonFileSystemProvider _zipProvider;
-    // Our picture box.
-    private PictureBox _picture;
+    private IGorgonFileSystemProvider? _zipProvider;
     // Loaded image.
-    private Image _image;
-    // Loaded text/binary info.
-    private TextBox _textDisplay;
-    // Textbox font.
-    private Font _textFont;
-    // Instructions label.
-    private Label _instructions;
+    private Image? _image;
     // File system plugin assembly cache.
-    private GorgonMefPluginCache _cache;
+    private GorgonMefPluginCache? _cache;
 
     /// <summary>
     /// Handles the NodeMouseDoubleClick event of the treeFileSystem control.
@@ -84,21 +78,20 @@ public partial class Form
     /// <param name="e">The <see cref="TreeNodeMouseClickEventArgs" /> instance containing the event data.</param>
     private void TreeFileSystem_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
     {
-        if (splitFileSystem.Panel2.Controls.Count > 0)
-        {
-            splitFileSystem.Panel2.Controls.RemoveAt(0);
-        }
+        Debug.Assert(_fileSystem is not null, "File system not created");
 
         try
         {
             if (e.Node?.Tag is not IGorgonVirtualFile)
             {
-                splitFileSystem.Panel2.Controls.Add(_instructions);
+                LabelInstructions.Visible = true;
+                TextDisplay.Visible = Picture.Visible = false;
+                LabelInstructions.Dock = DockStyle.Fill;
                 return;
             }
 
-            _picture.Image = null;
-            _textDisplay.Text = string.Empty;
+            Picture.Image = null;
+            TextDisplay.Text = string.Empty;
             IGorgonVirtualFile file = (IGorgonVirtualFile)e.Node.Tag;
 
             // Here we load the image from the file system.
@@ -119,12 +112,13 @@ public partial class Form
                     }
 
                     _image = Image.FromStream(fileStream);
-                    _picture.Image = _image;
-                    _picture.SizeMode = PictureBoxSizeMode.Zoom;
+                    Picture.Image = _image;
+                    Picture.SizeMode = PictureBoxSizeMode.Zoom;
 
                     // Add to control.
-                    splitFileSystem.Panel2.Controls.Add(_picture);
-                    _picture.Dock = DockStyle.Fill;
+                    LabelInstructions.Visible = TextDisplay.Visible = false;
+                    Picture.Visible = true;
+                    Picture.Dock = DockStyle.Fill;
                     break;
                 default:
                     // Get data in the file stream.
@@ -132,19 +126,19 @@ public partial class Form
                     fileStream.Read(textData, 0, textData.Length);
 
                     // Convert to a string.
-                    _textDisplay.Text = Encoding.UTF8.GetString(textData);
-                    _textDisplay.Multiline = true;
-                    _textDisplay.ReadOnly = true;
-                    _textDisplay.ScrollBars = ScrollBars.Both;
-                    _textDisplay.Dock = DockStyle.Fill;
-                    splitFileSystem.Panel2.Controls.Add(_textDisplay);
+                    TextDisplay.Text = Encoding.UTF8.GetString(textData);
+                    LabelInstructions.Visible = Picture.Visible = false;
+                    TextDisplay.Visible = true;
+                    TextDisplay.Dock = DockStyle.Fill;
                     break;
             }
         }
         catch (Exception ex)
         {
             ex.Handle(e => GorgonDialogs.Error(this, e), GorgonExample.Log);
-            splitFileSystem.Panel2.Controls.Add(_instructions);
+            LabelInstructions.Visible = true;
+            TextDisplay.Visible = Picture.Visible = false;
+            LabelInstructions.Dock = DockStyle.Fill;
         }
     }
 
@@ -153,12 +147,12 @@ public partial class Form
     /// </summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="TreeViewCancelEventArgs" /> instance containing the event data.</param>
-    private void TreeFileSystem_BeforeExpand(object sender, TreeViewCancelEventArgs e)
+    private void TreeFileSystem_BeforeExpand(object? sender, TreeViewCancelEventArgs e)
     {
 
         try
         {
-            if (e.Node.Tag is not IGorgonVirtualDirectory directory)
+            if (e.Node?.Tag is not IGorgonVirtualDirectory directory)
             {
                 e.Cancel = true;
                 return;
@@ -177,9 +171,11 @@ public partial class Form
     /// </summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="TreeViewCancelEventArgs" /> instance containing the event data.</param>
-    private void TreeFileSystem_BeforeCollapse(object sender, TreeViewCancelEventArgs e)
+    private void TreeFileSystem_BeforeCollapse(object? sender, TreeViewCancelEventArgs e)
     {
-        IGorgonVirtualDirectory directory = e.Node.Tag as IGorgonVirtualDirectory;
+        Debug.Assert(_fileSystem is not null, "File system not created");
+
+        IGorgonVirtualDirectory? directory = e.Node?.Tag as IGorgonVirtualDirectory;
 
         try
         {
@@ -198,6 +194,7 @@ public partial class Form
     /// <summary>
     /// Function to load the zip file system provider.
     /// </summary>
+    [MemberNotNull(nameof(_fileSystem), nameof(_zipProvider), nameof(_cache))]
     private void LoadZipFileSystemProvider()
     {
         // Name of our zip provider Plugin.
@@ -218,8 +215,10 @@ public partial class Form
     /// Function to fill the file system tree view.
     /// </summary>
     /// <param name="directory">Parent directory to fill, or <b>null</b> to fill the root directory.</param>
-    private void FillTree(IGorgonVirtualDirectory directory)
+    private void FillTree(IGorgonVirtualDirectory? directory)
     {
+        Debug.Assert(_fileSystem is not null, "File system not created");
+
         TreeNodeCollection nodes;
         TreeNode parentNode;
 
@@ -337,10 +336,7 @@ public partial class Form
         base.OnFormClosing(e);
 
         _cache?.Dispose();
-        _picture?.Dispose();
         _image?.Dispose();
-        _textDisplay?.Dispose();
-        _textFont?.Dispose();
     }
 
     /// <inheritdoc/>
@@ -352,33 +348,6 @@ public partial class Form
         {
             GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
             GorgonExample.PluginLocationDirectory = new DirectoryInfo(ExampleConfig.Default.PluginLocation);
-
-            // Picture box.
-            _picture = new PictureBox
-            {
-                Name = "pictureImage"
-            };
-
-            // Text display.
-            _textDisplay = new TextBox
-            {
-                Name = "textDisplay"
-            };
-            _textFont = new Font("Consolas", 10.0f, FontStyle.Regular, GraphicsUnit.Point);
-            _textDisplay.Font = _textFont;
-
-            _instructions = new Label
-            {
-                Name = "labelInstructions",
-                Text = "Double click on a file node in the tree to display it.",
-                AutoSize = false,
-                TextAlign = ContentAlignment.MiddleCenter,
-                Dock = DockStyle.Fill,
-                Font = Font
-            };
-
-            // Add the instructions.
-            splitFileSystem.Panel2.Controls.Add(_instructions);
 
             // Get the zip file provider.
             LoadZipFileSystemProvider();

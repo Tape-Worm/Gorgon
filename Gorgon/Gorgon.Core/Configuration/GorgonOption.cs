@@ -84,7 +84,7 @@ public class GorgonOption
     {
         Type type = typeof(T);
 
-        return typeof(T) != type ? (T?)Convert.ChangeType(_defaultValue, type) : (T?)_defaultValue;
+        return type != Type ? (T?)Convert.ChangeType(_defaultValue, type) : (T?)_defaultValue;
     }
 
     /// <summary>
@@ -96,7 +96,7 @@ public class GorgonOption
     {
         Type type = typeof(T);
 
-        return typeof(T) != type ? (T?)Convert.ChangeType(_minValue, type) : (T?)_minValue;
+        return type != Type ? (T?)Convert.ChangeType(_minValue, type) : (T?)_minValue;
     }
 
     /// <summary>
@@ -108,7 +108,7 @@ public class GorgonOption
     {
         Type type = typeof(T);
 
-        return typeof(T) != type ? (T?)Convert.ChangeType(_maxValue, type) : (T?)_maxValue;
+        return type != Type ? (T?)Convert.ChangeType(_maxValue, type) : (T?)_maxValue;
     }
 
     /// <summary>
@@ -120,7 +120,7 @@ public class GorgonOption
     {
         Type type = typeof(T);
 
-        return (typeof(T) != Type) ? (T?)Convert.ChangeType(_value, type) : (T?)_value;
+        return type != Type ? (T?)Convert.ChangeType(_value, type) : (T?)_value;
     }
 
     /// <summary>
@@ -130,12 +130,19 @@ public class GorgonOption
     /// <param name="value">The value to assign.</param>
     public void SetValue<T>(T? value)
     {
+        Type type = typeof(T);
         object? newValue = value;
 
         // Convert to the type used by this option.
-        if ((typeof(T) != Type) && (value is IConvertible))
+        if ((type != Type) && (value is IConvertible))
         {
             newValue = Convert.ChangeType(value, Type);
+        }
+
+        if (type.IsEnum)
+        {
+            _value = newValue;
+            return;
         }
 
         // If we're using a numeric, or date/time value, ensure that it's within the min/max range.

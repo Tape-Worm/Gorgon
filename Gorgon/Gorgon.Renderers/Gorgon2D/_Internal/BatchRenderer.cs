@@ -136,7 +136,7 @@ internal sealed class BatchRenderer
                                                                                      });
 
         IndexBuffer = new GorgonIndexBuffer(Graphics,
-                                            new GorgonIndexBufferInfo(indices.Length)
+                                            new GorgonIndexBufferInfo((int)indices.Length)
                                             {
                                                 Usage = ResourceUsage.Immutable,
                                                 Binding = VertexIndexBufferBinding.None

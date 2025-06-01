@@ -81,7 +81,7 @@ namespace Gorgon.Native;
 /// </para>
 /// </remarks>
 public sealed class GorgonNativeBuffer<T>
-    : IDisposable, IReadOnlyList<T>
+    : IDisposable, IEnumerable<T>
     where T : unmanaged
 {
     // The pointer to unmanaged memory.
@@ -112,12 +112,12 @@ public sealed class GorgonNativeBuffer<T>
     /// <summary>
     /// Property to return the number of bytes allocated for this buffer.
     /// </summary>
-    public int SizeInBytes => _memoryBlock.SizeInBytes;
+    public long SizeInBytes => _memoryBlock.SizeInBytes;
 
     /// <summary>
     /// Property to return the number of items of type <typeparamref name="T"/> stored in this buffer.
     /// </summary>
-    public int Length => _memoryBlock.Length;
+    public long Length => _memoryBlock.Length;
 
     /// <summary>
     /// Property to return the location in memory where this buffer is located.
@@ -135,12 +135,6 @@ public sealed class GorgonNativeBuffer<T>
         get;
         private set;
     }
-
-    /// <summary>Gets the number of elements in the collection.</summary>
-    int IReadOnlyCollection<T>.Count => Length;
-
-    /// <summary>Gets the <typeparamref name="T"/> at the specified index.</summary>
-    T IReadOnlyList<T>.this[int index] => this[index];
 
     /// <summary>
     /// Property to return a reference to the item located at the specified index.
@@ -164,7 +158,7 @@ public sealed class GorgonNativeBuffer<T>
     /// </code>
     /// </para>
     /// </remarks>
-    public ref T this[int index] => ref _memoryBlock[index];
+    public ref T this[long index] => ref _memoryBlock[index];
 
     /// <summary>
     /// Property to return a slice of this buffer by a given range.
@@ -172,6 +166,7 @@ public sealed class GorgonNativeBuffer<T>
     /// <returns>The slice of the buffer memory as a <see cref="GorgonPtr{T}"/>.</returns>
     /// <exception cref="ArgumentOutOfRangeException">Thrown if the <paramref name="range"/> is less than 0, or greater than/equal to <see cref="Length"/>.</exception>
     /// <remarks>
+    /// <para>
     /// This indexer can be used to create a slice of a buffer. For example, if a buffer has 10 items, and we want to create a pointer that points to the 3rd item and 4 items in the buffer, we can do the 
     /// following:
     /// <code lang="csharp">
@@ -188,6 +183,14 @@ public sealed class GorgonNativeBuffer<T>
     /// // 'sliced' will now point to: 4, 5, 6, 7
     /// ]]>
     /// </code>
+    /// </para>
+    /// <para>
+    /// <note type="warning">
+    /// <para>
+    /// If the data is larger than 2 GB, only 2 GB will be sliced using the <see cref="Range"/> because the <see cref="Range"/> type uses a 32 bit <see cref="int"/> for its start and end values.
+    /// </para>
+    /// </note>
+    /// </para>
     /// </remarks>
     public GorgonPtr<T> this[Range range] => _memoryBlock[range];
 
@@ -197,7 +200,7 @@ public sealed class GorgonNativeBuffer<T>
     /// <param name="count">The number of items in the buffer.</param>
     /// <param name="alignment">The alignment for the memory block.</param>    
     /// <param name="init"><b>true</b> to initialize the allocated memory, <b>false</b> to leave as-is.</param>
-    private unsafe void Allocate(int count, int alignment, bool init)
+    private unsafe void Allocate(long count, int alignment, bool init)
     {
         if (!BitOperations.IsPow2(alignment))
         {
@@ -269,6 +272,7 @@ public sealed class GorgonNativeBuffer<T>
     /// <para>Thrown when the <paramref name="alignment"/> parameter is not a power of two.</para>
     /// </exception>
     /// <exception cref="NullReferenceException">Thrown if the underlying memory was freed.</exception>
+    /// <exception cref="InvalidOperationException">Thrown if this buffer was created from a pinned value or array.</exception>
     /// <remarks>
     /// <para>
     /// This will reallocate the underlying memory for the buffer to a new size, and, optionally, a new memory alignment. 
@@ -289,12 +293,20 @@ public sealed class GorgonNativeBuffer<T>
     /// <para>
     /// If the <paramref name="length"/>, and memory <paramref name="alignment"/> are the same as the current buffer, then this method will do nothing.
     /// </para>
+    /// <para>
+    /// Do not attempt to resize a buffer that was created from a pinned array or other type. Attempts to do so will result in an exception.
+    /// </para>
     /// </remarks>
-    public void Resize(int length, int alignment = 16, bool preserve = false)
+    public void Resize(long length, int alignment = 16, bool preserve = false)
     {
         if (_memoryBlock == GorgonPtr<T>.NullPtr)
         {
             throw new NullReferenceException();
+        }
+
+        if (!_ownsMemory)
+        {
+            throw new InvalidOperationException(Resources.GOR_ERR_CANNOT_RESIZE_PINNED);
         }
 
         if ((Length == length) && (alignment == Alignment))
@@ -310,16 +322,16 @@ public sealed class GorgonNativeBuffer<T>
         unsafe
         {
             GorgonPtr<T> oldBlock = _memoryBlock;
-            int prevSize = SizeInBytes;
-            int prevLength = Length;
+            long prevSize = SizeInBytes;
+            long prevLength = Length;
             bool ownsMemory = _ownsMemory;
 
-            Allocate(length, alignment, preserve);
+            Allocate(length, alignment, true);
 
             if (preserve)
             {
-                int copyCount = length.Min(prevLength);
-                oldBlock[0..copyCount].CopyTo(_memoryBlock);
+                long copyCount = length.Min(prevLength);
+                oldBlock.Slice(0, copyCount).CopyTo(_memoryBlock);
             }
 
             // Unpin the type we've pinned.
@@ -400,15 +412,17 @@ public sealed class GorgonNativeBuffer<T>
     /// </code>
     /// </para>
     /// </remarks>
-    public static GorgonNativeBuffer<T> FromSpan(ReadOnlySpan<T> span)
+    public unsafe static GorgonNativeBuffer<T> FromSpan(ReadOnlySpan<T> span)
     {
         ArgumentEmptyException.ThrowIfEmpty(span);
 
         GorgonNativeBuffer<T> result = new(span.Length);
-        for (int i = 0; i < span.Length; ++i)
+
+        fixed(T* srcPtr = span)
         {
-            result[i] = span[i];
+            Buffer.MemoryCopy(srcPtr, (byte*)result._memoryBlock, result.Length, span.Length);
         }
+
         return result;
     }
 
@@ -458,7 +472,7 @@ public sealed class GorgonNativeBuffer<T>
     /// </para>
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public ref TTo AsRef<TTo>(int offset = 0)
+    public ref TTo AsRef<TTo>(long offset = 0)
         where TTo : unmanaged => ref _memoryBlock.AsRef<TTo>(offset);
 
     /// <summary>
@@ -517,7 +531,7 @@ public sealed class GorgonNativeBuffer<T>
         where TTo : unmanaged
     {
         int toSize = Unsafe.SizeOf<TTo>();
-        int newSize = _memoryBlock.SizeInBytes / toSize;
+        long newSize = _memoryBlock.SizeInBytes / toSize;
 
         if ((newSize == 0) || ((newSize * toSize) > _memoryBlock.SizeInBytes))
         {
@@ -528,9 +542,11 @@ public sealed class GorgonNativeBuffer<T>
 
         try
         {
-            GorgonPtr<byte> src = GorgonPtr<T>.ToBytePointer(_memoryBlock);
-            GorgonPtr<byte> dest = GorgonPtr<TTo>.ToBytePointer(result._memoryBlock);
-            src[..src.SizeInBytes.Min(dest.SizeInBytes)].CopyTo(dest);
+            long actualSize = _memoryBlock.SizeInBytes.Min(result._memoryBlock.SizeInBytes);
+            GorgonPtr<byte> src = _memoryBlock.ToPointerType<byte>(actualSize);
+            GorgonPtr<byte> dest = result._memoryBlock.ToPointerType<byte>();
+
+            src.CopyTo(dest);
         }
         catch
         {
@@ -572,19 +588,12 @@ public sealed class GorgonNativeBuffer<T>
     /// </code>
     /// </para>
     /// </remarks>
-    public void CopyTo(GorgonNativeBuffer<T> destination, int sourceIndex = 0, int? count = null, int destIndex = 0)
+    public void CopyTo(GorgonNativeBuffer<T> destination, long sourceIndex = 0, long? count = null, long destIndex = 0)
     {
-        count ??= (Length - sourceIndex);
+        ArgumentOutOfRangeException.ThrowIfLessThan(sourceIndex, 0);
+        ArgumentOutOfRangeException.ThrowIfLessThan(destIndex, 0);
 
-        if (sourceIndex < 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(sourceIndex), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
-        }
-
-        if (destIndex < 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(destIndex), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
-        }
+        count ??= (Length - sourceIndex);        
 
         if (sourceIndex + count.Value > _memoryBlock.Length)
         {
@@ -596,7 +605,9 @@ public sealed class GorgonNativeBuffer<T>
             throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, destIndex, count.Value), nameof(destIndex));
         }
 
-        (_memoryBlock[sourceIndex..(count.Value + sourceIndex)]).CopyTo(destination._memoryBlock[destIndex..(count.Value + destIndex)]);
+        GorgonPtr<T> src = _memoryBlock.Slice(sourceIndex, count.Value);
+        GorgonPtr<T> dest = destination._memoryBlock.Slice(destIndex, count.Value);
+        src.CopyTo(dest);
     }
 
     /// <summary>
@@ -633,15 +644,19 @@ public sealed class GorgonNativeBuffer<T>
     /// ]]>
     /// </code>
     /// </para>
+    /// <para>
+    /// <note type="warning">
+    /// <para>
+    /// If the data pointed to is larger than 2 GB, only the first 2 GB will be copied into the span. This is because the <see cref="Span{T}"/> type uses a 32 bit index, and length.
+    /// </para>
+    /// </note>
+    /// </para>
     /// </remarks>
     public void CopyTo(Span<T> destination, int sourceIndex = 0, int? count = null)
     {
-        count ??= (Length - sourceIndex);
+        ArgumentOutOfRangeException.ThrowIfLessThan(sourceIndex, 0);
 
-        if (sourceIndex < 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(sourceIndex), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
-        }
+        count ??= (int)((Length - sourceIndex).Min(int.MaxValue));
 
         if (sourceIndex + count.Value > _memoryBlock.Length)
         {
@@ -653,7 +668,9 @@ public sealed class GorgonNativeBuffer<T>
             throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, 0, count.Value), nameof(destination));
         }
 
-        (_memoryBlock[sourceIndex..(count.Value + sourceIndex)]).CopyTo(destination[..count.Value]);
+        int destSize = count > int.MaxValue ? int.MaxValue : (int)count.Value;
+
+        _memoryBlock.Slice(sourceIndex, count.Value).CopyTo(destination[..destSize]);
     }
 
     /// <summary>Returns an enumerator that iterates through the collection.</summary>
@@ -708,10 +725,11 @@ public sealed class GorgonNativeBuffer<T>
     /// <param name="pinnedData">The handle to the pinned data.</param>
     /// <param name="index">The starting index in the array.</param>
     /// <param name="count">The number of array items to cover.</param>
-    internal GorgonNativeBuffer(GCHandle pinnedData, int index, int count)
+    internal GorgonNativeBuffer(GCHandle pinnedData, long index, long count)
     {
         _pinnedArray = pinnedData;
-        _memoryBlock = new GorgonPtr<T>(_pinnedArray.AddrOfPinnedObject() + (index * TypeSize), count);
+        nint ptr = _pinnedArray.AddrOfPinnedObject() + ((nint)(index * TypeSize));
+        _memoryBlock = new GorgonPtr<T>(ptr, count);
         Alignment = 0;
     }
 
@@ -761,7 +779,7 @@ public sealed class GorgonNativeBuffer<T>
     /// set to <b>false</b> then the memory will not be initialized and will contain random data. This is useful for performance, but can be a problem for debugging.
     /// </para>
     /// </remarks>
-    public GorgonNativeBuffer(int length, int alignment = 16, bool init = true)
+    public GorgonNativeBuffer(long length, int alignment = 16, bool init = true)
     {
         if (length < 1)
         {

@@ -54,7 +54,7 @@
     <PackageReference Include="SharpDX.Mathematics" Version="4.2.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Gorgon\Gorgon.Graphics\Imaging\Gorgon.Graphics.Imaging.csproj" />
+    <ProjectReference Include="..\..\Gorgon\Gorgon.Renderers\Gorgon2D\Gorgon.Renderers.Gorgon2D.csproj" />
     <ProjectReference Include="..\..\Gorgon\Gorgon.UI\WindowsForms\Gorgon.UI.WindowsForms.csproj" />
   </ItemGroup>
   <ItemGroup>

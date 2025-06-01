@@ -2,6 +2,3 @@
 	path = Dependencies/Microsoft.Wpf.Interop.DirectX
 	url = https://github.com/Tape-Worm/WPFDXInterop.git
 	ignore = dirty
-[submodule "Dependencies/Gorgon.BCnEncoder.NET"]
-	path = Dependencies/Gorgon.BCnEncoder.NET
-	url = https://github.com/Tape-Worm/Gorgon.BCnEncoder.NET

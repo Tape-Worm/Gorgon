@@ -26,8 +26,8 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Gorgon.Diagnostics;
-using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
+using Gorgon.Graphics.Imaging;
 
 namespace Gorgon.IO;
 

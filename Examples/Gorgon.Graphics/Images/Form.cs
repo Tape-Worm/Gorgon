@@ -22,6 +22,8 @@
 // Created: March 31, 2018 1:12:38 PM
 // 
 
+using System.Diagnostics;
+
 namespace Gorgon.Examples;
 
 /// <summary>
@@ -31,7 +33,7 @@ namespace Gorgon.Examples;
 /// mip maps, image cubes and depth images.  It also supports many different image pixel layout formats like R8, R8G8B8A8_*, etc... 
 /// 
 /// The image manipulation functionality is built on a fluent interface, so that you can chain operations together like this:
-/// image.Resize(160, 100, 1).Crop(new SharpGorgonRectangle(120, 80, 40, 40), 1)
+/// image.Resize(160, 100, 1).Crop(new GorgonRectangle(120, 80, 40, 40), 1)
 /// 
 /// Users can create their own image and modify the image data directly (provided they know the format of data in the image) by manipulating the buffers 
 /// of the image. These buffers are indexed by mip level, and array (or depth) level, and have their own size (in the case of mip maps). By accessing the 
@@ -55,19 +57,19 @@ namespace Gorgon.Examples;
 public partial class Form
     : System.Windows.Forms.Form
 {
-
     // The gallery used to display our images.
-    private ImageGallery _gallery;
+    private ImageGallery? _gallery;
     // The animator for the GIF file.
-    private GifAnimator _gifAnim;
+    private GifAnimator? _gifAnim;
     // The graphics context for the form.
-    private System.Drawing.Graphics _graphics;
+    private System.Drawing.Graphics? _graphics;
 
-    /// <summary>Raises the <see cref="E:System.Windows.Forms.Form.Load" /> event.</summary>
-    /// <param name="e">An <see cref="EventArgs" /> that contains the event data. </param>
+    /// <inheritdoc/>
     protected override void OnLoad(EventArgs e)
     {
         base.OnLoad(e);
+
+        Debug.Assert(SynchronizationContext.Current is not null, "Need a synchronization context.");
 
         _gifAnim = new GifAnimator(SynchronizationContext.Current);
         _gallery = new ImageGallery(Font, DeviceDpi, _gifAnim);
@@ -81,11 +83,15 @@ public partial class Form
 
             _graphics = CreateGraphics();
 
+            // Setup the initial gallery layout.
+            _gallery.DrawGallery(_graphics, ClientSize);
+
             // Begin our animation.
             _gifAnim.Animate(() => _gallery.RefreshGif(_graphics));
         }
         catch (Exception ex)
         {
+            _gifAnim = null;
             GorgonExample.HandleException(ex);
             Application.Exit();
         }
@@ -95,28 +101,29 @@ public partial class Form
         }
     }
 
-    /// <summary>Raises the <see cref="E:System.Windows.Forms.Control.Resize" /> event.</summary>
-    /// <param name="e">An <see cref="EventArgs" /> that contains the event data.</param>
+    /// <inheritdoc/>
     protected override void OnResize(EventArgs e)
     {
         base.OnResize(e);
+
+        if (_graphics is not null)
+        {
+            _graphics.Dispose();
+            _graphics = CreateGraphics();
+        }
 
         Refresh();
         _gifAnim?.Reset();
     }
 
-    /// <summary>
-    /// Handles the Paint event of the ContentArea control.
-    /// </summary>
-    /// <param name="e">The <see cref="PaintEventArgs"/> instance containing the event data.</param>
+    /// <inheritdoc/>
     protected override void OnPaint(PaintEventArgs e)
     {
         _gallery?.DrawGallery(e.Graphics, ClientSize);
         _gifAnim?.Reset();
     }
 
-    /// <summary>Raises the <see cref="E:System.Windows.Forms.Form.FormClosing" /> event.</summary>
-    /// <param name="e">A <see cref="FormClosingEventArgs" /> that contains the event data. </param>
+    /// <inheritdoc/>
     protected override async void OnFormClosing(FormClosingEventArgs e)
     {
         base.OnFormClosing(e);
@@ -126,32 +133,22 @@ public partial class Form
             return;
         }
 
-        try
-        {
-            Cursor.Current = Cursors.WaitCursor;
+        UseWaitCursor = true;
 
-            // Cancel form closure because we need to wait until the thread is done prior to moving on.
+        // Cancel form closure because we need to wait until the thread is done prior to moving on.
+        if (_gifAnim.IsRunning)
+        {
             e.Cancel = true;
-            try
-            {
-                await _gifAnim.CancelAsync();
-            }
-            catch (OperationCanceledException)
-            {
-                // Do nothing, this could happen in Task.Delay.
-            }
+            await _gifAnim.CancelAsync();
 
-            e.Cancel = false;
+            // Once the animation thread is done, attempt to close the window again.
+            Close();
+            return;
+        }
 
-            _graphics.Dispose();
-            _gallery.Dispose();
-            _gifAnim = null;
-        }
-        finally
-        {
-            Cursor.Current = Cursors.Default;
-        }
-        Close();
+        _graphics?.Dispose();
+        _gallery?.Dispose();
+        _gifAnim = null;
     }
 
     /// <summary>

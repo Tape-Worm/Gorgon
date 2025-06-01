@@ -1111,11 +1111,7 @@ public static class GorgonIOExtensions
     {
         path = path?.FormatPath(directorySeparator);
 
-        return path?.Split(
-                          [
-                              directorySeparator
-                          ],
-                          StringSplitOptions.RemoveEmptyEntries) ?? [];
+        return path?.Split(directorySeparator, StringSplitOptions.RemoveEmptyEntries) ?? [];
     }
 
     /// <summary>

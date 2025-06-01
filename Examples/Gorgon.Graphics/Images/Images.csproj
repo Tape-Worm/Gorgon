@@ -6,21 +6,11 @@
     <ForceDesignerDpiUnaware>true</ForceDesignerDpiUnaware>
     <UseWindowsForms>true</UseWindowsForms>
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
-    <Authors>Michael Winsor</Authors>
-    <Company>Tape_Worm</Company>
-    <Product>Gorgon</Product>
-    <Description>An example showing how to load images for various image file formats.</Description>
-    <Copyright>(C)opyright Tape_Worm, 2020</Copyright>
     <PackageLicenseFile></PackageLicenseFile>
-    <PackageProjectUrl>https://www.tape-worm.net</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/Tape-Worm/Gorgon</RepositoryUrl>
-    <RepositoryType>Git</RepositoryType>
-    <PackageTags>Gorgon, C#, Direct 3D, SharpDX, Winforms</PackageTags>
     <EnableNETAnalyzers>false</EnableNETAnalyzers>
     <RootNamespace>Gorgon.Examples</RootNamespace>
     <NeutralLanguage></NeutralLanguage>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <StartupObject></StartupObject>
+    <StartupObject>Gorgon.Examples.Program</StartupObject>
     <SignAssembly>false</SignAssembly>
     <AssemblyOriginatorKeyFile></AssemblyOriginatorKeyFile>
     <DelaySign>false</DelaySign>
@@ -28,9 +18,8 @@
     <AssemblyVersion>4.0.0.0</AssemblyVersion>
     <FileVersion>4.0.0.0</FileVersion>
     <VersionPrefix>4.0.0</VersionPrefix>
-  </PropertyGroup>
-  <PropertyGroup>
     <EmbeddedResourceUseDependentUponConvention>true</EmbeddedResourceUseDependentUponConvention>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -44,9 +33,7 @@
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <AdditionalFiles Remove="..\..\app.manifest" />
-  </ItemGroup>
-  <ItemGroup>
+    <ProjectReference Include="..\..\..\Gorgon\Gorgon.Graphics\Imaging.GdiPlus\Gorgon.Graphics.Imaging.GdiPlus.csproj" />
     <ProjectReference Include="..\..\ExamplesCommon\ExamplesCommon.csproj" />
   </ItemGroup>
   <ItemGroup>

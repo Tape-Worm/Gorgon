@@ -28,24 +28,20 @@ partial class Form
     /// </summary>
     private void InitializeComponent()
     {
-        System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form));
-        this.SuspendLayout();
+        ComponentResourceManager resources = new ComponentResourceManager(typeof(Form));
+        SuspendLayout();
         // 
         // Form
         // 
-        this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-        this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-        this.ClientSize = new System.Drawing.Size(1280, 800);
-        
-        this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-        this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-        this.Name = "Form";
-        this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-        this.Text = "Codec Plugins";
-        this.ResumeLayout(false);
-
+        AutoScaleDimensions = new SizeF(7F, 15F);
+        AutoScaleMode = AutoScaleMode.Font;
+        ClientSize = new Size(1280, 720);
+        Icon = (Icon)resources.GetObject("$this.Icon");
+        Margin = new Padding(4, 5, 4, 5);
+        Name = "Form";
+        StartPosition = FormStartPosition.CenterScreen;
+        Text = "Codec Plugins";
+        ResumeLayout(false);
     }
-
-
 }
 

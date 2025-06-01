@@ -22,9 +22,12 @@
 // Created: December 1, 2020 9:29:00 PM
 // 
 
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.Intrinsics;
 using Gorgon.Core;
+using Gorgon.Math;
 using Gorgon.Properties;
 
 namespace Gorgon.Native;
@@ -89,12 +92,12 @@ public unsafe readonly struct GorgonPtr<T>
     private readonly T* _ptr;
 
     // The offset from the start of the memory block that this pointer is pointing at.
-    private readonly int _indexOffset;
+    private readonly long _indexOffset;
 
     /// <summary>
     /// The number of items of type <typeparamref name="T"/> stored within the memory block. 
     /// </summary>
-    public readonly int Length;
+    public readonly long Length;
 
     /// <summary>
     /// Property to return the size, in bytes, of the type represented by <typeparamref name="T"/>.
@@ -104,7 +107,7 @@ public unsafe readonly struct GorgonPtr<T>
     /// <summary>
     /// Property to return the total size, in bytes, of the memory pointed at by this pointer.
     /// </summary>
-    public int SizeInBytes => Length * TypeSize;
+    public long SizeInBytes => Length * TypeSize;
 
     /// <summary>
     /// Property to return a reference to the item located at the specified index.
@@ -116,7 +119,7 @@ public unsafe readonly struct GorgonPtr<T>
     /// This property will return the value as a reference, and as such, it can be assigned to as well. For example:
     /// <code lang="csharp">
     /// <![CDATA[
-    /// GorgonPtr<int> ptr = ...;
+    /// GorgonPtr_Long<int> ptr = ...;
     /// int newValue = 123;
     /// 
     /// ptr[2] = newValue;
@@ -129,7 +132,7 @@ public unsafe readonly struct GorgonPtr<T>
     /// </code>
     /// </para>
     /// </remarks>
-    public ref T this[int index]
+    public ref T this[long index]
     {
         get
         {
@@ -159,6 +162,7 @@ public unsafe readonly struct GorgonPtr<T>
     /// <returns>The slice of the memory as a <see cref="GorgonPtr{T}"/>.</returns>
     /// <exception cref="ArgumentOutOfRangeException">Thrown if the <paramref name="range"/> is less than 0, or greater than/equal to <see cref="Length"/>.</exception>
     /// <remarks>
+    /// <para>
     /// This indexer can be used to create a slice of a pointer. For example, if a pointer points to 10 items, and we want to create a pointer that points to the 3rd item and 4 items in the memory block 
     /// pointed at by this pointer, we can do the following:
     /// <code lang="csharp">
@@ -169,15 +173,23 @@ public unsafe readonly struct GorgonPtr<T>
     /// {
     ///     fixed(int* dataPtr = data)
     ///     {
-    ///         GorgonPtr<int> tenItems = new(data);    
+    ///         GorgonPtr_Long<int> tenItems = new(data);    
     ///         // Add 3 items to the pointer, and then take 4 items from that point.
-    ///         GorgonPtr<int> sliced = tenItems[3..7];
+    ///         GorgonPtr_Long<int> sliced = tenItems[3..7];
     /// 
     ///         // 'sliced' will now point to: 4, 5, 6, 7
     ///     }
     /// }
     /// ]]>
     /// </code>
+    /// </para>
+    /// <para>
+    /// <note type="warning">
+    /// <para>
+    /// If the data is larger than 2 GB, only 2 GB will be sliced using the <see cref="Range"/> because the <see cref="Range"/> type uses a 32 bit <see cref="int"/> for its start and end values.
+    /// </para>
+    /// </note>
+    /// </para>
     /// </remarks>
     public GorgonPtr<T> this[Range range]
     {
@@ -185,10 +197,10 @@ public unsafe readonly struct GorgonPtr<T>
         {
             if (_ptr is null)
             {
-                return GorgonPtr<T>.NullPtr;
+                return NullPtr;
             }
 
-            (int offset, int length) = range.GetOffsetAndLength(Length);
+            (int offset, int length) = range.GetOffsetAndLength((int)(Length.Min(int.MaxValue)));
 
             if ((offset < 0) || (offset >= Length))
             {
@@ -271,8 +283,145 @@ public unsafe readonly struct GorgonPtr<T>
     /// Operator to explicitly convert this pointer to a <see cref="GorgonPtr{Byte}"/> type.
     /// </summary>
     /// <param name="ptr">The pointer to convert.</param>
+    /// <exception cref="OverflowException">Thrown if the size, in bytes, of <see cref="byte"/> is larger than <see cref="SizeInBytes"/>.</exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static explicit operator GorgonPtr<byte>(GorgonPtr<T> ptr) => ToBytePointer(ptr);
+    public static explicit operator GorgonPtr<byte>(GorgonPtr<T> ptr) => ptr.ToPointerType<byte>();
+
+    /// <summary>
+    /// Operator to explicitly convert this pointer to a <see cref="GorgonPtr{SByte}"/> type.
+    /// </summary>
+    /// <param name="ptr">The pointer to convert.</param>
+    /// <exception cref="OverflowException">Thrown if the size, in bytes, of <see cref="sbyte"/> is larger than <see cref="SizeInBytes"/>.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static explicit operator GorgonPtr<sbyte>(GorgonPtr<T> ptr) => ptr.ToPointerType<sbyte>();
+
+    /// <summary>
+    /// Operator to explicitly convert this pointer to a <see cref="GorgonPtr{Int16}"/> type.
+    /// </summary>
+    /// <param name="ptr">The pointer to convert.</param>
+    /// <exception cref="OverflowException">Thrown if the size, in bytes, of <see cref="short"/> is larger than <see cref="SizeInBytes"/>.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static explicit operator GorgonPtr<short>(GorgonPtr<T> ptr) => ptr.ToPointerType<short>();
+
+    /// <summary>
+    /// Operator to explicitly convert this pointer to a <see cref="GorgonPtr{UInt16}"/> type.
+    /// </summary>
+    /// <param name="ptr">The pointer to convert.</param>
+    /// <exception cref="OverflowException">Thrown if the size, in bytes, of <see cref="ushort"/> is larger than <see cref="SizeInBytes"/>.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static explicit operator GorgonPtr<ushort>(GorgonPtr<T> ptr) => ptr.ToPointerType<ushort>();
+
+    /// <summary>
+    /// Operator to explicitly convert this pointer to a <see cref="GorgonPtr{Int32}"/> type.
+    /// </summary>
+    /// <param name="ptr">The pointer to convert.</param>
+    /// <exception cref="OverflowException">Thrown if the size, in bytes, of <see cref="int"/> is larger than <see cref="SizeInBytes"/>.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static explicit operator GorgonPtr<int>(GorgonPtr<T> ptr) => ptr.ToPointerType<int>();
+
+    /// <summary>
+    /// Operator to explicitly convert this pointer to a <see cref="GorgonPtr{UInt32}"/> type.
+    /// </summary>
+    /// <param name="ptr">The pointer to convert.</param>
+    /// <exception cref="OverflowException">Thrown if the size, in bytes, of <see cref="uint"/> is larger than <see cref="SizeInBytes"/>.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static explicit operator GorgonPtr<uint>(GorgonPtr<T> ptr) => ptr.ToPointerType<uint>();
+
+    /// <summary>
+    /// Operator to explicitly convert this pointer to a <see cref="GorgonPtr{Int64}"/> type.
+    /// </summary>
+    /// <param name="ptr">The pointer to convert.</param>
+    /// <exception cref="OverflowException">Thrown if the size, in bytes, of <see cref="long"/> is larger than <see cref="SizeInBytes"/>.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static explicit operator GorgonPtr<long>(GorgonPtr<T> ptr) => ptr.ToPointerType<long>();
+
+    /// <summary>
+    /// Operator to explicitly convert this pointer to a <see cref="GorgonPtr{UInt64}"/> type.
+    /// </summary>
+    /// <param name="ptr">The pointer to convert.</param>
+    /// <exception cref="OverflowException">Thrown if the size, in bytes, of <see cref="ulong"/> is larger than <see cref="SizeInBytes"/>.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static explicit operator GorgonPtr<ulong>(GorgonPtr<T> ptr) => ptr.ToPointerType<ulong>();
+
+    /// <summary>
+    /// Operator to explicitly convert this pointer to a <see cref="GorgonPtr{Half}"/> type.
+    /// </summary>
+    /// <param name="ptr">The pointer to convert.</param>
+    /// <exception cref="OverflowException">Thrown if the size, in bytes, of <see cref="Half"/> is larger than <see cref="SizeInBytes"/>.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static explicit operator GorgonPtr<Half>(GorgonPtr<T> ptr) => ptr.ToPointerType<Half>();
+
+    /// <summary>
+    /// Operator to explicitly convert this pointer to a <see cref="GorgonPtr{Single}"/> type.
+    /// </summary>
+    /// <param name="ptr">The pointer to convert.</param>
+    /// <exception cref="OverflowException">Thrown if the size, in bytes, of <see cref="float"/> is larger than <see cref="SizeInBytes"/>.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static explicit operator GorgonPtr<float>(GorgonPtr<T> ptr) => ptr.ToPointerType<float>();
+
+    /// <summary>
+    /// Operator to explicitly convert this pointer to a <see cref="GorgonPtr{Double}"/> type.
+    /// </summary>
+    /// <param name="ptr">The pointer to convert.</param>
+    /// <exception cref="OverflowException">Thrown if the size, in bytes, of <see cref="double"/> is larger than <see cref="SizeInBytes"/>.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static explicit operator GorgonPtr<double>(GorgonPtr<T> ptr) => ptr.ToPointerType<double>();
+
+    /// <summary>
+    /// Operator to explicitly convert this pointer to a <see cref="GorgonPtr{Matrix4x4}"/> type.
+    /// </summary>
+    /// <param name="ptr">The pointer to convert.</param>
+    /// <exception cref="OverflowException">Thrown if the size, in bytes, of <see cref="Matrix4x4"/> is larger than <see cref="SizeInBytes"/>.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static explicit operator GorgonPtr<Matrix4x4>(GorgonPtr<T> ptr) => ptr.ToPointerType<Matrix4x4>();
+
+    /// <summary>
+    /// Operator to explicitly convert this pointer to a <see cref="GorgonPtr{Matrix3x2}"/> type.
+    /// </summary>
+    /// <param name="ptr">The pointer to convert.</param>
+    /// <exception cref="OverflowException">Thrown if the size, in bytes, of <see cref="Matrix3x2"/> is larger than <see cref="SizeInBytes"/>.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static explicit operator GorgonPtr<Matrix3x2>(GorgonPtr<T> ptr) => ptr.ToPointerType<Matrix3x2>();
+
+    /// <summary>
+    /// Operator to explicitly convert this pointer to a <see cref="GorgonPtr{Quaternion}"/> type.
+    /// </summary>
+    /// <param name="ptr">The pointer to convert.</param>
+    /// <exception cref="OverflowException">Thrown if the size, in bytes, of <see cref="Quaternion"/> is larger than <see cref="SizeInBytes"/>.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static explicit operator GorgonPtr<Quaternion>(GorgonPtr<T> ptr) => ptr.ToPointerType<Quaternion>();
+
+    /// <summary>
+    /// Operator to explicitly convert this pointer to a <see cref="GorgonPtr{Vector4}"/> type.
+    /// </summary>
+    /// <param name="ptr">The pointer to convert.</param>
+    /// <exception cref="OverflowException">Thrown if the size, in bytes, of <see cref="Vector4"/> is larger than <see cref="SizeInBytes"/>.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static explicit operator GorgonPtr<Vector4>(GorgonPtr<T> ptr) => ptr.ToPointerType<Vector4>();
+
+    /// <summary>
+    /// Operator to explicitly convert this pointer to a <see cref="GorgonPtr{Vector3}"/> type.
+    /// </summary>
+    /// <param name="ptr">The pointer to convert.</param>
+    /// <exception cref="OverflowException">Thrown if the size, in bytes, of <see cref="Vector3"/> is larger than <see cref="SizeInBytes"/>.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static explicit operator GorgonPtr<Vector3>(GorgonPtr<T> ptr) => ptr.ToPointerType<Vector3>();
+
+    /// <summary>
+    /// Operator to explicitly convert this pointer to a <see cref="GorgonPtr{Vector2}"/> type.
+    /// </summary>
+    /// <param name="ptr">The pointer to convert.</param>
+    /// <exception cref="OverflowException">Thrown if the size, in bytes, of <see cref="Vector2"/> is larger than <see cref="SizeInBytes"/>.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static explicit operator GorgonPtr<Vector2>(GorgonPtr<T> ptr) => ptr.ToPointerType<Vector2>();
+
+    /// <summary>
+    /// Operator to explicitly convert this pointer to a <see cref="GorgonPtr{Plane}"/> type.
+    /// </summary>
+    /// <param name="ptr">The pointer to convert.</param>
+    /// <exception cref="OverflowException">Thrown if the size, in bytes, of <see cref="Plane"/> is larger than <see cref="SizeInBytes"/>.</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static explicit operator GorgonPtr<Plane>(GorgonPtr<T> ptr) => ptr.ToPointerType<Plane>();
 
     /// <summary>
     /// Operator to convert this pointer to a native pointer.
@@ -375,7 +524,37 @@ public unsafe readonly struct GorgonPtr<T>
     /// </para>
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static GorgonPtr<T> operator +(GorgonPtr<T> ptr, long indexOffset) => Add(ptr, indexOffset);
+
+    /// <summary>
+    /// Operator to increment the pointer by the given index offset.
+    /// </summary>
+    /// <param name="ptr">The pointer to increment.</param>
+    /// <param name="indexOffset">The number of indices to offset by.</param>
+    /// <returns>A new <see cref="GorgonPtr{T}"/> starting at the updated index offset.</returns>
+    /// <remarks>
+    /// <para>
+    /// If the pointer is incremented beyond the beginning, or end of the memory block that it points at, then the return value will be <see cref="GorgonPtr{T}.NullPtr"/> rather than throw an exception. 
+    /// This is done this way for performance reasons. So users should check that their pointer is not <b>null</b> when iterating to ensure that the pointer is still valid.
+    /// </para>
+    /// </remarks>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static GorgonPtr<T> operator +(GorgonPtr<T> ptr, int indexOffset) => Add(ptr, indexOffset);
+
+    /// <summary>
+    /// Operator to increment the pointer by the given index offset.
+    /// </summary>
+    /// <param name="indexOffset">The number of indices to offset by.</param>
+    /// <param name="ptr">The pointer to increment.</param>
+    /// <returns>A new <see cref="GorgonPtr{T}"/> starting at the updated index offset.</returns>
+    /// <remarks>
+    /// <para>
+    /// If the pointer is incremented beyond the beginning, or end of the memory block that it points at, then the return value will be <see cref="GorgonPtr{T}.NullPtr"/> rather than throw an exception. 
+    /// This is done this way for performance reasons. So users should check that their pointer is not <b>null</b> when iterating to ensure that the pointer is still valid.
+    /// </para>
+    /// </remarks>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static GorgonPtr<T> operator +(long indexOffset, GorgonPtr<T> ptr) => Add(ptr, indexOffset);
 
     /// <summary>
     /// Operator to increment the pointer by the given index offset.
@@ -400,6 +579,21 @@ public unsafe readonly struct GorgonPtr<T>
     /// <returns>The difference in bytes between the two pointers.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static long operator -(GorgonPtr<T> left, GorgonPtr<T> right) => Subtract(left, right);
+
+    /// <summary>
+    /// Operator to decrement the pointer by the given index offset.
+    /// </summary>
+    /// <param name="ptr">The pointer to decrement.</param>
+    /// <param name="indexOffset">The number of indices to offset by.</param>
+    /// <returns>A new <see cref="GorgonPtr{T}"/> starting at the updated index offset.</returns>
+    /// <remarks>
+    /// <para>
+    /// If the pointer is incremented beyond the beginning, or end of the memory block that it points at, then the return value will be <see cref="GorgonPtr{T}.NullPtr"/> rather than throw an exception. 
+    /// This is done this way for performance reasons. So users should check that their pointer is not <b>null</b> when iterating to ensure that the pointer is still valid.
+    /// </para>
+    /// </remarks>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static GorgonPtr<T> operator -(GorgonPtr<T> ptr, long indexOffset) => Subtract(ptr, indexOffset);
 
     /// <summary>
     /// Operator to decrement the pointer by the given index offset.
@@ -450,7 +644,16 @@ public unsafe readonly struct GorgonPtr<T>
     /// <param name="left">The left pointer to subtract.</param>
     /// <param name="right">The right pointer to subtract.</param>
     /// <returns>The difference in bytes between the two pointers.</returns>
-    public static long Subtract(GorgonPtr<T> left, GorgonPtr<T> right) => ((byte*)left._ptr) - ((byte*)right._ptr);
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static long Subtract(GorgonPtr<T> left, GorgonPtr<T> right)
+    {
+        if ((left == NullPtr) || (right == NullPtr))
+        {
+            return long.MaxValue;
+        }
+
+        return ((byte*)left._ptr) - ((byte*)right._ptr);
+    }
 
     /// <summary>
     /// Function to increment the pointer by the given index offset.
@@ -465,14 +668,14 @@ public unsafe readonly struct GorgonPtr<T>
     /// </para>
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static GorgonPtr<T> Add(GorgonPtr<T> ptr, int indexOffset)
+    public static GorgonPtr<T> Add(GorgonPtr<T> ptr, long indexOffset)
     {
         if (ptr == NullPtr)
         {
             return NullPtr;
         }
 
-        int newIndex = ptr._indexOffset + indexOffset;
+        long newIndex = ptr._indexOffset + indexOffset;
 
         if ((newIndex < 0) || (newIndex >= ptr.Length + ptr._indexOffset))
         {
@@ -495,14 +698,14 @@ public unsafe readonly struct GorgonPtr<T>
     /// </para>
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static GorgonPtr<T> Subtract(GorgonPtr<T> ptr, int indexOffset)
+    public static GorgonPtr<T> Subtract(GorgonPtr<T> ptr, long indexOffset)
     {
         if (ptr == NullPtr)
         {
             return NullPtr;
         }
 
-        int newIndex = ptr._indexOffset - indexOffset;
+        long newIndex = ptr._indexOffset - indexOffset;
 
         if ((newIndex < 0) || (newIndex >= ptr.Length + ptr._indexOffset))
         {
@@ -550,8 +753,8 @@ public unsafe readonly struct GorgonPtr<T>
     /// For example:
     /// <code lang="csharp">
     /// <![CDATA[
-    /// GorgonPtr<byte> ptr = ...;
-    /// GorgonPtr<int> ptr2 = ...;
+    /// GorgonPtr_Long<byte> ptr = ...;
+    /// GorgonPtr_Long<int> ptr2 = ...;
     /// 
     /// // This is the same as converting byte* ptr = (byte *)ptr2.
     /// ptr = ptr2.To<byte>();
@@ -567,8 +770,8 @@ public unsafe readonly struct GorgonPtr<T>
             throw new NullReferenceException();
         }
 
-        int toSize = Unsafe.SizeOf<TTo>();
-        int newCount = ptr.SizeInBytes / toSize;
+        long toSize = Unsafe.SizeOf<TTo>();
+        long newCount = ptr.SizeInBytes / toSize;
 
         if ((newCount == 0) || ((newCount * toSize) > ptr.SizeInBytes))
         {
@@ -610,7 +813,7 @@ public unsafe readonly struct GorgonPtr<T>
     /// This value is returned as a reference, and as such, it can be assigned to as well. For example:
     /// <code lang="csharp">
     /// <![CDATA[
-    /// GorgonPtr<int> ptr = ...;
+    /// GorgonPtr_Long<int> ptr = ...;
     /// byte newValue = 0x7f;
     /// 
     /// // This will write the byte value 0x7f at the 2nd byte in the integer data stored in 
@@ -622,7 +825,7 @@ public unsafe readonly struct GorgonPtr<T>
     /// </para>
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public ref TTo AsRef<TTo>(int offset = 0)
+    public ref TTo AsRef<TTo>(long offset = 0)
         where TTo : unmanaged
     {
         if (_ptr is null)
@@ -641,6 +844,39 @@ public unsafe readonly struct GorgonPtr<T>
         }
 
         return ref Unsafe.AsRef<TTo>(offset + (byte*)_ptr);
+    }
+
+    /// <summary>
+    /// Function to take a slice of a <see cref="GorgonPtr{T}"/>.
+    /// </summary>
+    /// <param name="index">The index into the pointer data to start slicing.</param>
+    /// <param name="count">The number of elements to slice.</param>
+    /// <returns>A new pointer to the slice of data.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown if the <paramref name="index"/> is less than 0.</exception>
+    /// <remarks>
+    /// <para>
+    /// This slices a section of the data pointed at by this pointer, into a new pointer starting at the address of the original pointer + the <paramref name="index"/>, up to the <paramref name="count"/> 
+    /// elements. This new pointer still points at the memory pointed at the original pointer.
+    /// </para>
+    /// </remarks>
+    public GorgonPtr<T> Slice(long index, long count)
+    {
+        ArgumentOutOfRangeException.ThrowIfLessThan(index, 0);
+        ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, Length);
+
+        if ((count < 0) || (index >= Length))
+        {
+            return NullPtr;
+        }
+
+        long actualCount = count.Min(Length - index);
+
+        if (actualCount <= 0)
+        {
+            return NullPtr;
+        }
+
+        return new(_ptr + index, actualCount);
     }
 
     /// <summary>
@@ -737,6 +973,15 @@ public unsafe readonly struct GorgonPtr<T>
     /// <param name="ptr">The pointer to convert.</param>
     /// <returns>A span for the pointer.</returns>
     /// <exception cref="NullReferenceException">Thrown when this pointer is <see cref="GorgonPtr{T}.NullPtr"/>.</exception>
+    /// <remarks>
+    /// <para>
+    /// <note type="warning">
+    /// <para>
+    /// The <see cref="Span{T}"/>/<see cref="ReadOnlySpan{T}"/> types are limited to 32 bit index and size values. If the buffer is over 2 GB in size, then only the 1st 2 GB will be returned.
+    /// </para>
+    /// </note>
+    /// </para>
+    /// </remarks>
     public static Span<T> ToSpan(GorgonPtr<T> ptr)
     {
         if (ptr._ptr is null)
@@ -744,23 +989,47 @@ public unsafe readonly struct GorgonPtr<T>
             throw new NullReferenceException();
         }
 
-        return new(ptr._ptr, ptr.Length);
+        return new(ptr._ptr, (int)(ptr.Length.Min(int.MaxValue)));
     }
 
     /// <summary>
-    /// Function to convert a pointer into a byte based pointer.
+    /// Function to convert a pointer into a pointer with a different data type.
     /// </summary>
-    /// <param name="ptr">The pointer to convert.</param>
-    /// <returns>A new byte pointer starting at the pointer address with the offset applied.</returns>
+    /// <typeparam name="K">The new type to interpret the data as.</typeparam>
+    /// <param name="count">[Optional] The length of data for the new pointer.</param>
+    /// <returns>A new pointer starting at the pointer address.</returns>
+    /// <exception cref="OverflowException">Thrown if the size, in bytes, of <typeparamref name="K"/> is larger than <see cref="SizeInBytes"/>.</exception>
+    /// <remarks>
+    /// <para>
+    /// If the <paramref name="count"/> is 0, then the entire length is covered. Otherwise, only the specified length is covered, up to the <see cref="Length"/>.
+    /// </para>
+    /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static GorgonPtr<byte> ToBytePointer(GorgonPtr<T> ptr)
+    public GorgonPtr<K> ToPointerType<K>(long count = 0)
+        where K : unmanaged
     {
-        if (ptr._ptr is null)
+        if (_ptr is null)
         {
-            return GorgonPtr<byte>.NullPtr;
+            return GorgonPtr<K>.NullPtr;
         }
 
-        return new((byte*)ptr._ptr, ptr.SizeInBytes);
+        long dataSize = sizeof(K);
+
+        if (count <= 0)
+        {
+            count = SizeInBytes;
+        }
+        else
+        {
+            count *= dataSize;
+        }
+
+        if (dataSize > SizeInBytes)
+        {
+            throw new OverflowException(string.Format(Resources.GOR_ERR_BUFFER_OVERFLOW, typeof(K).FullName ?? string.Empty));
+        }
+
+        return new((K*)_ptr, count / dataSize);
     }
 
     /// <summary>Returns a <see cref="string" /> that represents this instance.</summary>
@@ -795,7 +1064,7 @@ public unsafe readonly struct GorgonPtr<T>
         {
             throw new NullReferenceException();
         }
-
+        
         NativeMemory.Fill(_ptr, (nuint)SizeInBytes, value);
     }
 
@@ -805,7 +1074,7 @@ public unsafe readonly struct GorgonPtr<T>
     /// <param name="destination">The destination pointer that will receive the data.</param>
     /// <exception cref="NullReferenceException">Thrown when this pointer is <see cref="GorgonPtr{T}.NullPtr"/>.</exception>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="destination"/> parameter is <see cref="GorgonPtr{T}.NullPtr"/>.</exception>
-    /// <exception cref="ArgumentException">Thrown when the <see cref="Length"/> is too big for the memory block of the memory pointed at the <paramref name="destination"/>.</exception>
+    /// <exception cref="ArgumentException">Thrown if the memory pointed at by <paramref name="destination"/> is smaller than <see cref="SizeInBytes"/>.</exception>
     /// <remarks>
     /// <para>
     /// Use this method to copy memory from one location to another. When the copy is performed, the entire memory block in this pointer will be copied to the <paramref name="destination"/> pointer. If the 
@@ -815,8 +1084,8 @@ public unsafe readonly struct GorgonPtr<T>
     /// In order to copy a specified portion to the <paramref name="destination"/>, one may use the range operator like so:
     /// <code lang="csharp">
     /// <![CDATA[
-    /// GorgonPtr<byte> source = ...;
-    /// GorgonPtr<byte> destination = ...;
+    /// GorgonPtr_Long<byte> source = ...;
+    /// GorgonPtr_Long<byte> destination = ...;
     /// 
     /// src[..10].CopyTo(destination);
     /// 
@@ -836,12 +1105,12 @@ public unsafe readonly struct GorgonPtr<T>
 
         ArgumentNullException.ThrowIfNull(destination._ptr, nameof(destination));
 
-        if (Length > destination.Length)
+        if (SizeInBytes > destination.SizeInBytes)
         {
-            throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, 0, Length), nameof(destination));
+            throw new ArgumentException(Resources.GOR_ERR_DESTINATION_TOO_SMALL, nameof(destination));
         }
 
-        Unsafe.CopyBlock(destination._ptr, _ptr, (uint)SizeInBytes);
+        NativeMemory.Copy(_ptr, destination._ptr, (nuint)SizeInBytes);
     }
 
     /// <summary>
@@ -849,7 +1118,6 @@ public unsafe readonly struct GorgonPtr<T>
     /// </summary>
     /// <param name="destination">The destination pointer that will receive the data.</param>
     /// <exception cref="NullReferenceException">Thrown when this pointer is <see cref="GorgonPtr{T}.NullPtr"/>.</exception>
-    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="destination"/> is empty.</exception>
     /// <exception cref="ArgumentException">Thrown when the <see cref="Length"/> is too big for the memory block of the memory pointed at by the <paramref name="destination"/>.</exception>
     /// <remarks>
     /// <para>
@@ -860,7 +1128,7 @@ public unsafe readonly struct GorgonPtr<T>
     /// In order to copy a specified portion to the <paramref name="destination"/>, one may use the range operator like so:
     /// <code lang="csharp">
     /// <![CDATA[
-    /// GorgonPtr<byte> source = ...;
+    /// GorgonPtr_Long<byte> source = ...;
     /// Span<byte> destination = new byte[512];
     /// 
     /// src[..10].CopyTo(destination);
@@ -869,6 +1137,13 @@ public unsafe readonly struct GorgonPtr<T>
     /// src[5..10].CopyTo(destination[10..]);
     /// ]]>
     /// </code>
+    /// </para>
+    /// <para>
+    /// <note type="warning">
+    /// <para>
+    /// If the data pointed to is larger than 2 GB, then an exception is thrown because the <see cref="Span{T}"/> type only supports 32 bit <see cref="int"/> values for its <see cref="Span{T}.Length"/>.
+    /// </para>
+    /// </note>
     /// </para>
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -879,17 +1154,12 @@ public unsafe readonly struct GorgonPtr<T>
             throw new NullReferenceException();
         }
 
-        if (destination.IsEmpty)
-        {
-            throw new ArgumentEmptyException(nameof(destination));
-        }
-
         if (Length > destination.Length)
         {
-            throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, 0, Length), nameof(destination));
+            throw new ArgumentException(Resources.GOR_ERR_DESTINATION_TOO_SMALL, nameof(destination));
         }
 
-        Unsafe.CopyBlock(ref Unsafe.As<T, byte>(ref destination[0]), ref Unsafe.AsRef<byte>(_ptr), (uint)(SizeInBytes));
+        NativeMemory.Copy(_ptr, Unsafe.AsPointer(ref destination[0]), (nuint)(SizeInBytes.Min(int.MaxValue)));
     }
 
     /// <summary>
@@ -901,6 +1171,7 @@ public unsafe readonly struct GorgonPtr<T>
     /// If this pointer is <b>null</b>, then the resulting array will be empty.
     /// </para>
     /// </remarks>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public T[] ToArray()
     {
         if (_ptr is null)
@@ -908,8 +1179,12 @@ public unsafe readonly struct GorgonPtr<T>
             return [];
         }
 
-        var result = new T[Length];
-        CopyTo(result);
+        T[] result = new T[Length];
+
+        fixed (T* ptr = result)
+        {
+            NativeMemory.Copy(_ptr, ptr, (nuint)(TypeSize * result.LongLength));
+        }
         return result;
     }
 
@@ -935,87 +1210,156 @@ public unsafe readonly struct GorgonPtr<T>
     /// </remarks>
     public bool CompareMemory(GorgonPtr<T> other)
     {
-        if (other.Equals(this))
+        if (_ptr == other._ptr)
         {
             return true;
         }
 
-        unsafe
+        if ((_ptr is null) || (other._ptr is null))
         {
-            if ((_ptr is null) || (other._ptr is null))
+            return false;
+        }
+
+        long dataLength = SizeInBytes;
+
+        if (dataLength != other.SizeInBytes)
+        {
+            return false;
+        }
+
+        byte* leftData = (byte*)_ptr;
+        byte* rightData = (byte*)other._ptr;
+
+        if ((Vector512.IsHardwareAccelerated) && (dataLength >= 64))
+        {
+            do
             {
-                return false;
-            }
+                Vector512<ulong> l = Unsafe.ReadUnaligned<Vector512<ulong>>((ulong*)leftData);
+                Vector512<ulong> r = Unsafe.ReadUnaligned<Vector512<ulong>>((ulong*)rightData);
 
-            int dataLength = SizeInBytes;
-
-            if (dataLength != other.SizeInBytes)
-            {
-                return false;
-            }
-
-            byte* leftData = (byte*)_ptr;
-            byte* rightData = (byte*)other._ptr;
-
-            while (dataLength > 0)
-            {
-                if (dataLength >= sizeof(long))
-                {
-                    long left = *((long*)leftData);
-                    long right = *((long*)rightData);
-
-                    if (left != right)
-                    {
-                        return false;
-                    }
-
-                    leftData += sizeof(long);
-                    rightData += sizeof(long);
-                    dataLength -= sizeof(long);
-                    continue;
-                }
-
-                if (dataLength >= sizeof(int))
-                {
-                    int left = *((int*)leftData);
-                    int right = *((int*)rightData);
-
-                    if (left != right)
-                    {
-                        return false;
-                    }
-
-                    leftData += sizeof(int);
-                    rightData += sizeof(int);
-                    dataLength -= sizeof(int);
-                    continue;
-                }
-
-                if (dataLength >= sizeof(short))
-                {
-                    short left = *((short*)leftData);
-                    short right = *((short*)rightData);
-
-                    if (left != right)
-                    {
-                        return false;
-                    }
-
-                    leftData += sizeof(short);
-                    rightData += sizeof(short);
-                    dataLength -= sizeof(short);
-                    continue;
-                }
-
-                if ((*leftData) != (*rightData))
+                if (l != r)
                 {
                     return false;
                 }
 
-                leftData++;
-                rightData++;
-                dataLength--;
+                leftData += 64;
+                rightData += 64;
+                dataLength -= 64;
             }
+            while (dataLength >= 64);
+
+            if (dataLength == 0)
+            {
+                return true;
+            }
+        }
+
+        if ((Vector256.IsHardwareAccelerated) && (dataLength >= 32))
+        {
+            do
+            {
+                Vector256<ulong> l = Unsafe.ReadUnaligned<Vector256<ulong>>((ulong*)leftData);
+                Vector256<ulong> r = Unsafe.ReadUnaligned<Vector256<ulong>>((ulong*)rightData);
+
+                if (l != r)
+                {
+                    return false;
+                }
+
+                leftData += 32;
+                rightData += 32;
+                dataLength -= 32;
+            }
+            while (dataLength >= 32);
+
+            if (dataLength == 0)
+            {
+                return true;
+            }
+        }
+
+        if ((Vector128.IsHardwareAccelerated) && (dataLength >= 16))
+        {
+            do
+            {
+                Vector128<ulong> l = Unsafe.ReadUnaligned<Vector128<ulong>>((ulong*)leftData);
+                Vector128<ulong> r = Unsafe.ReadUnaligned<Vector128<ulong>>((ulong*)rightData);
+
+                if (l != r)
+                {
+                    return false;
+                }
+
+                leftData += 16;
+                rightData += 16;
+                dataLength -= 16;
+            }
+            while (dataLength >= 16);
+
+            if (dataLength == 0)
+            {
+                return true;
+            }
+        }
+
+        while (dataLength > 0)
+        {
+            if (dataLength >= sizeof(long))
+            {
+                long left = *((long*)leftData);
+                long right = *((long*)rightData);
+
+                if (left != right)
+                {
+                    return false;
+                }
+
+                leftData += sizeof(long);
+                rightData += sizeof(long);
+                dataLength -= sizeof(long);
+                continue;
+            }
+
+            if (dataLength >= sizeof(int))
+            {
+                int left = *((int*)leftData);
+                int right = *((int*)rightData);
+
+                if (left != right)
+                {
+                    return false;
+                }
+
+                leftData += sizeof(int);
+                rightData += sizeof(int);
+                dataLength -= sizeof(int);
+                continue;
+            }
+
+            if (dataLength >= sizeof(short))
+            {
+                short left = *((short*)leftData);
+                short right = *((short*)rightData);
+
+                if (left != right)
+                {
+                    return false;
+                }
+
+                leftData += sizeof(short);
+                rightData += sizeof(short);
+                dataLength -= sizeof(short);
+                continue;
+            }
+
+            if ((*leftData) != (*rightData))
+            {
+                return false;
+            }
+
+            leftData++;
+            rightData++;
+            dataLength--;
         }
 
         return true;
@@ -1027,10 +1371,43 @@ public unsafe readonly struct GorgonPtr<T>
     /// <param name="ptr">The pointer to memory to wrap with this pointer.</param>
     /// <param name="indexOffset">The offset within the memory block to point at.</param>
     /// <param name="count">The number of items of type <typeparamref name="T"/> to wrap.</param>
-    private GorgonPtr(T* ptr, int indexOffset, int count)
+    private GorgonPtr(T* ptr, long indexOffset, long count)
     {
         _ptr = ptr;
         _indexOffset = indexOffset;
+        Length = count;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GorgonPtr{T}"/> struct.
+    /// </summary>
+    /// <param name="pointer">The original pointer to memory.</param>
+    /// <param name="count">The number of items of type <typeparamref name="T"/> to cover.</param>
+    /// <exception cref="NullReferenceException">Thrown if the <paramref name="pointer"/> parameter is equal to <see cref="NullPtr"/>.</exception>
+    /// <remarks>
+    /// <para>
+    /// This is a copy constructor for the <see cref="GorgonPtr{T}"/> type, it also allows making a slice of the pointer by specifying a <paramref name="count"/> value. If the <paramref name="count"/> value 
+    /// is 0, then the entirety of the <paramref name="pointer"/> is covered, otherwise only the <paramref name="count"/> is covered, up to the <see cref="Length"/> of <paramref name="pointer"/>.
+    /// </para>
+    /// </remarks>
+    public GorgonPtr(GorgonPtr<T> pointer, long count = 0)
+    {
+        if (pointer == NullPtr)
+        {
+            throw new NullReferenceException(Resources.GOR_ERR_PTR_NULL);
+        }
+
+        if (count <= 0)
+        {
+            count = pointer.Length;
+        }
+        else
+        {
+            count = pointer.Length.Min(count);
+        }
+
+        _indexOffset = 0;
+        _ptr = pointer._ptr;
         Length = count;
     }
 
@@ -1047,7 +1424,7 @@ public unsafe readonly struct GorgonPtr<T>
     /// </note>
     /// </para>
     /// </remarks>
-    public GorgonPtr(nint pointer, int count)
+    public GorgonPtr(nint pointer, long count)
     {
         if (pointer == IntPtr.Zero)
         {
@@ -1077,7 +1454,7 @@ public unsafe readonly struct GorgonPtr<T>
     /// </note>
     /// </para>
     /// </remarks>
-    public GorgonPtr(nuint pointer, int count)
+    public GorgonPtr(nuint pointer, long count)
     {
         if (pointer == UIntPtr.Zero)
         {
@@ -1107,7 +1484,7 @@ public unsafe readonly struct GorgonPtr<T>
     /// </note>
     /// </para>
     /// </remarks>
-    public GorgonPtr(T* pointer, int count)
+    public GorgonPtr(T* pointer, long count)
     {
         if (pointer is null)
         {

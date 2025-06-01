@@ -27,18 +27,20 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
     <Nullable>enable</Nullable>
-    <IsAotCompatible>true</IsAotCompatible>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <Title>Gorgon Core Functionality</Title>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <PackageOutputPath>$(SolutionDir)nuget\$(Configuration)</PackageOutputPath>
     <VersionPrefix>4.0.0</VersionPrefix>
+    <IsAotCompatible>True</IsAotCompatible>
+    <PublishAot>True</PublishAot>
+    <PublishTrimmed>True</PublishTrimmed>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
+    <OptimizationPreference>Speed</OptimizationPreference>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DebugType>full</DebugType>

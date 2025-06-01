@@ -24,6 +24,7 @@
 // 
 
 using System.Runtime.CompilerServices;
+using Gorgon.Native;
 using Gorgon.Properties;
 
 namespace Gorgon.Core;
@@ -127,6 +128,38 @@ public class ArgumentEmptyException
     public static void ThrowIfEmpty<T>(ReadOnlySpan<T> value, [CallerArgumentExpression(nameof(value))] string? parameterName = null)
     {
         if (value.IsEmpty)
+        {
+            throw new ArgumentEmptyException(parameterName);
+        }
+    }
+
+    /// <summary>
+    /// Function to throw the appropraite exception if the pointer is empty.
+    /// </summary>
+    /// <typeparam name="T">The type of value in the pointer.</typeparam>
+    /// <param name="value">The value to evaluate.</param>
+    /// <param name="parameterName">The name of the parameter.</param>
+    /// <exception cref="ArgumentEmptyException">Thrown if the <paramref name="value"/> parameter is empty.</exception>
+    public static void ThrowIfEmpty<T>(GorgonPtr<T> value, [CallerArgumentExpression(nameof(value))] string? parameterName = null)
+        where T : unmanaged
+    {
+        if (value.Length == 0)
+        {
+            throw new ArgumentEmptyException(parameterName);
+        }
+    }
+
+    /// <summary>
+    /// Function to throw the appropraite exception if the native buffer is empty.
+    /// </summary>
+    /// <typeparam name="T">The type of value in the buffer.</typeparam>
+    /// <param name="value">The value to evaluate.</param>
+    /// <param name="parameterName">The name of the parameter.</param>
+    /// <exception cref="ArgumentEmptyException">Thrown if the <paramref name="value"/> parameter is empty.</exception>
+    public static void ThrowIfEmpty<T>(GorgonNativeBuffer<T> value, [CallerArgumentExpression(nameof(value))] string? parameterName = null)
+        where T : unmanaged
+    {
+        if (value.Length == 0)
         {
             throw new ArgumentEmptyException(parameterName);
         }

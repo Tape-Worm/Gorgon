@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Numerics;
+using System.Runtime.InteropServices;
 using Gorgon.Native;
 
 namespace Gorgon.Core.Tests;
@@ -112,6 +114,23 @@ public class GorgonPtrTests
             {
                 gorgonPtr--;
                 Assert.AreEqual(dummyArray[i], gorgonPtr[0], $"Expected element at index 0 to be {i} after decrementing.");
+            }
+        }
+    }
+
+    [TestMethod]
+    public unsafe void OperatorPostIncrementDerefCorrect()
+    {
+        int[] dummyArray = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+        fixed (int* dummyPtr = dummyArray)
+        {
+            GorgonPtr<int> gorgonPtr = new(dummyPtr, dummyArray.Length);
+
+            for (int i = 0; i < 4; i++)
+            {
+                int actual = (gorgonPtr++).Value;
+                Assert.AreEqual(dummyArray[i], actual, $"Expected element at index 0 to be {i} before incrementing.");
             }
         }
     }
@@ -554,8 +573,13 @@ public class GorgonPtrTests
     [TestMethod]
     public unsafe void CompareMemoryReturnsTrueWhenDataIsSame()
     {
-        int[] dummyArray1 = [1, 2, 3, 4, 5];
-        int[] dummyArray2 = [1, 2, 3, 4, 5];
+        int[] dummyArray1 = new int[1094];
+        int[] dummyArray2 = new int[1094];
+
+        for (int i = 0; i < dummyArray1.Length; i++)
+        {
+            dummyArray1[i] = dummyArray2[i] = i;
+        }
 
         fixed (int* dummyPtr1 = dummyArray1, dummyPtr2 = dummyArray2)
         {
@@ -741,6 +765,168 @@ public class GorgonPtrTests
             {
                 Assert.AreEqual(sourceArray[i + 1], destinationSpan[i + 2], $"Expected the element at index {i} to be equal in both arrays.");
             }
+        }
+    }
+
+    [TestMethod]
+    public unsafe void FailCasting()
+    {
+        byte[] sourceArray = [1, 2, 3, 4, 5];
+
+        fixed (byte* sourcePtr = sourceArray)
+        {
+            GorgonPtr<byte> bytePtr = new(sourcePtr, 1);
+
+            Assert.ThrowsExactly<OverflowException>(() => bytePtr.ToPointerType<uint>());
+        }
+    }
+
+    [TestMethod]
+    public unsafe void ByteToUintCasting()
+    {
+        byte[] sourceArray = [1, 2, 3, 4, 5];
+
+        fixed (byte* sourcePtr = sourceArray)
+        {
+            GorgonPtr<byte> bytePtr = new(sourcePtr, 4);
+            GorgonPtr<uint> uintPtr = (GorgonPtr<uint>)bytePtr;
+
+            Assert.AreEqual(1, uintPtr.Length);
+
+            uint value = uintPtr.Value;
+
+            Assert.AreEqual(67305985U, value);
+        }
+    }
+
+    [TestMethod]
+    public unsafe void UintToByteCasting()
+    {
+        uint[] sourceArray = [1, 2, 3, 4, 5];
+
+        fixed (uint* sourcePtr = sourceArray)
+        {
+            GorgonPtr<uint> uintPtr = new(sourcePtr, 4);
+            GorgonPtr<byte> bytePtr = (GorgonPtr<byte>)uintPtr;
+
+            Assert.AreEqual(16, bytePtr.Length);
+
+            Assert.AreEqual(1, bytePtr.Value);
+            Assert.AreEqual(2, (bytePtr + 4).Value);
+            Assert.AreEqual(3, (bytePtr + 8).Value);
+            Assert.AreEqual(4, (bytePtr + 12).Value);
+        }
+    }
+
+    [TestMethod]
+    public unsafe void UintToFloatCasting()
+    {
+        uint[] sourceArray = [1, 2, 3, 4, 5];
+
+        fixed (uint* sourcePtr = sourceArray)
+        {
+            float expected1 = *((float*)sourcePtr);
+            float expected2 = *(((float*)sourcePtr) + 1);
+            float expected3 = *(((float*)sourcePtr) + 2);
+            float expected4 = *(((float*)sourcePtr) + 3);
+
+            GorgonPtr<uint> uintPtr = new(sourcePtr, 4);
+            GorgonPtr<float> floatPtr = (GorgonPtr<float>)uintPtr;
+
+            Assert.AreEqual(4, floatPtr.Length);
+            Assert.AreEqual(expected1, floatPtr.Value);
+            Assert.AreEqual(expected2, (floatPtr + 1).Value);
+            Assert.AreEqual(expected3, (floatPtr + 2).Value);
+            Assert.AreEqual(expected4, (floatPtr + 3).Value);
+        }
+    }
+
+    [TestMethod]
+    public unsafe void Vector4ToFloatCasting()
+    {
+        Vector4 vector = new(1, 2, 3, 4);
+
+        GorgonPtr<Vector4> sourcePtr = new(&vector, 1);
+        GorgonPtr<float> floatPtr = (GorgonPtr<float>)sourcePtr;
+
+        Assert.AreEqual(4, floatPtr.Length);
+        Assert.AreEqual(vector.X, floatPtr.Value);
+        Assert.AreEqual(vector.Y, (floatPtr + 1).Value);
+        Assert.AreEqual(vector.Z, (floatPtr + 2).Value);
+        Assert.AreEqual(vector.W, (floatPtr + 3).Value);
+    }
+
+    [TestMethod, TestCategory("LongRunningTests")]
+    public unsafe void VeryLargeBuffer()
+    {
+        // This test should NEVER be run on the CI/CD.
+        void* memory = NativeMemory.Alloc(new UIntPtr(6_000_000_000));
+
+        try
+        {
+            GorgonPtr<byte> ptr = new((byte*)memory, 6_000_000_000);
+
+            Assert.AreEqual(6_000_000_000, ptr.SizeInBytes);
+
+            ptr.Fill(0x7f);
+
+            for (long i = 0; i < ptr.SizeInBytes; ++i)
+            {
+                Assert.AreEqual(0x7f, ptr[i]);
+            }
+        }
+        finally
+        {
+            NativeMemory.Free(memory);
+        }
+    }
+
+    [TestMethod, TestCategory("LongRunningTests")]
+    public unsafe void CopyVeryLargeBuffer()
+    {
+        // This test should NEVER be run on the CI/CD.
+        void* memory = NativeMemory.Alloc(new UIntPtr(5_000_000_000));
+        void* destMemory = NativeMemory.Alloc(new UIntPtr(5_000_000_000));
+
+        try
+        {
+            GorgonPtr<byte> srcPtr = new((byte*)memory, 5_000_000_000);
+            GorgonPtr<byte> destPtr = new((byte*)destMemory, 5_000_000_000);
+
+            Assert.AreEqual(5_000_000_000, srcPtr.SizeInBytes);
+            Assert.AreEqual(5_000_000_000, destPtr.SizeInBytes);
+
+            srcPtr.Fill(0x7f);
+            destPtr.Fill(0);
+
+            srcPtr.CopyTo(destPtr);
+
+            for (long i = 0; i < destPtr.SizeInBytes; ++i)
+            {
+                Assert.AreEqual(0x7f, destPtr[i]);
+            }
+        }
+        finally
+        {
+            NativeMemory.Free(memory);
+        }
+    }
+
+    [TestMethod]
+    public unsafe void FloatToVector4Casting()
+    {
+        float[] values = [1.0f, 2.0f, 3.0f, 4.0f];
+
+        fixed (float* sourcePtr = values)
+        {
+            GorgonPtr<float> floatPtr = new(sourcePtr, 4);
+            GorgonPtr<Vector4> vec = (GorgonPtr<Vector4>)floatPtr;
+
+            Assert.AreEqual(4, floatPtr.Length);
+            Assert.AreEqual(values[0], vec.Value.X);
+            Assert.AreEqual(values[1], vec.Value.Y);
+            Assert.AreEqual(values[2], vec.Value.Z);
+            Assert.AreEqual(values[3], vec.Value.W);
         }
     }
 }

@@ -213,10 +213,7 @@ public class Gorgon2DChromaticAberrationEffect(Gorgon2D renderer)
     protected override void OnInitialize()
     {
         // Initialize the default look up table.
-        using (IGorgonImage image = new GorgonImage(new GorgonImageInfo(ImageDataType.Image1D, BufferFormat.R8G8B8A8_UNorm)
-        {
-            Width = 3
-        }))
+        using (IGorgonImage image = new GorgonImage(GorgonImageInfo.Create1DImageInfo(BufferFormat.R8G8B8A8_UNorm, 3)))
         {
             image.ImageData.AsRef<int>(0) = GorgonColor.ToABGR(GorgonColors.Red);
             image.ImageData.AsRef<int>(4) = GorgonColor.ToABGR(GorgonColors.Blue);

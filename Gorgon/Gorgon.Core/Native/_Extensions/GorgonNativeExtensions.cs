@@ -24,6 +24,7 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Gorgon.Core;
+using Gorgon.Math;
 using Gorgon.Properties;
 
 namespace Gorgon.Native;
@@ -39,7 +40,7 @@ public static class GorgonNativeExtensions
     /// <param name="writer">The binary writer that will write the data to the stream.</param>
     /// <param name="pointer">The pointer containing the data to write in bytes.</param>
     /// <param name="size">The size, in bytes, of data to write.</param>
-    private static void WritePtr(BinaryWriter writer, GorgonPtr<byte> pointer, int size)
+    private static void WritePtr(BinaryWriter writer, GorgonPtr<byte> pointer, long size)
     {
         int offset = 0;
 
@@ -88,7 +89,7 @@ public static class GorgonNativeExtensions
     /// <param name="reader">The binary reader that will read the stream data.</param>
     /// <param name="pointer">The byte pointer that will receive the data.</param>
     /// <param name="size">The size, in bytes, of the data to read.</param>
-    private static void ReadPtr(this BinaryReader reader, GorgonPtr<byte> pointer, int size)
+    private static void ReadPtr(this BinaryReader reader, GorgonPtr<byte> pointer, long size)
     {
         int offset = 0;
 
@@ -188,7 +189,7 @@ public static class GorgonNativeExtensions
             throw new EndOfStreamException(Resources.GOR_ERR_STREAM_EOS);
         }
 
-        GorgonPtr<byte> bytePtr = GorgonPtr<T>.ToBytePointer(pointer);
+        GorgonPtr<byte> bytePtr = (GorgonPtr<byte>)pointer;
         ReadPtr(reader, bytePtr, bytePtr.Length);
     }
 
@@ -248,7 +249,7 @@ public static class GorgonNativeExtensions
             throw new IOException(Resources.GOR_ERR_STREAM_IS_READONLY);
         }
 
-        GorgonPtr<byte> bytePtr = GorgonPtr<T>.ToBytePointer(pointer);
+        GorgonPtr<byte> bytePtr = (GorgonPtr<byte>)pointer;
         WritePtr(writer, bytePtr, bytePtr.Length);
     }
 
@@ -274,19 +275,35 @@ public static class GorgonNativeExtensions
             throw new IOException(Resources.GOR_ERR_STREAM_IS_READONLY);
         }
 
-        int size = ptr.SizeInBytes;
+        long byteSize = ptr.SizeInBytes;
 
         // Ensure the stream has enough room to read the data.
-        if ((stream.Length - stream.Position) < size * ptr.TypeSize)
+        if ((stream.Length - stream.Position) < byteSize)
         {
             throw new EndOfStreamException();
         }
 
         unsafe
         {
-            fixed (T* srcPtr = &ptr[0])
+            byte* src = (byte*)ptr;
+            int blockSize = (int)(byteSize.Min(int.MaxValue));
+
+            while (byteSize > 0)
             {
-                stream.Read(new Span<byte>((byte*)srcPtr, size));
+                int read = stream.Read(new Span<byte>(src, blockSize));
+
+                if (read == 0)
+                {
+                    break;
+                }
+
+                src += read;
+                byteSize -= read;
+
+                if (byteSize < int.MaxValue)
+                {
+                    blockSize = (int)byteSize;
+                }
             }
         }
     }
@@ -314,7 +331,7 @@ public static class GorgonNativeExtensions
     /// the <see cref="GorgonNativeBuffer{T}.Length"/>.
     /// </para>
     /// </remarks>
-    public static void Read<T>(this Stream stream, GorgonNativeBuffer<T> buffer, int index, int? count = null)
+    public static void Read<T>(this Stream stream, GorgonNativeBuffer<T> buffer, long index, long? count = null)
         where T : unmanaged
     {
         if (!stream.CanRead)
@@ -327,7 +344,7 @@ public static class GorgonNativeExtensions
             throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL), nameof(index));
         }
 
-        int size = count ?? (buffer.Length - index);
+        long size = count ?? (buffer.Length - index);
 
         if (size < 1)
         {
@@ -339,17 +356,35 @@ public static class GorgonNativeExtensions
             throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, index, size));
         }
 
+        long byteSize = size * buffer.TypeSize;
+
         // Ensure the stream has enough room to read the data.
-        if ((stream.Length - stream.Position) < size * buffer.TypeSize)
+        if ((stream.Length - stream.Position) < byteSize)
         {
             throw new EndOfStreamException();
         }
 
         unsafe
         {
-            fixed (T* srcPtr = &buffer[index])
+            byte* src = (byte *)Unsafe.AsPointer(ref buffer[index]);
+            int blockSize = (int)(byteSize.Min(int.MaxValue));
+
+            while (byteSize > 0)
             {
-                stream.Read(new Span<byte>((byte*)srcPtr, size * buffer.TypeSize));
+                int read = stream.Read(new Span<byte>(src, blockSize));
+
+                if (read == 0)
+                {
+                    break;
+                }
+
+                src += read;
+                byteSize -= read;
+
+                if (byteSize < int.MaxValue)
+                {
+                    blockSize = (int)byteSize;
+                }
             }
         }
     }
@@ -375,11 +410,29 @@ public static class GorgonNativeExtensions
             throw new IOException(Resources.GOR_ERR_STREAM_IS_READONLY);
         }
 
+        long byteSize = ptr.SizeInBytes;
+
+        if (byteSize == 0)
+        {
+            return;
+        }
+
         unsafe
         {
-            fixed (T* srcPtr = &ptr[0])
+            byte* src = (byte*)ptr;
+            int blockSize = (int)(byteSize.Min(int.MaxValue));
+
+            while (byteSize > 0)
             {
-                stream.Write(new ReadOnlySpan<byte>((byte*)srcPtr, ptr.SizeInBytes));
+                stream.Write(new ReadOnlySpan<byte>(src, blockSize));
+
+                src += blockSize;
+                byteSize -= blockSize;
+
+                if (byteSize < int.MaxValue)
+                {
+                    blockSize = (int)byteSize;
+                }
             }
         }
     }
@@ -406,7 +459,7 @@ public static class GorgonNativeExtensions
     /// the <see cref="GorgonNativeBuffer{T}.Length"/>.
     /// </para>
     /// </remarks>
-    public static void Write<T>(this Stream stream, GorgonNativeBuffer<T> buffer, int index, int? count = null)
+    public static void Write<T>(this Stream stream, GorgonNativeBuffer<T> buffer, long index, long? count = null)
         where T : unmanaged
     {
         if (!stream.CanWrite)
@@ -419,7 +472,7 @@ public static class GorgonNativeExtensions
             throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL), nameof(index));
         }
 
-        int size = count ?? (buffer.Length - index);
+        long size = count ?? (buffer.Length - index);
 
         if (size < 1)
         {
@@ -431,11 +484,24 @@ public static class GorgonNativeExtensions
             throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, index, size));
         }
 
+        long byteSize = size * buffer.TypeSize;
+
         unsafe
         {
-            fixed (T* srcPtr = &buffer[index])
+            byte* src = (byte *)Unsafe.AsPointer(ref buffer[index]);
+            int blockSize = (int)(byteSize.Min(int.MaxValue));
+
+            while (byteSize > 0)
             {
-                stream.Write(new Span<byte>((byte*)srcPtr, size * buffer.TypeSize));
+                stream.Write(new Span<byte>(src, blockSize));
+
+                byteSize -= blockSize;
+                src += blockSize;
+
+                if (byteSize < int.MaxValue)
+                {
+                    blockSize = (int)byteSize;
+                }
             }
         }
     }
@@ -484,22 +550,16 @@ public static class GorgonNativeExtensions
     /// </code>
     /// </para>
     /// </remarks>
-    public static GorgonNativeBuffer<T> PinAsNativeBuffer<T>(this T[] array, int index = 0, int? count = null)
+    public static GorgonNativeBuffer<T> PinAsNativeBuffer<T>(this T[] array, long index = 0, long? count = null)
         where T : unmanaged
     {
-        count ??= array.Length - index;
+        ArgumentOutOfRangeException.ThrowIfLessThan(index, 0);        
 
-        if (index < 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(index), Resources.GOR_ERR_DATABUFF_OFFSET_TOO_SMALL);
-        }
+        count ??= array.LongLength - index;
 
-        if (count < 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(count), Resources.GOR_ERR_DATABUFF_SIZE_TOO_SMALL);
-        }
+        ArgumentOutOfRangeException.ThrowIfLessThan(count.Value, 0);
 
-        if ((index + count) > array.Length)
+        if ((index + count) > array.LongLength)
         {
             throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, index, count));
         }
@@ -623,10 +683,10 @@ public static class GorgonNativeExtensions
 
         unsafe
         {
-            fixed (T* srcPtr = &span[0])
-            fixed (T* destPtr = &ptr[0])
+            byte* destPtr = (byte*)ptr;
+            fixed (T* srcPtr = span)            
             {
-                Unsafe.CopyBlock((byte*)destPtr, (byte*)srcPtr, (uint)(count.Value * Unsafe.SizeOf<T>()));
+                NativeMemory.Copy(srcPtr, destPtr, (nuint)span.Length);
             }
         }
     }

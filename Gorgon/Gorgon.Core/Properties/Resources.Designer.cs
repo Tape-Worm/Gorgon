@@ -61,42 +61,6 @@ namespace Gorgon.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The type [{0}] is abstract and cannot be created directly..
-        /// </summary>
-        internal static string GOR_ERR_ACTIVATOR_CANNOT_CREATE_ABSTRACT {
-            get {
-                return ResourceManager.GetString("GOR_ERR_ACTIVATOR_CANNOT_CREATE_ABSTRACT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The type [{0}] is an interface. There is no constructor for this type..
-        /// </summary>
-        internal static string GOR_ERR_ACTIVATOR_CANNOT_CREATE_INTERFACE_TYPE {
-            get {
-                return ResourceManager.GetString("GOR_ERR_ACTIVATOR_CANNOT_CREATE_INTERFACE_TYPE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Could not find an applicable constructor on type [{0}] with the specified parameter types..
-        /// </summary>
-        internal static string GOR_ERR_ACTIVATOR_CANNOT_FIND_CONSTRUCTOR {
-            get {
-                return ResourceManager.GetString("GOR_ERR_ACTIVATOR_CANNOT_FIND_CONSTRUCTOR", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The type [{0}] is not the same as the generic type [{1}]..
-        /// </summary>
-        internal static string GOR_ERR_ACTIVATOR_TYPE_MISMATCH {
-            get {
-                return ResourceManager.GetString("GOR_ERR_ACTIVATOR_TYPE_MISMATCH", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The alignment value {0} is not a power of two..
         /// </summary>
         internal static string GOR_ERR_ALIGNMENT_NOT_POW2 {
@@ -138,6 +102,15 @@ namespace Gorgon.Properties {
         internal static string GOR_ERR_ARRAY_TOO_SMALL {
             get {
                 return ResourceManager.GetString("GOR_ERR_ARRAY_TOO_SMALL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Converting the pointer data type to {0} will cause a buffer overflow when reading/writing..
+        /// </summary>
+        internal static string GOR_ERR_BUFFER_OVERFLOW {
+            get {
+                return ResourceManager.GetString("GOR_ERR_BUFFER_OVERFLOW", resourceCulture);
             }
         }
         
@@ -214,29 +187,11 @@ namespace Gorgon.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The mode must be either [Read] or [Write]..
-        /// </summary>
-        internal static string GOR_ERR_CHUNK_ILLEGAL_OPEN_MODE {
-            get {
-                return ResourceManager.GetString("GOR_ERR_CHUNK_ILLEGAL_OPEN_MODE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Could not find a chunk with an ID of 0x{0}..
         /// </summary>
         internal static string GOR_ERR_CHUNK_NOT_FOUND {
             get {
                 return ResourceManager.GetString("GOR_ERR_CHUNK_NOT_FOUND", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The reader is currently deserializing an object. This call cannot be executed while the reader is deserializing..
-        /// </summary>
-        internal static string GOR_ERR_CHUNK_READER_DESERIALIZING {
-            get {
-                return ResourceManager.GetString("GOR_ERR_CHUNK_READER_DESERIALIZING", resourceCulture);
             }
         }
         
@@ -255,24 +210,6 @@ namespace Gorgon.Properties {
         internal static string GOR_ERR_CHUNK_WRITER_SERIALIZING {
             get {
                 return ResourceManager.GetString("GOR_ERR_CHUNK_WRITER_SERIALIZING", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The stream for the chunk file must be read only..
-        /// </summary>
-        internal static string GOR_ERR_CHUNKFILE_MUST_BE_READONLY {
-            get {
-                return ResourceManager.GetString("GOR_ERR_CHUNKFILE_MUST_BE_READONLY", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The stream for the chunk file must be write only..
-        /// </summary>
-        internal static string GOR_ERR_CHUNKFILE_MUST_BE_WRITEONLY {
-            get {
-                return ResourceManager.GetString("GOR_ERR_CHUNKFILE_MUST_BE_WRITEONLY", resourceCulture);
             }
         }
         
@@ -313,20 +250,11 @@ namespace Gorgon.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The directory &apos;{0}&apos; was not found..
+        ///   Looks up a localized string similar to The destination memory is not large enough to copy the data..
         /// </summary>
-        internal static string GOR_ERR_DIRECTORY_NOT_FOUND {
+        internal static string GOR_ERR_DESTINATION_TOO_SMALL {
             get {
-                return ResourceManager.GetString("GOR_ERR_DIRECTORY_NOT_FOUND", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The encryption key provided is not valid for the provider..
-        /// </summary>
-        internal static string GOR_ERR_ENCRYPTION_KEY_NOT_VALID {
-            get {
-                return ResourceManager.GetString("GOR_ERR_ENCRYPTION_KEY_NOT_VALID", resourceCulture);
+                return ResourceManager.GetString("GOR_ERR_DESTINATION_TOO_SMALL", resourceCulture);
             }
         }
         
@@ -349,15 +277,6 @@ namespace Gorgon.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The height given ({0}) is not a multiple of 2. The format [{1}] requires the height be a multiple of 2..
-        /// </summary>
-        internal static string GOR_ERR_HEIGHT_MUST_BE_MULTIPLE_OF_2 {
-            get {
-                return ResourceManager.GetString("GOR_ERR_HEIGHT_MUST_BE_MULTIPLE_OF_2", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The index is out of range.  The index value [{0}] must be be 0 or less than {1}..
         /// </summary>
         internal static string GOR_ERR_INDEX_OUT_OF_RANGE {
@@ -372,24 +291,6 @@ namespace Gorgon.Properties {
         internal static string GOR_ERR_KEY_NOT_FOUND {
             get {
                 return ResourceManager.GetString("GOR_ERR_KEY_NOT_FOUND", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The block count must be larger than 0..
-        /// </summary>
-        internal static string GOR_ERR_MISSING_BLOCK_COUNT {
-            get {
-                return ResourceManager.GetString("GOR_ERR_MISSING_BLOCK_COUNT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to A minimum of 8 elements must be available to retrieve the corners of the bounding box..
-        /// </summary>
-        internal static string GOR_ERR_NOT_ENOUGH_CORNERS {
-            get {
-                return ResourceManager.GetString("GOR_ERR_NOT_ENOUGH_CORNERS", resourceCulture);
             }
         }
         
@@ -428,43 +329,6 @@ namespace Gorgon.Properties {
         internal static string GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY {
             get {
                 return ResourceManager.GetString("GOR_ERR_PARAMETER_MUST_NOT_BE_EMPTY", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot read types from the Plugin assemblies:
-        ///{0}.
-        /// </summary>
-        internal static string GOR_ERR_plugin_TYPE_LOAD_FAILURE {
-            get {
-                return ResourceManager.GetString("GOR_ERR_plugin_TYPE_LOAD_FAILURE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The property &apos;{0}&apos; is declared on type [{1}] and is not the same as the generic type [{2}]..
-        /// </summary>
-        internal static string GOR_ERR_PROPERTY_DECLARING_TYPE_MISMATCH {
-            get {
-                return ResourceManager.GetString("GOR_ERR_PROPERTY_DECLARING_TYPE_MISMATCH", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The property &apos;{0}&apos; has no declaring type..
-        /// </summary>
-        internal static string GOR_ERR_PROPERTY_NO_DECLARING_TYPE {
-            get {
-                return ResourceManager.GetString("GOR_ERR_PROPERTY_NO_DECLARING_TYPE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The property &apos;{0}&apos; has a type of [{1}], which is not the same as the generic [{2}]..
-        /// </summary>
-        internal static string GOR_ERR_PROPERTY_TYPE_MISMATCH {
-            get {
-                return ResourceManager.GetString("GOR_ERR_PROPERTY_TYPE_MISMATCH", resourceCulture);
             }
         }
         
@@ -546,42 +410,6 @@ namespace Gorgon.Properties {
         internal static string GOR_ERR_STREAM_PARENT_NEEDS_SEEK {
             get {
                 return ResourceManager.GetString("GOR_ERR_STREAM_PARENT_NEEDS_SEEK", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The stream position must be 0 or greater..
-        /// </summary>
-        internal static string GOR_ERR_STREAM_POS_OUT_OF_RANGE {
-            get {
-                return ResourceManager.GetString("GOR_ERR_STREAM_POS_OUT_OF_RANGE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The stream size must be 0 or greater..
-        /// </summary>
-        internal static string GOR_ERR_STREAM_SIZE_OUT_OF_RANGE {
-            get {
-                return ResourceManager.GetString("GOR_ERR_STREAM_SIZE_OUT_OF_RANGE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The value &apos;{0}&apos; is greater than or equal to the maximum value &apos;{1}&apos;.
-        /// </summary>
-        internal static string GOR_ERR_VALUE_IS_GREATER_THAN {
-            get {
-                return ResourceManager.GetString("GOR_ERR_VALUE_IS_GREATER_THAN", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The value &apos;{0}&apos; is less than or equal to the minimum value &apos;{1}&apos;.
-        /// </summary>
-        internal static string GOR_ERR_VALUE_IS_LESS_THAN {
-            get {
-                return ResourceManager.GetString("GOR_ERR_VALUE_IS_LESS_THAN", resourceCulture);
             }
         }
         
@@ -811,24 +639,6 @@ namespace Gorgon.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Image pitch information.  Width={0} bytes, Size={1} bytes..
-        /// </summary>
-        internal static string GOR_TOSTR_FMTPITCH {
-            get {
-                return ResourceManager.GetString("GOR_TOSTR_FMTPITCH", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Image pitch information.  Width={0} bytes, Size={1} bytes.  Format is compressed. Block count width: {2}, Block count height: {3}.
-        /// </summary>
-        internal static string GOR_TOSTR_FMTPITCH_COMPRESSED {
-            get {
-                return ResourceManager.GetString("GOR_TOSTR_FMTPITCH_COMPRESSED", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Chunk: 0x{0}. Offset: 0x{1}. Size: 0x{2}.
         /// </summary>
         internal static string GOR_TOSTR_GORGONCHUNK {
@@ -863,15 +673,6 @@ namespace Gorgon.Properties {
         internal static string GOR_TOSTR_GORGONRESULT {
             get {
                 return ResourceManager.GetString("GOR_TOSTR_GORGONRESULT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Named object: {0}.
-        /// </summary>
-        internal static string GOR_TOSTR_NAMEDOBJECT {
-            get {
-                return ResourceManager.GetString("GOR_TOSTR_NAMEDOBJECT", resourceCulture);
             }
         }
         

@@ -34,11 +34,14 @@
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <PackageOutputPath>$(SolutionDir)nuget\$(Configuration)</PackageOutputPath>
+    <IsAotCompatible>True</IsAotCompatible>
+    <PublishAot>True</PublishAot>
+    <PublishTrimmed>True</PublishTrimmed>    
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
+    <OptimizationPreference>Speed</OptimizationPreference>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DebugType>full</DebugType>

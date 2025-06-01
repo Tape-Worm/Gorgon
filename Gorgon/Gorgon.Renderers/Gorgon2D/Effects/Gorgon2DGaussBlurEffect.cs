@@ -27,6 +27,7 @@ using System.Globalization;
 using System.Numerics;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
+using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
 using Gorgon.Native;
 using Gorgon.Renderers.Cameras;
@@ -337,7 +338,7 @@ public class Gorgon2DGaussBlurEffect
 
         // Write out the current blur radius.
         // Store the blur radius in the last part of the buffer (minus 4 floats for float alignment rules on constant buffers).
-        _blurKernelData[^4] = _blurRadius;
+        _blurKernelData[_blurKernelData.Length - 4] = _blurRadius;
 
         _needKernelUpdate = false;
         _needOffsetUpdate = true;

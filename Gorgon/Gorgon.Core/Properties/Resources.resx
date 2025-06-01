@@ -127,9 +127,6 @@ Parameter: '{0}'</value>
 Result: "{1}"
 Code: 0x{2}</value>
   </data>
-  <data name="GOR_TOSTR_NAMEDOBJECT" xml:space="preserve">
-    <value>Named object: {0}</value>
-  </data>
   <data name="GOR_TOSTR_GORGONRANGE" xml:space="preserve">
     <value>Min: {0}  Max: {1}  Range: {2}</value>
   </data>
@@ -163,21 +160,11 @@ Code: 0x{2}</value>
   <data name="GOR_UNIT_MEM_TB" xml:space="preserve">
     <value>TB</value>
   </data>
-  <data name="GOR_ERR_VALUE_IS_GREATER_THAN" xml:space="preserve">
-    <value>The value '{0}' is greater than or equal to the maximum value '{1}'</value>
-  </data>
-  <data name="GOR_ERR_VALUE_IS_LESS_THAN" xml:space="preserve">
-    <value>The value '{0}' is less than or equal to the minimum value '{1}'</value>
-  </data>
   <data name="GOR_ERR_STREAM_IS_WRITEONLY" xml:space="preserve">
     <value>The stream is write only.</value>
   </data>
   <data name="GOR_ERR_STREAM_NOT_SEEKABLE" xml:space="preserve">
     <value>Unable to seek within this stream.</value>
-  </data>
-  <data name="GOR_ERR_plugin_TYPE_LOAD_FAILURE" xml:space="preserve">
-    <value>Cannot read types from the Plugin assemblies:
-{0}</value>
   </data>
   <data name="GOR_EXCEPT_CUSTOM_INFO" xml:space="preserve">
     <value>Custom Information</value>
@@ -209,27 +196,6 @@ Code: 0x{2}</value>
   <data name="GOR_TOSTR_FILE_EXTENSION" xml:space="preserve">
     <value>{0} (*.{1})</value>
   </data>
-  <data name="GOR_ERR_ACTIVATOR_TYPE_MISMATCH" xml:space="preserve">
-    <value>The type [{0}] is not the same as the generic type [{1}].</value>
-  </data>
-  <data name="GOR_ERR_ACTIVATOR_CANNOT_FIND_CONSTRUCTOR" xml:space="preserve">
-    <value>Could not find an applicable constructor on type [{0}] with the specified parameter types.</value>
-  </data>
-  <data name="GOR_ERR_PROPERTY_DECLARING_TYPE_MISMATCH" xml:space="preserve">
-    <value>The property '{0}' is declared on type [{1}] and is not the same as the generic type [{2}].</value>
-  </data>
-  <data name="GOR_ERR_PROPERTY_NO_DECLARING_TYPE" xml:space="preserve">
-    <value>The property '{0}' has no declaring type.</value>
-  </data>
-  <data name="GOR_ERR_PROPERTY_TYPE_MISMATCH" xml:space="preserve">
-    <value>The property '{0}' has a type of [{1}], which is not the same as the generic [{2}].</value>
-  </data>
-  <data name="GOR_ERR_ACTIVATOR_CANNOT_CREATE_ABSTRACT" xml:space="preserve">
-    <value>The type [{0}] is abstract and cannot be created directly.</value>
-  </data>
-  <data name="GOR_ERR_ACTIVATOR_CANNOT_CREATE_INTERFACE_TYPE" xml:space="preserve">
-    <value>The type [{0}] is an interface. There is no constructor for this type.</value>
-  </data>
   <data name="GOR_ERR_OFFSET_AND_SIZE_ARE_LARGER_THAN_ARRAY" xml:space="preserve">
     <value>The offset {0} + size {1} requested are larger than the array: {2}</value>
   </data>
@@ -238,9 +204,6 @@ Code: 0x{2}</value>
   </data>
   <data name="GOR_ERR_STREAM_PARENT_NEEDS_SEEK" xml:space="preserve">
     <value>The child stream requires a parent stream that can seek.</value>
-  </data>
-  <data name="GOR_ERR_STREAM_POS_OUT_OF_RANGE" xml:space="preserve">
-    <value>The stream position must be 0 or greater.</value>
   </data>
   <data name="GOR_ERR_FILE_EXTENSION_NOT_FOUND" xml:space="preserve">
     <value>The file extension '{0}' was not found in this collection.</value>
@@ -317,12 +280,6 @@ Code: 0x{2}</value>
   <data name="GOR_RESULT_DESC_OUT_OF_MEMORY" xml:space="preserve">
     <value>There is not enough memory to complete the operation.</value>
   </data>
-  <data name="GOR_ERR_ENCRYPTION_KEY_NOT_VALID" xml:space="preserve">
-    <value>The encryption key provided is not valid for the provider.</value>
-  </data>
-  <data name="GOR_ERR_DIRECTORY_NOT_FOUND" xml:space="preserve">
-    <value>The directory '{0}' was not found.</value>
-  </data>
   <data name="GOR_ERR_ARGUMENT_MISSING" xml:space="preserve">
     <value>The parameter {0} is not initialized or missing on the parameter {1}.</value>
   </data>
@@ -334,21 +291,6 @@ Code: 0x{2}</value>
   </data>
   <data name="GOR_TOSTR_POINTER" xml:space="preserve">
     <value>Gorgon Pointer: {0}</value>
-  </data>
-  <data name="GOR_ERR_NOT_ENOUGH_CORNERS" xml:space="preserve">
-    <value>A minimum of 8 elements must be available to retrieve the corners of the bounding box.</value>
-  </data>
-  <data name="GOR_ERR_HEIGHT_MUST_BE_MULTIPLE_OF_2" xml:space="preserve">
-    <value>The height given ({0}) is not a multiple of 2. The format [{1}] requires the height be a multiple of 2.</value>
-  </data>
-  <data name="GOR_ERR_MISSING_BLOCK_COUNT" xml:space="preserve">
-    <value>The block count must be larger than 0.</value>
-  </data>
-  <data name="GOR_TOSTR_FMTPITCH" xml:space="preserve">
-    <value>Image pitch information.  Width={0} bytes, Size={1} bytes.</value>
-  </data>
-  <data name="GOR_TOSTR_FMTPITCH_COMPRESSED" xml:space="preserve">
-    <value>Image pitch information.  Width={0} bytes, Size={1} bytes.  Format is compressed. Block count width: {2}, Block count height: {3}</value>
   </data>
   <data name="GOR_ERR_SPLINE_POINT_OUT_OF_RANGE" xml:space="preserve">
     <value>The spline point index must be 0 or greater, or less than the number of points - 1.</value>
@@ -377,14 +319,8 @@ Code: 0x{2}</value>
   <data name="GOR_ERR_CHUNK_FILE_TABLE_OFFSET_INVALID" xml:space="preserve">
     <value>The chunk file is corrupt. The chunk table offset is invalid.</value>
   </data>
-  <data name="GOR_ERR_CHUNK_ILLEGAL_OPEN_MODE" xml:space="preserve">
-    <value>The mode must be either [Read] or [Write].</value>
-  </data>
   <data name="GOR_ERR_CHUNK_NOT_FOUND" xml:space="preserve">
     <value>Could not find a chunk with an ID of 0x{0}.</value>
-  </data>
-  <data name="GOR_ERR_CHUNK_READER_DESERIALIZING" xml:space="preserve">
-    <value>The reader is currently deserializing an object. This call cannot be executed while the reader is deserializing.</value>
   </data>
   <data name="GOR_ERR_CHUNK_RESERVED" xml:space="preserve">
     <value>The chunk ID 0x{0} is already the ID of a reserved value.</value>
@@ -392,17 +328,8 @@ Code: 0x{2}</value>
   <data name="GOR_ERR_CHUNK_WRITER_SERIALIZING" xml:space="preserve">
     <value>The writer is currently serializing an object. This call cannot be executed while the writer is serializing.</value>
   </data>
-  <data name="GOR_ERR_STREAM_SIZE_OUT_OF_RANGE" xml:space="preserve">
-    <value>The stream size must be 0 or greater.</value>
-  </data>
   <data name="GOR_ERR_CHUNK_ALREADY_OPEN" xml:space="preserve">
     <value>The chunk ID 0x{0} is already open. Only one chunk may be accessed at a time.</value>
-  </data>
-  <data name="GOR_ERR_CHUNKFILE_MUST_BE_READONLY" xml:space="preserve">
-    <value>The stream for the chunk file must be read only.</value>
-  </data>
-  <data name="GOR_ERR_CHUNKFILE_MUST_BE_WRITEONLY" xml:space="preserve">
-    <value>The stream for the chunk file must be write only.</value>
   </data>
   <data name="GOR_ERR_PTR_CONVERT_WIDENING" xml:space="preserve">
     <value>The pointer cannot be converted because the destination type ({0} bytes) is larger than the memory covered by the pointer ({1} bytes).</value>
@@ -421,5 +348,11 @@ Code: 0x{2}</value>
   </data>
   <data name="GOR_EXCEPT_STACK_TRACE" xml:space="preserve">
     <value>Stack trace</value>
+  </data>
+  <data name="GOR_ERR_BUFFER_OVERFLOW" xml:space="preserve">
+    <value>Converting the pointer data type to {0} will cause a buffer overflow when reading/writing.</value>
+  </data>
+  <data name="GOR_ERR_DESTINATION_TOO_SMALL" xml:space="preserve">
+    <value>The destination memory is not large enough to copy the data.</value>
   </data>
 </root>

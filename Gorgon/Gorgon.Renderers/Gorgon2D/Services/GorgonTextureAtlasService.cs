@@ -26,6 +26,7 @@
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
+using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
 using Gorgon.Renderers.Properties;
 
@@ -356,7 +357,6 @@ public class GorgonTextureAtlasService
     /// the array count will be 0.
     /// </para>
     /// </remarks>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0046:Convert to conditional expression", Justification = "<Pending>")]
     public (GorgonPoint textureSize, int arrayCount) GetBestFit(IEnumerable<GorgonSprite> sprites, GorgonPoint minTextureSize, int minArrayCount)
     {
         if (sprites is null)

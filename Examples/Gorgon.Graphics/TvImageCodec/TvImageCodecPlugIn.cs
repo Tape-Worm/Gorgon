@@ -24,6 +24,7 @@
 // 
 
 using Gorgon.Graphics.Imaging.Codecs;
+using Gorgon.Graphics.Imaging.Codecs.Plugins;
 
 namespace Gorgon.Examples;
 
@@ -42,7 +43,7 @@ public class TvImageCodecPlugin
     /// <remarks>
     /// This returns a <see cref="IReadOnlyDictionary{TKey,TValue}"/> containing the name of the plugin as its key, and an optional friendly description as its value.
     /// </remarks>
-    public override IReadOnlyList<GorgonImageCodecDescription> Codecs
+    public override IReadOnlyList<GorgonImageCodecName> Codecs
     {
         get;
     }
@@ -57,7 +58,7 @@ public class TvImageCodecPlugin
     /// Implementors must implement this method to return the codec from the plugin assembly.
     /// </para>
     /// </remarks>
-    protected override IGorgonImageCodec OnCreateCodec(string codec) => new TvImageCodec();
+    protected override IGorgonImageCodec OnCreateCodec(GorgonImageCodecName codec) => new TvImageCodec();
 
     /// <summary>
     /// Function to create image decoding options for the codec.
@@ -70,7 +71,7 @@ public class TvImageCodecPlugin
     /// return <b>null</b>.
     /// </para>
     /// </remarks>
-    protected override IGorgonImageCodecDecodingOptions OnCreateCodecDecodingOptions(string codec) => null;
+    protected override IGorgonImageCodecDecodingOptions? OnCreateCodecDecodingOptions(GorgonImageCodecName codec) => null;
 
     /// <summary>
     /// Function to create image encoding options for the codec.
@@ -83,18 +84,12 @@ public class TvImageCodecPlugin
     /// return <b>null</b>.
     /// </para>
     /// </remarks>
-    protected override IGorgonImageCodecEncodingOptions OnCreateCodecEncodingOptions(string codec) => null;
+    protected override IGorgonImageCodecEncodingOptions? OnCreateCodecEncodingOptions(GorgonImageCodecName codec) => null;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TvImageCodecPlugin"/> class.
     /// </summary>
     public TvImageCodecPlugin()
-        : base("A TV image codec, used for example only.") => Codecs =
-                 [
-                     new GorgonImageCodecDescription(typeof(TvImageCodec))
-                     {
-                         Description = Description
-                     }
-                 ];
+        : base("A TV image codec, used for example only.") => Codecs = [new GorgonImageCodecName(typeof(TvImageCodec), Description)];
 
 }

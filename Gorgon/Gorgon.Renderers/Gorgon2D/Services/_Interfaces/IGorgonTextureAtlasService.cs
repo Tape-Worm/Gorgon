@@ -25,6 +25,7 @@
 
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
+using Gorgon.Graphics.Imaging;
 
 namespace Gorgon.Renderers.Services;
 

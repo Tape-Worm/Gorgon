@@ -23,12 +23,14 @@
 // Created: March 5, 2017 10:33:01 PM
 // 
 
+using System.Diagnostics;
 using System.Numerics;
 using Gorgon.Examples;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
+using Gorgon.Graphics.Imaging.Codecs.Plugins;
 using Gorgon.IO;
 using Gorgon.Plugins;
 using Gorgon.UI.WindowsForms;
@@ -40,19 +42,18 @@ namespace Graphics.Examples;
 /// </summary>
 public partial class Form : System.Windows.Forms.Form
 {
-
     // The cache that holds Plugin information.
-    private GorgonMefPluginCache _pluginCache;
+    private readonly GorgonMefPluginCache _pluginCache;
     // The main graphics interface.
-    private GorgonGraphics _graphics;
+    private GorgonGraphics? _graphics;
     // The swap chain to use.
-    private GorgonSwapChain _swap;
+    private GorgonSwapChain? _swap;
     // Image to display, loaded from our plugin.
-    private GorgonTexture2DView _texture;
+    private GorgonTexture2DView? _texture;
     // The image in system memory.
-    private IGorgonImage _image;
+    private IGorgonImage? _image;
     // Our custom codec loaded from the plugin.
-    private IGorgonImageCodec _customCodec;
+    private IGorgonImageCodec? _customCodec;
 
     /// <summary>
     /// Function called during idle time.
@@ -60,6 +61,9 @@ public partial class Form : System.Windows.Forms.Form
     /// <returns><b>true</b> to continue execution, <b>false</b> to stop.</returns>
     private bool Idle()
     {
+        Debug.Assert(_swap is not null, "No swap chain.");
+        Debug.Assert(_texture is not null, "The texture was not created.");
+
         _swap.RenderTargetView.Clear(GorgonColors.White);
 
         Vector2 windowSize = new(ClientSize.Width, ClientSize.Height);
@@ -101,24 +105,22 @@ public partial class Form : System.Windows.Forms.Form
     {
         const string PluginName = "Gorgon.Examples.TvImageCodecPlugin";
 
-        _pluginCache = new GorgonMefPluginCache(GorgonExample.Log);
-
         // Load our plugin.
         _pluginCache.LoadPluginAssemblies(Application.StartupPath, "TVImageCodec.dll");
 
         // Activate the Plugin service.
-        IGorgonPluginService PluginService = new GorgonMefPluginService(_pluginCache);
+        IGorgonPluginService pluginService = new GorgonMefPluginService(_pluginCache);
 
         // Find the Plugin.
-        GorgonImageCodecPlugin Plugin = PluginService.GetPlugin<GorgonImageCodecPlugin>(PluginName);
+        GorgonImageCodecPlugin? plugin = pluginService.GetPlugin<GorgonImageCodecPlugin>(PluginName);
 
-        if ((Plugin is null) || (Plugin.Codecs.Count == 0))
+        if ((plugin is null) || (plugin.Codecs.Count == 0))
         {
             return false;
         }
 
         // Normally you would enumerate the plugins, but in this case we know there's only one.
-        _customCodec = Plugin.CreateCodec(Plugin.Codecs[0].Name);
+        _customCodec = plugin.CreateCodec(plugin.Codecs[0]);
 
         return _customCodec is not null;
     }
@@ -128,6 +130,9 @@ public partial class Form : System.Windows.Forms.Form
     /// </summary>
     private void ConvertImage()
     {
+        Debug.Assert(_image is not null, "No image available to convert.");
+        Debug.Assert(_customCodec is not null, "Custom image codec not found.");
+
         // The path to our image file for our custom codec.
         string tempPath = Path.ChangeExtension(Path.GetTempPath().FormatDirectory(Path.DirectorySeparatorChar) + Path.GetRandomFileName(), "tvImage");
 
@@ -259,6 +264,11 @@ public partial class Form : System.Windows.Forms.Form
     /// <summary>
     /// Initializes a new instance of the <see cref="Form"/> class.
     /// </summary>
-    public Form() => InitializeComponent();
+    public Form()
+    {
+        InitializeComponent();
+
+        _pluginCache = new GorgonMefPluginCache(GorgonExample.Log);
+    }
 
 }

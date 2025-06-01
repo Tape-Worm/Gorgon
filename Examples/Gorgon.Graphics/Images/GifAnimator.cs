@@ -23,26 +23,42 @@
 // Created: April 5, 2018 12:49:36 PM
 // 
 
+using System.Diagnostics;
+using Gorgon.Timing;
+
 namespace Gorgon.Examples;
 
 /// <summary>
 /// Updates the animation frame index for a GIF
 /// </summary>
-/// <remarks>
-/// Initializes a new instance of the <see cref="GifAnimator"/> class
-/// </remarks>
-/// <param name="syncContext">The synchronize context.</param>
-/// <exception cref="ArgumentNullException">Thrown when the <paramref name="syncContext"/> parameter is <b>null</b>.</exception>
-class GifAnimator(SynchronizationContext syncContext)
+internal class GifAnimator
 {
-
-    // The task that updates the frame index.
-    private Task _animationTask;
+    // The thread.
+    private readonly Thread _animThread;
+    // Event triggered when the thread has exited.
+    private readonly ManualResetEventSlim _closeEvent = new(false);
     // The current sychronization context.
-    private readonly SynchronizationContext _syncContext = syncContext ?? throw new ArgumentNullException(nameof(syncContext));
+    private readonly SynchronizationContext _syncContext;
     // Cancellation support.
-    private CancellationTokenSource _cancel;
+    private readonly CancellationTokenSource _cancel = new();
+    // The current frame of animation.
     private int _currentFrame;
+    // Timer for frame advancement.
+    private readonly GorgonTimer _timer = new();
+
+    /// <summary>
+    /// Property to return whether the animation is currently executing.
+    /// </summary>
+    public bool IsRunning => !_cancel.IsCancellationRequested;
+
+    /// <summary>
+    /// Property to set or return the position for the GIF image.
+    /// </summary>
+    public Point GifPosition
+    {
+        get;
+        set;
+    }
 
     /// <summary>
     /// Property to return the current frame of animation.
@@ -60,6 +76,42 @@ class GifAnimator(SynchronizationContext syncContext)
     {
         get;
         set;
+    } = [];
+
+    /// <summary>
+    /// Function to perform the animation.
+    /// </summary>
+    /// <param name="callback">The callback to execute on each frame.</param>
+    private void Animation(object? callback)
+    {
+        Debug.Assert(callback is not null, "No callback registered.");
+
+        Action frameChangeCallback = (Action)callback;
+        int currentFrameTime = FrameTimes[0];
+
+        bool IsFinishedDelay() => (_cancel.Token.IsCancellationRequested) || (_timer.Milliseconds >= currentFrameTime);
+
+        while (!_cancel.Token.IsCancellationRequested)
+        {
+            // Always execute the callback on the main thread.
+            // This way we won't have to worry about cross thread problems.
+            _syncContext.Send(_ => frameChangeCallback(), null);
+
+            // Gif frame times are in 1/100th of a second.  We need to scale to milliseconds.
+            currentFrameTime = FrameTimes[_currentFrame] * 10;
+
+            // Reset before we enter our spin so we're waiting for the frame time, and not the frametime plus 
+            // call overhead.
+            _timer.Reset();
+            SpinWait.SpinUntil(IsFinishedDelay);
+
+            if (Interlocked.Increment(ref _currentFrame) >= FrameTimes.Count)
+            {
+                _currentFrame = 0;
+            }
+        }
+
+        _closeEvent.Set();
     }
 
     /// <summary>
@@ -73,55 +125,40 @@ class GifAnimator(SynchronizationContext syncContext)
     /// <param name="frameChangeCallback">The callback to execute when a frame is updated.</param>
     public void Animate(Action frameChangeCallback)
     {
-        if ((FrameTimes is null) || (FrameTimes.Count == 0) || (_animationTask is not null))
+        if ((FrameTimes is null) || (FrameTimes.Count == 0))
         {
             return;
         }
 
-        _cancel = new CancellationTokenSource();
-        CancellationToken token = _cancel.Token;
-
-        // We'll use a background task to update the frame index.
-        // We didn't set up an Idle loop in this app, so we'll just use another task to continuously execute the frame change.
-        _animationTask = Task.Run(async () =>
-                                  {
-                                      while (!token.IsCancellationRequested)
-                                      {
-                                          if (frameChangeCallback is not null)
-                                          {
-                                              // Always execute the callback on the main thread.
-                                              // This way we won't have to worry about cross thread stuff.
-                                              _syncContext.Post(_ => frameChangeCallback(), null);
-                                          }
-
-                                          // Gif frame times are in 1/100th of a second.  We need to scale to milliseconds.
-                                          await Task.Delay(FrameTimes[CurrentFrame] * 10, token);
-
-                                          ++CurrentFrame;
-
-                                          if (CurrentFrame >= FrameTimes.Count)
-                                          {
-                                              CurrentFrame = 0;
-                                          }
-                                      }
-                                  }, token);
+        _animThread.Start(frameChangeCallback);
     }
 
     /// <summary>
     /// Function to cancel the animation.
     /// </summary>
-    /// <returns>The task that is updating the animation.</returns>
+    /// <returns>A task for asynchronous operation.</returns>
     public async Task CancelAsync()
     {
-        if (_animationTask is null)
+        if (_cancel.IsCancellationRequested)
         {
             return;
         }
 
         _cancel.Cancel();
+
         // We await so the animation has time to shut down gracefully.
-        await _animationTask;
-        _animationTask = null;
-        _cancel = null;
+        await Task.Run(() => _closeEvent.Wait(3000)).ConfigureAwait(false);
+
+        _closeEvent.Dispose();
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GifAnimator"/> class.
+    /// </summary>
+    /// <param name="syncContext">The synchronization context.</param>
+    public GifAnimator(SynchronizationContext syncContext)
+    {
+        _syncContext = syncContext;
+        _animThread = new Thread(Animation);
     }
 }

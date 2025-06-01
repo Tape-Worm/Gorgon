@@ -1,0 +1,9 @@
+﻿{
+    "$schema": "https://aka.ms/CsWin32.schema.json",
+    "emitSingleFile": false,
+    "useSafeHandles": false,
+    "allowMarshaling": false,
+    "comInterop": {
+        "preserveSigMethods": ["IPropertyBag2.Read"]
+    }
+}

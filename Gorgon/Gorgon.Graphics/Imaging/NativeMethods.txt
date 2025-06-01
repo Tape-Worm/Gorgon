@@ -1,0 +1,12 @@
+﻿IWICImagingFactory
+IPropertyBag2
+
+CLSID_WICImagingFactory1
+GUID_WICPixelFormat*
+GUID_Vendor*
+GUID_Container*
+PROPBAG2_TYPE
+WICPngFilterOption
+WICBitmapLockFlags
+
+CoCreateInstance

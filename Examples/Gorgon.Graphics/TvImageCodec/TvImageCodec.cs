@@ -27,7 +27,6 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using Gorgon.Core;
-using Gorgon.Graphics;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
@@ -46,14 +45,19 @@ namespace Gorgon.Examples;
 internal class TvImageCodec
     : GorgonImageCodec<IGorgonImageCodecEncodingOptions, IGorgonImageCodecDecodingOptions>
 {
+    // The magic number to identify the file.
+    private const long MagicValue = 0x3074724356543020;
+
     /// <summary>
     /// The header for our image format.
     /// </summary>
+    /// <param name="width">The width of the image.</param>
+    /// <param name="height">The height of the image.</param>
     /// <remarks>
     /// This is used to contain any metadata about the image such as its width, height, etc...
     /// </remarks>
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
-    private struct TvHeader
+    private readonly struct TvHeader(int width, int height)
     {
         /// <summary>
         /// Returns the size of this type, in bytes.
@@ -63,19 +67,16 @@ internal class TvImageCodec
         /// <summary>
         /// The magic number that identifies the image data as our desired format.
         /// </summary>
-        public long MagicValueData;
+        public readonly long MagicValueData = MagicValue;
         /// <summary>
         /// The width of the image.
         /// </summary>
-        public int Width;
+        public readonly int Width = width;
         /// <summary>
         /// The height of the image.
         /// </summary>
-        public int Height;
+        public readonly int Height = height;
     }
-
-    // The magic number to identify the file.
-    private const long MagicValue = 0x3074724356543020;
 
     // Formats supported by the image.
     // We need to tell Gorgon which pixel formats this image codec stores its data as.  Otherwise, the image will not look right when it's loaded.
@@ -160,11 +161,7 @@ internal class TvImageCodec
             throw new ArgumentException(@"The image in this stream has an invalid width/height.", nameof(stream));
         }
 
-        return new GorgonImageInfo(ImageDataType.Image2D, BufferFormat.R8G8B8A8_UNorm)
-        {
-            Width = header.Width,
-            Height = header.Height
-        };
+        return GorgonImageInfo.Create2DImageInfo(BufferFormat.R8G8B8A8_UNorm, header.Width, header.Height);
     }
 
     /// <summary>
@@ -254,12 +251,7 @@ internal class TvImageCodec
         }
 
         // First, we'll need to set up our header metadata.
-        TvHeader header = new()
-        {
-            MagicValueData = MagicValue,
-            Width = imageData.Width,
-            Height = imageData.Height
-        };
+        TvHeader header = new(imageData.Width, imageData.Height);
 
         // Write the metadata to the stream.
         using BinaryWriter writer = new(stream, Encoding.UTF8, true);
@@ -353,12 +345,11 @@ internal class TvImageCodec
         // Remember the stream position.
         // If we fail to do this then the stream will be offset when we return and could cause corruption.
         long position = stream.Position;
-        BinaryReader reader = null;
 
         try
         {
             // Using the BinaryReader, we can pull in the data we need.
-            reader = new BinaryReader(stream, Encoding.UTF8, true);
+            using BinaryReader reader = new(stream, Encoding.UTF8, true);
 
             // Retrieve our magic number.
             TvHeader header = reader.ReadValue<TvHeader>();
@@ -368,8 +359,6 @@ internal class TvImageCodec
         }
         finally
         {
-            reader?.Dispose();
-
             // Restore the stream to its original placement.
             stream.Position = position;
         }
@@ -395,7 +384,7 @@ internal class TvImageCodec
     /// may cause undesirable results.
     /// </para> 
     /// </remarks>
-    public override IGorgonImageInfo GetMetaData(Stream stream)
+    public override GorgonImageInfo GetMetaData(Stream stream)
     {
         if (stream is null)
         {
@@ -437,7 +426,7 @@ internal class TvImageCodec
     /// Initializes a new instance of the <see cref="TvImageCodec"/> class.
     /// </summary>
     public TvImageCodec()
-        : base(null, null) =>
+        : base(DefaultEncodingOptions, DefaultDecodingOptions) =>
         // Tell the codec which image file name extensions are commonly used to 
         // identify the image data type.  This is use by applications to determine 
         // which codec to use when loading an image.

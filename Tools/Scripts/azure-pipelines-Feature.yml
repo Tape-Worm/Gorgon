@@ -58,3 +58,4 @@ jobs:
           searchFolder: '$(System.DefaultWorkingDirectory)/Test'
           failOnMinTestsNotRun: true
           minimumExpectedTests: 1
+          testFilterCriteria: 'TestCategory=!LongRunningTests'

@@ -299,8 +299,8 @@ public struct GorgonRectangle
     /// <param name="rectangle">The rectangle to evaluate.</param>
     /// <returns><b>true</b> if the rectangle is contained within this rectangle, <b>false</b> if not.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public readonly bool Contains(GorgonRectangle rectangle) => (rectangle.Left >= Left) && (rectangle.Right <= Right)
-                                                              && (rectangle.Top >= Top) && (rectangle.Bottom <= Bottom);
+    public readonly bool Contains(GorgonRectangle rectangle) => (rectangle.X >= Left) && (rectangle.Right <= Right)
+                                                              && (rectangle.Y >= Top) && (rectangle.Bottom <= Bottom);
 
     /// <summary>
     /// Function to determine if a 3D point is contained within this <see cref="GorgonRectangle"/>.

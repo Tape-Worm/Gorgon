@@ -24,8 +24,9 @@ Docs/Help/
 Artifacts/
 *.snk
 Tools/Backup/
-__OLDE__/
+*OLDE*/
 OLDE/
+Test/Experimental/
 *.GeneratedMSBuildEditorConfig.editorconfig
 
 # Visual Studio 2015/2017 cache/options directory

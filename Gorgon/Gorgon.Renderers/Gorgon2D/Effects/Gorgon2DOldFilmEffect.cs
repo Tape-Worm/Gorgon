@@ -362,11 +362,7 @@ public class Gorgon2DOldFilmEffect
     {
         int textureSize = NoiseTextureSize.Min(128).Max(16);
 
-        using GorgonImage image = new(new GorgonImageInfo(ImageDataType.Image2D, BufferFormat.R8_UNorm)
-        {
-            Width = textureSize,
-            Height = textureSize
-        });
+        using GorgonImage image = new(GorgonImageInfo.Create2DImageInfo(BufferFormat.R8_UNorm, textureSize, textureSize));
         IGorgonImageBuffer imageBuffer = image.Buffers[0];
 
         for (int y = 0; y < textureSize; ++y)
@@ -389,7 +385,7 @@ public class Gorgon2DOldFilmEffect
                     simplexNoise = 0.0f;
                 }
 
-                image.Buffers[0].Data[(y * imageBuffer.PitchInformation.RowPitch) + x] = (byte)(simplexNoise * 255.0f);
+                image.Buffers[0].ImageData[(y * imageBuffer.PitchInformation.RowPitch) + x] = (byte)(simplexNoise * 255.0f);
             }
         }
 
