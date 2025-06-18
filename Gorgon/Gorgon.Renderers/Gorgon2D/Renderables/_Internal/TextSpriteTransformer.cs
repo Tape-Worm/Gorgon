@@ -303,7 +303,6 @@ internal class TextSpriteTransformer
     /// <param name="vertexOffset">The position in the vertex array to update.</param>
     /// <param name="isOutlinePass"><b>true</b> if outlines need to be drawn, or <b>false</b> if not.</param>
     /// <param name="lineMeasure">The width of the line.</param>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Transform(TextRenderable renderable, GorgonGlyph glyph, GorgonColor? blockColor, in Vector2 glyphPosition, int vertexOffset, bool isOutlinePass, float lineMeasure)
     {
         ref DX.RectangleF spriteBounds = ref renderable.Bounds;
