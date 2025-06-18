@@ -1522,13 +1522,22 @@ public sealed class Gorgon2D
                     }
 
                     // If we have a change of texture, then we need to let the renderer know that we need a flush.
-                    if ((renderable.Texture is not null) && (renderable.Texture != glyph.TextureView))
+                    if (renderable.Texture != glyph.TextureView)
                     {
-                        RenderBatchOnChange(renderable, true);
-                        renderable.HasTextureChanges = true;
-                    }
+                        renderable.Texture = glyph.TextureView;
 
-                    renderable.Texture = glyph.TextureView;
+                        if (renderable.IndexCount > 0)
+                        {
+                            _batchRenderer.QueueRenderable(renderable);
+                        }
+                        RenderBatchOnChange(renderable, true, flush: true);
+                                                
+                        renderable.IndexCount = 0;
+                        renderable.ActualVertexCount = 0;
+                        renderable.HasVertexChanges = true;
+                        vertexOffset = 0;
+                        isUpdated = true;
+                    }
 
                     if (isUpdated)
                     {
