@@ -420,7 +420,7 @@ public sealed class GorgonNativeBuffer<T>
 
         fixed(T* srcPtr = span)
         {
-            Buffer.MemoryCopy(srcPtr, (byte*)result._memoryBlock, result.Length, span.Length);
+            NativeMemory.Copy(srcPtr, (byte*)result._memoryBlock, (nuint)result.SizeInBytes);
         }
 
         return result;

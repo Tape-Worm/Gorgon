@@ -686,7 +686,7 @@ public static class GorgonNativeExtensions
             byte* destPtr = (byte*)ptr;
             fixed (T* srcPtr = span)            
             {
-                NativeMemory.Copy(srcPtr, destPtr, (nuint)span.Length);
+                NativeMemory.Copy(srcPtr, destPtr, (nuint)(span.Length * ptr.TypeSize));
             }
         }
     }

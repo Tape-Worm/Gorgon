@@ -65,7 +65,7 @@ jobs:
           searchFolder: '$(System.DefaultWorkingDirectory)/Test'
           failOnMinTestsNotRun: true
           minimumExpectedTests: 1
-          testFilterCriteria: 'TestCategory=!LongRunningTests'
+          testFilterCriteria: 'TestCategory!~LongRunningTests'
 
       - task: CopyFiles@2
         displayName: 'Copying Lib to $(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/lib'

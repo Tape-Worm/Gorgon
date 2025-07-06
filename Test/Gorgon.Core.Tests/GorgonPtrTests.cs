@@ -736,7 +736,7 @@ public class GorgonPtrTests
                 // Attempt to copy to an empty span
                 gorgonPtrSource.CopyTo(destinationSpan);
             }
-            catch (ArgumentEmptyException)
+            catch (ArgumentException)
             {
                 // If an ArgumentException is thrown, set the flag to true
                 exceptionThrown = true;
