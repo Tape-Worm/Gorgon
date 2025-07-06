@@ -25,7 +25,7 @@
 
 using System.Drawing.Drawing2D;
 using System.Text;
-using Gorgon.Graphics.Core;
+using Gorgon.Graphics.Core.OLDE;
 using Gorgon.Graphics.Fonts.Properties;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;

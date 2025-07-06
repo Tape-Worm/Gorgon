@@ -27,7 +27,7 @@ using System.Text;
 using System.Text.Json;
 using Gorgon.Animation;
 using Gorgon.Core;
-using Gorgon.Graphics.Core;
+using Gorgon.Graphics.Core.OLDE;
 using Gorgon.IO.Properties;
 using Gorgon.Renderers;
 

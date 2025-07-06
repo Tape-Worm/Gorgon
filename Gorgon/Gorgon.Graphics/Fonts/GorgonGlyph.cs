@@ -25,7 +25,7 @@
 
 using System.Globalization;
 using Gorgon.Core;
-using Gorgon.Graphics.Core;
+using Gorgon.Graphics.Core.OLDE;
 using Gorgon.Graphics.Fonts.Properties;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Math;

@@ -24,7 +24,7 @@
 // 
 
 using System.Numerics;
-using Gorgon.Graphics.Core;
+using Gorgon.Graphics.Core.OLDE;
 using Gorgon.Renderers.Cameras;
 
 namespace Gorgon.Renderers;

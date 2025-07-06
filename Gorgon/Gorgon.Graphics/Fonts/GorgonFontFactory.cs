@@ -26,7 +26,7 @@
 using System.Buffers;
 using System.Drawing.Text;
 using Gorgon.Core;
-using Gorgon.Graphics.Core;
+using Gorgon.Graphics.Core.OLDE;
 using Gorgon.Graphics.Fonts.Properties;
 using Gorgon.Math;
 using Gorgon.Memory;

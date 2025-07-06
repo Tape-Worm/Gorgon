@@ -30,7 +30,7 @@ using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
-using Gorgon.Graphics.Core;
+using Gorgon.Graphics.Core.OLDE;
 using Gorgon.Graphics.Fonts;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;

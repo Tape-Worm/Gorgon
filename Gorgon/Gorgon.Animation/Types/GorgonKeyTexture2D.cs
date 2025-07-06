@@ -26,7 +26,7 @@
 using System.Text.Json.Serialization;
 using Gorgon.Core;
 using Gorgon.Graphics;
-using Gorgon.Graphics.Core;
+using Gorgon.Graphics.Core.OLDE;
 
 namespace Gorgon.Animation;
 

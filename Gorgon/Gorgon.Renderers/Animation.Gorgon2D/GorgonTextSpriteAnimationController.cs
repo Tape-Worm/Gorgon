@@ -26,7 +26,7 @@
 using System.Numerics;
 using Gorgon.Animation.Properties;
 using Gorgon.Graphics;
-using Gorgon.Graphics.Core;
+using Gorgon.Graphics.Core.OLDE;
 using Gorgon.Renderers;
 
 namespace Gorgon.Animation;

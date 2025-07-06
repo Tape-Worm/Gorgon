@@ -23,7 +23,7 @@
 // Created: August 28, 2020 7:19:52 PM
 // 
 
-using Gorgon.Graphics.Core;
+using Gorgon.Graphics.Core.OLDE;
 using Gorgon.Graphics.Imaging;
 
 namespace Gorgon.IO;

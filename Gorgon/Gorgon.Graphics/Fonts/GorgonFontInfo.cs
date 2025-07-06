@@ -23,7 +23,7 @@
 // Created: Sunday, April 15, 2012 9:19:40 AM
 // 
 
-using Gorgon.Graphics.Core;
+using Gorgon.Graphics.Core.OLDE;
 
 namespace Gorgon.Graphics.Fonts;
 

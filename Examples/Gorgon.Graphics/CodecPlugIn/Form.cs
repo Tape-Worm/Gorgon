@@ -27,7 +27,7 @@ using System.Diagnostics;
 using System.Numerics;
 using Gorgon.Examples;
 using Gorgon.Graphics;
-using Gorgon.Graphics.Core;
+using Gorgon.Graphics.Core.OLDE;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Graphics.Imaging.Codecs.Plugins;

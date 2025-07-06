@@ -27,7 +27,7 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 using Gorgon.Core;
 using Gorgon.Graphics;
-using Gorgon.Graphics.Core;
+using Gorgon.Graphics.Core.OLDE;
 using Gorgon.Renderers.Geometry;
 
 namespace Gorgon.Renderers;

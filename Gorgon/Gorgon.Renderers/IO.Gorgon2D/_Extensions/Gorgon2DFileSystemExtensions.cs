@@ -26,7 +26,7 @@
 using Gorgon.Animation;
 using Gorgon.Core;
 using Gorgon.Graphics;
-using Gorgon.Graphics.Core;
+using Gorgon.Graphics.Core.OLDE;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO.FileSystem;
 using Gorgon.IO.Properties;
