@@ -138,11 +138,11 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Graphics.Imaging.Codecs.Plugins", "Gorgon\Gorgon.Graphics\Imaging.Codecs.Plugins\Gorgon.Graphics.Imaging.Codecs.Plugins.csproj", "{17FC63C2-B708-E110-BF92-5C5C4A52DE7B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TvImageCodec", "Examples\Gorgon.Graphics\TvImageCodec\TvImageCodec.csproj", "{E685A0D1-A0A9-03F3-C399-E59716D31F54}"
+	ProjectSection(ProjectDependencies) = postProject
+		{94ED3925-52A7-F066-6F2A-89729D389B67} = {94ED3925-52A7-F066-6F2A-89729D389B67}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodecPlugIn", "Examples\Gorgon.Graphics\CodecPlugIn\CodecPlugIn.csproj", "{94ED3925-52A7-F066-6F2A-89729D389B67}"
-	ProjectSection(ProjectDependencies) = postProject
-		{E685A0D1-A0A9-03F3-C399-E59716D31F54} = {E685A0D1-A0A9-03F3-C399-E59716D31F54}
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gorgon.Graphics.Imaging.Tests", "Test\Gorgon.Graphics.Imaging.Tests\Gorgon.Graphics.Imaging.Tests.csproj", "{6F098110-4D6C-D16E-7FF9-D77F6889773B}"
 EndProject
