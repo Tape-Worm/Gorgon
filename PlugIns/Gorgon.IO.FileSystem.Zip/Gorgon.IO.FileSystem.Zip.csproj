@@ -35,6 +35,8 @@ This assembly contains a plugin that will read a zip file as a file system.</Des
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <PackageType>Dependency</PackageType>
     <VersionPrefix>4.0.0</VersionPrefix>
+    <IncludeSymbols>True</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>    
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <PlatformTarget>AnyCPU</PlatformTarget>

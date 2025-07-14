@@ -38,6 +38,8 @@ Uses Windows RawInput API to poll the data from the devices.</Description>
     <IsAotCompatible>True</IsAotCompatible>
     <PublishAot>True</PublishAot>
     <PublishTrimmed>True</PublishTrimmed>
+    <IncludeSymbols>True</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>    
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">    
     <DebugSymbols>true</DebugSymbols>

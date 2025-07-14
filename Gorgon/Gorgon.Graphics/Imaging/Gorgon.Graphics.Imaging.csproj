@@ -12,7 +12,7 @@
     <PackageIcon>g.png</PackageIcon>
     <RepositoryUrl>https://github.com/Tape-Worm/Gorgon</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
-    <PackageTags>Gorgon;C#;.NET;Imaging;Graphics</PackageTags>
+    <PackageTags>Gorgon;C#;.NET;Imaging;Graphics;WIC</PackageTags>
     <EnableNETAnalyzers>True</EnableNETAnalyzers>
     <NeutralLanguage></NeutralLanguage>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -34,6 +34,8 @@
     <IsAotCompatible>True</IsAotCompatible>
     <PublishAot>True</PublishAot>
     <PublishTrimmed>True</PublishTrimmed>    
+    <IncludeSymbols>True</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>    
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">    
     <PlatformTarget>AnyCPU</PlatformTarget>

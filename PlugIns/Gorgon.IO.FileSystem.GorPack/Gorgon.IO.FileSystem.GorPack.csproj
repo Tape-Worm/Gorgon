@@ -35,6 +35,8 @@ This assembly contains a plugin that will read a proprietary BZip packed Gorgon 
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <PackageType>Dependency</PackageType>
     <VersionPrefix>4.0.0</VersionPrefix>
+    <IncludeSymbols>True</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>    
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DebugType>full</DebugType>

@@ -16,7 +16,6 @@ FreeConsole
 GetLogicalProcessorInformationEx
 
 PeekMessage
-GetForegroundWindow
 GetWindowThreadProcessId
 
 IStream

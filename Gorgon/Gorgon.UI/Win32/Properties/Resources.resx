@@ -117,32 +117,20 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="GOR_ERR_TIME_QPC_NOT_AVAILABLE" xml:space="preserve">
-    <value>The QPC timer is not supported on this system.</value>
+  <data name="GOR_ERR_CANNOT_CREATE_WINDOW" xml:space="preserve">
+    <value>Cannot create the window '{0}'.  Error code: {1}</value>
   </data>
-  <data name="GOR_TEXT_FREE_SPACE" xml:space="preserve">
-    <value>Free space</value>
+  <data name="GOR_ERR_CANNOT_GET_INSTANCE" xml:space="preserve">
+    <value>Cannot retrieve the instance handle for the application.</value>
   </data>
-  <data name="GOR_ERR_TIME_CANNOT_BEGIN" xml:space="preserve">
-    <value>Cannot begin the timer period.</value>
+  <data name="GOR_ERR_CANNOT_REGISTER_WINDOW" xml:space="preserve">
+    <value>Cannot register the window class. Error code: {0}</value>
   </data>
-  <data name="GOR_LOG_ERROR" xml:space="preserve">
-    <value>Error</value>
+  <data name="GOR_EXCEPT_NO_MSG" xml:space="preserve">
+    <value>No message given.</value>
   </data>
-  <data name="GOR_LOG_WARNING" xml:space="preserve">
-    <value>Warning</value>
-  </data>
-  <data name="GOR_LOG_EXCEPTION" xml:space="preserve">
-    <value>Exception</value>
-  </data>
-  <data name="GOR_NEW_DIR" xml:space="preserve">
-    <value>New Folder</value>
-  </data>
-  <data name="GOR_ERR_TIME_CANNOT_END" xml:space="preserve">
-    <value>Cannot end the timer period.</value>
-  </data>
-  <data name="GOR_TEXT_MODIFIED_DATE" xml:space="preserve">
-    <value>Last Modified Date</value>
+  <data name="GOR_TEXT_CONFIRM" xml:space="preserve">
+    <value>Confirmation</value>
   </data>
   <data name="GOR_TEXT_ERROR" xml:space="preserve">
     <value>Error</value>
@@ -152,11 +140,5 @@
   </data>
   <data name="GOR_TEXT_WARNING" xml:space="preserve">
     <value>Warning</value>
-  </data>
-  <data name="GOR_TEXT_UNKNOWN" xml:space="preserve">
-    <value>Unknown</value>
-  </data>
-  <data name="GOR_EXCEPT_NO_MSG" xml:space="preserve">
-    <value>No message given.</value>
   </data>
 </root>

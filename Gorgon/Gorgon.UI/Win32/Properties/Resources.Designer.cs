@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Gorgon.Core.Windows.Properties {
+namespace Gorgon.UI.Win32.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Gorgon.Core.Windows.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Gorgon.Core.Windows.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Gorgon.UI.Win32.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,29 +61,29 @@ namespace Gorgon.Core.Windows.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot begin the timer period..
+        ///   Looks up a localized string similar to Cannot create the window &apos;{0}&apos;.  Error code: {1}.
         /// </summary>
-        internal static string GOR_ERR_TIME_CANNOT_BEGIN {
+        internal static string GOR_ERR_CANNOT_CREATE_WINDOW {
             get {
-                return ResourceManager.GetString("GOR_ERR_TIME_CANNOT_BEGIN", resourceCulture);
+                return ResourceManager.GetString("GOR_ERR_CANNOT_CREATE_WINDOW", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot end the timer period..
+        ///   Looks up a localized string similar to Cannot retrieve the instance handle for the application..
         /// </summary>
-        internal static string GOR_ERR_TIME_CANNOT_END {
+        internal static string GOR_ERR_CANNOT_GET_INSTANCE {
             get {
-                return ResourceManager.GetString("GOR_ERR_TIME_CANNOT_END", resourceCulture);
+                return ResourceManager.GetString("GOR_ERR_CANNOT_GET_INSTANCE", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The QPC timer is not supported on this system..
+        ///   Looks up a localized string similar to Cannot register the window class. Error code: {0}.
         /// </summary>
-        internal static string GOR_ERR_TIME_QPC_NOT_AVAILABLE {
+        internal static string GOR_ERR_CANNOT_REGISTER_WINDOW {
             get {
-                return ResourceManager.GetString("GOR_ERR_TIME_QPC_NOT_AVAILABLE", resourceCulture);
+                return ResourceManager.GetString("GOR_ERR_CANNOT_REGISTER_WINDOW", resourceCulture);
             }
         }
         
@@ -97,38 +97,11 @@ namespace Gorgon.Core.Windows.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Error.
+        ///   Looks up a localized string similar to Confirmation.
         /// </summary>
-        internal static string GOR_LOG_ERROR {
+        internal static string GOR_TEXT_CONFIRM {
             get {
-                return ResourceManager.GetString("GOR_LOG_ERROR", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Exception.
-        /// </summary>
-        internal static string GOR_LOG_EXCEPTION {
-            get {
-                return ResourceManager.GetString("GOR_LOG_EXCEPTION", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Warning.
-        /// </summary>
-        internal static string GOR_LOG_WARNING {
-            get {
-                return ResourceManager.GetString("GOR_LOG_WARNING", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to New Folder.
-        /// </summary>
-        internal static string GOR_NEW_DIR {
-            get {
-                return ResourceManager.GetString("GOR_NEW_DIR", resourceCulture);
+                return ResourceManager.GetString("GOR_TEXT_CONFIRM", resourceCulture);
             }
         }
         
@@ -142,38 +115,11 @@ namespace Gorgon.Core.Windows.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Free space.
-        /// </summary>
-        internal static string GOR_TEXT_FREE_SPACE {
-            get {
-                return ResourceManager.GetString("GOR_TEXT_FREE_SPACE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Information.
         /// </summary>
         internal static string GOR_TEXT_INFO {
             get {
                 return ResourceManager.GetString("GOR_TEXT_INFO", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Last Modified Date.
-        /// </summary>
-        internal static string GOR_TEXT_MODIFIED_DATE {
-            get {
-                return ResourceManager.GetString("GOR_TEXT_MODIFIED_DATE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Unknown.
-        /// </summary>
-        internal static string GOR_TEXT_UNKNOWN {
-            get {
-                return ResourceManager.GetString("GOR_TEXT_UNKNOWN", resourceCulture);
             }
         }
         

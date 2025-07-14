@@ -33,6 +33,8 @@
     <IsAotCompatible>false</IsAotCompatible>
     <PublishAot>false</PublishAot>
     <PublishTrimmed>false</PublishTrimmed>
+    <IncludeSymbols>True</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>    
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>

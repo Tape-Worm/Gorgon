@@ -33,6 +33,8 @@
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <PackageOutputPath>$(SolutionDir)nuget\$(Configuration)</PackageOutputPath>
     <VersionPrefix>4.0.0</VersionPrefix>
+    <IncludeSymbols>True</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>    
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -56,26 +58,26 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="System.ComponentModel.Composition.Registration" Version="9.0.4" Condition="$(TargetFramework) != 'netstandard2.0'" />
+    <PackageReference Include="System.ComponentModel.Composition.Registration" Version="9.0.6" Condition="$(TargetFramework) != 'netstandard2.0'" />
     <PackageReference Include="System.Composition">
-      <Version>9.0.4</Version>
+      <Version>9.0.6</Version>
     </PackageReference>
     <PackageReference Include="System.Composition.AttributedModel">
-      <Version>9.0.4</Version>
+      <Version>9.0.6</Version>
     </PackageReference>
     <PackageReference Include="System.Composition.Convention">
-      <Version>9.0.4</Version>
+      <Version>9.0.6</Version>
     </PackageReference>
     <PackageReference Include="System.Composition.Hosting">
-      <Version>9.0.4</Version>
+      <Version>9.0.6</Version>
     </PackageReference>
     <PackageReference Include="System.Composition.Runtime">
-      <Version>9.0.4</Version>
+      <Version>9.0.6</Version>
     </PackageReference>
     <PackageReference Include="System.Composition.TypedParts">
-      <Version>9.0.4</Version>
+      <Version>9.0.6</Version>
     </PackageReference>
-    <PackageReference Include="System.Reflection.Context" Version="9.0.4" />
+    <PackageReference Include="System.Reflection.Context" Version="9.0.6" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Gorgon.Core\Gorgon.Core.csproj" />
