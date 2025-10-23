@@ -515,9 +515,7 @@ public class GorgonNativeBufferTests
         }
     }
 
-    [TestMethod]
-    [ExpectedException(typeof(ArgumentOutOfRangeException))]
-#pragma warning disable MSTEST0006 // Avoid '[ExpectedException]'
+    [TestMethod]    
     public void CopyToSpanWithNegativeSourceIndexFailure()
     {
         // Arrange
@@ -525,19 +523,40 @@ public class GorgonNativeBufferTests
         Span<int> destinationSpan = new(new int[5]);
 
         // Act
-        sourceBuffer.CopyTo(destinationSpan, -1);
+        try
+        {
+            sourceBuffer.CopyTo(destinationSpan, -1);
+            Assert.Fail("No exception");
+        }
+        catch (ArgumentOutOfRangeException)
+        {
+        }
+        catch
+        {
+            Assert.Fail("Wrong exception");
+        }
     }
 
     [TestMethod]
-    [ExpectedException(typeof(ArgumentException))]
     public void CopyToSpanWithInvalidCountFailure()
     {
         // Arrange
         GorgonNativeBuffer<int> sourceBuffer = new(5);
         Span<int> destinationSpan = new(new int[5]);
 
-        // Act
-        sourceBuffer.CopyTo(destinationSpan, 0, 6);
+        try
+        {
+            // Act
+            sourceBuffer.CopyTo(destinationSpan, 0, 6);
+            Assert.Fail("No exception");
+        }
+        catch (ArgumentException)
+        {
+        }
+        catch
+        {
+            Assert.Fail("Wrong exception");
+        }
     }
 
     [TestMethod]
@@ -664,5 +683,4 @@ public class GorgonNativeBufferTests
             Assert.AreEqual(i, buffer[i]);
         }
     }
-#pragma warning restore MSTEST0006 // Avoid '[ExpectedException]'
 }

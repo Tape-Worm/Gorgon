@@ -785,7 +785,7 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
     {
         string path = string.Empty;
         string[] result = path.GetPathParts(Path.DirectorySeparatorChar);
-        Assert.AreEqual(0, result.Length);
+        Assert.IsEmpty(result);
     }
 
     [TestMethod]

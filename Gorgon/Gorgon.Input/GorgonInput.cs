@@ -410,7 +410,7 @@ public sealed class GorgonInput
                 return -1;
             }
 
-            if ((deviceHandle == HANDLE.Null) || (Mice.Count == 1))
+            if ((deviceHandle == HANDLE.Null) && (Mice.Count == 1))
             {
                 return 0;
             }
@@ -442,7 +442,7 @@ public sealed class GorgonInput
                 return -1;
             }
 
-            if ((deviceHandle == HANDLE.Null) || (Keyboards.Count == 1))
+            if ((deviceHandle == HANDLE.Null) && (Keyboards.Count == 1))
             {
                 return 0;
             }

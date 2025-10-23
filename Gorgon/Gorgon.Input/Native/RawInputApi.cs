@@ -389,35 +389,32 @@ internal static partial class RawInputApi
 
         try
         {
-            fixed (RAWINPUTDEVICELIST* ptr = &deviceList[0])
+            uint actualCount = PInvoke.GetRawInputDeviceList(deviceList.AsSpan(), ref deviceCount, structSize);
+
+            if (actualCount < 0)
             {
-                uint actualCount = PInvoke.GetRawInputDeviceList(ptr, ref deviceCount, structSize);
-
-                if (actualCount < 0)
-                {
-                    int win32Error = Marshal.GetLastWin32Error();
-                    throw new Win32Exception(win32Error, Resources.GORINP_RAW_ERR_CANNOT_ENUMERATE_WIN32_ERR);
-                }
-
-                if (actualCount == 0)
-                {
-                    return [];
-                }
-
-                List<RAWINPUTDEVICELIST> result = [];
-
-                for (int i = 0; i < actualCount; ++i)
-                {
-                    if (deviceList[i].hDevice == HANDLE.Null)
-                    {
-                        continue;
-                    }
-
-                    result.Add(deviceList[i]);
-                }
-
-                return [.. result];
+                int win32Error = Marshal.GetLastWin32Error();
+                throw new Win32Exception(win32Error, Resources.GORINP_RAW_ERR_CANNOT_ENUMERATE_WIN32_ERR);
             }
+
+            if (actualCount == 0)
+            {
+                return [];
+            }
+
+            List<RAWINPUTDEVICELIST> result = [];
+
+            for (int i = 0; i < actualCount; ++i)
+            {
+                if (deviceList[i].hDevice == HANDLE.Null)
+                {
+                    continue;
+                }
+
+                result.Add(deviceList[i]);
+            }
+
+            return [.. result];
         }
         finally
         {

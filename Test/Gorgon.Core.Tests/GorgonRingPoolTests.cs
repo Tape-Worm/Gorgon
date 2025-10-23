@@ -45,7 +45,7 @@ public class GorgonRingPoolTests
 
         Assert.AreEqual(items[0], obj);
         Assert.AreEqual(items[0].Text, obj.Text);
-        Assert.AreEqual(4, items.Count);
+        Assert.HasCount(4, items);
     }
 
     [TestMethod]

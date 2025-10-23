@@ -89,7 +89,7 @@ public class GorgonLinearPoolTests
             items.Add(pool.Allocate(o => o.Text = $"Text {i}"));
         }
 
-        Assert.AreEqual(5, items.Count);
+        Assert.HasCount(5, items);
         Assert.AreEqual(0, pool.AvailableSlots);
 
         for (int i = 0; i < 5; ++i)
