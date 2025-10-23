@@ -30,8 +30,8 @@ public class GorgonPitchLayoutTests
         Assert.AreEqual(80, layout.HorizontalBlockCount);
         Assert.AreEqual(50, layout.VerticalBlockCount);
 
-        Assert.ThrowsException<ArgumentException>(() => new GorgonPitchLayout(320, 200, 80, 0));
-        Assert.ThrowsException<ArgumentException>(() => new GorgonPitchLayout(320, 200, 0, 50));
+        Assert.ThrowsExactly<ArgumentException>(() => new GorgonPitchLayout(320, 200, 80, 0));
+        Assert.ThrowsExactly<ArgumentException>(() => new GorgonPitchLayout(320, 200, 0, 50));
     }
 
     [TestMethod]

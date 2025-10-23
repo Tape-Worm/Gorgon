@@ -97,7 +97,7 @@ public class GorgonStringFormattingExtensionsTests
 
         sb.GetLines(ref actual);
 
-        Assert.AreEqual(expected.Length, actual.Length);
+        Assert.HasCount(expected.Length, actual);
         for (int i = 0; i < expected.Length; ++i)
         {
             Assert.AreEqual(expected[i], actual[i]);
@@ -105,7 +105,7 @@ public class GorgonStringFormattingExtensionsTests
 
         actual = sb.ToString().GetLines();
 
-        Assert.AreEqual(expected.Length, actual.Length);
+        Assert.HasCount(expected.Length, actual);
         for (int i = 0; i < expected.Length; ++i)
         {
             Assert.AreEqual(expected[i], actual[i]);

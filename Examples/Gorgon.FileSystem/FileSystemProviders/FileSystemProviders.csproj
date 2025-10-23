@@ -50,8 +50,8 @@
     <Compile Include="..\..\ExamplesCommon\ExampleConfig.cs" Link="ExampleConfig.cs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.10" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.10" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Gorgon\Gorgon.IO.FileSystem\Gorgon.IO.FileSystem.csproj" />

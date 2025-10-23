@@ -54,26 +54,26 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="System.ComponentModel.Composition.Registration" Version="9.0.0" Condition="$(TargetFramework) != 'netstandard2.0'" />
+    <PackageReference Include="System.ComponentModel.Composition.Registration" Version="9.0.10" Condition="$(TargetFramework) != 'netstandard2.0'" />
     <PackageReference Include="System.Composition">
-      <Version>9.0.0</Version>
+      <Version>9.0.10</Version>
     </PackageReference>
     <PackageReference Include="System.Composition.AttributedModel">
-      <Version>9.0.0</Version>
+      <Version>9.0.10</Version>
     </PackageReference>
     <PackageReference Include="System.Composition.Convention">
-      <Version>9.0.0</Version>
+      <Version>9.0.10</Version>
     </PackageReference>
     <PackageReference Include="System.Composition.Hosting">
-      <Version>9.0.0</Version>
+      <Version>9.0.10</Version>
     </PackageReference>
     <PackageReference Include="System.Composition.Runtime">
-      <Version>9.0.0</Version>
+      <Version>9.0.10</Version>
     </PackageReference>
     <PackageReference Include="System.Composition.TypedParts">
-      <Version>9.0.0</Version>
+      <Version>9.0.10</Version>
     </PackageReference>
-    <PackageReference Include="System.Reflection.Context" Version="9.0.0" />
+    <PackageReference Include="System.Reflection.Context" Version="9.0.10" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">

@@ -22,6 +22,7 @@
 //
 
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Gorgon.Diagnostics;
 using Gorgon.Input.Properties;
@@ -62,8 +63,8 @@ internal static partial class ConfigManager
             return string.Empty;
         }
 
-        byte* bufferPtr = stackalloc byte[(int)bufferSize];
-        result = PInvoke.CM_Get_Device_Interface_Property(deviceInterface, in propKey, out _, bufferPtr, ref bufferSize, 0);
+        Span<byte> buffer = stackalloc byte[(int)bufferSize];
+        result = PInvoke.CM_Get_Device_Interface_Property(deviceInterface, in propKey, out _, buffer, ref bufferSize, 0);
 
         if (result != CONFIGRET.CR_SUCCESS)
         {
@@ -71,7 +72,10 @@ internal static partial class ConfigManager
             return string.Empty;
         }
 
-        return Marshal.PtrToStringUni((nint)bufferPtr) ?? string.Empty;
+        fixed (byte* bufferPtr = buffer)
+        {
+            return Marshal.PtrToStringUni((nint)bufferPtr) ?? string.Empty;
+        }
     }
 
     /// <summary>
@@ -103,8 +107,8 @@ internal static partial class ConfigManager
                 return string.Empty;
             }
 
-            byte* bufferPtr = stackalloc byte[(int)bufferSize];
-            result = PInvoke.CM_Get_DevNode_Property(handle, in propKey, out _, bufferPtr, ref bufferSize, 0);
+            Span<byte> buffer = stackalloc byte[(int)bufferSize];
+            result = PInvoke.CM_Get_DevNode_Property(handle, in propKey, out _, buffer, ref bufferSize, 0);
 
             if (result != CONFIGRET.CR_SUCCESS)
             {
@@ -112,7 +116,10 @@ internal static partial class ConfigManager
                 return string.Empty;
             }
 
-            return Marshal.PtrToStringUni((nint)bufferPtr) ?? string.Empty;
+            fixed (byte* ptr = buffer)
+            {
+                return Marshal.PtrToStringUni((nint)ptr) ?? string.Empty;
+            }
         }
     }
 

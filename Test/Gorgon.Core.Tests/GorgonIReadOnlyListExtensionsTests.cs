@@ -67,6 +67,6 @@ public class GorgonIReadOnlyListExtensionsTests
         IReadOnlyList<int> list = [1, 2, 3, 2, 1];
         int[] array = new int[4];
 
-        Assert.ThrowsException<ArgumentException>(() => list.CopyTo(array));
+        Assert.ThrowsExactly<ArgumentException>(() => list.CopyTo(array));
     }
 }

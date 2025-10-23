@@ -208,8 +208,8 @@ public class GorgonArrayTests
         Assert.IsTrue(destArray.IsIndexDirty(2));
         Assert.IsTrue(destArray.IsIndexDirty(3));
 
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() => array.CopyTo(destArray, -4));
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() => array.CopyTo(destArray, 6));
+        Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => array.CopyTo(destArray, -4));
+        Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => array.CopyTo(destArray, 6));
     }
 
     [TestMethod]

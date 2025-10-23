@@ -75,13 +75,12 @@ internal static class HidApi
         }
 
         fixed (byte* ptr = preparsedData)
-        fixed (HIDP_VALUE_CAPS* valueCapsPtr = valueCaps)
-        {
+        {        
             PHIDP_PREPARSED_DATA dataPtr = new((nint)ptr);
             HIDP_VALUE_CAPS* buttonCapsData = stackalloc HIDP_VALUE_CAPS[valueCaps.Length];
             ushort buttonLength = (ushort)valueCaps.Length;
 
-            NTSTATUS status = PInvoke.HidP_GetValueCaps(HIDP_REPORT_TYPE.HidP_Input, valueCapsPtr, ref buttonLength, dataPtr);
+            NTSTATUS status = PInvoke.HidP_GetValueCaps(HIDP_REPORT_TYPE.HidP_Input, valueCaps, ref buttonLength, dataPtr);
 
             if (status.SeverityCode != NTSTATUS.Severity.Success)
             {
@@ -103,14 +102,13 @@ internal static class HidApi
             return;
         }
 
-        fixed (byte* ptr = preparsedData)
-        fixed (HIDP_BUTTON_CAPS* buttonCapsPtr = buttonCaps)
+        fixed (byte* ptr = preparsedData)        
         {
             PHIDP_PREPARSED_DATA dataPtr = new((nint)ptr);
             HIDP_BUTTON_CAPS* buttonCapsData = stackalloc HIDP_BUTTON_CAPS[buttonCaps.Length];
             ushort buttonLength = (ushort)buttonCaps.Length;
 
-            NTSTATUS status = PInvoke.HidP_GetButtonCaps(HIDP_REPORT_TYPE.HidP_Input, buttonCapsPtr, ref buttonLength, dataPtr);
+            NTSTATUS status = PInvoke.HidP_GetButtonCaps(HIDP_REPORT_TYPE.HidP_Input, buttonCaps, ref buttonLength, dataPtr);
 
             if (status.SeverityCode != NTSTATUS.Severity.Success)
             {
@@ -210,9 +208,8 @@ internal static class HidApi
         uint dbSize = (uint)hidBuffer.Length;
 
         fixed (byte* ptr = preparsedData, dataPtr = report)
-        fixed (HIDP_DATA* hidPtr = hidBuffer)
         {
-            NTSTATUS r = PInvoke.HidP_GetData(HIDP_REPORT_TYPE.HidP_Input, hidPtr, ref dbSize, new PHIDP_PREPARSED_DATA((nint)ptr), new PSTR(dataPtr), (uint)report.Length);
+            NTSTATUS r = PInvoke.HidP_GetData(HIDP_REPORT_TYPE.HidP_Input, hidBuffer, ref dbSize, new PHIDP_PREPARSED_DATA((nint)ptr), new PSTR(dataPtr), (uint)report.Length);
 
             if (r.SeverityCode != NTSTATUS.Severity.Success)
             {

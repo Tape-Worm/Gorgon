@@ -24,7 +24,7 @@ public class GorgonFileExtensionTests
     }
 
     [TestMethod]
-    public void GorgonFileExtensionConstructorShouldThrowExceptionWhenExtensionIsEmpty() => Assert.ThrowsException<ArgumentEmptyException>(() => new GorgonFileExtension(string.Empty));
+    public void GorgonFileExtensionConstructorShouldThrowExceptionWhenExtensionIsEmpty() => Assert.ThrowsExactly<ArgumentEmptyException>(() => _ = new GorgonFileExtension(string.Empty));
 
     [TestMethod]
     public void GorgonFileExtensionConstructorShouldRemoveLeadingPeriodFromExtension()

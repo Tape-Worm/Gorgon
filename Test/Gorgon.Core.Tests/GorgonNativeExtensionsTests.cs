@@ -17,7 +17,7 @@ public class GorgonNativeExtensionsTests
         using MemoryStream stream = new();
         GorgonPtr<int> ptr = GorgonPtr<int>.NullPtr;
 
-        Assert.ThrowsException<NullReferenceException>(() => stream.Read(ptr));
+        Assert.ThrowsExactly<NullReferenceException>(() => stream.Read(ptr));
     }
 
     [TestMethod]
@@ -32,7 +32,7 @@ public class GorgonNativeExtensionsTests
             byte* p = stackalloc byte[10];
             GorgonPtr<byte> ptr = new(p, 10);
 
-            Assert.ThrowsException<EndOfStreamException>(() => stream.Read<byte>(ptr));
+            Assert.ThrowsExactly<EndOfStreamException>(() => stream.Read<byte>(ptr));
         }
     }
 
@@ -61,7 +61,7 @@ public class GorgonNativeExtensionsTests
         using MemoryStream stream = new();
         GorgonPtr<int> ptr = GorgonPtr<int>.NullPtr;
 
-        Assert.ThrowsException<NullReferenceException>(() => stream.Write(ptr));
+        Assert.ThrowsExactly<NullReferenceException>(() => stream.Write(ptr));
     }
 
     [TestMethod]
@@ -74,7 +74,7 @@ public class GorgonNativeExtensionsTests
             byte* p = stackalloc byte[4];
             GorgonPtr<byte> ptr = new(p, 4);
 
-            Assert.ThrowsException<IOException>(() => stream.Write<byte>(ptr));
+            Assert.ThrowsExactly<IOException>(() => stream.Write<byte>(ptr));
         }
     }
 
@@ -106,7 +106,7 @@ public class GorgonNativeExtensionsTests
         using MemoryStream stream = new();
         GorgonNativeBuffer<byte> buffer = new(10);
 
-        Assert.ThrowsException<ArgumentException>(() => stream.Write(buffer, 11, 1));
+        Assert.ThrowsExactly<ArgumentException>(() => stream.Write(buffer, 11, 1));
     }
 
     [TestMethod]
@@ -115,7 +115,7 @@ public class GorgonNativeExtensionsTests
         using MemoryStream stream = new();
         GorgonNativeBuffer<byte> buffer = new(10);
 
-        Assert.ThrowsException<ArgumentException>(() => stream.Write(buffer, 0, 11));
+        Assert.ThrowsExactly<ArgumentException>(() => stream.Write(buffer, 0, 11));
     }
 
     [TestMethod]
@@ -162,7 +162,7 @@ public class GorgonNativeExtensionsTests
 
         GorgonNativeBuffer<byte> buffer = new(10);
 
-        Assert.ThrowsException<EndOfStreamException>(() => stream.Read(buffer, 0));
+        Assert.ThrowsExactly<EndOfStreamException>(() => stream.Read(buffer, 0));
     }
 
     [TestMethod]
@@ -172,7 +172,7 @@ public class GorgonNativeExtensionsTests
         using MemoryStream stream = new(data);
         GorgonNativeBuffer<byte> buffer = new(10);
 
-        Assert.ThrowsException<ArgumentException>(() => stream.Read(buffer, 11));
+        Assert.ThrowsExactly<ArgumentException>(() => stream.Read(buffer, 11));
     }
 
     [TestMethod]
@@ -212,7 +212,7 @@ public class GorgonNativeExtensionsTests
         using MemoryStream stream = new(data);
         GorgonNativeBuffer<byte> buffer = new(2);
 
-        Assert.ThrowsException<ArgumentException>(() => stream.Read(buffer, 0, 3));
+        Assert.ThrowsExactly<ArgumentException>(() => stream.Read(buffer, 0, 3));
     }
 
     [TestMethod]
@@ -267,7 +267,7 @@ public class GorgonNativeExtensionsTests
         int[] data = [1, 2, 3, 4, 5];
 
         // Act
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() => data.PinAsNativeBuffer(-1));
+        Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => _ = data.PinAsNativeBuffer(-1));
     }
 
     [TestMethod]
@@ -277,7 +277,7 @@ public class GorgonNativeExtensionsTests
         int[] data = [1, 2, 3, 4, 5];
 
         // Act
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() => data.PinAsNativeBuffer(0, -1));
+        Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => _ = data.PinAsNativeBuffer(0, -1));
     }
 
     [TestMethod]
@@ -287,7 +287,7 @@ public class GorgonNativeExtensionsTests
         int[] data = [1, 2, 3, 4, 5];
 
         // Act
-        Assert.ThrowsException<ArgumentException>(() => data.PinAsNativeBuffer(1, 5));
+        Assert.ThrowsExactly<ArgumentException>(() => _ = data.PinAsNativeBuffer(1, 5));
     }
 
     [TestMethod]
