@@ -123,6 +123,9 @@ jobs:
       - checkout: self
         submodules: true
 
+      - task: UseDotNet@2
+        useGlobalJson: true
+
       - task: CmdLine@2
         displayName: 'Updating version to $(Build.BuildNumber)'
         inputs:
