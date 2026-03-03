@@ -25,7 +25,8 @@ jobs:
         submodules: true
 
       - task: UseDotNet@2
-        useGlobalJson: true
+        inputs:
+          useGlobalJson: true
 
       - task: CmdLine@2
         displayName: 'Updating version to $(Build.BuildNumber)'
@@ -124,7 +125,8 @@ jobs:
         submodules: true
 
       - task: UseDotNet@2
-        useGlobalJson: true
+        inputs:
+          useGlobalJson: true
 
       - task: CmdLine@2
         displayName: 'Updating version to $(Build.BuildNumber)'
