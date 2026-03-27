@@ -21,54 +21,23 @@
 // Created: January 14, 2026 9:41:53 PM
 //
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Information that was used to build a <see cref="GorgonGpuBuffer"/>.
+/// Information that was used to build a <see cref="GorgonIndexBuffer"/>.
 /// </summary>
-public interface IGorgonGpuBufferInfo
+public interface IGorgonIndexBufferInfo
     : IGorgonCommonBufferInfo
 {
     /// <summary>
-    /// Property to return whether the buffer can be used as a render target.
-    /// </summary>
-    bool IsRenderTarget
-    {
-        get;
-    }
-
-    /// <summary>
-    /// Property to return whether the buffer can be used as a constant buffer.
-    /// </summary>
-    [Obsolete("We may not need this going forward.")]
-    bool IsConstantBuffer
-    {
-        get;
-    }
-
-    /// <summary>
-    /// Property to return the number of bytes to align the buffer by.
+    /// Property to return whether the buffer stores 32 bit indices or 16 bit indices.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This value is used to pad the buffer alignment so that it, and its data, starts on a power of 2 boundary.
-    /// </para>
-    /// <para>
-    /// Buffers used in a <see cref="GorgonStructuredBufferView"/> should set this value to the size of the data element within the buffer, especially if the element size is not a power of 2.
-    /// </para>
-    /// <para>
-    /// <note type="important">
-    /// <para>
-    /// For buffers used a <see cref="GorgonConstantBufferView"/>, this value <b>MUST</b> be set to 256.
-    /// </para>
-    /// </note>
+    /// When <b>true</b>, Gorgon will expect each element in the buffer to be 32 bits wide. Otherwise, if <b>false</b>, then each element must be 16 bits wide.
     /// </para>
     /// </remarks>
-    int Alignment
+    bool Use32BitIndices
     {
         get;
     }

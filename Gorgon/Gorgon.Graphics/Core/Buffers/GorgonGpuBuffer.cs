@@ -50,7 +50,7 @@ namespace Gorgon.Graphics.Core;
 /// </para>
 /// </remarks>
 public sealed unsafe class GorgonGpuBuffer
-    : GorgonGpuResource, IGorgonGpuBufferInfo
+    : GorgonGpuBufferCommon, IGorgonGpuBufferInfo
 {
     /// <summary>
     /// A unique key for a view.
@@ -61,12 +61,12 @@ public sealed unsafe class GorgonGpuBuffer
     private readonly record struct ViewKey(BufferFormat Format, long Value1, long Value2);
 
     private readonly Lock _viewLock = new();
+    private readonly GorgonGpuBufferInfo _info;
     private readonly Dictionary<ViewKey, GorgonBufferRenderTargetView> _rtvs = [];
     private readonly Dictionary<ViewKey, GorgonConstantBufferView> _cbvs = [];
     private readonly Dictionary<ViewKey, GorgonStructuredBufferView> _structs = [];
     private readonly Dictionary<ViewKey, GorgonShaderBufferView> _srvs = [];
-    private readonly Dictionary<ViewKey, GorgonResourceView> _uavs = [];
-    private readonly GorgonGpuBufferInfo _info;
+    private readonly Dictionary<ViewKey, GorgonResourceView> _uavs = [];    
     private GpuBufferAllocation _bufferAllocation = GpuBufferAllocation.Null;
     private CpuBufferAllocation _uploadAllocation = CpuBufferAllocation.Null;    
 
@@ -98,38 +98,28 @@ public sealed unsafe class GorgonGpuBuffer
     } = true;
 
     /// <inheritdoc/>
-    public long SizeInBytes => _info.SizeInBytes;
-
-    /// <inheritdoc/>
-    public BufferUsage Usage => _info.Usage;
-
-    /// <inheritdoc/>
     public bool IsRenderTarget => _info.IsRenderTarget;
 
     /// <inheritdoc/>
     public bool IsConstantBuffer => _info.IsConstantBuffer;
 
     /// <inheritdoc/>
-    public bool IsUnorderedAccess => _info.IsUnorderedAccess;
-
-    /// <inheritdoc/>
     public int Alignment => _info.Alignment;
 
-    /// <summary>
-    /// Function to validate the settings for the buffer.
-    /// </summary>
-    private void ValidateInfo()
+
+    /// <inheritdoc/>
+    private protected override void ValidateInfo()
     {
-        if (_info.Alignment < 0)
+        if (Alignment < 0)
         {
-            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_INVALID_ALIGNMENT, _info.Alignment));
+            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_INVALID_ALIGNMENT, Alignment));
         }
 
-        switch (_info.Usage)
+        switch (Usage)
         {
-            case BufferUsage.Download when _info.IsConstantBuffer || _info.IsRenderTarget || _info.IsUnorderedAccess:
+            case BufferUsage.Download when IsConstantBuffer || IsRenderTarget || IsUnorderedAccess:
                 throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_BUFFER_CANNOT_BE_DOWNLOAD, Name));
-            case BufferUsage.Upload or BufferUsage.DynamicPerFrame when _info.IsRenderTarget:
+            case BufferUsage.Upload or BufferUsage.DynamicPerFrame when IsRenderTarget:
                 throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_RTV_BUFFER_NOT_DEFAULT, Name));
         }
 
@@ -196,7 +186,7 @@ public sealed unsafe class GorgonGpuBuffer
         {
             case BufferUsage.DynamicPerFrame:
             case BufferUsage.Default:
-                Graphics.MegaBuffer.Allocate((ulong)SizeInBytes, out _bufferAllocation, (uint)_info.Alignment);
+                Graphics.MegaBuffer.Allocate((ulong)SizeInBytes, out _bufferAllocation, (uint)Alignment);
                 SetResource(in Graphics.MegaBuffer.D3DBuffer);
                 break;
             default:
@@ -212,12 +202,6 @@ public sealed unsafe class GorgonGpuBuffer
         // All mega buffer buffers are aligned on a 256 byte boundary (for worst case scenario - constant buffers).
         desc.Alignment = (uint)Alignment;
         resourceInfo = GpuResourceInfo.FromD3D(in desc);
-    }
-
-    private protected override ComPtr<ID3D12Resource2> OnCreateNative(out D3D12_RESOURCE_DESC1 desc)
-    {
-        desc = default;
-        return default;
     }
 
     /// <summary>
@@ -298,21 +282,22 @@ public sealed unsafe class GorgonGpuBuffer
     /// available are defined in the <see cref="GorgonGpuBufferInfo"/> flags.
     /// </para>
     /// <para>
-    /// Most buffers will require a minimum <see cref="GorgonGpuBufferInfo.SizeInBytes"/> of 1 byte. However, some views will require the buffer have a specific minimum size (e.g. constant buffers must be at 
+    /// Most buffers will require a minimum <see cref="GorgonCommonBufferInfo.SizeInBytes"/> of 1 byte. However, some views will require the buffer have a specific minimum size (e.g. constant buffers must be at 
     /// least 256 bytes, render target views must be at least the size of a <see cref="BufferFormat"/> format size, etc...).  
     /// </para>
     /// <para>
-    /// The <paramref name="info"/> also contains a <see cref="GorgonGpuBufferInfo.Usage"/> flag which indicates how often the data can be updated in a buffer. Below is a description of how to use the usage 
+    /// The <paramref name="info"/> also contains a <see cref="GorgonCommonBufferInfo.Usage"/> flag which indicates how often the data can be updated in a buffer. Below is a description of how to use the usage 
     /// flags with a buffer.
-    /// <inheritdoc cref="IGorgonGpuBufferInfo.Usage" path="/remarks/para/list"/>
+    /// <inheritdoc cref="IGorgonCommonBufferInfo.Usage" path="/remarks/para/list"/>
     /// </para>
     /// </remarks>
     /// <seealso cref="GorgonGpuBufferInfo"/>
     /// <seealso cref="BufferUsage"/>
     public GorgonGpuBuffer(GorgonGraphics graphics, string name, GorgonGpuBufferInfo info)
-        : base(graphics, name)
-    {        
-        _info = new GorgonGpuBufferInfo(info);
+        : base(graphics, name, info)
+    {
+        _info = info;
+
         ValidateInfo();
 
         Graphics.Log.Print($"Creating Gorgon buffer '{Name}'.", LoggingLevel.Simple);

@@ -61,7 +61,7 @@ public unsafe sealed class GorgonCommandList
     private readonly BarrierManager _barrierManager;
 
     private readonly CpuBufferAllocation [] _constantWriteData = new CpuBufferAllocation[GorgonGraphics.MaxRootConstantCount];
-    private (GorgonGpuBuffer_OLDE Buffer, bool Is32Bit)? _indexBuffer;
+    private GorgonIndexBuffer? _indexBuffer;
     private bool _indexBufferChanged;
     private readonly List<GorgonGpuBuffer> _dynamicBuffers = new(32);
     private readonly List<(GorgonGpuBuffer, BarrierSync Sync, BarrierAccess Access)> _usedBuffers = new(32);
@@ -195,17 +195,11 @@ public unsafe sealed class GorgonCommandList
             return;
         }
 
-        (GorgonGpuBuffer_OLDE buffer, bool is32Bit) = _indexBuffer.Value;
-
-        ulong address = GetBufferGpuAddress(buffer);
-
-        Debug.Assert(address != 0, $"The index buffer '{buffer.Name}' has a NULL GPU address.");
-
         D3D12_INDEX_BUFFER_VIEW view = new()
         {
-            BufferLocation = address,
-            Format = is32Bit ? DXGI_FORMAT.DXGI_FORMAT_R32_UINT : DXGI_FORMAT.DXGI_FORMAT_R16_UINT,
-            SizeInBytes = (uint)buffer.SizeInBytes
+            BufferLocation = _indexBuffer.D3DResource.Get()->GetGPUVirtualAddress(),
+            Format = _indexBuffer.Use32BitIndices ? DXGI_FORMAT.DXGI_FORMAT_R32_UINT : DXGI_FORMAT.DXGI_FORMAT_R16_UINT,
+            SizeInBytes = (uint)_indexBuffer.SizeInBytes
         };
 
         _list.Get()->IASetIndexBuffer(&view);
@@ -281,9 +275,9 @@ public unsafe sealed class GorgonCommandList
     /// <summary>
     /// Function to prepare buffers for use by the system by establishing barriers.
     /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void PrepareBufferBarriers()
     {
+#warning FINISHME: Provide validation here, at least in debug mode.
         /* NOTE: We need to validate that the buffers that are reading do not overlap their data regions with buffers that are writing.
          * Since we are using the MegaBuffer approach, this is a potential hazard. But, we also need to ensure that we're not trying to 
          * make a single non-UAV buffer (user facing, not mega buffer) with read access and write access simultaneously (e.g. SRV | COPY_DEST).
@@ -315,6 +309,34 @@ public unsafe sealed class GorgonCommandList
     }
 
     /// <summary>
+    /// Function to prepare the index buffer for use by the system by establishing its barriers.
+    /// </summary>
+    private void PrepareIndexBuffer()
+    {
+        if ((_indexBuffer is null) || (!_indexBufferChanged))
+        {
+            return;
+        }
+
+        if ((_indexBuffer.Usage == BufferUsage.DynamicPerFrame) && (_indexBuffer.NeedsDataUpload))
+        {
+            SetBarrier(_indexBuffer, BarrierSync.Copy, BarrierAccess.CopyDestination, true);
+
+            ref readonly CpuBufferAllocation allocation = ref _indexBuffer.GetTransientBufferData();
+
+            Debug.Assert(allocation.IsAvailable, $"Transient heap for index buffer '{_indexBuffer.Name}' is not valid.");
+
+            _list.Get()->CopyBufferRegion((PID3D12Resource2)_indexBuffer.D3DResource.Get(), 0,
+                                          (PID3D12Resource2)allocation.Heap.D3DResource.Get(), allocation.Offset,
+                                          (ulong)_indexBuffer.SizeInBytes);
+
+            _indexBuffer.NeedsDataUpload = false;
+        }
+
+        SetBarrier(_indexBuffer, BarrierSync.IndexInput, BarrierAccess.IndexBuffer);
+    }
+
+    /// <summary>
     /// Function to apply the individual resources prior to a command.
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -323,9 +345,10 @@ public unsafe sealed class GorgonCommandList
         if (_dynamicBuffers.Count > 0)
         {
             UploadDynamicBuffersToMegaBuffer();
-        }
+        }        
 
         PrepareBufferBarriers();
+        PrepareIndexBuffer();
 
         _barrierManager.Submit(in _list);
 
@@ -399,7 +422,6 @@ public unsafe sealed class GorgonCommandList
     /// <summary>
     /// TBD
     /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Draw(int indexCount, int instanceCount, int startIndexLocation, int baseVertexLocation, int startInstanceLocation)
     {
         // NOTE TO ME: DO NOT return the fluent interface.
@@ -410,7 +432,6 @@ public unsafe sealed class GorgonCommandList
 
         DoViewSetup();
         SetupDescriptors();
-
 
         // This needs to come from the PSO.
         _list.Get()->IASetPrimitiveTopology((D3D_PRIMITIVE_TOPOLOGY)PrimitiveType.TriangleList);
@@ -544,7 +565,6 @@ public unsafe sealed class GorgonCommandList
     /// <param name="buffer">The index buffer to assign, or <b>null</b> to unbind an existing index buffer.</param>
     /// <param name="is32Bit"><b>true</b> if the buffer contains 32 bit indices, or <b>false</b> if it contains 16 bit indices.</param>
     /// <returns><inheritdoc cref="AddPresenter" path="/returns"/></returns>
-    /// <exception cref="GorgonException"><inheritdoc cref="SetVertexBuffer(GorgonGpuBuffer_OLDE?, int, int)" path="/exception[cref='GorgonException']"/>></exception>
     /// <remarks>
     /// <para>
     /// This assigns an index buffer to the command list. When assigning the buffer, the <paramref name="is32Bit"/> should be set to <b>true</b> if each index in the buffer is 32 bits in size; otherwise the 
@@ -553,7 +573,7 @@ public unsafe sealed class GorgonCommandList
     /// </remarks>
     /// <seealso cref="GorgonGpuBuffer_OLDE"/>
     /// <seealso cref="BufferUsage"/>
-    public GorgonCommandList SetIndexBuffer(GorgonGpuBuffer_OLDE? buffer, bool is32Bit)
+    public GorgonCommandList SetIndexBuffer(GorgonIndexBuffer? buffer)
     {
         if (buffer is null)
         {
@@ -562,12 +582,8 @@ public unsafe sealed class GorgonCommandList
             return this;
         }
                         
-        SetBarrier(buffer, BarrierSync.IndexInput, BarrierAccess.IndexBuffer);
-
         Queue.Tracker.TrackResource(buffer);
-
-        _indexBuffer = (buffer, is32Bit);
-
+        _indexBuffer = buffer;
         _indexBufferChanged = true;
 
         return this;
@@ -720,13 +736,13 @@ public unsafe sealed class GorgonCommandList
         return this;
     }
 
-    /// <inheritdoc cref="IGorgonResourceWriter.CopyRange{T}(ReadOnlySpan{T}, GorgonGpuBuffer_OLDE, long)" path="/summary"/>
-    /// <inheritdoc cref="IGorgonResourceWriter.CopyRange{T}(ReadOnlySpan{T}, GorgonGpuBuffer_OLDE, long)" path="/param"/>
+    /// <inheritdoc cref="IGorgonResourceWriter.CopyRange{T}(ReadOnlySpan{T}, GorgonGpuBufferCommon, long)" path="/summary"/>
+    /// <inheritdoc cref="IGorgonResourceWriter.CopyRange{T}(ReadOnlySpan{T}, GorgonGpuBufferCommon, long)" path="/param"/>
     /// <returns><inheritdoc cref="AddPresenter" path="/returns"/></returns>
-    /// <inheritdoc cref="IGorgonResourceWriter.CopyRange{T}(ReadOnlySpan{T}, GorgonGpuBuffer_OLDE, long)" path="/exception"/>
+    /// <inheritdoc cref="IGorgonResourceWriter.CopyRange{T}(ReadOnlySpan{T}, GorgonGpuBufferCommon, long)" path="/exception"/>
     /// <remarks>
-    /// <inheritdoc cref="IGorgonResourceWriter.CopyRange{T}(ReadOnlySpan{T}, GorgonGpuBuffer_OLDE, long)" path="/remarks/para[1]"/>
-    /// <inheritdoc cref="IGorgonResourceWriter.CopyRange{T}(ReadOnlySpan{T}, GorgonGpuBuffer_OLDE, long)" path="/remarks/para[2]"/>
+    /// <inheritdoc cref="IGorgonResourceWriter.CopyRange{T}(ReadOnlySpan{T}, GorgonGpuBufferCommon, long)" path="/remarks/para[1]"/>
+    /// <inheritdoc cref="IGorgonResourceWriter.CopyRange{T}(ReadOnlySpan{T}, GorgonGpuBufferCommon, long)" path="/remarks/para[2]"/>
     /// </remarks>
     /// <example>
     /// <code lang="csharp">
@@ -744,11 +760,11 @@ public unsafe sealed class GorgonCommandList
     /// ]]>
     /// </code>
     /// </example>
-    /// <seealso cref="GorgonGpuBuffer_OLDE"/>
+    /// <seealso cref="GorgonGpuBufferCommon"/>
     /// <seealso cref="StructLayoutAttribute"/>
     /// <seealso cref="LayoutKind"/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public GorgonCommandList CopyRange<T>(ReadOnlySpan<T> values, GorgonGpuBuffer_OLDE buffer, long offset = 0) where T : unmanaged
+    public GorgonCommandList CopyRange<T>(ReadOnlySpan<T> values, GorgonGpuBufferCommon buffer, long offset = 0) where T : unmanaged
     {
         _resourceWriter.CopyRange(values, buffer, offset);
         return this;
@@ -788,12 +804,12 @@ public unsafe sealed class GorgonCommandList
         return this;
     }
 
-    /// <inheritdoc cref="IGorgonResourceWriter.SetBarrier(GorgonGpuBuffer, BarrierSync, BarrierAccess, bool)" path="/summary"/>
-    /// <inheritdoc cref="IGorgonResourceWriter.SetBarrier(GorgonGpuBuffer, BarrierSync, BarrierAccess, bool)" path="/param"/>
-    /// <inheritdoc cref="IGorgonResourceWriter.SetBarrier(GorgonGpuBuffer, BarrierSync, BarrierAccess, bool)" path="/remarks"/>
+    /// <inheritdoc cref="IGorgonResourceWriter.SetBarrier(GorgonGpuBufferCommon, BarrierSync, BarrierAccess, bool)" path="/summary"/>
+    /// <inheritdoc cref="IGorgonResourceWriter.SetBarrier(GorgonGpuBufferCommon, BarrierSync, BarrierAccess, bool)" path="/param"/>
+    /// <inheritdoc cref="IGorgonResourceWriter.SetBarrier(GorgonGpuBufferCommon, BarrierSync, BarrierAccess, bool)" path="/remarks"/>
     /// <returns><inheritdoc cref="AddPresenter" path="/returns"/></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public GorgonCommandList SetBarrier(GorgonGpuBuffer buffer, BarrierSync sync, BarrierAccess access, bool force = false)
+    public GorgonCommandList SetBarrier(GorgonGpuBufferCommon buffer, BarrierSync sync, BarrierAccess access, bool force = false)
     {
         _barrierManager.AddBarrier(buffer, sync, access);
 

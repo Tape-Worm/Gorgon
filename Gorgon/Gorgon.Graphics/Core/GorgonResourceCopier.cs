@@ -222,14 +222,13 @@ public readonly ref struct CopyTextureSubResourceParams
 #endregion
 
 /// <summary>
-/// Functionality to copy data into a <see cref="GorgonGpuBuffer_OLDE"/> or a <see cref="GorgonTexture"/> from CPU memory on the GPU copy queue, or from a <see cref="BufferUsage.Download"/> buffer into CPU 
-/// memory.
+/// Functionality to copy data into a <see cref="GorgonGpuBuffer"/>, <see cref="GorgonIndexBuffer"/> or a <see cref="GorgonTexture"/> from CPU memory on the GPU copy queue, or from a 
+/// <see cref="BufferUsage.Download"/> buffer into CPU memory.
 /// </summary>
 /// <remarks>
 /// <para>
-/// This provides functionality for applications to write data into <see cref="GorgonGpuBuffer_OLDE"/> or <see cref="GorgonTexture"/> objects from CPU memory. It also provides functionality to read data from a 
-/// <see cref="GorgonGpuBuffer_OLDE"/> with a <see cref="BufferUsage"/> of <see cref="BufferUsage.Download"/> into standard CPU addressable memory like an array, <see cref="Span{T}"/>, or a 
-/// <see cref="GorgonPtr{T}"/>.
+/// This provides functionality for applications to write data into <see cref="GorgonGpuBuffer"/>, <see cref="GorgonIndexBuffer"/> or <see cref="GorgonTexture"/> objects from CPU memory. It also provides 
+/// functionality to read data from a <see cref="GorgonGpuBuffer"/> into standard CPU addressable memory like an array, <see cref="Span{T}"/>, or a <see cref="GorgonPtr{T}"/>.
 /// </para>
 /// <para>
 /// The type provides a fluent interface that allows applications to chain multiple copy operations together by returning the <see cref="IGorgonResourceWriter"/> interface from the <see cref="BeginUpload"/> method. 
@@ -340,7 +339,30 @@ public unsafe sealed class GorgonResourceCopier
         buffer.NeedsDataUpload = true;
     }
 
-    /// <inheritdoc cref="WriteCpuBuffer"/>    
+    /// <summary>
+    /// Function to write values to a dynamic index buffer.
+    /// </summary>
+    /// <param name="buffer">The buffer to write the data into.</param>
+    /// <param name="data">The pointer to the data to write.</param>
+    /// <param name="offset">The offset, in bytes, within the <paramref name="buffer"/> to start writing at.</param>
+    /// <param name="count">The number of bytes to write.</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void WriteDynamicIndexBuffer(GorgonIndexBuffer buffer, void* data, ulong offset, ulong count)
+    {
+        ref readonly CpuBufferAllocation allocation = ref buffer.GetTransientBufferData();
+
+        Debug.Assert(allocation.IsAvailable, $"Transient heap for buffer '{buffer.Name}' is not valid.");
+
+        _commandQueue.Tracker.TrackResource(buffer.D3DResource);
+
+        void* dest = allocation.CpuPointer + offset;
+
+        NativeMemory.Copy(data, dest, (nuint)count);
+
+        buffer.NeedsDataUpload = true;
+    }
+
+    /// <inheritdoc cref="WriteCpuBuffer(GorgonGpuBuffer_OLDE, void*, long, long)"/>    
     [Obsolete("For old buffer types")]
     private void WriteGpuBuffer(GorgonGpuBuffer_OLDE buffer, void* data, ulong offset, ulong count)
     {
@@ -382,6 +404,22 @@ public unsafe sealed class GorgonResourceCopier
         }
 
         _commandList.D3DGraphicsCommandList.Get()->CopyBufferRegion((PID3D12Resource2)buffer.D3DResource.Get(), bufferAllocation.Offset + offset, (PID3D12Resource2)allocation.Heap.D3DResource.Get(), allocation.Offset, count);
+    }
+
+    /// <inheritdoc cref="WriteCpuBuffer(GorgonGpuBuffer, void*, ulong, ulong)"/>    
+    private void WriteIndexBuffer(GorgonIndexBuffer buffer, void* data, ulong offset, ulong count)
+    {
+        PrepDelayedWrites();
+
+        _commandQueue.Tracker.TrackResource(buffer.D3DResource);
+
+        _commandList.SetBarrier(buffer, BarrierSync.Copy, BarrierAccess.CopyDestination, true);
+
+        Graphics.UploadHeaps.Allocate(count, Graphics.Adapter.HasTightAlignmentSupport ? 0 : D3D12.D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT, out CpuBufferAllocation allocation);
+        NativeMemory.Copy(data, allocation.CpuPointer, (nuint)count);
+
+        Debug.Assert(allocation.IsAvailable, "The returned resource heap allocation is not valid.");
+        _commandList.D3DGraphicsCommandList.Get()->CopyBufferRegion((PID3D12Resource2)buffer.D3DResource.Get(), offset, (PID3D12Resource2)allocation.Heap.D3DResource.Get(), allocation.Offset, count);
     }
 
     /// <summary>
@@ -432,7 +470,7 @@ public unsafe sealed class GorgonResourceCopier
     /// <exception cref="ArgumentException">Thrown if the <paramref name="offset"/> plus the <paramref name="count"/> is greater than the <see cref="GorgonGpuBuffer_OLDE.SizeInBytes">size</see> if the buffer.</exception>
     /// <exception cref="GorgonException">Thrown if the <paramref name="buffer"/> has a usage of <see cref="BufferUsage.Download"/>.</exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static void ValidateRangeParams(GorgonGpuBuffer buffer, long offset, long count, int typeSize)
+    private static void ValidateRangeParams(GorgonGpuBufferCommon buffer, long offset, long count, int typeSize)
     {
         if (buffer.Usage == BufferUsage.Download)
         {
@@ -897,7 +935,7 @@ public unsafe sealed class GorgonResourceCopier
     }
 
     /// <inheritdoc/>
-    IGorgonResourceWriter IGorgonResourceWriter.SetBarrier(GorgonGpuBuffer buffer, BarrierSync sync, BarrierAccess access, bool force)
+    IGorgonResourceWriter IGorgonResourceWriter.SetBarrier(GorgonGpuBufferCommon buffer, BarrierSync sync, BarrierAccess access, bool force)
     {
         Debug.Assert(_commandList is not null && _commandAllocator is not null, "Command list and/or allocator are null.");
         _commandList.SetBarrier(buffer, sync, access, force);
@@ -936,7 +974,7 @@ public unsafe sealed class GorgonResourceCopier
 
     /// <inheritdoc/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    IGorgonResourceWriter IGorgonResourceWriter.CopyRange<T>(ReadOnlySpan<T> values, GorgonGpuBuffer_OLDE buffer, long offset)
+    IGorgonResourceWriter IGorgonResourceWriter.CopyRange<T>(ReadOnlySpan<T> values, GorgonGpuBufferCommon buffer, long offset)
     {
         if (_batchState is not 1 and not int.MaxValue)
         {
@@ -952,16 +990,33 @@ public unsafe sealed class GorgonResourceCopier
 
         ValidateRangeParams(buffer, offset, values.Length, typeSize);
 
-        fixed (T* valuePtr = values)
+        ulong size = (ulong)(values.Length * typeSize);
+
+        fixed (T* pointer = values)
         {
             switch (buffer.Usage)
             {
-                case BufferUsage.Upload:
                 case BufferUsage.DynamicPerFrame:
-                    WriteCpuBuffer(buffer, (byte*)valuePtr, offset, values.Length * typeSize);
+                    switch (buffer)
+                    {
+                        case GorgonGpuBuffer gpuBuffer:
+                            WriteCpuBuffer(gpuBuffer, pointer, (ulong)offset, size);
+                            break;
+                        case GorgonIndexBuffer indexBuffer:
+                            WriteDynamicIndexBuffer(indexBuffer, pointer, (ulong)offset, size);
+                            break;
+                    }
                     break;
                 case BufferUsage.Default:
-                    WriteGpuBuffer(buffer, (byte*)valuePtr, (ulong)offset, (ulong)(values.Length * typeSize));
+                    switch (buffer)
+                    {
+                        case GorgonGpuBuffer gpuBuffer:
+                            WriteGpuBuffer(gpuBuffer, pointer, (ulong)offset, size);
+                            break;
+                        case GorgonIndexBuffer indexBuffer:
+                            WriteIndexBuffer(indexBuffer, pointer, (ulong)offset, size);
+                            break;
+                    }
                     break;
             }
         }
@@ -1006,7 +1061,7 @@ public unsafe sealed class GorgonResourceCopier
 
     /// <inheritdoc/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    IGorgonResourceWriter IGorgonResourceWriter.CopyPointer<T>(GorgonPtr<T> pointer, GorgonGpuBuffer buffer, long offset)
+    IGorgonResourceWriter IGorgonResourceWriter.CopyPointer<T>(GorgonPtr<T> pointer, GorgonGpuBufferCommon buffer, long offset)
     {
         if (_batchState is not 1 and not int.MaxValue)
         {
@@ -1027,13 +1082,24 @@ public unsafe sealed class GorgonResourceCopier
 
         switch (buffer.Usage)
         {
-            case BufferUsage.Upload:
-                throw new NotImplementedException("Not done yet.");
             case BufferUsage.DynamicPerFrame:
-                WriteCpuBuffer(buffer, (void*)pointer, (ulong)offset, (ulong)pointer.SizeInBytes);
+                switch (buffer)
+                {
+                    case GorgonGpuBuffer gpuBuffer:
+                        WriteCpuBuffer(gpuBuffer, (void*)pointer, (ulong)offset, (ulong)pointer.SizeInBytes);
+                        break;
+                }                
                 break;
             case BufferUsage.Default:
-                WriteGpuBuffer(buffer, (void*)pointer, (ulong)offset, (ulong)pointer.SizeInBytes);
+                switch (buffer)
+                {
+                    case GorgonGpuBuffer gpuBuffer:
+                        WriteGpuBuffer(gpuBuffer, (void*)pointer, (ulong)offset, (ulong)pointer.SizeInBytes);
+                        break;
+                    case GorgonIndexBuffer indexBuffer:
+                        WriteIndexBuffer(indexBuffer, (void*)pointer, (ulong)offset, (ulong)pointer.SizeInBytes);
+                        break;
+                }                
                 break;
         }
 

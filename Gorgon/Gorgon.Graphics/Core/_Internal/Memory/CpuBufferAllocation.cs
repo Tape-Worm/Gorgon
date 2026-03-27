@@ -74,7 +74,7 @@ internal readonly unsafe struct CpuBufferAllocation(CpuBufferHeap? heap, ulong h
     /// </summary>
     public readonly byte* CpuPointer => ((Heap is null) || (Heap.CpuPointer is null)) ? null : Heap.CpuPointer + Offset;
 
-    /// <inheritdoc cref="Equals(CpuBufferAllocation)">
+    /// <inheritdoc cref="Equals(CpuBufferAllocation)"/>
     public bool Equals(ref readonly CpuBufferAllocation other) => Heap == other.Heap && Handle == other.Handle;
 
     /// <inheritdoc/>

@@ -1126,10 +1126,7 @@ public readonly struct GorgonBufferBarrier
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal unsafe readonly D3D12_BUFFER_BARRIER ToD3DBufferBarrier(BarrierSync beforeSync, BarrierAccess beforeAccess) => new((D3D12_BARRIER_SYNC)beforeSync, (D3D12_BARRIER_SYNC)Sync,
                             (D3D12_BARRIER_ACCESS)beforeAccess, (D3D12_BARRIER_ACCESS)Access,
-                            (PID3D12Resource2)Resource.Get())
-    {
-        
-    };
+                            (PID3D12Resource2)Resource.Get());
 
     /// <inheritdoc/>
     public override bool Equals(object? obj) => obj is GorgonBufferBarrier barrier && Equals(barrier);

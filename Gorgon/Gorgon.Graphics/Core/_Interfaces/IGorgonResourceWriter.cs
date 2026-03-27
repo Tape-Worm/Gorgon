@@ -35,7 +35,7 @@ namespace Gorgon.Graphics.Core;
 /// </summary>
 /// <remarks>
 /// <para>
-/// This interface performs copies to a <see cref="GorgonGpuBuffer_OLDE"/> or <see cref="GorgonTexture"/> by scheduling an upload of one or more write operations on the GPU copy queue. When a write is performed, a 
+/// This interface performs copies to a <see cref="GorgonGpuBuffer"/> or <see cref="GorgonTexture"/> by scheduling an upload of one or more write operations on the GPU copy queue. When a write is performed, a 
 /// temporary buffer is allocated and the application data is copied into that buffer. When the application calls the <see cref="End"/> (or <see cref="EndAsync"/>) method, then that temporary buffer is 
 /// uploaded into the buffer resource on the GPU. After this, the temporary buffer is freed.
 /// </para>
@@ -45,7 +45,7 @@ namespace Gorgon.Graphics.Core;
 /// </para>
 /// </remarks>
 /// <seealso cref="GorgonGpuResource"/>
-/// <seealso cref="GorgonGpuBuffer_OLDE"/>
+/// <seealso cref="GorgonGpuBuffer"/>
 /// <seealso cref="GorgonTexture"/>
 public interface IGorgonResourceWriter
 {
@@ -57,7 +57,7 @@ public interface IGorgonResourceWriter
     /// This method must be called after a call to the <see cref="GorgonResourceCopier"/>.<see cref="GorgonResourceCopier.BeginUpload"/> method. Failure to do so can lead to data not being sent the GPU properly.
     /// </para>
     /// <para>
-    /// Data written to a <see cref="GorgonGpuBuffer_OLDE"/> may be immediate, depending on the buffer <see cref="BufferUsage"/>. For buffers that have a <see cref="BufferUsage.DynamicPerFrame"/> or 
+    /// Data written to a <see cref="GorgonGpuBuffer"/> may be immediate, depending on the buffer <see cref="BufferUsage"/>. For buffers that have a <see cref="BufferUsage.DynamicPerFrame"/> or 
     /// <see cref="BufferUsage.Upload"/> usage, calls to the <c>Write</c> methods on this interface will be immediately sent to the buffer. Otherwise, the GPU will copy the data from the CPU to a GPU upload 
     /// buffer, and then a copy from the upload buffer to the <see cref="BufferUsage.Default"/> buffer. This is all handled transparently by this method.
     /// </para>
@@ -208,9 +208,9 @@ public interface IGorgonResourceWriter
     /// <remarks>
     /// <inheritdoc cref="SetBarrier(GorgonTexture, BarrierSync, BarrierAccess, BarrierLayout, GorgonSubResourceRange?, bool, bool)" path="/remarks/para[not(@type='TextureBarrier')]"/>
     /// </remarks>
-    /// <seealso cref="GorgonGpuBuffer"/>
+    /// <seealso cref="GorgonGpuBufferCommon"/>
     /// <seealso cref="GorgonCommandList"/>
-    IGorgonResourceWriter SetBarrier(GorgonGpuBuffer buffer, BarrierSync sync, BarrierAccess access, bool force = false);
+    IGorgonResourceWriter SetBarrier(GorgonGpuBufferCommon buffer, BarrierSync sync, BarrierAccess access, bool force = false);
 
     /// <summary>
     /// Function to set a barrier on a buffer to enforce synchronization.
@@ -294,7 +294,8 @@ public interface IGorgonResourceWriter
     /// ]]>
     /// </code>
     /// </example>
-    /// <seealso cref="GorgonGpuBuffer_OLDE"/>
+    /// <seealso cref="GorgonGpuBuffer"/>
+    /// <seealso cref="GorgonIndexBuffer"/>
     /// <seealso cref="GorgonResourceCopier"/>
     /// <seealso cref="End"/>
     /// <seealso cref="StructLayoutAttribute"/>
@@ -354,11 +355,11 @@ public interface IGorgonResourceWriter
     /// <param name="offset"><inheritdoc cref="CopyValue" path="/param[@name='offset']"/></param>
     /// <inheritdoc cref="SetBarrier(GorgonTexture, BarrierSync, BarrierAccess, BarrierLayout, GorgonSubResourceRange?, bool, bool)" path="/returns"/>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="pointer"/> pointer is <see cref="GorgonPtr{T}.NullPtr"/>.</exception>
-    /// <inheritdoc cref="CopyValue{T}(in T, GorgonGpuBuffer_OLDE, long)" path="/exception"/>
+    /// <inheritdoc cref="CopyValue{T}(in T, GorgonGpuBufferCommon, long)" path="/exception"/>
     /// <remarks>
     /// <para>
     /// This method writes data into the <paramref name="buffer"/> from the <see cref="GorgonPtr{T}"/> type specified by the <paramref name="pointer"/> parameter. Applications can use this to write directly 
-    /// from the contents of native/pinned memory pointed at by a <see cref="GorgonPtr{T}"/> or a <see cref="GorgonNativeBuffer{T}"/> into a <see cref="GorgonGpuBuffer_OLDE"/>. 
+    /// from the contents of native/pinned memory pointed at by a <see cref="GorgonPtr{T}"/> or a <see cref="GorgonNativeBuffer{T}"/> into a <see cref="GorgonGpuBuffer"/> or <see cref="GorgonIndexBuffer"/>. 
     /// </para>
     /// <inheritdoc cref="CopyValue" path="/remarks/para[@type='CopyCommon']"/>
     /// </remarks>
@@ -382,12 +383,13 @@ public interface IGorgonResourceWriter
     /// </code>
     /// </example>
     /// <seealso cref="GorgonPtr{T}"/>
-    /// <seealso cref="GorgonGpuBuffer_OLDE"/>
+    /// <seealso cref="GorgonGpuBuffer"/>
+    /// <seealso cref="GorgonIndexBuffer"/>
     /// <seealso cref="GorgonResourceCopier"/>
     /// <seealso cref="End"/>
     /// <seealso cref="StructLayoutAttribute"/>
     /// <seealso cref="LayoutKind"/>
-    IGorgonResourceWriter CopyPointer<T>(GorgonPtr<T> pointer, GorgonGpuBuffer buffer, long offset = 0) where T : unmanaged;
+    IGorgonResourceWriter CopyPointer<T>(GorgonPtr<T> pointer, GorgonGpuBufferCommon buffer, long offset = 0) where T : unmanaged;
 
     /// <summary>
     /// Function to copy a range of values into a buffer.
@@ -397,7 +399,7 @@ public interface IGorgonResourceWriter
     /// <param name="buffer"><inheritdoc cref="CopyValue" path="/param[@name='buffer']"/></param>
     /// <param name="offset"><inheritdoc cref="CopyValue" path="/param[@name='offset']"/></param>
     /// <inheritdoc cref="SetBarrier(GorgonTexture, BarrierSync, BarrierAccess, BarrierLayout, GorgonSubResourceRange?, bool, bool)" path="/returns"/>
-    /// <inheritdoc cref="CopyValue{T}(in T, GorgonGpuBuffer_OLDE, long)" path="/exception"/>
+    /// <inheritdoc cref="CopyValue{T}(in T, GorgonGpuBufferCommon, long)" path="/exception"/>
     /// <remarks>
     /// <para>
     /// This method writes data into the <paramref name="buffer"/> from the read only span type specified by the <paramref name="values"/> parameter. Applications can use this to write directly from arrays 
@@ -429,7 +431,7 @@ public interface IGorgonResourceWriter
     /// <seealso cref="End"/>
     /// <seealso cref="StructLayoutAttribute"/>
     /// <seealso cref="LayoutKind"/>
-    IGorgonResourceWriter CopyRange<T>(ReadOnlySpan<T> values, GorgonGpuBuffer_OLDE buffer, long offset = 0) where T : unmanaged;
+    IGorgonResourceWriter CopyRange<T>(ReadOnlySpan<T> values, GorgonGpuBufferCommon buffer, long offset = 0) where T : unmanaged;
 
     /// <summary>
     /// Function to copy the contents of one <see cref="GorgonGpuBuffer_OLDE"/> to another.

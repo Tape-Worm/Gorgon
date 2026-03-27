@@ -279,7 +279,7 @@ internal unsafe class BarrierManager(GlobalBarrierState globalState)
     /// <param name="buffer">The buffer resource to set a barrier on.</param>
     /// <param name="sync">The resource synchronization value.</param>
     /// <param name="access">The resource access level.</param>
-    public void AddBarrier(GorgonGpuBuffer buffer, BarrierSync sync, BarrierAccess access)
+    public void AddBarrier(GorgonGpuBufferCommon buffer, BarrierSync sync, BarrierAccess access)
     {
         GorgonBufferBarrier newBarrier = new(buffer, sync, access);        
 
