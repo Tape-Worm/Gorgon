@@ -1,0 +1,414 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="GORGFX_ERR_CANNOT_COMPILE_SHADER" xml:space="preserve">
+    <value>There was an error compiling the {0} shader.</value>
+  </data>
+  <data name="GORGFX_ERR_CANNOT_CREATE_ADAPTER" xml:space="preserve">
+    <value>There was an error creating the video adapter interface for adapter index {0}.</value>
+  </data>
+  <data name="GORGFX_ERR_CANNOT_CREATE_COMMAND_QUEUE" xml:space="preserve">
+    <value>There was an error creating a command queue of type {0}.</value>
+  </data>
+  <data name="GORGFX_ERR_CANNOT_CREATE_D3D12_DEVICE" xml:space="preserve">
+    <value>Could not create a Direct3D 12 device object for adapter {0}.</value>
+  </data>
+  <data name="GORGFX_ERR_CANNOT_CREATE_DESCRIPTOR_HEAP" xml:space="preserve">
+    <value>There was an error creating the descriptor heap for '{0}'.</value>
+  </data>
+  <data name="GORGFX_ERR_CANNOT_CREATE_DXCOMPILER" xml:space="preserve">
+    <value>There was an error creating an instance of the shader compiler.</value>
+  </data>
+  <data name="GORGFX_ERR_CANNOT_CREATE_FACTORY" xml:space="preserve">
+    <value>Unable to create a DXGI factory.</value>
+  </data>
+  <data name="GORGFX_ERR_CANNOT_CREATE_SWAPCHAIN" xml:space="preserve">
+    <value>There was an error creating the swap chain '{0}'.</value>
+  </data>
+  <data name="GORGFX_ERR_CANNOT_ENUMERATE_GPU" xml:space="preserve">
+    <value>Could not enumerate feature data for the adapter '{0}'.</value>
+  </data>
+  <data name="GORGFX_ERR_CANNOT_LOAD_DXCOMPILERDLL" xml:space="preserve">
+    <value>Unable to load the dxcompiler.dll file.</value>
+  </data>
+  <data name="GORGFX_ERR_CANNOT_RESIZE_SWAPCHAIN" xml:space="preserve">
+    <value>There was an error while resizing the swap chain '{0}'.</value>
+  </data>
+  <data name="GORGFX_ERR_CANNOT_RETRIEVE_BACKBUFFER" xml:space="preserve">
+    <value>There was an error retrieving the back buffer resource at index {0} for the swap chain '{1}'.</value>
+  </data>
+  <data name="GORGFX_ERR_CANNOT_RETRIEVE_SHADER_COMPILATION_ERRORS" xml:space="preserve">
+    <value>There was an error retrieving the shader compilation errors.</value>
+  </data>
+  <data name="GORGFX_ERR_CANNOT_SET_FULLSCREEN" xml:space="preserve">
+    <value>Could not set the full screen mode. The containing output on the adapter '{0}' could not be determined.</value>
+  </data>
+  <data name="GORGFX_ERR_CANNOT_SET_SCREEN_MODE" xml:space="preserve">
+    <value>There was an error switching the screen mode on adapter '{0}'.</value>
+  </data>
+  <data name="GORGFX_ERR_COMMAND_QUEUE_CREATE" xml:space="preserve">
+    <value>There was an error creating the {0} command queue.</value>
+  </data>
+  <data name="GORGFX_ERR_CANNOT_INIT_FENCE" xml:space="preserve">
+    <value>Could not initialize the fence value.</value>
+  </data>
+  <data name="GORGFX_ERR_DEVICE_REMOVED" xml:space="preserve">
+    <value>The device was removed.</value>
+  </data>
+  <data name="GORGFX_ERR_FILE_NOT_FOUND" xml:space="preserve">
+    <value>The file '{0}' was not found.</value>
+  </data>
+  <data name="GORGFX_ERR_FORMAT_INVALID_DISPLAY_FORMAT" xml:space="preserve">
+    <value>The format {0} is an invalid display format.</value>
+  </data>
+  <data name="GORGFX_ERR_HEIGHT_TOO_SMALL" xml:space="preserve">
+    <value>The height {0} is too small, it must be at least {1}.</value>
+  </data>
+  <data name="GORGFX_ERR_LOAD_AGILITY_FAILED" xml:space="preserve">
+    <value>There was an error loading the Agility SDK.</value>
+  </data>
+  <data name="GORGFX_ERR_NO_SUITABLE_ADAPTER" xml:space="preserve">
+    <value>No suitable video adapter could be found on the system.  Gorgon requires a Direct 3D 12 capable video adapter.</value>
+  </data>
+  <data name="GORGFX_ERR_SHADER_COMPILE_ERROR" xml:space="preserve">
+    <value>The following errors were found:
+
+{0}</value>
+  </data>
+  <data name="GORGFX_ERR_SHADER_FILE_CORRUPT" xml:space="preserve">
+    <value>The shader file is corrupt. </value>
+  </data>
+  <data name="GORGFX_ERR_SHADER_INCLUDE_NOT_FOUND" xml:space="preserve">
+    <value>The include file in line '{0}' was not found in the include list.</value>
+  </data>
+  <data name="GORGFX_ERR_SHADER_INCLUDE_PATH_INVALID" xml:space="preserve">
+    <value>The include line '{0}' is not valid.</value>
+  </data>
+  <data name="GORGFX_ERR_SHADER_MODEL_NOT_SUPPORTED" xml:space="preserve">
+    <value>The shader model version {0} is not supported.</value>
+  </data>
+  <data name="GORGFX_ERR_SHADER_TYPE_NOT_SUPPORTED" xml:space="preserve">
+    <value>The shader type {0} is not supported.</value>
+  </data>
+  <data name="GORGFX_ERR_STREAM_CANNOT_SEEK" xml:space="preserve">
+    <value>The steam is not seekable.</value>
+  </data>
+  <data name="GORGFX_ERR_STREAM_IS_READONLY" xml:space="preserve">
+    <value>The stream is read only.</value>
+  </data>
+  <data name="GORGFX_ERR_STREAM_IS_WRITEONLY" xml:space="preserve">
+    <value>The stream is write only.</value>
+  </data>
+  <data name="GORGFX_ERR_SWAPCHAIN_WAIT_HANDLE_INVALID" xml:space="preserve">
+    <value>The swap chain '{0}' returned an invalid wait handle.</value>
+  </data>
+  <data name="GORGFX_ERR_WIDTH_TOO_SMALL" xml:space="preserve">
+    <value>The width {0} is too small, it must be at least {1}.</value>
+  </data>
+  <data name="GORGFX_NULL_WINDOW_HANDLE" xml:space="preserve">
+    <value>The window handle must not be NULL.</value>
+  </data>
+  <data name="GORGFX_STR_ADAPTER" xml:space="preserve">
+    <value>Video Adapter</value>
+  </data>
+  <data name="GORGFX_STR_MEM_TYPE_LOCAL" xml:space="preserve">
+    <value>local</value>
+  </data>
+  <data name="GORGFX_STR_MEM_TYPE_NON_LOCAL" xml:space="preserve">
+    <value>non-local</value>
+  </data>
+  <data name="GORGFX_STR_OUTPUT" xml:space="preserve">
+    <value>Output</value>
+  </data>
+  <data name="GORGFX_STR_VIDEO_MODE" xml:space="preserve">
+    <value>Video Mode - {0}x{1} {2} Refresh Rate: {3:#####0.0}Hz</value>
+  </data>
+  <data name="GORGFX_ERR_CANNOT_CREATE_FENCE" xml:space="preserve">
+    <value>Could not create the fence object.</value>
+  </data>
+  <data name="GORGFX_ERR_HEAP_TYPE_INVALID" xml:space="preserve">
+    <value>The heap type '{0}' is invalid.</value>
+  </data>
+  <data name="GORGFX_ERR_HEAP_INDEX_NOT_FOUND" xml:space="preserve">
+    <value>The index {0} is not on the heap.</value>
+  </data>
+  <data name="GORGFX_ERR_DESCRIPTORHEAP_OUT_OF_MEMORY" xml:space="preserve">
+    <value>Out of memory in the {0} descriptor heap.</value>
+  </data>
+  <data name="GORGFX_ERR_CANNOT_CREATE_ALLOCATOR" xml:space="preserve">
+    <value>Cannot create a memory allocator for adapter {0}.</value>
+  </data>
+  <data name="GORGFX_ERR_CANNOT_CREATE_RESOURCE" xml:space="preserve">
+    <value>There was an error creating the resource.</value>
+  </data>
+  <data name="GORGFX_ERR_CANNOT_WRITE_DATA" xml:space="preserve">
+    <value>There was an error writing the data to '{0}'.</value>
+  </data>
+  <data name="GORGFX_ERR_CANNOT_CREATE_HEAP" xml:space="preserve">
+    <value>Cannot create the heap {0}.</value>
+  </data>
+  <data name="GORGFX_ERR_HEAP_OUT_OF_MEMORY" xml:space="preserve">
+    <value>The heap '{0}' is out of memory (size: {1}).</value>
+  </data>
+  <data name="GORGFX_ERR_CANNOT_CREATE_COMMAND_ALLOCATOR" xml:space="preserve">
+    <value>Could not create a command allocator.</value>
+  </data>
+  <data name="GORGFX_ERR_CANNOT_RESET_CMD_ALLOCATOR" xml:space="preserve">
+    <value>There was an error while resetting the command allocator.</value>
+  </data>
+  <data name="GORGFX_ERR_CANNOT_CREATE_COMMAND_LIST" xml:space="preserve">
+    <value>Could not create a command list of type '{0}'.</value>
+  </data>
+  <data name="GORGFX_ERR_CANNOT_RESET_COMMAND_LIST" xml:space="preserve">
+    <value>There was an error resetting the command list.</value>
+  </data>
+  <data name="GORGFX_ERR_CANNOT_CREATE_TEXTURE_UNKNOWN_TYPE" xml:space="preserve">
+    <value>The type '{0}' is not a valid texture type.</value>
+  </data>
+  <data name="GORGFX_ERR_CANNOT_CREATE_VIEW_UNKNOWN_TYPE" xml:space="preserve">
+    <value>The type '{0}' is not a valid view type for the resource.</value>
+  </data>
+  <data name="GORGFX_ERR_BATCH_STARTED" xml:space="preserve">
+    <value>The batch is already in progress.</value>
+  </data>
+  <data name="GORGFX_ERR_BATCH_NOT_STARTED" xml:space="preserve">
+    <value>Call the Begin method prior to calling this method.</value>
+  </data>
+  <data name="GORGFX_ERR_RTV_BUFFER_NOT_DEFAULT" xml:space="preserve">
+    <value>The buffer {0} cannot be a render target. Render targets require a buffer with a Default usage.</value>
+  </data>
+  <data name="GORGFX_ERR_CANNOT_WRITE_TO_DOWNLOAD_BUFFER" xml:space="preserve">
+    <value>The buffer '{0}' has a usage of Download. Only buffers with a usage of Default, Upload or DynamicPerFrame can be written to.</value>
+  </data>
+  <data name="GORGFX_ERR_COMMAND_LIST_STILL_OPEN" xml:space="preserve">
+    <value>A command list was still open for recording at the beginning of the frame.
+
+Please ensure all command lists have been submitted for execution at the end of the frame.</value>
+  </data>
+  <data name="GORGFX_ERR_FRAME_ALREADY_STARTED" xml:space="preserve">
+    <value>The frame has already started rendering.</value>
+  </data>
+  <data name="GORGFX_ERR_FRAME_NOT_STARTED" xml:space="preserve">
+    <value>The frame has not started rendering yet. Did you forget to call BeginFrame()?</value>
+  </data>
+  <data name="GORGFX_ERR_CANNOT_CALL_ON_ACTIVE_FRAME" xml:space="preserve">
+    <value>This method cannot be called while a frame is actively being rendered. 
+
+Call EndFrame() prior to calling this method, or call it prior to BeginFrame().</value>
+  </data>
+  <data name="GORGFX_ERR_BUFFER_OFFSET_OVERRUN" xml:space="preserve">
+    <value>The value {0} is too large.</value>
+  </data>
+  <data name="GORGFX_ERR_VERTEX_STRIDE_TOO_SMALL" xml:space="preserve">
+    <value>The vertex stride for buffer '{0}' must be at least 1 byte.</value>
+  </data>
+  <data name="GORGFX_ERR_BUFFER_TOO_SMALL_FOR_VIEW" xml:space="preserve">
+    <value>The buffer '{0}' is too small ({1} bytes) to accommodate the minimum size for a {2} ({3} bytes).</value>
+  </data>
+  <data name="GORGFX_ERR_INVALID_USAGE" xml:space="preserve">
+    <value>The usage of '{0}' is not supported.</value>
+  </data>
+  <data name="GORGFX_ERR_BUFFER_CANNOT_BE_DOWNLOAD" xml:space="preserve">
+    <value>The buffer '{0}' must not have a usage of download. </value>
+  </data>
+  <data name="GORGFX_ERR_BUFFER_TOO_SMALL" xml:space="preserve">
+    <value>The size of the buffer '{0}' is too small. Must be equal to or larger than {1} byte(s).</value>
+  </data>
+  <data name="GORGFX_ERR_NOT_CONSTANT_BUFFER" xml:space="preserve">
+    <value>The buffer '{0}' does not support constant data.</value>
+  </data>
+  <data name="GORGFX_ERR_INVALID_RENDER_TARGET_FORMAT" xml:space="preserve">
+    <value>The format {0} is not a valid render target format.</value>
+  </data>
+  <data name="GORGFX_ERR_INDEX_TOO_LARGE" xml:space="preserve">
+    <value>The index {0} is too large. The maximum value is {1}.</value>
+  </data>
+  <data name="GORGFX_ERR_NULL_GPU_ADDRESS" xml:space="preserve">
+    <value>The GPU address for '{0}' is NULL.</value>
+  </data>
+  <data name="GORGFX_ERR_COMMAND_LIST_ALREADY_SUBMITTED" xml:space="preserve">
+    <value>The command list '{0}' has already been submitted for execution.</value>
+  </data>
+  <data name="GORGFX_ERR_BUFFER_USAGE_NOT_DOWNLOAD" xml:space="preserve">
+    <value>The buffer '{0}' does not have a usage of Download. Only buffers with a usage value of Download may be read by the CPU.</value>
+  </data>
+  <data name="GORGFX_ERR_DYNAMIC_BUFFER_CANNOT_BE_DESTINATION" xml:space="preserve">
+    <value>The buffer '{0}' cannot be used as a copy destination because it has a usage of DynamicPerFrame. </value>
+  </data>
+  <data name="GORGFX_ERR_CANNOT_COPY_TEXTURE_INTO_ITSELF" xml:space="preserve">
+    <value>Cannot copy the source texture '{0}' into itself with the same sub resource index ({1}).
+
+The sub resources must be different if copying into the same texture.</value>
+  </data>
+  <data name="GORGFX_ERR_TEXTURE_COPY_FORMAT_GROUPS_DIFFERENT" xml:space="preserve">
+    <value>The source texture '{0}' has a format group of {1}, and the destination texture '{2}' has a format group of {3}. 
+
+The texture formats must belong to the same grouping in order to copy them.</value>
+  </data>
+  <data name="GORGFX_ERR_BARRIER_RESOURCE_DISPOSED" xml:space="preserve">
+    <value>The resource assigned to this barrier has been disposed.</value>
+  </data>
+  <data name="GORGFX_ERR_CANNOT_COPY_TEXTURE_NOT_SAME" xml:space="preserve">
+    <value>The source texture '{0}' dimensions, format group, mip-map count, or array count does not match that of the destination texture '{1}'.</value>
+  </data>
+  <data name="GORGFX_ERR_CANNOT_COPY_WITH_IMAGE_FORMAT" xml:space="preserve">
+    <value>Cannot copy the image data to the texture.
+
+The format of the image {0} and the format of the texture {1} are incompatible, and cannot be converted.</value>
+  </data>
+  <data name="GORGFX_ERR_DEPTH_STENCIL_CANNOT_BE_COPIED" xml:space="preserve">
+    <value>The depth stencil texture '{0}' cannot be copied unless the entire sub resource is copied. This means the destination coordinates must be 0, and the source region must be empty.</value>
+  </data>
+  <data name="GORGFX_ERR_MULTISAMPLE_CANNOT_BE_COPIED" xml:space="preserve">
+    <value>The texture '{0}' has a multi sample value of {1} and cannot be copied unless the entire sub resource is copied. This means the destination coordinates must be 0, and the source region must be empty.</value>
+  </data>
+  <data name="GORGFX_ERR_MULTISAMPLE_SOURCE_DEST_DIFFERENT" xml:space="preserve">
+    <value>The multi sample settings ({0}) for the texture '{1}' is not the same as the multi sample settings ({2}) for the texture '{3}'.</value>
+  </data>
+  <data name="GORGFX_ERR_CANNOT_COPY_IMAGE_TO_MULTISAMPLE_TEXTURE" xml:space="preserve">
+    <value>The texture '{0}' has a multi sample value of {1}. Only textures without multi sampling can receive image data.</value>
+  </data>
+  <data name="GORGFX_ERR_CANNOT_COPY_IMAGE_TO_DEPTH_STENCIL" xml:space="preserve">
+    <value>The texture '{0}' is a depth/stencil texture. Images cannot be copied into a depth/stencil texture.</value>
+  </data>
+  <data name="GORGFX_ERR_BUFFER_OVERRUN" xml:space="preserve">
+    <value>The offset {0} plus the size {1} exceeds the total size of the buffer: {2}.</value>
+  </data>
+  <data name="GORGFX_ERR_INVALID_PRIMITIVE_TYPE" xml:space="preserve">
+    <value>The primitive type {0} is not valid for this method.</value>
+  </data>
+  <data name="GORGFX_ERR_CANNOT_CLOSE_COMMAND_LIST" xml:space="preserve">
+    <value>There was an error closing the command list '{0}'.</value>
+  </data>
+  <data name="GORGFX_ERR_WAIT_FAILED" xml:space="preserve">
+    <value>The {0} failed to wait for the {1}.</value>
+  </data>
+  <data name="GORGFX_ERR_BUFFER_TOO_SMALL_FOR_STRUCTURE" xml:space="preserve">
+    <value>The buffer is {0} bytes in size. A single element is {1} bytes in size. This buffer is too small to hold a single element.</value>
+  </data>
+  <data name="GORGFX_ERR_BUFFER_USAGE_UNKNOWN" xml:space="preserve">
+    <value>The buffer usage {0} is not valid for buffer '{1}'.</value>
+  </data>
+  <data name="GORGFX_ERR_INVALID_STRUCT_SIZE" xml:space="preserve">
+    <value>The struct size must be a multiple of 16, and a minimum of 16 bytes.</value>
+  </data>
+  <data name="GORGFX_ERR_INVALID_ALIGNMENT" xml:space="preserve">
+    <value>The alignment {0} is not valid. The alignment must be a positive integer value.</value>
+  </data>
+</root>

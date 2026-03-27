@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
+    <SupportedOSPlatformVersion>10.0.26100.0</SupportedOSPlatformVersion>
+    <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
+    <Authors>Michael Winsor</Authors>
+    <Company>Tape_Worm</Company>
+    <Product>Gorgon</Product>
+    <Description>Provides access to low level graphics functionality utilizing hardware accelerated rendering through Direct3D 12.</Description>
+    <Copyright>(C)opyright Tape_Worm, 2025</Copyright>
+    <PackageProjectUrl>https://www.tape-worm.net</PackageProjectUrl>
+    <PackageIcon>g.png</PackageIcon>
+    <RepositoryUrl>https://github.com/Tape-Worm/Gorgon</RepositoryUrl>
+    <RepositoryType>Git</RepositoryType>
+    <PackageTags>Gorgon;C#;.NET;DXGI;Direct 3D 12;Graphics;</PackageTags>
+    <EnableNETAnalyzers>True</EnableNETAnalyzers>
+    <NeutralLanguage />
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <EmbeddedResourceUseDependentUponConvention>true</EmbeddedResourceUseDependentUponConvention>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+    <FileVersion>4.0.0.0</FileVersion>
+    <SignAssembly>false</SignAssembly>
+    <AssemblyOriginatorKeyFile></AssemblyOriginatorKeyFile>
+    <DelaySign>false</DelaySign>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
+    <Nullable>enable</Nullable>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <Title>Gorgon Graphics Core Functionality</Title>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <PackageOutputPath>$(SolutionDir)nuget\$(Configuration)</PackageOutputPath>
+    <VersionPrefix>4.0.0</VersionPrefix>
+    <IsAotCompatible>True</IsAotCompatible>
+    <PublishReadyToRun>True</PublishReadyToRun>    
+    <PublishTrimmed>True</PublishTrimmed>
+    <IncludeSymbols>True</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PackageReadmeFile>README.md</PackageReadmeFile>        
+    <NeutralLanguage>en-us</NeutralLanguage>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <OptimizationPreference>Speed</OptimizationPreference>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <VersionSuffix>Dev</VersionSuffix>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="$(SolutionDir)README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="$(SolutionDir)Gorgon\g.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Direct3D.D3D12" Version="1.619.1">
+      <GeneratePathProperty>true</GeneratePathProperty>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Direct3D.DXC" Version="1.9.2602.17">
+      <GeneratePathProperty>true</GeneratePathProperty>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Direct3D.WARP" Version="1.0.18">
+      <GeneratePathProperty>true</GeneratePathProperty>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.SourceLink.GitHub">
+      <Version>10.0.201</Version>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="PointerToolkit.TerraFX.Interop.Windows" Version="10.0.26100.5" />
+    <PackageReference Include="TerraFX.Interop.D3D12MemoryAllocator" Version="3.1.0" />    
+    <PackageReference Include="TerraFX.Interop.Windows" Version="10.0.26100.6" />    
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <None Include="$(PkgMicrosoft_Direct3D_WARP)\build\native\bin\x64\d3d10warp.dll">
+      <Link>runtimes\win-x64\native\d3d10warp.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Pack>False</Pack>
+    </None>
+    <None Include="$(PkgMicrosoft_Direct3D_WARP)\build\native\bin\x64\d3d10warp.pdb">
+      <Link>runtimes\win-x64\native\d3d10warp.pdb</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Pack>False</Pack>
+    </None>
+    <None Include="$(PkgMicrosoft_Direct3D_WARP)\build\native\bin\win32\d3d10warp.dll">
+      <Link>runtimes\win-x86\native\d3d10warp.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Pack>False</Pack>
+    </None>    
+    <None Include="$(PkgMicrosoft_Direct3D_WARP)\build\native\bin\win32\d3d10warp.pdb">
+      <Link>runtimes\win-x86\native\d3d10warp.pdb</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Pack>False</Pack>
+    </None>    
+    
+    <Content Include="build\Gorgon.Graphics.Core.targets">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <Pack>True</Pack>
+      <PackagePath>build</PackagePath>
+    </Content>   
+
+    <None Include="$(PkgMicrosoft_Direct3D_D3D12)\build\native\bin\x64\**\*.pdb" Exclude="$(PkgMicrosoft_Direct3D_D3D12)\build\native\bin\x64\D3D12StateObjectCompiler.pdb;$(PkgMicrosoft_Direct3D_D3D12)\build\native\bin\x64\D3D12StateObjectCompiler_Exe.pdb;$(PkgMicrosoft_Direct3D_D3D12)\build\native\bin\x64\d3dconfig.pdb">      
+      <Link>runtimes\win-x64\native\%(FileName)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Pack>False</Pack>
+    </None>
+    <None Include="$(PkgMicrosoft_Direct3D_D3D12)\build\native\bin\win32\**\*.pdb" Exclude="$(PkgMicrosoft_Direct3D_D3D12)\build\native\bin\win32\D3D12StateObjectCompiler.pdb;$(PkgMicrosoft_Direct3D_D3D12)\build\native\bin\win32\D3D12StateObjectCompiler_Exe.pdb;$(PkgMicrosoft_Direct3D_D3D12)\build\native\bin\win32\d3dconfig.pdb">
+      <Link>runtimes\win-x86\native\%(FileName)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Pack>False</Pack>
+    </None>
+    <None Include="$(PkgMicrosoft_Direct3D_DXC)\build\native\bin\x64\**\*.pdb" Exclude="$(PkgMicrosoft_Direct3D_DXC)\build\native\bin\x64\dxv.pdb;$(PkgMicrosoft_Direct3D_DXC)\build\native\bin\x64\dxc.pdb">
+      <Link>runtimes\win-x64\native\%(FileName)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Pack>False</Pack>
+    </None>
+    <None Include="$(PkgMicrosoft_Direct3D_DXC)\build\native\bin\x86\**\*.pdb" Exclude="$(PkgMicrosoft_Direct3D_DXC)\build\native\bin\x86\dxv.pdb;$(PkgMicrosoft_Direct3D_DXC)\build\native\bin\x86\dxc.pdb">
+      <Link>runtimes\win-x86\native\%(FileName)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Pack>False</Pack>
+    </None>
+    
+    <Content Include="$(PkgMicrosoft_Direct3D_D3D12)\build\native\bin\x64\**\*.dll" Exclude="$(PkgMicrosoft_Direct3D_D3D12)\build\native\bin\x64\D3D12StateObjectCompiler.dll">      
+      <Link>runtimes\win-x64\native\%(FileName)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Pack>True</Pack>
+      <PackagePath>runtimes\win-x64\native</PackagePath>
+    </Content>
+    <Content Include="$(PkgMicrosoft_Direct3D_D3D12)\build\native\bin\win32\**\*.dll" Exclude="$(PkgMicrosoft_Direct3D_D3D12)\build\native\bin\win32\D3D12StateObjectCompiler.dll">
+      <Link>runtimes\win-x86\native\%(FileName)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Pack>True</Pack>
+      <PackagePath>runtimes\win-x86\native</PackagePath>
+    </Content>
+    <Content Include="$(PkgMicrosoft_Direct3D_DXC)\build\native\bin\x64\**\*.dll">
+      <Link>runtimes\win-x64\native\%(FileName)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Pack>True</Pack>
+      <PackagePath>runtimes\win-x64\native</PackagePath>
+    </Content>
+    <Content Include="$(PkgMicrosoft_Direct3D_DXC)\build\native\bin\x86\**\*.dll">
+      <Link>runtimes\win-x86\native\%(FileName)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Pack>True</Pack>
+      <PackagePath>runtimes\win-x86\native</PackagePath>
+    </Content>
+</ItemGroup>
+  
+  <ItemGroup>
+    <Folder Include="Targets\_Internal\" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\..\Gorgon.Core.Windows\Gorgon.Core.Windows.csproj" />
+    <ProjectReference Include="..\Imaging\Gorgon.Graphics.Imaging.csproj" />
+  </ItemGroup>  	  
+</Project>

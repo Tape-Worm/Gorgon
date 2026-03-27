@@ -1,0 +1,97 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+  </Configurations>
+  <Folder Name="/Dependencies/">
+    <Project Path="Dependencies/Microsoft.Wpf.Interop.DirectX/src/Microsoft.Wpf.Interop.DirectX/Microsoft.Wpf.Interop.DirectX_winsdk.vcxproj" Id="157a478d-fe02-4eb2-bd7c-8cf3bf1cb9a2" />
+    <Project Path="Dependencies/WinFormsColor/Source/WinFormsColor/WinFormsColor.csproj" />
+  </Folder>
+  <Folder Name="/Examples/">
+    <File Path="Examples/.editorconfig" />
+    <Project Path="Examples/ExamplesCommon/ExamplesCommon.csproj" />
+  </Folder>
+  <Folder Name="/Examples/Gorgon.Core.Windows/">
+    <Project Path="Examples/Gorgon.Core.Windows/ComputerInfo/ComputerInfo.csproj" />
+    <Project Path="Examples/Gorgon.Core.Windows/ConsoleLogging/ConsoleLogging.csproj" />
+  </Folder>
+  <Folder Name="/Examples/Gorgon.Core/">
+    <Project Path="Examples/Gorgon.Core/ChunkFile/ChunkFile.csproj" />
+    <Project Path="Examples/Gorgon.Core/Logging/Logging.csproj" />
+    <Project Path="Examples/Gorgon.Core/NativeMemory/NativeMemory.csproj" />
+    <Project Path="Examples/Gorgon.Core/Timing/Timing.csproj" />
+  </Folder>
+  <Folder Name="/Examples/Gorgon.Editor/" />
+  <Folder Name="/Examples/Gorgon.FileSystem/">
+    <Project Path="Examples/Gorgon.FileSystem/FileSystemProviders/FileSystemProviders.csproj" />
+    <Project Path="Examples/Gorgon.FileSystem/FolderFileSystem/FolderFileSystem.csproj" />
+    <Project Path="Examples/Gorgon.FileSystem/MultiSource/MultiSource.csproj" />
+    <Project Path="Examples/Gorgon.FileSystem/Writing/Writing.csproj" />
+    <Project Path="Examples/Gorgon.FileSystem/ZipFileSystem/ZipFileSystem.csproj" />
+  </Folder>
+  <Folder Name="/Examples/Gorgon.Graphics/">
+    <Project Path="Examples/Gorgon.Graphics/Images/Images.csproj" />
+  </Folder>
+  <Folder Name="/Examples/Gorgon.Input/">
+    <Project Path="Examples/Gorgon.Input/Input/Input.csproj" />
+    <Project Path="Examples/Gorgon.Input/XInput/XInput.csproj" />
+  </Folder>
+  <Folder Name="/Examples/Gorgon.Plugins/">
+    <Project Path="Examples/Gorgon.Graphics/CodecPlugIn/CodecPlugIn.csproj" />
+    <Project Path="Examples/Gorgon.Plugins/Plugins/Plugins.csproj" />
+    <Project Path="Examples/Gorgon.Plugins/Plugins/PlugIns/BluePlugin/BluePlugin.csproj" />
+    <Project Path="Examples/Gorgon.Plugins/Plugins/PlugIns/GreenAndPurplePlugin/GreenAndPurplePlugin.csproj" />
+  </Folder>
+  <Folder Name="/Examples/Gorgon.UI/">
+    <Project Path="Examples/Gorgon.UI/Dialogs.Avalonia/Dialogs.Avalonia.csproj" />
+    <Project Path="Examples/Gorgon.UI/Dialogs.WinForms/Dialogs.WinForms.csproj" />
+    <Project Path="Examples/Gorgon.UI/Dialogs.Wpf/Dialogs.Wpf.csproj" />
+  </Folder>
+  <Folder Name="/Examples/Gorgon.UI/Winforms/">
+    <Project Path="Examples/Gorgon.UI/Idling/Idling.csproj" />
+    <Project Path="Examples/Gorgon.UI/MoreIdling/MoreIdling.csproj" />
+  </Folder>
+  <Folder Name="/Examples/Gorgon2D/" />
+  <Folder Name="/PlugIns/">
+    <Project Path="PlugIns/Gorgon.IO.FileSystem.GorPack/Gorgon.IO.FileSystem.GorPack.csproj" />
+    <Project Path="PlugIns/Gorgon.IO.FileSystem.Zip/Gorgon.IO.FileSystem.Zip.csproj" />
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+  </Folder>
+  <Folder Name="/Tests/">
+    <File Path="Test/.editorconfig" />
+    <Project Path="Test/Gorgon.Core.Tests/Gorgon.Core.Tests.csproj" />
+    <Project Path="Test/Gorgon.FileSystem.Tests/Gorgon.FileSystem.Tests.csproj" />
+    <Project Path="Test/Gorgon.Graphics.Imaging.Tests/Gorgon.Graphics.Imaging.Tests.csproj" />
+  </Folder>
+  <Folder Name="/Tools/" />
+  <Folder Name="/__Experiments__/">
+    <Project Path="Test/Experimental/Gorgon.Graphics.TestApp/Gorgon.Graphics.TestApp.csproj" Id="eab22832-edf6-4ee0-aa96-259f64bcaf64" />
+    <Project Path="Test/Experimental/Gorgon.Graphics.TestApp11/Gorgon.Graphics.TestApp11.csproj" />
+    <Project Path="Test/Experimental/SimdConvertTest/SimdTest.csproj" />
+  </Folder>
+  <Folder Name="/__Experiments__/___New___/" />
+  <Folder Name="/__OLDE__/">
+    <Project Path="Gorgon/Gorgon.Graphics/__OLDE__/Core/Gorgon.Graphics.Core.olde.csproj" />
+  </Folder>
+  <Project Path="Gorgon/Gorgon.Animation/Gorgon.Animation.csproj" />
+  <Project Path="Gorgon/Gorgon.Core.Windows/Gorgon.Core.Windows.csproj" />
+  <Project Path="Gorgon/Gorgon.Core/Gorgon.Core.csproj" />
+  <Project Path="Gorgon/Gorgon.Graphics/Core/Gorgon.Graphics.Core.csproj" />
+  <Project Path="Gorgon/Gorgon.Graphics/Fonts/Gorgon.Graphics.Fonts.csproj" />
+  <Project Path="Gorgon/Gorgon.Graphics/Imaging.Codecs.Plugins/Gorgon.Graphics.Imaging.Codecs.Plugins.csproj" />
+  <Project Path="Gorgon/Gorgon.Graphics/Imaging.GdiPlus/Gorgon.Graphics.Imaging.GdiPlus.csproj" />
+  <Project Path="Gorgon/Gorgon.Graphics/Imaging/Gorgon.Graphics.Imaging.csproj" />
+  <Project Path="Gorgon/Gorgon.Input/Gorgon.Input.csproj" />
+  <Project Path="Gorgon/Gorgon.IO/FileSystem.Plugins/Gorgon.IO.FileSystem.Plugins.csproj" />
+  <Project Path="Gorgon/Gorgon.IO/FileSystem/Gorgon.IO.FileSystem.csproj" />
+  <Project Path="Gorgon/Gorgon.Plugins/Gorgon.Plugins.csproj" />
+  <Project Path="Gorgon/Gorgon.Renderers/Animation.Gorgon2D/Gorgon.Animation.Gorgon2D.csproj" />
+  <Project Path="Gorgon/Gorgon.Renderers/Gorgon2D/Gorgon.Renderers.Gorgon2D.csproj" />
+  <Project Path="Gorgon/Gorgon.Renderers/IO.Gorgon2D/Gorgon.IO.Gorgon2D.csproj" />
+  <Project Path="Gorgon/Gorgon.UI/Avalonia/Gorgon.UI.Avalonia.csproj" />
+  <Project Path="Gorgon/Gorgon.UI/Win32/Gorgon.UI.Win32.csproj" />
+  <Project Path="Gorgon/Gorgon.UI/WindowsForms/Gorgon.UI.WindowsForms.csproj" />
+  <Project Path="Gorgon/Gorgon.UI/Wpf/Gorgon.UI.Wpf.csproj" />
+</Solution>

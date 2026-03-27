@@ -5,6 +5,8 @@
 
 name: 4.0.$(Rev:r).$(DayOfYear)
 
+trigger: none
+
 pr:
   branches:
     include:
