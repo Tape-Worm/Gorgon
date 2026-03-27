@@ -66,12 +66,7 @@
     <Project Path="Test/Gorgon.Graphics.Imaging.Tests/Gorgon.Graphics.Imaging.Tests.csproj" />
   </Folder>
   <Folder Name="/Tools/" />
-  <Folder Name="/__Experiments__/">
-    <Project Path="Test/Experimental/Gorgon.Graphics.TestApp/Gorgon.Graphics.TestApp.csproj" Id="eab22832-edf6-4ee0-aa96-259f64bcaf64" />
-    <Project Path="Test/Experimental/Gorgon.Graphics.TestApp11/Gorgon.Graphics.TestApp11.csproj" />
-    <Project Path="Test/Experimental/SimdConvertTest/SimdTest.csproj" />
-  </Folder>
-  <Folder Name="/__Experiments__/___New___/" />
+  <Folder Name="/__Experiments__/" />
   <Folder Name="/__OLDE__/">
     <Project Path="Gorgon/Gorgon.Graphics/__OLDE__/Core/Gorgon.Graphics.Core.olde.csproj" />
   </Folder>
