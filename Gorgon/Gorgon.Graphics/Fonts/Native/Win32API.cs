@@ -48,7 +48,7 @@ internal static unsafe partial class Win32API
     // Temporary font.
     private static Font _tempFont;
     // Synchronization object for threading.
-    private static readonly object _syncLock = new();
+    private static readonly Lock _syncLock = new();
 
     /// <summary>
     /// The SelectObject function selects an object into the specified device context (DC). The new object replaces the previous object of the same type.

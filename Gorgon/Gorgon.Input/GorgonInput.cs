@@ -93,8 +93,8 @@ public sealed class GorgonInput
     private Action<IGorgonInputDeviceInfo>? _deviceDetachedCallback;
     private Func<GorgonInputEvent, bool>? _inputEventCallback;
     // Device update lock.
-    private readonly object _deviceUpdateLock = new();
-    private static readonly object _inputCreateLock = new();
+    private readonly Lock _deviceUpdateLock = new();
+    private static readonly Lock _inputCreateLock = new();
 
     /// <inheritdoc/>
     public IReadOnlyList<IGorgonMouseInfo> Mice => _mouseDevices;

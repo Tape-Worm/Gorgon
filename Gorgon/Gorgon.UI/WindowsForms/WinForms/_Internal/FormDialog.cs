@@ -21,6 +21,8 @@
 // Created: March 12, 2025 12:18:20 AM
 //
 
+using System.ComponentModel;
+
 namespace Gorgon.UI.WindowsForms;
 
 /// <summary>
@@ -37,6 +39,7 @@ internal partial class FormDialog
     /// <summary>
     /// Property to set or return the message to place in the message label.
     /// </summary>
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public string Message
     {
         get => LabelMessage.Text;
@@ -46,6 +49,7 @@ internal partial class FormDialog
     /// <summary>
     /// Property to set or return the detail text for the detail area.
     /// </summary>
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public string Details
     {
         get => _details;
@@ -59,6 +63,7 @@ internal partial class FormDialog
     /// <summary>
     /// Property to set or return whether to show the OK button.
     /// </summary>
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public FormDialogButtons Buttons
     {
         get => _buttonState;
@@ -86,7 +91,8 @@ internal partial class FormDialog
     /// <summary>
     /// Property to set or return the icon for the dialog.
     /// </summary>
-    public Image DialogIcon
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public Image? DialogIcon
     {
         get => PictureIcon.Image;
         set => PictureIcon.Image = value;

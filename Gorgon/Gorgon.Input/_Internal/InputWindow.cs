@@ -115,7 +115,7 @@ internal sealed class InputWindow
                 }
                 return (LRESULT)0;
             case PInvoke.WM_INPUT_DEVICE_CHANGE:
-                switch ((uint)wParam)
+                switch ((nuint)wParam)
                 {
                     case PInvoke.GIDC_ARRIVAL:
                         _deviceAttached?.Invoke(new HANDLE(lParam.Value));

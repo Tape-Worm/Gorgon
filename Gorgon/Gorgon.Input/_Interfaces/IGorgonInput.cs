@@ -359,8 +359,8 @@ public interface IGorgonInput
     /// </code>
     /// </para>
     /// <para>
-    /// <note type="important">
-    /// Be aware that any events processed using the callback (by returning <b>true</b> from the callback) will be consumed and will not be available for polling.
+    /// <note type="information">
+    /// Any events processed using the callback (by returning <b>true</b> from the callback) will be consumed and will not be available for polling.
     /// </note>
     /// </para>
     /// <para>

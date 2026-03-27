@@ -190,1078 +190,1040 @@ public static class GorgonIOExtensions
         }
     }
 
-    /// <summary>
-    /// Function to copy the contents of this stream into another stream, up to a specified byte count.
-    /// </summary>
-    /// <param name="stream">The source stream that will be copied from.</param>
-    /// <param name="destination">The stream that will receive the copy of the data.</param>
-    /// <param name="count">The number of bytes to copy.</param>
-    /// <param name="bufferSize">[Optional] The size of the temporary buffer used to buffer the data between streams.</param>
-    /// <returns>The number of bytes copied, or 0 if no data was copied or at the end of a stream.</returns>
-    /// <exception cref="ArgumentException">Thrown when the <paramref name="stream"/> is write-only.
-    /// <para>-or-</para>
-    /// <para>Thrown when the <paramref name="destination"/> is read-only.</para>
-    /// <para>-or-</para>
-    /// <para>Thrown when the <paramref name="bufferSize"/> is less than 1.</para>
-    /// </exception>
-    /// <remarks>
-    /// <para>
-    /// This method is an extension of the <see cref="Stream.CopyTo(Stream,int)"/> method. But unlike that method, it will copy up to the number of bytes specified by <paramref name="count"/>. 
-    /// </para>
-    /// <para>
-    /// The <paramref name="bufferSize"/> is used to copy data in blocks, rather than attempt to copy byte-by-byte. This may improve performance significantly. 
-    /// </para>
-    /// </remarks>
-    public static int CopyToStream(this Stream stream, Stream destination, int count, int bufferSize = 131072)
+    extension(Stream stream)
     {
-        if (stream.Length <= stream.Position)
+        /// <summary>
+        /// Function to copy the contents of this stream into another stream, up to a specified byte count.
+        /// </summary>
+        /// <param name="destination">The stream that will receive the copy of the data.</param>
+        /// <param name="count">The number of bytes to copy.</param>
+        /// <param name="bufferSize">[Optional] The size of the temporary buffer used to buffer the data between streams.</param>
+        /// <returns>The number of bytes copied, or 0 if no data was copied or at the end of a stream.</returns>
+        /// <exception cref="ArgumentException"><para>Thrown when the stream is write-only.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when the <paramref name="destination"/> is read-only.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when the <paramref name="bufferSize"/> is less than 1.</para>
+        /// </exception>
+        /// <remarks>
+        /// <para>
+        /// This method is an extension of the <see cref="Stream.CopyTo(Stream,int)"/> method. But unlike that method, it will copy up to the number of bytes specified by <paramref name="count"/>. 
+        /// </para>
+        /// <para>
+        /// The <paramref name="bufferSize"/> is used to copy data in blocks, rather than attempt to copy byte-by-byte. This may improve performance significantly. 
+        /// </para>
+        /// </remarks>
+        public int CopyToStream(Stream destination, int count, int bufferSize = 131072)
         {
-            return 0;
+            if (stream.Length <= stream.Position)
+            {
+                return 0;
+            }
+
+            byte[] buffer = bufferSize > 0 ? ArrayPool<byte>.Shared.Rent(bufferSize) : throw new ArgumentException(Resources.GOR_ERR_DATABUFF_SIZE_TOO_SMALL, nameof(bufferSize));
+
+            try
+            {
+                return count < 1 ? 0 : CopyToStream(stream, destination, count, buffer);
+            }
+            finally
+            {
+                ArrayPool<byte>.Shared.Return(buffer, true);
+            }
         }
 
-        byte[] buffer = bufferSize > 0 ? ArrayPool<byte>.Shared.Rent(bufferSize) : throw new ArgumentException(Resources.GOR_ERR_DATABUFF_SIZE_TOO_SMALL, nameof(bufferSize));
-
-        try
+        /// <summary>
+        /// Function to asynchronously copy the contents of this stream into another stream, up to a specified byte count.
+        /// </summary>
+        /// <param name="destination">The stream that will receive the copy of the data.</param>
+        /// <param name="count">The number of bytes to copy.</param>
+        /// <param name="bufferSize">[Optional] The size of the temporary buffer used to buffer the data between streams.</param>
+        /// <param name="cancelToken">[Optional] The token used to cancel the operation.</param>
+        /// <returns>The number of bytes copied, or 0 if no data was copied or at the end of a stream.</returns>
+        /// <exception cref="ArgumentException"><para>Thrown when the stream is write-only.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when the <paramref name="destination"/> is read-only.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when the <paramref name="bufferSize"/> is less than 1.</para>
+        /// </exception>
+        /// <remarks>
+        /// <para>
+        /// This method is an extension of the <see cref="Stream.CopyTo(Stream,int)"/> method. But unlike that method, it will copy up to the number of bytes specified by <paramref name="count"/>. 
+        /// </para>
+        /// <para>
+        /// The <paramref name="bufferSize"/> is used to copy data in blocks, rather than attempt to copy byte-by-byte. This may improve performance significantly.
+        /// </para>
+        /// </remarks>
+        public async Task<int> CopyToStreamAsync(Stream destination, int count, int bufferSize = 131072, CancellationToken? cancelToken = null)
         {
-            return count < 1 ? 0 : CopyToStream(stream, destination, count, buffer);
+            if (stream.Length <= stream.Position)
+            {
+                return 0;
+            }
+
+            byte[] buffer = bufferSize > 0 ? ArrayPool<byte>.Shared.Rent(bufferSize) : throw new ArgumentException(Resources.GOR_ERR_DATABUFF_SIZE_TOO_SMALL, nameof(bufferSize));
+
+            ArgumentEmptyException.ThrowIfNullOrEmpty(buffer, nameof(buffer));
+
+            try
+            {
+                if (count < 1)
+                {
+                    return 0;
+                }
+
+                int result = await CopyToStreamAsync(stream, destination, count, buffer, cancelToken);
+
+                return result;
+            }
+            finally
+            {
+                ArrayPool<byte>.Shared.Return(buffer, true);
+            }
         }
-        finally
+
+        /// <summary>
+        /// Function to copy the contents of this stream into another stream, up to a specified byte count.
+        /// </summary>
+        /// <param name="destination">The stream that will receive the copy of the data.</param>
+        /// <param name="count">The number of bytes to copy.</param>
+        /// <param name="buffer">The buffer to use for reading and writing the chunks of the file.</param>
+        /// <returns>The number of bytes copied, or 0 if no data was copied or at the end of a stream.</returns>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="buffer"/> size is less than 1 byte.</exception>
+        /// <exception cref="ArgumentException"><para>Thrown when the stream is write-only.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when the <paramref name="destination"/> is read-only.</para>
+        /// </exception>
+        /// <remarks>
+        /// <para>
+        /// This method is an extension of the <see cref="Stream.CopyTo(Stream,int)"/> method. But unlike that method, it will copy up to the number of bytes specified by <paramref name="count"/>. 
+        /// </para>
+        /// <para>
+        /// The <paramref name="buffer"/> is used to copy data in blocks, rather than attempt to copy byte-by-byte. This may improve performance significantly. 
+        /// </para>
+        /// </remarks>
+        public int CopyToStream(Stream destination, int count, byte[] buffer)
         {
-            ArrayPool<byte>.Shared.Return(buffer, true);
-        }
-    }
+            if (!stream.CanRead)
+            {
+                throw new ArgumentException(Resources.GOR_ERR_STREAM_IS_WRITEONLY);
+            }
 
-    /// <summary>
-    /// Function to asynchronously copy the contents of this stream into another stream, up to a specified byte count.
-    /// </summary>
-    /// <param name="stream">The source stream that will be copied from.</param>
-    /// <param name="destination">The stream that will receive the copy of the data.</param>
-    /// <param name="count">The number of bytes to copy.</param>
-    /// <param name="bufferSize">[Optional] The size of the temporary buffer used to buffer the data between streams.</param>
-    /// <param name="cancelToken">[Optional] The token used to cancel the operation.</param>
-    /// <returns>The number of bytes copied, or 0 if no data was copied or at the end of a stream.</returns>
-    /// <exception cref="ArgumentException">Thrown when the <paramref name="stream"/> is write-only.
-    /// <para>-or-</para>
-    /// <para>Thrown when the <paramref name="destination"/> is read-only.</para>
-    /// <para>-or-</para>
-    /// <para>Thrown when the <paramref name="bufferSize"/> is less than 1.</para>
-    /// </exception>
-    /// <remarks>
-    /// <para>
-    /// This method is an extension of the <see cref="Stream.CopyTo(Stream,int)"/> method. But unlike that method, it will copy up to the number of bytes specified by <paramref name="count"/>. 
-    /// </para>
-    /// <para>
-    /// The <paramref name="bufferSize"/> is used to copy data in blocks, rather than attempt to copy byte-by-byte. This may improve performance significantly.
-    /// </para>
-    /// </remarks>
-    public static async Task<int> CopyToStreamAsync(this Stream stream, Stream destination, int count, int bufferSize = 131072, CancellationToken? cancelToken = null)
-    {
-        if (stream.Length <= stream.Position)
-        {
-            return 0;
-        }
+            if (!destination.CanWrite)
+            {
+                throw new ArgumentException(Resources.GOR_ERR_STREAM_IS_READONLY, nameof(destination));
+            }
 
-        byte[] buffer = bufferSize > 0 ? ArrayPool<byte>.Shared.Rent(bufferSize) : throw new ArgumentException(Resources.GOR_ERR_DATABUFF_SIZE_TOO_SMALL, nameof(bufferSize));
+            ArgumentEmptyException.ThrowIfNullOrEmpty(buffer, nameof(buffer));
 
-        ArgumentEmptyException.ThrowIfNullOrEmpty(buffer, nameof(buffer));
+            if (stream.Length <= stream.Position)
+            {
+                return 0;
+            }
 
-        try
-        {
             if (count < 1)
             {
                 return 0;
             }
 
-            int result = await CopyToStreamAsync(stream, destination, count, buffer, cancelToken);
+            int result = 0;
+            int bytesRead;
+            Span<byte> bufferSpan = buffer.AsSpan(..buffer.Length.Min(count));
+
+            while ((count > 0) && ((bytesRead = stream.Read(bufferSpan)) != 0))
+            {
+                destination.Write(bufferSpan[..bytesRead]);
+                result += bytesRead;
+                count -= bytesRead;
+            }
 
             return result;
         }
-        finally
+
+        /// <summary>
+        /// Function to copy the contents of this stream into another stream, up to a specified byte count.
+        /// </summary>
+        /// <param name="destination">The stream that will receive the copy of the data.</param>
+        /// <param name="count">The number of bytes to copy.</param>
+        /// <param name="buffer">The buffer to use for reading and writing the chunks of the file.</param>
+        /// <param name="cancelToken">[Optional] The token used to cancel the operation.</param>
+        /// <returns>The number of bytes copied, or 0 if no data was copied or at the end of a stream.</returns>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="buffer"/> size is less than 1 byte.</exception>
+        /// <exception cref="ArgumentException"><para>Thrown when the stream is write-only.</para>
+        /// <para>-or-</para>
+        /// <para>Thrown when the <paramref name="destination"/> is read-only.</para>
+        /// </exception>
+        /// <remarks>
+        /// <para>
+        /// This method is an extension of the <see cref="Stream.CopyTo(Stream,int)"/> method. But unlike that method, it will copy up to the number of bytes specified by <paramref name="count"/>. 
+        /// </para>
+        /// <para>
+        /// The <paramref name="buffer"/> is used to copy data in blocks, rather than attempt to copy byte-by-byte. This may improve performance significantly.
+        /// </para>
+        /// </remarks>
+        public async Task<int> CopyToStreamAsync(Stream destination, int count, byte[] buffer, CancellationToken? cancelToken = null)
         {
-            ArrayPool<byte>.Shared.Return(buffer, true);
-        }
-    }
-
-    /// <summary>
-    /// Function to copy the contents of this stream into another stream, up to a specified byte count.
-    /// </summary>
-    /// <param name="stream">The source stream that will be copied from.</param>
-    /// <param name="destination">The stream that will receive the copy of the data.</param>
-    /// <param name="count">The number of bytes to copy.</param>
-    /// <param name="buffer">The buffer to use for reading and writing the chunks of the file.</param>
-    /// <returns>The number of bytes copied, or 0 if no data was copied or at the end of a stream.</returns>
-    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="buffer"/> size is less than 1 byte.</exception>
-    /// <exception cref="ArgumentException">Thrown when the <paramref name="stream"/> is write-only.
-    /// <para>-or-</para>
-    /// <para>Thrown when the <paramref name="destination"/> is read-only.</para>
-    /// </exception>
-    /// <remarks>
-    /// <para>
-    /// This method is an extension of the <see cref="Stream.CopyTo(Stream,int)"/> method. But unlike that method, it will copy up to the number of bytes specified by <paramref name="count"/>. 
-    /// </para>
-    /// <para>
-    /// The <paramref name="buffer"/> is used to copy data in blocks, rather than attempt to copy byte-by-byte. This may improve performance significantly. 
-    /// </para>
-    /// </remarks>
-    public static int CopyToStream(this Stream stream, Stream destination, int count, byte[] buffer)
-    {
-        if (!stream.CanRead)
-        {
-            throw new ArgumentException(Resources.GOR_ERR_STREAM_IS_WRITEONLY, nameof(stream));
-        }
-
-        if (!destination.CanWrite)
-        {
-            throw new ArgumentException(Resources.GOR_ERR_STREAM_IS_READONLY, nameof(destination));
-        }
-
-        ArgumentEmptyException.ThrowIfNullOrEmpty(buffer, nameof(buffer));
-
-        if (stream.Length <= stream.Position)
-        {
-            return 0;
-        }
-
-        if (count < 1)
-        {
-            return 0;
-        }
-
-        int result = 0;
-        int bytesRead;
-        Span<byte> bufferSpan = buffer.AsSpan(..buffer.Length.Min(count));
-
-        while ((count > 0) && ((bytesRead = stream.Read(bufferSpan)) != 0))
-        {
-            destination.Write(bufferSpan[..bytesRead]);
-            result += bytesRead;
-            count -= bytesRead;
-        }
-
-        return result;
-    }
-
-    /// <summary>
-    /// Function to copy the contents of this stream into another stream, up to a specified byte count.
-    /// </summary>
-    /// <param name="stream">The source stream that will be copied from.</param>
-    /// <param name="destination">The stream that will receive the copy of the data.</param>
-    /// <param name="count">The number of bytes to copy.</param>
-    /// <param name="buffer">The buffer to use for reading and writing the chunks of the file.</param>
-    /// <param name="cancelToken">[Optional] The token used to cancel the operation.</param>
-    /// <returns>The number of bytes copied, or 0 if no data was copied or at the end of a stream.</returns>
-    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="buffer"/> size is less than 1 byte.</exception>
-    /// <exception cref="ArgumentException">Thrown when the <paramref name="stream"/> is write-only.
-    /// <para>-or-</para>
-    /// <para>Thrown when the <paramref name="destination"/> is read-only.</para>
-    /// </exception>
-    /// <remarks>
-    /// <para>
-    /// This method is an extension of the <see cref="Stream.CopyTo(Stream,int)"/> method. But unlike that method, it will copy up to the number of bytes specified by <paramref name="count"/>. 
-    /// </para>
-    /// <para>
-    /// The <paramref name="buffer"/> is used to copy data in blocks, rather than attempt to copy byte-by-byte. This may improve performance significantly.
-    /// </para>
-    /// </remarks>
-    public static async Task<int> CopyToStreamAsync(this Stream stream, Stream destination, int count, byte[] buffer, CancellationToken? cancelToken = null)
-    {
-        if (!stream.CanRead)
-        {
-            throw new ArgumentException(Resources.GOR_ERR_STREAM_IS_WRITEONLY, nameof(stream));
-        }
-
-        if (!destination.CanWrite)
-        {
-            throw new ArgumentException(Resources.GOR_ERR_STREAM_IS_READONLY, nameof(destination));
-        }
-
-        ArgumentEmptyException.ThrowIfNullOrEmpty(buffer, nameof(buffer));
-
-        if (stream.Length <= stream.Position)
-        {
-            return 0;
-        }
-
-        if (count < 1)
-        {
-            return 0;
-        }
-
-        cancelToken ??= CancellationToken.None;
-
-        int result = 0;
-        int bytesRead;
-        Memory<byte> bufferMemory = buffer.AsMemory(0, buffer.Length.Min(count));
-
-        while ((count > 0) && ((bytesRead = await stream.ReadAsync(bufferMemory, cancelToken.Value).ConfigureAwait(false)) != 0))
-        {
-            if (cancelToken.Value.IsCancellationRequested)
+            if (!stream.CanRead)
             {
+                throw new ArgumentException(Resources.GOR_ERR_STREAM_IS_WRITEONLY);
+            }
+
+            if (!destination.CanWrite)
+            {
+                throw new ArgumentException(Resources.GOR_ERR_STREAM_IS_READONLY, nameof(destination));
+            }
+
+            ArgumentEmptyException.ThrowIfNullOrEmpty(buffer, nameof(buffer));
+
+            if (stream.Length <= stream.Position)
+            {
+                return 0;
+            }
+
+            if (count < 1)
+            {
+                return 0;
+            }
+
+            cancelToken ??= CancellationToken.None;
+
+            int result = 0;
+            int bytesRead;
+            Memory<byte> bufferMemory = buffer.AsMemory(0, buffer.Length.Min(count));
+
+            while ((count > 0) && ((bytesRead = await stream.ReadAsync(bufferMemory, cancelToken.Value).ConfigureAwait(false)) != 0))
+            {
+                if (cancelToken.Value.IsCancellationRequested)
+                {
+                    return result;
+                }
+
+                await destination.WriteAsync(bufferMemory[..bytesRead], cancelToken.Value).ConfigureAwait(false);
+                result += bytesRead;
+                count -= bytesRead;
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Function to write a string to a stream with the specified encoding.
+        /// </summary>
+        /// <param name="value">The string to write.</param>
+        /// <param name="encoding">[Optional] The encoding for the string.</param>
+        /// <exception cref="IOException">Thrown when the stream parameter is read-only.</exception>
+        /// <returns>The number of bytes written to the stream.</returns>
+        /// <remarks>
+        /// <para>
+        /// Gorgon stores its strings in a stream by prefixing the string data with the length of the string, in bytes.  This length is encoded as a series of 7-bit bytes.
+        /// </para>
+        /// <para>
+        /// If the <paramref name="encoding"/> parameter is <b>null</b>, then UTF-8 encoding is used.
+        /// </para>
+        /// </remarks>
+        public int WriteString(string value, Encoding? encoding = null)
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                return 0;
+            }
+
+            if (!stream.CanWrite)
+            {
+                throw new IOException(Resources.GOR_ERR_STREAM_IS_READONLY);
+            }
+
+            encoding ??= Encoding.UTF8;
+
+            int maxCharCount = value.Length.Min(4096);
+            char[] charData = ArrayPool<char>.Shared.Rent(maxCharCount);
+            Array.Clear(charData);
+
+            int byteCount = encoding.GetByteCount(charData.AsSpan(..maxCharCount));
+            int size = encoding.GetByteCount(value);
+
+            ArrayPool<byte> bytePool = GorgonArrayPools<byte>.GetBestPool(byteCount);
+            byte[] stringData = bytePool.Rent(byteCount);
+
+            try
+            {
+                int start = 0;
+                int totalSize = size;
+                int result = size + 1;
+
+                // Build the 7 bit encoded length.
+                while (size >= 0x80)
+                {
+                    stream.WriteByte((byte)((size | 0x80) & 0xFF));
+                    size >>= 7;
+                    result++;
+                }
+
+                stream.WriteByte((byte)size);
+
+                while ((totalSize > 0) && (start < value.Length))
+                {
+                    int charsRemaining = maxCharCount.Min(value.Length - start);
+                    int bytesEncoded = encoding.GetBytes(value.AsSpan(start, charsRemaining), stringData.AsSpan(..byteCount));
+
+                    if (bytesEncoded == 0)
+                    {
+                        break;
+                    }
+
+                    totalSize -= bytesEncoded;
+                    start += charsRemaining;
+                    stream.Write(stringData.AsSpan(..bytesEncoded));
+                }
+
                 return result;
             }
-
-            await destination.WriteAsync(bufferMemory[..bytesRead], cancelToken.Value).ConfigureAwait(false);
-            result += bytesRead;
-            count -= bytesRead;
-        }
-
-        return result;
-    }
-
-    /// <summary>
-    /// Function to read a generic value from the stream.
-    /// </summary>
-    /// <typeparam name="T">Type of value to read.  Must be an unmanaged value type.</typeparam>
-    /// <param name="reader">The binary reader used to read the stream.</param>
-    /// <param name="result">The value from the stream.</param>
-    /// <returns>The value in the stream.</returns>
-    /// <exception cref="IOException">Thrown if the underlying stream is write only.</exception>
-    /// <exception cref="EndOfStreamException">Thrown if the size of <typeparamref name="T"/> is larger than the available room in the stream.</exception>
-    /// <remarks>
-    /// <para>
-    /// This method will read the data from the binary stream into a value of type <typeparamref name="T"/>, and return that value.
-    /// </para>
-    /// <para>
-    /// <note type="important">
-    /// <para>
-    /// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
-    /// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
-    /// </para>
-    /// <para>
-    /// Value types with marshalling attributes (<see cref="MarshalAsAttribute"/>) are <i>not</i> supported and will not be read correctly.
-    /// </para>
-    /// </note>
-    /// </para>
-    /// <para>
-    /// Here is an example of how to use this method:
-    /// <code language="csharp">
-    /// <![CDATA[
-    /// Point point;
-    /// using MemoryStream stream = ... // stream containing data.
-    /// using BinaryReader reader = new BinaryReader(stream);
-    /// 
-    /// reader.ReadValue<Point>(out point);
-    /// 
-    /// // or
-    /// 
-    /// point = reader.ReadValue<Point>();
-    /// ]]>
-    /// </code>
-    /// </para>
-    /// </remarks>
-    public static void ReadValue<T>(this BinaryReader reader, out T result)
-        where T : unmanaged
-    {
-        if (!reader.BaseStream.CanRead)
-        {
-            throw new IOException(Resources.GOR_ERR_STREAM_IS_WRITEONLY);
-        }
-
-        result = default;
-
-        unsafe
-        {
-            int size = sizeof(T);
-
-            if ((reader.BaseStream.Length - reader.BaseStream.Position) < size)
+            finally
             {
-                throw new EndOfStreamException(Resources.GOR_ERR_STREAM_EOS);
-            }
-
-            fixed (T* ptr = &result)
-            {
-                GorgonPtr<byte> pointer = new((byte*)ptr, size);
-                reader.ReadToPointer(pointer);
+                ArrayPool<char>.Shared.Return(charData, true);
+                bytePool.Return(stringData, true);
             }
         }
-    }
 
-    /// <summary>
-    /// Function to read a generic value from the stream.
-    /// </summary>
-    /// <typeparam name="T">Type of value to read.  Must be an unmanaged value type.</typeparam>
-    /// <param name="reader">The binary reader used to read the stream.</param>
-    /// <returns>The value in the stream.</returns>
-    /// <exception cref="IOException">Thrown if the underlying stream is write only.</exception>
-    /// <exception cref="EndOfStreamException">Thrown if the size of <typeparamref name="T"/> is larger than the available room in the stream.</exception>
-    /// <remarks>
-    /// <para>
-    /// This method will read the data from the binary stream into a value of type <typeparamref name="T"/>, and return that value.
-    /// </para>
-    /// <para>
-    /// <note type="important">
-    /// <para>
-    /// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
-    /// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
-    /// </para>
-    /// <para>
-    /// Value types with marshalling attributes (<see cref="MarshalAsAttribute"/>) are <i>not</i> supported and will not be read correctly.
-    /// </para>
-    /// </note>
-    /// </para>
-    /// <para>
-    /// Here is an example of how to use this method:
-    /// <code language="csharp">
-    /// <![CDATA[
-    /// Point point;
-    /// using MemoryStream stream = ... // stream containing data.
-    /// using BinaryReader reader = new BinaryReader(stream);
-    /// 
-    /// reader.ReadValue<Point>(out point);
-    /// 
-    /// // or
-    /// 
-    /// point = reader.ReadValue<Point>();
-    /// ]]>
-    /// </code>
-    /// </para>
-    /// </remarks>
-    public static T ReadValue<T>(this BinaryReader reader)
-        where T : unmanaged
-    {
-        ReadValue(reader, out T result);
-        return result;
-    }
-
-    /// <summary>
-    /// Function to write a generic value to the stream.
-    /// </summary>
-    /// <typeparam name="T">Type of value to write.  Must be an unmanaged value type.</typeparam>
-    /// <param name="writer">The binary writer used to write to the stream.</param>
-    /// <param name="value">Value to write to the stream.</param>
-    /// <exception cref="IOException">Thrown if the underlying stream is read only.</exception>
-    /// <remarks>
-    /// <para>
-    /// This method will write the data to the binary stream from the <paramref name="value"/> of type <typeparamref name="T"/>. The amount of data written will be dependant upon the size of 
-    /// <typeparamref name="T"/>, and any packing rules applied.
-    /// </para>
-    /// <para>
-    /// <note type="important">
-    /// <para>
-    /// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
-    /// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
-    /// </para>
-    /// <para>
-    /// Value types with marshalling attributes (<see cref="MarshalAsAttribute"/>) are <i>not</i> supported and will not be read correctly.
-    /// </para>
-    /// </note>
-    /// </para>
-    /// <para>
-    /// Here is an example of how to use this method:
-    /// <code language="csharp">
-    /// <![CDATA[
-    /// Point point = new Point(1, 2);
-    /// using MemoryStream stream = ... // stream containing data.
-    /// using BinaryWriter writer = new BinaryReader(stream);
-    /// 
-    /// writer.WriteValue<Point>(in point);
-    /// 
-    /// // or for values smaller or equal to than 16 bytes.
-    /// 
-    /// writer.WriteValue<Point>(point);
-    /// ]]>
-    /// </code>
-    /// </para>
-    /// </remarks>
-    /// <exception cref="IOException">Thrown when the stream is read-only.</exception>
-    public static void WriteValue<T>(this BinaryWriter writer, ref readonly T value)
-        where T : unmanaged
-    {
-        if (!writer.BaseStream.CanWrite)
+        /// <summary>
+        /// Function to read a string from a stream with the specified encoding.
+        /// </summary>
+        /// <param name="encoding">[Optional] The encoding for the string.</param>
+        /// <returns>The string in the stream.</returns>
+        /// <exception cref="IOException">Thrown when an attempt to read beyond the end of the stream is made.</exception>
+        /// <remarks>
+        /// <para>
+        /// Gorgon stores its strings in a stream by prefixing the string data with the length of the string.  This length is encoded as a series of 7-bit bytes.
+        /// </para>
+        /// <para>
+        /// If the <paramref name="encoding"/> parameter is <b>null</b>, then UTF-8 encoding is used.
+        /// </para>
+        /// </remarks>
+        public string ReadString(Encoding? encoding = null)
         {
-            throw new IOException(Resources.GOR_ERR_STREAM_IS_READONLY);
-        }
+            int stringLength = 0;
 
-        unsafe
-        {
-            int size = sizeof(T);
+            encoding ??= Encoding.UTF8;
 
-            fixed (T* ptr = &value)
+            // String length is encoded in a 7 bit integer.
+            // We have to get each byte and shift it until there are no more high bits set, or the counter becomes larger than 32 bits.
+            int counter = 0;
+            while (true)
             {
-                GorgonPtr<byte> pointer = new((byte*)ptr, size);
-                writer.WriteFromPointer(pointer);
-            }
-        }
-    }
+                int value = stream.ReadByte();
 
-    /// <summary>
-    /// Function to write a generic value to the stream.
-    /// </summary>
-    /// <typeparam name="T">Type of value to write.  Must be an unmanaged value type.</typeparam>
-    /// <param name="writer">The binary writer used to write to the stream.</param>
-    /// <param name="value">Value to write to the stream.</param>
-    /// <exception cref="IOException">Thrown if the underlying stream is read only.</exception>
-    /// <remarks>
-    /// <para>
-    /// This method will write the data to the binary stream from the <paramref name="value"/> of type <typeparamref name="T"/>. The amount of data written will be dependant upon the size of 
-    /// <typeparamref name="T"/>, and any packing rules applied.
-    /// </para>
-    /// <para>
-    /// <note type="important">
-    /// <para>
-    /// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
-    /// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
-    /// </para>
-    /// <para>
-    /// Value types with marshalling attributes (<see cref="MarshalAsAttribute"/>) are <i>not</i> supported and will not be read correctly.
-    /// </para>
-    /// </note>
-    /// </para>
-    /// <para>
-    /// Here is an example of how to use this method:
-    /// <code language="csharp">
-    /// <![CDATA[
-    /// Point point = new Point(1, 2);
-    /// using MemoryStream stream = ... // stream containing data.
-    /// using BinaryWriter writer = new BinaryReader(stream);
-    /// 
-    /// writer.WriteValue<Point>(in point);
-    /// 
-    /// // or for values smaller or equal to than 16 bytes.
-    /// 
-    /// writer.WriteValue<Point>(point);
-    /// ]]>
-    /// </code>
-    /// </para>
-    /// </remarks>
-    /// <exception cref="IOException">Thrown when the stream is read-only.</exception>
-    public static void WriteValue<T>(this BinaryWriter writer, T value)
-        where T : unmanaged => WriteValue(writer, in value);
+                if (value == -1)
+                {
+                    throw new IOException(Resources.GOR_ERR_STREAM_EOS);
+                }
 
-    /// <summary>
-    /// Function to write a range of generic values into a stream via a <see cref="BinaryWriter"/>.
-    /// </summary>
-    /// <typeparam name="T">Type of value to write.  Must be an unmanaged value type.</typeparam>
-    /// <param name="writer">The binary writer that will copy the data into the stream.</param>
-    /// <param name="values">Array of values to write.</param>
-    /// <exception cref="IOException">Thrown when the stream is read-only.</exception>
-    /// <remarks>
-    /// <para>
-    /// This will write data into the binary stream from the specified array of values of type <typeparamref name="T"/>. 
-    /// </para>
-    /// <para>
-    /// The amount of data written will be dependant upon the size of type <typeparamref name="T"/> with packing rules on type <typeparamref name="T"/> will affect the size of the type.
-    /// </para>
-    /// <para>
-    /// <note type="important">
-    /// <para>
-    /// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
-    /// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
-    /// </para>
-    /// <para>
-    /// Value types with marshalling attributes (<see cref="MarshalAsAttribute"/>) are <i>not</i> supported and will not be read correctly.
-    /// </para>
-    /// </note>
-    /// </para>
-    /// <para>
-    /// Here is an example of how to use this method:
-    /// <code language="csharp">
-    /// <![CDATA[
-    /// int[] values = { 1, 2, 3, 4, 5 };
-    /// using MemoryStream stream = new();
-    /// using BinaryWriter writer = new(stream);
-    /// 
-    /// writer.WriteRange(values);
-    /// ]]>
-    /// </code>
-    /// </para>
-    /// </remarks>
-    public static void WriteRange<T>(this BinaryWriter writer, ReadOnlySpan<T> values)
-        where T : unmanaged
-    {
-        if (!writer.BaseStream.CanWrite)
-        {
-            throw new IOException(Resources.GOR_ERR_STREAM_IS_READONLY);
-        }
-
-        if (values.IsEmpty)
-        {
-            return;
-        }
-
-        unsafe
-        {
-            int size = values.Length * sizeof(T);
-
-            fixed (T* ptr = &values[0])
-            {
-                GorgonPtr<byte> pointer = new((byte*)ptr, size);
-                writer.WriteFromPointer(pointer);
-            }
-        }
-    }
-
-    /// <summary>
-    /// Function to read a range of generic values from a stream via a <see cref="BinaryReader"/> and into a span.
-    /// </summary>
-    /// <typeparam name="T">Type of value to read. Must be an unmanaged value type.</typeparam>
-    /// <param name="reader">The binary reader that will copy the data into the span from the stream.</param>
-    /// <param name="values">The span buffer to read data into.</param>
-    /// <exception cref="IOException">Thrown when the stream is read-only.</exception>
-    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="values"/> is empty.</exception>
-    /// <remarks>
-    /// <para>
-    /// This will read data from the binary stream into the specified span of type <typeparamref name="T"/>. 
-    /// </para>
-    /// <para>
-    /// <note type="important">
-    /// <para>
-    /// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
-    /// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
-    /// </para>
-    /// <para>
-    /// Value types with marshalling attributes (<see cref="MarshalAsAttribute"/>) are <i>not</i> supported and will not be read correctly.
-    /// </para>
-    /// </note>
-    /// </para>
-    /// <para>
-    /// Here is an example of how to use this method:
-    /// <code language="csharp">
-    /// <![CDATA[
-    /// int[] values = { 1, 2, 3, 4, 5 };
-    /// using MemoryStream stream = new(values);
-    /// using BinaryReader reader = new(stream);
-    /// 
-    /// int[] valuesCopy = new[values.Length];
-    /// 
-    /// reader.ReadRange(valuesCopy);
-    /// ]]>
-    /// </code>
-    /// </para>
-    /// </remarks>
-    public static void ReadRange<T>(this BinaryReader reader, Span<T> values)
-        where T : unmanaged
-    {
-        if (!reader.BaseStream.CanRead)
-        {
-            throw new IOException(Resources.GOR_ERR_STREAM_IS_WRITEONLY);
-        }
-
-        if (values.IsEmpty)
-        {
-            throw new ArgumentEmptyException(nameof(values));
-        }
-
-        unsafe
-        {
-            int size = values.Length * sizeof(T);
-
-            fixed (T* ptr = &values[0])
-            {
-                GorgonPtr<byte> pointer = new((byte*)ptr, size);
-                reader.ReadToPointer(pointer);
-            }
-        }
-    }
-
-    /// <summary>
-    /// Function to write a string to a stream with the specified encoding.
-    /// </summary>
-    /// <param name="stream">The stream to write the string into.</param>
-    /// <param name="value">The string to write.</param>
-    /// <param name="encoding">[Optional] The encoding for the string.</param>
-    /// <exception cref="IOException">Thrown when the <paramref name="stream"/> parameter is read-only.</exception>
-    /// <returns>The number of bytes written to the stream.</returns>
-    /// <remarks>
-    /// <para>
-    /// Gorgon stores its strings in a stream by prefixing the string data with the length of the string, in bytes.  This length is encoded as a series of 7-bit bytes.
-    /// </para>
-    /// <para>
-    /// If the <paramref name="encoding"/> parameter is <b>null</b>, then UTF-8 encoding is used.
-    /// </para>
-    /// </remarks>
-    public static int WriteString(this Stream stream, string value, Encoding? encoding = null)
-    {
-        if (string.IsNullOrEmpty(value))
-        {
-            return 0;
-        }
-
-        if (!stream.CanWrite)
-        {
-            throw new IOException(Resources.GOR_ERR_STREAM_IS_READONLY);
-        }
-
-        encoding ??= Encoding.UTF8;
-
-        int maxCharCount = value.Length.Min(4096);
-        char[] charData = ArrayPool<char>.Shared.Rent(maxCharCount);
-        Array.Clear(charData);
-
-        int byteCount = encoding.GetByteCount(charData.AsSpan(..maxCharCount));
-        int size = encoding.GetByteCount(value);
-
-        ArrayPool<byte> bytePool = GorgonArrayPools<byte>.GetBestPool(byteCount);
-        byte[] stringData = bytePool.Rent(byteCount);
-
-        try
-        {
-            int start = 0;
-            int totalSize = size;
-            int result = size + 1;
-
-            // Build the 7 bit encoded length.
-            while (size >= 0x80)
-            {
-                stream.WriteByte((byte)((size | 0x80) & 0xFF));
-                size >>= 7;
-                result++;
-            }
-
-            stream.WriteByte((byte)size);
-
-            while ((totalSize > 0) && (start < value.Length))
-            {
-                int charsRemaining = maxCharCount.Min(value.Length - start);
-                int bytesEncoded = encoding.GetBytes(value.AsSpan(start, charsRemaining), stringData.AsSpan(..byteCount));
-
-                if (bytesEncoded == 0)
+                stringLength |= (value & 0x7F) << counter;
+                counter += 7;
+                if (((value & 0x80) == 0) || (counter > 32))
                 {
                     break;
                 }
-
-                totalSize -= bytesEncoded;
-                start += charsRemaining;
-                stream.Write(stringData.AsSpan(..bytesEncoded));
             }
 
-            return result;
-        }
-        finally
-        {
-            ArrayPool<char>.Shared.Return(charData, true);
-            bytePool.Return(stringData, true);
+            if (stringLength == 0)
+            {
+                return string.Empty;
+            }
+
+            // Find the number of bytes required for up to 4096 characters.
+            int charCount = stringLength.Min(4096);
+            char[] charBuffer = ArrayPool<char>.Shared.Rent(charCount);
+            Span<char> charSpan = charBuffer.AsSpan(..charCount);
+
+            // Empty the buffer, if not, the get byte count will get screwy.
+            charSpan.Clear();
+
+            int maxByteCount = encoding.GetByteCount(charSpan);
+            ArrayPool<byte> bytePool = GorgonArrayPools<byte>.GetBestPool(maxByteCount);
+
+            byte[] buffer = bytePool.Rent(maxByteCount);
+
+            try
+            {
+                Decoder decoder = encoding.GetDecoder();
+                StringBuilder? result = null;
+                counter = 0;
+
+                // Buffer the string in, just in case it's super long.
+                while ((stream.Position < stream.Length) && (counter < stringLength))
+                {
+                    // Fill the byte buffer.
+                    int bytesRead = stream.Read(buffer, 0, stringLength <= maxByteCount ? stringLength : maxByteCount);
+
+                    if (bytesRead == 0)
+                    {
+                        throw new EndOfStreamException(Resources.GOR_ERR_STREAM_EOS);
+                    }
+
+                    // Get the characters.
+                    int charsRead = encoding.GetChars(buffer.AsSpan(..bytesRead), charSpan);
+
+                    // If we've already read the entire string, just dump it back out now.
+                    if ((counter == 0) && (bytesRead == stringLength))
+                    {
+                        return new string(charBuffer, 0, charsRead);
+                    }
+
+                    // We'll need a bigger string. So allocate a string builder and use that.
+                    // Try to max out the string builder size by the length of our string, in characters.
+                    result ??= new StringBuilder(4096);
+
+                    result.Append(charSpan[..charsRead]);
+
+                    counter += bytesRead;
+                }
+
+                return result?.ToString() ?? string.Empty;
+            }
+            finally
+            {
+                bytePool.Return(buffer, true);
+                ArrayPool<char>.Shared.Return(charBuffer, true);
+            }
         }
     }
 
-    /// <summary>
-    /// Function to read a string from a stream with the specified encoding.
-    /// </summary>
-    /// <param name="stream">The stream to read the string from.</param>
-    /// <param name="encoding">[Optional] The encoding for the string.</param>
-    /// <returns>The string in the stream.</returns>
-    /// <exception cref="IOException">Thrown when an attempt to read beyond the end of the <paramref name="stream"/> is made.</exception>
-    /// <remarks>
-    /// <para>
-    /// Gorgon stores its strings in a stream by prefixing the string data with the length of the string.  This length is encoded as a series of 7-bit bytes.
-    /// </para>
-    /// <para>
-    /// If the <paramref name="encoding"/> parameter is <b>null</b>, then UTF-8 encoding is used.
-    /// </para>
-    /// </remarks>
-    public static string ReadString(this Stream stream, Encoding? encoding = null)
+    extension(BinaryReader reader)
     {
-        int stringLength = 0;
-
-        encoding ??= Encoding.UTF8;
-
-        // String length is encoded in a 7 bit integer.
-        // We have to get each byte and shift it until there are no more high bits set, or the counter becomes larger than 32 bits.
-        int counter = 0;
-        while (true)
+        /// <summary>
+        /// Function to read a generic value from the stream.
+        /// </summary>
+        /// <typeparam name="T">Type of value to read.  Must be an unmanaged value type.</typeparam>
+        /// <param name="result">The value from the stream.</param>
+        /// <returns>The value in the stream.</returns>
+        /// <exception cref="IOException">Thrown if the underlying stream is write only.</exception>
+        /// <exception cref="EndOfStreamException">Thrown if the size of <typeparamref name="T"/> is larger than the available room in the stream.</exception>
+        /// <remarks>
+        /// <para>
+        /// This method will read the data from the binary stream into a value of type <typeparamref name="T"/>, and return that value.
+        /// </para>
+        /// <para>
+        /// <note type="information">
+        /// <para>
+        /// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
+        /// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
+        /// </para>
+        /// <para>
+        /// Value types with marshalling attributes (<see cref="MarshalAsAttribute"/>) are <i>not</i> supported and will not be read correctly.
+        /// </para>
+        /// </note>
+        /// </para>
+        /// <para>
+        /// Here is an example of how to use this method:
+        /// <code language="csharp">
+        /// <![CDATA[
+        /// Point point;
+        /// using MemoryStream stream = ... // stream containing data.
+        /// using BinaryReader reader = new BinaryReader(stream);
+        /// 
+        /// reader.ReadValue<Point>(out point);
+        /// 
+        /// // or
+        /// 
+        /// point = reader.ReadValue<Point>();
+        /// ]]>
+        /// </code>
+        /// </para>
+        /// </remarks>
+        public void ReadValue<T>(out T result)
+            where T : unmanaged
         {
-            int value = stream.ReadByte();
-
-            if (value == -1)
+            if (!reader.BaseStream.CanRead)
             {
-                throw new IOException(Resources.GOR_ERR_STREAM_EOS);
+                throw new IOException(Resources.GOR_ERR_STREAM_IS_WRITEONLY);
             }
 
-            stringLength |= (value & 0x7F) << counter;
-            counter += 7;
-            if (((value & 0x80) == 0) || (counter > 32))
+            result = default;
+
+            unsafe
             {
-                break;
-            }
-        }
+                int size = sizeof(T);
 
-        if (stringLength == 0)
-        {
-            return string.Empty;
-        }
-
-        // Find the number of bytes required for up to 4096 characters.
-        int charCount = stringLength.Min(4096);
-        char[] charBuffer = ArrayPool<char>.Shared.Rent(charCount);
-        Span<char> charSpan = charBuffer.AsSpan(..charCount);
-
-        // Empty the buffer, if not, the get byte count will get screwy.
-        charSpan.Clear();
-
-        int maxByteCount = encoding.GetByteCount(charSpan);
-        ArrayPool<byte> bytePool = GorgonArrayPools<byte>.GetBestPool(maxByteCount);
-
-        byte[] buffer = bytePool.Rent(maxByteCount);
-
-        try
-        {
-            Decoder decoder = encoding.GetDecoder();
-            StringBuilder? result = null;
-            counter = 0;
-
-            // Buffer the string in, just in case it's super long.
-            while ((stream.Position < stream.Length) && (counter < stringLength))
-            {
-                // Fill the byte buffer.
-                int bytesRead = stream.Read(buffer, 0, stringLength <= maxByteCount ? stringLength : maxByteCount);
-
-                if (bytesRead == 0)
+                if ((reader.BaseStream.Length - reader.BaseStream.Position) < size)
                 {
                     throw new EndOfStreamException(Resources.GOR_ERR_STREAM_EOS);
                 }
 
-                // Get the characters.
-                int charsRead = encoding.GetChars(buffer.AsSpan(..bytesRead), charSpan);
-
-                // If we've already read the entire string, just dump it back out now.
-                if ((counter == 0) && (bytesRead == stringLength))
+                fixed (T* ptr = &result)
                 {
-                    return new string(charBuffer, 0, charsRead);
+                    GorgonPtr<byte> pointer = new((byte*)ptr, size);
+                    reader.ReadToPointer(pointer);
                 }
+            }
+        }
 
-                // We'll need a bigger string. So allocate a string builder and use that.
-                // Try to max out the string builder size by the length of our string, in characters.
-                result ??= new StringBuilder(4096);
+        /// <summary>
+        /// Function to read a generic value from the stream.
+        /// </summary>
+        /// <typeparam name="T">Type of value to read.  Must be an unmanaged value type.</typeparam>
+        /// <returns>The value in the stream.</returns>
+        /// <exception cref="IOException">Thrown if the underlying stream is write only.</exception>
+        /// <exception cref="EndOfStreamException">Thrown if the size of <typeparamref name="T"/> is larger than the available room in the stream.</exception>
+        /// <remarks>
+        /// <para>
+        /// This method will read the data from the binary stream into a value of type <typeparamref name="T"/>, and return that value.
+        /// </para>
+        /// <para>
+        /// <inheritdoc cref="ReadValue{T}(BinaryReader, out T)" path="/remarks/para/note[@type='information']"/>
+        /// </para>
+        /// <para>
+        /// Here is an example of how to use this method:
+        /// <code language="csharp">
+        /// <![CDATA[
+        /// Point point;
+        /// using MemoryStream stream = ... // stream containing data.
+        /// using BinaryReader reader = new BinaryReader(stream);
+        /// 
+        /// reader.ReadValue<Point>(out point);
+        /// 
+        /// // or
+        /// 
+        /// point = reader.ReadValue<Point>();
+        /// ]]>
+        /// </code>
+        /// </para>
+        /// </remarks>
+        public T ReadValue<T>()
+            where T : unmanaged
+        {
+            ReadValue(reader, out T result);
+            return result;
+        }
 
-                result.Append(charSpan[..charsRead]);
-
-                counter += bytesRead;
+        /// <summary>
+        /// Function to read a range of generic values from a stream via a <see cref="BinaryReader"/> and into a span.
+        /// </summary>
+        /// <typeparam name="T">Type of value to read. Must be an unmanaged value type.</typeparam>
+        /// <param name="values">The span buffer to read data into.</param>
+        /// <exception cref="IOException">Thrown when the stream is read-only.</exception>
+        /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="values"/> is empty.</exception>
+        /// <remarks>
+        /// <para>
+        /// This will read data from the binary stream into the specified span of type <typeparamref name="T"/>. 
+        /// </para>
+        /// <para>
+        /// <inheritdoc cref="ReadValue{T}(BinaryReader, out T)" path="/remarks/para/note[@type='information']"/>
+        /// </para>
+        /// <para>
+        /// Here is an example of how to use this method:
+        /// <code language="csharp">
+        /// <![CDATA[
+        /// int[] values = { 1, 2, 3, 4, 5 };
+        /// using MemoryStream stream = new(values);
+        /// using BinaryReader reader = new(stream);
+        /// 
+        /// int[] valuesCopy = new[values.Length];
+        /// 
+        /// reader.ReadRange(valuesCopy);
+        /// ]]>
+        /// </code>
+        /// </para>
+        /// </remarks>
+        public void ReadRange<T>(Span<T> values)
+            where T : unmanaged
+        {
+            if (!reader.BaseStream.CanRead)
+            {
+                throw new IOException(Resources.GOR_ERR_STREAM_IS_WRITEONLY);
             }
 
-            return result?.ToString() ?? string.Empty;
-        }
-        finally
-        {
-            bytePool.Return(buffer, true);
-            ArrayPool<char>.Shared.Return(charBuffer, true);
+            if (values.IsEmpty)
+            {
+                throw new ArgumentEmptyException(nameof(values));
+            }
+
+            unsafe
+            {
+                int size = values.Length * sizeof(T);
+
+                fixed (T* ptr = &values[0])
+                {
+                    GorgonPtr<byte> pointer = new((byte*)ptr, size);
+                    reader.ReadToPointer(pointer);
+                }
+            }
         }
     }
 
-    /// <summary>
-    /// Function to format a filename with safe characters.
-    /// </summary>
-    /// <param name="path">The path containing the filename to evaluate.</param>
-    /// <returns>A safe filename formatted with placeholder characters if invalid characters are found.</returns>
-    /// <remarks>
-    /// <para>
-    /// This will replace any illegal filename characters with the underscore character.
-    /// </para>
-    /// <para>
-    /// If <b>null</b> or <see cref="string.Empty"/> are passed to this method, then an empty string will be returned. If the path does not contain a 
-    /// filename, then an empty string will be returned as well.
-    /// </para>
-    /// </remarks>
-    public static ReadOnlySpan<char> FormatFileName(this ReadOnlySpan<char> path)
+    extension(BinaryWriter writer)
     {
-        if (path.IsEmpty)
+        /// <summary>
+        /// Function to write a generic value to the stream.
+        /// </summary>
+        /// <typeparam name="T">Type of value to write.  Must be an unmanaged value type.</typeparam>
+        /// <param name="value">Value to write to the stream.</param>
+        /// <exception cref="IOException">Thrown if the underlying stream is read only.</exception>
+        /// <remarks>
+        /// <para>
+        /// This method will write the data to the binary stream from the <paramref name="value"/> of type <typeparamref name="T"/>. The amount of data written will be dependant upon the size of 
+        /// <typeparamref name="T"/>, and any packing rules applied.
+        /// </para>
+        /// <para>
+        /// <inheritdoc cref="ReadValue{T}(BinaryReader, out T)" path="/remarks/para/note[@type='information']"/>
+        /// </para>
+        /// <para>
+        /// Here is an example of how to use this method:
+        /// <code language="csharp">
+        /// <![CDATA[
+        /// Point point = new Point(1, 2);
+        /// using MemoryStream stream = ... // stream containing data.
+        /// using BinaryWriter writer = new BinaryReader(stream);
+        /// 
+        /// writer.WriteValue<Point>(in point);
+        /// 
+        /// // or for values smaller or equal to than 16 bytes.
+        /// 
+        /// writer.WriteValue<Point>(point);
+        /// ]]>
+        /// </code>
+        /// </para>
+        /// </remarks>
+        /// <exception cref="IOException">Thrown when the stream is read-only.</exception>
+        public void WriteValue<T>(ref readonly T value)
+            where T : unmanaged
         {
-            return [];
+            if (!writer.BaseStream.CanWrite)
+            {
+                throw new IOException(Resources.GOR_ERR_STREAM_IS_READONLY);
+            }
+
+            unsafe
+            {
+                int size = sizeof(T);
+
+                fixed (T* ptr = &value)
+                {
+                    GorgonPtr<byte> pointer = new((byte*)ptr, size);
+                    writer.WriteFromPointer(pointer);
+                }
+            }
         }
 
-        ReadOnlySpan<char> fileName = Path.GetFileName(path);
+        /// <summary>
+        /// Function to write a generic value to the stream.
+        /// </summary>
+        /// <typeparam name="T">Type of value to write.  Must be an unmanaged value type.</typeparam>
+        /// <param name="value">Value to write to the stream.</param>
+        /// <exception cref="IOException">Thrown if the underlying stream is read only.</exception>
+        /// <remarks>
+        /// <para>
+        /// This method will write the data to the binary stream from the <paramref name="value"/> of type <typeparamref name="T"/>. The amount of data written will be dependant upon the size of 
+        /// <typeparamref name="T"/>, and any packing rules applied.
+        /// </para>
+        /// <para>
+        /// <inheritdoc cref="ReadValue{T}(BinaryReader, out T)" path="/remarks/para/note[@type='information']"/>
+        /// </para>
+        /// <para>
+        /// Here is an example of how to use this method:
+        /// <code language="csharp">
+        /// <![CDATA[
+        /// Point point = new Point(1, 2);
+        /// using MemoryStream stream = ... // stream containing data.
+        /// using BinaryWriter writer = new BinaryReader(stream);
+        /// 
+        /// writer.WriteValue<Point>(in point);
+        /// 
+        /// // or for values smaller or equal to than 16 bytes.
+        /// 
+        /// writer.WriteValue<Point>(point);
+        /// ]]>
+        /// </code>
+        /// </para>
+        /// </remarks>
+        /// <exception cref="IOException">Thrown when the stream is read-only.</exception>
+        public void WriteValue<T>(T value)
+            where T : unmanaged => WriteValue(writer, in value);
 
-        if (fileName.IsEmpty)
+        /// <summary>
+        /// Function to write a range of generic values into a stream via a <see cref="BinaryWriter"/>.
+        /// </summary>
+        /// <typeparam name="T">Type of value to write.  Must be an unmanaged value type.</typeparam>
+        /// <param name="values">Array of values to write.</param>
+        /// <exception cref="IOException">Thrown when the stream is read-only.</exception>
+        /// <remarks>
+        /// <para>
+        /// This will write data into the binary stream from the specified array of values of type <typeparamref name="T"/>. 
+        /// </para>
+        /// <para>
+        /// The amount of data written will be dependant upon the size of type <typeparamref name="T"/> with packing rules on type <typeparamref name="T"/> will affect the size of the type.
+        /// </para>
+        /// <para>
+        /// <inheritdoc cref="ReadValue{T}(BinaryReader, out T)" path="/remarks/para/note[@type='information']"/>
+        /// </para>
+        /// <para>
+        /// Here is an example of how to use this method:
+        /// <code language="csharp">
+        /// <![CDATA[
+        /// int[] values = { 1, 2, 3, 4, 5 };
+        /// using MemoryStream stream = new();
+        /// using BinaryWriter writer = new(stream);
+        /// 
+        /// writer.WriteRange(values);
+        /// ]]>
+        /// </code>
+        /// </para>
+        /// </remarks>
+        public void WriteRange<T>(ReadOnlySpan<T> values)
+            where T : unmanaged
         {
-            return string.Empty;
+            if (!writer.BaseStream.CanWrite)
+            {
+                throw new IOException(Resources.GOR_ERR_STREAM_IS_READONLY);
+            }
+
+            if (values.IsEmpty)
+            {
+                return;
+            }
+
+            unsafe
+            {
+                int size = values.Length * sizeof(T);
+
+                fixed (T* ptr = &values[0])
+                {
+                    GorgonPtr<byte> pointer = new((byte*)ptr, size);
+                    writer.WriteFromPointer(pointer);
+                }
+            }
         }
-
-        char[] dest = new char[fileName.Length];
-        Span<char> result = dest.AsSpan();
-
-        ReplaceIllegalChars(fileName, result);
-
-        return result;
     }
 
-    /// <summary>
-    /// Function to format a filename with safe characters.
-    /// </summary>
-    /// <param name="path">The path containing the filename to evaluate.</param>
-    /// <returns>A safe filename formatted with placeholder characters if invalid characters are found.</returns>
-    /// <remarks>
-    /// <para>
-    /// This will replace any illegal filename characters with the underscore character.
-    /// </para>
-    /// <para>
-    /// If <b>null</b> or <see cref="string.Empty"/> are passed to this method, then an empty string will be returned. If the path does not contain a 
-    /// filename, then an empty string will be returned as well.
-    /// </para>
-    /// </remarks>
-    public static string FormatFileName(this string path) => FormatFileName(path.AsSpan()).ToString();
-
-    /// <summary>
-    /// Function to format a directory path with safe characters.
-    /// </summary>
-    /// <param name="path">The directory path to evaluate..</param>
-    /// <param name="directorySeparator">Directory separator character to use.</param>
-    /// <returns>A safe directory path formatted with placeholder characters if invalid characters are found. Directory separators will be replaced with the specified separator passed 
-    /// to <paramref name="directorySeparator"/>.</returns> 
-    /// <remarks>
-    /// <para>
-    /// This will replace any illegal path characters with the underscore character. Any doubled up directory separators (e.g. // or \\) will be replaced with the directory separator 
-    /// passed to <paramref name="directorySeparator"/>.
-    /// </para>
-    /// <para>
-    /// If <b>null</b> or <see cref="string.Empty"/> are passed to this method, then an empty string will be returned. If the path contains only a filename, 
-    /// that string will be formatted as though it were a directory path.
-    /// </para>
-    /// </remarks>
-    public static ReadOnlySpan<char> FormatDirectory(this ReadOnlySpan<char> path, char directorySeparator)
+    extension(ReadOnlySpan<char> path)
     {
-        if (path.IsEmpty)
+        /// <summary>
+        /// Function to format a filename with safe characters.
+        /// </summary>
+        /// <returns>A safe filename formatted with placeholder characters if invalid characters are found.</returns>
+        /// <remarks>
+        /// <para>
+        /// This will replace any illegal filename characters with the underscore character.
+        /// </para>
+        /// <para>
+        /// If <b>null</b> or <see cref="string.Empty"/> are passed to this method, then an empty string will be returned. If the path does not contain a 
+        /// filename, then an empty string will be returned as well.
+        /// </para>
+        /// </remarks>
+        public ReadOnlySpan<char> FormatFileName()
         {
-            return [];
+            if (path.IsEmpty)
+            {
+                return [];
+            }
+
+            ReadOnlySpan<char> fileName = Path.GetFileName(path);
+
+            if (fileName.IsEmpty)
+            {
+                return string.Empty;
+            }
+
+            char[] dest = new char[fileName.Length];
+            Span<char> result = dest.AsSpan();
+
+            ReplaceIllegalChars(fileName, result);
+
+            return result;
         }
 
-        int pathLength = GetDirectoryNameLengthWithoutMultipleSeparators(path);
+        /// <summary>
+        /// Function to format a directory path with safe characters.
+        /// </summary>
+        /// <param name="directorySeparator">Directory separator character to use.</param>
+        /// <returns>A safe directory path formatted with placeholder characters if invalid characters are found. Directory separators will be replaced with the specified separator passed 
+        /// to <paramref name="directorySeparator"/>.</returns> 
+        /// <remarks>
+        /// <para>
+        /// This will replace any illegal path characters with the underscore character. Any doubled up directory separators (e.g. // or \\) will be replaced with the directory separator 
+        /// passed to <paramref name="directorySeparator"/>.
+        /// </para>
+        /// <para>
+        /// If <b>null</b> or <see cref="string.Empty"/> are passed to this method, then an empty string will be returned. If the path contains only a filename, 
+        /// that string will be formatted as though it were a directory path.
+        /// </para>
+        /// </remarks>
+        public ReadOnlySpan<char> FormatDirectory(char directorySeparator)
+        {
+            if (path.IsEmpty)
+            {
+                return [];
+            }
 
-        char[] dest = new char[pathLength];
-        Span<char> result = dest.AsSpan();
+            int pathLength = GetDirectoryNameLengthWithoutMultipleSeparators(path);
 
-        ReplaceIllegalCharsAndFormatDirectory(path, directorySeparator, result);
+            char[] dest = new char[pathLength];
+            Span<char> result = dest.AsSpan();
 
-        return result;
+            ReplaceIllegalCharsAndFormatDirectory(path, directorySeparator, result);
+
+            return result;
+        }
+
+        /// <summary>
+        /// Function to format a specific piece of a path.
+        /// </summary>
+        /// <returns>A safe path part with placeholder characters if invalid characters are found.</returns>
+        /// <remarks>
+        /// <para>
+        /// This method removes illegal symbols from the path and replaces them with an underscore character. It will not respect path separators and will consider those characters 
+        /// as illegal if provided in the path parameter.
+        /// </para>
+        /// </remarks>
+        public ReadOnlySpan<char> FormatPathPart()
+        {
+            if (path.IsEmpty)
+            {
+                return [];
+            }
+
+            char[] dest = new char[path.Length];
+            Span<char> result = dest.AsSpan();
+
+            ReplaceIllegalChars(path, result);
+
+            return result;
+        }
+
+        /// <summary>
+        /// Function to format a path with safe characters.
+        /// </summary>
+        /// <param name="directorySeparator">Directory separator character to use.</param>
+        /// <returns>A safe path formatted with placeholder characters if invalid characters are found.</returns>
+        /// <remarks>
+        /// <para>
+        /// If the path contains directories, they will be formatted according to the formatting applied by <see cref="FormatDirectory(string?, char)"/>, and if the path contains a filename, it will be 
+        /// formatted according to the formatting applied by the <see cref="FormatFileName(string?)"/> method.
+        /// </para>
+        /// <para>
+        /// If the last character in path is not the same as the <paramref name="directorySeparator"/> parameter, then that last part of the path will be treated as a file. 
+        /// </para>
+        /// <para>
+        /// If no directories are present in the path, then the see <paramref name="directorySeparator"/> is ignored.
+        /// </para>
+        /// </remarks>
+        public ReadOnlySpan<char> FormatPath(char directorySeparator)
+        {
+            if (path.IsEmpty)
+            {
+                return [];
+            }
+
+            ReadOnlySpan<char> directoryPath = Path.GetDirectoryName(path);
+            ReadOnlySpan<char> fileName = Path.GetFileName(path);
+
+            if ((fileName.IsEmpty) && (directoryPath.IsEmpty))
+            {
+                return [];
+            }
+
+            int dirPathLength = 0;
+
+            if (!directoryPath.IsEmpty)
+            {
+                dirPathLength = GetDirectoryNameLengthWithoutMultipleSeparators(directoryPath);
+            }
+
+            char[] dest = new char[dirPathLength + fileName.Length];
+            Span<char> result = dest.AsSpan();
+
+            if (!directoryPath.IsEmpty)
+            {
+                ReplaceIllegalCharsAndFormatDirectory(directoryPath, directorySeparator, result[..dirPathLength]);
+            }
+
+            if (!fileName.IsEmpty)
+            {
+                ReplaceIllegalChars(fileName, result[dirPathLength..]);
+            }
+
+            return result;
+        }
     }
 
-    /// <summary>
-    /// Function to format a directory path with safe characters.
-    /// </summary>
-    /// <param name="path">The directory path to evaluate..</param>
-    /// <param name="directorySeparator">Directory separator character to use.</param>
-    /// <returns>A safe directory path formatted with placeholder characters if invalid characters are found. Directory separators will be replaced with the specified separator passed 
-    /// to <paramref name="directorySeparator"/>.</returns> 
-    /// <remarks>
-    /// <para>
-    /// This will replace any illegal path characters with the underscore character. Any doubled up directory separators (e.g. // or \\) will be replaced with the directory separator 
-    /// passed to <paramref name="directorySeparator"/>.
-    /// </para>
-    /// <para>
-    /// If <b>null</b> or <see cref="string.Empty"/> are passed to this method, then an empty string will be returned. If the path contains only a filename, 
-    /// that string will be formatted as though it were a directory path.
-    /// </para>
-    /// </remarks>
-    public static string FormatDirectory(this string path, char directorySeparator) => FormatDirectory(path.AsSpan(), directorySeparator).ToString();
-
-    /// <summary>
-    /// Function to format a specific piece of a path.
-    /// </summary>
-    /// <param name="path">The path part to evaluate and repair.</param>
-    /// <returns>A safe path part with placeholder characters if invalid characters are found.</returns>
-    /// <remarks>
-    /// <para>
-    /// This method removes illegal symbols from the <paramref name="path"/> and replaces them with an underscore character. It will not respect path separators and will consider those characters 
-    /// as illegal if provided in the <paramref name="path"/> parameter.
-    /// </para>
-    /// </remarks>
-    public static ReadOnlySpan<char> FormatPathPart(this ReadOnlySpan<char> path)
+    extension(string path)
     {
-        if (path.IsEmpty)
-        {
-            return [];
-        }
+        /// <summary>
+        /// Function to format a filename with safe characters.
+        /// </summary>
+        /// <returns>A safe filename formatted with placeholder characters if invalid characters are found.</returns>
+        /// <remarks>
+        /// <para>
+        /// This will replace any illegal filename characters with the underscore character.
+        /// </para>
+        /// <para>
+        /// If <b>null</b> or <see cref="string.Empty"/> are passed to this method, then an empty string will be returned. If the path does not contain a 
+        /// filename, then an empty string will be returned as well.
+        /// </para>
+        /// </remarks>
+        public string FormatFileName() => FormatFileName(path.AsSpan()).ToString();
 
-        char[] dest = new char[path.Length];
-        Span<char> result = dest.AsSpan();
+        /// <summary>
+        /// Function to format a directory path with safe characters.
+        /// </summary>
+        /// <param name="directorySeparator">Directory separator character to use.</param>
+        /// <returns>A safe directory path formatted with placeholder characters if invalid characters are found. Directory separators will be replaced with the specified separator passed 
+        /// to <paramref name="directorySeparator"/>.</returns> 
+        /// <remarks>
+        /// <para>
+        /// This will replace any illegal path characters with the underscore character. Any doubled up directory separators (e.g. // or \\) will be replaced with the directory separator 
+        /// passed to <paramref name="directorySeparator"/>.
+        /// </para>
+        /// <para>
+        /// If <b>null</b> or <see cref="string.Empty"/> are passed to this method, then an empty string will be returned. If the path contains only a filename, 
+        /// that string will be formatted as though it were a directory path.
+        /// </para>
+        /// </remarks>
+        public string FormatDirectory(char directorySeparator) => FormatDirectory(path.AsSpan(), directorySeparator).ToString();
 
-        ReplaceIllegalChars(path, result);
+        /// <summary>
+        /// Function to format a specific piece of a path.
+        /// </summary>
+        /// <returns>A safe path part with placeholder characters if invalid characters are found.</returns>
+        /// <remarks>
+        /// <para>
+        /// This method removes illegal symbols from the path and replaces them with an underscore character. It will not respect path separators and will consider those characters 
+        /// as illegal if provided in the path parameter.
+        /// </para>
+        /// </remarks>
+        public string FormatPathPart() => FormatPathPart(path.AsSpan()).ToString();
 
-        return result;
+        /// <summary>
+        /// Function to format a path with safe characters.
+        /// </summary>
+        /// <param name="directorySeparator">Directory separator character to use.</param>
+        /// <returns>A safe path formatted with placeholder characters if invalid characters are found.</returns>
+        /// <remarks>
+        /// <para>
+        /// If the path contains directories, they will be formatted according to the formatting applied by <see cref="FormatDirectory(string?, char)"/>, and if the path contains a filename, it will be 
+        /// formatted according to the formatting applied by the <see cref="FormatFileName(string?)"/> method.
+        /// </para>
+        /// <para>
+        /// If the last character in path is not the same as the <paramref name="directorySeparator"/> parameter, then that last part of the path will be treated as a file. 
+        /// </para>
+        /// <para>
+        /// If no directories are present in the path, then the see <paramref name="directorySeparator"/> is ignored.
+        /// </para>
+        /// </remarks>
+        public string FormatPath(char directorySeparator) => FormatPath(path.AsSpan(), directorySeparator).ToString();
     }
 
-    /// <summary>
-    /// Function to format a specific piece of a path.
-    /// </summary>
-    /// <param name="path">The path part to evaluate and repair.</param>
-    /// <returns>A safe path part with placeholder characters if invalid characters are found.</returns>
-    /// <remarks>
-    /// <para>
-    /// This method removes illegal symbols from the <paramref name="path"/> and replaces them with an underscore character. It will not respect path separators and will consider those characters 
-    /// as illegal if provided in the <paramref name="path"/> parameter.
-    /// </para>
-    /// </remarks>
-    public static string FormatPathPart(this string path) => FormatPathPart(path.AsSpan()).ToString();
-
-    /// <summary>
-    /// Function to split a path into component parts.
-    /// </summary>
-    /// <param name="path">The path to split.</param>
-    /// <param name="directorySeparator">The separator to split the path on.</param>
-    /// <returns>An array containing the parts of the path, or an empty array if the path is <b>null</b> or empty.</returns>
-    /// <remarks>
-    /// This will take a path a split it into individual pieces for evaluation. The <paramref name="directorySeparator"/> parameter will be the character 
-    /// used to determine how to split the path. For example:
-    /// <code language="csharp">
-    ///		string myPath = @"C:\Windows\System32\ddraw.dll";
-    ///		string[] parts = myPath.GetPathParts(Path.DirectorySeparatorChar);
-    ///		
-    ///		foreach(string part in parts)
-    ///     {
-    ///			Console.WriteLine(part);
-    ///		}
-    /// 
-    ///		/* Output should be:
-    ///		 * C:
-    ///		 * Windows
-    ///		 * System32
-    ///		 * ddraw.dll
-    ///		 */
-    /// </code>
-    /// </remarks>
-    public static string[] GetPathParts(this string? path, char directorySeparator)
+    extension(string? path)
     {
-        path = path?.FormatPath(directorySeparator);
+        /// <summary>
+        /// Function to split a path into component parts.
+        /// </summary>
+        /// <param name="directorySeparator">The separator to split the path on.</param>
+        /// <returns>An array containing the parts of the path, or an empty array if the path is <b>null</b> or empty.</returns>
+        /// <remarks>
+        /// This will take a path a split it into individual pieces for evaluation. The <paramref name="directorySeparator"/> parameter will be the character 
+        /// used to determine how to split the path. For example:
+        /// <code language="csharp">
+        ///		string myPath = @"C:\Windows\System32\ddraw.dll";
+        ///		string[] parts = myPath.GetPathParts(Path.DirectorySeparatorChar);
+        ///		
+        ///		foreach(string part in parts)
+        ///     {
+        ///			Console.WriteLine(part);
+        ///		}
+        /// 
+        ///		/* Output should be:
+        ///		 * C:
+        ///		 * Windows
+        ///		 * System32
+        ///		 * ddraw.dll
+        ///		 */
+        /// </code>
+        /// </remarks>
+        public string[] GetPathParts(char directorySeparator)
+        {
+            path = path?.FormatPath(directorySeparator);
 
-        return path?.Split(directorySeparator, StringSplitOptions.RemoveEmptyEntries) ?? [];
+            return path?.Split(directorySeparator, StringSplitOptions.RemoveEmptyEntries) ?? [];
+        }
     }
 
-    /// <summary>
-    /// Function to format a path with safe characters.
-    /// </summary>
-    /// <param name="path">Path to the file or folder to format.</param>
-    /// <param name="directorySeparator">Directory separator character to use.</param>
-    /// <returns>A safe path formatted with placeholder characters if invalid characters are found.</returns>
-    /// <remarks>
-    /// <para>
-    /// If the path contains directories, they will be formatted according to the formatting applied by <see cref="FormatDirectory(string?, char)"/>, and if the path contains a filename, it will be 
-    /// formatted according to the formatting applied by the <see cref="FormatFileName(string?)"/> method.
-    /// </para>
-    /// <para>
-    /// If the last character in <paramref name="path"/> is not the same as the <paramref name="directorySeparator"/> parameter, then that last part of the path will be treated as a file. 
-    /// </para>
-    /// <para>
-    /// If no directories are present in the path, then the see <paramref name="directorySeparator"/> is ignored.
-    /// </para>
-    /// </remarks>
-    public static ReadOnlySpan<char> FormatPath(this ReadOnlySpan<char> path, char directorySeparator)
+    extension(string chunkName)
     {
-        if (path.IsEmpty)
+        /// <summary>
+        /// Function to return the chunk ID based on the name of the chunk passed to this method.
+        /// </summary>
+        /// <returns>A <see cref="ulong"/> value representing the chunk ID of the name.</returns>
+        /// <exception cref="ArgumentEmptyException">Thrown when the string is empty.</exception>
+        /// <remarks>
+        /// <para>
+        /// This method is used to generate a new chunk ID for the <conceptualLink target="7b81343e-e2fc-4f0f-926a-d9193ae481fe">Gorgon chunked file format</conceptualLink>. It converts the characters in the string to their ASCII byte 
+        /// equivalents, and then builds a <see cref="ulong"/> value from those bytes.
+        /// </para>
+        /// <para>
+        /// Since the size of an <see cref="ulong"/> is 8 bytes, then the string should contain 8 characters. If it does not, then the ID will be padded with 0's on the right to take up the remaining 
+        /// bytes. If the string is larger than 8 characters, then it will be truncated to the 8 character limit from left to right (e.g. STRINGVALUE will be processed as STRINGVA).
+        /// </para>
+        /// <para>
+        /// The format of the long value is not endian specific and is encoded in the same order as the characters in the string.  For example, encoding the string 'TESTVALU' produces:<br/>
+        /// <list type="table">
+        /// <listheader>
+        ///		<term>Byte</term>
+        ///		<term>1</term>
+        ///		<term>2</term>
+        ///		<term>3</term>
+        ///		<term>4</term>
+        ///		<term>5</term>
+        ///		<term>6</term>
+        ///		<term>7</term>
+        ///		<term>8</term>
+        /// </listheader>
+        ///		<item>
+        ///			<description>Character</description>
+        ///			<description>'T' (0x54)</description>
+        ///			<description>'E' (0x45)</description>
+        ///			<description>'S' (0x53)</description>
+        ///			<description>'T' (0x54)</description>
+        ///			<description>'V' (0x56)</description>
+        ///			<description>'A' (0x41)</description>
+        ///			<description>'L' (0x4C)</description>
+        ///			<description>'U' (0x55)</description>
+        ///		</item>
+        /// </list>
+        /// </para>
+        /// </remarks>
+        public ulong ChunkID()
         {
-            return [];
+            if (chunkName.Length == 0)
+            {
+                throw new ArgumentEmptyException(nameof(chunkName));
+            }
+
+            if (chunkName.Length > 8)
+            {
+                chunkName = chunkName[..8];
+            }
+            else if (chunkName.Length < 8)
+            {
+                chunkName = chunkName.PadRight(8, '\0');
+            }
+
+            return (((ulong)((byte)chunkName[7]) << 56)
+                   | ((ulong)((byte)chunkName[6]) << 48)
+                   | ((ulong)((byte)chunkName[5]) << 40)
+                   | ((ulong)((byte)chunkName[4]) << 32)
+                   | ((ulong)((byte)chunkName[3]) << 24)
+                   | ((ulong)((byte)chunkName[2]) << 16)
+                   | ((ulong)((byte)chunkName[1]) << 8)
+                   | (byte)chunkName[0]);
         }
-
-        ReadOnlySpan<char> directoryPath = Path.GetDirectoryName(path);
-        ReadOnlySpan<char> fileName = Path.GetFileName(path);
-
-        if ((fileName.IsEmpty) && (directoryPath.IsEmpty))
-        {
-            return [];
-        }
-
-        int dirPathLength = 0;
-
-        if (!directoryPath.IsEmpty)
-        {
-            dirPathLength = GetDirectoryNameLengthWithoutMultipleSeparators(directoryPath);
-        }
-
-        char[] dest = new char[dirPathLength + fileName.Length];
-        Span<char> result = dest.AsSpan();
-
-        if (!directoryPath.IsEmpty)
-        {
-            ReplaceIllegalCharsAndFormatDirectory(directoryPath, directorySeparator, result[..dirPathLength]);
-        }
-
-        if (!fileName.IsEmpty)
-        {
-            ReplaceIllegalChars(fileName, result[dirPathLength..]);
-        }
-
-        return result;
     }
 
-    /// <summary>
-    /// Function to format a path with safe characters.
-    /// </summary>
-    /// <param name="path">Path to the file or folder to format.</param>
-    /// <param name="directorySeparator">Directory separator character to use.</param>
-    /// <returns>A safe path formatted with placeholder characters if invalid characters are found.</returns>
-    /// <remarks>
-    /// <para>
-    /// If the path contains directories, they will be formatted according to the formatting applied by <see cref="FormatDirectory(string?, char)"/>, and if the path contains a filename, it will be 
-    /// formatted according to the formatting applied by the <see cref="FormatFileName(string?)"/> method.
-    /// </para>
-    /// <para>
-    /// If the last character in <paramref name="path"/> is not the same as the <paramref name="directorySeparator"/> parameter, then that last part of the path will be treated as a file. 
-    /// </para>
-    /// <para>
-    /// If no directories are present in the path, then the see <paramref name="directorySeparator"/> is ignored.
-    /// </para>
-    /// </remarks>
-    public static string FormatPath(this string path, char directorySeparator) => FormatPath(path.AsSpan(), directorySeparator).ToString();
-
-    /// <summary>
-    /// Function to return the chunk ID based on the name of the chunk passed to this method.
-    /// </summary>
-    /// <param name="chunkName">The name of the chunk.</param>
-    /// <returns>A <see cref="ulong"/> value representing the chunk ID of the name.</returns>
-    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="chunkName"/> is empty.</exception>
-    /// <remarks>
-    /// <para>
-    /// This method is used to generate a new chunk ID for the <conceptualLink target="7b81343e-e2fc-4f0f-926a-d9193ae481fe">Gorgon chunked file format</conceptualLink>. It converts the characters in the string to their ASCII byte 
-    /// equivalents, and then builds a <see cref="ulong"/> value from those bytes.
-    /// </para>
-    /// <para>
-    /// Since the size of an <see cref="ulong"/> is 8 bytes, then the string should contain 8 characters. If it does not, then the ID will be padded with 0's on the right to take up the remaining 
-    /// bytes. If the string is larger than 8 characters, then it will be truncated to the 8 character limit from left to right (e.g. STRINGVALUE will be processed as STRINGVA).
-    /// </para>
-    /// <para>
-    /// The format of the long value is not endian specific and is encoded in the same order as the characters in the string.  For example, encoding the string 'TESTVALU' produces:<br/>
-    /// <list type="table">
-    /// <listheader>
-    ///		<term>Byte</term>
-    ///		<term>1</term>
-    ///		<term>2</term>
-    ///		<term>3</term>
-    ///		<term>4</term>
-    ///		<term>5</term>
-    ///		<term>6</term>
-    ///		<term>7</term>
-    ///		<term>8</term>
-    /// </listheader>
-    ///		<item>
-    ///			<description>Character</description>
-    ///			<description>'T' (0x54)</description>
-    ///			<description>'E' (0x45)</description>
-    ///			<description>'S' (0x53)</description>
-    ///			<description>'T' (0x54)</description>
-    ///			<description>'V' (0x56)</description>
-    ///			<description>'A' (0x41)</description>
-    ///			<description>'L' (0x4C)</description>
-    ///			<description>'U' (0x55)</description>
-    ///		</item>
-    /// </list>
-    /// </para>
-    /// </remarks>
-    public static ulong ChunkID(this string chunkName)
+    extension(ulong chunkID)
     {
-        if (chunkName.Length == 0)
-        {
-            throw new ArgumentEmptyException(nameof(chunkName));
-        }
-
-        if (chunkName.Length > 8)
-        {
-            chunkName = chunkName[..8];
-        }
-        else if (chunkName.Length < 8)
-        {
-            chunkName = chunkName.PadRight(8, '\0');
-        }
-
-        return (((ulong)((byte)chunkName[7]) << 56)
-               | ((ulong)((byte)chunkName[6]) << 48)
-               | ((ulong)((byte)chunkName[5]) << 40)
-               | ((ulong)((byte)chunkName[4]) << 32)
-               | ((ulong)((byte)chunkName[3]) << 24)
-               | ((ulong)((byte)chunkName[2]) << 16)
-               | ((ulong)((byte)chunkName[1]) << 8)
-               | (byte)chunkName[0]);
+        /// <summary>
+        /// Function to convert a chunk ID back to a string value.
+        /// </summary>
+        /// <returns>The chunk ID, converted to a string.</returns>
+        public string ToChunkString() => Encoding.ASCII.GetString(BitConverter.GetBytes(chunkID));
     }
-
-    /// <summary>
-    /// Function to convert a chunk ID back to a string value.
-    /// </summary>
-    /// <returns>The chunk ID, converted to a string.</returns>
-    public static string ToChunkString(this ulong chunkID) => Encoding.ASCII.GetString(BitConverter.GetBytes(chunkID));
 }

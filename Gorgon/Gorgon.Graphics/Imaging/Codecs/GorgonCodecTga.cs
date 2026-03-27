@@ -101,7 +101,6 @@
 
 using System.Runtime.CompilerServices;
 using System.Text;
-using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Properties;
 using Gorgon.IO;
 using Gorgon.Native;
@@ -692,7 +691,7 @@ public sealed class GorgonCodecTga
                         srcPointer = (GorgonPtr<byte>)lineBuffer;
                     }
 
-                    reader.ReadRange<byte>(srcPointer);
+                    reader.ReadToPointer(srcPointer);
 
                     lineHasZeroAlpha = ReadUncompressed(lineBuffer, srcPitch.RowPitch, destPtr, image.Format, conversionFlags);
                 }
@@ -806,7 +805,7 @@ public sealed class GorgonCodecTga
         if ((destPitch == srcPitch) && (conversionFlags == TGAConversionFlags.None))
         {
             writer.WriteValue(in header);
-            writer.WriteRange<byte>(imageData.Buffers[0].ImageData.Slice(0, srcPitch.SlicePitch));
+            writer.WriteFromPointer(imageData.Buffers[0].ImageData.Slice(0, srcPitch.SlicePitch));
             return;
         }
 
@@ -841,7 +840,7 @@ public sealed class GorgonCodecTga
 
                 srcPointer += srcPitch.RowPitch;
 
-                writer.WriteRange<byte>(lineBuffer[..destPitch.RowPitch]);
+                writer.WriteFromPointer(lineBuffer[..destPitch.RowPitch]);
             }
         }
         finally

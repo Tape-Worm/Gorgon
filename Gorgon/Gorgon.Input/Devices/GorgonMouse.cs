@@ -46,7 +46,7 @@ public class GorgonMouse(IGorgonMouseInfo? mouseDevice = null) : IGorgonMouse
     // The system mouse information.
     private static readonly IGorgonMouseInfo _systemMouse;
     // Lock for multiple threads.
-    private static readonly object _syncLock = new();
+    private static readonly Lock _syncLock = new();
 
     // The last known absolute position.
     private GorgonPoint? _lastAbsPosition;

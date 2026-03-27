@@ -203,10 +203,7 @@ public class GorgonInputEvent
             Array.Clear(_hidReport);
         }
 
-        ref readonly byte src = ref data.bRawData.e0;
-        ref byte dest = ref _hidReport[0];
-
-        Unsafe.CopyBlock(ref dest, in src, (uint)_hidReportSize);
+        Unsafe.CopyBlock(ref _hidReport[0], in data.bRawData[0], (uint)_hidReportSize);
 
         PreparsedData = deviceInfo.PreparsedData;
         HidButtonIndices = deviceInfo.ButtonMap;

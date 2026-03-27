@@ -15,10 +15,10 @@ pr: none
 jobs:
   - job: 'Release'
     pool:
-      vmImage: 'windows-2022'
+      vmImage: 'windows-latest'
 
     variables:
-      solution: 'Gorgon.sln'
+      solution: 'Gorgon.slnx'
       buildPlatform: 'Any CPU'
       buildConfiguration: 'Release'
 
@@ -114,7 +114,7 @@ jobs:
       vmImage: 'windows-2022'
 
     variables:
-      solution: 'Gorgon.sln'
+      solution: 'Gorgon.slnx'
       buildPlatform: 'Any CPU'
       buildConfiguration: 'Debug'
 

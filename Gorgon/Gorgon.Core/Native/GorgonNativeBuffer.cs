@@ -32,6 +32,36 @@ using Gorgon.Properties;
 namespace Gorgon.Native;
 
 /// <summary>
+/// Provides support for collection expressions for the <see cref="GorgonNativeBuffer{T}"/>.
+/// </summary>
+public static class GorgonNativeBufferCollectionBuilder
+{
+    /// <summary>
+    /// Function to create a new, initialized version of the <see cref="GorgonNativeBuffer{T}"/> class.
+    /// </summary>
+    /// <typeparam name="T">The type of data in the buffer.</typeparam>
+    /// <param name="items">The items to copy into the buffer.</param>
+    /// <returns>A <see cref="GorgonNativeBuffer{T}"/> populated with the data in the items list.</returns>
+    public unsafe static GorgonNativeBuffer<T> Create<T>(ReadOnlySpan<T> items)
+        where T : unmanaged
+    {
+        if (items.IsEmpty)
+        {
+            return GorgonNativeBuffer<T>.Empty;
+        }
+
+        GorgonNativeBuffer<T> result = new(items.Length);
+
+        for (int i = 0; i < items.Length; i++)
+        {
+            result[i] = items[i];
+        }
+
+        return result;
+    }
+}
+
+/// <summary>
 /// Provides a buffer that uses native (unmanaged) memory to store its data.
 /// </summary>
 /// <typeparam name="T">The type of data to store in the buffer. Must be an unmanaged value type.</typeparam>
@@ -49,7 +79,7 @@ namespace Gorgon.Native;
 /// </note>
 /// </para>
 /// <para>
-/// <note type="important">
+/// <note type="information">
 /// <para>
 /// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
 /// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
@@ -77,9 +107,21 @@ namespace Gorgon.Native;
 /// </code>
 /// </para>
 /// <para>
+/// For convenience, the buffer can also be initialized using a collection expression like so:
+/// <code lang="CSharp">
+/// <![CDATA[
+/// // Create a buffer of 4 DateTime objects
+/// GorgonNativeBuffer<DateTime> dateInBuffer = [DateTime.Now, DateTime.Now, DateTime.Now, DateTime.Now];
+/// 
+/// Console.WriteLine(dateInBuffer[2]);
+/// ]]>
+/// </code>
+/// </para>
+/// <para>
 /// The buffer can also be used to pin an array or value type and act on those items as native memory. Please note that the standard disclaimers about pinning still apply.
 /// </para>
 /// </remarks>
+[CollectionBuilder(typeof(GorgonNativeBufferCollectionBuilder), nameof(GorgonNativeBufferCollectionBuilder.Create))]
 public sealed class GorgonNativeBuffer<T>
     : IDisposable, IEnumerable<T>
     where T : unmanaged
@@ -90,6 +132,11 @@ public sealed class GorgonNativeBuffer<T>
     private GCHandle _pinnedArray;
     // Flag to indicate that we allocated this memory ourselves.
     private readonly bool _ownsMemory;
+
+    /// <summary>
+    /// An empty buffer.
+    /// </summary>
+    public static readonly GorgonNativeBuffer<T> Empty = new();
 
     /// <summary>
     /// Property to return whether this buffer is an alias to a pointer.
@@ -267,7 +314,7 @@ public sealed class GorgonNativeBuffer<T>
     /// <param name="length">The new numer of items of type T, for the buffer.</param>
     /// <param name="alignment">[Optional] The alignment for the memory block.</param>    
     /// <param name="preserve">[Optional] Flag that controls whether memory contents should be preserved or not.</param>
-    /// <exception cref="ArgumentException">Thrown when the <paramref name="length"/> parameter is less than 1.
+    /// <exception cref="ArgumentException"><para>Thrown when the <paramref name="length"/> parameter is less than 1.</para>
     /// <para>-or-</para>
     /// <para>Thrown when the <paramref name="alignment"/> parameter is not a power of two.</para>
     /// </exception>
@@ -379,6 +426,32 @@ public sealed class GorgonNativeBuffer<T>
     public static GorgonPtr<T> ToGorgonPtr(GorgonNativeBuffer<T> buffer) => buffer._memoryBlock;
 
     /// <summary>
+    /// Function to return the underlying void pointer for this buffer.
+    /// </summary>
+    /// <param name="buffer">The buffer to containing the pointer.</param>
+    /// <returns>The underlying pointer for the buffer.</returns>
+    /// <remarks>
+    /// <para>
+    /// Be careful that this object is not disposed or collected while using its pointer. Doing so will result in undefined behavior.
+    /// </para>
+    /// <para>
+    /// For example, do <b>NOT</b> do:
+    /// <code lang="csharp">
+    /// <![CDATA[
+    /// GorgonNativeBuffer<int> buffer = new(10);
+    /// void* ptr = GorgonNativeBuffer<int>.ToPointer(buffer);
+    /// 
+    /// buffer.Dispose();
+    /// 
+    /// Console.WriteLine(ptr[4]); // This may crash the application.
+    /// ]]>
+    /// </code>
+    /// </para>
+    /// </remarks>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static unsafe void* ToPointer(GorgonNativeBuffer<T> buffer) => (void*)buffer._memoryBlock;
+
+    /// <summary>
     /// Function to create a new <see cref="GorgonNativeBuffer{T}"/> from a <see cref="ReadOnlySpan{T}"/>.
     /// </summary>
     /// <param name="span">The span to copy from.</param>
@@ -418,13 +491,30 @@ public sealed class GorgonNativeBuffer<T>
 
         GorgonNativeBuffer<T> result = new(span.Length);
 
-        fixed(T* srcPtr = span)
+        fixed (T* srcPtr = span)
         {
-            NativeMemory.Copy(srcPtr, (byte*)result._memoryBlock, (nuint)result.SizeInBytes);
+            NativeMemory.Copy(srcPtr, (void*)result._memoryBlock, (nuint)result.SizeInBytes);
         }
 
         return result;
     }
+
+    /// <summary>
+    /// Function to take a slice of a <see cref="GorgonNativeBuffer{T}"/>.
+    /// </summary>
+    /// <param name="index">The index into the buffer data to start slicing.</param>
+    /// <param name="count">The number of elements to slice.</param>
+    /// <returns>A new <see cref="GorgonPtr{T}"/> to the slice of data.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown if the <paramref name="index"/> is less than 0.</exception>
+    /// <remarks>
+    /// <para>
+    /// This slices a section of the data in this buffer, into a <see cref="GorgonPtr{T}"/> starting at the address of the original pointer + the <paramref name="index"/>, up to the <paramref name="count"/> 
+    /// elements. This new pointer still points at the memory pointed at the original pointer.
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="GorgonPtr{T}"/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public GorgonPtr<T> Slice(long index, long count) => _memoryBlock.Slice(index, count);
 
     /// <summary>
     /// Function to fill the buffer with a specific byte value.
@@ -442,7 +532,15 @@ public sealed class GorgonNativeBuffer<T>
     /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="offset"/> parameter is less than 0, or greater than/equal to <see cref="SizeInBytes"/>.</exception>
     /// <remarks>
     /// <para>
-    /// <note type="important">
+    /// This is meant for converting the data to another type while accessing memory. If the type of data specified by <typeparamref name="T"/> is the same as <typeparamref name="TTo"/>, then use the 
+    /// indexing property on the pointer for better performance.
+    /// </para>
+    /// <para>
+    /// The <paramref name="offset"/> parameter allows the reference the value at the specified byte offset within the memory pointed at by the pointer. For example, if the <paramref name="offset"/> 
+    /// is 4, then the returned reference value will be the value at 4 bytes into the memory pointed at by the pointer.
+    /// </para>
+    /// <para>
+    /// <note type="information">
     /// <para>
     /// The type referenced by <typeparamref name="TTo"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
     /// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
@@ -491,15 +589,7 @@ public sealed class GorgonNativeBuffer<T>
     /// </para>
     /// <para>
     /// <para>
-    /// <note type="important">
-    /// <para>
-    /// The type referenced by <typeparamref name="TTo"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
-    /// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
-    /// </para>
-    /// <para>
-    /// Value types with marshalling attributes (<see cref="MarshalAsAttribute"/>) are <i>not</i> supported and will not be read correctly.
-    /// </para>
-    /// </note>
+    /// <inheritdoc cref="AsRef{TTo}(long)" path="/remarks/para/note[@type='information']"/>
     /// </para>
     /// <note type="warning">
     /// <para>
@@ -565,8 +655,7 @@ public sealed class GorgonNativeBuffer<T>
     /// <param name="count">[Optional] The number of items to copy.</param>
     /// <param name="destIndex">[Optional] The destination index in the destination buffer to start copying into.</param>
     /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="sourceIndex"/>, or the <paramref name="destIndex"/> parameter is less than 0.</exception>
-    /// <exception cref="ArgumentException">
-    /// <para>Thrown when the <paramref name="sourceIndex"/> + <paramref name="count"/> is too big for this buffer.</para>
+    /// <exception cref="ArgumentException"><para>Thrown when the <paramref name="sourceIndex"/> + <paramref name="count"/> is too big for this buffer.</para>
     /// <para>-or-</para>
     /// <para>Thrown when the <paramref name="destIndex"/> + <paramref name="count"/> is too big for the <paramref name="destination"/> buffer.</para>
     /// </exception>
@@ -593,7 +682,7 @@ public sealed class GorgonNativeBuffer<T>
         ArgumentOutOfRangeException.ThrowIfLessThan(sourceIndex, 0);
         ArgumentOutOfRangeException.ThrowIfLessThan(destIndex, 0);
 
-        count ??= (Length - sourceIndex);        
+        count ??= (Length - sourceIndex);
 
         if (sourceIndex + count.Value > _memoryBlock.Length)
         {
@@ -668,7 +757,7 @@ public sealed class GorgonNativeBuffer<T>
             throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, 0, count.Value), nameof(destination));
         }
 
-        int destSize = count > int.MaxValue ? int.MaxValue : (int)count.Value;
+        int destSize = count > int.MaxValue ? int.MaxValue : count.Value;
 
         _memoryBlock.Slice(sourceIndex, count.Value).CopyTo(destination[..destSize]);
     }
@@ -720,6 +809,41 @@ public sealed class GorgonNativeBuffer<T>
     public static implicit operator GorgonPtr<T>(GorgonNativeBuffer<T>? buffer) => buffer == null ? GorgonPtr<T>.NullPtr : ToGorgonPtr(buffer);
 
     /// <summary>
+    /// Operator to convert this buffer to a void pointer
+    /// </summary>
+    /// <param name="buffer">The buffer to convert.</param>
+    /// <returns>The pointer to the buffer data.</returns>
+    /// <remarks>
+    /// <para>
+    /// This operator is provided as a convenience, but has potential for abuse. Be careful that this object is not disposed or collected while using its pointer. Doing so will result in undefined behavior.
+    /// </para>
+    /// <para>
+    /// For example, do <b>NOT</b> do:
+    /// <code lang="csharp">
+    /// <![CDATA[
+    /// void *ptr = (void*)new GorgonNativeBuffer<T>(10);
+    /// 
+    /// DoSomething();
+    /// 
+    /// // The native buffer may be collected at this point, and the memory will be freed.
+    /// 
+    /// Console.WriteLine(ptr[4]); // This may crash the application.
+    /// ]]>
+    /// </code>
+    /// </para>
+    /// </remarks>
+    public static unsafe explicit operator void*(GorgonNativeBuffer<T>? buffer) => buffer == null ? null : ToPointer(buffer);
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GorgonNativeBuffer{T}"/> class.
+    /// </summary>
+    private GorgonNativeBuffer()
+    {
+        _ownsMemory = false;
+        _memoryBlock = GorgonPtr<T>.NullPtr;
+    }
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="GorgonNativeBuffer{T}" /> class.
     /// </summary>
     /// <param name="pinnedData">The handle to the pinned data.</param>
@@ -761,7 +885,7 @@ public sealed class GorgonNativeBuffer<T>
     /// <param name="length">The number of items of type <typeparamref name="T"/> to allocate in the buffer.</param>
     /// <param name="alignment">[Optional] The alignment of the buffer, in bytes.</param>
     /// <param name="init">[Optional] <b>true</b> to initialize the buffer with a byte value of 0, or <b>false</b> to leave uninitialized.</param>
-    /// <exception cref="ArgumentException">Thrown when the <paramref name="length"/> is less than 0.
+    /// <exception cref="ArgumentException"><para>Thrown when the <paramref name="length"/> is less than 0.</para>
     /// <para>-or-</para>
     /// <para>Thrown when the <paramref name="alignment"/> parameter is not a power of two.</para>
     /// </exception>

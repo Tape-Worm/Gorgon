@@ -46,7 +46,7 @@ public sealed class GorgonApplicationLoop
     // The instance.
     private static volatile GorgonApplicationLoop? _instance = null;
     // The lock used to create a single instance.
-    private static readonly object _instanceLock = new();
+    private static readonly Lock _instanceLock = new();
 
     /// <summary>
     /// Property to return whether the application loop is running or not.
@@ -97,7 +97,7 @@ public sealed class GorgonApplicationLoop
             Stop();
         }
         else
-        {            
+        {
             _cancellationTokenSource.Cancel();
         }
 
@@ -146,6 +146,11 @@ public sealed class GorgonApplicationLoop
             {
                 Stop();
                 return;
+            }
+
+            if (!GorgonTiming.TimingStarted)
+            {
+                GorgonTiming.StartTiming(new GorgonTimer());
             }
 
             try

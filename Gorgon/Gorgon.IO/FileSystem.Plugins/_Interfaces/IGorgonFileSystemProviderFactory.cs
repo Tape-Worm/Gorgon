@@ -83,7 +83,7 @@ public interface IGorgonFileSystemProviderFactory
     /// <param name="providerPluginName">The fully qualified type name of the Plugin that contains the file system provider.</param>
     /// <returns>The new <see cref="IGorgonFileSystemProvider"/> object.</returns>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/>, or the <paramref name="providerPluginName"/> is empty.</exception>
-    /// <exception cref="ArgumentException">Thrown when the driver type name specified by <paramref name="providerPluginName"/> was not found in any of the loaded plugin assemblies.
+    /// <exception cref="ArgumentException"><para>Thrown when the driver type name specified by <paramref name="providerPluginName"/> was not found in any of the loaded plugin assemblies.</para>
     /// <para>-or-</para>
     /// <para>Thrown when the <paramref name="path"/> was invalid.</para>
     /// </exception>

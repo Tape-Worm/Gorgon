@@ -22,12 +22,10 @@
 //
 
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Gorgon.Diagnostics;
 using Gorgon.Input.Properties;
 using Windows.Win32.Devices.DeviceAndDriverInstallation;
-using Windows.Win32.Devices.Properties;
 using Windows.Win32.Foundation;
 using Windows.Win32.Storage.FileSystem;
 

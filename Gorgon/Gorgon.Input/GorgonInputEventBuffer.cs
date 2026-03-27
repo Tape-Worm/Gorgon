@@ -47,7 +47,7 @@ public sealed class GorgonInputEventBuffer
     : IDisposable
 {
     // Synchronization object.
-    private readonly object _syncLock = new();
+    private readonly Lock _syncLock = new();
 
     // The backing stores for the buffer.
     private GorgonInputEvent[] _keyboardBuffer = [];

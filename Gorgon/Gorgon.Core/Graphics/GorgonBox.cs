@@ -40,13 +40,6 @@ namespace Gorgon.Graphics;
 /// This data structure is used to easily pass around 3D coordinates for a cube shape. The box shape can be intersected and unioned. It also provides various methods to determine if another box intersects, or is 
 /// contained completely within a box. 
 /// </para>
-/// <para>
-/// <note type="important">
-/// <para>
-/// This value type merely represents the dimensions of a box, it does not draw a box. 
-/// </para>
-/// </note>
-/// </para>
 /// </remarks>
 [StructLayout(LayoutKind.Sequential, Pack = 4), JsonConverter(typeof(GorgonBoxJsonConverter))]
 public struct GorgonBox
@@ -157,42 +150,42 @@ public struct GorgonBox
     /// <summary>
     /// Property to return the top, left and front corner of the box.
     /// </summary>
-    public readonly (int x, int y, int z) TopLeftFront => (Left, Top, Front);
+    public readonly (int x, int y, int z) LeftTopFront => (Left, Top, Front);
 
     /// <summary>
     /// Property to return the bottom, left and front corner of the box.
     /// </summary>
-    public readonly (int x, int y, int z) BottomLeftFront => (Left, Bottom, Front);
+    public readonly (int x, int y, int z) LeftBottomFront => (Left, Bottom, Front);
 
     /// <summary>
     /// Property to return the top, right and front corner of the box.
     /// </summary>
-    public readonly (int x, int y, int z) TopRightFront => (Right, Top, Front);
+    public readonly (int x, int y, int z) RightTopFront => (Right, Top, Front);
 
     /// <summary>
     /// Property to return the bottom, right and front corner of the box.
     /// </summary>
-    public readonly (int x, int y, int z) BottomRightFront => (Right, Bottom, Front);
+    public readonly (int x, int y, int z) RightBottomFront => (Right, Bottom, Front);
 
     /// <summary>
     /// Property to return the top, left and back corner of the box.
     /// </summary>
-    public readonly (int x, int y, int z) TopLeftBack => (Left, Top, Back);
+    public readonly (int x, int y, int z) LeftTopBack => (Left, Top, Back);
 
     /// <summary>
     /// Property to return the bottom, left and back corner of the box.
     /// </summary>
-    public readonly (int x, int y, int z) BottomLeftBack => (Left, Bottom, Back);
+    public readonly (int x, int y, int z) LeftBottomBack => (Left, Bottom, Back);
 
     /// <summary>
     /// Property to return the top, right and back corner of the box.
     /// </summary>
-    public readonly (int x, int y, int z) TopRightBack => (Right, Top, Back);
+    public readonly (int x, int y, int z) RightTopBack => (Right, Top, Back);
 
     /// <summary>
     /// Property to return the bottom, right and back corner of the box.
     /// </summary>
-    public readonly (int x, int y, int z) BottomRightBack => (Right, Bottom, Back);
+    public readonly (int x, int y, int z) RightBottomBack => (Right, Bottom, Back);
 
     /// <summary>
     /// Property to return the center of the box.

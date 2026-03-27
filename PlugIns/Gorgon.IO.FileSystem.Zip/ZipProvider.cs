@@ -184,7 +184,7 @@ internal class ZipProvider(IGorgonLog log)
             return false;
         }
 
-        stream.Read(headerBytes, 0, headerBytes.Length);
+        stream.ReadExactly(headerBytes, 0, headerBytes.Length);
 
         return headerBytes.SequenceEqual(ZipHeader);
     }

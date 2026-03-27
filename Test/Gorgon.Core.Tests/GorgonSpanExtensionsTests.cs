@@ -17,7 +17,7 @@ public class GorgonSpanExtensionsTests
         List<string> parts = [];
         List<string> actual = ["d:", "my path", "is quite", "long", "you", "see", "look", "at_this.file"];
 
-        foreach (ReadOnlySpan<char> part in dir.Split(_separator))
+        foreach (ReadOnlySpan<char> part in dir.SplitString(_separator))
         {
             parts.Add(part.ToString());
         }
@@ -28,7 +28,7 @@ public class GorgonSpanExtensionsTests
         dir = @"d:/my path\is quite/long\you/see\look/at_this.file".AsSpan();
         actual = ["d:", "my path", "is quite", "long", "you", "see", "look", "at_this.file"];
 
-        foreach (ReadOnlySpan<char> part in dir.Split(_separator2))
+        foreach (ReadOnlySpan<char> part in dir.SplitString(_separator2))
         {
             parts.Add(part.ToString());
         }
@@ -39,7 +39,7 @@ public class GorgonSpanExtensionsTests
         dir = @"\d:\my path\\is quite\\\long\you\see\look\at_this.file".AsSpan();
         actual = ["d:", "my path", "is quite", "long", "you", "see", "look", "at_this.file"];
 
-        foreach (ReadOnlySpan<char> part in dir.Split(_separator))
+        foreach (ReadOnlySpan<char> part in dir.SplitString(_separator))
         {
             parts.Add(part.ToString());
         }
@@ -50,7 +50,7 @@ public class GorgonSpanExtensionsTests
         dir = @"\d:\my path\\is quite\\\long\you\see\look\at_this.file".AsSpan();
         actual = [string.Empty, "d:", "my path", string.Empty, "is quite", string.Empty, string.Empty, "long", "you", "see", "look", "at_this.file"];
 
-        foreach (ReadOnlySpan<char> part in dir.Split(_separator, true))
+        foreach (ReadOnlySpan<char> part in dir.SplitString(_separator, true))
         {
             parts.Add(part.ToString());
         }
@@ -61,7 +61,7 @@ public class GorgonSpanExtensionsTests
         dir = @"d:\my path\is quite\long\you\see\look\at_this_directory\".AsSpan();
         actual = ["d:", "my path", "is quite", "long", "you", "see", "look", "at_this_directory"];
 
-        foreach (ReadOnlySpan<char> part in dir.Split(_separator))
+        foreach (ReadOnlySpan<char> part in dir.SplitString(_separator))
         {
             parts.Add(part.ToString());
         }
@@ -72,7 +72,7 @@ public class GorgonSpanExtensionsTests
         dir = @"This has nothing to split.".AsSpan();
         actual = ["This has nothing to split."];
 
-        foreach (ReadOnlySpan<char> part in dir.Split(_separator))
+        foreach (ReadOnlySpan<char> part in dir.SplitString(_separator))
         {
             parts.Add(part.ToString());
         }

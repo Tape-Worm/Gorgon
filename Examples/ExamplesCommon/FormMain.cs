@@ -23,6 +23,8 @@
 // Created: August 23, 2018 4:45:05 PM
 // 
 
+using System.ComponentModel;
+
 namespace Gorgon.Examples;
 
 /// <summary>
@@ -41,6 +43,7 @@ public partial class FormMain : Form
     /// <summary>
     /// Property to set or return whether the please wait label is visible.
     /// </summary>
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public bool IsLoaded
     {
         get => !LabelPleaseWait.Visible;

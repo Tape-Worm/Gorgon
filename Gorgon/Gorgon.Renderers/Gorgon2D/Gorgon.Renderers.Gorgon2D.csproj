@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <TargetFramework>net10.0-windows</TargetFramework>
     <ForceDesignerDpiUnaware>true</ForceDesignerDpiUnaware>
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
     <UseWindowsForms>true</UseWindowsForms>
@@ -27,6 +27,7 @@
     <AssemblyVersion>4.0.0.0</AssemblyVersion>
     <FileVersion>4.0.0.0</FileVersion>
     <VersionPrefix>4.0.0</VersionPrefix>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
   <PropertyGroup>
     <EmbeddedResourceUseDependentUponConvention>true</EmbeddedResourceUseDependentUponConvention>
@@ -45,29 +46,6 @@
     <VersionSuffix>Dev</VersionSuffix>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Remove="Cameras\_Interfaces\**" />
-    <EmbeddedResource Remove="Cameras\_Interfaces\**" />
-    <None Remove="Cameras\_Interfaces\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="Cameras\Gorgon2DOrthoCamera.cs" />
-    <Compile Remove="Cameras\Gorgon2DPerspectiveCamera.cs" />
-    <Compile Remove="Effects\Gorgon2DLight.cs" />
-    <Compile Remove="Gorgon2DVertex.cs" />
-    <Compile Remove="Renderables\_Internal\BatchRenderableStateEqualityComparer.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Remove="Resources\BasicSprite.hlsl" />
-    <None Remove="Resources\black_2x2.png" />
-    <None Remove="Resources\ChromaticAberration.hlsl" />
-    <None Remove="Resources\FilmGrain.hlsl" />
-    <None Remove="Resources\GBuffer.hlsl" />
-    <None Remove="Resources\HdrBloom.hlsl" />
-    <None Remove="Resources\Lighting.hlsl" />
-    <None Remove="Resources\normal_2x2.png" />
-    <None Remove="Resources\White_2x2.png" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="Resources\BasicSprite.hlsl" />
     <EmbeddedResource Include="Resources\black_2x2.png" />
     <EmbeddedResource Include="Resources\ChromaticAberration.hlsl" />
@@ -79,14 +57,18 @@
     <EmbeddedResource Include="Resources\White_2x2.png" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
     <None Include="..\..\g.png">
       <Pack>True</Pack>
-      <PackagePath></PackagePath>
+      <PackagePath>\</PackagePath>
     </None>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub">
-      <Version>8.0.0</Version>
+      <Version>10.0.201</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>

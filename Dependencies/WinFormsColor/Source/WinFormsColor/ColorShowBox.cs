@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
@@ -18,6 +19,7 @@ public class ColorShowBox : UserControl
     public event EventHandler LowerClick = null;
 
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public Color Color
     {
         get => upperColor;
@@ -27,6 +29,8 @@ public class ColorShowBox : UserControl
             Invalidate();
         }
     }
+
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public Color UpperColor
     {
         get => upperColor;
@@ -36,6 +40,8 @@ public class ColorShowBox : UserControl
             Invalidate();
         }
     }
+
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public Color LowerColor
     {
         get => lowerColor;

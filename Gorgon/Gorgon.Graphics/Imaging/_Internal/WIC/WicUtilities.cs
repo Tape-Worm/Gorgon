@@ -1,5 +1,4 @@
-﻿
-// 
+﻿// 
 // Gorgon
 // Copyright (C) 2025 Michael Winsor
 // 
@@ -44,7 +43,7 @@ namespace Gorgon.Graphics.Imaging.Wic;
 /// <summary>
 /// The type of resize to perform
 /// </summary>
-public enum ResizeMode
+internal enum ResizeMode
 {
     /// <summary>
     /// Scale the image.
@@ -63,7 +62,7 @@ public enum ResizeMode
 /// <summary>
 /// Utilities that use WIC (Windows Imaging Component) to perform image manipulation operations
 /// </summary> 
-public unsafe class WicUtilities
+internal unsafe class WicUtilities
     : IDisposable
 {
     // Encoding option for interlacing.
@@ -460,7 +459,7 @@ public unsafe class WicUtilities
     {
         IWICBitmap* result = null;
 
-        _factory->CreateBitmapFromMemory((uint)imageData.Width, (uint)imageData.Height, in pixelFormat, (uint)imageData.PitchInformation.RowPitch, imageData.ImageData, &result);
+        _factory->CreateBitmapFromMemory((uint)imageData.Width, (uint)imageData.Height, in pixelFormat, (uint)imageData.PitchInformation.RowPitch, imageData.ImageData.ToReadOnlySpan(), &result);
 
         return result;
     }
@@ -906,7 +905,7 @@ public unsafe class WicUtilities
                 BOOL canConvert;
 
                 // If we've asked for B4G4R4A4, we have to convert using a manual conversion by converting to B8G8R8A8 first and then manually downsampling those pixels.
-                if (destFormat == BufferFormat.B4G4R4A4_UNorm)
+                if (destFormat is BufferFormat.B4G4R4A4_UNorm or BufferFormat.A4B4G4R4_UNorm)
                 {
                     destGuid = GetGUID(BufferFormat.B8G8R8A8_UNorm);
 
@@ -1152,7 +1151,7 @@ public unsafe class WicUtilities
 
             if (sourceFormat == scalerFromat)
             {
-                scaler->CopyPixels(in rect, (uint)buffer.PitchInformation.RowPitch, buffer.ImageData);
+                scaler->CopyPixels(rect, (uint)buffer.PitchInformation.RowPitch, buffer.ImageData.ToSpan());
                 return;
             }
 
@@ -1678,7 +1677,7 @@ public unsafe class WicUtilities
         GorgonImage workingImage = imageData;
 
         // If we have a 4 bit per channel image, then we need to convert it back to 8 bit per channel (WIC doesn't like 4 bit per channel it seems).
-        if (imageData.Format == BufferFormat.B4G4R4A4_UNorm)
+        if (imageData.Format is BufferFormat.B4G4R4A4_UNorm or BufferFormat.A4B4G4R4_UNorm)
         {
             workingImage = ConvertToFormat(workingImage, BufferFormat.R8G8B8A8_UNorm, ImageDithering.None, false, false);
         }
@@ -1746,7 +1745,7 @@ public unsafe class WicUtilities
         }
         finally
         {
-            if (imageData.Format == BufferFormat.B4G4R4A4_UNorm)
+            if (imageData.Format is BufferFormat.B4G4R4A4_UNorm or BufferFormat.A4B4G4R4_UNorm)
             {
                 workingImage?.Dispose();
             }

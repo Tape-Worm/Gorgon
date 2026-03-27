@@ -86,13 +86,10 @@ public enum AnimationState
 /// Applications can query the tracks registered with the controller via the <see cref="RegisteredTracks"/> property
 /// </para>
 /// <para>
-/// <note type="important">
-/// Please note that this is an abstract class. Applications will provide specific controllers for specific types
-/// </note>
-/// </para>
-/// <para>
 /// <note type="information">
-/// Because this is a base class, not all controllers will support all track types, or even components of a track key frame
+/// <para>
+/// Please note that this is an abstract class. Applications will provide specific controllers for specific types. Not all controllers will support all track types, or even components of a track key frame.
+/// </para>
 /// </note>
 /// </para>
 /// </remarks>

@@ -98,6 +98,18 @@ internal static class ImageUtilities
                             ? 0xFF000000
                             : (((srcPixel & 0x8000) != 0) ? 0xFF000000 : 0);
                     break;
+                case BufferFormat.A4B4G4R4_UNorm:
+                    B = (uint)((srcPixel & 0xF000) >> 12);
+                    R = (uint)((srcPixel & 0xF00) >> 8);
+                    G = (uint)((srcPixel & 0xF0) >> 4);
+                    A = (uint)(srcPixel & 0xF);
+                    R = ((R << 4) | R);
+                    G = ((G << 4) | G) << 8;
+                    B = ((B << 4) | B) << 16;
+                    A = ((bitFlags & ImageBitFlags.OpaqueAlpha) == ImageBitFlags.OpaqueAlpha)
+                            ? 0xFF000000
+                            : ((A << 4) | A) << 24;
+                    break;
                 case BufferFormat.B4G4R4A4_UNorm:
                     A = (uint)((srcPixel & 0xF000) >> 12);
                     R = (uint)((srcPixel & 0xF00) >> 8);
@@ -407,8 +419,15 @@ internal static class ImageUtilities
                 return result;
             case BufferFormat.B5G5R5A1_UNorm:
             case BufferFormat.B4G4R4A4_UNorm:
+            case BufferFormat.A4B4G4R4_UNorm:
                 {
-                    ushort alphaMask = (ushort)(format == BufferFormat.B5G5R5A1_UNorm ? 0x8000 : 0xF000);
+                    ushort alphaMask = format switch
+                    {
+                        BufferFormat.B5G5R5A1_UNorm => 0x8000,
+                        BufferFormat.B4G4R4A4_UNorm => 0xF000,
+                        BufferFormat.A4B4G4R4_UNorm => 0xF,
+                        _ => 0
+                    };
                     GorgonPtr<ushort> srcPtr = (GorgonPtr<ushort>)src;
                     GorgonPtr<ushort> destPtr = (GorgonPtr<ushort>)dest;
 
@@ -662,6 +681,25 @@ internal static class ImageUtilities
                         }
                     }
                     return;
+                case BufferFormat.A4B4G4R4_UNorm:
+                    {
+                        GorgonPtr<ushort> srcPtr = (GorgonPtr<ushort>)src;
+                        GorgonPtr<ushort> destPtr = (GorgonPtr<ushort>)dest;
+
+                        for (int i = 0; i < size; i += 2)
+                        {
+                            // If not in-place copy, then copy from the source.
+                            if (src != dest)
+                            {
+                                (destPtr++).Value = (ushort)((srcPtr++).Value | 0xF);
+                            }
+                            else
+                            {
+                                (destPtr++).Value |= 0xF;
+                            }
+                        }
+                    }
+                    return;
                 case BufferFormat.B5G5R5A1_UNorm:
                     {
                         GorgonPtr<ushort> srcPtr = (GorgonPtr<ushort>)src;
@@ -839,6 +877,23 @@ internal static class ImageUtilities
                     {
                         ushort destValue = (ushort)(srcPtr.Value & 0x7fff);
                         srcPtr.Value = (ushort)(destValue | (ushort)(((ushort)alphaValue & 0x1) << 15));
+                        ++srcPtr;
+                    }
+                }
+                return;
+            case BufferFormat.A4B4G4R4_UNorm:
+                {
+                    GorgonPtr<ushort> srcPtr = (GorgonPtr<ushort>)ptr;
+
+                    for (int i = 0; i < pitch; i += 2)
+                    {
+                        ushort srcAlpha = (ushort)((srcPtr.Value) & 0xF);
+
+                        if ((srcAlpha >= minAlpha) && (srcAlpha <= maxAlpha))
+                        {
+                            ushort destValue = (ushort)((srcPtr.Value) & 0xFFF0);
+                            srcPtr.Value = (ushort)(destValue | ((ushort)alphaValue & 0xF));
+                        }
                         ++srcPtr;
                     }
                 }
@@ -1087,6 +1142,30 @@ internal static class ImageUtilities
                     }
                 }
                 return;
+            case BufferFormat.A4B4G4R4_UNorm:
+                {
+                    GorgonPtr<ushort> srcPtr = (GorgonPtr<ushort>)src;
+                    GorgonPtr<ushort> destPtr = (GorgonPtr<ushort>)dest;
+
+                    for (int i = 0; i < size; i += 4)
+                    {
+                        ushort pixel = srcPtr.Value;
+                        ushort color = (ushort)(pixel & 0xfff0);
+                        float srcAlpha = (pixel & 0xF) / 16.0f;
+
+                        ushort c1 = (ushort)(((color >> 12) & 0xF) * srcAlpha);
+                        ushort c2 = (ushort)(((color >> 8) & 0xF) * srcAlpha);
+                        ushort c3 = (ushort)(((color >> 4) & 0xF) * srcAlpha);
+
+                        color = (ushort)((c1 << 8) | (c2 << 4) | c3);
+
+                        destPtr.Value = (ushort)((pixel & 0xF) | color);
+
+                        ++srcPtr;
+                        ++destPtr;
+                    }
+                }
+                return;
         }
     }
 
@@ -1313,6 +1392,31 @@ internal static class ImageUtilities
                         color = (ushort)((c1 << 8) | (c2 << 4) | c3);
 
                         destPtr.Value = (ushort)((pixel & 0xF000) | color);
+
+                        ++srcPtr;
+                        ++destPtr;
+                    }
+                }
+                return;
+            case BufferFormat.A4B4G4R4_UNorm:
+                {
+                    GorgonPtr<ushort> srcPtr = (GorgonPtr<ushort>)src;
+                    GorgonPtr<ushort> destPtr = (GorgonPtr<ushort>)dest;
+
+                    for (int i = 0; i < size; i += 4)
+                    {
+                        ushort pixel = srcPtr.Value;
+                        ushort color = (ushort)(pixel & 0xfff);
+                        float srcAlpha = (pixel & 0xF) / 16.0f;
+                        bool zeroAlpha = srcAlpha.EqualsEpsilon(0);
+
+                        ushort c1 = zeroAlpha ? (ushort)0 : (ushort)(((color >> 12) & 0xF) / srcAlpha);
+                        ushort c2 = zeroAlpha ? (ushort)0 : (ushort)(((color >> 8) & 0xF) / srcAlpha);
+                        ushort c3 = zeroAlpha ? (ushort)0 : (ushort)(((color >> 4) & 0xF) / srcAlpha);
+
+                        color = (ushort)((c1 << 8) | (c2 << 4) | c3);
+
+                        destPtr.Value = (ushort)((pixel & 0xF) | color);
 
                         ++srcPtr;
                         ++destPtr;

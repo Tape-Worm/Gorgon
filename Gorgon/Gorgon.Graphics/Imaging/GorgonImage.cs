@@ -268,7 +268,7 @@ public partial class GorgonImage
         BufferFormat sourceFormat = _imageInfo.Format;
 
         // If we want to convert from B4G4R4A4 to another format, then we first have to upsample to B8R8G8A8.
-        if (sourceFormat == BufferFormat.B4G4R4A4_UNorm)
+        if (sourceFormat is BufferFormat.B4G4R4A4_UNorm or BufferFormat.A4B4G4R4_UNorm)
         {
             sourceFormat = BufferFormat.B8G8R8A8_UNorm;
         }
@@ -294,7 +294,7 @@ public partial class GorgonImage
         using WicUtilities wic = new();
 
         // If we're converting from B4G4R4A4, then we need to use another path.
-        if (_imageInfo.Format == BufferFormat.B4G4R4A4_UNorm)
+        if (_imageInfo.Format is BufferFormat.B4G4R4A4_UNorm or BufferFormat.A4B4G4R4_UNorm)
         {
             sourceFormat = BufferFormat.B8G8R8X8_UNorm;
         }

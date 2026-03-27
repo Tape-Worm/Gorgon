@@ -55,7 +55,7 @@ public static class GorgonExceptionExtensions
 
         ReadOnlySpan<char> stackTraceSpan = stackTrace.AsSpan();
 
-        GorgonSpanCharEnumerator lines = stackTraceSpan.Split(_newLine);
+        GorgonSpanCharEnumerator lines = stackTraceSpan.SplitString(_newLine);
 
         foreach (ReadOnlySpan<char> line in lines)
         {
@@ -97,116 +97,119 @@ public static class GorgonExceptionExtensions
         }
     }
 
-    /// <summary>
-    /// Function to retrieve the details for an exception.
-    /// </summary>
-    /// <param name="innerException">Exception to evaluate.</param>
-    /// <returns>A string containing the details of the exception.</returns>
-    [UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code",
-                                  Justification = "Using RuntimeFeature.IsDynamicCodeSupported flag to skip the code.")]
-    public static string GetDetailsFromException(this Exception innerException)
+    extension(Exception innerException)
     {
-        // Find all inner exceptions.
-        StringBuilder errorText = new(1024);
-        Exception? nextException = innerException;
-
-        while (nextException is not null)
+        /// <summary>
+        /// Function to retrieve the details for an exception.
+        /// </summary>
+        /// <returns>A string containing the details of the exception.</returns>
+        [UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code",
+                                      Justification = "Using RuntimeFeature.IsDynamicCodeSupported flag to skip the code.")]
+        public string GetDetailsFromException()
         {
-            errorText.AppendFormat("{0}: {1}\n{2}: {3}",
-                                   Resources.GOR_EXCEPT_DETAILS_MSG,
-                                   nextException.Message,
-                                   Resources.GOR_EXCEPT_EXCEPT_TYPE,
-                                   nextException.GetType().FullName);
+            // Find all inner exceptions.
+            StringBuilder errorText = new(1024);
+            Exception? nextException = innerException;
 
-            if (nextException.Source is not null)
+            while (nextException is not null)
             {
-                errorText.AppendFormat("\n{0}: {1}", Resources.GOR_EXCEPT_SRC, nextException.Source);
-            }
+                errorText.AppendFormat("{0}: {1}\n{2}: {3}",
+                                       Resources.GOR_EXCEPT_DETAILS_MSG,
+                                       nextException.Message,
+                                       Resources.GOR_EXCEPT_EXCEPT_TYPE,
+                                       nextException.GetType().FullName);
 
-            if (RuntimeFeature.IsDynamicCodeSupported)
-            {
-                AddTargetSite(errorText, nextException);
-            }
-
-            if (nextException is GorgonException gorgonException)
-            {
-                errorText.AppendFormat("\n{0}: [{1}] {2} (0x{3})",
-                                       Resources.GOR_EXCEPT_GOREXCEPT_RESULT,
-                                       gorgonException.ResultCode.Name,
-                                       gorgonException.ResultCode.Description,
-                                       gorgonException.ResultCode.Code.FormatHex());
-            }
-
-            IDictionary extraInfo = nextException.Data;
-
-            // Print custom information.
-            if (extraInfo.Count > 0)
-            {
-                StringBuilder customData = new(256);
-
-                foreach (DictionaryEntry item in extraInfo)
+                if (nextException.Source is not null)
                 {
+                    errorText.AppendFormat("\n{0}: {1}", Resources.GOR_EXCEPT_SRC, nextException.Source);
+                }
+
+                if (RuntimeFeature.IsDynamicCodeSupported)
+                {
+                    AddTargetSite(errorText, nextException);
+                }
+
+                if (nextException is GorgonException gorgonException)
+                {
+                    errorText.AppendFormat("\n{0}: [{1}] {2} (0x{3})",
+                                           Resources.GOR_EXCEPT_GOREXCEPT_RESULT,
+                                           gorgonException.ResultCode.Name,
+                                           gorgonException.ResultCode.Description,
+                                           gorgonException.ResultCode.Code.FormatHex());
+                }
+
+                IDictionary extraInfo = nextException.Data;
+
+                // Print custom information.
+                if (extraInfo.Count > 0)
+                {
+                    StringBuilder customData = new(256);
+
+                    foreach (DictionaryEntry item in extraInfo)
+                    {
+                        if (customData.Length > 0)
+                        {
+                            customData.Append('\n');
+                        }
+
+                        if (item.Value is not null)
+                        {
+                            customData.AppendFormat("{0}: {1}", item.Key, item.Value);
+                        }
+                    }
+
                     if (customData.Length > 0)
                     {
-                        customData.Append('\n');
-                    }
-
-                    if (item.Value is not null)
-                    {
-                        customData.AppendFormat("{0}: {1}", item.Key, item.Value);
+                        errorText.AppendFormat("\n{0}:\n-------------------\n{1}\n-------------------\n",
+                                               Resources.GOR_EXCEPT_CUSTOM_INFO,
+                                               customData);
                     }
                 }
 
-                if (customData.Length > 0)
+                string stackTrace = string.Empty;
+
+                if (nextException.StackTrace is not null)
                 {
-                    errorText.AppendFormat("\n{0}:\n-------------------\n{1}\n-------------------\n",
-                                           Resources.GOR_EXCEPT_CUSTOM_INFO,
-                                           customData);
+                    stackTrace = FormatStackTrace(nextException.StackTrace);
+                }
+
+                if (!string.IsNullOrEmpty(stackTrace))
+                {
+                    errorText.AppendFormat("{0}\n", stackTrace);
+                }
+
+                nextException = nextException.InnerException;
+
+                if (nextException is not null)
+                {
+                    errorText.AppendFormat("\n{0}:\n===============\n", Resources.GOR_EXCEPT_NEXT_EXCEPTION);
                 }
             }
 
-            string stackTrace = string.Empty;
-
-            if (nextException.StackTrace is not null)
-            {
-                stackTrace = FormatStackTrace(nextException.StackTrace);
-            }
-
-            if (!string.IsNullOrEmpty(stackTrace))
-            {
-                errorText.AppendFormat("{0}\n", stackTrace);
-            }
-
-            nextException = nextException.InnerException;
-
-            if (nextException is not null)
-            {
-                errorText.AppendFormat("\n{0}:\n===============\n", Resources.GOR_EXCEPT_NEXT_EXCEPTION);
-            }
+            return errorText.ToString();
         }
-
-        return errorText.ToString();
     }
 
-    /// <summary>
-    /// Function to catch and handle an exception.
-    /// </summary>
     /// <typeparam name="T">The type of exception. This value must be or inherit from the <see cref="Exception"/> type.</typeparam>
-    /// <param name="ex">Exception to pass to the handler.</param>
-    /// <param name="handler">A method that is called to handle the exception.</param>
-    /// <param name="log">[Optional] A logger that will capture the exception, or <b>null</b> to disable logging of this exception.</param>
-    /// <remarks>
-    /// <para>
-    /// This is a convenience method used to catch an exception and then handle it with the supplied <paramref name="handler"/> method. The handler method must take a parameter 
-    /// that has a type that is or derives from <see cref="Exception"/>.
-    /// </para>
-    /// </remarks>
-    public static void Handle<T>(this T ex, Action<T> handler, IGorgonLog? log = null)
-        where T : Exception
+    extension<T>(T ex) where T : Exception
     {
-        log?.PrintException(ex);
+        /// <summary>
+        /// Function to catch and handle an exception.
+        /// </summary>        
+        /// <param name="handler">A method that is called to handle the exception.</param>
+        /// <param name="log">[Optional] A logger that will capture the exception, or <b>null</b> to disable logging of this exception.</param>
+        /// <remarks>
+        /// <para>
+        /// This is a convenience method used to catch an exception and then handle it with the supplied <paramref name="handler"/> method. The handler method must take a parameter 
+        /// that has a type that is or derives from <see cref="Exception"/>.
+        /// </para>
+        /// </remarks>
+        public void Handle(Action<T> handler, IGorgonLog? log = null)
+        {
+            log?.PrintException(ex);
 
-        // We pass the exception to the handler so that we don't capture the exception object in the closure.
-        handler.Invoke(ex);
+            // We pass the exception to the handler so that we don't capture the exception object in the closure.
+            handler.Invoke(ex);
+        }
     }
 }

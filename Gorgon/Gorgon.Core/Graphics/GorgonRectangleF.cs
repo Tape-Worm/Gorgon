@@ -40,13 +40,6 @@ namespace Gorgon.Graphics;
 /// This data structure is used to easily pass around 2D coordinates for a rectangle shape. The rectangle shape can be intersected and unioned. It also provides various methods to determine if another rectangle intersects, or is 
 /// contained completely within a rectangle. 
 /// </para>
-/// <para>
-/// <note type="important">
-/// <para>
-/// This value type merely represents the dimensions of a rectangle, it does not draw a rectangle. 
-/// </para>
-/// </note>
-/// </para>
 /// </remarks>
 [StructLayout(LayoutKind.Sequential, Pack = 4), JsonConverter(typeof(GorgonRectangleFJsonConverter))]
 public struct GorgonRectangleF

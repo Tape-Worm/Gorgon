@@ -183,12 +183,12 @@ public class GorgonComputerInfo
             SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX* cpuInfo = (SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX*)cpuPtr;
             SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX* coreInfo = (SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX*)corePtr;
 
-            if (!PInvoke.GetLogicalProcessorInformationEx(LOGICAL_PROCESSOR_RELATIONSHIP.RelationProcessorPackage, cpuInfo, ref cpuByteCount))
+            if (!PInvoke.GetLogicalProcessorInformationEx(LOGICAL_PROCESSOR_RELATIONSHIP.RelationProcessorPackage, cpuInfo, &cpuByteCount))
             {
                 return;
             }
 
-            if (!PInvoke.GetLogicalProcessorInformationEx(LOGICAL_PROCESSOR_RELATIONSHIP.RelationProcessorCore, coreInfo, ref coreByteCount))
+            if (!PInvoke.GetLogicalProcessorInformationEx(LOGICAL_PROCESSOR_RELATIONSHIP.RelationProcessorCore, coreInfo, &coreByteCount))
             {
                 return;
             }

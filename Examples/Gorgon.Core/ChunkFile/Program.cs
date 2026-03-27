@@ -22,7 +22,7 @@
 //
 
 using Avalonia;
-using Avalonia.ReactiveUI;
+using ReactiveUI.Avalonia;
 
 namespace Gorgon.Examples;
 
@@ -44,7 +44,7 @@ internal static class Program
     // Avalonia configuration, don't remove; also used by visual designer.
     public static AppBuilder BuildAvaloniaApp()
         => AppBuilder.Configure<App>()
-            .UseReactiveUI()
+            .UseReactiveUI(a => { })
             .UsePlatformDetect()
             .LogToTrace();
 }

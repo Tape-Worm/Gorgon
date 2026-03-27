@@ -30,25 +30,6 @@ public class GorgonRingPoolTests
     }
 
     [TestMethod]
-    public void ShouldWrapAndNotifyWhenFull()
-    {
-        const int poolSize = 3;
-        List<DisposableObject> items = [];
-        GorgonRingPool<DisposableObject> pool = new(poolSize, () => new DisposableObject(), () => items.Add(new DisposableObject()));
-
-        for (int i = 0; i < poolSize; i++)
-        {
-            items.Add(pool.Allocate());
-        }
-
-        DisposableObject obj = pool.Allocate(i => i.Text = "Test Text.");
-
-        Assert.AreEqual(items[0], obj);
-        Assert.AreEqual(items[0].Text, obj.Text);
-        Assert.HasCount(4, items);
-    }
-
-    [TestMethod]
     public void ShouldResetPool()
     {
         GorgonRingPool<string> pool = new(1, () => "Test");

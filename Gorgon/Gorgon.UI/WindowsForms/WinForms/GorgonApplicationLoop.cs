@@ -21,6 +21,7 @@
 // Created: March 25, 2025 11:14:31 PM
 //
 
+using System.Runtime.CompilerServices;
 using Gorgon.Diagnostics;
 using Gorgon.Timing;
 using Windows.Win32;
@@ -42,7 +43,7 @@ public sealed class GorgonApplicationLoop
     // The logging interface for debug messaging.
     private readonly IGorgonLog _log = GorgonLog.NullLog;
     // The synchronization object for multiple threads.
-    private readonly object _syncLock = new();
+    private readonly Lock _syncLock = new();
     // Flag to indicate whether the object was disposed or not.
     private bool _disposed;
     // The cancel token source for cancelling our async loop. This is only ever triggered on cleanup (dispose or application shut down).
@@ -50,7 +51,7 @@ public sealed class GorgonApplicationLoop
     // The instance.
     private static volatile GorgonApplicationLoop? _instance = null;
     // The lock used to create a single instance.
-    private static readonly object _instanceLock = new();
+    private static readonly Lock _instanceLock = new();
     // Flags to indicate that the events are assigned.
     private static int _idleAssigned = 0;
     private static int _exitAssigned = 0;
@@ -129,7 +130,14 @@ public sealed class GorgonApplicationLoop
             return;
         }
 
-        Application.Idle += Application_Idle;
+        if (_idleTask is not null)
+        {
+            Application.Idle += Application_AsyncIdle;
+        }
+        else
+        {
+            Application.Idle += Application_Idle;
+        }
     }
 
     /// <summary>
@@ -142,7 +150,14 @@ public sealed class GorgonApplicationLoop
             return;
         }
 
-        Application.Idle -= Application_Idle;
+        if (_idleTask is not null)
+        {
+            Application.Idle -= Application_AsyncIdle;
+        }
+        else
+        {
+            Application.Idle -= Application_Idle;
+        }
     }
 
     /// <summary>
@@ -243,7 +258,71 @@ public sealed class GorgonApplicationLoop
     /// </summary>
     /// <param name="sender">The sender of the event.</param>
     /// <param name="e">The event parameters.</param>
-    private async void Application_Idle(object? sender, EventArgs e)
+    private void Application_Idle(object? sender, EventArgs e)
+    {
+        Func<bool>? idle = _idle;
+
+        if (idle is null)
+        {
+            return;
+        }
+
+        // Stop reentrant behaviour while we wait.
+        DisableIdle();
+
+        bool allowExecution = AllowBackgroundExecution || IsForeGroundProcess();
+
+        if (!GorgonTiming.TimingStarted)
+        {
+            GorgonTiming.StartTiming(new GorgonTimer());
+        }
+
+        try
+        {
+            // If there are no messages to process, we exit and let Windows Forms handle any incoming messages. Otherwise, we can run our application loop.
+            while ((allowExecution) && (!PInvoke.PeekMessage(out MSG msg, HWND.Null, 0, 0, PEEK_MESSAGE_REMOVE_TYPE.PM_NOREMOVE)))
+            {
+                GorgonTiming.Update();
+
+                bool idleResult = false;
+
+                if (idle is not null)
+                {
+                    idleResult = idle();
+                }
+
+                // If the idle callback returns false, then stop running.
+                if (!idleResult)
+                {
+                    Stop();
+                    return;
+                }
+
+                bool isForeground = IsForeGroundProcess();
+                allowExecution = AllowBackgroundExecution || isForeground;
+
+                // If we're in the foreground, or allow background execution or don't have a delay time, then 
+                // continue execution as normal. Otherwise, give up CPU time to other processes.
+                if ((isForeground) || (!allowExecution) || (BackgroundSleepTime <= 0))
+                {
+                    continue;
+                }
+
+                Thread.Sleep(BackgroundSleepTime);
+            }
+        }
+        finally
+        {
+            EnableIdle();
+        }
+    }
+
+    /// <summary>
+    /// Function called while the application is in an idle state.
+    /// </summary>
+    /// <param name="sender">The sender of the event.</param>
+    /// <param name="e">The event parameters.</param>
+    private async void Application_AsyncIdle(object? sender, EventArgs e)
     {
         Func<bool>? idle = _idle;
         Func<CancellationToken, Task<bool>>? idleTask = _idleTask;
@@ -262,6 +341,9 @@ public sealed class GorgonApplicationLoop
             return;
         }
 
+        // Stop reentrant behaviour while we wait.
+        DisableIdle();
+
         bool allowExecution = AllowBackgroundExecution || IsForeGroundProcess();
 
         if (!GorgonTiming.TimingStarted)
@@ -269,58 +351,60 @@ public sealed class GorgonApplicationLoop
             GorgonTiming.StartTiming(new GorgonTimer());
         }
 
-        // If there are no messages to process, we exit and let Windows Forms handle any incoming messages. Otherwise, we can run our application loop.
-        while ((allowExecution) && (!PInvoke.PeekMessage(out MSG msg, HWND.Null, 0, 0, PEEK_MESSAGE_REMOVE_TYPE.PM_NOREMOVE)))
+        try
         {
-            GorgonTiming.Update();
-
-            bool idleResult = false;
-
-            if (idle is not null)
+            // If there are no messages to process, we exit and let Windows Forms handle any incoming messages. Otherwise, we can run our application loop.
+            while ((allowExecution) && (!PInvoke.PeekMessage(out MSG msg, HWND.Null, 0, 0, PEEK_MESSAGE_REMOVE_TYPE.PM_NOREMOVE)))
             {
-                idleResult = idle();
-            }
-            else if (idleTask is not null)
-            {
-                idleResult = await HandleIdleAsync(idleTask);
-            }
+                GorgonTiming.Update();
 
-            // If the idle callback returns false, then stop running.
-            if (!idleResult)
-            {
-                Stop();
-                return;
-            }
+                bool idleResult = false;
 
-            bool isForeground = IsForeGroundProcess();
-            allowExecution = AllowBackgroundExecution || isForeground;
-
-            // If we're in the foreground, or allow background execution or don't have a delay time, then 
-            // continue execution as normal. Otherwise, give up CPU time to other processes.
-            if ((isForeground) || (!allowExecution) || (BackgroundSleepTime <= 0))
-            {
-                continue;
-            }
-
-            // Stop reentrant behaviour while we wait.
-            DisableIdle();
-
-            try
-            {
-                await Task.Delay(BackgroundSleepTime, _cancellationTokenSource.Token);
-
-                if ((_disposed) || (_cancellationTokenSource.IsCancellationRequested))
+                if (idle is not null)
                 {
+                    idleResult = idle();
+                }
+                else if (idleTask is not null)
+                {
+                    idleResult = await HandleIdleAsync(idleTask);
+                }
+
+                // If the idle callback returns false, then stop running.
+                if (!idleResult)
+                {
+                    Stop();
                     return;
                 }
 
-                EnableIdle();
+                bool isForeground = IsForeGroundProcess();
+                allowExecution = AllowBackgroundExecution || isForeground;
+
+                // If we're in the foreground, or allow background execution or don't have a delay time, then 
+                // continue execution as normal. Otherwise, give up CPU time to other processes.
+                if ((isForeground) || (!allowExecution) || (BackgroundSleepTime <= 0))
+                {
+                    continue;
+                }
+
+                try
+                {
+                    await Task.Delay(BackgroundSleepTime, _cancellationTokenSource.Token);
+
+                    if ((_disposed) || (_cancellationTokenSource.IsCancellationRequested))
+                    {
+                        return;
+                    }
+                }
+                catch (OperationCanceledException)
+                {
+                    // If the cancel is triggered, we've cleaned up, just leave.
+                    return;
+                }
             }
-            catch (OperationCanceledException)
-            {
-                // If the cancel is triggered, we've cleaned up, just leave.
-                return;
-            }
+        }
+        finally
+        {
+            EnableIdle();
         }
     }
 
@@ -371,6 +455,8 @@ public sealed class GorgonApplicationLoop
     /// <exception cref="ObjectDisposedException">Thrown if the object was previously disposed.</exception>
     public void Run(Func<bool> idleProcess, bool allowBackground = false)
     {
+        ObjectDisposedException.ThrowIf(_disposed, typeof(GorgonApplicationLoop));
+
         lock (_syncLock)
         {
             ObjectDisposedException.ThrowIf(_disposed, typeof(GorgonApplicationLoop));
@@ -394,6 +480,30 @@ public sealed class GorgonApplicationLoop
     }
 
     /// <summary>
+    /// Function called to start running the idle loop.
+    /// </summary>
+    /// <param name="idleProcess">The function to call during idle time.</param>
+    /// <param name="mainForm">The main form for the application.</param>
+    /// <param name="allowBackground">[Optional] <b>true</b> to allow the loop to keep running while the application is not in focus, <b>false</b> to pause it and wait.</param>
+    /// <exception cref="ObjectDisposedException">Thrown if the object was previously disposed.</exception>
+    /// <remarks>
+    /// <para>
+    /// This method will enable the idle function and also run the application using the provided <paramref name="mainForm"/>. This method will block until the main window is closed.
+    /// </para>
+    /// </remarks>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void RunWithWindow(Func<bool> idleProcess, Form mainForm, bool allowBackground = false)
+    {
+        ObjectDisposedException.ThrowIf(_disposed, typeof(GorgonApplicationLoop));
+
+        lock (_syncLock)
+        {
+            Run(idleProcess, allowBackground);
+            Application.Run(mainForm);
+        }
+    }
+
+    /// <summary>
     /// Function called to start running an asynchronous idle loop.
     /// </summary>
     /// <param name="idleProcess">The function to call during idle time.</param>
@@ -401,10 +511,10 @@ public sealed class GorgonApplicationLoop
     /// <exception cref="ObjectDisposedException">Thrown if the object was previously disposed.</exception>
     public void Run(Func<CancellationToken, Task<bool>> idleProcess, bool allowBackground = false)
     {
+        ObjectDisposedException.ThrowIf(_disposed, typeof(GorgonApplicationLoop));
+
         lock (_syncLock)
         {
-            ObjectDisposedException.ThrowIf(_disposed, typeof(GorgonApplicationLoop));
-
             if (IsRunning)
             {
                 Stop();
@@ -420,6 +530,31 @@ public sealed class GorgonApplicationLoop
 
             EnableIdle();
             EnableExit();
+        }
+    }
+
+    /// <summary>
+    /// Function called to start running an asynchronous idle loop.
+    /// </summary>
+    /// <param name="idleProcess">The function to call during idle time.</param>
+    /// <param name="mainForm">The main form for the application.</param>
+    /// <param name="allowBackground">[Optional] <b>true</b> to allow the loop to keep running while the application is not in focus, <b>false</b> to pause it and wait.</param>
+    /// <exception cref="ObjectDisposedException">Thrown if the object was previously disposed.</exception>
+    /// <remarks>
+    /// <para>
+    /// This method will enable the idle function and also run the application using the provided <paramref name="mainForm"/>. This method will block until the main window is closed.
+    /// </para>
+    /// </remarks>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void RunWithWindow(Func<CancellationToken, Task<bool>> idleProcess, Form mainForm, bool allowBackground = false)
+    {
+        ObjectDisposedException.ThrowIf(_disposed, typeof(GorgonApplicationLoop));
+
+        lock (_syncLock)
+        {
+            Run(idleProcess, allowBackground);
+
+            Application.Run(mainForm);
         }
     }
 

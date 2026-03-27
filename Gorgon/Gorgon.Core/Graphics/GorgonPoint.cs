@@ -42,13 +42,6 @@ namespace Gorgon.Graphics;
 /// <para>
 /// If floating point coordinates are required, use the .NET <see cref="Vector2"/> type.
 /// </para>
-/// <para>
-/// <note type="important">
-/// <para>
-/// This value type merely represents the position of a point in space, it does not draw a point. 
-/// </para>
-/// </note>
-/// </para>
 /// </remarks>
 /// <param name="x">The horiztonal position of the point.</param>
 /// <param name="y">The vertical position of the point.</param>

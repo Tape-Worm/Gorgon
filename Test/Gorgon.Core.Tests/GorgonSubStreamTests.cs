@@ -50,7 +50,7 @@ public class GorgonSubStreamTests
         GorgonStreamSlice wrapper = new(parentStream, 0, 50, true);
 
         // Act and Assert
-        await Assert.ThrowsExactlyAsync<NotSupportedException>(() => wrapper.CopyToAsync(new MemoryStream(), 1024));
+        await Assert.ThrowsExactlyAsync<NotSupportedException>(() => wrapper.CopyToAsync(new MemoryStream(), 1024, TestContext.CancellationToken));
     }
 
     [TestMethod]
@@ -61,7 +61,7 @@ public class GorgonSubStreamTests
         GorgonStreamSlice wrapper = new(parentStream, 0, 50, true);
 
         // Act and Assert
-        await Assert.ThrowsExactlyAsync<NotSupportedException>(() => wrapper.ReadAsync(new byte[50], 0, 50));
+        await Assert.ThrowsExactlyAsync<NotSupportedException>(() => wrapper.ReadAsync(new byte[50], 0, 50, TestContext.CancellationToken));
     }
 
     [TestMethod]
@@ -72,7 +72,7 @@ public class GorgonSubStreamTests
         GorgonStreamSlice wrapper = new(parentStream, 0, 50, true);
 
         // Act and Assert
-        await Assert.ThrowsExactlyAsync<NotSupportedException>(() => wrapper.ReadAsync(new Memory<byte>(new byte[50])).AsTask());
+        await Assert.ThrowsExactlyAsync<NotSupportedException>(() => wrapper.ReadAsync(new Memory<byte>(new byte[50]), TestContext.CancellationToken).AsTask());
     }
 
     [TestMethod]
@@ -83,7 +83,7 @@ public class GorgonSubStreamTests
         GorgonStreamSlice wrapper = new(parentStream, 0, 50, true);
 
         // Act and Assert
-        await Assert.ThrowsExactlyAsync<NotSupportedException>(() => wrapper.WriteAsync(new byte[50], 0, 50));
+        await Assert.ThrowsExactlyAsync<NotSupportedException>(() => wrapper.WriteAsync(new byte[50], 0, 50, TestContext.CancellationToken));
     }
 
     [TestMethod]
@@ -94,7 +94,7 @@ public class GorgonSubStreamTests
         GorgonStreamSlice wrapper = new(parentStream, 0, 50, true);
 
         // Act and Assert
-        await Assert.ThrowsExactlyAsync<NotSupportedException>(() => wrapper.WriteAsync(new ReadOnlyMemory<byte>(new byte[50])).AsTask());
+        await Assert.ThrowsExactlyAsync<NotSupportedException>(() => wrapper.WriteAsync(new ReadOnlyMemory<byte>(new byte[50]), TestContext.CancellationToken).AsTask());
     }
 
     [TestMethod]
@@ -598,5 +598,11 @@ public class GorgonSubStreamTests
         using MemoryStream parentStream = new(new byte[100]);
         using GorgonStreamSlice subStream = new(parentStream, 0, null, false);
         Assert.IsFalse(subStream.CanWrite);
+    }
+
+    public TestContext TestContext
+    {
+        get;
+        set;
     }
 }

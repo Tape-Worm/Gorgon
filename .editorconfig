@@ -271,6 +271,9 @@ dotnet_diagnostic.IDE0058.severity = none
 # IDE0047: Remove unnecessary parentheses
 dotnet_diagnostic.IDE0047.severity = none
 
+# Point casting stuff.
+dotnet_diagnostic.IDE0221.severity = none
+
 # IDE0130: Namespace does not match folder structure
 dotnet_diagnostic.IDE0130.severity = none
 dotnet_diagnostic.CA1070.severity=warning
@@ -296,6 +299,7 @@ csharp_prefer_system_threading_lock = true:suggestion
 
 # IDE0001: Simplify Names
 dotnet_diagnostic.IDE0001.severity = suggestion
+csharp_style_prefer_simple_property_accessors = true:suggestion
 
 [*.{cs,vb}]
 dotnet_diagnostic.CA1063.severity=silent

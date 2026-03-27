@@ -509,7 +509,7 @@ public class GorgonPolySpriteBuilder(Gorgon2D renderer)
             Usage = ResourceUsage.Immutable
         }, indices);
 
-        newSprite.Renderable.VertexBuffer = GorgonVertexBufferBinding.CreateVertexBuffer<Gorgon2DVertex>(Graphics, new GorgonVertexBufferInfo(newSprite.Renderable.Vertices.Length * Gorgon2DVertex.SizeInBytes)
+        newSprite.Renderable.VertexBuffer = GorgonVertexBufferBinding.CreateVertexBuffer(Graphics, new GorgonVertexBufferInfo(newSprite.Renderable.Vertices.Length * Gorgon2DVertex.SizeInBytes)
         {
             Usage = ResourceUsage.Immutable,
             Binding = VertexIndexBufferBinding.None

@@ -60,7 +60,11 @@ public interface IGorgonFluentBuilder<out TB, TBo>
     /// <para>
     /// Implementations can use this to make a copy of the settings for a previous object in the builder instead of manually setting all the state.
     /// </para>
+    /// <para>
+    /// Unless stated otherwise by an implementation, if the <paramref name="builderObject"/> is <b>null</b>, then this will be the same as calling the <see cref="Clear"/> method.
+    /// </para>
     /// </remarks>
+    /// <seealso cref="Clear"/>
     TB ResetTo(TBo? builderObject);
 
     /// <summary>

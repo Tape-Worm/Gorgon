@@ -22,7 +22,7 @@ public class GorgonCatmullRomSplineTests
         Vector4 result = spline.GetInterpolatedValue(1, 0.5f);
 
         // Assert
-        Assert.AreEqual(new Vector4(1.6687499f, -0.45624995f, 1.5f, 1.5f), result);
+        Assert.AreEqual(new Vector4(1.66875f, -0.45624995f, 1.5f, 1.5f), result);
     }
 
     [TestMethod]
@@ -91,6 +91,6 @@ public class GorgonCatmullRomSplineTests
         Vector4 result = spline.GetInterpolatedValue(1, -0.5f);
 
         // Assert
-        Assert.AreEqual(new Vector4(0.5062499f, -0.1937499f, 0.5f, 0.5f), result);
+        Assert.AreEqual(new Vector4(0.50624996f, -0.1937499f, 0.5f, 0.5f), result);
     }
 }

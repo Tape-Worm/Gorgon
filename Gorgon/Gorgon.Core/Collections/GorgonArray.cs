@@ -325,7 +325,7 @@ public class GorgonArray<T>
     /// <paramref name="keepDirtyState"/> parameter will not reset the internal dirty state and the array will be iterated again.
     /// </para>
     /// <para>
-    /// <note type="important">
+    /// <note type="information">
     /// <para>
     /// Since this method will only return a single slice range, some items within the range may not be dirty. For example, if the array has indices 0, 1, 2, 3, 4 and 5 populated, and slots 0 and 3 are changed, the 
     /// slice returned will be contain the objects in indices 0, 1, 2, and 3. 
@@ -365,7 +365,7 @@ public class GorgonArray<T>
     /// <paramref name="keepDirtyState"/> parameter will not reset the internal dirty state and the array will be iterated again.
     /// </para>
     /// <para>
-    /// <note type="important">
+    /// <note type="information">
     /// <para>
     /// Since this method will only return a single range, some items within the range may not be dirty. For example, if the array has indices 0, 1, 2, 3, 4 and 5 populated, and slots 0 and 3 are changed, the 
     /// range returned will be (start: 0, count: 4) which indicates that items 0, 1, 2 and 3 are considered dirty. 
@@ -497,8 +497,7 @@ public class GorgonArray<T>
     /// <summary>Inserts an item to the <see cref="IList{T}" /> at the specified index.</summary>
     /// <param name="index">The zero-based index at which <paramref name="item" /> should be inserted.</param>
     /// <param name="item">The object to insert into the <see cref="IList{T}" />.</param>
-    /// <exception cref="ArgumentOutOfRangeException">
-    /// <paramref name="index" /> is not a valid index in the <see cref="IList{T}" />.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="index" /> is not a valid index in the <see cref="IList{T}" />.</exception>
     /// <exception cref="NotSupportedException">The <see cref="IList{T}" /> is read-only.</exception>
     void IList<T>.Insert(int index, T item) => throw new NotSupportedException();
 

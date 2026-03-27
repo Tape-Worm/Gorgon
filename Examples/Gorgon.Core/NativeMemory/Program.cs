@@ -298,7 +298,7 @@ internal static class Program
             Console.WriteLine("OK.");
             Console.ResetColor();
 
-            Span<byte> span = ptr;
+            Span<byte> span = ptr.ToSpan();
             Console.WriteLine("Writing Span<byte> bytes...");
 
             for (int i = 0; i < span.Length; ++i)

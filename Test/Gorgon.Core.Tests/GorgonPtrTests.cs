@@ -260,11 +260,11 @@ public class GorgonPtrTests
             GorgonPtr<int> gorgonPtr = new(dummyPtr, dummyArray.Length);
 
             // Test conversion to Span<T>
-            Span<int> span = gorgonPtr;
+            Span<int> span = (Span<int>)gorgonPtr;
             Assert.IsTrue(span.SequenceEqual(dummyArray), "Expected Span<T> to be equal to the original array.");
 
             // Test conversion to ReadOnlySpan<T>
-            ReadOnlySpan<int> readOnlySpan = gorgonPtr;
+            ReadOnlySpan<int> readOnlySpan = (ReadOnlySpan<int>)gorgonPtr;
             Assert.IsTrue(readOnlySpan.SequenceEqual(dummyArray), "Expected ReadOnlySpan<T> to be equal to the original array.");
 
             // Test conversion to long
@@ -544,9 +544,9 @@ public class GorgonPtrTests
         GorgonPtr<int> gorgonPtrInt4 = new(&dummyInt, 1); // Points to the same address as gorgonPtrInt1
 
         // Check the IComparable implementation
-        Assert.IsTrue(gorgonPtrInt1.CompareTo(gorgonPtrInt2) < 0, "Expected the address of gorgonPtrInt1 to be less than the address of gorgonPtrInt2.");
-        Assert.IsTrue(gorgonPtrInt2.CompareTo(gorgonPtrInt1) > 0, "Expected the address of gorgonPtrInt2 to be greater than the address of gorgonPtrInt1.");
-        Assert.IsTrue(gorgonPtrInt1.CompareTo(gorgonPtrInt3) > 0, "Expected the address of gorgonPtrInt1 to be greater than the address of gorgonPtrInt3.");
+        Assert.IsLessThan(0, gorgonPtrInt1.CompareTo(gorgonPtrInt2), "Expected the address of gorgonPtrInt1 to be less than the address of gorgonPtrInt2.");
+        Assert.IsGreaterThan(0, gorgonPtrInt2.CompareTo(gorgonPtrInt1), "Expected the address of gorgonPtrInt2 to be greater than the address of gorgonPtrInt1.");
+        Assert.IsGreaterThan(0, gorgonPtrInt1.CompareTo(gorgonPtrInt3), "Expected the address of gorgonPtrInt1 to be greater than the address of gorgonPtrInt3.");
         Assert.AreEqual(0, gorgonPtrInt1.CompareTo(gorgonPtrInt4), "Expected the address of gorgonPtrInt1 to be equal to the address of gorgonPtrInt4.");
     }
 

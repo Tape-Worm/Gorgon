@@ -75,7 +75,7 @@ internal static class HidApi
         }
 
         fixed (byte* ptr = preparsedData)
-        {        
+        {
             PHIDP_PREPARSED_DATA dataPtr = new((nint)ptr);
             HIDP_VALUE_CAPS* buttonCapsData = stackalloc HIDP_VALUE_CAPS[valueCaps.Length];
             ushort buttonLength = (ushort)valueCaps.Length;
@@ -102,7 +102,7 @@ internal static class HidApi
             return;
         }
 
-        fixed (byte* ptr = preparsedData)        
+        fixed (byte* ptr = preparsedData)
         {
             PHIDP_PREPARSED_DATA dataPtr = new((nint)ptr);
             HIDP_BUTTON_CAPS* buttonCapsData = stackalloc HIDP_BUTTON_CAPS[buttonCaps.Length];

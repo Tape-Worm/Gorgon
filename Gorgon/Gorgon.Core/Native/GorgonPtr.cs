@@ -54,18 +54,10 @@ namespace Gorgon.Native;
 /// <see cref="GorgonNativeBuffer{T}"/> for that purpose. The <see cref="GorgonNativeBuffer{T}"/> will implicitly convert to this type, so it can be used in situations where this type is required.
 /// </para>
 /// <para>
-/// <note type="important">
-/// <para>
-/// The type referenced by <typeparamref name="T"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
-/// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
+/// <inheritdoc cref="GorgonNativeBuffer{T}" path="/remarks/para/note[@type='information'][1]"/>
 /// </para>
 /// <para>
-/// Value types with marshalling attributes (<see cref="MarshalAsAttribute"/>) are <i>not</i> supported and will not be read correctly.
-/// </para>
-/// </note>
-/// </para>
-/// <para>
-/// <note type="important">
+/// <note type="warning">
 /// <para>
 /// This type is a little slower for access than a regular native pointer (x64). This is due to the safety features available to ensure the pointer does not cause a buffer over/underrun. For pure speed, 
 /// nothing beats a native pointer (or <c>nint</c>) and if your code is sensitive to microsecond timings (i.e. it needs to be blazing fast), then use a native pointer instead 
@@ -270,14 +262,14 @@ public unsafe readonly struct GorgonPtr<T>
     /// </summary>
     /// <param name="ptr">The buffer to convert.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static implicit operator Span<T>(GorgonPtr<T> ptr) => ToSpan(ptr);
+    public static explicit operator Span<T>(GorgonPtr<T> ptr) => ptr.ToSpan();
 
     /// <summary>
     /// Operator to implicitly convert this pointer to a span.
     /// </summary>
     /// <param name="ptr">The buffer to convert.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static implicit operator ReadOnlySpan<T>(GorgonPtr<T> ptr) => ToSpan(ptr);
+    public static explicit operator ReadOnlySpan<T>(GorgonPtr<T> ptr) => ptr.ToReadOnlySpan();
 
     /// <summary>
     /// Operator to explicitly convert this pointer to a <see cref="GorgonPtr{Byte}"/> type.
@@ -729,15 +721,7 @@ public unsafe readonly struct GorgonPtr<T>
     /// </para>
     /// <para>
     /// <para>
-    /// <note type="important">
-    /// <para>
-    /// The type referenced by <typeparamref name="TTo"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
-    /// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
-    /// </para>
-    /// <para>
-    /// Value types with marshalling attributes (<see cref="MarshalAsAttribute"/>) are <i>not</i> supported and will not be read correctly.
-    /// </para>
-    /// </note>
+    /// <inheritdoc cref="GorgonNativeBuffer{T}.AsRef{TTo}(long)" path="/remarks/para/note[@type='information']"/>
     /// </para>
     /// <note type="warning">
     /// <para>
@@ -781,34 +765,16 @@ public unsafe readonly struct GorgonPtr<T>
         return new((TTo*)ptr._ptr, newCount);
     }
 
-    /// <summary>
-    /// Function to return a reference, of the specified type, to the memory pointed at by the pointer.
-    /// </summary>
-    /// <typeparam name="TTo">The type of reference value to interpret the data as. Must be an unmanaged value type, and can be different than pointer type <typeparamref name="T"/>.</typeparam>
-    /// <param name="offset">[Optional] The offset, in bytes, within the memory pointed at this pointer.</param>
+    /// <inheritdoc cref="GorgonNativeBuffer{T}.AsRef{TTo}(long)" path="/summary"/>
+    /// <inheritdoc cref="GorgonNativeBuffer{T}.AsRef{TTo}(long)" path="/typeparam"/>
+    /// <inheritdoc cref="GorgonNativeBuffer{T}.AsRef{TTo}(long)" path="/param"/>
     /// <exception cref="NullReferenceException">Thrown when the pointer is <b>null</b>.</exception>
-    /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="offset"/> is less than 0, or greater than, or equal to, the pointer <see cref="SizeInBytes"/>.</exception>
-    /// <returns>The refernce to the value at the specified index.</returns>
+    /// <inheritdoc cref="GorgonNativeBuffer{T}.AsRef{TTo}(long)" path="/exception"/>
+    /// <inheritdoc cref="GorgonNativeBuffer{T}.AsRef{TTo}(long)" path="/returns"/>
     /// <remarks>
-    /// <para>
-    /// This is meant for converting the data to another type while accessing memory. If the type of data specified by <typeparamref name="T"/> is the same as <typeparamref name="TTo"/>, then use the 
-    /// indexing property on the pointer for better performance.
-    /// </para>
-    /// <para>
-    /// The <paramref name="offset"/> parameter allows the reference the value at the specified byte offset within the memory pointed at by the pointer. For example, if the <paramref name="offset"/> 
-    /// is 4, then the returned reference value will be the value at 4 bytes into the memory pointed at by the pointer.
-    /// </para>
-    /// <para>
-    /// <note type="important">
-    /// <para>
-    /// The type referenced by <typeparamref name="TTo"/> type parameter must have a <see cref="StructLayoutAttribute"/> with a <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> 
-    /// struct layout. Otherwise, .NET may rearrange the members and the data may not appear in the correct place.
-    /// </para>
-    /// <para>
-    /// Value types with marshalling attributes (<see cref="MarshalAsAttribute"/>) are <i>not</i> supported and will not be read correctly.
-    /// </para>
-    /// </note>
-    /// </para>
+    /// <inheritdoc cref="GorgonNativeBuffer{T}.AsRef{TTo}(long)" path="/remarks/para[1]"/>
+    /// <inheritdoc cref="GorgonNativeBuffer{T}.AsRef{TTo}(long)" path="/remarks/para[2]"/>
+    /// <inheritdoc cref="GorgonNativeBuffer{T}.AsRef{TTo}(long)" path="/remarks/para[3]"/>
     /// <para>
     /// This value is returned as a reference, and as such, it can be assigned to as well. For example:
     /// <code lang="csharp">
@@ -970,7 +936,6 @@ public unsafe readonly struct GorgonPtr<T>
     /// <summary>
     /// Function to access native data as a span slice.
     /// </summary>
-    /// <param name="ptr">The pointer to convert.</param>
     /// <returns>A span for the pointer.</returns>
     /// <exception cref="NullReferenceException">Thrown when this pointer is <see cref="GorgonPtr{T}.NullPtr"/>.</exception>
     /// <remarks>
@@ -982,14 +947,38 @@ public unsafe readonly struct GorgonPtr<T>
     /// </note>
     /// </para>
     /// </remarks>
-    public static Span<T> ToSpan(GorgonPtr<T> ptr)
+    public Span<T> ToSpan()
     {
-        if (ptr._ptr is null)
+        if (_ptr is null)
         {
             throw new NullReferenceException();
         }
 
-        return new(ptr._ptr, (int)(ptr.Length.Min(int.MaxValue)));
+        return new(_ptr, (int)(Length.Min(int.MaxValue)));
+    }
+
+    /// <summary>
+    /// Function to access native data as a span slice.
+    /// </summary>
+    /// <returns>A span for the pointer.</returns>
+    /// <exception cref="NullReferenceException">Thrown when this pointer is <see cref="GorgonPtr{T}.NullPtr"/>.</exception>
+    /// <remarks>
+    /// <para>
+    /// <note type="warning">
+    /// <para>
+    /// The <see cref="Span{T}"/>/<see cref="ReadOnlySpan{T}"/> types are limited to 32 bit index and size values. If the buffer is over 2 GB in size, then only the 1st 2 GB will be returned.
+    /// </para>
+    /// </note>
+    /// </para>
+    /// </remarks>
+    public ReadOnlySpan<T> ToReadOnlySpan()
+    {
+        if (_ptr is null)
+        {
+            throw new NullReferenceException();
+        }
+
+        return new(_ptr, (int)(Length.Min(int.MaxValue)));
     }
 
     /// <summary>
@@ -1064,7 +1053,7 @@ public unsafe readonly struct GorgonPtr<T>
         {
             throw new NullReferenceException();
         }
-        
+
         NativeMemory.Fill(_ptr, (nuint)SizeInBytes, value);
     }
 
@@ -1418,9 +1407,13 @@ public unsafe readonly struct GorgonPtr<T>
     /// <exception cref="ArgumentException">Thrown if the <paramref name="count"/> parameter is less than 1.</exception>
     /// <remarks>
     /// <para>
+    /// This constructor takes a native memory pointer and wraps it for safety.
+    /// </para>
+    /// <para>
     /// <note type="important">
-    /// This takes a native memory pointer and wraps it for safety. It is important that the <paramref name="count"/> is correct, otherwise memory access violations may occur when the pointer is 
-    /// used beyond the memory region that the original <paramref name="pointer"/> is assigned to.
+    /// <para>
+    /// It is important that the <paramref name="count"/> is correct, otherwise memory access violations may occur when the pointer is used beyond the memory region that the original <paramref name="pointer"/> is assigned to.
+    /// </para>
     /// </note>
     /// </para>
     /// </remarks>
@@ -1445,15 +1438,8 @@ public unsafe readonly struct GorgonPtr<T>
     /// <param name="pointer">The pointer to memory to wrap with this pointer.</param>
     /// <param name="count">The number of items of type <typeparamref name="T"/> to wrap.</param>
     /// <exception cref="NullReferenceException">Thrown when the pointer is <b>NULL</b>.</exception>
-    /// <exception cref="ArgumentException">Thrown if the <paramref name="count"/> parameter is less than 1.</exception>
-    /// <remarks>
-    /// <para>
-    /// <note type="important">
-    /// This takes a native memory pointer and wraps it for safety. It is important that the <paramref name="count"/> is correct, otherwise memory access violations may occur when the pointer is 
-    /// used beyond the memory region that the original <paramref name="pointer"/> is assigned to.
-    /// </note>
-    /// </para>
-    /// </remarks>
+    /// <exception cref="ArgumentException">Thrown if the <paramref name="count"/> parameter is less than 1.</exception>    /// 
+    /// <inheritdoc cref="GorgonPtr{T}(nint, long)" path="/remarks"/>
     public GorgonPtr(nuint pointer, long count)
     {
         if (pointer == UIntPtr.Zero)
@@ -1476,14 +1462,7 @@ public unsafe readonly struct GorgonPtr<T>
     /// <param name="count">The number of items of type <typeparamref name="T"/> to wrap.</param>
     /// <exception cref="NullReferenceException">Thrown when the pointer is <b>NULL</b>.</exception>
     /// <exception cref="ArgumentException">Thrown if the <paramref name="count"/> parameter is less than 1.</exception>
-    /// <remarks>
-    /// <para>
-    /// <note type="important">
-    /// This takes a native memory pointer and wraps it for safety. It is important that the <paramref name="count"/> is correct, otherwise memory access violations may occur when the pointer is 
-    /// used beyond the memory region that the original <paramref name="pointer"/> is assigned to.
-    /// </note>
-    /// </para>
-    /// </remarks>
+    /// <inheritdoc cref="GorgonPtr{T}(nint, long)" path="/remarks"/>
     public GorgonPtr(T* pointer, long count)
     {
         if (pointer is null)

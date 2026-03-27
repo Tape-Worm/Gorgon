@@ -177,7 +177,7 @@ internal class VirtualDirectoryCollection(VirtualDirectory parent)
             dirPath = dirPath[(_parent.FullPath.Length - 1)..];
         }
 
-        GorgonSpanCharEnumerator directories = dirPath.Split(GorgonFileSystem.DirectorySeparatorList);
+        GorgonSpanCharEnumerator directories = dirPath.SplitString(GorgonFileSystem.DirectorySeparatorList);
 
         VirtualDirectory directory = _parent;
 

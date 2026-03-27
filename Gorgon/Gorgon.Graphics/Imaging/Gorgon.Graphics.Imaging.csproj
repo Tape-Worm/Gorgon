@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <TargetFramework>net10.0-windows</TargetFramework>
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
     <Authors>Michael Winsor</Authors>
     <Company>Tape_Worm</Company>
@@ -13,8 +13,9 @@
     <RepositoryUrl>https://github.com/Tape-Worm/Gorgon</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
     <PackageTags>Gorgon;C#;.NET;Imaging;Graphics;WIC</PackageTags>
+    <EmbeddedResourceUseDependentUponConvention>true</EmbeddedResourceUseDependentUponConvention>    
     <EnableNETAnalyzers>True</EnableNETAnalyzers>
-    <NeutralLanguage></NeutralLanguage>
+    <NeutralLanguage />
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <SignAssembly>false</SignAssembly>
     <AssemblyOriginatorKeyFile></AssemblyOriginatorKeyFile>
@@ -22,20 +23,21 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <AssemblyVersion>4.0.0.0</AssemblyVersion>
     <FileVersion>4.0.0.0</FileVersion>
-    <VersionPrefix>4.0.0</VersionPrefix>
-    <EmbeddedResourceUseDependentUponConvention>true</EmbeddedResourceUseDependentUponConvention>
+    <VersionPrefix>4.0.0</VersionPrefix>    
     <Nullable>enable</Nullable>
+    <NoWarn>AD0001</NoWarn>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Title>Gorgon Imaging Functionality</Title>
     <PackageOutputPath>$(SolutionDir)nuget\$(Configuration)</PackageOutputPath>
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <IsAotCompatible>True</IsAotCompatible>
-    <PublishAot>True</PublishAot>
-    <PublishTrimmed>True</PublishTrimmed>    
-    <IncludeSymbols>True</IncludeSymbols>
+    <PublishReadyToRun>true</PublishReadyToRun>    
+    <IsAotCompatible>true</IsAotCompatible>
+    <PublishTrimmed>true</PublishTrimmed>
+    <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>    
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">    
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -46,22 +48,18 @@
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <VersionSuffix>Dev</VersionSuffix>
+    <VersionSuffix>Dev</VersionSuffix>    
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Remove="Codecs\GorgonImageCodecDescription.cs" />
-    <Compile Remove="Codecs\GorgonImageCodecPlugIn.cs" />
-  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Gorgon.Core.Windows\Gorgon.Core.Windows.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub">
-      <Version>8.0.0</Version>
+      <Version>10.0.201</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.183">
+    <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.269">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -80,7 +78,11 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Update="g.png">
+    <None Include="..\..\..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\..\g.png">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>

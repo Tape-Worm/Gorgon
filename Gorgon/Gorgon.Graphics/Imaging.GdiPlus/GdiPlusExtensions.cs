@@ -108,471 +108,480 @@ public static class GdiPlusExtensions
     /// <returns>A new pointer.</returns>
     private static GorgonPtr<byte> GetGdiImagePtr(BitmapData bitmapData, int offset = 0) => new(bitmapData.Scan0 + offset, bitmapData.Stride);
 
-    /// <summary>
-    /// Function to convert an individual <see cref="IGorgonImageBuffer"/> to a GDI+ bitmap object.
-    /// </summary>
-    /// <param name="buffer">The buffer to convert.</param>
-    /// <returns>A new GDI+ bitmap object.</returns>
-    /// <exception cref="GorgonException">Thrown if the <paramref name="buffer"/> is not a 32 bit <c>R8G8B8A8</c> format, or <c>B8G8R8*</c> format.</exception>
-    /// <remarks>
-    /// <para>
-    /// This method will take a <see cref="IGorgonImageBuffer"/> and copy its data into a new 2D <see cref="Bitmap"/>. 
-    /// </para>
-    /// <para>
-    /// Some format conversion is performed on the <paramref name="buffer"/> when it is imported. The format conversion will always convert to a pixel format of <c>Format32bppArgb</c> or 
-    /// <c>Format24bppRgb</c>.  The following formats are supported for 16/32 bit conversion:
-    /// <list type="bullet">
-    ///     <item>
-    ///         <term><see cref="BufferFormat.R8G8B8A8_UNorm"/></term>
-    ///     </item>
-    ///     <item>
-    ///         <term><see cref="BufferFormat.R8G8B8A8_UNorm_SRgb"/></term>
-    ///     </item>
-    ///     <item>
-    ///         <term><see cref="BufferFormat.R8G8B8A8_SInt"/></term>
-    ///     </item>
-    ///     <item>
-    ///         <term><see cref="BufferFormat.R8G8B8A8_SNorm"/></term>
-    ///     </item>
-    ///     <item>
-    ///         <term><see cref="BufferFormat.R8G8B8A8_UInt"/></term>
-    ///     </item>
-    ///     <item>
-    ///         <term><see cref="BufferFormat.R8G8B8A8_Typeless"/></term>
-    ///     </item>
-    ///     <item>
-    ///         <term><see cref="BufferFormat.B8G8R8A8_UNorm"/></term>
-    ///     </item>
-    ///     <item>
-    ///         <term><see cref="BufferFormat.B8G8R8A8_UNorm_SRgb"/></term>
-    ///     </item>
-    ///     <item>
-    ///         <term><see cref="BufferFormat.B8G8R8A8_Typeless"/></term>
-    ///     </item>
-    ///     <item>
-    ///         <term><see cref="BufferFormat.B5G6R5_UNorm"/></term>
-    ///     </item>
-    ///     <item>
-    ///         <term><see cref="BufferFormat.B5G5R5A1_UNorm"/></term>
-    ///     </item>
-    ///     <item>
-    ///         <term><see cref="BufferFormat.B4G4R4A4_UNorm"/></term>
-    ///     </item>
-    /// </list>
-    /// The following formats are supported for 24 bit conversion:
-    /// <list type="bullet">
-    ///     <item>
-    ///         <term><see cref="BufferFormat.B8G8R8X8_UNorm"/></term>
-    ///     </item>
-    ///     <item>
-    ///         <term><see cref="BufferFormat.B8G8R8X8_UNorm_SRgb"/></term>
-    ///     </item>
-    ///     <item>
-    ///         <term><see cref="BufferFormat.B8G8R8X8_Typeless"/></term>
-    ///     </item>
-    /// </list>
-    /// </para>
-    /// <para>
-    /// If the source <paramref name="buffer"/> does not support any of the formats on the lists, then an exception will be thrown.
-    /// </para>
-    /// </remarks>
-    public static Bitmap ToBitmap(this IGorgonImageBuffer buffer)
+    extension(IGorgonImageBuffer buffer)
     {
-        PixelFormat pixelFormat;
-        bool needsSwizzle = false;
-        bool needsExpansion = false;
-
-        switch (buffer.Format)
+        /// <summary>
+        /// Function to convert an individual <see cref="IGorgonImageBuffer"/> to a GDI+ bitmap object.
+        /// </summary>
+        /// <returns>A new GDI+ bitmap object.</returns>
+        /// <exception cref="GorgonException">Thrown if the buffer is not a 32 bit <c>R8G8B8A8</c> format, or <c>B8G8R8*</c> format.</exception>
+        /// <remarks>
+        /// <para>
+        /// This method will take a <see cref="IGorgonImageBuffer"/> and copy its data into a new 2D <see cref="Bitmap"/>. 
+        /// </para>
+        /// <para>
+        /// Some format conversion is performed on the buffer when it is imported. The format conversion will always convert to a pixel format of <c>Format32bppArgb</c> or 
+        /// <c>Format24bppRgb</c>.  The following formats are supported for 16/32 bit conversion:
+        /// <list type="bullet">
+        ///     <item>
+        ///         <term><see cref="BufferFormat.R8G8B8A8_UNorm"/></term>
+        ///     </item>
+        ///     <item>
+        ///         <term><see cref="BufferFormat.R8G8B8A8_UNorm_SRgb"/></term>
+        ///     </item>
+        ///     <item>
+        ///         <term><see cref="BufferFormat.R8G8B8A8_SInt"/></term>
+        ///     </item>
+        ///     <item>
+        ///         <term><see cref="BufferFormat.R8G8B8A8_SNorm"/></term>
+        ///     </item>
+        ///     <item>
+        ///         <term><see cref="BufferFormat.R8G8B8A8_UInt"/></term>
+        ///     </item>
+        ///     <item>
+        ///         <term><see cref="BufferFormat.R8G8B8A8_Typeless"/></term>
+        ///     </item>
+        ///     <item>
+        ///         <term><see cref="BufferFormat.B8G8R8A8_UNorm"/></term>
+        ///     </item>
+        ///     <item>
+        ///         <term><see cref="BufferFormat.B8G8R8A8_UNorm_SRgb"/></term>
+        ///     </item>
+        ///     <item>
+        ///         <term><see cref="BufferFormat.B8G8R8A8_Typeless"/></term>
+        ///     </item>
+        ///     <item>
+        ///         <term><see cref="BufferFormat.B5G6R5_UNorm"/></term>
+        ///     </item>
+        ///     <item>
+        ///         <term><see cref="BufferFormat.B5G5R5A1_UNorm"/></term>
+        ///     </item>
+        ///     <item>
+        ///         <term><see cref="BufferFormat.B4G4R4A4_UNorm"/></term>
+        ///     </item>
+        ///     <item>
+        ///         <term><see cref="BufferFormat.A4B4G4R4_UNorm"/></term>
+        ///     </item>
+        /// </list>
+        /// The following formats are supported for 24 bit conversion:
+        /// <list type="bullet">
+        ///     <item>
+        ///         <term><see cref="BufferFormat.B8G8R8X8_UNorm"/></term>
+        ///     </item>
+        ///     <item>
+        ///         <term><see cref="BufferFormat.B8G8R8X8_UNorm_SRgb"/></term>
+        ///     </item>
+        ///     <item>
+        ///         <term><see cref="BufferFormat.B8G8R8X8_Typeless"/></term>
+        ///     </item>
+        /// </list>
+        /// </para>
+        /// <para>
+        /// If the source the buffer does not support any of the formats on the lists, then an exception will be thrown.
+        /// </para>
+        /// </remarks>
+        public Bitmap ToBitmap()
         {
-            case BufferFormat.B4G4R4A4_UNorm:
-            case BufferFormat.B5G5R5A1_UNorm:
-            case BufferFormat.B5G6R5_UNorm:
-                pixelFormat = PixelFormat.Format32bppArgb;
-                needsSwizzle = true;
-                needsExpansion = true;
-                break;
-            case BufferFormat.R8G8B8A8_UNorm:
-            case BufferFormat.R8G8B8A8_UNorm_SRgb:
-            case BufferFormat.R8G8B8A8_SInt:
-            case BufferFormat.R8G8B8A8_SNorm:
-            case BufferFormat.R8G8B8A8_UInt:
-            case BufferFormat.R8G8B8A8_Typeless:
-                pixelFormat = PixelFormat.Format32bppArgb;
-                needsSwizzle = true;
-                break;
-            case BufferFormat.B8G8R8A8_UNorm:
-            case BufferFormat.B8G8R8A8_Typeless:
-            case BufferFormat.B8G8R8A8_UNorm_SRgb:
-                pixelFormat = PixelFormat.Format32bppArgb;
-                break;
-            case BufferFormat.B8G8R8X8_UNorm:
-            case BufferFormat.B8G8R8X8_Typeless:
-            case BufferFormat.B8G8R8X8_UNorm_SRgb:
-                pixelFormat = PixelFormat.Format24bppRgb;
-                break;
-            default:
-                throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, buffer.Format));
-        }
+            PixelFormat pixelFormat;
+            bool needsSwizzle = false;
+            bool needsExpansion = false;
 
-        Bitmap result = new(buffer.Width, buffer.Height, pixelFormat);
-
-        BitmapData destData = result.LockBits(new Rectangle(0, 0, result.Width, result.Height), ImageLockMode.WriteOnly, pixelFormat);
-
-        try
-        {
-            for (int y = 0; y < buffer.Height; ++y)
+            switch (buffer.Format)
             {
-                int srcPitch = buffer.PitchInformation.RowPitch;
-                int destPitch = destData.Stride;
-                BufferFormat srcFormat = buffer.Format;
-                GorgonPtr<byte> src = buffer.ImageData + (y * srcPitch);
-                GorgonPtr<byte> dest = GetGdiImagePtr(destData, y * destPitch);
+                case BufferFormat.A4B4G4R4_UNorm:
+                case BufferFormat.B4G4R4A4_UNorm:
+                case BufferFormat.B5G5R5A1_UNorm:
+                case BufferFormat.B5G6R5_UNorm:
+                    pixelFormat = PixelFormat.Format32bppArgb;
+                    needsSwizzle = true;
+                    needsExpansion = true;
+                    break;
+                case BufferFormat.R8G8B8A8_UNorm:
+                case BufferFormat.R8G8B8A8_UNorm_SRgb:
+                case BufferFormat.R8G8B8A8_SInt:
+                case BufferFormat.R8G8B8A8_SNorm:
+                case BufferFormat.R8G8B8A8_UInt:
+                case BufferFormat.R8G8B8A8_Typeless:
+                    pixelFormat = PixelFormat.Format32bppArgb;
+                    needsSwizzle = true;
+                    break;
+                case BufferFormat.B8G8R8A8_UNorm:
+                case BufferFormat.B8G8R8A8_Typeless:
+                case BufferFormat.B8G8R8A8_UNorm_SRgb:
+                    pixelFormat = PixelFormat.Format32bppArgb;
+                    break;
+                case BufferFormat.B8G8R8X8_UNorm:
+                case BufferFormat.B8G8R8X8_Typeless:
+                case BufferFormat.B8G8R8X8_UNorm_SRgb:
+                    pixelFormat = PixelFormat.Format24bppRgb;
+                    break;
+                default:
+                    throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, buffer.Format));
+            }
 
-                switch (pixelFormat)
+            Bitmap result = new(buffer.Width, buffer.Height, pixelFormat);
+
+            BitmapData destData = result.LockBits(new Rectangle(0, 0, result.Width, result.Height), ImageLockMode.WriteOnly, pixelFormat);
+
+            try
+            {
+                for (int y = 0; y < buffer.Height; ++y)
                 {
-                    case PixelFormat.Format32bppArgb:
-                        if ((!needsSwizzle) && (!needsExpansion))
-                        {
-                            int length = srcPitch.Min(destPitch);
+                    int srcPitch = buffer.PitchInformation.RowPitch;
+                    int destPitch = destData.Stride;
+                    BufferFormat srcFormat = buffer.Format;
+                    GorgonPtr<byte> src = buffer.ImageData + (y * srcPitch);
+                    GorgonPtr<byte> dest = GetGdiImagePtr(destData, y * destPitch);
 
-                            src.Slice(0, length).CopyTo(dest.Slice(0, length));
-                            continue;
-                        }
+                    switch (pixelFormat)
+                    {
+                        case PixelFormat.Format32bppArgb:
+                            if ((!needsSwizzle) && (!needsExpansion))
+                            {
+                                int length = srcPitch.Min(destPitch);
 
-                        if (needsExpansion)
-                        {
-                            ImageUtilities.Expand16BPPScanline(src, srcPitch, srcFormat, dest, destPitch, ImageBitFlags.None);
-                            src = dest;
-                            srcPitch = destPitch;
-                            srcFormat = BufferFormat.R8G8B8A8_UNorm;
-                        }
+                                src.Slice(0, length).CopyTo(dest.Slice(0, length));
+                                continue;
+                            }
 
-                        if (needsSwizzle)
-                        {
-                            ImageUtilities.SwizzleScanline(src, srcPitch, dest, destPitch, srcFormat, ImageBitFlags.None);
-                        }
+                            if (needsExpansion)
+                            {
+                                ImageUtilities.Expand16BPPScanline(src, srcPitch, srcFormat, dest, destPitch, ImageBitFlags.None);
+                                src = dest;
+                                srcPitch = destPitch;
+                                srcFormat = BufferFormat.R8G8B8A8_UNorm;
+                            }
 
-                        break;
-                    case PixelFormat.Format24bppRgb:
-                        ImageUtilities.Compress24BPPScanLine(src, buffer.PitchInformation.RowPitch, dest, destData.Stride, true);
-                        break;
+                            if (needsSwizzle)
+                            {
+                                ImageUtilities.SwizzleScanline(src, srcPitch, dest, destPitch, srcFormat, ImageBitFlags.None);
+                            }
+
+                            break;
+                        case PixelFormat.Format24bppRgb:
+                            ImageUtilities.Compress24BPPScanLine(src, buffer.PitchInformation.RowPitch, dest, destData.Stride, true);
+                            break;
+                    }
                 }
             }
-        }
-        finally
-        {
-            result.UnlockBits(destData);
-        }
-
-        return result;
-    }
-
-    /// <summary>
-    /// Function to copy the contents of an individual <see cref="IGorgonImageBuffer"/> to a GDI+ bitmap object.
-    /// </summary>
-    /// <param name="buffer">The buffer to convert.</param>
-    /// <param name="bitmap">The bitmap that will receive the image data.</param>
-    /// <returns>A new GDI+ bitmap object.</returns>
-    /// <exception cref="ArgumentException">Thrown if the <paramref name="buffer"/> and the <paramref name="bitmap"/> do not have the same width and height.</exception>
-    /// <exception cref="GorgonException">Thrown if the <paramref name="buffer"/> is not a 32 bit <c>R8G8B8A8</c> format, or <c>B8G8R8*</c> format.
-    /// <para>-or-</para>
-    /// <para>Thrown when the <paramref name="bitmap"/> is not in a 32 bit ARGB format.</para>
-    /// </exception>
-    /// <remarks>
-    /// <para>
-    /// This method will take a <see cref="IGorgonImageBuffer"/> and copy its data into a new 2D <see cref="Bitmap"/>. The <paramref name="buffer"/> and the <paramref name="bitmap"/> must have 
-    /// an identical width and height. Otherwise, an exception will be thrown.
-    /// </para>
-    /// <para>
-    /// Some format conversion is performed on the <paramref name="buffer"/> when it is imported. The format conversion will always convert to a pixel format of <c>Format32bppArgb</c> or 
-    /// <c>Format24bppRgb</c>.  The following formats are supported for 16 and 32 bit conversion:
-    /// <list type="bullet">
-    ///     <item>
-    ///         <term><see cref="BufferFormat.R8G8B8A8_UNorm"/></term>
-    ///     </item>
-    ///     <item>
-    ///         <term><see cref="BufferFormat.R8G8B8A8_UNorm_SRgb"/></term>
-    ///     </item>
-    ///     <item>
-    ///         <term><see cref="BufferFormat.R8G8B8A8_SInt"/></term>
-    ///     </item>
-    ///     <item>
-    ///         <term><see cref="BufferFormat.R8G8B8A8_SNorm"/></term>
-    ///     </item>
-    ///     <item>
-    ///         <term><see cref="BufferFormat.R8G8B8A8_UInt"/></term>
-    ///     </item>
-    ///     <item>
-    ///         <term><see cref="BufferFormat.R8G8B8A8_Typeless"/></term>
-    ///     </item>
-    ///     <item>
-    ///         <term><see cref="BufferFormat.B8G8R8A8_UNorm"/></term>
-    ///     </item>
-    ///     <item>
-    ///         <term><see cref="BufferFormat.B8G8R8A8_UNorm_SRgb"/></term>
-    ///     </item>
-    ///     <item>
-    ///         <term><see cref="BufferFormat.B8G8R8A8_Typeless"/></term>
-    ///     </item>
-    ///     <item>
-    ///         <term><see cref="BufferFormat.B8G8R8X8_UNorm"/></term>
-    ///     </item>
-    ///     <item>
-    ///         <term><see cref="BufferFormat.B8G8R8X8_UNorm_SRgb"/></term>
-    ///     </item>
-    ///     <item>
-    ///         <term><see cref="BufferFormat.B8G8R8X8_Typeless"/></term>
-    ///     </item>
-    ///     <item>
-    ///         <term><see cref="BufferFormat.B4G4R4A4_UNorm"/></term>
-    ///     </item>
-    ///     <item>
-    ///         <term><see cref="BufferFormat.B5G5R5A1_UNorm"/></term>
-    ///     </item>
-    ///     <item>
-    ///         <term><see cref="BufferFormat.B5G6R5_UNorm"/></term>
-    ///     </item>
-    /// </list>
-    /// </para>
-    /// <para>
-    /// If the source <paramref name="buffer"/> does not support any of the formats on the lists, then an exception will be thrown.
-    /// </para>
-    /// </remarks>
-    public static void CopyTo(this IGorgonImageBuffer buffer, Bitmap bitmap)
-    {
-        if (bitmap.PixelFormat is not PixelFormat.Format32bppArgb and not PixelFormat.Format32bppPArgb)
-        {
-            throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, bitmap.PixelFormat));
-        }
-
-        if ((bitmap.Width != buffer.Width) || (bitmap.Height != buffer.Height))
-        {
-            throw new ArgumentException(string.Format(Resources.GORIMG_ERR_BITMAP_SIZE_NOT_CORRECT, bitmap.Width, bitmap.Height, buffer.Width, buffer.Height));
-        }
-
-        bool needsSwizzle = buffer.Format switch
-        {
-            BufferFormat.B5G5R5A1_UNorm or BufferFormat.B4G4R4A4_UNorm or BufferFormat.B5G6R5_UNorm or BufferFormat.R8G8B8A8_UNorm or BufferFormat.R8G8B8A8_UNorm_SRgb or BufferFormat.R8G8B8A8_SInt or BufferFormat.R8G8B8A8_SNorm or BufferFormat.R8G8B8A8_UInt or BufferFormat.R8G8B8A8_Typeless => true,
-            BufferFormat.B8G8R8A8_UNorm or BufferFormat.B8G8R8A8_Typeless or BufferFormat.B8G8R8A8_UNorm_SRgb or BufferFormat.B8G8R8X8_UNorm or BufferFormat.B8G8R8X8_Typeless or BufferFormat.B8G8R8X8_UNorm_SRgb => false,
-            _ => throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, buffer.Format)),
-        };
-
-        bool needsExpand = buffer.Format is BufferFormat.B5G5R5A1_UNorm or BufferFormat.B4G4R4A4_UNorm or BufferFormat.B5G6R5_UNorm;
-
-        BitmapData destData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.WriteOnly, bitmap.PixelFormat);
-
-        try
-        {
-            for (int y = 0; y < buffer.Height; ++y)
+            finally
             {
-                int srcPitch = buffer.PitchInformation.RowPitch;
-                int destPitch = destData.Stride;
-                BufferFormat srcFormat = buffer.Format;
-                GorgonPtr<byte> src = buffer.ImageData + (y * srcPitch);
-                GorgonPtr<byte> dest = GetGdiImagePtr(destData, y * destPitch);
+                result.UnlockBits(destData);
+            }
 
-                if ((!needsSwizzle) && (!needsExpand))
+            return result;
+        }
+
+        /// <summary>
+        /// Function to copy the contents of an individual <see cref="IGorgonImageBuffer"/> to a GDI+ bitmap object.
+        /// </summary>
+        /// <param name="bitmap">The bitmap that will receive the image data.</param>
+        /// <returns>A new GDI+ bitmap object.</returns>
+        /// <exception cref="ArgumentException">Thrown if the buffer and the bitmap do not have the same width and height.</exception>
+        /// <exception cref="GorgonException">Thrown if the buffer is not a 32 bit <c>R8G8B8A8</c> format, or <c>B8G8R8*</c> format.
+        /// <para>-or-</para>
+        /// <para>Thrown when the bitmap is not in a 32 bit ARGB format.</para>
+        /// </exception>
+        /// <remarks>
+        /// <para>
+        /// This method will take a <see cref="IGorgonImageBuffer"/> and copy its data into a new 2D <see cref="Bitmap"/>. the buffer and the bitmap must have 
+        /// an identical width and height. Otherwise, an exception will be thrown.
+        /// </para>
+        /// <para>
+        /// Some format conversion is performed on the buffer when it is imported. The format conversion will always convert to a pixel format of <c>Format32bppArgb</c> or 
+        /// <c>Format24bppRgb</c>.  The following formats are supported for 16 and 32 bit conversion:
+        /// <list type="bullet">
+        ///     <item>
+        ///         <term><see cref="BufferFormat.R8G8B8A8_UNorm"/></term>
+        ///     </item>
+        ///     <item>
+        ///         <term><see cref="BufferFormat.R8G8B8A8_UNorm_SRgb"/></term>
+        ///     </item>
+        ///     <item>
+        ///         <term><see cref="BufferFormat.R8G8B8A8_SInt"/></term>
+        ///     </item>
+        ///     <item>
+        ///         <term><see cref="BufferFormat.R8G8B8A8_SNorm"/></term>
+        ///     </item>
+        ///     <item>
+        ///         <term><see cref="BufferFormat.R8G8B8A8_UInt"/></term>
+        ///     </item>
+        ///     <item>
+        ///         <term><see cref="BufferFormat.R8G8B8A8_Typeless"/></term>
+        ///     </item>
+        ///     <item>
+        ///         <term><see cref="BufferFormat.B8G8R8A8_UNorm"/></term>
+        ///     </item>
+        ///     <item>
+        ///         <term><see cref="BufferFormat.B8G8R8A8_UNorm_SRgb"/></term>
+        ///     </item>
+        ///     <item>
+        ///         <term><see cref="BufferFormat.B8G8R8A8_Typeless"/></term>
+        ///     </item>
+        ///     <item>
+        ///         <term><see cref="BufferFormat.B8G8R8X8_UNorm"/></term>
+        ///     </item>
+        ///     <item>
+        ///         <term><see cref="BufferFormat.B8G8R8X8_UNorm_SRgb"/></term>
+        ///     </item>
+        ///     <item>
+        ///         <term><see cref="BufferFormat.B8G8R8X8_Typeless"/></term>
+        ///     </item>
+        ///     <item>
+        ///         <term><see cref="BufferFormat.A4B4G4R4_UNorm"/></term>
+        ///     </item>
+        ///     <item>
+        ///         <term><see cref="BufferFormat.B4G4R4A4_UNorm"/></term>
+        ///     </item>
+        ///     <item>
+        ///         <term><see cref="BufferFormat.B5G5R5A1_UNorm"/></term>
+        ///     </item>
+        ///     <item>
+        ///         <term><see cref="BufferFormat.B5G6R5_UNorm"/></term>
+        ///     </item>
+        /// </list>
+        /// </para>
+        /// <para>
+        /// If the source the buffer does not support any of the formats on the lists, then an exception will be thrown.
+        /// </para>
+        /// </remarks>
+        public void CopyTo(Bitmap bitmap)
+        {
+            if (bitmap.PixelFormat is not PixelFormat.Format32bppArgb and not PixelFormat.Format32bppPArgb)
+            {
+                throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, bitmap.PixelFormat));
+            }
+
+            if ((bitmap.Width != buffer.Width) || (bitmap.Height != buffer.Height))
+            {
+                throw new ArgumentException(string.Format(Resources.GORIMG_ERR_BITMAP_SIZE_NOT_CORRECT, bitmap.Width, bitmap.Height, buffer.Width, buffer.Height));
+            }
+
+            bool needsSwizzle = buffer.Format switch
+            {
+                BufferFormat.A4B4G4R4_UNorm or BufferFormat.B5G5R5A1_UNorm or BufferFormat.B4G4R4A4_UNorm or BufferFormat.B5G6R5_UNorm or BufferFormat.R8G8B8A8_UNorm or BufferFormat.R8G8B8A8_UNorm_SRgb or BufferFormat.R8G8B8A8_SInt or BufferFormat.R8G8B8A8_SNorm or BufferFormat.R8G8B8A8_UInt or BufferFormat.R8G8B8A8_Typeless => true,
+                BufferFormat.B8G8R8A8_UNorm or BufferFormat.B8G8R8A8_Typeless or BufferFormat.B8G8R8A8_UNorm_SRgb or BufferFormat.B8G8R8X8_UNorm or BufferFormat.B8G8R8X8_Typeless or BufferFormat.B8G8R8X8_UNorm_SRgb => false,
+                _ => throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, buffer.Format)),
+            };
+
+            bool needsExpand = buffer.Format is BufferFormat.B5G5R5A1_UNorm or BufferFormat.A4B4G4R4_UNorm or BufferFormat.B4G4R4A4_UNorm or BufferFormat.B5G6R5_UNorm;
+
+            BitmapData destData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.WriteOnly, bitmap.PixelFormat);
+
+            try
+            {
+                for (int y = 0; y < buffer.Height; ++y)
                 {
-                    int length = srcPitch.Min(destPitch);
+                    int srcPitch = buffer.PitchInformation.RowPitch;
+                    int destPitch = destData.Stride;
+                    BufferFormat srcFormat = buffer.Format;
+                    GorgonPtr<byte> src = buffer.ImageData + (y * srcPitch);
+                    GorgonPtr<byte> dest = GetGdiImagePtr(destData, y * destPitch);
 
-                    src.Slice(0, length).CopyTo(dest.Slice(0, length));
-                    continue;
-                }
+                    if ((!needsSwizzle) && (!needsExpand))
+                    {
+                        int length = srcPitch.Min(destPitch);
 
-                if (needsExpand)
-                {
-                    ImageUtilities.Expand16BPPScanline(src, srcPitch, srcFormat, dest, destPitch, ImageBitFlags.None);
-                    // These values are expanded now, we need to swizzle in place.
-                    src = dest;
-                    srcPitch = destPitch;
-                    srcFormat = BufferFormat.R8G8B8A8_UInt;
-                }
+                        src.Slice(0, length).CopyTo(dest.Slice(0, length));
+                        continue;
+                    }
 
-                if (needsSwizzle)
-                {
-                    ImageUtilities.SwizzleScanline(src, srcPitch, dest, destPitch, srcFormat, ImageBitFlags.None);
+                    if (needsExpand)
+                    {
+                        ImageUtilities.Expand16BPPScanline(src, srcPitch, srcFormat, dest, destPitch, ImageBitFlags.None);
+                        // These values are expanded now, we need to swizzle in place.
+                        src = dest;
+                        srcPitch = destPitch;
+                        srcFormat = BufferFormat.R8G8B8A8_UInt;
+                    }
+
+                    if (needsSwizzle)
+                    {
+                        ImageUtilities.SwizzleScanline(src, srcPitch, dest, destPitch, srcFormat, ImageBitFlags.None);
+                    }
                 }
             }
-        }
-        finally
-        {
-            bitmap.UnlockBits(destData);
-        }
-    }
-
-    /// <summary>
-    /// Function to copy the contents of a GDI+ bitmap object to an individual <see cref="IGorgonImageBuffer"/>.
-    /// </summary>
-    /// <param name="bitmap">The bitmap to convert.</param>
-    /// <param name="buffer">The buffer to that will receive the image data.</param>
-    /// <returns>A new GDI+ bitmap object.</returns>
-    /// <exception cref="ArgumentException">Thrown if the <paramref name="bitmap"/> and the <paramref name="buffer"/> do not have the same width and height.</exception>
-    /// <exception cref="GorgonException">Thrown if the <paramref name="buffer"/> is not a 32 bit <c>R8G8B8A8</c> format, or <c>B8G8R8*</c> format.
-    /// <para>-or-</para>
-    /// <para>Thrown when the <paramref name="bitmap"/> is not in a 32 bit ARGB format.</para>
-    /// </exception>
-    /// <remarks>
-    /// <para>
-    /// This method will take a <see cref="IGorgonImageBuffer"/> and copy its data into a new 2D <see cref="Bitmap"/>. The <paramref name="buffer"/> and the <paramref name="bitmap"/> must have 
-    /// an identical width and height. Otherwise, an exception will be thrown.
-    /// </para>
-    /// <para>
-    /// Some format conversion is performed on the <paramref name="buffer"/> when it is imported. The format conversion will always convert to a pixel format of <c>Format32bppArgb</c> or 
-    /// <c>Format24bppRgb</c>.  The following formats are supported for 32 bit conversion:
-    /// <list type="bullet">
-    ///     <item>
-    ///         <term><see cref="BufferFormat.R8G8B8A8_UNorm"/></term>
-    ///     </item>
-    ///     <item>
-    ///         <term><see cref="BufferFormat.R8G8B8A8_UNorm_SRgb"/></term>
-    ///     </item>
-    ///     <item>
-    ///         <term><see cref="BufferFormat.R8G8B8A8_SInt"/></term>
-    ///     </item>
-    ///     <item>
-    ///         <term><see cref="BufferFormat.R8G8B8A8_SNorm"/></term>
-    ///     </item>
-    ///     <item>
-    ///         <term><see cref="BufferFormat.R8G8B8A8_UInt"/></term>
-    ///     </item>
-    ///     <item>
-    ///         <term><see cref="BufferFormat.R8G8B8A8_Typeless"/></term>
-    ///     </item>
-    ///     <item>
-    ///         <term><see cref="BufferFormat.B8G8R8A8_UNorm"/></term>
-    ///     </item>
-    ///     <item>
-    ///         <term><see cref="BufferFormat.B8G8R8A8_UNorm_SRgb"/></term>
-    ///     </item>
-    ///     <item>
-    ///         <term><see cref="BufferFormat.B8G8R8A8_Typeless"/></term>
-    ///     </item>
-    ///     <item>
-    ///         <term><see cref="BufferFormat.B8G8R8X8_UNorm"/></term>
-    ///     </item>
-    ///     <item>
-    ///         <term><see cref="BufferFormat.B8G8R8X8_UNorm_SRgb"/></term>
-    ///     </item>
-    ///     <item>
-    ///         <term><see cref="BufferFormat.B8G8R8X8_Typeless"/></term>
-    ///     </item>
-    /// </list>
-    /// </para>
-    /// <para>
-    /// If the source <paramref name="buffer"/> does not support any of the formats on the lists, then an exception will be thrown.
-    /// </para>
-    /// </remarks>
-    public static void CopyTo(this Bitmap bitmap, IGorgonImageBuffer buffer)
-    {
-        if (bitmap.PixelFormat is not PixelFormat.Format32bppArgb and not PixelFormat.Format32bppPArgb)
-        {
-            throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, bitmap.PixelFormat));
-        }
-
-        if ((bitmap.Width != buffer.Width) || (bitmap.Height != buffer.Height))
-        {
-            throw new ArgumentException(string.Format(Resources.GORIMG_ERR_BITMAP_SIZE_NOT_CORRECT, bitmap.Width, bitmap.Height, buffer.Width, buffer.Height));
-        }
-
-        bool needsSwizzle = buffer.Format switch
-        {
-            BufferFormat.R8G8B8A8_UNorm or BufferFormat.R8G8B8A8_UNorm_SRgb or BufferFormat.R8G8B8A8_SInt or BufferFormat.R8G8B8A8_SNorm or BufferFormat.R8G8B8A8_UInt or BufferFormat.R8G8B8A8_Typeless => true,
-            BufferFormat.B8G8R8A8_UNorm or BufferFormat.B8G8R8A8_Typeless or BufferFormat.B8G8R8A8_UNorm_SRgb or BufferFormat.B8G8R8X8_UNorm or BufferFormat.B8G8R8X8_Typeless or BufferFormat.B8G8R8X8_UNorm_SRgb => false,
-            _ => throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, buffer.Format)),
-        };
-        BitmapData srcData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, bitmap.PixelFormat);
-
-        try
-        {
-            for (int y = 0; y < buffer.Height; ++y)
+            finally
             {
-                GorgonPtr<byte> srcPtr = GetGdiImagePtr(srcData, y * srcData.Stride);
-                GorgonPtr<byte> destPtr = buffer.ImageData + (y * buffer.PitchInformation.RowPitch);
-
-                if (!needsSwizzle)
-                {
-                    int length = srcData.Stride.Min(buffer.PitchInformation.RowPitch);
-                    srcPtr.Slice(0, length).CopyTo(destPtr.Slice(0, length));
-                    continue;
-                }
-
-                ImageUtilities.SwizzleScanline(srcPtr, buffer.PitchInformation.RowPitch, destPtr, srcData.Stride, buffer.Format, ImageBitFlags.None);
+                bitmap.UnlockBits(destData);
             }
-        }
-        finally
-        {
-            bitmap.UnlockBits(srcData);
         }
     }
 
-    /// <summary>
-    /// Function to convert a <see cref="Bitmap"/> into a <see cref="IGorgonImage"/>.
-    /// </summary>
-    /// <param name="bitmap">The <see cref="Bitmap"/> to convert.</param>
-    /// <returns>A new <see cref="IGorgonImage"/> containing the data from the <see cref="Bitmap"/>.</returns>
-    /// <exception cref="GorgonException">Thrown if the <paramref name="bitmap"/> is not <see cref="PixelFormat.Format32bppArgb"/>.</exception>
-    /// <remarks>
-    /// <para>
-    /// This method will take a 2D <see cref="Bitmap"/> and copy its data into a new 2D <see cref="IGorgonImage"/>. The resulting <see cref="IGorgonImage"/> will only contain 1 array level, 
-    /// and no mip map levels.
-    /// </para>
-    /// <para>
-    /// Some format conversion is performed on the <paramref name="bitmap"/> when it is imported. The format conversion will always convert to the image format of 
-    /// <see cref="BufferFormat.R8G8B8A8_UNorm"/>. Only the following GDI+ pixel formats are supported for conversion:
-    /// <list type="bullet">
-    ///     <item>
-    ///         <term><see cref="PixelFormat.Format32bppArgb"/></term>
-    ///     </item>
-    ///     <item>
-    ///         <term><see cref="PixelFormat.Format32bppPArgb"/></term>
-    ///     </item>
-    ///     <item>
-    ///         <term><see cref="PixelFormat.Format32bppRgb"/></term>
-    ///     </item>
-    ///     <item>
-    ///         <term><see cref="PixelFormat.Format24bppRgb"/></term>
-    ///     </item>
-    /// </list>
-    /// If the source <paramref name="bitmap"/> does not support any of the formats on the list, then an exception will be thrown.
-    /// </para>
-    /// </remarks>
-    public static IGorgonImage ToGorgonImage(this Bitmap bitmap)
+    extension(Bitmap bitmap)
     {
-        if (bitmap.PixelFormat is not PixelFormat.Format32bppArgb and not PixelFormat.Format32bppPArgb and not PixelFormat.Format32bppRgb and not PixelFormat.Format24bppRgb)
+        /// <summary>
+        /// Function to copy the contents of a GDI+ bitmap object to an individual <see cref="IGorgonImageBuffer"/>.
+        /// </summary>
+        /// <param name="buffer">The buffer to that will receive the image data.</param>
+        /// <returns>A new GDI+ bitmap object.</returns>
+        /// <exception cref="ArgumentException">Thrown if the bitmap and the buffer do not have the same width and height.</exception>
+        /// <exception cref="GorgonException">Thrown if the buffer is not a 32 bit <c>R8G8B8A8</c> format, or <c>B8G8R8*</c> format.
+        /// <para>-or-</para>
+        /// <para>Thrown when the bitmap is not in a 32 bit ARGB format.</para>
+        /// </exception>
+        /// <remarks>
+        /// <para>
+        /// This method will take a <see cref="IGorgonImageBuffer"/> and copy its data into a new 2D <see cref="Bitmap"/>. the buffer and the bitmap must have 
+        /// an identical width and height. Otherwise, an exception will be thrown.
+        /// </para>
+        /// <para>
+        /// Some format conversion is performed on the buffer when it is imported. The format conversion will always convert to a pixel format of <c>Format32bppArgb</c> or 
+        /// <c>Format24bppRgb</c>.  The following formats are supported for 32 bit conversion:
+        /// <list type="bullet">
+        ///     <item>
+        ///         <term><see cref="BufferFormat.R8G8B8A8_UNorm"/></term>
+        ///     </item>
+        ///     <item>
+        ///         <term><see cref="BufferFormat.R8G8B8A8_UNorm_SRgb"/></term>
+        ///     </item>
+        ///     <item>
+        ///         <term><see cref="BufferFormat.R8G8B8A8_SInt"/></term>
+        ///     </item>
+        ///     <item>
+        ///         <term><see cref="BufferFormat.R8G8B8A8_SNorm"/></term>
+        ///     </item>
+        ///     <item>
+        ///         <term><see cref="BufferFormat.R8G8B8A8_UInt"/></term>
+        ///     </item>
+        ///     <item>
+        ///         <term><see cref="BufferFormat.R8G8B8A8_Typeless"/></term>
+        ///     </item>
+        ///     <item>
+        ///         <term><see cref="BufferFormat.B8G8R8A8_UNorm"/></term>
+        ///     </item>
+        ///     <item>
+        ///         <term><see cref="BufferFormat.B8G8R8A8_UNorm_SRgb"/></term>
+        ///     </item>
+        ///     <item>
+        ///         <term><see cref="BufferFormat.B8G8R8A8_Typeless"/></term>
+        ///     </item>
+        ///     <item>
+        ///         <term><see cref="BufferFormat.B8G8R8X8_UNorm"/></term>
+        ///     </item>
+        ///     <item>
+        ///         <term><see cref="BufferFormat.B8G8R8X8_UNorm_SRgb"/></term>
+        ///     </item>
+        ///     <item>
+        ///         <term><see cref="BufferFormat.B8G8R8X8_Typeless"/></term>
+        ///     </item>
+        /// </list>
+        /// </para>
+        /// <para>
+        /// If the source the buffer does not support any of the formats on the lists, then an exception will be thrown.
+        /// </para>
+        /// </remarks>
+        public void CopyTo(IGorgonImageBuffer buffer)
         {
-            throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, bitmap.PixelFormat));
-        }
-
-        GorgonImageInfo info = GorgonImageInfo.Create2DImageInfo(BufferFormat.R8G8B8A8_UNorm, bitmap.Width, bitmap.Height);
-        GorgonImage result = new(info);
-        BitmapData? bitmapLock = null;
-
-        try
-        {
-            bitmapLock = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, bitmap.PixelFormat);
-
-            if (bitmap.PixelFormat is PixelFormat.Format32bppArgb or PixelFormat.Format32bppPArgb or PixelFormat.Format32bppRgb)
+            if (bitmap.PixelFormat is not PixelFormat.Format32bppArgb and not PixelFormat.Format32bppPArgb)
             {
-                Transfer32Argb(bitmapLock, result.Buffers[0]);
+                throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, bitmap.PixelFormat));
             }
-            else
+
+            if ((bitmap.Width != buffer.Width) || (bitmap.Height != buffer.Height))
             {
-                Transfer24Rgb(bitmapLock, result.Buffers[0]);
+                throw new ArgumentException(string.Format(Resources.GORIMG_ERR_BITMAP_SIZE_NOT_CORRECT, bitmap.Width, bitmap.Height, buffer.Width, buffer.Height));
             }
-        }
-        catch
-        {
-            result.Dispose();
-            throw;
-        }
-        finally
-        {
-            if (bitmapLock is not null)
+
+            bool needsSwizzle = buffer.Format switch
             {
-                bitmap.UnlockBits(bitmapLock);
+                BufferFormat.R8G8B8A8_UNorm or BufferFormat.R8G8B8A8_UNorm_SRgb or BufferFormat.R8G8B8A8_SInt or BufferFormat.R8G8B8A8_SNorm or BufferFormat.R8G8B8A8_UInt or BufferFormat.R8G8B8A8_Typeless => true,
+                BufferFormat.B8G8R8A8_UNorm or BufferFormat.B8G8R8A8_Typeless or BufferFormat.B8G8R8A8_UNorm_SRgb or BufferFormat.B8G8R8X8_UNorm or BufferFormat.B8G8R8X8_Typeless or BufferFormat.B8G8R8X8_UNorm_SRgb => false,
+                _ => throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, buffer.Format)),
+            };
+            BitmapData srcData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, bitmap.PixelFormat);
+
+            try
+            {
+                for (int y = 0; y < buffer.Height; ++y)
+                {
+                    GorgonPtr<byte> srcPtr = GetGdiImagePtr(srcData, y * srcData.Stride);
+                    GorgonPtr<byte> destPtr = buffer.ImageData + (y * buffer.PitchInformation.RowPitch);
+
+                    if (!needsSwizzle)
+                    {
+                        int length = srcData.Stride.Min(buffer.PitchInformation.RowPitch);
+                        srcPtr.Slice(0, length).CopyTo(destPtr.Slice(0, length));
+                        continue;
+                    }
+
+                    ImageUtilities.SwizzleScanline(srcPtr, buffer.PitchInformation.RowPitch, destPtr, srcData.Stride, buffer.Format, ImageBitFlags.None);
+                }
+            }
+            finally
+            {
+                bitmap.UnlockBits(srcData);
             }
         }
 
-        return result;
+        /// <summary>
+        /// Function to convert a <see cref="Bitmap"/> into a <see cref="IGorgonImage"/>.
+        /// </summary>
+        /// <returns>A new <see cref="IGorgonImage"/> containing the data from the <see cref="Bitmap"/>.</returns>
+        /// <exception cref="GorgonException">Thrown if the bitmap is not <see cref="PixelFormat.Format32bppArgb"/>.</exception>
+        /// <remarks>
+        /// <para>
+        /// This method will take a 2D <see cref="Bitmap"/> and copy its data into a new 2D <see cref="IGorgonImage"/>. The resulting <see cref="IGorgonImage"/> will only contain 1 array level, 
+        /// and no mip map levels.
+        /// </para>
+        /// <para>
+        /// Some format conversion is performed on the bitmap when it is imported. The format conversion will always convert to the image format of 
+        /// <see cref="BufferFormat.R8G8B8A8_UNorm"/>. Only the following GDI+ pixel formats are supported for conversion:
+        /// <list type="bullet">
+        ///     <item>
+        ///         <term><see cref="PixelFormat.Format32bppArgb"/></term>
+        ///     </item>
+        ///     <item>
+        ///         <term><see cref="PixelFormat.Format32bppPArgb"/></term>
+        ///     </item>
+        ///     <item>
+        ///         <term><see cref="PixelFormat.Format32bppRgb"/></term>
+        ///     </item>
+        ///     <item>
+        ///         <term><see cref="PixelFormat.Format24bppRgb"/></term>
+        ///     </item>
+        /// </list>
+        /// If the source the bitmap does not support any of the formats on the list, then an exception will be thrown.
+        /// </para>
+        /// </remarks>
+        public IGorgonImage ToGorgonImage()
+        {
+            if (bitmap.PixelFormat is not PixelFormat.Format32bppArgb and not PixelFormat.Format32bppPArgb and not PixelFormat.Format32bppRgb and not PixelFormat.Format24bppRgb)
+            {
+                throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, bitmap.PixelFormat));
+            }
+
+            GorgonImageInfo info = GorgonImageInfo.Create2DImageInfo(BufferFormat.R8G8B8A8_UNorm, bitmap.Width, bitmap.Height);
+            GorgonImage result = new(info);
+            BitmapData? bitmapLock = null;
+
+            try
+            {
+                bitmapLock = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, bitmap.PixelFormat);
+
+                if (bitmap.PixelFormat is PixelFormat.Format32bppArgb or PixelFormat.Format32bppPArgb or PixelFormat.Format32bppRgb)
+                {
+                    Transfer32Argb(bitmapLock, result.Buffers[0]);
+                }
+                else
+                {
+                    Transfer24Rgb(bitmapLock, result.Buffers[0]);
+                }
+            }
+            catch
+            {
+                result.Dispose();
+                throw;
+            }
+            finally
+            {
+                if (bitmapLock is not null)
+                {
+                    bitmap.UnlockBits(bitmapLock);
+                }
+            }
+
+            return result;
+        }
     }
 }

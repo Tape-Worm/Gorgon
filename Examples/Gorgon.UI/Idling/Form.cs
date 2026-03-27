@@ -22,6 +22,7 @@
 // Created: Wednesday, September 12, 2012 8:26:19 PM
 // 
 
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Text;
@@ -49,6 +50,7 @@ public partial class Form
     /// <summary>
     /// Property to set or return the log for the application.
     /// </summary>
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public required IGorgonLog Log
     {
         get;

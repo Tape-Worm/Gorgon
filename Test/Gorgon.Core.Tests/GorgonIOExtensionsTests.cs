@@ -427,7 +427,7 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
         using BinaryWriter writer = new(stream, Encoding.Default, true); // leaveOpen is set to true.
 
         // Act
-        writer.WriteRange<GorgonPoint>(data);
+        writer.WriteRange(data);
 
         // Assert
         stream.Position = 0; // Reset the stream position.
@@ -455,7 +455,7 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
         GorgonPoint[] result = new GorgonPoint[2];
 
         // Act
-        reader.ReadRange<GorgonPoint>(result);
+        reader.ReadRange(result);
 
         // Assert
         Assert.AreEqual(data[0], result[0]);
@@ -471,7 +471,7 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
         GorgonPoint[] result = [];
 
         // Act & Assert
-        Assert.ThrowsExactly<ArgumentEmptyException>(() => reader.ReadRange<GorgonPoint>(result));
+        Assert.ThrowsExactly<ArgumentEmptyException>(() => reader.ReadRange(result));
     }
 
     [TestMethod]

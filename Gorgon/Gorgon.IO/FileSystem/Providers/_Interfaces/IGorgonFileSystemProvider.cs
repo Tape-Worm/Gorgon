@@ -37,7 +37,7 @@ namespace Gorgon.IO.FileSystem.Providers;
 /// file system file, or a file inside of a zip archive.  
 /// </para>
 /// <para>
-/// <note type="important">
+/// <note type="information">
 /// <para>
 /// This provider is read only, meaning it will only read data from the physical file system.
 /// </para>
@@ -138,7 +138,7 @@ public interface IGorgonFileSystemProvider
     /// <param name="physicalMountPoint">The physical path that is mounted in the file system.</param>
     /// <param name="virtualRootDirectory">A virtual directory path that the directories and files from the physical file system will be mounted into.</param>		
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="physicalPath"/>, or the <paramref name="virtualRootDirectory"/> parameter is empty.</exception>
-    /// <exception cref="GorgonException">Thrown if the physical file system could not be read.
+    /// <exception cref="GorgonException"><para>Thrown if the physical file system could not be read.</para>
     /// <para>-or-</para>
     /// <para>The <paramref name="physicalPath"/> is not under the <paramref name="physicalMountPoint"/> path.</para>
     /// </exception>

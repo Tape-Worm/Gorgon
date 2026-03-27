@@ -80,7 +80,7 @@ public class GorgonLinearPool<T>
     /// </summary>
     /// <param name="initializer">[Optional] A function used to initialize the object returned by the allocator.</param>
     /// <returns>A reference to the object in the pool.</returns>
-    /// <exception cref="GorgonException">Thrown when the pool is completely full.
+    /// <exception cref="GorgonException"><para>Thrown when the pool is completely full.</para>
     /// <para>-or-</para>
     /// <para>The object could not be created with the <see cref="ItemAllocator"/> and returned <b>null</b>.</para>
     /// </exception>
@@ -116,7 +116,7 @@ public class GorgonLinearPool<T>
 
         initializer?.Invoke(item);
 
-        return _items[nextIndex];
+        return item;
     }
 
     /// <summary>

@@ -112,9 +112,7 @@ internal static class Program
             // Run the application with an idle loop.
             // This will set the idle loop running as soon as the application goes into an idle state (after the call to Application.Run).
             loop = GorgonApplicationLoop.Create(log);
-            loop.Run(Idle);
-
-            Application.Run(_form);
+            loop.RunWithWindow(Idle, _form);
         }
         catch (Exception ex)
         {

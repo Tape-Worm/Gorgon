@@ -263,7 +263,7 @@ internal class DrawingSurface
     /// <summary>
     /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
     /// </summary>
-    /// <exception cref="NotSupportedException"></exception>
+    /// <exception cref="NotSupportedException"/>
     public void Dispose()
     {
         Dispose(true);

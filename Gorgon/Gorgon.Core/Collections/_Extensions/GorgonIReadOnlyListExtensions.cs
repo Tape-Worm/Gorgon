@@ -30,259 +30,253 @@ namespace Gorgon.Collections;
 /// </summary>
 public static class GorgonIReadOnlyListExtensions
 {
-    /// <summary>
-    /// Function to find the last index of an item using a predicate to filter through the list.
-    /// </summary>
     /// <typeparam name="T">The type of values in the list.</typeparam>
-    /// <param name="list">The list to evaluate.</param>
-    /// <param name="predicate">The predicate function used to evaluate the list items.</param>
-    /// <returns>The index of the filtered item, or -1 if not found.</returns>
-    /// <remarks>
-    /// <para>
-    /// This method searches through the list starting from the end and executes the <paramref name="predicate"/> against the current item. If the <paramref name="predicate"/> returns <b>true</b>, then the current index is 
-    /// returned. If no item in the list satisfies the <paramref name="predicate"/>, then -1 is returned.
-    /// </para>
-    /// </remarks>
-    public static int FindLastIndex<T>(this IReadOnlyList<T> list, Predicate<T> predicate)
+    extension<T>(IReadOnlyList<T> list)
     {
-        switch (list)
+        /// <summary>
+        /// Function to find the last index of an item using a predicate to filter through the list.
+        /// </summary>
+        /// <param name="predicate">The predicate function used to evaluate the list items.</param>
+        /// <returns>The index of the filtered item, or -1 if not found.</returns>
+        /// <remarks>
+        /// <para>
+        /// This method searches through the list starting from the end and executes the <paramref name="predicate"/> against the current item. If the <paramref name="predicate"/> returns <b>true</b>, then the current index is 
+        /// returned. If no item in the list satisfies the <paramref name="predicate"/>, then -1 is returned.
+        /// </para>
+        /// </remarks>
+        public int FindLastIndex(Predicate<T> predicate)
         {
-            case T[] arrayList:
-                return Array.FindLastIndex(arrayList, predicate);
-            case List<T> concreteList:
-                return concreteList.FindLastIndex(predicate);
-        }
-
-        for (int i = list.Count - 1; i >= 0; --i)
-        {
-            if (predicate(list[i]))
+            switch (list)
             {
-                return i;
+                case T[] arrayList:
+                    return Array.FindLastIndex(arrayList, predicate);
+                case List<T> concreteList:
+                    return concreteList.FindLastIndex(predicate);
             }
-        }
 
-        return -1;
-    }
-
-    /// <summary>
-    /// Function to find the first index of an item using a predicate to filter through the list.
-    /// </summary>
-    /// <typeparam name="T">The type of values in the list.</typeparam>
-    /// <param name="list">The list to evaluate.</param>
-    /// <param name="predicate">The predicate function used to evaluate the list items.</param>
-    /// <returns>The index of the filtered item, or -1 if not found.</returns>
-    /// <remarks>
-    /// <para>
-    /// This method searches through the list and executes the <paramref name="predicate"/> against the current item. If the <paramref name="predicate"/> returns <b>true</b>, then the current index is 
-    /// returned. If no item in the list satisfies the <paramref name="predicate"/>, then -1 is returned.
-    /// </para>
-    /// </remarks>
-    public static int FindIndex<T>(this IReadOnlyList<T> list, Predicate<T> predicate)
-    {
-        switch (list)
-        {
-            case T[] arrayList:
-                return Array.FindIndex(arrayList, predicate);
-            case List<T> concreteList:
-                return concreteList.FindIndex(predicate);
-        }
-
-        for (int i = 0; i < list.Count; ++i)
-        {
-            if (predicate(list[i]))
+            for (int i = list.Count - 1; i >= 0; --i)
             {
-                return i;
-            }
-        }
-
-        return -1;
-    }
-
-    /// <summary>
-    /// Function to determine if an item of type <typeparamref name="T"/> exists within the list.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="list">The list to evaluate.</param>
-    /// <param name="item">The item to find in the list.</param>
-    /// <returns><b>true</b> if the <paramref name="item"/> was found, or <b>false</b> if not.</returns>
-    /// <remarks>
-    /// <para>
-    /// This method scans through a <see cref="IReadOnlyList{T}"/> to locate the specified <paramref name="item"/>. If the item is found, then <b>true</b> is returned, and if not, then <b>false</b> 
-    /// is returned instead.
-    /// </para>
-    /// <para>
-    /// The search will use a native implementation of the Contains method on the <paramref name="list"/> concrete type if available. Otherwise, if the type, <typeparamref name="T"/> implements 
-    /// <see cref="IEquatable{T}"/> then that is used for comparing items the list. If that interface is not available, then <see cref="IComparable{T}"/> is used, and failing that, the 
-    /// <see cref="object.Equals(object)"/> method is used to determine equality between the items in the list.
-    /// </para>
-    /// <para>
-    /// For best performance, it is best to use a type that natively Contains in its concrete implementation.
-    /// </para>
-    /// </remarks>
-    public static bool Contains<T>(this IReadOnlyList<T> list, T item)
-    {
-        switch (list)
-        {
-            case T[] arrayList:
-                // If the list is an array, use the built in functionality.
-                return Array.IndexOf(arrayList, item) != -1;
-            case IList<T> readWriteList:
-                // If it implements IList<T>, then use the IndexOf on that.
-                return readWriteList.Contains(item);
-        }
-
-        switch (item)
-        {
-            // If the items in the type implement IEquatable<T>, then this will suffice.
-            case IEquatable<T> equalityItem:
-                for (int i = 0; i < list.Count; ++i)
+                if (predicate(list[i]))
                 {
-                    if (equalityItem.Equals(list[i]))
-                    {
-                        return true;
-                    }
+                    return i;
                 }
-
-                return false;
-            // If no equality comparer is found, but we are comparable, then try to use that.
-            case IComparable<T> comparerItem:
-                for (int i = 0; i < list.Count; ++i)
-                {
-                    if (comparerItem.CompareTo(list[i]) == 0)
-                    {
-                        return true;
-                    }
-                }
-
-                return false;
-        }
-
-        // Finally, fall back to the object (and potentially boxing) method.
-        for (int i = 0; i < list.Count; ++i)
-        {
-            if ((item is not null) && (item.Equals(list[i])))
-            {
-                return true;
             }
+
+            return -1;
         }
 
-        return false;
-    }
-
-    /// <summary>
-    /// Function to return the index of an item in a <see cref="IReadOnlyList{T}"/>.
-    /// </summary>
-    /// <typeparam name="T">The type of object in the collection.</typeparam>
-    /// <param name="list">The list of items to evaluate.</param>
-    /// <param name="item">The item to search for.</param>
-    /// <returns>The index of the <paramref name="item"/> in the <paramref name="list"/> if found, or -1 if not.</returns>
-    /// <remarks>
-    /// <para>
-    /// This method scans through a <see cref="IReadOnlyList{T}"/> to locate the specified <paramref name="item"/>. If the item is found, the index of that item within the <paramref name="list"/> 
-    /// is returned. Otherwise, if it is not found, <c>-1</c> is returned.
-    /// </para>
-    /// <para>
-    /// The search will use a native implementation of the IndexOf method on the <paramref name="list"/> concrete type if available. Otherwise, if the type, <typeparamref name="T"/> implements 
-    /// <see cref="IEquatable{T}"/> then that is used for comparing items the list. If that interface is not available, then <see cref="IComparable{T}"/> is used, and failing that, the 
-    /// <see cref="object.Equals(object)"/> method is used to determine equality between the items in the list.
-    /// </para>
-    /// <para>
-    /// For best performance, it is best to use a type that has an IndexOf implementation in its concrete implementation.
-    /// </para>
-    /// </remarks>
-    public static int IndexOf<T>(this IReadOnlyList<T> list, T item)
-    {
-        switch (list)
+        /// <summary>
+        /// Function to find the first index of an item using a predicate to filter through the list.
+        /// </summary>
+        /// <param name="predicate">The predicate function used to evaluate the list items.</param>
+        /// <returns>The index of the filtered item, or -1 if not found.</returns>
+        /// <remarks>
+        /// <para>
+        /// This method searches through the list and executes the <paramref name="predicate"/> against the current item. If the <paramref name="predicate"/> returns <b>true</b>, then the current index is 
+        /// returned. If no item in the list satisfies the <paramref name="predicate"/>, then -1 is returned.
+        /// </para>
+        /// </remarks>
+        public int FindIndex(Predicate<T> predicate)
         {
-            case T[] arrayList:
-                // If the list is an array, use the built in functionality.
-                return Array.IndexOf(arrayList, item);
-            case List<T> readWriteList:
-                // If it inherits List<T>, then use the IndexOf on that.
-                return readWriteList.IndexOf(item);
-            case IList<T> readWriteIList:
-                // If it implements IList<T>, then use the IndexOf on that.
-                return readWriteIList.IndexOf(item);
+            switch (list)
+            {
+                case T[] arrayList:
+                    return Array.FindIndex(arrayList, predicate);
+                case List<T> concreteList:
+                    return concreteList.FindIndex(predicate);
+            }
+
+            for (int i = 0; i < list.Count; ++i)
+            {
+                if (predicate(list[i]))
+                {
+                    return i;
+                }
+            }
+
+            return -1;
         }
 
-        switch (item)
+        /// <summary>
+        /// Function to determine if an item of type <typeparamref name="T"/> exists within the list.
+        /// </summary>
+        /// <param name="item">The item to find in the list.</param>
+        /// <returns><b>true</b> if the <paramref name="item"/> was found, or <b>false</b> if not.</returns>
+        /// <remarks>
+        /// <para>
+        /// This method scans through a <see cref="IReadOnlyList{T}"/> to locate the specified <paramref name="item"/>. If the item is found, then <b>true</b> is returned, and if not, then <b>false</b> 
+        /// is returned instead.
+        /// </para>
+        /// <para>
+        /// The search will use a native implementation of the Contains method on the list concrete type if available. Otherwise, if the type, <typeparamref name="T"/> implements 
+        /// <see cref="IEquatable{T}"/> then that is used for comparing items the list. If that interface is not available, then <see cref="IComparable{T}"/> is used, and failing that, the 
+        /// <see cref="object.Equals(object)"/> method is used to determine equality between the items in the list.
+        /// </para>
+        /// <para>
+        /// For best performance, it is best to use a type that natively Contains in its concrete implementation.
+        /// </para>
+        /// </remarks>
+        public bool Contains(T item)
         {
-            case IEquatable<T> equalityItem:
+            switch (list)
+            {
+                case T[] arrayList:
+                    // If the list is an array, use the built in functionality.
+                    return Array.IndexOf(arrayList, item) != -1;
+                case IList<T> readWriteList:
+                    // If it implements IList<T>, then use the IndexOf on that.
+                    return readWriteList.Contains(item);
+            }
+
+            switch (item)
+            {
                 // If the items in the type implement IEquatable<T>, then this will suffice.
-                for (int i = 0; i < list.Count; ++i)
-                {
-                    if (equalityItem.Equals(list[i]))
+                case IEquatable<T> equalityItem:
+                    for (int i = 0; i < list.Count; ++i)
                     {
-                        return i;
+                        if (equalityItem.Equals(list[i]))
+                        {
+                            return true;
+                        }
                     }
-                }
 
-                return -1;
-            case IComparable<T> comparerItem:
+                    return false;
                 // If no equality comparer is found, but we are comparable, then try to use that.
-                for (int i = 0; i < list.Count; ++i)
-                {
-                    if (comparerItem.CompareTo(list[i]) == 0)
+                case IComparable<T> comparerItem:
+                    for (int i = 0; i < list.Count; ++i)
                     {
-                        return i;
+                        if (comparerItem.CompareTo(list[i]) == 0)
+                        {
+                            return true;
+                        }
                     }
-                }
 
-                return -1;
-        }
-
-        // Finally, fall back to the object (and potentially boxing) method.
-        for (int i = 0; i < list.Count; ++i)
-        {
-            if ((item is not null) && (item.Equals(list[i])))
-            {
-                return i;
+                    return false;
             }
-        }
 
-        return -1;
-    }
-
-    /// <summary>
-    /// Function to copy the contents of this read only list into an array.
-    /// </summary>
-    /// <typeparam name="T">The type of data to copy.</typeparam>
-    /// <param name="list">The list to evaluate.</param>
-    /// <param name="array">The array that will receive the data.</param>
-    /// <param name="destIndex">[Optional] The index in the destination array to start copying into.</param>
-    /// <exception cref="ArgumentException">Thrown when the <paramref name="array"/> isn't large enough to support the entire list.</exception>
-    /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="destIndex"/> parameter is less than 0, or greater than/equal to the array length.</exception>
-    public static void CopyTo<T>(this IReadOnlyList<T> list, T[] array, int destIndex = 0)
-    {
-        if ((destIndex < 0) || (destIndex >= array.Length))
-        {
-            throw new ArgumentOutOfRangeException(nameof(destIndex));
-        }
-
-        int count = array.Length - destIndex;
-
-        if (list.Count > count)
-        {
-            throw new ArgumentException(string.Format(Resources.GOR_ERR_ARRAY_TOO_SMALL, count, list.Count), nameof(array));
-        }
-
-        switch (list)
-        {
-            case Array arrayList:
-                Array.Copy(arrayList, 0, array, destIndex, list.Count);
-                break;
-            case List<T> concreteList:
-                concreteList.CopyTo(array, destIndex);
-                break;
-            case IList<T> concreteIList:
-                concreteIList.CopyTo(array, destIndex);
-                break;
-            default:
-                for (int i = 0; i < list.Count; ++i)
+            // Finally, fall back to the object (and potentially boxing) method.
+            for (int i = 0; i < list.Count; ++i)
+            {
+                if ((item is not null) && (item.Equals(list[i])))
                 {
-                    array[i + destIndex] = list[i];
+                    return true;
                 }
-                break;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Function to return the index of an item in a <see cref="IReadOnlyList{T}"/>.
+        /// </summary>
+        /// <param name="item">The item to search for.</param>
+        /// <returns>The index of the <paramref name="item"/> in the list if found, or -1 if not.</returns>
+        /// <remarks>
+        /// <para>
+        /// This method scans through a <see cref="IReadOnlyList{T}"/> to locate the specified <paramref name="item"/>. If the item is found, the index of that item within the list 
+        /// is returned. Otherwise, if it is not found, <c>-1</c> is returned.
+        /// </para>
+        /// <para>
+        /// The search will use a native implementation of the IndexOf method on the list concrete type if available. Otherwise, if the type, <typeparamref name="T"/> implements 
+        /// <see cref="IEquatable{T}"/> then that is used for comparing items the list. If that interface is not available, then <see cref="IComparable{T}"/> is used, and failing that, the 
+        /// <see cref="object.Equals(object)"/> method is used to determine equality between the items in the list.
+        /// </para>
+        /// <para>
+        /// For best performance, it is best to use a type that has an IndexOf implementation in its concrete implementation.
+        /// </para>
+        /// </remarks>
+        public int IndexOf(T item)
+        {
+            switch (list)
+            {
+                case T[] arrayList:
+                    // If the list is an array, use the built in functionality.
+                    return Array.IndexOf(arrayList, item);
+                case List<T> readWriteList:
+                    // If it inherits List<T>, then use the IndexOf on that.
+                    return readWriteList.IndexOf(item);
+                case IList<T> readWriteIList:
+                    // If it implements IList<T>, then use the IndexOf on that.
+                    return readWriteIList.IndexOf(item);
+            }
+
+            switch (item)
+            {
+                case IEquatable<T> equalityItem:
+                    // If the items in the type implement IEquatable<T>, then this will suffice.
+                    for (int i = 0; i < list.Count; ++i)
+                    {
+                        if (equalityItem.Equals(list[i]))
+                        {
+                            return i;
+                        }
+                    }
+
+                    return -1;
+                case IComparable<T> comparerItem:
+                    // If no equality comparer is found, but we are comparable, then try to use that.
+                    for (int i = 0; i < list.Count; ++i)
+                    {
+                        if (comparerItem.CompareTo(list[i]) == 0)
+                        {
+                            return i;
+                        }
+                    }
+
+                    return -1;
+            }
+
+            // Finally, fall back to the object (and potentially boxing) method.
+            for (int i = 0; i < list.Count; ++i)
+            {
+                if ((item is not null) && (item.Equals(list[i])))
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
+        /// <summary>
+        /// Function to copy the contents of this read only list into an array.
+        /// </summary>
+        /// <param name="array">The array that will receive the data.</param>
+        /// <param name="destIndex">[Optional] The index in the destination array to start copying into.</param>
+        /// <exception cref="ArgumentException">Thrown when the <paramref name="array"/> isn't large enough to support the entire list.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="destIndex"/> parameter is less than 0, or greater than/equal to the array length.</exception>
+        public void CopyTo(T[] array, int destIndex = 0)
+        {
+            if ((destIndex < 0) || (destIndex >= array.Length))
+            {
+                throw new ArgumentOutOfRangeException(nameof(destIndex));
+            }
+
+            int count = array.Length - destIndex;
+
+            if (list.Count > count)
+            {
+                throw new ArgumentException(string.Format(Resources.GOR_ERR_ARRAY_TOO_SMALL, count, list.Count), nameof(array));
+            }
+
+            switch (list)
+            {
+                case Array arrayList:
+                    Array.Copy(arrayList, 0, array, destIndex, list.Count);
+                    break;
+                case List<T> concreteList:
+                    concreteList.CopyTo(array, destIndex);
+                    break;
+                case IList<T> concreteIList:
+                    concreteIList.CopyTo(array, destIndex);
+                    break;
+                default:
+                    for (int i = 0; i < list.Count; ++i)
+                    {
+                        array[i + destIndex] = list[i];
+                    }
+                    break;
+            }
         }
     }
 }

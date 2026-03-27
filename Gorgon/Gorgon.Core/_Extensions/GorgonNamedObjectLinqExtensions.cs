@@ -30,199 +30,189 @@ namespace Gorgon.Core;
 /// </summary>
 public static class GorgonNamedObjectLinqExtensions
 {
-    /// <summary>
-    /// Function to return an item in the <see cref="IEnumerable{T}"/> by name.
-    /// </summary>
     /// <typeparam name="T">The type of value to look for, must implement <see cref="IGorgonNamedObject"/>.</typeparam>
-    /// <param name="list">The list to evaluate.</param>
-    /// <param name="name">The name of the object to look up.</param>
-    /// <returns>The item with the specified name.</returns>
-    /// <exception cref="KeyNotFoundException">Thrown if no item with the <paramref name="name"/> could be found in the <paramref name="list"/>.</exception>
-    /// <remarks>
-    /// <para>
-    /// The default comparer is <see cref="StringComparer.OrdinalIgnoreCase"/>. This means that the <see cref="IGorgonNamedObject.Name"/> is case insensitive, and uses a binary comparison.
-    /// </para>
-    /// </remarks>
-    public static T GetByName<T>(this IEnumerable<T> list, string name)
-        where T : IGorgonNamedObject => GetByName(list, name, StringComparer.OrdinalIgnoreCase);
-
-    /// <summary>
-    /// Function to return an item in the <see cref="IEnumerable{T}"/> by name.
-    /// </summary>
-    /// <typeparam name="T">The type of value to look for, must implement <see cref="IGorgonNamedObject"/>.</typeparam>
-    /// <param name="list">The list to evaluate.</param>
-    /// <param name="name">The name of the object to look up.</param>
-    /// <param name="comparer">The comparer to use when comparing strings.</param>
-    /// <returns>The item with the specified name.</returns>
-    /// <exception cref="KeyNotFoundException">Thrown if no item with the <paramref name="name"/> could be found in the <paramref name="list"/>.</exception>    
-    public static T GetByName<T>(this IEnumerable<T> list, string name, StringComparer comparer)
-        where T : IGorgonNamedObject
+    extension<T>(IEnumerable<T> list) where T : IGorgonNamedObject
     {
-        if (string.IsNullOrEmpty(name))
+        /// <summary>
+        /// Function to return an item in the <see cref="IEnumerable{T}"/> by name.
+        /// </summary>        
+        /// <param name="name">The name of the object to look up.</param>
+        /// <returns>The item with the specified name.</returns>
+        /// <exception cref="KeyNotFoundException">Thrown if no item with the <paramref name="name"/> could be found in the list.</exception>
+        /// <remarks>
+        /// <para>
+        /// The default comparer is <see cref="StringComparer.OrdinalIgnoreCase"/>. This means that the <see cref="IGorgonNamedObject.Name"/> is case insensitive, and uses a binary comparison.
+        /// </para>
+        /// </remarks>
+        public T GetByName(string name)
+    => GetByName(list, name, StringComparer.OrdinalIgnoreCase);
+
+        /// <summary>
+        /// Function to return an item in the <see cref="IEnumerable{T}"/> by name.
+        /// </summary>
+        /// <param name="name">The name of the object to look up.</param>
+        /// <param name="comparer">The comparer to use when comparing strings.</param>
+        /// <returns>The item with the specified name.</returns>
+        /// <exception cref="KeyNotFoundException">Thrown if no item with the <paramref name="name"/> could be found in the list.</exception>    
+        public T GetByName(string name, StringComparer comparer)
         {
-            throw new KeyNotFoundException(string.Format(Resources.GOR_ERR_KEY_NOT_FOUND, name));
-        }
-
-        switch (list)
-        {
-            case IReadOnlyList<T> readOnlyList:
-                for (int i = 0; i < readOnlyList.Count; ++i)
-                {
-                    T item = readOnlyList[i];
-
-                    if (comparer.Compare(item.Name, name) == 0)
-                    {
-                        return item;
-                    }
-                }
+            if (string.IsNullOrEmpty(name))
+            {
                 throw new KeyNotFoundException(string.Format(Resources.GOR_ERR_KEY_NOT_FOUND, name));
-            case IList<T> actualList:
-                for (int i = 0; i < actualList.Count; ++i)
-                {
-                    T item = actualList[i];
+            }
 
-                    if (comparer.Compare(item.Name, name) == 0)
+            switch (list)
+            {
+                case IReadOnlyList<T> readOnlyList:
+                    for (int i = 0; i < readOnlyList.Count; ++i)
                     {
-                        return item;
+                        T item = readOnlyList[i];
+
+                        if (comparer.Compare(item.Name, name) == 0)
+                        {
+                            return item;
+                        }
                     }
-                }
-                throw new KeyNotFoundException(string.Format(Resources.GOR_ERR_KEY_NOT_FOUND, name));
-            default:
-                {
-                    using IEnumerator<T> enumerator = list.GetEnumerator();
-
-                    if (!enumerator.MoveNext())
+                    throw new KeyNotFoundException(string.Format(Resources.GOR_ERR_KEY_NOT_FOUND, name));
+                case IList<T> actualList:
+                    for (int i = 0; i < actualList.Count; ++i)
                     {
+                        T item = actualList[i];
+
+                        if (comparer.Compare(item.Name, name) == 0)
+                        {
+                            return item;
+                        }
+                    }
+                    throw new KeyNotFoundException(string.Format(Resources.GOR_ERR_KEY_NOT_FOUND, name));
+                default:
+                    {
+                        using IEnumerator<T> enumerator = list.GetEnumerator();
+
+                        if (!enumerator.MoveNext())
+                        {
+                            throw new KeyNotFoundException(string.Format(Resources.GOR_ERR_KEY_NOT_FOUND, name));
+                        }
+
+                        do
+                        {
+                            if (enumerator.Current is null)
+                            {
+                                continue;
+                            }
+
+                            if (comparer.Compare(name, enumerator.Current.Name) == 0)
+                            {
+                                return enumerator.Current;
+                            }
+                        }
+                        while (enumerator.MoveNext());
+
                         throw new KeyNotFoundException(string.Format(Resources.GOR_ERR_KEY_NOT_FOUND, name));
                     }
-
-                    do
-                    {
-                        if (enumerator.Current is null)
-                        {
-                            continue;
-                        }
-
-                        if (comparer.Compare(name, enumerator.Current.Name) == 0)
-                        {
-                            return enumerator.Current;
-                        }
-                    }
-                    while (enumerator.MoveNext());
-
-                    throw new KeyNotFoundException(string.Format(Resources.GOR_ERR_KEY_NOT_FOUND, name));
-                }
-        }
-    }
-
-    /// <summary>
-    /// Function to return the index of a <see cref="IGorgonNamedObject"/> in an <see cref="IEnumerable{T}"/>.
-    /// </summary>
-    /// <typeparam name="T">The type of value to look for, must implement <see cref="IGorgonNamedObject"/>.</typeparam>
-    /// <param name="list">The list to evaluate.</param>
-    /// <param name="name">The name of the object to look up.</param>
-    /// <returns>The index of the item, if found. Or, -1, if not.</returns>
-    /// <remarks>
-    /// <para>
-    /// The default comparer is <see cref="StringComparer.OrdinalIgnoreCase"/>. This means that the <see cref="IGorgonNamedObject.Name"/> is case insensitive, and uses a binary comparison.
-    /// </para>
-    /// </remarks>
-    public static int IndexOfName<T>(this IEnumerable<T> list, string name)
-        where T : IGorgonNamedObject => IndexOfName(list, name, StringComparer.OrdinalIgnoreCase);
-
-    /// <summary>
-    /// Function to return whether a <see cref="IGorgonNamedObject"/> is contained in an <see cref="IEnumerable{T}"/>.
-    /// </summary>
-    /// <typeparam name="T">The type of value to look for, must implement <see cref="IGorgonNamedObject"/>.</typeparam>
-    /// <param name="list">The list to evaluate.</param>
-    /// <param name="name">The name of the object to look up.</param>    
-    /// <returns><b>true</b> if found, <b>false</b> if not.</returns>
-    /// <remarks>
-    /// <para>
-    /// The default comparer is <see cref="StringComparer.OrdinalIgnoreCase"/>. This means that the <see cref="IGorgonNamedObject.Name"/> is case insensitive, and uses a binary comparison.
-    /// </para>
-    /// </remarks>
-    public static bool ContainsName<T>(this IEnumerable<T> list, string name)
-        where T : IGorgonNamedObject => IndexOfName(list, name) != -1;
-
-    /// <summary>
-    /// Function to return whether a <see cref="IGorgonNamedObject"/> is contained in an <see cref="IEnumerable{T}"/>.
-    /// </summary>
-    /// <typeparam name="T">The type of value to look for, must implement <see cref="IGorgonNamedObject"/>.</typeparam>
-    /// <param name="list">The list to evaluate.</param>
-    /// <param name="name">The name of the object to look up.</param>
-    /// <param name="comparer">The comparer to use when comparing strings.</param>
-    /// <returns><b>true</b> if found, <b>false</b> if not.</returns>
-    public static bool ContainsName<T>(this IEnumerable<T> list, string name, StringComparer comparer)
-        where T : IGorgonNamedObject => IndexOfName(list, name, comparer) != -1;
-
-    /// <summary>
-    /// Function to return the index of a <see cref="IGorgonNamedObject"/> in an <see cref="IEnumerable{T}"/>.
-    /// </summary>
-    /// <typeparam name="T">The type of value to look for, must implement <see cref="IGorgonNamedObject"/>.</typeparam>
-    /// <param name="list">The list to evaluate.</param>
-    /// <param name="name">The name of the object to look up.</param>
-    /// <param name="comparer">The comparer to use when comparing strings.</param>
-    /// <returns>The index of the item, if found. Or, -1, if not.</returns>
-    public static int IndexOfName<T>(this IEnumerable<T> list, string name, StringComparer comparer)
-        where T : IGorgonNamedObject
-    {
-        int count = 0;
-
-        if (string.IsNullOrEmpty(name))
-        {
-            return -1;
+            }
         }
 
-        switch (list)
+        /// <summary>
+        /// Function to return the index of a <see cref="IGorgonNamedObject"/> in an <see cref="IEnumerable{T}"/>.
+        /// </summary>
+        /// <param name="name">The name of the object to look up.</param>
+        /// <returns>The index of the item, if found. Or, -1, if not.</returns>
+        /// <remarks>
+        /// <para>
+        /// The default comparer is <see cref="StringComparer.OrdinalIgnoreCase"/>. This means that the <see cref="IGorgonNamedObject.Name"/> is case insensitive, and uses a binary comparison.
+        /// </para>
+        /// </remarks>
+        public int IndexOfName(string name)
+    => IndexOfName(list, name, StringComparer.OrdinalIgnoreCase);
+
+        /// <summary>
+        /// Function to return whether a <see cref="IGorgonNamedObject"/> is contained in an <see cref="IEnumerable{T}"/>.
+        /// </summary>
+        /// <param name="name">The name of the object to look up.</param>    
+        /// <returns><b>true</b> if found, <b>false</b> if not.</returns>
+        /// <remarks>
+        /// <para>
+        /// The default comparer is <see cref="StringComparer.OrdinalIgnoreCase"/>. This means that the <see cref="IGorgonNamedObject.Name"/> is case insensitive, and uses a binary comparison.
+        /// </para>
+        /// </remarks>
+        public bool ContainsName(string name)
+    => IndexOfName(list, name) != -1;
+
+        /// <summary>
+        /// Function to return whether a <see cref="IGorgonNamedObject"/> is contained in an <see cref="IEnumerable{T}"/>.
+        /// </summary>
+        /// <param name="name">The name of the object to look up.</param>
+        /// <param name="comparer">The comparer to use when comparing strings.</param>
+        /// <returns><b>true</b> if found, <b>false</b> if not.</returns>
+        public bool ContainsName(string name, StringComparer comparer)
+    => IndexOfName(list, name, comparer) != -1;
+
+        /// <summary>
+        /// Function to return the index of a <see cref="IGorgonNamedObject"/> in an <see cref="IEnumerable{T}"/>.
+        /// </summary>
+        /// <param name="name">The name of the object to look up.</param>
+        /// <param name="comparer">The comparer to use when comparing strings.</param>
+        /// <returns>The index of the item, if found. Or, -1, if not.</returns>
+        public int IndexOfName(string name, StringComparer comparer)
         {
-            case IReadOnlyList<T> readOnlyList:
-                for (int i = 0; i < readOnlyList.Count; i++)
-                {
-                    if (comparer.Compare(readOnlyList[i].Name, name) == 0)
-                    {
-                        return i;
-                    }
-                }
+            int count = 0;
 
+            if (string.IsNullOrEmpty(name))
+            {
                 return -1;
-            case IList<T> actualList:
-                for (int i = 0; i < actualList.Count; i++)
-                {
-                    if (comparer.Compare(actualList[i].Name, name) == 0)
-                    {
-                        return i;
-                    }
-                }
+            }
 
-                return -1;
-            default:
-                {
-                    using IEnumerator<T> enumerator = list.GetEnumerator();
-
-                    if (!enumerator.MoveNext())
+            switch (list)
+            {
+                case IReadOnlyList<T> readOnlyList:
+                    for (int i = 0; i < readOnlyList.Count; i++)
                     {
-                        return -1;
-                    }
-
-                    do
-                    {
-                        if (enumerator.Current is null)
+                        if (comparer.Compare(readOnlyList[i].Name, name) == 0)
                         {
-                            continue;
+                            return i;
                         }
-
-                        if (comparer.Compare(name, enumerator.Current.Name) == 0)
-                        {
-                            return count;
-                        }
-
-                        ++count;
                     }
-                    while (enumerator.MoveNext());
 
                     return -1;
-                }
+                case IList<T> actualList:
+                    for (int i = 0; i < actualList.Count; i++)
+                    {
+                        if (comparer.Compare(actualList[i].Name, name) == 0)
+                        {
+                            return i;
+                        }
+                    }
+
+                    return -1;
+                default:
+                    {
+                        using IEnumerator<T> enumerator = list.GetEnumerator();
+
+                        if (!enumerator.MoveNext())
+                        {
+                            return -1;
+                        }
+
+                        do
+                        {
+                            if (enumerator.Current is null)
+                            {
+                                continue;
+                            }
+
+                            if (comparer.Compare(name, enumerator.Current.Name) == 0)
+                            {
+                                return count;
+                            }
+
+                            ++count;
+                        }
+                        while (enumerator.MoveNext());
+
+                        return -1;
+                    }
+            }
         }
     }
 }

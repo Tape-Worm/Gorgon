@@ -38,78 +38,79 @@ namespace Gorgon.Math;
 /// </remarks>
 public static class GorgonPlaneExtensions
 {
-    /// <summary>
-    /// Function to build a matrix that can be used to flatten geometry into a shadow on the plane.
-    /// </summary>
-    /// <param name="plane">The plane to flatten the geometry onto.</param>
-    /// <param name="lightDirection">The direction of the light. If the W component is 0, then the light is considered a directional light, otherwise it is considered a point light.</param>
-    /// <param name="result">The matrix that contains the values used to create the shadow.</param>
-    /// <remarks>
-    /// <para>
-    /// This code was adapted from SharpDX (https://github.com/sharpdx/SharpDX).
-    /// </para>
-    /// </remarks>
-    public static void Shadow(this Plane plane, Vector4 lightDirection, out Matrix4x4 result)
+    extension(Plane plane)
     {
-        float dot = (plane.Normal.X * lightDirection.X) + (plane.Normal.Y * lightDirection.Y) + (plane.Normal.Z * lightDirection.Z) + (plane.D * lightDirection.W);
-        float x = -plane.Normal.X;
-        float y = -plane.Normal.Y;
-        float z = -plane.Normal.Z;
-        float d = -plane.D;
+        /// <summary>
+        /// Function to build a matrix that can be used to flatten geometry into a shadow on the plane.
+        /// </summary>
+        /// <param name="lightDirection">The direction of the light. If the W component is 0, then the light is considered a directional light, otherwise it is considered a point light.</param>
+        /// <param name="result">The matrix that contains the values used to create the shadow.</param>
+        /// <remarks>
+        /// <para>
+        /// This code was adapted from SharpDX (https://github.com/sharpdx/SharpDX).
+        /// </para>
+        /// </remarks>
+        public void Shadow(Vector4 lightDirection, out Matrix4x4 result)
+        {
+            float dot = (plane.Normal.X * lightDirection.X) + (plane.Normal.Y * lightDirection.Y) + (plane.Normal.Z * lightDirection.Z) + (plane.D * lightDirection.W);
+            float x = -plane.Normal.X;
+            float y = -plane.Normal.Y;
+            float z = -plane.Normal.Z;
+            float d = -plane.D;
 
-        result.M11 = (x * lightDirection.X) + dot;
-        result.M21 = y * lightDirection.X;
-        result.M31 = z * lightDirection.X;
-        result.M41 = d * lightDirection.X;
-        result.M12 = x * lightDirection.Y;
-        result.M22 = (y * lightDirection.Y) + dot;
-        result.M32 = z * lightDirection.Y;
-        result.M42 = d * lightDirection.Y;
-        result.M13 = x * lightDirection.Z;
-        result.M23 = y * lightDirection.Z;
-        result.M33 = (z * lightDirection.Z) + dot;
-        result.M43 = d * lightDirection.Z;
-        result.M14 = x * lightDirection.W;
-        result.M24 = y * lightDirection.W;
-        result.M34 = z * lightDirection.W;
-        result.M44 = (d * lightDirection.W) + dot;
-    }
+            result.M11 = (x * lightDirection.X) + dot;
+            result.M21 = y * lightDirection.X;
+            result.M31 = z * lightDirection.X;
+            result.M41 = d * lightDirection.X;
+            result.M12 = x * lightDirection.Y;
+            result.M22 = (y * lightDirection.Y) + dot;
+            result.M32 = z * lightDirection.Y;
+            result.M42 = d * lightDirection.Y;
+            result.M13 = x * lightDirection.Z;
+            result.M23 = y * lightDirection.Z;
+            result.M33 = (z * lightDirection.Z) + dot;
+            result.M43 = d * lightDirection.Z;
+            result.M14 = x * lightDirection.W;
+            result.M24 = y * lightDirection.W;
+            result.M34 = z * lightDirection.W;
+            result.M44 = (d * lightDirection.W) + dot;
+        }
 
-    /// <summary>
-    /// Function to build a matrix that can be used to reflect a vector about a plane.
-    /// </summary>
-    /// <param name="plane">The plane to reflect from.</param>
-    /// <param name="result">The matrix that contains reflection values.</param>
-    /// <remarks>
-    /// <para>
-    /// This code was adapted from SharpDX (https://github.com/sharpdx/SharpDX).
-    /// </para>
-    /// </remarks>
-    public static void Reflect(this Plane plane, out Matrix4x4 result)
-    {
-        float x = plane.Normal.X;
-        float y = plane.Normal.Y;
-        float z = plane.Normal.Z;
-        float x2 = -2.0f * x;
-        float y2 = -2.0f * y;
-        float z2 = -2.0f * z;
+        /// <summary>
+        /// Function to build a matrix that can be used to reflect a vector about a plane.
+        /// </summary>
+        /// <param name="result">The matrix that contains reflection values.</param>
+        /// <remarks>
+        /// <para>
+        /// This code was adapted from SharpDX (https://github.com/sharpdx/SharpDX).
+        /// </para>
+        /// </remarks>
+        public void Reflect(out Matrix4x4 result)
+        {
+            float x = plane.Normal.X;
+            float y = plane.Normal.Y;
+            float z = plane.Normal.Z;
+            float x2 = -2.0f * x;
+            float y2 = -2.0f * y;
+            float z2 = -2.0f * z;
 
-        result.M11 = (x2 * x) + 1.0f;
-        result.M12 = y2 * x;
-        result.M13 = z2 * x;
-        result.M14 = 0.0f;
-        result.M21 = x2 * y;
-        result.M22 = (y2 * y) + 1.0f;
-        result.M23 = z2 * y;
-        result.M24 = 0.0f;
-        result.M31 = x2 * z;
-        result.M32 = y2 * z;
-        result.M33 = (z2 * z) + 1.0f;
-        result.M34 = 0.0f;
-        result.M41 = x2 * plane.D;
-        result.M42 = y2 * plane.D;
-        result.M43 = z2 * plane.D;
-        result.M44 = 1.0f;
+            result.M11 = (x2 * x) + 1.0f;
+            result.M12 = y2 * x;
+            result.M13 = z2 * x;
+            result.M14 = 0.0f;
+            result.M21 = x2 * y;
+            result.M22 = (y2 * y) + 1.0f;
+            result.M23 = z2 * y;
+            result.M24 = 0.0f;
+            result.M31 = x2 * z;
+            result.M32 = y2 * z;
+            result.M33 = (z2 * z) + 1.0f;
+            result.M34 = 0.0f;
+            result.M41 = x2 * plane.D;
+            result.M42 = y2 * plane.D;
+            result.M43 = z2 * plane.D;
+            result.M44 = 1.0f;
+        }
     }
 
     /// <summary>

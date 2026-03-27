@@ -66,7 +66,7 @@ public sealed class GorgonFontFactory
     // The default font.
     private Lazy<GorgonFont> _defaultFont;
     // Synchronization object for multiple threads.
-    private readonly object _syncLock = new();
+    private readonly Lock _syncLock = new();
 
     /// <summary>
     /// Property to return the graphics interface used to generate the fonts.

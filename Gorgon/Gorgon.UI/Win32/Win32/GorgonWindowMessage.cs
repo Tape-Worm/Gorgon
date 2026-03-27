@@ -21,6 +21,9 @@
 // Created: July 12, 2025 7:33:51 PM
 //
 
+using System.Runtime.CompilerServices;
+using Gorgon.Graphics;
+
 namespace Gorgon.UI.Win32;
 
 /// <summary>
@@ -54,4 +57,94 @@ public readonly struct GorgonWindowMessage(GorgonWindow window, int message, nui
     /// Another parameter for the message.
     /// </summary>
     public readonly nint LParam = lParam;
+
+    /// <summary>
+    /// Function to retrieve a <see cref="GorgonPoint"/> coordinate from the <see cref="LParam"/> value.
+    /// </summary>
+    /// <returns>The <see cref="GorgonPoint"/> contained within <see cref="LParam"/>.</returns>
+    /// <seealso cref="GorgonPoint"/>
+    /// <remarks>
+    /// <para>
+    /// Use this method when handling coordinates when the X and Y coordinates can be negative values (e.g. a monitor placed to the left of the primary monitor).
+    /// </para>
+    /// </remarks>
+    public GorgonPoint GetPointFromLParam()
+    {
+        int value = LParam.ToInt32();
+
+        return new GorgonPoint((short)(value & 0xffff), (short)((value >> 16) & 0xffff));
+    }
+
+    /// <summary>
+    /// Function to retrieve a <see cref="GorgonPoint"/> coordinate from the <see cref="WParam"/> value.
+    /// </summary>
+    /// <returns>The <see cref="GorgonPoint"/> contained within <see cref="WParam"/>.</returns>
+    /// <seealso cref="GorgonPoint"/>
+    /// <remarks>
+    /// <para>
+    /// Use this method when handling coordinates when the X and Y coordinates can be negative values (e.g. a monitor placed to the left of the primary monitor).
+    /// </para>
+    /// </remarks>
+    public GorgonPoint GetPointFromWParam()
+    {
+        uint value = WParam.ToUInt32();
+
+        return new GorgonPoint((short)(value & 0xffff), (short)((value >> 16) & 0xffff));
+    }
+
+    /// <summary>
+    /// Function to retrieve the high word value from the <see cref="LParam"/> value.
+    /// </summary>
+    /// <returns>The high word value.</returns>
+    public int GetHighWordFromLParam() => (LParam.ToInt32() >> 16) & 0xffff;
+
+    /// <summary>
+    /// Function to retrieve the low word value from the <see cref="LParam"/> value.
+    /// </summary>
+    /// <returns>The low word value.</returns>
+    public int GetLowWordFromLParam() => LParam.ToInt32() & 0xffff;
+
+    /// <summary>
+    /// Function to retrieve the high word value from the <see cref="WParam"/> value.
+    /// </summary>
+    /// <returns>The high word value.</returns>
+    public uint GetHighWordFromWParam() => (WParam.ToUInt32() >> 16) & 0xffff;
+
+    /// <summary>
+    /// Function to retrieve the high word value from the <see cref="WParam"/> value.
+    /// </summary>
+    /// <returns>The high word value.</returns>
+    public uint GetLowWordFromWParam() => WParam.ToUInt32() & 0xffff;
+
+    /// <summary>
+    /// Function to retrieve the contents of the data pointed at by <see cref="LParam"/> as the specified type.
+    /// </summary>
+    /// <typeparam name="T">The type used to interpret the data.</typeparam>
+    /// <returns>A read only reference to the data pointed at by <see cref="LParam"/>.</returns>
+    /// <exception cref="NullReferenceException">Thrown if the <see cref="LParam"/> parameter is <b>null</b>.</exception>
+    public unsafe ref readonly T LParamAs<T>() where T : unmanaged
+    {
+        if (LParam == IntPtr.Zero)
+        {
+            throw new NullReferenceException();
+        }
+
+        return ref Unsafe.AsRef<T>((void*)LParam);
+    }
+
+    /// <summary>
+    /// Function to retrieve the contents of the data pointed at by <see cref="WParam"/> as the specified type.
+    /// </summary>
+    /// <typeparam name="T">The type used to interpret the data.</typeparam>
+    /// <returns>A read only reference to the data pointed at by <see cref="WParam"/>.</returns>
+    /// <exception cref="NullReferenceException">Thrown if the <see cref="WParam"/> parameter is <b>null</b>.</exception>
+    public unsafe ref readonly T WParamAs<T>() where T : unmanaged
+    {
+        if (WParam == UIntPtr.Zero)
+        {
+            throw new NullReferenceException();
+        }
+
+        return ref Unsafe.AsRef<T>((void*)WParam);
+    }
 }

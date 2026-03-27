@@ -113,7 +113,8 @@ public class GorgonStreamSlice
     /// <returns>
     /// A long value representing the length of the stream in bytes.
     /// </returns>
-    /// <exception cref="NotSupportedException">A class derived from Stream does not support seeking. </exception><exception cref="ObjectDisposedException">Methods were called after the stream was closed. </exception><filterpriority>1</filterpriority>
+    /// <exception cref="NotSupportedException">A class derived from Stream does not support seeking. </exception>
+    /// <exception cref="ObjectDisposedException">Methods were called after the stream was closed. </exception>
     public override long Length => _streamLength;
 
     /// <summary>

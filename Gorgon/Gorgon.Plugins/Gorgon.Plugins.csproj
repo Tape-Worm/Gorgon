@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
     <Authors>Michael Winsor</Authors>
     <Company>Tape_Worm</Company>
@@ -35,6 +35,7 @@
     <VersionPrefix>4.0.0</VersionPrefix>
     <IncludeSymbols>True</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>    
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -47,37 +48,41 @@
     <VersionSuffix>Dev</VersionSuffix>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="g.png">
+    <None Include="..\..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\g.png">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub">
-      <Version>8.0.0</Version>
+      <Version>10.0.201</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="System.ComponentModel.Composition.Registration" Version="9.0.6" Condition="$(TargetFramework) != 'netstandard2.0'" />
+    <PackageReference Include="System.ComponentModel.Composition.Registration" Version="10.0.5" Condition="$(TargetFramework) != 'netstandard2.0'" />
     <PackageReference Include="System.Composition">
-      <Version>9.0.6</Version>
+      <Version>10.0.5</Version>
     </PackageReference>
     <PackageReference Include="System.Composition.AttributedModel">
-      <Version>9.0.6</Version>
+      <Version>10.0.5</Version>
     </PackageReference>
     <PackageReference Include="System.Composition.Convention">
-      <Version>9.0.6</Version>
+      <Version>10.0.5</Version>
     </PackageReference>
     <PackageReference Include="System.Composition.Hosting">
-      <Version>9.0.6</Version>
+      <Version>10.0.5</Version>
     </PackageReference>
     <PackageReference Include="System.Composition.Runtime">
-      <Version>9.0.6</Version>
+      <Version>10.0.5</Version>
     </PackageReference>
     <PackageReference Include="System.Composition.TypedParts">
-      <Version>9.0.6</Version>
+      <Version>10.0.5</Version>
     </PackageReference>
-    <PackageReference Include="System.Reflection.Context" Version="9.0.6" />
+    <PackageReference Include="System.Reflection.Context" Version="10.0.5" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Gorgon.Core\Gorgon.Core.csproj" />

@@ -40,7 +40,7 @@ public abstract class GorgonLog
     // Logging filter.
     private LoggingLevel _filterLevel = LoggingLevel.All;
     // Synchronization lock for multiple threads.
-    private readonly object _syncLock = new();
+    private readonly Lock _syncLock = new();
     // The application version.
     private readonly Version? _appVersion;
 
@@ -318,11 +318,11 @@ public abstract class GorgonLog
 
         if ((string.IsNullOrEmpty(message)) || (message == "\n") || (message == "\r"))
         {
-            finalMessage = $"[{Environment.CurrentManagedThreadId}][{DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}]";
+            finalMessage = $"[{Environment.CurrentManagedThreadId}][{DateTime.Now:d} {DateTime.Now:t}]";
         }
         else if ((!message.Contains('\n')) && (!message.Contains('\r')))
         {
-            finalMessage = $"[{Environment.CurrentManagedThreadId}][{DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}]{prefix} {message}";
+            finalMessage = $"[{Environment.CurrentManagedThreadId}][{DateTime.Now:d} {DateTime.Now:t}]{prefix} {message}";
         }
         else
         {

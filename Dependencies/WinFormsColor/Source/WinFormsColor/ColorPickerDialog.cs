@@ -50,7 +50,7 @@ public partial class ColorPickerDialog : Form
     private InternalColor selColor = new InternalColor(Color.Red);
     private PrimaryAttrib primAttrib = PrimaryAttrib.Hue;
     private bool suspendTextEvents = false;
-
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public bool AlphaEnabled
     {
         get => alphaEnabled;
@@ -61,6 +61,7 @@ public partial class ColorPickerDialog : Form
             numAlpha.Enabled = alphaEnabled;
         }
     }
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public Color OldColor
     {
         get => oldColor.ToColor();
@@ -70,6 +71,7 @@ public partial class ColorPickerDialog : Form
             UpdateColorShowBox();
         }
     }
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public Color SelectedColor
     {
         get => selColor.ToColor();
@@ -79,6 +81,7 @@ public partial class ColorPickerDialog : Form
             UpdateColorControls();
         }
     }
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public PrimaryAttrib PrimaryAttribute
     {
         get => primAttrib;

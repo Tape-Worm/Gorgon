@@ -33,6 +33,7 @@ using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.Storage.FileSystem;
 using Windows.Win32.System.Console;
+using static System.MemoryExtensions;
 
 namespace Gorgon.Diagnostics.LogProviders;
 
@@ -251,7 +252,7 @@ internal class LogConsoleProvider
         }
 
         ReadOnlySpan<char> messageSpan = message.AsSpan();
-        GorgonSpanCharEnumerator spanEnum = messageSpan.Split(_lineSep);
+        GorgonSpanCharEnumerator spanEnum = messageSpan.SplitString(_lineSep);
 
         foreach (ReadOnlySpan<char> line in spanEnum)
         {

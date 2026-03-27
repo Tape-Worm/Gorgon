@@ -413,6 +413,7 @@ public sealed record class GorgonFormatInfo
         BufferFormat.B5G5R5A1_UNorm => 16,
         BufferFormat.B5G6R5_UNorm => 16,
         BufferFormat.B4G4R4A4_UNorm => 16,
+        BufferFormat.A4B4G4R4_UNorm => 16,
         BufferFormat.A8P8 => 16,
         BufferFormat.P010 => 16,
         BufferFormat.P016 => 16,
@@ -483,6 +484,7 @@ public sealed record class GorgonFormatInfo
         BufferFormat.B8G8R8A8_UNorm_SRgb => 4,
         BufferFormat.B5G5R5A1_UNorm => 4,
         BufferFormat.B4G4R4A4_UNorm => 4,
+        BufferFormat.A4B4G4R4_UNorm => 4,
         BufferFormat.B8G8R8X8_UNorm => 3,
         BufferFormat.B5G6R5_UNorm => 3,
         BufferFormat.R32G32B32_Typeless => 3,
@@ -581,6 +583,7 @@ public sealed record class GorgonFormatInfo
         BufferFormat.R8G8_Typeless or BufferFormat.R8G8_UNorm or BufferFormat.R8G8_UInt or BufferFormat.R8G8_SNorm or BufferFormat.R8G8_SInt => BufferFormat.R8G8_Typeless,
         BufferFormat.R8G8B8A8_Typeless or BufferFormat.R8G8B8A8_UNorm or BufferFormat.R8G8B8A8_UNorm_SRgb or BufferFormat.R8G8B8A8_UInt or BufferFormat.R8G8B8A8_SNorm or BufferFormat.R8G8B8A8_SInt => BufferFormat.R8G8B8A8_Typeless,
         BufferFormat.B4G4R4A4_UNorm => BufferFormat.B4G4R4A4_UNorm,
+        BufferFormat.A4B4G4R4_UNorm => BufferFormat.A4B4G4R4_UNorm,
         _ => BufferFormat.Unknown,
     };
 
@@ -602,7 +605,16 @@ public sealed record class GorgonFormatInfo
     /// <returns><b>true</b> if the format contains an alpha channel, <b>false</b> if not.</returns>
     private static bool GetAlphaChannel(BufferFormat format) => format switch
     {
-        BufferFormat.R32G32B32A32_Float or BufferFormat.R32G32B32A32_Typeless or BufferFormat.R32G32B32A32_UInt or BufferFormat.R32G32B32A32_SInt or BufferFormat.BC1_Typeless or BufferFormat.BC1_UNorm or BufferFormat.BC1_UNorm_SRgb or BufferFormat.BC2_Typeless or BufferFormat.BC2_UNorm or BufferFormat.BC2_UNorm_SRgb or BufferFormat.BC3_Typeless or BufferFormat.BC3_UNorm or BufferFormat.BC3_UNorm_SRgb or BufferFormat.BC7_Typeless or BufferFormat.BC7_UNorm or BufferFormat.BC7_UNorm_SRgb or BufferFormat.R16G16B16A16_Typeless or BufferFormat.R16G16B16A16_Float or BufferFormat.R16G16B16A16_UNorm or BufferFormat.R16G16B16A16_UInt or BufferFormat.R16G16B16A16_SNorm or BufferFormat.R16G16B16A16_SInt or BufferFormat.R10G10B10A2_Typeless or BufferFormat.R10G10B10A2_UNorm or BufferFormat.R10G10B10A2_UInt or BufferFormat.R10G10B10_Xr_Bias_A2_UNorm or BufferFormat.R8G8B8A8_Typeless or BufferFormat.R8G8B8A8_UNorm or BufferFormat.R8G8B8A8_UNorm_SRgb or BufferFormat.R8G8B8A8_UInt or BufferFormat.R8G8B8A8_SNorm or BufferFormat.R8G8B8A8_SInt or BufferFormat.B8G8R8A8_UNorm or BufferFormat.B8G8R8A8_Typeless or BufferFormat.B8G8R8A8_UNorm_SRgb or BufferFormat.B5G5R5A1_UNorm or BufferFormat.B4G4R4A4_UNorm or BufferFormat.A8_UNorm => true,
+        BufferFormat.R32G32B32A32_Float or BufferFormat.R32G32B32A32_Typeless or BufferFormat.R32G32B32A32_UInt
+        or BufferFormat.R32G32B32A32_SInt or BufferFormat.BC1_Typeless or BufferFormat.BC1_UNorm or BufferFormat.BC1_UNorm_SRgb
+        or BufferFormat.BC2_Typeless or BufferFormat.BC2_UNorm or BufferFormat.BC2_UNorm_SRgb or BufferFormat.BC3_Typeless or BufferFormat.BC3_UNorm
+        or BufferFormat.BC3_UNorm_SRgb or BufferFormat.BC7_Typeless or BufferFormat.BC7_UNorm or BufferFormat.BC7_UNorm_SRgb
+        or BufferFormat.R16G16B16A16_Typeless or BufferFormat.R16G16B16A16_Float or BufferFormat.R16G16B16A16_UNorm or BufferFormat.R16G16B16A16_UInt
+        or BufferFormat.R16G16B16A16_SNorm or BufferFormat.R16G16B16A16_SInt or BufferFormat.R10G10B10A2_Typeless or BufferFormat.R10G10B10A2_UNorm
+        or BufferFormat.R10G10B10A2_UInt or BufferFormat.R10G10B10_Xr_Bias_A2_UNorm or BufferFormat.R8G8B8A8_Typeless or BufferFormat.R8G8B8A8_UNorm
+        or BufferFormat.R8G8B8A8_UNorm_SRgb or BufferFormat.R8G8B8A8_UInt or BufferFormat.R8G8B8A8_SNorm or BufferFormat.R8G8B8A8_SInt
+        or BufferFormat.B8G8R8A8_UNorm or BufferFormat.B8G8R8A8_Typeless or BufferFormat.B8G8R8A8_UNorm_SRgb or BufferFormat.B5G5R5A1_UNorm
+        or BufferFormat.B4G4R4A4_UNorm or BufferFormat.A4B4G4R4_UNorm or BufferFormat.A8_UNorm => true,
         _ => false,
     };
 

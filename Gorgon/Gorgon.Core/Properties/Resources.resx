@@ -355,4 +355,13 @@ Code: 0x{2}</value>
   <data name="GOR_ERR_DESTINATION_TOO_SMALL" xml:space="preserve">
     <value>The destination memory is not large enough to copy the data.</value>
   </data>
+  <data name="GOR_RESULT_DESC_MEM_LEAK" xml:space="preserve">
+    <value>Unbounded memory growth was detected.</value>
+  </data>
+  <data name="GOR_RESULT_DESC_CANNOT_INITIALIZE" xml:space="preserve">
+    <value>There was an error while initializing.</value>
+  </data>
+  <data name="GOR_RESULT_DESC_CANNOT_EXECUTE" xml:space="preserve">
+    <value>There was an error while executing the operation.</value>
+  </data>
 </root>

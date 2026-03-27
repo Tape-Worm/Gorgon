@@ -21,6 +21,7 @@
 // Created: May 5, 2025 11:24:57 PM
 //
 
+using System.ComponentModel;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 
@@ -34,6 +35,7 @@ public partial class FormMain : Form
     /// <summary>
     /// Property to set or return the active log interface.
     /// </summary>
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public IGorgonLog Log
     {
         get;

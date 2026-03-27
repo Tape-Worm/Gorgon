@@ -84,7 +84,7 @@ public class GorgonFormatInfoTests
             GorgonFormatInfo info = new(format);
 
             Assert.IsTrue(groupedFormats.ContainsKey(info.Group), $"{info.Group} not found.");
-            Assert.IsTrue(groupedFormats[info.Group].Contains(info.Format), $"{info.Format} not found in group {info.Group}");
+            Assert.Contains(info.Format, groupedFormats[info.Group], $"{info.Format} not found in group {info.Group}");
         }
     }
 
@@ -259,6 +259,7 @@ public class GorgonFormatInfoTests
             BufferFormat.B8G8R8A8_UNorm_SRgb,
             BufferFormat.B5G5R5A1_UNorm,
             BufferFormat.B4G4R4A4_UNorm,
+            BufferFormat.A4B4G4R4_UNorm,
             BufferFormat.A8_UNorm
         ];
 
@@ -371,6 +372,7 @@ public class GorgonFormatInfoTests
             (BufferFormat.B5G5R5A1_UNorm, 16),
             (BufferFormat.B5G6R5_UNorm, 16),
             (BufferFormat.B4G4R4A4_UNorm, 16),
+            (BufferFormat.A4B4G4R4_UNorm, 16),
             (BufferFormat.A8P8, 16),
             (BufferFormat.P010, 16),
             (BufferFormat.P016, 16),
@@ -479,6 +481,7 @@ public class GorgonFormatInfoTests
             (BufferFormat.R8G8_SInt, 2),
             (BufferFormat.B5G5R5A1_UNorm, 4),
             (BufferFormat.B5G6R5_UNorm, 3),
+            (BufferFormat.A4B4G4R4_UNorm, 4),
             (BufferFormat.B4G4R4A4_UNorm, 4),
             (BufferFormat.A8P8, 2),
             (BufferFormat.R8_Typeless, 1),

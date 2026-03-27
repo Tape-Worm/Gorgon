@@ -51,8 +51,6 @@ public class GorgonRingPool<T>
     private int _currentItem = -1;
     // The items in the pool.
     private readonly T[] _items;
-    // The action executed when the allocator wraps around.
-    private readonly Action? _wrapAroundNotifier;
 
     /// <summary>
     /// Property to set the allocator to use when creating new instances of an object.
@@ -106,7 +104,6 @@ public class GorgonRingPool<T>
 
         if (nextIndex >= _items.Length)
         {
-            _wrapAroundNotifier?.Invoke();
             Interlocked.Exchange(ref _currentItem, 0);
             nextIndex = _currentItem;
         }
@@ -157,20 +154,15 @@ public class GorgonRingPool<T>
     /// </summary>
     /// <param name="maxObjectCount">The number of total objects available in the pool.</param>
     /// <param name="allocator">The allocator used to create an object in the pool.</param>
-    /// <param name="wrapAroundNotifier">[Optional] A callback method to notify the user that the allocator is about to wrap around, and reuse objects.</param>
     /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="maxObjectCount"/> parameter is less than 1.</exception>
     /// <remarks>
     /// <para>
     /// The <paramref name="allocator"/> parameter is a method that is used to create a new object in the pool. This method is called when the pool object has never been used before so that it will 
     /// return an instance. If the object does not need to be created (i.e. the resulting object has been used before), then the <paramref name="allocator"/> will not be called.
     /// </para>
-    /// <para>
-    /// If the <paramref name="wrapAroundNotifier"/> parameter is provided, then it will be called when the allocator is full, and wraps to the first item in the pool. Developers can use this to 
-    /// perform their own management of previously allocated objects from the allocator.
-    /// </para>
     /// </remarks>
     /// <seealso cref="Allocate(Action{T}?)"/>
-    public GorgonRingPool(int maxObjectCount, Func<T> allocator, Action? wrapAroundNotifier = null)
+    public GorgonRingPool(int maxObjectCount, Func<T> allocator)
     {
         if (maxObjectCount < 1)
         {
@@ -180,6 +172,5 @@ public class GorgonRingPool<T>
         TotalSize = maxObjectCount;
         _items = new T[maxObjectCount];
         ItemAllocator = allocator;
-        _wrapAroundNotifier = wrapAroundNotifier;
     }
 }

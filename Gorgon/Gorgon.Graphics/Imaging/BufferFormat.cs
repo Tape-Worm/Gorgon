@@ -814,5 +814,9 @@ public enum BufferFormat
     /// An 8 bit YCbCrA 4:4:4:4 rendering format. 
     /// </para>
     /// </summary>
-    V408 = 132
+    V408 = 132,
+    /// <summary>
+    /// A four-component, 16-bit unsigned-normalized integer format that supports 4 bits for each channel including alpha.
+    /// </summary>
+    A4B4G4R4_UNorm = 191
 }

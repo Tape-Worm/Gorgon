@@ -89,7 +89,7 @@ public abstract class GorgonPixel<T>()
     /// </para>
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    protected unsafe void SetPixelUnsafe(IGorgonImageBuffer buffer, int x, int y, T value) => *((T*)((byte*)(buffer.ImageData + (y * buffer.PitchInformation.RowPitch + x * buffer.FormatInformation.SizeInBytes)))) = value;
+    protected unsafe void SetPixelUnsafe(IGorgonImageBuffer buffer, int x, int y, T value) => *((T*)((void*)(buffer.ImageData + (y * buffer.PitchInformation.RowPitch + x * buffer.FormatInformation.SizeInBytes)))) = value;
 
     /// <summary>
     /// Function to retrieve a pixel value at a specified coordinate.
@@ -112,7 +112,7 @@ public abstract class GorgonPixel<T>()
     /// </para>
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    protected unsafe T GetPixelUnsafe(IGorgonImageBuffer buffer, int x, int y) => *((T*)((byte*)(buffer.ImageData + (y * buffer.PitchInformation.RowPitch + x * buffer.FormatInformation.SizeInBytes))));
+    protected unsafe T GetPixelUnsafe(IGorgonImageBuffer buffer, int x, int y) => *((T*)((void*)(buffer.ImageData + (y * buffer.PitchInformation.RowPitch + x * buffer.FormatInformation.SizeInBytes))));
 
     /// <summary>
     /// Function to set a pixel at a specified coordinate with the specified color.

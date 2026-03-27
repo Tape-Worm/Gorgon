@@ -105,11 +105,8 @@ public partial class Form
                 case ".jpeg":
                 case ".bmp":
                 case ".png":
-                    if (_image is not null)
-                    {
-                        _image.Dispose();
-                        _image = null;
-                    }
+                    _image?.Dispose();
+                    _image = null;
 
                     _image = Image.FromStream(fileStream);
                     Picture.Image = _image;

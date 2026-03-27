@@ -49,7 +49,14 @@ public sealed class GorgonTimer
     private TimeSpan _timeSpan;
 
     /// <inheritdoc/>
-    public TimeSpan Elapsed => _timeSpan;
+    public TimeSpan Elapsed
+    {
+        get
+        {
+            GetQpcTime();
+            return _timeSpan;
+        }
+    }
 
     /// <inheritdoc/>
     public double Milliseconds

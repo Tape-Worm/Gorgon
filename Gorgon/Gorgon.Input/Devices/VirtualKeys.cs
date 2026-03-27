@@ -881,49 +881,51 @@ public enum VirtualKeys
 /// </summary>
 public static class GorgonVirtualKeysExtensions
 {
-    /// <summary>
-    /// Function to find the index of a <see cref="VirtualKeys"/> value in a read only span.
-    /// </summary>
-    /// <param name="span">The span to evaluate.</param>
-    /// <param name="key">The key to look up.</param>
-    /// <returns>The index of the key within the span, or -1 if not found.</returns>
-    public static int IndexOf(this ReadOnlySpan<VirtualKeys> span, VirtualKeys key)
+    extension(ReadOnlySpan<VirtualKeys> span)
     {
-        for (int i = 0; i < span.Length; ++i)
+        /// <summary>
+        /// Function to find the index of a <see cref="VirtualKeys"/> value in a read only span.
+        /// </summary>
+        /// <param name="key">The key to look up.</param>
+        /// <returns>The index of the key within the span, or -1 if not found.</returns>
+        public int IndexOf(VirtualKeys key)
         {
-            if (span[i] == key)
+            for (int i = 0; i < span.Length; ++i)
             {
-                return i;
+                if (span[i] == key)
+                {
+                    return i;
+                }
             }
+
+            return -1;
         }
 
-        return -1;
+        /// <summary>
+        /// Function to determine if a <see cref="VirtualKeys"/> value is contained within a read only span.
+        /// </summary>
+        /// <param name="key">The key to look up.</param>
+        /// <returns><b>true</b> if found, <b>false</b> if not.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool Contains(VirtualKeys key) => IndexOf(span, key) != -1;
     }
 
-    /// <summary>
-    /// Function to determine if a <see cref="VirtualKeys"/> value is contained within a read only span.
-    /// </summary>
-    /// <param name="span">The span to evaluate.</param>
-    /// <param name="key">The key to look up.</param>
-    /// <returns><b>true</b> if found, <b>false</b> if not.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool Contains(this ReadOnlySpan<VirtualKeys> span, VirtualKeys key) => IndexOf(span, key) != -1;
+    extension(Span<VirtualKeys> span)
+    {
+        /// <summary>
+        /// Function to find the index of a <see cref="VirtualKeys"/> value in a read write span.
+        /// </summary>
+        /// <param name="key">The key to look up.</param>
+        /// <returns>The index of the key within the span, or -1 if not found.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int IndexOf(VirtualKeys key) => IndexOf(span, key);
 
-    /// <summary>
-    /// Function to find the index of a <see cref="VirtualKeys"/> value in a read write span.
-    /// </summary>
-    /// <param name="span">The span to evaluate.</param>
-    /// <param name="key">The key to look up.</param>
-    /// <returns>The index of the key within the span, or -1 if not found.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static int IndexOf(this Span<VirtualKeys> span, VirtualKeys key) => IndexOf(span, key);
-
-    /// <summary>
-    /// Function to determine if a <see cref="VirtualKeys"/> value is contained within a read write span.
-    /// </summary>
-    /// <param name="span">The span to evaluate.</param>
-    /// <param name="key">The key to look up.</param>
-    /// <returns><b>true</b> if found, <b>false</b> if not.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool Contains(this Span<VirtualKeys> span, VirtualKeys key) => IndexOf(span, key) != -1;
+        /// <summary>
+        /// Function to determine if a <see cref="VirtualKeys"/> value is contained within a read write span.
+        /// </summary>
+        /// <param name="key">The key to look up.</param>
+        /// <returns><b>true</b> if found, <b>false</b> if not.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool Contains(VirtualKeys key) => IndexOf(span, key) != -1;
+    }
 }

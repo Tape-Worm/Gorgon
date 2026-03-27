@@ -24,15 +24,15 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using Gorgon.UI.Win32.Properties;
+using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Math;
 using Gorgon.Native;
+using Gorgon.UI.Win32.Properties;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.Graphics.Gdi;
 using Windows.Win32.UI.WindowsAndMessaging;
-using Gorgon.Core;
 
 namespace Gorgon.UI.Win32;
 
@@ -268,7 +268,7 @@ public sealed class GorgonWindow
         }
 
         if ((decorations & WindowDecorations.SystemMenu) == WindowDecorations.SystemMenu)
-        {            
+        {
             style |= WINDOW_STYLE.WS_SYSMENU;
 
             // These styles need a system menu.
@@ -306,7 +306,7 @@ public sealed class GorgonWindow
             }
 
             fixed (char* classNamePtr = Name)
-            {                
+            {
                 HICON icon = _icon == IntPtr.Zero ? PInvoke.LoadIcon(HINSTANCE.Null, PInvoke.IDI_APPLICATION) : new HICON(_icon);
 
                 WNDCLASSEXW wndClass = new()
@@ -377,49 +377,6 @@ public sealed class GorgonWindow
     }
 
     /// <summary>
-    /// Function to dispose managed and unmanaged resources.
-    /// </summary>
-    /// <param name="disposing"><b>true</b> to dispose of managed and unmanaged resources, <b>false</b> to return </param>
-    private void Dispose(bool disposing)
-    {
-        if (Interlocked.Exchange(ref _isDisposing, 1) != 0)
-        {
-            return;
-        }
-
-        Interlocked.Exchange(ref _wndProc!, null);
-        nint hwnd = Interlocked.Exchange(ref _hwnd, IntPtr.Zero);
-        nint hicon = Interlocked.Exchange(ref _icon, IntPtr.Zero);
-
-        if (hwnd == IntPtr.Zero)
-        {
-            return;
-        }
-
-        _windowProcs.Remove(hwnd);
-
-        if (hicon != IntPtr.Zero)
-        {
-            PInvoke.DestroyIcon(new HICON(hicon));
-        }
-
-        if (hwnd != IntPtr.Zero)
-        {
-            PInvoke.DestroyWindow(new HWND(_hwnd));
-        }
-
-        if (!string.IsNullOrWhiteSpace(Name))
-        {
-            PInvoke.UnregisterClass(Name, _instance);
-        }
-
-        if (disposing)
-        {
-            // ???
-        }
-    }
-
-    /// <summary>
     /// Function to handle window messages for our window.
     /// </summary>
     /// <param name="hwnd">The window handle.</param>
@@ -435,6 +392,43 @@ public sealed class GorgonWindow
             return PInvoke.DefWindowProc(hwnd, msg, wParam, lParam);
         }
 
+        RECT windowRect = default;
+
+        switch (msg)
+        {
+            // Handle minimize by keeping our previous size, but setting the state only.
+            // This will keep apps from tripping up on weird client sizes/positions.
+            case GorgonWindowMessages.WM_SIZE when wParam.Value == 1:
+                proc.Window._state = WindowState.Minimized;
+                break;
+            case GorgonWindowMessages.WM_SIZE:
+                // Handle minimized scenario.
+                switch (wParam.Value)
+                {
+                    // Restore.
+                    case 0:
+                        proc.Window._state = WindowState.Normal;
+                        break;
+                    // Maximized.
+                    case 2:
+                        proc.Window._state = WindowState.Maximized;
+                        break;
+                }
+
+                int width = (int)lParam.Value & 0xffff;
+                int height = ((int)lParam.Value >> 16) & 0xffff;
+
+                PInvoke.GetWindowRect(hwnd, &windowRect);
+
+                proc.Window._clientSize = new GorgonPoint(width, height);
+                proc.Window._bounds = new GorgonRectangle(windowRect.X, windowRect.Y, windowRect.Width, windowRect.Height);
+                break;
+            case GorgonWindowMessages.WM_MOVE:
+                PInvoke.GetWindowRect(hwnd, &windowRect);
+                proc.Window._bounds = new GorgonRectangle(windowRect.X, windowRect.Y, windowRect.Width, windowRect.Height);
+                break;
+        }
+
         GorgonWindowMessage message = new(proc.Window, (int)msg, wParam, lParam);
         GorgonWindowMessageResult result = proc.WndProc(in message);
 
@@ -442,7 +436,7 @@ public sealed class GorgonWindow
         {
             return new LRESULT(result.Result);
         }
-        
+
         return PInvoke.DefWindowProc(hwnd, msg, wParam, lParam);
     }
 
@@ -678,7 +672,7 @@ public sealed class GorgonWindow
     public GorgonWindow SetBounds(GorgonRectangle bounds)
     {
         if (_hwnd == IntPtr.Zero)
-        {            
+        {
             _desiredBounds = _bounds = bounds;
             return this;
         }
@@ -696,7 +690,7 @@ public sealed class GorgonWindow
     /// <param name="position">The new position for the window.</param>
     /// <returns>This window as a fluent interface.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public GorgonWindow MoveTo(GorgonPoint position) 
+    public GorgonWindow MoveTo(GorgonPoint position)
     {
         _bounds = new GorgonRectangle(position.X, position.Y, _bounds.Width, _bounds.Height);
 
@@ -706,7 +700,7 @@ public sealed class GorgonWindow
             {
                 _desiredBounds = new GorgonRectangle(position.X, position.Y, _desiredBounds.Value.Width, _desiredBounds.Value.Height);
             }
-            
+
             return this;
         }
 
@@ -803,7 +797,7 @@ public sealed class GorgonWindow
 
         if (_hwnd != IntPtr.Zero)
         {
-            PInvoke.SetWindowPos(new HWND(_hwnd), _topMost ? HWND.HWND_TOPMOST : HWND.HWND_NOTOPMOST, 0, 0, 0, 0, SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOSIZE);            
+            PInvoke.SetWindowPos(new HWND(_hwnd), _topMost ? HWND.HWND_TOPMOST : HWND.HWND_NOTOPMOST, 0, 0, 0, 0, SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOSIZE);
         }
 
         return this;
@@ -906,7 +900,37 @@ public sealed class GorgonWindow
     /// <inheritdoc/>
     public void Dispose()
     {
-        Dispose(true);
+        if (Interlocked.Exchange(ref _isDisposing, 1) != 0)
+        {
+            return;
+        }
+
+        Interlocked.Exchange(ref _wndProc!, null);
+        nint hwnd = Interlocked.Exchange(ref _hwnd, IntPtr.Zero);
+        nint hicon = Interlocked.Exchange(ref _icon, IntPtr.Zero);
+
+        if (hwnd == IntPtr.Zero)
+        {
+            return;
+        }
+
+        _windowProcs.Remove(hwnd);
+
+        if (hicon != IntPtr.Zero)
+        {
+            PInvoke.DestroyIcon(new HICON(hicon));
+        }
+
+        if (hwnd != IntPtr.Zero)
+        {
+            PInvoke.DestroyWindow(new HWND(_hwnd));
+        }
+
+        if (!string.IsNullOrWhiteSpace(Name))
+        {
+            PInvoke.UnregisterClass(Name, _instance);
+        }
+
         GC.SuppressFinalize(this);
     }
 
@@ -942,7 +966,7 @@ public sealed class GorgonWindow
         ArgumentEmptyException.ThrowIfNullOrWhiteSpace(name);
 
         _caption = caption ?? string.Empty;
-        _clientSize = clientSize;        
+        _clientSize = clientSize;
         _wndProc = wndProc;
         Name = name;
 
@@ -957,6 +981,6 @@ public sealed class GorgonWindow
         }
 
         // Duplicate the icon, so we get ownership.
-        _icon = PInvoke.CopyIcon(new HICON(icon.Value));        
+        _icon = PInvoke.CopyIcon(new HICON(icon.Value));
     }
 }

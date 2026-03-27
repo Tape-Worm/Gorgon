@@ -265,7 +265,7 @@ public sealed class GorgonChunkFileWriter
     /// </summary>
     /// <param name="stream">The stream that contains the chunk file to write.</param>
     /// <param name="appHeaderId">An application specific header ID to write to the file for validation.</param>
-    /// <exception cref="ArgumentException">Thrown when the <paramref name="stream" /> is has its <see cref="Stream.CanSeek" /> property set to <b>false</b> 
+    /// <exception cref="ArgumentException"><para>Thrown when the <paramref name="stream" /> is has its <see cref="Stream.CanSeek" /> property set to <b>false</b>.</para>
     /// <para>-or-</para>
     /// <para>
     /// Thrown when the <paramref name="stream"/> is read-only.

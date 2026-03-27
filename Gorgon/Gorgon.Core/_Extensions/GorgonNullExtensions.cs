@@ -32,50 +32,53 @@ namespace Gorgon.Core;
 /// </summary>
 public static class GorgonNullExtensions
 {
-    /// <summary>
-    /// Determines whether the specified value is null.
-    /// </summary>
-    /// <param name="value">The value to check.</param>
-    /// <returns><c>true</c> if the specified value is null; otherwise, <c>false</c>.</returns>
-    /// <remarks>
-    /// <para>
-    /// This will check an object for <b>null</b> and <see cref="DBNull"/>.
-    /// </para>
-    /// </remarks>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsNull([NotNullWhen(false)] this object? value) => (value is null) || (value == DBNull.Value);
-
-    /// <summary>
-    /// Function to check an object for <b>null</b> or <see cref="DBNull"/> and return a substitute value.
-    /// </summary>
-    /// <typeparam name="T">The type of value.</typeparam>
-    /// <param name="value">The value to check.</param>
-    /// <param name="substitutionValue">The value used to replace the return value if the original value is <b>null</b> or <see cref="DBNull"/>.</param>
-    /// <returns>The original <paramref name="value"/> if not <b>null</b> (or <see cref="DBNull"/>), or the <paramref name="substitutionValue"/> otherwise.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static T IfNull<T>(this object? value, T substitutionValue) => !IsNull(value) ? (T)value : substitutionValue;
-
-    /// <summary>
-    /// Function to return the value as a nullable type.
-    /// </summary>
-    /// <typeparam name="T">The type of value to convert to, must be a value type.</typeparam>
-    /// <param name="value">The value to convert.</param>
-    /// <returns>The value as a nullable value type.</returns>
-    public static T? AsNullable<T>(this object? value)
-        where T : struct
+    extension([NotNullWhen(false)] object? value)
     {
-        if ((value is null) || (value == DBNull.Value))
+        /// <summary>
+        /// Determines whether the specified value is null.
+        /// </summary>
+        /// <returns><c>true</c> if the specified value is null; otherwise, <c>false</c>.</returns>
+        /// <remarks>
+        /// <para>
+        /// This will check an object for <b>null</b> and <see cref="DBNull"/>.
+        /// </para>
+        /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsNull() => (value is null) || (value == DBNull.Value);
+    }
+
+    extension(object? value)
+    {
+        /// <summary>
+        /// Function to check an object for <b>null</b> or <see cref="DBNull"/> and return a substitute value.
+        /// </summary>
+        /// <typeparam name="T">The type of value.</typeparam>
+        /// <param name="substitutionValue">The value used to replace the return value if the original value is <b>null</b> or <see cref="DBNull"/>.</param>
+        /// <returns>The original value if not <b>null</b> (or <see cref="DBNull"/>), or the <paramref name="substitutionValue"/> otherwise.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T IfNull<T>(T substitutionValue) => !IsNull(value) ? (T)value : substitutionValue;
+
+        /// <summary>
+        /// Function to return the value as a nullable type.
+        /// </summary>
+        /// <typeparam name="T">The type of value to convert to, must be a value type.</typeparam>
+        /// <returns>The value as a nullable value type.</returns>
+        public T? AsNullable<T>()
+            where T : struct
         {
-            return null;
+            if ((value is null) || (value == DBNull.Value))
+            {
+                return null;
+            }
+
+            Type type = typeof(T);
+
+            if ((type.IsEnum) && (type.IsEnumDefined(value)))
+            {
+                return (T)value;
+            }
+
+            return (T)Convert.ChangeType(value, type);
         }
-
-        Type type = typeof(T);
-
-        if ((type.IsEnum) && (type.IsEnumDefined(value)))
-        {
-            return (T)value;
-        }
-
-        return (T)Convert.ChangeType(value, type);
     }
 }

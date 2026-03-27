@@ -348,7 +348,31 @@ public readonly struct GorgonColor
     /// <param name="color">The color to convert.</param>
     /// <returns>An <see cref="int"/> representing the color value in ARGB format.</returns>
     /// <remarks>
-    /// The format indicates the byte position of each color component in the <see cref="int"/> value.
+    /// <para>
+    /// The name of the method indicates the byte position of each color component in the <see cref="int"/> value:
+    /// <list type="table">
+    ///     <listheader>
+    ///     <term>Component</term>
+    ///     <description>Bit position</description>
+    ///     </listheader>
+    ///     <item>
+    ///     <term>A</term>
+    ///     <description>Bits 24-31</description>
+    ///     </item>
+    ///     <item>
+    ///     <term>R</term>
+    ///     <description>Bits 16-23</description>
+    ///     </item>
+    ///     <item>
+    ///     <term>G</term>
+    ///     <description>Bits 8-15</description>
+    ///     </item>
+    ///     <item>
+    ///     <term>B</term>
+    ///     <description>Bits 0-7</description>
+    ///     </item>
+    /// </list>
+    /// </para>
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int ToARGB(GorgonColor color)
@@ -363,10 +387,32 @@ public readonly struct GorgonColor
     /// Function to convert this <see cref="GorgonColor"/> value into an <see cref="int"/> value with a RGBA format.
     /// </summary>
     /// <param name="color">The color to convert.</param>
-    /// <returns>An <see cref="int"/> representing the color value in ARGB format.</returns>
+    /// <returns>An <see cref="int"/> representing the color value in RGBA format.</returns>
     /// <remarks>
     /// <para>
-    /// The format indicates the byte position of each color component in the <see cref="int"/> value.
+    /// The name of the method indicates the byte position of each color component in the <see cref="int"/> value:
+    /// <list type="table">
+    ///     <listheader>
+    ///     <term>Component</term>
+    ///     <description>Bit position</description>
+    ///     </listheader>
+    ///     <item>
+    ///     <term>R</term>
+    ///     <description>Bits 24-31</description>
+    ///     </item>
+    ///     <item>
+    ///     <term>G</term>
+    ///     <description>Bits 16-23</description>
+    ///     </item>
+    ///     <item>
+    ///     <term>B</term>
+    ///     <description>Bits 8-15</description>
+    ///     </item>
+    ///     <item>
+    ///     <term>A</term>
+    ///     <description>Bits 0-7</description>
+    ///     </item>
+    /// </list>
     /// </para>
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -382,9 +428,33 @@ public readonly struct GorgonColor
     /// Function to convert this <see cref="GorgonColor"/> value into an <see cref="int"/> value with a BGRA format.
     /// </summary>
     /// <param name="color">The color to convert.</param>
-    /// <returns>An <see cref="int"/> representing the color value in ARGB format.</returns>
+    /// <returns>An <see cref="int"/> representing the color value in BGRA format.</returns>
     /// <remarks>
-    /// The format indicates the byte position of each color component in the <see cref="int"/> value.
+    /// <para>
+    /// The name of the method indicates the byte position of each color component in the <see cref="int"/> value:
+    /// <list type="table">
+    ///     <listheader>
+    ///     <term>Component</term>
+    ///     <description>Bit position</description>
+    ///     </listheader>
+    ///     <item>
+    ///     <term>B</term>
+    ///     <description>Bits 24-31</description>
+    ///     </item>
+    ///     <item>
+    ///     <term>G</term>
+    ///     <description>Bits 16-23</description>
+    ///     </item>
+    ///     <item>
+    ///     <term>R</term>
+    ///     <description>Bits 8-15</description>
+    ///     </item>
+    ///     <item>
+    ///     <term>A</term>
+    ///     <description>Bits 0-7</description>
+    ///     </item>
+    /// </list>
+    /// </para>
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int ToBGRA(GorgonColor color)
@@ -399,9 +469,33 @@ public readonly struct GorgonColor
     /// Function to convert this <see cref="GorgonColor"/> value into an <see cref="int"/> value with a ABGR format.
     /// </summary>
     /// <param name="color">The color to convert.</param>
-    /// <returns>An <see cref="int"/> representing the color value in ARGB format.</returns>
+    /// <returns>An <see cref="int"/> representing the color value in ABGR format.</returns>
     /// <remarks>
-    /// The format indicates the byte position of each color component in the <see cref="int"/> value.
+    /// <para>
+    /// The name of the method indicates the byte position of each color component in the <see cref="int"/> value:
+    /// <list type="table">
+    ///     <listheader>
+    ///     <term>Component</term>
+    ///     <description>Bit position</description>
+    ///     </listheader>
+    ///     <item>
+    ///     <term>A</term>
+    ///     <description>Bits 24-31</description>
+    ///     </item>
+    ///     <item>
+    ///     <term>B</term>
+    ///     <description>Bits 16-23</description>
+    ///     </item>
+    ///     <item>
+    ///     <term>G</term>
+    ///     <description>Bits 8-15</description>
+    ///     </item>
+    ///     <item>
+    ///     <term>R</term>
+    ///     <description>Bits 0-7</description>
+    ///     </item>
+    /// </list>
+    /// </para>
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int ToABGR(GorgonColor color)

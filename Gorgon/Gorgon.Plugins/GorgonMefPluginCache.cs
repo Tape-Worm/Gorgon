@@ -114,7 +114,7 @@ public sealed class GorgonMefPluginCache
     // The container for the Plugin definitions.
     private CompositionContainer? _container;
     // The synchronization lock for multiple threads..
-    private static readonly object _syncLock = new();
+    private static readonly Lock _syncLock = new();
     // The builder used for type registration.
     private readonly RegistrationBuilder _builder = new();
 

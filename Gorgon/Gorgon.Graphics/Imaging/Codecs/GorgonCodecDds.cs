@@ -598,6 +598,7 @@ public sealed class GorgonCodecDds
                     conversionFlags |= DdsConversionFlags.Expand | DdsConversionFlags.NoAlpha;
                     break;
                 case BufferFormat.B4G4R4A4_UNorm:
+                case BufferFormat.A4B4G4R4_UNorm:
                 case BufferFormat.B5G5R5A1_UNorm:
                     format = BufferFormat.R8G8B8A8_UNorm;
                     conversionFlags |= DdsConversionFlags.Expand;
@@ -660,7 +661,7 @@ public sealed class GorgonCodecDds
                     break;
                 case DdsConversionFlags.A4L4:
                     {
-                        GorgonPtr<byte> srcPtr = (GorgonPtr<byte>)src;
+                        GorgonPtr<byte> srcPtr = src;
                         GorgonPtr<uint> destPtr = (GorgonPtr<uint>)dest;
 
                         // Copy alpha luminance.
@@ -677,7 +678,7 @@ public sealed class GorgonCodecDds
                     break;
                 case DdsConversionFlags.RGB332:
                     {
-                        GorgonPtr<byte> srcPtr = (GorgonPtr<byte>)src;
+                        GorgonPtr<byte> srcPtr = src;
 
                         switch (destFormat)
                         {
@@ -773,7 +774,7 @@ public sealed class GorgonCodecDds
                     break;
                 case DdsConversionFlags.RGB888:
                     {
-                        GorgonPtr<byte> srcPtr = (GorgonPtr<byte>)src;
+                        GorgonPtr<byte> srcPtr = src;
                         GorgonPtr<uint> destPtr = (GorgonPtr<uint>)dest;
 
                         // Copy 24 bit RGB.
@@ -991,7 +992,7 @@ public sealed class GorgonCodecDds
                 && (pitchFlags == PitchFlags.None))
         {
             // First mip, array and depth slice is at the start of our image memory buffer.
-            reader.ReadRange<byte>(image.ImageData);
+            reader.ReadToPointer(image.ImageData);
             return;
         }
 
@@ -1191,7 +1192,7 @@ public sealed class GorgonCodecDds
                     for (int mipLevel = 0; mipLevel < imageData.MipCount; mipLevel++)
                     {
                         IGorgonImageBuffer buffer = imageData.Buffers[mipLevel, array];
-                        writer.WriteRange<byte>(buffer.ImageData.Slice(0, buffer.PitchInformation.SlicePitch));
+                        writer.WriteFromPointer(buffer.ImageData.Slice(0, buffer.PitchInformation.SlicePitch));
                     }
                 }
                 break;
@@ -1202,7 +1203,7 @@ public sealed class GorgonCodecDds
                     for (int slice = 0; slice < depth; slice++)
                     {
                         IGorgonImageBuffer buffer = imageData.Buffers[mipLevel, slice];
-                        writer.WriteRange<byte>(buffer.ImageData.Slice(0, buffer.PitchInformation.SlicePitch));
+                        writer.WriteFromPointer(buffer.ImageData.Slice(0, buffer.PitchInformation.SlicePitch));
                     }
 
                     if (depth > 1)

@@ -28,88 +28,89 @@ namespace Gorgon.Collections;
 /// </summary>
 public static class GorgonIEnumerableExtensions
 {
-    /// <summary>
-    /// Function to convert an <see cref="IEnumerable{T}"/> to a <see cref="GorgonArray{T}"/>.
-    /// </summary>
     /// <typeparam name="T">The type of item in the array. Must implement <see cref="IEquatable{T}"/>.</typeparam>
-    /// <param name="source">The enumerable to copy into the array.</param>
-    /// <param name="markDirty">[Optional] <b>true</b> to mark the elements in the resulting array as dirty, <b>false</b> to mark the resulting array as clean.</param>
-    /// <returns>A new <see cref="GorgonArray{T}"/> containing the elements in the <see cref="IEnumerable{T}"/>.</returns>
-    /// <remarks>
-    /// <para>
-    /// The <see cref="GorgonArray{T}"/> returned will have
-    /// </para>
-    /// </remarks>
-    public static GorgonArray<T> ToGorgonArray<T>(this IEnumerable<T> source, bool markDirty = false)
-        where T : IEquatable<T>
-            => new(source, markDirty);
-
-    /// <summary>
-    /// Function to flatten a tree of objects into a flat traversable list using a depth first approach.
-    /// </summary>
-    /// <typeparam name="T">The type of value in the tree.</typeparam>
-    /// <param name="children">The list of objects to evaluate.</param>
-    /// <param name="getChildren">The method to retrieve the next level of children.</param>
-    /// <returns>An enumerable containing the flattened list of objects.</returns>
-    public static IEnumerable<T> TraverseDepthFirst<T>(this IEnumerable<T> children, Func<T, IEnumerable<T>> getChildren)
+    extension<T>(IEnumerable<T> source) where T : IEquatable<T>
     {
-        Stack<T> queue = new();
-        foreach (T child in children.Reverse())
+        /// <summary>
+        /// Function to convert an <see cref="IEnumerable{T}"/> to a <see cref="GorgonArray{T}"/>.
+        /// </summary>
+        /// <param name="markDirty">[Optional] <b>true</b> to mark the elements in the resulting array as dirty, <b>false</b> to mark the resulting array as clean.</param>
+        /// <returns>A new <see cref="GorgonArray{T}"/> containing the elements in the <see cref="IEnumerable{T}"/>.</returns>
+        /// <remarks>
+        /// <para>
+        /// The <see cref="GorgonArray{T}"/> returned will have
+        /// </para>
+        /// </remarks>
+        public GorgonArray<T> ToGorgonArray(bool markDirty = false)
+                => new(source, markDirty);
+    }
+
+    /// <typeparam name="T">The type of value in the tree.</typeparam>
+    extension<T>(IEnumerable<T> children)
+    {
+        /// <summary>
+        /// Function to flatten a tree of objects into a flat traversable list using a depth first approach.
+        /// </summary>
+        /// <param name="getChildren">The method to retrieve the next level of children.</param>
+        /// <returns>An enumerable containing the flattened list of objects.</returns>
+        public IEnumerable<T> TraverseDepthFirst(Func<T, IEnumerable<T>> getChildren)
         {
-            queue.Push(child);
-        }
-
-        while (queue.Count > 0)
-        {
-            T node = queue.Pop();
-
-            yield return node;
-
-            IEnumerable<T> subChildren = getChildren.Invoke(node);
-
-            if (subChildren is null)
-            {
-                continue;
-            }
-
-            foreach (T child in subChildren.Reverse())
+            Stack<T> queue = new();
+            foreach (T child in children.Reverse())
             {
                 queue.Push(child);
             }
-        }
-    }
 
-    /// <summary>
-    /// Function to flatten a tree of objects into a flat traversable list using a breadth first approach.
-    /// </summary>
-    /// <typeparam name="T">The type of value in the tree.</typeparam>
-    /// <param name="children">The list of objects to evaluate.</param>
-    /// <param name="getChildren">The method to retrieve the next level of children.</param>
-    /// <returns>An enumerable containing the flattened list of objects.</returns>
-    public static IEnumerable<T> TraverseBreadthFirst<T>(this IEnumerable<T> children, Func<T, IEnumerable<T>> getChildren)
-    {
-        Queue<T> queue = new();
-        foreach (T child in children)
-        {
-            queue.Enqueue(child);
-        }
-
-        while (queue.Count > 0)
-        {
-            T node = queue.Dequeue();
-
-            yield return node;
-
-            IEnumerable<T> subChildren = getChildren.Invoke(node);
-
-            if (subChildren is null)
+            while (queue.Count > 0)
             {
-                continue;
-            }
+                T node = queue.Pop();
 
-            foreach (T child in subChildren)
+                yield return node;
+
+                IEnumerable<T> subChildren = getChildren.Invoke(node);
+
+                if (subChildren is null)
+                {
+                    continue;
+                }
+
+                foreach (T child in subChildren.Reverse())
+                {
+                    queue.Push(child);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Function to flatten a tree of objects into a flat traversable list using a breadth first approach.
+        /// </summary>
+        /// <param name="getChildren">The method to retrieve the next level of children.</param>
+        /// <returns>An enumerable containing the flattened list of objects.</returns>
+        public IEnumerable<T> TraverseBreadthFirst(Func<T, IEnumerable<T>> getChildren)
+        {
+            Queue<T> queue = new();
+            foreach (T child in children)
             {
                 queue.Enqueue(child);
+            }
+
+            while (queue.Count > 0)
+            {
+                T node = queue.Dequeue();
+
+                yield return node;
+
+                IEnumerable<T> subChildren = getChildren.Invoke(node);
+
+                if (subChildren is null)
+                {
+                    continue;
+                }
+
+                foreach (T child in subChildren)
+                {
+                    queue.Enqueue(child);
+                }
             }
         }
     }

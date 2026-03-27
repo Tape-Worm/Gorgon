@@ -33,52 +33,54 @@ namespace Gorgon.IO;
 /// </summary>
 internal static class GorgonGraphicExtensions
 {
-    /// <summary>
-    /// Function to locate a 2D texture resource by its name.
-    /// </summary>
-    /// <param name="graphics">The graphics interface that is holding the resources.</param>
-    /// <param name="textureName">The name of the texture to locate.</param>
-    /// <param name="width">The width of the texture to locate.</param>
-    /// <param name="height">The height of the texture to locate.</param>
-    /// <param name="format">The format of the texture to locate.</param>
-    /// <param name="arrayCount">The number of array indices in the texture to locate. Pass -1 to ignore.</param>
-    /// <param name="mipCount">The number of mip map levels in the texture to locate. Pass -1 to ignore.</param>
-    /// <returns>The texture resource if found, or <b>null</b> if not.</returns>
-    public static GorgonTexture2D Locate2DTextureByName(this GorgonGraphics graphics, string textureName, int width, int height, BufferFormat format, int arrayCount, int mipCount)
+    extension(GorgonGraphics graphics)
     {
-        if ((graphics is null) || (string.IsNullOrWhiteSpace(textureName)))
+        /// <summary>
+        /// Function to locate a 2D texture resource by its name.
+        /// </summary>
+        /// <param name="textureName">The name of the texture to locate.</param>
+        /// <param name="width">The width of the texture to locate.</param>
+        /// <param name="height">The height of the texture to locate.</param>
+        /// <param name="format">The format of the texture to locate.</param>
+        /// <param name="arrayCount">The number of array indices in the texture to locate. Pass -1 to ignore.</param>
+        /// <param name="mipCount">The number of mip map levels in the texture to locate. Pass -1 to ignore.</param>
+        /// <returns>The texture resource if found, or <b>null</b> if not.</returns>
+        public GorgonTexture2D Locate2DTextureByName(string textureName, int width, int height, BufferFormat format, int arrayCount, int mipCount)
         {
-            return null;
-        }
-
-        IEnumerable<GorgonTexture2D> textureResources = graphics.LocateResourcesByName<GorgonTexture2D>(textureName).Where(item => item is not null);
-        int resourceCount = textureResources.Count();
-
-        // Nothing found, leave.
-        if (resourceCount == 0)
-        {
-            return null;
-        }
-
-        // There's only 1 texture found, so this must be it. Right?
-        if (resourceCount == 1)
-        {
-            return textureResources.First();
-        }
-
-        // If there's more than 1, then we have 
-        foreach (GorgonTexture2D texture in textureResources)
-        {
-            if ((texture.Width == width)
-                && (texture.Height == height)
-                && (texture.Format == format)
-                && ((arrayCount < 1) || (texture.ArrayCount == arrayCount))
-                && ((mipCount < 1) || (texture.MipLevels == mipCount)))
+            if ((graphics is null) || (string.IsNullOrWhiteSpace(textureName)))
             {
-                return texture;
+                return null;
             }
-        }
 
-        return null;
+            IEnumerable<GorgonTexture2D> textureResources = graphics.LocateResourcesByName<GorgonTexture2D>(textureName).Where(item => item is not null);
+            int resourceCount = textureResources.Count();
+
+            // Nothing found, leave.
+            if (resourceCount == 0)
+            {
+                return null;
+            }
+
+            // There's only 1 texture found, so this must be it. Right?
+            if (resourceCount == 1)
+            {
+                return textureResources.First();
+            }
+
+            // If there's more than 1, then we have 
+            foreach (GorgonTexture2D texture in textureResources)
+            {
+                if ((texture.Width == width)
+                    && (texture.Height == height)
+                    && (texture.Format == format)
+                    && ((arrayCount < 1) || (texture.ArrayCount == arrayCount))
+                    && ((mipCount < 1) || (texture.MipLevels == mipCount)))
+                {
+                    return texture;
+                }
+            }
+
+            return null;
+        }
     }
 }

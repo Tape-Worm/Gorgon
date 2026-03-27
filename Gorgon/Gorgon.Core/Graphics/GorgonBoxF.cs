@@ -41,13 +41,6 @@ namespace Gorgon.Graphics;
 /// This data structure is used to easily pass around 3D coordinates for a cube shape. The box shape can be intersected and unioned. It also provides various methods to determine if another box intersects, or is 
 /// contained completely within a box. 
 /// </para>
-/// <para>
-/// <note type="important">
-/// <para>
-/// This value type merely represents the dimensions of a box, it does not draw a box. 
-/// </para>
-/// </note>
-/// </para>
 /// </remarks>
 [StructLayout(LayoutKind.Sequential, Pack = 4), JsonConverter(typeof(GorgonBoxFJsonConverter))]
 public struct GorgonBoxF

@@ -42,67 +42,82 @@ public readonly struct GorgonResult
     /// <summary>
     /// Initialization was already performed.
     /// </summary>
-    public static GorgonResult AlreadyInitialized => new(nameof(AlreadyInitialized), ErrorBase + 1, Resources.GOR_RESULT_DESC_NOT_INITIALIZED);
+    public static GorgonResult AlreadyInitialized => new(nameof(AlreadyInitialized), ErrorBase + 2, Resources.GOR_RESULT_DESC_NOT_INITIALIZED);
 
     /// <summary>
     /// There was an error during creation.
     /// </summary>
-    public static GorgonResult CannotCreate => new(nameof(CannotCreate), ErrorBase + 2, Resources.GOR_RESULT_DESC_CANNOT_CREATE);
-
-    /// <summary>
-    /// There was an error while writing.
-    /// </summary>
-    public static GorgonResult CannotWrite => new(nameof(CannotWrite), ErrorBase + 0xa, Resources.GOR_RESULT_DESC_CANNOT_WRITE);
-
-    /// <summary>
-    /// There was not enough memory to complete the operation.
-    /// </summary>
-    public static GorgonResult OutOfMemory => new(nameof(OutOfMemory), ErrorBase + 0xb, Resources.GOR_RESULT_DESC_OUT_OF_MEMORY);
+    public static GorgonResult CannotCreate => new(nameof(CannotCreate), ErrorBase + 3, Resources.GOR_RESULT_DESC_CANNOT_CREATE);
 
     /// <summary>
     /// Access is denied.
     /// </summary>
-    public static GorgonResult AccessDenied => new(nameof(AccessDenied), ErrorBase + 3, Resources.GOR_RESULT_DESC_ACCESS_DENIED);
+    public static GorgonResult AccessDenied => new(nameof(AccessDenied), ErrorBase + 4, Resources.GOR_RESULT_DESC_ACCESS_DENIED);
 
     /// <summary>
     /// There was an error interfacing with the driver.
     /// </summary>
-    public static GorgonResult DriverError => new(nameof(DriverError), ErrorBase + 4, Resources.GOR_RESULT_DESC_DRIVER_ERROR);
+    public static GorgonResult DriverError => new(nameof(DriverError), ErrorBase + 5, Resources.GOR_RESULT_DESC_DRIVER_ERROR);
 
     /// <summary>
     /// There was an error while reading.
     /// </summary>
-    public static GorgonResult CannotRead => new(nameof(CannotRead), ErrorBase + 5, Resources.GOR_RESULT_DESC_CANNOT_READ);
+    public static GorgonResult CannotRead => new(nameof(CannotRead), ErrorBase + 6, Resources.GOR_RESULT_DESC_CANNOT_READ);
 
     /// <summary>
     /// There was an error during binding.
     /// </summary>
-    public static GorgonResult CannotBind => new(nameof(CannotBind), ErrorBase + 6, Resources.GOR_RESULT_DESC_CANNOT_BIND);
+    public static GorgonResult CannotBind => new(nameof(CannotBind), ErrorBase + 7, Resources.GOR_RESULT_DESC_CANNOT_BIND);
 
     /// <summary>
     /// There was an error during the enumeration process.
     /// </summary>
-    public static GorgonResult CannotEnumerate => new(nameof(CannotEnumerate), ErrorBase + 7, Resources.GOR_RESULT_DESC_CANNOT_ENUMERATE);
+    public static GorgonResult CannotEnumerate => new(nameof(CannotEnumerate), ErrorBase + 8, Resources.GOR_RESULT_DESC_CANNOT_ENUMERATE);
 
     /// <summary>
     /// The requested format is not supported.
     /// </summary>
-    public static GorgonResult FormatNotSupported => new(nameof(FormatNotSupported), ErrorBase + 8, Resources.GOR_RESULT_DESC_FORMAT_NOT_SUPPORTED);
+    public static GorgonResult FormatNotSupported => new(nameof(FormatNotSupported), ErrorBase + 9, Resources.GOR_RESULT_DESC_FORMAT_NOT_SUPPORTED);
 
     /// <summary>
     /// The file format is not supported.
     /// </summary>
-    public static GorgonResult InvalidFileFormat => new(nameof(InvalidFileFormat), ErrorBase + 9, Resources.GOR_RESULT_DESC_FILE_FORMAT_NOT_SUPPORTED);
+    public static GorgonResult InvalidFileFormat => new(nameof(InvalidFileFormat), ErrorBase + 0xa, Resources.GOR_RESULT_DESC_FILE_FORMAT_NOT_SUPPORTED);
 
     /// <summary>
     /// Cannot make this call across threads.
     /// </summary>
-    public static GorgonResult CrossThreadCall => new(nameof(CrossThreadCall), ErrorBase + 10, Resources.GOR_RESULT_DESC_CANNOT_CALL_CROSS_THREAD);
+    public static GorgonResult CrossThreadCall => new(nameof(CrossThreadCall), ErrorBase + 0xb, Resources.GOR_RESULT_DESC_CANNOT_CALL_CROSS_THREAD);
 
     /// <summary>
     /// Cannot compile the source code.
     /// </summary>
-    public static GorgonResult CannotCompile => new(nameof(CannotCompile), ErrorBase + 11, Resources.GOR_RESULT_DESC_CANNOT_COMPILE);
+    public static GorgonResult CannotCompile => new(nameof(CannotCompile), ErrorBase + 0xc, Resources.GOR_RESULT_DESC_CANNOT_COMPILE);
+
+    /// <summary>
+    /// An unbounded memory growth was detected.
+    /// </summary>
+    public static GorgonResult MemoryLeak => new(nameof(MemoryLeak), ErrorBase + 0xd, Resources.GOR_RESULT_DESC_MEM_LEAK);
+
+    /// <summary>
+    /// There was an error while writing.
+    /// </summary>
+    public static GorgonResult CannotWrite => new(nameof(CannotWrite), ErrorBase + 0xf, Resources.GOR_RESULT_DESC_CANNOT_WRITE);
+
+    /// <summary>
+    /// There was not enough memory to complete the operation.
+    /// </summary>
+    public static GorgonResult OutOfMemory => new(nameof(OutOfMemory), ErrorBase + 0x10, Resources.GOR_RESULT_DESC_OUT_OF_MEMORY);
+
+    /// <summary>
+    /// There was an error executing the operation.
+    /// </summary>
+    public static GorgonResult CannotExecute => new(nameof(CannotExecute), ErrorBase + 0x11, Resources.GOR_RESULT_DESC_CANNOT_EXECUTE);
+
+    /// <summary>
+    /// Initialization failed.
+    /// </summary>
+    public static GorgonResult CannotInitialize => new(nameof(CannotInitialize), ErrorBase + 0xe, Resources.GOR_RESULT_DESC_CANNOT_INITIALIZE);
 
     /// <summary>
     /// Property to return the name of the error.

@@ -94,15 +94,9 @@ public class GorgonGamingDevice
 
         (int left, int right) = XInputApi.GetTriggerValues(Info.XInputSlot);
 
-        if (leftTrigger is not null)
-        {
-            leftTrigger.Value = left;
-        }
+        leftTrigger?.Value = left;
 
-        if (rightTrigger is not null)
-        {
-            rightTrigger.Value = right;
-        }
+        rightTrigger?.Value = right;
     }
 
     /// <summary>

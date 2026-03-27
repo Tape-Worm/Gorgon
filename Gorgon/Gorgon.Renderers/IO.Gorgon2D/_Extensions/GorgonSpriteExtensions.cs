@@ -44,24 +44,25 @@ public static class GorgonSpriteExtensions
     /// </summary>
     internal const string JsonVersionProp = "version";
 
-    /// <summary>
-    /// Function to convert a sprite into a JSON formatted string.
-    /// </summary>
-    /// <param name="sprite">The sprite to serialize.</param>
-    /// <param name="prettyFormat"><b>true</b> to employ pretty formatting on the JSON string (increases size), <b>false</b> to compact the string.</param>
-    /// <returns>The sprite data as a JSON formatted string.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="sprite"/> parameter is <b>null</b>.</exception>
-    /// <seealso cref="GorgonSprite"/>
-    public static string ToJson(this GorgonSprite sprite, bool prettyFormat = false)
+    extension(GorgonSprite sprite)
     {
-        if (sprite is null)
+        /// <summary>
+        /// Function to convert a sprite into a JSON formatted string.
+        /// </summary>
+        /// <param name="prettyFormat"><b>true</b> to employ pretty formatting on the JSON string (increases size), <b>false</b> to compact the string.</param>
+        /// <returns>The sprite data as a JSON formatted string.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the sprite parameter is <b>null</b>.</exception>
+        /// <seealso cref="GorgonSprite"/>
+        public string ToJson(bool prettyFormat = false)
         {
-            throw new ArgumentNullException(nameof(sprite));
-        }
+            if (sprite is null)
+            {
+                throw new ArgumentNullException(nameof(sprite));
+            }
 
-        JsonSerializerOptions options = new()
-        {
-            Converters =
+            JsonSerializerOptions options = new()
+            {
+                Converters =
             {
                 new Vector2JsonConverter(),
                 new Vector3JsonConverter(),
@@ -71,40 +72,42 @@ public static class GorgonSpriteExtensions
                 new JsonSamplerConverter(null),
                 new JsonTexture2DConverter(null, null)
             },
-            WriteIndented = prettyFormat
-        };
+                WriteIndented = prettyFormat
+            };
 
-        JsonObject? node = JsonSerializer.SerializeToNode(sprite, options).AsObject();
+            JsonObject? node = JsonSerializer.SerializeToNode(sprite, options).AsObject();
 
-        if (node is null)
-        {
-            return string.Empty;
+            if (node is null)
+            {
+                return string.Empty;
+            }
+
+            node[JsonHeaderProp] = GorgonSpriteCodecCommon.CurrentFileHeader;
+            node[JsonVersionProp] = GorgonSpriteCodecCommon.CurrentVersion.ToString(2);
+
+            return node.ToJsonString(options);
         }
-
-        node[JsonHeaderProp] = GorgonSpriteCodecCommon.CurrentFileHeader;
-        node[JsonVersionProp] = GorgonSpriteCodecCommon.CurrentVersion.ToString(2);
-
-        return node.ToJsonString(options);
     }
 
-    /// <summary>
-    /// Function to convert a polygonal sprite into a JSON formatted string.
-    /// </summary>
-    /// <param name="sprite">The polygonal sprite to serialize.</param>
-    /// <param name="prettyFormat"><b>true</b> to employ pretty formatting on the JSON string (increases size), <b>false</b> to compact the string.</param>
-    /// <returns>The polygonal sprite data as a JSON formatted string.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="sprite"/> parameter is <b>null</b>.</exception>
-    /// <seealso cref="GorgonPolySprite"/>
-    public static string ToJson(this GorgonPolySprite sprite, bool prettyFormat = false)
+    extension(GorgonPolySprite sprite)
     {
-        if (sprite is null)
+        /// <summary>
+        /// Function to convert a polygonal sprite into a JSON formatted string.
+        /// </summary>
+        /// <param name="prettyFormat"><b>true</b> to employ pretty formatting on the JSON string (increases size), <b>false</b> to compact the string.</param>
+        /// <returns>The polygonal sprite data as a JSON formatted string.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the sprite parameter is <b>null</b>.</exception>
+        /// <seealso cref="GorgonPolySprite"/>
+        public string ToJson(bool prettyFormat = false)
         {
-            throw new ArgumentNullException(nameof(sprite));
-        }
+            if (sprite is null)
+            {
+                throw new ArgumentNullException(nameof(sprite));
+            }
 
-        JsonSerializerOptions options = new()
-        {
-            Converters =
+            JsonSerializerOptions options = new()
+            {
+                Converters =
             {
                 new Vector2JsonConverter(),
                 new Vector3JsonConverter(),
@@ -115,19 +118,20 @@ public static class GorgonSpriteExtensions
                 new JsonTexture2DConverter(null, null),
                 new GorgonPolySpriteVertexJsonConverter()
             },
-            WriteIndented = prettyFormat
-        };
+                WriteIndented = prettyFormat
+            };
 
-        JsonObject? node = JsonSerializer.SerializeToNode(sprite, options).AsObject();
+            JsonObject? node = JsonSerializer.SerializeToNode(sprite, options).AsObject();
 
-        if (node is null)
-        {
-            return string.Empty;
+            if (node is null)
+            {
+                return string.Empty;
+            }
+
+            node[JsonHeaderProp] = GorgonPolySpriteCodecCommon.CurrentFileHeader;
+            node[JsonVersionProp] = GorgonPolySpriteCodecCommon.CurrentVersion.ToString(2);
+
+            return node.ToJsonString(options);
         }
-
-        node[JsonHeaderProp] = GorgonPolySpriteCodecCommon.CurrentFileHeader;
-        node[JsonVersionProp] = GorgonPolySpriteCodecCommon.CurrentVersion.ToString(2);
-
-        return node.ToJsonString(options);
     }
 }

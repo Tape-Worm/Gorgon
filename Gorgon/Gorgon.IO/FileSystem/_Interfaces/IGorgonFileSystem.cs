@@ -74,7 +74,7 @@ public enum FileStreamStatus
 /// can be used store save game data on the hard drive in some arbitrary place, but still accessible from the same virtual file system.
 /// </para>
 /// <para>
-/// <note type="important">
+/// <note type="information">
 /// <para>
 /// The order in which file systems are mounted into the virtual file system is important.  If a zip file contains SomeText.txt, and a directory contains the same file path, then if the zip file is 
 /// mounted, followed by the directory, the file in the directory will override the file in the zip file. This is true for directories as well. 
@@ -331,7 +331,7 @@ public interface IGorgonFileSystem
     /// </summary>
     /// <param name="path">Path to the file to retrieve.</param>
     /// <returns>The <see cref="IGorgonVirtualFile"/> requested or <b>null</b> if the file was not found.</returns>
-    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> parameter is empty.
+    /// <exception cref="ArgumentEmptyException"><para>Thrown when the <paramref name="path"/> parameter is empty.</para>
     /// <para>-or-</para>
     /// <para>Thrown when there is no file name in the <paramref name="path"/>.</para>
     /// </exception>
@@ -368,7 +368,7 @@ public interface IGorgonFileSystem
     /// Function to retrieve a directory from the file system.
     /// </summary>
     /// <param name="path">Path to the directory to retrieve.</param>
-    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> parameter is an empty string.</exception>
+    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> parameter is empty.</exception>
     /// <returns>A <see cref="IGorgonVirtualDirectory"/> if found, <b>null</b> if not.</returns>
     /// <remarks>
     /// <para>
@@ -514,7 +514,7 @@ public interface IGorgonFileSystem
     /// <param name="physicalPath">Path to the physical file system directory or file that contains the files/directories to enumerate.</param>
     /// <param name="provider">[Optionl] The provider used to retrieve the physical file system data.</param>
     /// <param name="mountPath">[Optional] Virtual directory path to mount into.</param>
-    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="physicalPath"/> parameter is an empty string.
+    /// <exception cref="ArgumentEmptyException"><para>Thrown when the <paramref name="physicalPath"/> parameter is an empty string.</para>
     /// <para>-or-</para>
     /// <para>Thrown if mounting a directory and there is no directory in the path.</para>
     /// </exception>
@@ -634,7 +634,7 @@ public interface IGorgonFileSystem
     /// <returns>An open <see cref="Stream"/> to the file.</returns>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> is empty.</exception>
     /// <exception cref="GorgonException">Thrown when the file system is in read only mode and the <paramref name="write"/> parameter is set to <b>true</b>.</exception>
-    /// <exception cref="FileNotFoundException">Thrown when the file referenced by the <paramref name="path"/> was not found and the <paramref name="write"/> parameter is set to <b>false</b>.
+    /// <exception cref="FileNotFoundException"><para>Thrown when the file referenced by the <paramref name="path"/> was not found and the <paramref name="write"/> parameter is set to <b>false</b>.</para>
     /// <para>-or-</para>
     /// <para>Thrown when the <paramref name="path"/> points to a directory, and the <paramref name="write"/> parameter is set to <b>false</b>.</para>
     /// </exception>
@@ -728,7 +728,7 @@ public interface IGorgonFileSystem
     /// <param name="options">[Optional] The options to pass to the delete operation.</param>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> is empty.</exception>
     /// <exception cref="DirectoryNotFoundException">Thrown when the directory specified by the <paramref name="path"/> could not be found.</exception>
-    /// <exception cref="GorgonException">Thrown when no physical directory has been mounted as a writable file system.
+    /// <exception cref="GorgonException"><para>Thrown when no physical directory has been mounted as a writable file system.</para>
     /// <para>-or-</para>
     /// <para>The <paramref name="path"/> belongs to a read only file system provider.</para>
     /// </exception>
@@ -744,10 +744,10 @@ public interface IGorgonFileSystem
     /// If the <paramref name="options"/> parameter is supplied, then users can supply functionality to report progress, and cancel the operation.
     /// </para>
     /// <para>
-    /// <note type="important">
+    /// <note type="information">
     /// <para>
-    /// If the directory specified in <paramref name="path"/> is not in the writeable area specified by <see cref="MountWriteArea(string)"/>, then an exception will be thrown. Only paths that exist in the 
-    /// write area can be deleted.
+    /// If the <paramref name="path"/> is not in the writeable area specified by <see cref="MountWriteArea(string)"/>, then an exception will be thrown. Only paths that exist in the write area can be written 
+    /// to.
     /// </para>
     /// </note>
     /// </para>
@@ -766,11 +766,11 @@ public interface IGorgonFileSystem
     /// <param name="newName">The new name for the directory.</param>
     /// <exception cref="ArgumentEmptyException">Thrown if the <paramref name="path"/>, or the <paramref name="newName"/> parameters are empty.</exception>
     /// <exception cref="DirectoryNotFoundException">Thrown if the <paramref name="path"/> was not found on the file system.</exception>
-    /// <exception cref="GorgonException">Thrown when no physical directory has been mounted as a writable file system.
+    /// <exception cref="GorgonException"><para>Thrown when no physical directory has been mounted as a writable file system.</para>
     /// <para>-or-</para>
     /// <para>The <paramref name="path"/> belongs to a read only file system provider.</para>
     /// </exception>
-    /// <exception cref="IOException">Thrown if the <paramref name="path"/> points to the root directory.
+    /// <exception cref="IOException"><para>Thrown if the <paramref name="path"/> points to the root directory.</para>
     /// <para>-or-</para>
     /// <para>Thrown if the new directory is the same as the <paramref name="path"/>.</para>
     /// <para>-or-</para>
@@ -784,12 +784,7 @@ public interface IGorgonFileSystem
     /// If the <paramref name="newName"/> is the same as an already existing directory in the parent directory of the <paramref name="path"/> directory, then an exception will be thrown.
     /// </para>
     /// <para>
-    /// <note type="important">
-    /// <para>
-    /// If the directory specified in <paramref name="path"/> is not in the writeable area specified by <see cref="MountWriteArea(string)"/>, then an exception will be thrown. Only paths that exist in the 
-    /// write area can be renamed.
-    /// </para>
-    /// </note>
+    /// <inheritdoc cref="DeleteDirectory(string, GorgonFileSystemDeleteOptions?)" path="/remarks/para/note[@type='information']"/>
     /// </para>
     /// <para>
     /// Calling this method will trigger the <see cref="VirtualDirectoryRenamed"/> event.
@@ -807,7 +802,7 @@ public interface IGorgonFileSystem
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="sourcePath"/>, or <paramref name="destinationPath"/> parameter is empty.</exception>
     /// <exception cref="DirectoryNotFoundException">Thrown when the directory specified by the <paramref name="sourcePath"/>, or <paramref name="destinationPath"/> could not be found.</exception>
     /// <exception cref="GorgonException">Thrown when no physical directory has been mounted as a writable file system.</exception>
-    /// <exception cref="IOException">Thrown if the source and destination paths are the same.
+    /// <exception cref="IOException"><para>Thrown if the source and destination paths are the same.</para>
     /// <para>-or-</para>
     /// <para>Thrown if the destination is a child of the source directory.</para>
     /// </exception>
@@ -845,11 +840,11 @@ public interface IGorgonFileSystem
     /// <param name="options">[Optional] The options to pass to the move operation.</param>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="sourcePath"/>, or <paramref name="destinationPath"/> parameter is empty.</exception>
     /// <exception cref="DirectoryNotFoundException">Thrown when the directory specified by the <paramref name="sourcePath"/>, or <paramref name="destinationPath"/> could not be found.</exception>
-    /// <exception cref="GorgonException">Thrown when no physical directory has been mounted as a writable file system.
+    /// <exception cref="GorgonException"><para>Thrown when no physical directory has been mounted as a writable file system.</para>
     /// <para>-or-</para>
     /// <para>The <paramref name="sourcePath"/> belongs to a read only file system provider.</para>
     /// </exception>
-    /// <exception cref="IOException">Thrown if the source and destination paths are the same.
+    /// <exception cref="IOException"><para>Thrown if the source and destination paths are the same.</para>
     /// <para>-or-</para>
     /// <para>Thrown if the destination is a child of the source directory.</para>
     /// </exception>
@@ -868,14 +863,14 @@ public interface IGorgonFileSystem
     /// </para>
     /// <para>
     /// </para>
-    /// <para>
-    /// <note type="important">
+    /// <para>    
+    /// <note type="information">
     /// <para>
     /// If the directory specified in <paramref name="sourcePath"/> is not in the writeable area specified by <see cref="MountWriteArea(string)"/>, then an exception will be thrown. Only paths that exist 
     /// in the write area can be moved. 
     /// </para>
     /// <para>
-    /// This does not apply to the <paramref name="destinationPath"/> because this method will create the directory in the writeable area if it does not exist.
+    /// This does not apply to the <paramref name="destinationPath"/> because this method will create the path in the writeable area if it does not exist.
     /// </para>
     /// </note>
     /// </para>
@@ -896,7 +891,7 @@ public interface IGorgonFileSystem
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="sourcePath"/>, or <paramref name="destinationPath"/> parameter is empty.</exception>
     /// <exception cref="FileNotFoundException">Thrown when the file specified by the <paramref name="sourcePath"/> could not be found.</exception>
     /// <exception cref="DirectoryNotFoundException">Thrown when the directory specified by the <paramref name="destinationPath"/> could not be found.</exception>
-    /// <exception cref="GorgonException">Thrown when no physical directory has been mounted as a writable file system.
+    /// <exception cref="GorgonException"><para>Thrown when no physical directory has been mounted as a writable file system.</para>
     /// <para>-or-</para>
     /// <para>The <paramref name="sourcePath"/> belongs to a read only file system provider.</para>
     /// </exception>
@@ -909,12 +904,7 @@ public interface IGorgonFileSystem
     /// If the <paramref name="options"/> parameter is supplied, then users can supply functionality to report progress, and cancel the operation.
     /// </para>
     /// <para>
-    /// <note type="important">
-    /// <para>
-    /// If the file specified in <paramref name="sourcePath"/> is not in the writeable area specified by <see cref="MountWriteArea(string)"/>, then an exception will be thrown. Only paths that exist in the 
-    /// write area can be moved.
-    /// </para>
-    /// </note>
+    /// <inheritdoc cref="MoveDirectory(string, string, GorgonFileSystemCopyOptions?)" path="/remarks/para/note[@type='information']"/>
     /// </para>
     /// <para>
     /// Calling this method will trigger the <see cref="VirtualFileCopied"/> event.
@@ -931,7 +921,7 @@ public interface IGorgonFileSystem
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> is empty.</exception>
     /// <exception cref="FileNotFoundException">Thrown when the file specified by the <paramref name="path"/> could not be found.</exception>
     /// <exception cref="DirectoryNotFoundException">Thrown when the directory specified in the <paramref name="path"/> could not be found.</exception>
-    /// <exception cref="GorgonException">Thrown when no physical directory has been mounted as a writable file system.
+    /// <exception cref="GorgonException"><para>Thrown when no physical directory has been mounted as a writable file system.</para>
     /// <para>-or-</para>
     /// <para>The <paramref name="path"/> belongs to a read only file system provider.</para>
     /// </exception>
@@ -941,12 +931,7 @@ public interface IGorgonFileSystem
     /// exists in that location.
     /// </para>
     /// <para>
-    /// <note type="important">
-    /// <para>
-    /// If the file specified in <paramref name="path"/> is not in the writeable area specified by <see cref="MountWriteArea(string)"/>, then an exception will be thrown. Only paths that exist in the 
-    /// write area can be deleted.
-    /// </para>
-    /// </note>
+    /// <inheritdoc cref="DeleteDirectory(string, GorgonFileSystemDeleteOptions?)" path="/remarks/para/note[@type='information']"/>
     /// </para>
     /// <para>
     /// Calling this method will trigger the <see cref="VirtualFileDeleted"/> event.
@@ -963,8 +948,7 @@ public interface IGorgonFileSystem
     /// <param name="options">[Optional] Options to pass to the file copy operation.</param>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="sourcePath"/>, or the <paramref name="destinationPath"/> parameter is empty.</exception>
     /// <exception cref="GorgonException">Thrown when no physical directory has been mounted as a writable file system.</exception>
-    /// <exception cref="IOException">
-    /// <para>Thrown if the source and destination paths are the same.</para>
+    /// <exception cref="IOException"><para>Thrown if the source and destination paths are the same.</para>
     /// <para>-or-</para>
     /// <para>Thrown if the file copy operation failed during the process.</para>
     /// <para>-or-</para>
@@ -1001,7 +985,7 @@ public interface IGorgonFileSystem
     /// </summary>
     /// <param name="path">The path to the file to rename.</param>
     /// <param name="newName">The new name for the file.</param>
-    /// <exception cref="GorgonException">Thrown when no physical directory has been mounted as a writable file system.
+    /// <exception cref="GorgonException"><para>Thrown when no physical directory has been mounted as a writable file system.</para>
     /// <para>-or-</para>
     /// <para>The <paramref name="path"/> belongs to a read only file system provider.</para>
     /// </exception>
@@ -1021,12 +1005,7 @@ public interface IGorgonFileSystem
     /// If the <paramref name="newName"/> is the same as an already existing file in the <paramref name="path"/> directory, then an exception will be thrown.
     /// </para>
     /// <para>
-    /// <note type="important">
-    /// <para>
-    /// If the file specified in <paramref name="path"/> is not in the writeable area specified by <see cref="MountWriteArea(string)"/>, then an exception will be thrown. Only paths that exist in the 
-    /// write area can be renamed.
-    /// </para>
-    /// </note>
+    /// <inheritdoc cref="DeleteDirectory(string, GorgonFileSystemDeleteOptions?)" path="/remarks/para/note[@type='information']"/>
     /// </para>
     /// <para>
     /// Calling this method will trigger the <see cref="VirtualFileRenamedEventArgs"/> event.

@@ -213,10 +213,7 @@ public static class GorgonExample
     /// </summary>
     public static void EndInit()
     {
-        if (_mainForm is not null)
-        {
-            _mainForm.IsLoaded = true;
-        }
+        _mainForm?.IsLoaded = true;
 
         Cursor.Current = Cursors.Default;
     }
