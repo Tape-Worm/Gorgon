@@ -38,7 +38,7 @@ public record class GorgonIndexBufferInfo(long SizeInBytes, bool Use32BitIndices
     : GorgonCommonBufferInfo(SizeInBytes, Usage)
 {
     /// <summary>
-    /// An empty instance of the <see cref="GorgonGpuBuffer_OLDE"/> type.
+    /// An empty instance of the <see cref="GorgonIndexBufferInfo"/> type.
     /// </summary>
     public static readonly GorgonIndexBufferInfo Empty = new(0, false, BufferUsage.Default);
 

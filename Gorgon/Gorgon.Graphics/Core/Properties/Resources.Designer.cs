@@ -189,6 +189,24 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The texture &apos;{0}&apos; is a depth/stencil texture. Depth/stencil textures cannot be copied into an image..
+        /// </summary>
+        internal static string GORGFX_ERR_CANNOT_COPY_FROM_DEPTH_STENCIL {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_CANNOT_COPY_FROM_DEPTH_STENCIL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The texture &apos;{0}&apos; has a multi sample value of {1}. Only textures without multi sampling can be copied..
+        /// </summary>
+        internal static string GORGFX_ERR_CANNOT_COPY_FROM_MULTISAMPLE_TEXTURE {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_CANNOT_COPY_FROM_MULTISAMPLE_TEXTURE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The texture &apos;{0}&apos; is a depth/stencil texture. Images cannot be copied into a depth/stencil texture..
         /// </summary>
         internal static string GORGFX_ERR_CANNOT_COPY_IMAGE_TO_DEPTH_STENCIL {
@@ -510,6 +528,15 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The buffer &apos;{0}&apos; has an alignment of {1}. Constant buffer views require that the buffer have an alignment of 256 bytes on creation..
+        /// </summary>
+        internal static string GORGFX_ERR_CONSTANT_BUFFER_ALIGNMENT_INVALID {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_CONSTANT_BUFFER_ALIGNMENT_INVALID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The depth stencil texture &apos;{0}&apos; cannot be copied unless the entire sub resource is copied. This means the destination coordinates must be 0, and the source region must be empty..
         /// </summary>
         internal static string GORGFX_ERR_DEPTH_STENCIL_CANNOT_BE_COPIED {
@@ -524,6 +551,15 @@ namespace Gorgon.Graphics.Core.Properties {
         internal static string GORGFX_ERR_DESCRIPTORHEAP_OUT_OF_MEMORY {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_DESCRIPTORHEAP_OUT_OF_MEMORY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The destination data structure is too small ({0} bytes) to fit the required data ({1} bytes)..
+        /// </summary>
+        internal static string GORGFX_ERR_DEST_TOO_SMALL {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_DEST_TOO_SMALL", resourceCulture);
             }
         }
         
@@ -708,15 +744,6 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The buffer &apos;{0}&apos; does not support constant data..
-        /// </summary>
-        internal static string GORGFX_ERR_NOT_CONSTANT_BUFFER {
-            get {
-                return ResourceManager.GetString("GORGFX_ERR_NOT_CONSTANT_BUFFER", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The GPU address for &apos;{0}&apos; is NULL..
         /// </summary>
         internal static string GORGFX_ERR_NULL_GPU_ADDRESS {
@@ -834,6 +861,24 @@ namespace Gorgon.Graphics.Core.Properties {
         internal static string GORGFX_ERR_TEXTURE_COPY_FORMAT_GROUPS_DIFFERENT {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_TEXTURE_COPY_FORMAT_GROUPS_DIFFERENT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The texture sub resource for texture &apos;{0}&apos; is too small ({1} bytes) for the amount of data being copied ({2} bytes)..
+        /// </summary>
+        internal static string GORGFX_ERR_TEXTURE_SUB_RESOURCE_TOO_SMALL {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_TEXTURE_SUB_RESOURCE_TOO_SMALL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The texture &apos;{0}&apos; is too small ({1} bytes) for the amount of data being copied ({2} bytes)..
+        /// </summary>
+        internal static string GORGFX_ERR_TEXTURE_TOO_SMALL {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_TEXTURE_TOO_SMALL", resourceCulture);
             }
         }
         

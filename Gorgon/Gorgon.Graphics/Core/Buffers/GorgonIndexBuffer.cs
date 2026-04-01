@@ -42,13 +42,39 @@ using Win32 = TerraFX.Interop.Windows.Windows;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// A buffer used to hold arbitrary types of data used by the GPU.
+/// A buffer used to store index data.
 /// </summary>
 /// <remarks>
 /// <para>
-/// TODO: Write something here.
+/// An index buffer uses indices that point to vertices within a buffer to help form a mesh. This allows an application to use smaller buffers for vertices and helps reduce bandwidth when rendering. 
+/// </para>
+/// <para>
+/// For example, if a vertex buffer has a vertex that is 40 bytes, and describes a rectangle out of 2 triangles, that's 6 vertices * 40 bytes = 240 bytes. Now, with an index buffer, you can use 16 bit 
+/// indices and 4 vertices to describe the same rectangle.  12 bytes for the indices, and 160 bytes for the vertices = 172 bytes, a difference of 68 bytes in total. Scale this up by meshes that use 10's of 
+/// thousands of vertices, and you start seeing some massive gains.
+/// </para>
+/// <para>
+/// The index buffer can consist of indices that are 32 bits wide, or 16 bits wide. The smaller data size means less overhead, but a reduced mesh size (32 bit can address 4,294,967,296 vertices, while 16 
+/// bit can only address 65536 vertices). The type of data is specified upon creation of the buffer.
+/// </para>
+/// <inheritdoc cref="GorgonGpuBuffer" path="/remarks/para[@type='BufferUsage']"/>
+/// <para>
+/// <h3>Why a separate buffer type?</h3>
+/// </para>
+/// <para>
+/// Gorgon works on a system known as bindless rendering. Older systems like OpenGL or Direct 3D 11 forced data to be bound to a pipeline using slots of some kind. This system has several drawbacks around 
+/// state tracking and is no longer really representative of how a GPU actually works. With Gorgon and its Direct 3D 12 back end, we no longer need this binding system and can just create resources and 
+/// just use them directly from memory. No more state tracking for resources, no more costly pipeline switches, etc... 
+/// </para>
+/// <para>
+/// However, while this system applies to almost all resources, index buffers are required to be bound. This is unavoidable, and as such, the memory architecture for these index buffers are slightly 
+/// different and require they be treated differently than a generic buffer type like <see cref="GorgonGpuBuffer"/>. 
 /// </para>
 /// </remarks>
+/// <seealso cref="GorgonVideoAdapterInfo"/>
+/// <seealso cref="GorgonGpuBufferInfo"/>
+/// <seealso cref="GorgonGpuBuffer"/>
+/// <seealso cref="BufferUsage"/>
 public sealed unsafe class GorgonIndexBuffer
     : GorgonGpuBufferCommon, IGorgonIndexBufferInfo
 {
@@ -57,14 +83,11 @@ public sealed unsafe class GorgonIndexBuffer
     private CpuBufferAllocation _uploadAllocation = CpuBufferAllocation.Null;
     private readonly GorgonIndexBufferInfo _info;
 
-    /// <summary>
-    /// Property to set or return whether the dynamic buffer has data that needs to be uploaded.
-    /// </summary>
-    internal bool NeedsDataUpload
-    {
-        get;
-        set;
-    } = true;
+    /// <inheritdoc/>
+    /// <remarks>
+    /// This buffer has its own resource and never has an offset. It will always return 0.
+    /// </remarks>
+    internal override ulong ResourceOffset => 0;
 
     /// <inheritdoc cref="IGorgonIndexBufferInfo.Use32BitIndices"/>
     public bool Use32BitIndices => _info.Use32BitIndices;
@@ -132,7 +155,7 @@ public sealed unsafe class GorgonIndexBuffer
     /// Function to return the transient upload buffer for a dynamic buffer.
     /// </summary>
     /// <returns>A read only reference to the CPU buffer allocation backing this dynamic buffer.</returns>
-    internal ref readonly CpuBufferAllocation GetTransientBufferData()
+    internal override ref readonly CpuBufferAllocation GetTransientBufferData()
     {
         if (!_uploadAllocation.IsAvailable)
         {

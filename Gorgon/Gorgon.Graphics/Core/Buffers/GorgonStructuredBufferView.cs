@@ -66,13 +66,8 @@ public unsafe class GorgonStructuredBufferView
     /// <summary>
     /// Function to allocate a view descriptor from the descriptor heap.
     /// </summary>
-    /// <returns>The handles for the descriptor.</returns>
-    private (D3D12_CPU_DESCRIPTOR_HANDLE CpuHandle, D3D12_GPU_DESCRIPTOR_HANDLE GpuHandle) AllocateDescriptors()
+    private void AllocateDescriptors()
     {
-        ref readonly GpuBufferAllocation allocation = ref Buffer.GpuAllocation;
-
-        Debug.Assert(!allocation.IsNull, $"Buffer {Buffer.Name} has no GPU memory address.");        
-
         if (!_allocation.Equals(GpuDescriptorAllocation.Null))
         {
             Graphics.GpuViewDescriptors.Free(ref _allocation);
@@ -87,8 +82,10 @@ public unsafe class GorgonStructuredBufferView
             Shader4ComponentMapping = D3D12.D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING,            
         };
 
-        view.Buffer.StructureByteStride = (uint)ElementSize;
-        view.Buffer.FirstElement = (ulong)((allocation.Offset / ElementSize) + StartElementIndex);
+        uint elementSize = (uint)ElementSize;
+
+        view.Buffer.StructureByteStride = elementSize;
+        view.Buffer.FirstElement = (Buffer.ResourceOffset / elementSize) + (ulong)StartElementIndex;
         view.Buffer.NumElements = (uint)ElementCount;
         view.Buffer.Flags = D3D12_BUFFER_SRV_FLAGS.D3D12_BUFFER_SRV_FLAG_NONE;
 
@@ -100,7 +97,7 @@ public unsafe class GorgonStructuredBufferView
 
         Graphics.D3DDevice.Get()->CreateShaderResourceView((PID3D12Resource2)Buffer.D3DResource.Get(), &view, cpuHandle);
 
-        return (cpuHandle, gpuHandle);
+        SetHandles(cpuHandle, gpuHandle);
     }
 
     /// <inheritdoc/>
@@ -117,10 +114,6 @@ public unsafe class GorgonStructuredBufferView
 
         base.Dispose(disposing);
     }
-
-    /// <inheritdoc/>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private protected override (D3D12_CPU_DESCRIPTOR_HANDLE CpuHandle, D3D12_GPU_DESCRIPTOR_HANDLE GpuHandle) OnCreateViewHandles() => AllocateDescriptors();
 
     /// <summary>
     /// Function to retrieve the handle of the view, which is used to pass to a shader for resource heap indexing.
@@ -154,6 +147,6 @@ public unsafe class GorgonStructuredBufferView
         StartElementIndex = startIndex;
         ElementCount = elementCount;
 
-        CreateNative();
+        AllocateDescriptors();
     }
 }

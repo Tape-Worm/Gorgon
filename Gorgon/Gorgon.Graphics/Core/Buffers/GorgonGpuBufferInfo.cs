@@ -27,7 +27,7 @@ using TerraFX.Interop.DirectX;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Settings used for creating a <see cref="GorgonGpuBuffer_OLDE"/>.
+/// Settings used for creating a <see cref="GorgonGpuBuffer"/>.
 /// </summary>
 /// <param name="SizeInBytes">The size of the buffer, in bytes.</param>
 /// <param name="Usage">The intended usage for the buffer.</param>
@@ -40,29 +40,9 @@ public record class GorgonGpuBufferInfo(long SizeInBytes, BufferUsage Usage)
     : GorgonCommonBufferInfo(SizeInBytes, Usage)
 {
     /// <summary>
-    /// An empty instance of the <see cref="GorgonGpuBuffer_OLDE"/> type.
+    /// An empty instance of the <see cref="GorgonGpuBuffer"/> type.
     /// </summary>
     public static readonly GorgonGpuBufferInfo Empty = new(0, BufferUsage.Default);
-
-    /// <inheritdoc cref="IGorgonGpuBufferInfo.IsRenderTarget"/>
-    /// <remarks>
-    /// The default value is <b>false</b>.
-    /// </remarks>
-    public bool IsRenderTarget
-    {
-        get;
-        init;
-    } = false;
-
-    /// <inheritdoc cref="IGorgonGpuBufferInfo.IsConstantBuffer"/>
-    /// <remarks>
-    /// The default value is <b>false</b>.
-    /// </remarks>
-    public bool IsConstantBuffer
-    {
-        get;
-        init;
-    } = false;
 
     /// <summary>
     /// <inheritdoc cref="IGorgonGpuBufferInfo.Alignment"/>
@@ -85,31 +65,13 @@ public record class GorgonGpuBufferInfo(long SizeInBytes, BufferUsage Usage)
     }
 
     /// <summary>
-    /// Function to create a buffer information structure for a constant buffer.
-    /// </summary>
-    /// <param name="sizeInBytes">The size of the buffer, in bytes.</param>
-    /// <param name="usage">The intended usage for the buffer.</param>
-    /// <returns>A new <see cref="GorgonGpuBufferInfo"/> setup to build a constant buffer.</returns>
-    /// <remarks>
-    /// <para>
-    /// Constant buffers require an alignment of 256 bytes. Because of this, the <paramref name="sizeInBytes"/> parameter will be adjusted to the nearest 256 bytes.
-    /// </para>
-    /// </remarks>
-    public static GorgonGpuBufferInfo ConstantBuffer(int sizeInBytes, BufferUsage usage) => new(sizeInBytes.AlignUp(D3D12.D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT), usage)
-    {
-        IsConstantBuffer = true
-    };    
-
-    /// <summary>
     /// Initializes a new instance of the <see cref="GorgonGpuBufferInfo"/> class.
     /// </summary>
     /// <param name="info">The buffer creation information to copy.</param>
     public GorgonGpuBufferInfo(GorgonGpuBufferInfo info)
         : base(info)
     {
-        IsRenderTarget = info.IsRenderTarget;
         IsUnorderedAccess = info.IsUnorderedAccess;
-        IsConstantBuffer = info.IsConstantBuffer;
         Alignment = info.Alignment;
     }
 
@@ -120,9 +82,7 @@ public record class GorgonGpuBufferInfo(long SizeInBytes, BufferUsage Usage)
     public GorgonGpuBufferInfo(IGorgonGpuBufferInfo info)
         : this(info.SizeInBytes, info.Usage)
     {
-        IsRenderTarget = info.IsRenderTarget;
-        IsUnorderedAccess = info.IsUnorderedAccess;        
-        IsConstantBuffer = info.IsConstantBuffer;
+        IsUnorderedAccess = info.IsUnorderedAccess;
         Alignment = info.Alignment;
     }
 }

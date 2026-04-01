@@ -35,9 +35,14 @@ using TerraFX.Interop.DirectX;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Provides a view of a <see cref="GorgonGpuBuffer_OLDE"/> as a constant buffer.
+/// Provides a view that interprets the data in a <see cref="GorgonGpuBuffer"/> as shader constant values.
 /// </summary>
-/// <seealso cref="GorgonGpuBuffer_OLDE"/>
+/// <remarks>
+/// <para>
+/// TODO: 
+/// </para>
+/// </remarks>
+/// <seealso cref="GorgonGpuBuffer"/>
 public unsafe sealed class GorgonConstantBufferView
     : GorgonResourceView
 {
@@ -46,7 +51,7 @@ public unsafe sealed class GorgonConstantBufferView
     /// <summary>
     /// Property to return the buffer used by this view.
     /// </summary>
-    public GorgonGpuBuffer_OLDE Buffer
+    public GorgonGpuBuffer Buffer
     {
         get;
     }
@@ -62,7 +67,7 @@ public unsafe sealed class GorgonConstantBufferView
     /// <summary>
     /// Property to return the size, in bytes, of the buffer to view.
     /// </summary>
-    public long Size
+    public int Size
     {
         get;
     }
@@ -70,23 +75,8 @@ public unsafe sealed class GorgonConstantBufferView
     /// <summary>
     /// Function to allocate a view descriptor from the descriptor heap.
     /// </summary>
-    /// <returns>The handles for the descriptor.</returns>
-    private (D3D12_CPU_DESCRIPTOR_HANDLE CpuHandle, D3D12_GPU_DESCRIPTOR_HANDLE GpuHandle) AllocateDescriptors()
+    private void AllocateDescriptors()
     {
-        ulong bufferAddress;
-
-        if (Buffer.Usage != BufferUsage.DynamicPerFrame)
-        {
-            bufferAddress = Buffer.D3DResource.Get()->GetGPUVirtualAddress() + (ulong)Offset;
-        }
-        else
-        {
-            ref readonly CpuBufferAllocation resource = ref Buffer.GetGpuAddress();
-            bufferAddress = resource.GpuAddress;
-        }
-
-        Debug.Assert(bufferAddress != 0, $"Buffer {Buffer.Name} has no GPU memory address.");
-
         if (!_allocation.Equals(GpuDescriptorAllocation.Null))
         {
             Graphics.GpuViewDescriptors.Free(ref _allocation);
@@ -94,10 +84,10 @@ public unsafe sealed class GorgonConstantBufferView
 
         Graphics.GpuViewDescriptors.Allocate(1, out _allocation);
 
-        D3D12_CONSTANT_BUFFER_VIEW_DESC desc = new()
+        D3D12_CONSTANT_BUFFER_VIEW_DESC view = new()
         {
-            SizeInBytes = (uint)Size,
-            BufferLocation = bufferAddress
+            BufferLocation = Buffer.D3DResource.Get()->GetGPUVirtualAddress() + Buffer.ResourceOffset + (ulong)Offset,
+            SizeInBytes = (uint)Size
         };
 
         D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = Graphics.GpuViewDescriptors.D3DCpuHandle;
@@ -106,9 +96,9 @@ public unsafe sealed class GorgonConstantBufferView
         cpuHandle.Offset(_allocation.Offset, Graphics.GpuViewDescriptors.DescriptorSize);
         gpuHandle.Offset(_allocation.Offset, Graphics.GpuViewDescriptors.DescriptorSize);
 
-        Graphics.D3DDevice.Get()->CreateConstantBufferView(&desc, cpuHandle);
+        Graphics.D3DDevice.Get()->CreateConstantBufferView(&view, cpuHandle);
 
-        return (cpuHandle, gpuHandle);
+        SetHandles(cpuHandle, gpuHandle);
     }
 
     /// <inheritdoc/>
@@ -126,45 +116,20 @@ public unsafe sealed class GorgonConstantBufferView
         base.Dispose(disposing);
     }
 
-    /// <inheritdoc/>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private protected override (D3D12_CPU_DESCRIPTOR_HANDLE CpuHandle, D3D12_GPU_DESCRIPTOR_HANDLE GpuHandle) OnUpdateDynamicDescriptors()
-    {
-        if (Buffer.Usage != BufferUsage.DynamicPerFrame)
-        {
-            return (D3D12_CPU_DESCRIPTOR_HANDLE.DEFAULT, D3D12_GPU_DESCRIPTOR_HANDLE.DEFAULT);
-        }
-
-        return AllocateDescriptors();
-    }
-
-    /// <inheritdoc/>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private protected override (D3D12_CPU_DESCRIPTOR_HANDLE CpuHandle, D3D12_GPU_DESCRIPTOR_HANDLE GpuHandle) OnCreateViewHandles()
-    {
-        if (Buffer.Usage == BufferUsage.DynamicPerFrame)
-        {
-            return (D3D12_CPU_DESCRIPTOR_HANDLE.DEFAULT, D3D12_GPU_DESCRIPTOR_HANDLE.DEFAULT);
-        }
-
-        Graphics.Log.Print($"Allocating D3D12 constant buffer view descriptor for buffer '{Name}'.", LoggingLevel.Verbose);
-        return AllocateDescriptors();
-    }
-
     /// <summary>
     /// Function to perform validations on the constant buffer view.
     /// </summary>
     /// <param name="name">The name of the buffer.</param>
-    /// <param name="usage">The usage specification for the buffer.</param>
+    /// <param name="alignment">The alignment, in bytes, of the buffer.</param>
     /// <param name="sizeInBytes">The total size, in bytes, of the buffer.</param>
     /// <param name="offset">The offset, in bytes, within the buffer</param>
     /// <param name="size">The size of the view, in bytes.</param>
-    internal static void ValidateCbv(string name, BufferUsage usage, long sizeInBytes, long offset, long size)
+    internal static void ValidateCbv(string name, int alignment, long sizeInBytes, long offset, long size)
     {
-        if (usage == BufferUsage.Download)
+        if ((alignment % D3D12.D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT) != 0)
         {
-            throw new NotSupportedException(string.Format(Resources.GORGFX_ERR_INVALID_USAGE, usage));
-        }        
+            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_CONSTANT_BUFFER_ALIGNMENT_INVALID, name, alignment));
+        }
 
         if (sizeInBytes < D3D12.D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT)
         {
@@ -187,24 +152,22 @@ public unsafe sealed class GorgonConstantBufferView
     /// <param name="graphics">The graphics interface associated with the view and buffer.</param>
     /// <param name="name">The name of the buffer and view.</param>
     /// <param name="bufferInfo">The information used to build the underlying buffer.</param>
-    /// <returns>The <see cref="GorgonConstantBufferView"/> and associated <see cref="GorgonGpuBuffer_OLDE"/>.</returns>
-    /// <exception cref="NotSupportedException">Thrown if the <see cref="IGorgonGpuBufferInfo.Usage"/> is set to <see cref="BufferUsage.Download"/>.</exception>
+    /// <returns>The <see cref="GorgonConstantBufferView"/> and associated <see cref="GorgonGpuBuffer"/>.</returns>
     /// <remarks>
     /// <para>
-    /// This is a convenience method used to create a <see cref="GorgonGpuBuffer_OLDE"/> and an associated <see cref="GorgonConstantBufferView"/>. 
+    /// This is a convenience method used to create a <see cref="GorgonGpuBuffer"/> and an associated <see cref="GorgonConstantBufferView"/>. 
     /// </para>
     /// <para>
-    /// The <see cref="IGorgonGpuBufferInfo.Usage"/> value on the <paramref name="bufferInfo"/> parameter can be one of <see cref="BufferUsage.Default"/>, <see cref="BufferUsage.Upload"/>, or 
-    /// <see cref="BufferUsage.DynamicPerFrame"/>. These usages correspond to update frequency of the underlying buffer. 
-    /// <inheritdoc cref="IGorgonGpuBufferInfo.Usage" path="/remarks/para/list"/>
-    /// A value of <see cref="BufferUsage.Download"/> will throw an exception for a constant buffer view.
+    /// The <see cref="IGorgonCommonBufferInfo.Usage"/> value on the <paramref name="bufferInfo"/> parameter can be one of <see cref="BufferUsage.Default"/>, or <see cref="BufferUsage.DynamicPerFrame"/>. 
+    /// These usages correspond to update frequency of the underlying buffer. 
+    /// <inheritdoc cref="IGorgonCommonBufferInfo.Usage" path="/remarks/para/list"/>
     /// </para>
     /// <para>
-    /// The <see cref="IGorgonGpuBufferInfo.SizeInBytes"/> on the <paramref name="bufferInfo"/> parameter must be aligned to the nearest 256 bytes. If it is not, then this method will automatically ccreate 
+    /// The <see cref="IGorgonCommonBufferInfo.SizeInBytes"/> on the <paramref name="bufferInfo"/> parameter must be aligned to the nearest 256 bytes. If it is not, then this method will automatically create 
     /// the buffer with a size that is aligned to the nearest 256 bytes.
     /// </para>
     /// <para>
-    /// <inheritdoc cref="GorgonGpuBuffer_OLDE.GetConstantBufferView(long, long?)" path="/remarks/para/note"/>
+    /// <inheritdoc cref="GorgonGpuBuffer.GetConstantBufferView(long, long?)" path="/remarks/para/note"/>
     /// </para>
     /// <para>
     /// <note type="information">
@@ -214,17 +177,16 @@ public unsafe sealed class GorgonConstantBufferView
     /// </note>
     /// </para>
     /// </remarks>
-    /// <seealso cref="GorgonGpuBuffer_OLDE"/>
+    /// <seealso cref="GorgonGpuBuffer"/>
     /// <seealso cref="BufferUsage"/>
     public static GorgonConstantBufferView CreateConstantBuffer(GorgonGraphics graphics, string name, GorgonGpuBufferInfo bufferInfo)
     {
-        if ((!bufferInfo.IsConstantBuffer) || (bufferInfo.IsRenderTarget) || (bufferInfo.IsUnorderedAccess))
+        if ((bufferInfo.IsUnorderedAccess) || (bufferInfo.Alignment == 0) || ((bufferInfo.Alignment % D3D12.D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT) != 0))
         {
             bufferInfo = bufferInfo with
             {
-                IsConstantBuffer = true,
-                IsRenderTarget = false,
-                IsUnorderedAccess = false                
+                IsUnorderedAccess = false,
+                Alignment = D3D12.D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT
             };
         }
 
@@ -236,14 +198,31 @@ public unsafe sealed class GorgonConstantBufferView
 
             bufferInfo = bufferInfo with
             {
-                SizeInBytes = aligned
+                SizeInBytes = aligned,
+                // Double check to ensure that alignment is what it should be for constant buffers.
+                Alignment = D3D12.D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT
             };
         }
 
-        ValidateCbv(name, bufferInfo.Usage, bufferInfo.SizeInBytes, 0, bufferInfo.SizeInBytes);
+        ValidateCbv(name, bufferInfo.Alignment, bufferInfo.SizeInBytes, 0, bufferInfo.SizeInBytes);
 
-        GorgonGpuBuffer_OLDE buffer = new(graphics, name, bufferInfo);
-        return new GorgonConstantBufferView(graphics, name, buffer, 0, buffer.SizeInBytes, true);
+        GorgonGpuBuffer buffer = new(graphics, name, bufferInfo);
+        return new GorgonConstantBufferView(graphics, name, buffer, 0, (int)buffer.SizeInBytes, true);
+    }
+
+    /// <summary>
+    /// Function to retrieve the handle of the view, which is used to pass to a shader for resource heap indexing.
+    /// </summary>
+    /// <returns>The handle of the view.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public int GetViewHandle()
+    {
+        if ((Buffer.Usage == BufferUsage.DynamicPerFrame) || (_allocation.Equals(in GpuDescriptorAllocation.Null)))
+        {
+            AllocateDescriptors();
+        }
+
+        return _allocation.Offset;
     }
 
     /// <summary>
@@ -255,7 +234,7 @@ public unsafe sealed class GorgonConstantBufferView
     /// <param name="offset">The offset, in bytes, within the buffer to start the view.</param>
     /// <param name="size">The size, in bytes, within the buffer to view.</param>
     /// <param name="owned"><inheritdoc cref="GorgonResourceView(GorgonGraphics, string, GorgonGpuResource, bool)" path="/param[@name='owned']"/></param>
-    internal GorgonConstantBufferView(GorgonGraphics graphics, string name, GorgonGpuBuffer_OLDE buffer, long offset, long size, bool owned)
+    internal GorgonConstantBufferView(GorgonGraphics graphics, string name, GorgonGpuBuffer buffer, long offset, int size, bool owned)
         : base(graphics, $"{name} - Constant Buffer View", buffer, owned)
     {
         Graphics.Log.Print($"Creating constant buffer view for buffer '{Name}'...", LoggingLevel.Simple);
@@ -263,6 +242,7 @@ public unsafe sealed class GorgonConstantBufferView
         Buffer = buffer;
         Offset = offset;
         Size = size;
-        CreateNative();
+
+        AllocateDescriptors();
     }
 }

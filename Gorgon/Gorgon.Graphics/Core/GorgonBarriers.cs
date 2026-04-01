@@ -209,7 +209,9 @@ public enum BarrierSync
     /// <para>
     /// <see cref="BarrierAccess">Access types</see> in this scope are limited to the following values:
     /// <list type="bullet">
-    /// <item><description><see cref="BarrierAccess.RenderTarget"/></description></item>
+    /// <item><description><see cref="BarrierAccess.ConstantBuffer"/></description></item>
+    /// <item><description><see cref="BarrierAccess.UnorderedAccess"/></description></item>
+    /// <item><description><see cref="BarrierAccess.ShaderResource"/></description></item>
     /// <item><description><see cref="BarrierAccess.Common"/> (See the note on the <see cref="BarrierSync"/> description.)</description></item>
     /// </list>
     /// </para>

@@ -201,18 +201,9 @@ public static class GorgonTiming
     }
 
     /// <summary>
-    /// Property to return the number of frames that have been presented.
-    /// </summary>
-    public static uint FrameCount
-    {
-        get;
-        private set;
-    }
-
-    /// <summary>
     /// Property to return the number of frames that have been presented (using an unsigned 64 bit value).
     /// </summary>
-    public static ulong FrameCountULong
+    public static long FrameCount
     {
         get;
         private set;
@@ -419,8 +410,11 @@ public static class GorgonTiming
 
         unchecked
         {
+            if (FrameCount == long.MaxValue)
+            {
+                FrameCount = 0;
+            }
             FrameCount++;
-            FrameCountULong++;
 
             frameDelta = (_lastTimerValue - _lastTime);
 
@@ -521,7 +515,7 @@ public static class GorgonTiming
         Delta = 0.0f;
         UnscaledDelta = 0.0f;
         FPS = 0.0f;
-        FrameCountULong = FrameCount = 0;
+        FrameCount = 0;
         _averageCounter = 0;
         _frameCounter = 0;
         _lastTime = 0.0;

@@ -406,6 +406,11 @@ internal unsafe sealed class MegaBuffer
     {
         using (_lock.EnterScope())
         {
+            if (alignment == 0)
+            {
+                alignment = 1;
+            }
+
             D3D12MA_VIRTUAL_ALLOCATION_DESC desc = new(size + (alignment - 1), 0);
             D3D12MA_VirtualAllocation vmAllocation = default;
             ulong location = 0;

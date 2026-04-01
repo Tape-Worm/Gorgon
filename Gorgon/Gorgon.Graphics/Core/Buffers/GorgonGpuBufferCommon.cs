@@ -27,6 +27,9 @@ using System.Text;
 using TerraFX.Interop.Windows;
 using TerraFX.Interop.DirectX;
 using Win32 = TerraFX.Interop.Windows.Windows;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace Gorgon.Graphics.Core;
 
@@ -51,11 +54,93 @@ public abstract class GorgonGpuBufferCommon(GorgonGraphics graphics, string name
     public bool IsUnorderedAccess => _info.IsUnorderedAccess;
 
     /// <summary>
+    /// Property to return the offset, in bytes, of a suballocated buffer within a larger buffer.
+    /// </summary>
+    internal abstract ulong ResourceOffset
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to set or return whether the dynamic buffer has data that needs to be uploaded.
+    /// </summary>
+    internal bool NeedsDataUpload
+    {
+        get;
+        private set;
+    } = true;
+
+    /// <summary>
     /// Function to validate the settings for the buffer.
     /// </summary>
     private protected abstract void ValidateInfo();
 
-#warning Please remove this.    
+    /// <summary>
+    /// Function to return the transient upload buffer for a dynamic buffer.
+    /// </summary>
+    /// <returns>A read only reference to the CPU buffer allocation backing this dynamic buffer.</returns>
+    internal abstract ref readonly CpuBufferAllocation GetTransientBufferData();
+
+    /// <summary>
+    /// Function to copy CPU data to a dynamic buffer's transient buffer.
+    /// </summary>
+    /// <param name="data">The pointer to the data to copy.</param>
+    /// <param name="destOffset">The offset within the transient buffer to start writing into.</param>
+    /// <param name="count">The number of bytes to copy.</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal unsafe void CopyCpuData(void* data, ulong destOffset, ulong count)
+    {
+        if (Usage != BufferUsage.DynamicPerFrame)
+        {
+            return;
+        }
+
+        ref readonly CpuBufferAllocation allocation = ref GetTransientBufferData();
+        Debug.Assert(allocation.IsAvailable, $"The transient heap for '{Name}' is not valid.");
+
+        void* dest = allocation.CpuPointer + destOffset;
+
+        NativeMemory.Copy(data, dest, (nuint)count);
+
+        NeedsDataUpload = true;
+    }
+
+    /// <summary>
+    /// Function to trigger an upload from the internal transient buffer to the backing default resource for the buffer object.
+    /// </summary>
+    /// <param name="list">The command list used to trigger the copy operation.</param>
+    /// <param name="setBarrier"><b>true</b> to set the appropriate barrier before copying, <b>false</b> if the barrier has already been set externally.</param>
+    /// <remarks>
+    /// <para>
+    /// This method only executes if the buffer usage is <see cref="BufferUsage.DynamicPerFrame"/>, and <see cref="NeedsDataUpload"/> is <b>true</b>.
+    /// </para>
+    /// </remarks>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal unsafe void FlushDynamicBuffer(GorgonCommandList list, bool setBarrier)
+    {
+        if ((Usage != BufferUsage.DynamicPerFrame) || (!NeedsDataUpload))
+        {
+            return;
+        }
+
+        ref readonly CpuBufferAllocation allocation = ref GetTransientBufferData();
+        Debug.Assert(allocation.IsAvailable, $"The transient heap for '{Name}' is not valid.");
+
+        if (setBarrier)
+        {
+            list.SetBarrier(this, BarrierSync.Copy, BarrierAccess.CopyDestination, true);
+        }
+
+        list.D3DGraphicsCommandList.Get()->CopyBufferRegion((PID3D12Resource2)D3DResource.Get(),
+            ResourceOffset,
+            (PID3D12Resource2)allocation.Heap.D3DResource.Get(),
+            allocation.Offset,
+            (ulong)SizeInBytes);
+
+        NeedsDataUpload = false;
+    }
+
+#warning REMOVETHIS: Some stuff is still using it, but it'll need to be removed in short order.    
     private protected override ComPtr<ID3D12Resource2> OnCreateNative(out D3D12_RESOURCE_DESC1 desc)
     {
         desc = default;

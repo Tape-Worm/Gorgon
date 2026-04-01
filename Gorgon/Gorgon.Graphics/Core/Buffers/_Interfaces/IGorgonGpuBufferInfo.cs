@@ -34,23 +34,6 @@ public interface IGorgonGpuBufferInfo
     : IGorgonCommonBufferInfo
 {
     /// <summary>
-    /// Property to return whether the buffer can be used as a render target.
-    /// </summary>
-    bool IsRenderTarget
-    {
-        get;
-    }
-
-    /// <summary>
-    /// Property to return whether the buffer can be used as a constant buffer.
-    /// </summary>
-    [Obsolete("We may not need this going forward.")]
-    bool IsConstantBuffer
-    {
-        get;
-    }
-
-    /// <summary>
     /// Property to return the number of bytes to align the buffer by.
     /// </summary>
     /// <remarks>

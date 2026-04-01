@@ -122,34 +122,30 @@ public abstract class GorgonResourceView
     /// Function to create the handles required for the view.
     /// </summary>
     /// <returns>A tuple containing the D3D CPU descriptor handle, and, optionally, the D3D12 GPU descriptor handle.</returns>
-    private protected abstract (D3D12_CPU_DESCRIPTOR_HANDLE CpuHandle, D3D12_GPU_DESCRIPTOR_HANDLE GpuHandle) OnCreateViewHandles();
+    private protected virtual (D3D12_CPU_DESCRIPTOR_HANDLE CpuHandle, D3D12_GPU_DESCRIPTOR_HANDLE GpuHandle) OnCreateViewHandles() => (D3D12_CPU_DESCRIPTOR_HANDLE.DEFAULT, D3D12_GPU_DESCRIPTOR_HANDLE.DEFAULT);
 
     /// <summary>
-    /// Function to update handles for the view when attached to a dynamic buffer.
+    /// Function to assign the descriptor handles to the associated properties.
     /// </summary>
-    /// <returns>A tuple containing the D3D CPU descriptor handle, and, optionally, the D3D12 GPU descriptor handle.</returns>
+    /// <param name="cpuHandle">The CPU descriptor handle.</param>
+    /// <param name="gpuHandle">The GPU descriptor handle.</param>
+    /// <remarks>
+    /// <para>
+    /// Implementors MUST call this method after descriptor handle creation.
+    /// </para>
+    /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private protected virtual (D3D12_CPU_DESCRIPTOR_HANDLE CpuHandle, D3D12_GPU_DESCRIPTOR_HANDLE GpuHandle) OnUpdateDynamicDescriptors() => (D3D12_CPU_DESCRIPTOR_HANDLE.DEFAULT, D3D12_GPU_DESCRIPTOR_HANDLE.DEFAULT);
+    private protected void SetHandles(D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle, D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle)
+    {
+        D3DCpuHandle = cpuHandle;
+        D3DGpuHandle = gpuHandle;
+    }
 
     /// <summary>
     /// Function to create the native view handle(s) and memory allocation information.
     /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [Obsolete("This is the old way, get rid of it!")]
     protected void CreateNative() => (D3DCpuHandle, D3DGpuHandle) = OnCreateViewHandles();
-
-    /// <summary>
-    /// Function to update the native view handle(s) and memory allocation information for dynamic buffers.
-    /// </summary>
-    /// <remarks>
-    /// <para>
-    /// Because dynamic buffers won't always have their resource located in the same memory location, a view must be constantly updated to bind to the memory loc.
-    /// </para>
-    /// <para>
-    /// This method only applies to buffer resources. Texture resources do not allow dynamic updates.
-    /// </para>
-    /// </remarks>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal void UpdateDynamicDescriptors() => (D3DCpuHandle, D3DGpuHandle) = OnUpdateDynamicDescriptors();
 
     /// <inheritdoc/>
     public void Dispose()

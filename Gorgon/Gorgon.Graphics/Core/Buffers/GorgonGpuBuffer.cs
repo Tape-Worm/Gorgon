@@ -21,13 +21,7 @@
 // Created: January 14, 2026 9:28:58 PM
 //
 
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Numerics;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Text;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
@@ -36,19 +30,78 @@ using Gorgon.Math;
 using Gorgon.Native;
 using TerraFX.Interop.DirectX;
 using TerraFX.Interop.Windows;
-using WinRT;
-using Win32 = TerraFX.Interop.Windows.Windows;
 
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// A buffer used to hold arbitrary types of data used by the GPU.
+/// A buffer used to hold data to be used by the GPU.
 /// </summary>
 /// <remarks>
 /// <para>
-/// TODO: Write something here.
+/// This is a generic data buffer that is used by the GPU to read, and write, data. Applications can use these buffers to send various types of data, such as vertices, or user defined types to the GPU and 
+/// then use shaders to read from, or using Unordered Access Views, write to the buffer. The type of data in the buffer can be anything a user needs.
+/// </para>
+/// <para>
+/// Buffers, in some scenarios, require alignment in order for the shader(s) to read/write correctly. For example, buffers containing constant values for a shader (i.e. a constant buffer) <b>must</b> be 
+/// aligned to 256 bytes. While buffers containing structured data might require the buffer to be aligned to the size, in bytes, of that data structure. Applications can create a buffer with an alignment 
+/// using the <see cref="GorgonGpuBufferInfo.Alignment"/> property on the <see cref="GorgonGpuBufferInfo"/> type that is passed to the constructor.
+/// </para>
+/// <para>
+/// Because the data in the buffer is nothing more than a blob of bytes, the GPU needs a way to interpret how to read the data. This can be done through views (which the buffer can create through one of its 
+/// <c>Get*View</c> methods). For example, if a buffer needs to be treated as a constant buffer, the user will create a <see cref="GorgonConstantBufferView"/>, or structured data through a 
+/// <see cref="GorgonStructuredBufferView"/>. Users can pass these views to shaders by passing their appropriate handle as a constant value via a <see cref="GorgonCommandList.WriteConstant{T}(int, in T)"/> 
+/// method on a <see cref="GorgonCommandList"/>, or via a <see cref="GorgonConstantBufferView"/> (obviously, a parent view needs to be passed by the aforementioned Write method).
+/// </para>
+/// <para>
+/// <note type="information">
+/// <para>
+/// While these buffers can hold many different types of data, they cannot be used as an index buffer. For more information, please consult the <see cref="GorgonIndexBuffer"/> documentation.
+/// </para>
+/// </note>
+/// </para>
+/// <para type="BufferUsage">
+/// <para>
+/// The buffer can be used in two modes: <see cref="BufferUsage.Default"/> and <see cref="BufferUsage.DynamicPerFrame"/>. These modes indicate where the memory is stored for the buffer.
+/// </para>
+/// <para>
+/// <h3><see cref="BufferUsage.Default"/></h3>
+/// </para>
+/// <para>
+/// When in default mode, the buffer's memory is stored on the GPU and is inaccessible by the CPU. That is, the developer cannot write the memory directly. This has the effect of having extremely fast read 
+/// performance, but poor update performance and should be used in write once, read many scenarios.
+/// </para>
+/// <para>
+/// <h3><see cref="BufferUsage.DynamicPerFrame"/></h3>
+/// </para>
+/// <para>
+/// With this mode, the buffer can be updated from the CPU and copied through the PCIE bus and into GPU memory*. This allows decent performance when updating the buffer multiple times per frame. This mode is 
+/// similar to the old Direct3D 11 style "Dynamic Buffer" type. 
+/// </para>
+/// <para>
+/// <note type="warning">
+/// <para>
+/// <see cref="BufferUsage.DynamicPerFrame"/> is as the name suggests. Data uploaded to the buffer is only valid for the current frame. Use a <see cref="BufferUsage.Default"/> if you need data to persist for 
+/// more than a single frame.
+/// </para>
+/// </note>
+/// </para>
+/// <para>
+/// <i>
+/// * - If the GPU supports GPU Uploads and ReBar is enabled, then the copy is done directly into video memory. If Gorgon detects that the video adapter is GPU upload capable, it will use that mode as it 
+/// will provide better performance. To determine if your GPU has GPU upload capability, check the <see cref="GorgonVideoAdapterInfo.HasGpuUploadSupport"/> flag on the <see cref="GorgonVideoAdapterInfo"/> 
+/// type.
+/// </i>
+/// </para>
 /// </para>
 /// </remarks>
+/// <seealso cref="GorgonVideoAdapterInfo"/>
+/// <seealso cref="GorgonGpuBufferInfo"/>
+/// <seealso cref="GorgonIndexBuffer"/>
+/// <seealso cref="GorgonConstantBufferView"/>
+/// <seealso cref="GorgonStructuredBufferView"/>
+/// <seealso cref="GorgonCommandList"/>
+/// <seealso cref="GorgonCommandList.WriteConstant{T}(int, in T)"/>
+/// <seealso cref="BufferUsage"/>
 public sealed unsafe class GorgonGpuBuffer
     : GorgonGpuBufferCommon, IGorgonGpuBufferInfo
 {
@@ -62,7 +115,6 @@ public sealed unsafe class GorgonGpuBuffer
 
     private readonly Lock _viewLock = new();
     private readonly GorgonGpuBufferInfo _info;
-    private readonly Dictionary<ViewKey, GorgonBufferRenderTargetView> _rtvs = [];
     private readonly Dictionary<ViewKey, GorgonConstantBufferView> _cbvs = [];
     private readonly Dictionary<ViewKey, GorgonStructuredBufferView> _structs = [];
     private readonly Dictionary<ViewKey, GorgonShaderBufferView> _srvs = [];
@@ -71,37 +123,9 @@ public sealed unsafe class GorgonGpuBuffer
     private CpuBufferAllocation _uploadAllocation = CpuBufferAllocation.Null;    
 
     /// <summary>
-    /// Property to return the internal buffer allocation from the <see cref="MegaBuffer"/>.
+    /// Property to return the offset, in bytes, of a suballocated buffer within a larger buffer.
     /// </summary>
-    internal ref readonly GpuBufferAllocation GpuAllocation
-    {
-        get
-        {
-            switch (Usage)
-            {
-                case BufferUsage.DynamicPerFrame:
-                case BufferUsage.Default:
-                    return ref _bufferAllocation;
-                default:
-                    return ref GpuBufferAllocation.Null;
-            }
-        }
-    }
-
-    /// <summary>
-    /// Property to set or return whether the dynamic buffer has data that needs to be uploaded.
-    /// </summary>
-    internal bool NeedsDataUpload
-    {
-        get;
-        set;
-    } = true;
-
-    /// <inheritdoc/>
-    public bool IsRenderTarget => _info.IsRenderTarget;
-
-    /// <inheritdoc/>
-    public bool IsConstantBuffer => _info.IsConstantBuffer;
+    internal override ulong ResourceOffset => _bufferAllocation.Offset;
 
     /// <inheritdoc/>
     public int Alignment => _info.Alignment;
@@ -113,14 +137,6 @@ public sealed unsafe class GorgonGpuBuffer
         if (Alignment < 0)
         {
             throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_INVALID_ALIGNMENT, Alignment));
-        }
-
-        switch (Usage)
-        {
-            case BufferUsage.Download when IsConstantBuffer || IsRenderTarget || IsUnorderedAccess:
-                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_BUFFER_CANNOT_BE_DOWNLOAD, Name));
-            case BufferUsage.Upload or BufferUsage.DynamicPerFrame when IsRenderTarget:
-                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_RTV_BUFFER_NOT_DEFAULT, Name));
         }
 
         if (SizeInBytes < 1)
@@ -135,11 +151,6 @@ public sealed unsafe class GorgonGpuBuffer
         if (disposing)
         {           
             // Remove all the child views.
-            foreach (KeyValuePair<ViewKey, GorgonBufferRenderTargetView> view in _rtvs)
-            {
-                view.Value.Dispose();
-            }
-
             foreach (KeyValuePair<ViewKey, GorgonConstantBufferView> view in _cbvs)
             {
                 view.Value.Dispose();
@@ -161,7 +172,6 @@ public sealed unsafe class GorgonGpuBuffer
             }
 
             _cbvs.Clear();
-            _rtvs.Clear();
             _structs.Clear();
             _srvs.Clear();
             _uavs.Clear();
@@ -204,11 +214,8 @@ public sealed unsafe class GorgonGpuBuffer
         resourceInfo = GpuResourceInfo.FromD3D(in desc);
     }
 
-    /// <summary>
-    /// Function to return the transient upload buffer for a dynamic buffer.
-    /// </summary>
-    /// <returns>A read only reference to the CPU buffer allocation backing this dynamic buffer.</returns>
-    internal ref readonly CpuBufferAllocation GetTransientBufferData()
+    /// <inheritdoc/>
+    internal override ref readonly CpuBufferAllocation GetTransientBufferData()
     {
         if (!_uploadAllocation.IsAvailable)
         {
@@ -218,6 +225,57 @@ public sealed unsafe class GorgonGpuBuffer
         Debug.Assert(_uploadAllocation.IsAvailable, $"Upload heap for dynamic buffer '{Name}' is no longer valid.");
 
         return ref _uploadAllocation;
+    }
+
+    /// <summary>
+    /// Function to create a new constant buffer view for this buffer.
+    /// </summary>
+    /// <param name="offset">[Optional] The offset, in bytes, within the buffer to start viewing at.</param>
+    /// <param name="size">[Optional[ The size, in bytes, of the buffer to view.</param>
+    /// <returns>A new <see cref="GorgonConstantBufferView"/> used to send constant data to the GPU.</returns>
+    /// <exception cref="GorgonException">Thrown if the view could not be created because the buffer is less than 256 bytes in size.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="offset"/> is less than 0, or the <paramref name="size"/> is less than 256 bytes.</exception>
+    /// <exception cref="ArgumentException">Thrown if the <paramref name="offset"/> plus the <paramref name="size"/>, aligned to 256 bytes, is larger than <see cref="GorgonGpuBufferCommon.SizeInBytes"/>.</exception>
+    /// <remarks>
+    /// <para>
+    /// To access constant data in the shaders, a constant buffer view must be passed to the shader. This view will indicate that the entire buffer, or a portion of it can be used to represent shader 
+    /// constants. 
+    /// </para>
+    /// <para>
+    /// <note type="information">
+    /// <para>
+    /// The constant buffer view <b>MUST</b> be aligned to 256 bytes. This method will adjust the <paramref name="size"/> and the <paramref name="offset"/> values internally, however the aligned 
+    /// <paramref name="size"/> and <paramref name="offset"/> will be used in determining if the view fits within the <see cref="GorgonGpuBufferCommon.SizeInBytes"/> of the buffer. Therefore, the error message will reflect this 
+    /// alignment and may differ from the values passed in to the <paramref name="size"/> and <paramref name="offset"/> parameters.
+    /// </para>
+    /// <para>
+    /// These aligned values will also reflect in the <see cref="GorgonConstantBufferView.Size"/> and <see cref="GorgonConstantBufferView.Offset"/> properties on the <see cref="GorgonConstantBufferView"/> 
+    /// returned from this method, and therefore may not match the parameter values passed to the method.
+    /// </para>
+    /// </note>
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="GorgonConstantBufferView"/>
+    /// <seealso cref="BufferUsage"/>
+    public GorgonConstantBufferView GetConstantBufferView(long offset = 0, long? size = null)
+    {
+        using (_viewLock.EnterScope())
+        {
+            size ??= SizeInBytes;
+            long alignedSize = size.Value.AlignUp(D3D12.D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
+            long alignedOffset = offset.AlignUp(D3D12.D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
+
+            GorgonConstantBufferView.ValidateCbv(Name, Alignment, SizeInBytes, alignedOffset, alignedSize);
+
+            ViewKey key = new(BufferFormat.Unknown, alignedOffset, alignedSize);
+
+            if ((_cbvs.TryGetValue(key, out GorgonConstantBufferView? result)) && (result.D3DCpuHandle != D3D12_CPU_DESCRIPTOR_HANDLE.DEFAULT))
+            {
+                return result;
+            }
+
+            return _cbvs[key] = new GorgonConstantBufferView(Graphics, Name, this, alignedOffset, (int)alignedSize, false);
+        }
     }
 
     /// <summary>
@@ -270,11 +328,7 @@ public sealed unsafe class GorgonGpuBuffer
     /// <param name="info">Information used to create the buffer.</param>
     /// <exception cref="GorgonException"><para>Thrown if the buffer cannot be created because the size is less than 1 byte.</para>
     /// <para>-or-</para>
-    /// <para>Thrown if the buffer is a render target, constant buffer, or unordered access buffer and the <see cref="BufferUsage"/> is set to <see cref="BufferUsage.Download"/>.</para>
-    /// <para>-or-</para>
-    /// <para>Thrown if the buffer is a render target and the <see cref="BufferUsage"/> is not set to <see cref="BufferUsage.Default"/>.</para>
-    /// <para>-or-</para>
-    /// <para>Thrown if the <see cref="GorgonGpuBufferInfo.Alignment"/> value is negative, or not a power of 2.</para>
+    /// <para>Thrown if the <see cref="GorgonGpuBufferInfo.Alignment"/> value is negative.</para>
     /// </exception>
     /// <remarks>
     /// <para>
@@ -283,7 +337,7 @@ public sealed unsafe class GorgonGpuBuffer
     /// </para>
     /// <para>
     /// Most buffers will require a minimum <see cref="GorgonCommonBufferInfo.SizeInBytes"/> of 1 byte. However, some views will require the buffer have a specific minimum size (e.g. constant buffers must be at 
-    /// least 256 bytes, render target views must be at least the size of a <see cref="BufferFormat"/> format size, etc...).  
+    /// least 256 bytes, etc...).  
     /// </para>
     /// <para>
     /// The <paramref name="info"/> also contains a <see cref="GorgonCommonBufferInfo.Usage"/> flag which indicates how often the data can be updated in a buffer. Below is a description of how to use the usage 

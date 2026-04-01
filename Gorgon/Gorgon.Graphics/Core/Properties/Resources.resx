@@ -330,8 +330,8 @@ Call EndFrame() prior to calling this method, or call it prior to BeginFrame().<
   <data name="GORGFX_ERR_BUFFER_TOO_SMALL" xml:space="preserve">
     <value>The size of the buffer '{0}' is too small. Must be equal to or larger than {1} byte(s).</value>
   </data>
-  <data name="GORGFX_ERR_NOT_CONSTANT_BUFFER" xml:space="preserve">
-    <value>The buffer '{0}' does not support constant data.</value>
+  <data name="GORGFX_ERR_CONSTANT_BUFFER_ALIGNMENT_INVALID" xml:space="preserve">
+    <value>The buffer '{0}' has an alignment of {1}. Constant buffer views require that the buffer have an alignment of 256 bytes on creation.</value>
   </data>
   <data name="GORGFX_ERR_INVALID_RENDER_TARGET_FORMAT" xml:space="preserve">
     <value>The format {0} is not a valid render target format.</value>
@@ -410,5 +410,20 @@ The format of the image {0} and the format of the texture {1} are incompatible, 
   </data>
   <data name="GORGFX_ERR_INVALID_ALIGNMENT" xml:space="preserve">
     <value>The alignment {0} is not valid. The alignment must be a positive integer value.</value>
+  </data>
+  <data name="GORGFX_ERR_DEST_TOO_SMALL" xml:space="preserve">
+    <value>The destination data structure is too small ({0} bytes) to fit the required data ({1} bytes).</value>
+  </data>
+  <data name="GORGFX_ERR_CANNOT_COPY_FROM_MULTISAMPLE_TEXTURE" xml:space="preserve">
+    <value>The texture '{0}' has a multi sample value of {1}. Only textures without multi sampling can be copied.</value>
+  </data>
+  <data name="GORGFX_ERR_CANNOT_COPY_FROM_DEPTH_STENCIL" xml:space="preserve">
+    <value>The texture '{0}' is a depth/stencil texture. Depth/stencil textures cannot be copied into an image.</value>
+  </data>
+  <data name="GORGFX_ERR_TEXTURE_SUB_RESOURCE_TOO_SMALL" xml:space="preserve">
+    <value>The texture sub resource for texture '{0}' is too small ({1} bytes) for the amount of data being copied ({2} bytes).</value>
+  </data>
+  <data name="GORGFX_ERR_TEXTURE_TOO_SMALL" xml:space="preserve">
+    <value>The texture '{0}' is too small ({1} bytes) for the amount of data being copied ({2} bytes).</value>
   </data>
 </root>

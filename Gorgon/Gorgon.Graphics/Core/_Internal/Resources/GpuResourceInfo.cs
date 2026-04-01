@@ -86,42 +86,42 @@ internal readonly struct GpuResourceInfo
     /// Property to return the alignment of the data within the resource, in bytes.
     /// </summary>
     [FieldOffset(4)]
-    public readonly long Alignment;
+    public readonly int Alignment;
 
     /// <summary>
     /// Property to return the format of the data contained within the resource.
     /// </summary>
-    [FieldOffset(12)]
+    [FieldOffset(8)]
     public readonly BufferFormat Format;
 
     /// <summary>
     /// Property to return the flags indicating the intended usage for the resource.
     /// </summary>
-    [FieldOffset(16)]
+    [FieldOffset(12)]
     public readonly GraphicsResourceUsage Usage;
 
     /// <summary>
     /// Property to return information about a buffer resource.
     /// </summary>
-    [FieldOffset(20)]
+    [FieldOffset(16)]
     public readonly BufferResource Buffer;
 
     /// <summary>
     /// Property to return information about a 1D texture resource.
     /// </summary>
-    [FieldOffset(20)]
+    [FieldOffset(16)]
     public readonly Texture1DResource Texture1D;
 
     /// <summary>
     /// Property to return information about a 2D texture resource.
     /// </summary>
-    [FieldOffset(20)]
+    [FieldOffset(16)]
     public readonly Texture2DResource Texture2D;
 
     /// <summary>
     /// Property to return information about a 3D texture resource.
     /// </summary>
-    [FieldOffset(20)]
+    [FieldOffset(16)]
     public readonly Texture3DResource Texture3D;
 
     /// <summary>
@@ -136,12 +136,12 @@ internal readonly struct GpuResourceInfo
 
         return desc.Dimension switch
         {
-            D3D12_RESOURCE_DIMENSION.D3D12_RESOURCE_DIMENSION_BUFFER => new((GraphicsResourceType)desc.Dimension, (long)desc.Alignment, (BufferFormat)desc.Format, flags, new BufferResource((long)desc.Width)),
-            D3D12_RESOURCE_DIMENSION.D3D12_RESOURCE_DIMENSION_TEXTURE1D => new((GraphicsResourceType)desc.Dimension, (long)desc.Alignment, (BufferFormat)desc.Format, flags, new Texture1DResource((int)desc.Width,
+            D3D12_RESOURCE_DIMENSION.D3D12_RESOURCE_DIMENSION_BUFFER => new((GraphicsResourceType)desc.Dimension, (int)desc.Alignment, (BufferFormat)desc.Format, flags, new BufferResource((long)desc.Width)),
+            D3D12_RESOURCE_DIMENSION.D3D12_RESOURCE_DIMENSION_TEXTURE1D => new((GraphicsResourceType)desc.Dimension, (int)desc.Alignment, (BufferFormat)desc.Format, flags, new Texture1DResource((int)desc.Width,
                                                                             (short)desc.DepthOrArraySize, (short)desc.MipLevels, (BarrierLayout)desc.Layout)),
-            D3D12_RESOURCE_DIMENSION.D3D12_RESOURCE_DIMENSION_TEXTURE2D => new((GraphicsResourceType)desc.Dimension, (long)desc.Alignment, (BufferFormat)desc.Format, flags, new Texture2DResource((int)desc.Width, (int)desc.Height,
+            D3D12_RESOURCE_DIMENSION.D3D12_RESOURCE_DIMENSION_TEXTURE2D => new((GraphicsResourceType)desc.Dimension, (int)desc.Alignment, (BufferFormat)desc.Format, flags, new Texture2DResource((int)desc.Width, (int)desc.Height,
                                                                             (short)desc.DepthOrArraySize, (short)desc.MipLevels, new GorgonMultisampleInfo((int)desc.SampleDesc.Count, (int)desc.SampleDesc.Quality), (BarrierLayout)desc.Layout)),
-            D3D12_RESOURCE_DIMENSION.D3D12_RESOURCE_DIMENSION_TEXTURE3D => new((GraphicsResourceType)desc.Dimension, (long)desc.Alignment, (BufferFormat)desc.Format, flags, new Texture3DResource((int)desc.Width, (int)desc.Height,
+            D3D12_RESOURCE_DIMENSION.D3D12_RESOURCE_DIMENSION_TEXTURE3D => new((GraphicsResourceType)desc.Dimension, (int)desc.Alignment, (BufferFormat)desc.Format, flags, new Texture3DResource((int)desc.Width, (int)desc.Height,
                                                                             (short)desc.DepthOrArraySize, (short)desc.MipLevels, (BarrierLayout)desc.Layout)),
             _ => default
         };
@@ -179,7 +179,7 @@ internal readonly struct GpuResourceInfo
     /// <param name="format">The format of the data in the resource.</param>
     /// <param name="usage">Flags indicating the intended usage for the resource.</param>
     /// <param name="bufferInfo">The information for a buffer resource.</param>
-    public GpuResourceInfo(GraphicsResourceType type, long alignment, BufferFormat format, GraphicsResourceUsage usage, BufferResource bufferInfo)
+    public GpuResourceInfo(GraphicsResourceType type, int alignment, BufferFormat format, GraphicsResourceUsage usage, BufferResource bufferInfo)
     {
         ResourceType = type;
         Alignment = alignment;
@@ -196,7 +196,7 @@ internal readonly struct GpuResourceInfo
     /// <param name="format">The format of the data in the resource.</param>
     /// <param name="usage">Flags indicating the intended usage for the resource.</param>
     /// <param name="textureInfo">The information for a 1D texture resource.</param>
-    public GpuResourceInfo(GraphicsResourceType type, long alignment, BufferFormat format, GraphicsResourceUsage usage, Texture1DResource textureInfo)
+    public GpuResourceInfo(GraphicsResourceType type, int alignment, BufferFormat format, GraphicsResourceUsage usage, Texture1DResource textureInfo)
     {
         ResourceType = type;
         Alignment = alignment;
@@ -213,7 +213,7 @@ internal readonly struct GpuResourceInfo
     /// <param name="format">The format of the data in the resource.</param>
     /// <param name="usage">Flags indicating the intended usage for the resource.</param>
     /// <param name="textureInfo">The information for a 2D texture resource.</param>
-    public GpuResourceInfo(GraphicsResourceType type, long alignment, BufferFormat format, GraphicsResourceUsage usage, Texture2DResource textureInfo)
+    public GpuResourceInfo(GraphicsResourceType type, int alignment, BufferFormat format, GraphicsResourceUsage usage, Texture2DResource textureInfo)
     {
         ResourceType = type;
         Alignment = alignment;
@@ -230,7 +230,7 @@ internal readonly struct GpuResourceInfo
     /// <param name="format">The format of the data in the resource.</param>
     /// <param name="usage">Flags indicating the intended usage for the resource.</param>
     /// <param name="textureInfo">The information for a 3D texture resource.</param>
-    public GpuResourceInfo(GraphicsResourceType type, long alignment, BufferFormat format, GraphicsResourceUsage usage, Texture3DResource textureInfo)
+    public GpuResourceInfo(GraphicsResourceType type, int alignment, BufferFormat format, GraphicsResourceUsage usage, Texture3DResource textureInfo)
     {
         ResourceType = type;
         Alignment = alignment;

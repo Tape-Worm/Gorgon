@@ -914,7 +914,7 @@ public unsafe sealed class GorgonGraphics
     /// </remarks>
     internal void InitializeTexture(GorgonTexture texture)
     {
-        UploadHeaps.Allocate((ulong)texture.SizeInBytes, (int)texture.Info.Alignment, out CpuBufferAllocation allocation);
+        UploadHeaps.Allocate((ulong)texture.SizeInBytes, texture.Info.Alignment, out CpuBufferAllocation allocation);
 
         Debug.Assert(allocation.IsAvailable, $"Could not allocate upload memory for texture '{texture.Name}'");
 

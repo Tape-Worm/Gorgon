@@ -23,6 +23,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -40,18 +41,6 @@ internal class GlobalBarrierState
     private GlobalBarrier[][] _barriers = new GlobalBarrier[InitialPageCount][];
 
     /// <summary>
-    /// Function to add a new page to the barrier list.
-    /// </summary>
-    private void AddPage()
-    {
-        GlobalBarrier[][] result = new GlobalBarrier[_barriers.Length + 1][];
-
-        Array.Copy(_barriers, result, _barriers.Length);
-
-        _barriers = result;
-    }
-
-    /// <summary>
     /// Function to retrieve the state for a given resource.
     /// </summary>
     /// <param name="resourceID">The ID of the resource.</param>
@@ -65,6 +54,8 @@ internal class GlobalBarrierState
     {
         using (_syncLock.EnterScope())
         {
+            Debug.Assert(resourceID < 268_435_456, $"The resource ID {resourceID} is really large. This may be a broken resource ID, or the application has too many resources. Please eliminate 3. P.S. I am not a crackpot");
+
             ulong page = resourceID / MaxPageSize;
             ulong barrierIndex = resourceID % MaxPageSize;
 
@@ -100,12 +91,7 @@ internal class GlobalBarrierState
                 ulong page = barrier.Key / MaxPageSize;
                 ulong barrierIndex = barrier.Key % MaxPageSize;
 
-                // This will be a slow operation, but it shouldn't happen, and if it does, we have other issues.
-                // Basically, this is just here to keep things running.
-                if (page >= (ulong)_barriers.Length)
-                {
-                    AddPage();
-                }
+                Debug.Assert(page < (ulong)_barriers.Length, $"The page index {page} is outside of the total number of pages {_barriers.Length}.");
 
                 GlobalBarrier[]? gBarriers = _barriers[page];
 
@@ -141,10 +127,7 @@ internal class GlobalBarrierState
                 ulong page = barrier.Key / MaxPageSize;
                 ulong barrierIndex = barrier.Key % MaxPageSize;
 
-                if (page >= (ulong)_barriers.Length)
-                {
-                    AddPage();
-                }
+                Debug.Assert(page < (ulong)_barriers.Length, $"The page index {page} is outside of the total number of pages {_barriers.Length}.");
 
                 GlobalBarrier[]? gBarriers = _barriers[page];
 

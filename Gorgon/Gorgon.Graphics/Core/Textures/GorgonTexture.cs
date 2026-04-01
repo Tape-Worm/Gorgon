@@ -197,7 +197,7 @@ public sealed unsafe class GorgonTexture
                         {
                             int r = GetSubResourceIndex(m, a, p);
                             D3D12_PLACED_SUBRESOURCE_FOOTPRINT footPrint = footPrints[r];
-                            GorgonSubResourceInfo info = new(r, (int)footPrints[r].Footprint.Width, (int)footPrint.Footprint.Height, (int)footPrint.Footprint.Depth,
+                            GorgonSubResourceInfo info = new(r, (int)footPrint.Footprint.Width, (int)footPrint.Footprint.Height, (int)footPrint.Footprint.Depth,
                                 a, m, p, 
                                 (int)footPrint.Footprint.RowPitch, (long)rowSizes[r], (int)rows[r], (long)footPrint.Offset);
 
@@ -607,7 +607,7 @@ public sealed unsafe class GorgonTexture
     /// <param name="arrayCountOrDepthCount"></param>
     /// <returns></returns>
     /// <exception cref="GorgonException"></exception>
-#warning FINISH: This is not complete, just here as a marker/template.  Needs validation and documentation.
+#warning FINISHME: This is not complete, just here as a marker/template.  Needs validation and documentation.
     public GorgonTextureRenderTargetView GetRenderTargetView(BufferFormat format = BufferFormat.Unknown, short mipLevel = 0, short arrayIndexOrDepthSlice = 0, short arrayCountOrDepthCount = 1)
     {
         using (_viewLock.EnterScope())
@@ -651,7 +651,7 @@ public sealed unsafe class GorgonTexture
     /// <param name="arrayCount"></param>
     /// <param name="resourceMinLodClamp"></param>
     /// <returns></returns>
-#warning FINISH: This is not complete, just here as a marker/template.  Needs validation and documentation.
+#warning FINISHME: This is not complete, just here as a marker/template.  Needs validation and documentation.
     public GorgonTextureView GetTextureView(BufferFormat format = BufferFormat.Unknown, short mipLevel = 0, short mipCount = 1, short arrayIndex = 0, short arrayCount = 1, float resourceMinLodClamp = 0)
     {
         using (_viewLock.EnterScope())

@@ -48,10 +48,27 @@ namespace Gorgon.Graphics.Core;
 /// </para>
 /// </remarks>
 public unsafe sealed class GorgonTextureRenderTargetView
-    : GorgonRenderTargetView, IGorgonImageInfo
+    : GorgonResourceView, IGorgonImageInfo
 {
     private CpuDescriptorAllocation _allocation;
     private readonly IGorgonImageInfo _textureImageInfo;
+
+    /// <summary>
+    /// Property to return the format of view data.
+    /// </summary>
+    public BufferFormat Format
+    {
+        get;
+    } = BufferFormat.Unknown;
+
+    /// <summary>
+    /// Property to return the information about the buffer <see cref="Format"/>.
+    /// </summary>
+    public GorgonFormatInfo FormatInfo
+    {
+        get;
+    }
+
 
     /// <summary>
     /// Property to return the texture associated with this view.
@@ -298,16 +315,19 @@ public unsafe sealed class GorgonTextureRenderTargetView
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonTextureView"/> class.
     /// </summary>
-    /// <param name="graphics"><inheritdoc cref="GorgonRenderTargetView(GorgonGraphics, string, GorgonGpuResource, BufferFormat, GorgonFormatInfo, bool)" path="/param[@name='graphics']"/></param>
-    /// <param name="name"><inheritdoc cref="GorgonRenderTargetView(GorgonGraphics, string, GorgonGpuResource, BufferFormat, GorgonFormatInfo, bool)" path="/param[@name='name']"/></param>
+    /// <param name="graphics"><inheritdoc cref="GorgonResourceView(GorgonGraphics, string, GorgonGpuResource, bool)" path="/param[@name='graphics']"/></param>
+    /// <param name="name"><inheritdoc cref="GorgonResourceView(GorgonGraphics, string, GorgonGpuResource, bool)" path="/param[@name='name']"/></param>
     /// <param name="texture">The texture for the view.</param>
-    /// <param name="format"><inheritdoc cref="GorgonRenderTargetView(GorgonGraphics, string, GorgonGpuResource, BufferFormat, GorgonFormatInfo, bool)" path="/param[@name='format']"/></param>
-    /// <param name="formatInfo"><inheritdoc cref="GorgonRenderTargetView(GorgonGraphics, string, GorgonGpuResource, BufferFormat, GorgonFormatInfo, bool)" path="/param[@name='formatInfo']"/></param>
-    /// <param name="owned"><inheritdoc cref="GorgonRenderTargetView(GorgonGraphics, string, GorgonGpuResource, BufferFormat, GorgonFormatInfo, bool)" path="/param[@name='owned']"/></param>
+    /// <param name="format">The format for the view.</param>
+    /// <param name="formatInfo">Information about the view format.</param>
+    /// <param name="owned"><inheritdoc cref="GorgonResourceView(GorgonGraphics, string, GorgonGpuResource, bool)" path="/param[@name='owned']"/></param>
     internal GorgonTextureRenderTargetView(GorgonGraphics graphics, string name, GorgonTexture texture, BufferFormat format, GorgonFormatInfo formatInfo, bool owned)
-        : base(graphics, name, texture, format, formatInfo, owned)
+        : base(graphics, name, texture, owned)
     {
         _textureImageInfo = Texture = texture;
+
+        Format = format;
+        FormatInfo = formatInfo;
 
         // Default the view depth slice count to match the actual depth.
         DepthCount = texture.Depth;

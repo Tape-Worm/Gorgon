@@ -48,6 +48,7 @@ namespace Gorgon.Graphics.Core;
 /// TODO: Write something here.
 /// </para>
 /// </remarks>
+[Obsolete("Do not use this")]
 public sealed unsafe class GorgonGpuBuffer_OLDE
     : GorgonGpuResource, IGorgonGpuBufferInfo
 {
@@ -63,7 +64,6 @@ public sealed unsafe class GorgonGpuBuffer_OLDE
 
     private CpuBufferAllocation _uploadAllocation;
     private readonly Lock _viewLock = new();
-    private readonly Dictionary<ViewKey, GorgonBufferRenderTargetView> _rtvs = [];
     private readonly Dictionary<ViewKey, GorgonConstantBufferView> _cbvs = [];
     private readonly Dictionary<ViewKey, GorgonStructuredBufferView> _structs = [];
     private readonly Dictionary<ViewKey, GorgonShaderBufferView> _srvs = [];
@@ -88,10 +88,10 @@ public sealed unsafe class GorgonGpuBuffer_OLDE
     public BufferUsage Usage => _info.Usage;
 
     /// <inheritdoc/>
-    public bool IsRenderTarget => _info.IsRenderTarget;
+    public bool IsRenderTarget => false;
 
     /// <inheritdoc/>
-    public bool IsConstantBuffer => _info.IsConstantBuffer;
+    public bool IsConstantBuffer => false;
 
     /// <inheritdoc/>
     public bool IsUnorderedAccess => _info.IsUnorderedAccess;
@@ -106,6 +106,7 @@ public sealed unsafe class GorgonGpuBuffer_OLDE
     /// </summary>
     private void ValidateInfo()
     {
+        /*
         switch (_info.Usage)
         {
             case BufferUsage.Download when _info.IsConstantBuffer || _info.IsRenderTarget || _info.IsUnorderedAccess:
@@ -118,6 +119,7 @@ public sealed unsafe class GorgonGpuBuffer_OLDE
         {
             throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_CANNOT_CALL_ON_ACTIVE_FRAME, SizeInBytes, 1));
         }
+        */
     }
 
     /// <summary>
@@ -151,12 +153,6 @@ public sealed unsafe class GorgonGpuBuffer_OLDE
                 D3DResource.Get()->Unmap(0, null);
             }
 
-            // Remove all the child views.
-            foreach (KeyValuePair<ViewKey, GorgonBufferRenderTargetView> view in _rtvs)
-            {
-                view.Value.Dispose();
-            }
-
             foreach (KeyValuePair<ViewKey, GorgonConstantBufferView> view in _cbvs)
             {
                 view.Value.Dispose();
@@ -178,7 +174,6 @@ public sealed unsafe class GorgonGpuBuffer_OLDE
             }
 
             _cbvs.Clear();
-            _rtvs.Clear();
             _structs.Clear();
             _srvs.Clear();
             _uavs.Clear();
@@ -277,101 +272,6 @@ public sealed unsafe class GorgonGpuBuffer_OLDE
     }
 
     /// <summary>
-    /// Function to create a new constant buffer view for this buffer.
-    /// </summary>
-    /// <param name="offset">[Optional] The offset, in bytes, within the buffer to start viewing at.</param>
-    /// <param name="size">[Optional[ The size, in bytes, of the buffer to view.</param>
-    /// <returns>A new <see cref="GorgonConstantBufferView"/> used to send constant data to the GPU.</returns>
-    /// <exception cref="NotSupportedException">Thrown if the <see cref="Usage"/> is set to <see cref="BufferUsage.Download"/>.</exception>
-    /// <exception cref="GorgonException">Thrown if the view could not be created because the buffer is less than 256 bytes in size.</exception>
-    /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="offset"/> is less than 0, or the <paramref name="size"/> is less than 256 bytes.</exception>
-    /// <exception cref="ArgumentException">Thrown if the <paramref name="offset"/> plus the <paramref name="size"/>, aligned to 256 bytes, is larger than <see cref="SizeInBytes"/>.</exception>
-    /// <remarks>
-    /// <para>
-    /// To access constant data in the shaders, a constant buffer view must be passed to the shader. This view will indicate that the entire buffer, or a portion of it can be used to represent shader 
-    /// constants. 
-    /// </para>
-    /// <para>
-    /// <note type="information">
-    /// <para>
-    /// The constant buffer view <b>MUST</b> be aligned to 256 bytes. This method will adjust the <paramref name="size"/> and the <paramref name="offset"/> values internally, however the aligned 
-    /// <paramref name="size"/> and <paramref name="offset"/> will be used in determining if the view fits within the <see cref="SizeInBytes"/> of the buffer. Therefore, the error message will reflect this 
-    /// alignment and may differ from the values passed in to the <paramref name="size"/> and <paramref name="offset"/> parameters.
-    /// </para>
-    /// <para>
-    /// These aligned values will also reflect in the <see cref="GorgonConstantBufferView.Size"/> and <see cref="GorgonConstantBufferView.Offset"/> properties on the <see cref="GorgonConstantBufferView"/> 
-    /// returned from this method, and therefore may not match the parameter values passed to the method.
-    /// </para>
-    /// </note>
-    /// </para>
-    /// </remarks>
-    /// <seealso cref="GorgonConstantBufferView"/>
-    /// <seealso cref="BufferUsage"/>
-    public GorgonConstantBufferView GetConstantBufferView(long offset = 0, long? size = null)
-    {
-        using (_viewLock.EnterScope())
-        {
-            if (!IsConstantBuffer)
-            {
-                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_NOT_CONSTANT_BUFFER, Name));
-            }
-
-            size ??= SizeInBytes;
-            long alignedSize = size.Value.AlignUp(D3D12.D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
-            long alignedOffset = offset.AlignUp(D3D12.D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
-
-            GorgonConstantBufferView.ValidateCbv(Name, Usage, SizeInBytes, alignedOffset, alignedSize);
-
-            ViewKey key = new(BufferFormat.Unknown, alignedOffset, alignedSize);
-
-            if ((_cbvs.TryGetValue(key, out GorgonConstantBufferView? result)) && (result.D3DCpuHandle != D3D12_CPU_DESCRIPTOR_HANDLE.DEFAULT))
-            {
-                return result;
-            }
-
-            return _cbvs[key] = new GorgonConstantBufferView(Graphics, Name, this, alignedOffset, alignedSize, false);            
-        }
-    }
-
-#warning FINISH: This is not complete, just here as a marker/template.  Needs validation and documentation.
-    /// <summary>
-    /// TODO:
-    /// </summary>
-    /// <param name="format"></param>
-    /// <param name="startElement"></param>
-    /// <param name="elementCount"></param>
-    /// <returns></returns>
-    /// <exception cref="GorgonException"></exception>
-    public GorgonBufferRenderTargetView GetRenderTargetView(BufferFormat format, long startElement = 0, long? elementCount = null)
-    {
-        using (_viewLock.EnterScope())
-        {
-            if (!Graphics.FormatSupport[format].IsRenderTargetFormat)
-            {
-                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_INVALID_RENDER_TARGET_FORMAT, format));
-            }
-
-            GorgonFormatInfo info = new(format);
-
-            elementCount ??= SizeInBytes / info.SizeInBytes;
-            startElement /= info.SizeInBytes;
-
-            ArgumentOutOfRangeException.ThrowIfLessThan(startElement, 0);
-            ArgumentOutOfRangeException.ThrowIfLessThan(elementCount.Value, 1);
-
-            ViewKey key = new(format, startElement, elementCount.Value);
-
-            if ((_rtvs.TryGetValue(key, out GorgonBufferRenderTargetView? result))
-                && (result.D3DCpuHandle != D3D12_CPU_DESCRIPTOR_HANDLE.DEFAULT))
-            {
-                return result;
-            }
-
-            return _rtvs[key] = new(Graphics, $"{Name} Render Target View", this, format, info, startElement, elementCount.Value, false);
-        }
-    }
-
-    /// <summary>
     /// Initializes a new instance of the <see cref="GorgonGpuBuffer_OLDE"/> class.
     /// </summary>
     /// <param name="graphics"><inheritdoc cref="GorgonGpuResource(GorgonGraphics, string, ComPtr{ID3D12Resource2})" path="/param[@name='graphics']"/></param>
@@ -418,7 +318,7 @@ public sealed unsafe class GorgonGpuBuffer_OLDE
 
         CreateNative_OLDE();
 
-        long sizeInBytes = info.IsConstantBuffer ? info.SizeInBytes.AlignUp(D3D12.D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT) : info.SizeInBytes;
+        long sizeInBytes = info.SizeInBytes;
 
         CpuData = info.Usage switch
         {

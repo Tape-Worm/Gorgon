@@ -92,9 +92,7 @@ internal unsafe sealed class CommandListPool(GorgonGraphics graphics, CommandQue
             if (_free.Count > 0)
             {
                 list = _free[^1];
-                list.Allocator = allocator;
-                list.Presenters.Clear();
-                list.Name = name;
+                list.ResetState(name, allocator);
 
                 _free.RemoveAt(_free.Count - 1);
                 _active.Add(list);
@@ -121,8 +119,8 @@ internal unsafe sealed class CommandListPool(GorgonGraphics graphics, CommandQue
         using (_lock.EnterScope())
         {
             if (_active.Remove(list))
-            {                
-                list.Allocator = null;
+            {
+                list.ResetState(list.Name, null);
                 _free.Add(list);
             }
         }

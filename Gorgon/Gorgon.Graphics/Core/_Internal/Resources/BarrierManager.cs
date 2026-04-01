@@ -43,19 +43,46 @@ namespace Gorgon.Graphics.Core;
 /// <summary>
 /// Manages resource barriers for command lists.
 /// </summary>
-/// <param name="globalState">The global resource barrier state tracker.</param>
-internal unsafe class BarrierManager(GlobalBarrierState globalState)
+/// <param name="graphics">The graphics interface associated with this manager.</param>
+internal unsafe class BarrierManager(GorgonGraphics graphics)
 {
     // The initial capacity of the sub resource barrier lists.
     private const int InitalSubResourceCapacity = 128;
 
+    // Masks to ensure "before" state compatibility with the copy and compute queues.
+    private const BarrierSync LegalCopySyncMask = BarrierSync.None | BarrierSync.All | BarrierSync.Copy | BarrierSync.Split;
+    private const BarrierAccess LegalCopyAccessMask = BarrierAccess.CopyDestination | BarrierAccess.CopySource | BarrierAccess.None;
+    private const BarrierSync LegalComputeSyncMask = BarrierSync.None | BarrierSync.All | BarrierSync.ComputeShading | BarrierSync.Copy
+                                                    | BarrierSync.ExecuteIndirect | BarrierSync.AllShading | BarrierSync.NonPixelShading | BarrierSync.ClearUnorderedAccessView
+                                                    | BarrierSync.Split;
+                                         // Future: | BarrierSync.RayTracing
+                                         //         | BarrierSync.BuildRayTracingAccelerationStructure
+                                         //         | BarrierSync.CopyRayTracingAccelerationStructure
+                                         //         | BarrierSync.EmitRayTracingAccelerationStructurePostBuildInformation
+    private const BarrierAccess LegalComputeAccessMask = BarrierAccess.None | BarrierAccess.Common | BarrierAccess.VertexBuffer | BarrierAccess.ConstantBuffer
+                                                       | BarrierAccess.UnorderedAccess | BarrierAccess.ShaderResource | BarrierAccess.IndirectArgument | BarrierAccess.CopyDestination
+                                                       | BarrierAccess.CopySource;
+                                            // Future: | BarrierAccess.RayTracingAccelerationStructureRead
+                                            //         | BarrierAccess.RayTracingAccelerationStructureWrite
+
+    // Future:
+    // These masks are used to indicate which queue the resource was last used by (from its "before" layout).
+    // We can use these to force a transition on the appropriate queue to make it compatible with the current executing queue.
+    // For now, these values are not used and are here just for reference should we need to integrate such a system.
+    private const BarrierLayout GraphicsOnlyLayoutMask = BarrierLayout.RenderTarget | BarrierLayout.DepthStencilWrite | BarrierLayout.DepthStencilRead | BarrierLayout.ResolveSource
+                                                       | BarrierLayout.ResolveDestination | BarrierLayout.ShadingRateSource | BarrierLayout.GraphicsCommon | BarrierLayout.GraphicsGenericRead
+                                                       | BarrierLayout.GraphicsUnorderedAccess | BarrierLayout.GraphicsShaderResource | BarrierLayout.GraphicsCopySource | BarrierLayout.GraphicsCopyDestination;
+    private const BarrierLayout ComputeOnlyLayoutMask = BarrierLayout.ComputeCommon | BarrierLayout.ComputeGenericRead | BarrierLayout.ComputeUnorderedAccess | BarrierLayout.ComputeShaderResource
+                                                      | BarrierLayout.ComputeCopySource | BarrierLayout.ComputeCopyDestination;
+
+    private readonly GorgonGraphics _graphics = graphics;
     private readonly Dictionary<ulong, GorgonBufferBarrier> _currentBuffers = [];
     private readonly Dictionary<ulong, GorgonBufferBarrier> _pendingBuffers = [];
     private readonly Dictionary<ulong, GorgonTextureBarrier> _currentTextures = [];
     private readonly Dictionary<ulong, GorgonTextureBarrier> _pendingTextures = [];
     private readonly Dictionary<ulong, List<GorgonSubResourceRange>> _currentSubResources = [];
     private readonly Dictionary<ulong, List<GorgonSubResourceRange>> _pendingSubResources = [];
-    private readonly GlobalBarrierState _globalState = globalState;
+    private readonly GlobalBarrierState _globalState = graphics.GlobalBarriers;
 
     /// <summary>
     /// Property to return whether there are any pending barriers.
@@ -182,21 +209,82 @@ internal unsafe class BarrierManager(GlobalBarrierState globalState)
         }
     }
 
+    /// <summary>
+    /// Function to check the before layout state against what's allowed for a given queue.
+    /// </summary>
+    /// <param name="currentQueue">The queue that is executing.</param>
+    /// <param name="layout">The before layout state.</param>
+    /// <returns>The updated state.</returns>
+    private BarrierLayout CheckQueueBeforeLayoutState(CommandQueue currentQueue, BarrierLayout layout)
+    {
+        const BarrierLayout legalComputeLayoutMask = BarrierLayout.None | BarrierLayout.Common | BarrierLayout.GenericRead | BarrierLayout.UnorderedAccess | BarrierLayout.ShaderResource
+                                                   | BarrierLayout.CopySource | BarrierLayout.CopyDestination | BarrierLayout.ComputeCommon | BarrierLayout.ComputeGenericRead | BarrierLayout.ComputeUnorderedAccess
+                                                   | BarrierLayout.ComputeShaderResource | BarrierLayout.ComputeCopySource | BarrierLayout.ComputeCopyDestination;
+
+        // TODO: Replace these with transitions to the appropriate states on the source queue.
+        if (currentQueue == _graphics.CopyQueue)
+        {
+            Debug.Assert((layout & ~(BarrierLayout.None | BarrierLayout.Common)) == 0, $"The before layout {layout} is not supported by the copy queue.");
+        }
+
+        if (currentQueue == _graphics.ComputeQueue)
+        {
+            Debug.Assert((layout & ~legalComputeLayoutMask) == 0, $"The before layout {layout} is not supported by the compute queue.");
+        }        
+
+        return layout;
+    }
+
+    /// <summary>
+    /// Function to check the before states against what's allowed for a given queue.
+    /// </summary>
+    /// <param name="currentQueue">The queue that is executing.</param>
+    /// <param name="sync">The before sync state.</param>
+    /// <param name="access">The access sync state.</param>
+    /// <returns>The updated states.</returns>
+    private (BarrierSync sync, BarrierAccess access) CheckQueueBeforeState(CommandQueue currentQueue, BarrierSync sync, BarrierAccess access)
+    {
+        // Check for legal copy queue values.        
+        if (currentQueue == _graphics.CopyQueue)
+        {
+            if (((sync & ~LegalCopySyncMask) != 0) || ((access & ~LegalCopyAccessMask) != 0))
+            {
+                sync = BarrierSync.None;
+                access = BarrierAccess.None;
+            }
+        }
+
+        // Check for legal compute queue values.
+        if (currentQueue == _graphics.ComputeQueue)
+        {
+            if (((sync & ~LegalComputeSyncMask) != 0) || ((access & ~LegalComputeAccessMask) != 0))
+            {
+                sync = BarrierSync.None;
+                access = BarrierAccess.None;
+            }
+        }
+
+        return (sync, access);
+    }
+
 
     /// <summary>
     /// Function to populate the buffer barrier list.
     /// </summary>
     /// <param name="barriers">The barrier array to populate.</param>
-    private void GatherBufferBarriers(D3D12_BUFFER_BARRIER* barriers)
+    /// <param name="queue">The command queue this is executing on.</param>
+    private void GatherBufferBarriers(D3D12_BUFFER_BARRIER* barriers, CommandQueue queue)
     {
         int index = 0;
 
         foreach (KeyValuePair<ulong, GorgonBufferBarrier> barrier in _pendingBuffers)
-        {
+        {            
             // If we get a null ref, then we'll let it die here. That means something got messed up when we allocated the barrier earlier and is a bug.
             ref GorgonBufferBarrier current = ref CollectionsMarshal.GetValueRefOrNullRef(_currentBuffers, barrier.Key);
 
-            barriers[index++] = barrier.Value.ToD3DBufferBarrier(current.Sync, current.Access);
+            (BarrierSync sync, BarrierAccess access) = CheckQueueBeforeState(queue, current.Sync, current.Access);
+
+            barriers[index++] = barrier.Value.ToD3DBufferBarrier(sync, access);
             current = barrier.Value;
         }
 
@@ -229,7 +317,8 @@ internal unsafe class BarrierManager(GlobalBarrierState globalState)
     /// Function to populate the texture barrier list.
     /// </summary>
     /// <param name="barriers">The barrier array to populate.</param>
-    private void GatherTextureBarriers(D3D12_TEXTURE_BARRIER* barriers)
+    /// <param name="queue">The command queue this is executing on.</param>
+    private void GatherTextureBarriers(D3D12_TEXTURE_BARRIER* barriers, CommandQueue queue)
     {
         int index = 0;
 
@@ -257,16 +346,20 @@ internal unsafe class BarrierManager(GlobalBarrierState globalState)
             List<GorgonSubResourceRange> currentSubResources = _currentSubResources[pending.Key];
             currentSubResources.Clear();
 
+            (BarrierSync sync, BarrierAccess access) = CheckQueueBeforeState(queue, current.Sync, current.Access);
+            BarrierLayout layout = CheckQueueBeforeLayoutState(queue, current.Layout);
+
             for (int i = 0; i < ranges.Length; ++i)
             {
                 ref readonly GorgonSubResourceRange r = ref ranges[i];
                 D3D12_BARRIER_SUBRESOURCE_RANGE range = r.ToD3DBarrierSubResourceRange();
 
-                barriers[index++] = pendingBarrier.ToD3DTextureBarrier(current.Sync, current.Access, current.Layout, in range);
+
+                barriers[index++] = pendingBarrier.ToD3DTextureBarrier(sync, access, layout, in range);
                 currentSubResources.Add(r);
             }
 
-            ranges.Clear();
+            _pendingSubResources[pending.Key].Clear();
             current = pendingBarrier;
         }
 
@@ -428,7 +521,7 @@ internal unsafe class BarrierManager(GlobalBarrierState globalState)
     /// Function to submit the barriers to the command list.
     /// </summary>
     /// <param name="list">The command list to append the barriers on.</param>
-    public void Submit(ref readonly ComPtr<ID3D12GraphicsCommandList10> list)
+    public void Submit(GorgonCommandList list)
     {
         if (IsEmpty)
         {
@@ -443,18 +536,18 @@ internal unsafe class BarrierManager(GlobalBarrierState globalState)
         if (_pendingBuffers.Count > 0)
         {            
             D3D12_BUFFER_BARRIER* bufferBarriers = stackalloc D3D12_BUFFER_BARRIER[bufferBarrierCount];
-            GatherBufferBarriers(bufferBarriers);
+            GatherBufferBarriers(bufferBarriers, list.Queue);
             groups[groupCount++] = new D3D12_BARRIER_GROUP((uint)bufferBarrierCount, bufferBarriers);
         }
 
         if (textureBarrierCount > 0)
         {
             D3D12_TEXTURE_BARRIER* textureBarriers = stackalloc D3D12_TEXTURE_BARRIER[textureBarrierCount];
-            GatherTextureBarriers(textureBarriers);
+            GatherTextureBarriers(textureBarriers, list.Queue);
             groups[groupCount++] = new D3D12_BARRIER_GROUP((uint)textureBarrierCount, textureBarriers);
         }
 
-        list.Get()->Barrier(groupCount, groups);
+        list.D3DGraphicsCommandList.Get()->Barrier(groupCount, groups);
     }
 
     /// <summary>
