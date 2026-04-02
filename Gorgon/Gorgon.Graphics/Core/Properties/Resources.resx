@@ -426,4 +426,7 @@ The format of the image {0} and the format of the texture {1} are incompatible, 
   <data name="GORGFX_ERR_TEXTURE_TOO_SMALL" xml:space="preserve">
     <value>The texture '{0}' is too small ({1} bytes) for the amount of data being copied ({2} bytes).</value>
   </data>
+  <data name="GORGFX_ERR_BUFFERS_AND_BARRIER_OVERLAP" xml:space="preserve">
+    <value>The buffer '{0}' has a sync of {1}, access of {2}, and overlaps the same memory region as the buffer '{3}' with a sync of {4} and access of {5}. This is not allowed.</value>
+  </data>
 </root>

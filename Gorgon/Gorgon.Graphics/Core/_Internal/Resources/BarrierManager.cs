@@ -402,48 +402,6 @@ internal unsafe class BarrierManager(GorgonGraphics graphics)
     }
 
     /// <summary>
-    /// Function to add a barrier for a buffer.
-    /// </summary>
-    /// <param name="buffer">The buffer resource to set a barrier on.</param>
-    /// <param name="sync">The resource synchronization value.</param>
-    /// <param name="access">The resource access level.</param>
-    [Obsolete("For old buffers.")]
-    public void AddBarrier(GorgonGpuBuffer_OLDE buffer, BarrierSync sync, BarrierAccess access)
-    {
-        // If we're using a dynamic-per-frame buffer, then we cannot change its barrier.
-        if (buffer.Usage == BufferUsage.DynamicPerFrame)
-        {
-            return;
-        }
-
-        GorgonBufferBarrier newBarrier = new(buffer, sync, access);
-
-        ref GorgonBufferBarrier current = ref CollectionsMarshal.GetValueRefOrAddDefault(_currentBuffers, buffer.ResourceID, out bool exists);
-
-        if (!exists)
-        {
-            ref readonly GlobalBarrier globalBarrier = ref _globalState.GetState(buffer.ResourceID);
-
-            current = new(buffer, globalBarrier.Sync, globalBarrier.Access);
-        }
-
-        // Redundant state.
-        if (current.Equals(newBarrier))
-        {
-            return;
-        }
-
-        ref GorgonBufferBarrier pending = ref CollectionsMarshal.GetValueRefOrAddDefault(_pendingBuffers, buffer.ResourceID, out exists);
-
-        if ((exists) && (pending.Equals(newBarrier)))
-        {
-            return;
-        }
-
-        pending = newBarrier;
-    }
-
-    /// <summary>
     /// Function to add a barrier for a texture.
     /// </summary>
     /// <param name="texture">The texture resource to set a barrier on.</param>

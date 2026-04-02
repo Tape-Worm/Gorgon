@@ -114,7 +114,7 @@ public abstract unsafe class GorgonGpuResource
     private static ulong _resHandleAccumulator = 0;
 
     private GpuResourceInfo _info;
-    private ulong _resHandle;
+    private readonly ulong _resHandle;
 
     /// <summary>
     /// Property to return the D3D 12 resource COM pointer.

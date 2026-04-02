@@ -26,7 +26,7 @@ namespace Gorgon.Graphics.Core;
 /// <summary>
 /// Parameters used to copy a texture sub resource to another texture sub resource.
 /// </summary>
-/// <seealso cref="IGorgonResourceWriter.CopyTexture(GorgonTexture, GorgonTexture, in GorgonCopyTextureSubResource)"/>
+/// <seealso cref="IGorgonCopyMethodsFluent{T}.CopyTexture(GorgonTexture, GorgonTexture, ref readonly GorgonCopyTextureSubResource)"/>
 public readonly ref struct GorgonCopyTextureSubResource
 {
     /// <summary>

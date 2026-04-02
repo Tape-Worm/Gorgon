@@ -38,7 +38,7 @@ internal class GlobalBarrierState
     private const int MaxPageSize = 65536;
 
     private readonly Lock _syncLock = new();
-    private GlobalBarrier[][] _barriers = new GlobalBarrier[InitialPageCount][];
+    private readonly GlobalBarrier[][] _barriers = new GlobalBarrier[InitialPageCount][];
 
     /// <summary>
     /// Function to retrieve the state for a given resource.

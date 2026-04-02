@@ -160,6 +160,15 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The buffer &apos;{0}&apos; has a sync of {1}, access of {2}, and overlaps the same memory region as the buffer &apos;{3}&apos; with a sync of {4} and access of {5}. This is not allowed..
+        /// </summary>
+        internal static string GORGFX_ERR_BUFFERS_AND_BARRIER_OVERLAP {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_BUFFERS_AND_BARRIER_OVERLAP", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This method cannot be called while a frame is actively being rendered. 
         ///
         ///Call EndFrame() prior to calling this method, or call it prior to BeginFrame()..

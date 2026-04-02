@@ -954,22 +954,6 @@ public unsafe sealed class GorgonGraphics
         }
     }
 
-    /// <summary>
-    /// Function to signal all pools, and heaps that a new frame is starting/ending.
-    /// </summary>
-    internal void SignalAll()
-    {
-        MegaBuffer.Signal();
-        GraphicsQueue.AllocatorPool.Signal();
-        CopyQueue.AllocatorPool.Signal();
-        ComputeQueue.AllocatorPool.Signal();
-
-        UploadHeaps.Signal();
-        DownloadHeaps.Signal();
-        GpuSamplerDescriptors.Signal();
-        GpuViewDescriptors.Signal();
-    }
-
     /// <inheritdoc/>
     public void Dispose()
     {

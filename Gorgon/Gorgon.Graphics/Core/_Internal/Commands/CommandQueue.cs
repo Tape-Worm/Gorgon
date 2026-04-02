@@ -56,7 +56,7 @@ internal sealed unsafe class CommandQueue : IDisposable
     {
         get;
         private set;
-    } = 1;
+    }
 
     /// <summary>
     /// Property to return the current fence values for the frames in flight.
