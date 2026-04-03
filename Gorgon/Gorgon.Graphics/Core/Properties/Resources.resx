@@ -162,12 +162,6 @@
   <data name="GORGFX_ERR_CANNOT_SET_SCREEN_MODE" xml:space="preserve">
     <value>There was an error switching the screen mode on adapter '{0}'.</value>
   </data>
-  <data name="GORGFX_ERR_COMMAND_QUEUE_CREATE" xml:space="preserve">
-    <value>There was an error creating the {0} command queue.</value>
-  </data>
-  <data name="GORGFX_ERR_CANNOT_INIT_FENCE" xml:space="preserve">
-    <value>Could not initialize the fence value.</value>
-  </data>
   <data name="GORGFX_ERR_DEVICE_REMOVED" xml:space="preserve">
     <value>The device was removed.</value>
   </data>
@@ -176,9 +170,6 @@
   </data>
   <data name="GORGFX_ERR_FORMAT_INVALID_DISPLAY_FORMAT" xml:space="preserve">
     <value>The format {0} is an invalid display format.</value>
-  </data>
-  <data name="GORGFX_ERR_HEIGHT_TOO_SMALL" xml:space="preserve">
-    <value>The height {0} is too small, it must be at least {1}.</value>
   </data>
   <data name="GORGFX_ERR_LOAD_AGILITY_FAILED" xml:space="preserve">
     <value>There was an error loading the Agility SDK.</value>
@@ -227,26 +218,11 @@
   <data name="GORGFX_STR_ADAPTER" xml:space="preserve">
     <value>Video Adapter</value>
   </data>
-  <data name="GORGFX_STR_MEM_TYPE_LOCAL" xml:space="preserve">
-    <value>local</value>
-  </data>
-  <data name="GORGFX_STR_MEM_TYPE_NON_LOCAL" xml:space="preserve">
-    <value>non-local</value>
-  </data>
-  <data name="GORGFX_STR_OUTPUT" xml:space="preserve">
-    <value>Output</value>
-  </data>
   <data name="GORGFX_STR_VIDEO_MODE" xml:space="preserve">
     <value>Video Mode - {0}x{1} {2} Refresh Rate: {3:#####0.0}Hz</value>
   </data>
   <data name="GORGFX_ERR_CANNOT_CREATE_FENCE" xml:space="preserve">
     <value>Could not create the fence object.</value>
-  </data>
-  <data name="GORGFX_ERR_HEAP_TYPE_INVALID" xml:space="preserve">
-    <value>The heap type '{0}' is invalid.</value>
-  </data>
-  <data name="GORGFX_ERR_HEAP_INDEX_NOT_FOUND" xml:space="preserve">
-    <value>The index {0} is not on the heap.</value>
   </data>
   <data name="GORGFX_ERR_DESCRIPTORHEAP_OUT_OF_MEMORY" xml:space="preserve">
     <value>Out of memory in the {0} descriptor heap.</value>
@@ -290,66 +266,19 @@
   <data name="GORGFX_ERR_BATCH_NOT_STARTED" xml:space="preserve">
     <value>Call the Begin method prior to calling this method.</value>
   </data>
-  <data name="GORGFX_ERR_RTV_BUFFER_NOT_DEFAULT" xml:space="preserve">
-    <value>The buffer {0} cannot be a render target. Render targets require a buffer with a Default usage.</value>
-  </data>
-  <data name="GORGFX_ERR_CANNOT_WRITE_TO_DOWNLOAD_BUFFER" xml:space="preserve">
-    <value>The buffer '{0}' has a usage of Download. Only buffers with a usage of Default, Upload or DynamicPerFrame can be written to.</value>
-  </data>
   <data name="GORGFX_ERR_COMMAND_LIST_STILL_OPEN" xml:space="preserve">
     <value>A command list was still open for recording at the beginning of the frame.
 
 Please ensure all command lists have been submitted for execution at the end of the frame.</value>
   </data>
-  <data name="GORGFX_ERR_FRAME_ALREADY_STARTED" xml:space="preserve">
-    <value>The frame has already started rendering.</value>
-  </data>
-  <data name="GORGFX_ERR_FRAME_NOT_STARTED" xml:space="preserve">
-    <value>The frame has not started rendering yet. Did you forget to call BeginFrame()?</value>
-  </data>
-  <data name="GORGFX_ERR_CANNOT_CALL_ON_ACTIVE_FRAME" xml:space="preserve">
-    <value>This method cannot be called while a frame is actively being rendered. 
-
-Call EndFrame() prior to calling this method, or call it prior to BeginFrame().</value>
-  </data>
-  <data name="GORGFX_ERR_BUFFER_OFFSET_OVERRUN" xml:space="preserve">
-    <value>The value {0} is too large.</value>
-  </data>
-  <data name="GORGFX_ERR_VERTEX_STRIDE_TOO_SMALL" xml:space="preserve">
-    <value>The vertex stride for buffer '{0}' must be at least 1 byte.</value>
-  </data>
   <data name="GORGFX_ERR_BUFFER_TOO_SMALL_FOR_VIEW" xml:space="preserve">
     <value>The buffer '{0}' is too small ({1} bytes) to accommodate the minimum size for a {2} ({3} bytes).</value>
-  </data>
-  <data name="GORGFX_ERR_INVALID_USAGE" xml:space="preserve">
-    <value>The usage of '{0}' is not supported.</value>
-  </data>
-  <data name="GORGFX_ERR_BUFFER_CANNOT_BE_DOWNLOAD" xml:space="preserve">
-    <value>The buffer '{0}' must not have a usage of download. </value>
   </data>
   <data name="GORGFX_ERR_BUFFER_TOO_SMALL" xml:space="preserve">
     <value>The size of the buffer '{0}' is too small. Must be equal to or larger than {1} byte(s).</value>
   </data>
-  <data name="GORGFX_ERR_CONSTANT_BUFFER_ALIGNMENT_INVALID" xml:space="preserve">
-    <value>The buffer '{0}' has an alignment of {1}. Constant buffer views require that the buffer have an alignment of 256 bytes on creation.</value>
-  </data>
   <data name="GORGFX_ERR_INVALID_RENDER_TARGET_FORMAT" xml:space="preserve">
     <value>The format {0} is not a valid render target format.</value>
-  </data>
-  <data name="GORGFX_ERR_INDEX_TOO_LARGE" xml:space="preserve">
-    <value>The index {0} is too large. The maximum value is {1}.</value>
-  </data>
-  <data name="GORGFX_ERR_NULL_GPU_ADDRESS" xml:space="preserve">
-    <value>The GPU address for '{0}' is NULL.</value>
-  </data>
-  <data name="GORGFX_ERR_COMMAND_LIST_ALREADY_SUBMITTED" xml:space="preserve">
-    <value>The command list '{0}' has already been submitted for execution.</value>
-  </data>
-  <data name="GORGFX_ERR_BUFFER_USAGE_NOT_DOWNLOAD" xml:space="preserve">
-    <value>The buffer '{0}' does not have a usage of Download. Only buffers with a usage value of Download may be read by the CPU.</value>
-  </data>
-  <data name="GORGFX_ERR_DYNAMIC_BUFFER_CANNOT_BE_DESTINATION" xml:space="preserve">
-    <value>The buffer '{0}' cannot be used as a copy destination because it has a usage of DynamicPerFrame. </value>
   </data>
   <data name="GORGFX_ERR_CANNOT_COPY_TEXTURE_INTO_ITSELF" xml:space="preserve">
     <value>Cannot copy the source texture '{0}' into itself with the same sub resource index ({1}).
@@ -360,9 +289,6 @@ The sub resources must be different if copying into the same texture.</value>
     <value>The source texture '{0}' has a format group of {1}, and the destination texture '{2}' has a format group of {3}. 
 
 The texture formats must belong to the same grouping in order to copy them.</value>
-  </data>
-  <data name="GORGFX_ERR_BARRIER_RESOURCE_DISPOSED" xml:space="preserve">
-    <value>The resource assigned to this barrier has been disposed.</value>
   </data>
   <data name="GORGFX_ERR_CANNOT_COPY_TEXTURE_NOT_SAME" xml:space="preserve">
     <value>The source texture '{0}' dimensions, format group, mip-map count, or array count does not match that of the destination texture '{1}'.</value>
@@ -390,23 +316,14 @@ The format of the image {0} and the format of the texture {1} are incompatible, 
   <data name="GORGFX_ERR_BUFFER_OVERRUN" xml:space="preserve">
     <value>The offset {0} plus the size {1} exceeds the total size of the buffer: {2}.</value>
   </data>
-  <data name="GORGFX_ERR_INVALID_PRIMITIVE_TYPE" xml:space="preserve">
-    <value>The primitive type {0} is not valid for this method.</value>
-  </data>
   <data name="GORGFX_ERR_CANNOT_CLOSE_COMMAND_LIST" xml:space="preserve">
     <value>There was an error closing the command list '{0}'.</value>
   </data>
   <data name="GORGFX_ERR_WAIT_FAILED" xml:space="preserve">
     <value>The {0} failed to wait for the {1}.</value>
   </data>
-  <data name="GORGFX_ERR_BUFFER_TOO_SMALL_FOR_STRUCTURE" xml:space="preserve">
-    <value>The buffer is {0} bytes in size. A single element is {1} bytes in size. This buffer is too small to hold a single element.</value>
-  </data>
   <data name="GORGFX_ERR_BUFFER_USAGE_UNKNOWN" xml:space="preserve">
     <value>The buffer usage {0} is not valid for buffer '{1}'.</value>
-  </data>
-  <data name="GORGFX_ERR_INVALID_STRUCT_SIZE" xml:space="preserve">
-    <value>The struct size must be a multiple of 16, and a minimum of 16 bytes.</value>
   </data>
   <data name="GORGFX_ERR_INVALID_ALIGNMENT" xml:space="preserve">
     <value>The alignment {0} is not valid. The alignment must be a positive integer value.</value>

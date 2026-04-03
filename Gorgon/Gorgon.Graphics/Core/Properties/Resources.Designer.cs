@@ -61,15 +61,6 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The resource assigned to this barrier has been disposed..
-        /// </summary>
-        internal static string GORGFX_ERR_BARRIER_RESOURCE_DISPOSED {
-            get {
-                return ResourceManager.GetString("GORGFX_ERR_BARRIER_RESOURCE_DISPOSED", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Call the Begin method prior to calling this method..
         /// </summary>
         internal static string GORGFX_ERR_BATCH_NOT_STARTED {
@@ -97,24 +88,6 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The buffer &apos;{0}&apos; must not have a usage of download. .
-        /// </summary>
-        internal static string GORGFX_ERR_BUFFER_CANNOT_BE_DOWNLOAD {
-            get {
-                return ResourceManager.GetString("GORGFX_ERR_BUFFER_CANNOT_BE_DOWNLOAD", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The value {0} is too large..
-        /// </summary>
-        internal static string GORGFX_ERR_BUFFER_OFFSET_OVERRUN {
-            get {
-                return ResourceManager.GetString("GORGFX_ERR_BUFFER_OFFSET_OVERRUN", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The offset {0} plus the size {1} exceeds the total size of the buffer: {2}..
         /// </summary>
         internal static string GORGFX_ERR_BUFFER_OVERRUN {
@@ -133,29 +106,11 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The buffer is {0} bytes in size. A single element is {1} bytes in size. This buffer is too small to hold a single element..
-        /// </summary>
-        internal static string GORGFX_ERR_BUFFER_TOO_SMALL_FOR_STRUCTURE {
-            get {
-                return ResourceManager.GetString("GORGFX_ERR_BUFFER_TOO_SMALL_FOR_STRUCTURE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The buffer &apos;{0}&apos; is too small ({1} bytes) to accommodate the minimum size for a {2} ({3} bytes)..
         /// </summary>
         internal static string GORGFX_ERR_BUFFER_TOO_SMALL_FOR_VIEW {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_BUFFER_TOO_SMALL_FOR_VIEW", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The buffer &apos;{0}&apos; does not have a usage of Download. Only buffers with a usage value of Download may be read by the CPU..
-        /// </summary>
-        internal static string GORGFX_ERR_BUFFER_USAGE_NOT_DOWNLOAD {
-            get {
-                return ResourceManager.GetString("GORGFX_ERR_BUFFER_USAGE_NOT_DOWNLOAD", resourceCulture);
             }
         }
         
@@ -174,17 +129,6 @@ namespace Gorgon.Graphics.Core.Properties {
         internal static string GORGFX_ERR_BUFFERS_AND_BARRIER_OVERLAP {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_BUFFERS_AND_BARRIER_OVERLAP", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to This method cannot be called while a frame is actively being rendered. 
-        ///
-        ///Call EndFrame() prior to calling this method, or call it prior to BeginFrame()..
-        /// </summary>
-        internal static string GORGFX_ERR_CANNOT_CALL_ON_ACTIVE_FRAME {
-            get {
-                return ResourceManager.GetString("GORGFX_ERR_CANNOT_CALL_ON_ACTIVE_FRAME", resourceCulture);
             }
         }
         
@@ -418,15 +362,6 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Could not initialize the fence value..
-        /// </summary>
-        internal static string GORGFX_ERR_CANNOT_INIT_FENCE {
-            get {
-                return ResourceManager.GetString("GORGFX_ERR_CANNOT_INIT_FENCE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Unable to load the dxcompiler.dll file..
         /// </summary>
         internal static string GORGFX_ERR_CANNOT_LOAD_DXCOMPILERDLL {
@@ -508,24 +443,6 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The buffer &apos;{0}&apos; has a usage of Download. Only buffers with a usage of Default, Upload or DynamicPerFrame can be written to..
-        /// </summary>
-        internal static string GORGFX_ERR_CANNOT_WRITE_TO_DOWNLOAD_BUFFER {
-            get {
-                return ResourceManager.GetString("GORGFX_ERR_CANNOT_WRITE_TO_DOWNLOAD_BUFFER", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The command list &apos;{0}&apos; has already been submitted for execution..
-        /// </summary>
-        internal static string GORGFX_ERR_COMMAND_LIST_ALREADY_SUBMITTED {
-            get {
-                return ResourceManager.GetString("GORGFX_ERR_COMMAND_LIST_ALREADY_SUBMITTED", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to A command list was still open for recording at the beginning of the frame.
         ///
         ///Please ensure all command lists have been submitted for execution at the end of the frame..
@@ -533,24 +450,6 @@ namespace Gorgon.Graphics.Core.Properties {
         internal static string GORGFX_ERR_COMMAND_LIST_STILL_OPEN {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_COMMAND_LIST_STILL_OPEN", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to There was an error creating the {0} command queue..
-        /// </summary>
-        internal static string GORGFX_ERR_COMMAND_QUEUE_CREATE {
-            get {
-                return ResourceManager.GetString("GORGFX_ERR_COMMAND_QUEUE_CREATE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The buffer &apos;{0}&apos; has an alignment of {1}. Constant buffer views require that the buffer have an alignment of 256 bytes on creation..
-        /// </summary>
-        internal static string GORGFX_ERR_CONSTANT_BUFFER_ALIGNMENT_INVALID {
-            get {
-                return ResourceManager.GetString("GORGFX_ERR_CONSTANT_BUFFER_ALIGNMENT_INVALID", resourceCulture);
             }
         }
         
@@ -587,15 +486,6 @@ namespace Gorgon.Graphics.Core.Properties {
         internal static string GORGFX_ERR_DEVICE_REMOVED {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_DEVICE_REMOVED", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The buffer &apos;{0}&apos; cannot be used as a copy destination because it has a usage of DynamicPerFrame. .
-        /// </summary>
-        internal static string GORGFX_ERR_DYNAMIC_BUFFER_CANNOT_BE_DESTINATION {
-            get {
-                return ResourceManager.GetString("GORGFX_ERR_DYNAMIC_BUFFER_CANNOT_BE_DESTINATION", resourceCulture);
             }
         }
         
@@ -645,65 +535,11 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The frame has already started rendering..
-        /// </summary>
-        internal static string GORGFX_ERR_FRAME_ALREADY_STARTED {
-            get {
-                return ResourceManager.GetString("GORGFX_ERR_FRAME_ALREADY_STARTED", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The frame has not started rendering yet. Did you forget to call BeginFrame()?.
-        /// </summary>
-        internal static string GORGFX_ERR_FRAME_NOT_STARTED {
-            get {
-                return ResourceManager.GetString("GORGFX_ERR_FRAME_NOT_STARTED", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The index {0} is not on the heap..
-        /// </summary>
-        internal static string GORGFX_ERR_HEAP_INDEX_NOT_FOUND {
-            get {
-                return ResourceManager.GetString("GORGFX_ERR_HEAP_INDEX_NOT_FOUND", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The heap &apos;{0}&apos; is out of memory (size: {1})..
         /// </summary>
         internal static string GORGFX_ERR_HEAP_OUT_OF_MEMORY {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_HEAP_OUT_OF_MEMORY", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The heap type &apos;{0}&apos; is invalid..
-        /// </summary>
-        internal static string GORGFX_ERR_HEAP_TYPE_INVALID {
-            get {
-                return ResourceManager.GetString("GORGFX_ERR_HEAP_TYPE_INVALID", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The height {0} is too small, it must be at least {1}..
-        /// </summary>
-        internal static string GORGFX_ERR_HEIGHT_TOO_SMALL {
-            get {
-                return ResourceManager.GetString("GORGFX_ERR_HEIGHT_TOO_SMALL", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The index {0} is too large. The maximum value is {1}..
-        /// </summary>
-        internal static string GORGFX_ERR_INDEX_TOO_LARGE {
-            get {
-                return ResourceManager.GetString("GORGFX_ERR_INDEX_TOO_LARGE", resourceCulture);
             }
         }
         
@@ -717,38 +553,11 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The primitive type {0} is not valid for this method..
-        /// </summary>
-        internal static string GORGFX_ERR_INVALID_PRIMITIVE_TYPE {
-            get {
-                return ResourceManager.GetString("GORGFX_ERR_INVALID_PRIMITIVE_TYPE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The format {0} is not a valid render target format..
         /// </summary>
         internal static string GORGFX_ERR_INVALID_RENDER_TARGET_FORMAT {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_INVALID_RENDER_TARGET_FORMAT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The struct size must be a multiple of 16, and a minimum of 16 bytes..
-        /// </summary>
-        internal static string GORGFX_ERR_INVALID_STRUCT_SIZE {
-            get {
-                return ResourceManager.GetString("GORGFX_ERR_INVALID_STRUCT_SIZE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The usage of &apos;{0}&apos; is not supported..
-        /// </summary>
-        internal static string GORGFX_ERR_INVALID_USAGE {
-            get {
-                return ResourceManager.GetString("GORGFX_ERR_INVALID_USAGE", resourceCulture);
             }
         }
         
@@ -785,24 +594,6 @@ namespace Gorgon.Graphics.Core.Properties {
         internal static string GORGFX_ERR_NO_SUITABLE_ADAPTER {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_NO_SUITABLE_ADAPTER", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The GPU address for &apos;{0}&apos; is NULL..
-        /// </summary>
-        internal static string GORGFX_ERR_NULL_GPU_ADDRESS {
-            get {
-                return ResourceManager.GetString("GORGFX_ERR_NULL_GPU_ADDRESS", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The buffer {0} cannot be a render target. Render targets require a buffer with a Default usage..
-        /// </summary>
-        internal static string GORGFX_ERR_RTV_BUFFER_NOT_DEFAULT {
-            get {
-                return ResourceManager.GetString("GORGFX_ERR_RTV_BUFFER_NOT_DEFAULT", resourceCulture);
             }
         }
         
@@ -928,15 +719,6 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The vertex stride for buffer &apos;{0}&apos; must be at least 1 byte..
-        /// </summary>
-        internal static string GORGFX_ERR_VERTEX_STRIDE_TOO_SMALL {
-            get {
-                return ResourceManager.GetString("GORGFX_ERR_VERTEX_STRIDE_TOO_SMALL", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The {0} failed to wait for the {1}..
         /// </summary>
         internal static string GORGFX_ERR_WAIT_FAILED {
@@ -969,33 +751,6 @@ namespace Gorgon.Graphics.Core.Properties {
         internal static string GORGFX_STR_ADAPTER {
             get {
                 return ResourceManager.GetString("GORGFX_STR_ADAPTER", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to local.
-        /// </summary>
-        internal static string GORGFX_STR_MEM_TYPE_LOCAL {
-            get {
-                return ResourceManager.GetString("GORGFX_STR_MEM_TYPE_LOCAL", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to non-local.
-        /// </summary>
-        internal static string GORGFX_STR_MEM_TYPE_NON_LOCAL {
-            get {
-                return ResourceManager.GetString("GORGFX_STR_MEM_TYPE_NON_LOCAL", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Output.
-        /// </summary>
-        internal static string GORGFX_STR_OUTPUT {
-            get {
-                return ResourceManager.GetString("GORGFX_STR_OUTPUT", resourceCulture);
             }
         }
         

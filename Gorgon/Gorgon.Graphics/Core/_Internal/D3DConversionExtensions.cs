@@ -190,23 +190,4 @@ internal static class D3DConversionExtensions
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public unsafe void SetDXGIDebugName(string? name) => self.Get()->SetDXGIDebugName(name);
     }
-
-    extension(BufferUsage usage)
-    {
-        /// <summary>
-        /// Function to convert a <see cref="BufferUsage"/> value to a D3D 12 heap type.
-        /// </summary>
-        /// <param name="graphics">The graphics object used to determine the type of heap.</param>
-        /// <returns>The D3D 12 heap type.</returns>
-        /// <exception cref="InvalidCastException">Thrown if the usage type is unknown.</exception>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public D3D12_HEAP_TYPE ToD3DHeapType(GorgonGraphics graphics) => usage switch
-        {
-            BufferUsage.Default => D3D12_HEAP_TYPE.D3D12_HEAP_TYPE_DEFAULT,
-            BufferUsage.Upload => graphics.Adapter.HasGpuUploadSupport ? D3D12_HEAP_TYPE.D3D12_HEAP_TYPE_GPU_UPLOAD : D3D12_HEAP_TYPE.D3D12_HEAP_TYPE_UPLOAD,
-            BufferUsage.Download => D3D12_HEAP_TYPE.D3D12_HEAP_TYPE_READBACK,
-            _ => throw new InvalidCastException()
-        };
-    }
-
 }
