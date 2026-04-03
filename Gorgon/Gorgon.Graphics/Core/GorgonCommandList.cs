@@ -268,8 +268,7 @@ public unsafe sealed class GorgonCommandList
                 
                 ulong otherEnd = (ulong)otherBuffer.SizeInBytes +  otherBuffer.ResourceOffset;
 
-                if ((otherBuffer.ResourceOffset >= bufferStart) && (otherBuffer.ResourceOffset <= bufferEnd)
-                    || (otherEnd >= bufferStart) && (otherEnd <= bufferEnd))
+                if ((bufferStart < otherEnd) && (otherBuffer.ResourceOffset < bufferEnd))
                 {
                     // If they aren't changing the barrier, then we don't care.
                     if ((otherSync != sync) || (otherAccess != access))

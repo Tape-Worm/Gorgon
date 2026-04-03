@@ -26,7 +26,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Gorgon.Graphics.Imaging.Properties;
 
-namespace Gorgon.Graphics.Imaging;
+namespace Gorgon.Graphics;
 
 /// <summary>
 /// Information about the pitch layout for buffer data.

@@ -429,4 +429,16 @@ The format of the image {0} and the format of the texture {1} are incompatible, 
   <data name="GORGFX_ERR_BUFFERS_AND_BARRIER_OVERLAP" xml:space="preserve">
     <value>The buffer '{0}' has a sync of {1}, access of {2}, and overlaps the same memory region as the buffer '{3}' with a sync of {4} and access of {5}. This is not allowed.</value>
   </data>
+  <data name="GORGFX_ERR_BUFFER_ALIGNMENT_INCORRECT_FOR_VIEW" xml:space="preserve">
+    <value>The buffer '{0}' requires an alignment of {1} bytes for a {2} view.</value>
+  </data>
+  <data name="GORGFX_ERR_ELEMENT_SIZE_NOT_MULTIPLE_OF" xml:space="preserve">
+    <value>The element size must be a multiple of {0}.</value>
+  </data>
+  <data name="GORGFX_ERR_FORMAT_INVALID" xml:space="preserve">
+    <value>The format {0} is not valid.</value>
+  </data>
+  <data name="GORGFX_ERR_FORMAT_NOT_COMPATIBLE_WITH_BUFFER" xml:space="preserve">
+    <value>The format {0} is not compatible with buffer data.</value>
+  </data>
 </root>

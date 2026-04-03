@@ -224,33 +224,22 @@ public sealed unsafe class GorgonTexture
     {
         if (disposing)
         {
-            this.UnregisterDisposable(Graphics);
-
             // Remove all the child views.
-            foreach (KeyValuePair<RtViewKey, GorgonTextureRenderTargetView> view in _rtvs)
+            foreach (GorgonResourceView view in _rtvs.Values.Cast<GorgonResourceView>()
+                                                            .Concat(_dsvs.Values.Cast<GorgonResourceView>())
+                                                            .Concat(_srvs.Values.Cast<GorgonResourceView>())
+                                                            .Concat(_uavs.Values.Cast<GorgonResourceView>())
+                                                            .Where(v => !v.OwnsResource))
             {
-                view.Value.Dispose();
-            }
-
-            foreach (KeyValuePair<RtViewKey, GorgonResourceView> view in _dsvs)
-            {
-                view.Value.Dispose();
-            }
-
-            foreach (KeyValuePair<SrViewKey, GorgonTextureView> view in _srvs)
-            {
-                view.Value.Dispose();
-            }
-
-            foreach (KeyValuePair<RtViewKey, GorgonResourceView> view in _uavs)
-            {
-                view.Value.Dispose();
+                view.Dispose();
             }
                         
             _rtvs.Clear();
             _dsvs.Clear();
             _srvs.Clear();
-            _uavs.Clear();            
+            _uavs.Clear();
+
+            this.UnregisterDisposable(Graphics);
         }
 
         _resourceAllocation.Dispose();
@@ -787,9 +776,7 @@ public sealed unsafe class GorgonTexture
         : base(graphics, name)
     {
         _info = new GorgonTextureInfo(ValidateInfo(info));
-        FormatInfo = new GorgonFormatInfo(info.Format);
-
-        this.RegisterDisposable(Graphics);
+        FormatInfo = new GorgonFormatInfo(info.Format);        
 
         CreateNative_OLDE();
         

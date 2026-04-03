@@ -21,61 +21,41 @@
 // Created: March 22, 2026 3:02:19 PM
 //
 
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Runtime.CompilerServices;
-using System.Text;
-using Gorgon.Diagnostics;
+using Gorgon.Core;
+using Gorgon.Graphics.Core.Properties;
 using TerraFX.Interop.DirectX;
 
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Provides a structured view of a buffer to shaders.
+/// Provides a view that interprets the data in a <see cref="GorgonGpuBuffer"/> as a structured data type.
 /// </summary>
-public unsafe class GorgonStructuredBufferView
+/// <remarks>
+/// <para>
+/// Applications can use a structured buffer to allow a shader to interpret buffer data as a custom type. This allows flexible data usage within a shader.
+/// </para>
+/// <para>
+/// Structured views require that the underlying buffer be aligned to the size of a single structured view element, and that the buffer be at least 16 bytes. The structured data must have a size, in bytes, 
+/// that is a multiple of <see cref="MinimumElementSize"/> (4 bytes).
+/// </para>
+/// <para>
+/// <inheritdoc cref="GorgonGpuBuffer.GetConstantBufferView(bool)" path="/remarks/para[@type='bindless_doc']"/>
+/// </para>
+/// </remarks>
+/// <seealso cref="GorgonCommandList.WriteConstant{T}(int, in T)"/>
+/// <seealso cref="GorgonShaderBufferView.GetViewHandle"/>
+public sealed class GorgonStructuredBufferView
     : GorgonShaderBufferView
 {
-    private GpuDescriptorAllocation _allocation = GpuDescriptorAllocation.Null;
-
     /// <summary>
-    /// Property to return the number of elements in the buffer.
+    /// The minimum size, in bytes, for a single element in the structured buffer.
     /// </summary>
-    public int ElementCount
+    public const int MinimumElementSize = 4;
+
+    /// <inheritdoc/>
+    private protected override D3D12_SHADER_RESOURCE_VIEW_DESC GetDesc()
     {
-        get;
-    }
-
-    /// <summary>
-    /// Property to return the size, in bytes, of a single element in the buffer.
-    /// </summary>
-    public int ElementSize
-    {
-        get;
-    }
-
-    /// <summary>
-    /// Property to return the first index within the buffer to start the view at.
-    /// </summary>
-    public long StartElementIndex
-    {
-        get;
-    }
-
-    /// <summary>
-    /// Function to allocate a view descriptor from the descriptor heap.
-    /// </summary>
-    private void AllocateDescriptors()
-    {
-        if (!_allocation.Equals(GpuDescriptorAllocation.Null))
-        {
-            Graphics.GpuViewDescriptors.Free(ref _allocation);
-        }
-
-        Graphics.GpuViewDescriptors.Allocate(1, out _allocation);
-
-        D3D12_SHADER_RESOURCE_VIEW_DESC view = new()
+        D3D12_SHADER_RESOURCE_VIEW_DESC desc = new()
         {
             Format = DXGI_FORMAT.DXGI_FORMAT_UNKNOWN,
             ViewDimension = D3D12_SRV_DIMENSION.D3D12_SRV_DIMENSION_BUFFER,
@@ -84,50 +64,47 @@ public unsafe class GorgonStructuredBufferView
 
         uint elementSize = (uint)ElementSize;
 
-        view.Buffer.StructureByteStride = elementSize;
-        view.Buffer.FirstElement = (Buffer.ResourceOffset / elementSize) + (ulong)StartElementIndex;
-        view.Buffer.NumElements = (uint)ElementCount;
-        view.Buffer.Flags = D3D12_BUFFER_SRV_FLAGS.D3D12_BUFFER_SRV_FLAG_NONE;
+        desc.Buffer.StructureByteStride = elementSize;
+        desc.Buffer.FirstElement = (Buffer.ResourceOffset / elementSize) + (ulong)StartElementIndex;
+        desc.Buffer.NumElements = (uint)ElementCount;
+        desc.Buffer.Flags = D3D12_BUFFER_SRV_FLAGS.D3D12_BUFFER_SRV_FLAG_NONE;
 
-        D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = Graphics.GpuViewDescriptors.D3DCpuHandle;
-        D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle = Graphics.GpuViewDescriptors.D3DGpuHandle;
-
-        cpuHandle.Offset(_allocation.Offset, Graphics.GpuViewDescriptors.DescriptorSize);
-        gpuHandle.Offset(_allocation.Offset, Graphics.GpuViewDescriptors.DescriptorSize);
-
-        Graphics.D3DDevice.Get()->CreateShaderResourceView((PID3D12Resource2)Buffer.D3DResource.Get(), &view, cpuHandle);
-
-        SetHandles(cpuHandle, gpuHandle);
-    }
-
-    /// <inheritdoc/>
-    private protected override void Dispose(bool disposing)
-    {
-        if (disposing)
-        {
-            if (!_allocation.Equals(GpuDescriptorAllocation.Null))
-            {
-                Graphics.Log.Print($"Freeing CPU descriptor handle allocation for {Name}.", LoggingLevel.Verbose);
-                Graphics.GpuViewDescriptors.Free(ref _allocation);
-            }
-        }
-
-        base.Dispose(disposing);
+        return desc;
     }
 
     /// <summary>
-    /// Function to retrieve the handle of the view, which is used to pass to a shader for resource heap indexing.
+    /// Function to validate the view settings.
     /// </summary>
-    /// <returns>The handle of the view.</returns>
-    [MethodImpl (MethodImplOptions.AggressiveInlining)]
-    public int GetViewHandle()
+    /// <param name="name">The name of the buffer.</param>
+    /// <param name="structSize">The size, in bytes, of a single element in the view.</param>
+    /// <param name="bufferSize">The total size of the buffer.</param>
+    /// <param name="resourceOffset"><inheritdoc cref="GorgonConstantBufferView.ValidateConstantView(string, int, long, ulong)" path="/param[@name='resourceOffset']"/></param>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown if the <paramref name="structSize"/> is less than the <see cref="MinimumElementSize"/> (4 bytes).</exception>
+    /// <exception cref="GorgonException"><para>Thrown if the <paramref name="structSize"/> is not a multiple of the <see cref="MinimumElementSize"/> (4 bytes).</para>
+    /// <para>-or-</para>
+    /// <para>Thrown if the size of the buffer is less than the <see cref="MinimumElementSize"/> (4 bytes).</para>
+    /// <para>-or-</para>
+    /// <para>Throw if the buffer was not aligned to the <paramref name="structSize"/> upon creation.</para>
+    /// </exception>
+    internal static void ValidateStructuredView(string name, int structSize, long bufferSize, ulong resourceOffset)
     {
-        if ((Buffer.Usage == BufferUsage.DynamicPerFrame) || (_allocation.Equals(in GpuDescriptorAllocation.Null)))
+        // Only allow buffers that are 16 bytes in size at minimum.
+        ArgumentOutOfRangeException.ThrowIfLessThan(structSize, MinimumElementSize);
+
+        if ((structSize % MinimumElementSize) != 0)
         {
-            AllocateDescriptors();
+            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_ELEMENT_SIZE_NOT_MULTIPLE_OF, MinimumElementSize));
         }
 
-        return _allocation.Offset;
+        if (bufferSize < structSize)
+        {
+            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_BUFFER_TOO_SMALL_FOR_VIEW, name, bufferSize, nameof(GorgonStructuredBufferView), structSize));
+        }
+
+        if ((resourceOffset % (ulong)structSize) != 0)
+        {
+            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_BUFFER_ALIGNMENT_INCORRECT_FOR_VIEW, name, structSize, nameof(GorgonStructuredBufferView)));
+        }
     }
 
     /// <summary>
@@ -141,12 +118,5 @@ public unsafe class GorgonStructuredBufferView
     /// <param name="elementCount">The number of elements of the structure type in the buffer.</param>
     /// <param name="owned"><inheritdoc cref="GorgonResourceView(GorgonGraphics, string, GorgonGpuResource, bool)" path="/param[@name='owned']"/></param>
     internal GorgonStructuredBufferView(GorgonGraphics graphics, string name, GorgonGpuBuffer buffer, long startIndex, int elementSize, int elementCount, bool owned)
-        : base(graphics, $"{name} - Structured Buffer View", buffer, startIndex * elementSize, elementCount * elementSize, owned)
-    {
-        ElementSize = elementSize;
-        StartElementIndex = startIndex;
-        ElementCount = elementCount;
-
-        AllocateDescriptors();
-    }
+        : base(graphics, $"{name} - Structured Buffer View", buffer, startIndex, elementCount, elementSize, owned) => AllocateDescriptors();
 }

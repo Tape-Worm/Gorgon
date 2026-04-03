@@ -21,11 +21,8 @@
 // Created: March 22, 2026 3:02:19 PM
 //
 
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using System.Text;
+using Gorgon.Diagnostics;
 using TerraFX.Interop.DirectX;
 
 namespace Gorgon.Graphics.Core;
@@ -33,9 +30,16 @@ namespace Gorgon.Graphics.Core;
 /// <summary>
 /// Base object for shader resource based views.
 /// </summary>
-public abstract class GorgonShaderBufferView
+public unsafe abstract class GorgonShaderBufferView
     : GorgonResourceView
 {
+    private GpuDescriptorAllocation _allocation = GpuDescriptorAllocation.Null;
+
+    /// <summary>
+    /// Property to return the descriptor allocation for this view.
+    /// </summary>
+    private protected ref readonly GpuDescriptorAllocation Allocation => ref _allocation;
+
     /// <summary>
     /// Property to return the buffer used by this view.
     /// </summary>
@@ -61,19 +65,120 @@ public abstract class GorgonShaderBufferView
     }
 
     /// <summary>
+    /// Property to return the number of elements in the buffer view.
+    /// </summary>
+    public int ElementCount
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the first index within the buffer to start the view at.
+    /// </summary>
+    public long StartElementIndex
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the size, in bytes, of a single element in the view.
+    /// </summary>
+    public int ElementSize
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Function to assign the descriptor allocation to the view.
+    /// </summary>
+    /// <returns>The new descriptor allocation for the view.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private ref readonly GpuDescriptorAllocation GetDescriptorAllocation()
+    {
+        if (!_allocation.Equals(in GpuDescriptorAllocation.Null))
+        {
+            Graphics.GpuViewDescriptors.Free(ref _allocation);
+        }
+
+        Graphics.GpuViewDescriptors.Allocate(1, out _allocation);
+        return ref _allocation;
+    }
+
+    /// <summary>
+    /// Function to retrieve the shader resource view description.
+    /// </summary>
+    /// <returns>The shader resource description used to create the descriptor.</returns>
+    private protected abstract D3D12_SHADER_RESOURCE_VIEW_DESC GetDesc();
+
+    /// <summary>
+    /// Function to allocate a view descriptor from the descriptor heap.
+    /// </summary>
+    private protected void AllocateDescriptors()
+    {
+        D3D12_SHADER_RESOURCE_VIEW_DESC desc = GetDesc();
+
+        ref readonly GpuDescriptorAllocation allocation = ref GetDescriptorAllocation();
+
+        D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = Graphics.GpuViewDescriptors.D3DCpuHandle;
+        D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle = Graphics.GpuViewDescriptors.D3DGpuHandle;
+
+        cpuHandle.Offset(allocation.Offset, Graphics.GpuViewDescriptors.DescriptorSize);
+        gpuHandle.Offset(allocation.Offset, Graphics.GpuViewDescriptors.DescriptorSize);        
+
+        Graphics.D3DDevice.Get()->CreateShaderResourceView((PID3D12Resource2)Buffer.D3DResource.Get(), &desc, cpuHandle);
+
+        SetHandles(cpuHandle, gpuHandle);
+    }
+
+    /// <inheritdoc/>
+    private protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            if (!_allocation.Equals(GpuDescriptorAllocation.Null))
+            {
+                Graphics.Log.Print($"Freeing CPU descriptor handle allocation for {Name}.", LoggingLevel.Verbose);
+                Graphics.GpuViewDescriptors.Free(ref _allocation);
+                _allocation = GpuDescriptorAllocation.Null;
+            }
+        }
+
+        base.Dispose(disposing);
+    }
+
+    /// <summary>
+    /// Function to retrieve the handle of the view, which is used to pass to a shader for resource heap indexing.
+    /// </summary>
+    /// <returns>The handle of the view.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public int GetViewHandle()
+    {
+        if (_allocation.Equals(in GpuDescriptorAllocation.Null))
+        {
+            AllocateDescriptors();
+        }
+
+        return _allocation.Offset;
+    }
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="GorgonShaderBufferView"/> class.
     /// </summary>
     /// <param name="graphics"><inheritdoc cref="GorgonResourceView(GorgonGraphics, string, GorgonGpuResource, bool)" path="/param[@name='graphics']"/></param>
     /// <param name="name"><inheritdoc cref="GorgonResourceView(GorgonGraphics, string, GorgonGpuResource, bool)" path="/param[@name='name']"/></param>
     /// <param name="buffer"><inheritdoc cref="GorgonResourceView(GorgonGraphics, string, GorgonGpuResource, bool)" path="/param[@name='resource']"/></param>
-    /// <param name="offset">The offset, in bytes, within the buffer to start viewing at.</param>
-    /// <param name="size">The size, in bytes, of the view.</param>
+    /// <param name="startIndex">The element index within the buffer the view starts at.</param>
+    /// <param name="elementCount">The number of elements in the buffer to view.</param>
+    /// <param name="elementSize">The size of the element.</param>
     /// <param name="owned"><inheritdoc cref="GorgonResourceView(GorgonGraphics, string, GorgonGpuResource, bool)" path="/param[@name='owned']"/></param>
-    internal GorgonShaderBufferView(GorgonGraphics graphics, string name, GorgonGpuBuffer buffer, long offset, int size, bool owned)
+    internal GorgonShaderBufferView(GorgonGraphics graphics, string name, GorgonGpuBuffer buffer, long startIndex, int elementCount, int elementSize , bool owned)
         : base(graphics, name, buffer, owned)
     {
-        Buffer = buffer;                
-        Offset = offset;
-        Size = size;
+        Buffer = buffer;
+        StartElementIndex = startIndex;
+        ElementCount = elementCount;
+        ElementSize = elementSize;
+        Offset = startIndex * elementSize;
+        Size = elementCount * elementSize;
     }
 }

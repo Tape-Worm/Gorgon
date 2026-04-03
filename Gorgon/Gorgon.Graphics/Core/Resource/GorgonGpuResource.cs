@@ -115,6 +115,7 @@ public abstract unsafe class GorgonGpuResource
 
     private GpuResourceInfo _info;
     private readonly ulong _resHandle;
+    private int _disposed;
 
     /// <summary>
     /// Property to return the D3D 12 resource COM pointer.
@@ -147,6 +148,11 @@ public abstract unsafe class GorgonGpuResource
         }
     }
 
+    /// <summary>
+    /// Property to return whether the resource has been disposed or not.
+    /// </summary>
+    public bool IsDisposed => _disposed != 0 || _d3dResource.IsNull;
+
     /// <inheritdoc/>
     public string Name
     {
@@ -162,7 +168,28 @@ public abstract unsafe class GorgonGpuResource
     }
 
     /// <inheritdoc cref="GorgonGraphicsFactory.Dispose(bool)"/>
-    private protected virtual void Dispose(bool disposing) => _d3dResource.Dispose();
+    private protected virtual void Dispose(bool disposing)
+    {
+        if (_d3dResource.IsNull)
+        {
+            return;
+        }
+
+        if (disposing)
+        {
+            if (Interlocked.Exchange(ref _disposed, 1) != 0)
+            {
+                return;
+            }
+
+            Graphics.Log.Print($"Destroying Gorgon resource '{Name}'", LoggingLevel.Simple);
+            Graphics.Log.Print($"Destroying D3D 12 {_info.ResourceType} resource object for '{Name}'...", LoggingLevel.Verbose);
+
+            this.UnregisterDisposable(Graphics);
+        }
+
+        _d3dResource.Dispose();
+    }
 
     /// <summary>
     /// Function to build the native D3D 12 resource object.
@@ -226,9 +253,6 @@ public abstract unsafe class GorgonGpuResource
     /// <inheritdoc/>
     public void Dispose()
     {
-        Graphics.Log.Print($"Destroying Gorgon resource '{Name}'", LoggingLevel.Simple);
-        Graphics.Log.Print($"Destroying D3D 12 {_info.ResourceType} resource object for '{Name}'...", LoggingLevel.Verbose);
-
         Dispose(true);
         GC.SuppressFinalize(this);
     }
@@ -272,6 +296,9 @@ public abstract unsafe class GorgonGpuResource
     private protected GorgonGpuResource(GorgonGraphics graphics, string name)
     {
         Graphics = graphics;
+
+        this.RegisterDisposable(Graphics);
+
         Name = GorgonGraphicsFactory.GenerateName(name, nameof(GorgonGpuResource));
 
         _resHandle = Interlocked.Increment(ref _resHandleAccumulator);

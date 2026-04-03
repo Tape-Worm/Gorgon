@@ -39,7 +39,7 @@ using System.Diagnostics;
 using Gorgon.Graphics.Imaging.Properties;
 using Gorgon.Math;
 
-namespace Gorgon.Graphics.Imaging;
+namespace Gorgon.Graphics;
 
 /// <summary>
 /// Flags to handle legacy format types.

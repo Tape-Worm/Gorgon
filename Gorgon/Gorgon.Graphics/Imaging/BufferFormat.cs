@@ -22,7 +22,7 @@
 // Created: November 8, 2017 2:10:42 PM
 // 
 
-namespace Gorgon.Graphics.Imaging;
+namespace Gorgon.Graphics;
 
 /// <summary>
 /// Buffer data formats.

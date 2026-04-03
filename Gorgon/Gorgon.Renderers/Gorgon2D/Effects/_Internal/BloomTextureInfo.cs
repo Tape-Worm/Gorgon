@@ -24,7 +24,7 @@
 // 
 
 using Gorgon.Graphics.Core.OLDE;
-using Gorgon.Graphics.Imaging;
+using Gorgon.Graphics;
 
 namespace Gorgon.Renderers;
 

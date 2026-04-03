@@ -95,9 +95,9 @@ public sealed unsafe class GorgonIndexBuffer
     /// <inheritdoc/>
     private protected override void ValidateInfo()
     {
-        if (SizeInBytes < 1)
+        if (SizeInBytes < (_info.Use32BitIndices ? 4 : 2))
         {
-            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_BUFFER_TOO_SMALL, Name, 1));
+            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_BUFFER_TOO_SMALL, Name, (_info.Use32BitIndices ? 4 : 2)));
         }
     }
 

@@ -21,11 +21,7 @@
 // Created: January 26, 2026 11:20:28 PM
 //
 
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using System.Text;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
@@ -39,35 +35,33 @@ namespace Gorgon.Graphics.Core;
 /// </summary>
 /// <remarks>
 /// <para>
-/// TODO: 
+/// Constant buffers are used to send data into the shader that changes periodically over the application lifetime. This allows an application to modify the behaviour of a shader during a frame.
 /// </para>
+/// <para>
+/// Constant views should only be used by an application to store constant data that changes infrequently, meaning once a frame or less. Otherwise, applications should use one of the 
+/// <see cref="GorgonCommandList.WriteConstant{T}(int, in T)"/> methods on the command list.
+/// </para>
+/// <para>
+/// <inheritdoc cref="GorgonGpuBuffer.GetConstantBufferView(bool)" path="/remarks/para[@type='bindless_doc']"/>
+/// </para>
+/// <inheritdoc cref="GorgonGpuBuffer.GetConstantBufferView(bool)" path="/remarks/para[@type='constant_alignment']"/>
 /// </remarks>
-/// <seealso cref="GorgonGpuBuffer"/>
+/// <seealso cref="GorgonCommandList.WriteConstant{T}(int, in T)"/>
+/// <seealso cref="GorgonShaderBufferView.GetViewHandle()"/>
 public unsafe sealed class GorgonConstantBufferView
     : GorgonResourceView
 {
     private GpuDescriptorAllocation _allocation = GpuDescriptorAllocation.Null;
 
     /// <summary>
+    /// The alignment, in bytes, required for constant buffer data.
+    /// </summary>
+    public const int AlignmentRequirement = D3D12.D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT;
+
+    /// <summary>
     /// Property to return the buffer used by this view.
     /// </summary>
     public GorgonGpuBuffer Buffer
-    {
-        get;
-    }
-
-    /// <summary>
-    /// Property to return the offset, in bytes, within the buffer that the view starts at.
-    /// </summary>
-    public long Offset
-    {
-        get;
-    }
-
-    /// <summary>
-    /// Property to return the size, in bytes, of the buffer to view.
-    /// </summary>
-    public int Size
     {
         get;
     }
@@ -86,8 +80,8 @@ public unsafe sealed class GorgonConstantBufferView
 
         D3D12_CONSTANT_BUFFER_VIEW_DESC view = new()
         {
-            BufferLocation = Buffer.D3DResource.Get()->GetGPUVirtualAddress() + Buffer.ResourceOffset + (ulong)Offset,
-            SizeInBytes = (uint)Size
+            BufferLocation = Buffer.D3DResource.Get()->GetGPUVirtualAddress() + Buffer.ResourceOffset,
+            SizeInBytes = (uint)Buffer.SizeInBytes
         };
 
         D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = Graphics.GpuViewDescriptors.D3DCpuHandle;
@@ -122,29 +116,23 @@ public unsafe sealed class GorgonConstantBufferView
     /// <param name="name">The name of the buffer.</param>
     /// <param name="alignment">The alignment, in bytes, of the buffer.</param>
     /// <param name="sizeInBytes">The total size, in bytes, of the buffer.</param>
-    /// <param name="offset">The offset, in bytes, within the buffer</param>
-    /// <param name="size">The size of the view, in bytes.</param>
-    internal static void ValidateCbv(string name, int alignment, long sizeInBytes, long offset, long size)
+    /// <param name="resourceOffset">The resource offset, in bytes, of the buffer within its mega buffer host.</param>
+    /// <exception cref="GorgonException"><para>Thrown if the view could not be created because the buffer is smaller than the <see cref="AlignmentRequirement"/> size (256 bytes).</para>
+    /// <para>-or-</para>
+    /// <para>Thrown if the buffer was not aligned to the <see cref="AlignmentRequirement"/> (256 bytes) upon creation.</para>
+    /// </exception>
+    internal static void ValidateConstantView(string name, int alignment, long sizeInBytes, ulong resourceOffset)
     {
-        if ((alignment % D3D12.D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT) != 0)
+        if (sizeInBytes < AlignmentRequirement)
         {
-            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_CONSTANT_BUFFER_ALIGNMENT_INVALID, name, alignment));
+            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_BUFFER_TOO_SMALL_FOR_VIEW, name, sizeInBytes, nameof(GorgonConstantBufferView), AlignmentRequirement));
         }
 
-        if (sizeInBytes < D3D12.D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT)
+        if ((alignment != AlignmentRequirement) && ((resourceOffset % AlignmentRequirement) != 0))
         {
-            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_BUFFER_TOO_SMALL_FOR_VIEW, name, sizeInBytes, D3D12.D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT));
-        }
-
-        ArgumentOutOfRangeException.ThrowIfLessThan(offset, 0);
-        ArgumentOutOfRangeException.ThrowIfLessThan(size, D3D12.D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
-
-        if (offset + size > sizeInBytes)
-        {
-            throw new ArgumentException(string.Format(Resources.GORGFX_ERR_BUFFER_OVERRUN, offset, size, sizeInBytes));
+            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_BUFFER_ALIGNMENT_INCORRECT_FOR_VIEW, name, AlignmentRequirement, nameof(GorgonConstantBufferView)));
         }
     }
-
 
     /// <summary>
     /// Function to create a constant buffer view and associated buffer.
@@ -167,7 +155,7 @@ public unsafe sealed class GorgonConstantBufferView
     /// the buffer with a size that is aligned to the nearest 256 bytes.
     /// </para>
     /// <para>
-    /// <inheritdoc cref="GorgonGpuBuffer.GetConstantBufferView(long, long?)" path="/remarks/para/note"/>
+    /// <inheritdoc cref="GorgonGpuBuffer.GetConstantBufferView()" path="/remarks/para/note"/>
     /// </para>
     /// <para>
     /// <note type="information">
@@ -181,33 +169,33 @@ public unsafe sealed class GorgonConstantBufferView
     /// <seealso cref="BufferUsage"/>
     public static GorgonConstantBufferView CreateConstantBuffer(GorgonGraphics graphics, string name, GorgonGpuBufferInfo bufferInfo)
     {
-        if ((bufferInfo.IsUnorderedAccess) || (bufferInfo.Alignment == 0) || ((bufferInfo.Alignment % D3D12.D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT) != 0))
+        if ((bufferInfo.IsUnorderedAccess) || (bufferInfo.Alignment == 0) || ((bufferInfo.Alignment % AlignmentRequirement) != 0))
         {
             bufferInfo = bufferInfo with
             {
                 IsUnorderedAccess = false,
-                Alignment = D3D12.D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT
+                Alignment = AlignmentRequirement
             };
         }
 
-        if ((bufferInfo.SizeInBytes % D3D12.D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT) != 0)
+        if ((bufferInfo.SizeInBytes % AlignmentRequirement) != 0)
         {
-            long aligned = bufferInfo.SizeInBytes.AlignUp(D3D12.D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
-            graphics.Log.PrintWarning($"The constant buffer '{name}' has a size of {bufferInfo.SizeInBytes}. This is not aligned to {D3D12.D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT} bytes. The buffer size will be adjusted to an aligned value of {aligned} bytes.", 
+            long aligned = bufferInfo.SizeInBytes.AlignUp(AlignmentRequirement);
+            graphics.Log.PrintWarning($"The constant buffer '{name}' has a size of {bufferInfo.SizeInBytes}. This is not aligned to {AlignmentRequirement} bytes. The buffer size will be adjusted to an aligned value of {aligned} bytes.", 
                 LoggingLevel.Intermediate);
 
             bufferInfo = bufferInfo with
             {
                 SizeInBytes = aligned,
                 // Double check to ensure that alignment is what it should be for constant buffers.
-                Alignment = D3D12.D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT
+                Alignment = AlignmentRequirement
             };
         }
 
-        ValidateCbv(name, bufferInfo.Alignment, bufferInfo.SizeInBytes, 0, bufferInfo.SizeInBytes);
+        ValidateConstantView(name, bufferInfo.Alignment, bufferInfo.SizeInBytes, 0);
 
         GorgonGpuBuffer buffer = new(graphics, name, bufferInfo);
-        return new GorgonConstantBufferView(graphics, name, buffer, 0, (int)buffer.SizeInBytes, true);
+        return buffer.GetConstantBufferView(true);
     }
 
     /// <summary>
@@ -217,7 +205,7 @@ public unsafe sealed class GorgonConstantBufferView
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int GetViewHandle()
     {
-        if ((Buffer.Usage == BufferUsage.DynamicPerFrame) || (_allocation.Equals(in GpuDescriptorAllocation.Null)))
+        if (_allocation.Equals(in GpuDescriptorAllocation.Null))
         {
             AllocateDescriptors();
         }
@@ -231,17 +219,13 @@ public unsafe sealed class GorgonConstantBufferView
     /// <param name="graphics"><inheritdoc cref="GorgonResourceView(GorgonGraphics, string, GorgonGpuResource, bool)" path="/param[@name='graphics']"/></param>
     /// <param name="name"><inheritdoc cref="GorgonResourceView(GorgonGraphics, string, GorgonGpuResource, bool)" path="/param[@name='name']"/></param>
     /// <param name="buffer">The buffer to view as a constant buffer.</param>
-    /// <param name="offset">The offset, in bytes, within the buffer to start the view.</param>
-    /// <param name="size">The size, in bytes, within the buffer to view.</param>
     /// <param name="owned"><inheritdoc cref="GorgonResourceView(GorgonGraphics, string, GorgonGpuResource, bool)" path="/param[@name='owned']"/></param>
-    internal GorgonConstantBufferView(GorgonGraphics graphics, string name, GorgonGpuBuffer buffer, long offset, int size, bool owned)
+    internal GorgonConstantBufferView(GorgonGraphics graphics, string name, GorgonGpuBuffer buffer, bool owned)
         : base(graphics, $"{name} - Constant Buffer View", buffer, owned)
     {
         Graphics.Log.Print($"Creating constant buffer view for buffer '{Name}'...", LoggingLevel.Simple);
 
         Buffer = buffer;
-        Offset = offset;
-        Size = size;
 
         AllocateDescriptors();
     }

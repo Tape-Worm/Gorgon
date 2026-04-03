@@ -88,6 +88,15 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The buffer &apos;{0}&apos; requires an alignment of {1} bytes for a {2} view..
+        /// </summary>
+        internal static string GORGFX_ERR_BUFFER_ALIGNMENT_INCORRECT_FOR_VIEW {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_BUFFER_ALIGNMENT_INCORRECT_FOR_VIEW", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The buffer &apos;{0}&apos; must not have a usage of download. .
         /// </summary>
         internal static string GORGFX_ERR_BUFFER_CANNOT_BE_DOWNLOAD {
@@ -591,6 +600,15 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The element size must be a multiple of {0}..
+        /// </summary>
+        internal static string GORGFX_ERR_ELEMENT_SIZE_NOT_MULTIPLE_OF {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_ELEMENT_SIZE_NOT_MULTIPLE_OF", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The file &apos;{0}&apos; was not found..
         /// </summary>
         internal static string GORGFX_ERR_FILE_NOT_FOUND {
@@ -600,11 +618,29 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The format {0} is not valid..
+        /// </summary>
+        internal static string GORGFX_ERR_FORMAT_INVALID {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_FORMAT_INVALID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The format {0} is an invalid display format..
         /// </summary>
         internal static string GORGFX_ERR_FORMAT_INVALID_DISPLAY_FORMAT {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_FORMAT_INVALID_DISPLAY_FORMAT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The format {0} is not compatible with buffer data..
+        /// </summary>
+        internal static string GORGFX_ERR_FORMAT_NOT_COMPATIBLE_WITH_BUFFER {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_FORMAT_NOT_COMPATIBLE_WITH_BUFFER", resourceCulture);
             }
         }
         

@@ -40,8 +40,6 @@ namespace Gorgon.Graphics.Core;
 public abstract class GorgonResourceView
     : IGorgonNamedObject, IDisposable
 {
-    private int _disposed;
-
     /// <summary>
     /// Property to return whether the resource is owned by this view.
     /// </summary>
@@ -68,6 +66,11 @@ public abstract class GorgonResourceView
         get;
         private set;
     }
+
+    /// <summary>
+    /// Property to return whether the view resource is disposed or not.
+    /// </summary>
+    public bool IsResourceDisposed => Resource.IsDisposed;
 
     /// <summary>
     /// Property to return the graphics interface associated with this view.
@@ -102,19 +105,16 @@ public abstract class GorgonResourceView
     {
         if (disposing)
         {
-            if (Interlocked.Exchange(ref _disposed, 1) != 0)
-            {
-                return;
-            }
-
             D3DCpuHandle = D3D12_CPU_DESCRIPTOR_HANDLE.DEFAULT;
             D3DGpuHandle = D3D12_GPU_DESCRIPTOR_HANDLE.DEFAULT;
 
-            if (OwnsResource)
+            if ((OwnsResource) && (!IsResourceDisposed))
             {
                 Graphics.Log.Print($"Destroying resource '{Resource.Name}' because it is owned by this view.", LoggingLevel.Intermediate);
                 Resource.Dispose();
-            }            
+            }
+
+            this.UnregisterDisposable(Graphics);
         }
     }
 
@@ -164,6 +164,8 @@ public abstract class GorgonResourceView
     private protected GorgonResourceView(GorgonGraphics graphics, string name, GorgonGpuResource resource, bool owned)
     {
         Graphics = graphics;
+        this.RegisterDisposable(Graphics);
+
         Name = GorgonGraphicsFactory.GenerateName(name, GetType().Name);
         OwnsResource = owned;
         Resource = resource;
