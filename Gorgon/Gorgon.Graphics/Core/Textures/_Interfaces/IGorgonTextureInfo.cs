@@ -117,6 +117,11 @@ public interface IGorgonTextureInfo
     /// <summary>
     /// Property to return whether this texture is used as a depth/stencil buffer.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// For best performance, it is recommended that the application set <see cref="IsShaderResource"/> to <b>false</b> if the texture is never read from.
+    /// </para>
+    /// </remarks>
     bool IsDepthStencil
     {
         get;        
@@ -133,6 +138,15 @@ public interface IGorgonTextureInfo
     /// <summary>
     /// Property to return whether this texture is used as a shader resource.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// When set to <b>false</b>, some adapter architectures gain bandwidth capacity If a texture is rarely used as a shader resource, it may be better to have two textures, one with this value set to 
+    /// <b>false</b>, and another set to <b>true</b> and copy between them.
+    /// </para>
+    /// <para>
+    /// If the texture has <see cref="IsDepthStencil"/> set to <b>true</b>, and the depth texture is never read in a shader, then performance is improved when this value is set to <b>false</b>.
+    /// </para>
+    /// </remarks>
     bool IsShaderResource
     {
         get;        
@@ -159,7 +173,7 @@ public interface IGorgonTextureInfo
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This value only applies to <see cref="TextureType.Texture2D"/> textures.
+    /// This value only applies to <see cref="TextureType.Texture2D"/> textures and is ignored on other types.
     /// </para>
     /// </remarks>
     GorgonMultisampleInfo MultisampleInfo

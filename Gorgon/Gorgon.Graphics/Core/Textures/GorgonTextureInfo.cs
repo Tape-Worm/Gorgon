@@ -21,20 +21,18 @@
 // Created: January 11, 2026 12:06:54 PM
 //
 
-using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Text;
 using Gorgon.Graphics.Imaging;
-using TerraFX.Interop.Windows;
 
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
 /// Settings used for creating a <see cref="GorgonTexture"/>.
 /// </summary>
-/// <param name="Type"><inheritdoc cref="IGorgonTextureInfo.Type"/></param>
-/// <param name="Format"><inheritdoc cref="IGorgonTextureInfo.Format"/></param>
+/// <param name="Type">The type of texture to create.</param>
+/// <param name="Format">The format of the texel data in the texture.</param>
+/// <seealso cref="TextureType"/>
+/// <seealso cref="BufferFormat"/>
 public record class GorgonTextureInfo(TextureType Type, BufferFormat Format)
 {
     /// <summary>
@@ -45,9 +43,7 @@ public record class GorgonTextureInfo(TextureType Type, BufferFormat Format)
         Width = 0
     };
 
-    /// <summary>
-    /// <inheritdoc/>
-    /// </summary>
+    /// <inheritdoc cref="IGorgonTextureInfo.Width" path="/summary"/>
     /// <remarks>
     /// This value must be between 1 and <see cref="GorgonVideoAdapterInfo.MaxTextureWidth"/> or <see cref="GorgonVideoAdapterInfo.MaxTexture3DWidth"/>.
     /// </remarks>
@@ -57,11 +53,9 @@ public record class GorgonTextureInfo(TextureType Type, BufferFormat Format)
         init;
     }
 
-    /// <summary>
-    /// <inheritdoc/>
-    /// </summary>
+    /// <inheritdoc cref="IGorgonTextureInfo.Height" path="/summary"/>
     /// <remarks>
-    /// <inheritdoc/>
+    /// <inheritdoc cref="IGorgonTextureInfo.Height" path="/remarks/para"/>
     /// <para>
     /// This value must be between 1 and <see cref="GorgonVideoAdapterInfo.MaxTextureHeight"/> or <see cref="GorgonVideoAdapterInfo.MaxTexture3DHeight"/>.
     /// </para>
@@ -75,11 +69,9 @@ public record class GorgonTextureInfo(TextureType Type, BufferFormat Format)
         init;
     } = 1;
 
-    /// <summary>
-    /// <inheritdoc/>
-    /// </summary>
+    /// <inheritdoc cref="IGorgonTextureInfo.Depth" path="/summary"/>
     /// <remarks>
-    /// <inheritdoc/>
+    /// <inheritdoc cref="IGorgonTextureInfo.Depth" path="/remarks/para"/>
     /// <para>
     /// This value must be between 1 and <see cref="GorgonVideoAdapterInfo.MaxTexture3DDepth"/>.
     /// </para>
@@ -93,9 +85,7 @@ public record class GorgonTextureInfo(TextureType Type, BufferFormat Format)
         init;
     } = 1;
 
-    /// <summary>
-    /// <inheritdoc/>
-    /// </summary>
+    /// <inheritdoc cref="IGorgonTextureInfo.MipCount" path="/summary"/>
     /// <remarks>
     /// <para>
     /// This value must be at least 1.
@@ -110,11 +100,12 @@ public record class GorgonTextureInfo(TextureType Type, BufferFormat Format)
         init;
     } = 1;
 
-    /// <summary>
-    /// <inheritdoc/>
-    /// </summary>
+    /// <inheritdoc cref="IGorgonTextureInfo.ArrayCount" path="/summary"/>
     /// <remarks>
-    /// <inheritdoc/>
+    /// <inheritdoc cref="IGorgonTextureInfo.ArrayCount" path="/remarks/para"/>
+    /// <para>
+    /// If the <see cref="IsCube"/> property is set to <b>true</b>, then this value <b>must</b> be a multiple of 6. If it is not, an exception will be thrown upon texture creation.
+    /// </para>
     /// <para>
     /// This value must be at least 1.
     /// </para>
@@ -128,11 +119,15 @@ public record class GorgonTextureInfo(TextureType Type, BufferFormat Format)
         init;
     } = 1;
 
-    /// <summary>
-    /// <inheritdoc/>
-    /// </summary>
+    /// <inheritdoc cref="IGorgonTextureInfo.IsCube" path="/summary"/>
     /// <remarks>
-    /// <inheritdoc/>
+    /// <inheritdoc cref="IGorgonTextureInfo.IsCube" path="/remarks/para"/>
+    /// <para>
+    /// If this property is set to <b>true</b>, then the <see cref="ArrayCount"/> property <b>must</b> be a multiple of 6. If it is not, an exception will be thrown upon texture creation.
+    /// </para>
+    /// <para>
+    /// If the <see cref="Type"/> is not set to <see cref="TextureType.Texture2D"/>, then an exception will be thrown upon texture creation.
+    /// </para>
     /// <para>
     /// The default value is <b>false</b>.
     /// </para>
@@ -143,11 +138,14 @@ public record class GorgonTextureInfo(TextureType Type, BufferFormat Format)
         init;
     } = false;
 
-    /// <summary>
-    /// <inheritdoc/>
-    /// </summary>
+    /// <inheritdoc cref="IGorgonTextureInfo.IsRenderTarget" path="/summary"/>
     /// <remarks>
+    /// <para>
+    /// If this value is set to <b>true</b>, and <see cref="IsDepthStencil"/> is <b>true</b>, then an exception will be thrown upon texture creation.
+    /// </para>
+    /// <para>
     /// The default value is <b>false</b>.
+    /// </para>
     /// </remarks>
     public bool IsRenderTarget
     {
@@ -155,16 +153,15 @@ public record class GorgonTextureInfo(TextureType Type, BufferFormat Format)
         init;
     } = false;
 
-    /// <summary>
-    /// <inheritdoc/>
-    /// </summary>
+    /// <inheritdoc cref="IGorgonTextureInfo.IsDepthStencil" path="/summary"/>
     /// <remarks>
     /// <para>
-    /// This flag must not be <b>true</b> when <see cref="IsRenderTarget"/>, or <see cref="IsUnorderedAccess"/> is <b>true</b>.
+    /// This flag must not be <b>true</b> when <see cref="IsRenderTarget"/>, or <see cref="IsUnorderedAccess"/> is <b>true</b>, otherwise an exception will be thrown on texture creation.
     /// </para>
     /// <para>
     /// The default value is <b>false</b>.
     /// </para>
+    /// <inheritdoc cref="IGorgonTextureInfo.IsDepthStencil" path="/remarks/para"/>
     /// </remarks>
     public bool IsDepthStencil
     {
@@ -172,11 +169,12 @@ public record class GorgonTextureInfo(TextureType Type, BufferFormat Format)
         init;
     } = false;
 
-    /// <summary>
-    /// <inheritdoc/>
-    /// </summary>
+    /// <inheritdoc cref="IGorgonTextureInfo.IsShaderResource" path="/summary"/>
     /// <remarks>
+    /// <inheritdoc cref="IGorgonTextureInfo.IsShaderResource" path="/remarks/para"/>
+    /// <para>
     /// The default value is <b>true</b>.
+    /// </para>
     /// </remarks>
     public bool IsShaderResource
     {
@@ -184,11 +182,15 @@ public record class GorgonTextureInfo(TextureType Type, BufferFormat Format)
         init;
     } = true;
 
-    /// <summary>
-    /// <inheritdoc/>
-    /// </summary>
+    /// <inheritdoc cref="IGorgonTextureInfo.IsUnorderedAccess" path="/summary"/>
     /// <remarks>
+    /// <para>
+    /// This value must be <b>false</b> if <see cref="MultisampleInfo"/> is not set to <see cref="GorgonMultisampleInfo.NoMultisampling"/>, or <see cref="IsDepthStencil"/> is set to <b>true</b>, otherwise an 
+    /// exception is thrown upon texture creation.
+    /// </para>
+    /// <para>
     /// The default value is <b>false</b>.
+    /// </para>
     /// </remarks>
     public bool IsUnorderedAccess
     {
@@ -196,11 +198,13 @@ public record class GorgonTextureInfo(TextureType Type, BufferFormat Format)
         init;
     } = false;
 
-    /// <summary>
-    /// <inheritdoc/>
-    /// </summary>
+    /// <inheritdoc cref="IGorgonTextureInfo.MultisampleInfo" path="/summary"/>
     /// <remarks>
-    /// <inheritdoc/>
+    /// <inheritdoc cref="IGorgonTextureInfo.MultisampleInfo" path="/remarks/para"/>
+    /// <para>
+    /// This value must be <see cref="GorgonMultisampleInfo.NoMultisampling"/> if the <see cref="MipCount"/> is greater than 1, or <see cref="IsUnorderedAccess"/> is set to <b>true</b>. If this is not the 
+    /// case an exception will be thrown on texture creation.
+    /// </para>
     /// <para>
     /// The default value is <see cref="GorgonMultisampleInfo.NoMultisampling"/>.
     /// </para>
@@ -223,7 +227,7 @@ public record class GorgonTextureInfo(TextureType Type, BufferFormat Format)
     /// <param name="isUnorderedResource"><b>true</b> to use this texture as an unordered access resource, <b>false</b> to deny unordered access.</param>
     /// <param name="multiSampleInfo">[Optional] Multisample information for the texture.</param>
     /// <returns>A new <see cref="IGorgonTextureInfo"/>.</returns>
-    public static GorgonTextureInfo Create2DTexture(BufferFormat format, int width, int height, short mipCount = 1, short arrayCount = 1, bool isShaderResource = true, bool isUnorderedResource = false, GorgonMultisampleInfo? multiSampleInfo = null) => new(TextureType.Texture2D, format)
+    public static GorgonTextureInfo Create2DTextureInfo(BufferFormat format, int width, int height, short mipCount = 1, short arrayCount = 1, bool isShaderResource = true, bool isUnorderedResource = false, GorgonMultisampleInfo? multiSampleInfo = null) => new(TextureType.Texture2D, format)
     {
         Width = width,
         Height = height,
@@ -247,7 +251,7 @@ public record class GorgonTextureInfo(TextureType Type, BufferFormat Format)
     /// <param name="isUnorderedResource"><b>true</b> to use this texture as an unordered access resource, <b>false</b> to deny unordered access.</param>
     /// <param name="multiSampleInfo">[Optional] Multisample information for the texture.</param>
     /// <returns>A new <see cref="IGorgonTextureInfo"/>.</returns>
-    public static GorgonTextureInfo Create2DRenderTarget(BufferFormat format, int width, int height, short mipCount = 1, short arrayCount = 1, bool isShaderResource = true, bool isUnorderedResource = false, GorgonMultisampleInfo? multiSampleInfo = null) => new(TextureType.Texture2D, format)
+    public static GorgonTextureInfo Create2DRenderTargetInfo(BufferFormat format, int width, int height, short mipCount = 1, short arrayCount = 1, bool isShaderResource = true, bool isUnorderedResource = false, GorgonMultisampleInfo? multiSampleInfo = null) => new(TextureType.Texture2D, format)
     {
         Width = width,
         Height = height,
@@ -270,7 +274,7 @@ public record class GorgonTextureInfo(TextureType Type, BufferFormat Format)
     /// <param name="arrayCount">[Optional] The number of array indices contained within the texture.</param>
     /// <param name="isShaderResource"><b>true</b> to use this texture as a shader resource, <b>false</b> to deny shader access.</param>
     /// <returns>A new <see cref="IGorgonTextureInfo"/>.</returns>
-    public static GorgonTextureInfo Create2DDepthStencil(BufferFormat format, int width, int height, short mipCount = 1, short arrayCount = 1, bool isShaderResource = true) => new(TextureType.Texture2D, format)
+    public static GorgonTextureInfo Create2DDepthStencilInfo(BufferFormat format, int width, int height, short mipCount = 1, short arrayCount = 1, bool isShaderResource = true) => new(TextureType.Texture2D, format)
     {
         Width = width,
         Height = height,

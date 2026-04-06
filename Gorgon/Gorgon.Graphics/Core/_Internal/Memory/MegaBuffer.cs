@@ -93,7 +93,7 @@ internal unsafe sealed class MegaBuffer
     {
         if (disposing)
         {
-            _graphics.WaitForGpu(5_000);
+            _graphics.WaitForGpu(GorgonGraphics.WaitFenceTimeout);
 
             _graphics.Log.Print($"Destroying mega buffer ({_size.FormatMemory()}).", LoggingLevel.Verbose);
 
@@ -110,7 +110,12 @@ internal unsafe sealed class MegaBuffer
             }
         }
 
-        _memoryBlock.Dispose();
+        if (!_memoryBlock.IsNull)
+        {
+            _memoryBlock.Get()->Clear();
+            _memoryBlock.Dispose();
+        }
+
         _d3dBuffer.Dispose();        
     }
 

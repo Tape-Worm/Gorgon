@@ -300,7 +300,8 @@ public sealed record class GorgonFormatInfo
     /// <param name="format">The format to evaluate.</param>
     /// <returns><b>true</b> if the format is a planar pixel format, <b>false</b> if not.</returns>
     private static bool GetIsPlanar(BufferFormat format) => format is BufferFormat.NV12 or BufferFormat.P010 or BufferFormat.P016 or BufferFormat.Opaque420 or BufferFormat.NV11
-                                                            or BufferFormat.P208 or BufferFormat.V208 or BufferFormat.V408;
+                                                            or BufferFormat.P208 or BufferFormat.V208 or BufferFormat.V408 or BufferFormat.D24_UNorm_S8_UInt or BufferFormat.D32_Float_S8X24_UInt
+                                                            or BufferFormat.X24_Typeless_G8_UInt;
 
     /// <summary>
     /// Function to determine if a format is a packed pixel format.
@@ -392,10 +393,10 @@ public sealed record class GorgonFormatInfo
         BufferFormat.B8G8R8A8_UNorm_SRgb => 32,
         BufferFormat.B8G8R8X8_Typeless => 32,
         BufferFormat.B8G8R8X8_UNorm_SRgb => 32,
-        BufferFormat.R8G8_B8G8_UNorm => 32,
-        BufferFormat.G8R8_G8B8_UNorm => 32,
+        BufferFormat.R8G8_B8G8_UNorm => 16,
+        BufferFormat.G8R8_G8B8_UNorm => 16,
         BufferFormat.Y410 => 32,
-        BufferFormat.Y416 => 32,
+        BufferFormat.Y416 => 64,
         BufferFormat.AYUV => 32,
         BufferFormat.R9G9B9E5_SharedExp => 32,
         BufferFormat.R16_Typeless => 16,
@@ -581,9 +582,7 @@ public sealed record class GorgonFormatInfo
         BufferFormat.R32G32B32A32_Typeless or BufferFormat.R32G32B32A32_Float or BufferFormat.R32G32B32A32_UInt or BufferFormat.R32G32B32A32_SInt => BufferFormat.R32G32B32A32_Typeless,
         BufferFormat.R8_Typeless or BufferFormat.R8_UNorm or BufferFormat.R8_UInt or BufferFormat.R8_SNorm or BufferFormat.R8_SInt => BufferFormat.R8_Typeless,
         BufferFormat.R8G8_Typeless or BufferFormat.R8G8_UNorm or BufferFormat.R8G8_UInt or BufferFormat.R8G8_SNorm or BufferFormat.R8G8_SInt => BufferFormat.R8G8_Typeless,
-        BufferFormat.R8G8B8A8_Typeless or BufferFormat.R8G8B8A8_UNorm or BufferFormat.R8G8B8A8_UNorm_SRgb or BufferFormat.R8G8B8A8_UInt or BufferFormat.R8G8B8A8_SNorm or BufferFormat.R8G8B8A8_SInt => BufferFormat.R8G8B8A8_Typeless,
-        BufferFormat.B4G4R4A4_UNorm => BufferFormat.B4G4R4A4_UNorm,
-        BufferFormat.A4B4G4R4_UNorm => BufferFormat.A4B4G4R4_UNorm,
+        BufferFormat.R8G8B8A8_Typeless or BufferFormat.R8G8B8A8_UNorm or BufferFormat.R8G8B8A8_UNorm_SRgb or BufferFormat.R8G8B8A8_UInt or BufferFormat.R8G8B8A8_SNorm or BufferFormat.R8G8B8A8_SInt => BufferFormat.R8G8B8A8_Typeless,        
         _ => BufferFormat.Unknown,
     };
 

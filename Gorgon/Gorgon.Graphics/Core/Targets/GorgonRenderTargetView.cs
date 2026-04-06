@@ -47,7 +47,7 @@ namespace Gorgon.Graphics.Core;
 /// TODO: Write something here.
 /// </para>
 /// </remarks>
-public unsafe sealed class GorgonTextureRenderTargetView
+public unsafe sealed class GorgonRenderTargetView
     : GorgonResourceView, IGorgonImageInfo
 {
     private CpuDescriptorAllocation _allocation;
@@ -321,7 +321,7 @@ public unsafe sealed class GorgonTextureRenderTargetView
     /// <param name="format">The format for the view.</param>
     /// <param name="formatInfo">Information about the view format.</param>
     /// <param name="owned"><inheritdoc cref="GorgonResourceView(GorgonGraphics, string, GorgonGpuResource, bool)" path="/param[@name='owned']"/></param>
-    internal GorgonTextureRenderTargetView(GorgonGraphics graphics, string name, GorgonTexture texture, BufferFormat format, GorgonFormatInfo formatInfo, bool owned)
+    internal GorgonRenderTargetView(GorgonGraphics graphics, string name, GorgonTexture texture, BufferFormat format, GorgonFormatInfo formatInfo, bool owned)
         : base(graphics, name, texture, owned)
     {
         _textureImageInfo = Texture = texture;

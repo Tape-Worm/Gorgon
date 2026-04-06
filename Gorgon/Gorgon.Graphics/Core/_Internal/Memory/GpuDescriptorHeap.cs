@@ -94,11 +94,16 @@ internal unsafe class GpuDescriptorHeap
     {
         if (disposing)
         {
-            _graphics.WaitForGpu(5_000);
+            _graphics.WaitForGpu(GorgonGraphics.WaitFenceTimeout);
             _graphics.Log.Print($"Cleaning up GPU {_type} view heap.", LoggingLevel.Simple);
         }
 
-        _memoryBlock.Dispose();
+        if (!_memoryBlock.IsNull)
+        {
+            _memoryBlock.Get()->Clear();
+            _memoryBlock.Dispose();
+        }
+
         _heap.Dispose();
     }
 

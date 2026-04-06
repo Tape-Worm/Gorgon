@@ -213,23 +213,30 @@ internal unsafe class BarrierManager(GorgonGraphics graphics)
     /// Function to check the before layout state against what's allowed for a given queue.
     /// </summary>
     /// <param name="currentQueue">The queue that is executing.</param>
+    /// <param name="pendingAccess">The pending access state.</param>
     /// <param name="layout">The before layout state.</param>
     /// <returns>The updated state.</returns>
-    private BarrierLayout CheckQueueBeforeLayoutState(CommandQueue currentQueue, BarrierLayout layout)
+    private BarrierLayout CheckQueueBeforeLayoutState(CommandQueue currentQueue, BarrierAccess pendingAccess, BarrierLayout layout)
     {
-        const BarrierLayout legalComputeLayoutMask = BarrierLayout.None | BarrierLayout.Common | BarrierLayout.GenericRead | BarrierLayout.UnorderedAccess | BarrierLayout.ShaderResource
-                                                   | BarrierLayout.CopySource | BarrierLayout.CopyDestination | BarrierLayout.ComputeCommon | BarrierLayout.ComputeGenericRead | BarrierLayout.ComputeUnorderedAccess
-                                                   | BarrierLayout.ComputeShaderResource | BarrierLayout.ComputeCopySource | BarrierLayout.ComputeCopyDestination;
-
         // TODO: Replace these with transitions to the appropriate states on the source queue.
         if (currentQueue == _graphics.CopyQueue)
         {
-            Debug.Assert((layout & ~(BarrierLayout.None | BarrierLayout.Common)) == 0, $"The before layout {layout} is not supported by the copy queue.");
+            // For the copy queue, any destination is not meant to be preserved, so we don't care about its previous layout, and will 
+            // discard anyway.
+            if ((pendingAccess is BarrierAccess.CopyDestination) && (layout is not BarrierLayout.Common and not BarrierLayout.None))
+            {
+                layout = BarrierLayout.None;
+            }
+            Debug.Assert(layout is BarrierLayout.Common or BarrierLayout.None, $"The before layout {layout} is not supported by the copy queue.");
         }
 
         if (currentQueue == _graphics.ComputeQueue)
         {
-            Debug.Assert((layout & ~legalComputeLayoutMask) == 0, $"The before layout {layout} is not supported by the compute queue.");
+            Debug.Assert(layout is BarrierLayout.None or BarrierLayout.Common or BarrierLayout.GenericRead or BarrierLayout.UnorderedAccess or BarrierLayout.ShaderResource
+                                                   or BarrierLayout.CopySource or BarrierLayout.CopyDestination or BarrierLayout.ComputeCommon or BarrierLayout.ComputeGenericRead 
+                                                   or BarrierLayout.ComputeUnorderedAccess or BarrierLayout.ComputeShaderResource or BarrierLayout.ComputeCopySource 
+                                                   or BarrierLayout.ComputeCopyDestination or BarrierLayout.GraphicsQueueGenericReadFromCompute
+                , $"The before layout {layout} is not supported by the compute queue.");
         }        
 
         return layout;
@@ -347,13 +354,12 @@ internal unsafe class BarrierManager(GorgonGraphics graphics)
             currentSubResources.Clear();
 
             (BarrierSync sync, BarrierAccess access) = CheckQueueBeforeState(queue, current.Sync, current.Access);
-            BarrierLayout layout = CheckQueueBeforeLayoutState(queue, current.Layout);
+            BarrierLayout layout = CheckQueueBeforeLayoutState(queue, pending.Value.Access, current.Layout);
 
             for (int i = 0; i < ranges.Length; ++i)
             {
                 ref readonly GorgonSubResourceRange r = ref ranges[i];
                 D3D12_BARRIER_SUBRESOURCE_RANGE range = r.ToD3DBarrierSubResourceRange();
-
 
                 barriers[index++] = pendingBarrier.ToD3DTextureBarrier(sync, access, layout, in range);
                 currentSubResources.Add(r);
@@ -430,7 +436,7 @@ internal unsafe class BarrierManager(GorgonGraphics graphics)
 
         if (!exists)
         {
-            ref readonly GlobalBarrier global = ref _globalState.GetState(texture.ResourceID);
+            ref readonly GlobalBarrier global = ref _globalState.GetState(texture.ResourceID);            
             current = new GorgonTextureBarrier(texture, global.Sync, global.Access, global.Layout);
 
             if (currentSubResources.Count > 0)

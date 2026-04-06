@@ -141,10 +141,6 @@ public interface IGorgonCopyMethodsFluent<T>
     /// Applications must call the <see cref="GorgonResourceCopier"/>.<see cref="GorgonResourceCopier.BeginUpload"/> method prior to calling this method, failure to do so will result in an exception being 
     /// thrown.
     /// </para>
-    /// <para type="CopyCommon">
-    /// Depending on the <see cref="BufferUsage"/> of the <paramref name="buffer"/>, data may not be immediately written to the buffer until the <see cref="IGorgonResourceWriter.End"/> method is called. Because of this, the 
-    /// <paramref name="buffer"/> should not be used until the <c>End</c> method returns.
-    /// </para>
     /// </remarks>
     /// <example>
     /// <code lang="csharp">
@@ -311,8 +307,8 @@ public interface IGorgonCopyMethodsFluent<T>
     /// 
     /// // Code to write data to the sourceData array goes here...
     /// 
-    /// using GorgonGpuBuffer destBuffer = new(_graphics, "Destination Buffer", new GorgonBufferInfo(256, BufferUsage.Default);
-    /// using GorgonGpuBuffer srcBuffer = new(_graphics, "Source Buffer", new GorgonBufferInfo(256, BufferUsage.Upload);
+    /// using GorgonGpuBuffer destBuffer = new(_graphics, "Destination Buffer", new GorgonBufferInfo(256);
+    /// using GorgonGpuBuffer srcBuffer = new(_graphics, "Source Buffer", new GorgonBufferInfo(256);
     /// using GorgonGpuBufferWriter writer = new(_graphics);
     /// 
     /// 

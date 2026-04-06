@@ -358,4 +358,45 @@ The format of the image {0} and the format of the texture {1} are incompatible, 
   <data name="GORGFX_ERR_FORMAT_NOT_COMPATIBLE_WITH_BUFFER" xml:space="preserve">
     <value>The format {0} is not compatible with buffer data.</value>
   </data>
+  <data name="GORGFX_ERR_INVALID_PARAMETER_LESS_THAN_VALUE" xml:space="preserve">
+    <value>The parameter '{0}' must be greater than, or equal to {1}.</value>
+  </data>
+  <data name="GORGFX_ERR_TEXTURE_FORMAT_INVALID" xml:space="preserve">
+    <value>The format {0} is not valid for a {1}.</value>
+  </data>
+  <data name="GORGFX_ERR_MSAA_FORMAT_INVALID" xml:space="preserve">
+    <value>The format {0} is not valid for MSAA.</value>
+  </data>
+  <data name="GORGFX_ERR_CUBE_TEXTURE_FORMAT_INVALID" xml:space="preserve">
+    <value>The format {0} is not valid for a cube texture.</value>
+  </data>
+  <data name="GORGFX_ERR_INVALID_DEPTH_STENCIL_FORMAT" xml:space="preserve">
+    <value>The format {0} is not valid for a depth/stencil texture.</value>
+  </data>
+  <data name="GORGFX_ERR_MIP_FORMAT_INVALID" xml:space="preserve">
+    <value>The format {0} does not support mip map levels.</value>
+  </data>
+  <data name="GORGFX_ERR_MSAA_MIP_COUNT_INVALID" xml:space="preserve">
+    <value>MSAA textures must only have a single mip level.</value>
+  </data>
+  <data name="GORGFX_ERR_CUBEMAP_NOT_MULTIPLE_OF_SIX" xml:space="preserve">
+    <value>The texture is a cube map, but the number of array slices {0} is not a multiple of 6.</value>
+  </data>
+  <data name="GORGFX_ERR_CUBEMAP_ONLY_2DTEX" xml:space="preserve">
+    <value>Cube maps are only allowed on 2D textures.</value>
+  </data>
+  <data name="GORGFX_ERR_TEXTURE_CANNOT_BE_RT_AND_DS" xml:space="preserve">
+    <value>The texture '{0}' is configured to be a render target and a depth/stencil buffer. These two flags are mutually exclusive and only one can be set to true at a time.</value>
+  </data>
+  <data name="GORGFX_ERR_TEXTURE_CANNOT_BE_UNORDERED_AND_DS" xml:space="preserve">
+    <value>The texture '{0}' is configured to be an unordered access resource and a depth/stencil buffer. These two flags are mutually exclusive and only one can be set to true at a time.</value>
+  </data>
+  <data name="GORGFX_TEXTURE_CANNOT_BE_MSAA_AND_UNORDERED" xml:space="preserve">
+    <value>The texture '{0}' is a MSAA texture. These textures cannot be used with unordered access.</value>
+  </data>
+  <data name="GORGFX_ERR_CANNOT_CREATE_ROOT" xml:space="preserve">
+    <value>There was an error creating the root signature.
+
+Error data: {0}</value>
+  </data>
 </root>

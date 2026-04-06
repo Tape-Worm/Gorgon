@@ -28,19 +28,18 @@ namespace Gorgon.Graphics.Core;
 /// </summary>
 /// <param name="SizeInBytes">The size of the buffer, in bytes.</param>
 /// <param name="Use32BitIndices"><b>true</b> to indicate that each element in the buffer will be 32 bits wide, or <b>false</b> to indicate that each element will be 16 bits wide.</param>
-/// <param name="Usage">The intended usage for the buffer.</param>
 /// <remarks>
 /// <para>
 /// The <paramref name="SizeInBytes"/> parameter must be greater than 0.
 /// </para>
 /// </remarks>
-public record class GorgonIndexBufferInfo(long SizeInBytes, bool Use32BitIndices, BufferUsage Usage)
-    : GorgonCommonBufferInfo(SizeInBytes, Usage)
+public record class GorgonIndexBufferInfo(long SizeInBytes, bool Use32BitIndices)
+    : GorgonCommonBufferInfo(SizeInBytes)
 {
     /// <summary>
     /// An empty instance of the <see cref="GorgonIndexBufferInfo"/> type.
     /// </summary>
-    public static readonly GorgonIndexBufferInfo Empty = new(0, false, BufferUsage.Default);
+    public static readonly GorgonIndexBufferInfo Empty = new(0, false);
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonGpuBufferInfo"/> class.
@@ -54,7 +53,7 @@ public record class GorgonIndexBufferInfo(long SizeInBytes, bool Use32BitIndices
     /// </summary>
     /// <param name="info">The buffer creation information to copy.</param>
     public GorgonIndexBufferInfo(IGorgonIndexBufferInfo info)
-        : this(info.SizeInBytes, info.Use32BitIndices, info.Usage)
+        : this(info.SizeInBytes, info.Use32BitIndices)
     {
     }
 }

@@ -752,11 +752,6 @@ public enum BarrierAccess
     /// </para>
     /// </summary>
     None = D3D12_BARRIER_ACCESS.D3D12_BARRIER_ACCESS_NO_ACCESS,
-
-    /// <summary>
-    /// The default access bits for an upload heap buffer resource.
-    /// </summary>
-    UploadHeapDefaultAccessState = VertexBuffer | IndexBuffer | ConstantBuffer | CopySource | ShaderResource | IndirectArgument
 }
 
 /// <summary>
@@ -766,7 +761,6 @@ public enum BarrierAccess
 /// <para>
 /// </para>
 /// </remarks>
-[Flags]
 public enum BarrierLayout
 {
     /// <summary>
@@ -803,7 +797,7 @@ public enum BarrierLayout
     GenericRead = D3D12_BARRIER_LAYOUT.D3D12_BARRIER_LAYOUT_GENERIC_READ,
     /// <summary>
     /// <para>
-    /// The resource is used as a render target. A subresource must be in this state when it is rendered to, or when it is cleared with <see cref="GorgonCommandList.ClearRenderTarget(GorgonTextureRenderTargetView, GorgonColor)"/>.
+    /// The resource is used as a render target. A subresource must be in this state when it is rendered to, or when it is cleared with <see cref="GorgonCommandList.ClearRenderTarget(GorgonRenderTargetView, GorgonColor)"/>.
     /// </para>
     /// <para>
     /// This is a write-only state. To read from a render target as a shader resource, the resource must be set to <see cref="ShaderResource"/>.
@@ -986,6 +980,12 @@ public enum BarrierLayout
     /// </para>
     /// </summary>
     ComputeCopyDestination = D3D12_BARRIER_LAYOUT.D3D12_BARRIER_LAYOUT_COMPUTE_QUEUE_COPY_DEST,
+    /// <summary>
+    /// <para>
+    /// Allows reading from the graphics queue by the compute queue.
+    /// </para>
+    /// </summary>
+    GraphicsQueueGenericReadFromCompute = D3D12_BARRIER_LAYOUT.D3D12_BARRIER_LAYOUT_DIRECT_QUEUE_GENERIC_READ_COMPUTE_QUEUE_ACCESSIBLE,    
 }
 
 /// <summary>

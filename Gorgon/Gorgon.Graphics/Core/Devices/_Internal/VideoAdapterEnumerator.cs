@@ -104,7 +104,7 @@ internal unsafe class VideoAdapterEnumerator
 
         if (addressSupport.MaxGPUVirtualAddressBitsPerResource < 28)
         {
-            log.PrintWarning(err, $"The adapter '{name}' only supports {addressSupport.MaxGPUVirtualAddressBitsPerResource} bits of address space. Gorgon requires at least 24 bits. This adapter will be skipped.", LoggingLevel.Intermediate);
+            log.PrintWarning(err, $"The adapter '{name}' only supports {addressSupport.MaxGPUVirtualAddressBitsPerResource} bits of address space. Gorgon requires at least 28 bits. This adapter will be skipped.", LoggingLevel.Intermediate);
             return false;
         }
 

@@ -40,13 +40,6 @@ public abstract record class GorgonCommonBufferInfo
         init;
     }
 
-    /// <inheritdoc cref="IGorgonCommonBufferInfo.Usage"/>
-    public BufferUsage Usage
-    {
-        get;
-        init;
-    }
-
     /// <inheritdoc cref="IGorgonCommonBufferInfo.IsUnorderedAccess"/>
     /// <remarks>
     /// The default value is <b>false</b>.
@@ -61,12 +54,7 @@ public abstract record class GorgonCommonBufferInfo
     /// Initializes a new instance of the <see cref="GorgonCommonBufferInfo"/> class.
     /// </summary>
     /// <param name="sizeInBytes">The size of the buffer, in bytes.</param>
-    /// <param name="usage">The intended usage for the buffer.</param>
-    protected GorgonCommonBufferInfo(long sizeInBytes, BufferUsage usage)
-    {
-        SizeInBytes = sizeInBytes;
-        Usage = usage;
-    }
+    protected GorgonCommonBufferInfo(long sizeInBytes) => SizeInBytes = sizeInBytes;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonCommonBufferInfo"/> class.
@@ -75,7 +63,6 @@ public abstract record class GorgonCommonBufferInfo
     protected GorgonCommonBufferInfo(GorgonCommonBufferInfo copy)
     {
         SizeInBytes = copy.SizeInBytes;
-        Usage = copy.Usage;
         IsUnorderedAccess = copy.IsUnorderedAccess;
     }
 }

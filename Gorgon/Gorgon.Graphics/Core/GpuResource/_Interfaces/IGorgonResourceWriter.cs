@@ -56,17 +56,11 @@ public interface IGorgonResourceWriter
     /// This method must be called after a call to the <see cref="GorgonResourceCopier"/>.<see cref="GorgonResourceCopier.BeginUpload"/> method. Failure to do so can lead to data not being sent the GPU properly.
     /// </para>
     /// <para>
-    /// Data written to a <see cref="GorgonGpuBufferCommon"/> may be immediate, depending on the buffer <see cref="BufferUsage"/>. For buffers that have a <see cref="BufferUsage.DynamicPerFrame"/> usage, 
-    /// calls to the <c>Write</c> methods on this interface will be immediately sent to the buffer. Otherwise, the GPU will copy the data from the CPU to a GPU upload buffer, and then a copy from the upload 
-    /// buffer to the <see cref="BufferUsage.Default"/> buffer. This is all handled transparently by this method.
-    /// </para>
-    /// <para>
     /// This method will not return until the GPU is finished its upload(s).
     /// </para>
     /// </remarks>
     /// <seealso cref="GorgonResourceCopier"/>
     /// <seealso cref="GorgonGpuBufferCommon"/>
-    /// <seealso cref="BufferUsage"/>
     /// <example>
     /// <inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyValue{Tv}(in Tv, GorgonGpuBufferCommon, long)"/>
     /// </example>
@@ -91,13 +85,9 @@ public interface IGorgonResourceWriter
     /// <para>
     /// <inheritdoc cref="End" path="/remarks/para[1]"/>
     /// </para>
-    /// <para>
-    /// <inheritdoc cref="End" path="/remarks/para[2]"/>
-    /// </para>
     /// </remarks>
     /// <seealso cref="GorgonResourceCopier"/>
     /// <seealso cref="GorgonGpuBufferCommon"/>
-    /// <seealso cref="BufferUsage"/>
     /// <example>    
     /// <code lang="csharp">
     /// <![CDATA[
@@ -112,7 +102,7 @@ public interface IGorgonResourceWriter
     ///     // Initialize.
     ///     for (int i = 0; i < buffers.Length; ++i)
     ///     {
-    ///         result[i] = new GorgonGpuBuffer(_graphics, $"Buffer {i}", new GorgonGpuBufferInfo(buffers[i].Length, BufferUsage.Default));
+    ///         result[i] = new GorgonGpuBuffer(_graphics, $"Buffer {i}", new GorgonGpuBufferInfo(buffers[i].Length));
     ///         writers[i] = new GorgonGpuBufferWriter(_graphics);
     ///         
     ///         // Start writing.

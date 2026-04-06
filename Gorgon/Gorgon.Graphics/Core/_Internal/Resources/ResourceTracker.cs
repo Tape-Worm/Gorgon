@@ -50,7 +50,7 @@ internal unsafe class ResourceTracker(CommandQueue queue)
     {
         if (disposing)
         {
-            _queue.WaitForGpu(5_000);
+            _queue.WaitForGpu(GorgonGraphics.WaitFenceTimeout);
 
             using (_fenceLock.EnterScope())
             {

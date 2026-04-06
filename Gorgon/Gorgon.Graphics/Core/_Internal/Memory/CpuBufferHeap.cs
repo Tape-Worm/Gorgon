@@ -135,12 +135,10 @@ internal sealed unsafe class CpuBufferHeap
     {
         if (disposing)
         {
-            if (_resourceHeap.IsNull)
+            if (!_resourceHeap.IsNull)
             {
-                return;
+                _resourceHeap.Get()->Unmap(0, null);
             }
-
-            _resourceHeap.Get()->Unmap(0, null);
 
             CopyFence = ComputeFence = GfxFence = 0;
             Used = 0;
@@ -153,9 +151,9 @@ internal sealed unsafe class CpuBufferHeap
         if (!_memoryBlock.IsNull)
         {
             _memoryBlock.Get()->Clear();
+            _memoryBlock.Dispose();
         }
 
-        _memoryBlock.Dispose();
         _resourceHeap.Dispose();
         _heapAllocation.Dispose();
     }

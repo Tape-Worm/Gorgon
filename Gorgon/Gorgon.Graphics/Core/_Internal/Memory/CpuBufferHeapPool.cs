@@ -67,7 +67,7 @@ internal unsafe sealed class CpuResourceHeapPool(GorgonGraphics graphics, bool i
     {
         if (disposing)
         {
-            Graphics.WaitForGpu(5_000);
+            Graphics.WaitForGpu(GorgonGraphics.WaitFenceTimeout);
 
             // Wait for the GPU to finish with our heaps.
             while(_inUse.Count > 0)
@@ -237,6 +237,12 @@ internal unsafe sealed class CpuResourceHeapPool(GorgonGraphics graphics, bool i
 
             for (int i = 0; i < _free.Count; ++i)
             {
+                if ((_lastHeap is not null) && (_free[i] == _lastHeap))
+                {
+                    // Don't hang on to a heap that is going to die.
+                    _lastHeap = null;
+                }
+
                 _free[i].Dispose();
             }
 

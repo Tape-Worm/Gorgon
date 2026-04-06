@@ -24,6 +24,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -63,7 +64,7 @@ internal class GlobalBarrierState
 
             if ((barriers is null) || (barriers.Length == 0))
             {
-                return ref GlobalBarrier.Empty;
+                return ref GlobalBarrier.Default;
             }
 
             ref readonly GlobalBarrier barrier = ref barriers[barrierIndex];
@@ -71,7 +72,7 @@ internal class GlobalBarrierState
             // This means not initialized.
             if (barrier.SubResources is null)
             {
-                return ref GlobalBarrier.Empty;
+                return ref GlobalBarrier.Default;
             }
 
             return ref barrier;            

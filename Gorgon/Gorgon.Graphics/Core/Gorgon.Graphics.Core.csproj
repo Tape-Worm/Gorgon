@@ -81,7 +81,7 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="PointerToolkit.TerraFX.Interop.Windows" Version="10.0.26100.5" />
-    <PackageReference Include="TerraFX.Interop.D3D12MemoryAllocator" Version="3.1.0" />    
+    <PackageReference Include="TerraFX.Interop.D3D12MemoryAllocator" Version="3.1.0.2-rc1" />    
     <PackageReference Include="TerraFX.Interop.Windows" Version="10.0.26100.6" />    
   </ItemGroup>
   <ItemGroup>

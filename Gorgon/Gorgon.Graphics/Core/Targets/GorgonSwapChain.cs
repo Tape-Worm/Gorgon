@@ -48,7 +48,7 @@ public unsafe sealed class GorgonSwapChain
     private GorgonSwapChainInfo _info;
     private readonly HANDLE _waitHandle;
     private uint _descFlags;
-    private GorgonTextureRenderTargetView[] _renderTargetViews = [];
+    private GorgonRenderTargetView[] _renderTargetViews = [];
 
     /// <summary>
     /// Property to return the internal DXGI swap chain.
@@ -89,7 +89,7 @@ public unsafe sealed class GorgonSwapChain
     /// <summary>
     /// Property to return the target view handle for the swap chain render target textures.
     /// </summary>
-    public GorgonTextureRenderTargetView Target => _renderTargetViews[CurrentBackBufferIndex];
+    public GorgonRenderTargetView Target => _renderTargetViews[CurrentBackBufferIndex];
 
     /// <inheritdoc/>
     public bool FlipDiscard => _info.FlipDiscard;
@@ -379,7 +379,7 @@ public unsafe sealed class GorgonSwapChain
         Graphics.Log.Print($"Resizing swap chain {Name}...", LoggingLevel.Verbose);
 
         // Wait for the GPU to finish its current work.
-        Graphics.WaitForGpu();
+        Graphics.WaitForGpu(GorgonGraphics.WaitFenceTimeout * 6);
                
         OnBeforeResize();
 
@@ -437,7 +437,7 @@ public unsafe sealed class GorgonSwapChain
             return;
         }
 
-        Graphics.WaitForGpu();
+        Graphics.WaitForGpu(GorgonGraphics.WaitFenceTimeout * 6);
 
         RECT rect = default;
         Win32.GetClientRect(new HWND((void*)WindowHandle), &rect);
@@ -507,7 +507,7 @@ public unsafe sealed class GorgonSwapChain
             return;
         }
 
-        Graphics.WaitForGpu();
+        Graphics.WaitForGpu(GorgonGraphics.WaitFenceTimeout * 6);
 
         OnBeforeResize();
 
@@ -582,7 +582,7 @@ public unsafe sealed class GorgonSwapChain
         ValidateInfo(info);
 
         _info = new GorgonSwapChainInfo(info);
-        _renderTargetViews = new GorgonTextureRenderTargetView[_info.ResourceCount];
+        _renderTargetViews = new GorgonRenderTargetView[_info.ResourceCount];
 
         (_dxgiSwapChain, _waitHandle) = CreateNativeObjects(in graphics.DXGIFactory, in graphics.GraphicsQueue.D3DQueue);
         ResizeResources();

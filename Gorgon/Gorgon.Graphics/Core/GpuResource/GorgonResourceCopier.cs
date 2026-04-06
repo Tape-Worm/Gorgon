@@ -36,8 +36,7 @@ using TerraFX.Interop.DirectX;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Functionality to copy data into a <see cref="GorgonGpuBuffer"/>, <see cref="GorgonIndexBuffer"/> or a <see cref="GorgonTexture"/> from CPU memory on the GPU copy queue, or from a 
-/// <see cref="BufferUsage.Download"/> buffer into CPU memory.
+/// Functionality to copy data into a <see cref="GorgonGpuBuffer"/>, <see cref="GorgonIndexBuffer"/> or a <see cref="GorgonTexture"/> from CPU memory on the GPU copy queue, or from other buffers/textures.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -55,7 +54,6 @@ namespace Gorgon.Graphics.Core;
 /// <seealso cref="GorgonGpuBuffer"/>
 /// <seealso cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}"/>
 /// <seealso cref="GorgonPtr{T}"/>
-/// <seealso cref="BufferUsage"/>
 public unsafe sealed class GorgonResourceCopier
     : IDisposable, IGorgonResourceWriter
 {
@@ -130,27 +128,21 @@ public unsafe sealed class GorgonResourceCopier
     /// <param name="data">The pointer to the data to write.</param>
     /// <param name="offset">The offset, in bytes, within the <paramref name="buffer"/> to start writing at.</param>
     /// <param name="count">The number of bytes to write.</param>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void WriteCpuBuffer(GorgonGpuBufferCommon buffer, void* data, ulong offset, ulong count)
-    {
-        _commandQueue.Tracker.TrackResource(buffer.D3DResource);
-
-        buffer.CopyCpuData(data, offset, count);
-    }
-
-    /// <inheritdoc cref="WriteCpuBuffer(GorgonGpuBufferCommon, void*, ulong, ulong)"/>    
-    private void WriteGpuBuffer(GorgonGpuBufferCommon buffer, void* data, ulong offset, ulong count)
+    private void WriteBuffer(GorgonGpuBufferCommon buffer, void* data, ulong offset, ulong count)
     {
         PrepUpload();
 
         _commandQueue.Tracker.TrackResource(buffer.D3DResource);
-
+        
         _commandList.SetBarrier(buffer, BarrierSync.Copy, BarrierAccess.CopyDestination, true);
 
         Graphics.UploadHeaps.Allocate(count, Graphics.Adapter.HasTightAlignmentSupport ? 0 : D3D12.D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT, out CpuBufferAllocation allocation);
-        Debug.Assert(allocation.IsAvailable, "The returned resource heap allocation is not valid.");
-        NativeMemory.Copy(data, allocation.CpuPointer, (nuint)count);        
+        Debug.Assert(allocation.IsAvailable, $"The transient heap for '{buffer.Name}' is not valid.");
 
+        _commandQueue.Tracker.TrackResource(allocation.Heap.D3DResource);
+
+        NativeMemory.Copy(data, allocation.CpuPointer, (nuint)count);
+        
         _commandList.D3DGraphicsCommandList.Get()->CopyBufferRegion((PID3D12Resource2)buffer.D3DResource.Get(), buffer.ResourceOffset + offset, (PID3D12Resource2)allocation.Heap.D3DResource.Get(), allocation.Offset, count);
     }
 
@@ -166,7 +158,6 @@ public unsafe sealed class GorgonResourceCopier
     /// <para>Thrown if the <paramref name="count"/> is less than 0.</para>
     /// </exception>
     /// <exception cref="ArgumentException">Thrown if the <paramref name="offset"/> plus the <paramref name="count"/> is greater than the <see cref="GorgonGpuBufferCommon.SizeInBytes">size</see> if the buffer.</exception>
-    /// <exception cref="GorgonException">Thrown if the <paramref name="buffer"/> has a usage of <see cref="BufferUsage.Download"/>.</exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void ValidateRangeParams(GorgonGpuBufferCommon buffer, long offset, long count, int typeSize)
     {
@@ -467,14 +458,13 @@ public unsafe sealed class GorgonResourceCopier
 
             Graphics.CopyQueue.Execute(_commandList);
             fence = Graphics.CopyQueue.IncrementFence();
-            Graphics.ComputeQueue.IncrementFence();
-            Graphics.GraphicsQueue.IncrementFence();
 
             Graphics.CopyQueue.WaitForFence(fence, Timeout.Infinite);
         }
         finally
         {
             Graphics.DownloadHeaps.Signal();
+            Graphics.CopyQueue.Tracker.Signal();
             Graphics.CopyQueue.AllocatorPool.Signal();
             Graphics.CopyQueue.ListPool.Return(_commandList);
         }
@@ -496,12 +486,12 @@ public unsafe sealed class GorgonResourceCopier
         Graphics.DownloadHeaps.Allocate(sizeInBytes.Max(16), Graphics.Adapter.HasTightAlignmentSupport ? 0 : D3D12.D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT, out CpuBufferAllocation allocation);
         Debug.Assert(allocation.IsAvailable, "The returned resource heap allocation is not valid.");
 
+        _commandQueue.Tracker.Signal();
+
+
         PrepDownload();
 
         _commandQueue.Tracker.TrackResource(buffer.D3DResource);
-
-        // If the buffer is dynamic, it needs to flush its contents to the default buffer right now.
-        buffer.FlushDynamicBuffer(_commandList, true);
 
         // Do the copy.
         _commandList.SetBarrier(buffer, BarrierSync.Copy, BarrierAccess.CopySource, true);
@@ -591,6 +581,7 @@ public unsafe sealed class GorgonResourceCopier
             }
             finally
             {
+                _commandQueue.Tracker.Signal();
                 _commandQueue.AllocatorPool.Signal();
                 Graphics.UploadHeaps.Signal();
                 _commandQueue.ListPool.Return(_commandList);
@@ -625,6 +616,7 @@ public unsafe sealed class GorgonResourceCopier
         }
         finally
         {
+            _commandQueue.Tracker.Signal();
             _commandQueue.AllocatorPool.Signal();
             Graphics.UploadHeaps.Signal();
             _commandQueue.ListPool.Return(_commandList);
@@ -663,15 +655,7 @@ public unsafe sealed class GorgonResourceCopier
 
         fixed (Tv* valuePtr = &value)
         {
-            switch (buffer.Usage)
-            {
-                case BufferUsage.DynamicPerFrame:
-                    WriteCpuBuffer(buffer, (byte*)valuePtr, (ulong)offset, (ulong)typeSize);
-                    break;
-                case BufferUsage.Default:
-                    WriteGpuBuffer(buffer, (byte*)valuePtr, (ulong)offset, (ulong)typeSize);
-                    break;
-            }
+            WriteBuffer(buffer, (byte*)valuePtr, (ulong)offset, (ulong)typeSize);
         }
 
         return this;
@@ -699,15 +683,7 @@ public unsafe sealed class GorgonResourceCopier
 
         fixed (Tv* pointer = values)
         {
-            switch (buffer.Usage)
-            {
-                case BufferUsage.DynamicPerFrame:
-                    WriteCpuBuffer(buffer, pointer, (ulong)offset, size);
-                    break;
-                case BufferUsage.Default:
-                    WriteGpuBuffer(buffer, pointer, (ulong)offset, size);
-                    break;
-            }
+            WriteBuffer(buffer, pointer, (ulong)offset, size);
         }
 
         return this;
@@ -733,16 +709,7 @@ public unsafe sealed class GorgonResourceCopier
         }
 
         ValidateRangeParams(buffer, offset, pointer.Length, pointer.TypeSize);
-
-        switch (buffer.Usage)
-        {
-            case BufferUsage.DynamicPerFrame:
-                WriteCpuBuffer(buffer, (void*)pointer, (ulong)offset, (ulong)pointer.SizeInBytes);
-                break;
-            case BufferUsage.Default:
-                WriteGpuBuffer(buffer, (void*)pointer, (ulong)offset, (ulong)pointer.SizeInBytes);
-                break;
-        }
+        WriteBuffer(buffer, (void*)pointer, (ulong)offset, (ulong)pointer.SizeInBytes);
 
         return this;
     }
@@ -784,10 +751,6 @@ public unsafe sealed class GorgonResourceCopier
 
         _commandQueue.Tracker.TrackResource(source.D3DResource);
         _commandQueue.Tracker.TrackResource(destination.D3DResource);
-
-        // For dynamic buffers, push them to into their default buffers so we have the latest snapshot.
-        source.FlushDynamicBuffer(_commandList, true);
-        destination.FlushDynamicBuffer(_commandList, true);
 
         // If the buffers are pointing to the same resource (as in the mega buffer), then we need a combination of states.
         if (source.ResourceID == destination.ResourceID)
@@ -853,8 +816,9 @@ public unsafe sealed class GorgonResourceCopier
             _commandQueue.Tracker.TrackResource(texture.D3DResource);
 
             Graphics.UploadHeaps.Allocate((ulong)working.SizeInBytes, texture.Info.Alignment, out CpuBufferAllocation allocation);
-
             Debug.Assert(allocation.IsAvailable, $"The returned resource heap allocation is not valid.");
+
+            _commandQueue.Tracker.TrackResource(allocation.Heap.D3DResource);
 
             // Copy to upload resource.
             NativeMemory.Copy((void*)working.ImageData, allocation.CpuPointer, (nuint)working.SizeInBytes);
@@ -941,8 +905,9 @@ public unsafe sealed class GorgonResourceCopier
         GorgonSubResourceInfo destInfo = texture.SubResources[destResourceIndex];
 
         Graphics.UploadHeaps.Allocate((ulong)srcInfo.SizeInBytes, texture.Info.Alignment, out CpuBufferAllocation allocation);
-
         Debug.Assert(allocation.IsAvailable, $"The returned resource heap allocation is not valid.");
+
+        _commandQueue.Tracker.TrackResource(allocation.Heap.D3DResource);
 
         // Copy to upload resource.
         NativeMemory.Copy((void*)imageBuffer.ImageData, allocation.CpuPointer, (nuint)(imageBuffer.SizeInBytes.Min(srcInfo.SizeInBytes)));
@@ -1076,8 +1041,6 @@ public unsafe sealed class GorgonResourceCopier
 
         PrepUpload();        
 
-        buffer.FlushDynamicBuffer(_commandList, true);
-
         _commandQueue.Tracker.TrackResource(buffer.D3DResource);
         _commandQueue.Tracker.TrackResource(texture.D3DResource);
 
@@ -1113,8 +1076,6 @@ public unsafe sealed class GorgonResourceCopier
         }
 
         PrepUpload();
-
-        buffer.FlushDynamicBuffer(_commandList, true);
 
         ulong resourceOffset = (ulong)sourceOffset + buffer.ResourceOffset;
 
@@ -1255,7 +1216,8 @@ public unsafe sealed class GorgonResourceCopier
             throw new GorgonException(GorgonResult.CannotWrite, string.Format(Resources.GORGFX_ERR_CANNOT_COPY_TEXTURE_NOT_SAME, source.Name, destination.Name));
         }
 
-        ValidateCopyTexture(source, destination, GorgonCopyTextureSubResource.Empty);
+        GorgonCopyTextureSubResource copyParams = new();
+        ValidateCopyTexture(source, destination, in copyParams);
 
         ID3D12Resource* srcRes = (PID3D12Resource2)source.D3DResource.Get();
         ID3D12Resource* destRes = (PID3D12Resource2)destination.D3DResource.Get();
@@ -1472,6 +1434,8 @@ public unsafe sealed class GorgonResourceCopier
         Graphics.DownloadHeaps.Allocate((ulong)image.SizeInBytes, texture.Info.Alignment, out CpuBufferAllocation allocation);
         Debug.Assert(allocation.IsAvailable, "The returned resource heap allocation is not valid.");
 
+        _commandQueue.Tracker.TrackResource(allocation.Heap.D3DResource);
+
         ulong offsetCalc = allocation.Offset;
         int arrayCount = image.ArrayCount.Min(texture.ArrayCount);
         int mipCount = image.MipCount.Min(texture.MipCount);
@@ -1589,6 +1553,8 @@ public unsafe sealed class GorgonResourceCopier
 
             Graphics.DownloadHeaps.Allocate((ulong)buffer.SizeInBytes, texture.Info.Alignment, out CpuBufferAllocation allocation);
             Debug.Assert(allocation.IsAvailable, "The returned resource heap allocation is not valid.");
+
+            _commandQueue.Tracker.TrackResource(allocation.Heap.D3DResource);
 
             // Copy queues can only use Common layouts.
             _commandList.SetBarrier(texture, BarrierSync.Copy, BarrierAccess.CopySource, _commandQueue.Type == D3D12_COMMAND_LIST_TYPE.D3D12_COMMAND_LIST_TYPE_COPY ? BarrierLayout.Common : BarrierLayout.CopySource, force: true);

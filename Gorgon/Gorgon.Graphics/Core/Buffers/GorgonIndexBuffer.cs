@@ -57,7 +57,6 @@ namespace Gorgon.Graphics.Core;
 /// The index buffer can consist of indices that are 32 bits wide, or 16 bits wide. The smaller data size means less overhead, but a reduced mesh size (32 bit can address 4,294,967,296 vertices, while 16 
 /// bit can only address 65536 vertices). The type of data is specified upon creation of the buffer.
 /// </para>
-/// <inheritdoc cref="GorgonGpuBuffer" path="/remarks/para[@type='BufferUsage']"/>
 /// <para>
 /// <h3>Why a separate buffer type?</h3>
 /// </para>
@@ -74,13 +73,12 @@ namespace Gorgon.Graphics.Core;
 /// <seealso cref="GorgonVideoAdapterInfo"/>
 /// <seealso cref="GorgonGpuBufferInfo"/>
 /// <seealso cref="GorgonGpuBuffer"/>
-/// <seealso cref="BufferUsage"/>
 public sealed unsafe class GorgonIndexBuffer
     : GorgonGpuBufferCommon, IGorgonIndexBufferInfo
 {
     private ComPtr<D3D12MA_Allocation> _bufferAllocation;
 
-    private CpuBufferAllocation _uploadAllocation = CpuBufferAllocation.Null;
+    private D3D12_RESOURCE_DESC1 _d3dDesc;
     private readonly GorgonIndexBufferInfo _info;
 
     /// <inheritdoc/>
@@ -91,15 +89,6 @@ public sealed unsafe class GorgonIndexBuffer
 
     /// <inheritdoc cref="IGorgonIndexBufferInfo.Use32BitIndices"/>
     public bool Use32BitIndices => _info.Use32BitIndices;
-
-    /// <inheritdoc/>
-    private protected override void ValidateInfo()
-    {
-        if (SizeInBytes < (_info.Use32BitIndices ? 4 : 2))
-        {
-            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_BUFFER_TOO_SMALL, Name, (_info.Use32BitIndices ? 4 : 2)));
-        }
-    }
 
     /// <inheritdoc/>
     private protected sealed override void Dispose(bool disposing)
@@ -114,58 +103,38 @@ public sealed unsafe class GorgonIndexBuffer
         base.Dispose(disposing);
     }
 
+    /// <inheritdoc/>
+    private protected override void ValidateInfo()
+    {
+        if (SizeInBytes < (_info.Use32BitIndices ? 4 : 2))
+        {
+            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_BUFFER_TOO_SMALL, Name, (_info.Use32BitIndices ? 4 : 2)));
+        }
+    }
+
     /// <summary>
     /// Function to create the native backing resources for the buffer.
     /// </summary>
     private void CreateNative()
     {
-        switch (Usage)
-        {
-            case BufferUsage.DynamicPerFrame:
-            case BufferUsage.Default:
-                {
-                    using ComPtr<ID3D12Resource2> resource = default;
-                    D3D12_RESOURCE_DESC1 desc = D3D12_RESOURCE_DESC1.Buffer((ulong)SizeInBytes);
-                    D3D12MA_ALLOCATION_DESC allocDesc = new(D3D12_HEAP_TYPE.D3D12_HEAP_TYPE_DEFAULT);
+        using ComPtr<ID3D12Resource2> resource = default;
+        D3D12_RESOURCE_DESC1 desc = D3D12_RESOURCE_DESC1.Buffer((ulong)SizeInBytes);
+        D3D12MA_ALLOCATION_DESC allocDesc = new(D3D12_HEAP_TYPE.D3D12_HEAP_TYPE_DEFAULT);
 
-                    Graphics.Allocator.Get()->CreateResource3(&allocDesc, &desc, D3D12_BARRIER_LAYOUT.D3D12_BARRIER_LAYOUT_UNDEFINED,
-                        null, 0, null,
-                        _bufferAllocation.GetAddressOf(), Win32.__uuidof<ID3D12Resource2>(), (void**)resource.GetAddressOf())
-                        .ThrowIfFailed(GorgonResult.CannotCreate, () => string.Format(Resources.GORGFX_ERR_CANNOT_CREATE_RESOURCE));
+        Graphics.Allocator.Get()->CreateResource3(&allocDesc, &desc, D3D12_BARRIER_LAYOUT.D3D12_BARRIER_LAYOUT_UNDEFINED,
+            null, 0, null,
+            _bufferAllocation.GetAddressOf(), Win32.__uuidof<ID3D12Resource2>(), (void**)resource.GetAddressOf())
+            .ThrowIfFailed(GorgonResult.CannotCreate, () => string.Format(Resources.GORGFX_ERR_CANNOT_CREATE_RESOURCE));
 
-                    SetResource(in resource);
-                }
-                break;
-            default:
-                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_BUFFER_USAGE_UNKNOWN, Usage, Name));
-        }
+        resource.SetD3DDebugName(Name);
+
+        _d3dDesc = desc;
+
+        AssignResource(in resource);
     }
 
     /// <inheritdoc/>
-    private protected override void OnGetResourceInfo(out GpuResourceInfo resourceInfo)
-    {
-        D3D12_RESOURCE_DESC1 desc = D3DResource.Get()->GetDesc1();
-        desc.Width = (ulong)SizeInBytes;
-        // Index buffers don't need an alignment.
-        desc.Alignment = 0;
-        resourceInfo = GpuResourceInfo.FromD3D(in desc);
-    }
-
-    /// <summary>
-    /// Function to return the transient upload buffer for a dynamic buffer.
-    /// </summary>
-    /// <returns>A read only reference to the CPU buffer allocation backing this dynamic buffer.</returns>
-    internal override ref readonly CpuBufferAllocation GetTransientBufferData()
-    {
-        if (!_uploadAllocation.IsAvailable)
-        {
-            Graphics.UploadHeaps.Allocate((ulong)SizeInBytes, 0, out _uploadAllocation);
-        }
-
-        Debug.Assert(_uploadAllocation.IsAvailable, $"Upload heap for dynamic buffer '{Name}' is no longer valid.");
-
-        return ref _uploadAllocation;
-    }
+    private protected override void OnGetResourceInfo(out GpuResourceInfo resourceInfo) => resourceInfo = GpuResourceInfo.FromD3D(in _d3dDesc);
 
     /// <summary>
     /// Finalizer.
@@ -188,14 +157,8 @@ public sealed unsafe class GorgonIndexBuffer
     /// Most buffers will require a minimum <see cref="GorgonCommonBufferInfo.SizeInBytes"/> of 1 byte. However, some views will require the buffer have a specific minimum size (e.g. constant buffers must be at 
     /// least 256 bytes, render target views must be at least the size of a <see cref="BufferFormat"/> format size, etc...).  
     /// </para>
-    /// <para>
-    /// The <paramref name="info"/> also contains a <see cref="GorgonCommonBufferInfo.Usage"/> flag which indicates how often the data can be updated in a buffer. Below is a description of how to use the usage 
-    /// flags with a buffer.
-    /// <inheritdoc cref="IGorgonCommonBufferInfo.Usage" path="/remarks/para/list"/>
-    /// </para>
     /// </remarks>
     /// <seealso cref="GorgonGpuBufferInfo"/>
-    /// <seealso cref="BufferUsage"/>
     public GorgonIndexBuffer(GorgonGraphics graphics, string name, GorgonIndexBufferInfo info)
         : base(graphics, name, info)
     {

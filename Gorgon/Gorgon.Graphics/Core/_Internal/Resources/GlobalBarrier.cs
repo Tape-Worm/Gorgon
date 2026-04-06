@@ -37,9 +37,9 @@ namespace Gorgon.Graphics.Core;
 internal struct GlobalBarrier(BarrierSync sync, BarrierAccess access, BarrierLayout layout)
 {
     /// <summary>
-    /// Empty barrier state.
+    /// Default barrier state.
     /// </summary>
-    public static readonly GlobalBarrier Empty = new(BarrierSync.None, BarrierAccess.None, BarrierLayout.None);
+    public static readonly GlobalBarrier Default = new(BarrierSync.None, BarrierAccess.None, BarrierLayout.None);
 
     /// <summary>
     /// The access state for the resource.

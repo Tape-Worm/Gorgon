@@ -30,19 +30,18 @@ namespace Gorgon.Graphics.Core;
 /// Settings used for creating a <see cref="GorgonGpuBuffer"/>.
 /// </summary>
 /// <param name="SizeInBytes">The size of the buffer, in bytes.</param>
-/// <param name="Usage">The intended usage for the buffer.</param>
 /// <remarks>
 /// <para>
 /// The <paramref name="SizeInBytes"/> parameter must be greater than 0.
 /// </para>
 /// </remarks>
-public record class GorgonGpuBufferInfo(long SizeInBytes, BufferUsage Usage)
-    : GorgonCommonBufferInfo(SizeInBytes, Usage)
+public record class GorgonGpuBufferInfo(long SizeInBytes)
+    : GorgonCommonBufferInfo(SizeInBytes)
 {
     /// <summary>
     /// An empty instance of the <see cref="GorgonGpuBuffer"/> type.
     /// </summary>
-    public static readonly GorgonGpuBufferInfo Empty = new(0, BufferUsage.Default);
+    public static readonly GorgonGpuBufferInfo Empty = new(0);
 
     /// <summary>
     /// <inheritdoc cref="IGorgonGpuBufferInfo.Alignment"/>
@@ -80,7 +79,7 @@ public record class GorgonGpuBufferInfo(long SizeInBytes, BufferUsage Usage)
     /// </summary>
     /// <param name="info">The buffer creation information to copy.</param>
     public GorgonGpuBufferInfo(IGorgonGpuBufferInfo info)
-        : this(info.SizeInBytes, info.Usage)
+        : this(info.SizeInBytes)
     {
         IsUnorderedAccess = info.IsUnorderedAccess;
         Alignment = info.Alignment;

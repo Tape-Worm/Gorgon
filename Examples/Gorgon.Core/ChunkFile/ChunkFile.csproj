@@ -43,12 +43,12 @@
     <AvaloniaResource Include="Gorgon2.ico" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="11.3.12" />
-    <PackageReference Include="Avalonia.Desktop" Version="11.3.12" />
-    <PackageReference Include="Avalonia.Diagnostics" Version="11.3.12" />
-    <PackageReference Include="Avalonia.Markup.Xaml.Loader" Version="11.3.12" />
-    <PackageReference Include="Avalonia.Native" Version="11.3.12" />
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.12" />
+    <PackageReference Include="Avalonia" Version="11.3.13" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.3.13" />
+    <PackageReference Include="Avalonia.Diagnostics" Version="11.3.13" />
+    <PackageReference Include="Avalonia.Markup.Xaml.Loader" Version="11.3.13" />
+    <PackageReference Include="Avalonia.Native" Version="11.3.13" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.13" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="10.0.5" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.5" />
     <PackageReference Include="Microsoft.SourceLink.GitHub">
@@ -56,7 +56,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="ReactiveUI" Version="23.1.8" />
+    <PackageReference Include="ReactiveUI" Version="23.2.1" />
     <PackageReference Include="ReactiveUI.Avalonia" Version="11.4.12" />
     <ProjectReference Include="..\..\..\Gorgon\Gorgon.Core\Gorgon.Core.csproj" />
   </ItemGroup>

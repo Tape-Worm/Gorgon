@@ -146,11 +146,6 @@ public unsafe sealed class GorgonConstantBufferView
     /// This is a convenience method used to create a <see cref="GorgonGpuBuffer"/> and an associated <see cref="GorgonConstantBufferView"/>. 
     /// </para>
     /// <para>
-    /// The <see cref="IGorgonCommonBufferInfo.Usage"/> value on the <paramref name="bufferInfo"/> parameter can be one of <see cref="BufferUsage.Default"/>, or <see cref="BufferUsage.DynamicPerFrame"/>. 
-    /// These usages correspond to update frequency of the underlying buffer. 
-    /// <inheritdoc cref="IGorgonCommonBufferInfo.Usage" path="/remarks/para/list"/>
-    /// </para>
-    /// <para>
     /// The <see cref="IGorgonCommonBufferInfo.SizeInBytes"/> on the <paramref name="bufferInfo"/> parameter must be aligned to the nearest 256 bytes. If it is not, then this method will automatically create 
     /// the buffer with a size that is aligned to the nearest 256 bytes.
     /// </para>
@@ -166,7 +161,6 @@ public unsafe sealed class GorgonConstantBufferView
     /// </para>
     /// </remarks>
     /// <seealso cref="GorgonGpuBuffer"/>
-    /// <seealso cref="BufferUsage"/>
     public static GorgonConstantBufferView CreateConstantBuffer(GorgonGraphics graphics, string name, GorgonGpuBufferInfo bufferInfo)
     {
         if ((bufferInfo.IsUnorderedAccess) || (bufferInfo.Alignment == 0) || ((bufferInfo.Alignment % AlignmentRequirement) != 0))

@@ -131,9 +131,14 @@ public abstract unsafe class GorgonGpuResource
     /// Property to return the unique ID for this resource.
     /// </summary>
     /// <remarks>
+    /// <para>
+    /// If the resource belongs to the <see cref="MegaBuffer"/>, then this value <b>always</b> returns 0. 0 is a reserved ID for the mega buffer resource.
+    /// </para>
+    /// <para>
     /// <note type="warning">
     /// This ID is for the lifetime of the application. It is not guaranteed to be consistent between application restarts. This makes it unusable as a external unique identifer.
     /// </note>
+    /// </para>
     /// </remarks>
     internal ulong ResourceID
     {
@@ -144,6 +149,7 @@ public abstract unsafe class GorgonGpuResource
                 return 0;
             }
 
+            Debug.Assert(_resHandle != 0, "Resource ID handle is 0, this is a reserved value.");
             return _resHandle;
         }
     }
@@ -192,59 +198,26 @@ public abstract unsafe class GorgonGpuResource
     }
 
     /// <summary>
-    /// Function to build the native D3D 12 resource object.
-    /// </summary>
-    /// <param name="desc">The description of the D3D 12 resource.</param>
-    /// <returns>The COM pointer to the D3D 12 resource object.</returns>
-    /// <remarks>
-    /// <para>
-    /// Objects that inherit this type must implement this method and call <see cref="CreateNative_OLDE"/> in the implementing object constructor to create any native backing resources. Otherwise, the object will 
-    /// have no backing native object to work with and this can lead to undefined behaviour.
-    /// </para>
-    /// </remarks>
-    private protected abstract ComPtr<ID3D12Resource2> OnCreateNative(out D3D12_RESOURCE_DESC1 desc);
-
-    /// <summary>
     /// Function to retrieve information about the underlying resource.
     /// </summary>
     /// <param name="resourceInfo">The data structure to populate.</param>
     private protected abstract void OnGetResourceInfo(out GpuResourceInfo resourceInfo);
 
     /// <summary>
-    /// Function to create the native backing objects for this resource.
-    /// </summary>
-    /// <remarks>
-    /// <para>
-    /// Objects that inherit this type <b>MUST</b> call this method to enforce creation of the object's backing native objects. Failure to do so will result in a broken object that may cause undefined 
-    /// behaviour. 
-    /// </para>
-    /// </remarks>
-    [MethodImpl(MethodImplOptions.AggressiveInlining), Obsolete("This is kinda painful and I do not like it.")]
-    private protected void CreateNative_OLDE()
-    {
-        // If a resource is already in place, destroy it.
-        _d3dResource.Dispose();
-        
-        _d3dResource = OnCreateNative(out D3D12_RESOURCE_DESC1 desc);        
-
-        _info = GpuResourceInfo.FromD3D(in desc);
-    }
-
-    /// <summary>
     /// Function to assign the D3D 12 resource object to this resource.
     /// </summary>
     /// <param name="resource">The resource to assign.</param>
-    private protected void SetResource(ref readonly ComPtr<ID3D12Resource2> resource)
+    private protected void AssignResource(ref readonly ComPtr<ID3D12Resource2> resource)
     {
         _d3dResource.Dispose();
 
-        // This will addref.
         if (resource.IsNull)
         {
             _info = default;
             return;
         }
 
+        // This will addref.
         _d3dResource = new ComPtr<ID3D12Resource2>(resource);
 
         OnGetResourceInfo(out _info);
@@ -284,6 +257,7 @@ public abstract unsafe class GorgonGpuResource
         _info = GpuResourceInfo.FromD3D(in desc);
 
         _resHandle = Interlocked.Increment(ref _resHandleAccumulator);
+        Debug.Assert(_resHandle != 0, "Resource ID handle is 0, this is a reserved value.");
     }
 
     /// <summary>
@@ -302,5 +276,6 @@ public abstract unsafe class GorgonGpuResource
         Name = GorgonGraphicsFactory.GenerateName(name, nameof(GorgonGpuResource));
 
         _resHandle = Interlocked.Increment(ref _resHandleAccumulator);
-    }    
+        Debug.Assert(_resHandle != 0, "Resource ID handle is 0, this is a reserved value.");
+    }
 }

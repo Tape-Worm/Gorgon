@@ -140,6 +140,11 @@ public unsafe sealed class GorgonGraphics
     : IDisposable
 {
     /// <summary>
+    /// The maximum time to wait for a fence to be signalled, in milliseconds.
+    /// </summary>
+    internal const int WaitFenceTimeout = 10_000;
+
+    /// <summary>
     /// The maximum number of slots for root constant buffer values.
     /// </summary>
     public const int MaxRootConstantCount = 16;
@@ -149,7 +154,8 @@ public unsafe sealed class GorgonGraphics
     private ComPtr<ID3D12Device14> _d3dDevice;
     private ComPtr<ID3D12InfoQueue1> _d3dInfoQueue;
     private ComPtr<D3D12MA_Allocator> _allocator;
-    
+    private ComPtr<ID3D12RootSignature> _rootSignature;
+
     private readonly GorgonGraphicsFactory _parentFactory;
     private readonly GorgonGraphicsDebug? _debug;
     private readonly Dictionary<BufferFormat, GorgonBufferFormatSupport> _formatSupport = [];
@@ -163,85 +169,11 @@ public unsafe sealed class GorgonGraphics
     private readonly ConcurrentBag<GorgonCommandList> _submittedLists = [];
     private readonly Lock _submitLock = new();
 
-    #region Temporary - Delete me.
-    private ComPtr<ID3D12RootSignature> _root;
+    #region Temporary - Delete me.    
     private ComPtr<ID3D12PipelineState> _pso;
 
     [Obsolete("This is temporary.")]
-    internal ref readonly ComPtr<ID3D12RootSignature> RootSig => ref _root;
-
-    [Obsolete("This is temporary.")]
     internal ref readonly ComPtr<ID3D12PipelineState> Pso => ref _pso;
-
-    [Obsolete("This is temporary.")]
-    private void CreateRoot()
-    {
-        if (!_root.IsNull)
-        {
-            return;
-        }
-
-        ComPtr<ID3D12DeviceConfiguration1> devConfig = default;
-        D3D12_VERSIONED_ROOT_SIGNATURE_DESC rootDesc = default;
-
-        using ComPtr<ID3DBlob> serialized = default;
-        using ComPtr<ID3DBlob> errors = default;
-
-        try
-        {
-            D3D12_ROOT_PARAMETER1* paramList = stackalloc D3D12_ROOT_PARAMETER1[MaxRootConstantCount + 3];
-
-            for (uint i = 0; i < MaxRootConstantCount; ++i)
-            {
-                paramList[i].InitAsConstantBufferView(i);
-            }
-
-            D3D12_DESCRIPTOR_RANGE1 r0 = new(D3D12_DESCRIPTOR_RANGE_TYPE.D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
-            D3D12_DESCRIPTOR_RANGE1 r1 = new(D3D12_DESCRIPTOR_RANGE_TYPE.D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 1, 0);
-            D3D12_DESCRIPTOR_RANGE1 r2 = new(D3D12_DESCRIPTOR_RANGE_TYPE.D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 18, flags: D3D12_DESCRIPTOR_RANGE_FLAGS.D3D12_DESCRIPTOR_RANGE_FLAG_DESCRIPTORS_VOLATILE
-                | D3D12_DESCRIPTOR_RANGE_FLAGS.D3D12_DESCRIPTOR_RANGE_FLAG_DATA_VOLATILE);            
-
-            paramList[16].InitAsDescriptorTable(1, &r0);
-            paramList[17].InitAsDescriptorTable(1, &r1);
-            paramList[18].InitAsDescriptorTable(1, &r2);
-
-            D3D12_VERSIONED_ROOT_SIGNATURE_DESC.Init_1_2(ref rootDesc, MaxRootConstantCount + 3, paramList, 0, null,
-            //    D3D12_ROOT_SIGNATURE_FLAGS.D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT
-            D3D12_ROOT_SIGNATURE_FLAGS.D3D12_ROOT_SIGNATURE_FLAG_CBV_SRV_UAV_HEAP_DIRECTLY_INDEXED);
-            //| D3D12_ROOT_SIGNATURE_FLAGS.D3D12_ROOT_SIGNATURE_FLAG_SAMPLER_HEAP_DIRECTLY_INDEXED);
-
-            Log.Print("TEMPORARY - Creating D3D 12 root signature...", LoggingLevel.Verbose);
-
-            _d3dDevice.As(ref devConfig);
-
-            HRESULT err = devConfig.Get()->SerializeVersionedRootSignature(&rootDesc, serialized.GetAddressOf(), errors.GetAddressOf());
-
-            if ((err.FAILED) || (serialized.IsNull))
-            {
-                string exceptionText;
-
-                if (errors.Get() is not null)
-                {
-                    byte* errorData = (byte*)errors.Get()->GetBufferPointer();
-                    exceptionText = Encoding.ASCII.GetString(errorData, (int)errors.Get()->GetBufferSize());
-                }
-                else
-                {
-                    Log.PrintError($"Error creating the root signature, HRESULT code = 0x{err.Value:x}. No error message was returned.", LoggingLevel.Simple);
-                    exceptionText = $"Error code: 0x{err.Value:x}";
-                }
-
-                throw new GorgonException(GorgonResult.CannotCreate, $"Root Error data: {exceptionText}");
-            }
-
-            _d3dDevice.Get()->CreateRootSignature(0, serialized.Get()->GetBufferPointer(), serialized.Get()->GetBufferSize(), Win32.__uuidof<ID3D12RootSignature>(), (void**)_root.GetAddressOf());
-
-        }
-        finally
-        {
-            devConfig.Dispose();
-        }
-    }
 
     [Obsolete("This is temporary.")]
     private void CreatePso(GorgonShader vertexShader, GorgonShader pixelShader)
@@ -289,12 +221,7 @@ public unsafe sealed class GorgonGraphics
             */
             D3D12_GRAPHICS_PIPELINE_STATE_DESC desc = new()
             {
-                /*InputLayout = new D3D12_INPUT_LAYOUT_DESC
-                {
-                    pInputElementDescs = iaDesc,
-                    NumElements = 3,
-                },*/
-                pRootSignature = _root.Get(),
+                pRootSignature = _rootSignature.Get(),
                 VS = new D3D12_SHADER_BYTECODE(vsPtr, (nuint)vertexShader.ShaderData.Length),
                 PS = new D3D12_SHADER_BYTECODE(psPtr, (nuint)pixelShader.ShaderData.Length),
                 RasterizerState = D3D12_RASTERIZER_DESC.DEFAULT,
@@ -331,7 +258,6 @@ public unsafe sealed class GorgonGraphics
     private void DestroyTempStuff()
     {
         _pso.Dispose();
-        _root.Dispose();
     }
 
     /// <summary>
@@ -342,7 +268,6 @@ public unsafe sealed class GorgonGraphics
     [Obsolete("This is temporary.")]
     public void CreateScaffoldingForTesting(GorgonShader vertexShader, GorgonShader pixelShader)
     {
-        CreateRoot();
         CreatePso(vertexShader, pixelShader);
     }
     #endregion
@@ -511,7 +436,7 @@ public unsafe sealed class GorgonGraphics
             FinalizeFrame();
 
             // Let the GPU finish whatever it's doing.
-            WaitForGpu(5000);
+            WaitForGpu(WaitFenceTimeout);
 
             if (_debug is not null)
             {
@@ -543,6 +468,7 @@ public unsafe sealed class GorgonGraphics
 
         DestroyTempStuff();
 
+        _rootSignature.Dispose();
         _allocator.Dispose();
         _d3dInfoQueue.Dispose();
         _d3dDevice.Dispose();
@@ -595,6 +521,24 @@ public unsafe sealed class GorgonGraphics
             Log.PrintWarning(err, $"Unable to retrieve the {nameof(ID3D12InfoQueue1)} object. Debugging information will be limited.", LoggingLevel.Intermediate);
             return default;
         }
+
+        // Add any messages we want to ignore here:
+        D3D12_MESSAGE_ID* filters = stackalloc D3D12_MESSAGE_ID[1]
+        {
+            // We don't care if the clear colour isn't optimized.
+            D3D12_MESSAGE_ID.D3D12_MESSAGE_ID_CLEARRENDERTARGETVIEW_MISMATCHINGCLEARVALUE
+        };
+
+        D3D12_INFO_QUEUE_FILTER filter = new()
+        {
+            DenyList = new D3D12_INFO_QUEUE_FILTER_DESC()
+            {
+                NumIDs = 1,
+                pIDList = filters
+            }
+        };
+
+        result.Get()->AddStorageFilterEntries(&filter);
 
         return result;
     }
@@ -903,6 +847,62 @@ public unsafe sealed class GorgonGraphics
             scope.Dispose();
         }
     }
+
+    /// <summary>
+    /// Function to create a global root signature for Gorgon.
+    /// </summary>
+    /// <returns>The COM pointer to the root signature.</returns>
+    /// <exception cref="GorgonException">Thrown if the root signature failed to create.</exception>
+    private ComPtr<ID3D12RootSignature> CreateRootSignature()
+    {
+        D3D12_VERSIONED_ROOT_SIGNATURE_DESC rootDesc = default;
+
+        using ComPtr<ID3D12DeviceConfiguration1> devConfig = default;
+        using ComPtr<ID3DBlob> serialized = default;
+        using ComPtr<ID3DBlob> errors = default;
+        ComPtr<ID3D12RootSignature> result = default;
+
+        D3D12_ROOT_PARAMETER1* paramList = stackalloc D3D12_ROOT_PARAMETER1[MaxRootConstantCount];
+
+        for (uint i = 0; i < MaxRootConstantCount; ++i)
+        {
+            paramList[i].InitAsConstantBufferView(i);
+        }
+
+        D3D12_VERSIONED_ROOT_SIGNATURE_DESC.Init_1_2(ref rootDesc, MaxRootConstantCount, paramList, 0, null,
+                                                     D3D12_ROOT_SIGNATURE_FLAGS.D3D12_ROOT_SIGNATURE_FLAG_CBV_SRV_UAV_HEAP_DIRECTLY_INDEXED
+                                                   | D3D12_ROOT_SIGNATURE_FLAGS.D3D12_ROOT_SIGNATURE_FLAG_SAMPLER_HEAP_DIRECTLY_INDEXED);
+
+        Log.Print("Creating Gorgon D3D 12 global bindless root signature...", LoggingLevel.Verbose);
+
+        _d3dDevice.As(&devConfig)
+            .ThrowIfFailed((hr) => new InvalidCastException(null, hr));
+
+        HRESULT err = devConfig.Get()->SerializeVersionedRootSignature(&rootDesc, serialized.GetAddressOf(), errors.GetAddressOf());
+
+        if ((err.FAILED) || (serialized.IsNull))
+        {
+            string exceptionText;
+
+            if (errors.Get() is not null)
+            {
+                byte* errorData = (byte*)errors.Get()->GetBufferPointer();
+                exceptionText = Encoding.ASCII.GetString(errorData, (int)errors.Get()->GetBufferSize());
+            }
+            else
+            {
+                Log.PrintError($"Error creating the root signature, HRESULT code = 0x{err.Value:x}. No error message was returned.", LoggingLevel.Simple);
+                exceptionText = $"HRESULT: 0x{err.Value:x}";
+            }
+
+            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_CANNOT_CREATE_ROOT, exceptionText));
+        }
+            
+        _d3dDevice.Get()->CreateRootSignature(0, serialized.Get()->GetBufferPointer(), serialized.Get()->GetBufferSize(), Win32.__uuidof<ID3D12RootSignature>(), (void**)result.GetAddressOf());
+
+        return result;
+    }
+
     /// <summary>
     /// Function to initialize a new texture with 0 values.
     /// </summary>
@@ -915,8 +915,9 @@ public unsafe sealed class GorgonGraphics
     internal void InitializeTexture(GorgonTexture texture)
     {
         UploadHeaps.Allocate((ulong)texture.SizeInBytes, texture.Info.Alignment, out CpuBufferAllocation allocation);
-
         Debug.Assert(allocation.IsAvailable, $"Could not allocate upload memory for texture '{texture.Name}'");
+
+        GraphicsQueue.Tracker.TrackResource(allocation.Heap.D3DResource);
 
         NativeMemory.Fill(allocation.CpuPointer, (nuint)texture.SizeInBytes, 0);
 
@@ -943,14 +944,15 @@ public unsafe sealed class GorgonGraphics
             GraphicsQueue.Execute(list);
             ulong fence = GraphicsQueue.IncrementFence();
 
-            UploadHeaps.Signal();
-            GraphicsQueue.AllocatorPool.Signal();
-
-            GraphicsQueue.WaitForFence(fence, 30_000);
+            GraphicsQueue.WaitForFence(fence, WaitFenceTimeout);
         }
         finally
-        {            
-            GraphicsQueue.ListPool.Return(list);            
+        {
+
+            UploadHeaps.Signal();
+            GraphicsQueue.AllocatorPool.Signal();
+            GraphicsQueue.Tracker.Signal();
+            GraphicsQueue.ListPool.Return(list);
         }
     }
 
@@ -961,7 +963,7 @@ public unsafe sealed class GorgonGraphics
         GorgonTimer sw = new();
         // Wait for the GPU to finish whatever it's doing.
         // Give it 5 seconds, if we take longer than this, we're probably in trouble.
-        WaitForGpu(5_000);
+        WaitForGpu(WaitFenceTimeout);
         Log.Print($"GPU finished work in {sw.Elapsed}.", LoggingLevel.Intermediate);
 
         Log.Print("Shutting down graphics interface...", LoggingLevel.Simple);
@@ -1102,7 +1104,7 @@ public unsafe sealed class GorgonGraphics
         CommandAllocator allocator = GraphicsQueue.AllocatorPool.Get(commandListName);
         GorgonCommandList list = GraphicsQueue.ListPool.Get(commandListName, allocator);
 
-        list.BeginRecording(_currentFrame);
+        list.BeginRecording(_currentFrame, in _rootSignature);
 
         _commands.Add(new ComPtr<ID3D12CommandList>(list.D3DCommandList));
 
@@ -1225,18 +1227,17 @@ public unsafe sealed class GorgonGraphics
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GarbageCollect(bool forceDotNetGc = false)
     {
-        WaitForGpu(10_000);
+        WaitForGpu(WaitFenceTimeout);
+
+        CopyQueue.GarbageCollect();
+        ComputeQueue.GarbageCollect();
+        GraphicsQueue.GarbageCollect();
 
         MegaBuffer.GarbageCollect();
         UploadHeaps.GarbageCollect();
         DownloadHeaps.GarbageCollect();
         RtvDescriptors.GarbageCollect();
         DsvDescriptors.GarbageCollect();
-        GpuSamplerDescriptors.Signal();
-        GpuViewDescriptors.Signal();
-        CopyQueue.GarbageCollect();
-        ComputeQueue.GarbageCollect();
-        GraphicsQueue.GarbageCollect();
 
         if (!forceDotNetGc)
         {
@@ -1301,5 +1302,7 @@ public unsafe sealed class GorgonGraphics
         
         RtvDescriptors = new CpuDescriptorHeapPool(this, D3D12_DESCRIPTOR_HEAP_TYPE.D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
         DsvDescriptors = new CpuDescriptorHeapPool(this, D3D12_DESCRIPTOR_HEAP_TYPE.D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
+
+        _rootSignature = CreateRootSignature();
     }
 }

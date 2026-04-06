@@ -39,8 +39,6 @@ using Win32 = TerraFX.Interop.Windows.Windows;
 
 namespace Gorgon.Graphics.Core;
 
-#pragma warning disable CA1067 // Override Object.Equals(object) when implementing IEquatable<T>. We don't need this, we're using IEquatable<T> to satisfy a generic constraint.
-
 /// <summary>
 /// A view for a texture resource.
 /// </summary>
@@ -50,25 +48,34 @@ namespace Gorgon.Graphics.Core;
 /// </para>
 /// </remarks>
 public unsafe sealed class GorgonTextureView
-    : GorgonShaderResourceView, IGorgonImageInfo, IEquatable<GorgonTextureView?>
+    : GorgonResourceView
 {
-    private GpuDescriptorAllocation _allocation;
-    private readonly IGorgonImageInfo _textureImageInfo;
+    private GpuDescriptorAllocation _allocation = GpuDescriptorAllocation.Null;
 
     /// <summary>
-    /// Property to return the texture associated with this view.
+    /// Property to return the texture used by this view.
     /// </summary>
-    /// <remarks>
-    /// This value is a strongly typed version of the <see cref="GorgonResourceView.Resource"/> property and point to the same object.
-    /// </remarks>
     public GorgonTexture Texture
     {
         get;
     }
 
     /// <summary>
-    /// Property to return the first map level in the view.
+    /// Property to return the format for the view.
     /// </summary>
+    public BufferFormat Format
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the first mip level in the view.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The <see cref="MinimumLodClamp"/> value should be set to zero if this value is non-zero.
+    /// </para>
+    /// </remarks>
     public short MipLevel
     {
         get;
@@ -83,12 +90,14 @@ public unsafe sealed class GorgonTextureView
     }
 
     /// <summary>
-    /// Property to return the first array index in the view.
+    /// Property to return the first array index within the buffer to start the view at.
     /// </summary>
     /// <remarks>
-    /// This only applies to views attached to a <see cref="GraphicsResourceType.Texture1D"/> or <see cref="GraphicsResourceType.Texture2D"/> resource with multiple array indices. For all other types this 
-    /// will return 0.
+    /// <para>
+    /// This value only applies to textures that have a <see cref="GorgonTexture.Type"/> of <see cref="TextureType.Texture1D"/>, or <see cref="TextureType.Texture2D"/>.
+    /// </para>
     /// </remarks>
+    /// <seealso cref="TextureType"/>
     public short ArrayIndex
     {
         get;
@@ -98,66 +107,38 @@ public unsafe sealed class GorgonTextureView
     /// Property to return the number of array indices in the view.
     /// </summary>
     /// <remarks>
-    /// This only applies to views attached to a <see cref="GraphicsResourceType.Texture1D"/> or <see cref="GraphicsResourceType.Texture2D"/> resource with multiple array indices. For all other types this 
-    /// will return 1.
+    /// <para>
+    /// This value only applies to textures that have a <see cref="GorgonTexture.Type"/> of <see cref="TextureType.Texture1D"/>, or <see cref="TextureType.Texture2D"/>.
+    /// </para>
     /// </remarks>
+    /// <seealso cref="TextureType"/>
     public short ArrayCount
-    {
-        get;
-    } = 1;
-
-    /// <summary>
-    /// Property to return the minimum mip level that can be accessed.
-    /// </summary>
-    /// <remarks>
-    /// <para>
-    /// Specifying 0.0f means that all mip levels can be accessed, while specifying 3.0f indicates that all levels from 3.0f up to <see cref="MipCount"/> are accessible.
-    /// </para>
-    /// <para>
-    /// It is not recommended to set this value and <see cref="MipLevel"/> at the same time. Use one or the other.
-    /// </para>
-    /// </remarks>
-    public float ResourceMinimumLODClamp
     {
         get;
     }
 
-    /// <inheritdoc/>
-    ImageDataType IGorgonImageInfo.ImageType => _textureImageInfo.ImageType;
-
-    /// <inheritdoc/>
-    int IGorgonImageInfo.Width => Texture.GetMipWidth(MipLevel);
-
-    /// <inheritdoc/>
-    int IGorgonImageInfo.Height => Texture.GetMipHeight(MipLevel);
-
-    /// <inheritdoc/>
-    int IGorgonImageInfo.Depth => Texture.GetMipDepth(MipLevel);
-
-    /// <inheritdoc/>
-    BufferFormat IGorgonImageInfo.Format => Format;
-
-    /// <inheritdoc/>
-    bool IGorgonImageInfo.HasPremultipliedAlpha => _textureImageInfo.HasPremultipliedAlpha;
-
-    /// <inheritdoc/>
-    int IGorgonImageInfo.MipCount => 1;
-
-    /// <inheritdoc/>
-    bool IGorgonImageInfo.IsPowerOfTwo => _textureImageInfo.IsPowerOfTwo;
-
-    /// <inheritdoc/>
-    int IGorgonImageInfo.ArrayCount => ArrayCount;
-
-    /// <inheritdoc/>
-    private protected override void Dispose(bool disposing)
+    /// <summary>
+    /// Property to return the minimum LOD clamp that can be accessed by the view.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// A value of 0 indicates that the entire mip chain is accessible, specifying 3.0f means that mip map levels from 3.0 to <see cref="GorgonTexture.MipCount"/><c>-1</c> are accessible.
+    /// </para>
+    /// <para>
+    /// The <see cref="MipLevel"/> value should be set to zero if this value is non-zero.
+    /// </para>
+    /// </remarks>
+    public float MinimumLodClamp
     {
-        if (disposing)
-        {
-            this.UnregisterDisposable(Graphics);
-        }
+        get;
+    }
 
-        base.Dispose(disposing);
+    /// <summary>
+    /// Property to return the the index of the plane in a planar format to use in the view.
+    /// </summary>
+    public byte PlaneIndex
+    {
+        get;
     }
 
     /// <summary>
@@ -180,10 +161,10 @@ public unsafe sealed class GorgonTextureView
 
             if (cubeCount > 1)
             {
-                return D3D12_SHADER_RESOURCE_VIEW_DESC.TexCubeArray((DXGI_FORMAT)Format, cubeCount, (uint)MipCount, (uint)ArrayIndex, (uint)MipLevel, ResourceMinimumLODClamp, D3D12.D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING);
+                return D3D12_SHADER_RESOURCE_VIEW_DESC.TexCubeArray((DXGI_FORMAT)Format, cubeCount, (uint)MipCount, (uint)ArrayIndex, (uint)MipLevel, MinimumLodClamp, D3D12.D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING);
             }
 
-            return D3D12_SHADER_RESOURCE_VIEW_DESC.TexCube((DXGI_FORMAT)Format, (uint)MipCount, (uint)MipLevel, ResourceMinimumLODClamp, D3D12.D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING);
+            return D3D12_SHADER_RESOURCE_VIEW_DESC.TexCube((DXGI_FORMAT)Format, (uint)MipCount, (uint)MipLevel, MinimumLodClamp, D3D12.D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING);
         }
 
         if (isMultiSampled)
@@ -198,28 +179,30 @@ public unsafe sealed class GorgonTextureView
 
         if (isArray)
         {
-            return D3D12_SHADER_RESOURCE_VIEW_DESC.Tex2DArray((DXGI_FORMAT)Format, (uint)ArrayCount, (uint)MipCount, (uint)ArrayIndex, (uint)MipLevel, 0, ResourceMinimumLODClamp, D3D12.D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING);
+            return D3D12_SHADER_RESOURCE_VIEW_DESC.Tex2DArray((DXGI_FORMAT)Format, (uint)ArrayCount, (uint)MipCount, (uint)ArrayIndex, (uint)MipLevel, PlaneIndex, MinimumLodClamp, D3D12.D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING);
         }
 
-        return D3D12_SHADER_RESOURCE_VIEW_DESC.Tex2D((DXGI_FORMAT)Format, (uint)MipCount, (uint)MipLevel, 0, ResourceMinimumLODClamp, D3D12.D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING);
+        return D3D12_SHADER_RESOURCE_VIEW_DESC.Tex2D((DXGI_FORMAT)Format, (uint)MipCount, (uint)MipLevel, PlaneIndex, MinimumLodClamp, D3D12.D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING);
     }
 
-    /// <inheritdoc/>
-    private protected sealed override (D3D12_CPU_DESCRIPTOR_HANDLE CpuHandle, D3D12_GPU_DESCRIPTOR_HANDLE GpuHandle) OnCreateViewHandles()
+    /// <summary>
+    /// Function to allocate a view descriptor from the descriptor heap.
+    /// </summary>
+    private void AllocateDescriptors()
     {
         bool isMultiSampled = !Texture.MultisampleInfo.Equals(GorgonMultisampleInfo.NoMultisampling);
         bool isArray = Texture.ArrayCount > 1;
 
         D3D12_SHADER_RESOURCE_VIEW_DESC desc = Texture.Type switch
         {
-            TextureType.Texture1D => isArray ? D3D12_SHADER_RESOURCE_VIEW_DESC.Tex1DArray((DXGI_FORMAT)Format, (uint)ArrayCount, (uint)MipCount, (uint)ArrayIndex, (uint)MipLevel, ResourceMinimumLODClamp, D3D12.D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING)
-                                             : D3D12_SHADER_RESOURCE_VIEW_DESC.Tex1D((DXGI_FORMAT)Format, (uint)MipCount, (uint)MipLevel, ResourceMinimumLODClamp, D3D12.D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING),
+            TextureType.Texture1D => isArray ? D3D12_SHADER_RESOURCE_VIEW_DESC.Tex1DArray((DXGI_FORMAT)Format, (uint)ArrayCount, (uint)MipCount, (uint)ArrayIndex, (uint)MipLevel, MinimumLodClamp, D3D12.D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING)
+                                             : D3D12_SHADER_RESOURCE_VIEW_DESC.Tex1D((DXGI_FORMAT)Format, (uint)MipCount, (uint)MipLevel, MinimumLodClamp, D3D12.D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING),
             TextureType.Texture2D => Create2DDesc(isMultiSampled, isArray, Texture.IsCube),
-            TextureType.Texture3D => D3D12_SHADER_RESOURCE_VIEW_DESC.Tex3D((DXGI_FORMAT)Format, (uint)MipCount, (uint)MipLevel, ResourceMinimumLODClamp, D3D12.D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING),
+            TextureType.Texture3D => D3D12_SHADER_RESOURCE_VIEW_DESC.Tex3D((DXGI_FORMAT)Format, (uint)MipCount, (uint)MipLevel, MinimumLodClamp, D3D12.D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING),
             _ => throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_CANNOT_CREATE_VIEW_UNKNOWN_TYPE, Texture.Type))
         };
 
-        Graphics.Log.Print($"Allocating GPU/CPU handle for {Name}.", LoggingLevel.Verbose);
+        Graphics.Log.Print($"Allocating GPU/CPU handle for '{Name}'.", LoggingLevel.Verbose);
         Graphics.GpuViewDescriptors.Allocate(1, out _allocation);
 
         D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = Graphics.GpuViewDescriptors.D3DCpuHandle;
@@ -230,38 +213,66 @@ public unsafe sealed class GorgonTextureView
 
         Graphics.D3DDevice.Get()->CreateShaderResourceView((PID3D12Resource2)Resource.D3DResource.Get(), &desc, cpuHandle);
 
-        return (cpuHandle, gpuHandle);
+        SetHandles(cpuHandle, gpuHandle);
     }
 
     /// <inheritdoc/>
-    bool IEquatable<GorgonTextureView?>.Equals(GorgonTextureView? other) => ReferenceEquals(this, other);
+    private protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            if (!_allocation.Equals(GpuDescriptorAllocation.Null))
+            {
+                Graphics.Log.Print($"Freeing CPU descriptor handle allocation for '{Name}'.", LoggingLevel.Verbose);
+                Graphics.GpuViewDescriptors.Free(ref _allocation);
+                _allocation = GpuDescriptorAllocation.Null;
+            }
+        }
+
+        base.Dispose(disposing);
+    }
+
+    /// <summary>
+    /// Function to retrieve the handle of the view, which is used to pass to a shader for resource heap indexing.
+    /// </summary>
+    /// <returns>The handle of the view.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public int GetViewHandle()
+    {
+        if (_allocation.Equals(in GpuDescriptorAllocation.Null))
+        {
+            AllocateDescriptors();
+        }
+
+        return _allocation.Offset;
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonTextureView"/> class.
     /// </summary>
-    /// <param name="graphics"><inheritdoc cref="GorgonShaderResourceView(GorgonGraphics, string, GorgonGpuResource, BufferFormat, bool)" path="/param[@name='graphics']"/></param>
-    /// <param name="name"><inheritdoc cref="GorgonShaderResourceView(GorgonGraphics, string, GorgonGpuResource, BufferFormat, bool)" path="/param[@name='name']"/></param>
-    /// <param name="texture">The texture for the view.</param>
-    /// <param name="format"><inheritdoc cref="GorgonShaderResourceView(GorgonGraphics, string, GorgonGpuResource, BufferFormat, bool)" path="/param[@name='format']"/></param>
-    /// <param name="arrayIndex">The starting array index for the view.</param>
-    /// <param name="arrayCount">The number of array indices for the view.</param>
-    /// <param name="mipLevel">The starting mip level for the view.</param>
-    /// <param name="mipCount">The number of mip levels for the view.</param>
-    /// <param name="resourceMinLODClamp">The minimum mip level for the view.</param>
-    /// <param name="owned"><inheritdoc cref="GorgonShaderResourceView(GorgonGraphics, string, GorgonGpuResource, BufferFormat, bool)" path="/param[@name='owned']"/></param>
-    internal GorgonTextureView(GorgonGraphics graphics, string name, GorgonTexture texture, BufferFormat format, short arrayIndex, short arrayCount, short mipLevel, short mipCount, float resourceMinLODClamp, bool owned)
-        : base(graphics, name, texture, format, owned)
+    /// <param name="graphics"><inheritdoc cref="GorgonResourceView(GorgonGraphics, string, GorgonGpuResource, bool)" path="/param[@name='graphics']"/></param>
+    /// <param name="name"><inheritdoc cref="GorgonResourceView(GorgonGraphics, string, GorgonGpuResource, bool)" path="/param[@name='name']"/></param>
+    /// <param name="texture"><inheritdoc cref="GorgonResourceView(GorgonGraphics, string, GorgonGpuResource, bool)" path="/param[@name='resource']"/></param>
+    /// <param name="format">The format for the view.</param>
+    /// <param name="mipLevel">The first mip level to view.</param>
+    /// <param name="mipCount">The number of mip levels to view.</param>
+    /// <param name="arrayIndex">The first array index to view.</param>
+    /// <param name="arrayCount">The number of array indices to view.</param>
+    /// <param name="minLodClamp">The minimum LOD resource clamp.</param>
+    /// <param name="planeIndex">The index of the plane in a planar format.</param>
+    /// <param name="owned"><inheritdoc cref="GorgonResourceView(GorgonGraphics, string, GorgonGpuResource, bool)" path="/param[@name='owned']"/></param>
+    internal GorgonTextureView(GorgonGraphics graphics, string name, GorgonTexture texture, BufferFormat format, short mipLevel, short mipCount, short arrayIndex, short arrayCount, float minLodClamp, byte planeIndex, bool owned)
+        : base(graphics, $"{name} - Shader Resource View", texture, owned)
     {
-        _textureImageInfo = Texture = texture;
-
+        Texture = texture;
+        Format = format;
         MipLevel = mipLevel;
         MipCount = mipCount;
         ArrayIndex = arrayIndex;
         ArrayCount = arrayCount;
-        ResourceMinimumLODClamp = resourceMinLODClamp;
+        MinimumLodClamp = minLodClamp;
+        PlaneIndex = planeIndex;
 
-        this.RegisterDisposable(Graphics);
-
-        CreateNative();
+        AllocateDescriptors();
     }
 }

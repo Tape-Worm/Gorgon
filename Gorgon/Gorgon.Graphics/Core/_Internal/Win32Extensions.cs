@@ -35,6 +35,15 @@ namespace Gorgon.Graphics.Core;
 /// </summary>
 internal static class Win32Extensions
 {
+    extension(GorgonRectangle rect)
+    {
+        /// <summary>
+        /// Function to covnert a <see cref="GorgonViewport"/> to a D3D12_VIEWPORT type.
+        /// </summary>
+        /// <returns>The D3D12 viewport.</returns>
+        public RECT ToWin32Rect() => new(rect.Left, rect.Top, rect.Right, rect.Bottom);
+    }
+
     extension<T>(ComPtr<T> ptr) where T : unmanaged, IUnknown.Interface
     {
         /// <summary>

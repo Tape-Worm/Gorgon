@@ -58,40 +58,6 @@ namespace Gorgon.Graphics.Core;
 /// </para>
 /// </note>
 /// </para>
-/// <para type="BufferUsage">
-/// <para>
-/// The buffer can be used in two modes: <see cref="BufferUsage.Default"/> and <see cref="BufferUsage.DynamicPerFrame"/>. These modes indicate where the memory is stored for the buffer.
-/// </para>
-/// <para>
-/// <h3><see cref="BufferUsage.Default"/></h3>
-/// </para>
-/// <para>
-/// When in default mode, the buffer's memory is stored on the GPU and is inaccessible by the CPU. That is, the developer cannot write the memory directly. This has the effect of having extremely fast read 
-/// performance, but poor update performance and should be used in write once, read many scenarios.
-/// </para>
-/// <para>
-/// <h3><see cref="BufferUsage.DynamicPerFrame"/></h3>
-/// </para>
-/// <para>
-/// With this mode, the buffer can be updated from the CPU and copied through the PCIE bus and into GPU memory*. This allows decent performance when updating the buffer multiple times per frame. This mode is 
-/// similar to the old Direct3D 11 style "Dynamic Buffer" type. 
-/// </para>
-/// <para>
-/// <note type="warning">
-/// <para>
-/// <see cref="BufferUsage.DynamicPerFrame"/> is as the name suggests. Data uploaded to the buffer is only valid for the current frame. Use a <see cref="BufferUsage.Default"/> if you need data to persist for 
-/// more than a single frame.
-/// </para>
-/// </note>
-/// </para>
-/// <para>
-/// <i>
-/// * - If the GPU supports GPU Uploads and ReBar is enabled, then the copy is done directly into video memory. If Gorgon detects that the video adapter is GPU upload capable, it will use that mode as it 
-/// will provide better performance. To determine if your GPU has GPU upload capability, check the <see cref="GorgonVideoAdapterInfo.HasGpuUploadSupport"/> flag on the <see cref="GorgonVideoAdapterInfo"/> 
-/// type.
-/// </i>
-/// </para>
-/// </para>
 /// </remarks>
 /// <seealso cref="GorgonVideoAdapterInfo"/>
 /// <seealso cref="GorgonGpuBufferInfo"/>
@@ -100,7 +66,6 @@ namespace Gorgon.Graphics.Core;
 /// <seealso cref="GorgonStructuredBufferView"/>
 /// <seealso cref="GorgonCommandList"/>
 /// <seealso cref="GorgonCommandList.WriteConstant{T}(int, in T)"/>
-/// <seealso cref="BufferUsage"/>
 public sealed unsafe class GorgonGpuBuffer
     : GorgonGpuBufferCommon, IGorgonGpuBufferInfo
 {
@@ -120,7 +85,6 @@ public sealed unsafe class GorgonGpuBuffer
     private readonly Dictionary<ViewKey, GorgonTypedBufferView> _typeds = [];
     private readonly Dictionary<ViewKey, GorgonResourceView> _uavs = [];    
     private GpuBufferAllocation _bufferAllocation = GpuBufferAllocation.Null;
-    private CpuBufferAllocation _uploadAllocation = CpuBufferAllocation.Null;    
 
     /// <summary>
     /// Property to return the offset, in bytes, of a suballocated buffer within a larger buffer.
@@ -131,23 +95,18 @@ public sealed unsafe class GorgonGpuBuffer
     public int Alignment => _info.Alignment;
 
 
-    /// <inheritdoc/>
-    private protected override void ValidateInfo()
+    /// <summary>
+    /// Function to create the native backing resources for the buffer.
+    /// </summary>
+    private void CreateNative()
     {
-        if (Alignment < 0)
-        {
-            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_INVALID_ALIGNMENT, Alignment));
-        }
-
-        if (SizeInBytes < 1)
-        {
-            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_BUFFER_TOO_SMALL, Name, 1));
-        }
+        Graphics.MegaBuffer.Allocate((ulong)SizeInBytes, out _bufferAllocation, (uint)Alignment);
+        AssignResource(in Graphics.MegaBuffer.D3DBuffer);
     }
 
     /// <inheritdoc/>
     private protected sealed override void Dispose(bool disposing)
-    {        
+    {
         if (disposing)
         {
             // Remove all the child views.
@@ -164,12 +123,12 @@ public sealed unsafe class GorgonGpuBuffer
             foreach (GorgonResourceView view in _structs.Values.Cast<GorgonResourceView>()
                                                                .Concat(_raws.Values.Cast<GorgonResourceView>())
                                                                .Concat(_typeds.Values.Cast<GorgonResourceView>())
-                                                               .Concat(_uavs.Values.Cast<GorgonResourceView>())                                                               
+                                                               .Concat(_uavs.Values.Cast<GorgonResourceView>())
                                                                .Where(v => !v.OwnsResource))
             {
                 view.Dispose();
             }
-            
+
             _structs.Clear();
             _raws.Clear();
             _uavs.Clear();
@@ -183,20 +142,17 @@ public sealed unsafe class GorgonGpuBuffer
         base.Dispose(disposing);
     }
 
-    /// <summary>
-    /// Function to create the native backing resources for the buffer.
-    /// </summary>
-    private void CreateNative()
+    /// <inheritdoc/>
+    private protected override void ValidateInfo()
     {
-        switch (Usage)
+        if (Alignment < 0)
         {
-            case BufferUsage.DynamicPerFrame:
-            case BufferUsage.Default:
-                Graphics.MegaBuffer.Allocate((ulong)SizeInBytes, out _bufferAllocation, (uint)Alignment);
-                SetResource(in Graphics.MegaBuffer.D3DBuffer);
-                break;
-            default:
-                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_BUFFER_USAGE_UNKNOWN, Usage, Name));
+            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_INVALID_ALIGNMENT, Alignment));
+        }
+
+        if (SizeInBytes < 1)
+        {
+            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_BUFFER_TOO_SMALL, Name, 1));
         }
     }
 
@@ -205,22 +161,8 @@ public sealed unsafe class GorgonGpuBuffer
     {
         D3D12_RESOURCE_DESC1 desc = D3DResource.Get()->GetDesc1();
         desc.Width = (ulong)SizeInBytes;
-        // All mega buffer buffers are aligned on a 256 byte boundary (for worst case scenario - constant buffers).
         desc.Alignment = (uint)Alignment;
         resourceInfo = GpuResourceInfo.FromD3D(in desc);
-    }
-
-    /// <inheritdoc/>
-    internal override ref readonly CpuBufferAllocation GetTransientBufferData()
-    {
-        if (!_uploadAllocation.IsAvailable)
-        {
-            Graphics.UploadHeaps.Allocate((ulong)SizeInBytes, 0, out _uploadAllocation);
-        }
-
-        Debug.Assert(_uploadAllocation.IsAvailable, $"Upload heap for dynamic buffer '{Name}' is no longer valid.");
-
-        return ref _uploadAllocation;
     }
 
     /// <summary>
@@ -523,14 +465,8 @@ public sealed unsafe class GorgonGpuBuffer
     /// Most buffers will require a minimum <see cref="GorgonCommonBufferInfo.SizeInBytes"/> of 1 byte. However, some views will require the buffer have a specific minimum size (e.g. constant buffers must be at 
     /// least 256 bytes, etc...).  
     /// </para>
-    /// <para>
-    /// The <paramref name="info"/> also contains a <see cref="GorgonCommonBufferInfo.Usage"/> flag which indicates how often the data can be updated in a buffer. Below is a description of how to use the usage 
-    /// flags with a buffer.
-    /// <inheritdoc cref="IGorgonCommonBufferInfo.Usage" path="/remarks/para/list"/>
-    /// </para>
     /// </remarks>
     /// <seealso cref="GorgonGpuBufferInfo"/>
-    /// <seealso cref="BufferUsage"/>
     public GorgonGpuBuffer(GorgonGraphics graphics, string name, GorgonGpuBufferInfo info)
         : base(graphics, name, info)
     {

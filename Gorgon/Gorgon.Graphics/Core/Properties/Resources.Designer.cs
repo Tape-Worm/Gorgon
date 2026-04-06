@@ -326,6 +326,17 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There was an error creating the root signature.
+        ///
+        ///Error data: {0}.
+        /// </summary>
+        internal static string GORGFX_ERR_CANNOT_CREATE_ROOT {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_CANNOT_CREATE_ROOT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There was an error creating the swap chain &apos;{0}&apos;..
         /// </summary>
         internal static string GORGFX_ERR_CANNOT_CREATE_SWAPCHAIN {
@@ -454,6 +465,33 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The format {0} is not valid for a cube texture..
+        /// </summary>
+        internal static string GORGFX_ERR_CUBE_TEXTURE_FORMAT_INVALID {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_CUBE_TEXTURE_FORMAT_INVALID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The texture is a cube map, but the number of array slices {0} is not a multiple of 6..
+        /// </summary>
+        internal static string GORGFX_ERR_CUBEMAP_NOT_MULTIPLE_OF_SIX {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_CUBEMAP_NOT_MULTIPLE_OF_SIX", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cube maps are only allowed on 2D textures..
+        /// </summary>
+        internal static string GORGFX_ERR_CUBEMAP_ONLY_2DTEX {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_CUBEMAP_ONLY_2DTEX", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The depth stencil texture &apos;{0}&apos; cannot be copied unless the entire sub resource is copied. This means the destination coordinates must be 0, and the source region must be empty..
         /// </summary>
         internal static string GORGFX_ERR_DEPTH_STENCIL_CANNOT_BE_COPIED {
@@ -553,6 +591,24 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The format {0} is not valid for a depth/stencil texture..
+        /// </summary>
+        internal static string GORGFX_ERR_INVALID_DEPTH_STENCIL_FORMAT {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_INVALID_DEPTH_STENCIL_FORMAT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The parameter &apos;{0}&apos; must be greater than, or equal to {1}..
+        /// </summary>
+        internal static string GORGFX_ERR_INVALID_PARAMETER_LESS_THAN_VALUE {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_INVALID_PARAMETER_LESS_THAN_VALUE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The format {0} is not a valid render target format..
         /// </summary>
         internal static string GORGFX_ERR_INVALID_RENDER_TARGET_FORMAT {
@@ -567,6 +623,33 @@ namespace Gorgon.Graphics.Core.Properties {
         internal static string GORGFX_ERR_LOAD_AGILITY_FAILED {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_LOAD_AGILITY_FAILED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The format {0} does not support mip map levels..
+        /// </summary>
+        internal static string GORGFX_ERR_MIP_FORMAT_INVALID {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_MIP_FORMAT_INVALID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The format {0} is not valid for MSAA..
+        /// </summary>
+        internal static string GORGFX_ERR_MSAA_FORMAT_INVALID {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_MSAA_FORMAT_INVALID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MSAA textures must only have a single mip level..
+        /// </summary>
+        internal static string GORGFX_ERR_MSAA_MIP_COUNT_INVALID {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_MSAA_MIP_COUNT_INVALID", resourceCulture);
             }
         }
         
@@ -690,6 +773,24 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The texture &apos;{0}&apos; is configured to be a render target and a depth/stencil buffer. These two flags are mutually exclusive and only one can be set to true at a time..
+        /// </summary>
+        internal static string GORGFX_ERR_TEXTURE_CANNOT_BE_RT_AND_DS {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_TEXTURE_CANNOT_BE_RT_AND_DS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The texture &apos;{0}&apos; is configured to be an unordered access resource and a depth/stencil buffer. These two flags are mutually exclusive and only one can be set to true at a time..
+        /// </summary>
+        internal static string GORGFX_ERR_TEXTURE_CANNOT_BE_UNORDERED_AND_DS {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_TEXTURE_CANNOT_BE_UNORDERED_AND_DS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The source texture &apos;{0}&apos; has a format group of {1}, and the destination texture &apos;{2}&apos; has a format group of {3}. 
         ///
         ///The texture formats must belong to the same grouping in order to copy them..
@@ -697,6 +798,15 @@ namespace Gorgon.Graphics.Core.Properties {
         internal static string GORGFX_ERR_TEXTURE_COPY_FORMAT_GROUPS_DIFFERENT {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_TEXTURE_COPY_FORMAT_GROUPS_DIFFERENT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The format {0} is not valid for a {1}..
+        /// </summary>
+        internal static string GORGFX_ERR_TEXTURE_FORMAT_INVALID {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_TEXTURE_FORMAT_INVALID", resourceCulture);
             }
         }
         
@@ -760,6 +870,15 @@ namespace Gorgon.Graphics.Core.Properties {
         internal static string GORGFX_STR_VIDEO_MODE {
             get {
                 return ResourceManager.GetString("GORGFX_STR_VIDEO_MODE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The texture &apos;{0}&apos; is a MSAA texture. These textures cannot be used with unordered access..
+        /// </summary>
+        internal static string GORGFX_TEXTURE_CANNOT_BE_MSAA_AND_UNORDERED {
+            get {
+                return ResourceManager.GetString("GORGFX_TEXTURE_CANNOT_BE_MSAA_AND_UNORDERED", resourceCulture);
             }
         }
     }

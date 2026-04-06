@@ -43,11 +43,11 @@ using Win32 = TerraFX.Interop.Windows.Windows;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// A texture used to project an image onto a graphic primitive such as a triangle
+/// A texture used to project an image onto a graphic primitive such as a triangle.
 /// </summary>
 public sealed unsafe class GorgonTexture
     : GorgonGpuResource, IGorgonTextureInfo, IGorgonImageInfo
-{
+{   
     /// <summary>
     /// A unique key for a view.
     /// </summary>
@@ -66,17 +66,20 @@ public sealed unsafe class GorgonTexture
     /// <param name="Value3">The third key value.</param>
     /// <param name="Value4">The fourth key value.</param>
     /// <param name="Value5">The fifth key value.</param>
-    private readonly record struct SrViewKey(BufferFormat Format, short Value1, short Value2, short Value3, short Value4, int Value5);
+    /// <param name="Value6">The sixth key value.</param>
+    private readonly record struct SrViewKey(short Format, short Value1, short Value2, short Value3, short Value4, int Value5, byte Value6);
 
     private ComPtr<D3D12MA_Allocation> _resourceAllocation;
 
+    private static readonly Dictionary<int, List<BufferFormat>> _formatGroups = [];
     private readonly Lock _viewLock = new();
-    private readonly Dictionary<RtViewKey, GorgonTextureRenderTargetView> _rtvs = [];
+    private readonly Dictionary<RtViewKey, GorgonRenderTargetView> _rtvs = [];
     private readonly Dictionary<RtViewKey, GorgonResourceView> _dsvs = [];
     private readonly Dictionary<SrViewKey, GorgonTextureView> _srvs = [];
     private readonly Dictionary<RtViewKey, GorgonResourceView> _uavs = [];
+    private D3D12_RESOURCE_DESC1 _d3dDesc;
     private readonly GorgonTextureInfo _info;
-    private GorgonSubResourceInfoList _subResourceInfo = GorgonSubResourceInfoList.Empty;
+    private GorgonSubResourceInfoList _subResourceInfo = GorgonSubResourceInfoList.Empty;    
 
     /// <inheritdoc/>
     public short ArrayCount => _info.ArrayCount;
@@ -198,7 +201,7 @@ public sealed unsafe class GorgonTexture
                             int r = GetSubResourceIndex(m, a, p);
                             D3D12_PLACED_SUBRESOURCE_FOOTPRINT footPrint = footPrints[r];
                             GorgonSubResourceInfo info = new(r, (int)footPrint.Footprint.Width, (int)footPrint.Footprint.Height, (int)footPrint.Footprint.Depth,
-                                a, m, p, 
+                                a, m, p,
                                 (int)footPrint.Footprint.RowPitch, (long)rowSizes[r], (int)rows[r], (long)footPrint.Offset);
 
                             result.Add(info);
@@ -219,6 +222,304 @@ public sealed unsafe class GorgonTexture
         }
     }
 
+    /// <summary>
+    /// Function to validate the information passed to the constructor.
+    /// </summary>
+    /// <param name="info">The texture creation information to validate.</param>
+    /// <returns>The updated creation information if default values need changing, otherwise the <paramref name="info"/> parameter.</returns>
+    /// <exception cref="GorgonException"><para>Thrown when the <paramref name="info"/> <see cref="GorgonTextureInfo.MipCount"/>, or <see cref="GorgonTextureInfo.Width"/> is less than 1.</para>
+    /// <para>-or-</para>
+    /// <para>Thrown if the texture type is <see cref="TextureType.Texture3D"/> and the <paramref name="info"/> <see cref="GorgonTextureInfo.Depth"/> or <see cref="GorgonTextureInfo.Height"/> is less than 1, or the <see cref="GorgonTextureInfo.Format"/> doesn't support 3D textures, or the <see cref="GorgonTextureInfo.IsCube"/> is set to <b>true</b>.</para>
+    /// <para>-or-</para>
+    /// <para>Thrown if the texture type is <see cref="TextureType.Texture2D"/> and the <paramref name="info"/> <see cref="GorgonTextureInfo.Height"/> or <see cref="GorgonTextureInfo.ArrayCount"/> is less than 1, or the <see cref="GorgonTextureInfo.Format"/> doesn't support 2D textures, or the <see cref="GorgonTextureInfo.IsCube"/> is set to <b>true</b> and the <see cref="GorgonTextureInfo.ArrayCount"/> is not a multiple of 6.</para>
+    /// <para>-or-</para>
+    /// <para>Thrown if the texture type is <see cref="TextureType.Texture1D"/> and the <paramref name="info"/> <see cref="GorgonTextureInfo.ArrayCount"/> is less than 1, or the <see cref="GorgonTextureInfo.Format"/> doesn't support 1D textures, or the <see cref="GorgonTextureInfo.IsCube"/> is set to <b>true</b>.</para>
+    /// <para>-or-</para>
+    /// <para>Thrown if the texture is a depth/stencil and the <paramref name="info"/> <see cref="GorgonTextureInfo.Format"/> does not support depth/stencil, the <see cref="GorgonTextureInfo.MultisampleInfo"/> value is not set to <see cref="GorgonMultisampleInfo.NoMultisampling"/>, or <see cref="GorgonTextureInfo.IsUnorderedAccess"/> is set to <b>true</b>.</para>
+    /// <para>-or-</para>
+    /// <para>Thrown if the texture is a render target and the <paramref name="info"/> <see cref="GorgonTextureInfo.Format"/> does not support render targets or MSAA render targets.</para>
+    /// <para>-or-</para>
+    /// <para>Thrown if the texture is an unordered access resource and the <paramref name="info"/> <see cref="GorgonTextureInfo.MultisampleInfo"/> is not set to <see cref="GorgonTextureInfo.MultisampleInfo"/>.</para>
+    /// <para>-or-</para>
+    /// <para>Thrown if the texture has a mip count greater than 1 and the <paramref name="info"/> <see cref="GorgonTextureInfo.MultisampleInfo"/> is not set to <see cref="GorgonTextureInfo.MultisampleInfo"/>, or the <see cref="GorgonTextureInfo.Format"/> does not support mip maps.</para>
+    /// <para>-or-</para>
+    /// <para>Thrown if the texture is a cube map and the <paramref name="info"/> <see cref="GorgonTextureInfo.Format"/> does not support cube maps.</para>
+    /// </exception>
+    private GorgonTextureInfo ValidateInfo(GorgonTextureInfo info)
+    {
+        GorgonTextureInfo result = info;
+        bool isMultisampled = !info.MultisampleInfo.Equals(GorgonMultisampleInfo.NoMultisampling);
+
+        if (info.MipCount < 1)
+        {
+            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_INVALID_PARAMETER_LESS_THAN_VALUE, nameof(GorgonTextureInfo) + "." + nameof(info.MipCount), 1));
+        }
+
+        if (info.Width < 1)
+        {
+            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_INVALID_PARAMETER_LESS_THAN_VALUE, nameof(GorgonTextureInfo) + "." + nameof(info.Width), 1));
+        }
+
+        switch (info.Type)
+        {
+            case TextureType.Texture3D:
+                if (!Graphics.FormatSupport[info.Format].Is3DTextureFormat)
+                {
+                    throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_TEXTURE_FORMAT_INVALID, info.Format, info.Type));
+                }
+
+                if (info.Depth < 1)
+                {
+                    throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_INVALID_PARAMETER_LESS_THAN_VALUE, nameof(GorgonTextureInfo) + "." + nameof(info.Depth), 1));
+                }
+
+                if (info.Height < 1)
+                {
+                    throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_INVALID_PARAMETER_LESS_THAN_VALUE, nameof(GorgonTextureInfo) + "." + nameof(info.Height), 1));
+                }
+
+                if (info.IsCube)
+                {
+                    throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_CUBEMAP_ONLY_2DTEX);
+                }
+
+                if ((info.ArrayCount != 1) || (isMultisampled))
+                {
+                    result = info with
+                    {
+                        ArrayCount = 1,
+                        MultisampleInfo = GorgonMultisampleInfo.NoMultisampling
+                    };
+                }
+                break;
+            case TextureType.Texture2D:
+                if (!Graphics.FormatSupport[info.Format].Is2DTextureFormat)
+                {
+                    throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_TEXTURE_FORMAT_INVALID, info.Format, info.Type));
+                }
+
+                if (info.ArrayCount < 1)
+                {
+                    throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_INVALID_PARAMETER_LESS_THAN_VALUE, nameof(GorgonTextureInfo) + "." + nameof(info.ArrayCount), 1));
+                }
+
+                if ((info.IsCube) && ((info.ArrayCount % 6) != 0))
+                {
+                    throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_CUBEMAP_NOT_MULTIPLE_OF_SIX, info.ArrayCount));
+                }
+
+                if (info.Height < 1)
+                {
+                    throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_INVALID_PARAMETER_LESS_THAN_VALUE, nameof(GorgonTextureInfo) + "." + nameof(info.Height), 1));
+                }
+
+                if (info.Depth != 1)
+                {
+                    result = info with
+                    {
+                        Depth = 1
+                    };
+                }
+                break;
+            case TextureType.Texture1D:
+                if (!Graphics.FormatSupport[info.Format].Is1DTextureFormat)
+                {
+                    throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_TEXTURE_FORMAT_INVALID, info.Format, info.Type));
+                }
+
+                if (info.ArrayCount < 1)
+                {
+                    throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_INVALID_PARAMETER_LESS_THAN_VALUE, nameof(GorgonTextureInfo) + "." + nameof(info.ArrayCount), 1));
+                }
+
+                if (info.IsCube)
+                {
+                    throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_CUBEMAP_ONLY_2DTEX);
+                }
+
+                if ((info.Depth != 1) || (info.Height != 1) || (isMultisampled))
+                {
+                    result = info with
+                    {
+                        Depth = 1,
+                        Height = 1,
+                        MultisampleInfo = GorgonMultisampleInfo.NoMultisampling
+                    };
+                }
+                break;
+            default:
+                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_CANNOT_CREATE_TEXTURE_UNKNOWN_TYPE, info.Type));
+        }
+
+        if (result.IsDepthStencil)
+        {
+            if (result.IsRenderTarget)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_TEXTURE_CANNOT_BE_RT_AND_DS, Name));
+            }
+
+            if (result.IsUnorderedAccess)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_TEXTURE_CANNOT_BE_UNORDERED_AND_DS, Name));
+            }
+        }
+
+        if (result.IsRenderTarget)
+        {
+            if (!Graphics.FormatSupport[result.Format].IsRenderTargetFormat)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_INVALID_RENDER_TARGET_FORMAT, result.Format));
+            }
+
+            if ((isMultisampled) && (!Graphics.FormatSupport[result.Format].IsMultisampleRenderTargetFormat))
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_MSAA_FORMAT_INVALID, result.Format));
+            }
+        }
+
+        if ((isMultisampled) && (result.IsUnorderedAccess))
+        {
+            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_TEXTURE_CANNOT_BE_MSAA_AND_UNORDERED, Name));
+        }
+
+        if (result.MipCount > 1)
+        {
+            if (isMultisampled)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_MSAA_MIP_COUNT_INVALID);
+            }
+
+            if (!Graphics.FormatSupport[result.Format].SupportsMipMaps)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_MIP_FORMAT_INVALID, result.Format));
+            }
+        }
+
+        if ((result.IsCube) && (!Graphics.FormatSupport[result.Format].IsCubeTextureFormat))
+        {
+            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_CUBE_TEXTURE_FORMAT_INVALID, result.Format));
+        }
+
+        if ((result.IsDepthStencil) && (!Graphics.FormatSupport[result.Format].IsDepthStencilFormat))
+        {
+            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_INVALID_DEPTH_STENCIL_FORMAT, result.Format));
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Function to create the native D3D 12 resources for the texture.
+    /// </summary>
+    /// <exception cref="GorgonException">Thrown if the COM resource could not be created.</exception>
+    /// <exception cref="InvalidCastException">Thrown if the resource could not be casted to the correct COM type.</exception>
+    private void CreateNative()
+    {
+        using ComPtr<ID3D12Resource2> result = default;
+        ComPtr<D3D12MA_Allocation> resourcePtr = default;
+        D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAGS.D3D12_RESOURCE_FLAG_NONE;
+        D3D12_CLEAR_VALUE *clearValue = null;
+        
+        if (IsUnorderedAccess)
+        {
+            flags |= D3D12_RESOURCE_FLAGS.D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+        }
+
+        if (!IsShaderResource)
+        {
+            flags |= D3D12_RESOURCE_FLAGS.D3D12_RESOURCE_FLAG_DENY_SHADER_RESOURCE;
+        }        
+
+        if (IsRenderTarget)
+        {
+            flags |= D3D12_RESOURCE_FLAGS.D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+
+            D3D12_CLEAR_VALUE clear = new()
+            {
+                Format = (DXGI_FORMAT)Format,
+            };
+            clear.Color[0] = 0;
+            clear.Color[1] = 0;
+            clear.Color[2] = 0;
+            clear.Color[3] = 0;
+            clearValue = &clear;
+        }
+        else if (IsDepthStencil)
+        {
+            flags |= D3D12_RESOURCE_FLAGS.D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
+            D3D12_CLEAR_VALUE clear = new()
+            {
+                Format = (DXGI_FORMAT)Format,
+                DepthStencil = new D3D12_DEPTH_STENCIL_VALUE
+                {
+                    Depth = 1.0f,
+                    Stencil = 0
+                }
+            };
+            clearValue = &clear;
+        }
+
+        if ((Graphics.Adapter.HasTightAlignmentSupport) && (!IsRenderTarget) && (!IsDepthStencil))
+        {
+            flags |= D3D12_RESOURCE_FLAGS.D3D12_RESOURCE_FLAG_USE_TIGHT_ALIGNMENT;
+        }
+
+        GorgonNativeBuffer<DXGI_FORMAT>? castable = null;
+
+        try
+        {
+#if !D3D12_MA_FIXED
+            if ((_formatGroups.TryGetValue(FormatInfo.SizeInBytes, out List<BufferFormat>? compatibleFormats))
+                && (compatibleFormats.Count > 0))
+            {
+                castable = new GorgonNativeBuffer<DXGI_FORMAT>(compatibleFormats.Count);
+
+                for (int i = 0; i < compatibleFormats.Count; ++i)
+                {
+                    castable[i] = (DXGI_FORMAT)compatibleFormats[i];
+                }
+            }
+#endif
+
+            byte planeCount = Graphics.FormatSupport[Format].PlaneCount;
+            ulong alignment = (Graphics.Adapter.HasTightAlignmentSupport || MultisampleInfo.Equals(GorgonMultisampleInfo.NoMultisampling)) ? 0UL : D3D12.D3D12_DEFAULT_MSAA_RESOURCE_PLACEMENT_ALIGNMENT;
+
+            D3D12_RESOURCE_DESC1 desc = Type switch
+            {
+                TextureType.Texture1D => D3D12_RESOURCE_DESC1.Tex1D((DXGI_FORMAT)Format, (ulong)Width, (ushort)ArrayCount, (ushort)MipCount, flags),
+                TextureType.Texture2D => D3D12_RESOURCE_DESC1.Tex2D((DXGI_FORMAT)Format, (ulong)Width, (uint)Height, (ushort)ArrayCount, (ushort)MipCount, (uint)MultisampleInfo.Count, (uint)MultisampleInfo.Quality, flags,
+                                            alignment: alignment),
+                TextureType.Texture3D => D3D12_RESOURCE_DESC1.Tex3D((DXGI_FORMAT)Format, (ulong)Width, (uint)Height, (ushort)Depth, (ushort)MipCount, flags),
+                _ => throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_CANNOT_CREATE_TEXTURE_UNKNOWN_TYPE, Type))
+            };
+
+            string textureName = $"D3D12 {Type} {Name}";
+
+            Graphics.Log.Print($"Created D3D 12 {Type} resource object for '{Name}'.", LoggingLevel.Verbose);
+
+            D3D12MA_ALLOCATION_DESC allocDesc = new(D3D12_HEAP_TYPE.D3D12_HEAP_TYPE_DEFAULT);
+
+            Graphics.Allocator.Get()->CreateResource3(&allocDesc, &desc,
+                D3D12_BARRIER_LAYOUT.D3D12_BARRIER_LAYOUT_UNDEFINED,
+                clearValue, (uint)(castable is null ? 0 : castable.Length), castable is null ? null : (DXGI_FORMAT*)castable,
+                resourcePtr.GetAddressOf(), Win32.__uuidof<ID3D12Resource2>(), (void**)result.GetAddressOf())
+                .ThrowIfFailed(GorgonResult.CannotCreate, () => Resources.GORGFX_ERR_CANNOT_CREATE_RESOURCE);
+
+            _resourceAllocation = resourcePtr;
+
+            result.SetD3DDebugName(textureName);
+
+            _subResourceInfo = new GorgonSubResourceInfoList(this, PopulateSubResourceInfo(in desc));
+            _d3dDesc = desc;
+
+            AssignResource(in result);
+        }
+        finally        
+        {
+            castable?.Dispose();
+        }
+    }
+
     /// <inheritdoc/>
     private protected sealed override void Dispose(bool disposing)
     {
@@ -233,7 +534,7 @@ public sealed unsafe class GorgonTexture
             {
                 view.Dispose();
             }
-                        
+
             _rtvs.Clear();
             _dsvs.Clear();
             _srvs.Clear();
@@ -247,82 +548,7 @@ public sealed unsafe class GorgonTexture
     }
 
     /// <inheritdoc/>
-    private protected override void OnGetResourceInfo(out GpuResourceInfo resourceInfo) 
-    {
-        D3D12_RESOURCE_DESC1 desc = D3DResource.Get()->GetDesc1();
-        resourceInfo = GpuResourceInfo.FromD3D(in desc);
-    }
-
-    /// <inheritdoc/>
-    private protected override ComPtr<ID3D12Resource2> OnCreateNative(out D3D12_RESOURCE_DESC1 desc)
-    {
-        ComPtr<ID3D12Resource2> result = default;
-        ComPtr<D3D12MA_Allocation> resourcePtr = default;
-        D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAGS.D3D12_RESOURCE_FLAG_NONE;
-
-        if (!IsShaderResource)
-        {
-            flags |= D3D12_RESOURCE_FLAGS.D3D12_RESOURCE_FLAG_DENY_SHADER_RESOURCE;
-        }
-
-        if (IsUnorderedAccess)
-        {
-            flags |= D3D12_RESOURCE_FLAGS.D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
-        }
-
-        if (IsRenderTarget)
-        {
-            flags |= D3D12_RESOURCE_FLAGS.D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
-        }
-
-        if (IsDepthStencil)
-        {
-            flags |= D3D12_RESOURCE_FLAGS.D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
-        }
-
-        if ((Graphics.Adapter.HasTightAlignmentSupport) && (!IsRenderTarget) && (!IsDepthStencil))
-        {
-            flags |= D3D12_RESOURCE_FLAGS.D3D12_RESOURCE_FLAG_USE_TIGHT_ALIGNMENT;
-        }
-
-        byte planeCount = Graphics.FormatSupport[Format].PlaneCount;
-
-        desc = Type switch
-        {
-            TextureType.Texture1D => D3D12_RESOURCE_DESC1.Tex1D((DXGI_FORMAT)Format, (ulong)Width, (ushort)ArrayCount, (ushort)MipCount, flags),
-            TextureType.Texture2D => D3D12_RESOURCE_DESC1.Tex2D((DXGI_FORMAT)Format, (ulong)Width, (uint)Height, (ushort)ArrayCount, (ushort)MipCount, (uint)MultisampleInfo.Count, (uint)MultisampleInfo.Quality, flags,
-                                        alignment: (Graphics.Adapter.HasTightAlignmentSupport || MultisampleInfo.Equals(GorgonMultisampleInfo.NoMultisampling)) ? 0UL : D3D12.D3D12_DEFAULT_MSAA_RESOURCE_PLACEMENT_ALIGNMENT),
-            TextureType.Texture3D => D3D12_RESOURCE_DESC1.Tex3D((DXGI_FORMAT)Format, (ulong)Width, (uint)Height, (ushort)Depth, (ushort)MipCount, flags),
-            _ => throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_CANNOT_CREATE_TEXTURE_UNKNOWN_TYPE, Type))
-        };
-
-        string textureName = $"D3D12 {Type} {Name}";
-        
-        Graphics.Log.Print($"Created D3D 12 {Type} resource object for '{Name}'.", LoggingLevel.Verbose);
-    
-        D3D12MA_ALLOCATION_DESC allocDesc = new(D3D12_HEAP_TYPE.D3D12_HEAP_TYPE_DEFAULT);
-
-        fixed (D3D12_RESOURCE_DESC1* descPtr = &desc)
-        {
-            Graphics.Allocator.Get()->CreateResource3(&allocDesc, descPtr,
-                D3D12_BARRIER_LAYOUT.D3D12_BARRIER_LAYOUT_UNDEFINED,
-                null, 0, null,
-                resourcePtr.GetAddressOf(), null, null)
-                .ThrowIfFailed(GorgonResult.CannotCreate, () => Resources.GORGFX_ERR_CANNOT_CREATE_RESOURCE);
-
-            _resourceAllocation = resourcePtr;
-
-            using ComPtr<ID3D12Resource> newRes = new(_resourceAllocation.Get()->GetResource());
-            newRes.As(ref result)
-                .ThrowIfFailed(hr => throw new InvalidCastException());
-
-            result.SetD3DDebugName(textureName);
-        }
-
-        _subResourceInfo = new GorgonSubResourceInfoList(this, PopulateSubResourceInfo(in desc));
-
-        return result;
-    }
+    private protected override void OnGetResourceInfo(out GpuResourceInfo resourceInfo) => resourceInfo = GpuResourceInfo.FromD3D(in _d3dDesc);
 
     /// <summary>
     /// Function to create a 2D render target from a swap chain.
@@ -366,7 +592,7 @@ public sealed unsafe class GorgonTexture
             resource.GetTextureView();
         }
 
-        GorgonTextureRenderTargetView view = new(swapChain.Graphics, $"{backBufferName} render target view", resource, resource.Format, resource.FormatInfo, true);
+        GorgonRenderTargetView view = new(swapChain.Graphics, $"{backBufferName} render target view", resource, resource.Format, resource.FormatInfo, true);
         RtViewKey key = new(view.Format, 0, 0, 1);
         resource._rtvs[key] = view;
 
@@ -597,7 +823,7 @@ public sealed unsafe class GorgonTexture
     /// <returns></returns>
     /// <exception cref="GorgonException"></exception>
 #warning FINISHME: This is not complete, just here as a marker/template.  Needs validation and documentation.
-    public GorgonTextureRenderTargetView GetRenderTargetView(BufferFormat format = BufferFormat.Unknown, short mipLevel = 0, short arrayIndexOrDepthSlice = 0, short arrayCountOrDepthCount = 1)
+    public GorgonRenderTargetView GetRenderTargetView(BufferFormat format = BufferFormat.Unknown, short mipLevel = 0, short arrayIndexOrDepthSlice = 0, short arrayCountOrDepthCount = 1)
     {
         using (_viewLock.EnterScope())
         {
@@ -620,7 +846,7 @@ public sealed unsafe class GorgonTexture
 
             RtViewKey key = new(format, mipLevel, arrayIndexOrDepthSlice, arrayCountOrDepthCount);
 
-            if ((_rtvs.TryGetValue(key, out GorgonTextureRenderTargetView? result))
+            if ((_rtvs.TryGetValue(key, out GorgonRenderTargetView? result))
                 && (result.D3DCpuHandle != D3D12_CPU_DESCRIPTOR_HANDLE.DEFAULT))
             {
                 return result;
@@ -639,9 +865,10 @@ public sealed unsafe class GorgonTexture
     /// <param name="arrayIndex"></param>
     /// <param name="arrayCount"></param>
     /// <param name="resourceMinLodClamp"></param>
+    /// <param name="planeIndex"></param>
     /// <returns></returns>
 #warning FINISHME: This is not complete, just here as a marker/template.  Needs validation and documentation.
-    public GorgonTextureView GetTextureView(BufferFormat format = BufferFormat.Unknown, short mipLevel = 0, short mipCount = 1, short arrayIndex = 0, short arrayCount = 1, float resourceMinLodClamp = 0)
+    public GorgonTextureView GetTextureView(BufferFormat format = BufferFormat.Unknown, short mipLevel = 0, short mipCount = 1, short arrayIndex = 0, short arrayCount = 1, float resourceMinLodClamp = 0, byte planeIndex = 0)
     {
         using (_viewLock.EnterScope())
         {
@@ -659,15 +886,14 @@ public sealed unsafe class GorgonTexture
 
             int lodClamp = *((int*)(&resourceMinLodClamp));
 
-            SrViewKey key = new(format, mipLevel, mipCount, arrayIndex, arrayCount, lodClamp);
+            SrViewKey key = new((short)format, mipLevel, mipCount, arrayIndex, arrayCount, lodClamp, planeIndex);
 
-            if ((_srvs.TryGetValue(key, out GorgonTextureView? result))
-                && (result.D3DCpuHandle != D3D12_CPU_DESCRIPTOR_HANDLE.DEFAULT))
+            if ((_srvs.TryGetValue(key, out GorgonTextureView? result)) && (result.D3DCpuHandle != D3D12_CPU_DESCRIPTOR_HANDLE.DEFAULT))
             {
                 return result;
             }
 
-            return _srvs[key] = new(Graphics, Name, this, format, arrayIndex, arrayCount, mipLevel, mipCount, resourceMinLodClamp, false);
+            return _srvs[key] = new(Graphics, Name, this, format, arrayIndex, arrayCount, mipLevel, mipCount, resourceMinLodClamp, planeIndex, false);
         }
     }
 
@@ -692,55 +918,6 @@ public sealed unsafe class GorgonTexture
         arrayIndex = Type != TextureType.Texture3D ? arrayIndex.Min(ArrayCount - 1).Max(0) : 0;
 
         return (int)DX.D3D12CalcSubresource((uint)mipLevel, (uint)arrayIndex, (uint)plane, (uint)MipCount, (uint)ArrayCount);
-    }
-
-    /// <summary>
-    /// Function to validate the information passed to the constructor.
-    /// </summary>
-    /// <param name="info">The texture creation information to validate.</param>
-    /// <returns>The updated creation information if default values need changing, otherwise the <paramref name="info"/> parameter.</returns>
-    /// <exception cref="GorgonException">Thrown when TODO</exception>
-    private static GorgonTextureInfo ValidateInfo(GorgonTextureInfo info)
-    {
-        GorgonTextureInfo result = info;
-
-        switch (info.Type)
-        {
-            case TextureType.Texture3D:
-                if ((info.ArrayCount != 1) || (!info.MultisampleInfo.Equals(GorgonMultisampleInfo.NoMultisampling)))
-                {
-                    result = info with
-                    {
-                        ArrayCount = 1,
-                        MultisampleInfo = GorgonMultisampleInfo.NoMultisampling
-                    };
-                }
-                break;
-            case TextureType.Texture2D:
-                if ((info.Depth != 1) || (!info.MultisampleInfo.Equals(GorgonMultisampleInfo.NoMultisampling)))
-                {
-                    result = info with
-                    {
-                        Depth = 1,
-                        MultisampleInfo = GorgonMultisampleInfo.NoMultisampling
-                    };
-                }
-                break;
-            case TextureType.Texture1D:
-                if ((info.Depth != 1) || (!info.MultisampleInfo.Equals(GorgonMultisampleInfo.NoMultisampling)))
-                {
-                    result = info with
-                    {
-                        Depth = 1,
-                        MultisampleInfo = GorgonMultisampleInfo.NoMultisampling
-                    };
-                }
-                break;
-            default:
-                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_CANNOT_CREATE_TEXTURE_UNKNOWN_TYPE, info.Type));
-        }
-
-        return result;
     }
 
     /// <summary>
@@ -772,19 +949,45 @@ public sealed unsafe class GorgonTexture
     /// <param name="graphics"><inheritdoc cref="GorgonGpuResource(GorgonGraphics, string, ComPtr{ID3D12Resource2})" path="/param[@name='graphics']"/></param>
     /// <param name="name"><inheritdoc cref="GorgonGpuResource(GorgonGraphics, string, ComPtr{ID3D12Resource2})" path="/param[@name='name']"/></param>
     /// <param name="info">Information used to create the texture.</param>
+    /// <inheritdoc cref="ValidateInfo(GorgonTextureInfo)" path="/exception"/>
     public GorgonTexture(GorgonGraphics graphics, string name, GorgonTextureInfo info)
         : base(graphics, name)
     {
         _info = new GorgonTextureInfo(ValidateInfo(info));
-        FormatInfo = new GorgonFormatInfo(info.Format);        
+        FormatInfo = new GorgonFormatInfo(info.Format);
 
-        CreateNative_OLDE();
+        CreateNative();
         
         Graphics.InitializeTexture(this);
 
         if (IsShaderResource)
         {
             GetTextureView();
+        }
+    }
+
+    /// <summary>
+    /// Static constructor.
+    /// </summary>
+    static GorgonTexture()
+    {
+        BufferFormat[] formats = Enum.GetValues<BufferFormat>();
+
+        for (int i = 0; i < formats.Length; ++i)
+        {
+            GorgonFormatInfo info = new(formats[i]);
+
+            if ((info.IsTypeless) || (info.SizeInBytes < 1) || (info.IsPlanar) || (info.IsCompressed))
+            {
+                continue;
+            }
+
+            if (!_formatGroups.TryGetValue(info.SizeInBytes, out List<BufferFormat>? formatList))
+            {
+                _formatGroups[info.SizeInBytes] = formatList = new List<BufferFormat>();
+            }
+
+            formatList.Add(info.Format);
         }
     }
 }
