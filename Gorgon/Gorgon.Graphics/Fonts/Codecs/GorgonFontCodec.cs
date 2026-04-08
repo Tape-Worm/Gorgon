@@ -171,7 +171,6 @@ public abstract class GorgonFontCodec(GorgonFontFactory factory)
     /// The font meta data as a <see cref="GorgonFontInfo"/> value.
     /// </returns>
     /// <exception cref="IOException">Thrown when the <paramref name="stream"/> is write-only or if the stream cannot perform seek operations.
-    /// <para>-or-</para>
     /// <para>Thrown if the file is corrupt or can't be read by the codec.</para>
     /// </exception>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is <b>null</b>.</exception>

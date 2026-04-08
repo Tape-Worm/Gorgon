@@ -487,7 +487,6 @@ public class GorgonStreamSlice
     /// <exception cref="ArgumentException">Thrown when the <see cref="Stream.CanSeek"/> property on the parent stream is <b>false</b>.</exception>
     /// <exception cref="IOException">Thrown when the <paramref name="parentStream"/> is read only and the <paramref name="allowWrite"/> flag is set to <b>true</b>.</exception>
     /// <exception cref="EndOfStreamException">Thrown when the <paramref name="streamStart"/> is greater than or equal to the length of the <paramref name="parentStream"/>.
-    /// <para>-or-</para>
     /// <para>Thrown when the <paramref name="streamSize"/> is greater than the <paramref name="parentStream"/> length minus the <paramref name="streamStart"/>.</para>
     /// </exception>
     /// <remarks>

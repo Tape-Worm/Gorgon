@@ -174,7 +174,6 @@ public interface IGorgonChunkReader
     /// <param name="index">[Optional] The index within the <paramref name="data"/> array to start filling with data.</param>
     /// <param name="count">[Optional] The number of items to read.</param>
     /// <exception cref="ArgumentException"><para>The index is less than 0, or greater than/equal to the size of the <paramref name="data"/> array.</para>
-    /// <para>-or-</para>
     /// <para>The <paramref name="count"/> minus the <paramref name="index"/> is too large for the <paramref name="data"/> array.</para>
     /// </exception>
     /// <exception cref="EndOfStreamException">Thrown if the reader tries to read beyond the size of the chunk.</exception>

@@ -249,9 +249,7 @@ internal class GorgonChunkReader(Stream stream)
     /// <exception cref="IOException">Thrown when the stream is read-only.</exception>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="data"/> parameter is NULL (Nothing in VB.Net).</exception>
     /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="startIndex"/> parameter is less than 0.
-    /// <para>-or-</para>
     /// <para>Thrown when the startIndex parameter is equal to or greater than the number of elements in the value parameter.</para>
-    /// <para>-or-</para>
     /// <para>Thrown when the sum of startIndex and <paramref name="count"/> is greater than the number of elements in the value parameter.</para>
     /// </exception>
     public void Read(byte[] data, int startIndex, int count)
@@ -280,9 +278,7 @@ internal class GorgonChunkReader(Stream stream)
     /// <param name="count">Number of array elements to copy.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="value"/> parameter is NULL (Nothing in VB.Net).</exception>
     /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="startIndex"/> parameter is less than 0.
-    /// <para>-or-</para>
     /// <para>Thrown when the startIndex parameter is equal to or greater than the number of elements in the value parameter.</para>
-    /// <para>-or-</para>
     /// <para>Thrown when the sum of startIndex and <paramref name="count"/> is greater than the number of elements in the value parameter.</para>
     /// </exception>
     /// <exception cref="IOException">Thrown when the stream is write-only.</exception>

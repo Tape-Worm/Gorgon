@@ -111,9 +111,7 @@ public sealed class GorgonCodecGif(GorgonGifEncodingOptions? encodingOptions = n
     /// <returns>An array of frame delays (1/100th of a second), or an empty array if the image is not an animated GIF.</returns>
     /// <exception cref="ArgumentException">Thown when the filePath parameter is empty.</exception>
     /// <exception cref="IOException">Thrown when the stream parameter is write-only.
-    /// <para>-or-</para>
     /// <para>The data in the stream could not be decoded as GIF file.</para>
-    /// <para>-or-</para>
     /// <para>The stream cannot perform seek operations.</para>
     /// </exception>
     /// <exception cref="EndOfStreamException">Thrown when an attempt to read beyond the end of the stream is made.</exception>
@@ -139,9 +137,7 @@ public sealed class GorgonCodecGif(GorgonGifEncodingOptions? encodingOptions = n
     /// <param name="stream">Stream containing the animated GIF.</param>
     /// <returns>An array of frame delays (1/100th of a second), or an empty array if the image is not an animated GIF.</returns>
     /// <exception cref="IOException">Thrown when the stream parameter is write-only.
-    /// <para>-or-</para>
     /// <para>The data in the stream could not be decoded as GIF file.</para>
-    /// <para>-or-</para>
     /// <para>The stream cannot perform seek operations.</para>
     /// </exception>
     /// <exception cref="EndOfStreamException">Thrown when an attempt to read beyond the end of the stream is made.</exception>

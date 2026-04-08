@@ -391,12 +391,66 @@ The format of the image {0} and the format of the texture {1} are incompatible, 
   <data name="GORGFX_ERR_TEXTURE_CANNOT_BE_UNORDERED_AND_DS" xml:space="preserve">
     <value>The texture '{0}' is configured to be an unordered access resource and a depth/stencil buffer. These two flags are mutually exclusive and only one can be set to true at a time.</value>
   </data>
-  <data name="GORGFX_TEXTURE_CANNOT_BE_MSAA_AND_UNORDERED" xml:space="preserve">
+  <data name="GORGFX_ERR_TEXTURE_CANNOT_BE_MSAA_AND_UNORDERED" xml:space="preserve">
     <value>The texture '{0}' is a MSAA texture. These textures cannot be used with unordered access.</value>
   </data>
   <data name="GORGFX_ERR_CANNOT_CREATE_ROOT" xml:space="preserve">
     <value>There was an error creating the root signature.
 
 Error data: {0}</value>
+  </data>
+  <data name="GORGFX_ERR_CANNOT_INITIALIZE_TEXTURE" xml:space="preserve">
+    <value>There was an error trying to initialize the texture.</value>
+  </data>
+  <data name="GORGFX_ERR_TEXTURE_VIEW_FORMAT_DEPTHSTENCIL_NOT_SUPPORTED" xml:space="preserve">
+    <value>The view for texture '{0}' has a format of {1}. View formats must not be a depth/stencil format.</value>
+  </data>
+  <data name="GORGFX_ERR_TEXTURE_VIEW_CANNOT_BE_CAST" xml:space="preserve">
+    <value>The texture '{0}' has a format of {1}. This format cannot be cast to the view format {2}.</value>
+  </data>
+  <data name="GORGFX_ERR_TEXTURE_VIEW_COMPRESSED_REQUIRED_COMPRESSED" xml:space="preserve">
+    <value>The format {0} for texture '{0}' is compressed. The view format {2} is not. Both formats must be compressed.</value>
+  </data>
+  <data name="GORGFX_ERR_TEXTURE_VIEW_DEPTH_FORMAT_INVALID" xml:space="preserve">
+    <value>The texture '{0}' has a format of {1}. The view format is {2}. To view a depth texture, the view format must be {3}.</value>
+  </data>
+  <data name="GORGFX_ERR_TEXTURE_VIEW_STENCIL_FORMAT_INVALID" xml:space="preserve">
+    <value>The texture '{0}' has a format of {1}. The view format is {2}. To view a stencil texture, the view format must be {3}.</value>
+  </data>
+  <data name="GORGFX_ERR_TEXTURE_VIEW_NO_DEPTH_STENCIL_TEXTURE" xml:space="preserve">
+    <value>The texture '{0}' has a depth/stencil format of {1}. Views cannot be created on textures with depth/stencil formats. The texture must use an equivalent typeless format.</value>
+  </data>
+  <data name="GORGFX_ERR_TEXTURE_VIEW_FORMAT_PLANAR_NOT_SUPPORTED" xml:space="preserve">
+    <value>The view for texture '{0}' has a format of {1}. View formats must not be a planar format.</value>
+  </data>
+  <data name="GORGFX_ERR_TEXTURE_VIEW_NOT_SHADER_RESOURCE" xml:space="preserve">
+    <value>The texture '{0}' is not accessible to shaders.</value>
+  </data>
+  <data name="GORGFX_ERR_TEXTURE_RTV_NOT_RENDER_TARGET" xml:space="preserve">
+    <value>The texture '{0}' can't be used as a render target.</value>
+  </data>
+  <data name="GORGFX_ERR_TEXTURE_RTV_FORMAT_TYPELESS_NOT_SUPPORTED" xml:space="preserve">
+    <value>The render target view does not support typeless formats.</value>
+  </data>
+  <data name="GORGFX_ERR_TEXTURE_VIEW_FORMAT_TYPELESS_NOT_SUPPORTED" xml:space="preserve">
+    <value>The texture view does not support typeless formats.</value>
+  </data>
+  <data name="GORGFX_ERR_TEXTURE_RTV_NOT_RENDERTARGET_FORMAT" xml:space="preserve">
+    <value>The render target view format {0} on texture '{1}' is not valid for render targets.</value>
+  </data>
+  <data name="GORGFX_ERR_DEPTH_STENCIL_MUST_BE_2D" xml:space="preserve">
+    <value>Only 2D textures can be used as a depth/stencil buffer.</value>
+  </data>
+  <data name="GORGFX_ERR_TEXTURE_COMPRESSED_NOT_MULTIPLE_OF_FOUR" xml:space="preserve">
+    <value>The texture '{0}' has a compressed format of {1}. The width {2} and height {3} need to be a multiple of 4.</value>
+  </data>
+  <data name="GORGFX_ERR_TEXTURE_DSV_NOT_DEPTHSTENCIL" xml:space="preserve">
+    <value>The texture '{0}' can't be used as a depth/stencil buffer.</value>
+  </data>
+  <data name="GORGFX_ERR_TEXTURE_DSV_FORMAT_DEPTHSTENCIL_FORMAT" xml:space="preserve">
+    <value>The depth stencil view format {0} is not a valid depth/stencil format.</value>
+  </data>
+  <data name="GORGFX_ERR_TEXTURE_DSV_FORMAT_MISMATCH" xml:space="preserve">
+    <value>The texture '{0}' has a format of {1}. The view has a format of {2}, and the texture format needs to be {3}.</value>
   </data>
 </root>

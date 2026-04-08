@@ -160,11 +160,8 @@ public abstract class GorgonChunkFile
     /// </note>
     /// </remarks>
     /// <exception cref="GorgonException">Thrown when the chunk file format header ID does not match when reading.
-    /// <para>-or-</para>
     /// <para>Thrown when application specific header ID in the file was not found in the list passed to the constructor when reading.</para>
-    /// <para>-or-</para>
     /// <para>Thrown if the chunk file table offset is less than or equal to the size of the header when reading.</para>
-    /// <para>-or-</para>
     /// <para>Thrown if the file size recorded in the header is less than the size of the header when reading.</para>
     /// </exception>
     public void Open()

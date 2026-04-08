@@ -384,6 +384,14 @@ public unsafe sealed class GorgonGraphics
     } = new();
 
     /// <summary>
+    /// Property to return the internal copier for setting up resource state.
+    /// </summary>
+    internal GorgonResourceCopier GlobalCopier
+    {
+        get;
+    }
+
+    /// <summary>
     /// Property to return the logging interface for the Gorgon graphics API.
     /// </summary>
     public IGorgonLog Log
@@ -444,7 +452,9 @@ public unsafe sealed class GorgonGraphics
             }
 
             // Ensure everything is returned before we continue.
-            this.DisposeAll();            
+            this.DisposeAll();
+
+            GlobalCopier.Dispose();
 
             GpuViewDescriptors.Dispose();
             GpuSamplerDescriptors.Dispose();
@@ -903,59 +913,6 @@ public unsafe sealed class GorgonGraphics
         return result;
     }
 
-    /// <summary>
-    /// Function to initialize a new texture with 0 values.
-    /// </summary>
-    /// <param name="texture">The texture to initialize.</param>
-    /// <remarks>
-    /// <para>
-    /// This method is only meant to be used within a texture constructor. Do not use anywhere else!
-    /// </para>
-    /// </remarks>
-    internal void InitializeTexture(GorgonTexture texture)
-    {
-        UploadHeaps.Allocate((ulong)texture.SizeInBytes, texture.Info.Alignment, out CpuBufferAllocation allocation);
-        Debug.Assert(allocation.IsAvailable, $"Could not allocate upload memory for texture '{texture.Name}'");
-
-        GraphicsQueue.Tracker.TrackResource(allocation.Heap.D3DResource);
-
-        NativeMemory.Fill(allocation.CpuPointer, (nuint)texture.SizeInBytes, 0);
-
-        CommandAllocator allocator = GraphicsQueue.AllocatorPool.Get("Texture Initialization Allocator");
-        GorgonCommandList list = GraphicsQueue.ListPool.Get("Texture Initialization Command List", allocator);
-
-        try
-        {
-            list.SetBarrier(texture, BarrierSync.Copy, BarrierAccess.CopyDestination, BarrierLayout.CopyDestination, force: true);
-
-            for (int i = 0; i < texture.SubResources.Count; ++i)
-            {
-                D3D12_PLACED_SUBRESOURCE_FOOTPRINT placedFootPrint = texture.SubResources[i].ToD3DPlacedSubResourceFootPrint(texture.Format, allocation.Offset);
-                ref readonly D3D12_SUBRESOURCE_FOOTPRINT footPrint = ref placedFootPrint.Footprint;
-                D3D12_TEXTURE_COPY_LOCATION src = new((PID3D12Resource2)allocation.Heap.D3DResource.Get(), in placedFootPrint);
-                D3D12_TEXTURE_COPY_LOCATION dest = new((PID3D12Resource2)texture.D3DResource.Get(), (uint)i);
-                D3D12_BOX box = new(0, 0, 0, (int)footPrint.Width, (int)footPrint.Height, (int)footPrint.Depth);
-
-                list.D3DGraphicsCommandList.Get()->CopyTextureRegion(&dest, 0, 0, 0, &src, &box);
-            }
-
-            list.D3DGraphicsCommandList.Get()->Close();
-
-            GraphicsQueue.Execute(list);
-            ulong fence = GraphicsQueue.IncrementFence();
-
-            GraphicsQueue.WaitForFence(fence, WaitFenceTimeout);
-        }
-        finally
-        {
-
-            UploadHeaps.Signal();
-            GraphicsQueue.AllocatorPool.Signal();
-            GraphicsQueue.Tracker.Signal();
-            GraphicsQueue.ListPool.Return(list);
-        }
-    }
-
     /// <inheritdoc/>
     public void Dispose()
     {
@@ -1304,5 +1261,7 @@ public unsafe sealed class GorgonGraphics
         DsvDescriptors = new CpuDescriptorHeapPool(this, D3D12_DESCRIPTOR_HEAP_TYPE.D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
 
         _rootSignature = CreateRootSignature();
+
+        GlobalCopier = new GorgonResourceCopier(GraphicsQueue);
     }
 }

@@ -34,6 +34,37 @@ namespace Gorgon.Graphics.Core;
 /// </summary>
 internal static class GorgonConversionExtensions
 {
+    private const ShaderStage VertexShadingMask = ShaderStage.Vertex | ShaderStage.Geometry | ShaderStage.Hull | ShaderStage.Domain;
+
+    extension(ShaderStage shaderStage)
+    {
+        /// <summary>
+        /// Function to convert a bitmask of shader stages into a barrier sync bitmask.
+        /// </summary>
+        /// <returns>The barrier sync mask.</returns>
+        public BarrierSync ToSync()
+        {
+            BarrierSync sync = BarrierSync.None;
+
+            if ((shaderStage & VertexShadingMask) == ShaderStage.Vertex)
+            {
+                sync |= BarrierSync.VertexShading;
+            }
+
+            if ((shaderStage & ShaderStage.Pixel) == ShaderStage.Pixel)
+            {
+                sync |= BarrierSync.PixelShading;
+            }
+
+            if ((shaderStage & ShaderStage.Compute) == ShaderStage.Compute)
+            {
+                sync |= BarrierSync.ComputeShading;
+            }
+
+            return sync;
+        }
+    }
+
     extension(TextureType textureType)
     {
         /// <summary>

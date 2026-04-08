@@ -44,10 +44,17 @@ internal sealed unsafe class CommandQueue : IDisposable
     private ComPtr<ID3D12CommandQueue> _d3dQueue;
     private ComPtr<ID3D12Fence1> _d3dFence;
 
-    private readonly Lock _fenceLock = new();
-    private readonly GorgonGraphics _graphics;
+    private readonly Lock _fenceLock = new();    
     private ulong _previousFenceValue = 0;
     private ulong _nextFenceValue = 1;
+
+    /// <summary>
+    /// Property to return the graphics object associated with this queue.
+    /// </summary>
+    public GorgonGraphics Graphics
+    {
+        get;
+    }
 
     /// <summary>
     /// Property to return the fence value for the queue.
@@ -114,8 +121,8 @@ internal sealed unsafe class CommandQueue : IDisposable
     {
         if (disposing)
         {
-            _graphics.Log.Print($"Destroying {nameof(ID3D12Fence1)} on ({Type} queue)...", LoggingLevel.Verbose);
-            _graphics.Log.Print($"Destroying {nameof(ID3D12CommandQueue)} ({Type})...", LoggingLevel.Verbose);            
+            Graphics.Log.Print($"Destroying {nameof(ID3D12Fence1)} on ({Type} queue)...", LoggingLevel.Verbose);
+            Graphics.Log.Print($"Destroying {nameof(ID3D12CommandQueue)} ({Type})...", LoggingLevel.Verbose);            
 
             // Ensure that any pending in-flight resources are removed.
             Tracker.Dispose();
@@ -140,7 +147,7 @@ internal sealed unsafe class CommandQueue : IDisposable
 
         string fenceName = $"Gorgon D3D12 fence ({Type} queue)";
 
-        _graphics.Log.Print($"Creating {nameof(ID3D12Fence1)} on {Type} queue...", LoggingLevel.Verbose);
+        Graphics.Log.Print($"Creating {nameof(ID3D12Fence1)} on {Type} queue...", LoggingLevel.Verbose);
 
         device.Get()->CreateFence(0, D3D12_FENCE_FLAGS.D3D12_FENCE_FLAG_NONE, Win32.__uuidof<ID3D12Fence1>(), (void**)result.GetAddressOf())
                 .ThrowIfFailed(GorgonResult.CannotCreate, () => string.Format(Resources.GORGFX_ERR_CANNOT_CREATE_FENCE, Type));
@@ -162,7 +169,7 @@ internal sealed unsafe class CommandQueue : IDisposable
         
         string commandQueueName = $"Gorgon D3D12 command queue ({Type})";
 
-        _graphics.Log.Print($"Creating {nameof(ID3D12CommandQueue)} ({Type})...", LoggingLevel.Verbose);
+        Graphics.Log.Print($"Creating {nameof(ID3D12CommandQueue)} ({Type})...", LoggingLevel.Verbose);
 
         D3D12_COMMAND_QUEUE_DESC desc = new()
         {
@@ -218,7 +225,7 @@ internal sealed unsafe class CommandQueue : IDisposable
 
         if (err.FAILED)
         {
-            _graphics.Log.PrintError(err, "There was an error assigning the event.", LoggingLevel.Simple);
+            Graphics.Log.PrintError(err, "There was an error assigning the event.", LoggingLevel.Simple);
             return;
         }
 
@@ -246,7 +253,7 @@ internal sealed unsafe class CommandQueue : IDisposable
             }
 
             // Commit all reserved buffer memory.
-            _graphics.MegaBuffer.Commit(this);
+            Graphics.MegaBuffer.Commit(this);
 
             ID3D12CommandList** commands = stackalloc ID3D12CommandList*[commandList.Length];
 
@@ -270,7 +277,7 @@ internal sealed unsafe class CommandQueue : IDisposable
         using (_fenceLock.EnterScope())
         {
             // Commit all reserved buffer memory.
-            _graphics.MegaBuffer.Commit(this);
+            Graphics.MegaBuffer.Commit(this);
 
             ID3D12CommandList** commands = stackalloc ID3D12CommandList*[1]
             {
@@ -329,12 +336,12 @@ internal sealed unsafe class CommandQueue : IDisposable
     /// <param name="type">The type of commands that this queue will execute.</param>
     public CommandQueue(GorgonGraphics graphics,  D3D12_COMMAND_LIST_TYPE type)
     {
-        _graphics = graphics;
-        FrameFenceValue = new ulong[_graphics.InFlightFrameCount];
+        Graphics = graphics;
+        FrameFenceValue = new ulong[Graphics.InFlightFrameCount];
         Type = type;
 
-        AllocatorPool = new CommandAllocatorPool(graphics, this);
-        ListPool = new CommandListPool(graphics, this);
+        AllocatorPool = new CommandAllocatorPool(this);
+        ListPool = new CommandListPool(this);
         Tracker = new ResourceTracker(this);
 
         _d3dQueue = CreateNative(in graphics.D3DDevice);

@@ -35,12 +35,11 @@ namespace Gorgon.Graphics.Core;
 /// <summary>
 /// A pool for managing D3D 12 command lists.
 /// </summary>
-/// <param name="graphics">The graphics interface that owns this allocator.</param>
 /// <param name="queue">The command queue that owns this pool.</param>
-internal unsafe sealed class CommandListPool(GorgonGraphics graphics, CommandQueue queue)
+internal unsafe sealed class CommandListPool(CommandQueue queue)
     : IDisposable
 {
-    private readonly GorgonGraphics _graphics = graphics;
+    private readonly GorgonGraphics _graphics = queue.Graphics;
     private readonly CommandQueue _queue = queue;
     private readonly Lock _lock = new();
     private readonly List<GorgonCommandList> _free = new(32);

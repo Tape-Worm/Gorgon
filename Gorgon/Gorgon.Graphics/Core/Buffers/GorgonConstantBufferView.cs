@@ -102,13 +102,17 @@ public unsafe sealed class GorgonConstantBufferView
         {
             if (!_allocation.Equals(GpuDescriptorAllocation.Null))
             {
-                Graphics.Log.Print($"Freeing CPU descriptor handle allocation for {Name}.", LoggingLevel.Verbose);
+                Graphics.Log.Print($"Freeing descriptor handle allocation for '{Name}'.", LoggingLevel.Verbose);
                 Graphics.GpuViewDescriptors.Free(ref _allocation);
             }
         }
 
         base.Dispose(disposing);
     }
+
+    /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private protected override void OnReset() => AllocateDescriptors();
 
     /// <summary>
     /// Function to perform validations on the constant buffer view.
@@ -118,7 +122,6 @@ public unsafe sealed class GorgonConstantBufferView
     /// <param name="sizeInBytes">The total size, in bytes, of the buffer.</param>
     /// <param name="resourceOffset">The resource offset, in bytes, of the buffer within its mega buffer host.</param>
     /// <exception cref="GorgonException"><para>Thrown if the view could not be created because the buffer is smaller than the <see cref="AlignmentRequirement"/> size (256 bytes).</para>
-    /// <para>-or-</para>
     /// <para>Thrown if the buffer was not aligned to the <see cref="AlignmentRequirement"/> (256 bytes) upon creation.</para>
     /// </exception>
     internal static void ValidateConstantView(string name, int alignment, long sizeInBytes, ulong resourceOffset)
@@ -215,7 +218,7 @@ public unsafe sealed class GorgonConstantBufferView
     /// <param name="buffer">The buffer to view as a constant buffer.</param>
     /// <param name="owned"><inheritdoc cref="GorgonResourceView(GorgonGraphics, string, GorgonGpuResource, bool)" path="/param[@name='owned']"/></param>
     internal GorgonConstantBufferView(GorgonGraphics graphics, string name, GorgonGpuBuffer buffer, bool owned)
-        : base(graphics, $"{name} - Constant Buffer View", buffer, owned)
+        : base(graphics, $"{GorgonGraphicsFactory.GenerateName(name, nameof(GorgonConstantBufferView))} - Constant Buffer View", buffer, owned)
     {
         Graphics.Log.Print($"Creating constant buffer view for buffer '{Name}'...", LoggingLevel.Simple);
 

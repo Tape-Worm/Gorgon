@@ -63,7 +63,6 @@ public sealed class GorgonRawBufferView
     /// <param name="bufferSize">The total size of the buffer.</param>
     /// <param name="resourceOffset"><inheritdoc cref="GorgonConstantBufferView.ValidateConstantView(string, int, long, ulong)" path="/param[@name='resourceOffset']"/></param>
     /// <exception cref="GorgonException"><para>Thrown if the size of the buffer is less than the <see cref="MinimumElementSize"/> (4 bytes).</para>
-    /// <para>-or-</para>
     /// <para>Throw if the buffer was not aligned to the <see cref="AlignmentRequirement"/> (16 bytes) upon creation.</para>
     /// </exception>
     internal static void ValidateRawView(string name, long bufferSize, ulong resourceOffset)
@@ -107,5 +106,5 @@ public sealed class GorgonRawBufferView
     /// <param name="elementCount">The number of 4 byte elements in the buffer to view.</param>
     /// <param name="owned"><inheritdoc cref="GorgonResourceView(GorgonGraphics, string, GorgonGpuResource, bool)" path="/param[@name='owned']"/></param>
     internal GorgonRawBufferView(GorgonGraphics graphics, string name, GorgonGpuBuffer buffer, long startIndex, int elementCount, bool owned)
-        : base(graphics, $"{name} - Raw Buffer View", buffer, startIndex, elementCount, MinimumElementSize, owned) => AllocateDescriptors();
+        : base(graphics, $"{GorgonGraphicsFactory.GenerateName(name, nameof(GorgonRawBufferView))} - Raw Buffer View", buffer, startIndex, elementCount, MinimumElementSize, owned) => AllocateDescriptors();
 }

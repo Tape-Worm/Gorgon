@@ -1,0 +1,94 @@
+﻿// Gorgon.
+// Copyright (C) 2026 Michael Winsor
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+// 
+// Created: April 6, 2026 2:06:23 PM
+//
+
+using Gorgon.Core;
+using Gorgon.Diagnostics;
+
+namespace Gorgon.Graphics.Core;
+
+/// <summary>
+/// A special view for data streamed out from the GPU.
+/// </summary>
+public unsafe sealed class GorgonStreamOutView
+    : IGorgonNamedObject, IDisposable
+{
+    /// <summary>
+    /// Property to return the graphics interface that is associated with this view.
+    /// </summary>
+    public GorgonGraphics Graphics => Buffer.Graphics;
+
+    /// <summary>
+    /// Property to return the buffer used by the view to stream data into.
+    /// </summary>
+    public GorgonGpuBuffer Buffer
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the 8 byte buffer used to store counter information.
+    /// </summary>
+    public GorgonGpuBuffer CounterBuffer
+    {
+        get;
+    }
+
+    /// <inheritdoc/>
+    public string Name
+    {
+        get;
+    }
+
+    /// <inheritdoc cref="GorgonGraphicsFactory.Dispose(bool)"/>
+    private void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            Graphics.Log.Print($"Destroying stream out view '{Name}'.", LoggingLevel.Simple);
+            CounterBuffer.Dispose();
+        }
+    }
+
+    /// <inheritdoc/>
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GorgonStreamOutView"/> class.
+    /// </summary>
+    /// <param name="buffer">The buffer used to stream data into.</param>
+    /// <param name="name">The name of the view.</param>
+    public GorgonStreamOutView(GorgonGpuBuffer buffer, string name)
+    {
+        Name = GorgonGraphicsFactory.GenerateName(name, nameof(GorgonStreamOutView));
+        Buffer = buffer;
+
+        CounterBuffer = new GorgonGpuBuffer(Buffer.Graphics, $"{Name} - SO Counter", new GorgonGpuBufferInfo(sizeof(ulong)));
+        Graphics.GlobalCopier.BeginUpload()
+                             .CopyValue<long>(0, CounterBuffer)
+                             .End();
+    }
+}

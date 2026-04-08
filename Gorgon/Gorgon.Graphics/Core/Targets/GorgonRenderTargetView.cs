@@ -48,10 +48,9 @@ namespace Gorgon.Graphics.Core;
 /// </para>
 /// </remarks>
 public unsafe sealed class GorgonRenderTargetView
-    : GorgonResourceView, IGorgonImageInfo
+    : GorgonResourceView
 {
     private CpuDescriptorAllocation _allocation;
-    private readonly IGorgonImageInfo _textureImageInfo;
 
     /// <summary>
     /// Property to return the format of view data.
@@ -62,13 +61,12 @@ public unsafe sealed class GorgonRenderTargetView
     } = BufferFormat.Unknown;
 
     /// <summary>
-    /// Property to return the information about the buffer <see cref="Format"/>.
+    /// Property to return the format information for the <see cref="Format"/>.
     /// </summary>
     public GorgonFormatInfo FormatInfo
     {
         get;
     }
-
 
     /// <summary>
     /// Property to return the texture associated with this view.
@@ -102,7 +100,7 @@ public unsafe sealed class GorgonRenderTargetView
     public short DepthCount
     {
         get;
-    } = 1;
+    }
 
     /// <summary>
     /// Property to return the first map level in the view.
@@ -134,56 +132,17 @@ public unsafe sealed class GorgonRenderTargetView
     public short ArrayCount
     {
         get;
-    } = 1;
+    }
 
-    /// <inheritdoc/>
-    ImageDataType IGorgonImageInfo.ImageType => _textureImageInfo.ImageType;
-
-    /// <inheritdoc/>
-    int IGorgonImageInfo.Width => Texture.GetMipWidth(MipLevel);
-
-    /// <inheritdoc/>
-    int IGorgonImageInfo.Height => Texture.GetMipHeight(MipLevel);
-
-    /// <inheritdoc/>
-    int IGorgonImageInfo.Depth => Texture.GetMipDepth(MipLevel);
-
-    /// <inheritdoc/>
-    BufferFormat IGorgonImageInfo.Format => Format;
-
-    /// <inheritdoc/>
-    bool IGorgonImageInfo.HasPremultipliedAlpha => _textureImageInfo.HasPremultipliedAlpha;
-
-    /// <inheritdoc/>
-    int IGorgonImageInfo.MipCount => 1;
-
-    /// <inheritdoc/>
-    bool IGorgonImageInfo.IsPowerOfTwo => _textureImageInfo.IsPowerOfTwo;
-
-    /// <inheritdoc/>
-    int IGorgonImageInfo.ArrayCount => ArrayCount;
-
-    /// <inheritdoc/>
-    private protected sealed override void Dispose(bool disposing)
+    /// <summary>
+    /// Property to return the plane index in the view.
+    /// </summary>
+    /// <remarks>
+    /// This value only applies to <see cref="TextureType.Texture2D"/> textures that have a multi-sample value of <see cref="GorgonMultisampleInfo.NoMultisampling"/>.
+    /// </remarks>
+    public byte PlaneIndex
     {
-        if (disposing)
-        {
-            Graphics.Log.Print($"Destroying view '{Name}'...", LoggingLevel.Simple);
-
-            CpuDescriptorAllocation allocation = _allocation;
-            _allocation = CpuDescriptorAllocation.Null;
-
-            if (!allocation.Equals(in CpuDescriptorAllocation.Null))
-            {
-                CpuDescriptorHeap? heap = allocation.Heap;
-                Graphics.Log.Print($"Freeing CPU handle allocation for {Name}.", LoggingLevel.Verbose);
-                heap?.Free(ref allocation);
-            }
-
-            this.UnregisterDisposable(Graphics);
-        }
-
-        base.Dispose(disposing);
+        get;
     }
 
     /// <summary>
@@ -240,14 +199,16 @@ public unsafe sealed class GorgonRenderTargetView
             {
                 ArraySize = (uint)ArrayCount,
                 FirstArraySlice = (uint)ArrayIndex,
-                MipSlice = (uint)MipLevel
+                MipSlice = (uint)MipLevel,
+                PlaneSlice = PlaneIndex                
             };
             return;
         }
 
         desc.Texture2D = new D3D12_TEX2D_RTV
         {
-            MipSlice = (uint)MipLevel
+            MipSlice = (uint)MipLevel,
+            PlaneSlice = PlaneIndex
         };
     }
 
@@ -260,12 +221,19 @@ public unsafe sealed class GorgonRenderTargetView
     {
         MipSlice = (uint)MipLevel,
         FirstWSlice = (uint)StartDepth,
-        WSize = (uint)DepthCount
+        WSize = (uint)DepthCount        
     };
 
-    /// <inheritdoc/>
-    private protected sealed override (D3D12_CPU_DESCRIPTOR_HANDLE CpuHandle, D3D12_GPU_DESCRIPTOR_HANDLE GpuHandle) OnCreateViewHandles()
+    /// <summary>
+    /// Function to allocate a view descriptor from the descriptor heap.
+    /// </summary>
+    private void AllocateDescriptors()
     {
+        if (!_allocation.Equals(CpuDescriptorAllocation.Null))
+        {
+            _allocation.Heap?.Free(ref _allocation);
+        }
+
         bool hasMultiSample = !Texture.MultisampleInfo.Equals(GorgonMultisampleInfo.NoMultisampling);
         bool hasArrays = Texture.ArrayCount > 1;
         D3D12_RTV_DIMENSION dimension;
@@ -309,7 +277,69 @@ public unsafe sealed class GorgonRenderTargetView
         Graphics.RtvDescriptors.Allocate(1, out _allocation);
         Graphics.D3DDevice.Get()->CreateRenderTargetView((PID3D12Resource2)Resource.D3DResource.Get(), &desc, _allocation.CpuHandle);
 
-        return (_allocation.CpuHandle, D3D12_GPU_DESCRIPTOR_HANDLE.DEFAULT);
+        SetHandles(_allocation.CpuHandle, D3D12_GPU_DESCRIPTOR_HANDLE.DEFAULT);
+    }
+
+    /// <inheritdoc/>
+    private protected sealed override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            if (!_allocation.Equals(CpuDescriptorAllocation.Null))
+            {
+                Graphics.Log.Print($"Freeing descriptor handle allocation for '{Name}'.", LoggingLevel.Verbose);
+                CpuDescriptorHeap? heap = _allocation.Heap;
+                heap?.Free(ref _allocation);
+            }
+        }
+
+        base.Dispose(disposing);
+    }
+
+    /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private protected override void OnReset() => AllocateDescriptors();
+
+    /// <summary>
+    /// Function to determine if the view settings are valid for a render target.
+    /// </summary>
+    /// <param name="name">The name of the render target texture.</param>
+    /// <param name="formatSupport">The support for the format.</param>
+    /// <param name="textureFormatInfo">The information about the texture format.</param>
+    /// <param name="viewFormatInfo">The information about the view format.</param>
+    /// <param name="formats">The list of formats that the texture format can cast to.</param>
+    /// <param name="isRenderTarget"><b>true</b> if the texture is capable of being used as a render target, <b>false</b> if not.</param>
+    /// <exception cref="GorgonException"><para>Thrown if the texture is not a <see cref="GorgonTexture.IsRenderTarget">render target</see></para>
+    /// <para>Thrown if the format is a typeless format.</para>
+    /// <para>Thrown if the format is not supported by render targets.</para>
+    /// <para>Thrown if the texture format cannot be casted to the view format.</para>
+    /// </exception>
+    internal static void ValidateRenderTargetView(string name, GorgonBufferFormatSupport formatSupport, GorgonFormatInfo textureFormatInfo, GorgonFormatInfo viewFormatInfo, IReadOnlyList<BufferFormat> formats, bool isRenderTarget)
+    {
+        if (!isRenderTarget)
+        {
+            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_TEXTURE_RTV_NOT_RENDER_TARGET, name));
+        }
+
+        if (viewFormatInfo.IsTypeless)
+        {
+            throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_TEXTURE_RTV_FORMAT_TYPELESS_NOT_SUPPORTED);
+        }
+
+        if (!formatSupport.IsRenderTargetFormat)
+        {
+            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_TEXTURE_RTV_NOT_RENDERTARGET_FORMAT, viewFormatInfo.Format, name));
+        }
+
+        if ((textureFormatInfo.Format != viewFormatInfo.Format) && ((formats.Count == 0) || (!formats.Contains(viewFormatInfo.Format))))
+        {
+            // This is a fallback to the old way of casting. If we have a castable format that isn't part of the same group,
+            // then we should not test this.
+            if (textureFormatInfo.Group != viewFormatInfo.Group)
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_TEXTURE_VIEW_CANNOT_BE_CAST, name, textureFormatInfo.Format, viewFormatInfo.Format));
+            }
+        }
     }
 
     /// <summary>
@@ -318,22 +348,25 @@ public unsafe sealed class GorgonRenderTargetView
     /// <param name="graphics"><inheritdoc cref="GorgonResourceView(GorgonGraphics, string, GorgonGpuResource, bool)" path="/param[@name='graphics']"/></param>
     /// <param name="name"><inheritdoc cref="GorgonResourceView(GorgonGraphics, string, GorgonGpuResource, bool)" path="/param[@name='name']"/></param>
     /// <param name="texture">The texture for the view.</param>
-    /// <param name="format">The format for the view.</param>
     /// <param name="formatInfo">Information about the view format.</param>
+    /// <param name="mipLevel">The first mip level to view.</param>
+    /// <param name="firstArrayOrDepth">The first array index or depth slice to view.</param>
+    /// <param name="arrayOrDepthCount">The number of array indices/depth slices to view.</param>
+    /// <param name="planeIndex">The plane index in the view.</param>
     /// <param name="owned"><inheritdoc cref="GorgonResourceView(GorgonGraphics, string, GorgonGpuResource, bool)" path="/param[@name='owned']"/></param>
-    internal GorgonRenderTargetView(GorgonGraphics graphics, string name, GorgonTexture texture, BufferFormat format, GorgonFormatInfo formatInfo, bool owned)
-        : base(graphics, name, texture, owned)
+    internal GorgonRenderTargetView(GorgonGraphics graphics, string name, GorgonTexture texture, GorgonFormatInfo formatInfo, short mipLevel, short firstArrayOrDepth, short arrayOrDepthCount, byte planeIndex, bool owned)
+        : base(graphics, $"{GorgonGraphicsFactory.GenerateName(name, nameof(GorgonRenderTargetView))} - Render Target View", texture, owned)
     {
-        _textureImageInfo = Texture = texture;
-
-        Format = format;
+        Texture = texture;
+        Format = formatInfo.Format;
         FormatInfo = formatInfo;
+        MipLevel = mipLevel;
+        ArrayIndex = texture.Type != TextureType.Texture3D ? firstArrayOrDepth : (short)0;
+        ArrayCount = texture.Type != TextureType.Texture3D ? arrayOrDepthCount : (short)1;
+        StartDepth = texture.Type == TextureType.Texture3D ? firstArrayOrDepth : (short)0;
+        DepthCount = texture.Type == TextureType.Texture3D ? arrayOrDepthCount : (short)1;
+        PlaneIndex = planeIndex;
 
-        // Default the view depth slice count to match the actual depth.
-        DepthCount = texture.Depth;
-
-        this.RegisterDisposable(Graphics);
-
-        CreateNative();
+        AllocateDescriptors();
     }
 }

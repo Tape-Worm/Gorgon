@@ -175,11 +175,8 @@ public sealed class GorgonChunkFileReader
     /// Function to read in the header information from the chunk file and validate it.
     /// </summary>
     /// <exception cref="GorgonException"><para>Thrown when the chunked file format header ID does not match.</para>
-    /// <para>-or-</para>
     /// <para>Thrown when application specific header ID in the file was not found in the list passed to the constructor.</para>
-    /// <para>-or-</para>
     /// <para>Thrown if the chunk file table offset is less than or equal to the size of the header.</para>
-    /// <para>-or-</para>
     /// <para>Thrown if the file size recorded in the header is less than the size of the header.</para>
     /// </exception>
     protected override void OnOpen()
@@ -321,7 +318,6 @@ public sealed class GorgonChunkFileReader
     /// </para>
     /// </remarks>
     /// <exception cref="IOException"><para>Thrown if the chunk was opened without calling <see cref="GorgonChunkFile.Open"/> first.</para>
-    /// <para>-or-</para>
     /// <para>Thrown if another <see cref="IGorgonChunkReader"/> is open elsewhere.</para>
     /// </exception>
     /// <exception cref="GorgonException">Thrown when the <paramref name="chunkId" /> does not match the chunk in the file.</exception>
@@ -344,7 +340,6 @@ public sealed class GorgonChunkFileReader
     /// </para>
     /// </remarks>
     /// <exception cref="IOException"><para>Thrown if the chunk was opened without calling <see cref="GorgonChunkFile.Open"/> first.</para>
-    /// <para>-or-</para>
     /// <para>Thrown if another <see cref="IGorgonChunkReader"/> is open elsewhere.</para>
     /// </exception>
     /// <exception cref="GorgonException">Thrown when the <paramref name="chunkId" /> does not match the chunk in the file.</exception>
@@ -409,7 +404,6 @@ public sealed class GorgonChunkFileReader
     /// <remarks>
     /// </remarks>
     /// <exception cref="ArgumentEmptyException"><para>Thrown when the <paramref name="appSpecificIds"/> contains no values.</para>
-    /// <para>-or-</para>
     /// <para>Thrown when the <paramref name="stream"/> is write-only</para>
     /// </exception>
     /// <exception cref="EndOfStreamException">Thrown when the <paramref name="stream"/> is at its end.</exception>

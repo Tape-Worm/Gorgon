@@ -216,6 +216,52 @@ public record class GorgonTextureInfo(TextureType Type, BufferFormat Format)
     } = GorgonMultisampleInfo.NoMultisampling;
 
     /// <summary>
+    /// Function to create a <see cref="IGorgonTextureInfo"/> that will build a 1D texture object.
+    /// </summary>
+    /// <param name="format">The format of the texture data.</param>
+    /// <param name="width">The width of the texture, in pixels.</param>
+    /// <param name="mipCount">[Optional] The number of mip levels contained within the texture.</param>
+    /// <param name="arrayCount">[Optional] The number of array indices contained within the texture.</param>
+    /// <param name="isShaderResource"><b>true</b> to use this texture as a shader resource, <b>false</b> to deny shader access.</param>
+    /// <param name="isUnorderedResource"><b>true</b> to use this texture as an unordered access resource, <b>false</b> to deny unordered access.</param>
+    /// <returns>A new <see cref="IGorgonTextureInfo"/>.</returns>
+    public static GorgonTextureInfo Create1DTextureInfo(BufferFormat format, int width, short mipCount = 1, short arrayCount = 1, bool isShaderResource = true, bool isUnorderedResource = false) => new(TextureType.Texture1D, format)
+    {
+        Width = width,
+        Height = 1,
+        Depth = 1,
+        MipCount = mipCount,
+        ArrayCount = arrayCount,
+        IsShaderResource = isShaderResource,
+        IsUnorderedAccess = isUnorderedResource,
+        MultisampleInfo = GorgonMultisampleInfo.NoMultisampling,
+        IsCube = false
+    };
+
+    /// <summary>
+    /// Function to create a <see cref="IGorgonTextureInfo"/> that will build a 1D texture object for render target usage.
+    /// </summary>
+    /// <param name="format">The format of the texture data.</param>
+    /// <param name="width">The width of the texture, in pixels.</param>
+    /// <param name="mipCount">[Optional] The number of mip levels contained within the texture.</param>
+    /// <param name="arrayCount">[Optional] The number of array indices contained within the texture.</param>
+    /// <param name="isShaderResource"><b>true</b> to use this texture as a shader resource, <b>false</b> to deny shader access.</param>
+    /// <param name="isUnorderedResource"><b>true</b> to use this texture as an unordered access resource, <b>false</b> to deny unordered access.</param>
+    /// <returns>A new <see cref="IGorgonTextureInfo"/>.</returns>
+    public static GorgonTextureInfo Create1DRenderTargetInfo(BufferFormat format, int width, short mipCount = 1, short arrayCount = 1, bool isShaderResource = true, bool isUnorderedResource = false) => new(TextureType.Texture2D, format)
+    {
+        Width = width,
+        Height = 1,
+        Depth = 1,
+        MipCount = mipCount,
+        ArrayCount = arrayCount,
+        IsShaderResource = isShaderResource,
+        IsUnorderedAccess = isUnorderedResource,
+        IsRenderTarget = true,
+        MultisampleInfo = GorgonMultisampleInfo.NoMultisampling
+    };
+
+    /// <summary>
     /// Function to create a <see cref="IGorgonTextureInfo"/> that will build a 2D texture object.
     /// </summary>
     /// <param name="format">The format of the texture data.</param>
@@ -225,9 +271,8 @@ public record class GorgonTextureInfo(TextureType Type, BufferFormat Format)
     /// <param name="arrayCount">[Optional] The number of array indices contained within the texture.</param>
     /// <param name="isShaderResource"><b>true</b> to use this texture as a shader resource, <b>false</b> to deny shader access.</param>
     /// <param name="isUnorderedResource"><b>true</b> to use this texture as an unordered access resource, <b>false</b> to deny unordered access.</param>
-    /// <param name="multiSampleInfo">[Optional] Multisample information for the texture.</param>
     /// <returns>A new <see cref="IGorgonTextureInfo"/>.</returns>
-    public static GorgonTextureInfo Create2DTextureInfo(BufferFormat format, int width, int height, short mipCount = 1, short arrayCount = 1, bool isShaderResource = true, bool isUnorderedResource = false, GorgonMultisampleInfo? multiSampleInfo = null) => new(TextureType.Texture2D, format)
+    public static GorgonTextureInfo Create2DTextureInfo(BufferFormat format, int width, int height, short mipCount = 1, short arrayCount = 1, bool isShaderResource = true, bool isUnorderedResource = false) => new(TextureType.Texture2D, format)
     {
         Width = width,
         Height = height,
@@ -236,7 +281,32 @@ public record class GorgonTextureInfo(TextureType Type, BufferFormat Format)
         ArrayCount = arrayCount,
         IsShaderResource = isShaderResource,
         IsUnorderedAccess = isUnorderedResource,
-        MultisampleInfo = multiSampleInfo ?? GorgonMultisampleInfo.NoMultisampling
+        MultisampleInfo = GorgonMultisampleInfo.NoMultisampling,
+        IsCube = false
+    };
+
+    /// <summary>
+    /// Function to create a <see cref="IGorgonTextureInfo"/> that will build a texture cube object.
+    /// </summary>
+    /// <param name="format">The format of the texture data.</param>
+    /// <param name="width">The width of the texture, in pixels.</param>
+    /// <param name="height">The height of the texture, in pixels.</param>
+    /// <param name="cubeCount">The number of cubes contained within the texture.</param>
+    /// <param name="mipCount">[Optional] The number of mip levels contained within the texture.</param>
+    /// <param name="isShaderResource"><b>true</b> to use this texture as a shader resource, <b>false</b> to deny shader access.</param>
+    /// <param name="isUnorderedResource"><b>true</b> to use this texture as an unordered access resource, <b>false</b> to deny unordered access.</param>
+    /// <returns>A new <see cref="IGorgonTextureInfo"/>.</returns>
+    public static GorgonTextureInfo CreateTextureCubeInfo(BufferFormat format, int width, int height, short cubeCount, short mipCount = 1, bool isShaderResource = true, bool isUnorderedResource = false) => new(TextureType.Texture2D, format)
+    {
+        Width = width,
+        Height = height,
+        Depth = 1,
+        MipCount = mipCount,
+        ArrayCount = (short)(cubeCount * 6),
+        IsShaderResource = isShaderResource,
+        IsUnorderedAccess = isUnorderedResource,
+        MultisampleInfo = GorgonMultisampleInfo.NoMultisampling,
+        IsCube = true
     };
 
     /// <summary>
@@ -265,6 +335,32 @@ public record class GorgonTextureInfo(TextureType Type, BufferFormat Format)
     };
 
     /// <summary>
+    /// Function to create a <see cref="IGorgonTextureInfo"/> that will build a cube map for render target usage.
+    /// </summary>
+    /// <param name="format">The format of the texture data.</param>
+    /// <param name="width">The width of the texture, in pixels.</param>
+    /// <param name="height">The height of the texture, in pixels.</param>
+    /// <param name="cubeCount">The number of cubes contained within the texture.</param>
+    /// <param name="mipCount">[Optional] The number of mip levels contained within the texture.</param>
+    /// <param name="isShaderResource"><b>true</b> to use this texture as a shader resource, <b>false</b> to deny shader access.</param>
+    /// <param name="isUnorderedResource"><b>true</b> to use this texture as an unordered access resource, <b>false</b> to deny unordered access.</param>
+    /// <param name="multiSampleInfo">[Optional] Multisample information for the texture.</param>
+    /// <returns>A new <see cref="IGorgonTextureInfo"/>.</returns>
+    public static GorgonTextureInfo CreateRenderTargetCubeInfo(BufferFormat format, int width, int height, short cubeCount, short mipCount = 1, bool isShaderResource = true, bool isUnorderedResource = false, GorgonMultisampleInfo? multiSampleInfo = null) => new(TextureType.Texture2D, format)
+    {
+        Width = width,
+        Height = height,
+        Depth = 1,
+        MipCount = mipCount,
+        ArrayCount = (short)(cubeCount * 6),
+        IsShaderResource = isShaderResource,
+        IsUnorderedAccess = isUnorderedResource,
+        IsRenderTarget = true,
+        IsCube =true,
+        MultisampleInfo = multiSampleInfo ?? GorgonMultisampleInfo.NoMultisampling
+    };
+
+    /// <summary>
     /// Function to create a <see cref="IGorgonTextureInfo"/> that will build a 2D texture object for depth/stencil usage.
     /// </summary>
     /// <param name="format">The format of the texture data.</param>
@@ -286,6 +382,76 @@ public record class GorgonTextureInfo(TextureType Type, BufferFormat Format)
     };
 
     /// <summary>
+    /// Function to create a <see cref="IGorgonTextureInfo"/> that will build a cube map for depth/stencil usage.
+    /// </summary>
+    /// <param name="format">The format of the texture data.</param>
+    /// <param name="width">The width of the texture, in pixels.</param>
+    /// <param name="height">The height of the texture, in pixels.</param>
+    /// <param name="cubeCount">The number of cubes contained within the texture.</param>
+    /// <param name="mipCount">[Optional] The number of mip levels contained within the texture.</param>
+    /// <param name="isShaderResource"><b>true</b> to use this texture as a shader resource, <b>false</b> to deny shader access.</param>
+    /// <returns>A new <see cref="IGorgonTextureInfo"/>.</returns>
+    public static GorgonTextureInfo CreateDepthStencilCubeInfo(BufferFormat format, int width, int height, short cubeCount, short mipCount = 1, bool isShaderResource = true) => new(TextureType.Texture2D, format)
+    {
+        Width = width,
+        Height = height,
+        Depth = 1,
+        MipCount = mipCount,
+        ArrayCount = (short)(cubeCount * 6),
+        IsShaderResource = isShaderResource,
+        IsDepthStencil = true,
+        IsCube = true
+    };
+
+    /// <summary>
+    /// Function to create a <see cref="IGorgonTextureInfo"/> that will build a 3D texture object.
+    /// </summary>
+    /// <param name="format">The format of the texture data.</param>
+    /// <param name="width">The width of the texture, in pixels.</param>
+    /// <param name="height">The height of the texture, in pixels.</param>
+    /// <param name="depth">The depth of the texture, in depth slices.</param>
+    /// <param name="mipCount">[Optional] The number of mip levels contained within the texture.</param>
+    /// <param name="isShaderResource"><b>true</b> to use this texture as a shader resource, <b>false</b> to deny shader access.</param>
+    /// <param name="isUnorderedResource"><b>true</b> to use this texture as an unordered access resource, <b>false</b> to deny unordered access.</param>
+    /// <returns>A new <see cref="IGorgonTextureInfo"/>.</returns>
+    public static GorgonTextureInfo Create3DTextureInfo(BufferFormat format, int width, int height, short depth, short mipCount = 1, bool isShaderResource = true, bool isUnorderedResource = false) => new(TextureType.Texture1D, format)
+    {
+        Width = width,
+        Height = height,
+        Depth = depth,
+        MipCount = mipCount,
+        ArrayCount = 1,
+        IsShaderResource = isShaderResource,
+        IsUnorderedAccess = isUnorderedResource,
+        MultisampleInfo = GorgonMultisampleInfo.NoMultisampling,
+        IsCube = false
+    };
+
+    /// <summary>
+    /// Function to create a <see cref="IGorgonTextureInfo"/> that will build a 3D texture object for render target usage.
+    /// </summary>
+    /// <param name="format">The format of the texture data.</param>
+    /// <param name="width">The width of the texture, in pixels.</param>
+    /// <param name="height">The height of the texture, in pixels.</param>
+    /// <param name="depth">The depth of the texture, in depth slices.</param>
+    /// <param name="mipCount">[Optional] The number of mip levels contained within the texture.</param>
+    /// <param name="isShaderResource"><b>true</b> to use this texture as a shader resource, <b>false</b> to deny shader access.</param>
+    /// <param name="isUnorderedResource"><b>true</b> to use this texture as an unordered access resource, <b>false</b> to deny unordered access.</param>
+    /// <returns>A new <see cref="IGorgonTextureInfo"/>.</returns>
+    public static GorgonTextureInfo Create3DRenderTargetInfo(BufferFormat format, int width, int height, short depth, short mipCount = 1, bool isShaderResource = true, bool isUnorderedResource = false) => new(TextureType.Texture2D, format)
+    {
+        Width = width,
+        Height = height,
+        Depth = depth,
+        MipCount = mipCount,
+        ArrayCount = 1,
+        IsShaderResource = isShaderResource,
+        IsUnorderedAccess = isUnorderedResource,
+        IsRenderTarget = true,
+        MultisampleInfo = GorgonMultisampleInfo.NoMultisampling
+    };
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="GorgonTextureInfo"/> class.
     /// </summary>
     /// <param name="info">The <see cref="IGorgonImageInfo"/> to derive the texture settings from.</param>
@@ -303,48 +469,6 @@ public record class GorgonTextureInfo(TextureType Type, BufferFormat Format)
         IsShaderResource = true,
         MultisampleInfo = GorgonMultisampleInfo.NoMultisampling
     };
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonTextureInfo"/> class.
-    /// </summary>
-    /// <param name="info">The texture information to copy.</param>
-    [SetsRequiredMembers()]
-    internal GorgonTextureInfo(ref readonly GpuResourceInfo info)
-        : this(info.ResourceType.ToTextureType(), info.Format)
-    {
-        switch (Type)
-        {
-            case TextureType.Texture1D:
-                Width = info.Texture1D.Width;
-                Height = 1;
-                Depth = 1;
-                ArrayCount = info.Texture1D.ArrayCount;
-                MipCount = info.Texture1D.MipCount;
-                MultisampleInfo = GorgonMultisampleInfo.NoMultisampling;
-                break;
-            case TextureType.Texture2D:
-                Width = info.Texture2D.Width;
-                Height = info.Texture2D.Height;
-                Depth = 1;
-                ArrayCount = info.Texture2D.ArrayCount;
-                MipCount = info.Texture2D.MipCount;
-                MultisampleInfo = info.Texture2D.MultisampleInfo;
-                break;
-            case TextureType.Texture3D:
-                Width = info.Texture3D.Width;
-                Height = info.Texture3D.Height;
-                Depth = info.Texture3D.Depth;
-                ArrayCount = 1;
-                MipCount = info.Texture3D.MipCount;
-                MultisampleInfo = GorgonMultisampleInfo.NoMultisampling;
-                break;
-        }
-
-        IsRenderTarget = (info.Usage & GraphicsResourceUsage.RenderTarget) == GraphicsResourceUsage.RenderTarget;
-        IsDepthStencil = (info.Usage & GraphicsResourceUsage.DepthStencil) == GraphicsResourceUsage.DepthStencil;
-        IsUnorderedAccess = (info.Usage & GraphicsResourceUsage.UnorderedAccess) == GraphicsResourceUsage.UnorderedAccess;
-        IsShaderResource = (info.Usage & GraphicsResourceUsage.ShaderResource) == GraphicsResourceUsage.ShaderResource;
-    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonTextureInfo"/> class.

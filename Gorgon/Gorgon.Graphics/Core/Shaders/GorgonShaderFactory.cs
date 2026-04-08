@@ -497,7 +497,6 @@ public unsafe class GorgonShaderFactory
     /// <returns>A shader compilation result containing either the shader, or an error message.</returns>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="sourceCode"/>, or <paramref name="entryPoint"/> parameters are empty.</exception>
     /// <exception cref="GorgonException">Thrown if the <paramref name="shaderType"/> or <paramref name="shaderModel"/> are not supported.
-    /// <para>-or-</para>
     /// <para>Thrown if the shader failed compilation due to errors in the code, or the shader compiler had an internal error.</para>
     /// </exception>
     /// <remarks>

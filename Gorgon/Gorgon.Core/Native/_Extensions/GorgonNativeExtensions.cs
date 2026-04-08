@@ -308,10 +308,8 @@ public static class GorgonNativeExtensions
         /// <exception cref="IOException">Thrown when the stream is read only.</exception>
         /// <exception cref="EndOfStreamException">Thrown when the stream is at its end.</exception>"
         /// <exception cref="ArgumentException"><para>Thrown if the <paramref name="index"/> is larger than the <see cref="GorgonNativeBuffer{T}.Length"/> of the <see cref="GorgonNativeBuffer{T}"/>.</para>
-        /// <para>-or-</para>
-        /// <para>Thrown if the <paramref name="index"/> is less than 0, or the <paramref name="count"/> parameter is less than 1.</para>
-        /// <para>-or-</para>
-        /// <para>Thrown if the <paramref name="index"/> plus the <paramref name="count"/> is larger than the buffer or stream.</para>
+            /// <para>Thrown if the <paramref name="index"/> is less than 0, or the <paramref name="count"/> parameter is less than 1.</para>
+            /// <para>Thrown if the <paramref name="index"/> plus the <paramref name="count"/> is larger than the buffer or stream.</para>
         /// </exception>
         /// <remarks>
         /// <para>
@@ -434,10 +432,8 @@ public static class GorgonNativeExtensions
         /// <exception cref="NullReferenceException">Thrown when this pointer is <b>null</b>.</exception>
         /// <exception cref="IOException">Thrown when the stream is read only.</exception>
         /// <exception cref="ArgumentException"><para>Thrown if the <paramref name="index"/> is larger than the <see cref="GorgonNativeBuffer{T}.Length"/> of the <see cref="GorgonNativeBuffer{T}"/>.</para>
-        /// <para>-or-</para>
-        /// <para>Thrown if the <paramref name="index"/> is less than 0, or the <paramref name="count"/> parameter is less than 1.</para>
-        /// <para>-or-</para>
-        /// <para>Thrown if the <paramref name="index"/> plus the <paramref name="count"/> is larger than the buffer or stream.</para>
+            /// <para>Thrown if the <paramref name="index"/> is less than 0, or the <paramref name="count"/> parameter is less than 1.</para>
+            /// <para>Thrown if the <paramref name="index"/> plus the <paramref name="count"/> is larger than the buffer or stream.</para>
         /// </exception>
         /// <remarks>
         /// <para>

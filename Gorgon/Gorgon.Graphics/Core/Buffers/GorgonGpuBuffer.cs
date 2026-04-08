@@ -188,7 +188,7 @@ public sealed unsafe class GorgonGpuBuffer
     /// <note type="important">
     /// <para>
     /// The buffer used for the constant buffer view <b>MUST</b> be aligned to <see cref="GorgonConstantBufferView.AlignmentRequirement"/> (256 bytes). Ensure the <see cref="GorgonGpuBufferInfo.Alignment"/> 
-    /// property on <see cref="GorgonGpuBufferInfo"/> is set to match the <see cref="GorgonConstantBufferView.AlignmentRequirement"/> 
+    /// property on the <see cref="GorgonGpuBufferInfo"/> passed to the buffer's constructor is set to match the <see cref="GorgonConstantBufferView.AlignmentRequirement"/> 
     /// upon buffer creation.
     /// </para>
     /// </note>
@@ -204,8 +204,9 @@ public sealed unsafe class GorgonGpuBuffer
         {
             GorgonConstantBufferView.ValidateConstantView(Name, Alignment, SizeInBytes, ResourceOffset);
 
-            if ((_cbv is not null) && (_cbv.D3DCpuHandle != D3D12_CPU_DESCRIPTOR_HANDLE.DEFAULT))
+            if (_cbv is not null)
             {
+                _cbv.Reset();
                 return _cbv;
             }
 
@@ -259,8 +260,9 @@ public sealed unsafe class GorgonGpuBuffer
 
             ViewKey key = new(BufferFormat.Unknown, startIndex, ((long)count.Value << 32) | (uint)structSize);
 
-            if ((_structs.TryGetValue(key, out GorgonStructuredBufferView? result)) && (result.D3DCpuHandle != D3D12_CPU_DESCRIPTOR_HANDLE.DEFAULT))
+            if (_structs.TryGetValue(key, out GorgonStructuredBufferView? result))
             {
+                result.Reset();
                 return result;
             }
 
@@ -309,8 +311,9 @@ public sealed unsafe class GorgonGpuBuffer
 
             ViewKey key = new(BufferFormat.Unknown, startIndex, count.Value);
 
-            if ((_raws.TryGetValue(key, out GorgonRawBufferView? result)) && (result.D3DCpuHandle != D3D12_CPU_DESCRIPTOR_HANDLE.DEFAULT))
+            if (_raws.TryGetValue(key, out GorgonRawBufferView? result))
             {
+                result.Reset();
                 return result;
             }
 
@@ -363,12 +366,13 @@ public sealed unsafe class GorgonGpuBuffer
 
             ViewKey key = new(format, startIndex, count.Value);
 
-            if ((_typeds.TryGetValue(key, out GorgonTypedBufferView? result)) && (result.D3DCpuHandle != D3D12_CPU_DESCRIPTOR_HANDLE.DEFAULT))
+            if (_typeds.TryGetValue(key, out GorgonTypedBufferView? result))
             {
+                result.Reset();
                 return result;
             }
 
-            return _typeds[key] = new GorgonTypedBufferView(Graphics, Name, this, format, formatInfo.SizeInBytes, startIndex, count.Value, owned);
+            return _typeds[key] = new GorgonTypedBufferView(Graphics, Name, this, formatInfo, startIndex, count.Value, owned);
         }
     }
 
@@ -453,7 +457,6 @@ public sealed unsafe class GorgonGpuBuffer
     /// <param name="name"><inheritdoc cref="GorgonGpuResource(GorgonGraphics, string, ComPtr{ID3D12Resource2})" path="/param[@name='name']"/></param>
     /// <param name="info">Information used to create the buffer.</param>
     /// <exception cref="GorgonException"><para>Thrown if the buffer cannot be created because the size is less than 1 byte.</para>
-    /// <para>-or-</para>
     /// <para>Thrown if the <see cref="GorgonGpuBufferInfo.Alignment"/> value is negative.</para>
     /// </exception>
     /// <remarks>

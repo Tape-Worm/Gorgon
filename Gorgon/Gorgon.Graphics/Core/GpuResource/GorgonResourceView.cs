@@ -21,15 +21,10 @@
 // Created: January 3, 2026 12:18:17 PM
 //
 
-using System;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using System.Text;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
-using Gorgon.Graphics.Imaging;
 using TerraFX.Interop.DirectX;
-using TerraFX.Interop.Windows;
 
 namespace Gorgon.Graphics.Core;
 
@@ -105,6 +100,8 @@ public abstract class GorgonResourceView
     {
         if (disposing)
         {
+            Graphics.Log.Print($"Destroying view '{Name}' for resource '{Resource.Name}'...", LoggingLevel.Simple);
+
             D3DCpuHandle = D3D12_CPU_DESCRIPTOR_HANDLE.DEFAULT;
             D3DGpuHandle = D3D12_GPU_DESCRIPTOR_HANDLE.DEFAULT;
 
@@ -117,12 +114,6 @@ public abstract class GorgonResourceView
             this.UnregisterDisposable(Graphics);
         }
     }
-
-    /// <summary>
-    /// Function to create the handles required for the view.
-    /// </summary>
-    /// <returns>A tuple containing the D3D CPU descriptor handle, and, optionally, the D3D12 GPU descriptor handle.</returns>
-    private protected virtual (D3D12_CPU_DESCRIPTOR_HANDLE CpuHandle, D3D12_GPU_DESCRIPTOR_HANDLE GpuHandle) OnCreateViewHandles() => (D3D12_CPU_DESCRIPTOR_HANDLE.DEFAULT, D3D12_GPU_DESCRIPTOR_HANDLE.DEFAULT);
 
     /// <summary>
     /// Function to assign the descriptor handles to the associated properties.
@@ -142,10 +133,21 @@ public abstract class GorgonResourceView
     }
 
     /// <summary>
-    /// Function to create the native view handle(s) and memory allocation information.
+    /// Function to reset the allocation if it's been freed.
     /// </summary>
-    [Obsolete("This is the old way, get rid of it!")]
-    protected void CreateNative() => (D3DCpuHandle, D3DGpuHandle) = OnCreateViewHandles();
+    private protected abstract void OnReset();
+
+    /// <summary>
+    /// Function to reset the allocation if it's been freed.
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal void Reset()
+    {
+        if (D3DCpuHandle == D3D12_CPU_DESCRIPTOR_HANDLE.DEFAULT)
+        {
+            OnReset();
+        }
+    }
 
     /// <inheritdoc/>
     public void Dispose()

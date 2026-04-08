@@ -706,7 +706,6 @@ public sealed class GorgonFont
     /// </para>
     /// </remarks>
     /// <exception cref="GorgonException">Thrown when the texture size in the settings exceeds that of the capabilities of the feature level.
-    /// <para>-or-</para>
     /// <para>Thrown when the font family name is <b>null</b> or Empty.</para>
     /// </exception>
     internal async Task GenerateFontAsync(PrivateFontCollection externalFontCollection)
@@ -784,7 +783,6 @@ public sealed class GorgonFont
     /// </para>
     /// </remarks>
     /// <exception cref="GorgonException">Thrown when the texture size in the settings exceeds that of the capabilities of the feature level.
-    /// <para>-or-</para>
     /// <para>Thrown when the font family name is <b>null</b> or Empty.</para>
     /// </exception>
     internal void GenerateFont(PrivateFontCollection externalFontCollection)

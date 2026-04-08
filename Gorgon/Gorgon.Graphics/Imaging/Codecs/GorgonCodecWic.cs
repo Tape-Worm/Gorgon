@@ -316,7 +316,6 @@ public abstract class GorgonCodecWic<TWicEncOpt, TWicDecOpt>
     /// <param name="stream">The stream containing the image data.</param>
     /// <returns>A list of <c>Point</c> values that indicate the offset within the image for each frame.</returns>
     /// <exception cref="IOException">Thrown when the stream is write-only.
-    /// <para>-or-</para>
     /// <para>Thrown when the stream cannot perform seek operations.</para>
     /// </exception>
     /// <exception cref="EndOfStreamException">Thrown when an attempt to read beyond the end of the stream is made.</exception>

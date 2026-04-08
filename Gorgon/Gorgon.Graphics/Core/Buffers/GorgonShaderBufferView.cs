@@ -89,22 +89,6 @@ public unsafe abstract class GorgonShaderBufferView
     }
 
     /// <summary>
-    /// Function to assign the descriptor allocation to the view.
-    /// </summary>
-    /// <returns>The new descriptor allocation for the view.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private ref readonly GpuDescriptorAllocation GetDescriptorAllocation()
-    {
-        if (!_allocation.Equals(in GpuDescriptorAllocation.Null))
-        {
-            Graphics.GpuViewDescriptors.Free(ref _allocation);
-        }
-
-        Graphics.GpuViewDescriptors.Allocate(1, out _allocation);
-        return ref _allocation;
-    }
-
-    /// <summary>
     /// Function to retrieve the shader resource view description.
     /// </summary>
     /// <returns>The shader resource description used to create the descriptor.</returns>
@@ -115,15 +99,20 @@ public unsafe abstract class GorgonShaderBufferView
     /// </summary>
     private protected void AllocateDescriptors()
     {
+        if (!_allocation.Equals(GpuDescriptorAllocation.Null))
+        {
+            Graphics.GpuViewDescriptors.Free(ref _allocation);
+        }
+
         D3D12_SHADER_RESOURCE_VIEW_DESC desc = GetDesc();
 
-        ref readonly GpuDescriptorAllocation allocation = ref GetDescriptorAllocation();
+        Graphics.GpuViewDescriptors.Allocate(1, out _allocation);        
 
         D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = Graphics.GpuViewDescriptors.D3DCpuHandle;
         D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle = Graphics.GpuViewDescriptors.D3DGpuHandle;
 
-        cpuHandle.Offset(allocation.Offset, Graphics.GpuViewDescriptors.DescriptorSize);
-        gpuHandle.Offset(allocation.Offset, Graphics.GpuViewDescriptors.DescriptorSize);        
+        cpuHandle.Offset(_allocation.Offset, Graphics.GpuViewDescriptors.DescriptorSize);
+        gpuHandle.Offset(_allocation.Offset, Graphics.GpuViewDescriptors.DescriptorSize);
 
         Graphics.D3DDevice.Get()->CreateShaderResourceView((PID3D12Resource2)Buffer.D3DResource.Get(), &desc, cpuHandle);
 
@@ -137,14 +126,17 @@ public unsafe abstract class GorgonShaderBufferView
         {
             if (!_allocation.Equals(GpuDescriptorAllocation.Null))
             {
-                Graphics.Log.Print($"Freeing CPU descriptor handle allocation for {Name}.", LoggingLevel.Verbose);
+                Graphics.Log.Print($"Freeing descriptor handle allocation for '{Name}'.", LoggingLevel.Verbose);
                 Graphics.GpuViewDescriptors.Free(ref _allocation);
-                _allocation = GpuDescriptorAllocation.Null;
             }
         }
 
         base.Dispose(disposing);
     }
+
+    /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private protected override void OnReset() => AllocateDescriptors();
 
     /// <summary>
     /// Function to retrieve the handle of the view, which is used to pass to a shader for resource heap indexing.

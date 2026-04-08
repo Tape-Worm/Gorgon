@@ -421,7 +421,6 @@ public abstract class Gorgon2DEffect
     /// <returns>A <see cref="PassContinuationState"/> value describing how to continue on to the next pass (if applicable).</returns>
     /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> parameter is less than 0, or not less than <see cref="PassCount"/>.</exception>
     /// <exception cref="GorgonException">Thrown if this method is has been called once before and called again without calling <see cref="EndPass"/>.
-    /// <para>-or-</para>
     /// <para>Thrown if <see cref="BeginRender"/> was not called prior to calling this method.</para>
     /// </exception>
     /// <remarks>

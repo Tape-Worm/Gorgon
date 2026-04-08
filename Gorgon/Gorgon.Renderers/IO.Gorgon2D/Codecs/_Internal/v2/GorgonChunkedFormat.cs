@@ -143,7 +143,6 @@ internal abstract class GorgonChunkedFormat
     /// <param name="chunkName">The name of the chunk.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="chunkName"/> parameter is NULL (Nothing in VB.Net).</exception>
     /// <exception cref="ArgumentException">Thrown when the chunkName parameter is empty.
-    /// <para>-or-</para>
     /// <para>Thrown when the chunkName parameter is less than 8 characters.</para>
     /// </exception>
     /// <exception cref="InvalidDataException">Thrown when reading a chunk ID and it does not match the requested chunk name.</exception>
@@ -270,9 +269,7 @@ internal abstract class GorgonChunkedFormat
     /// <param name="accessMode">Stream access mode for the chunk object.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="stream"/> parameter is NULL (Nothing in VB.Net).</exception>
     /// <exception cref="ArgumentException">Thrown when the <paramref name="accessMode"/> parameter is set to read, but the stream cannot be read.
-    /// <para>-or-</para>
     /// <para>Thrown when the accessMode parameter is set to write, but the stream cannot be written.</para>
-    /// <para>-or-</para>
     /// <para>Thrown if the stream can't perform seek operations.</para>
     /// </exception>
     protected GorgonChunkedFormat(Stream stream, ChunkAccessMode accessMode)

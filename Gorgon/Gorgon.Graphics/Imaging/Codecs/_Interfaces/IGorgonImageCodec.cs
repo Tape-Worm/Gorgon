@@ -345,7 +345,6 @@ public interface IGorgonImageCodec
     /// The image meta data as a <see cref="IGorgonImageInfo"/> value.
     /// </returns>
     /// <exception cref="IOException">Thrown when the <paramref name="stream"/> is write-only or if the stream cannot perform seek operations.
-    /// <para>-or-</para>
     /// <para>Thrown if the file is corrupt or can't be read by the codec.</para>
     /// </exception>
     /// <exception cref="IOException">Thrown when the <paramref name="stream"/> is write-only or if the stream cannot perform seek operations.</exception>

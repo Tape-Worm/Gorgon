@@ -139,7 +139,6 @@ public interface IGorgonFileSystemProvider
     /// <param name="virtualRootDirectory">A virtual directory path that the directories and files from the physical file system will be mounted into.</param>		
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="physicalPath"/>, or the <paramref name="virtualRootDirectory"/> parameter is empty.</exception>
     /// <exception cref="GorgonException"><para>Thrown if the physical file system could not be read.</para>
-    /// <para>-or-</para>
     /// <para>The <paramref name="physicalPath"/> is not under the <paramref name="physicalMountPoint"/> path.</para>
     /// </exception>
     /// <returns>A <see cref="GorgonPhysicalFileSystemData"/> object containing information about the directories and files contained within the physical file system.</returns>

@@ -81,9 +81,7 @@ public sealed class GorgonStructuredBufferView
     /// <param name="resourceOffset"><inheritdoc cref="GorgonConstantBufferView.ValidateConstantView(string, int, long, ulong)" path="/param[@name='resourceOffset']"/></param>
     /// <exception cref="ArgumentOutOfRangeException">Thrown if the <paramref name="structSize"/> is less than the <see cref="MinimumElementSize"/> (4 bytes).</exception>
     /// <exception cref="GorgonException"><para>Thrown if the <paramref name="structSize"/> is not a multiple of the <see cref="MinimumElementSize"/> (4 bytes).</para>
-    /// <para>-or-</para>
     /// <para>Thrown if the size of the buffer is less than the <see cref="MinimumElementSize"/> (4 bytes).</para>
-    /// <para>-or-</para>
     /// <para>Throw if the buffer was not aligned to the <paramref name="structSize"/> upon creation.</para>
     /// </exception>
     internal static void ValidateStructuredView(string name, int structSize, long bufferSize, ulong resourceOffset)
@@ -118,5 +116,5 @@ public sealed class GorgonStructuredBufferView
     /// <param name="elementCount">The number of elements of the structure type in the buffer.</param>
     /// <param name="owned"><inheritdoc cref="GorgonResourceView(GorgonGraphics, string, GorgonGpuResource, bool)" path="/param[@name='owned']"/></param>
     internal GorgonStructuredBufferView(GorgonGraphics graphics, string name, GorgonGpuBuffer buffer, long startIndex, int elementSize, int elementCount, bool owned)
-        : base(graphics, $"{name} - Structured Buffer View", buffer, startIndex, elementCount, elementSize, owned) => AllocateDescriptors();
+        : base(graphics, $"{GorgonGraphicsFactory.GenerateName(name, nameof(GorgonStructuredBufferView))} - Structured Buffer View", buffer, startIndex, elementCount, elementSize, owned) => AllocateDescriptors();
 }

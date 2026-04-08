@@ -332,7 +332,6 @@ public interface IGorgonFileSystem
     /// <param name="path">Path to the file to retrieve.</param>
     /// <returns>The <see cref="IGorgonVirtualFile"/> requested or <b>null</b> if the file was not found.</returns>
     /// <exception cref="ArgumentEmptyException"><para>Thrown when the <paramref name="path"/> parameter is empty.</para>
-    /// <para>-or-</para>
     /// <para>Thrown when there is no file name in the <paramref name="path"/>.</para>
     /// </exception>
     /// <remarks>
@@ -515,7 +514,6 @@ public interface IGorgonFileSystem
     /// <param name="provider">[Optionl] The provider used to retrieve the physical file system data.</param>
     /// <param name="mountPath">[Optional] Virtual directory path to mount into.</param>
     /// <exception cref="ArgumentEmptyException"><para>Thrown when the <paramref name="physicalPath"/> parameter is an empty string.</para>
-    /// <para>-or-</para>
     /// <para>Thrown if mounting a directory and there is no directory in the path.</para>
     /// </exception>
     /// <exception cref="DirectoryNotFoundException">Thrown when the directory specified by <paramref name="physicalPath"/> was not found.</exception>
@@ -635,7 +633,6 @@ public interface IGorgonFileSystem
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> is empty.</exception>
     /// <exception cref="GorgonException">Thrown when the file system is in read only mode and the <paramref name="write"/> parameter is set to <b>true</b>.</exception>
     /// <exception cref="FileNotFoundException"><para>Thrown when the file referenced by the <paramref name="path"/> was not found and the <paramref name="write"/> parameter is set to <b>false</b>.</para>
-    /// <para>-or-</para>
     /// <para>Thrown when the <paramref name="path"/> points to a directory, and the <paramref name="write"/> parameter is set to <b>false</b>.</para>
     /// </exception>
     /// <exception cref="DirectoryNotFoundException">Thrown when the directory in the <paramref name="path"/> was not found.</exception>
@@ -729,7 +726,6 @@ public interface IGorgonFileSystem
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/> is empty.</exception>
     /// <exception cref="DirectoryNotFoundException">Thrown when the directory specified by the <paramref name="path"/> could not be found.</exception>
     /// <exception cref="GorgonException"><para>Thrown when no physical directory has been mounted as a writable file system.</para>
-    /// <para>-or-</para>
     /// <para>The <paramref name="path"/> belongs to a read only file system provider.</para>
     /// </exception>
     /// <remarks>
@@ -767,13 +763,10 @@ public interface IGorgonFileSystem
     /// <exception cref="ArgumentEmptyException">Thrown if the <paramref name="path"/>, or the <paramref name="newName"/> parameters are empty.</exception>
     /// <exception cref="DirectoryNotFoundException">Thrown if the <paramref name="path"/> was not found on the file system.</exception>
     /// <exception cref="GorgonException"><para>Thrown when no physical directory has been mounted as a writable file system.</para>
-    /// <para>-or-</para>
     /// <para>The <paramref name="path"/> belongs to a read only file system provider.</para>
     /// </exception>
     /// <exception cref="IOException"><para>Thrown if the <paramref name="path"/> points to the root directory.</para>
-    /// <para>-or-</para>
     /// <para>Thrown if the new directory is the same as the <paramref name="path"/>.</para>
-    /// <para>-or-</para>
     /// <para>Thrown if the the new directory name already exists.</para>
     /// </exception>
     /// <remarks>
@@ -803,7 +796,6 @@ public interface IGorgonFileSystem
     /// <exception cref="DirectoryNotFoundException">Thrown when the directory specified by the <paramref name="sourcePath"/>, or <paramref name="destinationPath"/> could not be found.</exception>
     /// <exception cref="GorgonException">Thrown when no physical directory has been mounted as a writable file system.</exception>
     /// <exception cref="IOException"><para>Thrown if the source and destination paths are the same.</para>
-    /// <para>-or-</para>
     /// <para>Thrown if the destination is a child of the source directory.</para>
     /// </exception>
     /// <remarks>
@@ -841,11 +833,9 @@ public interface IGorgonFileSystem
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="sourcePath"/>, or <paramref name="destinationPath"/> parameter is empty.</exception>
     /// <exception cref="DirectoryNotFoundException">Thrown when the directory specified by the <paramref name="sourcePath"/>, or <paramref name="destinationPath"/> could not be found.</exception>
     /// <exception cref="GorgonException"><para>Thrown when no physical directory has been mounted as a writable file system.</para>
-    /// <para>-or-</para>
     /// <para>The <paramref name="sourcePath"/> belongs to a read only file system provider.</para>
     /// </exception>
     /// <exception cref="IOException"><para>Thrown if the source and destination paths are the same.</para>
-    /// <para>-or-</para>
     /// <para>Thrown if the destination is a child of the source directory.</para>
     /// </exception>
     /// <remarks>
@@ -892,7 +882,6 @@ public interface IGorgonFileSystem
     /// <exception cref="FileNotFoundException">Thrown when the file specified by the <paramref name="sourcePath"/> could not be found.</exception>
     /// <exception cref="DirectoryNotFoundException">Thrown when the directory specified by the <paramref name="destinationPath"/> could not be found.</exception>
     /// <exception cref="GorgonException"><para>Thrown when no physical directory has been mounted as a writable file system.</para>
-    /// <para>-or-</para>
     /// <para>The <paramref name="sourcePath"/> belongs to a read only file system provider.</para>
     /// </exception>
     /// <exception cref="IOException">Thrown if the source and destination paths are the same.</exception>
@@ -922,7 +911,6 @@ public interface IGorgonFileSystem
     /// <exception cref="FileNotFoundException">Thrown when the file specified by the <paramref name="path"/> could not be found.</exception>
     /// <exception cref="DirectoryNotFoundException">Thrown when the directory specified in the <paramref name="path"/> could not be found.</exception>
     /// <exception cref="GorgonException"><para>Thrown when no physical directory has been mounted as a writable file system.</para>
-    /// <para>-or-</para>
     /// <para>The <paramref name="path"/> belongs to a read only file system provider.</para>
     /// </exception>
     /// <remarks>
@@ -949,9 +937,7 @@ public interface IGorgonFileSystem
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="sourcePath"/>, or the <paramref name="destinationPath"/> parameter is empty.</exception>
     /// <exception cref="GorgonException">Thrown when no physical directory has been mounted as a writable file system.</exception>
     /// <exception cref="IOException"><para>Thrown if the source and destination paths are the same.</para>
-    /// <para>-or-</para>
     /// <para>Thrown if the file copy operation failed during the process.</para>
-    /// <para>-or-</para>
     /// <para>The <paramref name="options"/> contains a <see cref="GorgonFileSystemCopyOptions.ConflictResolutionCallback"/> that returns the <see cref="FileConflictResolution.Exception"/> value.</para>
     /// </exception>
     /// <exception cref="FileNotFoundException">Thrown when the source file was not found in the file system.</exception>
@@ -986,7 +972,6 @@ public interface IGorgonFileSystem
     /// <param name="path">The path to the file to rename.</param>
     /// <param name="newName">The new name for the file.</param>
     /// <exception cref="GorgonException"><para>Thrown when no physical directory has been mounted as a writable file system.</para>
-    /// <para>-or-</para>
     /// <para>The <paramref name="path"/> belongs to a read only file system provider.</para>
     /// </exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="path"/>, or the <paramref name="newName"/> parameter is empty.</exception>

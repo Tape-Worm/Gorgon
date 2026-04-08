@@ -315,7 +315,6 @@ public sealed class GorgonNativeBuffer<T>
     /// <param name="alignment">[Optional] The alignment for the memory block.</param>    
     /// <param name="preserve">[Optional] Flag that controls whether memory contents should be preserved or not.</param>
     /// <exception cref="ArgumentException"><para>Thrown when the <paramref name="length"/> parameter is less than 1.</para>
-    /// <para>-or-</para>
     /// <para>Thrown when the <paramref name="alignment"/> parameter is not a power of two.</para>
     /// </exception>
     /// <exception cref="NullReferenceException">Thrown if the underlying memory was freed.</exception>
@@ -656,7 +655,6 @@ public sealed class GorgonNativeBuffer<T>
     /// <param name="destIndex">[Optional] The destination index in the destination buffer to start copying into.</param>
     /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="sourceIndex"/>, or the <paramref name="destIndex"/> parameter is less than 0.</exception>
     /// <exception cref="ArgumentException"><para>Thrown when the <paramref name="sourceIndex"/> + <paramref name="count"/> is too big for this buffer.</para>
-    /// <para>-or-</para>
     /// <para>Thrown when the <paramref name="destIndex"/> + <paramref name="count"/> is too big for the <paramref name="destination"/> buffer.</para>
     /// </exception>
     /// <remarks>
@@ -886,7 +884,6 @@ public sealed class GorgonNativeBuffer<T>
     /// <param name="alignment">[Optional] The alignment of the buffer, in bytes.</param>
     /// <param name="init">[Optional] <b>true</b> to initialize the buffer with a byte value of 0, or <b>false</b> to leave uninitialized.</param>
     /// <exception cref="ArgumentException"><para>Thrown when the <paramref name="length"/> is less than 0.</para>
-    /// <para>-or-</para>
     /// <para>Thrown when the <paramref name="alignment"/> parameter is not a power of two.</para>
     /// </exception>
     /// <remarks>

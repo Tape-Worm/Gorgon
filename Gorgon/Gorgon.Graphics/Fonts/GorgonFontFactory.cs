@@ -363,9 +363,7 @@ public sealed class GorgonFontFactory
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="fontInfo"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentException">Thrown when the <see cref="IGorgonFontInfo.TextureWidth"/> or <see cref="IGorgonFontInfo.TextureHeight"/> parameters exceed the <see cref="IGorgonVideoAdapterInfo.MaxTextureWidth"/> or 
     /// <see cref="IGorgonVideoAdapterInfo.MaxTextureHeight"/> available for the current <see cref="FeatureSet"/>.
-    /// <para>-or-</para>
     /// <para>Thrown if the <see cref="IGorgonFontInfo.Characters"/> list does not contain the <see cref="IGorgonFontInfo.DefaultCharacter"/> character.</para>
-    /// <para>-or-</para>
     /// <para>A font with the same name was already created by the factory, but does not have the same parameters.</para>
     /// </exception>
     /// <remarks>
@@ -445,9 +443,7 @@ public sealed class GorgonFontFactory
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="fontInfo"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentException">Thrown when the <see cref="IGorgonFontInfo.TextureWidth"/> or <see cref="IGorgonFontInfo.TextureHeight"/> parameters exceed the <see cref="IGorgonVideoAdapterInfo.MaxTextureWidth"/> or 
     /// <see cref="IGorgonVideoAdapterInfo.MaxTextureHeight"/> available for the current <see cref="FeatureSet"/>.
-    /// <para>-or-</para>
     /// <para>Thrown if the <see cref="IGorgonFontInfo.Characters"/> list does not contain the <see cref="IGorgonFontInfo.DefaultCharacter"/> character.</para>
-    /// <para>-or-</para>
     /// <para>A font with the same name was already created by the factory, but does not have the same parameters.</para>
     /// </exception>
     /// <remarks>

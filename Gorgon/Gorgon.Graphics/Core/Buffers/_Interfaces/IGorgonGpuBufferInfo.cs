@@ -46,7 +46,7 @@ public interface IGorgonGpuBufferInfo
     /// <para>
     /// <note type="important">
     /// <para>
-    /// For buffers used a <see cref="GorgonConstantBufferView"/>, this value <b>MUST</b> be set to 256.
+    /// For buffers meant to be used as a <see cref="GorgonConstantBufferView"/>, this value <b>MUST</b> be set to <see cref="GorgonConstantBufferView.AlignmentRequirement"/> (256 bytes).
     /// </para>
     /// </note>
     /// </para>

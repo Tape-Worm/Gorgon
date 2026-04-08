@@ -279,8 +279,7 @@ public static class GdiPlusExtensions
         /// <returns>A new GDI+ bitmap object.</returns>
         /// <exception cref="ArgumentException">Thrown if the buffer and the bitmap do not have the same width and height.</exception>
         /// <exception cref="GorgonException">Thrown if the buffer is not a 32 bit <c>R8G8B8A8</c> format, or <c>B8G8R8*</c> format.
-        /// <para>-or-</para>
-        /// <para>Thrown when the bitmap is not in a 32 bit ARGB format.</para>
+            /// <para>Thrown when the bitmap is not in a 32 bit ARGB format.</para>
         /// </exception>
         /// <remarks>
         /// <para>
@@ -417,8 +416,7 @@ public static class GdiPlusExtensions
         /// <returns>A new GDI+ bitmap object.</returns>
         /// <exception cref="ArgumentException">Thrown if the bitmap and the buffer do not have the same width and height.</exception>
         /// <exception cref="GorgonException">Thrown if the buffer is not a 32 bit <c>R8G8B8A8</c> format, or <c>B8G8R8*</c> format.
-        /// <para>-or-</para>
-        /// <para>Thrown when the bitmap is not in a 32 bit ARGB format.</para>
+            /// <para>Thrown when the bitmap is not in a 32 bit ARGB format.</para>
         /// </exception>
         /// <remarks>
         /// <para>

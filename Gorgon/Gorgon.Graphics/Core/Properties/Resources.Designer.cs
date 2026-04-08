@@ -373,6 +373,15 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There was an error trying to initialize the texture..
+        /// </summary>
+        internal static string GORGFX_ERR_CANNOT_INITIALIZE_TEXTURE {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_CANNOT_INITIALIZE_TEXTURE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unable to load the dxcompiler.dll file..
         /// </summary>
         internal static string GORGFX_ERR_CANNOT_LOAD_DXCOMPILERDLL {
@@ -497,6 +506,15 @@ namespace Gorgon.Graphics.Core.Properties {
         internal static string GORGFX_ERR_DEPTH_STENCIL_CANNOT_BE_COPIED {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_DEPTH_STENCIL_CANNOT_BE_COPIED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Only 2D textures can be used as a depth/stencil buffer..
+        /// </summary>
+        internal static string GORGFX_ERR_DEPTH_STENCIL_MUST_BE_2D {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_DEPTH_STENCIL_MUST_BE_2D", resourceCulture);
             }
         }
         
@@ -773,6 +791,15 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The texture &apos;{0}&apos; is a MSAA texture. These textures cannot be used with unordered access..
+        /// </summary>
+        internal static string GORGFX_ERR_TEXTURE_CANNOT_BE_MSAA_AND_UNORDERED {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_TEXTURE_CANNOT_BE_MSAA_AND_UNORDERED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The texture &apos;{0}&apos; is configured to be a render target and a depth/stencil buffer. These two flags are mutually exclusive and only one can be set to true at a time..
         /// </summary>
         internal static string GORGFX_ERR_TEXTURE_CANNOT_BE_RT_AND_DS {
@@ -791,6 +818,15 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The texture &apos;{0}&apos; has a compressed format of {1}. The width {2} and height {3} need to be a multiple of 4..
+        /// </summary>
+        internal static string GORGFX_ERR_TEXTURE_COMPRESSED_NOT_MULTIPLE_OF_FOUR {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_TEXTURE_COMPRESSED_NOT_MULTIPLE_OF_FOUR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The source texture &apos;{0}&apos; has a format group of {1}, and the destination texture &apos;{2}&apos; has a format group of {3}. 
         ///
         ///The texture formats must belong to the same grouping in order to copy them..
@@ -802,11 +838,65 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The depth stencil view format {0} is not a valid depth/stencil format..
+        /// </summary>
+        internal static string GORGFX_ERR_TEXTURE_DSV_FORMAT_DEPTHSTENCIL_FORMAT {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_TEXTURE_DSV_FORMAT_DEPTHSTENCIL_FORMAT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The texture &apos;{0}&apos; has a format of {1}. The view has a format of {2}, and the texture format needs to be {3}..
+        /// </summary>
+        internal static string GORGFX_ERR_TEXTURE_DSV_FORMAT_MISMATCH {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_TEXTURE_DSV_FORMAT_MISMATCH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The texture &apos;{0}&apos; can&apos;t be used as a depth/stencil buffer..
+        /// </summary>
+        internal static string GORGFX_ERR_TEXTURE_DSV_NOT_DEPTHSTENCIL {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_TEXTURE_DSV_NOT_DEPTHSTENCIL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The format {0} is not valid for a {1}..
         /// </summary>
         internal static string GORGFX_ERR_TEXTURE_FORMAT_INVALID {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_TEXTURE_FORMAT_INVALID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The render target view does not support typeless formats..
+        /// </summary>
+        internal static string GORGFX_ERR_TEXTURE_RTV_FORMAT_TYPELESS_NOT_SUPPORTED {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_TEXTURE_RTV_FORMAT_TYPELESS_NOT_SUPPORTED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The texture &apos;{0}&apos; can&apos;t be used as a render target..
+        /// </summary>
+        internal static string GORGFX_ERR_TEXTURE_RTV_NOT_RENDER_TARGET {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_TEXTURE_RTV_NOT_RENDER_TARGET", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The render target view format {0} on texture &apos;{1}&apos; is not valid for render targets..
+        /// </summary>
+        internal static string GORGFX_ERR_TEXTURE_RTV_NOT_RENDERTARGET_FORMAT {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_TEXTURE_RTV_NOT_RENDERTARGET_FORMAT", resourceCulture);
             }
         }
         
@@ -825,6 +915,87 @@ namespace Gorgon.Graphics.Core.Properties {
         internal static string GORGFX_ERR_TEXTURE_TOO_SMALL {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_TEXTURE_TOO_SMALL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The texture &apos;{0}&apos; has a format of {1}. This format cannot be cast to the view format {2}..
+        /// </summary>
+        internal static string GORGFX_ERR_TEXTURE_VIEW_CANNOT_BE_CAST {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_TEXTURE_VIEW_CANNOT_BE_CAST", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The format {0} for texture &apos;{0}&apos; is compressed. The view format {2} is not. Both formats must be compressed..
+        /// </summary>
+        internal static string GORGFX_ERR_TEXTURE_VIEW_COMPRESSED_REQUIRED_COMPRESSED {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_TEXTURE_VIEW_COMPRESSED_REQUIRED_COMPRESSED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The texture &apos;{0}&apos; has a format of {1}. The view format is {2}. To view a depth texture, the view format must be {3}..
+        /// </summary>
+        internal static string GORGFX_ERR_TEXTURE_VIEW_DEPTH_FORMAT_INVALID {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_TEXTURE_VIEW_DEPTH_FORMAT_INVALID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The view for texture &apos;{0}&apos; has a format of {1}. View formats must not be a depth/stencil format..
+        /// </summary>
+        internal static string GORGFX_ERR_TEXTURE_VIEW_FORMAT_DEPTHSTENCIL_NOT_SUPPORTED {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_TEXTURE_VIEW_FORMAT_DEPTHSTENCIL_NOT_SUPPORTED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The view for texture &apos;{0}&apos; has a format of {1}. View formats must not be a planar format..
+        /// </summary>
+        internal static string GORGFX_ERR_TEXTURE_VIEW_FORMAT_PLANAR_NOT_SUPPORTED {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_TEXTURE_VIEW_FORMAT_PLANAR_NOT_SUPPORTED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The texture view does not support typeless formats..
+        /// </summary>
+        internal static string GORGFX_ERR_TEXTURE_VIEW_FORMAT_TYPELESS_NOT_SUPPORTED {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_TEXTURE_VIEW_FORMAT_TYPELESS_NOT_SUPPORTED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The texture &apos;{0}&apos; has a depth/stencil format of {1}. Views cannot be created on textures with depth/stencil formats. The texture must use an equivalent typeless format..
+        /// </summary>
+        internal static string GORGFX_ERR_TEXTURE_VIEW_NO_DEPTH_STENCIL_TEXTURE {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_TEXTURE_VIEW_NO_DEPTH_STENCIL_TEXTURE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The texture &apos;{0}&apos; is not accessible to shaders..
+        /// </summary>
+        internal static string GORGFX_ERR_TEXTURE_VIEW_NOT_SHADER_RESOURCE {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_TEXTURE_VIEW_NOT_SHADER_RESOURCE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The texture &apos;{0}&apos; has a format of {1}. The view format is {2}. To view a stencil texture, the view format must be {3}..
+        /// </summary>
+        internal static string GORGFX_ERR_TEXTURE_VIEW_STENCIL_FORMAT_INVALID {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_TEXTURE_VIEW_STENCIL_FORMAT_INVALID", resourceCulture);
             }
         }
         
@@ -870,15 +1041,6 @@ namespace Gorgon.Graphics.Core.Properties {
         internal static string GORGFX_STR_VIDEO_MODE {
             get {
                 return ResourceManager.GetString("GORGFX_STR_VIDEO_MODE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The texture &apos;{0}&apos; is a MSAA texture. These textures cannot be used with unordered access..
-        /// </summary>
-        internal static string GORGFX_TEXTURE_CANNOT_BE_MSAA_AND_UNORDERED {
-            get {
-                return ResourceManager.GetString("GORGFX_TEXTURE_CANNOT_BE_MSAA_AND_UNORDERED", resourceCulture);
             }
         }
     }

@@ -87,7 +87,6 @@ public class GorgonPool<T>
     /// <param name="initializer">[Optional] A function used to initialize the object returned by the allocator.</param>
     /// <returns>The newly allocated object.</returns>
     /// <exception cref="GorgonException"><para>Thrown when the pool is completely full.</para>
-    /// <para>-or-</para>
     /// <para>The object could not be created with the <see cref="ItemAllocator"/> and returned <b>null</b>.</para>
     /// </exception>    
     /// <remarks>

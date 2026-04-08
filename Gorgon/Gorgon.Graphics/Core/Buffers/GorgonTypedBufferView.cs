@@ -51,6 +51,14 @@ public sealed class GorgonTypedBufferView
     : GorgonShaderBufferView
 {
     /// <summary>
+    /// Property to return the format information for the <see cref="Format"/>.
+    /// </summary>
+    public GorgonFormatInfo FormatInfo
+    {
+        get;
+    }
+
+    /// <summary>
     /// Property to return the format type for the view.
     /// </summary>
     public BufferFormat Format
@@ -67,11 +75,8 @@ public sealed class GorgonTypedBufferView
     /// <param name="bufferSize">The total size of the buffer.</param>
     /// <param name="resourceOffset"><inheritdoc cref="GorgonConstantBufferView.ValidateConstantView(string, int, long, ulong)" path="/param[@name='resourceOffset']"/></param>
     /// <exception cref="GorgonException"><para>Thrown if the buffer does not support the format supplied.</para>
-    /// <para>-or-</para>
     /// <para>Thrown if the format is <see cref="BufferFormat.Unknown"/>, typeless, compressed, or a depth/stencil format.</para>
-    /// <para>-or-</para>
     /// <para>Thrown if the size of the buffer is less than the <see cref="GorgonFormatInfo.SizeInBytes">format size</see>, in bytes.</para>
-    /// <para>-or-</para>
     /// <para>Throw if the buffer was not aligned to the <see cref="GorgonFormatInfo.SizeInBytes">format size</see> upon creation.</para>
     /// </exception>
     internal static void ValidateTypedView(string name, GorgonFormatInfo formatInfo, GorgonBufferFormatSupport formatSupport, long bufferSize, ulong resourceOffset)
@@ -121,15 +126,15 @@ public sealed class GorgonTypedBufferView
     /// <param name="graphics"><inheritdoc cref="GorgonResourceView(GorgonGraphics, string, GorgonGpuResource, bool)" path="/param[@name='graphics']"/></param>
     /// <param name="name"><inheritdoc cref="GorgonResourceView(GorgonGraphics, string, GorgonGpuResource, bool)" path="/param[@name='name']"/></param>
     /// <param name="buffer"><inheritdoc cref="GorgonResourceView(GorgonGraphics, string, GorgonGpuResource, bool)" path="/param[@name='resource']"/></param>
-    /// <param name="format">The format type for the view.</param>
-    /// <param name="formatSize">The size, in bytes, of the format type.</param>
+    /// <param name="formatInfo">The information about the view format type.</param>
     /// <param name="startIndex">The element index within the buffer the view starts at.</param>
     /// <param name="elementCount">The number of elements of the format type in the buffer.</param>
     /// <param name="owned"><inheritdoc cref="GorgonResourceView(GorgonGraphics, string, GorgonGpuResource, bool)" path="/param[@name='owned']"/></param>
-    internal GorgonTypedBufferView(GorgonGraphics graphics, string name, GorgonGpuBuffer buffer, BufferFormat format, int formatSize, long startIndex, int elementCount, bool owned)
-        : base(graphics, $"{name} - Typed Buffer View ({format})", buffer, startIndex, elementCount, formatSize, owned)
+    internal GorgonTypedBufferView(GorgonGraphics graphics, string name, GorgonGpuBuffer buffer, GorgonFormatInfo formatInfo, long startIndex, int elementCount, bool owned)
+        : base(graphics, $"{GorgonGraphicsFactory.GenerateName(name, nameof(GorgonTypedBufferView))} - Typed Buffer View ({formatInfo.Format})", buffer, startIndex, elementCount, formatInfo.SizeInBytes, owned)
     {
-        Format = format;
+        Format = formatInfo.Format;
+        FormatInfo = formatInfo;
         AllocateDescriptors();
     }
 }

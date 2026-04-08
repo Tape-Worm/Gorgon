@@ -154,7 +154,6 @@ public unsafe sealed class GorgonResourceCopier
     /// <param name="count">The total number of items within the buffer.</param>
     /// <param name="typeSize">The size of an individual item, in bytes, within the buffer.</param>
     /// <exception cref="ArgumentOutOfRangeException"><para>Thrown if the <paramref name="offset"/>, is less than 0.</para>
-    /// <para>-or-</para>
     /// <para>Thrown if the <paramref name="count"/> is less than 0.</para>
     /// </exception>
     /// <exception cref="ArgumentException">Thrown if the <paramref name="offset"/> plus the <paramref name="count"/> is greater than the <see cref="GorgonGpuBufferCommon.SizeInBytes">size</see> if the buffer.</exception>
@@ -1363,7 +1362,6 @@ public unsafe sealed class GorgonResourceCopier
     /// <param name="texture">The texture to copy.</param>
     /// <param name="image">The image that will receive the texture data.</param>
     /// <exception cref="ArgumentException"><para>Thrown if the <paramref name="texture"/> is an unresolved multi-sample texture.</para>
-    /// <para>-or-</para>
     /// <para>Thrown if the <paramref name="texture"/> is <see cref="GorgonTextureInfo.IsDepthStencil">configured to be used as a depth/stencil texture</see>.</para>
     /// </exception>
     /// <exception cref="GorgonException">Thrown if the <paramref name="image"/> format is not compatible with the <paramref name="texture"/> format.</exception>
@@ -1598,6 +1596,16 @@ public unsafe sealed class GorgonResourceCopier
 
         // Release any previous resources that may have been used in copy operations.
         _commandQueue.Tracker.Signal();
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GorgonResourceCopier"/> class.
+    /// </summary>
+    /// <param name="queue">The queue to use for copying.</param>
+    internal GorgonResourceCopier(CommandQueue queue)
+    {
+        Graphics = queue.Graphics;
+        _commandQueue = queue;
     }
 
     /// <summary>
