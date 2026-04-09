@@ -471,7 +471,7 @@ public unsafe sealed class GorgonGraphicsFactory
     /// <para>
     /// The following example shows how to create the graphics object using this factory.
     /// </para>
-    /// <code lang="csharp">
+    /// <code language="csharp">
     /// <![CDATA[
     /// GorgonGraphicsFactory factory = new(log: log);
     /// 

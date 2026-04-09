@@ -36,7 +36,7 @@ using Win32 = TerraFX.Interop.Windows.Windows;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// A heap that holds descriptors for samplers, shader resource views, constant buffer views and unordered access views.
+/// A heap that holds descriptors for samplers, shader resource views, constant buffer views and read/write views.
 /// </summary>
 internal unsafe sealed class CpuDescriptorHeap
     : IDisposable

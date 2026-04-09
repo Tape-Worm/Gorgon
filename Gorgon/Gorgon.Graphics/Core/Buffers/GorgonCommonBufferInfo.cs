@@ -28,7 +28,7 @@ namespace Gorgon.Graphics.Core;
 /// </summary>
 public abstract record class GorgonCommonBufferInfo
 {
-    /// <inheritdoc cref="IGorgonCommonBufferInfo.SizeInBytes"/>
+    /// <inheritdoc cref="IGorgonCommonBufferInfo.SizeInBytes" path="/summary"/>
     /// <remarks>
     /// <para>
     /// This value must be greater than 0.
@@ -40,11 +40,14 @@ public abstract record class GorgonCommonBufferInfo
         init;
     }
 
-    /// <inheritdoc cref="IGorgonCommonBufferInfo.IsUnorderedAccess"/>
+    /// <inheritdoc cref="IGorgonCommonBufferInfo.HasReadWriteAccess" path="/summary"/>
     /// <remarks>
+    /// <inheritdoc cref="IGorgonCommonBufferInfo.HasReadWriteAccess" path="/remarks/para"/>
+    /// <para>
     /// The default value is <b>false</b>.
+    /// </para>
     /// </remarks>
-    public bool IsUnorderedAccess
+    public bool HasReadWriteAccess
     {
         get;
         init;
@@ -63,7 +66,7 @@ public abstract record class GorgonCommonBufferInfo
     protected GorgonCommonBufferInfo(GorgonCommonBufferInfo copy)
     {
         SizeInBytes = copy.SizeInBytes;
-        IsUnorderedAccess = copy.IsUnorderedAccess;
+        HasReadWriteAccess = copy.HasReadWriteAccess;
     }
 }
 

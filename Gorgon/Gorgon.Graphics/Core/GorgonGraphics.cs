@@ -239,7 +239,7 @@ public unsafe sealed class GorgonGraphics
                 LogicOp = D3D12_LOGIC_OP.D3D12_LOGIC_OP_NOOP,
                 BlendOp = D3D12_BLEND_OP.D3D12_BLEND_OP_ADD,
                 BlendOpAlpha = D3D12_BLEND_OP.D3D12_BLEND_OP_ADD,
-                SrcBlend = D3D12_BLEND.D3D12_BLEND_ONE,
+                SrcBlend = D3D12_BLEND.D3D12_BLEND_SRC_ALPHA,
                 DestBlend = D3D12_BLEND.D3D12_BLEND_INV_SRC_ALPHA,
                 SrcBlendAlpha = D3D12_BLEND.D3D12_BLEND_ONE,
                 DestBlendAlpha = D3D12_BLEND.D3D12_BLEND_INV_SRC_ALPHA,

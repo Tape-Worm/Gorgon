@@ -95,7 +95,7 @@ public abstract class GorgonShaderCodec(GorgonGraphics graphics)
     /// <seealso cref="BuildShader"/>
     /// <seealso cref="GorgonShader"/>
     /// <example>
-    /// <code lang="csharp">
+    /// <code language="csharp">
     /// 
     /// <![CDATA[
     /// protected override GorgonShader OnDecodeFromStream(Stream stream, long size)

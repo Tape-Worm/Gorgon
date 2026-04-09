@@ -53,14 +53,14 @@ internal unsafe class BarrierManager(GorgonGraphics graphics)
     private const BarrierSync LegalCopySyncMask = BarrierSync.None | BarrierSync.All | BarrierSync.Copy | BarrierSync.Split;
     private const BarrierAccess LegalCopyAccessMask = BarrierAccess.CopyDestination | BarrierAccess.CopySource | BarrierAccess.None;
     private const BarrierSync LegalComputeSyncMask = BarrierSync.None | BarrierSync.All | BarrierSync.ComputeShading | BarrierSync.Copy
-                                                    | BarrierSync.ExecuteIndirect | BarrierSync.AllShading | BarrierSync.NonPixelShading | BarrierSync.ClearUnorderedAccessView
+                                                    | BarrierSync.ExecuteIndirect | BarrierSync.AllShading | BarrierSync.NonPixelShading | BarrierSync.ClearReadWriteView
                                                     | BarrierSync.Split;
                                          // Future: | BarrierSync.RayTracing
                                          //         | BarrierSync.BuildRayTracingAccelerationStructure
                                          //         | BarrierSync.CopyRayTracingAccelerationStructure
                                          //         | BarrierSync.EmitRayTracingAccelerationStructurePostBuildInformation
     private const BarrierAccess LegalComputeAccessMask = BarrierAccess.None | BarrierAccess.Common | BarrierAccess.VertexBuffer | BarrierAccess.ConstantBuffer
-                                                       | BarrierAccess.UnorderedAccess | BarrierAccess.ShaderResource | BarrierAccess.IndirectArgument | BarrierAccess.CopyDestination
+                                                       | BarrierAccess.ReadWrite | BarrierAccess.ShaderResource | BarrierAccess.IndirectArgument | BarrierAccess.CopyDestination
                                                        | BarrierAccess.CopySource;
                                             // Future: | BarrierAccess.RayTracingAccelerationStructureRead
                                             //         | BarrierAccess.RayTracingAccelerationStructureWrite
@@ -71,8 +71,8 @@ internal unsafe class BarrierManager(GorgonGraphics graphics)
     // For now, these values are not used and are here just for reference should we need to integrate such a system.
     private const BarrierLayout GraphicsOnlyLayoutMask = BarrierLayout.RenderTarget | BarrierLayout.DepthStencilWrite | BarrierLayout.DepthStencilRead | BarrierLayout.ResolveSource
                                                        | BarrierLayout.ResolveDestination | BarrierLayout.ShadingRateSource | BarrierLayout.GraphicsCommon | BarrierLayout.GraphicsGenericRead
-                                                       | BarrierLayout.GraphicsUnorderedAccess | BarrierLayout.GraphicsShaderResource | BarrierLayout.GraphicsCopySource | BarrierLayout.GraphicsCopyDestination;
-    private const BarrierLayout ComputeOnlyLayoutMask = BarrierLayout.ComputeCommon | BarrierLayout.ComputeGenericRead | BarrierLayout.ComputeUnorderedAccess | BarrierLayout.ComputeShaderResource
+                                                       | BarrierLayout.GraphicsReadWrite | BarrierLayout.GraphicsShaderResource | BarrierLayout.GraphicsCopySource | BarrierLayout.GraphicsCopyDestination;
+    private const BarrierLayout ComputeOnlyLayoutMask = BarrierLayout.ComputeCommon | BarrierLayout.ComputeGenericRead | BarrierLayout.ComputeReadWrite | BarrierLayout.ComputeShaderResource
                                                       | BarrierLayout.ComputeCopySource | BarrierLayout.ComputeCopyDestination;
 
     private readonly GorgonGraphics _graphics = graphics;
@@ -232,9 +232,9 @@ internal unsafe class BarrierManager(GorgonGraphics graphics)
 
         if (currentQueue == _graphics.ComputeQueue)
         {
-            Debug.Assert(layout is BarrierLayout.None or BarrierLayout.Common or BarrierLayout.GenericRead or BarrierLayout.UnorderedAccess or BarrierLayout.ShaderResource
+            Debug.Assert(layout is BarrierLayout.None or BarrierLayout.Common or BarrierLayout.GenericRead or BarrierLayout.ReadWrite or BarrierLayout.ShaderResource
                                                    or BarrierLayout.CopySource or BarrierLayout.CopyDestination or BarrierLayout.ComputeCommon or BarrierLayout.ComputeGenericRead 
-                                                   or BarrierLayout.ComputeUnorderedAccess or BarrierLayout.ComputeShaderResource or BarrierLayout.ComputeCopySource 
+                                                   or BarrierLayout.ComputeReadWrite or BarrierLayout.ComputeShaderResource or BarrierLayout.ComputeCopySource 
                                                    or BarrierLayout.ComputeCopyDestination or BarrierLayout.GraphicsQueueGenericReadFromCompute
                 , $"The before layout {layout} is not supported by the compute queue.");
         }        

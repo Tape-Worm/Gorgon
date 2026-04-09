@@ -109,7 +109,7 @@ public unsafe readonly struct GorgonPtr<T>
     /// <remarks>
     /// <para>
     /// This property will return the value as a reference, and as such, it can be assigned to as well. For example:
-    /// <code lang="csharp">
+    /// <code language="csharp">
     /// <![CDATA[
     /// GorgonPtr_Long<int> ptr = ...;
     /// int newValue = 123;
@@ -157,7 +157,7 @@ public unsafe readonly struct GorgonPtr<T>
     /// <para>
     /// This indexer can be used to create a slice of a pointer. For example, if a pointer points to 10 items, and we want to create a pointer that points to the 3rd item and 4 items in the memory block 
     /// pointed at by this pointer, we can do the following:
-    /// <code lang="csharp">
+    /// <code language="csharp">
     /// <![CDATA[
     /// int[] data = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
     /// 
@@ -735,7 +735,7 @@ public unsafe readonly struct GorgonPtr<T>
     /// </para>
     /// <para>
     /// For example:
-    /// <code lang="csharp">
+    /// <code language="csharp">
     /// <![CDATA[
     /// GorgonPtr_Long<byte> ptr = ...;
     /// GorgonPtr_Long<int> ptr2 = ...;
@@ -777,7 +777,7 @@ public unsafe readonly struct GorgonPtr<T>
     /// <inheritdoc cref="GorgonNativeBuffer{T}.AsRef{TTo}(long)" path="/remarks/para[3]"/>
     /// <para>
     /// This value is returned as a reference, and as such, it can be assigned to as well. For example:
-    /// <code lang="csharp">
+    /// <code language="csharp">
     /// <![CDATA[
     /// GorgonPtr_Long<int> ptr = ...;
     /// byte newValue = 0x7f;
@@ -1071,7 +1071,7 @@ public unsafe readonly struct GorgonPtr<T>
     /// </para>
     /// <para>
     /// In order to copy a specified portion to the <paramref name="destination"/>, one may use the range operator like so:
-    /// <code lang="csharp">
+    /// <code language="csharp">
     /// <![CDATA[
     /// GorgonPtr_Long<byte> source = ...;
     /// GorgonPtr_Long<byte> destination = ...;
@@ -1115,7 +1115,7 @@ public unsafe readonly struct GorgonPtr<T>
     /// </para>
     /// <para>
     /// In order to copy a specified portion to the <paramref name="destination"/>, one may use the range operator like so:
-    /// <code lang="csharp">
+    /// <code language="csharp">
     /// <![CDATA[
     /// GorgonPtr_Long<byte> source = ...;
     /// Span<byte> destination = new byte[512];

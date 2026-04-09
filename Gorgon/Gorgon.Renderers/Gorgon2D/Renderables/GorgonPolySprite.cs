@@ -464,7 +464,7 @@ public class GorgonPolySprite
     /// The vertices should be ordered in a clockwise orientation. This can be achieved by setting up the indices to point at each vertex in the desired order. For example:
     /// </para>
     /// <para>
-    /// <code lang="csharp">
+    /// <code language="csharp">
     /// <![CDATA[
     ///     // These define the corners of a rectangle.
     ///     Gorgon2PolySpriteVertex[] vertices = new Gorgon2PolySpriteVertex[4];
@@ -539,7 +539,7 @@ public class GorgonPolySprite
     /// The vertices should be ordered in a clockwise orientation. This can be achieved by setting up the indices to point at each vertex in the desired order. For example:
     /// </para>
     /// <para>
-    /// <code lang="csharp">
+    /// <code language="csharp">
     /// <![CDATA[
     ///     // These define the corners of a rectangle.
     ///     Gorgon2PolySpriteVertex[] vertices = new Gorgon2PolySpriteVertex[4];

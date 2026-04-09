@@ -50,7 +50,7 @@ namespace Gorgon.Graphics.Core;
 public unsafe sealed class GorgonRenderTargetView
     : GorgonResourceView
 {
-    private CpuDescriptorAllocation _allocation;
+    private CpuDescriptorAllocation _allocation = CpuDescriptorAllocation.Null;
 
     /// <summary>
     /// Property to return the format of view data.
@@ -58,7 +58,7 @@ public unsafe sealed class GorgonRenderTargetView
     public BufferFormat Format
     {
         get;
-    } = BufferFormat.Unknown;
+    }
 
     /// <summary>
     /// Property to return the format information for the <see cref="Format"/>.
@@ -143,6 +143,23 @@ public unsafe sealed class GorgonRenderTargetView
     public byte PlaneIndex
     {
         get;
+    }
+
+    /// <summary>
+    /// Property to return the default texture view for the underlying texture.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This is a convenience view as it's often necessary to have a texture view so that shaders can use the results of a render target output.
+    /// </para>
+    /// <para>
+    /// If this value is <b>null</b>, then the underlying <see cref="GorgonTexture"/> was not created with its <see cref="GorgonTextureInfo.IsShaderResource"/> flag set to <b>true</b>.
+    /// </para>
+    /// </remarks>
+    public GorgonTextureView? TextureView
+    {
+        get;
+        private set;
     }
 
     /// <summary>
@@ -273,11 +290,11 @@ public unsafe sealed class GorgonRenderTargetView
                 break;
         }
 
-        Graphics.Log.Print($"Allocating CPU handle for {Name}.", LoggingLevel.Verbose);
+        Graphics.Log.Print($"Allocating CPU handle for '{Name}'.", LoggingLevel.Verbose);
         Graphics.RtvDescriptors.Allocate(1, out _allocation);
         Graphics.D3DDevice.Get()->CreateRenderTargetView((PID3D12Resource2)Resource.D3DResource.Get(), &desc, _allocation.CpuHandle);
 
-        SetHandles(_allocation.CpuHandle, D3D12_GPU_DESCRIPTOR_HANDLE.DEFAULT);
+        D3DCpuHandle = _allocation.CpuHandle;
     }
 
     /// <inheritdoc/>
@@ -285,6 +302,9 @@ public unsafe sealed class GorgonRenderTargetView
     {
         if (disposing)
         {
+            TextureView?.Dispose();
+            TextureView = null;
+
             if (!_allocation.Equals(CpuDescriptorAllocation.Null))
             {
                 Graphics.Log.Print($"Freeing descriptor handle allocation for '{Name}'.", LoggingLevel.Verbose);
@@ -296,9 +316,19 @@ public unsafe sealed class GorgonRenderTargetView
         base.Dispose(disposing);
     }
 
-    /// <inheritdoc/>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private protected override void OnReset() => AllocateDescriptors();
+    /// <summary>
+    /// Function to retrieve the CPU descriptor handle for the view.
+    /// </summary>
+    /// <returns>The D3D12 CPU handle for the descriptor.</returns>
+    internal D3D12_CPU_DESCRIPTOR_HANDLE GetCpuHandle()
+    {
+        if (D3DCpuHandle == D3D12_CPU_DESCRIPTOR_HANDLE.DEFAULT)
+        {
+            AllocateDescriptors();
+        }
+
+        return D3DCpuHandle;
+    }
 
     /// <summary>
     /// Function to determine if the view settings are valid for a render target.
@@ -343,6 +373,45 @@ public unsafe sealed class GorgonRenderTargetView
     }
 
     /// <summary>
+    /// Function to create a 2D render target view and attached render target texture.
+    /// </summary>
+    /// <param name="graphics"><inheritdoc cref="GorgonTextureView.Create2DTexture(GorgonGraphics, string, BufferFormat, int, int, short, short)" path="/param[@name='graphics']"/></param>
+    /// <param name="name"><inheritdoc cref="GorgonTextureView.Create2DTexture(GorgonGraphics, string, BufferFormat, int, int, short, short)" path="/param[@name='name']"/></param>
+    /// <param name="width"><inheritdoc cref="GorgonTextureView.Create2DTexture(GorgonGraphics, string, BufferFormat, int, int, short, short)" path="/param[@name='width']"/></param>
+    /// <param name="height"><inheritdoc cref="GorgonTextureView.Create2DTexture(GorgonGraphics, string, BufferFormat, int, int, short, short)" path="/param[@name='height']"/></param>
+    /// <param name="format">The render target format to use.</param>
+    /// <param name="mipCount"><inheritdoc cref="GorgonTextureView.Create2DTexture(GorgonGraphics, string, BufferFormat, int, int, short, short)" path="/param[@name='mipCount']"/></param>
+    /// <param name="arrayCount"><inheritdoc cref="GorgonTextureView.Create2DTexture(GorgonGraphics, string, BufferFormat, int, int, short, short)" path="/param[@name='arrayCount']"/></param>
+    /// <param name="multisampleInfo"><inheritdoc cref="GorgonDepthStencilView.CreateDepthStencilView(GorgonGraphics, string, int, int, BufferFormat, short, short, GorgonMultisampleInfo?)" path="/param[@name='multisampleInfo']"/></param>
+    /// <returns>A new <see cref="GorgonRenderTargetView"/> and its associated <see cref="GorgonTexture"/>,</returns>
+    /// <exception cref="GorgonException">
+    /// <b>Texture Exceptions</b>
+    /// <inheritdoc cref="GorgonTexture.ValidateInfo(GorgonTextureInfo)" path="/exception/para"/>
+    /// <b>View Exceptions</b>
+    /// <inheritdoc cref="ValidateRenderTargetView(string, GorgonBufferFormatSupport, GorgonFormatInfo, GorgonFormatInfo, IReadOnlyList{BufferFormat}, bool)" path="/exception/para"/>
+    /// </exception>
+    /// <remarks>
+    /// <para>
+    /// TODO:
+    /// </para>
+    /// </remarks>
+    public static GorgonRenderTargetView Create2DRenderTarget(GorgonGraphics graphics, string name, int width, int height, BufferFormat format, short mipCount = 1, short arrayCount = 1, GorgonMultisampleInfo? multisampleInfo = null)
+    {
+        GorgonTextureInfo textureInfo = GorgonTextureInfo.Create2DRenderTargetInfo(format, width, height, mipCount, arrayCount, multisampleInfo: multisampleInfo);
+        GorgonTexture texture = new(graphics, name, textureInfo);
+
+        try
+        {
+            return texture.GetRenderTargetView(format, 0, 0, texture.ArrayCount, 0, true);
+        }
+        catch
+        {
+            texture.Dispose();
+            throw;
+        }
+    }
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="GorgonTextureView"/> class.
     /// </summary>
     /// <param name="graphics"><inheritdoc cref="GorgonResourceView(GorgonGraphics, string, GorgonGpuResource, bool)" path="/param[@name='graphics']"/></param>
@@ -368,5 +437,23 @@ public unsafe sealed class GorgonRenderTargetView
         PlaneIndex = planeIndex;
 
         AllocateDescriptors();
+
+        if (!texture.IsShaderResource)
+        {
+            return;
+        }
+
+        bool compatibleFormat = texture.Type switch
+        {
+            TextureType.Texture1D => graphics.FormatSupport[Format].Is1DTextureFormat,
+            TextureType.Texture2D => graphics.FormatSupport[Format].Is2DTextureFormat,
+            TextureType.Texture3D => graphics.FormatSupport[Format].Is3DTextureFormat,
+            _ => false
+        };
+
+        TextureView = texture.GetTextureView(compatibleFormat ? Format : texture.Format, 
+            mipLevel, 1, 
+            ArrayIndex, ArrayCount, 
+            planeIndex: planeIndex);
     }
 }

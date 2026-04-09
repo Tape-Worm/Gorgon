@@ -160,7 +160,7 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The texture &apos;{0}&apos; has a multi sample value of {1}. Only textures without multi sampling can be copied..
+        ///   Looks up a localized string similar to The texture &apos;{0}&apos; has a multi sample value of {1}. Only textures without multisampling can be copied..
         /// </summary>
         internal static string GORGFX_ERR_CANNOT_COPY_FROM_MULTISAMPLE_TEXTURE {
             get {
@@ -178,7 +178,7 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The texture &apos;{0}&apos; has a multi sample value of {1}. Only textures without multi sampling can receive image data..
+        ///   Looks up a localized string similar to The texture &apos;{0}&apos; has a multi sample value of {1}. Only textures without multisampling can receive image data..
         /// </summary>
         internal static string GORGFX_ERR_CANNOT_COPY_IMAGE_TO_MULTISAMPLE_TEXTURE {
             get {
@@ -791,7 +791,7 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The texture &apos;{0}&apos; is a MSAA texture. These textures cannot be used with unordered access..
+        ///   Looks up a localized string similar to The texture &apos;{0}&apos; is a MSAA texture. These textures cannot be used with read/write access..
         /// </summary>
         internal static string GORGFX_ERR_TEXTURE_CANNOT_BE_MSAA_AND_UNORDERED {
             get {
@@ -809,7 +809,7 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The texture &apos;{0}&apos; is configured to be an unordered access resource and a depth/stencil buffer. These two flags are mutually exclusive and only one can be set to true at a time..
+        ///   Looks up a localized string similar to The texture &apos;{0}&apos; is configured to be an read/write access resource and a depth/stencil buffer. These two flags are mutually exclusive and only one can be set to true at a time..
         /// </summary>
         internal static string GORGFX_ERR_TEXTURE_CANNOT_BE_UNORDERED_AND_DS {
             get {

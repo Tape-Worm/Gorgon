@@ -89,7 +89,7 @@ public interface IGorgonResourceWriter
     /// <seealso cref="GorgonResourceCopier"/>
     /// <seealso cref="GorgonGpuBufferCommon"/>
     /// <example>    
-    /// <code lang="csharp">
+    /// <code language="csharp">
     /// <![CDATA[
     /// // This example is here to give an idea how async can be used to upload a lot of data to GPU buffers.
     /// // It should not be considered production code.

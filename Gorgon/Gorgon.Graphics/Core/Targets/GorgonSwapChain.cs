@@ -158,7 +158,7 @@ public unsafe sealed class GorgonSwapChain
 
             for (int i = 0; i < _renderTargetViews.Length; i++)
             {
-                _renderTargetViews[i].Dispose();
+                _renderTargetViews[i]?.Dispose();
             }
 
             if (_waitHandle != HANDLE.NULL)
@@ -439,6 +439,10 @@ public unsafe sealed class GorgonSwapChain
 
         Graphics.WaitForGpu(GorgonGraphics.WaitFenceTimeout * 6);
 
+        Graphics.GraphicsQueue.Tracker.Signal();
+        Graphics.ComputeQueue.Tracker.Signal();
+        Graphics.CopyQueue.Tracker.Signal();
+
         RECT rect = default;
         Win32.GetClientRect(new HWND((void*)WindowHandle), &rect);
 
@@ -508,6 +512,10 @@ public unsafe sealed class GorgonSwapChain
         }
 
         Graphics.WaitForGpu(GorgonGraphics.WaitFenceTimeout * 6);
+
+        Graphics.GraphicsQueue.Tracker.Signal();
+        Graphics.ComputeQueue.Tracker.Signal();
+        Graphics.CopyQueue.Tracker.Signal();
 
         OnBeforeResize();
 

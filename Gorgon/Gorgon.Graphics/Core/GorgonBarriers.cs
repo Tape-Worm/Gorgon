@@ -22,11 +22,8 @@
 //
 
 using System.Runtime.CompilerServices;
-using Gorgon.Core;
-using Gorgon.Graphics.Core.Properties;
 using TerraFX.Interop.DirectX;
 using TerraFX.Interop.Windows;
-using Windows.Web.AtomPub;
 
 namespace Gorgon.Graphics.Core;
 
@@ -78,10 +75,11 @@ public enum BarrierSync
     /// <item><description>Drawing instanced (indexed and otherwise) geometry.</description></item>
     /// <item><description>Setting a root descriptor table.</description></item>
     /// <item><description>Setting a root shader resource.</description></item>
-    /// <item><description>Setting a root unordered access view.</description></item>
+    /// <item><description>Setting a root read/write view.</description></item>
     /// <item><description>Setting a root constant buffer view.</description></item>
     /// </list>
     /// </para>
+    /// <inheritdoc cref="GorgonGpuBuffer" path="/remarks/para[@type='uav_readwrite']"/>
     /// <para>
     /// This is an umbrella scope for all Drawing pipeline stages. When used in a <c>Before</c> state, it indicates ALL PRECEDING Draw work must complete before executing the barrier. And when used in an 
     /// <c>After</c> state, it indicates ALL SUBSEQUENT Draw work must wait for the barrier to complete.
@@ -93,7 +91,7 @@ public enum BarrierSync
     /// <item><description><see cref="BarrierAccess.ConstantBuffer"/></description></item>
     /// <item><description><see cref="BarrierAccess.IndexBuffer"/></description></item>
     /// <item><description><see cref="BarrierAccess.RenderTarget"/></description></item>
-    /// <item><description><see cref="BarrierAccess.UnorderedAccess"/></description></item>
+    /// <item><description><see cref="BarrierAccess.ReadWrite"/></description></item>
     /// <item><description><see cref="BarrierAccess.DepthStencilWrite"/></description></item>
     /// <item><description><see cref="BarrierAccess.DepthStencilRead"/></description></item>
     /// <item><description><see cref="BarrierAccess.ShaderResource"/></description></item>
@@ -125,7 +123,7 @@ public enum BarrierSync
     /// <list type="bullet">
     /// <item><description><see cref="BarrierAccess.VertexBuffer"/></description></item>
     /// <item><description><see cref="BarrierAccess.ConstantBuffer"/></description></item>
-    /// <item><description><see cref="BarrierAccess.UnorderedAccess"/></description></item>
+    /// <item><description><see cref="BarrierAccess.ReadWrite"/></description></item>
     /// <item><description><see cref="BarrierAccess.ShaderResource"/></description></item>
     /// <item><description><see cref="BarrierAccess.StreamOutput"/></description></item>
     /// <item><description><see cref="BarrierAccess.Common"/> (See the note on the <see cref="BarrierSync"/> description.)</description></item>
@@ -141,7 +139,7 @@ public enum BarrierSync
     /// <see cref="BarrierAccess">Access types</see> in this scope are limited to the following values:
     /// <list type="bullet">
     /// <item><description><see cref="BarrierAccess.ConstantBuffer"/></description></item>
-    /// <item><description><see cref="BarrierAccess.UnorderedAccess"/></description></item>
+    /// <item><description><see cref="BarrierAccess.ReadWrite"/></description></item>
     /// <item><description><see cref="BarrierAccess.ShadingRateSource"/></description></item>
     /// <item><description><see cref="BarrierAccess.ShaderResource"/></description></item>
     /// <item><description><see cref="BarrierAccess.Common"/> (See the note on the <see cref="BarrierSync"/> description.)</description></item>
@@ -158,7 +156,7 @@ public enum BarrierSync
     /// <list type="bullet">
     /// <item><description><see cref="BarrierAccess.VertexBuffer"/></description></item>
     /// <item><description><see cref="BarrierAccess.ConstantBuffer"/></description></item>
-    /// <item><description><see cref="BarrierAccess.UnorderedAccess"/></description></item>
+    /// <item><description><see cref="BarrierAccess.ReadWrite"/></description></item>
     /// <item><description><see cref="BarrierAccess.ShaderResource"/></description></item>
     /// <item><description><see cref="BarrierAccess.StreamOutput"/></description></item>
     /// <item><description><see cref="BarrierAccess.Common"/> (See the note on the <see cref="BarrierSync"/> description.)</description></item>
@@ -202,15 +200,16 @@ public enum BarrierSync
     /// <item><description>Dispatch operations.</description></item>
     /// <item><description>Setting a <b>compute</b> root descriptor table.</description></item>
     /// <item><description>Setting a <b>compute</b> root shader resource.</description></item>
-    /// <item><description>Setting a <b>compute</b> root unordered access view.</description></item>
+    /// <item><description>Setting a <b>compute</b> root read/write view.</description></item>
     /// <item><description>Setting a <b>compute</b> root constant buffer view.</description></item>
     /// </list>
     /// </para>
+    /// <inheritdoc cref="GorgonGpuBuffer" path="/remarks/para[@type='uav_readwrite']"/>
     /// <para>
     /// <see cref="BarrierAccess">Access types</see> in this scope are limited to the following values:
     /// <list type="bullet">
     /// <item><description><see cref="BarrierAccess.ConstantBuffer"/></description></item>
-    /// <item><description><see cref="BarrierAccess.UnorderedAccess"/></description></item>
+    /// <item><description><see cref="BarrierAccess.ReadWrite"/></description></item>
     /// <item><description><see cref="BarrierAccess.ShaderResource"/></description></item>
     /// <item><description><see cref="BarrierAccess.Common"/> (See the note on the <see cref="BarrierSync"/> description.)</description></item>
     /// </list>
@@ -279,7 +278,7 @@ public enum BarrierSync
     /// <list type="bullet">
     /// <item><description><see cref="BarrierAccess.VertexBuffer"/></description></item>
     /// <item><description><see cref="BarrierAccess.ConstantBuffer"/></description></item>
-    /// <item><description><see cref="BarrierAccess.UnorderedAccess"/></description></item>
+    /// <item><description><see cref="BarrierAccess.ReadWrite"/></description></item>
     /// <item><description><see cref="BarrierAccess.ShaderResource"/></description></item>
     /// <item><description><see cref="BarrierAccess.StreamOutput"/></description></item>
     /// <item><description><see cref="BarrierAccess.ShadingRateSource"/></description></item>
@@ -296,17 +295,18 @@ public enum BarrierSync
     EmitRayTracingAccelerationStructurePostBuildInformation = D3D12_BARRIER_SYNC.D3D12_BARRIER_SYNC_EMIT_RAYTRACING_ACCELERATION_STRUCTURE_POSTBUILD_INFO,
     /// <summary>
     /// <para>
-    /// Synchronize scope for the <see cref="GorgonCommandList.ClearUnorderedAccessView(uint)"/> and <see cref="GorgonCommandList.ClearUnorderedAccessView(float)"/> methods.
+    /// Synchronize scope for the <see cref="GorgonCommandList.ClearReadWriteView(uint)"/> and <see cref="GorgonCommandList.ClearReadWriteView(float)"/> methods.
     /// </para>
+    /// <inheritdoc cref="GorgonGpuBuffer" path="/remarks/para[@type='uav_readwrite']"/>
     /// <para>
     /// <see cref="BarrierAccess">Access types</see> in this scope are limited to the following values:
     /// <list type="bullet">
-    /// <item><description><see cref="BarrierAccess.UnorderedAccess"/></description></item>
+    /// <item><description><see cref="BarrierAccess.ReadWrite"/></description></item>
     /// <item><description><see cref="BarrierAccess.Common"/> (See the note on the <see cref="BarrierSync"/> description.)</description></item>
     /// </list>
     /// </para>
     /// </summary>
-    ClearUnorderedAccessView = D3D12_BARRIER_SYNC.D3D12_BARRIER_SYNC_CLEAR_UNORDERED_ACCESS_VIEW,
+    ClearReadWriteView = D3D12_BARRIER_SYNC.D3D12_BARRIER_SYNC_CLEAR_UNORDERED_ACCESS_VIEW,
     /* TODO: We do not support ray tracing or video encoding/decoding (yet).  Leave this here for now, but ignore it. */
 /*    /// <summary>
     /// <para>
@@ -482,8 +482,9 @@ public enum BarrierAccess
     RenderTarget = D3D12_BARRIER_ACCESS.D3D12_BARRIER_ACCESS_RENDER_TARGET,
     /// <summary>
     /// <para>
-    /// Indicates a resource is accessible as an unordered access resource. Runtime barrier validation ensures that this value is used with one or more of the following sync bits:
+    /// Indicates a resource is accessible as an read/write resource. Runtime barrier validation ensures that this value is used with one or more of the following sync bits:
     /// </para>
+    /// <inheritdoc cref="GorgonGpuBuffer" path="/remarks/para[@type='uav_readwrite']"/>
     /// <para>
     /// <list type="bullet">
     /// <item><description><see cref="BarrierSync.All"/></description></item>
@@ -492,11 +493,11 @@ public enum BarrierAccess
     /// <item><description><see cref="BarrierSync.ComputeShading"/></description></item>
     /// <item><description><see cref="BarrierSync.Draw"/></description></item>
     /// <item><description><see cref="BarrierSync.AllShading"/></description></item>
-    /// <item><description><see cref="BarrierSync.ClearUnorderedAccessView"/></description></item>
+    /// <item><description><see cref="BarrierSync.ClearReadWriteView"/></description></item>
     /// </list>
     /// </para>
     /// </summary>
-    UnorderedAccess = D3D12_BARRIER_ACCESS.D3D12_BARRIER_ACCESS_UNORDERED_ACCESS,
+    ReadWrite = D3D12_BARRIER_ACCESS.D3D12_BARRIER_ACCESS_UNORDERED_ACCESS,
     /// <summary>
     /// <para>
     /// Indicates a resource is accessible as a writable depth/stencil resource. Runtime barrier validation ensures that this value is used with one or more of the following sync bits:
@@ -790,14 +791,14 @@ public enum BarrierLayout
     Common = D3D12_BARRIER_LAYOUT.D3D12_BARRIER_LAYOUT_COMMON,
     /// <summary>
     /// <para>
-    /// Provides support for any read-only access (e.g. <see cref="BarrierAccess.ShaderResource"/> , <see cref="BarrierAccess.CopySource"/>). Should only be used for textures that require multiple, 
+    /// Provides support for any read-only access (e.g. <see cref="BarrierAccess.ShaderResource"/>, <see cref="BarrierAccess.CopySource"/>). Should only be used for textures that require multiple, 
     /// concurrent read accesses since this may not be as optimal as a more specific read layout.
     /// </para>
     /// </summary>
     GenericRead = D3D12_BARRIER_LAYOUT.D3D12_BARRIER_LAYOUT_GENERIC_READ,
     /// <summary>
     /// <para>
-    /// The resource is used as a render target. A subresource must be in this state when it is rendered to, or when it is cleared with <see cref="GorgonCommandList.ClearRenderTarget(GorgonRenderTargetView, GorgonColor)"/>.
+    /// The resource is used as a render target. A subresource must be in this state when it is rendered to, or when it is cleared with <see cref="GorgonCommandList.ClearRenderTarget(GorgonRenderTargetView, GorgonColor, IReadOnlyList{GorgonRectangle}?)"/>.
     /// </para>
     /// <para>
     /// This is a write-only state. To read from a render target as a shader resource, the resource must be set to <see cref="ShaderResource"/>.
@@ -806,14 +807,15 @@ public enum BarrierLayout
     RenderTarget = D3D12_BARRIER_LAYOUT.D3D12_BARRIER_LAYOUT_RENDER_TARGET,
     /// <summary>
     /// <para>
-    /// The resource is used for unordered access. A subresource must be in this state when it is accessed by the GPU via an unordered access view. A subresource must also be in this state when it is cleared 
-    /// with <see cref="GorgonCommandList.ClearUnorderedAccessView"/>. This is a read/write state.
+    /// The resource is used for read/write access. A subresource must be in this state when it is accessed by the GPU via an read/write view. A subresource must also be in this state when it is cleared 
+    /// with <see cref="GorgonCommandList.ClearReadWriteView"/>. This is a read/write state.
     /// </para>
+    /// <inheritdoc cref="GorgonGpuBuffer" path="/remarks/para[@type='uav_readwrite']"/>
     /// </summary>
-    UnorderedAccess = D3D12_BARRIER_LAYOUT.D3D12_BARRIER_LAYOUT_UNORDERED_ACCESS,
+    ReadWrite = D3D12_BARRIER_LAYOUT.D3D12_BARRIER_LAYOUT_UNORDERED_ACCESS,
     /// <summary>
     /// <para>
-    /// This state is mutually exclusive with other states. You should use it for <see cref="GorgonCommandList.ClearDepthStencilView"/> when the flags indicate a given subresource should be cleared 
+    /// This state is mutually exclusive with other states. You should use it for <see cref="GorgonCommandList.ClearDepthStencil(GorgonDepthStencilView, float, byte, IReadOnlyList{GorgonRectangle}?)"/> when the flags indicate a given subresource should be cleared 
     /// (otherwise the subresource state doesn't matter), or when using it in a writable depth stencil view when the PSO has depth write enabled.
     /// </para>
     /// </summary>
@@ -919,10 +921,10 @@ public enum BarrierLayout
     GraphicsGenericRead = D3D12_BARRIER_LAYOUT.D3D12_BARRIER_LAYOUT_DIRECT_QUEUE_GENERIC_READ,
     /// <summary>
     /// <para>
-    /// Same as <see cref="UnorderedAccess"/> except with optimizations specific for graphics queues. Can only be used in barriers on graphics queues.
+    /// Same as <see cref="ReadWrite"/> except with optimizations specific for graphics queues. Can only be used in barriers on graphics queues.
     /// </para>
     /// </summary>
-    GraphicsUnorderedAccess = D3D12_BARRIER_LAYOUT.D3D12_BARRIER_LAYOUT_DIRECT_QUEUE_UNORDERED_ACCESS,
+    GraphicsReadWrite = D3D12_BARRIER_LAYOUT.D3D12_BARRIER_LAYOUT_DIRECT_QUEUE_UNORDERED_ACCESS,
     /// <summary>
     /// <para>
     /// Same as <see cref="ShaderResource"/> except with optimizations specific for graphics queues. Can only be used in barriers on graphics queues.
@@ -958,10 +960,10 @@ public enum BarrierLayout
     ComputeGenericRead = D3D12_BARRIER_LAYOUT.D3D12_BARRIER_LAYOUT_COMPUTE_QUEUE_GENERIC_READ,
     /// <summary>
     /// <para>
-    /// Same as <see cref="UnorderedAccess"/> except with optimizations specific for compute queues. Can only be used in barriers on compute queues.
+    /// Same as <see cref="ReadWrite"/> except with optimizations specific for compute queues. Can only be used in barriers on compute queues.
     /// </para>
     /// </summary>
-    ComputeUnorderedAccess = D3D12_BARRIER_LAYOUT.D3D12_BARRIER_LAYOUT_COMPUTE_QUEUE_UNORDERED_ACCESS,
+    ComputeReadWrite = D3D12_BARRIER_LAYOUT.D3D12_BARRIER_LAYOUT_COMPUTE_QUEUE_UNORDERED_ACCESS,
     /// <summary>
     /// <para>
     /// Same as <see cref="ShaderResource"/> except with optimizations specific for compute queues. Can only be used in barriers on compute queues.

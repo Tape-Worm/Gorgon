@@ -153,9 +153,12 @@ public interface IGorgonTextureInfo
     }
 
     /// <summary>
-    /// Property to return whether this texture is used as an unordered access resource.
+    /// Property to return whether this texture can be used as an read/write resource.
     /// </summary>
-    bool IsUnorderedAccess
+    /// <remarks>
+    /// <inheritdoc cref="GorgonGpuBuffer" path="/remarks/para[@type='uav_readwrite']"/>
+    /// </remarks>
+    bool HasReadWriteAccess
     {
         get;        
     }

@@ -31,6 +31,7 @@
   </Folder>
   <Folder Name="/Examples/Gorgon.Graphics/">
     <Project Path="Examples/Gorgon.Graphics/Images/Images.csproj" />
+    <Project Path="Examples/Gorgon.Graphics/Initialization/Initialization.csproj" />
   </Folder>
   <Folder Name="/Examples/Gorgon.Input/">
     <Project Path="Examples/Gorgon.Input/Input/Input.csproj" />

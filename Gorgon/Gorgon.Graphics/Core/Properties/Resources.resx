@@ -308,7 +308,7 @@ The format of the image {0} and the format of the texture {1} are incompatible, 
     <value>The multi sample settings ({0}) for the texture '{1}' is not the same as the multi sample settings ({2}) for the texture '{3}'.</value>
   </data>
   <data name="GORGFX_ERR_CANNOT_COPY_IMAGE_TO_MULTISAMPLE_TEXTURE" xml:space="preserve">
-    <value>The texture '{0}' has a multi sample value of {1}. Only textures without multi sampling can receive image data.</value>
+    <value>The texture '{0}' has a multi sample value of {1}. Only textures without multisampling can receive image data.</value>
   </data>
   <data name="GORGFX_ERR_CANNOT_COPY_IMAGE_TO_DEPTH_STENCIL" xml:space="preserve">
     <value>The texture '{0}' is a depth/stencil texture. Images cannot be copied into a depth/stencil texture.</value>
@@ -332,7 +332,7 @@ The format of the image {0} and the format of the texture {1} are incompatible, 
     <value>The destination data structure is too small ({0} bytes) to fit the required data ({1} bytes).</value>
   </data>
   <data name="GORGFX_ERR_CANNOT_COPY_FROM_MULTISAMPLE_TEXTURE" xml:space="preserve">
-    <value>The texture '{0}' has a multi sample value of {1}. Only textures without multi sampling can be copied.</value>
+    <value>The texture '{0}' has a multi sample value of {1}. Only textures without multisampling can be copied.</value>
   </data>
   <data name="GORGFX_ERR_CANNOT_COPY_FROM_DEPTH_STENCIL" xml:space="preserve">
     <value>The texture '{0}' is a depth/stencil texture. Depth/stencil textures cannot be copied into an image.</value>
@@ -389,10 +389,10 @@ The format of the image {0} and the format of the texture {1} are incompatible, 
     <value>The texture '{0}' is configured to be a render target and a depth/stencil buffer. These two flags are mutually exclusive and only one can be set to true at a time.</value>
   </data>
   <data name="GORGFX_ERR_TEXTURE_CANNOT_BE_UNORDERED_AND_DS" xml:space="preserve">
-    <value>The texture '{0}' is configured to be an unordered access resource and a depth/stencil buffer. These two flags are mutually exclusive and only one can be set to true at a time.</value>
+    <value>The texture '{0}' is configured to be an read/write access resource and a depth/stencil buffer. These two flags are mutually exclusive and only one can be set to true at a time.</value>
   </data>
   <data name="GORGFX_ERR_TEXTURE_CANNOT_BE_MSAA_AND_UNORDERED" xml:space="preserve">
-    <value>The texture '{0}' is a MSAA texture. These textures cannot be used with unordered access.</value>
+    <value>The texture '{0}' is a MSAA texture. These textures cannot be used with read/write access.</value>
   </data>
   <data name="GORGFX_ERR_CANNOT_CREATE_ROOT" xml:space="preserve">
     <value>There was an error creating the root signature.

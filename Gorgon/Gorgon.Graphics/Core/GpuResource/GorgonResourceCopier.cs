@@ -834,23 +834,22 @@ public unsafe sealed class GorgonResourceCopier
             {
                 for (int m = 0; m < mipCount; ++m)
                 {
+                    // Planes are not supported by IGorgonImage, so leave at 0.
                     GorgonSubResourceInfo subResource = texture.SubResources[texture.GetSubResourceIndex(m, a, 0)];
                     IGorgonImageBuffer buffer = working.Buffers[m, a];
 
                     D3D12_PLACED_SUBRESOURCE_FOOTPRINT footPrint = new()
                     {
                         Offset = offsetCalc,
-                        Footprint = new D3D12_SUBRESOURCE_FOOTPRINT((DXGI_FORMAT)working.Format, (uint)buffer.Width, (uint)buffer.Height, (uint)depth, (uint)buffer.PitchInformation.RowPitch)
+                        Footprint = new D3D12_SUBRESOURCE_FOOTPRINT((DXGI_FORMAT)working.Format, (uint)subResource.Width, (uint)subResource.Height, (uint)depth, (uint)buffer.PitchInformation.RowPitch)
                     };
                     D3D12_TEXTURE_COPY_LOCATION src = new((PID3D12Resource2)allocation.Heap.D3DResource.Get(), in footPrint);
                     D3D12_TEXTURE_COPY_LOCATION dest = new((PID3D12Resource2)texture.D3DResource.Get(), (uint)subResource.SubResourceIndex);
-                    D3D12_BOX box = new(0, 0, 0, buffer.Width.Min(subResource.Width), buffer.Height.Min(subResource.Height), buffer.Depth.Min(subResource.Depth));
 
-                    _commandList.D3DGraphicsCommandList.Get()->CopyTextureRegion(&dest, 0, 0, 0, &src, &box);
-
-                    depth = (depth >> 1).Max(1);
+                    _commandList.D3DGraphicsCommandList.Get()->CopyTextureRegion(&dest, 0, 0, 0, &src, null);
 
                     offsetCalc += (ulong)(buffer.SizeInBytes * depth);
+                    depth = (depth >> 1).Max(1);
                 }
             }
 
@@ -898,32 +897,40 @@ public unsafe sealed class GorgonResourceCopier
 
         _commandQueue.Tracker.TrackResource(texture.D3DResource);
 
-        int srcResourceIndex = texture.GetSubResourceIndex(imageBuffer.MipLevel, imageBuffer.DepthSliceIndex, 0);
-        GorgonSubResourceInfo srcInfo = texture.SubResources[srcResourceIndex];
+        // Planes are not supported by IGorgonImage, so leave at 0.
         int destResourceIndex = texture.GetSubResourceIndex(destinationMipLevel, destinationZOrArrayIndex, destinationPlane);
         GorgonSubResourceInfo destInfo = texture.SubResources[destResourceIndex];
 
-        Graphics.UploadHeaps.Allocate((ulong)srcInfo.SizeInBytes, texture.Info.Alignment, out CpuBufferAllocation allocation);
+        Graphics.UploadHeaps.Allocate((ulong)imageBuffer.SizeInBytes, texture.Info.Alignment, out CpuBufferAllocation allocation);
         Debug.Assert(allocation.IsAvailable, $"The returned resource heap allocation is not valid.");
 
         _commandQueue.Tracker.TrackResource(allocation.Heap.D3DResource);
 
         // Copy to upload resource.
-        NativeMemory.Copy((void*)imageBuffer.ImageData, allocation.CpuPointer, (nuint)(imageBuffer.SizeInBytes.Min(srcInfo.SizeInBytes)));
+        NativeMemory.Copy((void*)imageBuffer.ImageData, allocation.CpuPointer, (nuint)imageBuffer.SizeInBytes);
 
         _commandList.SetBarrier(texture, BarrierSync.Copy, BarrierAccess.CopyDestination, _commandQueue.Type == D3D12_COMMAND_LIST_TYPE.D3D12_COMMAND_LIST_TYPE_COPY ? BarrierLayout.Common : BarrierLayout.CopyDestination, force: true);
+
+        int bufferWidth = imageBuffer.Width.Min(destInfo.Width);
+        int bufferHeight = imageBuffer.Height.Min(destInfo.Height);
+
+        if (imageBuffer.FormatInformation.IsCompressed)
+        {
+            bufferWidth = (imageBuffer.PitchInformation.HorizontalBlockCount.Min(destInfo.Width >> 2)) << 2;
+            bufferHeight = (imageBuffer.PitchInformation.VerticalBlockCount.Min(destInfo.Height >> 2)) << 2;
+        }
 
         // Copy to final resource.
         D3D12_PLACED_SUBRESOURCE_FOOTPRINT footPrint = new()
         {
             Offset = allocation.Offset,
-            Footprint = new D3D12_SUBRESOURCE_FOOTPRINT((DXGI_FORMAT)imageBuffer.Format, (uint)imageBuffer.Width, (uint)imageBuffer.Height, 1, (uint)imageBuffer.PitchInformation.RowPitch)
+            Footprint = new D3D12_SUBRESOURCE_FOOTPRINT((DXGI_FORMAT)imageBuffer.Format, (uint)bufferWidth, (uint)bufferHeight, 1, (uint)imageBuffer.PitchInformation.RowPitch)
         };
         D3D12_TEXTURE_COPY_LOCATION src = new((PID3D12Resource2)allocation.Heap.D3DResource.Get(), in footPrint);
         D3D12_TEXTURE_COPY_LOCATION dest = new((PID3D12Resource2)texture.D3DResource.Get(), (uint)destResourceIndex);
-        D3D12_BOX box = new(0, 0, 0, destInfo.Width.Min(imageBuffer.Width), destInfo.Height.Min(imageBuffer.Height), 1);
+        D3D12_BOX box = new(0, 0, 0, bufferWidth, bufferHeight, 1);
 
-        _commandList.D3DGraphicsCommandList.Get()->CopyTextureRegion(&dest, 0, 0, 0, &src, &box);
+        _commandList.D3DGraphicsCommandList.Get()->CopyTextureRegion(&dest, 0, 0, texture.Type == TextureType.Texture3D ? (uint)destinationZOrArrayIndex : 0, &src, &box);
 
         return this;
     }
@@ -1387,7 +1394,7 @@ public unsafe sealed class GorgonResourceCopier
     ///     from a depth/stencil texture is made.</description>
     /// </item>
     /// <item>
-    ///     <description>Textures that are created using <see cref="GorgonTextureInfo.MultisampleInfo">Multi-sampling</see> (i.e. a multi-sample value that is not equal to 
+    ///     <description>Textures that are created using <see cref="GorgonTextureInfo.MultisampleInfo">Multisampling</see> (i.e. a multi-sample value that is not equal to 
     ///     <see cref="GorgonMultisampleInfo.NoMultisampling"/>) cannot be used as a source. An exception will be thrown if an attempt to copy from a multi-sampled texture is made.</description>
     /// </item>
     /// </list>
@@ -1457,21 +1464,16 @@ public unsafe sealed class GorgonResourceCopier
                     D3D12_PLACED_SUBRESOURCE_FOOTPRINT footPrint = new()
                     {
                         Offset = offsetCalc,
-                        Footprint = new D3D12_SUBRESOURCE_FOOTPRINT((DXGI_FORMAT)texture.Format, (uint)buffer.Width.Min(subResource.Width), (uint)buffer.Height.Min(subResource.Height), (uint)depth, (uint)buffer.PitchInformation.RowPitch)
+                        Footprint = new D3D12_SUBRESOURCE_FOOTPRINT((DXGI_FORMAT)texture.Format, (uint)subResource.Width, (uint)subResource.Height, (uint)depth, (uint)buffer.PitchInformation.RowPitch)
                     };
 
                     D3D12_TEXTURE_COPY_LOCATION dest = new((PID3D12Resource2)allocation.Heap.D3DResource.Get(), in footPrint);
 
                     _commandList.D3DGraphicsCommandList.Get()->CopyTextureRegion(&dest, 0, 0, 0, &src, null);
 
-                    depth >>= 1;
-
-                    if (depth < 1)
-                    {
-                        depth = 1;
-                    }
-
                     offsetCalc += (ulong)(buffer.SizeInBytes * depth);
+
+                    depth = (depth >> 1).Max(1);                    
                 }
             }
 
@@ -1559,15 +1561,24 @@ public unsafe sealed class GorgonResourceCopier
 
             D3D12_TEXTURE_COPY_LOCATION src = new((PID3D12Resource2)texture.D3DResource.Get(), (uint)srcResourceIndex);
 
+            int bufferWidth = buffer.Width.Min(srcInfo.Width);
+            int bufferHeight = buffer.Height.Min(srcInfo.Height);
+
+            if (texture.FormatInfo.IsCompressed)
+            {
+                bufferWidth = (buffer.PitchInformation.HorizontalBlockCount.Min(srcInfo.Width >> 2)) << 2;
+                bufferHeight = (buffer.PitchInformation.VerticalBlockCount.Min(srcInfo.Height >> 2)) << 2;
+            }
+
             D3D12_PLACED_SUBRESOURCE_FOOTPRINT footPrint = new()
             {
                 Offset = allocation.Offset,
-                Footprint = new D3D12_SUBRESOURCE_FOOTPRINT((DXGI_FORMAT)texture.Format, (uint)buffer.Width.Min(srcInfo.Width), (uint)buffer.Height.Min(srcInfo.Height), (uint)buffer.Depth.Min(srcInfo.Depth), (uint)buffer.PitchInformation.RowPitch)
+                Footprint = new D3D12_SUBRESOURCE_FOOTPRINT((DXGI_FORMAT)texture.Format, (uint)bufferWidth, (uint)bufferHeight, 1, (uint)buffer.PitchInformation.RowPitch)
             };
 
             D3D12_TEXTURE_COPY_LOCATION dest = new((PID3D12Resource2)allocation.Heap.D3DResource.Get(), in footPrint);
             D3D12_BOX box = new(0, 0, texture.Type == TextureType.Texture3D ? sourceZOrArrayIndex : 0,
-                                        srcInfo.Width.Min(buffer.Width), srcInfo.Height.Min(buffer.Height), texture.Type == TextureType.Texture3D ? sourceZOrArrayIndex + 1 : 1);
+                                        bufferWidth, bufferHeight, texture.Type == TextureType.Texture3D ? sourceZOrArrayIndex + 1 : 1);
 
             _commandList.D3DGraphicsCommandList.Get()->CopyTextureRegion(&dest, 0, 0, 0, &src, &box);
 

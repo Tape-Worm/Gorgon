@@ -70,7 +70,7 @@ public record class GorgonGpuBufferInfo(long SizeInBytes)
     public GorgonGpuBufferInfo(GorgonGpuBufferInfo info)
         : base(info)
     {
-        IsUnorderedAccess = info.IsUnorderedAccess;
+        HasReadWriteAccess = info.HasReadWriteAccess;
         Alignment = info.Alignment;
     }
 
@@ -81,7 +81,7 @@ public record class GorgonGpuBufferInfo(long SizeInBytes)
     public GorgonGpuBufferInfo(IGorgonGpuBufferInfo info)
         : this(info.SizeInBytes)
     {
-        IsUnorderedAccess = info.IsUnorderedAccess;
+        HasReadWriteAccess = info.HasReadWriteAccess;
         Alignment = info.Alignment;
     }
 }

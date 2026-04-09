@@ -27,6 +27,7 @@ using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Math;
+using Gorgon.Native;
 using TerraFX.Interop.DirectX;
 using TerraFX.Interop.Windows;
 
@@ -38,7 +39,7 @@ namespace Gorgon.Graphics.Core;
 /// <remarks>
 /// <para>
 /// This is a generic data buffer that is used by the GPU to read, and write, data. Applications can use these buffers to send various types of data, such as vertices, or user defined types to the GPU and 
-/// then use shaders to read from, or using Unordered Access Views, write to the buffer. The type of data in the buffer can be anything a user needs.
+/// then use shaders to read from, or using read/write views, write to the buffer. The type of data in the buffer can be anything a user needs.
 /// </para>
 /// <para>
 /// Buffers, in some scenarios, require alignment in order for the shader(s) to read/write correctly. For example, buffers containing constant values for a shader (i.e. a constant buffer) <b>must</b> be 
@@ -56,6 +57,11 @@ namespace Gorgon.Graphics.Core;
 /// <para>
 /// While these buffers can hold many different types of data, they cannot be used as an index buffer. For more information, please consult the <see cref="GorgonIndexBuffer"/> documentation.
 /// </para>
+/// </note>
+/// </para>
+/// <para type="uav_readwrite">
+/// <note type="Information">
+/// In Gorgon, read/write views are synonymous with Unordered Access Views (UAVs).
 /// </note>
 /// </para>
 /// </remarks>
@@ -143,6 +149,9 @@ public sealed unsafe class GorgonGpuBuffer
     }
 
     /// <inheritdoc/>
+    /// <exception cref="GorgonException"><para>Thrown if the alignment for the buffer is less than 0.</para>
+    /// <para>Thrown if the buffer size is less than 1 byte.</para>
+    /// </exception>
     private protected override void ValidateInfo()
     {
         if (Alignment < 0)
@@ -170,7 +179,7 @@ public sealed unsafe class GorgonGpuBuffer
     /// </summary>
     /// <param name="owned"><b>true</b> if the buffer is owned by the view, or <b>false</b> if not.</param>
     /// <returns>A <see cref="GorgonConstantBufferView"/> for the buffer.</returns>
-    /// <inheritdoc cref="GorgonConstantBufferView.ValidateConstantView(string, int, long, ulong)" path="/exception"/>
+    /// <inheritdoc cref="GorgonConstantBufferView.ValidateConstantView(string, int, ulong, ulong)" path="/exception"/>
     /// <remarks>
     /// <para>
     /// This allows shaders to access data in the buffer as shader constants. This type of view is typically used for scenarios where the buffer is updated once per frame, or less. Otherwise, applications 
@@ -202,15 +211,16 @@ public sealed unsafe class GorgonGpuBuffer
     {
         using (_viewLock.EnterScope())
         {
-            GorgonConstantBufferView.ValidateConstantView(Name, Alignment, SizeInBytes, ResourceOffset);
+            ulong alignedSize = _bufferAllocation.SizeInBytes.AlignDown((ulong)GorgonConstantBufferView.AlignmentRequirement);
+
+            GorgonConstantBufferView.ValidateConstantView(Name, Alignment, alignedSize, ResourceOffset);
 
             if (_cbv is not null)
             {
-                _cbv.Reset();
                 return _cbv;
             }
 
-            _cbv = new GorgonConstantBufferView(Graphics, Name, this, owned);
+            _cbv = new GorgonConstantBufferView(Graphics, Name, this, (uint)alignedSize, owned);
             return _cbv;
         }
     }
@@ -262,7 +272,6 @@ public sealed unsafe class GorgonGpuBuffer
 
             if (_structs.TryGetValue(key, out GorgonStructuredBufferView? result))
             {
-                result.Reset();
                 return result;
             }
 
@@ -313,7 +322,6 @@ public sealed unsafe class GorgonGpuBuffer
 
             if (_raws.TryGetValue(key, out GorgonRawBufferView? result))
             {
-                result.Reset();
                 return result;
             }
 
@@ -368,7 +376,6 @@ public sealed unsafe class GorgonGpuBuffer
 
             if (_typeds.TryGetValue(key, out GorgonTypedBufferView? result))
             {
-                result.Reset();
                 return result;
             }
 

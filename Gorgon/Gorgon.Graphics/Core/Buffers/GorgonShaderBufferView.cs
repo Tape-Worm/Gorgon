@@ -109,14 +109,12 @@ public unsafe abstract class GorgonShaderBufferView
         Graphics.GpuViewDescriptors.Allocate(1, out _allocation);        
 
         D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = Graphics.GpuViewDescriptors.D3DCpuHandle;
-        D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle = Graphics.GpuViewDescriptors.D3DGpuHandle;
 
         cpuHandle.Offset(_allocation.Offset, Graphics.GpuViewDescriptors.DescriptorSize);
-        gpuHandle.Offset(_allocation.Offset, Graphics.GpuViewDescriptors.DescriptorSize);
 
         Graphics.D3DDevice.Get()->CreateShaderResourceView((PID3D12Resource2)Buffer.D3DResource.Get(), &desc, cpuHandle);
 
-        SetHandles(cpuHandle, gpuHandle);
+        D3DCpuHandle = cpuHandle;
     }
 
     /// <inheritdoc/>
@@ -133,10 +131,6 @@ public unsafe abstract class GorgonShaderBufferView
 
         base.Dispose(disposing);
     }
-
-    /// <inheritdoc/>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private protected override void OnReset() => AllocateDescriptors();
 
     /// <summary>
     /// Function to retrieve the handle of the view, which is used to pass to a shader for resource heap indexing.

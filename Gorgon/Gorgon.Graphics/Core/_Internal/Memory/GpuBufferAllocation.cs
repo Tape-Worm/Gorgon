@@ -21,21 +21,17 @@
 // Created: March 23, 2026 8:29:07 PM
 //
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-using Gorgon.Core;
-
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
 /// An allocation block from the mega buffer.
 /// </summary>
 /// <param name="handle"><inheritdoc cref="Handle" path="/summary"/></param>
+/// <param name="size"><inheritdoc cref="SizeInBytes" path="/summary"/></param>
 /// <param name="offset"><inheritdoc cref="Offset" path="/summary"/></param>
 /// <param name="tileStart"><inheritdoc cref="TileStart" path="/summary"/></param>
 /// <param name="tileEnd"><inheritdoc cref="TileEnd" path="/summary"/></param>
-internal readonly struct GpuBufferAllocation(ulong handle, uint offset, ushort tileStart, ushort tileEnd)
+internal readonly struct GpuBufferAllocation(ulong handle, ulong size, uint offset, ushort tileStart, ushort tileEnd)
     : IEquatable<GpuBufferAllocation>
 {
     /// <summary>
@@ -47,6 +43,14 @@ internal readonly struct GpuBufferAllocation(ulong handle, uint offset, ushort t
     /// The virtual allocation handle.
     /// </summary>
     public readonly ulong Handle = handle;
+
+    /// <summary>
+    /// The total size of the allocation block.
+    /// </summary>
+    /// <remarks>
+    /// This does not necessarily indicate the size of the data stored in the allocation, just the size of the allocation block itself, which could be larger due to alignment.
+    /// </remarks>
+    public readonly ulong SizeInBytes = size;
 
     /// <summary>
     /// The offset within the mega buffer that this allocation starts at.

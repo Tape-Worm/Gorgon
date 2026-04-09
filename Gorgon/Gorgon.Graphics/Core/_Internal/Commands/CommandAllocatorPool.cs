@@ -88,8 +88,6 @@ internal unsafe sealed class CommandAllocatorPool(CommandQueue queue)
 
         while(_inUse.TryPeek(out CommandAllocator? allocator))
         {
-            Debug.Assert(allocator.Fence != 0, "The allocator does not have a valid fence value. Cannot safely remove this allocator.");
-
             if (completed < allocator.Fence)
             {
                 break;

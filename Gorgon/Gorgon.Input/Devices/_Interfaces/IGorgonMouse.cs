@@ -84,7 +84,7 @@ public interface IGorgonMouse
     /// </para>
     /// <para>
     /// For example:
-    /// <code lang="csharp">
+    /// <code language="csharp">
     /// <![CDATA[
     /// if ((_mouse & MouseButtons.Button1) == MouseButtons.Button1)
     /// {

@@ -427,7 +427,7 @@ internal unsafe sealed class MegaBuffer
 
             (ushort start, ushort end) = MapTilesAndHeaps(location, size);
 
-            allocation = new GpuBufferAllocation(vmAllocation.AllocHandle, (uint)location, start, end);
+            allocation = new GpuBufferAllocation(vmAllocation.AllocHandle, desc.Size, (uint)location, start, end);
         }
     }
 

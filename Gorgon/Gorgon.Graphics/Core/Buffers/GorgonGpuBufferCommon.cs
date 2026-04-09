@@ -41,7 +41,7 @@ public abstract class GorgonGpuBufferCommon(GorgonGraphics graphics, string name
     public long SizeInBytes => _info.SizeInBytes;
 
     /// <inheritdoc/>
-    public bool IsUnorderedAccess => _info.IsUnorderedAccess;
+    public bool HasReadWriteAccess => _info.HasReadWriteAccess;
 
     /// <summary>
     /// Property to return the offset, in bytes, of a suballocated buffer within a larger buffer.

@@ -21,7 +21,7 @@
 // Created: January 3, 2026 12:18:17 PM
 //
 
-using System.Runtime.CompilerServices;
+using System.Diagnostics;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using TerraFX.Interop.DirectX;
@@ -35,6 +35,33 @@ namespace Gorgon.Graphics.Core;
 public abstract class GorgonResourceView
     : IGorgonNamedObject, IDisposable
 {
+    private bool _isConfigured;
+    private D3D12_CPU_DESCRIPTOR_HANDLE _d3dHandle;
+
+    /// <summary>
+    /// Property to return the D3D CPU descriptor handle for the view.
+    /// </summary>
+    /// <remarks>
+    /// Objects that implement this base class, MUST set this value after descriptor creation.
+    /// </remarks>
+    private protected D3D12_CPU_DESCRIPTOR_HANDLE D3DCpuHandle
+    {
+        get
+        {
+            Debug.Assert(_isConfigured, "The handle was never set. This is a bug.");
+            return _d3dHandle;
+        }
+        set
+        {
+            _d3dHandle = value;
+
+            if (value != D3D12_CPU_DESCRIPTOR_HANDLE.DEFAULT)
+            {
+                _isConfigured = true;
+            }
+        }
+    }
+
     /// <summary>
     /// Property to return whether the resource is owned by this view.
     /// </summary>
@@ -42,25 +69,7 @@ public abstract class GorgonResourceView
     {
         get;
         private set;
-    }
-
-    /// <summary>
-    /// Property to return the D3D CPU descriptor handle for the view.
-    /// </summary>
-    internal D3D12_CPU_DESCRIPTOR_HANDLE D3DCpuHandle
-    {
-        get;
-        private set;
-    }
-
-    /// <summary>
-    /// Property to return the D3D GPU descriptor handle for the view.
-    /// </summary>
-    internal D3D12_GPU_DESCRIPTOR_HANDLE D3DGpuHandle
-    {
-        get;
-        private set;
-    }
+    }    
 
     /// <summary>
     /// Property to return whether the view resource is disposed or not.
@@ -87,7 +96,7 @@ public abstract class GorgonResourceView
     /// </summary>
     public GorgonGpuResource Resource
     {
-        get;        
+        get;
     }
 
     /// <summary>
@@ -103,7 +112,6 @@ public abstract class GorgonResourceView
             Graphics.Log.Print($"Destroying view '{Name}' for resource '{Resource.Name}'...", LoggingLevel.Simple);
 
             D3DCpuHandle = D3D12_CPU_DESCRIPTOR_HANDLE.DEFAULT;
-            D3DGpuHandle = D3D12_GPU_DESCRIPTOR_HANDLE.DEFAULT;
 
             if ((OwnsResource) && (!IsResourceDisposed))
             {
@@ -112,40 +120,6 @@ public abstract class GorgonResourceView
             }
 
             this.UnregisterDisposable(Graphics);
-        }
-    }
-
-    /// <summary>
-    /// Function to assign the descriptor handles to the associated properties.
-    /// </summary>
-    /// <param name="cpuHandle">The CPU descriptor handle.</param>
-    /// <param name="gpuHandle">The GPU descriptor handle.</param>
-    /// <remarks>
-    /// <para>
-    /// Implementors MUST call this method after descriptor handle creation.
-    /// </para>
-    /// </remarks>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private protected void SetHandles(D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle, D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle)
-    {
-        D3DCpuHandle = cpuHandle;
-        D3DGpuHandle = gpuHandle;
-    }
-
-    /// <summary>
-    /// Function to reset the allocation if it's been freed.
-    /// </summary>
-    private protected abstract void OnReset();
-
-    /// <summary>
-    /// Function to reset the allocation if it's been freed.
-    /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal void Reset()
-    {
-        if (D3DCpuHandle == D3D12_CPU_DESCRIPTOR_HANDLE.DEFAULT)
-        {
-            OnReset();
         }
     }
 

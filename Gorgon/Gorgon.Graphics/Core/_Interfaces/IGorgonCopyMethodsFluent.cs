@@ -31,6 +31,7 @@ namespace Gorgon.Graphics.Core;
 /// <summary>
 /// Provides a fluent interface for systems that implement copying functionality.
 /// </summary>
+/// <typeparam name="T">The type of object to return as the fluent interface.</typeparam>
 public interface IGorgonCopyMethodsFluent<T>
 {
     /// <summary>
@@ -142,7 +143,7 @@ public interface IGorgonCopyMethodsFluent<T>
     /// </para>
     /// </remarks>
     /// <example>
-    /// <code lang="csharp">
+    /// <code language="csharp">
     /// <![CDATA[
     /// [StructLayout(LayoutKind.Sequential)]
     /// struct MyType
@@ -195,7 +196,7 @@ public interface IGorgonCopyMethodsFluent<T>
     /// <inheritdoc cref="CopyValue" path="/remarks/para[@type='CopyCommon']"/>
     /// </remarks>
     /// <example>
-    /// <code lang="csharp">
+    /// <code language="csharp">
     /// <![CDATA[
     /// using GorgonNativeBuffer<byte> sourceData = new(1024);
     /// 
@@ -239,7 +240,7 @@ public interface IGorgonCopyMethodsFluent<T>
     /// <inheritdoc cref="CopyValue" path="/remarks/para[@type='CopyCommon']"/>
     /// </remarks>
     /// <example>
-    /// <code lang="csharp">
+    /// <code language="csharp">
     /// <![CDATA[
     /// byte[] sourceData = new byte[1024];
     /// 
@@ -298,7 +299,7 @@ public interface IGorgonCopyMethodsFluent<T>
     /// </para>
     /// </remarks>
     /// <example>
-    /// <code lang="csharp">    
+    /// <code language="csharp">    
     /// <![CDATA[
     /// byte[] sourceData = new byte[1024];
     /// 
@@ -333,7 +334,7 @@ public interface IGorgonCopyMethodsFluent<T>
     /// <param name="image">The image data to copy into the texture.</param>
     /// <param name="texture">The texture that will receive the image data.</param>
     /// <inheritdoc cref="SetBarrier(GorgonTexture, BarrierSync, BarrierAccess, BarrierLayout, GorgonSubResourceRange?, bool, bool)" path="/returns"/>
-    /// <exception cref="ArgumentException"><para>Thrown if the <paramref name="texture"/> uses multi sampling.</para>
+    /// <exception cref="ArgumentException"><para>Thrown if the <paramref name="texture"/> uses multisampling.</para>
     /// <para>Thrown if the <paramref name="texture"/> is <see cref="GorgonTextureInfo.IsDepthStencil">configured to be used as a depth/stencil texture</see>.</para>
     /// </exception>
     /// <exception cref="GorgonException">Thrown if the <paramref name="image"/> <see cref="BufferFormat">format</see> is not compatible with the format of the texture.</exception>    
@@ -361,7 +362,7 @@ public interface IGorgonCopyMethodsFluent<T>
     ///     into a depth/stencil texture is made.</description>
     /// </item>
     /// <item>
-    ///     <description>Textures that are created using <see cref="GorgonTextureInfo.MultisampleInfo">Multi-sampling</see> (i.e. a multi-sample value that is not equal to 
+    ///     <description>Textures that are created using <see cref="GorgonTextureInfo.MultisampleInfo">Multisampling</see> (i.e. a multi-sample value that is not equal to 
     ///     <see cref="GorgonMultisampleInfo.NoMultisampling"/>) cannot be used as a destination. An exception will be thrown if an attempt to copy into a multi-sampled texture is made.</description>
     /// </item>
     /// </list>
@@ -651,7 +652,7 @@ public interface IGorgonCopyMethodsFluent<T>
     ///     textures only) must be set to 0.</description>
     /// </item>
     /// <item>
-    ///     <description>If either of the textures use multi-sampling, the <see cref="GorgonCopyTextureSubResource.SourceRegion"/> must be empty and 
+    ///     <description>If either of the textures use multisampling, the <see cref="GorgonCopyTextureSubResource.SourceRegion"/> must be empty and 
     ///     <see cref="GorgonCopyTextureSubResource.DestinationX"/>, <see cref="GorgonCopyTextureSubResource.DestinationY"/>, and <see cref="GorgonCopyTextureSubResource.DestinationZOrArrayIndex"/> (3D 
     ///     textures only) must be set to 0.</description>
     /// </item>

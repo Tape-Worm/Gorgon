@@ -51,25 +51,28 @@ namespace Gorgon.Graphics.Core;
 /// <param name="SupportsMultisampleLoadInstruction">Format can be used as a multi-sampled texture and read into a shader with the HLSL Load function.</param>
 /// <param name="SupportsGatherInstruction">Format can be used with the HLSL gather function.</param>
 /// <param name="CanCastBackBufferResource">Format supports casting when the resource is a back buffer.</param>
-/// <param name="IsTypedUnorderedAccessViewFormat">Format can be used for an unordered access view.</param>
+/// <param name="IsTypedReadWriteViewFormat">Format can be used for an read/write access view.</param>
 /// <param name="SupportsShaderGatherCmpInstruction">Format can be used with the HLSL gather with comparison function.</param>
 /// <param name="IsDecoderFormat">Format can be used with the decoder output.</param>
 /// <param name="IsEncoderFormat">Format can be used with the video encoder.</param>
 /// <param name="IsVideoProcessorOutputFormat">Format can be used with the video processor output.</param>
 /// <param name="IsVideoProcessorInputFormat">Format can be used with the video processor input.</param>
-/// <param name="SupportsUavAtomicAdd">Format supports atomic add.</param>
-/// <param name="SupportsUavAtomicBitwiseOperations">Format supports atomic bitwise operations.</param>
-/// <param name="SupportsUavAtomicCompareStoreOrExchange">Format supports atomic compare with store or exchange.</param>
-/// <param name="SupportsUavAtomicExchange">Format supports atomic exchange.</param>
-/// <param name="SupportsUavAtomicSignedMinOrMax">Format supports atomic min and max.</param>
-/// <param name="SupportsUavAtomicUnsignedMinOrMax">Format supports atomic unsigned min and max.</param>
-/// <param name="SupportsUavTypedLoad">Format supports a typed load.</param>
-/// <param name="SupportsUavTypedStore">Format supports a typed store.</param>
+/// <param name="SupportsReadWriteViewAtomicAdd">Format supports atomic add.</param>
+/// <param name="SupportsReadWriteViewAtomicBitwiseOperations">Format supports atomic bitwise operations.</param>
+/// <param name="SupportsReadWriteViewAtomicCompareStoreOrExchange">Format supports atomic compare with store or exchange.</param>
+/// <param name="SupportsReadWriteViewAtomicExchange">Format supports atomic exchange.</param>
+/// <param name="SupportsReadWriteViewAtomicSignedMinOrMax">Format supports atomic min and max.</param>
+/// <param name="SupportsReadWriteViewAtomicUnsignedMinOrMax">Format supports atomic unsigned min and max.</param>
+/// <param name="SupportsReadWriteViewTypedLoad">Format supports a typed load.</param>
+/// <param name="SupportsReadWriteViewTypedStore">Format supports a typed store.</param>
 /// <param name="SupportsBlendingLogicOperators">Format supports logic operations in blend state.</param>
 /// <param name="IsTiledFormat">Format supports tiled resources.</param>
 /// <param name="SupportsMultiplaneOverlay">Format supports multi-plane overlays.</param>
 /// <param name="PlaneCount">The number of planes supported by the format.</param>
 /// <param name="MaxMultipleSampleValues">The maximum count and quality for this format.</param>
+/// <remarks>
+/// <inheritdoc cref="GorgonGpuBuffer" path="/remarks/para[@type='uav_readwrite']"/>
+/// </remarks>
 public record class GorgonBufferFormatSupport(BufferFormat Format, bool IsBufferFormat,
     bool IsVertexBufferFormat,
     bool IsIndexBufferFormat,
@@ -92,20 +95,20 @@ public record class GorgonBufferFormatSupport(BufferFormat Format, bool IsBuffer
     bool SupportsMultisampleLoadInstruction,
     bool SupportsGatherInstruction,
     bool CanCastBackBufferResource,
-    bool IsTypedUnorderedAccessViewFormat,
+    bool IsTypedReadWriteViewFormat,
     bool SupportsShaderGatherCmpInstruction,
     bool IsDecoderFormat,
     bool IsEncoderFormat,
     bool IsVideoProcessorOutputFormat,
     bool IsVideoProcessorInputFormat,
-    bool SupportsUavAtomicAdd,
-    bool SupportsUavAtomicBitwiseOperations,
-    bool SupportsUavAtomicCompareStoreOrExchange,
-    bool SupportsUavAtomicExchange,
-    bool SupportsUavAtomicSignedMinOrMax,
-    bool SupportsUavAtomicUnsignedMinOrMax,
-    bool SupportsUavTypedLoad,
-    bool SupportsUavTypedStore,
+    bool SupportsReadWriteViewAtomicAdd,
+    bool SupportsReadWriteViewAtomicBitwiseOperations,
+    bool SupportsReadWriteViewAtomicCompareStoreOrExchange,
+    bool SupportsReadWriteViewAtomicExchange,
+    bool SupportsReadWriteViewAtomicSignedMinOrMax,
+    bool SupportsReadWriteViewAtomicUnsignedMinOrMax,
+    bool SupportsReadWriteViewTypedLoad,
+    bool SupportsReadWriteViewTypedStore,
     bool SupportsBlendingLogicOperators,
     bool IsTiledFormat,
     bool SupportsMultiplaneOverlay,

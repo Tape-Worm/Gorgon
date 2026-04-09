@@ -45,7 +45,7 @@ namespace Gorgon.Graphics.Core;
 /// </remarks>
 /// <example>
 /// The following example shows multiple ways to consume the result type:
-/// <code lang="csharp">
+/// <code language="csharp">
 /// <![CDATA[
 /// GorgonShaderCompileResult result = _shaderFactory.Compile(...);
 /// 

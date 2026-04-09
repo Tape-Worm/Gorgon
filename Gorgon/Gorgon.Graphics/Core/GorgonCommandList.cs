@@ -63,6 +63,8 @@ public unsafe sealed class GorgonCommandList
 
     private readonly CpuBufferAllocation [] _constantWriteData = new CpuBufferAllocation[GorgonGraphics.MaxRootConstantCount];
     private GorgonIndexBuffer? _indexBuffer;
+    private D3D12_CPU_DESCRIPTOR_HANDLE _depthStencilView;
+    private bool _depthStencilChanged;
     private readonly D3D12_CPU_DESCRIPTOR_HANDLE[] _rtvs = new D3D12_CPU_DESCRIPTOR_HANDLE[D3D12.D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT];
     private uint _rtvsCount;
     private bool _rtvsChanged;
@@ -291,21 +293,23 @@ public unsafe sealed class GorgonCommandList
     /// </summary>
     private void ApplyRenderTargets()
     {
-        if (!_rtvsChanged)
+        if ((!_rtvsChanged) && (!_depthStencilChanged))
         {
             return;
         }
+
+        D3D12_CPU_DESCRIPTOR_HANDLE dsvHandle = _depthStencilView;
 
         if (_rtvsCount != 0)
         {
             fixed (D3D12_CPU_DESCRIPTOR_HANDLE* rtvHandlePtr = &_rtvs[0])
             {
-                _list.Get()->OMSetRenderTargets(_rtvsCount, rtvHandlePtr, false, null);
+                _list.Get()->OMSetRenderTargets(_rtvsCount, rtvHandlePtr, false, dsvHandle != D3D12_CPU_DESCRIPTOR_HANDLE.DEFAULT ? &dsvHandle : null);
             }
         }
         else
         {
-            _list.Get()->OMSetRenderTargets(0, null, false, null);
+            _list.Get()->OMSetRenderTargets(0, null, false, dsvHandle != D3D12_CPU_DESCRIPTOR_HANDLE.DEFAULT ? &dsvHandle : null);
         }
 
         _rtvsChanged = false;
@@ -366,6 +370,51 @@ public unsafe sealed class GorgonCommandList
         }
 
         _scissorsChanged = false;
+    }
+
+    /// <summary>
+    /// Function to clear a depth/stencil to the specified values.
+    /// </summary>
+    /// <param name="depthStencil">The depth/stencil view containing the texture to clear.</param>
+    /// <param name="depthValue">The depth value to write.</param>
+    /// <param name="stencilValue">The stencil value to write.</param>
+    /// <param name="clearRects">[Optional] Defines a list of regions to clear on the depth/stencil texture.</param>
+    /// <param name="flags">The flags to use for clearing the buffer.</param>
+    /// <inheritdoc cref="AddPresenter" path="/returns"/>
+    private GorgonCommandList ClearDepthStencil(GorgonDepthStencilView depthStencil, float depthValue, byte stencilValue, IReadOnlyList<GorgonRectangle>? clearRects, D3D12_CLEAR_FLAGS flags)
+    {
+        if (!depthStencil.Texture.FormatInfo.HasDepth)
+        {
+            return this;
+        }
+
+        Queue.Tracker.TrackResource(depthStencil.Texture);
+        SetBarrier(depthStencil.Texture, BarrierSync.DepthStencil, BarrierAccess.DepthStencilWrite, BarrierLayout.DepthStencilWrite);
+
+        clearRects ??= [];
+
+        if (!depthStencil.Texture.FormatInfo.HasStencil)
+        {
+            flags &= ~D3D12_CLEAR_FLAGS.D3D12_CLEAR_FLAG_STENCIL;
+        }
+
+        if (clearRects.Count == 0)
+        {
+            _list.Get()->ClearDepthStencilView(depthStencil.GetCpuHandle(), flags, depthValue, stencilValue, 0, null);
+        }
+        else
+        {
+            RECT* rects = stackalloc RECT[clearRects.Count];
+
+            for (int i = 0; i < clearRects.Count; ++i)
+            {
+                GorgonRectangle rect = clearRects[i];
+                rects[i] = new RECT(rect.Left, rect.Top, rect.Right, rect.Bottom);
+            }
+            _list.Get()->ClearDepthStencilView(depthStencil.GetCpuHandle(), flags, depthValue, stencilValue, (uint)clearRects.Count, rects);
+        }
+
+        return this;
     }
 
     /// <summary>
@@ -480,7 +529,7 @@ public unsafe sealed class GorgonCommandList
     }
 
     /// <inheritdoc/>
-    public void Dispose()
+    void IDisposable.Dispose()
     {
         Dispose(true);
         GC.SuppressFinalize(this);
@@ -524,12 +573,13 @@ public unsafe sealed class GorgonCommandList
     /// </summary>
     /// <param name="swapChain">The swap chain to clear.</param>
     /// <param name="color">The color to fill the swap chain back buffer with.</param>
+    /// <param name="clearRects">[Optional] Defines a list of regions to clear on the render target.</param>
     /// <inheritdoc cref="AddPresenter" path="/returns"/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public GorgonCommandList ClearSwapChain(GorgonSwapChain swapChain, GorgonColor color)
+    public GorgonCommandList ClearSwapChain(GorgonSwapChain swapChain, GorgonColor color, IReadOnlyList<GorgonRectangle>? clearRects = null)
     {
         Queue.Tracker.TrackResource(swapChain.DXGISwapChain);
-        ClearRenderTarget(swapChain.Target, color);
+        ClearRenderTarget(swapChain.Target, color, clearRects);
         return this;
     }
 
@@ -537,19 +587,70 @@ public unsafe sealed class GorgonCommandList
     /// Function to clear a render target view with a specified color.
     /// </summary>
     /// <param name="renderTarget">The texture render target view to clear.</param>
-    /// <param name="color"><inheritdoc cref="ClearSwapChain(GorgonSwapChain, GorgonColor)" path="/param[@name='color']"/></param>
+    /// <param name="color"><inheritdoc cref="ClearSwapChain(GorgonSwapChain, GorgonColor, IReadOnlyList{GorgonRectangle})" path="/param[@name='color']"/></param>
+    /// <param name="clearRects"><inheritdoc cref="ClearSwapChain(GorgonSwapChain, GorgonColor, IReadOnlyList{GorgonRectangle})" path="/param[@name='clearRects']"/></param>
     /// <inheritdoc cref="AddPresenter" path="/returns"/>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public GorgonCommandList ClearRenderTarget(GorgonRenderTargetView renderTarget, GorgonColor color)
+    public GorgonCommandList ClearRenderTarget(GorgonRenderTargetView renderTarget, GorgonColor color, IReadOnlyList<GorgonRectangle>? clearRects = null)
     {
         SetBarrier(renderTarget.Texture, BarrierSync.RenderTarget, BarrierAccess.RenderTarget, BarrierLayout.RenderTarget, force: true);
 
+        clearRects ??= [];
+
         float* r = &color.Red;
         Queue.Tracker.TrackResource(renderTarget.Texture);
-        _list.Get()->ClearRenderTargetView(renderTarget.D3DCpuHandle, r, 0, null);
+
+        if (clearRects.Count == 0)
+        {
+            _list.Get()->ClearRenderTargetView(renderTarget.GetCpuHandle(), r, 0, null);
+
+            return this;
+        }
+
+        RECT* rects = stackalloc RECT[clearRects.Count];
+
+        for (int i = 0; i < clearRects.Count; ++i)
+        {
+            GorgonRectangle rect = clearRects[i];
+            rects[i] = new RECT(rect.Left, rect.Top, rect.Right, rect.Bottom);
+        }
+        _list.Get()->ClearRenderTargetView(renderTarget.GetCpuHandle(), r, (uint)clearRects.Count, rects);
 
         return this;
     }
+
+    /// <summary>
+    /// <inheritdoc cref="ClearDepthStencil(GorgonDepthStencilView, float, byte, IReadOnlyList{GorgonRectangle}?, D3D12_CLEAR_FLAGS)" path="/summary"/>
+    /// </summary>
+    /// <param name="depthStencil"><inheritdoc cref="ClearDepthStencil(GorgonDepthStencilView, float, byte, IReadOnlyList{GorgonRectangle}?, D3D12_CLEAR_FLAGS)" path="/param[@name='depthStencil']"/></param>
+    /// <param name="depthValue"><inheritdoc cref="ClearDepthStencil(GorgonDepthStencilView, float, byte, IReadOnlyList{GorgonRectangle}?, D3D12_CLEAR_FLAGS)" path="/param[@name='depthValue']"/></param>
+    /// <param name="stencilValue"><inheritdoc cref="ClearDepthStencil(GorgonDepthStencilView, float, byte, IReadOnlyList{GorgonRectangle}?, D3D12_CLEAR_FLAGS)" path="/param[@name='stencilValue']"/></param>
+    /// <param name="clearRects"><inheritdoc cref="ClearDepthStencil(GorgonDepthStencilView, float, byte, IReadOnlyList{GorgonRectangle}?, D3D12_CLEAR_FLAGS)" path="/param[@name='clearRects']"/></param>
+    /// <inheritdoc cref="AddPresenter" path="/returns"/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public GorgonCommandList ClearDepthStencil(GorgonDepthStencilView depthStencil, float depthValue, byte stencilValue, IReadOnlyList<GorgonRectangle>? clearRects = null) =>
+        ClearDepthStencil(depthStencil, depthValue, stencilValue, clearRects, D3D12_CLEAR_FLAGS.D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAGS.D3D12_CLEAR_FLAG_STENCIL);
+
+    /// <summary>
+    /// Function to clear a depth buffer to the specified values.
+    /// </summary>
+    /// <param name="depthStencil">The depth/stencil view containing the depth buffer to clear.</param>
+    /// <param name="depthValue"><inheritdoc cref="ClearDepthStencil(GorgonDepthStencilView, float, byte, IReadOnlyList{GorgonRectangle}?)" path="/param[@name='depthValue']"/></param>
+    /// <param name="clearRects"><inheritdoc cref="ClearDepthStencil(GorgonDepthStencilView, float, byte, IReadOnlyList{GorgonRectangle}?)" path="/param[@name='clearRects']"/></param>
+    /// <inheritdoc cref="AddPresenter" path="/returns"/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public GorgonCommandList ClearDepth(GorgonDepthStencilView depthStencil, float depthValue, IReadOnlyList<GorgonRectangle>? clearRects = null) => 
+        ClearDepthStencil(depthStencil, depthValue, 0, clearRects, D3D12_CLEAR_FLAGS.D3D12_CLEAR_FLAG_DEPTH);
+
+    /// <summary>
+    /// Function to clear a stencil buffer to the specified values.
+    /// </summary>
+    /// <param name="depthStencil">The depth/stencil view containing the stencil buffer to clear.</param>
+    /// <param name="stencilValue"><inheritdoc cref="ClearDepthStencil(GorgonDepthStencilView, float, byte, IReadOnlyList{GorgonRectangle}?)" path="/param[@name='stencilValue']"/></param>
+    /// <param name="clearRects"><inheritdoc cref="ClearDepthStencil(GorgonDepthStencilView, float, byte, IReadOnlyList{GorgonRectangle}?)" path="/param[@name='clearRects']"/></param>
+    /// <inheritdoc cref="AddPresenter" path="/returns"/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public GorgonCommandList ClearStencil(GorgonDepthStencilView depthStencil, byte stencilValue, IReadOnlyList<GorgonRectangle>? clearRects = null) =>
+        ClearDepthStencil(depthStencil, 1.0f, stencilValue, clearRects, D3D12_CLEAR_FLAGS.D3D12_CLEAR_FLAG_STENCIL);
 
     /// <summary>
     /// Function to reset the stream out counter for the specified stream out view.
@@ -579,8 +680,8 @@ public unsafe sealed class GorgonCommandList
         BarrierAccess access = usage switch
         {
             BufferUsage.ConstantBuffer => BarrierAccess.ConstantBuffer,
-            BufferUsage.Writeable => BarrierAccess.UnorderedAccess,
-            BufferUsage.ReadWrite => BarrierAccess.UnorderedAccess | BarrierAccess.ShaderResource,
+            BufferUsage.Writeable => BarrierAccess.ReadWrite,
+            BufferUsage.ReadWrite => BarrierAccess.ReadWrite | BarrierAccess.ShaderResource,
             BufferUsage.IndirectArguments => BarrierAccess.IndirectArgument,
             _ => BarrierAccess.ShaderResource,
         };
@@ -643,13 +744,13 @@ public unsafe sealed class GorgonCommandList
 
             BarrierAccess access = usage switch
             {
-                TextureUsage.Writeable => BarrierAccess.UnorderedAccess,
+                TextureUsage.Writeable => BarrierAccess.ReadWrite,
                 _ => BarrierAccess.ShaderResource,
             };
 
             BarrierLayout layout = usage switch
             {
-                TextureUsage.Writeable => BarrierLayout.UnorderedAccess,
+                TextureUsage.Writeable => BarrierLayout.ReadWrite,
                 _ => BarrierLayout.ShaderResource,
             };
 
@@ -672,7 +773,7 @@ public unsafe sealed class GorgonCommandList
     /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyValue{Tv}(in Tv, GorgonGpuBufferCommon, long)" path="/remarks/para[3]"/>
     /// </remarks>    
     /// <example>
-    /// <code lang="csharp">
+    /// <code language="csharp">
     /// <![CDATA[
     /// [StructLayout(LayoutKind.Sequential)]
     /// struct MyType
@@ -728,7 +829,7 @@ public unsafe sealed class GorgonCommandList
     /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyPointer{T}(GorgonPtr{T}, GorgonGpuBufferCommon, long)" path="/remarks/para[2]"/>
     /// </remarks>
     /// <example>
-    /// <code lang="csharp">
+    /// <code language="csharp">
     /// <![CDATA[
     /// using GorgonNativeBuffer<byte> sourceData = new(1024);
     /// 
@@ -763,7 +864,7 @@ public unsafe sealed class GorgonCommandList
     /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyRange{T}(ReadOnlySpan{T}, GorgonGpuBufferCommon, long)" path="/remarks/para[2]"/>
     /// </remarks>
     /// <example>
-    /// <code lang="csharp">
+    /// <code language="csharp">
     /// <![CDATA[
     /// byte[] sourceData = new byte[1024];
     /// 
@@ -1029,12 +1130,12 @@ public unsafe sealed class GorgonCommandList
     /// Function to set the render target views to use when rendering.
     /// </summary>
     /// <param name="renderTargets">The list of render targets to assign.</param>
-    /// <param name="depthStencil">TODO:</param>
+    /// <param name="depthStencil">The depth stencil view to assign.</param>
     /// <inheritdoc cref="AddPresenter" path="/returns"/>
     /// <remarks>
     /// TODO:
     /// </remarks>
-    public GorgonCommandList SetRenderTargets(ReadOnlySpan<GorgonRenderTargetView> renderTargets, object? depthStencil = null)
+    public GorgonCommandList SetRenderTargets(ReadOnlySpan<GorgonRenderTargetView> renderTargets, GorgonDepthStencilView? depthStencil = null)
     {
         if (renderTargets.Length > _rtvs.Length)
         {
@@ -1055,11 +1156,14 @@ public unsafe sealed class GorgonCommandList
             }
 
             Queue.Tracker.TrackResource(view.Resource);
-            _rtvs[i] = view.D3DCpuHandle;
+            _rtvs[i] = view.GetCpuHandle();
 
             GorgonSubResourceRange range = new(view.MipLevel, 1, view.ArrayIndex, view.ArrayCount, view.PlaneIndex, 1);
             SetBarrier(view.Texture, BarrierSync.RenderTarget, BarrierAccess.RenderTarget, BarrierLayout.RenderTarget, range);
         }
+
+        _depthStencilView = depthStencil?.GetCpuHandle() ?? D3D12_CPU_DESCRIPTOR_HANDLE.DEFAULT;
+        _depthStencilChanged = true;
 
         _rtvsCount = (uint)renderTargets.Length;
         _rtvsChanged = true;

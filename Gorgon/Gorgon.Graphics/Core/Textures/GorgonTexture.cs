@@ -84,17 +84,17 @@ namespace Gorgon.Graphics.Core;
 ///         <description>Only 2D textures can be depth stencil buffers.</description>
 ///     </item>
 ///     <item>
-///         <description>When specifying a texture as a render target, unordered access or depth stencil resource, the texture format must be compatible. Applications can evaluate the 
+///         <description>When specifying a texture as a render target, read/write access or depth stencil resource, the texture format must be compatible. Applications can evaluate the 
 ///         <see cref="GorgonGraphics.FormatSupport"/> property to determine if the format supports the desired functionality.</description>
 ///     </item>
 ///     <item>
-///         <description>Depth/stencil textures cannot be used with UAV (read/write) views.</description>
+///         <description>Depth/stencil textures cannot be used with read/write views.</description>
 ///     </item>
 ///     <item>
-///         <description>Textures that can have unordered access, must have a multi-sample value of <see cref="GorgonMultisampleInfo.NoMultisampling"/> (i.e. multi-sampling disabled).</description>
+///         <description>Textures that can have read/write access, must have a multi-sample value of <see cref="GorgonMultisampleInfo.NoMultisampling"/> (i.e. multisampling disabled).</description>
 ///     </item>
 ///     <item>
-///         <description>Textures that have multi-sampling enabled, cannot have a mip count larger than 1.</description>
+///         <description>Textures that have multisampling enabled, cannot have a mip count larger than 1.</description>
 ///     </item>
 ///     <item>
 ///         <description>Textures that indicate they are to be used as a cube map must have an array count that is a multiple of 6.</description>
@@ -144,6 +144,7 @@ namespace Gorgon.Graphics.Core;
 /// </list>
 /// </para>
 /// </para>
+/// <inheritdoc cref="GorgonGpuBuffer" path="/remarks/para[@type='uav_readwrite']"/>
 /// </remarks>
 /// <seealso cref="GorgonTextureView"/>
 /// <seealso cref="BufferFormat"/>
@@ -205,7 +206,7 @@ public sealed unsafe class GorgonTexture
     public bool IsShaderResource => _info.IsShaderResource;
 
     /// <inheritdoc/>
-    public bool IsUnorderedAccess => _info.IsUnorderedAccess;
+    public bool HasReadWriteAccess => _info.HasReadWriteAccess;
 
     /// <inheritdoc/>
     public short MipCount => _info.MipCount;
@@ -332,10 +333,10 @@ public sealed unsafe class GorgonTexture
     /// <para>Thrown if the texture type is <see cref="TextureType.Texture3D"/> and the <paramref name="info"/> <see cref="GorgonTextureInfo.Depth"/> or <see cref="GorgonTextureInfo.Height"/> is less than 1, or the <see cref="GorgonTextureInfo.Format"/> doesn't support 3D textures, or the <see cref="GorgonTextureInfo.IsCube"/> is set to <b>true</b>.</para>
     /// <para>Thrown if the texture type is <see cref="TextureType.Texture2D"/> and the <paramref name="info"/> <see cref="GorgonTextureInfo.Height"/> or <see cref="GorgonTextureInfo.ArrayCount"/> is less than 1, or the <see cref="GorgonTextureInfo.Format"/> doesn't support 2D textures, or the <see cref="GorgonTextureInfo.IsCube"/> is set to <b>true</b> and the <see cref="GorgonTextureInfo.ArrayCount"/> is not a multiple of 6.</para>
     /// <para>Thrown if the texture type is <see cref="TextureType.Texture1D"/> and the <paramref name="info"/> <see cref="GorgonTextureInfo.ArrayCount"/> is less than 1, or the <see cref="GorgonTextureInfo.Format"/> doesn't support 1D textures, or the <see cref="GorgonTextureInfo.IsCube"/> is set to <b>true</b>.</para>
-    /// <para>Thrown if the texture is a depth/stencil and the <paramref name="info"/> <see cref="GorgonTextureInfo.Format"/> does not support depth/stencil, or <see cref="GorgonTextureInfo.IsUnorderedAccess"/> is set to <b>true</b>, 
+    /// <para>Thrown if the texture is a depth/stencil and the <paramref name="info"/> <see cref="GorgonTextureInfo.Format"/> does not support depth/stencil, or <see cref="GorgonTextureInfo.HasReadWriteAccess"/> is set to <b>true</b>, 
     /// or the <paramref name="info"/> <see cref="GorgonTextureInfo.Type"/> is not set to <see cref="TextureType.Texture2D"/>.</para>
     /// <para>Thrown if the texture is a render target and the <paramref name="info"/> <see cref="GorgonTextureInfo.Format"/> does not support render targets or MSAA render targets.</para>
-    /// <para>Thrown if the texture is an unordered access resource and the <paramref name="info"/> <see cref="GorgonTextureInfo.MultisampleInfo"/> is not set to <see cref="GorgonMultisampleInfo.NoMultisampling"/>.</para>
+    /// <para>Thrown if the texture is an read/write resource and the <paramref name="info"/> <see cref="GorgonTextureInfo.MultisampleInfo"/> is not set to <see cref="GorgonMultisampleInfo.NoMultisampling"/>.</para>
     /// <para>Thrown if the texture has a mip count greater than 1 and the <paramref name="info"/> <see cref="GorgonTextureInfo.MultisampleInfo"/> is not set to <see cref="GorgonMultisampleInfo.NoMultisampling"/>, or the <see cref="GorgonTextureInfo.Format"/> does not support mip maps.</para>
     /// <para>Thrown if the texture is a cube map and the <paramref name="info"/> <see cref="GorgonTextureInfo.Format"/> does not support cube maps.</para>
     /// <para>Thrown if the texture uses a compressed format, and does not have dimensions that are a multiple of 4.</para>
@@ -395,7 +396,7 @@ public sealed unsafe class GorgonTexture
                 }
 
                 if ((FormatInfo.IsCompressed)
-                    && (((Width % 4) != 0) || ((Height % 4) != 0)))
+                    && (((info.Width % 4) != 0) || ((info.Height % 4) != 0)))
                 {
                     throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_TEXTURE_COMPRESSED_NOT_MULTIPLE_OF_FOUR, Name, Format, Width, Height));
                 }
@@ -431,7 +432,7 @@ public sealed unsafe class GorgonTexture
                 }
 
                 if ((FormatInfo.IsCompressed)
-                    && (((Width % 4) != 0) || ((Height % 4) != 0)))
+                    && (((info.Width % 4) != 0) || ((info.Height % 4) != 0)))
                 {
                     throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_TEXTURE_COMPRESSED_NOT_MULTIPLE_OF_FOUR, Name, Format, Width, Height));
                 }
@@ -481,7 +482,7 @@ public sealed unsafe class GorgonTexture
                 throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_TEXTURE_CANNOT_BE_RT_AND_DS, Name));
             }
 
-            if (result.IsUnorderedAccess)
+            if (result.HasReadWriteAccess)
             {
                 throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_TEXTURE_CANNOT_BE_UNORDERED_AND_DS, Name));
             }
@@ -500,7 +501,7 @@ public sealed unsafe class GorgonTexture
             }
         }
 
-        if ((isMultisampled) && (result.IsUnorderedAccess))
+        if ((isMultisampled) && (result.HasReadWriteAccess))
         {
             throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_TEXTURE_CANNOT_BE_MSAA_AND_UNORDERED, Name));
         }
@@ -543,7 +544,7 @@ public sealed unsafe class GorgonTexture
         D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAGS.D3D12_RESOURCE_FLAG_NONE;
         D3D12_CLEAR_VALUE *clearValue = null;
         
-        if (IsUnorderedAccess)
+        if (HasReadWriteAccess)
         {
             flags |= D3D12_RESOURCE_FLAGS.D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
         }
@@ -752,7 +753,7 @@ public sealed unsafe class GorgonTexture
             IsDepthStencil = false,
             IsRenderTarget = true,
             IsShaderResource = (info.Usage & GraphicsResourceUsage.ShaderResource) == GraphicsResourceUsage.ShaderResource,
-            IsUnorderedAccess = (info.Usage & GraphicsResourceUsage.UnorderedAccess) == GraphicsResourceUsage.UnorderedAccess,
+            HasReadWriteAccess = (info.Usage & GraphicsResourceUsage.ReadWrite) == GraphicsResourceUsage.ReadWrite,
             MipCount = 1,
             MultisampleInfo = GorgonMultisampleInfo.NoMultisampling
         });
@@ -931,7 +932,6 @@ public sealed unsafe class GorgonTexture
 
             if (_srvs.TryGetValue(key, out GorgonTextureView? result))
             {
-                result.Reset();
                 return result;
             }
 
@@ -1009,7 +1009,6 @@ public sealed unsafe class GorgonTexture
 
             if (_rtvs.TryGetValue(key, out GorgonRenderTargetView? result))
             {
-                result.Reset();
                 return result;
             }
 
@@ -1120,7 +1119,6 @@ public sealed unsafe class GorgonTexture
 
             if (_dsvs.TryGetValue(key, out GorgonDepthStencilView? result))
             {
-                result.Reset();
                 return result;
             }
 
@@ -1513,7 +1511,7 @@ public sealed unsafe class GorgonTexture
     ///         <description><see cref="GorgonTextureInfo.IsRenderTarget"/> must be <b>false</b>. The opposite also applies.</description>
     ///     </item>
     ///     <item>
-    ///         <description><see cref="GorgonTextureInfo.IsUnorderedAccess"/> must be <b>false</b>. The opposite also applies.</description>
+    ///         <description><see cref="GorgonTextureInfo.HasReadWriteAccess"/> must be <b>false</b>. The opposite also applies.</description>
     ///     </item>
     ///     <item>
     ///         <description><see cref="GorgonTextureInfo.Type"/> must be set to <see cref="TextureType.Texture2D"/>.</description>
@@ -1524,7 +1522,7 @@ public sealed unsafe class GorgonTexture
     /// If the <see cref="GorgonTextureInfo.MultisampleInfo"/> value is not set to <see cref="GorgonMultisampleInfo.NoMultisampling"/>:
     /// <list type="bullet">
     ///     <item>
-    ///         <description><see cref="GorgonTextureInfo.IsUnorderedAccess"/> must not be set to <b>true</b>.</description>
+    ///         <description><see cref="GorgonTextureInfo.HasReadWriteAccess"/> must not be set to <b>true</b>.</description>
     ///     </item>
     ///     <item>
     ///         <description><see cref="GorgonTextureInfo.MipCount"/> must be set to 1.</description>
@@ -1545,8 +1543,8 @@ public sealed unsafe class GorgonTexture
     public GorgonTexture(GorgonGraphics graphics, string name, GorgonTextureInfo info)
         : base(graphics, name)
     {
-        _info = new GorgonTextureInfo(ValidateInfo(info));
         FormatInfo = new GorgonFormatInfo(info.Format);
+        _info = new GorgonTextureInfo(ValidateInfo(info));        
 
         CreateNative();        
         InitializeTexture();

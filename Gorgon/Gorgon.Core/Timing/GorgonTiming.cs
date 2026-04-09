@@ -42,7 +42,7 @@ namespace Gorgon.Timing;
 /// </remarks>
 /// <example>
 /// When using the <c>Gorgon.UI.GorgonApplication</c> class, the timing code is automatically updated by its own idle loop:
-/// <code lang="csharp">
+/// <code language="csharp">
 /// <![CDATA[
 ///	public static bool MyLoop()
 /// {
@@ -60,7 +60,7 @@ namespace Gorgon.Timing;
 /// ]]>
 /// </code> 
 /// And here is a a custom application loop using the <see cref="GorgonTiming"/> class:
-/// <code lang="csharp">
+/// <code language="csharp">
 /// <![CDATA[
 /// // This assumes the Win32 API call to PeekMessage is imported
 /// public void DoLoop()

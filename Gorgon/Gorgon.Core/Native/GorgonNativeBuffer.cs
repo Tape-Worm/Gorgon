@@ -92,7 +92,7 @@ public static class GorgonNativeBufferCollectionBuilder
 /// <para>
 /// Accessing data in the buffer is done through an indexer on the object like an array or other <see cref="IList{T}"/> types. This indexer performs a <see langword="ref return">ref return</see> so 
 /// its contents can be updated using references for optimal performance. For example:
-/// <code lang="CSharp">
+/// <code language="CSharp">
 /// <![CDATA[
 /// // Create a buffer of 10 DateTime objects
 /// GorgonNativeBuffer<DateTime> dateInBuffer = new GorgonNativeBuffer<DateTime>(10);
@@ -108,7 +108,7 @@ public static class GorgonNativeBufferCollectionBuilder
 /// </para>
 /// <para>
 /// For convenience, the buffer can also be initialized using a collection expression like so:
-/// <code lang="CSharp">
+/// <code language="CSharp">
 /// <![CDATA[
 /// // Create a buffer of 4 DateTime objects
 /// GorgonNativeBuffer<DateTime> dateInBuffer = [DateTime.Now, DateTime.Now, DateTime.Now, DateTime.Now];
@@ -190,7 +190,7 @@ public sealed class GorgonNativeBuffer<T>
     /// <remarks>
     /// <para>
     /// This property will return the value as a reference, and as such, it can be assigned to as well. For example:
-    /// <code lang="csharp">
+    /// <code language="csharp">
     /// <![CDATA[
     /// GorgonNativeBuffer<int> ptr = ...;
     /// int newValue = 123;
@@ -216,7 +216,7 @@ public sealed class GorgonNativeBuffer<T>
     /// <para>
     /// This indexer can be used to create a slice of a buffer. For example, if a buffer has 10 items, and we want to create a pointer that points to the 3rd item and 4 items in the buffer, we can do the 
     /// following:
-    /// <code lang="csharp">
+    /// <code language="csharp">
     /// <![CDATA[
     /// GorgonNativeBuffer<int> data = new(10);
     /// 
@@ -409,7 +409,7 @@ public sealed class GorgonNativeBuffer<T>
     /// </para>
     /// <para>
     /// For example, do <b>NOT</b> do:
-    /// <code lang="csharp">
+    /// <code language="csharp">
     /// <![CDATA[
     /// GorgonNativeBuffer<int> buffer = new(10);
     /// GorgonPtr<T> ptr = GorgonNativeBuffer<int>.ToGorgonPtr(buffer);
@@ -435,7 +435,7 @@ public sealed class GorgonNativeBuffer<T>
     /// </para>
     /// <para>
     /// For example, do <b>NOT</b> do:
-    /// <code lang="csharp">
+    /// <code language="csharp">
     /// <![CDATA[
     /// GorgonNativeBuffer<int> buffer = new(10);
     /// void* ptr = GorgonNativeBuffer<int>.ToPointer(buffer);
@@ -463,7 +463,7 @@ public sealed class GorgonNativeBuffer<T>
     /// </para>
     /// <para>
     /// Because arrays, and <see cref="GorgonPtr{T}"/> can be cast to spans, this method can be used to create a buffer from an array or a <see cref="GorgonPtr{T}"/>:
-    /// <code lang="csharp">
+    /// <code language="csharp">
     /// <![CDATA[
     /// int[] arr = { 1, 2, 3, 4, 5 };
     /// 
@@ -551,7 +551,7 @@ public sealed class GorgonNativeBuffer<T>
     /// </para>
     /// <para>
     /// This method returns a reference to the value in the buffer, so applications can immediately write back to the value and have it reflected in the buffer:
-    /// <code lang="csharp">
+    /// <code language="csharp">
     /// <![CDATA[
     /// GorgonNativeBuffer<int> buffer = ...;
     /// byte newValue = 123;
@@ -602,7 +602,7 @@ public sealed class GorgonNativeBuffer<T>
     /// </para>
     /// <para>
     /// For example:
-    /// <code lang="csharp">
+    /// <code language="csharp">
     /// <![CDATA[
     /// GorgonNativeBuffer<int> b1 = new(128);        // Allocate 128 ints, 512 bytes.
     /// GorgonNativeBuffer<byte> b2;
@@ -664,7 +664,7 @@ public sealed class GorgonNativeBuffer<T>
     /// </para>
     /// <para>
     /// Example of copying one buffer to another.
-    /// <code lang="csharp">
+    /// <code language="csharp">
     /// <![CDATA[
     /// int[] array = { 1, 2, 3, 4, 5 };
     /// using GorgonNativeBuffer<int> sourceBuffer = array.PinAsNativeBuffer();
@@ -713,7 +713,7 @@ public sealed class GorgonNativeBuffer<T>
     /// </para>
     /// <para>
     /// Because arrays, and <see cref="GorgonPtr{T}"/> can be cast to spans, this method can be used to copy the buffer to an array or a <see cref="GorgonPtr{T}"/>:
-    /// <code lang="csharp">
+    /// <code language="csharp">
     /// <![CDATA[
     /// int[] arr = { 1, 2, 3, 4, 5 };
     /// 
@@ -791,7 +791,7 @@ public sealed class GorgonNativeBuffer<T>
     /// </para>
     /// <para>
     /// For example, do <b>NOT</b> do:
-    /// <code lang="csharp">
+    /// <code language="csharp">
     /// <![CDATA[
     /// GorgonPtr<T> ptr = new GorgonNativeBuffer<T>(10);
     /// 
@@ -817,7 +817,7 @@ public sealed class GorgonNativeBuffer<T>
     /// </para>
     /// <para>
     /// For example, do <b>NOT</b> do:
-    /// <code lang="csharp">
+    /// <code language="csharp">
     /// <![CDATA[
     /// void *ptr = (void*)new GorgonNativeBuffer<T>(10);
     /// 

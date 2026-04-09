@@ -156,7 +156,7 @@ public record class GorgonTextureInfo(TextureType Type, BufferFormat Format)
     /// <inheritdoc cref="IGorgonTextureInfo.IsDepthStencil" path="/summary"/>
     /// <remarks>
     /// <para>
-    /// This flag must not be <b>true</b> when <see cref="IsRenderTarget"/>, or <see cref="IsUnorderedAccess"/> is <b>true</b>, otherwise an exception will be thrown on texture creation.
+    /// This flag must not be <b>true</b> when <see cref="IsRenderTarget"/>, or <see cref="HasReadWriteAccess"/> is <b>true</b>, otherwise an exception will be thrown on texture creation.
     /// </para>
     /// <para>
     /// The default value is <b>false</b>.
@@ -182,17 +182,18 @@ public record class GorgonTextureInfo(TextureType Type, BufferFormat Format)
         init;
     } = true;
 
-    /// <inheritdoc cref="IGorgonTextureInfo.IsUnorderedAccess" path="/summary"/>
+    /// <inheritdoc cref="IGorgonTextureInfo.HasReadWriteAccess" path="/summary"/>
     /// <remarks>
     /// <para>
     /// This value must be <b>false</b> if <see cref="MultisampleInfo"/> is not set to <see cref="GorgonMultisampleInfo.NoMultisampling"/>, or <see cref="IsDepthStencil"/> is set to <b>true</b>, otherwise an 
     /// exception is thrown upon texture creation.
     /// </para>
+    /// <inheritdoc cref="IGorgonTextureInfo.HasReadWriteAccess" path="/remarks/para"/>
     /// <para>
     /// The default value is <b>false</b>.
     /// </para>
     /// </remarks>
-    public bool IsUnorderedAccess
+    public bool HasReadWriteAccess
     {
         get;
         init;
@@ -202,7 +203,7 @@ public record class GorgonTextureInfo(TextureType Type, BufferFormat Format)
     /// <remarks>
     /// <inheritdoc cref="IGorgonTextureInfo.MultisampleInfo" path="/remarks/para"/>
     /// <para>
-    /// This value must be <see cref="GorgonMultisampleInfo.NoMultisampling"/> if the <see cref="MipCount"/> is greater than 1, or <see cref="IsUnorderedAccess"/> is set to <b>true</b>. If this is not the 
+    /// This value must be <see cref="GorgonMultisampleInfo.NoMultisampling"/> if the <see cref="MipCount"/> is greater than 1, or <see cref="HasReadWriteAccess"/> is set to <b>true</b>. If this is not the 
     /// case an exception will be thrown on texture creation.
     /// </para>
     /// <para>
@@ -223,9 +224,12 @@ public record class GorgonTextureInfo(TextureType Type, BufferFormat Format)
     /// <param name="mipCount">[Optional] The number of mip levels contained within the texture.</param>
     /// <param name="arrayCount">[Optional] The number of array indices contained within the texture.</param>
     /// <param name="isShaderResource"><b>true</b> to use this texture as a shader resource, <b>false</b> to deny shader access.</param>
-    /// <param name="isUnorderedResource"><b>true</b> to use this texture as an unordered access resource, <b>false</b> to deny unordered access.</param>
+    /// <param name="allowReadWriteAccess"><b>true</b> to use this texture as a read/write access resource, <b>false</b> to deny read/write access.</param>
     /// <returns>A new <see cref="IGorgonTextureInfo"/>.</returns>
-    public static GorgonTextureInfo Create1DTextureInfo(BufferFormat format, int width, short mipCount = 1, short arrayCount = 1, bool isShaderResource = true, bool isUnorderedResource = false) => new(TextureType.Texture1D, format)
+    /// <remarks>
+    /// <inheritdoc cref="GorgonGpuBuffer" path="/remarks/para[@type='uav_readwrite']"/>
+    /// </remarks>
+    public static GorgonTextureInfo Create1DTextureInfo(BufferFormat format, int width, short mipCount = 1, short arrayCount = 1, bool isShaderResource = true, bool allowReadWriteAccess = false) => new(TextureType.Texture1D, format)
     {
         Width = width,
         Height = 1,
@@ -233,7 +237,7 @@ public record class GorgonTextureInfo(TextureType Type, BufferFormat Format)
         MipCount = mipCount,
         ArrayCount = arrayCount,
         IsShaderResource = isShaderResource,
-        IsUnorderedAccess = isUnorderedResource,
+        HasReadWriteAccess = allowReadWriteAccess,
         MultisampleInfo = GorgonMultisampleInfo.NoMultisampling,
         IsCube = false
     };
@@ -246,9 +250,12 @@ public record class GorgonTextureInfo(TextureType Type, BufferFormat Format)
     /// <param name="mipCount">[Optional] The number of mip levels contained within the texture.</param>
     /// <param name="arrayCount">[Optional] The number of array indices contained within the texture.</param>
     /// <param name="isShaderResource"><b>true</b> to use this texture as a shader resource, <b>false</b> to deny shader access.</param>
-    /// <param name="isUnorderedResource"><b>true</b> to use this texture as an unordered access resource, <b>false</b> to deny unordered access.</param>
+    /// <param name="allowReadWriteAccess"><b>true</b> to use this texture as a read/write access resource, <b>false</b> to deny read/write access.</param>
     /// <returns>A new <see cref="IGorgonTextureInfo"/>.</returns>
-    public static GorgonTextureInfo Create1DRenderTargetInfo(BufferFormat format, int width, short mipCount = 1, short arrayCount = 1, bool isShaderResource = true, bool isUnorderedResource = false) => new(TextureType.Texture2D, format)
+    /// <remarks>
+    /// <inheritdoc cref="GorgonGpuBuffer" path="/remarks/para[@type='uav_readwrite']"/>
+    /// </remarks>
+    public static GorgonTextureInfo Create1DRenderTargetInfo(BufferFormat format, int width, short mipCount = 1, short arrayCount = 1, bool isShaderResource = true, bool allowReadWriteAccess = false) => new(TextureType.Texture2D, format)
     {
         Width = width,
         Height = 1,
@@ -256,7 +263,7 @@ public record class GorgonTextureInfo(TextureType Type, BufferFormat Format)
         MipCount = mipCount,
         ArrayCount = arrayCount,
         IsShaderResource = isShaderResource,
-        IsUnorderedAccess = isUnorderedResource,
+        HasReadWriteAccess = allowReadWriteAccess,
         IsRenderTarget = true,
         MultisampleInfo = GorgonMultisampleInfo.NoMultisampling
     };
@@ -270,9 +277,12 @@ public record class GorgonTextureInfo(TextureType Type, BufferFormat Format)
     /// <param name="mipCount">[Optional] The number of mip levels contained within the texture.</param>
     /// <param name="arrayCount">[Optional] The number of array indices contained within the texture.</param>
     /// <param name="isShaderResource"><b>true</b> to use this texture as a shader resource, <b>false</b> to deny shader access.</param>
-    /// <param name="isUnorderedResource"><b>true</b> to use this texture as an unordered access resource, <b>false</b> to deny unordered access.</param>
+    /// <param name="allowReadWriteAccess"><b>true</b> to use this texture as a read/write access resource, <b>false</b> to deny read/write access.</param>
     /// <returns>A new <see cref="IGorgonTextureInfo"/>.</returns>
-    public static GorgonTextureInfo Create2DTextureInfo(BufferFormat format, int width, int height, short mipCount = 1, short arrayCount = 1, bool isShaderResource = true, bool isUnorderedResource = false) => new(TextureType.Texture2D, format)
+    /// <remarks>
+    /// <inheritdoc cref="GorgonGpuBuffer" path="/remarks/para[@type='uav_readwrite']"/>
+    /// </remarks>
+    public static GorgonTextureInfo Create2DTextureInfo(BufferFormat format, int width, int height, short mipCount = 1, short arrayCount = 1, bool isShaderResource = true, bool allowReadWriteAccess = false) => new(TextureType.Texture2D, format)
     {
         Width = width,
         Height = height,
@@ -280,7 +290,7 @@ public record class GorgonTextureInfo(TextureType Type, BufferFormat Format)
         MipCount = mipCount,
         ArrayCount = arrayCount,
         IsShaderResource = isShaderResource,
-        IsUnorderedAccess = isUnorderedResource,
+        HasReadWriteAccess = allowReadWriteAccess,
         MultisampleInfo = GorgonMultisampleInfo.NoMultisampling,
         IsCube = false
     };
@@ -294,9 +304,12 @@ public record class GorgonTextureInfo(TextureType Type, BufferFormat Format)
     /// <param name="cubeCount">The number of cubes contained within the texture.</param>
     /// <param name="mipCount">[Optional] The number of mip levels contained within the texture.</param>
     /// <param name="isShaderResource"><b>true</b> to use this texture as a shader resource, <b>false</b> to deny shader access.</param>
-    /// <param name="isUnorderedResource"><b>true</b> to use this texture as an unordered access resource, <b>false</b> to deny unordered access.</param>
+    /// <param name="allowReadWriteAccess"><b>true</b> to use this texture as a read/write resource, <b>false</b> to deny read/write access.</param>
     /// <returns>A new <see cref="IGorgonTextureInfo"/>.</returns>
-    public static GorgonTextureInfo CreateTextureCubeInfo(BufferFormat format, int width, int height, short cubeCount, short mipCount = 1, bool isShaderResource = true, bool isUnorderedResource = false) => new(TextureType.Texture2D, format)
+    /// <remarks>
+    /// <inheritdoc cref="GorgonGpuBuffer" path="/remarks/para[@type='uav_readwrite']"/>
+    /// </remarks>
+    public static GorgonTextureInfo CreateTextureCubeInfo(BufferFormat format, int width, int height, short cubeCount, short mipCount = 1, bool isShaderResource = true, bool allowReadWriteAccess = false) => new(TextureType.Texture2D, format)
     {
         Width = width,
         Height = height,
@@ -304,7 +317,7 @@ public record class GorgonTextureInfo(TextureType Type, BufferFormat Format)
         MipCount = mipCount,
         ArrayCount = (short)(cubeCount * 6),
         IsShaderResource = isShaderResource,
-        IsUnorderedAccess = isUnorderedResource,
+        HasReadWriteAccess = allowReadWriteAccess,
         MultisampleInfo = GorgonMultisampleInfo.NoMultisampling,
         IsCube = true
     };
@@ -318,10 +331,13 @@ public record class GorgonTextureInfo(TextureType Type, BufferFormat Format)
     /// <param name="mipCount">[Optional] The number of mip levels contained within the texture.</param>
     /// <param name="arrayCount">[Optional] The number of array indices contained within the texture.</param>
     /// <param name="isShaderResource"><b>true</b> to use this texture as a shader resource, <b>false</b> to deny shader access.</param>
-    /// <param name="isUnorderedResource"><b>true</b> to use this texture as an unordered access resource, <b>false</b> to deny unordered access.</param>
-    /// <param name="multiSampleInfo">[Optional] Multisample information for the texture.</param>
+    /// <param name="allowReadWriteAccess"><b>true</b> to use this texture as a read/write resource, <b>false</b> to deny read/write access.</param>
+    /// <param name="multisampleInfo">[Optional] Multisample information for the texture.</param>
     /// <returns>A new <see cref="IGorgonTextureInfo"/>.</returns>
-    public static GorgonTextureInfo Create2DRenderTargetInfo(BufferFormat format, int width, int height, short mipCount = 1, short arrayCount = 1, bool isShaderResource = true, bool isUnorderedResource = false, GorgonMultisampleInfo? multiSampleInfo = null) => new(TextureType.Texture2D, format)
+    /// <remarks>
+    /// <inheritdoc cref="GorgonGpuBuffer" path="/remarks/para[@type='uav_readwrite']"/>
+    /// </remarks>
+    public static GorgonTextureInfo Create2DRenderTargetInfo(BufferFormat format, int width, int height, short mipCount = 1, short arrayCount = 1, bool isShaderResource = true, bool allowReadWriteAccess = false, GorgonMultisampleInfo? multisampleInfo = null) => new(TextureType.Texture2D, format)
     {
         Width = width,
         Height = height,
@@ -329,9 +345,9 @@ public record class GorgonTextureInfo(TextureType Type, BufferFormat Format)
         MipCount = mipCount,
         ArrayCount = arrayCount,
         IsShaderResource = isShaderResource,
-        IsUnorderedAccess = isUnorderedResource,
+        HasReadWriteAccess = allowReadWriteAccess,
         IsRenderTarget = true,
-        MultisampleInfo = multiSampleInfo ?? GorgonMultisampleInfo.NoMultisampling
+        MultisampleInfo = multisampleInfo ?? GorgonMultisampleInfo.NoMultisampling
     };
 
     /// <summary>
@@ -343,10 +359,13 @@ public record class GorgonTextureInfo(TextureType Type, BufferFormat Format)
     /// <param name="cubeCount">The number of cubes contained within the texture.</param>
     /// <param name="mipCount">[Optional] The number of mip levels contained within the texture.</param>
     /// <param name="isShaderResource"><b>true</b> to use this texture as a shader resource, <b>false</b> to deny shader access.</param>
-    /// <param name="isUnorderedResource"><b>true</b> to use this texture as an unordered access resource, <b>false</b> to deny unordered access.</param>
-    /// <param name="multiSampleInfo">[Optional] Multisample information for the texture.</param>
+    /// <param name="allowReadWriteAccess"><b>true</b> to use this texture as anread/write resource, <b>false</b> to deny read/write access.</param>
+    /// <param name="multisampleInfo"><inheritdoc cref="Create2DRenderTargetInfo(BufferFormat, int, int, short, short, bool, bool, GorgonMultisampleInfo?)" path="/param[@name='multisampleInfo']"/></param>
     /// <returns>A new <see cref="IGorgonTextureInfo"/>.</returns>
-    public static GorgonTextureInfo CreateRenderTargetCubeInfo(BufferFormat format, int width, int height, short cubeCount, short mipCount = 1, bool isShaderResource = true, bool isUnorderedResource = false, GorgonMultisampleInfo? multiSampleInfo = null) => new(TextureType.Texture2D, format)
+    /// <remarks>
+    /// <inheritdoc cref="GorgonGpuBuffer" path="/remarks/para[@type='uav_readwrite']"/>
+    /// </remarks>
+    public static GorgonTextureInfo CreateRenderTargetCubeInfo(BufferFormat format, int width, int height, short cubeCount, short mipCount = 1, bool isShaderResource = true, bool allowReadWriteAccess = false, GorgonMultisampleInfo? multisampleInfo = null) => new(TextureType.Texture2D, format)
     {
         Width = width,
         Height = height,
@@ -354,10 +373,10 @@ public record class GorgonTextureInfo(TextureType Type, BufferFormat Format)
         MipCount = mipCount,
         ArrayCount = (short)(cubeCount * 6),
         IsShaderResource = isShaderResource,
-        IsUnorderedAccess = isUnorderedResource,
+        HasReadWriteAccess = allowReadWriteAccess,
         IsRenderTarget = true,
         IsCube =true,
-        MultisampleInfo = multiSampleInfo ?? GorgonMultisampleInfo.NoMultisampling
+        MultisampleInfo = multisampleInfo ?? GorgonMultisampleInfo.NoMultisampling
     };
 
     /// <summary>
@@ -368,9 +387,10 @@ public record class GorgonTextureInfo(TextureType Type, BufferFormat Format)
     /// <param name="height">The height of the texture, in pixels.</param>
     /// <param name="mipCount">[Optional] The number of mip levels contained within the texture.</param>
     /// <param name="arrayCount">[Optional] The number of array indices contained within the texture.</param>
-    /// <param name="isShaderResource"><b>true</b> to use this texture as a shader resource, <b>false</b> to deny shader access.</param>
+    /// <param name="isShaderResource">[Optional] <b>true</b> to use this texture as a shader resource, <b>false</b> to deny shader access.</param>
+    /// <param name="multisampleInfo"><inheritdoc cref="Create2DRenderTargetInfo(BufferFormat, int, int, short, short, bool, bool, GorgonMultisampleInfo?)" path="/param[@name='multisampleInfo']"/></param>
     /// <returns>A new <see cref="IGorgonTextureInfo"/>.</returns>
-    public static GorgonTextureInfo Create2DDepthStencilInfo(BufferFormat format, int width, int height, short mipCount = 1, short arrayCount = 1, bool isShaderResource = true) => new(TextureType.Texture2D, format)
+    public static GorgonTextureInfo Create2DDepthStencilInfo(BufferFormat format, int width, int height, short mipCount = 1, short arrayCount = 1, bool isShaderResource = false, GorgonMultisampleInfo? multisampleInfo = null) => new(TextureType.Texture2D, format)
     {
         Width = width,
         Height = height,
@@ -378,7 +398,8 @@ public record class GorgonTextureInfo(TextureType Type, BufferFormat Format)
         MipCount = mipCount,
         ArrayCount = arrayCount,
         IsShaderResource = isShaderResource,
-        IsDepthStencil = true
+        IsDepthStencil = true,
+        MultisampleInfo = multisampleInfo ?? GorgonMultisampleInfo.NoMultisampling
     };
 
     /// <summary>
@@ -390,8 +411,9 @@ public record class GorgonTextureInfo(TextureType Type, BufferFormat Format)
     /// <param name="cubeCount">The number of cubes contained within the texture.</param>
     /// <param name="mipCount">[Optional] The number of mip levels contained within the texture.</param>
     /// <param name="isShaderResource"><b>true</b> to use this texture as a shader resource, <b>false</b> to deny shader access.</param>
+    /// <param name="multisampleInfo"><inheritdoc cref="Create2DRenderTargetInfo(BufferFormat, int, int, short, short, bool, bool, GorgonMultisampleInfo?)" path="/param[@name='multisampleInfo']"/></param>
     /// <returns>A new <see cref="IGorgonTextureInfo"/>.</returns>
-    public static GorgonTextureInfo CreateDepthStencilCubeInfo(BufferFormat format, int width, int height, short cubeCount, short mipCount = 1, bool isShaderResource = true) => new(TextureType.Texture2D, format)
+    public static GorgonTextureInfo CreateDepthStencilCubeInfo(BufferFormat format, int width, int height, short cubeCount, short mipCount = 1, bool isShaderResource = false, GorgonMultisampleInfo? multisampleInfo = null) => new(TextureType.Texture2D, format)
     {
         Width = width,
         Height = height,
@@ -400,7 +422,8 @@ public record class GorgonTextureInfo(TextureType Type, BufferFormat Format)
         ArrayCount = (short)(cubeCount * 6),
         IsShaderResource = isShaderResource,
         IsDepthStencil = true,
-        IsCube = true
+        IsCube = true,
+        MultisampleInfo = multisampleInfo ?? GorgonMultisampleInfo.NoMultisampling
     };
 
     /// <summary>
@@ -412,9 +435,12 @@ public record class GorgonTextureInfo(TextureType Type, BufferFormat Format)
     /// <param name="depth">The depth of the texture, in depth slices.</param>
     /// <param name="mipCount">[Optional] The number of mip levels contained within the texture.</param>
     /// <param name="isShaderResource"><b>true</b> to use this texture as a shader resource, <b>false</b> to deny shader access.</param>
-    /// <param name="isUnorderedResource"><b>true</b> to use this texture as an unordered access resource, <b>false</b> to deny unordered access.</param>
+    /// <param name="allowReadWriteAccess"><b>true</b> to use this texture as a read/write resource, <b>false</b> to deny read/write access.</param>
     /// <returns>A new <see cref="IGorgonTextureInfo"/>.</returns>
-    public static GorgonTextureInfo Create3DTextureInfo(BufferFormat format, int width, int height, short depth, short mipCount = 1, bool isShaderResource = true, bool isUnorderedResource = false) => new(TextureType.Texture1D, format)
+    /// <remarks>
+    /// <inheritdoc cref="GorgonGpuBuffer" path="/remarks/para[@type='uav_readwrite']"/>
+    /// </remarks>
+    public static GorgonTextureInfo Create3DTextureInfo(BufferFormat format, int width, int height, short depth, short mipCount = 1, bool isShaderResource = true, bool allowReadWriteAccess = false) => new(TextureType.Texture1D, format)
     {
         Width = width,
         Height = height,
@@ -422,7 +448,7 @@ public record class GorgonTextureInfo(TextureType Type, BufferFormat Format)
         MipCount = mipCount,
         ArrayCount = 1,
         IsShaderResource = isShaderResource,
-        IsUnorderedAccess = isUnorderedResource,
+        HasReadWriteAccess = allowReadWriteAccess,
         MultisampleInfo = GorgonMultisampleInfo.NoMultisampling,
         IsCube = false
     };
@@ -436,9 +462,12 @@ public record class GorgonTextureInfo(TextureType Type, BufferFormat Format)
     /// <param name="depth">The depth of the texture, in depth slices.</param>
     /// <param name="mipCount">[Optional] The number of mip levels contained within the texture.</param>
     /// <param name="isShaderResource"><b>true</b> to use this texture as a shader resource, <b>false</b> to deny shader access.</param>
-    /// <param name="isUnorderedResource"><b>true</b> to use this texture as an unordered access resource, <b>false</b> to deny unordered access.</param>
+    /// <param name="allowReadWriteAccess"><b>true</b> to use this texture as a read/write resource, <b>false</b> to deny read/write access.</param>
     /// <returns>A new <see cref="IGorgonTextureInfo"/>.</returns>
-    public static GorgonTextureInfo Create3DRenderTargetInfo(BufferFormat format, int width, int height, short depth, short mipCount = 1, bool isShaderResource = true, bool isUnorderedResource = false) => new(TextureType.Texture2D, format)
+    /// <remarks>
+    /// <inheritdoc cref="GorgonGpuBuffer" path="/remarks/para[@type='uav_readwrite']"/>
+    /// </remarks>
+    public static GorgonTextureInfo Create3DRenderTargetInfo(BufferFormat format, int width, int height, short depth, short mipCount = 1, bool isShaderResource = true, bool allowReadWriteAccess = false) => new(TextureType.Texture2D, format)
     {
         Width = width,
         Height = height,
@@ -446,7 +475,7 @@ public record class GorgonTextureInfo(TextureType Type, BufferFormat Format)
         MipCount = mipCount,
         ArrayCount = 1,
         IsShaderResource = isShaderResource,
-        IsUnorderedAccess = isUnorderedResource,
+        HasReadWriteAccess = allowReadWriteAccess,
         IsRenderTarget = true,
         MultisampleInfo = GorgonMultisampleInfo.NoMultisampling
     };
@@ -465,7 +494,7 @@ public record class GorgonTextureInfo(TextureType Type, BufferFormat Format)
         IsCube = info.ImageType == ImageDataType.ImageCube,
         IsRenderTarget = false,
         IsDepthStencil = false,
-        IsUnorderedAccess = false,
+        HasReadWriteAccess = false,
         IsShaderResource = true,
         MultisampleInfo = GorgonMultisampleInfo.NoMultisampling
     };
@@ -487,7 +516,7 @@ public record class GorgonTextureInfo(TextureType Type, BufferFormat Format)
         IsCube = info.IsCube;
         IsRenderTarget = info.IsRenderTarget;
         IsDepthStencil = info.IsDepthStencil;
-        IsUnorderedAccess = info.IsUnorderedAccess;
+        HasReadWriteAccess = info.HasReadWriteAccess;
         IsShaderResource = info.IsShaderResource;
         MultisampleInfo = info.MultisampleInfo;
     }
@@ -508,7 +537,7 @@ public record class GorgonTextureInfo(TextureType Type, BufferFormat Format)
         IsCube = info.IsCube;
         IsRenderTarget = info.IsRenderTarget;
         IsDepthStencil = info.IsDepthStencil;
-        IsUnorderedAccess = info.IsUnorderedAccess;
+        HasReadWriteAccess = info.HasReadWriteAccess;
         IsShaderResource = info.IsShaderResource;
         MultisampleInfo = info.MultisampleInfo;
     }

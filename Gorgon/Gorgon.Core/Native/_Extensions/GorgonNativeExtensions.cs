@@ -520,7 +520,7 @@ public static class GorgonNativeExtensions
         /// </para>
         /// <para>
         /// For example:
-        /// <code lang="csharp">
+        /// <code language="csharp">
         /// <![CDATA[
         /// using Gorgon.Native;
         /// 
@@ -605,7 +605,7 @@ public static class GorgonNativeExtensions
         /// </para>
         /// <para>
         /// Example:
-        /// <code lang="csharp">
+        /// <code language="csharp">
         /// <![CDATA[
         /// int[] arr = { 1, 2, 3, 4, 5 };
         /// Span<int> span = arr.AsSpan();
@@ -642,7 +642,7 @@ public static class GorgonNativeExtensions
         /// be the <see cref="ReadOnlySpan{T}.Length"/> of the span.
         /// </para>
         /// <para>
-        /// <code lang="csharp">
+        /// <code language="csharp">
         /// Example:
         /// <![CDATA[
         /// int[] arr = { 1, 2, 3, 4, 5 };

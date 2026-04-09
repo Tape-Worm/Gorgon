@@ -106,6 +106,50 @@ public sealed class GorgonStructuredBufferView
     }
 
     /// <summary>
+    /// Function to create a structured buffer based on the type passed to the function, and its associated buffer.
+    /// </summary>
+    /// <typeparam name="T">The type of structured data. Must be an unmanaged type.</typeparam>
+    /// <param name="graphics"><inheritdoc cref="GorgonConstantBufferView.CreateConstantBuffer(GorgonGraphics, string, long, bool)" path="/param[@name='graphics']"/></param>
+    /// <param name="name"><inheritdoc cref="GorgonConstantBufferView.CreateConstantBuffer(GorgonGraphics, string, long, bool)" path="/param[@name='name']"/></param>
+    /// <param name="elementCount">The number of elements of type <typeparamref name="T"/> in the buffer.</param>
+    /// <param name="allowReadWriteAccess">[Optional] <b>true</b> to allow read/write access to the buffer, <b>false</b> to allow only read only access.</param>
+    /// <returns>A new <see cref="GorgonStructuredBufferView"/> and the associated <see cref="GorgonGpuBuffer"/>.</returns>
+    /// <exception cref="GorgonException">
+    /// <b>Buffer Exceptions</b>
+    /// <inheritdoc cref="GorgonGpuBuffer.ValidateInfo()" path="/exception/para"/>
+    /// <b>View Exceptions</b>
+    /// <inheritdoc cref="ValidateStructuredView(string, int, long, ulong)" path="/exception/para"/>
+    /// </exception>
+    /// <remarks>
+    /// <para>
+    /// TODO:
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="GorgonGpuBuffer"/>
+    public static unsafe GorgonStructuredBufferView CreateStructuredBuffer<T>(GorgonGraphics graphics, string name, int elementCount, bool allowReadWriteAccess = false)
+        where T : unmanaged
+    {
+        int typeSize = sizeof(T);
+        GorgonGpuBufferInfo bufferInfo = new(typeSize * elementCount)
+        {
+            Alignment = typeSize,
+            HasReadWriteAccess = allowReadWriteAccess
+        };
+
+        GorgonGpuBuffer buffer = new(graphics, name, bufferInfo);
+
+        try
+        {
+            return buffer.GetStructuredBufferView<T>();
+        }
+        catch
+        {
+            buffer.Dispose();
+            throw;
+        }
+    }
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="GorgonStructuredBufferView"/> class.
     /// </summary>
     /// <param name="graphics"><inheritdoc cref="GorgonResourceView(GorgonGraphics, string, GorgonGpuResource, bool)" path="/param[@name='graphics']"/></param>

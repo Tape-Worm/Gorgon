@@ -37,9 +37,12 @@ public interface IGorgonCommonBufferInfo
     }
 
     /// <summary>
-    /// Property to return whether the buffer can be used as an unordered access resource.
+    /// Property to return whether the buffer can be used as a read/write resource.
     /// </summary>
-    bool IsUnorderedAccess
+    /// <remarks>
+    /// <inheritdoc cref="GorgonGpuBuffer" path="/remarks/para[@type='uav_readwrite']"/>
+    /// </remarks>
+    bool HasReadWriteAccess
     {
         get;
     }

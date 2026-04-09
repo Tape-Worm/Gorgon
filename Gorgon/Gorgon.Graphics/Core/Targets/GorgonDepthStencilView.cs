@@ -70,7 +70,7 @@ public enum DepthStencilViewAccess
 public unsafe sealed class GorgonDepthStencilView
     : GorgonResourceView
 {
-    private CpuDescriptorAllocation _allocation;
+    private CpuDescriptorAllocation _allocation = CpuDescriptorAllocation.Null;
 
     /// <summary>
     /// Property to return the format of view data.
@@ -203,11 +203,11 @@ public unsafe sealed class GorgonDepthStencilView
 
         GetTexture2DInfo(ref desc, hasMultiSample, hasArrays);
 
-        Graphics.Log.Print($"Allocating CPU handle for {Name}.", LoggingLevel.Verbose);
+        Graphics.Log.Print($"Allocating CPU handle for '{Name}'.", LoggingLevel.Verbose);
         Graphics.RtvDescriptors.Allocate(1, out _allocation);
         Graphics.D3DDevice.Get()->CreateDepthStencilView((PID3D12Resource2)Resource.D3DResource.Get(), &desc, _allocation.CpuHandle);
 
-        SetHandles(_allocation.CpuHandle, D3D12_GPU_DESCRIPTOR_HANDLE.DEFAULT);
+        D3DCpuHandle = _allocation.CpuHandle;
     }
 
     /// <inheritdoc/>
@@ -226,9 +226,19 @@ public unsafe sealed class GorgonDepthStencilView
         base.Dispose(disposing);
     }
 
-    /// <inheritdoc/>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private protected override void OnReset() => AllocateDescriptors();
+    /// <summary>
+    /// Function to retrieve the CPU descriptor handle for the view.
+    /// </summary>
+    /// <returns>The D3D12 CPU handle for the descriptor.</returns>
+    internal D3D12_CPU_DESCRIPTOR_HANDLE GetCpuHandle()
+    {
+        if (D3DCpuHandle == D3D12_CPU_DESCRIPTOR_HANDLE.DEFAULT)
+        {
+            AllocateDescriptors();
+        }
+
+        return D3DCpuHandle;
+    }
 
     /// <summary>
     /// Function to determine if the view settings are valid for a depth/stencil buffer.
@@ -290,23 +300,66 @@ public unsafe sealed class GorgonDepthStencilView
     }
 
     /// <summary>
+    /// Function to create a depth/stencil view and attached depth/stencil texture.
+    /// </summary>
+    /// <param name="graphics"><inheritdoc cref="GorgonTextureView.Create2DTexture(GorgonGraphics, string, BufferFormat, int, int, short, short)" path="/param[@name='graphics']"/></param>
+    /// <param name="name"><inheritdoc cref="GorgonTextureView.Create2DTexture(GorgonGraphics, string, BufferFormat, int, int, short, short)" path="/param[@name='name']"/></param>
+    /// <param name="width"><inheritdoc cref="GorgonTextureView.Create2DTexture(GorgonGraphics, string, BufferFormat, int, int, short, short)" path="/param[@name='width']"/></param>
+    /// <param name="height"><inheritdoc cref="GorgonTextureView.Create2DTexture(GorgonGraphics, string, BufferFormat, int, int, short, short)" path="/param[@name='height']"/></param>
+    /// <param name="format">The depth format to use.</param>
+    /// <param name="mipCount"><inheritdoc cref="GorgonTextureView.Create2DTexture(GorgonGraphics, string, BufferFormat, int, int, short, short)" path="/param[@name='mipCount']"/></param>
+    /// <param name="arrayCount"><inheritdoc cref="GorgonTextureView.Create2DTexture(GorgonGraphics, string, BufferFormat, int, int, short, short)" path="/param[@name='arrayCount']"/></param>
+    /// <param name="multisampleInfo">[Optional] The multisampling info to apply to the texture.</param>
+    /// <returns>A new <see cref="GorgonDepthStencilView"/> and its associated <see cref="GorgonTexture"/>,</returns>
+    /// <exception cref="GorgonException">
+    /// <b>Texture Exceptions</b>
+    /// <inheritdoc cref="GorgonTexture.ValidateInfo(GorgonTextureInfo)" path="/exception/para[1]"/>
+    /// <inheritdoc cref="GorgonTexture.ValidateInfo(GorgonTextureInfo)" path="/exception/para[3]"/>
+    /// <inheritdoc cref="GorgonTexture.ValidateInfo(GorgonTextureInfo)" path="/exception/para[5]"/>
+    /// <inheritdoc cref="GorgonTexture.ValidateInfo(GorgonTextureInfo)" path="/exception/para[8]"/>
+    /// <b>View Exceptions</b>
+    /// <inheritdoc cref="ValidateDepthStencilView(string, GorgonBufferFormatSupport, GorgonFormatInfo, GorgonFormatInfo, bool)" path="/exception/para[2]"/>
+    /// <inheritdoc cref="ValidateDepthStencilView(string, GorgonBufferFormatSupport, GorgonFormatInfo, GorgonFormatInfo, bool)" path="/exception/para[3]"/>
+    /// </exception>
+    /// <remarks>
+    /// <para>
+    /// TODO:
+    /// </para>
+    /// </remarks>
+    public static GorgonDepthStencilView CreateDepthStencilView(GorgonGraphics graphics, string name, int width, int height, BufferFormat format, short mipCount = 1, short arrayCount = 1, GorgonMultisampleInfo? multisampleInfo = null)
+    {
+        GorgonTextureInfo textureInfo = GorgonTextureInfo.Create2DDepthStencilInfo(format, width, height, mipCount, arrayCount, multisampleInfo: multisampleInfo);
+        GorgonTexture texture = new(graphics, name, textureInfo);
+
+        try
+        {
+            return texture.GetDepthStencilView(format, DepthStencilViewAccess.None, 0, 0, arrayCount, true);
+        }
+        catch
+        {
+            texture.Dispose();
+            throw;
+        }
+    }
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="GorgonDepthStencilView"/> class.
     /// </summary>
     /// <param name="graphics"><inheritdoc cref="GorgonResourceView(GorgonGraphics, string, GorgonGpuResource, bool)" path="/param[@name='graphics']"/></param>
     /// <param name="name"><inheritdoc cref="GorgonResourceView(GorgonGraphics, string, GorgonGpuResource, bool)" path="/param[@name='name']"/></param>
     /// <param name="texture">The texture for the view.</param>
-    /// <param name="formatInfo">Information about the view format.</param>
+    /// <param name="viewFormatInfo">Information about the view format.</param>
     /// <param name="access">The access state for the view.</param>
     /// <param name="mipLevel">The first mip level to view.</param>
     /// <param name="arrayIndex">The first array index to view.</param>
     /// <param name="arrayCount">The number of array indices to view.</param>
     /// <param name="owned"><inheritdoc cref="GorgonResourceView(GorgonGraphics, string, GorgonGpuResource, bool)" path="/param[@name='owned']"/></param>
-    internal GorgonDepthStencilView(GorgonGraphics graphics, string name, GorgonTexture texture, GorgonFormatInfo formatInfo, DepthStencilViewAccess access, short mipLevel, short arrayIndex, short arrayCount, bool owned)
+    internal GorgonDepthStencilView(GorgonGraphics graphics, string name, GorgonTexture texture, GorgonFormatInfo viewFormatInfo, DepthStencilViewAccess access, short mipLevel, short arrayIndex, short arrayCount, bool owned)
         : base(graphics, $"{GorgonGraphicsFactory.GenerateName(name, nameof(GorgonDepthStencilView))} - Depth Stencil View", texture, owned)
     {
         Texture = texture;
-        Format = formatInfo.Format;
-        FormatInfo = formatInfo;
+        Format = viewFormatInfo.Format;
+        FormatInfo = viewFormatInfo;
         DepthStencilViewAccess = access;
         MipLevel = mipLevel;
         ArrayIndex = arrayIndex;

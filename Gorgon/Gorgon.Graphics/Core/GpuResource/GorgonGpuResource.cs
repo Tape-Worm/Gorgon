@@ -81,9 +81,12 @@ public enum GraphicsResourceUsage
     /// </summary>
     DepthStencil = D3D12_RESOURCE_FLAGS.D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL,
     /// <summary>
-    /// Resource allows unordered access views.
+    /// <para>
+    /// Resource allows read/write views.
+    /// </para>
+    /// <inheritdoc cref="GorgonGpuBuffer" path="/remarks/para[@type='uav_readwrite']"/>
     /// </summary>
-    UnorderedAccess = D3D12_RESOURCE_FLAGS.D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS,
+    ReadWrite = D3D12_RESOURCE_FLAGS.D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS,
     /// <summary>
     /// Resource is a ray tracing acceleration structure.
     /// </summary>
