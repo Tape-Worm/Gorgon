@@ -34,6 +34,7 @@ public unsafe abstract class GorgonShaderBufferView
     : GorgonResourceView
 {
     private GpuDescriptorAllocation _allocation = GpuDescriptorAllocation.Null;
+    private readonly GpuDescriptorHeap _descriptors;
 
     /// <summary>
     /// Property to return the descriptor allocation for this view.
@@ -101,16 +102,16 @@ public unsafe abstract class GorgonShaderBufferView
     {
         if (!_allocation.Equals(GpuDescriptorAllocation.Null))
         {
-            Graphics.GpuViewDescriptors.Free(ref _allocation);
+            _descriptors.Free(ref _allocation);
         }
 
         D3D12_SHADER_RESOURCE_VIEW_DESC desc = GetDesc();
 
-        Graphics.GpuViewDescriptors.Allocate(1, out _allocation);        
+        _descriptors.Allocate(1, out _allocation);        
 
-        D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = Graphics.GpuViewDescriptors.D3DCpuHandle;
+        D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = _descriptors.D3DCpuHandle;
 
-        cpuHandle.Offset(_allocation.Offset, Graphics.GpuViewDescriptors.DescriptorSize);
+        cpuHandle.Offset(_allocation.Offset, _descriptors.DescriptorSize);
 
         Graphics.D3DDevice.Get()->CreateShaderResourceView((PID3D12Resource2)Buffer.D3DResource.Get(), &desc, cpuHandle);
 
@@ -125,17 +126,14 @@ public unsafe abstract class GorgonShaderBufferView
             if (!_allocation.Equals(GpuDescriptorAllocation.Null))
             {
                 Graphics.Log.Print($"Freeing descriptor handle allocation for '{Name}'.", LoggingLevel.Verbose);
-                Graphics.GpuViewDescriptors.Free(ref _allocation);
+                _descriptors.Free(ref _allocation);
             }
         }
 
         base.Dispose(disposing);
     }
 
-    /// <summary>
-    /// Function to retrieve the handle of the view, which is used to pass to a shader for resource heap indexing.
-    /// </summary>
-    /// <returns>The handle of the view.</returns>
+    /// <inheritdoc cref="GorgonConstantBufferView.GetViewHandle()"/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int GetViewHandle()
     {
@@ -160,6 +158,8 @@ public unsafe abstract class GorgonShaderBufferView
     internal GorgonShaderBufferView(GorgonGraphics graphics, string name, GorgonGpuBuffer buffer, long startIndex, int elementCount, int elementSize , bool owned)
         : base(graphics, name, buffer, owned)
     {
+        _descriptors = graphics.Descriptors.GpuViewDescriptors;
+
         Buffer = buffer;
         StartElementIndex = startIndex;
         ElementCount = elementCount;

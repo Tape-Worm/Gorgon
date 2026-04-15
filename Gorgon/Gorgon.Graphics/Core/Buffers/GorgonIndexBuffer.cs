@@ -87,6 +87,9 @@ public sealed unsafe class GorgonIndexBuffer
     /// </remarks>
     internal override ulong ResourceOffset => 0;
 
+    /// <inheritdoc/>
+    internal override bool IsMegaBufferResource => false;
+
     /// <inheritdoc cref="IGorgonIndexBufferInfo.Use32BitIndices"/>
     public bool Use32BitIndices => _info.Use32BitIndices;
 
@@ -121,7 +124,7 @@ public sealed unsafe class GorgonIndexBuffer
         D3D12_RESOURCE_DESC1 desc = D3D12_RESOURCE_DESC1.Buffer((ulong)SizeInBytes);
         D3D12MA_ALLOCATION_DESC allocDesc = new(D3D12_HEAP_TYPE.D3D12_HEAP_TYPE_DEFAULT);
 
-        Graphics.Allocator.Get()->CreateResource3(&allocDesc, &desc, D3D12_BARRIER_LAYOUT.D3D12_BARRIER_LAYOUT_UNDEFINED,
+        Graphics.Memory.Allocator.Get()->CreateResource3(&allocDesc, &desc, D3D12_BARRIER_LAYOUT.D3D12_BARRIER_LAYOUT_UNDEFINED,
             null, 0, null,
             _bufferAllocation.GetAddressOf(), Win32.__uuidof<ID3D12Resource2>(), (void**)resource.GetAddressOf())
             .ThrowIfFailed(GorgonResult.CannotCreate, () => string.Format(Resources.GORGFX_ERR_CANNOT_CREATE_RESOURCE));

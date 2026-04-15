@@ -52,6 +52,7 @@ public unsafe sealed class GorgonTextureView
     : GorgonResourceView
 {
     private GpuDescriptorAllocation _allocation = GpuDescriptorAllocation.Null;
+    private GpuDescriptorHeap _descriptors;
 
     /// <summary>
     /// Property to return the texture used by this view.
@@ -59,7 +60,7 @@ public unsafe sealed class GorgonTextureView
     /// <remarks>
     /// This value is a strongly typed version of the <see cref="GorgonResourceView.Resource"/> property and point to the same object.
     /// </remarks>
-    public GorgonTexture Texture
+    public GorgonTextureCommon Texture
     {
         get;
     }
@@ -106,7 +107,7 @@ public unsafe sealed class GorgonTextureView
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This value only applies to textures that have a <see cref="GorgonTexture.Type"/> of <see cref="TextureType.Texture1D"/>, or <see cref="TextureType.Texture2D"/>.
+    /// This value only applies to textures that have a <see cref="GorgonTextureCommon.Type"/> of <see cref="TextureType.Texture1D"/>, or <see cref="TextureType.Texture2D"/>.
     /// </para>
     /// </remarks>
     /// <seealso cref="TextureType"/>
@@ -120,7 +121,7 @@ public unsafe sealed class GorgonTextureView
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This value only applies to textures that have a <see cref="GorgonTexture.Type"/> of <see cref="TextureType.Texture1D"/>, or <see cref="TextureType.Texture2D"/>.
+    /// This value only applies to textures that have a <see cref="GorgonTextureCommon.Type"/> of <see cref="TextureType.Texture1D"/>, or <see cref="TextureType.Texture2D"/>.
     /// </para>
     /// </remarks>
     /// <seealso cref="TextureType"/>
@@ -134,7 +135,7 @@ public unsafe sealed class GorgonTextureView
     /// </summary>
     /// <remarks>
     /// <para>
-    /// A value of 0 indicates that the entire mip chain is accessible, specifying 3.0f means that mip map levels from 3.0 to <see cref="GorgonTexture.MipCount"/><c>-1</c> are accessible.
+    /// A value of 0 indicates that the entire mip chain is accessible, specifying 3.0f means that mip map levels from 3.0 to <see cref="GorgonTextureCommon.MipCount"/><c>-1</c> are accessible.
     /// </para>
     /// <para>
     /// The <see cref="MipLevel"/> value should be set to zero if this value is non-zero.
@@ -204,7 +205,7 @@ public unsafe sealed class GorgonTextureView
     {
         if (!_allocation.Equals(GpuDescriptorAllocation.Null))
         {
-            Graphics.GpuViewDescriptors.Free(ref _allocation);
+            _descriptors.Free(ref _allocation);
         }
 
         bool isMultiSampled = !Texture.MultisampleInfo.Equals(GorgonMultisampleInfo.NoMultisampling);
@@ -220,11 +221,11 @@ public unsafe sealed class GorgonTextureView
         };
 
         Graphics.Log.Print($"Allocating CPU handle for '{Name}'.", LoggingLevel.Verbose);
-        Graphics.GpuViewDescriptors.Allocate(1, out _allocation);
+        _descriptors.Allocate(1, out _allocation);
 
-        D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = Graphics.GpuViewDescriptors.D3DCpuHandle;
+        D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = _descriptors.D3DCpuHandle;
 
-        cpuHandle.Offset(_allocation.Offset, Graphics.GpuViewDescriptors.DescriptorSize);
+        cpuHandle.Offset(_allocation.Offset, _descriptors.DescriptorSize);
 
         Graphics.D3DDevice.Get()->CreateShaderResourceView((PID3D12Resource2)Resource.D3DResource.Get(), &desc, cpuHandle);
 
@@ -239,7 +240,7 @@ public unsafe sealed class GorgonTextureView
             if (!_allocation.Equals(GpuDescriptorAllocation.Null))
             {
                 Graphics.Log.Print($"Freeing descriptor handle allocation for '{Name}'.", LoggingLevel.Verbose);
-                Graphics.GpuViewDescriptors.Free(ref _allocation);
+                _descriptors.Free(ref _allocation);
             }
         }
 
@@ -256,12 +257,12 @@ public unsafe sealed class GorgonTextureView
     /// <param name="plane">The format plane to view.</param>
     /// <param name="isShaderResource"><b>true</b> if the texture can be used as a shader resource, <b>false</b> if not.</param>
     /// <param name="isDepthStencil"><b>true</b> if the texture is a depth/stencil texture.</param>
-    /// <exception cref="GorgonException"><para>Thrown if the texture is not a <see cref="GorgonTexture.IsShaderResource">shader resource</see>.</para>
+    /// <exception cref="GorgonException"><para>Thrown if the texture is not a <see cref="GorgonTextureCommon.IsShaderResource">shader resource</see>.</para>
     /// <para>Thrown if the format is for a depth/stencil format.</para>
-    /// <para>Thrown if either the texture <see cref="GorgonTexture.Format"/> or view format is for a compressed texture, and the other is not.</para>
+    /// <para>Thrown if either the texture <see cref="GorgonTextureCommon.Format"/> or view format is for a compressed texture, and the other is not.</para>
     /// <para>Thrown if the texture is a depth/stencil texture using a <see cref="BufferFormat.D16_UNorm"/>, <see cref="BufferFormat.D32_Float"/>, <see cref="BufferFormat.D24_UNorm_S8_UInt"/> or <see cref="BufferFormat.D32_Float_S8X24_UInt"/> format.</para>
     /// <para>Thrown if the format is a planar format.</para>
-    /// <para>Thrown if the texture <see cref="GorgonTexture.Format"/> is a typeless format, and view format is not using the correct view format.</para>
+    /// <para>Thrown if the texture <see cref="GorgonTextureCommon.Format"/> is a typeless format, and view format is not using the correct view format.</para>
     /// <para>Thrown if the texture format cannot be casted to the view format.</para>
     /// </exception>
     internal static void ValidateTextureView(string name, GorgonFormatInfo textureFormatInfo, GorgonFormatInfo viewFormatInfo, IReadOnlyList<BufferFormat> formats, byte plane, bool isShaderResource, bool isDepthStencil)
@@ -379,12 +380,12 @@ public unsafe sealed class GorgonTextureView
     /// <param name="width">The width of the texture, in pixels.</param>
     /// <param name="mipCount">[Optional] The number of mip map levels in the texture.</param>
     /// <param name="arrayCount">[Optional] The number of array indices in the texture.</param>
-    /// <returns>A new <see cref="GorgonTextureView"/> and its associated <see cref="GorgonTexture"/>.</returns>
+    /// <returns>A new <see cref="GorgonTextureView"/> and its associated <see cref="GorgonTextureCommon"/>.</returns>
     /// <exception cref="GorgonException">
     /// <b>Texture Exceptions</b>
-    /// <inheritdoc cref="GorgonTexture.ValidateInfo(GorgonTextureInfo)" path="/exception/para[1]"/>
-    /// <inheritdoc cref="GorgonTexture.ValidateInfo(GorgonTextureInfo)" path="/exception/para[4]"/>
-    /// <inheritdoc cref="GorgonTexture.ValidateInfo(GorgonTextureInfo)" path="/exception/para[5]"/>
+    /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[1]"/>
+    /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[4]"/>
+    /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[5]"/>
     /// <b>View Exceptions</b>
     /// <inheritdoc cref="ValidateTextureView(string, GorgonFormatInfo, GorgonFormatInfo, IReadOnlyList{BufferFormat}, byte, bool, bool)" path="/exception/para[2]"/>
     /// <inheritdoc cref="ValidateTextureView(string, GorgonFormatInfo, GorgonFormatInfo, IReadOnlyList{BufferFormat}, byte, bool, bool)" path="/exception/para[5]"/>
@@ -423,9 +424,9 @@ public unsafe sealed class GorgonTextureView
     /// <inheritdoc cref="Create1DTexture(GorgonGraphics, string, BufferFormat, int, short, short)" path="/returns"/>
     /// <exception cref="GorgonException">
     /// <b>Texture Exceptions</b>
-    /// <inheritdoc cref="GorgonTexture.ValidateInfo(GorgonTextureInfo)" path="/exception/para[1]"/>
-    /// <inheritdoc cref="GorgonTexture.ValidateInfo(GorgonTextureInfo)" path="/exception/para[3]"/>
-    /// <inheritdoc cref="GorgonTexture.ValidateInfo(GorgonTextureInfo)" path="/exception/para[10]"/>
+    /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[1]"/>
+    /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[3]"/>
+    /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[10]"/>
     /// <b>View Exceptions</b>
     /// <inheritdoc cref="ValidateTextureView(string, GorgonFormatInfo, GorgonFormatInfo, IReadOnlyList{BufferFormat}, byte, bool, bool)" path="/exception/para[2]"/>
     /// <inheritdoc cref="ValidateTextureView(string, GorgonFormatInfo, GorgonFormatInfo, IReadOnlyList{BufferFormat}, byte, bool, bool)" path="/exception/para[5]"/>
@@ -464,10 +465,10 @@ public unsafe sealed class GorgonTextureView
     /// <inheritdoc cref="Create1DTexture(GorgonGraphics, string, BufferFormat, int, short, short)" path="/returns"/>
     /// <exception cref="GorgonException">
     /// <b>Texture Exceptions</b>
-    /// <inheritdoc cref="GorgonTexture.ValidateInfo(GorgonTextureInfo)" path="/exception/para[1]"/>
-    /// <inheritdoc cref="GorgonTexture.ValidateInfo(GorgonTextureInfo)" path="/exception/para[3]"/>
-    /// <inheritdoc cref="GorgonTexture.ValidateInfo(GorgonTextureInfo)" path="/exception/para[9]"/>
-    /// <inheritdoc cref="GorgonTexture.ValidateInfo(GorgonTextureInfo)" path="/exception/para[10]"/>
+    /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[1]"/>
+    /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[3]"/>
+    /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[9]"/>
+    /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[10]"/>
     /// <b>View Exceptions</b>
     /// <inheritdoc cref="ValidateTextureView(string, GorgonFormatInfo, GorgonFormatInfo, IReadOnlyList{BufferFormat}, byte, bool, bool)" path="/exception/para[2]"/>
     /// <inheritdoc cref="ValidateTextureView(string, GorgonFormatInfo, GorgonFormatInfo, IReadOnlyList{BufferFormat}, byte, bool, bool)" path="/exception/para[5]"/>
@@ -506,8 +507,8 @@ public unsafe sealed class GorgonTextureView
     /// <inheritdoc cref="Create1DTexture(GorgonGraphics, string, BufferFormat, int, short, short)" path="/returns"/>
     /// <exception cref="GorgonException">
     /// <b>Texture Exceptions</b>
-    /// <inheritdoc cref="GorgonTexture.ValidateInfo(GorgonTextureInfo)" path="/exception/para[1]"/>
-    /// <inheritdoc cref="GorgonTexture.ValidateInfo(GorgonTextureInfo)" path="/exception/para[2]"/>    
+    /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[1]"/>
+    /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[2]"/>    
     /// <b>View Exceptions</b>
     /// <inheritdoc cref="ValidateTextureView(string, GorgonFormatInfo, GorgonFormatInfo, IReadOnlyList{BufferFormat}, byte, bool, bool)" path="/exception/para[2]"/>
     /// <inheritdoc cref="ValidateTextureView(string, GorgonFormatInfo, GorgonFormatInfo, IReadOnlyList{BufferFormat}, byte, bool, bool)" path="/exception/para[5]"/>
@@ -542,7 +543,7 @@ public unsafe sealed class GorgonTextureView
     /// <inheritdoc cref="Create1DTexture(GorgonGraphics, string, BufferFormat, int, short, short)" path="/returns"/>
     /// <exception cref="GorgonException">
     /// <b>Texture Exceptions</b>
-    /// <inheritdoc cref="GorgonTexture.ValidateInfo(GorgonTextureInfo)" path="/exception/para"/>
+    /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para"/>
     /// <b>View Exceptions</b>
     /// <inheritdoc cref="ValidateTextureView(string, GorgonFormatInfo, GorgonFormatInfo, IReadOnlyList{BufferFormat}, byte, bool, bool)" path="/exception/para"/>
     /// </exception>
@@ -581,9 +582,11 @@ public unsafe sealed class GorgonTextureView
     /// <param name="minLodClamp">The minimum LOD resource clamp.</param>
     /// <param name="planeIndex">The index of the plane in a planar format.</param>
     /// <param name="owned"><inheritdoc cref="GorgonResourceView(GorgonGraphics, string, GorgonGpuResource, bool)" path="/param[@name='owned']"/></param>
-    internal GorgonTextureView(GorgonGraphics graphics, string name, GorgonTexture texture, GorgonFormatInfo viewFormatInfo, short mipLevel, short mipCount, short arrayIndex, short arrayCount, float minLodClamp, byte planeIndex, bool owned)
+    internal GorgonTextureView(GorgonGraphics graphics, string name, GorgonTextureCommon texture, GorgonFormatInfo viewFormatInfo, short mipLevel, short mipCount, short arrayIndex, short arrayCount, float minLodClamp, byte planeIndex, bool owned)
         : base(graphics, $"{GorgonGraphicsFactory.GenerateName(name, nameof(GorgonTextureView))} - Shader Resource View", texture, owned)
     {
+        _descriptors = graphics.Descriptors.GpuViewDescriptors;
+
         Texture = texture;
         Format = viewFormatInfo.Format;
         MipLevel = mipLevel;

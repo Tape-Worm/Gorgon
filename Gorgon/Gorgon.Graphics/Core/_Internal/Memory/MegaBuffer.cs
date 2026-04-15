@@ -41,11 +41,26 @@ using Win32 = TerraFX.Interop.Windows.Windows;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
+/// The state of the allocation attempt.
+/// </summary>
+internal enum AllocationState
+{
+    /// <summary>
+    /// The memory was allocated successfully.
+    /// </summary>
+    Success = 0,
+    /// <summary>
+    /// The allocation failed because of memory fragmentation.
+    /// </summary>
+    FragmentationError = 1,
+}
+
+/// <summary>
 /// A giant monolithic buffer to store all GPU data (except textures).
 /// </summary>
 /// <remarks>
 /// <para>
-/// Gorgon uses a single huge buffer (up to 4GB of address space, just address space, not committed memory) to store all buffers required for rendering. This has the advantage of keeping all our buffer 
+/// Gorgon uses a single huge buffer (up to 2GB of address space, just address space, not committed memory) to store all buffers required for rendering. This has the advantage of keeping all our buffer 
 /// data in the same place for easier management, and as fast default heap memory. By using a single large buffer, this minimizes descriptor switching, and, more importantly enables the use of bindless 
 /// rendering for more than just textures. By using this, we can do vertex pulling to read our vertex data without needing to bind vertex buffers to the pipeline.
 /// </para>
@@ -63,17 +78,15 @@ internal unsafe sealed class MegaBuffer
     // Default heap size: 256 MB.
     private const ulong HeapSize = 256 * 1024 * 1024;
     // 256MB/heap div 65536 bytes per tile = 4096 tiles per heap.
-    private const uint MaxTilesPerHeap = (int)(HeapSize / 65536);
+    private const uint MaxTilesPerHeap = (uint)(HeapSize / 65536);
 
     private ComPtr<ID3D12Resource2> _d3dBuffer;
     private ComPtr<D3D12MA_VirtualBlock> _memoryBlock;
     private readonly ComPtr<ID3D12Heap>[] _d3dHeaps = [];
 
     private static readonly uint[] _tileCounts = new uint[MaxTilesPerHeap];
-    private readonly ulong _maxAddressSpace = 4UL * 1024 * 1024 * 1024;    
-    private readonly Lock _lock = new();
+    private readonly ulong _maxAddressSpace;    
     private readonly GorgonGraphics _graphics;
-    private readonly ulong _size;
     private readonly Stack<ushort>[] _tiles;
     private readonly List<GorgonRange<ushort>> _pendingCommits = [];
     private readonly ushort[] _tileRefCounts;
@@ -81,32 +94,49 @@ internal unsafe sealed class MegaBuffer
     private ushort _heapIndex;
     private readonly Queue<(ulong GfxFence, ulong ComputeFence, ulong CopyFence, GpuBufferAllocation Allocation)> _pendingDeletions = new(65536);
     private readonly List<ushort> _unmappedTiles = [];
-    private readonly List<int> _emptyHeaps = [];
+    private readonly List<int> _emptyHeaps = [];    
+    private ulong _used;
 
     /// <summary>
     /// Property to return the pointer to the backing buffer store.
     /// </summary>
     public ref readonly ComPtr<ID3D12Resource2> D3DBuffer => ref _d3dBuffer;
 
+    /// <summary>
+    /// Property to return the index of the megabuffer within the megabuffer pool.
+    /// </summary>
+    public byte PoolIndex
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the total size, in bytes, of the buffer.
+    /// </summary>
+    public ulong SizeInBytes
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the amount of free space, in bytes, within the buffer.
+    /// </summary>
+    public ulong FreeSpace => SizeInBytes - _used;
+
     /// <inheritdoc cref="GorgonGraphicsFactory.Dispose(bool)"/>
     private void Dispose(bool disposing)
     {
         if (disposing)
         {
-            _graphics.WaitForGpu(GorgonGraphics.WaitFenceTimeout);
-
-            _graphics.Log.Print($"Destroying mega buffer ({_size.FormatMemory()}).", LoggingLevel.Verbose);
+            _graphics.Log.Print($"Destroying mega buffer #{PoolIndex} ({SizeInBytes.FormatMemory()}).", LoggingLevel.Verbose);
 
             _pendingDeletions.Clear();
             _pendingCommits.Clear();
             Array.Clear(_allocatedTiles);
 
-            using (_lock.EnterScope())
+            for (int i = 0; i < _d3dHeaps.Length; i++)
             {
-                for (int i = 0; i < _d3dHeaps.Length; i++)
-                {
-                    _d3dHeaps[i].Dispose();
-                }
+                _d3dHeaps[i].Dispose();
             }
         }
 
@@ -130,7 +160,7 @@ internal unsafe sealed class MegaBuffer
 
         ComPtr<ID3D12Heap> result = default;
 
-        _graphics.Log.Print($"Creating {name}...", LoggingLevel.Verbose);
+        _graphics.Log.Print($"Creating '{name}'...", LoggingLevel.Verbose);
 
         _graphics.D3DDevice.Get()->CreateHeap(&desc, Win32.__uuidof<ID3D12Heap>(), (void**)result.GetAddressOf())
             .ThrowIfFailed(GorgonResult.CannotCreate, () => string.Format(Resources.GORGFX_ERR_CANNOT_CREATE_HEAP, name));
@@ -151,7 +181,7 @@ internal unsafe sealed class MegaBuffer
     /// <returns>The pointer to the mega buffer resource and virtual memory block.</returns>
     private (ComPtr<ID3D12Resource2> resource,ComPtr<D3D12MA_VirtualBlock> memoryBlock) CreateNative()
     {
-        string name = $"Gorgon Mega Buffer ({_size.FormatMemory()})";
+        string name = $"Gorgon Mega Buffer ({SizeInBytes.FormatMemory()})";
         D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAGS.D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
 
         if (_graphics.Adapter.HasTightAlignmentSupport)
@@ -175,7 +205,7 @@ internal unsafe sealed class MegaBuffer
 
         _d3dHeaps[0] = CreateHeap();
 
-        D3D12MA_VIRTUAL_BLOCK_DESC maDesc = new(_size);
+        D3D12MA_VIRTUAL_BLOCK_DESC maDesc = new(SizeInBytes);
 
         D3D12MemAlloc.D3D12MA_CreateVirtualBlock(&maDesc, memoryBlock.GetAddressOf())
             .ThrowIfFailed(GorgonResult.CannotCreate, () => string.Format(Resources.GORGFX_ERR_CANNOT_CREATE_HEAP, name));
@@ -213,7 +243,7 @@ internal unsafe sealed class MegaBuffer
 
         if (_heapIndex >= _d3dHeaps.Length)
         {
-            throw new GorgonException(GorgonResult.OutOfMemory, string.Format(Resources.GORGFX_ERR_HEAP_OUT_OF_MEMORY, "Mega Buffer", _size.FormatMemory()));
+            throw new GorgonException(GorgonResult.OutOfMemory, string.Format(Resources.GORGFX_ERR_HEAP_OUT_OF_MEMORY, "Mega Buffer", SizeInBytes.FormatMemory()));
         }               
 
         _d3dHeaps[_heapIndex] = CreateHeap();
@@ -312,7 +342,14 @@ internal unsafe sealed class MegaBuffer
         // Purge any heaps scheduled for destruction.
         for (int i = 0; i < _emptyHeaps.Count; ++i)
         {
-            _d3dHeaps[_emptyHeaps[i]].Dispose();            
+            int heapIndex = _emptyHeaps[i];
+
+            // Only drop heaps if we actually have cleared them (this avoids a race condition when allocating before the unmap happens).
+            if (_tiles[heapIndex].Count == MaxTilesPerHeap)
+            {
+                _d3dHeaps[_emptyHeaps[i]].Dispose();
+                _tiles[heapIndex].Clear();
+            }
         }
 
         _emptyHeaps.Clear();
@@ -407,28 +444,54 @@ internal unsafe sealed class MegaBuffer
     /// <param name="size">The size, in bytes, for the buffer.</param>
     /// <param name="allocation">The resulting allocation from the mega buffer.</param>
     /// <param name="alignment">The alignment, in bytes, of the buffer within the mega buffer.</param>
-    public void Allocate(ulong size, out GpuBufferAllocation allocation, uint alignment)
+    /// <returns>A value from the <see cref="AllocationState"/>.</returns>
+    /// <exception cref="GorgonException">Thrown when the D3D12 memory allocator fails to allocate the memory.</exception>
+    public AllocationState TryAllocate(ulong size, out GpuBufferAllocation allocation, uint alignment)
     {
-        using (_lock.EnterScope())
+        D3D12MA_VIRTUAL_ALLOCATION_DESC desc = new(size, 0);
+        D3D12MA_VirtualAllocation vmAllocation = default;
+        ulong location = 0;
+
+        HRESULT err = _memoryBlock.Get()->Allocate(&desc, &vmAllocation, &location);
+
+        if (!err.SUCCEEDED)
         {
-            if (alignment == 0)
+            if (err == E.E_OUTOFMEMORY)
             {
-                alignment = 1;
+                D3D12MA_DetailedStatistics stats = default;
+                _memoryBlock.Get()->CalculateStatistics(&stats);
+
+                if (stats.UnusedRangeSizeMax < desc.Size)
+                {
+                    _graphics.Log.PrintWarning($"Out of memory in MegaBuffer {PoolIndex}. Too much fragmentation. Performance may be affected.", LoggingLevel.Intermediate);
+                    _graphics.Log.Print($"Detailed memory information:\nRequested size: {size} bytes.\n"
+                        + $"Total amount free: {stats.Stats.BlockBytes - stats.Stats.AllocationBytes} bytes.\n"
+                        + $"Largest contiguous free block: {stats.UnusedRangeSizeMax} bytes.\n"
+                        + $"Total number of free ranges: {stats.UnusedRangeCount}.", LoggingLevel.Verbose);
+
+                    allocation = GpuBufferAllocation.Null;
+                    return AllocationState.FragmentationError;
+                }
+                else
+                {
+                    throw new GorgonException(GorgonResult.OutOfMemory, string.Format(Resources.GORGFX_ERR_HEAP_OUT_OF_MEMORY, "Mega Buffer", SizeInBytes.FormatMemory()));
+                }
             }
-
-            D3D12MA_VIRTUAL_ALLOCATION_DESC desc = new(size + (alignment - 1), 0);
-            D3D12MA_VirtualAllocation vmAllocation = default;
-            ulong location = 0;
-                        
-            _memoryBlock.Get()->Allocate(&desc, &vmAllocation, &location)
-                .ThrowIfFailed(GorgonResult.OutOfMemory, () => string.Format(Resources.GORGFX_ERR_HEAP_OUT_OF_MEMORY, "Mega Buffer", _size.FormatMemory()));
-
-            location = (location + (alignment - 1)) / alignment * alignment;
-
-            (ushort start, ushort end) = MapTilesAndHeaps(location, size);
-
-            allocation = new GpuBufferAllocation(vmAllocation.AllocHandle, desc.Size, (uint)location, start, end);
+            else
+            {
+                err.ThrowIfFailed(GorgonResult.CannotCreate, () => Resources.GORGFX_ERR_MEMORY_ALLOCATION);
+            }
         }
+
+        location = (location + (alignment - 1)) / alignment * alignment;
+
+        (ushort start, ushort end) = MapTilesAndHeaps(location, size);
+
+        allocation = new GpuBufferAllocation(vmAllocation.AllocHandle, PoolIndex, (uint)desc.Size, (uint)location, start, end);
+
+        _used += allocation.SizeInBytes;
+
+        return AllocationState.Success;
     }
 
     /// <summary>
@@ -437,17 +500,16 @@ internal unsafe sealed class MegaBuffer
     /// <param name="allocation">The allocation to free.</param>
     public void Free(ref GpuBufferAllocation allocation)
     {
-        using (_lock.EnterScope())
+        if (allocation.IsNull)
         {
-            if (allocation.IsNull)
-            {
-                return;
-            }
-
-            _pendingDeletions.Enqueue((_graphics.GraphicsQueue.FenceValue, _graphics.ComputeQueue.FenceValue, _graphics.CopyQueue.FenceValue, allocation));
-
-            allocation = GpuBufferAllocation.Null;
+            return;
         }
+
+        _pendingDeletions.Enqueue((_graphics.Queues.GraphicsQueue.FenceValue, 
+                                   _graphics.Queues.ComputeQueue.FenceValue, 
+                                   _graphics.Queues.CopyQueue.FenceValue, allocation));
+
+        allocation = GpuBufferAllocation.Null;
     }
 
     /// <summary>
@@ -455,47 +517,49 @@ internal unsafe sealed class MegaBuffer
     /// </summary>
     public void Signal()
     {
-        using (_lock.EnterScope())
+        ulong gfxCompleted = _graphics.Queues.GraphicsQueue.D3DFence.Get()->GetCompletedValue();
+        ulong computeCompleted = _graphics.Queues.ComputeQueue.D3DFence.Get()->GetCompletedValue();
+        ulong copyCompleted = _graphics.Queues.CopyQueue.D3DFence.Get()->GetCompletedValue();
+
+        while (_pendingDeletions.TryPeek(out (ulong GfxFence, ulong ComputeFence, ulong CopyFence, GpuBufferAllocation Allocation) item))
         {
-            ulong gfxCompleted = _graphics.GraphicsQueue.D3DFence.Get()->GetCompletedValue();
-            ulong computeCompleted = _graphics.ComputeQueue.D3DFence.Get()->GetCompletedValue();
-            ulong copyCompleted = _graphics.CopyQueue.D3DFence.Get()->GetCompletedValue();
-
-            while (_pendingDeletions.TryPeek(out (ulong GfxFence, ulong ComputeFence, ulong CopyFence, GpuBufferAllocation Allocation) item))
+            // If we hit a fence that's greater than what's completed, then leave it be until the next pass.
+            if ((gfxCompleted < item.GfxFence) || (computeCompleted < item.ComputeFence) || (copyCompleted < item.CopyFence))
             {
-                // If we hit a fence that's greater than what's completed, then leave it be until the next pass.
-                if ((gfxCompleted < item.GfxFence) || (computeCompleted < item.ComputeFence) || (copyCompleted < item.CopyFence))
-                {
-                    break;
-                }
-
-                ushort tileStart = item.Allocation.TileStart;
-                ushort tileEnd = item.Allocation.TileEnd;
-
-                for (int i = tileStart; i <= tileEnd; ++i)
-                {
-                    ref (ushort HeapIndex, ushort TileIndex) allocated = ref _allocatedTiles[i];                    
-
-                    ref ushort tileRef = ref _tileRefCounts[i];
-
-                    --tileRef;
-
-                    if (tileRef <= 0)
-                    {
-                        tileRef = 0;
-                        _tiles[allocated.HeapIndex].Push(allocated.TileIndex);
-                        allocated = default;
-                        _unmappedTiles.Add((ushort)i);
-                    }                    
-                }
-
-                _memoryBlock.Get()->FreeAllocation(new D3D12MA_VirtualAllocation
-                {
-                    AllocHandle = item.Allocation.Handle
-                });
-
-                _pendingDeletions.Dequeue();
+                break;
             }
+
+            ushort tileStart = item.Allocation.TileStart;
+            ushort tileEnd = item.Allocation.TileEnd;
+
+            for (int i = tileStart; i <= tileEnd; ++i)
+            {
+                ref (ushort HeapIndex, ushort TileIndex) allocated = ref _allocatedTiles[i];
+
+                ref ushort tileRef = ref _tileRefCounts[i];
+
+                if (tileRef == 0)
+                {
+                    continue;
+                }
+
+                --tileRef;
+
+                if (tileRef == 0)
+                {
+                    _tiles[allocated.HeapIndex].Push(allocated.TileIndex);
+                    allocated = default;
+                    _unmappedTiles.Add((ushort)i);
+                }
+            }
+
+            _memoryBlock.Get()->FreeAllocation(new D3D12MA_VirtualAllocation
+            {
+                AllocHandle = item.Allocation.Handle
+            });
+
+            _pendingDeletions.Dequeue();
+            _used -= item.Allocation.SizeInBytes;
         }
     }
 
@@ -506,13 +570,10 @@ internal unsafe sealed class MegaBuffer
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Commit(CommandQueue queue)
     {
-        using (_lock.EnterScope())
-        {
-            // Dump any tiles that need to be unmapped from the resource.
-            ProcessUnmaps(in queue.D3DQueue);
+        // Dump any tiles that need to be unmapped from the resource.
+        ProcessUnmaps(in queue.D3DQueue);
 
-            ProcessPending(in queue.D3DQueue);
-        }
+        ProcessPending(in queue.D3DQueue);
     }
 
     /// <summary>
@@ -541,29 +602,25 @@ internal unsafe sealed class MegaBuffer
     /// Initializes a new instance of the <see cref="MegaBuffer"/> class.
     /// </summary>
     /// <param name="graphics">The graphics interface that is associated with this buffer.</param>
-    /// <param name="sizePercent">The percentage of VRAM to dedicate, between 10 to 50%. Which can be from 256MB to 4GB depending on available GPU memory.</param>
-    public MegaBuffer(GorgonGraphics graphics, int sizePercent)
+    /// <param name="poolIndex">The index of the megabuffer within the megabuffer pool.</param>
+    /// <param name="sizePercent">The percentage of VRAM to dedicate, between 10 to 50%. Which can be from 256MB to 2GB depending on available GPU memory.</param>
+    public MegaBuffer(GorgonGraphics graphics, byte poolIndex, int sizePercent)
     {
         D3D12MA_Budget local = default;
-
+        
         _graphics = graphics;
-
-        int maxAddressingBits = (_graphics.Adapter.MaxAddressBitsPerResource).Min(32);
-
-        if (maxAddressingBits < 32)
-        {
-            _maxAddressSpace = 1UL << maxAddressingBits;
-        }
+        PoolIndex = poolIndex;
+        _maxAddressSpace = 1UL << (_graphics.Adapter.MaxAddressBitsPerResource).Min(31);
 
         uint pageTableCounts = (uint)(_maxAddressSpace >> 16);
         _tileRefCounts = new ushort[pageTableCounts];
         _allocatedTiles = new (ushort HeapIndex, ushort Index)[pageTableCounts];
 
-        _graphics.Allocator.Get()->GetBudget(&local, null);
+        _graphics.Memory.Allocator.Get()->GetBudget(&local, null);
 
         decimal percent = sizePercent / 100.0M;
-        _size = (ulong)(local.BudgetBytes * percent).Max(HeapSize).Min(_maxAddressSpace);
-        _d3dHeaps = new ComPtr<ID3D12Heap>[(int)System.Math.Ceiling((decimal)_size / HeapSize).Max(1)];
+        SizeInBytes = (ulong)(local.BudgetBytes * percent).Max(HeapSize).Min(_maxAddressSpace);
+        _d3dHeaps = new ComPtr<ID3D12Heap>[(int)System.Math.Ceiling((decimal)SizeInBytes / HeapSize).Max(1)];
         _tiles = new Stack<ushort>[_d3dHeaps.Length];
 
         for (int i = 0; i < _tiles.Length; ++i)

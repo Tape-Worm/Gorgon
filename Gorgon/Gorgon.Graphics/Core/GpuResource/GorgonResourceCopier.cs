@@ -36,11 +36,11 @@ using TerraFX.Interop.DirectX;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Functionality to copy data into a <see cref="GorgonGpuBuffer"/>, <see cref="GorgonIndexBuffer"/> or a <see cref="GorgonTexture"/> from CPU memory on the GPU copy queue, or from other buffers/textures.
+/// Functionality to copy data into a <see cref="GorgonGpuBuffer"/>, <see cref="GorgonIndexBuffer"/> or a <see cref="GorgonTextureCommon"/> from CPU memory on the GPU copy queue, or from other buffers/textures.
 /// </summary>
 /// <remarks>
 /// <para>
-/// This provides functionality for applications to write data into <see cref="GorgonGpuBuffer"/>, <see cref="GorgonIndexBuffer"/> or <see cref="GorgonTexture"/> objects from CPU memory. It also provides 
+/// This provides functionality for applications to write data into <see cref="GorgonGpuBuffer"/>, <see cref="GorgonIndexBuffer"/> or <see cref="GorgonTextureCommon"/> objects from CPU memory. It also provides 
 /// functionality to read data from a <see cref="GorgonGpuBuffer"/> into standard CPU addressable memory like an array, <see cref="Span{T}"/>, or a <see cref="GorgonPtr{T}"/>.
 /// </para>
 /// <para>
@@ -49,7 +49,7 @@ namespace Gorgon.Graphics.Core;
 /// </para>
 /// </remarks>
 /// <seealso cref="GorgonGpuBufferCommon"/>
-/// <seealso cref="GorgonTexture"/>
+/// <seealso cref="GorgonTextureCommon"/>
 /// <seealso cref="GorgonIndexBuffer"/>
 /// <seealso cref="GorgonGpuBuffer"/>
 /// <seealso cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}"/>
@@ -63,6 +63,8 @@ public unsafe sealed class GorgonResourceCopier
     private readonly CommandQueue _commandQueue;
     private int _batchState;
     private bool _hasDelayedWrites;
+    private readonly CpuResourceHeapPool _uploadHeaps;
+    private readonly CpuResourceHeapPool _downloadHeaps;
 
     /// <summary>
     /// Property to return the graphics interface associated with this writer.
@@ -136,7 +138,7 @@ public unsafe sealed class GorgonResourceCopier
         
         _commandList.SetBarrier(buffer, BarrierSync.Copy, BarrierAccess.CopyDestination, true);
 
-        Graphics.UploadHeaps.Allocate(count, Graphics.Adapter.HasTightAlignmentSupport ? 0 : D3D12.D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT, out CpuBufferAllocation allocation);
+        _uploadHeaps.Allocate(count, Graphics.Adapter.HasTightAlignmentSupport ? 0 : D3D12.D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT, out CpuBufferAllocation allocation);
         Debug.Assert(allocation.IsAvailable, $"The transient heap for '{buffer.Name}' is not valid.");
 
         _commandQueue.Tracker.TrackResource(allocation.Heap.D3DResource);
@@ -177,18 +179,18 @@ public unsafe sealed class GorgonResourceCopier
     /// Function to copy a 1D texture into another texture.
     /// </summary>
     /// <param name="source">The 1D texture to copy.</param>
-    /// <param name="destination"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTexture, GorgonTexture)" path="/param[@name='destination']"/></param>
+    /// <param name="destination"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTextureCommon, GorgonTextureCommon)" path="/param[@name='destination']"/></param>
     /// <param name="sourceRegion">The horizontal range on the texture to copy.</param>
     /// <param name="sourceArrayIndex">The index in the texture array to copy.</param>
-    /// <param name="sourceMipLevel"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTexture, GorgonTexture)" path="/param[@name='sourceMipLevel']"/></param>
-    /// <param name="sourcePlane"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTexture, GorgonTexture)" path="/param[@name='sourcePlane']"/></param>
-    /// <param name="destinationX"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTexture, GorgonTexture)" path="/param[@name='destinationX']"/></param>
-    /// <param name="destinationY"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTexture, GorgonTexture)" path="/param[@name='destinationY']"/></param>
-    /// <param name="destinationZOrArrayIndex"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTexture, GorgonTexture)" path="/param[@name='destinationZOrArrayIndex']"/></param>
-    /// <param name="destinationMipLevel"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTexture, GorgonTexture)" path="/param[@name='destinationMipLevel']"/></param>
-    /// <param name="destinationPlane"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTexture, GorgonTexture)" path="/param[@name='destinationPlane']"/></param>
+    /// <param name="sourceMipLevel"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTextureCommon, GorgonTextureCommon)" path="/param[@name='sourceMipLevel']"/></param>
+    /// <param name="sourcePlane"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTextureCommon, GorgonTextureCommon)" path="/param[@name='sourcePlane']"/></param>
+    /// <param name="destinationX"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTextureCommon, GorgonTextureCommon)" path="/param[@name='destinationX']"/></param>
+    /// <param name="destinationY"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTextureCommon, GorgonTextureCommon)" path="/param[@name='destinationY']"/></param>
+    /// <param name="destinationZOrArrayIndex"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTextureCommon, GorgonTextureCommon)" path="/param[@name='destinationZOrArrayIndex']"/></param>
+    /// <param name="destinationMipLevel"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTextureCommon, GorgonTextureCommon)" path="/param[@name='destinationMipLevel']"/></param>
+    /// <param name="destinationPlane"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTextureCommon, GorgonTextureCommon)" path="/param[@name='destinationPlane']"/></param>
     /// <param name="isFullSubResource"><b>true</b> if the full sub resource is being copied, <b>false</b> if not.</param>
-    private void Copy1DTexture(GorgonTexture source, GorgonTexture destination, GorgonRange<int> sourceRegion, int sourceArrayIndex, int sourceMipLevel, int sourcePlane, int destinationX, int destinationY, int destinationZOrArrayIndex, int destinationMipLevel, int destinationPlane, bool isFullSubResource)
+    private void Copy1DTexture(GorgonTextureCommon source, GorgonTextureCommon destination, GorgonRange<int> sourceRegion, int sourceArrayIndex, int sourceMipLevel, int sourcePlane, int destinationX, int destinationY, int destinationZOrArrayIndex, int destinationMipLevel, int destinationPlane, bool isFullSubResource)
     {
         uint sourceSubIndex = (uint)source.GetSubResourceIndex(sourceMipLevel, sourceArrayIndex, sourcePlane);
         uint destSubIndex = (uint)destination.GetSubResourceIndex(destinationMipLevel, destinationZOrArrayIndex, destinationPlane);
@@ -224,18 +226,18 @@ public unsafe sealed class GorgonResourceCopier
     /// Function to copy a 2D texture into another texture.
     /// </summary>
     /// <param name="source">The 2D texture to copy.</param>
-    /// <param name="destination"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTexture, GorgonTexture)" path="/param[@name='destination']"/></param>
+    /// <param name="destination"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTextureCommon, GorgonTextureCommon)" path="/param[@name='destination']"/></param>
     /// <param name="sourceRegion">The rectangular range on the texture to copy.</param>
     /// <param name="sourceArrayIndex"><inheritdoc cref="Copy1DTexture" path="/param[@name='sourceArrayIndex']"/></param>
-    /// <param name="sourceMipLevel"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTexture, GorgonTexture)" path="/param[@name='sourceMipLevel']"/></param>
-    /// <param name="sourcePlane"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTexture, GorgonTexture)" path="/param[@name='sourcePlane']"/></param>
-    /// <param name="destinationX"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTexture, GorgonTexture)" path="/param[@name='destinationX']"/></param>
-    /// <param name="destinationY"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTexture, GorgonTexture)" path="/param[@name='destinationY']"/></param>
-    /// <param name="destinationZOrArrayIndex"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTexture, GorgonTexture)" path="/param[@name='destinationZOrArrayIndex']"/></param>
-    /// <param name="destinationMipLevel"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTexture, GorgonTexture)" path="/param[@name='destinationMipLevel']"/></param>
-    /// <param name="destinationPlane"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTexture, GorgonTexture)" path="/param[@name='destinationPlane']"/></param>
-    /// <param name="isFullSubResource"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTexture, GorgonTexture)" path="/param[@name='isFullSubResource']"/></param>
-    private void Copy2DTexture(GorgonTexture source, GorgonTexture destination, GorgonRectangle sourceRegion, int sourceArrayIndex, int sourceMipLevel, int sourcePlane, int destinationX, int destinationY, int destinationZOrArrayIndex, int destinationMipLevel, int destinationPlane, bool isFullSubResource)
+    /// <param name="sourceMipLevel"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTextureCommon, GorgonTextureCommon)" path="/param[@name='sourceMipLevel']"/></param>
+    /// <param name="sourcePlane"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTextureCommon, GorgonTextureCommon)" path="/param[@name='sourcePlane']"/></param>
+    /// <param name="destinationX"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTextureCommon, GorgonTextureCommon)" path="/param[@name='destinationX']"/></param>
+    /// <param name="destinationY"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTextureCommon, GorgonTextureCommon)" path="/param[@name='destinationY']"/></param>
+    /// <param name="destinationZOrArrayIndex"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTextureCommon, GorgonTextureCommon)" path="/param[@name='destinationZOrArrayIndex']"/></param>
+    /// <param name="destinationMipLevel"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTextureCommon, GorgonTextureCommon)" path="/param[@name='destinationMipLevel']"/></param>
+    /// <param name="destinationPlane"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTextureCommon, GorgonTextureCommon)" path="/param[@name='destinationPlane']"/></param>
+    /// <param name="isFullSubResource"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTextureCommon, GorgonTextureCommon)" path="/param[@name='isFullSubResource']"/></param>
+    private void Copy2DTexture(GorgonTextureCommon source, GorgonTextureCommon destination, GorgonRectangle sourceRegion, int sourceArrayIndex, int sourceMipLevel, int sourcePlane, int destinationX, int destinationY, int destinationZOrArrayIndex, int destinationMipLevel, int destinationPlane, bool isFullSubResource)
     {
         uint sourceSubIndex = (uint)source.GetSubResourceIndex(sourceMipLevel, sourceArrayIndex, sourcePlane);
         uint destSubIndex = (uint)destination.GetSubResourceIndex(destinationMipLevel, destinationZOrArrayIndex, destinationPlane);
@@ -271,17 +273,17 @@ public unsafe sealed class GorgonResourceCopier
     /// Function to copy a 3D texture into another texture.
     /// </summary>
     /// <param name="source">The 3D texture to copy.</param>
-    /// <param name="destination"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTexture, GorgonTexture)" path="/param[@name='destination']"/></param>
+    /// <param name="destination"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTextureCommon, GorgonTextureCommon)" path="/param[@name='destination']"/></param>
     /// <param name="sourceRegion">The box range on the texture to copy.</param>
-    /// <param name="sourceMipLevel"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTexture, GorgonTexture)" path="/param[@name='sourceMipLevel']"/></param>
-    /// <param name="sourcePlane"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTexture, GorgonTexture)" path="/param[@name='sourcePlane']"/></param>
-    /// <param name="destinationX"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTexture, GorgonTexture)" path="/param[@name='destinationX']"/></param>
-    /// <param name="destinationY"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTexture, GorgonTexture)" path="/param[@name='destinationY']"/></param>
-    /// <param name="destinationZOrArrayIndex"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTexture, GorgonTexture)" path="/param[@name='destinationZOrArrayIndex']"/></param>
-    /// <param name="destinationMipLevel"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTexture, GorgonTexture)" path="/param[@name='destinationMipLevel']"/></param>
-    /// <param name="destinationPlane"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTexture, GorgonTexture)" path="/param[@name='destinationPlane']"/></param>
-    /// <param name="isFullSubResource"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTexture, GorgonTexture)" path="/param[@name='isFullSubResource']"/></param>
-    private void Copy3DTexture(GorgonTexture source, GorgonTexture destination, GorgonBox sourceRegion, int sourceMipLevel, int sourcePlane, int destinationX, int destinationY, int destinationZOrArrayIndex, int destinationMipLevel, int destinationPlane, bool isFullSubResource)
+    /// <param name="sourceMipLevel"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTextureCommon, GorgonTextureCommon)" path="/param[@name='sourceMipLevel']"/></param>
+    /// <param name="sourcePlane"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTextureCommon, GorgonTextureCommon)" path="/param[@name='sourcePlane']"/></param>
+    /// <param name="destinationX"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTextureCommon, GorgonTextureCommon)" path="/param[@name='destinationX']"/></param>
+    /// <param name="destinationY"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTextureCommon, GorgonTextureCommon)" path="/param[@name='destinationY']"/></param>
+    /// <param name="destinationZOrArrayIndex"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTextureCommon, GorgonTextureCommon)" path="/param[@name='destinationZOrArrayIndex']"/></param>
+    /// <param name="destinationMipLevel"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTextureCommon, GorgonTextureCommon)" path="/param[@name='destinationMipLevel']"/></param>
+    /// <param name="destinationPlane"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTextureCommon, GorgonTextureCommon)" path="/param[@name='destinationPlane']"/></param>
+    /// <param name="isFullSubResource"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTextureCommon, GorgonTextureCommon)" path="/param[@name='isFullSubResource']"/></param>
+    private void Copy3DTexture(GorgonTextureCommon source, GorgonTextureCommon destination, GorgonBox sourceRegion, int sourceMipLevel, int sourcePlane, int destinationX, int destinationY, int destinationZOrArrayIndex, int destinationMipLevel, int destinationPlane, bool isFullSubResource)
     {
         uint sourceSubIndex = (uint)source.GetSubResourceIndex(sourceMipLevel, 0, sourcePlane);
         uint destSubIndex = (uint)destination.GetSubResourceIndex(destinationMipLevel, destinationZOrArrayIndex, destinationPlane);
@@ -321,7 +323,7 @@ public unsafe sealed class GorgonResourceCopier
     /// <param name="parameters">The parameters for the sub resource to copy.</param>
     /// <param name="sourceIsFullSubResource">If the parameterss covers the entire resource, then this value will return <b>true</b>; otherwise <b>false</b>.</param>
     /// <returns>The updated and clipped copy parameters.</returns>
-    private GorgonCopyTextureSubResource Clip(GorgonTexture source, GorgonTexture destination, ref readonly GorgonCopyTextureSubResource parameters, out bool sourceIsFullSubResource)
+    private GorgonCopyTextureSubResource Clip(GorgonTextureCommon source, GorgonTextureCommon destination, ref readonly GorgonCopyTextureSubResource parameters, out bool sourceIsFullSubResource)
     {
         GorgonBox srcDims = new(0, 0, 0, source.GetMipWidth(parameters.SourceMipLevel), source.GetMipHeight(parameters.SourceMipLevel), source.Type == TextureType.Texture3D ? source.GetMipDepth(parameters.SourceMipLevel) : 1);
         GorgonBox destDims = new(0, 0, 0, destination.GetMipWidth(parameters.DestinationMipLevel), destination.GetMipHeight(parameters.DestinationMipLevel), destination.Type == TextureType.Texture3D ? destination.GetMipDepth(parameters.DestinationMipLevel) : 1);
@@ -386,11 +388,11 @@ public unsafe sealed class GorgonResourceCopier
     /// <summary>
     /// Function to validate the settings for copying a texture to another.
     /// </summary>
-    /// <param name="source"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTexture, GorgonTexture, ref readonly GorgonCopyTextureSubResource)" path="/param[@name='source']"/></param>
-    /// <param name="destination"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTexture, GorgonTexture, ref readonly GorgonCopyTextureSubResource)" path="/param[@name='destination']"/></param>
-    /// <param name="parameters"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTexture, GorgonTexture, ref readonly GorgonCopyTextureSubResource)" path="/param[@name='parameters']"/></param>
-    /// <inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTexture, GorgonTexture, ref readonly GorgonCopyTextureSubResource)" path="/exception"/>
-    private static void ValidateCopyTexture(GorgonTexture source, GorgonTexture destination, ref readonly GorgonCopyTextureSubResource parameters)
+    /// <param name="source"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTextureCommon, GorgonTextureCommon, ref readonly GorgonCopyTextureSubResource)" path="/param[@name='source']"/></param>
+    /// <param name="destination"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTextureCommon, GorgonTextureCommon, ref readonly GorgonCopyTextureSubResource)" path="/param[@name='destination']"/></param>
+    /// <param name="parameters"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTextureCommon, GorgonTextureCommon, ref readonly GorgonCopyTextureSubResource)" path="/param[@name='parameters']"/></param>
+    /// <inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTextureCommon, GorgonTextureCommon, ref readonly GorgonCopyTextureSubResource)" path="/exception"/>
+    private static void ValidateCopyTexture(GorgonTextureCommon source, GorgonTextureCommon destination, ref readonly GorgonCopyTextureSubResource parameters)
     {
         if (source.FormatInfo.Group != destination.FormatInfo.Group)
         {
@@ -449,23 +451,24 @@ public unsafe sealed class GorgonResourceCopier
         Debug.Assert(_commandList is not null, "No command list to execute the download.");
 
         ulong fence = 0;
+        CommandQueue copyQueue = Graphics.Queues.CopyQueue;
 
         // Finalize the command.
         try
         {
             _commandList.D3DGraphicsCommandList.Get()->Close();
 
-            Graphics.CopyQueue.Execute(_commandList);
-            fence = Graphics.CopyQueue.IncrementFence();
+            copyQueue.Execute(_commandList);
+            fence = copyQueue.IncrementFence();
 
-            Graphics.CopyQueue.WaitForFence(fence, Timeout.Infinite);
+            copyQueue.WaitForFence(fence, Timeout.Infinite);
         }
         finally
         {
-            Graphics.DownloadHeaps.Signal();
-            Graphics.CopyQueue.Tracker.Signal();
-            Graphics.CopyQueue.AllocatorPool.Signal();
-            Graphics.CopyQueue.ListPool.Return(_commandList);
+            _downloadHeaps.Signal();
+            copyQueue.Tracker.Signal();
+            copyQueue.AllocatorPool.Signal();
+            copyQueue.ListPool.Return(_commandList);
         }
     }
 
@@ -482,7 +485,7 @@ public unsafe sealed class GorgonResourceCopier
         ulong sizeInBytes = ((ulong)buffer.SizeInBytes - offset).Min(typeSize * length);
 
         // Grab some temporary memory from our download heap.
-        Graphics.DownloadHeaps.Allocate(sizeInBytes.Max(16), Graphics.Adapter.HasTightAlignmentSupport ? 0 : D3D12.D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT, out CpuBufferAllocation allocation);
+        _downloadHeaps.Allocate(sizeInBytes.Max(16), Graphics.Adapter.HasTightAlignmentSupport ? 0 : D3D12.D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT, out CpuBufferAllocation allocation);
         Debug.Assert(allocation.IsAvailable, "The returned resource heap allocation is not valid.");
 
         _commandQueue.Tracker.Signal();
@@ -582,7 +585,7 @@ public unsafe sealed class GorgonResourceCopier
             {
                 _commandQueue.Tracker.Signal();
                 _commandQueue.AllocatorPool.Signal();
-                Graphics.UploadHeaps.Signal();
+                _uploadHeaps.Signal();
                 _commandQueue.ListPool.Return(_commandList);
                 Cleanup();
             }
@@ -617,14 +620,14 @@ public unsafe sealed class GorgonResourceCopier
         {
             _commandQueue.Tracker.Signal();
             _commandQueue.AllocatorPool.Signal();
-            Graphics.UploadHeaps.Signal();
+            _uploadHeaps.Signal();
             _commandQueue.ListPool.Return(_commandList);
             Cleanup();            
         }        
     }
 
     /// <inheritdoc/>
-    IGorgonResourceWriter IGorgonCopyMethodsFluent<IGorgonResourceWriter>.SetBarrier(GorgonTexture texture, BarrierSync sync, BarrierAccess access, BarrierLayout layout, GorgonSubResourceRange? subResources, bool discard, bool force)
+    IGorgonResourceWriter IGorgonCopyMethodsFluent<IGorgonResourceWriter>.SetBarrier(GorgonTextureCommon texture, BarrierSync sync, BarrierAccess access, BarrierLayout layout, GorgonSubResourceRange? subResources, bool discard, bool force)
     {
         Debug.Assert(_commandList is not null && _commandAllocator is not null, "Command list and/or allocator are null.");
         _commandList.SetBarrier(texture, sync, access, layout, subResources, discard, force);
@@ -772,7 +775,7 @@ public unsafe sealed class GorgonResourceCopier
     }
 
     /// <inheritdoc/>
-    IGorgonResourceWriter IGorgonCopyMethodsFluent<IGorgonResourceWriter>.CopyImageToTexture(IGorgonImage image, GorgonTexture texture)
+    IGorgonResourceWriter IGorgonCopyMethodsFluent<IGorgonResourceWriter>.CopyImageToTexture(IGorgonImage image, GorgonTextureCommon texture)
     {
         if (_batchState is not 1 and not int.MaxValue)
         {
@@ -814,7 +817,7 @@ public unsafe sealed class GorgonResourceCopier
 
             _commandQueue.Tracker.TrackResource(texture.D3DResource);
 
-            Graphics.UploadHeaps.Allocate((ulong)working.SizeInBytes, texture.Info.Alignment, out CpuBufferAllocation allocation);
+            _uploadHeaps.Allocate((ulong)working.SizeInBytes, texture.Info.Alignment, out CpuBufferAllocation allocation);
             Debug.Assert(allocation.IsAvailable, $"The returned resource heap allocation is not valid.");
 
             _commandQueue.Tracker.TrackResource(allocation.Heap.D3DResource);
@@ -865,7 +868,7 @@ public unsafe sealed class GorgonResourceCopier
     }
 
     /// <inheritdoc/>
-    IGorgonResourceWriter IGorgonCopyMethodsFluent<IGorgonResourceWriter>.CopyImageToTexture(IGorgonImageBuffer imageBuffer, GorgonTexture texture, short destinationMipLevel, short destinationZOrArrayIndex, byte destinationPlane)
+    IGorgonResourceWriter IGorgonCopyMethodsFluent<IGorgonResourceWriter>.CopyImageToTexture(IGorgonImageBuffer imageBuffer, GorgonTextureCommon texture, short destinationMipLevel, short destinationZOrArrayIndex, byte destinationPlane)
     {
         if (_batchState is not 1 and not int.MaxValue)
         {
@@ -901,7 +904,7 @@ public unsafe sealed class GorgonResourceCopier
         int destResourceIndex = texture.GetSubResourceIndex(destinationMipLevel, destinationZOrArrayIndex, destinationPlane);
         GorgonSubResourceInfo destInfo = texture.SubResources[destResourceIndex];
 
-        Graphics.UploadHeaps.Allocate((ulong)imageBuffer.SizeInBytes, texture.Info.Alignment, out CpuBufferAllocation allocation);
+        _uploadHeaps.Allocate((ulong)imageBuffer.SizeInBytes, texture.Info.Alignment, out CpuBufferAllocation allocation);
         Debug.Assert(allocation.IsAvailable, $"The returned resource heap allocation is not valid.");
 
         _commandQueue.Tracker.TrackResource(allocation.Heap.D3DResource);
@@ -958,9 +961,9 @@ public unsafe sealed class GorgonResourceCopier
             return this;
         }
 
-        ulong copyQueueFence = Graphics.GraphicsQueue.FenceValue;
-        _commandQueue.D3DQueue.Get()->Wait((PID3D12Fence1)Graphics.GraphicsQueue.D3DFence.Get(), copyQueueFence)
-            .ThrowIfFailed(GorgonResult.CannotExecute, () => string.Format(Resources.GORGFX_ERR_WAIT_FAILED, nameof(Graphics.CopyQueue), nameof(Graphics.GraphicsQueue)));
+        ulong copyQueueFence = Graphics.Queues.GraphicsQueue.FenceValue;
+        _commandQueue.D3DQueue.Get()->Wait((PID3D12Fence1)Graphics.Queues.GraphicsQueue.D3DFence.Get(), copyQueueFence)
+            .ThrowIfFailed(GorgonResult.CannotExecute, () => string.Format(Resources.GORGFX_ERR_WAIT_FAILED, nameof(Graphics.Queues.CopyQueue), nameof(Graphics.Queues.GraphicsQueue)));
         return this;
     }
 
@@ -988,14 +991,14 @@ public unsafe sealed class GorgonResourceCopier
             return this;
         }
 
-        ulong computeQueueFence = Graphics.ComputeQueue.FenceValue;
-        _commandQueue.D3DQueue.Get()->Wait((PID3D12Fence1)Graphics.ComputeQueue.D3DFence.Get(), computeQueueFence)
-            .ThrowIfFailed(GorgonResult.CannotExecute, () => string.Format(Resources.GORGFX_ERR_WAIT_FAILED, nameof(Graphics.CopyQueue), nameof(Graphics.ComputeQueue)));
+        ulong computeQueueFence = Graphics.Queues.ComputeQueue.FenceValue;
+        _commandQueue.D3DQueue.Get()->Wait((PID3D12Fence1)Graphics.Queues.ComputeQueue.D3DFence.Get(), computeQueueFence)
+            .ThrowIfFailed(GorgonResult.CannotExecute, () => string.Format(Resources.GORGFX_ERR_WAIT_FAILED, nameof(Graphics.Queues.CopyQueue), nameof(Graphics.Queues.ComputeQueue)));
         return this;
     }
 
     /// <inheritdoc/>
-    IGorgonResourceWriter IGorgonCopyMethodsFluent<IGorgonResourceWriter>.CopyTextureToBuffer(GorgonTexture texture, GorgonGpuBuffer buffer, long destinationOffset)
+    IGorgonResourceWriter IGorgonCopyMethodsFluent<IGorgonResourceWriter>.CopyTextureToBuffer(GorgonTextureCommon texture, GorgonGpuBuffer buffer, long destinationOffset)
     {
         ArgumentOutOfRangeException.ThrowIfLessThan(destinationOffset, 0);
 
@@ -1026,7 +1029,7 @@ public unsafe sealed class GorgonResourceCopier
     }
 
     /// <inheritdoc/>
-    IGorgonResourceWriter IGorgonCopyMethodsFluent<IGorgonResourceWriter>.CopyBufferToTexture(GorgonGpuBuffer buffer, GorgonTexture texture, GorgonCopyBufferToTexture parameters)
+    IGorgonResourceWriter IGorgonCopyMethodsFluent<IGorgonResourceWriter>.CopyBufferToTexture(GorgonGpuBuffer buffer, GorgonTextureCommon texture, GorgonCopyBufferToTexture parameters)
     {
         if (_batchState is not 1 and not int.MaxValue)
         {
@@ -1067,7 +1070,7 @@ public unsafe sealed class GorgonResourceCopier
     }
 
     /// <inheritdoc/>
-    IGorgonResourceWriter IGorgonCopyMethodsFluent<IGorgonResourceWriter>.CopyBufferToTexture(GorgonGpuBuffer buffer, GorgonTexture texture, long sourceOffset)
+    IGorgonResourceWriter IGorgonCopyMethodsFluent<IGorgonResourceWriter>.CopyBufferToTexture(GorgonGpuBuffer buffer, GorgonTextureCommon texture, long sourceOffset)
     {
         if (_batchState is not 1 and not int.MaxValue)
         {
@@ -1129,7 +1132,7 @@ public unsafe sealed class GorgonResourceCopier
     }
 
     /// <inheritdoc/>
-    IGorgonResourceWriter IGorgonCopyMethodsFluent<IGorgonResourceWriter>.CopyTextureToBuffer(GorgonTexture texture, GorgonGpuBuffer buffer, GorgonCopyTextureToBuffer parameters)
+    IGorgonResourceWriter IGorgonCopyMethodsFluent<IGorgonResourceWriter>.CopyTextureToBuffer(GorgonTextureCommon texture, GorgonGpuBuffer buffer, GorgonCopyTextureToBuffer parameters)
     {
         if (_batchState is not 1 and not int.MaxValue)
         {
@@ -1173,7 +1176,7 @@ public unsafe sealed class GorgonResourceCopier
     }
 
     /// <inheritdoc/>
-    IGorgonResourceWriter IGorgonCopyMethodsFluent<IGorgonResourceWriter>.CopyTexture(GorgonTexture source, GorgonTexture destination, ref readonly GorgonCopyTextureSubResource parameters)
+    IGorgonResourceWriter IGorgonCopyMethodsFluent<IGorgonResourceWriter>.CopyTexture(GorgonTextureCommon source, GorgonTextureCommon destination, ref readonly GorgonCopyTextureSubResource parameters)
     {
         if (_batchState is not 1 and not int.MaxValue)
         {
@@ -1208,7 +1211,7 @@ public unsafe sealed class GorgonResourceCopier
     }
 
     /// <inheritdoc/>
-    IGorgonResourceWriter IGorgonCopyMethodsFluent<IGorgonResourceWriter>.CopyTexture(GorgonTexture source, GorgonTexture destination)
+    IGorgonResourceWriter IGorgonCopyMethodsFluent<IGorgonResourceWriter>.CopyTexture(GorgonTextureCommon source, GorgonTextureCommon destination)
     {
         if (_batchState is not 1 and not int.MaxValue)
         {
@@ -1364,7 +1367,7 @@ public unsafe sealed class GorgonResourceCopier
     }
 
     /// <summary>
-    /// Function to copy the contents of a <see cref="GorgonTexture"/> into a <see cref="IGorgonImage"/>.
+    /// Function to copy the contents of a <see cref="GorgonTextureCommon"/> into a <see cref="IGorgonImage"/>.
     /// </summary>
     /// <param name="texture">The texture to copy.</param>
     /// <param name="image">The image that will receive the texture data.</param>
@@ -1374,8 +1377,8 @@ public unsafe sealed class GorgonResourceCopier
     /// <exception cref="GorgonException">Thrown if the <paramref name="image"/> format is not compatible with the <paramref name="texture"/> format.</exception>
     /// <remarks>
     /// <para>
-    /// This method will copy the contents of a <see cref="GorgonTexture"/> into a <see cref="IGorgonImage"/> so that applications can evaluate texture data on the CPU. This method copies the entire texture 
-    /// to the image, if an application needs to more fine grained copying, use the <see cref="CopyTextureToImage(GorgonTexture, IGorgonImageBuffer, int, int, int)"/> overload.
+    /// This method will copy the contents of a <see cref="GorgonTextureCommon"/> into a <see cref="IGorgonImage"/> so that applications can evaluate texture data on the CPU. This method copies the entire texture 
+    /// to the image, if an application needs to more fine grained copying, use the <see cref="CopyTextureToImage(GorgonTextureCommon, IGorgonImageBuffer, int, int, int)"/> overload.
     /// </para>
     /// <para>
     /// If the <paramref name="texture"/> dimensions, array count (1D or 2D only), or mip count are not the same as those in the <paramref name="image"/>, then the method will only copy the minimum 
@@ -1383,7 +1386,7 @@ public unsafe sealed class GorgonResourceCopier
     /// don't have an overrun when copying. 
     /// </para>
     /// <para>
-    /// If the texture <see cref="GorgonTexture.Format"/> does not match that of the <paramref name="image"/>, and the image can be converted to the format of the texture, the method will automatically do so 
+    /// If the texture <see cref="GorgonTextureCommon.Format"/> does not match that of the <paramref name="image"/>, and the image can be converted to the format of the texture, the method will automatically do so 
     /// prior to copying into the texture. If it cannot convert the image due to an incompatible format, then an exception will be thrown.
     /// </para>
     /// <para type="Limits">
@@ -1400,12 +1403,12 @@ public unsafe sealed class GorgonResourceCopier
     /// </list>
     /// </para>
     /// </remarks>
-    /// <seealso cref="GorgonTexture"/>
+    /// <seealso cref="GorgonTextureCommon"/>
     /// <seealso cref="GorgonTextureInfo"/>
     /// <seealso cref="IGorgonImage"/>
     /// <seealso cref="BufferFormat"/>
-    /// <seealso cref="CopyTextureToImage(GorgonTexture, IGorgonImageBuffer, int, int, int)"/>
-    public void CopyTextureToImage(GorgonTexture texture, IGorgonImage image)
+    /// <seealso cref="CopyTextureToImage(GorgonTextureCommon, IGorgonImageBuffer, int, int, int)"/>
+    public void CopyTextureToImage(GorgonTextureCommon texture, IGorgonImage image)
     {
         if (!texture.MultisampleInfo.Equals(GorgonMultisampleInfo.NoMultisampling))
         {
@@ -1436,7 +1439,7 @@ public unsafe sealed class GorgonResourceCopier
 
         _commandQueue.Tracker.TrackResource(texture.D3DResource);
 
-        Graphics.DownloadHeaps.Allocate((ulong)image.SizeInBytes, texture.Info.Alignment, out CpuBufferAllocation allocation);
+        _downloadHeaps.Allocate((ulong)image.SizeInBytes, texture.Info.Alignment, out CpuBufferAllocation allocation);
         Debug.Assert(allocation.IsAvailable, "The returned resource heap allocation is not valid.");
 
         _commandQueue.Tracker.TrackResource(allocation.Heap.D3DResource);
@@ -1494,32 +1497,32 @@ public unsafe sealed class GorgonResourceCopier
     }
 
     /// <summary>
-    /// Function to copy the contents of a <see cref="GorgonTexture"/> sub resource into a <see cref="IGorgonImageBuffer"/>.
+    /// Function to copy the contents of a <see cref="GorgonTextureCommon"/> sub resource into a <see cref="IGorgonImageBuffer"/>.
     /// </summary>
-    /// <param name="texture"><inheritdoc cref="CopyTextureToImage(GorgonTexture, IGorgonImage)" path="/param[@name='texture']"/></param>
+    /// <param name="texture"><inheritdoc cref="CopyTextureToImage(GorgonTextureCommon, IGorgonImage)" path="/param[@name='texture']"/></param>
     /// <param name="buffer">The image buffer that will receive the sub resource data.</param>
     /// <param name="sourceMipLevel">[Optional] The source mip level on the texture to copy the image data from.</param>
     /// <param name="sourceZOrArrayIndex">[Optional] The source depth slice on a 3D texture, or array index on a 1D or 2D texture array to copy the image data from.</param>
     /// <param name="sourcePlane">[Optional] The source format plane on the texture to copy the image data from.</param>
-    /// <inheritdoc cref="CopyTextureToImage(GorgonTexture, IGorgonImage)" path="/exception"/>
+    /// <inheritdoc cref="CopyTextureToImage(GorgonTextureCommon, IGorgonImage)" path="/exception"/>
     /// <remarks>
     /// <para>
-    /// This method will copy the contents of a sub resource in a <see cref="GorgonTexture"/> into a <see cref="IGorgonImage"/> on a <see cref="IGorgonImage"/>. This method only copies one sub resource, if 
-    /// the application needs to copy the entire image instead, use the <see cref="CopyTextureToImage(GorgonTexture, IGorgonImage)"/> overload.
+    /// This method will copy the contents of a sub resource in a <see cref="GorgonTextureCommon"/> into a <see cref="IGorgonImage"/> on a <see cref="IGorgonImage"/>. This method only copies one sub resource, if 
+    /// the application needs to copy the entire image instead, use the <see cref="CopyTextureToImage(GorgonTextureCommon, IGorgonImage)"/> overload.
     /// </para>
     /// <para>
-    /// <inheritdoc cref="CopyTextureToImage(GorgonTexture, IGorgonImage)" path="/remarks/para[2]"/>
+    /// <inheritdoc cref="CopyTextureToImage(GorgonTextureCommon, IGorgonImage)" path="/remarks/para[2]"/>
     /// </para>
     /// <para>
-    /// <inheritdoc cref="CopyTextureToImage(GorgonTexture, IGorgonImage)" path="/remarks/para[3]"/>
+    /// <inheritdoc cref="CopyTextureToImage(GorgonTextureCommon, IGorgonImage)" path="/remarks/para[3]"/>
     /// </para>
-    /// <inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyImageToTexture(IGorgonImage, GorgonTexture)" path="/remarks/para[@type='Limits']"/>
+    /// <inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyImageToTexture(IGorgonImage, GorgonTextureCommon)" path="/remarks/para[@type='Limits']"/>
     /// <para>
     /// If the <paramref name="sourceMipLevel"/>, <paramref name="sourceZOrArrayIndex"/>, and the <paramref name="sourcePlane"/> is not specified, then the first mip level, first array index 
     /// (or depth slice for a 3D texture), and the first format plane are used to copy the data from.
     /// </para>
     /// </remarks>
-    public void CopyTextureToImage(GorgonTexture texture, IGorgonImageBuffer buffer, int sourceMipLevel = 0, int sourceZOrArrayIndex = 0, int sourcePlane = 0)
+    public void CopyTextureToImage(GorgonTextureCommon texture, IGorgonImageBuffer buffer, int sourceMipLevel = 0, int sourceZOrArrayIndex = 0, int sourcePlane = 0)
     {
         if (!texture.MultisampleInfo.Equals(GorgonMultisampleInfo.NoMultisampling))
         {
@@ -1551,7 +1554,7 @@ public unsafe sealed class GorgonResourceCopier
             int srcResourceIndex = texture.GetSubResourceIndex(sourceMipLevel, sourceZOrArrayIndex, sourcePlane);
             GorgonSubResourceInfo srcInfo = texture.SubResources[srcResourceIndex];
 
-            Graphics.DownloadHeaps.Allocate((ulong)buffer.SizeInBytes, texture.Info.Alignment, out CpuBufferAllocation allocation);
+            _downloadHeaps.Allocate((ulong)buffer.SizeInBytes, texture.Info.Alignment, out CpuBufferAllocation allocation);
             Debug.Assert(allocation.IsAvailable, "The returned resource heap allocation is not valid.");
 
             _commandQueue.Tracker.TrackResource(allocation.Heap.D3DResource);
@@ -1600,10 +1603,12 @@ public unsafe sealed class GorgonResourceCopier
     internal GorgonResourceCopier(GorgonGraphics graphics, GorgonCommandList list)
     {
         Graphics = graphics;
+        _uploadHeaps = Graphics.Memory.UploadHeaps;
+        _downloadHeaps = Graphics.Memory.DownloadHeaps;
         _batchState = int.MaxValue;
         _commandAllocator = list.Allocator;
         _commandList = list;
-        _commandQueue = list.Queue;
+        _commandQueue = list.Queue;        
 
         // Release any previous resources that may have been used in copy operations.
         _commandQueue.Tracker.Signal();
@@ -1616,6 +1621,8 @@ public unsafe sealed class GorgonResourceCopier
     internal GorgonResourceCopier(CommandQueue queue)
     {
         Graphics = queue.Graphics;
+        _uploadHeaps = Graphics.Memory.UploadHeaps;
+        _downloadHeaps = Graphics.Memory.DownloadHeaps;
         _commandQueue = queue;
     }
 
@@ -1626,6 +1633,8 @@ public unsafe sealed class GorgonResourceCopier
     public GorgonResourceCopier(GorgonGraphics graphics)
     {
         Graphics = graphics;
-        _commandQueue = graphics.CopyQueue;
+        _uploadHeaps = Graphics.Memory.UploadHeaps;
+        _downloadHeaps = Graphics.Memory.DownloadHeaps;
+        _commandQueue = Graphics.Queues.CopyQueue;
     }
 }

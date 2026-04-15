@@ -73,7 +73,7 @@ public sealed class GorgonTypedBufferView
     /// <param name="formatInfo">The information about the format for the view.</param>
     /// <param name="formatSupport">The adapter support for formats.</param>
     /// <param name="bufferSize">The total size of the buffer.</param>
-    /// <param name="resourceOffset"><inheritdoc cref="GorgonConstantBufferView.ValidateConstantView(string, int, long, ulong)" path="/param[@name='resourceOffset']"/></param>
+    /// <param name="resourceOffset"><inheritdoc cref="GorgonConstantBufferView.ValidateConstantView(string, int, ulong, ulong)" path="/param[@name='resourceOffset']"/></param>
     /// <exception cref="GorgonException"><para>Thrown if the buffer does not support the format supplied.</para>
     /// <para>Thrown if the format is <see cref="BufferFormat.Unknown"/>, typeless, compressed, or a depth/stencil format.</para>
     /// <para>Thrown if the size of the buffer is less than the <see cref="GorgonFormatInfo.SizeInBytes">format size</see>, in bytes.</para>

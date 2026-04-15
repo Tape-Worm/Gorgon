@@ -22,6 +22,7 @@
 //
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
@@ -47,6 +48,8 @@ internal sealed unsafe class CommandQueue : IDisposable
     private readonly Lock _fenceLock = new();    
     private ulong _previousFenceValue = 0;
     private ulong _nextFenceValue = 1;
+    private readonly MegaBufferPool _megaBuffer;
+    private readonly ConcurrentBag<GorgonCommandList> _activeLists = [];
 
     /// <summary>
     /// Property to return the graphics object associated with this queue.
@@ -236,8 +239,14 @@ internal sealed unsafe class CommandQueue : IDisposable
     /// Function to execute command lists on the queue.
     /// </summary>
     /// <param name="commandList">The command lists to execute on the queue.</param>
+    /// <param name="trackLists">[Optional] <b>true</b> to track the command lists, <b>false</b> to manage lists manually.</param>
     /// <returns>The current fence value.</returns>
-    public void Execute(ReadOnlySpan<GorgonCommandList> commandList)
+    /// <remarks>
+    /// <para>
+    /// If the <paramref name="trackLists"/> parameter is <b>true</b>, then applications should call the <see cref="CollectOutstandingLists"/> method at the end of execution to clean up active lists.
+    /// </para>
+    /// </remarks>
+    public void Execute(ReadOnlySpan<GorgonCommandList> commandList, bool trackLists = false)
     {
         using (_fenceLock.EnterScope())
         {
@@ -253,13 +262,16 @@ internal sealed unsafe class CommandQueue : IDisposable
             }
 
             // Commit all reserved buffer memory.
-            Graphics.MegaBuffer.Commit(this);
+            _megaBuffer.Commit(this);
 
             ID3D12CommandList** commands = stackalloc ID3D12CommandList*[commandList.Length];
 
             for (int i = 0; i < commandList.Length; ++i)
             {
-                commands[i] = commandList[i].D3DCommandList.Get();
+                GorgonCommandList list = commandList[i];
+
+                commands[i] = list.D3DCommandList.Get();
+                _activeLists.Add(list);
             }
 
             _d3dQueue.Get()->ExecuteCommandLists((uint)commandList.Length, commands);
@@ -270,15 +282,22 @@ internal sealed unsafe class CommandQueue : IDisposable
     /// Function to execute a command list on the queue.
     /// </summary>
     /// <param name="commandList">The command list to execute on the queue.</param>    
+    /// <param name="trackList">[Optional] <b>true</b> to track the command list, <b>false</b> to manage the list manually.</param>
     /// <returns>The current fence value.</returns>
+    /// <remarks>
+    /// <para>
+    /// If the <paramref name="trackList"/> parameter is <b>true</b>, then applications should call the <see cref="CollectOutstandingLists"/> method at the end of execution to clean up active lists.
+    /// </para>
+    /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Execute(GorgonCommandList commandList)
+    public void Execute(GorgonCommandList commandList, bool trackList = false)
     {
         using (_fenceLock.EnterScope())
         {
             // Commit all reserved buffer memory.
-            Graphics.MegaBuffer.Commit(this);
+            _megaBuffer.Commit(this);
 
+            _activeLists.Add(commandList);
             ID3D12CommandList** commands = stackalloc ID3D12CommandList*[1]
             {
                 commandList.D3DCommandList.Get()
@@ -325,6 +344,30 @@ internal sealed unsafe class CommandQueue : IDisposable
     }
 
     /// <summary>
+    /// Function to collect any outstanding lists.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This method is used to clean up and return lists that are being tracked by the queue.
+    /// </para>
+    /// </remarks>
+    public void CollectOutstandingLists()
+    {
+        SpinWait waiter = new();
+
+        while (!_activeLists.IsEmpty)
+        {
+            if (!_activeLists.TryTake(out GorgonCommandList? list))
+            {
+                waiter.SpinOnce();
+                continue;
+            }
+
+            ListPool.Return(list);
+        }
+    }
+
+    /// <summary>
     /// Finalizer.
     /// </summary>
     ~CommandQueue() => Dispose(false);
@@ -337,6 +380,7 @@ internal sealed unsafe class CommandQueue : IDisposable
     public CommandQueue(GorgonGraphics graphics,  D3D12_COMMAND_LIST_TYPE type)
     {
         Graphics = graphics;
+        _megaBuffer = Graphics.Memory.MegaBuffer;
         FrameFenceValue = new ulong[Graphics.InFlightFrameCount];
         Type = type;
 

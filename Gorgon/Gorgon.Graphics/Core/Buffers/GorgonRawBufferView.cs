@@ -61,7 +61,7 @@ public sealed class GorgonRawBufferView
     /// </summary>
     /// <param name="name">The name of the buffer.</param>
     /// <param name="bufferSize">The total size of the buffer.</param>
-    /// <param name="resourceOffset"><inheritdoc cref="GorgonConstantBufferView.ValidateConstantView(string, int, long, ulong)" path="/param[@name='resourceOffset']"/></param>
+    /// <param name="resourceOffset"><inheritdoc cref="GorgonConstantBufferView.ValidateConstantView(string, int, ulong, ulong)" path="/param[@name='resourceOffset']"/></param>
     /// <exception cref="GorgonException"><para>Thrown if the size of the buffer is less than the <see cref="MinimumElementSize"/> (4 bytes).</para>
     /// <para>Throw if the buffer was not aligned to the <see cref="AlignmentRequirement"/> (16 bytes) upon creation.</para>
     /// </exception>

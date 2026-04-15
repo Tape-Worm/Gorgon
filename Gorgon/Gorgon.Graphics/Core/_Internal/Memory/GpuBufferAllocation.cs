@@ -21,18 +21,21 @@
 // Created: March 23, 2026 8:29:07 PM
 //
 
+using Gorgon.Core;
+
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
 /// An allocation block from the mega buffer.
 /// </summary>
 /// <param name="handle"><inheritdoc cref="Handle" path="/summary"/></param>
+/// <param name="poolIndex"><inheritdoc cref="PoolIndex" path="/summary"/></param>
 /// <param name="size"><inheritdoc cref="SizeInBytes" path="/summary"/></param>
 /// <param name="offset"><inheritdoc cref="Offset" path="/summary"/></param>
 /// <param name="tileStart"><inheritdoc cref="TileStart" path="/summary"/></param>
 /// <param name="tileEnd"><inheritdoc cref="TileEnd" path="/summary"/></param>
-internal readonly struct GpuBufferAllocation(ulong handle, ulong size, uint offset, ushort tileStart, ushort tileEnd)
-    : IEquatable<GpuBufferAllocation>
+internal readonly struct GpuBufferAllocation(ulong handle, byte poolIndex, uint size, uint offset, ushort tileStart, ushort tileEnd)
+    : IEquatable<GpuBufferAllocation>, IGorgonEquatableByRef<GpuBufferAllocation>
 {
     /// <summary>
     /// A representation for a null allocation.
@@ -50,7 +53,7 @@ internal readonly struct GpuBufferAllocation(ulong handle, ulong size, uint offs
     /// <remarks>
     /// This does not necessarily indicate the size of the data stored in the allocation, just the size of the allocation block itself, which could be larger due to alignment.
     /// </remarks>
-    public readonly ulong SizeInBytes = size;
+    public readonly uint SizeInBytes = size;
 
     /// <summary>
     /// The offset within the mega buffer that this allocation starts at.
@@ -68,12 +71,17 @@ internal readonly struct GpuBufferAllocation(ulong handle, ulong size, uint offs
     public readonly ushort TileEnd = tileEnd;
 
     /// <summary>
+    /// The index of the mega buffer within the pool.
+    /// </summary>
+    public readonly byte PoolIndex = poolIndex;
+
+    /// <summary>
     /// Property to return if this allocation is <see cref="Null"/> or not.
     /// </summary>
     public readonly bool IsNull => Equals(in Null);
 
     /// <inheritdoc/>
-    public readonly bool Equals(ref readonly GpuBufferAllocation other) => Handle == other.Handle;
+    public readonly bool Equals(ref readonly GpuBufferAllocation other) => Handle == other.Handle && PoolIndex == other.PoolIndex;
 
     /// <inheritdoc/>
     public readonly bool Equals(GpuBufferAllocation other) => Equals(in other);
@@ -82,5 +90,5 @@ internal readonly struct GpuBufferAllocation(ulong handle, ulong size, uint offs
     public readonly override bool Equals(object? obj) => obj is GpuBufferAllocation alloc && Equals(in alloc);
 
     /// <inheritdoc/>
-    public readonly override int GetHashCode() => Handle.GetHashCode();
+    public readonly override int GetHashCode() => HashCode.Combine(Handle, PoolIndex);
 }

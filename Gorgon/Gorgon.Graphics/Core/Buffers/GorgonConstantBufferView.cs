@@ -51,7 +51,8 @@ public unsafe sealed class GorgonConstantBufferView
     : GorgonResourceView
 {
     private GpuDescriptorAllocation _allocation = GpuDescriptorAllocation.Null;
-    private uint _allocationSize;
+    private readonly uint _allocationSize;
+    private readonly GpuDescriptorHeap _descriptors;
 
     /// <summary>
     /// The alignment, in bytes, required for constant buffer data.
@@ -73,10 +74,10 @@ public unsafe sealed class GorgonConstantBufferView
     {
         if (!_allocation.Equals(GpuDescriptorAllocation.Null))
         {
-            Graphics.GpuViewDescriptors.Free(ref _allocation);
+            _descriptors.Free(ref _allocation);
         }
 
-        Graphics.GpuViewDescriptors.Allocate(1, out _allocation);
+        _descriptors.Allocate(1, out _allocation);
 
         D3D12_CONSTANT_BUFFER_VIEW_DESC view = new()
         {
@@ -84,9 +85,9 @@ public unsafe sealed class GorgonConstantBufferView
             SizeInBytes = _allocationSize
         };
 
-        D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = Graphics.GpuViewDescriptors.D3DCpuHandle;
+        D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = _descriptors.D3DCpuHandle;
 
-        cpuHandle.Offset(_allocation.Offset, Graphics.GpuViewDescriptors.DescriptorSize);
+        cpuHandle.Offset(_allocation.Offset, _descriptors.DescriptorSize);
 
         Graphics.D3DDevice.Get()->CreateConstantBufferView(&view, cpuHandle);
 
@@ -101,7 +102,7 @@ public unsafe sealed class GorgonConstantBufferView
             if (!_allocation.Equals(GpuDescriptorAllocation.Null))
             {
                 Graphics.Log.Print($"Freeing descriptor handle allocation for '{Name}'.", LoggingLevel.Verbose);
-                Graphics.GpuViewDescriptors.Free(ref _allocation);
+                _descriptors.Free(ref _allocation);
             }
         }
 
@@ -274,6 +275,7 @@ public unsafe sealed class GorgonConstantBufferView
     {
         Graphics.Log.Print($"Creating constant buffer view for buffer '{Name}'...", LoggingLevel.Simple);
 
+        _descriptors = graphics.Descriptors.GpuViewDescriptors;
         _allocationSize = allocationSize;
         Buffer = buffer;
 

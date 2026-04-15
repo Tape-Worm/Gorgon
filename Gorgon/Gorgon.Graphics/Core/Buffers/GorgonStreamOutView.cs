@@ -29,7 +29,12 @@ namespace Gorgon.Graphics.Core;
 /// <summary>
 /// A special view for data streamed out from the GPU.
 /// </summary>
-public unsafe sealed class GorgonStreamOutView
+/// <remarks>
+/// <para>
+/// TODO:
+/// </para>
+/// </remarks>
+public sealed class GorgonStreamOutView
     : IGorgonNamedObject, IDisposable
 {
     /// <summary>
@@ -87,8 +92,8 @@ public unsafe sealed class GorgonStreamOutView
         Buffer = buffer;
 
         CounterBuffer = new GorgonGpuBuffer(Buffer.Graphics, $"{Name} - SO Counter", new GorgonGpuBufferInfo(sizeof(ulong)));
-        Graphics.GlobalCopier.BeginUpload()
-                             .CopyValue<long>(0, CounterBuffer)
-                             .End();
+        Graphics.Queues.GlobalCopier.BeginUpload()
+                                           .CopyValue<long>(0, CounterBuffer)
+                                           .End();
     }
 }

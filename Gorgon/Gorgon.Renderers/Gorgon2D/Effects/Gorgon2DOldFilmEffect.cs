@@ -356,7 +356,7 @@ public class Gorgon2DOldFilmEffect
     }
 
     /// <summary>
-    /// Funciton to generate random noise for the effect.
+    /// Function to generate random noise for the effect.
     /// </summary>
     private void GenerateRandomNoise()
     {

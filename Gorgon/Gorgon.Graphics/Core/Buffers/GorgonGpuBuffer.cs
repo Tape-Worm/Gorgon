@@ -21,7 +21,6 @@
 // Created: January 14, 2026 9:28:58 PM
 //
 
-using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
@@ -91,11 +90,15 @@ public sealed unsafe class GorgonGpuBuffer
     private readonly Dictionary<ViewKey, GorgonTypedBufferView> _typeds = [];
     private readonly Dictionary<ViewKey, GorgonResourceView> _uavs = [];    
     private GpuBufferAllocation _bufferAllocation = GpuBufferAllocation.Null;
+    private readonly MegaBufferPool _megaBuffer;
 
     /// <summary>
     /// Property to return the offset, in bytes, of a suballocated buffer within a larger buffer.
     /// </summary>
     internal override ulong ResourceOffset => _bufferAllocation.Offset;
+
+    /// <inheritdoc/>
+    internal override bool IsMegaBufferResource => true;
 
     /// <inheritdoc/>
     public int Alignment => _info.Alignment;
@@ -106,8 +109,8 @@ public sealed unsafe class GorgonGpuBuffer
     /// </summary>
     private void CreateNative()
     {
-        Graphics.MegaBuffer.Allocate((ulong)SizeInBytes, out _bufferAllocation, (uint)Alignment);
-        AssignResource(in Graphics.MegaBuffer.D3DBuffer);
+        _megaBuffer.Allocate((ulong)SizeInBytes, out _bufferAllocation, (uint)Alignment);
+        AssignResource(in _megaBuffer[in _bufferAllocation]);
     }
 
     /// <inheritdoc/>
@@ -135,13 +138,14 @@ public sealed unsafe class GorgonGpuBuffer
                 view.Dispose();
             }
 
+            _typeds.Clear();
             _structs.Clear();
             _raws.Clear();
             _uavs.Clear();
 
             if (!_bufferAllocation.IsNull)
             {
-                Graphics.MegaBuffer.Free(ref _bufferAllocation);
+                _megaBuffer.Free(ref _bufferAllocation);
             }
         }
 
@@ -211,7 +215,7 @@ public sealed unsafe class GorgonGpuBuffer
     {
         using (_viewLock.EnterScope())
         {
-            ulong alignedSize = _bufferAllocation.SizeInBytes.AlignDown((ulong)GorgonConstantBufferView.AlignmentRequirement);
+            ulong alignedSize = _bufferAllocation.SizeInBytes.AlignDown((uint)GorgonConstantBufferView.AlignmentRequirement);
 
             GorgonConstantBufferView.ValidateConstantView(Name, Alignment, alignedSize, ResourceOffset);
 
@@ -481,6 +485,7 @@ public sealed unsafe class GorgonGpuBuffer
         : base(graphics, name, info)
     {
         _info = info;
+        _megaBuffer = graphics.Memory.MegaBuffer;
 
         ValidateInfo();
 

@@ -439,9 +439,9 @@ public unsafe sealed class GorgonSwapChain
 
         Graphics.WaitForGpu(GorgonGraphics.WaitFenceTimeout * 6);
 
-        Graphics.GraphicsQueue.Tracker.Signal();
-        Graphics.ComputeQueue.Tracker.Signal();
-        Graphics.CopyQueue.Tracker.Signal();
+        Graphics.Queues.GraphicsQueue.Tracker.Signal();
+        Graphics.Queues.ComputeQueue.Tracker.Signal();
+        Graphics.Queues.CopyQueue.Tracker.Signal();
 
         RECT rect = default;
         Win32.GetClientRect(new HWND((void*)WindowHandle), &rect);
@@ -513,9 +513,9 @@ public unsafe sealed class GorgonSwapChain
 
         Graphics.WaitForGpu(GorgonGraphics.WaitFenceTimeout * 6);
 
-        Graphics.GraphicsQueue.Tracker.Signal();
-        Graphics.ComputeQueue.Tracker.Signal();
-        Graphics.CopyQueue.Tracker.Signal();
+        Graphics.Queues.GraphicsQueue.Tracker.Signal();
+        Graphics.Queues.ComputeQueue.Tracker.Signal();
+        Graphics.Queues.CopyQueue.Tracker.Signal();
 
         OnBeforeResize();
 
@@ -592,7 +592,7 @@ public unsafe sealed class GorgonSwapChain
         _info = new GorgonSwapChainInfo(info);
         _renderTargetViews = new GorgonRenderTargetView[_info.ResourceCount];
 
-        (_dxgiSwapChain, _waitHandle) = CreateNativeObjects(in graphics.DXGIFactory, in graphics.GraphicsQueue.D3DQueue);
+        (_dxgiSwapChain, _waitHandle) = CreateNativeObjects(in graphics.DXGIFactory, in graphics.Queues.GraphicsQueue.D3DQueue);
         ResizeResources();
 
         this.RegisterDisposable(Graphics);

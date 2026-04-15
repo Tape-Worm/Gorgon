@@ -41,7 +41,7 @@ public sealed class GorgonSubResourceInfoList
     internal static readonly GorgonSubResourceInfoList Empty = new();
 
     private readonly List<GorgonSubResourceInfo> _list = [];
-    private readonly GorgonTexture? _owner;
+    private readonly GorgonTextureCommon? _owner;
 
     /// <inheritdoc/>
     public GorgonSubResourceInfo this[int index] => _list[index];
@@ -72,7 +72,7 @@ public sealed class GorgonSubResourceInfoList
     /// </summary>
     /// <param name="owner">The texture that owns the sub resources.</param>
     /// <param name="list">The list of sub resources.</param>
-    internal GorgonSubResourceInfoList(GorgonTexture owner, List<GorgonSubResourceInfo> list)
+    internal GorgonSubResourceInfoList(GorgonTextureCommon owner, List<GorgonSubResourceInfo> list)
     {
         _owner = owner;
         _list = list;

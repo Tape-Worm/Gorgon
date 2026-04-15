@@ -22,107 +22,22 @@
 //
 
 using System.Buffers;
-using System.Collections;
 using System.Collections.Concurrent;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using System.Numerics;
-using System.Reflection.Metadata.Ecma335;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
-using Gorgon.Graphics.Imaging;
-using Gorgon.Math;
 using Gorgon.Memory;
 using Gorgon.Native;
 using Gorgon.Timing;
 using TerraFX.Interop.DirectX;
 using TerraFX.Interop.Windows;
-using DX = TerraFX.Interop.DirectX.DirectX;
 using Win32 = TerraFX.Interop.Windows.Windows;
 
 namespace Gorgon.Graphics.Core;
-
-/// <summary>
-/// Defines the severity of a debug information message.
-/// </summary>
-public enum DebugInfoSeverity
-{
-    /// <summary>
-    /// Message indicates data corruption.
-    /// </summary>
-    Corruption = D3D12_MESSAGE_SEVERITY.D3D12_MESSAGE_SEVERITY_CORRUPTION,
-    /// <summary>
-    /// Message indicates an error.
-    /// </summary>
-    Error = D3D12_MESSAGE_SEVERITY.D3D12_MESSAGE_SEVERITY_ERROR,
-    /// <summary>
-    /// Message indicates a warning.
-    /// </summary>
-    Warning = D3D12_MESSAGE_SEVERITY.D3D12_MESSAGE_SEVERITY_WARNING,
-    /// <summary>
-    /// Message indicates information.
-    /// </summary>
-    Information = D3D12_MESSAGE_SEVERITY.D3D12_MESSAGE_SEVERITY_INFO,
-    /// <summary>
-    /// A general message.
-    /// </summary>
-    Message = D3D12_MESSAGE_SEVERITY.D3D12_MESSAGE_SEVERITY_MESSAGE
-}
-
-/// <summary>
-/// Defines the category for a debug information message.
-/// </summary>
-public enum DebugInfoCategory
-{
-    /// <summary>
-    /// An application defined category.
-    /// </summary>
-    ApplicationDefined = D3D12_MESSAGE_CATEGORY.D3D12_MESSAGE_CATEGORY_APPLICATION_DEFINED,
-    /// <summary>
-    /// Initialization category.
-    /// </summary>
-    Initialization = D3D12_MESSAGE_CATEGORY.D3D12_MESSAGE_CATEGORY_INITIALIZATION,
-    /// <summary>
-    /// Execution category.
-    /// </summary>
-    Execution = D3D12_MESSAGE_CATEGORY.D3D12_MESSAGE_CATEGORY_EXECUTION,
-    /// <summary>
-    /// Cleanup category.
-    /// </summary>
-    Cleanup = D3D12_MESSAGE_CATEGORY.D3D12_MESSAGE_CATEGORY_CLEANUP,
-    /// <summary>
-    /// Resource manipulation category.
-    /// </summary>
-    ResourceManipulation = D3D12_MESSAGE_CATEGORY.D3D12_MESSAGE_CATEGORY_RESOURCE_MANIPULATION,
-    /// <summary>
-    /// Compilation category.
-    /// </summary>
-    Compilation = D3D12_MESSAGE_CATEGORY.D3D12_MESSAGE_CATEGORY_COMPILATION,
-    /// <summary>
-    /// Miscellaneous category.
-    /// </summary>
-    Misc = D3D12_MESSAGE_CATEGORY.D3D12_MESSAGE_CATEGORY_MISCELLANEOUS,
-    /// <summary>
-    /// Shader category.
-    /// </summary>
-    Shader = D3D12_MESSAGE_CATEGORY.D3D12_MESSAGE_CATEGORY_SHADER,
-    /// <summary>
-    /// State creation category.
-    /// </summary>
-    StateCreation = D3D12_MESSAGE_CATEGORY.D3D12_MESSAGE_CATEGORY_STATE_CREATION,
-    /// <summary>
-    /// State retrieval category.
-    /// </summary>
-    StateRetrieval = D3D12_MESSAGE_CATEGORY.D3D12_MESSAGE_CATEGORY_STATE_GETTING,
-    /// <summary>
-    /// State update category.
-    /// </summary>
-    StateUpdate = D3D12_MESSAGE_CATEGORY.D3D12_MESSAGE_CATEGORY_STATE_SETTING    
-}
 
 /// <summary>
 /// Delegate used to define a message callback for the Direct 3D 12 debug information queue.
@@ -166,8 +81,6 @@ public unsafe sealed class GorgonGraphics
     private readonly static Dictionary<Guid, GorgonDebugInformationCallback> _infoQueueCallbackMethods = [];
     private int _currentFrame;    
     private readonly ConcurrentBag<ComPtr<ID3D12CommandList>> _commands =[];
-    private readonly ConcurrentBag<GorgonCommandList> _submittedLists = [];
-    private readonly Lock _submitLock = new();
 
     #region Temporary - Delete me.    
     private ComPtr<ID3D12PipelineState> _pso;
@@ -273,22 +186,6 @@ public unsafe sealed class GorgonGraphics
     #endregion
 
     /// <summary>
-    /// Property to return the primary resource allocator.
-    /// </summary>
-    internal ref readonly ComPtr<D3D12MA_Allocator> Allocator => ref _allocator;
-
-    /// <summary>
-    /// Property to return the mega buffer system used to sub allocate smaller buffers.
-    /// </summary>
-    /// <remarks>
-    /// <inheritdoc cref="MegaBuffer" path="/remarks"/>
-    /// </remarks>
-    internal MegaBuffer MegaBuffer
-    {
-        get;
-    }
-
-    /// <summary>
     /// Property to return the internal Direct 3D 12 device pointer.
     /// </summary>
     internal ref readonly ComPtr<ID3D12Device14> D3DDevice => ref _d3dDevice;
@@ -304,89 +201,33 @@ public unsafe sealed class GorgonGraphics
     internal ref readonly ComPtr<IDXGIFactory7> DXGIFactory => ref _dxgiFactory;
 
     /// <summary>
-    /// Property to return the GPU side sampler descriptors.
+    /// Property to return the descriptor services.
     /// </summary>
-    internal GpuDescriptorHeap GpuSamplerDescriptors
-    {
-        get;
-    }
-    
-    /// <summary>
-    /// Property to return the allocator for GPU visible view descriptors.
-    /// </summary>
-    internal GpuDescriptorHeap GpuViewDescriptors
+    internal DescriptorServices Descriptors
     {
         get;
     }
 
     /// <summary>
-    /// Property to return the descriptor heap for render target views.
+    /// Property to return the memory services.
     /// </summary>
-    internal CpuDescriptorHeapPool RtvDescriptors
+    internal MemoryServices Memory
     {
         get;
     }
 
     /// <summary>
-    /// Property to return the descriptor heap for depth/stencil views.
+    /// Property to return the queue related services.
     /// </summary>
-    internal CpuDescriptorHeapPool DsvDescriptors
+    internal QueueServices Queues
     {
         get;
     }
 
     /// <summary>
-    /// Property to return the resource heaps interface for allocating temporary per-frame upload memory.
+    /// Property to return the predefined sampler states.
     /// </summary>
-    internal CpuResourceHeapPool UploadHeaps
-    {
-        get;
-    }
-
-    /// <summary>
-    /// Property to return the resource heaps interface for allocating temporary per-frame download memory.
-    /// </summary>
-    internal CpuResourceHeapPool DownloadHeaps
-    {
-        get;
-    }
-
-    /// <summary>
-    /// Property to return the internal graphics command queue.
-    /// </summary>
-    internal CommandQueue GraphicsQueue
-    {
-        get;
-    }
-
-    /// <summary>
-    /// Property to return the internal compute command queue.
-    /// </summary>
-    internal CommandQueue ComputeQueue
-    {
-        get;
-    }
-
-    /// <summary>
-    /// Property to return the internal copy command queue.
-    /// </summary>
-    internal CommandQueue CopyQueue
-    {
-        get;
-    }
-
-    /// <summary>
-    /// Property to return the global resource barrier state.
-    /// </summary>
-    internal GlobalBarrierState GlobalBarriers
-    {
-        get;
-    } = new();
-
-    /// <summary>
-    /// Property to return the internal copier for setting up resource state.
-    /// </summary>
-    internal GorgonResourceCopier GlobalCopier
+    internal SamplerStates SamplerStates
     {
         get;
     }
@@ -438,6 +279,8 @@ public unsafe sealed class GorgonGraphics
     /// <inheritdoc cref="GorgonGraphicsFactory.Dispose(bool)"/>
     private void Dispose(bool disposing)
     {
+        ComPtr<D3D12MA_Allocator> allocator = default;
+
         if (disposing)
         {
             // Ensure the frame is ended.
@@ -448,32 +291,38 @@ public unsafe sealed class GorgonGraphics
 
             if (_debug is not null)
             {
-                UnregisterDebugInformationCallback();                
+                UnregisterDebugInformationCallback();
             }
 
             // Ensure everything is returned before we continue.
             this.DisposeAll();
 
-            GlobalCopier.Dispose();
-
-            GpuViewDescriptors.Dispose();
-            GpuSamplerDescriptors.Dispose();
-            RtvDescriptors.Dispose();
-            DsvDescriptors.Dispose();
-
-            DownloadHeaps.Dispose();
-            UploadHeaps.Dispose();
-
-            MegaBuffer.Dispose();
+            SamplerStates.Dispose();
+            allocator = new ComPtr<D3D12MA_Allocator>(Memory.Allocator);
+            Descriptors.Dispose();
+            Memory.Dispose();
 
             _infoQueueInstanceGuid?.Dispose();
 
             // Remove our queues.
-            GraphicsQueue.Dispose();
-            ComputeQueue.Dispose();
-            CopyQueue.Dispose();
+            Queues.Dispose();
 
             _parentFactory.Unregister(this);
+
+            Log.Print($"Destroying {nameof(D3D12MA_Allocator)}...", LoggingLevel.Verbose);
+
+            if (IsInDebugMode)
+            {
+                Log.Print($"[DEBUG] Destroying {nameof(ID3D12InfoQueue1)}...", LoggingLevel.Verbose);
+            }
+
+            Log.Print($"Destroying {nameof(ID3D12Device14)}...", LoggingLevel.Verbose);
+            Log.Print($"Destroying {nameof(IDXGIAdapter4)}, and {nameof(IDXGIFactory7)}...", LoggingLevel.Verbose);
+
+            if (!allocator.IsNull)
+            {
+                DumpMemoryStats(in allocator);
+            }
         }
 
         DestroyTempStuff();
@@ -484,6 +333,14 @@ public unsafe sealed class GorgonGraphics
         _d3dDevice.Dispose();
         _dxgiAdapter.Dispose();
         _dxgiFactory.Dispose();
+
+        allocator.Dispose();
+
+        if (disposing)
+        {
+            // Finally, tell us if we've any objects left over.
+            _debug?.Report();
+        }
     }
 
     /// <summary>
@@ -533,10 +390,11 @@ public unsafe sealed class GorgonGraphics
         }
 
         // Add any messages we want to ignore here:
-        D3D12_MESSAGE_ID* filters = stackalloc D3D12_MESSAGE_ID[1]
+        D3D12_MESSAGE_ID* filters = stackalloc D3D12_MESSAGE_ID[2]
         {
             // We don't care if the clear colour isn't optimized.
-            D3D12_MESSAGE_ID.D3D12_MESSAGE_ID_CLEARRENDERTARGETVIEW_MISMATCHINGCLEARVALUE
+            D3D12_MESSAGE_ID.D3D12_MESSAGE_ID_CLEARRENDERTARGETVIEW_MISMATCHINGCLEARVALUE,
+            D3D12_MESSAGE_ID.D3D12_MESSAGE_ID_CREATE_SAMPLER_COMPARISON_FUNC_IGNORED
         };
 
         D3D12_INFO_QUEUE_FILTER filter = new()
@@ -709,27 +567,18 @@ public unsafe sealed class GorgonGraphics
         int nextFrame = Interlocked.Increment(ref _currentFrame);
         nextFrame %= InFlightFrameCount;
 
-        ulong gfxNextFence = GraphicsQueue.IncrementFence();
-        ulong computeNextFence = ComputeQueue.IncrementFence();
-        ulong copyNextFence = CopyQueue.IncrementFence();
+        ulong gfxNextFence = Queues.GraphicsQueue.IncrementFence();
+        ulong computeNextFence = Queues.ComputeQueue.IncrementFence();
+        ulong copyNextFence = Queues.CopyQueue.IncrementFence();
 
-        Interlocked.Exchange(ref GraphicsQueue.FrameFenceValue[nextFrame], gfxNextFence);
-        Interlocked.Exchange(ref ComputeQueue.FrameFenceValue[nextFrame], computeNextFence);
-        Interlocked.Exchange(ref CopyQueue.FrameFenceValue[nextFrame], copyNextFence);
+        Interlocked.Exchange(ref Queues.GraphicsQueue.FrameFenceValue[nextFrame], gfxNextFence);
+        Interlocked.Exchange(ref Queues.ComputeQueue.FrameFenceValue[nextFrame], computeNextFence);
+        Interlocked.Exchange(ref Queues.CopyQueue.FrameFenceValue[nextFrame], copyNextFence);
         Interlocked.Exchange(ref _currentFrame, nextFrame);
 
+        Queues.GraphicsQueue.CollectOutstandingLists();
+
         SpinWait waiter = new();
-
-        while (!_submittedLists.IsEmpty)
-        {
-            if (!_submittedLists.TryTake(out GorgonCommandList? list))
-            {
-                waiter.SpinOnce();
-                continue;
-            }
-
-            GraphicsQueue.ListPool.Return(list);
-        }
 
         while (!_commands.IsEmpty)
         {
@@ -749,36 +598,24 @@ public unsafe sealed class GorgonGraphics
     /// <param name="commandList">The command list to execute.</param>
     private void SubmitCommandList(GorgonCommandList commandList)
     {
-        Lock.Scope scope = _submitLock.EnterScope();
-
-        try
+        if (commandList.Graphics != this)
         {
-            if (commandList.Graphics != this)
-            {
-                Log.PrintWarning($"The command list {commandList.Name} was not created by the same graphics object. It will be skipped. Only submit command lists created by the same graphics object.", LoggingLevel.Simple);
-                return;
-            }
-
-            if (commandList.Queue != GraphicsQueue)
-            {
-                Log.PrintWarning($"The command list {commandList.Name} is not from the same queue. It will be skipped. Only submit command lists that are on the same queue.", LoggingLevel.Intermediate);
-                return;
-            }
-
-            commandList.Close();
-            GraphicsQueue.Execute(commandList);
-
-            if (commandList.Presenters.Count > 0)
-            {
-                commandList.Present();
-            }
-
-            _submittedLists.Add(commandList);
+            Log.PrintWarning($"The command list {commandList.Name} was not created by the same graphics object. It will be skipped. Only submit command lists created by the same graphics object.", LoggingLevel.Simple);
+            return;
         }
-        finally
+
+        if (commandList.Queue != Queues.GraphicsQueue)
         {
-            scope.Dispose();
-            GraphicsQueue.ListPool.Return(commandList);            
+            Log.PrintWarning($"The command list {commandList.Name} is not from the same queue. It will be skipped. Only submit command lists that are on the same queue.", LoggingLevel.Intermediate);
+            return;
+        }
+
+        commandList.Close();
+        Queues.GraphicsQueue.Execute(commandList, true);
+
+        if (commandList.Presenters.Count > 0)
+        {
+            commandList.Present();
         }
     }
 
@@ -794,12 +631,9 @@ public unsafe sealed class GorgonGraphics
         GorgonCommandList[] commands = pool.Rent(commandLists.Length);
         GorgonCommandList[] presenterCommands = pool.Rent(commandLists.Length);
         ReadOnlySpan<GorgonCommandList> finalCommandList = default;
-        Lock.Scope scope = new();
 
         try
         {
-            scope = _submitLock.EnterScope();
-
             for (int i = 0; i < commandLists.Length; ++i)
             {
                 GorgonCommandList list = commandLists[i];
@@ -810,13 +644,13 @@ public unsafe sealed class GorgonGraphics
                     continue;
                 }
 
-                if (list.Queue != GraphicsQueue)
+                if (list.Queue != Queues.GraphicsQueue)
                 {
                     Log.PrintWarning($"The command list '{list.Name}' at index {i} is not from the same queue. It will be skipped. Only submit multple command lists that are on the same queue.", LoggingLevel.Intermediate);
                     continue;
                 }
 
-                GraphicsQueue.Tracker.TrackResource(list.D3DGraphicsCommandList);
+                Queues.GraphicsQueue.Tracker.TrackResource(list.D3DGraphicsCommandList);
                 list.Close();
 
                 if (list.Presenters.Count > 0)
@@ -825,7 +659,6 @@ public unsafe sealed class GorgonGraphics
                 }
 
                 commands[commandCount++] = list;
-                _submittedLists.Add(list);
             }
 
             if (commandCount == 0)
@@ -835,7 +668,7 @@ public unsafe sealed class GorgonGraphics
             }
 
             finalCommandList = commands.AsSpan(0, commandCount);
-            GraphicsQueue.Execute(finalCommandList);
+            Queues.GraphicsQueue.Execute(finalCommandList, true);
 
             for (int i = 0; i < presenterCount; ++i)
             {
@@ -848,13 +681,12 @@ public unsafe sealed class GorgonGraphics
             {
                 for (int i = 0; i < finalCommandList.Length; ++i)
                 {
-                    GraphicsQueue.ListPool.Return(finalCommandList[i]);
+                    Queues.GraphicsQueue.ListPool.Return(finalCommandList[i]);
                 }
             }
 
             pool.Return(presenterCommands, true);
             pool.Return(commands, true);
-            scope.Dispose();
         }
     }
 
@@ -913,6 +745,49 @@ public unsafe sealed class GorgonGraphics
         return result;
     }
 
+    /// <summary>
+    /// Function to dump memory statistics to the debug output.
+    /// </summary>
+    /// <param name="allocator">The D3D12MA allocator pointer.</param>
+    private void DumpMemoryStats(ref readonly ComPtr<D3D12MA_Allocator> allocator)
+    {
+        D3D12MA_Budget local = default;
+        D3D12MA_Budget nonLocal = default;
+        D3D12MA_TotalStatistics stats = default;
+
+        if (allocator.IsNull)
+        {
+            Debug.WriteLine("Memory allocator has been disposed. No stats available.");
+            return;
+        }
+
+        allocator.Get()->GetBudget(&local, &nonLocal);
+        allocator.Get()->CalculateStatistics(&stats);
+
+        Debug.WriteLine("Memory Data:");
+        Debug.WriteLine("=======================================================================================================");
+
+        Debug.WriteLine("Local (VRAM):");
+        Debug.WriteLine($"   Budget: {local.BudgetBytes.FormatMemory()}");
+        Debug.WriteLine($"   Used: {local.UsageBytes.FormatMemory()}");
+        Debug.WriteLine($"   Free: {(local.BudgetBytes - local.UsageBytes).FormatMemory()}\n");
+
+        Debug.WriteLine("Non-Local (System):");
+        Debug.WriteLine($"   Budget: {nonLocal.BudgetBytes.FormatMemory()}");
+        Debug.WriteLine($"   Used: {nonLocal.UsageBytes.FormatMemory()}");
+        Debug.WriteLine($"   Free: {(nonLocal.BudgetBytes - nonLocal.UsageBytes).FormatMemory()}\n");
+
+        Debug.WriteLine($"In use by resources: {stats.Total.Stats.AllocationBytes.FormatMemory()} ({stats.Total.Stats.AllocationCount} objects)");
+        Debug.WriteLine($"Reserved from OS: {stats.Total.Stats.BlockBytes.FormatMemory()}");
+        Debug.WriteLine($"Available in pools: {(stats.Total.Stats.BlockBytes - stats.Total.Stats.AllocationBytes).FormatMemory()}");
+        Debug.WriteLine($"Largest contiguous free: {stats.Total.UnusedRangeSizeMax.FormatMemory()}");
+    }
+
+    /// <summary>
+    /// Function to dump memory statistics to the debug output.
+    /// </summary>
+    internal void ReportMemory() => DumpMemoryStats(in Memory.Allocator);
+
     /// <inheritdoc/>
     public void Dispose()
     {
@@ -926,19 +801,6 @@ public unsafe sealed class GorgonGraphics
         Log.Print("Shutting down graphics interface...", LoggingLevel.Simple);
 
         Dispose(true);
-
-        Log.Print($"Destroying {nameof(D3D12MA_Allocator)}...", LoggingLevel.Verbose);
-
-        if (IsInDebugMode)
-        {
-            Log.Print($"[DEBUG] Destroying {nameof(ID3D12InfoQueue1)}...", LoggingLevel.Verbose);
-        }
-
-        Log.Print($"Destroying {nameof(ID3D12Device14)}...", LoggingLevel.Verbose);
-        Log.Print($"Destroying {nameof(IDXGIAdapter4)}, and {nameof(IDXGIFactory7)}...", LoggingLevel.Verbose);
-
-        // Finally, tell us if we've any objects left over.
-        _debug?.Report();
 
         GC.SuppressFinalize(this);
     }
@@ -1027,9 +889,9 @@ public unsafe sealed class GorgonGraphics
     /// <param name="timeout">[Optional] The number of milliseconds to wait before continuing.</param>
     public void WaitForGpu(int timeout = Timeout.Infinite) 
     {
-        GraphicsQueue.WaitForGpu(timeout);
-        ComputeQueue.WaitForGpu(timeout);
-        CopyQueue.WaitForGpu(timeout); 
+        Queues.GraphicsQueue.WaitForGpu(timeout);
+        Queues.ComputeQueue.WaitForGpu(timeout);
+        Queues.CopyQueue.WaitForGpu(timeout); 
     }
 
     /// <summary>
@@ -1058,8 +920,8 @@ public unsafe sealed class GorgonGraphics
     {
         commandListName = GorgonGraphicsFactory.GenerateName(commandListName ?? string.Empty, nameof(GorgonCommandList));
 
-        CommandAllocator allocator = GraphicsQueue.AllocatorPool.Get(commandListName);
-        GorgonCommandList list = GraphicsQueue.ListPool.Get(commandListName, allocator);
+        CommandAllocator allocator = Queues.GraphicsQueue.AllocatorPool.Get(commandListName);
+        GorgonCommandList list = Queues.GraphicsQueue.ListPool.Get(commandListName, allocator);
 
         list.BeginRecording(_currentFrame, in _rootSignature);
 
@@ -1127,9 +989,9 @@ public unsafe sealed class GorgonGraphics
     /// <seealso cref="GorgonResourceCopier"/>
     public void WaitForCopy()
     {
-        ulong copyQueueFence = CopyQueue.FenceValue;
-        GraphicsQueue.D3DQueue.Get()->Wait((PID3D12Fence1)CopyQueue.D3DFence.Get(), copyQueueFence)
-            .ThrowIfFailed(GorgonResult.CannotExecute, () => string.Format(Resources.GORGFX_ERR_WAIT_FAILED, nameof(GraphicsQueue), nameof(CopyQueue)));
+        ulong copyQueueFence = Queues.CopyQueue.FenceValue;
+        Queues.GraphicsQueue.D3DQueue.Get()->Wait((PID3D12Fence1)Queues.CopyQueue.D3DFence.Get(), copyQueueFence)
+            .ThrowIfFailed(GorgonResult.CannotExecute, () => string.Format(Resources.GORGFX_ERR_WAIT_FAILED, nameof(Queues.GraphicsQueue), nameof(Queues.CopyQueue)));
     }
 
     /// <summary>
@@ -1159,9 +1021,9 @@ public unsafe sealed class GorgonGraphics
     /// <seealso cref="GorgonComputeEngine"/>
     public void WaitForCompute()
     {
-        ulong computeQueueFence = ComputeQueue.FenceValue;
-        GraphicsQueue.D3DQueue.Get()->Wait((PID3D12Fence1)ComputeQueue.D3DFence.Get(), computeQueueFence)
-            .ThrowIfFailed(GorgonResult.CannotExecute, () => string.Format(Resources.GORGFX_ERR_WAIT_FAILED, nameof(GraphicsQueue), nameof(ComputeQueue)));
+        ulong computeQueueFence = Queues.ComputeQueue.FenceValue;
+        Queues.GraphicsQueue.D3DQueue.Get()->Wait((PID3D12Fence1)Queues.ComputeQueue.D3DFence.Get(), computeQueueFence)
+            .ThrowIfFailed(GorgonResult.CannotExecute, () => string.Format(Resources.GORGFX_ERR_WAIT_FAILED, nameof(Queues.GraphicsQueue), nameof(Queues.ComputeQueue)));
     }
 
     /// <summary>
@@ -1186,15 +1048,9 @@ public unsafe sealed class GorgonGraphics
     {
         WaitForGpu(WaitFenceTimeout);
 
-        CopyQueue.GarbageCollect();
-        ComputeQueue.GarbageCollect();
-        GraphicsQueue.GarbageCollect();
-
-        MegaBuffer.GarbageCollect();
-        UploadHeaps.GarbageCollect();
-        DownloadHeaps.GarbageCollect();
-        RtvDescriptors.GarbageCollect();
-        DsvDescriptors.GarbageCollect();
+        Queues.GarbageCollect();
+        Memory.GarbageCollect();
+        Descriptors.GarbageCollect();
 
         if (!forceDotNetGc)
         {
@@ -1241,27 +1097,25 @@ public unsafe sealed class GorgonGraphics
             _d3dInfoQueue = CreateDebugInfoQueue();
         }
 
-        _allocator = BuildAllocator(adapter.Name, _dxgiAdapter, _d3dDevice);
+        ComPtr<D3D12MA_Allocator> allocator = BuildAllocator(adapter.Name, _dxgiAdapter, _d3dDevice);
 
-        MegaBuffer = new MegaBuffer(this, bufferPercent);
+        Memory = new MemoryServices(new CpuResourceHeapPool(this, false), 
+            new CpuResourceHeapPool(this, true), 
+            new MegaBufferPool(this, bufferPercent),
+            in allocator);
+
+        Descriptors = new DescriptorServices(new GpuDescriptorHeap(this, D3D12_DESCRIPTOR_HEAP_TYPE.D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER, 2_048),
+            new GpuDescriptorHeap(this, D3D12_DESCRIPTOR_HEAP_TYPE.D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 131_072),
+            new CpuDescriptorHeapPool(this, D3D12_DESCRIPTOR_HEAP_TYPE.D3D12_DESCRIPTOR_HEAP_TYPE_RTV),
+            new CpuDescriptorHeapPool(this, D3D12_DESCRIPTOR_HEAP_TYPE.D3D12_DESCRIPTOR_HEAP_TYPE_DSV));
+
+        Queues = new QueueServices(new CommandQueue(this, D3D12_COMMAND_LIST_TYPE.D3D12_COMMAND_LIST_TYPE_DIRECT),
+            new CommandQueue(this, D3D12_COMMAND_LIST_TYPE.D3D12_COMMAND_LIST_TYPE_COPY),
+            new CommandQueue(this, D3D12_COMMAND_LIST_TYPE.D3D12_COMMAND_LIST_TYPE_COMPUTE));
+
+        SamplerStates = new SamplerStates(this);
 
         EnumerateBufferFormatSupport();
-
-        GraphicsQueue = new CommandQueue(this, D3D12_COMMAND_LIST_TYPE.D3D12_COMMAND_LIST_TYPE_DIRECT);
-        ComputeQueue = new CommandQueue(this, D3D12_COMMAND_LIST_TYPE.D3D12_COMMAND_LIST_TYPE_COMPUTE);
-        CopyQueue = new CommandQueue(this, D3D12_COMMAND_LIST_TYPE.D3D12_COMMAND_LIST_TYPE_COPY);
-
-        UploadHeaps = new CpuResourceHeapPool(this, false);
-        DownloadHeaps = new CpuResourceHeapPool(this, true);
-
-        GpuViewDescriptors = new GpuDescriptorHeap(this, D3D12_DESCRIPTOR_HEAP_TYPE.D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 131_072);
-        GpuSamplerDescriptors = new GpuDescriptorHeap(this, D3D12_DESCRIPTOR_HEAP_TYPE.D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER, 2_048);
-        
-        RtvDescriptors = new CpuDescriptorHeapPool(this, D3D12_DESCRIPTOR_HEAP_TYPE.D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-        DsvDescriptors = new CpuDescriptorHeapPool(this, D3D12_DESCRIPTOR_HEAP_TYPE.D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
-
         _rootSignature = CreateRootSignature();
-
-        GlobalCopier = new GorgonResourceCopier(GraphicsQueue);
     }
 }

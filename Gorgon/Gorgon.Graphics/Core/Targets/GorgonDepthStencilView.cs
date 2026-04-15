@@ -71,6 +71,7 @@ public unsafe sealed class GorgonDepthStencilView
     : GorgonResourceView
 {
     private CpuDescriptorAllocation _allocation = CpuDescriptorAllocation.Null;
+    private readonly CpuDescriptorHeapPool _descriptors;
 
     /// <summary>
     /// Property to return the format of view data.
@@ -204,7 +205,7 @@ public unsafe sealed class GorgonDepthStencilView
         GetTexture2DInfo(ref desc, hasMultiSample, hasArrays);
 
         Graphics.Log.Print($"Allocating CPU handle for '{Name}'.", LoggingLevel.Verbose);
-        Graphics.RtvDescriptors.Allocate(1, out _allocation);
+        _descriptors.Allocate(1, out _allocation);
         Graphics.D3DDevice.Get()->CreateDepthStencilView((PID3D12Resource2)Resource.D3DResource.Get(), &desc, _allocation.CpuHandle);
 
         D3DCpuHandle = _allocation.CpuHandle;
@@ -357,6 +358,8 @@ public unsafe sealed class GorgonDepthStencilView
     internal GorgonDepthStencilView(GorgonGraphics graphics, string name, GorgonTexture texture, GorgonFormatInfo viewFormatInfo, DepthStencilViewAccess access, short mipLevel, short arrayIndex, short arrayCount, bool owned)
         : base(graphics, $"{GorgonGraphicsFactory.GenerateName(name, nameof(GorgonDepthStencilView))} - Depth Stencil View", texture, owned)
     {
+        _descriptors = graphics.Descriptors.DsvDescriptors;
+
         Texture = texture;
         Format = viewFormatInfo.Format;
         FormatInfo = viewFormatInfo;

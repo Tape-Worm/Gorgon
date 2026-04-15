@@ -147,7 +147,7 @@ public abstract unsafe class GorgonGpuResource
     {
         get
         {
-            if (D3DResource.Get() == Graphics.MegaBuffer.D3DBuffer.Get())
+            if (IsMegaBufferResource)
             {
                 return 0;
             }
@@ -155,6 +155,14 @@ public abstract unsafe class GorgonGpuResource
             Debug.Assert(_resHandle != 0, "Resource ID handle is 0, this is a reserved value.");
             return _resHandle;
         }
+    }
+
+    /// <summary>
+    /// Property to return whether this resource is allocated on the mega buffer or not.
+    /// </summary>
+    internal abstract bool IsMegaBufferResource
+    {
+        get;
     }
 
     /// <summary>

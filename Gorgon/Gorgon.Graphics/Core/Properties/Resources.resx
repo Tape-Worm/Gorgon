@@ -453,4 +453,13 @@ Error data: {0}</value>
   <data name="GORGFX_ERR_TEXTURE_DSV_FORMAT_MISMATCH" xml:space="preserve">
     <value>The texture '{0}' has a format of {1}. The view has a format of {2}, and the texture format needs to be {3}.</value>
   </data>
+  <data name="GORGFX_ERR_MEMORY_ALLOCATION" xml:space="preserve">
+    <value>There was an error allocating memory for the heap.</value>
+  </data>
+  <data name="GORGFX_ERR_QUEUE_MISMATCH" xml:space="preserve">
+    <value>The command list '{0}' was not created for this queue.</value>
+  </data>
+  <data name="GORGFX_ERR_MIP_LOD_MIN_LARGER_THAN_MAX" xml:space="preserve">
+    <value>The minimum LOD value {0} is larger than the maximum LOD value {1}.</value>
+  </data>
 </root>

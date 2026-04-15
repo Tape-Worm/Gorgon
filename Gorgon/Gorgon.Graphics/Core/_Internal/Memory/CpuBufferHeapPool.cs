@@ -96,9 +96,9 @@ internal unsafe sealed class CpuResourceHeapPool(GorgonGraphics graphics, bool i
             return;
         }
 
-        ulong gfxCompleted = Graphics.GraphicsQueue.D3DFence.Get()->GetCompletedValue();
-        ulong computeCompleted = Graphics.ComputeQueue.D3DFence.Get()->GetCompletedValue();
-        ulong copyCompleted = Graphics.CopyQueue.D3DFence.Get()->GetCompletedValue();
+        ulong gfxCompleted = Graphics.Queues.GraphicsQueue.D3DFence.Get()->GetCompletedValue();
+        ulong computeCompleted = Graphics.Queues.ComputeQueue.D3DFence.Get()->GetCompletedValue();
+        ulong copyCompleted = Graphics.Queues.CopyQueue.D3DFence.Get()->GetCompletedValue();
 
         while(_inUse.TryPeek(out CpuBufferHeap? heap))
         {
@@ -214,9 +214,9 @@ internal unsafe sealed class CpuResourceHeapPool(GorgonGraphics graphics, bool i
                     continue;
                 }
 
-                heap.GfxFence = Graphics.GraphicsQueue.FenceValue;
-                heap.ComputeFence = Graphics.ComputeQueue.FenceValue;
-                heap.CopyFence = Graphics.CopyQueue.FenceValue;
+                heap.GfxFence = Graphics.Queues.GraphicsQueue.FenceValue;
+                heap.ComputeFence = Graphics.Queues.ComputeQueue.FenceValue;
+                heap.CopyFence = Graphics.Queues.CopyQueue.FenceValue;
 
                 _inUse.Enqueue(heap);
             }

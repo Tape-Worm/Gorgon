@@ -78,7 +78,7 @@ public sealed class GorgonStructuredBufferView
     /// <param name="name">The name of the buffer.</param>
     /// <param name="structSize">The size, in bytes, of a single element in the view.</param>
     /// <param name="bufferSize">The total size of the buffer.</param>
-    /// <param name="resourceOffset"><inheritdoc cref="GorgonConstantBufferView.ValidateConstantView(string, int, long, ulong)" path="/param[@name='resourceOffset']"/></param>
+    /// <param name="resourceOffset"><inheritdoc cref="GorgonConstantBufferView.ValidateConstantView(string, int, ulong, ulong)" path="/param[@name='resourceOffset']"/></param>
     /// <exception cref="ArgumentOutOfRangeException">Thrown if the <paramref name="structSize"/> is less than the <see cref="MinimumElementSize"/> (4 bytes).</exception>
     /// <exception cref="GorgonException"><para>Thrown if the <paramref name="structSize"/> is not a multiple of the <see cref="MinimumElementSize"/> (4 bytes).</para>
     /// <para>Thrown if the size of the buffer is less than the <see cref="MinimumElementSize"/> (4 bytes).</para>

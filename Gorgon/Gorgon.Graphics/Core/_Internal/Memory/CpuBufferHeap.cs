@@ -244,12 +244,12 @@ internal sealed unsafe class CpuBufferHeap
 
         Pool.Graphics.Log.Print($"Creating {nameof(ID3D12Resource2)} '{Name}'...", LoggingLevel.Verbose);
 
-        Pool.Graphics.Allocator.Get()->CreateResource3(&heapDesc, &desc, D3D12_BARRIER_LAYOUT.D3D12_BARRIER_LAYOUT_UNDEFINED, 
+        Pool.Graphics.Memory.Allocator.Get()->CreateResource3(&heapDesc, &desc, D3D12_BARRIER_LAYOUT.D3D12_BARRIER_LAYOUT_UNDEFINED, 
             null, 0, null, 
             heapAllocation.GetAddressOf(), Win32.__uuidof<ID3D12Resource2>(), (void**)resource.GetAddressOf())
                 .ThrowIfFailed(GorgonResult.CannotCreate, () => string.Format(Resources.GORGFX_ERR_CANNOT_CREATE_HEAP, Name));
 
-        resource.SetD3DDebugName($"Gorgon D3D12 Resource {Name}");
+        resource.SetD3DDebugName($"Gorgon D3D12 Resource {Name}");        
 
         GpuAddress = resource.Get()->GetGPUVirtualAddress();
         

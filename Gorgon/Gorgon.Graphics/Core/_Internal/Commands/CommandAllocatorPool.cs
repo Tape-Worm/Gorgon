@@ -75,7 +75,7 @@ internal unsafe sealed class CommandAllocatorPool(CommandQueue queue)
     }
 
     /// <summary>
-    /// Funciton to retire allocators back into the unused pool.
+    /// Function to retire allocators back into the unused pool.
     /// </summary>
     private void Release()
     {

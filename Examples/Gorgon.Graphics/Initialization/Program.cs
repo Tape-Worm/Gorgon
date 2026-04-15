@@ -160,7 +160,7 @@ internal static class Program
 
         // Command lists use a fluent interface to allow us to chain multiple commands together at once.
 
-                    // This tells the command list that we want to present the back buffer to the screen at the end of the execution of the command list.
+                   // This tells the command list that we want to present the back buffer to the screen at the end of the execution of the command list.
         commandList.AddPresenter(_swap)
                    // This clears our swap chain to the colour, using the region, we asked for.
                    .ClearSwapChain(_swap, _clearColor, regions);

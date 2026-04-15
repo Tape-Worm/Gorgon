@@ -645,11 +645,29 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There was an error allocating memory for the heap..
+        /// </summary>
+        internal static string GORGFX_ERR_MEMORY_ALLOCATION {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_MEMORY_ALLOCATION", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The format {0} does not support mip map levels..
         /// </summary>
         internal static string GORGFX_ERR_MIP_FORMAT_INVALID {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_MIP_FORMAT_INVALID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The minimum LOD value {0} is larger than the maximum LOD value {1}..
+        /// </summary>
+        internal static string GORGFX_ERR_MIP_LOD_MIN_LARGER_THAN_MAX {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_MIP_LOD_MIN_LARGER_THAN_MAX", resourceCulture);
             }
         }
         
@@ -695,6 +713,15 @@ namespace Gorgon.Graphics.Core.Properties {
         internal static string GORGFX_ERR_NO_SUITABLE_ADAPTER {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_NO_SUITABLE_ADAPTER", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The command list &apos;{0}&apos; was not created for this queue..
+        /// </summary>
+        internal static string GORGFX_ERR_QUEUE_MISMATCH {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_QUEUE_MISMATCH", resourceCulture);
             }
         }
         

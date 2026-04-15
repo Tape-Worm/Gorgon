@@ -82,7 +82,7 @@ internal unsafe class BarrierManager(GorgonGraphics graphics)
     private readonly Dictionary<ulong, GorgonTextureBarrier> _pendingTextures = [];
     private readonly Dictionary<ulong, List<GorgonSubResourceRange>> _currentSubResources = [];
     private readonly Dictionary<ulong, List<GorgonSubResourceRange>> _pendingSubResources = [];
-    private readonly GlobalBarrierState _globalState = graphics.GlobalBarriers;
+    private readonly GlobalBarrierState _globalState = graphics.Queues.GlobalBarriers;
 
     /// <summary>
     /// Property to return whether there are any pending barriers.
@@ -176,7 +176,7 @@ internal unsafe class BarrierManager(GorgonGraphics graphics)
     /// </summary>
     /// <param name="texture">The texture used to determine limits.</param>
     /// <param name="requestedRange">The request range.</param>    
-    private static void ConstrainSubResource(GorgonTexture texture, ref GorgonSubResourceRange requestedRange)
+    private static void ConstrainSubResource(GorgonTextureCommon texture, ref GorgonSubResourceRange requestedRange)
     {
         byte formatPlaneCount = texture.Graphics.FormatSupport[texture.Format].PlaneCount;
 
@@ -219,7 +219,7 @@ internal unsafe class BarrierManager(GorgonGraphics graphics)
     private BarrierLayout CheckQueueBeforeLayoutState(CommandQueue currentQueue, BarrierAccess pendingAccess, BarrierLayout layout)
     {
         // TODO: Replace these with transitions to the appropriate states on the source queue.
-        if (currentQueue == _graphics.CopyQueue)
+        if (currentQueue == _graphics.Queues.CopyQueue)
         {
             // For the copy queue, any destination is not meant to be preserved, so we don't care about its previous layout, and will 
             // discard anyway.
@@ -230,13 +230,13 @@ internal unsafe class BarrierManager(GorgonGraphics graphics)
             Debug.Assert(layout is BarrierLayout.Common or BarrierLayout.None, $"The before layout {layout} is not supported by the copy queue.");
         }
 
-        if (currentQueue == _graphics.ComputeQueue)
+        if (currentQueue == _graphics.Queues.ComputeQueue)
         {
             Debug.Assert(layout is BarrierLayout.None or BarrierLayout.Common or BarrierLayout.GenericRead or BarrierLayout.ReadWrite or BarrierLayout.ShaderResource
                                                    or BarrierLayout.CopySource or BarrierLayout.CopyDestination or BarrierLayout.ComputeCommon or BarrierLayout.ComputeGenericRead 
                                                    or BarrierLayout.ComputeReadWrite or BarrierLayout.ComputeShaderResource or BarrierLayout.ComputeCopySource 
-                                                   or BarrierLayout.ComputeCopyDestination or BarrierLayout.GraphicsQueueGenericReadFromCompute
-                , $"The before layout {layout} is not supported by the compute queue.");
+                                                   or BarrierLayout.ComputeCopyDestination or BarrierLayout.GraphicsQueueGenericReadFromCompute, 
+                                                   $"The before layout {layout} is not supported by the compute queue.");
         }        
 
         return layout;
@@ -252,7 +252,7 @@ internal unsafe class BarrierManager(GorgonGraphics graphics)
     private (BarrierSync sync, BarrierAccess access) CheckQueueBeforeState(CommandQueue currentQueue, BarrierSync sync, BarrierAccess access)
     {
         // Check for legal copy queue values.        
-        if (currentQueue == _graphics.CopyQueue)
+        if (currentQueue == _graphics.Queues.CopyQueue)
         {
             if (((sync & ~LegalCopySyncMask) != 0) || ((access & ~LegalCopyAccessMask) != 0))
             {
@@ -262,7 +262,7 @@ internal unsafe class BarrierManager(GorgonGraphics graphics)
         }
 
         // Check for legal compute queue values.
-        if (currentQueue == _graphics.ComputeQueue)
+        if (currentQueue == _graphics.Queues.ComputeQueue)
         {
             if (((sync & ~LegalComputeSyncMask) != 0) || ((access & ~LegalComputeAccessMask) != 0))
             {
@@ -417,7 +417,7 @@ internal unsafe class BarrierManager(GorgonGraphics graphics)
     /// <param name="subResourceRange">[Optional] The subresources on the texture to apply the barrier to.</param>
     /// <param name="discard">[Optional] <b>true</b> to discard the resource content, <b>false</b> to leave as-is.</param>
     /// <returns><b>true</b> if a barrier was created, <b>false</b> if not.</returns>
-    public bool AddBarrier(GorgonTexture texture, BarrierSync sync, BarrierAccess access, BarrierLayout layout, GorgonSubResourceRange? subResourceRange = null, bool discard = false)
+    public bool AddBarrier(GorgonTextureCommon texture, BarrierSync sync, BarrierAccess access, BarrierLayout layout, GorgonSubResourceRange? subResourceRange = null, bool discard = false)
     {
         GorgonTextureBarrier newBarrier = new(texture, sync, access, layout)
         {

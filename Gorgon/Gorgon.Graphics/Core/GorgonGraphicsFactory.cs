@@ -448,7 +448,7 @@ public unsafe sealed class GorgonGraphicsFactory
     /// </para>
     /// <para>
     /// If the <paramref name="vramReservedPercent"/> is specified, it allows users to specify how much VRAM can be used to store buffers for use as bindless data. The default value is 13%. The maximum 
-    /// amount of VRAM that will be reserved is 4GB, and the minimum is 256 MB. This value is may change depending on the amount of VRAM available for the application.
+    /// amount of VRAM that will be reserved is 2GB, and the minimum is 256 MB. This value is may change depending on the amount of VRAM available for the application.
     /// <note type="important">
     /// This feature is meant for advanced usage and should only be used if memory constraints cause an issue with buffer usage/storage. Do not change this without a very good reason for doing so.
     /// </note>

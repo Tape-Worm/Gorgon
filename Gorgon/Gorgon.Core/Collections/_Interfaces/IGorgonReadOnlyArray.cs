@@ -147,13 +147,13 @@ public interface IGorgonReadOnlyArray<T>
     (int StartingIndex, int Count) GetDirtyStartIndexAndCount(bool keepDirtyState = false);
 
     /// <summary>
-    /// Funciton to retrieve an enumerable that will iterate through dirty items only.
+    /// Function to retrieve an enumerable that will iterate through dirty items only.
     /// </summary>
     /// <returns>The enumerable.</returns>
     IEnumerable<T> SelectDirty();
 
     /// <summary>
-    /// Funciton to retrieve an enumerable that will iterate through clean items only.
+    /// Function to retrieve an enumerable that will iterate through clean items only.
     /// </summary>
     /// <returns>The enumerable.</returns>
     IEnumerable<T> SelectClean();

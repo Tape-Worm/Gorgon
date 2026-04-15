@@ -183,7 +183,7 @@ internal unsafe class GpuDescriptorHeap
                 return;
             }
 
-            _freedAllocations.Enqueue((_graphics.GraphicsQueue.FenceValue, _graphics.ComputeQueue.FenceValue, allocation));
+            _freedAllocations.Enqueue((_graphics.Queues.GraphicsQueue.FenceValue, _graphics.Queues.ComputeQueue.FenceValue, allocation));
 
             allocation = GpuDescriptorAllocation.Null;
         }
@@ -201,8 +201,8 @@ internal unsafe class GpuDescriptorHeap
                 return;
             }
 
-            ulong gfxCompleted = _graphics.GraphicsQueue.D3DFence.Get()->GetCompletedValue();
-            ulong computeCompleted = _graphics.ComputeQueue.D3DFence.Get()->GetCompletedValue();
+            ulong gfxCompleted = _graphics.Queues.GraphicsQueue.D3DFence.Get()->GetCompletedValue();
+            ulong computeCompleted = _graphics.Queues.ComputeQueue.D3DFence.Get()->GetCompletedValue();
 
             while (_freedAllocations.TryPeek(out (ulong GfxFence, ulong ComputeFence, GpuDescriptorAllocation Allocation) item))
             {

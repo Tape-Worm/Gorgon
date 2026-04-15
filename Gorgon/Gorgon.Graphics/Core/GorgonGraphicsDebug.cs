@@ -57,6 +57,14 @@ public unsafe sealed class GorgonGraphicsDebug
         _dxgiDebug.Get()->ReportLiveObjects(DXGI.DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_FLAGS.DXGI_DEBUG_RLO_DETAIL | DXGI_DEBUG_RLO_FLAGS.DXGI_DEBUG_RLO_IGNORE_INTERNAL);
     }
 
+#pragma warning disable CA1822 // Mark members as static
+    /// <summary>
+    /// Function to report memory allocation statistics for Gorgon.
+    /// </summary>
+    /// <param name="graphics">The graphics interface to retrieve the statistics from.</param>
+    public void GetMemoryStatistics(GorgonGraphics graphics) => graphics?.ReportMemory();
+#pragma warning restore CA1822 // Mark members as static
+
     /// <summary>
     /// Function to retrieve information from the Device Removed Extended Data system after a device removal event.
     /// </summary>

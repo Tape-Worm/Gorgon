@@ -33,9 +33,9 @@ namespace Gorgon.Graphics.Core;
 /// </summary>
 /// <remarks>
 /// <para>
-/// This interface performs copies to a <see cref="GorgonGpuBuffer"/> or <see cref="GorgonTexture"/> by scheduling an upload of one or more write operations on the GPU copy queue. When a write is performed, a 
-/// temporary buffer is allocated and the application data is copied into that buffer. When the application calls the <see cref="End"/> (or <see cref="EndAsync"/>) method, then that temporary buffer is 
-/// uploaded into the buffer resource on the GPU. After this, the temporary buffer is freed.
+/// This interface performs copies to a <see cref="GorgonGpuBuffer"/>, <see cref="GorgonTexture"/> or <see cref="GorgonVirtualTexture"/> by scheduling an upload of one or more write operations on the GPU 
+/// copy queue. When a write is performed, a temporary buffer is allocated and the application data is copied into that buffer. When the application calls the <see cref="End"/> (or <see cref="EndAsync"/>) 
+/// method, then that temporary buffer is uploaded into the buffer resource on the GPU. After this, the temporary buffer is freed.
 /// </para>
 /// <para>
 /// When the copy to the GPU buffer resource is performed, the object will stall the CPU (this can be awaited using the <see cref="EndAsync"/> method) until the GPU is finished with its upload. Because of 
@@ -45,6 +45,7 @@ namespace Gorgon.Graphics.Core;
 /// <seealso cref="GorgonGpuResource"/>
 /// <seealso cref="GorgonGpuBuffer"/>
 /// <seealso cref="GorgonTexture"/>
+/// <seealso cref="GorgonVirtualTexture"/>
 public interface IGorgonResourceWriter
     : IGorgonCopyMethodsFluent<IGorgonResourceWriter>
 {

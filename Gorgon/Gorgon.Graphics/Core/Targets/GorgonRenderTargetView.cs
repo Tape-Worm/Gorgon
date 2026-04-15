@@ -51,6 +51,7 @@ public unsafe sealed class GorgonRenderTargetView
     : GorgonResourceView
 {
     private CpuDescriptorAllocation _allocation = CpuDescriptorAllocation.Null;
+    private readonly CpuDescriptorHeapPool _descriptors;
 
     /// <summary>
     /// Property to return the format of view data.
@@ -291,7 +292,7 @@ public unsafe sealed class GorgonRenderTargetView
         }
 
         Graphics.Log.Print($"Allocating CPU handle for '{Name}'.", LoggingLevel.Verbose);
-        Graphics.RtvDescriptors.Allocate(1, out _allocation);
+        _descriptors.Allocate(1, out _allocation);
         Graphics.D3DDevice.Get()->CreateRenderTargetView((PID3D12Resource2)Resource.D3DResource.Get(), &desc, _allocation.CpuHandle);
 
         D3DCpuHandle = _allocation.CpuHandle;
@@ -426,6 +427,8 @@ public unsafe sealed class GorgonRenderTargetView
     internal GorgonRenderTargetView(GorgonGraphics graphics, string name, GorgonTexture texture, GorgonFormatInfo formatInfo, short mipLevel, short firstArrayOrDepth, short arrayOrDepthCount, byte planeIndex, bool owned)
         : base(graphics, $"{GorgonGraphicsFactory.GenerateName(name, nameof(GorgonRenderTargetView))} - Render Target View", texture, owned)
     {
+        _descriptors = graphics.Descriptors.RtvDescriptors;
+
         Texture = texture;
         Format = formatInfo.Format;
         FormatInfo = formatInfo;
