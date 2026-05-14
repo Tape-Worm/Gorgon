@@ -49,7 +49,7 @@ public sealed class GorgonSubResourceInfoList
     /// <summary>
     /// Property to return the sub resource by its mip level, array index, and optionally, format plane.
     /// </summary>
-    public GorgonSubResourceInfo this[int mipLevel, int arrayIndex, int plane = 0] => _list[_owner?.GetSubResourceIndex(mipLevel, arrayIndex, plane) ?? 0];
+    public GorgonSubResourceInfo this[short mipLevel, short arrayIndex, byte plane = 0] => _list[_owner?.GetSubResourceIndex(mipLevel, arrayIndex, plane) ?? 0];
 
     /// <inheritdoc/>
     public int Count => _list.Count;
@@ -77,4 +77,64 @@ public sealed class GorgonSubResourceInfoList
         _owner = owner;
         _list = list;
     }    
+}
+
+/// <summary>
+/// A list of sub resource tile information data structures in a <see cref="GorgonVirtualTexture"/>.
+/// </summary>
+public sealed class GorgonSubResourceTileInfoList
+    : IReadOnlyList<GorgonSubResourceTileInfo>
+{
+    /// <summary>
+    /// An empty list.
+    /// </summary>
+    internal static readonly GorgonSubResourceTileInfoList Empty = new();
+
+    private readonly List<GorgonSubResourceTileInfo> _list = [];
+    private readonly GorgonVirtualTexture? _owner;
+
+    /// <inheritdoc/>
+    public GorgonSubResourceTileInfo this[int index] => _list[index];
+
+    /// <summary>
+    /// Property to return the sub resource by its mip level, array index, and optionally, format plane.
+    /// </summary>
+    public GorgonSubResourceTileInfo this[short mipLevel, short arrayIndex] => _list[_owner?.GetTileSubResourceIndex(mipLevel, arrayIndex) ?? 0];
+
+    /// <inheritdoc/>
+    /// <remarks>
+    /// <para>
+    /// This count is not necessarily the number of sub resources on the texture (see <see cref="GorgonTextureCommon.SubResources"/> for that). 
+    /// </para>
+    /// <para>
+    /// If multiple mip levels can fit into a single tile, then the mip information will be collapsed down into a single sub resource entry (<see cref="GorgonSubResourceTileInfo.MipCount"/>).
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="GorgonTextureCommon.SubResources"/>
+    /// <seealso cref="GorgonSubResourceTileInfo"/>
+    public int Count => _list.Count;
+
+    /// <inheritdoc/>
+    public IEnumerator<GorgonSubResourceTileInfo> GetEnumerator() => _list.GetEnumerator();
+
+    /// <inheritdoc/>
+    IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)_list).GetEnumerator();
+
+    /// <summary>
+    /// Internal constructor for empty lists.
+    /// </summary>    
+    private GorgonSubResourceTileInfoList()
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GorgonSubResourceTileInfoList"/> class.
+    /// </summary>
+    /// <param name="owner">The texture that owns the sub resource tile information.</param>
+    /// <param name="list">The list of sub resources.</param>
+    internal GorgonSubResourceTileInfoList(GorgonVirtualTexture owner, List<GorgonSubResourceTileInfo> list)
+    {
+        _owner = owner;
+        _list = list;
+    }
 }

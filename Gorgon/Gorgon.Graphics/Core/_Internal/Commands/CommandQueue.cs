@@ -49,6 +49,7 @@ internal sealed unsafe class CommandQueue : IDisposable
     private ulong _previousFenceValue = 0;
     private ulong _nextFenceValue = 1;
     private readonly MegaBufferPool _megaBuffer;
+    private readonly VirtualTextureTilePool _tilePool;
     private readonly ConcurrentBag<GorgonCommandList> _activeLists = [];
 
     /// <summary>
@@ -189,6 +190,19 @@ internal sealed unsafe class CommandQueue : IDisposable
         return result;
     }
 
+    /// <summary>
+    /// Function to commit any outstanding allocations to physical GPU memory prior to executing command lists.
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void CommitReservedMemory()
+    {
+        // Commit all reserved buffer memory.
+        _megaBuffer.Commit(this);
+
+        // Commit all reserved texture memory.
+        _tilePool.Commit(this);
+    }
+
     /// <inheritdoc/>
     public void Dispose()
     {
@@ -261,8 +275,7 @@ internal sealed unsafe class CommandQueue : IDisposable
                 return;
             }
 
-            // Commit all reserved buffer memory.
-            _megaBuffer.Commit(this);
+            CommitReservedMemory();
 
             ID3D12CommandList** commands = stackalloc ID3D12CommandList*[commandList.Length];
 
@@ -294,8 +307,7 @@ internal sealed unsafe class CommandQueue : IDisposable
     {
         using (_fenceLock.EnterScope())
         {
-            // Commit all reserved buffer memory.
-            _megaBuffer.Commit(this);
+            CommitReservedMemory();
 
             _activeLists.Add(commandList);
             ID3D12CommandList** commands = stackalloc ID3D12CommandList*[1]
@@ -381,6 +393,7 @@ internal sealed unsafe class CommandQueue : IDisposable
     {
         Graphics = graphics;
         _megaBuffer = Graphics.Memory.MegaBuffer;
+        _tilePool = Graphics.Memory.TextureTilePool;
         FrameFenceValue = new ulong[Graphics.InFlightFrameCount];
         Type = type;
 

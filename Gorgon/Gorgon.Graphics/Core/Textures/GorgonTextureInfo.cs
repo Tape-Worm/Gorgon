@@ -22,6 +22,7 @@
 //
 
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using Gorgon.Graphics.Imaging;
 
 namespace Gorgon.Graphics.Core;
@@ -216,16 +217,20 @@ public record class GorgonTextureInfo(TextureType Type, BufferFormat Format)
         init;
     } = GorgonMultisampleInfo.NoMultisampling;
 
+    /// <inheritdoc cref="GorgonImageInfo.GetMaximumMipCount(int, int, int)"/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static short GetMaximumMipCount(int width, int height, short depth) => (short)GorgonImageInfo.GetMaximumMipCount(width, height, depth);
+
     /// <summary>
-    /// Function to create a <see cref="IGorgonTextureInfo"/> that will build a 1D texture object.
+    /// Function to create a <see cref="GorgonTextureInfo"/> that will build a 1D texture object.
     /// </summary>
     /// <param name="format">The format of the texture data.</param>
     /// <param name="width">The width of the texture, in pixels.</param>
     /// <param name="mipCount">[Optional] The number of mip levels contained within the texture.</param>
     /// <param name="arrayCount">[Optional] The number of array indices contained within the texture.</param>
-    /// <param name="isShaderResource"><b>true</b> to use this texture as a shader resource, <b>false</b> to deny shader access.</param>
-    /// <param name="allowReadWriteAccess"><b>true</b> to use this texture as a read/write access resource, <b>false</b> to deny read/write access.</param>
-    /// <returns>A new <see cref="IGorgonTextureInfo"/>.</returns>
+    /// <param name="isShaderResource">[Optional] <b>true</b> to use this texture as a shader resource, <b>false</b> to deny shader access.</param>
+    /// <param name="allowReadWriteAccess">[Optional] <b>true</b> to use this texture as a read/write access resource, <b>false</b> to deny read/write access.</param>
+    /// <returns>A new <see cref="GorgonTextureInfo"/>.</returns>
     /// <remarks>
     /// <inheritdoc cref="GorgonGpuBuffer" path="/remarks/para[@type='uav_readwrite']"/>
     /// </remarks>
@@ -243,15 +248,15 @@ public record class GorgonTextureInfo(TextureType Type, BufferFormat Format)
     };
 
     /// <summary>
-    /// Function to create a <see cref="IGorgonTextureInfo"/> that will build a 1D texture object for render target usage.
+    /// Function to create a <see cref="GorgonTextureInfo"/> that will build a 1D texture object for render target usage.
     /// </summary>
-    /// <param name="format">The format of the texture data.</param>
-    /// <param name="width">The width of the texture, in pixels.</param>
-    /// <param name="mipCount">[Optional] The number of mip levels contained within the texture.</param>
-    /// <param name="arrayCount">[Optional] The number of array indices contained within the texture.</param>
-    /// <param name="isShaderResource"><b>true</b> to use this texture as a shader resource, <b>false</b> to deny shader access.</param>
-    /// <param name="allowReadWriteAccess"><b>true</b> to use this texture as a read/write access resource, <b>false</b> to deny read/write access.</param>
-    /// <returns>A new <see cref="IGorgonTextureInfo"/>.</returns>
+    /// <param name="format"><inheritdoc cref="Create1DTextureInfo(BufferFormat, int, short, short, bool, bool)" path="/param[@name='format']"/></param>
+    /// <param name="width"><inheritdoc cref="Create1DTextureInfo(BufferFormat, int, short, short, bool, bool)" path="/param[@name='width']"/></param>
+    /// <param name="mipCount"><inheritdoc cref="Create1DTextureInfo(BufferFormat, int, short, short, bool, bool)" path="/param[@name='mipCount']"/></param>
+    /// <param name="arrayCount"><inheritdoc cref="Create1DTextureInfo(BufferFormat, int, short, short, bool, bool)" path="/param[@name='arrayCount']"/></param>
+    /// <param name="isShaderResource"><inheritdoc cref="Create1DTextureInfo(BufferFormat, int, short, short, bool, bool)" path="/param[@name='isShaderResource']"/></param>
+    /// <param name="allowReadWriteAccess"><inheritdoc cref="Create1DTextureInfo(BufferFormat, int, short, short, bool, bool)" path="/param[@name='allowReadWriteAccess']"/></param>
+    /// <inheritdoc cref="Create1DTextureInfo(BufferFormat, int, short, short, bool, bool)" path="/returns"/>
     /// <remarks>
     /// <inheritdoc cref="GorgonGpuBuffer" path="/remarks/para[@type='uav_readwrite']"/>
     /// </remarks>
@@ -269,16 +274,16 @@ public record class GorgonTextureInfo(TextureType Type, BufferFormat Format)
     };
 
     /// <summary>
-    /// Function to create a <see cref="IGorgonTextureInfo"/> that will build a 2D texture object.
+    /// Function to create a <see cref="GorgonTextureInfo"/> that will build a 2D texture object.
     /// </summary>
-    /// <param name="format">The format of the texture data.</param>
-    /// <param name="width">The width of the texture, in pixels.</param>
+    /// <param name="format"><inheritdoc cref="Create1DTextureInfo(BufferFormat, int, short, short, bool, bool)" path="/param[@name='format']"/></param>
+    /// <param name="width"><inheritdoc cref="Create1DTextureInfo(BufferFormat, int, short, short, bool, bool)" path="/param[@name='width']"/></param>
     /// <param name="height">The height of the texture, in pixels.</param>
-    /// <param name="mipCount">[Optional] The number of mip levels contained within the texture.</param>
-    /// <param name="arrayCount">[Optional] The number of array indices contained within the texture.</param>
-    /// <param name="isShaderResource"><b>true</b> to use this texture as a shader resource, <b>false</b> to deny shader access.</param>
-    /// <param name="allowReadWriteAccess"><b>true</b> to use this texture as a read/write access resource, <b>false</b> to deny read/write access.</param>
-    /// <returns>A new <see cref="IGorgonTextureInfo"/>.</returns>
+    /// <param name="mipCount"><inheritdoc cref="Create1DTextureInfo(BufferFormat, int, short, short, bool, bool)" path="/param[@name='mipCount']"/></param>
+    /// <param name="arrayCount"><inheritdoc cref="Create1DTextureInfo(BufferFormat, int, short, short, bool, bool)" path="/param[@name='arrayCount']"/></param>
+    /// <param name="isShaderResource"><inheritdoc cref="Create1DTextureInfo(BufferFormat, int, short, short, bool, bool)" path="/param[@name='isShaderResource']"/></param>
+    /// <param name="allowReadWriteAccess"><inheritdoc cref="Create1DTextureInfo(BufferFormat, int, short, short, bool, bool)" path="/param[@name='allowReadWriteAccess']"/></param>
+    /// <inheritdoc cref="Create1DTextureInfo(BufferFormat, int, short, short, bool, bool)" path="/returns"/>
     /// <remarks>
     /// <inheritdoc cref="GorgonGpuBuffer" path="/remarks/para[@type='uav_readwrite']"/>
     /// </remarks>
@@ -296,16 +301,16 @@ public record class GorgonTextureInfo(TextureType Type, BufferFormat Format)
     };
 
     /// <summary>
-    /// Function to create a <see cref="IGorgonTextureInfo"/> that will build a texture cube object.
+    /// Function to create a <see cref="GorgonTextureInfo"/> that will build a texture cube object.
     /// </summary>
-    /// <param name="format">The format of the texture data.</param>
-    /// <param name="width">The width of the texture, in pixels.</param>
-    /// <param name="height">The height of the texture, in pixels.</param>
+    /// <param name="format"><inheritdoc cref="Create1DTextureInfo(BufferFormat, int, short, short, bool, bool)" path="/param[@name='format']"/></param>
+    /// <param name="width"><inheritdoc cref="Create1DTextureInfo(BufferFormat, int, short, short, bool, bool)" path="/param[@name='width']"/></param>
+    /// <param name="height"><inheritdoc cref="Create2DTextureInfo(BufferFormat, int, int, short, short, bool, bool)" path="/param[@name='height']"/></param>
     /// <param name="cubeCount">The number of cubes contained within the texture.</param>
-    /// <param name="mipCount">[Optional] The number of mip levels contained within the texture.</param>
-    /// <param name="isShaderResource"><b>true</b> to use this texture as a shader resource, <b>false</b> to deny shader access.</param>
-    /// <param name="allowReadWriteAccess"><b>true</b> to use this texture as a read/write resource, <b>false</b> to deny read/write access.</param>
-    /// <returns>A new <see cref="IGorgonTextureInfo"/>.</returns>
+    /// <param name="mipCount"><inheritdoc cref="Create1DTextureInfo(BufferFormat, int, short, short, bool, bool)" path="/param[@name='mipCount']"/></param>
+    /// <param name="isShaderResource"><inheritdoc cref="Create1DTextureInfo(BufferFormat, int, short, short, bool, bool)" path="/param[@name='isShaderResource']"/></param>
+    /// <param name="allowReadWriteAccess"><inheritdoc cref="Create1DTextureInfo(BufferFormat, int, short, short, bool, bool)" path="/param[@name='allowReadWriteAccess']"/></param>
+    /// <inheritdoc cref="Create1DTextureInfo(BufferFormat, int, short, short, bool, bool)" path="/returns"/>
     /// <remarks>
     /// <inheritdoc cref="GorgonGpuBuffer" path="/remarks/para[@type='uav_readwrite']"/>
     /// </remarks>
@@ -323,17 +328,17 @@ public record class GorgonTextureInfo(TextureType Type, BufferFormat Format)
     };
 
     /// <summary>
-    /// Function to create a <see cref="IGorgonTextureInfo"/> that will build a 2D texture object for render target usage.
+    /// Function to create a <see cref="GorgonTextureInfo"/> that will build a 2D texture object for render target usage.
     /// </summary>
-    /// <param name="format">The format of the texture data.</param>
-    /// <param name="width">The width of the texture, in pixels.</param>
-    /// <param name="height">The height of the texture, in pixels.</param>
-    /// <param name="mipCount">[Optional] The number of mip levels contained within the texture.</param>
-    /// <param name="arrayCount">[Optional] The number of array indices contained within the texture.</param>
-    /// <param name="isShaderResource"><b>true</b> to use this texture as a shader resource, <b>false</b> to deny shader access.</param>
-    /// <param name="allowReadWriteAccess"><b>true</b> to use this texture as a read/write resource, <b>false</b> to deny read/write access.</param>
+    /// <param name="format"><inheritdoc cref="Create1DTextureInfo(BufferFormat, int, short, short, bool, bool)" path="/param[@name='format']"/></param>
+    /// <param name="width"><inheritdoc cref="Create1DTextureInfo(BufferFormat, int, short, short, bool, bool)" path="/param[@name='width']"/></param>
+    /// <param name="height"><inheritdoc cref="Create2DTextureInfo(BufferFormat, int, int, short, short, bool, bool)" path="/param[@name='height']"/></param>
+    /// <param name="mipCount"><inheritdoc cref="Create1DTextureInfo(BufferFormat, int, short, short, bool, bool)" path="/param[@name='mipCount']"/></param>
+    /// <param name="arrayCount"><inheritdoc cref="Create1DTextureInfo(BufferFormat, int, short, short, bool, bool)" path="/param[@name='arrayCount']"/></param>
+    /// <param name="isShaderResource"><inheritdoc cref="Create1DTextureInfo(BufferFormat, int, short, short, bool, bool)" path="/param[@name='isShaderResource']"/></param>
+    /// <param name="allowReadWriteAccess"><inheritdoc cref="Create1DTextureInfo(BufferFormat, int, short, short, bool, bool)" path="/param[@name='allowReadWriteAccess']"/></param>
     /// <param name="multisampleInfo">[Optional] Multisample information for the texture.</param>
-    /// <returns>A new <see cref="IGorgonTextureInfo"/>.</returns>
+    /// <inheritdoc cref="Create1DTextureInfo(BufferFormat, int, short, short, bool, bool)" path="/returns"/>
     /// <remarks>
     /// <inheritdoc cref="GorgonGpuBuffer" path="/remarks/para[@type='uav_readwrite']"/>
     /// </remarks>
@@ -351,17 +356,17 @@ public record class GorgonTextureInfo(TextureType Type, BufferFormat Format)
     };
 
     /// <summary>
-    /// Function to create a <see cref="IGorgonTextureInfo"/> that will build a cube map for render target usage.
+    /// Function to create a <see cref="GorgonTextureInfo"/> that will build a cube map for render target usage.
     /// </summary>
-    /// <param name="format">The format of the texture data.</param>
-    /// <param name="width">The width of the texture, in pixels.</param>
-    /// <param name="height">The height of the texture, in pixels.</param>
-    /// <param name="cubeCount">The number of cubes contained within the texture.</param>
-    /// <param name="mipCount">[Optional] The number of mip levels contained within the texture.</param>
-    /// <param name="isShaderResource"><b>true</b> to use this texture as a shader resource, <b>false</b> to deny shader access.</param>
-    /// <param name="allowReadWriteAccess"><b>true</b> to use this texture as anread/write resource, <b>false</b> to deny read/write access.</param>
+    /// <param name="format"><inheritdoc cref="Create1DTextureInfo(BufferFormat, int, short, short, bool, bool)" path="/param[@name='format']"/></param>
+    /// <param name="width"><inheritdoc cref="Create1DTextureInfo(BufferFormat, int, short, short, bool, bool)" path="/param[@name='width']"/></param>
+    /// <param name="height"><inheritdoc cref="Create2DTextureInfo(BufferFormat, int, int, short, short, bool, bool)" path="/param[@name='height']"/></param>
+    /// <param name="cubeCount"><inheritdoc cref="CreateTextureCubeInfo(BufferFormat, int, int, short, short, bool, bool)" path="/param[@name='cubeCount']"/></param>
+    /// <param name="mipCount"><inheritdoc cref="Create1DTextureInfo(BufferFormat, int, short, short, bool, bool)" path="/param[@name='mipCount']"/></param>
+    /// <param name="isShaderResource"><inheritdoc cref="Create1DTextureInfo(BufferFormat, int, short, short, bool, bool)" path="/param[@name='isShaderResource']"/></param>
+    /// <param name="allowReadWriteAccess"><inheritdoc cref="Create1DTextureInfo(BufferFormat, int, short, short, bool, bool)" path="/param[@name='allowReadWriteAccess']"/></param>
     /// <param name="multisampleInfo"><inheritdoc cref="Create2DRenderTargetInfo(BufferFormat, int, int, short, short, bool, bool, GorgonMultisampleInfo?)" path="/param[@name='multisampleInfo']"/></param>
-    /// <returns>A new <see cref="IGorgonTextureInfo"/>.</returns>
+    /// <inheritdoc cref="Create1DTextureInfo(BufferFormat, int, short, short, bool, bool)" path="/returns"/>
     /// <remarks>
     /// <inheritdoc cref="GorgonGpuBuffer" path="/remarks/para[@type='uav_readwrite']"/>
     /// </remarks>
@@ -380,16 +385,16 @@ public record class GorgonTextureInfo(TextureType Type, BufferFormat Format)
     };
 
     /// <summary>
-    /// Function to create a <see cref="IGorgonTextureInfo"/> that will build a 2D texture object for depth/stencil usage.
+    /// Function to create a <see cref="GorgonTextureInfo"/> that will build a 2D texture object for depth/stencil usage.
     /// </summary>
-    /// <param name="format">The format of the texture data.</param>
-    /// <param name="width">The width of the texture, in pixels.</param>
-    /// <param name="height">The height of the texture, in pixels.</param>
-    /// <param name="mipCount">[Optional] The number of mip levels contained within the texture.</param>
-    /// <param name="arrayCount">[Optional] The number of array indices contained within the texture.</param>
-    /// <param name="isShaderResource">[Optional] <b>true</b> to use this texture as a shader resource, <b>false</b> to deny shader access.</param>
+    /// <param name="format"><inheritdoc cref="Create1DTextureInfo(BufferFormat, int, short, short, bool, bool)" path="/param[@name='format']"/></param>
+    /// <param name="width"><inheritdoc cref="Create1DTextureInfo(BufferFormat, int, short, short, bool, bool)" path="/param[@name='width']"/></param>
+    /// <param name="height"><inheritdoc cref="Create2DTextureInfo(BufferFormat, int, int, short, short, bool, bool)" path="/param[@name='height']"/></param>
+    /// <param name="mipCount"><inheritdoc cref="Create1DTextureInfo(BufferFormat, int, short, short, bool, bool)" path="/param[@name='mipCount']"/></param>
+    /// <param name="arrayCount"><inheritdoc cref="Create1DTextureInfo(BufferFormat, int, short, short, bool, bool)" path="/param[@name='arrayCount']"/></param>
+    /// <param name="isShaderResource"><inheritdoc cref="Create1DTextureInfo(BufferFormat, int, short, short, bool, bool)" path="/param[@name='isShaderResource']"/></param>
     /// <param name="multisampleInfo"><inheritdoc cref="Create2DRenderTargetInfo(BufferFormat, int, int, short, short, bool, bool, GorgonMultisampleInfo?)" path="/param[@name='multisampleInfo']"/></param>
-    /// <returns>A new <see cref="IGorgonTextureInfo"/>.</returns>
+    /// <inheritdoc cref="Create1DTextureInfo(BufferFormat, int, short, short, bool, bool)" path="/returns"/>
     public static GorgonTextureInfo Create2DDepthStencilInfo(BufferFormat format, int width, int height, short mipCount = 1, short arrayCount = 1, bool isShaderResource = false, GorgonMultisampleInfo? multisampleInfo = null) => new(TextureType.Texture2D, format)
     {
         Width = width,
@@ -403,16 +408,16 @@ public record class GorgonTextureInfo(TextureType Type, BufferFormat Format)
     };
 
     /// <summary>
-    /// Function to create a <see cref="IGorgonTextureInfo"/> that will build a cube map for depth/stencil usage.
+    /// Function to create a <see cref="GorgonTextureInfo"/> that will build a cube map for depth/stencil usage.
     /// </summary>
-    /// <param name="format">The format of the texture data.</param>
-    /// <param name="width">The width of the texture, in pixels.</param>
-    /// <param name="height">The height of the texture, in pixels.</param>
-    /// <param name="cubeCount">The number of cubes contained within the texture.</param>
-    /// <param name="mipCount">[Optional] The number of mip levels contained within the texture.</param>
-    /// <param name="isShaderResource"><b>true</b> to use this texture as a shader resource, <b>false</b> to deny shader access.</param>
+    /// <param name="format"><inheritdoc cref="Create1DTextureInfo(BufferFormat, int, short, short, bool, bool)" path="/param[@name='format']"/></param>
+    /// <param name="width"><inheritdoc cref="Create1DTextureInfo(BufferFormat, int, short, short, bool, bool)" path="/param[@name='width']"/></param>
+    /// <param name="height"><inheritdoc cref="Create2DTextureInfo(BufferFormat, int, int, short, short, bool, bool)" path="/param[@name='height']"/></param>
+    /// <param name="cubeCount"><inheritdoc cref="CreateTextureCubeInfo(BufferFormat, int, int, short, short, bool, bool)" path="/param[@name='cubeCount']"/></param>
+    /// <param name="mipCount"><inheritdoc cref="Create1DTextureInfo(BufferFormat, int, short, short, bool, bool)" path="/param[@name='mipCount']"/></param>
+    /// <param name="isShaderResource"><inheritdoc cref="Create1DTextureInfo(BufferFormat, int, short, short, bool, bool)" path="/param[@name='isShaderResource']"/></param>
     /// <param name="multisampleInfo"><inheritdoc cref="Create2DRenderTargetInfo(BufferFormat, int, int, short, short, bool, bool, GorgonMultisampleInfo?)" path="/param[@name='multisampleInfo']"/></param>
-    /// <returns>A new <see cref="IGorgonTextureInfo"/>.</returns>
+    /// <inheritdoc cref="Create1DTextureInfo(BufferFormat, int, short, short, bool, bool)" path="/returns"/>
     public static GorgonTextureInfo CreateDepthStencilCubeInfo(BufferFormat format, int width, int height, short cubeCount, short mipCount = 1, bool isShaderResource = false, GorgonMultisampleInfo? multisampleInfo = null) => new(TextureType.Texture2D, format)
     {
         Width = width,
@@ -427,16 +432,16 @@ public record class GorgonTextureInfo(TextureType Type, BufferFormat Format)
     };
 
     /// <summary>
-    /// Function to create a <see cref="IGorgonTextureInfo"/> that will build a 3D texture object.
+    /// Function to create a <see cref="GorgonTextureInfo"/> that will build a 3D texture object.
     /// </summary>
-    /// <param name="format">The format of the texture data.</param>
-    /// <param name="width">The width of the texture, in pixels.</param>
-    /// <param name="height">The height of the texture, in pixels.</param>
+    /// <param name="format"><inheritdoc cref="Create1DTextureInfo(BufferFormat, int, short, short, bool, bool)" path="/param[@name='format']"/></param>
+    /// <param name="width"><inheritdoc cref="Create1DTextureInfo(BufferFormat, int, short, short, bool, bool)" path="/param[@name='width']"/></param>
+    /// <param name="height"><inheritdoc cref="Create2DTextureInfo(BufferFormat, int, int, short, short, bool, bool)" path="/param[@name='height']"/></param>
     /// <param name="depth">The depth of the texture, in depth slices.</param>
-    /// <param name="mipCount">[Optional] The number of mip levels contained within the texture.</param>
-    /// <param name="isShaderResource"><b>true</b> to use this texture as a shader resource, <b>false</b> to deny shader access.</param>
-    /// <param name="allowReadWriteAccess"><b>true</b> to use this texture as a read/write resource, <b>false</b> to deny read/write access.</param>
-    /// <returns>A new <see cref="IGorgonTextureInfo"/>.</returns>
+    /// <param name="mipCount"><inheritdoc cref="Create1DTextureInfo(BufferFormat, int, short, short, bool, bool)" path="/param[@name='mipCount']"/></param>
+    /// <param name="isShaderResource"><inheritdoc cref="Create1DTextureInfo(BufferFormat, int, short, short, bool, bool)" path="/param[@name='isShaderResource']"/></param>
+    /// <param name="allowReadWriteAccess"><inheritdoc cref="Create1DTextureInfo(BufferFormat, int, short, short, bool, bool)" path="/param[@name='allowReadWriteAccess']"/></param>
+    /// <inheritdoc cref="Create1DTextureInfo(BufferFormat, int, short, short, bool, bool)" path="/returns"/>
     /// <remarks>
     /// <inheritdoc cref="GorgonGpuBuffer" path="/remarks/para[@type='uav_readwrite']"/>
     /// </remarks>
@@ -454,16 +459,16 @@ public record class GorgonTextureInfo(TextureType Type, BufferFormat Format)
     };
 
     /// <summary>
-    /// Function to create a <see cref="IGorgonTextureInfo"/> that will build a 3D texture object for render target usage.
+    /// Function to create a <see cref="GorgonTextureInfo"/> that will build a 3D texture object for render target usage.
     /// </summary>
-    /// <param name="format">The format of the texture data.</param>
-    /// <param name="width">The width of the texture, in pixels.</param>
-    /// <param name="height">The height of the texture, in pixels.</param>
-    /// <param name="depth">The depth of the texture, in depth slices.</param>
-    /// <param name="mipCount">[Optional] The number of mip levels contained within the texture.</param>
-    /// <param name="isShaderResource"><b>true</b> to use this texture as a shader resource, <b>false</b> to deny shader access.</param>
-    /// <param name="allowReadWriteAccess"><b>true</b> to use this texture as a read/write resource, <b>false</b> to deny read/write access.</param>
-    /// <returns>A new <see cref="IGorgonTextureInfo"/>.</returns>
+    /// <param name="format"><inheritdoc cref="Create1DTextureInfo(BufferFormat, int, short, short, bool, bool)" path="/param[@name='format']"/></param>
+    /// <param name="width"><inheritdoc cref="Create1DTextureInfo(BufferFormat, int, short, short, bool, bool)" path="/param[@name='width']"/></param>
+    /// <param name="height"><inheritdoc cref="Create2DTextureInfo(BufferFormat, int, int, short, short, bool, bool)" path="/param[@name='height']"/></param>
+    /// <param name="depth"><inheritdoc cref="Create3DTextureInfo(BufferFormat, int, int, short, short, bool, bool)" path="/param[@name='depth']"/></param>
+    /// <param name="mipCount"><inheritdoc cref="Create1DTextureInfo(BufferFormat, int, short, short, bool, bool)" path="/param[@name='mipCount']"/></param>
+    /// <param name="isShaderResource"><inheritdoc cref="Create1DTextureInfo(BufferFormat, int, short, short, bool, bool)" path="/param[@name='isShaderResource']"/></param>
+    /// <param name="allowReadWriteAccess"><inheritdoc cref="Create1DTextureInfo(BufferFormat, int, short, short, bool, bool)" path="/param[@name='allowReadWriteAccess']"/></param>
+    /// <inheritdoc cref="Create1DTextureInfo(BufferFormat, int, short, short, bool, bool)" path="/returns"/>
     /// <remarks>
     /// <inheritdoc cref="GorgonGpuBuffer" path="/remarks/para[@type='uav_readwrite']"/>
     /// </remarks>
@@ -521,10 +526,27 @@ public record class GorgonTextureInfo(TextureType Type, BufferFormat Format)
         MultisampleInfo = info.MultisampleInfo;
     }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonTextureInfo"/> class.
-    /// </summary>
-    /// <param name="info">The texture information to copy.</param>
+    /// <inheritdoc cref="GorgonTextureInfo(GorgonTextureInfo)"/>
+    [SetsRequiredMembers()]
+    public GorgonTextureInfo(GorgonVirtualTextureInfo info)
+        : this(info.Type, info.Format)
+    {
+        Type = info.Type;
+        Format = info.Format;
+        Width = info.Width;
+        Height = info.Height;
+        Depth = info.Depth;
+        MipCount = info.MipCount;
+        ArrayCount = info.ArrayCount;
+        IsCube = info.IsCube;
+        IsRenderTarget = info.IsRenderTarget;
+        IsDepthStencil = false;
+        HasReadWriteAccess = info.HasReadWriteAccess;
+        IsShaderResource = info.IsShaderResource;
+        MultisampleInfo = GorgonMultisampleInfo.NoMultisampling;
+    }
+
+    /// <inheritdoc cref="GorgonTextureInfo(GorgonTextureInfo)"/>
     [SetsRequiredMembers()]
     public GorgonTextureInfo(IGorgonTextureInfo info)
         : this(info.Type, info.Format)

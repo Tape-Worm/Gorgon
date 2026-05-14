@@ -44,9 +44,17 @@ namespace Gorgon.Graphics.Core;
 /// </summary>
 /// <remarks>
 /// <para>
-/// TODO: Write something here.
+/// A render target view allows an application to render data into a texture resource that can then be used for processing, display, and other functionality (e.g. post processing). Applications apply the 
+/// view to a <see cref="GorgonCommandList"/> via the <see cref="GorgonCommandList.SetRenderTargets(ReadOnlySpan{GorgonRenderTargetView}, GorgonDepthStencilView?)"/> 
+/// method. 
+/// </para>
+/// <para>
+/// Applications will typically set the render target view, perform some rendering, and then use the underlying <see cref="Texture">texture</see> resource attached to the view as an input to read from. For 
+/// example, think of a mirror surface, where the camera is pointing at the scene from 180 degrees on the Y axis, we render that view to the texture via the view, and then, switch our camera around 180 
+/// degrees again, and render the surface of the mirror onto some geometry using the same texture.
 /// </para>
 /// </remarks>
+/// <seealso cref="GorgonCommandList.SetRenderTargets(ReadOnlySpan{GorgonRenderTargetView}, GorgonDepthStencilView?)"/>
 public unsafe sealed class GorgonRenderTargetView
     : GorgonResourceView
 {
@@ -75,7 +83,7 @@ public unsafe sealed class GorgonRenderTargetView
     /// <remarks>
     /// This value is a strongly typed version of the <see cref="GorgonResourceView.Resource"/> property and point to the same object.
     /// </remarks>
-    public GorgonTexture Texture
+    public GorgonTextureCommon Texture
     {
         get;
     }
@@ -157,7 +165,7 @@ public unsafe sealed class GorgonRenderTargetView
     /// If this value is <b>null</b>, then the underlying <see cref="GorgonTexture"/> was not created with its <see cref="GorgonTextureInfo.IsShaderResource"/> flag set to <b>true</b>.
     /// </para>
     /// </remarks>
-    public GorgonTextureView? TextureView
+    public IGorgonTextureView<GorgonTextureCommon>? TextureView
     {
         get;
         private set;
@@ -340,7 +348,7 @@ public unsafe sealed class GorgonRenderTargetView
     /// <param name="viewFormatInfo">The information about the view format.</param>
     /// <param name="formats">The list of formats that the texture format can cast to.</param>
     /// <param name="isRenderTarget"><b>true</b> if the texture is capable of being used as a render target, <b>false</b> if not.</param>
-    /// <exception cref="GorgonException"><para>Thrown if the texture is not a <see cref="GorgonTexture.IsRenderTarget">render target</see></para>
+    /// <exception cref="GorgonException"><para>Thrown if the texture is not a <see cref="GorgonTextureCommon.IsRenderTarget">render target</see></para>
     /// <para>Thrown if the format is a typeless format.</para>
     /// <para>Thrown if the format is not supported by render targets.</para>
     /// <para>Thrown if the texture format cannot be casted to the view format.</para>
@@ -376,24 +384,24 @@ public unsafe sealed class GorgonRenderTargetView
     /// <summary>
     /// Function to create a 2D render target view and attached render target texture.
     /// </summary>
-    /// <param name="graphics"><inheritdoc cref="GorgonTextureView.Create2DTexture(GorgonGraphics, string, BufferFormat, int, int, short, short)" path="/param[@name='graphics']"/></param>
-    /// <param name="name"><inheritdoc cref="GorgonTextureView.Create2DTexture(GorgonGraphics, string, BufferFormat, int, int, short, short)" path="/param[@name='name']"/></param>
-    /// <param name="width"><inheritdoc cref="GorgonTextureView.Create2DTexture(GorgonGraphics, string, BufferFormat, int, int, short, short)" path="/param[@name='width']"/></param>
-    /// <param name="height"><inheritdoc cref="GorgonTextureView.Create2DTexture(GorgonGraphics, string, BufferFormat, int, int, short, short)" path="/param[@name='height']"/></param>
+    /// <param name="graphics"><inheritdoc cref="GorgonTextureViewExtensions.Create2DTexture(GorgonGraphics, string, BufferFormat, int, int, short, short)" path="/param[@name='graphics']"/></param>
+    /// <param name="name"><inheritdoc cref="GorgonTextureViewExtensions.Create2DTexture(GorgonGraphics, string, BufferFormat, int, int, short, short)" path="/param[@name='name']"/></param>
+    /// <param name="width"><inheritdoc cref="GorgonTextureViewExtensions.Create2DTexture(GorgonGraphics, string, BufferFormat, int, int, short, short)" path="/param[@name='width']"/></param>
+    /// <param name="height"><inheritdoc cref="GorgonTextureViewExtensions.Create2DTexture(GorgonGraphics, string, BufferFormat, int, int, short, short)" path="/param[@name='height']"/></param>
     /// <param name="format">The render target format to use.</param>
-    /// <param name="mipCount"><inheritdoc cref="GorgonTextureView.Create2DTexture(GorgonGraphics, string, BufferFormat, int, int, short, short)" path="/param[@name='mipCount']"/></param>
-    /// <param name="arrayCount"><inheritdoc cref="GorgonTextureView.Create2DTexture(GorgonGraphics, string, BufferFormat, int, int, short, short)" path="/param[@name='arrayCount']"/></param>
+    /// <param name="mipCount"><inheritdoc cref="GorgonTextureViewExtensions.Create2DTexture(GorgonGraphics, string, BufferFormat, int, int, short, short)" path="/param[@name='mipCount']"/></param>
+    /// <param name="arrayCount"><inheritdoc cref="GorgonTextureViewExtensions.Create2DTexture(GorgonGraphics, string, BufferFormat, int, int, short, short)" path="/param[@name='arrayCount']"/></param>
     /// <param name="multisampleInfo"><inheritdoc cref="GorgonDepthStencilView.CreateDepthStencilView(GorgonGraphics, string, int, int, BufferFormat, short, short, GorgonMultisampleInfo?)" path="/param[@name='multisampleInfo']"/></param>
     /// <returns>A new <see cref="GorgonRenderTargetView"/> and its associated <see cref="GorgonTexture"/>,</returns>
     /// <exception cref="GorgonException">
     /// <b>Texture Exceptions</b>
-    /// <inheritdoc cref="GorgonTexture.ValidateInfo(GorgonTextureInfo)" path="/exception/para"/>
+    /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para"/>
     /// <b>View Exceptions</b>
     /// <inheritdoc cref="ValidateRenderTargetView(string, GorgonBufferFormatSupport, GorgonFormatInfo, GorgonFormatInfo, IReadOnlyList{BufferFormat}, bool)" path="/exception/para"/>
     /// </exception>
     /// <remarks>
     /// <para>
-    /// TODO:
+    /// This function is a convenience method that builds a 2D texture with a default render target view. Textures created with this method will be destroyed when the default view returned is disposed.
     /// </para>
     /// </remarks>
     public static GorgonRenderTargetView Create2DRenderTarget(GorgonGraphics graphics, string name, int width, int height, BufferFormat format, short mipCount = 1, short arrayCount = 1, GorgonMultisampleInfo? multisampleInfo = null)
@@ -413,7 +421,7 @@ public unsafe sealed class GorgonRenderTargetView
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonTextureView"/> class.
+    /// Initializes a new instance of the <see cref="GorgonRenderTargetView"/> class.
     /// </summary>
     /// <param name="graphics"><inheritdoc cref="GorgonResourceView(GorgonGraphics, string, GorgonGpuResource, bool)" path="/param[@name='graphics']"/></param>
     /// <param name="name"><inheritdoc cref="GorgonResourceView(GorgonGraphics, string, GorgonGpuResource, bool)" path="/param[@name='name']"/></param>
@@ -424,7 +432,7 @@ public unsafe sealed class GorgonRenderTargetView
     /// <param name="arrayOrDepthCount">The number of array indices/depth slices to view.</param>
     /// <param name="planeIndex">The plane index in the view.</param>
     /// <param name="owned"><inheritdoc cref="GorgonResourceView(GorgonGraphics, string, GorgonGpuResource, bool)" path="/param[@name='owned']"/></param>
-    internal GorgonRenderTargetView(GorgonGraphics graphics, string name, GorgonTexture texture, GorgonFormatInfo formatInfo, short mipLevel, short firstArrayOrDepth, short arrayOrDepthCount, byte planeIndex, bool owned)
+    internal GorgonRenderTargetView(GorgonGraphics graphics, string name, GorgonTextureCommon texture, GorgonFormatInfo formatInfo, short mipLevel, short firstArrayOrDepth, short arrayOrDepthCount, byte planeIndex, bool owned)
         : base(graphics, $"{GorgonGraphicsFactory.GenerateName(name, nameof(GorgonRenderTargetView))} - Render Target View", texture, owned)
     {
         _descriptors = graphics.Descriptors.RtvDescriptors;
@@ -454,9 +462,9 @@ public unsafe sealed class GorgonRenderTargetView
             _ => false
         };
 
-        TextureView = texture.GetTextureView(compatibleFormat ? Format : texture.Format, 
+        TextureView = texture.GetTextureView<GorgonTextureCommon>(compatibleFormat ? Format : texture.Format, 
             mipLevel, 1, 
-            ArrayIndex, ArrayCount, 
-            planeIndex: planeIndex);
+            ArrayIndex, ArrayCount, 0, 
+            planeIndex, false);
     }
 }

@@ -96,7 +96,7 @@ public enum ResourceHeapTier
 /// <summary>
 /// The tiers available for tiled resources.
 /// </summary>
-public enum TiledResourcsTier
+public enum TiledResourcesTier
 {
     /// <summary>
     /// No support for tiled resources. This adaper will not work with Gorgon.
@@ -233,7 +233,7 @@ public record class GorgonVideoAdapterInfo(string Name,
                                            ShaderModel ShaderModelSupport,
                                            bool HasTightAlignmentSupport,
                                            ResourceHeapTier ResourceHeapTier,
-                                           TiledResourcsTier TiledResourcesTier,
+                                           TiledResourcesTier TiledResourcesTier,
                                            GorgonVideoAdapterArchitecture Architecture,
                                            GraphicsPreemptionGranularity GraphicsPreemptionGranularity,
                                            ComputePreemptionGranularity ComputePreemptionGranularity)
@@ -388,7 +388,7 @@ public record class GorgonVideoAdapterInfo(string Name,
             shaderModel,
             tightAlignment.SupportTier != D3D12_TIGHT_ALIGNMENT_TIER.D3D12_TIGHT_ALIGNMENT_TIER_NOT_SUPPORTED,
             (ResourceHeapTier)options.ResourceHeapTier,
-            (TiledResourcsTier)options.TiledResourcesTier,
+            (TiledResourcesTier)options.TiledResourcesTier,
             new GorgonVideoAdapterArchitecture((int)arch.NodeIndex, arch.TileBasedRenderer, arch.UMA, arch.CacheCoherentUMA, arch.IsolatedMMU),
             (GraphicsPreemptionGranularity)desc.GraphicsPreemptionGranularity,
             (ComputePreemptionGranularity)desc.ComputePreemptionGranularity);

@@ -38,8 +38,9 @@ namespace Gorgon.Graphics.Core;
 /// <param name="uploadHeaps">Transient heaps for uploading data to the GPU.</param>
 /// <param name="downloadHeaps">Transient heaps for downloading data from the GPU.</param>
 /// <param name="megaBuffer">The mega buffer implementation for bindless buffers.</param>
+/// <param name="textureTilePool">The virtual texture tile pool.</param>
 /// <param name="allocator">The D3D 12 memory allocator interface pointer.</param>
-internal sealed class MemoryServices(CpuResourceHeapPool uploadHeaps, CpuResourceHeapPool downloadHeaps, MegaBufferPool megaBuffer, ref readonly ComPtr<D3D12MA_Allocator> allocator)
+internal sealed class MemoryServices(CpuResourceHeapPool uploadHeaps, CpuResourceHeapPool downloadHeaps, MegaBufferPool megaBuffer, VirtualTextureTilePool textureTilePool, ref readonly ComPtr<D3D12MA_Allocator> allocator)
         : IDisposable
 {
     private readonly ComPtr<D3D12MA_Allocator> _allocator = allocator;
@@ -73,6 +74,11 @@ internal sealed class MemoryServices(CpuResourceHeapPool uploadHeaps, CpuResourc
         get;
     } = megaBuffer;
 
+    public VirtualTextureTilePool TextureTilePool
+    {
+        get;
+    } = textureTilePool;
+
     /// <inheritdoc cref="GorgonGraphicsFactory.Dispose(bool)"/>
     private void Dispose(bool disposing)
     {
@@ -81,6 +87,7 @@ internal sealed class MemoryServices(CpuResourceHeapPool uploadHeaps, CpuResourc
             DownloadHeaps.Dispose();
             UploadHeaps.Dispose();
             MegaBuffer.Dispose();
+            TextureTilePool.Dispose();
         }
 
         _allocator.Dispose();
@@ -101,5 +108,6 @@ internal sealed class MemoryServices(CpuResourceHeapPool uploadHeaps, CpuResourc
         UploadHeaps.GarbageCollect();
         DownloadHeaps.GarbageCollect();
         MegaBuffer.GarbageCollect();
+        TextureTilePool.GarbageCollect();
     }
 }

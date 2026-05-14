@@ -90,7 +90,8 @@ public interface IGorgonCopyMethodsFluent<T>
     /// moment is a performance optimization for some GPUs.
     /// </para>
     /// </remarks>
-    /// <seealso cref="GorgonTextureCommon"/>
+    /// <seealso cref="GorgonTexture"/>
+    /// <seealso cref="GorgonVirtualTexture"/>
     /// <seealso cref="GorgonCommandList"/>
     T SetBarrier(GorgonTextureCommon texture, BarrierSync sync, BarrierAccess access, BarrierLayout layout, GorgonSubResourceRange? subResources = null, bool discard = false, bool force = false);
 
@@ -105,7 +106,8 @@ public interface IGorgonCopyMethodsFluent<T>
     /// <remarks>
     /// <inheritdoc cref="SetBarrier(GorgonTextureCommon, BarrierSync, BarrierAccess, BarrierLayout, GorgonSubResourceRange?, bool, bool)" path="/remarks/para[not(@type='TextureBarrier')]"/>
     /// </remarks>
-    /// <seealso cref="GorgonGpuBufferCommon"/>
+    /// <seealso cref="GorgonGpuBuffer"/>
+    /// <seealso cref="GorgonIndexBuffer"/>
     /// <seealso cref="GorgonCommandList"/>
     T SetBarrier(GorgonGpuBufferCommon buffer, BarrierSync sync, BarrierAccess access, bool force = false);
 
@@ -329,7 +331,7 @@ public interface IGorgonCopyMethodsFluent<T>
     T CopyBuffer(GorgonGpuBufferCommon source, GorgonGpuBufferCommon destination, long sourceOffset = 0, long destinationOffset = 0, long? count = null);
 
     /// <summary>
-    /// Function to copy a <see cref="IGorgonImage"/> into a <see cref="GorgonTextureCommon"/>.
+    /// Function to copy a <see cref="IGorgonImage"/> into a <see cref="GorgonTexture"/>.
     /// </summary>
     /// <param name="image">The image data to copy into the texture.</param>
     /// <param name="texture">The texture that will receive the image data.</param>
@@ -342,8 +344,8 @@ public interface IGorgonCopyMethodsFluent<T>
     /// <remarks>
     /// <para type="common">
     /// <para>
-    /// This method will copy the contents of a <see cref="IGorgonImage"/> into a <see cref="GorgonTextureCommon"/> so that applications can use image data as textures. This method copies the entire image to the 
-    /// texture, if an application needs to more fine grained copying, use the <see cref="CopyImageToTexture(IGorgonImageBuffer, GorgonTextureCommon, short, short, byte)"/> overload.
+    /// This method will copy the contents of a <see cref="IGorgonImage"/> into a <see cref="GorgonTexture"/> so that applications can use image data as textures. This method copies the entire image to the 
+    /// texture, if an application needs to more fine grained copying, use the <see cref="CopyImageToTexture(IGorgonImageBuffer, GorgonTexture, short, short, byte)"/> overload.
     /// </para>
     /// <para>
     /// If the <paramref name="texture"/> dimensions, array count (1D or 2D only), or mip count are not the same as those in the <paramref name="image"/>, then the method will only copy the minimum 
@@ -370,32 +372,32 @@ public interface IGorgonCopyMethodsFluent<T>
     /// </para>
     /// <inheritdoc cref="CopyBuffer(GorgonGpuBufferCommon, GorgonGpuBufferCommon, long, long, long?)" path="/remarks/para[@type='endrequired']"/>
     /// </remarks>
-    /// <seealso cref="GorgonTextureCommon"/>
+    /// <seealso cref="GorgonTexture"/>
     /// <seealso cref="GorgonTextureInfo"/>
     /// <seealso cref="IGorgonImage"/>
     /// <seealso cref="BufferFormat"/>
-    /// <seealso cref="CopyImageToTexture(IGorgonImageBuffer, GorgonTextureCommon, short, short, byte)"/>
-    T CopyImageToTexture(IGorgonImage image, GorgonTextureCommon texture);
+    /// <seealso cref="CopyImageToTexture(IGorgonImageBuffer, GorgonTexture, short, short, byte)"/>
+    T CopyImageToTexture(IGorgonImage image, GorgonTexture texture);
 
     /// <summary>
-    /// Function to copy a <see cref="IGorgonImageBuffer"/> into a <see cref="GorgonTextureCommon"/> sub resource.
+    /// Function to copy a <see cref="IGorgonImageBuffer"/> into a <see cref="GorgonTexture"/> sub resource.
     /// </summary>
     /// <param name="imageBuffer">The image data buffer to copy into the texture.</param>
-    /// <param name="texture"><inheritdoc cref="CopyImageToTexture(IGorgonImage, GorgonTextureCommon)" path="/param[@name='texture']"/></param>
+    /// <param name="texture"><inheritdoc cref="CopyImageToTexture(IGorgonImage, GorgonTexture)" path="/param[@name='texture']"/></param>
     /// <param name="destinationMipLevel">[Optional] The destination mip level on the texture to copy the image data into.</param>
     /// <param name="destinationZOrArrayIndex">[Optional] The destination depth slice on a 3D texture, or array index on a 1D or 2D texture array to copy the image data into.</param>
     /// <param name="destinationPlane">[Optional] The destination format plane on the texture to copy the image data into.</param>
     /// <inheritdoc cref="SetBarrier(GorgonTextureCommon, BarrierSync, BarrierAccess, BarrierLayout, GorgonSubResourceRange?, bool, bool)" path="/returns"/>
-    /// <inheritdoc cref="CopyImageToTexture(IGorgonImage, GorgonTextureCommon)" path="/exception"/>
+    /// <inheritdoc cref="CopyImageToTexture(IGorgonImage, GorgonTexture)" path="/exception"/>
     /// <remarks>
     /// <para type="common">
     /// <para>
     /// This method will copy the contents of an individual <see cref="IGorgonImageBuffer"/> on a <see cref="IGorgonImage"/> into a single texture sub resource. This method only copies one buffer, if the 
-    /// application needs to copy the entire image instead, use the <see cref="CopyImageToTexture(IGorgonImage, GorgonTextureCommon)"/> overload.
+    /// application needs to copy the entire image instead, use the <see cref="CopyImageToTexture(IGorgonImage, GorgonTexture)"/> overload.
     /// </para>
     /// <para>
     /// If the buffer dimensions are not the same as the sub resource, then the image data will be cropped to fit as to prevent a buffer overrun. Unlike the 
-    /// <see cref="CopyImageToTexture(IGorgonImage, GorgonTextureCommon)"/> no image conversion is done with this method, and an exception will be thrown if the <see cref="BufferFormat"/>s do not match.
+    /// <see cref="CopyImageToTexture(IGorgonImage, GorgonTexture)"/> no image conversion is done with this method, and an exception will be thrown if the <see cref="BufferFormat"/>s do not match.
     /// </para>
     /// <para>
     /// If the <paramref name="destinationMipLevel"/>, <paramref name="destinationZOrArrayIndex"/>, and the <paramref name="destinationPlane"/> is not specified, then the first mip level, first array index 
@@ -405,20 +407,41 @@ public interface IGorgonCopyMethodsFluent<T>
     /// Like the dimensions, the <paramref name="destinationMipLevel"/>, <paramref name="destinationZOrArrayIndex"/>, and <paramref name="destinationPlane"/> parameters are clamped to a minimum value of 0, 
     /// and to the maximum mip level, array indices (or depth slices), and plane count of the destination <paramref name="texture"/>.
     /// </para>
-    /// <inheritdoc cref="CopyImageToTexture(IGorgonImage, GorgonTextureCommon)" path="/remarks/para[@type='Limits']"/>
+    /// <inheritdoc cref="CopyImageToTexture(IGorgonImage, GorgonTexture)" path="/remarks/para[@type='Limits']"/>
     /// </para>
     /// <inheritdoc cref="CopyBuffer(GorgonGpuBufferCommon, GorgonGpuBufferCommon, long, long, long?)" path="/remarks/para[@type='endrequired']"/>
     /// </remarks>
-    /// <seealso cref="GorgonTextureCommon"/>
+    /// <seealso cref="GorgonTexture"/>
     /// <seealso cref="GorgonTextureInfo"/>
     /// <seealso cref="IGorgonImageBuffer"/>
     /// <seealso cref="IGorgonImage"/>
     /// <seealso cref="BufferFormat"/>
-    /// <seealso cref="CopyImageToTexture(IGorgonImage, GorgonTextureCommon)"/>
-    T CopyImageToTexture(IGorgonImageBuffer imageBuffer, GorgonTextureCommon texture, short destinationMipLevel = 0, short destinationZOrArrayIndex = 0, byte destinationPlane = 0);
+    /// <seealso cref="CopyImageToTexture(IGorgonImage, GorgonTexture)"/>
+    T CopyImageToTexture(IGorgonImageBuffer imageBuffer, GorgonTexture texture, short destinationMipLevel = 0, short destinationZOrArrayIndex = 0, byte destinationPlane = 0);
 
     /// <summary>
-    /// Function to copy the contents of a <see cref="GorgonGpuBuffer"/> into a specific sub resource of a <see cref="GorgonTextureCommon"/>.
+    /// Function to copy a <see cref="IGorgonImageBuffer"/> into a <see cref="GorgonVirtualTexture"/> sub resource.
+    /// </summary>
+    /// <param name="imageBuffer"><inheritdoc cref="CopyImageToTexture(IGorgonImageBuffer, GorgonTexture, short, short, byte)" path="/param[@name='imageBuffer']"/></param>
+    /// <param name="texture">The virtual texture that will receive the data from the image buffer.</param>
+    /// <param name="handle">The allocation handle returned from the texture to indicate where the data should be stored.</param>
+    /// <param name="destinationDepthSlice">[Optional] For 3D textures only. Indicates which depth slice will receive the buffer data.</param>
+    /// <inheritdoc cref="SetBarrier(GorgonTextureCommon, BarrierSync, BarrierAccess, BarrierLayout, GorgonSubResourceRange?, bool, bool)" path="/returns"/>
+    /// <exception cref="ArgumentException">Thrown if the <paramref name="handle"/> refers to a handle that has not been allocated on the <paramref name="texture"/>.</exception>
+    /// <inheritdoc cref="CopyImageToTexture(IGorgonImage, GorgonTexture)" path="/exception[@cref='T:Gorgon.Core.GorgonException']"/>
+    /// <remarks>
+    /// <para>
+    /// This method will copy the contents of an individual <see cref="IGorgonImageBuffer"/> on a <see cref="IGorgonImage"/> into a single virtual texture sub resource allocation, which is represent by the 
+    /// <paramref name="handle"/> parameter. Use the <see cref="GorgonVirtualTexture.TryAllocate(ref readonly GorgonBoxF, out long, short, short)"/> method to receive this handle before copying.
+    /// </para>
+    /// <inheritdoc cref="CopyImageToTexture(IGorgonImageBuffer, GorgonTexture, short, short, byte)" path="/remarks/para/para[2]"/>
+    /// <inheritdoc cref="CopyBuffer(GorgonGpuBufferCommon, GorgonGpuBufferCommon, long, long, long?)" path="/remarks/para[@type='endrequired']"/>
+    /// </remarks>
+    /// <seealso cref="GorgonVirtualTexture"/>
+    T CopyImageToTexture(IGorgonImageBuffer imageBuffer, GorgonVirtualTexture texture, long handle, short destinationDepthSlice = 0);
+
+    /// <summary>
+    /// Function to copy the contents of a <see cref="GorgonGpuBuffer"/> into a specific sub resource of a <see cref="GorgonTexture"/>.
     /// </summary>
     /// <param name="buffer">The buffer containing the data to copy.</param>
     /// <param name="texture">The texture to copy the data into.</param>
@@ -430,8 +453,8 @@ public interface IGorgonCopyMethodsFluent<T>
     /// <remarks>
     /// <para type="common">
     /// <para>
-    /// This method will copy the data within the specified <see cref="GorgonGpuBuffer"/> into the specified sub resource for the specified <see cref="GorgonTextureCommon"/>. This allows applications to load 
-    /// arbitrary data into a texture sub resource. To fill an entire texture with the contents of a buffer, call the <see cref="CopyBufferToTexture(GorgonGpuBuffer, GorgonTextureCommon, long)"/> overload.
+    /// This method will copy the data within the specified <see cref="GorgonGpuBuffer"/> into the specified sub resource for the specified <see cref="GorgonTexture"/>. This allows applications to load 
+    /// arbitrary data into a texture sub resource. To fill an entire texture with the contents of a buffer, call the <see cref="CopyBufferToTexture(GorgonGpuBuffer, GorgonTexture, long)"/> overload.
     /// </para>
     /// <para>
     /// For the copy to succeed, the <see cref="GorgonGpuBufferCommon.SizeInBytes"/> of the <paramref name="buffer"/> minus the 
@@ -451,7 +474,7 @@ public interface IGorgonCopyMethodsFluent<T>
     /// <note type="information">
     /// <para>
     /// You cannot copy into an individual depth slice using this method. To perform a copy on an individual depth slice, use the 
-    /// <see cref="CopyImageToTexture(IGorgonImageBuffer, GorgonTextureCommon, short, short, byte)"/> method.
+    /// <see cref="CopyImageToTexture(IGorgonImageBuffer, GorgonTexture, short, short, byte)"/> method.
     /// </para>
     /// </note>
     /// </para>
@@ -473,18 +496,18 @@ public interface IGorgonCopyMethodsFluent<T>
     /// </remarks>
     /// <seealso cref="GorgonSubResourceInfo"/>
     /// <seealso cref="GorgonGpuBuffer"/>
-    /// <seealso cref="GorgonTextureCommon"/>
-    /// <seealso cref="CopyBufferToTexture(GorgonGpuBuffer, GorgonTextureCommon, long)"/>
+    /// <seealso cref="GorgonTexture"/>
+    /// <seealso cref="CopyBufferToTexture(GorgonGpuBuffer, GorgonTexture, long)"/>
     /// <seealso cref="TextureType"/>
     /// <seealso cref="BufferFormat"/>
     /// <seealso cref="GorgonCopyBufferToTexture"/>
-    T CopyBufferToTexture(GorgonGpuBuffer buffer, GorgonTextureCommon texture, GorgonCopyBufferToTexture parameters);
+    T CopyBufferToTexture(GorgonGpuBuffer buffer, GorgonTexture texture, GorgonCopyBufferToTexture parameters);
 
     /// <summary>
-    /// Function to copy the contents of a <see cref="GorgonGpuBuffer"/> into a <see cref="GorgonTextureCommon"/>.
+    /// Function to copy the contents of a <see cref="GorgonGpuBuffer"/> into a <see cref="GorgonTexture"/>.
     /// </summary>
-    /// <param name="buffer"><inheritdoc cref="CopyBufferToTexture(GorgonGpuBuffer, GorgonTextureCommon, GorgonCopyBufferToTexture)" path="/param[@name='buffer']"/></param>
-    /// <param name="texture"><inheritdoc cref="CopyBufferToTexture(GorgonGpuBuffer, GorgonTextureCommon, GorgonCopyBufferToTexture)" path="/param[@name='texture']"/></param>
+    /// <param name="buffer"><inheritdoc cref="CopyBufferToTexture(GorgonGpuBuffer, GorgonTexture, GorgonCopyBufferToTexture)" path="/param[@name='buffer']"/></param>
+    /// <param name="texture"><inheritdoc cref="CopyBufferToTexture(GorgonGpuBuffer, GorgonTexture, GorgonCopyBufferToTexture)" path="/param[@name='texture']"/></param>
     /// <param name="sourceOffset">[Optional] The number of bytes within the buffer to start copying from.</param>
     /// <inheritdoc cref="SetBarrier(GorgonTextureCommon, BarrierSync, BarrierAccess, BarrierLayout, GorgonSubResourceRange?, bool, bool)" path="/returns"/>
     /// <exception cref="ArgumentException">Thrown if the size, in bytes, of <paramref name="buffer"/> minus the <paramref name="sourceOffset"/> is larger than the texture sub resource size, in bytes.</exception>
@@ -492,8 +515,8 @@ public interface IGorgonCopyMethodsFluent<T>
     /// <remarks>
     /// <para type="common">
     /// <para>
-    /// This method will copy the data within the specified <see cref="GorgonGpuBuffer"/> into a <see cref="GorgonTextureCommon"/>. This allows applications to load arbitrary data into a texture. To copy data from 
-    /// a buffer into an arbitrary sub resource on a texture, call the <see cref="CopyBufferToTexture(GorgonGpuBuffer, GorgonTextureCommon, GorgonCopyBufferToTexture)"/> overload.
+    /// This method will copy the data within the specified <see cref="GorgonGpuBuffer"/> into a <see cref="GorgonTexture"/>. This allows applications to load arbitrary data into a texture. To copy data from 
+    /// a buffer into an arbitrary sub resource on a texture, call the <see cref="CopyBufferToTexture(GorgonGpuBuffer, GorgonTexture, GorgonCopyBufferToTexture)"/> overload.
     /// </para>
     /// <para>
     /// For the copy to succeed, the <see cref="GorgonGpuBufferCommon.SizeInBytes"/> of the <paramref name="buffer"/> minus the <paramref name="sourceOffset"/> parameter, must be at least the same size, in 
@@ -510,12 +533,12 @@ public interface IGorgonCopyMethodsFluent<T>
     /// </remarks>
     /// <seealso cref="GorgonSubResourceInfo"/>
     /// <seealso cref="GorgonGpuBuffer"/>
-    /// <seealso cref="GorgonTextureCommon"/>
-    /// <seealso cref="CopyImageToTexture(IGorgonImageBuffer, GorgonTextureCommon, short, short, byte)"/>
-    T CopyBufferToTexture(GorgonGpuBuffer buffer, GorgonTextureCommon texture, long sourceOffset = 0);
+    /// <seealso cref="GorgonTexture"/>
+    /// <seealso cref="CopyImageToTexture(IGorgonImageBuffer, GorgonTexture, short, short, byte)"/>
+    T CopyBufferToTexture(GorgonGpuBuffer buffer, GorgonTexture texture, long sourceOffset = 0);
 
     /// <summary>
-    /// Function to copy <see cref="GorgonTextureCommon"/> sub resource into a <see cref="GorgonGpuBuffer"/>.
+    /// Function to copy <see cref="GorgonTexture"/> sub resource into a <see cref="GorgonGpuBuffer"/>.
     /// </summary>
     /// <param name="texture">The texture containing the sub resource to copy.</param>
     /// <param name="buffer">The buffer that will receive a copy of the data.</param>
@@ -526,9 +549,9 @@ public interface IGorgonCopyMethodsFluent<T>
     /// <remarks>
     /// <para type="common">
     /// <para>
-    /// This method will copy the subresource from the <see cref="GorgonTextureCommon"/> into the <see cref="GorgonGpuBuffer"/>. This allows applications to load 
+    /// This method will copy the subresource from the <see cref="GorgonTexture"/> into the <see cref="GorgonGpuBuffer"/>. This allows applications to load 
     /// <paramref name="texture"/> sub resource data into a <paramref name="buffer"/>. To fill a <paramref name="buffer"/> with the entire <paramref name="texture"/>, call the 
-    /// <see cref="CopyTextureToBuffer(GorgonTextureCommon, GorgonGpuBuffer, long)"/> overload.
+    /// <see cref="CopyTextureToBuffer(GorgonTexture, GorgonGpuBuffer, long)"/> overload.
     /// </para>
     /// <para>
     /// For the copy to succeed, the <see cref="GorgonGpuBufferCommon.SizeInBytes"/> of the <paramref name="buffer"/> minus the 
@@ -548,7 +571,7 @@ public interface IGorgonCopyMethodsFluent<T>
     /// <note type="information">
     /// <para>
     /// You cannot copy into an individual depth slice using this method. To perform a copy on an individual depth slice, use the 
-    /// <see cref="CopyImageToTexture(IGorgonImageBuffer, GorgonTextureCommon, short, short, byte)"/> method.
+    /// <see cref="CopyImageToTexture(IGorgonImageBuffer, GorgonTexture, short, short, byte)"/> method.
     /// </para>
     /// </note>
     /// </para>
@@ -569,40 +592,40 @@ public interface IGorgonCopyMethodsFluent<T>
     /// </remarks>
     /// <seealso cref="GorgonSubResourceInfo"/>
     /// <seealso cref="GorgonGpuBuffer"/>
-    /// <seealso cref="GorgonTextureCommon"/>
-    /// <seealso cref="CopyTextureToBuffer(GorgonTextureCommon, GorgonGpuBuffer, long)"/>
+    /// <seealso cref="GorgonTexture"/>
+    /// <seealso cref="CopyTextureToBuffer(GorgonTexture, GorgonGpuBuffer, long)"/>
     /// <seealso cref="TextureType"/>
     /// <seealso cref="BufferFormat"/>
     /// <seealso cref="GorgonCopyTextureToBuffer"/>
-    T CopyTextureToBuffer(GorgonTextureCommon texture, GorgonGpuBuffer buffer, GorgonCopyTextureToBuffer parameters);
+    T CopyTextureToBuffer(GorgonTexture texture, GorgonGpuBuffer buffer, GorgonCopyTextureToBuffer parameters);
 
     /// <summary>
-    /// Function to copy a <see cref="GorgonTextureCommon"/> into a <see cref="GorgonGpuBuffer"/>.
+    /// Function to copy a <see cref="GorgonTexture"/> into a <see cref="GorgonGpuBuffer"/>.
     /// </summary>
     /// <param name="texture">The texture to copy.</param>
-    /// <param name="buffer"><inheritdoc cref="CopyTextureToBuffer(GorgonTextureCommon, GorgonGpuBuffer, GorgonCopyTextureToBuffer)" path="/param[@name='buffer']"/></param>
+    /// <param name="buffer"><inheritdoc cref="CopyTextureToBuffer(GorgonTexture, GorgonGpuBuffer, GorgonCopyTextureToBuffer)" path="/param[@name='buffer']"/></param>
     /// <param name="destinationOffset">[Optional] The offset, in bytes, within the buffer to start copying into.</param>
     /// <inheritdoc cref="SetBarrier(GorgonTextureCommon, BarrierSync, BarrierAccess, BarrierLayout, GorgonSubResourceRange?, bool, bool)" path="/returns"/>
-    /// <inheritdoc cref="CopyTextureToBuffer(GorgonTextureCommon, GorgonGpuBuffer, GorgonCopyTextureToBuffer)" path="/exception[@cref='T:Gorgon.Core.GorgonException']"/>
+    /// <inheritdoc cref="CopyTextureToBuffer(GorgonTexture, GorgonGpuBuffer, GorgonCopyTextureToBuffer)" path="/exception[@cref='T:Gorgon.Core.GorgonException']"/>
     /// <exception cref="ArgumentOutOfRangeException">Thrown if the <paramref name="destinationOffset"/> is less than 0.</exception>
     /// <remarks>
     /// <para type="common">
     /// <para>
-    /// This method will copy the entire <see cref="GorgonTextureCommon"/> into the <see cref="GorgonGpuBuffer"/>. This allows applications to load a full <paramref name="texture"/> a <paramref name="buffer"/>. 
-    /// To copy only a sub resource to a <paramref name="buffer"/>, call the <see cref="CopyTextureToBuffer(GorgonTextureCommon, GorgonGpuBuffer, GorgonCopyTextureToBuffer)"/> overload.
+    /// This method will copy the entire <see cref="GorgonTexture"/> into the <see cref="GorgonGpuBuffer"/>. This allows applications to load a full <paramref name="texture"/> a <paramref name="buffer"/>. 
+    /// To copy only a sub resource to a <paramref name="buffer"/>, call the <see cref="CopyTextureToBuffer(GorgonTexture, GorgonGpuBuffer, GorgonCopyTextureToBuffer)"/> overload.
     /// </para>
     /// <para>
     /// For the copy to succeed, the <see cref="GorgonGpuBufferCommon.SizeInBytes"/> of the <paramref name="buffer"/> minus the <paramref name="destinationOffset"/> parameter, must be at least the same size, 
     /// in bytes, as the <paramref name="texture"/>. Users may use the <see cref="GorgonTextureCommon.SizeInBytes"/> property to determine how large the buffer needs to be. 
     /// </para>
-    /// <inheritdoc cref="CopyTextureToBuffer(GorgonTextureCommon, GorgonGpuBuffer, GorgonCopyTextureToBuffer)" path="/remarks/path[@type='alignment']"/>
+    /// <inheritdoc cref="CopyTextureToBuffer(GorgonTexture, GorgonGpuBuffer, GorgonCopyTextureToBuffer)" path="/remarks/path[@type='alignment']"/>
     /// </para>
     /// <inheritdoc cref="CopyBuffer(GorgonGpuBufferCommon, GorgonGpuBufferCommon, long, long, long?)" path="/remarks/para[@type='endrequired']"/>
     /// </remarks>
     /// <seealso cref="GorgonGpuBuffer"/>
-    /// <seealso cref="GorgonTextureCommon"/>
-    /// <seealso cref="CopyTextureToBuffer(GorgonTextureCommon, GorgonGpuBuffer, GorgonCopyTextureToBuffer)"/>
-    T CopyTextureToBuffer(GorgonTextureCommon texture, GorgonGpuBuffer buffer, long destinationOffset = 0);
+    /// <seealso cref="GorgonTexture"/>
+    /// <seealso cref="CopyTextureToBuffer(GorgonTexture, GorgonGpuBuffer, GorgonCopyTextureToBuffer)"/>
+    T CopyTextureToBuffer(GorgonTexture texture, GorgonGpuBuffer buffer, long destinationOffset = 0);
 
     /// <summary>
     /// Function to copy a texture subresource into another texture subresource.
@@ -625,8 +648,8 @@ public interface IGorgonCopyMethodsFluent<T>
     /// <remarks>
     /// <para type="common">
     /// <para>
-    /// This will copy a sub resource from one <see cref="GorgonTextureCommon"/> to another sub resource in another <see cref="GorgonTextureCommon"/>, or, another sub resource in the same <see cref="GorgonTextureCommon"/>. 
-    /// This method only copies a single sub resource at a time, to copy the full texture, use the <see cref="CopyTexture(GorgonTextureCommon, GorgonTextureCommon)"/> overload.
+    /// This will copy a sub resource from one <see cref="GorgonTexture"/> to another sub resource in another <see cref="GorgonTexture"/>, or, another sub resource in the same <see cref="GorgonTexture"/>. 
+    /// This method only copies a single sub resource at a time, to copy the full texture, use the <see cref="CopyTexture(GorgonTexture, GorgonTexture)"/> overload.
     /// </para>
     /// <para>
     /// When copying a region on a sub resource, and the destination sub resource does not have the same dimensions, it will be clipped against the smaller sub resource. This keeps from triggering a buffer 
@@ -661,11 +684,11 @@ public interface IGorgonCopyMethodsFluent<T>
     /// </para>
     /// <inheritdoc cref="CopyBuffer(GorgonGpuBufferCommon, GorgonGpuBufferCommon, long, long, long?)" path="/remarks/para[@type='endrequired']"/>
     /// </remarks>
-    /// <seealso cref="GorgonTextureCommon"/>
-    /// <seealso cref="CopyTexture(GorgonTextureCommon, GorgonTextureCommon)"/>
+    /// <seealso cref="GorgonTexture"/>
+    /// <seealso cref="CopyTexture(GorgonTexture, GorgonTexture)"/>
     /// <seealso cref="GorgonCopyTextureSubResource"/>
     /// <seealso cref="GorgonMultisampleInfo"/>
-    T CopyTexture(GorgonTextureCommon source, GorgonTextureCommon destination, ref readonly GorgonCopyTextureSubResource parameters);
+    T CopyTexture(GorgonTexture source, GorgonTexture destination, ref readonly GorgonCopyTextureSubResource parameters);
 
     /// <summary>
     /// Function to copy an entire texture into another.
@@ -673,15 +696,15 @@ public interface IGorgonCopyMethodsFluent<T>
     /// <param name="source">The texture to copy.</param>
     /// <param name="destination">The texture that will receive the data.</param>
     /// <inheritdoc cref="SetBarrier(GorgonTextureCommon, BarrierSync, BarrierAccess, BarrierLayout, GorgonSubResourceRange?, bool, bool)" path="/returns"/>
-    /// <exception cref="ArgumentException"><para><inheritdoc cref="CopyTexture(GorgonTextureCommon, GorgonTextureCommon, ref readonly GorgonCopyTextureSubResource)" path="/exception[@cref='T:System.ArgumentException']/node()"/></para></exception>
-    /// <exception cref="GorgonException"><para><inheritdoc cref="CopyTexture(GorgonTextureCommon, GorgonTextureCommon, ref readonly GorgonCopyTextureSubResource)" path="/exception[@cref='T:Gorgon.Core.GorgonException']/node()"/></para>
+    /// <exception cref="ArgumentException"><para><inheritdoc cref="CopyTexture(GorgonTexture, GorgonTexture, ref readonly GorgonCopyTextureSubResource)" path="/exception[@cref='T:System.ArgumentException']/node()"/></para></exception>
+    /// <exception cref="GorgonException"><para><inheritdoc cref="CopyTexture(GorgonTexture, GorgonTexture, ref readonly GorgonCopyTextureSubResource)" path="/exception[@cref='T:Gorgon.Core.GorgonException']/node()"/></para>
     /// <para>Thrown if the source texture and destination texture do not meet the restrictions for this method.</para>
     /// </exception>
     /// <remarks>
     /// <para type="common">
     /// <para>
     /// This method will copy the entirety of the <paramref name="source"/> texture to the <paramref name="destination"/> texture. This method is more efficient than copying individual subresources with the 
-    /// <see cref="CopyTexture(GorgonTextureCommon, GorgonTextureCommon, ref readonly GorgonCopyTextureSubResource)"/> method.
+    /// <see cref="CopyTexture(GorgonTexture, GorgonTexture, ref readonly GorgonCopyTextureSubResource)"/> method.
     /// </para>
     /// <para>
     /// However, this functionality has several restrictions. The source and destination texture must:
@@ -714,8 +737,8 @@ public interface IGorgonCopyMethodsFluent<T>
     /// <inheritdoc cref="CopyBuffer(GorgonGpuBufferCommon, GorgonGpuBufferCommon, long, long, long?)" path="/remarks/para[@type='endrequired']"/>
     /// </remarks>
     /// <seealso cref="TextureType"/>
-    /// <seealso cref="GorgonTextureCommon"/>
+    /// <seealso cref="GorgonTexture"/>
     /// <seealso cref="GorgonFormatInfo"/>
-    /// <seealso cref="CopyTexture(GorgonTextureCommon, GorgonTextureCommon, ref readonly GorgonCopyTextureSubResource)"/>
-    T CopyTexture(GorgonTextureCommon source, GorgonTextureCommon destination);
+    /// <seealso cref="CopyTexture(GorgonTexture, GorgonTexture, ref readonly GorgonCopyTextureSubResource)"/>
+    T CopyTexture(GorgonTexture source, GorgonTexture destination);
 }

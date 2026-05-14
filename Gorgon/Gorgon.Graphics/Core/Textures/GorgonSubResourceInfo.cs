@@ -21,7 +21,6 @@
 // Created: February 17, 2026 7:09:03 PM
 //
 
-using Gorgon.Graphics.Imaging;
 using TerraFX.Interop.DirectX;
 
 namespace Gorgon.Graphics.Core;
@@ -42,10 +41,10 @@ namespace Gorgon.Graphics.Core;
 /// <param name="Offset">The offset, in bytes, of the sub resource within the containing resource.</param>
 /// <remarks>
 /// <para>
-/// The <see cref="ArrayIndex"/> property is only for <see cref="TextureType.Texture1D"/> and <see cref="TextureType.Texture2D"/> textures. For <see cref="TextureType.Texture3D"/>, this wll always return 1.
+/// The <see cref="ArrayIndex"/> property is only for <see cref="TextureType.Texture1D"/> and <see cref="TextureType.Texture2D"/> textures. For <see cref="TextureType.Texture3D"/>, this will always return 0.
 /// </para>
 /// </remarks>
-public record class GorgonSubResourceInfo(int SubResourceIndex, int Width, int Height, int Depth, int ArrayIndex, int MipLevel, int Plane, int RowPitch, long RowSize, int RowCount, long Offset)
+public record class GorgonSubResourceInfo(int SubResourceIndex, int Width, short Height, short Depth, short ArrayIndex, short MipLevel, byte Plane, long RowPitch, long RowSize, int RowCount, long Offset)
 {
     /// <summary>
     /// Function to convert this information object into a Direct 3D sub resource foot print.
@@ -73,4 +72,54 @@ public record class GorgonSubResourceInfo(int SubResourceIndex, int Width, int H
     /// This value uses the <see cref="RowPitch"/> to calculate the size. This means the size may be larger than expected due to alignment.
     /// </remarks>
     public long SizeInBytes => RowPitch * RowCount;
+}
+
+
+/// <summary>
+/// Tile information for each sub resource tiles in the texture.
+/// </summary>
+/// <param name="SubResourceIndex">The index of the sub resource.</param>
+/// <param name="Width">The width, in tiles, for the sub resource.</param>
+/// <param name="Height">The height, in tiles, for the sub resource.</param>
+/// <param name="Depth">The depth, in tiles, for the sub resource.</param>
+/// <param name="ArrayIndex">The array index of the sub resource.</param>
+/// <param name="MipLevel">The mip level of the sub resource.</param>
+/// <param name="MipCount">The number of mip levels for the tile.</param>
+/// <remarks>
+/// <para>
+/// For multiple texture mip levels that can fit into a single tile, the <see cref="MipCount"/> value will be set to the number of mip levels that can be contained in that single tile. In most cases, this 
+/// will be set to 1.
+/// </para>
+/// <para>
+/// The <see cref="ArrayIndex"/> property is only for <see cref="TextureType.Texture2D"/> textures. For <see cref="TextureType.Texture3D"/>, this will always return 0.
+/// </para>
+/// <para>
+/// <note type="information">
+/// The size of a tile is 64KB (65536 bytes).
+/// </note>
+/// </para>
+/// </remarks>
+public record class GorgonSubResourceTileInfo(int SubResourceIndex, int Width, short Height, short Depth, short ArrayIndex, short MipLevel, short MipCount)
+{
+    /// <summary>
+    /// Property to return the number of tiles where the sub resource begins.
+    /// </summary>
+    internal int TileOffset
+    {
+        get;
+        init;
+    }    
+
+    /// <summary>
+    /// Property to return the total size, in tiles, of the sub resource.
+    /// </summary>
+    public int SizeInTiles => Width * Height * Depth;
+
+    /// <summary>
+    /// Property to return the size, in bytes, of the sub resource.
+    /// </summary>
+    /// <remarks>
+    /// This is the total size of the sub resource <see cref="SizeInTiles">tiles</see>, converted to bytes.
+    /// </remarks>
+    public long SizeInBytes => SizeInTiles * 65536;
 }

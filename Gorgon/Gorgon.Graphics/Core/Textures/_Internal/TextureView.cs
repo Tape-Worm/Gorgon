@@ -43,112 +43,62 @@ namespace Gorgon.Graphics.Core;
 /// <summary>
 /// A view for a texture resource.
 /// </summary>
-/// <remarks>
-/// <para>
-/// TODO: Write something here.
-/// </para>
-/// </remarks>
-public unsafe sealed class GorgonTextureView
-    : GorgonResourceView
+internal unsafe sealed class TextureView<T>
+    : GorgonResourceView, IGorgonTextureView<T>
+    where T : GorgonTextureCommon
 {
     private GpuDescriptorAllocation _allocation = GpuDescriptorAllocation.Null;
     private GpuDescriptorHeap _descriptors;
 
-    /// <summary>
-    /// Property to return the texture used by this view.
-    /// </summary>
-    /// <remarks>
-    /// This value is a strongly typed version of the <see cref="GorgonResourceView.Resource"/> property and point to the same object.
-    /// </remarks>
-    public GorgonTextureCommon Texture
+    /// <inheritdoc/>
+    public T Texture
     {
         get;
     }
 
-    /// <summary>
-    /// Property to return the format information for the <see cref="Format"/>.
-    /// </summary>
+    /// <inheritdoc/>
     public GorgonFormatInfo FormatInfo
     {
         get;
     }
 
-    /// <summary>
-    /// Property to return the format for the view.
-    /// </summary>
+    /// <inheritdoc/>
     public BufferFormat Format
     {
         get;
     }
 
-    /// <summary>
-    /// Property to return the first mip level in the view.
-    /// </summary>
-    /// <remarks>
-    /// <para>
-    /// The <see cref="MinimumLodClamp"/> value should be set to zero if this value is non-zero.
-    /// </para>
-    /// </remarks>
+    /// <inheritdoc/>
     public short MipLevel
     {
         get;
     }
 
-    /// <summary>
-    /// Property to return the number of mip levels in the view.
-    /// </summary>
+    /// <inheritdoc/>
     public short MipCount
     {
         get;
     }
 
-    /// <summary>
-    /// Property to return the first array index within the buffer to start the view at.
-    /// </summary>
-    /// <remarks>
-    /// <para>
-    /// This value only applies to textures that have a <see cref="GorgonTextureCommon.Type"/> of <see cref="TextureType.Texture1D"/>, or <see cref="TextureType.Texture2D"/>.
-    /// </para>
-    /// </remarks>
-    /// <seealso cref="TextureType"/>
+    /// <inheritdoc/>
     public short ArrayIndex
     {
         get;
     }
 
-    /// <summary>
-    /// Property to return the number of array indices in the view.
-    /// </summary>
-    /// <remarks>
-    /// <para>
-    /// This value only applies to textures that have a <see cref="GorgonTextureCommon.Type"/> of <see cref="TextureType.Texture1D"/>, or <see cref="TextureType.Texture2D"/>.
-    /// </para>
-    /// </remarks>
-    /// <seealso cref="TextureType"/>
+    /// <inheritdoc/>
     public short ArrayCount
     {
         get;
     }
 
-    /// <summary>
-    /// Property to return the minimum LOD clamp that can be accessed by the view.
-    /// </summary>
-    /// <remarks>
-    /// <para>
-    /// A value of 0 indicates that the entire mip chain is accessible, specifying 3.0f means that mip map levels from 3.0 to <see cref="GorgonTextureCommon.MipCount"/><c>-1</c> are accessible.
-    /// </para>
-    /// <para>
-    /// The <see cref="MipLevel"/> value should be set to zero if this value is non-zero.
-    /// </para>
-    /// </remarks>
+    /// <inheritdoc/>
     public float MinimumLodClamp
     {
         get;
     }
 
-    /// <summary>
-    /// Property to return the the index of the plane in a planar format to use in the view.
-    /// </summary>
+    /// <inheritdoc/>
     public byte PlaneIndex
     {
         get;
@@ -356,10 +306,7 @@ public unsafe sealed class GorgonTextureView
         }        
     }
 
-    /// <summary>
-    /// Function to retrieve the handle of the view, which is used to pass to a shader for resource heap indexing.
-    /// </summary>
-    /// <returns>The handle of the view.</returns>
+    /// <inheritdoc/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int GetViewHandle()
     {
@@ -372,204 +319,7 @@ public unsafe sealed class GorgonTextureView
     }
 
     /// <summary>
-    /// Function to create a 1D texture and its default view.
-    /// </summary>
-    /// <param name="graphics">The graphics interface associated with the texture and view.</param>
-    /// <param name="name">The name of the texture and view.</param>
-    /// <param name="format">The texel format for the texture and view.</param>
-    /// <param name="width">The width of the texture, in pixels.</param>
-    /// <param name="mipCount">[Optional] The number of mip map levels in the texture.</param>
-    /// <param name="arrayCount">[Optional] The number of array indices in the texture.</param>
-    /// <returns>A new <see cref="GorgonTextureView"/> and its associated <see cref="GorgonTextureCommon"/>.</returns>
-    /// <exception cref="GorgonException">
-    /// <b>Texture Exceptions</b>
-    /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[1]"/>
-    /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[4]"/>
-    /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[5]"/>
-    /// <b>View Exceptions</b>
-    /// <inheritdoc cref="ValidateTextureView(string, GorgonFormatInfo, GorgonFormatInfo, IReadOnlyList{BufferFormat}, byte, bool, bool)" path="/exception/para[2]"/>
-    /// <inheritdoc cref="ValidateTextureView(string, GorgonFormatInfo, GorgonFormatInfo, IReadOnlyList{BufferFormat}, byte, bool, bool)" path="/exception/para[5]"/>
-    /// </exception>
-    /// <remarks>
-    /// <para>
-    /// TODO:
-    /// </para>
-    /// </remarks>
-    public static GorgonTextureView Create1DTexture(GorgonGraphics graphics, string name, BufferFormat format, int width, short mipCount = 1, short arrayCount = 1)
-    {
-        GorgonTextureInfo info = GorgonTextureInfo.Create1DTextureInfo(format, width, mipCount, arrayCount);
-        GorgonTexture texture = new(graphics, name, info);
-
-        try
-        {
-            return texture.GetTextureView(format, 0, mipCount, 0, texture.ArrayCount, 0, 0, true);
-        }
-        catch
-        {
-            texture.Dispose();
-            throw;
-        }
-    }
-
-    /// <summary>
-    /// Function to create a 2D texture and its default view.
-    /// </summary>
-    /// <param name="graphics"><inheritdoc cref="Create1DTexture(GorgonGraphics, string, BufferFormat, int, short, short)" path="/param[@name='graphics']"/></param>
-    /// <param name="name"><inheritdoc cref="Create1DTexture(GorgonGraphics, string, BufferFormat, int, short, short)" path="/param[@name='name']"/></param>
-    /// <param name="format"><inheritdoc cref="Create1DTexture(GorgonGraphics, string, BufferFormat, int, short, short)" path="/param[@name='format']"/></param>
-    /// <param name="width"><inheritdoc cref="Create1DTexture(GorgonGraphics, string, BufferFormat, int, short, short)" path="/param[@name='width']"/></param>
-    /// <param name="height">The height of the texture, in pixels.</param>
-    /// <param name="mipCount"><inheritdoc cref="Create1DTexture(GorgonGraphics, string, BufferFormat, int, short, short)" path="/param[@name='mipCount']"/></param>
-    /// <param name="arrayCount"><inheritdoc cref="Create1DTexture(GorgonGraphics, string, BufferFormat, int, short, short)" path="/param[@name='arrayCount']"/></param>
-    /// <inheritdoc cref="Create1DTexture(GorgonGraphics, string, BufferFormat, int, short, short)" path="/returns"/>
-    /// <exception cref="GorgonException">
-    /// <b>Texture Exceptions</b>
-    /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[1]"/>
-    /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[3]"/>
-    /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[10]"/>
-    /// <b>View Exceptions</b>
-    /// <inheritdoc cref="ValidateTextureView(string, GorgonFormatInfo, GorgonFormatInfo, IReadOnlyList{BufferFormat}, byte, bool, bool)" path="/exception/para[2]"/>
-    /// <inheritdoc cref="ValidateTextureView(string, GorgonFormatInfo, GorgonFormatInfo, IReadOnlyList{BufferFormat}, byte, bool, bool)" path="/exception/para[5]"/>
-    /// </exception>
-    /// <remarks>
-    /// <para>
-    /// TODO:
-    /// </para>
-    /// </remarks>
-    public static GorgonTextureView Create2DTexture(GorgonGraphics graphics, string name, BufferFormat format, int width, int height, short mipCount = 1, short arrayCount = 1)
-    {
-        GorgonTextureInfo info = GorgonTextureInfo.Create2DTextureInfo(format, width, height, mipCount, arrayCount);
-        GorgonTexture texture = new(graphics, name, info);
-
-        try
-        {
-            return texture.GetTextureView(format, 0, mipCount, 0, texture.ArrayCount, 0, 0, true);
-        }
-        catch
-        {
-            texture.Dispose();
-            throw;
-        }
-    }
-
-    /// <summary>
-    /// Function to create a cube texture and its default view.
-    /// </summary>
-    /// <param name="graphics"><inheritdoc cref="Create1DTexture(GorgonGraphics, string, BufferFormat, int, short, short)" path="/param[@name='graphics']"/></param>
-    /// <param name="name"><inheritdoc cref="Create1DTexture(GorgonGraphics, string, BufferFormat, int, short, short)" path="/param[@name='name']"/></param>
-    /// <param name="format"><inheritdoc cref="Create1DTexture(GorgonGraphics, string, BufferFormat, int, short, short)" path="/param[@name='format']"/></param>
-    /// <param name="width"><inheritdoc cref="Create1DTexture(GorgonGraphics, string, BufferFormat, int, short, short)" path="/param[@name='width']"/></param>
-    /// <param name="height"><inheritdoc cref="Create2DTexture(GorgonGraphics, string, BufferFormat, int, int, short, short)" path="/param[@name='height']"/></param>
-    /// <param name="cubeCount">The number of cube textures. One cube has 6 array indices.</param>
-    /// <param name="mipCount"><inheritdoc cref="Create1DTexture(GorgonGraphics, string, BufferFormat, int, short, short)" path="/param[@name='mipCount']"/></param>    
-    /// <inheritdoc cref="Create1DTexture(GorgonGraphics, string, BufferFormat, int, short, short)" path="/returns"/>
-    /// <exception cref="GorgonException">
-    /// <b>Texture Exceptions</b>
-    /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[1]"/>
-    /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[3]"/>
-    /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[9]"/>
-    /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[10]"/>
-    /// <b>View Exceptions</b>
-    /// <inheritdoc cref="ValidateTextureView(string, GorgonFormatInfo, GorgonFormatInfo, IReadOnlyList{BufferFormat}, byte, bool, bool)" path="/exception/para[2]"/>
-    /// <inheritdoc cref="ValidateTextureView(string, GorgonFormatInfo, GorgonFormatInfo, IReadOnlyList{BufferFormat}, byte, bool, bool)" path="/exception/para[5]"/>
-    /// </exception>
-    /// <remarks>
-    /// <para>
-    /// TODO:
-    /// </para>
-    /// </remarks>
-    public static GorgonTextureView CreateCubeTexture(GorgonGraphics graphics, string name, BufferFormat format, int width, int height, short cubeCount = 1, short mipCount = 1)
-    {
-        GorgonTextureInfo info = GorgonTextureInfo.CreateTextureCubeInfo(format, width, height, mipCount, cubeCount);
-        GorgonTexture texture = new(graphics, name, info);
-
-        try
-        {
-            return texture.GetTextureView(format, 0, mipCount, 0, texture.ArrayCount, 0, 0, true);
-        }
-        catch
-        {
-            texture.Dispose();
-            throw;
-        }
-    }
-
-    /// <summary>
-    /// Function to create a 1D texture and its default view.
-    /// </summary>
-    /// <param name="graphics"><inheritdoc cref="Create1DTexture(GorgonGraphics, string, BufferFormat, int, short, short)" path="/param[@name='graphics']"/></param>
-    /// <param name="name"><inheritdoc cref="Create1DTexture(GorgonGraphics, string, BufferFormat, int, short, short)" path="/param[@name='name']"/></param>
-    /// <param name="format"><inheritdoc cref="Create1DTexture(GorgonGraphics, string, BufferFormat, int, short, short)" path="/param[@name='format']"/></param>
-    /// <param name="width"><inheritdoc cref="Create1DTexture(GorgonGraphics, string, BufferFormat, int, short, short)" path="/param[@name='width']"/></param>
-    /// <param name="height"><inheritdoc cref="Create2DTexture(GorgonGraphics, string, BufferFormat, int, int, short, short)" path="/param[@name='height']"/></param>
-    /// <param name="depth">The number of depth slices in the texture.</param>
-    /// <param name="mipCount"><inheritdoc cref="Create1DTexture(GorgonGraphics, string, BufferFormat, int, short, short)" path="/param[@name='mipCount']"/></param>
-    /// <inheritdoc cref="Create1DTexture(GorgonGraphics, string, BufferFormat, int, short, short)" path="/returns"/>
-    /// <exception cref="GorgonException">
-    /// <b>Texture Exceptions</b>
-    /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[1]"/>
-    /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[2]"/>    
-    /// <b>View Exceptions</b>
-    /// <inheritdoc cref="ValidateTextureView(string, GorgonFormatInfo, GorgonFormatInfo, IReadOnlyList{BufferFormat}, byte, bool, bool)" path="/exception/para[2]"/>
-    /// <inheritdoc cref="ValidateTextureView(string, GorgonFormatInfo, GorgonFormatInfo, IReadOnlyList{BufferFormat}, byte, bool, bool)" path="/exception/para[5]"/>
-    /// </exception>
-    /// <remarks>
-    /// <para>
-    /// TODO:
-    /// </para>
-    /// </remarks>
-    public static GorgonTextureView Create3DTexture(GorgonGraphics graphics, string name, BufferFormat format, int width, int height, short depth, short mipCount = 1)
-    {
-        GorgonTextureInfo info = GorgonTextureInfo.Create3DTextureInfo(format, width, height, depth, mipCount);
-        GorgonTexture texture = new(graphics, name, info);
-
-        try
-        {
-            return texture.GetTextureView(format, 0, mipCount, 0, 1, 0, 0, true);
-        }
-        catch
-        {
-            texture.Dispose();
-            throw;
-        }
-    }
-
-    /// <summary>
-    /// Function to create a texture and its default view from a <see cref="IGorgonImage"/>.
-    /// </summary>
-    /// <param name="graphics"><inheritdoc cref="Create1DTexture(GorgonGraphics, string, BufferFormat, int, short, short)" path="/param[@name='graphics']"/></param>
-    /// <param name="name"><inheritdoc cref="Create1DTexture(GorgonGraphics, string, BufferFormat, int, short, short)" path="/param[@name='name']"/></param>
-    /// <param name="image">The image to build the texture from.</param>
-    /// <inheritdoc cref="Create1DTexture(GorgonGraphics, string, BufferFormat, int, short, short)" path="/returns"/>
-    /// <exception cref="GorgonException">
-    /// <b>Texture Exceptions</b>
-    /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para"/>
-    /// <b>View Exceptions</b>
-    /// <inheritdoc cref="ValidateTextureView(string, GorgonFormatInfo, GorgonFormatInfo, IReadOnlyList{BufferFormat}, byte, bool, bool)" path="/exception/para"/>
-    /// </exception>
-    /// <remarks>
-    /// <para>
-    /// TODO:
-    /// </para>
-    /// </remarks>
-    /// <seealso cref="IGorgonImage"/>
-    public static GorgonTextureView CreateTexture(GorgonGraphics graphics, string name, IGorgonImage image)
-    {
-        GorgonTexture texture = GorgonTexture.FromImage(graphics, name, image);
-
-        try
-        {
-            return texture.GetTextureView(texture.Format, 0, texture.MipCount, 0, texture.ArrayCount, 0, 0, true);
-        }
-        catch
-        {
-            texture.Dispose();
-            throw;
-        }
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonTextureView"/> class.
+    /// Initializes a new instance of the <see cref="IGorgonTextureView{GorgonTexture}"/> class.
     /// </summary>
     /// <param name="graphics"><inheritdoc cref="GorgonResourceView(GorgonGraphics, string, GorgonGpuResource, bool)" path="/param[@name='graphics']"/></param>
     /// <param name="name"><inheritdoc cref="GorgonResourceView(GorgonGraphics, string, GorgonGpuResource, bool)" path="/param[@name='name']"/></param>
@@ -582,8 +332,8 @@ public unsafe sealed class GorgonTextureView
     /// <param name="minLodClamp">The minimum LOD resource clamp.</param>
     /// <param name="planeIndex">The index of the plane in a planar format.</param>
     /// <param name="owned"><inheritdoc cref="GorgonResourceView(GorgonGraphics, string, GorgonGpuResource, bool)" path="/param[@name='owned']"/></param>
-    internal GorgonTextureView(GorgonGraphics graphics, string name, GorgonTextureCommon texture, GorgonFormatInfo viewFormatInfo, short mipLevel, short mipCount, short arrayIndex, short arrayCount, float minLodClamp, byte planeIndex, bool owned)
-        : base(graphics, $"{GorgonGraphicsFactory.GenerateName(name, nameof(GorgonTextureView))} - Shader Resource View", texture, owned)
+    internal TextureView(GorgonGraphics graphics, string name, T texture, GorgonFormatInfo viewFormatInfo, short mipLevel, short mipCount, short arrayIndex, short arrayCount, float minLodClamp, byte planeIndex, bool owned)
+        : base(graphics, $"{GorgonGraphicsFactory.GenerateName(name, nameof(IGorgonTextureView<>))} - Shader Resource View", texture, owned)
     {
         _descriptors = graphics.Descriptors.GpuViewDescriptors;
 

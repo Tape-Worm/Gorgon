@@ -122,9 +122,11 @@ public sealed class GorgonStructuredBufferView
     /// </exception>
     /// <remarks>
     /// <para>
-    /// TODO:
+    /// This function is a convenience method that builds a buffer with a default view to pass to shaders as a shader resource. Buffers created with this method will be destroyed when the default view 
+    /// returned is disposed.
     /// </para>
     /// </remarks>
+    /// <seealso cref="IGorgonTextureView{T}"/>
     /// <seealso cref="GorgonGpuBuffer"/>
     public static unsafe GorgonStructuredBufferView CreateStructuredBuffer<T>(GorgonGraphics graphics, string name, int elementCount, bool allowReadWriteAccess = false)
         where T : unmanaged

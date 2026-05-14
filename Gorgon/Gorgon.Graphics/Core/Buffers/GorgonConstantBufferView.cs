@@ -193,7 +193,7 @@ public unsafe sealed class GorgonConstantBufferView
     /// </remarks>
     /// <example>
     /// <para>
-    /// The following code is an example of how to use Gorgon's bindless system to pass in views to a shader. The same pattern applies to all resource views, be that a <see cref="GorgonTextureView"/>, 
+    /// The following code is an example of how to use Gorgon's bindless system to pass in views to a shader. The same pattern applies to all resource views, be that a <see cref="IGorgonTextureView{T}"/>, 
     /// <see cref="GorgonStructuredBufferView"/>, <see cref="GorgonConstantBufferView"/>, etc... The only view types this does not apply to is the <see cref="GorgonRenderTargetView"/> and 
     /// <see cref="GorgonDepthStencilView"/> as they are assigned on the command list directly.
     /// </para>
@@ -251,6 +251,10 @@ public unsafe sealed class GorgonConstantBufferView
     /// </code>
     /// </example>
     /// <seealso cref="GorgonCommandList.WriteConstant{T}(int, in T)"/>
+    /// <seealso cref="GorgonRenderTargetView"/>
+    /// <seealso cref="GorgonDepthStencilView"/>
+    /// <seealso cref="GorgonStructuredBufferView"/>
+    /// <seealso cref="IGorgonTextureView{T}"/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int GetViewHandle()
     {

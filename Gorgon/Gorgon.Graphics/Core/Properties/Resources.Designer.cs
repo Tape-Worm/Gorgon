@@ -618,6 +618,15 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The parameter &apos;{0}&apos; must be less than, or equal to {1}..
+        /// </summary>
+        internal static string GORGFX_ERR_INVALID_PARAMETER_GREATER_THAN_VALUE {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_INVALID_PARAMETER_GREATER_THAN_VALUE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The parameter &apos;{0}&apos; must be greater than, or equal to {1}..
         /// </summary>
         internal static string GORGFX_ERR_INVALID_PARAMETER_LESS_THAN_VALUE {
@@ -632,6 +641,15 @@ namespace Gorgon.Graphics.Core.Properties {
         internal static string GORGFX_ERR_INVALID_RENDER_TARGET_FORMAT {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_INVALID_RENDER_TARGET_FORMAT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The texture type {0} is not supported by virtual textures..
+        /// </summary>
+        internal static string GORGFX_ERR_INVALID_VIRTUAL_TEXTURE_TYPE {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_INVALID_VIRTUAL_TEXTURE_TYPE", resourceCulture);
             }
         }
         
@@ -901,6 +919,15 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The texture handle 0x{0} does not exist on &apos;{1}&apos;..
+        /// </summary>
+        internal static string GORGFX_ERR_TEXTURE_HANDLE_DOES_NOT_EXIST {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_TEXTURE_HANDLE_DOES_NOT_EXIST", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The render target view does not support typeless formats..
         /// </summary>
         internal static string GORGFX_ERR_TEXTURE_RTV_FORMAT_TYPELESS_NOT_SUPPORTED {
@@ -1023,6 +1050,66 @@ namespace Gorgon.Graphics.Core.Properties {
         internal static string GORGFX_ERR_TEXTURE_VIEW_STENCIL_FORMAT_INVALID {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_TEXTURE_VIEW_STENCIL_FORMAT_INVALID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The virtual texture {0} cannot be a 3D texture. The device only supports {1}, and 3D virtual textures require tier 3 or better support..
+        /// </summary>
+        internal static string GORGFX_ERR_VIRTUAL_TEXTURE_3D_NOT_SUPPORTED {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_VIRTUAL_TEXTURE_3D_NOT_SUPPORTED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot allocate memory from the virtual texture &apos;{0}&apos;. The region defined for the texture is empty on at least 1 axis. .
+        /// </summary>
+        internal static string GORGFX_ERR_VIRTUAL_TEXTURE_ALLOCATE_INVALID_REGION {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_VIRTUAL_TEXTURE_ALLOCATE_INVALID_REGION", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The texture &apos;{0}&apos;&apos; has {1} mip levels, and {2} array indices. 
+        ///
+        ///Devices that do not support TiledResourcesTier.Tier4 can only support a single array index with multiple mip levels, or multiple array indices with a single mip level.
+        ///
+        ///The device &apos;{4}&apos; only supports {5}..
+        /// </summary>
+        internal static string GORGFX_ERR_VIRTUAL_TEXTURE_ARRAY_MIP_NOT_SUPPORTED {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_VIRTUAL_TEXTURE_ARRAY_MIP_NOT_SUPPORTED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The format {0} is not valid for the virtual texture &apos;{1}&apos;..
+        /// </summary>
+        internal static string GORGFX_ERR_VIRTUAL_TEXTURE_FORMAT_INVALID {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_VIRTUAL_TEXTURE_FORMAT_INVALID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The region specified already has allocated tiles on texture &apos;{0}&apos;..
+        /// </summary>
+        internal static string GORGFX_ERR_VIRTUAL_TEXTURE_REGION_ALLOCATED {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_VIRTUAL_TEXTURE_REGION_ALLOCATED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The minimum size, in bytes, for a virtual texture is 4 MB (4,194,304 bytes).
+        ///
+        ///The texture &apos;{0}&apos; is only {1} ({2:###,###,###,###,###,##0} bytes)..
+        /// </summary>
+        internal static string GORGFX_ERR_VIRTUAL_TEXTURE_TOO_SMALL {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_VIRTUAL_TEXTURE_TOO_SMALL", resourceCulture);
             }
         }
         

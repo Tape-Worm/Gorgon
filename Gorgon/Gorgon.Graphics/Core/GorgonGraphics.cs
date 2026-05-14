@@ -1102,6 +1102,7 @@ public unsafe sealed class GorgonGraphics
         Memory = new MemoryServices(new CpuResourceHeapPool(this, false), 
             new CpuResourceHeapPool(this, true), 
             new MegaBufferPool(this, bufferPercent),
+            new VirtualTextureTilePool(this),
             in allocator);
 
         Descriptors = new DescriptorServices(new GpuDescriptorHeap(this, D3D12_DESCRIPTOR_HEAP_TYPE.D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER, 2_048),

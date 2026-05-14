@@ -104,7 +104,7 @@ namespace Gorgon.Graphics.Core;
 /// </para>
 /// <para type="depth_buffer_usage">
 /// <para>
-/// <h2>Depth/Stencil Buffers</h2>
+/// <h3>Depth/Stencil Buffers</h3>
 /// </para>
 /// <para>
 /// If the texture is to be used as a write-only depth/stencil buffer, then its format must be one of the following:
@@ -124,7 +124,7 @@ namespace Gorgon.Graphics.Core;
 /// </list>
 /// </para>
 /// <para>
-/// However, if an application wishes to read the buffer in a shader as a <see cref="GorgonTextureView"/>, the format of the buffer must be one of the following typeless formats:
+/// However, if an application wishes to read the buffer in a shader as a <see cref="IGorgonTextureView{GorgonTexture}"/>, the format of the buffer must be one of the following typeless formats:
 /// <list type="bullet">
 ///     <item>
 ///         <term><see cref="BufferFormat.R16_Typeless"/></term>
@@ -144,33 +144,53 @@ namespace Gorgon.Graphics.Core;
 ///     </item>
 /// </list>
 /// </para>
+/// <para type="max_dimensions">
+/// Textures have a maximum size for array counts, width, height and depth depending on the <see cref="TextureType"/>.
+/// <list type="table">
+///     <listheader>
+///         <term><see cref="TextureType"/></term>
+///         <term>Maximum width</term>
+///         <term>Maximum height</term>
+///         <term>Maximum depth</term>
+///         <term>Maximum array count.</term>
+///     </listheader>
+///     <item>
+///         <description><see cref="TextureType.Texture1D"/></description>
+///         <description><see cref="GorgonTextureCommon.Max1DTextureWidth"/></description>
+///         <description>1</description>
+///         <description>1</description>
+///         <description><see cref="GorgonTextureCommon.Max1DArraySize"/></description>
+///     </item>
+///     <item>
+///         <description><see cref="TextureType.Texture2D"/></description>
+///         <description><see cref="GorgonTextureCommon.Max2DTextureWidth"/></description>
+///         <description><see cref="GorgonTextureCommon.Max2DTextureHeight"/></description>
+///         <description>1</description>
+///         <description><see cref="GorgonTextureCommon.Max2DArraySize"/></description>
+///     </item>
+///     <item>
+///         <description><see cref="TextureType.Texture3D"/></description>
+///         <description><see cref="GorgonTextureCommon.Max3DTextureWidth"/></description>
+///         <description><see cref="GorgonTextureCommon.Max3DTextureHeight"/></description>
+///         <description><see cref="GorgonTextureCommon.Max3DTextureDepth"/></description>
+///         <description>1</description>
+///     </item>
+/// </list>
+/// </para>
 /// </para>
 /// <inheritdoc cref="GorgonGpuBuffer" path="/remarks/para[@type='uav_readwrite']"/>
 /// </remarks>
-/// <seealso cref="GorgonTextureView"/>
+/// <seealso cref="GorgonTextureCommon"/>
+/// <seealso cref="IGorgonTextureView{GorgonTexture}"/>
 /// <seealso cref="BufferFormat"/>
+/// <seealso cref="TextureType"/>
 public sealed unsafe class GorgonTexture
     : GorgonTextureCommon
 {   
-    /// <summary>
-    /// A unique key for a view.
-    /// </summary>
-    /// <param name="Format">The format of the view.</param>
-    /// <param name="Value1">The first key value.</param>
-    /// <param name="Value2">The second key value.</param>
-    /// <param name="Value3">The third key value.</param>
-    /// <param name="Value4">The fourth key value.</param>
-    /// <param name="Value5">The fifth key value.</param>
-    /// <param name="Value6">The sixth key value.</param>
-    private readonly record struct ViewKey(short Format, short Value1, short Value2, short Value3, short Value4, int Value5, byte Value6);
-
     private ComPtr<D3D12MA_Allocation> _resourceAllocation;
 
     private readonly Lock _viewLock = new();
-    private readonly Dictionary<ViewKey, GorgonRenderTargetView> _rtvs = [];
     private readonly Dictionary<ViewKey, GorgonDepthStencilView> _dsvs = [];
-    private readonly Dictionary<ViewKey, GorgonTextureView> _srvs = [];
-    private readonly Dictionary<ViewKey, GorgonResourceView> _uavs = [];
     private readonly CpuResourceHeapPool _uploadHeaps;
 
     /// <summary>
@@ -356,19 +376,12 @@ public sealed unsafe class GorgonTexture
         if (disposing)
         {
             // Remove all the child views.
-            foreach (GorgonResourceView view in _rtvs.Values.Cast<GorgonResourceView>()
-                                                            .Concat(_dsvs.Values.Cast<GorgonResourceView>())
-                                                            .Concat(_srvs.Values.Cast<GorgonResourceView>())
-                                                            .Concat(_uavs.Values.Cast<GorgonResourceView>())
-                                                            .Where(v => !v.OwnsResource))
+            foreach (GorgonResourceView view in _dsvs.Values.Where(v => !v.OwnsResource))
             {
                 view.Dispose();
             }
 
-            _rtvs.Clear();
             _dsvs.Clear();
-            _srvs.Clear();
-            _uavs.Clear();            
         }
 
         _resourceAllocation.Dispose();
@@ -417,278 +430,28 @@ public sealed unsafe class GorgonTexture
             resource.GetTextureView();
         }
 
-        GorgonRenderTargetView view = new(swapChain.Graphics, $"{backBufferName} render target view", resource, resource.FormatInfo, 0, 0, 1, 0, true);
-        ViewKey key = new((short)view.Format, 0, 0, 1, 0, 0, 0);
-        resource._rtvs[key] = view;
+        // Get a default view for the texture.
+        resource.GetRenderTargetView(resource.Format, resource.MipCount, 0, resource.ArrayCount, 0, true);
 
         return resource;
     }
 
     /// <summary>
-    /// Function to retrieve a <see cref="GorgonTextureView"/> to pass to shaders.
-    /// </summary>
-    /// <param name="format">[Optional] The format to view the texture with.</param>
-    /// <param name="mipLevel">[Optional] The first mip level in the view.</param>
-    /// <param name="mipCount">[Optional] The number of mip levels to view.</param>
-    /// <param name="arrayIndex">[Optional] The first array index in the view.</param>
-    /// <param name="arrayCount">[Optional] The number of array indices in the view.</param>
-    /// <param name="resourceMinLodClamp">[Optional] The minimum mip level that you can access.</param>
-    /// <param name="planeIndex">[Optional] The index of the format plane to use.</param>
-    /// <param name="owned"><b>true</b> if the texture is owned by the view, or <b>false</b> if not.</param>
-    /// <returns>The <see cref="GorgonTextureView"/> for the texture.</returns>
-    /// <inheritdoc cref="GorgonTextureView.ValidateTextureView(string, GorgonFormatInfo, GorgonFormatInfo, IReadOnlyList{BufferFormat}, byte, bool, bool)" path="/exception"/>
-    /// <remarks>
-    /// <para>
-    /// This allows access to textures, in shaders, as a resource. The view allows for accessing a piece of the texture, like a single or multiple mip map levels, array indices, and format planes. It also 
-    /// allows for accessing the entire texture.
-    /// </para>
-    /// <para type="param_constraints">
-    /// All parameters that access a portion of the physical texture, are clamped against the texture's minimum and maximum values for mip levels, array indices, and format plane count. 
-    /// </para>
-    /// <para>
-    /// If the <paramref name="arrayCount"/>, or <paramref name="mipCount"/> are less than 1, then this will ensure the view uses the remainder (starting from <paramref name="mipLevel"/> or 
-    /// <paramref name="arrayIndex"/>) of the texture for the view.
-    /// </para>
-    /// <para type="format_casting">
-    /// The <paramref name="format"/> can be any format that the texture's <see cref="GorgonTextureCommon.Format"/> can cast to. To determine which formats the texture 
-    /// <see cref="GorgonTextureCommon.Format"/> can be casted into, check the <see cref="GorgonTextureCommon.CompatibleFormats"/> list. Even if this list is empty, as long as the texture and view format 
-    /// belong to the same <see cref="GorgonFormatInfo.Group"/> the format can be casted. To check whether the formats belong to the same group, use the <see cref="GorgonFormatInfo.Group"/> property on the 
-    /// <see cref="GorgonFormatInfo"/> object. The <see cref="GorgonTexture"/> object already has information about its format via the <see cref="GorgonTextureCommon.FormatInfo"/> property.
-    /// </para>
-    /// <para>
-    /// <h2>Special Considerations</h2>
-    /// </para>
-    /// <para>
-    /// <h3><see cref="GorgonTextureCommon.IsDepthStencil">Depth/Stencil</see></h3>
-    /// </para>
-    /// <para>
-    /// A <see cref="GorgonTextureView"/> cannot be created for a texture that has a depth/stencil format of:
-    /// <list type="bullet">
-    ///     <item>
-    ///         <description><see cref="BufferFormat.D16_UNorm"/></description>
-    ///     </item>
-    ///     <item>
-    ///         <description><see cref="BufferFormat.D32_Float"/></description>
-    ///     </item>
-    ///     <item>
-    ///         <description><see cref="BufferFormat.D24_UNorm_S8_UInt"/></description>
-    ///     </item>
-    ///     <item>
-    ///         <description><see cref="BufferFormat.D32_Float_S8X24_UInt"/></description>
-    ///     </item>
-    /// </list>
-    /// Attempting to retrieve a view with a texture created with these formats will throw an exception.
-    /// </para>
-    /// <para>
-    /// If a view is required for a depth/stencil texture, the texture must be created with one of the following <b>typeless</b> formats:
-    /// <list type="bullet">
-    ///     <item>
-    ///         <description><see cref="BufferFormat.R16_Typeless"/></description>
-    ///     </item>
-    ///     <item>
-    ///         <description><see cref="BufferFormat.R32_Typeless"/></description>
-    ///     </item>
-    ///     <item>
-    ///         <description><see cref="BufferFormat.R24G8_Typeless"/></description>
-    ///     </item>
-    ///     <item>
-    ///         <description><see cref="BufferFormat.R32G8X24_Typeless"/></description>
-    ///     </item>
-    /// </list>
-    /// Plus, the view <paramref name="format"/> must be one of the following formats, and plane indices (0 for the depth portion, 1 for the stencil portion):
-    /// <list type="table">
-    ///     <listheader>
-    ///         <term>Texture Format</term>
-    ///         <term>Depth Format</term>
-    ///         <term>Stencil Format</term>
-    ///         <term><paramref name="planeIndex"/></term>
-    ///     </listheader>
-    ///     <item>
-    ///         <description><see cref="BufferFormat.R16_Typeless"/></description>
-    ///         <description><see cref="BufferFormat.R16_UNorm"/></description>
-    ///         <description>N/A</description>
-    ///         <description>0</description>
-    ///     </item>
-    ///     <item>
-    ///         <description><see cref="BufferFormat.R32_Typeless"/></description>
-    ///         <description><see cref="BufferFormat.R32_Float"/></description>
-    ///         <description>N/A</description>
-    ///         <description>0</description>
-    ///     </item>
-    ///     <item>
-    ///         <description><see cref="BufferFormat.R24G8_Typeless"/></description>
-    ///         <description><see cref="BufferFormat.R24_UNorm_X8_Typeless"/></description>
-    ///         <description><see cref="BufferFormat.X24_Typeless_G8_UInt"/></description>
-    ///         <description>1</description>
-    ///     </item>
-    ///     <item>
-    ///         <description><see cref="BufferFormat.R32G8X24_Typeless"/></description>
-    ///         <description><see cref="BufferFormat.R32_Float_X8X24_Typeless"/></description>
-    ///         <description><see cref="BufferFormat.X32_Typeless_G8X24_UInt"/></description>
-    ///         <description>1</description>
-    ///     </item>
-    /// </list>
-    /// If any of these requirements are not met, then an exception will be thrown.
-    /// </para>
-    /// <para>
-    /// <h3>Planar Formats</h3>
-    /// </para>
-    /// <para>
-    /// The <paramref name="format"/> must not be a planar format, if it is, then an exception will be thrown. If the texture <see cref="GorgonTextureCommon.Format"/> is planar, then no validation is 
-    /// performed by Gorgon. However, the underlying Direct3D 12 runtime will show an error if a constraint is violated. Applications can receive debug information from the underlying runtime by creating the 
-    /// <see cref="GorgonGraphicsFactory"/> with debugging flags pass to the constructor, and calling the <see cref="GorgonGraphics.RegisterDebugInformationCallback(GorgonDebugInformationCallback)"/> 
-    /// method to receive the debug messages.
-    /// </para>
-    /// </remarks>
-    /// <seealso cref="GorgonTextureView"/>
-    /// <seealso cref="GorgonFormatInfo"/>
-    /// <seealso cref="GorgonGraphicsFactory"/>
-    /// <seealso cref="GorgonGraphics.RegisterDebugInformationCallback(GorgonDebugInformationCallback)"/>
-    /// <seealso cref="BufferFormat"/>
-    /// <seealso cref="GorgonTextureCommon.CompatibleFormats"/>
-    internal GorgonTextureView GetTextureView(BufferFormat format, short mipLevel, short mipCount, short arrayIndex, short arrayCount, float resourceMinLodClamp, byte planeIndex, bool owned)
-    {
-        using (_viewLock.EnterScope())
-        {
-            if (format == BufferFormat.Unknown)
-            {
-                format = Format;
-            }
-
-            byte planeCount = Graphics.FormatSupport[format].PlaneCount;
-
-            mipLevel = mipLevel.Max(0).Min((short)(MipCount - 1));
-            arrayIndex = arrayIndex.Max(0).Min((short)(ArrayCount - 1));
-
-            if (mipCount <= 0)
-            {
-                mipCount = (short)(MipCount - mipLevel);
-            }
-            else
-            {
-                mipCount = mipCount.Min((short)(MipCount - mipLevel)).Max(1);
-            }
-
-            if (arrayCount <= 0)
-            {
-                arrayCount = (short)(ArrayCount - arrayIndex);
-            }
-            else
-            {
-                arrayCount = arrayCount.Min((short)(ArrayCount - arrayIndex)).Max(1);
-            }
-
-            planeIndex = planeIndex.Min((byte)(planeCount - 1));
-
-            int lodClamp = *((int*)(&resourceMinLodClamp));
-
-            ViewKey key = new((short)format, mipLevel, mipCount, arrayIndex, arrayCount, lodClamp, planeIndex);
-
-            if (_srvs.TryGetValue(key, out GorgonTextureView? result))
-            {
-                return result;
-            }
-
-            GorgonFormatInfo viewFormatInfo = format == Format ? FormatInfo : new GorgonFormatInfo(format);
-            GorgonTextureView.ValidateTextureView(Name, FormatInfo, viewFormatInfo, CompatibleFormats, planeIndex, IsShaderResource, IsDepthStencil);
-
-            return _srvs[key] = new(Graphics, Name, this, viewFormatInfo, mipLevel, mipCount, arrayIndex, arrayCount, resourceMinLodClamp, planeIndex, owned);
-        }
-    }
-
-    /// <summary>
-    /// Function to retrieve a <see cref="GorgonRenderTargetView"/> to allow this texture to be used as a render target.
-    /// </summary>
-    /// <param name="format"><inheritdoc cref="GetTextureView(BufferFormat, short, short, short, short, float, byte, bool)" path="/param[@name='format']"/></param>
-    /// <param name="mipLevel">[Optional] The mip map level in the texture to view.</param>
-    /// <param name="arrayIndexOrDepthSlice">[Optional] For 1D and 2D textures, the first array index to view. For 3D textures, the first depth slice to view.</param>
-    /// <param name="arrayCountOrDepthCount">[Optional] For 1D and 2D textures, the number of array indices to view. For 3D textures, the number of depth slices to view.</param>
-    /// <param name="planeIndex"><inheritdoc cref="GetTextureView(BufferFormat, short, short, short, short, float, byte, bool)" path="/param[@name='planeIndex']"/></param>
-    /// <param name="owned"><inheritdoc cref="GetTextureView(BufferFormat, short, short, short, short, float, byte, bool)" path="/param[@name='owned']"/></param>
-    /// <returns>The <see cref="GorgonRenderTargetView"/> for the texture.</returns>
-    /// <inheritdoc cref="GorgonRenderTargetView.ValidateRenderTargetView(string, GorgonBufferFormatSupport, GorgonFormatInfo, GorgonFormatInfo, IReadOnlyList{BufferFormat}, bool)" path="/exception"/>
-    /// <remarks>
-    /// <para>
-    /// This allows textures to be used as a render target output. 
-    /// </para>
-    /// <inheritdoc cref="GetTextureView(BufferFormat, short, short, short, short, float, byte, bool)" path="/remarks/para[@type='param_constraints']"/>
-    /// <para>
-    /// If the <see cref="Type"/> is <see cref="TextureType.Texture3D"/>, then <paramref name="arrayIndexOrDepthSlice"/> and <paramref name="arrayCountOrDepthCount"/> will indicate the depth slice; otherwise 
-    /// it will indicate the array indices.
-    /// </para>
-    /// <para>
-    /// If the <paramref name="arrayCountOrDepthCount"/> is less than 1, then this will ensure the view uses the remainder (starting from <paramref name="arrayIndexOrDepthSlice"/>) of the texture for the 
-    /// view.
-    /// </para>
-    /// <inheritdoc cref="GetTextureView(BufferFormat, short, short, short, short, float, byte, bool)" path="/remarks/para[@type='format_casting']"/>
-    /// <para>
-    /// The texture must have been created as a render target by passing the <see cref="GorgonTextureInfo"/> with its <see cref="GorgonTextureInfo.IsRenderTarget"/> set to <b>true</b> when creating the 
-    /// texture. If the texture was not created as a render target, then an exception will be thrown.
-    /// </para>
-    /// <para>
-    /// The <paramref name="format"/> cannot be a typeless format, and must be supported by render targets. This can be found on the <see cref="GorgonBufferFormatSupport.IsRenderTargetFormat"/> property on 
-    /// the <see cref="GorgonBufferFormatSupport"/> object on the <see cref="GorgonGraphics.FormatSupport"/> property. If these conditions are not met, then an exception will be thrown.
-    /// </para>
-    /// </remarks>
-    /// <seealso cref="GorgonRenderTargetView"/>
-    /// <seealso cref="GorgonFormatInfo"/>
-    /// <seealso cref="GorgonTextureInfo"/>
-    /// <seealso cref="BufferFormat"/>
-    /// <seealso cref="GorgonTextureCommon.CompatibleFormats"/>
-    internal GorgonRenderTargetView GetRenderTargetView(BufferFormat format, short mipLevel, short arrayIndexOrDepthSlice, short arrayCountOrDepthCount, byte planeIndex, bool owned)
-    {
-        using (_viewLock.EnterScope())
-        {
-            if (format == BufferFormat.Unknown)
-            {
-                format = Format;
-            }
-
-            byte planeCount = Graphics.FormatSupport[format].PlaneCount;
-
-            mipLevel = mipLevel.Max(0).Min((short)(MipCount - 1));
-            arrayIndexOrDepthSlice = arrayIndexOrDepthSlice.Max(0).Min((short)(Type == TextureType.Texture3D ? Depth - 1 : ArrayCount - 1));
-            planeIndex = planeIndex.Max(0).Min((byte)(planeCount - 1));
-
-            if (arrayCountOrDepthCount <= 0)
-            {
-                arrayCountOrDepthCount = (short)(Type == TextureType.Texture3D ? Depth - arrayIndexOrDepthSlice : ArrayCount - arrayIndexOrDepthSlice);
-            }
-            else
-            {
-                arrayCountOrDepthCount = arrayCountOrDepthCount.Min((short)(Type == TextureType.Texture3D ? Depth - arrayIndexOrDepthSlice : ArrayCount - arrayIndexOrDepthSlice)).Max(1);
-            }
-
-            ViewKey key = new((short)format, mipLevel, arrayIndexOrDepthSlice, arrayCountOrDepthCount, planeIndex, 0, 0);
-
-            if (_rtvs.TryGetValue(key, out GorgonRenderTargetView? result))
-            {
-                return result;
-            }
-
-            GorgonFormatInfo formatInfo = format == Format ? FormatInfo : new GorgonFormatInfo(format);
-            GorgonRenderTargetView.ValidateRenderTargetView(Name, Graphics.FormatSupport[format], FormatInfo, formatInfo, CompatibleFormats, IsRenderTarget);
-
-            return _rtvs[key] = new(Graphics, Name, this, formatInfo, mipLevel, arrayIndexOrDepthSlice, arrayCountOrDepthCount, planeIndex, owned);
-        }
-    }
-
-    /// <summary>
     /// Function to retrieve a <see cref="GorgonDepthStencilView"/> to allow this texture to be used as a depth/stencil buffer.
     /// </summary>
-    /// <param name="format"><inheritdoc cref="GetTextureView(BufferFormat, short, short, short, short, float, byte, bool)" path="/param[@name='format']"/></param>
+    /// <param name="format"><inheritdoc cref="GorgonTextureCommon.GetTextureView(BufferFormat, short, short, short, short, float, byte, bool)" path="/param[@name='format']"/></param>
     /// <param name="access">[Optional] The access flags for the view.</param>
     /// <param name="mipLevel">[Optional] The mip map level in the texture to view.</param>
     /// <param name="arrayIndex">[Optional] The first array index to view.</param>
     /// <param name="arrayCount">[Optional] The number of array indices to view.</param>
-    /// <param name="owned"><inheritdoc cref="GetTextureView(BufferFormat, short, short, short, short, float, byte, bool)" path="/param[@name='owned']"/></param>
+    /// <param name="owned"><inheritdoc cref="GorgonTextureCommon.GetTextureView(BufferFormat, short, short, short, short, float, byte, bool)" path="/param[@name='owned']"/></param>
     /// <returns>The <see cref="GorgonDepthStencilView"/> for the texture.</returns>
     /// <inheritdoc cref="GorgonDepthStencilView.ValidateDepthStencilView(string, GorgonBufferFormatSupport, GorgonFormatInfo, GorgonFormatInfo, bool)" path="/exception"/>
     /// <remarks>
     /// <para>
     /// This allows textures to be used as a depth/stencil buffer. 
     /// </para>
-    /// <inheritdoc cref="GetTextureView(BufferFormat, short, short, short, short, float, byte, bool)" path="/remarks/para[@type='param_constraints']"/>
+    /// <inheritdoc cref="GorgonTextureCommon.GetTextureView(BufferFormat, short, short, short, short, float, byte, bool)" path="/remarks/para[@type='param_constraints']"/>
     /// <para>
     /// If the <paramref name="arrayCount"/> is less than 1, then this will ensure the view uses the remainder (starting from <paramref name="arrayIndex"/>) of the texture for the view.
     /// </para>
@@ -707,7 +470,7 @@ public sealed unsafe class GorgonTexture
     /// If the texture is a write only depth/stencil texture with a depth/stencil <see cref="GorgonTextureCommon.Format"/>, then the view <paramref name="format"/> must match. 
     /// </para>
     /// <para>
-    /// If the depth/stencil is meant to be read in a shader, and needs a <see cref="GorgonTextureView"/>, then the texture must be created with a typeless <see cref="BufferFormat"/>. The following table 
+    /// If the depth/stencil is meant to be read in a shader, and needs a <see cref="IGorgonTextureView{GorgonTexture}"/>, then the texture must be created with a typeless <see cref="BufferFormat"/>. The following table 
     /// indicates the formats required for reading depth/stencil textures:
     /// <list type="table">
     ///     <listheader>
@@ -744,7 +507,7 @@ public sealed unsafe class GorgonTexture
     /// </para>
     /// </remarks>
     /// <seealso cref="GorgonDepthStencilView"/>
-    /// <seealso cref="GorgonTextureView"/>
+    /// <seealso cref="IGorgonTextureView{GorgonTexture}"/>
     /// <seealso cref="GorgonFormatInfo"/>
     /// <seealso cref="GorgonTextureInfo"/>
     /// <seealso cref="BufferFormat"/>
@@ -784,38 +547,6 @@ public sealed unsafe class GorgonTexture
     }
 
     /// <summary>
-    /// <inheritdoc cref="GetRenderTargetView(BufferFormat, short, short, short, byte, bool)" path="/summary"/>
-    /// </summary>
-    /// <param name="format"><inheritdoc cref="GetRenderTargetView(BufferFormat, short, short, short, byte, bool)" path="/param[@name='format']"/></param>
-    /// <param name="mipLevel"><inheritdoc cref="GetRenderTargetView(BufferFormat, short, short, short, byte, bool)" path="/param[@name='mipLevel']"/></param>
-    /// <param name="arrayIndexOrDepthSlice"><inheritdoc cref="GetRenderTargetView(BufferFormat, short, short, short, byte, bool)" path="/param[@name='arrayIndexOrDepthSlice']"/></param>
-    /// <param name="arrayCountOrDepthCount"><inheritdoc cref="GetRenderTargetView(BufferFormat, short, short, short, byte, bool)" path="/param[@name='arrayCountOrDepthCount']"/></param>
-    /// <param name="planeIndex"><inheritdoc cref="GetRenderTargetView(BufferFormat, short, short, short, byte, bool)" path="/param[@name='planeIndex']"/></param>
-    /// <inheritdoc cref="GetRenderTargetView(BufferFormat, short, short, short, byte, bool)" path="/returns"/>
-    /// <inheritdoc cref="GetRenderTargetView(BufferFormat, short, short, short, byte, bool)" path="/exception"/>
-    /// <inheritdoc cref="GetRenderTargetView(BufferFormat, short, short, short, byte, bool)" path="/remarks"/>
-    /// <inheritdoc cref="GetRenderTargetView(BufferFormat, short, short, short, byte, bool)" path="/seealso"/>
-    public GorgonRenderTargetView GetRenderTargetView(BufferFormat format = BufferFormat.Unknown, short mipLevel = 0, short arrayIndexOrDepthSlice = 0, short arrayCountOrDepthCount = 0, byte planeIndex = 0)
-        => GetRenderTargetView(format, mipLevel, arrayIndexOrDepthSlice, arrayCountOrDepthCount, planeIndex, false);
-
-    /// <summary>
-    /// <inheritdoc cref="GetTextureView(BufferFormat, short, short, short, short, float, byte, bool)" path="/summary"/>
-    /// </summary>
-    /// <param name="format"><inheritdoc cref="GetTextureView(BufferFormat, short, short, short, short, float, byte, bool)" path="/param[@name='format']"/></param>
-    /// <param name="mipLevel"><inheritdoc cref="GetTextureView(BufferFormat, short, short, short, short, float, byte, bool)" path="/param[@name='mipLevel']"/></param>
-    /// <param name="mipCount"><inheritdoc cref="GetTextureView(BufferFormat, short, short, short, short, float, byte, bool)" path="/param[@name='mipCount']"/></param>
-    /// <param name="arrayIndex"><inheritdoc cref="GetTextureView(BufferFormat, short, short, short, short, float, byte, bool)" path="/param[@name='arrayIndex']"/></param>
-    /// <param name="arrayCount"><inheritdoc cref="GetTextureView(BufferFormat, short, short, short, short, float, byte, bool)" path="/param[@name='arrayCount']"/></param>
-    /// <param name="resourceMinLodClamp"><inheritdoc cref="GetTextureView(BufferFormat, short, short, short, short, float, byte, bool)" path="/param[@name='resourceMinLodClamp']"/></param>
-    /// <param name="planeIndex"><inheritdoc cref="GetTextureView(BufferFormat, short, short, short, short, float, byte, bool)" path="/param[@name='planeIndex']"/></param>
-    /// <inheritdoc cref="GetTextureView(BufferFormat, short, short, short, short, float, byte, bool)" path="/returns"/>
-    /// <inheritdoc cref="GetTextureView(BufferFormat, short, short, short, short, float, byte, bool)" path="/exception"/>
-    /// <inheritdoc cref="GetTextureView(BufferFormat, short, short, short, short, float, byte, bool)" path="/remarks"/>
-    /// <inheritdoc cref="GetTextureView(BufferFormat, short, short, short, short, float, byte, bool)" path="/seealso"/>
-    public GorgonTextureView GetTextureView(BufferFormat format = BufferFormat.Unknown, short mipLevel = 0, short mipCount = 0, short arrayIndex = 0, short arrayCount = 0, float resourceMinLodClamp = 0, byte planeIndex = 0) =>
-        GetTextureView(format, mipLevel, mipCount, arrayIndex, arrayCount, resourceMinLodClamp, planeIndex, false);
-
-    /// <summary>
     /// <inheritdoc cref="GetDepthStencilView(BufferFormat, DepthStencilViewAccess, short, short, short, bool)" path="/summary"/>
     /// </summary>
     /// <param name="format"><inheritdoc cref="GetDepthStencilView(BufferFormat, DepthStencilViewAccess, short, short, short, bool)" path="/param[@name='format']"/></param>
@@ -848,6 +579,23 @@ public sealed unsafe class GorgonTexture
               .End();
         return texture;
     }
+
+    /// <summary>
+    /// <inheritdoc cref="GorgonTextureCommon.GetTextureView(BufferFormat, short, short, short, short, float, byte, bool)" path="/summary"/>
+    /// </summary>
+    /// <param name="format"><inheritdoc cref="GorgonTextureCommon.GetTextureView(BufferFormat, short, short, short, short, float, byte, bool)" path="/param[@name='format']"/></param>
+    /// <param name="mipLevel"><inheritdoc cref="GorgonTextureCommon.GetTextureView(BufferFormat, short, short, short, short, float, byte, bool)" path="/param[@name='mipLevel']"/></param>
+    /// <param name="mipCount"><inheritdoc cref="GorgonTextureCommon.GetTextureView(BufferFormat, short, short, short, short, float, byte, bool)" path="/param[@name='mipCount']"/></param>
+    /// <param name="arrayIndex"><inheritdoc cref="GorgonTextureCommon.GetTextureView(BufferFormat, short, short, short, short, float, byte, bool)" path="/param[@name='arrayIndex']"/></param>
+    /// <param name="arrayCount"><inheritdoc cref="GorgonTextureCommon.GetTextureView(BufferFormat, short, short, short, short, float, byte, bool)" path="/param[@name='arrayCount']"/></param>
+    /// <param name="resourceMinLodClamp"><inheritdoc cref="GorgonTextureCommon.GetTextureView(BufferFormat, short, short, short, short, float, byte, bool)" path="/param[@name='resourceMinLodClamp']"/></param>
+    /// <param name="planeIndex"><inheritdoc cref="GorgonTextureCommon.GetTextureView(BufferFormat, short, short, short, short, float, byte, bool)" path="/param[@name='planeIndex']"/></param>
+    /// <inheritdoc cref="GorgonTextureCommon.GetTextureView(BufferFormat, short, short, short, short, float, byte, bool)" path="/returns"/>
+    /// <inheritdoc cref="GorgonTextureCommon.GetTextureView(BufferFormat, short, short, short, short, float, byte, bool)" path="/exception"/>
+    /// <inheritdoc cref="GorgonTextureCommon.GetTextureView(BufferFormat, short, short, short, short, float, byte, bool)" path="/remarks"/>
+    /// <inheritdoc cref="GorgonTextureCommon.GetTextureView(BufferFormat, short, short, short, short, float, byte, bool)" path="/seealso"/>
+    public IGorgonTextureView<GorgonTexture> GetTextureView(BufferFormat format = BufferFormat.Unknown, short mipLevel = 0, short mipCount = 0, short arrayIndex = 0, short arrayCount = 0, float resourceMinLodClamp = 0, byte planeIndex = 0) =>
+        GetTextureView<GorgonTexture>(format, mipLevel, mipCount, arrayIndex, arrayCount, resourceMinLodClamp, planeIndex, false);
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonTexture"/> resource.
@@ -904,7 +652,7 @@ public sealed unsafe class GorgonTexture
     /// <see cref="GorgonTextureInfo.IsCube"/> is set to <b>true</b>, then this value <b>must</b> be a multiple of 6.
     /// </para>
     /// <para>
-    /// The <see cref="GorgonTextureInfo.MipCount"/> value should be at least 1. <see cref="GorgonImageInfo.GetMaximumMipCount(int, int, int)"/> can be used to determine the maximum number of mip levels for 
+    /// The <see cref="GorgonTextureInfo.MipCount"/> value should be at least 1. <see cref="GorgonTextureInfo.GetMaximumMipCount(int, int, short)"/> can be used to determine the maximum number of mip levels for 
     /// the texture.
     /// </para>
     /// <para>
@@ -937,7 +685,9 @@ public sealed unsafe class GorgonTexture
     /// When using the texture as a shader readable depth/stencil buffer, the <see cref="GorgonTextureInfo.IsShaderResource"/> should be set to <b>true</b>, otherwise, if it's not meant to be visible to 
     /// shaders then the <see cref="GorgonTextureInfo.IsShaderResource"/> should be set to <b>false</b>.
     /// </para>
+    /// <inheritdoc cref="GorgonTexture" path="/remarks/para[@type='max_dimensions']"/>
     /// </remarks>
+    /// <seealso cref="GorgonTextureCommon"/>
     /// <seealso cref="GorgonTextureInfo"/>
     /// <seealso cref="GorgonImageInfo.GetMaximumMipCount(int, int, int)"/>
     /// <seealso cref="GorgonGraphics.FormatSupport"/>

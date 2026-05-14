@@ -28,7 +28,7 @@ using TerraFX.Interop.DirectX;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Base object for shader resource based views.
+/// Base object to deliver common functionality and information for shader resource based views.
 /// </summary>
 public unsafe abstract class GorgonShaderBufferView
     : GorgonResourceView
@@ -68,6 +68,9 @@ public unsafe abstract class GorgonShaderBufferView
     /// <summary>
     /// Property to return the number of elements in the buffer view.
     /// </summary>
+    /// <remarks>
+    /// An element is a single item within the buffer. This can be a single byte, or set of values contained within a value type.
+    /// </remarks>
     public int ElementCount
     {
         get;
@@ -76,6 +79,13 @@ public unsafe abstract class GorgonShaderBufferView
     /// <summary>
     /// Property to return the first index within the buffer to start the view at.
     /// </summary>
+    /// <remarks>
+    /// <inheritdoc cref="ElementCount" path="/remarks"/>
+    /// <para>
+    /// An index in the buffer is a value that when multiplied by <see cref="ElementSize"/>, will give the byte offset within the buffer.
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="ElementSize"/>
     public long StartElementIndex
     {
         get;
@@ -84,6 +94,7 @@ public unsafe abstract class GorgonShaderBufferView
     /// <summary>
     /// Property to return the size, in bytes, of a single element in the view.
     /// </summary>
+    /// <inheritdoc cref="ElementCount" path="/remarks"/>
     public int ElementSize
     {
         get;
