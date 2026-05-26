@@ -18,7 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: January 16, 2026 2:28:28 PM
+// Created: May 14, 2026 9:16:37 PM
 //
 
 using System.Diagnostics.CodeAnalysis;
@@ -26,21 +26,28 @@ using System.Diagnostics.CodeAnalysis;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Parameters used to copy a texture sub resource to another texture sub resource.
+/// Parameters used to copy a virtual texture to a destination texture sub resource.
 /// </summary>
 /// <param name="sourceRegion">The region on the source texture to copy.</param>
-/// <seealso cref="IGorgonCopyMethodsFluent{T}.CopyTexture(GorgonTexture, GorgonTexture, ref readonly GorgonCopyTextureSubResource)"/>
-/// <seealso cref="IGorgonCopyMethodsFluent{T}.CopyTexture(GorgonTexture, GorgonTexture, ref readonly GorgonCopyTextureSubResource)"/>
+/// <param name="sourceHandle">The handle to the allocation on the source texture.</param>
+/// <remarks>
+/// <para>
+/// The <paramref name="sourceRegion"/> is relative to the area in the <paramref name="sourceHandle"/> allocation. This means that specifying 0x0 in the region is the upper left corner of the allocation 
+/// region, and <b>NOT</b> 0x0 in the actual texture. This is done because areas in the virtual texture can be unallocated when specifying absolute texture coordinates. This protects the user from specifying 
+/// out of bounds regions.
+/// </para>
+/// </remarks>
+/// <seealso cref="IGorgonCopyMethodsFluent{T}.CopyVirtualToTexture(GorgonVirtualTexture, GorgonTexture, ref readonly GorgonCopyVirtualToTexture)"/>
 [method: SetsRequiredMembers]
-public readonly ref struct GorgonCopyTextureSubResource(GorgonBox sourceRegion)
+public readonly ref struct GorgonCopyVirtualToTexture(GorgonBox sourceRegion, GorgonVirtualTextureHandle sourceHandle)
 {
     /// <summary>
     /// Property to return whether the parameter is considered empty.
     /// </summary>
-    public readonly bool IsEmpty => SourceRegion.Equals(in GorgonBox.Empty);
+    public readonly bool IsEmpty => (SourceRegion.Equals(in GorgonBox.Empty)) && (SourceHandle.Equals(GorgonVirtualTextureHandle.Null));
 
     /// <summary>
-    /// <inheritdoc cref="GorgonCopyTextureToVirtual(GorgonBox, GorgonVirtualTextureHandle)" path="/param[@name='sourceRegion']"/>
+    /// <inheritdoc cref="GorgonCopyVirtualToTexture(GorgonBox, GorgonVirtualTextureHandle)" path="/param[@name='sourceRegion']"/>
     /// </summary>
     /// <remarks>
     /// This region will contain either the depth range for a <see cref="TextureType.Texture3D"/>, or the range of array indices for a <see cref="TextureType.Texture1D"/> or 
@@ -49,18 +56,14 @@ public readonly ref struct GorgonCopyTextureSubResource(GorgonBox sourceRegion)
     public readonly GorgonBox SourceRegion = sourceRegion;
 
     /// <summary>
-    /// Property to return the mip level on the source texture to copy from.
+    /// <inheritdoc cref="GorgonCopyVirtualToTexture(GorgonBox, GorgonVirtualTextureHandle)" path="/param[@name='sourceHandle']"/>
     /// </summary>
-    public readonly short SourceMipLevel
-    {
-        get;
-        init;
-    } = 0;
+    public readonly GorgonVirtualTextureHandle SourceHandle = sourceHandle;
 
     /// <summary>
-    /// Property to return the source format plane index on the source texture to copy from.
+    /// Property to return the mip level on the source texture to copy from.
     /// </summary>
-    public readonly byte SourcePlane
+    public readonly short DestinationMipLevel
     {
         get;
         init;
@@ -88,7 +91,7 @@ public readonly ref struct GorgonCopyTextureSubResource(GorgonBox sourceRegion)
     } = 0;
 
     /// <summary>
-    /// Property to return the depth destination position in the texture or the array index.
+    /// Property to return the depth destination position in the texture.
     /// </summary>
     /// <remarks>
     /// <para>
@@ -99,24 +102,6 @@ public readonly ref struct GorgonCopyTextureSubResource(GorgonBox sourceRegion)
     /// </para>
     /// </remarks>
     public readonly short DestinationZOrArrayIndex
-    {
-        get;
-        init;
-    } = 0;
-
-    /// <summary>
-    /// Property to return the mip level on the destination texture to copy into.
-    /// </summary>
-    public readonly short DestinationMipLevel
-    {
-        get;
-        init;
-    } = 0;
-
-    /// <summary>
-    /// Property to return the destination format plane index on the destination texture to copy into.
-    /// </summary>
-    public readonly byte DestinationPlane
     {
         get;
         init;

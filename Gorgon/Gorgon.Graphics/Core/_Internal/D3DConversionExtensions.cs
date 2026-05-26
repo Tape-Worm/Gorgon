@@ -190,4 +190,21 @@ internal static class D3DConversionExtensions
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public unsafe void SetDXGIDebugName(string? name) => self.Get()->SetDXGIDebugName(name);
     }
+
+    extension(D3D12_COMMAND_LIST_TYPE queueType)
+    {
+        /// <summary>
+        /// Function to return the equivalent Gorgon object name for a D3D12 queue type.
+        /// </summary>
+        /// <returns>The name of the object to equates to the queue type.</returns>
+        /// <exception cref="InvalidCastException">Thrown if the queue type could not be resolved to a Gorgon object name.</exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public string ToGorgonObjectType() => queueType switch
+        {
+            D3D12_COMMAND_LIST_TYPE.D3D12_COMMAND_LIST_TYPE_DIRECT => nameof(GorgonGraphics),
+            D3D12_COMMAND_LIST_TYPE.D3D12_COMMAND_LIST_TYPE_COPY => nameof(GorgonResourceCopier),
+            D3D12_COMMAND_LIST_TYPE.D3D12_COMMAND_LIST_TYPE_COMPUTE => nameof(GorgonComputeEngine),
+            _ => throw new InvalidCastException()
+        };
+    }
 }

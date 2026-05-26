@@ -30,6 +30,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using Gorgon.Core;
+using Gorgon.Graphics.Core.Properties;
 using Gorgon.Math;
 using Gorgon.Memory;
 using Gorgon.Native;
@@ -213,21 +214,13 @@ internal unsafe class BarrierManager(GorgonGraphics graphics)
     /// Function to check the before layout state against what's allowed for a given queue.
     /// </summary>
     /// <param name="currentQueue">The queue that is executing.</param>
-    /// <param name="pendingAccess">The pending access state.</param>
     /// <param name="layout">The before layout state.</param>
     /// <returns>The updated state.</returns>
-    private BarrierLayout CheckQueueBeforeLayoutState(CommandQueue currentQueue, BarrierAccess pendingAccess, BarrierLayout layout)
+    private BarrierLayout CheckQueueBeforeLayoutState(CommandQueue currentQueue, BarrierLayout layout)
     {
-        // TODO: Replace these with transitions to the appropriate states on the source queue.
         if (currentQueue == _graphics.Queues.CopyQueue)
         {
-            // For the copy queue, any destination is not meant to be preserved, so we don't care about its previous layout, and will 
-            // discard anyway.
-            if ((pendingAccess is BarrierAccess.CopyDestination) && (layout is not BarrierLayout.Common and not BarrierLayout.None))
-            {
-                layout = BarrierLayout.None;
-            }
-            Debug.Assert(layout is BarrierLayout.Common or BarrierLayout.None, $"The before layout {layout} is not supported by the copy queue.");
+            Debug.Assert(layout is BarrierLayout.None or BarrierLayout.Common, $"The before layout {layout} is not supported by the copy queue.");
         }
 
         if (currentQueue == _graphics.Queues.ComputeQueue)
@@ -337,24 +330,12 @@ internal unsafe class BarrierManager(GorgonGraphics graphics)
 
             GorgonTextureBarrier pendingBarrier = pending.Value;
 
-            // Only allow discard when moving from read -> write bits (access after). Doing read -> read + discard makes no sense.
-            // Disable this for now and come back to it.
-            /*
-            if ((pendingBarrier.Discard) && (current.Layout != BarrierLayout.None))
-            {
-                pendingBarrier = pendingBarrier with
-                {
-                    Discard = false
-                };
-            }
-            */
-
             Span<GorgonSubResourceRange> ranges = CollectionsMarshal.AsSpan(_pendingSubResources[pending.Key]);
             List<GorgonSubResourceRange> currentSubResources = _currentSubResources[pending.Key];
             currentSubResources.Clear();
-
+            
             (BarrierSync sync, BarrierAccess access) = CheckQueueBeforeState(queue, current.Sync, current.Access);
-            BarrierLayout layout = CheckQueueBeforeLayoutState(queue, pending.Value.Access, current.Layout);
+            BarrierLayout layout = CheckQueueBeforeLayoutState(queue, current.Layout);
 
             for (int i = 0; i < ranges.Length; ++i)
             {
@@ -410,6 +391,7 @@ internal unsafe class BarrierManager(GorgonGraphics graphics)
     /// <summary>
     /// Function to add a barrier for a texture.
     /// </summary>
+    /// <param name="commandList">The command list that the barrier is being set on.</param>
     /// <param name="texture">The texture resource to set a barrier on.</param>
     /// <param name="sync">The resource synchronization value.</param>
     /// <param name="access">The resource access level.</param>
@@ -417,7 +399,8 @@ internal unsafe class BarrierManager(GorgonGraphics graphics)
     /// <param name="subResourceRange">[Optional] The subresources on the texture to apply the barrier to.</param>
     /// <param name="discard">[Optional] <b>true</b> to discard the resource content, <b>false</b> to leave as-is.</param>
     /// <returns><b>true</b> if a barrier was created, <b>false</b> if not.</returns>
-    public bool AddBarrier(GorgonTextureCommon texture, BarrierSync sync, BarrierAccess access, BarrierLayout layout, GorgonSubResourceRange? subResourceRange = null, bool discard = false)
+    /// <exception cref="GorgonException">Thrown when the <paramref name="texture"/> was previously used and is in a state that is incompatible with the current object setting the barrier, or the texture was reset and used on the same command list.</exception>
+    public bool AddBarrier(GorgonCommandList commandList, GorgonTextureCommon texture, BarrierSync sync, BarrierAccess access, BarrierLayout layout, GorgonSubResourceRange? subResourceRange = null, bool discard = false)
     {
         GorgonTextureBarrier newBarrier = new(texture, sync, access, layout)
         {
@@ -436,8 +419,13 @@ internal unsafe class BarrierManager(GorgonGraphics graphics)
 
         if (!exists)
         {
-            ref readonly GlobalBarrier global = ref _globalState.GetState(texture.ResourceID);            
+            ref readonly GlobalBarrier global = ref _globalState.GetState(texture.ResourceID);
             current = new GorgonTextureBarrier(texture, global.Sync, global.Access, global.Layout);
+
+            if ((current.Layout is not BarrierLayout.Common and not BarrierLayout.None) && (global.QueueType != commandList.Queue.Type))
+            {
+                throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_CROSS_QUEUE_BARRIER, texture.Name, commandList.Queue.Type.ToGorgonObjectType(), global.QueueType.ToGorgonObjectType()));
+            }
 
             if (currentSubResources.Count > 0)
             {
@@ -450,20 +438,56 @@ internal unsafe class BarrierManager(GorgonGraphics graphics)
             }
         }
 
-        // Check to see if this sub resource change is redundant.
-        if ((current.Equals(newBarrier)) && (currentSubResources.Contains(subResource)))
+        // For undefined textures, we should discard their contents on first go around.
+        if (current.Layout is BarrierLayout.None)
+        {
+            newBarrier = newBarrier with
+            {
+                Discard = true
+            };
+        }
+        else if (newBarrier.Discard)
+        {
+            // Cannot use discard without a layout of None.
+            newBarrier = newBarrier with
+            {
+                Discard = false
+            };
+        }
+
+        // This HAS to be done on all of the resource because it's initializing the resource.
+        if (newBarrier.Discard)
+        {
+            subResource = GorgonSubResourceRange.All;
+        }
+
+        ref GorgonTextureBarrier pending = ref CollectionsMarshal.GetValueRefOrNullRef(_pendingTextures, texture.ResourceID);
+        exists = !Unsafe.IsNullRef(ref pending);
+
+        // Check against pending barriers if one exists, otherwise check against its previous state.
+        // This is required because it's possible that the list has a previous pending state, and if it's not submitted
+        // we should just overwrite it.
+        ref readonly GorgonTextureBarrier comparisonBarrier = ref exists ? ref pending : ref current;
+        List<GorgonSubResourceRange> comparisonRanges = exists ? pendingSubResources : currentSubResources;
+
+        if ((comparisonBarrier.Equals(newBarrier)) && (comparisonRanges.Contains(subResource)))
         {
             return false;
         }
 
-        ref GorgonTextureBarrier pending = ref CollectionsMarshal.GetValueRefOrAddDefault(_pendingTextures, texture.ResourceID, out exists);
-
-        if ((exists) && (pending.Equals(newBarrier)) && (pendingSubResources.Contains(subResource)))
+        if ((_graphics.IsInDebugMode) && (exists) && (pending.Sync == BarrierSync.None) && (pending.Access == BarrierAccess.None) && ((sync != BarrierSync.None) || (access != BarrierAccess.None)))
         {
-            return false;
+            throw new GorgonException(GorgonResult.AccessDenied, string.Format(Resources.GORGFX_ERR_RESOURCE_CANNOT_BE_USED_AGAIN, texture.Name, commandList.Name));
         }
 
-        pending = newBarrier;
+        if (!exists)
+        {
+            _pendingTextures.Add(texture.ResourceID, newBarrier);
+        }
+        else
+        {
+            pending = newBarrier;
+        }
 
         // If we've specified that the full resource is to be covered, then clear the current pending list.
         if (subResource.Equals(in GorgonSubResourceRange.All))
@@ -511,16 +535,23 @@ internal unsafe class BarrierManager(GorgonGraphics graphics)
             groups[groupCount++] = new D3D12_BARRIER_GROUP((uint)textureBarrierCount, textureBarriers);
         }
 
+        if (groupCount == 0)
+        {
+            return;
+        }
+
         list.D3DGraphicsCommandList.Get()->Barrier(groupCount, groups);
     }
 
     /// <summary>
     /// Function to copy the current internal state to the global state.
     /// </summary>
-    public void CopyCurrentToGlobal()
+    /// <param name="queueType">The type of command queue used for the barrier states.</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void CopyCurrentToGlobal(D3D12_COMMAND_LIST_TYPE queueType)
     {
-        _globalState.CaptureBufferState(_currentBuffers);
-        _globalState.CaptureTextureState(_currentTextures, _currentSubResources);
+        _globalState.CaptureBufferState(queueType, _currentBuffers);
+        _globalState.CaptureTextureState(queueType, _currentTextures, _currentSubResources);
     }
 
 

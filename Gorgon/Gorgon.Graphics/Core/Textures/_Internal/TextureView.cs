@@ -48,7 +48,7 @@ internal unsafe sealed class TextureView<T>
     where T : GorgonTextureCommon
 {
     private GpuDescriptorAllocation _allocation = GpuDescriptorAllocation.Null;
-    private GpuDescriptorHeap _descriptors;
+    private readonly GpuDescriptorHeap _descriptors;
 
     /// <inheritdoc/>
     public T Texture

@@ -64,7 +64,7 @@
           <TextBlock Text="Chunk Data" DockPanel.Dock="Top" Margin="3,0,3,3"/>
           <TextBox x:Name="TextChunkData" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Disabled" 
                    FontFamily="{OnPlatform Windows='Consolas', Linux='Monospace'}"
-                   IsReadOnly="True" TextWrapping="Wrap" AcceptsReturn="True" Watermark="Chunk data will appear here..." 
+                   IsReadOnly="True" TextWrapping="Wrap" AcceptsReturn="True" PlaceholderText="Chunk data will appear here..." 
                    Margin="3,0,3,3" BorderThickness="0" Text="{Binding ChunkFileData}"                   
                    Background="{DynamicResource SystemAltLowColor}">
           </TextBox>

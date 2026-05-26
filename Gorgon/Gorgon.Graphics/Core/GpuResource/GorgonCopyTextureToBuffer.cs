@@ -29,17 +29,6 @@ namespace Gorgon.Graphics.Core;
 public readonly ref struct GorgonCopyTextureToBuffer
 {
     /// <summary>
-    /// An empty texture sub resource parameter.
-    /// </summary>
-    public static GorgonCopyTextureToBuffer Empty => default;
-
-    /// <summary>
-    /// Property to return whether the parameter is considered empty.
-    /// </summary>
-    public readonly bool IsEmpty => (SourceMipLevel == 0)
-                && (SourceArrayIndex == 0) && (SourcePlane == 0) && (DestinationOffset == 0);
-
-    /// <summary>
     /// Property to return source mip level to copy.
     /// </summary>
     public readonly short SourceMipLevel
@@ -78,6 +67,19 @@ public readonly ref struct GorgonCopyTextureToBuffer
         get;
         init;
     } = 0;
+
+    /// <summary>
+    /// Function to increment/decrement the offset within the the destination buffer.
+    /// </summary>
+    /// <param name="offsetBytes">The number of bytes to offset within the destination buffer.</param>
+    /// <returns>A new <see cref="GorgonCopyTextureToBuffer"/> with the updated offset.</returns>
+    public GorgonCopyTextureToBuffer Offset(long offsetBytes) => new()
+    {
+        DestinationOffset = DestinationOffset + offsetBytes,
+        SourceArrayIndex = SourceArrayIndex,
+        SourceMipLevel = SourceMipLevel,
+        SourcePlane = SourcePlane
+    };
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonCopyTextureToBuffer"/> value type.

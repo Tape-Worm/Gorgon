@@ -814,16 +814,23 @@ public sealed unsafe class GorgonVirtualTexture
     /// To remove all allocated texture memory in a single call, use the <see cref="FreeAll"/> method.
     /// </para>
     /// <para>
-    /// This method will set the <paramref name="handle"/> parameter to -1 (equivalent to <see cref="ulong.MaxValue"/>) to indicate an invalid handle when the deallocation call is successful.
+    /// This method will set the <paramref name="handle"/> parameter to <see cref="GorgonVirtualTextureHandle"/>.<see cref="GorgonVirtualTextureHandle.Null"/> to indicate an invalid handle when the 
+    /// deallocation call is successful.
     /// </para>
     /// </remarks>
-    public bool TryDeallocate(ref long handle)
+    /// <seealso cref="GorgonVirtualTextureHandle"/>
+    public bool TryDeallocate(ref GorgonVirtualTextureHandle handle)
     {
         using (_allocLock.EnterScope())
         {
             static ulong Unset(ulong value, ulong bitmap) => value & ~bitmap;
 
-            ulong textureHandle = (ulong)handle;
+            if ((handle.Equals(GorgonVirtualTextureHandle.Null)) || (handle.TextureID != ResourceID))
+            {
+                return false;
+            }
+
+            ulong textureHandle = handle.Handle;
 
             if ((textureHandle == ulong.MaxValue) || (!_textureAllocations.Remove(textureHandle, out VirtualTextureAllocation allocation)))
             {
@@ -837,7 +844,7 @@ public sealed unsafe class GorgonVirtualTexture
 
             SetAllocationBitmap(in allocation.TileRegion, subTileIndex, subInfo, Unset);
 
-            handle = -1;
+            handle = GorgonVirtualTextureHandle.Null;
 
             return true;
         }
@@ -862,8 +869,8 @@ public sealed unsafe class GorgonVirtualTexture
     /// </para>
     /// <inheritdoc cref="GorgonVirtualTexture" path="/remarks/para[@type='overlap_warn']"/>
     /// <para>
-    /// As mentioned in the above warning, allocation fails if there is overlap with another region. When this happens, the application returns <b>false</b> and sets the <paramref name="handle"/> to -1 (the 
-    /// equivalent of <see cref="ulong.MaxValue"/>). Developers should check the return value of this method and handle it appropriately.
+    /// As mentioned in the above warning, allocation fails if there is overlap with another region. When this happens, the application returns <b>false</b> and sets the <paramref name="handle"/> to 
+    /// <see cref="GorgonVirtualTextureHandle"/>.<see cref="GorgonVirtualTextureHandle.Null"/>.Developers should check the return value of this method and handle it appropriately.
     /// </para>
     /// <para>
     /// If a region is no longer required, then the application should call <see cref="TryDeallocate"/> to free it up for future usage.
@@ -876,8 +883,9 @@ public sealed unsafe class GorgonVirtualTexture
     /// <see cref="GorgonTextureCommon.ArrayCount"/><c>-1</c> for the maximum values.
     /// </para>
     /// </remarks>
+    /// <seealso cref="GorgonVirtualTextureHandle"/>
     /// <seealso cref="TryDeallocate"/>
-    public bool TryAllocate(ref readonly GorgonBoxF texels, out long handle, short mipLevel = 0, short arrayIndex = 0)
+    public bool TryAllocate(ref readonly GorgonBoxF texels, out GorgonVirtualTextureHandle handle, short mipLevel = 0, short arrayIndex = 0)
     {
         static ulong SetBits(ulong value, ulong bits) => value | bits;
 
@@ -889,7 +897,6 @@ public sealed unsafe class GorgonVirtualTexture
             arrayIndex = arrayIndex.Max(0).Min((short)(Type == TextureType.Texture3D ? 0 : (ArrayCount - 1)));
             int subResourceIndex = arrayIndex * mipsPerArray + tileMipLevel;
             
-
             float l = texels.Left.Max(0).Min(1.0f);
             float t = texels.Top.Max(0).Min(1.0f);
             float f = Type != TextureType.Texture3D ? 0 : texels.Front.Max(0).Min(1.0f);
@@ -916,7 +923,7 @@ public sealed unsafe class GorgonVirtualTexture
 
             if (HasAllocationBitmap(in tileBox, subResourceIndex, info))
             {
-                handle = -1;
+                handle = GorgonVirtualTextureHandle.Null;
                 return false;
             }
 
@@ -930,7 +937,7 @@ public sealed unsafe class GorgonVirtualTexture
 
             SetAllocationBitmap(in tileBox, subResourceIndex, info, SetBits);
 
-            handle = (long)actualHandle;
+            handle = new(ResourceID, actualHandle);
 
             return true;
         }
@@ -947,9 +954,15 @@ public sealed unsafe class GorgonVirtualTexture
     /// If the method is given an invalid <paramref name="handle"/>, then the <paramref name="tiles"/> is set to <see cref="GorgonBox.Empty"/> and the method will return <b>false</b>.
     /// </para>
     /// </remarks>
-    public bool TryGetAllocatedTileRegion(long handle, out GorgonBox tiles)
+    public bool TryGetAllocatedTileRegion(GorgonVirtualTextureHandle handle, out GorgonBox tiles)
     {
-        if (!_textureAllocations.TryGetValue((ulong)handle, out VirtualTextureAllocation allocation))
+        if ((handle.Equals(GorgonVirtualTextureHandle.Null)) || (handle.TextureID != ResourceID))
+        {
+            tiles = GorgonBox.Empty;
+            return false;
+        }
+
+        if (!_textureAllocations.TryGetValue(handle.Handle, out VirtualTextureAllocation allocation))
         {
             tiles = GorgonBox.Empty;
             return false;
@@ -965,15 +978,21 @@ public sealed unsafe class GorgonVirtualTexture
     /// <param name="handle">The allocation handle to evaluate.</param>
     /// <param name="mipLevel">The mip map level for the allocation.</param>
     /// <param name="arrayIndex">The array index for the allocation.</param>
-    /// <inheritdoc cref="TryGetAllocatedTileRegion(long, out GorgonBox)" path="/returns"/>
+    /// <inheritdoc cref="TryGetAllocatedTileRegion(GorgonVirtualTextureHandle, out GorgonBox)" path="/returns"/>
     /// <remarks>
     /// <para>
     /// If the method is given an invalid <paramref name="handle"/>, then the <paramref name="mipLevel"/> and <paramref name="arrayIndex"/> are set to -1 and the method will return <b>false</b>.
     /// </para>
     /// </remarks>
-    public bool TryGetSubResources(long handle, out short mipLevel, out short arrayIndex)
+    public bool TryGetSubResources(GorgonVirtualTextureHandle handle, out short mipLevel, out short arrayIndex)
     {
-        if (!_textureAllocations.TryGetValue((ulong)handle, out VirtualTextureAllocation allocation))
+        if ((handle.Equals(GorgonVirtualTextureHandle.Null)) || (handle.TextureID != ResourceID))
+        {
+            mipLevel = arrayIndex = -1;
+            return false;
+        }
+
+        if (!_textureAllocations.TryGetValue(handle.Handle, out VirtualTextureAllocation allocation))
         {
             mipLevel = arrayIndex = -1;
             return false;

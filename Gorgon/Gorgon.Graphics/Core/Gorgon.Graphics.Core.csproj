@@ -63,7 +63,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.Direct3D.D3D12" Version="1.619.1">
+    <PackageReference Include="Microsoft.Direct3D.D3D12" Version="1.619.2">
       <GeneratePathProperty>true</GeneratePathProperty>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
@@ -71,12 +71,12 @@
       <GeneratePathProperty>true</GeneratePathProperty>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Direct3D.WARP" Version="1.0.18">
+    <PackageReference Include="Microsoft.Direct3D.WARP" Version="1.0.19">
       <GeneratePathProperty>true</GeneratePathProperty>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.SourceLink.GitHub">
-      <Version>10.0.201</Version>
+      <Version>10.0.300</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>

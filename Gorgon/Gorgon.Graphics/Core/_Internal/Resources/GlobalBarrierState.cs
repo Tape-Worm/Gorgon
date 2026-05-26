@@ -27,6 +27,7 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
+using TerraFX.Interop.DirectX;
 
 namespace Gorgon.Graphics.Core;
 
@@ -82,8 +83,9 @@ internal class GlobalBarrierState
     /// <summary>
     /// Function to capture the current state for resource barriers from a command list.
     /// </summary>
+    /// <param name="queueType">The type of command queue last used for the barriers.</param>
     /// <param name="barriers">The barriers to evaluate.</param>
-    public void CaptureBufferState(Dictionary<ulong, GorgonBufferBarrier> barriers)
+    public void CaptureBufferState(D3D12_COMMAND_LIST_TYPE queueType, Dictionary<ulong, GorgonBufferBarrier> barriers)
     {
         using (_syncLock.EnterScope())
         {
@@ -102,12 +104,13 @@ internal class GlobalBarrierState
 
                 if (gBarrier.SubResources is null)
                 {
-                    gBarrier = new GlobalBarrier(barrier.Value.Sync, barrier.Value.Access, BarrierLayout.None);
+                    gBarrier = new GlobalBarrier(barrier.Value.Sync, barrier.Value.Access, BarrierLayout.None, queueType);
                 }
                 else
                 {
                     gBarrier.Sync = barrier.Value.Sync;
                     gBarrier.Access = barrier.Value.Access;
+                    gBarrier.QueueType = queueType;
                     gBarrier.SubResources.Clear();
                 }
             }
@@ -117,9 +120,10 @@ internal class GlobalBarrierState
     /// <summary>
     /// Function to capture the current state for resource barriers from a command list.
     /// </summary>
+    /// <param name="queueType">The type of command queue last used for the barriers.</param>
     /// <param name="barriers">The barriers to evaluate.</param>
     /// <param name="subResources">The list of sub resources for the barrier.</param>
-    public void CaptureTextureState(Dictionary<ulong, GorgonTextureBarrier> barriers, Dictionary<ulong, List<GorgonSubResourceRange>> subResources)
+    public void CaptureTextureState(D3D12_COMMAND_LIST_TYPE queueType, Dictionary<ulong, GorgonTextureBarrier> barriers, Dictionary<ulong, List<GorgonSubResourceRange>> subResources)
     {
         using (_syncLock.EnterScope())
         {
@@ -138,13 +142,14 @@ internal class GlobalBarrierState
 
                 if (newBarrier.SubResources is null)
                 {
-                    newBarrier = new(barrier.Value.Sync, barrier.Value.Access, barrier.Value.Layout);
+                    newBarrier = new(barrier.Value.Sync, barrier.Value.Access, barrier.Value.Layout, queueType);
                 }
                 else
                 {
                     newBarrier.Sync = barrier.Value.Sync;
                     newBarrier.Access = barrier.Value.Access;
                     newBarrier.Layout = barrier.Value.Layout;
+                    newBarrier.QueueType = queueType;
                     newBarrier.SubResources.Clear();
                 }
 

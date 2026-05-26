@@ -474,6 +474,17 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The resource &apos;{0}&apos; is in an incompatible state with the {1} object.
+        ///
+        ///Please reset the resource on the last command list executed on the {2} object before using it on the {1} object..
+        /// </summary>
+        internal static string GORGFX_ERR_CROSS_QUEUE_BARRIER {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_CROSS_QUEUE_BARRIER", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The format {0} is not valid for a cube texture..
         /// </summary>
         internal static string GORGFX_ERR_CUBE_TEXTURE_FORMAT_INVALID {
@@ -740,6 +751,15 @@ namespace Gorgon.Graphics.Core.Properties {
         internal static string GORGFX_ERR_QUEUE_MISMATCH {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_QUEUE_MISMATCH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The resource &apos;{0}&apos; has been reset, and cannot be used on the command list &apos;{1}&apos; again..
+        /// </summary>
+        internal static string GORGFX_ERR_RESOURCE_CANNOT_BE_USED_AGAIN {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_RESOURCE_CANNOT_BE_USED_AGAIN", resourceCulture);
             }
         }
         

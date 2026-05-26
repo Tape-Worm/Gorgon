@@ -75,8 +75,8 @@ public unsafe sealed class GorgonCommandList
     private uint _scissorCount;
     private bool _scissorsChanged;    
     private readonly List<(GorgonGpuBuffer Buffer, BarrierSync Sync, BarrierAccess Access)> _usedBuffers = new(32);
-    private GpuDescriptorHeap _samplerDescriptors;
-    private GpuDescriptorHeap _viewDescriptors;
+    private readonly GpuDescriptorHeap _samplerDescriptors;
+    private readonly GpuDescriptorHeap _viewDescriptors;
     private readonly MegaBufferPool _megaBuffer;
     private readonly VirtualTextureTilePool _textureTilePool;
     private readonly CpuResourceHeapPool _uploadHeaps;
@@ -493,7 +493,7 @@ public unsafe sealed class GorgonCommandList
         _list.Get()->Close()
             .ThrowIfFailed(GorgonResult.CannotExecute, () => string.Format(Resources.GORGFX_ERR_CANNOT_CLOSE_COMMAND_LIST, Name));
 
-        _barrierManager.CopyCurrentToGlobal();
+        _barrierManager.CopyCurrentToGlobal(Queue.Type);
         Array.Clear(_constantWriteData);
         _usedBuffers.Clear();
     }
@@ -728,7 +728,8 @@ public unsafe sealed class GorgonCommandList
     /// <param name="textures"></param>
     /// <param name="shaderStage"></param>
     /// <param name="usage"></param>
-    /// <returns></returns>
+    /// <inheritdoc cref="AddPresenter" path="/returns"/>
+    /// <exception cref="GorgonException"><inheritdoc cref="SetBarrier(GorgonTextureCommon, BarrierSync, BarrierAccess, BarrierLayout, GorgonSubResourceRange?, bool, bool)" path="/exception/para[@type='barrier_issue']"/></exception>
     public GorgonCommandList Use(ReadOnlySpan<IGorgonTextureView<GorgonTextureCommon>> textures, ShaderStage shaderStage, TextureUsage usage)
     {
         if (textures.Length == 0)
@@ -757,9 +758,65 @@ public unsafe sealed class GorgonCommandList
                 _ => BarrierLayout.ShaderResource,
             };
 
-            Queue.Tracker.TrackResource(texture);
-
             SetBarrier(texture, sync, access, layout);
+        }
+
+        return this;
+    }
+
+    /// <summary>
+    /// Function to reset the usage for the specified textures.
+    /// </summary>
+    /// <param name="textures">The list of textures that need their usage state reset.</param>
+    /// <inheritdoc cref="AddPresenter" path="/returns"/>
+    /// <exception cref="GorgonException">
+    /// <inheritdoc cref="SetBarrier(GorgonTextureCommon, BarrierSync, BarrierAccess, BarrierLayout, GorgonSubResourceRange?, bool, bool)" path="/exception/barrier_issue"/>
+    /// </exception>
+    /// <remarks>
+    /// <para>
+    /// When a texture is used in a command list on the <see cref="GorgonGraphics"/>, <see cref="GorgonResourceCopier"/> (directly), or the <see cref="GorgonComputeEngine"/> objects, it will be put into a 
+    /// state that provides optimal usage for the GPU. 
+    /// </para>
+    /// <para>
+    /// Because of this, the state of the object will need to be reset before using it on a different <see cref="GorgonGraphics"/>, <see cref="GorgonResourceCopier"/>, or the 
+    /// <see cref="GorgonComputeEngine"/> objects, otherwise an exception will be thrown when it is used without resetting it to a generalized state.
+    /// </para>
+    /// <para>
+    /// This is required because the GPU can have metadata on a resource that can be used to help with rendering, or other operations. Unfortunately that metadata, makes the resource unusable for other 
+    /// operations like copying, or use as a read/write resource. So, the resource needs to be put back into a general state before it can be consumed in those operations.
+    /// </para>
+    /// <para>
+    /// <note type="important">
+    /// <para>
+    /// Any texture that has been reset cannot be used again in the same command list. When the texture has been reset, we are telling the GPU that there is no intention to use the texture again until it has 
+    /// been submitted to the <see cref="GorgonGraphics.Submit(GorgonCommandList)"/> method.
+    /// </para>
+    /// </note>
+    /// </para>
+    /// <para>
+    /// <note type="warning">
+    /// <para>
+    /// The reset operation <b>must</b> be called on a command list from the correct object. So, if the rsource was last used by a command list from a <see cref="GorgonGraphics"/> object, then only a command 
+    /// list from that object can reset the resource, otherwise an exception will be thrown.
+    /// </para>    
+    /// </note>
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="GorgonGraphics"/>
+    /// <seealso cref="GorgonResourceCopier"/>
+    /// <seealso cref="GorgonComputeEngine"/>
+    public GorgonCommandList Reset(ReadOnlySpan<IGorgonTextureView<GorgonTextureCommon>> textures)
+    {
+        if (textures.Length == 0)
+        {
+            return this;
+        }
+
+        for (int i = 0; i < textures.Length; ++i)
+        {
+            GorgonTextureCommon texture = textures[i].Texture;
+            Queue.Tracker.TrackResource(texture);
+            SetBarrier(texture, BarrierSync.None, BarrierAccess.None, BarrierLayout.Common);
         }
 
         return this;
@@ -912,7 +969,7 @@ public unsafe sealed class GorgonCommandList
     /// <inheritdoc cref="AddPresenter" path="/returns"/>
     /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyImageToTexture(IGorgonImageBuffer, GorgonTexture, short, short, byte)" path="/exception"/>
     /// <remarks>
-    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyBuffer(GorgonGpuBufferCommon, GorgonGpuBufferCommon, long, long, long?)" path="/remarks/para[@type='common']"/>
+    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyImageToTexture(IGorgonImageBuffer, GorgonTexture, short, short, byte)" path="/remarks/para[@type='common']"/>
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public GorgonCommandList CopyImageToTexture(IGorgonImageBuffer imageBuffer, GorgonTexture texture, short destinationMipLevel = 0, short destinationZOrArrayIndex = 0, byte destinationPlane = 0)
@@ -921,12 +978,15 @@ public unsafe sealed class GorgonCommandList
         return this;
     }
 
-    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyImageToTexture(IGorgonImageBuffer, GorgonVirtualTexture, long, short)" path="/summary"/>
-    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyImageToTexture(IGorgonImageBuffer, GorgonVirtualTexture, long, short)" path="/param"/>
+    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyImageToTexture(IGorgonImageBuffer, GorgonVirtualTexture, GorgonVirtualTextureHandle, short)" path="/summary"/>
+    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyImageToTexture(IGorgonImageBuffer, GorgonVirtualTexture, GorgonVirtualTextureHandle, short)" path="/param"/>
     /// <inheritdoc cref="AddPresenter" path="/returns"/>
-    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyImageToTexture(IGorgonImageBuffer, GorgonVirtualTexture, long, short)" path="/exception"/>
+    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyImageToTexture(IGorgonImageBuffer, GorgonVirtualTexture, GorgonVirtualTextureHandle, short)" path="/exception"/>
+    /// <remarks>
+    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyImageToTexture(IGorgonImageBuffer, GorgonVirtualTexture, GorgonVirtualTextureHandle, short)" path="/remarks/para[@type='common']"/>
+    /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public GorgonCommandList CopyImageToTexture(IGorgonImageBuffer imageBuffer, GorgonVirtualTexture texture, long handle, short destinationDepthSlice = 0)
+    public GorgonCommandList CopyImageToTexture(IGorgonImageBuffer imageBuffer, GorgonVirtualTexture texture, GorgonVirtualTextureHandle handle, short destinationDepthSlice = 0)
     {
         _resourceWriter.CopyImageToTexture(imageBuffer, texture, handle, destinationDepthSlice);
         return this;
@@ -938,7 +998,7 @@ public unsafe sealed class GorgonCommandList
     /// <inheritdoc cref="AddPresenter" path="/returns"/>
     /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyBufferToTexture(GorgonGpuBuffer, GorgonTexture, GorgonCopyBufferToTexture)" path="/exception"/>
     /// <remarks>
-    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyBuffer(GorgonGpuBufferCommon, GorgonGpuBufferCommon, long, long, long?)" path="/remarks/para[@type='common']"/>
+    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyBufferToTexture(GorgonGpuBuffer, GorgonTexture, GorgonCopyBufferToTexture)" path="/remarks/para[@type='common']"/>
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public GorgonCommandList CopyBufferToTexture(GorgonGpuBuffer buffer, GorgonTexture texture, GorgonCopyBufferToTexture parameters)
@@ -947,26 +1007,12 @@ public unsafe sealed class GorgonCommandList
         return this;
     }
 
-    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyBufferToTexture(GorgonGpuBuffer, GorgonTexture, long)" path="/summary"/>
-    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyBufferToTexture(GorgonGpuBuffer, GorgonTexture, long)" path="/param"/>
-    /// <inheritdoc cref="AddPresenter" path="/returns"/>
-    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyBufferToTexture(GorgonGpuBuffer, GorgonTexture, long)" path="/exception"/>
-    /// <remarks>
-    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyBuffer(GorgonGpuBufferCommon, GorgonGpuBufferCommon, long, long, long?)" path="/remarks/para[@type='common']"/>
-    /// </remarks>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public GorgonCommandList CopyBufferToTexture(GorgonGpuBuffer buffer, GorgonTexture texture, long sourceOffset = 0)
-    {
-        _resourceWriter.CopyBufferToTexture(buffer, texture, sourceOffset);
-        return this;
-    }
-
     /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyTextureToBuffer(GorgonTexture, GorgonGpuBuffer, GorgonCopyTextureToBuffer)" path="/summary"/>
     /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyTextureToBuffer(GorgonTexture, GorgonGpuBuffer, GorgonCopyTextureToBuffer)" path="/param"/>
     /// <inheritdoc cref="AddPresenter" path="/returns"/>
     /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyTextureToBuffer(GorgonTexture, GorgonGpuBuffer, GorgonCopyTextureToBuffer)" path="/exception"/>
     /// <remarks>
-    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyBuffer(GorgonGpuBufferCommon, GorgonGpuBufferCommon, long, long, long?)" path="/remarks/para[@type='common']"/>
+    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyTextureToBuffer(GorgonTexture, GorgonGpuBuffer, GorgonCopyTextureToBuffer)" path="/remarks/para[@type='common']"/>
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public GorgonCommandList CopyTextureToBuffer(GorgonTexture texture, GorgonGpuBuffer buffer, GorgonCopyTextureToBuffer parameters)
@@ -975,26 +1021,12 @@ public unsafe sealed class GorgonCommandList
         return this;
     }
 
-    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyTextureToBuffer(GorgonTexture, GorgonGpuBuffer, long)" path="/summary"/>
-    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyTextureToBuffer(GorgonTexture, GorgonGpuBuffer, long)" path="/param"/>
-    /// <inheritdoc cref="AddPresenter" path="/returns"/>
-    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyTextureToBuffer(GorgonTexture, GorgonGpuBuffer, long)" path="/exception"/>
-    /// <remarks>
-    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyBuffer(GorgonGpuBufferCommon, GorgonGpuBufferCommon, long, long, long?)" path="/remarks/para[@type='common']"/>
-    /// </remarks>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public GorgonCommandList CopyTextureToBuffer(GorgonTexture texture, GorgonGpuBuffer buffer, long destinationOffset = 0)
-    {
-        _resourceWriter.CopyTextureToBuffer(texture, buffer, destinationOffset);
-        return this;
-    }
-
     /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyTexture(GorgonTexture, GorgonTexture, ref readonly GorgonCopyTextureSubResource)" path="/summary"/>
     /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyTexture(GorgonTexture, GorgonTexture, ref readonly GorgonCopyTextureSubResource)" path="/param"/>
     /// <inheritdoc cref="AddPresenter" path="/returns"/>
     /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyTexture(GorgonTexture, GorgonTexture, ref readonly GorgonCopyTextureSubResource)" path="/exception"/>
     /// <remarks>
-    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyBuffer(GorgonGpuBufferCommon, GorgonGpuBufferCommon, long, long, long?)" path="/remarks/para[@type='common']"/>
+    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyTexture(GorgonTexture, GorgonTexture, ref readonly GorgonCopyTextureSubResource)" path="/remarks/para[@type='common']"/>
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public GorgonCommandList CopyTexture(GorgonTexture source, GorgonTexture destination, ref readonly GorgonCopyTextureSubResource parameters)
@@ -1008,7 +1040,7 @@ public unsafe sealed class GorgonCommandList
     /// <inheritdoc cref="AddPresenter" path="/returns"/>
     /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyTexture(GorgonTexture, GorgonTexture)" path="/exception"/>
     /// <remarks>
-    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyBuffer(GorgonGpuBufferCommon, GorgonGpuBufferCommon, long, long, long?)" path="/remarks/para[@type='common']"/>
+    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyTexture(GorgonTexture, GorgonTexture)" path="/remarks/para[@type='common']"/>
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public GorgonCommandList CopyTexture(GorgonTexture source, GorgonTexture destination)
@@ -1017,14 +1049,117 @@ public unsafe sealed class GorgonCommandList
         return this;
     }
 
-    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.SetBarrier(GorgonTextureCommon, BarrierSync, BarrierAccess, BarrierLayout, GorgonSubResourceRange?, bool, bool)" path="/summary"/>
-    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.SetBarrier(GorgonTextureCommon, BarrierSync, BarrierAccess, BarrierLayout, GorgonSubResourceRange?, bool, bool)" path="/param"/>
-    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.SetBarrier(GorgonTextureCommon, BarrierSync, BarrierAccess, BarrierLayout, GorgonSubResourceRange?, bool, bool)" path="/remarks"/>
+
+    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyTextureToVirtual(GorgonTexture, GorgonVirtualTexture, ref readonly GorgonCopyTextureToVirtual)" path="/summary"/>
+    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyTextureToVirtual(GorgonTexture, GorgonVirtualTexture, ref readonly GorgonCopyTextureToVirtual)" path="/param"/>
     /// <inheritdoc cref="AddPresenter" path="/returns"/>
+    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyTextureToVirtual(GorgonTexture, GorgonVirtualTexture, ref readonly GorgonCopyTextureToVirtual)" path="/exception"/>
+    /// <remarks>
+    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyTextureToVirtual(GorgonTexture, GorgonVirtualTexture, ref readonly GorgonCopyTextureToVirtual)" path="/remarks/para[@type='common']"/>
+    /// </remarks>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public GorgonCommandList CopyTextureToVirtual(GorgonTexture source, GorgonVirtualTexture destination, ref readonly GorgonCopyTextureToVirtual parameters)
+    {
+        _resourceWriter.CopyTextureToVirtual(source, destination, in parameters);
+        return this;
+    }
+
+
+    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyVirtualToTexture(GorgonVirtualTexture, GorgonTexture, ref readonly GorgonCopyVirtualToTexture)" path="/summary"/>
+    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyVirtualToTexture(GorgonVirtualTexture, GorgonTexture, ref readonly GorgonCopyVirtualToTexture)" path="/param"/>
+    /// <inheritdoc cref="AddPresenter" path="/returns"/>
+    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyVirtualToTexture(GorgonVirtualTexture, GorgonTexture, ref readonly GorgonCopyVirtualToTexture)" path="/exception"/>
+    /// <remarks>
+    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyVirtualToTexture(GorgonVirtualTexture, GorgonTexture, ref readonly GorgonCopyVirtualToTexture)" path="/remarks/para[@type='common']"/>
+    /// </remarks>
+    public GorgonCommandList CopyVirtualToTexture(GorgonVirtualTexture source, GorgonTexture destination, ref readonly GorgonCopyVirtualToTexture parameters)
+    {
+        _resourceWriter.CopyVirtualToTexture(source, destination, in parameters);
+        return this;
+    }
+
+    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyVirtualToVirtual(GorgonVirtualTexture, GorgonVirtualTexture, ref readonly GorgonCopyVirtualToVirtual)" path="/summary"/>
+    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyVirtualToVirtual(GorgonVirtualTexture, GorgonVirtualTexture, ref readonly GorgonCopyVirtualToVirtual)" path="/param"/>
+    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyVirtualToVirtual(GorgonVirtualTexture, GorgonVirtualTexture, ref readonly GorgonCopyVirtualToVirtual)" path="/exception"/>
+    /// <inheritdoc cref="AddPresenter" path="/returns"/>
+    /// <remarks>
+    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyVirtualToVirtual(GorgonVirtualTexture, GorgonVirtualTexture, ref readonly GorgonCopyVirtualToVirtual)" path="/remarks"/>
+    /// </remarks>
+    public GorgonCommandList CopyVirtualToVirtual(GorgonVirtualTexture source, GorgonVirtualTexture destination, ref readonly GorgonCopyVirtualToVirtual parameters)
+    {
+        _resourceWriter.CopyVirtualToVirtual(source, destination, in parameters);
+        return this;
+    }
+
+    /// <summary>
+    /// Function to set a barrier on a texture to enforce synchronization.
+    /// </summary>
+    /// <param name="texture">The texture to assign the barrier to.</param>
+    /// <param name="sync">The new synchronization state for the barrier.</param>
+    /// <param name="access">The new access level for the barrier.</param>
+    /// <param name="layout">The new layout for the texture data.</param>
+    /// <param name="subResources">[Optional] The individual sub resource on the texture to barrier.</param>
+    /// <param name="discard">[Optional] <b>true</b> to force a discard operation on the resource, <b>false</b> to leave as-is.</param>
+    /// <param name="force">[Optional] <b>true</b> to force the barrier to apply right away, <b>false</b> to wait until the barrier is required.</param>
+    /// <inheritdoc cref="AddPresenter" path="/returns"/>
+    /// <exception cref="GorgonException">
+    /// <para type="barrier_issue">Thrown if a resource was previously used in a command list on one of the Gorgon root objects (<see cref="GorgonGraphics"/>, <see cref="GorgonResourceCopier"/>, or 
+    /// <see cref="GorgonComputeEngine"/>) and was left in a usage state that is incompatible with the root object that is currently trying to use the resource.
+    /// </para>
+    /// <para type="barrier_issue">Thrown if a resource was previously reset on a command list, and then used again before the command list was submitted.</para>
+    /// </exception>
+    /// <remarks>
+    /// <para>
+    /// Most operations in Gorgon automatically apply barriers for resources on the user's behalf. However, there may be times the end user may need a more optimal barrier strategy, or Gorgon cannot set the 
+    /// barriers correctly. This method allows users to bypass the automatic barrier management.
+    /// </para>
+    /// <para>
+    /// <note type="information">
+    /// <para><h3>What is a barrier? What is it for?</h3></para>
+    /// <para>
+    /// Modern GPUs may require their resources to be in specific states (e.g. compressed, uncompressed, etc...) prior to modification, and they also run operations in parallel. To prevent hazards for 
+    /// read-after-write, write-after-read, and write-after-write operations, applications can provide barriers to indicate that they intend to perform a certain action, requiring certain access types and 
+    /// data layout. This allows the GPU to perform the necessary operations required to ensure the data is synchronized. 
+    /// </para>
+    /// <para>
+    /// For more detailed information, please refer to <a target="_blank">https://microsoft.github.io/DirectX-Specs/d3d/D3D12EnhancedBarriers.html</a>.
+    /// </para>
+    /// </note>
+    /// </para>
+    /// <para>
+    /// The synchronization bits provided by the <paramref name="sync"/> parameter indicate what synchronization we require before accessing the data. Thess bits can be combined to provide multiple 
+    /// synchronization types.
+    /// </para>
+    /// <para>
+    /// The access bits provided provided by the <paramref name="access"/> parameter indicates what type of access we require before accessing the data. Since GPUs cache a lot of their write operations, 
+    /// this allows the GPU to ensure that the caches are correctly flushed. Thess bits can be combined to provide multiple access types.
+    /// </para>
+    /// <para type="TextureBarrier">
+    /// The <paramref name="layout"/> transition is for <see cref="GorgonTextureCommon"/> objects only. This value indicates the type of read/write operation being performed so the GPU can compress or 
+    /// decompress its data (depending on the GPU architecture).
+    /// </para>
+    /// <para type="TextureBarrier">
+    /// The barrier can be applied to sub resources of a <see cref="GorgonTextureCommon"/> by assigning a value to the <paramref name="subResources"/> parameter. If this value is omitted, then the entire resource 
+    /// has the barrier applied instead of a portion of it. By assigning a <see cref="GorgonSubResourceRange"/> to this barrier, the GPU can allow work on another portion of the texture while working on 
+    /// the sub resource passed to this method.
+    /// </para>
+    /// <para type="TextureBarrier">
+    /// The <paramref name="discard"/> value indicates that the contents of the resource can be discarded/ignored when this value is <b>true</b>. This is only available for initial barriers on a 
+    /// <see cref="GorgonTextureCommon"/> resource.
+    /// </para>
+    /// <para>
+    /// When a barrier is set on a resource, it is queued in a list of barriers and when it comes time to make use of the resource in a <see cref="GorgonCommandList"/> operation. This operation is automatic.
+    /// If this value is set to <b>true</b>, then that queue is processed immediately after this barrier is set. This allows the user to control when barriers are applied. Queuing of barriers until the last 
+    /// moment is a performance optimization for some GPUs.
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="GorgonTexture"/>
+    /// <seealso cref="GorgonVirtualTexture"/>
+    /// <seealso cref="GorgonCommandList"/>    
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public GorgonCommandList SetBarrier(GorgonTextureCommon texture, BarrierSync sync, BarrierAccess access, BarrierLayout layout, GorgonSubResourceRange? subResources = null, bool discard = false, bool force = false)
     {
-        _barrierManager.AddBarrier(texture, sync, access, layout, subResources, discard);
+        _barrierManager.AddBarrier(this, texture, sync, access, layout, subResources, discard);
 
         if ((force) && (!_barrierManager.IsEmpty))
         {
@@ -1034,10 +1169,20 @@ public unsafe sealed class GorgonCommandList
         return this;
     }
 
-    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.SetBarrier(GorgonGpuBufferCommon, BarrierSync, BarrierAccess, bool)" path="/summary"/>
-    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.SetBarrier(GorgonGpuBufferCommon, BarrierSync, BarrierAccess, bool)" path="/param"/>
-    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.SetBarrier(GorgonGpuBufferCommon, BarrierSync, BarrierAccess, bool)" path="/remarks"/>
+    /// <summary>
+    /// Function to set a barrier on a buffer to enforce synchronization.
+    /// </summary>
+    /// <param name="buffer">The buffer to assign the barrier to.</param>
+    /// <param name="sync"><inheritdoc cref="SetBarrier(GorgonTextureCommon, BarrierSync, BarrierAccess, BarrierLayout, GorgonSubResourceRange?, bool, bool)" path="/param[@name='sync']"/></param>
+    /// <param name="access"><inheritdoc cref="SetBarrier(GorgonTextureCommon, BarrierSync, BarrierAccess, BarrierLayout, GorgonSubResourceRange?, bool, bool)" path="/param[@name='access']"/></param>
+    /// <param name="force"><inheritdoc cref="SetBarrier(GorgonTextureCommon, BarrierSync, BarrierAccess, BarrierLayout, GorgonSubResourceRange?, bool, bool)" path="/param[@name='force']"/></param>
     /// <inheritdoc cref="AddPresenter" path="/returns"/>
+    /// <remarks>
+    /// <inheritdoc cref="SetBarrier(GorgonTextureCommon, BarrierSync, BarrierAccess, BarrierLayout, GorgonSubResourceRange?, bool, bool)" path="/remarks/para[not(@type='TextureBarrier')]"/>
+    /// </remarks>
+    /// <seealso cref="GorgonGpuBuffer"/>
+    /// <seealso cref="GorgonIndexBuffer"/>
+    /// <seealso cref="GorgonCommandList"/>    
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public GorgonCommandList SetBarrier(GorgonGpuBufferCommon buffer, BarrierSync sync, BarrierAccess access, bool force = false)
     {

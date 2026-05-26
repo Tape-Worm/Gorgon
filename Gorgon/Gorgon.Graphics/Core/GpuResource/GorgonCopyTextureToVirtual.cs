@@ -18,7 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: January 16, 2026 2:28:28 PM
+// Created: May 14, 2026 9:16:37 PM
 //
 
 using System.Diagnostics.CodeAnalysis;
@@ -26,18 +26,18 @@ using System.Diagnostics.CodeAnalysis;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Parameters used to copy a texture sub resource to another texture sub resource.
+/// Parameters used to copy a texture sub resource to a destination virtual texture.
 /// </summary>
 /// <param name="sourceRegion">The region on the source texture to copy.</param>
-/// <seealso cref="IGorgonCopyMethodsFluent{T}.CopyTexture(GorgonTexture, GorgonTexture, ref readonly GorgonCopyTextureSubResource)"/>
-/// <seealso cref="IGorgonCopyMethodsFluent{T}.CopyTexture(GorgonTexture, GorgonTexture, ref readonly GorgonCopyTextureSubResource)"/>
+/// <param name="destinationHandle">The handle to the allocation on the destination texture.</param>
+/// <seealso cref="IGorgonCopyMethodsFluent{T}.CopyTextureToVirtual(GorgonTexture, GorgonVirtualTexture, ref readonly GorgonCopyTextureToVirtual)"/>
 [method: SetsRequiredMembers]
-public readonly ref struct GorgonCopyTextureSubResource(GorgonBox sourceRegion)
+public readonly ref struct GorgonCopyTextureToVirtual(GorgonBox sourceRegion, GorgonVirtualTextureHandle destinationHandle)
 {
     /// <summary>
     /// Property to return whether the parameter is considered empty.
     /// </summary>
-    public readonly bool IsEmpty => SourceRegion.Equals(in GorgonBox.Empty);
+    public readonly bool IsEmpty => (SourceRegion.Equals(in GorgonBox.Empty)) && (DestinationHandle.Equals(GorgonVirtualTextureHandle.Null));
 
     /// <summary>
     /// <inheritdoc cref="GorgonCopyTextureToVirtual(GorgonBox, GorgonVirtualTextureHandle)" path="/param[@name='sourceRegion']"/>
@@ -49,18 +49,14 @@ public readonly ref struct GorgonCopyTextureSubResource(GorgonBox sourceRegion)
     public readonly GorgonBox SourceRegion = sourceRegion;
 
     /// <summary>
+    /// <inheritdoc cref="GorgonCopyTextureToVirtual(GorgonBox, GorgonVirtualTextureHandle)" path="/param[@name='destinationHandle']"/>
+    /// </summary>
+    public readonly GorgonVirtualTextureHandle DestinationHandle = destinationHandle;
+
+    /// <summary>
     /// Property to return the mip level on the source texture to copy from.
     /// </summary>
     public readonly short SourceMipLevel
-    {
-        get;
-        init;
-    } = 0;
-
-    /// <summary>
-    /// Property to return the source format plane index on the source texture to copy from.
-    /// </summary>
-    public readonly byte SourcePlane
     {
         get;
         init;
@@ -88,35 +84,14 @@ public readonly ref struct GorgonCopyTextureSubResource(GorgonBox sourceRegion)
     } = 0;
 
     /// <summary>
-    /// Property to return the depth destination position in the texture or the array index.
+    /// Property to return the depth destination position in the texture.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// If the destination texture has a texture type of <see cref="TextureType.Texture1D"/>, or <see cref="TextureType.Texture2D"/>, then this value represents the array index for the texture array.
-    /// </para>
-    /// <para>
-    /// If the destination texture has a texture type of <see cref="TextureType.Texture3D"/>, then this value represents the depth slice in the depth texture.
+    /// If the destination texture has a texture type of <see cref="TextureType.Texture1D"/>, or <see cref="TextureType.Texture2D"/>, then this value is ignored and treated as 0.
     /// </para>
     /// </remarks>
-    public readonly short DestinationZOrArrayIndex
-    {
-        get;
-        init;
-    } = 0;
-
-    /// <summary>
-    /// Property to return the mip level on the destination texture to copy into.
-    /// </summary>
-    public readonly short DestinationMipLevel
-    {
-        get;
-        init;
-    } = 0;
-
-    /// <summary>
-    /// Property to return the destination format plane index on the destination texture to copy into.
-    /// </summary>
-    public readonly byte DestinationPlane
+    public readonly short DestinationZ
     {
         get;
         init;

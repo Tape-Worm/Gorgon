@@ -190,12 +190,14 @@ public unsafe sealed class GorgonResourceCopier
     /// <param name="destinationMipLevel"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTexture, GorgonTexture)" path="/param[@name='destinationMipLevel']"/></param>
     /// <param name="destinationPlane"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTexture, GorgonTexture)" path="/param[@name='destinationPlane']"/></param>
     /// <param name="isFullSubResource"><b>true</b> if the full sub resource is being copied, <b>false</b> if not.</param>
-    private void Copy1DTexture(GorgonTexture source, GorgonTexture destination, GorgonRange<int> sourceRegion, short sourceArrayIndex, short sourceMipLevel, byte sourcePlane, int destinationX, int destinationY, short destinationZOrArrayIndex, short destinationMipLevel, byte destinationPlane, bool isFullSubResource)
+    private void Copy1DTexture(GorgonTextureCommon source, GorgonTextureCommon destination, GorgonRange<int> sourceRegion, short sourceArrayIndex, short sourceMipLevel, byte sourcePlane, int destinationX, int destinationY, short destinationZOrArrayIndex, short destinationMipLevel, byte destinationPlane, bool isFullSubResource)
     {
         uint sourceSubIndex = (uint)source.GetSubResourceIndex(sourceMipLevel, sourceArrayIndex, sourcePlane);
         uint destSubIndex = (uint)destination.GetSubResourceIndex(destinationMipLevel, destinationZOrArrayIndex, destinationPlane);
 
-        if ((ReferenceEquals(source, destination)) && (sourceSubIndex == destSubIndex))
+        GorgonRange<int> destRegion = new(destinationX, destinationX + sourceRegion.Range);
+
+        if ((ReferenceEquals(source, destination)) && (sourceSubIndex == destSubIndex) && (sourceRegion.Intersects(destRegion)))
         {
             throw new GorgonException(GorgonResult.CannotWrite, string.Format(Resources.GORGFX_ERR_CANNOT_COPY_TEXTURE_INTO_ITSELF, source.Name, sourceSubIndex));
         }
@@ -208,11 +210,11 @@ public unsafe sealed class GorgonResourceCopier
         _commandQueue.Tracker.TrackResource(source.D3DResource);
         _commandQueue.Tracker.TrackResource(destination.D3DResource);
 
-        GorgonSubResourceRange srcSubRange = new((short)sourceMipLevel, 1, (short)sourceArrayIndex, 1, (byte)sourcePlane, 1);
-        GorgonSubResourceRange destSubRange = new((short)destinationMipLevel, 1, (short)destinationZOrArrayIndex, 1, (byte)destinationPlane, 1);
+        GorgonSubResourceRange srcSubRange = new(sourceMipLevel, 1, sourceArrayIndex, 1, sourcePlane, 1);
+        GorgonSubResourceRange destSubRange = new(destinationMipLevel, 1, destinationZOrArrayIndex, 1, destinationPlane, 1);
 
-        _commandList.SetBarrier(source, BarrierSync.Copy, BarrierAccess.CopySource, _commandQueue.Type == D3D12_COMMAND_LIST_TYPE.D3D12_COMMAND_LIST_TYPE_COPY ? BarrierLayout.Common : BarrierLayout.CopySource, srcSubRange);
-        _commandList.SetBarrier(destination, BarrierSync.Copy, BarrierAccess.CopyDestination, _commandQueue.Type == D3D12_COMMAND_LIST_TYPE.D3D12_COMMAND_LIST_TYPE_COPY ? BarrierLayout.Common : BarrierLayout.CopyDestination, destSubRange, force: true);
+        _commandList.SetBarrier(source, BarrierSync.Copy, BarrierAccess.CopySource, BarrierLayout.Common, srcSubRange);
+        _commandList.SetBarrier(destination, BarrierSync.Copy, BarrierAccess.CopyDestination, BarrierLayout.Common, destSubRange, force: true);
 
         D3D12_BOX d3dBox = new(sourceRegion.Minimum, 0, 0, sourceRegion.Maximum, 1, 1);
 
@@ -237,15 +239,17 @@ public unsafe sealed class GorgonResourceCopier
     /// <param name="destinationMipLevel"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTexture, GorgonTexture)" path="/param[@name='destinationMipLevel']"/></param>
     /// <param name="destinationPlane"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTexture, GorgonTexture)" path="/param[@name='destinationPlane']"/></param>
     /// <param name="isFullSubResource"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTexture, GorgonTexture)" path="/param[@name='isFullSubResource']"/></param>
-    private void Copy2DTexture(GorgonTexture source, GorgonTexture destination, GorgonRectangle sourceRegion, short sourceArrayIndex, short sourceMipLevel, byte sourcePlane, int destinationX, int destinationY, short destinationZOrArrayIndex, short destinationMipLevel, byte destinationPlane, bool isFullSubResource)
+    private void Copy2DTexture(GorgonTextureCommon source, GorgonTextureCommon destination, GorgonRectangle sourceRegion, short sourceArrayIndex, short sourceMipLevel, byte sourcePlane, int destinationX, int destinationY, short destinationZOrArrayIndex, short destinationMipLevel, byte destinationPlane, bool isFullSubResource)
     {
         uint sourceSubIndex = (uint)source.GetSubResourceIndex(sourceMipLevel, sourceArrayIndex, sourcePlane);
         uint destSubIndex = (uint)destination.GetSubResourceIndex(destinationMipLevel, destinationZOrArrayIndex, destinationPlane);
 
-        if ((ReferenceEquals(source, destination)) && (sourceSubIndex == destSubIndex))
+        GorgonRectangle destRect = new(destinationX, destinationY, sourceRegion.Width, sourceRegion.Height);
+
+        if ((ReferenceEquals(source, destination)) && (sourceSubIndex == destSubIndex) && (sourceRegion.IntersectsWith(destRect)))
         {
             throw new GorgonException(GorgonResult.CannotWrite, string.Format(Resources.GORGFX_ERR_CANNOT_COPY_TEXTURE_INTO_ITSELF, source.Name, sourceSubIndex));
-        }
+        }       
 
         ID3D12Resource* srcRes = (PID3D12Resource2)source.D3DResource.Get();
         ID3D12Resource* destRes = (PID3D12Resource2)destination.D3DResource.Get();
@@ -255,11 +259,11 @@ public unsafe sealed class GorgonResourceCopier
         _commandQueue.Tracker.TrackResource(source.D3DResource);
         _commandQueue.Tracker.TrackResource(destination.D3DResource);
 
-        GorgonSubResourceRange srcSubRange = new((short)sourceMipLevel, 1, (short)sourceArrayIndex, 1, (byte)sourcePlane, 1);
-        GorgonSubResourceRange destSubRange = new((short)destinationMipLevel, 1, (short)destinationZOrArrayIndex, 1, (byte)destinationPlane, 1);
+        GorgonSubResourceRange srcSubRange = new(sourceMipLevel, 1, sourceArrayIndex, 1, sourcePlane, 1);
+        GorgonSubResourceRange destSubRange = new(destinationMipLevel, 1, destinationZOrArrayIndex, 1, destinationPlane, 1);
 
-        _commandList.SetBarrier(source, BarrierSync.Copy, BarrierAccess.CopySource, _commandQueue.Type == D3D12_COMMAND_LIST_TYPE.D3D12_COMMAND_LIST_TYPE_COPY ? BarrierLayout.Common : BarrierLayout.CopySource, srcSubRange);
-        _commandList.SetBarrier(destination, BarrierSync.Copy, BarrierAccess.CopyDestination, _commandQueue.Type == D3D12_COMMAND_LIST_TYPE.D3D12_COMMAND_LIST_TYPE_COPY ? BarrierLayout.Common : BarrierLayout.CopyDestination, destSubRange, force: true);
+        _commandList.SetBarrier(source, BarrierSync.Copy, BarrierAccess.CopySource, BarrierLayout.Common, srcSubRange);
+        _commandList.SetBarrier(destination, BarrierSync.Copy, BarrierAccess.CopyDestination, BarrierLayout.Common, destSubRange, force: true);
 
         D3D12_BOX d3dBox = new(sourceRegion.Left, sourceRegion.Top, 0, sourceRegion.Right, sourceRegion.Bottom, 1);
 
@@ -283,12 +287,14 @@ public unsafe sealed class GorgonResourceCopier
     /// <param name="destinationMipLevel"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTexture, GorgonTexture)" path="/param[@name='destinationMipLevel']"/></param>
     /// <param name="destinationPlane"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTexture, GorgonTexture)" path="/param[@name='destinationPlane']"/></param>
     /// <param name="isFullSubResource"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTexture, GorgonTexture)" path="/param[@name='isFullSubResource']"/></param>
-    private void Copy3DTexture(GorgonTexture source, GorgonTexture destination, GorgonBox sourceRegion, short sourceMipLevel, byte sourcePlane, int destinationX, int destinationY, short destinationZOrArrayIndex, short destinationMipLevel, byte destinationPlane, bool isFullSubResource)
+    private void Copy3DTexture(GorgonTextureCommon source, GorgonTextureCommon destination, GorgonBox sourceRegion, short sourceMipLevel, byte sourcePlane, int destinationX, int destinationY, short destinationZOrArrayIndex, short destinationMipLevel, byte destinationPlane, bool isFullSubResource)
     {
         uint sourceSubIndex = (uint)source.GetSubResourceIndex(sourceMipLevel, 0, sourcePlane);
         uint destSubIndex = (uint)destination.GetSubResourceIndex(destinationMipLevel, destinationZOrArrayIndex, destinationPlane);
 
-        if ((ReferenceEquals(source, destination)) && (sourceSubIndex == destSubIndex))
+        GorgonBox destBox = new(destinationX, destinationY, destination.Type == TextureType.Texture2D ? destinationZOrArrayIndex : 0, sourceRegion.Width, sourceRegion.Height, sourceRegion.Depth);
+
+        if ((ReferenceEquals(source, destination)) && (sourceSubIndex == destSubIndex) && (sourceRegion.IntersectsWith(in destBox)))
         {
             throw new GorgonException(GorgonResult.CannotWrite, string.Format(Resources.GORGFX_ERR_CANNOT_COPY_TEXTURE_INTO_ITSELF, source.Name, sourceSubIndex));
         }
@@ -301,11 +307,11 @@ public unsafe sealed class GorgonResourceCopier
         _commandQueue.Tracker.TrackResource(source.D3DResource);
         _commandQueue.Tracker.TrackResource(destination.D3DResource);
 
-        GorgonSubResourceRange srcSubRange = new((short)sourceMipLevel, 1, 0, 1, (byte)sourcePlane, 1);
-        GorgonSubResourceRange destSubRange = new((short)destinationMipLevel, 1, (short)destinationZOrArrayIndex, 1, (byte)destinationPlane, 1);
+        GorgonSubResourceRange srcSubRange = new(sourceMipLevel, 1, 0, 1, sourcePlane, 1);
+        GorgonSubResourceRange destSubRange = new(destinationMipLevel, 1, destinationZOrArrayIndex, 1, destinationPlane, 1);
                 
-        _commandList.SetBarrier(source, BarrierSync.Copy, BarrierAccess.CopySource, _commandQueue.Type == D3D12_COMMAND_LIST_TYPE.D3D12_COMMAND_LIST_TYPE_COPY ? BarrierLayout.Common : BarrierLayout.CopySource, srcSubRange);
-        _commandList.SetBarrier(destination, BarrierSync.Copy, BarrierAccess.CopyDestination, _commandQueue.Type == D3D12_COMMAND_LIST_TYPE.D3D12_COMMAND_LIST_TYPE_COPY ? BarrierLayout.Common : BarrierLayout.CopyDestination, destSubRange, force: true);
+        _commandList.SetBarrier(source, BarrierSync.Copy, BarrierAccess.CopySource, BarrierLayout.Common, srcSubRange);
+        _commandList.SetBarrier(destination, BarrierSync.Copy, BarrierAccess.CopyDestination, BarrierLayout.Common, destSubRange, force: true);
 
         D3D12_BOX d3dBox = new(sourceRegion.Left, sourceRegion.Top, sourceRegion.Front, sourceRegion.Right, sourceRegion.Bottom, sourceRegion.Back);
 
@@ -323,11 +329,11 @@ public unsafe sealed class GorgonResourceCopier
     /// <param name="parameters">The parameters for the sub resource to copy.</param>
     /// <param name="sourceIsFullSubResource">If the parameterss covers the entire resource, then this value will return <b>true</b>; otherwise <b>false</b>.</param>
     /// <returns>The updated and clipped copy parameters.</returns>
-    private GorgonCopyTextureSubResource Clip(GorgonTexture source, GorgonTexture destination, ref readonly GorgonCopyTextureSubResource parameters, out bool sourceIsFullSubResource)
+    private static GorgonCopyTextureSubResource Clip(GorgonTexture source, GorgonTexture destination, ref readonly GorgonCopyTextureSubResource parameters, out bool sourceIsFullSubResource)
     {
         GorgonBox srcDims = new(0, 0, 0, source.GetMipWidth(parameters.SourceMipLevel), source.GetMipHeight(parameters.SourceMipLevel), source.Type == TextureType.Texture3D ? source.GetMipDepth(parameters.SourceMipLevel) : 1);
         GorgonBox destDims = new(0, 0, 0, destination.GetMipWidth(parameters.DestinationMipLevel), destination.GetMipHeight(parameters.DestinationMipLevel), destination.Type == TextureType.Texture3D ? destination.GetMipDepth(parameters.DestinationMipLevel) : 1);
-        int maxPlaneCount = Graphics.FormatSupport[source.Format].PlaneCount;
+        int maxPlaneCount = source.Graphics.FormatSupport[source.Format].PlaneCount;
 
         short sourceMipLevel = parameters.SourceMipLevel.Min((short)(source.MipCount - 1)).Max(0);
         short destinationMipLevel = parameters.DestinationMipLevel.Min((short)(destination.MipCount - 1)).Max(0);
@@ -339,7 +345,7 @@ public unsafe sealed class GorgonResourceCopier
 
         if ((parameters.DestinationX >= destDims.Width) || (parameters.DestinationY >= destDims.Height) || (parameters.DestinationZOrArrayIndex >= destDims.Depth) || ((destination.Type != TextureType.Texture3D) && (parameters.DestinationZOrArrayIndex < 0)))
         {            
-            return GorgonCopyTextureSubResource.Empty;
+            return new GorgonCopyTextureSubResource();
         }        
 
         GorgonBox destRegion = new(parameters.DestinationX, parameters.DestinationY, parameters.DestinationZOrArrayIndex, sourceRegion.Width, sourceRegion.Height, sourceRegion.Depth);
@@ -370,11 +376,10 @@ public unsafe sealed class GorgonResourceCopier
 
         sourceRegion.Width = sourceRegion.Width.Min(destRegion.Width).Max(0);
         sourceRegion.Height = sourceRegion.Height.Min(destRegion.Height).Max(0);
-        sourceRegion.Depth = sourceRegion.Depth.Min(destRegion.Depth).Max(0);
+        sourceRegion.Depth = sourceRegion.Depth.Min(destRegion.Depth).Max(0);        
 
-        return new GorgonCopyTextureSubResource
+        return sourceRegion.IsEmpty ? new GorgonCopyTextureSubResource() : new GorgonCopyTextureSubResource(sourceRegion)
         {
-            SourceRegion = sourceRegion,
             SourceMipLevel = sourceMipLevel,
             SourcePlane = sourcePlane,
             DestinationX = destinationX,
@@ -383,6 +388,227 @@ public unsafe sealed class GorgonResourceCopier
             DestinationMipLevel = destinationMipLevel,
             DestinationPlane = destinationPlane,
         };
+    }
+
+    /// <summary>
+    /// Function to clip the sub resource copy parameters to avoid overflow.
+    /// </summary>
+    /// <param name="source">The texture to copy.</param>
+    /// <param name="destination">The texture that will receive the data.</param>
+    /// <param name="parameters">The parameters for the sub resource to copy.</param>
+    /// <param name="sourceTiles">The tiles encompassed by the allocation region.</param>
+    /// <param name="sourceMipLevel">The mip level referenced in the allocation.</param>
+    /// <returns>The updated and clipped copy parameters.</returns>
+    private static GorgonCopyVirtualToTexture Clip(GorgonVirtualTexture source, GorgonTexture destination, ref readonly GorgonCopyVirtualToTexture parameters, ref readonly GorgonBox sourceTiles, short sourceMipLevel)
+    {
+        source.FromTiles(in sourceTiles, out GorgonBoxF sourceTexels, sourceMipLevel);
+        source.ToPixelBox(in sourceTexels, out GorgonBox srcDims, sourceMipLevel);
+
+        // We're using the relative coordinates to the allocation, so we need to adjust everything.
+        int srcOffsetX = srcDims.Left;
+        int srcOffsetY = srcDims.Top;
+        short srcOffsetZ = (short)srcDims.Front;
+        srcDims.Left = parameters.SourceRegion.X;
+        srcDims.Top = parameters.SourceRegion.Y;
+        srcDims.Front = source.Type == TextureType.Texture3D ? parameters.SourceRegion.Z : 0;
+
+        GorgonBox destDims = new(0, 0, 0, destination.GetMipWidth(parameters.DestinationMipLevel), destination.GetMipHeight(parameters.DestinationMipLevel), destination.Type == TextureType.Texture3D ? destination.GetMipDepth(parameters.DestinationMipLevel) : 1);
+
+        short destinationMipLevel = parameters.DestinationMipLevel.Min((short)(destination.MipCount - 1)).Max(0);
+
+        if ((parameters.DestinationX >= destDims.Width) || (parameters.DestinationY >= destDims.Height) || (parameters.DestinationZOrArrayIndex >= destDims.Depth) || ((destination.Type != TextureType.Texture3D) && (parameters.DestinationZOrArrayIndex < 0)))
+        {
+            return new GorgonCopyVirtualToTexture();
+        }
+
+        GorgonBox sourceRegion = parameters.SourceRegion.IsEmpty ? srcDims : parameters.SourceRegion;
+        GorgonBox destRegion = new(parameters.DestinationX, parameters.DestinationY, parameters.DestinationZOrArrayIndex, sourceRegion.Width, sourceRegion.Height, sourceRegion.Depth);
+        GorgonBox.Intersect(in sourceRegion, in srcDims, out sourceRegion);
+        GorgonBox.Intersect(in destRegion, in destDims, out destRegion);
+
+        if (parameters.DestinationX < 0)
+        {
+            sourceRegion.X -= parameters.DestinationX;
+            sourceRegion.Width += parameters.DestinationX;
+        }
+
+        if ((destination.Type != TextureType.Texture1D) && (parameters.DestinationY < 0))
+        {
+            sourceRegion.Y -= parameters.DestinationY;
+            sourceRegion.Height += parameters.DestinationY;
+        }
+
+        if ((destination.Type == TextureType.Texture3D) && (parameters.DestinationZOrArrayIndex < 0))
+        {
+            sourceRegion.Z -= parameters.DestinationZOrArrayIndex;
+            sourceRegion.Depth += parameters.DestinationZOrArrayIndex;
+        }
+
+        int destinationX = destRegion.X;
+        int destinationY = destination.Type != TextureType.Texture1D ? destRegion.Y : 0;
+        short destinationZOrArrayIndex = (short)destRegion.Z;
+
+        sourceRegion.X += srcOffsetX;
+        sourceRegion.Y += srcOffsetY;
+        sourceRegion.Z += srcOffsetZ;
+        sourceRegion.Width = sourceRegion.Width.Min(destRegion.Width).Max(0);
+        sourceRegion.Height = sourceRegion.Height.Min(destRegion.Height).Max(0);
+        sourceRegion.Depth = sourceRegion.Depth.Min(destRegion.Depth).Max(0);
+
+        return sourceRegion.IsEmpty ? new GorgonCopyVirtualToTexture() : new GorgonCopyVirtualToTexture(sourceRegion, parameters.SourceHandle)
+        {                        
+            DestinationX = destinationX,
+            DestinationY = destinationY,
+            DestinationZOrArrayIndex = destinationZOrArrayIndex,
+            DestinationMipLevel = destinationMipLevel,
+        };
+    }
+
+    /// <summary>
+    /// Function to clip the virtual texture copy parameters to avoid overflow.
+    /// </summary>
+    /// <param name="source">The texture to copy.</param>
+    /// <param name="destination">The virtual texture that will receive the data.</param>
+    /// <param name="parameters">The parameters for the virtual texture copy.</param>
+    /// <param name="destinationTiles">The tiles encompassed by the allocation region.</param>
+    /// <param name="destinationMipLevel">The mip level referenced in the allocation.</param>
+    /// <returns>The updated and clipped copy parameters.</returns>
+    private static GorgonCopyTextureToVirtual Clip(GorgonTexture source, GorgonVirtualTexture destination, ref readonly GorgonCopyTextureToVirtual parameters, ref readonly GorgonBox destinationTiles, short destinationMipLevel)
+    {
+        GorgonBox srcDims = new(0, 0, 0, source.GetMipWidth(parameters.SourceMipLevel), source.GetMipHeight(parameters.SourceMipLevel), source.Type == TextureType.Texture3D ? source.GetMipDepth(parameters.SourceMipLevel) : 1);
+
+        destination.FromTiles(in destinationTiles, out GorgonBoxF destinationTexels, destinationMipLevel);
+        destination.ToPixelBox(in destinationTexels, out GorgonBox destDims, destinationMipLevel);
+
+        // We're using the relative coordinates to the allocation, so we need to adjust everything.
+        int destOffsetX = destDims.Left;
+        int destOffsetY = destDims.Top;
+        short destOffsetZ = (short)destDims.Front;
+        destDims.Top = destDims.Left = destDims.Front = 0;
+
+        short sourceMipLevel = parameters.SourceMipLevel.Min((short)(source.MipCount - 1)).Max(0);        
+        GorgonBox sourceRegion = parameters.SourceRegion.IsEmpty ? srcDims : parameters.SourceRegion;
+
+        if ((parameters.DestinationX >= destDims.Width) || (parameters.DestinationY >= destDims.Height) || (parameters.DestinationZ >= destDims.Depth))
+        {
+            return new GorgonCopyTextureToVirtual();
+        }
+
+        GorgonBox destRegion = new(parameters.DestinationX, parameters.DestinationY, destination.Type == TextureType.Texture3D ? parameters.DestinationZ : 0, sourceRegion.Width, sourceRegion.Height, sourceRegion.Depth);
+        GorgonBox.Intersect(in sourceRegion, in srcDims, out sourceRegion);
+        GorgonBox.Intersect(in destRegion, in destDims, out destRegion);
+
+        if (parameters.DestinationX < 0)
+        {
+            sourceRegion.X -= parameters.DestinationX;
+            sourceRegion.Width += parameters.DestinationX;
+        }
+
+        if ((source.Type != TextureType.Texture1D) && (parameters.DestinationY < 0))
+        {
+            sourceRegion.Y -= parameters.DestinationY;
+            sourceRegion.Height += parameters.DestinationY;
+        }
+
+        if ((source.Type == TextureType.Texture3D) && (parameters.DestinationZ < 0))
+        {
+            sourceRegion.Z -= parameters.DestinationZ;
+            sourceRegion.Depth += parameters.DestinationZ;
+        }
+
+        int destinationX = destRegion.X + destOffsetX;
+        int destinationY = destRegion.Y + destOffsetY;
+        short destinationZ =  (short)(destRegion.Z + destOffsetZ);
+
+        sourceRegion.Width = sourceRegion.Width.Min(destRegion.Width).Max(0);
+        sourceRegion.Height = sourceRegion.Height.Min(destRegion.Height).Max(0);
+        sourceRegion.Depth = sourceRegion.Depth.Min(destRegion.Depth).Max(0);
+
+        return sourceRegion.IsEmpty ? new GorgonCopyTextureToVirtual() : new GorgonCopyTextureToVirtual(sourceRegion, parameters.DestinationHandle)
+        {
+            SourceMipLevel = sourceMipLevel,            
+            DestinationX = destinationX,
+            DestinationY = destinationY,
+            DestinationZ = destinationZ            
+        };
+    }
+
+    /// <summary>
+    /// Function to clip the sub resource copy parameters to avoid overflow.
+    /// </summary>
+    /// <param name="source">The texture to copy.</param>
+    /// <param name="destination">The texture that will receive the data.</param>
+    /// <param name="parameters">The parameters for the sub resource to copy.</param>
+    /// <param name="sourceTiles">The tiles encompassed by the source allocation region.</param>
+    /// <param name="sourceMipLevel">The mip level referenced in the source allocation.</param>
+    /// <param name="destTiles">The tiles encompassed by the destination allocation region.</param>
+    /// <param name="destMipLevel">The mip level referenced in the destination allocation.</param>
+    /// <returns>The updated and clipped copy parameters.</returns>
+    private static GorgonCopyVirtualToVirtual Clip(GorgonVirtualTexture source, GorgonVirtualTexture destination, ref readonly GorgonCopyVirtualToVirtual parameters, ref readonly GorgonBox sourceTiles, short sourceMipLevel, ref readonly GorgonBox destTiles, short destMipLevel)
+    {
+        source.FromTiles(in sourceTiles, out GorgonBoxF sourceTexels, sourceMipLevel);
+        source.ToPixelBox(in sourceTexels, out GorgonBox srcDims, sourceMipLevel);
+
+        destination.FromTiles(in destTiles, out GorgonBoxF destinationTexels, destMipLevel);
+        destination.ToPixelBox(in destinationTexels, out GorgonBox destDims, destMipLevel);
+
+        // We're using the relative coordinates to the allocation, so we need to adjust everything.
+        int srcOffsetX = srcDims.Left;
+        int srcOffsetY = srcDims.Top;
+        short srcOffsetZ = (short)srcDims.Front;
+
+        int destOffsetX = destDims.Left;
+        int destOffsetY = destDims.Top;
+        short destOffsetZ = (short)destDims.Front;
+
+        srcDims.Left = parameters.SourceRegion.X;
+        srcDims.Top = parameters.SourceRegion.Y;
+        srcDims.Front = source.Type == TextureType.Texture3D ? parameters.SourceRegion.Z : 0;
+
+        destDims.Left = parameters.DestinationX;
+        destDims.Top = parameters.DestinationY;
+        destDims.Front = destination.Type == TextureType.Texture3D ? parameters.DestinationZ : 0;
+
+        if ((parameters.DestinationX >= destDims.Width) || (parameters.DestinationY >= destDims.Height) || (parameters.DestinationZ >= destDims.Depth))
+        {
+            return new GorgonCopyVirtualToVirtual();
+        }
+
+        GorgonBox sourceRegion = parameters.SourceRegion.IsEmpty ? srcDims : parameters.SourceRegion;
+        GorgonBox destRegion = new(parameters.DestinationX, parameters.DestinationY, parameters.DestinationZ, sourceRegion.Width, sourceRegion.Height, sourceRegion.Depth);
+        GorgonBox.Intersect(in sourceRegion, in srcDims, out sourceRegion);
+        GorgonBox.Intersect(in destRegion, in destDims, out destRegion);
+
+        if (parameters.DestinationX < 0)
+        {
+            sourceRegion.X -= parameters.DestinationX;
+            sourceRegion.Width += parameters.DestinationX;
+        }
+
+        if (parameters.DestinationY < 0)
+        {
+            sourceRegion.Y -= parameters.DestinationY;
+            sourceRegion.Height += parameters.DestinationY;
+        }
+
+        if ((destination.Type == TextureType.Texture3D) && (parameters.DestinationZ < 0))
+        {
+            sourceRegion.Z -= parameters.DestinationZ;
+            sourceRegion.Depth += parameters.DestinationZ;
+        }
+
+        int destinationX = destRegion.X + destOffsetX;
+        int destinationY = destRegion.Y + destOffsetY;
+        short destinationZ = (short)(destRegion.Z + destOffsetZ);
+
+        sourceRegion.X += srcOffsetX;
+        sourceRegion.Y += srcOffsetY;
+        sourceRegion.Z += srcOffsetZ;
+        sourceRegion.Width = sourceRegion.Width.Min(destRegion.Width).Max(0);
+        sourceRegion.Height = sourceRegion.Height.Min(destRegion.Height).Max(0);
+        sourceRegion.Depth = sourceRegion.Depth.Min(destRegion.Depth).Max(0);
+
+        return (sourceRegion.IsEmpty) || (destRegion.IsEmpty) ? new GorgonCopyVirtualToVirtual() : new GorgonCopyVirtualToVirtual(sourceRegion, parameters.SourceHandle, destinationX, destinationY, destinationZ, parameters.DestinationHandle);
     }
 
     /// <summary>
@@ -444,6 +670,68 @@ public unsafe sealed class GorgonResourceCopier
     }
 
     /// <summary>
+    /// Function to validate the settings for copying a texture to a virtual texture.
+    /// </summary>
+    /// <param name="source"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTexture, GorgonTexture, ref readonly GorgonCopyTextureSubResource)" path="/param[@name='source']"/></param>
+    /// <param name="destination"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTextureToVirtual(GorgonTexture, GorgonVirtualTexture, ref readonly GorgonCopyTextureToVirtual)" path="/param[@name='destination']"/></param>
+    /// <inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTextureToVirtual(GorgonTexture, GorgonVirtualTexture, ref readonly GorgonCopyTextureToVirtual)" path="/exception"/>
+    private static void ValidateCopyTexture(GorgonTexture source, GorgonVirtualTexture destination)
+    {
+        if (source.FormatInfo.Group != destination.FormatInfo.Group)
+        {
+            throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORGFX_ERR_TEXTURE_COPY_FORMAT_GROUPS_DIFFERENT, source.Name, source.FormatInfo.Group, destination.Name, destination.FormatInfo.Group));
+        }
+
+        if (!destination.MultisampleInfo.Equals(source.MultisampleInfo))
+        {
+            throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORGFX_ERR_MULTISAMPLE_SOURCE_DEST_DIFFERENT, source.MultisampleInfo, source.Name, destination.MultisampleInfo, destination.Name));
+        }
+
+        if (source.IsDepthStencil)
+        {
+            throw new ArgumentException(string.Format(Resources.GORGFX_ERR_DEPTH_STENCIL_CANNOT_BE_COPIED, source.Name), nameof(source));
+        }
+    }
+
+    /// <summary>
+    /// Function to validate the settings for copying a texture to a virtual texture.
+    /// </summary>
+    /// <param name="source"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyVirtualToTexture(GorgonVirtualTexture, GorgonTexture, ref readonly GorgonCopyVirtualToTexture)" path="/param[@name='source']"/></param>
+    /// <param name="destination"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTexture(GorgonTexture, GorgonTexture, ref readonly GorgonCopyTextureSubResource)" path="/param[@name='destination']"/></param>
+    /// <inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyTextureToVirtual(GorgonTexture, GorgonVirtualTexture, ref readonly GorgonCopyTextureToVirtual)" path="/exception"/>
+    private static void ValidateCopyTexture(GorgonVirtualTexture source, GorgonTexture destination)
+    {
+        if (source.FormatInfo.Group != destination.FormatInfo.Group)
+        {
+            throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORGFX_ERR_TEXTURE_COPY_FORMAT_GROUPS_DIFFERENT, source.Name, source.FormatInfo.Group, destination.Name, destination.FormatInfo.Group));
+        }
+
+        if (!destination.MultisampleInfo.Equals(source.MultisampleInfo))
+        {
+            throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORGFX_ERR_MULTISAMPLE_SOURCE_DEST_DIFFERENT, source.MultisampleInfo, source.Name, destination.MultisampleInfo, destination.Name));
+        }
+
+        if (destination.IsDepthStencil)
+        {
+            throw new ArgumentException(string.Format(Resources.GORGFX_ERR_DEPTH_STENCIL_CANNOT_BE_COPIED, destination.Name), nameof(destination));
+        }
+    }
+
+    /// <summary>
+    /// Function to validate the settings for copying a texture to a virtual texture.
+    /// </summary>
+    /// <param name="source"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyVirtualToVirtual(GorgonVirtualTexture, GorgonVirtualTexture, ref readonly GorgonCopyVirtualToVirtual)" path="/param[@name='source']"/></param>
+    /// <param name="destination"><inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyVirtualToVirtual(GorgonVirtualTexture, GorgonVirtualTexture, ref readonly GorgonCopyVirtualToVirtual)" path="/param[@name='destination']"/></param>
+    /// <inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyVirtualToVirtual(GorgonVirtualTexture, GorgonVirtualTexture, ref readonly GorgonCopyVirtualToVirtual)" path="/exception"/>
+    private static void ValidateCopyTexture(GorgonVirtualTexture source, GorgonVirtualTexture destination)
+    {
+        if (source.FormatInfo.Group != destination.FormatInfo.Group)
+        {
+            throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORGFX_ERR_TEXTURE_COPY_FORMAT_GROUPS_DIFFERENT, source.Name, source.FormatInfo.Group, destination.Name, destination.FormatInfo.Group));
+        }
+    }
+
+    /// <summary>
     /// Function to execute the download command list.
     /// </summary>
     private void ExecuteDownload()
@@ -461,7 +749,7 @@ public unsafe sealed class GorgonResourceCopier
             copyQueue.Execute(_commandList);
             fence = copyQueue.IncrementFence();
 
-            copyQueue.WaitForFence(fence, Timeout.Infinite);
+            copyQueue.WaitForFence(fence, Timeout.Infinite);            
         }
         finally
         {
@@ -624,22 +912,6 @@ public unsafe sealed class GorgonResourceCopier
             _commandQueue.ListPool.Return(_commandList);
             Cleanup();            
         }        
-    }
-
-    /// <inheritdoc/>
-    IGorgonResourceWriter IGorgonCopyMethodsFluent<IGorgonResourceWriter>.SetBarrier(GorgonTextureCommon texture, BarrierSync sync, BarrierAccess access, BarrierLayout layout, GorgonSubResourceRange? subResources, bool discard, bool force)
-    {
-        Debug.Assert(_commandList is not null && _commandAllocator is not null, "Command list and/or allocator are null.");
-        _commandList.SetBarrier(texture, sync, access, layout, subResources, discard, force);
-        return this;
-    }
-
-    /// <inheritdoc/>
-    IGorgonResourceWriter IGorgonCopyMethodsFluent<IGorgonResourceWriter>.SetBarrier(GorgonGpuBufferCommon buffer, BarrierSync sync, BarrierAccess access, bool force)
-    {
-        Debug.Assert(_commandList is not null && _commandAllocator is not null, "Command list and/or allocator are null.");
-        _commandList.SetBarrier(buffer, sync, access, force);
-        return this;
     }
 
     /// <inheritdoc/>
@@ -825,7 +1097,7 @@ public unsafe sealed class GorgonResourceCopier
             // Copy to upload resource.
             NativeMemory.Copy((void*)working.ImageData, allocation.CpuPointer, (nuint)working.SizeInBytes);
 
-            _commandList.SetBarrier(texture, BarrierSync.Copy, BarrierAccess.CopyDestination, _commandQueue.Type == D3D12_COMMAND_LIST_TYPE.D3D12_COMMAND_LIST_TYPE_COPY ? BarrierLayout.Common : BarrierLayout.CopyDestination, force: true);
+            _commandList.SetBarrier(texture, BarrierSync.Copy, BarrierAccess.CopyDestination, BarrierLayout.Common, force: true);
 
             ulong offsetCalc = allocation.Offset;
             int arrayCount = working.ArrayCount.Min(texture.ArrayCount);
@@ -912,7 +1184,7 @@ public unsafe sealed class GorgonResourceCopier
         // Copy to upload resource.
         NativeMemory.Copy((void*)imageBuffer.ImageData, allocation.CpuPointer, (nuint)imageBuffer.SizeInBytes);
 
-        _commandList.SetBarrier(texture, BarrierSync.Copy, BarrierAccess.CopyDestination, _commandQueue.Type == D3D12_COMMAND_LIST_TYPE.D3D12_COMMAND_LIST_TYPE_COPY ? BarrierLayout.Common : BarrierLayout.CopyDestination, force: true);
+        _commandList.SetBarrier(texture, BarrierSync.Copy, BarrierAccess.CopyDestination, BarrierLayout.Common, force: true);
 
         int bufferWidth = imageBuffer.Width.Min(destInfo.Width);
         int bufferHeight = imageBuffer.Height.Min(destInfo.Height);
@@ -939,7 +1211,7 @@ public unsafe sealed class GorgonResourceCopier
     }
 
     /// <inheritdoc/>
-    IGorgonResourceWriter IGorgonCopyMethodsFluent<IGorgonResourceWriter>.CopyImageToTexture(IGorgonImageBuffer imageBuffer, GorgonVirtualTexture texture, long handle, short destinationDepthSlice)
+    IGorgonResourceWriter IGorgonCopyMethodsFluent<IGorgonResourceWriter>.CopyImageToTexture(IGorgonImageBuffer imageBuffer, GorgonVirtualTexture texture, GorgonVirtualTextureHandle handle, short destinationDepthSlice)
     {
         if (_batchState is not 1 and not int.MaxValue)
         {
@@ -975,7 +1247,7 @@ public unsafe sealed class GorgonResourceCopier
         // Copy to upload resource.
         NativeMemory.Copy((void*)imageBuffer.ImageData, allocation.CpuPointer, (nuint)imageBuffer.SizeInBytes);
 
-        _commandList.SetBarrier(texture, BarrierSync.Copy, BarrierAccess.CopyDestination, _commandQueue.Type == D3D12_COMMAND_LIST_TYPE.D3D12_COMMAND_LIST_TYPE_COPY ? BarrierLayout.Common : BarrierLayout.CopyDestination, force: true);
+        _commandList.SetBarrier(texture, BarrierSync.Copy, BarrierAccess.CopyDestination, BarrierLayout.Common, force: true);
 
         int bufferWidth = imageBuffer.Width.Min(pixelBox.Width);
         int bufferHeight = imageBuffer.Height.Min(pixelBox.Height);
@@ -1061,37 +1333,6 @@ public unsafe sealed class GorgonResourceCopier
     }
 
     /// <inheritdoc/>
-    IGorgonResourceWriter IGorgonCopyMethodsFluent<IGorgonResourceWriter>.CopyTextureToBuffer(GorgonTexture texture, GorgonGpuBuffer buffer, long destinationOffset)
-    {
-        ArgumentOutOfRangeException.ThrowIfLessThan(destinationOffset, 0);
-
-        if (texture.SizeInBytes > (buffer.SizeInBytes - destinationOffset))
-        {
-            throw new GorgonException(GorgonResult.CannotWrite, string.Format(Resources.GORGFX_ERR_BUFFER_TOO_SMALL, buffer.Name, texture.SizeInBytes));
-        }
-
-        PrepUpload();
-
-        _commandQueue.Tracker.TrackResource(buffer.D3DResource);
-        _commandQueue.Tracker.TrackResource(texture.D3DResource);
-
-        _commandList.SetBarrier(texture, BarrierSync.Copy, BarrierAccess.CopySource, _commandQueue.Type == D3D12_COMMAND_LIST_TYPE.D3D12_COMMAND_LIST_TYPE_COPY ? BarrierLayout.Common : BarrierLayout.CopySource);
-        _commandList.SetBarrier(buffer, BarrierSync.Copy, BarrierAccess.CopyDestination, true);
-
-        for (int i = 0; i < texture.SubResources.Count; ++i)
-        {
-            GorgonSubResourceInfo subInfo = texture.SubResources[i];
-            D3D12_PLACED_SUBRESOURCE_FOOTPRINT footPrint = subInfo.ToD3DPlacedSubResourceFootPrint(texture.Format, buffer.ResourceOffset + (ulong)destinationOffset);
-            D3D12_TEXTURE_COPY_LOCATION srcLoc = new((PID3D12Resource2)texture.D3DResource.Get(), (uint)i);
-            D3D12_TEXTURE_COPY_LOCATION destLoc = new((PID3D12Resource2)buffer.D3DResource.Get(), in footPrint);
-
-            _commandList.D3DGraphicsCommandList.Get()->CopyTextureRegion(&destLoc, 0, 0, 0, &srcLoc, null);            
-        }
-
-        return this;
-    }
-
-    /// <inheritdoc/>
     IGorgonResourceWriter IGorgonCopyMethodsFluent<IGorgonResourceWriter>.CopyBufferToTexture(GorgonGpuBuffer buffer, GorgonTexture texture, GorgonCopyBufferToTexture parameters)
     {
         if (_batchState is not 1 and not int.MaxValue)
@@ -1125,71 +1366,9 @@ public unsafe sealed class GorgonResourceCopier
         D3D12_BOX box = new(0, 0, 0, subInfo.Width, subInfo.Height, subInfo.Depth);
 
         _commandList.SetBarrier(buffer, BarrierSync.Copy, BarrierAccess.CopySource);
-        _commandList.SetBarrier(texture, BarrierSync.Copy, BarrierAccess.CopyDestination, _commandQueue.Type == D3D12_COMMAND_LIST_TYPE.D3D12_COMMAND_LIST_TYPE_COPY ? BarrierLayout.Common : BarrierLayout.CopyDestination, force: true);
+        _commandList.SetBarrier(texture, BarrierSync.Copy, BarrierAccess.CopyDestination, BarrierLayout.Common, force: true);
 
         _commandList.D3DGraphicsCommandList.Get()->CopyTextureRegion(&destLoc, 0, 0, 0, &srcLoc, &box);
-
-        return this;
-    }
-
-    /// <inheritdoc/>
-    IGorgonResourceWriter IGorgonCopyMethodsFluent<IGorgonResourceWriter>.CopyBufferToTexture(GorgonGpuBuffer buffer, GorgonTexture texture, long sourceOffset)
-    {
-        if (_batchState is not 1 and not int.MaxValue)
-        {
-            throw new GorgonException(GorgonResult.CannotWrite, Resources.GORGFX_ERR_BATCH_NOT_STARTED);
-        }
-
-        ArgumentOutOfRangeException.ThrowIfLessThan(sourceOffset, 0);
-
-        if (texture.SizeInBytes < (buffer.SizeInBytes - sourceOffset))
-        {
-            throw new ArgumentException(string.Format(Resources.GORGFX_ERR_TEXTURE_TOO_SMALL, texture.Name, texture.SizeInBytes, buffer.SizeInBytes - sourceOffset), nameof(buffer));
-        }
-
-        PrepUpload();
-
-        ulong resourceOffset = (ulong)sourceOffset + buffer.ResourceOffset;
-
-        _commandQueue.Tracker.TrackResource(buffer.D3DResource);
-        _commandQueue.Tracker.TrackResource(texture.D3DResource);
-
-        _commandList.SetBarrier(buffer, BarrierSync.Copy, BarrierAccess.CopySource);
-        _commandList.SetBarrier(texture, BarrierSync.Copy, BarrierAccess.CopyDestination, _commandQueue.Type == D3D12_COMMAND_LIST_TYPE.D3D12_COMMAND_LIST_TYPE_COPY ? BarrierLayout.Common : BarrierLayout.CopyDestination, force: true);
-
-        int depth = texture.Depth;  
-
-        for (int a = 0; a < texture.ArrayCount; ++a)
-        {
-            for (int m = 0; m < texture.MipCount; ++m)
-            {
-                for (int p = 0; p < Graphics.FormatSupport[texture.Format].PlaneCount; ++p)
-                {
-                    int subResourceIndex = texture.GetSubResourceIndex((short)a, (short)m, (byte)p);
-                    GorgonSubResourceInfo subResourceInfo = texture.SubResources[subResourceIndex];
-
-                    D3D12_PLACED_SUBRESOURCE_FOOTPRINT footPrint = new()
-                    {
-                        Offset = resourceOffset,
-                        Footprint = new D3D12_SUBRESOURCE_FOOTPRINT((DXGI_FORMAT)texture.Format, (uint)subResourceInfo.Width, (uint)subResourceInfo.Height, (uint)subResourceInfo.Depth, (uint)subResourceInfo.RowPitch)
-                    };
-
-                    resourceOffset += (ulong)subResourceInfo.Offset;
-
-                    D3D12_TEXTURE_COPY_LOCATION srcLoc = new((PID3D12Resource2)buffer.D3DResource.Get(), in footPrint);
-                    D3D12_TEXTURE_COPY_LOCATION destLoc = new((PID3D12Resource2)texture.D3DResource.Get(), (uint)subResourceIndex);
-
-                    _commandList.D3DGraphicsCommandList.Get()->CopyTextureRegion(&destLoc, 0, 0, (uint)(texture.Type == TextureType.Texture3D ? depth : 0), &srcLoc, null);
-                }
-
-                depth >>= 1;
-
-                if (depth < 1)
-                {
-                    depth = 1;
-                }
-            }
-        }
 
         return this;
     }
@@ -1229,7 +1408,7 @@ public unsafe sealed class GorgonResourceCopier
         D3D12_TEXTURE_COPY_LOCATION destLoc = new((PID3D12Resource2)buffer.D3DResource.Get(), in footPrint);
 
         _commandList.SetBarrier(buffer, BarrierSync.Copy, BarrierAccess.CopyDestination);
-        _commandList.SetBarrier(texture, BarrierSync.Copy, BarrierAccess.CopySource, _commandQueue.Type == D3D12_COMMAND_LIST_TYPE.D3D12_COMMAND_LIST_TYPE_COPY ? BarrierLayout.Common : BarrierLayout.CopySource, force: true);
+        _commandList.SetBarrier(texture, BarrierSync.Copy, BarrierAccess.CopySource, BarrierLayout.Common, force: true);
 
         D3D12_BOX box = new(0, 0,  0, subInfo.Width, subInfo.Height, subInfo.Depth);
 
@@ -1296,13 +1475,145 @@ public unsafe sealed class GorgonResourceCopier
 
         PrepUpload();
 
-        _commandList.SetBarrier(source, BarrierSync.Copy, BarrierAccess.CopySource, _commandQueue.Type == D3D12_COMMAND_LIST_TYPE.D3D12_COMMAND_LIST_TYPE_COPY ? BarrierLayout.Common : BarrierLayout.CopySource);
-        _commandList.SetBarrier(destination, BarrierSync.Copy, BarrierAccess.CopyDestination, _commandQueue.Type == D3D12_COMMAND_LIST_TYPE.D3D12_COMMAND_LIST_TYPE_COPY ? BarrierLayout.Common : BarrierLayout.CopyDestination, force: true);
+        _commandList.SetBarrier(source, BarrierSync.Copy, BarrierAccess.CopySource, BarrierLayout.Common);
+        _commandList.SetBarrier(destination, BarrierSync.Copy, BarrierAccess.CopyDestination, BarrierLayout.Common, force: true);
 
         _commandQueue.Tracker.TrackResource(source.D3DResource);
         _commandQueue.Tracker.TrackResource(destination.D3DResource);
 
         _commandList.D3DGraphicsCommandList.Get()->CopyResource(destRes, srcRes);
+
+        return this;
+    }
+
+    /// <inheritdoc/>
+    IGorgonResourceWriter IGorgonCopyMethodsFluent<IGorgonResourceWriter>.CopyTextureToVirtual(GorgonTexture source, GorgonVirtualTexture destination, ref readonly GorgonCopyTextureToVirtual parameters)
+    {
+        if (_batchState is not 1 and not int.MaxValue)
+        {
+            throw new GorgonException(GorgonResult.CannotWrite, Resources.GORGFX_ERR_BATCH_NOT_STARTED);
+        }
+
+        if ((parameters.DestinationHandle.Equals(GorgonVirtualTextureHandle.Null))
+            || (!destination.TryGetAllocatedTileRegion(parameters.DestinationHandle, out GorgonBox tileRegion))
+            || (!destination.TryGetSubResources(parameters.DestinationHandle, out short destinationMipLevel, out short destinationArrayIndex)))
+        {
+            throw new GorgonException(GorgonResult.CannotWrite, string.Format(Resources.GORGFX_ERR_TEXTURE_HANDLE_DOES_NOT_EXIST, parameters.DestinationHandle, destination.Name));
+        }
+
+        ValidateCopyTexture(source, destination);
+
+        GorgonCopyTextureToVirtual newParameters = Clip(source, destination, in parameters, in tileRegion, destinationMipLevel);
+
+        if (newParameters.IsEmpty)
+        {
+            return this;
+        }
+
+        short destZOrArray = destination.Type == TextureType.Texture3D ? newParameters.DestinationZ : destinationArrayIndex;
+
+        switch (source.Type)
+        {
+            case TextureType.Texture1D:
+                Copy1DTexture(source, destination, new GorgonRange<int>(newParameters.SourceRegion.Left, newParameters.SourceRegion.Right), (short)newParameters.SourceRegion.Front, newParameters.SourceMipLevel, 0, newParameters.DestinationX, newParameters.DestinationY, destZOrArray, destinationMipLevel, 0, false);
+                break;
+            case TextureType.Texture2D:
+                Copy2DTexture(source, destination, (GorgonRectangle)newParameters.SourceRegion, (short)newParameters.SourceRegion.Front, newParameters.SourceMipLevel, 0, newParameters.DestinationX, newParameters.DestinationY, newParameters.DestinationZ, destZOrArray, 0, false);
+                break;
+            case TextureType.Texture3D:
+                Copy3DTexture(source, destination, newParameters.SourceRegion, newParameters.SourceMipLevel, 0, newParameters.DestinationX, newParameters.DestinationY, destZOrArray, destinationMipLevel, 0, false);
+                break;
+            default:
+                throw new ArgumentException(string.Format(Resources.GORGFX_ERR_CANNOT_CREATE_TEXTURE_UNKNOWN_TYPE, source.Type), nameof(source));
+        }
+
+        return this;
+    }
+
+    /// <inheritdoc/>
+    IGorgonResourceWriter IGorgonCopyMethodsFluent<IGorgonResourceWriter>.CopyVirtualToTexture(GorgonVirtualTexture source, GorgonTexture destination, ref readonly GorgonCopyVirtualToTexture parameters)
+    {
+        if (_batchState is not 1 and not int.MaxValue)
+        {
+            throw new GorgonException(GorgonResult.CannotWrite, Resources.GORGFX_ERR_BATCH_NOT_STARTED);
+        }
+
+        if ((parameters.SourceHandle.Equals(GorgonVirtualTextureHandle.Null))
+            || (!source.TryGetAllocatedTileRegion(parameters.SourceHandle, out GorgonBox tileRegion))
+            || (!source.TryGetSubResources(parameters.SourceHandle, out short sourceMipLevel, out short sourceArrayIndex)))
+        {
+            throw new GorgonException(GorgonResult.CannotWrite, string.Format(Resources.GORGFX_ERR_TEXTURE_HANDLE_DOES_NOT_EXIST, parameters.SourceHandle, source.Name));
+        }
+
+        ValidateCopyTexture(source, destination);
+
+        GorgonCopyVirtualToTexture newParameters = Clip(source, destination, in parameters, in tileRegion, sourceMipLevel);
+
+        if (newParameters.IsEmpty)
+        {
+            return this;
+        }
+
+        switch (source.Type)
+        {
+            case TextureType.Texture1D:
+                Copy1DTexture(source, destination, new GorgonRange<int>(newParameters.SourceRegion.Left, newParameters.SourceRegion.Right), sourceArrayIndex, sourceMipLevel, 0, newParameters.DestinationX, newParameters.DestinationY, newParameters.DestinationZOrArrayIndex, newParameters.DestinationMipLevel, 0, false);
+                break;
+            case TextureType.Texture2D:
+                Copy2DTexture(source, destination, (GorgonRectangle)newParameters.SourceRegion, sourceArrayIndex, sourceMipLevel, 0, newParameters.DestinationX, newParameters.DestinationY, newParameters.DestinationZOrArrayIndex, newParameters.DestinationMipLevel, 0, false);
+                break;
+            case TextureType.Texture3D:
+                Copy3DTexture(source, destination, newParameters.SourceRegion, sourceMipLevel, 0, newParameters.DestinationX, newParameters.DestinationY, newParameters.DestinationZOrArrayIndex, newParameters.DestinationMipLevel, 0, false);
+                break;
+            default:
+                throw new ArgumentException(string.Format(Resources.GORGFX_ERR_CANNOT_CREATE_TEXTURE_UNKNOWN_TYPE, source.Type), nameof(source));
+        }
+
+        return this;
+    }
+
+    /// <inheritdoc/>
+    IGorgonResourceWriter IGorgonCopyMethodsFluent<IGorgonResourceWriter>.CopyVirtualToVirtual(GorgonVirtualTexture source, GorgonVirtualTexture destination, ref readonly GorgonCopyVirtualToVirtual parameters)
+    {
+        if (_batchState is not 1 and not int.MaxValue)
+        {
+            throw new GorgonException(GorgonResult.CannotWrite, Resources.GORGFX_ERR_BATCH_NOT_STARTED);
+        }
+
+        if ((parameters.SourceHandle.Equals(GorgonVirtualTextureHandle.Null))
+            || (!source.TryGetAllocatedTileRegion(parameters.SourceHandle, out GorgonBox sourceTileRegion))
+            || (!source.TryGetSubResources(parameters.SourceHandle, out short sourceMipLevel, out short sourceArrayIndex)))
+        {
+            throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORGFX_ERR_TEXTURE_HANDLE_DOES_NOT_EXIST, parameters.SourceHandle, source.Name));
+        }
+
+        if ((parameters.DestinationHandle.Equals(GorgonVirtualTextureHandle.Null))
+            || (!destination.TryGetAllocatedTileRegion(parameters.DestinationHandle, out GorgonBox destTileRegion))
+            || (!destination.TryGetSubResources(parameters.DestinationHandle, out short destMipLevel, out short destArrayIndex)))
+        {
+            throw new GorgonException(GorgonResult.CannotWrite, string.Format(Resources.GORGFX_ERR_TEXTURE_HANDLE_DOES_NOT_EXIST, parameters.DestinationHandle, destination.Name));
+        }
+
+        ValidateCopyTexture(source, destination);
+
+        GorgonCopyVirtualToVirtual newParameters = Clip(source, destination, in parameters, in sourceTileRegion, sourceMipLevel, in destTileRegion, destMipLevel);
+
+        if (newParameters.IsEmpty)
+        {
+            return this;
+        }
+
+        switch (source.Type)
+        {
+            case TextureType.Texture2D:
+                Copy2DTexture(source, destination, (GorgonRectangle)newParameters.SourceRegion, sourceArrayIndex, sourceMipLevel, 0, newParameters.DestinationX, newParameters.DestinationY, destination.Type == TextureType.Texture3D ? newParameters.DestinationZ : destArrayIndex, destMipLevel, 0, false);
+                break;
+            case TextureType.Texture3D:
+                Copy3DTexture(source, destination, newParameters.SourceRegion, sourceMipLevel, 0, newParameters.DestinationX, newParameters.DestinationY, destination.Type == TextureType.Texture3D ? newParameters.DestinationZ : destArrayIndex, destMipLevel, 0, false);
+                break;
+            default:
+                throw new ArgumentException(string.Format(Resources.GORGFX_ERR_CANNOT_CREATE_TEXTURE_UNKNOWN_TYPE, source.Type), nameof(source));
+        }
 
         return this;
     }
@@ -1513,7 +1824,7 @@ public unsafe sealed class GorgonResourceCopier
         int depth = image.Depth.Min(texture.Depth);
 
         // Copy queues can only use Common layouts.
-        _commandList.SetBarrier(texture, BarrierSync.Copy, BarrierAccess.CopySource, _commandQueue.Type == D3D12_COMMAND_LIST_TYPE.D3D12_COMMAND_LIST_TYPE_COPY ? BarrierLayout.Common : BarrierLayout.CopySource, force: true);
+        _commandList.SetBarrier(texture, BarrierSync.Copy, BarrierAccess.CopySource, BarrierLayout.Common, force: true);
 
         try
         {
@@ -1623,7 +1934,7 @@ public unsafe sealed class GorgonResourceCopier
             _commandQueue.Tracker.TrackResource(allocation.Heap.D3DResource);
 
             // Copy queues can only use Common layouts.
-            _commandList.SetBarrier(texture, BarrierSync.Copy, BarrierAccess.CopySource, _commandQueue.Type == D3D12_COMMAND_LIST_TYPE.D3D12_COMMAND_LIST_TYPE_COPY ? BarrierLayout.Common : BarrierLayout.CopySource, force: true);
+            _commandList.SetBarrier(texture, BarrierSync.Copy, BarrierAccess.CopySource, BarrierLayout.Common, force: true);
 
             D3D12_TEXTURE_COPY_LOCATION src = new((PID3D12Resource2)texture.D3DResource.Get(), (uint)srcResourceIndex);
 

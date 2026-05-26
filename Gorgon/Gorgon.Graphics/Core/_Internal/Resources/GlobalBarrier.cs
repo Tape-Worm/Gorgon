@@ -25,6 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
+using TerraFX.Interop.DirectX;
 
 namespace Gorgon.Graphics.Core;
 
@@ -34,12 +35,13 @@ namespace Gorgon.Graphics.Core;
 /// <param name="sync"><inheritdoc cref="Sync" path="/summary"/></param>
 /// <param name="access"><inheritdoc cref="Access" path="/summary"/></param>
 /// <param name="layout"><inheritdoc cref="Layout" path="/summary"/></param>
-internal struct GlobalBarrier(BarrierSync sync, BarrierAccess access, BarrierLayout layout)
+/// <param name="queueType"><inheritdoc cref="QueueType" path="/summary"/></param>
+internal struct GlobalBarrier(BarrierSync sync, BarrierAccess access, BarrierLayout layout, D3D12_COMMAND_LIST_TYPE queueType)
 {
     /// <summary>
     /// Default barrier state.
     /// </summary>
-    public static readonly GlobalBarrier Default = new(BarrierSync.None, BarrierAccess.None, BarrierLayout.None);
+    public static readonly GlobalBarrier Default = new(BarrierSync.None, BarrierAccess.None, BarrierLayout.None, D3D12_COMMAND_LIST_TYPE.D3D12_COMMAND_LIST_TYPE_DIRECT);
 
     /// <summary>
     /// The access state for the resource.
@@ -53,6 +55,10 @@ internal struct GlobalBarrier(BarrierSync sync, BarrierAccess access, BarrierLay
     /// The layout for a texture resource.
     /// </summary>
     public BarrierLayout Layout = layout;
+    /// <summary>
+    /// The type of queue last used for this barrier.
+    /// </summary>
+    public D3D12_COMMAND_LIST_TYPE QueueType = queueType;
     /// <summary>
     /// The list of texture sub resources affected by the current barrier state.
     /// </summary>

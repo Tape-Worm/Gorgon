@@ -39,10 +39,6 @@ jobs:
         inputs:
           restoreSolution: '$(solution)'
 
-      - task: DownloadSecureFile@1
-        inputs:
-          secureFile: GorgonFull.snk
-
       - task: VSBuild@1
         inputs:
           clean: true

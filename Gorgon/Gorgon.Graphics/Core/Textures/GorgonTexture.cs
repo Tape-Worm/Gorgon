@@ -251,55 +251,6 @@ public sealed unsafe class GorgonTexture
     }
 
     /// <summary>
-    /// Function to initialize a new texture with 0 values.
-    /// </summary>
-    private void InitializeTexture()
-    {
-        CommandQueue queue = Graphics.Queues.GraphicsQueue;
-
-        _uploadHeaps.Allocate((ulong)SizeInBytes, Info.Alignment, out CpuBufferAllocation allocation);
-        Debug.Assert(allocation.IsAvailable, $"Could not allocate upload memory for texture '{Name}'");
-
-        queue.Tracker.TrackResource(this);
-        queue.Tracker.TrackResource(allocation.Heap.D3DResource);
-
-        NativeMemory.Fill(allocation.CpuPointer, (nuint)SizeInBytes, 0);
-
-        CommandAllocator allocator = queue.AllocatorPool.Get("Texture Initialization Allocator");
-        GorgonCommandList list = queue.ListPool.Get("Texture Initialization Command List", allocator);
-
-        try
-        {
-            list.SetBarrier(this, BarrierSync.Copy, BarrierAccess.CopyDestination, BarrierLayout.CopyDestination, force: true);
-
-            for (int i = 0; i < SubResources.Count; ++i)
-            {
-                D3D12_PLACED_SUBRESOURCE_FOOTPRINT placedFootPrint = SubResources[i].ToD3DPlacedSubResourceFootPrint(Format, allocation.Offset);
-                ref readonly D3D12_SUBRESOURCE_FOOTPRINT footPrint = ref placedFootPrint.Footprint;
-                D3D12_TEXTURE_COPY_LOCATION src = new((PID3D12Resource2)allocation.Heap.D3DResource.Get(), in placedFootPrint);
-                D3D12_TEXTURE_COPY_LOCATION dest = new((PID3D12Resource2)D3DResource.Get(), (uint)i);
-                D3D12_BOX box = new(0, 0, 0, (int)footPrint.Width, (int)footPrint.Height, (int)footPrint.Depth);
-
-                list.D3DGraphicsCommandList.Get()->CopyTextureRegion(&dest, 0, 0, 0, &src, &box);
-            }
-
-            list.D3DGraphicsCommandList.Get()->Close();
-
-            queue.Execute(list);
-            ulong fence = queue.IncrementFence();
-
-            queue.WaitForFence(fence, GorgonGraphics.WaitFenceTimeout);
-        }
-        finally
-        {
-            _uploadHeaps.Signal();
-            queue.AllocatorPool.Signal();
-            queue.Tracker.Signal();
-            queue.ListPool.Return(list);
-        }
-    }
-
-    /// <summary>
     /// Function to create the native D3D 12 resources for the texture.
     /// </summary>
     /// <inheritdoc cref="OnCreateNative()" path="/returns"/>
@@ -698,6 +649,5 @@ public sealed unsafe class GorgonTexture
     {
         _uploadHeaps = graphics.Memory.UploadHeaps;
         CreateNative();
-        InitializeTexture();
     }
 }

@@ -495,4 +495,13 @@ The device '{4}' only supports {5}.</value>
 
 The texture '{0}' is only {1} ({2:###,###,###,###,###,##0} bytes).</value>
   </data>
+  <data name="GORGFX_ERR_CROSS_QUEUE_BARRIER" xml:space="preserve">
+    <value>The resource '{0}' is in an incompatible state with the {1} object.
+
+Please reset the resource on the last command list executed on the {2} object before using it on the {1} object.</value>
+    <comment>Call the 'Reset' method on the last command list to bypass this. Add this to the docs.</comment>
+  </data>
+  <data name="GORGFX_ERR_RESOURCE_CANNOT_BE_USED_AGAIN" xml:space="preserve">
+    <value>The resource '{0}' has been reset, and cannot be used on the command list '{1}' again.</value>
+  </data>
 </root>
