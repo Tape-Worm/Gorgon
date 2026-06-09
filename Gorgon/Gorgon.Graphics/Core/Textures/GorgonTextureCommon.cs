@@ -487,6 +487,34 @@ public unsafe abstract class GorgonTextureCommon
         base.Dispose(disposing);
     }
 
+
+    /// <summary>
+    /// Function to build a list of castable formats.
+    /// </summary>
+    /// <returns>The buffer containing the list of castable formats.</returns>
+    private protected GorgonNativeBuffer<DXGI_FORMAT> BuildCastList()
+    {
+        if (!Graphics.Adapter.SupportsRelaxedCasting)
+        {
+            return [];
+        }
+
+        GorgonNativeBuffer<DXGI_FORMAT> castable = [];
+
+        if ((FormatGroups.TryGetValue(FormatInfo.SizeInBytes, out List<BufferFormat>? compatibleFormats))
+            && (compatibleFormats.Count > 0))
+        {
+            castable = new GorgonNativeBuffer<DXGI_FORMAT>(compatibleFormats.Count);
+
+            for (int i = 0; i < compatibleFormats.Count; ++i)
+            {
+                castable[i] = (DXGI_FORMAT)compatibleFormats[i];
+            }
+        }
+
+        return castable;
+    }
+
     /// <inheritdoc/>
     private protected sealed override void OnGetResourceInfo(out GpuResourceInfo resourceInfo) => resourceInfo = GpuResourceInfo.FromD3D(in _d3dDesc);
 

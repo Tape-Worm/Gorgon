@@ -406,7 +406,9 @@ internal unsafe sealed class VirtualTextureTilePool(GorgonGraphics graphics)
                     break;
                 }
 
-                Debug.Assert(_allocations.TryGetValue(item.Handle, out HeapAllocation? heaps), $"The allocation handle 0x{item.Handle.FormatHex()} is not valid.");
+                _allocations.TryGetValue(item.Handle, out HeapAllocation? heaps);
+
+                Debug.Assert(heaps is not null, $"The allocation handle 0x{item.Handle.FormatHex()} is not valid.");
 
                 Span<ulong> tiles = CollectionsMarshal.AsSpan(_tiles);
 

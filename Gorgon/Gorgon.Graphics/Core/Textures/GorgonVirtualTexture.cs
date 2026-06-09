@@ -179,28 +179,6 @@ public sealed unsafe class GorgonVirtualTexture
     }
 
     /// <summary>
-    /// Function to build a list of castable formats.
-    /// </summary>
-    /// <returns>The buffer containing the list of castable formats.</returns>
-    private GorgonNativeBuffer<DXGI_FORMAT> BuildCastList()
-    {
-        GorgonNativeBuffer<DXGI_FORMAT> castable = [];
-
-        if ((FormatGroups.TryGetValue(FormatInfo.SizeInBytes, out List<BufferFormat>? compatibleFormats))
-            && (compatibleFormats.Count > 0))
-        {
-            castable = new GorgonNativeBuffer<DXGI_FORMAT>(compatibleFormats.Count);
-
-            for (int i = 0; i < compatibleFormats.Count; ++i)
-            {
-                castable[i] = (DXGI_FORMAT)compatibleFormats[i];
-            }
-        }
-
-        return castable;
-    }
-
-    /// <summary>
     /// Function to retrieve the details about the reserved resource.
     /// </summary>
     private void GetReservedDetails()

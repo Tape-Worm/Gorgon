@@ -46,6 +46,7 @@ public readonly struct GorgonVirtualTextureHandle
     /// The ID of the texture that this allocation handle comes from.
     /// </summary>
     internal readonly ulong TextureID = ulong.MaxValue;
+
     /// <summary>
     /// The handle to the memory allocated.
     /// </summary>
@@ -61,7 +62,7 @@ public readonly struct GorgonVirtualTextureHandle
     public override int GetHashCode() => HashCode.Combine(TextureID, Handle);
 
     /// <inheritdoc/>
-    public override string ToString() => $"0x{((TextureID & 0xffff_ffff) << 32 | (Handle & 0xffff_ffff)).FormatHex()}";
+    public override string ToString() => $"0x{TextureID.FormatHex()}:0x{Handle.FormatHex()}";
 
     /// <summary>
     /// Operator to determine if two handles are equal.

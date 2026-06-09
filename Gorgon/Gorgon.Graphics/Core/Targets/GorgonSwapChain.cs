@@ -319,12 +319,11 @@ public unsafe sealed class GorgonSwapChain
     /// If the device is physcially removed, this method will throw an exception on presentation. The HRESULT code that represents the device removal reason will be included in the exception message.
     /// </para>
     /// </remarks>
-    internal void Present(int interval)
+    internal void Present(uint interval)
     {
-        uint blankInterval = ((uint)interval).Min(4);
-        uint flags = (blankInterval == 0) && (IsWindowed) && (Graphics.Adapter.AllowTearing) ? DXGI.DXGI_PRESENT_ALLOW_TEARING : 0;
+        uint flags = (interval == 0) && (IsWindowed) && (Graphics.Adapter.AllowTearing) ? DXGI.DXGI_PRESENT_ALLOW_TEARING : 0;
 
-        HRESULT err = _dxgiSwapChain.Get()->Present(blankInterval, flags);
+        HRESULT err = _dxgiSwapChain.Get()->Present(interval, flags);
 
         if (err.FAILED)
         {

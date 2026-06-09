@@ -207,6 +207,15 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot copy the same handle onto itself in the virtual texture &apos;{0}&apos;..
+        /// </summary>
+        internal static string GORGFX_ERR_CANNOT_COPY_VIRTUAL_TO_SAME_HANDLE {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_CANNOT_COPY_VIRTUAL_TO_SAME_HANDLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot copy the image data to the texture.
         ///
         ///The format of the image {0} and the format of the texture {1} are incompatible, and cannot be converted..

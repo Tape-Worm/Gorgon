@@ -504,4 +504,7 @@ Please reset the resource on the last command list executed on the {2} object be
   <data name="GORGFX_ERR_RESOURCE_CANNOT_BE_USED_AGAIN" xml:space="preserve">
     <value>The resource '{0}' has been reset, and cannot be used on the command list '{1}' again.</value>
   </data>
+  <data name="GORGFX_ERR_CANNOT_COPY_VIRTUAL_TO_SAME_HANDLE" xml:space="preserve">
+    <value>Cannot copy the same handle onto itself in the virtual texture '{0}'.</value>
+  </data>
 </root>

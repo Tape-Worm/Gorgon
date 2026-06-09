@@ -431,7 +431,7 @@ public unsafe sealed class GorgonCommandList
         for (int i = 0; i < Presenters.Count; ++i)
         {
             (GorgonSwapChain swapChain, int interval) = Presenters[i];
-            swapChain.Present(interval);
+            swapChain.Present((uint)interval);
         }
     }
 
@@ -559,6 +559,11 @@ public unsafe sealed class GorgonCommandList
             {
                 // We don't need to track again because if this item is already in the list, then 
                 // it's already being tracked.
+                if (interval == Presenters[i].PresentInterval)
+                {
+                    return this;
+                }
+
                 Presenters[i] = (swapChain, interval);
                 return this;
             }            
@@ -1072,6 +1077,7 @@ public unsafe sealed class GorgonCommandList
     /// <remarks>
     /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyVirtualToTexture(GorgonVirtualTexture, GorgonTexture, ref readonly GorgonCopyVirtualToTexture)" path="/remarks/para[@type='common']"/>
     /// </remarks>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public GorgonCommandList CopyVirtualToTexture(GorgonVirtualTexture source, GorgonTexture destination, ref readonly GorgonCopyVirtualToTexture parameters)
     {
         _resourceWriter.CopyVirtualToTexture(source, destination, in parameters);
@@ -1085,9 +1091,24 @@ public unsafe sealed class GorgonCommandList
     /// <remarks>
     /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyVirtualToVirtual(GorgonVirtualTexture, GorgonVirtualTexture, ref readonly GorgonCopyVirtualToVirtual)" path="/remarks"/>
     /// </remarks>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public GorgonCommandList CopyVirtualToVirtual(GorgonVirtualTexture source, GorgonVirtualTexture destination, ref readonly GorgonCopyVirtualToVirtual parameters)
     {
         _resourceWriter.CopyVirtualToVirtual(source, destination, in parameters);
+        return this;
+    }
+
+    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyBufferToVirtual(GorgonGpuBuffer, GorgonVirtualTexture, GorgonVirtualTextureHandle, long)" path="/summary"/>
+    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyBufferToVirtual(GorgonGpuBuffer, GorgonVirtualTexture, GorgonVirtualTextureHandle, long)" path="/param"/>
+    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyBufferToVirtual(GorgonGpuBuffer, GorgonVirtualTexture, GorgonVirtualTextureHandle, long)" path="/exception"/>
+    /// <inheritdoc cref="AddPresenter" path="/returns"/>
+    /// <remarks>
+    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyBufferToVirtual(GorgonGpuBuffer, GorgonVirtualTexture, GorgonVirtualTextureHandle, long)" path="/remarks/para[type='common']"/>
+    /// </remarks>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public GorgonCommandList CopyBufferToVirtual(GorgonGpuBuffer buffer, GorgonVirtualTexture texture, GorgonVirtualTextureHandle destinationHandle, long sourceOffset = 0)
+    {
+        _resourceWriter.CopyBufferToVirtual(buffer, texture, destinationHandle, sourceOffset);
         return this;
     }
 
