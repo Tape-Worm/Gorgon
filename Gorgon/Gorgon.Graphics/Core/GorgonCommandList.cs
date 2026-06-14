@@ -877,7 +877,9 @@ public unsafe sealed class GorgonCommandList
     /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyImageToTexture(IGorgonImage, GorgonTexture)" path="/param"/>
     /// <inheritdoc cref="AddPresenter" path="/returns"/>
     /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyImageToTexture(IGorgonImage, GorgonTexture)" path="/exception"/>    
-    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyImageToTexture(IGorgonImage, GorgonTexture)" path="/remarks"/>    
+    /// <remarks>
+    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyImageToTexture(IGorgonImage, GorgonTexture)" path="/remarks/para[@type='common']"/>    
+    /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public GorgonCommandList CopyImageToTexture(IGorgonImage image, GorgonTexture texture)
     {
@@ -1062,6 +1064,7 @@ public unsafe sealed class GorgonCommandList
     /// <remarks>
     /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyTextureToVirtual(GorgonTexture, GorgonVirtualTexture, ref readonly GorgonCopyTextureToVirtual)" path="/remarks/para[@type='common']"/>
     /// </remarks>
+    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyTextureToVirtual(GorgonTexture, GorgonVirtualTexture, ref readonly GorgonCopyTextureToVirtual)" path="/seealso"/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public GorgonCommandList CopyTextureToVirtual(GorgonTexture source, GorgonVirtualTexture destination, ref readonly GorgonCopyTextureToVirtual parameters)
     {
@@ -1077,6 +1080,7 @@ public unsafe sealed class GorgonCommandList
     /// <remarks>
     /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyVirtualToTexture(GorgonVirtualTexture, GorgonTexture, ref readonly GorgonCopyVirtualToTexture)" path="/remarks/para[@type='common']"/>
     /// </remarks>
+    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyVirtualToTexture(GorgonVirtualTexture, GorgonTexture, ref readonly GorgonCopyVirtualToTexture)" path="/seealso"/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public GorgonCommandList CopyVirtualToTexture(GorgonVirtualTexture source, GorgonTexture destination, ref readonly GorgonCopyVirtualToTexture parameters)
     {
@@ -1089,8 +1093,9 @@ public unsafe sealed class GorgonCommandList
     /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyVirtualToVirtual(GorgonVirtualTexture, GorgonVirtualTexture, ref readonly GorgonCopyVirtualToVirtual)" path="/exception"/>
     /// <inheritdoc cref="AddPresenter" path="/returns"/>
     /// <remarks>
-    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyVirtualToVirtual(GorgonVirtualTexture, GorgonVirtualTexture, ref readonly GorgonCopyVirtualToVirtual)" path="/remarks"/>
+    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyVirtualToVirtual(GorgonVirtualTexture, GorgonVirtualTexture, ref readonly GorgonCopyVirtualToVirtual)" path="/remarks/para[@type='common']"/>
     /// </remarks>
+    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyVirtualToVirtual(GorgonVirtualTexture, GorgonVirtualTexture, ref readonly GorgonCopyVirtualToVirtual)" path="/seealso"/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public GorgonCommandList CopyVirtualToVirtual(GorgonVirtualTexture source, GorgonVirtualTexture destination, ref readonly GorgonCopyVirtualToVirtual parameters)
     {
@@ -1100,11 +1105,14 @@ public unsafe sealed class GorgonCommandList
 
     /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyBufferToVirtual(GorgonGpuBuffer, GorgonVirtualTexture, GorgonVirtualTextureHandle, long)" path="/summary"/>
     /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyBufferToVirtual(GorgonGpuBuffer, GorgonVirtualTexture, GorgonVirtualTextureHandle, long)" path="/param"/>
-    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyBufferToVirtual(GorgonGpuBuffer, GorgonVirtualTexture, GorgonVirtualTextureHandle, long)" path="/exception"/>
+    /// <exception cref="ArgumentOutOfRangeException"><inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyBufferToVirtual(GorgonGpuBuffer, GorgonVirtualTexture, GorgonVirtualTextureHandle, long)" path="/exception[@cref='T:System.ArgumentOutOfRangeException']/para"/></exception>
+    /// <exception cref="ArgumentException"><inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyBufferToVirtual(GorgonGpuBuffer, GorgonVirtualTexture, GorgonVirtualTextureHandle, long)" path="/exception[@cref='T:System.ArgumentException']/para"/></exception>
+    /// <exception cref="GorgonException"><inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyBufferToVirtual(GorgonGpuBuffer, GorgonVirtualTexture, GorgonVirtualTextureHandle, long)" path="/exception[@cref='T:Gorgon.Core.GorgonException']/para[@type='common']"/></exception>
     /// <inheritdoc cref="AddPresenter" path="/returns"/>
     /// <remarks>
-    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyBufferToVirtual(GorgonGpuBuffer, GorgonVirtualTexture, GorgonVirtualTextureHandle, long)" path="/remarks/para[type='common']"/>
+    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyBufferToVirtual(GorgonGpuBuffer, GorgonVirtualTexture, GorgonVirtualTextureHandle, long)" path="/remarks/para[@type='common']"/>
     /// </remarks>
+    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyBufferToVirtual(GorgonGpuBuffer, GorgonVirtualTexture, GorgonVirtualTextureHandle, long)" path="/seealso"/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public GorgonCommandList CopyBufferToVirtual(GorgonGpuBuffer buffer, GorgonVirtualTexture texture, GorgonVirtualTextureHandle destinationHandle, long sourceOffset = 0)
     {

@@ -682,14 +682,14 @@ public unsafe sealed class GorgonResourceCopier
             throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORGFX_ERR_TEXTURE_COPY_FORMAT_GROUPS_DIFFERENT, source.Name, source.FormatInfo.Group, destination.Name, destination.FormatInfo.Group));
         }
 
-        if (!destination.MultisampleInfo.Equals(source.MultisampleInfo))
+        if (!source.MultisampleInfo.Equals(GorgonMultisampleInfo.NoMultisampling))
         {
             throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORGFX_ERR_MULTISAMPLE_SOURCE_DEST_DIFFERENT, source.MultisampleInfo, source.Name, destination.MultisampleInfo, destination.Name));
         }
 
         if (source.IsDepthStencil)
         {
-            throw new ArgumentException(string.Format(Resources.GORGFX_ERR_DEPTH_STENCIL_CANNOT_BE_COPIED, source.Name), nameof(source));
+            throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORGFX_ERR_DEPTH_STENCIL_CANNOT_BE_COPIED, source.Name));
         }
     }
 
@@ -706,14 +706,14 @@ public unsafe sealed class GorgonResourceCopier
             throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORGFX_ERR_TEXTURE_COPY_FORMAT_GROUPS_DIFFERENT, source.Name, source.FormatInfo.Group, destination.Name, destination.FormatInfo.Group));
         }
 
-        if (!destination.MultisampleInfo.Equals(source.MultisampleInfo))
+        if (!destination.Equals(GorgonMultisampleInfo.NoMultisampling))
         {
             throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORGFX_ERR_MULTISAMPLE_SOURCE_DEST_DIFFERENT, source.MultisampleInfo, source.Name, destination.MultisampleInfo, destination.Name));
         }
 
         if (destination.IsDepthStencil)
         {
-            throw new ArgumentException(string.Format(Resources.GORGFX_ERR_DEPTH_STENCIL_CANNOT_BE_COPIED, destination.Name), nameof(destination));
+            throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORGFX_ERR_DEPTH_STENCIL_CANNOT_BE_COPIED, destination.Name));
         }
     }
 
