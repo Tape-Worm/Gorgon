@@ -32,6 +32,14 @@ namespace Gorgon.Graphics.Core;
 /// Provides a fluent interface for systems that implement copying functionality.
 /// </summary>
 /// <typeparam name="T">The type of object to return as the fluent interface.</typeparam>
+/// <remarks>
+/// <para>
+/// This interface is used to share methods between the <see cref="GorgonResourceCopier"/> object, <see cref="GorgonComputeEngine"/> and the <see cref="GorgonGraphics"/> objects.
+/// </para>
+/// </remarks>
+/// <seealso cref="GorgonGraphics"/>
+/// <seealso cref="GorgonResourceCopier"/>
+/// <seealso cref="GorgonGraphics"/>
 public interface IGorgonCopyMethodsFluent<T>
 {
     /// <summary>
