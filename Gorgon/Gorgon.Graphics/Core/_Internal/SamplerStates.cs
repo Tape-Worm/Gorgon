@@ -125,6 +125,11 @@ internal class SamplerStates
             WAddressing = TextureAddressing.Wrap
         };
 
+        Default.UnregisterDisposable(graphics);
+        Wrapping.UnregisterDisposable(graphics);
+        Linear.UnregisterDisposable(graphics);
+        LinearWrapping.UnregisterDisposable(graphics);
+
         // Pre-allocate the handles.
         Default.GetViewHandle();
         Wrapping.GetViewHandle();

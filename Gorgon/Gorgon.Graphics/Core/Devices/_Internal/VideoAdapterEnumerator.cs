@@ -132,6 +132,22 @@ internal unsafe class VideoAdapterEnumerator
             return false;
         }
 
+        D3D12_FEATURE_DATA_D3D12_OPTIONS19 options19 = default;
+
+        err = d3dDevice.Get()->CheckFeatureSupport(D3D12_FEATURE.D3D12_FEATURE_D3D12_OPTIONS19, &options19, (uint)sizeof(D3D12_FEATURE_DATA_D3D12_OPTIONS19));
+
+        if (err.FAILED)
+        {
+            log.PrintError(err, $"There was an error retrieving the depth stencil and rasterizer support for the adapter '{name}'. This adapter will be skipped.", LoggingLevel.Verbose);
+            return false;
+        }
+
+        if (!options19.RasterizerDesc2Supported)
+        {
+            log.PrintWarning($"The adapter '{name}' does not support the most recent rasterizer state object. This means the drivers for the GPU are out of date. Please update to the latest drivers. This adapter will be skipped.", LoggingLevel.Intermediate);
+            return false;
+        }
+
         return true;
     }
 
@@ -204,6 +220,7 @@ internal unsafe class VideoAdapterEnumerator
         log.Print($"Resource heap tier: {device.ResourceHeapTier}", LoggingLevel.Verbose);
         log.Print($"Tiled resources tier: {device.TiledResourcesTier}", LoggingLevel.Verbose);
         log.Print($"ACG Compatible: {device.AcgCompatible}", LoggingLevel.Verbose);
+        log.Print($"Supports Alpha Factor blending: {device.SupportsAlphaBlendFactor}", LoggingLevel.Verbose);
         log.Print($"Supports GPU upload heaps: {device.HasGpuUploadSupport}", LoggingLevel.Verbose);
         log.Print($"Supports monitored fences: {device.SupportsMonitoredFences}", LoggingLevel.Verbose);
         log.Print($"Supports non-monitored fences: {device.SupportsMonitoredFences}", LoggingLevel.Verbose);

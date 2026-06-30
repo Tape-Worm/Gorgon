@@ -51,7 +51,7 @@ namespace Gorgon.Animation;
 /// </remarks>
 /// <seealso cref="GorgonTrackRegistration"/>
 public class GorgonAnimationBuilder
-    : IGorgonFluentBuilder<GorgonAnimationBuilder, IGorgonAnimation>
+    : IGorgonFluentBuilderDoNotUse<GorgonAnimationBuilder, IGorgonAnimation>
 {
 
     // A list of builders for single floating point value tracks.
@@ -840,7 +840,7 @@ public class GorgonAnimationBuilder
     /// It is recommended that you use the <see cref="Build(string, float, float?)"/> method instead.
     /// </para>
     /// </remarks>
-    IGorgonAnimation IGorgonFluentBuilder<GorgonAnimationBuilder, IGorgonAnimation>.Build()
+    IGorgonAnimation IGorgonFluentBuilderDoNotUse<GorgonAnimationBuilder, IGorgonAnimation>.Build()
     {
         float maxTime = _singleTracks.SelectMany(item => item.Value.Keys.Cast<IGorgonKeyFrame>())
             .Concat(_vector2Tracks.SelectMany(item => item.Value.Keys))

@@ -35,6 +35,22 @@ namespace Gorgon.Graphics.Core;
 /// </summary>
 internal static class D3DConversionExtensions
 {
+    extension(PrimitiveType gorgonPt)
+    {
+        /// <summary>
+        /// Function to convert a <see cref="PrimitiveType"/> value into a D3D12_PRIMITIVE_TOPOLOGY_TYPE value.
+        /// </summary>
+        /// <returns>The D3D12_PRIMITIVE_TOPOLOGY value, or UNDEFINED if the <paramref name="gorgonPt"/> parameter is not recognized.</returns>
+        public D3D12_PRIMITIVE_TOPOLOGY_TYPE ToTopologyType() => gorgonPt switch
+        {
+            PrimitiveType.PointList => D3D12_PRIMITIVE_TOPOLOGY_TYPE.D3D12_PRIMITIVE_TOPOLOGY_TYPE_POINT,
+            PrimitiveType.LineList or PrimitiveType.LineListWithAdjacency or PrimitiveType.LineStrip or PrimitiveType.LineStripWithAdjacency => D3D12_PRIMITIVE_TOPOLOGY_TYPE.D3D12_PRIMITIVE_TOPOLOGY_TYPE_LINE,
+            PrimitiveType.TriangleList or PrimitiveType.TriangleStrip or PrimitiveType.TriangleListWithAdjacency or PrimitiveType.TriangleStripWithAdjacency => D3D12_PRIMITIVE_TOPOLOGY_TYPE.D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
+            >= PrimitiveType.PatchListWith1ControlPoints and <= PrimitiveType.PatchListWith32ControlPoints => D3D12_PRIMITIVE_TOPOLOGY_TYPE.D3D12_PRIMITIVE_TOPOLOGY_TYPE_PATCH,
+            _ => D3D12_PRIMITIVE_TOPOLOGY_TYPE.D3D12_PRIMITIVE_TOPOLOGY_TYPE_UNDEFINED
+        };
+    }
+
     extension(DXGI_MODE_DESC1 mode)
     {
         /// <summary>

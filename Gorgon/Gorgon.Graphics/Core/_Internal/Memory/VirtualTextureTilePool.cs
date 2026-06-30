@@ -80,7 +80,7 @@ internal unsafe sealed class VirtualTextureTilePool(GorgonGraphics graphics)
         public readonly GorgonBox TileBox = tileBox;
     }
 
-    // Default heap size: 4 MB. This is enough to hold a single 1024x1024 32 bit texture with 1 array level and 1 mip level. 
+    // Default heap size: 4 MB. This is enough to hold a single 1024x1024 32-bit texture with 1 array level and 1 mip level. 
     // We will use more heaps for larger textures.
     private const ulong HeapSize = 4 * 1024 * 1024;
     // 256MB/heap div 65536 bytes per tile = 4096 tiles per heap.

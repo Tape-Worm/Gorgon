@@ -33,6 +33,11 @@ namespace Gorgon.Graphics.Core;
 public enum BufferUsage
 {
     /// <summary>
+    /// No usage.
+    /// </summary>
+    None,
+
+    /// <summary>
     /// Buffer will be used for vertex data.
     /// </summary>
     VertexBuffer,
@@ -73,6 +78,11 @@ public enum BufferUsage
 /// </summary>
 public enum TextureUsage
 {
+    /// <summary>
+    /// No usage.
+    /// </summary>
+    None,
+
     /// <summary>
     /// Texture is general read only texel data.
     /// </summary>

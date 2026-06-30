@@ -23,6 +23,7 @@
 
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
+using Gorgon.Native;
 
 namespace Gorgon.Graphics.Core.Codecs;
 
@@ -184,7 +185,7 @@ public abstract class GorgonShaderCodec(GorgonGraphics graphics)
     /// <example>
     /// <inheritdoc cref="OnDecodeFromStream(Stream, long)"/>
     /// </example>
-    protected GorgonShader BuildShader(ShaderType shaderType, ShaderModel shaderModel, byte[] shaderBinaryData, byte[]? shaderHashData = null, byte[]? optionalPdbData = null, string? optionalPdbName = null, byte[]? optionalReflectionData = null) =>
+    protected GorgonShader BuildShader(ShaderType shaderType, ShaderModel shaderModel, GorgonNativeBuffer<byte> shaderBinaryData, GorgonNativeBuffer<byte>? shaderHashData = null, GorgonNativeBuffer<byte>? optionalPdbData = null, string? optionalPdbName = null, GorgonNativeBuffer<byte>? optionalReflectionData = null) =>
         new(Graphics, shaderBinaryData, shaderHashData ?? [], optionalPdbData ?? [], optionalPdbName ?? string.Empty, optionalReflectionData ?? [], shaderType, shaderModel);
 
     /// <summary>

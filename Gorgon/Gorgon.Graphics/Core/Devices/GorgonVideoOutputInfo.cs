@@ -72,7 +72,7 @@ public enum ColorSpace
     RGBFullG22NoneP709 = DXGI_COLOR_SPACE_TYPE.DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P709,
 
     /// <summary>
-    /// This is the standard definition for scRGB, and is usually used with 16 bit integer, 16 bit floating point, or 32 bit floating point color channels.
+    /// This is the standard definition for scRGB, and is usually used with 16-bit integer, 16-bit floating point, or 32-bit floating point color channels.
     /// </summary>
     RGBFullG10NoneP709 = DXGI_COLOR_SPACE_TYPE.DXGI_COLOR_SPACE_RGB_FULL_G10_NONE_P709,
 

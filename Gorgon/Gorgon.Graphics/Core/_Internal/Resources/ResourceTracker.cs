@@ -42,7 +42,7 @@ internal unsafe class ResourceTracker(CommandQueue queue)
         : IDisposable
 {
     private readonly CommandQueue _queue = queue;
-    private readonly List<(ulong Fence, ComPtr<IUnknown> Resource)> _trackedResources = [];
+    private readonly List<(ulong Fence, ComPtr<IUnknown> Resource)> _trackedResources = new(4096);
     private readonly Lock _fenceLock = new();
 
     /// <inheritdoc cref="GorgonGraphicsFactory.Dispose(bool)"/>

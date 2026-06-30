@@ -82,109 +82,6 @@ public unsafe sealed class GorgonGraphics
     private int _currentFrame;    
     private readonly ConcurrentBag<ComPtr<ID3D12CommandList>> _commands =[];
 
-    #region Temporary - Delete me.    
-    private ComPtr<ID3D12PipelineState> _pso;
-
-    [Obsolete("This is temporary.")]
-    internal ref readonly ComPtr<ID3D12PipelineState> Pso => ref _pso;
-
-    [Obsolete("This is temporary.")]
-    private void CreatePso(GorgonShader vertexShader, GorgonShader pixelShader)
-    {
-        if (!_pso.IsNull)
-        {
-            return;
-        }
-
-        /*
-        byte[] semName1 = Encoding.ASCII.GetBytes("POSITION\0");
-        byte[] semName2 = Encoding.ASCII.GetBytes("COLOR\0");
-        byte[] semName3 = Encoding.ASCII.GetBytes("TEXCOORD\0");
-
-        fixed (byte* semName1Ptr = semName1)
-        fixed (byte* semName2Ptr = semName2)
-        fixed (byte* semName3Ptr = semName3)*/
-        fixed (void* vsPtr = vertexShader.ShaderData)
-        fixed (void* psPtr = pixelShader.ShaderData)
-        {
-            /*
-            D3D12_INPUT_ELEMENT_DESC* iaDesc = stackalloc D3D12_INPUT_ELEMENT_DESC[3]
-            {
-                new()
-                {
-                    SemanticName = (sbyte*)semName1Ptr,
-                    Format = DXGI_FORMAT.DXGI_FORMAT_R32G32B32A32_FLOAT,
-                    InputSlotClass = D3D12_INPUT_CLASSIFICATION.D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA
-                },
-                new()
-                {
-                    SemanticName = (sbyte*)semName2Ptr,
-                    Format = DXGI_FORMAT.DXGI_FORMAT_R32G32B32A32_FLOAT,
-                    InputSlotClass = D3D12_INPUT_CLASSIFICATION.D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,
-                    AlignedByteOffset = 16
-                },
-                new()
-                {
-                    SemanticName = (sbyte*)semName3Ptr,
-                    Format = DXGI_FORMAT.DXGI_FORMAT_R32G32_FLOAT,
-                    InputSlotClass = D3D12_INPUT_CLASSIFICATION.D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,
-                    AlignedByteOffset = 32
-                }
-            };
-            */
-            D3D12_GRAPHICS_PIPELINE_STATE_DESC desc = new()
-            {
-                pRootSignature = _rootSignature.Get(),
-                VS = new D3D12_SHADER_BYTECODE(vsPtr, (nuint)vertexShader.ShaderData.Length),
-                PS = new D3D12_SHADER_BYTECODE(psPtr, (nuint)pixelShader.ShaderData.Length),
-                RasterizerState = D3D12_RASTERIZER_DESC.DEFAULT,
-                DepthStencilState = D3D12_DEPTH_STENCIL_DESC.DEFAULT,
-                SampleMask = uint.MaxValue,
-                PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE.D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE,
-                NumRenderTargets = 1,
-                SampleDesc = new DXGI_SAMPLE_DESC(count: 1, quality: 0)
-            };
-
-            desc.BlendState.RenderTarget[0] = new D3D12_RENDER_TARGET_BLEND_DESC()
-            {
-                BlendEnable = true,
-                LogicOpEnable = false,
-                LogicOp = D3D12_LOGIC_OP.D3D12_LOGIC_OP_NOOP,
-                BlendOp = D3D12_BLEND_OP.D3D12_BLEND_OP_ADD,
-                BlendOpAlpha = D3D12_BLEND_OP.D3D12_BLEND_OP_ADD,
-                SrcBlend = D3D12_BLEND.D3D12_BLEND_SRC_ALPHA,
-                DestBlend = D3D12_BLEND.D3D12_BLEND_INV_SRC_ALPHA,
-                SrcBlendAlpha = D3D12_BLEND.D3D12_BLEND_ONE,
-                DestBlendAlpha = D3D12_BLEND.D3D12_BLEND_INV_SRC_ALPHA,
-                RenderTargetWriteMask = (byte)D3D12_COLOR_WRITE_ENABLE.D3D12_COLOR_WRITE_ENABLE_ALL
-            };
-
-            desc.DepthStencilState.DepthEnable = false;
-            desc.RTVFormats[0] = DXGI_FORMAT.DXGI_FORMAT_R8G8B8A8_UNORM;
-
-            _d3dDevice.Get()->CreateGraphicsPipelineState(&desc, Win32.__uuidof<ID3D12PipelineState>(), (void**)_pso.GetAddressOf())
-                .ThrowIfFailed(GorgonResult.CannotCreate, () => "Failed PSO");
-        }
-    }
-
-    [Obsolete("This is temporary.")]
-    private void DestroyTempStuff()
-    {
-        _pso.Dispose();
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="vertexShader"></param>
-    /// <param name="pixelShader"></param>
-    [Obsolete("This is temporary.")]
-    public void CreateScaffoldingForTesting(GorgonShader vertexShader, GorgonShader pixelShader)
-    {
-        CreatePso(vertexShader, pixelShader);
-    }
-    #endregion
-
     /// <summary>
     /// Property to return the internal Direct 3D 12 device pointer.
     /// </summary>
@@ -199,6 +96,11 @@ public unsafe sealed class GorgonGraphics
     /// Property to return the internal DXGI factory pointer.
     /// </summary>    
     internal ref readonly ComPtr<IDXGIFactory7> DXGIFactory => ref _dxgiFactory;
+
+    /// <summary>
+    /// Property to return the D3D 12 root signature for this instance.
+    /// </summary>
+    internal ref readonly ComPtr<ID3D12RootSignature> D3DRootSignature => ref _rootSignature;
 
     /// <summary>
     /// Property to return the descriptor services.
@@ -228,6 +130,14 @@ public unsafe sealed class GorgonGraphics
     /// Property to return the predefined sampler states.
     /// </summary>
     internal SamplerStates SamplerStates
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the shared resources for this graphics interface.
+    /// </summary>
+    internal SharedResources SharedResources
     {
         get;
     }
@@ -294,20 +204,20 @@ public unsafe sealed class GorgonGraphics
                 UnregisterDebugInformationCallback();
             }
 
-            // Ensure everything is returned before we continue.
-            this.DisposeAll();
+            _parentFactory.Unregister(this);
 
+            // Remove our queues.
+            SharedResources.Dispose();          
             SamplerStates.Dispose();
             allocator = new ComPtr<D3D12MA_Allocator>(Memory.Allocator);
             Descriptors.Dispose();
             Memory.Dispose();
+            Queues.Dispose();
 
             _infoQueueInstanceGuid?.Dispose();
 
-            // Remove our queues.
-            Queues.Dispose();
-
-            _parentFactory.Unregister(this);
+            // Ensure everything is released before we continue.
+            this.DisposeAll();
 
             Log.Print($"Destroying {nameof(D3D12MA_Allocator)}...", LoggingLevel.Verbose);
 
@@ -322,10 +232,8 @@ public unsafe sealed class GorgonGraphics
             if (!allocator.IsNull)
             {
                 DumpMemoryStats(in allocator);
-            }
+            }            
         }
-
-        DestroyTempStuff();
 
         _rootSignature.Dispose();
         _allocator.Dispose();
@@ -376,7 +284,9 @@ public unsafe sealed class GorgonGraphics
     /// </summary>
     /// <returns>The pointer to the D3D 12 information queue.</returns>
     private ComPtr<ID3D12InfoQueue1> CreateDebugInfoQueue()
-    {        
+    {
+        const int MaxIDDenyCount = 3;
+
         ComPtr<ID3D12InfoQueue1> result = default;
 
         Log.Print($"[DEBUG] Creating a {nameof(ID3D12InfoQueue1)} object for callbacks...", LoggingLevel.Verbose);
@@ -390,23 +300,24 @@ public unsafe sealed class GorgonGraphics
         }
 
         // Add any messages we want to ignore here:
-        D3D12_MESSAGE_ID* filters = stackalloc D3D12_MESSAGE_ID[2]
-        {
-            // We don't care if the clear colour isn't optimized.
+        D3D12_MESSAGE_ID* filters = stackalloc D3D12_MESSAGE_ID[MaxIDDenyCount]
+        {            
             D3D12_MESSAGE_ID.D3D12_MESSAGE_ID_CLEARRENDERTARGETVIEW_MISMATCHINGCLEARVALUE,
-            D3D12_MESSAGE_ID.D3D12_MESSAGE_ID_CREATE_SAMPLER_COMPARISON_FUNC_IGNORED
+            D3D12_MESSAGE_ID.D3D12_MESSAGE_ID_CLEARDEPTHSTENCILVIEW_MISMATCHINGCLEARVALUE,
+            D3D12_MESSAGE_ID.D3D12_MESSAGE_ID_CREATE_SAMPLER_COMPARISON_FUNC_IGNORED            
         };
 
         D3D12_INFO_QUEUE_FILTER filter = new()
         {
             DenyList = new D3D12_INFO_QUEUE_FILTER_DESC()
             {
-                NumIDs = 1,
+                NumIDs = MaxIDDenyCount,
                 pIDList = filters
             }
         };
 
-        result.Get()->AddStorageFilterEntries(&filter);
+        result.Get()->AddStorageFilterEntries(&filter)
+            .ThrowIfFailed(GorgonResult.CannotCreate, () => Resources.GORGFX_ERR_CANNOT_SETUP_DEBUG_INFO);
 
         return result;
     }
@@ -1118,5 +1029,7 @@ public unsafe sealed class GorgonGraphics
 
         EnumerateBufferFormatSupport();
         _rootSignature = CreateRootSignature();
+
+        SharedResources = new SharedResources(this);
     }
 }

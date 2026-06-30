@@ -36,7 +36,7 @@ namespace Gorgon.Renderers;
 /// <seealso cref="Gorgon2DBatchState"/>
 /// <seealso cref="Gorgon2D"/>
 public class Gorgon2DBatchStateBuilder
-    : IGorgonFluentBuilder<Gorgon2DBatchStateBuilder, Gorgon2DBatchState, IGorgonAllocator<Gorgon2DBatchState>>
+    : IGorgonFluentBuilderWithBuildDoNotUse<Gorgon2DBatchStateBuilder, Gorgon2DBatchState, IGorgonAllocator<Gorgon2DBatchState>>
 {
 
     // The state that will be edited.

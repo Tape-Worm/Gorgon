@@ -21,11 +21,7 @@
 // Created: April 13, 2026 6:56:41 PM
 //
 
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
-using System.Text;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Math;
@@ -36,7 +32,7 @@ namespace Gorgon.Graphics.Core;
 /// <summary>
 /// Provides a sampler for shaders to sample texture data.
 /// </summary>
-public unsafe class GorgonSampler
+public sealed unsafe class GorgonSampler
     : IDisposable, IGorgonNamedObject
 {
     private readonly GpuDescriptorHeap _descriptors;
@@ -74,6 +70,11 @@ public unsafe class GorgonSampler
     /// <summary>
     /// Property to return the comparison function for the sampler.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The default value is <see cref="ComparisonFunction.None"/>.
+    /// </para>
+    /// </remarks>
     public ComparisonFunction Comparison
     {
         get;
@@ -85,10 +86,13 @@ public unsafe class GorgonSampler
     /// </summary>
     /// <remarks>
     /// <para>
-    /// When the <see cref="BorderUsesIntegerColor"/> value is <b>true</b>, the components, red, green, blue and alpha, are interpreted as 32 bit integer values ranging from 0 to 255.
+    /// When the <see cref="BorderUsesIntegerColor"/> value is <b>true</b>, the components, red, green, blue and alpha, are interpreted as 32-bit integer values ranging from 0 to 255.
     /// </para>
     /// <para>
     /// This value is used when the <see cref="UAddressing"/>, <see cref="VAddressing"/> and/or <see cref="WAddressing"/> properties are set to <see cref="TextureAddressing.Border"/>.
+    /// </para>
+    /// <para>
+    /// The default value is <see cref="GorgonColors.White"/>.
     /// </para>
     /// </remarks>
     /// <seealso cref="BorderUsesIntegerColor"/>
@@ -105,6 +109,9 @@ public unsafe class GorgonSampler
     /// <para>
     /// This is the lower end of the mipmap range to clamp access to, where 0 is the largest and most detailed mipmap level and any level higher than that is less detailed.
     /// </para>
+    /// <para>
+    /// The default value is 0.
+    /// </para>
     /// </remarks>
     public float MinimumLod
     {
@@ -118,6 +125,9 @@ public unsafe class GorgonSampler
     /// <remarks>
     /// <para>
     /// This offset from the calculated mipmap level. If the texture should be sampled at mipmap level 3 and <see cref="MipLodBias"/> is 2, the texture will be sampled at mipmap level 5.
+    /// </para>
+    /// <para>
+    /// The default value is 0.
     /// </para>
     /// </remarks>
     public float MipLodBias
@@ -136,6 +146,9 @@ public unsafe class GorgonSampler
     /// <para>
     /// This value must be greater than or equal to <see cref="MinimumLod"/>. To have no upper limit on LOD, set this member to <see cref="float.MaxValue"/>.
     /// </para>
+    /// <para>
+    /// The default value is <see cref="float.MaxValue"/>.
+    /// </para>
     /// </remarks>
     public float MaximumLod
     {
@@ -150,6 +163,9 @@ public unsafe class GorgonSampler
     /// <para>
     /// This value only applies when the <see cref="Filter"/> property is set to one of the anisotropic filters in <see cref="TextureFilter"/>.
     /// </para>
+    /// <para>
+    /// The default value is 16.
+    /// </para>
     /// </remarks>
     public int MaxAnisotropy
     {
@@ -158,11 +174,14 @@ public unsafe class GorgonSampler
     } = 16;
 
     /// <summary>
-    /// Property to return the flag that indicates that the <see cref="BorderColor"/> will be interpreted a 32 bit integer values.
+    /// Property to return the flag that indicates that the <see cref="BorderColor"/> will be interpreted as a 32-bit integer value.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// When this value is <b>true</b>, the <see cref="BorderColor"/> red, green, blue and alpha components will be interpreted as 32 bit integer values that range from 0 - 255.
+    /// When this value is <b>true</b>, the <see cref="BorderColor"/> red, green, blue and alpha components will be interpreted as 32-bit integer values that range from 0 - 255.
+    /// </para>
+    /// <para>
+    /// The default value is <b>false</b>.
     /// </para>
     /// </remarks>
     /// <seealso cref="BorderColor"/>
@@ -175,6 +194,11 @@ public unsafe class GorgonSampler
     /// <summary>
     /// Property to return the addressing mode on the texture U axis.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The default value is <see cref="TextureAddressing.Clamp"/>.
+    /// </para>
+    /// </remarks>
     public TextureAddressing UAddressing
     {
         get;
@@ -184,6 +208,11 @@ public unsafe class GorgonSampler
     /// <summary>
     /// Property to return the addressing mode on the texture V axis.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The default value is <see cref="TextureAddressing.Clamp"/>.
+    /// </para>
+    /// </remarks>
     public TextureAddressing VAddressing
     {
         get;
@@ -193,6 +222,11 @@ public unsafe class GorgonSampler
     /// <summary>
     /// Property to return the addressing mode on the texture W axis.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The default value is <see cref="TextureAddressing.Clamp"/>.
+    /// </para>
+    /// </remarks>
     public TextureAddressing WAddressing
     {
         get;
@@ -202,6 +236,11 @@ public unsafe class GorgonSampler
     /// <summary>
     /// Property to return the type of filtering to perform when sampling.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The default value is <see cref="TextureFilter.PointMinMagMip"/>.
+    /// </para>
+    /// </remarks>
     public TextureFilter Filter
     {
         get;
@@ -213,11 +252,11 @@ public unsafe class GorgonSampler
     {
         if (disposing)
         {
+            this.UnregisterDisposable(Graphics);
+
             Graphics.Log.Print($"Destroying sampler '{Name}'...", LoggingLevel.Simple);
 
-            ResetDescriptor();
-
-            this.UnregisterDisposable(Graphics);
+            ResetDescriptor();            
         }
     }
 
@@ -331,7 +370,7 @@ public unsafe class GorgonSampler
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonSampler"/> class.
     /// </summary>
-    /// <param name="graphics">The graphics object assoicated with this sampler.</param>
+    /// <param name="graphics">The graphics object associated with this sampler.</param>
     /// <param name="name">The name of the sampler.</param>
     internal GorgonSampler(GorgonGraphics graphics, string name)
     {        

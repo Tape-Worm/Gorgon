@@ -507,4 +507,49 @@ Please reset the resource on the last command list executed on the {2} object be
   <data name="GORGFX_ERR_CANNOT_COPY_VIRTUAL_TO_SAME_HANDLE" xml:space="preserve">
     <value>Cannot copy the same handle onto itself in the virtual texture '{0}'.</value>
   </data>
+  <data name="GORGFX_ERR_ERROR_BUILDING_PSO" xml:space="preserve">
+    <value>There was an error building the pipeline state object '{0}'.</value>
+  </data>
+  <data name="GORGFX_ERR_PSO_NO_NAME" xml:space="preserve">
+    <value>The Pipeline State Object cannot be created because it does not have a name.</value>
+  </data>
+  <data name="GORGFX_ERR_PSO_NO_VS" xml:space="preserve">
+    <value>The Pipeline State Object '{0}' cannot be created because a vertex shader is required.</value>
+  </data>
+  <data name="GORGFX_ERR_PSO_INVALID_PRIMITIVE_TYPE" xml:space="preserve">
+    <value>The primitive type {0} is not valid.</value>
+  </data>
+  <data name="GORGFX_ERR_PSO_DEPTH_UNKNOWN_ENABLED" xml:space="preserve">
+    <value>The depth and/or stencil state is set to Enabled, but the expected format is set to Unknown. This is not valid.</value>
+  </data>
+  <data name="GORGFX_ERR_PSO_DEPTH_ENABLED_FORMAT_NO_DEPTH" xml:space="preserve">
+    <value>The depth test state is enabled, but the format {0} is not a depth capable format.</value>
+  </data>
+  <data name="GORGFX_ERR_PSO_STENCIL_ENABLED_FORMAT_NO_STENCIL" xml:space="preserve">
+    <value>The stencil test state is enabled, but the format {0} is not a stencil capable format.</value>
+  </data>
+  <data name="GORGFX_ERR_UPLOAD_NOT_AVAILABLE" xml:space="preserve">
+    <value>The upload memory is no longer available for use.</value>
+  </data>
+  <data name="GORGFX_ERR_CANNOT_SETUP_DEBUG_INFO" xml:space="preserve">
+    <value>There was an error setting up the debug information functionality.</value>
+  </data>
+  <data name="GORGFX_ERR_NO_VIEWPORTS" xml:space="preserve">
+    <value>At least one viewport must be assigned to the command list.</value>
+  </data>
+  <data name="GORGFX_ERR_NO_RTVS" xml:space="preserve">
+    <value>At least one render target view must be assigned.</value>
+  </data>
+  <data name="GORGFX_ERR_TRANSIENT_MEMORY_NOT_VALID" xml:space="preserve">
+    <value>The transient memory is no longer valid for use.</value>
+  </data>
+  <data name="GORGFX_ERR_NO_NARROW_QUAD_SUPPORT" xml:space="preserve">
+    <value>The adapter '{0}' does not support narrow quadrilateral line rasterization.</value>
+  </data>
+  <data name="GORGFX_ERR_NO_DEPTH_BOUNDS_TEST_SUPPORT" xml:space="preserve">
+    <value>The adapter '{0}' does not support depth bounds testing.</value>
+  </data>
+  <data name="GORGFX_ERR_NO_INDEPENDENT_STENCIL_REF_SUPPORT" xml:space="preserve">
+    <value>The adapter '{0}' does not support independent front/back stencil reference value support.</value>
+  </data>
 </root>

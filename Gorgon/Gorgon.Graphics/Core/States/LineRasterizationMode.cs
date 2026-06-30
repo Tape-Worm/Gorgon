@@ -18,27 +18,32 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: January 14, 2026 9:41:53 PM
+// Created: June 29, 2026 5:23:57 PM
 //
+
+using TerraFX.Interop.DirectX;
 
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Information that was used to build a <see cref="GorgonIndexBuffer"/>.
+/// Defines how line primitives are rasterized.
 /// </summary>
-public interface IGorgonIndexBufferInfo
-    : IGorgonCommonBufferInfo
+public enum LineRasterizationMode
 {
     /// <summary>
-    /// Property to return whether the buffer stores 32-bit indices or 16-bit indices.
+    /// Standard line drawing is applied. No antialiasing.
     /// </summary>
-    /// <remarks>
-    /// <para>
-    /// When <b>true</b>, Gorgon will expect each element in the buffer to be 32-bits wide. Otherwise, if <b>false</b>, then each element must be 16-bits wide.
-    /// </para>
-    /// </remarks>
-    bool Use32BitIndices
-    {
-        get;
-    }
+    Default = D3D12_LINE_RASTERIZATION_MODE.D3D12_LINE_RASTERIZATION_MODE_ALIASED,
+    /// <summary>
+    /// Alpha based antialiasing. 
+    /// </summary>
+    AntiAliased = D3D12_LINE_RASTERIZATION_MODE.D3D12_LINE_RASTERIZATION_MODE_ALPHA_ANTIALIASED,
+    /// <summary>
+    /// Line is expanded into a quad between the range of 1.0 and 1.4. This value only applies to render targets that use multisampling.
+    /// </summary>
+    QuadrilateralWide = D3D12_LINE_RASTERIZATION_MODE.D3D12_LINE_RASTERIZATION_MODE_QUADRILATERAL_WIDE,
+    /// <summary>
+    /// Line is expanded into a quad, but uses a true 1.0 width. This value only applies to render targets that use multisampling.
+    /// </summary>
+    QuadrilateralNarrow = D3D12_LINE_RASTERIZATION_MODE.D3D12_LINE_RASTERIZATION_MODE_QUADRILATERAL_NARROW,
 }

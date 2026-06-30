@@ -18,43 +18,41 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: January 14, 2026 9:42:47 PM
+// Created: June 17, 2026 3:33:16 PM
 //
 
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Settings used for creating a <see cref="GorgonIndexBuffer"/>.
+/// Values that describe an identifier that is used to handle primitive restart for strip topologies.
 /// </summary>
-/// <param name="SizeInBytes">The size of the buffer, in bytes.</param>
-/// <param name="Use32BitIndices"><b>true</b> to indicate that each element in the buffer will be 32-bits wide, or <b>false</b> to indicate that each element will be 16-bits wide.</param>
 /// <remarks>
 /// <para>
-/// The <paramref name="SizeInBytes"/> parameter must be greater than 0.
+/// This value is only used with primitive topologies that use triangle or line strips.
 /// </para>
 /// </remarks>
-public record class GorgonIndexBufferInfo(long SizeInBytes, bool Use32BitIndices)
-    : GorgonCommonBufferInfo(SizeInBytes)
+public enum IndexBufferStripCutIdentifier
 {
     /// <summary>
-    /// An empty instance of the <see cref="GorgonIndexBufferInfo"/> type.
+    /// All indices point to actual vertices.
     /// </summary>
-    public static readonly GorgonIndexBufferInfo Empty = new(0, false);
-
+    Disabled = 0,
     /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonGpuBufferInfo"/> class.
+    /// <para>
+    /// Specify this to restart when an index value of <c>0xFFFF</c> (<c>-1 signed</c>) is found. 
+    /// </para>
+    /// <para>
+    /// This applies to 16-bit indices only.
+    /// </para>
     /// </summary>
-    /// <param name="info">The buffer creation information to copy.</param>
-    public GorgonIndexBufferInfo(GorgonIndexBufferInfo info)
-        : base(info) => Use32BitIndices = info.Use32BitIndices;
-
+    StopWith16BitMax = 1,
     /// <summary>
-    /// Initializes a new instance of the <see cref="IGorgonGpuBufferInfo"/> class.
+    /// <para>
+    /// Specify this to restart when an index value of <c>0xFFFFFFFF</c> (<c>-1 signed</c>) is found.
+    /// </para>
+    /// <para>
+    /// This applies to 32-bit indices only.
+    /// </para>
     /// </summary>
-    /// <param name="info">The buffer creation information to copy.</param>
-    public GorgonIndexBufferInfo(IGorgonIndexBufferInfo info)
-        : this(info.SizeInBytes, info.Use32BitIndices)
-    {
-    }
+    StopWith32BitMax = 2
 }
-

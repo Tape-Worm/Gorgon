@@ -246,8 +246,8 @@ public sealed unsafe class GorgonVirtualTexture
             for (int y = tileRegion.Top; y < tileRegion.Bottom; ++y)
             {
                 // Set the number of bits on a row to match the horizontal values we've allocated.
-                // This may be a single qword (64 bit value), or multiple. In most cases, this will be 
-                // larger than 64 bits, and offset by a non-aligned by 64 value, so we have to to break 
+                // This may be a single qword (64-bit value), or multiple. In most cases, this will be 
+                // larger than 64-bits, and offset by a non-aligned by 64 value, so we have to to break 
                 // it up into chunks and set each qword individually.
 
                 int tileRow = tileSlice + tileInfo.Width * y;
@@ -271,7 +271,7 @@ public sealed unsafe class GorgonVirtualTexture
                     continue;
                 }
 
-                // Otherwise, start with our partial start qword, fill in the middle with the full 64 bits set (or unset) 
+                // Otherwise, start with our partial start qword, fill in the middle with the full 64-bits set (or unset) 
                 // and then fill out the ending qword.
                 bitmap[qwordStart] = operation(bitmap[qwordStart], headMask);
                 for (int x = qwordStart + 1; x < qwordEnd; ++x)
@@ -1056,7 +1056,7 @@ public sealed unsafe class GorgonVirtualTexture
     /// <inheritdoc cref="GorgonTexture" path="/remarks/para[@type='max_dimensions']"/>
     /// <para>
     /// A virtual texture must be no less than 4 MB (4,194,304 bytes) in size. Virtual textures are meant to store large amounts of texture data, and the minimum allocated physical size of a virtual texture is 
-    /// 4 MB, which is large enough to hold a single array and mip level for a 1024x1024 32 bit texture. If the texture size is not large enough, then an exception will be thrown when one is created. To 
+    /// 4 MB, which is large enough to hold a single array and mip level for a 1024x1024 32-bit texture. If the texture size is not large enough, then an exception will be thrown when one is created. To 
     /// compute the size of a texture, users may take the requested <c>width x <see cref="GorgonFormatInfo.SizeInBytes">format size</see> x height x depth (3D only) x array count (2D only) x 1.34 (for a full 
     /// 2D mip chain, 1.14 for a full 3D mip chain, or x 1 for a single mip level)</c> to roughly determine the texture size. 
     /// </para>

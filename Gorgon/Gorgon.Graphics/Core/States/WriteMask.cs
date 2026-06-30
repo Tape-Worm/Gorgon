@@ -1,5 +1,7 @@
-﻿// Gorgon.
-// Copyright (C) 2026 Michael Winsor
+﻿
+// 
+// Gorgon
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -9,36 +11,36 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
+// all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE
 // 
-// Created: January 14, 2026 9:41:53 PM
-//
+// Created: May 29, 2018 8:51:27 AM
+// 
+
+using TerraFX.Interop.DirectX;
 
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Information that was used to build a <see cref="GorgonIndexBuffer"/>.
+/// Defines the channels to output for a given render target.
 /// </summary>
-public interface IGorgonIndexBufferInfo
-    : IGorgonCommonBufferInfo
+[Flags]
+public enum WriteMask
 {
-    /// <summary>
-    /// Property to return whether the buffer stores 32-bit indices or 16-bit indices.
-    /// </summary>
-    /// <remarks>
-    /// <para>
-    /// When <b>true</b>, Gorgon will expect each element in the buffer to be 32-bits wide. Otherwise, if <b>false</b>, then each element must be 16-bits wide.
-    /// </para>
-    /// </remarks>
-    bool Use32BitIndices
-    {
-        get;
-    }
+    /// <summary>The red channel will be written.</summary>
+    Red = D3D12_COLOR_WRITE_ENABLE.D3D12_COLOR_WRITE_ENABLE_RED,
+    /// <summary>The green channel will be written.</summary>
+    Green = D3D12_COLOR_WRITE_ENABLE.D3D12_COLOR_WRITE_ENABLE_GREEN,
+    /// <summary>The blue channel will be written.</summary>
+    Blue = D3D12_COLOR_WRITE_ENABLE.D3D12_COLOR_WRITE_ENABLE_BLUE,
+    /// <summary>The alpha channel will be written.</summary>
+    Alpha = D3D12_COLOR_WRITE_ENABLE.D3D12_COLOR_WRITE_ENABLE_ALPHA,
+    /// <summary>All channels will be written.</summary>
+    All = D3D12_COLOR_WRITE_ENABLE.D3D12_COLOR_WRITE_ENABLE_ALL
 }

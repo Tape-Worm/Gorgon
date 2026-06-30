@@ -68,7 +68,7 @@ namespace Gorgon.Renderers;
 /// </remarks>
 /// <param name="renderer">The renderer interface to use for building the polygon sprite.</param>
 public class GorgonPolySpriteBuilder(Gorgon2D renderer)
-        : IGorgonFluentBuilder<GorgonPolySpriteBuilder, GorgonPolySprite>, IEnumerable<GorgonPolySpriteVertex>, IGorgonGraphicsObject
+        : IGorgonFluentBuilderDoNotUse<GorgonPolySpriteBuilder, GorgonPolySprite>, IEnumerable<GorgonPolySpriteVertex>, IGorgonGraphicsObject
 {
     // The working sprite.
     private readonly GorgonPolySprite _workingSprite = new();

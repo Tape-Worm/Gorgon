@@ -21,6 +21,9 @@
 // Created: September 29, 2025 12:47:46 PM
 //
 
+using System.Diagnostics.CodeAnalysis;
+using Gorgon.Native;
+
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
@@ -67,14 +70,26 @@ public enum ShaderType
 }
 
 /// <summary>
-/// The base type for all shaders.
+/// A shader used to execute instructions on the GPU.
 /// </summary>
+/// <remarks>
+/// <para>
+/// Applications use shaders to do everything from generating primitives, modifying vertices, to coloring a pixel on the screen using the GPU. These programs are what give GPUs their power when rendering 
+/// interesting and creative scenes.
+/// </para>
+/// </remarks>
 public sealed class GorgonShader
+    : IDisposable
 {
-    private readonly byte[] _data;
-    private readonly byte[] _pdbData;
-    private readonly byte[] _reflectionData;
-    private readonly byte[] _hash;
+    /// <summary>
+    /// A dummy shader used to indicate that no shader has been applied.
+    /// </summary>
+    internal static readonly GorgonShader NullShader = new();
+
+    private readonly GorgonNativeBuffer<byte> _data = [];
+    private readonly GorgonNativeBuffer<byte> _pdbData = [];
+    private readonly GorgonNativeBuffer<byte> _reflectionData = [];
+    private readonly GorgonNativeBuffer<byte> _hash = [];    
 
     /// <summary>
     /// Property to return the type of shader.
@@ -95,6 +110,7 @@ public sealed class GorgonShader
     /// <summary>
     /// Property to return the graphics interface that owns this shader.
     /// </summary>
+    [MaybeNull()]
     public GorgonGraphics Graphics
     {
         get;
@@ -109,12 +125,12 @@ public sealed class GorgonShader
     public string PdbName
     {
         get;
-    } 
+    } = string.Empty;
 
     /// <summary>
     /// Property to retrieve the shader binary data.
     /// </summary>
-    public ReadOnlySpan<byte> ShaderData => _data;
+    public GorgonPtr<byte> ShaderData => _data;
 
     /// <summary>
     /// Property to return the program database for shader debugging.
@@ -124,17 +140,38 @@ public sealed class GorgonShader
     /// This will only be populated if the shader is compiled using debug mode.
     /// </para>
     /// </remarks>
-    public ReadOnlySpan<byte> PdbData => _pdbData;
+    public GorgonPtr<byte> PdbData => _pdbData;
 
     /// <summary>
     /// Property to return any reflection information within the shader.
     /// </summary>
-    public ReadOnlySpan<byte> ReflectionData => _reflectionData;
+    public GorgonPtr<byte> ReflectionData => _reflectionData;
 
     /// <summary>
     /// Property to return the shader hash.
     /// </summary>
-    public ReadOnlySpan<byte> Hash => _hash;
+    public GorgonPtr<byte> Hash => _hash;
+
+    /// <inheritdoc cref="GorgonGraphicsFactory.Dispose(bool)"/>
+    private void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            this.UnregisterDisposable(Graphics);
+
+            _data.Dispose();
+            _pdbData.Dispose();
+            _reflectionData.Dispose();
+            _hash.Dispose();
+        }        
+    }
+
+    /// <inheritdoc/>
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonShader"/> class.
@@ -147,7 +184,7 @@ public sealed class GorgonShader
     /// <param name="reflectionData">The reflection information for the shader.</param>
     /// <param name="shaderType">The type of shader.</param>
     /// <param name="shaderModel">The shader model.</param>
-    internal GorgonShader(GorgonGraphics graphics, byte[] shaderData, byte[] hash, byte[] pdbData, string pdbName, byte[] reflectionData, ShaderType shaderType, ShaderModel shaderModel)
+    internal GorgonShader(GorgonGraphics graphics, GorgonNativeBuffer<byte> shaderData, GorgonNativeBuffer<byte> hash, GorgonNativeBuffer<byte> pdbData, string pdbName, GorgonNativeBuffer<byte> reflectionData, ShaderType shaderType, ShaderModel shaderModel)
     {
         Graphics = graphics;
         _data = shaderData;
@@ -157,5 +194,14 @@ public sealed class GorgonShader
         _reflectionData = reflectionData;
         ShaderType = shaderType;
         ShaderModel = shaderModel;
+
+        this.RegisterDisposable(graphics);
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GorgonShader"/> class.
+    /// </summary>
+    private GorgonShader()
+    {
     }
 }

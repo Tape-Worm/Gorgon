@@ -589,9 +589,9 @@ public unsafe class GorgonShaderFactory
         result.Get()->GetResult((IDxcBlob**)shaderBlob.GetAddressOf())
             .ThrowIfFailed(GorgonResult.CannotCompile, () => string.Format(Resources.GORGFX_ERR_CANNOT_COMPILE_SHADER, shaderModelProfile));
 
-        byte[] hash = [];
-        byte[] pdbData = [];        
-        byte[] reflectionData = [];
+        GorgonNativeBuffer<byte> hash = [];
+        GorgonNativeBuffer<byte> pdbData = [];
+        GorgonNativeBuffer<byte> reflectionData = [];
         string pdbName = string.Empty;
         HRESULT err;
 
@@ -609,7 +609,7 @@ public unsafe class GorgonShaderFactory
             {                
                 DxcShaderHash* hashDigest = (DxcShaderHash*)hashBlob.Get()->GetBufferPointer();
 
-                hash = new byte[16];
+                hash = new GorgonNativeBuffer<byte>(16);
                 Unsafe.CopyBlock(ref hash[0], in hashDigest->HashDigest[0], 16);
             }
         }
@@ -631,9 +631,9 @@ public unsafe class GorgonShaderFactory
                 Graphics.Log.PrintError(err, "There was an error retrieving the PDB information for the shader.", LoggingLevel.Verbose);
             }
             else
-            {            
-                GorgonPtr<byte> pdbDataPtr = new((byte*)pdbBlob.Get()->GetBufferPointer(), (long)pdbBlob.Get()->GetBufferSize());
-                pdbData = pdbDataPtr.ToArray();
+            {
+                pdbData = new((long)pdbBlob.Get()->GetBufferSize());
+                NativeMemory.Copy(pdbBlob.Get()->GetBufferPointer(), (void*)pdbData, (uint)pdbData.Length);
             }
         }
 
@@ -649,14 +649,15 @@ public unsafe class GorgonShaderFactory
             }
             else
             {
-                GorgonPtr<byte> reflectDataPtr = new((byte*)reflectBlob.Get()->GetBufferPointer(), (long)reflectBlob.Get()->GetBufferSize());
-                reflectionData = reflectDataPtr.ToArray();
+                reflectionData = new GorgonNativeBuffer<byte>((long)reflectBlob.Get()->GetBufferSize());
+                NativeMemory.Copy(reflectBlob.Get()->GetBufferPointer(), (void*)reflectionData, (uint)reflectionData.Length);
             }
         }
 
-        GorgonPtr<byte> shaderDataPtr = new((byte*)shaderBlob.Get()->GetBufferPointer(), (long)shaderBlob.Get()->GetBufferSize());
+        GorgonNativeBuffer<byte> shaderData = new((long)shaderBlob.Get()->GetBufferSize());
+        NativeMemory.Copy(shaderBlob.Get()->GetBufferPointer(), (byte*)shaderData, (uint)shaderData.Length);        
 
-        return new GorgonShaderCompileResult(new GorgonShader(Graphics, shaderDataPtr.ToArray(), hash, pdbData, pdbName, reflectionData, shaderType, shaderModelProfile.ShaderModel));
+        return new GorgonShaderCompileResult(new GorgonShader(Graphics, shaderData, hash, pdbData, pdbName, reflectionData, shaderType, shaderModelProfile.ShaderModel));
     }
 
     /// <inheritdoc/>

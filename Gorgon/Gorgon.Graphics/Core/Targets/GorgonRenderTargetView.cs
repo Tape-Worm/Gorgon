@@ -234,7 +234,7 @@ public unsafe sealed class GorgonRenderTargetView
         desc.Texture2D = new D3D12_TEX2D_RTV
         {
             MipSlice = (uint)MipLevel,
-            PlaneSlice = PlaneIndex
+            PlaneSlice = PlaneIndex            
         };
     }
 

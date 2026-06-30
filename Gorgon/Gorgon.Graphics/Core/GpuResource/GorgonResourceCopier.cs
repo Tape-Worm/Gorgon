@@ -155,15 +155,12 @@ public unsafe sealed class GorgonResourceCopier
     /// <param name="offset">The offset, in bytes, within the buffer to start writing at.</param>
     /// <param name="count">The total number of items within the buffer.</param>
     /// <param name="typeSize">The size of an individual item, in bytes, within the buffer.</param>
-    /// <exception cref="ArgumentOutOfRangeException"><para>Thrown if the <paramref name="offset"/>, is less than 0.</para>
-    /// <para>Thrown if the <paramref name="count"/> is less than 0.</para>
-    /// </exception>
-    /// <exception cref="ArgumentException">Thrown if the <paramref name="offset"/> plus the <paramref name="count"/> is greater than the <see cref="GorgonGpuBufferCommon.SizeInBytes">size</see> if the buffer.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><para>Thrown if the <paramref name="offset"/>, is less than 0.</para></exception>
+    /// <exception cref="ArgumentException">Thrown if the <paramref name="offset"/> plus the size of data being copied is greater than the <see cref="GorgonGpuBufferCommon.SizeInBytes">size</see> of the buffer.</exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void ValidateRangeParams(GorgonGpuBufferCommon buffer, long offset, long count, int typeSize)
     {
         ArgumentOutOfRangeException.ThrowIfNegative(offset);
-        ArgumentOutOfRangeException.ThrowIfLessThan(count, 1);
 
         long byteSize = count * typeSize;
 
@@ -706,7 +703,7 @@ public unsafe sealed class GorgonResourceCopier
             throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORGFX_ERR_TEXTURE_COPY_FORMAT_GROUPS_DIFFERENT, source.Name, source.FormatInfo.Group, destination.Name, destination.FormatInfo.Group));
         }
 
-        if (!destination.Equals(GorgonMultisampleInfo.NoMultisampling))
+        if (!destination.MultisampleInfo.Equals(GorgonMultisampleInfo.NoMultisampling))
         {
             throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORGFX_ERR_MULTISAMPLE_SOURCE_DEST_DIFFERENT, source.MultisampleInfo, source.Name, destination.MultisampleInfo, destination.Name));
         }
@@ -1005,8 +1002,8 @@ public unsafe sealed class GorgonResourceCopier
 
         long sizeToCopy = count ?? (source.SizeInBytes - sourceOffset).Min(destination.SizeInBytes - destinationOffset);        
 
-        ArgumentOutOfRangeException.ThrowIfLessThan(sourceOffset, 0);
-        ArgumentOutOfRangeException.ThrowIfLessThan(destinationOffset, 0);
+        ArgumentOutOfRangeException.ThrowIfNegative(sourceOffset);
+        ArgumentOutOfRangeException.ThrowIfNegative(destinationOffset);
 
         if (count is not null)
         {
@@ -1232,7 +1229,7 @@ public unsafe sealed class GorgonResourceCopier
 
         if ((!texture.TryGetAllocatedTileRegion(handle, out GorgonBox tileBox)) || (!texture.TryGetSubResources(handle, out short destinationMipLevel, out short destinationArrayIndex)))
         {
-            throw new ArgumentException(string.Format(Resources.GORGFX_ERR_TEXTURE_HANDLE_DOES_NOT_EXIST, handle, texture.Name));
+            throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORGFX_ERR_TEXTURE_HANDLE_DOES_NOT_EXIST, handle, texture.Name));
         }
 
         texture.FromTiles(in tileBox, out GorgonBoxF texelBox, destinationMipLevel);
@@ -1347,7 +1344,7 @@ public unsafe sealed class GorgonResourceCopier
             throw new GorgonException(GorgonResult.CannotWrite, Resources.GORGFX_ERR_BATCH_NOT_STARTED);
         }
 
-        ArgumentOutOfRangeException.ThrowIfLessThan(parameters.SourceOffset, 0);
+        ArgumentOutOfRangeException.ThrowIfNegative(parameters.SourceOffset);
 
         if (buffer.SizeInBytes - parameters.SourceOffset <= 0)
         {
@@ -1393,7 +1390,7 @@ public unsafe sealed class GorgonResourceCopier
             throw new GorgonException(GorgonResult.CannotWrite, Resources.GORGFX_ERR_BATCH_NOT_STARTED);
         }
 
-        ArgumentOutOfRangeException.ThrowIfLessThan(parameters.DestinationOffset, 0);
+        ArgumentOutOfRangeException.ThrowIfNegative(parameters.DestinationOffset);
 
         byte planeCount = texture.Graphics.FormatSupport[texture.Format].PlaneCount;
         short sourceMipLevel = parameters.SourceMipLevel.Min((short)(texture.MipCount - 1)).Max(0);
@@ -1638,7 +1635,7 @@ public unsafe sealed class GorgonResourceCopier
             throw new GorgonException(GorgonResult.CannotWrite, Resources.GORGFX_ERR_BATCH_NOT_STARTED);
         }
 
-        ArgumentOutOfRangeException.ThrowIfLessThan(sourceOffset, 0);
+        ArgumentOutOfRangeException.ThrowIfNegative(sourceOffset);
 
         if (buffer.SizeInBytes - sourceOffset <= 0)
         {
@@ -1778,7 +1775,7 @@ public unsafe sealed class GorgonResourceCopier
     public void CopyToValue<T>(GorgonGpuBufferCommon buffer, out T destination, long bufferOffset = 0)
         where T : unmanaged
     {
-        ArgumentOutOfRangeException.ThrowIfLessThan(bufferOffset, 0);
+        ArgumentOutOfRangeException.ThrowIfNegative(bufferOffset);
 
         int typeSize = sizeof(T);
 

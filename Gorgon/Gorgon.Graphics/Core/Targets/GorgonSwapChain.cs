@@ -379,7 +379,12 @@ public unsafe sealed class GorgonSwapChain
 
         // Wait for the GPU to finish its current work.
         Graphics.WaitForGpu(GorgonGraphics.WaitFenceTimeout * 6);
-               
+
+        // Ensure we release any holds on our render targets.
+        Graphics.Queues.GraphicsQueue.Tracker.Signal();
+        Graphics.Queues.CopyQueue.Tracker.Signal();
+        Graphics.Queues.ComputeQueue.Tracker.Signal();
+
         OnBeforeResize();
 
         _info = _info with

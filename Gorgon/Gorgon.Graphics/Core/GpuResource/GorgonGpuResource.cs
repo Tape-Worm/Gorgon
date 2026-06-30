@@ -21,17 +21,11 @@
 // Created: January 3, 2026 2:11:32 AM
 //
 
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
-using System.Text;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
-using Gorgon.Graphics.Core.Properties;
 using TerraFX.Interop.DirectX;
 using TerraFX.Interop.Windows;
-using Win32 = TerraFX.Interop.Windows.Windows;
 
 namespace Gorgon.Graphics.Core;
 
@@ -106,7 +100,7 @@ public enum GraphicsResourceUsage
 /// </summary>
 /// <remarks>
 /// <para>
-/// TODO:...
+/// This is a base class for buffers and textures stored on the GPU and carries common functionality. 
 /// </para>
 /// </remarks>
 public abstract unsafe class GorgonGpuResource
@@ -199,10 +193,10 @@ public abstract unsafe class GorgonGpuResource
                 return;
             }
 
-            Graphics.Log.Print($"Destroying Gorgon resource '{Name}'", LoggingLevel.Simple);
-            Graphics.Log.Print($"Destroying D3D 12 {_info.ResourceType} resource object for '{Name}'...", LoggingLevel.Verbose);
-
             this.UnregisterDisposable(Graphics);
+
+            Graphics.Log.Print($"Destroying Gorgon resource '{Name}'", LoggingLevel.Simple);
+            Graphics.Log.Print($"Destroying D3D 12 {_info.ResourceType} resource object for '{Name}'...", LoggingLevel.Verbose);            
         }
 
         _d3dResource.Dispose();

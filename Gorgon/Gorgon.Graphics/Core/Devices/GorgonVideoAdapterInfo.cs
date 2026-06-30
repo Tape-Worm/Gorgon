@@ -200,6 +200,10 @@ public enum GraphicsPreemptionGranularity
 /// <param name="HasGpuUploadSupport">The value that indicates whether the GPU supports direct GPU upload support.</param>
 /// <param name="ShaderModelSupport">The value that indicates the highest level of shader model supported by this adapter.</param>
 /// <param name="HasTightAlignmentSupport">The value that indicates whether the adapter supports tight packing of resource data within heaps.</param>
+/// <param name="SupportsAlphaBlendFactor">The value that indicates whether the adapter supports alpha blend factoring in blending operations.</param>
+/// <param name="SupportsDepthBoundsTest">The value that indicates whether the adapter supports depth bounds testing.</param>
+/// <param name="SupportsNarrowQuadrilateralLines">The value that indicates whether the adapter supports narrow quadrilateral line rasterization.</param>
+/// <param name="SupportsIndependentFrontAndBackStencilRef">The value that indicates whether the adapter supports independent front and back stencil references.</param>
 /// <param name="ResourceHeapTier">The value that indicates the tier support for resource heaps.
 /// <para>
 /// Resource heap tier 1 support indicates that a heap can only support resources of a single category (Buffers, non depth/non render target textures, and depth and render target textures). Resource 
@@ -234,6 +238,10 @@ public record class GorgonVideoAdapterInfo(string Name,
                                            bool SupportsRelaxedCasting,
                                            ShaderModel ShaderModelSupport,
                                            bool HasTightAlignmentSupport,
+                                           bool SupportsAlphaBlendFactor,
+                                           bool SupportsDepthBoundsTest,
+                                           bool SupportsNarrowQuadrilateralLines,
+                                           bool SupportsIndependentFrontAndBackStencilRef,
                                            ResourceHeapTier ResourceHeapTier,
                                            TiledResourcesTier TiledResourcesTier,
                                            GorgonVideoAdapterArchitecture Architecture,
@@ -289,7 +297,7 @@ public record class GorgonVideoAdapterInfo(string Name,
     /// <summary>
     /// Property to return the maximum number of allowed viewports.
     /// </summary>
-    public static int MaxViewportCount => D3D12.D3D12_VIEWPORT_AND_SCISSORRECT_MAX_INDEX + 1;
+    public static int MaxViewportCount => D3D12.D3D12_VIEWPORT_AND_SCISSORRECT_MAX_INDEX + 1;    
 
     /// <summary>
     /// Property to return whether the GPU driver supports enhanced barriers (introduced in the 1.608.0 Agilty SDK), and on Windows 11 after release 22H2.
@@ -355,8 +363,12 @@ public record class GorgonVideoAdapterInfo(string Name,
 
         D3D12_FEATURE_DATA_D3D12_OPTIONS options = default;
         D3D12_FEATURE_DATA_ARCHITECTURE1 arch = default;
-        D3D12_FEATURE_DATA_D3D12_OPTIONS3 castSupport = default;
+        D3D12_FEATURE_DATA_D3D12_OPTIONS2 options2 = default;
+        D3D12_FEATURE_DATA_D3D12_OPTIONS3 options3 = default;
+        D3D12_FEATURE_DATA_D3D12_OPTIONS13 options13 = default;
+        D3D12_FEATURE_DATA_D3D12_OPTIONS14 options14 = default;
         D3D12_FEATURE_DATA_D3D12_OPTIONS16 options16 = default;
+        D3D12_FEATURE_DATA_D3D12_OPTIONS19 options19 = default;
         D3D12_FEATURE_DATA_TIGHT_ALIGNMENT tightAlignment = default;
         D3D12_FEATURE_DATA_GPU_VIRTUAL_ADDRESS_SUPPORT addressSupport = default;
 
@@ -375,7 +387,19 @@ public record class GorgonVideoAdapterInfo(string Name,
         d3dDevice.Get()->CheckFeatureSupport(D3D12_FEATURE.D3D12_FEATURE_GPU_VIRTUAL_ADDRESS_SUPPORT, &addressSupport, (uint)sizeof(D3D12_FEATURE_DATA_GPU_VIRTUAL_ADDRESS_SUPPORT))
             .ThrowIfFailed(GorgonResult.CannotEnumerate, () => string.Format(Resources.GORGFX_ERR_CANNOT_ENUMERATE_GPU, name));
 
-        d3dDevice.Get()->CheckFeatureSupport(D3D12_FEATURE.D3D12_FEATURE_D3D12_OPTIONS3, &castSupport, (uint)sizeof(D3D12_FEATURE_DATA_D3D12_OPTIONS3))
+        d3dDevice.Get()->CheckFeatureSupport(D3D12_FEATURE.D3D12_FEATURE_D3D12_OPTIONS2, &options2, (uint)sizeof(D3D12_FEATURE_DATA_D3D12_OPTIONS2))
+            .ThrowIfFailed(GorgonResult.CannotEnumerate, () => string.Format(Resources.GORGFX_ERR_CANNOT_ENUMERATE_GPU, name));
+
+        d3dDevice.Get()->CheckFeatureSupport(D3D12_FEATURE.D3D12_FEATURE_D3D12_OPTIONS3, &options3, (uint)sizeof(D3D12_FEATURE_DATA_D3D12_OPTIONS3))
+            .ThrowIfFailed(GorgonResult.CannotEnumerate, () => string.Format(Resources.GORGFX_ERR_CANNOT_ENUMERATE_GPU, name));
+
+        d3dDevice.Get()->CheckFeatureSupport(D3D12_FEATURE.D3D12_FEATURE_D3D12_OPTIONS13, &options13, (uint)sizeof(D3D12_FEATURE_DATA_D3D12_OPTIONS13))
+            .ThrowIfFailed(GorgonResult.CannotEnumerate, () => string.Format(Resources.GORGFX_ERR_CANNOT_ENUMERATE_GPU, name));
+
+        d3dDevice.Get()->CheckFeatureSupport(D3D12_FEATURE.D3D12_FEATURE_D3D12_OPTIONS14, &options14, (uint)sizeof(D3D12_FEATURE_DATA_D3D12_OPTIONS14))
+            .ThrowIfFailed(GorgonResult.CannotEnumerate, () => string.Format(Resources.GORGFX_ERR_CANNOT_ENUMERATE_GPU, name));
+
+        d3dDevice.Get()->CheckFeatureSupport(D3D12_FEATURE.D3D12_FEATURE_D3D12_OPTIONS19, &options19, (uint)sizeof(D3D12_FEATURE_DATA_D3D12_OPTIONS19))
             .ThrowIfFailed(GorgonResult.CannotEnumerate, () => string.Format(Resources.GORGFX_ERR_CANNOT_ENUMERATE_GPU, name));
 
         GorgonVideoAdapterOutputList outputs = new(EnumerateOutputs(adapter, d3dDevice));
@@ -390,9 +414,13 @@ public record class GorgonVideoAdapterInfo(string Name,
             (desc.Flags & DXGI_ADAPTER_FLAG3.DXGI_ADAPTER_FLAG3_KEYED_MUTEX_CONFORMANCE) == DXGI_ADAPTER_FLAG3.DXGI_ADAPTER_FLAG3_KEYED_MUTEX_CONFORMANCE,
             allowTearing,
             options16.GPUUploadHeapSupported,
-            castSupport.CastingFullyTypedFormatSupported,
+            options3.CastingFullyTypedFormatSupported,
             shaderModel,
             tightAlignment.SupportTier != D3D12_TIGHT_ALIGNMENT_TIER.D3D12_TIGHT_ALIGNMENT_TIER_NOT_SUPPORTED,
+            options13.AlphaBlendFactorSupported,
+            options2.DepthBoundsTestSupported,
+            options19.NarrowQuadrilateralLinesSupported,
+            options14.IndependentFrontAndBackStencilRefMaskSupported,
             (ResourceHeapTier)options.ResourceHeapTier,
             (TiledResourcesTier)options.TiledResourcesTier,
             new GorgonVideoAdapterArchitecture((int)arch.NodeIndex, arch.TileBasedRenderer, arch.UMA, arch.CacheCoherentUMA, arch.IsolatedMMU),

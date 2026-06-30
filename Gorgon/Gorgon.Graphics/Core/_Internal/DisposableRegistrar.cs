@@ -72,6 +72,8 @@ internal static class DisposableRegistrar
                     return;
                 }
 
+                graphics.Log.PrintWarning($"Cleaning up {disposables.Count} outstanding user objects. Please Dispose() your objects when done with them.", LoggingLevel.Intermediate);
+
                 while (disposables.Count > 0)
                 {
                     if (!disposables[0].TryGetTarget(out IDisposable? disposeRef))
@@ -89,7 +91,15 @@ internal static class DisposableRegistrar
                         graphics.Log.PrintWarning($"Object type {disposeRef.GetType().FullName} (Name: '{named.Name}') is still alive. Applications should dispose of this object type when done with it.", LoggingLevel.Verbose);
                     }
 
-                    disposeRef.Dispose();
+                    try
+                    {
+                        disposeRef.Dispose();
+                    }
+                    catch (Exception ex)
+                    {
+                        graphics.Log.PrintError($"Disposing of '{disposeRef.GetType().FullName}' failed.", LoggingLevel.Simple);
+                        graphics.Log.PrintException(ex);
+                    }
                 }
 
                 disposables.Clear();

@@ -25,6 +25,7 @@ using System.Text;
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.IO;
+using Gorgon.Native;
 using TerraFX.Interop.DirectX;
 using TerraFX.Interop.Windows;
 using DX = TerraFX.Interop.DirectX.DirectX;
@@ -155,10 +156,10 @@ public sealed class GorgonCodecGorShader(GorgonGraphics graphics)
             throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORGFX_ERR_SHADER_TYPE_NOT_SUPPORTED, shaderType));
         }
 
-        byte[] shaderBinaryData;
-        byte[] hashData = [];
-        byte[] pdbData = [];
-        byte[] reflectionData = [];
+        GorgonNativeBuffer<byte> shaderBinaryData =[];
+        GorgonNativeBuffer<byte> hashData = [];
+        GorgonNativeBuffer<byte> pdbData = [];
+        GorgonNativeBuffer<byte> reflectionData = [];
         string pdbName = string.Empty;
 
         using (IGorgonChunkReader dataReader = reader.OpenChunk(BinaryShaderByteCode))
@@ -168,9 +169,8 @@ public sealed class GorgonCodecGorShader(GorgonGraphics graphics)
             DX.D3DCreateBlob(dataSize, blob.GetAddressOf())
                 .ThrowIfFailed(GorgonResult.CannotRead, () => Resources.GORGFX_ERR_CANNOT_COMPILE_SHADER);
 
-            shaderBinaryData = new byte[dataSize];
-
-            dataReader.ReadArray(shaderBinaryData);
+            shaderBinaryData = new GorgonNativeBuffer<byte>(dataSize);
+            dataReader.ReadPointer<byte>(shaderBinaryData);
         }
 
         if (reader.Chunks.Contains(HashData))
@@ -181,8 +181,8 @@ public sealed class GorgonCodecGorShader(GorgonGraphics graphics)
             hashSize = hashReader.ReadInt32();
             if (hashSize != 0)
             {
-                hashData = new byte[hashSize];
-                hashReader.ReadArray(hashData);
+                hashData = new GorgonNativeBuffer<byte>(hashSize);
+                hashReader.ReadPointer<byte>(hashData);
             }
         }
 
@@ -197,8 +197,8 @@ public sealed class GorgonCodecGorShader(GorgonGraphics graphics)
 
             if (debugSize != 0)
             {
-                pdbData = new byte[debugSize];
-                debugReader.ReadArray(pdbData);
+                pdbData = new GorgonNativeBuffer<byte>(debugSize);
+                debugReader.ReadPointer<byte>(pdbData);
             }
         }
 
@@ -210,8 +210,8 @@ public sealed class GorgonCodecGorShader(GorgonGraphics graphics)
 
             if (reflectSize != 0)
             {
-                reflectionData = new byte[reflectSize];
-                reflectReader.ReadArray(reflectionData);
+                reflectionData = new GorgonNativeBuffer<byte>(reflectSize);
+                reflectReader.ReadPointer<byte>(reflectionData);
             }
         }
 
@@ -229,20 +229,20 @@ public sealed class GorgonCodecGorShader(GorgonGraphics graphics)
         {
             metadataWriter.WriteInt32((int)shader.ShaderType);
             metadataWriter.WriteInt32((int)shader.ShaderModel);
-            metadataWriter.WriteInt32(shader.ShaderData.Length);
+            metadataWriter.WriteInt32((int)shader.ShaderData.Length);
         }
 
         using (IGorgonChunkWriter dataWriter = writer.OpenChunk(BinaryShaderByteCode))
         {
-            dataWriter.WriteSpan(shader.ShaderData);
+            dataWriter.WritePointer(shader.ShaderData);
         }
 
         if (shader.Hash.Length != 0)
         {
             using IGorgonChunkWriter hashWriter = writer.OpenChunk(HashData);
 
-            hashWriter.WriteInt32(shader.Hash.Length);
-            hashWriter.WriteSpan(shader.Hash);
+            hashWriter.WriteInt32((int)shader.Hash.Length);
+            hashWriter.WritePointer(shader.Hash);
         }
 
         if (shader.PdbData.Length != 0)
@@ -250,8 +250,8 @@ public sealed class GorgonCodecGorShader(GorgonGraphics graphics)
             using IGorgonChunkWriter debugWriter = writer.OpenChunk(PdbData);
 
             debugWriter.WriteString(shader.PdbName);
-            debugWriter.WriteInt32(shader.PdbData.Length);
-            debugWriter.WriteSpan(shader.PdbData);
+            debugWriter.WriteInt32((int)shader.PdbData.Length);
+            debugWriter.WritePointer(shader.PdbData);
         }
 
         if (shader.ReflectionData.Length == 0)
@@ -261,8 +261,8 @@ public sealed class GorgonCodecGorShader(GorgonGraphics graphics)
 
         using IGorgonChunkWriter reflectionWriter = writer.OpenChunk(ReflectionData);
 
-        reflectionWriter.WriteInt32(shader.ReflectionData.Length);
-        reflectionWriter.WriteSpan(shader.ReflectionData);
+        reflectionWriter.WriteInt32((int)shader.ReflectionData.Length);
+        reflectionWriter.WritePointer(shader.ReflectionData);
     }
 
     /// <inheritdoc/>

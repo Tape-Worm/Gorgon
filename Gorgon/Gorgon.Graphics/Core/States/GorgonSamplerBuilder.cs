@@ -21,19 +21,27 @@
 // Created: April 14, 2026 8:59:51 PM
 //
 
+using System.Runtime.CompilerServices;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Memory;
 using Gorgon.Patterns;
-using TerraFX.Interop.DirectX;
 
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// A builder used to create <see cref="GorgonSampler"/> objects.
+/// A builder for a <see cref="GorgonSampler"/> object.
 /// </summary>
+/// <remarks>
+/// <para>
+/// Use this builder to create a new immutable <see cref="GorgonSampler"/> object to bindlessly pass to a shader. The sampler will be used by the shader to provide filtered samples of texel data.
+/// </para>
+/// <para>
+/// A <see cref="GorgonSampler"/> is an immutable object, it can only be created through this builder factory type.
+/// </para>
+/// </remarks>
 /// <seealso cref="GorgonSampler"/>
 public sealed class GorgonSamplerBuilder
-    : IGorgonFluentBuilder<GorgonSamplerBuilder, GorgonSampler, IGorgonAllocator<GorgonSampler>>
+    : IGorgonFluentBuilder<GorgonSamplerBuilder, GorgonSampler, IGorgonAllocator<GorgonSampler>, string>
 {
     private readonly GorgonSampler _worker;
     
@@ -50,6 +58,7 @@ public sealed class GorgonSamplerBuilder
     /// </summary>
     /// <param name="source">The source sampler to copy.</param>
     /// <param name="destination">The destination sampler to update.</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void Copy(GorgonSampler source, GorgonSampler destination)
     {
         destination.Name = source.Name;
@@ -67,59 +76,36 @@ public sealed class GorgonSamplerBuilder
     }
 
     /// <inheritdoc/>
-    public GorgonSamplerBuilder ResetTo(GorgonSampler? builderObject)
+    public GorgonSamplerBuilder ResetTo(GorgonSampler builderObject)
     {
-        if (builderObject is null)
-        {
-            Clear();
-            return this;
-        }
-
         Copy(builderObject, _worker);
-
         return this;
     }
 
     /// <inheritdoc/>
     public GorgonSamplerBuilder Clear()
     {
+        Copy(GorgonSampler.Default(Graphics), _worker);
         _worker.Name = string.Empty;
-        _worker.Comparison = ComparisonFunction.None;
-        _worker.BorderColor = GorgonColors.White;
-        _worker.MinimumLod = 0;
-        _worker.MipLodBias = 0;
-        _worker.MaximumLod = float.MaxValue;
-        _worker.MaxAnisotropy = 16;
-        _worker.BorderUsesIntegerColor = false;
-        _worker.UAddressing = _worker.VAddressing = _worker.WAddressing = TextureAddressing.Clamp;
-        _worker.Filter = TextureFilter.PointMinMagMip;        
 
         return this;
     }
 
     /// <inheritdoc/>
-    public GorgonSampler Build(IGorgonAllocator<GorgonSampler>? allocator = null)
-    {
-        GorgonSampler result = allocator is null ? new GorgonSampler(Graphics, string.Empty) : allocator.Allocate();
-
+    /// <param name="name">The name of the sampler.</param>
+    /// <param name="allocator"><inheritdoc cref="IGorgonFluentBuilder{TB, TBo, TBa, TP1}.Build" path="/param[@name='allocator']"/></param>
+    /// <remarks>
+    /// <inheritdoc path="/remarks/para"/>
+    /// <para>
+    /// The <paramref name="name"/> is required, if it is left empty, a name will be generated.
+    /// </para>
+    /// </remarks>
+    public GorgonSampler Build(string name, IGorgonAllocator<GorgonSampler>? allocator = null)
+    {        
+        GorgonSampler result = allocator is null ? new GorgonSampler(Graphics, string.Empty) : allocator.Allocate(s => s.ResetDescriptor());
+        _worker.Name = GorgonGraphicsFactory.GenerateName(name, nameof(GorgonSampler));
         Copy(_worker, result);
-
-        result.Name = GorgonGraphicsFactory.GenerateName(_worker.Name, nameof(GorgonSampler));
-        // We have to reset the descriptor when we allocate.
-        result.ResetDescriptor();
-
         return result;
-    }
-
-    /// <summary>
-    /// Function to set a name for the sampler.
-    /// </summary>
-    /// <param name="name">The name to assign to the sampler.</param>
-    /// <inheritdoc cref="Clear" path="/returns"/>
-    public GorgonSamplerBuilder Name(string name)
-    {
-        _worker.Name = name;
-        return this;
     }
 
     /// <summary>
@@ -127,6 +113,7 @@ public sealed class GorgonSamplerBuilder
     /// </summary>
     /// <param name="comparison">The comparison function to apply.</param>
     /// <inheritdoc cref="Clear" path="/returns"/>
+    /// <inheritdoc cref="GorgonSampler.Comparison" path="/remarks"/>
     public GorgonSamplerBuilder Comparison(ComparisonFunction comparison)
     {
         _worker.Comparison = comparison;
@@ -134,9 +121,9 @@ public sealed class GorgonSamplerBuilder
     }
 
     /// <summary>
-    /// Function to set the border colour for the sampler.
+    /// Function to set the border color for the sampler.
     /// </summary>
-    /// <param name="color">The border color apply.</param>
+    /// <param name="color">The border color to apply.</param>
     /// <inheritdoc cref="Clear" path="/returns"/>
     /// <inheritdoc cref="GorgonSampler.BorderColor" path="/remarks"/>    
     /// <inheritdoc cref="GorgonSampler.BorderColor" path="/seealso"/>    
@@ -198,9 +185,9 @@ public sealed class GorgonSamplerBuilder
     }
 
     /// <summary>
-    /// Function to set whether the <see cref="GorgonSampler.BorderColor"/> components are interpreted as 32 bit integer values.
+    /// Function to set whether the <see cref="GorgonSampler.BorderColor"/> components are interpreted as 32-bit integer values.
     /// </summary>
-    /// <param name="value"><b>true</b> to enable using 32 bit integer values for color components, <b>false</b> to use the standard floating point values for color components.</param>
+    /// <param name="value"><b>true</b> to enable using 32-bit integer values for color components, <b>false</b> to use the standard floating point values for color components.</param>
     /// <inheritdoc cref="Clear" path="/returns"/>
     /// <inheritdoc cref="GorgonSampler.BorderUsesIntegerColor" path="/remarks"/>
     /// <inheritdoc cref="GorgonSampler.BorderUsesIntegerColor" path="/seealso"/>
@@ -217,6 +204,11 @@ public sealed class GorgonSamplerBuilder
     /// <param name="v">The vertical addressing mode.</param>
     /// <param name="w">[Optional] The depth addressing mode.</param>
     /// <inheritdoc cref="Clear" path="/returns"/>
+    /// <remarks>
+    /// <para>
+    /// All 3 values default to <see cref="TextureAddressing.Clamp"/>.
+    /// </para>
+    /// </remarks>
     public GorgonSamplerBuilder Addressing(TextureAddressing u, TextureAddressing v, TextureAddressing w = TextureAddressing.Clamp)
     {
         _worker.UAddressing = u;
@@ -230,6 +222,7 @@ public sealed class GorgonSamplerBuilder
     /// </summary>
     /// <param name="filter">The type of filtering.</param>
     /// <inheritdoc cref="Clear" path="/returns"/>
+    /// <inheritdoc cref="GorgonSampler.Filter" path="/remarks"/>
     public GorgonSamplerBuilder Filter(TextureFilter filter)
     {
         _worker.Filter = filter;

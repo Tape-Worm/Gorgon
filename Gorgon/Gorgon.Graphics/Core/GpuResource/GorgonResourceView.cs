@@ -109,6 +109,8 @@ public abstract class GorgonResourceView
     {
         if (disposing)
         {
+            this.UnregisterDisposable(Graphics);
+
             Graphics.Log.Print($"Destroying view '{Name}' for resource '{Resource.Name}'...", LoggingLevel.Simple);
 
             D3DCpuHandle = D3D12_CPU_DESCRIPTOR_HANDLE.DEFAULT;
@@ -117,9 +119,7 @@ public abstract class GorgonResourceView
             {
                 Graphics.Log.Print($"Destroying resource '{Resource.Name}' because it is owned by this view.", LoggingLevel.Intermediate);
                 Resource.Dispose();
-            }
-
-            this.UnregisterDisposable(Graphics);
+            }            
         }
     }
 
@@ -139,11 +139,12 @@ public abstract class GorgonResourceView
     /// <param name="owned"><b>true</b> if the resource is owned by this view, <b>false</b> if not.</param>
     private protected GorgonResourceView(GorgonGraphics graphics, string name, GorgonGpuResource resource, bool owned)
     {
-        Graphics = graphics;
-        this.RegisterDisposable(Graphics);
+        Graphics = graphics;       
 
         Name = GorgonGraphicsFactory.GenerateName(name, GetType().Name);
         OwnsResource = owned;
         Resource = resource;
+
+        this.RegisterDisposable(Graphics);
     }
 }

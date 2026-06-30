@@ -142,7 +142,7 @@ public sealed class GorgonStructuredBufferView
 
         try
         {
-            return buffer.GetStructuredBufferView<T>();
+            return buffer.GetStructuredBufferView(sizeof(T), 0, null, true);
         }
         catch
         {

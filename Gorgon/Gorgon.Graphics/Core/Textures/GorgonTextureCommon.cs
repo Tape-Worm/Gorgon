@@ -494,7 +494,7 @@ public unsafe abstract class GorgonTextureCommon
     /// <returns>The buffer containing the list of castable formats.</returns>
     private protected GorgonNativeBuffer<DXGI_FORMAT> BuildCastList()
     {
-        if (!Graphics.Adapter.SupportsRelaxedCasting)
+        if ((!Graphics.Adapter.SupportsRelaxedCasting) || (FormatInfo.IsTypeless) || (FormatInfo.SizeInBytes < 1) || (FormatInfo.IsPlanar) || (FormatInfo.IsCompressed) || (FormatInfo.HasDepth) || (FormatInfo.HasStencil))
         {
             return [];
         }
@@ -1215,7 +1215,7 @@ public unsafe abstract class GorgonTextureCommon
         {
             GorgonFormatInfo info = new(formats[i]);
 
-            if ((info.IsTypeless) || (info.SizeInBytes < 1) || (info.IsPlanar) || (info.IsCompressed))
+            if ((info.IsTypeless) || (info.SizeInBytes < 1) || (info.IsPlanar) || (info.IsCompressed) || (info.HasDepth) || (info.HasStencil))
             {
                 continue;
             }

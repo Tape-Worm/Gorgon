@@ -49,12 +49,12 @@ namespace Gorgon.Graphics.Core;
 /// An index buffer uses indices that point to vertices within a buffer to help form a mesh. This allows an application to use smaller buffers for vertices and helps reduce bandwidth when rendering. 
 /// </para>
 /// <para>
-/// For example, if a vertex buffer has a vertex that is 40 bytes, and describes a rectangle out of 2 triangles, that's 6 vertices * 40 bytes = 240 bytes. Now, with an index buffer, you can use 16 bit 
+/// For example, if a vertex buffer has a vertex that is 40 bytes, and describes a rectangle out of 2 triangles, that's 6 vertices * 40 bytes = 240 bytes. Now, with an index buffer, you can use 16-bit 
 /// indices and 4 vertices to describe the same rectangle.  12 bytes for the indices, and 160 bytes for the vertices = 172 bytes, a difference of 68 bytes in total. Scale this up by meshes that use 10's of 
 /// thousands of vertices, and you start seeing some massive gains.
 /// </para>
 /// <para>
-/// The index buffer can consist of indices that are 32 bits wide, or 16 bits wide. The smaller data size means less overhead, but a reduced mesh size (32 bit can address 4,294,967,296 vertices, while 16 
+/// The index buffer can consist of indices that are 32-bits wide, or 16-bits wide. The smaller data size means less overhead, but a reduced mesh size (32-bit can address 4,294,967,296 vertices, while 16 
 /// bit can only address 65536 vertices). The type of data is specified upon creation of the buffer.
 /// </para>
 /// <para>

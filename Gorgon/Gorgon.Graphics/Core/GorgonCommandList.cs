@@ -49,7 +49,7 @@ namespace Gorgon.Graphics.Core;
 /// TODO: Write something...
 /// </para>
 /// </remarks>
-public unsafe sealed class GorgonCommandList
+public sealed unsafe class GorgonCommandList
     : IGorgonNamedObject, IDisposable, IGorgonCopyMethodsFluent<GorgonCommandList>
 {
     private ComPtr<ID3D12GraphicsCommandList10> _list;
@@ -62,24 +62,27 @@ public unsafe sealed class GorgonCommandList
     private readonly BarrierManager _barrierManager;
 
     private readonly CpuBufferAllocation [] _constantWriteData = new CpuBufferAllocation[GorgonGraphics.MaxRootConstantCount];
-    private GorgonIndexBuffer? _indexBuffer;
     private D3D12_CPU_DESCRIPTOR_HANDLE _depthStencilView;
     private bool _depthStencilChanged;
-    private readonly D3D12_CPU_DESCRIPTOR_HANDLE[] _rtvs = new D3D12_CPU_DESCRIPTOR_HANDLE[D3D12.D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT];
+    private readonly GorgonRenderTargetView?[] _renderTargetViews = new GorgonRenderTargetView[GorgonVideoAdapterInfo.MaxRenderTargetCount];
+    private readonly D3D12_CPU_DESCRIPTOR_HANDLE[] _d3dRtvs = new D3D12_CPU_DESCRIPTOR_HANDLE[GorgonVideoAdapterInfo.MaxRenderTargetCount];
     private uint _rtvsCount;
     private bool _rtvsChanged;
-    private readonly D3D12_VIEWPORT[] _viewports = new D3D12_VIEWPORT[D3D12.D3D12_VIEWPORT_AND_SCISSORRECT_OBJECT_COUNT_PER_PIPELINE];
+    private readonly GorgonViewport[] _viewports = new GorgonViewport[D3D12.D3D12_VIEWPORT_AND_SCISSORRECT_OBJECT_COUNT_PER_PIPELINE];
+    private readonly D3D12_VIEWPORT[] _d3dViewports = new D3D12_VIEWPORT[D3D12.D3D12_VIEWPORT_AND_SCISSORRECT_OBJECT_COUNT_PER_PIPELINE];
     private uint _viewportCount;
     private bool _viewportsChanged;
-    private readonly RECT[] _scissors = new RECT[D3D12.D3D12_VIEWPORT_AND_SCISSORRECT_OBJECT_COUNT_PER_PIPELINE];
+    private readonly GorgonRectangle[] _scissors = new GorgonRectangle[D3D12.D3D12_VIEWPORT_AND_SCISSORRECT_OBJECT_COUNT_PER_PIPELINE];
+    private readonly RECT[] _d3dScissors = new RECT[D3D12.D3D12_VIEWPORT_AND_SCISSORRECT_OBJECT_COUNT_PER_PIPELINE];
     private uint _scissorCount;
     private bool _scissorsChanged;    
-    private readonly List<(GorgonGpuBuffer Buffer, BarrierSync Sync, BarrierAccess Access)> _usedBuffers = new(32);
     private readonly GpuDescriptorHeap _samplerDescriptors;
     private readonly GpuDescriptorHeap _viewDescriptors;
     private readonly MegaBufferPool _megaBuffer;
     private readonly VirtualTextureTilePool _textureTilePool;
     private readonly CpuResourceHeapPool _uploadHeaps;
+    private GorgonIndexBuffer? _currentIndexBuffer;
+    private Blitter? _blitter;   
 
     /// <summary>
     /// Property to set or return the allocator associated with the command list.
@@ -127,6 +130,30 @@ public unsafe sealed class GorgonCommandList
     } = [];
 
     /// <summary>
+    /// Property to return the list of render targets bound to this command list.
+    /// </summary>
+    public ReadOnlySpan<GorgonRenderTargetView?> RenderTargets => _renderTargetViews.AsSpan(0, (int)_rtvsCount);
+
+    /// <summary>
+    /// Property to return the list of viewports bound to this command list.
+    /// </summary>
+    public ReadOnlySpan<GorgonViewport> Viewports => _viewports.AsSpan(0, (int)_viewportCount);
+
+    /// <summary>
+    /// Property to return the list of scissor rectangles bound to this command list.
+    /// </summary>
+    public ReadOnlySpan<GorgonRectangle> ScissorRectangles => _scissors.AsSpan(0, (int)_scissorCount);
+
+    /// <summary>
+    /// Property to return the depth/stencil buffer assigned to this command list.
+    /// </summary>
+    public GorgonDepthStencilView? DepthStencil
+    {
+        get;
+        private set;
+    }
+
+    /// <summary>
     /// Property to return the graphics interface associated with this command list.
     /// </summary>
     public GorgonGraphics Graphics
@@ -154,6 +181,7 @@ public unsafe sealed class GorgonCommandList
     {
         if (disposing)
         {
+            _blitter?.Dispose();
             _barrierManager.Clear();
             _resourceCopier.Dispose();
 
@@ -185,22 +213,33 @@ public unsafe sealed class GorgonCommandList
     /// <summary>
     /// Function to assign an index buffer to the command list.
     /// </summary>
-    private void ApplyIndexBuffer()
+    /// <param name="indexBuffer">The index buffer to apply.</param>
+    private void ApplyIndexBuffer(GorgonIndexBuffer? indexBuffer)
     {
-        if (_indexBuffer is null)
+        if (_currentIndexBuffer == indexBuffer)
         {
-            _list.Get()->IASetIndexBuffer(null);
             return;
         }
 
+        if (indexBuffer is null)
+        {
+            _list.Get()->IASetIndexBuffer(null);
+            _currentIndexBuffer = null;
+            return;
+        }
+
+        Queue.Tracker.TrackResource(indexBuffer);
+        SetBarrier(indexBuffer, BarrierSync.IndexInput, BarrierAccess.IndexBuffer);
+
         D3D12_INDEX_BUFFER_VIEW view = new()
         {
-            BufferLocation = _indexBuffer.D3DResource.Get()->GetGPUVirtualAddress(),
-            Format = _indexBuffer.Use32BitIndices ? DXGI_FORMAT.DXGI_FORMAT_R32_UINT : DXGI_FORMAT.DXGI_FORMAT_R16_UINT,
-            SizeInBytes = (uint)_indexBuffer.SizeInBytes
+            BufferLocation = indexBuffer.D3DResource.Get()->GetGPUVirtualAddress(),
+            Format = indexBuffer.Use32BitIndices ? DXGI_FORMAT.DXGI_FORMAT_R32_UINT : DXGI_FORMAT.DXGI_FORMAT_R16_UINT,
+            SizeInBytes = (uint)indexBuffer.SizeInBytes
         };
 
         _list.Get()->IASetIndexBuffer(&view);
+        _currentIndexBuffer = indexBuffer;
     }
 
     /// <summary>
@@ -218,26 +257,75 @@ public unsafe sealed class GorgonCommandList
     }
 
     /// <summary>
-    /// Function to prepare buffers for use by the system by establishing barriers.
+    /// Function to set the barriers for textures on a draw call.
     /// </summary>
-    private void PrepareBufferBarriers()
+    /// <param name="textures">The textures on the draw call.</param>
+    private void ApplyTextureBarriers(ReadOnlySpan<(IGorgonTextureView<GorgonTextureCommon> Texture, ShaderStage Shader, TextureUsage Usage)> textures)
     {
+        if (textures.Length == 0)
+        {
+            return;
+        }
+
+        for (int i = 0; i < textures.Length; ++i)
+        {
+            (IGorgonTextureView<GorgonTextureCommon> textureView, ShaderStage shader, TextureUsage usage) = textures[i];
+            GorgonTextureCommon texture = textureView.Texture;
+
+            Queue.Tracker.TrackResource(texture);
+
+            // ExecuteIndirect does not use a shader stage, it's its own thing.
+            BarrierSync sync = shader.ToSync();
+
+            BarrierAccess access = usage switch
+            {
+                TextureUsage.Writeable => BarrierAccess.ReadWrite,
+                _ => BarrierAccess.ShaderResource,
+            };
+
+            BarrierLayout layout = usage switch
+            {
+                TextureUsage.Writeable => BarrierLayout.ReadWrite,
+                _ => BarrierLayout.ShaderResource,
+            };
+
+            SetBarrier(texture, sync, access, layout);
+        }
+    }
+
+    /// <summary>
+    /// Function to apply barriers to buffers used in a draw call.
+    /// </summary>
+    private void ApplyBufferBarriers(ReadOnlySpan<(GorgonGpuBuffer Buffer, ShaderStage Shader, BufferUsage Usage)> buffers)
+    {
+        static BarrierSync GetSyncForBuffer(BufferUsage usage, ShaderStage stage) => usage != BufferUsage.IndirectArguments ? stage.ToSync() : BarrierSync.ExecuteIndirect;
+        static BarrierAccess GetAccessForBuffer(BufferUsage usage) => usage switch
+        {
+            BufferUsage.ConstantBuffer => BarrierAccess.ConstantBuffer,
+            BufferUsage.Writeable => BarrierAccess.ReadWrite,
+            BufferUsage.ReadWrite => BarrierAccess.ReadWrite | BarrierAccess.ShaderResource,
+            BufferUsage.IndirectArguments => BarrierAccess.IndirectArgument,
+            _ => BarrierAccess.ShaderResource,
+        };
+
         // We need to validate that the buffers that are reading do not overlap their data regions with buffers that are writing.
         // Since we are using the MegaBuffer approach, this is a potential hazard. But, we also need to ensure that we're not trying to 
         // make a single non-UAV buffer (user facing, not mega buffer) with read access and write access simultaneously (e.g. SRV | COPY_DEST).
-        int Intersects(GorgonGpuBuffer buffer, int bufferIndex, BarrierSync sync, BarrierAccess access)
+        static int Intersects(GorgonGpuBuffer buffer, int bufferIndex, BarrierSync sync, BarrierAccess access, ReadOnlySpan<(GorgonGpuBuffer Buffer, ShaderStage Shader, BufferUsage Usage)> buffers)
         {
             ulong bufferStart = buffer.ResourceOffset;
             ulong bufferEnd = (ulong)buffer.SizeInBytes + buffer.ResourceOffset;
 
-            for (int i = 0; i < _usedBuffers.Count; ++i)
+            for (int i = 0; i < buffers.Length; ++i)
             {
-                (GorgonGpuBuffer otherBuffer, BarrierSync otherSync, BarrierAccess otherAccess) = _usedBuffers[i];
-
                 if (bufferIndex == i)
                 {
                     continue;
                 }
+
+                (GorgonGpuBuffer otherBuffer, ShaderStage otherStage, BufferUsage otherUsage) = buffers[i];
+                BarrierSync otherSync = GetSyncForBuffer(otherUsage, otherStage);
+                BarrierAccess otherAccess = GetAccessForBuffer(otherUsage);
                 
                 ulong otherEnd = (ulong)otherBuffer.SizeInBytes +  otherBuffer.ResourceOffset;
 
@@ -257,14 +345,17 @@ public unsafe sealed class GorgonCommandList
         BarrierSync megaSync = BarrierSync.None;
         BarrierAccess megaAccess = BarrierAccess.Common;
 
-        for (int i = 0; i < _usedBuffers.Count; ++i)
+        for (int i = 0; i < buffers.Length; ++i)
         {
-            (GorgonGpuBuffer buffer, BarrierSync sync, BarrierAccess access) = _usedBuffers[i];
+            (GorgonGpuBuffer buffer, ShaderStage stage, BufferUsage usage) = buffers[i];
+            BarrierSync sync = GetSyncForBuffer(usage, stage);
+            BarrierAccess access = GetAccessForBuffer(usage);
 
             if (!buffer.IsMegaBufferResource)
             {
                 // If this buffer is not from the mega buffer, then just set its barrier as-is.
                 _barrierManager.AddBarrier(buffer, sync, access);
+                Queue.Tracker.TrackResource(buffer);
                 continue;
             }
 
@@ -273,14 +364,14 @@ public unsafe sealed class GorgonCommandList
             // does, we'll throw an exception.
             if (Graphics.IsInDebugMode)
             {
-                int collisionIndex = Intersects(buffer, i, sync, access);
+                int collisionIndex = Intersects(buffer, i, sync, access, buffers);
 
                 if (collisionIndex != -1)
                 {
                     throw new GorgonException(GorgonResult.CannotExecute, string.Format(Resources.GORGFX_ERR_BUFFERS_AND_BARRIER_OVERLAP, buffer, sync, access, 
-                                                                                        _usedBuffers[collisionIndex].Buffer, 
-                                                                                        _usedBuffers[collisionIndex].Sync, 
-                                                                                        _usedBuffers[collisionIndex].Access));
+                                                                                        buffers[collisionIndex].Buffer, 
+                                                                                        GetSyncForBuffer(buffers[collisionIndex].Usage, buffers[collisionIndex].Shader), 
+                                                                                        GetAccessForBuffer(buffers[collisionIndex].Usage)));
                 }                
             }
 
@@ -290,7 +381,8 @@ public unsafe sealed class GorgonCommandList
             megaAccess |= access;
 
             _barrierManager.AddBarrier(buffer, megaSync, megaAccess);
-        }
+            Queue.Tracker.TrackResource(buffer);
+        }        
     }
 
     /// <summary>
@@ -307,7 +399,7 @@ public unsafe sealed class GorgonCommandList
 
         if (_rtvsCount != 0)
         {
-            fixed (D3D12_CPU_DESCRIPTOR_HANDLE* rtvHandlePtr = &_rtvs[0])
+            fixed (D3D12_CPU_DESCRIPTOR_HANDLE* rtvHandlePtr = &_d3dRtvs[0])
             {
                 _list.Get()->OMSetRenderTargets(_rtvsCount, rtvHandlePtr, false, dsvHandle != D3D12_CPU_DESCRIPTOR_HANDLE.DEFAULT ? &dsvHandle : null);
             }
@@ -321,18 +413,21 @@ public unsafe sealed class GorgonCommandList
     }
 
     /// <summary>
-    /// Function to apply the individual resources prior to a command.
+    /// Function to apply the PSO for the command list.
     /// </summary>
+    /// <param name="pso">The pipeline state to apply.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void ApplyResources()
+    private void ApplyPso(GorgonGraphicsPso pso)
     {
-        PrepareBufferBarriers();
+        if (pso.D3DPso.IsNull)
+        {
+            pso.UpdateD3DPso();
+        }
 
-        _barrierManager.Submit(this);
+        Queue.Tracker.TrackResource(pso.D3DPso);
 
-        ApplyIndexBuffer();
-        ApplyConstantWrites();
-        ApplyRenderTargets();        
+        _list.Get()->SetPipelineState((PID3D12PipelineState1)pso.D3DPso.Get());
+        _list.Get()->IASetPrimitiveTopology((D3D_PRIMITIVE_TOPOLOGY)pso.PrimitiveType);
     }
 
     /// <summary>
@@ -344,7 +439,7 @@ public unsafe sealed class GorgonCommandList
         {
             if (_viewportCount != 0)
             {
-                fixed (D3D12_VIEWPORT* vpPtr = &_viewports[0])
+                fixed (D3D12_VIEWPORT* vpPtr = &_d3dViewports[0])
                 {
                     _list.Get()->RSSetViewports(_viewportCount, vpPtr);
                 }
@@ -364,7 +459,7 @@ public unsafe sealed class GorgonCommandList
 
         if (_scissorCount != 0)
         {
-            fixed (RECT* scissorPtr = &_scissors[0])
+            fixed (RECT* scissorPtr = &_d3dScissors[0])
             {
                 _list.Get()->RSSetScissorRects(_scissorCount, scissorPtr);
             }
@@ -388,13 +483,13 @@ public unsafe sealed class GorgonCommandList
     /// <inheritdoc cref="AddPresenter" path="/returns"/>
     private GorgonCommandList ClearDepthStencil(GorgonDepthStencilView depthStencil, float depthValue, byte stencilValue, IReadOnlyList<GorgonRectangle>? clearRects, D3D12_CLEAR_FLAGS flags)
     {
-        if (!depthStencil.Texture.FormatInfo.HasDepth)
+        if (!depthStencil.FormatInfo.HasDepth)
         {
             return this;
         }
 
         Queue.Tracker.TrackResource(depthStencil.Texture);
-        SetBarrier(depthStencil.Texture, BarrierSync.DepthStencil, BarrierAccess.DepthStencilWrite, BarrierLayout.DepthStencilWrite);
+        SetBarrier(depthStencil.Texture, BarrierSync.DepthStencil, BarrierAccess.DepthStencilWrite, BarrierLayout.DepthStencilWrite, force: true);
 
         clearRects ??= [];
 
@@ -495,7 +590,6 @@ public unsafe sealed class GorgonCommandList
 
         _barrierManager.CopyCurrentToGlobal(Queue.Type);
         Array.Clear(_constantWriteData);
-        _usedBuffers.Clear();
     }
 
     /// <summary>
@@ -505,30 +599,32 @@ public unsafe sealed class GorgonCommandList
     /// <param name="allocator">The allocator used by the list.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal void ResetState(string newName, CommandAllocator? allocator)
-    {
+    {        
         Name = newName;
         Allocator = allocator;
         Presenters.Clear();
         _barrierManager.Clear();
-        _indexBuffer = null;
-        _usedBuffers.Clear();
+        _currentIndexBuffer = null;
     }
 
     /// <summary>
     /// TBD
     /// </summary>
-    public void Draw(int indexCount, int instanceCount, int startIndexLocation, int baseVertexLocation, int startInstanceLocation)
-    {
-        // NOTE TO ME: DO NOT return the fluent interface.
-        _list.Get()->SetPipelineState(Graphics.Pso.Get());
-
-        ApplyResources();
+    /// <param name="drawCall"></param>
+    public void Draw(GorgonDrawCall drawCall)
+    {   
+        // Apply pending barrier calls.
+        ApplyBufferBarriers(drawCall.UsedBuffers);
+        ApplyTextureBarriers(drawCall.UsedTextures);
+        ApplyIndexBuffer(drawCall.IndexBuffer);
+        ApplyConstantWrites();
+        ApplyRenderTargets();
+        ApplyPso(drawCall.Pso);
         ApplyViewSetup();
 
-        // This needs to come from the PSO.
-        _list.Get()->IASetPrimitiveTopology((D3D_PRIMITIVE_TOPOLOGY)PrimitiveType.TriangleList);
+        _barrierManager.Submit(this);
 
-        _list.Get()->DrawIndexedInstanced((uint)indexCount, (uint)instanceCount, (uint)startIndexLocation, baseVertexLocation, (uint)startInstanceLocation);
+        _list.Get()->DrawIndexedInstanced((uint)drawCall.IndexCount, (uint)drawCall.InstanceCount, (uint)drawCall.StartIndex, drawCall.BaseVertex, (uint)drawCall.StartInstance);
     }
 
     /// <inheritdoc/>
@@ -594,7 +690,7 @@ public unsafe sealed class GorgonCommandList
     /// <summary>
     /// Function to clear a render target view with a specified color.
     /// </summary>
-    /// <param name="renderTarget">The texture render target view to clear.</param>
+    /// <param name="renderTarget">The render target view texture to clear.</param>
     /// <param name="color"><inheritdoc cref="ClearSwapChain(GorgonSwapChain, GorgonColor, IReadOnlyList{GorgonRectangle})" path="/param[@name='color']"/></param>
     /// <param name="clearRects"><inheritdoc cref="ClearSwapChain(GorgonSwapChain, GorgonColor, IReadOnlyList{GorgonRectangle})" path="/param[@name='clearRects']"/></param>
     /// <inheritdoc cref="AddPresenter" path="/returns"/>
@@ -672,102 +768,6 @@ public unsafe sealed class GorgonCommandList
     /// </para>
     /// </remarks>
     public GorgonCommandList ResetStreamOutCounter(GorgonStreamOutView view, long count = 0) => CopyValue(count, view.CounterBuffer);
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="buffer"></param>
-    /// <param name="shaderStage"></param>
-    /// <param name="usage"></param>
-    /// <inheritdoc cref="AddPresenter" path="/returns"/>
-    public GorgonCommandList Use(GorgonGpuBuffer buffer, ShaderStage shaderStage, BufferUsage usage)
-    {
-        // ExecuteIndirect does not use a shader stage, it's its own thing.
-        BarrierSync sync = usage != BufferUsage.IndirectArguments ? shaderStage.ToSync() : BarrierSync.ExecuteIndirect;
-
-        BarrierAccess access = usage switch
-        {
-            BufferUsage.ConstantBuffer => BarrierAccess.ConstantBuffer,
-            BufferUsage.Writeable => BarrierAccess.ReadWrite,
-            BufferUsage.ReadWrite => BarrierAccess.ReadWrite | BarrierAccess.ShaderResource,
-            BufferUsage.IndirectArguments => BarrierAccess.IndirectArgument,
-            _ => BarrierAccess.ShaderResource,
-        };
-
-        _usedBuffers.Add((buffer, sync, access));
-
-        Queue.Tracker.TrackResource(buffer);
-
-        return this;
-    }
-
-    /// <summary>
-    /// Function to assign an index buffer to render.
-    /// </summary>
-    /// <param name="buffer">The index buffer to assign, or <b>null</b> to unbind an existing index buffer.</param>
-    /// <inheritdoc cref="AddPresenter" path="/returns"/>
-    /// <remarks>
-    /// <para>
-    /// TODO: Fill me in.
-    /// </para>
-    /// </remarks>
-    /// <seealso cref="GorgonIndexBuffer"/>
-    public GorgonCommandList Use(GorgonIndexBuffer? buffer)
-    {
-        if (buffer is null)
-        {
-            _indexBuffer = null;
-            return this;
-        }
-                        
-        Queue.Tracker.TrackResource(buffer);
-        SetBarrier(buffer, BarrierSync.IndexInput, BarrierAccess.IndexBuffer);
-        _indexBuffer = buffer;
-
-        return this;
-    }
-
-    /// <summary>
-    /// TODO:
-    /// </summary>
-    /// <param name="textures"></param>
-    /// <param name="shaderStage"></param>
-    /// <param name="usage"></param>
-    /// <inheritdoc cref="AddPresenter" path="/returns"/>
-    /// <exception cref="GorgonException"><inheritdoc cref="SetBarrier(GorgonTextureCommon, BarrierSync, BarrierAccess, BarrierLayout, GorgonSubResourceRange?, bool, bool)" path="/exception/para[@type='barrier_issue']"/></exception>
-    public GorgonCommandList Use(ReadOnlySpan<IGorgonTextureView<GorgonTextureCommon>> textures, ShaderStage shaderStage, TextureUsage usage)
-    {
-        if (textures.Length == 0)
-        {
-            return this;
-        }
-
-        for (int i = 0; i < textures.Length; ++i)
-        {
-            GorgonTextureCommon texture = textures[i].Texture;
-
-            Queue.Tracker.TrackResource(texture);
-
-            // ExecuteIndirect does not use a shader stage, it's its own thing.
-            BarrierSync sync = shaderStage.ToSync();
-
-            BarrierAccess access = usage switch
-            {
-                TextureUsage.Writeable => BarrierAccess.ReadWrite,
-                _ => BarrierAccess.ShaderResource,
-            };
-
-            BarrierLayout layout = usage switch
-            {
-                TextureUsage.Writeable => BarrierLayout.ReadWrite,
-                _ => BarrierLayout.ShaderResource,
-            };
-
-            SetBarrier(texture, sync, access, layout);
-        }
-
-        return this;
-    }
 
     /// <summary>
     /// Function to reset the usage for the specified textures.
@@ -1249,7 +1249,7 @@ public unsafe sealed class GorgonCommandList
     public GorgonCommandList WriteConstant<T>(int index, in T data)
         where T : unmanaged
     {
-        ArgumentOutOfRangeException.ThrowIfLessThan(index, 0);
+        ArgumentOutOfRangeException.ThrowIfNegative(index);
         ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, GorgonGraphics.MaxRootConstantCount);
 
         nuint typeSize = (nuint)Unsafe.SizeOf<T>();
@@ -1270,6 +1270,45 @@ public unsafe sealed class GorgonCommandList
     }
 
     /// <summary>
+    /// Function to upload data in a <see cref="GorgonGpuUploadMemory"/> to a <see cref="GorgonGpuBufferCommon"/>
+    /// </summary>
+    /// <param name="upload">The transient GPU memory containing the data to copy.</param>
+    /// <param name="buffer">The buffer that will receive the data.</param>
+    /// <param name="offset">[Optional] The offset within the <paramref name="buffer"/> to start writing into.</param>
+    /// <inheritdoc cref="AddPresenter" path="/returns"/>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown if the <paramref name="offset"/> is less than 0.</exception>
+    /// <exception cref="ArgumentException">Thrown if the <paramref name="offset"/> plus the size of the <paramref name="upload"/> memory, in bytes, exceeds the size of the <paramref name="buffer"/>.</exception>
+    /// <exception cref="GorgonException">Thrown if the <paramref name="upload"/> memory is no longer available for use.</exception>
+    /// <remarks>
+    /// <para>
+    /// TODO:
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="GorgonGpuUploadMemory"/>
+    public GorgonCommandList UploadGpuMemoryToBuffer(ref readonly GorgonGpuUploadMemory upload, GorgonGpuBufferCommon buffer, long offset = 0)
+    {
+        if (!upload.Allocation.IsAvailable)
+        {
+            throw new GorgonException(GorgonResult.CannotRead, Resources.GORGFX_ERR_UPLOAD_NOT_AVAILABLE);
+        }
+
+        ArgumentOutOfRangeException.ThrowIfNegative(offset);
+
+        if (upload.SizeInBytes + offset > buffer.SizeInBytes)
+        {
+            throw new ArgumentException(string.Format(Resources.GORGFX_ERR_BUFFER_OVERRUN, offset, upload.SizeInBytes, buffer.SizeInBytes));
+        }
+
+        Queue.Tracker.TrackResource(upload.Allocation.Heap.D3DResource);
+        Queue.Tracker.TrackResource(buffer);
+
+        SetBarrier(buffer, BarrierSync.Copy, BarrierAccess.CopyDestination, true);
+        D3DGraphicsCommandList.Get()->CopyBufferRegion((PID3D12Resource2)buffer.D3DResource.Get(), buffer.ResourceOffset + (ulong)offset, (PID3D12Resource2)upload.Allocation.Heap.D3DResource.Get(), upload.Allocation.Offset, (ulong)upload.SizeInBytes);
+
+        return this;
+    }
+
+    /// <summary>
     /// Function to set the viewports for rendering.
     /// </summary>
     /// <param name="viewports">The viewports to assign.</param>
@@ -1279,14 +1318,40 @@ public unsafe sealed class GorgonCommandList
     /// </remarks>
     public GorgonCommandList SetViewports(ReadOnlySpan<GorgonViewport> viewports)
     {
+        Array.Clear(_d3dViewports);
         Array.Clear(_viewports);
 
-        for (int i = 0; i < viewports.Length; ++i)
+        for (int i = 0; i < viewports.Length.Min(_viewports.Length); ++i)
         {
-            _viewports[i] = viewports[i].ToD3DViewport();
+            _viewports[i] = viewports[i];
+            _d3dViewports[i] = viewports[i].ToD3DViewport();
         }
 
         _viewportCount = (uint)viewports.Length;
+        _viewportsChanged = true;
+
+        return this;
+    }
+
+    /// <summary>
+    /// Function to set the viewport for rendering.
+    /// </summary>
+    /// <param name="viewport">The viewport to assign.</param>
+    /// <inheritdoc cref="AddPresenter" path="/returns"/>
+    /// <remarks>
+    /// TODO:
+    /// </remarks>
+    public GorgonCommandList SetViewport(GorgonViewport viewport)
+    {
+        if (_viewportCount > 1)
+        {
+            Array.Clear(_d3dViewports);
+            Array.Clear(_viewports);
+        }
+
+        _viewportCount = viewport.IsEmpty ? 0 : 1u;
+        _viewports[0] = viewport;
+        _d3dViewports[0] = viewport.ToD3DViewport();
         _viewportsChanged = true;
 
         return this;
@@ -1302,11 +1367,13 @@ public unsafe sealed class GorgonCommandList
     /// </remarks>
     public GorgonCommandList SetScissorRectangles(ReadOnlySpan<GorgonRectangle> scissors)
     {
+        Array.Clear(_d3dScissors);
         Array.Clear(_scissors);
 
-        for (int i = 0; i < scissors.Length; ++i)
+        for (int i = 0; i < scissors.Length.Min(_scissors.Length); ++i)
         {
-            _scissors[i] = scissors[i].ToWin32Rect();
+            _scissors[i] = scissors[i];
+            _d3dScissors[i] = scissors[i].ToWin32Rect();
         }
 
         _scissorCount = (uint)scissors.Length;
@@ -1316,41 +1383,114 @@ public unsafe sealed class GorgonCommandList
     }
 
     /// <summary>
+    /// Function to set the scissor rectangle for clipping rendering.
+    /// </summary>
+    /// <param name="scissor">The scissor rectangle to assign.</param>
+    /// <inheritdoc cref="AddPresenter" path="/returns"/>
+    /// <remarks>
+    /// TODO:
+    /// </remarks>
+    public GorgonCommandList SetScissorRectangle(GorgonRectangle scissor)
+    {
+        if (_scissorCount > 1)
+        {
+            Array.Clear(_d3dScissors);
+            Array.Clear(_scissors);
+        }
+
+        _scissorCount = scissor.IsEmpty ? 0 : 1u;
+        _scissors[0] = scissor;
+        _d3dScissors[0] = scissor.ToWin32Rect();
+        _scissorsChanged = true;
+
+        return this;
+    }
+
+    /// <summary>
+    /// Function to set a single render target view to use when rendering.
+    /// </summary>
+    /// <param name="renderTarget">The render target to assign.</param>
+    /// <param name="depthStencil">[Optional] The depth/stencil to assign.</param>
+    /// <inheritdoc cref="AddPresenter" path="/returns"/>
+    /// <remarks>
+    /// TODO:
+    /// </remarks>
+    public GorgonCommandList SetRenderTarget(GorgonRenderTargetView? renderTarget, GorgonDepthStencilView? depthStencil = null)
+    {
+        if (_rtvsCount > 1)
+        {
+            Array.Clear(_d3dRtvs);
+            Array.Clear(_renderTargetViews);            
+        }
+
+        _renderTargetViews[0] = renderTarget;
+        _d3dRtvs[0] = renderTarget?.GetCpuHandle() ?? D3D12_CPU_DESCRIPTOR_HANDLE.DEFAULT;        
+        _rtvsCount = renderTarget is null ? 0 : 1u;
+        _rtvsChanged = true;
+
+        DepthStencil = depthStencil;
+        _depthStencilView = depthStencil?.GetCpuHandle() ?? D3D12_CPU_DESCRIPTOR_HANDLE.DEFAULT;
+        _depthStencilChanged = true;
+
+        if (renderTarget is not null)
+        {
+            GorgonSubResourceRange range = new(renderTarget.MipLevel, 1, renderTarget.ArrayIndex, renderTarget.ArrayCount, renderTarget.PlaneIndex, 1);
+            SetBarrier(renderTarget.Texture, BarrierSync.RenderTarget, BarrierAccess.RenderTarget, BarrierLayout.RenderTarget, range);
+        }
+
+        if (depthStencil is not null)
+        {
+            GorgonSubResourceRange range = new(depthStencil.MipLevel, 1, depthStencil.ArrayIndex, depthStencil.ArrayCount, 0, 1);
+            SetBarrier(depthStencil.Texture, BarrierSync.DepthStencil, BarrierAccess.DepthStencilWrite, BarrierLayout.DepthStencilWrite, range);
+        }
+
+        return this;
+    }
+
+    /// <summary>
     /// Function to set the render target views to use when rendering.
     /// </summary>
     /// <param name="renderTargets">The list of render targets to assign.</param>
-    /// <param name="depthStencil">The depth stencil view to assign.</param>
+    /// <param name="depthStencil">[Optional] The depth stencil view to assign.</param>
     /// <inheritdoc cref="AddPresenter" path="/returns"/>
     /// <remarks>
     /// TODO:
     /// </remarks>
     public GorgonCommandList SetRenderTargets(ReadOnlySpan<GorgonRenderTargetView> renderTargets, GorgonDepthStencilView? depthStencil = null)
     {
-        if (renderTargets.Length > _rtvs.Length)
+        if (renderTargets.Length > _d3dRtvs.Length)
         {
             throw new GorgonException(GorgonResult.CannotBind, "TODO: This should be a resource string. But there's way too many rtvs.");
         }
 
-        Array.Clear(_rtvs);
+        Array.Clear(_d3dRtvs);
+        Array.Clear(_renderTargetViews);
         _rtvsCount = 0;
 
-        for (int i = 0; i < renderTargets.Length; ++i)
+        for (int i = 0; i < renderTargets.Length.Min(_renderTargetViews.Length); ++i)
         {
-            GorgonRenderTargetView? view = renderTargets[i];
+            GorgonRenderTargetView? view = _renderTargetViews[i] = renderTargets[i];
             
             if (view is null)
             {
-                _rtvs[i] = D3D12_CPU_DESCRIPTOR_HANDLE.DEFAULT;
+                _d3dRtvs[i] = D3D12_CPU_DESCRIPTOR_HANDLE.DEFAULT;
                 continue;
             }
 
             Queue.Tracker.TrackResource(view.Resource);
-            _rtvs[i] = view.GetCpuHandle();
+            _d3dRtvs[i] = view.GetCpuHandle();
 
             GorgonSubResourceRange range = new(view.MipLevel, 1, view.ArrayIndex, view.ArrayCount, view.PlaneIndex, 1);
             SetBarrier(view.Texture, BarrierSync.RenderTarget, BarrierAccess.RenderTarget, BarrierLayout.RenderTarget, range);
         }
 
+        if (depthStencil is not null)
+        {
+            GorgonSubResourceRange range = new(depthStencil.MipLevel, 1, depthStencil.ArrayIndex, depthStencil.ArrayCount, 0, 1);
+            SetBarrier(depthStencil.Texture, BarrierSync.DepthStencil, BarrierAccess.DepthStencilWrite, BarrierLayout.DepthStencilWrite, range);
+        }
+
+        DepthStencil = depthStencil;
         _depthStencilView = depthStencil?.GetCpuHandle() ?? D3D12_CPU_DESCRIPTOR_HANDLE.DEFAULT;
         _depthStencilChanged = true;
 
@@ -1359,6 +1499,34 @@ public unsafe sealed class GorgonCommandList
 
         return this;
     }
+
+    public void Blit(IGorgonTextureView<GorgonTextureCommon> texture, GorgonRectangleF destination, GorgonRectangleF? textureCoordinates = null, GorgonSampler? sampler = null, GorgonBlendState? blendState = null)
+    {
+        if (_viewportCount == 0)
+        {
+            throw new GorgonException(GorgonResult.CannotExecute, Resources.GORGFX_ERR_NO_VIEWPORTS);
+        }
+
+        if (_rtvsCount == 0)
+        {
+            throw new GorgonException(GorgonResult.CannotExecute, Resources.GORGFX_ERR_NO_RTVS);
+        }
+
+        _blitter ??= new Blitter(this);
+        _blitter.Draw(texture, destination, textureCoordinates ?? new GorgonRectangleF(0, 0, 1, 1), sampler ?? GorgonSampler.Default(Graphics), blendState ?? GorgonBlendState.NoBlending);
+    }
+
+    /// <summary>
+    /// Function to retrieve a block of transient GPU memory for uploading to a buffer.
+    /// </summary>
+    /// <param name="sizeInBytes">The number of bytes to allocate.</param>
+    /// <returns>A new <see cref="GorgonGpuUploadMemory"/> structure.</returns>
+    /// <remarks>
+    /// <para>
+    /// TOOD:
+    /// </para>
+    /// </remarks>
+    public GorgonGpuUploadMemory GetGpuUploadMemory(long sizeInBytes) => new(Graphics, sizeInBytes);
 
     /// <summary>
     /// Finalizer.

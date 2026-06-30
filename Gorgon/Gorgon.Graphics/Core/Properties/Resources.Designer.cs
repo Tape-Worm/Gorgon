@@ -463,6 +463,15 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There was an error setting up the debug information functionality..
+        /// </summary>
+        internal static string GORGFX_ERR_CANNOT_SETUP_DEBUG_INFO {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_CANNOT_SETUP_DEBUG_INFO", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There was an error writing the data to &apos;{0}&apos;..
         /// </summary>
         internal static string GORGFX_ERR_CANNOT_WRITE_DATA {
@@ -571,6 +580,15 @@ namespace Gorgon.Graphics.Core.Properties {
         internal static string GORGFX_ERR_ELEMENT_SIZE_NOT_MULTIPLE_OF {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_ELEMENT_SIZE_NOT_MULTIPLE_OF", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error building the pipeline state object &apos;{0}&apos;..
+        /// </summary>
+        internal static string GORGFX_ERR_ERROR_BUILDING_PSO {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_ERROR_BUILDING_PSO", resourceCulture);
             }
         }
         
@@ -746,11 +764,110 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The adapter &apos;{0}&apos; does not support depth bounds testing..
+        /// </summary>
+        internal static string GORGFX_ERR_NO_DEPTH_BOUNDS_TEST_SUPPORT {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_NO_DEPTH_BOUNDS_TEST_SUPPORT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The adapter &apos;{0}&apos; does not support independent front/back stencil reference value support..
+        /// </summary>
+        internal static string GORGFX_ERR_NO_INDEPENDENT_STENCIL_REF_SUPPORT {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_NO_INDEPENDENT_STENCIL_REF_SUPPORT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The adapter &apos;{0}&apos; does not support narrow quadrilateral line rasterization..
+        /// </summary>
+        internal static string GORGFX_ERR_NO_NARROW_QUAD_SUPPORT {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_NO_NARROW_QUAD_SUPPORT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to At least one render target view must be assigned..
+        /// </summary>
+        internal static string GORGFX_ERR_NO_RTVS {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_NO_RTVS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No suitable video adapter could be found on the system.  Gorgon requires a Direct 3D 12 capable video adapter..
         /// </summary>
         internal static string GORGFX_ERR_NO_SUITABLE_ADAPTER {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_NO_SUITABLE_ADAPTER", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to At least one viewport must be assigned to the command list..
+        /// </summary>
+        internal static string GORGFX_ERR_NO_VIEWPORTS {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_NO_VIEWPORTS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The depth test state is enabled, but the format {0} is not a depth capable format..
+        /// </summary>
+        internal static string GORGFX_ERR_PSO_DEPTH_ENABLED_FORMAT_NO_DEPTH {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_PSO_DEPTH_ENABLED_FORMAT_NO_DEPTH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The depth and/or stencil state is set to Enabled, but the expected format is set to Unknown. This is not valid..
+        /// </summary>
+        internal static string GORGFX_ERR_PSO_DEPTH_UNKNOWN_ENABLED {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_PSO_DEPTH_UNKNOWN_ENABLED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The primitive type {0} is not valid..
+        /// </summary>
+        internal static string GORGFX_ERR_PSO_INVALID_PRIMITIVE_TYPE {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_PSO_INVALID_PRIMITIVE_TYPE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Pipeline State Object cannot be created because it does not have a name..
+        /// </summary>
+        internal static string GORGFX_ERR_PSO_NO_NAME {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_PSO_NO_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Pipeline State Object &apos;{0}&apos; cannot be created because a vertex shader is required..
+        /// </summary>
+        internal static string GORGFX_ERR_PSO_NO_VS {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_PSO_NO_VS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The stencil test state is enabled, but the format {0} is not a stencil capable format..
+        /// </summary>
+        internal static string GORGFX_ERR_PSO_STENCIL_ENABLED_FORMAT_NO_STENCIL {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_PSO_STENCIL_ENABLED_FORMAT_NO_STENCIL", resourceCulture);
             }
         }
         
@@ -1079,6 +1196,24 @@ namespace Gorgon.Graphics.Core.Properties {
         internal static string GORGFX_ERR_TEXTURE_VIEW_STENCIL_FORMAT_INVALID {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_TEXTURE_VIEW_STENCIL_FORMAT_INVALID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The transient memory is no longer valid for use..
+        /// </summary>
+        internal static string GORGFX_ERR_TRANSIENT_MEMORY_NOT_VALID {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_TRANSIENT_MEMORY_NOT_VALID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The upload memory is no longer available for use..
+        /// </summary>
+        internal static string GORGFX_ERR_UPLOAD_NOT_AVAILABLE {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_UPLOAD_NOT_AVAILABLE", resourceCulture);
             }
         }
         
