@@ -352,7 +352,7 @@ public sealed class GorgonFont
     /// <param name="bitmap">Bitmap to copy.</param>
     /// <param name="image">Image to receive the data.</param>
     /// <param name="arrayIndex">The index in the bitmap array to copy from.</param>
-    private unsafe void CopyBitmap(Bitmap bitmap, GorgonImage image, int arrayIndex)
+    private void CopyBitmap(Bitmap bitmap, GorgonImage image, int arrayIndex)
     {
         BitmapData sourcePixels = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
 

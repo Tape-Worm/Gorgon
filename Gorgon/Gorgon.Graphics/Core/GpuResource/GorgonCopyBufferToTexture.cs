@@ -26,6 +26,16 @@ namespace Gorgon.Graphics.Core;
 /// <summary>
 /// Parameters used to copy a buffer into a texture sub resource.
 /// </summary>
+/// <remarks>
+/// <para>
+/// These parameters are used to copy a <see cref="GorgonGpuBufferCommon"/> to a <see cref="GorgonTextureCommon"/> sub resource via the <see cref="GorgonResourceCopier"/> or <see cref="GorgonCommandList"/>.
+/// </para>
+/// </remarks>
+/// <seealso cref="IGorgonCopyMethodsFluent{T}.CopyBufferToTexture(GorgonGpuBuffer, GorgonTexture, GorgonCopyBufferToTexture)"/>
+/// <seealso cref="IGorgonCopyMethodsFluent{T}.CopyBufferToVirtual(GorgonGpuBuffer, GorgonVirtualTexture, GorgonVirtualTextureHandle, long)"/>
+/// <seealso cref="GorgonTexture"/>
+/// <seealso cref="GorgonVirtualTexture"/>
+/// <seealso cref="GorgonGpuBuffer"/>
 public readonly ref struct GorgonCopyBufferToTexture
 {
     /// <summary>
@@ -41,7 +51,9 @@ public readonly ref struct GorgonCopyBufferToTexture
     /// Property to return the destination array index.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// If the destination texture has a texture type of <see cref="TextureType.Texture3D"/>, then this value is ignored.
+    /// </para>
     /// </remarks>
     public readonly short DestinationArrayIndex
     {
@@ -69,7 +81,7 @@ public readonly ref struct GorgonCopyBufferToTexture
     } = 0;
 
     /// <summary>
-    /// Function to increment/decrement the offset within the the source buffer.
+    /// Function to increment/decrement the offset within the source buffer.
     /// </summary>
     /// <param name="offsetBytes">The number of bytes to offset within the source buffer.</param>
     /// <returns>A new <see cref="GorgonCopyBufferToTexture"/> with the updated offset.</returns>

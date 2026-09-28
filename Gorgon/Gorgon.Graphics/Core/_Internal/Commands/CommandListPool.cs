@@ -52,7 +52,7 @@ internal unsafe sealed class CommandListPool(CommandQueue queue)
         {
             using (_lock.EnterScope())
             {
-                foreach (IDisposable list in _free.Concat(_active))
+                foreach (GorgonCommandList list in _free.Concat(_active))
                 {
                     list.Dispose();
                 }
@@ -138,7 +138,7 @@ internal unsafe sealed class CommandListPool(CommandQueue queue)
             }
 
             int index = 0;
-            foreach (IDisposable list in _free)
+            foreach (GorgonCommandList list in _free)
             {
                 _graphics.Log.Print($"Destroying D3D 12 command list {_queue.Type} #{index++}...", LoggingLevel.Verbose);
                 list.Dispose();

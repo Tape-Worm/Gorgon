@@ -42,7 +42,7 @@ public static class GorgonNativeBufferCollectionBuilder
     /// <typeparam name="T">The type of data in the buffer.</typeparam>
     /// <param name="items">The items to copy into the buffer.</param>
     /// <returns>A <see cref="GorgonNativeBuffer{T}"/> populated with the data in the items list.</returns>
-    public unsafe static GorgonNativeBuffer<T> Create<T>(ReadOnlySpan<T> items)
+    public static GorgonNativeBuffer<T> Create<T>(ReadOnlySpan<T> items)
         where T : unmanaged
     {
         if (items.IsEmpty)

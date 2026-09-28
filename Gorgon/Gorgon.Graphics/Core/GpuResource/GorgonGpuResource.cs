@@ -43,15 +43,15 @@ public enum GraphicsResourceType
     /// </summary>
     Buffer = D3D12_RESOURCE_DIMENSION.D3D12_RESOURCE_DIMENSION_BUFFER,
     /// <summary>
-    /// The data is 1 dimensional texture data.
+    /// The data is 1-dimensional texture data.
     /// </summary>
     Texture1D = D3D12_RESOURCE_DIMENSION.D3D12_RESOURCE_DIMENSION_TEXTURE1D,
     /// <summary>
-    /// The data is 2 dimensional texture data.
+    /// The data is 2-dimensional texture data.
     /// </summary>
     Texture2D = D3D12_RESOURCE_DIMENSION.D3D12_RESOURCE_DIMENSION_TEXTURE2D,
     /// <summary>
-    /// The data is 3 dimensional texture data.
+    /// The data is 3-dimensional texture data.
     /// </summary>
     Texture3D = D3D12_RESOURCE_DIMENSION.D3D12_RESOURCE_DIMENSION_TEXTURE3D
 }
@@ -107,9 +107,7 @@ public abstract unsafe class GorgonGpuResource
     : IGorgonNamedObject, IDisposable
 {
     private ComPtr<ID3D12Resource2> _d3dResource;
-
     private static ulong _resHandleAccumulator = 0;
-
     private GpuResourceInfo _info;
     private readonly ulong _resHandle;
     private int _disposed;

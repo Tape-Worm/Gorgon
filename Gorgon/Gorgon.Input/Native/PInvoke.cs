@@ -69,7 +69,7 @@ internal static partial class PInvoke
     /// <param name="states">The current state of the keyboard.</param>
     /// <param name="buffer">The buffer that will receive the unicode character.</param>
     /// <returns>The character as a string, or an empty string if no character is applicable.</returns>
-    public unsafe static string ToUnicodeChar(VirtualKeys key, ReadOnlySpan<byte> states, Span<char> buffer)
+    public static string ToUnicodeChar(VirtualKeys key, ReadOnlySpan<byte> states, Span<char> buffer)
     {
         int result = ToUnicode((uint)key, 0, states, buffer, 0);
 

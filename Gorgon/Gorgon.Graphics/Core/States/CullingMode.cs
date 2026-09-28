@@ -28,7 +28,7 @@ using TerraFX.Interop.DirectX;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Defines how a triangle primitive should be culled when rendering
+/// Defines how a triangle primitive should be culled when rendering.
 /// </summary>
 public enum CullingMode
 {

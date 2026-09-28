@@ -94,19 +94,19 @@ public enum Blend
     InverseDestinationColor = D3D12_BLEND.D3D12_BLEND_INV_DEST_COLOR,
     /// <summary>
     /// <para>
-    /// The blend factor is (f, f, f, 1); where f = min(Aₛ, 1- A). The pre-blend operation clamps the data to 1 or less.
+    /// The blend factor is (f, f, f, 1); where f = min(Aₛ, 1 - A). The pre-blend operation clamps the data to 1 or less.
     /// </para>
     /// </summary>
     SourceAlphaSaturate = D3D12_BLEND.D3D12_BLEND_SRC_ALPHA_SAT,
     /// <summary>
     /// <para>
-    /// The blend factor is set on the pipeline state. No pre-blend operation.
+    /// The blend factor is set with the <see cref="GorgonDrawCallCommon.BlendFactor"/> property. No pre-blend operation.
     /// </para>
     /// </summary>
     BlendFactor = D3D12_BLEND.D3D12_BLEND_BLEND_FACTOR,
     /// <summary>
     /// <para>
-    /// The blend factor is set on the pipeline state. The pre-blend operation inverts the blend factor, generating 1 - blend_factor.
+    /// The blend factor is set with the <see cref="GorgonDrawCallCommon.BlendFactor"/> property. The pre-blend operation inverts the blend factor, generating 1 - blend_factor.
     /// </para>
     /// </summary>
     InverseBlendFactor = D3D12_BLEND.D3D12_BLEND_INV_BLEND_FACTOR,
@@ -136,7 +136,7 @@ public enum Blend
     InverseSecondarySourceAlpha = D3D12_BLEND.D3D12_BLEND_INV_SRC1_ALPHA,
     /// <summary>
     /// <para>
-    /// The blend factor is (A, A, A, A), which is set with the <see cref="GorgonDrawCall.BlendFactor"/> property.
+    /// The blend factor is (A, A, A, A), which is set with the <see cref="GorgonDrawCallCommon.BlendFactor"/> property.
     /// </para>
     /// <para>
     /// This blending type will only work if the video adapter has its <see cref="GorgonVideoAdapterInfo.SupportsAlphaBlendFactor"/> value set to <b>true</b>.
@@ -145,7 +145,7 @@ public enum Blend
     AlphaFactor = D3D12_BLEND.D3D12_BLEND_ALPHA_FACTOR,
     /// <summary>
     /// <para>
-    /// The blend factor is (1 – A, 1 – A, 1 – A, 1 – A), which is set with the <see cref="GorgonDrawCall.BlendFactor"/> property.
+    /// The blend factor is (1 – A, 1 – A, 1 – A, 1 – A), which is set with the <see cref="GorgonDrawCallCommon.BlendFactor"/> property.
     /// </para>
     /// <para>
     /// This blending type will only work if the video adapter has its <see cref="GorgonVideoAdapterInfo.SupportsAlphaBlendFactor"/> value set to <b>true</b>.

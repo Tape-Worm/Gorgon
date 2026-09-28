@@ -42,14 +42,14 @@ public record class GorgonIndexBufferInfo(long SizeInBytes, bool Use32BitIndices
     public static readonly GorgonIndexBufferInfo Empty = new(0, false);
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonGpuBufferInfo"/> class.
+    /// Initializes a new instance of the <see cref="GorgonIndexBufferInfo"/> class.
     /// </summary>
     /// <param name="info">The buffer creation information to copy.</param>
     public GorgonIndexBufferInfo(GorgonIndexBufferInfo info)
         : base(info) => Use32BitIndices = info.Use32BitIndices;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="IGorgonGpuBufferInfo"/> class.
+    /// Initializes a new instance of the <see cref="GorgonIndexBufferInfo"/> class.
     /// </summary>
     /// <param name="info">The buffer creation information to copy.</param>
     public GorgonIndexBufferInfo(IGorgonIndexBufferInfo info)

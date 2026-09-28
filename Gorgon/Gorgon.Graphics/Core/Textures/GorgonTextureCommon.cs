@@ -161,7 +161,7 @@ public unsafe abstract class GorgonTextureCommon
     public int Width => _info.Width;
 
     /// <summary>
-    /// Property to return the list of formats that can be casted to in a <see cref="IGorgonTextureView{GorgonTexture}"/>.
+    /// Property to return the list of formats that can be cast to in a <see cref="IGorgonTextureView{GorgonTexture}"/>.
     /// </summary>
     public IReadOnlyList<BufferFormat> CompatibleFormats
     {
@@ -178,7 +178,7 @@ public unsafe abstract class GorgonTextureCommon
     }
 
     /// <summary>
-    /// Property to return the information about the buffer <see cref="Format"/>.
+    /// Property to return the information about the texture <see cref="Format"/>.
     /// </summary>
     public GorgonFormatInfo FormatInfo
     {
@@ -202,7 +202,9 @@ public unsafe abstract class GorgonTextureCommon
     /// Property to return information about each sub resource in the texture.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// The first sub resource will always have the same information as the texture.
+    /// </para>
     /// </remarks>
     public GorgonSubResourceInfoList SubResources
     {
@@ -215,17 +217,50 @@ public unsafe abstract class GorgonTextureCommon
     /// </summary>
     /// <param name="info">The texture creation information to validate.</param>
     /// <returns>The updated creation information if default values need changing, otherwise the <paramref name="info"/> parameter.</returns>
-    /// <exception cref="GorgonException"><para>Thrown when the <paramref name="info"/> <see cref="GorgonTextureInfo.MipCount"/> is less than 1, or greater than the number of supported mip levels for the texture.</para>
-    /// <para>Thrown if the texture type is <see cref="TextureType.Texture3D"/> and the <paramref name="info"/> <see cref="GorgonTextureInfo.Width"/> is less than 1, or greater than <see cref="Max3DTextureWidth"/>, or <see cref="GorgonTextureInfo.Height"/> is less than 1, or greater than <see cref="Max3DTextureHeight"/>, or the <see cref="GorgonTextureInfo.Depth"/> is less than 1, or greater than <see cref="Max3DTextureDepth"/>, or the <see cref="GorgonTextureInfo.Format"/> doesn't support 3D textures, or the <see cref="GorgonTextureInfo.IsCube"/> is set to <b>true</b>.</para>
-    /// <para>Thrown if the texture type is <see cref="TextureType.Texture2D"/> and the <paramref name="info"/> <see cref="GorgonTextureInfo.Width"/> is less than 1, or greater than <see cref="Max2DTextureWidth"/>, or <see cref="GorgonTextureInfo.Height"/> is less than 1, or greater than <see cref="Max2DTextureHeight"/>, or the <see cref="GorgonTextureInfo.ArrayCount"/> is less than 1, or greater than <see cref="Max2DArraySize"/>, or the <see cref="GorgonTextureInfo.Format"/> doesn't support 2D textures, or the <see cref="GorgonTextureInfo.IsCube"/> is set to <b>true</b> and the <see cref="GorgonTextureInfo.ArrayCount"/> is not a multiple of 6.</para>
-    /// <para>Thrown if the texture type is <see cref="TextureType.Texture1D"/> and the <paramref name="info"/> <see cref="GorgonTextureInfo.Width"/> is less than 1, or greater than <see cref="Max1DTextureWidth"/> or the <see cref="GorgonTextureInfo.ArrayCount"/> is less than 1, or greater than <see cref="Max1DArraySize"/>, or the <see cref="GorgonTextureInfo.Format"/> doesn't support 1D textures, or the <see cref="GorgonTextureInfo.IsCube"/> is set to <b>true</b>.</para>
-    /// <para>Thrown if the texture is a depth/stencil and the <paramref name="info"/> <see cref="GorgonTextureInfo.Format"/> does not support depth/stencil, or <see cref="GorgonTextureInfo.HasReadWriteAccess"/> is set to <b>true</b>, 
-    /// or the <paramref name="info"/> <see cref="GorgonTextureInfo.Type"/> is not set to <see cref="TextureType.Texture2D"/>.</para>
-    /// <para>Thrown if the texture is a render target and the <paramref name="info"/> <see cref="GorgonTextureInfo.Format"/> does not support render targets or MSAA render targets.</para>
-    /// <para>Thrown if the texture is an read/write resource and the <paramref name="info"/> <see cref="GorgonTextureInfo.MultisampleInfo"/> is not set to <see cref="GorgonMultisampleInfo.NoMultisampling"/>.</para>
-    /// <para>Thrown if the texture has a mip count greater than 1 and the <paramref name="info"/> <see cref="GorgonTextureInfo.MultisampleInfo"/> is not set to <see cref="GorgonMultisampleInfo.NoMultisampling"/>, or the <see cref="GorgonTextureInfo.Format"/> does not support mip maps.</para>
-    /// <para>Thrown if the texture is a cube map and the <paramref name="info"/> <see cref="GorgonTextureInfo.Format"/> does not support cube maps.</para>
-    /// <para>Thrown if the texture uses a compressed format, and does not have dimensions that are a multiple of 4.</para>
+    /// <exception cref="GorgonException"><para type="mip">
+    /// Thrown if the <paramref name="info"/> <see cref="GorgonTextureInfo.MipCount"/> is less than 1, or greater than the number of supported mip levels for the texture.
+    /// </para>
+    /// <para type="type">
+    /// Thrown if the <paramref name="info"/> <see cref="GorgonTextureInfo.Type"/> is <see cref="TextureType.Unknown"/>.
+    /// </para>
+    /// <para type="3d">
+    /// Thrown if the texture type is <see cref="TextureType.Texture3D"/> and the <paramref name="info"/> <see cref="GorgonTextureInfo.Width"/> is less than 1, or greater than
+    /// <see cref="Max3DTextureWidth"/>, or <see cref="GorgonTextureInfo.Height"/> is less than 1, or greater than <see cref="Max3DTextureHeight"/>, or the <see cref="GorgonTextureInfo.Depth"/> is less
+    /// than 1, or greater than <see cref="Max3DTextureDepth"/>, or the <see cref="GorgonTextureInfo.Format"/> doesn't support 3D textures, or the <see cref="GorgonTextureInfo.IsCube"/> is set to
+    /// <b>true</b>.
+    /// </para>
+    /// <para type="2d">
+    /// Thrown if the texture type is <see cref="TextureType.Texture2D"/> and the <paramref name="info"/> <see cref="GorgonTextureInfo.Width"/> is less than 1, or greater than
+    /// <see cref="Max2DTextureWidth"/>, or <see cref="GorgonTextureInfo.Height"/> is less than 1, or greater than <see cref="Max2DTextureHeight"/>, or the <see cref="GorgonTextureInfo.ArrayCount"/> is
+    /// less than 1, or greater than <see cref="Max2DArraySize"/>, or the <see cref="GorgonTextureInfo.Format"/> doesn't support 2D textures, or the <see cref="GorgonTextureInfo.IsCube"/> is set to
+    /// <b>true</b> and the <see cref="GorgonTextureInfo.ArrayCount"/> is not a multiple of 6.
+    /// </para>
+    /// <para type="1d">
+    /// Thrown if the texture type is <see cref="TextureType.Texture1D"/> and the <paramref name="info"/> <see cref="GorgonTextureInfo.Width"/> is less than 1, or greater than
+    /// <see cref="Max1DTextureWidth"/>, or the <see cref="GorgonTextureInfo.ArrayCount"/> is less than 1, or greater than <see cref="Max1DArraySize"/>, or the <see cref="GorgonTextureInfo.Format"/>
+    /// doesn't support 1D textures or is a compressed format, or the <see cref="GorgonTextureInfo.IsCube"/> is set to <b>true</b>.
+    /// </para>
+    /// <para type="depth">
+    /// Thrown if the texture is a depth/stencil and the <paramref name="info"/> <see cref="GorgonTextureInfo.Format"/> does not support depth/stencil, or
+    /// <see cref="GorgonTextureInfo.IsRenderTarget"/> or <see cref="GorgonTextureInfo.HasReadWriteAccess"/> is set to <b>true</b>, or the <paramref name="info"/> <see cref="GorgonTextureInfo.Type"/> is
+    /// not set to <see cref="TextureType.Texture2D"/>.
+    /// </para>
+    /// <para type="rt">
+    /// Thrown if the texture is a render target and the <paramref name="info"/> <see cref="GorgonTextureInfo.Format"/> does not support render targets or MSAA render targets.
+    /// </para>
+    /// <para type="rw">
+    /// Thrown if the texture is a read/write resource and the <paramref name="info"/> <see cref="GorgonTextureInfo.MultisampleInfo"/> is not set to <see cref="GorgonMultisampleInfo.NoMultisampling"/>.
+    /// </para>
+    /// <para type="msaa">
+    /// Thrown if the texture has a mip count greater than 1 and the <paramref name="info"/> <see cref="GorgonTextureInfo.MultisampleInfo"/> is not set to
+    /// <see cref="GorgonMultisampleInfo.NoMultisampling"/>, or the <see cref="GorgonTextureInfo.Format"/> does not support mip maps.
+    /// </para>
+    /// <para type="cube">
+    /// Thrown if the texture is a cube map and the <paramref name="info"/> <see cref="GorgonTextureInfo.Format"/> does not support cube maps.
+    /// </para>
+    /// <para type="compressed">
+    /// Thrown if the texture uses a compressed format, and does not have dimensions that are a multiple of 4.
+    /// </para>
     /// </exception>
     private protected virtual GorgonTextureInfo ValidateInfo(GorgonTextureInfo info)
     {
@@ -249,12 +284,19 @@ public unsafe abstract class GorgonTextureCommon
                 throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_DEPTH_STENCIL_MUST_BE_2D);
             }
 
-            if (info.Format is not BufferFormat.D16_UNorm and not BufferFormat.D24_UNorm_S8_UInt
-                            and not BufferFormat.D32_Float and not BufferFormat.D32_Float_S8X24_UInt
-                            and not BufferFormat.R16_Typeless and not BufferFormat.R32_Typeless
-                            and not BufferFormat.R24G8_Typeless and not BufferFormat.R32G8X24_Typeless)
+            if (FormatInfo.IsTypeless)
             {
-                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_INVALID_DEPTH_STENCIL_FORMAT, info.Format));
+                if (info.Format is not BufferFormat.R16_Typeless and not BufferFormat.R32_Typeless and not BufferFormat.R24G8_Typeless and not BufferFormat.R32G8X24_Typeless)
+                {
+                    throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_INVALID_DEPTH_STENCIL_FORMAT, info.Format));
+                }
+            }
+            else
+            {
+                if (!Graphics.FormatSupport[info.Format].IsDepthStencilFormat)
+                {
+                    throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_INVALID_DEPTH_STENCIL_FORMAT, info.Format));
+                }
             }
         }
 
@@ -299,7 +341,7 @@ public unsafe abstract class GorgonTextureCommon
                 if ((FormatInfo.IsCompressed)
                     && (((info.Width % 4) != 0) || ((info.Height % 4) != 0)))
                 {
-                    throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_TEXTURE_COMPRESSED_NOT_MULTIPLE_OF_FOUR, Name, Format, Width, Height));
+                    throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_TEXTURE_COMPRESSED_NOT_MULTIPLE_OF_FOUR, Name, info.Format, info.Width, info.Height));
                 }
 
                 if ((info.ArrayCount != 1) || (isMultisampled))
@@ -350,7 +392,7 @@ public unsafe abstract class GorgonTextureCommon
                 if ((FormatInfo.IsCompressed)
                     && (((info.Width % 4) != 0) || ((info.Height % 4) != 0)))
                 {
-                    throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_TEXTURE_COMPRESSED_NOT_MULTIPLE_OF_FOUR, Name, Format, Width, Height));
+                    throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_TEXTURE_COMPRESSED_NOT_MULTIPLE_OF_FOUR, Name, info.Format, info.Width, info.Height));
                 }
 
                 if (info.Depth != 1)
@@ -457,11 +499,6 @@ public unsafe abstract class GorgonTextureCommon
             throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_CUBE_TEXTURE_FORMAT_INVALID, result.Format));
         }
 
-        if ((result.IsDepthStencil) && (!Graphics.FormatSupport[result.Format].IsDepthStencilFormat))
-        {
-            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_INVALID_DEPTH_STENCIL_FORMAT, result.Format));
-        }
-
         return result;
     }
 
@@ -528,7 +565,6 @@ public unsafe abstract class GorgonTextureCommon
     /// Function to populate the sub resource information for the texture.
     /// </summary>
     /// <param name="desc">The resource description.</param>
-    /// <returns>The list of sub resources for the texture.</returns>
     [MemberNotNull(nameof(SubResources))]
     protected void PopulateSubResourceInfo(ref readonly D3D12_RESOURCE_DESC1 desc)
     {
@@ -609,7 +645,7 @@ public unsafe abstract class GorgonTextureCommon
     /// <param name="mipCount">[Optional] The number of mip levels to view.</param>
     /// <param name="arrayIndex">[Optional] The first array index in the view.</param>
     /// <param name="arrayCount">[Optional] The number of array indices in the view.</param>
-    /// <param name="resourceMinLodClamp">[Optional] The minimum mip level that you can access.</param>
+    /// <param name="resourceMinLodClamp">[Optional] The minimum LOD clamp that can be accessed by the view.</param>
     /// <param name="planeIndex">[Optional] The index of the format plane to use.</param>
     /// <param name="owned"><b>true</b> if the texture is owned by the view, or <b>false</b> if not.</param>
     /// <returns>The <see cref="IGorgonTextureView{GorgonTexture}"/> for the texture.</returns>
@@ -620,7 +656,7 @@ public unsafe abstract class GorgonTextureCommon
     /// allows for accessing the entire texture.
     /// </para>
     /// <para type="param_constraints">
-    /// All parameters that access a portion of the physical texture, are clamped against the texture's minimum and maximum values for mip levels, array indices, and format plane count. 
+    /// All parameters that access a portion of the physical texture are clamped against the texture's minimum and maximum values for mip levels, array indices, and format plane count. 
     /// </para>
     /// <para>
     /// If the <paramref name="arrayCount"/>, or <paramref name="mipCount"/> are less than 1, then this will ensure the view uses the remainder (starting from <paramref name="mipLevel"/> or 
@@ -628,16 +664,12 @@ public unsafe abstract class GorgonTextureCommon
     /// </para>
     /// <para type="format_casting">
     /// The <paramref name="format"/> can be any format that the texture's <see cref="Format"/> can cast to. To determine which formats the texture 
-    /// <see cref="Format"/> can be casted into, check the <see cref="CompatibleFormats"/> list. Even if this list is empty, as long as the texture and view format 
-    /// belong to the same <see cref="GorgonFormatInfo.Group"/> the format can be casted. To check whether the formats belong to the same group, use the <see cref="GorgonFormatInfo.Group"/> property on the 
+    /// <see cref="Format"/> can be cast to, check the <see cref="CompatibleFormats"/> list. Even if this list is empty, as long as the texture and view format
+    /// belong to the same <see cref="GorgonFormatInfo.Group"/> the format can be cast. To check whether the formats belong to the same group, use the <see cref="GorgonFormatInfo.Group"/> property on the 
     /// <see cref="GorgonFormatInfo"/> object. The <see cref="GorgonTexture"/> object already has information about its format via the <see cref="FormatInfo"/> property.
     /// </para>
-    /// <para>
     /// <h3>Special Considerations</h3>
-    /// </para>
-    /// <para>
     /// <h3><see cref="IsDepthStencil">Depth/Stencil</see></h3>
-    /// </para>
     /// <para>
     /// A <see cref="IGorgonTextureView{GorgonTexture}"/> cannot be created for a texture that has a depth/stencil format of:
     /// <list type="bullet">
@@ -707,14 +739,11 @@ public unsafe abstract class GorgonTextureCommon
     /// </list>
     /// If any of these requirements are not met, then an exception will be thrown.
     /// </para>
-    /// <para>
     /// <h3>Planar Formats</h3>
-    /// </para>
     /// <para>
-    /// The <paramref name="format"/> must not be a planar format, if it is, then an exception will be thrown. If the texture <see cref="Format"/> is planar, then no validation is 
-    /// performed by Gorgon. However, the underlying Direct3D 12 runtime will show an error if a constraint is violated. Applications can receive debug information from the underlying runtime by creating the 
-    /// <see cref="GorgonGraphicsFactory"/> with debugging flags pass to the constructor, and calling the <see cref="GorgonGraphics.RegisterDebugInformationCallback(GorgonDebugInformationCallback)"/> 
-    /// method to receive the debug messages.
+    /// The <paramref name="format"/> must not be a planar format. If it is, then an exception will be thrown. If the texture <see cref="Format"/> is planar, then no validation is performed by Gorgon.
+    /// However, any constraint violations will be reported in the debug output. Applications can receive debug information by creating the <see cref="GorgonGraphicsFactory"/> with debugging flags passed
+    /// to the constructor, and calling the <see cref="GorgonGraphics.RegisterDebugInformationCallback(GorgonDebugInformationCallback)"/> method to receive the debug messages.
     /// </para>
     /// </remarks>
     /// <seealso cref="IGorgonTextureView{GorgonTexture}"/>
@@ -794,8 +823,8 @@ public unsafe abstract class GorgonTextureCommon
     /// </para>
     /// <inheritdoc cref="GetTextureView(BufferFormat, short, short, short, short, float, byte, bool)" path="/remarks/para[@type='param_constraints']"/>
     /// <para>
-    /// If the <see cref="Type"/> is <see cref="TextureType.Texture3D"/>, then <paramref name="arrayIndexOrDepthSlice"/> and <paramref name="arrayCountOrDepthCount"/> will indicate the depth slice; otherwise 
-    /// it will indicate the array indices.
+    /// If the <see cref="Type"/> is <see cref="TextureType.Texture3D"/>, then <paramref name="arrayIndexOrDepthSlice"/> and <paramref name="arrayCountOrDepthCount"/> will indicate the depth slices; otherwise
+    /// they will indicate the array indices.
     /// </para>
     /// <para>
     /// If the <paramref name="arrayCountOrDepthCount"/> is less than 1, then this will ensure the view uses the remainder (starting from <paramref name="arrayIndexOrDepthSlice"/>) of the texture for the 
@@ -870,16 +899,18 @@ public unsafe abstract class GorgonTextureCommon
         => GetRenderTargetView(format, mipLevel, arrayIndexOrDepthSlice, arrayCountOrDepthCount, planeIndex, false);
 
     /// <summary>
-    /// Function to return the width of the texture, in pixels, at the specified mip level
+    /// Function to return the width of the texture, in pixels, at the specified mip level.
     /// </summary>
     /// <param name="mipLevel">The mip level to evaluate.</param>
+    /// <returns>The width of the texture at the mip level.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int GetMipWidth(short mipLevel) => Width >> mipLevel.Min((short)(MipCount - 1)).Max(0);
 
     /// <summary>
-    /// Function to return the height of the texture, in pixels, at the specified mip level
+    /// Function to return the height of the texture, in pixels, at the specified mip level.
     /// </summary>
     /// <param name="mipLevel">The mip level to evaluate.</param>
+    /// <returns>The height of the texture at the mip level.</returns>
     /// <remarks>
     /// <para>
     /// This only applies to textures with a <see cref="Type"/> of <see cref="TextureType.Texture2D"/> and <see cref="TextureType.Texture3D"/>, otherwise the method will return 1.
@@ -892,6 +923,7 @@ public unsafe abstract class GorgonTextureCommon
     /// Function to return the depth of the texture, in depth slices, at the specified mip level.
     /// </summary>
     /// <param name="mipLevel">The mip level to evaluate.</param>
+    /// <returns>The depth of the texture at the mip level.</returns>
     /// <remarks>
     /// <para>
     /// This only applies to textures with a <see cref="Type"/> of <see cref="TextureType.Texture3D"/>, otherwise the method will return 1.
@@ -903,7 +935,7 @@ public unsafe abstract class GorgonTextureCommon
     /// <summary>
     /// Function to convert a single horizontal pixel value to a texel coordinate.
     /// </summary>
-    /// <param name="x">The horizontal pixel coordinate to covnert.</param>
+    /// <param name="x">The horizontal pixel coordinate to convert.</param>
     /// <param name="mipLevel">[Optional] The mip level for the texture.</param>
     /// <returns>The horizontal texel coordinate.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -912,7 +944,7 @@ public unsafe abstract class GorgonTextureCommon
     /// <summary>
     /// Function to convert a 2D pixel coordinate value to a 2D texel coordinate.
     /// </summary>
-    /// <param name="point">The pixel coordinate to covnert.</param>
+    /// <param name="point">The pixel coordinate to convert.</param>
     /// <param name="mipLevel">[Optional] The mip level for the texture.</param>
     /// <returns>The texel coordinate.</returns>
     /// <remarks>
@@ -926,7 +958,7 @@ public unsafe abstract class GorgonTextureCommon
     /// <summary>
     /// Function to convert a 3D pixel coordinate value to a 3D texel coordinate.
     /// </summary>
-    /// <param name="point">The pixel coordinate to covnert.</param>
+    /// <param name="point">The pixel coordinate to convert.</param>
     /// <param name="mipLevel">[Optional] The mip level for the texture.</param>
     /// <returns>The texel coordinate.</returns>
     /// <remarks>
@@ -943,16 +975,16 @@ public unsafe abstract class GorgonTextureCommon
     /// <summary>
     /// Function to convert a single horizontal texel value to a pixel coordinate.
     /// </summary>
-    /// <param name="tx">The horizontal texel coordinate to covnert.</param>
+    /// <param name="tx">The horizontal texel coordinate to convert.</param>
     /// <param name="mipLevel">[Optional] The mip level for the texture.</param>
     /// <returns>The horizontal pixel coordinate.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public float ToPixel(int tx, short mipLevel = 0) => tx * (float)GetMipWidth(mipLevel);
+    public float ToPixel(float tx, short mipLevel = 0) => tx * (float)GetMipWidth(mipLevel);
 
     /// <summary>
     /// Function to convert a 2D texel coordinate value to a 2D pixel coordinate.
     /// </summary>
-    /// <param name="texel">The texel coordinate to covnert.</param>
+    /// <param name="texel">The texel coordinate to convert.</param>
     /// <param name="mipLevel">[Optional] The mip level for the texture.</param>
     /// <returns>The pixel coordinate.</returns>
     /// <remarks>
@@ -967,7 +999,7 @@ public unsafe abstract class GorgonTextureCommon
     /// <summary>
     /// Function to convert a 3D texel coordinate value to a 3D pixel coordinate.
     /// </summary>
-    /// <param name="point">The texel coordinate to covnert.</param>
+    /// <param name="point">The texel coordinate to convert.</param>
     /// <param name="mipLevel">[Optional] The mip level for the texture.</param>
     /// <returns>The pixel coordinate.</returns>
     /// <remarks>
@@ -984,7 +1016,7 @@ public unsafe abstract class GorgonTextureCommon
     /// <summary>
     /// Function to convert 2D rectangle pixel coordinates into 2D rectangle texel coordinates.
     /// </summary>
-    /// <param name="rect">The pixel coorindates.</param>
+    /// <param name="rect">The pixel coordinates.</param>
     /// <param name="mipLevel">[Optional] The mip level for the texture.</param>
     /// <returns>The converted texel coordinates.</returns>
     /// <remarks>
@@ -1004,7 +1036,7 @@ public unsafe abstract class GorgonTextureCommon
     /// <summary>
     /// Function to convert 2D rectangle texel coordinates into 2D rectangle pixel coordinates.
     /// </summary>
-    /// <param name="texels">The texel coorindates.</param>
+    /// <param name="texels">The texel coordinates.</param>
     /// <param name="mipLevel">[Optional] The mip level for the texture.</param>
     /// <returns>The converted pixel coordinates.</returns>
     /// <remarks>
@@ -1024,16 +1056,16 @@ public unsafe abstract class GorgonTextureCommon
     /// <summary>
     /// Function to convert 3D box pixel coordinates into 3D box texel coordinates.
     /// </summary>
-    /// <param name="box">The pixel coorindates.</param>
+    /// <param name="box">The pixel coordinates.</param>
     /// <param name="mipLevel">[Optional] The mip level for the texture.</param>
     /// <returns>The converted texel coordinates.</returns>
     /// <remarks>
     /// <para>
-    /// For <see cref="TextureType.Texture1D"/> resources, this method will return a <see cref="GorgonBox.Y"/> and <see cref="GorgonBox.Z"/> value of 0, and a <see cref="GorgonBox.Height"/> and a 
-    /// <see cref="GorgonBox.Depth"/> value of 1.0f.
+    /// For <see cref="TextureType.Texture1D"/> resources, this method will return a <see cref="GorgonBoxF.Y"/> and <see cref="GorgonBoxF.Z"/> value of 0, and a <see cref="GorgonBoxF.Height"/> and a
+    /// <see cref="GorgonBoxF.Depth"/> value of 1.0f.
     /// </para>
     /// <para>
-    /// For <see cref="TextureType.Texture2D"/> resources, this method will return a <see cref="GorgonBox.Z"/> value of 0, and a <see cref="GorgonBox.Depth"/> value of 1.0f.
+    /// For <see cref="TextureType.Texture2D"/> resources, this method will return a <see cref="GorgonBoxF.Z"/> value of 0, and a <see cref="GorgonBoxF.Depth"/> value of 1.0f.
     /// </para>
     /// </remarks>
     /// <seealso cref="GorgonBoxF"/>
@@ -1047,17 +1079,16 @@ public unsafe abstract class GorgonTextureCommon
     /// <summary>
     /// Function to convert 3D box pixel coordinates into 3D box texel coordinates.
     /// </summary>
-    /// <param name="box">The pixel coorindates.</param>
-    /// <param name="texels">The texel coordinates.</param>
+    /// <param name="box">The pixel coordinates.</param>
+    /// <param name="texels">The converted texel coordinates.</param>
     /// <param name="mipLevel">[Optional] The mip level for the texture.</param>
-    /// <returns>The converted texel coordinates.</returns>
     /// <remarks>
     /// <para>
-    /// For <see cref="TextureType.Texture1D"/> resources, this method will return a <see cref="GorgonBox.Y"/> and <see cref="GorgonBox.Z"/> value of 0, and a <see cref="GorgonBox.Height"/> and a 
-    /// <see cref="GorgonBox.Depth"/> value of 1.0f.
+    /// For <see cref="TextureType.Texture1D"/> resources, this method will return a <see cref="GorgonBoxF.Y"/> and <see cref="GorgonBoxF.Z"/> value of 0, and a <see cref="GorgonBoxF.Height"/> and a
+    /// <see cref="GorgonBoxF.Depth"/> value of 1.0f.
     /// </para>
     /// <para>
-    /// For <see cref="TextureType.Texture2D"/> resources, this method will return a <see cref="GorgonBox.Z"/> value of 0, and a <see cref="GorgonBox.Depth"/> value of 1.0f.
+    /// For <see cref="TextureType.Texture2D"/> resources, this method will return a <see cref="GorgonBoxF.Z"/> value of 0, and a <see cref="GorgonBoxF.Depth"/> value of 1.0f.
     /// </para>
     /// </remarks>
     /// <seealso cref="GorgonBoxF"/>
@@ -1077,9 +1108,9 @@ public unsafe abstract class GorgonTextureCommon
     }
 
     /// <summary>
-    /// Function to convert 3D Box texel coordinates into 3D Box pixel coordinates.
+    /// Function to convert 3D box texel coordinates into 3D box pixel coordinates.
     /// </summary>
-    /// <param name="texels">The texel coorindates.</param>
+    /// <param name="texels">The texel coordinates.</param>
     /// <param name="mipLevel">[Optional] The mip level for the texture.</param>
     /// <returns>The converted pixel coordinates.</returns>
     /// <remarks>
@@ -1100,10 +1131,10 @@ public unsafe abstract class GorgonTextureCommon
     }
 
     /// <summary>
-    /// Function to convert 3D Box texel coordinates into 3D Box pixel coordinates.
+    /// Function to convert 3D box texel coordinates into 3D box pixel coordinates.
     /// </summary>
-    /// <param name="texels">The texel coorindates.</param>
-    /// <param name="pixels">The pixel coordinates.</param>
+    /// <param name="texels">The texel coordinates.</param>
+    /// <param name="pixels">The converted pixel coordinates.</param>
     /// <param name="mipLevel">[Optional] The mip level for the texture.</param>
     /// <remarks>
     /// <para>
@@ -1133,15 +1164,18 @@ public unsafe abstract class GorgonTextureCommon
     /// <summary>
     /// Function to calculate the sub resource index for a texture.
     /// </summary>
-    /// <param name="mipLevel">The mip map level for the texture sub resource..</param>
-    /// <param name="arrayIndex">The array index (for 1D and 2D textures). For 3D textures, this value should be 0.</param>
+    /// <param name="mipLevel">The mip map level for the texture sub resource.</param>
+    /// <param name="arrayIndex">The array index (for 1D and 2D textures). For 3D textures, this value is ignored.</param>
     /// <param name="plane">[Optional] The plane slice for the format.</param>
     /// <returns>The texture sub resource index.</returns>
     /// <remarks>
     /// <para>
-    /// Use this method to retrieve the index of a sub resource within the texture for the given <paramref name="mipLevel"/> and <paramref name="arrayIndex"/> values. For a 
-    /// <see cref="TextureType.Texture1D"/> or <see cref="TextureType.Texture2D"/> the <paramref name="arrayIndex"/> value is for array slice of the texture. Otherwise, it will represent the depth 
-    /// slice.
+    /// Use this method to retrieve the index of a sub resource within the texture for the given <paramref name="mipLevel"/> and <paramref name="arrayIndex"/> values. For a
+    /// <see cref="TextureType.Texture1D"/> or <see cref="TextureType.Texture2D"/> the <paramref name="arrayIndex"/> value is the array index of the texture. For a <see cref="TextureType.Texture3D"/>, the
+    /// <paramref name="arrayIndex"/> is ignored, and 0 is used instead.
+    /// </para>
+    /// <para>
+    /// The <paramref name="mipLevel"/> and <paramref name="arrayIndex"/> values are clamped to the number of mip levels and array indices in the texture.
     /// </para>
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1154,11 +1188,11 @@ public unsafe abstract class GorgonTextureCommon
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonTextureCommon"/> resource.
+    /// Initializes a new instance of the <see cref="GorgonTextureCommon"/> class.
     /// </summary>
-    /// <param name="graphics">The graphics interface associated with this texture.</param>
+    /// <param name="graphics">The graphics interface that is associated with this texture.</param>
     /// <param name="name">The name of the texture.</param>
-    /// <param name="resource">The predefined D3D12 resource that this texture is wrapping.</param>
+    /// <param name="resource">The existing native resource that this texture wraps.</param>
     /// <param name="info">The texture information.</param>
     /// <remarks>
     /// <para>

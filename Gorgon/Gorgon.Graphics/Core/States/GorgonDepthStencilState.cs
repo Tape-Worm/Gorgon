@@ -28,21 +28,18 @@ using TerraFX.Interop.DirectX;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Describes how rasterized primitive data is clipped against a depth/stencil buffer
+/// Describes how depth and stencil testing are performed against a depth/stencil buffer.
 /// </summary>
 /// <remarks>
 /// <para>
-/// This will define how rasterized primitive data is clipped against a depth/stencil buffer. Depth reading, writing, and stencil operations are affected by this state
+/// This defines how rasterized primitive data is tested against a depth/stencil buffer. Depth testing, depth writing, depth bounds testing, and stencil operations are affected by this state.
 /// </para>
 /// <para>
-/// The depth/stencil state contains several common depth/stencil states used by applications as static members of the class. 
-/// </para>
-/// <para>
-/// A depth/stencil state is an immutable object, and as such can only be created by using a <see cref="GorgonDepthStencilStateBuilder"/>
+/// The default constructor sets up the <see cref="GorgonDepthStencilState"/> with the same parameters as the <see cref="Default"/> property.
 /// </para>
 /// </remarks>
-/// <seealso cref="GorgonGraphics"/>
-public sealed class GorgonDepthStencilState    
+public sealed record class GorgonDepthStencilState()
+    : IPsoState<GorgonDepthStencilState>
 {
     /// <summary>
     /// The default depth/stencil state.
@@ -91,7 +88,9 @@ public sealed class GorgonDepthStencilState
     /// Depth/stencil enabled. With a comparison of less than or equal for the depth buffer.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// This value is suitable for 2D operations because sprites don't have any depth, and not having an equals operator will cause overlapping sprites to overwrite instead of merge together.
+    /// </para>
     /// </remarks>
     public static readonly GorgonDepthStencilState DepthLessEqualStencilEnabled = new()
     {
@@ -104,9 +103,7 @@ public sealed class GorgonDepthStencilState
     /// <summary>
     /// Depth/stencil enabled, depth write disabled. With a comparison of less than or equal for the depth buffer.
     /// </summary>
-    /// <remarks>
-    /// This value is suitable for 2D operations because sprites don't have any depth, and not having an equals operator will cause overlapping sprites to overwrite instead of merge together.
-    /// </remarks>
+    /// <inheritdoc cref="DepthLessEqualStencilEnabled" path="/remarks"/>
     public static readonly GorgonDepthStencilState DepthLessEqualStencilEnabledNoWrite = new()
     {
         IsDepthEnabled = true,
@@ -118,9 +115,7 @@ public sealed class GorgonDepthStencilState
     /// <summary>
     /// Depth only enabled. With a comparison of less than or equal for the depth buffer.
     /// </summary>
-    /// <remarks>
-    /// This value is suitable for 2D operations because sprites don't have any depth, and not having an equals operator will cause overlapping sprites to overwrite instead of merge together.
-    /// </remarks>
+    /// <inheritdoc cref="DepthLessEqualStencilEnabled" path="/remarks"/>
     public static readonly GorgonDepthStencilState DepthLessEqualEnabled = new()
     {
         IsDepthEnabled = true,
@@ -131,9 +126,7 @@ public sealed class GorgonDepthStencilState
     /// <summary>
     /// Depth only enabled, depth write disabled. With a comparison of less than or equal for the depth buffer.
     /// </summary>
-    /// <remarks>
-    /// This value is suitable for 2D operations because sprites don't have any depth, and not having an equals operator will cause overlapping sprites to overwrite instead of merge together.
-    /// </remarks>
+    /// <inheritdoc cref="DepthLessEqualStencilEnabled" path="/remarks"/>
     public static readonly GorgonDepthStencilState DepthLessEqualEnabledNoWrite = new()
     {
         IsDepthEnabled = true,
@@ -168,11 +161,12 @@ public sealed class GorgonDepthStencilState
     };
 
     /// <summary>
-    /// Property to set or return the depth comparison function.
+    /// Property to return the depth comparison function.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// Use this property to determine whether a depth value will be written into the buffer if the function specified evaluates to true using the data being written and existing data.
+    /// This function compares the depth value of the incoming pixel against the existing value in the depth buffer. If the comparison evaluates to <b>true</b>, then the pixel passes the depth test. This value 
+    /// is only used when <see cref="IsDepthEnabled"/> is <b>true</b>.
     /// </para>
     /// <para>
     /// The default value is <see cref="ComparisonFunction.Less"/>.
@@ -181,59 +175,88 @@ public sealed class GorgonDepthStencilState
     public ComparisonFunction DepthFunction
     {
         get;
-        internal set;
+        init;
     } = ComparisonFunction.Less;
 
     /// <summary>
-    /// Property to set or return whether to enable writing to the depth buffer or not.
+    /// Property to return whether to enable writing to the depth buffer or not.
     /// </summary>
     /// <remarks>
-    /// The default value is <c>true</c>.
+    /// <para>
+    /// When this value is <b>true</b>, the depth value of a pixel that passes the depth test is written to the depth buffer. This value is only used when <see cref="IsDepthEnabled"/> is <b>true</b>.
+    /// </para>
+    /// <para>
+    /// The default value is <b>true</b>.
+    /// </para>
     /// </remarks>
     public bool IsDepthWriteEnabled
     {
         get;
-        internal set;
+        init;
     } = true;
 
     /// <summary>
-    /// Property to set or return whether the depth buffer is enabled or not.
+    /// Property to return whether depth testing is enabled or not.
     /// </summary>
     /// <remarks>
+    /// <para>
+    /// When this value is <b>true</b>, the pipeline state object must be given a depth/stencil format that contains a depth component (e.g. <see cref="BufferFormat.D32_Float"/>).
+    /// </para>
+    /// <para>
     /// The default value is <b>false</b>.
+    /// </para>
     /// </remarks>
+    /// <seealso cref="GorgonGraphicsPsoBuilder.DepthStencilState(GorgonDepthStencilState, BufferFormat)"/>
     public bool IsDepthEnabled
     {
         get;
-        internal set;
+        init;
     }
 
     /// <summary>
-    /// Property to set or return whether the stencil buffer is enabled or not.
+    /// Property to return whether stencil testing is enabled or not.
     /// </summary>
     /// <remarks>
+    /// <para>
+    /// When this value is <b>true</b>, the pipeline state object must be given a depth/stencil format that contains a stencil component (e.g. <see cref="BufferFormat.D24_UNorm_S8_UInt"/>).
+    /// </para>
+    /// <para>
     /// The default value is <b>false</b>.
+    /// </para>
     /// </remarks>
+    /// <seealso cref="GorgonGraphicsPsoBuilder.DepthStencilState(GorgonDepthStencilState, BufferFormat)"/>
     public bool IsStencilEnabled
     {
         get;
-        internal set;
+        init;
     }
 
     /// <summary>
-    /// Property to return the setup information for stencil operations on front facing polygons.
+    /// Property to return the setup information for stencil operations on front-facing polygons.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// If the <see cref="GorgonStencilOperation.ReadMask"/> or <see cref="GorgonStencilOperation.WriteMask"/> values are different between the <see cref="FrontFaceStencilOperation"/> and the 
+    /// <see cref="BackFaceStencilOperation"/>, and the video adapter does not support it (see <see cref="GorgonVideoAdapterInfo.SupportsIndependentFrontAndBackStencilRef"/>), then an exception will be thrown 
+    /// when the pipeline state object is created by <see cref="GorgonGraphicsPsoFactory.CreateOrGetPso(string, GorgonShader, GorgonGraphicsPsoBuilder)"/>.
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="GorgonStencilOperation"/>
     public GorgonStencilOperation FrontFaceStencilOperation
     {
         get;
+        init;
     } = new GorgonStencilOperation();
 
     /// <summary>
-    /// Property to return the setup information for stencil operations on back facing polygons.
+    /// Property to return the setup information for stencil operations on back-facing polygons.
     /// </summary>
+    /// <inheritdoc cref="FrontFaceStencilOperation" path="/remarks"/>
+    /// <seealso cref="GorgonStencilOperation"/>
     public GorgonStencilOperation BackFaceStencilOperation
     {
         get;
+        init;
     } = new GorgonStencilOperation();
 
     /// <summary>
@@ -241,17 +264,22 @@ public sealed class GorgonDepthStencilState
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This is used to determine if a pixel/sample passes if a depth buffer value is within the range specified on <see cref="GorgonDrawCall.DepthBoundsTestRange"/>.
+    /// This is used to determine if a pixel/sample passes if a depth buffer value is within the range specified on <see cref="GorgonDrawCallCommon.DepthBoundsTestRange"/>.
+    /// </para>
+    /// <para>
+    /// When this value is <b>true</b>, the pipeline state object must be given a depth/stencil format that contains a depth component. If the video adapter does not support depth bounds testing (see 
+    /// <see cref="GorgonVideoAdapterInfo.SupportsDepthBoundsTest"/>), then an exception will be thrown when the pipeline state object is created by 
+    /// <see cref="GorgonGraphicsPsoFactory.CreateOrGetPso(string, GorgonShader, GorgonGraphicsPsoBuilder)"/>.
     /// </para>
     /// <para>
     /// The default value is <b>false</b>.
     /// </para>
     /// </remarks>
-    /// <seealso cref="GorgonDrawCall.DepthBoundsTestRange"/>
+    /// <seealso cref="GorgonDrawCallCommon.DepthBoundsTestRange"/>
     public bool IsDepthBoundsTestingEnabled
     {
         get;
-        internal set;
+        init;
     } = false;
 
     /// <summary>
@@ -267,12 +295,66 @@ public sealed class GorgonDepthStencilState
         BackFace = BackFaceStencilOperation.GetDesc(),
         FrontFace = FrontFaceStencilOperation.GetDesc(),
         DepthBoundsTestEnable = IsDepthBoundsTestingEnabled,
-    };    
+    };
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonDepthStencilState"/> class.
-    /// </summary>
-    internal GorgonDepthStencilState()
+    /// <inheritdoc/>
+    public static GorgonDepthStencilState GetDefinedState(GorgonDepthStencilState state)
     {
+        if (state == Default)
+        {
+            return Default;
+        }
+
+        if (state == DepthStencilEnabled)
+        {
+            return DepthStencilEnabled;
+        }
+
+        if (state == DepthStencilEnabledNoWrite)
+        {
+            return DepthStencilEnabledNoWrite;
+        }
+
+        if (state == DepthEnabled)
+        {
+            return DepthEnabled;
+        }
+
+        if (state == DepthEnabledNoWrite)
+        {
+            return DepthEnabledNoWrite;
+        }
+
+        if (state == DepthLessEqualStencilEnabled)
+        {
+            return DepthLessEqualStencilEnabled;
+        }
+
+        if (state == DepthLessEqualStencilEnabledNoWrite)
+        {
+            return DepthLessEqualStencilEnabledNoWrite;
+        }
+
+        if (state == DepthLessEqualEnabled)
+        {
+            return DepthLessEqualEnabled;
+        }
+
+        if (state == DepthLessEqualEnabledNoWrite)
+        {
+            return DepthLessEqualEnabledNoWrite;
+        }
+
+        if (state == StencilEnabled)
+        {
+            return StencilEnabled;
+        }
+
+        if (state == DepthStencilEnabledGreaterEqual)
+        {
+            return DepthStencilEnabledGreaterEqual;
+        }
+
+        return state;
     }
 }

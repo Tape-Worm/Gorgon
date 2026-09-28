@@ -37,7 +37,7 @@ namespace Gorgon.Graphics.Core;
 /// The <see cref="Format"/> property must support being used as a display format. Use the <see cref="GorgonGraphics.FormatSupport"/> property to determine if the format is suitable for display.
 /// </para>
 /// <para>
-/// The <see cref="Width"/> and <see cref="Height"/> must be at least 1 pixel, otherwise the swap chain will fail upon creation.
+/// The <see cref="Width"/> and <see cref="Height"/> must be at least 1 pixel, otherwise an exception will be thrown when the swap chain is created.
 /// </para>
 /// </remarks>
 public record class GorgonSwapChainInfo(int Width, int Height, BufferFormat Format)
@@ -75,7 +75,10 @@ public record class GorgonSwapChainInfo(int Width, int Height, BufferFormat Form
     /// <inheritdoc/>
     /// </summary>
     /// <remarks>
+    /// <inheritdoc/>
+    /// <para>
     /// The default value is <b>true</b>.
+    /// </para>
     /// </remarks>
     public bool FlipDiscard
     {
@@ -102,7 +105,9 @@ public record class GorgonSwapChainInfo(int Width, int Height, BufferFormat Form
     /// <inheritdoc/>
     /// </summary>
     /// <remarks>
+    /// <para>
     /// The default value is <b>true</b>.
+    /// </para>
     /// </remarks>
     public bool AllowScaling
     {

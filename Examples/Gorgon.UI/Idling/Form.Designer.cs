@@ -61,7 +61,7 @@ namespace Gorgon.Examples;
         AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
         AutoScaleMode = AutoScaleMode.Font;
         BackColor = System.Drawing.Color.FromArgb(30, 30, 30);
-        ClientSize = new System.Drawing.Size(733, 327);
+        ClientSize = new System.Drawing.Size(1280, 800);
         Controls.Add(panelGraphics);
         Controls.Add(labelFPS);
         DoubleBuffered = true;

@@ -29,8 +29,14 @@ namespace Gorgon.Graphics.Core;
 /// Parameters used to copy a texture sub resource to another texture sub resource.
 /// </summary>
 /// <param name="sourceRegion">The region on the source texture to copy.</param>
+/// <remarks>
+/// <para>
+/// These parameters are used to copy a <see cref="GorgonTextureCommon"/> sub resource to another sub resource via the <see cref="GorgonResourceCopier"/> or <see cref="GorgonCommandList"/>.
+/// </para>
+/// </remarks>
 /// <seealso cref="IGorgonCopyMethodsFluent{T}.CopyTexture(GorgonTexture, GorgonTexture, ref readonly GorgonCopyTextureSubResource)"/>
-/// <seealso cref="IGorgonCopyMethodsFluent{T}.CopyTexture(GorgonTexture, GorgonTexture, ref readonly GorgonCopyTextureSubResource)"/>
+/// <seealso cref="GorgonTexture"/>
+/// <seealso cref="GorgonVirtualTexture"/>
 [method: SetsRequiredMembers]
 public readonly ref struct GorgonCopyTextureSubResource(GorgonBox sourceRegion)
 {
@@ -40,11 +46,13 @@ public readonly ref struct GorgonCopyTextureSubResource(GorgonBox sourceRegion)
     public readonly bool IsEmpty => SourceRegion.Equals(in GorgonBox.Empty);
 
     /// <summary>
-    /// <inheritdoc cref="GorgonCopyTextureToVirtual(GorgonBox, GorgonVirtualTextureHandle)" path="/param[@name='sourceRegion']"/>
+    /// <inheritdoc cref="GorgonCopyTextureSubResource(GorgonBox)" path="/param[@name='sourceRegion']"/>
     /// </summary>
     /// <remarks>
+    /// <para>
     /// This region will contain either the depth range for a <see cref="TextureType.Texture3D"/>, or the range of array indices for a <see cref="TextureType.Texture1D"/> or 
     /// <see cref="TextureType.Texture2D"/> texture array.
+    /// </para>
     /// </remarks>
     public readonly GorgonBox SourceRegion = sourceRegion;
 
@@ -79,7 +87,9 @@ public readonly ref struct GorgonCopyTextureSubResource(GorgonBox sourceRegion)
     /// Property to return the vertical destination position in the destination texture.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// This only applies to textures with a texture type of <see cref="TextureType.Texture2D"/>, or <see cref="TextureType.Texture3D"/>.
+    /// </para>
     /// </remarks>
     public readonly int DestinationY
     {

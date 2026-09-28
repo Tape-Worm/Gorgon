@@ -40,15 +40,13 @@ namespace Gorgon.Graphics.Core;
 /// Constant views should only be used by an application to store constant data that changes infrequently, meaning once a frame or less. Otherwise, applications should use one of the 
 /// <see cref="GorgonCommandList.WriteConstant{T}(int, in T)"/> methods on the command list.
 /// </para>
-/// <para>
 /// <inheritdoc cref="GorgonGpuBuffer.GetConstantBufferView(bool)" path="/remarks/para[@type='bindless_doc']"/>
-/// </para>
 /// <inheritdoc cref="GorgonGpuBuffer.GetConstantBufferView(bool)" path="/remarks/para[@type='constant_alignment']"/>
 /// </remarks>
 /// <seealso cref="GorgonCommandList.WriteConstant{T}(int, in T)"/>
 /// <seealso cref="GorgonShaderBufferView.GetViewHandle()"/>
 public unsafe sealed class GorgonConstantBufferView
-    : GorgonResourceView
+    : GorgonGpuBufferView
 {
     private GpuDescriptorAllocation _allocation = GpuDescriptorAllocation.Null;
     private readonly uint _allocationSize;
@@ -58,14 +56,6 @@ public unsafe sealed class GorgonConstantBufferView
     /// The alignment, in bytes, required for constant buffer data.
     /// </summary>
     public const int AlignmentRequirement = D3D12.D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT;
-
-    /// <summary>
-    /// Property to return the buffer used by this view.
-    /// </summary>
-    public GorgonGpuBuffer Buffer
-    {
-        get;
-    }
 
     /// <summary>
     /// Function to allocate a view descriptor from the descriptor heap.
@@ -99,6 +89,8 @@ public unsafe sealed class GorgonConstantBufferView
     {
         if (disposing)
         {
+            this.UnregisterDisposable(Graphics);
+
             if (!_allocation.Equals(GpuDescriptorAllocation.Null))
             {
                 Graphics.Log.Print($"Freeing descriptor handle allocation for '{Name}'.", LoggingLevel.Verbose);
@@ -118,6 +110,7 @@ public unsafe sealed class GorgonConstantBufferView
     /// <param name="resourceOffset">The resource offset, in bytes, of the buffer within its mega buffer host.</param>
     /// <exception cref="GorgonException"><para>Thrown if the view could not be created because the buffer is smaller than the <see cref="AlignmentRequirement"/> size (256 bytes).</para>
     /// <para>Thrown if the buffer was not aligned to the <see cref="AlignmentRequirement"/> (256 bytes) upon creation.</para>
+    /// <para>Thrown if the view size is larger than 64KB (65,536 bytes).</para>
     /// </exception>
     internal static void ValidateConstantView(string name, int alignment, ulong sizeInBytes, ulong resourceOffset)
     {
@@ -130,6 +123,11 @@ public unsafe sealed class GorgonConstantBufferView
         {
             throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_BUFFER_ALIGNMENT_INCORRECT_FOR_VIEW, name, AlignmentRequirement, nameof(GorgonConstantBufferView)));
         }
+
+        if (sizeInBytes > 65536)
+        {
+            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_CONSTANT_BUFFER_VIEW_TOO_LARGE, name, sizeInBytes));
+        }
     }
 
     /// <summary>
@@ -140,14 +138,18 @@ public unsafe sealed class GorgonConstantBufferView
     /// <param name="sizeInBytes">The size of the buffer, in bytes.</param>
     /// <param name="allowReadWriteAccess">[Optional] <b>true</b> to allow read and write access to the buffer in the shader, <b>false</b> to only allow read-only access.</param>
     /// <returns>The <see cref="GorgonConstantBufferView"/> and associated <see cref="GorgonGpuBuffer"/>.</returns>
-    /// <exception cref="GorgonException"><inheritdoc cref="GorgonGpuBuffer.ValidateInfo()" path="/exception/para[2]"/></exception>
+    /// <exception cref="GorgonException"><para>
+    /// Thrown if the <paramref name="sizeInBytes"/> is less than the <see cref="AlignmentRequirement"/> (256 bytes).
+    /// </para>
+    /// <para>Thrown if the <paramref name="sizeInBytes"/> is larger than 64KB (65,536 bytes).</para>
+    /// </exception>
     /// <remarks>
     /// <para>
     /// This is a convenience method used to create a <see cref="GorgonConstantBufferView"/> and its associated <see cref="GorgonGpuBuffer"/> in a single call. This takes some of the tedium out of creating 
     /// constant buffers.
     /// </para>
     /// <para>
-    /// Buffers created with this method are guaranteed to be aligned to the <see cref="AlignmentRequirement"/> (256 bytes). 
+    /// Buffers created with this method are guaranteed to be aligned to the <see cref="AlignmentRequirement"/> (256 bytes).
     /// </para>
     /// <para>
     /// <note type="information">
@@ -236,7 +238,7 @@ public unsafe sealed class GorgonConstantBufferView
     /// }
     /// 
     /// // This function sends our rendering info to the shader as needed.
-    /// public void SendToShader(GorgonCommandList list, GorgonConstantBufferView cbv, GorgonTextureView tv)
+    /// public void SendToShader(GorgonCommandList list, GorgonConstantBufferView cbv, IGorgonTextureView<GorgonTextureCommon> tv)
     /// {
     ///    RenderData data = new()
     ///    {
@@ -281,7 +283,6 @@ public unsafe sealed class GorgonConstantBufferView
 
         _descriptors = graphics.Descriptors.GpuViewDescriptors;
         _allocationSize = allocationSize;
-        Buffer = buffer;
 
         AllocateDescriptors();
     }

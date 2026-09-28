@@ -280,7 +280,7 @@ internal static partial class RawInputApi
     /// <returns>The size of the data block, in bytes.</returns>
     /// <exception cref="Win32Exception">Thrown if the size could not be retrieved.</exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public unsafe static int GetPreparsedDataSize(HANDLE deviceHandle)
+    public static int GetPreparsedDataSize(HANDLE deviceHandle)
     {
         uint dataSize = 0;
         if (PInvoke.GetRawInputDeviceInfo(deviceHandle, RAW_INPUT_DEVICE_INFO_COMMAND.RIDI_PREPARSEDDATA, null, ref dataSize) < 0)
@@ -298,7 +298,7 @@ internal static partial class RawInputApi
     /// <param name="deviceHandle">The handle to the device.</param>
     /// <param name="buffer">The buffer to populate.</param>
     /// <returns>A pointer to the block of memory holding the HID preparsed data.</returns>
-    public unsafe static void GetPreparsedDeviceInfoData(HANDLE deviceHandle, Span<byte> buffer)
+    public static void GetPreparsedDeviceInfoData(HANDLE deviceHandle, Span<byte> buffer)
     {
         int win32Error;
 
@@ -366,7 +366,7 @@ internal static partial class RawInputApi
     /// Function to perform the enumeration and translation of raw input native structures.
     /// </summary>
     /// <returns>The raw input device list.</returns>
-    public unsafe static RAWINPUTDEVICELIST[] EnumerateRawInputDevices()
+    public static RAWINPUTDEVICELIST[] EnumerateRawInputDevices()
     {
         uint deviceCount = 0;
         uint structSize = (uint)Unsafe.SizeOf<RAWINPUTDEVICELIST>();

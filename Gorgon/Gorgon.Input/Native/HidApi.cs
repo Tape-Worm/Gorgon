@@ -123,7 +123,7 @@ internal static class HidApi
     /// <param name="fileHandle">The file handle to the HID device.</param>
     /// <returns>The plain text, friendly product name for the device.</returns>
     /// <exception cref="Win32Exception">Thrown if the name could not be retrieved.</exception>
-    public static unsafe string GetProductString(HANDLE fileHandle)
+    public static string GetProductString(HANDLE fileHandle)
     {
         if ((fileHandle.IsNull) || (fileHandle == HANDLE.INVALID_HANDLE_VALUE))
         {
@@ -162,7 +162,7 @@ internal static class HidApi
     /// <param name="fileHandle">The file handle to the HID device.</param>
     /// <returns>The plain text, friendly manufacturer name for the device.</returns>
     /// <exception cref="Win32Exception">Thrown if the name could not be retrieved.</exception>
-    public static unsafe string GetManufacturerString(HANDLE fileHandle)
+    public static string GetManufacturerString(HANDLE fileHandle)
     {
         if ((fileHandle.IsNull) || (fileHandle == HANDLE.INVALID_HANDLE_VALUE))
         {

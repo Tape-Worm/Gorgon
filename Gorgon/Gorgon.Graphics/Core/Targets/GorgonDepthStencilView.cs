@@ -46,7 +46,7 @@ namespace Gorgon.Graphics.Core;
 public enum DepthStencilViewAccess
 {
     /// <summary>
-    /// A default view.
+    /// Depth and stencil values are both writable.
     /// </summary>
     None = D3D12_DSV_FLAGS.D3D12_DSV_FLAG_NONE,    
     /// <summary>
@@ -69,16 +69,16 @@ public enum DepthStencilViewAccess
 /// method. 
 /// </para>
 /// <para>
-/// Depending on the depth format used, a depth/stencil buffer may contain two parts (or planes). A depth portion, and a stencil portion. 
+/// Depending on the depth format used, a depth/stencil buffer may contain two parts (or planes): a depth portion and a stencil portion.
 /// </para>
-/// <para>
 /// <h3>Depth</h3>
-/// The depth plane is used to reject pixels that are obscured by a previously rendered pixel. This allows applications to skip rendering that pixel and increase performance by not overdrawing. 
-/// </para>
 /// <para>
+/// The depth plane is used to reject pixels that are obscured by a previously rendered pixel. This allows applications to skip rendering that pixel and increase performance by not overdrawing.
+/// </para>
 /// <h3>Stencil</h3>
-/// The stencil plane is used to allow user-defined rejection of pixels when rendering. For example, an application can use the stencil to mark which areas cannot be rendered into, say, the outside of a 
-/// circle. Then, on the 2nd pass, the rendering will only write pixels into the unmarked areas.
+/// <para>
+/// The stencil plane is used to allow user-defined rejection of pixels when rendering. For example, an application can use the stencil to mark which areas cannot be rendered into, say, the outside of a
+/// circle. Then, on the second pass, the rendering will only write pixels into the unmarked areas.
 /// </para>
 /// </remarks>
 /// <seealso cref="GorgonCommandList.SetRenderTargets(ReadOnlySpan{GorgonRenderTargetView}, GorgonDepthStencilView?)"/>
@@ -89,7 +89,7 @@ public unsafe sealed class GorgonDepthStencilView
     private readonly CpuDescriptorHeapPool _descriptors;
 
     /// <summary>
-    /// Property to return the format of view data.
+    /// Property to return the format of the view data.
     /// </summary>
     public BufferFormat Format
     {
@@ -116,7 +116,9 @@ public unsafe sealed class GorgonDepthStencilView
     /// Property to return the texture associated with this view.
     /// </summary>
     /// <remarks>
-    /// This value is a strongly typed version of the <see cref="GorgonResourceView.Resource"/> property and point to the same object.
+    /// <para>
+    /// This value is a strongly typed version of the <see cref="GorgonResourceView.Resource"/> property and points to the same object.
+    /// </para>
     /// </remarks>
     public GorgonTexture Texture
     {
@@ -124,7 +126,7 @@ public unsafe sealed class GorgonDepthStencilView
     }
 
     /// <summary>
-    /// Property to return the first map level in the view.
+    /// Property to return the first mip level in the view.
     /// </summary>
     public short MipLevel
     {
@@ -208,7 +210,7 @@ public unsafe sealed class GorgonDepthStencilView
         else
         {
             dimension = hasArrays ? D3D12_DSV_DIMENSION.D3D12_DSV_DIMENSION_TEXTURE2DARRAY : D3D12_DSV_DIMENSION.D3D12_DSV_DIMENSION_TEXTURE2D;
-        };        
+        }
 
         D3D12_DEPTH_STENCIL_VIEW_DESC desc = new()
         {
@@ -231,6 +233,8 @@ public unsafe sealed class GorgonDepthStencilView
     {
         if (disposing)
         {
+            this.UnregisterDisposable(Graphics);
+
             if (!_allocation.Equals(CpuDescriptorAllocation.Null))
             {
                 Graphics.Log.Print($"Freeing descriptor handle allocation for '{Name}'.", LoggingLevel.Verbose);
@@ -264,9 +268,15 @@ public unsafe sealed class GorgonDepthStencilView
     /// <param name="textureFormatInfo">The information about the texture format.</param>
     /// <param name="viewFormatInfo">The information about the view format.</param>
     /// <param name="isDepthStencil"><b>true</b> if the texture is capable of being used as a depth/stencil buffer, <b>false</b> if not.</param>
-    /// <exception cref="GorgonException"><para>Thrown if the texture is not a <see cref="GorgonTextureCommon.IsDepthStencil">depth stencil</see> buffer.</para>
-    /// <para>Thrown if the format is not supported by depth/stencil buffers.</para>
-    /// <para>Thrown if the texture format is not the same as the view format, and the texture format is not one of the required typeless formats.</para>
+    /// <exception cref="GorgonException"><para type="notds">
+    /// Thrown if the texture is not a <see cref="GorgonTextureCommon.IsDepthStencil">depth/stencil</see> buffer.
+    /// </para>
+    /// <para type="format">
+    /// Thrown if the format is not supported by depth/stencil buffers.
+    /// </para>
+    /// <para type="mismatch">
+    /// Thrown if the texture format is not the same as the view format, and the texture format is not one of the required typeless formats.
+    /// </para>
     /// </exception>
     internal static void ValidateDepthStencilView(string name, GorgonBufferFormatSupport formatSupport, GorgonFormatInfo textureFormatInfo, GorgonFormatInfo viewFormatInfo, bool isDepthStencil)
     {
@@ -320,29 +330,29 @@ public unsafe sealed class GorgonDepthStencilView
     /// </summary>
     /// <param name="graphics"><inheritdoc cref="GorgonTextureViewExtensions.Create2DTexture(GorgonGraphics, string, BufferFormat, int, int, short, short)" path="/param[@name='graphics']"/></param>
     /// <param name="name"><inheritdoc cref="GorgonTextureViewExtensions.Create2DTexture(GorgonGraphics, string, BufferFormat, int, int, short, short)" path="/param[@name='name']"/></param>
+    /// <param name="format">The depth format to use.</param>
     /// <param name="width"><inheritdoc cref="GorgonTextureViewExtensions.Create2DTexture(GorgonGraphics, string, BufferFormat, int, int, short, short)" path="/param[@name='width']"/></param>
     /// <param name="height"><inheritdoc cref="GorgonTextureViewExtensions.Create2DTexture(GorgonGraphics, string, BufferFormat, int, int, short, short)" path="/param[@name='height']"/></param>
-    /// <param name="format">The depth format to use.</param>
     /// <param name="mipCount"><inheritdoc cref="GorgonTextureViewExtensions.Create2DTexture(GorgonGraphics, string, BufferFormat, int, int, short, short)" path="/param[@name='mipCount']"/></param>
     /// <param name="arrayCount"><inheritdoc cref="GorgonTextureViewExtensions.Create2DTexture(GorgonGraphics, string, BufferFormat, int, int, short, short)" path="/param[@name='arrayCount']"/></param>
     /// <param name="multisampleInfo">[Optional] The multisampling info to apply to the texture.</param>
-    /// <returns>A new <see cref="GorgonDepthStencilView"/> and its associated <see cref="GorgonTexture"/>,</returns>
+    /// <returns>A new <see cref="GorgonDepthStencilView"/> and its associated <see cref="GorgonTexture"/>.</returns>
     /// <exception cref="GorgonException">
     /// <b>Texture Exceptions</b>
-    /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[1]"/>
-    /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[3]"/>
-    /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[5]"/>
-    /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[8]"/>
+    /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[@type='mip']"/>
+    /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[@type='2d']"/>
+    /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[@type='depth']"/>
+    /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[@type='msaa']"/>
     /// <b>View Exceptions</b>
-    /// <inheritdoc cref="ValidateDepthStencilView(string, GorgonBufferFormatSupport, GorgonFormatInfo, GorgonFormatInfo, bool)" path="/exception/para[2]"/>
-    /// <inheritdoc cref="ValidateDepthStencilView(string, GorgonBufferFormatSupport, GorgonFormatInfo, GorgonFormatInfo, bool)" path="/exception/para[3]"/>
+    /// <inheritdoc cref="ValidateDepthStencilView(string, GorgonBufferFormatSupport, GorgonFormatInfo, GorgonFormatInfo, bool)" path="/exception/para[@type='format']"/>
+    /// <inheritdoc cref="ValidateDepthStencilView(string, GorgonBufferFormatSupport, GorgonFormatInfo, GorgonFormatInfo, bool)" path="/exception/para[@type='mismatch']"/>
     /// </exception>
     /// <remarks>
     /// <para>
     /// This function is a convenience method that builds a 2D texture with a default depth/stencil view. Textures created with this method will be destroyed when the default view returned is disposed.
     /// </para>
     /// </remarks>
-    public static GorgonDepthStencilView CreateDepthStencilView(GorgonGraphics graphics, string name, int width, int height, BufferFormat format, short mipCount = 1, short arrayCount = 1, GorgonMultisampleInfo? multisampleInfo = null)
+    public static GorgonDepthStencilView CreateDepthStencilView(GorgonGraphics graphics, string name, BufferFormat format, int width, int height, short mipCount = 1, short arrayCount = 1, GorgonMultisampleInfo? multisampleInfo = null)
     {
         GorgonTextureInfo textureInfo = GorgonTextureInfo.Create2DDepthStencilInfo(format, width, height, mipCount, arrayCount, multisampleInfo: multisampleInfo);
         GorgonTexture texture = new(graphics, name, textureInfo);

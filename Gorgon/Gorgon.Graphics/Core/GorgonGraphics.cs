@@ -181,7 +181,9 @@ public unsafe sealed class GorgonGraphics
     /// Property to return the current frame being worked on.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// To see the total number of frames that can be worked on at once, check the <see cref="InFlightFrameCount"/>.
+    /// </para>
     /// </remarks>
     /// <see cref="InFlightFrameCount"/>
     public int CurrentFrame => _currentFrame;
@@ -316,6 +318,8 @@ public unsafe sealed class GorgonGraphics
             }
         };
 
+        result.Get()->SetBreakOnID(D3D12_MESSAGE_ID.D3D12_MESSAGE_ID_GETHEAPPROPERTIES_INVALIDRESOURCE, false);
+
         result.Get()->AddStorageFilterEntries(&filter)
             .ThrowIfFailed(GorgonResult.CannotCreate, () => Resources.GORGFX_ERR_CANNOT_SETUP_DEBUG_INFO);
 
@@ -400,7 +404,6 @@ public unsafe sealed class GorgonGraphics
                 (support.Support1 & D3D12_FORMAT_SUPPORT1.D3D12_FORMAT_SUPPORT1_BUFFER) == D3D12_FORMAT_SUPPORT1.D3D12_FORMAT_SUPPORT1_BUFFER,
                 (support.Support1 & D3D12_FORMAT_SUPPORT1.D3D12_FORMAT_SUPPORT1_IA_VERTEX_BUFFER) == D3D12_FORMAT_SUPPORT1.D3D12_FORMAT_SUPPORT1_IA_VERTEX_BUFFER,
                 (support.Support1 & D3D12_FORMAT_SUPPORT1.D3D12_FORMAT_SUPPORT1_IA_VERTEX_BUFFER) == D3D12_FORMAT_SUPPORT1.D3D12_FORMAT_SUPPORT1_IA_INDEX_BUFFER,
-                (support.Support1 & D3D12_FORMAT_SUPPORT1.D3D12_FORMAT_SUPPORT1_SO_BUFFER) == D3D12_FORMAT_SUPPORT1.D3D12_FORMAT_SUPPORT1_SO_BUFFER,
                 (support.Support1 & D3D12_FORMAT_SUPPORT1.D3D12_FORMAT_SUPPORT1_TEXTURE1D) == D3D12_FORMAT_SUPPORT1.D3D12_FORMAT_SUPPORT1_TEXTURE1D,
                 (support.Support1 & D3D12_FORMAT_SUPPORT1.D3D12_FORMAT_SUPPORT1_TEXTURE2D) == D3D12_FORMAT_SUPPORT1.D3D12_FORMAT_SUPPORT1_TEXTURE2D,
                 (support.Support1 & D3D12_FORMAT_SUPPORT1.D3D12_FORMAT_SUPPORT1_TEXTURE3D) == D3D12_FORMAT_SUPPORT1.D3D12_FORMAT_SUPPORT1_TEXTURE3D,
@@ -522,7 +525,7 @@ public unsafe sealed class GorgonGraphics
         }
 
         commandList.Close();
-        Queues.GraphicsQueue.Execute(commandList, true);
+        Queues.GraphicsQueue.Execute(commandList);
 
         if (commandList.Presenters.Count > 0)
         {
@@ -579,7 +582,7 @@ public unsafe sealed class GorgonGraphics
             }
 
             finalCommandList = commands.AsSpan(0, commandCount);
-            Queues.GraphicsQueue.Execute(finalCommandList, true);
+            Queues.GraphicsQueue.Execute(finalCommandList);
 
             for (int i = 0; i < presenterCount; ++i)
             {
@@ -714,6 +717,50 @@ public unsafe sealed class GorgonGraphics
         Dispose(true);
 
         GC.SuppressFinalize(this);
+    }
+
+    /// <summary>
+    /// Function to retrieve the driver version for the current GPU.
+    /// </summary>
+    /// <returns>The version number for the driver.</returns>
+    /// <exception cref="GorgonException">Thrown if the driver version could not be retrieved.</exception>
+    /// <remarks>
+    /// <para>
+    /// This method will return the user mode driver version for the current GPU. It is a grouping of 4 16 bit words that make up the driver version number.
+    /// </para>
+    /// <para>
+    /// This is a version number used by Windows, and not the vendor specific driver (i.e. it is not Nvidia's format: 546.22 or AMD's format: 23.12.11, it is agnostic).
+    /// </para>
+    /// </remarks>
+    public long GetDriverVersion()
+    {
+        LARGE_INTEGER li = default;
+
+        DXGIAdapter.Get()->CheckInterfaceSupport(Win32.__uuidof<IDXGIDevice>(), &li)
+            .ThrowIfFailed(GorgonResult.CannotRead, () => Resources.GORGFX_ERR_CANNOT_RETRIEVE_DRIVER_VERSION);
+
+        return li.QuadPart;
+    }
+
+    /// <summary>
+    /// Functrion to retrieve the current memory used on the GPU, and the budget given to the application by the operating system.
+    /// </summary>
+    /// <returns>A tuple containing the number of bytes that are currently used, and the number of bytes budgeted for the application.</returns>
+    /// <exception cref="GorgonException">Thrown if the budget information could not be retrieved.</exception>
+    /// <remarks>
+    /// <para>
+    /// Applications can use this to determine if GPU memory exhaustion has occurred, or is about to occur. By checking to see if the returned <c>Used</c> value is greater than, or equal to the <c>Budget</c>, 
+    /// the developer can then choose to handle a potential out of memory scenario.
+    /// </para>
+    /// </remarks>
+    public (long Used, long Budget) GetBudgetedVideoMemory()
+    {
+        DXGI_QUERY_VIDEO_MEMORY_INFO info = default;
+
+        DXGIAdapter.Get()->QueryVideoMemoryInfo(0, DXGI_MEMORY_SEGMENT_GROUP.DXGI_MEMORY_SEGMENT_GROUP_LOCAL, &info)
+            .ThrowIfFailed(GorgonResult.CannotRead, () => string.Format(Resources.GORGFX_ERR_CANNOT_READ_GPU_BUDGET, Adapter.Name));
+
+        return ((long)info.CurrentUsage, (long)info.Budget);
     }
 
     /// <summary>

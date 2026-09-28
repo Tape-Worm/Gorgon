@@ -54,24 +54,23 @@ public interface IGorgonResourceWriter
     /// Function to end the batch and perform any pending uploads.
     /// </summary>
     /// <remarks>
-    /// <para>
-    /// This method must be called after a call to the <see cref="GorgonResourceCopier"/>.<see cref="GorgonResourceCopier.BeginUpload"/> method. Failure to do so can lead to data not being sent the GPU properly.
+    /// <para type="Required">
+    /// This method must be called after a call to the <see cref="GorgonResourceCopier"/>.<see cref="GorgonResourceCopier.BeginUpload"/> method. Failure to do so can lead to data not being sent to the GPU
+    /// properly.
     /// </para>
     /// <para>
-    /// This method will not return until the GPU is finished its upload(s).
+    /// This method will not return until the GPU has finished its upload(s).
     /// </para>
     /// </remarks>
+    /// <inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyValue{Tv}(in Tv, GorgonGpuBufferCommon, long)" path="/example"/>
     /// <seealso cref="GorgonResourceCopier"/>
     /// <seealso cref="GorgonGpuBufferCommon"/>
-    /// <example>
-    /// <inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyValue{Tv}(in Tv, GorgonGpuBufferCommon, long)"/>
-    /// </example>
     void End();
 
     /// <summary>
     /// Function to asynchronously end the batch and perform any pending uploads.
     /// </summary>
-    /// <returns>A <see cref="ValueTask"/> for asynchronous operation.</returns>
+    /// <returns>A <see cref="Task"/> for asynchronous operation.</returns>
     /// <remarks>
     /// <para>
     /// This method takes advantage of the asynchronous nature of the GPU and CPU. Applications can use this method to let the GPU finish uploading data without blocking the CPU (the <see cref="End"/> method 
@@ -84,47 +83,47 @@ public interface IGorgonResourceWriter
     /// </para>
     /// </note>
     /// </para>
-    /// <para>
-    /// <inheritdoc cref="End" path="/remarks/para[1]"/>
-    /// </para>
+    /// <inheritdoc cref="End" path="/remarks/para[@type='Required']"/>
     /// </remarks>
-    /// <seealso cref="GorgonResourceCopier"/>
-    /// <seealso cref="GorgonGpuBufferCommon"/>
-    /// <example>    
+    /// <example>
     /// <code language="csharp">
     /// <![CDATA[
     /// // This example is here to give an idea how async can be used to upload a lot of data to GPU buffers.
     /// // It should not be considered production code.
-    /// async Task<GorgonGpuBuffer> WriteTheDataAsync(GorgonNativeBuffer<byte>[] buffers)
+    /// async Task<GorgonGpuBuffer[]> WriteTheDataAsync(GorgonNativeBuffer<byte>[] buffers)
     /// {
     ///     GorgonGpuBuffer[] result = new GorgonGpuBuffer[buffers.Length];
-    ///     GorgonGpuBufferWriter[] writers = new GorgonGpuBufferWriter[buffers.Length];
+    ///     // A copier can only run one batch at a time, so each concurrent upload gets its own copier.
+    ///     GorgonResourceCopier[] copiers = new GorgonResourceCopier[buffers.Length];
     ///     Task[] tasks = new Task[buffers.Length];
-    ///     
+    ///
     ///     // Initialize.
     ///     for (int i = 0; i < buffers.Length; ++i)
     ///     {
     ///         result[i] = new GorgonGpuBuffer(_graphics, $"Buffer {i}", new GorgonGpuBufferInfo(buffers[i].Length));
-    ///         writers[i] = new GorgonGpuBufferWriter(_graphics);
-    ///         
+    ///         copiers[i] = new GorgonResourceCopier(_graphics);
+    ///
     ///         // Start writing.
-    ///         writers[i].Begin().CopyPointer<byte>(buffers[i], result[i]);
-    ///         tasks[i] = writers[i].EndAsync();        
+    ///         tasks[i] = copiers[i].BeginUpload()
+    ///                              .CopyPointer<byte>(buffers[i], result[i])
+    ///                              .EndAsync();
     ///     }
-    ///     
+    ///
     ///     // Wait for all buffers to write to the GPU.
     ///     // If this takes a long time, the CPU is free to do other work.
     ///     await Task.WhenAll(tasks);
-    /// 
+    ///
     ///     // Clean up.
-    ///     for (int i = 0; i < writers.Length; ++i)
+    ///     for (int i = 0; i < copiers.Length; ++i)
     ///     {
-    ///         writers[i].Dispose();
+    ///         copiers[i].Dispose();
     ///     }
     ///     return result;
     /// }
     /// ]]>
     /// </code>
     /// </example>
+    /// <seealso cref="GorgonResourceCopier"/>
+    /// <seealso cref="GorgonGpuBufferCommon"/>
     Task EndAsync();
 }

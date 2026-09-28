@@ -26,10 +26,10 @@ namespace Gorgon.Graphics.Core;
 /// <summary>
 /// Provides architectural information about the video adapter.
 /// </summary>
-/// <param name="NodeIndex">The node index for the physical adapter in multi GPU scenarios</param>
+/// <param name="NodeIndex">The node index for the physical adapter in multi-GPU scenarios.</param>
 /// <param name="IsTileBasedRenderer">Returns whether the hardware and driver support a tile-based renderer.</param>
 /// <param name="HasUnifiedMemoryArchitecture">Returns whether the hardware supports a unified memory architecture (UMA) or not.</param>
-/// <param name="HasCacheCoherentUnifiedMemoryArchitecture">Returns whether the hardware supports a cache coherent unified memory architecture or not.</param>
+/// <param name="HasCacheCoherentUnifiedMemoryArchitecture">Returns whether the hardware supports a cache-coherent unified memory architecture or not.</param>
 /// <param name="HasIsolatedMemoryManagementUnit">Returns whether the hardware supports isolated memory management.</param>
 /// <remarks>
 /// <para>
@@ -38,7 +38,7 @@ namespace Gorgon.Graphics.Core;
 /// <a href="https://learn.microsoft.com/en-us/windows/win32/Memory/memory-protection-constants" target="_blank">Memory Protection Constants</a>).
 /// </para>
 /// <para>
-/// If the <see cref="HasIsolatedMemoryManagementUnit"/> is <b>true</b>, the application must take care to no use memory with these page table properties with the GPU, as the GPU might trigger these page 
+/// If the <see cref="HasIsolatedMemoryManagementUnit"/> is <b>true</b>, the application must take care to not use memory with these page table properties with the GPU, as the GPU might trigger these page 
 /// table properties in unexpected ways. For example, GPU write operations might be coarser than the application expects, particularly writes from within shaders. Certain write-watch pages might appear 
 /// dirty, even when it isn't obvious how GPU writes may have affected them. GPU operations associated with upload and readback heap usage scenarios work well with write-watch pages, but might occasionally 
 /// generate false positives that can be safely ignored.

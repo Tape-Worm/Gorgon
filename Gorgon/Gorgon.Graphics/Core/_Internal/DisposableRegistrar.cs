@@ -75,10 +75,11 @@ internal static class DisposableRegistrar
                 graphics.Log.PrintWarning($"Cleaning up {disposables.Count} outstanding user objects. Please Dispose() your objects when done with them.", LoggingLevel.Intermediate);
 
                 while (disposables.Count > 0)
-                {
-                    if (!disposables[0].TryGetTarget(out IDisposable? disposeRef))
+                {                    
+                    WeakReference<IDisposable> weakRef = disposables[^1];
+                    if (!weakRef.TryGetTarget(out IDisposable? disposeRef))
                     {
-                        disposables.RemoveAt(0);
+                        disposables.RemoveAt(disposables.Count - 1);
                         continue;
                     }
 
@@ -99,6 +100,7 @@ internal static class DisposableRegistrar
                     {
                         graphics.Log.PrintError($"Disposing of '{disposeRef.GetType().FullName}' failed.", LoggingLevel.Simple);
                         graphics.Log.PrintException(ex);
+                        disposables.RemoveAt(disposables.Count - 1);
                     }
                 }
 
@@ -152,9 +154,18 @@ internal static class DisposableRegistrar
                     return;
                 }
 
-                disposables.RemoveAll(weakRef =>
-                                          // Remove any dead references.
-                                          !weakRef.TryGetTarget(out IDisposable? disposeRef) || disposeRef == disposable);
+                int i = 0;
+
+                while (i < disposables.Count)
+                {
+                    if ((!disposables[i].TryGetTarget(out IDisposable? obj)) || (obj == disposable))
+                    {
+                        disposables.RemoveAt(i);
+                        continue;
+                    }
+
+                    ++i;
+                }
             }
         }
     }

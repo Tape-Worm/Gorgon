@@ -71,9 +71,15 @@ public class GorgonPointJsonConverter
 
             switch (propName)
             {
+                case "w":
+                case "width":
+                case "Width":
                 case "x":
                     x = reader.GetInt32();
                     break;
+                case "h":
+                case "height":
+                case "Height":
                 case "y":
                     y = reader.GetInt32();
                     break;

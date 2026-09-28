@@ -212,7 +212,7 @@
   <data name="GORGFX_ERR_WIDTH_TOO_SMALL" xml:space="preserve">
     <value>The width {0} is too small, it must be at least {1}.</value>
   </data>
-  <data name="GORGFX_NULL_WINDOW_HANDLE" xml:space="preserve">
+  <data name="GORGFX_ERR_NULL_WINDOW_HANDLE" xml:space="preserve">
     <value>The window handle must not be NULL.</value>
   </data>
   <data name="GORGFX_STR_ADAPTER" xml:space="preserve">
@@ -551,5 +551,107 @@ Please reset the resource on the last command list executed on the {2} object be
   </data>
   <data name="GORGFX_ERR_NO_INDEPENDENT_STENCIL_REF_SUPPORT" xml:space="preserve">
     <value>The adapter '{0}' does not support independent front/back stencil reference value support.</value>
+  </data>
+  <data name="GORGFX_ERR_CANNOT_RETRIEVE_DRIVER_VERSION" xml:space="preserve">
+    <value>Could not retrieve the GPU driver version.</value>
+  </data>
+  <data name="GORGFX_ERR_PSO_GPU_MISMATCH" xml:space="preserve">
+    <value>The PSO was not created by device '{0}'.  
+
+Original: VendorID = {0}, SubSystemID = {1}, DeviceID = {2}, Revision = {3}.
+Current: VendorID = {4}, SubSystemID = {5}, DeviceID = {6}, Revision = {7}.</value>
+  </data>
+  <data name="GORGFX_ERR_PSO_DRIVER_MISMATCH" xml:space="preserve">
+    <value>The PSO '{0}' was compiled under a different driver version. It cannot be used.</value>
+  </data>
+  <data name="GORGFX_ERR_PSO_NO_SHADERS" xml:space="preserve">
+    <value>The PSO '{0}' requires at least 1 shader, and it must be a vertex shader.</value>
+  </data>
+  <data name="GORGFX_ERR_DRAW_NEEDS_PSO" xml:space="preserve">
+    <value>The draw object requires a pipeline state object.</value>
+  </data>
+  <data name="GORGFX_ERR_DRAW_INDEXED_NEEDS_INDEXBUFFER" xml:space="preserve">
+    <value>The draw indexed object needs an index buffer.</value>
+  </data>
+  <data name="GORGFX_ERR_DRAW_INSTANCE_COUNT" xml:space="preserve">
+    <value>The number of instances must be at least 1.</value>
+  </data>
+  <data name="GORGFX_ERR_DRAW_INDEX_COUNT" xml:space="preserve">
+    <value>The number of indices must be at least 1.</value>
+  </data>
+  <data name="GORGFX_ERR_DRAW_VERTEX_COUNT" xml:space="preserve">
+    <value>The number of vertices must be at least 1.</value>
+  </data>
+  <data name="GORGFX_ERR_NO_PSO_DATA_TO_WRITE" xml:space="preserve">
+    <value>The cache does not contain any PSO data to write.</value>
+  </data>
+  <data name="GORGFX_ERR_PSO_CACHE_CORRUPT_CANNOT_FIND_SHADER_LINK" xml:space="preserve">
+    <value>The PSO '{0}' has a shader link ID of {1}, but no shader with that ID is in the cache.</value>
+  </data>
+  <data name="GORGFX_ERR_PSO_CACHE_CORRUPT_SHADER_LINK_ID_DUPLICATE" xml:space="preserve">
+    <value>The shader link ID {0} already exists in PSO '{1}'.  Shader type: {2}</value>
+  </data>
+  <data name="GORGFX_ERR_PSO_CACHE_CORRUPT_DUPE_NAME" xml:space="preserve">
+    <value>The PSO cache file is corrupt. The PSO '{0}' already exists.</value>
+  </data>
+  <data name="GORGFX_ERR_TEXTURE_DISPOSED" xml:space="preserve">
+    <value>The texture object '{0}' is disposed and cannot be used.</value>
+  </data>
+  <data name="GORGFX_ERR_BUFFER_DISPOSED" xml:space="preserve">
+    <value>The buffer '{0}' is disposed and cannot be used.</value>
+  </data>
+  <data name="GORGFX_ERR_PSO_CACHE_FILE_NO_SHADERS" xml:space="preserve">
+    <value>The PSO cache file does not contain any shaders.</value>
+  </data>
+  <data name="GORGFX_ERR_CANNOT_READ_GPU_BUDGET" xml:space="preserve">
+    <value>There was an error trying to read the GPU memory budget for the adapter '{0}'.</value>
+  </data>
+  <data name="GORGFX_ERR_GORGON_MISMATCH" xml:space="preserve">
+    <value>'{0}' requires Gorgon version {1}. The current version is {2}.</value>
+  </data>
+  <data name="GORGFX_ERR_MSAA_NOT_MULTISAMPLED" xml:space="preserve">
+    <value>The texture '{0}' is not a multisampled texture.</value>
+  </data>
+  <data name="GORGFX_ERR_MSAA_TEXTURE_NOT_SUPPORTED" xml:space="preserve">
+    <value>The texture '{0}' is multisampled, but multisampled textures cannot be used.</value>
+  </data>
+  <data name="GORGFX_ERR_MSAA_DEST_NOT_2D" xml:space="preserve">
+    <value>The destination texture '{0}' must be a 2D texture or a 2D texture array.</value>
+  </data>
+  <data name="GORGFX_ERR_MSAA_TEXTURE_FORMAT_NOT_RESOLVABLE" xml:space="preserve">
+    <value>The texture '{0}' has a format of {1}. This format cannot be resolved.</value>
+  </data>
+  <data name="GORGFX_ERR_MSAA_TEXTURE_FORMATS_NOT_SAME" xml:space="preserve">
+    <value>The MSAA texture '{0}' has a format of {1}, and the output texture '{2}' has a format of {3}.
+
+Both textures must have the same format.</value>
+  </data>
+  <data name="GORGFX_MSAA_RESOLVE_SIZE_MISMATCH" xml:space="preserve">
+    <value>The MSAA texture '{0}' has a subresource size of {1}x{2}. The output texture '{3}' has a subresource size of {4}x{5}.
+
+The texture subresources must be the same width and height.</value>
+  </data>
+  <data name="GORGFX_ERR_PSO_INDEPENDENT_BLEND_LOGIC_ENABLED" xml:space="preserve">
+    <value>Independent blending is enabled, and the first render target has logic enabled. 
+
+There is no support for independent blending and blending logic.</value>
+  </data>
+  <data name="GORGFX_ERR_BLEND_STATE_ENABLED_LOGIC_ENABLED" xml:space="preserve">
+    <value>The blend state at {0} is enabled, and has its logic enabled.  Only one of these can be true at a time.</value>
+  </data>
+  <data name="GORGFX_ERR_PSO_HULL_AND_DOMAIN_REQUIRED" xml:space="preserve">
+    <value>Both the hull and domain shaders need to be assigned. </value>
+  </data>
+  <data name="GORGFX_ERR_PSO_HULL_DOMAIN_PRIMTYPE_NOT_PATCH" xml:space="preserve">
+    <value>The primitive type is {0}. For domain/hull shaders, the primitive type must be one of the patch primitive types.</value>
+  </data>
+  <data name="GORGFX_ERR_INDEX_CUT_NON_STRIP_PRIMITIVE" xml:space="preserve">
+    <value>The index buffer strip cut identifier is only usable on strip primitive types. The current primitive type is {0}.</value>
+  </data>
+  <data name="GORGFX_ERR_CONSTANT_BUFFER_VIEW_TOO_LARGE" xml:space="preserve">
+    <value>The constant buffer '{0}' view is {1} bytes. The maximum size for a constant buffer view is 64KB (65,536 bytes).</value>
+  </data>
+  <data name="GORGFX_ERR_HEIGHT_TOO_SMALL" xml:space="preserve">
+    <value>The height {0} is too small, it must be at least {1}.</value>
   </data>
 </root>

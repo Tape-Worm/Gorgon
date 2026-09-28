@@ -23,10 +23,10 @@
 
 using System.Reactive;
 using System.Reactive.Linq;
+using ReactiveUI;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using Gorgon.IO;
-using ReactiveUI;
 
 namespace Gorgon.Examples;
 

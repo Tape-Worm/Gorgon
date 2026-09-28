@@ -28,15 +28,9 @@ using Gorgon.Core;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// A macro for a shader
+/// A macro used for conditional compilation or injecting code or value into a shader.
 /// </summary>
-/// <param name="Name">[Optional] The name of the macro.</param>
-/// <param name="Value">[Optional] The value/expression to assign to the macro.</param>
+/// <param name="Name">The name of the macro.</param>
+/// <param name="Value">[Optional] The value/expression to assign to the macro. If this value is <b>null</b>, then the macro is defined without a value.</param>
 public readonly record struct GorgonShaderMacro(string Name, string? Value = null)
-    : IGorgonNamedObject, IEquatable<GorgonShaderMacro>
-{
-    /// <summary>
-    /// Property to return the name of the named object.
-    /// </summary>
-    string IGorgonNamedObject.Name => Name;
-}
+    : IGorgonNamedObject, IEquatable<GorgonShaderMacro>;

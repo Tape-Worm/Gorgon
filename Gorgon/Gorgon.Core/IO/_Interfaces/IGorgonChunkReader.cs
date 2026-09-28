@@ -222,7 +222,7 @@ public interface IGorgonChunkReader
     /// </summary>
     /// <param name="bytes">The number of bytes to skip, if this is less than or equal to 0, then nothing will happen.</param>
     /// <returns>The number of bytes skipped.</returns>
-    int Skip(int bytes);
+    long Skip(long bytes);
 
     /// <summary>
     /// Function to deserialize object data from the underlying file stream.

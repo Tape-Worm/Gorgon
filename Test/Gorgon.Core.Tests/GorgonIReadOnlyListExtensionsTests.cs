@@ -58,7 +58,7 @@ public class GorgonIReadOnlyListExtensionsTests
 
         list.CopyTo(array);
 
-        CollectionAssert.AreEqual(list.ToArray(), array);
+        Assert.AreSequenceEqual([.. list], array);
     }
 
     [TestMethod]

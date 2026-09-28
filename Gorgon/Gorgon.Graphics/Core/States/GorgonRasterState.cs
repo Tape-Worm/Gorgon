@@ -21,10 +21,6 @@
 // Created: June 29, 2026 5:08:58 PM
 //
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-using Gorgon.Math;
 using TerraFX.Interop.DirectX;
 
 namespace Gorgon.Graphics.Core;
@@ -34,18 +30,25 @@ namespace Gorgon.Graphics.Core;
 /// </summary>
 /// <remarks>
 /// <para>
-/// This is the part of the <see cref="GorgonGraphicsPso"/> object that defines the raster state during a draw call.
+/// This defines how rasterization is performed when rendering primitives. This state can provide anti-aliasing for lines, tell the GPU what to cull by the vertex order of a triangle, among other properties.
+/// </para>
+/// <para>
+/// The raster state contains several common raster states used by applications as static members of the class. Use these instead of defining your own so there's less garbage for the GC to pick up.
+/// </para>
+/// <para>
+/// The default constructor sets up the <see cref="GorgonRasterState"/> with the same parameters as the <see cref="Default"/> property.
 /// </para>
 /// </remarks>
-/// <seealso cref="GorgonGraphicsPso"/>
-public class GorgonRasterState
-    : IEquatable<GorgonRasterState>
+public sealed record class GorgonRasterState()
+    : IPsoState<GorgonRasterState>
 {
     /// <summary>
     /// The default raster state.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// Provides back face culling, and a solid fill mode.
+    /// </para>
     /// </remarks>
     public static readonly GorgonRasterState Default = new();
 
@@ -88,48 +91,57 @@ public class GorgonRasterState
     public CullingMode CullMode
     {
         get;
-        internal set;
+        init;
     } = CullingMode.Back;
 
     /// <summary>
     /// Property to return the triangle fill mode.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// The default value is <see cref="FillMode.Solid"/>.
+    /// </para>
     /// </remarks>
     public FillMode FillMode
     {
         get;
-        internal set;
+        init;
     } = FillMode.Solid;
 
     /// <summary>
     /// Property to return whether conservative rasterization should be used or not.
     /// </summary>
     /// <remarks>
+    /// <para>
+    /// When conservative rasterization is used, a pixel is rasterized if any part of the primitive covers any part of the pixel, instead of only when the primitive covers the center of the pixel.
+    /// </para>
+    /// <para>
     /// The default value is <b>false</b>.
+    /// </para>
     /// </remarks>
     public bool UseConservativeRasterization
     {
         get;
-        internal set;
+        init;
     }
 
     /// <summary>
-    /// Property to return whether a triangle is front or back facing.
+    /// Property to return whether triangles with a counter-clockwise winding order are front-facing.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This value determines if a triangle is front or back facing by using the winding order of its vertices.
+    /// When this value is <b>true</b>, a triangle is considered front-facing if its vertices are counter-clockwise on the render target, and back-facing if they are clockwise. When this value is <b>false</b>, 
+    /// the opposite is true.
     /// </para>
     /// <para>
     /// The default value is <b>false</b>.
     /// </para>
     /// </remarks>
+    /// <seealso cref="CullMode"/>
     public bool IsFrontCounterClockwise
     {
         get;
-        internal set;
+        init;
     }
 
     /// <summary>
@@ -137,8 +149,8 @@ public class GorgonRasterState
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This value is used to help z-fighting for co-planar polygons. This is often caused by a lack of precision for the depth in the view volume and the depth/stencil buffer. By adding a small offset 
-    /// via this property, it can make a polygon appear to be in front of or behind another polygon even though they actually share the same (or very nearly the same depth value).
+    /// This value is used to help reduce z-fighting for co-planar polygons. This is often caused by a lack of precision for the depth in the view volume and the depth/stencil buffer. By adding a small offset 
+    /// via this property, it can make a polygon appear to be in front of or behind another polygon, even though they actually share the same depth value (or very nearly the same depth value).
     /// </para>
     /// <para>
     /// The default value is 0.
@@ -147,7 +159,7 @@ public class GorgonRasterState
     public int DepthBias
     {
         get;
-        internal set;
+        init;
     }
 
     /// <summary>
@@ -165,7 +177,7 @@ public class GorgonRasterState
     public float SlopeScaledDepthBias
     {
         get;
-        internal set;
+        init;
     }
 
     /// <summary>
@@ -183,27 +195,37 @@ public class GorgonRasterState
     public float DepthBiasClamp
     {
         get;
-        internal set;
+        init;
     }
 
     /// <summary>
-    /// Property to return whether depth/clipping is enabled or not.
+    /// Property to return whether depth clipping is enabled or not.
     /// </summary>
     /// <remarks>
+    /// <para>
+    /// When this value is <b>true</b>, primitives are clipped against the near and far planes of the view volume. When this value is <b>false</b>, the depth clipping is skipped, and improper depth ordering at 
+    /// the pixel level may result.
+    /// </para>
+    /// <para>
     /// The default value is <b>true</b>.
+    /// </para>
     /// </remarks>
     public bool IsDepthClippingEnabled
     {
         get;
-        internal set;
+        init;
     } = true;
 
     /// <summary>
-    /// Property to return the type of rasterization performed on line primitves.
+    /// Property to return the type of rasterization performed on line primitives.
     /// </summary>
     /// <remarks>
     /// <para>
     /// The <see cref="LineRasterizationMode.QuadrilateralNarrow"/> and <see cref="LineRasterizationMode.QuadrilateralWide"/> require MSAA to be enabled on the currently bound render target(s).
+    /// </para>
+    /// <para>
+    /// If this value is set to <see cref="LineRasterizationMode.QuadrilateralNarrow"/>, and the video adapter does not support it (see <see cref="GorgonVideoAdapterInfo.SupportsNarrowQuadrilateralLines"/>), 
+    /// then an exception will be thrown when the pipeline state object is created by <see cref="GorgonGraphicsPsoFactory.CreateOrGetPso(string, GorgonShader, GorgonGraphicsPsoBuilder)"/>.
     /// </para>
     /// <para>
     /// The default value is <see cref="LineRasterizationMode.Default"/>.
@@ -212,7 +234,7 @@ public class GorgonRasterState
     public LineRasterizationMode LineRasterizationMode
     {
         get;
-        internal set;
+        init;
     }
 
     /// <summary>
@@ -220,29 +242,30 @@ public class GorgonRasterState
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This forces the number of samples to use when rendering unordered access view data. The valid values are 0, 1, 4, 8 and 16. A value of 0 indicates that the sample count is not forced.
+    /// This forces the number of samples to use when rendering unordered access view data. The valid values are 0, 1, 4, 8, and optionally 16. A value of 0 indicates that the sample count is not forced.
     /// </para>
     /// <para>
     /// <note type="note">
     /// <para>
     /// If you want to render with sample count set to 1 or greater, you must follow these guidelines:
     /// <list type="bullet">
-    ///		<item> 
-    ///			<description>Don't bind depth-stencil views.</description>
-    ///		</item>
-    ///		<item>
-    ///			<description>Disable depth testing.</description>
-    ///		</item>
-    ///		<item>
-    ///			<description>Ensure the shader doesn't output depth.</description>
-    ///		</item>
-    ///		<item>
-    ///			<description>If you have any render-target views bound and this value is greater than 1, ensure that every render target has only a single sample.</description>
-    ///		</item>
-    ///		<item>
-    ///			<description>Don't operate the shader at sample frequency.</description>
-    ///		</item> 
+    /// 	<item>
+    /// 		<description>Don't bind depth-stencil views.</description>
+    /// 	</item>
+    /// 	<item>
+    /// 		<description>Disable depth testing.</description>
+    /// 	</item>
+    /// 	<item>
+    /// 		<description>Ensure the shader doesn't output depth.</description>
+    /// 	</item>
+    /// 	<item>
+    /// 		<description>If you have any render-target views bound and this value is greater than 1, ensure that every render target has only a single sample.</description>
+    /// 	</item>
+    /// 	<item>
+    /// 		<description>Don't operate the shader at sample frequency.</description>
+    /// 	</item>
     /// </list>
+    /// Otherwise, the rendering results are undefined.
     /// </para>
     /// </note>
     /// </para>
@@ -253,7 +276,7 @@ public class GorgonRasterState
     public int ForcedReadWriteViewSampleCount
     {
         get;
-        internal set;
+        init;
     }
 
     /// <summary>
@@ -275,54 +298,29 @@ public class GorgonRasterState
             LineRasterizationMode = (D3D12_LINE_RASTERIZATION_MODE)LineRasterizationMode
         };
 
-    /// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
-    /// <returns>true if the current object is equal to the <paramref name="state" /> parameter; otherwise, false.</returns>
-    /// <param name="state">An object to compare with this object.</param>
-    public bool Equals(GorgonRasterState? state) => (this == state) || ((state is not null)
-                                   && (CullMode == state.CullMode)
-                                   && (DepthBias == state.DepthBias)
-                                   && (DepthBiasClamp.EqualsEpsilon(state.DepthBiasClamp))
-                                   && (IsDepthClippingEnabled == state.IsDepthClippingEnabled)
-                                   && (FillMode == state.FillMode)
-                                   && (ForcedReadWriteViewSampleCount == state.ForcedReadWriteViewSampleCount)
-                                   && (IsFrontCounterClockwise == state.IsFrontCounterClockwise)
-                                   && (LineRasterizationMode == state.LineRasterizationMode)
-                                   && (SlopeScaledDepthBias.EqualsEpsilon(state.SlopeScaledDepthBias))
-                                   && (UseConservativeRasterization == state.UseConservativeRasterization));
-
-    /// <summary>
-    /// Indicates whether the current object is equal to another object of the same type.
-    /// </summary>
-    /// <param name="obj">An object to compare with this object.</param>
-    /// <returns><see langword="true" /> if the current object is equal to the <paramref name="obj" /> parameter; otherwise, <see langword="false" />.</returns>
-    public override bool Equals(object? obj) => obj is GorgonRasterState rs ?  Equals(rs) : base.Equals(obj);
-
-    /// <summary>
-    /// Returns a hash code for this instance.
-    /// </summary>
-    /// <returns>
-    /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
-    /// </returns>
-    public override int GetHashCode()
+    /// <inheritdoc/>
+    public static GorgonRasterState GetDefinedState(GorgonRasterState state)
     {
-        HashCode hashCode = new();
-        hashCode.Add(CullMode);
-        hashCode.Add(DepthBias);
-        hashCode.Add(DepthBiasClamp);
-        hashCode.Add(IsDepthClippingEnabled);
-        hashCode.Add(FillMode);
-        hashCode.Add(ForcedReadWriteViewSampleCount);
-        hashCode.Add(IsFrontCounterClockwise);
-        hashCode.Add(LineRasterizationMode);
-        hashCode.Add(SlopeScaledDepthBias);
-        hashCode.Add(UseConservativeRasterization);
-        return hashCode.ToHashCode();
-    }
+        if (state == Default)
+        {
+            return Default;
+        }
+        
+        if (state == NoCulling)
+        {
+            return NoCulling;
+        }
+        
+        if (state == CullFrontFace)
+        {
+            return CullFrontFace;
+        }
+        
+        if (state == WireFrameNoCulling)
+        {
+            return WireFrameNoCulling;
+        }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonRasterState"/> class.
-    /// </summary>
-    internal GorgonRasterState()
-    {
+        return state;
     }
 }

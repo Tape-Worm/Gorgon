@@ -28,7 +28,7 @@ using TerraFX.Interop.DirectX;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Defines the type of operation to perform while blending colors
+/// Defines the type of operation to perform while blending colors.
 /// </summary>
 public enum BlendOperation
 {

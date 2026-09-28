@@ -65,7 +65,7 @@ namespace Gorgon.Graphics.Core;
 /// <h3>Data Management</h3>
 /// <para>
 /// Users can allocate portions of the texture by allocating regions using texel coordinates (i.e. UV for <see cref="TextureType.Texture2D"/> textures, or UVW for <see cref="TextureType.Texture3D"/> textures). 
-/// This results in the creation of a unique handle identifer that the user should hold on to and use in operations such as copying texture data. 
+/// This results in the creation of a unique handle identifier that the user should hold on to and use in operations such as copying texture data. 
 /// </para>
 /// <para>
 /// Conversely, when users are finished with a region on the texture, they use the aforementioned handle to deallocate the region to make it available for other purposes.
@@ -428,13 +428,17 @@ public sealed unsafe class GorgonVirtualTexture
     /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/returns"/>
     /// <exception cref="GorgonException">
     /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para"/>
-    /// <para>
-    /// Thrown if the <c>info</c> <see cref="GorgonVirtualTextureInfo.Format"/> of the texture is not supported for virtual textures.
+    /// <para type="tiled">
+    /// Thrown if the <paramref name="info"/> <see cref="GorgonTextureInfo.Format"/> of the texture is not supported for virtual textures.
     /// </para>
-    /// <para>
+    /// <para type="tier3">
     /// Thrown if the type of texture is <see cref="TextureType.Texture3D"/>, but the GPU does not support <see cref="TiledResourcesTier.Tier3"/>.
     /// </para>
-    /// <para>
+    /// <para type="arraymip">
+    /// Thrown if the texture has a <see cref="GorgonTextureInfo.MipCount"/> greater than 1 and an <see cref="GorgonTextureInfo.ArrayCount"/> greater than 1, but the GPU does not support
+    /// <see cref="TiledResourcesTier.Tier4"/>.
+    /// </para>
+    /// <para type="size">
     /// Thrown if the texture size, in bytes, is less than 4 MB (4,194,304 bytes).
     /// </para>
     /// </exception>
@@ -449,7 +453,7 @@ public sealed unsafe class GorgonVirtualTexture
 
         if ((info.Type == TextureType.Texture3D) && (Graphics.Adapter.TiledResourcesTier < TiledResourcesTier.Tier3))
         {
-            throw new GorgonException(GorgonResult.CannotEnumerate, string.Format(Resources.GORGFX_ERR_VIRTUAL_TEXTURE_3D_NOT_SUPPORTED, Name, nameof(TiledResourcesTier) + "." + Graphics.Adapter.TiledResourcesTier));
+            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_VIRTUAL_TEXTURE_3D_NOT_SUPPORTED, Name, nameof(TiledResourcesTier) + "." + Graphics.Adapter.TiledResourcesTier));
         }
 
         // Ancient devices before 2016 can't support packed mips on array textures. 
@@ -487,7 +491,7 @@ public sealed unsafe class GorgonVirtualTexture
     /// Function to convert a 2D texel coordinate into a 2D tile coordinate.
     /// </summary>
     /// <param name="texel">The 2D texel coordinate to convert.</param>
-    /// <param name="mipLevel">The mip level to use.</param>
+    /// <param name="mipLevel">[Optional] The mip level to use.</param>
     /// <returns>The texel value, converted to tile coordinates.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public GorgonPoint ToTile(Vector2 texel, short mipLevel = 0)
@@ -520,7 +524,7 @@ public sealed unsafe class GorgonVirtualTexture
     /// </summary>
     /// <param name="tile">The 2D tile coordinate to convert.</param>
     /// <param name="mipLevel"><inheritdoc cref="ToTile(Vector2, short)" path="/param[@name='mipLevel']"/></param>
-    /// <returns>The tile value converted, to texel coordinates.</returns>
+    /// <returns>The tile value, converted to texel coordinates.</returns>
     /// <remarks>
     /// <para>
     /// Due to the imprecision of a tile, this method will only return the texel coordinate of the upper left corner of the tile.
@@ -542,7 +546,7 @@ public sealed unsafe class GorgonVirtualTexture
     /// <inheritdoc cref="ToTexelOrigin(GorgonPoint, short)" path="/returns"/>
     /// <remarks>
     /// <para>
-    /// Due to the imprecision of a tile, this method will only return the texel coordinate of the whole tile.
+    /// Due to the imprecision of a tile, this method will only return texel coordinates that are aligned to whole tiles.
     /// </para>
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -576,7 +580,7 @@ public sealed unsafe class GorgonVirtualTexture
     /// Function to convert a 3D region of texel coordinates into a 3D region of tile coordinates.
     /// </summary>
     /// <param name="texels">The 3D texel region to convert.</param>
-    /// <param name="tiles">The 3D tile region.</param>
+    /// <param name="tiles">The converted 3D tile region.</param>
     /// <param name="mipLevel"><inheritdoc cref="ToTile(Vector2, short)" path="/param[@name='mipLevel']"/></param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void ToTiles(ref readonly GorgonBoxF texels, out GorgonBox tiles, short mipLevel = 0)
@@ -627,10 +631,9 @@ public sealed unsafe class GorgonVirtualTexture
     /// Function to convert a 3D region of tile coordinates into a region of 3D texel coordinates.
     /// </summary>
     /// <param name="tiles">The 3D tile region to convert.</param>
-    /// <param name="texels">The texel values for the region.</param>
+    /// <param name="texels">The converted 3D texel region.</param>
     /// <param name="mipLevel"><inheritdoc cref="ToTile(Vector2, short)" path="/param[@name='mipLevel']"/></param>
-    /// <inheritdoc cref="ToTexelOrigin(GorgonPoint, short)" path="/returns"/>
-    /// <inheritdoc cref="ToTexelOrigin(Vector3, short)" path="/remarks"/>
+    /// <inheritdoc cref="FromTiles(GorgonRectangle, short)" path="/remarks"/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void FromTiles(ref readonly GorgonBox tiles, out GorgonBoxF texels, short mipLevel = 0)
     {
@@ -650,9 +653,9 @@ public sealed unsafe class GorgonVirtualTexture
     /// <param name="tiles">The 3D tile region to convert.</param>
     /// <param name="mipLevel"><inheritdoc cref="ToTile(Vector2, short)" path="/param[@name='mipLevel']"/></param>
     /// <inheritdoc cref="ToTexelOrigin(GorgonPoint, short)" path="/returns"/>
-    /// <inheritdoc cref="ToTexelOrigin(Vector3, short)" path="/remarks"/>
+    /// <inheritdoc cref="FromTiles(GorgonRectangle, short)" path="/remarks"/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public GorgonBoxF FromTiles(GorgonBox tiles, short mipLevel = 0) 
+    public GorgonBoxF FromTiles(GorgonBox tiles, short mipLevel = 0)
     {
         FromTiles(in tiles, out GorgonBoxF texels, mipLevel);
         return texels;
@@ -668,7 +671,7 @@ public sealed unsafe class GorgonVirtualTexture
     /// <para>
     /// Unlike the <see cref="GorgonTextureCommon.GetSubResourceIndex(short, short, byte)"/> method, this will return the sub resource index based on which tile the sub resource resides in. This means that 
     /// a sub resource can share a tile if it is small enough (e.g. multiple small mip maps in a single tile). Therefore, the index returned by this method is not the same as the aforementioned method, and 
-    /// should not be used with <see cref="GorgonTextureCommon.SubResources"/>. Instead, use the index with the <see cref="SubResourceTileInformation"/> property instead.
+    /// should not be used with <see cref="GorgonTextureCommon.SubResources"/>. Instead, use the index with the <see cref="SubResourceTileInformation"/> property.
     /// </para>
     /// </remarks>
     /// <seealso cref="GorgonTextureCommon"/>
@@ -840,15 +843,15 @@ public sealed unsafe class GorgonVirtualTexture
     /// <remarks>
     /// <para>
     /// This method allocates a region on the texture for use by an application. The application specifies the region in normalized texel coordinates (i.e. UV for <see cref="TextureType.Texture2D"/> textures, 
-    /// or UVW for <see cref="TextureType.Texture3D"/> textures). For example, a region of (0.5f, 0.25f, 0) - (1.0f, 0.5f, 0.25f) indicates that the region should start half way through the texture, a 
+    /// or UVW for <see cref="TextureType.Texture3D"/> textures). For example, a region of (0.5f, 0.25f, 0) - (1.0f, 0.5f, 0.25f) indicates that the region should start halfway through the texture, a 
     /// quarter of the way down, and at the first depth slice and should cover half of the width of the texture (i.e. right - left = 0.5f), one quarter of the height, and one quarter of its depth. This can 
     /// be applied to any sub resource on the texture like the <paramref name="mipLevel"/>, or, for <see cref="TextureType.Texture2D"/> textures, the <paramref name="arrayIndex"/> (this parameter is ignored 
     /// for <see cref="TextureType.Texture3D"/> textures).
     /// </para>
     /// <inheritdoc cref="GorgonVirtualTexture" path="/remarks/para[@type='overlap_warn']"/>
     /// <para>
-    /// As mentioned in the above warning, allocation fails if there is overlap with another region. When this happens, the application returns <b>false</b> and sets the <paramref name="handle"/> to 
-    /// <see cref="GorgonVirtualTextureHandle"/>.<see cref="GorgonVirtualTextureHandle.Null"/>.Developers should check the return value of this method and handle it appropriately.
+    /// As mentioned in the above warning, allocation fails if there is overlap with another region. When this happens, this method returns <b>false</b> and sets the <paramref name="handle"/> to
+    /// <see cref="GorgonVirtualTextureHandle"/>.<see cref="GorgonVirtualTextureHandle.Null"/>. Developers should check the return value of this method and handle it appropriately.
     /// </para>
     /// <para>
     /// If a region is no longer required, then the application should call <see cref="TryDeallocate"/> to free it up for future usage.
@@ -1010,18 +1013,20 @@ public sealed unsafe class GorgonVirtualTexture
     /// <param name="name"><inheritdoc cref="GorgonTextureCommon(GorgonGraphics, string, GorgonTextureInfo)" path="/param[@name='name']"/></param>
     /// <param name="info"><inheritdoc cref="GorgonTextureCommon(GorgonGraphics, string, GorgonTextureInfo)" path="/param[@name='info']"/></param>
     /// <exception cref="GorgonException">
-    /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[1]"/>
-    /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[2]"/>
-    /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[3]"/>
-    /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[6]"/>
-    /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[9]"/>
-    /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[10]"/>
-    /// <inheritdoc cref="ValidateInfo(GorgonTextureInfo)" path="/exception/para[11]"/>
-    /// <inheritdoc cref="ValidateInfo(GorgonTextureInfo)" path="/exception/para[12]"/>
+    /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[@type='mip']"/>
+    /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[@type='3d']"/>
+    /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[@type='2d']"/>
+    /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[@type='rt']"/>
+    /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[@type='cube']"/>
+    /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[@type='compressed']"/>
+    /// <inheritdoc cref="ValidateInfo(GorgonTextureInfo)" path="/exception/para[@type='tiled']"/>
+    /// <inheritdoc cref="ValidateInfo(GorgonTextureInfo)" path="/exception/para[@type='tier3']"/>
+    /// <inheritdoc cref="ValidateInfo(GorgonTextureInfo)" path="/exception/para[@type='arraymip']"/>
+    /// <inheritdoc cref="ValidateInfo(GorgonTextureInfo)" path="/exception/para[@type='size']"/>
     /// </exception>
     /// <remarks>
     /// <para>
-    /// When applications create a texture, they have to pass in a <see cref="GorgonVirtualTextureInfo"/> object to define the layout of the virtual texture. Applications use this to define the number of 
+    /// When applications create a texture, they have to pass in a <see cref="GorgonVirtualTextureInfo"/> object to define the layout of the virtual texture. Applications use this to define the number of
     /// dimensions in the texture (<see cref="TextureType"/>) and its format (<see cref="BufferFormat"/>).
     /// </para>
     /// <para>
@@ -1029,28 +1034,28 @@ public sealed unsafe class GorgonVirtualTexture
     /// <list type="bullet">
     ///     <item>
     ///         <term><see cref="TextureType.Texture1D"/></term>
-    ///         <description>Not supported by virtual textures..</description>
+    ///         <description>Not supported by virtual textures.</description>
     ///     </item>
     ///     <item>
     ///         <term><see cref="TextureType.Texture2D"/></term>
-    ///         <description><see cref="GorgonTextureInfo.Width"/> and <see cref="GorgonTextureInfo.Height"/> are required, <see cref="GorgonTextureInfo.Depth"/> should be set to 1.</description>
+    ///         <description><see cref="GorgonVirtualTextureInfo.Width"/> and <see cref="GorgonVirtualTextureInfo.Height"/> are required, <see cref="GorgonVirtualTextureInfo.Depth"/> should be set to 1.</description>
     ///     </item>
     ///     <item>
     ///         <term><see cref="TextureType.Texture3D"/></term>
-    ///         <description><see cref="GorgonTextureInfo.Width"/>, <see cref="GorgonTextureInfo.Height"/>, and <see cref="GorgonTextureInfo.Depth"/> are required.</description>
+    ///         <description><see cref="GorgonVirtualTextureInfo.Width"/>, <see cref="GorgonVirtualTextureInfo.Height"/>, and <see cref="GorgonVirtualTextureInfo.Depth"/> are required.</description>
     ///     </item>
     /// </list>
     /// </para>
     /// <para>
-    /// The <see cref="GorgonTextureInfo.Format"/> should be a supported format for virtual textures. This can be determined by checking the <see cref="GorgonGraphics.FormatSupport"/> property on the 
+    /// The <see cref="GorgonVirtualTextureInfo.Format"/> should be a supported format for virtual textures. This can be determined by checking the <see cref="GorgonGraphics.FormatSupport"/> property on the
     /// <see cref="GorgonGraphics"/> object to determine if the format is supported for a given texture type.
     /// </para>
     /// <para>
-    /// The <see cref="GorgonTextureInfo.ArrayCount"/> should be set to 1 for <see cref="TextureType.Texture3D"/> textures. It only applies to 2D textures. If the <see cref="GorgonTextureInfo.IsCube"/> is 
-    /// set to <b>true</b>, then this value <b>must</b> be a multiple of 6.
+    /// The <see cref="GorgonVirtualTextureInfo.ArrayCount"/> only applies to 2D textures, and is reset to 1 for <see cref="TextureType.Texture3D"/> textures. If the
+    /// <see cref="GorgonVirtualTextureInfo.IsCube"/> is set to <b>true</b>, then this value <b>must</b> be a multiple of 6.
     /// </para>
     /// <para>
-    /// The <see cref="GorgonTextureInfo.MipCount"/> value should be at least 1. <see cref="GorgonVirtualTextureInfo.GetMaximumMipCount(int, int, short)"/> can be used to determine the maximum number of mip 
+    /// The <see cref="GorgonVirtualTextureInfo.MipCount"/> value should be at least 1. <see cref="GorgonVirtualTextureInfo.GetMaximumMipCount(int, int, short)"/> can be used to determine the maximum number of mip 
     /// levels for the texture.
     /// </para>
     /// <inheritdoc cref="GorgonTexture" path="/remarks/para[@type='max_dimensions']"/>

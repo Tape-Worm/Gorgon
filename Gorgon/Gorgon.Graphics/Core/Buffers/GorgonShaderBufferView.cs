@@ -31,7 +31,7 @@ namespace Gorgon.Graphics.Core;
 /// Base object to deliver common functionality and information for shader resource based views.
 /// </summary>
 public unsafe abstract class GorgonShaderBufferView
-    : GorgonResourceView
+    : GorgonGpuBufferView
 {
     private GpuDescriptorAllocation _allocation = GpuDescriptorAllocation.Null;
     private readonly GpuDescriptorHeap _descriptors;
@@ -40,14 +40,6 @@ public unsafe abstract class GorgonShaderBufferView
     /// Property to return the descriptor allocation for this view.
     /// </summary>
     private protected ref readonly GpuDescriptorAllocation Allocation => ref _allocation;
-
-    /// <summary>
-    /// Property to return the buffer used by this view.
-    /// </summary>
-    public GorgonGpuBuffer Buffer
-    {
-        get;
-    }
 
     /// <summary>
     /// Property to return the size, in bytes, of the buffer to view.
@@ -69,7 +61,9 @@ public unsafe abstract class GorgonShaderBufferView
     /// Property to return the number of elements in the buffer view.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// An element is a single item within the buffer. This can be a single byte, or set of values contained within a value type.
+    /// </para>
     /// </remarks>
     public int ElementCount
     {
@@ -80,7 +74,7 @@ public unsafe abstract class GorgonShaderBufferView
     /// Property to return the first index within the buffer to start the view at.
     /// </summary>
     /// <remarks>
-    /// <inheritdoc cref="ElementCount" path="/remarks"/>
+    /// <inheritdoc cref="ElementCount" path="/remarks/para"/>
     /// <para>
     /// An index in the buffer is a value that when multiplied by <see cref="ElementSize"/>, will give the byte offset within the buffer.
     /// </para>
@@ -134,6 +128,8 @@ public unsafe abstract class GorgonShaderBufferView
     {
         if (disposing)
         {
+            this.UnregisterDisposable(Graphics);
+
             if (!_allocation.Equals(GpuDescriptorAllocation.Null))
             {
                 Graphics.Log.Print($"Freeing descriptor handle allocation for '{Name}'.", LoggingLevel.Verbose);
@@ -171,7 +167,6 @@ public unsafe abstract class GorgonShaderBufferView
     {
         _descriptors = graphics.Descriptors.GpuViewDescriptors;
 
-        Buffer = buffer;
         StartElementIndex = startIndex;
         ElementCount = elementCount;
         ElementSize = elementSize;

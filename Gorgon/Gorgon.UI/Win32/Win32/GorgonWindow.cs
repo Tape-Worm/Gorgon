@@ -289,7 +289,7 @@ public sealed class GorgonWindow
     /// <summary>
     /// Function to create the actual window.
     /// </summary>
-    private unsafe void CreateWindow()
+    private void CreateWindow()
     {
         if ((_hwnd != IntPtr.Zero) || (_isDisposing != 0))
         {

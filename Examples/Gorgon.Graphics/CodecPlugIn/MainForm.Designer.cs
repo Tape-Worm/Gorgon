@@ -2,7 +2,7 @@
 
 namespace Graphics.Examples;
 
-partial class Form
+partial class MainForm
 {
     /// <summary>
     /// Required designer variable.
@@ -28,17 +28,18 @@ partial class Form
     /// </summary>
     private void InitializeComponent()
     {
-        ComponentResourceManager resources = new ComponentResourceManager(typeof(Form));
+        ComponentResourceManager resources = new ComponentResourceManager(typeof(MainForm));
         SuspendLayout();
         // 
-        // Form
+        // MainForm
         // 
         AutoScaleDimensions = new SizeF(7F, 15F);
         AutoScaleMode = AutoScaleMode.Font;
-        ClientSize = new Size(1280, 720);
+        BackColor = Color.Black;
+        ClientSize = new Size(1280, 800);
         Icon = (Icon)resources.GetObject("$this.Icon");
         Margin = new Padding(4, 5, 4, 5);
-        Name = "Form";
+        Name = "MainForm";
         StartPosition = FormStartPosition.CenterScreen;
         Text = "Codec Plugins";
         ResumeLayout(false);

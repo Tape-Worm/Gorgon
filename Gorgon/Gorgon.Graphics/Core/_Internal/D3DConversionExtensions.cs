@@ -25,6 +25,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
+using Gorgon.Native;
 using TerraFX.Interop.DirectX;
 using TerraFX.Interop.Windows;
 
@@ -222,5 +223,16 @@ internal static class D3DConversionExtensions
             D3D12_COMMAND_LIST_TYPE.D3D12_COMMAND_LIST_TYPE_COMPUTE => nameof(GorgonComputeEngine),
             _ => throw new InvalidCastException()
         };
+    }
+
+    extension(ComPtr<ID3DBlob> blob)
+    {
+        /// <summary>
+        /// Function to convert a D3D blob type to a <see cref="GorgonPtr{T}"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of data in memory.</typeparam>
+        /// <returns>The <see cref="GorgonPtr{T}"/> pointing at the blob's contents.</returns>
+        public unsafe GorgonPtr<T> ToGorgonPtr<T>()
+            where T : unmanaged => new((T*)blob.Get()->GetBufferPointer(), (long)blob.Get()->GetBufferSize());
     }
 }

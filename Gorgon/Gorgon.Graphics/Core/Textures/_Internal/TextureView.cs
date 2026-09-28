@@ -187,6 +187,8 @@ internal unsafe sealed class TextureView<T>
     {
         if (disposing)
         {
+            this.UnregisterDisposable(Graphics);
+
             if (!_allocation.Equals(GpuDescriptorAllocation.Null))
             {
                 Graphics.Log.Print($"Freeing descriptor handle allocation for '{Name}'.", LoggingLevel.Verbose);
@@ -207,13 +209,31 @@ internal unsafe sealed class TextureView<T>
     /// <param name="plane">The format plane to view.</param>
     /// <param name="isShaderResource"><b>true</b> if the texture can be used as a shader resource, <b>false</b> if not.</param>
     /// <param name="isDepthStencil"><b>true</b> if the texture is a depth/stencil texture.</param>
-    /// <exception cref="GorgonException"><para>Thrown if the texture is not a <see cref="GorgonTextureCommon.IsShaderResource">shader resource</see>.</para>
-    /// <para>Thrown if the format is for a depth/stencil format.</para>
-    /// <para>Thrown if either the texture <see cref="GorgonTextureCommon.Format"/> or view format is for a compressed texture, and the other is not.</para>
-    /// <para>Thrown if the texture is a depth/stencil texture using a <see cref="BufferFormat.D16_UNorm"/>, <see cref="BufferFormat.D32_Float"/>, <see cref="BufferFormat.D24_UNorm_S8_UInt"/> or <see cref="BufferFormat.D32_Float_S8X24_UInt"/> format.</para>
-    /// <para>Thrown if the format is a planar format.</para>
-    /// <para>Thrown if the texture <see cref="GorgonTextureCommon.Format"/> is a typeless format, and view format is not using the correct view format.</para>
-    /// <para>Thrown if the texture format cannot be casted to the view format.</para>
+    /// <exception cref="GorgonException"><para type="notsrv">
+    /// Thrown if the texture is not a <see cref="GorgonTextureCommon.IsShaderResource">shader resource</see>.
+    /// </para>
+    /// <para type="typeless">
+    /// Thrown if the view format is a typeless format.
+    /// </para>
+    /// <para type="depthformat">
+    /// Thrown if the view format is a depth/stencil format.
+    /// </para>
+    /// <para type="planar">
+    /// Thrown if the view format is a planar format.
+    /// </para>
+    /// <para type="compressed">
+    /// Thrown if either the texture <see cref="GorgonTextureCommon.Format"/> or view format is for a compressed texture, and the other is not.
+    /// </para>
+    /// <para type="dsformat">
+    /// Thrown if the texture is a depth/stencil texture using a <see cref="BufferFormat.D16_UNorm"/>, <see cref="BufferFormat.D32_Float"/>, <see cref="BufferFormat.D24_UNorm_S8_UInt"/> or
+    /// <see cref="BufferFormat.D32_Float_S8X24_UInt"/> format.
+    /// </para>
+    /// <para type="dsview">
+    /// Thrown if the texture is a depth/stencil texture with a typeless <see cref="GorgonTextureCommon.Format"/>, and the view format is not the correct format for the plane being viewed.
+    /// </para>
+    /// <para type="cast">
+    /// Thrown if the texture format cannot be cast to the view format.
+    /// </para>
     /// </exception>
     internal static void ValidateTextureView(string name, GorgonFormatInfo textureFormatInfo, GorgonFormatInfo viewFormatInfo, IReadOnlyList<BufferFormat> formats, byte plane, bool isShaderResource, bool isDepthStencil)
     {

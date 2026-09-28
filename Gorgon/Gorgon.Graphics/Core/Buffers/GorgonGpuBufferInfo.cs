@@ -39,19 +39,15 @@ public record class GorgonGpuBufferInfo(long SizeInBytes)
     : GorgonCommonBufferInfo(SizeInBytes)
 {
     /// <summary>
-    /// An empty instance of the <see cref="GorgonGpuBuffer"/> type.
+    /// An empty instance of the <see cref="GorgonGpuBufferInfo"/> type.
     /// </summary>
     public static readonly GorgonGpuBufferInfo Empty = new(0);
 
-    /// <summary>
-    /// <inheritdoc cref="IGorgonGpuBufferInfo.Alignment"/>
-    /// </summary>
+    /// <inheritdoc cref="IGorgonGpuBufferInfo.Alignment" path="/summary"/>
     /// <remarks>
-    /// <inheritdoc cref="IGorgonGpuBufferInfo.Alignment" path="/remarks/para[1]"/>
-    /// <inheritdoc cref="IGorgonGpuBufferInfo.Alignment" path="/remarks/para[2]"/>
-    /// <inheritdoc cref="IGorgonGpuBufferInfo.Alignment" path="/remarks/para[3]"/>
+    /// <inheritdoc cref="IGorgonGpuBufferInfo.Alignment" path="/remarks/para"/>
     /// <para>
-    /// This value must be a power of 2, and non-negative. If these conditions are not met, then the buffer will not be created.
+    /// This value must not be negative. If it is, then the buffer will not be created.
     /// </para>
     /// <para>
     /// The default value is 0, meaning no alignment (this is the same as an alignment of 1).
@@ -75,7 +71,7 @@ public record class GorgonGpuBufferInfo(long SizeInBytes)
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="IGorgonGpuBufferInfo"/> class.
+    /// Initializes a new instance of the <see cref="GorgonGpuBufferInfo"/> class.
     /// </summary>
     /// <param name="info">The buffer creation information to copy.</param>
     public GorgonGpuBufferInfo(IGorgonGpuBufferInfo info)

@@ -27,7 +27,7 @@ using TerraFX.Interop.DirectX;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Defines the type of logical operations to perform while blending a render target
+/// Defines the type of logical operation to perform on a render target.
 /// </summary>
 public enum LogicOperation
 {

@@ -27,7 +27,7 @@ using System.Diagnostics;
 using System.Numerics;
 using Gorgon.Examples;
 using Gorgon.Graphics;
-using Gorgon.Graphics.Core.OLDE;
+using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Graphics.Imaging.Codecs.Plugins;
@@ -40,20 +40,35 @@ namespace Graphics.Examples;
 /// <summary>
 /// Our main UI window for the example
 /// </summary>
-public partial class Form : System.Windows.Forms.Form
+public partial class MainForm : System.Windows.Forms.Form
 {
     // The cache that holds Plugin information.
     private readonly GorgonMefPluginCache _pluginCache;
+    // The graphics object factory.
+    private GorgonGraphicsFactory? _factory;
     // The main graphics interface.
     private GorgonGraphics? _graphics;
     // The swap chain to use.
     private GorgonSwapChain? _swap;
     // Image to display, loaded from our plugin.
-    private GorgonTexture2DView? _texture;
+    private IGorgonTextureView<GorgonTexture>? _texture;
     // The image in system memory.
     private IGorgonImage? _image;
     // Our custom codec loaded from the plugin.
     private IGorgonImageCodec? _customCodec;
+
+    /// <summary>
+    /// Function to handle a window resizing event.
+    /// </summary>
+    /// <param name="sender">The sender of the event.</param>
+    /// <param name="e">The event parameters.</param>
+    private void WindowResize(object? sender, EventArgs e)
+    {
+        Debug.Assert(_graphics is not null, "No graphics interface");
+        Debug.Assert(_swap is not null, "No swap chain.");
+
+        _swap.Resize(ClientSize.Width, ClientSize.Height);
+    }
 
     /// <summary>
     /// Function called during idle time.
@@ -61,13 +76,19 @@ public partial class Form : System.Windows.Forms.Form
     /// <returns><b>true</b> to continue execution, <b>false</b> to stop.</returns>
     private bool Idle()
     {
+        Debug.Assert(_graphics is not null, "No graphics interface");
         Debug.Assert(_swap is not null, "No swap chain.");
         Debug.Assert(_texture is not null, "The texture was not created.");
 
-        _swap.RenderTargetView.Clear(GorgonColors.White);
+        GorgonCommandList commandList = _graphics.GetCommandList("Main command list")
+                                                 .ClearSwapChain(_swap, GorgonColors.White)
+                                                 .SetViewport(new GorgonViewport(0, 0, ClientSize.Width, ClientSize.Height))
+                                                 .SetScissorRectangle(new GorgonRectangle(0, 0, ClientSize.Width, ClientSize.Height))
+                                                 .AddPresenter(_swap)
+                                                 .SetRenderTarget(_swap.Target);
 
         Vector2 windowSize = new(ClientSize.Width, ClientSize.Height);
-        Vector2 imageSize = new(_texture.Width, _texture.Height);
+        Vector2 imageSize = new(_texture.Texture.Width, _texture.Texture.Height);
 
         // Calculate the scale between the images.
         Vector2 scale = new(windowSize.X / imageSize.X, windowSize.Y / imageSize.Y);
@@ -88,11 +109,11 @@ public partial class Form : System.Windows.Forms.Form
         // Find the position.
         GorgonRectangle bounds = new((int)((windowSize.X / 2) - (size.X / 2)), (int)((windowSize.Y / 2) - (size.Y / 2)), size.X, size.Y);
 
-        GorgonExample.Blitter.Blit(_texture, bounds);
+        commandList.Blit(_texture, bounds, new GorgonRectangleF(0, 0, 1, 1), GorgonSampler.Default(_graphics));
 
-        GorgonExample.BlitLogo(_graphics);
+        GorgonExample.BlitLogo(commandList);
 
-        _swap.Present(1);
+        _graphics.Submit(commandList);
 
         return true;
     }
@@ -147,11 +168,7 @@ public partial class Form : System.Windows.Forms.Form
 
             _image = _customCodec.FromFile(tempPath);
 
-            _texture = _image.ToTexture2D(_graphics, new GorgonTexture2DLoadOptions
-            {
-                Name = "Converted Texture"
-            }).GetShaderResourceView();
-
+            _texture = IGorgonTextureView<GorgonTexture>.CreateTexture(_graphics, "Converted Texture", _image);
         }
         catch
         {
@@ -165,7 +182,6 @@ public partial class Form : System.Windows.Forms.Form
             {
                 File.Delete(tempPath);
             }
-            // ReSharper disable once EmptyGeneralCatchClause
             catch
             {
                 // Intentionally left blank.
@@ -196,6 +212,7 @@ public partial class Form : System.Windows.Forms.Form
         _texture?.Dispose();
         _swap?.Dispose();
         _graphics?.Dispose();
+        _factory?.Dispose();
         _image?.Dispose();
     }
 
@@ -220,7 +237,16 @@ public partial class Form : System.Windows.Forms.Form
 
             // Set up the graphics interface.
             // Find out which devices we have installed in the system.
-            IReadOnlyList<IGorgonVideoAdapterInfo> deviceList = GorgonGraphics.EnumerateAdapters();
+            // Create the factory used to create our graphics functionality.
+#if DEBUG
+            _factory = new(GorgonGraphicsDebugFlags.SynchronizedCommandQueueValidation
+                | GorgonGraphicsDebugFlags.GpuBasedValidation
+                | GorgonGraphicsDebugFlags.GpuBasedStateTrackingValidation
+                | GorgonGraphicsDebugFlags.ObjectTracking, log: GorgonExample.Log);
+#else
+            _factory = new(log: log);
+#endif     
+            IReadOnlyList<GorgonVideoAdapterInfo> deviceList = _factory.EnumerateAdapters();
 
             if (deviceList.Count == 0)
             {
@@ -229,24 +255,24 @@ public partial class Form : System.Windows.Forms.Form
                 return;
             }
 
-            _graphics = new GorgonGraphics(deviceList[0]);
+            _graphics = _factory.CreateGraphics(deviceList[0]);
 
             _swap = new GorgonSwapChain(_graphics,
-                                        this,
-                                        new GorgonSwapChainInfo(ClientSize.Width, ClientSize.Height, BufferFormat.R8G8B8A8_UNorm)
-                                        {
-                                            Name = "Codec Plugin SwapChain"
-                                        });
-
-            _graphics.SetRenderTarget(_swap.RenderTargetView);
+                                        "Codec plugin SwapChain",
+                                        Handle,
+                                        new GorgonSwapChainInfo(ClientSize.Width, ClientSize.Height, BufferFormat.R8G8B8A8_UNorm));
 
             // Load the image to use as a texture.
             IGorgonImageCodec png = new GorgonCodecPng();
             _image = png.FromFile(Path.Combine(GorgonExample.GetResourcePath(@"Textures\CodecPlugin\").FullName, "SourceTexture.png"));
-
+                        
             GorgonExample.LoadResources(_graphics);
 
             ConvertImage();
+
+            GorgonExample.EndInit();
+
+            Resize += WindowResize;
 
             GorgonExample.Loop.Run(Idle);
         }
@@ -262,9 +288,9 @@ public partial class Form : System.Windows.Forms.Form
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="Form"/> class.
+    /// Initializes a new instance of the <see cref="MainForm"/> class.
     /// </summary>
-    public Form()
+    public MainForm()
     {
         InitializeComponent();
 

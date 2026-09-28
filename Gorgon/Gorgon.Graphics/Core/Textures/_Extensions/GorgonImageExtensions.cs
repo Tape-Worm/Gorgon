@@ -29,7 +29,7 @@ using Gorgon.Graphics.Imaging;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Extension methods for the <see cref="IGorgonImage"/> and <see cref="IGorgonImageInfo"/> types.
+/// Extension methods for the <see cref="ImageDataType"/> type.
 /// </summary>
 public static class GorgonImageExtensions
 {

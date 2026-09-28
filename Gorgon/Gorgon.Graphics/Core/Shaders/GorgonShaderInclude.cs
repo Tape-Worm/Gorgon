@@ -28,40 +28,39 @@ using Gorgon.Core;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// An include file for a shader
+/// A named include used by the <c>#GorgonInclude</c> keyword in shader source code.
 /// </summary>
+/// <param name="Name">The name used to look up the include.</param>
+/// <param name="SourceCodeFile">The source code for the include.</param>
 /// <remarks>
 /// <para>
-/// Use this object to load in included external functions for a shader.  If the shader source contains an HLSL <c>#include</c> directive, the shader compiler will try to locate that include file on 
-/// the file system.  However, this does not work when the files are loaded from a <see cref="Stream"/> (it wouldn't know where to find the include file).  So to facilitate this, this object will 
-/// contain the source for the include file and will be looked up <i>before</i> the file system is checked for the include file
+/// The HLSL <c>#include</c> directive locates include files on the file system. This does not work when the shader source was not loaded from a file (e.g. from a <see cref="Stream"/>), because there is no 
+/// path to search. To facilitate this, Gorgon provides a <c>#GorgonInclude</c> keyword that looks up the include by name in the <see cref="GorgonShaderCompiler.Includes"/> property <i>before</i> it tries to 
+/// load a file.
 /// </para>
 /// <para>
-/// Gorgon uses a special keyword in shaders to allow shader files to include other files as part of the source. This keyword is named <c>#GorgonInclude</c> and is similar to the HLSL 
-/// <c>#include</c> keyword. The difference is that this keyword allows users to include shader source from memory instead of a separate source file. This is done by assigning a name to the included 
-/// source code in the <c>#GorgonInclude</c> keyword, and adding the <see cref="GorgonShaderInclude"/> containing the source to the <see cref="GorgonShaderFactory.Includes"/> property on the 
-/// <see cref="GorgonShaderFactory"/> class. When the include is loaded from a file, then it will automatically be added to the <see cref="GorgonShaderFactory.Includes"/> property
+/// To include source code from memory, add a <see cref="GorgonShaderInclude"/> containing the source code to the <see cref="GorgonShaderCompiler.Includes"/> property, and use its name in the 
+/// <c>#GorgonInclude</c> keyword. When the include is loaded from a file, then its source code will automatically be added to the <see cref="GorgonShaderCompiler.Includes"/> property.
 /// </para>
 /// <para>
-/// The parameters for the <c>#GorgonInclude</c>keyword are: 
+/// The <c>#GorgonInclude</c> keyword is written as <c>#GorgonInclude "Name"</c>, or <c>#GorgonInclude "Name", "Path"</c>. The parameters are:
 /// <list type="bullet">
-///		<item>
-///			<term>Name</term>
-///			<description>The path name of the included source. This must be unique, and assigned to the <see cref="GorgonShaderFactory.Includes"/> property.</description>
-///		</item>
-///		<item>
-///			<term>(Optional) Path</term>
-///			<description>The path to the shader source file to include. This may be omitted if the include is assigned from memory in the <see cref="GorgonShaderFactory.Includes"/> property.</description>
-///		</item>
+/// <item>
+/// <term>Name</term>
+/// <description>
+/// The name of the include. This is the key for the include in the <see cref="GorgonShaderCompiler.Includes"/> property, and is not case sensitive.
+/// </description>
+/// </item>
+/// <item>
+/// <term>(Optional) Path</term>
+/// <description>
+/// The path to the shader source file to include. This is ignored if an include with the same name is already in the <see cref="GorgonShaderCompiler.Includes"/> property.
+/// </description>
+/// </item>
 /// </list>
 /// </para>
-/// <para>
-/// These include objects are ignored with binary shader data loaded from a <see cref="Stream"/> or file as those will aready contain the included source compiled into bytecode
-/// </para>
 /// </remarks>
-/// <seealso cref="GorgonShaderFactory"/>
-/// <param name="Name">The name of the shader include file.</param>
-/// <param name="SourceCodeFile">The source code contained within the include file.</param>
+/// <seealso cref="GorgonShaderCompiler"/>
 public readonly record struct GorgonShaderInclude(string Name, string SourceCodeFile)
     : IGorgonNamedObject
 {

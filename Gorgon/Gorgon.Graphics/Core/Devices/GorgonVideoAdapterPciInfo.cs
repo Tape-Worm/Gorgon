@@ -28,7 +28,7 @@ namespace Gorgon.Graphics.Core;
 /// PCI slot information for a <see cref="GorgonVideoAdapterInfo"/> data structure.
 /// </summary>
 /// <param name="DeviceID">The PCI device ID for the adapter.</param>
-/// <param name="Revision">The PCI ID revision number for the adapter</param>
-/// <param name="SubSystemID">The PCI sub system ID for the adapter.</param>
+/// <param name="Revision">The PCI ID revision number for the adapter.</param>
+/// <param name="SubSystemID">The PCI subsystem ID for the adapter.</param>
 /// <param name="VendorID">The PCI vendor ID for the adapter.</param>
 public readonly record struct GorgonVideoAdapterPciInfo(int DeviceID, int Revision, int SubSystemID, int VendorID);

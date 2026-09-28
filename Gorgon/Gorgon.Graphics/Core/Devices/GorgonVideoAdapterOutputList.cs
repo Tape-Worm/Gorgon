@@ -30,7 +30,7 @@ using Gorgon.Native;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// A list of outputs on a video adapter
+/// A list of outputs on a video adapter.
 /// </summary>
 public sealed class GorgonVideoAdapterOutputList
     : IReadOnlyDictionary<string, GorgonVideoOutputInfo>
@@ -51,6 +51,13 @@ public sealed class GorgonVideoAdapterOutputList
     /// <summary>
     /// Property to return an item in the dictionary by its name.
     /// </summary>
+    /// <param name="name">The name of the output to return.</param>
+    /// <exception cref="KeyNotFoundException">Thrown if no output with the <paramref name="name"/> exists in the list.</exception>
+    /// <remarks>
+    /// <para>
+    /// Output names are not case sensitive.
+    /// </para>
+    /// </remarks>
     public GorgonVideoOutputInfo this[string name] => _outputs[name];
 
     /// <summary>
@@ -75,7 +82,7 @@ public sealed class GorgonVideoAdapterOutputList
     /// Function to return whether an item with the specified name exists in this collection.
     /// </summary>
     /// <param name="name">Name of the item to find.</param>
-    /// <returns><b>true</b>if found, <b>false</b> if not.</returns>
+    /// <returns><b>true</b> if found, <b>false</b> if not.</returns>
     public bool ContainsKey(string name) => _outputs.ContainsKey(name);
 
     /// <summary>
@@ -94,7 +101,7 @@ public sealed class GorgonVideoAdapterOutputList
     /// <returns>An <see cref="IEnumerator" /> object that can be used to iterate through the collection.</returns>
     IEnumerator IEnumerable.GetEnumerator() => _outputs.Select(output => output.Value).GetEnumerator();
 
-    /// <inheritdocs/>
+    /// <inheritdoc/>
     IEnumerator<KeyValuePair<string, GorgonVideoOutputInfo>> IEnumerable<KeyValuePair<string, GorgonVideoOutputInfo>>.GetEnumerator()
     {
         foreach (KeyValuePair<string, GorgonVideoOutputInfo> output in _outputs)

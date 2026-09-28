@@ -191,8 +191,8 @@ public sealed unsafe class GorgonGpuBuffer
     /// </para>
     /// <para type="bindless_doc">
     /// In Gorgon's bindless model, passing the view is done by writing a constant value via the <see cref="GorgonCommandList.WriteConstant{T}(int, in T)"/> method. The value is the handle of the view, which 
-    /// is retrieved by the <see cref="GorgonShaderBufferView.GetViewHandle()"/> method on the view. Then, in the shader, the resource can be indexed easily by the <c>ResourceDescriptorHeap[cbv_handle]</c> 
-    /// intrinsic function (where <c>cbv_handle</c> is the name of the constant that was updated).
+    /// is retrieved by the <c>GetViewHandle</c> method on the view. Then, in the shader, the resource can be indexed easily by the <c>ResourceDescriptorHeap[handle]</c> intrinsic function (where <c>handle</c> 
+    /// is the name of the constant that was updated).
     /// </para>
     /// <para>
     /// Unlike other view types, only 1 constant buffer view can be used by a buffer. This is because the constant buffer covers the range of the entire buffer's size.
@@ -201,14 +201,13 @@ public sealed unsafe class GorgonGpuBuffer
     /// <note type="important">
     /// <para>
     /// The buffer used for the constant buffer view <b>MUST</b> be aligned to <see cref="GorgonConstantBufferView.AlignmentRequirement"/> (256 bytes). Ensure the <see cref="GorgonGpuBufferInfo.Alignment"/> 
-    /// property on the <see cref="GorgonGpuBufferInfo"/> passed to the buffer's constructor is set to match the <see cref="GorgonConstantBufferView.AlignmentRequirement"/> 
-    /// upon buffer creation.
+    /// property on the <see cref="GorgonGpuBufferInfo"/> passed to the buffer's constructor is set to match the <see cref="GorgonConstantBufferView.AlignmentRequirement"/> upon buffer creation.
     /// </para>
     /// </note>
     /// </para>
     /// </remarks>
     /// <seealso cref="GorgonCommandList.WriteConstant{T}(int, in T)"/>
-    /// <seealso cref="GorgonShaderBufferView.GetViewHandle()"/>
+    /// <seealso cref="GorgonConstantBufferView.GetViewHandle()"/>
     /// <seealso cref="GorgonGpuBufferInfo"/>
     /// <seealso cref="GorgonConstantBufferView"/>
     internal GorgonConstantBufferView GetConstantBufferView(bool owned)
@@ -232,14 +231,14 @@ public sealed unsafe class GorgonGpuBuffer
     /// <summary>
     /// Function to create a structured buffer view.
     /// </summary>
-    /// <param name="structSize">The size, in bytes, of a single element in the view. Must be a multiple of 16.</param>
-    /// <param name="startIndex">[Optional] The index in the buffer to start the view at.</param>
+    /// <param name="structSize">The size, in bytes, of a single element in the view. Must be a multiple of <see cref="GorgonStructuredBufferView.MinimumElementSize"/> (4 bytes).</param>
+    /// <param name="startIndex">[Optional] The index of the first element in the buffer to start the view at.</param>
     /// <param name="count">[Optional] The number of elements to view.</param>
     /// <param name="owned"><inheritdoc cref="GetConstantBufferView(bool)" path="/param[@name='owned']"/></param>
     /// <returns>A <see cref="GorgonStructuredBufferView"/> for the buffer.</returns>
     /// <inheritdoc cref="GorgonStructuredBufferView.ValidateStructuredView(string, int, long, ulong)" path="/exception"/>
     /// <remarks>
-    /// <para>
+    /// <para type="intro">
     /// This allows shaders to access buffer data as a custom data structure.
     /// </para>
     /// <para>
@@ -250,11 +249,9 @@ public sealed unsafe class GorgonGpuBuffer
     /// </para>
     /// <para>
     /// When the structured buffer is created, it must use an <see cref="GorgonGpuBufferInfo.Alignment"/> that matches the <paramref name="structSize"/>. Otherwise, an exception will be thrown when creating 
-    /// the structured view. This provides protection against data misalignment. 
+    /// the structured view. This provides protection against data misalignment.
     /// </para>
-    /// <para>
     /// <inheritdoc cref="GetConstantBufferView(bool)" path="/remarks/para[@type='bindless_doc']"/>
-    /// </para>
     /// </remarks>
     /// <seealso cref="GorgonCommandList.WriteConstant{T}(int, in T)"/>
     /// <seealso cref="GorgonShaderBufferView.GetViewHandle()"/>
@@ -300,11 +297,9 @@ public sealed unsafe class GorgonGpuBuffer
     /// </para>
     /// <para>
     /// When the raw buffer is created, it must use an <see cref="GorgonGpuBufferInfo.Alignment"/> that matches the <see cref="GorgonRawBufferView.AlignmentRequirement"/>. Otherwise, an exception will be 
-    /// thrown when creating the raw view. This provides protection against data misalignment. 
+    /// thrown when creating the raw view. This provides protection against data misalignment.
     /// </para>
-    /// <para>
     /// <inheritdoc cref="GetConstantBufferView(bool)" path="/remarks/para[@type='bindless_doc']"/>
-    /// </para>
     /// </remarks>
     /// <seealso cref="GorgonCommandList.WriteConstant{T}(int, in T)"/>
     /// <seealso cref="GorgonShaderBufferView.GetViewHandle()"/>
@@ -351,12 +346,10 @@ public sealed unsafe class GorgonGpuBuffer
     /// <see cref="GorgonFormatInfo"/> object and reading the <see cref="GorgonFormatInfo.SizeInBytes"/> property.
     /// </para>
     /// <para>
-    /// When the typed buffer is created, it must use an <see cref="GorgonGpuBufferInfo.Alignment"/> that matches the size of a <see cref="BufferFormat"/>. Otherwise, an exception will be thrown when 
-    /// creating the typed view. This provides protection against data misalignment. 
+    /// When the typed buffer is created, it must use an <see cref="GorgonGpuBufferInfo.Alignment"/> that matches the size of a <see cref="BufferFormat"/>. Otherwise, an exception will be thrown when creating 
+    /// the typed view. This provides protection against data misalignment.
     /// </para>
-    /// <para>
     /// <inheritdoc cref="GetConstantBufferView(bool)" path="/remarks/para[@type='bindless_doc']"/>
-    /// </para>
     /// </remarks>
     /// <seealso cref="GorgonCommandList.WriteConstant{T}(int, in T)"/>
     /// <seealso cref="GorgonShaderBufferView.GetViewHandle()"/>
@@ -387,9 +380,7 @@ public sealed unsafe class GorgonGpuBuffer
         }
     }
 
-    /// <summary>
     /// <inheritdoc cref="GetConstantBufferView(bool)" path="/summary"/>
-    /// </summary>
     /// <inheritdoc cref="GetConstantBufferView(bool)" path="/returns"/>
     /// <inheritdoc cref="GetConstantBufferView(bool)" path="/exception"/>
     /// <inheritdoc cref="GetConstantBufferView(bool)" path="/remarks"/>
@@ -397,9 +388,7 @@ public sealed unsafe class GorgonGpuBuffer
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public GorgonConstantBufferView GetConstantBufferView() => GetConstantBufferView(false);
 
-    /// <summary>
     /// <inheritdoc cref="GetStructuredBufferView(int, long, int?, bool)" path="/summary"/>
-    /// </summary>
     /// <param name="structSize"><inheritdoc cref="GetStructuredBufferView(int, long, int?, bool)" path="/param[@name='structSize']"/></param>
     /// <param name="startIndex"><inheritdoc cref="GetStructuredBufferView(int, long, int?, bool)" path="/param[@name='startIndex']"/></param>
     /// <param name="count"><inheritdoc cref="GetStructuredBufferView(int, long, int?, bool)" path="/param[@name='count']"/></param>
@@ -410,54 +399,50 @@ public sealed unsafe class GorgonGpuBuffer
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public GorgonStructuredBufferView GetStructuredBufferView(int structSize, long startIndex = 0, int? count = null) => GetStructuredBufferView(structSize, startIndex, count, false);
 
-    /// <summary>
-    /// <inheritdoc cref="GetStructuredBufferView(int, long, int?, bool)"/>
-    /// </summary>
+    /// <inheritdoc cref="GetStructuredBufferView(int, long, int?, bool)" path="/summary"/>
     /// <typeparam name="T">The type of data to view the buffer as. Must be an unmanaged type.</typeparam>
     /// <param name="startIndex"><inheritdoc cref="GetStructuredBufferView(int, long, int?, bool)" path="/param[@name='startIndex']"/></param>
     /// <param name="count"><inheritdoc cref="GetStructuredBufferView(int, long, int?, bool)" path="/param[@name='count']"/></param>
     /// <inheritdoc cref="GetStructuredBufferView(int, long, int?, bool)" path="/returns"/>
+    /// <inheritdoc cref="GetStructuredBufferView(int, long, int?, bool)" path="/exception"/>
     /// <remarks>
+    /// <inheritdoc cref="GetStructuredBufferView(int, long, int?, bool)" path="/remarks/para[@type='intro']"/>
     /// <para>
-    /// <inheritdoc cref="GetStructuredBufferView(int, long, int?, bool)" path="/remarks/para[1]"/>
+    /// The size of the type <typeparamref name="T"/>, in bytes, must be a multiple of <see cref="GorgonStructuredBufferView.MinimumElementSize"/> (4 bytes). If it is not, then an exception is thrown.
     /// </para>
     /// <para>
     /// Buffers used as a structured data buffer must be at least the size of a single element, which is the size of the type <typeparamref name="T"/>, in bytes. If the buffer is too small, an exception is 
     /// thrown.
     /// </para>
     /// <para>
-    /// When the structured buffer is created, it must use an <see cref="GorgonGpuBufferInfo.Alignment"/> that matches the size of the type <typeparamref name="T"/>. Otherwise, an exception will be thrown 
-    /// when creating the structured view. This provides protection against data misalignment. 
+    /// When the structured buffer is created, it must use an <see cref="GorgonGpuBufferInfo.Alignment"/> that matches the size of the type <typeparamref name="T"/>. Otherwise, an exception will be thrown when 
+    /// creating the structured view. This provides protection against data misalignment.
     /// </para>
-    /// <para>
     /// <inheritdoc cref="GetConstantBufferView(bool)" path="/remarks/para[@type='bindless_doc']"/>
-    /// </para>
     /// </remarks>
     /// <inheritdoc cref="GetStructuredBufferView(int, long, int?, bool)" path="/seealso"/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public GorgonStructuredBufferView GetStructuredBufferView<T>(long startIndex = 0, int? count = null) where T : unmanaged
         => GetStructuredBufferView(sizeof(T), startIndex, count, false);
 
-    /// <summary>
-    /// <inheritdoc cref="GetRawBufferView(long, int?, bool)"/>
-    /// </summary>
+    /// <inheritdoc cref="GetRawBufferView(long, int?, bool)" path="/summary"/>
     /// <param name="startIndex"><inheritdoc cref="GetRawBufferView(long, int?, bool)" path="/param[@name='startIndex']"/></param>
     /// <param name="count"><inheritdoc cref="GetRawBufferView(long, int?, bool)" path="/param[@name='count']"/></param>
+    /// <inheritdoc cref="GetRawBufferView(long, int?, bool)" path="/returns"/>
     /// <inheritdoc cref="GetRawBufferView(long, int?, bool)" path="/exception"/>
     /// <inheritdoc cref="GetRawBufferView(long, int?, bool)" path="/remarks"/>
     /// <inheritdoc cref="GetRawBufferView(long, int?, bool)" path="/seealso"/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public GorgonRawBufferView GetRawBufferView(long startIndex = 0, int? count = null) => GetRawBufferView(startIndex, count, false);
 
-    /// <summary>
-    /// <inheritdoc cref="GetTypedBufferView(BufferFormat, long, int?, bool)"/>
-    /// </summary>
-    /// <param name="format"><inheritdoc cref="GetTypedBufferView(BufferFormat,long, int?, bool)" path="/param[@name='format']"/></param>
-    /// <param name="startIndex"><inheritdoc cref="GetTypedBufferView(BufferFormat,long, int?, bool)" path="/param[@name='startIndex']"/></param>
-    /// <param name="count"><inheritdoc cref="GetTypedBufferView(BufferFormat,long, int?, bool)" path="/param[@name='count']"/></param>
-    /// <inheritdoc cref="GetTypedBufferView(BufferFormat,long, int?, bool)" path="/exception"/>
-    /// <inheritdoc cref="GetTypedBufferView(BufferFormat,long, int?, bool)" path="/remarks"/>
-    /// <inheritdoc cref="GetTypedBufferView(BufferFormat,long, int?, bool)" path="/seealso"/>
+    /// <inheritdoc cref="GetTypedBufferView(BufferFormat, long, int?, bool)" path="/summary"/>
+    /// <param name="format"><inheritdoc cref="GetTypedBufferView(BufferFormat, long, int?, bool)" path="/param[@name='format']"/></param>
+    /// <param name="startIndex"><inheritdoc cref="GetTypedBufferView(BufferFormat, long, int?, bool)" path="/param[@name='startIndex']"/></param>
+    /// <param name="count"><inheritdoc cref="GetTypedBufferView(BufferFormat, long, int?, bool)" path="/param[@name='count']"/></param>
+    /// <inheritdoc cref="GetTypedBufferView(BufferFormat, long, int?, bool)" path="/returns"/>
+    /// <inheritdoc cref="GetTypedBufferView(BufferFormat, long, int?, bool)" path="/exception"/>
+    /// <inheritdoc cref="GetTypedBufferView(BufferFormat, long, int?, bool)" path="/remarks"/>
+    /// <inheritdoc cref="GetTypedBufferView(BufferFormat, long, int?, bool)" path="/seealso"/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public GorgonTypedBufferView GetTypedBufferView(BufferFormat format, long startIndex = 0, int? count = null) => GetTypedBufferView(format, startIndex, count, false);
 
@@ -467,17 +452,19 @@ public sealed unsafe class GorgonGpuBuffer
     /// <param name="graphics"><inheritdoc cref="GorgonGpuResource(GorgonGraphics, string, ComPtr{ID3D12Resource2})" path="/param[@name='graphics']"/></param>
     /// <param name="name"><inheritdoc cref="GorgonGpuResource(GorgonGraphics, string, ComPtr{ID3D12Resource2})" path="/param[@name='name']"/></param>
     /// <param name="info">Information used to create the buffer.</param>
-    /// <exception cref="GorgonException"><para>Thrown if the buffer cannot be created because the size is less than 1 byte.</para>
+    /// <exception cref="GorgonException"><para>
+    /// Thrown if the buffer cannot be created because the size is less than 1 byte.
+    /// </para>
     /// <para>Thrown if the <see cref="GorgonGpuBufferInfo.Alignment"/> value is negative.</para>
     /// </exception>
     /// <remarks>
     /// <para>
-    /// This creates a generic buffer that can hold data on the GPU, or upload to the GPU. The buffer data has no structure. That is defined by views that can be created from the buffer. The types of views 
-    /// available are defined in the <see cref="GorgonGpuBufferInfo"/> flags.
+    /// This creates a generic buffer that holds data on the GPU. The buffer data has no structure. That is defined by the views that can be created from the buffer (e.g. <see cref="GetConstantBufferView()"/>, 
+    /// <see cref="GetStructuredBufferView(int, long, int?)"/>, etc...).
     /// </para>
     /// <para>
-    /// Most buffers will require a minimum <see cref="GorgonCommonBufferInfo.SizeInBytes"/> of 1 byte. However, some views will require the buffer have a specific minimum size (e.g. constant buffers must be at 
-    /// least 256 bytes, etc...).  
+    /// Most buffers will require a minimum <see cref="GorgonCommonBufferInfo.SizeInBytes"/> of 1 byte. However, some views will require the buffer have a specific minimum size (e.g. constant buffers must be 
+    /// at least 256 bytes, etc...).
     /// </para>
     /// </remarks>
     /// <seealso cref="GorgonGpuBufferInfo"/>

@@ -35,9 +35,9 @@ namespace Gorgon.Graphics.Core;
 /// <param name="ArrayIndex">The index of the array sub resource.</param>
 /// <param name="MipLevel">The mip level for the sub resource.</param>
 /// <param name="Plane">The format plane for the sub resource.</param>
-/// <param name="RowPitch">The size of a row, in bytes, in the subresource. This value is a multiple of 256 bytes.</param>
-/// <param name="RowSize">The size of a row, in bytes, in the subresource. This value is unaligned.</param>
-/// <param name="RowCount">The number of rows in the sub resource, this is different from the <paramref name="Height"/> depending on the format of the resource.</param>
+/// <param name="RowPitch">The size of a row, in bytes, in the sub resource. This value is a multiple of 256 bytes.</param>
+/// <param name="RowSize">The size of a row, in bytes, in the sub resource. This value is unaligned.</param>
+/// <param name="RowCount">The number of rows in the sub resource. This may differ from the <paramref name="Height"/> depending on the format of the resource.</param>
 /// <param name="Offset">The offset, in bytes, of the sub resource within the containing resource.</param>
 /// <remarks>
 /// <para>
@@ -69,14 +69,16 @@ public record class GorgonSubResourceInfo(int SubResourceIndex, int Width, short
     /// Property to return the size, in bytes, of the sub resource.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// This value uses the <see cref="RowPitch"/> to calculate the size. This means the size may be larger than expected due to alignment.
+    /// </para>
     /// </remarks>
     public long SizeInBytes => RowPitch * RowCount;
 }
 
 
 /// <summary>
-/// Tile information for each sub resource tiles in the texture.
+/// Tile information for a sub resource in a <see cref="GorgonVirtualTexture"/>.
 /// </summary>
 /// <param name="SubResourceIndex">The index of the sub resource.</param>
 /// <param name="Width">The width, in tiles, for the sub resource.</param>
@@ -119,7 +121,9 @@ public record class GorgonSubResourceTileInfo(int SubResourceIndex, int Width, s
     /// Property to return the size, in bytes, of the sub resource.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// This is the total size of the sub resource <see cref="SizeInTiles">tiles</see>, converted to bytes.
+    /// </para>
     /// </remarks>
-    public long SizeInBytes => SizeInTiles * 65536;
+    public long SizeInBytes => SizeInTiles * 65536L;
 }

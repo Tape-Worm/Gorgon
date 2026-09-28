@@ -28,16 +28,17 @@ using TerraFX.Interop.DirectX;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Information used to create the stencil portion of a <see cref="GorgonDepthStencilState"/>
+/// Information used to define the parameters for the stencil portion of a <see cref="GorgonDepthStencilState"/>.
 /// </summary>
-public class GorgonStencilOperation
+public sealed record class GorgonStencilOperation    
 {
     /// <summary>
-    /// Property to return the comparison function to use for stencil operations.
+    /// Property to return the comparison function to use for stencil testing.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This specifies the function to evaluate with stencil data being read/written and existing stencil data.
+    /// This specifies the function used to compare the stencil reference value against the existing value in the stencil buffer. Both values are masked with the <see cref="ReadMask"/> before the comparison is 
+    /// made. If the comparison evaluates to <b>true</b>, then the stencil test passes.
     /// </para>
     /// <para>
     /// The default value is <see cref="ComparisonFunction.Always"/>.
@@ -46,43 +47,49 @@ public class GorgonStencilOperation
     public ComparisonFunction StencilFunction
     {
         get;
-        internal set;
+        init;
     } = ComparisonFunction.Always;
 
     /// <summary>
-    /// Property to return the operation to perform when the depth testing function fails, but stencil testing passes.
+    /// Property to return the operation to perform when stencil testing passes, but depth testing fails.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// The default value is <see cref="StencilOperation.Keep"/>.
+    /// </para>
     /// </remarks>
     public StencilOperation DepthFailOperation
     {
         get;
-        internal set;
+        init;
     } = StencilOperation.Keep;
 
     /// <summary>
-    /// Property to return the operation to perform when the stencil testing fails.
+    /// Property to return the operation to perform when stencil testing fails.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// The default value is <see cref="StencilOperation.Keep"/>.
+    /// </para>
     /// </remarks>
     public StencilOperation FailOperation
     {
         get;
-        internal set;
+        init;
     } = StencilOperation.Keep;
 
     /// <summary>
-    /// Property to return the operation to perform when the stencil testing passes.
+    /// Property to return the operation to perform when both stencil testing and depth testing pass.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// The default value is <see cref="StencilOperation.Keep"/>.
+    /// </para>
     /// </remarks>
     public StencilOperation PassOperation
     {
         get;
-        internal set;
+        init;
     } = StencilOperation.Keep;
 
     /// <summary>
@@ -100,7 +107,7 @@ public class GorgonStencilOperation
     public byte ReadMask
     {
         get;
-        internal set;
+        init;
     } = 0xff;
 
     /// <summary>
@@ -118,7 +125,7 @@ public class GorgonStencilOperation
     public byte WriteMask
     {
         get;
-        internal set;
+        init;
     } = 0xff;
 
     /// <summary>
@@ -134,12 +141,4 @@ public class GorgonStencilOperation
         StencilReadMask = ReadMask,
         StencilWriteMask = WriteMask
     };
-
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonStencilOperation"/> class.
-    /// </summary>
-    internal GorgonStencilOperation()
-    {
-    }
 }

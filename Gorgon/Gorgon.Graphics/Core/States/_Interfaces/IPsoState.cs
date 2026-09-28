@@ -18,37 +18,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: May 13, 2026 10:21:25 PM
+// Created: September 20, 2026 4:04:44 PM
 //
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Gorgon.Graphics.Core.Textures;
+namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Extension methods for the <see cref="IGorgonTextureView{T}"/> type.
+/// Defines specific methods required for 
 /// </summary>
-public static class GorgonVirtualTextureViewExtensions
+/// <typeparam name="TS">The type of PSO state.</typeparam>
+internal interface IPsoState<TS>
 {
-    extension(IGorgonTextureView<GorgonVirtualTexture>)
-    {
-        /// <summary>
-        /// TODO:
-        /// </summary>
-        /// <param name="graphics"></param>
-        /// <param name="name"></param>
-        /// <param name="format"></param>
-        /// <param name="width"></param>
-        /// <param name="height"></param>
-        /// <param name="mipCount"></param>
-        /// <param name="arrayCount"></param>
-        /// <returns></returns>
-        public static IGorgonTextureView<GorgonVirtualTexture> Create2DTexture(GorgonGraphics graphics, string name, BufferFormat format, int width, int height, short mipCount = 1, short arrayCount = 1)
-        {
-            // TODO:
-            return null!;
-        }
-    }
+    /// <summary>
+    /// Function to determine if a given state matches one of the predefined states.
+    /// </summary>
+    /// <param name="state">The state to evaluate.</param>
+    /// <returns>If the state matches one of the predefined states, then one of the predefined states is returned. Otherwise, the <paramref name="state"/> parameter is returned.</returns>
+    /// <remarks>
+    /// <para>
+    /// Use this method to determine whether a state matches one of the predefined states for the state type. This allows applications to cut down duplicating state objects.
+    /// </para>
+    /// </remarks>
+    abstract static TS GetDefinedState(TS state);
 }

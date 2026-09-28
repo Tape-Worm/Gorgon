@@ -106,19 +106,28 @@ internal class SamplerStates
     /// <param name="graphics">The graphics interface that owns these samplers.</param>
     public SamplerStates(GorgonGraphics graphics)
     {
-        Default = new GorgonSampler(graphics, nameof(Default));
-        Wrapping = new GorgonSampler(graphics, nameof(Wrapping))
+        Default = new GorgonSampler(graphics)
         {
+            Name = nameof(Default)
+        };
+
+        Wrapping = new GorgonSampler(graphics)
+        {
+            Name = nameof(Wrapping),
             UAddressing = TextureAddressing.Wrap,
             VAddressing = TextureAddressing.Wrap,
             WAddressing = TextureAddressing.Wrap
         };
-        Linear = new GorgonSampler(graphics, nameof(Linear))
+
+        Linear = new GorgonSampler(graphics)
         {
+            Name = nameof(Linear),
             Filter = TextureFilter.LinearMinMagMip
         };
-        LinearWrapping = new GorgonSampler(graphics, nameof(LinearWrapping))
+
+        LinearWrapping = new GorgonSampler(graphics)
         {
+            Name = nameof(LinearWrapping),
             Filter = TextureFilter.LinearMinMagMip,
             UAddressing = TextureAddressing.Wrap,
             VAddressing = TextureAddressing.Wrap,

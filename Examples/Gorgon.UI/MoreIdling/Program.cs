@@ -162,9 +162,7 @@ internal static class Program
 
         try
         {
-            Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
+            ApplicationConfiguration.Initialize();
 
             log = new GorgonLogConsole("MoreIdling", typeof(Program).Assembly.GetName().Version);
             log.LogStart(new GorgonComputerInfo());

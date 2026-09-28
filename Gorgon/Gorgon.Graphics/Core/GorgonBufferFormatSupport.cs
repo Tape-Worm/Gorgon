@@ -32,7 +32,6 @@ namespace Gorgon.Graphics.Core;
 /// <param name="IsBufferFormat">Buffer resources supported.</param>
 /// <param name="IsVertexBufferFormat">Vertex buffers supported.</param>
 /// <param name="IsIndexBufferFormat">Index buffers supported.</param>
-/// <param name="IsStreamOutFormat">Streaming output buffers supported.</param>
 /// <param name="Is1DTextureFormat">1D texture resources supported.</param>
 /// <param name="Is2DTextureFormat">2D texture resources supported.</param>
 /// <param name="Is3DTextureFormat">3D texture resources supported.</param>
@@ -76,7 +75,6 @@ namespace Gorgon.Graphics.Core;
 public record class GorgonBufferFormatSupport(BufferFormat Format, bool IsBufferFormat,
     bool IsVertexBufferFormat,
     bool IsIndexBufferFormat,
-    bool IsStreamOutFormat,
     bool Is1DTextureFormat,
     bool Is2DTextureFormat,
     bool Is3DTextureFormat,

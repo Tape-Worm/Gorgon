@@ -38,7 +38,7 @@ public interface IGorgonGpuBufferInfo
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This value is used to pad the buffer alignment so that it, and its data, starts on a power of 2 boundary.
+    /// This value is used to align the start of the buffer, and its data, to a multiple of this value. It does not need to be a power of 2.
     /// </para>
     /// <para>
     /// Buffers used in a <see cref="GorgonStructuredBufferView"/> should set this value to the size of the data element within the buffer, especially if the element size is not a power of 2.

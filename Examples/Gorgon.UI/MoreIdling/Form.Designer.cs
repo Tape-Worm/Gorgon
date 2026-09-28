@@ -47,11 +47,11 @@ partial class Form
         // 
         LabelFps.AutoSize = true;
         LabelFps.Dock = DockStyle.Fill;
-        LabelFps.ForeColor = System.Drawing.Color.FromArgb(255, 255, 128);
-        LabelFps.Location = new System.Drawing.Point(0, 0);
+        LabelFps.ForeColor = Color.FromArgb(255, 255, 128);
+        LabelFps.Location = new Point(0, 0);
         LabelFps.Margin = new Padding(3);
         LabelFps.Name = "LabelFps";
-        LabelFps.Size = new System.Drawing.Size(38, 15);
+        LabelFps.Size = new Size(38, 15);
         LabelFps.TabIndex = 0;
         LabelFps.Text = "FPS: 0";
         // 
@@ -59,9 +59,9 @@ partial class Form
         // 
         LabelInstructions.Anchor = AnchorStyles.Left;
         LabelInstructions.AutoSize = true;
-        LabelInstructions.Location = new System.Drawing.Point(25, 3);
+        LabelInstructions.Location = new Point(25, 3);
         LabelInstructions.Name = "LabelInstructions";
-        LabelInstructions.Size = new System.Drawing.Size(220, 15);
+        LabelInstructions.Size = new Size(220, 15);
         LabelInstructions.TabIndex = 1;
         LabelInstructions.Text = "Press the space bar to change idle loops.";
         // 
@@ -72,13 +72,13 @@ partial class Form
         TableDisplay.ColumnStyles.Add(new ColumnStyle());
         TableDisplay.Controls.Add(FlowInstructions, 0, 2);
         TableDisplay.Dock = DockStyle.Bottom;
-        TableDisplay.Location = new System.Drawing.Point(0, 778);
+        TableDisplay.Location = new Point(0, 778);
         TableDisplay.Name = "TableDisplay";
         TableDisplay.RowCount = 3;
         TableDisplay.RowStyles.Add(new RowStyle());
         TableDisplay.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
         TableDisplay.RowStyles.Add(new RowStyle());
-        TableDisplay.Size = new System.Drawing.Size(1280, 22);
+        TableDisplay.Size = new Size(1280, 22);
         TableDisplay.TabIndex = 3;
         // 
         // FlowInstructions
@@ -87,20 +87,20 @@ partial class Form
         FlowInstructions.AutoSize = true;
         FlowInstructions.Controls.Add(ImageKeyboardIcon);
         FlowInstructions.Controls.Add(LabelInstructions);
-        FlowInstructions.Location = new System.Drawing.Point(0, 0);
+        FlowInstructions.Location = new Point(0, 0);
         FlowInstructions.Margin = new Padding(0);
         FlowInstructions.Name = "FlowInstructions";
-        FlowInstructions.Size = new System.Drawing.Size(1280, 22);
+        FlowInstructions.Size = new Size(1280, 22);
         FlowInstructions.TabIndex = 4;
         // 
         // ImageKeyboardIcon
         // 
         ImageKeyboardIcon.Anchor = AnchorStyles.Left;
         ImageKeyboardIcon.Image = Properties.Resources.keyboardIcon;
-        ImageKeyboardIcon.Location = new System.Drawing.Point(3, 3);
-        ImageKeyboardIcon.MaximumSize = new System.Drawing.Size(16, 16);
+        ImageKeyboardIcon.Location = new Point(3, 3);
+        ImageKeyboardIcon.MaximumSize = new Size(16, 16);
         ImageKeyboardIcon.Name = "ImageKeyboardIcon";
-        ImageKeyboardIcon.Size = new System.Drawing.Size(16, 16);
+        ImageKeyboardIcon.Size = new Size(16, 16);
         ImageKeyboardIcon.SizeMode = PictureBoxSizeMode.CenterImage;
         ImageKeyboardIcon.TabIndex = 2;
         ImageKeyboardIcon.TabStop = false;
@@ -108,9 +108,9 @@ partial class Form
         // PanelGraphics
         // 
         PanelGraphics.Dock = DockStyle.Fill;
-        PanelGraphics.Location = new System.Drawing.Point(0, 15);
+        PanelGraphics.Location = new Point(0, 15);
         PanelGraphics.Name = "PanelGraphics";
-        PanelGraphics.Size = new System.Drawing.Size(1280, 763);
+        PanelGraphics.Size = new Size(1280, 763);
         PanelGraphics.TabIndex = 3;
         // 
         // PanelFps
@@ -119,23 +119,23 @@ partial class Form
         PanelFps.AutoSizeMode = AutoSizeMode.GrowAndShrink;
         PanelFps.Controls.Add(LabelFps);
         PanelFps.Dock = DockStyle.Top;
-        PanelFps.Location = new System.Drawing.Point(0, 0);
+        PanelFps.Location = new Point(0, 0);
         PanelFps.Name = "PanelFps";
-        PanelFps.Size = new System.Drawing.Size(1280, 15);
+        PanelFps.Size = new Size(1280, 15);
         PanelFps.TabIndex = 0;
         // 
         // Form
         // 
-        AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+        AutoScaleDimensions = new SizeF(7F, 15F);
         AutoScaleMode = AutoScaleMode.Font;
-        BackColor = System.Drawing.Color.FromArgb(30, 30, 30);
-        ClientSize = new System.Drawing.Size(1280, 800);
+        BackColor = Color.FromArgb(30, 30, 30);
+        ClientSize = new Size(1280, 800);
         Controls.Add(PanelGraphics);
         Controls.Add(PanelFps);
         Controls.Add(TableDisplay);
         DoubleBuffered = true;
-        ForeColor = System.Drawing.Color.White;
-        Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
+        ForeColor = Color.White;
+        Icon = (Icon)resources.GetObject("$this.Icon");
         Name = "Form";
         StartPosition = FormStartPosition.CenterScreen;
         Text = "More Idling - Advanced Idling Techniques";

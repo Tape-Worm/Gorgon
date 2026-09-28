@@ -57,7 +57,7 @@ public interface IGorgonTextureView<out T>
     }
 
     /// <summary>
-    /// Property to return the graphics interface associated with this view.
+    /// Property to return the graphics interface that is associated with this view.
     /// </summary>
     GorgonGraphics Graphics
     {
@@ -84,7 +84,9 @@ public interface IGorgonTextureView<out T>
     /// Property to return the texture used by this view.
     /// </summary>
     /// <remarks>
-    /// This value is a strongly typed version of the <see cref="GorgonResourceView.Resource"/> property and point to the same object.
+    /// <para>
+    /// This value is a strongly typed version of the <see cref="Resource"/> property and points to the same object.
+    /// </para>
     /// </remarks>
     T Texture
     {
@@ -129,7 +131,7 @@ public interface IGorgonTextureView<out T>
     }
 
     /// <summary>
-    /// Property to return the first array index within the buffer to start the view at.
+    /// Property to return the first array index within the texture to start the view at.
     /// </summary>
     /// <remarks>
     /// <para>
@@ -173,7 +175,7 @@ public interface IGorgonTextureView<out T>
     }
 
     /// <summary>
-    /// Property to return the the index of the plane in a planar format to use in the view.
+    /// Property to return the index of the plane in a planar format to use in the view.
     /// </summary>
     byte PlaneIndex
     {

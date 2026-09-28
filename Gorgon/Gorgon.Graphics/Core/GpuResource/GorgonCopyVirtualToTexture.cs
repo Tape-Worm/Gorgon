@@ -32,26 +32,33 @@ namespace Gorgon.Graphics.Core;
 /// <param name="sourceHandle">The handle to the allocation on the source texture.</param>
 /// <remarks>
 /// <para>
+/// These parameters are used to copy a <see cref="GorgonVirtualTexture"/> to a <see cref="GorgonTexture"/> sub resource via the <see cref="GorgonResourceCopier"/> or <see cref="GorgonCommandList"/>.
+/// </para>
+/// <para>
 /// The <paramref name="sourceRegion"/> is relative to the area in the <paramref name="sourceHandle"/> allocation. This means that specifying 0x0 in the region is the upper left corner of the allocation 
 /// region, and <b>NOT</b> 0x0 in the actual texture. This is done because areas in the virtual texture can be unallocated when specifying absolute texture coordinates. This protects the user from specifying 
 /// out of bounds regions.
 /// </para>
 /// </remarks>
 /// <seealso cref="IGorgonCopyMethodsFluent{T}.CopyVirtualToTexture(GorgonVirtualTexture, GorgonTexture, ref readonly GorgonCopyVirtualToTexture)"/>
+/// <seealso cref="GorgonTexture"/>
+/// <seealso cref="GorgonVirtualTexture"/>
 [method: SetsRequiredMembers]
 public readonly ref struct GorgonCopyVirtualToTexture(GorgonBox sourceRegion, GorgonVirtualTextureHandle sourceHandle)
 {
     /// <summary>
     /// Property to return whether the parameter is considered empty.
     /// </summary>
-    public readonly bool IsEmpty => (SourceRegion.Equals(in GorgonBox.Empty)) && (SourceHandle.Equals(GorgonVirtualTextureHandle.Null));
+    public readonly bool IsEmpty => (SourceRegion.Equals(in GorgonBox.Empty)) || (SourceHandle.Equals(GorgonVirtualTextureHandle.Null));
 
     /// <summary>
     /// <inheritdoc cref="GorgonCopyVirtualToTexture(GorgonBox, GorgonVirtualTextureHandle)" path="/param[@name='sourceRegion']"/>
     /// </summary>
     /// <remarks>
+    /// <para>
     /// This region will contain either the depth range for a <see cref="TextureType.Texture3D"/>, or the range of array indices for a <see cref="TextureType.Texture1D"/> or 
     /// <see cref="TextureType.Texture2D"/> texture array.
+    /// </para>
     /// </remarks>
     public readonly GorgonBox SourceRegion = sourceRegion;
 
@@ -61,7 +68,7 @@ public readonly ref struct GorgonCopyVirtualToTexture(GorgonBox sourceRegion, Go
     public readonly GorgonVirtualTextureHandle SourceHandle = sourceHandle;
 
     /// <summary>
-    /// Property to return the mip level on the source texture to copy from.
+    /// Property to return the mip level on the destination texture to copy into.
     /// </summary>
     public readonly short DestinationMipLevel
     {
@@ -82,7 +89,9 @@ public readonly ref struct GorgonCopyVirtualToTexture(GorgonBox sourceRegion, Go
     /// Property to return the vertical destination position in the destination texture.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// This only applies to textures with a texture type of <see cref="TextureType.Texture2D"/>, or <see cref="TextureType.Texture3D"/>.
+    /// </para>
     /// </remarks>
     public readonly int DestinationY
     {

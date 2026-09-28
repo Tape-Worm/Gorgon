@@ -32,15 +32,13 @@ namespace Gorgon.Graphics.Core;
 /// </summary>
 /// <remarks>
 /// <para>
-/// Applications can use a raw buffer to allow a shader to interpret buffer data as blob of byte data. This allows shaders to read data at a byte level, and cast it however they choose.
+/// Applications can use a raw buffer to allow a shader to interpret buffer data as a blob of byte data. This allows shaders to read data at a byte level, and cast it however they choose.
 /// </para>
 /// <para>
-/// Raw views require that the underlying buffer be aligned to the <see cref="AlignmentRequirement"/> (16 bytes), and that the buffer size be at least <see cref="MinimumElementSize"/> (4 bytes). The 
-/// data in the buffer is accessed 4 bytes at a time in the shader.
+/// Raw views require that the underlying buffer be aligned to the <see cref="AlignmentRequirement"/> (16 bytes), and that the buffer size be at least <see cref="MinimumElementSize"/> (4 bytes). The data in 
+/// the buffer is accessed 4 bytes at a time in the shader.
 /// </para>
-/// <para>
 /// <inheritdoc cref="GorgonGpuBuffer.GetConstantBufferView(bool)" path="/remarks/para[@type='bindless_doc']"/>
-/// </para>
 /// </remarks>
 /// <seealso cref="GorgonCommandList.WriteConstant{T}(int, in T)"/>
 /// <seealso cref="GorgonShaderBufferView.GetViewHandle"/>
@@ -62,8 +60,10 @@ public sealed class GorgonRawBufferView
     /// <param name="name">The name of the buffer.</param>
     /// <param name="bufferSize">The total size of the buffer.</param>
     /// <param name="resourceOffset"><inheritdoc cref="GorgonConstantBufferView.ValidateConstantView(string, int, ulong, ulong)" path="/param[@name='resourceOffset']"/></param>
-    /// <exception cref="GorgonException"><para>Thrown if the size of the buffer is less than the <see cref="MinimumElementSize"/> (4 bytes).</para>
-    /// <para>Throw if the buffer was not aligned to the <see cref="AlignmentRequirement"/> (16 bytes) upon creation.</para>
+    /// <exception cref="GorgonException"><para>
+    /// Thrown if the size of the buffer is less than the <see cref="MinimumElementSize"/> (4 bytes).
+    /// </para>
+    /// <para>Thrown if the buffer was not aligned to the <see cref="AlignmentRequirement"/> (16 bytes) upon creation.</para>
     /// </exception>
     internal static void ValidateRawView(string name, long bufferSize, ulong resourceOffset)
     {

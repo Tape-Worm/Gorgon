@@ -36,12 +36,17 @@ namespace Gorgon.Graphics.Core;
 /// <param name="destinationHandle">The handle to the allocation on the destination texture.</param>
 /// <remarks>
 /// <para>
+/// These parameters are used to copy a <see cref="GorgonVirtualTexture"/> to another <see cref="GorgonVirtualTexture"/> sub resource via the <see cref="GorgonResourceCopier"/> or 
+/// <see cref="GorgonCommandList"/>.
+/// </para>
+/// <para>
 /// The <paramref name="sourceRegion"/> and <paramref name="destinationX"/>, <paramref name="destinationY"/>, and <paramref name="destinationZ"/> are relative to the area in the 
 /// <paramref name="sourceHandle"/> and <paramref name="destinationHandle"/> allocations. This means that specifying 0x0 in the region is the upper left corner of the allocation region, and <b>NOT</b> 0x0 in 
 /// the actual texture. This is done because areas in the virtual texture can be unallocated when specifying absolute texture coordinates. This protects the user from specifying out of bounds regions.
 /// </para>
 /// </remarks>
 /// <seealso cref="IGorgonCopyMethodsFluent{T}.CopyVirtualToVirtual(GorgonVirtualTexture, GorgonVirtualTexture, ref readonly GorgonCopyVirtualToVirtual)"/>
+/// <seealso cref="GorgonVirtualTexture"/>
 [method: SetsRequiredMembers]
 public readonly ref struct GorgonCopyVirtualToVirtual(GorgonBox sourceRegion, GorgonVirtualTextureHandle sourceHandle, int destinationX, int destinationY, short destinationZ, GorgonVirtualTextureHandle destinationHandle)
 {
@@ -54,8 +59,10 @@ public readonly ref struct GorgonCopyVirtualToVirtual(GorgonBox sourceRegion, Go
     /// <inheritdoc cref="GorgonCopyVirtualToVirtual(GorgonBox, GorgonVirtualTextureHandle, int, int, short, GorgonVirtualTextureHandle)" path="/param[@name='sourceRegion']"/>
     /// </summary>
     /// <remarks>
+    /// <para>
     /// This region will contain either the depth range for a <see cref="TextureType.Texture3D"/>, or the range of array indices for a <see cref="TextureType.Texture1D"/> or 
     /// <see cref="TextureType.Texture2D"/> texture array.
+    /// </para>
     /// </remarks>
     public readonly GorgonBox SourceRegion = sourceRegion;
 

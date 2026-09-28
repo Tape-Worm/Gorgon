@@ -25,10 +25,6 @@ using System.Text;
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.IO;
-using Gorgon.Native;
-using TerraFX.Interop.DirectX;
-using TerraFX.Interop.Windows;
-using DX = TerraFX.Interop.DirectX.DirectX;
 
 namespace Gorgon.Graphics.Core.Codecs;
 
@@ -37,9 +33,7 @@ namespace Gorgon.Graphics.Core.Codecs;
 /// </summary>
 /// <param name="graphics"><inheritdoc/></param>
 /// <remarks>
-/// <para>
-/// This codec is used to read and write binary shader data using a custom format for Gorgon. This file format includes metadata about shader type, shader model, and other validation information.
-/// </para>
+/// <inheritdoc cref="GorgonShaderCodecCommon" path="/remarks/para"/>
 /// <para>
 /// <note type="warning">
 /// <para>
@@ -48,8 +42,9 @@ namespace Gorgon.Graphics.Core.Codecs;
 /// </note>
 /// </para>
 /// </remarks>
-public sealed class GorgonCodecGorShader(GorgonGraphics graphics)
-    : GorgonShaderCodec(graphics)
+/// <inheritdoc cref="GorgonShaderCodecCommon" path="/seealso"/>
+public sealed class GorgonCodecShader(GorgonGraphics graphics)
+    : GorgonShaderCodecCommon(graphics)
 {
     /// <summary>
     /// The header chunk for a Gorgon binary shader file.
@@ -67,7 +62,7 @@ public sealed class GorgonCodecGorShader(GorgonGraphics graphics)
     public const string BinaryShaderByteCode = "BYTECODE";
 
     /// <summary>
-    /// The chunk ID for the optional chunk that contains the the hash data for the shader.
+    /// The chunk ID for the optional chunk that contains the hash data for the shader.
     /// </summary>
     public const string HashData = "HASHDATA";
 
@@ -81,18 +76,19 @@ public sealed class GorgonCodecGorShader(GorgonGraphics graphics)
     /// </summary>
     public const string ReflectionData = "REFLECTN";
 
-    /// <inheritdoc/>
+    /// <inheritdoc path="/summary"/>
+    /// <inheritdoc path="/seealso"/>
     public override bool CanDecode => true;
 
-    /// <inheritdoc/>
+    /// <inheritdoc path="/summary"/>
+    /// <inheritdoc path="/seealso"/>
     public override bool CanEncode => true;
 
     /// <inheritdoc/>
-    protected override (ShaderType ShaderType, ShaderModel ShaderModel, ShaderDataBlocks DataBlocks) OnGetShaderMetadata(Stream stream)
+    protected override ShaderMetadata OnGetShaderMetadata(Stream stream)
     {
         ShaderType shaderType;
         ShaderModel shaderModel;
-
 
         using GorgonChunkFileReader reader = new(stream, [
             BinaryShaderFileHeader.ChunkID()
@@ -102,7 +98,7 @@ public sealed class GorgonCodecGorShader(GorgonGraphics graphics)
 
         if (!reader.Chunks.Contains(BinaryShaderMetaData))
         {
-            return (ShaderType.None, ShaderModel.Unsupported, ShaderDataBlocks.None);
+            return new(ShaderType.None, ShaderModel.Unsupported, ShaderDataBlocks.None);
         }
 
         using (IGorgonChunkReader metadataReader = reader.OpenChunk(BinaryShaderMetaData))
@@ -123,11 +119,16 @@ public sealed class GorgonCodecGorShader(GorgonGraphics graphics)
             dataBlocks |= ShaderDataBlocks.ReflectionData;
         }
 
-        return (shaderType, shaderModel, dataBlocks);
+        if (reader.Chunks.Contains(HashData))
+        {
+            dataBlocks |= ShaderDataBlocks.HashData;
+        }
+
+        return new(shaderType, shaderModel, dataBlocks);
     }
 
     /// <inheritdoc/>
-    protected unsafe override GorgonShader OnDecodeFromStream(Stream stream, long size)
+    protected override GorgonShader OnDecodeFromStream(Stream stream, long size)
     {
         using GorgonChunkFileReader reader = new(stream, [
             BinaryShaderFileHeader.ChunkID()
@@ -156,21 +157,16 @@ public sealed class GorgonCodecGorShader(GorgonGraphics graphics)
             throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORGFX_ERR_SHADER_TYPE_NOT_SUPPORTED, shaderType));
         }
 
-        GorgonNativeBuffer<byte> shaderBinaryData =[];
-        GorgonNativeBuffer<byte> hashData = [];
-        GorgonNativeBuffer<byte> pdbData = [];
-        GorgonNativeBuffer<byte> reflectionData = [];
+        byte[] shaderBinaryData =[];
+        byte[] hashData = [];
+        byte[] pdbData = [];
+        byte[] reflectionData = [];
         string pdbName = string.Empty;
 
         using (IGorgonChunkReader dataReader = reader.OpenChunk(BinaryShaderByteCode))
         {
-            using ComPtr<ID3DBlob> blob = default;
-
-            DX.D3DCreateBlob(dataSize, blob.GetAddressOf())
-                .ThrowIfFailed(GorgonResult.CannotRead, () => Resources.GORGFX_ERR_CANNOT_COMPILE_SHADER);
-
-            shaderBinaryData = new GorgonNativeBuffer<byte>(dataSize);
-            dataReader.ReadPointer<byte>(shaderBinaryData);
+            shaderBinaryData = new byte[dataSize];
+            dataReader.ReadArray(shaderBinaryData);
         }
 
         if (reader.Chunks.Contains(HashData))
@@ -181,8 +177,8 @@ public sealed class GorgonCodecGorShader(GorgonGraphics graphics)
             hashSize = hashReader.ReadInt32();
             if (hashSize != 0)
             {
-                hashData = new GorgonNativeBuffer<byte>(hashSize);
-                hashReader.ReadPointer<byte>(hashData);
+                hashData = new byte[hashSize];
+                hashReader.ReadArray(hashData);
             }
         }
 
@@ -197,8 +193,8 @@ public sealed class GorgonCodecGorShader(GorgonGraphics graphics)
 
             if (debugSize != 0)
             {
-                pdbData = new GorgonNativeBuffer<byte>(debugSize);
-                debugReader.ReadPointer<byte>(pdbData);
+                pdbData = new byte[debugSize];
+                debugReader.ReadArray(pdbData);
             }
         }
 
@@ -210,12 +206,12 @@ public sealed class GorgonCodecGorShader(GorgonGraphics graphics)
 
             if (reflectSize != 0)
             {
-                reflectionData = new GorgonNativeBuffer<byte>(reflectSize);
-                reflectReader.ReadPointer<byte>(reflectionData);
+                reflectionData = new byte[reflectSize];
+                reflectReader.ReadArray(reflectionData);
             }
         }
 
-        return BuildShader(shaderType, shaderModel, shaderBinaryData, hashData, pdbData, pdbName, reflectionData);
+        return CreateShader(shaderType, shaderModel, shaderBinaryData, hashData, pdbData, pdbName, reflectionData);
     }
 
     /// <inheritdoc/>
@@ -229,20 +225,20 @@ public sealed class GorgonCodecGorShader(GorgonGraphics graphics)
         {
             metadataWriter.WriteInt32((int)shader.ShaderType);
             metadataWriter.WriteInt32((int)shader.ShaderModel);
-            metadataWriter.WriteInt32((int)shader.ShaderData.Length);
+            metadataWriter.WriteInt32(shader.ShaderData.Length);
         }
 
         using (IGorgonChunkWriter dataWriter = writer.OpenChunk(BinaryShaderByteCode))
         {
-            dataWriter.WritePointer(shader.ShaderData);
+            dataWriter.WriteSpan(shader.ShaderData);
         }
 
         if (shader.Hash.Length != 0)
         {
             using IGorgonChunkWriter hashWriter = writer.OpenChunk(HashData);
 
-            hashWriter.WriteInt32((int)shader.Hash.Length);
-            hashWriter.WritePointer(shader.Hash);
+            hashWriter.WriteInt32(shader.Hash.Length);
+            hashWriter.WriteSpan(shader.Hash);
         }
 
         if (shader.PdbData.Length != 0)
@@ -251,7 +247,7 @@ public sealed class GorgonCodecGorShader(GorgonGraphics graphics)
 
             debugWriter.WriteString(shader.PdbName);
             debugWriter.WriteInt32((int)shader.PdbData.Length);
-            debugWriter.WritePointer(shader.PdbData);
+            debugWriter.WriteSpan(shader.PdbData);
         }
 
         if (shader.ReflectionData.Length == 0)
@@ -262,7 +258,7 @@ public sealed class GorgonCodecGorShader(GorgonGraphics graphics)
         using IGorgonChunkWriter reflectionWriter = writer.OpenChunk(ReflectionData);
 
         reflectionWriter.WriteInt32((int)shader.ReflectionData.Length);
-        reflectionWriter.WritePointer(shader.ReflectionData);
+        reflectionWriter.WriteSpan(shader.ReflectionData);
     }
 
     /// <inheritdoc/>

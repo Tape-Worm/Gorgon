@@ -82,20 +82,20 @@ namespace Gorgon.Graphics.Core;
 ///         <description>Render targets cannot be depth/stencil buffers or vice-versa.</description>
 ///     </item>
 ///     <item>
-///         <description>Only 2D textures can be depth stencil buffers.</description>
+///         <description>Only 2D textures can be depth/stencil buffers.</description>
 ///     </item>
 ///     <item>
-///         <description>When specifying a texture as a render target, read/write access or depth stencil resource, the texture format must be compatible. Applications can evaluate the 
+///         <description>When specifying a texture as a render target, read/write access or depth/stencil resource, the texture format must be compatible. Applications can evaluate the 
 ///         <see cref="GorgonGraphics.FormatSupport"/> property to determine if the format supports the desired functionality.</description>
 ///     </item>
 ///     <item>
 ///         <description>Depth/stencil textures cannot be used with read/write views.</description>
 ///     </item>
 ///     <item>
-///         <description>Textures that can have read/write access, must have a multi-sample value of <see cref="GorgonMultisampleInfo.NoMultisampling"/> (i.e. multisampling disabled).</description>
+///         <description>Textures that can have read/write access must have a multi-sample value of <see cref="GorgonMultisampleInfo.NoMultisampling"/> (i.e. multisampling disabled).</description>
 ///     </item>
 ///     <item>
-///         <description>Textures that have multisampling enabled, cannot have a mip count larger than 1.</description>
+///         <description>Textures that have multisampling enabled cannot have a mip count larger than 1.</description>
 ///     </item>
 ///     <item>
 ///         <description>Textures that indicate they are to be used as a cube map must have an array count that is a multiple of 6.</description>
@@ -144,6 +144,7 @@ namespace Gorgon.Graphics.Core;
 ///     </item>
 /// </list>
 /// </para>
+/// </para>
 /// <para type="max_dimensions">
 /// Textures have a maximum size for array counts, width, height and depth depending on the <see cref="TextureType"/>.
 /// <list type="table">
@@ -176,7 +177,6 @@ namespace Gorgon.Graphics.Core;
 ///         <description>1</description>
 ///     </item>
 /// </list>
-/// </para>
 /// </para>
 /// <inheritdoc cref="GorgonGpuBuffer" path="/remarks/para[@type='uav_readwrite']"/>
 /// </remarks>
@@ -320,7 +320,7 @@ public sealed unsafe class GorgonTexture
     /// <summary>
     /// Function to create a 2D render target from a swap chain.
     /// </summary>
-    /// <param name="swapChain">The swap chain to retrieve the render target view fromn.</param>
+    /// <param name="swapChain">The swap chain to retrieve the render target view from.</param>
     /// <param name="index">The index of the back buffer for the render target view.</param>
     /// <returns>A new render target view.</returns>
     internal static GorgonTexture FromSwapChain(GorgonSwapChain swapChain, uint index)
@@ -385,7 +385,7 @@ public sealed unsafe class GorgonTexture
     /// If the <paramref name="arrayCount"/> is less than 1, then this will ensure the view uses the remainder (starting from <paramref name="arrayIndex"/>) of the texture for the view.
     /// </para>
     /// <para>
-    /// The <paramref name="access"/> value can be used to lock down a portion of the depth/stencil buffer.
+    /// The <paramref name="access"/> value can be used to make the depth and/or stencil portions of the buffer read-only.
     /// </para>
     /// <para>
     /// The texture must have been created as a depth/stencil buffer by passing the <see cref="GorgonTextureInfo"/> with its <see cref="GorgonTextureInfo.IsDepthStencil"/> set to <b>true</b> when creating 
@@ -396,7 +396,7 @@ public sealed unsafe class GorgonTexture
     /// property on the <see cref="GorgonBufferFormatSupport"/> object on the <see cref="GorgonGraphics.FormatSupport"/> property. If these conditions are not met, then an exception will be thrown.
     /// </para>
     /// <para>
-    /// If the texture is a write only depth/stencil texture with a depth/stencil <see cref="GorgonTextureCommon.Format"/>, then the view <paramref name="format"/> must match. 
+    /// If the texture is a write-only depth/stencil texture with a depth/stencil <see cref="GorgonTextureCommon.Format"/>, then the view <paramref name="format"/> must match. 
     /// </para>
     /// <para>
     /// If the depth/stencil is meant to be read in a shader, and needs a <see cref="IGorgonTextureView{GorgonTexture}"/>, then the texture must be created with a typeless <see cref="BufferFormat"/>. The following table 
@@ -493,10 +493,11 @@ public sealed unsafe class GorgonTexture
     /// <summary>
     /// Function to create a texture from a <see cref="IGorgonImage"/> object.
     /// </summary>
-    /// <param name="graphics">The graphics image associated with the texture.</param>
-    /// <param name="name">The name of the image.</param>
+    /// <param name="graphics">The graphics interface that is associated with the texture.</param>
+    /// <param name="name">The name of the texture.</param>
     /// <param name="image">The image used to define the texture schema, and its contents.</param>
     /// <returns>A new texture, populated with the image data.</returns>
+    /// <inheritdoc cref="GorgonTexture(GorgonGraphics, string, GorgonTextureInfo)" path="/exception"/>
     public static GorgonTexture FromImage(GorgonGraphics graphics, string name, IGorgonImage image)
     {
         GorgonResourceCopier copier = graphics.Queues.GlobalCopier;
@@ -542,7 +543,7 @@ public sealed unsafe class GorgonTexture
         : base(graphics, name, resource, info) => _uploadHeaps = graphics.Memory.UploadHeaps;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonTexture"/> resource.
+    /// Initializes a new instance of the <see cref="GorgonTexture"/> class.
     /// </summary>
     /// <param name="graphics"><inheritdoc cref="GorgonGpuResource(GorgonGraphics, string, ComPtr{ID3D12Resource2})" path="/param[@name='graphics']"/></param>
     /// <param name="name"><inheritdoc cref="GorgonGpuResource(GorgonGraphics, string, ComPtr{ID3D12Resource2})" path="/param[@name='name']"/></param>
@@ -562,13 +563,13 @@ public sealed unsafe class GorgonTexture
     ///     </item>
     ///     <item>
     ///         <term><see cref="TextureType.Texture2D"/></term>
-    ///         <description><see cref="GorgonTextureInfo.Width"/> and <see cref="GorgonTextureInfo.Height"/> are required, <see cref="GorgonTextureInfo.Depth"/> should be set to 1. If the texture format is compressed 
-    ///         then the width and height should be a multiple of 4.</description>
+    ///         <description><see cref="GorgonTextureInfo.Width"/> and <see cref="GorgonTextureInfo.Height"/> are required, <see cref="GorgonTextureInfo.Depth"/> should be set to 1. If the texture format is compressed
+    ///         then the width and height must be a multiple of 4.</description>
     ///     </item>
     ///     <item>
     ///         <term><see cref="TextureType.Texture3D"/></term>
-    ///         <description><see cref="GorgonTextureInfo.Width"/>, <see cref="GorgonTextureInfo.Height"/>, and <see cref="GorgonTextureInfo.Depth"/> are required. If the texture format is compressed 
-    ///         then the width and height should be a multiple of 4.</description>
+    ///         <description><see cref="GorgonTextureInfo.Width"/>, <see cref="GorgonTextureInfo.Height"/>, and <see cref="GorgonTextureInfo.Depth"/> are required. If the texture format is compressed
+    ///         then the width and height must be a multiple of 4.</description>
     ///     </item>
     /// </list>
     /// </para>
@@ -577,7 +578,7 @@ public sealed unsafe class GorgonTexture
     /// object to determine if the format is supported for a given texture type.
     /// </para>
     /// <para>
-    /// The <see cref="GorgonTextureInfo.ArrayCount"/> should be set to 1 for <see cref="TextureType.Texture3D"/> textures. It only applies to 1D and 2D textures. If the 
+    /// The <see cref="GorgonTextureInfo.ArrayCount"/> only applies to 1D and 2D textures, and is reset to 1 for <see cref="TextureType.Texture3D"/> textures. If the
     /// <see cref="GorgonTextureInfo.IsCube"/> is set to <b>true</b>, then this value <b>must</b> be a multiple of 6.
     /// </para>
     /// <para>

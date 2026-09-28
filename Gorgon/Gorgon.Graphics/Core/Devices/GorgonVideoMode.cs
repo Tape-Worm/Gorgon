@@ -31,7 +31,7 @@ using TerraFX.Interop.DirectX;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Defines how the display mode should be scaled when the mode is not native to the display
+/// Defines how the display mode should be scaled when the mode is not native to the display.
 /// </summary>
 public enum ModeScaling
 {
@@ -50,7 +50,7 @@ public enum ModeScaling
 }
 
 /// <summary>
-/// Defines the ordering of the scanlines on the display for a video mode
+/// Defines the ordering of the scanlines on the display for a video mode.
 /// </summary>
 public enum ModeScanlineOrder
 {
@@ -73,13 +73,13 @@ public enum ModeScanlineOrder
 }
 
 /// <summary>
-/// Information about a full screen video mode provided by a <see cref="GorgonVideoOutputInfo"/>
+/// Information about a full-screen video mode provided by a <see cref="GorgonVideoOutputInfo"/>.
 /// </summary>
 /// <param name="Width">The width, in pixels, for the video mode.</param>
 /// <param name="Height">The height, in pixels, for the video mode.</param>
 /// <param name="Format">The pixel format for the display mode.</param>
 /// <param name="RefreshRate">The refresh rate represented as a rational number.</param>
-/// <param name="SupportsStereo"><b>true</b> if whether this mode supports stereo rendering, <b>false</b> if not.</param>
+/// <param name="SupportsStereo"><b>true</b> if this mode supports stereo rendering, <b>false</b> if not.</param>
 /// <param name="Scaling">The type of scaling available to the video mode.</param>
 /// <param name="ScanlineOrder">The type of scanline ordering performed when drawing the image on the display for this mode.</param>
 public record struct GorgonVideoMode(int Width, int Height, BufferFormat Format, GorgonRationalNumber RefreshRate, bool SupportsStereo, ModeScaling Scaling, ModeScanlineOrder ScanlineOrder)

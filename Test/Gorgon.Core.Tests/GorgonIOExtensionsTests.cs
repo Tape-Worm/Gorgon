@@ -329,7 +329,7 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
             reader.ReadToPointer(destBuffer);
 
             // Assert
-            CollectionAssert.AreEqual(data, buffer);
+            Assert.AreSequenceEqual(data, buffer);
         }
     }
 
@@ -793,7 +793,7 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
     {
         string path = @"C:\Some\Path";
         string[] result = path.GetPathParts(Path.DirectorySeparatorChar);
-        CollectionAssert.AreEqual(_expected, result);
+        Assert.AreSequenceEqual(_expected, result);
     }
 
     [TestMethod]
@@ -801,7 +801,7 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
     {
         string path = @"C:/Some/Path";
         string[] result = path.GetPathParts(Path.AltDirectorySeparatorChar);
-        CollectionAssert.AreEqual(_expected, result);
+        Assert.AreSequenceEqual(_expected, result);
     }
 
     [TestMethod]

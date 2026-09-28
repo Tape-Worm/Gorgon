@@ -93,13 +93,10 @@ internal static class Program
 
         try
         {
-            Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
+            ApplicationConfiguration.Initialize();
 
             _form = new Form
             {
-                ClientSize = new Size(1280, 800),
                 Log = log
             };
 

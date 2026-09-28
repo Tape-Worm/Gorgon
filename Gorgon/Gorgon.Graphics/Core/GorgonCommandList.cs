@@ -50,7 +50,7 @@ namespace Gorgon.Graphics.Core;
 /// </para>
 /// </remarks>
 public sealed unsafe class GorgonCommandList
-    : IGorgonNamedObject, IDisposable, IGorgonCopyMethodsFluent<GorgonCommandList>
+    : IGorgonNamedObject, IGorgonCopyMethodsFluent<GorgonCommandList>
 {
     private ComPtr<ID3D12GraphicsCommandList10> _list;
     private ComPtr<ID3D12CommandList> _baseList;
@@ -176,22 +176,6 @@ public sealed unsafe class GorgonCommandList
         }
     }
 
-    /// <inheritdoc cref="GorgonGraphicsFactory.Dispose(bool)"/>
-    private void Dispose(bool disposing)
-    {
-        if (disposing)
-        {
-            _blitter?.Dispose();
-            _barrierManager.Clear();
-            _resourceCopier.Dispose();
-
-            Graphics.Log.Print($"Destroying {nameof(GorgonCommandList)} '{Name}'...", LoggingLevel.Intermediate);
-            Graphics.Log.Print($"Destroying D3D 12 {Queue.Type} '{Name}'", LoggingLevel.Verbose);
-        }
-        _baseList.Dispose();
-        _list.Dispose();
-    }
-
     /// <summary>
     /// Function to create the native D3D 12 backing command list object.
     /// </summary>
@@ -220,12 +204,18 @@ public sealed unsafe class GorgonCommandList
         {
             return;
         }
+        
 
         if (indexBuffer is null)
         {
             _list.Get()->IASetIndexBuffer(null);
             _currentIndexBuffer = null;
             return;
+        }
+
+        if (indexBuffer.IsDisposed)
+        {
+            throw new ObjectDisposedException(nameof(GorgonIndexBuffer), string.Format(Resources.GORGFX_ERR_BUFFER_DISPOSED, indexBuffer.Name));
         }
 
         Queue.Tracker.TrackResource(indexBuffer);
@@ -260,17 +250,26 @@ public sealed unsafe class GorgonCommandList
     /// Function to set the barriers for textures on a draw call.
     /// </summary>
     /// <param name="textures">The textures on the draw call.</param>
-    private void ApplyTextureBarriers(ReadOnlySpan<(IGorgonTextureView<GorgonTextureCommon> Texture, ShaderStage Shader, TextureUsage Usage)> textures)
+    private void ApplyTextureBarriers(List<GorgonDrawCallTexture> textures)
     {
-        if (textures.Length == 0)
+        if (textures.Count == 0)
         {
             return;
         }
 
-        for (int i = 0; i < textures.Length; ++i)
+        for (int i = 0; i < textures.Count; ++i)
         {
-            (IGorgonTextureView<GorgonTextureCommon> textureView, ShaderStage shader, TextureUsage usage) = textures[i];
-            GorgonTextureCommon texture = textureView.Texture;
+            (GorgonTextureCommon? texture, ShaderStage shader, TextureUsage usage) = textures[i];
+
+            if (texture is null)
+            {
+                continue;
+            }
+
+            if (texture.IsDisposed)
+            {
+                throw new ObjectDisposedException(texture.GetType().Name, string.Format(Resources.GORGFX_ERR_BUFFER_DISPOSED, texture.Name));                
+            }
 
             Queue.Tracker.TrackResource(texture);
 
@@ -296,7 +295,7 @@ public sealed unsafe class GorgonCommandList
     /// <summary>
     /// Function to apply barriers to buffers used in a draw call.
     /// </summary>
-    private void ApplyBufferBarriers(ReadOnlySpan<(GorgonGpuBuffer Buffer, ShaderStage Shader, BufferUsage Usage)> buffers)
+    private void ApplyBufferBarriers(List<GorgonDrawCallBuffer> buffers)
     {
         static BarrierSync GetSyncForBuffer(BufferUsage usage, ShaderStage stage) => usage != BufferUsage.IndirectArguments ? stage.ToSync() : BarrierSync.ExecuteIndirect;
         static BarrierAccess GetAccessForBuffer(BufferUsage usage) => usage switch
@@ -311,19 +310,25 @@ public sealed unsafe class GorgonCommandList
         // We need to validate that the buffers that are reading do not overlap their data regions with buffers that are writing.
         // Since we are using the MegaBuffer approach, this is a potential hazard. But, we also need to ensure that we're not trying to 
         // make a single non-UAV buffer (user facing, not mega buffer) with read access and write access simultaneously (e.g. SRV | COPY_DEST).
-        static int Intersects(GorgonGpuBuffer buffer, int bufferIndex, BarrierSync sync, BarrierAccess access, ReadOnlySpan<(GorgonGpuBuffer Buffer, ShaderStage Shader, BufferUsage Usage)> buffers)
+        static int Intersects(GorgonGpuBuffer buffer, int bufferIndex, BarrierSync sync, BarrierAccess access, IList<GorgonDrawCallBuffer> buffers)
         {
             ulong bufferStart = buffer.ResourceOffset;
             ulong bufferEnd = (ulong)buffer.SizeInBytes + buffer.ResourceOffset;
 
-            for (int i = 0; i < buffers.Length; ++i)
+            for (int i = 0; i < buffers.Count; ++i)
             {
                 if (bufferIndex == i)
                 {
                     continue;
                 }
 
-                (GorgonGpuBuffer otherBuffer, ShaderStage otherStage, BufferUsage otherUsage) = buffers[i];
+                (GorgonGpuBuffer? otherBuffer, ShaderStage otherStage, BufferUsage otherUsage) = buffers[i];
+
+                if (otherBuffer is null)
+                {
+                    continue;
+                }
+
                 BarrierSync otherSync = GetSyncForBuffer(otherUsage, otherStage);
                 BarrierAccess otherAccess = GetAccessForBuffer(otherUsage);
                 
@@ -345,11 +350,22 @@ public sealed unsafe class GorgonCommandList
         BarrierSync megaSync = BarrierSync.None;
         BarrierAccess megaAccess = BarrierAccess.Common;
 
-        for (int i = 0; i < buffers.Length; ++i)
+        for (int i = 0; i < buffers.Count; ++i)
         {
-            (GorgonGpuBuffer buffer, ShaderStage stage, BufferUsage usage) = buffers[i];
+            (GorgonGpuBuffer? buffer, ShaderStage stage, BufferUsage usage) = buffers[i];
+
+            if (buffer is null)
+            {
+                continue;
+            }
+
             BarrierSync sync = GetSyncForBuffer(usage, stage);
             BarrierAccess access = GetAccessForBuffer(usage);
+
+            if (buffer.IsDisposed)
+            {
+                throw new ObjectDisposedException(nameof(GorgonGpuBuffer), string.Format(Resources.GORGFX_ERR_BUFFER_DISPOSED, buffer.Name));
+            }
 
             if (!buffer.IsMegaBufferResource)
             {
@@ -419,14 +435,12 @@ public sealed unsafe class GorgonCommandList
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void ApplyPso(GorgonGraphicsPso pso)
     {
-        if (pso.D3DPso.IsNull)
-        {
-            pso.UpdateD3DPso();
-        }
+        Debug.Assert(!pso.D3DPso.IsNull, $"The pipeline state object '{pso.Name}' no longer has a pointer to a native pipeline state object.");
+        ObjectDisposedException.ThrowIf(pso.D3DPso.IsNull, pso);
 
         Queue.Tracker.TrackResource(pso.D3DPso);
 
-        _list.Get()->SetPipelineState((PID3D12PipelineState1)pso.D3DPso.Get());
+        _list.Get()->SetPipelineState((PID3D12PipelineState)pso.D3DPso.Get());
         _list.Get()->IASetPrimitiveTopology((D3D_PRIMITIVE_TOPOLOGY)pso.PrimitiveType);
     }
 
@@ -608,11 +622,173 @@ public sealed unsafe class GorgonCommandList
     }
 
     /// <summary>
+    /// Function to release any disposable objects or native objects.
+    /// </summary>
+    internal void Dispose()
+    {
+        _blitter?.Dispose();
+        _barrierManager.Clear();
+        _resourceCopier.Dispose();
+
+        Graphics.Log.Print($"Destroying {nameof(GorgonCommandList)} '{Name}'...", LoggingLevel.Intermediate);
+        Graphics.Log.Print($"Destroying D3D 12 {Queue.Type} '{Name}'", LoggingLevel.Verbose);
+
+        _baseList.Dispose();
+        _list.Dispose();
+    }
+
+    /// <summary>
+    /// Function to resolve a multisampled texture into a single-sample texture.
+    /// </summary>
+    /// <param name="msaaTexture">The multisampled texture to read the sample data from.</param>
+    /// <param name="output">The single-sample texture that will receive the resolved data.</param>
+    /// <param name="sourceArrayIndex">[Optional] The array index on the multisampled texture to read from.</param>
+    /// <param name="destinationArrayIndex">[Optional] The array index on the output texture to write into.</param>
+    /// <param name="destinationMipLevel">[Optional] The mip level on the output texture to write into.</param>
+    /// <inheritdoc cref="AddPresenter" path="/returns"/>
+    /// <exception cref="GorgonException">
+    /// <para>Thrown if the <paramref name="msaaTexture"/> is not multisampled.</para>
+    /// <para>Thrown if the <paramref name="output"/> texture is multisampled.</para>
+    /// <para>Thrown if the <paramref name="msaaTexture"/> and <paramref name="output"/> textures do not have the same format.</para>
+    /// <para>Thrown if the format of the <paramref name="msaaTexture"/> is not supported for resolving (e.g. if the format is typeless).</para>
+    /// <para>Thrown if the <paramref name="output"/> texture is not a 2D texture.</para>
+    /// <para>Thrown if the sub resources being resolved do not have the same width and height.</para>
+    /// </exception>
+    /// <remarks>
+    /// <para>
+    /// A multisampled texture stores several samples per pixel, and because of this it cannot be filtered when read by a shader. This method averages those samples down into a single value per pixel and 
+    /// writes the result into the <paramref name="output"/> texture, which can then be used like any other texture. 
+    /// </para>
+    /// <para>
+    /// Both textures must use the same format, and that format must be resolvable by the video adapter. This can be checked ahead of time with the 
+    /// <see cref="GorgonBufferFormatSupport.CanResolveMultisample"/> property for the format.
+    /// </para>
+    /// <para>
+    /// A single sub resource is resolved per call. The <paramref name="sourceArrayIndex"/> parameter selects the array index to read from, and the <paramref name="destinationArrayIndex"/> and 
+    /// <paramref name="destinationMipLevel"/> parameters select the sub resource to write into. These values are clipped to the range available on their respective textures, so out of range values will not 
+    /// cause an error. The sub resources must have the same width and height because no scaling or filtering is performed during the resolve.
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="GorgonTexture"/>
+    /// <seealso cref="GorgonMultisampleInfo"/>
+    /// <seealso cref="GorgonBufferFormatSupport"/>
+    public GorgonCommandList ResolveMsaaTexture(GorgonTextureCommon msaaTexture, GorgonTextureCommon output, short sourceArrayIndex = 0, short destinationArrayIndex = 0, short destinationMipLevel = 0)
+    {
+        if (msaaTexture.MultisampleInfo.Equals(GorgonMultisampleInfo.NoMultisampling))
+        {
+            throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORGFX_ERR_MSAA_NOT_MULTISAMPLED, msaaTexture.Name));
+        }
+
+        if (!output.MultisampleInfo.Equals(GorgonMultisampleInfo.NoMultisampling))
+        {
+            throw new GorgonException(GorgonResult.CannotWrite, string.Format(Resources.GORGFX_ERR_MSAA_TEXTURE_NOT_SUPPORTED, output.Name));
+        }
+
+        if (msaaTexture.Format != output.Format)
+        {
+            throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORGFX_ERR_MSAA_TEXTURE_FORMATS_NOT_SAME, msaaTexture.Name, msaaTexture.Format, output.Name, output.Format));
+        }
+
+        if (!Graphics.FormatSupport[msaaTexture.Format].CanResolveMultisample)
+        {
+            throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORGFX_ERR_MSAA_TEXTURE_FORMAT_NOT_RESOLVABLE, msaaTexture.Name, msaaTexture.Format));
+        }
+
+        if (msaaTexture.FormatInfo.IsTypeless)
+        {
+            throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORGFX_ERR_FORMAT_INVALID, msaaTexture.Format));
+        }
+
+        if (output.Type != TextureType.Texture2D)
+        {
+            throw new GorgonException(GorgonResult.CannotWrite, string.Format(Resources.GORGFX_ERR_MSAA_DEST_NOT_2D, output.Name));
+        }        
+
+        int destSubResWidth = output.GetMipWidth(destinationMipLevel);
+        int destSubResHeight = output.GetMipHeight(destinationMipLevel);
+
+        if ((msaaTexture.Width != destSubResWidth) || (msaaTexture.Height != destSubResHeight))
+        {
+            throw new GorgonException(GorgonResult.CannotWrite, string.Format(Resources.GORGFX_MSAA_RESOLVE_SIZE_MISMATCH, msaaTexture.Name, msaaTexture.Width, msaaTexture.Height, output.Name, destSubResWidth, destSubResHeight));
+        }
+
+        // The GetSubResourceIndex method clips the input values to their minimums and maximums (minus one).
+        // So we don't need to do that here.
+        int sourceSubResourceIndex = msaaTexture.GetSubResourceIndex(0, sourceArrayIndex);
+        int destSubResourceIndex = output.GetSubResourceIndex(destinationMipLevel, destinationArrayIndex);        
+
+        SetBarrier(msaaTexture, BarrierSync.Resolve, BarrierAccess.ResolveSource, BarrierLayout.ResolveSource);
+        SetBarrier(output, BarrierSync.Resolve, BarrierAccess.ResolveDestination, BarrierLayout.ResolveDestination, force: true);
+
+        _list.Get()->ResolveSubresource((PID3D12Resource2)output.D3DResource.Get(), (uint)destSubResourceIndex, (PID3D12Resource2)msaaTexture.D3DResource.Get(), (uint)sourceSubResourceIndex, (DXGI_FORMAT)msaaTexture.Format);
+
+        return this;
+    }
+
+    /// <summary>
     /// TBD
     /// </summary>
     /// <param name="drawCall"></param>
     public void Draw(GorgonDrawCall drawCall)
-    {   
+    {
+        if (drawCall.Pso is null)
+        {
+            throw new ArgumentException(Resources.GORGFX_ERR_DRAW_NEEDS_PSO, nameof(drawCall));
+        }
+
+        if (drawCall.InstanceCount < 1)
+        {
+            Graphics.Log.PrintWarning($"The draw call requires at least 1 instance value. The number of instances are {drawCall.InstanceCount}. Nothing will be drawn.", LoggingLevel.Simple);
+            return;
+        }
+
+        if (drawCall.VertexCount < 1)
+        {
+            Graphics.Log.PrintWarning($"The draw call requires at least 1 vertex in its vertex count. The number of vertices are {drawCall.VertexCount}. Nothing will be drawn.", LoggingLevel.Simple);
+            return;
+        }
+
+        // Apply pending barrier calls.
+        ApplyBufferBarriers(drawCall.UsedBuffers);
+        ApplyTextureBarriers(drawCall.UsedTextures);
+        ApplyConstantWrites();
+        ApplyRenderTargets();
+        ApplyPso(drawCall.Pso);
+        ApplyViewSetup();
+
+        _barrierManager.Submit(this);
+
+        _list.Get()->DrawInstanced((uint)drawCall.VertexCount, (uint)drawCall.InstanceCount, (uint)drawCall.StartVertex.Max(0), (uint)drawCall.StartInstance.Max(0));
+    }
+
+    /// <summary>
+    /// TBD
+    /// </summary>
+    /// <param name="drawCall"></param>
+    public void Draw(GorgonIndexedDrawCall drawCall)
+    {
+        if (drawCall.Pso is null)
+        {
+            throw new ArgumentException(Resources.GORGFX_ERR_DRAW_NEEDS_PSO, nameof(drawCall));
+        }
+
+        if (drawCall.IndexBuffer is null)
+        {
+            throw new ArgumentException(Resources.GORGFX_ERR_DRAW_INDEXED_NEEDS_INDEXBUFFER, nameof(drawCall));
+        }
+
+        if (drawCall.InstanceCount < 1)
+        {
+            Graphics.Log.PrintWarning($"The draw indexed call requires at least 1 instance value. The number of instances are {drawCall.InstanceCount}. Nothing will be drawn.", LoggingLevel.Simple);
+            return;
+        }
+
+        if (drawCall.IndexCount < 1)
+        {
+            Graphics.Log.PrintWarning($"The draw call requires at least 1 index in its index count. The number of indices are {drawCall.IndexCount}. Nothing will be drawn.", LoggingLevel.Simple);
+            return;
+        }
+
         // Apply pending barrier calls.
         ApplyBufferBarriers(drawCall.UsedBuffers);
         ApplyTextureBarriers(drawCall.UsedTextures);
@@ -624,14 +800,7 @@ public sealed unsafe class GorgonCommandList
 
         _barrierManager.Submit(this);
 
-        _list.Get()->DrawIndexedInstanced((uint)drawCall.IndexCount, (uint)drawCall.InstanceCount, (uint)drawCall.StartIndex, drawCall.BaseVertex, (uint)drawCall.StartInstance);
-    }
-
-    /// <inheritdoc/>
-    void IDisposable.Dispose()
-    {
-        Dispose(true);
-        GC.SuppressFinalize(this);
+        _list.Get()->DrawIndexedInstanced((uint)drawCall.IndexCount, (uint)drawCall.InstanceCount, (uint)drawCall.StartIndex.Max(0), drawCall.BaseVertex.Max(0), (uint)drawCall.StartInstance.Max(0));
     }
 
     /// <summary>
@@ -757,19 +926,6 @@ public sealed unsafe class GorgonCommandList
         ClearDepthStencil(depthStencil, 1.0f, stencilValue, clearRects, D3D12_CLEAR_FLAGS.D3D12_CLEAR_FLAG_STENCIL);
 
     /// <summary>
-    /// Function to reset the stream out counter for the specified stream out view.
-    /// </summary>
-    /// <param name="view">The stream out view to update.</param>
-    /// <param name="count">[Optional] The initial value to set for the counter.</param>
-    /// <inheritdoc cref="AddPresenter" path="/returns"/>
-    /// <remarks>
-    /// <para>
-    /// This is used to reset the stream out buffer's counter to an initial count value. Applications should call this when reusing stream out and want to start over or at a specific count.
-    /// </para>
-    /// </remarks>
-    public GorgonCommandList ResetStreamOutCounter(GorgonStreamOutView view, long count = 0) => CopyValue(count, view.CounterBuffer);
-
-    /// <summary>
     /// Function to reset the usage for the specified textures.
     /// </summary>
     /// <param name="textures">The list of textures that need their usage state reset.</param>
@@ -830,13 +986,10 @@ public sealed unsafe class GorgonCommandList
     /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyValue{Tv}(in Tv, GorgonGpuBufferCommon, long)" path="/summary"/>
     /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyValue{Tv}(in Tv, GorgonGpuBufferCommon, long)" path="/param"/>
     /// <inheritdoc cref="AddPresenter" path="/returns"/>
-    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyValue{Tv}(in Tv, GorgonGpuBufferCommon, long)" path="/exception[not(@cref='T:Gorgon.Core.GorgonException')]"/>
-    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyValue{Tv}(in Tv, GorgonGpuBufferCommon, long)" path="/exception[@cref='T:Gorgon.Core.GorgonException']/para[1]"/>
+    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyValue{Tv}(in Tv, GorgonGpuBufferCommon, long)" path="/exception"/>
     /// <remarks>
-    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyValue{Tv}(in Tv, GorgonGpuBufferCommon, long)" path="/remarks/para[1]"/>
-    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyValue{Tv}(in Tv, GorgonGpuBufferCommon, long)" path="/remarks/para[2]"/>
-    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyValue{Tv}(in Tv, GorgonGpuBufferCommon, long)" path="/remarks/para[3]"/>
-    /// </remarks>    
+    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyValue{Tv}(in Tv, GorgonGpuBufferCommon, long)" path="/remarks/para"/>
+    /// </remarks>
     /// <example>
     /// <code language="csharp">
     /// <![CDATA[
@@ -855,9 +1008,8 @@ public sealed unsafe class GorgonCommandList
     /// 
     /// using GorgonGpuBuffer destBuffer = ... code to create the GPU buffer...
     /// 
-    /// GorgonCommandList list = _graphics.BeginFrame();
-    /// 
-    /// // sourceData is a GorgonNativeBuffer<byte> which implicitly converts to GorgonPtr<byte>.
+    /// GorgonCommandList list = _graphics.GetCommandList();
+    ///
     /// list.CopyValue(in sourceData, destBuffer);
     ///       
     /// ]]>
@@ -892,8 +1044,7 @@ public sealed unsafe class GorgonCommandList
     /// <inheritdoc cref="AddPresenter" path="/returns"/>
     /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyPointer{T}(GorgonPtr{T}, GorgonGpuBufferCommon, long)" path="/exception"/>
     /// <remarks>
-    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyPointer{T}(GorgonPtr{T}, GorgonGpuBufferCommon, long)" path="/remarks/para[1]"/>
-    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyPointer{T}(GorgonPtr{T}, GorgonGpuBufferCommon, long)" path="/remarks/para[2]"/>
+    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyPointer{T}(GorgonPtr{T}, GorgonGpuBufferCommon, long)" path="/remarks/para"/>
     /// </remarks>
     /// <example>
     /// <code language="csharp">
@@ -903,8 +1054,8 @@ public sealed unsafe class GorgonCommandList
     /// // Code to write to the sourceData buffer goes here...
     /// 
     /// using GorgonGpuBuffer destBuffer = ... code to create the GPU buffer...
-    /// GorgonCommandList list = _graphics.BeginFrame();
-    /// 
+    /// GorgonCommandList list = _graphics.GetCommandList();
+    ///
     /// // sourceData is a GorgonNativeBuffer<byte> which implicitly converts to GorgonPtr<byte>.
     /// list.CopyPointer<byte>(sourceData, destBuffer);
     ///       
@@ -927,8 +1078,7 @@ public sealed unsafe class GorgonCommandList
     /// <inheritdoc cref="AddPresenter" path="/returns"/>
     /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyRange{T}(ReadOnlySpan{T}, GorgonGpuBufferCommon, long)" path="/exception"/>
     /// <remarks>
-    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyRange{T}(ReadOnlySpan{T}, GorgonGpuBufferCommon, long)" path="/remarks/para[1]"/>
-    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyRange{T}(ReadOnlySpan{T}, GorgonGpuBufferCommon, long)" path="/remarks/para[2]"/>
+    /// <inheritdoc cref="IGorgonCopyMethodsFluent{GorgonCommandList}.CopyRange{T}(ReadOnlySpan{T}, GorgonGpuBufferCommon, long)" path="/remarks/para"/>
     /// </remarks>
     /// <example>
     /// <code language="csharp">
@@ -938,10 +1088,9 @@ public sealed unsafe class GorgonCommandList
     /// // Code to write data to the sourceData array goes here...
     /// 
     /// using GorgonGpuBuffer destBuffer = ... code to create the GPU buffer...
-    /// GoronCommandList list = _graphics.BeginFrame();
-    /// 
-    /// // sourceData is a GorgonNativeBuffer<byte> which implicitly converts to GorgonPtr<byte>.
-    /// list.CopyRange<byte>(sourceData.ToSpan(), destBuffer);
+    /// GorgonCommandList list = _graphics.GetCommandList();
+    ///
+    /// list.CopyRange<byte>(sourceData, destBuffer);
     ///       
     /// ]]>
     /// </code>
@@ -1341,7 +1490,7 @@ public sealed unsafe class GorgonCommandList
     /// <remarks>
     /// TODO:
     /// </remarks>
-    public GorgonCommandList SetViewport(GorgonViewport viewport)
+    public GorgonCommandList SetViewport(in GorgonViewport viewport)
     {
         if (_viewportCount > 1)
         {
@@ -1390,7 +1539,7 @@ public sealed unsafe class GorgonCommandList
     /// <remarks>
     /// TODO:
     /// </remarks>
-    public GorgonCommandList SetScissorRectangle(GorgonRectangle scissor)
+    public GorgonCommandList SetScissorRectangle(in GorgonRectangle scissor)
     {
         if (_scissorCount > 1)
         {
@@ -1423,26 +1572,30 @@ public sealed unsafe class GorgonCommandList
             Array.Clear(_renderTargetViews);            
         }
 
+        if (renderTarget is not null)
+        {
+            Queue.Tracker.TrackResource(renderTarget.Resource);
+
+            GorgonSubResourceRange range = new(renderTarget.MipLevel, 1, renderTarget.ArrayIndex, renderTarget.ArrayCount, renderTarget.PlaneIndex, 1);
+            SetBarrier(renderTarget.Texture, BarrierSync.RenderTarget, BarrierAccess.RenderTarget, BarrierLayout.RenderTarget, range);
+        }
+
         _renderTargetViews[0] = renderTarget;
         _d3dRtvs[0] = renderTarget?.GetCpuHandle() ?? D3D12_CPU_DESCRIPTOR_HANDLE.DEFAULT;        
         _rtvsCount = renderTarget is null ? 0 : 1u;
         _rtvsChanged = true;
 
-        DepthStencil = depthStencil;
-        _depthStencilView = depthStencil?.GetCpuHandle() ?? D3D12_CPU_DESCRIPTOR_HANDLE.DEFAULT;
-        _depthStencilChanged = true;
-
-        if (renderTarget is not null)
-        {
-            GorgonSubResourceRange range = new(renderTarget.MipLevel, 1, renderTarget.ArrayIndex, renderTarget.ArrayCount, renderTarget.PlaneIndex, 1);
-            SetBarrier(renderTarget.Texture, BarrierSync.RenderTarget, BarrierAccess.RenderTarget, BarrierLayout.RenderTarget, range);
-        }
-
         if (depthStencil is not null)
         {
+            Queue.Tracker.TrackResource(depthStencil.Resource);
+
             GorgonSubResourceRange range = new(depthStencil.MipLevel, 1, depthStencil.ArrayIndex, depthStencil.ArrayCount, 0, 1);
             SetBarrier(depthStencil.Texture, BarrierSync.DepthStencil, BarrierAccess.DepthStencilWrite, BarrierLayout.DepthStencilWrite, range);
         }
+
+        DepthStencil = depthStencil;
+        _depthStencilView = depthStencil?.GetCpuHandle() ?? D3D12_CPU_DESCRIPTOR_HANDLE.DEFAULT;
+        _depthStencilChanged = true;
 
         return this;
     }
@@ -1486,7 +1639,9 @@ public sealed unsafe class GorgonCommandList
 
         if (depthStencil is not null)
         {
-            GorgonSubResourceRange range = new(depthStencil.MipLevel, 1, depthStencil.ArrayIndex, depthStencil.ArrayCount, 0, 1);
+            Queue.Tracker.TrackResource(depthStencil.Resource);
+
+            GorgonSubResourceRange range = new(depthStencil.MipLevel, 1, depthStencil.ArrayIndex, depthStencil.ArrayCount, 0, 1);            
             SetBarrier(depthStencil.Texture, BarrierSync.DepthStencil, BarrierAccess.DepthStencilWrite, BarrierLayout.DepthStencilWrite, range);
         }
 
@@ -1512,6 +1667,11 @@ public sealed unsafe class GorgonCommandList
             throw new GorgonException(GorgonResult.CannotExecute, Resources.GORGFX_ERR_NO_RTVS);
         }
 
+        if (!texture.Texture.MultisampleInfo.Equals(GorgonMultisampleInfo.NoMultisampling))
+        {
+            throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORGFX_ERR_MSAA_TEXTURE_NOT_SUPPORTED, texture.Texture.Name));
+        }
+
         _blitter ??= new Blitter(this);
         _blitter.Draw(texture, destination, textureCoordinates ?? new GorgonRectangleF(0, 0, 1, 1), sampler ?? GorgonSampler.Default(Graphics), blendState ?? GorgonBlendState.NoBlending);
     }
@@ -1527,11 +1687,6 @@ public sealed unsafe class GorgonCommandList
     /// </para>
     /// </remarks>
     public GorgonGpuUploadMemory GetGpuUploadMemory(long sizeInBytes) => new(Graphics, sizeInBytes);
-
-    /// <summary>
-    /// Finalizer.
-    /// </summary>
-    ~GorgonCommandList() => Dispose(false);
 
     /// <summary>
     /// Initializes a new instance of a <see cref="GorgonCommandList"/> class.

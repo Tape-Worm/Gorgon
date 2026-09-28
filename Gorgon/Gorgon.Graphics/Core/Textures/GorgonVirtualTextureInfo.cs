@@ -58,7 +58,9 @@ public record class GorgonVirtualTextureInfo
 
     /// <inheritdoc cref="IGorgonTextureInfo.Width" path="/summary"/>
     /// <remarks>
+    /// <para>
     /// This value must be between 1 and <see cref="GorgonVideoAdapterInfo.MaxTextureWidth"/> or <see cref="GorgonVideoAdapterInfo.MaxTexture3DWidth"/>.
+    /// </para>
     /// </remarks>
     public required int Width
     {
@@ -222,7 +224,7 @@ public record class GorgonVirtualTextureInfo
     /// <summary>
     /// Function to create a <see cref="GorgonVirtualTextureInfo"/> that will build a texture cube object.
     /// </summary>
-    /// <param name="format"><inheritdoc cref="Create2DTextureInfo(BufferFormat, int, int, short, short, bool, bool)" path="/param[@name='format']"/>.</param>
+    /// <param name="format"><inheritdoc cref="Create2DTextureInfo(BufferFormat, int, int, short, short, bool, bool)" path="/param[@name='format']"/></param>
     /// <param name="width"><inheritdoc cref="Create2DTextureInfo(BufferFormat, int, int, short, short, bool, bool)" path="/param[@name='width']"/></param>
     /// <param name="height"><inheritdoc cref="Create2DTextureInfo(BufferFormat, int, int, short, short, bool, bool)" path="/param[@name='height']"/></param>
     /// <param name="cubeCount">The number of cubes contained within the texture.</param>
@@ -248,7 +250,7 @@ public record class GorgonVirtualTextureInfo
     /// <summary>
     /// Function to create a <see cref="GorgonVirtualTextureInfo"/> that will build a 2D texture object for render target usage.
     /// </summary>
-    /// <param name="format"><inheritdoc cref="Create2DTextureInfo(BufferFormat, int, int, short, short, bool, bool)" path="/param[@name='format']"/>.</param>
+    /// <param name="format"><inheritdoc cref="Create2DTextureInfo(BufferFormat, int, int, short, short, bool, bool)" path="/param[@name='format']"/></param>
     /// <param name="width"><inheritdoc cref="Create2DTextureInfo(BufferFormat, int, int, short, short, bool, bool)" path="/param[@name='width']"/></param>
     /// <param name="height"><inheritdoc cref="Create2DTextureInfo(BufferFormat, int, int, short, short, bool, bool)" path="/param[@name='height']"/></param>
     /// <param name="mipCount"><inheritdoc cref="Create2DTextureInfo(BufferFormat, int, int, short, short, bool, bool)" path="/param[@name='mipCount']"/></param>
@@ -274,10 +276,10 @@ public record class GorgonVirtualTextureInfo
     /// <summary>
     /// Function to create a <see cref="GorgonVirtualTextureInfo"/> that will build a cube map for render target usage.
     /// </summary>
-    /// <param name="format"><inheritdoc cref="Create2DTextureInfo(BufferFormat, int, int, short, short, bool, bool)" path="/param[@name='format']"/>.</param>
+    /// <param name="format"><inheritdoc cref="Create2DTextureInfo(BufferFormat, int, int, short, short, bool, bool)" path="/param[@name='format']"/></param>
     /// <param name="width"><inheritdoc cref="Create2DTextureInfo(BufferFormat, int, int, short, short, bool, bool)" path="/param[@name='width']"/></param>
     /// <param name="height"><inheritdoc cref="Create2DTextureInfo(BufferFormat, int, int, short, short, bool, bool)" path="/param[@name='height']"/></param>
-    /// <param name="cubeCount"><inheritdoc cref="Create2DTextureInfo(BufferFormat, int, int, short, short, bool, bool)" path="/param[@name='cubeCount']"/></param>
+    /// <param name="cubeCount"><inheritdoc cref="CreateTextureCubeInfo(BufferFormat, int, int, short, short, bool, bool)" path="/param[@name='cubeCount']"/></param>
     /// <param name="mipCount"><inheritdoc cref="Create2DTextureInfo(BufferFormat, int, int, short, short, bool, bool)" path="/param[@name='mipCount']"/></param>
     /// <param name="isShaderResource"><inheritdoc cref="Create2DTextureInfo(BufferFormat, int, int, short, short, bool, bool)" path="/param[@name='isShaderResource']"/></param>
     /// <param name="allowReadWriteAccess"><inheritdoc cref="Create2DTextureInfo(BufferFormat, int, int, short, short, bool, bool)" path="/param[@name='allowReadWriteAccess']"/></param>
@@ -301,7 +303,7 @@ public record class GorgonVirtualTextureInfo
     /// <summary>
     /// Function to create a <see cref="GorgonVirtualTextureInfo"/> that will build a 3D texture object.
     /// </summary>
-    /// <param name="format"><inheritdoc cref="Create2DTextureInfo(BufferFormat, int, int, short, short, bool, bool)" path="/param[@name='format']"/>.</param>
+    /// <param name="format"><inheritdoc cref="Create2DTextureInfo(BufferFormat, int, int, short, short, bool, bool)" path="/param[@name='format']"/></param>
     /// <param name="width"><inheritdoc cref="Create2DTextureInfo(BufferFormat, int, int, short, short, bool, bool)" path="/param[@name='width']"/></param>
     /// <param name="height"><inheritdoc cref="Create2DTextureInfo(BufferFormat, int, int, short, short, bool, bool)" path="/param[@name='height']"/></param>
     /// <param name="depth">The depth of the texture, in depth slices.</param>
@@ -312,7 +314,7 @@ public record class GorgonVirtualTextureInfo
     /// <remarks>
     /// <inheritdoc cref="GorgonGpuBuffer" path="/remarks/para[@type='uav_readwrite']"/>
     /// </remarks>
-    public static GorgonVirtualTextureInfo Create3DTextureInfo(BufferFormat format, int width, int height, short depth, short mipCount = 1, bool isShaderResource = true, bool allowReadWriteAccess = false) => new(TextureType.Texture1D, format)
+    public static GorgonVirtualTextureInfo Create3DTextureInfo(BufferFormat format, int width, int height, short depth, short mipCount = 1, bool isShaderResource = true, bool allowReadWriteAccess = false) => new(TextureType.Texture3D, format)
     {
         Width = width,
         Height = height,
@@ -327,10 +329,10 @@ public record class GorgonVirtualTextureInfo
     /// <summary>
     /// Function to create a <see cref="GorgonVirtualTextureInfo"/> that will build a 3D texture object for render target usage.
     /// </summary>
-    /// <param name="format"><inheritdoc cref="Create2DTextureInfo(BufferFormat, int, int, short, short, bool, bool)" path="/param[@name='format']"/>.</param>
+    /// <param name="format"><inheritdoc cref="Create2DTextureInfo(BufferFormat, int, int, short, short, bool, bool)" path="/param[@name='format']"/></param>
     /// <param name="width"><inheritdoc cref="Create2DTextureInfo(BufferFormat, int, int, short, short, bool, bool)" path="/param[@name='width']"/></param>
     /// <param name="height"><inheritdoc cref="Create2DTextureInfo(BufferFormat, int, int, short, short, bool, bool)" path="/param[@name='height']"/></param>
-    /// <param name="depth"><inheritdoc cref="Create3DTextureInfo(BufferFormat, int, int, short, short, bool, bool)" path="/paramn[@name='depth']"/></param>
+    /// <param name="depth"><inheritdoc cref="Create3DTextureInfo(BufferFormat, int, int, short, short, bool, bool)" path="/param[@name='depth']"/></param>
     /// <param name="mipCount"><inheritdoc cref="Create2DTextureInfo(BufferFormat, int, int, short, short, bool, bool)" path="/param[@name='mipCount']"/></param>    
     /// <param name="isShaderResource"><inheritdoc cref="Create2DTextureInfo(BufferFormat, int, int, short, short, bool, bool)" path="/param[@name='isShaderResource']"/></param>
     /// <param name="allowReadWriteAccess"><inheritdoc cref="Create2DTextureInfo(BufferFormat, int, int, short, short, bool, bool)" path="/param[@name='allowReadWriteAccess']"/></param>
@@ -338,7 +340,7 @@ public record class GorgonVirtualTextureInfo
     /// <remarks>
     /// <inheritdoc cref="GorgonGpuBuffer" path="/remarks/para[@type='uav_readwrite']"/>
     /// </remarks>
-    public static GorgonVirtualTextureInfo Create3DRenderTargetInfo(BufferFormat format, int width, int height, short depth, short mipCount = 1, bool isShaderResource = true, bool allowReadWriteAccess = false) => new(TextureType.Texture2D, format)
+    public static GorgonVirtualTextureInfo Create3DRenderTargetInfo(BufferFormat format, int width, int height, short depth, short mipCount = 1, bool isShaderResource = true, bool allowReadWriteAccess = false) => new(TextureType.Texture3D, format)
     {
         Width = width,
         Height = height,
@@ -351,7 +353,7 @@ public record class GorgonVirtualTextureInfo
     };
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonVirtualTextureInfo"/> class.
+    /// Function to create a <see cref="GorgonVirtualTextureInfo"/> from image information.
     /// </summary>
     /// <param name="info">The <see cref="IGorgonImageInfo"/> to derive the texture settings from.</param>
     /// <inheritdoc cref="Create2DTextureInfo(BufferFormat, int, int, short, short, bool, bool)" path="/returns"/>
@@ -370,23 +372,23 @@ public record class GorgonVirtualTextureInfo
     };
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonVirtualTextureInfo"/>
+    /// Initializes a new instance of the <see cref="GorgonVirtualTextureInfo"/> class.
     /// </summary>
     /// <param name="type">The type of texture to create.</param>
     /// <param name="format">The format of the texel data in the texture.</param>
     /// <exception cref="GorgonException">Thrown if the <paramref name="type"/> is <see cref="TextureType.Texture1D"/>, or <see cref="TextureType.Unknown"/>.</exception>
-    /// <seealso cref="TextureType"/>
-    /// <seealso cref="BufferFormat"/>
     /// <remarks>
     /// <para>
-    /// Virtual textures do not support 1D texture types, if the <paramref name="type"/> value is set to <see cref="TextureType.Texture1D"/>, an exception will be thrown.
+    /// Virtual textures do not support 1D texture types. If the <paramref name="type"/> value is set to <see cref="TextureType.Texture1D"/>, an exception will be thrown.
     /// </para>
     /// </remarks>
+    /// <seealso cref="TextureType"/>
+    /// <seealso cref="BufferFormat"/>
     public GorgonVirtualTextureInfo(TextureType type, BufferFormat format)
     {
         if (type is TextureType.Texture1D or TextureType.Unknown)
         {
-            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_INVALID_VIRTUAL_TEXTURE_TYPE, format));
+            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_INVALID_VIRTUAL_TEXTURE_TYPE, type));
         }
 
         Type = type;

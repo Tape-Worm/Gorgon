@@ -30,7 +30,7 @@ namespace Gorgon.Graphics.Core;
 /// </summary>
 /// <remarks>
 /// <para>
-/// If you use different filter types for min versus mag filter, undefined behavior occurs in certain cases where the choice between whether magnification or minification happens is ambiguous.To prevent this 
+/// If you use different filter types for min versus mag filter, undefined behavior occurs in certain cases where the choice between whether magnification or minification happens is ambiguous. To prevent this
 /// undefined behavior, use filter modes that use similar filter operations for both min and mag (or use anisotropic filtering, which avoids the issue as well).
 /// </para>
 /// </remarks>
@@ -69,7 +69,7 @@ public enum TextureFilter
     /// </summary>
     LinearMinMagMip = D3D12_FILTER.D3D12_FILTER_MIN_MAG_MIP_LINEAR,
     /// <summary>
-    /// Use anisotropic interpolation for minification and magnification. Point filtering for mip-level sampling.
+    /// Use anisotropic interpolation for minification and magnification; use point sampling for mip-level sampling.
     /// </summary>
     AnisotropicMinMagPointMip = D3D12_FILTER.D3D12_FILTER_MIN_MAG_ANISOTROPIC_MIP_POINT,
     /// <summary>
@@ -77,19 +77,19 @@ public enum TextureFilter
     /// </summary>
     AnisotropicMinMagMip = D3D12_FILTER.D3D12_FILTER_ANISOTROPIC,
     /// <summary>
-    /// Use point sampling for minification and magnification; use linear interpolation for mip-level sampling. Compare the result to the comparison value.
+    /// Use point sampling for minification, magnification, and mip-level sampling. Compare the result to the comparison value.
     /// </summary>
-    ComparePointMinMagPointMip = D3D12_FILTER.D3D12_FILTER_COMPARISON_MIN_MAG_MIP_POINT,
+    ComparePointMinMagMip = D3D12_FILTER.D3D12_FILTER_COMPARISON_MIN_MAG_MIP_POINT,
     /// <summary>
-    /// Use point sampling for minification; use linear interpolation for magnification; use point sampling for mip-level sampling. Compare the result to the comparison value.
+    /// Use point sampling for minification and magnification; use linear interpolation for mip-level sampling. Compare the result to the comparison value.
     /// </summary>
     ComparePointMinMagLinearMip = D3D12_FILTER.D3D12_FILTER_COMPARISON_MIN_MAG_POINT_MIP_LINEAR,
     /// <summary>
-    /// Use point sampling for minification; use linear interpolation for magnification and mip-level sampling. Compare the result to the comparison value.
+    /// Use point sampling for minification; use linear interpolation for magnification; use point sampling for mip-level sampling. Compare the result to the comparison value.
     /// </summary>
     ComparePointMinLinearMagPointMip = D3D12_FILTER.D3D12_FILTER_COMPARISON_MIN_POINT_MAG_LINEAR_MIP_POINT,
     /// <summary>
-    /// Use point sampling for minification; use linear interpolation for magnification; use point sampling for mip-level sampling. Compare the result to the comparison value.
+    /// Use point sampling for minification; use linear interpolation for magnification and mip-level sampling. Compare the result to the comparison value.
     /// </summary>
     ComparePointMinLinearMagMip = D3D12_FILTER.D3D12_FILTER_COMPARISON_MIN_POINT_MAG_MIP_LINEAR,
     /// <summary>
@@ -109,7 +109,7 @@ public enum TextureFilter
     /// </summary>
     CompareLinearMinMagMip = D3D12_FILTER.D3D12_FILTER_COMPARISON_MIN_MAG_MIP_LINEAR,
     /// <summary>
-    /// Use anisotropic interpolation for minification, magnification; use point sampling for mip-level sampling. Compare the result to the comparison value.
+    /// Use anisotropic interpolation for minification and magnification; use point sampling for mip-level sampling. Compare the result to the comparison value.
     /// </summary>
     CompareAnisotropicMinMagPointMip = D3D12_FILTER.D3D12_FILTER_COMPARISON_MIN_MAG_ANISOTROPIC_MIP_POINT,
     /// <summary>
@@ -132,15 +132,15 @@ public enum TextureFilter
     /// </summary>
     MinimumPointMinLinearMagPointMip = D3D12_FILTER.D3D12_FILTER_MINIMUM_MIN_POINT_MAG_LINEAR_MIP_POINT,
     /// <summary>
-    /// Fetch the same set of texels as <see cref="PointMinLinearMagMip"/> instead of filtering them return the minimum of the texels. Texels that are weighted 0 during filtering aren't counted towards the 
+    /// Fetch the same set of texels as <see cref="PointMinLinearMagMip"/> and instead of filtering them return the minimum of the texels. Texels that are weighted 0 during filtering aren't counted towards the 
     /// minimum.
     /// </summary>
-    MinimumPointLinearMagMip = D3D12_FILTER.D3D12_FILTER_MINIMUM_MIN_POINT_MAG_MIP_LINEAR,
+    MinimumMinPointLinearMagMip = D3D12_FILTER.D3D12_FILTER_MINIMUM_MIN_POINT_MAG_MIP_LINEAR,
     /// <summary>
     /// Fetch the same set of texels as <see cref="LinearMinPointMagMip"/> and instead of filtering them return the minimum of the texels. Texels that are weighted 0 during filtering aren't counted towards 
     /// the minimum. 
     /// </summary>
-    MinimumLinearMinLinearMagPointMip = D3D12_FILTER.D3D12_FILTER_MINIMUM_MIN_LINEAR_MAG_MIP_POINT,
+    MinimumMinLinearMinLinearMagPointMip = D3D12_FILTER.D3D12_FILTER_MINIMUM_MIN_LINEAR_MAG_MIP_POINT,
     /// <summary>
     /// Fetch the same set of texels as <see cref="LinearMinPointMagLinearMip"/> and instead of filtering them return the minimum of the texels. Texels that are weighted 0 during filtering aren't counted 
     /// towards the minimum. 

@@ -23,7 +23,9 @@
 // Created: Monday, November 03, 2014 8:32:52 PM
 // 
 
+using Gorgon.Diagnostics;
 using Gorgon.Examples;
+using TerraFX.Interop.Windows;
 
 namespace Graphics.Examples;
 
@@ -44,14 +46,15 @@ internal static class Program
     /// </summary>
     [STAThread]
     private static void Main()
-    {
+    {        
+        ApplicationConfiguration.Initialize();
+
         try
         {
-            Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
+            MainForm mainForm = new();
+            mainForm.ClientSize = mainForm.LogicalToDeviceUnits(new Size(ExampleConfig.Default.Resolution.X, ExampleConfig.Default.Resolution.Y));
 
-            Application.Run(new Form());
+            Application.Run(mainForm);
         }
         catch (Exception ex)
         {

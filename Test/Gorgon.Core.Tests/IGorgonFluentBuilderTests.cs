@@ -32,7 +32,7 @@ public class DumbAllocator
 }
 
 public class TestFluentBuilder
-    : IGorgonFluentBuilderDoNotUse<TestFluentBuilder, TestClass>
+    : IGorgonFluentBuilder<TestFluentBuilder, TestClass>
 {
     private int _value;
 

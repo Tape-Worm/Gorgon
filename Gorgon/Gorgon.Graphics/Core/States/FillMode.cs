@@ -1,5 +1,4 @@
-﻿
-// 
+﻿// 
 // Gorgon
 // Copyright (C) 2025 Michael Winsor
 // 
@@ -28,7 +27,7 @@ using TerraFX.Interop.DirectX;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Defines how a triangle primitive should be rendered
+/// Defines how a triangle primitive should be rendered.
 /// </summary>
 public enum FillMode
 {

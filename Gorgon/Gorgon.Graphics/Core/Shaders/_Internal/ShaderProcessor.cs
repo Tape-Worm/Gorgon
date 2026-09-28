@@ -68,9 +68,8 @@ internal class ShaderProcessor
     /// Function to retrieve the name of the include and its path.
     /// </summary>
     /// <param name="includeLine">The line that contains the include file.</param>
-    /// <param name="checkFileExists"><b>true</b> to check if the file exists, <b>false</b> to skip the check.</param>
     /// <returns>A new include object.</returns>
-    private static GorgonShaderInclude ParseIncludeLine(StringBuilder includeLine, bool checkFileExists)
+    private static GorgonShaderInclude ParseIncludeLine(StringBuilder includeLine)
     {
         int length = "#GorgonInclude".Length;
         StringBuilder line = new(includeLine.ToString(), length, includeLine.Length - length, includeLine.Length - length);
@@ -141,9 +140,7 @@ internal class ShaderProcessor
             throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORGFX_ERR_SHADER_INCLUDE_PATH_INVALID, includeLine));
         }
 
-        return (checkFileExists) && (!File.Exists(includePath))
-            ? throw new IOException(string.Format(Resources.GORGFX_ERR_FILE_NOT_FOUND, includeName))
-            : new GorgonShaderInclude(includeName, includePath);
+        return new GorgonShaderInclude(includeName, includePath);
 
     }
 
@@ -181,7 +178,7 @@ internal class ShaderProcessor
             TrimLine(includeLine);
 
             ++i;
-            GorgonShaderInclude includeFile = ParseIncludeLine(includeLine, false);
+            GorgonShaderInclude includeFile = ParseIncludeLine(includeLine);
 
             // If we have no file name, then assume we've already included it in the collection.
             if (CachedIncludes.TryGetValue(includeFile.Name, out GorgonShaderInclude cached))
@@ -212,7 +209,7 @@ internal class ShaderProcessor
 
             result.Append($"// ------------------ Begin #include of external include '{includeFile.SourceCodeFile}' ------------------ \r\n");
             result.Append($"{Process(includeSourceCode)}\r\n");
-            result.Append($"// ------------------ End #include of extneral include '{includeFile.SourceCodeFile}'------------------ \r\n\r\n");
+            result.Append($"// ------------------ End #include of external include '{includeFile.SourceCodeFile}'------------------ \r\n\r\n");
 
             // Add to the include list.
             CachedIncludes[includeFile.Name] = new GorgonShaderInclude(includeFile.Name, includeSourceCode);

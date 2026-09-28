@@ -21,11 +21,6 @@
 // Created: January 16, 2026 9:02:10 PM
 //
 
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Runtime.CompilerServices;
-using System.Text;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
@@ -173,6 +168,8 @@ internal sealed unsafe class CpuBufferHeap
     /// <param name="allocation">The resulting allocation from the heap.</param>
     public void Allocate(ulong size, int alignment, out CpuBufferAllocation allocation)
     {
+        ObjectDisposedException.ThrowIf(_memoryBlock.IsNull, this);
+
         D3D12MA_VIRTUAL_ALLOCATION_DESC desc = new()
         {
             Alignment = (ulong)alignment,
@@ -200,9 +197,12 @@ internal sealed unsafe class CpuBufferHeap
     /// </para>
     /// </remarks>
     public void FreeAll()
-    {
+    {       
         CopyFence = ComputeFence = GfxFence = 0;
-        _memoryBlock.Get()->Clear();
+        if (!_memoryBlock.IsNull)
+        {
+            _memoryBlock.Get()->Clear();
+        }
         Used = 0;        
     }
 

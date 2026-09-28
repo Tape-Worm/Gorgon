@@ -26,7 +26,7 @@
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Information about video memory for a <see cref="GorgonVideoAdapterInfo"/>
+/// Information about video memory for a <see cref="GorgonVideoAdapterInfo"/>.
 /// </summary>
 /// <param name="System">The amount of dedicated system memory available, in bytes.</param>
 /// <param name="Video">The amount of memory available on the GPU, in bytes.</param>

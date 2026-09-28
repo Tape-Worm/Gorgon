@@ -23,39 +23,47 @@
 // Created: February 7, 2021 12:31:53 AM
 // 
 
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 using Gorgon.Graphics;
-using Microsoft.Extensions.Configuration;
+using Gorgon.Json;
 
 namespace Gorgon.Examples;
 
 /// <summary>
 /// Configuration information for the example application
-/// </summary>
+/// </summary>]
 public class ExampleConfig
 {
     // The default instance.
     private static ExampleConfig _default;
+    // Options used to deserialize a JSON string.
+    private static readonly JsonSerializerOptions _jsonOptions = new()
+    {
+        Converters =
+        {
+            new GorgonPointJsonConverter()
+        }
+    };
 
     /// <summary>
     /// Function to load the configuration.
     /// </summary>
     private static void LoadConfig()
     {
-        IConfigurationRoot config = new ConfigurationBuilder()
-                                        .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
-                                        .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
-                                        .Build();
+        using StreamReader reader = new(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appsettings.json"));
+        string configJson = reader.ReadToEnd();
 
-        IConfigurationSection section = config.GetSection(nameof(ExampleConfig));
+        JsonObject? result = JsonSerializer.Deserialize<JsonObject>(configJson, _jsonOptions);
 
-        _default = new ExampleConfig();
-
-        if (section is null)
+        if ((result is null) || (result.Count != 1))
         {
+            _default = new ExampleConfig();
             return;
         }
 
-        section.Bind(_default);
+        _default = result[0].Deserialize<ExampleConfig>(_jsonOptions) ?? new ExampleConfig();
     }
 
     /// <summary>
@@ -77,6 +85,7 @@ public class ExampleConfig
     /// <summary>
     /// Property to set or return the path to the resources for the example.
     /// </summary>
+    [JsonInclude]
     public string ResourceLocation
     {
         get;
@@ -86,6 +95,7 @@ public class ExampleConfig
     /// <summary>
     /// Property to set or return the path to the location for example plugins.
     /// </summary>
+    [JsonInclude]
     public string PluginLocation
     {
         get;
@@ -95,15 +105,17 @@ public class ExampleConfig
     /// <summary>
     /// Property to set or return the desired window resolution.
     /// </summary>
+    [JsonInclude]
     public GorgonPoint Resolution
     {
         get;
         set;
-    } = new GorgonPoint(1280, 800);
+    } = GorgonPoint.Zero;
 
     /// <summary>
     /// Property to set or return whether the example runs in windowed mode, or full screen mode.
     /// </summary>
+    [JsonInclude]
     public bool IsWindowed
     {
         get;

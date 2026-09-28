@@ -26,7 +26,7 @@ using TerraFX.Interop.DirectX;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Defines a type of comparison to perform for a comparison operation (e.g. depth compare)
+/// Defines a type of comparison to perform for a comparison operation (e.g. depth compare).
 /// </summary>
 public enum ComparisonFunction
 {

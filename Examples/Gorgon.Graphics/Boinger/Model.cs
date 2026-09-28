@@ -1,7 +1,5 @@
-﻿
-// 
-// Gorgon
-// Copyright (C) 2025 Michael Winsor
+﻿// Gorgon.
+// Copyright (C) 2026 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -11,24 +9,47 @@
 // furnished to do so, subject to the following conditions:
 // 
 // The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software
+// all copies or substantial portions of the Software.
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE
+// THE SOFTWARE.
 // 
-// Created: Sunday, December 30, 2012 2:35:20 PM
-// 
+// Created: July 30, 2026 9:37:04 PM
+//
 
+using System.Diagnostics;
 using System.Numerics;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
-using Gorgon.Renderers.Geometry;
 
 namespace Gorgon.Examples;
+
+/// <summary>
+/// A vertex in our geometry.
+/// </summary>
+[StructLayout(LayoutKind.Sequential)]
+internal struct Vertex
+{
+    /// <summary>
+    /// The size of the vertex, in bytes.
+    /// </summary>
+    public static readonly int Size = Unsafe.SizeOf<Vertex>();
+
+    /// <summary>
+    /// The object space position of the vertex.
+    /// </summary>
+    public Vector4 Position;
+    /// <summary>
+    /// The texture UV coordinates.
+    /// </summary>
+    public Vector2 UV;
+}
 
 /// <summary>
 /// The base model object
@@ -36,7 +57,6 @@ namespace Gorgon.Examples;
 internal abstract class Model
     : IDisposable
 {
-
     // Our world matrix.
     private Matrix4x4 _worldMatrix = Matrix4x4.Identity;
     // Our position matrix.
@@ -59,21 +79,13 @@ internal abstract class Model
     private bool _isRotationChanged;
 
     /// <summary>
-    /// Property to return the input layout of the vertices for the mesh stored within this model.
-    /// </summary>
-    protected GorgonInputLayout InputLayout
-    {
-        get;
-    }
-
-    /// <summary>
     /// Property to set or return the vertices for our object.
     /// </summary>
-    protected GorgonVertexPosUv[] Vertices
+    protected Vertex[] Vertices
     {
         get;
         set;
-    }
+    } = [];
 
     /// <summary>
     /// Property to set or return the indices for our object.
@@ -82,23 +94,34 @@ internal abstract class Model
     {
         get;
         set;
-    }
+    } = [];
+
+    /// <summary>
+    /// Property to return the number of vertices in the model.
+    /// </summary>
+    public int VertexCount => Vertices.Length;
+
+    /// <summary>
+    /// Property to return the number of indices in the model.
+    /// </summary>
+    public int IndexCount => Indices.Length;
 
     /// <summary>
     /// Property to return the index buffer for this object.
     /// </summary>
-    public GorgonIndexBuffer IndexBuffer
+    public GorgonIndexBuffer? IndexBuffer
     {
         get;
         protected set;
     }
 
     /// <summary>
-    /// Property to return the vertex buffer bindings for this model.
+    /// Property to return the vertex buffer views for this model.
     /// </summary>
-    public GorgonVertexBufferBindings VertexBufferBindings
+    public GorgonStructuredBufferView? VertexBufferView
     {
         get;
+        protected set;
     }
 
     /// <summary>
@@ -116,7 +139,7 @@ internal abstract class Model
     /// <summary>
     /// Property to set or return the material used on the model.
     /// </summary>
-    public Material Material
+    public Material? Material
     {
         get;
         set;
@@ -215,26 +238,31 @@ internal abstract class Model
     }
 
     /// <summary>
+    /// Function to upload the vertex/index data into the GPU
+    /// </summary>
+    /// <param name="list">The command list to use.</param>
+    public void Upload(GorgonCommandList list)
+    {
+        Debug.Assert(VertexBufferView is not null, "No vertex buffer!");
+        Debug.Assert(IndexBuffer is not null, "No index buffer!");
+
+        list.CopyRange(Vertices, VertexBufferView.Buffer)
+            .CopyRange(Indices, IndexBuffer);
+    }
+
+    /// <summary>
     /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
     /// </summary>
-    /// <exception cref="NotImplementedException"></exception>
     public void Dispose()
     {
-        foreach (GorgonVertexBufferBinding binding in VertexBufferBindings)
-        {
-            binding.VertexBuffer?.Dispose();
-        }
+        VertexBufferView?.Dispose();
         IndexBuffer?.Dispose();
     }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Model" /> class.
     /// </summary>
-    /// <param name="inputLayout">The input layout of the vertices for the mesh contained within the model.</param>
-    protected Model(GorgonInputLayout inputLayout)
+    protected Model()
     {
-        Scale = new Vector3(1.0f);
-        InputLayout = inputLayout;
-        VertexBufferBindings = new GorgonVertexBufferBindings(InputLayout);
     }
 }

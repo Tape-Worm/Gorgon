@@ -36,12 +36,10 @@ namespace Gorgon.Graphics.Core;
 /// operations.
 /// </para>
 /// <para>
-/// Typed views require that the underlying buffer be aligned to the size of the <see cref="BufferFormat"/> used by the view, and that the buffer size be at least the size of a <see cref="BufferFormat"/>. 
-/// This information can be determined by using the <see cref="GorgonFormatInfo"/> object and reading the <see cref="GorgonFormatInfo.SizeInBytes"/> property.  
+/// Typed views require that the underlying buffer be aligned to the size of the <see cref="BufferFormat"/> used by the view, and that the buffer size be at least the size of a <see cref="BufferFormat"/>. This 
+/// information can be determined by using the <see cref="GorgonFormatInfo"/> object and reading the <see cref="GorgonFormatInfo.SizeInBytes"/> property.
 /// </para>
-/// <para>
 /// <inheritdoc cref="GorgonGpuBuffer.GetConstantBufferView(bool)" path="/remarks/para[@type='bindless_doc']"/>
-/// </para>
 /// </remarks>
 /// <seealso cref="GorgonCommandList.WriteConstant{T}(int, in T)"/>
 /// <seealso cref="GorgonShaderBufferView.GetViewHandle"/>
@@ -74,10 +72,12 @@ public sealed class GorgonTypedBufferView
     /// <param name="formatSupport">The adapter support for formats.</param>
     /// <param name="bufferSize">The total size of the buffer.</param>
     /// <param name="resourceOffset"><inheritdoc cref="GorgonConstantBufferView.ValidateConstantView(string, int, ulong, ulong)" path="/param[@name='resourceOffset']"/></param>
-    /// <exception cref="GorgonException"><para>Thrown if the buffer does not support the format supplied.</para>
+    /// <exception cref="GorgonException"><para>
+    /// Thrown if the buffer does not support the format supplied.
+    /// </para>
     /// <para>Thrown if the format is <see cref="BufferFormat.Unknown"/>, typeless, compressed, or a depth/stencil format.</para>
     /// <para>Thrown if the size of the buffer is less than the <see cref="GorgonFormatInfo.SizeInBytes">format size</see>, in bytes.</para>
-    /// <para>Throw if the buffer was not aligned to the <see cref="GorgonFormatInfo.SizeInBytes">format size</see> upon creation.</para>
+    /// <para>Thrown if the buffer was not aligned to the <see cref="GorgonFormatInfo.SizeInBytes">format size</see> upon creation.</para>
     /// </exception>
     internal static void ValidateTypedView(string name, GorgonFormatInfo formatInfo, GorgonBufferFormatSupport formatSupport, long bufferSize, ulong resourceOffset)
     {
@@ -93,12 +93,12 @@ public sealed class GorgonTypedBufferView
 
         if (bufferSize < formatInfo.SizeInBytes)
         {
-            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_BUFFER_TOO_SMALL_FOR_VIEW, name, bufferSize, nameof(GorgonStructuredBufferView), formatInfo.SizeInBytes));
+            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_BUFFER_TOO_SMALL_FOR_VIEW, name, bufferSize, nameof(GorgonTypedBufferView), formatInfo.SizeInBytes));
         }
 
         if ((resourceOffset % (ulong)formatInfo.SizeInBytes) != 0)
         {
-            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_BUFFER_ALIGNMENT_INCORRECT_FOR_VIEW, name, formatInfo.SizeInBytes, nameof(GorgonStructuredBufferView)));
+            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_BUFFER_ALIGNMENT_INCORRECT_FOR_VIEW, name, formatInfo.SizeInBytes, nameof(GorgonTypedBufferView)));
         }
     }
 

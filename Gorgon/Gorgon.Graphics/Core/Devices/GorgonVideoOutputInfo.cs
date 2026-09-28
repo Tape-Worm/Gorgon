@@ -35,7 +35,7 @@ using Windows.Web.AtomPub;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// An enumeration that indicates how the back buffers should be rotated to fit the physical rotation of a monitor
+/// An enumeration that indicates how the back buffers should be rotated to fit the physical rotation of a monitor.
 /// </summary>
 public enum RotationMode
 {
@@ -124,7 +124,7 @@ public enum ColorSpace
     YCBCRFullG22LeftP709 = DXGI_COLOR_SPACE_TYPE.DXGI_COLOR_SPACE_YCBCR_FULL_G22_LEFT_P709,
 
     /// <summary>
-    /// This definition may be used by HEVC, and is usually used with 10 or 12 bit color channels
+    /// This definition may be used by HEVC, and is usually used with 10 or 12 bit color channels.
     /// </summary>
     YCBCRStudioG22LeftP2020 = DXGI_COLOR_SPACE_TYPE.DXGI_COLOR_SPACE_YCBCR_STUDIO_G22_LEFT_P2020,
 
@@ -171,7 +171,7 @@ public enum ColorSpace
     /// <summary>
     /// This is usually used with 10 or 12 bit color channels.
     /// </summary>
-    YCBCRFullGHLGTopLeftP20202 = DXGI_COLOR_SPACE_TYPE.DXGI_COLOR_SPACE_YCBCR_FULL_GHLG_TOPLEFT_P2020,
+    YCBCRFullGHLGTopLeftP2020 = DXGI_COLOR_SPACE_TYPE.DXGI_COLOR_SPACE_YCBCR_FULL_GHLG_TOPLEFT_P2020,
 
     /// <summary>
     /// This is usually used with 10 or 12 bit color channels.
@@ -208,65 +208,85 @@ public enum ColorSpace
 /// Provides information about an output on a <see cref="GorgonVideoAdapterInfo"/> object.
 /// </summary>
 /// <param name="Name">The friendly name of the video output.</param>
-/// <param name="Index">The index of the output on the video adapter.
+/// <param name="Index"><para>
+/// The index of the output on the video adapter.
+/// </para>
 /// <para>
 /// <note type="warning">
 /// <para>
-/// This is not the same as the index in the <see cref="GorgonVideoAdapterInfo.Outputs"/> list on the <see cref="GorgonVideoAdapterInfo"/>
+/// This is not the same as the index in the <see cref="GorgonVideoAdapterInfo.Outputs"/> list on the <see cref="GorgonVideoAdapterInfo"/>.
 /// </para>
 /// </note>
 /// </para>
 /// </param>
 /// <param name="DeviceHandle">The native handle for the output device.</param>
-/// <param name="Bounds">The physical boundaries of the output device, typically the desktop boundaries.
+/// <param name="Bounds"><para>
+/// The physical boundaries of the output device, typically the desktop boundaries.
+/// </para>
 /// <para>
 /// The desktop coordinates depend on the dots per inch (DPI) of the desktop. For more information about writing DPI-aware Win32 applications, 
 /// see <a target="_blank" href="https://msdn.microsoft.com/en-us/library/bb173068.aspx">High DPI</a>.
 /// </para>
 /// </param>
-/// <param name="IsAttached">Flag to indicate whether the device is attached or not.</param>
-/// <param name="Rotation">The value that indicates how the output image is rotated by the output</param>
-/// <param name="VideoModes">The list of video modes supported by this output</param>
+/// <param name="IsAttached">Flag to indicate whether the output is attached to the desktop or not.</param>
+/// <param name="Rotation">The value that indicates how the output image is rotated by the output.</param>
+/// <param name="VideoModes">The list of video modes supported by this output.</param>
 /// <param name="BitsPerColorChannel">The value that indicates the number of bits per color channel.</param>
-/// <param name="ColorSpace">The value that indicates the current advanced color capabilities of the display attached to this output. Specifically, whether it's capable of reproducing color and luminance 
+/// <param name="ColorSpace"><para>
+/// The value that indicates the current advanced color capabilities of the display attached to this output. Specifically, whether it's capable of reproducing color and luminance 
 /// values outside of the sRGB color space.
+/// </para>
 /// <para>
 /// A value of <see cref="ColorSpace.RGBFullG22NoneP709"/> indicates that the display is limited to SDR/sRGB. A value of <see cref="ColorSpace.RGBFullG2084NoneP2020"/> indicates that the display 
 /// supports advanced color capabilities. <see cref="ColorSpace.RGBFullG10NoneP709"/> is currently not a color space that displays use; it's simply an intermediary swap-chain color space.
 /// </para>
 /// </param>
-/// <param name="WhitePoint">The value that indicates the white point, in xy coordinates, of the display attached to this output.
+/// <param name="WhitePoint"><para>
+/// The value that indicates the white point, in xy coordinates, of the display attached to this output.
+/// </para>
 /// <para>
 /// This value will usually come from the EDID of the corresponding display or sometimes from an override.
 /// </para>
 /// </param>
-/// <param name="RedPrimary">The value that indicates the red color primary, in xy coordinates, of the display attached to this output.
+/// <param name="RedPrimary"><para>
+/// The value that indicates the red color primary, in xy coordinates, of the display attached to this output.
+/// </para>
 /// <para>
 /// This value will usually come from the EDID of the corresponding display or sometimes from an override.
 /// </para>
 /// </param>
-/// <param name="GreenPrimary">The value that indicates the green color primary, in xy coordinates, of the display attached to this output.
+/// <param name="GreenPrimary"><para>
+/// The value that indicates the green color primary, in xy coordinates, of the display attached to this output.
+/// </para>
 /// <para>
 /// This value will usually come from the EDID of the corresponding display or sometimes from an override.
 /// </para>
 /// </param>
-/// <param name="BluePrimary">The value that indicates the blue color primary, in xy coordinates, of the display attached to this output.
+/// <param name="BluePrimary"><para>
+/// The value that indicates the blue color primary, in xy coordinates, of the display attached to this output.
+/// </para>
 /// <para>
 /// This value will usually come from the EDID of the corresponding display or sometimes from an override.
 /// </para>
 /// </param>
-/// <param name="MinimumLuminance">The value that indicates the minimum luminance, in nits, that the display attached to this output is capable of rendering.
+/// <param name="MinimumLuminance"><para>
+/// The value that indicates the minimum luminance, in nits, that the display attached to this output is capable of rendering.
+/// </para>
 /// <para>
 /// Content should not exceed this minimum value for optimal rendering. This value will usually come from the EDID of the corresponding display or sometimes from an override.
 /// </para>
 /// </param>
-/// <param name="MaximumLuminance">The value that indicates the maximum luminance, in nits, that the display attached to this output is capable of rendering.
+/// <param name="MaximumLuminance"><para>
+/// The value that indicates the maximum luminance, in nits, that the display attached to this output is capable of rendering.
+/// </para>
 /// <para>
-/// This value is likely only valid for a small area of the panel. Content should not exceed this minimum value for optimal rendering. This value will usually come from the EDID of the corresponding 
+/// This value is likely only valid for a small area of the panel. Content should not exceed this maximum value for optimal rendering. This value will usually come from the EDID of the corresponding 
 /// display or sometimes from an override.
 /// </para>
 /// </param>
-/// <param name="MaximumFullFrameLuminance">The value that indicates the maximum luminance, in nits, that the display attached to this output is capable of rendering.
+/// <param name="MaximumFullFrameLuminance"><para>
+/// The value that indicates the maximum luminance, in nits, that the display attached to this output is capable of rendering.
+/// </para>
 /// <para>
 /// Unlike <see cref="MaximumLuminance"/>, this value is valid for a color that fills the entire area of the panel. Content should not exceed this value across the entire panel for optimal rendering. This 
 /// value will usually come from the EDID of the corresponding display or sometimes from an override.
@@ -343,7 +363,7 @@ public record class GorgonVideoOutputInfo(string Name,
                 continue;
             }
 
-            // Use the array pool since we need a new array for each display format. Should cut down on garabge.
+            // Use the array pool since we need a new array for each display format. Should cut down on garbage.
             DXGI_MODE_DESC1[] modes = ArrayPool<DXGI_MODE_DESC1>.Shared.Rent((int)modeCount);
 
             try

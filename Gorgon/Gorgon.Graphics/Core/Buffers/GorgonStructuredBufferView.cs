@@ -35,12 +35,10 @@ namespace Gorgon.Graphics.Core;
 /// Applications can use a structured buffer to allow a shader to interpret buffer data as a custom type. This allows flexible data usage within a shader.
 /// </para>
 /// <para>
-/// Structured views require that the underlying buffer be aligned to the size of a single structured view element, and that the buffer be at least 16 bytes. The structured data must have a size, in bytes, 
-/// that is a multiple of <see cref="MinimumElementSize"/> (4 bytes).
+/// Structured views require that the underlying buffer be aligned to the size of a single structured view element, and that the buffer be at least the size of a single element. The structured data must have a 
+/// size, in bytes, that is a multiple of <see cref="MinimumElementSize"/> (4 bytes).
 /// </para>
-/// <para>
 /// <inheritdoc cref="GorgonGpuBuffer.GetConstantBufferView(bool)" path="/remarks/para[@type='bindless_doc']"/>
-/// </para>
 /// </remarks>
 /// <seealso cref="GorgonCommandList.WriteConstant{T}(int, in T)"/>
 /// <seealso cref="GorgonShaderBufferView.GetViewHandle"/>
@@ -80,13 +78,15 @@ public sealed class GorgonStructuredBufferView
     /// <param name="bufferSize">The total size of the buffer.</param>
     /// <param name="resourceOffset"><inheritdoc cref="GorgonConstantBufferView.ValidateConstantView(string, int, ulong, ulong)" path="/param[@name='resourceOffset']"/></param>
     /// <exception cref="ArgumentOutOfRangeException">Thrown if the <paramref name="structSize"/> is less than the <see cref="MinimumElementSize"/> (4 bytes).</exception>
-    /// <exception cref="GorgonException"><para>Thrown if the <paramref name="structSize"/> is not a multiple of the <see cref="MinimumElementSize"/> (4 bytes).</para>
-    /// <para>Thrown if the size of the buffer is less than the <see cref="MinimumElementSize"/> (4 bytes).</para>
-    /// <para>Throw if the buffer was not aligned to the <paramref name="structSize"/> upon creation.</para>
+    /// <exception cref="GorgonException"><para>
+    /// Thrown if the <paramref name="structSize"/> is not a multiple of the <see cref="MinimumElementSize"/> (4 bytes).
+    /// </para>
+    /// <para>Thrown if the size of the buffer is less than the <paramref name="structSize"/>.</para>
+    /// <para>Thrown if the buffer was not aligned to the <paramref name="structSize"/> upon creation.</para>
     /// </exception>
     internal static void ValidateStructuredView(string name, int structSize, long bufferSize, ulong resourceOffset)
     {
-        // Only allow buffers that are 16 bytes in size at minimum.
+        // Only allow buffers that are 4 bytes in size at minimum.
         ArgumentOutOfRangeException.ThrowIfLessThan(structSize, MinimumElementSize);
 
         if ((structSize % MinimumElementSize) != 0)
@@ -114,19 +114,18 @@ public sealed class GorgonStructuredBufferView
     /// <param name="elementCount">The number of elements of type <typeparamref name="T"/> in the buffer.</param>
     /// <param name="allowReadWriteAccess">[Optional] <b>true</b> to allow read/write access to the buffer, <b>false</b> to allow only read only access.</param>
     /// <returns>A new <see cref="GorgonStructuredBufferView"/> and the associated <see cref="GorgonGpuBuffer"/>.</returns>
-    /// <exception cref="GorgonException">
-    /// <b>Buffer Exceptions</b>
-    /// <inheritdoc cref="GorgonGpuBuffer.ValidateInfo()" path="/exception/para"/>
-    /// <b>View Exceptions</b>
-    /// <inheritdoc cref="ValidateStructuredView(string, int, long, ulong)" path="/exception/para"/>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown if the size of the type <typeparamref name="T"/> is less than the <see cref="MinimumElementSize"/> (4 bytes).</exception>
+    /// <exception cref="GorgonException"><para>
+    /// Thrown if the <paramref name="elementCount"/> is less than 1.
+    /// </para>
+    /// <para>Thrown if the size of the type <typeparamref name="T"/> is not a multiple of the <see cref="MinimumElementSize"/> (4 bytes).</para>
     /// </exception>
     /// <remarks>
     /// <para>
-    /// This function is a convenience method that builds a buffer with a default view to pass to shaders as a shader resource. Buffers created with this method will be destroyed when the default view 
-    /// returned is disposed.
+    /// This function is a convenience method that builds a buffer with a default view to pass to shaders as a shader resource. Buffers created with this method will be destroyed when the default view returned 
+    /// is disposed.
     /// </para>
     /// </remarks>
-    /// <seealso cref="IGorgonTextureView{T}"/>
     /// <seealso cref="GorgonGpuBuffer"/>
     public static unsafe GorgonStructuredBufferView CreateStructuredBuffer<T>(GorgonGraphics graphics, string name, int elementCount, bool allowReadWriteAccess = false)
         where T : unmanaged

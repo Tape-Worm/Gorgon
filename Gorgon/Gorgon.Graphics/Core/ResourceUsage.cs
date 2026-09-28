@@ -48,7 +48,7 @@ public enum BufferUsage
     ConstantBuffer,
 
     /// <summary>
-    /// Buffer will store arguments for indirection execution.
+    /// Buffer will store arguments for indirect execution.
     /// </summary>
     IndirectArguments,
 
@@ -68,7 +68,7 @@ public enum BufferUsage
     Writeable,
 
     /// <summary>
-    /// Buffer is used for general data storage that can be read and write concurrently.
+    /// Buffer is used for general data storage that can be read from and written to concurrently.
     /// </summary>
     ReadWrite
 }

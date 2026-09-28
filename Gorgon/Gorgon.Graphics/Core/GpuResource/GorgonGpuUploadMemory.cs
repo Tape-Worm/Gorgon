@@ -21,7 +21,6 @@
 // Created: June 23, 2026 7:23:18 PM
 //
 
-using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Gorgon.Core;
@@ -42,7 +41,7 @@ namespace Gorgon.Graphics.Core;
 /// <para>
 /// <note type="important">
 /// <para>
-/// The underlying GPU memory is transient and is only available for the lifetime of a single frame. This is why this memory is a <c>ref struct</c> type, it helps ensure the memory cannot be used across 
+/// The underlying GPU memory is transient and is only available for the lifetime of a single frame. This is why this memory is a <c>ref struct</c> type; it helps ensure the memory cannot be used across 
 /// frames by not allowing the memory to be kept alive at the object level.
 /// </para>
 /// </note>
@@ -52,6 +51,7 @@ namespace Gorgon.Graphics.Core;
 /// <see cref="GorgonCommandList.UploadGpuMemoryToBuffer(ref readonly GorgonGpuUploadMemory, GorgonGpuBufferCommon, long)"/> method on a <see cref="GorgonCommandList"/>.
 /// </para>
 /// </remarks>
+/// <seealso cref="GorgonCommandList.UploadGpuMemoryToBuffer(ref readonly GorgonGpuUploadMemory, GorgonGpuBufferCommon, long)"/>
 /// <seealso cref="GorgonResourceCopier"/>
 /// <seealso cref="GorgonGpuBuffer"/>
 /// <seealso cref="GorgonCommandList"/>
@@ -181,10 +181,12 @@ public unsafe readonly ref struct GorgonGpuUploadMemory
     /// <param name="count">[Optional] The number of bytes to slice.</param>    
     /// <returns>A new <see cref="GorgonGpuUploadMemory"/> for the specified slice region.</returns>
     /// <exception cref="ArgumentException">Thrown if the <paramref name="offset"/>, plus the <paramref name="count"/> are larger than the <see cref="SizeInBytes"/>.</exception>
-    /// <exception cref="ArgumentOutOfRangeException"><para>Thrown if the <paramref name="offset"/> parameter is less than 0.</para>
+    /// <exception cref="ArgumentOutOfRangeException"><para>
+    /// Thrown if the <paramref name="offset"/> parameter is less than 0.
+    /// </para>
     /// <para>Thrown if the <paramref name="count"/>, if specified, is less than 1.</para>
     /// </exception>
-    /// <exception cref="GorgonException"><inheritdoc cref="Write{T}(in T, long)" path="/exception[@cref='T:Gorgon.Core.GorgonException'"/></exception>
+    /// <inheritdoc cref="Write{T}(in T, long)" path="/exception[@cref='T:Gorgon.Core.GorgonException']"/>
     /// <remarks>
     /// <para>
     /// If the <paramref name="count"/> parameter is not supplied, then the <see cref="SizeInBytes"/> minus the <paramref name="offset"/> is used.

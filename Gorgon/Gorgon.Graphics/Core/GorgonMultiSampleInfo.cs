@@ -62,7 +62,9 @@ public record struct GorgonMultisampleInfo(int Count, int Quality)
     /// A quality level for standard multisample quality.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// This value is always supported in Gorgon because it can only use Direct 3D 10 or better devices, and these devices are required to implement this pattern.
+    /// </para>
     /// </remarks>
     public static readonly int StandardMultisamplePatternQuality = unchecked((int)0xffffffff);
 

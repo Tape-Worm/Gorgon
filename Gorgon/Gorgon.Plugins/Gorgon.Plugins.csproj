@@ -59,30 +59,30 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub">
-      <Version>10.0.300</Version>
+      <Version>10.0.401</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="System.ComponentModel.Composition.Registration" Version="10.0.8" Condition="$(TargetFramework) != 'netstandard2.0'" />
+    <PackageReference Include="System.ComponentModel.Composition.Registration" Version="10.0.12" Condition="$(TargetFramework) != 'netstandard2.0'" />
     <PackageReference Include="System.Composition">
-      <Version>10.0.8</Version>
+      <Version>10.0.12</Version>
     </PackageReference>
     <PackageReference Include="System.Composition.AttributedModel">
-      <Version>10.0.8</Version>
+      <Version>10.0.12</Version>
     </PackageReference>
     <PackageReference Include="System.Composition.Convention">
-      <Version>10.0.8</Version>
+      <Version>10.0.12</Version>
     </PackageReference>
     <PackageReference Include="System.Composition.Hosting">
-      <Version>10.0.8</Version>
+      <Version>10.0.12</Version>
     </PackageReference>
     <PackageReference Include="System.Composition.Runtime">
-      <Version>10.0.8</Version>
+      <Version>10.0.12</Version>
     </PackageReference>
     <PackageReference Include="System.Composition.TypedParts">
-      <Version>10.0.8</Version>
+      <Version>10.0.12</Version>
     </PackageReference>
-    <PackageReference Include="System.Reflection.Context" Version="10.0.8" />
+    <PackageReference Include="System.Reflection.Context" Version="10.0.12" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Gorgon.Core\Gorgon.Core.csproj" />

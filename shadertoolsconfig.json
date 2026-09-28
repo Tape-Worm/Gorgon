@@ -1,0 +1,5 @@
+{
+    "root": true,
+    "hlsl.languageVersion": "2021",
+    "hlsl.targetProfile": "lib_6_6"
+}

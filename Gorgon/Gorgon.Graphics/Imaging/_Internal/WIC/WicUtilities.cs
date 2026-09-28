@@ -609,7 +609,7 @@ internal unsafe class WicUtilities
     /// </summary>
     /// <param name="options">The list of options used to override.</param>
     /// <returns>The palette information.</returns>
-    private unsafe WICPaletteInfo GetDecoderPalette(IGorgonWicDecodingOptions options)
+    private WICPaletteInfo GetDecoderPalette(IGorgonWicDecodingOptions options)
     {
         // If there's no palette option on the decoder, then we do nothing.
         if (!options.Options.ContainsName(DecOptPalette))
@@ -1672,7 +1672,7 @@ internal unsafe class WicUtilities
     /// <param name="scaleFilter">The filter to apply when smoothing the image during scaling.</param>
     /// <param name="resizeMode">The type of resize to perform.</param>
     /// <returns>A new <see cref="IGorgonImage"/> containing the resized data.</returns>
-    public unsafe GorgonImage Resize(GorgonImage imageData, int offsetX, int offsetY, int newWidth, int newHeight, int newDepth, int calculatedMipLevels, ImageFilter scaleFilter, ResizeMode resizeMode)
+    public GorgonImage Resize(GorgonImage imageData, int offsetX, int offsetY, int newWidth, int newHeight, int newDepth, int calculatedMipLevels, ImageFilter scaleFilter, ResizeMode resizeMode)
     {
         GorgonImage workingImage = imageData;
 

@@ -175,7 +175,6 @@ internal class Context
             Form.KeyDown += MainForm_KeyDown;
             Form.Deactivate += (sender, args) => _log.Print("Application is deactivated. Loops will pause.", LoggingLevel.All);
             Form.Activated += (sender, args) => _log.Print("Application is activated. Loops will run.", LoggingLevel.All);
-            Form.ClientSize = new Size(1280, 800);
             Form.Show();
 
             // We'll start out with the default idle loop.            

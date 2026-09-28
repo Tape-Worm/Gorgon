@@ -35,15 +35,15 @@ public enum LineRasterizationMode
     /// </summary>
     Default = D3D12_LINE_RASTERIZATION_MODE.D3D12_LINE_RASTERIZATION_MODE_ALIASED,
     /// <summary>
-    /// Alpha based antialiasing. 
+    /// Alpha-based antialiasing.
     /// </summary>
     AntiAliased = D3D12_LINE_RASTERIZATION_MODE.D3D12_LINE_RASTERIZATION_MODE_ALPHA_ANTIALIASED,
     /// <summary>
-    /// Line is expanded into a quad between the range of 1.0 and 1.4. This value only applies to render targets that use multisampling.
+    /// The line is drawn as a quadrilateral (two triangles) with a width of 1.4. This value only applies to render targets that use multisampling.
     /// </summary>
     QuadrilateralWide = D3D12_LINE_RASTERIZATION_MODE.D3D12_LINE_RASTERIZATION_MODE_QUADRILATERAL_WIDE,
     /// <summary>
-    /// Line is expanded into a quad, but uses a true 1.0 width. This value only applies to render targets that use multisampling.
+    /// The line is drawn as a quadrilateral (two triangles) with a width of 1.0. This value only applies to render targets that use multisampling, and requires that the video adapter supports it (see <see cref="GorgonVideoAdapterInfo.SupportsNarrowQuadrilateralLines"/>).
     /// </summary>
     QuadrilateralNarrow = D3D12_LINE_RASTERIZATION_MODE.D3D12_LINE_RASTERIZATION_MODE_QUADRILATERAL_NARROW,
 }

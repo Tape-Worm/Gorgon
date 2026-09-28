@@ -46,32 +46,32 @@ namespace Gorgon.Graphics.Core;
 /// </summary>
 /// <remarks>
 /// <para>
-/// An index buffer uses indices that point to vertices within a buffer to help form a mesh. This allows an application to use smaller buffers for vertices and helps reduce bandwidth when rendering. 
+/// An index buffer uses indices that point to vertices within a buffer to help form a mesh. This allows an application to use smaller buffers for vertices and helps reduce bandwidth when rendering.
 /// </para>
 /// <para>
-/// For example, if a vertex buffer has a vertex that is 40 bytes, and describes a rectangle out of 2 triangles, that's 6 vertices * 40 bytes = 240 bytes. Now, with an index buffer, you can use 16-bit 
-/// indices and 4 vertices to describe the same rectangle.  12 bytes for the indices, and 160 bytes for the vertices = 172 bytes, a difference of 68 bytes in total. Scale this up by meshes that use 10's of 
-/// thousands of vertices, and you start seeing some massive gains.
+/// For example, if a vertex buffer has a vertex that is 40 bytes, and describes a rectangle out of 2 triangles, that's 6 vertices * 40 bytes = 240 bytes. Now, with an index buffer, you can use 16-bit indices 
+/// and 4 vertices to describe the same rectangle. 12 bytes for the indices, and 160 bytes for the vertices = 172 bytes, a difference of 68 bytes in total. Scale this up by meshes that use tens of thousands of 
+/// vertices, and you start seeing some massive gains.
 /// </para>
 /// <para>
-/// The index buffer can consist of indices that are 32-bits wide, or 16-bits wide. The smaller data size means less overhead, but a reduced mesh size (32-bit can address 4,294,967,296 vertices, while 16 
-/// bit can only address 65536 vertices). The type of data is specified upon creation of the buffer.
+/// The index buffer can consist of indices that are 32 bits wide, or 16 bits wide. The smaller data size means less overhead, but a reduced mesh size (32-bit indices can address 4,294,967,296 vertices, while 
+/// 16-bit indices can only address 65536 vertices). The type of data is specified upon creation of the buffer.
 /// </para>
 /// <para>
 /// <h3>Why a separate buffer type?</h3>
 /// </para>
 /// <para>
-/// Gorgon works on a system known as bindless rendering. Older systems like OpenGL or Direct 3D 11 forced data to be bound to a pipeline using slots of some kind. This system has several drawbacks around 
-/// state tracking and is no longer really representative of how a GPU actually works. With Gorgon and its Direct 3D 12 back end, we no longer need this binding system and can just create resources and 
-/// just use them directly from memory. No more state tracking for resources, no more costly pipeline switches, etc... 
+/// Gorgon works on a system known as bindless rendering. Older graphics APIs forced data to be bound to a pipeline using slots of some kind. This system has several drawbacks around state tracking and is no 
+/// longer really representative of how a GPU actually works. With Gorgon, we no longer need this binding system and can just create resources and use them directly from memory. No more state tracking for 
+/// resources, no more costly pipeline switches, etc...
 /// </para>
 /// <para>
-/// However, while this system applies to almost all resources, index buffers are required to be bound. This is unavoidable, and as such, the memory architecture for these index buffers are slightly 
-/// different and require they be treated differently than a generic buffer type like <see cref="GorgonGpuBuffer"/>. 
+/// However, while this system applies to almost all resources, index buffers are required to be bound. This is unavoidable, and as such, the memory architecture for these index buffers is slightly different 
+/// and requires they be treated differently than a generic buffer type like <see cref="GorgonGpuBuffer"/>.
 /// </para>
 /// </remarks>
 /// <seealso cref="GorgonVideoAdapterInfo"/>
-/// <seealso cref="GorgonGpuBufferInfo"/>
+/// <seealso cref="GorgonIndexBufferInfo"/>
 /// <seealso cref="GorgonGpuBuffer"/>
 public sealed unsafe class GorgonIndexBuffer
     : GorgonGpuBufferCommon, IGorgonIndexBufferInfo
@@ -150,18 +150,16 @@ public sealed unsafe class GorgonIndexBuffer
     /// <param name="graphics"><inheritdoc cref="GorgonGpuResource(GorgonGraphics, string, ComPtr{ID3D12Resource2})" path="/param[@name='graphics']"/></param>
     /// <param name="name"><inheritdoc cref="GorgonGpuResource(GorgonGraphics, string, ComPtr{ID3D12Resource2})" path="/param[@name='name']"/></param>
     /// <param name="info">Information used to create the buffer.</param>
-    /// <exception cref="GorgonException"><para>Thrown if the buffer cannot be created because the size is less than 1 byte.</para></exception>
+    /// <exception cref="GorgonException">Thrown if the size of the buffer is less than the size of a single index (2 bytes for 16-bit indices, or 4 bytes for 32-bit indices).</exception>
     /// <remarks>
     /// <para>
-    /// This creates a generic buffer that can hold data on the GPU, or upload to the GPU. The buffer data has no structure. That is defined by views that can be created from the buffer. The types of views 
-    /// available are defined in the <see cref="GorgonGpuBufferInfo"/> flags.
+    /// This creates a buffer that holds index data on the GPU. The size of each index is defined by the <see cref="GorgonIndexBufferInfo.Use32BitIndices"/> value on the <paramref name="info"/> parameter.
     /// </para>
     /// <para>
-    /// Most buffers will require a minimum <see cref="GorgonCommonBufferInfo.SizeInBytes"/> of 1 byte. However, some views will require the buffer have a specific minimum size (e.g. constant buffers must be at 
-    /// least 256 bytes, render target views must be at least the size of a <see cref="BufferFormat"/> format size, etc...).  
+    /// The <see cref="GorgonCommonBufferInfo.SizeInBytes"/> must be at least the size of a single index.
     /// </para>
     /// </remarks>
-    /// <seealso cref="GorgonGpuBufferInfo"/>
+    /// <seealso cref="GorgonIndexBufferInfo"/>
     public GorgonIndexBuffer(GorgonGraphics graphics, string name, GorgonIndexBufferInfo info)
         : base(graphics, name, info)
     {

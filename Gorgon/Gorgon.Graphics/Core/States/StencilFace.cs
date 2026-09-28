@@ -24,7 +24,7 @@
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Defines which face to apply a stencil operation to.
+/// Defines which face is used for a stencil operation.
 /// </summary>
 public enum StencilFace
 {

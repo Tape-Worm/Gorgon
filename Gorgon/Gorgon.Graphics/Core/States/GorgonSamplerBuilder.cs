@@ -31,27 +31,48 @@ namespace Gorgon.Graphics.Core;
 /// <summary>
 /// A builder for a <see cref="GorgonSampler"/> object.
 /// </summary>
+/// <param name="graphics">The graphics interface that is associated with the built objects.</param>
 /// <remarks>
 /// <para>
 /// Use this builder to create a new immutable <see cref="GorgonSampler"/> object to bindlessly pass to a shader. The sampler will be used by the shader to provide filtered samples of texel data.
 /// </para>
 /// <para>
-/// A <see cref="GorgonSampler"/> is an immutable object, it can only be created through this builder factory type.
+/// A <see cref="GorgonSampler"/> is an immutable object, so it can only be created through this builder. Each call to <see cref="Build(string, IGorgonAllocator{GorgonSampler})"/> creates a new 
+/// <see cref="GorgonSampler"/>. The application should dispose of the sampler when it is no longer needed. Otherwise, it will be disposed when the <see cref="GorgonGraphics"/> interface it is associated with 
+/// is disposed.
 /// </para>
 /// </remarks>
 /// <seealso cref="GorgonSampler"/>
-public sealed class GorgonSamplerBuilder
-    : IGorgonFluentBuilder<GorgonSamplerBuilder, GorgonSampler, IGorgonAllocator<GorgonSampler>, string>
+public sealed class GorgonSamplerBuilder(GorgonGraphics graphics)
+        : IGorgonFluentBuilderWithAllocator<GorgonSamplerBuilder, GorgonSampler, IGorgonAllocator<GorgonSampler>, string>
 {
-    private readonly GorgonSampler _worker;
-    
+    /// <summary>
+    /// The default allocator for creating samplers.
+    /// </summary>
+    private class DefaultAllocator(GorgonGraphics graphics)
+        : IGorgonAllocator<GorgonSampler>
+    {
+        private readonly GorgonGraphics _graphics = graphics;
+
+        /// <inheritdoc/>
+        public GorgonSampler Allocate(Action<GorgonSampler>? initializer = null)
+        {
+            GorgonSampler result = new(_graphics);
+            initializer?.Invoke(result);
+            return result;
+        }
+    }
+
+    private readonly DefaultAllocator _allocator = new(graphics);
+    private readonly GorgonSampler _worker = new(graphics);
+
     /// <summary>
     /// Property to return the graphics interface to associate with the built objects.
     /// </summary>
     public GorgonGraphics Graphics
     {
         get;
-    }
+    } = graphics;
 
     /// <summary>
     /// Function to copy the settings for a sampler.
@@ -92,19 +113,22 @@ public sealed class GorgonSamplerBuilder
     }
 
     /// <inheritdoc/>
-    /// <param name="name">The name of the sampler.</param>
-    /// <param name="allocator"><inheritdoc cref="IGorgonFluentBuilder{TB, TBo, TBa, TP1}.Build" path="/param[@name='allocator']"/></param>
+    /// <param name="name">The name of the sampler. If this value is empty, then a name will be generated.</param>
+    /// <param name="allocator"><inheritdoc cref="IGorgonFluentBuilderWithAllocator{TB, TBo, TBa, TP1}.Build" path="/param[@name='allocator']"/></param>
     /// <remarks>
     /// <inheritdoc path="/remarks/para"/>
-    /// <para>
-    /// The <paramref name="name"/> is required, if it is left empty, a name will be generated.
-    /// </para>
     /// </remarks>
     public GorgonSampler Build(string name, IGorgonAllocator<GorgonSampler>? allocator = null)
-    {        
-        GorgonSampler result = allocator is null ? new GorgonSampler(Graphics, string.Empty) : allocator.Allocate(s => s.ResetDescriptor());
+    {
+        allocator ??= _allocator;        
         _worker.Name = GorgonGraphicsFactory.GenerateName(name, nameof(GorgonSampler));
-        Copy(_worker, result);
+
+        GorgonSampler result = allocator.Allocate(s =>
+        {
+            s.ResetDescriptor();
+            Copy(_worker, s);
+        });
+
         return result;
     }
 
@@ -146,13 +170,15 @@ public sealed class GorgonSamplerBuilder
     /// The <paramref name="minLod"/> is the lower end of the mipmap range to clamp access to, where 0 is the largest and most detailed mipmap level and any level higher than that is less detailed.
     /// </para>
     /// <para>
-    /// The <paramref name="maxLod"/> is the upper end of the mipmap range to clamp access to, where 0 is the largest and most detailed mipmap level and any level higher than that is less detailed. 
+    /// The <paramref name="maxLod"/> is the upper end of the mipmap range to clamp access to, where 0 is the largest and most detailed mipmap level and any level higher than that is less detailed.
     /// </para>
     /// <para>
     /// The <paramref name="maxLod"/> must be greater than or equal to <paramref name="minLod"/>. To have no upper limit on LOD, set <paramref name="maxLod"/> to <see cref="float.MaxValue"/>.
     /// </para>
-    /// <inheritdoc cref="GorgonSampler.MaximumLod" path="/remarks/para"/>
-    /// </remarks>    
+    /// <para>
+    /// The default values are 0 for the <paramref name="minLod"/>, and <see cref="float.MaxValue"/> for the <paramref name="maxLod"/>.
+    /// </para>
+    /// </remarks>
     public GorgonSamplerBuilder LodRange(float minLod, float maxLod)
     {
         ArgumentOutOfRangeException.ThrowIfNegative(minLod);
@@ -206,7 +232,7 @@ public sealed class GorgonSamplerBuilder
     /// <inheritdoc cref="Clear" path="/returns"/>
     /// <remarks>
     /// <para>
-    /// All 3 values default to <see cref="TextureAddressing.Clamp"/>.
+    /// The default value for all three axes is <see cref="TextureAddressing.Clamp"/>.
     /// </para>
     /// </remarks>
     public GorgonSamplerBuilder Addressing(TextureAddressing u, TextureAddressing v, TextureAddressing w = TextureAddressing.Clamp)
@@ -236,9 +262,12 @@ public sealed class GorgonSamplerBuilder
     /// <inheritdoc cref="Clear" path="/returns"/>
     /// <exception cref="ArgumentOutOfRangeException">Thrown if the <paramref name="maxValue"/> value is less than 1 or greater than 16.</exception>
     /// <remarks>
-    /// <inheritdoc cref="GorgonSampler.MaxAnisotropy" path="/remarks/para"/>
+    /// <inheritdoc cref="GorgonSampler.MaxAnisotropy" path="/remarks/para[@type='common']"/>
     /// <para>
-    /// This value must be an integer value between 1 to 16.
+    /// This value must be an integer value from 1 to 16.
+    /// </para>
+    /// <para>
+    /// The default value is 16.
     /// </para>
     /// </remarks>
     public GorgonSamplerBuilder MaxAnisotropy(int maxValue)
@@ -248,21 +277,5 @@ public sealed class GorgonSamplerBuilder
 
         _worker.MaxAnisotropy = maxValue;
         return this;
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonSamplerBuilder"/> class.
-    /// </summary>
-    /// <param name="graphics">The graphics interface to associate with the built objects.</param>
-    public GorgonSamplerBuilder(GorgonGraphics graphics)
-    {
-        Graphics = graphics;
-        
-        _worker = new GorgonSampler(graphics, string.Empty)
-        {
-            Name = string.Empty
-        };
-        // Do not register this sampler, we don't need to dispose it.
-        _worker.UnregisterDisposable(graphics);
     }
 }

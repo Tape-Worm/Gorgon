@@ -21,11 +21,7 @@
 // Created: March 5, 2026 10:47:19 PM
 //
 
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Text;
 
 namespace Gorgon.Graphics.Core;
 
@@ -49,6 +45,9 @@ public sealed class GorgonSubResourceInfoList
     /// <summary>
     /// Property to return the sub resource by its mip level, array index, and optionally, format plane.
     /// </summary>
+    /// <param name="mipLevel">The mip level of the sub resource.</param>
+    /// <param name="arrayIndex">The array index of the sub resource.</param>
+    /// <param name="plane">[Optional] The format plane of the sub resource.</param>
     public GorgonSubResourceInfo this[short mipLevel, short arrayIndex, byte plane = 0] => _list[_owner?.GetSubResourceIndex(mipLevel, arrayIndex, plane) ?? 0];
 
     /// <inheritdoc/>
@@ -97,8 +96,10 @@ public sealed class GorgonSubResourceTileInfoList
     public GorgonSubResourceTileInfo this[int index] => _list[index];
 
     /// <summary>
-    /// Property to return the sub resource by its mip level, array index, and optionally, format plane.
+    /// Property to return the sub resource tile information by its mip level and array index.
     /// </summary>
+    /// <param name="mipLevel">The mip level of the sub resource.</param>
+    /// <param name="arrayIndex">The array index of the sub resource.</param>
     public GorgonSubResourceTileInfo this[short mipLevel, short arrayIndex] => _list[_owner?.GetTileSubResourceIndex(mipLevel, arrayIndex) ?? 0];
 
     /// <inheritdoc/>

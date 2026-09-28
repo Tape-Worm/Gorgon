@@ -22,6 +22,8 @@
 // Created: December 1, 2020 9:29:00 PM
 // 
 
+using System.Collections;
+using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -262,6 +264,7 @@ public unsafe readonly struct GorgonPtr<T>
     /// </summary>
     /// <param name="ptr">The buffer to convert.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#pragma warning disable IDE0305 // Simplify collection initialization
     public static explicit operator Span<T>(GorgonPtr<T> ptr) => ptr.ToSpan();
 
     /// <summary>
@@ -270,6 +273,7 @@ public unsafe readonly struct GorgonPtr<T>
     /// <param name="ptr">The buffer to convert.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static explicit operator ReadOnlySpan<T>(GorgonPtr<T> ptr) => ptr.ToReadOnlySpan();
+#pragma warning restore IDE0305 // Simplify collection initialization
 
     /// <summary>
     /// Operator to explicitly convert this pointer to a <see cref="GorgonPtr{Byte}"/> type.

@@ -90,9 +90,9 @@ internal sealed class SharedResources
     public const string BlitterShadersName = "__GORGON__BLITTER__SHADERS__";
 
     /// <summary>
-    /// Property to return the global shader factory for building shaders.
+    /// Property to return the global shader compiler for building shaders.
     /// </summary>
-    public GorgonShaderFactory ShaderFactory
+    public GorgonShaderCompiler ShaderCompiler
     {
         get;
     }
@@ -118,9 +118,7 @@ internal sealed class SharedResources
     {
         if (disposing)
         {
-            BlitterPixelShader.Dispose();
-            BlitterVertexShader.Dispose();
-            ShaderFactory.Dispose();
+            ShaderCompiler.Dispose();
         }
     }
 
@@ -137,12 +135,12 @@ internal sealed class SharedResources
     /// <param name="graphics">The graphics interface that owns this instance.</param>
     public SharedResources(GorgonGraphics graphics)
     {
-        ShaderFactory = new GorgonShaderFactory(graphics);
-        ShaderFactory.Includes[BlitterShadersName] = new GorgonShaderInclude(BlitterShadersName, BlitterShader);
+        ShaderCompiler = new GorgonShaderCompiler(graphics);
+        ShaderCompiler.Includes[BlitterShadersName] = new GorgonShaderInclude(BlitterShadersName, BlitterShader);
 
         CompileFlags flags = graphics.IsInDebugMode ? CompileFlags.Debug : CompileFlags.OptimizationLevel3;
 
-        BlitterVertexShader = ShaderFactory.Compile(BlitterShader, "GorgonBlitterVS", ShaderType.VertexShader, flags: flags);
-        BlitterPixelShader = ShaderFactory.Compile(BlitterShader, "GorgonBlitterPS", ShaderType.PixelShader, flags: flags);
+        BlitterVertexShader = ShaderCompiler.Compile(BlitterShader, "GorgonBlitterVS", ShaderType.VertexShader, flags: flags);
+        BlitterPixelShader = ShaderCompiler.Compile(BlitterShader, "GorgonBlitterPS", ShaderType.PixelShader, flags: flags);
     }
 }

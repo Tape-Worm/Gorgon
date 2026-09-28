@@ -36,21 +36,21 @@ public static class GorgonTextureViewExtensions
         /// <summary>
         /// Function to create a 1D texture and its default view.
         /// </summary>
-        /// <param name="graphics">The graphics interface associated with the texture and view.</param>
+        /// <param name="graphics">The graphics interface that is associated with the texture and view.</param>
         /// <param name="name">The name of the texture and view.</param>
         /// <param name="format">The texel format for the texture and view.</param>
         /// <param name="width">The width of the texture, in pixels.</param>
         /// <param name="mipCount">[Optional] The number of mip map levels in the texture.</param>
         /// <param name="arrayCount">[Optional] The number of array indices in the texture.</param>
-        /// <returns>A new <see cref="IGorgonTextureView{GorgonTexture}"/> and its associated <see cref="GorgonTextureCommon"/>.</returns>
+        /// <returns>A new <see cref="IGorgonTextureView{GorgonTexture}"/> and its associated <see cref="GorgonTexture"/>.</returns>
         /// <exception cref="GorgonException">
         /// <b>Texture Exceptions</b>
-        /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[1]"/>
-        /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[4]"/>
-        /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[5]"/>
+        /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[@type='mip']"/>
+        /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[@type='1d']"/>
         /// <b>View Exceptions</b>
-        /// <inheritdoc cref="TextureView{T}.ValidateTextureView(string, GorgonFormatInfo, GorgonFormatInfo, IReadOnlyList{BufferFormat}, byte, bool, bool)" path="/exception/para[2]"/>
-        /// <inheritdoc cref="TextureView{T}.ValidateTextureView(string, GorgonFormatInfo, GorgonFormatInfo, IReadOnlyList{BufferFormat}, byte, bool, bool)" path="/exception/para[5]"/>
+        /// <inheritdoc cref="TextureView{T}.ValidateTextureView(string, GorgonFormatInfo, GorgonFormatInfo, IReadOnlyList{BufferFormat}, byte, bool, bool)" path="/exception/para[@type='typeless']"/>
+        /// <inheritdoc cref="TextureView{T}.ValidateTextureView(string, GorgonFormatInfo, GorgonFormatInfo, IReadOnlyList{BufferFormat}, byte, bool, bool)" path="/exception/para[@type='depthformat']"/>
+        /// <inheritdoc cref="TextureView{T}.ValidateTextureView(string, GorgonFormatInfo, GorgonFormatInfo, IReadOnlyList{BufferFormat}, byte, bool, bool)" path="/exception/para[@type='planar']"/>
         /// </exception>
         /// <remarks>
         /// <para>
@@ -88,12 +88,13 @@ public static class GorgonTextureViewExtensions
         /// <inheritdoc cref="Create1DTexture(GorgonGraphics, string, BufferFormat, int, short, short)" path="/returns"/>
         /// <exception cref="GorgonException">
         /// <b>Texture Exceptions</b>
-        /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[1]"/>
-        /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[3]"/>
-        /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[10]"/>
+        /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[@type='mip']"/>
+        /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[@type='2d']"/>
+        /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[@type='compressed']"/>
         /// <b>View Exceptions</b>
-        /// <inheritdoc cref="TextureView{T}.ValidateTextureView(string, GorgonFormatInfo, GorgonFormatInfo, IReadOnlyList{BufferFormat}, byte, bool, bool)" path="/exception/para[2]"/>
-        /// <inheritdoc cref="TextureView{T}.ValidateTextureView(string, GorgonFormatInfo, GorgonFormatInfo, IReadOnlyList{BufferFormat}, byte, bool, bool)" path="/exception/para[5]"/>
+        /// <inheritdoc cref="TextureView{T}.ValidateTextureView(string, GorgonFormatInfo, GorgonFormatInfo, IReadOnlyList{BufferFormat}, byte, bool, bool)" path="/exception/para[@type='typeless']"/>
+        /// <inheritdoc cref="TextureView{T}.ValidateTextureView(string, GorgonFormatInfo, GorgonFormatInfo, IReadOnlyList{BufferFormat}, byte, bool, bool)" path="/exception/para[@type='depthformat']"/>
+        /// <inheritdoc cref="TextureView{T}.ValidateTextureView(string, GorgonFormatInfo, GorgonFormatInfo, IReadOnlyList{BufferFormat}, byte, bool, bool)" path="/exception/para[@type='planar']"/>
         /// </exception>
         /// <remarks>
         /// <para>
@@ -126,18 +127,19 @@ public static class GorgonTextureViewExtensions
         /// <param name="format"><inheritdoc cref="Create1DTexture(GorgonGraphics, string, BufferFormat, int, short, short)" path="/param[@name='format']"/></param>
         /// <param name="width"><inheritdoc cref="Create1DTexture(GorgonGraphics, string, BufferFormat, int, short, short)" path="/param[@name='width']"/></param>
         /// <param name="height"><inheritdoc cref="Create2DTexture(GorgonGraphics, string, BufferFormat, int, int, short, short)" path="/param[@name='height']"/></param>
-        /// <param name="cubeCount">The number of cube textures. One cube has 6 array indices.</param>
-        /// <param name="mipCount"><inheritdoc cref="Create1DTexture(GorgonGraphics, string, BufferFormat, int, short, short)" path="/param[@name='mipCount']"/></param>    
+        /// <param name="cubeCount">[Optional] The number of cube textures. One cube has 6 array indices.</param>
+        /// <param name="mipCount"><inheritdoc cref="Create1DTexture(GorgonGraphics, string, BufferFormat, int, short, short)" path="/param[@name='mipCount']"/></param>
         /// <inheritdoc cref="Create1DTexture(GorgonGraphics, string, BufferFormat, int, short, short)" path="/returns"/>
         /// <exception cref="GorgonException">
         /// <b>Texture Exceptions</b>
-        /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[1]"/>
-        /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[3]"/>
-        /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[9]"/>
-        /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[10]"/>
+        /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[@type='mip']"/>
+        /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[@type='2d']"/>
+        /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[@type='cube']"/>
+        /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[@type='compressed']"/>
         /// <b>View Exceptions</b>
-        /// <inheritdoc cref="TextureView{T}.ValidateTextureView(string, GorgonFormatInfo, GorgonFormatInfo, IReadOnlyList{BufferFormat}, byte, bool, bool)" path="/exception/para[2]"/>
-        /// <inheritdoc cref="TextureView{T}.ValidateTextureView(string, GorgonFormatInfo, GorgonFormatInfo, IReadOnlyList{BufferFormat}, byte, bool, bool)" path="/exception/para[5]"/>
+        /// <inheritdoc cref="TextureView{T}.ValidateTextureView(string, GorgonFormatInfo, GorgonFormatInfo, IReadOnlyList{BufferFormat}, byte, bool, bool)" path="/exception/para[@type='typeless']"/>
+        /// <inheritdoc cref="TextureView{T}.ValidateTextureView(string, GorgonFormatInfo, GorgonFormatInfo, IReadOnlyList{BufferFormat}, byte, bool, bool)" path="/exception/para[@type='depthformat']"/>
+        /// <inheritdoc cref="TextureView{T}.ValidateTextureView(string, GorgonFormatInfo, GorgonFormatInfo, IReadOnlyList{BufferFormat}, byte, bool, bool)" path="/exception/para[@type='planar']"/>
         /// </exception>
         /// <remarks>
         /// <para>
@@ -148,7 +150,7 @@ public static class GorgonTextureViewExtensions
         /// <seealso cref="IGorgonTextureView{T}"/>
         public static IGorgonTextureView<GorgonTexture> CreateCubeTexture(GorgonGraphics graphics, string name, BufferFormat format, int width, int height, short cubeCount = 1, short mipCount = 1)
         {
-            GorgonTextureInfo info = GorgonTextureInfo.CreateTextureCubeInfo(format, width, height, mipCount, cubeCount);
+            GorgonTextureInfo info = GorgonTextureInfo.CreateTextureCubeInfo(format, width, height, cubeCount, mipCount);
             GorgonTexture texture = new(graphics, name, info);
 
             try
@@ -163,7 +165,7 @@ public static class GorgonTextureViewExtensions
         }
 
         /// <summary>
-        /// Function to create a 1D texture and its default view.
+        /// Function to create a 3D texture and its default view.
         /// </summary>
         /// <param name="graphics"><inheritdoc cref="Create1DTexture(GorgonGraphics, string, BufferFormat, int, short, short)" path="/param[@name='graphics']"/></param>
         /// <param name="name"><inheritdoc cref="Create1DTexture(GorgonGraphics, string, BufferFormat, int, short, short)" path="/param[@name='name']"/></param>
@@ -175,11 +177,12 @@ public static class GorgonTextureViewExtensions
         /// <inheritdoc cref="Create1DTexture(GorgonGraphics, string, BufferFormat, int, short, short)" path="/returns"/>
         /// <exception cref="GorgonException">
         /// <b>Texture Exceptions</b>
-        /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[1]"/>
-        /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[2]"/>    
+        /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[@type='mip']"/>
+        /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para[@type='3d']"/>
         /// <b>View Exceptions</b>
-        /// <inheritdoc cref="TextureView{T}.ValidateTextureView(string, GorgonFormatInfo, GorgonFormatInfo, IReadOnlyList{BufferFormat}, byte, bool, bool)" path="/exception/para[2]"/>
-        /// <inheritdoc cref="TextureView{T}.ValidateTextureView(string, GorgonFormatInfo, GorgonFormatInfo, IReadOnlyList{BufferFormat}, byte, bool, bool)" path="/exception/para[5]"/>
+        /// <inheritdoc cref="TextureView{T}.ValidateTextureView(string, GorgonFormatInfo, GorgonFormatInfo, IReadOnlyList{BufferFormat}, byte, bool, bool)" path="/exception/para[@type='typeless']"/>
+        /// <inheritdoc cref="TextureView{T}.ValidateTextureView(string, GorgonFormatInfo, GorgonFormatInfo, IReadOnlyList{BufferFormat}, byte, bool, bool)" path="/exception/para[@type='depthformat']"/>
+        /// <inheritdoc cref="TextureView{T}.ValidateTextureView(string, GorgonFormatInfo, GorgonFormatInfo, IReadOnlyList{BufferFormat}, byte, bool, bool)" path="/exception/para[@type='planar']"/>
         /// </exception>
         /// <remarks>
         /// <para>

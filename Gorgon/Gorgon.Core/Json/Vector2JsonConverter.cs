@@ -71,11 +71,13 @@ public class Vector2JsonConverter
 
             switch (propName)
             {
+                case "Width":
                 case "width":
                 case "w":
                 case "x":
                     x = reader.GetSingle();
                     break;
+                case "Height":
                 case "height":
                 case "h":
                 case "y":

@@ -29,34 +29,6 @@ using Gorgon.Graphics.Core;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Represents a material applied to a model
+/// Represents a material applied to a model.
 /// </summary>
-public class Material
-{
-    /// <summary>
-    /// Property to set or return the diffuse color for the model.
-    /// </summary>
-    public GorgonColor Diffuse
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// Property to set or return the texture for the model.
-    /// </summary>
-    public GorgonTexture2DView Texture
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// Property to set or return the sampler used to sample the texture in the shader.
-    /// </summary>
-    public GorgonSamplerState TextureSampler
-    {
-        get;
-        set;
-    }
-}
+internal record class Material(GorgonColor Diffuse, IGorgonTextureView<GorgonTexture> Texture, GorgonSampler TextureSampler);

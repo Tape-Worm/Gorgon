@@ -26,13 +26,13 @@ using TerraFX.Interop.DirectX;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Specifies the type of primitive geometry to render from vertex data bound to the pipeline
+/// Specifies the type of primitive geometry to render from vertex data bound to the pipeline.
 /// </summary>
 public enum PrimitiveType
 {
     /// <summary>
     /// <para>
-    /// The IA stage has not been initialized with a primitive topology. The IA stage will not function properly unless a primitive topology is defined.
+    /// The primitive type has not been defined. This value cannot be used with a pipeline state object.
     /// </para>
     /// </summary>
     None = D3D_PRIMITIVE_TOPOLOGY.D3D_PRIMITIVE_TOPOLOGY_UNDEFINED,
@@ -68,25 +68,25 @@ public enum PrimitiveType
     TriangleStrip = D3D_PRIMITIVE_TOPOLOGY.D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP,
     /// <summary>
     /// <para>
-    /// Interpret the vertex data as list of lines with adjacency data.
+    /// Interpret the vertex data as a list of lines with adjacency data.
     /// </para>
     /// </summary>
     LineListWithAdjacency = D3D_PRIMITIVE_TOPOLOGY.D3D10_PRIMITIVE_TOPOLOGY_LINELIST_ADJ,
     /// <summary>
     /// <para>
-    /// Interpret the vertex data as line strip with adjacency data.
+    /// Interpret the vertex data as a line strip with adjacency data.
     /// </para>
     /// </summary>
     LineStripWithAdjacency = D3D_PRIMITIVE_TOPOLOGY.D3D_PRIMITIVE_TOPOLOGY_LINESTRIP_ADJ,
     /// <summary>
     /// <para>
-    /// Interpret the vertex data as list of triangles with adjacency data.
+    /// Interpret the vertex data as a list of triangles with adjacency data.
     /// </para>
     /// </summary>
     TriangleListWithAdjacency = D3D_PRIMITIVE_TOPOLOGY.D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST_ADJ,
     /// <summary>
     /// <para>
-    /// Interpret the vertex data as triangle strip with adjacency data.
+    /// Interpret the vertex data as a triangle strip with adjacency data.
     /// </para>
     /// </summary>
     TriangleStripWithAdjacency = D3D_PRIMITIVE_TOPOLOGY.D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP_ADJ,

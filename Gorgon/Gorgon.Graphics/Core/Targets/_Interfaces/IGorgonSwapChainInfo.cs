@@ -32,8 +32,13 @@ namespace Gorgon.Graphics.Core;
 public interface IGorgonSwapChainInfo
 {
     /// <summary>
-    /// Property to return whether to use discard or sequential flip modes.
+    /// Property to return whether to use the discard flip mode or the sequential flip mode.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// If this value is <b>true</b>, the contents of a back buffer are discarded after it is presented. If this value is <b>false</b>, the contents of the back buffer are preserved after presentation.
+    /// </para>
+    /// </remarks>
     bool FlipDiscard
     {
         get;
@@ -51,7 +56,9 @@ public interface IGorgonSwapChainInfo
     /// Property to return whether the swap chain will be triple buffered or not.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// If this value is <b>true</b>, the number of back buffers for the swap chain will be 3, otherwise, it will be 2.
+    /// </para>
     /// </remarks>
     bool TripleBuffer
     {
@@ -75,7 +82,7 @@ public interface IGorgonSwapChainInfo
     }
 
     /// <summary>
-    /// Property to return whether the back buffer should be scaled on window resize, or not.
+    /// Property to return whether the back buffer should be stretched to fit the window when their sizes do not match.
     /// </summary>
     bool AllowScaling
     {

@@ -21,15 +21,10 @@
 // Created: December 29, 2025 12:58:41 AM
 //
 
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using System.Text;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
-using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
 using TerraFX.Interop.DirectX;
 using TerraFX.Interop.Windows;
@@ -45,10 +40,12 @@ public unsafe sealed class GorgonSwapChain
 {
     private ComPtr<IDXGISwapChain4> _dxgiSwapChain;
 
+    private bool _isDisposed;
     private GorgonSwapChainInfo _info;
-    private readonly HANDLE _waitHandle;
+    private HANDLE _waitHandle;
     private uint _descFlags;
     private GorgonRenderTargetView[] _renderTargetViews = [];
+    private int _inResize;
 
     /// <summary>
     /// Property to return the internal DXGI swap chain.
@@ -62,7 +59,12 @@ public unsafe sealed class GorgonSwapChain
     }
 
     /// <summary>
-    /// Property to return the graphics object associated with this swap chain.
+    /// Property to return whether the object has been disposed or not.
+    /// </summary>
+    public bool IsDisposed => _isDisposed;
+
+    /// <summary>
+    /// Property to return the graphics interface that is associated with this swap chain.
     /// </summary>
     public GorgonGraphics Graphics
     {
@@ -70,7 +72,7 @@ public unsafe sealed class GorgonSwapChain
     }
 
     /// <summary>
-    /// Property to return the window handle that the swap chain is bound with.
+    /// Property to return the window handle that the swap chain is bound to.
     /// </summary>
     public nint WindowHandle
     {
@@ -87,7 +89,7 @@ public unsafe sealed class GorgonSwapChain
     } = -1;
 
     /// <summary>
-    /// Property to return the target view handle for the swap chain render target textures.
+    /// Property to return the render target view for the current back buffer.
     /// </summary>
     public GorgonRenderTargetView Target => _renderTargetViews[CurrentBackBufferIndex];
 
@@ -114,8 +116,8 @@ public unsafe sealed class GorgonSwapChain
     /// </summary>
     /// <remarks>
     /// <para>
-    /// When the swap chain is in fullscreen mode, this value returns <b>true</b>. To enter fullscreen mode, call the <see cref="EnterFullscreen"/> method. To return this value to <b>false</b>, simply call 
-    /// the <see cref="ExitFullscreen"/> method.
+    /// When the swap chain is in windowed mode, this value returns <b>true</b>. To enter fullscreen mode and set this value to <b>false</b>, call the <see cref="EnterFullscreen"/> method. To return this
+    /// value to <b>true</b>, call the <see cref="ExitFullscreen"/> method.
     /// </para>
     /// <para>
     /// <inheritdoc cref="EnterFullscreen" path="/remarks/para/note[@type='warning']"/>
@@ -129,8 +131,10 @@ public unsafe sealed class GorgonSwapChain
     /// Property to return the output that is being used for fullscreen mode.
     /// </summary>
     /// <remarks>
-    /// If the <see cref="IsWindowed"/> property is set to <b>true</b> (by calling <see cref="EnterFullscreen"/>), then this will return information about the output that is being used. Otherwise, if the 
-    /// <see cref="IsWindowed"/> property is set to <b>false</b> (by calling <see cref="ExitFullscreen"/>), then this will return <b>null</b>.
+    /// <para>
+    /// If the <see cref="IsWindowed"/> property is <b>false</b> (by calling <see cref="EnterFullscreen"/>), then this will return information about the output that is being used. Otherwise, if the
+    /// <see cref="IsWindowed"/> property is <b>true</b> (by calling <see cref="ExitFullscreen"/>), then this will return <see cref="GorgonVideoOutputInfo.Empty"/>.
+    /// </para>
     /// </remarks>
     /// <seealso cref="IsWindowed"/>
     /// <seealso cref="EnterFullscreen"/>
@@ -145,7 +149,7 @@ public unsafe sealed class GorgonSwapChain
     private void Dispose(bool disposing)
     {
         // If we're consumed by the finalizer for whatever reason, then force windowed mode again no matter if we've disposed directly or not.
-        if (_dxgiSwapChain.Get() is not null)
+        if (!_dxgiSwapChain.IsNull)
         {
             _dxgiSwapChain.Get()->SetFullscreenState(false, null);
         }        
@@ -175,7 +179,11 @@ public unsafe sealed class GorgonSwapChain
         {
             Win32.CloseHandle(_waitHandle);
         }
+
+        _waitHandle = HANDLE.NULL;
         _dxgiSwapChain.Dispose();
+
+        _isDisposed = true;
     }
 
     /// <summary>
@@ -227,7 +235,7 @@ public unsafe sealed class GorgonSwapChain
 
         if (info.Height < 1)
         {
-            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_WIDTH_TOO_SMALL, info.Height, 1));
+            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_HEIGHT_TOO_SMALL, info.Height, 1));
         }
 
         Graphics.Log.Print($"Swap chain format: {info.Format}.", LoggingLevel.Intermediate);
@@ -242,8 +250,11 @@ public unsafe sealed class GorgonSwapChain
     {   
         for (uint i = 0; i < _renderTargetViews.Length; ++i)
         {
-            GorgonTexture backBuffer = GorgonTexture.FromSwapChain(this, i);
+            GorgonTexture backBuffer = GorgonTexture.FromSwapChain(this, i);            
             _renderTargetViews[i] = backBuffer.GetRenderTargetView();
+            // We own these, so we don't need to control them in the public interface.
+            _renderTargetViews[i].UnregisterDisposable(Graphics);
+            backBuffer.UnregisterDisposable(Graphics);
         }
     }
 
@@ -316,7 +327,7 @@ public unsafe sealed class GorgonSwapChain
     /// </list>
     /// </para>
     /// <para>
-    /// If the device is physcially removed, this method will throw an exception on presentation. The HRESULT code that represents the device removal reason will be included in the exception message.
+    /// If the device is physically removed, this method will throw an exception on presentation. The HRESULT code that represents the device removal reason will be included in the exception message.
     /// </para>
     /// </remarks>
     internal void Present(uint interval)
@@ -348,15 +359,20 @@ public unsafe sealed class GorgonSwapChain
     /// </summary>
     /// <param name="width">The new width of the swap chain.</param>
     /// <param name="height">The new height of the swap chain.</param>
+    /// <exception cref="GorgonException">Thrown if the swap chain buffers could not be resized.</exception>
     /// <remarks>
     /// <para>
-    /// This method is used to change the size of the swap chain buffers. Usually applications will call this in response to a window size change event of some kind so that the swap chain back buffers are 
-    /// set to the same size as the client area of the window. However, applications can call this to set the buffer size to anything they wish (between 1 to 16384 pixels for width/height).
+    /// This method is used to change the size of the swap chain buffers. Usually applications will call this in response to a window size change event of some kind so that the swap chain back buffers are
+    /// set to the same size as the client area of the window. However, applications can call this to set the buffer size to anything they wish (from 1 to 16384 pixels for width/height). Values outside of
+    /// this range are clamped.
+    /// </para>
+    /// <para>
+    /// If the new size is the same as the current size, then this method will do nothing.
     /// </para>
     /// <para>
     /// <note type="warning">
     /// <para>
-    /// It is recommended to keep the swap buffer size the same as the window client size when in fullscreen mode, or in windowed mode when Multi Plane Overlays are in effect. Keeping the buffers at the 
+    /// It is recommended to keep the swap chain buffer size the same as the window client size when in fullscreen mode, or in windowed mode when multiplane overlays are in effect. Keeping the buffers at the
     /// correct size will yield performance improvements, but a mismatch in size will impair performance by returning control to the DWM and increasing latency.
     /// </para>
     /// <para>
@@ -367,37 +383,49 @@ public unsafe sealed class GorgonSwapChain
     /// </remarks>
     public void Resize(int width, int height)
     {
-        width = width.Max(1).Min(D3D12.D3D12_REQ_TEXTURE2D_U_OR_V_DIMENSION);
-        height = height.Max(1).Min(D3D12.D3D12_REQ_TEXTURE2D_U_OR_V_DIMENSION);
-
-        if ((_info.Width == width) && (_info.Height == height))
+        // Ensure that we are not reentrant.
+        if (Interlocked.Exchange(ref _inResize, 1) != 0)
         {
             return;
         }
 
-        Graphics.Log.Print($"Resizing swap chain {Name}...", LoggingLevel.Verbose);
-
-        // Wait for the GPU to finish its current work.
-        Graphics.WaitForGpu(GorgonGraphics.WaitFenceTimeout * 6);
-
-        // Ensure we release any holds on our render targets.
-        Graphics.Queues.GraphicsQueue.Tracker.Signal();
-        Graphics.Queues.CopyQueue.Tracker.Signal();
-        Graphics.Queues.ComputeQueue.Tracker.Signal();
-
-        OnBeforeResize();
-
-        _info = _info with
+        try
         {
-            Width = width,
-            Height = height
-        };
+            width = width.Max(1).Min(D3D12.D3D12_REQ_TEXTURE2D_U_OR_V_DIMENSION);
+            height = height.Max(1).Min(D3D12.D3D12_REQ_TEXTURE2D_U_OR_V_DIMENSION);
 
-        OnAfterResize();
+            if ((_info.Width == width) && (_info.Height == height))
+            {
+                return;
+            }
 
-        Graphics.Log.Print($"Swap chain {Name} resized to {_info.Width}x{_info.Height}.", LoggingLevel.Verbose);
+            Graphics.Log.Print($"Resizing swap chain {Name}...", LoggingLevel.Verbose);
+
+            // Wait for the GPU to finish its current work.
+            Graphics.WaitForGpu(GorgonGraphics.WaitFenceTimeout * 6);
+
+            // Ensure we release any holds on our render targets.
+            Graphics.Queues.GraphicsQueue.Tracker.Signal();
+            Graphics.Queues.CopyQueue.Tracker.Signal();
+            Graphics.Queues.ComputeQueue.Tracker.Signal();
+
+            OnBeforeResize();
+
+            _info = _info with
+            {
+                Width = width,
+                Height = height
+            };
+
+            OnAfterResize();
+
+            Graphics.Log.Print($"Swap chain {Name} resized to {_info.Width}x{_info.Height}.", LoggingLevel.Verbose);
+        }
+        finally
+        {
+            Interlocked.Exchange(ref _inResize, 0);
+        }
     }
-
 
     /// <summary>
     /// Function to set the swap chain to fullscreen mode.
@@ -409,7 +437,7 @@ public unsafe sealed class GorgonSwapChain
     /// Use this to enter fullscreen mode on the swap chain. This method will find the video mode that is closest to the client size of the window, and use that as the dimensions for fullscreen mode.
     /// </para>
     /// <para>
-    /// If the <paramref name="output"/> is <b>null</b>, then Gorgon will find the output that contains the largest portion of the window bound to the swap chain. The output that is used for fullscreen mode 
+    /// If the <paramref name="output"/> is <b>null</b>, or <see cref="GorgonVideoOutputInfo.Empty"/>, then Gorgon will find the output that contains the largest portion of the window bound to the swap chain. The output that is used for fullscreen mode 
     /// will be assigned to the <see cref="FullscreenOutput"/> property.
     /// </para>
     /// <para>
@@ -425,7 +453,7 @@ public unsafe sealed class GorgonSwapChain
     /// the appropriate video mode, and a fullscreen borderless window is used. 
     /// </para>
     /// <para>
-    /// The best practice is to make a full screen borderless window, render to a render target texture that is sized to the desired resolution, and then copy the contents of the render target to the swap 
+    /// The best practice is to make a fullscreen borderless window, render to a render target texture that is sized to the desired resolution, and then copy the contents of the render target to the swap 
     /// chain. This also has the added benefit of allowing developers to resize the image as they see fit, provide filtering (or no filtering), post processing effects like CRT shaders, etc...
     /// </para>
     /// </note>
@@ -441,57 +469,71 @@ public unsafe sealed class GorgonSwapChain
             return;
         }
 
-        Graphics.WaitForGpu(GorgonGraphics.WaitFenceTimeout * 6);
-
-        Graphics.Queues.GraphicsQueue.Tracker.Signal();
-        Graphics.Queues.ComputeQueue.Tracker.Signal();
-        Graphics.Queues.CopyQueue.Tracker.Signal();
-
-        RECT rect = default;
-        Win32.GetClientRect(new HWND((void*)WindowHandle), &rect);
-
-        OnBeforeResize();
-
-        if ((output is null) || (output == GorgonVideoOutputInfo.Empty))
+        // Indicate that we're in the middle of switching video modes. This will ensure we don't call Resize multiple times.
+        // Or re-enter this method.
+        if (Interlocked.Exchange(ref _inResize, 1) != 0)
         {
-            output = Graphics.Adapter.Outputs.GetOutputFromWindowHandle(WindowHandle);
+            return;
+        }
 
-            if (output == GorgonVideoOutputInfo.Empty)
+        try
+        {
+            Graphics.WaitForGpu(GorgonGraphics.WaitFenceTimeout * 6);
+
+            Graphics.Queues.GraphicsQueue.Tracker.Signal();
+            Graphics.Queues.ComputeQueue.Tracker.Signal();
+            Graphics.Queues.CopyQueue.Tracker.Signal();
+
+            RECT rect = default;
+            Win32.GetClientRect(new HWND((void*)WindowHandle), &rect);
+
+            OnBeforeResize();
+
+            if ((output is null) || (output == GorgonVideoOutputInfo.Empty))
             {
-                throw new GorgonException(GorgonResult.AccessDenied, string.Format(Resources.GORGFX_ERR_CANNOT_SET_FULLSCREEN, Graphics.Adapter.Name));
+                output = Graphics.Adapter.Outputs.GetOutputFromWindowHandle(WindowHandle);
+
+                if (output == GorgonVideoOutputInfo.Empty)
+                {
+                    throw new GorgonException(GorgonResult.AccessDenied, string.Format(Resources.GORGFX_ERR_CANNOT_SET_FULLSCREEN, Graphics.Adapter.Name));
+                }
             }
-        }
 
-        // For the backbuffers to resize to whatever our window client area is.
-        // D3D 12 uses the current back buffer size to locate the video mode, but I prefer this.
-        if (((rect.bottom - rect.top) != _info.Height) || ((rect.right - rect.left) != _info.Width))
-        {
-            _info = _info with
+            // For the backbuffers to resize to whatever our window client area is.
+            // D3D 12 uses the current back buffer size to locate the video mode, but I prefer this.
+            if (((rect.bottom - rect.top) != _info.Height) || ((rect.right - rect.left) != _info.Width))
             {
-                Width = rect.right - rect.left,
-                Height = rect.bottom - rect.top
-            };
+                _info = _info with
+                {
+                    Width = rect.right - rect.left,
+                    Height = rect.bottom - rect.top
+                };
 
-            DXGI_SWAP_CHAIN_DESC1 desc = _info.ToDXGI();
+                DXGI_SWAP_CHAIN_DESC1 desc = _info.ToDXGI();
 
-            _dxgiSwapChain.Get()->ResizeBuffers(desc.BufferCount, desc.Width, desc.Height, desc.Format, desc.Flags)
-                .ThrowIfFailed(GorgonResult.CannotInitialize, () => string.Format(Resources.GORGFX_ERR_CANNOT_RESIZE_SWAPCHAIN, Name));
+                _dxgiSwapChain.Get()->ResizeBuffers(desc.BufferCount, desc.Width, desc.Height, desc.Format, desc.Flags)
+                    .ThrowIfFailed(GorgonResult.CannotInitialize, () => string.Format(Resources.GORGFX_ERR_CANNOT_RESIZE_SWAPCHAIN, Name));
+            }
+
+            using ComPtr<IDXGIOutput> dxgiOutput = default;
+            Graphics.DXGIAdapter.Get()->EnumOutputs((uint)output.Index, dxgiOutput.GetAddressOf())
+                .ThrowIfFailed(GorgonResult.AccessDenied, () => string.Format(Resources.GORGFX_ERR_CANNOT_SET_FULLSCREEN, Graphics.Adapter.Name));
+
+            _dxgiSwapChain.Get()->SetFullscreenState(true, dxgiOutput.Get())
+                .ThrowIfFailed(GorgonResult.CannotExecute, () => string.Format(Resources.GORGFX_ERR_CANNOT_SET_SCREEN_MODE, Graphics.Adapter.Name));
+
+            FullscreenOutput = output;
+
+            OnAfterResize();
         }
-
-        using ComPtr<IDXGIOutput> dxgiOutput = default;
-        Graphics.DXGIAdapter.Get()->EnumOutputs((uint)output.Index, dxgiOutput.GetAddressOf())
-            .ThrowIfFailed(GorgonResult.AccessDenied, () => string.Format(Resources.GORGFX_ERR_CANNOT_SET_FULLSCREEN, Graphics.Adapter.Name));
-
-        _dxgiSwapChain.Get()->SetFullscreenState(true, dxgiOutput.Get())
-            .ThrowIfFailed(GorgonResult.CannotExecute, () => string.Format(Resources.GORGFX_ERR_CANNOT_SET_SCREEN_MODE, Graphics.Adapter.Name));
-
-        FullscreenOutput = output;
-
-        OnAfterResize();
+        finally
+        {
+            Interlocked.Exchange(ref _inResize, 0);
+        }
     }
 
     /// <summary>
-    /// Function to set the swap chain to windows mode.
+    /// Function to set the swap chain to windowed mode.
     /// </summary>
     /// <exception cref="GorgonException">Thrown if the swap chain failed being set to windowed mode.</exception>
     /// <remarks>
@@ -515,20 +557,32 @@ public unsafe sealed class GorgonSwapChain
             return;
         }
 
-        Graphics.WaitForGpu(GorgonGraphics.WaitFenceTimeout * 6);
+        if (Interlocked.Exchange(ref _inResize, 1) != 0)
+        {
+            return;
+        }
 
-        Graphics.Queues.GraphicsQueue.Tracker.Signal();
-        Graphics.Queues.ComputeQueue.Tracker.Signal();
-        Graphics.Queues.CopyQueue.Tracker.Signal();
+        try
+        {
+            Graphics.WaitForGpu(GorgonGraphics.WaitFenceTimeout * 6);
 
-        OnBeforeResize();
+            Graphics.Queues.GraphicsQueue.Tracker.Signal();
+            Graphics.Queues.ComputeQueue.Tracker.Signal();
+            Graphics.Queues.CopyQueue.Tracker.Signal();
 
-        _dxgiSwapChain.Get()->SetFullscreenState(false, null)
-            .ThrowIfFailed(GorgonResult.CannotExecute, () => string.Format(Resources.GORGFX_ERR_CANNOT_SET_SCREEN_MODE, Graphics.Adapter.Name));
+            OnBeforeResize();
 
-        FullscreenOutput = GorgonVideoOutputInfo.Empty;
+            _dxgiSwapChain.Get()->SetFullscreenState(false, null)
+                .ThrowIfFailed(GorgonResult.CannotExecute, () => string.Format(Resources.GORGFX_ERR_CANNOT_SET_SCREEN_MODE, Graphics.Adapter.Name));
 
-        OnAfterResize();
+            FullscreenOutput = GorgonVideoOutputInfo.Empty;
+
+            OnAfterResize();
+        }
+        finally
+        {
+            Interlocked.Exchange(ref _inResize, 0);
+        }
     }
 
     /// <summary>
@@ -537,11 +591,11 @@ public unsafe sealed class GorgonSwapChain
     /// <param name="timeout">[Optional] The number of milliseconds to wait before continuing.</param>
     /// <remarks>
     /// <para>
-    /// This method allows an object to lower frame latency by waiting until the previous frame is rendered and displayed before moving on to the next frame. Applications should call this method before any 
+    /// This method allows an application to lower frame latency by waiting until the previous frame is rendered and displayed before moving on to the next frame. Applications should call this method before any 
     /// rendering operations are executed (including the very first frame). 
     /// </para>
     /// <para>
-    /// The <paramref name="timeout"/> value defaults to infinity, but users may enter a shorter time frame to avoid having the application freeze indefinitely (this should never really happen).
+    /// The <paramref name="timeout"/> value defaults to <see cref="Timeout.Infinite"/>, but applications may pass a shorter time frame to avoid having the application freeze indefinitely (this should never really happen).
     /// </para>
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -577,12 +631,22 @@ public unsafe sealed class GorgonSwapChain
     /// <param name="name">The name of the swap chain.</param>
     /// <param name="windowHandle">The native handle (HWND) to the window that will host the swap chain.</param>
     /// <param name="info">The information used to define the swap chain properties.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="windowHandle"/> parameter is <b>null</b> (<c>nint.Zero or IntPtr.Zero</c>)(</exception> 
+    /// <exception cref="ArgumentNullException">Thrown if the <paramref name="windowHandle"/> parameter is <c>nint.Zero</c>.</exception>
+    /// <exception cref="GorgonException"><para>
+    /// Thrown if the <paramref name="info"/> <see cref="GorgonSwapChainInfo.Format"/> is not a display format.
+    /// </para>
+    /// <para>
+    /// Thrown if the <paramref name="info"/> <see cref="GorgonSwapChainInfo.Width"/> or <see cref="GorgonSwapChainInfo.Height"/> is less than 1.
+    /// </para>
+    /// <para>
+    /// Thrown if the swap chain could not be created.
+    /// </para>
+    /// </exception>
     public GorgonSwapChain(GorgonGraphics graphics, string name, nint windowHandle, GorgonSwapChainInfo info)
     {
         if (windowHandle == nint.Zero)
         {
-            throw new ArgumentNullException(nameof(windowHandle), Resources.GORGFX_NULL_WINDOW_HANDLE);
+            throw new ArgumentNullException(nameof(windowHandle), Resources.GORGFX_ERR_NULL_WINDOW_HANDLE);
         }        
 
         Graphics = graphics;

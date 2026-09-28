@@ -31,14 +31,15 @@ namespace Gorgon.Graphics.Core;
 /// </summary>
 /// <remarks>
 /// <para>
-/// This is similar to a functional Either type. Applications can take this result value, and implicitly convert it to a <see cref="GorgonShader"/> type if the <see cref="Success"/> flag returns 
-/// <b>true</b>. Otherwise, the type can be converted implicitly to a string containing the compilation errors, or a <see cref="GorgonException"/> type containing the error information.
+/// This is similar to a functional Either type. Applications can take this result value, and implicitly convert it to a <see cref="GorgonShader"/> type if the <see cref="Success"/> flag returns <b>true</b>. 
+/// Otherwise, the type can be converted implicitly to a string containing the compilation errors, or the <see cref="GetCompilationException"/> method can be used to retrieve a
+/// <see cref="GorgonException"/> containing the errors. This allows an application to determine how to handle a shader compilation error.
 /// </para>
 /// <para>
 /// <note type="information">
 /// <para>
-/// An exception will be raised if the result is implicitly converted to a <see cref="GorgonShader"/> result. This exception will be of the <see cref="GorgonException"/> type, and will contain the 
-/// error messages from the shader compiler.
+/// An exception will be raised if the result is implicitly converted to a <see cref="GorgonShader"/> when the compilation failed. This exception will be of the <see cref="GorgonException"/> type, and
+/// will contain the error messages from the shader compiler.
 /// </para>
 /// </note>
 /// </para>
@@ -47,24 +48,26 @@ namespace Gorgon.Graphics.Core;
 /// The following example shows multiple ways to consume the result type:
 /// <code language="csharp">
 /// <![CDATA[
-/// GorgonShaderCompileResult result = _shaderFactory.Compile(...);
-/// 
+/// GorgonShaderCompileResult result = _shaderCompiler.Compile(...);
+///
 /// // We can test for an error like this:
-/// _shader = result.Success switch 
+/// if (!result.Success)
 /// {
-///   true => result,
-///   false => Debug.Print($"The shader died horribly. Compile errors: {result}")
-/// };
-/// 
+///   Debug.Print($"The shader died horribly. Compile errors: {result}");
+///   return;
+/// }
+///
+/// _shader = result;
+///
 /// // Or we can throw an exception:
-/// _shader = result.Success switch 
+/// _shader = result.Success switch
 /// {
 ///   true => result,
-///   false => throw result;
+///   false => throw result.GetCompilationException()
 /// };
-/// 
-/// // Or we can do this. This works because it will convert to GorgonShader if no error occured, and will throw an exception if one did.
-/// _shader = _shaderFactory.Compile(...);
+///
+/// // Or we can do this. This works because it will convert to GorgonShader if no error occurred, and will throw an exception if one did.
+/// _shader = _shaderCompiler.Compile(...);
 /// // Or
 /// // _shader = result;
 /// ]]>
@@ -86,19 +89,22 @@ public readonly record struct GorgonShaderCompileResult
     /// Operator to convert the result to a <see cref="GorgonShader"/> type.
     /// </summary>
     /// <param name="r">The shader compile result.</param>
-    public static implicit operator GorgonShader(GorgonShaderCompileResult r) => r._shader ?? throw new GorgonException(GorgonResult.CannotCompile, string.Format(Resources.GORGFX_ERR_SHADER_COMPILE_ERROR, r._message));
+    /// <returns>The <see cref="GorgonShader"/> if the compilation was successful.</returns>
+    /// <exception cref="GorgonException">Thrown if the shader is retrieved but the compilation was not <see cref="Success">successful</see>.</exception>
+    public static implicit operator GorgonShader(GorgonShaderCompileResult r) => r._shader ?? throw r.GetCompilationException();
 
     /// <summary>
     /// Operator to convert the result to an error message.
     /// </summary>
     /// <param name="r">Compiler result.</param>
+    /// <returns>The error message if there was a compilation error. Otherwise, <see cref="string.Empty"/> is returned.</returns>
     public static implicit operator string(GorgonShaderCompileResult r) => r._message;
 
     /// <summary>
     /// Function to retrieve an exception for the compilation errors.
     /// </summary>
-    /// <returns>An exception for the compilation errors if not successful; <b>null</b> if successful.</returns>        
-    /// <exception cref="InvalidCastException">Thrown if the compilaation result was <see cref="Success">successful</see> and no errors were generated.</exception>
+    /// <returns>A <see cref="GorgonException"/> containing the compilation errors.</returns>
+    /// <exception cref="InvalidCastException">Thrown if the compilation result was <see cref="Success">successful</see> and no errors were generated.</exception>
     public Exception GetCompilationException()
     {
         if (Success)

@@ -30,7 +30,7 @@ namespace Gorgon.Graphics.Core;
 /// </summary>
 /// <remarks>
 /// <para>
-/// This represents an opaque value for an allocation handle on a <see cref="GorgonVirtualTexture"/>. This is used to indentify the portion of memory allocated within the texture.
+/// This represents an opaque value for an allocation handle on a <see cref="GorgonVirtualTexture"/>. This is used to identify the portion of memory allocated within the texture.
 /// </para>
 /// </remarks>
 /// <seealso cref="GorgonVirtualTexture.TryAllocate(ref readonly GorgonBoxF, out GorgonVirtualTextureHandle, short, short)"/>

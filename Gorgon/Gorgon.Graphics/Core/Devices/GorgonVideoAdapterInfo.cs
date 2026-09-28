@@ -24,7 +24,6 @@
 // 
 
 using System.ComponentModel;
-using System.Runtime.InteropServices;
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 using TerraFX.Interop.DirectX;
@@ -33,7 +32,7 @@ using TerraFX.Interop.Windows;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Defines the type of video adapter
+/// Defines the type of video adapter.
 /// </summary>
 public enum VideoDeviceType
 {
@@ -99,7 +98,7 @@ public enum ResourceHeapTier
 public enum TiledResourcesTier
 {
     /// <summary>
-    /// No support for tiled resources. This adaper will not work with Gorgon.
+    /// No support for tiled resources. This adapter will not work with Gorgon.
     /// </summary>
     None = D3D12_TILED_RESOURCES_TIER.D3D12_TILED_RESOURCES_TIER_NOT_SUPPORTED,
     /// <summary>
@@ -165,49 +164,55 @@ public enum GraphicsPreemptionGranularity
 }
 
 /// <summary>
-/// Provides information about a video adapter in the system
+/// Provides information about a video adapter in the system.
 /// </summary>
 /// <param name="Name">The friendly name of the video adapter.</param>
 /// <param name="Index">The index of the video adapter within a list returned by <see cref="GorgonGraphicsFactory.EnumerateAdapters(bool)"/>.</param>
 /// <param name="VideoDeviceType">The type of video adapter.</param>
 /// <param name="Luid">The unique identifier for the adapter.</param>
-/// <param name="Outputs">The outputs on this device</param>
+/// <param name="Outputs">The outputs on this device.</param>
 /// <param name="Memory">The amount of memory for the adapter, in bytes.</param>
 /// <param name="MaxAddressBitsPerProcess">The number of addressable bits of GPU memory on a process level.</param>
 /// <param name="MaxAddressBitsPerResource">The number of addressable bits of GPU memory on a resource level.</param>
 /// <param name="PciInfo">The PCI bus information for the adapter.</param>
 /// <param name="AcgCompatible">The value that indicates whether the adapter's driver has been confirmed to work in an OS process where Arbitrary Code Guard (ACG) is enabled (i.e. dynamic code generation is disallowed).</param>
 /// <param name="SupportsMonitoredFences">The value that indicates whether the adapter supports monitored fences.</param>
-/// <param name="SupportsNonMonitoredFences">The value that indicates whether the adapter supports non-monitored fences.
+/// <param name="SupportsNonMonitoredFences"><para>
+/// The value that indicates whether the adapter supports non-monitored fences.
+/// </para>
 /// <para>
 /// Monitored fences should always be used by supporting adapters unless communicating with an adapter that only supports non-monitored fences.
 /// </para>
 /// </param>
 /// <param name="SupportsKeyedMutexConformance">The value that indicates whether the adapter claims keyed mutex conformance. This signals a stronger guarantee that the keyed mutex interface behaves correctly.</param>
-/// <param name="AllowTearing">The value that indicates whether the adapter allows for tearing of the image when presenting without v-sync.
-/// <para>
-/// When a device presents its frame to the screen, it will typically wait until v-sync is done and then display. However, by doing an immediate presentation and allowing the image to display, even if 
-/// in the middle of a v-sync operation, giving a "torn" look to the image.
+/// <param name="AllowTearing"><para>
+/// The value that indicates whether the adapter allows for tearing of the image when presenting without v-sync.
 /// </para>
 /// <para>
-/// Applications that wish to enable this, can do so when presenting a swap chain, but should check this property first to ensure the system supports it. The swap chain must be full screen, in that the 
+/// When a device presents its frame to the screen, it will typically wait for the vertical blank and then display. An immediate presentation allows the image to display even if the display is in the
+/// middle of a refresh, which gives the image a "torn" look.
+/// </para>
+/// <para>
+/// Applications that wish to enable this can do so when presenting a swap chain, but should check this property first to ensure the system supports it. The swap chain must be full screen, in that the 
 /// back buffer dimensions must match the width and height of the owning window, and the window client area should cover the width and height of the display output.
 /// </para>
 /// <para>
 /// Applications must use tearing in order to make use of variable refresh rate displays.
 /// </para>
 /// </param>
-/// <param name="HasGpuUploadSupport">The value that indicates whether the GPU supports direct GPU upload support.</param>
+/// <param name="HasGpuUploadSupport">The value that indicates whether the adapter supports GPU upload heaps, which allow the CPU to write directly into video memory.</param>
 /// <param name="ShaderModelSupport">The value that indicates the highest level of shader model supported by this adapter.</param>
 /// <param name="HasTightAlignmentSupport">The value that indicates whether the adapter supports tight packing of resource data within heaps.</param>
-/// <param name="SupportsAlphaBlendFactor">The value that indicates whether the adapter supports alpha blend factoring in blending operations.</param>
+/// <param name="SupportsAlphaBlendFactor">The value that indicates whether the adapter supports the <see cref="Blend.AlphaFactor"/> and <see cref="Blend.InverseAlphaFactor"/> blend types.</param>
 /// <param name="SupportsDepthBoundsTest">The value that indicates whether the adapter supports depth bounds testing.</param>
 /// <param name="SupportsNarrowQuadrilateralLines">The value that indicates whether the adapter supports narrow quadrilateral line rasterization.</param>
 /// <param name="SupportsIndependentFrontAndBackStencilRef">The value that indicates whether the adapter supports independent front and back stencil references.</param>
-/// <param name="ResourceHeapTier">The value that indicates the tier support for resource heaps.
+/// <param name="ResourceHeapTier"><para>
+/// The value that indicates the tier support for resource heaps.
+/// </para>
 /// <para>
 /// Resource heap tier 1 support indicates that a heap can only support resources of a single category (Buffers, non depth/non render target textures, and depth and render target textures). Resource 
-/// heap tier 2 supports a heap that contain any or all of the categories of resources.
+/// heap tier 2 supports a heap that contains any or all of the categories of resources.
 /// </para>
 /// </param>
 /// <param name="SupportsRelaxedCasting">The value that indicates that the GPU supports casting between fully typed formats and formats that are in the same family (group).</param>
@@ -217,7 +222,7 @@ public enum GraphicsPreemptionGranularity
 /// <param name="ComputePreemptionGranularity">The compute preemption granularity level at which the GPU can be preempted from performing its current compute task.</param>
 /// <remarks>
 /// <para>
-/// This information may be for a physical hardware device, or a software rasterizer. To determine which type this device falls under, se the <see cref="VideoDeviceType"/> property to determine the type of device
+/// This information may be for a physical hardware device, or a software rasterizer. To determine which type this device falls under, use the <see cref="VideoDeviceType"/> property.
 /// </para>
 /// </remarks>
 public record class GorgonVideoAdapterInfo(string Name, 
@@ -250,7 +255,7 @@ public record class GorgonVideoAdapterInfo(string Name,
     : IGorgonNamedObject
 {
     /// <summary>
-    /// Property to return the maximum number of render targets allow to be assigned at the same time.
+    /// Property to return the maximum number of render targets allowed to be assigned at the same time.
     /// </summary>
     public static int MaxRenderTargetCount => D3D12.D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT;
 
@@ -285,11 +290,6 @@ public record class GorgonVideoAdapterInfo(string Name,
     public static int MaxTexture3DDepth => D3D12.D3D12_REQ_TEXTURE3D_U_V_OR_W_DIMENSION;
 
     /// <summary>
-    /// Property to return the maximum size, in bytes, for a constant buffer.
-    /// </summary>
-    public static int MaxConstantBufferSize => int.MaxValue;
-
-    /// <summary>
     /// Property to return the maximum number of allowed scissor rectangles.
     /// </summary>
     public static int MaxScissorCount => D3D12.D3D12_VIEWPORT_AND_SCISSORRECT_MAX_INDEX + 1;
@@ -300,8 +300,13 @@ public record class GorgonVideoAdapterInfo(string Name,
     public static int MaxViewportCount => D3D12.D3D12_VIEWPORT_AND_SCISSORRECT_MAX_INDEX + 1;    
 
     /// <summary>
-    /// Property to return whether the GPU driver supports enhanced barriers (introduced in the 1.608.0 Agilty SDK), and on Windows 11 after release 22H2.
+    /// Property to return whether the video adapter supports enhanced barriers.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Gorgon requires enhanced barrier support, and will not use a video adapter without it. As such, this value is always <b>true</b>.
+    /// </para>
+    /// </remarks>
     public static bool HasEnhancedBarrierSupport => true;
 
     /// <summary>
@@ -405,7 +410,7 @@ public record class GorgonVideoAdapterInfo(string Name,
         GorgonVideoAdapterOutputList outputs = new(EnumerateOutputs(adapter, d3dDevice));
         
         return new(string.IsNullOrWhiteSpace(name) ? $"{Resources.GORGFX_STR_ADAPTER} #{index}" : name, index, deviceType, (luid.HighPart, luid.LowPart), outputs,
-            new GorgonVideoAdapterMemory((long)desc.DedicatedSystemMemory, (long)desc.SharedSystemMemory, (long)desc.DedicatedVideoMemory), 
+            new GorgonVideoAdapterMemory((long)desc.DedicatedSystemMemory, (long)desc.DedicatedVideoMemory, (long)desc.SharedSystemMemory), 
             (int)addressSupport.MaxGPUVirtualAddressBitsPerProcess, (int)addressSupport.MaxGPUVirtualAddressBitsPerResource,
             new GorgonVideoAdapterPciInfo((int)desc.DeviceId, (int)desc.Revision, (int)desc.SubSysId, (int)desc.VendorId),
             (desc.Flags & DXGI_ADAPTER_FLAG3.DXGI_ADAPTER_FLAG3_ACG_COMPATIBLE) == DXGI_ADAPTER_FLAG3.DXGI_ADAPTER_FLAG3_ACG_COMPATIBLE,

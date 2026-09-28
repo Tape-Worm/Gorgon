@@ -79,11 +79,29 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The blend state at {0} is enabled, and has its logic enabled.  Only one of these can be true at a time..
+        /// </summary>
+        internal static string GORGFX_ERR_BLEND_STATE_ENABLED_LOGIC_ENABLED {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_BLEND_STATE_ENABLED_LOGIC_ENABLED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The buffer &apos;{0}&apos; requires an alignment of {1} bytes for a {2} view..
         /// </summary>
         internal static string GORGFX_ERR_BUFFER_ALIGNMENT_INCORRECT_FOR_VIEW {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_BUFFER_ALIGNMENT_INCORRECT_FOR_VIEW", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The buffer &apos;{0}&apos; is disposed and cannot be used..
+        /// </summary>
+        internal static string GORGFX_ERR_BUFFER_DISPOSED {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_BUFFER_DISPOSED", resourceCulture);
             }
         }
         
@@ -400,6 +418,15 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There was an error trying to read the GPU memory budget for the adapter &apos;{0}&apos;..
+        /// </summary>
+        internal static string GORGFX_ERR_CANNOT_READ_GPU_BUDGET {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_CANNOT_READ_GPU_BUDGET", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There was an error while resetting the command allocator..
         /// </summary>
         internal static string GORGFX_ERR_CANNOT_RESET_CMD_ALLOCATOR {
@@ -432,6 +459,15 @@ namespace Gorgon.Graphics.Core.Properties {
         internal static string GORGFX_ERR_CANNOT_RETRIEVE_BACKBUFFER {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_CANNOT_RETRIEVE_BACKBUFFER", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not retrieve the GPU driver version..
+        /// </summary>
+        internal static string GORGFX_ERR_CANNOT_RETRIEVE_DRIVER_VERSION {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_CANNOT_RETRIEVE_DRIVER_VERSION", resourceCulture);
             }
         }
         
@@ -488,6 +524,15 @@ namespace Gorgon.Graphics.Core.Properties {
         internal static string GORGFX_ERR_COMMAND_LIST_STILL_OPEN {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_COMMAND_LIST_STILL_OPEN", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The constant buffer &apos;{0}&apos; view is {1} bytes. The maximum size for a constant buffer view is 64KB (65,536 bytes)..
+        /// </summary>
+        internal static string GORGFX_ERR_CONSTANT_BUFFER_VIEW_TOO_LARGE {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_CONSTANT_BUFFER_VIEW_TOO_LARGE", resourceCulture);
             }
         }
         
@@ -575,6 +620,51 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The number of indices must be at least 1..
+        /// </summary>
+        internal static string GORGFX_ERR_DRAW_INDEX_COUNT {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_DRAW_INDEX_COUNT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The draw indexed object needs an index buffer..
+        /// </summary>
+        internal static string GORGFX_ERR_DRAW_INDEXED_NEEDS_INDEXBUFFER {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_DRAW_INDEXED_NEEDS_INDEXBUFFER", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The number of instances must be at least 1..
+        /// </summary>
+        internal static string GORGFX_ERR_DRAW_INSTANCE_COUNT {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_DRAW_INSTANCE_COUNT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The draw object requires a pipeline state object..
+        /// </summary>
+        internal static string GORGFX_ERR_DRAW_NEEDS_PSO {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_DRAW_NEEDS_PSO", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The number of vertices must be at least 1..
+        /// </summary>
+        internal static string GORGFX_ERR_DRAW_VERTEX_COUNT {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_DRAW_VERTEX_COUNT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The element size must be a multiple of {0}..
         /// </summary>
         internal static string GORGFX_ERR_ELEMENT_SIZE_NOT_MULTIPLE_OF {
@@ -629,11 +719,38 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &apos;{0}&apos; requires Gorgon version {1}. The current version is {2}..
+        /// </summary>
+        internal static string GORGFX_ERR_GORGON_MISMATCH {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_GORGON_MISMATCH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The heap &apos;{0}&apos; is out of memory (size: {1})..
         /// </summary>
         internal static string GORGFX_ERR_HEAP_OUT_OF_MEMORY {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_HEAP_OUT_OF_MEMORY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The height {0} is too small, it must be at least {1}..
+        /// </summary>
+        internal static string GORGFX_ERR_HEIGHT_TOO_SMALL {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_HEIGHT_TOO_SMALL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The index buffer strip cut identifier is only usable on strip primitive types. The current primitive type is {0}..
+        /// </summary>
+        internal static string GORGFX_ERR_INDEX_CUT_NON_STRIP_PRIMITIVE {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_INDEX_CUT_NON_STRIP_PRIMITIVE", resourceCulture);
             }
         }
         
@@ -728,6 +845,15 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The destination texture &apos;{0}&apos; must be a 2D texture or a 2D texture array..
+        /// </summary>
+        internal static string GORGFX_ERR_MSAA_DEST_NOT_2D {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_MSAA_DEST_NOT_2D", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The format {0} is not valid for MSAA..
         /// </summary>
         internal static string GORGFX_ERR_MSAA_FORMAT_INVALID {
@@ -742,6 +868,44 @@ namespace Gorgon.Graphics.Core.Properties {
         internal static string GORGFX_ERR_MSAA_MIP_COUNT_INVALID {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_MSAA_MIP_COUNT_INVALID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The texture &apos;{0}&apos; is not a multisampled texture..
+        /// </summary>
+        internal static string GORGFX_ERR_MSAA_NOT_MULTISAMPLED {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_MSAA_NOT_MULTISAMPLED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The texture &apos;{0}&apos; has a format of {1}. This format cannot be resolved..
+        /// </summary>
+        internal static string GORGFX_ERR_MSAA_TEXTURE_FORMAT_NOT_RESOLVABLE {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_MSAA_TEXTURE_FORMAT_NOT_RESOLVABLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The MSAA texture &apos;{0}&apos; has a format of {1}, and the output texture &apos;{2}&apos; has a format of {3}.
+        ///
+        ///Both textures must have the same format..
+        /// </summary>
+        internal static string GORGFX_ERR_MSAA_TEXTURE_FORMATS_NOT_SAME {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_MSAA_TEXTURE_FORMATS_NOT_SAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The texture &apos;{0}&apos; is multisampled, but multisampled textures cannot be used..
+        /// </summary>
+        internal static string GORGFX_ERR_MSAA_TEXTURE_NOT_SUPPORTED {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_MSAA_TEXTURE_NOT_SUPPORTED", resourceCulture);
             }
         }
         
@@ -791,6 +955,15 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The cache does not contain any PSO data to write..
+        /// </summary>
+        internal static string GORGFX_ERR_NO_PSO_DATA_TO_WRITE {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_NO_PSO_DATA_TO_WRITE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to At least one render target view must be assigned..
         /// </summary>
         internal static string GORGFX_ERR_NO_RTVS {
@@ -818,6 +991,51 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The window handle must not be NULL..
+        /// </summary>
+        internal static string GORGFX_ERR_NULL_WINDOW_HANDLE {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_NULL_WINDOW_HANDLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The PSO &apos;{0}&apos; has a shader link ID of {1}, but no shader with that ID is in the cache..
+        /// </summary>
+        internal static string GORGFX_ERR_PSO_CACHE_CORRUPT_CANNOT_FIND_SHADER_LINK {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_PSO_CACHE_CORRUPT_CANNOT_FIND_SHADER_LINK", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The PSO cache file is corrupt. The PSO &apos;{0}&apos; already exists..
+        /// </summary>
+        internal static string GORGFX_ERR_PSO_CACHE_CORRUPT_DUPE_NAME {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_PSO_CACHE_CORRUPT_DUPE_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The shader link ID {0} already exists in PSO &apos;{1}&apos;.  Shader type: {2}.
+        /// </summary>
+        internal static string GORGFX_ERR_PSO_CACHE_CORRUPT_SHADER_LINK_ID_DUPLICATE {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_PSO_CACHE_CORRUPT_SHADER_LINK_ID_DUPLICATE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The PSO cache file does not contain any shaders..
+        /// </summary>
+        internal static string GORGFX_ERR_PSO_CACHE_FILE_NO_SHADERS {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_PSO_CACHE_FILE_NO_SHADERS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The depth test state is enabled, but the format {0} is not a depth capable format..
         /// </summary>
         internal static string GORGFX_ERR_PSO_DEPTH_ENABLED_FORMAT_NO_DEPTH {
@@ -836,6 +1054,56 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The PSO &apos;{0}&apos; was compiled under a different driver version. It cannot be used..
+        /// </summary>
+        internal static string GORGFX_ERR_PSO_DRIVER_MISMATCH {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_PSO_DRIVER_MISMATCH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The PSO was not created by device &apos;{0}&apos;.  
+        ///
+        ///Original: VendorID = {0}, SubSystemID = {1}, DeviceID = {2}, Revision = {3}.
+        ///Current: VendorID = {4}, SubSystemID = {5}, DeviceID = {6}, Revision = {7}..
+        /// </summary>
+        internal static string GORGFX_ERR_PSO_GPU_MISMATCH {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_PSO_GPU_MISMATCH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Both the hull and domain shaders need to be assigned. .
+        /// </summary>
+        internal static string GORGFX_ERR_PSO_HULL_AND_DOMAIN_REQUIRED {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_PSO_HULL_AND_DOMAIN_REQUIRED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The primitive type is {0}. For domain/hull shaders, the primitive type must be one of the patch primitive types..
+        /// </summary>
+        internal static string GORGFX_ERR_PSO_HULL_DOMAIN_PRIMTYPE_NOT_PATCH {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_PSO_HULL_DOMAIN_PRIMTYPE_NOT_PATCH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Independent blending is enabled, and the first render target has logic enabled. 
+        ///
+        ///There is no support for independent blending and blending logic..
+        /// </summary>
+        internal static string GORGFX_ERR_PSO_INDEPENDENT_BLEND_LOGIC_ENABLED {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_PSO_INDEPENDENT_BLEND_LOGIC_ENABLED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The primitive type {0} is not valid..
         /// </summary>
         internal static string GORGFX_ERR_PSO_INVALID_PRIMITIVE_TYPE {
@@ -850,6 +1118,15 @@ namespace Gorgon.Graphics.Core.Properties {
         internal static string GORGFX_ERR_PSO_NO_NAME {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_PSO_NO_NAME", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The PSO &apos;{0}&apos; requires at least 1 shader, and it must be a vertex shader..
+        /// </summary>
+        internal static string GORGFX_ERR_PSO_NO_SHADERS {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_PSO_NO_SHADERS", resourceCulture);
             }
         }
         
@@ -1025,6 +1302,15 @@ namespace Gorgon.Graphics.Core.Properties {
         internal static string GORGFX_ERR_TEXTURE_COPY_FORMAT_GROUPS_DIFFERENT {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_TEXTURE_COPY_FORMAT_GROUPS_DIFFERENT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The texture object &apos;{0}&apos; is disposed and cannot be used..
+        /// </summary>
+        internal static string GORGFX_ERR_TEXTURE_DISPOSED {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_TEXTURE_DISPOSED", resourceCulture);
             }
         }
         
@@ -1296,11 +1582,13 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The window handle must not be NULL..
+        ///   Looks up a localized string similar to The MSAA texture &apos;{0}&apos; has a subresource size of {1}x{2}. The output texture &apos;{3}&apos; has a subresource size of {4}x{5}.
+        ///
+        ///The texture subresources must be the same width and height..
         /// </summary>
-        internal static string GORGFX_NULL_WINDOW_HANDLE {
+        internal static string GORGFX_MSAA_RESOLVE_SIZE_MISMATCH {
             get {
-                return ResourceManager.GetString("GORGFX_NULL_WINDOW_HANDLE", resourceCulture);
+                return ResourceManager.GetString("GORGFX_MSAA_RESOLVE_SIZE_MISMATCH", resourceCulture);
             }
         }
         

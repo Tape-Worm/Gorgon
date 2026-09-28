@@ -26,7 +26,7 @@ using TerraFX.Interop.DirectX;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Defines a type of operation to perform when masking using the stencil buffer
+/// Defines a type of operation to perform when masking using the stencil buffer.
 /// </summary>
 public enum StencilOperation
 {
@@ -44,7 +44,7 @@ public enum StencilOperation
     Zero = D3D12_STENCIL_OP.D3D12_STENCIL_OP_ZERO,
     /// <summary>
     /// <para>
-    /// Set the stencil data to the reference value set on the <see cref="GorgonDrawCall.DepthStencilReplaceValue"/>.
+    /// Set the stencil data to the reference value set on the <see cref="GorgonDrawCallCommon.DepthStencilReplaceValue"/>.
     /// </para>
     /// </summary>
     Replace = D3D12_STENCIL_OP.D3D12_STENCIL_OP_REPLACE,
@@ -53,7 +53,7 @@ public enum StencilOperation
     /// Increment the stencil value by 1, and clamp the result if necessary.
     /// </para>
     /// </summary>
-    IncrementClmap = D3D12_STENCIL_OP.D3D12_STENCIL_OP_INCR_SAT,
+    IncrementClamp = D3D12_STENCIL_OP.D3D12_STENCIL_OP_INCR_SAT,
     /// <summary>
     /// <para>
     /// Decrement the stencil value by 1, and clamp the result if necessary.

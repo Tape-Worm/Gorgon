@@ -145,7 +145,7 @@ internal sealed unsafe class CommandQueue : IDisposable
     /// <param name="device">The D3D device responsible for creating the object.</param>
     /// <returns>The COM pointer to the D3D fence object.</returns>
     /// <exception cref="GorgonException">Thrown if the D3D fence could not be created.</exception>
-    private ComPtr<ID3D12Fence1> CreateFence(ref readonly ComPtr<ID3D12Device14> device)
+    private ComPtr<ID3D12Fence1> CreateNativeFence(ref readonly ComPtr<ID3D12Device14> device)
     {
         ComPtr<ID3D12Fence1> result = default;       
 
@@ -167,7 +167,7 @@ internal sealed unsafe class CommandQueue : IDisposable
     /// <param name="device">The D3D device responsible for creating the object.</param>
     /// <returns>The COM pointer to the D3D command queue object.</returns>
     /// <exception cref="GorgonException">Thrown if the D3D command queue could not be created.</exception>
-    private ComPtr<ID3D12CommandQueue> CreateNative(ref readonly ComPtr<ID3D12Device14> device)
+    private ComPtr<ID3D12CommandQueue> CreateNativeQueue(ref readonly ComPtr<ID3D12Device14> device)
     {
         ComPtr<ID3D12CommandQueue> result = default;
         
@@ -218,6 +218,11 @@ internal sealed unsafe class CommandQueue : IDisposable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool IsFenceComplete(ulong fenceValue)
     {
+        if (_d3dFence.IsNull)
+        {
+            return true;
+        }
+
         if (fenceValue > _previousFenceValue)
         {
             _previousFenceValue = _d3dFence.Get()->GetCompletedValue().Max(_previousFenceValue);
@@ -253,15 +258,11 @@ internal sealed unsafe class CommandQueue : IDisposable
     /// Function to execute command lists on the queue.
     /// </summary>
     /// <param name="commandList">The command lists to execute on the queue.</param>
-    /// <param name="trackLists">[Optional] <b>true</b> to track the command lists, <b>false</b> to manage lists manually.</param>
-    /// <returns>The current fence value.</returns>
-    /// <remarks>
-    /// <para>
-    /// If the <paramref name="trackLists"/> parameter is <b>true</b>, then applications should call the <see cref="CollectOutstandingLists"/> method at the end of execution to clean up active lists.
-    /// </para>
-    /// </remarks>
-    public void Execute(ReadOnlySpan<GorgonCommandList> commandList, bool trackLists = false)
+    /// <exception cref="ObjectDisposedException">Thrown if the queue object has been disposed.</exception>
+    public void Execute(ReadOnlySpan<GorgonCommandList> commandList)
     {
+        ObjectDisposedException.ThrowIf(_d3dQueue.IsNull, this);
+
         using (_fenceLock.EnterScope())
         {
             if (commandList.Length == 0)
@@ -294,17 +295,13 @@ internal sealed unsafe class CommandQueue : IDisposable
     /// <summary>
     /// Function to execute a command list on the queue.
     /// </summary>
-    /// <param name="commandList">The command list to execute on the queue.</param>    
-    /// <param name="trackList">[Optional] <b>true</b> to track the command list, <b>false</b> to manage the list manually.</param>
-    /// <returns>The current fence value.</returns>
-    /// <remarks>
-    /// <para>
-    /// If the <paramref name="trackList"/> parameter is <b>true</b>, then applications should call the <see cref="CollectOutstandingLists"/> method at the end of execution to clean up active lists.
-    /// </para>
-    /// </remarks>
+    /// <param name="commandList">The command list to execute on the queue.</param>
+    /// <inheritdoc cref="Execute(ReadOnlySpan{GorgonCommandList})" path="/exception"/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Execute(GorgonCommandList commandList, bool trackList = false)
+    public void Execute(GorgonCommandList commandList)
     {
+        ObjectDisposedException.ThrowIf(_d3dQueue.IsNull, this);
+
         using (_fenceLock.EnterScope())
         {
             CommitReservedMemory();
@@ -323,17 +320,24 @@ internal sealed unsafe class CommandQueue : IDisposable
     /// Function to increment the fence for the queue.
     /// </summary>
     /// <returns>The current fence value.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public ulong IncrementFence()
     {
+        if (_d3dQueue.IsNull)
+        {
+            return ulong.MaxValue;
+        }
+
         using (_fenceLock.EnterScope())
         {
             FenceValue = _nextFenceValue;
 
             HRESULT err = _d3dQueue.Get()->Signal((PID3D12Fence1)_d3dFence.Get(), _nextFenceValue);
             Debug.Assert(err.SUCCEEDED, $"Could not set the fence value 0x{err.Value.FormatHex()}.");
-            
-            return _nextFenceValue++;
+
+            unchecked
+            {
+                return _nextFenceValue++;
+            }
         }
     }
 
@@ -401,7 +405,7 @@ internal sealed unsafe class CommandQueue : IDisposable
         ListPool = new CommandListPool(this);
         Tracker = new ResourceTracker(this);
 
-        _d3dQueue = CreateNative(in graphics.D3DDevice);
-        _d3dFence = CreateFence(in graphics.D3DDevice);
+        _d3dQueue = CreateNativeQueue(in graphics.D3DDevice);
+        _d3dFence = CreateNativeFence(in graphics.D3DDevice);
     }
 }

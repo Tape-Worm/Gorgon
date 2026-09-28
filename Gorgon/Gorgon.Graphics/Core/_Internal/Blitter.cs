@@ -24,6 +24,9 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.InteropServices;
+using Gorgon.Core;
+using Gorgon.Graphics.Core.Properties;
+using Gorgon.Memory;
 
 namespace Gorgon.Graphics.Core;
 
@@ -50,21 +53,21 @@ public unsafe class Blitter
 
     private Vector2 _viewDimensions;
     private readonly GorgonCommandList _commandList;
-    private GorgonDrawCall? _drawCall;
+    private GorgonIndexedDrawCall? _drawCall;
     private GorgonGraphicsPso _pso;
     private readonly GorgonIndexBuffer _indexBuffer;
     private readonly GorgonStructuredBufferView _vertexBuffer;
     private GorgonBlendState _blendState = GorgonBlendState.NoBlending;
-    private readonly (IGorgonTextureView<GorgonTextureCommon>, ShaderStage, TextureUsage)[] _texture = new (IGorgonTextureView<GorgonTextureCommon>, ShaderStage, TextureUsage)[1];
-    private Matrix4x4 _projection;    
+    private Matrix4x4 _projection;
+    private readonly GorgonGraphicsPsoFactory _psoCache;
 
     private void Dispose(bool disposing)
     {
         if (disposing)
         {
+            _psoCache.Dispose();
             _vertexBuffer.Dispose();
             _indexBuffer.Dispose();
-            _pso.Dispose();
         }
     }
 
@@ -75,8 +78,6 @@ public unsafe class Blitter
     [MemberNotNull(nameof(_pso))]
     private void BuildPSO(GorgonBlendState blendState)
     {
-        _pso?.Dispose();
-
         Span<BufferFormat> outputFormats = stackalloc BufferFormat[_commandList.RenderTargets.Length];        
 
         if (_commandList.RenderTargets.Length > 1)
@@ -91,11 +92,49 @@ public unsafe class Blitter
             outputFormats[0] = _commandList.RenderTargets[0]?.Format ?? BufferFormat.Unknown;
         }
 
+        GorgonGraphicsPso? pso = _psoCache.FindPso(p =>
+        {
+            if (!p.BlendStates[0].Equals(blendState))
+            {
+                return false;
+            }
+
+            if (_commandList.RenderTargets.Length != p.OutputFormats.Length)
+            {
+                return false;
+            }
+
+            if (p.Multisample.Equals(_commandList.RenderTargets[0]?.Texture.MultisampleInfo ?? GorgonMultisampleInfo.NoMultisampling))
+            {
+                return false;
+            }
+
+            for (int i = 0; i < p.OutputFormats.Length; ++i)
+            {
+                if ((_commandList.RenderTargets[i]?.Format ?? BufferFormat.Unknown) != p.OutputFormats[i])
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        });
+
+        if (pso is not null)
+        {
+            _pso = pso;
+            _blendState = blendState;
+            return;
+        }
+
         GorgonGraphicsPsoBuilder psoFactory = new(_commandList.Graphics);
-        _pso = psoFactory.PixelShader(_commandList.Graphics.SharedResources.BlitterPixelShader)
-                         .OutputFormats(outputFormats)
-                         .BlendState(blendState)
-                         .Build($"Gorgon Blitter PSO - {_commandList.Name}", _commandList.Graphics.SharedResources.BlitterVertexShader);
+        psoFactory.PixelShader(_commandList.Graphics.SharedResources.BlitterPixelShader)
+                  .OutputFormats(outputFormats)
+                  .Multisample(_commandList.RenderTargets[0]?.Texture.MultisampleInfo ?? GorgonMultisampleInfo.NoMultisampling)
+                  .BlendState(blendState);
+
+        string name = $"Gorgon Blitter PSO - {_commandList.Name}:{Guid.NewGuid():N}";
+        _pso = _psoCache.CreateOrGetPso(name, _commandList.Graphics.SharedResources.BlitterVertexShader, psoFactory);
 
         _blendState = blendState;
     }
@@ -148,21 +187,32 @@ public unsafe class Blitter
 
     public void Draw(IGorgonTextureView<GorgonTextureCommon> texture, GorgonRectangleF destination, GorgonRectangleF textureCoordinates, GorgonSampler sampler, GorgonBlendState blendState)
     {
-        _drawCall ??= new GorgonDrawCall(_indexBuffer, 6, _pso)
-        {
-            IndexBuffer = _indexBuffer,
-            UsedBuffers = [(_vertexBuffer.Buffer, ShaderStage.Vertex, BufferUsage.VertexBuffer)]
-        };
-
         if (CheckPsoState(blendState))
         {
             BuildPSO(blendState);
             _blendState = blendState;
-            _drawCall.Pso = _pso;
+            _drawCall = null;
         }
 
-        _texture[0] = (texture, ShaderStage.Pixel, TextureUsage.ReadOnly);
-        _drawCall.UsedTextures = _texture;
+        if ((_drawCall is null) || (_drawCall.UsedTextures[0].Texture != texture.Texture))
+        {
+            if (_drawCall is null)
+            {            
+                _drawCall = new GorgonIndexedDrawCall()
+                {
+                    IndexBuffer = _indexBuffer,
+                    IndexCount = 6,
+                    Pso = _pso
+                };
+            }
+            else
+            {
+                _drawCall.Pso = _pso;
+            }
+
+            _drawCall.AssignBuffer(new GorgonDrawCallBuffer(_vertexBuffer, ShaderStage.Vertex, BufferUsage.VertexBuffer));
+            _drawCall.AssignTexture(new GorgonDrawCallTexture(texture, ShaderStage.Pixel, TextureUsage.ReadOnly));
+        }
 
         if ((_commandList.Viewports[0].Width != _viewDimensions.X)
             || (_commandList.Viewports[0].Height != _viewDimensions.Y))
@@ -215,6 +265,7 @@ public unsafe class Blitter
 
         _indexBuffer = new GorgonIndexBuffer(_commandList.Graphics, "Gorgon Blitter Index Buffer", new GorgonIndexBufferInfo(sizeof(short) * 6, false));
         _vertexBuffer = GorgonStructuredBufferView.CreateStructuredBuffer<Vertex>(commandList.Graphics, "Gorgon Blitter Vertex Buffer", 4);
+        _psoCache = new GorgonGraphicsPsoFactory(_commandList.Graphics);
 
         BuildPSO(_blendState);
 

@@ -95,7 +95,6 @@ public enum BarrierSync
     /// <item><description><see cref="BarrierAccess.DepthStencilWrite"/></description></item>
     /// <item><description><see cref="BarrierAccess.DepthStencilRead"/></description></item>
     /// <item><description><see cref="BarrierAccess.ShaderResource"/></description></item>
-    /// <item><description><see cref="BarrierAccess.StreamOutput"/></description></item>
     /// <item><description><see cref="BarrierAccess.Common"/> (See the note on the <see cref="BarrierSync"/> description.)</description></item>
     /// </list>
     /// </para>
@@ -125,7 +124,6 @@ public enum BarrierSync
     /// <item><description><see cref="BarrierAccess.ConstantBuffer"/></description></item>
     /// <item><description><see cref="BarrierAccess.ReadWrite"/></description></item>
     /// <item><description><see cref="BarrierAccess.ShaderResource"/></description></item>
-    /// <item><description><see cref="BarrierAccess.StreamOutput"/></description></item>
     /// <item><description><see cref="BarrierAccess.Common"/> (See the note on the <see cref="BarrierSync"/> description.)</description></item>
     /// </list>
     /// </para>
@@ -158,7 +156,6 @@ public enum BarrierSync
     /// <item><description><see cref="BarrierAccess.ConstantBuffer"/></description></item>
     /// <item><description><see cref="BarrierAccess.ReadWrite"/></description></item>
     /// <item><description><see cref="BarrierAccess.ShaderResource"/></description></item>
-    /// <item><description><see cref="BarrierAccess.StreamOutput"/></description></item>
     /// <item><description><see cref="BarrierAccess.Common"/> (See the note on the <see cref="BarrierSync"/> description.)</description></item>
     /// </list>
     /// </para>
@@ -280,7 +277,6 @@ public enum BarrierSync
     /// <item><description><see cref="BarrierAccess.ConstantBuffer"/></description></item>
     /// <item><description><see cref="BarrierAccess.ReadWrite"/></description></item>
     /// <item><description><see cref="BarrierAccess.ShaderResource"/></description></item>
-    /// <item><description><see cref="BarrierAccess.StreamOutput"/></description></item>
     /// <item><description><see cref="BarrierAccess.ShadingRateSource"/></description></item>
     /// <item><description><see cref="BarrierAccess.Common"/> (See the note on the <see cref="BarrierSync"/> description.)</description></item>
     /// </list>
@@ -540,20 +536,20 @@ public enum BarrierAccess
     /// </para>
     /// </summary>
     ShaderResource = D3D12_BARRIER_ACCESS.D3D12_BARRIER_ACCESS_SHADER_RESOURCE,
-    /// <summary>
-    /// <para>
-    /// Indicates a buffer is accessible as a stream output target. Runtime barrier validation ensures that this value is used with one or more of the following sync bits:
-    /// </para>
-    /// <para>
-    /// <list type="bullet">
-    /// <item><description><see cref="BarrierSync.All"/></description></item>
-    /// <item><description><see cref="BarrierSync.VertexShading"/></description></item>
-    /// <item><description><see cref="BarrierSync.Draw"/></description></item>
-    /// <item><description><see cref="BarrierSync.AllShading"/></description></item>
-    /// </list>
-    /// </para>
-    /// </summary>
-    StreamOutput = D3D12_BARRIER_ACCESS.D3D12_BARRIER_ACCESS_STREAM_OUTPUT,
+    ///// <summary>
+    ///// <para>
+    ///// Indicates a buffer is accessible as a stream output target. Runtime barrier validation ensures that this value is used with one or more of the following sync bits:
+    ///// </para>
+    ///// <para>
+    ///// <list type="bullet">
+    ///// <item><description><see cref="BarrierSync.All"/></description></item>
+    ///// <item><description><see cref="BarrierSync.VertexShading"/></description></item>
+    ///// <item><description><see cref="BarrierSync.Draw"/></description></item>
+    ///// <item><description><see cref="BarrierSync.AllShading"/></description></item>
+    ///// </list>
+    ///// </para>
+    ///// </summary>
+    //StreamOutput = D3D12_BARRIER_ACCESS.D3D12_BARRIER_ACCESS_STREAM_OUTPUT,
     /// <summary>
     /// <para>
     /// Indicates a buffer is accessible as an indirect argument buffer. Runtime barrier validation ensures that this value is used with one or more of the following sync bits:

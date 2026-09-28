@@ -153,6 +153,8 @@ internal unsafe class GpuDescriptorHeap
     /// <returns>The handle at which the views start on the CPU.</returns>    
     public void Allocate(uint count, out GpuDescriptorAllocation allocation)
     {
+        ObjectDisposedException.ThrowIf(_memoryBlock.IsNull, this);
+
         using (_syncLock.EnterScope())
         {
             Debug.Assert(count > 0, "At least 1 view should be allocated.");
@@ -212,10 +214,13 @@ internal unsafe class GpuDescriptorHeap
                     break;
                 }
 
-                _memoryBlock.Get()->FreeAllocation(new D3D12MA_VirtualAllocation
+                if (!_memoryBlock.IsNull)
                 {
-                    AllocHandle = item.Allocation.Handle
-                });
+                    _memoryBlock.Get()->FreeAllocation(new D3D12MA_VirtualAllocation
+                    {
+                        AllocHandle = item.Allocation.Handle
+                    });
+                }
 
                 _used -= item.Allocation.Count;
 

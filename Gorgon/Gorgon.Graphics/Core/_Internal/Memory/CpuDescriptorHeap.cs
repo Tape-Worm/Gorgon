@@ -150,6 +150,8 @@ internal unsafe sealed class CpuDescriptorHeap
     /// <exception cref="GorgonException">Thrown if the descriptor heap is out of room to store any new descriptors.</exception>
     public void Allocate(uint count, out CpuDescriptorAllocation allocation)
     {
+        ObjectDisposedException.ThrowIf(_memoryBlock.IsNull, this);
+
         D3D12MA_VIRTUAL_ALLOCATION_DESC desc = new(count, 0);
         D3D12MA_VirtualAllocation vmAllocation = default;
         ulong location = 0;
@@ -176,19 +178,23 @@ internal unsafe sealed class CpuDescriptorHeap
     /// </remarks>
     public void Free(ref CpuDescriptorAllocation allocation)
     {
-        if (allocation.IsNull)
+        if (allocation.IsNull) 
         {
             return;
         }
 
-        _memoryBlock.Get()->FreeAllocation(new D3D12MA_VirtualAllocation()
+        if (!_memoryBlock.IsNull)
         {
-            AllocHandle = allocation.Handle
-        });
+            _memoryBlock.Get()->FreeAllocation(new D3D12MA_VirtualAllocation()
+            {
+                AllocHandle = allocation.Handle
+            });
 
-        // For some fucked up reason, the .NET team didn't see fit to give us a "Subtract" interlocked function, even though it exists
-        // in Win32 (InterlockedExchangeSubtract). This ugly hack will give us something approximating that.
-        Interlocked.Add(ref Unsafe.As<uint, long>(ref _used), -allocation.Count);
+            // For some fucked up reason, the .NET team didn't see fit to give us a "Subtract" interlocked function, even though it exists
+            // in Win32 (InterlockedExchangeSubtract). This ugly hack will give us something approximating that.
+            Interlocked.Add(ref Unsafe.As<uint, long>(ref _used), -allocation.Count);
+        }
+
         allocation = CpuDescriptorAllocation.Null;
     }
 
@@ -202,7 +208,10 @@ internal unsafe sealed class CpuDescriptorHeap
     /// </remarks>
     public void FreeAll()
     {
-        _memoryBlock.Get()->Clear();
+        if (!_memoryBlock.IsNull)
+        {
+            _memoryBlock.Get()->Clear();
+        }
         Interlocked.Exchange(ref _used, 0);
     }
 

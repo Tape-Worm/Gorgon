@@ -52,7 +52,7 @@ public enum TextureAddressing
     /// </summary>
     Border = D3D12_TEXTURE_ADDRESS_MODE.D3D12_TEXTURE_ADDRESS_MODE_BORDER,
     /// <summary>
-    /// Same as <see cref="Mirror"/>, except the mirroring only happens one time.
+    /// Same as <see cref="Mirror"/>, except the texture is only mirrored once around 0, and then clamped.
     /// </summary>
     MirrorOnce = D3D12_TEXTURE_ADDRESS_MODE.D3D12_TEXTURE_ADDRESS_MODE_MIRROR_ONCE,
 

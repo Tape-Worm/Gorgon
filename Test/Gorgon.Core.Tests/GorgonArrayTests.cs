@@ -161,7 +161,7 @@ public class GorgonArrayTests
         ReadOnlySpan<string?> range = array.GetDirtySpan();
 
         Assert.AreEqual(array[2], range[0]);
-        Assert.AreEqual(1, range.Length);
+        Assert.HasCount(1, range);
 
         Assert.IsFalse(array.IsDirty);
 

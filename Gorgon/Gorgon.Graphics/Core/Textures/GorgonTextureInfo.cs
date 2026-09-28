@@ -46,7 +46,9 @@ public record class GorgonTextureInfo(TextureType Type, BufferFormat Format)
 
     /// <inheritdoc cref="IGorgonTextureInfo.Width" path="/summary"/>
     /// <remarks>
+    /// <para>
     /// This value must be between 1 and <see cref="GorgonVideoAdapterInfo.MaxTextureWidth"/> or <see cref="GorgonVideoAdapterInfo.MaxTexture3DWidth"/>.
+    /// </para>
     /// </remarks>
     public required int Width
     {
@@ -159,10 +161,10 @@ public record class GorgonTextureInfo(TextureType Type, BufferFormat Format)
     /// <para>
     /// This flag must not be <b>true</b> when <see cref="IsRenderTarget"/>, or <see cref="HasReadWriteAccess"/> is <b>true</b>, otherwise an exception will be thrown on texture creation.
     /// </para>
+    /// <inheritdoc cref="IGorgonTextureInfo.IsDepthStencil" path="/remarks/para"/>
     /// <para>
     /// The default value is <b>false</b>.
     /// </para>
-    /// <inheritdoc cref="IGorgonTextureInfo.IsDepthStencil" path="/remarks/para"/>
     /// </remarks>
     public bool IsDepthStencil
     {
@@ -260,7 +262,7 @@ public record class GorgonTextureInfo(TextureType Type, BufferFormat Format)
     /// <remarks>
     /// <inheritdoc cref="GorgonGpuBuffer" path="/remarks/para[@type='uav_readwrite']"/>
     /// </remarks>
-    public static GorgonTextureInfo Create1DRenderTargetInfo(BufferFormat format, int width, short mipCount = 1, short arrayCount = 1, bool isShaderResource = true, bool allowReadWriteAccess = false) => new(TextureType.Texture2D, format)
+    public static GorgonTextureInfo Create1DRenderTargetInfo(BufferFormat format, int width, short mipCount = 1, short arrayCount = 1, bool isShaderResource = true, bool allowReadWriteAccess = false) => new(TextureType.Texture1D, format)
     {
         Width = width,
         Height = 1,
@@ -445,7 +447,7 @@ public record class GorgonTextureInfo(TextureType Type, BufferFormat Format)
     /// <remarks>
     /// <inheritdoc cref="GorgonGpuBuffer" path="/remarks/para[@type='uav_readwrite']"/>
     /// </remarks>
-    public static GorgonTextureInfo Create3DTextureInfo(BufferFormat format, int width, int height, short depth, short mipCount = 1, bool isShaderResource = true, bool allowReadWriteAccess = false) => new(TextureType.Texture1D, format)
+    public static GorgonTextureInfo Create3DTextureInfo(BufferFormat format, int width, int height, short depth, short mipCount = 1, bool isShaderResource = true, bool allowReadWriteAccess = false) => new(TextureType.Texture3D, format)
     {
         Width = width,
         Height = height,
@@ -472,7 +474,7 @@ public record class GorgonTextureInfo(TextureType Type, BufferFormat Format)
     /// <remarks>
     /// <inheritdoc cref="GorgonGpuBuffer" path="/remarks/para[@type='uav_readwrite']"/>
     /// </remarks>
-    public static GorgonTextureInfo Create3DRenderTargetInfo(BufferFormat format, int width, int height, short depth, short mipCount = 1, bool isShaderResource = true, bool allowReadWriteAccess = false) => new(TextureType.Texture2D, format)
+    public static GorgonTextureInfo Create3DRenderTargetInfo(BufferFormat format, int width, int height, short depth, short mipCount = 1, bool isShaderResource = true, bool allowReadWriteAccess = false) => new(TextureType.Texture3D, format)
     {
         Width = width,
         Height = height,
@@ -486,9 +488,10 @@ public record class GorgonTextureInfo(TextureType Type, BufferFormat Format)
     };
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonTextureInfo"/> class.
+    /// Function to create a <see cref="GorgonTextureInfo"/> from image information.
     /// </summary>
     /// <param name="info">The <see cref="IGorgonImageInfo"/> to derive the texture settings from.</param>
+    /// <inheritdoc cref="Create1DTextureInfo(BufferFormat, int, short, short, bool, bool)" path="/returns"/>
     public static GorgonTextureInfo FromImageInfo(IGorgonImageInfo info) => new(info.ImageType.ToTextureType(), info.Format)
     {
         Width = info.Width,

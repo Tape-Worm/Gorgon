@@ -1,5 +1,5 @@
 ﻿// Gorgon.
-// Copyright (C) 2225 Michael Winsor
+// Copyright (C) 2025 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -18,7 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 // 
-// Created: September 28, 2225 11:58:26 PM
+// Created: September 28, 2025 11:58:26 PM
 //
 
 using System.Runtime.CompilerServices;
@@ -26,6 +26,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
+using Gorgon.Graphics.Core.Codecs;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Native;
 using TerraFX.Interop.DirectX;
@@ -77,7 +78,7 @@ public enum CompileFlags
     /// </summary>
     Debug = 1,
     /// <summary>
-    /// Optimization level 2.
+    /// Optimization level 0.
     /// </summary>
     OptimizationLevel0 = 2,
     /// <summary>
@@ -119,14 +120,21 @@ public enum CompileFlags
 }
 
 /// <summary>
-/// A factory used to compile shader programs and retrieve binary shader data.
+/// Functionality to compile shader programs from HLSL source code.
 /// </summary>
 /// <remarks>
 /// <para>
-/// TODO: 
+/// Shaders typically come in source code form as strings. To compile them for use in a scene, applications should use this compiler to build <see cref="GorgonShader"/> objects. This compiles the shaders
+/// into an intermediate format which is contained in a resulting <see cref="GorgonShader"/>. When that shader is used by a <see cref="GorgonGraphicsPso"/>, <see cref="GorgonComputePso"/>, or 
+/// <see cref="GorgonMeshPso"/>, then it is converted into the correct native format for the GPU. 
+/// </para>
+/// <para>
+/// Because the compilation can take time, it is best to compile the shaders to the intermediate format before rendering starts. Preferably, the compiled shaders should be stored on disk directly, or in
+/// a PSO cache.
 /// </para>
 /// </remarks>
-public unsafe class GorgonShaderFactory
+/// <seealso cref="GorgonShader"/>
+public unsafe class GorgonShaderCompiler
     : IDisposable
 {
     /// <summary>
@@ -202,19 +210,7 @@ public unsafe class GorgonShaderFactory
     };
 
     /// <summary>
-    /// Property to return the list of <see cref="GorgonShaderInclude"/> definitions to include with compiled shaders.
-    /// </summary>
-    /// <remarks>
-    /// Gorgon uses a special keyword in shaders to allow shader files to include other files as part of the source. This keyword is named <c>#GorgonInclude</c> and is similar to the HLSL 
-    /// <c>#include</c> keyword. The difference is that this keyword allows users to include shader source from memory instead of a separate source file. This is done by assigning a name to the included 
-    /// source code in the <c>#GorgonInclude</c> keyword, and adding the string containing the source to this property. When the include is loaded from a file, then it will automatically be added to 
-    /// this property.
-    /// </remarks>
-    /// <seealso cref="GorgonShaderInclude"/>
-    public IDictionary<string, GorgonShaderInclude> Includes => _processor.CachedIncludes;
-
-    /// <summary>
-    /// Property to return the graphics object that owns this shader factory.
+    /// Property to return the graphics object that is associated with this compiler.
     /// </summary>
     public GorgonGraphics Graphics
     {
@@ -222,10 +218,27 @@ public unsafe class GorgonShaderFactory
     }
 
     /// <summary>
-    /// Function to convert all compile flag arguments into a list of C compatible compiler switch strings for the compiler.
+    /// Property to return the list of <see cref="GorgonShaderInclude"/> definitions to include with compiled shaders.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Gorgon uses a special keyword in shaders to allow shader files to include other files as part of the source. This keyword is named <c>#GorgonInclude</c> and is similar to the HLSL <c>#include</c> 
+    /// keyword. The difference is that this keyword allows users to include shader source from memory instead of a separate source file. This is done by assigning a name to the included source code in the 
+    /// <c>#GorgonInclude</c> keyword, and adding a <see cref="GorgonShaderInclude"/> containing the source code to this property with the same name. Names are not case sensitive.
+    /// </para>
+    /// <para>
+    /// Includes can also be loaded from a file by passing a path to the <c>#GorgonInclude</c> keyword (e.g. <c>#GorgonInclude "Name", "Path\To\The\File.hlsl"</c>). The source code for the file is loaded when 
+    /// the include is processed, and is added to this property with the name from the keyword.
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="GorgonShaderInclude"/>
+    public IDictionary<string, GorgonShaderInclude> Includes => _processor.CachedIncludes;
+
+    /// <summary>
+    /// Function to gather all the compilation flags and build a list of equivalent string arguments to be passed to the compiler.
     /// </summary>
     /// <param name="flags">The flags passed to the compiler.</param>
-    /// <param name="args">The list of C strings to populate.</param>
+    /// <param name="args">The list of strings to populate.</param>
     private static void GetFlagArgs(CompileFlags flags, List<string> args)
     {
         if (flags == CompileFlags.None)
@@ -351,13 +364,13 @@ public unsafe class GorgonShaderFactory
     }
 
     /// <summary>
-    /// Function to return the shader blob for the shader source code.
+    /// Function to return the shader source blob for the shader source code.
     /// </summary>
     /// <param name="source">The source code for the shader.</param>
     /// <param name="profile">The shader model profile.</param>
     /// <param name="buffer">The buffer definition for the compiler.</param>
     /// <returns>A UTF-16 blob containing the shader source.</returns>
-    private ComPtr<IDxcBlobEncoding> GetShaderBlob(string source, ShaderProfiles profile, out DxcBuffer buffer)
+    private ComPtr<IDxcBlobEncoding> GetShaderSourceBlob(string source, ShaderProfiles profile, out DxcBuffer buffer)
     {
         string processedSource = _processor.Process(source);
 
@@ -380,7 +393,7 @@ public unsafe class GorgonShaderFactory
     }
 
     /// <summary>
-    /// Function to build up the parameters to pass to the compiler.
+    /// Function to build up the parameters to pass to the compiler as C style strings.
     /// </summary>
     /// <param name="entryPoint">The entrypoint for the shader.</param>
     /// <param name="shaderModelProfile">The shader model profile for the shader.</param>
@@ -444,6 +457,11 @@ public unsafe class GorgonShaderFactory
     /// <summary>
     /// Function to build the native compiler objects.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// We only ever create one instance of these, shared amongst all factories.  
+    /// </para>
+    /// </remarks>
     private void BuildNativeObjects()
     {
         using (_compilerLock.EnterScope())
@@ -495,16 +513,123 @@ public unsafe class GorgonShaderFactory
     /// <param name="flags">[Optional] Flags used when compiling the shader.</param>
     /// <param name="macros">[Optional] Macros to pass to the shader.</param>
     /// <returns>A shader compilation result containing either the shader, or an error message.</returns>
-    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="sourceCode"/>, or <paramref name="entryPoint"/> parameters are empty.</exception>
-    /// <exception cref="GorgonException">Thrown if the <paramref name="shaderType"/> or <paramref name="shaderModel"/> are not supported.
-    /// <para>Thrown if the shader failed compilation due to errors in the code, or the shader compiler had an internal error.</para>
+    /// <exception cref="ArgumentEmptyException">Thrown if the <paramref name="sourceCode"/>, or <paramref name="entryPoint"/> parameters are empty.</exception>
+    /// <exception cref="GorgonException"><para>
+    /// Thrown if the <paramref name="shaderType"/> or <paramref name="shaderModel"/> are not supported.
+    /// </para>
+    /// <para>
+    /// Thrown if a <c>#GorgonInclude</c> keyword in the <paramref name="sourceCode"/> is malformed.
+    /// </para>
+    /// <para>
+    /// Thrown if the shader compiler had an internal error.
+    /// </para>
     /// </exception>
+    /// <exception cref="IOException">Thrown if the file specified by a <c>#GorgonInclude</c> keyword could not be found.</exception>
     /// <remarks>
     /// <para>
-    /// TODO.
+    /// This converts the source code for a shader, and turns it into an intermediate binary format via a <see cref="GorgonShader"/> for use with a <see cref="GorgonGraphicsPso"/>, 
+    /// <see cref="GorgonComputePso"/> or other pipeline state object types.
+    /// </para>
+    /// <para>
+    /// The <paramref name="entryPoint"/> is the name of the function to execute when the shader is running on the GPU.
+    /// </para>
+    /// <para>
+    /// The <paramref name="shaderType"/> is the type of shader to generate. See the <see cref="ShaderType"/> enum for the possible values.
+    /// </para>
+    /// <para>
+    /// The <paramref name="shaderModel"/> parameter should normally be left alone as it defaults to <see cref="ShaderModel.HighestVersionAvailable"/>. But if required, this parameter can force the compiler to 
+    /// compile for older shader model versions.
+    /// </para>
+    /// <para>
+    /// The method returns a <see cref="GorgonShaderCompileResult"/> composite type which contains either the <see cref="GorgonShader"/>, or, if there was an error, the error message(s) from the compiler. 
+    /// Errors in the shader source code are returned in this result, and do not throw an exception.
+    /// </para>
+    /// <h3>Compilation flags</h3>
+    /// <para>
+    /// There are several compilation flags that can be passed to this method via its <paramref name="flags"/> parameter to enable/disable sets of functionality. The flags are typically OR'd together to allow 
+    /// for multiple flags at once. However, if a <see cref="CompileFlags.Debug"/> is combined with an optimization flag, the <see cref="CompileFlags.Debug"/> flag takes precedence and the optimization flags 
+    /// are dropped. The flags are as follows:
+    /// <list type="bullet">
+    ///     <item>
+    ///         <term><see cref="CompileFlags.None"/></term>
+    ///         <description>
+    /// Default flags - Whatever values the compiler uses as default (except when running in <see cref="GorgonGraphics.IsInDebugMode">Debug mode</see>, then this defaults to <see cref="CompileFlags.Debug"/>).
+    ///         </description>
+    ///     </item>
+    ///     <item>
+    ///         <term><see cref="CompileFlags.Debug"/></term>
+    ///         <description>Compiles the shader with debug information to allow for debugging the shader in external applications like Microsoft PIX.</description>
+    ///     </item>
+    ///     <item>
+    ///         <term>
+    /// <see cref="CompileFlags.OptimizationLevel0"/>, <see cref="CompileFlags.OptimizationLevel1"/>, <see cref="CompileFlags.OptimizationLevel2"/>, <see cref="CompileFlags.OptimizationLevel3"/>
+    ///         </term>
+    ///         <description>
+    /// Instructs the compiler to perform optimizations on the code while compiling. Where <see cref="CompileFlags.OptimizationLevel0"/> has no optimizations, but compiles very fast, and 
+    /// <see cref="CompileFlags.OptimizationLevel3"/> applies the most extensive optimizations.
+    ///         </description>
+    ///     </item>
+    ///     <item>
+    ///         <term><see cref="CompileFlags.WarningsAsErrors"/></term>
+    ///         <description>Instructs the compiler to treat warnings as errors.</description>
+    ///     </item>
+    ///     <item>
+    ///         <term><see cref="CompileFlags.NoReflection"/></term>
+    ///         <description>Instructs the compiler to strip out any reflection data from the shader binary.</description>
+    ///     </item>
+    ///     <item>
+    ///         <term><see cref="CompileFlags.RowMajor"/></term>
+    ///         <description>Instructs the compiler to pack matrices in row major order.</description>
+    ///     </item>
+    ///     <item>
+    ///         <term><see cref="CompileFlags.StrictMode"/></term>
+    ///         <description>Instruct the compiler to disallow legacy syntax.</description>
+    ///     </item>
+    ///     <item>
+    ///         <term><see cref="CompileFlags.AvoidFlowConstructs"/></term>
+    ///         <description>Instructs the compiler to avoid using flow control as much as possible.</description>
+    ///     </item>
+    ///     <item>
+    ///         <term><see cref="CompileFlags.IEEEStrictness"/></term>
+    ///         <description>Instructs the compiler to use strict IEEE to avoid optimizations that may break IEEE rules.</description>
+    ///     </item>
+    /// </list>
+    /// </para>
+    /// <h3>Includes</h3>
+    /// <para>
+    /// The source code passed to the compiler is capable of including other source files as input, much like the C/C++ compilers. Using this allows for reuse of common code across multiple shader sources. 
+    /// However, Gorgon has a special keyword that it uses to import these includes (either as a string in memory via the <see cref="Includes"/> property, or a file on disk): <c>#GorgonInclude "Name"</c>. The 
+    /// <c>Name</c> is the key name of the include in the <see cref="Includes"/> property.
+    /// </para>
+    /// <para>
+    /// The <c>#GorgonInclude</c> keyword has two parameters: a name, and an optional path. To have the keyword only look in the <see cref="Includes"/> property, just use <c>#GorgonInclude "Name"</c>. 
+    /// Otherwise, applications can load external files into the <see cref="Includes"/> property by using <c>#GorgonInclude "Name", "Path\To\The\File.hlsl"</c>. If an include with the same name is already in 
+    /// the <see cref="Includes"/> property, then the file is not loaded.
+    /// </para>
+    /// <para>
+    /// <note type="warning">
+    /// <para>
+    /// These includes are merged in with the source file at compile time, changing locations of functions. Therefore, error message line number information may not be correct.
+    /// </para>
+    /// <para>
+    /// Also, if using a string in memory as an include, ensure that the include is present in the <see cref="Includes"/> property, and has the same key name as the name in the <c>#GorgonInclude</c>. 
+    /// Otherwise, the include is skipped.
+    /// </para>
+    /// </note>
+    /// </para>
+    /// <h3>Macros</h3>
+    /// <para>
+    /// This method also has the ability to pass in a list of <see cref="GorgonShaderMacro"/> values, which allows conditional compilation on a shader, which can be used to create a variety of shader functions 
+    /// while still using the same code base.
     /// </para>
     /// </remarks>
-    public GorgonShaderCompileResult Compile(string sourceCode, string entryPoint, ShaderType shaderType, ShaderModel shaderModel = ShaderModel.HighestVersionAvailable, CompileFlags flags = CompileFlags.Debug, IReadOnlyList<GorgonShaderMacro>? macros = null)
+    /// <seealso cref="GorgonShader"/>
+    /// <seealso cref="GorgonShaderCompileResult"/>
+    /// <seealso cref="Includes"/>
+    /// <seealso cref="GorgonShaderInclude"/>
+    /// <seealso cref="GorgonGraphicsPso"/>
+    /// <seealso cref="GorgonComputePso"/>
+    public GorgonShaderCompileResult Compile(string sourceCode, string entryPoint, ShaderType shaderType, ShaderModel shaderModel = ShaderModel.HighestVersionAvailable, CompileFlags flags = CompileFlags.None, IReadOnlyList<GorgonShaderMacro>? macros = null)
     {
         using ComPtr<IDxcResult> result = default;
 
@@ -535,10 +660,12 @@ public unsafe class GorgonShaderFactory
         if (((flags & CompileFlags.Debug) == CompileFlags.Debug) && (((flags & CompileFlags.OptimizationLevel0) == CompileFlags.OptimizationLevel0)
             || ((flags & CompileFlags.OptimizationLevel1) == CompileFlags.OptimizationLevel1)
             || ((flags & CompileFlags.OptimizationLevel2) == CompileFlags.OptimizationLevel2)
-            || ((flags & CompileFlags.OptimizationLevel1) == CompileFlags.OptimizationLevel3)))
+            || ((flags & CompileFlags.OptimizationLevel3) == CompileFlags.OptimizationLevel3)))
         {
             Graphics.Log.PrintWarning($"Shader {shaderModelProfile.ShaderType} {shaderModelProfile.ShaderModel} has a debug flag, but also specifies an optimization flag. " +
                 $"The debug flag will take precedence and optimizations will be disabled.", LoggingLevel.Intermediate);
+
+            flags &= ~(CompileFlags.OptimizationLevel0 | CompileFlags.OptimizationLevel1 | CompileFlags.OptimizationLevel2 | CompileFlags.OptimizationLevel3);
         }
 
         // If we're in debug mode, then compile shaders with debug info as well.
@@ -553,7 +680,7 @@ public unsafe class GorgonShaderFactory
 
         Graphics.Log.Print($"Creating a {shaderModelProfile.ShaderType} ({shaderModelProfile.ShaderModel}).", LoggingLevel.Simple);
 
-        using ComPtr<IDxcBlobEncoding> srcBlob = GetShaderBlob(sourceCode, shaderModelProfile, out DxcBuffer buffer);
+        using ComPtr<IDxcBlobEncoding> srcBlob = GetShaderSourceBlob(sourceCode, shaderModelProfile, out DxcBuffer buffer);
         char** cstrs = GetCompilerArguments(entryPoint, shaderModelProfile.Profile, macros ?? [], flags, out uint argCount);
 
         try
@@ -589,9 +716,9 @@ public unsafe class GorgonShaderFactory
         result.Get()->GetResult((IDxcBlob**)shaderBlob.GetAddressOf())
             .ThrowIfFailed(GorgonResult.CannotCompile, () => string.Format(Resources.GORGFX_ERR_CANNOT_COMPILE_SHADER, shaderModelProfile));
 
-        GorgonNativeBuffer<byte> hash = [];
-        GorgonNativeBuffer<byte> pdbData = [];
-        GorgonNativeBuffer<byte> reflectionData = [];
+        byte[] hash = [];
+        byte[] pdbData = [];
+        byte[] reflectionData = [];
         string pdbName = string.Empty;
         HRESULT err;
 
@@ -607,10 +734,9 @@ public unsafe class GorgonShaderFactory
             }
             else
             {                
-                DxcShaderHash* hashDigest = (DxcShaderHash*)hashBlob.Get()->GetBufferPointer();
-
-                hash = new GorgonNativeBuffer<byte>(16);
-                Unsafe.CopyBlock(ref hash[0], in hashDigest->HashDigest[0], 16);
+                GorgonPtr<byte> hashDigest = hashBlob.ToGorgonPtr<byte>();
+                hash = new byte[hashDigest.Length];
+                hashDigest.CopyTo(hash);
             }
         }
 
@@ -632,8 +758,9 @@ public unsafe class GorgonShaderFactory
             }
             else
             {
-                pdbData = new((long)pdbBlob.Get()->GetBufferSize());
-                NativeMemory.Copy(pdbBlob.Get()->GetBufferPointer(), (void*)pdbData, (uint)pdbData.Length);
+                GorgonPtr<byte> pdbPtr = pdbBlob.ToGorgonPtr<byte>();
+                pdbData = new byte[pdbPtr.Length];
+                pdbPtr.CopyTo(pdbData);
             }
         }
 
@@ -649,13 +776,15 @@ public unsafe class GorgonShaderFactory
             }
             else
             {
-                reflectionData = new GorgonNativeBuffer<byte>((long)reflectBlob.Get()->GetBufferSize());
-                NativeMemory.Copy(reflectBlob.Get()->GetBufferPointer(), (void*)reflectionData, (uint)reflectionData.Length);
+                GorgonPtr<byte> reflectPtr = reflectBlob.ToGorgonPtr<byte>();
+                reflectionData = new byte[reflectPtr.Length];
+                reflectPtr.CopyTo(reflectionData);
             }
         }
 
-        GorgonNativeBuffer<byte> shaderData = new((long)shaderBlob.Get()->GetBufferSize());
-        NativeMemory.Copy(shaderBlob.Get()->GetBufferPointer(), (byte*)shaderData, (uint)shaderData.Length);        
+        GorgonPtr<byte> shaderPtr = shaderBlob.ToGorgonPtr<byte>();
+        byte[] shaderData = new byte[(long)shaderBlob.Get()->GetBufferSize()];
+        shaderPtr.CopyTo(shaderData);
 
         return new GorgonShaderCompileResult(new GorgonShader(Graphics, shaderData, hash, pdbData, pdbName, reflectionData, shaderType, shaderModelProfile.ShaderModel));
     }
@@ -670,17 +799,17 @@ public unsafe class GorgonShaderFactory
     /// <summary>
     /// Finalizer.
     /// </summary>
-    ~GorgonShaderFactory() => Dispose(false);
+    ~GorgonShaderCompiler() => Dispose(false);
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonShaderFactory"/> class.
+    /// Initializes a new instance of the <see cref="GorgonShaderCompiler"/> class.
     /// </summary>
-    /// <param name="graphics">The graphics object that owns this factory.</param>
-    public GorgonShaderFactory(GorgonGraphics graphics)
+    /// <param name="graphics">The graphics object that is associated with this compiler.</param>
+    public GorgonShaderCompiler(GorgonGraphics graphics)
     {
         Graphics = graphics;
-        this.RegisterDisposable(graphics);
-
         BuildNativeObjects();
+
+        this.RegisterDisposable(graphics);
     }
 }

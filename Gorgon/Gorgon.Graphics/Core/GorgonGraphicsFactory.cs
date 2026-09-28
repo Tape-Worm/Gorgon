@@ -136,7 +136,9 @@ public unsafe sealed class GorgonGraphicsFactory
     /// Property to return the debugging interface.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// If this value is <b>null</b>, then debugging is disabled.
+    /// </para>
     /// </remarks>
     public GorgonGraphicsDebug? Debugging
     {
@@ -477,7 +479,7 @@ public unsafe sealed class GorgonGraphicsFactory
     /// 
     /// // Create using a specific video adapter and use the highest feature set supported by that device:
     /// // Get a list of available video adapters.
-    /// IReadOnlyList<IGorgonVideoAdapterInfo> videoAdapters = factory.EnumerateAdapters(false);
+    /// IReadOnlyList<GorgonVideoAdapterInfo> videoAdapters = factory.EnumerateAdapters(false);
     /// 
     /// if (videoAdapters.Count == 0)
     ///   throw new Exception("No suitable video adapters found.");

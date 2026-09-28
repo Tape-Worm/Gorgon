@@ -95,7 +95,7 @@ public class GorgonNativeExtensionsTests
                 byte[] result = new byte[data.Length];
                 stream.Read(result, 0, data.Length);
 
-                CollectionAssert.AreEqual(data, result);
+                Assert.AreSequenceEqual(data, result);
             }
         }
     }
@@ -135,7 +135,7 @@ public class GorgonNativeExtensionsTests
         byte[] result = new byte[data.Length];
         stream.Read(result, 0, data.Length);
 
-        CollectionAssert.AreEqual(data, result);
+        Assert.AreSequenceEqual(data, result);
     }
 
     [TestMethod]
@@ -151,7 +151,7 @@ public class GorgonNativeExtensionsTests
 
         stream.Write(buffer, 1, 2); // Write only the 2nd and 3rd elements from the buffer into the stream
 
-        CollectionAssert.AreEqual(new byte[] { 2, 3 }, stream.ToArray());
+        Assert.AreSequenceEqual(new byte[] { 2, 3 }, stream.ToArray());
     }
     [TestMethod]
     public void ReadIntoBufferShouldThrowExceptionWhenStreamIsAtItsEnd()
@@ -257,7 +257,7 @@ public class GorgonNativeExtensionsTests
 
         // Assert
         Assert.AreEqual(data.Length, buffer.Length);
-        CollectionAssert.AreEqual(data, buffer.ToArray());
+        Assert.AreSequenceEqual(data, [.. buffer]);
     }
 
     [TestMethod]
@@ -301,7 +301,7 @@ public class GorgonNativeExtensionsTests
 
         // Assert
         Assert.AreEqual(sizeof(int), buffer.Length);
-        CollectionAssert.AreEqual(BitConverter.GetBytes(value), buffer.ToArray());
+        Assert.AreSequenceEqual(BitConverter.GetBytes(value), [.. buffer]);
     }
 
     [TestMethod]
@@ -319,7 +319,7 @@ public class GorgonNativeExtensionsTests
 
         // Assert
         Assert.AreEqual(Unsafe.SizeOf<Point>(), buffer.Length);
-        CollectionAssert.AreEqual(BitConverter.GetBytes(value.X).Concat(BitConverter.GetBytes(value.Y)).ToArray(), buffer.ToArray());
+        Assert.AreSequenceEqual([.. BitConverter.GetBytes(value.X), .. BitConverter.GetBytes(value.Y)], [.. buffer]);
     }
 
     private static readonly int[] _array = [1, 2, 3, 4, 5];

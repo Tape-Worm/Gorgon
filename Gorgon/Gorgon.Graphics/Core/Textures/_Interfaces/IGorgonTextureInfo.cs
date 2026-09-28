@@ -35,15 +35,15 @@ public enum TextureType
     /// </summary>
     Unknown = ImageDataType.Unknown,
     /// <summary>
-    /// 
+    /// A 1-dimensional texture.
     /// </summary>
     Texture1D = ImageDataType.Image1D,
     /// <summary>
-    /// 
+    /// A 2-dimensional texture.
     /// </summary>
     Texture2D = ImageDataType.Image2D,
     /// <summary>
-    /// 
+    /// A 3-dimensional texture.
     /// </summary>
     Texture3D = ImageDataType.Image3D
 }
@@ -93,7 +93,7 @@ public interface IGorgonTextureInfo
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This value is only available to <see cref="TextureType.Texture2D"/> and <see cref="TextureType.Texture3D"/> textures.
+    /// This value only applies to <see cref="TextureType.Texture2D"/> and <see cref="TextureType.Texture3D"/> textures.
     /// </para>
     /// </remarks>
     int Height
@@ -102,7 +102,7 @@ public interface IGorgonTextureInfo
     }
 
     /// <summary>
-    /// Property to return whether this texure is a cube map.
+    /// Property to return whether this texture is a cube map.
     /// </summary>
     /// <remarks>
     /// <para>
@@ -140,8 +140,8 @@ public interface IGorgonTextureInfo
     /// </summary>
     /// <remarks>
     /// <para>
-    /// When set to <b>false</b>, some adapter architectures gain bandwidth capacity If a texture is rarely used as a shader resource, it may be better to have two textures, one with this value set to 
-    /// <b>false</b>, and another set to <b>true</b> and copy between them.
+    /// When set to <b>false</b>, some adapter architectures gain bandwidth capacity. If a texture is rarely used as a shader resource, it may be better to have two textures, one with this value set to
+    /// <b>false</b> and another set to <b>true</b>, and copy between them.
     /// </para>
     /// <para>
     /// If the texture has <see cref="IsDepthStencil"/> set to <b>true</b>, and the depth texture is never read in a shader, then performance is improved when this value is set to <b>false</b>.
@@ -153,7 +153,7 @@ public interface IGorgonTextureInfo
     }
 
     /// <summary>
-    /// Property to return whether this texture can be used as an read/write resource.
+    /// Property to return whether this texture can be used as a read/write resource.
     /// </summary>
     /// <remarks>
     /// <inheritdoc cref="GorgonGpuBuffer" path="/remarks/para[@type='uav_readwrite']"/>

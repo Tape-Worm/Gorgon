@@ -162,8 +162,17 @@ internal static class Program
 
                    // This tells the command list that we want to present the back buffer to the screen at the end of the execution of the command list.
         commandList.AddPresenter(_swap)
+                   // This sets the swap chain as the destination for our rendered graphics.
+                   .SetRenderTarget(_swap.Target)
+                   // These tell the renderer how large the rendered area is supposed to be on the window.
+                   // The viewport is used to help in projection from device space to pixel space.
+                   .SetViewport(new GorgonViewport(0, 0, _swap.Width, _swap.Height))
+                   // The scissor is used to clip pixels that are outside of the specified space.
+                   .SetScissorRectangle(new GorgonRectangle(0, 0, _swap.Width, _swap.Height))
                    // This clears our swap chain to the colour, using the region, we asked for.
                    .ClearSwapChain(_swap, _clearColor, regions);
+
+        GorgonExample.BlitLogo(commandList);
 
         _graphics.Submit(commandList);
 
@@ -227,9 +236,6 @@ internal static class Program
             }
         }
 
-#warning FIXME: This can't work until we have the 2D renderer up and running.
-        //GorgonExample.BlitLogo(_graphics);
-
         return true;
     }
 
@@ -245,8 +251,6 @@ internal static class Program
 
         try
         {
-            result.KeyUp += MainForm_KeyUp;
-
             // Now we create and enumerate the list of video devices installed in the computer.
             // We must do this in order to tell Gorgon which video device we intend to use. Note that this method may be quite slow (particularly when running DEBUG versions of 
             // Direct 3D). To counter this, this object and its Enumerate method are thread safe so this can be run in the background while keeping the main UI responsive.
@@ -290,8 +294,9 @@ internal static class Program
                                                                      result.ClientSize.Height,
                                                                      BufferFormat.R8G8B8A8_UNorm));
 
-#warning FIXME: This can't work until we have the 2D renderer up and running.
-            //GorgonExample.LoadResources(_graphics);
+            GorgonExample.LoadResources(_graphics);
+
+            result.KeyUp += MainForm_KeyUp;
 
             GorgonExample.Loop.Run(Idle);
         }
@@ -345,7 +350,7 @@ internal static class Program
             _swap.ExitFullscreen();
 
             // Our original window size should now be set back.
-            form.ClientSize = new Size(640, 480);
+            form.ClientSize = form.LogicalToDeviceUnits(new Size(640, 480));
             return;
         }
 
@@ -363,9 +368,7 @@ internal static class Program
         IGorgonLog log = GorgonLog.NullLog;
         GorgonGraphicsFactory? _factory = null;
 
-        Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
-        Application.EnableVisualStyles();
-        Application.SetCompatibleTextRenderingDefault(false);
+        ApplicationConfiguration.Initialize();
 
         try
         {

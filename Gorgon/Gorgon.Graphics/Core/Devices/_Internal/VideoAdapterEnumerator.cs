@@ -132,6 +132,22 @@ internal unsafe class VideoAdapterEnumerator
             return false;
         }
 
+        D3D12_FEATURE_DATA_D3D12_OPTIONS13 options13 = default;
+
+        err = d3dDevice.Get()->CheckFeatureSupport(D3D12_FEATURE.D3D12_FEATURE_D3D12_OPTIONS13, &options13, (uint)sizeof(D3D12_FEATURE_DATA_D3D12_OPTIONS13));
+
+        if (err.FAILED)
+        {
+            log.PrintError(err, $"There was an error retrieving the enhanced barrier support for the adapter '{name}'. This adapter will be skipped.", LoggingLevel.Verbose);
+            return false;
+        }
+
+        if (!options13.UnrestrictedBufferTextureCopyPitchSupported)
+        {
+            log.PrintWarning($"The adapter '{name}' does not support unrestricted buffer to texture copy pitch. This adapter will be skipped.", LoggingLevel.Intermediate);
+            return false;
+        }
+
         D3D12_FEATURE_DATA_D3D12_OPTIONS19 options19 = default;
 
         err = d3dDevice.Get()->CheckFeatureSupport(D3D12_FEATURE.D3D12_FEATURE_D3D12_OPTIONS19, &options19, (uint)sizeof(D3D12_FEATURE_DATA_D3D12_OPTIONS19));

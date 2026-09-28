@@ -21,42 +21,36 @@
 // Created: June 15, 2026 1:09:18 PM
 //
 
-using System.Diagnostics;
-using System.Runtime.CompilerServices;
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Math;
 using Gorgon.Memory;
 using Gorgon.Patterns;
+using TerraFX.Interop.DirectX;
 
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Builds pipeline state objects for rendering.
+/// A builder used to set up the state for a <see cref="GorgonGraphicsPso"/>.
 /// </summary>
-public sealed class GorgonGraphicsPsoBuilder
-        : IGorgonFluentBuilder<GorgonGraphicsPsoBuilder, GorgonGraphicsPso, IGorgonAllocator<GorgonGraphicsPso>, string, GorgonShader>
+/// <param name="graphics">The graphics interface that is associated with the pipeline state objects created from this builder.</param>
+/// <remarks>
+/// <para>
+/// This builder is used to define the state for a graphics pipeline state object. The state includes the render target output formats, the depth/stencil format, multisampling, the primitive type, the shaders 
+/// (e.g. pixel, geometry, etc...), and the blend, rasterizer, and depth/stencil states. Once the state is set up, the builder is passed to the 
+/// <see cref="GorgonGraphicsPsoFactory.CreateOrGetPso(string, GorgonShader, GorgonGraphicsPsoBuilder)"/> method, along with a name and a vertex shader, to create the <see cref="GorgonGraphicsPso"/>.
+/// </para>
+/// <para>
+/// The pipeline state object receives a copy of the state held by this builder. Changing the builder after a pipeline state object is created will not change that pipeline state object. This allows a single 
+/// builder to be reused to create many pipeline state objects. To start from a clean slate, call <see cref="Clear"/>, or to start from the state of an existing pipeline state object, call 
+/// <see cref="ResetTo(GorgonGraphicsPso)"/>.
+/// </para>
+/// </remarks>
+/// <seealso cref="GorgonGraphicsPso"/>
+/// <seealso cref="GorgonGraphicsPsoFactory"/>
+public sealed class GorgonGraphicsPsoBuilder(GorgonGraphics graphics)
 {
-    private readonly GorgonGraphicsPso _worker;
-    private readonly DefaultAllocator _allocator;
-    
-    /// <summary>
-    /// Default allocator object.
-    /// </summary>
-    /// <param name="graphics">The graphics object for the builder.</param>
-    private class DefaultAllocator(GorgonGraphics graphics)
-        : IGorgonAllocator<GorgonGraphicsPso>
-    {
-        private readonly GorgonGraphics _graphics = graphics;
-
-        /// <inheritdoc/>
-        public GorgonGraphicsPso Allocate(Action<GorgonGraphicsPso>? initializer = null)
-        {
-            GorgonGraphicsPso result = new(_graphics);
-            initializer?.Invoke(result);
-            return result;
-        }
-    }
+    private readonly GorgonGraphicsPso _worker = new(graphics);
 
     /// <summary>
     /// Property to return the graphics instance that is associated with this builder.
@@ -64,25 +58,22 @@ public sealed class GorgonGraphicsPsoBuilder
     public GorgonGraphics Graphics
     {
         get;
-    }
-
+    } = graphics;
+    
     /// <summary>
     /// Function to copy the state from one pso object to another.
     /// </summary>
     /// <param name="source">The pso to copy from.</param>
     /// <param name="destination">The pso to copy into.</param>
-    /// <exception cref="GorgonException">We should not see this happen.</exception>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void Copy(GorgonGraphicsPso source, GorgonGraphicsPso destination)
     {
-        destination.D3DPso.Dispose();
         destination.Name = source.Name;
-        destination.VertexShader = source.VertexShader;
-        destination.OutputFormats = source.OutputFormats;
+        destination.OutputFormats = source.OutputFormats;        
         
         destination.PrimitiveType = source.PrimitiveType;
-        destination.IndexBufferStripCutIdentifier = source.IndexBufferStripCutIdentifier;        
+        destination.IndexBufferStripCutIdentifier = source.IndexBufferStripCutIdentifier;
 
+        destination.VertexShader = source.VertexShader;
         destination.PixelShader = source.PixelShader;
         destination.GeometryShader = source.GeometryShader;
         destination.DomainShader = source.DomainShader;
@@ -107,8 +98,11 @@ public sealed class GorgonGraphicsPsoBuilder
     /// <exception cref="GorgonException">
     /// <para>Thrown if the <see cref="GorgonRasterState.LineRasterizationMode"/> is set to <see cref="LineRasterizationMode.QuadrilateralNarrow"/> and the adapter does not support it.</para>
     /// <para>Thrown if the <see cref="GorgonDepthStencilState.IsDepthBoundsTestingEnabled"/> is <b>true</b> and the adapter does not support depth bounds testing.</para>
-    /// <para>Thrown if the <see cref="GorgonStencilOperation.ReadMask"/> or <see cref="GorgonStencilOperation.WriteMask"/> is different between the <see cref="GorgonDepthStencilState.FrontFaceStencilOperation"/> and <see cref="GorgonDepthStencilState.BackFaceStencilOperation"/> 
-    /// and the adapter does not support independent reference masks between front and back stencil operations.</para>
+    /// <para>Thrown if the <see cref="GorgonStencilOperation.ReadMask"/> or <see cref="GorgonStencilOperation.WriteMask"/> is different between the <see cref="GorgonDepthStencilState.FrontFaceStencilOperation"/> and <see cref="GorgonDepthStencilState.BackFaceStencilOperation"/>, and the adapter does not support independent reference masks between front and back stencil operations.</para>
+    /// <para>Thrown if the <see cref="IndependentBlendingEnabled(bool)"/> has been set to <b>true</b>, and the first render target blending slot has its <see cref="GorgonBlendState.IsLogicEnabled"/> flag set to <b>true</b>.</para>
+    /// <para>Thrown if a hull shader is assigned without a domain shader, or a domain shader is assigned without a hull shader.</para>
+    /// <para>Thrown if a hull and domain shader are assigned, and the primitive type is not one of the patch list types.</para>
+    /// <para>Thrown if the index buffer strip cut value is not <see cref="IndexBufferStripCutIdentifier.Disabled"/>, and the primitive type is not a strip type.</para>
     /// </exception>
     private void Validate()
     {
@@ -128,28 +122,100 @@ public sealed class GorgonGraphicsPsoBuilder
         {
             throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_NO_INDEPENDENT_STENCIL_REF_SUPPORT, Graphics.Adapter.Name));
         }
+
+        if ((_worker.IsIndependentBlendingEnabled) && (_worker.RWBlendStates[0].IsLogicEnabled))
+        {
+            throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_PSO_INDEPENDENT_BLEND_LOGIC_ENABLED);
+        }
+
+        if ((_worker.HullShader is not null) && (_worker.PrimitiveType.ToTopologyType() != D3D12_PRIMITIVE_TOPOLOGY_TYPE.D3D12_PRIMITIVE_TOPOLOGY_TYPE_PATCH))
+        {        
+            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_PSO_HULL_DOMAIN_PRIMTYPE_NOT_PATCH, _worker.PrimitiveType));
+        }
+
+        if ((_worker.IndexBufferStripCutIdentifier is not Core.IndexBufferStripCutIdentifier.Disabled)
+            && (_worker.PrimitiveType is not Core.PrimitiveType.LineStrip and not Core.PrimitiveType.TriangleStrip and not Core.PrimitiveType.LineStripWithAdjacency and not Core.PrimitiveType.TriangleStripWithAdjacency))
+        {
+            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_INDEX_CUT_NON_STRIP_PRIMITIVE, _worker.PrimitiveType));
+        }
     }
 
     /// <summary>
-    /// Function to assign the format expected as the output format from the pixel shader.
+    /// Function to build a new <see cref="GorgonGraphicsPso"/> from the state in this builder.
     /// </summary>
-    /// <param name="format">The expected output format.</param>
-    /// <param name="renderTargetSlot">[Optional] The slot number corresponding to the render target that the pixel shader is rendering into.</param>
+    /// <param name="name">The name of the pipeline state object.</param>
+    /// <param name="vertexShader">The vertex shader to assign to the pipeline state object.</param>
+    /// <returns>A new <see cref="GorgonGraphicsPso"/> containing a copy of the state in this builder.</returns>
+    /// <inheritdoc cref="Validate" path="/exception"/>
+    internal GorgonGraphicsPso Build(string name, GorgonShader vertexShader)
+    {
+        _worker.Name = name;
+        _worker.VertexShader = vertexShader;
+
+        Validate();
+
+        GorgonGraphicsPso result = new(Graphics);
+
+        Copy(_worker, result);
+
+        return result;
+    }
+
+    /// <summary>
+    /// Function to determine whether the given PSO has the same settings as the PSO settings in this builder.
+    /// </summary>
+    /// <param name="pso">The PSO to evaluate.</param>
+    /// <param name="vertexShader">The vertex shader</param>
+    /// <returns><b>true</b> if the settings are the same, <b>false</b> if not.</returns>
+    internal bool IsPsoDataSame(GorgonGraphicsPso pso, GorgonShader vertexShader) => pso.Graphics == Graphics
+                && pso.PrimitiveType == _worker.PrimitiveType
+                && pso.OutputFormats.Length == _worker.OutputFormats.Length
+                && pso.DepthStencilFormat == _worker.DepthStencilFormat
+                && pso.VertexShader == vertexShader
+                && pso.PixelShader == _worker.PixelShader
+                && pso.GeometryShader == _worker.GeometryShader
+                && pso.DomainShader == _worker.DomainShader
+                && pso.HullShader == _worker.HullShader
+                && pso.IndexBufferStripCutIdentifier == _worker.IndexBufferStripCutIdentifier
+                && pso.IsAlphaToCoverageEnabled == _worker.IsAlphaToCoverageEnabled
+                && pso.IsIndependentBlendingEnabled == _worker.IsIndependentBlendingEnabled
+                && pso.OutputFormats.SequenceEqual(_worker.OutputFormats)
+                && pso.Multisample.Equals(_worker.Multisample)
+                && pso.MultisampleMask == _worker.MultisampleMask
+                && pso.RasterizerState.Equals(_worker.RasterizerState)
+                && pso.BlendStates.SequenceEqual(_worker.BlendStates)
+                && pso.DepthStencilState == _worker.DepthStencilState;
+
+    /// <summary>
+    /// Function to assign the format for the values written by the pixel shader into a single render target slot.
+    /// </summary>
+    /// <param name="format">The format for the render target slot.</param>
+    /// <param name="renderTargetSlot">[Optional] The render target slot that will receive the format.</param>
     /// <returns>The fluent interface for this builder.</returns>
-    /// <exception cref="ArgumentOutOfRangeException"><para>Thrown if the <paramref name="renderTargetSlot"/> is less than 0, or greater than or equal to <see cref="GorgonVideoAdapterInfo.MaxRenderTargetCount"/>.</para></exception>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown if the <paramref name="renderTargetSlot"/> is less than 0, or greater than or equal to <see cref="GorgonVideoAdapterInfo.MaxRenderTargetCount"/>.</exception>
     /// <remarks>
     /// <para>
-    /// This provides the pipeline with the expected output format from the pixel shader on the specified render target slot. If this value is not matched correctly with the format of the current render 
-    /// target view on the specified slot when rendering, then the call to the <see cref="GorgonCommandList.Draw(GorgonDrawCall)"/> method will fail.
+    /// This assigns the <paramref name="format"/> to the <paramref name="renderTargetSlot"/>, and leaves the formats in the other slots unchanged. The <paramref name="renderTargetSlot"/> matches the 
+    /// <c>SV_Target</c> semantic index for the value returned from the pixel shader. For example, slot 0 is for the pixel shader output marked with <c>SV_Target0</c>, slot 1 is for the output marked with 
+    /// <c>SV_Target1</c>, and so on.
     /// </para>
     /// <para>
-    /// When the <paramref name="renderTargetSlot"/> is greater than 0, then it is expected that the previous target slots have valid format values (i.e. not <see cref="BufferFormat.Unknown"/>). Otherwise 
-    /// rendering will fail.
+    /// Assigning a format to a slot will also include every slot before it in the <see cref="GorgonGraphicsPso.OutputFormats"/>. Any of those slots that have not been assigned a format will contain 
+    /// <see cref="BufferFormat.Unknown"/>.
+    /// </para>
+    /// <para>
+    /// When a draw call that uses the pipeline state object is executed, the formats of the render target views bound to the <see cref="GorgonCommandList"/> must match the formats in the corresponding slots. 
+    /// If they do not match, then the rendering results are undefined. When debugging is enabled, a warning will also be reported in the debug output.
+    /// </para>
+    /// <para>
+    /// To assign the formats for several render target slots at once, use the <see cref="OutputFormats(ReadOnlySpan{BufferFormat})"/> method.
     /// </para>
     /// </remarks>
-    /// <seealso cref="GorgonCommandList.Draw(GorgonDrawCall)"/>
-    /// <seealso cref="GorgonVideoAdapterInfo"/>
     /// <seealso cref="BufferFormat"/>
+    /// <seealso cref="OutputFormats(ReadOnlySpan{BufferFormat})"/>
+    /// <seealso cref="GorgonGraphicsPso.OutputFormats"/>
+    /// <seealso cref="GorgonDrawCall"/>
+    /// <seealso cref="GorgonIndexedDrawCall"/>
     public GorgonGraphicsPsoBuilder OutputFormat(BufferFormat format, int renderTargetSlot = 0)
     {
         ArgumentOutOfRangeException.ThrowIfNegative(renderTargetSlot);
@@ -161,25 +227,24 @@ public sealed class GorgonGraphicsPsoBuilder
     }
 
     /// <summary>
-    /// Function to assign a series of formats expected as the output format from the pixel shader.
+    /// Function to assign the formats for the values written by the pixel shader into the render targets.
     /// </summary>
-    /// <param name="formats">The list of formats for each render target slot.</param>
+    /// <param name="formats">The formats for each render target slot.</param>
     /// <inheritdoc cref="OutputFormat(BufferFormat, int)" path="/returns"/>
     /// <remarks>
+    /// <inheritdoc cref="GorgonGraphicsPso.OutputFormats" path="/remarks/para"/>
     /// <para>
-    /// This provides the pipeline with the expected output formats from the pixel shader on corresponding render target slots. If this value is not matched correctly with the formats of the current render 
-    /// target views on the specified slots when rendering, then the call to the <see cref="GorgonCommandList.Draw(GorgonDrawCall)"/> method will fail.
+    /// This replaces all of the formats that were previously assigned. If the <paramref name="formats"/> list contains more than <see cref="GorgonVideoAdapterInfo.MaxRenderTargetCount"/> formats, then only 
+    /// the first <see cref="GorgonVideoAdapterInfo.MaxRenderTargetCount"/> formats are used, and the rest are ignored. Passing an empty list will remove all of the formats.
     /// </para>
     /// <para>
-    /// If the length of the <paramref name="formats"/> list is greater than <see cref="GorgonVideoAdapterInfo.MaxRenderTargetCount"/>, then only the values up to the 
-    /// <see cref="GorgonVideoAdapterInfo.MaxRenderTargetCount"/> will be copied, the rest will be ignored.
-    /// </para>
-    /// <para>
-    /// Use the <see cref="OutputFormat(BufferFormat, int)"/> method if only a single output format is returned from the pixel shader.
+    /// To assign the format for a single render target slot, use the <see cref="OutputFormat(BufferFormat, int)"/> method.
     /// </para>
     /// </remarks>
-    /// <seealso cref="GorgonCommandList.Draw(GorgonDrawCall)"/>
-    /// <seealso cref="GorgonVideoAdapterInfo"/>
+    /// <seealso cref="OutputFormat(BufferFormat, int)"/>
+    /// <seealso cref="GorgonGraphicsPso.OutputFormats"/>
+    /// <seealso cref="GorgonDrawCall"/>
+    /// <seealso cref="GorgonIndexedDrawCall"/>
     /// <seealso cref="BufferFormat"/>
     public GorgonGraphicsPsoBuilder OutputFormats(ReadOnlySpan<BufferFormat> formats)
     {
@@ -188,19 +253,25 @@ public sealed class GorgonGraphicsPsoBuilder
     }
 
     /// <summary>
-    /// Function to assign the multisampling values expected for the output.
+    /// Function to assign the multisampling information expected for the render targets and depth/stencil buffer.
     /// </summary>
-    /// <param name="multisampleInfo">The multisample value to expect.</param>
-    /// <param name="multisampleMask">[Optional] The mask used when performing multisampling.</param>
+    /// <param name="multisampleInfo">The number of samples per pixel, and the quality level for those samples.</param>
+    /// <param name="multisampleMask">[Optional] The mask used to determine which samples are updated in the render targets.</param>
     /// <inheritdoc cref="OutputFormat(BufferFormat, int)" path="/returns"/>
     /// <remarks>
+    /// <inheritdoc cref="GorgonGraphicsPso.Multisample" path="/remarks/para[@type='common']"/>
     /// <para>
-    /// If the <paramref name="multisampleMask"/> is not specified, the value will not be changed and will remain the same as the previous call to this method. 
+    /// Each bit in the <paramref name="multisampleMask"/> corresponds to a sample within a pixel, and only the samples with their bit set will be updated in the render targets. If the 
+    /// <paramref name="multisampleMask"/> is omitted, then the mask that is currently assigned is kept. See <see cref="GorgonGraphicsPso.MultisampleMask"/> for more information about how the mask is applied.
     /// </para>
     /// <para>
-    /// The default values are <see cref="GorgonMultisampleInfo.NoMultisampling"/> and -1 (<c>0xFFFFFFFF</c> <langword>unsigned</langword>).
+    /// The default values are <see cref="GorgonMultisampleInfo.NoMultisampling"/> for the <paramref name="multisampleInfo"/>, and -1 (<c>0xFFFFFFFF</c>) for the <paramref name="multisampleMask"/>.
     /// </para>
     /// </remarks>
+    /// <seealso cref="GorgonGraphicsPso.Multisample"/>
+    /// <seealso cref="GorgonGraphicsPso.MultisampleMask"/>
+    /// <seealso cref="GorgonMultisampleInfo"/>
+    /// <seealso cref="GorgonBufferFormatSupport"/>
     public GorgonGraphicsPsoBuilder Multisample(GorgonMultisampleInfo multisampleInfo, int? multisampleMask = null)
     {
         _worker.Multisample = multisampleInfo;
@@ -214,19 +285,22 @@ public sealed class GorgonGraphicsPsoBuilder
     }
 
     /// <summary>
-    /// Function to enable or disable independent blending.
+    /// Function to enable or disable independent blending for the render targets.
     /// </summary>
-    /// <param name="enabled"><b>true</b> to enable, <b>false</b> to disable.</param>
+    /// <param name="enabled"><b>true</b> to enable independent blending, <b>false</b> to disable it.</param>
     /// <inheritdoc cref="OutputFormat(BufferFormat, int)" path="/returns"/>
     /// <remarks>
+    /// <inheritdoc cref="GorgonGraphicsPso.IsIndependentBlendingEnabled" path="/remarks/para[@type='common']"/>
     /// <para>
-    /// This turns independent blending between render target slots on or off. Applications that enable this functionality can then proceed to assign a blend state for each render target assigned on the 
-    /// pipeline via <see cref="BlendState(GorgonBlendState, int)"/>. Otherwise, when <paramref name="enabled"/> is <b>false</b>, then only the first render target slot's blend state is used.
+    /// If independent blending is enabled while the blend state in the first slot has logic operations enabled, then an exception will be thrown when the pipeline state object is created by 
+    /// <see cref="GorgonGraphicsPsoFactory.CreateOrGetPso(string, GorgonShader, GorgonGraphicsPsoBuilder)"/>.
     /// </para>
     /// <para>
     /// The default value is <b>false</b>.
     /// </para>
     /// </remarks>
+    /// <seealso cref="BlendState(GorgonBlendState, int)"/>
+    /// <seealso cref="BlendStates(ReadOnlySpan{GorgonBlendState})"/>
     /// <seealso cref="GorgonBlendState"/>
     public GorgonGraphicsPsoBuilder IndependentBlendingEnabled(bool enabled)
     {
@@ -235,15 +309,12 @@ public sealed class GorgonGraphicsPsoBuilder
     }
 
     /// <summary>
-    /// Function to set whether alpha to coverage is enabled or not.
+    /// Function to enable or disable alpha to coverage.
     /// </summary>
-    /// <param name="enabled"><b>true</b> to enable alpha to coverage, <b>false</b> disable.</param>
+    /// <param name="enabled"><b>true</b> to enable alpha to coverage, <b>false</b> to disable it.</param>
     /// <inheritdoc cref="OutputFormat(BufferFormat, int)" path="/returns"/>
-    /// <remarks>
-    /// <para>
-    /// The default value is <b>false</b>.
-    /// </para>
-    /// </remarks>
+    /// <inheritdoc cref="GorgonGraphicsPso.IsAlphaToCoverageEnabled" path="/remarks"/>
+    /// <seealso cref="Multisample(GorgonMultisampleInfo, int?)"/>
     public GorgonGraphicsPsoBuilder AlphaToCoverageEnabled(bool enabled)
     {
         _worker.IsAlphaToCoverageEnabled = enabled;
@@ -252,16 +323,25 @@ public sealed class GorgonGraphicsPsoBuilder
 
 
     /// <summary>
-    /// Function to assign the primitive type to use when rendering with the pipeline state object.
+    /// Function to assign the type of primitive rendered with the pipeline state object.
     /// </summary>
-    /// <param name="primType">The primitive type to assign.</param>
+    /// <param name="primType">The type of primitive to render.</param>
     /// <inheritdoc cref="OutputFormat(BufferFormat, int)" path="/returns"/>
-    /// <exception cref="ArgumentException">Thrown if the <paramref name="primType"/> is set to <see cref="PrimitiveType.None"/>.</exception>
+    /// <exception cref="ArgumentException">Thrown if the <paramref name="primType"/> is <see cref="PrimitiveType.None"/>.</exception>
     /// <remarks>
+    /// <inheritdoc cref="GorgonGraphicsPso.PrimitiveType" path="/remarks/para[@type='common']"/>
     /// <para>
-    /// This value defaults to <see cref="PrimitiveType.TriangleList"/>.
+    /// If a hull shader and domain shader are assigned, and the <paramref name="primType"/> is not one of the patch list types, then an exception will be thrown when the pipeline state object is created by 
+    /// <see cref="GorgonGraphicsPsoFactory.CreateOrGetPso(string, GorgonShader, GorgonGraphicsPsoBuilder)"/>. The same is true if an index buffer strip cut value other than 
+    /// <see cref="IndexBufferStripCutIdentifier.Disabled"/> is assigned, and the <paramref name="primType"/> is not a strip type.
+    /// </para>
+    /// <para>
+    /// The default value is <see cref="PrimitiveType.TriangleList"/>.
     /// </para>
     /// </remarks>
+    /// <seealso cref="Core.PrimitiveType"/>
+    /// <seealso cref="TessellationShaders(GorgonShader?, GorgonShader?)"/>
+    /// <seealso cref="IndexBufferStripCutIdentifier(Core.IndexBufferStripCutIdentifier)"/>
     public GorgonGraphicsPsoBuilder PrimitiveType(PrimitiveType primType)
     {
         if (primType == Core.PrimitiveType.None)
@@ -274,23 +354,26 @@ public sealed class GorgonGraphicsPsoBuilder
     }
 
     /// <summary>
-    /// Function to assign the type of index buffer identifier used to restart strips of vertices.
+    /// Function to assign the index value used to restart a strip of primitives.
     /// </summary>
-    /// <param name="identifier">The identifier to apply.</param>
+    /// <param name="identifier">The index value used to restart a strip.</param>
     /// <inheritdoc cref="OutputFormat(BufferFormat, int)" path="/returns"/>
     /// <remarks>
     /// <para>
-    /// This value applies only when the <see cref="Core.PrimitiveType"/> topology is a triangle or line strip. It will be ignored if it is any other type.
+    /// When the primitive type is a strip type (e.g. <see cref="PrimitiveType.TriangleStrip"/> or <see cref="PrimitiveType.LineStrip"/>), and a <see cref="GorgonIndexedDrawCall"/> is used to render, an index 
+    /// with this value will end the current strip and start a new one. This allows multiple strips to be rendered with a single draw call.
+    /// </para>
+    /// <inheritdoc cref="GorgonGraphicsPso.IndexBufferStripCutIdentifier" path="/remarks/para[@type='common']"/>
+    /// <para>
+    /// If the <paramref name="identifier"/> is not <see cref="IndexBufferStripCutIdentifier.Disabled"/>, and the primitive type is not a strip type, then an exception will be thrown when the pipeline state 
+    /// object is created by <see cref="GorgonGraphicsPsoFactory.CreateOrGetPso(string, GorgonShader, GorgonGraphicsPsoBuilder)"/>.
     /// </para>
     /// <para>
-    /// Ensure that the value passed matches the size of an index in the buffer. For a 16-bit index, use the <see cref="IndexBufferStripCutIdentifier.StopWith16BitMax"/>, and for a 32-bit index use the 
-    /// <see cref="IndexBufferStripCutIdentifier.StopWith32BitMax"/> value.
-    /// </para>
-    /// <para>
-    /// This value defaults to <see cref="IndexBufferStripCutIdentifier.Disabled"/>.
+    /// The default value is <see cref="IndexBufferStripCutIdentifier.Disabled"/>.
     /// </para>
     /// </remarks>
-    /// <seealso cref="Core.PrimitiveType"/>
+    /// <seealso cref="Core.IndexBufferStripCutIdentifier"/>
+    /// <seealso cref="PrimitiveType(Core.PrimitiveType)"/>
     public GorgonGraphicsPsoBuilder IndexBufferStripCutIdentifier(IndexBufferStripCutIdentifier identifier)
     {
         _worker.IndexBufferStripCutIdentifier = identifier;
@@ -298,16 +381,11 @@ public sealed class GorgonGraphicsPsoBuilder
     }
 
     /// <summary>
-    /// Function to assign a pixel shader to the pipeline state object.
+    /// Function to assign the pixel shader for the pipeline state object.
     /// </summary>
-    /// <param name="shader">The shader to assign, or <b>null</b> to disable.</param>
+    /// <param name="shader">The pixel shader to assign, or <b>null</b> to remove the pixel shader.</param>
     /// <inheritdoc cref="OutputFormat(BufferFormat, int)" path="/returns"/>
-    /// <remarks>
-    /// <para>
-    /// When specifying a pixel shader, ensure that the return value format is recorded using the <see cref="OutputFormat(BufferFormat, int)"/> or <see cref="OutputFormats(ReadOnlySpan{BufferFormat})"/> 
-    /// method.
-    /// </para>
-    /// </remarks>
+    /// <inheritdoc cref="GorgonGraphicsPso.PixelShader" path="/remarks"/>
     /// <seealso cref="OutputFormat(BufferFormat, int)"/>
     /// <seealso cref="OutputFormats(ReadOnlySpan{BufferFormat})"/>
     public GorgonGraphicsPsoBuilder PixelShader(GorgonShader? shader)
@@ -317,12 +395,11 @@ public sealed class GorgonGraphicsPsoBuilder
     }
 
     /// <summary>
-    /// Function to assign a geometry shader to the pipeline state object.
+    /// Function to assign the geometry shader for the pipeline state object.
     /// </summary>
-    /// <param name="shader">The shader to assign, or <b>null</b> to disable.</param>
+    /// <param name="shader">The geometry shader to assign, or <b>null</b> to remove the geometry shader.</param>
     /// <inheritdoc cref="OutputFormat(BufferFormat, int)" path="/returns"/>
-    /// <seealso cref="OutputFormat(BufferFormat, int)"/>
-    /// <seealso cref="OutputFormats(ReadOnlySpan{BufferFormat})"/>
+    /// <inheritdoc cref="GorgonGraphicsPso.GeometryShader" path="/remarks"/>
     public GorgonGraphicsPsoBuilder GeometryShader(GorgonShader? shader)
     {
         _worker.GeometryShader = shader;
@@ -330,63 +407,74 @@ public sealed class GorgonGraphicsPsoBuilder
     }
 
     /// <summary>
-    /// Function to assign a domain shader to the pipeline state object.
+    /// Function to assign the hull and domain shaders used for tessellation.
     /// </summary>
-    /// <param name="shader">The shader to assign, or <b>null</b> to disable.</param>
+    /// <param name="hullShader">The hull shader to assign, or <b>null</b> to disable tessellation.</param>
+    /// <param name="domainShader">The domain shader to assign, or <b>null</b> to disable tessellation.</param>
     /// <inheritdoc cref="OutputFormat(BufferFormat, int)" path="/returns"/>
-    /// <seealso cref="OutputFormat(BufferFormat, int)"/>
-    /// <seealso cref="OutputFormats(ReadOnlySpan{BufferFormat})"/>
-    public GorgonGraphicsPsoBuilder DomainShader(GorgonShader? shader)
-    {
-        _worker.DomainShader = shader;
-        return this;
-    }
-
-    /// <summary>
-    /// Function to assign a hull shader to the pipeline state object.
-    /// </summary>
-    /// <param name="shader">The shader to assign, or <b>null</b> to disable.</param>
-    /// <inheritdoc cref="OutputFormat(BufferFormat, int)" path="/returns"/>
-    /// <seealso cref="OutputFormat(BufferFormat, int)"/>
-    /// <seealso cref="OutputFormats(ReadOnlySpan{BufferFormat})"/>
-    public GorgonGraphicsPsoBuilder HullShader(GorgonShader? shader)
-    {
-        _worker.HullShader = shader;
-        return this;
-    }
-
-    /// <summary>
-    /// Function to assign a depth/stencil state to the pipeline state object.
-    /// </summary>
-    /// <param name="depthStencilState">The depth/stencil state to assign.</param>
-    /// <param name="dsvFormat">The expected format of the depth/stencil buffer.</param>
-    /// <inheritdoc cref="OutputFormat(BufferFormat, int)" path="/returns"/>
-    /// <exception cref="GorgonException">
-    /// <para>The <paramref name="depthStencilState"/> has the depth and/or stencil testing enabled, but the expected <paramref name="dsvFormat"/> is set to <see cref="BufferFormat.Unknown"/>.</para>
-    /// <para>The <paramref name="depthStencilState"/> has depth testing enabled, but the <paramref name="dsvFormat"/> does not support depth data.</para>
-    /// <para>The <paramref name="depthStencilState"/> has stencil testing enabled, but the <paramref name="dsvFormat"/> does not support stencil data.</para>
-    /// </exception>
+    /// <exception cref="GorgonException">Thrown if only one of the <paramref name="hullShader"/> or <paramref name="domainShader"/> parameters is <b>null</b>.</exception>
     /// <remarks>
+    /// <inheritdoc cref="GorgonGraphicsPso.HullShader" path="/remarks/para[@type='common']"/>
+    /// <inheritdoc cref="GorgonGraphicsPso.DomainShader" path="/remarks/para[@type='common']"/>
     /// <para>
-    /// This assigns a depth stencil state to the pipeline to configure how to perform depth and/or stencil testing. It also supplies the pipeline state with the expected format for depth/stencil testing 
-    /// operations while the PSO is active. 
+    /// Tessellation is optional. The hull shader and domain shader are always assigned together, so to disable tessellation, pass <b>null</b> for both the <paramref name="hullShader"/> and the 
+    /// <paramref name="domainShader"/>.
     /// </para>
     /// <para>
-    /// If the <paramref name="dsvFormat"/> does not match the currently assigned <see cref="GorgonDepthStencilView"/> format, then the <see cref="GorgonDrawCall"/> will fail.
-    /// </para>
-    /// <para>
-    /// Ensure that the format passed to the <paramref name="dsvFormat"/> has the correct depth and/or stencil format type (e.g. <see cref="BufferFormat.D32_Float"/>, 
-    /// <see cref="BufferFormat.D24_UNorm_S8_UInt"/>, etc...), otherwise an exception will be thrown. An exception will also be thrown for passing <see cref="BufferFormat.Unknown"/> when the 
-    /// <paramref name="depthStencilState"/> has depth and/or stencil testing enabled.
-    /// </para>
-    /// <para>
-    /// It is important to note that the <see cref="GorgonDepthStencilState.IsDepthBoundsTestingEnabled"/> flag bypasses the <see cref="GorgonDepthStencilState.IsDepthEnabled"/> flag, and as such if it is set 
-    /// to <b>true</b>, it will be treated as though depth testing is enabled.
-    /// </para>
-    /// <para>
-    /// The default value is <see cref="GorgonDepthStencilState.Default"/> (No depth/stencil testing).
+    /// When tessellation is used, the primitive type must be one of the patch list types (e.g. <see cref="PrimitiveType.PatchListWith3ControlPoints"/>). If it is not, then an exception will be thrown when the 
+    /// pipeline state object is created by <see cref="GorgonGraphicsPsoFactory.CreateOrGetPso(string, GorgonShader, GorgonGraphicsPsoBuilder)"/>.
     /// </para>
     /// </remarks>
+    /// <seealso cref="PrimitiveType(Core.PrimitiveType)"/>
+    /// <seealso cref="GorgonGraphicsPso.HullShader"/>
+    /// <seealso cref="GorgonGraphicsPso.DomainShader"/>
+    public GorgonGraphicsPsoBuilder TessellationShaders(GorgonShader? hullShader, GorgonShader? domainShader)
+    {
+        if (((hullShader is not null) && (domainShader is null))
+            || ((hullShader is null) && (domainShader is not null)))
+        {
+            throw new GorgonException(GorgonResult.CannotBind, Resources.GORGFX_ERR_PSO_HULL_AND_DOMAIN_REQUIRED);
+        }
+
+        _worker.HullShader = hullShader;
+        _worker.DomainShader = domainShader;
+        return this;
+    }
+
+    /// <summary>
+    /// Function to assign the state used for depth/stencil testing, and the format of the depth/stencil buffer.
+    /// </summary>
+    /// <param name="depthStencilState">The depth/stencil state to assign.</param>
+    /// <param name="dsvFormat">The format of the depth/stencil buffer expected by the pipeline state object.</param>
+    /// <inheritdoc cref="OutputFormat(BufferFormat, int)" path="/returns"/>
+    /// <exception cref="GorgonException">
+    /// <para>Thrown if the <paramref name="depthStencilState"/> has depth testing, depth bounds testing, or stencil testing enabled, and the <paramref name="dsvFormat"/> is <see cref="BufferFormat.Unknown"/>.</para>
+    /// <para>Thrown if the <paramref name="depthStencilState"/> has depth testing or depth bounds testing enabled, and the <paramref name="dsvFormat"/> does not contain a depth component.</para>
+    /// <para>Thrown if the <paramref name="depthStencilState"/> has stencil testing enabled, and the <paramref name="dsvFormat"/> does not contain a stencil component.</para>
+    /// </exception>
+    /// <remarks>
+    /// <inheritdoc cref="GorgonGraphicsPso.DepthStencilState" path="/remarks/para[@type='common']"/>
+    /// <para>
+    /// When a draw call that uses the pipeline state object is executed, the format of the depth/stencil view bound to the <see cref="GorgonCommandList"/> must match the <paramref name="dsvFormat"/>. If they 
+    /// do not match, then the rendering results are undefined. When debugging is enabled, a warning will also be reported in the debug output.
+    /// </para>
+    /// <para>
+    /// If the <paramref name="depthStencilState"/> has depth testing or depth bounds testing enabled, then the <paramref name="dsvFormat"/> must contain a depth component (e.g. 
+    /// <see cref="BufferFormat.D32_Float"/>). If it has stencil testing enabled, then the <paramref name="dsvFormat"/> must contain a stencil component (e.g. <see cref="BufferFormat.D24_UNorm_S8_UInt"/>). 
+    /// Pass <see cref="BufferFormat.Unknown"/> when no depth/stencil buffer is used, and ensure that depth testing, depth bounds testing, and stencil testing are all disabled.
+    /// </para>
+    /// <para>
+    /// If depth bounds testing is enabled and the video adapter does not support it (see <see cref="GorgonVideoAdapterInfo.SupportsDepthBoundsTest"/>), or stencil testing is enabled with different read or 
+    /// write masks for the front and back faces and the video adapter does not support it (see <see cref="GorgonVideoAdapterInfo.SupportsIndependentFrontAndBackStencilRef"/>), then an exception will be thrown 
+    /// when the pipeline state object is created by <see cref="GorgonGraphicsPsoFactory.CreateOrGetPso(string, GorgonShader, GorgonGraphicsPsoBuilder)"/>.
+    /// </para>
+    /// <para>
+    /// The default values are <see cref="GorgonDepthStencilState.Default"/> for the <paramref name="depthStencilState"/>, and <see cref="BufferFormat.Unknown"/> for the <paramref name="dsvFormat"/>.
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="GorgonDepthStencilState"/>
+    /// <seealso cref="GorgonGraphicsPso.DepthStencilState"/>
+    /// <seealso cref="GorgonGraphicsPso.DepthStencilFormat"/>
     public GorgonGraphicsPsoBuilder DepthStencilState(GorgonDepthStencilState depthStencilState, BufferFormat dsvFormat)
     {
         if (dsvFormat == BufferFormat.Unknown)
@@ -417,15 +505,22 @@ public sealed class GorgonGraphicsPsoBuilder
     }
 
     /// <summary>
-    /// Function to assign a rasterizer state to the pipeline state object.
+    /// Function to assign the state used to rasterize primitives.
     /// </summary>
     /// <param name="rasterState">The rasterizer state to assign.</param>
     /// <inheritdoc cref="OutputFormat(BufferFormat, int)" path="/returns"/>
     /// <remarks>
+    /// <inheritdoc cref="GorgonGraphicsPso.RasterizerState" path="/remarks/para[@type='common']"/>
+    /// <para>
+    /// If the <see cref="GorgonRasterState.LineRasterizationMode"/> is set to <see cref="LineRasterizationMode.QuadrilateralNarrow"/>, and the video adapter does not support it (see 
+    /// <see cref="GorgonVideoAdapterInfo.SupportsNarrowQuadrilateralLines"/>), then an exception will be thrown when the pipeline state object is created by 
+    /// <see cref="GorgonGraphicsPsoFactory.CreateOrGetPso(string, GorgonShader, GorgonGraphicsPsoBuilder)"/>.
+    /// </para>
     /// <para>
     /// The default value is <see cref="GorgonRasterState.Default"/>.
     /// </para>
     /// </remarks>
+    /// <seealso cref="GorgonRasterState"/>
     public GorgonGraphicsPsoBuilder RasterizerState(GorgonRasterState rasterState)
     {
         _worker.RasterizerState = rasterState;
@@ -433,24 +528,45 @@ public sealed class GorgonGraphicsPsoBuilder
     }
 
     /// <summary>
-    /// Function to assign a blend state to the pipeline state object.
+    /// Function to assign the blend state for a single render target slot.
     /// </summary>
     /// <param name="blendState">The blend state to assign.</param>
-    /// <param name="renderTargetSlot">[Optional] The slot to use when <see cref="GorgonGraphicsPso.IsIndependentBlendingEnabled"/> is <b>true</b>.</param>
+    /// <param name="renderTargetSlot">[Optional] The render target slot that will receive the blend state.</param>
     /// <inheritdoc cref="OutputFormat(BufferFormat, int)" path="/returns"/>
-    /// <exception cref="ArgumentOutOfRangeException"><inheritdoc cref="OutputFormat(BufferFormat, int)" path="/exception[@cref='T:System.ArgumentOutOfRangeException']"/></exception>
+    /// <inheritdoc cref="OutputFormat(BufferFormat, int)" path="/exception"/>
+    /// <exception cref="GorgonException">Thrown if the <paramref name="blendState"/> has both blending (<see cref="GorgonBlendState.IsEnabled"/>) and logic operations (<see cref="GorgonBlendState.IsLogicEnabled"/>) enabled.</exception>
     /// <remarks>
     /// <para>
-    /// This assigns a blending state for specified render target slot to the PSO. The <paramref name="renderTargetSlot"/> allows setting different blend states per render target view slot, however, the 
-    /// <see cref="IndependentBlendingEnabled(bool)(bool)"/> method must be called and passed a value of <b>true</b> to enable this functionality, otherwise all render targets will receive the same blend state 
-    /// as the first slot.
+    /// This assigns the <paramref name="blendState"/> to the <paramref name="renderTargetSlot"/>, and leaves the blend states in the other slots unchanged. The blend state controls how the value returned from 
+    /// the pixel shader is combined with the existing contents of the render target in that slot.
+    /// </para>
+    /// <para>
+    /// The blend states in slots other than the first slot are only used when independent blending is enabled with the <see cref="IndependentBlendingEnabled(bool)"/> method. Otherwise, the blend state in the 
+    /// first slot is applied to all of the render targets.
+    /// </para>
+    /// <para>
+    /// If the blend state in the first slot has logic operations enabled, and independent blending is enabled, then an exception will be thrown when the pipeline state object is created by 
+    /// <see cref="GorgonGraphicsPsoFactory.CreateOrGetPso(string, GorgonShader, GorgonGraphicsPsoBuilder)"/>.
+    /// </para>
+    /// <para>
+    /// To assign the blend states for several render target slots at once, use the <see cref="BlendStates(ReadOnlySpan{GorgonBlendState})"/> method.
+    /// </para>
+    /// <para>
+    /// The default value for every slot is <see cref="GorgonBlendState.NoBlending"/>.
     /// </para>
     /// </remarks>
+    /// <seealso cref="BlendStates(ReadOnlySpan{GorgonBlendState})"/>
     /// <seealso cref="IndependentBlendingEnabled(bool)"/>
+    /// <seealso cref="GorgonBlendState"/>
     public GorgonGraphicsPsoBuilder BlendState(GorgonBlendState blendState, int renderTargetSlot = 0)
     {
         ArgumentOutOfRangeException.ThrowIfNegative(renderTargetSlot);
         ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(renderTargetSlot, GorgonVideoAdapterInfo.MaxRenderTargetCount);
+
+        if ((blendState.IsEnabled) && (blendState.IsLogicEnabled))
+        {
+            throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_BLEND_STATE_ENABLED_LOGIC_ENABLED, renderTargetSlot));
+        }
 
         _worker.RWBlendStates[renderTargetSlot] = blendState;
 
@@ -458,72 +574,49 @@ public sealed class GorgonGraphicsPsoBuilder
     }
 
     /// <summary>
-    /// Function to assign multiple blend states to the pipeline state object.
+    /// Function to assign the blend states for the render targets.
     /// </summary>
-    /// <param name="blendStates">The blend states to assign.</param>    
+    /// <param name="blendStates">The blend states for each render target slot.</param>
     /// <inheritdoc cref="OutputFormat(BufferFormat, int)" path="/returns"/>
+    /// <exception cref="GorgonException">Thrown if any of the <paramref name="blendStates"/> has both blending (<see cref="GorgonBlendState.IsEnabled"/>) and logic operations (<see cref="GorgonBlendState.IsLogicEnabled"/>) enabled.</exception>
     /// <remarks>
+    /// <inheritdoc cref="GorgonGraphicsPso.BlendStates" path="/remarks/para[@type='common']"/>
     /// <para>
-    /// This assigns blending states for the corresponding render target slots to the PSO. If the <see cref="IsIndependentBlendingEnabled(bool)"/> method has a value of <b>true</b>, then each blend state 
-    /// will be used, otherwise all render targets will receive the same blend state as the first slot. So, passing multiple blend states without independent blending enabled will not work.
+    /// This replaces all of the blend states that were previously assigned. If the <paramref name="blendStates"/> list contains more than <see cref="GorgonVideoAdapterInfo.MaxRenderTargetCount"/> blend 
+    /// states, then only the first <see cref="GorgonVideoAdapterInfo.MaxRenderTargetCount"/> blend states are used, and the rest are ignored.
     /// </para>
     /// <para>
-    /// If the length of the <paramref name="blendStates"/> list is greater than <see cref="GorgonVideoAdapterInfo.MaxRenderTargetCount"/>, then only the values up to the 
-    /// <see cref="GorgonVideoAdapterInfo.MaxRenderTargetCount"/> will be copied, the rest will be ignored.
+    /// If the first blend state has logic operations enabled, and independent blending is enabled, then an exception will be thrown when the pipeline state object is created by 
+    /// <see cref="GorgonGraphicsPsoFactory.CreateOrGetPso(string, GorgonShader, GorgonGraphicsPsoBuilder)"/>.
     /// </para>
     /// <para>
-    /// To set a single blend state, call the <see cref="BlendState(GorgonBlendState, int)"/> method.
+    /// To assign the blend state for a single render target slot, use the <see cref="BlendState(GorgonBlendState, int)"/> method.
+    /// </para>
+    /// <para>
+    /// The default value for every slot is <see cref="GorgonBlendState.NoBlending"/>.
     /// </para>
     /// </remarks>
-    /// <seealso cref="GorgonVideoAdapterInfo"/>
-    /// <seealso cref="IsIndependentBlendingEnabled(bool)"/>
     /// <seealso cref="BlendState(GorgonBlendState, int)"/>
+    /// <seealso cref="IndependentBlendingEnabled(bool)"/>
+    /// <seealso cref="GorgonBlendState"/>
     public GorgonGraphicsPsoBuilder BlendStates(ReadOnlySpan<GorgonBlendState> blendStates)
     {
+        for (int i = 0; i < blendStates.Length; ++i)
+        {
+            if ((blendStates[i].IsEnabled) && (blendStates[i].IsLogicEnabled))
+            {
+                throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_BLEND_STATE_ENABLED_LOGIC_ENABLED, i));
+            }
+        }
+
         _worker.BlendStates = blendStates;
         return this;
     }
 
-    /// <inheritdoc/>
-    /// <param name="name">The name of the pipeline state object.</param>
-    /// <param name="vertexShader">The vertex shader to assign to the pipeline state object.</param>
-    /// <param name="allocator"><inheritdoc cref="IGorgonFluentBuilder{TB, TBo, TBa, TP1}.Build" path="/param[@name='allocator']"/></param>
-    /// <exception cref="GorgonException"><inheritdoc cref="Validate" path="/exception[@cref='Gorgon.Core.GorgonException']"/></exception>
-    /// <remarks>
-    /// <inheritdoc path="/remarks/para"/>
-    /// <para>
-    /// The <paramref name="name"/> is required, if it is left empty, a name will be generated.
-    /// </para>
-    /// </remarks>
-    public GorgonGraphicsPso Build(string name, GorgonShader vertexShader, IGorgonAllocator<GorgonGraphicsPso>? allocator = null)
-    {
-        allocator ??= _allocator;
-
-        Debug.Assert(vertexShader != GorgonShader.NullShader, "A vertex shader is required for the PSO.");
-                
-        _worker.Name = GorgonGraphicsFactory.GenerateName(name, nameof(GorgonGraphicsPso));
-        _worker.VertexShader = vertexShader;
-
-        Validate();
-
-        GorgonGraphicsPso result = allocator.Allocate(pso =>
-        {
-            Copy(_worker, pso);
-            pso.IndexBufferStripCutIdentifier = pso.PrimitiveType switch
-            {
-                Core.PrimitiveType.LineStrip or Core.PrimitiveType.TriangleStrip or Core.PrimitiveType.LineStripWithAdjacency or Core.PrimitiveType.TriangleStripWithAdjacency => _worker.IndexBufferStripCutIdentifier,
-                _ => Core.IndexBufferStripCutIdentifier.Disabled
-            };
-        });
-
-        return result;
-    }
-
-    /// <inheritdoc/>
+    /// <inheritdoc cref="IGorgonFluentBuilder{TB, TBo}.Clear()"/>
     public GorgonGraphicsPsoBuilder Clear()
     {
-        _worker.VertexShader = GorgonShader.NullShader;
-        _worker.PixelShader = _worker.GeometryShader = _worker.DomainShader = _worker.HullShader = null;
+        _worker.VertexShader = _worker.PixelShader = _worker.GeometryShader = _worker.DomainShader = _worker.HullShader = null;
         _worker.RWFormatCount = 0;
         _worker.Name = string.Empty;
         _worker.DepthStencilFormat = BufferFormat.Unknown;        
@@ -534,7 +627,7 @@ public sealed class GorgonGraphicsPsoBuilder
         _worker.PrimitiveType = Core.PrimitiveType.TriangleList;
         _worker.IndexBufferStripCutIdentifier = Core.IndexBufferStripCutIdentifier.Disabled;
         _worker.DepthStencilState = GorgonDepthStencilState.Default;
-        _worker.RasterizerState = GorgonRasterState.Default;
+        _worker.RasterizerState = GorgonRasterState.Default;        
 
         Array.Fill(_worker.RWBlendStates, GorgonBlendState.NoBlending);
         Array.Fill(_worker.RWFormats, BufferFormat.Unknown);
@@ -542,23 +635,11 @@ public sealed class GorgonGraphicsPsoBuilder
         return this;
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc cref="IGorgonFluentBuilder{TB, TBo}.ResetTo(TBo)"/>
     public GorgonGraphicsPsoBuilder ResetTo(GorgonGraphicsPso builderObject)
     {
-        Copy(builderObject, _worker);
+        Copy(builderObject, _worker);        
         _worker.Name = string.Empty;
         return this;
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonGraphicsPsoBuilder"/> class.
-    /// </summary>
-    /// <param name="graphics">The graphics object associated with this builder.</param>
-    public GorgonGraphicsPsoBuilder(GorgonGraphics graphics)
-    {        
-        Graphics = graphics;
-        _worker = new GorgonGraphicsPso(Graphics);
-        _allocator = new DefaultAllocator(Graphics);
-        _worker.UnregisterDisposable(Graphics);
     }
 }
