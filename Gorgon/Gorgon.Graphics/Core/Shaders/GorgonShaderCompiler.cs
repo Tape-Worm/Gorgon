@@ -151,7 +151,6 @@ public unsafe class GorgonShaderCompiler
 
     private static readonly Lock _compilerLock = new();
     private static int _compilerCreateCounter;
-    private readonly ShaderProcessor _processor = new();
 
     private static readonly Dictionary<CompileFlags, List<string>> _compileFlagValues = new()
     {
@@ -224,15 +223,26 @@ public unsafe class GorgonShaderCompiler
     /// <para>
     /// Gorgon uses a special keyword in shaders to allow shader files to include other files as part of the source. This keyword is named <c>#GorgonInclude</c> and is similar to the HLSL <c>#include</c> 
     /// keyword. The difference is that this keyword allows users to include shader source from memory instead of a separate source file. This is done by assigning a name to the included source code in the 
-    /// <c>#GorgonInclude</c> keyword, and adding a <see cref="GorgonShaderInclude"/> containing the source code to this property with the same name. Names are not case sensitive.
+    /// <c>#GorgonInclude</c> keyword, and adding a <see cref="GorgonShaderInclude"/> containing the source code with the same name by using the <see cref="AddInclude(GorgonShaderInclude)"/> method.
+    /// Names are not case sensitive.
     /// </para>
     /// <para>
-    /// Includes can also be loaded from a file by passing a path to the <c>#GorgonInclude</c> keyword (e.g. <c>#GorgonInclude "Name", "Path\To\The\File.hlsl"</c>). The source code for the file is loaded when 
-    /// the include is processed, and is added to this property with the name from the keyword.
+    /// Includes can also be loaded from a file by passing a path to the <c>#GorgonInclude</c> keyword (e.g. <c>#GorgonInclude "Name", "Path\To\The\File.hlsl"</c>). The source code for the file is loaded when
+    /// the include is processed, and is added to this list with the name from the keyword.
+    /// </para>
+    /// <para type="shared">
+    /// This list is shared by every <see cref="GorgonShaderCompiler"/>. An include added by one compiler, including an include loaded from a file, is available to all compilers, and remains in the list
+    /// until it is removed with the <see cref="RemoveInclude(string)"/> method. Gorgon also adds its own includes to this list (e.g. <see cref="GorgonTextureBlitter.GorgonTextureBlitterShadersName"/>).
+    /// </para>
+    /// <para>
+    /// Because an include loaded from a file remains in the list, changes made to the file after it was loaded are not used when compiling. To load the file again, remove the include with the
+    /// <see cref="RemoveInclude(string)"/> method before compiling.
     /// </para>
     /// </remarks>
     /// <seealso cref="GorgonShaderInclude"/>
-    public IDictionary<string, GorgonShaderInclude> Includes => _processor.CachedIncludes;
+    /// <seealso cref="AddInclude(GorgonShaderInclude)"/>
+    /// <seealso cref="RemoveInclude(string)"/>
+    public IReadOnlyDictionary<string, GorgonShaderInclude> Includes => ShaderProcessor.CachedIncludes;
 
     /// <summary>
     /// Function to gather all the compilation flags and build a list of equivalent string arguments to be passed to the compiler.
@@ -372,7 +382,7 @@ public unsafe class GorgonShaderCompiler
     /// <returns>A UTF-16 blob containing the shader source.</returns>
     private ComPtr<IDxcBlobEncoding> GetShaderSourceBlob(string source, ShaderProfiles profile, out DxcBuffer buffer)
     {
-        string processedSource = _processor.Process(source);
+        string processedSource = ShaderProcessor.Process(source);
 
         ComPtr<IDxcBlobEncoding> result = default;
 
@@ -598,7 +608,8 @@ public unsafe class GorgonShaderCompiler
     /// <h3>Includes</h3>
     /// <para>
     /// The source code passed to the compiler is capable of including other source files as input, much like the C/C++ compilers. Using this allows for reuse of common code across multiple shader sources. 
-    /// However, Gorgon has a special keyword that it uses to import these includes (either as a string in memory via the <see cref="Includes"/> property, or a file on disk): <c>#GorgonInclude "Name"</c>. The 
+    /// However, Gorgon has a special keyword that it uses to import these includes (either as a string in memory added with the <see cref="AddInclude(GorgonShaderInclude)"/> method, or a file on disk):
+    /// <c>#GorgonInclude "Name"</c>. The
     /// <c>Name</c> is the key name of the include in the <see cref="Includes"/> property.
     /// </para>
     /// <para>
@@ -612,7 +623,8 @@ public unsafe class GorgonShaderCompiler
     /// These includes are merged in with the source file at compile time, changing locations of functions. Therefore, error message line number information may not be correct.
     /// </para>
     /// <para>
-    /// Also, if using a string in memory as an include, ensure that the include is present in the <see cref="Includes"/> property, and has the same key name as the name in the <c>#GorgonInclude</c>. 
+    /// Also, if using a string in memory as an include, ensure that the include has been added with the <see cref="AddInclude(GorgonShaderInclude)"/> method, and has the same name as the name in the
+    /// <c>#GorgonInclude</c>.
     /// Otherwise, the include is skipped.
     /// </para>
     /// </note>
@@ -795,6 +807,49 @@ public unsafe class GorgonShaderCompiler
         Dispose(true);
         GC.SuppressFinalize(this);
     }
+
+    /// <summary>
+    /// Function to add an include to the list of includes available to all compilers.
+    /// </summary>
+    /// <param name="include">The include to add.</param>
+    /// <remarks>
+    /// <para>
+    /// If an include with the same name is already in the <see cref="Includes"/> list, then it is replaced with the <paramref name="include"/>. Names are not case sensitive.
+    /// </para>
+    /// <inheritdoc cref="Includes" path="/remarks/para[@type='shared']"/>
+    /// <para>
+    /// This method is thread safe.
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="Includes"/>
+    /// <seealso cref="RemoveInclude(string)"/>
+    /// <seealso cref="GorgonShaderInclude"/>
+    public void AddInclude(GorgonShaderInclude include) => ShaderProcessor.CachedIncludes[include.Name] = include;
+
+    /// <summary>
+    /// Function to remove an include from the list of includes available to all compilers.
+    /// </summary>
+    /// <param name="name">The name of the include to remove.</param>
+    /// <returns><b>true</b> if the include was removed, or <b>false</b> if no include with the <paramref name="name"/> was found.</returns>
+    /// <remarks>
+    /// <para>
+    /// Use this method to remove an include that is no longer needed, or to force an include loaded from a file to be loaded again the next time it is used. Names are not case sensitive.
+    /// </para>
+    /// <para>
+    /// <note type="warning">
+    /// <para>
+    /// The <see cref="Includes"/> list is shared by all compilers. Removing an include makes it unavailable to every <see cref="GorgonShaderCompiler"/>, including includes that were added by Gorgon or by
+    /// other libraries. Only remove includes that your application added.
+    /// </para>
+    /// </note>
+    /// </para>
+    /// <para>
+    /// This method is thread safe.
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="Includes"/>
+    /// <seealso cref="AddInclude(GorgonShaderInclude)"/>
+    public bool RemoveInclude(string name) => ShaderProcessor.CachedIncludes.TryRemove(name, out _);
 
     /// <summary>
     /// Finalizer.

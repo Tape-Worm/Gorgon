@@ -23,6 +23,7 @@
 // Created: July 7, 2016 11:53:48 PM
 // 
 
+using System.Collections.Concurrent;
 using System.Text;
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
@@ -32,12 +33,12 @@ namespace Gorgon.Graphics.Core;
 /// <summary>
 /// A processor used to analyze shader source code and inject any special #GorgonInclude directives
 /// </summary>
-internal class ShaderProcessor
+internal static class ShaderProcessor
 {
     /// <summary>
     /// Property to return the list of cached include files.
     /// </summary>
-    public Dictionary<string, GorgonShaderInclude> CachedIncludes
+    public static ConcurrentDictionary<string, GorgonShaderInclude> CachedIncludes
     {
         get;
     }
@@ -149,7 +150,7 @@ internal class ShaderProcessor
     /// </summary>
     /// <param name="sourceCode">The source code to process.</param>
     /// <returns>The processed shader source.</returns>
-    public string Process(string sourceCode)
+    public static string Process(string sourceCode)
     {
         StringBuilder result = new();
 
@@ -221,5 +222,5 @@ internal class ShaderProcessor
     /// <summary>
     /// Initializes a new instance of the <see cref="ShaderProcessor"/> class.
     /// </summary>
-    public ShaderProcessor() => CachedIncludes = new(StringComparer.OrdinalIgnoreCase);
+    static ShaderProcessor() => CachedIncludes = new(StringComparer.OrdinalIgnoreCase);
 }

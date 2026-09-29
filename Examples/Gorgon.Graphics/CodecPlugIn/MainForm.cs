@@ -50,6 +50,8 @@ public partial class MainForm : System.Windows.Forms.Form
     private GorgonGraphics? _graphics;
     // The swap chain to use.
     private GorgonSwapChain? _swap;
+    // The blitter used to display the logo.
+    private GorgonTextureBlitter? _blitter;
     // Image to display, loaded from our plugin.
     private IGorgonTextureView<GorgonTexture>? _texture;
     // The image in system memory.
@@ -78,6 +80,7 @@ public partial class MainForm : System.Windows.Forms.Form
     {
         Debug.Assert(_graphics is not null, "No graphics interface");
         Debug.Assert(_swap is not null, "No swap chain.");
+        Debug.Assert(_blitter is not null, "No blitter.");
         Debug.Assert(_texture is not null, "The texture was not created.");
 
         GorgonCommandList commandList = _graphics.GetCommandList("Main command list")
@@ -109,7 +112,7 @@ public partial class MainForm : System.Windows.Forms.Form
         // Find the position.
         GorgonRectangle bounds = new((int)((windowSize.X / 2) - (size.X / 2)), (int)((windowSize.Y / 2) - (size.Y / 2)), size.X, size.Y);
 
-        commandList.Blit(_texture, bounds, new GorgonRectangleF(0, 0, 1, 1), GorgonSampler.Default(_graphics));
+        _blitter.Blit(commandList, _texture, bounds, sampler: GorgonSampler.Default(_graphics));
 
         GorgonExample.BlitLogo(commandList);
 
@@ -153,6 +156,7 @@ public partial class MainForm : System.Windows.Forms.Form
     {
         Debug.Assert(_image is not null, "No image available to convert.");
         Debug.Assert(_customCodec is not null, "Custom image codec not found.");
+        Debug.Assert(_graphics is not null, "Graphics interface not found.");
 
         // The path to our image file for our custom codec.
         string tempPath = Path.ChangeExtension(Path.GetTempPath().FormatDirectory(Path.DirectorySeparatorChar) + Path.GetRandomFileName(), "tvImage");
@@ -210,6 +214,7 @@ public partial class MainForm : System.Windows.Forms.Form
 
         _pluginCache?.Dispose();
         _texture?.Dispose();
+        _blitter?.Dispose();
         _swap?.Dispose();
         _graphics?.Dispose();
         _factory?.Dispose();
@@ -261,6 +266,8 @@ public partial class MainForm : System.Windows.Forms.Form
                                         "Codec plugin SwapChain",
                                         Handle,
                                         new GorgonSwapChainInfo(ClientSize.Width, ClientSize.Height, BufferFormat.R8G8B8A8_UNorm));
+
+            _blitter = new GorgonTextureBlitter(_graphics);
 
             // Load the image to use as a texture.
             IGorgonImageCodec png = new GorgonCodecPng();

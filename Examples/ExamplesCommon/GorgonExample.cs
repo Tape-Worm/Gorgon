@@ -38,6 +38,8 @@ using Gorgon.IO;
 using Gorgon.Timing;
 using Gorgon.UI.WindowsForms;
 using Gorgon.Graphics.Imaging;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Gorgon.Examples;
 
@@ -50,16 +52,17 @@ public static class GorgonExample
     // The font factory to use.
     //private static GorgonFontFactory _factory;
     // The font used for statistics.
-    //private static GorgonFont _statsFont;
+    //private static GorgonFont _statsFont;    
     // Blitter for displaying rendering.
+    private static GorgonTextureBlitter? _blitter;
     // The string containing our statistics.
     private static readonly StringBuilder _statsText = new();
     // The main window for the application.
-    private static FormMain _mainForm;
+    private static FormMain? _mainForm;
     // The lazy instance of the log file.
     private readonly static Lazy<IGorgonLog> _lazyLog = new(() =>
     {
-        Assembly assembly = Assembly.GetEntryAssembly();
+        Assembly assembly = Assembly.GetEntryAssembly() ?? throw new Exception("Can't get assembly");
 
         if (assembly is null)
         {
@@ -67,9 +70,7 @@ public static class GorgonExample
         }
 
         AssemblyName assemblyName = assembly.GetName();
-
-        string name = assemblyName.Name;
-        Version version = assemblyName.Version;
+        Version version = assemblyName.Version ?? new Version(0, 0, 0, 0);
 
         GorgonTextFileLog log = new(assembly.GetName().Name ?? "Unknown Example", "Tape_Worm", version);
         log.LogStart(new GorgonComputerInfo());
@@ -92,7 +93,7 @@ public static class GorgonExample
     /// <summary>
     /// Property to set or return the path to the plugin directory.
     /// </summary>
-    public static DirectoryInfo PluginLocationDirectory
+    public static DirectoryInfo? PluginLocationDirectory
     {
         get;
         set;
@@ -101,7 +102,7 @@ public static class GorgonExample
     /// <summary>
     /// Property to set or return the base directory for application resources.
     /// </summary>
-    public static DirectoryInfo ResourceBaseDirectory
+    public static DirectoryInfo? ResourceBaseDirectory
     {
         get;
         set;
@@ -126,7 +127,7 @@ public static class GorgonExample
     /// </summary>
     /// <param name="sender">The sender of the event.</param>
     /// <param name="e">The event parameters.</param>
-    private static void FormKeyDown(object sender, KeyEventArgs e)
+    private static void FormKeyDown(object? sender, KeyEventArgs e)
     {
         if (e.KeyCode == Keys.Escape)
         {
@@ -141,7 +142,7 @@ public static class GorgonExample
     /// <returns>A directory information object for the Plugin path.</returns>
     public static DirectoryInfo GetPluginPath()
     {
-        string path = PluginLocationDirectory?.FullName;
+        string path = PluginLocationDirectory?.FullName ?? throw new DirectoryNotFoundException();
 
         if (string.IsNullOrWhiteSpace(path))
         {
@@ -176,7 +177,7 @@ public static class GorgonExample
     /// <returns>A directory info object for the resource path.</returns>
     public static DirectoryInfo GetResourcePath(string extraPath)
     {
-        string path = ResourceBaseDirectory?.FullName;
+        string path = ResourceBaseDirectory?.FullName ?? throw new DirectoryNotFoundException();
 
         if (string.IsNullOrEmpty(path))
         {
@@ -217,16 +218,19 @@ public static class GorgonExample
     /// <param name="list">The command list to use.</param>
     public static void BlitLogo(GorgonCommandList list)
     {
+        Debug.Assert(_blitter is not null, "Blitter not loaded.");
+
         if ((_logo is null) || (list.RenderTargets.Length < 1))
         {
             list.Graphics.Log.PrintError("There is not render target to blit the logo on to.", LoggingLevel.Verbose);
             return;
         }
 
-        GorgonRenderTargetView currentRtv = list.RenderTargets[0];
+        GorgonRenderTargetView currentRtv = list.RenderTargets[0] ?? throw new GorgonException(GorgonResult.CannotRead, "There is no render target at render target slot 0 on the command list.");
 
         GorgonRectangle logoRegion = new(currentRtv.Texture.Width - _logo.Texture.Width - 5, currentRtv.Texture.Height - _logo.Texture.Height - 2, _logo.Texture.Width, _logo.Texture.Height);
-        list.Blit(_logo, logoRegion, sampler: GorgonSampler.Linear(list.Graphics), blendState: GorgonBlendState.Default);
+
+        _blitter.Blit(list, _logo, logoRegion, sampler: GorgonSampler.Linear(list.Graphics), blendState: GorgonBlendState.Default);
     }
 
     /// <summary>
@@ -339,7 +343,7 @@ public static class GorgonExample
         //GorgonFontFactory factory = Interlocked.Exchange(ref _factory, null);
 
         _logo?.Dispose();
-        //blitter?.Dispose();
+        _blitter?.Dispose();
         //logo?.Dispose();
         //font?.Dispose();
         //factory?.Dispose();
@@ -370,6 +374,8 @@ public static class GorgonExample
     public static void LoadResources(GorgonGraphics graphics)
     {
         Log.Print("Loading example resources...", LoggingLevel.Simple);
+
+        _blitter = new GorgonTextureBlitter(graphics);
 
         using MemoryStream stream = new(Resources.Gorgon_Logo_Small);
         GorgonCodecDds ddsCodec = new();
@@ -422,7 +428,8 @@ public static class GorgonExample
     /// <param name="appTitle">The title for the application.</param>
     /// <param name="formLoad">The method to execute when the form load event is triggered.</param>
     /// <returns>The newly created form.</returns>
-    public static FormMain Initialize(GorgonPoint resolution, string appTitle, EventHandler formLoad = null)
+    [MemberNotNull(nameof(_mainForm))]
+    public static FormMain Initialize(GorgonPoint resolution, string appTitle, EventHandler? formLoad = null)
     {
         Log.Print("Initializing example...", LoggingLevel.Simple);
 

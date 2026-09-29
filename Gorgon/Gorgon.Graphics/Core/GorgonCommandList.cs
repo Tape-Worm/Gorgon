@@ -23,6 +23,7 @@
 
 using System.Buffers;
 using System.Diagnostics;
+using System.Numerics;
 using System.Reflection.Metadata.Ecma335;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -64,7 +65,7 @@ public sealed unsafe class GorgonCommandList
     private readonly CpuBufferAllocation [] _constantWriteData = new CpuBufferAllocation[GorgonGraphics.MaxRootConstantCount];
     private D3D12_CPU_DESCRIPTOR_HANDLE _depthStencilView;
     private bool _depthStencilChanged;
-    private readonly GorgonRenderTargetView?[] _renderTargetViews = new GorgonRenderTargetView[GorgonVideoAdapterInfo.MaxRenderTargetCount];
+    private readonly GorgonRenderTargetView[] _renderTargetViews = new GorgonRenderTargetView[GorgonVideoAdapterInfo.MaxRenderTargetCount];
     private readonly D3D12_CPU_DESCRIPTOR_HANDLE[] _d3dRtvs = new D3D12_CPU_DESCRIPTOR_HANDLE[GorgonVideoAdapterInfo.MaxRenderTargetCount];
     private uint _rtvsCount;
     private bool _rtvsChanged;
@@ -82,7 +83,7 @@ public sealed unsafe class GorgonCommandList
     private readonly VirtualTextureTilePool _textureTilePool;
     private readonly CpuResourceHeapPool _uploadHeaps;
     private GorgonIndexBuffer? _currentIndexBuffer;
-    private Blitter? _blitter;   
+    private ushort _dirtyRootConstants;
 
     /// <summary>
     /// Property to set or return the allocator associated with the command list.
@@ -132,7 +133,7 @@ public sealed unsafe class GorgonCommandList
     /// <summary>
     /// Property to return the list of render targets bound to this command list.
     /// </summary>
-    public ReadOnlySpan<GorgonRenderTargetView?> RenderTargets => _renderTargetViews.AsSpan(0, (int)_rtvsCount);
+    public ReadOnlySpan<GorgonRenderTargetView> RenderTargets => _renderTargetViews.AsSpan(0, (int)_rtvsCount);
 
     /// <summary>
     /// Property to return the list of viewports bound to this command list.
@@ -238,12 +239,19 @@ public sealed unsafe class GorgonCommandList
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void ApplyConstantWrites()
     {
-        for (uint i = 0; i < _constantWriteData.Length; ++i)
-        {
-            ref CpuBufferAllocation allocation = ref _constantWriteData[i];
+        int dirty = _dirtyRootConstants;
 
-            _list.Get()->SetGraphicsRootConstantBufferView(i, allocation.GpuAddress);
+        while (dirty != 0)
+        {
+            int index = BitOperations.TrailingZeroCount(dirty);
+            ref CpuBufferAllocation allocation = ref _constantWriteData[index];
+
+            _list.Get()->SetGraphicsRootConstantBufferView((uint)index, allocation.GpuAddress);
+
+            dirty &= (dirty - 1);
         }
+
+        _dirtyRootConstants = 0;
     }
 
     /// <summary>
@@ -619,6 +627,7 @@ public sealed unsafe class GorgonCommandList
         Presenters.Clear();
         _barrierManager.Clear();
         _currentIndexBuffer = null;
+        _dirtyRootConstants = 0;
     }
 
     /// <summary>
@@ -626,7 +635,6 @@ public sealed unsafe class GorgonCommandList
     /// </summary>
     internal void Dispose()
     {
-        _blitter?.Dispose();
         _barrierManager.Clear();
         _resourceCopier.Dispose();
 
@@ -725,11 +733,8 @@ public sealed unsafe class GorgonCommandList
         return this;
     }
 
-    /// <summary>
-    /// TBD
-    /// </summary>
-    /// <param name="drawCall"></param>
-    public void Draw(GorgonDrawCall drawCall)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private bool ValidateDrawCall(GorgonDrawCallCommon drawCall)
     {
         if (drawCall.Pso is null)
         {
@@ -739,6 +744,20 @@ public sealed unsafe class GorgonCommandList
         if (drawCall.InstanceCount < 1)
         {
             Graphics.Log.PrintWarning($"The draw call requires at least 1 instance value. The number of instances are {drawCall.InstanceCount}. Nothing will be drawn.", LoggingLevel.Simple);
+            return false;
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// TBD
+    /// </summary>
+    /// <param name="drawCall"></param>
+    public void Draw(GorgonDrawCall drawCall)
+    {
+        if (!ValidateDrawCall(drawCall))
+        {
             return;
         }
 
@@ -767,9 +786,9 @@ public sealed unsafe class GorgonCommandList
     /// <param name="drawCall"></param>
     public void Draw(GorgonIndexedDrawCall drawCall)
     {
-        if (drawCall.Pso is null)
+        if (!ValidateDrawCall(drawCall))
         {
-            throw new ArgumentException(Resources.GORGFX_ERR_DRAW_NEEDS_PSO, nameof(drawCall));
+            return;
         }
 
         if (drawCall.IndexBuffer is null)
@@ -780,12 +799,6 @@ public sealed unsafe class GorgonCommandList
         if (drawCall.InstanceCount < 1)
         {
             Graphics.Log.PrintWarning($"The draw indexed call requires at least 1 instance value. The number of instances are {drawCall.InstanceCount}. Nothing will be drawn.", LoggingLevel.Simple);
-            return;
-        }
-
-        if (drawCall.IndexCount < 1)
-        {
-            Graphics.Log.PrintWarning($"The draw call requires at least 1 index in its index count. The number of indices are {drawCall.IndexCount}. Nothing will be drawn.", LoggingLevel.Simple);
             return;
         }
 
@@ -1415,6 +1428,9 @@ public sealed unsafe class GorgonCommandList
 
         _constantWriteData[index] = allocation;
 
+        // Record the dirty state.
+        _dirtyRootConstants |= (ushort)(1 << index);
+
         return this;
     }
 
@@ -1568,9 +1584,9 @@ public sealed unsafe class GorgonCommandList
     {
         if (_rtvsCount > 1)
         {
-            Array.Clear(_d3dRtvs);
-            Array.Clear(_renderTargetViews);            
+            Array.Clear(_d3dRtvs);            
         }
+        Array.Clear(_renderTargetViews, 0, (int)_rtvsCount);
 
         if (renderTarget is not null)
         {
@@ -1580,7 +1596,10 @@ public sealed unsafe class GorgonCommandList
             SetBarrier(renderTarget.Texture, BarrierSync.RenderTarget, BarrierAccess.RenderTarget, BarrierLayout.RenderTarget, range);
         }
 
-        _renderTargetViews[0] = renderTarget;
+        if (renderTarget is not null)
+        {
+            _renderTargetViews[0] = renderTarget;
+        }
         _d3dRtvs[0] = renderTarget?.GetCpuHandle() ?? D3D12_CPU_DESCRIPTOR_HANDLE.DEFAULT;        
         _rtvsCount = renderTarget is null ? 0 : 1u;
         _rtvsChanged = true;
@@ -1622,13 +1641,7 @@ public sealed unsafe class GorgonCommandList
 
         for (int i = 0; i < renderTargets.Length.Min(_renderTargetViews.Length); ++i)
         {
-            GorgonRenderTargetView? view = _renderTargetViews[i] = renderTargets[i];
-            
-            if (view is null)
-            {
-                _d3dRtvs[i] = D3D12_CPU_DESCRIPTOR_HANDLE.DEFAULT;
-                continue;
-            }
+            GorgonRenderTargetView view = _renderTargetViews[i] = renderTargets[i];
 
             Queue.Tracker.TrackResource(view.Resource);
             _d3dRtvs[i] = view.GetCpuHandle();
@@ -1653,27 +1666,6 @@ public sealed unsafe class GorgonCommandList
         _rtvsChanged = true;
 
         return this;
-    }
-
-    public void Blit(IGorgonTextureView<GorgonTextureCommon> texture, GorgonRectangleF destination, GorgonRectangleF? textureCoordinates = null, GorgonSampler? sampler = null, GorgonBlendState? blendState = null)
-    {
-        if (_viewportCount == 0)
-        {
-            throw new GorgonException(GorgonResult.CannotExecute, Resources.GORGFX_ERR_NO_VIEWPORTS);
-        }
-
-        if (_rtvsCount == 0)
-        {
-            throw new GorgonException(GorgonResult.CannotExecute, Resources.GORGFX_ERR_NO_RTVS);
-        }
-
-        if (!texture.Texture.MultisampleInfo.Equals(GorgonMultisampleInfo.NoMultisampling))
-        {
-            throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORGFX_ERR_MSAA_TEXTURE_NOT_SUPPORTED, texture.Texture.Name));
-        }
-
-        _blitter ??= new Blitter(this);
-        _blitter.Draw(texture, destination, textureCoordinates ?? new GorgonRectangleF(0, 0, 1, 1), sampler ?? GorgonSampler.Default(Graphics), blendState ?? GorgonBlendState.NoBlending);
     }
 
     /// <summary>

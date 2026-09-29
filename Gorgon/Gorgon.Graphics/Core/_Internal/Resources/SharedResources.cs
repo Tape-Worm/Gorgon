@@ -21,10 +21,6 @@
 // Created: June 24, 2026 11:37:34 PM
 //
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
@@ -33,62 +29,6 @@ namespace Gorgon.Graphics.Core;
 internal sealed class SharedResources
     : IDisposable
 {
-    #region Shaders
-    // The shader code used to blit our texture.
-    private const string BlitterShader = @"
-            struct GorgonBlitterVertex
-            {
-                float2 position;
-                float2 uv;
-            };
-
-            struct GorgonBlitterPixelShaderInput
-            {
-                float4 position : SV_POSITION;
-                float2 uv : TEXCOORD0;
-            };
-
-            struct GorgonBlitterRenderData
-            {
-                float4x4 wvp;
-                int vbHandle;
-                int textureHandle;
-                int samplerHandle;
-            };
-           
-            SamplerState _gorgonBlitterSampler : register(s0);
-            ConstantBuffer<GorgonBlitterRenderData> _gorgonBlitterRenderData : register(b0);
-            
-            GorgonBlitterPixelShaderInput GorgonBlitterVS(uint vertexID : SV_VertexID)
-            {
-                GorgonBlitterPixelShaderInput result;
-
-                StructuredBuffer<GorgonBlitterVertex> vertexBuffer = ResourceDescriptorHeap[_gorgonBlitterRenderData.vbHandle];
-
-                GorgonBlitterVertex vertex = vertexBuffer[vertexID];
-
-                result.position = mul(_gorgonBlitterRenderData.wvp, float4(vertex.position, 0.7f, 1));
-                result.uv = vertex.uv;
-
-                return result;
-            }
-
-            float4 GorgonBlitterPS(GorgonBlitterPixelShaderInput input) : SV_TARGET
-            {
-                SamplerState sampler = SamplerDescriptorHeap[_gorgonBlitterRenderData.samplerHandle];
-                Texture2D texture = ResourceDescriptorHeap[_gorgonBlitterRenderData.textureHandle];                
-                float4 result = texture.Sample(sampler, input.uv);
-
-                return result;
-            }            
-        ";
-    #endregion
-
-    /// <summary>
-    /// The name of the include for attching the Gorgon blitter shaders to a custom shader.
-    /// </summary>
-    public const string BlitterShadersName = "__GORGON__BLITTER__SHADERS__";
-
     /// <summary>
     /// Property to return the global shader compiler for building shaders.
     /// </summary>
@@ -109,6 +49,22 @@ internal sealed class SharedResources
     /// Property to return the pixel shader for the blitter command.
     /// </summary>
     public GorgonShader BlitterPixelShader
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the vertex shader for the full screen blitter command.
+    /// </summary>
+    public GorgonShader FullScreenBlitterVertexShader
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the pixel shader for the full screen blitter command.
+    /// </summary>
+    public GorgonShader FullScreenBlitterPixelShader
     {
         get;
     }
@@ -136,11 +92,13 @@ internal sealed class SharedResources
     public SharedResources(GorgonGraphics graphics)
     {
         ShaderCompiler = new GorgonShaderCompiler(graphics);
-        ShaderCompiler.Includes[BlitterShadersName] = new GorgonShaderInclude(BlitterShadersName, BlitterShader);
+        ShaderCompiler.AddInclude(new GorgonShaderInclude(GorgonTextureBlitter.GorgonTextureBlitterShadersName, GorgonTextureBlitter.GorgonTextureBlitterShader));
 
         CompileFlags flags = graphics.IsInDebugMode ? CompileFlags.Debug : CompileFlags.OptimizationLevel3;
-
-        BlitterVertexShader = ShaderCompiler.Compile(BlitterShader, "GorgonBlitterVS", ShaderType.VertexShader, flags: flags);
-        BlitterPixelShader = ShaderCompiler.Compile(BlitterShader, "GorgonBlitterPS", ShaderType.PixelShader, flags: flags);
+        
+        BlitterVertexShader = ShaderCompiler.Compile(GorgonTextureBlitter.GorgonTextureBlitterShader, "GorgonBlitterVS", ShaderType.VertexShader, flags: flags);
+        BlitterPixelShader = ShaderCompiler.Compile(GorgonTextureBlitter.GorgonTextureBlitterShader, "GorgonBlitterPS", ShaderType.PixelShader, flags: flags);
+        FullScreenBlitterVertexShader = ShaderCompiler.Compile(GorgonTextureBlitter.GorgonTextureBlitterShader, "GorgonFullScreenVertexShader", ShaderType.VertexShader, flags: flags);
+        FullScreenBlitterPixelShader = ShaderCompiler.Compile(GorgonTextureBlitter.GorgonTextureBlitterShader, "GorgonFullScreenPixelShader", ShaderType.PixelShader, flags: flags);
     }
 }

@@ -39,8 +39,8 @@ namespace Gorgon.Graphics.Core;
 /// load a file.
 /// </para>
 /// <para>
-/// To include source code from memory, add a <see cref="GorgonShaderInclude"/> containing the source code to the <see cref="GorgonShaderCompiler.Includes"/> property, and use its name in the 
-/// <c>#GorgonInclude</c> keyword. When the include is loaded from a file, then its source code will automatically be added to the <see cref="GorgonShaderCompiler.Includes"/> property.
+/// To include source code from memory, add a <see cref="GorgonShaderInclude"/> containing the source code with the <see cref="GorgonShaderCompiler.AddInclude(GorgonShaderInclude)"/> method, and use its
+/// name in the <c>#GorgonInclude</c> keyword. When the include is loaded from a file, then its source code will automatically be added to the <see cref="GorgonShaderCompiler.Includes"/> list.
 /// </para>
 /// <para>
 /// The <c>#GorgonInclude</c> keyword is written as <c>#GorgonInclude "Name"</c>, or <c>#GorgonInclude "Name", "Path"</c>. The parameters are:
