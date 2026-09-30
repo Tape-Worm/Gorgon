@@ -301,6 +301,12 @@ csharp_prefer_system_threading_lock = true:suggestion
 dotnet_diagnostic.IDE0001.severity = suggestion
 csharp_style_prefer_simple_property_accessors = true:suggestion
 
+# IDE0051: Remove unused private members
+dotnet_diagnostic.IDE0051.severity = warning
+
+# IDE0052: Remove unread private members
+dotnet_diagnostic.IDE0052.severity = warning
+
 [*.{cs,vb}]
 dotnet_diagnostic.CA1063.severity=silent
 dotnet_diagnostic.CA1002.severity=silent

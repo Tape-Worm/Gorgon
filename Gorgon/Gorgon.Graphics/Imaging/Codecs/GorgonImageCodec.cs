@@ -52,7 +52,10 @@ public abstract class GorgonImageCodec<TEncOpt, TDecOpt>(TEncOpt encodingOptions
         }
 
         /// <inheritdoc/>
-        public IGorgonOptionBag Options => new GorgonOptionBag([]);
+        public IGorgonOptionBag Options
+        {
+            get;
+        } = new GorgonOptionBag([]);
     }
 
     /// <summary>
@@ -71,7 +74,10 @@ public abstract class GorgonImageCodec<TEncOpt, TDecOpt>(TEncOpt encodingOptions
         }
 
         /// <inheritdoc/>
-        public IGorgonOptionBag Options => new GorgonOptionBag([]);
+        public IGorgonOptionBag Options
+        {
+            get;
+        } = new GorgonOptionBag([]);
     }
 
     /// <summary>
@@ -177,16 +183,16 @@ public abstract class GorgonImageCodec<TEncOpt, TDecOpt>(TEncOpt encodingOptions
             throw new ArgumentException(Resources.GORIMG_ERR_STREAM_IS_WRITEONLY, nameof(stream));
         }
 
-        size ??= stream.Length;
-
-        if (size + stream.Position > stream.Length)
+        if (!stream.CanSeek)
         {
-            throw new EndOfStreamException();
+            throw new ArgumentException(Resources.GORIMG_ERR_STREAM_CANNOT_SEEK, nameof(stream));
         }
 
-        if (size < 1)
+        size ??= stream.Length - stream.Position;
+
+        if ((size < 1) || (size + stream.Position > stream.Length))
         {
-            throw new ArgumentOutOfRangeException(nameof(size), Resources.GORIMG_ERR_IMAGE_BYTE_LENGTH_TOO_SHORT);
+            throw new EndOfStreamException();
         }
 
         long basePosition = stream.Position;

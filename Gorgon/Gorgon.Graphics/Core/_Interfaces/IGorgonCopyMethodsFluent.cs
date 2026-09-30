@@ -264,13 +264,10 @@ public interface IGorgonCopyMethodsFluent<T>
     /// Thrown if the <paramref name="texture"/> uses multisampling.
     /// </para>
     /// <para>Thrown if the <paramref name="texture"/> is <see cref="GorgonTextureInfo.IsDepthStencil">configured to be used as a depth/stencil texture</see>.</para>
+    /// <para>Thrown if the <see cref="BufferFormat">format</see> of the image data is not compatible with the format of the texture.</para>
     /// </exception>
-    /// <exception cref="GorgonException">
-    /// <para>
-    /// Thrown if the <paramref name="image"/> <see cref="BufferFormat">format</see> is not compatible with the format of the texture.
-    /// </para>
-    /// <inheritdoc cref="GorgonCommandList.SetBarrier(GorgonTextureCommon, BarrierSync, BarrierAccess, BarrierLayout, GorgonSubResourceRange?, bool, bool)" path="/exception/para[@type='barrier_issue']"/>
-    /// </exception>    
+    /// <exception cref="ObjectDisposedException">Thrown if the image data has been disposed.</exception>
+    /// <exception cref="GorgonException"><inheritdoc cref="GorgonCommandList.SetBarrier(GorgonTextureCommon, BarrierSync, BarrierAccess, BarrierLayout, GorgonSubResourceRange?, bool, bool)" path="/exception/para[@type='barrier_issue']"/></exception>
     /// <seealso cref="IGorgonImage"/>
     /// <remarks>
     /// <para type="common">
@@ -284,8 +281,8 @@ public interface IGorgonCopyMethodsFluent<T>
     /// don't have an overrun when copying. 
     /// </para>
     /// <para>
-    /// If the texture <see cref="GorgonTextureCommon.Format"/> does not match that of the <paramref name="image"/>, and the image can be converted to the format of the texture, the method will automatically do so 
-    /// prior to copying into the texture. If it cannot convert the image due to an incompatible format, then an exception will be thrown.
+    /// If the texture <see cref="GorgonTextureCommon.Format"/> does not match that of the <paramref name="image"/>, and the image can be converted to the format of the texture, the method will automatically 
+    /// do so prior to copying into the texture. If it cannot convert the image due to an incompatible format, then an exception will be thrown.
     /// </para>
     /// <para type="Limits">
     /// This method also has the following limitations for the destination <paramref name="texture"/>.
@@ -320,7 +317,6 @@ public interface IGorgonCopyMethodsFluent<T>
     /// <param name="destinationPlane">[Optional] The destination format plane on the texture to copy the image data into.</param>
     /// <inheritdoc cref="CopyValue{Tv}(in Tv, GorgonGpuBufferCommon, long)" path="/returns"/>
     /// <inheritdoc cref="CopyImageToTexture(IGorgonImage, GorgonTexture)" path="/exception"/>
-    /// <exception cref="GorgonException"><inheritdoc cref="GorgonCommandList.SetBarrier(GorgonTextureCommon, BarrierSync, BarrierAccess, BarrierLayout, GorgonSubResourceRange?, bool, bool)" path="/exception/para[@type='barrier_issue']"/></exception>
     /// <remarks>
     /// <para type="common">
     /// <para>
@@ -328,7 +324,7 @@ public interface IGorgonCopyMethodsFluent<T>
     /// application needs to copy the entire image instead, use the <see cref="CopyImageToTexture(IGorgonImage, GorgonTexture)"/> overload.
     /// </para>
     /// <para type="crop">
-    /// If the buffer dimensions are not the same as the sub resource, then the image data will be cropped to fit as to prevent a buffer overrun. Unlike the
+    /// If the buffer dimensions are not the same as the sub resource, then the image data will be cropped to fit as to prevent a buffer overrun. Unlike the 
     /// <see cref="CopyImageToTexture(IGorgonImage, GorgonTexture)"/> no image conversion is done with this method, and an exception will be thrown if the <see cref="BufferFormat"/>s do not match.
     /// </para>
     /// <para>
@@ -359,15 +355,18 @@ public interface IGorgonCopyMethodsFluent<T>
     /// <param name="handle">The allocation handle returned from the texture to indicate where the data should be stored.</param>
     /// <param name="destinationDepthSlice">[Optional] For 3D textures only. Indicates which depth slice will receive the image buffer data.</param>
     /// <inheritdoc cref="CopyValue{Tv}(in Tv, GorgonGpuBufferCommon, long)" path="/returns"/>
-    /// <exception cref="GorgonException">
+    /// <exception cref="ArgumentException">
     /// <para>Thrown if the <paramref name="handle"/> refers to a handle that has not been allocated on the <paramref name="texture"/>, or the <paramref name="handle"/> is <see cref="GorgonVirtualTextureHandle.Null"/>.</para>
-    /// <inheritdoc cref="GorgonCommandList.SetBarrier(GorgonTextureCommon, BarrierSync, BarrierAccess, BarrierLayout, GorgonSubResourceRange?, bool, bool)" path="/exception/para[@type='barrier_issue']"/></exception>
+    /// <para>Thrown if the <paramref name="imageBuffer"/> format does not match the format of the <paramref name="texture"/>.</para>
+    /// </exception>
+    /// <inheritdoc cref="CopyImageToTexture(IGorgonImage, GorgonTexture)" path="/exception[@cref='T:System.ObjectDisposedException']"/>
     /// <inheritdoc cref="CopyImageToTexture(IGorgonImage, GorgonTexture)" path="/exception[@cref='T:Gorgon.Core.GorgonException']"/>
     /// <remarks>
     /// <para type="common">
     /// <para>
     /// This method will copy the contents of an individual <see cref="IGorgonImageBuffer"/> on a <see cref="IGorgonImage"/> into a single virtual texture sub resource allocation, which is represented by the 
-    /// <paramref name="handle"/> parameter. Use the <see cref="GorgonVirtualTexture.TryAllocate(ref readonly GorgonBoxF, out GorgonVirtualTextureHandle, short, short)"/> method to receive this handle before copying.
+    /// <paramref name="handle"/> parameter. Use the <see cref="GorgonVirtualTexture.TryAllocate(ref readonly GorgonBoxF, out GorgonVirtualTextureHandle, short, short)"/> method to receive this handle before 
+    /// copying.
     /// </para>
     /// <inheritdoc cref="CopyImageToTexture(IGorgonImageBuffer, GorgonTexture, short, short, byte)" path="/remarks/para[@type='common']/para[@type='crop']"/>
     /// </para>
@@ -456,7 +455,7 @@ public interface IGorgonCopyMethodsFluent<T>
     /// <param name="buffer">The buffer that will receive a copy of the data.</param>
     /// <param name="parameters">The parameters used to determine what to copy..</param>
     /// <inheritdoc cref="CopyValue{Tv}(in Tv, GorgonGpuBufferCommon, long)" path="/returns"/>
-    /// <exception cref="GorgonException">Thrown if the <paramref name="texture"/> sub resource size, in bytes, is too large to fit within the <paramref name="buffer"/>.</exception>    
+    /// <exception cref="ArgumentException">Thrown if the <paramref name="texture"/> sub resource size, in bytes, is too large to fit within the <paramref name="buffer"/>.</exception>
     /// <exception cref="ArgumentOutOfRangeException">Thrown if the <paramref name="parameters"/>.<see cref="GorgonCopyTextureToBuffer.DestinationOffset"/> is less than 0.</exception>
     /// <exception cref="GorgonException"><inheritdoc cref="GorgonCommandList.SetBarrier(GorgonTextureCommon, BarrierSync, BarrierAccess, BarrierLayout, GorgonSubResourceRange?, bool, bool)" path="/exception/para[@type='barrier_issue']"/></exception>
     /// <remarks>
@@ -518,13 +517,12 @@ public interface IGorgonCopyMethodsFluent<T>
     /// <param name="destination">The texture that will receive data to copy.</param>
     /// <param name="parameters">The parameters used to define which sub resource to copy, and which sub resource will receive the copied data.</param>
     /// <inheritdoc cref="CopyValue{Tv}(in Tv, GorgonGpuBufferCommon, long)" path="/returns"/>
-    /// <exception cref="GorgonException"><para>
+    /// <exception cref="ArgumentException"><para>
     /// Thrown if the <paramref name="source"/> and <paramref name="destination"/> have a <see cref="BufferFormat"/> that does not belong to the same <see cref="GorgonFormatInfo.Group"/>.
     /// </para>
+    /// <para>Thrown if the <paramref name="source"/> and <paramref name="destination"/> are the same texture, and the region being copied overlaps the destination region on the same sub resource.</para>
     /// <para>Thrown if the <paramref name="source"/> and <paramref name="destination"/> do not have matching <see cref="GorgonTextureCommon.MultisampleInfo"/> values.</para>
-    /// <inheritdoc cref="GorgonCommandList.SetBarrier(GorgonTextureCommon, BarrierSync, BarrierAccess, BarrierLayout, GorgonSubResourceRange?, bool, bool)" path="/exception/para[@type='barrier_issue']"/>
-    /// </exception>
-    /// <exception cref="ArgumentException"><para>Thrown if the <paramref name="source"/>, or <paramref name="destination"/> parameters have a <see cref="GorgonTextureCommon.IsDepthStencil"/> value of <b>true</b> and the 
+    /// <para>Thrown if the <paramref name="source"/>, or <paramref name="destination"/> parameters have a <see cref="GorgonTextureCommon.IsDepthStencil"/> value of <b>true</b> and the 
     /// <paramref name="parameters"/>.<see cref="GorgonCopyTextureSubResource.SourceRegion"/> is not empty, or the <paramref name="parameters"/>.<see cref="GorgonCopyTextureSubResource.DestinationX"/>, 
     /// <paramref name="parameters"/>.<see cref="GorgonCopyTextureSubResource.DestinationY"/> or <paramref name="parameters"/>.<see cref="GorgonCopyTextureSubResource.DestinationZOrArrayIndex"/> (3D textures only) parameters are not 0.</para>
     /// <para>Thrown if the <paramref name="source"/>, or <paramref name="destination"/> parameters have a <see cref="GorgonTextureCommon.MultisampleInfo"/> not equal to <see cref="GorgonMultisampleInfo.NoMultisampling"/> and the 
@@ -532,6 +530,7 @@ public interface IGorgonCopyMethodsFluent<T>
     /// <paramref name="parameters"/>.<see cref="GorgonCopyTextureSubResource.DestinationY"/> or <paramref name="parameters"/>.<see cref="GorgonCopyTextureSubResource.DestinationZOrArrayIndex"/> (3D textures only) parameters are not 0.</para>
     /// <para>Thrown if the <paramref name="source"/> texture <see cref="GorgonTextureCommon.Type"/> is unknown.</para>
     /// </exception>
+    /// <exception cref="GorgonException"><inheritdoc cref="GorgonCommandList.SetBarrier(GorgonTextureCommon, BarrierSync, BarrierAccess, BarrierLayout, GorgonSubResourceRange?, bool, bool)" path="/exception/para[@type='barrier_issue']"/></exception>
     /// <remarks>
     /// <para type="common">
     /// <para>
@@ -583,13 +582,11 @@ public interface IGorgonCopyMethodsFluent<T>
     /// <param name="source">The texture to copy.</param>
     /// <param name="destination">The texture that will receive the data.</param>
     /// <inheritdoc cref="CopyValue{Tv}(in Tv, GorgonGpuBufferCommon, long)" path="/returns"/>
-    /// <exception cref="ArgumentException"><inheritdoc cref="CopyTexture(GorgonTexture, GorgonTexture, ref readonly GorgonCopyTextureSubResource)" path="/exception[@cref='T:System.ArgumentException']/node()"/></exception>
-    /// <exception cref="GorgonException"><para>
-    /// <inheritdoc cref="CopyTexture(GorgonTexture, GorgonTexture, ref readonly GorgonCopyTextureSubResource)" path="/exception[@cref='T:Gorgon.Core.GorgonException']/node()"/>
-    /// </para>
+    /// <exception cref="ArgumentException">
+    /// <inheritdoc cref="CopyTexture(GorgonTexture, GorgonTexture, ref readonly GorgonCopyTextureSubResource)" path="/exception[@cref='T:System.ArgumentException']/node()"/>
     /// <para>Thrown if the source texture and destination texture do not meet the restrictions for this method.</para>
-    /// <inheritdoc cref="GorgonCommandList.SetBarrier(GorgonTextureCommon, BarrierSync, BarrierAccess, BarrierLayout, GorgonSubResourceRange?, bool, bool)" path="/exception/para[@type='barrier_issue']"/>
     /// </exception>
+    /// <exception cref="GorgonException"><inheritdoc cref="GorgonCommandList.SetBarrier(GorgonTextureCommon, BarrierSync, BarrierAccess, BarrierLayout, GorgonSubResourceRange?, bool, bool)" path="/exception/para[@type='barrier_issue']"/></exception>
     /// <remarks>
     /// <para type="common">
     /// <para>
@@ -639,7 +636,7 @@ public interface IGorgonCopyMethodsFluent<T>
     /// <param name="destination">The virtual texture that will receive the data.</param>
     /// <param name="parameters">The parameters that define where to copy the information on the destination, and where on the source to retrieve information from.</param>
     /// <inheritdoc cref="CopyValue{Tv}(in Tv, GorgonGpuBufferCommon, long)" path="/returns"/>
-    /// <exception cref="GorgonException"><para type="handle">
+    /// <exception cref="ArgumentException"><para type="handle">
     /// Thrown if the <paramref name="destination"/> handle is <see cref="GorgonVirtualTextureHandle.Null"/>, or was not allocated from the <paramref name="destination"/> texture.
     /// </para>
     /// <para type="group">
@@ -679,8 +676,8 @@ public interface IGorgonCopyMethodsFluent<T>
     /// convert to pixels call <see cref="GorgonTextureCommon.ToPixelBox(ref readonly GorgonBoxF, out GorgonBox, short)"/> (or one of the overloads).
     /// </para>
     /// <para>
-    /// When converting to pixels, you will notice that the region coordinates do not exactly match your allocation region, this is because the allocation is done in tiles, and the tile size may require that the 
-    /// coordinates be larger than what was passed in. 
+    /// When converting to pixels, you will notice that the region coordinates do not exactly match your allocation region, this is because the allocation is done in tiles, and the tile size may require that 
+    /// the coordinates be larger than what was passed in.
     /// </para>
     /// </note>
     /// </para>
@@ -711,10 +708,10 @@ public interface IGorgonCopyMethodsFluent<T>
     /// <param name="destination">The texture that will receive the data.</param>
     /// <param name="parameters"><inheritdoc cref="CopyTextureToVirtual(GorgonTexture, GorgonVirtualTexture, ref readonly GorgonCopyTextureToVirtual)" path="/param[@name='parameters']"/></param>
     /// <inheritdoc cref="CopyValue{Tv}(in Tv, GorgonGpuBufferCommon, long)" path="/returns"/>
-    /// <exception cref="GorgonException"><para type="handle">
+    /// <exception cref="ArgumentException"><para type="handle">
     /// Thrown if the <paramref name="source"/> handle is <see cref="GorgonVirtualTextureHandle.Null"/>, or was not allocated from the <paramref name="source"/> texture.
     /// </para>
-    /// <inheritdoc cref="CopyTextureToVirtual(GorgonTexture, GorgonVirtualTexture, ref readonly GorgonCopyTextureToVirtual)" path="/exception[@cref='T:Gorgon.Core.GorgonException']/para[@type='group']"/>
+    /// <inheritdoc cref="CopyTextureToVirtual(GorgonTexture, GorgonVirtualTexture, ref readonly GorgonCopyTextureToVirtual)" path="/exception[@cref='T:System.ArgumentException']/para[@type='group']"/>
     /// <para type="msaa">
     /// Thrown if the <paramref name="destination"/> is a multi-sampled texture, or is a depth/stencil texture.
     /// </para>
@@ -768,13 +765,13 @@ public interface IGorgonCopyMethodsFluent<T>
     /// <param name="destination"><inheritdoc cref="CopyTextureToVirtual(GorgonTexture, GorgonVirtualTexture, ref readonly GorgonCopyTextureToVirtual)" path="/param[@name='destination']"/></param>
     /// <param name="parameters"><inheritdoc cref="CopyTextureToVirtual(GorgonTexture, GorgonVirtualTexture, ref readonly GorgonCopyTextureToVirtual)" path="/param[@name='parameters']"/></param>
     /// <inheritdoc cref="CopyValue{Tv}(in Tv, GorgonGpuBufferCommon, long)" path="/returns"/>
-    /// <exception cref="GorgonException">
-    /// <inheritdoc cref="CopyVirtualToTexture(GorgonVirtualTexture, GorgonTexture, ref readonly GorgonCopyVirtualToTexture)" path="/exception[@cref='T:Gorgon.Core.GorgonException']/para[@type='handle']"/>
-    /// <inheritdoc cref="CopyTextureToVirtual(GorgonTexture, GorgonVirtualTexture, ref readonly GorgonCopyTextureToVirtual)" path="/exception[@cref='T:Gorgon.Core.GorgonException']/para[@type='handle']"/>
+    /// <exception cref="ArgumentException">
+    /// <inheritdoc cref="CopyVirtualToTexture(GorgonVirtualTexture, GorgonTexture, ref readonly GorgonCopyVirtualToTexture)" path="/exception[@cref='T:System.ArgumentException']/para[@type='handle']"/>
+    /// <inheritdoc cref="CopyTextureToVirtual(GorgonTexture, GorgonVirtualTexture, ref readonly GorgonCopyTextureToVirtual)" path="/exception[@cref='T:System.ArgumentException']/para[@type='handle']"/>
     /// <para>
     /// Thrown if the <paramref name="source"/> and <paramref name="destination"/> have the same handle.
     /// </para>
-    /// <inheritdoc cref="CopyTextureToVirtual(GorgonTexture, GorgonVirtualTexture, ref readonly GorgonCopyTextureToVirtual)" path="/exception[@cref='T:Gorgon.Core.GorgonException']/para[@type='group']"/>
+    /// <inheritdoc cref="CopyTextureToVirtual(GorgonTexture, GorgonVirtualTexture, ref readonly GorgonCopyTextureToVirtual)" path="/exception[@cref='T:System.ArgumentException']/para[@type='group']"/>
     /// </exception>
     /// <remarks>
     /// <para type="common">
@@ -803,13 +800,11 @@ public interface IGorgonCopyMethodsFluent<T>
     /// <param name="sourceOffset">[Optional] The offset, in bytes, within the buffer to start reading from.</param>
     /// <inheritdoc cref="CopyValue{Tv}(in Tv, GorgonGpuBufferCommon, long)" path="/returns"/>
     /// <exception cref="ArgumentOutOfRangeException">Thrown if the <paramref name="sourceOffset"/> is less than 0.</exception>
-    /// <exception cref="ArgumentException">Thrown if the size, in bytes, of <paramref name="buffer"/> minus the <paramref name="sourceOffset"/> is larger than the texture sub resource size.</exception>
-    /// <exception cref="GorgonException">
-    /// <para type="common">
+    /// <exception cref="ArgumentException">
+    /// <para>Thrown if the size, in bytes, of <paramref name="buffer"/> minus the <paramref name="sourceOffset"/> is larger than the texture sub resource size.</para>
     /// <para>Thrown if the <paramref name="destinationHandle"/> is <see cref="GorgonVirtualTextureHandle.Null"/>, or the handle is not from the <paramref name="texture"/>.</para>
-    /// <inheritdoc cref="GorgonCommandList.SetBarrier(GorgonTextureCommon, BarrierSync, BarrierAccess, BarrierLayout, GorgonSubResourceRange?, bool, bool)" path="/exception/para[@type='barrier_issue']"/>
-    /// </para>
     /// </exception>
+    /// <exception cref="GorgonException"><inheritdoc cref="GorgonCommandList.SetBarrier(GorgonTextureCommon, BarrierSync, BarrierAccess, BarrierLayout, GorgonSubResourceRange?, bool, bool)" path="/exception/para[@type='barrier_issue']"/></exception>
     /// <remarks>
     /// <para type="common">
     /// <para>

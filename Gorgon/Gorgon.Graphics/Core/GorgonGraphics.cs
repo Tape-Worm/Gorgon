@@ -492,6 +492,13 @@ public unsafe sealed class GorgonGraphics
 
         Queues.GraphicsQueue.CollectOutstandingLists();
 
+        // Every command list for this frame has been submitted, so the fence we just signaled covers everything allocated during the frame.
+        Memory.MegaBuffer.Signal();
+        Memory.TextureTilePool.Signal();
+        Queues.GraphicsQueue.AllocatorPool.Signal();
+        Memory.UploadHeaps.Signal();
+        Descriptors.GpuSamplerDescriptors.Signal();
+        Descriptors.GpuViewDescriptors.Signal();
         SpinWait waiter = new();
 
         while (!_commands.IsEmpty)
@@ -524,7 +531,6 @@ public unsafe sealed class GorgonGraphics
             return;
         }
 
-        commandList.Close();
         Queues.GraphicsQueue.Execute(commandList);
 
         if (commandList.Presenters.Count > 0)
@@ -550,29 +556,28 @@ public unsafe sealed class GorgonGraphics
         {
             for (int i = 0; i < commandLists.Length; ++i)
             {
-                GorgonCommandList list = commandLists[i];
+                GorgonCommandList commandList = commandLists[i];
 
-                if (list.Graphics != this)
+                if (commandList.Graphics != this)
                 {
-                    Log.PrintWarning($"The command list '{list.Name}' at index {i} was not created by the same graphics object. It will be skipped. Only submit command lists created by the same graphics object.", LoggingLevel.Simple);
+                    Log.PrintWarning($"The command list '{commandList.Name}' at index {i} was not created by the same graphics object. It will be skipped. Only submit command lists created by the same graphics object.", LoggingLevel.Simple);
                     continue;
                 }
 
-                if (list.Queue != Queues.GraphicsQueue)
+                if (commandList.Queue != Queues.GraphicsQueue)
                 {
-                    Log.PrintWarning($"The command list '{list.Name}' at index {i} is not from the same queue. It will be skipped. Only submit multple command lists that are on the same queue.", LoggingLevel.Intermediate);
+                    Log.PrintWarning($"The command list '{commandList.Name}' at index {i} is not from the same queue. It will be skipped. Only submit multple command lists that are on the same queue.", LoggingLevel.Intermediate);
                     continue;
                 }
 
-                Queues.GraphicsQueue.Tracker.TrackResource(list.D3DGraphicsCommandList);
-                list.Close();
+                Queues.GraphicsQueue.Tracker.TrackResource(commandList.D3DGraphicsCommandList);
 
-                if (list.Presenters.Count > 0)
+                if (commandList.Presenters.Count > 0)
                 {
-                    presenterCommands[presenterCount++] = list;
+                    presenterCommands[presenterCount++] = commandList;
                 }
 
-                commands[commandCount++] = list;
+                commands[commandCount++] = commandList;
             }
 
             if (commandCount == 0)
@@ -892,6 +897,9 @@ public unsafe sealed class GorgonGraphics
     /// Function to end the current frame, move to the next frame, and clean up per frame resources.
     /// </summary>
     /// <param name="commandList">The command list to execute at the end of the frame.</param>
+    /// <remarks>
+    /// <inheritdoc cref="Submit(ReadOnlySpan{GorgonCommandList})" path="/remarks/para"/>
+    /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #warning FINISHME: Need to document.
     public void Submit(GorgonCommandList commandList)
@@ -905,6 +913,20 @@ public unsafe sealed class GorgonGraphics
     /// Function to end the current frame, move to the next frame, and clean up per frame resources.
     /// </summary>
     /// <param name="commandLists">The command lists to execute at the end of the frame.</param>
+    /// <remarks>
+    /// <para>
+    /// This method submits the command lists to the GPU in a single batch, and then ends the current frame. Every command list obtained from <see cref="GetCommandList"/> during the frame must be
+    /// passed to this method before the next frame begins.
+    /// </para>
+    /// <para>
+    /// <note type="important">
+    /// <para>
+    /// This method must be called from a single thread. Command lists can be recorded on multiple threads, but they must all be submitted from the same thread. Direct3D 12 serializes submissions to a
+    /// command queue in the order they arrive, so submitting from multiple threads provides no benefit, and makes the execution order of the command lists depend on thread timing.
+    /// </para>
+    /// </note>
+    /// </para>
+    /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #warning FINISHME: Need to document.
     public void Submit(ReadOnlySpan<GorgonCommandList> commandLists)

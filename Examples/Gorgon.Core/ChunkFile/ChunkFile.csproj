@@ -56,8 +56,8 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="ReactiveUI" Version="24.2.0" />
-    <PackageReference Include="ReactiveUI.Avalonia" Version="12.1.2" />
+    <PackageReference Include="ReactiveUI" Version="25.1.1" />
+    <PackageReference Include="ReactiveUI.Avalonia" Version="12.1.5" />
     <PackageReference Include="System.Reactive" Version="7.0.0" />
     <ProjectReference Include="..\..\..\Gorgon\Gorgon.Core\Gorgon.Core.csproj" />
   </ItemGroup>

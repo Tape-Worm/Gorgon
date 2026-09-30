@@ -111,17 +111,17 @@ using Gorgon.Native;
 namespace Gorgon.Graphics.Imaging.Codecs;
 
 /// <summary>
-/// A codec to handle reading/writing DDDS files
+/// A codec to handle reading/writing DDS files.
 /// </summary>
 /// <remarks>
 /// <para>
-/// This codec will read and write compressed or uncompressed (lossy, depending on pixel format) files using the Direct Draw Surface (DDS) format
+/// This codec will read and write compressed or uncompressed (lossy, depending on pixel format) files using the Direct Draw Surface (DDS) format.
 /// </para>
 /// <para>
-/// This file format is the best suited for use with Gorgon as it supports a multitude of options and is far more flexible than other legacy formats such as TGA or PNG
+/// This file format is the best suited for use with Gorgon as it supports a multitude of options and is far more flexible than other legacy formats such as TGA or PNG.
 /// </para>
 /// <para>
-/// While the DDS codec will support any format for Direct 3D 10 (except typeless formats) and above, it does not support the following legacy Direct3D 9 formats:
+/// While the DDS codec will support any format for Direct3D 10 (except typeless formats) and above, it does not support the following legacy Direct3D 9 formats:
 /// <list type="bullet">
 ///     <item>
 ///         <description>BumpDuDv D3DFMT_V8U8</description>
@@ -165,7 +165,7 @@ public sealed class GorgonCodecDds
     // The DDS file magic number: "DDS "
     private const uint MagicNumber = 0x20534444;
 
-    private static readonly DdsPixelFormat _pfDxt1 = new(DdsPixelFormatFlags.FourCC, MakeFourCC('D', 'X', 'T', '1'), 0, 0, 0, 0, 0);     // DXT1		
+    private static readonly DdsPixelFormat _pfDxt1 = new(DdsPixelFormatFlags.FourCC, MakeFourCC('D', 'X', 'T', '1'), 0, 0, 0, 0, 0);     // DXT1
     private static readonly DdsPixelFormat _pfDxt2 = new(DdsPixelFormatFlags.FourCC, MakeFourCC('D', 'X', 'T', '2'), 0, 0, 0, 0, 0);     // DXT2
     private static readonly DdsPixelFormat _pfDxt3 = new(DdsPixelFormatFlags.FourCC, MakeFourCC('D', 'X', 'T', '3'), 0, 0, 0, 0, 0);     // DXT3
     private static readonly DdsPixelFormat _pfDxt4 = new(DdsPixelFormatFlags.FourCC, MakeFourCC('D', 'X', 'T', '4'), 0, 0, 0, 0, 0);     // DXT4
@@ -183,7 +183,7 @@ public sealed class GorgonCodecDds
     private static readonly DdsPixelFormat _pfG16R16 = new(DdsPixelFormatFlags.RGB, 0, 32, 0x0000ffff, 0xffff0000, 0x00000000, 0x00000000); // G16R16
     private static readonly DdsPixelFormat _pfR5G6B5 = new(DdsPixelFormatFlags.RGB, 0, 16, 0x0000f800, 0x000007e0, 0x0000001f, 0x00000000); // R5G6B5
     private static readonly DdsPixelFormat _pfA1R5G5B5 = new(DdsPixelFormatFlags.RGBA, 0, 16, 0x00007c00, 0x000003e0, 0x0000001f, 0x00008000); // A1R5G5B5A1
-    private static readonly DdsPixelFormat _pfA4R4G4B4 = new(DdsPixelFormatFlags.RGBA, 0, 16, 0x00000f00, 0x000000f0, 0x0000000f, 0x0000f000); // A4R4G4B4		
+    private static readonly DdsPixelFormat _pfA4R4G4B4 = new(DdsPixelFormatFlags.RGBA, 0, 16, 0x00000f00, 0x000000f0, 0x0000000f, 0x0000f000); // A4R4G4B4
     private static readonly DdsPixelFormat _pfR8G8B8 = new(DdsPixelFormatFlags.RGB, 0, 24, 0x00ff0000, 0x0000ff00, 0x000000ff, 0x00000000); // R8G8B8
     private static readonly DdsPixelFormat _pfL8 = new(DdsPixelFormatFlags.Luminance, 0, 8, 0xff, 0x00, 0x00, 0x00);                     // L8
     private static readonly DdsPixelFormat _pfL16 = new(DdsPixelFormatFlags.Luminance, 0, 16, 0xffff, 0x0000, 0x0000, 0x0000);           // L16
@@ -202,7 +202,7 @@ public sealed class GorgonCodecDds
             new(BufferFormat.BC4_UNorm, DdsConversionFlags.None, _pfBC4U),
             new(BufferFormat.BC4_SNorm, DdsConversionFlags.None, _pfBC4S),
             new(BufferFormat.BC5_UNorm, DdsConversionFlags.None, _pfBC5U),
-            new(BufferFormat.BC4_SNorm, DdsConversionFlags.None, _pfBC5S),
+            new(BufferFormat.BC5_SNorm, DdsConversionFlags.None, _pfBC5S),
             new(BufferFormat.BC4_UNorm, DdsConversionFlags.None, new DdsPixelFormat(DdsPixelFormatFlags.FourCC, MakeFourCC('A', 'T', 'I', '1'), 0, 0, 0, 0, 0)),
             new(BufferFormat.BC5_UNorm, DdsConversionFlags.None, new DdsPixelFormat(DdsPixelFormatFlags.FourCC, MakeFourCC('A', 'T', 'I', '2'), 0, 0, 0, 0, 0)),
             new(BufferFormat.R8G8_B8G8_UNorm, DdsConversionFlags.None, _pfR8G8_B8G8),
@@ -252,7 +252,9 @@ public sealed class GorgonCodecDds
     /// Property to return whether the codec supports decoding/encoding multiple frames or not.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// For this codec, this means that the codec supports image/texture arrays natively.
+    /// </para>
     /// </remarks>
     public override bool SupportsMultipleFrames => true;
 
@@ -669,8 +671,8 @@ public sealed class GorgonCodecDds
                         {
                             byte pixel = (srcPtr++).Value;
 
-                            uint alpha = ((bitFlags & ImageBitFlags.OpaqueAlpha) == ImageBitFlags.OpaqueAlpha) ? 0xFF000000 : (uint)(((pixel & 0xF0) << 24) | ((pixel & (0xF0 << 20))));
-                            uint lum = (uint)((pixel & (0x0F << 4)) | (pixel & 0x0F));
+                            uint alpha = ((bitFlags & ImageBitFlags.OpaqueAlpha) == ImageBitFlags.OpaqueAlpha) ? 0xFF000000 : (uint)(((pixel & 0xF0) << 24) | ((pixel & 0xF0) << 20));
+                            uint lum = (uint)(((pixel & 0x0F) << 4) | (pixel & 0x0F));
 
                             (destPtr++).Value = lum | (lum << 8) | (lum << 16) | alpha;
                         }
@@ -730,7 +732,7 @@ public sealed class GorgonCodecDds
                             ushort pixel = (srcPtr++).Value;
                             uint alpha = ((bitFlags & ImageBitFlags.OpaqueAlpha) == ImageBitFlags.OpaqueAlpha) ? 0xFF000000 : (uint)((pixel & 0xFF00) << 16);
 
-                            (destPtr++).Value = pixel | alpha;
+                            (destPtr++).Value = (actualPalette[pixel & 0xFF] & 0x00FFFFFF) | alpha;
                         }
                     }
                     break;
@@ -742,7 +744,7 @@ public sealed class GorgonCodecDds
                         // Copy 8 bit RGB with alpha.
                         for (int srcCount = 0, destCount = 0; ((srcCount < srcPitch) && (destCount < destPitch)); srcCount += 2, destCount += 4)
                         {
-                            ushort pixel = (ushort)((srcPtr++).Value & 0xFF);
+                            ushort pixel = (srcPtr++).Value;
                             uint alpha = ((bitFlags & ImageBitFlags.OpaqueAlpha) == ImageBitFlags.OpaqueAlpha) ? 0xFF000000 : (uint)((pixel & 0xFF00) << 16);
 
                             uint r = (uint)((pixel & 0xE0) | ((pixel & 0xE0) >> 3) | ((pixel & 0xC0) >> 6));
@@ -1122,7 +1124,7 @@ public sealed class GorgonCodecDds
 
                     for (int i = 0; i < count; i++)
                     {
-                        palette[i] = (uint)GorgonColor.ToARGB(DecodingOptions.Palette[i]);
+                        palette[i] = (uint)GorgonColor.ToABGR(DecodingOptions.Palette[i]);
                     }
 
                     // Skip past palette data since we're not using it.
@@ -1168,8 +1170,10 @@ public sealed class GorgonCodecDds
     {
         if (!stream.CanWrite)
         {
-            throw new ArgumentException(Resources.GORIMG_ERR_STREAM_IS_READONLY);
+            throw new ArgumentException(Resources.GORIMG_ERR_STREAM_IS_READONLY, nameof(stream));
         }
+
+        ObjectDisposedException.ThrowIf(imageData.ImageData == GorgonPtr<byte>.NullPtr, imageData);
 
         if (Array.IndexOf(_formats, imageData.Format) == -1)
         {
@@ -1224,12 +1228,12 @@ public sealed class GorgonCodecDds
 
         if (!stream.CanRead)
         {
-            throw new IOException(Resources.GORIMG_ERR_STREAM_IS_WRITEONLY);
+            throw new ArgumentException(Resources.GORIMG_ERR_STREAM_IS_WRITEONLY, nameof(stream));
         }
 
         if (!stream.CanSeek)
         {
-            throw new IOException(Resources.GORIMG_ERR_STREAM_CANNOT_SEEK);
+            throw new ArgumentException(Resources.GORIMG_ERR_STREAM_CANNOT_SEEK, nameof(stream));
         }
 
         if (stream.Length - stream.Position < headerSize)
@@ -1263,12 +1267,12 @@ public sealed class GorgonCodecDds
 
         if (!stream.CanRead)
         {
-            throw new IOException(Resources.GORIMG_ERR_STREAM_IS_WRITEONLY);
+            throw new ArgumentException(Resources.GORIMG_ERR_STREAM_IS_WRITEONLY, nameof(stream));
         }
 
         if (!stream.CanSeek)
         {
-            throw new IOException(Resources.GORIMG_ERR_STREAM_CANNOT_SEEK);
+            throw new ArgumentException(Resources.GORIMG_ERR_STREAM_CANNOT_SEEK, nameof(stream));
         }
 
         if (stream.Length - stream.Position < sizeof(uint) + Unsafe.SizeOf<DdsHeader>())

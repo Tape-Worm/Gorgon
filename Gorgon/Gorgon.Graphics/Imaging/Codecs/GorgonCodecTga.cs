@@ -148,11 +148,11 @@ internal enum TGAConversionFlags
 }
 
 /// <summary>
-/// A codec to handle reading/writing Truevision TGA files
+/// A codec to handle reading/writing Truevision TGA files.
 /// </summary>
 /// <remarks>
 /// <para>
-/// This codec will read RLE compressed and uncompressed files, and write compressed files using the Truevision Targa (TGA) format
+/// This codec will read RLE compressed and uncompressed files, and write uncompressed files using the Truevision Targa (TGA) format.
 /// </para>
 /// <para>
 /// Most 16/24/32 bit TGA files will be readable using this codec, however the following limitations may keep the file from being decoded by this codec:
@@ -369,10 +369,9 @@ public sealed class GorgonCodecTga
     /// <param name="dest">The destination buffer pointer.</param>
     /// <param name="runLength">The size of the run, in pixels.</param>
     /// <param name="expand"><b>true</b> to expand a 24bpp scanline to 32bpp, or <b>false</b> if no expansion is needed.</param>
-    /// <param name="flipHorizontal"><b>true</b> to decode the pixels from right to left, or <b>false</b> to decode from left to right.</param>
     /// <param name="format">The pixel format.</param>
     /// <returns><b>true</b> if the run contains entirely transparent pixels, or <b>false</b> if not, and the amount of bytes written.</returns>
-    private static (bool isAllTransparent, long runSize) DecodeRleEncodedRun(BinaryReader reader, GorgonPtr<byte> dest, int runLength, bool expand, bool flipHorizontal, BufferFormat format)
+    private static (bool isAllTransparent, long runSize) DecodeRleEncodedRun(BinaryReader reader, GorgonPtr<byte> dest, int runLength, bool expand, BufferFormat format)
     {
         bool result = true;
         long runSize = 0;
@@ -381,16 +380,11 @@ public sealed class GorgonCodecTga
         {
             case BufferFormat.R8_UNorm:
                 {
+                    byte pixel = reader.ReadByte();
+
                     for (; runLength > 0; --runLength, ++runSize)
                     {
-                        if (!flipHorizontal)
-                        {
-                            (dest++).Value = reader.ReadByte();
-                        }
-                        else
-                        {
-                            (dest--).Value = reader.ReadByte();
-                        }
+                        (dest++).Value = pixel;
                     }
                     return (false, runSize);
                 }
@@ -406,14 +400,7 @@ public sealed class GorgonCodecTga
 
                     for (; runLength > 0; runLength--, runSize += sizeof(ushort))
                     {
-                        if (!flipHorizontal)
-                        {
-                            (destPtr++).Value = pixel;
-                        }
-                        else
-                        {
-                            (destPtr--).Value = pixel;
-                        }
+                        (destPtr++).Value = pixel;
                     }
 
                     return (result, runSize);
@@ -442,14 +429,7 @@ public sealed class GorgonCodecTga
 
                     for (; runLength > 0; --runLength, runSize += sizeof(uint))
                     {
-                        if (!flipHorizontal)
-                        {
-                            (destPtr++).Value = pixel;
-                        }
-                        else
-                        {
-                            (destPtr--).Value = pixel;
-                        }
+                        (destPtr++).Value = pixel;
                     }
 
                     return (result, runSize);
@@ -466,10 +446,9 @@ public sealed class GorgonCodecTga
     /// <param name="dest">The destination buffer pointer.</param>
     /// <param name="runLength">The size of the run, in pixels.</param>
     /// <param name="expand"><b>true</b> to expand a 24bpp scanline to 32bpp, or <b>false</b> if no expansion is needed.</param>
-    /// <param name="flipHorizontal"><b>true</b> to decode the pixels from right to left, or <b>false</b> to decode from left to right.</param>
     /// <param name="format">The pixel format.</param>
     /// <returns><b>true</b> if the run contains entirely transparent pixels, or <b>false</b> if not, and the amount of bytes written.</returns>
-    private static (bool isLineTransparent, long bytesRead) DecodeUncompressedRun(BinaryReader reader, GorgonPtr<byte> dest, int runLength, bool expand, bool flipHorizontal, BufferFormat format)
+    private static (bool isLineTransparent, long bytesRead) DecodeUncompressedRun(BinaryReader reader, GorgonPtr<byte> dest, int runLength, bool expand, BufferFormat format)
     {
         bool result = true;
         long bytesRead = 0;
@@ -479,14 +458,7 @@ public sealed class GorgonCodecTga
             case BufferFormat.R8_UNorm:
                 for (; runLength > 0; --runLength, ++bytesRead)
                 {
-                    if (!flipHorizontal)
-                    {
-                        (dest++).Value = reader.ReadByte();
-                    }
-                    else
-                    {
-                        (dest--).Value = reader.ReadByte();
-                    }
+                    (dest++).Value = reader.ReadByte();
                 }
                 return (false, bytesRead);
             case BufferFormat.B5G5R5A1_UNorm:
@@ -502,14 +474,7 @@ public sealed class GorgonCodecTga
                             result = false;
                         }
 
-                        if (!flipHorizontal)
-                        {
-                            (destPtr++).Value = pixel;
-                        }
-                        else
-                        {
-                            (destPtr--).Value = pixel;
-                        }
+                        (destPtr++).Value = pixel;
                     }
 
                     return (result, bytesRead);
@@ -537,14 +502,7 @@ public sealed class GorgonCodecTga
                             }
                         }
 
-                        if (!flipHorizontal)
-                        {
-                            (destPtr++).Value = pixel;
-                        }
-                        else
-                        {
-                            (destPtr--).Value = pixel;
-                        }
+                        (destPtr++).Value = pixel;
                     }
 
                     return (result, bytesRead);
@@ -566,7 +524,6 @@ public sealed class GorgonCodecTga
     private bool ReadCompressed(BinaryReader reader, int width, GorgonPtr<byte> dest, BufferFormat format, TGAConversionFlags conversionFlags)
     {
         bool setOpaque = true;
-        bool flipHorizontal = (conversionFlags & TGAConversionFlags.InvertX) == TGAConversionFlags.InvertX;
         bool expand = (conversionFlags & TGAConversionFlags.Expand) == TGAConversionFlags.Expand;
         GorgonPtr<byte> destPtr = dest;
 
@@ -583,11 +540,11 @@ public sealed class GorgonCodecTga
 
             if ((rleBlock & 0x80) != 0)
             {
-                decodeResult = DecodeRleEncodedRun(reader, destPtr, size, expand, flipHorizontal, format);
+                decodeResult = DecodeRleEncodedRun(reader, destPtr, size, expand, format);
             }
             else
             {
-                decodeResult = DecodeUncompressedRun(reader, destPtr, size, expand, flipHorizontal, format);
+                decodeResult = DecodeUncompressedRun(reader, destPtr, size, expand, format);
             }
 
             destPtr += decodeResult.BytesRead;
@@ -612,26 +569,47 @@ public sealed class GorgonCodecTga
     /// <param name="conversionFlags">Flags used for conversion.</param>
     private static bool ReadUncompressed(GorgonPtr<byte> src, int srcPitch, GorgonPtr<byte> dest, BufferFormat format, TGAConversionFlags conversionFlags)
     {
-        bool flipHorizontal = (conversionFlags & TGAConversionFlags.InvertX) == TGAConversionFlags.InvertX;
 
         switch (format)
         {
             case BufferFormat.R8_UNorm:
             case BufferFormat.B5G5R5A1_UNorm:
-                return ImageUtilities.CopyScanline(src, srcPitch, dest, format, flipHorizontal);
+                return ImageUtilities.CopyScanline(src, srcPitch, dest, format);
             case BufferFormat.R8G8B8A8_UNorm:
                 if ((conversionFlags & TGAConversionFlags.Expand) != TGAConversionFlags.Expand)
                 {
-                    return ImageUtilities.CopyScanline(src, srcPitch, dest, format, flipHorizontal);
+                    return ImageUtilities.CopyScanline(src, srcPitch, dest, format);
                 }
 
-                ImageUtilities.Expand24BPPScanLine(src, srcPitch, dest, flipHorizontal);
+                ImageUtilities.Expand24BPPScanLine(src, srcPitch, dest);
 
                 // We're already opaque by virtue of being 24 bit.
                 return false;
         }
 
         return false;
+    }
+
+    /// <summary>
+    /// Function to reverse the order of the pixels in a row.
+    /// </summary>
+    /// <param name="row">The pointer to the start of the row.</param>
+    /// <param name="width">The number of pixels in the row.</param>
+    /// <param name="format">The pixel format of the row.</param>
+    private static void ReverseRow(GorgonPtr<byte> row, int width, BufferFormat format)
+    {
+        switch (format)
+        {
+            case BufferFormat.R8_UNorm:
+                row[..width].ToSpan().Reverse();
+                break;
+            case BufferFormat.B5G5R5A1_UNorm:
+                ((GorgonPtr<ushort>)row)[..width].ToSpan().Reverse();
+                break;
+            case BufferFormat.R8G8B8A8_UNorm:
+                ((GorgonPtr<uint>)row)[..width].ToSpan().Reverse();
+                break;
+        }
     }
 
     /// <summary>
@@ -654,12 +632,11 @@ public sealed class GorgonCodecTga
 
         GorgonPtr<byte> destPtr = buffer.ImageData;
 
-        // Adjust destination for inverted axes.
-        if ((conversionFlags & TGAConversionFlags.InvertX) == TGAConversionFlags.InvertX)
-        {
-            destPtr += buffer.PitchInformation.RowPitch - formatInfo.SizeInBytes;
-        }
+        // Rows stored right to left are decoded left to right, then reversed, so the row readers never have to walk backwards through the buffer.
+        bool reverseRows = (conversionFlags & TGAConversionFlags.InvertX) == TGAConversionFlags.InvertX;
+        conversionFlags &= ~TGAConversionFlags.InvertX;
 
+        // Adjust destination for inverted axes.
         if ((conversionFlags & TGAConversionFlags.InvertY) != TGAConversionFlags.InvertY)
         {
             destPtr += (image.Height - 1) * buffer.PitchInformation.RowPitch;
@@ -699,6 +676,11 @@ public sealed class GorgonCodecTga
                 if ((lineHasZeroAlpha) && ((conversionFlags & TGAConversionFlags.SetOpaqueAlpha) == TGAConversionFlags.SetOpaqueAlpha))
                 {
                     opaqueLineCount++;
+                }
+
+                if (reverseRows)
+                {
+                    ReverseRow(destPtr, image.Width, image.Format);
                 }
 
                 // The components of the pixel data in a TGA file need swizzling for 32 bit.
@@ -776,6 +758,13 @@ public sealed class GorgonCodecTga
     /// <inheritdoc/>
     public override void Save(IGorgonImage imageData, Stream stream)
     {
+        if (!stream.CanWrite)
+        {
+            throw new ArgumentException(Resources.GORIMG_ERR_STREAM_IS_READONLY, nameof(stream));
+        }
+
+        ObjectDisposedException.ThrowIf(imageData.ImageData == GorgonPtr<byte>.NullPtr, imageData);
+
         // Ensure that we can actually read this format.  We do not perform total pixel conversion on behalf of the user, they are responsible for that.
         // We will, however, support swizzling and pixel compression (e.g. 32 -> 24 bit).
         if (Array.IndexOf(_supportedFormats, imageData.Format) == -1)
@@ -818,7 +807,7 @@ public sealed class GorgonCodecTga
             // Persist the working buffer to the stream.
             writer.WriteValue(in header);
 
-            // Write out each scan line.					
+            // Write out each scan line.
             for (int y = 0; y < imageData.Height; y++)
             {
                 if ((conversionFlags & TGAConversionFlags.RGB888) == TGAConversionFlags.RGB888)
@@ -857,12 +846,12 @@ public sealed class GorgonCodecTga
 
         if (!stream.CanRead)
         {
-            throw new IOException(Resources.GORIMG_ERR_STREAM_IS_WRITEONLY);
+            throw new ArgumentException(Resources.GORIMG_ERR_STREAM_IS_WRITEONLY, nameof(stream));
         }
 
         if (!stream.CanSeek)
         {
-            throw new IOException(Resources.GORIMG_ERR_STREAM_CANNOT_SEEK);
+            throw new ArgumentException(Resources.GORIMG_ERR_STREAM_CANNOT_SEEK, nameof(stream));
         }
 
         if (stream.Length - stream.Position < sizeof(uint) + headerSize)
@@ -890,12 +879,12 @@ public sealed class GorgonCodecTga
 
         if (!stream.CanRead)
         {
-            throw new IOException(Resources.GORIMG_ERR_STREAM_IS_WRITEONLY);
+            throw new ArgumentException(Resources.GORIMG_ERR_STREAM_IS_WRITEONLY, nameof(stream));
         }
 
         if (!stream.CanSeek)
         {
-            throw new IOException(Resources.GORIMG_ERR_STREAM_CANNOT_SEEK);
+            throw new ArgumentException(Resources.GORIMG_ERR_STREAM_CANNOT_SEEK, nameof(stream));
         }
 
         if (stream.Length - stream.Position < Unsafe.SizeOf<TgaHeader>())

@@ -28,7 +28,7 @@ using Gorgon.Configuration;
 namespace Gorgon.Graphics.Imaging.Codecs;
 
 /// <summary>
-/// Provides options used when encoding a <see cref="IGorgonImage"/> for persistence
+/// Provides options used when encoding a <see cref="IGorgonImage"/> for persistence.
 /// </summary>
 public interface IGorgonImageCodecEncodingOptions
 {
@@ -36,7 +36,9 @@ public interface IGorgonImageCodecEncodingOptions
     /// Property to set or return whether all frames in an image array should be persisted.
     /// </summary>
     /// <remarks>
-    /// This flag only applies to codecs that support multiple image frames.  For all other codec types, this flag will be ignored.
+    /// <para>
+    /// This flag only applies to codecs that support multiple image frames. For all other codec types, this flag will be ignored.
+    /// </para>
     /// </remarks>
     bool SaveAllFrames
     {

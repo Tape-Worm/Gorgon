@@ -29,33 +29,33 @@ using Windows.Win32;
 namespace Gorgon.Graphics.Imaging.Codecs;
 
 /// <summary>
-/// A codec to handle read/writing of BMP files
+/// A codec to handle reading/writing of BMP files.
 /// </summary>
 /// <remarks>
 /// <para>
-/// This codec will read and write lossless compressed files using the Windows Bitmap (BMP) format
+/// This codec will read and write uncompressed files using the Windows Bitmap (BMP) format.
 /// </para>
 /// <para>
 /// This codec supports the following pixel formats:
 /// <list type="bullet">
-///		<item>
-///			<description><see cref="BufferFormat.B8G8R8X8_UNorm"/></description>
-///		</item>
-///		<item>
-///			<description><see cref="BufferFormat.B8G8R8A8_UNorm"/> (Has alpha channel support)</description>
-///		</item>
-///		<item>
-///			<description><see cref="BufferFormat.R8G8B8A8_UNorm"/> (Alpha channel is ignored)</description>
-///		</item>
-///		<item>
-///			<description><see cref="BufferFormat.B5G6R5_UNorm"/></description>
-///		</item>
+///        <item>
+///            <description><see cref="BufferFormat.B8G8R8X8_UNorm"/></description>
+///        </item>
+///        <item>
+///            <description><see cref="BufferFormat.B8G8R8A8_UNorm"/> (Has alpha channel support)</description>
+///        </item>
+///        <item>
+///            <description><see cref="BufferFormat.R8G8B8A8_UNorm"/> (Alpha channel is ignored)</description>
+///        </item>
+///        <item>
+///            <description><see cref="BufferFormat.B5G6R5_UNorm"/></description>
+///        </item>
 /// </list>
 /// </para>
 /// <para>
 /// <note type="important">
 /// <para>
-/// This codec requires the Windows Imaging Components (WIC) to be installed for the operating system
+/// This codec requires the Windows Imaging Components (WIC) to be installed for the operating system.
 /// </para>
 /// </note>
 /// </para>

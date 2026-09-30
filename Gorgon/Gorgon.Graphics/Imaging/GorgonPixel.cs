@@ -23,6 +23,7 @@
 
 using System.Runtime.CompilerServices;
 using Gorgon.Graphics.Imaging.Properties;
+using Gorgon.Native;
 
 namespace Gorgon.Graphics.Imaging;
 
@@ -52,6 +53,8 @@ public abstract class GorgonPixel<T>()
     /// <summary>
     /// Function to determine if the requested format is supported by this pixel codec.
     /// </summary>
+    /// <param name="format">The format to evaluate.</param>
+    /// <returns><b>true</b> if the format is supported, <b>false</b> if not.</returns>
     public abstract bool SupportsFormat(BufferFormat format);
 
     /// <summary>
@@ -62,8 +65,8 @@ public abstract class GorgonPixel<T>()
     public abstract T Encode(GorgonColor color);
 
     /// <summary>
-    /// Function to decode a color from 
-    /// </summary>
+    /// Function to decode a color from an encoded value.
+/// </summary>
     /// <param name="value">The value from an image buffer to decode.</param>
     /// <returns>The color represented by the value.</returns>
     public abstract GorgonColor Decode(T value);
@@ -120,11 +123,16 @@ public abstract class GorgonPixel<T>()
     /// <param name="buffer">The buffer that will receive the pixel.</param>
     /// <param name="point">The location of the pixel within the buffer width (and for 2D images, height).</param>
     /// <param name="color">The color for the pixel.</param>
+    /// <exception cref="ObjectDisposedException">Thrown if the image that owns the <paramref name="buffer"/> has been disposed.</exception>
     /// <exception cref="NotSupportedException">Thrown if this pixel type does not support the format of the buffer.</exception>
     /// <remarks>
     /// <para>
-    /// This is a standard utility function allows an application to assign a pixel to a point within the buffer. For a 1D image, this is within the width of the image, and for a 2D image this is within the 
-    /// height of the image as well as width. 3D images are separated by depth slices, and can have individual pixels set per slice by accessing the slice from an <see cref="IGorgonImage.Buffers"/> list.
+    /// This is a standard utility function that allows an application to assign a pixel to a point within the buffer. For a 1D image, this is within the width of the image, and for a 2D image this is 
+    /// within the height of the image as well as width. 3D images are separated by depth slices, and can have individual pixels set per slice by accessing the slice from an 
+    /// <see cref="IGorgonImage.Buffers"/> list.
+    /// </para>
+    /// <para>
+    /// If the pixel <paramref name="point"/> is outside of the <see cref="IGorgonImageBuffer.Bounds"/> of the <paramref name="buffer"/>, then no changes will be made.
     /// </para>
     /// </remarks>
     /// <seealso cref="IGorgonImage"/>
@@ -132,6 +140,8 @@ public abstract class GorgonPixel<T>()
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void SetPixel(IGorgonImageBuffer buffer, GorgonPoint point, GorgonColor color)
     {
+        ObjectDisposedException.ThrowIf(buffer.ImageData == GorgonPtr<byte>.NullPtr, buffer);
+
         if (!SupportsFormat(buffer.Format))
         {
             throw new NotSupportedException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, buffer.Format));
@@ -148,16 +158,17 @@ public abstract class GorgonPixel<T>()
     }
 
     /// <summary>
-    /// Function to retrieve the colour of a pixel at a specified coordinate.
+    /// Function to retrieve the color of a pixel at a specified coordinate.
     /// </summary>
     /// <param name="buffer">The buffer containing the pixel to evaluate.</param>
     /// <param name="point">The location of the pixel within the buffer width (and for 2D images, height).</param>
-    /// <returns>A <see cref="GorgonColor"/> representing the color if the pixel at the specified point.</returns>
+    /// <returns>A <see cref="GorgonColor"/> representing the color of the pixel at the specified point.</returns>
+    /// <exception cref="ObjectDisposedException">Thrown if the image that owns the <paramref name="buffer"/> has been disposed.</exception>
     /// <exception cref="NotSupportedException">Thrown if this pixel type does not support the format of the buffer.</exception>
     /// <remarks>
     /// <para>
-    /// This is a standard utility function allows an application to retrieve a pixel color from a point within the buffer. For a 1D image, this is within the width of the image, and for a 2D image this is 
-    /// within the height of the image as well as width. 3D images are separated by depth slices, and can have individual pixels set per slice by accessing the slice from an 
+    /// This is a standard utility function that allows an application to retrieve a pixel color from a point within the buffer. For a 1D image, this is within the width of the image, and for a 2D image 
+    /// this is within the height of the image as well as width. 3D images are separated by depth slices, and can have individual pixels read per slice by accessing the slice from an 
     /// <see cref="IGorgonImage.Buffers"/> list.
     /// </para>
     /// <para>
@@ -170,6 +181,8 @@ public abstract class GorgonPixel<T>()
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public GorgonColor GetPixel(IGorgonImageBuffer buffer, GorgonPoint point)
     {
+        ObjectDisposedException.ThrowIf(buffer.ImageData == GorgonPtr<byte>.NullPtr, buffer);
+
         if (!SupportsFormat(buffer.Format))
         {
             throw new NotSupportedException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, buffer.Format));
@@ -177,7 +190,7 @@ public abstract class GorgonPixel<T>()
 
         GorgonRectangle bounds = new(0, 0, buffer.Bounds.Width - 1, buffer.Bounds.Height - 1);
 
-        if (bounds.Contains(point))
+        if (!bounds.Contains(point))
         {
             return GorgonColors.BlackTransparent;
         }

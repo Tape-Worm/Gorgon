@@ -30,9 +30,7 @@ using Gorgon.Native;
 
 namespace Gorgon.Graphics.Imaging;
 
-/// <summary>
-/// An image buffer containing data about a part of a <see cref="IGorgonImage"/>
-/// </summary>
+/// <inheritdoc cref="IGorgonImageBuffer"/>
 public class GorgonImageBuffer
     : IGorgonImageBuffer
 {
@@ -44,6 +42,11 @@ public class GorgonImageBuffer
     /// <summary>
     /// An empty image buffer.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This buffer has no image data and is treated as a disposed buffer. Calling any of its methods that read or write image data will throw an <see cref="ObjectDisposedException"/>.
+    /// </para>
+    /// </remarks>
     public static readonly GorgonImageBuffer Empty = new(GorgonPtr<byte>.NullPtr, GorgonPitchLayout.Empty, 0, 0, 0, 0, 0, 0, new GorgonFormatInfo(BufferFormat.Unknown));
 
     /// <inheritdoc/>
@@ -168,104 +171,21 @@ public class GorgonImageBuffer
 
         updateAlphaRange ??= (FormatInformation.IsFloatingPoint || FormatInformation.IsSigned) ? new GorgonRange<float>(-1.0f, 1.0f) : new GorgonRange<float>(0, 1);
 
-        if (region is null)
-        {
-            region = _bounds;
-        }
-        else
-        {
-            region = GorgonRectangle.Intersect(region.Value, _bounds);
-        }
+        GorgonRectangle updateRegion = region is null ? _bounds : GorgonRectangle.Intersect(region.Value, _bounds);
 
-        if ((region.Value.Width <= 0) || (region.Value.Height <= 0))
+        if ((updateRegion.Width <= 0) || (updateRegion.Height <= 0))
         {
             return;
         }
 
-        GorgonPtr<byte> src = ImageData;
+        int rowSize = updateRegion.Width * FormatInformation.SizeInBytes;
+        GorgonPtr<byte> rowPtr = ImageData + (updateRegion.Top * PitchInformation.RowPitch) + (updateRegion.Left * FormatInformation.SizeInBytes);
 
-        float alpha;
-        float min = 0;
-        float max;
-        int rowSize = region.Value.Width * FormatInformation.SizeInBytes;
-
-        if (FormatInformation.IsFloatingPoint)
+        for (int y = 0; y < updateRegion.Height; ++y)
         {
-            float floatAlpha = alphaValue;
-            float floatMin = updateAlphaRange.Value.Minimum;
-            float floatMax = updateAlphaRange.Value.Maximum;
-
-            if (FormatInformation.IsHalf)
-            {
-                floatAlpha *= (float)Half.MaxValue;
-                floatMin *= (float)Half.MinValue;
-                floatMax *= (float)Half.MaxValue;
-            }
-            else
-            {
-                floatAlpha *= float.MaxValue;
-                floatMin *= float.MinValue;
-                floatMax *= float.MaxValue;
-            }
-
-            alpha = floatAlpha;
-            min = floatMin;
-            max = floatMax;
-        }
-        else if (!FormatInformation.IsSigned)
-        {
-            switch (FormatInformation.SizeInBytes)
-            {
-                case 2:
-                    alpha = alphaValue * 15;
-                    max = updateAlphaRange.Value.Maximum * 15;
-                    break;
-                case 4:
-                    alpha = alphaValue * byte.MaxValue;
-                    max = updateAlphaRange.Value.Maximum * byte.MaxValue;
-                    break;
-                case 8:
-                    alpha = alphaValue * ushort.MaxValue;
-                    max = updateAlphaRange.Value.Maximum * ushort.MaxValue;
-                    break;
-                case 16:
-                    alpha = alphaValue * uint.MaxValue;
-                    max = updateAlphaRange.Value.Maximum * uint.MaxValue;
-                    break;
-                default:
-                    throw new NotSupportedException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, Format));
-            }
-        }
-        else
-        {
-            switch (FormatInformation.SizeInBytes)
-            {
-                case 4:
-                    alpha = alphaValue * sbyte.MaxValue;
-                    min = updateAlphaRange.Value.Minimum * sbyte.MinValue;
-                    max = updateAlphaRange.Value.Maximum * sbyte.MaxValue;
-                    break;
-                case 8:
-                    alpha = alphaValue * short.MaxValue;
-                    min = updateAlphaRange.Value.Minimum * short.MinValue;
-                    max = updateAlphaRange.Value.Maximum * short.MaxValue;
-                    break;
-                case 16:
-                    alpha = alphaValue * int.MaxValue;
-                    min = updateAlphaRange.Value.Minimum * int.MinValue;
-                    max = updateAlphaRange.Value.Maximum * int.MaxValue;
-                    break;
-                default:
-                    throw new NotSupportedException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, Format));
-            }
-        }
-
-        for (int y = region.Value.Top; y < region.Value.Bottom; ++y)
-        {
-            GorgonPtr<byte> horzPtr = src + (region.Value.Left.Max(0) * FormatInformation.SizeInBytes);
-            ImageUtilities.SetAlphaScanline(horzPtr, rowSize, Format, alpha, min, max);
-            src += PitchInformation.RowPitch;
-        }
+            ImageUtilities.SetAlphaScanline(rowPtr, rowSize, Format, alphaValue, updateAlphaRange.Value.Minimum, updateAlphaRange.Value.Maximum);
+            rowPtr += PitchInformation.RowPitch;
+        }    
     }
 
     /// <inheritdoc/>
@@ -273,13 +193,7 @@ public class GorgonImageBuffer
     {
         ObjectDisposedException.ThrowIf(ImageData == GorgonPtr<byte>.NullPtr, this);
 
-        // We don't support compressed formats.
-        if (FormatInformation.IsCompressed)
-        {
-            throw new NotSupportedException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, Format));
-        }
-
-        if (buffer.ImageData.SizeInBytes == 0)
+        if (buffer.ImageData.Equals(GorgonPtr<byte>.NullPtr))
         {
             throw new ArgumentEmptyException(nameof(buffer));
         }
@@ -289,77 +203,68 @@ public class GorgonImageBuffer
             throw new ArgumentException(string.Format(Resources.GORIMG_ERR_BUFFER_FORMAT_MISMATCH, Format), nameof(buffer));
         }
 
-        // Do nothing if we're using an empty buffer.
         // If we're attempting to copy ourselves into... well, ourselves, then do nothing.
-        if ((buffer == this) || (buffer == Empty) || (buffer.ImageData == Empty.ImageData) || (buffer.ImageData == ImageData))
+        if ((buffer == this) || (buffer.ImageData == ImageData))
         {
             return;
         }
 
-        destination ??= GorgonPoint.Zero;
+        GorgonPoint destOffset = destination ?? GorgonPoint.Zero;
+        GorgonRectangle srcRect = sourceRegion is null ? _bounds : GorgonRectangle.Intersect(sourceRegion.Value, _bounds);
 
-        if (sourceRegion is not null)
-        {
-            // Clip the rectangle to the buffer size.
-            sourceRegion = GorgonRectangle.Intersect(sourceRegion.Value, _bounds);
-        }
-        else
-        {
-            sourceRegion = _bounds;
-        }
+        GorgonRectangle dstRect = GorgonRectangle.Intersect(new GorgonRectangle(destOffset.X, destOffset.Y,srcRect.Width, srcRect.Height),
+                                                            new GorgonRectangle(0, 0, buffer.Width, buffer.Height));
 
-        // If we've nothing to copy, then leave.
-        if ((sourceRegion.Value.IsEmpty)
-            || ((sourceRegion.Value.Right - sourceRegion.Value.Left) <= 0)
-            || ((sourceRegion.Value.Bottom - sourceRegion.Value.Top) <= 0))
+        // If nothing lands in the destination, then there's nothing to copy.
+        if ((dstRect.Width <= 0) || (dstRect.Height <= 0))
         {
             return;
         }
 
-        // If we try to place this image outside of the target buffer, then do nothing.
-        if ((destination.Value.X >= buffer.Width)
-            || (destination.Value.Y >= buffer.Height))
-        {
-            return;
-        }
+        // Move the source start by whatever was clipped off the destination's left/top edges.
+        int srcX = srcRect.X + (dstRect.X - destOffset.X);
+        int srcY = srcRect.Y + (dstRect.Y - destOffset.Y);
 
-        // Ensure that the regions actually fit within their respective buffers.
-        GorgonRectangle dstRegion = GorgonRectangle.Intersect(new GorgonRectangle(destination.Value.X, destination.Value.Y, sourceRegion.Value.Width, sourceRegion.Value.Height),
-                                                              _bounds);
-
-        // If the source/dest region is empty, then we have nothing to copy.
-        if ((dstRegion.IsEmpty)
-            || ((dstRegion.Right - dstRegion.Left) <= 0)
-            || ((dstRegion.Bottom - dstRegion.Top) <= 0))
-        {
-            return;
-        }
-
-        // If the buffers are identical in dimensions and have no offset, then just do a straight copy.
-        if ((buffer.Width == Width)
+        if ((srcX == 0)
+            && (srcY == 0)
+            && (dstRect.Equals(_bounds))
+            && (buffer.Width == Width)
             && (buffer.Height == Height)
-            && (sourceRegion.Value.Equals(dstRegion)))
+            && (buffer.PitchInformation.RowPitch == PitchInformation.RowPitch))
         {
             ImageData.CopyTo(buffer.ImageData);
             return;
         }
 
-        // Number of source bytes/scanline.
-        int srcLineSize = FormatInformation.SizeInBytes * (sourceRegion.Value.Right - sourceRegion.Value.Left);
-        GorgonPtr<byte> srcData = ImageData + (sourceRegion.Value.Top * PitchInformation.RowPitch) + (sourceRegion.Value.Left * FormatInformation.SizeInBytes);
+        GorgonPtr<byte> srcData;
+        GorgonPtr<byte> dstData;
 
-        // Number of dest bytes/scanline.
-        int dstLineSize = FormatInformation.SizeInBytes * (dstRegion.Right - dstRegion.Left);
-        GorgonPtr<byte> dstData = buffer.ImageData + (dstRegion.Top * buffer.PitchInformation.RowPitch) + (dstRegion.Left * FormatInformation.SizeInBytes);
+        int lineSize = dstRect.Width * FormatInformation.SizeInBytes;
+        int destHeight = dstRect.Height;
+        srcData = ImageData + (srcY * PitchInformation.RowPitch) + (srcX * FormatInformation.SizeInBytes);
+        dstData = buffer.ImageData + (dstRect.Y * buffer.PitchInformation.RowPitch) + (dstRect.X * FormatInformation.SizeInBytes);
 
-        // Get the smallest line size.
-        int minLineSize = dstLineSize.Min(srcLineSize);
-        int minHeight = (dstRegion.Bottom - dstRegion.Top).Min(sourceRegion.Value.Bottom - sourceRegion.Value.Top);
-
-        // Finally, copy our data.
-        for (int i = 0; i < minHeight; ++i)
+        // For compressed textures we need to copy using 4x4 blocks instead of pixels.
+        if (FormatInformation.IsCompressed)
         {
-            srcData.Slice(0, minLineSize).CopyTo(dstData.Slice(0, minLineSize));
+            int srcBlockX = srcX >> 2;
+            int srcBlockY = srcY >> 2;
+            int destBlockX = dstRect.X >> 2;
+            int destBlockY = dstRect.Y >> 2;
+            int destWidth = ((srcX + dstRect.Width + 3) >> 2) - srcBlockX;
+            destHeight = ((srcY + dstRect.Height + 3) >> 2) - srcBlockY;
+
+            destWidth = destWidth.Min(((buffer.Width + 3) >> 2) - destBlockX);
+            destHeight = destHeight.Min(((buffer.Height + 3) >> 2) - destBlockY);
+
+            lineSize = destWidth * FormatInformation.SizeInBytes;
+            srcData = ImageData + (srcBlockY * PitchInformation.RowPitch) + (srcBlockX * FormatInformation.SizeInBytes);
+            dstData = buffer.ImageData + (destBlockY * buffer.PitchInformation.RowPitch) + (destBlockX * FormatInformation.SizeInBytes);
+        }        
+
+        for (int y = 0; y < destHeight; ++y)
+        {
+            srcData.Slice(0, lineSize).CopyTo(dstData.Slice(0, lineSize));
 
             srcData += PitchInformation.RowPitch;
             dstData += buffer.PitchInformation.RowPitch;
@@ -371,13 +276,17 @@ public class GorgonImageBuffer
     {
         ObjectDisposedException.ThrowIf(ImageData == GorgonPtr<byte>.NullPtr, this);
 
-        // We don't support compressed formats.
+        GorgonRectangle finalRegion = GorgonRectangle.Intersect(clipRegion, _bounds);
+
         if (FormatInformation.IsCompressed)
         {
-            throw new NotSupportedException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, Format));
-        }
+            int srcX = finalRegion.X >> 2;
+            int srcY = finalRegion.Y >> 2;
+            int srcWidth = ((finalRegion.Right + 3) >> 2) - srcX;
+            int srcHeight = ((finalRegion.Bottom + 3) >> 2) - srcY;
 
-        GorgonRectangle finalRegion = GorgonRectangle.Intersect(clipRegion, _bounds);
+            finalRegion = new GorgonRectangle(srcX << 2, srcY << 2, (srcWidth << 2).Min(Width - (srcX << 2)), (srcHeight << 2).Min(Height - (srcY <<2)));
+        }
 
         if ((finalRegion.Width <= 0)
             || (finalRegion.Height <= 0))
@@ -387,10 +296,13 @@ public class GorgonImageBuffer
 
         GorgonImageBuffer result = new(finalRegion.Width, finalRegion.Height, Format);
 
-        CopyTo(result, clipRegion);
+        CopyTo(result, finalRegion);
 
         return result;
     }
+
+    // Function to detach this buffer from the image memory that it points into, once the image has freed or replaced that memory.
+    internal void Detach() => ImageData = GorgonPtr<byte>.NullPtr;
 
     /// <inheritdoc/>
     public void Fill(byte value)
@@ -449,15 +361,17 @@ public class GorgonImageBuffer
     /// <param name="width">The width for the buffer.</param>
     /// <param name="height">The height for the buffer.</param>
     /// <param name="format">Format of the buffer.</param>
+    /// <exception cref="NotSupportedException">Thrown when the <paramref name="format"/> is <see cref="BufferFormat.Unknown"/>.</exception>
+    /// <exception cref="GorgonException">Thrown when the <paramref name="width"/> or the <paramref name="height"/> is less than 1.</exception>
     /// <remarks>
     /// <para>
-    /// This constructor creates a new image buffer that users can use independently of a <see cref="IGorgonImage"/>. It can be used for updating image information periodically and copying it back into a base 
+    /// This constructor creates a new image bufferthat users can use independently of a <see cref="IGorgonImage"/>. It can be used for updating image information periodically and copying it back into a base 
     /// image. Or it can be used for a temporary buffer for a completely separate operation. 
     /// </para>
     /// <para>
     /// <note type="warning">
     /// <para>
-    /// This type implements <see cref="IDisposable"/>, ensure that the <see cref="IDisposable.Dispose"/> method is called on any instance when you are finished with it. Otherwise, a temporary memory leak 
+    /// This type implements <see cref="IDisposable"/>, so ensure that the <see cref="IDisposable.Dispose"/> method is called on any instance when you are finished with it. Otherwise, a temporary memory leak 
     /// may occur.
     /// </para>
     /// </note>
@@ -471,25 +385,17 @@ public class GorgonImageBuffer
         }
 
         FormatInformation = new GorgonFormatInfo(format);
+        PitchInformation = FormatInformation.GetPitchForFormat(width, height);
 
-        // We don't support compressed formats.
-        if (FormatInformation.IsCompressed)
-        {
-            throw new NotSupportedException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, Format));
-        }
-
-        long size = ((long)width * FormatInformation.SizeInBytes) * height;
-
-        if (size <= 0)
+        if (PitchInformation.SlicePitch <= 0)
         {
             throw new GorgonException(GorgonResult.CannotCreate, Resources.GORIMG_ERR_BUFFER_TOO_SMALL);
         }
 
         _bounds = new GorgonRectangle(0, 0, width, height);
-        _ownedBuffer = new GorgonNativeBuffer<byte>(size);
+        _ownedBuffer = new GorgonNativeBuffer<byte>(PitchInformation.SlicePitch);
         ImageData = (GorgonPtr<byte>)_ownedBuffer;
-
-        PitchInformation = FormatInformation.GetPitchForFormat(width, height);
+                
         MipLevel = 0;
         ArrayIndex = 0;
         DepthSliceIndex = 0;
@@ -497,6 +403,6 @@ public class GorgonImageBuffer
         Height = height;
         Depth = 1;
         Format = format;
-        SizeInBytes = size;
+        SizeInBytes = PitchInformation.SlicePitch;
     }
 }

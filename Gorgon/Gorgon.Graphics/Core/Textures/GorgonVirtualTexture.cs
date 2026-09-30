@@ -362,6 +362,10 @@ public sealed unsafe class GorgonVirtualTexture
     }
 
     /// <inheritdoc/>
+    private protected override IGorgonTextureView<GorgonTextureCommon> OnCreateTextureView(GorgonFormatInfo viewFormatInfo, short mipLevel, short mipCount, short arrayIndex, short arrayCount, float resourceMinLodClamp, byte planeIndex, bool owned) =>
+        new TextureView<GorgonVirtualTexture>(Graphics, Name, this, viewFormatInfo, mipLevel, mipCount, arrayIndex, arrayCount, resourceMinLodClamp, planeIndex, owned);
+
+    /// <inheritdoc/>
     private protected override ComPtr<ID3D12Resource2> OnCreateNative()
     {
         using ComPtr<ID3D12Resource2> result = default;
@@ -1062,8 +1066,9 @@ public sealed unsafe class GorgonVirtualTexture
     /// <para>
     /// A virtual texture must be no less than 4 MB (4,194,304 bytes) in size. Virtual textures are meant to store large amounts of texture data, and the minimum allocated physical size of a virtual texture is 
     /// 4 MB, which is large enough to hold a single array and mip level for a 1024x1024 32-bit texture. If the texture size is not large enough, then an exception will be thrown when one is created. To 
-    /// compute the size of a texture, users may take the requested <c>width x <see cref="GorgonFormatInfo.SizeInBytes">format size</see> x height x depth (3D only) x array count (2D only) x 1.34 (for a full 
-    /// 2D mip chain, 1.14 for a full 3D mip chain, or x 1 for a single mip level)</c> to roughly determine the texture size. 
+    /// compute the size of a texture, users may take the requested <c>width x <see cref="GorgonFormatInfo.SizeInBytes">format size</see> x height x depth (3D only) x array count (2D only) x 1.34 (for a full
+    /// 2D mip chain, 1.14 for a full 3D mip chain, or x 1 for a single mip level)</c> to roughly determine the texture size. For a <see cref="GorgonFormatInfo.IsCompressed">block compressed</see> format,
+    /// the format size is the size of a 4x4 block, so use <c>width / 4</c> and <c>height / 4</c> instead.
     /// </para>
     /// </remarks>
     /// <seealso cref="GorgonVirtualTextureInfo"/>

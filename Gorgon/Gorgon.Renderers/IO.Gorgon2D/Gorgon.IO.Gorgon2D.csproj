@@ -65,7 +65,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Gorgon.IO\FileSystem.Plugins\Gorgon.IO.FileSystem.Plugins.csproj" />
-    <ProjectReference Include="..\Animation.Gorgon2D\Gorgon.Animation.Gorgon2D.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">

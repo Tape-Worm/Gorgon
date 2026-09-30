@@ -25,11 +25,11 @@
 namespace Gorgon.Graphics.Imaging.Codecs;
 
 /// <summary>
-/// Provides options used when encoding a <see cref="IGorgonImage"/> for persistence
+/// Provides options used when encoding a <see cref="IGorgonImage"/> for persistence.
 /// </summary>
 /// <remarks>
 /// <para>
-/// This particular interface provides common WIC (Windows Imaging Component) specific options for use when encoding an image across multiple image formats
+/// This particular interface provides common WIC (Windows Imaging Component) specific options for use when encoding an image across multiple image formats.
 /// </para>
 /// </remarks>
 public interface IGorgonWicEncodingOptions
@@ -63,7 +63,7 @@ public interface IGorgonWicEncodingOptions
     }
 
     /// <summary>
-    /// Property to set or return the vertical dots-per-index for the encoded image.
+    /// Property to set or return the vertical dots-per-inch for the encoded image.
     /// </summary>
     double DpiY
     {

@@ -28,18 +28,19 @@ using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Properties;
 using Gorgon.Graphics.Imaging.Wic;
 using Gorgon.IO;
+using Gorgon.Native;
 
 namespace Gorgon.Graphics.Imaging.Codecs;
 
 /// <summary>
-/// Base class for the WIC based file formats (PNG, JPG, and BMP)
+/// Base class for the WIC based file formats (PNG, JPEG, GIF and BMP).
 /// </summary>
 /// <typeparam name="TWicEncOpt">The type of the options object used to provide options when encoding an image. Must be a reference type and implement <see cref="IGorgonWicEncodingOptions"/>.</typeparam>
 /// <typeparam name="TWicDecOpt">The type of the options object used to provide options when decoding an image. Must be a reference type and implement <see cref="IGorgonWicDecodingOptions"/>.</typeparam>
 /// <remarks>
 /// <para>
-/// A codec allows for reading and/or writing of data in an encoded format.  Users may inherit from this object to define their own 
-/// image formats, or use one of the predefined image codecs available in Gorgon
+/// A codec allows for reading and/or writing of data in an encoded format. Users may inherit from this object to define their own 
+/// image formats, or use one of the predefined image codecs available in Gorgon.
 /// </para>
 /// </remarks>
 public abstract class GorgonCodecWic<TWicEncOpt, TWicDecOpt>
@@ -81,7 +82,10 @@ public abstract class GorgonCodecWic<TWicEncOpt, TWicDecOpt>
         }
 
         /// <inheritdoc/>
-        public IGorgonOptionBag Options => new GorgonOptionBag([]);
+        public IGorgonOptionBag Options
+        {
+            get;
+        } = new GorgonOptionBag([]);
     }
 
     /// <summary>
@@ -127,7 +131,10 @@ public abstract class GorgonCodecWic<TWicEncOpt, TWicDecOpt>
         }
 
         /// <inheritdoc/>
-        public IGorgonOptionBag Options => throw new NotImplementedException();
+        public IGorgonOptionBag Options
+        {
+            get;
+        } = new GorgonOptionBag([]);
     }
 
     /// <summary>
@@ -181,19 +188,33 @@ public abstract class GorgonCodecWic<TWicEncOpt, TWicDecOpt>
     public override IReadOnlyList<BufferFormat> SupportedPixelFormats => _supportedFormats;
 
     /// <summary>
-    /// Property to return the list of names used to locate frame offsets in metadata.
+    /// Function to return the names used to locate frame offsets in metadata.
     /// </summary>
+    /// <returns>The names of the horizontal and vertical offsets, or empty names if the format does not store frame offsets.</returns>
     /// <remarks>
-    /// Implementors must put the horizontal offset name first, and the vertical name second.  Failure to do so will lead to incorrect offsets.
+    /// <para>
+    /// Implementors must put the horizontal offset name first, and the vertical name second. Failure to do so will lead to incorrect offsets.
+    /// </para>
     /// </remarks>
     protected virtual (string xOffset, string yOffset) GetFrameOffsetMetadataNames() => (string.Empty, string.Empty);
+
+    /// <summary>
+    /// Function to return the names used to locate the size of the canvas that the frames are placed on in metadata.
+    /// </summary>
+    /// <returns>The names of the canvas width and height, or empty names if the format does not store a canvas size.</returns>
+    /// <remarks>
+    /// <para>
+    /// Implementors must put the width name first, and the height name second. If the names are empty, then the size of the first frame is used as the size of the image.
+    /// </para>
+    /// </remarks>
+    protected virtual (string width, string height) GetCanvasSizeMetadataNames() => (string.Empty, string.Empty);
 
     /// <summary>
     /// Function to retrieve custom metadata when encoding an image frame.
     /// </summary>
     /// <param name="frameIndex">The index of the frame being encoded.</param>
     /// <param name="settings">The settings for the image being encoded.</param>
-    /// <returns>A dictionary containing the key/value pair describing the metadata to write to the frame, or <b>null</b> if the frame contains no metadata.</returns>
+    /// <returns>A dictionary containing the key/value pairs describing the metadata to write to the frame, or an empty dictionary if the frame has no metadata.</returns>
     protected virtual IReadOnlyDictionary<string, object> GetCustomEncodingMetadata(int frameIndex, IGorgonImageInfo settings) => new Dictionary<string, object>();
 
     /// <inheritdoc/>
@@ -212,9 +233,7 @@ public abstract class GorgonCodecWic<TWicEncOpt, TWicDecOpt>
                 streamAlias = new GorgonStreamSlice(stream, 0, size, stream.CanWrite);
             }
 
-            (string xOffsetName, string yOffsetName) = GetFrameOffsetMetadataNames();
-
-            IGorgonImage result = wic.DecodeImageData(streamAlias, size, SupportedFileFormat, DecodingOptions, xOffsetName, yOffsetName) ?? throw new IOException(string.Format(Resources.GORIMG_ERR_FILE_FORMAT_NOT_CORRECT, Codec));
+            IGorgonImage result = wic.DecodeImageData(streamAlias, size, SupportedFileFormat, DecodingOptions, GetFrameOffsetMetadataNames(), GetCanvasSizeMetadataNames()) ?? throw new IOException(string.Format(Resources.GORIMG_ERR_FILE_FORMAT_NOT_CORRECT, Codec));
 
             if (stream.Position != streamAlias.Position)
             {
@@ -239,8 +258,10 @@ public abstract class GorgonCodecWic<TWicEncOpt, TWicDecOpt>
     {
         if (!stream.CanWrite)
         {
-            throw new IOException(string.Format(Resources.GORIMG_ERR_STREAM_IS_READONLY));
+            throw new ArgumentException(Resources.GORIMG_ERR_STREAM_IS_READONLY, nameof(stream));
         }
+
+        ObjectDisposedException.ThrowIf(imageData.ImageData == GorgonPtr<byte>.NullPtr, imageData);
 
         WicUtilities wic = new();
 
@@ -251,7 +272,14 @@ public abstract class GorgonCodecWic<TWicEncOpt, TWicDecOpt>
                 throw new NotSupportedException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, imageData.Format));
             }
 
-            IReadOnlyDictionary<string, object> metaData = GetCustomEncodingMetadata(0, imageData);
+            // Each frame has its own metadata (e.g. GIF frame delays).
+            IReadOnlyDictionary<string, object>[] metaData = new IReadOnlyDictionary<string, object>[imageData.ArrayCount];
+
+            for (int i = 0; i < metaData.Length; ++i)
+            {
+                metaData[i] = GetCustomEncodingMetadata(i, imageData);
+            }
+
             wic.EncodeImageData(imageData, stream, SupportedFileFormat, EncodingOptions, metaData);
         }
         finally
@@ -263,23 +291,35 @@ public abstract class GorgonCodecWic<TWicEncOpt, TWicDecOpt>
     /// <inheritdoc/>
     public override GorgonImageInfo GetMetaData(Stream stream) => GetMetaData(stream, DecodingOptions);
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Function to read the meta data for image data within a stream, using specific decoding options.
+    /// </summary>
+    /// <param name="stream">The stream containing the metadata to read.</param>
+    /// <param name="options">The options used to decode the image data (e.g. to determine the pixel format).</param>
+    /// <returns>The image meta data as a <see cref="GorgonImageInfo"/> value.</returns>
+    /// <exception cref="ArgumentException">Thrown when the <paramref name="stream"/> is write-only or if the stream cannot perform seek operations.</exception>
+    /// <exception cref="IOException">Thrown when the pixel format of the image data is not supported.</exception>
+    /// <remarks>
+    /// <para>
+    /// The position of the <paramref name="stream"/> is restored when this method returns.
+    /// </para>
+    /// </remarks>
     public GorgonImageInfo GetMetaData(Stream stream, IGorgonWicDecodingOptions options)
     {
         if (!stream.CanRead)
         {
-            throw new IOException(Resources.GORIMG_ERR_STREAM_IS_WRITEONLY);
+            throw new ArgumentException(Resources.GORIMG_ERR_STREAM_IS_WRITEONLY, nameof(stream));
         }
 
         if (!stream.CanSeek)
         {
-            throw new IOException(Resources.GORIMG_ERR_STREAM_CANNOT_SEEK);
+            throw new ArgumentException(Resources.GORIMG_ERR_STREAM_CANNOT_SEEK, nameof(stream));
         }
 
         using WicUtilities wic = new();
 
-        // Get our WIC interface.				
-        GorgonImageInfo result = wic.GetImageMetaDataFromStream(stream, SupportedFileFormat, options);
+        // Get our WIC interface.
+        GorgonImageInfo result = wic.GetImageMetaDataFromStream(stream, SupportedFileFormat, options, GetCanvasSizeMetadataNames());
 
         return result.Format == BufferFormat.Unknown
             ? throw new IOException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, result.Format))
@@ -290,14 +330,10 @@ public abstract class GorgonCodecWic<TWicEncOpt, TWicDecOpt>
     /// Function to retrieve the horizontal and vertical offsets for the frames in a multi-frame image.
     /// </summary>
     /// <param name="fileName">The path to the file to retrieve the offsets from.</param>
-    /// <returns>A list of <c>Point</c> values that indicate the offset within the image for each frame.</returns>
+    /// <returns>A list of <see cref="GorgonPoint"/> values that indicate the offset within the image for each frame.</returns>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="fileName"/> parameter is empty.</exception>
-    /// <exception cref="EndOfStreamException">Thrown when an attempt to read beyond the end of the stream is made.</exception>
     /// <remarks>
-    /// <para>
-    /// For image codecs that support multiple frames, this reads a list of offset values for each frame so that the frame can be positioned correctly within the base image. If the image does not have 
-    /// multiple frames, or the codec does not support multiple frames, then an empty list is returned.
-    /// </para>
+    /// <inheritdoc cref="GetFrameOffsets(Stream)" path="/remarks/para[@type='common']"/>
     /// </remarks>
     public IReadOnlyList<GorgonPoint> GetFrameOffsets(string fileName)
     {
@@ -314,19 +350,29 @@ public abstract class GorgonCodecWic<TWicEncOpt, TWicDecOpt>
     /// Function to retrieve the horizontal and vertical offsets for the frames in a multi-frame image.
     /// </summary>
     /// <param name="stream">The stream containing the image data.</param>
-    /// <returns>A list of <c>Point</c> values that indicate the offset within the image for each frame.</returns>
-    /// <exception cref="IOException">Thrown when the stream is write-only.
-    /// <para>Thrown when the stream cannot perform seek operations.</para>
-    /// </exception>
-    /// <exception cref="EndOfStreamException">Thrown when an attempt to read beyond the end of the stream is made.</exception>
+    /// <returns>A list of <see cref="GorgonPoint"/> values that indicate the offset within the image for each frame.</returns>
+    /// <exception cref="ArgumentException">Thrown when the <paramref name="stream"/> is write-only or if the stream cannot perform seek operations.</exception>
     /// <remarks>
+    /// <para type="common">
+    /// For image codecs that support multiple frames, this reads the offset of each frame so that the frame can be positioned correctly within the base image. There is one offset for each frame in the image, 
+    /// including an image with a single frame. If the codec does not support multiple frames, or does not store frame offsets, then an empty list is returned.
+    /// </para>
     /// <para>
-    /// For image codecs that support multiple frames, this reads a list of offset values for each frame so that the frame can be positioned correctly within the base image. If the image does not have 
-    /// multiple frames, or the codec does not support multiple frames, then an empty list is returned.
+    /// The position of the <paramref name="stream"/> is restored when this method returns.
     /// </para>
     /// </remarks>
     public IReadOnlyList<GorgonPoint> GetFrameOffsets(Stream stream)
     {
+        if (!stream.CanRead)
+        {
+            throw new ArgumentException(Resources.GORIMG_ERR_STREAM_IS_WRITEONLY, nameof(stream));
+        }
+
+        if (!stream.CanSeek)
+        {
+            throw new ArgumentException(Resources.GORIMG_ERR_STREAM_CANNOT_SEEK, nameof(stream));
+        }
+
         if (!SupportsMultipleFrames)
         {
             return [];
@@ -351,17 +397,22 @@ public abstract class GorgonCodecWic<TWicEncOpt, TWicDecOpt>
     {
         if (!stream.CanRead)
         {
-            throw new IOException(Resources.GORIMG_ERR_STREAM_IS_WRITEONLY);
+            throw new ArgumentException(Resources.GORIMG_ERR_STREAM_IS_WRITEONLY, nameof(stream));
         }
 
         if (!stream.CanSeek)
         {
-            throw new IOException(Resources.GORIMG_ERR_STREAM_CANNOT_SEEK);
+            throw new ArgumentException(Resources.GORIMG_ERR_STREAM_CANNOT_SEEK, nameof(stream));
         }
 
         using WicUtilities wic = new();
 
-        GorgonImageInfo info = wic.GetImageMetaDataFromStream(stream, SupportedFileFormat, DecodingOptions);
+        if (!wic.CanDecode(stream, SupportedFileFormat))
+        {
+            return false;
+        }
+
+        GorgonImageInfo info = wic.GetImageMetaDataFromStream(stream, SupportedFileFormat, DecodingOptions, GetCanvasSizeMetadataNames());
 
         return info is not null && info.Format != BufferFormat.Unknown;
     }

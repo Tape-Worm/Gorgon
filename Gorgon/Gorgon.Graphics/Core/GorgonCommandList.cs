@@ -60,8 +60,6 @@ public sealed unsafe class GorgonCommandList
     private string _name;
     private readonly GorgonResourceCopier _resourceCopier;
     private readonly IGorgonResourceWriter _resourceWriter;
-    private readonly BarrierManager _barrierManager;
-
     private readonly CpuBufferAllocation [] _constantWriteData = new CpuBufferAllocation[GorgonGraphics.MaxRootConstantCount];
     private D3D12_CPU_DESCRIPTOR_HANDLE _depthStencilView;
     private bool _depthStencilChanged;
@@ -105,6 +103,14 @@ public sealed unsafe class GorgonCommandList
     }
 
     /// <summary>
+    /// Property to return the manager for the barriers used by this command list.
+    /// </summary>
+    internal BarrierManager BarrierManager
+    {
+        get;
+    }
+
+    /// <summary>
     /// Property to return the D3D command list. 
     /// </summary>
     internal ref readonly ComPtr<ID3D12GraphicsCommandList10> D3DGraphicsCommandList => ref _list;
@@ -144,6 +150,21 @@ public sealed unsafe class GorgonCommandList
     /// Property to return the list of scissor rectangles bound to this command list.
     /// </summary>
     public ReadOnlySpan<GorgonRectangle> ScissorRectangles => _scissors.AsSpan(0, (int)_scissorCount);
+
+    /// <summary>
+    /// Property to return whether the list is currently recording commands or not.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// If this value is <b>false</b>, then it means the command list is no longer usable in a <see cref="GorgonGraphics.Submit(GorgonCommandList)"/> call.
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="GorgonGraphics"/>
+    public bool IsRecording
+    {
+        get;
+        internal set;
+    }
 
     /// <summary>
     /// Property to return the depth/stencil buffer assigned to this command list.
@@ -378,7 +399,7 @@ public sealed unsafe class GorgonCommandList
             if (!buffer.IsMegaBufferResource)
             {
                 // If this buffer is not from the mega buffer, then just set its barrier as-is.
-                _barrierManager.AddBarrier(buffer, sync, access);
+                BarrierManager.AddBarrier(buffer, sync, access);
                 Queue.Tracker.TrackResource(buffer);
                 continue;
             }
@@ -404,7 +425,7 @@ public sealed unsafe class GorgonCommandList
             megaSync |= sync;
             megaAccess |= access;
 
-            _barrierManager.AddBarrier(buffer, megaSync, megaAccess);
+            BarrierManager.AddBarrier(buffer, megaSync, megaAccess);
             Queue.Tracker.TrackResource(buffer);
         }        
     }
@@ -561,14 +582,6 @@ public sealed unsafe class GorgonCommandList
     {
         ResetState(Name, Allocator);
 
-        _megaBuffer.Signal();
-        _textureTilePool.Signal();
-        Queue.AllocatorPool.Signal();
-
-        _uploadHeaps.Signal();
-        _samplerDescriptors.Signal();
-        _viewDescriptors.Signal();
-
         // Wait for the next frame to become available.
         Queue.WaitForFence(Queue.FrameFenceValue[currentFrame], Timeout.Infinite);
 
@@ -576,7 +589,7 @@ public sealed unsafe class GorgonCommandList
         Queue.Tracker.Signal();
 
         // Any previous barriers on this command list should be voided.
-        _barrierManager.Clear();
+        BarrierManager.Clear();
 
         // Ensure we have our heaps set prior to the root signature.
         ID3D12DescriptorHeap** heaps = stackalloc ID3D12DescriptorHeap*[2]
@@ -590,9 +603,9 @@ public sealed unsafe class GorgonCommandList
     }
 
     /// <summary>
-    /// Function to close the list for recording.
+    /// Function to commit and finalize any pending barriers.
     /// </summary>
-    internal void Close()
+    internal void CommitBarriers()
     {
         if (Presenters.Count != 0)
         {
@@ -604,13 +617,21 @@ public sealed unsafe class GorgonCommandList
         }
         else
         {
-            _barrierManager.Submit(this);
+            BarrierManager.Submit(this);
         }
 
+        BarrierManager.CopyCurrentToGlobal(Queue.Type);
+    }
+
+    /// <summary>
+    /// Function to close the list for recording.
+    /// </summary>
+    internal void Close()
+    {
         _list.Get()->Close()
             .ThrowIfFailed(GorgonResult.CannotExecute, () => string.Format(Resources.GORGFX_ERR_CANNOT_CLOSE_COMMAND_LIST, Name));
 
-        _barrierManager.CopyCurrentToGlobal(Queue.Type);
+        IsRecording = false;
         Array.Clear(_constantWriteData);
     }
 
@@ -625,7 +646,7 @@ public sealed unsafe class GorgonCommandList
         Name = newName;
         Allocator = allocator;
         Presenters.Clear();
-        _barrierManager.Clear();
+        BarrierManager.Clear();
         _currentIndexBuffer = null;
         _dirtyRootConstants = 0;
     }
@@ -635,7 +656,7 @@ public sealed unsafe class GorgonCommandList
     /// </summary>
     internal void Dispose()
     {
-        _barrierManager.Clear();
+        BarrierManager.Clear();
         _resourceCopier.Dispose();
 
         Graphics.Log.Print($"Destroying {nameof(GorgonCommandList)} '{Name}'...", LoggingLevel.Intermediate);
@@ -775,7 +796,7 @@ public sealed unsafe class GorgonCommandList
         ApplyPso(drawCall.Pso);
         ApplyViewSetup();
 
-        _barrierManager.Submit(this);
+        BarrierManager.Submit(this);
 
         _list.Get()->DrawInstanced((uint)drawCall.VertexCount, (uint)drawCall.InstanceCount, (uint)drawCall.StartVertex.Max(0), (uint)drawCall.StartInstance.Max(0));
     }
@@ -811,7 +832,7 @@ public sealed unsafe class GorgonCommandList
         ApplyPso(drawCall.Pso);
         ApplyViewSetup();
 
-        _barrierManager.Submit(this);
+        BarrierManager.Submit(this);
 
         _list.Get()->DrawIndexedInstanced((uint)drawCall.IndexCount, (uint)drawCall.InstanceCount, (uint)drawCall.StartIndex.Max(0), drawCall.BaseVertex.Max(0), (uint)drawCall.StartInstance.Max(0));
     }
@@ -962,15 +983,16 @@ public sealed unsafe class GorgonCommandList
     /// <para>
     /// <note type="important">
     /// <para>
-    /// Any texture that has been reset cannot be used again in the same command list. When the texture has been reset, we are telling the GPU that there is no intention to use the texture again until it has 
-    /// been submitted to the <see cref="GorgonGraphics.Submit(GorgonCommandList)"/> method.
+    /// Any texture that has been reset cannot be used again by any command list passed to the same <see cref="GorgonGraphics.Submit(ReadOnlySpan{GorgonCommandList})"/> call, including the command list
+    /// that reset it. When the texture has been reset, we are telling the GPU that there is no intention to use the texture again until those command lists have been submitted. Use the texture in a
+    /// command list for a later submit, or on the object it was reset for.
     /// </para>
     /// </note>
     /// </para>
     /// <para>
     /// <note type="warning">
     /// <para>
-    /// The reset operation <b>must</b> be called on a command list from the correct object. So, if the rsource was last used by a command list from a <see cref="GorgonGraphics"/> object, then only a command 
+    /// The reset operation <b>must</b> be called on a command list from the correct object. So, if the resource was last used by a command list from a <see cref="GorgonGraphics"/> object, then only a command 
     /// list from that object can reset the resource, otherwise an exception will be thrown.
     /// </para>    
     /// </note>
@@ -1350,11 +1372,11 @@ public sealed unsafe class GorgonCommandList
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public GorgonCommandList SetBarrier(GorgonTextureCommon texture, BarrierSync sync, BarrierAccess access, BarrierLayout layout, GorgonSubResourceRange? subResources = null, bool discard = false, bool force = false)
     {
-        _barrierManager.AddBarrier(this, texture, sync, access, layout, subResources, discard);
+        BarrierManager.AddBarrier(this, texture, sync, access, layout, subResources, discard);
 
-        if ((force) && (!_barrierManager.IsEmpty))
+        if ((force) && (!BarrierManager.IsEmpty))
         {
-            _barrierManager.Submit(this);
+            BarrierManager.Submit(this);
         }
 
         return this;
@@ -1377,11 +1399,11 @@ public sealed unsafe class GorgonCommandList
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public GorgonCommandList SetBarrier(GorgonGpuBufferCommon buffer, BarrierSync sync, BarrierAccess access, bool force = false)
     {
-        _barrierManager.AddBarrier(buffer, sync, access);
+        BarrierManager.AddBarrier(buffer, sync, access);
 
-        if ((force) && (!_barrierManager.IsEmpty))
+        if ((force) && (!BarrierManager.IsEmpty))
         {
-            _barrierManager.Submit(this);
+            BarrierManager.Submit(this);
         }
 
         return this;
@@ -1697,7 +1719,7 @@ public sealed unsafe class GorgonCommandList
         _viewDescriptors = Graphics.Descriptors.GpuViewDescriptors;
         Queue = queue;
         Allocator = allocator;
-        _barrierManager = new BarrierManager(graphics);
+        BarrierManager = new BarrierManager(graphics);
         _name = GorgonGraphicsFactory.GenerateName(name, nameof(GorgonCommandList));
 
         _list = CreateNative();

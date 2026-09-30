@@ -8,5 +8,6 @@ GUID_Container*
 PROPBAG2_TYPE
 WICPngFilterOption
 WICBitmapLockFlags
+WICBitmapDecoderCapabilities
 
 CoCreateInstance

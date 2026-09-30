@@ -249,7 +249,7 @@ public partial class MainForm : System.Windows.Forms.Form
                 | GorgonGraphicsDebugFlags.GpuBasedStateTrackingValidation
                 | GorgonGraphicsDebugFlags.ObjectTracking, log: GorgonExample.Log);
 #else
-            _factory = new(log: log);
+            _factory = new(log: GorgonExample.Log);
 #endif     
             IReadOnlyList<GorgonVideoAdapterInfo> deviceList = _factory.EnumerateAdapters();
 

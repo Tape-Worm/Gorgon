@@ -25,7 +25,7 @@
 namespace Gorgon.Graphics.Imaging.Codecs;
 
 /// <summary>
-/// Special case flags for decoding images
+/// Special case flags for decoding images.
 /// </summary>
 [Flags]
 public enum WICFlags
@@ -53,11 +53,11 @@ public enum WICFlags
 }
 
 /// <summary>
-/// Provides options used when decoding a <see cref="IGorgonImage"/>
+/// Provides options used when decoding a <see cref="IGorgonImage"/>.
 /// </summary>
 /// <remarks>
 /// <para>
-/// This particular interface provides common WIC (Windows Imaging Component) specific options for use when encoding an image across multiple image formats
+/// This particular interface provides common WIC (Windows Imaging Component) specific options for use when decoding an image across multiple image formats.
 /// </para>
 /// </remarks>
 public interface IGorgonWicDecodingOptions

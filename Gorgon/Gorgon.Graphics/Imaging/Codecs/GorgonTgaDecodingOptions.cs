@@ -29,13 +29,16 @@ using Gorgon.Graphics.Imaging.Properties;
 namespace Gorgon.Graphics.Imaging.Codecs;
 
 /// <summary>
-/// Options used when decoding an image from a stream as a TGA file
+/// Options used when decoding an image from a stream as a TGA file.
 /// </summary>
 public class GorgonTgaDecodingOptions
     : IGorgonImageCodecDecodingOptions
 {
+    // Whether an image with an alpha of 0 everywhere is made opaque.
+    private readonly GorgonOption<bool> _setZeroAlphaAsOpaque = GorgonOption.CreateOption(nameof(SetZeroAlphaAsOpaque), true, Resources.GORIMG_OPT_TGA_SETZEROALPHA_OPAQUE);
+
     /// <summary>
-    /// The default encoding options for PNG files.
+    /// The default decoding options for TGA files.
     /// </summary>
     public static readonly GorgonTgaDecodingOptions Default = new();
 
@@ -56,7 +59,7 @@ public class GorgonTgaDecodingOptions
     }
 
     /// <summary>
-    /// Property to set or return whether the to force alpha values of 0 in the image to be fully opaque.
+    /// Property to set or return whether to force alpha values of 0 in the image to be fully opaque.
     /// </summary>
     /// <remarks>
     /// <para>
@@ -72,17 +75,13 @@ public class GorgonTgaDecodingOptions
     /// </remarks>
     public bool SetZeroAlphaAsOpaque
     {
-        get => Options.GetOptionValue<bool>(nameof(SetZeroAlphaAsOpaque));
-
-        set => Options.SetOptionValue(nameof(SetZeroAlphaAsOpaque), value);
+        get => _setZeroAlphaAsOpaque.Value;
+        set => _setZeroAlphaAsOpaque.Value = value;
     }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonTgaDecodingOptions"/> class.
     /// </summary>
-    public GorgonTgaDecodingOptions() => Options = new GorgonOptionBag(
-                                      [
-                                          GorgonOption.CreateOption(nameof(SetZeroAlphaAsOpaque), true, Resources.GORIMG_OPT_TGA_SETZEROALPHA_OPAQUE)
-                                      ]);
+    public GorgonTgaDecodingOptions() => Options = new GorgonOptionBag([_setZeroAlphaAsOpaque]);
 
 }

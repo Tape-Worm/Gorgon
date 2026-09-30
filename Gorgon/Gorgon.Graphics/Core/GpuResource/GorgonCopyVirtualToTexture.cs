@@ -56,8 +56,8 @@ public readonly ref struct GorgonCopyVirtualToTexture(GorgonBox sourceRegion, Go
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This region will contain either the depth range for a <see cref="TextureType.Texture3D"/>, or the range of array indices for a <see cref="TextureType.Texture1D"/> or 
-    /// <see cref="TextureType.Texture2D"/> texture array.
+    /// This region will contain the depth range for a <see cref="TextureType.Texture3D"/>. For a <see cref="TextureType.Texture1D"/> or <see cref="TextureType.Texture2D"/> texture, the array
+    /// index is taken from the source allocation handle, so <see cref="GorgonBox.Z"/> and <see cref="GorgonBox.Depth"/> are ignored.
     /// </para>
     /// </remarks>
     public readonly GorgonBox SourceRegion = sourceRegion;

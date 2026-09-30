@@ -35,9 +35,9 @@ namespace Gorgon.Examples;
 /// Configuration information for the example application
 /// </summary>]
 public class ExampleConfig
-{
-    // The default instance.
-    private static ExampleConfig _default;
+{    
+    private readonly static Lazy<ExampleConfig> _default;    
+
     // Options used to deserialize a JSON string.
     private static readonly JsonSerializerOptions _jsonOptions = new()
     {
@@ -50,7 +50,8 @@ public class ExampleConfig
     /// <summary>
     /// Function to load the configuration.
     /// </summary>
-    private static void LoadConfig()
+    /// <returns>The configuration file.</returns>
+    private static ExampleConfig LoadConfig()
     {
         using StreamReader reader = new(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appsettings.json"));
         string configJson = reader.ReadToEnd();
@@ -59,28 +60,16 @@ public class ExampleConfig
 
         if ((result is null) || (result.Count != 1))
         {
-            _default = new ExampleConfig();
-            return;
+            return new ExampleConfig();
         }
 
-        _default = result[0].Deserialize<ExampleConfig>(_jsonOptions) ?? new ExampleConfig();
+        return result[0].Deserialize<ExampleConfig>(_jsonOptions) ?? new ExampleConfig();
     }
 
     /// <summary>
     /// Property to return the default settings.
     /// </summary>
-    public static ExampleConfig Default
-    {
-        get
-        {
-            if (_default is null)
-            {
-                LoadConfig();
-            }
-
-            return _default;
-        }
-    }
+    public static ExampleConfig Default => _default.Value;
 
     /// <summary>
     /// Property to set or return the path to the resources for the example.
@@ -90,7 +79,7 @@ public class ExampleConfig
     {
         get;
         set;
-    }
+    } = string.Empty;
 
     /// <summary>
     /// Property to set or return the path to the location for example plugins.
@@ -100,7 +89,7 @@ public class ExampleConfig
     {
         get;
         set;
-    }
+    } = string.Empty;
 
     /// <summary>
     /// Property to set or return the desired window resolution.
@@ -121,4 +110,9 @@ public class ExampleConfig
         get;
         set;
     } = true;
+
+    /// <summary>
+    /// Initializes a new static instance of <see cref="ExampleConfig"/>
+    /// </summary>
+    static ExampleConfig() => _default = new Lazy<ExampleConfig>(LoadConfig);
 }

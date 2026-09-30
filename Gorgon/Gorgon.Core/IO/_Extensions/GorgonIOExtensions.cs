@@ -22,7 +22,6 @@
 //
 
 using System.Buffers;
-using System.Globalization;
 using System.Runtime.InteropServices;
 using Gorgon.Core;
 using Gorgon.Math;
@@ -37,10 +36,6 @@ namespace Gorgon.IO;
 /// </summary>
 public static class GorgonIOExtensions
 {
-    // The system directory path separator.
-    private static readonly string _directoryPathSeparator = Path.DirectorySeparatorChar.ToString(CultureInfo.InvariantCulture);
-    // The system alternate path separator.
-    private static readonly string _altPathSeparator = Path.AltDirectorySeparatorChar.ToString(CultureInfo.InvariantCulture);
     // All illegal characters.
     private static readonly char[] _allIllegalChars = [.. Path.GetInvalidPathChars().Concat(Path.GetInvalidFileNameChars()).Distinct()];
     // All illegal directory characters.

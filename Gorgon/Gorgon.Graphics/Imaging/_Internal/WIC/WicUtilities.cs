@@ -302,8 +302,9 @@ internal unsafe class WicUtilities
     /// <param name="frameDecoder">The decoder for the image frame.</param>
     /// <param name="fileFormat">The file format of the image data.</param>
     /// <param name="options">Options used for decoding the image data.</param>
+    /// <param name="canvasSizeNames">The metadata names for the width and height of the canvas that the frames are placed on, or empty names to use the size of the first frame.</param>
     /// <returns>A <see cref="GorgonImageInfo"/> containing information about the image data.</returns>
-    private (GorgonImageInfo, Guid) GetImageMetaData(IWICBitmapDecoder* decoder, IWICBitmapFrameDecode* frameDecoder, Guid fileFormat, IGorgonWicDecodingOptions options)
+    private (GorgonImageInfo, Guid) GetImageMetaData(IWICBitmapDecoder* decoder, IWICBitmapFrameDecode* frameDecoder, Guid fileFormat, IGorgonWicDecodingOptions options, (string Width, string Height) canvasSizeNames)
     {
         IWICBitmapDecoderInfo* decoderInfo = null;
 
@@ -331,7 +332,12 @@ internal unsafe class WicUtilities
 
             frameDecoder->GetSize(out uint frameWidth, out uint frameHeight);
 
-            return (GorgonImageInfo.Create2DImageInfo(format, (int)frameWidth, (int)frameHeight, (int)arrayCount, 1), actualPixelFormat);
+            // Some formats (e.g. GIF) store the size of the canvas that their frames are placed on, and the frames can be smaller than the canvas.
+            (int width, int height) = (!string.IsNullOrWhiteSpace(canvasSizeNames.Width)) && (!string.IsNullOrWhiteSpace(canvasSizeNames.Height))
+                                          ? GetCanvasSize(decoder, canvasSizeNames)
+                                          : ((int)frameWidth, (int)frameHeight);
+
+            return (GorgonImageInfo.Create2DImageInfo(format, width, height, (int)arrayCount, 1), actualPixelFormat);
         }
         finally
         {
@@ -617,7 +623,7 @@ internal unsafe class WicUtilities
             throw new GorgonException(GorgonResult.FormatNotSupported, Resources.GORIMG_ERR_CANNOT_GET_PALETTE_FOR_INDEXED_FRAME);
         }
 
-        IList<GorgonColor> paletteColors = options.Options.GetOptionValue<IList<GorgonColor>>(DecOptPalette) ?? [];
+        IReadOnlyList<GorgonColor> paletteColors = options.Options.GetOptionValue<IReadOnlyList<GorgonColor>>(DecOptPalette) ?? [];
         float alpha = options.Options.GetOptionValue<float>(DecOptAlphaThreshold);
 
         // If there are no colors set, then extract it from the frame.
@@ -665,7 +671,7 @@ internal unsafe class WicUtilities
         }
 
         IWICPalette* wicPalette = null;
-        IList<GorgonColor> paletteColors = options.Options.GetOptionValue<IList<GorgonColor>>(DecOptPalette) ?? [];
+        IReadOnlyList<GorgonColor> paletteColors = options.Options.GetOptionValue<IReadOnlyList<GorgonColor>>(DecOptPalette) ?? [];
         float alpha = options.Options.GetOptionValue<float>(DecOptAlphaThreshold);
 
         _factory->CreatePalette(&wicPalette);
@@ -960,8 +966,8 @@ internal unsafe class WicUtilities
     /// <param name="imageStream">The stream that will contain the encoded data.</param>
     /// <param name="imageFileFormat">The file format to use for encoding.</param>
     /// <param name="options">The encoding options for the codec performing the encode operation.</param>
-    /// <param name="metaData">Optional metadata to further describe the encoding process.</param>
-    public void EncodeImageData(IGorgonImage imageData, Stream imageStream, Guid imageFileFormat, IGorgonWicEncodingOptions options, IReadOnlyDictionary<string, object> metaData)
+    /// <param name="metaData">The metadata to write for each frame, indexed by frame (array index).</param>
+    public void EncodeImageData(IGorgonImage imageData, Stream imageStream, Guid imageFileFormat, IGorgonWicEncodingOptions options, IReadOnlyList<IReadOnlyDictionary<string, object>> metaData)
     {
         GorgonComStreamWrapper streamWrapper = new(imageStream, false);
         IStream* iStream = (IStream*)streamWrapper;
@@ -998,7 +1004,7 @@ internal unsafe class WicUtilities
 
             for (int i = 0; i < frameCount; ++i)
             {
-                EncodeFrame(encoder, imageData, pixelFormat, options, i, metaData);
+                EncodeFrame(encoder, imageData, pixelFormat, options, i, metaData[i]);
             }
 
             encoder->Commit();
@@ -1017,108 +1023,6 @@ internal unsafe class WicUtilities
 
             iStream->Release();
             streamWrapper.Dispose();
-        }
-    }
-
-    /// <summary>
-    /// Function to decode all frames in a multi-frame image.
-    /// </summary>
-    /// <param name="fileFormat">The format of the encoded data.</param>
-    /// <param name="data">The image data that will receive the multi-frame data.</param>
-    /// <param name="convertFormat">The destination pixel format.</param>
-    /// <param name="stream">The stream containing the encoded data.</param>
-    /// <param name="decodingOptions">Options used in decoding the image.</param>
-    /// <param name="xOffsetMetadataName">The name of the X offset metadata.</param>
-    /// <param name="yOffsetMetadataName">The name of the Y offset metadata.</param>
-    private void ReadAllFrames(Guid fileFormat, GorgonImage data, Guid convertFormat, IWICStream* stream, IGorgonWicDecodingOptions decodingOptions, string xOffsetMetadataName, string yOffsetMetadataName)
-    {
-        IWICBitmap* tempBitmap = null;
-        IWICBitmapDecoder* decoder = null;
-        IWICBitmapFrameDecode* frameDecoder = null;
-        IWICBitmapSource* converter = null;
-        WICPaletteInfo palette = default;
-
-        try
-        {
-            decoder = _factory->CreateDecoder(&fileFormat, null);
-            decoder->Initialize((IStream*)stream, WICDecodeOptions.WICDecodeMetadataCacheOnDemand);
-
-            for (uint i = 0; i < data.ArrayCount; ++i)
-            {
-                IGorgonImageBuffer buffer = data.Buffers[0, (int)i];
-
-                decoder->GetFrame(i, &frameDecoder);
-                frameDecoder->GetPixelFormat(out Guid framePixelFormat);
-
-                if ((convertFormat == Guid.Empty) || (convertFormat == framePixelFormat))
-                {
-                    frameDecoder->CopyPixels(null, (uint)buffer.PitchInformation.RowPitch, (uint)buffer.PitchInformation.SlicePitch, (byte*)buffer.ImageData);
-                    return;
-                }
-
-                if ((framePixelFormat == PixelFormat.Format1bppIndexed) || (framePixelFormat == PixelFormat.Format2bppIndexed)
-                    || (framePixelFormat == PixelFormat.Format4bppIndexed) || (framePixelFormat == PixelFormat.Format8bppIndexed))
-                {
-                    palette = GetDecoderPalette(decodingOptions);
-                }
-
-                GorgonPoint offset = (!string.IsNullOrWhiteSpace(xOffsetMetadataName) && !string.IsNullOrWhiteSpace(yOffsetMetadataName)) ? GetFrameOffsetMetadataItems(frameDecoder, xOffsetMetadataName, yOffsetMetadataName)
-                                                                                                                                          : GorgonPoint.Zero;
-
-                // Get the pointer to the buffer and adjust its offset to that of the current frame.
-                GorgonPtr<byte> bufferPtr = buffer.ImageData + offset.Y * buffer.PitchInformation.RowPitch + offset.X * buffer.FormatInformation.SizeInBytes;
-
-                // Convert the format as necessary.
-                if (palette.Palette is not null)
-                {
-                    _factory->CreateBitmapFromSource((IWICBitmapSource*)frameDecoder, WICBitmapCreateCacheOption.WICBitmapNoCache, &tempBitmap);
-                    tempBitmap->SetPalette(palette.Palette);
-                    converter = GetFormatConverter((IWICBitmapSource*)tempBitmap, convertFormat, decodingOptions.Dithering, palette);
-                }
-                else
-                {
-                    converter = GetFormatConverter((IWICBitmapSource*)frameDecoder, convertFormat, decodingOptions.Dithering, default);
-                }
-
-                converter->CopyPixels(null, (uint)buffer.PitchInformation.RowPitch, (uint)buffer.PitchInformation.SlicePitch, (byte*)buffer.ImageData);
-
-                if (tempBitmap is not null)
-                {
-                    tempBitmap->Release();
-                    tempBitmap = null;
-                }
-
-                palette.Dispose();
-                palette = default;
-                converter->Release();
-                converter = null;
-                frameDecoder->Release();
-                frameDecoder = null;
-            }
-        }
-        finally
-        {
-            palette.Dispose();
-
-            if (tempBitmap is not null)
-            {
-                tempBitmap->Release();
-            }
-
-            if (converter is not null)
-            {
-                converter->Release();
-            }
-
-            if (frameDecoder is not null)
-            {
-                frameDecoder->Release();
-            }
-
-            if (decoder is not null)
-            {
-                decoder->Release();
-            }
         }
     }
 
@@ -1183,9 +1087,6 @@ internal unsafe class WicUtilities
     /// <param name="offsetY">The vertical offset to start cropping at.</param>
     private static void ExpandBitmapData(IWICBitmap* bitmap, IGorgonImageBuffer buffer, int offsetX, int offsetY)
     {
-        int pixelStride = buffer.FormatInformation.SizeInBytes;
-        GorgonPtr<byte> data = buffer.ImageData + (offsetY * buffer.PitchInformation.RowPitch + offsetX * pixelStride);
-
         IWICBitmapLock* bitmapLock = null;
 
         try
@@ -1282,6 +1183,35 @@ internal unsafe class WicUtilities
     }
 
     /// <summary>
+    /// Function to retrieve the size of the canvas that the frames of an image are placed on.
+    /// </summary>
+    /// <param name="decoder">The decoder for the image.</param>
+    /// <param name="canvasSizeNames">The metadata names for the width and height of the canvas.</param>
+    /// <returns>The width and height of the canvas.</returns>
+    private static (int Width, int Height) GetCanvasSize(IWICBitmapDecoder* decoder, (string Width, string Height) canvasSizeNames)
+    {
+        IWICMetadataQueryReader* reader = null;
+        PROPVARIANT widthProp = new();
+        PROPVARIANT heightProp = new();
+
+        try
+        {
+            decoder->GetMetadataQueryReader(&reader);
+            reader->GetMetadataByName(canvasSizeNames.Width, ref widthProp);
+            reader->GetMetadataByName(canvasSizeNames.Height, ref heightProp);
+
+            return (ConvertVariantToInt(ref widthProp), ConvertVariantToInt(ref heightProp));
+        }
+        finally
+        {
+            if (reader is not null)
+            {
+                reader->Release();
+            }
+        }
+    }
+
+    /// <summary>
     /// Function to retrieve metadata items from a stream containing an image.
     /// </summary>
     /// <param name="frame">The frame containing the metadata.</param>
@@ -1298,7 +1228,7 @@ internal unsafe class WicUtilities
         {
             frame->GetMetadataQueryReader(&reader);
             reader->GetMetadataByName(xOffsetMetadataName, ref xProp);
-            reader->GetMetadataByName(xOffsetMetadataName, ref yProp);
+            reader->GetMetadataByName(yOffsetMetadataName, ref yProp);
 
             return new(ConvertVariantToInt(ref xProp), ConvertVariantToInt(ref yProp));
         }
@@ -1332,7 +1262,7 @@ internal unsafe class WicUtilities
 
         try
         {
-            if ((string.IsNullOrWhiteSpace(yOffsetMetadataName)) || (string.IsNullOrWhiteSpace(yOffsetMetadataName)))
+            if ((string.IsNullOrWhiteSpace(xOffsetMetadataName)) || (string.IsNullOrWhiteSpace(yOffsetMetadataName)))
             {
                 return [];
             }
@@ -1405,13 +1335,74 @@ internal unsafe class WicUtilities
     }
 
     /// <summary>
+    /// Function to determine if the decoder for a file format can decode the data in a stream.
+    /// </summary>
+    /// <param name="stream">The stream containing the image data.</param>
+    /// <param name="fileFormat">The file format of the decoder to query.</param>
+    /// <returns><b>true</b> if the decoder can decode some or all of the images in the stream, <b>false</b> if not.</returns>
+    /// <remarks>
+    /// <para>
+    /// This uses the decoder's own capability check, rather than initializing the decoder, because initialization fails (and the interop layer throws) for data in 
+    /// another format.
+    /// </para>
+    /// </remarks>
+    public bool CanDecode(Stream stream, Guid fileFormat)
+    {
+        long oldPosition = stream.Position;
+        GorgonStreamSlice wrapper = new(stream, allowWrite: false);
+        GorgonComStreamWrapper comStream = new(wrapper, false);
+        IStream* iStream = (IStream*)comStream;
+        IWICStream* wicStream = null;
+        IWICBitmapDecoder* decoder = null;
+
+        try
+        {
+            _factory->CreateStream(&wicStream);
+            wicStream->InitializeFromIStream(iStream);
+
+            decoder = _factory->CreateDecoder(&fileFormat, null);
+
+            uint capabilities = 0;
+
+            // WIC fails this call with WINCODEC_ERR_UNKNOWNIMAGEFORMAT for data in another format, rather than returning no capabilities. QueryCapability
+            // is listed under preserveSigMethods in NativeMethods.json, so we get the HRESULT back instead of an exception.
+            if (decoder->QueryCapability((IStream*)wicStream, &capabilities).Failed)
+            {
+                return false;
+            }
+
+            const uint canDecode = (uint)(WICBitmapDecoderCapabilities.WICBitmapDecoderCapabilityCanDecodeAllImages
+                                        | WICBitmapDecoderCapabilities.WICBitmapDecoderCapabilityCanDecodeSomeImages);
+
+            return (capabilities & canDecode) != 0;
+        }
+        finally
+        {
+            if (decoder is not null)
+            {
+                decoder->Release();
+            }
+
+            if (wicStream is not null)
+            {
+                wicStream->Release();
+            }
+
+            iStream->Release();
+            wrapper.Dispose();
+            stream.Position = oldPosition;
+        }
+    }
+
+    /// <summary>
     /// Function to retrieve the metadata for an image from a stream.
     /// </summary>
     /// <param name="stream">The stream containing the image data.</param>
     /// <param name="fileFormat">The file format of the data in the stream.</param>
     /// <param name="options">Options for image decoding.</param>
+    /// <param name="canvasSizeNames">The metadata names for the width and height of the canvas that the frames are placed on, or empty names to use the size of the first frame.</param>
     /// <returns>The image metadata from the stream and the file format for the file in the stream.</returns>
-    public GorgonImageInfo GetImageMetaDataFromStream(Stream stream, Guid fileFormat, IGorgonWicDecodingOptions options)
+    public GorgonImageInfo GetImageMetaDataFromStream(Stream stream, Guid fileFormat, IGorgonWicDecodingOptions options, (string Width, string Height) canvasSizeNames)
     {
         long oldPosition = stream.Position;
         GorgonStreamSlice wrapper = new(stream, allowWrite: false);
@@ -1428,8 +1419,9 @@ internal unsafe class WicUtilities
 
             decoder = _factory->CreateDecoder(&fileFormat, null);
             decoder->Initialize((IStream*)wicStream, WICDecodeOptions.WICDecodeMetadataCacheOnDemand);
+            decoder->GetFrame(0, &frameDecoder);
 
-            (GorgonImageInfo imageInfo, Guid _) = GetImageMetaData(decoder, frameDecoder, fileFormat, options);
+            (GorgonImageInfo imageInfo, Guid _) = GetImageMetaData(decoder, frameDecoder, fileFormat, options, canvasSizeNames);
             return imageInfo;
         }
         finally
@@ -1462,10 +1454,10 @@ internal unsafe class WicUtilities
     /// <param name="length">The size of the image data to read, in bytes.</param>
     /// <param name="imageFileFormat">The file format for the image data in the stream.</param>
     /// <param name="decodingOptions">Options used for decoding the image data.</param>
-    /// <param name="xOffsetMetadataName">The name of the X offset metadata.</param>
-    /// <param name="yOffsetMetadataName">The name of the Y offset metadata.</param>
+    /// <param name="offsetNames">The metadata names for the horizontal and vertical offsets of each frame, or empty names if the frames have no offsets.</param>
+    /// <param name="canvasSizeNames">The metadata names for the width and height of the canvas that the frames are placed on, or empty names to use the size of the first frame.</param>
     /// <returns>A <see cref="IGorgonImage"/> containing the decoded image file data. Or <b>null</b> if the decoding fails.</returns>
-    public IGorgonImage DecodeImageData(Stream stream, long length, Guid imageFileFormat, IGorgonWicDecodingOptions decodingOptions, string xOffsetMetadataName, string yOffsetMetadataName)
+    public IGorgonImage DecodeImageData(Stream stream, long length, Guid imageFileFormat, IGorgonWicDecodingOptions decodingOptions, (string X, string Y) offsetNames, (string Width, string Height) canvasSizeNames)
     {
         _ = length;
 
@@ -1490,7 +1482,7 @@ internal unsafe class WicUtilities
 
             decoder->GetFrame(0, &firstFrameDecoder);
 
-            (GorgonImageInfo imageInfo, Guid pixelFormat) = GetImageMetaData(decoder, firstFrameDecoder, imageFileFormat, decodingOptions);
+            (GorgonImageInfo imageInfo, Guid pixelFormat) = GetImageMetaData(decoder, firstFrameDecoder, imageFileFormat, decodingOptions, canvasSizeNames);
 
             if (imageInfo.Format == BufferFormat.Unknown)
             {
@@ -1506,16 +1498,40 @@ internal unsafe class WicUtilities
 
                 decoder->GetFrame(i, &frameDecoder);
                 frameDecoder->GetPixelFormat(out Guid framePixelFormat);
+                frameDecoder->GetSize(out uint frameWidth, out uint frameHeight);
+
+                GorgonPoint offset = (!string.IsNullOrWhiteSpace(offsetNames.X)) && (!string.IsNullOrWhiteSpace(offsetNames.Y))
+                                    ? GetFrameOffsetMetadataItems(frameDecoder, offsetNames.X, offsetNames.Y)
+                                    : GorgonPoint.Zero;
+
+                // Frames can be smaller than the image and are placed by their offset (a malformed file can even place them partly outside of the image),
+                // so only the part of the frame that lands inside of the buffer is copied.
+                GorgonRectangle destRect = GorgonRectangle.Intersect(new GorgonRectangle(offset.X, offset.Y, (int)frameWidth, (int)frameHeight), buffer.Bounds);
+
+                if ((destRect.Width <= 0) || (destRect.Height <= 0))
+                {
+                    frameDecoder->Release();
+                    frameDecoder = null;
+                    continue;
+                }
+
+                WICRect srcRect = new()
+                {
+                    X = destRect.X - offset.X,
+                    Y = destRect.Y - offset.Y,
+                    Width = destRect.Width,
+                    Height = destRect.Height
+                };
+
+                int startByte = (destRect.Y * buffer.PitchInformation.RowPitch) + (destRect.X * buffer.FormatInformation.SizeInBytes);
+                GorgonPtr<byte> bufferPtr = buffer.ImageData + startByte;
+                uint bufferSize = (uint)(buffer.PitchInformation.SlicePitch - startByte);
 
                 if ((pixelFormat == Guid.Empty) || (pixelFormat == framePixelFormat))
                 {
-                    frameDecoder->CopyPixels(null, (uint)buffer.PitchInformation.RowPitch, (uint)buffer.PitchInformation.SlicePitch, (byte*)buffer.ImageData);
-
-                    if (frameDecoder is not null)
-                    {
-                        frameDecoder->Release();
-                        frameDecoder = null;
-                    }
+                    frameDecoder->CopyPixels(&srcRect, (uint)buffer.PitchInformation.RowPitch, bufferSize, (byte*)bufferPtr);
+                    frameDecoder->Release();
+                    frameDecoder = null;
                     continue;
                 }
 
@@ -1524,13 +1540,6 @@ internal unsafe class WicUtilities
                 {
                     palette = GetDecoderPalette(decodingOptions);
                 }
-
-                GorgonPoint offset = (!string.IsNullOrWhiteSpace(xOffsetMetadataName) && !string.IsNullOrWhiteSpace(yOffsetMetadataName))
-                                    ? GetFrameOffsetMetadataItems(frameDecoder, xOffsetMetadataName, yOffsetMetadataName)
-                                    : GorgonPoint.Zero;
-
-                // Get the pointer to the buffer and adjust its offset to that of the current frame.
-                GorgonPtr<byte> bufferPtr = buffer.ImageData + offset.Y * buffer.PitchInformation.RowPitch + offset.X * buffer.FormatInformation.SizeInBytes;
 
                 // Convert the format as necessary.
                 if (palette.Palette is not null)
@@ -1544,7 +1553,7 @@ internal unsafe class WicUtilities
                     converter = GetFormatConverter((IWICBitmapSource*)frameDecoder, pixelFormat, decodingOptions.Dithering, default);
                 }
 
-                converter->CopyPixels(null, (uint)buffer.PitchInformation.RowPitch, (uint)buffer.PitchInformation.SlicePitch, (byte*)bufferPtr);
+                converter->CopyPixels(&srcRect, (uint)buffer.PitchInformation.RowPitch, bufferSize, (byte*)bufferPtr);
 
                 palette.Dispose();
                 palette = default;
@@ -1628,11 +1637,11 @@ internal unsafe class WicUtilities
             // Begin scaling.
             for (int array = 0; array < destImageData.ArrayCount; ++array)
             {
-                int mipDepth = destImageData.Depth;
-
                 // Start at 1 because we're copying from the first mip level..
                 for (int mipLevel = 1; mipLevel < destImageData.MipCount; ++mipLevel)
                 {
+                    int mipDepth = destImageData.GetDepthCount(mipLevel);
+
                     for (int depth = 0; depth < mipDepth; ++depth)
                     {
                         IGorgonImageBuffer sourceBuffer = destImageData.Buffers[0, destImageData.ImageType == ImageDataType.Image3D ? destImageData.Depth / mipDepth * depth : array];
@@ -1643,19 +1652,17 @@ internal unsafe class WicUtilities
                         ScaleBitmapData((IWICBitmapSource*)bitmap, destBuffer, destBuffer.Width, destBuffer.Height, filter);
 
                         bitmap->Release();
-                    }
-
-                    // Scale the depth.
-                    if (mipDepth > 1)
-                    {
-                        mipDepth >>= 1;
+                        bitmap = null;
                     }
                 }
             }
         }
         finally
         {
-            bitmap->Release();
+            if (bitmap is not null)
+            {
+                bitmap->Release();
+            }
         }
     }
 
@@ -1708,7 +1715,10 @@ internal unsafe class WicUtilities
             {
                 for (int mip = 0; mip < calculatedMipLevels.Min(workingImage.MipCount); ++mip)
                 {
-                    int mipDepth = result.GetDepthCount(mip).Min(workingImage.Depth);
+                    // Each mip is half the size of the one above it, so the offset is too.
+                    int mipOffsetX = offsetX >> mip;
+                    int mipOffsetY = offsetY >> mip;
+                    int mipDepth = result.GetDepthCount(mip).Min(workingImage.GetDepthCount(mip));
 
                     for (int depth = 0; depth < mipDepth; ++depth)
                     {
@@ -1723,10 +1733,10 @@ internal unsafe class WicUtilities
                                 ScaleBitmapData((IWICBitmapSource*)bitmap, destBuffer, destBuffer.Width, destBuffer.Height, scaleFilter);
                                 break;
                             case ResizeMode.Crop:
-                                CropBitmapData((IWICBitmapSource*)bitmap, destBuffer, offsetX, offsetY, destBuffer.Width, destBuffer.Height);
+                                CropBitmapData((IWICBitmapSource*)bitmap, destBuffer, mipOffsetX, mipOffsetY, destBuffer.Width, destBuffer.Height);
                                 break;
                             case ResizeMode.Expand:
-                                ExpandBitmapData(bitmap, destBuffer, offsetX, offsetY);
+                                ExpandBitmapData(bitmap, destBuffer, mipOffsetX, mipOffsetY);
                                 break;
                         }
 

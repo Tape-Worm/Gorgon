@@ -97,6 +97,7 @@ internal unsafe sealed class VirtualTextureTilePool(GorgonGraphics graphics)
     private readonly Lock _signalLock = new();
     private readonly Queue<HeapAllocation> _mapQueue = [];
     private readonly Queue<HeapAllocation> _unmapQueue = [];
+    private readonly Queue<(D3D12_COMMAND_LIST_TYPE QueueType, ulong Fence, ComPtr<ID3D12Resource2> Resource)> _pendingDeallocations = [];
 
     /// <inheritdoc cref="GorgonGraphicsFactory.Dispose(bool)"/>
     private void Dispose(bool disposing)
@@ -107,12 +108,26 @@ internal unsafe sealed class VirtualTextureTilePool(GorgonGraphics graphics)
 
             while (_mapQueue.TryDequeue(out HeapAllocation? alloc))
             {
-                alloc.Resource.Dispose();
+                if (!alloc.Resource.IsNull)
+                {
+                    alloc.Resource.Get()->Release();
+                }                
             }
 
             while (_unmapQueue.TryDequeue(out HeapAllocation? alloc))
             {
-                alloc.Resource.Dispose();
+                if (!alloc.Resource.IsNull)
+                {
+                    alloc.Resource.Get()->Release();
+                }
+            }
+
+            while (_pendingDeallocations.TryDequeue(out (D3D12_COMMAND_LIST_TYPE, ulong, ComPtr<ID3D12Resource2> Resource) item))
+            {
+                if (!item.Resource.IsNull)
+                {
+                    item.Resource.Get()->Release();
+                }
             }
 
             _mapQueue.Clear();
@@ -120,6 +135,8 @@ internal unsafe sealed class VirtualTextureTilePool(GorgonGraphics graphics)
             _tiles.Clear();
             _emptyHeaps.Clear();
             _pendingDeletions.Clear();
+            _pendingDeallocations.Clear();
+            _allocations.Clear();
 
             for (int i = 0; i < _d3dHeaps.Count; i++)
             {
@@ -187,7 +204,7 @@ internal unsafe sealed class VirtualTextureTilePool(GorgonGraphics graphics)
     /// Function to processed any pending mapped tiles.
     /// </summary>
     /// <param name="queue">The command queue used to map the tiles and heap to the resource.</param>
-    private void ProcessMapped(ref readonly ComPtr<ID3D12CommandQueue> queue)
+    private void ProcessMapped(CommandQueue queue)
     {
         if (_mapQueue.Count == 0)
         {
@@ -237,17 +254,17 @@ internal unsafe sealed class VirtualTextureTilePool(GorgonGraphics graphics)
                     }
 
                     // Do update here.
-                    queue.Get()->UpdateTileMappings((PID3D12Resource2)alloc.Resource.Get(), destOffset, coords, ranges,
+                    queue.D3DQueue.Get()->UpdateTileMappings((PID3D12Resource2)alloc.Resource.Get(), destOffset, coords, ranges,
                         _d3dHeaps[heapIndex].Get(), 
                         1, null, &heapOffset, &count, 
                         D3D12_TILE_MAPPING_FLAGS.D3D12_TILE_MAPPING_FLAG_NONE);                    
                 }
             }
             finally
-            {
+            {                
                 if (!alloc.Resource.IsNull)
-                {
-                    alloc.Resource.Get()->Release();
+                {                    
+                    _pendingDeallocations.Enqueue((queue.Type, queue.FenceValue + 1, alloc.Resource));
                 }
             }
         }
@@ -257,7 +274,7 @@ internal unsafe sealed class VirtualTextureTilePool(GorgonGraphics graphics)
     /// Function to processed any pending unmapped tiles.
     /// </summary>
     /// <param name="queue">The command queue used to unmap the tiles and heap from the resource.</param>
-    private void ProcessUnmapped(ref readonly ComPtr<ID3D12CommandQueue> queue)
+    private void ProcessUnmapped(CommandQueue queue)
     {
         if (_unmapQueue.Count == 0)
         {
@@ -278,7 +295,7 @@ internal unsafe sealed class VirtualTextureTilePool(GorgonGraphics graphics)
                 D3D12_TILE_RANGE_FLAGS flags = D3D12_TILE_RANGE_FLAGS.D3D12_TILE_RANGE_FLAG_NULL;
 
                 // Do update here.
-                queue.Get()->UpdateTileMappings((PID3D12Resource2)alloc.Resource.Get(), 1, &coord, &range,
+                queue.D3DQueue.Get()->UpdateTileMappings((PID3D12Resource2)alloc.Resource.Get(), 1, &coord, &range,
                     null,
                     1, &flags, null, null,
                     D3D12_TILE_MAPPING_FLAGS.D3D12_TILE_MAPPING_FLAG_NONE);
@@ -287,7 +304,7 @@ internal unsafe sealed class VirtualTextureTilePool(GorgonGraphics graphics)
             {
                 if (!alloc.Resource.IsNull)
                 {
-                    alloc.Resource.Get()->Release();
+                    _pendingDeallocations.Enqueue((queue.Type, queue.FenceValue + 1, alloc.Resource));
                 }
             }
         }
@@ -433,6 +450,29 @@ internal unsafe sealed class VirtualTextureTilePool(GorgonGraphics graphics)
                 _unmapQueue.Enqueue(heaps);
                 _pendingDeletions.Dequeue();
             }
+
+            while (_pendingDeallocations.TryPeek(out (D3D12_COMMAND_LIST_TYPE QueueType, ulong Fence, ComPtr<ID3D12Resource2> Resource) item))
+            {
+                ulong completed = item.QueueType switch
+                {
+                    D3D12_COMMAND_LIST_TYPE.D3D12_COMMAND_LIST_TYPE_DIRECT => gfxCompleted,
+                    D3D12_COMMAND_LIST_TYPE.D3D12_COMMAND_LIST_TYPE_COMPUTE => computeCompleted,
+                    D3D12_COMMAND_LIST_TYPE.D3D12_COMMAND_LIST_TYPE_COPY => copyCompleted,
+                    _ => throw new GorgonException(GorgonResult.CannotEnumerate, string.Format(Resources.GORGFX_ERR_UNKNOWN_QUEUE, item.QueueType))
+                };
+
+                if (completed < item.Fence)
+                {
+                    break;
+                }                
+
+                if (!item.Resource.IsNull)
+                {
+                    item.Resource.Get()->Release();
+                }
+
+                _pendingDeallocations.Dequeue();
+            }
         }
     }
 
@@ -493,8 +533,8 @@ internal unsafe sealed class VirtualTextureTilePool(GorgonGraphics graphics)
     {
         using (_signalLock.EnterScope())
         {
-            ProcessUnmapped(in queue.D3DQueue);
-            ProcessMapped(in queue.D3DQueue);
+            ProcessUnmapped(queue);
+            ProcessMapped(queue);
         }
     }
 }

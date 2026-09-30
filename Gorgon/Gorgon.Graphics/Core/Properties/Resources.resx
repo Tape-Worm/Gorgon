@@ -654,4 +654,7 @@ There is no support for independent blending and blending logic.</value>
   <data name="GORGFX_ERR_HEIGHT_TOO_SMALL" xml:space="preserve">
     <value>The height {0} is too small, it must be at least {1}.</value>
   </data>
+  <data name="GORGFX_ERR_UNKNOWN_QUEUE" xml:space="preserve">
+    <value>The queue type '{0}' is not known.</value>
+  </data>
 </root>

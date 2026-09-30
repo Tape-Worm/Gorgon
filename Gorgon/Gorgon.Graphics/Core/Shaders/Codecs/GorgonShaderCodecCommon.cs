@@ -208,7 +208,7 @@ public abstract class GorgonShaderCodecCommon(GorgonGraphics graphics)
     /// <remarks>
     /// <para type="common">
     /// This method queries the shader data in the stream and returns a <see cref="ShaderMetadata"/> record that will tell the user what type of shader is in the stream, what shader model version was used, 
-    /// and which optional blocks of data the shader contains as a <see cref="ShaderDataBlocks"/> bit mask. If the <see cref="ShaderMetadata.ShaderModel"/> is <see cref="ShaderModel.Unsupported"/>, then the
+    /// and which optional blocks of data the shader contains as a <see cref="ShaderDataBlocks"/> bit mask. If the <see cref="ShaderMetadata.ShaderModel"/> is <see cref="ShaderModel.Unsupported"/>, then the 
     /// shader cannot be read or used.
     /// </para>
     /// <para>
@@ -256,8 +256,8 @@ public abstract class GorgonShaderCodecCommon(GorgonGraphics graphics)
     /// <param name="stream"><inheritdoc cref="OnDecodeFromStream(Stream, long)" path="/param[@name='stream']"/></param>
     /// <param name="size">[Optional] <inheritdoc cref="OnDecodeFromStream(Stream, long)" path="/param[@name='size']"/></param>
     /// <inheritdoc cref="OnDecodeFromStream(Stream, long)" path="/returns"/>
-    /// <exception cref="ArgumentException">Thrown if the <paramref name="stream"/> is write-only.</exception>
-    /// <exception cref="EndOfStreamException">Thrown if the <paramref name="size"/> is less than 1, or the <paramref name="size"/> is omitted and the current position of the <paramref name="stream"/> is at the end of the stream.</exception>
+    /// <exception cref="ArgumentException">Thrown if the <paramref name="stream"/> is write-only, or cannot perform seek operations.</exception>
+    /// <exception cref="EndOfStreamException">Thrown if the <paramref name="size"/> is less than 1, the <paramref name="size"/> plus the current position of the <paramref name="stream"/> exceeds the stream length, or the <paramref name="size"/> is omitted and the current position of the <paramref name="stream"/> is at the end of the stream.</exception>
     /// <remarks>
     /// <inheritdoc cref="OnDecodeFromStream(Stream, long)" path="/remarks/para[@type='common']"/>
     /// <para>
@@ -272,9 +272,14 @@ public abstract class GorgonShaderCodecCommon(GorgonGraphics graphics)
             throw new ArgumentException(Resources.GORGFX_ERR_STREAM_IS_WRITEONLY, nameof(stream));
         }
 
+        if (!stream.CanSeek)
+        {
+            throw new ArgumentException(Resources.GORGFX_ERR_STREAM_CANNOT_SEEK, nameof(stream));
+        }
+
         size ??= stream.Length - stream.Position;
 
-        if (size <= 0)
+        if ((size <= 0) || (stream.Position + size > stream.Length))
         {
             throw new EndOfStreamException();
         }

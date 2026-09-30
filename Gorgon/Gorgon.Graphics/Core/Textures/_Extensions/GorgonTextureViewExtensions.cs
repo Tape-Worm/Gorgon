@@ -214,6 +214,7 @@ public static class GorgonTextureViewExtensions
         /// <param name="name"><inheritdoc cref="Create1DTexture(GorgonGraphics, string, BufferFormat, int, short, short)" path="/param[@name='name']"/></param>
         /// <param name="image">The image to build the texture from.</param>
         /// <inheritdoc cref="Create1DTexture(GorgonGraphics, string, BufferFormat, int, short, short)" path="/returns"/>
+        /// <exception cref="ObjectDisposedException">Thrown if the <paramref name="image"/> has been disposed.</exception>
         /// <exception cref="GorgonException">
         /// <b>Texture Exceptions</b>
         /// <inheritdoc cref="GorgonTextureCommon.ValidateInfo(GorgonTextureInfo)" path="/exception/para"/>

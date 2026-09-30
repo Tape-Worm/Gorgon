@@ -2772,7 +2772,7 @@ internal class ImageContent
                     }
                     else
                     {
-                        imageUpdate.ConvertFromPremultipedAlpha();
+                        imageUpdate.ConvertFromPremultipliedAlpha();
                     }
 
                     imageUpdate.EndUpdate();

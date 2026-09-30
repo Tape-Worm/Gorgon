@@ -22,6 +22,7 @@
 //
 
 using System;
+using System.Buffers;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -252,7 +253,7 @@ internal sealed unsafe class CommandQueue : IDisposable
         }
 
         _previousFenceValue = fenceValue;
-    }
+    }    
 
     /// <summary>
     /// Function to execute command lists on the queue.
@@ -261,7 +262,31 @@ internal sealed unsafe class CommandQueue : IDisposable
     /// <exception cref="ObjectDisposedException">Thrown if the queue object has been disposed.</exception>
     public void Execute(ReadOnlySpan<GorgonCommandList> commandList)
     {
-        ObjectDisposedException.ThrowIf(_d3dQueue.IsNull, this);
+        ObjectDisposedException.ThrowIf(_d3dQueue.IsNull, this);        
+
+        void PopulateCommandList(GorgonCommandList list, ArraySegment<D3D12_BUFFER_BARRIER> bufferBarriers, ArraySegment<D3D12_TEXTURE_BARRIER> textureBarriers)
+        {
+            D3D12_BARRIER_GROUP* groups = stackalloc D3D12_BARRIER_GROUP[2];
+            int groupIndex = 0;
+            Span<D3D12_BUFFER_BARRIER> bufferSpan = bufferBarriers.AsSpan();
+            Span<D3D12_TEXTURE_BARRIER> textureSpan = textureBarriers.AsSpan();
+
+            fixed (D3D12_BUFFER_BARRIER* bufferPtr = bufferSpan)
+            fixed (D3D12_TEXTURE_BARRIER* texturePtr = textureSpan)
+            {
+                if (bufferBarriers.Count != 0)
+                {
+                    groups[groupIndex++] = new D3D12_BARRIER_GROUP((uint)bufferSpan.Length, bufferPtr);
+                }
+
+                if (textureBarriers.Count != 0)
+                {
+                    groups[groupIndex++] = new D3D12_BARRIER_GROUP((uint)textureSpan.Length, texturePtr);
+                }
+
+                list.D3DGraphicsCommandList.Get()->Barrier((uint)groupIndex, groups);
+            }
+        }
 
         using (_fenceLock.EnterScope())
         {
@@ -270,25 +295,88 @@ internal sealed unsafe class CommandQueue : IDisposable
                 return;
             }
 
-            if (commandList.Length == 1)
-            {
-                Execute(commandList[0]);
-                return;
-            }
-
             CommitReservedMemory();
 
-            ID3D12CommandList** commands = stackalloc ID3D12CommandList*[commandList.Length];
+            ID3D12CommandList** commands = stackalloc ID3D12CommandList*[commandList.Length + 1];
+            GorgonCommandList? previousList = null;
+            CommandAllocator? listAllocator = null;
+            GorgonCommandList? barrierList = null;
+            uint commandListCount = 0;
 
-            for (int i = 0; i < commandList.Length; ++i)
+            try
             {
-                GorgonCommandList list = commandList[i];
+                for (int i = 0; i < commandList.Length; ++i)
+                {
+                    GorgonCommandList list = commandList[i];
+                    (ArraySegment<D3D12_BUFFER_BARRIER> bufferBarriers, ArraySegment<D3D12_TEXTURE_BARRIER> textureBarriers) = list.BarrierManager.ResolveInitialStates(this);
 
-                commands[i] = list.D3DCommandList.Get();
-                _activeLists.Add(list);
+                    Debug.Assert(bufferBarriers.Array is not null, "Buffer barrier array is null.");
+                    Debug.Assert(textureBarriers.Array is not null, "Texture barrier array is null.");
+
+                    try
+                    {
+                        if ((bufferBarriers.Count != 0) || (textureBarriers.Count != 0))
+                        {
+                            if (previousList is null)
+                            {
+                                listAllocator = AllocatorPool.Get($"Resource transition allocator '{list.Name}'");
+                                barrierList = ListPool.Get($"Resource transition list '{list.Name}'", listAllocator);
+
+                                PopulateCommandList(barrierList, bufferBarriers, textureBarriers);
+                                barrierList.Close();
+                                commands[0] = barrierList.D3DCommandList.Get();
+                                ++commandListCount;
+                            }
+                            else
+                            {
+                                PopulateCommandList(previousList, bufferBarriers, textureBarriers);
+                            }
+                        }
+
+                        commands[commandListCount++] = list.D3DCommandList.Get();
+
+                        previousList?.Close();
+
+                        previousList = list;
+                        _activeLists.Add(list);
+
+                        list.CommitBarriers();
+                    }
+                    finally
+                    {
+                        ArrayPool<D3D12_BUFFER_BARRIER>.Shared.Return(bufferBarriers.Array, true);
+                        ArrayPool<D3D12_TEXTURE_BARRIER>.Shared.Return(textureBarriers.Array, true);
+                    }
+                }
+
+                previousList?.Close();
             }
+            catch
+            {
+                // A throw leaves command lists open. Close them, so the pools never hand out a command list, or
+                // an allocator, that D3D12 still considers to be recording.
+                for (int j = 0; j < commandList.Length; ++j)
+                {
+                    if (commandList[j].IsRecording)
+                    {
+                        commandList[j].Close();
+                    }
+                }
 
-            _d3dQueue.Get()->ExecuteCommandLists((uint)commandList.Length, commands);
+                if (barrierList is not null)
+                {
+                    ListPool.Return(barrierList);
+                }
+
+                throw;
+            }        
+
+            _d3dQueue.Get()->ExecuteCommandLists(commandListCount, commands);
+
+            if (barrierList is not null)
+            {
+                ListPool.Return(barrierList);
+            }
         }
     }
 
@@ -298,23 +386,7 @@ internal sealed unsafe class CommandQueue : IDisposable
     /// <param name="commandList">The command list to execute on the queue.</param>
     /// <inheritdoc cref="Execute(ReadOnlySpan{GorgonCommandList})" path="/exception"/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Execute(GorgonCommandList commandList)
-    {
-        ObjectDisposedException.ThrowIf(_d3dQueue.IsNull, this);
-
-        using (_fenceLock.EnterScope())
-        {
-            CommitReservedMemory();
-
-            _activeLists.Add(commandList);
-            ID3D12CommandList** commands = stackalloc ID3D12CommandList*[1]
-            {
-                commandList.D3DCommandList.Get()
-            };
-
-            _d3dQueue.Get()->ExecuteCommandLists(1, commands);
-        }
-    }
+    public void Execute(GorgonCommandList commandList) => Execute(new ReadOnlySpan<GorgonCommandList>(in commandList));
 
     /// <summary>
     /// Function to increment the fence for the queue.
@@ -322,10 +394,7 @@ internal sealed unsafe class CommandQueue : IDisposable
     /// <returns>The current fence value.</returns>
     public ulong IncrementFence()
     {
-        if (_d3dQueue.IsNull)
-        {
-            return ulong.MaxValue;
-        }
+        Debug.Assert(!_d3dQueue.IsNull, "The D3D12 backing queue is NULL.");
 
         using (_fenceLock.EnterScope())
         {

@@ -27,7 +27,7 @@ using Windows.Win32.Graphics.Imaging;
 namespace Gorgon.Graphics.Imaging;
 
 /// <summary>
-/// Flags to control how pixel conversion should be handled
+/// Flags to control how pixel conversion should be handled.
 /// </summary>
 [Flags]
 public enum ImageBitFlags
@@ -47,7 +47,7 @@ public enum ImageBitFlags
 }
 
 /// <summary>
-/// Filter for dithering an image when it is downsampled to a lower bit depth
+/// Filter for dithering an image when it is downsampled to a lower bit depth.
 /// </summary>
 public enum ImageDithering
 {
@@ -100,7 +100,7 @@ public enum ImageDithering
 }
 
 /// <summary>
-/// Filter to be applied to an image that's been stretched or shrunk
+/// Filter to be applied to an image that's been stretched or shrunk.
 /// </summary>
 public enum ImageFilter
 {
@@ -117,7 +117,7 @@ public enum ImageFilter
     /// </summary>
     Cubic = WICBitmapInterpolationMode.WICBitmapInterpolationModeCubic,
     /// <summary>
-    /// Destination pixel values are computed as a weighted average of the all the pixels that map to the new pixel.
+    /// Destination pixel values are computed as a weighted average of all the pixels that map to the new pixel.
     /// </summary>
     Fant = WICBitmapInterpolationMode.WICBitmapInterpolationModeFant,
     /// <summary>
@@ -127,7 +127,7 @@ public enum ImageFilter
 }
 
 /// <summary>
-/// Holds raw data that is used to represent an image
+/// Holds raw data that is used to represent an image.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -137,10 +137,10 @@ public enum ImageFilter
 /// <para>
 /// Images can access their data directly through a <see cref="GorgonPtr{T}"/> interface that allows safe access to raw, unmanaged memory where the image data is stored. In cases where images have 
 /// multiple parts like depth slices for a 3D image, or an array for 2D images, this object will provide access through a series of buffers that will point to the individual locations for depth slices, 
-/// array indices, and mip map levels. These buffers will also provide their own <see cref="GorgonPtr{T}"/> that will allow safe and direct access to the native memory where the buffer is located
+/// array indices, and mip map levels. These buffers will also provide their own <see cref="GorgonPtr{T}"/> that will allow safe and direct access to the native memory where the buffer is located.
 /// </para>
 /// <para>
-/// Because this object stored data in native memory instead of on the heaps provided by .NET, this object should be disposed by calling its <see cref="IDisposable.Dispose"/> method when it is no 
+/// Because this object stores its data in native memory instead of on the heaps provided by .NET, this object should be disposed by calling its <see cref="IDisposable.Dispose"/> method when it is no 
 /// longer required. Failure to do so might cause a temporary memory leak until the garbage collector can deal with it.
 /// </para>
 /// </remarks>
@@ -151,8 +151,10 @@ public interface IGorgonImage
     /// Property to return the pointer to the native memory holding the pixel data for the entire image.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// The memory pointed at by this pointer contains all mip levels, depth slices and array indices of the image. To access each mip level, depth slice or array index, use the <see cref="Buffers"/> 
     /// collection to retrieve a <see cref="IGorgonImageBuffer"/> and use its <see cref="IGorgonImageBuffer.ImageData"/> pointer.
+    /// </para>
     /// </remarks>
     /// <seealso cref="GorgonPtr{T}"/>
     /// <seealso cref="IGorgonImageBuffer"/>
@@ -186,55 +188,64 @@ public interface IGorgonImage
     }
 
     /// <summary>
-    /// Function to return the number of depth slices for a given mip map slice.
+    /// Function to return the number of depth slices for a given mip map level.
     /// </summary>
     /// <param name="mipLevel">The mip map level to look up.</param>
     /// <returns>The number of depth slices for the given mip map level.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="mipLevel"/> parameter is less than 0, or is equal to or greater than the <see cref="IGorgonImageInfo.MipCount"/>.</exception>
     /// <remarks>
     /// <para>
-    /// For 1D and 2D images, the mip level will always return 1.
+    /// For 1D, 2D and cube images, this method always returns 1.
     /// </para>
     /// </remarks>
-    /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="mipLevel"/> parameter exceeds, or equals the number of mip map levels for the image or is less than 0.</exception>
     int GetDepthCount(int mipLevel);
 
     /// <summary>
     /// Function to determine if the pixel format for this image can be converted to another pixel format.
     /// </summary>
     /// <param name="format">The pixel format to convert to.</param>
-    /// <returns><b>true</b> if the the current pixel format and the requested pixel format can be converted, <b>false</b> if not.</returns>
+    /// <returns><b>true</b> if the current pixel format can be converted to the requested pixel format, <b>false</b> if not.</returns>
+    /// <exception cref="ObjectDisposedException">Thrown when the image has been disposed.</exception>
+    /// <remarks>
+    /// <para>
+    /// This method always returns <b>true</b> for the current pixel format, and <b>false</b> for <see cref="BufferFormat.Unknown"/>.
+    /// </para>
+    /// </remarks>
     bool CanConvertToFormat(BufferFormat format);
 
     /// <summary>
     /// Function to determine if the source format can convert to any of the formats in the destination list.
     /// </summary>
     /// <param name="destFormats">List of destination formats to compare.</param>
-    /// <returns>A list of formats that the source format can be converted into, or an empty array if no conversion is possible.</returns>
+    /// <returns>A list of formats that the source format can be converted into, or an empty list if no conversion is possible.</returns>
+    /// <exception cref="ObjectDisposedException">Thrown when the image has been disposed.</exception>
     IReadOnlyList<BufferFormat> CanConvertToFormats(IReadOnlyList<BufferFormat> destFormats);
 
     /// <summary>
     /// Function to copy this image into a new image.
     /// </summary>
-    /// <returns>The new image containing and exact duplicate of its data and properties.</returns>
+    /// <returns>The new image containing an exact duplicate of its data and properties.</returns>
+    /// <exception cref="ObjectDisposedException">Thrown when the image has been disposed.</exception>
     IGorgonImage Copy();
 
     /// <summary>
     /// Function to begin updating the image.
     /// </summary>
     /// <returns>The fluent interface for editing the image.</returns>
-    /// <exception cref="NotSupportedException">Thrown if the image cannot be updated because of its format.</exception>
+    /// <exception cref="NotSupportedException">Thrown if the image uses a block compressed or a typeless format.</exception>
     /// <exception cref="InvalidOperationException">Thrown if the image is already being edited.</exception>
+    /// <exception cref="ObjectDisposedException">Thrown when the image has been disposed.</exception>
     /// <remarks>
     /// <para>
     /// This begins an update to the current image instance by returning a fluent interface (<see cref="IGorgonImageUpdateFluent"/>) that will provide operations that can be performed on the image 
     /// in place. 
     /// </para>
     /// <para>
-    /// If the image data is compressed using block compression, this method will throw an exception. Check the <see cref="FormatInfo"/> property to determine if the image has block compressed image 
-    /// data.
+    /// If the image data is compressed using block compression, or uses a typeless format, this method will throw an exception. Check the <see cref="FormatInfo"/> property to determine if the image 
+    /// has block compressed or typeless image data.
     /// </para>
     /// <para>
-    /// Once done updating the image, call the <see cref="IGorgonImageUpdateFluent.EndUpdate"/> method to apply or cancel the changes to the image data. This method must be called if <c>BeginUpdate</c>
+    /// Once done updating the image, call the <see cref="IGorgonImageUpdateFluent.EndUpdate"/> method to apply or cancel the changes to the image data. This method must be called if <c>BeginUpdate</c> 
     /// is to be called again. Calling <c>BeginUpdate</c> more than once without calling <see cref="IGorgonImageUpdateFluent.EndUpdate"/> will throw an exception.
     /// </para>
     /// </remarks>

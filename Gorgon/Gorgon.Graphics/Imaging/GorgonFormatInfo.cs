@@ -90,7 +90,8 @@ public enum PitchFlags
 /// </summary>
 /// <remarks>
 /// <para>
-/// This object will return the specifics for a <see cref="BufferFormat"/>, such as its bit depth, format grouping, and other information about the format. This is useful for determining how to handle a formatted 
+/// This object will return the specifics for a <see cref="BufferFormat"/>, such as its bit depth, format grouping, and other information about the format. This is useful for determining how to handle a 
+/// formatted 
 /// element in a buffer at the byte level.
 /// </para>
 /// </remarks>
@@ -133,7 +134,9 @@ public sealed record class GorgonFormatInfo
     /// Property to return whether the format is typeless or not.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// When this value returns <b>true</b>, then the components of the format may be interpreted in any way. If not, then the components of the format are expected to be interpreted as a known type.
+    /// </para>
     /// </remarks>
     public bool IsTypeless
     {
@@ -144,8 +147,10 @@ public sealed record class GorgonFormatInfo
     /// Property to return the bit depth for the format.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// This is the number of bits in the format, not per component. For example, <see cref="BufferFormat.R8G8B8A8_UNorm"/> would be 32 bits, and <see cref="BufferFormat.B5G6R5_UNorm"/> would be 16 
     /// bits.
+    /// </para>
     /// </remarks>
     public int BitDepth
     {
@@ -155,6 +160,11 @@ public sealed record class GorgonFormatInfo
     /// <summary>
     /// Property to return the size of the format, in bytes.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// For a <see cref="IsCompressed">block compressed</see> format, this is the size of a single 4x4 block of pixels (8 bytes for BC1 and BC4, 16 bytes for all others), not the size of a pixel.
+    /// </para>
+    /// </remarks>
     public int SizeInBytes
     {
         get;
@@ -164,7 +174,9 @@ public sealed record class GorgonFormatInfo
     /// Property to return whether the format has a depth component.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// When this value returns <b>true</b>, then this format can be considered valid for use as a depth buffer format (this depends on available hardware support).
+    /// </para>
     /// </remarks>
     public bool HasDepth
     {
@@ -175,7 +187,9 @@ public sealed record class GorgonFormatInfo
     /// Property to return whether the format has a stencil component.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// When this value returns <b>true</b>, then this format can be considered valid for use as a stencil buffer format (this depends on available hardware support).
+    /// </para>
     /// </remarks>
     public bool HasStencil
     {
@@ -215,10 +229,20 @@ public sealed record class GorgonFormatInfo
     }
 
     /// <summary>
+    /// Property to return whether the format can be used for video or not.
+    /// </summary>
+    public bool IsVideo
+    {
+        get;
+    }
+
+    /// <summary>
     /// Property to return whether the pixel format is compressed or not.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// If this value returns <b>true</b>, then the format is meant for use with images that contain block compressed data.
+    /// </para>
     /// </remarks>
     public bool IsCompressed
     {
@@ -229,30 +253,40 @@ public sealed record class GorgonFormatInfo
     /// Property to return whether this format uses an indexed palette or not.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// For some 8 bit formats, the pixel value is an index into a larger palette of color values. For example, if the index 10 is mapped to a color value of R:64, G:32, B:128, then any pixels with the value 
     /// of 10 will use that color from the palette.
+    /// </para>
     /// </remarks>
-    public bool IsPalettized => Format is BufferFormat.A8P8 or BufferFormat.P8;
+    public bool IsPalettized
+    {
+        get;
+    }
 
     /// <summary>
     /// Property to return whether this format uses floating point values.
     /// </summary>
-    public bool IsFloatingPoint => Format is BufferFormat.R11G11B10_Float or BufferFormat.D32_Float or BufferFormat.D32_Float_S8X24_UInt
-                                or BufferFormat.R16G16B16A16_Float or BufferFormat.R16G16_Float or BufferFormat.R16_Float
-                                or BufferFormat.R32G32B32A32_Float or BufferFormat.R32G32B32_Float or BufferFormat.R32G32_Float
-                                or BufferFormat.R32_Float or BufferFormat.R32_Float_X8X24_Typeless;
+    public bool IsFloatingPoint
+    {
+        get;
+    }
 
     /// <summary>
     /// Property to return whether this format uses half floating point values.
     /// </summary>
-    public bool IsHalf => Format is BufferFormat.R16G16B16A16_Float or BufferFormat.R16G16_Float or BufferFormat.R16_Float;
+    public bool IsHalf
+    {
+        get;
+    }
 
     /// <summary>
     /// Property to return whether the format uses signed values or not.
     /// </summary>
-    public bool IsSigned => (Format is BufferFormat.R16G16B16A16_SInt or BufferFormat.R16G16_SInt or BufferFormat.R16_SInt or BufferFormat.R32G32B32A32_SInt or BufferFormat.R32_SInt
-                                   or BufferFormat.R32G32B32_SInt or BufferFormat.R32G32_SInt or BufferFormat.R32_SInt or BufferFormat.R8G8B8A8_SInt or BufferFormat.R8G8_SInt or BufferFormat.R8_SInt)
-                            || (IsFloatingPoint);
+    public bool IsSigned
+    {
+        get;
+    }
+
 
     /// <summary>
     /// Function to retrieve the number of bytes a format occupies.
@@ -260,11 +294,16 @@ public sealed record class GorgonFormatInfo
     /// <param name="format">The format to evaluate.</param>
     /// <param name="bitDepth">The bit depth for the format.</param>
     /// <returns>The number of bytes for the format.</returns>
-    private static int GetByteCount(BufferFormat format, int bitDepth)
+    private int GetByteCount(BufferFormat format, int bitDepth)
     {
         if (format == BufferFormat.Unknown)
         {
             return 0;
+        }
+
+        if (IsCompressed)
+        {
+            return format is BufferFormat.BC1_Typeless or BufferFormat.BC1_UNorm or BufferFormat.BC1_UNorm_SRgb or BufferFormat.BC4_Typeless or BufferFormat.BC4_SNorm or BufferFormat.BC4_UNorm ? 8 : 16;
         }
 
         int sizeInBytes;
@@ -299,16 +338,25 @@ public sealed record class GorgonFormatInfo
     /// </summary>
     /// <param name="format">The format to evaluate.</param>
     /// <returns><b>true</b> if the format is a planar pixel format, <b>false</b> if not.</returns>
-    private static bool GetIsPlanar(BufferFormat format) => format is BufferFormat.NV12 or BufferFormat.P010 or BufferFormat.P016 or BufferFormat.Opaque420 or BufferFormat.NV11
-                                                            or BufferFormat.P208 or BufferFormat.V208 or BufferFormat.V408 or BufferFormat.D24_UNorm_S8_UInt or BufferFormat.D32_Float_S8X24_UInt
-                                                            or BufferFormat.X24_Typeless_G8_UInt;
+    private static bool GetIsPlanar(BufferFormat format) => format is BufferFormat.NV12 or BufferFormat.P010 or BufferFormat.P016 or BufferFormat.Opaque420 or BufferFormat.NV11 or BufferFormat.P208 or BufferFormat.V208 or BufferFormat.V408
+                                                            or BufferFormat.R32G8X24_Typeless or BufferFormat.D32_Float_S8X24_UInt or BufferFormat.R32_Float_X8X24_Typeless or BufferFormat.X32_Typeless_G8X24_UInt or BufferFormat.R24G8_Typeless
+                                                            or BufferFormat.D24_UNorm_S8_UInt or BufferFormat.R24_UNorm_X8_Typeless or BufferFormat.X24_Typeless_G8_UInt;
+
+    /// <summary>
+    /// Function to determine if a format is a video format.
+    /// </summary>
+    /// <param name="format">The format to evaluate.</param>
+    /// <returns><b>true</b> if the format is a video format, <b>false</b> if not.</returns>
+    private static bool GetIsVideo(BufferFormat format) => format is BufferFormat.AYUV or BufferFormat.Y410 or BufferFormat.Y416 or BufferFormat.NV12 or BufferFormat.P010 or BufferFormat.P016
+                                                           or BufferFormat.YUY2 or BufferFormat.Y210 or BufferFormat.Y216 or BufferFormat.NV11 or BufferFormat.Opaque420 or BufferFormat.AI44
+                                                           or BufferFormat.IA44 or BufferFormat.P8 or BufferFormat.A8P8 or BufferFormat.P208 or BufferFormat.V208 or BufferFormat.V408;
 
     /// <summary>
     /// Function to determine if a format is a packed pixel format.
     /// </summary>
     /// <param name="format">The format to evaluate.</param>
     /// <returns><b>true</b> if the format is a packed pixel format, <b>false</b> if not.</returns>
-    private static bool GetIsPacked(BufferFormat format) => format is BufferFormat.R8G8_B8G8_UNorm or BufferFormat.G8R8_G8B8_UNorm or BufferFormat.YUY2 or BufferFormat.Y210 or BufferFormat.Y216 or BufferFormat.Y410 or BufferFormat.Y416;
+    private static bool GetIsPacked(BufferFormat format) => format is BufferFormat.R8G8_B8G8_UNorm or BufferFormat.G8R8_G8B8_UNorm or BufferFormat.YUY2 or BufferFormat.Y210 or BufferFormat.Y216;
 
     /// <summary>
     /// Function to retrieve the number of bits required for the format.
@@ -416,17 +464,17 @@ public sealed record class GorgonFormatInfo
         BufferFormat.B4G4R4A4_UNorm => 16,
         BufferFormat.A4B4G4R4_UNorm => 16,
         BufferFormat.A8P8 => 16,
-        BufferFormat.P010 => 16,
-        BufferFormat.P016 => 16,
-        BufferFormat.Y210 => 16,
-        BufferFormat.Y216 => 16,
-        BufferFormat.YUY2 => 16,
-        BufferFormat.NV11 => 16,
-        BufferFormat.NV12 => 16,
-        BufferFormat.Opaque420 => 16,
+        BufferFormat.P010 => 24,
+        BufferFormat.P016 => 24,
+        BufferFormat.Y210 => 64,
+        BufferFormat.Y216 => 64,
+        BufferFormat.YUY2 => 32,
+        BufferFormat.NV11 => 12,
+        BufferFormat.NV12 => 12,
+        BufferFormat.Opaque420 => 12,
         BufferFormat.P208 => 16,
         BufferFormat.V208 => 16,
-        BufferFormat.V408 => 16,
+        BufferFormat.V408 => 24,
         BufferFormat.R8_Typeless => 8,
         BufferFormat.R8_UNorm => 8,
         BufferFormat.R8_UInt => 8,
@@ -436,7 +484,7 @@ public sealed record class GorgonFormatInfo
         BufferFormat.AI44 => 8,
         BufferFormat.IA44 => 8,
         BufferFormat.P8 => 8,
-        BufferFormat.R1_UNorm => 8,
+        BufferFormat.R1_UNorm => 1,
         _ => 0,
     };
 
@@ -445,11 +493,8 @@ public sealed record class GorgonFormatInfo
     /// </summary>
     /// <param name="format">Format to look up.</param>
     /// <returns><b>true</b> if the format is an sRGB format, or <b>false</b> if not.</returns>
-    private static bool GetSRgbState(BufferFormat format) => format switch
-    {
-        BufferFormat.R8G8B8A8_UNorm_SRgb or BufferFormat.B8G8R8A8_UNorm_SRgb or BufferFormat.B8G8R8X8_UNorm_SRgb or BufferFormat.BC1_UNorm_SRgb or BufferFormat.BC2_UNorm_SRgb or BufferFormat.BC3_UNorm_SRgb or BufferFormat.BC7_UNorm_SRgb => true,
-        _ => false
-    };
+    private static bool GetSRgbState(BufferFormat format) => format is BufferFormat.R8G8B8A8_UNorm_SRgb or BufferFormat.B8G8R8A8_UNorm_SRgb or BufferFormat.B8G8R8X8_UNorm_SRgb or BufferFormat.BC1_UNorm_SRgb
+                                                            or BufferFormat.BC2_UNorm_SRgb or BufferFormat.BC3_UNorm_SRgb or BufferFormat.BC7_UNorm_SRgb;
 
     /// <summary>
     /// Function to retrieve the number of components that make up a format.
@@ -550,11 +595,13 @@ public sealed record class GorgonFormatInfo
     /// </summary>
     /// <param name="format">Format of the buffer.</param>
     /// <returns><b>true</b> if the format represents a block compressed format, <b>false</b> if not.</returns>
-    private static bool GetCompressedState(BufferFormat format) => format switch
-    {
-        BufferFormat.BC1_Typeless or BufferFormat.BC1_UNorm or BufferFormat.BC1_UNorm_SRgb or BufferFormat.BC2_Typeless or BufferFormat.BC2_UNorm or BufferFormat.BC2_UNorm_SRgb or BufferFormat.BC3_Typeless or BufferFormat.BC3_UNorm or BufferFormat.BC3_UNorm_SRgb or BufferFormat.BC4_Typeless or BufferFormat.BC4_SNorm or BufferFormat.BC4_UNorm or BufferFormat.BC5_Typeless or BufferFormat.BC5_SNorm or BufferFormat.BC5_UNorm or BufferFormat.BC6H_Typeless or BufferFormat.BC6H_Sf16 or BufferFormat.BC6H_Uf16 or BufferFormat.BC7_Typeless or BufferFormat.BC7_UNorm or BufferFormat.BC7_UNorm_SRgb => true,
-        _ => false
-    };
+    private static bool GetCompressedState(BufferFormat format) => format is BufferFormat.BC1_Typeless or BufferFormat.BC1_UNorm or BufferFormat.BC1_UNorm_SRgb
+                                                                  or BufferFormat.BC2_Typeless or BufferFormat.BC2_UNorm or BufferFormat.BC2_UNorm_SRgb
+                                                                  or BufferFormat.BC3_Typeless or BufferFormat.BC3_UNorm or BufferFormat.BC3_UNorm_SRgb
+                                                                  or BufferFormat.BC4_Typeless or BufferFormat.BC4_SNorm or BufferFormat.BC4_UNorm
+                                                                  or BufferFormat.BC5_Typeless or BufferFormat.BC5_SNorm or BufferFormat.BC5_UNorm
+                                                                  or BufferFormat.BC6H_Typeless or BufferFormat.BC6H_Sf16 or BufferFormat.BC6H_Uf16
+                                                                  or BufferFormat.BC7_Typeless or BufferFormat.BC7_UNorm or BufferFormat.BC7_UNorm_SRgb;
 
     /// <summary>
     /// Function to determine which typeless group the format belongs to.
@@ -582,7 +629,7 @@ public sealed record class GorgonFormatInfo
         BufferFormat.R32G32B32A32_Typeless or BufferFormat.R32G32B32A32_Float or BufferFormat.R32G32B32A32_UInt or BufferFormat.R32G32B32A32_SInt => BufferFormat.R32G32B32A32_Typeless,
         BufferFormat.R8_Typeless or BufferFormat.R8_UNorm or BufferFormat.R8_UInt or BufferFormat.R8_SNorm or BufferFormat.R8_SInt => BufferFormat.R8_Typeless,
         BufferFormat.R8G8_Typeless or BufferFormat.R8G8_UNorm or BufferFormat.R8G8_UInt or BufferFormat.R8G8_SNorm or BufferFormat.R8G8_SInt => BufferFormat.R8G8_Typeless,
-        BufferFormat.R8G8B8A8_Typeless or BufferFormat.R8G8B8A8_UNorm or BufferFormat.R8G8B8A8_UNorm_SRgb or BufferFormat.R8G8B8A8_UInt or BufferFormat.R8G8B8A8_SNorm or BufferFormat.R8G8B8A8_SInt => BufferFormat.R8G8B8A8_Typeless,        
+        BufferFormat.R8G8B8A8_Typeless or BufferFormat.R8G8B8A8_UNorm or BufferFormat.R8G8B8A8_UNorm_SRgb or BufferFormat.R8G8B8A8_UInt or BufferFormat.R8G8B8A8_SNorm or BufferFormat.R8G8B8A8_SInt => BufferFormat.R8G8B8A8_Typeless,
         _ => BufferFormat.Unknown,
     };
 
@@ -591,31 +638,65 @@ public sealed record class GorgonFormatInfo
     /// </summary>
     /// <param name="format">The format to check.</param>
     /// <returns><b>true</b> if the format is typeless, or <b>false</b> if not.</returns>
-    private static bool GetTypelessState(BufferFormat format) => format switch
-    {
-        BufferFormat.R32G32B32A32_Typeless or BufferFormat.BC1_Typeless or BufferFormat.BC2_Typeless or BufferFormat.BC3_Typeless or BufferFormat.BC4_Typeless or BufferFormat.BC5_Typeless or BufferFormat.BC6H_Typeless or BufferFormat.BC7_Typeless or BufferFormat.R32G32B32_Typeless or BufferFormat.R32G32_Typeless or BufferFormat.R32G8X24_Typeless or BufferFormat.R32_Float_X8X24_Typeless or BufferFormat.X32_Typeless_G8X24_UInt or BufferFormat.R16G16B16A16_Typeless or BufferFormat.R32_Typeless or BufferFormat.R24G8_Typeless or BufferFormat.R24_UNorm_X8_Typeless or BufferFormat.R16G16_Typeless or BufferFormat.R10G10B10A2_Typeless or BufferFormat.R8G8B8A8_Typeless or BufferFormat.B8G8R8A8_Typeless or BufferFormat.B8G8R8X8_Typeless or BufferFormat.R16_Typeless or BufferFormat.R8G8_Typeless or BufferFormat.R8_Typeless => true,
-        _ => false,
-    };
+    private static bool GetTypelessState(BufferFormat format) => format is BufferFormat.R32G32B32A32_Typeless or BufferFormat.R32G32B32_Typeless or BufferFormat.R32G32_Typeless or BufferFormat.R32_Typeless
+                                                                or BufferFormat.R32G8X24_Typeless or BufferFormat.R32_Float_X8X24_Typeless or BufferFormat.X32_Typeless_G8X24_UInt
+                                                                or BufferFormat.R24G8_Typeless or BufferFormat.R24_UNorm_X8_Typeless
+                                                                or BufferFormat.R16G16B16A16_Typeless or BufferFormat.R16G16_Typeless or BufferFormat.R16_Typeless
+                                                                or BufferFormat.R10G10B10A2_Typeless or BufferFormat.R8G8B8A8_Typeless or BufferFormat.R8G8_Typeless or BufferFormat.R8_Typeless
+                                                                or BufferFormat.B8G8R8A8_Typeless or BufferFormat.B8G8R8X8_Typeless
+                                                                or BufferFormat.BC1_Typeless or BufferFormat.BC2_Typeless or BufferFormat.BC3_Typeless or BufferFormat.BC4_Typeless
+                                                                or BufferFormat.BC5_Typeless or BufferFormat.BC6H_Typeless or BufferFormat.BC7_Typeless;
 
     /// <summary>
     /// Function to determine if the format has an alpha channel.
     /// </summary>
     /// <param name="format">Format to check.</param>
     /// <returns><b>true</b> if the format contains an alpha channel, <b>false</b> if not.</returns>
-    private static bool GetAlphaChannel(BufferFormat format) => format switch
-    {
-        BufferFormat.R32G32B32A32_Float or BufferFormat.R32G32B32A32_Typeless or BufferFormat.R32G32B32A32_UInt
-        or BufferFormat.R32G32B32A32_SInt or BufferFormat.BC1_Typeless or BufferFormat.BC1_UNorm or BufferFormat.BC1_UNorm_SRgb
-        or BufferFormat.BC2_Typeless or BufferFormat.BC2_UNorm or BufferFormat.BC2_UNorm_SRgb or BufferFormat.BC3_Typeless or BufferFormat.BC3_UNorm
-        or BufferFormat.BC3_UNorm_SRgb or BufferFormat.BC7_Typeless or BufferFormat.BC7_UNorm or BufferFormat.BC7_UNorm_SRgb
-        or BufferFormat.R16G16B16A16_Typeless or BufferFormat.R16G16B16A16_Float or BufferFormat.R16G16B16A16_UNorm or BufferFormat.R16G16B16A16_UInt
-        or BufferFormat.R16G16B16A16_SNorm or BufferFormat.R16G16B16A16_SInt or BufferFormat.R10G10B10A2_Typeless or BufferFormat.R10G10B10A2_UNorm
-        or BufferFormat.R10G10B10A2_UInt or BufferFormat.R10G10B10_Xr_Bias_A2_UNorm or BufferFormat.R8G8B8A8_Typeless or BufferFormat.R8G8B8A8_UNorm
-        or BufferFormat.R8G8B8A8_UNorm_SRgb or BufferFormat.R8G8B8A8_UInt or BufferFormat.R8G8B8A8_SNorm or BufferFormat.R8G8B8A8_SInt
-        or BufferFormat.B8G8R8A8_UNorm or BufferFormat.B8G8R8A8_Typeless or BufferFormat.B8G8R8A8_UNorm_SRgb or BufferFormat.B5G5R5A1_UNorm
-        or BufferFormat.B4G4R4A4_UNorm or BufferFormat.A4B4G4R4_UNorm or BufferFormat.A8_UNorm => true,
-        _ => false,
-    };
+    private static bool GetAlphaChannel(BufferFormat format) => format is BufferFormat.R32G32B32A32_Float or BufferFormat.R32G32B32A32_Typeless or BufferFormat.R32G32B32A32_UInt
+                                                               or BufferFormat.R32G32B32A32_SInt or BufferFormat.BC1_Typeless or BufferFormat.BC1_UNorm or BufferFormat.BC1_UNorm_SRgb
+                                                               or BufferFormat.BC2_Typeless or BufferFormat.BC2_UNorm or BufferFormat.BC2_UNorm_SRgb or BufferFormat.BC3_Typeless or BufferFormat.BC3_UNorm
+                                                               or BufferFormat.BC3_UNorm_SRgb or BufferFormat.BC7_Typeless or BufferFormat.BC7_UNorm or BufferFormat.BC7_UNorm_SRgb
+                                                               or BufferFormat.R16G16B16A16_Typeless or BufferFormat.R16G16B16A16_Float or BufferFormat.R16G16B16A16_UNorm or BufferFormat.R16G16B16A16_UInt
+                                                               or BufferFormat.R16G16B16A16_SNorm or BufferFormat.R16G16B16A16_SInt or BufferFormat.R10G10B10A2_Typeless or BufferFormat.R10G10B10A2_UNorm
+                                                               or BufferFormat.R10G10B10A2_UInt or BufferFormat.R10G10B10_Xr_Bias_A2_UNorm or BufferFormat.R8G8B8A8_Typeless or BufferFormat.R8G8B8A8_UNorm
+                                                               or BufferFormat.R8G8B8A8_UNorm_SRgb or BufferFormat.R8G8B8A8_UInt or BufferFormat.R8G8B8A8_SNorm or BufferFormat.R8G8B8A8_SInt
+                                                               or BufferFormat.B8G8R8A8_UNorm or BufferFormat.B8G8R8A8_Typeless or BufferFormat.B8G8R8A8_UNorm_SRgb or BufferFormat.B5G5R5A1_UNorm
+                                                               or BufferFormat.B4G4R4A4_UNorm or BufferFormat.A4B4G4R4_UNorm or BufferFormat.A8_UNorm;
+
+
+    /// <summary>
+    /// Function to determine if a format uses floating point values or not.
+    /// </summary>
+    /// <param name="format">The format to evaluate.</param>
+    /// <returns><b>true</b> if the format uses floating point values, <b>false</b> if not.</returns>
+    private static bool GetIsFloatingPoint(BufferFormat format) => format is BufferFormat.R11G11B10_Float or BufferFormat.D32_Float or BufferFormat.D32_Float_S8X24_UInt
+                                or BufferFormat.R16G16B16A16_Float or BufferFormat.R16G16_Float or BufferFormat.R16_Float
+                                or BufferFormat.R32G32B32A32_Float or BufferFormat.R32G32B32_Float or BufferFormat.R32G32_Float
+                                or BufferFormat.R32_Float or BufferFormat.R32_Float_X8X24_Typeless;
+
+    /// <summary>
+    /// Function to determine if a format uses signed values or not.
+    /// </summary>
+    /// <param name="format">The format to evaluate.</param>
+    /// <returns><b>true</b> if the format uses signed values, <b>false</b> if not.</returns>
+    private static bool GetIsSigned(BufferFormat format) => format is BufferFormat.R32G32B32A32_SInt or BufferFormat.R32G32B32_SInt or BufferFormat.R32G32_SInt or BufferFormat.R32_SInt 
+                or BufferFormat.R16G16B16A16_SInt or BufferFormat.R16G16_SInt or BufferFormat.R16_SInt or BufferFormat.R8G8B8A8_SInt or BufferFormat.R8G8_SInt or BufferFormat.R8_SInt 
+                or BufferFormat.R16G16B16A16_SNorm or BufferFormat.R16G16_SNorm or BufferFormat.R16_SNorm or BufferFormat.R8G8B8A8_SNorm or BufferFormat.R8G8_SNorm or BufferFormat.R8_SNorm
+                or BufferFormat.BC4_SNorm or BufferFormat.BC5_SNorm or BufferFormat.BC6H_Sf16;
+
+    /// <summary>
+    /// Function to determine if a format uses half floating point values or not.
+    /// </summary>
+    /// <param name="format">The format to evaluate.</param>
+    /// <returns><b>true</b> if the format uses half floating point values, <b>false</b> if not.</returns>
+    private static bool GetIsHalf(BufferFormat format) => format is BufferFormat.R16G16B16A16_Float or BufferFormat.R16G16_Float or BufferFormat.R16_Float;
+
+    /// <summary>
+    /// Function to determine if a format uses an indexed palette or not.
+    /// </summary>
+    /// <param name="format">The format to evaluate.</param>
+    /// <returns><b>true</b> if the format uses an indexed palette, <b>false</b> if not.</returns>
+    private static bool GetIsPalettized(BufferFormat format) => format is BufferFormat.A8P8 or BufferFormat.P8;
 
     /// <summary>
     /// Function to return pitch information for this format.
@@ -637,12 +718,6 @@ public sealed record class GorgonFormatInfo
         // Do calculations for compressed formats.
         if (IsCompressed)
         {
-            int bpb = Format switch
-            {
-                BufferFormat.BC1_Typeless or BufferFormat.BC1_UNorm or BufferFormat.BC1_UNorm_SRgb or BufferFormat.BC4_Typeless or BufferFormat.BC4_SNorm or BufferFormat.BC4_UNorm => 8,
-                _ => 16,
-            };
-
             long numBlocksWide = 0;
             if (width > 0)
             {
@@ -653,7 +728,7 @@ public sealed record class GorgonFormatInfo
             {
                 numBlocksHigh = (height + 3) / 4;
             }
-            long rowBytes = numBlocksWide * bpb;
+            long rowBytes = numBlocksWide * SizeInBytes;
             long numBytes = rowBytes * numBlocksHigh;
 
             return new GorgonPitchLayout((int)rowBytes, (int)numBytes, (int)numBlocksWide, (int)numBlocksHigh);
@@ -673,7 +748,7 @@ public sealed record class GorgonFormatInfo
                     break;
                 case BufferFormat.Y210:
                 case BufferFormat.Y216:
-                    rowPitch = ((width + 1) >> 1) << 4;
+                    rowPitch = ((width + 1) >> 1) << 3;
                     slicePitch = rowPitch * height;
                     break;
                 default:
@@ -690,7 +765,7 @@ public sealed record class GorgonFormatInfo
             return new GorgonPitchLayout(rowPitch, slicePitch);
         }
 
-        if (IsPlanar)
+        if ((IsPlanar) && (IsVideo))
         {
             switch (Format)
             {
@@ -729,7 +804,7 @@ public sealed record class GorgonFormatInfo
                     }
 
                     rowPitch = width;
-                    slicePitch = rowPitch * (height + ((height + 1) >> 1) << 1);
+                    slicePitch = rowPitch * (height + (((height + 1) >> 1) << 1));
                     break;
                 case BufferFormat.V408:
                     rowPitch = width;
@@ -740,7 +815,7 @@ public sealed record class GorgonFormatInfo
                     break;
             }
 
-            Debug.Assert(rowPitch != 0, "Format [" + Format + "] is a planar format. Cannot to extract pitch/slice info.");
+            Debug.Assert(rowPitch != 0, "Format [" + Format + "] is a planar format. Cannot extract pitch/slice info.");
 
             return new GorgonPitchLayout(rowPitch, slicePitch);
         }
@@ -802,12 +877,14 @@ public sealed record class GorgonFormatInfo
     /// </para>
     /// </remarks>
     public int CalculateScanlines(int height) => IsCompressed
-            ? 4.Max((height + 3) >> 2)
+            ? 1.Max((height + 3) >> 2)
             : Format switch
             {
                 // These are planar formats.
-                BufferFormat.NV11 => height << 1,
-                BufferFormat.NV12 or BufferFormat.P010 or BufferFormat.P016 or BufferFormat.Opaque420 => height + ((height + 1) >> 1),
+                BufferFormat.NV11 or BufferFormat.P208 => height << 1,
+                BufferFormat.V208 => height + (((height + 1) >> 1) << 1),
+                BufferFormat.V408 => height + ((height >> 1) << 2),
+                BufferFormat.NV12 or BufferFormat.P010 or BufferFormat.P016 or BufferFormat.Opaque420 => height + ((height + 1) >> 1),                
                 // All other formats report height as-is.
                 _ => height
             };
@@ -818,7 +895,8 @@ public sealed record class GorgonFormatInfo
     /// <param name="format">The format to evaluate.</param>
     /// <remarks>
     /// <para>
-    /// If the <paramref name="format"/> parameter is set to <see cref="BufferFormat.Unknown"/>, then the members of this object, except for <see cref="Group"/>, will be set to default values and will not be accurate. 
+    /// If the <paramref name="format"/> parameter is set to <see cref="BufferFormat.Unknown"/>, then the members of this object, except for <see cref="Group"/>, will be set to default values and will not be 
+    /// accurate.
     /// </para>
     /// </remarks>
     public GorgonFormatInfo(BufferFormat format)
@@ -833,10 +911,15 @@ public sealed record class GorgonFormatInfo
         Group = GetGroup(format);
         IsPacked = GetIsPacked(format);
         IsPlanar = GetIsPlanar(format);
+        IsVideo = GetIsVideo(format);
         IsCompressed = GetCompressedState(format);
         IsTypeless = GetTypelessState(format);
         HasAlpha = GetAlphaChannel(format);
         IsSRgb = GetSRgbState(format);
+        IsFloatingPoint = GetIsFloatingPoint(format);
+        IsHalf = GetIsHalf(format);
+        IsSigned = IsFloatingPoint || GetIsSigned(format);
+        IsPalettized = GetIsPalettized(format);
         (HasDepth, HasStencil) = GetDepthState(format);
         BitDepth = GetBitDepth(format);
         ComponentCount = GetComponentCount(format);

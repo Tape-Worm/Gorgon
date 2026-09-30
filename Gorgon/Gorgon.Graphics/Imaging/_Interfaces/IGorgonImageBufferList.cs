@@ -26,24 +26,26 @@
 namespace Gorgon.Graphics.Imaging;
 
 /// <summary>
-/// A container for a list of image buffers
+/// A container for a list of image buffers.
 /// </summary>
 public interface IGorgonImageBufferList
     : IReadOnlyList<IGorgonImageBuffer>
 {
     /// <summary>
-    /// Property to return the buffer for the given mip map level and depth slice.
+    /// Property to return the buffer for the given mip map level and depth slice or array index.
     /// </summary>
-    /// <exception cref="ArgumentOutOfRangeException">Thrown when the array index or the depth slice parameters are larger than their respective boundaries, or less than 0. Only thrown when this assembly is compiled in DEBUG mode.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="mipLevel"/> or the <paramref name="depthSliceOrArrayIndex"/> is less than 0, or is equal to or greater than the number of mip map levels, depth slices (for the requested mip map level) or array indices for the image.</exception>
+    /// <exception cref="IndexOutOfRangeException">Thrown when the list has no buffers (e.g. the image has been disposed).</exception>
     /// <remarks>
     /// <para>
-    /// To get the array length, or the mip map count, use the <see cref="IGorgonImage"/>.<see cref="IGorgonImageInfo.ArrayCount"/>, or <see cref="IGorgonImage"/>.<see cref="IGorgonImageInfo.MipCount"/> property.
+    /// To get the array length, or the mip map count, use the <see cref="IGorgonImage"/>.<see cref="IGorgonImageInfo.ArrayCount"/>, or <see cref="IGorgonImage"/>.<see cref="IGorgonImageInfo.MipCount"/> 
+    /// property.
     /// </para>
     /// <para>
     /// To get the depth slice count, use the <see cref="IGorgonImage.GetDepthCount"/> method.
     /// </para>
     /// <para>
-    /// The <paramref name="depthSliceOrArrayIndex"/> parameter is used as an array index if the image is 1D or 2D.  If it is a 3D image, then the value indicates a depth slice.
+    /// The <paramref name="depthSliceOrArrayIndex"/> parameter is used as an array index if the image is 1D, 2D or a cube. If it is a 3D image, then the value indicates a depth slice.
     /// </para>
     /// </remarks>
     IGorgonImageBuffer this[int mipLevel, int depthSliceOrArrayIndex = 0]
@@ -62,15 +64,15 @@ public interface IGorgonImageBufferList
     /// Function to retrieve the index of a buffer within the list using a mip map level and optional depth slice or array index.
     /// </summary>
     /// <param name="mipLevel">The mip map level to look up.</param>
-    /// <param name="depthSliceOrArrayIndex">[Optional] The depth slice (for 3D images) or array index (for 1D or 2D images) to look up.</param>
-    /// <returns>The index of the buffer within the list, or -1 if not found.</returns>
+    /// <param name="depthSliceOrArrayIndex">[Optional] The depth slice (for 3D images) or array index (for 1D, 2D or cube images) to look up.</param>
+    /// <returns>The index of the buffer within the list, or -1 if the mip map level, depth slice or array index is outside of the image.</returns>
     int IndexOf(int mipLevel, int depthSliceOrArrayIndex = 0);
 
     /// <summary>
-    /// Function to determine if a buffer with the given mip level and optional depth slice or array index.
+    /// Function to determine if a buffer with the given mip level and optional depth slice or array index exists in this list.
     /// </summary>
     /// <param name="mipLevel">The mip map level to look up.</param>
-    /// <param name="depthSliceOrArrayIndex">[Optional] The depth slice (for 3D images) or array index (for 1D or 2D images) to look up.</param>
-    /// <returns><b>true</b> if the mip and/or depth slice/array index are in this list.</returns>
+    /// <param name="depthSliceOrArrayIndex">[Optional] The depth slice (for 3D images) or array index (for 1D, 2D or cube images) to look up.</param>
+    /// <returns><b>true</b> if the buffer exists in this list, <b>false</b> if not.</returns>
     bool Contains(int mipLevel, int depthSliceOrArrayIndex = 0);
 }

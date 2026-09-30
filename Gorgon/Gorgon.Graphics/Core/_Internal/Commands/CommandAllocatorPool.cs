@@ -163,12 +163,17 @@ internal unsafe sealed class CommandAllocatorPool(CommandQueue queue)
                 return;
             }
 
-            while (_active.Count > 0)
+            for (int i = _active.Count - 1; i >= 0; --i)
             {
-                int i = _active.Count - 1;
                 CommandAllocator allocator = _active[i];
-                _active.RemoveAt(i);
 
+                // A command list is still recording with this allocator, so its work has no fence yet. It gets stamped by a later signal, after the list is submitted.
+                if (allocator.HasCommandList)
+                {
+                    continue;
+                }
+
+                _active.RemoveAt(i);
                 allocator.Fence = _queue.FenceValue;
                 _inUse.Enqueue(allocator);
             }

@@ -44,8 +44,6 @@ sealed class ImageBufferList
     private int _arrayCount;
     // The number of mip levels.
     private int _mipCount;
-    // The number of depth slices.
-    private int _depth;
     // The type of image.
     private ImageDataType _imageType;
 
@@ -80,7 +78,8 @@ sealed class ImageBufferList
     {
         get
         {
-            (int, int) offsetSize;
+            int bufferIndex;
+            int mipDepth;
 
             if (_bufferCount == 0)
             {
@@ -92,18 +91,22 @@ sealed class ImageBufferList
 
             if (_imageType == ImageDataType.Image3D)
             {
-                ArgumentOutOfRangeException.ThrowIfLessThan(depthSliceOrArrayIndex, 0);
-                ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(depthSliceOrArrayIndex, _depth);
+                (bufferIndex, mipDepth) = MipOffsetSize[mipLevel];
 
-                offsetSize = MipOffsetSize[mipLevel];
-                return _buffers[offsetSize.Item1 + depthSliceOrArrayIndex];
+                ArgumentOutOfRangeException.ThrowIfLessThan(depthSliceOrArrayIndex, 0);
+                ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(depthSliceOrArrayIndex, mipDepth);
+
+                
+                return _buffers[bufferIndex + depthSliceOrArrayIndex];
             }
+
 
             ArgumentOutOfRangeException.ThrowIfLessThan(depthSliceOrArrayIndex, 0);
             ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(depthSliceOrArrayIndex, _arrayCount);
 
-            offsetSize = MipOffsetSize[mipLevel + (depthSliceOrArrayIndex * _mipCount)];
-            return _buffers[offsetSize.Item1];
+            (bufferIndex, _) = MipOffsetSize[mipLevel + (depthSliceOrArrayIndex * _mipCount)];
+
+            return _buffers[bufferIndex];
         }
     }
 
@@ -115,10 +118,17 @@ sealed class ImageBufferList
     {
         if (disposing)
         {
-            _arrayCount = _bufferCount = _mipCount = _depth = 0;
+            _arrayCount = _bufferCount = _mipCount = 0;
             _imageType = ImageDataType.Unknown;
 
             IGorgonImageBuffer[] buffers = Interlocked.Exchange(ref _buffers, []);
+
+            // The buffers point into the image memory, which is being freed or replaced, so they can no longer be used.
+            for (int i = 0; i < buffers.Length; ++i)
+            {
+                (buffers[i] as GorgonImageBuffer)?.Detach();
+            }
+
             if (buffers.Length > 0)
             {
                 ArrayPool<IGorgonImageBuffer>.Shared.Return(buffers, true);
@@ -131,15 +141,16 @@ sealed class ImageBufferList
     /// </summary>
     /// <param name="imageWidth">The width of the image, in pixels.</param>
     /// <param name="imageHeight">The height of the image, in pixels.</param>
+    /// <param name="imageDepth">The depth of the image, in depth slices (3D images only).</param>
     /// <param name="formatInfo">The information about the image pixel format.</param>
     /// <param name="imageDataPtr">The pointer to the image data.</param>
     /// <returns>The actual count and list of image buffers.</returns>
-    private (int count, IGorgonImageBuffer[] buffers) CreateBuffers(int imageWidth, int imageHeight, GorgonFormatInfo formatInfo, GorgonPtr<byte> imageDataPtr)
+    private (int count, IGorgonImageBuffer[] buffers) CreateBuffers(int imageWidth, int imageHeight, int imageDepth, GorgonFormatInfo formatInfo, GorgonPtr<byte> imageDataPtr)
     {
         int bufferIndex = 0;
 
         // Allocate enough room for the array and mip levels.
-        int bufferCount = GorgonImageInfo.GetMaximumDepthSliceCount(_depth, _mipCount) * _arrayCount;
+        int bufferCount = GorgonImageInfo.GetMaximumDepthSliceCount(imageDepth, _mipCount) * _arrayCount;
         IGorgonImageBuffer[] buffers = ArrayPool<IGorgonImageBuffer>.Shared.Rent(bufferCount);
 
         // Offsets for the mip maps.
@@ -152,7 +163,7 @@ sealed class ImageBufferList
         {
             int mipWidth = imageWidth;
             int mipHeight = imageHeight;
-            int mipDepth = _depth;
+            int mipDepth = imageDepth;
 
             // Enumerate mip map levels.
             for (int mip = 0; mip < _mipCount; mip++)
@@ -166,7 +177,7 @@ sealed class ImageBufferList
                 // Enumerate depth slices.
                 for (int depth = 0; depth < mipDepth; depth++)
                 {
-                    // Get mip information.						
+                    // Get mip information.
                     buffers[bufferIndex] = new GorgonImageBuffer(dataAddress.Slice(0, pitchInformation.SlicePitch),
                                                                     pitchInformation,
                                                                     mip,
@@ -209,10 +220,9 @@ sealed class ImageBufferList
     /// </returns>
     public IEnumerator<IGorgonImageBuffer> GetEnumerator()
     {
-        // ReSharper disable once LoopCanBeConvertedToQuery
-        foreach (IGorgonImageBuffer buffer in _buffers)
+        for (int i = 0; i < _bufferCount; ++i)
         {
-            yield return buffer;
+            yield return _buffers[i];
         }
     }
 
@@ -246,14 +256,28 @@ sealed class ImageBufferList
             return -1;
         }
 
-        mipLevel = mipLevel.Max(0).Min(_mipCount - 1);
+        if ((mipLevel < 0) || (mipLevel >= _mipCount))
+        {
+            return -1;
+        }
 
         if (_imageType == ImageDataType.Image3D)
         {
-            depthSliceOrArrayIndex = depthSliceOrArrayIndex.Max(0).Min(_depth - 1);
+            (_, int mipDepth) = MipOffsetSize[mipLevel];
+
+            if ((depthSliceOrArrayIndex < 0) || (depthSliceOrArrayIndex >= mipDepth))
+            {
+                return -1;
+            }
+
             offsetSize = MipOffsetSize[mipLevel];
 
             return offsetSize.Item1 + depthSliceOrArrayIndex;
+        }
+
+        if ((depthSliceOrArrayIndex < 0) || (depthSliceOrArrayIndex >= _arrayCount))
+        {
+            return -1;
         }
 
         depthSliceOrArrayIndex = depthSliceOrArrayIndex.Max(0).Min(_arrayCount - 1);
@@ -285,11 +309,10 @@ sealed class ImageBufferList
     internal ImageBufferList(GorgonImageInfo info, GorgonFormatInfo formatInfo, GorgonPtr<byte> data)
     {
         _imageType = info.ImageType;
-        _depth = info.Depth;
         _arrayCount = info.ArrayCount;
         _mipCount = info.MipCount;
 
-        (_bufferCount, _buffers) = CreateBuffers(info.Width, info.Height, formatInfo, data);
+        (_bufferCount, _buffers) = CreateBuffers(info.Width, info.Height, info.Depth, formatInfo, data);
     }
 
     /// <summary>

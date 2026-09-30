@@ -22,18 +22,27 @@
 // Created: August 16, 2016 4:40:09 PM
 // 
 
+using System;
 using Gorgon.Core;
 
 namespace Gorgon.Configuration;
 
 /// <summary>
-/// An option to be stored in a <see cref="IGorgonOptionBag"/>
+/// An option stored in an <see cref="IGorgonOptionBag"/>.
 /// </summary>
+/// <remarks>
+/// <para>
+/// This is the view of an option used by code that only has the option bag (for example, a user interface that lists the options). The value is read and written through methods that convert it to and from the 
+/// type requested by the caller. Use <see cref="GorgonOption"/> to create options.
+/// </para>
+/// </remarks>
+/// <seealso cref="GorgonOption{T}"/>
+/// <seealso cref="GorgonRangedOption{T}"/>
 public interface IGorgonOption
     : IGorgonNamedObject
 {
     /// <summary>
-    /// Property to return the type of data stored in the option.
+    /// Property to return the type of the value stored in the option.
     /// </summary>
     Type Type
     {
@@ -41,10 +50,12 @@ public interface IGorgonOption
     }
 
     /// <summary>
-    /// Property to return text to display regarding this option.
+    /// Property to return the text to display for this option.
     /// </summary>
     /// <remarks>
-    /// This is pulled from the first line of the <see cref="Description"/>.
+    /// <para>
+    /// This is the first line of the <see cref="Description"/>.
+    /// </para>
     /// </remarks>
     public string Text
     {
@@ -62,35 +73,60 @@ public interface IGorgonOption
     /// <summary>
     /// Function to retrieve the value stored in this option.
     /// </summary>
-    /// <typeparam name="T">The type for the value.</typeparam>
-    /// <returns>The value, strongly typed.</returns>
+    /// <typeparam name="T">The type to return the value as.</typeparam>
+    /// <returns>The value, converted to <typeparamref name="T"/>.</returns>
+    /// <exception cref="InvalidCastException">Thrown when the value cannot be converted to <typeparamref name="T"/>.</exception>
+    /// <exception cref="OverflowException">Thrown when the value is outside of the range of <typeparamref name="T"/>.</exception>
+    /// <remarks>
+    /// <para>
+    /// If the value is already a <typeparamref name="T"/>, then it is returned as is. Otherwise, it is converted with <see cref="Convert.ChangeType(object, Type)"/>, which requires a type that implements 
+    /// <see cref="IConvertible"/> (e.g. the numeric types, <see cref="DateTime"/>, enumerations, and <see cref="string"/>).
+    /// </para>
+    /// </remarks>
     T? GetValue<T>();
 
     /// <summary>
     /// Function to assign a value for the option.
     /// </summary>
-    /// <typeparam name="T">The type parmeter for the value.</typeparam>
+    /// <typeparam name="T">The type of the value being assigned.</typeparam>
     /// <param name="value">The value to assign.</param>
+    /// <exception cref="InvalidCastException">Thrown when the <paramref name="value"/> cannot be converted to the <see cref="Type"/> of the option.</exception>
+    /// <exception cref="OverflowException">Thrown when the <paramref name="value"/> is outside of the range of the <see cref="Type"/> of the option.</exception>
+    /// <remarks>
+    /// <para>
+    /// If the <paramref name="value"/> is not already the <see cref="Type"/> of the option, then it is converted with <see cref="Convert.ChangeType(object, Type)"/>. An option that limits its value to a range 
+    /// clamps the converted value to that range.
+    /// </para>
+    /// </remarks>
     void SetValue<T>(T? value);
 
     /// <summary>
     /// Function to retrieve the default value for this option.
     /// </summary>
-    /// <typeparam name="T">The type of the value.</typeparam>
-    /// <returns>The value, strongly typed.</returns>
+    /// <typeparam name="T">The type to return the value as.</typeparam>
+    /// <returns>The default value, converted to <typeparamref name="T"/>.</returns>
+    /// <exception cref="InvalidCastException">Thrown when the value cannot be converted to <typeparamref name="T"/>.</exception>
+    /// <exception cref="OverflowException">Thrown when the value is outside of the range of <typeparamref name="T"/>.</exception>
+    /// <inheritdoc cref="GetValue{T}" path="/remarks"/>
     T? GetDefaultValue<T>();
 
     /// <summary>
-    /// Function to retrieve the minimum allowed value for this option.
+    /// Function to retrieve the smallest value allowed for this option.
     /// </summary>
-    /// <typeparam name="T">The type of the value.</typeparam>
-    /// <returns>The value, strongly typed.</returns>
+    /// <typeparam name="T">The type to return the value as.</typeparam>
+    /// <returns>The smallest value allowed, converted to <typeparamref name="T"/>, or the default for <typeparamref name="T"/> if the option has no lower limit.</returns>
+    /// <exception cref="InvalidCastException">Thrown when the value cannot be converted to <typeparamref name="T"/>.</exception>
+    /// <exception cref="OverflowException">Thrown when the value is outside of the range of <typeparamref name="T"/>.</exception>
+    /// <inheritdoc cref="GetValue{T}" path="/remarks"/>
     T? GetMinValue<T>();
 
     /// <summary>
-    /// Function to retrieve the maximum allowed value for this option.
+    /// Function to retrieve the largest value allowed for this option.
     /// </summary>
-    /// <typeparam name="T">The type of the value.</typeparam>
-    /// <returns>The value, strongly typed.</returns>
+    /// <typeparam name="T">The type to return the value as.</typeparam>
+    /// <returns>The largest value allowed, converted to <typeparamref name="T"/>, or the default for <typeparamref name="T"/> if the option has no upper limit.</returns>
+    /// <exception cref="InvalidCastException">Thrown when the value cannot be converted to <typeparamref name="T"/>.</exception>
+    /// <exception cref="OverflowException">Thrown when the value is outside of the range of <typeparamref name="T"/>.</exception>
+    /// <inheritdoc cref="GetValue{T}" path="/remarks"/>
     T? GetMaxValue<T>();
 }

@@ -91,7 +91,7 @@ internal unsafe sealed class CommandListPool(CommandQueue queue)
             if (_free.Count > 0)
             {
                 list = _free[^1];
-                list.ResetState(name, allocator);
+                list.ResetState(name, allocator);                
 
                 _free.RemoveAt(_free.Count - 1);
                 _active.Add(list);
@@ -100,10 +100,11 @@ internal unsafe sealed class CommandListPool(CommandQueue queue)
             {
                 list = new GorgonCommandList(_graphics, name, allocator, _queue);
                 _active.Add(list);
-            }
+            }            
 
             list.D3DGraphicsCommandList.Get()->Reset(allocator.D3DAllocator.Get(), null)
-                .ThrowIfFailed(GorgonResult.CannotInitialize, () => Resources.GORGFX_ERR_CANNOT_RESET_COMMAND_LIST);            
+                .ThrowIfFailed(GorgonResult.CannotInitialize, () => Resources.GORGFX_ERR_CANNOT_RESET_COMMAND_LIST);
+            list.IsRecording = true;
 
             return list;
         }
@@ -115,6 +116,8 @@ internal unsafe sealed class CommandListPool(CommandQueue queue)
     /// <param name="list">The command list to return.</param>
     public void Return(GorgonCommandList list)
     {
+        Debug.Assert(!list.IsRecording, $"The command list '{list.Name}' is open and cannot be recycled.");
+
         using (_lock.EnterScope())
         {
             if (_active.Remove(list))

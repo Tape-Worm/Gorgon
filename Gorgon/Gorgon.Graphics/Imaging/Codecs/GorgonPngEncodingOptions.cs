@@ -30,12 +30,12 @@ using Windows.Win32.Graphics.Imaging;
 namespace Gorgon.Graphics.Imaging.Codecs;
 
 /// <summary>
-/// Filter to apply for compression optimization
+/// Filter to apply for compression optimization.
 /// </summary>
 public enum PngFilter
 {
     /// <summary>
-    /// The system will chose the best filter based on the image data.
+    /// The system will choose the best filter based on the image data.
     /// </summary>
     DontCare = WICPngFilterOption.WICPngFilterUnspecified,
     /// <summary>
@@ -59,7 +59,7 @@ public enum PngFilter
     /// </summary>
     Paeth = WICPngFilterOption.WICPngFilterPaeth,
     /// <summary>
-    /// Adaptive filtering.  The system will choose the best filter based on a per-scanline basis.
+    /// Adaptive filtering. The system will choose the best filter on a per-scanline basis.
     /// </summary>
     Adaptive = WICPngFilterOption.WICPngFilterAdaptive
 }
@@ -70,6 +70,17 @@ public enum PngFilter
 public sealed class GorgonPngEncodingOptions
     : IGorgonWicEncodingOptions
 {
+    // The dithering to apply when converting formats.
+    private readonly GorgonOption<ImageDithering> _dithering = GorgonOption.CreateOption(nameof(Dithering), ImageDithering.None, Resources.GORIMG_OPT_WIC_DITHERING);
+    // The filter used to improve compression.
+    private readonly GorgonOption<PngFilter> _filter = GorgonOption.CreateOption(nameof(Filter), PngFilter.None, Resources.GORIMG_OPT_PNG_FILTERING);
+    // Whether to interlace the image.
+    private readonly GorgonOption<bool> _interlacing = GorgonOption.CreateOption(nameof(Interlacing), false, Resources.GORIMG_OPT_PNG_INTERLACED);
+    // The horizontal dots per inch.
+    private readonly GorgonRangedOption<double> _dpiX = GorgonOption.CreateDoubleOption(nameof(DpiX), 72.0, Resources.GORIMG_OPT_WIC_DPIX);
+    // The vertical dots per inch.
+    private readonly GorgonRangedOption<double> _dpiY = GorgonOption.CreateDoubleOption(nameof(DpiY), 72.0, Resources.GORIMG_OPT_WIC_DPIY);
+
     /// <summary>
     /// The default encoding options for PNG files.
     /// </summary>
@@ -85,49 +96,69 @@ public sealed class GorgonPngEncodingOptions
         }
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc cref="IGorgonWicEncodingOptions.DpiX" path="/summary"/>
+    /// <remarks>
+    /// <para>
+    /// The default value is 72.0.
+    /// </para>
+    /// </remarks>
     public double DpiX
     {
-        get => Options.GetOptionValue<double>(nameof(DpiX));
-        set => Options.SetOptionValue(nameof(DpiX), value);
+        get => _dpiX.Value;
+        set => _dpiX.Value = value;
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc cref="IGorgonWicEncodingOptions.DpiY" path="/summary"/>
+    /// <remarks>
+    /// <para>
+    /// The default value is 72.0.
+    /// </para>
+    /// </remarks>
     public double DpiY
     {
-        get => Options.GetOptionValue<double>(nameof(DpiY));
-        set => Options.SetOptionValue(nameof(DpiY), value);
+        get => _dpiY.Value;
+        set => _dpiY.Value = value;
     }
 
     /// <summary>
     /// Property to set or return whether to use interlacing when encoding an image as a PNG file.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// The default value is <b>false</b>.
+    /// </para>
     /// </remarks>
     public bool Interlacing
     {
-        get => Options.GetOptionValue<bool>(nameof(Interlacing));
-        set => Options.SetOptionValue(nameof(Interlacing), value);
+        get => _interlacing.Value;
+        set => _interlacing.Value = value;
     }
 
     /// <summary>
-    /// Property to set or return the type of filter to use when when compressing the PNG file.
+    /// Property to set or return the type of filter to use when compressing the PNG file.
     /// </summary>
     /// <remarks>
-    /// The default value is <see cref="PngFilter.DontCare"/>.
+    /// <para>
+    /// The default value is <see cref="PngFilter.None"/>.
+    /// </para>
     /// </remarks>
     public PngFilter Filter
     {
-        get => Options.GetOptionValue<PngFilter>(nameof(Filter));
-        set => Options.SetOptionValue(nameof(Filter), value);
+        get => _filter.Value;
+        set => _filter.Value = value;
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc cref="IGorgonWicEncodingOptions.Dithering" path="/summary"/>
+    /// <remarks>
+    /// <inheritdoc cref="IGorgonWicEncodingOptions.Dithering" path="/remarks/para"/>
+    /// <para>
+    /// The default value is <see cref="ImageDithering.None"/>.
+    /// </para>
+    /// </remarks>
     public ImageDithering Dithering
     {
-        get => Options.GetOptionValue<ImageDithering>(nameof(Dithering));
-        set => Options.SetOptionValue(nameof(Dithering), value);
+        get => _dithering.Value;
+        set => _dithering.Value = value;
     }
 
     /// <inheritdoc/>
@@ -139,13 +170,6 @@ public sealed class GorgonPngEncodingOptions
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonPngEncodingOptions"/> class.
     /// </summary>
-    public GorgonPngEncodingOptions() => Options = new GorgonOptionBag(
-                                      [
-                                          GorgonOption.CreateOption(nameof(Dithering), ImageDithering.None, Resources.GORIMG_OPT_WIC_DITHERING),
-                                          GorgonOption.CreateOption(nameof(Filter), PngFilter.None, Resources.GORIMG_OPT_PNG_FILTERING),
-                                          GorgonOption.CreateOption(nameof(Interlacing), false, Resources.GORIMG_OPT_PNG_INTERLACED),
-                                          GorgonOption.CreateOption(nameof(DpiX), 72, Resources.GORIMG_OPT_WIC_DPIX),
-                                          GorgonOption.CreateOption(nameof(DpiY), 72, Resources.GORIMG_OPT_WIC_DPIY)
-                                      ]);
+    public GorgonPngEncodingOptions() => Options = new GorgonOptionBag([_dithering, _filter, _interlacing, _dpiX, _dpiY]);
 
 }

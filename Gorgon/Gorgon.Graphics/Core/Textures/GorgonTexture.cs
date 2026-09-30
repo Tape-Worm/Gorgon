@@ -228,6 +228,10 @@ public sealed unsafe class GorgonTexture
         return flags;
     }
 
+    /// <inheritdoc/>
+    private protected override IGorgonTextureView<GorgonTextureCommon> OnCreateTextureView(GorgonFormatInfo viewFormatInfo, short mipLevel, short mipCount, short arrayIndex, short arrayCount, float resourceMinLodClamp, byte planeIndex, bool owned) =>
+        new TextureView<GorgonTexture>(Graphics, Name, this, viewFormatInfo, mipLevel, mipCount, arrayIndex, arrayCount, resourceMinLodClamp, planeIndex, owned);
+
     /// <summary>
     /// Function to create the native D3D 12 resources for the texture.
     /// </summary>
@@ -399,8 +403,8 @@ public sealed unsafe class GorgonTexture
     /// If the texture is a write-only depth/stencil texture with a depth/stencil <see cref="GorgonTextureCommon.Format"/>, then the view <paramref name="format"/> must match. 
     /// </para>
     /// <para>
-    /// If the depth/stencil is meant to be read in a shader, and needs a <see cref="IGorgonTextureView{GorgonTexture}"/>, then the texture must be created with a typeless <see cref="BufferFormat"/>. The following table 
-    /// indicates the formats required for reading depth/stencil textures:
+    /// If the depth/stencil is meant to be read in a shader, and needs a <see cref="IGorgonTextureView{GorgonTexture}"/>, then the texture must be created with a typeless <see cref="BufferFormat"/>. The 
+    /// following table indicates the formats required for reading depth/stencil textures:
     /// <list type="table">
     ///     <listheader>
     ///         <term>Texture Format</term>
@@ -497,9 +501,12 @@ public sealed unsafe class GorgonTexture
     /// <param name="name">The name of the texture.</param>
     /// <param name="image">The image used to define the texture schema, and its contents.</param>
     /// <returns>A new texture, populated with the image data.</returns>
+    /// <exception cref="ObjectDisposedException">Thrown if the <paramref name="image"/> has been disposed.</exception>
     /// <inheritdoc cref="GorgonTexture(GorgonGraphics, string, GorgonTextureInfo)" path="/exception"/>
     public static GorgonTexture FromImage(GorgonGraphics graphics, string name, IGorgonImage image)
     {
+        ObjectDisposedException.ThrowIf(image.ImageData == GorgonPtr<byte>.NullPtr, image);
+
         GorgonResourceCopier copier = graphics.Queues.GlobalCopier;
         GorgonTextureInfo info = GorgonTextureInfo.FromImageInfo(image);
 
@@ -578,12 +585,12 @@ public sealed unsafe class GorgonTexture
     /// object to determine if the format is supported for a given texture type.
     /// </para>
     /// <para>
-    /// The <see cref="GorgonTextureInfo.ArrayCount"/> only applies to 1D and 2D textures, and is reset to 1 for <see cref="TextureType.Texture3D"/> textures. If the
+    /// The <see cref="GorgonTextureInfo.ArrayCount"/> only applies to 1D and 2D textures, and is reset to 1 for <see cref="TextureType.Texture3D"/> textures. If the 
     /// <see cref="GorgonTextureInfo.IsCube"/> is set to <b>true</b>, then this value <b>must</b> be a multiple of 6.
     /// </para>
     /// <para>
-    /// The <see cref="GorgonTextureInfo.MipCount"/> value should be at least 1. <see cref="GorgonTextureInfo.GetMaximumMipCount(int, int, short)"/> can be used to determine the maximum number of mip levels for 
-    /// the texture.
+    /// The <see cref="GorgonTextureInfo.MipCount"/> value should be at least 1. <see cref="GorgonTextureInfo.GetMaximumMipCount(int, int, short)"/> can be used to determine the maximum number of mip levels 
+    /// for the texture.
     /// </para>
     /// <para>
     /// If the <see cref="GorgonTextureInfo.IsDepthStencil"/> value is <b>true</b>:

@@ -562,6 +562,25 @@ public unsafe abstract class GorgonTextureCommon
     private protected abstract ComPtr<ID3D12Resource2> OnCreateNative();
 
     /// <summary>
+    /// Function called to create a texture view for this texture.
+    /// </summary>
+    /// <param name="viewFormatInfo">The format information for the view.</param>
+    /// <param name="mipLevel">The first mip level for the view.</param>
+    /// <param name="mipCount">The number of mip levels for the view.</param>
+    /// <param name="arrayIndex">The first array index for the view.</param>
+    /// <param name="arrayCount">The number of array indices for the view.</param>
+    /// <param name="resourceMinLodClamp">The minimum LOD to clamp to.</param>
+    /// <param name="planeIndex">The format plane for the view.</param>
+    /// <param name="owned"><b>true</b> if the view owns the texture, <b>false</b> if not.</param>
+    /// <returns>The new texture view, typed for the actual texture type.</returns>
+    /// <remarks>
+    /// <para>
+    /// The view is created with the actual texture type so a cached view can be returned as an <see cref="IGorgonTextureView{T}"/> for any type the texture can be viewed as.
+    /// </para>
+    /// </remarks>
+    private protected abstract IGorgonTextureView<GorgonTextureCommon> OnCreateTextureView(GorgonFormatInfo viewFormatInfo, short mipLevel, short mipCount, short arrayIndex, short arrayCount, float resourceMinLodClamp, byte planeIndex, bool owned);
+
+    /// <summary>
     /// Function to populate the sub resource information for the texture.
     /// </summary>
     /// <param name="desc">The resource description.</param>
@@ -798,11 +817,11 @@ public unsafe abstract class GorgonTextureCommon
 
             GorgonFormatInfo viewFormatInfo = format == Format ? FormatInfo : new GorgonFormatInfo(format);
             TextureView<T>.ValidateTextureView(Name, FormatInfo, viewFormatInfo, CompatibleFormats, planeIndex, IsShaderResource, IsDepthStencil);
-            IGorgonTextureView<T> view = new TextureView<T>(Graphics, Name, (T)this, viewFormatInfo, mipLevel, mipCount, arrayIndex, arrayCount, resourceMinLodClamp, planeIndex, owned);
+            IGorgonTextureView<GorgonTextureCommon> view = OnCreateTextureView(viewFormatInfo, mipLevel, mipCount, arrayIndex, arrayCount, resourceMinLodClamp, planeIndex, owned);
 
             _srvs[key] = view;
 
-            return view;
+            return (IGorgonTextureView<T>)view;
         }
     }
 
@@ -1249,7 +1268,7 @@ public unsafe abstract class GorgonTextureCommon
         {
             GorgonFormatInfo info = new(formats[i]);
 
-            if ((info.IsTypeless) || (info.SizeInBytes < 1) || (info.IsPlanar) || (info.IsCompressed) || (info.HasDepth) || (info.HasStencil))
+            if ((info.IsTypeless) || (info.SizeInBytes < 1) || (info.IsPlanar) || (info.IsVideo) || (info.IsCompressed) || (info.HasDepth) || (info.HasStencil))
             {
                 continue;
             }

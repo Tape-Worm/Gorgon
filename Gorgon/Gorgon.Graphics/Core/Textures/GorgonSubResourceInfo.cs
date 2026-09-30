@@ -70,10 +70,11 @@ public record class GorgonSubResourceInfo(int SubResourceIndex, int Width, short
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This value uses the <see cref="RowPitch"/> to calculate the size. This means the size may be larger than expected due to alignment.
+    /// This value uses the <see cref="RowPitch"/> to calculate the size. This means the size may be larger than expected due to alignment. For a <see cref="TextureType.Texture3D"/> texture, this includes
+    /// every depth slice in the sub resource.
     /// </para>
     /// </remarks>
-    public long SizeInBytes => RowPitch * RowCount;
+    public long SizeInBytes => RowPitch * RowCount * Depth;
 }
 
 

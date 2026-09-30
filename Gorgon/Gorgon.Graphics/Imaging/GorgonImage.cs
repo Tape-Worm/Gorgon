@@ -218,17 +218,17 @@ public partial class GorgonImage
     }
 
     /// <summary>
-    /// Function to return the size, in bytes, of an image with the given <see cref="IGorgonImageInfo"/>.
+    /// Function to return the size, in bytes, of an image with the given <see cref="GorgonImageInfo"/>.
     /// </summary>
-    /// <param name="info">The <see cref="IGorgonImageInfo"/> used to describe the image.</param>
+    /// <param name="info">The <see cref="GorgonImageInfo"/> used to describe the image.</param>
     /// <param name="pitchFlags">[Optional] Flags to influence the size of the row pitch.</param>
     /// <returns>The number of bytes for the image.</returns>
     /// <exception cref="ArgumentOutOfRangeException">Thrown when one of the <see cref="GorgonImageInfo.Width"/>, <see cref="GorgonImageInfo.Height"/>, <see cref="GorgonImageInfo.Depth"/>, 
     /// <see cref="GorgonImageInfo.ArrayCount"/>, or <see cref="GorgonImageInfo.MipCount"/> in the <paramref name="info"/> parameter is less than 1.</exception>
-    /// <exception cref="NotSupportedException">Thrown when the <see cref="IGorgonImageInfo.Format"/> value of the <paramref name="info"/> parameter is set to <see cref="BufferFormat.Unknown"/>.</exception>
+    /// <exception cref="NotSupportedException">Thrown when the <see cref="GorgonImageInfo.ImageType"/> or the <see cref="GorgonImageInfo.Format"/> value of the <paramref name="info"/> parameter is set to an unknown value.</exception>
     /// <remarks>
     /// <para>
-    /// The <paramref name="pitchFlags"/> parameter is used to compensate in cases where the original image data is not laid out correctly (such as with older DirectDraw DDS images).
+    /// The <paramref name="pitchFlags"/> parameter is used to compensatein cases where the original image data is not laid out correctly (such as with older DirectDraw DDS images).
     /// </para>
     /// </remarks>
     public static long CalculateSizeInBytes(GorgonImageInfo info, PitchFlags pitchFlags = PitchFlags.None) => GorgonImageInfo.CalculateSizeInBytes(info.ImageType,
@@ -242,7 +242,7 @@ public partial class GorgonImage
     /// <inheritdoc/>
     public int GetDepthCount(int mipLevel)
     {
-        if ((mipLevel < 0) || (mipLevel > MipCount))
+        if ((mipLevel < 0) || (mipLevel >= MipCount))
         {
             throw new ArgumentOutOfRangeException(nameof(mipLevel), mipLevel, string.Format(Resources.GORIMG_ERR_INDEX_OUT_OF_RANGE, 0, _imageInfo.MipCount));
         }
@@ -296,7 +296,7 @@ public partial class GorgonImage
         // If we're converting from B4G4R4A4, then we need to use another path.
         if (_imageInfo.Format is BufferFormat.B4G4R4A4_UNorm or BufferFormat.A4B4G4R4_UNorm)
         {
-            sourceFormat = BufferFormat.B8G8R8X8_UNorm;
+            sourceFormat = BufferFormat.B8G8R8A8_UNorm;
         }
 
         return wic.CanConvertFormats(sourceFormat, destFormats);
@@ -317,10 +317,11 @@ public partial class GorgonImage
     }
 
     /// <summary>
-    /// Initialzies a new instance of the <see cref="GorgonImage"/> class.
+    /// Initializes a new instance of the <see cref="GorgonImage"/> class.
     /// </summary>
     /// <param name="image">The image to copy.</param>
     /// <param name="log">[Optional] The log used for debug messages.</param>
+    /// <exception cref="ObjectDisposedException">Thrown if the <paramref name="image"/> has been disposed.</exception>
     /// <remarks>
     /// <para>
     /// This is a copy constructor used to create a new image that is identical, but separate from the <paramref name="image"/> parameter.
@@ -328,6 +329,8 @@ public partial class GorgonImage
     /// </remarks>
     public GorgonImage(IGorgonImage image, IGorgonLog? log = null)
     {
+        ObjectDisposedException.ThrowIf(image.ImageData == GorgonPtr<byte>.NullPtr, image);
+
         _log = log ?? GorgonLog.NullLog;
 
         _imageInfo = new GorgonImageInfo(image);
@@ -347,11 +350,11 @@ public partial class GorgonImage
     /// <exception cref="ArgumentOutOfRangeException">Thrown when one of the <see cref="GorgonImageInfo.Width"/>, <see cref="GorgonImageInfo.Height"/>, <see cref="GorgonImageInfo.Depth"/>, 
     /// <see cref="GorgonImageInfo.ArrayCount"/>, or <see cref="GorgonImageInfo.MipCount"/> in the <paramref name="info"/> parameter is less than 1.</exception>
     /// <exception cref="ArgumentException">Thrown when the <paramref name="data"/> is too small, or too large for the image.</exception>
-    /// <exception cref="NotSupportedException">Thrown when the <see cref="IGorgonImageInfo.Format"/> value of the <paramref name="info"/> parameter is set to <see cref="BufferFormat.Unknown"/>.</exception>
+    /// <exception cref="NotSupportedException">Thrown when the <see cref="GorgonImageInfo.ImageType"/> or the <see cref="GorgonImageInfo.Format"/> value of the <paramref name="info"/> parameter is set to an unknown value.</exception>
     /// <remarks>
     /// <para>
-    /// If the <paramref name="data"/> parameter is omitted, then a new, empty, image will be created, otherwise the data within the span will be copied into this image. The <paramref name="data"/> passed 
-    /// to this image must be the same size, in bytes as the image described by <paramref name="info"/>, otherwise an exception will be thrown. To determine how large the image size will be, in 
+    /// If the <paramref name="data"/> parameter is omitted, then a new, empty, image will be created, otherwise the data at the pointer will be copied into this image. The <paramref name="data"/> passed 
+    /// to this image must be the same size, in bytes, as the image described by<paramref name="info"/>, otherwise an exception will be thrown. To determine how large the image size will be, in 
     /// bytes, use the static <see cref="GorgonImageInfo.CalculateSizeInBytes(ImageDataType, int, int, int, BufferFormat, int, PitchFlags)"/> or the 
     /// <see cref="CalculateSizeInBytes(GorgonImageInfo, PitchFlags)"/> method to determine the potential size of an image prior to creation.
     /// </para>
@@ -397,17 +400,17 @@ public partial class GorgonImage
     /// <exception cref="ArgumentOutOfRangeException">Thrown when one of the <see cref="GorgonImageInfo.Width"/>, <see cref="GorgonImageInfo.Height"/>, <see cref="GorgonImageInfo.Depth"/>, 
     /// <see cref="GorgonImageInfo.ArrayCount"/>, or <see cref="GorgonImageInfo.MipCount"/> in the <paramref name="info"/> parameter is less than 1.</exception>
     /// <exception cref="ArgumentException">Thrown when the <paramref name="data"/> is too small, or too large for the image.</exception>
-    /// <exception cref="NotSupportedException">Thrown when the <see cref="IGorgonImageInfo.Format"/> value of the <paramref name="info"/> parameter is set to <see cref="BufferFormat.Unknown"/>.</exception>
+    /// <exception cref="NotSupportedException">Thrown when the <see cref="GorgonImageInfo.ImageType"/> or the <see cref="GorgonImageInfo.Format"/> value of the <paramref name="info"/> parameter is set to an unknown value.</exception>
     /// <remarks>
     /// <para>
-    /// The <paramref name="data"/> passed to this image must be the same size, in bytes as the image described by <paramref name="info"/>, otherwise an exception will be thrown. To determine how large the 
+    /// The <paramref name="data"/> passed to this image must be the same size, in bytes, as the imagedescribed by <paramref name="info"/>, otherwise an exception will be thrown. To determine how large the 
     /// image size will be, in bytes, use the static <see cref="GorgonImageInfo.CalculateSizeInBytes(ImageDataType, int, int, int, BufferFormat, int, PitchFlags)"/> or the 
     /// <see cref="CalculateSizeInBytes(GorgonImageInfo, PitchFlags)"/> method to determine the potential size of an image prior to creation.
     /// </para>
     /// <para>
     /// <note type="important">
     /// <para>
-    /// The <paramref name="data"/>, is <b>copied</b>, not wrapped. This ensures that the lifetime of the data passed in remains the responsibility of the caller and does not affect the image object 
+    /// The <paramref name="data"/> is <b>copied</b>, not wrapped.This ensures that the lifetime of the data passed in remains the responsibility of the caller and does not affect the image object 
     /// integrity.
     /// </para>
     /// </note>

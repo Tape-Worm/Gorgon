@@ -63,7 +63,9 @@ public sealed record class GorgonImageInfo
     /// Property to return the width of an image, in pixels.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// A value of less than 1 will throw an exception upon creation.
+    /// </para>
     /// </remarks>
     public int Width
     {
@@ -76,7 +78,7 @@ public sealed record class GorgonImageInfo
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This applies to 2D and 3D images only. This parameter will be set to a value of 1 for a 1D image.
+    /// This applies to 2D, cube and 3D images only. This value will be set to 1 for a 1D image.
     /// </para>
     /// <para>
     /// For applicable image types, a value of less than 1 will throw an exception upon creation.
@@ -93,7 +95,7 @@ public sealed record class GorgonImageInfo
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This applies to 3D images only.  This parameter will be set to a value of 1 for a 1D or 2D image.
+    /// This applies to 3D images only. This value will be set to 1 for a 1D, 2D or cube image.
     /// </para>
     /// <para>
     /// For applicable image types, a value of less than 1 will throw an exception upon creation.
@@ -110,14 +112,14 @@ public sealed record class GorgonImageInfo
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This only applies to 1D and 2D images.  This parameter will be set to a value of 1 for a 3D image.
+    /// This only applies to 1D, 2D and cube images. This value will be set to 1 for a 3D image.
     /// </para>
     /// <para>
-    /// If the <see cref="ImageType"/> is <see cref="ImageDataType.ImageCube"/>, then this value should be set to a multiple of 6. If it is not, then Gorgon will adjust this value to be a multiple of 
-    /// 6 if this image is to be used as a cube map.
+    /// If the <see cref="ImageType"/> is <see cref="ImageDataType.ImageCube"/>, then this value must be a multiple of 6 (one array index per cube face). 
+    /// <see cref="CreateCubeImageInfo"/> takes the number of cubes, and multiplies it by 6.
     /// </para>
     /// <para>
-    /// This value will be reset to 1 if the value supplied is less than 1.
+    /// A value of less than 1 will throw an exception upon creation.
     /// </para>
     /// </remarks>
     public int ArrayCount
@@ -130,7 +132,10 @@ public sealed record class GorgonImageInfo
     /// Property to return the number of mip map levels in the image.
     /// </summary>
     /// <remarks>
-    /// If this value is set to 0, or less, then a full mip-map chain will be generated for the image.
+    /// <para>
+    /// A value of less than 1 will throw an exception upon creation. A value larger than the number of mip map levels that the width, height and depth of the image can hold is reduced to that number 
+    /// (see <see cref="GetMaximumMipCount"/>).
+    /// </para>
     /// </remarks>
     public int MipCount
     {
@@ -156,7 +161,7 @@ public sealed record class GorgonImageInfo
     }
 
     /// <summary>
-    /// Property to return whether the size of the texture is a power of 2 or not.
+    /// Property to return whether the width, height and depth of the image are all powers of 2.
     /// </summary>
     public bool IsPowerOfTwo => ((Width == 0) || (Width & (Width - 1)) == 0) &&
                                 ((Height == 0) || (Height & (Height - 1)) == 0) &&
@@ -176,7 +181,7 @@ public sealed record class GorgonImageInfo
     /// A 1D image only has a <paramref name="width"/> value, and contains a linear set of pixels across that width. Ideally these image types are used for look up data.
     /// </para>
     /// <para>
-    /// Storage for mip map levels, and array indices in the image can be specified by the <paramref name="mipCount"/> and <paramref name="arrayCount"/> parameters. These are useful for for images that get 
+    /// Storage for mip map levels, and array indices in the image can be specified by the <paramref name="mipCount"/> and <paramref name="arrayCount"/> parameters. These are useful for images that get 
     /// used as textures. If these values are omitted, only the top mip level and a single array index is allocated (a <see cref="MipCount"/> of 1 and <see cref="ArrayCount"/> of 1).
     /// </para>
     /// <para>
@@ -225,7 +230,7 @@ public sealed record class GorgonImageInfo
     /// A 2D image only has a <paramref name="width"/>, and <paramref name="height"/> value. This image type is the most commonly used one.
     /// </para>
     /// <para>
-    /// Storage for mip map levels, and array indices in the image can be specified by the <paramref name="mipCount"/> and <paramref name="arrayCount"/> parameters. These are useful for for images that get 
+    /// Storage for mip map levels, and array indices in the image can be specified by the <paramref name="mipCount"/> and <paramref name="arrayCount"/> parameters. These are useful for images that get 
     /// used as textures. If these values are omitted, only the top mip level and a single array index is allocated (a <see cref="MipCount"/> of 1 and <see cref="ArrayCount"/> of 1).
     /// </para>
     /// <para>
@@ -269,7 +274,7 @@ public sealed record class GorgonImageInfo
     /// <param name="format">The pixel format of the image.</param>
     /// <param name="width">The width of the 2D image, in pixels.</param>
     /// <param name="height">The height of the 2D image, in pixels.</param>
-    /// <param name="cubeCount">The number of cubes stored in the image.</param>[
+    /// <param name="cubeCount">The number of cubes stored in the image.</param>
     /// <param name="mipCount">[Optional] The number of mip levels in the image.</param>
     /// <param name="isPremultiplied">[Optional] <b>true</b> if the image will contain premultiplied alpha, or <b>false</b> if it does not.</param>
     /// <returns>A new <see cref="GorgonImageInfo"/> containing the parameters to create a new 2D <see cref="IGorgonImage"/> cube.</returns>
@@ -331,10 +336,10 @@ public sealed record class GorgonImageInfo
     /// <returns>A new <see cref="GorgonImageInfo"/> containing the parameters to create a new 3D <see cref="IGorgonImage"/>.</returns>
     /// <remarks>
     /// <para>
-    /// A 2D image only has a <paramref name="width"/>, <paramref name="height"/>, and <paramref name="depth"/> value. This image type is used in volumetric rendering (e.g. clouds).
+    /// A 3D image only has a <paramref name="width"/>, <paramref name="height"/>, and <paramref name="depth"/> value. This image type is used in volumetric rendering (e.g. clouds).
     /// </para>
     /// <para>
-    /// Storage for mip map levels in the image can be specified by the <paramref name="mipCount"/> parameter. These are useful for for images that get used as textures. If this value is omitted, only the 
+    /// Storage for mip map levels in the image can be specified by the <paramref name="mipCount"/> parameter. These are useful for images that get used as textures. If this value is omitted, only the 
     /// top mip level is allocated (a <see cref="MipCount"/> of 1).
     /// </para>
     /// <para>
@@ -365,7 +370,7 @@ public sealed record class GorgonImageInfo
     /// </remarks>
     /// <seealso cref="IGorgonImage"/>
     /// <seealso cref="MipCount"/>
-    public static GorgonImageInfo Create3DImageInfo(BufferFormat format, int width, int height, int depth, int mipCount = 1) => new(ImageDataType.Image2D, format, width, height, depth, 1, mipCount, false);
+    public static GorgonImageInfo Create3DImageInfo(BufferFormat format, int width, int height, int depth, int mipCount = 1) => new(ImageDataType.Image3D, format, width, height, depth, 1, mipCount, false);
 
     /// <summary>
     /// Function to calculate the maximum number of available mip map levels for this image.
@@ -374,6 +379,7 @@ public sealed record class GorgonImageInfo
     /// <param name="height">The height of the image, in pixels.</param>
     /// <param name="depth">The depth of the image, in depth slices. Leave at 1 for 1D or 2D images.</param>
     /// <returns>The maximum number of mip map levels for the image.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="width"/>, <paramref name="height"/> or <paramref name="depth"/> is less than 1.</exception>
     public static int GetMaximumMipCount(int width, int height, int depth)
     {
         ArgumentOutOfRangeException.ThrowIfLessThan(width, 1);
@@ -416,10 +422,13 @@ public sealed record class GorgonImageInfo
     /// <returns>The number of bytes for the image.</returns>
     /// <exception cref="ArgumentOutOfRangeException">Thrown when one of the <paramref name="width"/>, <paramref name="height"/>, <paramref name="arrayCountOrDepth"/>, or <paramref name="mipCount"/> values 
     /// are less than 1.</exception>
-    /// <exception cref="NotSupportedException">Thrown when the <paramref name="format"/> is not supported.</exception>
+    /// <exception cref="NotSupportedException">Thrown when the <paramref name="imageType"/> is <see cref="ImageDataType.Unknown"/>, or the <paramref name="format"/> is not supported.</exception>
     /// <remarks>
     /// <para>
     /// The <paramref name="pitchFlags"/> parameter is used to compensate in cases where the original image data is not laid out correctly (such as with older DirectDraw DDS images).
+    /// </para>
+    /// <para>
+    /// A <paramref name="mipCount"/> larger than the number of mip map levels that the image can hold is reduced to that number.
     /// </para>
     /// </remarks>
     public static long CalculateSizeInBytes(ImageDataType imageType, int width, int height, int arrayCountOrDepth, BufferFormat format, int mipCount = 1, PitchFlags pitchFlags = PitchFlags.None)
@@ -477,11 +486,11 @@ public sealed record class GorgonImageInfo
     }
 
     /// <summary>
-    /// Function to return the number of depth slices for a 3D image with the given number of mip maps.
+    /// Function to return the total number of depth slices, across all mip map levels, for a 3D image with the given number of mip maps.
     /// </summary>
-    /// <param name="maximumSlices">The maximum desired number of depth slices to return.</param>
+    /// <param name="maximumSlices">The number of depth slices in the first mip map level.</param>
     /// <param name="mipCount">The number of mip maps to use.</param>
-    /// <returns>The actual number of depth slices.</returns>
+    /// <returns>The total number of depth slices for all mip map levels. The depth halves at each mip map level, down to a minimum of 1.</returns>
     public static int GetMaximumDepthSliceCount(int maximumSlices, int mipCount)
     {
         if (mipCount < 2)

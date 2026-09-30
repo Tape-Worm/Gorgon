@@ -30,11 +30,26 @@ using Gorgon.Math;
 namespace Gorgon.Graphics.Imaging.Codecs;
 
 /// <summary>
-/// Options used when decoding an image from a stream as a GIF file
+/// Options used when encoding an image to a stream as a GIF file.
 /// </summary>
 public class GorgonGifEncodingOptions
     : IGorgonWicEncodingOptions
 {
+    // The dithering to apply when converting to an indexed format.
+    private readonly GorgonOption<ImageDithering> _dithering = GorgonOption.CreateOption(nameof(Dithering), ImageDithering.None, Resources.GORIMG_OPT_WIC_DITHERING);
+    // Whether to save every array index as a frame.
+    private readonly GorgonOption<bool> _saveAllFrames = GorgonOption.CreateOption(nameof(IGorgonImageCodecEncodingOptions.SaveAllFrames), true, Resources.GORIMG_OPT_SAVE_ALL_FRAMES);
+    // The horizontal dots per inch.
+    private readonly GorgonRangedOption<double> _dpiX = GorgonOption.CreateDoubleOption(nameof(DpiX), 72.0, Resources.GORIMG_OPT_WIC_DPIX);
+    // The vertical dots per inch.
+    private readonly GorgonRangedOption<double> _dpiY = GorgonOption.CreateDoubleOption(nameof(DpiY), 72.0, Resources.GORIMG_OPT_WIC_DPIY);
+    // The custom palette.
+    private readonly GorgonOption<IReadOnlyList<GorgonColor>> _palette = GorgonOption.CreateOption<IReadOnlyList<GorgonColor>>(nameof(Palette));
+    // The alpha value below which a color is transparent.
+    private readonly GorgonRangedOption<float> _alphaThreshold = GorgonOption.CreateSingleOption(nameof(AlphaThreshold), 1.0f, Resources.GORIMG_OPT_GIF_ALPHA_THRESHOLD, 0.0f, 1.0f);
+    // The delay for each frame of animation.
+    private readonly GorgonOption<IReadOnlyList<int>> _frameDelays = GorgonOption.CreateOption<IReadOnlyList<int>>(nameof(FrameDelays));
+
     /// <summary>
     /// The default encoding options for GIF files.
     /// </summary>
@@ -54,16 +69,13 @@ public class GorgonGifEncodingOptions
     /// Use this to define a new palette for the 8 bit indexed image in the GIF file. This will be used to find a "best fit" set of colors when downsampling from a higher bit depth. 
     /// </para>
     /// <para>
-    /// This value is ignored when the GIF file has multiple frames of animation.
-    /// </para>
-    /// <para>
     /// The default value is an empty list.
     /// </para>
     /// </remarks>
-    public IList<GorgonColor> Palette
+    public IReadOnlyList<GorgonColor> Palette
     {
-        get => Options.GetOptionValue<IList<GorgonColor>>(nameof(Palette)) ?? [];
-        set => Options.SetOptionValue(nameof(Palette), value);
+        get => _palette.Value ?? [];
+        set => _palette.Value = value;
     }
 
     /// <summary>
@@ -71,20 +83,17 @@ public class GorgonGifEncodingOptions
     /// </summary>
     /// <remarks>
     /// <para>
-    /// Use this to determine what percentage of alpha channel values should be considered transparent for the GIF.  A value of 0.5f will mean that colors with an alpha component less than 0.5f will 
+    /// Use this to determine what percentage of alpha channel values should be considered transparent for the GIF. A value of 0.5f will mean that colors with an alpha component less than 0.5f will 
     /// be considered transparent.
     /// </para>
     /// <para>
-    /// This value does not apply to GIF files with multiple frames.
-    /// </para>
-    /// <para>
-    /// The default value is 0.0f.
+    /// The default value is 1.0f.
     /// </para>
     /// </remarks>
     public float AlphaThreshold
     {
-        get => Options.GetOptionValue<float>(nameof(AlphaThreshold));
-        set => Options.SetOptionValue(nameof(AlphaThreshold), value.Max(0).Min(1));
+        get => _alphaThreshold.Value;
+        set => _alphaThreshold.Value = value;
     }
 
     /// <summary>
@@ -92,60 +101,76 @@ public class GorgonGifEncodingOptions
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This specifies the delay, in 1/100 of a second, between each frame of animation for an animated GIF file. If this value is <b>null</b>, or empty, then no delay will be applied between the 
+    /// This specifies the delay, in 1/100 of a second, between each frame of animation for an animated GIF file. If this value is empty, then no delay will be applied between the 
     /// animation frames.
     /// </para>
     /// <para>
     /// This is used when the GIF file is an animated GIF, and its source <see cref="IGorgonImage"/> uses an array to store frames of animation. For a single frame GIF (i.e. a <see cref="IGorgonImage"/> 
     /// with an array count of 1), this value is ignored.
     /// </para> 
+    /// <para>
+    /// The default value is an empty list.
+    /// </para>
     /// </remarks>
-    public IList<int> FrameDelays
+    public IReadOnlyList<int> FrameDelays
     {
-        get => Options.GetOptionValue<IList<int>>(nameof(FrameDelays)) ?? [];
-        set => Options.SetOptionValue(nameof(FrameDelays), value);
+        get => _frameDelays.Value ?? [];
+        set => _frameDelays.Value = value;
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc cref="IGorgonWicEncodingOptions.Dithering" path="/summary"/>
+    /// <remarks>
+    /// <inheritdoc cref="IGorgonWicEncodingOptions.Dithering" path="/remarks/para"/>
+    /// <para>
+    /// The default value is <see cref="ImageDithering.None"/>.
+    /// </para>
+    /// </remarks>
     public ImageDithering Dithering
     {
-        get => Options.GetOptionValue<ImageDithering>(nameof(Dithering));
-        set => Options.SetOptionValue(nameof(Dithering), value);
+        get => _dithering.Value;
+        set => _dithering.Value = value;
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc cref="IGorgonWicEncodingOptions.DpiX" path="/summary"/>
+    /// <remarks>
+    /// <para>
+    /// The default value is 72.0.
+    /// </para>
+    /// </remarks>
     public double DpiX
     {
-        get => Options.GetOptionValue<double>(nameof(DpiX));
-        set => Options.SetOptionValue(nameof(DpiX), value);
+        get => _dpiX.Value;
+        set => _dpiX.Value = value;
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc cref="IGorgonWicEncodingOptions.DpiY" path="/summary"/>
+    /// <remarks>
+    /// <para>
+    /// The default value is 72.0.
+    /// </para>
+    /// </remarks>
     public double DpiY
     {
-        get => Options.GetOptionValue<double>(nameof(DpiY));
-        set => Options.SetOptionValue(nameof(DpiY), value);
+        get => _dpiY.Value;
+        set => _dpiY.Value = value;
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc cref="IGorgonImageCodecEncodingOptions.SaveAllFrames" path="/summary"/>
+    /// <remarks>
+    /// <inheritdoc cref="IGorgonImageCodecEncodingOptions.SaveAllFrames" path="/remarks/para"/>
+    /// <para>
+    /// The default value is <b>true</b>.
+    /// </para>
+    /// </remarks>
     public bool SaveAllFrames
     {
-        get => Options.GetOptionValue<bool>(nameof(IGorgonImageCodecEncodingOptions.SaveAllFrames));
-        set => Options.SetOptionValue(nameof(IGorgonImageCodecEncodingOptions.SaveAllFrames), value);
+        get => _saveAllFrames.Value;
+        set => _saveAllFrames.Value = value;
     }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonGifEncodingOptions"/> class.
     /// </summary>
-    public GorgonGifEncodingOptions() => Options = new GorgonOptionBag(
-                                      [
-                                          GorgonOption.CreateOption(nameof(Dithering), ImageDithering.None, Resources.GORIMG_OPT_WIC_DITHERING),
-                                          GorgonOption.CreateOption(nameof(SaveAllFrames), true, Resources.GORIMG_OPT_SAVE_ALL_FRAMES),
-                                          GorgonOption.CreateDoubleOption(nameof(DpiX), 72.0, Resources.GORIMG_OPT_WIC_DPIX),
-                                          GorgonOption.CreateDoubleOption(nameof(DpiY), 72.0, Resources.GORIMG_OPT_WIC_DPIY),
-                                          GorgonOption.CreateOption<IList<GorgonColor>>(nameof(Palette), []),
-                                          GorgonOption.CreateSingleOption(nameof(AlphaThreshold), 1.0f, Resources.GORIMG_OPT_GIF_ALPHA_THRESHOLD, 0.0f, 1.0f),
-                                          GorgonOption.CreateOption(nameof(FrameDelays), new List<int>())
-                                      ]);
+    public GorgonGifEncodingOptions() => Options = new GorgonOptionBag([_dithering, _saveAllFrames, _dpiX, _dpiY, _palette, _alphaThreshold, _frameDelays]);
 
 }

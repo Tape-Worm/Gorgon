@@ -35,7 +35,7 @@ public static class GorgonPixels
     public static readonly GorgonPixel<uint> Pixel32BppRgba = new Pixel32BppRgba();
 
     /// <summary>
-    /// Encodes/decodes 32 bits per pixel, with an B, G, R, A layout.
+    /// Encodes/decodes 32 bits per pixel, with a B, G, R, A layout.
     /// </summary>
     public static readonly GorgonPixel<uint> Pixel32BppBgra = new Pixel32BppBgra();
 
@@ -43,7 +43,9 @@ public static class GorgonPixels
     /// Encodes/decodes 32 bits per pixel, with an R, G, B, A layout. 
     /// </summary>
     /// <remarks>
+    /// <para>
     /// Red, Green, and Blue channels are 10 bits, and Alpha is 2 bits.
+    /// </para>
     /// </remarks>
     public static readonly GorgonPixel<uint> Pixel32BppRgb10a2 = new Pixel32BppRgb10a2();
 
@@ -51,25 +53,41 @@ public static class GorgonPixels
     /// Encodes/decodes 16 bits per pixel, with a B, G, R layout.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// Red channel is 5 bits, Green channel is 6 bits, and Blue channel is 5 bits.
+    /// </para>
     /// </remarks>
-    public static readonly GorgonPixel<ushort> Pixel16BppRgb565 = new Pixel16BppBgr565();
+    public static readonly GorgonPixel<ushort> Pixel16BppBgr565 = new Pixel16BppBgr565();
 
     /// <summary>
-    /// Encodes/decodes 16 bits per pixel, with a B, G, R layout.
+    /// Encodes/decodes 16 bits per pixel, with a B, G, R, A layout.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// Red channel is 5 bits, Green channel is 5 bits, Blue channel is 5 bits, and Alpha is 1 bit.
+    /// </para>
     /// </remarks>
-    public static readonly GorgonPixel<ushort> Pixel16BppRgb555a1 = new Pixel16BppBgr555a1();
+    public static readonly GorgonPixel<ushort> Pixel16BppBgr555a1 = new Pixel16BppBgr555a1();
 
     /// <summary>
-    /// Encodes/decodes 16 bits per pixel, with a B, G, R layout.
+    /// Encodes/decodes 16 bits per pixel, with a B, G, R, A layout.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// Red channel is 4 bits, Green channel is 4 bits, Blue channel is 4 bits, and Alpha is 4 bits.
+    /// </para>
     /// </remarks>
-    public static readonly GorgonPixel<ushort> Pixel16BppRgb444a4 = new Pixel16BppBgr444a4();
+    public static readonly GorgonPixel<ushort> Pixel16BppBgr444a4 = new Pixel16BppBgr444a4();
+
+    /// <summary>
+    /// Encodes/decodes 16 bits per pixel, with an A, B, G, R layout.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Alpha is 4 bits, Blue channel is 4 bits, Green channel is 4 bits, and Red channel is 4 bits.
+    /// </para>
+    /// </remarks>
+    public static readonly GorgonPixel<ushort> Pixel16BppA4Bgr444 = new Pixel16BppA4Bgr444();
 
     /// <summary>
     /// Encodes/decodes 8 bits per pixel, utilizing the R channel of a <see cref="GorgonColor"/>.

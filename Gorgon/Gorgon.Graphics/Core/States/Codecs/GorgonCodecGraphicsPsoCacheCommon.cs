@@ -165,8 +165,8 @@ public abstract class GorgonCodecGraphicsPsoCacheCommon(GorgonGraphics graphics)
     /// <returns>A new <see cref="GorgonShader"/> object.</returns>
     /// <remarks>
     /// <para>
-    /// When implementors override the <see cref="OnDecodeFromStream(GorgonGraphicsPsoFactory, Stream, long)"/> method, they must use this method to construct a new <see cref="GorgonShader"/> object. How this data
-    /// is retrieved is up to the implementor of the codec, but the data must be returned in the same format as expected by Gorgon. The only other way to create a <see cref="GorgonShader"/> is with the 
+    /// When implementors override the <see cref="OnDecodeFromStream(GorgonGraphicsPsoFactory, Stream, long)"/> method, they must use this method to construct a new <see cref="GorgonShader"/> object. How this 
+    /// data is retrieved is up to the implementor of the codec, but the data must be returned in the same format as expected by Gorgon. The only other way to create a <see cref="GorgonShader"/> is with the 
     /// <see cref="GorgonShaderCompiler.Compile(string, string, ShaderType, ShaderModel, CompileFlags, IReadOnlyList{GorgonShaderMacro}?)"/> method in the <see cref="GorgonShaderCompiler"/> object.
     /// </para>
     /// <inheritdoc cref="GorgonShaderCodecCommon.CreateShader(ShaderType, ShaderModel, byte[], byte[], byte[], string?, byte[])" path="/remarks/para[@type='params']"/>
@@ -184,8 +184,8 @@ public abstract class GorgonCodecGraphicsPsoCacheCommon(GorgonGraphics graphics)
     /// <param name="size">The size, in bytes, of the data to read.</param>
     /// <remarks>
     /// <para>
-    /// Implementors will use this method to extract the data and any metadata from the stream, and add the pipeline state objects to the <paramref name="psoFactory"/> using the provided
-    /// <see cref="BuildAndCachePso(string, byte[], GorgonShader, GorgonGraphicsPsoFactory)"/>, <see cref="GetShaderInCache(GorgonGraphicsPsoFactory, ReadOnlySpan{byte})"/>, and
+    /// Implementors will use this method to extract the data and any metadata from the stream, and add the pipeline state objects to the <paramref name="psoFactory"/> using the provided 
+    /// <see cref="BuildAndCachePso(string, byte[], GorgonShader, GorgonGraphicsPsoFactory)"/>, <see cref="GetShaderInCache(GorgonGraphicsPsoFactory, ReadOnlySpan{byte})"/>, and 
     /// <see cref="CreateShader(ShaderType, ShaderModel, byte[], byte[], byte[], string?, byte[])"/> methods.
     /// </para>
     /// <para>
@@ -280,8 +280,8 @@ public abstract class GorgonCodecGraphicsPsoCacheCommon(GorgonGraphics graphics)
     /// <param name="psoFactory">The factory that will receive the <see cref="GorgonGraphicsPso"/> objects, <see cref="GorgonShader"/> objects, and states read from the stream.</param>
     /// <param name="stream">The stream containing the pipeline state object cache binary data.</param>
     /// <param name="size">[Optional] The size, in bytes, of the pipeline state object cache data to read.</param>
-    /// <exception cref="ArgumentException">Thrown if the <paramref name="stream"/> is write-only.</exception>
-    /// <exception cref="EndOfStreamException">Thrown if the size of the pipeline state object cache data plus the current stream position exceeds the stream length.</exception>
+    /// <exception cref="ArgumentException">Thrown if the <paramref name="stream"/> is write-only, or cannot perform seek operations.</exception>
+    /// <exception cref="EndOfStreamException">Thrown if the <paramref name="size"/> is less than 1, or the size of the pipeline state object cache data plus the current stream position exceeds the stream length.</exception>
     /// <exception cref="GorgonException"><para>
     /// Thrown if the current GPU driver version does not match the driver information used to create the cache.
     /// </para>
@@ -292,20 +292,20 @@ public abstract class GorgonCodecGraphicsPsoCacheCommon(GorgonGraphics graphics)
     /// <para type="hwnote">
     /// <note type="important">
     /// <para>
-    /// Loading a pipeline state object cache requires that the current system has the exact driver version, hardware, and version of Gorgon that was used to generate the data. If the driver version, hardware,
-    /// or Gorgon version information in the cache data does not match the current system, then an exception will be thrown. Therefore, it is important to check the results of the
+    /// Loading a pipeline state object cache requires that the current system has the exact driver version, hardware, and version of Gorgon that was used to generate the data. If the driver version, hardware, 
+    /// or Gorgon version information in the cache data does not match the current system, then an exception will be thrown. Therefore, it is important to check the results of the 
     /// <see cref="IsReadable(Stream)"/> or <see cref="IsReadable(string)"/> methods prior to loading a cache.
     /// </para>
     /// </note>
     /// </para>
     /// <para type="existing">
-    /// The pipeline state objects read from the cache data are added to the <paramref name="psoFactory"/>, alongside any pipeline state objects that it already contains. This allows multiple caches to be
-    /// loaded into a single factory without creating duplicate pipeline state objects. If the <paramref name="psoFactory"/> already contains a pipeline state object with the same name as one in the cache
-    /// data, then the existing pipeline state object is kept. If the two have different settings, then a warning will be written to the log. Shaders and states that already exist in the
+    /// The pipeline state objects read from the cache data are added to the <paramref name="psoFactory"/>, alongside any pipeline state objects that it already contains. This allows multiple caches to be 
+    /// loaded into a single factory without creating duplicate pipeline state objects. If the <paramref name="psoFactory"/> already contains a pipeline state object with the same name as one in the cache 
+    /// data, then the existing pipeline state object is kept. If the two have different settings, then a warning will be written to the log. Shaders and states that already exist in the 
     /// <paramref name="psoFactory"/> are reused.
     /// </para>
     /// <para type="size">
-    /// If the <paramref name="size"/> is omitted, then the total length of the stream is used.
+    /// If the <paramref name="size"/> is omitted, then the remaining length of the stream is used.
     /// </para>
     /// </remarks>
     /// <seealso cref="IsReadable(Stream)"/>
@@ -317,9 +317,14 @@ public abstract class GorgonCodecGraphicsPsoCacheCommon(GorgonGraphics graphics)
             throw new ArgumentException(Resources.GORGFX_ERR_STREAM_IS_WRITEONLY, nameof(stream));
         }
 
-        size ??= stream.Length;
+        if (!stream.CanSeek)
+        {
+            throw new ArgumentException(Resources.GORGFX_ERR_STREAM_CANNOT_SEEK, nameof(stream));
+        }
 
-        if ((stream.Position + size) > stream.Length)
+        size ??= stream.Length - stream.Position;
+
+        if ((size < 1) || ((stream.Position + size) > stream.Length))
         {
             throw new EndOfStreamException();
         }

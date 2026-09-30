@@ -27,165 +27,162 @@ using Gorgon.Core;
 namespace Gorgon.Graphics.Imaging.Codecs;
 
 /// <summary>
-/// A codec to reading and/or writing image data
+/// A codec for reading and/or writing image data.
 /// </summary>
 /// <remarks>
 /// <para>
-/// A codec allows for reading and/or writing of data in an encoded format.  Users may inherit from this object to define their own image formats, or use one of the predefined image codecs available in 
-/// Gorgon
+/// A codec allows for reading and/or writing of data in an encoded format. Users may inherit from this object to define their own image formats, or use one of the predefined image codecs available in 
+/// Gorgon.
 /// </para>
 /// <para>
 /// Currently, Gorgon supports the following codecs:
 /// <para>
 /// <list type="table">
-///		<listheader>
-///			<term>Format</term>
-///			<term>File extension(s)</term>
-///			<term>Read?</term>
-///			<term>Write?</term>
-///			<term>Limitations</term>
-///			<term>Features</term>
-///		</listheader>
-///		<item>
-///			<description><see cref="GorgonCodecJpeg">Jpeg</see></description>
-///			<description>*.jpg; *.jpeg; *.jpe; *.jif; *.jfif; *.jfi</description>
-///			<description>Yes</description>
-///			<description>Yes</description>
-///			<description>Only supports the first array index in an image array, the first mip slice in a mip map, and the first depth slice in a 3D image.</description>
-///			<description>None</description>
-///		</item>
-///		<item>
-///			<description><see cref="GorgonCodecPng">Png</see></description>
-///			<description>*.png</description>
-///			<description>Yes</description>
-///			<description>Yes</description>
-///			<description>Only supports the first array index in an image array, the first mip slice in a mip map, and the first depth slice in a 3D image.</description>
-///			<description>None</description>
-///		</item>
-///		<item>
-///			<description><see cref="GorgonCodecBmp">Bmp</see></description>
-///			<description>*.bmp; *.dib</description>
-///			<description>Yes</description>
-///			<description>Yes</description>
-///			<description>
-///				<list type="bullet">
-///					<item>
-///						<description>24 bit only</description>
-///					</item>
-///					<item>
-///						<description>Only supports the first array index in an image array, the first mip slice in a mip map, and the first depth slice in a 3D image.</description>
-///					</item>
-///				</list>
-///			</description>
-///			<description>None</description>
-///		</item>
-///		<item>
-///			<description><see cref="GorgonCodecGif">Gif</see></description>
-///			<description>*.gif; *.dib</description>
-///			<description>Yes</description>
-///			<description>Yes</description>
-///			<description>
-///				<list type="bullet">					
-///					<item>
-///						<description>8 bit paletted images only. Color quantinization will reduce image quality.</description>
-///					</item>
-///					<item>
-///						<description>Only supports the first array index in an image array (for non-animated images), the first mip slice in a mip map, and the first depth slice in a 3D image.</description>
-///					</item>
-///				</list>
-///			</description>
-///			<description>Supports reading of animated gif files as an array of images.</description>
-///		</item>
-///		<item>
-///			<description><see cref="GorgonCodecTga">Tga</see></description>
-///			<description>*.tga; *.tpic</description>
-///			<description>Yes</description>
-///			<description>Yes</description>
-///			<description>
-///				<list type="bullet">
-///					<item>
-///						<description>No color map support.</description>						
-///					</item>
-///					<item>
-///						<description>Interleaved files are not supported.</description>						
-///					</item>
-///					<item>
-///						<description>Only supports 8 bit grayscale, 16, 24 and 32 bit image formats.</description>						
-///					</item>
-///					<item>
-///						<description>Can only write uncompressed image data.</description>						
-///					</item>
-///					<item>
-///						<description>Only supports the first array index in an image array, the first mip slice in a mip map, and the first depth slice in a 3D image.</description>
-///					</item>
-///				</list>
-///			</description>
-///			<description>Can read RLE compressed and uncompressed formats.</description>
-///		</item>
-///		<item>
-///			<description><see cref="GorgonCodecDds">Dds</see></description>
-///			<description>*.dds</description>
-///			<description>Yes</description>
-///			<description>Yes</description>
-///			<description>
-///				<list type="bullet">
-///					<item>
-///						<description>
-///							No support for the following Direct 3D 9 image formats:
-///							<para>
-///							<list type="bullet">
-///							<item>
-///								<description>BumpDuDv D3DFMT_V8U8</description>
-///							</item>
-///							<item>
-///								<description>D3DFMT_Q8W8V8U8</description>
-///							</item>
-///							<item>
-///								<description>D3DFMT_V16U16</description>
-///							</item>
-///							<item>
-///								<description>D3DFMT_A2W10V10U10</description>
-///							</item>
-///							<item>
-///								<description>BumpLuminance D3DFMT_L6V5U5</description>
-///							</item>
-///							<item>
-///								<description>D3DFMT_X8L8V8U8</description>
-///							</item>
-///							<item>
-///								<description>FourCC "UYVY" D3DFMT_UYVY</description>
-///							</item>
-///							<item>
-///								<description>FourCC "YUY2" D3DFMT_YUY2</description>
-///							</item>
-///							<item>
-///								<description>FourCC 117 D3DFMT_CxV8U8</description>
-///							</item>
-///							<item>
-///								<description>ZBuffer D3DFMT_D16_LOCKABLE</description>
-///							</item>
-///							<item>
-///								<description>FourCC 82 D3DFMT_D32F_LOCKABLE</description>
-///							</item>
-///							</list>
-///							</para>
-///						</description>
-///					</item>
-///					<item>
-///						<description>No support for writing block compressed formats (BC1-BC7).</description>
-///					</item>
-///				</list>
-///			</description>
-///			<description>
-///				Supports the full array of image options like arrays, mip maps, 3D images and all Direct 3D 11 pixel formats
-///			</description>
-///		</item>
+///        <listheader>
+///            <term>Format</term>
+///            <term>File extension(s)</term>
+///            <term>Read?</term>
+///            <term>Write?</term>
+///            <term>Limitations</term>
+///            <term>Features</term>
+///        </listheader>
+///        <item>
+///            <description><see cref="GorgonCodecJpeg">Jpeg</see></description>
+///            <description>*.jpg; *.jpeg; *.jpe; *.jif; *.jfif; *.jfi</description>
+///            <description>Yes</description>
+///            <description>Yes</description>
+///            <description>Only supports the first array index in an image array, the first mip slice in a mip map, and the first depth slice in a 3D image.</description>
+///            <description>None</description>
+///        </item>
+///        <item>
+///            <description><see cref="GorgonCodecPng">Png</see></description>
+///            <description>*.png</description>
+///            <description>Yes</description>
+///            <description>Yes</description>
+///            <description>Only supports the first array index in an image array, the first mip slice in a mip map, and the first depth slice in a 3D image.</description>
+///            <description>None</description>
+///        </item>
+///        <item>
+///            <description><see cref="GorgonCodecBmp">Bmp</see></description>
+///            <description>*.bmp; *.dib</description>
+///            <description>Yes</description>
+///            <description>Yes</description>
+///            <description>
+///                <list type="bullet">
+///                    <item>
+///                        <description>32 bit (8 bits per channel) and 16 bit (5:6:5) pixel formats only.</description>
+///                    </item>
+///                    <item>
+///                        <description>Only supports the first array index in an image array, the first mip slice in a mip map, and the first depth slice in a 3D image.</description>
+///                    </item>
+///                </list>
+///            </description>
+///            <description>None</description>
+///        </item>
+///        <item>
+///            <description><see cref="GorgonCodecGif">Gif</see></description>
+///            <description>*.gif</description>
+///            <description>Yes</description>
+///            <description>Yes</description>
+///            <description>
+///                <list type="bullet">                    
+///                    <item>
+///                        <description>8 bit paletted images only. Color quantization will reduce image quality.</description>
+///                    </item>
+///                    <item>
+///                        <description>Only supports the first array index in an image array (for non-animated images), the first mip slice in a mip map, and the first depth slice in a 3D image.</description>
+///                    </item>
+///                </list>
+///            </description>
+///            <description>Supports reading of animated gif files as an array of images.</description>
+///        </item>
+///        <item>
+///            <description><see cref="GorgonCodecTga">Tga</see></description>
+///            <description>*.tga; *.tpic</description>
+///            <description>Yes</description>
+///            <description>Yes</description>
+///            <description>
+///                <list type="bullet">
+///                    <item>
+///                        <description>No color map support.</description>                        
+///                    </item>
+///                    <item>
+///                        <description>Interleaved files are not supported.</description>                        
+///                    </item>
+///                    <item>
+///                        <description>Only supports 8 bit grayscale, 16, 24 and 32 bit image formats.</description>                        
+///                    </item>
+///                    <item>
+///                        <description>Can only write uncompressed image data.</description>                        
+///                    </item>
+///                    <item>
+///                        <description>Only supports the first array index in an image array, the first mip slice in a mip map, and the first depth slice in a 3D image.</description>
+///                    </item>
+///                </list>
+///            </description>
+///            <description>Can read RLE compressed and uncompressed formats.</description>
+///        </item>
+///        <item>
+///            <description><see cref="GorgonCodecDds">Dds</see></description>
+///            <description>*.dds</description>
+///            <description>Yes</description>
+///            <description>Yes</description>
+///            <description>
+///                <list type="bullet">
+///                    <item>
+///                        <description>
+///                            No support for the following Direct3D 9 image formats:
+///                            <para>
+///                            <list type="bullet">
+///                            <item>
+///                                <description>BumpDuDv D3DFMT_V8U8</description>
+///                            </item>
+///                            <item>
+///                                <description>D3DFMT_Q8W8V8U8</description>
+///                            </item>
+///                            <item>
+///                                <description>D3DFMT_V16U16</description>
+///                            </item>
+///                            <item>
+///                                <description>D3DFMT_A2W10V10U10</description>
+///                            </item>
+///                            <item>
+///                                <description>BumpLuminance D3DFMT_L6V5U5</description>
+///                            </item>
+///                            <item>
+///                                <description>D3DFMT_X8L8V8U8</description>
+///                            </item>
+///                            <item>
+///                                <description>FourCC "UYVY" D3DFMT_UYVY</description>
+///                            </item>
+///                            <item>
+///                                <description>FourCC "YUY2" D3DFMT_YUY2</description>
+///                            </item>
+///                            <item>
+///                                <description>FourCC 117 D3DFMT_CxV8U8</description>
+///                            </item>
+///                            <item>
+///                                <description>ZBuffer D3DFMT_D16_LOCKABLE</description>
+///                            </item>
+///                            <item>
+///                                <description>FourCC 82 D3DFMT_D32F_LOCKABLE</description>
+///                            </item>
+///                            </list>
+///                            </para>
+///                        </description>
+///                    </item>
+///                </list>
+///            </description>
+///            <description>
+///                Supports the full array of image options like arrays, mip maps, 3D images and all pixel formats except typeless formats.
+///            </description>
+///        </item>
 /// </list>
 /// </para>
 /// </para>
 /// <para>
-///	While many of the image formats supplied will be useful out of the box, the system can read/write images via a plugin if the supplied formats are too limited or do not 
-/// support a necessary feature
+/// While many of the image formats supplied will be useful out of the box, the system can read/write images via a plugin if the supplied formats are too limited or do not 
+/// support a necessary feature.
 /// </para>
 /// </remarks>
 public interface IGorgonImageCodec
@@ -195,7 +192,9 @@ public interface IGorgonImageCodec
     /// Property to return whether the codec supports encoding of image data.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// If this value is <b>false</b>, then the codec is effectively read only.
+    /// </para>
     /// </remarks>
     bool CanEncode
     {
@@ -206,7 +205,9 @@ public interface IGorgonImageCodec
     /// Property to return whether the codec supports decoding of image data.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// If this value is <b>false</b>, then the codec is effectively write only.
+    /// </para>
     /// </remarks>
     bool CanDecode
     {
@@ -283,14 +284,17 @@ public interface IGorgonImageCodec
     /// <param name="stream">The stream containing the image data to read.</param>
     /// <param name="size">[Optional] The size of the image within the stream, in bytes.</param>
     /// <returns>A <see cref="IGorgonImage"/> containing the image data from the stream.</returns>
-    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="stream"/> is write only.</exception>
-    /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="size"/> parameter is less than 1.</exception>
-    /// <exception cref="EndOfStreamException">Thrown when the amount of data requested exceeds the size of the stream minus its current position.</exception>
+    /// <exception cref="ArgumentException">Thrown when the <paramref name="stream"/> is write only, or cannot perform seek operations.</exception>
+    /// <exception cref="EndOfStreamException">Thrown when the <paramref name="size"/> parameter is less than 1, or the amount of data requested exceeds the size of the stream minus its current position.</exception>
+    /// <exception cref="IOException">Thrown when the data in the stream is corrupt, or is not in a format that this codec can read.</exception>
     /// <exception cref="GorgonException">Thrown when the image data in the stream has a pixel format that is unsupported.</exception>
     /// <remarks>
     /// <para>
     /// When the <paramref name="size"/> parameter is specified, the image data will be read from the stream up to the amount specified. If it is omitted, then image data will be read up to the end of 
     /// the stream.
+    /// </para>
+    /// <para>
+    /// When this method returns, the stream is positioned at the end of the image data (its starting position plus the <paramref name="size"/>).
     /// </para>
     /// </remarks>
     IGorgonImage FromStream(Stream stream, long? size = null);
@@ -299,9 +303,10 @@ public interface IGorgonImageCodec
     /// Function to load an image from a file on the physical file system.
     /// </summary>
     /// <param name="filePath">Path to the file to load.</param>
-    /// <returns>A <see cref="IGorgonImage"/> containing the image data from the stream.</returns>
+    /// <returns>A <see cref="IGorgonImage"/> containing the image data from the file.</returns>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="filePath"/> parameter is empty.</exception>
-    /// <exception cref="ArgumentOutOfRangeException">Thrown when the size of the file is less than 1 byte.</exception>
+    /// <exception cref="EndOfStreamException">Thrown when the size of the file is less than 1 byte.</exception>
+    /// <exception cref="IOException">Thrown when the data in the file is corrupt, or is not in a format that this codec can read.</exception>
     /// <exception cref="GorgonException">Thrown when the image data in the file has a pixel format that is unsupported.</exception>
     IGorgonImage FromFile(string filePath);
 
@@ -310,8 +315,9 @@ public interface IGorgonImageCodec
     /// </summary>
     /// <param name="imageData">A <see cref="IGorgonImage"/> to persist to the stream.</param>
     /// <param name="stream">The stream that will receive the image data.</param>
-    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="stream"/> is read only.</exception>
-    /// <exception cref="GorgonException">Thrown when the image data in the stream has a pixel format that is unsupported.</exception>        
+    /// <exception cref="ArgumentException">Thrown when the <paramref name="stream"/> is read only.</exception>
+    /// <exception cref="ObjectDisposedException">Thrown when the <paramref name="imageData"/> has been disposed.</exception>
+    /// <exception cref="NotSupportedException">Thrown when the pixel format of the <paramref name="imageData"/> is not supported by this codec.</exception>
     void Save(IGorgonImage imageData, Stream stream);
 
     /// <summary>
@@ -319,8 +325,9 @@ public interface IGorgonImageCodec
     /// </summary>
     /// <param name="imageData">A <see cref="IGorgonImage"/> to persist to the stream.</param>
     /// <param name="filePath">The path to the file that will hold the image data.</param>
-    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="filePath"/> is empty..</exception>
-    /// <exception cref="GorgonException">Thrown when the image data in the stream has a pixel format that is unsupported.</exception>
+    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="filePath"/> is empty.</exception>
+    /// <exception cref="ObjectDisposedException">Thrown when the <paramref name="imageData"/> has been disposed.</exception>
+    /// <exception cref="NotSupportedException">Thrown when the pixel format of the <paramref name="imageData"/> is not supported by this codec.</exception>
     void Save(IGorgonImage imageData, string filePath);
 
     /// <summary>
@@ -328,11 +335,11 @@ public interface IGorgonImageCodec
     /// </summary>
     /// <param name="stream">The stream that is used to read the image data.</param>
     /// <returns><b>true</b> if the codec can read the file, <b>false</b> if not.</returns>
-    /// <exception cref="IOException">Thrown when the <paramref name="stream"/> is write-only or if the stream cannot perform seek operations.</exception>
+    /// <exception cref="ArgumentException">Thrown when the <paramref name="stream"/> is write-only or if the stream cannot perform seek operations.</exception>
     /// <remarks>
     /// <para>
-    /// When overloading this method, the implementor should remember to reset the stream position back to the original position when they are done reading the data.  Failure to do so may cause 
-    /// undesirable results or an exception. 
+    /// When overloading this method, the implementor should remember to reset the stream position back to the original position when they are done reading the data. Failure to do so may cause 
+/// undesirable results or an exception. 
     /// </para>
     /// </remarks>
     bool IsReadable(Stream stream);
@@ -341,18 +348,14 @@ public interface IGorgonImageCodec
     /// Function to read the meta data for image data within a stream.
     /// </summary>
     /// <param name="stream">The stream containing the metadata to read.</param>
-    /// <returns>
-    /// The image meta data as a <see cref="IGorgonImageInfo"/> value.
-    /// </returns>
-    /// <exception cref="IOException">Thrown when the <paramref name="stream"/> is write-only or if the stream cannot perform seek operations.
-    /// <para>Thrown if the file is corrupt or can't be read by the codec.</para>
-    /// </exception>
-    /// <exception cref="IOException">Thrown when the <paramref name="stream"/> is write-only or if the stream cannot perform seek operations.</exception>
+    /// <returns>The image meta data as a <see cref="GorgonImageInfo"/> value.</returns>
+    /// <exception cref="ArgumentException">Thrown when the <paramref name="stream"/> is write-only or if the stream cannot perform seek operations.</exception>
+    /// <exception cref="IOException">Thrown if the file is corrupt or can't be read by the codec.</exception>
     /// <exception cref="EndOfStreamException">Thrown when an attempt to read beyond the end of the stream is made.</exception>
     /// <remarks>
     /// <para>
-    /// When overloading this method, the implementor should remember to reset the stream position back to the original position when they are done reading the data.  Failure to do so 
-    /// may cause undesirable results.
+    /// When overloading this method, the implementor should remember to reset the stream position back to the original position when they are done reading the data. Failure to do so 
+/// may cause undesirable results.
     /// </para> 
     /// </remarks>
     GorgonImageInfo GetMetaData(Stream stream);

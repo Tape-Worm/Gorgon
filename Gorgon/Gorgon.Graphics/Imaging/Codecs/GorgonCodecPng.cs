@@ -29,33 +29,33 @@ using Windows.Win32;
 namespace Gorgon.Graphics.Imaging.Codecs;
 
 /// <summary>
-/// A codec to handle read/writing of PNG files
+/// A codec to handle reading/writing of PNG files.
 /// </summary>
 /// <remarks>
 /// <para>
-/// This codec will read and write lossless compressed files using the Portable Network Graphics (PNG) format
+/// This codec will read and write lossless compressed files using the Portable Network Graphics (PNG) format.
 /// </para>
 /// <para>
 /// This codec supports the following pixel formats:
 /// <list type="bullet">
-///		<item>
-///			<description><c>R8G8B8A8_UNorm</c></description>
-///		</item>
-///		<item>
-///			<description><c>B8G8R8A8_UNorm</c></description>
-///		</item>
-///		<item>
-///			<description><c>B8G8R8X8_UNorm</c></description>
-///		</item>
-///		<item>
-///			<description><c>R16G16B16A16_UNorm</c></description>
-///		</item>
+///        <item>
+///            <description><c>R8G8B8A8_UNorm</c></description>
+///        </item>
+///        <item>
+///            <description><c>B8G8R8A8_UNorm</c></description>
+///        </item>
+///        <item>
+///            <description><c>B8G8R8X8_UNorm</c></description>
+///        </item>
+///        <item>
+///            <description><c>R16G16B16A16_UNorm</c></description>
+///        </item>
 /// </list>
 /// </para>
 /// <para>
 /// <note type="important">
 /// <para>
-/// This codec requires the Windows Imaging Components (WIC) to be installed for the operating system
+/// This codec requires the Windows Imaging Components (WIC) to be installed for the operating system.
 /// </para>
 /// </note>
 /// </para>

@@ -1220,8 +1220,7 @@ public readonly struct GorgonTextureBarrier
     public unsafe readonly bool Equals(GorgonTextureBarrier other) => Resource.Get() == other.Resource.Get()
         && Sync == other.Sync
         && Access == other.Access
-        && Layout == other.Layout
-        && Discard == other.Discard;
+        && Layout == other.Layout;
 
     /// <summary>
     /// Function to convert this value into D3D 12 texture barrier type.
@@ -1261,7 +1260,7 @@ public readonly struct GorgonTextureBarrier
     public static bool operator !=(in GorgonTextureBarrier left, in GorgonTextureBarrier right) => !left.Equals(right);
 
     /// <inheritdoc/>
-    public override int GetHashCode() => HashCode.Combine(Resource, Sync, Access, Layout, Discard);
+    public override int GetHashCode() => HashCode.Combine(Resource, Sync, Access, Layout);
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonTextureBarrier"/> value type.

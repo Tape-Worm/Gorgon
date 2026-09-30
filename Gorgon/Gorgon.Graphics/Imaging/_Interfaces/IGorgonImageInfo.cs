@@ -26,7 +26,7 @@
 namespace Gorgon.Graphics.Imaging;
 
 /// <summary>
-/// Type of image data
+/// Type of image data.
 /// </summary>
 public enum ImageDataType
 {
@@ -47,13 +47,13 @@ public enum ImageDataType
     /// </summary>
     Image3D = 4,
     /// <summary>
-    /// Image is a texture cube.
+    /// Image is a cube map.
     /// </summary>
     ImageCube = 0xFF
 }
 
 /// <summary>
-/// Provides information about an image
+/// Provides information about an image.
 /// </summary>
 public interface IGorgonImageInfo
 {
@@ -69,7 +69,9 @@ public interface IGorgonImageInfo
     /// Property to return the width of an image, in pixels.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// A value of less than 1 will throw an exception upon creation.
+    /// </para>
     /// </remarks>
     int Width
     {
@@ -81,7 +83,7 @@ public interface IGorgonImageInfo
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This applies to 2D and 3D images only.  This parameter will be set to a value of 1 for a 1D image.
+    /// This applies to 2D, cube and 3D images only. This value will be set to 1 for a 1D image.
     /// </para>
     /// <para>
     /// For applicable image types, a value of less than 1 will throw an exception upon creation.
@@ -97,7 +99,7 @@ public interface IGorgonImageInfo
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This applies to 3D images only.  This parameter will be set to a value of 1 for a 1D or 2D image.
+    /// This applies to 3D images only. This value will be set to 1 for a 1D, 2D or cube image.
     /// </para>
     /// <para>
     /// For applicable image types, a value of less than 1 will throw an exception upon creation.
@@ -141,7 +143,10 @@ public interface IGorgonImageInfo
     /// Property to return the number of mip map levels in the image.
     /// </summary>
     /// <remarks>
-    /// If this value is set to 0, or less, then a full mip-map chain will be generated for the image.
+    /// <para>
+    /// A value of less than 1 will throw an exception upon creation. A value larger than the number of mip map levels that the width, height and depth of the image can hold is reduced to 
+    /// that number (see <see cref="GorgonImageInfo.GetMaximumMipCount"/>).
+    /// </para>
     /// </remarks>
     int MipCount
     {
@@ -149,7 +154,7 @@ public interface IGorgonImageInfo
     }
 
     /// <summary>
-    /// Property to return whether the size of the texture is a power of 2 or not.
+    /// Property to return whether the width, height and depth of the image are all powers of 2.
     /// </summary>
     bool IsPowerOfTwo
     {
@@ -161,14 +166,14 @@ public interface IGorgonImageInfo
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This only applies to 1D and 2D images.  This parameter will be set to a value of 1 for a 3D image.
+    /// This only applies to 1D, 2D and cube images. This value will be set to 1 for a 3D image.
     /// </para>
     /// <para>
-    /// If the <see cref="ImageType"/> is <see cref="ImageDataType.ImageCube"/>, then this value should be set to a multiple of 6. If it is not, then Gorgon will adjust this value to be a multiple of 
-    /// 6 if this image is to be used as a cube map.
+    /// If the <see cref="ImageType"/> is <see cref="ImageDataType.ImageCube"/>, then this value must be a multiple of 6 (one array index per cube face). 
+    /// <see cref="GorgonImageInfo.CreateCubeImageInfo"/> takes the number of cubes, and multiplies it by 6.
     /// </para>
     /// <para>
-    /// This value will be reset to 1 if the value supplied is less than 1.
+    /// A value of less than 1 will throw an exception upon creation.
     /// </para>
     /// </remarks>
     int ArrayCount

@@ -239,9 +239,8 @@ internal static class ImageUtilities
     /// <param name="srcPitch">The pitch of the source data scanline.</param>
     /// <param name="dest">The destination buffer that will receive the copied data.</param>
     /// <param name="format">The format used to copy.</param>
-    /// <param name="flipHorizontal"><b>true</b> to write horizontal pixel values from right to left, or <b>false</b> to write left to right.</param>
     /// <returns><b>true</b> if the line contains all 0 alpha values, <b>false</b> if not.</returns>
-    public static bool CopyScanline(GorgonPtr<byte> src, int srcPitch, GorgonPtr<byte> dest, BufferFormat format, bool flipHorizontal)
+    public static bool CopyScanline(GorgonPtr<byte> src, int srcPitch, GorgonPtr<byte> dest, BufferFormat format)
     {
         bool result = true;
 
@@ -270,26 +269,15 @@ internal static class ImageUtilities
                         }
 
                         // If not in place copy, then copy to destination.
-                        if (dest == src)
+                        if (dest != src)
                         {
-                            continue;
+                            (destPtr++).Value = srcPtr.Value;
+                            (destPtr++).Value = (srcPtr + 1).Value;
+                            (destPtr++).Value = (srcPtr + 2).Value;
+                            (destPtr++).Value = (srcPtr + 3).Value;
                         }
 
-                        if (!flipHorizontal)
-                        {
-                            (destPtr++).Value = (srcPtr++).Value;
-                            (destPtr++).Value = (srcPtr++).Value;
-                            (destPtr++).Value = (srcPtr++).Value;
-                            (destPtr++).Value = (srcPtr++).Value;
-                        }
-                        else
-                        {
-                            (destPtr - 3).Value = (srcPtr++).Value;
-                            (destPtr - 2).Value = (srcPtr++).Value;
-                            (destPtr - 1).Value = (srcPtr++).Value;
-                            (destPtr).Value = (srcPtr++).Value;
-                            destPtr -= 4;
-                        }
+                        srcPtr += 4;
                     }
                 }
                 return result;
@@ -323,22 +311,13 @@ internal static class ImageUtilities
                         }
 
                         // If not in-place copy, then copy from the source.
-                        if (src == dest)
+                        if (src != dest)
                         {
-                            continue;
+                            (destPtr++).Value = srcPtr.Value;
+                            (destPtr++).Value = (srcPtr + 1).Value;
                         }
 
-                        if (!flipHorizontal)
-                        {
-                            (destPtr++).Value = (srcPtr++).Value;
-                            (destPtr++).Value = (srcPtr++).Value;
-                        }
-                        else
-                        {
-                            (destPtr - 1).Value = (srcPtr++).Value;
-                            (destPtr).Value = (srcPtr++).Value;
-                            destPtr -= 2;
-                        }
+                        srcPtr += 2;
                     }
                 }
                 return result;
@@ -365,14 +344,7 @@ internal static class ImageUtilities
                             continue;
                         }
 
-                        if (!flipHorizontal)
-                        {
-                            (destPtr++).Value = pixel;
-                        }
-                        else
-                        {
-                            (destPtr--).Value = pixel;
-                        }
+                        (destPtr++).Value = pixel;
                     }
                 }
                 return result;
@@ -406,14 +378,7 @@ internal static class ImageUtilities
                             continue;
                         }
 
-                        if (!flipHorizontal)
-                        {
-                            (destPtr++).Value = pixel;
-                        }
-                        else
-                        {
-                            (destPtr--).Value = pixel;
-                        }
+                        (destPtr++).Value = pixel;
                     }
                 }
                 return result;
@@ -441,20 +406,13 @@ internal static class ImageUtilities
                             result = false;
                         }
 
+                        // If not in-place copy, then copy from the source.
                         if (src == dest)
                         {
                             continue;
                         }
 
-                        // If not in-place copy, then copy from the source.
-                        if (!flipHorizontal)
-                        {
-                            (destPtr++).Value = pixel;
-                        }
-                        else
-                        {
-                            (destPtr--).Value = pixel;
-                        }
+                        (destPtr++).Value = pixel;
                     }
                 }
                 return result;
@@ -462,18 +420,6 @@ internal static class ImageUtilities
             case BufferFormat.B5G6R5_UNorm:
                 if (dest == src)
                 {
-                    return false;
-                }
-
-                if (flipHorizontal)
-                {
-                    GorgonPtr<byte> srcPtr = src;
-                    GorgonPtr<byte> destPtr = dest;
-
-                    for (int x = 0; x < srcPitch; ++x)
-                    {
-                        (destPtr--).Value = (srcPtr++).Value;
-                    }
                     return false;
                 }
 
@@ -499,14 +445,7 @@ internal static class ImageUtilities
                             continue;
                         }
 
-                        if (!flipHorizontal)
-                        {
-                            (destPtr++).Value = alpha;
-                        }
-                        else
-                        {
-                            (destPtr--).Value = alpha;
-                        }
+                        (destPtr++).Value = alpha;
                     }
                 }
                 return result;
@@ -733,17 +672,18 @@ internal static class ImageUtilities
     }
 
     /// <summary>
-    /// Function to update a line with opaque alpha substituion.
+    /// Function to set the alpha channel on a scanline.
     /// </summary>
     /// <param name="ptr">The pointer to the image data.</param>
-    /// <param name="pitch">The pitch of the image data.</param>
+    /// <param name="pitch">The number of bytes in the scanline to update.</param>
     /// <param name="format">Format of the destination buffer.</param>
-    /// <param name="alphaValue">The alpha value to set.</param>
-    /// <param name="minAlpha">The minimum alpha value to overwrite.</param>
-    /// <param name="maxAlpha">The maximum alpha value to overwrite.</param>
-    /// <remarks>Use this method to copy a single scanline of an image and (optionally) set an opaque constant alpha value.</remarks>
+    /// <param name="alphaValue">The normalized alpha value to set (0 to 1 for unsigned formats, -1 to 1 for signed formats).</param>
+    /// <param name="minAlpha">The minimum normalized alpha value to overwrite.</param>
+    /// <param name="maxAlpha">The maximum normalized alpha value to overwrite.</param>
     public static void SetAlphaScanline(GorgonPtr<byte> ptr, int pitch, BufferFormat format, float alphaValue, float minAlpha, float maxAlpha)
     {
+        // Each format converts the alpha value into its own channel units once, and converts each pixel's alpha back into a normalized value before comparing it
+        // with the range. Signed normalized formats treat their most negative value as -1, so those are clamped before the comparison.
         switch (format)
         {
             case BufferFormat.R32G32B32A32_Float:
@@ -762,20 +702,38 @@ internal static class ImageUtilities
                         srcPtr += 4;
                     }
                 }
-                break;
+                return;
             case BufferFormat.R32G32B32A32_Typeless:
             case BufferFormat.R32G32B32A32_UInt:
-            case BufferFormat.R32G32B32A32_SInt:
                 {
                     GorgonPtr<uint> srcPtr = (GorgonPtr<uint>)ptr;
+                    uint alpha = (uint)(alphaValue.Max(0.0f).Min(1.0f) * (double)uint.MaxValue).Round();
 
                     for (int i = 0; i < pitch; i += 16)
                     {
-                        uint srcAlpha = (srcPtr + 3).Value;
+                        double srcAlpha = (srcPtr + 3).Value / (double)uint.MaxValue;
 
-                        if ((srcAlpha >= (uint)minAlpha) && (srcAlpha <= (uint)maxAlpha))
+                        if ((srcAlpha >= minAlpha) && (srcAlpha <= maxAlpha))
                         {
-                            (srcPtr + 3).Value = (uint)alphaValue;
+                            (srcPtr + 3).Value = alpha;
+                        }
+
+                        srcPtr += 4;
+                    }
+                }
+                return;
+            case BufferFormat.R32G32B32A32_SInt:
+                {
+                    GorgonPtr<uint> srcPtr = (GorgonPtr<uint>)ptr;
+                    uint alpha = (uint)(int)(alphaValue.Max(-1.0f).Min(1.0f) * (double)int.MaxValue).Round();
+
+                    for (int i = 0; i < pitch; i += 16)
+                    {
+                        double srcAlpha = ((int)(srcPtr + 3).Value / (double)int.MaxValue).Max(-1.0);
+
+                        if ((srcAlpha >= minAlpha) && (srcAlpha <= maxAlpha))
+                        {
+                            (srcPtr + 3).Value = alpha;
                         }
 
                         srcPtr += 4;
@@ -805,18 +763,36 @@ internal static class ImageUtilities
             case BufferFormat.R16G16B16A16_Typeless:
             case BufferFormat.R16G16B16A16_UNorm:
             case BufferFormat.R16G16B16A16_UInt:
+                {
+                    GorgonPtr<ushort> srcPtr = (GorgonPtr<ushort>)ptr;
+                    ushort alpha = (ushort)(alphaValue.Max(0.0f).Min(1.0f) * ushort.MaxValue).Round();
+
+                    for (int i = 0; i < pitch; i += 8)
+                    {
+                        float srcAlpha = (srcPtr + 3).Value / (float)ushort.MaxValue;
+
+                        if ((srcAlpha >= minAlpha) && (srcAlpha <= maxAlpha))
+                        {
+                            (srcPtr + 3).Value = alpha;
+                        }
+
+                        srcPtr += 4;
+                    }
+                }
+                return;
             case BufferFormat.R16G16B16A16_SNorm:
             case BufferFormat.R16G16B16A16_SInt:
                 {
                     GorgonPtr<ushort> srcPtr = (GorgonPtr<ushort>)ptr;
+                    ushort alpha = (ushort)(short)(alphaValue.Max(-1.0f).Min(1.0f) * short.MaxValue).Round();
 
                     for (int i = 0; i < pitch; i += 8)
                     {
-                        ushort srcAlpha = (srcPtr + 3).Value;
+                        float srcAlpha = ((short)(srcPtr + 3).Value / (float)short.MaxValue).Max(-1.0f);
 
-                        if ((srcAlpha >= (ushort)minAlpha) && (srcAlpha <= (ushort)maxAlpha))
+                        if ((srcAlpha >= minAlpha) && (srcAlpha <= maxAlpha))
                         {
-                            (srcPtr + 3).Value = (ushort)alphaValue;
+                            (srcPtr + 3).Value = alpha;
                         }
 
                         srcPtr += 4;
@@ -829,15 +805,15 @@ internal static class ImageUtilities
             case BufferFormat.R10G10B10_Xr_Bias_A2_UNorm:
                 {
                     GorgonPtr<uint> srcPtr = (GorgonPtr<uint>)ptr;
+                    uint alpha = (uint)(alphaValue.Max(0.0f).Min(1.0f) * 3.0f).Round();
 
                     for (int i = 0; i < pitch; i += 4)
                     {
-                        uint srcAlpha = (((srcPtr.Value) & 0xC0000000) >> 30) & 3;
+                        float srcAlpha = (srcPtr.Value >> 30) / 3.0f;
 
-                        if ((srcAlpha >= (uint)minAlpha) && (srcAlpha <= (uint)maxAlpha))
+                        if ((srcAlpha >= minAlpha) && (srcAlpha <= maxAlpha))
                         {
-                            uint destValue = srcPtr.Value & 0x3FFFFFFF;
-                            srcPtr.Value = (destValue | ((uint)alphaValue & 3) << 30);
+                            srcPtr.Value = (srcPtr.Value & 0x3FFFFFFF) | (alpha << 30);
                         }
 
                         ++srcPtr;
@@ -851,32 +827,56 @@ internal static class ImageUtilities
             case BufferFormat.B8G8R8A8_Typeless:
             case BufferFormat.B8G8R8A8_UNorm:
             case BufferFormat.B8G8R8A8_UNorm_SRgb:
+                {
+                    GorgonPtr<uint> srcPtr = (GorgonPtr<uint>)ptr;
+                    uint alpha = (uint)(alphaValue.Max(0.0f).Min(1.0f) * byte.MaxValue).Round();
+
+                    for (int i = 0; i < pitch; i += 4)
+                    {
+                        float srcAlpha = (srcPtr.Value >> 24) / (float)byte.MaxValue;
+
+                        if ((srcAlpha >= minAlpha) && (srcAlpha <= maxAlpha))
+                        {
+                            srcPtr.Value = (srcPtr.Value & 0xFFFFFF) | (alpha << 24);
+                        }
+
+                        ++srcPtr;
+                    }
+                }
+                return;
             case BufferFormat.R8G8B8A8_SNorm:
             case BufferFormat.R8G8B8A8_SInt:
                 {
                     GorgonPtr<uint> srcPtr = (GorgonPtr<uint>)ptr;
+                    uint alpha = (byte)(sbyte)(alphaValue.Max(-1.0f).Min(1.0f) * sbyte.MaxValue).Round();
 
                     for (int i = 0; i < pitch; i += 4)
                     {
-                        uint srcAlpha = ((srcPtr.Value) & 0xFF000000) >> 24;
+                        float srcAlpha = ((sbyte)(srcPtr.Value >> 24) / (float)sbyte.MaxValue).Max(-1.0f);
 
-                        if ((srcAlpha >= (uint)minAlpha) && (srcAlpha <= (uint)maxAlpha))
+                        if ((srcAlpha >= minAlpha) && (srcAlpha <= maxAlpha))
                         {
-                            uint destValue = (srcPtr.Value) & 0xFFFFFF;
-                            srcPtr.Value = destValue | ((uint)alphaValue & 0xFF) << 24;
+                            srcPtr.Value = (srcPtr.Value & 0xFFFFFF) | (alpha << 24);
                         }
+
                         ++srcPtr;
                     }
                 }
-                break;
+                return;
             case BufferFormat.B5G5R5A1_UNorm:
                 {
                     GorgonPtr<ushort> srcPtr = (GorgonPtr<ushort>)ptr;
+                    ushort alpha = (ushort)alphaValue.Max(0.0f).Min(1.0f).Round();
 
                     for (int i = 0; i < pitch; i += 2)
                     {
-                        ushort destValue = (ushort)(srcPtr.Value & 0x7fff);
-                        srcPtr.Value = (ushort)(destValue | (ushort)(((ushort)alphaValue & 0x1) << 15));
+                        float srcAlpha = srcPtr.Value >> 15;
+
+                        if ((srcAlpha >= minAlpha) && (srcAlpha <= maxAlpha))
+                        {
+                            srcPtr.Value = (ushort)((srcPtr.Value & 0x7FFF) | (alpha << 15));
+                        }
+
                         ++srcPtr;
                     }
                 }
@@ -884,16 +884,17 @@ internal static class ImageUtilities
             case BufferFormat.A4B4G4R4_UNorm:
                 {
                     GorgonPtr<ushort> srcPtr = (GorgonPtr<ushort>)ptr;
+                    ushort alpha = (ushort)(alphaValue.Max(0.0f).Min(1.0f) * 15.0f).Round();
 
                     for (int i = 0; i < pitch; i += 2)
                     {
-                        ushort srcAlpha = (ushort)((srcPtr.Value) & 0xF);
+                        float srcAlpha = (srcPtr.Value & 0xF) / 15.0f;
 
                         if ((srcAlpha >= minAlpha) && (srcAlpha <= maxAlpha))
                         {
-                            ushort destValue = (ushort)((srcPtr.Value) & 0xFFF0);
-                            srcPtr.Value = (ushort)(destValue | ((ushort)alphaValue & 0xF));
+                            srcPtr.Value = (ushort)((srcPtr.Value & 0xFFF0) | alpha);
                         }
+
                         ++srcPtr;
                     }
                 }
@@ -901,17 +902,33 @@ internal static class ImageUtilities
             case BufferFormat.B4G4R4A4_UNorm:
                 {
                     GorgonPtr<ushort> srcPtr = (GorgonPtr<ushort>)ptr;
+                    ushort alpha = (ushort)(alphaValue.Max(0.0f).Min(1.0f) * 15.0f).Round();
 
                     for (int i = 0; i < pitch; i += 2)
                     {
-                        ushort srcAlpha = (ushort)(((srcPtr.Value) & 0xF000) >> 12);
+                        float srcAlpha = (srcPtr.Value >> 12) / 15.0f;
 
                         if ((srcAlpha >= minAlpha) && (srcAlpha <= maxAlpha))
                         {
-                            ushort destValue = (ushort)((srcPtr.Value) & 0xFFF);
-                            srcPtr.Value = (ushort)(destValue | (ushort)(((ushort)alphaValue & 0xF) << 12));
+                            srcPtr.Value = (ushort)((srcPtr.Value & 0x0FFF) | (alpha << 12));
                         }
+
                         ++srcPtr;
+                    }
+                }
+                return;
+            case BufferFormat.A8_UNorm:
+                {
+                    byte alpha = (byte)(alphaValue.Max(0.0f).Min(1.0f) * byte.MaxValue).Round();
+
+                    for (int i = 0; i < pitch; ++i)
+                    {
+                        float srcAlpha = ptr[i] / (float)byte.MaxValue;
+
+                        if ((srcAlpha >= minAlpha) && (srcAlpha <= maxAlpha))
+                        {
+                            ptr[i] = alpha;
+                        }
                     }
                 }
                 return;
@@ -951,7 +968,6 @@ internal static class ImageUtilities
 
         switch (format)
         {
-            case BufferFormat.R32G32B32A32_SInt:
             case BufferFormat.R32G32B32A32_Typeless:
             case BufferFormat.R32G32B32A32_UInt:
                 {
@@ -960,22 +976,29 @@ internal static class ImageUtilities
 
                     for (int i = 0; i < size; i += 16)
                     {
-                        uint srcAlpha = (srcPtr + 3).Value;
+                        double srcAlpha = (srcPtr + 3).Value / (double)uint.MaxValue;
 
-                        if (srcAlpha == 0)
-                        {
-                            srcPtr += 4;
-                            destPtr += 4;
-                            continue;
-                        }
+                        destPtr.Value = (uint)((srcPtr).Value * srcAlpha).Round();
+                        (destPtr + 1).Value = (uint)((srcPtr + 1).Value * srcAlpha).Round();
+                        (destPtr + 2).Value = (uint)((srcPtr + 2).Value * srcAlpha).Round();
 
-                        uint c1 = srcPtr.Value / srcAlpha;
-                        uint c2 = ((srcPtr + 1).Value) / srcAlpha;
-                        uint c3 = ((srcPtr + 2).Value) / srcAlpha;
+                        srcPtr += 4;
+                        destPtr += 4;
+                    }
+                }
+                return;
+            case BufferFormat.R32G32B32A32_SInt:
+                {
+                    GorgonPtr<uint> srcPtr = (GorgonPtr<uint>)src;
+                    GorgonPtr<uint> destPtr = (GorgonPtr<uint>)dest;
 
-                        destPtr.Value = c1;
-                        ((destPtr + 1).Value) = c2;
-                        ((destPtr + 2).Value) = c3;
+                    for (int i = 0; i < size; i += 16)
+                    {
+                        double srcAlpha = ((int)(srcPtr + 3).Value / (double)int.MaxValue).Max(0.0);
+
+                        destPtr.Value = (uint)(int)((int)(srcPtr).Value * srcAlpha).Round();
+                        (destPtr + 1).Value = (uint)(int)((int)(srcPtr + 1).Value * srcAlpha).Round();
+                        (destPtr + 2).Value = (uint)(int)((int)(srcPtr + 2).Value * srcAlpha).Round();
 
                         srcPtr += 4;
                         destPtr += 4;
@@ -1004,8 +1027,6 @@ internal static class ImageUtilities
                     }
                 }
                 return;
-            case BufferFormat.R16G16B16A16_SNorm:
-            case BufferFormat.R16G16B16A16_SInt:
             case BufferFormat.R16G16B16A16_Typeless:
             case BufferFormat.R16G16B16A16_UNorm:
             case BufferFormat.R16G16B16A16_UInt:
@@ -1015,22 +1036,30 @@ internal static class ImageUtilities
 
                     for (int i = 0; i < size; i += 8)
                     {
-                        ushort srcAlpha = (srcPtr + 3).Value;
+                        float srcAlpha = (srcPtr + 3).Value / (float)ushort.MaxValue;
 
-                        if (srcAlpha == 0)
-                        {
-                            srcPtr += 4;
-                            destPtr += 4;
-                            continue;
-                        }
+                        destPtr.Value = (ushort)((srcPtr).Value * srcAlpha).Round();
+                        (destPtr + 1).Value = (ushort)((srcPtr + 1).Value * srcAlpha).Round();
+                        (destPtr + 2).Value = (ushort)((srcPtr + 2).Value * srcAlpha).Round();
 
-                        ushort c1 = (ushort)(srcPtr.Value / srcAlpha);
-                        ushort c2 = (ushort)(((srcPtr + 1).Value) / srcAlpha);
-                        ushort c3 = (ushort)(((srcPtr + 2).Value) / srcAlpha);
+                        srcPtr += 4;
+                        destPtr += 4;
+                    }
+                }
+                return;
+            case BufferFormat.R16G16B16A16_SNorm:
+            case BufferFormat.R16G16B16A16_SInt:
+                {
+                    GorgonPtr<ushort> srcPtr = (GorgonPtr<ushort>)src;
+                    GorgonPtr<ushort> destPtr = (GorgonPtr<ushort>)dest;
 
-                        destPtr.Value = c1;
-                        ((destPtr + 1).Value) = c2;
-                        ((destPtr + 2).Value) = c3;
+                    for (int i = 0; i < size; i += 8)
+                    {
+                        float srcAlpha = ((short)(srcPtr + 3).Value / (float)short.MaxValue).Max(0.0f);
+
+                        destPtr.Value = (ushort)(short)((short)(srcPtr).Value * srcAlpha).Round();
+                        (destPtr + 1).Value = (ushort)(short)((short)(srcPtr + 1).Value * srcAlpha).Round();
+                        (destPtr + 2).Value = (ushort)(short)((short)(srcPtr + 2).Value * srcAlpha).Round();
 
                         srcPtr += 4;
                         destPtr += 4;
@@ -1071,11 +1100,11 @@ internal static class ImageUtilities
                     {
                         uint pixel = srcPtr.Value;
                         uint color = pixel & 0x3FFFFFFF;
-                        float srcAlpha = (((pixel & 0xC0000000) >> 30) & 3) / 4.0f;
+                        float srcAlpha = (((pixel & 0xC0000000) >> 30) & 3) / 3.0f;
 
-                        uint c1 = (uint)(((color >> 20) & 0x3FF) * srcAlpha);
-                        uint c2 = (uint)(((color >> 10) & 0x3FF) * srcAlpha);
-                        uint c3 = (uint)((color & 0x3ff) * srcAlpha);
+                        uint c1 = (uint)(((color >> 20) & 0x3FF) * srcAlpha).Round();
+                        uint c2 = (uint)(((color >> 10) & 0x3FF) * srcAlpha).Round();
+                        uint c3 = (uint)((color & 0x3ff) * srcAlpha).Round();
 
                         color = (c1 << 20) | (c2 << 10) | c3;
 
@@ -1105,9 +1134,9 @@ internal static class ImageUtilities
                         uint color = pixel & 0xFFFFFF;
                         float srcAlpha = ((pixel & 0xFF000000) >> 24) / 255.0f;
 
-                        uint c1 = (uint)(((color >> 16) & 0xFF) * srcAlpha);
-                        uint c2 = (uint)(((color >> 8) & 0xFF) * srcAlpha);
-                        uint c3 = (uint)((color & 0xFF) * srcAlpha);
+                        uint c1 = (uint)(((color >> 16) & 0xFF) * srcAlpha).Round();
+                        uint c2 = (uint)(((color >> 8) & 0xFF) * srcAlpha).Round();
+                        uint c3 = (uint)((color & 0xFF) * srcAlpha).Round();
 
                         color = (c1 << 16) | (c2 << 8) | c3;
 
@@ -1123,15 +1152,15 @@ internal static class ImageUtilities
                     GorgonPtr<ushort> srcPtr = (GorgonPtr<ushort>)src;
                     GorgonPtr<ushort> destPtr = (GorgonPtr<ushort>)dest;
 
-                    for (int i = 0; i < size; i += 4)
+                    for (int i = 0; i < size; i += sizeof(ushort))
                     {
                         ushort pixel = srcPtr.Value;
                         ushort color = (ushort)(pixel & 0xfff);
-                        float srcAlpha = ((pixel & 0xF000) >> 12) / 16.0f;
+                        float srcAlpha = ((pixel & 0xF000) >> 12) / 15.0f;
 
-                        ushort c1 = (ushort)(((color >> 8) & 0xF) * srcAlpha);
-                        ushort c2 = (ushort)(((color >> 4) & 0xF) * srcAlpha);
-                        ushort c3 = (ushort)((color & 0xF) * srcAlpha);
+                        ushort c1 = (ushort)(((color >> 8) & 0xF) * srcAlpha).Round();
+                        ushort c2 = (ushort)(((color >> 4) & 0xF) * srcAlpha).Round();
+                        ushort c3 = (ushort)((color & 0xF) * srcAlpha).Round();
 
                         color = (ushort)((c1 << 8) | (c2 << 4) | c3);
 
@@ -1147,17 +1176,17 @@ internal static class ImageUtilities
                     GorgonPtr<ushort> srcPtr = (GorgonPtr<ushort>)src;
                     GorgonPtr<ushort> destPtr = (GorgonPtr<ushort>)dest;
 
-                    for (int i = 0; i < size; i += 4)
+                    for (int i = 0; i < size; i += sizeof(ushort))
                     {
                         ushort pixel = srcPtr.Value;
                         ushort color = (ushort)(pixel & 0xfff0);
-                        float srcAlpha = (pixel & 0xF) / 16.0f;
+                        float srcAlpha = (pixel & 0xF) / 15.0f;
 
-                        ushort c1 = (ushort)(((color >> 12) & 0xF) * srcAlpha);
-                        ushort c2 = (ushort)(((color >> 8) & 0xF) * srcAlpha);
-                        ushort c3 = (ushort)(((color >> 4) & 0xF) * srcAlpha);
+                        ushort c1 = (ushort)(((color >> 12) & 0xF) * srcAlpha).Round();
+                        ushort c2 = (ushort)(((color >> 8) & 0xF) * srcAlpha).Round();
+                        ushort c3 = (ushort)(((color >> 4) & 0xF) * srcAlpha).Round();
 
-                        color = (ushort)((c1 << 8) | (c2 << 4) | c3);
+                        color = (ushort)((c1 << 12) | (c2 << 8) | (c3 << 4));
 
                         destPtr.Value = (ushort)((pixel & 0xF) | color);
 
@@ -1202,7 +1231,6 @@ internal static class ImageUtilities
 
         switch (format)
         {
-            case BufferFormat.R32G32B32A32_SInt:
             case BufferFormat.R32G32B32A32_Typeless:
             case BufferFormat.R32G32B32A32_UInt:
                 {
@@ -1211,22 +1239,43 @@ internal static class ImageUtilities
 
                     for (int i = 0; i < size; i += 16)
                     {
-                        uint srcAlpha = (srcPtr + 3).Value;
+                        double srcAlpha = (srcPtr + 3).Value / (double)uint.MaxValue;
 
-                        if (srcAlpha == 0)
+                        if (srcAlpha <= 0)
                         {
                             srcPtr += 4;
                             destPtr += 4;
                             continue;
                         }
 
-                        uint c1 = srcPtr.Value * srcAlpha;
-                        uint c2 = ((srcPtr + 1).Value) * srcAlpha;
-                        uint c3 = ((srcPtr + 2).Value) * srcAlpha;
+                        destPtr.Value = (uint)((srcPtr).Value / srcAlpha).Round().Min((double)uint.MaxValue);
+                        (destPtr + 1).Value = (uint)((srcPtr + 1).Value / srcAlpha).Round().Min((double)uint.MaxValue);
+                        (destPtr + 2).Value = (uint)((srcPtr + 2).Value / srcAlpha).Round().Min((double)uint.MaxValue);
 
-                        destPtr.Value = c1;
-                        ((destPtr + 1).Value) = c2;
-                        ((destPtr + 2).Value) = c3;
+                        srcPtr += 4;
+                        destPtr += 4;
+                    }
+                }
+                return;
+            case BufferFormat.R32G32B32A32_SInt:
+                {
+                    GorgonPtr<uint> srcPtr = (GorgonPtr<uint>)src;
+                    GorgonPtr<uint> destPtr = (GorgonPtr<uint>)dest;
+
+                    for (int i = 0; i < size; i += 16)
+                    {
+                        double srcAlpha = ((int)(srcPtr + 3).Value / (double)int.MaxValue).Max(0.0);
+
+                        if (srcAlpha <= 0)
+                        {
+                            srcPtr += 4;
+                            destPtr += 4;
+                            continue;
+                        }
+
+                        destPtr.Value = (uint)(int)((int)(srcPtr).Value / srcAlpha).Round().Max((double)int.MinValue).Min((double)int.MaxValue);
+                        (destPtr + 1).Value = (uint)(int)((int)(srcPtr + 1).Value / srcAlpha).Round().Max((double)int.MinValue).Min((double)int.MaxValue);
+                        (destPtr + 2).Value = (uint)(int)((int)(srcPtr + 2).Value / srcAlpha).Round().Max((double)int.MinValue).Min((double)int.MaxValue);
 
                         srcPtr += 4;
                         destPtr += 4;
@@ -1256,8 +1305,6 @@ internal static class ImageUtilities
                     }
                 }
                 return;
-            case BufferFormat.R16G16B16A16_SNorm:
-            case BufferFormat.R16G16B16A16_SInt:
             case BufferFormat.R16G16B16A16_Typeless:
             case BufferFormat.R16G16B16A16_UNorm:
             case BufferFormat.R16G16B16A16_UInt:
@@ -1267,22 +1314,44 @@ internal static class ImageUtilities
 
                     for (int i = 0; i < size; i += 8)
                     {
-                        ushort srcAlpha = (srcPtr + 3).Value;
+                        float srcAlpha = (srcPtr + 3).Value / (float)ushort.MaxValue;
 
-                        if (srcAlpha == 0)
+                        if (srcAlpha <= 0)
                         {
                             srcPtr += 4;
                             destPtr += 4;
                             continue;
                         }
 
-                        ushort c1 = (ushort)(srcPtr.Value * srcAlpha);
-                        ushort c2 = (ushort)(((srcPtr + 1).Value) * srcAlpha);
-                        ushort c3 = (ushort)(((srcPtr + 2).Value) * srcAlpha);
+                        destPtr.Value = (ushort)((srcPtr).Value / srcAlpha).Round().Min((float)ushort.MaxValue);
+                        (destPtr + 1).Value = (ushort)((srcPtr + 1).Value / srcAlpha).Round().Min((float)ushort.MaxValue);
+                        (destPtr + 2).Value = (ushort)((srcPtr + 2).Value / srcAlpha).Round().Min((float)ushort.MaxValue);
 
-                        destPtr.Value = c1;
-                        ((destPtr + 1).Value) = c2;
-                        ((destPtr + 2).Value) = c3;
+                        srcPtr += 4;
+                        destPtr += 4;
+                    }
+                }
+                return;
+            case BufferFormat.R16G16B16A16_SNorm:
+            case BufferFormat.R16G16B16A16_SInt:
+                {
+                    GorgonPtr<ushort> srcPtr = (GorgonPtr<ushort>)src;
+                    GorgonPtr<ushort> destPtr = (GorgonPtr<ushort>)dest;
+
+                    for (int i = 0; i < size; i += 8)
+                    {
+                        float srcAlpha = ((short)(srcPtr + 3).Value / (float)short.MaxValue).Max(0.0f);
+
+                        if (srcAlpha <= 0)
+                        {
+                            srcPtr += 4;
+                            destPtr += 4;
+                            continue;
+                        }
+
+                        destPtr.Value = (ushort)(short)((short)(srcPtr).Value / srcAlpha).Round().Max((float)short.MinValue).Min((float)short.MaxValue);
+                        (destPtr + 1).Value = (ushort)(short)((short)(srcPtr + 1).Value / srcAlpha).Round().Max((float)short.MinValue).Min((float)short.MaxValue);
+                        (destPtr + 2).Value = (ushort)(short)((short)(srcPtr + 2).Value / srcAlpha).Round().Max((float)short.MinValue).Min((float)short.MaxValue);
 
                         srcPtr += 4;
                         destPtr += 4;
@@ -1324,12 +1393,12 @@ internal static class ImageUtilities
                     {
                         uint pixel = srcPtr.Value;
                         uint color = pixel & 0x3FFFFFFF;
-                        float srcAlpha = (((pixel & 0xC0000000) >> 30) & 3) / 4.0f;
+                        float srcAlpha = (((pixel & 0xC0000000) >> 30) & 3) / 3.0f;
                         bool zeroAlpha = srcAlpha.EqualsEpsilon(0);
 
-                        uint c1 = zeroAlpha ? 0 : (uint)(((color >> 20) & 0x3FF) / srcAlpha);
-                        uint c2 = zeroAlpha ? 0 : (uint)(((color >> 10) & 0x3FF) / srcAlpha);
-                        uint c3 = zeroAlpha ? 0 : (uint)((color & 0x3ff) / srcAlpha);
+                        uint c1 = zeroAlpha ? 0 : (uint)(((color >> 20) & 0x3FF) / srcAlpha).Round().Min(1023.0f);
+                        uint c2 = zeroAlpha ? 0 : (uint)(((color >> 10) & 0x3FF) / srcAlpha).Round().Min(1023.0f);
+                        uint c3 = zeroAlpha ? 0 : (uint)((color & 0x3ff) / srcAlpha).Round().Min(1023.0f);
 
                         color = (c1 << 20) | (c2 << 10) | c3;
 
@@ -1360,9 +1429,9 @@ internal static class ImageUtilities
                         float srcAlpha = ((pixel & 0xFF000000) >> 24) / 255.0f;
                         bool zeroAlpha = srcAlpha.EqualsEpsilon(0);
 
-                        uint c1 = zeroAlpha ? 0 : (uint)(((color >> 16) & 0xFF) / srcAlpha);
-                        uint c2 = zeroAlpha ? 0 : (uint)(((color >> 8) & 0xFF) / srcAlpha);
-                        uint c3 = zeroAlpha ? 0 : (uint)((color & 0xFF) / srcAlpha);
+                        uint c1 = zeroAlpha ? 0 : (uint)(((color >> 16) & 0xFF) / srcAlpha).Round().Min(255.0f);
+                        uint c2 = zeroAlpha ? 0 : (uint)(((color >> 8) & 0xFF) / srcAlpha).Round().Min(255.0f);
+                        uint c3 = zeroAlpha ? 0 : (uint)((color & 0xFF) / srcAlpha).Round().Min(255.0f);
 
                         color = (c1 << 16) | (c2 << 8) | c3;
 
@@ -1378,16 +1447,16 @@ internal static class ImageUtilities
                     GorgonPtr<ushort> srcPtr = (GorgonPtr<ushort>)src;
                     GorgonPtr<ushort> destPtr = (GorgonPtr<ushort>)dest;
 
-                    for (int i = 0; i < size; i += 4)
+                    for (int i = 0; i < size; i += sizeof(ushort))
                     {
                         ushort pixel = srcPtr.Value;
                         ushort color = (ushort)(pixel & 0xfff);
-                        float srcAlpha = ((pixel & 0xF000) >> 12) / 16.0f;
+                        float srcAlpha = ((pixel & 0xF000) >> 12) / 15.0f;
                         bool zeroAlpha = srcAlpha.EqualsEpsilon(0);
 
-                        ushort c1 = zeroAlpha ? (ushort)0 : (ushort)(((color >> 8) & 0xF) / srcAlpha);
-                        ushort c2 = zeroAlpha ? (ushort)0 : (ushort)(((color >> 4) & 0xF) / srcAlpha);
-                        ushort c3 = zeroAlpha ? (ushort)0 : (ushort)((color & 0xF) / srcAlpha);
+                        ushort c1 = zeroAlpha ? (ushort)0 : (ushort)(((color >> 8) & 0xF) / srcAlpha).Round().Min(15.0f);
+                        ushort c2 = zeroAlpha ? (ushort)0 : (ushort)(((color >> 4) & 0xF) / srcAlpha).Round().Min(15.0f);
+                        ushort c3 = zeroAlpha ? (ushort)0 : (ushort)((color & 0xF) / srcAlpha).Round().Min(15.0f);
 
                         color = (ushort)((c1 << 8) | (c2 << 4) | c3);
 
@@ -1403,18 +1472,18 @@ internal static class ImageUtilities
                     GorgonPtr<ushort> srcPtr = (GorgonPtr<ushort>)src;
                     GorgonPtr<ushort> destPtr = (GorgonPtr<ushort>)dest;
 
-                    for (int i = 0; i < size; i += 4)
+                    for (int i = 0; i < size; i += sizeof(ushort))
                     {
                         ushort pixel = srcPtr.Value;
-                        ushort color = (ushort)(pixel & 0xfff);
-                        float srcAlpha = (pixel & 0xF) / 16.0f;
+                        ushort color = (ushort)(pixel & 0xfff0);
+                        float srcAlpha = (pixel & 0xF) / 15.0f;
                         bool zeroAlpha = srcAlpha.EqualsEpsilon(0);
 
-                        ushort c1 = zeroAlpha ? (ushort)0 : (ushort)(((color >> 12) & 0xF) / srcAlpha);
-                        ushort c2 = zeroAlpha ? (ushort)0 : (ushort)(((color >> 8) & 0xF) / srcAlpha);
-                        ushort c3 = zeroAlpha ? (ushort)0 : (ushort)(((color >> 4) & 0xF) / srcAlpha);
+                        ushort c1 = zeroAlpha ? (ushort)0 : (ushort)(((color >> 12) & 0xF) / srcAlpha).Round().Min(15.0f);
+                        ushort c2 = zeroAlpha ? (ushort)0 : (ushort)(((color >> 8) & 0xF) / srcAlpha).Round().Min(15.0f);
+                        ushort c3 = zeroAlpha ? (ushort)0 : (ushort)(((color >> 4) & 0xF) / srcAlpha).Round().Min(15.0f);
 
-                        color = (ushort)((c1 << 8) | (c2 << 4) | c3);
+                        color = (ushort)((c1 << 12) | (c2 << 8) | (c3 << 4));
 
                         destPtr.Value = (ushort)((pixel & 0xF) | color);
 
@@ -1432,8 +1501,7 @@ internal static class ImageUtilities
     /// <param name="src">The source data to expand.</param>
     /// <param name="srcPitch">The number of bytes for a scanline in the source data.</param>
     /// <param name="dest">The pointer to the destination buffer to fill.</param>
-    /// <param name="reverse"><b>true</b> to fill the destination from the right side, <b>false</b> to fill from the left.</param>
-    public static void Expand24BPPScanLine(GorgonPtr<byte> src, int srcPitch, GorgonPtr<byte> dest, bool reverse)
+    public static void Expand24BPPScanLine(GorgonPtr<byte> src, int srcPitch, GorgonPtr<byte> dest)
     {
         GorgonPtr<byte> srcPtr = src;
         GorgonPtr<uint> destPtr = (GorgonPtr<uint>)dest;
@@ -1442,14 +1510,7 @@ internal static class ImageUtilities
         {
             uint pixel = (uint)(((srcPtr++).Value) | ((srcPtr++).Value << 8) | ((srcPtr++).Value << 16) | 0xFF000000);
 
-            if (reverse)
-            {
-                (destPtr--).Value = pixel;
-            }
-            else
-            {
-                (destPtr++).Value = pixel;
-            }
+            (destPtr++).Value = pixel;
         }
     }
 

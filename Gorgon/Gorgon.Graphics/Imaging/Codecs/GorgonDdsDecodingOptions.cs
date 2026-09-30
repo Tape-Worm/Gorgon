@@ -28,7 +28,7 @@ using Gorgon.Configuration;
 namespace Gorgon.Graphics.Imaging.Codecs;
 
 /// <summary>
-/// Flags used to decode an existing DDS image encoded with a legacy version of the format specification
+/// Flags used to decode an existing DDS image encoded with a legacy version of the format specification.
 /// </summary>
 [Flags]
 public enum DdsLegacyFlags
@@ -38,35 +38,40 @@ public enum DdsLegacyFlags
     /// </summary>
     None = 0,
     /// <summary>
-    /// Assume pitch is DWORD aligned instead of BYTE aligned (used by some legacy DDS files)
+    /// Assume pitch is DWORD aligned instead of BYTE aligned (used by some legacy DDS files).
     /// </summary>
     LegacyDWORD = 0x1,
     /// <summary>
-    /// Do not implicitly convert legacy formats that result in larger pixel sizes (24 bpp, 3:3:2, A8L8, A4L4, P8, A8P8) 
+    /// Do not implicitly convert legacy formats that result in larger pixel sizes (24 bpp, 3:3:2, A8L8, A4L4, P8, A8P8).
     /// </summary>
     NoLegacyExpansion = 0x2,
     /// <summary>
-    /// Do not use work-around for long-standing D3DX DDS file format issue which reversed the 10:10:10:2 color order masks
+    /// Do not use the work-around for a long-standing D3DX DDS file format issue which reversed the 10:10:10:2 color order masks.
     /// </summary>
     NoR10B10G10A2Fix = 0x4,
     /// <summary>
-    /// Convert DXGI 1.1 BGR formats to BufferFormat.R8G8B8A8_UNorm to avoid use of optional WDDM 1.1 formats
+    /// Convert DXGI 1.1 BGR formats to <see cref="BufferFormat.R8G8B8A8_UNorm"/> to avoid use of optional WDDM 1.1 formats.
     /// </summary>
     ForceRGB = 0x8,
     /// <summary>
-    /// Conversions avoid use of 565, 5551, and 4444 formats and instead expand to 8888 to avoid use of optional WDDM 1.2 formats
+    /// Conversions avoid use of 565, 5551, and 4444 formats and instead expand to 8888 to avoid use of optional WDDM 1.2 formats.
     /// </summary>
     No16BPP = 0x10,
 }
 
 /// <summary>
-/// Options used when decoding an image from a stream as a DDS file
+/// Options used when decoding an image from a stream as a DDS file.
 /// </summary>
 public class GorgonDdsDecodingOptions
     : IGorgonImageCodecDecodingOptions
 {
+    // The flags used to convert legacy formats.
+    private readonly GorgonOption<DdsLegacyFlags> _legacyFormatConversionFlags = GorgonOption.CreateOption(nameof(LegacyFormatConversionFlags), DdsLegacyFlags.None);
+    // The custom palette.
+    private readonly GorgonOption<IReadOnlyList<GorgonColor>> _palette = GorgonOption.CreateOption<IReadOnlyList<GorgonColor>>(nameof(Palette));
+
     /// <summary>
-    /// The default decoding options for PNG files.
+    /// The default decoding options for DDS files.
     /// </summary>
     public static readonly GorgonDdsDecodingOptions Default = new();
 
@@ -99,8 +104,8 @@ public class GorgonDdsDecodingOptions
     /// </remarks>
     public DdsLegacyFlags LegacyFormatConversionFlags
     {
-        get => Options.GetOptionValue<DdsLegacyFlags>(nameof(LegacyFormatConversionFlags));
-        set => Options.SetOptionValue(nameof(LegacyFormatConversionFlags), value);
+        get => _legacyFormatConversionFlags.Value;
+        set => _legacyFormatConversionFlags.Value = value;
     }
 
     /// <summary>
@@ -117,10 +122,10 @@ public class GorgonDdsDecodingOptions
     /// The default value is an empty list.
     /// </para>
     /// </remarks>
-    public IList<GorgonColor> Palette
+    public IReadOnlyList<GorgonColor> Palette
     {
-        get => Options.GetOptionValue<IList<GorgonColor>>(nameof(Palette)) ?? [];
-        set => Options.SetOptionValue(nameof(Palette), value);
+        get => _palette.Value ?? [];
+        set => _palette.Value = value;
     }
 
     /// <inheritdoc/>
@@ -136,10 +141,6 @@ public class GorgonDdsDecodingOptions
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonDdsDecodingOptions"/> class.
     /// </summary>
-    public GorgonDdsDecodingOptions() => Options = new GorgonOptionBag(
-                                      [
-                                            GorgonOption.CreateOption(nameof(LegacyFormatConversionFlags), DdsLegacyFlags.None),
-                                            GorgonOption.CreateOption(nameof(Palette), new List<GorgonColor>())
-                                      ]);
+    public GorgonDdsDecodingOptions() => Options = new GorgonOptionBag([_legacyFormatConversionFlags, _palette]);
 
 }

@@ -1495,6 +1495,15 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The queue type &apos;{0}&apos; is not known..
+        /// </summary>
+        internal static string GORGFX_ERR_UNKNOWN_QUEUE {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_UNKNOWN_QUEUE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The upload memory is no longer available for use..
         /// </summary>
         internal static string GORGFX_ERR_UPLOAD_NOT_AVAILABLE {

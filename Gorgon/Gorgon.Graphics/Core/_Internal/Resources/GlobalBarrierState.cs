@@ -43,6 +43,12 @@ internal class GlobalBarrierState
     private readonly GlobalBarrier[][] _barriers = new GlobalBarrier[InitialPageCount][];
 
     /// <summary>
+    /// Function to lock the global barriers to synchronize access between multiple threads.
+    /// </summary>
+    /// <returns>The scope for the lock.</returns>
+    public Lock.Scope Lock() => _syncLock.EnterScope();
+
+    /// <summary>
     /// Function to retrieve the state for a given resource.
     /// </summary>
     /// <param name="resourceID">The ID of the resource.</param>
@@ -54,30 +60,27 @@ internal class GlobalBarrierState
     /// </remarks>
     public ref readonly GlobalBarrier GetState(ulong resourceID)
     {
-        using (_syncLock.EnterScope())
+        Debug.Assert(resourceID < 268_435_456, $"The resource ID {resourceID} is really large. This may be a broken resource ID, or the application has too many resources. Please eliminate 3. P.S. I am not a crackpot");
+
+        ulong page = resourceID / MaxPageSize;
+        ulong barrierIndex = resourceID % MaxPageSize;
+
+        GlobalBarrier[]? barriers = _barriers[page];
+
+        if ((barriers is null) || (barriers.Length == 0))
         {
-            Debug.Assert(resourceID < 268_435_456, $"The resource ID {resourceID} is really large. This may be a broken resource ID, or the application has too many resources. Please eliminate 3. P.S. I am not a crackpot");
-
-            ulong page = resourceID / MaxPageSize;
-            ulong barrierIndex = resourceID % MaxPageSize;
-
-            GlobalBarrier[]? barriers = _barriers[page];
-
-            if ((barriers is null) || (barriers.Length == 0))
-            {
-                return ref GlobalBarrier.Default;
-            }
-
-            ref readonly GlobalBarrier barrier = ref barriers[barrierIndex];
-
-            // This means not initialized.
-            if (barrier.SubResources is null)
-            {
-                return ref GlobalBarrier.Default;
-            }
-
-            return ref barrier;            
+            return ref GlobalBarrier.Default;
         }
+
+        ref readonly GlobalBarrier barrier = ref barriers[barrierIndex];
+
+        // This means not initialized.
+        if (barrier.Barriers is null)
+        {
+            return ref GlobalBarrier.Default;
+        }
+
+        return ref barrier;            
     }
 
     /// <summary>
@@ -87,33 +90,24 @@ internal class GlobalBarrierState
     /// <param name="barriers">The barriers to evaluate.</param>
     public void CaptureBufferState(D3D12_COMMAND_LIST_TYPE queueType, Dictionary<ulong, GorgonBufferBarrier> barriers)
     {
-        using (_syncLock.EnterScope())
+        foreach (KeyValuePair<ulong, GorgonBufferBarrier> barrier in barriers)
         {
-            foreach (KeyValuePair<ulong, GorgonBufferBarrier> barrier in barriers)
-            {
-                ulong page = barrier.Key / MaxPageSize;
-                ulong barrierIndex = barrier.Key % MaxPageSize;
+            ulong page = barrier.Key / MaxPageSize;
+            ulong barrierIndex = barrier.Key % MaxPageSize;
 
-                Debug.Assert(page < (ulong)_barriers.Length, $"The page index {page} is outside of the total number of pages {_barriers.Length}.");
+            Debug.Assert(page < (ulong)_barriers.Length, $"The page index {page} is outside of the total number of pages {_barriers.Length}.");
 
-                GlobalBarrier[]? gBarriers = _barriers[page];
+            GlobalBarrier[]? gBarriers = _barriers[page];
 
-                gBarriers ??= _barriers[page] = new GlobalBarrier[MaxPageSize];
+            gBarriers ??= _barriers[page] = new GlobalBarrier[MaxPageSize];
 
-                ref GlobalBarrier gBarrier = ref gBarriers[barrierIndex];
+            ref GlobalBarrier gBarrier = ref gBarriers[barrierIndex];
+            ref List<(BarrierSync Sync, BarrierAccess Access, BarrierLayout Layout, GorgonSubResourceRange Range)>? barrierList = ref gBarrier.Barriers;
+            barrierList ??= [];
+            barrierList.Clear();
 
-                if (gBarrier.SubResources is null)
-                {
-                    gBarrier = new GlobalBarrier(barrier.Value.Sync, barrier.Value.Access, BarrierLayout.None, queueType);
-                }
-                else
-                {
-                    gBarrier.Sync = barrier.Value.Sync;
-                    gBarrier.Access = barrier.Value.Access;
-                    gBarrier.QueueType = queueType;
-                    gBarrier.SubResources.Clear();
-                }
-            }
+            gBarrier.QueueType = queueType;
+            barrierList.Add((barrier.Value.Sync, barrier.Value.Access, BarrierLayout.None, GorgonSubResourceRange.Empty));
         }
     }
 
@@ -121,46 +115,33 @@ internal class GlobalBarrierState
     /// Function to capture the current state for resource barriers from a command list.
     /// </summary>
     /// <param name="queueType">The type of command queue last used for the barriers.</param>
-    /// <param name="barriers">The barriers to evaluate.</param>
-    /// <param name="subResources">The list of sub resources for the barrier.</param>
-    public void CaptureTextureState(D3D12_COMMAND_LIST_TYPE queueType, Dictionary<ulong, GorgonTextureBarrier> barriers, Dictionary<ulong, List<GorgonSubResourceRange>> subResources)
+    /// <param name="barriers">The texture barriers to consumer.</param>
+    public void CaptureTextureState(D3D12_COMMAND_LIST_TYPE queueType, Dictionary<ulong, List<BarrierManager.TextureBarrierEntry>> barriers)
     {
-        using (_syncLock.EnterScope())
+        foreach (KeyValuePair<ulong, List<BarrierManager.TextureBarrierEntry>> barrier in barriers)
         {
-            foreach (KeyValuePair<ulong, GorgonTextureBarrier> barrier in barriers)
+            ulong page = barrier.Key / MaxPageSize;
+            ulong barrierIndex = barrier.Key % MaxPageSize;
+
+            Debug.Assert(page < (ulong)_barriers.Length, $"The page index {page} is outside of the total number of pages {_barriers.Length}.");
+
+            GlobalBarrier[]? gBarriers = _barriers[page];
+
+            gBarriers ??= _barriers[page] = new GlobalBarrier[MaxPageSize];
+
+            ref GlobalBarrier newBarrier = ref gBarriers[barrierIndex];
+            ref List<(BarrierSync Sync, BarrierAccess Access, BarrierLayout Layout, GorgonSubResourceRange Range)>? barrierList = ref newBarrier.Barriers;
+            barrierList ??= [];
+            barrierList.Clear();
+
+            newBarrier.QueueType = queueType;
+
+            ReadOnlySpan<BarrierManager.TextureBarrierEntry> entries = CollectionsMarshal.AsSpan(barrier.Value);
+
+            for (int i = 0; i < entries.Length; ++i)
             {
-                ulong page = barrier.Key / MaxPageSize;
-                ulong barrierIndex = barrier.Key % MaxPageSize;
-
-                Debug.Assert(page < (ulong)_barriers.Length, $"The page index {page} is outside of the total number of pages {_barriers.Length}.");
-
-                GlobalBarrier[]? gBarriers = _barriers[page];
-
-                gBarriers ??= _barriers[page] = new GlobalBarrier[MaxPageSize];
-
-                ref GlobalBarrier newBarrier = ref gBarriers[barrierIndex];
-
-                if (newBarrier.SubResources is null)
-                {
-                    newBarrier = new(barrier.Value.Sync, barrier.Value.Access, barrier.Value.Layout, queueType);
-                }
-                else
-                {
-                    newBarrier.Sync = barrier.Value.Sync;
-                    newBarrier.Access = barrier.Value.Access;
-                    newBarrier.Layout = barrier.Value.Layout;
-                    newBarrier.QueueType = queueType;
-                    newBarrier.SubResources.Clear();
-                }
-
-                List<GorgonSubResourceRange> srcRanges = subResources[barrier.Key];
-
-                for (int i = 0; i < srcRanges.Count; ++i)
-                {                    
-                    // This complains of a null ref on subresources (which is true if you use 'default').
-                    // So we keep the check here to make VS happy.
-                    newBarrier.SubResources?.Add(srcRanges[i]);
-                }               
+                ref readonly BarrierManager.TextureBarrierEntry entry = ref entries[i];
+                barrierList.Add((entry.Barrier.Sync, entry.Barrier.Access, entry.Barrier.Layout, entry.Range));
             }
         }
     }

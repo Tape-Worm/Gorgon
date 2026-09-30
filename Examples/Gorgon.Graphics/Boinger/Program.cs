@@ -57,7 +57,7 @@ internal static partial class Program
                 | GorgonGraphicsDebugFlags.GpuBasedStateTrackingValidation
                 | GorgonGraphicsDebugFlags.ObjectTracking, log: GorgonExample.Log);
 #else
-            using GorgonGraphicsFactory factory = new(log: log);
+            using GorgonGraphicsFactory factory = new(log: GorgonExample.Log);
 #endif     
 
             // Ensure that we have an appropriate GPU that we can use.

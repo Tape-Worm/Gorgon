@@ -29,16 +29,23 @@ using Gorgon.Graphics.Imaging.Properties;
 namespace Gorgon.Graphics.Imaging.Codecs;
 
 /// <summary>
-/// Options used when decoding an image from a stream as a GIF file
+/// Options used when decoding an image from a stream as a GIF file.
 /// </summary>
 /// <remarks>
 /// <para>
-/// When decoding a GIF file into a <see cref="GorgonImage"/>, the <see cref="IGorgonWicDecodingOptions.Dithering"/> property is ignored
+/// When decoding a GIF file into a <see cref="GorgonImage"/>, the <see cref="IGorgonWicDecodingOptions.Dithering"/> property is ignored.
 /// </para>
 /// </remarks>
 public class GorgonGifDecodingOptions
     : IGorgonWicDecodingOptions
 {
+    // Whether to read every frame into an array index.
+    private readonly GorgonOption<bool> _readAllFrames = GorgonOption.CreateOption(nameof(ReadAllFrames), false, Resources.GORIMG_OPT_READ_ALL_FRAMES);
+    // The custom palette.
+    private readonly GorgonOption<IReadOnlyList<GorgonColor>> _palette = GorgonOption.CreateOption<IReadOnlyList<GorgonColor>>(nameof(Palette));
+    // The alpha value below which a color is transparent.
+    private readonly GorgonRangedOption<float> _alphaThreshold = GorgonOption.CreateSingleOption(nameof(AlphaThreshold), 0.0f, Resources.GORIMG_OPT_GIF_ALPHA_THRESHOLD, 0.0f, 1.0f);
+
     /// <summary>
     /// The default decoding options for GIF files.
     /// </summary>
@@ -54,11 +61,17 @@ public class GorgonGifDecodingOptions
         }
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc cref="IGorgonImageCodecDecodingOptions.ReadAllFrames" path="/summary"/>
+    /// <remarks>
+    /// <inheritdoc cref="IGorgonImageCodecDecodingOptions.ReadAllFrames" path="/remarks/para"/>
+    /// <para>
+    /// The default value is <b>false</b>.
+    /// </para>
+    /// </remarks>
     public bool ReadAllFrames
     {
-        get => Options.GetOptionValue<bool>(nameof(ReadAllFrames));
-        set => Options.SetOptionValue(nameof(ReadAllFrames), value);
+        get => _readAllFrames.Value;
+        set => _readAllFrames.Value = value;
     }
 
     /// <inheritdoc/>
@@ -77,17 +90,14 @@ public class GorgonGifDecodingOptions
     /// <para>
     /// This value does not remap the pixel values to the corresponding palette color, therefore, palettes assigned to the image may not give the desired results without careful palette selection.
     /// </para>
-    /// <para>
-    /// This value is ignored when the GIF file has multiple frames of animation.
-    /// </para>
-    /// <para>
+/// <para>
     /// The default value is an empty list.
     /// </para>
     /// </remarks>
-    public IList<GorgonColor> Palette
+    public IReadOnlyList<GorgonColor> Palette
     {
-        get => Options.GetOptionValue<IList<GorgonColor>>(nameof(Palette)) ?? [];
-        set => Options.SetOptionValue(nameof(Palette), value);
+        get => _palette.Value ?? [];
+        set => _palette.Value = value;
     }
 
     /// <summary>
@@ -95,11 +105,8 @@ public class GorgonGifDecodingOptions
     /// </summary>
     /// <remarks>
     /// <para>
-    /// Use this to determine what percentage of alpha channel values should be considered transparent for the GIF.  A value of 0.5f will mean that colors with an alpha component less than 0.5f will 
+    /// Use this to determine what percentage of alpha channel values should be considered transparent for the GIF. A value of 0.5f will mean that colors with an alpha component less than 0.5f will 
     /// be considered transparent.
-    /// </para>
-    /// <para>
-    /// This value does not apply to GIF files with multiple frames.
     /// </para>
     /// <para>
     /// The default value is 0.0f.
@@ -107,8 +114,8 @@ public class GorgonGifDecodingOptions
     /// </remarks>
     public float AlphaThreshold
     {
-        get => Options.GetOptionValue<float>(nameof(AlphaThreshold));
-        set => Options.SetOptionValue(nameof(AlphaThreshold), value);
+        get => _alphaThreshold.Value;
+        set => _alphaThreshold.Value = value;
     }
 
     /// <inheritdoc/>
@@ -124,11 +131,6 @@ public class GorgonGifDecodingOptions
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonGifDecodingOptions"/> class.
     /// </summary>
-    public GorgonGifDecodingOptions() => Options = new GorgonOptionBag(
-                                      [
-                                          GorgonOption.CreateOption(nameof(ReadAllFrames), false, Resources.GORIMG_OPT_READ_ALL_FRAMES),
-                                          GorgonOption.CreateOption<IList<GorgonColor>>(nameof(Palette), []),
-                                          GorgonOption.CreateSingleOption(nameof(AlphaThreshold), 0.0f, Resources.GORIMG_OPT_GIF_ALPHA_THRESHOLD, 0.0f, 1.0f)
-                                      ]);
+    public GorgonGifDecodingOptions() => Options = new GorgonOptionBag([_readAllFrames, _palette, _alphaThreshold]);
 
 }

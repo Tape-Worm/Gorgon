@@ -21,10 +21,6 @@
 // Created: March 21, 2026 1:08:33 PM
 //
 
-using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using System.Text;
 using TerraFX.Interop.DirectX;
 
 namespace Gorgon.Graphics.Core;
@@ -32,35 +28,26 @@ namespace Gorgon.Graphics.Core;
 /// <summary>
 /// The current barrier state used by a resource.
 /// </summary>
-/// <param name="sync"><inheritdoc cref="Sync" path="/summary"/></param>
-/// <param name="access"><inheritdoc cref="Access" path="/summary"/></param>
-/// <param name="layout"><inheritdoc cref="Layout" path="/summary"/></param>
 /// <param name="queueType"><inheritdoc cref="QueueType" path="/summary"/></param>
-internal struct GlobalBarrier(BarrierSync sync, BarrierAccess access, BarrierLayout layout, D3D12_COMMAND_LIST_TYPE queueType)
+internal struct GlobalBarrier(D3D12_COMMAND_LIST_TYPE queueType)
 {
     /// <summary>
     /// Default barrier state.
     /// </summary>
-    public static readonly GlobalBarrier Default = new(BarrierSync.None, BarrierAccess.None, BarrierLayout.None, D3D12_COMMAND_LIST_TYPE.D3D12_COMMAND_LIST_TYPE_DIRECT);
+    public static readonly GlobalBarrier Default = new(D3D12_COMMAND_LIST_TYPE.D3D12_COMMAND_LIST_TYPE_DIRECT);
 
     /// <summary>
-    /// The access state for the resource.
+    /// The list of barriers for a global barrier.
     /// </summary>
-    public BarrierAccess Access = access;
+    /// <remarks>
+    /// <para>
+    /// Buffers will only utilize the sync and access parts of the tuple, and will only ever have 1 entry in the list.
+    /// </para>
+    /// </remarks>
+    public List<(BarrierSync Sync, BarrierAccess Access, BarrierLayout Layout, GorgonSubResourceRange Range)>? Barriers = [];
+
     /// <summary>
-    /// The synchronization state for the resource.
-    /// </summary>
-    public BarrierSync Sync = sync;
-    /// <summary>
-    /// The layout for a texture resource.
-    /// </summary>
-    public BarrierLayout Layout = layout;
-    /// <summary>
-    /// The type of queue last used for this barrier.
+    /// The type of queue this resource belongs to.
     /// </summary>
     public D3D12_COMMAND_LIST_TYPE QueueType = queueType;
-    /// <summary>
-    /// The list of texture sub resources affected by the current barrier state.
-    /// </summary>
-    public List<GorgonSubResourceRange>? SubResources = [];
 }
