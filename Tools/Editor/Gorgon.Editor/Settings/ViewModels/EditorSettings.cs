@@ -24,7 +24,7 @@
 // 
 
 using System.Collections.ObjectModel;
-using Gorgon.Editor.Plugins;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.UI;
 
@@ -65,9 +65,9 @@ internal class EditorSettings
     }
 
     /// <summary>
-    /// Property to return the list of plugins for the fixed plugin list category.
+    /// Property to return the list of plug-ins for the fixed plug-in list category.
     /// </summary>
-    public ISettingsPluginsList PluginsList
+    public ISettingsPlugInsList PlugInsList
     {
         get;
         private set;
@@ -117,7 +117,7 @@ internal class EditorSettings
     protected override void OnInitialize(EditorSettingsParameters injectionParameters)
     {
         Categories = [.. injectionParameters.Categories];
-        PluginsList = injectionParameters.PluginsList;
+        PlugInsList = injectionParameters.PlugInsList;
     }
 
     /// <summary>Initializes a new instance of the <see cref="EditorSettings"/> class.</summary>

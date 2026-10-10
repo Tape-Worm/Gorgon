@@ -14,6 +14,7 @@
 // all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -358,7 +359,7 @@ public static class GorgonOption
 /// <note type="important">
 /// <para>
 /// When <typeparamref name="T"/> is a reference type, the option stores a reference to the object, and the <see cref="Value"/> starts out as the same instance as the <see cref="DefaultValue"/>. Use an 
-/// immutable or read-only type (e.g. <see cref="System.Collections.Generic.IReadOnlyList{T}"/>) so that changes to the value cannot alter the default.
+/// immutable or read-only type (e.g. <see cref="IReadOnlyList{T}"/>) so that changes to the value cannot alter the default.
 /// </para>
 /// </note>
 /// </para>

@@ -23,33 +23,33 @@
 // Created: March 27, 2020 10:53:09 AM
 // 
 
-using Gorgon.Editor.Plugins;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Services;
-using Gorgon.Plugins;
+using Gorgon.PlugIns;
 
 namespace Gorgon.Editor.UI;
 
 /// <summary>
-/// Parameters for a <see cref="ISettingsCategory"/> specific to loading plugins for an editor plugin
+/// Parameters for a <see cref="ISettingsCategory"/> specific to loading plug-ins for an editor plug-in
 /// </summary>
-/// <remarks>Initializes a new instance of the <see cref="PluginsCategoryViewModelParameters"/> class.</remarks>
-/// <param name="openCodecDialog">The service used to locate plugin assemblies for loading.</param>
-/// <param name="pluginCache">The cache for plugin assemblies.</param>
+/// <remarks>Initializes a new instance of the <see cref="PlugInsCategoryViewModelParameters"/> class.</remarks>
+/// <param name="openCodecDialog">The service used to locate plug-in assemblies for loading.</param>
+/// <param name="plugInCache">The cache for plug-in assemblies.</param>
 /// <param name="hostServices">Services passed down from the host application.</param>
 /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
-public class PluginsCategoryViewModelParameters(IFileDialogService openCodecDialog, GorgonMefPluginCache pluginCache, IHostContentServices hostServices)
+public class PlugInsCategoryViewModelParameters(IFileDialogService openCodecDialog, GorgonMefPlugInCache plugInCache, IHostContentServices hostServices)
         : SettingsCategoryViewModelParameters(hostServices)
 {
     /// <summary>
-    /// Property to return the plugin cache.
+    /// Property to return the plug-in cache.
     /// </summary>
-    public GorgonMefPluginCache PluginCache
+    public GorgonMefPlugInCache PlugInCache
     {
         get;
-    } = pluginCache ?? throw new ArgumentNullException(nameof(pluginCache));
+    } = plugInCache ?? throw new ArgumentNullException(nameof(plugInCache));
 
     /// <summary>
-    /// Property to return the service used to locate plugin assemblies for loading.
+    /// Property to return the service used to locate plug-in assemblies for loading.
     /// </summary>
     public IFileDialogService OpenCodecDialog
     {

@@ -12,6 +12,7 @@
 // all copies or substantial portions of the Software.
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -40,17 +41,17 @@ namespace Gorgon.Graphics.Core;
 /// </summary>
 /// <remarks>
 /// <para>
-/// The texture blitter provides a quick way to display the contents of a texture on a render target without having to set up pipeline state objects, buffers, and shaders. This is useful for testing,
+/// The texture blitter provides a quick way to display the contents of a texture on a render target without having to set up pipeline state objects, buffers, and shaders. This is useful for testing, 
 /// tools, and applications that only need to display a texture. It is not a 2D renderer, and it is not intended for performance sensitive work.
 /// </para>
 /// <para>
-/// A texture can be rendered into a rectangular area on the render target with the <see cref="Blit"/> method, or rendered over the entire viewport with the <see cref="BlitFullScreen"/> method. Custom pixel
+/// A texture can be rendered into a rectangular area on the render target with the <see cref="Blit"/> method, or rendered over the entire viewport with the <see cref="BlitFullScreen"/> method. Custom pixel 
 /// shaders can be used with the <see cref="Blit"/> method to apply effects to the texture.
 /// </para>
 /// <para>
 /// <note type="information">
 /// <para>
-/// The blitter uses the last constant slot (<see cref="GorgonGraphics.MaxRootConstantCount"/> - 1) to send its data to its shaders. Applications should not use this slot for their own data if they are
+/// The blitter uses the last constant slot (<see cref="GorgonGraphics.MaxRootCbvCount"/> - 1) to send its data to its shaders. Applications should not use this slot for their own data if they are 
 /// using the blitter.
 /// </para>
 /// </note>
@@ -79,7 +80,7 @@ public unsafe class GorgonTextureBlitter
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This source code contains the vertex and pixel shaders used by the blitter, along with the structures and constant data that they use. It is provided so that custom pixel shaders for the blitter
+    /// This source code contains the vertex and pixel shaders used by the blitter, along with the structures and constant data that they use. It is provided so that custom pixel shaders for the blitter 
     /// can be written against the same structures and constant data. See the <see cref="GorgonTextureBlitterShadersName"/> field for information on how to include this source code in a custom pixel shader.
     /// </para>
     /// </remarks>
@@ -127,9 +128,9 @@ public unsafe class GorgonTextureBlitter
             };
                    
             // The constant buffer holding the blitter render data.
-            ConstantBuffer<GorgonBlitterRenderData> _gorgonBlitterRenderData : register(b{{(GorgonGraphics.MaxRootConstantCount - 1)}});
+            ConstantBuffer<GorgonBlitterRenderData> _gorgonBlitterRenderData : register(b{{(GorgonGraphics.MaxRootCbvCount - 1)}});
             // The constant buffer holding the full screen triangle render data.
-            ConstantBuffer<GorgonFullScreenBlitterRenderData> _gorgonFullScreenBlitterRenderData : register(b{{(GorgonGraphics.MaxRootConstantCount - 1)}});
+            ConstantBuffer<GorgonFullScreenBlitterRenderData> _gorgonFullScreenBlitterRenderData : register(b{{(GorgonGraphics.MaxRootCbvCount - 1)}});
                     
             // The vertex shader for the standard blitter.
             GorgonBlitterPixelShaderInput GorgonBlitterVS(uint vertexID : SV_VertexID)
@@ -187,9 +188,9 @@ public unsafe class GorgonTextureBlitter
     /// </summary>
     /// <remarks>
     /// <para>
-    /// A custom pixel shader passed to the <see cref="Blit"/> method must use the same inputs and constant data as the blitter's own pixel shader. To get these, include the
-    /// <see cref="GorgonTextureBlitterShader"/> source code in the custom shader with <c>#GorgonInclude "__GORGON__BLITTER__SHADERS__"</c>. This should be the first include in the custom shader,
-    /// before any other <c>#GorgonInclude</c> or <c>#include</c>. This include is available to every
+    /// A custom pixel shader passed to the <see cref="Blit"/> method must use the same inputs and constant data as the blitter's own pixel shader. To get these, include the 
+    /// <see cref="GorgonTextureBlitterShader"/> source code in the custom shader with <c>#GorgonInclude "__GORGON__BLITTER__SHADERS__"</c>. This should be the first include in the custom shader, 
+    /// before any other <c>#GorgonInclude</c> or <c>#include</c>. This include is available to every 
     /// <see cref="GorgonShaderCompiler"/>, so no other setup is required.
     /// </para>
     /// <para>
@@ -206,7 +207,7 @@ public unsafe class GorgonTextureBlitter
     /// </list>
     /// </para>
     /// <para>
-    /// The blitter's constant data uses the last constant slot. Custom pixel shaders can receive their own data in the other slots by calling <see cref="GorgonCommandList.WriteConstant{T}(int, in T)"/>
+    /// The blitter's constant data uses the last constant slot. Custom pixel shaders can receive their own data in the other slots by calling <see cref="GorgonCommandList.WriteConstant{T}(int, in T)"/> 
     /// before calling <see cref="Blit"/>.
     /// </para>
     /// </remarks>
@@ -446,7 +447,7 @@ public unsafe class GorgonTextureBlitter
         if (_drawCall is null)
         {            
             _drawCall = new GorgonIndexedDrawCall(6, _indexBuffer, _currentPso.Pso);
-            _drawCall.AssignBuffer(new GorgonDrawCallBuffer(_vertexBuffer, ShaderStage.Vertex, BufferUsage.VertexBuffer));
+            _drawCall.AssignBuffer(new GorgonUsedBuffer(_vertexBuffer, ShaderStage.Vertex, BufferUsage.VertexBuffer));
         }
         else if (_drawCall.Pso != _currentPso.Pso)
         {
@@ -455,7 +456,7 @@ public unsafe class GorgonTextureBlitter
 
         if ((_drawCall.UsedTextures.Count == 0) || (_drawCall.UsedTextures[0].Texture != texture.Texture))
         {
-            _drawCall.AssignTexture(new GorgonDrawCallTexture(texture, ShaderStage.Pixel, TextureUsage.ReadOnly));
+            _drawCall.AssignTexture(new GorgonUsedTexture(texture, ShaderStage.Pixel, TextureUsage.ReadOnly));
         }
     }
 
@@ -477,7 +478,7 @@ public unsafe class GorgonTextureBlitter
 
         if ((_fullScreenDrawCall.UsedTextures.Count == 0) || (_fullScreenDrawCall.UsedTextures[0].Texture != texture.Texture))
         {
-            _fullScreenDrawCall.AssignTexture(new GorgonDrawCallTexture(texture, ShaderStage.Pixel, TextureUsage.ReadOnly));
+            _fullScreenDrawCall.AssignTexture(new GorgonUsedTexture(texture, ShaderStage.Pixel, TextureUsage.ReadOnly));
         }
     }
 
@@ -501,32 +502,32 @@ public unsafe class GorgonTextureBlitter
     /// <param name="pixelShader">[Optional] A custom pixel shader used to render the texture.</param>
     /// <remarks>
     /// <para>
-    /// This method renders the <paramref name="texture"/> into the <paramref name="destination"/> area on the render target in slot 0 of the <paramref name="commandList"/>. The
+    /// This method renders the <paramref name="texture"/> into the <paramref name="destination"/> area on the render target in slot 0 of the <paramref name="commandList"/>. The 
     /// <paramref name="destination"/> is relative to the upper left corner of the first viewport assigned to the <paramref name="commandList"/>.
     /// </para>
     /// <para>
-    /// If the <paramref name="color"/> is omitted, then the texture is rendered without a tint. If the alpha value of the <paramref name="color"/> is 0, then nothing is rendered. When using the default pixel
+    /// If the <paramref name="color"/> is omitted, then the texture is rendered without a tint. If the alpha value of the <paramref name="color"/> is 0, then nothing is rendered. When using the default pixel 
     /// shader, pixels with an alpha value of 0 (after the tint is applied) are not rendered.
     /// </para>
     /// <para>
-    /// If the <paramref name="textureCoordinates"/> are omitted, then the entire texture is rendered. If the <paramref name="sampler"/> is omitted, then <see cref="GorgonSampler.Default(GorgonGraphics)"/>
+    /// If the <paramref name="textureCoordinates"/> are omitted, then the entire texture is rendered. If the <paramref name="sampler"/> is omitted, then <see cref="GorgonSampler.Default(GorgonGraphics)"/> 
     /// is used. If the <paramref name="blendState"/> is omitted, then <see cref="GorgonBlendState.NoBlending"/> is used.
     /// </para>
     /// <para>
-    /// A custom <paramref name="pixelShader"/> can be used to apply an effect to the texture as it is rendered. The shader must use the inputs and constant data from the blitter's shader source code,
-    /// see the <see cref="GorgonTextureBlitterShadersName"/> field for more information. If the <paramref name="pixelShader"/> is not a pixel shader, then a warning is written to the log, and the default
+    /// A custom <paramref name="pixelShader"/> can be used to apply an effect to the texture as it is rendered. The shader must use the inputs and constant data from the blitter's shader source code, 
+    /// see the <see cref="GorgonTextureBlitterShadersName"/> field for more information. If the <paramref name="pixelShader"/> is not a pixel shader, then a warning is written to the log, and the default 
     /// pixel shader is used instead.
     /// </para>
     /// <para type="state">
-    /// The <paramref name="commandList"/> must have at least one viewport, one scissor rectangle, and one render target assigned. If any of these are missing, or if the <paramref name="texture"/> is
+    /// The <paramref name="commandList"/> must have at least one viewport, one scissor rectangle, and one render target assigned. If any of these are missing, or if the <paramref name="texture"/> is 
     /// multisampled, then a warning is written to the log, and nothing is rendered. Multisampled textures must be resolved into a non-multisampled texture before they can be rendered by the blitter.
     /// </para>
     /// <para type="constants">
-    /// The blitter writes its data into the last constant slot (<see cref="GorgonGraphics.MaxRootConstantCount"/> - 1) on the <paramref name="commandList"/>. Any data previously written to that slot by
+    /// The blitter writes its data into the last constant slot (<see cref="GorgonGraphics.MaxRootCbvCount"/> - 1) on the <paramref name="commandList"/>. Any data previously written to that slot by 
     /// the application is replaced.
     /// </para>
     /// <para type="pso">
-    /// The first time the blitter is used with a new combination of render target formats, multisampling, blending state, or pixel shader, it builds a new pipeline state object. This is a small, one
+    /// The first time the blitter is used with a new combination of render target formats, multisampling, blending state, or pixel shader, it builds a new pipeline state object. This is a small, one 
     /// time cost.
     /// </para>
     /// </remarks>
@@ -689,7 +690,7 @@ public unsafe class GorgonTextureBlitter
         uploader.WriteRange(vertices);
 
         commandList.UploadGpuMemoryToBuffer(in uploader, _vertexBuffer.Buffer)
-                   .WriteConstant(GorgonGraphics.MaxRootConstantCount - 1, in data)
+                   .WriteConstant(GorgonGraphics.MaxRootCbvCount - 1, in data)
                    .Draw(_drawCall);
     }
 
@@ -702,16 +703,16 @@ public unsafe class GorgonTextureBlitter
     /// <param name="blendState">[Optional] The blending state to apply when rendering the texture.</param>
     /// <remarks>
     /// <para>
-    /// This method stretches the <paramref name="texture"/> over the entire area of the first viewport on the render target in slot 0 of the <paramref name="commandList"/>. It renders a single triangle that
-    /// covers the viewport, and does not upload any vertex data, so it is faster than calling <see cref="Blit"/> with a rectangle that covers the viewport. However, it does not support tinting, rendering a
+    /// This method stretches the <paramref name="texture"/> over the entire area of the first viewport on the render target in slot 0 of the <paramref name="commandList"/>. It renders a single triangle that 
+    /// covers the viewport, and does not upload any vertex data, so it is faster than calling <see cref="Blit"/> with a rectangle that covers the viewport. However, it does not support tinting, rendering a 
     /// region of the texture, or custom pixel shaders.
     /// </para>
     /// <para>
-    /// If the <paramref name="sampler"/> is omitted, then <see cref="GorgonSampler.Default(GorgonGraphics)"/> is used. If the <paramref name="blendState"/> is omitted, then
+    /// If the <paramref name="sampler"/> is omitted, then <see cref="GorgonSampler.Default(GorgonGraphics)"/> is used. If the <paramref name="blendState"/> is omitted, then 
     /// <see cref="GorgonBlendState.NoBlending"/> is used.
     /// </para>
     /// <para>
-    /// When the <paramref name="blendState"/> is equal to <see cref="GorgonBlendState.NoBlending"/>, every pixel of the texture is written to the render target, including pixels with an alpha value of 0.
+    /// When the <paramref name="blendState"/> is equal to <see cref="GorgonBlendState.NoBlending"/>, every pixel of the texture is written to the render target, including pixels with an alpha value of 0. 
     /// For any other blending state, pixels with an alpha value of 0 are not rendered.
     /// </para>
     /// <inheritdoc cref="Blit(GorgonCommandList, IGorgonTextureView{GorgonTextureCommon}, GorgonRectangleF, GorgonColor?, GorgonRectangleF?, GorgonSampler?, GorgonBlendState?, GorgonShader?)" path="/remarks/para[@type='state']"/>
@@ -794,7 +795,7 @@ public unsafe class GorgonTextureBlitter
 
         UpdateFullScreenDrawCall(texture);
 
-        commandList.WriteConstant(GorgonGraphics.MaxRootConstantCount - 1, in data)
+        commandList.WriteConstant(GorgonGraphics.MaxRootCbvCount - 1, in data)
                    .Draw(_fullScreenDrawCall);
     }
 

@@ -41,7 +41,7 @@ partial class MainForm
         Margin = new Padding(4, 5, 4, 5);
         Name = "MainForm";
         StartPosition = FormStartPosition.CenterScreen;
-        Text = "Codec Plugins";
+        Text = "Codec PlugIns";
         ResumeLayout(false);
     }
 }

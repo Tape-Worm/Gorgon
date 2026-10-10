@@ -39,11 +39,11 @@
     <Project Path="Examples/Gorgon.Input/Input/Input.csproj" />
     <Project Path="Examples/Gorgon.Input/XInput/XInput.csproj" />
   </Folder>
-  <Folder Name="/Examples/Gorgon.Plugins/">
+  <Folder Name="/Examples/Gorgon.PlugIns/">
     <Project Path="Examples/Gorgon.Graphics/TvImageCodec/TvImageCodec.csproj" />
-    <Project Path="Examples/Gorgon.Plugins/Plugins/Plugins.csproj" />
-    <Project Path="Examples/Gorgon.Plugins/Plugins/PlugIns/BluePlugin/BluePlugin.csproj" />
-    <Project Path="Examples/Gorgon.Plugins/Plugins/PlugIns/GreenAndPurplePlugin/GreenAndPurplePlugin.csproj" />
+    <Project Path="Examples/Gorgon.PlugIns/PlugIns/PlugIns.csproj" />
+    <Project Path="Examples/Gorgon.PlugIns/PlugIns/PlugIns/BluePlugIn/BluePlugIn.csproj" />
+    <Project Path="Examples/Gorgon.PlugIns/PlugIns/PlugIns/GreenAndPurplePlugIn/GreenAndPurplePlugIn.csproj" />
   </Folder>
   <Folder Name="/Examples/Gorgon.UI/">
     <Project Path="Examples/Gorgon.UI/Dialogs.Avalonia/Dialogs.Avalonia.csproj" />
@@ -73,18 +73,19 @@
   <Folder Name="/__Experiments__/">
     <Project Path="Test/Experimental/Gorgon.D3D12.RulesTest/Gorgon.D3D12.RulesTest.csproj" />
     <Project Path="Test/Experimental/Gorgon.Graphics.TestApp/Gorgon.Graphics.TestApp.csproj" />
+    <Project Path="Test/Experimental/GraphicsCoreFunctions/GraphicsCoreFunctions.csproj" />
     <Project Path="Test/Experimental/ImagingFunctions/ImagingFunctions.csproj" />
   </Folder>
   <Project Path="Gorgon/Gorgon.Core.Windows/Gorgon.Core.Windows.csproj" />
   <Project Path="Gorgon/Gorgon.Core/Gorgon.Core.csproj" />
   <Project Path="Gorgon/Gorgon.Graphics/Core/Gorgon.Graphics.Core.csproj" />
-  <Project Path="Gorgon/Gorgon.Graphics/Imaging.Codecs.Plugins/Gorgon.Graphics.Imaging.Codecs.Plugins.csproj" />
+  <Project Path="Gorgon/Gorgon.Graphics/Imaging.Codecs.PlugIns/Gorgon.Graphics.Imaging.Codecs.PlugIns.csproj" />
   <Project Path="Gorgon/Gorgon.Graphics/Imaging.GdiPlus/Gorgon.Graphics.Imaging.GdiPlus.csproj" />
   <Project Path="Gorgon/Gorgon.Graphics/Imaging/Gorgon.Graphics.Imaging.csproj" />
   <Project Path="Gorgon/Gorgon.Input/Gorgon.Input.csproj" />
-  <Project Path="Gorgon/Gorgon.IO/FileSystem.Plugins/Gorgon.IO.FileSystem.Plugins.csproj" />
+  <Project Path="Gorgon/Gorgon.IO/FileSystem.PlugIns/Gorgon.IO.FileSystem.PlugIns.csproj" />
   <Project Path="Gorgon/Gorgon.IO/FileSystem/Gorgon.IO.FileSystem.csproj" />
-  <Project Path="Gorgon/Gorgon.Plugins/Gorgon.Plugins.csproj" />
+  <Project Path="Gorgon/Gorgon.PlugIns/Gorgon.PlugIns.csproj" />
   <Project Path="Gorgon/Gorgon.UI/Avalonia/Gorgon.UI.Avalonia.csproj" />
   <Project Path="Gorgon/Gorgon.UI/Win32/Gorgon.UI.Win32.csproj" />
   <Project Path="Gorgon/Gorgon.UI/WindowsForms/Gorgon.UI.WindowsForms.csproj" />

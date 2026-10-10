@@ -12,6 +12,7 @@
 // all copies or substantial portions of the Software.
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -24,6 +25,7 @@
 using System.Drawing;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.Intrinsics;
 using System.Text.Json.Serialization;
 using Gorgon.Json;
 using Gorgon.Math;
@@ -227,6 +229,54 @@ public struct GorgonRectangle
     public static GorgonRectangle FromRectangle(Rectangle rect) => new(rect.X, rect.Y, rect.Width, rect.Height);
 
     /// <summary>
+    /// Function to convert a <see cref="GorgonRectangle"/> to a <see cref="Vector128{T}"/> of <see cref="int"/> values.
+    /// </summary>
+    /// <param name="rect">The rectangle to convert.</param>
+    /// <returns>A <see cref="Vector128{T}"/> containing the <see cref="Left"/>, <see cref="Top"/>, <see cref="Right"/> and <see cref="Bottom"/> values of the rectangle.</returns>
+    /// <remarks>
+    /// <para type="mapping">
+    /// The elements of the vector are mapped to the rectangle as follows:
+    /// <list type="table">
+    ///     <listheader>
+    ///         <term>Element</term>
+    ///         <description>Rectangle value</description>
+    ///     </listheader>
+    ///     <item>
+    ///         <term>0</term>
+    ///         <description><see cref="Left"/></description>
+    ///     </item>
+    ///     <item>
+    ///         <term>1</term>
+    ///         <description><see cref="Top"/></description>
+    ///     </item>
+    ///     <item>
+    ///         <term>2</term>
+    ///         <description><see cref="Right"/></description>
+    ///     </item>
+    ///     <item>
+    ///         <term>3</term>
+    ///         <description><see cref="Bottom"/></description>
+    ///     </item>
+    /// </list>
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="FromVector128(Vector128{int})"/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Vector128<int> ToVector128(GorgonRectangle rect) => Vector128.Create(rect.Left, rect.Top, rect.Right, rect.Bottom);
+
+    /// <summary>
+    /// Function to convert a <see cref="Vector128{T}"/> of <see cref="int"/> values to a <see cref="GorgonRectangle"/>.
+    /// </summary>
+    /// <param name="vector">The vector containing the left, top, right and bottom values of the rectangle.</param>
+    /// <returns>The converted <see cref="GorgonRectangle"/>.</returns>
+    /// <remarks>
+    /// <inheritdoc cref="ToVector128(GorgonRectangle)" path="/remarks/para[@type='mapping']"/>
+    /// </remarks>
+    /// <seealso cref="ToVector128(GorgonRectangle)"/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static GorgonRectangle FromVector128(Vector128<int> vector) => FromLTRB(vector[0], vector[1], vector[2], vector[3]);
+
+    /// <summary>
     /// Operator to convert a <see cref="GorgonRectangle"/> to a <see cref="RectangleF"/>.
     /// </summary>
     /// <param name="rect">The rectangle to convert.</param>
@@ -253,6 +303,22 @@ public struct GorgonRectangle
     /// <param name="rect">The rectangle to convert.</param>
     /// <returns>The converted <see cref="RectangleF"/>.</returns>
     public static implicit operator GorgonRectangle(Rectangle rect) => FromRectangle(rect);
+
+    /// <summary>
+    /// Operator to convert a <see cref="GorgonRectangle"/> to a <see cref="Vector128{T}"/> of <see cref="int"/> values.
+    /// </summary>
+    /// <param name="rect">The rectangle to convert.</param>
+    /// <inheritdoc cref="ToVector128(GorgonRectangle)" path="/returns"/>
+    /// <inheritdoc cref="ToVector128(GorgonRectangle)" path="/remarks"/>
+    public static explicit operator Vector128<int>(GorgonRectangle rect) => ToVector128(rect);
+
+    /// <summary>
+    /// Operator to convert a <see cref="Vector128{T}"/> of <see cref="int"/> values to a <see cref="GorgonRectangle"/>.
+    /// </summary>
+    /// <param name="vector"><inheritdoc cref="FromVector128(Vector128{int})" path="/param[@name='vector']"/></param>
+    /// <inheritdoc cref="FromVector128(Vector128{int})" path="/returns"/>
+    /// <inheritdoc cref="ToVector128(GorgonRectangle)" path="/remarks"/>
+    public static explicit operator GorgonRectangle(Vector128<int> vector) => FromVector128(vector);
 
     /// <summary>
     /// Function to determine the intersection between two <see cref="GorgonRectangle"/> values.

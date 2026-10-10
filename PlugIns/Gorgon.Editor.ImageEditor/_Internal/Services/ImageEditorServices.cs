@@ -23,13 +23,13 @@
 // Created: January 5, 2019 2:46:03 PM
 // 
 
-using Gorgon.Editor.Plugins;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Services;
 
 namespace Gorgon.Editor.ImageEditor;
 
 /// <summary>
-/// A list of services required for the image plugin
+/// A list of services required for the image plug-in
 /// </summary>
 internal class ImageEditorServices
 {

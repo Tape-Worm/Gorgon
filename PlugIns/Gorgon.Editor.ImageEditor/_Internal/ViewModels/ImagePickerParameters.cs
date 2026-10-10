@@ -24,7 +24,7 @@
 // 
 
 using Gorgon.Editor.Content;
-using Gorgon.Editor.Plugins;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI;
 
 namespace Gorgon.Editor.ImageEditor;
@@ -68,7 +68,7 @@ internal class ImagePickerParameters(IContentFileManager fileManager, IContentFi
     }
 
     /// <summary>
-    /// Property to set or return the settings for the editor plugin.
+    /// Property to set or return the settings for the editor plug-in.
     /// </summary>
     public ISettings Settings
     {

@@ -317,6 +317,15 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There was an error creating the command signature for the execution call..
+        /// </summary>
+        internal static string GORGFX_ERR_CANNOT_CREATE_EXECUTION_CALL {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_CANNOT_CREATE_EXECUTION_CALL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unable to create a DXGI factory..
         /// </summary>
         internal static string GORGFX_ERR_CANNOT_CREATE_FACTORY {
@@ -683,6 +692,96 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This type of execution call does not allow index buffers..
+        /// </summary>
+        internal static string GORGFX_ERR_EXECUTE_CALL_INDEX_BUFFER_NOT_ALLOWED {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_EXECUTE_CALL_INDEX_BUFFER_NOT_ALLOWED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The size of the command list is {0} bytes. The execute call requires a value that is a multiple of 4..
+        /// </summary>
+        internal static string GORGFX_ERR_EXECUTE_COMMAND_COUNT_NOT_MULTIPLE_OF_4 {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_EXECUTE_COMMAND_COUNT_NOT_MULTIPLE_OF_4", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The constant at index {0} plus the count of {1} is too large for the available constant indices: {2}..
+        /// </summary>
+        internal static string GORGFX_ERR_EXECUTE_CONSTANT_RANGE_INVALID {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_EXECUTE_CONSTANT_RANGE_INVALID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The execute buffer &apos;{0}&apos; has {1} commands of {2} bytes, and {3} counters. It must have at least 1 command, a command size of at least 16 bytes that is a multiple of 4, and 0 or more counters..
+        /// </summary>
+        internal static string GORGFX_ERR_EXECUTE_BUFFER_INVALID {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_EXECUTE_BUFFER_INVALID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The execute buffer &apos;{0}&apos; has no counters..
+        /// </summary>
+        internal static string GORGFX_ERR_EXECUTE_BUFFER_NO_COUNTERS {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_EXECUTE_BUFFER_NO_COUNTERS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The commands in the execute buffer &apos;{0}&apos; are {1} bytes, which is smaller than the {2} bytes needed by the execute call..
+        /// </summary>
+        internal static string GORGFX_ERR_EXECUTE_COMMAND_SIZE_TOO_SMALL {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_EXECUTE_COMMAND_SIZE_TOO_SMALL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The commands in the execute buffer &apos;{0}&apos; are {1} bytes, but the execute call uses commands of {2} bytes..
+        /// </summary>
+        internal static string GORGFX_ERR_EXECUTE_COMMAND_SIZE_MISMATCH {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_EXECUTE_COMMAND_SIZE_MISMATCH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The execute buffer &apos;{0}&apos; has no counters. An execute call that renders on the GPU needs at least 1 counter..
+        /// </summary>
+        internal static string GORGFX_ERR_EXECUTE_GPU_NEEDS_COUNTERS {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_EXECUTE_GPU_NEEDS_COUNTERS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The range of commands to execute, starting at index {0} with a count of {1}, is outside of the {2} commands in the commands buffer..
+        /// </summary>
+        internal static string GORGFX_ERR_EXECUTE_RANGE_INVALID {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_EXECUTE_RANGE_INVALID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The counter index {0} is outside of the {1} counters in the counters buffer..
+        /// </summary>
+        internal static string GORGFX_ERR_EXECUTE_COUNTER_INDEX_INVALID {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_EXECUTE_COUNTER_INDEX_INVALID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The file &apos;{0}&apos; was not found..
         /// </summary>
         internal static string GORGFX_ERR_FILE_NOT_FOUND {
@@ -751,6 +850,17 @@ namespace Gorgon.Graphics.Core.Properties {
         internal static string GORGFX_ERR_INDEX_CUT_NON_STRIP_PRIMITIVE {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_INDEX_CUT_NON_STRIP_PRIMITIVE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A typed view format for the index buffer &apos;{0}&apos; must be 16 bits, or 32 bits in size, and an integer value.  
+        ///
+        ///The format {1} is {2} bits or the incorrect data type..
+        /// </summary>
+        internal static string GORGFX_ERR_INDEXBUFFER_TYPED_VIEW_INCOMPATIBLE {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_INDEXBUFFER_TYPED_VIEW_INCOMPATIBLE", resourceCulture);
             }
         }
         
@@ -1167,6 +1277,15 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The resource &apos;{0}&apos; does not have read/write access. The view cannot be created..
+        /// </summary>
+        internal static string GORGFX_ERR_RESOURCE_NO_READ_WRITE_ACCESS {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_RESOURCE_NO_READ_WRITE_ACCESS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The following errors were found:
         ///
         ///{0}.
@@ -1383,6 +1502,24 @@ namespace Gorgon.Graphics.Core.Properties {
         internal static string GORGFX_ERR_TEXTURE_RTV_NOT_RENDERTARGET_FORMAT {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_TEXTURE_RTV_NOT_RENDERTARGET_FORMAT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The read/write view does not support typeless formats..
+        /// </summary>
+        internal static string GORGFX_ERR_TEXTURE_RWVIEW_FORMAT_TYPELESS_NOT_SUPPORTED {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_TEXTURE_RWVIEW_FORMAT_TYPELESS_NOT_SUPPORTED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The read/write view format {0} on texture &apos;{1}&apos; is not valid for read/write views..
+        /// </summary>
+        internal static string GORGFX_ERR_TEXTURE_RWVIEW_NOT_RWVIEW_FORMAT {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_TEXTURE_RWVIEW_NOT_RWVIEW_FORMAT", resourceCulture);
             }
         }
         

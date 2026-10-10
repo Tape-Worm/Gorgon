@@ -12,6 +12,7 @@
 // all copies or substantial portions of the Software.
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -196,8 +197,10 @@ public sealed class GorgonGraphicsPsoBuilder(GorgonGraphics graphics)
     /// <remarks>
     /// <para>
     /// This assigns the <paramref name="format"/> to the <paramref name="renderTargetSlot"/>, and leaves the formats in the other slots unchanged. The <paramref name="renderTargetSlot"/> matches the 
-    /// <c>SV_Target</c> semantic index for the value returned from the pixel shader. For example, slot 0 is for the pixel shader output marked with <c>SV_Target0</c>, slot 1 is for the output marked with 
-    /// <c>SV_Target1</c>, and so on.
+    /// <a href="https://learn.microsoft.com/windows/win32/direct3dhlsl/dx-graphics-hlsl-semantics#system-value-semantics" target="_blank">SV_Target</a> semantic index for the value returned from the pixel 
+    /// shader. For example, slot 0 is for the pixel shader output marked with 
+    /// <a href="https://learn.microsoft.com/windows/win32/direct3dhlsl/dx-graphics-hlsl-semantics#system-value-semantics" target="_blank">SV_Target0</a>, slot 1 is for the output marked with 
+    /// <a href="https://learn.microsoft.com/windows/win32/direct3dhlsl/dx-graphics-hlsl-semantics#system-value-semantics" target="_blank">SV_Target1</a>, and so on.
     /// </para>
     /// <para>
     /// Assigning a format to a slot will also include every slot before it in the <see cref="GorgonGraphicsPso.OutputFormats"/>. Any of those slots that have not been assigned a format will contain 

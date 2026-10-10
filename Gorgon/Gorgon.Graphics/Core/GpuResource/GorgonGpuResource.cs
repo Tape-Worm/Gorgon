@@ -12,6 +12,7 @@
 // all copies or substantial portions of the Software.
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -179,11 +180,6 @@ public abstract unsafe class GorgonGpuResource
     /// <inheritdoc cref="GorgonGraphicsFactory.Dispose(bool)"/>
     private protected virtual void Dispose(bool disposing)
     {
-        if (_d3dResource.IsNull)
-        {
-            return;
-        }
-
         if (disposing)
         {
             if (Interlocked.Exchange(ref _disposed, 1) != 0)
@@ -193,8 +189,11 @@ public abstract unsafe class GorgonGpuResource
 
             this.UnregisterDisposable(Graphics);
 
-            Graphics.Log.Print($"Destroying Gorgon resource '{Name}'", LoggingLevel.Simple);
-            Graphics.Log.Print($"Destroying D3D 12 {_info.ResourceType} resource object for '{Name}'...", LoggingLevel.Verbose);            
+            if (!_d3dResource.IsNull)
+            {
+                Graphics.Log.Print($"Destroying Gorgon resource '{Name}'", LoggingLevel.Simple);
+                Graphics.Log.Print($"Destroying D3D 12 {_info.ResourceType} resource object for '{Name}'...", LoggingLevel.Verbose);
+            }
         }
 
         _d3dResource.Dispose();

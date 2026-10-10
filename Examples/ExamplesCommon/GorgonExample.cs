@@ -14,6 +14,7 @@
 // all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -56,7 +57,7 @@ public static class GorgonExample
     // Blitter for displaying rendering.
     private static GorgonTextureBlitter? _blitter;
     // The string containing our statistics.
-    private static readonly StringBuilder _statsText = new();
+    //private static readonly StringBuilder _statsText = new();
     // The main window for the application.
     private static FormMain? _mainForm;
     // The lazy instance of the log file.
@@ -91,9 +92,9 @@ public static class GorgonExample
     public static GorgonApplicationLoop Loop => _lazyLoop.Value;
 
     /// <summary>
-    /// Property to set or return the path to the plugin directory.
+    /// Property to set or return the path to the plug-in directory.
     /// </summary>
-    public static DirectoryInfo? PluginLocationDirectory
+    public static DirectoryInfo? PlugInLocationDirectory
     {
         get;
         set;
@@ -137,16 +138,16 @@ public static class GorgonExample
     }
 
     /// <summary>
-    /// Function to retrieve the directory that contains the Plugins for an application.
+    /// Function to retrieve the directory that contains the plug-ins for an application.
     /// </summary>
-    /// <returns>A directory information object for the Plugin path.</returns>
-    public static DirectoryInfo GetPluginPath()
+    /// <returns>A directory information object for the plug-in path.</returns>
+    public static DirectoryInfo GetPlugInPath()
     {
-        string path = PluginLocationDirectory?.FullName ?? throw new DirectoryNotFoundException();
+        string path = PlugInLocationDirectory?.FullName ?? throw new DirectoryNotFoundException();
 
         if (string.IsNullOrWhiteSpace(path))
         {
-            throw new IOException("No plugin path has been assigned.");
+            throw new IOException("No plug-in path has been assigned.");
         }
 
         if (path.Contains("{0}"))
@@ -165,7 +166,7 @@ public static class GorgonExample
 
         DirectoryInfo result = new(Path.GetFullPath(path));
 
-        Log.Print($"Example plug in path: {result.FullName}", LoggingLevel.Simple);
+        Log.Print($"Example plug-in path: {result.FullName}", LoggingLevel.Simple);
 
         return result;
     }

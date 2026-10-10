@@ -26,7 +26,7 @@
 using System.Buffers;
 using System.Numerics;
 using Gorgon.Diagnostics;
-using Gorgon.Editor.Plugins;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.SpriteEditor.Properties;
 using Gorgon.Editor.UI;
 using Gorgon.Math;

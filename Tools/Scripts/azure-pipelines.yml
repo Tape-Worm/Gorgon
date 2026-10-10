@@ -71,7 +71,7 @@ jobs:
           Overwrite: true
 
       - task: CopyFiles@2
-        displayName: 'Copying Plugins to $(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/PlugIns'
+        displayName: 'Copying Plug-ins to $(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/PlugIns'
         inputs:
           SourceFolder: '$(Build.SourcesDirectory)/PlugIns/Bin/$(buildConfiguration)/'
           Contents: '**/?(*.dll|Gorgon*.pdb)'
@@ -167,7 +167,7 @@ jobs:
           Overwrite: true
 
       - task: CopyFiles@2
-        displayName: 'Copying Plugins to $(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/PlugIns'
+        displayName: 'Copying Plug-ins to $(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/PlugIns'
         inputs:
           SourceFolder: '$(Build.SourcesDirectory)/PlugIns/Bin/$(buildConfiguration)/'
           Contents: '**/?(*.dll|Gorgon*.pdb)'

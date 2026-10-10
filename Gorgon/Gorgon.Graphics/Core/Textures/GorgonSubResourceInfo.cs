@@ -12,6 +12,7 @@
 // all copies or substantial portions of the Software.
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -35,6 +36,7 @@ namespace Gorgon.Graphics.Core;
 /// <param name="ArrayIndex">The index of the array sub resource.</param>
 /// <param name="MipLevel">The mip level for the sub resource.</param>
 /// <param name="Plane">The format plane for the sub resource.</param>
+/// <param name="PlaneFormat">The format of the data in the <paramref name="Plane"/> of the sub resource.</param>
 /// <param name="RowPitch">The size of a row, in bytes, in the sub resource. This value is a multiple of 256 bytes.</param>
 /// <param name="RowSize">The size of a row, in bytes, in the sub resource. This value is unaligned.</param>
 /// <param name="RowCount">The number of rows in the sub resource. This may differ from the <paramref name="Height"/> depending on the format of the resource.</param>
@@ -43,21 +45,24 @@ namespace Gorgon.Graphics.Core;
 /// <para>
 /// The <see cref="ArrayIndex"/> property is only for <see cref="TextureType.Texture1D"/> and <see cref="TextureType.Texture2D"/> textures. For <see cref="TextureType.Texture3D"/>, this will always return 0.
 /// </para>
+/// <para>
+/// The <see cref="PlaneFormat"/> is the same as the texture format, except for planar formats where each plane holds its own data. For example, the depth plane (0) of a 
+/// <see cref="BufferFormat.D24_UNorm_S8_UInt"/> texture uses <see cref="BufferFormat.R32_Typeless"/>, and the stencil plane (1) uses <see cref="BufferFormat.R8_Typeless"/>.
+/// </para>
 /// </remarks>
-public record class GorgonSubResourceInfo(int SubResourceIndex, int Width, short Height, short Depth, short ArrayIndex, short MipLevel, byte Plane, long RowPitch, long RowSize, int RowCount, long Offset)
+public record class GorgonSubResourceInfo(int SubResourceIndex, int Width, short Height, short Depth, short ArrayIndex, short MipLevel, byte Plane, BufferFormat PlaneFormat, long RowPitch,long RowSize, int RowCount, long Offset)
 {
     /// <summary>
     /// Function to convert this information object into a Direct 3D sub resource foot print.
     /// </summary>
-    /// <param name="format">The format of the texture.</param>
     /// <param name="offset">The offset, in bytes, to add to the footprint.</param>
     /// <returns>The D3D sub resource foot print.</returns>
-    internal D3D12_PLACED_SUBRESOURCE_FOOTPRINT ToD3DPlacedSubResourceFootPrint(BufferFormat format, ulong offset) => new()
+    internal D3D12_PLACED_SUBRESOURCE_FOOTPRINT ToD3DPlacedSubResourceFootPrint(ulong offset) => new()
     {
         Offset = (ulong)Offset + offset,
         Footprint = new D3D12_SUBRESOURCE_FOOTPRINT()
         {
-            Format = (DXGI_FORMAT)format,
+            Format = (DXGI_FORMAT)PlaneFormat,
             RowPitch = (uint)RowPitch,
             Width = (uint)Width,
             Height = (uint)Height,
@@ -70,7 +75,7 @@ public record class GorgonSubResourceInfo(int SubResourceIndex, int Width, short
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This value uses the <see cref="RowPitch"/> to calculate the size. This means the size may be larger than expected due to alignment. For a <see cref="TextureType.Texture3D"/> texture, this includes
+    /// This value uses the <see cref="RowPitch"/> to calculate the size. This means the size may be larger than expected due to alignment. For a <see cref="TextureType.Texture3D"/> texture, this includes 
     /// every depth slice in the sub resource.
     /// </para>
     /// </remarks>

@@ -14,6 +14,7 @@
 // all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -30,9 +31,9 @@ using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
-using Gorgon.Graphics.Imaging.Codecs.Plugins;
+using Gorgon.Graphics.Imaging.Codecs.PlugIns;
 using Gorgon.IO;
-using Gorgon.Plugins;
+using Gorgon.PlugIns;
 using Gorgon.UI.WindowsForms;
 
 namespace Graphics.Examples;
@@ -40,10 +41,10 @@ namespace Graphics.Examples;
 /// <summary>
 /// Our main UI window for the example
 /// </summary>
-public partial class MainForm : System.Windows.Forms.Form
+public partial class MainForm : Form
 {
-    // The cache that holds Plugin information.
-    private readonly GorgonMefPluginCache _pluginCache;
+    // The cache that holds plug-in information.
+    private readonly GorgonMefPlugInCache _plugInCache;
     // The graphics object factory.
     private GorgonGraphicsFactory? _factory;
     // The main graphics interface.
@@ -52,11 +53,11 @@ public partial class MainForm : System.Windows.Forms.Form
     private GorgonSwapChain? _swap;
     // The blitter used to display the logo.
     private GorgonTextureBlitter? _blitter;
-    // Image to display, loaded from our plugin.
+    // Image to display, loaded from our plug-in.
     private IGorgonTextureView<GorgonTexture>? _texture;
     // The image in system memory.
     private IGorgonImage? _image;
-    // Our custom codec loaded from the plugin.
+    // Our custom codec loaded from the plug-in.
     private IGorgonImageCodec? _customCodec;
 
     /// <summary>
@@ -84,7 +85,7 @@ public partial class MainForm : System.Windows.Forms.Form
         Debug.Assert(_texture is not null, "The texture was not created.");
 
         GorgonCommandList commandList = _graphics.GetCommandList("Main command list")
-                                                 .ClearSwapChain(_swap, GorgonColors.White)
+                                                 .ClearRenderTarget(_swap, GorgonColors.White)
                                                  .SetViewport(new GorgonViewport(0, 0, ClientSize.Width, ClientSize.Height))
                                                  .SetScissorRectangle(new GorgonRectangle(0, 0, ClientSize.Width, ClientSize.Height))
                                                  .AddPresenter(_swap)
@@ -122,29 +123,29 @@ public partial class MainForm : System.Windows.Forms.Form
     }
 
     /// <summary>
-    /// Function to load our useless image codec plugin.
+    /// Function to load our useless image codec plug-in.
     /// </summary>
     /// <returns><b>true</b> if successful, <b>false</b> if not.</returns>
     private bool LoadCodec()
     {
-        const string PluginName = "Gorgon.Examples.TvImageCodecPlugin";
+        const string PlugInName = "Gorgon.Examples.TvImageCodecPlugIn";
 
-        // Load our plugin.
-        _pluginCache.LoadPluginAssemblies(Application.StartupPath, "TVImageCodec.dll");
+        // Load our plug-in.
+        _plugInCache.LoadPlugInAssemblies(Application.StartupPath, "TVImageCodec.dll");
 
-        // Activate the Plugin service.
-        IGorgonPluginService pluginService = new GorgonMefPluginService(_pluginCache);
+        // Activate the plug-in service.
+        IGorgonPlugInService plugInService = new GorgonMefPlugInService(_plugInCache);
 
-        // Find the Plugin.
-        GorgonImageCodecPlugin? plugin = pluginService.GetPlugin<GorgonImageCodecPlugin>(PluginName);
+        // Find the plug-in.
+        GorgonImageCodecPlugIn? plugIn = plugInService.GetPlugIn<GorgonImageCodecPlugIn>(PlugInName);
 
-        if ((plugin is null) || (plugin.Codecs.Count == 0))
+        if ((plugIn is null) || (plugIn.Codecs.Count == 0))
         {
             return false;
         }
 
-        // Normally you would enumerate the plugins, but in this case we know there's only one.
-        _customCodec = plugin.CreateCodec(plugin.Codecs[0]);
+        // Normally you would enumerate the plug-ins, but in this case we know there's only one.
+        _customCodec = plugIn.CreateCodec(plugIn.Codecs[0]);
 
         return _customCodec is not null;
     }
@@ -212,7 +213,7 @@ public partial class MainForm : System.Windows.Forms.Form
 
         GorgonExample.UnloadResources();
 
-        _pluginCache?.Dispose();
+        _plugInCache?.Dispose();
         _texture?.Dispose();
         _blitter?.Dispose();
         _swap?.Dispose();
@@ -235,7 +236,7 @@ public partial class MainForm : System.Windows.Forms.Form
             // Load the custom codec.
             if (!LoadCodec())
             {
-                GorgonDialogs.Error(this, "Unable to load the image codec plugin.");
+                GorgonDialogs.Error(this, "Unable to load the image codec plug-in.");
                 Application.Exit();
                 return;
             }
@@ -263,7 +264,7 @@ public partial class MainForm : System.Windows.Forms.Form
             _graphics = _factory.CreateGraphics(deviceList[0]);
 
             _swap = new GorgonSwapChain(_graphics,
-                                        "Codec plugin SwapChain",
+                                        "Codec plug-in SwapChain",
                                         Handle,
                                         new GorgonSwapChainInfo(ClientSize.Width, ClientSize.Height, BufferFormat.R8G8B8A8_UNorm));
 
@@ -271,7 +272,7 @@ public partial class MainForm : System.Windows.Forms.Form
 
             // Load the image to use as a texture.
             IGorgonImageCodec png = new GorgonCodecPng();
-            _image = png.FromFile(Path.Combine(GorgonExample.GetResourcePath(@"Textures\CodecPlugin\").FullName, "SourceTexture.png"));
+            _image = png.FromFile(Path.Combine(GorgonExample.GetResourcePath(@"Textures\CodecPlugIn\").FullName, "SourceTexture.png"));
                         
             GorgonExample.LoadResources(_graphics);
 
@@ -301,7 +302,7 @@ public partial class MainForm : System.Windows.Forms.Form
     {
         InitializeComponent();
 
-        _pluginCache = new GorgonMefPluginCache(GorgonExample.Log);
+        _plugInCache = new GorgonMefPlugInCache(GorgonExample.Log);
     }
 
 }

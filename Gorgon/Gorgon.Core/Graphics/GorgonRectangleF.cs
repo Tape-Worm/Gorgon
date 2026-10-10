@@ -12,6 +12,7 @@
 // all copies or substantial portions of the Software.
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -228,6 +229,54 @@ public struct GorgonRectangleF
     public static GorgonRectangleF FromRectangle(Rectangle rect) => new(rect.X, rect.Y, rect.Width, rect.Height);
 
     /// <summary>
+    /// Function to convert a <see cref="GorgonRectangleF"/> to a <see cref="Vector4"/>.
+    /// </summary>
+    /// <param name="rect">The rectangle to convert.</param>
+    /// <returns>A <see cref="Vector4"/> containing the <see cref="Left"/>, <see cref="Top"/>, <see cref="Right"/> and <see cref="Bottom"/> values of the rectangle.</returns>
+    /// <remarks>
+    /// <para type="mapping">
+    /// The components of the vector are mapped to the rectangle as follows:
+    /// <list type="table">
+    ///     <listheader>
+    ///         <term>Component</term>
+    ///         <description>Rectangle value</description>
+    ///     </listheader>
+    ///     <item>
+    ///         <term><see cref="Vector4.X"/></term>
+    ///         <description><see cref="Left"/></description>
+    ///     </item>
+    ///     <item>
+    ///         <term><see cref="Vector4.Y"/></term>
+    ///         <description><see cref="Top"/></description>
+    ///     </item>
+    ///     <item>
+    ///         <term><see cref="Vector4.Z"/></term>
+    ///         <description><see cref="Right"/></description>
+    ///     </item>
+    ///     <item>
+    ///         <term><see cref="Vector4.W"/></term>
+    ///         <description><see cref="Bottom"/></description>
+    ///     </item>
+    /// </list>
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="FromVector4(Vector4)"/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Vector4 ToVector4(GorgonRectangleF rect) => new(rect.Left, rect.Top, rect.Right, rect.Bottom);
+
+    /// <summary>
+    /// Function to convert a <see cref="Vector4"/> to a <see cref="GorgonRectangleF"/>.
+    /// </summary>
+    /// <param name="vector">The vector containing the left, top, right and bottom values of the rectangle.</param>
+    /// <returns>The converted <see cref="GorgonRectangleF"/>.</returns>
+    /// <remarks>
+    /// <inheritdoc cref="ToVector4(GorgonRectangleF)" path="/remarks/para[@type='mapping']"/>
+    /// </remarks>
+    /// <seealso cref="ToVector4(GorgonRectangleF)"/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static GorgonRectangleF FromVector4(Vector4 vector) => FromLTRB(vector.X, vector.Y, vector.Z, vector.W);
+
+    /// <summary>
     /// Operator to convert a <see cref="GorgonRectangleF"/> to a <see cref="RectangleF"/>.
     /// </summary>
     /// <param name="rect">The rectangle to convert.</param>
@@ -254,6 +303,22 @@ public struct GorgonRectangleF
     /// <param name="rect">The rectangle to convert.</param>
     /// <returns>The converted <see cref="RectangleF"/>.</returns>
     public static implicit operator GorgonRectangleF(Rectangle rect) => FromRectangle(rect);
+
+    /// <summary>
+    /// Operator to convert a <see cref="GorgonRectangleF"/> to a <see cref="Vector4"/>.
+    /// </summary>
+    /// <param name="rect">The rectangle to convert.</param>
+    /// <inheritdoc cref="ToVector4(GorgonRectangleF)" path="/returns"/>
+    /// <inheritdoc cref="ToVector4(GorgonRectangleF)" path="/remarks"/>
+    public static explicit operator Vector4(GorgonRectangleF rect) => ToVector4(rect);
+
+    /// <summary>
+    /// Operator to convert a <see cref="Vector4"/> to a <see cref="GorgonRectangleF"/>.
+    /// </summary>
+    /// <param name="vector"><inheritdoc cref="FromVector4(Vector4)" path="/param[@name='vector']"/></param>
+    /// <inheritdoc cref="FromVector4(Vector4)" path="/returns"/>
+    /// <inheritdoc cref="ToVector4(GorgonRectangleF)" path="/remarks"/>
+    public static explicit operator GorgonRectangleF(Vector4 vector) => FromVector4(vector);
 
     /// <summary>
     /// Function to determine the intersection between two <see cref="GorgonRectangleF"/> values.

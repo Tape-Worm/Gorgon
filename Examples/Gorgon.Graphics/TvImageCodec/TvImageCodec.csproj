@@ -30,10 +30,10 @@
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Gorgon\Gorgon.Graphics\Imaging.Codecs.Plugins\Gorgon.Graphics.Imaging.Codecs.Plugins.csproj" />
+    <ProjectReference Include="..\..\..\Gorgon\Gorgon.Graphics\Imaging.Codecs.PlugIns\Gorgon.Graphics.Imaging.Codecs.PlugIns.csproj" />
     <ProjectReference Include="..\..\..\Gorgon\Gorgon.Graphics\Imaging\Gorgon.Graphics.Imaging.csproj" />
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="copy &quot;$(TargetDir)TVImageCodec.dll&quot; &quot;$(SolutionDir)Examples\Gorgon.Graphics\CodecPlugin\$(OutDir)&quot;&#xD;&#xA;copy &quot;$(TargetDir)TVImageCodec.pdb&quot; &quot;$(SolutionDir)Examples\Gorgon.Graphics\CodecPlugin\$(OutDir)&quot;" />
+    <Exec Command="copy &quot;$(TargetDir)TVImageCodec.dll&quot; &quot;$(SolutionDir)Examples\Gorgon.Graphics\CodecPlugIn\$(OutDir)&quot;&#xD;&#xA;copy &quot;$(TargetDir)TVImageCodec.pdb&quot; &quot;$(SolutionDir)Examples\Gorgon.Graphics\CodecPlugIn\$(OutDir)&quot;" />
   </Target>
 </Project>

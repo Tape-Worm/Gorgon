@@ -14,6 +14,7 @@
 // all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -100,13 +101,13 @@ public enum Blend
     SourceAlphaSaturate = D3D12_BLEND.D3D12_BLEND_SRC_ALPHA_SAT,
     /// <summary>
     /// <para>
-    /// The blend factor is set with the <see cref="GorgonDrawCallCommon.BlendFactor"/> property. No pre-blend operation.
+    /// The blend factor is set with the <see cref="GorgonGraphicsCallCommon.BlendFactor"/> property. No pre-blend operation.
     /// </para>
     /// </summary>
     BlendFactor = D3D12_BLEND.D3D12_BLEND_BLEND_FACTOR,
     /// <summary>
     /// <para>
-    /// The blend factor is set with the <see cref="GorgonDrawCallCommon.BlendFactor"/> property. The pre-blend operation inverts the blend factor, generating 1 - blend_factor.
+    /// The blend factor is set with the <see cref="GorgonGraphicsCallCommon.BlendFactor"/> property. The pre-blend operation inverts the blend factor, generating 1 - blend_factor.
     /// </para>
     /// </summary>
     InverseBlendFactor = D3D12_BLEND.D3D12_BLEND_INV_BLEND_FACTOR,
@@ -136,7 +137,7 @@ public enum Blend
     InverseSecondarySourceAlpha = D3D12_BLEND.D3D12_BLEND_INV_SRC1_ALPHA,
     /// <summary>
     /// <para>
-    /// The blend factor is (A, A, A, A), which is set with the <see cref="GorgonDrawCallCommon.BlendFactor"/> property.
+    /// The blend factor is (A, A, A, A), which is set with the <see cref="GorgonGraphicsCallCommon.BlendFactor"/> property.
     /// </para>
     /// <para>
     /// This blending type will only work if the video adapter has its <see cref="GorgonVideoAdapterInfo.SupportsAlphaBlendFactor"/> value set to <b>true</b>.
@@ -145,7 +146,7 @@ public enum Blend
     AlphaFactor = D3D12_BLEND.D3D12_BLEND_ALPHA_FACTOR,
     /// <summary>
     /// <para>
-    /// The blend factor is (1 – A, 1 – A, 1 – A, 1 – A), which is set with the <see cref="GorgonDrawCallCommon.BlendFactor"/> property.
+    /// The blend factor is (1 – A, 1 – A, 1 – A, 1 – A), which is set with the <see cref="GorgonGraphicsCallCommon.BlendFactor"/> property.
     /// </para>
     /// <para>
     /// This blending type will only work if the video adapter has its <see cref="GorgonVideoAdapterInfo.SupportsAlphaBlendFactor"/> value set to <b>true</b>.

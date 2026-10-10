@@ -13,6 +13,7 @@
 // all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -47,7 +48,7 @@ public interface IGorgonImageUpdateFluent
     /// <param name="filter">[Optional] The filter to apply when copying the data from one mip level to another.</param>
     /// <returns>The fluent interface for the image update.</returns>
     /// <exception cref="ObjectDisposedException">Thrown when the image has been disposed.</exception>
-    /// <exception cref="Gorgon.Core.GorgonException">Thrown when the image update has already ended.</exception>
+    /// <exception cref="Core.GorgonException">Thrown when the image update has already ended.</exception>
     /// <remarks>
     /// <para>
     /// This method will generate a new mip map chain from the first mip map level of the image, and replaces any existing mip map levels. If the <paramref name="mipCount"/> is 0 or less, or larger than the 
@@ -71,7 +72,7 @@ public interface IGorgonImageUpdateFluent
     /// <returns>The fluent interface for the image update.</returns>
     /// <exception cref="ArgumentOutOfRangeException">Thrown when the <paramref name="newDepth"/> is less than 1 for a <see cref="ImageDataType.Image3D"/> image.</exception>
     /// <exception cref="ObjectDisposedException">Thrown when the image has been disposed.</exception>
-    /// <exception cref="Gorgon.Core.GorgonException">Thrown when the image update has already ended.</exception>
+    /// <exception cref="Core.GorgonException">Thrown when the image update has already ended.</exception>
     /// <remarks>
     /// <para>
     /// This method will crop the existing image to a smaller version of itself. The <paramref name="cropRect"/> is clipped to the boundaries of the image, so a rectangle that extends past the edges of the 
@@ -95,7 +96,7 @@ public interface IGorgonImageUpdateFluent
     /// <param name="offset">[Optional] The position of the original image within the expanded image.</param>
     /// <returns>The fluent interface for the image update.</returns>
     /// <exception cref="ObjectDisposedException">Thrown when the image has been disposed.</exception>
-    /// <exception cref="Gorgon.Core.GorgonException">Thrown when the image update has already ended.</exception>
+    /// <exception cref="Core.GorgonException">Thrown when the image update has already ended.</exception>
     /// <remarks>
     /// <para>
     /// This will expand the size of an image, but not stretch the actual image data. This will leave a padding around the original image area filled with transparent pixels.
@@ -134,7 +135,7 @@ public interface IGorgonImageUpdateFluent
     /// </para>
     /// </exception>
     /// <exception cref="ObjectDisposedException">Thrown when the image has been disposed.</exception>
-    /// <exception cref="Gorgon.Core.GorgonException">Thrown when the image update has already ended.</exception>
+    /// <exception cref="Core.GorgonException">Thrown when the image update has already ended.</exception>
     /// <remarks>
     /// <para>
     /// This method will change the size of the image, and scale the image data to fit the new size using the <paramref name="filter"/>. If the new size cannot hold the current number of mip map levels, then 
@@ -152,7 +153,7 @@ public interface IGorgonImageUpdateFluent
     /// <param name="format">The new pixel format for the image.</param>
     /// <param name="dithering">[Optional] Flag to indicate the type of dithering to perform when the bit depth for the <paramref name="format"/> is lower than the original bit depth.</param>
     /// <returns>The fluent interface for the image update.</returns>
-    /// <exception cref="Gorgon.Core.GorgonException"><para>
+    /// <exception cref="Core.GorgonException"><para>
     /// Thrown when the <paramref name="format"/> is <see cref="BufferFormat.Unknown"/>, or the image cannot be converted to the <paramref name="format"/>.
     /// </para>
     /// <para>
@@ -182,7 +183,7 @@ public interface IGorgonImageUpdateFluent
     /// </summary>
     /// <returns>The fluent interface for the image update.</returns>
     /// <exception cref="ObjectDisposedException">Thrown when the image has been disposed.</exception>
-    /// <exception cref="Gorgon.Core.GorgonException">Thrown when the image update has already ended.</exception>
+    /// <exception cref="Core.GorgonException">Thrown when the image update has already ended.</exception>
     /// <remarks>
     /// <para>
     /// Use this to convert an image from a premultiplied format. This takes each Red, Green and Blue element and divides them by the Alpha element.
@@ -201,7 +202,7 @@ public interface IGorgonImageUpdateFluent
     /// </summary>
     /// <returns>The fluent interface for the image update.</returns>
     /// <exception cref="ObjectDisposedException">Thrown when the image has been disposed.</exception>
-    /// <exception cref="Gorgon.Core.GorgonException">Thrown when the image update has already ended.</exception>
+    /// <exception cref="Core.GorgonException">Thrown when the image update has already ended.</exception>
     /// <remarks>
     /// <para>
     /// Use this to convert an image to a premultiplied format. This takes each Red, Green and Blue element and multiplies them by the Alpha element.

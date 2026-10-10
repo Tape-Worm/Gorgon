@@ -28,10 +28,10 @@ using System.Text.Json.Serialization;
 namespace Gorgon.Editor.FontEditor;
 
 /// <summary>
-/// The settings for the animation importer plugin
+/// The settings for the animation importer plug-in
 /// </summary>
 /// <remarks>
-/// This is our settings for the plugin. The settings should contain simple primitive types so they can be serialized into/deserialized from 
+/// This is our settings for the plug-in. The settings should contain simple primitive types so they can be serialized into/deserialized from 
 /// JSON data
 /// </remarks>
 internal class FontEditorSettings

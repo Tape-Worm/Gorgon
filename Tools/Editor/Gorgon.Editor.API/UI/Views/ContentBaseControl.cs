@@ -230,7 +230,7 @@ public partial class ContentBaseControl
     /// </summary>
     /// <remarks>
     /// <para>
-    /// Plug in developers should set this in the IDE designer to set up a swap chain for rendering when this control is created.
+    /// Plug-in developers should set this in the IDE designer to set up a swap chain for rendering when this control is created.
     /// </para>
     /// <para>
     /// If this property is assigned after control creation, the <see cref="SetupGraphics(IGraphicsContext)"/> method must be called again for it to take effect.

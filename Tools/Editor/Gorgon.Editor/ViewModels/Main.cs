@@ -29,7 +29,7 @@ using System.Text;
 using System.Text.Json;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
-using Gorgon.Editor.Plugins;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Services;
@@ -67,9 +67,9 @@ internal class Main
     }
 
     /// <summary>
-    /// Property to return a list of content Plugins that can create their own content.
+    /// Property to return a list of content plug-ins that can create their own content.
     /// </summary>
-    public IReadOnlyList<IContentPluginMetadata> ContentCreators
+    public IReadOnlyList<IContentPlugInMetadata> ContentCreators
     {
         get;
         private set;

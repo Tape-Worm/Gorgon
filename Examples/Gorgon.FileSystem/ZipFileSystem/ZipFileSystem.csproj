@@ -49,7 +49,7 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.12" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Gorgon\Gorgon.IO\FileSystem.Plugins\Gorgon.IO.FileSystem.Plugins.csproj" />
+    <ProjectReference Include="..\..\..\Gorgon\Gorgon.IO\FileSystem.PlugIns\Gorgon.IO.FileSystem.PlugIns.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="appsettings.json">

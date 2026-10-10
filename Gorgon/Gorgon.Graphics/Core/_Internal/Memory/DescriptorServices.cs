@@ -12,6 +12,7 @@
 // all copies or substantial portions of the Software.
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -30,7 +31,8 @@ namespace Gorgon.Graphics.Core;
 /// <param name="GpuViewDescriptors">The cbv/srv/uav descriptors.</param>
 /// <param name="RtvDescriptors">The render target view descriptors.</param>
 /// <param name="DsvDescriptors">The depth/stencil view descriptors.</param>
-internal sealed record class DescriptorServices(GpuDescriptorHeap GpuSamplerDescriptors, GpuDescriptorHeap GpuViewDescriptors, CpuDescriptorHeapPool RtvDescriptors, CpuDescriptorHeapPool DsvDescriptors)
+/// <param name="CbvSrvUavDescriptors">The constant, shader resource, unordered access view descriptors.</param>
+internal sealed record class DescriptorServices(GpuDescriptorHeap GpuSamplerDescriptors, GpuDescriptorHeap GpuViewDescriptors, CpuDescriptorHeapPool RtvDescriptors, CpuDescriptorHeapPool DsvDescriptors, CpuDescriptorHeapPool CbvSrvUavDescriptors)
     : IDisposable
 {
     /// <inheritdoc/>
@@ -40,6 +42,7 @@ internal sealed record class DescriptorServices(GpuDescriptorHeap GpuSamplerDesc
         GpuViewDescriptors.Dispose();
         RtvDescriptors.Dispose(); 
         DsvDescriptors.Dispose();
+        CbvSrvUavDescriptors.Dispose();
 
         GC.SuppressFinalize(this);
     }
@@ -51,5 +54,6 @@ internal sealed record class DescriptorServices(GpuDescriptorHeap GpuSamplerDesc
     {
         RtvDescriptors.GarbageCollect();
         DsvDescriptors.GarbageCollect();
+        CbvSrvUavDescriptors.GarbageCollect();
     }    
 }

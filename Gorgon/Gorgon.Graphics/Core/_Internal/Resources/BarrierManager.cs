@@ -12,6 +12,7 @@
 // all copies or substantial portions of the Software.
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -104,8 +105,8 @@ internal unsafe class BarrierManager(GorgonGraphics graphics)
                                                        | BarrierLayout.GraphicsReadWrite | BarrierLayout.GraphicsShaderResource | BarrierLayout.GraphicsCopySource | BarrierLayout.GraphicsCopyDestination;
     private const BarrierLayout ComputeOnlyLayoutMask = BarrierLayout.ComputeCommon | BarrierLayout.ComputeGenericRead | BarrierLayout.ComputeReadWrite | BarrierLayout.ComputeShaderResource
                                                       | BarrierLayout.ComputeCopySource | BarrierLayout.ComputeCopyDestination;
-    // Buffer accesses that write. A barrier after one of these can't be skipped, even when the state doesn't change, because it's what makes later work wait for the write.
-    private const BarrierAccess BufferWriteAccessMask = BarrierAccess.CopyDestination | BarrierAccess.ReadWrite;
+    // Accesses that write. A barrier after one of these can't be skipped, even when the state doesn't change, because it's what makes later work wait for the write.
+    private const BarrierAccess WriteAccessMask = BarrierAccess.CopyDestination | BarrierAccess.ReadWrite;
 
     private readonly GorgonGraphics _graphics = graphics;
     private readonly GlobalBarrierState _globalState = graphics.Queues.GlobalBarriers;
@@ -454,7 +455,7 @@ internal unsafe class BarrierManager(GorgonGraphics graphics)
                 {
                     ref readonly TextureBarrierEntry currentEntry = ref current[j];
 
-                    if (currentEntry.Barrier.Equals(pendingEntry.Barrier))
+                    if ((currentEntry.Barrier.Equals(pendingEntry.Barrier)) && ((pendingEntry.Barrier.Access & WriteAccessMask) == BarrierAccess.None))
                     {
                         continue;
                     }
@@ -503,8 +504,8 @@ internal unsafe class BarrierManager(GorgonGraphics graphics)
             return;
         }
 
-        // Redundant state.
-        if (current.Equals(newBarrier))
+        // Redundant state. Writes are never redundant: the barrier makes later work wait for the write.
+        if ((current.Equals(newBarrier)) && ((access & WriteAccessMask) == BarrierAccess.None))
         {
             _pendingBuffers.Remove(buffer.ResourceID);
             return;
@@ -543,7 +544,7 @@ internal unsafe class BarrierManager(GorgonGraphics graphics)
         {
             pending.Clear();
 
-            if ((current.Length == 1) && (current[0].Barrier.Equals(newBarrier)))
+            if ((current.Length == 1) && (current[0].Barrier.Equals(newBarrier)) && ((newBarrier.Access & WriteAccessMask) == BarrierAccess.None))
             {
                 return;
             }
@@ -641,7 +642,7 @@ internal unsafe class BarrierManager(GorgonGraphics graphics)
                     BarrierSync sync = barriers.IsEmpty ? BarrierSync.None : barriers[0].Sync;
                     BarrierAccess access = barriers.IsEmpty ? BarrierAccess.None : barriers[0].Access;
 
-                    if ((sync == bufferBarrier.Value.Sync) && (access == bufferBarrier.Value.Access) && ((access & BufferWriteAccessMask) == BarrierAccess.None))
+                    if ((sync == bufferBarrier.Value.Sync) && (access == bufferBarrier.Value.Access) && ((access & WriteAccessMask) == BarrierAccess.None))
                     {
                         continue;
                     }
@@ -679,7 +680,8 @@ internal unsafe class BarrierManager(GorgonGraphics graphics)
                             throw new GorgonException(GorgonResult.CannotBind, string.Format(Resources.GORGFX_ERR_CROSS_QUEUE_BARRIER, textureBarrier.Key, queue.Type.ToGorgonObjectType(), globalBarrier.QueueType.ToGorgonObjectType()));
                         }
 
-                        if ((barrier.Sync == textureBarrier.Value.Sync) && (barrier.Access == textureBarrier.Value.Access) && (barrier.Layout == textureBarrier.Value.Layout))
+                        if ((barrier.Sync == textureBarrier.Value.Sync) && (barrier.Access == textureBarrier.Value.Access) && (barrier.Layout == textureBarrier.Value.Layout)
+                            && ((barrier.Access & WriteAccessMask) == BarrierAccess.None))
                         {
                             continue;
                         }

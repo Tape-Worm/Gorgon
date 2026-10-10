@@ -12,6 +12,7 @@
 // all copies or substantial portions of the Software.
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -291,7 +292,9 @@ public enum BarrierSync
     EmitRayTracingAccelerationStructurePostBuildInformation = D3D12_BARRIER_SYNC.D3D12_BARRIER_SYNC_EMIT_RAYTRACING_ACCELERATION_STRUCTURE_POSTBUILD_INFO,
     /// <summary>
     /// <para>
-    /// Synchronize scope for the <see cref="GorgonCommandList.ClearReadWriteView(uint)"/> and <see cref="GorgonCommandList.ClearReadWriteView(float)"/> methods.
+    /// Synchronize scope for the <see cref="GorgonCommandList.ClearReadWriteView(GorgonRawBufferRwView, System.Runtime.Intrinsics.Vector128{int})">ClearReadWriteView</see> (buffer) and 
+    /// <see cref="GorgonCommandList.ClearReadWriteView(GorgonTextureRwView, System.Runtime.Intrinsics.Vector128{int}, IReadOnlyList{GorgonRectangle})">ClearReadWriteView</see> 
+    /// (texture) methods.
     /// </para>
     /// <inheritdoc cref="GorgonGpuBuffer" path="/remarks/para[@type='uav_readwrite']"/>
     /// <para>
@@ -803,8 +806,10 @@ public enum BarrierLayout
     RenderTarget = D3D12_BARRIER_LAYOUT.D3D12_BARRIER_LAYOUT_RENDER_TARGET,
     /// <summary>
     /// <para>
-    /// The resource is used for read/write access. A subresource must be in this state when it is accessed by the GPU via an read/write view. A subresource must also be in this state when it is cleared 
-    /// with <see cref="GorgonCommandList.ClearReadWriteView"/>. This is a read/write state.
+    /// The resource is used for read/write access. A subresource must be in this state when it is accessed by the GPU via an read/write view. A subresource must also be in this state when it is cleared with 
+    /// the <see cref="GorgonCommandList.ClearReadWriteView(GorgonRawBufferRwView, System.Runtime.Intrinsics.Vector128{int})">ClearReadWriteView</see> (buffer) or 
+    /// <see cref="GorgonCommandList.ClearReadWriteView(GorgonTextureRwView, System.Runtime.Intrinsics.Vector128{int}, IReadOnlyList{GorgonRectangle})">ClearReadWriteView</see> 
+    /// (texture) methods. This is a read/write state.
     /// </para>
     /// <inheritdoc cref="GorgonGpuBuffer" path="/remarks/para[@type='uav_readwrite']"/>
     /// </summary>

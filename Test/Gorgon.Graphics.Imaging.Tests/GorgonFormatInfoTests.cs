@@ -691,4 +691,25 @@ public class GorgonFormatInfoTests
         Assert.AreEqual(320, layout.RowPitch, $"{BufferFormat.V408} row pitch incorrect.");
         Assert.AreEqual(192_000, layout.SlicePitch, $"{BufferFormat.V408} slice pitch incorrect.");
     }
+
+    [TestMethod]
+    [DataRow(BufferFormat.R9G9B9E5_SharedExp)]
+    [DataRow(BufferFormat.BC6H_Uf16)]
+    [DataRow(BufferFormat.BC6H_Sf16)]
+    public void FloatingPointFormatsMissingFromList(BufferFormat format)
+    {
+        GorgonFormatInfo info = new(format);
+
+        Assert.IsTrue(info.IsFloatingPoint, $"{format} should be a floating point format.");
+    }
+
+    [TestMethod]
+    [DataRow(BufferFormat.BC6H_Uf16)]
+    [DataRow(BufferFormat.BC6H_Sf16)]
+    public void HalfFloatFormatsMissingFromList(BufferFormat format)
+    {
+        GorgonFormatInfo info = new(format);
+
+        Assert.IsTrue(info.IsHalf, $"{format} should be a half floating point format.");
+    }
 }

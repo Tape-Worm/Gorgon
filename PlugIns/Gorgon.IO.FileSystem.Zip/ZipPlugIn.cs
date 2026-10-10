@@ -14,6 +14,7 @@
 // all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -29,18 +30,18 @@ using Gorgon.IO.FileSystem.Providers.Properties;
 namespace Gorgon.IO.FileSystem.Providers;
 
 /// <summary>
-/// The plug in to create a zip file provider.
+/// The plug-in to create a zip file provider.
 /// </summary>
-internal class ZipPlugin
-    : GorgonFileSystemProviderPlugin
+internal class ZipPlugIn
+    : GorgonFileSystemProviderPlugIn
 {
     /// <inheritdoc/>
     public override IGorgonFileSystemProvider CreateProvider(IGorgonLog? log = null) => new ZipProvider(log ?? GorgonLog.NullLog);
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ZipPlugin"/> class.
+    /// Initializes a new instance of the <see cref="ZipPlugIn"/> class.
     /// </summary>
-    public ZipPlugin()
+    public ZipPlugIn()
         : base(Resources.GORFS_ZIP_DESC)
     {
     }

@@ -28,7 +28,7 @@ using System.Text.Json.Serialization;
 namespace Gorgon.Editor.ImageSplitTool;
 
 /// <summary>
-/// The settings for the plugin
+/// The settings for the plug-in
 /// </summary>
 internal class ImageSplitToolSettings
 {

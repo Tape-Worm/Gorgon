@@ -117,8 +117,8 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="GOREDIT_plugin_TYPE_UNKNOWN" xml:space="preserve">
-    <value>Unknown plugin type.</value>
+  <data name="GOREDIT_PLUGIN_TYPE_UNKNOWN" xml:space="preserve">
+    <value>Unknown plug-in type.</value>
   </data>
   <data name="GOREDIT_ERR_NOT_IMAGE" xml:space="preserve">
     <value>The file '{0}' is not an image.</value>
@@ -132,7 +132,7 @@ Please try again.</value>
   <data name="folder_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\folder_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="GOREDIT_plugin_LOAD_FAIL_NOT_FOUND" xml:space="preserve">
+  <data name="GOREDIT_PLUGIN_LOAD_FAIL_NOT_FOUND" xml:space="preserve">
     <value>Not found</value>
   </data>
   <data name="GOREDIT_ZOOM_3200" xml:space="preserve">
@@ -147,7 +147,7 @@ Please try again.</value>
   <data name="GOREDIT_ZOOM_12" xml:space="preserve">
     <value>12.5%</value>
   </data>
-  <data name="GOREDIT_plugin_LOAD_FAIL_EXCEPTION" xml:space="preserve">
+  <data name="GOREDIT_PLUGIN_LOAD_FAIL_EXCEPTION" xml:space="preserve">
     <value>An exception was thrown while loading the '{0}' assembly.
 
 {1}</value>
@@ -167,7 +167,7 @@ Please try again.</value>
   <data name="GOREDIT_ZOOM_1600" xml:space="preserve">
     <value>1600%</value>
   </data>
-  <data name="GOREDIT_plugin_TYPE_IMPORTER" xml:space="preserve">
+  <data name="GOREDIT_PLUGIN_TYPE_IMPORTER" xml:space="preserve">
     <value>Content importer</value>
   </data>
   <data name="GOREDIT_ERR_NOT_EDITOR_PROJECT" xml:space="preserve">
@@ -193,7 +193,7 @@ Please try again.</value>
   <data name="GOREDIT_ERR_VERSION_MISMATCH" xml:space="preserve">
     <value>The editor project data requires version {0}, but this API only supports up to version {1}.</value>
   </data>
-  <data name="GOREDIT_plugin_TYPE_WRITER" xml:space="preserve">
+  <data name="GOREDIT_PLUGIN_TYPE_WRITER" xml:space="preserve">
     <value>Editor file writer</value>
   </data>
   <data name="generic_file_20x20" type="System.Resources.ResXFileRef, System.Windows.Forms">
@@ -208,10 +208,10 @@ Please try again.</value>
   <data name="GOREDIT_ERR_FILE_NOT_FOUND" xml:space="preserve">
     <value>The file '{0}' was not found on the file system.</value>
   </data>
-  <data name="GOREDIT_ERR_NO_CONTENT_IMPORTER_FROM_plugin" xml:space="preserve">
-    <value>The plugin '{0}' did not produce any importers.</value>
+  <data name="GOREDIT_ERR_NO_CONTENT_IMPORTER_FROM_PLUGIN" xml:space="preserve">
+    <value>The plug-in '{0}' did not produce any importers.</value>
   </data>
-  <data name="GOREDIT_plugin_TYPE_CONTENT" xml:space="preserve">
+  <data name="GOREDIT_PLUGIN_TYPE_CONTENT" xml:space="preserve">
     <value>Editor content</value>
   </data>
   <data name="GOREDIT_ZOOM_6400" xml:space="preserve">
@@ -220,8 +220,8 @@ Please try again.</value>
   <data name="drive_cdrom_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\drive_cdrom_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="GOREDIT_ERR_NO_CONTENT_FROM_plugin" xml:space="preserve">
-    <value>The plugin '{0}' did not produce any content.</value>
+  <data name="GOREDIT_ERR_NO_CONTENT_FROM_PLUGIN" xml:space="preserve">
+    <value>The plug-in '{0}' did not produce any content.</value>
   </data>
   <data name="drive_remove_48x48" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\drive_remove_48x48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -229,7 +229,7 @@ Please try again.</value>
   <data name="GOREDIT_SEARCH_DIRECTORY_TAG2" xml:space="preserve">
     <value>directory:</value>
   </data>
-  <data name="GOREDIT_plugin_TYPE_READER" xml:space="preserve">
+  <data name="GOREDIT_PLUGIN_TYPE_READER" xml:space="preserve">
     <value>Packed file reader</value>
   </data>
   <data name="manual_input_24x24" type="System.Resources.ResXFileRef, System.Windows.Forms">
@@ -243,7 +243,7 @@ Please try again.</value>
 
 Some changes may not have been saved.</value>
   </data>
-  <data name="GOREDIT_plugin_TYPE_TOOL" xml:space="preserve">
+  <data name="GOREDIT_PLUGIN_TYPE_TOOL" xml:space="preserve">
     <value>Editor utility</value>
   </data>
   <data name="GOREDIT_ERR_PROPERTY_DOES_NOT_EXIST" xml:space="preserve">
@@ -287,8 +287,8 @@ Please try again.</value>
   <data name="GOREDIT_TITLE_OPEN_FILE" xml:space="preserve">
     <value>Open a file...</value>
   </data>
-  <data name="GOREDIT_ERR_UNABLE_TO_UNLOAD_pluginS" xml:space="preserve">
-    <value>There was an error while unloading the plugins.</value>
+  <data name="GOREDIT_ERR_UNABLE_TO_UNLOAD_PLUGINS" xml:space="preserve">
+    <value>There was an error while unloading the plug-ins.</value>
   </data>
   <data name="GOREDIT_ERR_CONTENT_RENDERER_EXISTS" xml:space="preserve">
     <value>The content renderer '{0}' already exists.</value>
@@ -311,10 +311,10 @@ Please try again.</value>
   <data name="GOREDIT_TITLE_DEFAULT_DIR_LOCATOR" xml:space="preserve">
     <value>Select a directory...</value>
   </data>
-  <data name="GOREDIT_ERR_UNABLE_TO_LOAD_pluginS" xml:space="preserve">
-    <value>There was an error while loading the plugins.</value>
+  <data name="GOREDIT_ERR_UNABLE_TO_LOAD_PLUGINS" xml:space="preserve">
+    <value>There was an error while loading the plug-ins.</value>
   </data>
-  <data name="GOREDIT_plugin_LOAD_FAIL_NOT_DOT_NET" xml:space="preserve">
+  <data name="GOREDIT_PLUGIN_LOAD_FAIL_NOT_DOT_NET" xml:space="preserve">
     <value>The file '{0}' is not a .NET assembly.</value>
   </data>
   <data name="GOREDIT_ZOOM_800" xml:space="preserve">
@@ -350,7 +350,7 @@ Please try again.</value>
   <data name="GOREDIT_ERR_CANNOT_FIND_VIEW_FACTORY" xml:space="preserve">
     <value>Could not find a view factory registered to the type '{0}'.</value>
   </data>
-  <data name="GOREDIT_plugin_LOAD_FAIL_PLATFORM_MISMATCH" xml:space="preserve">
+  <data name="GOREDIT_PLUGIN_LOAD_FAIL_PLATFORM_MISMATCH" xml:space="preserve">
     <value>The assembly '{0}' has a platform architecture of {1}, but the application is running as {2}.
 
 These platforms are incompatible and cannot be mixed.</value>

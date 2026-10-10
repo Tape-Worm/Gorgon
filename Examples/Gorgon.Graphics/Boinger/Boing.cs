@@ -12,6 +12,7 @@
 // all copies or substantial portions of the Software.
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -127,8 +128,6 @@ internal class Boing
     private readonly GorgonSwapChain _swap;
     // The depth/stencil buffer to use.
     private GorgonDepthStencilView _depth;
-    // The texture for our geometry.
-    private readonly IGorgonTextureView<GorgonTexture> _texture;
     // The pipeline state for rendering.
     private readonly GorgonGraphicsPso _pipelineState;
     // The draw calls for the application.
@@ -537,15 +536,10 @@ internal class Boing
 
         GorgonIndexedDrawCall[] result = new GorgonIndexedDrawCall[_planes.Length + 1];
 
-        result[0] = new()
-        {
-            IndexBuffer = _sphere.IndexBuffer,
-            IndexCount = _sphere.IndexCount,
-            Pso = _pipelineState
-        };
+        result[0] = new(_sphere.IndexCount, _sphere.IndexBuffer, _pipelineState);
 
-        result[0].AssignTexture(new GorgonDrawCallTexture(_sphere.Material.Texture, ShaderStage.Pixel, TextureUsage.ReadOnly));
-        result[0].AssignBuffer(new GorgonDrawCallBuffer(_sphere.VertexBufferView, ShaderStage.Vertex, BufferUsage.VertexBuffer));
+        result[0].AssignTexture(new GorgonUsedTexture(_sphere.Material.Texture, ShaderStage.Pixel, TextureUsage.ReadOnly));
+        result[0].AssignBuffer(new GorgonUsedBuffer(_sphere.VertexBufferView, ShaderStage.Vertex, BufferUsage.VertexBuffer));
 
         for (int i = 0; i < _planes.Length; ++i)
         {
@@ -555,18 +549,15 @@ internal class Boing
             Debug.Assert(plane.IndexBuffer is not null, $"Index buffer not available for plane {i}.");
             Debug.Assert(plane.Material is not null, "The plane material is null");
 
-            result[i + 1] = new()
+            result[i + 1] = new(plane.IndexCount, plane.IndexBuffer, _pipelineState)
             {
-                IndexBuffer = plane.IndexBuffer,
-                IndexCount = plane.IndexCount,
-                Pso = _pipelineState,
                 UsedBuffers =
                 {
-                    new GorgonDrawCallBuffer(plane.VertexBufferView, ShaderStage.Vertex, BufferUsage.VertexBuffer)
+                    new GorgonUsedBuffer(plane.VertexBufferView, ShaderStage.Vertex, BufferUsage.VertexBuffer)
                 },
                 UsedTextures =
                 {
-                    new GorgonDrawCallTexture(plane.Material.Texture, ShaderStage.Pixel, TextureUsage.ReadOnly)
+                    new GorgonUsedTexture(plane.Material.Texture, ShaderStage.Pixel, TextureUsage.ReadOnly)
                 }
             };
         }
@@ -688,7 +679,7 @@ internal class Boing
         {
             planes = CreatePlanes(graphics, defaultMaterial);
 
-            Boing program = new(form, graphics, swap, loop, audio, texture, psoFactory, sphere, planes);            
+            Boing program = new(form, graphics, swap, loop, audio, psoFactory, sphere, planes);            
             program.Run();
         }
         finally
@@ -712,12 +703,11 @@ internal class Boing
     /// <param name="swap">The swap chain for the application.</param>
     /// <param name="loop">The application main loop.</param>
     /// <param name="audio">The audio engine used to play sound.</param>
-    /// <param name="texture">The texture for the geometry.</param>
     /// <param name="psoFactory">The factory used to create pipeline state objects.</param>
     /// <param name="sphere">The sphere model.</param>
     /// <param name="planes">The plane models.</param>
     private Boing(FormMain form, GorgonGraphics graphics, GorgonSwapChain swap, GorgonApplicationLoop loop, AudioPlaybackEngine audio,
-                     IGorgonTextureView<GorgonTexture> texture, GorgonGraphicsPsoFactory psoFactory, Sphere sphere, Plane[] planes)
+                     GorgonGraphicsPsoFactory psoFactory, Sphere sphere, Plane[] planes)
     {
         Debug.Assert(sphere.Material is not null, "Sphere has no material");
 
@@ -726,7 +716,6 @@ internal class Boing
         _swap = swap;
         _loop = loop;
         _audio = audio;
-        _texture = texture;        
         _sphere = sphere;
         _planes = planes;
 

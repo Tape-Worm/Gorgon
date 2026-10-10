@@ -13,6 +13,7 @@
 // all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -238,8 +239,9 @@ internal unsafe class VideoAdapterEnumerator
         log.Print($"ACG Compatible: {device.AcgCompatible}", LoggingLevel.Verbose);
         log.Print($"Supports Alpha Factor blending: {device.SupportsAlphaBlendFactor}", LoggingLevel.Verbose);
         log.Print($"Supports GPU upload heaps: {device.HasGpuUploadSupport}", LoggingLevel.Verbose);
+        log.Print($"Supports extended command info (SV_StartVertexLocation/SV_StartInstanceLocation): {device.SupportsExtendedCommandInfo}", LoggingLevel.Verbose);
         log.Print($"Supports monitored fences: {device.SupportsMonitoredFences}", LoggingLevel.Verbose);
-        log.Print($"Supports non-monitored fences: {device.SupportsMonitoredFences}", LoggingLevel.Verbose);
+        log.Print($"Supports non-monitored fences: {device.SupportsNonMonitoredFences}", LoggingLevel.Verbose);
         log.Print($"Supports keyed mutex conformance: {device.SupportsKeyedMutexConformance}", LoggingLevel.Verbose);
         log.Print($"Graphics preemption granularity: {device.GraphicsPreemptionGranularity}", LoggingLevel.Verbose);
         log.Print($"Compute preemption granularity: {device.ComputePreemptionGranularity}", LoggingLevel.Verbose);

@@ -35,22 +35,22 @@ internal class SpritePickMaskEditor
     : HostedPanelViewModelBase<SpritePickMaskEditorParameters>, ISpritePickMaskEditor
 {
 
-    // The settings for the plugin.
-    private ISettings _pluginSettings;
+    // The settings for the plug-in.
+    private ISettings _plugInSettings;
 
     /// <summary>Property to set or return the type of masking to perform when picking a sprite using the sprite picker tool.</summary>
     public ClipMask ClipMaskType
     {
-        get => _pluginSettings.ClipMaskType;
+        get => _plugInSettings.ClipMaskType;
         set
         {
-            if (_pluginSettings.ClipMaskType == value)
+            if (_plugInSettings.ClipMaskType == value)
             {
                 return;
             }
 
             OnPropertyChanging();
-            _pluginSettings.ClipMaskType = value;
+            _plugInSettings.ClipMaskType = value;
             OnPropertyChanged();
         }
     }
@@ -58,16 +58,16 @@ internal class SpritePickMaskEditor
     /// <summary>Property to set or return the sprite picker mask color.</summary>
     public GorgonColor ClipMaskValue
     {
-        get => _pluginSettings.ClipMaskValue;
+        get => _plugInSettings.ClipMaskValue;
         set
         {
-            if (_pluginSettings.ClipMaskValue == value)
+            if (_plugInSettings.ClipMaskValue == value)
             {
                 return;
             }
 
             OnPropertyChanging();
-            _pluginSettings.ClipMaskValue = value;
+            _plugInSettings.ClipMaskValue = value;
             OnPropertyChanged();
         }
     }
@@ -85,6 +85,6 @@ internal class SpritePickMaskEditor
     /// This method is only ever called after the view model has been created, and never again during the lifetime of the view model.
     /// </para>
     /// </remarks>
-    protected override void OnInitialize(SpritePickMaskEditorParameters injectionParameters) => _pluginSettings = injectionParameters.PluginSettings;
+    protected override void OnInitialize(SpritePickMaskEditorParameters injectionParameters) => _plugInSettings = injectionParameters.PlugInSettings;
 
 }

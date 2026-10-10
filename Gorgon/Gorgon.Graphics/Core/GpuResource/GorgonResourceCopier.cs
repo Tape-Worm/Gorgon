@@ -12,6 +12,7 @@
 // all copies or substantial portions of the Software.
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -1209,8 +1210,8 @@ public unsafe sealed class GorgonResourceCopier
 
         int maxPlaneCount = Graphics.FormatSupport[texture.Format].PlaneCount;
 
-        destinationZOrArrayIndex = texture.Type == TextureType.Texture3D ? destinationZOrArrayIndex.Min((short)(texture.Depth - 1)).Max(0) : destinationZOrArrayIndex.Min((short)(texture.ArrayCount - 1)).Max(0);
         destinationMipLevel = destinationMipLevel.Min((short)(texture.MipCount - 1)).Max(0);
+        destinationZOrArrayIndex = texture.Type == TextureType.Texture3D ? destinationZOrArrayIndex.Min((short)(texture.GetMipDepth(destinationMipLevel) - 1)).Max(0) : destinationZOrArrayIndex.Min((short)(texture.ArrayCount - 1)).Max(0);
         destinationPlane = destinationPlane.Min((byte)(maxPlaneCount - 1)).Max(0);
 
         PrepUpload();
@@ -1420,7 +1421,7 @@ public unsafe sealed class GorgonResourceCopier
         _commandQueue.Tracker.TrackResource(buffer.D3DResource);
         _commandQueue.Tracker.TrackResource(texture.D3DResource);
 
-        D3D12_PLACED_SUBRESOURCE_FOOTPRINT footPrint = subInfo.ToD3DPlacedSubResourceFootPrint(texture.Format, 0);
+        D3D12_PLACED_SUBRESOURCE_FOOTPRINT footPrint = subInfo.ToD3DPlacedSubResourceFootPrint(0);
         footPrint.Offset = (ulong)parameters.SourceOffset + buffer.ResourceOffset;
         footPrint.Footprint.RowPitch = (uint)(subInfo.RowSize);
 
@@ -1463,7 +1464,7 @@ public unsafe sealed class GorgonResourceCopier
         _commandQueue.Tracker.TrackResource(buffer.D3DResource);
         _commandQueue.Tracker.TrackResource(texture.D3DResource);
 
-        D3D12_PLACED_SUBRESOURCE_FOOTPRINT footPrint = subInfo.ToD3DPlacedSubResourceFootPrint(texture.Format, 0);
+        D3D12_PLACED_SUBRESOURCE_FOOTPRINT footPrint = subInfo.ToD3DPlacedSubResourceFootPrint(0);
         footPrint.Offset = (ulong)parameters.DestinationOffset + buffer.ResourceOffset;
         footPrint.Footprint.RowPitch = (uint)subInfo.RowPitch;
 
@@ -2064,8 +2065,8 @@ public unsafe sealed class GorgonResourceCopier
         }
 
         int maxPlaneCount = Graphics.FormatSupport[texture.Format].PlaneCount;
-        sourceZOrArrayIndex = texture.Type == TextureType.Texture3D ? sourceZOrArrayIndex.Min((short)(texture.Depth - 1)).Max(0) : sourceZOrArrayIndex.Min((short)(texture.ArrayCount - 1)).Max(0);
         sourceMipLevel = sourceMipLevel.Min((short)(texture.MipCount - 1)).Max(0);
+        sourceZOrArrayIndex = texture.Type == TextureType.Texture3D ? sourceZOrArrayIndex.Min((short)(texture.GetMipDepth(sourceMipLevel) - 1)).Max(0) : sourceZOrArrayIndex.Min((short)(texture.ArrayCount - 1)).Max(0);
         sourcePlane = sourcePlane.Min((byte)(maxPlaneCount - 1)).Max(0);
 
         try

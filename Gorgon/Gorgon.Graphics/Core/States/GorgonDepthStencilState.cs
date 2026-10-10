@@ -14,6 +14,7 @@
 // all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -264,7 +265,7 @@ public sealed record class GorgonDepthStencilState()
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This is used to determine if a pixel/sample passes if a depth buffer value is within the range specified on <see cref="GorgonDrawCallCommon.DepthBoundsTestRange"/>.
+    /// This is used to determine if a pixel/sample passes if a depth buffer value is within the range specified on <see cref="GorgonGraphicsCallCommon.DepthBoundsTestRange"/>.
     /// </para>
     /// <para>
     /// When this value is <b>true</b>, the pipeline state object must be given a depth/stencil format that contains a depth component. If the video adapter does not support depth bounds testing (see 
@@ -275,7 +276,7 @@ public sealed record class GorgonDepthStencilState()
     /// The default value is <b>false</b>.
     /// </para>
     /// </remarks>
-    /// <seealso cref="GorgonDrawCallCommon.DepthBoundsTestRange"/>
+    /// <seealso cref="GorgonGraphicsCallCommon.DepthBoundsTestRange"/>
     public bool IsDepthBoundsTestingEnabled
     {
         get;

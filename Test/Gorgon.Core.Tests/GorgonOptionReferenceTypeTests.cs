@@ -3,6 +3,8 @@ using Gorgon.Configuration;
 
 namespace Gorgon.Core.Tests;
 
+#pragma warning disable CA1859 // Use concrete types when possible for improved performance
+#pragma warning disable CA1861
 // Found by the Imaging integration battery: DDS Palette and GIF FrameDelays are created with a List<T> default and read back as IList<T>.
 [TestClass]
 public class GorgonOptionReferenceTypeTests
@@ -11,6 +13,7 @@ public class GorgonOptionReferenceTypeTests
     public void GetValueListOptionAsInterfaceReturnsList()
     {
         // Arrange
+
         IGorgonOption option = GorgonOption.CreateOption("TestOption", new List<int> { 1, 2 });
 
         // Act
@@ -18,7 +21,7 @@ public class GorgonOptionReferenceTypeTests
 
         // Assert
         Assert.IsNotNull(value);
-        CollectionAssert.AreEqual(new[] { 1, 2 }, (System.Collections.ICollection)value);
+        Assert.AreSequenceEqual(new[] { 1, 2 }, (System.Collections.ICollection)value);
     }
 
     [TestMethod]
@@ -32,7 +35,7 @@ public class GorgonOptionReferenceTypeTests
 
         // Assert
         Assert.IsNotNull(value);
-        CollectionAssert.AreEqual(new[] { 1, 2 }, (System.Collections.ICollection)value);
+        Assert.AreSequenceEqual(new[] { 1, 2 }, (System.Collections.ICollection)value);
     }
 
     [TestMethod]
@@ -47,7 +50,7 @@ public class GorgonOptionReferenceTypeTests
 
         // Assert
         Assert.IsNotNull(value);
-        CollectionAssert.AreEqual(new[] { 3, 4 }, (System.Collections.ICollection)value);
+        Assert.AreSequenceEqual(new[] { 3, 4 }, (System.Collections.ICollection)value);
     }
 
     [TestMethod]
@@ -91,3 +94,5 @@ public class GorgonOptionReferenceTypeTests
         Assert.AreEqual("First line", option.Text);
     }
 }
+#pragma warning restore CA1861
+#pragma warning restore CA1859 // Use concrete types when possible for improved performance

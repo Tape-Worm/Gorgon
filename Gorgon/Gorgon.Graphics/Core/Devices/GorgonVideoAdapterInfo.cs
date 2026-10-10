@@ -14,6 +14,7 @@
 // all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -207,6 +208,7 @@ public enum GraphicsPreemptionGranularity
 /// <param name="SupportsDepthBoundsTest">The value that indicates whether the adapter supports depth bounds testing.</param>
 /// <param name="SupportsNarrowQuadrilateralLines">The value that indicates whether the adapter supports narrow quadrilateral line rasterization.</param>
 /// <param name="SupportsIndependentFrontAndBackStencilRef">The value that indicates whether the adapter supports independent front and back stencil references.</param>
+/// <param name="SupportsExtendedCommandInfo">The value that indicates whether the adapter supports the <a href="https://microsoft.github.io/hlsl-specs/proposals/0015-extended-command-info/" target="_blank">SV_StartVertexLocation</a> and <a href="https://microsoft.github.io/hlsl-specs/proposals/0015-extended-command-info/" target="_blank">SV_StartInstanceLocation</a> vertex shader system values (shader model 6.8), which return the start vertex and start instance values of the draw call.</param>
 /// <param name="ResourceHeapTier"><para>
 /// The value that indicates the tier support for resource heaps.
 /// </para>
@@ -247,6 +249,7 @@ public record class GorgonVideoAdapterInfo(string Name,
                                            bool SupportsDepthBoundsTest,
                                            bool SupportsNarrowQuadrilateralLines,
                                            bool SupportsIndependentFrontAndBackStencilRef,
+                                           bool SupportsExtendedCommandInfo,
                                            ResourceHeapTier ResourceHeapTier,
                                            TiledResourcesTier TiledResourcesTier,
                                            GorgonVideoAdapterArchitecture Architecture,
@@ -374,6 +377,7 @@ public record class GorgonVideoAdapterInfo(string Name,
         D3D12_FEATURE_DATA_D3D12_OPTIONS14 options14 = default;
         D3D12_FEATURE_DATA_D3D12_OPTIONS16 options16 = default;
         D3D12_FEATURE_DATA_D3D12_OPTIONS19 options19 = default;
+        D3D12_FEATURE_DATA_D3D12_OPTIONS21 options21 = default;
         D3D12_FEATURE_DATA_TIGHT_ALIGNMENT tightAlignment = default;
         D3D12_FEATURE_DATA_GPU_VIRTUAL_ADDRESS_SUPPORT addressSupport = default;
 
@@ -407,6 +411,9 @@ public record class GorgonVideoAdapterInfo(string Name,
         d3dDevice.Get()->CheckFeatureSupport(D3D12_FEATURE.D3D12_FEATURE_D3D12_OPTIONS19, &options19, (uint)sizeof(D3D12_FEATURE_DATA_D3D12_OPTIONS19))
             .ThrowIfFailed(GorgonResult.CannotEnumerate, () => string.Format(Resources.GORGFX_ERR_CANNOT_ENUMERATE_GPU, name));
 
+        d3dDevice.Get()->CheckFeatureSupport(D3D12_FEATURE.D3D12_FEATURE_D3D12_OPTIONS21, &options21, (uint)sizeof(D3D12_FEATURE_DATA_D3D12_OPTIONS21))
+            .ThrowIfFailed(GorgonResult.CannotEnumerate, () => string.Format(Resources.GORGFX_ERR_CANNOT_ENUMERATE_GPU, name));
+
         GorgonVideoAdapterOutputList outputs = new(EnumerateOutputs(adapter, d3dDevice));
         
         return new(string.IsNullOrWhiteSpace(name) ? $"{Resources.GORGFX_STR_ADAPTER} #{index}" : name, index, deviceType, (luid.HighPart, luid.LowPart), outputs,
@@ -426,6 +433,7 @@ public record class GorgonVideoAdapterInfo(string Name,
             options2.DepthBoundsTestSupported,
             options19.NarrowQuadrilateralLinesSupported,
             options14.IndependentFrontAndBackStencilRefMaskSupported,
+            options21.ExtendedCommandInfoSupported,
             (ResourceHeapTier)options.ResourceHeapTier,
             (TiledResourcesTier)options.TiledResourcesTier,
             new GorgonVideoAdapterArchitecture((int)arch.NodeIndex, arch.TileBasedRenderer, arch.UMA, arch.CacheCoherentUMA, arch.IsolatedMMU),

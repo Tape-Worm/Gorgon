@@ -45,10 +45,10 @@ internal class EditorSettings
     }
 
     /// <summary>
-    /// Property to set or return the path used for the application plugins.
+    /// Property to set or return the path used for the application plug-ins.
     /// </summary>
     [JsonInclude]
-    public string PluginPath
+    public string PlugInPath
     {
         get;
         set;

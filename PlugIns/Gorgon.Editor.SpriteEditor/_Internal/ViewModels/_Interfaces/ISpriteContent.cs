@@ -61,7 +61,7 @@ internal interface ISpriteContent
     }
 
     /// <summary>
-    /// Property to return the view model for the plugin settings.
+    /// Property to return the view model for the plug-in settings.
     /// </summary>
     ISettings Settings
     {

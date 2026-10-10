@@ -158,7 +158,7 @@ internal class AnimationContent
     }
 
     /// <summary>
-    /// Property to return the settings view model for the plugin.
+    /// Property to return the settings view model for the plug-in.
     /// </summary>
     public ISettings Settings
     {
@@ -2224,7 +2224,7 @@ internal class AnimationContent
     /// <summary>Function to determine the action to take when this content is closing.</summary>
     /// <returns>
     ///   <b>true</b> to continue with closing, <b>false</b> to cancel the close request.</returns>
-    /// <remarks>Plugin authors should override this method to confirm whether save changed content, continue without saving, or cancel the operation entirely.</remarks>
+    /// <remarks>Plug-in authors should override this method to confirm whether save changed content, continue without saving, or cancel the operation entirely.</remarks>
     protected override async Task<bool> OnCloseContentTaskAsync()
     {
         if (ContentState == ContentState.Unmodified)

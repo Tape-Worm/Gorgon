@@ -13,6 +13,7 @@
 // all copies or substantial portions of the Software.
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -29,9 +30,6 @@ namespace Gorgon.Collections;
 /// <summary>
 /// A comparer for comparing floating point values using epsilon equality.
 /// </summary>
-/// <remarks>
-/// Initializes a new instance of the <see cref="GorgonEpsilonFloatComparer"/> class.
-/// </remarks>
 /// <param name="epsilon">[Optional] The epsilon error value used to negate floating point drift.</param>
 public class GorgonEpsilonFloatComparer(float epsilon = 1e-6f)
     : IComparer<float>

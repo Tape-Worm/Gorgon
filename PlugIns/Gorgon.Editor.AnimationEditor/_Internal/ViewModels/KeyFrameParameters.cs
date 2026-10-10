@@ -26,7 +26,7 @@
 using System.Numerics;
 using Gorgon.Animation;
 using Gorgon.Editor.Content;
-using Gorgon.Editor.Plugins;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI.ViewModels;
 
 namespace Gorgon.Editor.AnimationEditor;

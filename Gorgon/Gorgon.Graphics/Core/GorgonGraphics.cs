@@ -12,6 +12,7 @@
 // all copies or substantial portions of the Software.
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -54,15 +55,22 @@ public delegate void GorgonDebugInformationCallback(string message, DebugInfoCat
 public unsafe sealed class GorgonGraphics
     : IDisposable
 {
+    // The maximum number of parameters on the root signature.
+    private const int MaxRootParamCount = 18;
+
     /// <summary>
     /// The maximum time to wait for a fence to be signalled, in milliseconds.
     /// </summary>
     internal const int WaitFenceTimeout = 10_000;
 
     /// <summary>
-    /// The maximum number of slots for root constant buffer values.
+    /// The maximum number of slots for root constant buffer views.
     /// </summary>
-    public const int MaxRootConstantCount = 16;
+    public const int MaxRootCbvCount = 16;
+    /// <summary>
+    /// The maximum number of slots for root constants.
+    /// </summary>
+    public const int MaxRootConstantCount = 8;
 
     private ComPtr<IDXGIFactory7> _dxgiFactory;
     private ComPtr<IDXGIAdapter4> _dxgiAdapter;
@@ -623,14 +631,18 @@ public unsafe sealed class GorgonGraphics
         using ComPtr<ID3DBlob> errors = default;
         ComPtr<ID3D12RootSignature> result = default;
 
-        D3D12_ROOT_PARAMETER1* paramList = stackalloc D3D12_ROOT_PARAMETER1[MaxRootConstantCount];
+        D3D12_ROOT_PARAMETER1* paramList = stackalloc D3D12_ROOT_PARAMETER1[MaxRootParamCount];
 
-        for (uint i = 0; i < MaxRootConstantCount; ++i)
+        for (uint i = 0; i < MaxRootCbvCount; ++i)
         {
             paramList[i].InitAsConstantBufferView(i);
         }
 
-        D3D12_VERSIONED_ROOT_SIGNATURE_DESC.Init_1_2(ref rootDesc, MaxRootConstantCount, paramList, 0, null,
+        uint maxRootConstPerReg = MaxRootConstantCount / 2;
+        paramList[MaxRootCbvCount].InitAsConstants(maxRootConstPerReg, 0, 1);
+        paramList[MaxRootCbvCount + 1].InitAsConstants(maxRootConstPerReg, 1, 1);
+
+        D3D12_VERSIONED_ROOT_SIGNATURE_DESC.Init_1_2(ref rootDesc, MaxRootParamCount, paramList, 0, null,
                                                      D3D12_ROOT_SIGNATURE_FLAGS.D3D12_ROOT_SIGNATURE_FLAG_CBV_SRV_UAV_HEAP_DIRECTLY_INDEXED
                                                    | D3D12_ROOT_SIGNATURE_FLAGS.D3D12_ROOT_SIGNATURE_FLAG_SAMPLER_HEAP_DIRECTLY_INDEXED);
 
@@ -901,7 +913,6 @@ public unsafe sealed class GorgonGraphics
     /// <inheritdoc cref="Submit(ReadOnlySpan{GorgonCommandList})" path="/remarks/para"/>
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#warning FINISHME: Need to document.
     public void Submit(GorgonCommandList commandList)
     {
         SubmitCommandList(commandList);
@@ -928,7 +939,6 @@ public unsafe sealed class GorgonGraphics
     /// </para>
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#warning FINISHME: Need to document.
     public void Submit(ReadOnlySpan<GorgonCommandList> commandLists)
     {
         if (commandLists.Length != 0)
@@ -1088,7 +1098,8 @@ public unsafe sealed class GorgonGraphics
         Descriptors = new DescriptorServices(new GpuDescriptorHeap(this, D3D12_DESCRIPTOR_HEAP_TYPE.D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER, 2_048),
             new GpuDescriptorHeap(this, D3D12_DESCRIPTOR_HEAP_TYPE.D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 131_072),
             new CpuDescriptorHeapPool(this, D3D12_DESCRIPTOR_HEAP_TYPE.D3D12_DESCRIPTOR_HEAP_TYPE_RTV),
-            new CpuDescriptorHeapPool(this, D3D12_DESCRIPTOR_HEAP_TYPE.D3D12_DESCRIPTOR_HEAP_TYPE_DSV));
+            new CpuDescriptorHeapPool(this, D3D12_DESCRIPTOR_HEAP_TYPE.D3D12_DESCRIPTOR_HEAP_TYPE_DSV),
+            new CpuDescriptorHeapPool(this, D3D12_DESCRIPTOR_HEAP_TYPE.D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV));
 
         Queues = new QueueServices(new CommandQueue(this, D3D12_COMMAND_LIST_TYPE.D3D12_COMMAND_LIST_TYPE_DIRECT),
             new CommandQueue(this, D3D12_COMMAND_LIST_TYPE.D3D12_COMMAND_LIST_TYPE_COPY),

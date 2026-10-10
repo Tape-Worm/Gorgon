@@ -8,7 +8,7 @@
     <Authors>Michael Winsor</Authors>
     <Company>Tape_Worm</Company>
     <Product>Gorgon</Product>
-    <Description>A Gorgon Editor plugin that will write out Gorgon packed files.</Description>
+    <Description>A Gorgon Editor plug-in that will write out Gorgon packed files.</Description>
     <Copyright>(C)opyright Tape_Worm, 2020</Copyright>
     <PackageLicenseFile></PackageLicenseFile>
     <PackageProjectUrl>https://www.tape-worm.net</PackageProjectUrl>
@@ -74,6 +74,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="robocopy &quot;$(TargetDir)\&quot; &quot;$(SolutionDir)Tools\Editor\Gorgon.Editor\$(OutDir)Plugins\FileSystem&quot; $(TargetFileName) $(TargetName).pdb DotNetZip.dll /Z /R:3 /W:3&#xD;&#xA;&#xD;&#xA;REM Because Robocopy trips up visual studio with its return codes.&#xD;&#xA;&#xD;&#xA;IF %25ERRORLEVEL%25 LSS 8 EXIT 0&#xD;&#xA;" />
+    <Exec Command="robocopy &quot;$(TargetDir)\&quot; &quot;$(SolutionDir)Tools\Editor\Gorgon.Editor\$(OutDir)PlugIns\FileSystem&quot; $(TargetFileName) $(TargetName).pdb DotNetZip.dll /Z /R:3 /W:3&#xD;&#xA;&#xD;&#xA;REM Because Robocopy trips up visual studio with its return codes.&#xD;&#xA;&#xD;&#xA;IF %25ERRORLEVEL%25 LSS 8 EXIT 0&#xD;&#xA;" />
   </Target>
 </Project>

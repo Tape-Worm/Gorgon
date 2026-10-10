@@ -25,46 +25,46 @@
 
 using Gorgon.Core;
 using Gorgon.Diagnostics;
-using Gorgon.Editor.Plugins;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Properties;
 using Gorgon.IO;
 using Gorgon.IO.FileSystem.Providers;
-using Gorgon.Plugins;
+using Gorgon.PlugIns;
 
 namespace Gorgon.Editor.Services;
 
 /// <summary>
-/// Functionality to capture and load file system providers from Plugins
+/// Functionality to capture and load file system providers from plug-ins
 /// </summary>
 /// <remarks>Initializes a new instance of the <see cref="FileSystemProviders"/> class.</remarks>
-/// <param name="hostServices">Services to pass around to the plugins from the host application.</param>
+/// <param name="hostServices">Services to pass around to the plug-ins from the host application.</param>
 /// <exception cref="ArgumentNullException">Thrown when the <paramref name="commonServices"/> parameter is <b>null</b>.</exception>
 internal class FileSystemProviders(IHostServices hostServices)
 {
 
     // A list of available file system reader providers.
-    private readonly Dictionary<string, (GorgonFileSystemProviderPlugin Plugin, IGorgonFileSystemProvider Provider)> _readers = new(StringComparer.OrdinalIgnoreCase);
+    private readonly Dictionary<string, (GorgonFileSystemProviderPlugIn PlugIn, IGorgonFileSystemProvider Provider)> _readers = new(StringComparer.OrdinalIgnoreCase);
     // A list of available file system writer providers.
-    private readonly Dictionary<string, FileWriterPlugin> _writers = new(StringComparer.OrdinalIgnoreCase);
-    // A list of disabled plugins.
-    private readonly Dictionary<string, IDisabledPlugin> _disabled = new(StringComparer.OrdinalIgnoreCase);
+    private readonly Dictionary<string, FileWriterPlugIn> _writers = new(StringComparer.OrdinalIgnoreCase);
+    // A list of disabled plug-ins.
+    private readonly Dictionary<string, IDisabledPlugIn> _disabled = new(StringComparer.OrdinalIgnoreCase);
     // Common application services.
     private readonly IHostServices _hostServices = hostServices ?? throw new ArgumentNullException(nameof(hostServices));
 
     /// <summary>
-    /// Property to return the list of disabled provider plugins.
+    /// Property to return the list of disabled provider plug-ins.
     /// </summary>
-    public IReadOnlyDictionary<string, IDisabledPlugin> DisabledPlugins => _disabled;
+    public IReadOnlyDictionary<string, IDisabledPlugIn> DisabledPlugIns => _disabled;
 
     /// <summary>
     /// Property to return all loaded file system reader providers.
     /// </summary>
-    public IReadOnlyDictionary<string, (GorgonFileSystemProviderPlugin Plugin, IGorgonFileSystemProvider Provider)> Readers => _readers;
+    public IReadOnlyDictionary<string, (GorgonFileSystemProviderPlugIn PlugIn, IGorgonFileSystemProvider Provider)> Readers => _readers;
 
     /// <summary>
-    /// Property to return all loaded file system writer plugins.
+    /// Property to return all loaded file system writer plug-ins.
     /// </summary>
-    public IReadOnlyDictionary<string, FileWriterPlugin> Writers => _writers;
+    public IReadOnlyDictionary<string, FileWriterPlugIn> Writers => _writers;
 
     /// <summary>
     /// Function to retrieve the file system provider that supports the specified file.
@@ -84,13 +84,13 @@ internal class FileSystemProviders(IHostServices hostServices)
         return null;
     }
 
-    /// <summary>Function to return the <see cref="FileWriterPlugin"/> by its Plugin name.</summary>
-    /// <param name="writerName">The name of the writer plugin to locate.</param>
-    /// <param name="useV2PluginName">[Optional] Use the v2 compatible Plugin name.</param>
-    /// <returns>The <see cref="FileWriterPlugin"/>, or <b>null</b> if no writer could be found.</returns>
+    /// <summary>Function to return the <see cref="FileWriterPlugIn"/> by its plug-in name.</summary>
+    /// <param name="writerName">The name of the writer plug-in to locate.</param>
+    /// <param name="useV2PlugInName">[Optional] Use the v2 compatible plug-in name.</param>
+    /// <returns>The <see cref="FileWriterPlugIn"/>, or <b>null</b> if no writer could be found.</returns>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="writerName" /> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="writerName" /> parameter is empty.</exception>
-    public FileWriterPlugin GetWriterByName(string writerName, bool useV2PluginName = false)
+    public FileWriterPlugIn GetWriterByName(string writerName, bool useV2PlugInName = false)
     {
         if (writerName is null)
         {
@@ -102,17 +102,17 @@ internal class FileSystemProviders(IHostServices hostServices)
             throw new ArgumentEmptyException(nameof(writerName));
         }
 
-        if (useV2PluginName)
+        if (useV2PlugInName)
         {
-            FileWriterPlugin v2Plugin = _writers.FirstOrDefault(item => string.Equals(item.Value.V2PluginName, writerName, StringComparison.OrdinalIgnoreCase)).Value;
+            FileWriterPlugIn v2PlugIn = _writers.FirstOrDefault(item => string.Equals(item.Value.V2PlugInName, writerName, StringComparison.OrdinalIgnoreCase)).Value;
 
-            if (v2Plugin is not null)
+            if (v2PlugIn is not null)
             {
-                return v2Plugin;
+                return v2PlugIn;
             }
         }
 
-        _writers.TryGetValue(writerName, out FileWriterPlugin result);
+        _writers.TryGetValue(writerName, out FileWriterPlugIn result);
 
         return result;
     }
@@ -162,11 +162,11 @@ internal class FileSystemProviders(IHostServices hostServices)
     /// Function to retrieve the available file extensions for all writers.
     /// </summary>
     /// <returns>A list of all file extensions available for all writers.</returns>
-    public IReadOnlyList<(string desc, FileWriterPlugin Plugin, IReadOnlyList<GorgonFileExtension> extensions)> GetWriterFileExtensions()
+    public IReadOnlyList<(string desc, FileWriterPlugIn PlugIn, IReadOnlyList<GorgonFileExtension> extensions)> GetWriterFileExtensions()
     {
-        Dictionary<string, (FileWriterPlugin, List<GorgonFileExtension>)> result = new(StringComparer.CurrentCultureIgnoreCase);
+        Dictionary<string, (FileWriterPlugIn, List<GorgonFileExtension>)> result = new(StringComparer.CurrentCultureIgnoreCase);
 
-        foreach (KeyValuePair<string, FileWriterPlugin> provider in _writers.OrderBy(item => item.Value.Description))
+        foreach (KeyValuePair<string, FileWriterPlugIn> provider in _writers.OrderBy(item => item.Value.Description))
         {
             if (provider.Value.FileExtensions.Count == 0)
             {
@@ -180,7 +180,7 @@ internal class FileSystemProviders(IHostServices hostServices)
                 continue;
             }
 
-            if (!result.TryGetValue(description, out (FileWriterPlugin Plugin, List<GorgonFileExtension> extensions) extensions))
+            if (!result.TryGetValue(description, out (FileWriterPlugIn PlugIn, List<GorgonFileExtension> extensions) extensions))
             {
                 result[description] = extensions = (provider.Value, new List<GorgonFileExtension>());
             }
@@ -199,7 +199,7 @@ internal class FileSystemProviders(IHostServices hostServices)
     {
         Dictionary<string, List<GorgonFileExtension>> result = new(StringComparer.CurrentCultureIgnoreCase);
 
-        foreach (KeyValuePair<string, (GorgonFileSystemProviderPlugin Plugin, IGorgonFileSystemProvider Provider)> provider in _readers.OrderBy(item => item.Value.Provider.Description))
+        foreach (KeyValuePair<string, (GorgonFileSystemProviderPlugIn PlugIn, IGorgonFileSystemProvider Provider)> provider in _readers.OrderBy(item => item.Value.Provider.Description))
         {
             if (provider.Value.Provider.PreferredExtensions.Count == 0)
             {
@@ -225,72 +225,72 @@ internal class FileSystemProviders(IHostServices hostServices)
     }
 
     /// <summary>
-    /// Function to load the file system provider plugins.
+    /// Function to load the file system provider plug-ins.
     /// </summary>
-    /// <param name="pluginCache">The MEF plugin cache used to load the file system plugins.</param>
-    /// <param name="pluginDir">The plugin directory.</param>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="pluginCache"/>, or the <paramref name="pluginDir"/> parameter is <b>null</b>.</exception>
-    public void LoadProviders(GorgonMefPluginCache pluginCache, string pluginDir)
+    /// <param name="plugInCache">The MEF plug-in cache used to load the file system plug-ins.</param>
+    /// <param name="plugInDir">The plug-in directory.</param>
+    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="plugInCache"/>, or the <paramref name="plugInDir"/> parameter is <b>null</b>.</exception>
+    public void LoadProviders(GorgonMefPlugInCache plugInCache, string plugInDir)
     {
-        if (pluginCache is null)
+        if (plugInCache is null)
         {
-            throw new ArgumentNullException(nameof(pluginCache));
+            throw new ArgumentNullException(nameof(plugInCache));
         }
 
-        if (pluginDir is null)
+        if (plugInDir is null)
         {
-            throw new ArgumentNullException(nameof(pluginDir));
+            throw new ArgumentNullException(nameof(plugInDir));
         }
 
-        IReadOnlyList<PluginAssemblyState> assemblies = pluginCache.ValidateAndLoadAssemblies(Directory.EnumerateFiles(pluginDir, "*.dll"), _hostServices.Log);
+        IReadOnlyList<PlugInAssemblyState> assemblies = plugInCache.ValidateAndLoadAssemblies(Directory.EnumerateFiles(plugInDir, "*.dll"), _hostServices.Log);
 
         if (assemblies.Count > 0)
         {
-            foreach (PluginAssemblyState record in assemblies.Where(item => !item.IsAssemblyLoaded && item.IsManaged))
+            foreach (PlugInAssemblyState record in assemblies.Where(item => !item.IsAssemblyLoaded && item.IsManaged))
             {
-                _disabled[Path.GetFileName(record.Path)] = new DisabledPlugin(DisabledReasonCode.Error, Path.GetFileName(record.Path), record.LoadFailureReason, record.Path);
+                _disabled[Path.GetFileName(record.Path)] = new DisabledPlugIn(DisabledReasonCode.Error, Path.GetFileName(record.Path), record.LoadFailureReason, record.Path);
             }
         }
 
-        IGorgonPluginService Plugins = new GorgonMefPluginService(pluginCache);
-        IReadOnlyList<GorgonFileSystemProviderPlugin> readers = Plugins.GetPlugins<GorgonFileSystemProviderPlugin>();
-        IReadOnlyList<FileWriterPlugin> writers = Plugins.GetPlugins<FileWriterPlugin>();
+        IGorgonPlugInService PlugIns = new GorgonMefPlugInService(plugInCache);
+        IReadOnlyList<GorgonFileSystemProviderPlugIn> readers = PlugIns.GetPlugIns<GorgonFileSystemProviderPlugIn>();
+        IReadOnlyList<FileWriterPlugIn> writers = PlugIns.GetPlugIns<FileWriterPlugIn>();
 
         // Get readers.
-        foreach (GorgonFileSystemProviderPlugin reader in readers)
+        foreach (GorgonFileSystemProviderPlugIn reader in readers)
         {
             try
             {
-                _hostServices.Log.Print($"Creating file system reader plugin '{reader.Name}'...", LoggingLevel.Simple);
+                _hostServices.Log.Print($"Creating file system reader plug-in '{reader.Name}'...", LoggingLevel.Simple);
                 _readers[reader.Name] = (reader, reader.CreateProvider());
             }
             catch (Exception ex)
             {
-                _hostServices.Log.PrintError($"Cannot create file system reader plugin '{reader.Name}'.", LoggingLevel.Simple);
+                _hostServices.Log.PrintError($"Cannot create file system reader plug-in '{reader.Name}'.", LoggingLevel.Simple);
                 _hostServices.Log.PrintException(ex);
 
-                _disabled[reader.Name] = new DisabledPlugin(DisabledReasonCode.Error, reader.Name, string.Format(Resources.GOREDIT_DISABLE_FILE_PROVIDER_EXCEPTION, ex.Message), reader.PluginPath);
+                _disabled[reader.Name] = new DisabledPlugIn(DisabledReasonCode.Error, reader.Name, string.Format(Resources.GOREDIT_DISABLE_FILE_PROVIDER_EXCEPTION, ex.Message), reader.PlugInPath);
             }
         }
 
         // Get writers
-        foreach (FileWriterPlugin writer in writers)
+        foreach (FileWriterPlugIn writer in writers)
         {
-            IReadOnlyList<string> disabled = writer.IsPluginAvailable();
+            IReadOnlyList<string> disabled = writer.IsPlugInAvailable();
 
             try
             {
-                _hostServices.Log.Print($"Creating file system writer plugin '{writer.Name}'...", LoggingLevel.Simple);
+                _hostServices.Log.Print($"Creating file system writer plug-in '{writer.Name}'...", LoggingLevel.Simple);
 
                 if (disabled.Count != 0)
                 {
-                    _hostServices.Log.PrintWarning($"The file system writer plugin '{writer.Name}' is disabled:", LoggingLevel.Simple);
+                    _hostServices.Log.PrintWarning($"The file system writer plug-in '{writer.Name}' is disabled:", LoggingLevel.Simple);
                     foreach (string reason in disabled)
                     {
                         _hostServices.Log.PrintWarning($"{reason}", LoggingLevel.Verbose);
                     }
 
-                    _disabled[writer.Name] = new DisabledPlugin(DisabledReasonCode.ValidationError, writer.Name, string.Join("\n", disabled), writer.PluginPath);
+                    _disabled[writer.Name] = new DisabledPlugIn(DisabledReasonCode.ValidationError, writer.Name, string.Join("\n", disabled), writer.PlugInPath);
                     continue;
                 }
 
@@ -299,10 +299,10 @@ internal class FileSystemProviders(IHostServices hostServices)
             }
             catch (Exception ex)
             {
-                _hostServices.Log.PrintError($"Cannot create file system writer plugin '{writer.Name}'.", LoggingLevel.Simple);
+                _hostServices.Log.PrintError($"Cannot create file system writer plug-in '{writer.Name}'.", LoggingLevel.Simple);
                 _hostServices.Log.PrintException(ex);
 
-                _disabled[writer.Name] = new DisabledPlugin(DisabledReasonCode.Error, writer.Name, string.Format(Resources.GOREDIT_DISABLE_FILE_PROVIDER_EXCEPTION, ex.Message), writer.PluginPath);
+                _disabled[writer.Name] = new DisabledPlugIn(DisabledReasonCode.Error, writer.Name, string.Format(Resources.GOREDIT_DISABLE_FILE_PROVIDER_EXCEPTION, ex.Message), writer.PlugInPath);
             }
         }
     }

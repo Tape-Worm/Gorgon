@@ -23,7 +23,7 @@
 // Created: May 9, 2020 11:26:04 PM
 // 
 
-using Gorgon.Editor.Plugins;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI;
 
 namespace Gorgon.Editor.SpriteEditor;
@@ -32,17 +32,17 @@ namespace Gorgon.Editor.SpriteEditor;
 /// Parameters for the <see cref="ISpritePickMaskEditor"/> view model
 /// </summary>
 /// <remarks>Initializes a new instance of the <see cref="SpritePickMaskEditorParameters"/> class.</remarks>
-/// <param name="pluginSettings">The Plugin settings.</param>
+/// <param name="plugInSettings">The plug-in settings.</param>
 /// <param name="hostServices">The host application services.</param>
-internal class SpritePickMaskEditorParameters(ISettings pluginSettings, IHostContentServices hostServices)
+internal class SpritePickMaskEditorParameters(ISettings plugInSettings, IHostContentServices hostServices)
         : HostedPanelViewModelParameters(hostServices)
 {
     /// <summary>
-    /// Property to return the plugin settings.
+    /// Property to return the plug-in settings.
     /// </summary>
-    public ISettings PluginSettings
+    public ISettings PlugInSettings
     {
         get;
-    } = pluginSettings ?? throw new ArgumentNullException(nameof(pluginSettings));
+    } = plugInSettings ?? throw new ArgumentNullException(nameof(plugInSettings));
 
 }

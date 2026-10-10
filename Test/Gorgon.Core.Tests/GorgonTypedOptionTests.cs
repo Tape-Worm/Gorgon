@@ -11,9 +11,10 @@ public class GorgonTypedOptionTests
     [TestMethod]
     public void ValueRoundTripsWithoutConversion()
     {
-        GorgonOption<int> option = new("TestOption", 5);
-
-        option.Value = 7;
+        GorgonOption<int> option = new("TestOption", 5)
+        {
+            Value = 7
+        };
 
         Assert.AreEqual(7, option.Value);
         Assert.AreEqual(7, option.GetValue<int>());
@@ -24,9 +25,10 @@ public class GorgonTypedOptionTests
     [TestMethod]
     public void RangedOptionClampsAssignedValues()
     {
-        GorgonRangedOption<int> option = new("TestOption", 5, null, 0, 10);
-
-        option.Value = 20;
+        GorgonRangedOption<int> option = new("TestOption", 5, null, 0, 10)
+        {
+            Value = 20
+        };
         int high = option.Value;
         option.Value = -5;
         int low = option.Value;
@@ -47,9 +49,10 @@ public class GorgonTypedOptionTests
     [TestMethod]
     public void RangedOptionWithOneLimitOnlyClampsThatSide()
     {
-        GorgonRangedOption<int> option = new("TestOption", 5, null, minValue: 0);
-
-        option.Value = 1000;
+        GorgonRangedOption<int> option = new("TestOption", 5, null, minValue: 0)
+        {
+            Value = 1000
+        };
 
         Assert.AreEqual(1000, option.Value);
         Assert.IsNull(option.MaxValue);

@@ -75,17 +75,17 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Update="Plugins\Content\Readme.txt">
+    <None Update="PlugIns\Content\Readme.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Plugins\Filesystem\Readme.txt">
+    <None Update="PlugIns\Filesystem\Readme.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Plugins\Tools\Readme.txt">
+    <None Update="PlugIns\Tools\Readme.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="copy &quot;$(SolutionDir)Tools\texconv\texconv.exe&quot; &quot;$(TargetDir)Plugins\content&quot;" />
+    <Exec Command="copy &quot;$(SolutionDir)Tools\texconv\texconv.exe&quot; &quot;$(TargetDir)PlugIns\content&quot;" />
   </Target>
 </Project>

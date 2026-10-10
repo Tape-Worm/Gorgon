@@ -12,6 +12,7 @@
 // all copies or substantial portions of the Software.
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -58,6 +59,10 @@ namespace Gorgon.Graphics.Core;
 /// 16-bit indices can only address 65536 vertices). The type of data is specified upon creation of the buffer.
 /// </para>
 /// <para>
+/// Shaders can read and write index data through a raw or typed read/write view (see <see cref="GetRawBufferReadWriteView(long, int?)"/> and 
+/// <see cref="GetTypedBufferReadWriteView(BufferFormat, long, int?)"/>). This requires that the buffer be created with the <see cref="GorgonCommonBufferInfo.HasReadWriteAccess"/> property set to <b>true</b>.
+/// </para>
+/// <para>
 /// <h3>Why a separate buffer type?</h3>
 /// </para>
 /// <para>
@@ -76,10 +81,21 @@ namespace Gorgon.Graphics.Core;
 public sealed unsafe class GorgonIndexBuffer
     : GorgonGpuBufferCommon, IGorgonIndexBufferInfo
 {
+    /// <summary>
+    /// A unique key for a view.
+    /// </summary>
+    /// <param name="Format">The format of the view.</param>
+    /// <param name="StartIndex">The index of the first element in the view.</param>
+    /// <param name="Count">The number of elements in the view.</param>
+    private readonly record struct ViewKey(byte Format, int StartIndex, int Count);
+
     private ComPtr<D3D12MA_Allocation> _bufferAllocation;
 
     private D3D12_RESOURCE_DESC1 _d3dDesc;
     private readonly GorgonIndexBufferInfo _info;
+    private readonly Dictionary<ViewKey, GorgonRawBufferRwView> _rawUavs = [];
+    private readonly Dictionary<ViewKey, GorgonTypedBufferRwView> _typedUavs = [];
+    private readonly Lock _viewLock = new();
 
     /// <inheritdoc/>
     /// <remarks>
@@ -98,7 +114,17 @@ public sealed unsafe class GorgonIndexBuffer
     {        
         if (disposing)
         {            
-            this.UnregisterDisposable(Graphics);
+            // One of the few places where I don't care about using LINQ.
+            // We only call dispose for the views that do not own this resource.
+            foreach (GorgonResourceView view in _typedUavs.Values.Cast<GorgonResourceView>()
+                                                               .Concat(_rawUavs.Values.Cast<GorgonResourceView>())
+                                                               .Where(v => !v.OwnsResource))
+            {
+                view.Dispose();
+            }
+
+            _typedUavs.Clear();
+            _rawUavs.Clear();
         }
 
         _bufferAllocation.Dispose();
@@ -121,7 +147,8 @@ public sealed unsafe class GorgonIndexBuffer
     private void CreateNative()
     {
         using ComPtr<ID3D12Resource2> resource = default;
-        D3D12_RESOURCE_DESC1 desc = D3D12_RESOURCE_DESC1.Buffer((ulong)SizeInBytes);
+        D3D12_RESOURCE_FLAGS flags = HasReadWriteAccess ? D3D12_RESOURCE_FLAGS.D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS : D3D12_RESOURCE_FLAGS.D3D12_RESOURCE_FLAG_NONE;
+        D3D12_RESOURCE_DESC1 desc = D3D12_RESOURCE_DESC1.Buffer((ulong)SizeInBytes, flags);
         D3D12MA_ALLOCATION_DESC allocDesc = new(D3D12_HEAP_TYPE.D3D12_HEAP_TYPE_DEFAULT);
 
         Graphics.Memory.Allocator.Get()->CreateResource3(&allocDesc, &desc, D3D12_BARRIER_LAYOUT.D3D12_BARRIER_LAYOUT_UNDEFINED,
@@ -138,6 +165,148 @@ public sealed unsafe class GorgonIndexBuffer
 
     /// <inheritdoc/>
     private protected override void OnGetResourceInfo(out GpuResourceInfo resourceInfo) => resourceInfo = GpuResourceInfo.FromD3D(in _d3dDesc);
+
+    /// <summary>
+    /// Function to create a raw read/write view for the buffer.
+    /// </summary>
+    /// <param name="startIndex"><inheritdoc cref="GorgonGpuBuffer.GetStructuredBufferView(int, long, int?, bool)" path="/param[@name='startIndex']"/></param>
+    /// <param name="count"><inheritdoc cref="GorgonGpuBuffer.GetStructuredBufferView(int, long, int?, bool)" path="/param[@name='count']"/></param>
+    /// <param name="owned"><inheritdoc cref="GorgonGpuBuffer.GetConstantBufferView(bool)" path="/param[@name='owned']"/></param>
+    /// <returns>A <see cref="GorgonRawBufferRwView"/> for the buffer.</returns>
+    /// <exception cref="GorgonException">
+    /// <inheritdoc cref="GorgonRawBufferRwView.ValidateRawView(string, long, ulong, bool)" path="/exception/para[@type='norw']"/>
+    /// <inheritdoc cref="GorgonRawBufferRwView.ValidateRawView(string, long, ulong, bool)" path="/exception/para[@type='size']"/>
+    /// </exception>
+    /// <remarks>
+    /// <para>
+    /// This allows shaders to read and write the index data as a series of raw byte data.
+    /// </para>
+    /// <inheritdoc cref="GorgonShaderBufferRwView" path="/remarks/para"/>
+    /// <para type="raw_size">
+    /// The buffer must be at least <see cref="GorgonRawBufferRwView.MinimumElementSize"/> (4 bytes) in size. If the buffer is too small, an exception is thrown.
+    /// </para>
+    /// <inheritdoc cref="GorgonGpuBuffer.GetStructuredBufferView(int, long, int?, bool)" path="/remarks/para[@type='range']"/>
+    /// <inheritdoc cref="GorgonGpuBuffer.GetConstantBufferView(bool)" path="/remarks/para[@type='bindless_doc']"/>
+    /// </remarks>
+    /// <seealso cref="GorgonShaderBufferRwView.GetViewHandle()"/>
+    /// <seealso cref="GorgonIndexBufferInfo"/>
+    /// <seealso cref="GorgonRawBufferRwView"/>
+    internal GorgonRawBufferRwView GetRawBufferReadWriteView(long startIndex, int? count, bool owned)
+    {
+        using (_viewLock.EnterScope())
+        {
+            GorgonRawBufferRwView.ValidateRawView(Name, SizeInBytes, ResourceOffset, HasReadWriteAccess);
+
+            long maxElements = (SizeInBytes / GorgonRawBufferRwView.MinimumElementSize).Max(1);
+
+            startIndex = startIndex.Max(0).Min(maxElements - 1);
+            count ??= (int)(maxElements - startIndex);
+            count = count.Value.Max(1).Min((int)(maxElements - startIndex));
+
+            ViewKey key = new((byte)BufferFormat.Unknown, (int)startIndex, count.Value);
+
+            if (_rawUavs.TryGetValue(key, out GorgonRawBufferRwView? result))
+            {
+                return result;
+            }
+
+            return _rawUavs[key] = new GorgonRawBufferRwView(Graphics, Name, this, startIndex, count.Value, owned);
+        }
+    }
+
+    /// <summary>
+    /// Function to create a typed read/write view for the buffer.
+    /// </summary>
+    /// <param name="format">The format type for the view.</param>
+    /// <param name="startIndex"><inheritdoc cref="GorgonGpuBuffer.GetStructuredBufferView(int, long, int?, bool)" path="/param[@name='startIndex']"/></param>
+    /// <param name="count"><inheritdoc cref="GorgonGpuBuffer.GetStructuredBufferView(int, long, int?, bool)" path="/param[@name='count']"/></param>
+    /// <param name="owned"><inheritdoc cref="GorgonGpuBuffer.GetConstantBufferView(bool)" path="/param[@name='owned']"/></param>
+    /// <returns>A <see cref="GorgonTypedBufferRwView"/> for the buffer.</returns>
+    /// <exception cref="GorgonException"><para type="index_format">
+    /// Thrown if the <paramref name="format"/> is a floating point format, or its size does not match the size of an index (2 bytes for 16-bit indices, or 4 bytes for 32-bit indices).
+    /// </para>
+    /// <inheritdoc cref="GorgonTypedBufferRwView.ValidateTypedView(string, GorgonFormatInfo, GorgonBufferFormatSupport, long, ulong, bool)" path="/exception/para[@type='norw']"/>
+    /// <inheritdoc cref="GorgonTypedBufferRwView.ValidateTypedView(string, GorgonFormatInfo, GorgonBufferFormatSupport, long, ulong, bool)" path="/exception/para[@type='support']"/>
+    /// <inheritdoc cref="GorgonTypedBufferRwView.ValidateTypedView(string, GorgonFormatInfo, GorgonBufferFormatSupport, long, ulong, bool)" path="/exception/para[@type='format']"/>
+    /// </exception>
+    /// <remarks>
+    /// <para>
+    /// This allows shaders to read and write the index data as a series of simply typed data elements that match a <see cref="BufferFormat"/>.
+    /// </para>
+    /// <inheritdoc cref="GorgonShaderBufferRwView" path="/remarks/para"/>
+    /// <para>
+    /// The <paramref name="format"/> must be the same size as an index in the buffer (2 bytes for 16-bit indices, or 4 bytes for 32-bit indices), and cannot be a floating point format. For example, 
+    /// <see cref="BufferFormat.R32_UInt"/> or <see cref="BufferFormat.R32_SInt"/> for 32-bit indices, and <see cref="BufferFormat.R16_UInt"/> or <see cref="BufferFormat.R16_SInt"/> for 16-bit indices.
+    /// </para>
+    /// <inheritdoc cref="GorgonTypedBufferRwView" path="/remarks/para[@type='format_support']"/>
+    /// <inheritdoc cref="GorgonGpuBuffer.GetStructuredBufferView(int, long, int?, bool)" path="/remarks/para[@type='range']"/>
+    /// <inheritdoc cref="GorgonGpuBuffer.GetConstantBufferView(bool)" path="/remarks/para[@type='bindless_doc']"/>
+    /// </remarks>
+    /// <seealso cref="GorgonShaderBufferRwView.GetViewHandle()"/>
+    /// <seealso cref="GorgonIndexBufferInfo"/>
+    /// <seealso cref="GorgonFormatInfo"/>
+    /// <seealso cref="GorgonTypedBufferRwView"/>
+    internal GorgonTypedBufferRwView GetTypedBufferReadWriteView(BufferFormat format, long startIndex, int? count, bool owned)
+    {
+        using (_viewLock.EnterScope())
+        {
+            GorgonFormatInfo formatInfo = new(format);
+
+            if ((formatInfo.IsFloatingPoint) 
+                || (((Use32BitIndices) && (formatInfo.SizeInBytes != sizeof(uint))) || (!Use32BitIndices) && (formatInfo.SizeInBytes != sizeof(ushort))))
+            {
+                throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_INDEXBUFFER_TYPED_VIEW_INCOMPATIBLE, Name, format, formatInfo.BitDepth));
+            }
+
+            GorgonTypedBufferRwView.ValidateTypedView(Name, formatInfo, Graphics.FormatSupport[format], SizeInBytes, ResourceOffset, HasReadWriteAccess);
+
+            long maxElements = (SizeInBytes / formatInfo.SizeInBytes).Max(1);
+
+            startIndex = startIndex.Max(0).Min(maxElements - 1);
+            count ??= (int)(maxElements - startIndex);
+            count = count.Value.Max(1).Min((int)(maxElements - startIndex));
+
+            ViewKey key = new((byte)format, (int)startIndex, count.Value);
+
+            if (_typedUavs.TryGetValue(key, out GorgonTypedBufferRwView? result))
+            {
+                return result;
+            }
+
+            return _typedUavs[key] = new GorgonTypedBufferRwView(Graphics, Name, this, formatInfo, startIndex, count.Value, owned);
+        }
+    }
+
+    /// <inheritdoc cref="GetRawBufferReadWriteView(long, int?, bool)" path="/summary"/>
+    /// <param name="startIndex"><inheritdoc cref="GetRawBufferReadWriteView(long, int?, bool)" path="/param[@name='startIndex']"/></param>
+    /// <param name="count"><inheritdoc cref="GetRawBufferReadWriteView(long, int?, bool)" path="/param[@name='count']"/></param>
+    /// <inheritdoc cref="GetRawBufferReadWriteView(long, int?, bool)" path="/returns"/>
+    /// <inheritdoc cref="GetRawBufferReadWriteView(long, int?, bool)" path="/exception"/>
+    /// <remarks>
+    /// <inheritdoc cref="GetRawBufferReadWriteView(long, int?, bool)" path="/remarks/para"/>
+    /// <para>
+    /// The default values are 0 for the <paramref name="startIndex"/>, and <b>null</b> for the <paramref name="count"/>.
+    /// </para>
+    /// </remarks>
+    /// <inheritdoc cref="GetRawBufferReadWriteView(long, int?, bool)" path="/seealso"/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public GorgonRawBufferRwView GetRawBufferReadWriteView(long startIndex = 0, int? count = null) => GetRawBufferReadWriteView(startIndex, count, false);
+
+    /// <inheritdoc cref="GetTypedBufferReadWriteView(BufferFormat, long, int?, bool)" path="/summary"/>
+    /// <param name="format"><inheritdoc cref="GetTypedBufferReadWriteView(BufferFormat, long, int?, bool)" path="/param[@name='format']"/></param>
+    /// <param name="startIndex"><inheritdoc cref="GetTypedBufferReadWriteView(BufferFormat, long, int?, bool)" path="/param[@name='startIndex']"/></param>
+    /// <param name="count"><inheritdoc cref="GetTypedBufferReadWriteView(BufferFormat, long, int?, bool)" path="/param[@name='count']"/></param>
+    /// <inheritdoc cref="GetTypedBufferReadWriteView(BufferFormat, long, int?, bool)" path="/returns"/>
+    /// <inheritdoc cref="GetTypedBufferReadWriteView(BufferFormat, long, int?, bool)" path="/exception"/>
+    /// <remarks>
+    /// <inheritdoc cref="GetTypedBufferReadWriteView(BufferFormat, long, int?, bool)" path="/remarks/para"/>
+    /// <para>
+    /// The default values are 0 for the <paramref name="startIndex"/>, and <b>null</b> for the <paramref name="count"/>.
+    /// </para>
+    /// </remarks>
+    /// <inheritdoc cref="GetTypedBufferReadWriteView(BufferFormat, long, int?, bool)" path="/seealso"/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public GorgonTypedBufferRwView GetTypedBufferReadWriteView(BufferFormat format, long startIndex = 0, int? count = null) => GetTypedBufferReadWriteView(format, startIndex, count, false);
 
     /// <summary>
     /// Finalizer.
@@ -170,7 +339,5 @@ public sealed unsafe class GorgonIndexBuffer
         Graphics.Log.Print($"Creating Gorgon index buffer '{Name}'.", LoggingLevel.Simple);
 
         CreateNative();        
-
-        this.RegisterDisposable(Graphics);
     }
 }

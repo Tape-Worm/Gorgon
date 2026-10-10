@@ -29,7 +29,7 @@ using Gorgon.Graphics;
 namespace Gorgon.Editor.ImageAtlasTool;
 
 /// <summary>
-/// The settings for the plugin
+/// The settings for the plug-in
 /// </summary>
 internal class TextureAtlasSettings
 {

@@ -24,7 +24,7 @@
 // 
 
 using System.Collections.ObjectModel;
-using Gorgon.Editor.Plugins;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI;
 using Gorgon.IO.FileSystem;
 

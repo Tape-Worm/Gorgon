@@ -12,6 +12,7 @@
 // all copies or substantial portions of the Software.
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -112,7 +113,7 @@ public sealed class GorgonStructuredBufferView
     /// <param name="graphics"><inheritdoc cref="GorgonConstantBufferView.CreateConstantBuffer(GorgonGraphics, string, long, bool)" path="/param[@name='graphics']"/></param>
     /// <param name="name"><inheritdoc cref="GorgonConstantBufferView.CreateConstantBuffer(GorgonGraphics, string, long, bool)" path="/param[@name='name']"/></param>
     /// <param name="elementCount">The number of elements of type <typeparamref name="T"/> in the buffer.</param>
-    /// <param name="allowReadWriteAccess">[Optional] <b>true</b> to allow read/write access to the buffer, <b>false</b> to allow only read only access.</param>
+    /// <param name="allowReadWriteAccess">[Optional] <b>true</b> to create the buffer with read/write access, <b>false</b> to create it without.</param>
     /// <returns>A new <see cref="GorgonStructuredBufferView"/> and the associated <see cref="GorgonGpuBuffer"/>.</returns>
     /// <exception cref="ArgumentOutOfRangeException">Thrown if the size of the type <typeparamref name="T"/> is less than the <see cref="MinimumElementSize"/> (4 bytes).</exception>
     /// <exception cref="GorgonException"><para>
@@ -124,6 +125,13 @@ public sealed class GorgonStructuredBufferView
     /// <para>
     /// This function is a convenience method that builds a buffer with a default view to pass to shaders as a shader resource. Buffers created with this method will be destroyed when the default view returned 
     /// is disposed.
+    /// </para>
+    /// <para>
+    /// The view returned by this method is read-only. The <paramref name="allowReadWriteAccess"/> parameter sets the <see cref="GorgonCommonBufferInfo.HasReadWriteAccess"/> property on the buffer, which 
+    /// allows read/write views to be created from the <see cref="GorgonGpuBufferView.Buffer"/>.
+    /// </para>
+    /// <para>
+    /// The default value for the <paramref name="allowReadWriteAccess"/> parameter is <b>false</b>.
     /// </para>
     /// </remarks>
     /// <seealso cref="GorgonGpuBuffer"/>

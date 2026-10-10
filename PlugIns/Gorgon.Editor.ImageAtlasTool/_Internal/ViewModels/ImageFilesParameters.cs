@@ -23,7 +23,7 @@
 // Created: May 7, 2019 12:12:47 AM
 // 
 
-using Gorgon.Editor.Plugins;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI.Controls;
 using Gorgon.Editor.UI.ViewModels;

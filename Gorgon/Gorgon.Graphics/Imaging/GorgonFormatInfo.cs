@@ -13,6 +13,7 @@
 // all copies or substantial portions of the Software.
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -672,7 +673,8 @@ public sealed record class GorgonFormatInfo
     private static bool GetIsFloatingPoint(BufferFormat format) => format is BufferFormat.R11G11B10_Float or BufferFormat.D32_Float or BufferFormat.D32_Float_S8X24_UInt
                                 or BufferFormat.R16G16B16A16_Float or BufferFormat.R16G16_Float or BufferFormat.R16_Float
                                 or BufferFormat.R32G32B32A32_Float or BufferFormat.R32G32B32_Float or BufferFormat.R32G32_Float
-                                or BufferFormat.R32_Float or BufferFormat.R32_Float_X8X24_Typeless;
+                                or BufferFormat.R32_Float or BufferFormat.R32_Float_X8X24_Typeless
+                                or BufferFormat.R9G9B9E5_SharedExp or BufferFormat.BC6H_Uf16 or BufferFormat.BC6H_Sf16;
 
     /// <summary>
     /// Function to determine if a format uses signed values or not.
@@ -689,7 +691,8 @@ public sealed record class GorgonFormatInfo
     /// </summary>
     /// <param name="format">The format to evaluate.</param>
     /// <returns><b>true</b> if the format uses half floating point values, <b>false</b> if not.</returns>
-    private static bool GetIsHalf(BufferFormat format) => format is BufferFormat.R16G16B16A16_Float or BufferFormat.R16G16_Float or BufferFormat.R16_Float;
+    private static bool GetIsHalf(BufferFormat format) => format is BufferFormat.R16G16B16A16_Float or BufferFormat.R16G16_Float or BufferFormat.R16_Float
+                                                         or BufferFormat.BC6H_Uf16 or BufferFormat.BC6H_Sf16;
 
     /// <summary>
     /// Function to determine if a format uses an indexed palette or not.

@@ -26,7 +26,7 @@
 using System.Security;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
-using Gorgon.Editor.Plugins;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Services;

@@ -23,7 +23,7 @@
 // Created: April 20, 2019 5:20:34 PM
 // 
 
-using Gorgon.Editor.Plugins;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI;
 
 namespace Gorgon.Editor.ImageEditor;
@@ -35,14 +35,14 @@ namespace Gorgon.Editor.ImageEditor;
 /// <param name="settings">The settings for the image editor.</param>
 /// <param name="codecs">The codecs loaded into the system.</param>
 /// <param name="openCodecDialog">The file dialog used to locate codec assemblies.</param>
-/// <param name="PluginCache">The cache for plugin assemblies.</param>
+/// <param name="PlugInCache">The cache for plug-in assemblies.</param>
 /// <param name="hostServices">Common application services.</param>
 /// <exception cref="ArgumentNullException">Thrown when any of the parameters are <b>null</b>.</exception>
 internal class SettingsParameters(ImageEditorSettings settings, IHostContentServices hostServices)
         : SettingsCategoryViewModelParameters(hostServices)
 {
     /// <summary>
-    /// Property to return the settings for the image editor Plugin.
+    /// Property to return the settings for the image editor plug-in.
     /// </summary>
     public ImageEditorSettings Settings
     {

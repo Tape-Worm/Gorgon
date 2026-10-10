@@ -35,7 +35,7 @@
     <None Include="..\..\..\Gorgon\g.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Gorgon\Gorgon.IO\FileSystem.Plugins\Gorgon.IO.FileSystem.Plugins.csproj" />
+    <ProjectReference Include="..\..\..\Gorgon\Gorgon.IO\FileSystem.PlugIns\Gorgon.IO.FileSystem.PlugIns.csproj" />
     <ProjectReference Include="..\..\ExamplesCommon\ExamplesCommon.csproj" />
     <Compile Update="Properties\Resources.Designer.cs">
       <DesignTime>True</DesignTime>

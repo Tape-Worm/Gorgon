@@ -14,6 +14,7 @@
 // all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -170,7 +171,7 @@ internal static class Program
                    // The scissor is used to clip pixels that are outside of the specified space.
                    .SetScissorRectangle(new GorgonRectangle(0, 0, _swap.Width, _swap.Height))
                    // This clears our swap chain to the colour, using the region, we asked for.
-                   .ClearSwapChain(_swap, _clearColor, regions);
+                   .ClearRenderTarget(_swap, _clearColor, regions);
 
         GorgonExample.BlitLogo(commandList);
 

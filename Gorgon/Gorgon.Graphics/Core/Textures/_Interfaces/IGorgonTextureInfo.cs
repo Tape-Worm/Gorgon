@@ -12,6 +12,7 @@
 // all copies or substantial portions of the Software.
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -140,7 +141,7 @@ public interface IGorgonTextureInfo
     /// </summary>
     /// <remarks>
     /// <para>
-    /// When set to <b>false</b>, some adapter architectures gain bandwidth capacity. If a texture is rarely used as a shader resource, it may be better to have two textures, one with this value set to
+    /// When set to <b>false</b>, some adapter architectures gain bandwidth capacity. If a texture is rarely used as a shader resource, it may be better to have two textures, one with this value set to 
     /// <b>false</b> and another set to <b>true</b>, and copy between them.
     /// </para>
     /// <para>
@@ -156,6 +157,10 @@ public interface IGorgonTextureInfo
     /// Property to return whether this texture can be used as a read/write resource.
     /// </summary>
     /// <remarks>
+    /// <para>
+    /// When this value is <b>true</b>, shaders can read from, and write to, the texture through a <see cref="GorgonTextureRwView"/>, which is created by the 
+    /// <see cref="GorgonTextureCommon.GetTextureReadWriteView(BufferFormat, short, short, short, byte)"/> method.
+    /// </para>
     /// <inheritdoc cref="GorgonGpuBuffer" path="/remarks/para[@type='uav_readwrite']"/>
     /// </remarks>
     bool HasReadWriteAccess

@@ -12,6 +12,7 @@
 // all copies or substantial portions of the Software.
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -107,8 +108,11 @@ public sealed class GorgonGraphicsPso
     /// </summary>
     /// <remarks>
     /// <para>
-    /// Each index in this list corresponds to a render target slot, and that slot matches the <c>SV_Target</c> semantic index for the value returned from the <see cref="PixelShader"/>. For example, the format 
-    /// at index 0 is for the pixel shader output marked with <c>SV_Target0</c>, the format at index 1 is for the output marked with <c>SV_Target1</c>, and so on. This list can hold up to 
+    /// Each index in this list corresponds to a render target slot, and that slot matches the 
+    /// <a href="https://learn.microsoft.com/windows/win32/direct3dhlsl/dx-graphics-hlsl-semantics#system-value-semantics" target="_blank">SV_Target</a> semantic index for the value returned from the 
+    /// <see cref="PixelShader"/>. For example, the format at index 0 is for the pixel shader output marked with 
+    /// <a href="https://learn.microsoft.com/windows/win32/direct3dhlsl/dx-graphics-hlsl-semantics#system-value-semantics" target="_blank">SV_Target0</a>, the format at index 1 is for the output marked with 
+    /// <a href="https://learn.microsoft.com/windows/win32/direct3dhlsl/dx-graphics-hlsl-semantics#system-value-semantics" target="_blank">SV_Target1</a>, and so on. This list can hold up to 
     /// <see cref="GorgonVideoAdapterInfo.MaxRenderTargetCount"/> formats.
     /// </para>
     /// <para>
@@ -230,16 +234,18 @@ public sealed class GorgonGraphicsPso
     /// define detailed silhouettes for sprites that would otherwise be opaque.
     /// </para>
     /// <para>
-    /// When this value is set to <b>true</b>, the alpha component of the value returned from the <see cref="PixelShader"/> for <c>SV_Target0</c> is converted into a coverage mask. This mask is combined with 
-    /// the coverage of the primitive and the <see cref="MultisampleMask"/> to determine which samples are updated in all of the active render targets. The alpha value written to the first render target is not 
-    /// changed by this process, and alpha to coverage works independently of whether blending is enabled in the <see cref="BlendStates"/>.
+    /// When this value is set to <b>true</b>, the alpha component of the value returned from the <see cref="PixelShader"/> for 
+    /// <a href="https://learn.microsoft.com/windows/win32/direct3dhlsl/dx-graphics-hlsl-semantics#system-value-semantics" target="_blank">SV_Target0</a> is converted into a coverage mask. This mask is 
+    /// combined with the coverage of the primitive and the <see cref="MultisampleMask"/> to determine which samples are updated in all of the active render targets. The alpha value written to the first render 
+    /// target is not changed by this process, and alpha to coverage works independently of whether blending is enabled in the <see cref="BlendStates"/>.
     /// </para>
     /// <para>
     /// An alpha value of 0 (or less) will produce no coverage, and an alpha value of 1 (or greater) will produce full coverage. How the values in between are converted into a coverage mask is determined by 
     /// the video hardware, and some hardware may dither the result. An alpha value of NaN will produce no coverage.
     /// </para>
     /// <para>
-    /// If the pixel shader outputs a value using <c>SV_Coverage</c>, then alpha to coverage is disabled.
+    /// If the pixel shader outputs a value using <a href="https://learn.microsoft.com/windows/win32/direct3dhlsl/dx-graphics-hlsl-semantics#system-value-semantics" target="_blank">SV_Coverage</a>, then alpha 
+    /// to coverage is disabled.
     /// </para>
     /// <para>
     /// The default value is <b>false</b>.
@@ -394,9 +400,10 @@ public sealed class GorgonGraphicsPso
     /// <para>
     /// <note type="warning">
     /// <para>
-    /// For each <c>SV_Target</c> value returned from the pixel shader, the <see cref="OutputFormats"/> should contain a format in the corresponding slot that is compatible with the type of the returned value. 
-    /// For example, a pixel shader that returns a <c>float4</c> requires a floating-point or normalized format (e.g. <see cref="BufferFormat.R8G8B8A8_UNorm"/>), while a pixel shader that returns a 
-    /// <c>uint4</c> requires an unsigned integer format (e.g. <see cref="BufferFormat.R8G8B8A8_UInt"/>).
+    /// For each <a href="https://learn.microsoft.com/windows/win32/direct3dhlsl/dx-graphics-hlsl-semantics#system-value-semantics" target="_blank">SV_Target</a> value returned from the pixel shader, the 
+    /// <see cref="OutputFormats"/> should contain a format in the corresponding slot that is compatible with the type of the returned value. For example, a pixel shader that returns a <c>float4</c> requires a 
+    /// floating-point or normalized format (e.g. <see cref="BufferFormat.R8G8B8A8_UNorm"/>), while a pixel shader that returns a <c>uint4</c> requires an unsigned integer format (e.g. 
+    /// <see cref="BufferFormat.R8G8B8A8_UInt"/>).
     /// </para>
     /// </note>
     /// </para>

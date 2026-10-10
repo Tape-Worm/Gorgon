@@ -53,7 +53,7 @@ internal interface IImageIOService
     }
 
     /// <summary>
-    /// Property to return the default Plugin codec.
+    /// Property to return the default plug-in codec.
     /// </summary>
     IGorgonImageCodec DefaultCodec
     {

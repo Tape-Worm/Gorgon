@@ -24,7 +24,7 @@
 // 
 
 using Gorgon.Editor.Content;
-using Gorgon.Editor.Plugins;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Tools;
 using Gorgon.Editor.UI.Views;
@@ -32,7 +32,7 @@ using Gorgon.Editor.UI.Views;
 namespace Gorgon.Editor.UI;
 
 /// <summary>
-/// Common functionality for an editor tool plugin view model
+/// Common functionality for an editor tool plug-in view model
 /// </summary>
 /// <typeparam name="T">The type of dependency injection object. Must be a class, and implement <see cref="IEditorToolViewModelInjection"/>.</typeparam>
 /// <remarks>
@@ -40,7 +40,7 @@ namespace Gorgon.Editor.UI;
 /// This base class provides functionality needed to communicate the state of the tool with its UI
 /// </para>
 /// <para>
-/// An editor tool plugin is a special type of plugin that adds functionality to the editor via the main application ribbon. Tools can be anything from a special bit of functionality to manage 
+/// An editor tool plug-in is a special type of plug-in that adds functionality to the editor via the main application ribbon. Tools can be anything from a special bit of functionality to manage 
 /// data, to batch processing, etc... To begin implementing an editor tool, developers must inherit from this type so that their tool model data is updated from the UI, and feedback is returned 
 /// to the tool UI
 /// </para>
@@ -78,7 +78,7 @@ public abstract class EditorToolViewModelBase<T>
     /// This command will be executed when the user shuts down the tool via a close UI element. 
     /// </para>
     /// <para>
-    /// Plug in developers may override this command by setting the property in their own view model. If it is not assigned by the developer, then an internal command is executed. This internal 
+    /// Plug-in developers may override this command by setting the property in their own view model. If it is not assigned by the developer, then an internal command is executed. This internal 
     /// command should cover most use cases, so overriding the command should only be done in unique circumstances.
     /// </para>
     /// </remarks>
@@ -129,7 +129,7 @@ public abstract class EditorToolViewModelBase<T>
     /// <returns><b>true</b> to continue with closing, <b>false</b> to cancel the close request.</returns>
     /// <remarks>
     /// <para>
-    /// Tool plugin developers can override this method to verify changes, or perform last minute updates as needed.
+    /// Tool plug-in developers can override this method to verify changes, or perform last minute updates as needed.
     /// </para>
     /// <para>
     /// This is set up as an asynchronous method so that users may save their data asynchronously to keep the UI usable.

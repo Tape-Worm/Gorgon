@@ -14,6 +14,7 @@
 // all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -33,7 +34,7 @@ using Gorgon.Graphics.Core;
 using Gorgon.IO;
 using Gorgon.IO.FileSystem;
 using Gorgon.IO.FileSystem.Providers;
-using Gorgon.Plugins;
+using Gorgon.PlugIns;
 using Gorgon.Renderers;
 using Gorgon.UI.OLDE;
 
@@ -48,8 +49,8 @@ namespace Gorgon.Examples;
 /// </remarks>
 /// <remarks>Initializes a new instance of the <see cref="ResourceManagement"/> class.</remarks>
 /// <param name="renderer">The renderer for the application.</param>
-/// <param name="plugins>The Plugin service used to load file system providers.</param>
-internal class ResourceManagement(Gorgon2D renderer, GorgonMefPluginCache plugins)
+/// <param name="plug-ins>The plug-in service used to load file system providers.</param>
+internal class ResourceManagement(Gorgon2D renderer, GorgonMefPlugInCache plugIns)
         : IDisposable
 {
 
@@ -61,8 +62,8 @@ internal class ResourceManagement(Gorgon2D renderer, GorgonMefPluginCache plugin
     private readonly GorgonGraphics _graphics = renderer.Graphics;
     // The 2D renderer interface for the application.
     private readonly Gorgon2D _renderer = renderer;
-    // The plugin service for the application.
-    private readonly GorgonMefPluginCache _plugins = plugins;
+    // The plug-in service for the application.
+    private readonly GorgonMefPlugInCache _plugIns = plugIns;
     // The file system where resources are kept.
     private IGorgonFileSystem _fileSystem;
     // The list of shaders.
@@ -351,9 +352,9 @@ internal class ResourceManagement(Gorgon2D renderer, GorgonMefPluginCache plugin
     public void Load(string path)
     {
         // Load the file system containing our application data (sprites, images, etc...)
-        IGorgonFileSystemProviderFactory providerFactory = new GorgonFileSystemProviderFactory(_plugins, GorgonApplication.Log);
-        IGorgonFileSystemProvider provider = providerFactory.CreateProvider(Path.Combine(GorgonExample.GetPluginPath().FullName, "Gorgon.IO.FileSystem.GorPack.dll"),
-                                                                            "Gorgon.IO.FileSystem.Providers.GorPackPlugin");
+        IGorgonFileSystemProviderFactory providerFactory = new GorgonFileSystemProviderFactory(_plugIns, GorgonApplication.Log);
+        IGorgonFileSystemProvider provider = providerFactory.CreateProvider(Path.Combine(GorgonExample.GetPlugInPath().FullName, "Gorgon.IO.FileSystem.GorPack.dll"),
+                                                                            "Gorgon.IO.FileSystem.Providers.GorPackPlugIn");
         _fileSystem = new GorgonFileSystem(GorgonApplication.Log);
         _fileSystem.Mount(path, provider: provider);
 

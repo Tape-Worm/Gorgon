@@ -13,6 +13,7 @@
 // all copies or substantial portions of the Software
 //
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -39,8 +40,23 @@ namespace Gorgon.Configuration;
 /// </remarks>
 /// <seealso cref="GorgonOption{T}"/>
 /// <seealso cref="GorgonOptionBag"/>
-public sealed class GorgonRangedOption<T>
-    : GorgonOption<T>
+/// <param name="name">The name of the option.</param>
+/// <param name="defaultValue">The default value for the option.</param>
+/// <param name="description">[Optional] The friendly description for the option.</param>
+/// <param name="minValue">[Optional] The smallest value allowed for the option.</param>
+/// <param name="maxValue">[Optional] The largest value allowed for the option.</param>
+/// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
+/// <remarks>
+/// <para>
+/// The <see cref="GorgonOption{T}.Text"/> for the option is the first line of the <paramref name="description"/>. If the <paramref name="description"/> is a single line, then the 
+/// <see cref="GorgonOption{T}.Text"/> and the <see cref="GorgonOption{T}.Description"/> are the same.
+/// </para>
+/// <para>
+/// The default values are an empty string for the <paramref name="description"/>, and no limit for the <paramref name="minValue"/> and the <paramref name="maxValue"/>.
+/// </para>
+/// </remarks>
+public sealed class GorgonRangedOption<T>(string name, T defaultValue, string? description = null, T? minValue = null, T? maxValue = null)
+    : GorgonOption<T>(name, Clamp(defaultValue, minValue, maxValue), description)
     where T : struct, IComparable<T>
 {
     /// <summary>
@@ -54,7 +70,7 @@ public sealed class GorgonRangedOption<T>
     public T? MinValue
     {
         get;
-    }
+    } = minValue;
 
     /// <summary>
     /// Property to return the largest value allowed for this option.
@@ -67,7 +83,7 @@ public sealed class GorgonRangedOption<T>
     public T? MaxValue
     {
         get;
-    }
+    } = maxValue;
 
     /// <summary>
     /// Function to clamp a value to a range.
@@ -101,29 +117,4 @@ public sealed class GorgonRangedOption<T>
     /// <inheritdoc/>
     public override TValue? GetMaxValue<TValue>()
         where TValue : default => MaxValue is null ? default : ConvertValue<TValue>(MaxValue.Value);
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonRangedOption{T}"/> class.
-    /// </summary>
-    /// <param name="name">The name of the option.</param>
-    /// <param name="defaultValue">The default value for the option.</param>
-    /// <param name="description">[Optional] The friendly description for the option.</param>
-    /// <param name="minValue">[Optional] The smallest value allowed for the option.</param>
-    /// <param name="maxValue">[Optional] The largest value allowed for the option.</param>
-    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="name"/> parameter is empty.</exception>
-    /// <remarks>
-    /// <para>
-    /// The <see cref="GorgonOption{T}.Text"/> for the option is the first line of the <paramref name="description"/>. If the <paramref name="description"/> is a single line, then the 
-    /// <see cref="GorgonOption{T}.Text"/> and the <see cref="GorgonOption{T}.Description"/> are the same.
-    /// </para>
-    /// <para>
-    /// The default values are an empty string for the <paramref name="description"/>, and no limit for the <paramref name="minValue"/> and the <paramref name="maxValue"/>.
-    /// </para>
-    /// </remarks>
-    public GorgonRangedOption(string name, T defaultValue, string? description = null, T? minValue = null, T? maxValue = null)
-        : base(name, Clamp(defaultValue, minValue, maxValue), description)
-    {
-        MinValue = minValue;
-        MaxValue = maxValue;
-    }
 }

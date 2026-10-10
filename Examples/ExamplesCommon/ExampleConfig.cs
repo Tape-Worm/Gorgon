@@ -14,6 +14,7 @@
 // all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -33,7 +34,7 @@ namespace Gorgon.Examples;
 
 /// <summary>
 /// Configuration information for the example application
-/// </summary>]
+/// </summary>
 public class ExampleConfig
 {    
     private readonly static Lazy<ExampleConfig> _default;    
@@ -82,10 +83,10 @@ public class ExampleConfig
     } = string.Empty;
 
     /// <summary>
-    /// Property to set or return the path to the location for example plugins.
+    /// Property to set or return the path to the location for example plug-ins.
     /// </summary>
     [JsonInclude]
-    public string PluginLocation
+    public string PlugInLocation
     {
         get;
         set;

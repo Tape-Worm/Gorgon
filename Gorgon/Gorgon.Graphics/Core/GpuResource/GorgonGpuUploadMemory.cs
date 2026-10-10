@@ -12,6 +12,7 @@
 // all copies or substantial portions of the Software.
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -235,7 +236,20 @@ public unsafe readonly ref struct GorgonGpuUploadMemory
     /// </summary>
     /// <param name="graphics">The graphics interface associated with the upload memory.</param>
     /// <param name="size">The size, in bytes, of the upload memory block.</param>
-    internal GorgonGpuUploadMemory(GorgonGraphics graphics, long size)
+    /// <remarks>
+    /// <para>
+    /// This allocates a block of transient GPU memory that the application writes into directly (e.g. with <see cref="WriteRange{T}(ReadOnlySpan{T}, long)"/>), and then copies into a buffer with 
+    /// <see cref="GorgonCommandList.UploadGpuMemoryToBuffer(ref readonly GorgonGpuUploadMemory, GorgonGpuBufferCommon, long)"/>.
+    /// </para>
+    /// <para>
+    /// <note type="important">
+    /// <para>
+    /// The memory is transient, and is only available until the end of the current frame.
+    /// </para>
+    /// </note>
+    /// </para>
+    /// </remarks>
+    public GorgonGpuUploadMemory(GorgonGraphics graphics, long size)
     {
         SizeInBytes = size;
         graphics.Memory.UploadHeaps.Allocate((ulong)size, graphics.Adapter.HasTightAlignmentSupport ? 0 : D3D12.D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT, out Allocation);

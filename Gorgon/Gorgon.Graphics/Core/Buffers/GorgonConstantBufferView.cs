@@ -12,6 +12,7 @@
 // all copies or substantial portions of the Software.
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -136,7 +137,7 @@ public unsafe sealed class GorgonConstantBufferView
     /// <param name="graphics">The graphics interface associated with the view and buffer.</param>
     /// <param name="name">The name of the buffer and view.</param>
     /// <param name="sizeInBytes">The size of the buffer, in bytes.</param>
-    /// <param name="allowReadWriteAccess">[Optional] <b>true</b> to allow read and write access to the buffer in the shader, <b>false</b> to only allow read-only access.</param>
+    /// <param name="allowReadWriteAccess">[Optional] <b>true</b> to create the buffer with read/write access, <b>false</b> to create it without.</param>
     /// <returns>The <see cref="GorgonConstantBufferView"/> and associated <see cref="GorgonGpuBuffer"/>.</returns>
     /// <exception cref="GorgonException"><para>
     /// Thrown if the <paramref name="sizeInBytes"/> is less than the <see cref="AlignmentRequirement"/> (256 bytes).
@@ -157,6 +158,13 @@ public unsafe sealed class GorgonConstantBufferView
     /// Buffers created with this method will be disposed when the view is disposed. There is no need to dispose of the buffer directly when created by this method.
     /// </para>
     /// </note>
+    /// </para>
+    /// <para>
+    /// The view returned by this method is read-only. The <paramref name="allowReadWriteAccess"/> parameter sets the <see cref="GorgonCommonBufferInfo.HasReadWriteAccess"/> property on the buffer, which 
+    /// allows read/write views to be created from the <see cref="GorgonGpuBufferView.Buffer"/>.
+    /// </para>
+    /// <para>
+    /// The default value for the <paramref name="allowReadWriteAccess"/> parameter is <b>false</b>.
     /// </para>
     /// </remarks>
     /// <seealso cref="GorgonGpuBuffer"/>
@@ -189,7 +197,7 @@ public unsafe sealed class GorgonConstantBufferView
     /// <para>
     /// This handle is meant to be passed directly into a shader via a direct constant value by the <see cref="GorgonCommandList.WriteConstant{T}(int, in T)"/> method on the <see cref="GorgonCommandList"/>, 
     /// or using the value inside of another <see cref="GorgonConstantBufferView"/> (although this is not recommended). This helps facilitate Gorgon's bindless system and allows direct access to buffers and 
-    /// textures in the shader via the <a href="https://microsoft.github.io/DirectX-Specs/d3d/HLSL_SM_6_6_DynamicResources.html#resourcedescriptorheap-and-samplerdescriptorheap">
+    /// textures in the shader via the <a href="https://microsoft.github.io/DirectX-Specs/d3d/HLSL_SM_6_6_DynamicResources.html#resourcedescriptorheap-and-samplerdescriptorheap"> 
     /// <c>ResourceDescriptorHeap</c></a> HLSL intrinsic. 
     /// </para>
     /// </remarks>

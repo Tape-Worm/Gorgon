@@ -23,19 +23,19 @@
 // 
 
 using Gorgon.Core;
-using Gorgon.Editor.Plugins;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics;
 
 namespace Gorgon.Editor.SpriteEditor;
 
 /// <summary>
-/// The view model used to manipulate the settings for the plugin
+/// The view model used to manipulate the settings for the plug-in
 /// </summary>
 internal class Settings
     : ViewModelBase<SettingsParameters, IHostContentServices>, ISettings
 {
-    // The plugin settings.
+    // The plug-in settings.
     private SpriteEditorSettings _settings;
 
     /// <summary>

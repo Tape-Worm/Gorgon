@@ -29,7 +29,7 @@ using Gorgon.Graphics;
 namespace Gorgon.Editor.ExtractSpriteTool;
 
 /// <summary>
-/// The settings for the plugin
+/// The settings for the plug-in
 /// </summary>
 internal class ExtractSpriteToolSettings
 {

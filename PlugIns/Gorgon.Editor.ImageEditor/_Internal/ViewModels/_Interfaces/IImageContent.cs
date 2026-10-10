@@ -39,7 +39,7 @@ internal interface IImageContent
     : IVisualEditorContent, IUndoHandler
 {
     /// <summary>
-    /// Property to return the settings for the image editor Plugin.
+    /// Property to return the settings for the image editor plug-in.
     /// </summary>
     ISettings Settings
     {

@@ -12,6 +12,7 @@
 // all copies or substantial portions of the Software.
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -264,7 +265,7 @@ internal sealed unsafe class CommandQueue : IDisposable
     {
         ObjectDisposedException.ThrowIf(_d3dQueue.IsNull, this);        
 
-        void PopulateCommandList(GorgonCommandList list, ArraySegment<D3D12_BUFFER_BARRIER> bufferBarriers, ArraySegment<D3D12_TEXTURE_BARRIER> textureBarriers)
+        static void PopulateCommandList(GorgonCommandList list, ArraySegment<D3D12_BUFFER_BARRIER> bufferBarriers, ArraySegment<D3D12_TEXTURE_BARRIER> textureBarriers)
         {
             D3D12_BARRIER_GROUP* groups = stackalloc D3D12_BARRIER_GROUP[2];
             int groupIndex = 0;

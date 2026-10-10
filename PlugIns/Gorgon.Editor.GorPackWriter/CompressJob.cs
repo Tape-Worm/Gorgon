@@ -25,7 +25,7 @@
 
 using System.Xml.Linq;
 
-namespace Gorgon.Editor.GorPackWriterPlugin;
+namespace Gorgon.Editor.GorPackWriterPlugIn;
 
 /// <summary>
 /// Information about a compression job

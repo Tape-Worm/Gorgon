@@ -12,6 +12,7 @@
 // all copies or substantial portions of the Software.
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -388,7 +389,7 @@ public sealed unsafe class GorgonVirtualTexture
         {
             D3D12_CLEAR_VALUE clear = new()
             {
-                Format = (DXGI_FORMAT)Format,
+                Format = (DXGI_FORMAT)GetDepthStencilClearFormat(Format),
                 DepthStencil = new D3D12_DEPTH_STENCIL_VALUE
                 {
                     Depth = 1.0f,
@@ -749,7 +750,8 @@ public sealed unsafe class GorgonVirtualTexture
     /// Users can use this to remove all texture allocations from the virtual texture. Doing so will make the entire texture available for use.
     /// </para>
     /// <para>
-    /// Unlike the <see cref="TryDeallocate"/> method, this method immediately frees the memory for the texture by waiting for the GPU to finish its workload. This may impact performance if called on a hot path.
+    /// Unlike the <see cref="TryDeallocate"/> method, this method immediately frees the memory for the texture by waiting for the GPU to finish its workload. This may impact performance if called on a hot 
+    /// path.
     /// </para>
     /// <para>
     /// <note type="warning">
@@ -854,7 +856,7 @@ public sealed unsafe class GorgonVirtualTexture
     /// </para>
     /// <inheritdoc cref="GorgonVirtualTexture" path="/remarks/para[@type='overlap_warn']"/>
     /// <para>
-    /// As mentioned in the above warning, allocation fails if there is overlap with another region. When this happens, this method returns <b>false</b> and sets the <paramref name="handle"/> to
+    /// As mentioned in the above warning, allocation fails if there is overlap with another region. When this happens, this method returns <b>false</b> and sets the <paramref name="handle"/> to 
     /// <see cref="GorgonVirtualTextureHandle"/>.<see cref="GorgonVirtualTextureHandle.Null"/>. Developers should check the return value of this method and handle it appropriately.
     /// </para>
     /// <para>
@@ -1030,7 +1032,7 @@ public sealed unsafe class GorgonVirtualTexture
     /// </exception>
     /// <remarks>
     /// <para>
-    /// When applications create a texture, they have to pass in a <see cref="GorgonVirtualTextureInfo"/> object to define the layout of the virtual texture. Applications use this to define the number of
+    /// When applications create a texture, they have to pass in a <see cref="GorgonVirtualTextureInfo"/> object to define the layout of the virtual texture. Applications use this to define the number of 
     /// dimensions in the texture (<see cref="TextureType"/>) and its format (<see cref="BufferFormat"/>).
     /// </para>
     /// <para>
@@ -1051,23 +1053,23 @@ public sealed unsafe class GorgonVirtualTexture
     /// </list>
     /// </para>
     /// <para>
-    /// The <see cref="GorgonVirtualTextureInfo.Format"/> should be a supported format for virtual textures. This can be determined by checking the <see cref="GorgonGraphics.FormatSupport"/> property on the
+    /// The <see cref="GorgonVirtualTextureInfo.Format"/> should be a supported format for virtual textures. This can be determined by checking the <see cref="GorgonGraphics.FormatSupport"/> property on the 
     /// <see cref="GorgonGraphics"/> object to determine if the format is supported for a given texture type.
     /// </para>
     /// <para>
-    /// The <see cref="GorgonVirtualTextureInfo.ArrayCount"/> only applies to 2D textures, and is reset to 1 for <see cref="TextureType.Texture3D"/> textures. If the
+    /// The <see cref="GorgonVirtualTextureInfo.ArrayCount"/> only applies to 2D textures, and is reset to 1 for <see cref="TextureType.Texture3D"/> textures. If the 
     /// <see cref="GorgonVirtualTextureInfo.IsCube"/> is set to <b>true</b>, then this value <b>must</b> be a multiple of 6.
     /// </para>
     /// <para>
-    /// The <see cref="GorgonVirtualTextureInfo.MipCount"/> value should be at least 1. <see cref="GorgonVirtualTextureInfo.GetMaximumMipCount(int, int, short)"/> can be used to determine the maximum number of mip 
-    /// levels for the texture.
+    /// The <see cref="GorgonVirtualTextureInfo.MipCount"/> value should be at least 1. <see cref="GorgonVirtualTextureInfo.GetMaximumMipCount(int, int, short)"/> can be used to determine the maximum number of 
+    /// mip levels for the texture.
     /// </para>
     /// <inheritdoc cref="GorgonTexture" path="/remarks/para[@type='max_dimensions']"/>
     /// <para>
     /// A virtual texture must be no less than 4 MB (4,194,304 bytes) in size. Virtual textures are meant to store large amounts of texture data, and the minimum allocated physical size of a virtual texture is 
     /// 4 MB, which is large enough to hold a single array and mip level for a 1024x1024 32-bit texture. If the texture size is not large enough, then an exception will be thrown when one is created. To 
-    /// compute the size of a texture, users may take the requested <c>width x <see cref="GorgonFormatInfo.SizeInBytes">format size</see> x height x depth (3D only) x array count (2D only) x 1.34 (for a full
-    /// 2D mip chain, 1.14 for a full 3D mip chain, or x 1 for a single mip level)</c> to roughly determine the texture size. For a <see cref="GorgonFormatInfo.IsCompressed">block compressed</see> format,
+    /// compute the size of a texture, users may take the requested <c>width x <see cref="GorgonFormatInfo.SizeInBytes">format size</see> x height x depth (3D only) x array count (2D only) x 1.34 (for a full 
+    /// 2D mip chain, 1.14 for a full 3D mip chain, or x 1 for a single mip level)</c> to roughly determine the texture size. For a <see cref="GorgonFormatInfo.IsCompressed">block compressed</see> format, 
     /// the format size is the size of a 4x4 block, so use <c>width / 4</c> and <c>height / 4</c> instead.
     /// </para>
     /// </remarks>

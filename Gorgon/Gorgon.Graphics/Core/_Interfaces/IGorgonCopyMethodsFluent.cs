@@ -12,6 +12,7 @@
 // all copies or substantial portions of the Software.
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -53,18 +54,18 @@ public interface IGorgonCopyMethodsFluent<T>
     /// <inheritdoc cref="GorgonResourceCopier.ValidateRangeParams(GorgonGpuBufferCommon, long, long, int)" path="/exception"/>
     /// <remarks>
     /// <para>
-    /// This method writes a single <paramref name="value"/> of the <typeparamref name="T"/> type into the <paramref name="buffer"/>. Applications can use this to write a single value type to a buffer at 
+    /// This method writes a single <paramref name="value"/> of the <typeparamref name="Tv"/> type into the <paramref name="buffer"/>. Applications can use this to write a single value type to a buffer at 
     /// the specified <paramref name="offset"/>. 
     /// </para>
     /// <para>
     /// <note type="information">
     /// <para>
-    /// If the <typeparamref name="T"/> type is larger than 16 bytes in size, then the value should be passed using the <see langword="in"/> parameter modifier for improved performance.
+    /// If the <typeparamref name="Tv"/> type is larger than 16 bytes in size, then the value should be passed using the <see langword="in"/> parameter modifier for improved performance.
     /// </para>
     /// </note>
     /// </para>
     /// <para type="CopyCommon">
-    /// If the <typeparamref name="T"/> type is a custom struct type, then that struct type should be decorated by the <see cref="StructLayoutAttribute"/> attribute with a <see cref="LayoutKind"/> of 
+    /// If the <typeparamref name="Tv"/> type is a custom struct type, then that struct type should be decorated by the <see cref="StructLayoutAttribute"/> attribute with a <see cref="LayoutKind"/> of 
     /// <see cref="LayoutKind.Sequential"/> or <see cref="LayoutKind.Explicit"/> to ensure the value type fields are not moved around.
     /// </para>
     /// </remarks>
@@ -333,7 +334,7 @@ public interface IGorgonCopyMethodsFluent<T>
     /// </para>
     /// <para>
     /// Like the dimensions, the <paramref name="destinationMipLevel"/>, <paramref name="destinationZOrArrayIndex"/>, and <paramref name="destinationPlane"/> parameters are clamped to a minimum value of 0, 
-    /// and to the maximum mip level, array indices (or depth slices), and plane count of the destination <paramref name="texture"/>.
+    /// and to the maximum mip level, array indices (or depth slices in the destination mip level), and plane count of the destination <paramref name="texture"/>.
     /// </para>
     /// <inheritdoc cref="CopyImageToTexture(IGorgonImage, GorgonTexture)" path="/remarks/para[@type='Limits']"/>
     /// </para>

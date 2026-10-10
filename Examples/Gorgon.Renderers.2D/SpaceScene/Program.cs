@@ -14,6 +14,7 @@
 // all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -31,7 +32,7 @@ using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts;
 using Gorgon.Input;
 using Gorgon.Input.Devices;
-using Gorgon.Plugins;
+using Gorgon.PlugIns;
 using Gorgon.Renderers;
 using Gorgon.Renderers.Cameras;
 using DX = SharpDX;
@@ -47,8 +48,8 @@ namespace Gorgon.Examples;
 static class Program
 {
 
-    // The cache for our plugin assemblies.
-    private static GorgonMefPluginCache _assemblyCache;
+    // The cache for our plug-in assemblies.
+    private static GorgonMefPlugInCache _assemblyCache;
     // The primary graphics interface.
     private static GorgonGraphics _graphics;
     // The main "screen" for the application.
@@ -317,12 +318,12 @@ static class Program
         try
         {
             GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
-            GorgonExample.PluginLocationDirectory = new DirectoryInfo(ExampleConfig.Default.PluginLocation);
+            GorgonExample.PlugInLocationDirectory = new DirectoryInfo(ExampleConfig.Default.PlugInLocation);
 
-            // Load our packed file system plugin.
-            window.UpdateStatus("Loading Plugins...");
+            // Load our packed file system plug-in.
+            window.UpdateStatus("Loading Plug-ins...");
 
-            _assemblyCache = new GorgonMefPluginCache(GorgonExample.Log);
+            _assemblyCache = new GorgonMefPlugInCache(GorgonExample.Log);
 
             window.UpdateStatus("Initializing graphics...");
 

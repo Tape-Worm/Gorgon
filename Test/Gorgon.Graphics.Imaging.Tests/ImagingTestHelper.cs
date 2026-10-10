@@ -251,10 +251,10 @@ internal static class ImagingTestHelper
         {
             for (int x = 0; x < expected.Width; ++x)
             {
-                (byte R, byte G, byte B, byte A) e = ReadColor(expected, x, y);
+                (byte R, byte G, byte B, byte _) = ReadColor(expected, x, y);
                 (byte R, byte G, byte B, byte A) a = ReadColor(actual, x, y);
 
-                sum += ((e.R - a.R) * (e.R - a.R)) + ((e.G - a.G) * (e.G - a.G)) + ((e.B - a.B) * (e.B - a.B));
+                sum += ((R - a.R) * (R - a.R)) + ((G - a.G) * (G - a.G)) + ((B - a.B) * (B - a.B));
                 count += 3;
             }
         }

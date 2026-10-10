@@ -40,7 +40,7 @@ What can it do?
 Gorgon provides a set of libraries that are capable of handling pretty much any task thrown at it.  It includes:
   - [x] __[Gorgon.Core](Gorgon/Gorgon.Core)__
   
-  Core functionality, plug in support and utility functionality. This is the base library that everything else uses.
+  Core functionality, plug-in support and utility functionality. This is the base library that everything else uses.
   
   - [x] __[Gorgon.Windows](Gorgon/Gorgon.Windows)__
   
@@ -50,7 +50,7 @@ Gorgon provides a set of libraries that are capable of handling pretty much any 
   
   A virtual file system that can mount a directory as a file system root, or using various file system providers, can mount a packed file as a virtual file system root.  This code is based on the popular [PhysFS library](http://icculus.org/physfs/).
   
-  By default, Gorgon's basic virtual file system is based on the folder/files on the Windows file system, but using filesystem providers via plug ins, applications can read any type of file storage container can be used if the appropriate plug in is available for it. Gorgon comes with two plug ins for file system providers:
+  By default, Gorgon's basic virtual file system is based on the folder/files on the Windows file system, but using filesystem providers via plug-ins, applications can read any type of file storage container can be used if the appropriate plug-in is available for it. Gorgon comes with two plug-ins for file system providers:
    * __[Gorgon.FileSystem.GorPack](PlugIns/Gorgon.FileSystem.GorPack):__ Gorgon's proprietary packed file system format, using BZip2 compression.
    * __[Gorgon.FileSystem.Zip](PlugIns/Gorgon.FileSystem.Zip):__ Mounts standard .zip files as virtual file systems.
   
@@ -60,7 +60,7 @@ Gorgon provides a set of libraries that are capable of handling pretty much any 
   
   A flexible input library to handle joysticks/gamepads, keyboard and mouse input. The input library can use events or polling to retrieve data from the various input sources. 
  
- Keyboard and mouse input is provided using the Windows Raw Input API, and joystick/gamepad support is driven by the following plug ins:
+ Keyboard and mouse input is provided using the Windows Raw Input API, and joystick/gamepad support is driven by the following plug-ins:
  * __[Gorgon.Input.XInput](PlugIns/Gorgon.Input.XInput):__ Support for the XBox 360 controller (and potentially XBox One controller - not tested)
  * __[Gorgon.Input.DirectInput](PlugIns/Gorgon.Input.DirectInput):__ Support for gaming devices that are not covered by the XInput API.
       
@@ -88,7 +88,7 @@ Gorgon provides a set of libraries that are capable of handling pretty much any 
    * __BMP__ - Windows Bitmap
    * __GIF__ - Graphic Interchange Format (supports animated gifs as well)
 
-   In additon to the support above, applications can extend the support for file formats by adding their own custom codec plug in to read/write in their desired format(s).
+   In additon to the support above, applications can extend the support for file formats by adding their own custom codec plug-in to read/write in their desired format(s).
   
   - [x] __[Gorgon.Graphics.Fonts](Gorgon/Gorgon.Graphics.Fonts)__ 
   
@@ -98,7 +98,7 @@ Gorgon provides a set of libraries that are capable of handling pretty much any 
    * __GorFont:__ A proprietary binary format for Gorgon.
    * __[BmFont](http://www.angelcode.com/products/bmfont/):__ A popular font file type created by Andreas Jönsson (Note: this support is limited to the text based file format at this time). 
 
-  In addition to the support above, applications can introduce their own codecs to read/write whatever font types they wish by extending the [GorgonFontCodec](Gorgon/Gorgon.Graphics.Fonts/Codecs/GorgonFontCodec.cs) type. (Plug in support is pending at this time)
+  In addition to the support above, applications can introduce their own codecs to read/write whatever font types they wish by extending the [GorgonFontCodec](Gorgon/Gorgon.Graphics.Fonts/Codecs/GorgonFontCodec.cs) type. (Plug-in support is pending at this time)
   
   - [x] __[Gorgon.Renderers.Gorgon2D](Gorgon/Gorgon.Renderers/Gorgon2D)__ 
   
@@ -123,13 +123,13 @@ Gorgon provides a set of libraries that are capable of handling pretty much any 
   - [x] __[Gorgon.Editor](Tools/Editor)__ 
   
   A flexible content editor to allow for the creation and editing of content.        
-   * Supports a plug in based architecture to allow developers to extend the editor indefinitely. 
+   * Supports a plug-in based architecture to allow developers to extend the editor indefinitely. 
    * Supports file management of content by using a simple tree layout for folders and files.
-   * Comes with an image editor plug in which allows users to add depth slices to 3D images (I have yet, for the life of me to find anything on the web that does this), mip maps and array indices, and other simple functions.
-   * Comes with a sprite editor plug in which allows users to clip sprites from an image and store them as a file.    
-   * Comes with an animation editor plug in for animating sprites.
-   * Can output the files as a packed file. The type of file that be written out is provided via plug in support (currently only supports the proprietary Gorgon packed file format).
-   * Can import packed files using file system plug ins (currently has support for zip and the proprietary Gorgon packed file formats - included with Gorgon as file system plug ins).   
+   * Comes with an image editor plug-in which allows users to add depth slices to 3D images (I have yet, for the life of me to find anything on the web that does this), mip maps and array indices, and other simple functions.
+   * Comes with a sprite editor plug-in which allows users to clip sprites from an image and store them as a file.    
+   * Comes with an animation editor plug-in for animating sprites.
+   * Can output the files as a packed file. The type of file that be written out is provided via plug-in support (currently only supports the proprietary Gorgon packed file format).
+   * Can import packed files using file system plug-ins (currently has support for zip and the proprietary Gorgon packed file formats - included with Gorgon as file system plug-ins).   
    
 
 What's required?

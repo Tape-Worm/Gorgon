@@ -12,6 +12,7 @@
 // all copies or substantial portions of the Software.
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -21,29 +22,40 @@
 // Created: June 25, 2026 12:15:44 AM
 //
 
-using System.Diagnostics.CodeAnalysis;
-
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Defines parameters for drawing indexed primivites.
+/// Defines parameters for drawing indexed primitives.
 /// </summary>
-public sealed class GorgonIndexedDrawCall
-    : GorgonDrawCallCommon
+/// <param name="indexCount">The number of indices to draw.</param>
+/// <param name="indexBuffer">The index buffer to use when drawing.</param>
+/// <param name="pso">The graphics pipeline state object to use when drawing.</param>
+/// <remarks>
+/// <para>
+/// This is used by the <see cref="GorgonCommandList.Draw(GorgonIndexedDrawCall)"/> method.
+/// </para>
+/// <inheritdoc cref="GorgonDrawCall" path="/remarks/para[@type='vertices']"/>
+/// </remarks>
+/// <seealso cref="GorgonCommandList.Draw(GorgonIndexedDrawCall)"/>
+public sealed class GorgonIndexedDrawCall(int indexCount, GorgonIndexBuffer indexBuffer, GorgonGraphicsPso pso)
+        : GorgonDrawCallCommon(pso)
 {
     /// <summary>
-    /// Property to return the index buffer used to draw.
+    /// Property to set or return the index buffer used to draw.
     /// </summary>
-    public required GorgonIndexBuffer IndexBuffer
+    public GorgonIndexBuffer IndexBuffer
     {
         get;
         set;
-    }
+    } = indexBuffer;
 
     /// <summary>
-    /// Property to set or return the starting location of the first index read by the GPU in the index buffer.
+    /// Property to set or return the location of the first index read from the index buffer.
     /// </summary>
     /// <remarks>
+    /// <para>
+    /// Negative values are treated as 0.
+    /// </para>
     /// <para>
     /// The default value is 0.
     /// </para>
@@ -55,9 +67,18 @@ public sealed class GorgonIndexedDrawCall
     }
 
     /// <summary>
-    /// Property to set or return the value added to each index value before reading from the vertex buffer.
+    /// Property to set or return the base vertex for the draw.
     /// </summary>
     /// <remarks>
+    /// <para>
+    /// The <a href="https://learn.microsoft.com/windows/win32/direct3dhlsl/dx-graphics-hlsl-semantics#system-value-semantics" target="_blank">SV_VertexID</a> value in the vertex shader is the index read from 
+    /// the index buffer, and does not include this value. A vertex shader that needs the base vertex reads it through the 
+    /// <a href="https://microsoft.github.io/hlsl-specs/proposals/0015-extended-command-info/" target="_blank">SV_StartVertexLocation</a> system value (shader model 6.8, see 
+    /// <see cref="GorgonVideoAdapterInfo.SupportsExtendedCommandInfo"/>), or receives it through a constant, and adds it to the index itself.
+    /// </para>
+    /// <para>
+    /// This value can be negative, as long as the index plus the base vertex is not less than 0.
+    /// </para>
     /// <para>
     /// The default value is 0.
     /// </para>
@@ -71,40 +92,11 @@ public sealed class GorgonIndexedDrawCall
     /// <summary>
     /// Property to set or return the number of indices to read from the index buffer for each instance.
     /// </summary>
-    /// <remarks>
-    /// <para>
-    /// This requires that the <see cref="IndexBuffer"/> is not <b>null</b>.
-    /// </para>
-    /// <para>
-    /// The default value is 0.
-    /// </para>
-    /// </remarks>
     /// <seealso cref="GorgonCommandList"/>
     /// <seealso cref="GorgonIndexBuffer"/>
-    public required int IndexCount
+    public int IndexCount
     {
         get;
         set;
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonIndexedDrawCall"/> class.
-    /// </summary>
-    /// <param name="indexCount">The number of indices to draw.</param>
-    /// <param name="indexBuffer">The index buffer to use when drawing.</param>
-    /// <param name="pso">The graphics pipeline state object to use when drawing.</param>
-    [SetsRequiredMembers]
-    public GorgonIndexedDrawCall(int indexCount, GorgonIndexBuffer indexBuffer, GorgonGraphicsPso pso)
-    {
-        IndexCount = indexCount;
-        IndexBuffer = indexBuffer;
-        Pso = pso;
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonIndexedDrawCall"/> class.
-    /// </summary>
-    public GorgonIndexedDrawCall()
-    {
-    }
+    } = indexCount;
 }

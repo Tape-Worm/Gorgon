@@ -181,8 +181,8 @@ internal class ImageContent
     private IReadOnlyDictionary<BufferFormat, IGorgonFormatSupportInfo> _formatSupport;
     // The available pixel formats, based on codec.
     private ObservableCollection<BufferFormat> _pixelFormats = [];
-    // The settings for the image editor Plugin.
-    private ISettingsPlugins _pluginSettings;
+    // The settings for the image editor plug-in.
+    private ISettingsPlugIns _plugInSettings;
     // The file used for working changes.
     private IGorgonVirtualFile _workingFile;
     // The service used to read/write image data.
@@ -221,7 +221,7 @@ internal class ImageContent
     private (string ExePath, string FriendlyName, Bitmap IconLarge, Bitmap IconSmall) _userEditorInfo;
 
     /// <summary>
-    /// Property to return the settings for the image editor Plugin.
+    /// Property to return the settings for the image editor plug-in.
     /// </summary>
     public ISettings Settings
     {
@@ -661,10 +661,10 @@ internal class ImageContent
         get;
     }
 
-    /// <summary>Handles the CollectionChanged event of the CodecPluginPaths control.</summary>
+    /// <summary>Handles the CollectionChanged event of the CodecPlugInPaths control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="NotifyCollectionChangedEventArgs"/> instance containing the event data.</param>
-    private void CodecPluginPaths_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) => BuildCodecList(ImageData);
+    private void CodecPlugInPaths_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) => BuildCodecList(ImageData);
 
     /// <summary>Handles the PropertyChanged event of the CurrentHostedPanel control.</summary>
     /// <param name="sender">The source of the event.</param>
@@ -3072,7 +3072,7 @@ internal class ImageContent
     /// <summary>Function to determine the action to take when this content is closing.</summary>
     /// <returns>
     ///   <b>true</b> to continue with closing, <b>false</b> to cancel the close request.</returns>
-    /// <remarks>Plugin authors should override this method to confirm whether save changed content, continue without saving, or cancel the operation entirely.</remarks>
+    /// <remarks>Plug-in authors should override this method to confirm whether save changed content, continue without saving, or cancel the operation entirely.</remarks>
     protected override async Task<bool> OnCloseContentTaskAsync()
     {
         if (ContentState == ContentState.Unmodified)
@@ -3107,7 +3107,7 @@ internal class ImageContent
         _alphaSettings = injectionParameters.AlphaSettings;
         FxContext = injectionParameters.FxContext;
         Settings = injectionParameters.Settings;
-        _pluginSettings = injectionParameters.PluginSettings;
+        _plugInSettings = injectionParameters.PlugInSettings;
         _workingFile = injectionParameters.WorkingFile;
         ImageData = injectionParameters.Image;
         _formatSupport = injectionParameters.FormatSupport;
@@ -3140,9 +3140,9 @@ internal class ImageContent
 
         _dimensionSettings.MipSupport = MipSupport;
 
-        if (_pluginSettings.CodecPluginPaths is not null)
+        if (_plugInSettings.CodecPlugInPaths is not null)
         {
-            _pluginSettings.CodecPluginPaths.CollectionChanged += CodecPluginPaths_CollectionChanged;
+            _plugInSettings.CodecPlugInPaths.CollectionChanged += CodecPlugInPaths_CollectionChanged;
         }
 
         FxContext.ApplyCommand = new EditorCommand<object>(DoApplyFx, CanApplyFx);
@@ -3171,9 +3171,9 @@ internal class ImageContent
 
         try
         {
-            if (_pluginSettings.CodecPluginPaths is not null)
+            if (_plugInSettings.CodecPlugInPaths is not null)
             {
-                _pluginSettings.CodecPluginPaths.CollectionChanged -= CodecPluginPaths_CollectionChanged;
+                _plugInSettings.CodecPlugInPaths.CollectionChanged -= CodecPlugInPaths_CollectionChanged;
             }
 
             CurrentPanel = null;

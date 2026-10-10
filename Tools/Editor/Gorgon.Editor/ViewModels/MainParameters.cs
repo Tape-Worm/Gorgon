@@ -23,7 +23,7 @@
 // Created: September 17, 2018 8:07:42 AM
 // 
 
-using Gorgon.Editor.Plugins;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Services;
 
 namespace Gorgon.Editor.ViewModels;
@@ -83,9 +83,9 @@ internal class MainParameters(IHostContentServices hostServices, ViewModelFactor
     }
 
     /// <summary>
-    /// Property to set or return a list of content plugins that can create their own content.
+    /// Property to set or return a list of content plug-ins that can create their own content.
     /// </summary>
-    public IReadOnlyList<IContentPluginMetadata> ContentCreators
+    public IReadOnlyList<IContentPlugInMetadata> ContentCreators
     {
         get;
         set;

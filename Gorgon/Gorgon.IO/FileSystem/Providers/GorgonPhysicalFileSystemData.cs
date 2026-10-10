@@ -14,6 +14,7 @@
 // all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -32,7 +33,7 @@ namespace Gorgon.IO.FileSystem.Providers;
 /// <param name="Files">The list of <see cref="IGorgonPhysicalFileInfo"/> files.</param>
 /// <remarks>
 /// <para>
-/// Implementors of the <see cref="GorgonFileSystemProvider"/> plugin will return this type when enumerating directories and files from the physical file system. Gorgon will use this information to 
+/// Implementors of the <see cref="GorgonFileSystemProvider"/> plug-in will return this type when enumerating directories and files from the physical file system. Gorgon will use this information to 
 /// populate the <see cref="IGorgonFileSystem"/> object with <see cref="IGorgonVirtualDirectory"/> and <see cref="IGorgonVirtualFile"/> entries
 /// </para>
 /// <para>

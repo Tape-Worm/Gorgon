@@ -31,7 +31,7 @@ $gorgonExamples = (Get-ChildItem "Examples\\" -include *.dll,*.exe,appsettings.j
 $plugInDlls = (Get-ChildItem "PlugIns\\Bin\\" -include *.dll -Recurse | Where-Object { $_.FullName -notmatch "\\debug\\" -and $_.FullName -notmatch "\\net48\\" })
 
 Write-Output "$($gorgonExamples.Length) Example files to copy."
-Write-Output "$($plugInDlls.Length) Plug in files to copy."
+Write-Output "$($plugInDlls.Length) Plug-in files to copy."
 
 Copy-Item -Path $baseSrcResources -Exclude Krypton_DarkO2k10Theme.xml -Destination $artifactDir -Recurse -Container
 Copy-Item -Path $baseSrcImages -Destination $artifactImagesFolder -Container: $false

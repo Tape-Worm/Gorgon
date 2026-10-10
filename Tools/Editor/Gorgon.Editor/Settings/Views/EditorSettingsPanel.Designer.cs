@@ -39,7 +39,7 @@ partial class EditorSettingsPanel
         this.LabelHeader = new System.Windows.Forms.Label();
         this.SplitSettingsNav = new System.Windows.Forms.SplitContainer();
         this.ListCategories = new System.Windows.Forms.ListBox();
-        this.PluginList = new Gorgon.Editor.Views.PluginListPanel();
+        this.PlugInList = new Gorgon.Editor.Views.PlugInListPanel();
         this.panel2.SuspendLayout();
         this.panel3.SuspendLayout();
         ((System.ComponentModel.ISupportInitialize)(this.SplitSettingsNav)).BeginInit();
@@ -101,7 +101,7 @@ partial class EditorSettingsPanel
         // 
         this.SplitSettingsNav.Panel2.AutoScroll = true;
         this.SplitSettingsNav.Panel2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
-        this.SplitSettingsNav.Panel2.Controls.Add(this.PluginList);
+        this.SplitSettingsNav.Panel2.Controls.Add(this.PlugInList);
         this.SplitSettingsNav.Panel2.Padding = new System.Windows.Forms.Padding(4);
         this.SplitSettingsNav.Size = new System.Drawing.Size(856, 589);
         this.SplitSettingsNav.SplitterDistance = 256;
@@ -117,25 +117,25 @@ partial class EditorSettingsPanel
         this.ListCategories.FormattingEnabled = true;
         this.ListCategories.ItemHeight = 20;
         this.ListCategories.Items.AddRange(new object[] {
-        "Plug ins"});
+        "Plug-ins"});
         this.ListCategories.Location = new System.Drawing.Point(3, 3);
         this.ListCategories.Name = "ListCategories";
         this.ListCategories.Size = new System.Drawing.Size(250, 583);
         this.ListCategories.TabIndex = 0;
         this.ListCategories.SelectedIndexChanged += new System.EventHandler(this.ListCategories_SelectedIndexChanged);
         // 
-        // PluginList
+        // PlugInList
         // 
-        this.PluginList.AutoSize = true;
-        this.PluginList.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
-        this.PluginList.Dock = System.Windows.Forms.DockStyle.Fill;
-        this.PluginList.Font = new System.Drawing.Font("Segoe UI", 9F);
-        this.PluginList.ForeColor = System.Drawing.Color.White;
-        this.PluginList.Location = new System.Drawing.Point(4, 4);
-        this.PluginList.Name = "PluginList";
-        this.PluginList.Size = new System.Drawing.Size(588, 581);
-        this.PluginList.TabIndex = 0;
-        this.PluginList.Text = "Plug ins";
+        this.PlugInList.AutoSize = true;
+        this.PlugInList.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(28)))), ((int)(((byte)(28)))), ((int)(((byte)(28)))));
+        this.PlugInList.Dock = System.Windows.Forms.DockStyle.Fill;
+        this.PlugInList.Font = new System.Drawing.Font("Segoe UI", 9F);
+        this.PlugInList.ForeColor = System.Drawing.Color.White;
+        this.PlugInList.Location = new System.Drawing.Point(4, 4);
+        this.PlugInList.Name = "PlugInList";
+        this.PlugInList.Size = new System.Drawing.Size(588, 581);
+        this.PlugInList.TabIndex = 0;
+        this.PlugInList.Text = "Plug-ins";
         // 
         // EditorSettingsPanel
         // 
@@ -166,5 +166,5 @@ partial class EditorSettingsPanel
     private System.Windows.Forms.Label LabelHeader;
     private System.Windows.Forms.SplitContainer SplitSettingsNav;
     private System.Windows.Forms.ListBox ListCategories;
-    private PluginListPanel PluginList;
+    private PlugInListPanel PlugInList;
 }

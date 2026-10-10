@@ -32,7 +32,7 @@ public class GorgonNativeExtensionsTests
             byte* p = stackalloc byte[10];
             GorgonPtr<byte> ptr = new(p, 10);
 
-            Assert.ThrowsExactly<EndOfStreamException>(() => stream.Read<byte>(ptr));
+            Assert.ThrowsExactly<EndOfStreamException>(() => stream.Read(ptr));
         }
     }
 
@@ -46,7 +46,7 @@ public class GorgonNativeExtensionsTests
             byte* p = stackalloc byte[4];
             GorgonPtr<byte> ptr = new(p, 4);
 
-            stream.Read<byte>(ptr);
+            stream.Read(ptr);
 
             for (int i = 0; i < data.Length; i++)
             {
@@ -74,7 +74,7 @@ public class GorgonNativeExtensionsTests
             byte* p = stackalloc byte[4];
             GorgonPtr<byte> ptr = new(p, 4);
 
-            Assert.ThrowsExactly<IOException>(() => stream.Write<byte>(ptr));
+            Assert.ThrowsExactly<IOException>(() => stream.Write(ptr));
         }
     }
 
@@ -89,7 +89,7 @@ public class GorgonNativeExtensionsTests
             {
                 GorgonPtr<byte> ptr = new(p, data.Length);
 
-                stream.Write<byte>(ptr);
+                stream.Write(ptr);
 
                 stream.Position = 0;
                 byte[] result = new byte[data.Length];

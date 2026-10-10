@@ -23,7 +23,7 @@
 // Created: June 7, 2020 9:28:04 PM
 // 
 
-using Gorgon.Editor.Plugins;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI;
 
 namespace Gorgon.Editor.AnimationEditor;
@@ -32,14 +32,14 @@ namespace Gorgon.Editor.AnimationEditor;
 /// The parameters to pass to the <see cref="ISettings"/> view model
 /// </summary>
 /// <remarks>Initializes a new instance of the <see cref="SettingsParameters"/> class.</remarks>
-/// <param name="settings">The plugin settings.</param>
+/// <param name="settings">The plug-in settings.</param>
 /// <param name="hostServices">Common application services.</param>
 /// <exception cref="ArgumentNullException">Thrown when the <paramref name="settings" /> parameter is <strong>null</strong>.</exception>
 internal class SettingsParameters(AnimationEditorSettings settings, IHostContentServices hostServices)
         : SettingsCategoryViewModelParameters(hostServices)
 {
     /// <summary>
-    /// Property to return the settings for the plugin.
+    /// Property to return the settings for the plug-in.
     /// </summary>
     public AnimationEditorSettings Settings
     {

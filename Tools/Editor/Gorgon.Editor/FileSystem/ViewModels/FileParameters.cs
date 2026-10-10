@@ -24,7 +24,7 @@
 // 
 
 using Gorgon.Editor.Metadata;
-using Gorgon.Editor.Plugins;
+using Gorgon.Editor.PlugIns;
 using Gorgon.IO.FileSystem;
 
 namespace Gorgon.Editor.ViewModels;

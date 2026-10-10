@@ -13,6 +13,7 @@
 // all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -47,7 +48,7 @@ namespace Gorgon.Examples;
 /// Direct Draw Surface (dds)
 /// Graphics Interface Format (gif) - This one supports animation
 /// 
-/// Users can also add their own codecs by using the GorgonImageCodecPlugin.  However, this is outside of the scope for this example and is demonstrated 
+/// Users can also add their own codecs by using the GorgonImageCodecPlugIn.  However, this is outside of the scope for this example and is demonstrated 
 /// in the TvImageCodec example
 /// 
 /// This example also includes code to show how to load and animate an animated GIF using a background task
