@@ -24,7 +24,7 @@
 // 
 
 using Gorgon.Editor.Content;
-using Gorgon.Editor.Plugins;
+using Gorgon.Editor.PlugIns;
 
 namespace Gorgon.Editor.UI.ViewModels;
 
@@ -34,10 +34,10 @@ namespace Gorgon.Editor.UI.ViewModels;
 /// <remarks>
 /// <para>
 /// These parameters are meant to be passed to a view model based on the <see cref="EditorToolViewModelBase{T}"/> type and will contain services from the host application, and any other information 
-/// required for editor tool plugin view models
+/// required for editor tool plug-in view models
 /// </para>
 /// <para>
-/// Tool plugin developers will use types derived from this type to pass custom initialization parameters to their tool plugin view models. 
+/// Tool plug-in developers will use types derived from this type to pass custom initialization parameters to their tool plug-in view models. 
 /// </para>
 /// </remarks>
 /// <seealso cref="EditorToolViewModelBase{T}"/>

@@ -12,6 +12,7 @@
 // all copies or substantial portions of the Software.
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -23,10 +24,10 @@
 
 using System.Reactive;
 using System.Reactive.Linq;
+using ReactiveUI;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using Gorgon.IO;
-using ReactiveUI;
 
 namespace Gorgon.Examples;
 

@@ -75,7 +75,7 @@ public class GorgonLinearPoolTests
         }
 
         // Ensure all allocated items are unique.
-        Assert.AreEqual(poolSize, allocatedItems.Distinct().Count());
+        Assert.HasCount(poolSize, allocatedItems.Distinct());
     }
 
     [TestMethod]

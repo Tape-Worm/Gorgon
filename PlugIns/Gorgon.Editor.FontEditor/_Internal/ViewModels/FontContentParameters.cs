@@ -24,7 +24,7 @@
 // 
 
 using Gorgon.Editor.Content;
-using Gorgon.Editor.Plugins;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI;
 

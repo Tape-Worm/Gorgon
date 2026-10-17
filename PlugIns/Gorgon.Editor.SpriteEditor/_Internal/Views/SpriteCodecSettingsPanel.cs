@@ -60,7 +60,7 @@ internal partial class SpriteCodecSettingsPanel
         }
 
         ButtonAddCodec.Enabled = true;
-        ButtonRemoveCodecs.Enabled = ViewModel.UnloadPluginAssembliesCommand?.CanExecute(null) ?? false;
+        ButtonRemoveCodecs.Enabled = ViewModel.UnloadPlugInAssembliesCommand?.CanExecute(null) ?? false;
     }
 
     /// <summary>
@@ -81,7 +81,7 @@ internal partial class SpriteCodecSettingsPanel
                 return;
             }
 
-            foreach (CodecSetting setting in dataContext.CodecPluginPaths)
+            foreach (CodecSetting setting in dataContext.CodecPlugInPaths)
             {
                 ListViewItem item = new()
                 {
@@ -90,7 +90,7 @@ internal partial class SpriteCodecSettingsPanel
                     Tag = setting
                 };
 
-                item.SubItems.Add(setting.Plugin.PluginPath);
+                item.SubItems.Add(setting.PlugIn.PlugInPath);
 
                 ListCodecs.Items.Add(item);
             }
@@ -132,12 +132,12 @@ internal partial class SpriteCodecSettingsPanel
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonAddCodec_Click(object sender, EventArgs e)
     {
-        if ((ViewModel?.LoadPluginAssemblyCommand is null) || (!ViewModel.LoadPluginAssemblyCommand.CanExecute(null)))
+        if ((ViewModel?.LoadPlugInAssemblyCommand is null) || (!ViewModel.LoadPlugInAssemblyCommand.CanExecute(null)))
         {
             return;
         }
 
-        ViewModel.LoadPluginAssemblyCommand.Execute(null);
+        ViewModel.LoadPlugInAssemblyCommand.Execute(null);
     }
 
     /// <summary>Handles the Click event of the ButtonRemoveCodecs control.</summary>
@@ -145,18 +145,18 @@ internal partial class SpriteCodecSettingsPanel
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonRemoveCodecs_Click(object sender, EventArgs e)
     {
-        if ((ViewModel?.UnloadPluginAssembliesCommand is null) || (!ViewModel.UnloadPluginAssembliesCommand.CanExecute(null)))
+        if ((ViewModel?.UnloadPlugInAssembliesCommand is null) || (!ViewModel.UnloadPlugInAssembliesCommand.CanExecute(null)))
         {
             return;
         }
 
-        ViewModel.UnloadPluginAssembliesCommand.Execute(null);
+        ViewModel.UnloadPlugInAssembliesCommand.Execute(null);
     }
 
-    /// <summary>Handles the CollectionChanged event of the CodecPluginPaths control.</summary>
+    /// <summary>Handles the CollectionChanged event of the CodecPlugInPaths control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="NotifyCollectionChangedEventArgs"/> instance containing the event data.</param>
-    private void CodecPluginPaths_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+    private void CodecPlugInPaths_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
     {
         ListCodecs.BeginUpdate();
         try
@@ -173,7 +173,7 @@ internal partial class SpriteCodecSettingsPanel
                             Tag = setting
                         };
 
-                        item.SubItems.Add(setting.Plugin.PluginPath);
+                        item.SubItems.Add(setting.PlugIn.PlugInPath);
 
                         ListCodecs.Items.Add(item);
                     }
@@ -254,7 +254,7 @@ internal partial class SpriteCodecSettingsPanel
         }
 
         ViewModel.SelectedCodecs.CollectionChanged -= SelectedCodecs_CollectionChanged;
-        ViewModel.CodecPluginPaths.CollectionChanged -= CodecPluginPaths_CollectionChanged;
+        ViewModel.CodecPlugInPaths.CollectionChanged -= CodecPlugInPaths_CollectionChanged;
     }
 
     /// <summary>
@@ -301,7 +301,7 @@ internal partial class SpriteCodecSettingsPanel
             return;
         }
 
-        ViewModel.CodecPluginPaths.CollectionChanged += CodecPluginPaths_CollectionChanged;
+        ViewModel.CodecPlugInPaths.CollectionChanged += CodecPlugInPaths_CollectionChanged;
         ViewModel.SelectedCodecs.CollectionChanged += SelectedCodecs_CollectionChanged;
     }
 

@@ -163,7 +163,6 @@ public sealed class GorgonGlyph
     /// <param name="textureArrayIndex">The array index on the 2D texture array to use for this glyph.</param>
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="texture"/> parameter is <b>null</b>.</exception>
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="texture"/> is not a 2D texture.
-    /// <para>-or-</para>
     /// <para>Thrown if the <paramref name="texture"/> format is not <see cref="BufferFormat.R8G8B8A8_UNorm"/>, <see cref="BufferFormat.R8G8B8A8_UNorm_SRgb"/>, <see cref="BufferFormat.B8G8R8A8_UNorm"/> or 
     /// <see cref="BufferFormat.B8G8R8A8_UNorm_SRgb"/>.</para>
     /// </exception>

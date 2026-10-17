@@ -156,7 +156,7 @@ internal class GorgonSpriteImporter(IGorgonFileSystem projectFileSystem, IGorgon
 
             _log.Print("Importing associated texture for sprite...", LoggingLevel.Simple);
 
-            IGorgonSpriteCodec sourceCodec = SpriteImporterPlugin.GetCodec(physicalFilePath, _codecs);
+            IGorgonSpriteCodec sourceCodec = SpriteImporterPlugIn.GetCodec(physicalFilePath, _codecs);
             Debug.Assert(sourceCodec is not null, "We shouldn't be able to get this far without a codec.");
 
             texture = GetTexture(physicalFilePath, sourceCodec);

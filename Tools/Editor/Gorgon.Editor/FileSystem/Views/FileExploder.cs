@@ -2836,7 +2836,7 @@ internal partial class FileExploder
 
             SetSplitterDistance(Settings.SplitDirFileDistance);
 
-            LoadTreeNodeIcons(dataContext.PluginMetadata.ToDictionary(k => k.SmallIconID, v => v.GetSmallIcon()));
+            LoadTreeNodeIcons(dataContext.PlugInMetadata.ToDictionary(k => k.SmallIconID, v => v.GetSmallIcon()));
             RefreshNodes(dataContext.Root);
             FillFiles(dataContext, dataContext.Root, dataContext.Root.Files);
 

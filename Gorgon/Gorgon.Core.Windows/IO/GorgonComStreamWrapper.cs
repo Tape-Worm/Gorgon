@@ -12,6 +12,7 @@
 // all copies or substantial portions of the Software.
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -457,7 +458,7 @@ public sealed unsafe class GorgonComStreamWrapper(Stream stream, bool ownsStream
     {
         GorgonComStreamWrapper newWrapper = new(BaseStream, false);
 
-        void* ptr = ToIStream(out HRESULT result);
+        IStream* ptr = ToIStream(out HRESULT result);
 
         if (result.Failed)
         {
@@ -465,7 +466,7 @@ public sealed unsafe class GorgonComStreamWrapper(Stream stream, bool ownsStream
             return result;
         }
 
-        *ppstm = (IStream*)ptr;
+        *ppstm = ptr;
 
         return _sOk;
     }
@@ -691,7 +692,7 @@ public sealed unsafe class GorgonComStreamWrapper(Stream stream, bool ownsStream
     /// </summary>
     /// <param name="err">The HRESULT error codes from the operations.</param>
     /// <returns>A pointer to the IStream interface, or <b>null</b> if one could not be returned.</returns>
-    private void* ToIStream(out HRESULT err)
+    private IStream* ToIStream(out HRESULT err)
     {
         IUnknown* pUnk = (IUnknown*)GetOrCreateComInterfaceForObject(this, CreateComInterfaceFlags.None);
 
@@ -703,7 +704,7 @@ public sealed unsafe class GorgonComStreamWrapper(Stream stream, bool ownsStream
 
         try
         {
-            err = pUnk->QueryInterface(in _guid, out void* result).ThrowOnFailure();
+            err = pUnk->QueryInterface(out IStream* result).ThrowOnFailure();
 
             return result;
         }

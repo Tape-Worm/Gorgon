@@ -12,6 +12,7 @@
 // all copies or substantial portions of the Software.
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -203,10 +204,7 @@ public class GorgonInputEvent
             Array.Clear(_hidReport);
         }
 
-        ref readonly byte src = ref data.bRawData.e0;
-        ref byte dest = ref _hidReport[0];
-
-        Unsafe.CopyBlock(ref dest, in src, (uint)_hidReportSize);
+        Unsafe.CopyBlock(ref _hidReport[0], in data.bRawData[0], (uint)_hidReportSize);
 
         PreparsedData = deviceInfo.PreparsedData;
         HidButtonIndices = deviceInfo.ButtonMap;

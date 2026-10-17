@@ -29,7 +29,6 @@ using Gorgon.Animation;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core.OLDE;
-using Gorgon.Graphics.Imaging;
 using Gorgon.IO.Properties;
 using Gorgon.Math;
 using Gorgon.Renderers;

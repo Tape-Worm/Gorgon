@@ -12,6 +12,7 @@
 // all copies or substantial portions of the Software.
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -21,6 +22,7 @@
 // Created: May 5, 2025 11:24:57 PM
 //
 
+using System.ComponentModel;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 
@@ -34,6 +36,7 @@ public partial class FormMain : Form
     /// <summary>
     /// Property to set or return the active log interface.
     /// </summary>
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public IGorgonLog Log
     {
         get;

@@ -13,6 +13,7 @@
 // all copies or substantial portions of the Software.
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -40,13 +41,6 @@ namespace Gorgon.Graphics;
 /// <para>
 /// This data structure is used to easily pass around 3D coordinates for a cube shape. The box shape can be intersected and unioned. It also provides various methods to determine if another box intersects, or is 
 /// contained completely within a box. 
-/// </para>
-/// <para>
-/// <note type="important">
-/// <para>
-/// This value type merely represents the dimensions of a box, it does not draw a box. 
-/// </para>
-/// </note>
 /// </para>
 /// </remarks>
 [StructLayout(LayoutKind.Sequential, Pack = 4), JsonConverter(typeof(GorgonBoxFJsonConverter))]

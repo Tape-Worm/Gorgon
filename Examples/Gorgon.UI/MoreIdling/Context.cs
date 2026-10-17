@@ -14,6 +14,7 @@
 // all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -64,7 +65,7 @@ internal class Context
     /// </summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="KeyEventArgs" /> instance containing the event data.</param>
-    /// <exception cref="NotSupportedException"></exception>
+    /// <exception cref="NotSupportedException"/>
     private void MainForm_KeyDown(object? sender, KeyEventArgs e)
     {
         switch (e.KeyCode)
@@ -175,7 +176,6 @@ internal class Context
             Form.KeyDown += MainForm_KeyDown;
             Form.Deactivate += (sender, args) => _log.Print("Application is deactivated. Loops will pause.", LoggingLevel.All);
             Form.Activated += (sender, args) => _log.Print("Application is activated. Loops will run.", LoggingLevel.All);
-            Form.ClientSize = new Size(1280, 800);
             Form.Show();
 
             // We'll start out with the default idle loop.            

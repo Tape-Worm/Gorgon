@@ -158,7 +158,7 @@ public partial class GorgonFileSystemTests
 
         IGorgonVirtualDirectory[] dirs = [.. fileSystem.FindDirectories("/", "*")];
 
-        Assert.AreEqual(430, dirs.Length);
+        Assert.HasCount(430, dirs);
 
         dirs = [.. fileSystem.FindDirectories("/", "*lease")];
 
@@ -212,7 +212,7 @@ public partial class GorgonFileSystemTests
 
         IGorgonVirtualFile[] files = [.. fileSystem.FindFiles("/", "*")];
 
-        Assert.AreEqual(2833, files.Length);
+        Assert.HasCount(2833, files);
 
         files = [.. fileSystem.FindFiles("/", "*provider.cs")];
 
@@ -341,7 +341,7 @@ public partial class GorgonFileSystemTests
         fileSystem.Mount(@"::\\mock", provider: mockProvider);
         fileSystem.MountWriteArea(@"::\\write");
 
-        Assert.AreEqual(2, fileSystem.MountPoints.Count);
+        Assert.HasCount(2, fileSystem.MountPoints);
     }
 
     [TestMethod]

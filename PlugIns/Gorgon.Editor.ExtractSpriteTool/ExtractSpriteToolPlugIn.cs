@@ -26,7 +26,7 @@
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.ExtractSpriteTool.Properties;
-using Gorgon.Editor.Plugins;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Services;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -38,14 +38,14 @@ using Gorgon.UI.OLDE;
 namespace Gorgon.Editor.ExtractSpriteTool;
 
 /// <summary>
-/// A plugin used to extract sprites from a texture atlas by using an adjustable grid
+/// A plug-in used to extract sprites from a texture atlas by using an adjustable grid
 /// </summary>
-internal class ExtractSpriteToolPlugin
-    : ToolPlugin
+internal class ExtractSpriteToolPlugIn
+    : ToolPlugIn
 {
 
     // The cached button definition.
-    private ToolPluginRibbonButton _button;
+    private ToolPlugInRibbonButton _button;
     // The default image codec to use.
     private IGorgonImageCodec _defaultImageCodec;
     // Data used for extracting sprites.
@@ -123,7 +123,7 @@ internal class ExtractSpriteToolPlugin
 
         try
         {
-            settings = HostToolServices.ToolPluginService.ReadContentSettings<ExtractSpriteToolSettings>(typeof(ExtractSpriteToolPlugin).FullName);
+            settings = HostToolServices.ToolPlugInService.ReadContentSettings<ExtractSpriteToolSettings>(typeof(ExtractSpriteToolPlugIn).FullName);
 
             settings ??= new ExtractSpriteToolSettings();
 
@@ -177,7 +177,7 @@ internal class ExtractSpriteToolPlugin
             form.ShowDialog(GorgonApplication.MainForm);
 
             HostToolServices.BusyService.SetBusy();
-            HostToolServices.ToolPluginService.WriteContentSettings(typeof(ExtractSpriteToolPlugin).FullName, settings);
+            HostToolServices.ToolPlugInService.WriteContentSettings(typeof(ExtractSpriteToolPlugIn).FullName, settings);
         }
         catch (Exception ex)
         {
@@ -199,18 +199,18 @@ internal class ExtractSpriteToolPlugin
     /// <returns>A new tool ribbon button instance.</returns>
     /// <remarks>
     ///   <para>
-    /// Tool plugin developers must override this method to return the button which is inserted on the application ribbon, under the "Tools" tab. If the method returns <b>null</b>, then the tool is
+    /// Tool plug-in developers must override this method to return the button which is inserted on the application ribbon, under the "Tools" tab. If the method returns <b>null</b>, then the tool is
     /// ignored.
     /// </para>
     ///   <para>
-    /// The resulting data structure will contain the means to handle the click event for the tool, and as such, is the only means of communication between the main UI and the plugin.
+    /// The resulting data structure will contain the means to handle the click event for the tool, and as such, is the only means of communication between the main UI and the plug-in.
     /// </para>
     ///   <para>
-    /// The <paramref name="fileManager" /> will allow plugins to enumerate files in the project file system, create files/directories, and delete files/directories. This allows the plugin a means
+    /// The <paramref name="fileManager" /> will allow plug-ins to enumerate files in the project file system, create files/directories, and delete files/directories. This allows the plug-in a means
     /// to persist any data generated.
     /// </para>
     /// </remarks>
-    protected override IToolPluginRibbonButton OnGetToolButton()
+    protected override IToolPlugInRibbonButton OnGetToolButton()
     {
         _button.ClickCallback ??= ShowForm;
 
@@ -219,20 +219,20 @@ internal class ExtractSpriteToolPlugin
         return _button;
     }
 
-    /// <summary>Function to provide initialization for the Plugin.</summary>
-    /// <remarks>This method is only called when the Plugin is loaded at startup.</remarks>
+    /// <summary>Function to provide initialization for the plug-in.</summary>
+    /// <remarks>This method is only called when the plug-in is loaded at startup.</remarks>
     protected override void OnInitialize()
     {
         _defaultImageCodec = new GorgonCodecDds();
 
-        _button = new ToolPluginRibbonButton(Resources.GOREST_TEXT_BUTTON, Resources.extract_grid_48x48, Resources.extract_grid_16x16, Resources.GOREST_GROUP_BUTTON)
+        _button = new ToolPlugInRibbonButton(Resources.GOREST_TEXT_BUTTON, Resources.extract_grid_48x48, Resources.extract_grid_16x16, Resources.GOREST_GROUP_BUTTON)
         {
             Description = Resources.GOREST_DESC_BUTTON
         };
         _button.ValidateButton();
     }
 
-    /// <summary>Function to provide clean up for the Plugin.</summary>
+    /// <summary>Function to provide clean up for the plug-in.</summary>
     protected override void OnShutdown()
     {
         // Disconnect from the button to ensure that we don't get this thing keeping us around longer than we should.
@@ -246,9 +246,9 @@ internal class ExtractSpriteToolPlugin
         base.OnShutdown();
     }
 
-    /// <summary>Initializes a new instance of the <see cref="ExtractSpriteToolPlugin"/> class.</summary>
-    public ExtractSpriteToolPlugin()
-        : base(Resources.GOREST_plugin_DESC)
+    /// <summary>Initializes a new instance of the <see cref="ExtractSpriteToolPlugIn"/> class.</summary>
+    public ExtractSpriteToolPlugIn()
+        : base(Resources.GOREST_PLUGIN_DESC)
     {
     }
 }

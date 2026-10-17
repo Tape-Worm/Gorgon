@@ -97,7 +97,7 @@ internal class ComboFonts
 
         string fontName = Items[e.Index].ToString();
 
-        if (!FontEditorPlugin.CachedFonts.TryGetValue(fontName, out Font font))
+        if (!FontEditorPlugIn.CachedFonts.TryGetValue(fontName, out Font font))
         {
             font = Font;
         }

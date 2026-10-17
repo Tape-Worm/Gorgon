@@ -3,6 +3,7 @@ using Gorgon.Configuration;
 
 namespace Gorgon.Core.Tests;
 
+#pragma warning disable CA1859 // Use concrete types when possible for improved performance
 [TestClass]
 public class GorgonOptionTests
 {
@@ -1724,3 +1725,4 @@ public class GorgonOptionTests
         Assert.AreEqual(newValue, retrievedValue);
     }
 }
+#pragma warning restore CA1859 // Use concrete types when possible for improved performance

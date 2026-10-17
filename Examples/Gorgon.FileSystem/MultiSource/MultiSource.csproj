@@ -2,7 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
     <ForceDesignerDpiUnaware>true</ForceDesignerDpiUnaware>
     <UseWindowsForms>true</UseWindowsForms>
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
@@ -18,6 +18,7 @@
     <AssemblyVersion>4.0.0.0</AssemblyVersion>
     <FileVersion>4.0.0.0</FileVersion>
     <VersionPrefix>4.0.0</VersionPrefix>
+    <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
     <EmbeddedResourceUseDependentUponConvention>true</EmbeddedResourceUseDependentUponConvention>
     <Nullable>enable</Nullable>
   </PropertyGroup>
@@ -34,10 +35,7 @@
     <None Include="..\..\..\Gorgon\g.png" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\Gorgon\Gorgon.IO\FileSystem.Plugins\Gorgon.IO.FileSystem.Plugins.csproj" />
+    <ProjectReference Include="..\..\..\Gorgon\Gorgon.IO\FileSystem.PlugIns\Gorgon.IO.FileSystem.PlugIns.csproj" />
     <ProjectReference Include="..\..\ExamplesCommon\ExamplesCommon.csproj" />
     <Compile Update="Properties\Resources.Designer.cs">
       <DesignTime>True</DesignTime>

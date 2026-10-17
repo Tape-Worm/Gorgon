@@ -131,7 +131,7 @@ internal class SpriteContent
     public override string ContentType => CommonEditorContentTypes.SpriteType;
 
     /// <summary>
-    /// Property to return the view model for the plugin settings.
+    /// Property to return the view model for the plug-in settings.
     /// </summary>
     public ISettings Settings
     {
@@ -1735,7 +1735,7 @@ internal class SpriteContent
     /// <summary>Function to determine the action to take when this content is closing.</summary>
     /// <returns>
     ///   <b>true</b> to continue with closing, <b>false</b> to cancel the close request.</returns>
-    /// <remarks>Plugin authors should override this method to confirm whether save changed content, continue without saving, or cancel the operation entirely.</remarks>
+    /// <remarks>Plug-in authors should override this method to confirm whether save changed content, continue without saving, or cancel the operation entirely.</remarks>
     protected override async Task<bool> OnCloseContentTaskAsync()
     {
         if (ContentState == ContentState.Unmodified)

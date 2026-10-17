@@ -26,7 +26,7 @@
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using Gorgon.Core;
-using Gorgon.Editor.Plugins;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Services;

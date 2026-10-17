@@ -14,6 +14,7 @@
 // all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -177,7 +178,7 @@ internal class VirtualDirectoryCollection(VirtualDirectory parent)
             dirPath = dirPath[(_parent.FullPath.Length - 1)..];
         }
 
-        GorgonSpanCharEnumerator directories = dirPath.Split(GorgonFileSystem.DirectorySeparatorList);
+        GorgonSpanCharEnumerator directories = dirPath.SplitString(GorgonFileSystem.DirectorySeparatorList);
 
         VirtualDirectory directory = _parent;
 

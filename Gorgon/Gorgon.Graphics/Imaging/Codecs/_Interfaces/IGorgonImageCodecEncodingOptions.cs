@@ -14,6 +14,7 @@
 // all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -28,7 +29,7 @@ using Gorgon.Configuration;
 namespace Gorgon.Graphics.Imaging.Codecs;
 
 /// <summary>
-/// Provides options used when encoding a <see cref="IGorgonImage"/> for persistence
+/// Provides options used when encoding a <see cref="IGorgonImage"/> for persistence.
 /// </summary>
 public interface IGorgonImageCodecEncodingOptions
 {
@@ -36,7 +37,9 @@ public interface IGorgonImageCodecEncodingOptions
     /// Property to set or return whether all frames in an image array should be persisted.
     /// </summary>
     /// <remarks>
-    /// This flag only applies to codecs that support multiple image frames.  For all other codec types, this flag will be ignored.
+    /// <para>
+    /// This flag only applies to codecs that support multiple image frames. For all other codec types, this flag will be ignored.
+    /// </para>
     /// </remarks>
     bool SaveAllFrames
     {

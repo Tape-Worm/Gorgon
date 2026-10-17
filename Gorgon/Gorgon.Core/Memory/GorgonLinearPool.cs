@@ -13,6 +13,7 @@
 // all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -80,8 +81,7 @@ public class GorgonLinearPool<T>
     /// </summary>
     /// <param name="initializer">[Optional] A function used to initialize the object returned by the allocator.</param>
     /// <returns>A reference to the object in the pool.</returns>
-    /// <exception cref="GorgonException">Thrown when the pool is completely full.
-    /// <para>-or-</para>
+    /// <exception cref="GorgonException"><para>Thrown when the pool is completely full.</para>
     /// <para>The object could not be created with the <see cref="ItemAllocator"/> and returned <b>null</b>.</para>
     /// </exception>
     /// <remarks>
@@ -116,7 +116,7 @@ public class GorgonLinearPool<T>
 
         initializer?.Invoke(item);
 
-        return _items[nextIndex];
+        return item;
     }
 
     /// <summary>

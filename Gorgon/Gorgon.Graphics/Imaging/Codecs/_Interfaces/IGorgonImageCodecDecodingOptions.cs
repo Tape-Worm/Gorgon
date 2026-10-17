@@ -14,6 +14,7 @@
 // all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -28,7 +29,7 @@ using Gorgon.Configuration;
 namespace Gorgon.Graphics.Imaging.Codecs;
 
 /// <summary>
-/// Provides options used when decoding a <see cref="IGorgonImage"/>
+/// Provides options used when decoding a <see cref="IGorgonImage"/>.
 /// </summary>
 public interface IGorgonImageCodecDecodingOptions
 {
@@ -36,7 +37,9 @@ public interface IGorgonImageCodecDecodingOptions
     /// Property to set or return whether to read all frames from an image.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// Some codecs do not use multiple frames in their image data. For those codecs, this flag will be ignored.
+    /// </para>
     /// </remarks>
     bool ReadAllFrames
     {

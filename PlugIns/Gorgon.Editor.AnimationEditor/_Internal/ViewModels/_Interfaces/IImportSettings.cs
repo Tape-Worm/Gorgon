@@ -29,7 +29,7 @@ using Gorgon.Editor.UI;
 namespace Gorgon.Editor.AnimationEditor;
 
 /// <summary>
-/// The view model for the importer plugin settings
+/// The view model for the importer plug-in settings
 /// </summary>
 internal interface IImportSettings
     : ISettingsCategory
@@ -43,9 +43,9 @@ internal interface IImportSettings
     }
 
     /// <summary>
-    /// Propery to return the paths to the codec plugins.
+    /// Propery to return the paths to the codec plug-ins.
     /// </summary>
-    ObservableCollection<CodecSetting> CodecPluginPaths
+    ObservableCollection<CodecSetting> CodecPlugInPaths
     {
         get;
     }
@@ -59,17 +59,17 @@ internal interface IImportSettings
     }
 
     /// <summary>
-    /// Property to return the command for loading a plugin assembly.
+    /// Property to return the command for loading a plug-in assembly.
     /// </summary>
-    IEditorCommand<object> LoadPluginAssemblyCommand
+    IEditorCommand<object> LoadPlugInAssemblyCommand
     {
         get;
     }
 
     /// <summary>
-    /// Property to return the command to unloading a plugin assembly.
+    /// Property to return the command to unloading a plug-in assembly.
     /// </summary>
-    IEditorCommand<object> UnloadPluginAssembliesCommand
+    IEditorCommand<object> UnloadPlugInAssembliesCommand
     {
         get;
     }

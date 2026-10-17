@@ -558,6 +558,24 @@ namespace Gorgon.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There was an error while executing the operation..
+        /// </summary>
+        internal static string GOR_RESULT_DESC_CANNOT_EXECUTE {
+            get {
+                return ResourceManager.GetString("GOR_RESULT_DESC_CANNOT_EXECUTE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There was an error while initializing..
+        /// </summary>
+        internal static string GOR_RESULT_DESC_CANNOT_INITIALIZE {
+            get {
+                return ResourceManager.GetString("GOR_RESULT_DESC_CANNOT_INITIALIZE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There was an error while reading..
         /// </summary>
         internal static string GOR_RESULT_DESC_CANNOT_READ {
@@ -599,6 +617,15 @@ namespace Gorgon.Properties {
         internal static string GOR_RESULT_DESC_FORMAT_NOT_SUPPORTED {
             get {
                 return ResourceManager.GetString("GOR_RESULT_DESC_FORMAT_NOT_SUPPORTED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unbounded memory growth was detected..
+        /// </summary>
+        internal static string GOR_RESULT_DESC_MEM_LEAK {
+            get {
+                return ResourceManager.GetString("GOR_RESULT_DESC_MEM_LEAK", resourceCulture);
             }
         }
         

@@ -15,10 +15,10 @@ pr: none
 jobs:
   - job: 'Release'
     pool:
-      vmImage: 'windows-2022'
+      vmImage: 'windows-latest'
 
     variables:
-      solution: 'Gorgon.sln'
+      solution: 'Gorgon.slnx'
       buildPlatform: 'Any CPU'
       buildConfiguration: 'Release'
 
@@ -71,7 +71,7 @@ jobs:
           Overwrite: true
 
       - task: CopyFiles@2
-        displayName: 'Copying Plugins to $(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/PlugIns'
+        displayName: 'Copying Plug-ins to $(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/PlugIns'
         inputs:
           SourceFolder: '$(Build.SourcesDirectory)/PlugIns/Bin/$(buildConfiguration)/'
           Contents: '**/?(*.dll|Gorgon*.pdb)'
@@ -114,7 +114,7 @@ jobs:
       vmImage: 'windows-2022'
 
     variables:
-      solution: 'Gorgon.sln'
+      solution: 'Gorgon.slnx'
       buildPlatform: 'Any CPU'
       buildConfiguration: 'Debug'
 
@@ -167,7 +167,7 @@ jobs:
           Overwrite: true
 
       - task: CopyFiles@2
-        displayName: 'Copying Plugins to $(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/PlugIns'
+        displayName: 'Copying Plug-ins to $(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/PlugIns'
         inputs:
           SourceFolder: '$(Build.SourcesDirectory)/PlugIns/Bin/$(buildConfiguration)/'
           Contents: '**/?(*.dll|Gorgon*.pdb)'

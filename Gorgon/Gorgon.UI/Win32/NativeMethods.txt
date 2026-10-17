@@ -3,6 +3,7 @@ SendMessage
 TranslateMessage
 DispatchMessage
 GetForegroundWindow
+GetWindowRect
 GetWindowThreadProcessId
 GetModuleHandle
 MonitorFromWindow

@@ -33,13 +33,13 @@ namespace Gorgon.Editor.Metadata;
 internal class ProjectItemMetadata30
 {
     /// <summary>
-    /// Property to set or return the name of the Plugin associated with the metadata file path.
+    /// Property to set or return the name of the plug-in associated with the metadata file path.
     /// </summary>
     /// <remarks>
-    /// If this value is <b>null</b>, then the Plugin hasn't been set.  If it's an empty string, then no Plugin is associated with this metadata.
+    /// If this value is <b>null</b>, then the plug-in hasn't been set.  If it's an empty string, then no plug-in is associated with this metadata.
     /// </remarks>
     [JsonInclude]
-    public string PluginName
+    public string PlugInName
     {
         get;
         set;

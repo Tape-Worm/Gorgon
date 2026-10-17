@@ -12,6 +12,7 @@
 // all copies or substantial portions of the Software.
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -46,7 +47,7 @@ public class GorgonMouse(IGorgonMouseInfo? mouseDevice = null) : IGorgonMouse
     // The system mouse information.
     private static readonly IGorgonMouseInfo _systemMouse;
     // Lock for multiple threads.
-    private static readonly object _syncLock = new();
+    private static readonly Lock _syncLock = new();
 
     // The last known absolute position.
     private GorgonPoint? _lastAbsPosition;

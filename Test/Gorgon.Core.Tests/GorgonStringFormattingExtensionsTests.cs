@@ -24,7 +24,7 @@ public class GorgonStringFormattingExtensionsTests
             parts.Add(part.ToString());
         }
 
-        CollectionAssert.AreEqual(actual, parts);
+        Assert.AreSequenceEqual(actual, parts);
 
         parts.Clear();
         dir = @"d:/my path\is quite/long\you/see\look/at_this.file";
@@ -35,7 +35,7 @@ public class GorgonStringFormattingExtensionsTests
             parts.Add(part.ToString());
         }
 
-        CollectionAssert.AreEqual(actual, parts);
+        Assert.AreSequenceEqual(actual, parts);
 
         parts.Clear();
         dir = @"\d:\my path\\is quite\\\long\you\see\look\at_this.file";
@@ -46,7 +46,7 @@ public class GorgonStringFormattingExtensionsTests
             parts.Add(part.ToString());
         }
 
-        CollectionAssert.AreEqual(actual, parts);
+        Assert.AreSequenceEqual(actual, parts);
 
         parts.Clear();
         dir = @"\d:\my path\\is quite\\\long\you\see\look\at_this.file";
@@ -57,7 +57,7 @@ public class GorgonStringFormattingExtensionsTests
             parts.Add(part.ToString());
         }
 
-        CollectionAssert.AreEqual(actual, parts);
+        Assert.AreSequenceEqual(actual, parts);
 
         parts.Clear();
         dir = @"d:\my path\is quite\long\you\see\look\at_this_directory\";
@@ -68,7 +68,7 @@ public class GorgonStringFormattingExtensionsTests
             parts.Add(part.ToString());
         }
 
-        CollectionAssert.AreEqual(actual, parts);
+        Assert.AreSequenceEqual(actual, parts);
 
         parts.Clear();
         dir = @"This has nothing to split.";
@@ -79,7 +79,7 @@ public class GorgonStringFormattingExtensionsTests
             parts.Add(part.ToString());
         }
 
-        CollectionAssert.AreEqual(actual, parts);
+        Assert.AreSequenceEqual(actual, parts);
     }
 
     [TestMethod]

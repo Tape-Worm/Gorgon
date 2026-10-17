@@ -219,7 +219,9 @@ public class GorgonNativeBufferTests
             GorgonPtr<int> gorgonPtr = new(ptr, testData.Length);
 
             // Act
-            using GorgonNativeBuffer<int> newBuffer = GorgonNativeBuffer<int>.FromSpan(gorgonPtr);
+#pragma warning disable IDE0305 // Simplify collection initialization (this breaks).
+            using GorgonNativeBuffer<int> newBuffer = GorgonNativeBuffer<int>.FromSpan(gorgonPtr.ToReadOnlySpan());
+#pragma warning restore IDE0305 // Simplify collection initialization
 
             // Assert
             for (int i = 0; i < newBuffer.Length; i++)
@@ -270,7 +272,9 @@ public class GorgonNativeBufferTests
         GorgonPtr<int> ptr = GorgonPtr<int>.NullPtr;
 
         // Act & Assert
-        Assert.ThrowsExactly<NullReferenceException>(() => _ = GorgonNativeBuffer<int>.FromSpan(ptr));
+#pragma warning disable IDE0305 // Simplify collection initialization (This breaks the test)
+        Assert.ThrowsExactly<NullReferenceException>(() => _ = GorgonNativeBuffer<int>.FromSpan(ptr.ToSpan()));
+#pragma warning restore IDE0305 // Simplify collection initialization
     }
 
     [TestMethod]
@@ -515,7 +519,7 @@ public class GorgonNativeBufferTests
         }
     }
 
-    [TestMethod]    
+    [TestMethod]
     public void CopyToSpanWithNegativeSourceIndexFailure()
     {
         // Arrange
@@ -530,11 +534,9 @@ public class GorgonNativeBufferTests
         }
         catch (ArgumentOutOfRangeException)
         {
+            return;
         }
-        catch
-        {
-            Assert.Fail("Wrong exception");
-        }
+        Assert.Fail("Wrong exception");
     }
 
     [TestMethod]
@@ -552,11 +554,9 @@ public class GorgonNativeBufferTests
         }
         catch (ArgumentException)
         {
+            return;
         }
-        catch
-        {
-            Assert.Fail("Wrong exception");
-        }
+        Assert.Fail("Wrong exception");
     }
 
     [TestMethod]

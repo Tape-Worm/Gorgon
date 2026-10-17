@@ -93,7 +93,7 @@ internal class DdsImageImporter(IGorgonFileSystem tempFileSystemWriter, ICodecRe
             throw new ArgumentEmptyException(nameof(physicalFilePath));
         }
 
-        IGorgonImageCodec sourceCodec = ImageImporterPlugin.GetCodec(physicalFilePath, _codecs);
+        IGorgonImageCodec sourceCodec = ImageImporterPlugIn.GetCodec(physicalFilePath, _codecs);
 
         // This source is the same as the destination codec. So there's nothing to do.
         if (sourceCodec is null)

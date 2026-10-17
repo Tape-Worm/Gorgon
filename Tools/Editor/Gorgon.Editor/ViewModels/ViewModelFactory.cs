@@ -25,7 +25,7 @@
 
 using Gorgon.Collections;
 using Gorgon.Editor.Metadata;
-using Gorgon.Editor.Plugins;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Services;
@@ -43,7 +43,7 @@ namespace Gorgon.Editor.ViewModels;
 /// <param name="settings">The settings for the editor.</param>
 /// <param name="projectManager">The project manager for managing the project file.</param>
 /// <param name="fileSystemProviders">The file system providers used to read/write file systems.</param>
-/// <param name="contentServices">Common host services to pass into plugins.</param>        
+/// <param name="contentServices">Common host services to pass into plug-ins.</param>        
 internal class ViewModelFactory(Editor.EditorSettings settings, ProjectManager projectManager, FileSystemProviders fileSystemProviders, HostContentServices contentServices)
 {
 
@@ -59,8 +59,8 @@ internal class ViewModelFactory(Editor.EditorSettings settings, ProjectManager p
     private readonly ProjectManager _projectManager = projectManager;
     // The synchronization context.
     private SynchronizationContext _syncContext;
-    // The list of content creator plugins.
-    private IReadOnlyList<IContentPluginMetadata> _contentCreators = [];
+    // The list of content creator plug-ins.
+    private IReadOnlyList<IContentPlugInMetadata> _contentCreators = [];
     /*
     /// <summary>
     /// Function to send the item specified in the path to the recycle bin.
@@ -81,81 +81,81 @@ internal class ViewModelFactory(Editor.EditorSettings settings, ProjectManager p
     }
     */
     /// <summary>
-    /// Function to retrieve a plugin list item view model based on the plugin passed in.
+    /// Function to retrieve a plug-in list item view model based on the plug-in passed in.
     /// </summary>
-    /// <param name="plugin">The plugin to retrieve data from.</param>
+    /// <param name="plugIn">The plug-in to retrieve data from.</param>
     /// <returns>The view model.</returns>
-    private ISettingsPluginListItem CreatePluginListItem(EditorPlugin plugin)
+    private ISettingsPlugInListItem CreatePlugInListItem(EditorPlugIn plugIn)
     {
-        SettingsPluginListItem result = new();
-        result.Initialize(new SettingsPluginListItemParameters(plugin, _hostContentServices));
+        SettingsPlugInListItem result = new();
+        result.Initialize(new SettingsPlugInListItemParameters(plugIn, _hostContentServices));
         return result;
     }
 
     /// <summary>
-    /// Function to retrieve a plugin list item view model based on the plugin passed in.
+    /// Function to retrieve a plug-in list item view model based on the plug-in passed in.
     /// </summary>
-    /// <param name="plugin">The plugin to retrieve data from.</param>
+    /// <param name="plugIn">The plug-in to retrieve data from.</param>
     /// <returns>The view model.</returns>
-    private ISettingsPluginListItem CreatePluginListItem(GorgonFileSystemProviderPlugin plugin)
+    private ISettingsPlugInListItem CreatePlugInListItem(GorgonFileSystemProviderPlugIn plugIn)
     {
-        SettingsPluginListItem result = new();
-        result.Initialize(new SettingsPluginListItemParameters(plugin, _hostContentServices));
+        SettingsPlugInListItem result = new();
+        result.Initialize(new SettingsPlugInListItemParameters(plugIn, _hostContentServices));
         return result;
     }
 
     /// <summary>
-    /// Function to retrieve a plugin list item view model based on the plugin passed in.
+    /// Function to retrieve a plug-in list item view model based on the plug-in passed in.
     /// </summary>
-    /// <param name="plugin">The plugin to retrieve data from.</param>
+    /// <param name="plugIn">The plug-in to retrieve data from.</param>
     /// <returns>The view model.</returns>
-    private ISettingsPluginListItem CreatePluginListItem(IDisabledPlugin plugin)
+    private ISettingsPlugInListItem CreatePlugInListItem(IDisabledPlugIn plugIn)
     {
-        SettingsPluginListItem result = new();
-        result.Initialize(new SettingsPluginListItemParameters(plugin, _hostContentServices));
+        SettingsPlugInListItem result = new();
+        result.Initialize(new SettingsPlugInListItemParameters(plugIn, _hostContentServices));
         return result;
     }
 
     /// <summary>
-    /// Function to retrieve the list of plugins view model.
+    /// Function to retrieve the list of plug-ins view model.
     /// </summary>
-    /// <returns>The plugins list view model.</returns>
-    private ISettingsPluginsList CreatePluginListViewModel()
+    /// <returns>The plug-ins list view model.</returns>
+    private ISettingsPlugInsList CreatePlugInListViewModel()
     {
-        IEnumerable<ISettingsPluginListItem> Plugins = _fileSystemProviders.Readers
-            .Select(item => CreatePluginListItem(item.Value.Plugin))
-            .Concat(_fileSystemProviders.Writers.Select(item => CreatePluginListItem(item.Value)))
-            .Concat(_hostContentServices.ContentPluginService.Plugins.Select(item => CreatePluginListItem(item.Value)))
-            .Concat(_hostContentServices.ContentPluginService.Importers.Select(item => CreatePluginListItem(item.Value)))
-            .Concat(_hostContentServices.ToolPluginService.Plugins.Select(item => CreatePluginListItem(item.Value)))
-            .Concat(_fileSystemProviders.DisabledPlugins.Select(item => CreatePluginListItem(item.Value)))
-            .Concat(_hostContentServices.ContentPluginService.DisabledPlugins.Select(item => CreatePluginListItem(item.Value)))
-            .Concat(_hostContentServices.ToolPluginService.DisabledPlugins.Select(item => CreatePluginListItem(item.Value)));
+        IEnumerable<ISettingsPlugInListItem> PlugIns = _fileSystemProviders.Readers
+            .Select(item => CreatePlugInListItem(item.Value.PlugIn))
+            .Concat(_fileSystemProviders.Writers.Select(item => CreatePlugInListItem(item.Value)))
+            .Concat(_hostContentServices.ContentPlugInService.PlugIns.Select(item => CreatePlugInListItem(item.Value)))
+            .Concat(_hostContentServices.ContentPlugInService.Importers.Select(item => CreatePlugInListItem(item.Value)))
+            .Concat(_hostContentServices.ToolPlugInService.PlugIns.Select(item => CreatePlugInListItem(item.Value)))
+            .Concat(_fileSystemProviders.DisabledPlugIns.Select(item => CreatePlugInListItem(item.Value)))
+            .Concat(_hostContentServices.ContentPlugInService.DisabledPlugIns.Select(item => CreatePlugInListItem(item.Value)))
+            .Concat(_hostContentServices.ToolPlugInService.DisabledPlugIns.Select(item => CreatePlugInListItem(item.Value)));
 
-        SettingsPluginsList result = new();
-        result.Initialize(new SettingsPluginsListParameters(_hostContentServices)
+        SettingsPlugInsList result = new();
+        result.Initialize(new SettingsPlugInsListParameters(_hostContentServices)
         {
-            Plugins = Plugins
+            PlugIns = PlugIns
         });
         return result;
     }
 
     /// <summary>
-    /// Function to retrieve the list of settings categories from loaded plugins.
+    /// Function to retrieve the list of settings categories from loaded plug-ins.
     /// </summary>
     /// <returns>The list of categories.</returns>
-    private IEnumerable<ISettingsCategory> GetPluginSettingsCategories()
+    private IEnumerable<ISettingsCategory> GetPlugInSettingsCategories()
     {
         List<ISettingsCategory> result = [];
 
-        IEnumerable<EditorPlugin> Plugins = _fileSystemProviders.Writers.Select(item => (EditorPlugin)item.Value)
-            .Concat(_hostContentServices.ContentPluginService.Plugins.Select(item => item.Value))
-            .Concat(_hostContentServices.ContentPluginService.Importers.Select(item => item.Value))
-            .Concat(_hostContentServices.ToolPluginService.Plugins.Select(item => item.Value));
+        IEnumerable<EditorPlugIn> PlugIns = _fileSystemProviders.Writers.Select(item => (EditorPlugIn)item.Value)
+            .Concat(_hostContentServices.ContentPlugInService.PlugIns.Select(item => item.Value))
+            .Concat(_hostContentServices.ContentPlugInService.Importers.Select(item => item.Value))
+            .Concat(_hostContentServices.ToolPlugInService.PlugIns.Select(item => item.Value));
 
-        foreach (EditorPlugin Plugin in Plugins)
+        foreach (EditorPlugIn PlugIn in PlugIns)
         {
-            ISettingsCategory settings = Plugin.GetPluginSettings();
+            ISettingsCategory settings = PlugIn.GetPlugInSettings();
 
             if (settings is null)
             {
@@ -298,9 +298,9 @@ internal class ViewModelFactory(Editor.EditorSettings settings, ProjectManager p
             SyncContext = _syncContext
         });
 
-        foreach (ContentPlugin Plugin in _hostContentServices.ContentPluginService.Plugins.Values)
+        foreach (ContentPlugIn PlugIn in _hostContentServices.ContentPlugInService.PlugIns.Values)
         {
-            Plugin.RegisterSearchKeywords(searchService);
+            PlugIn.RegisterSearchKeywords(searchService);
         }
 
         return result;
@@ -478,20 +478,20 @@ internal class ViewModelFactory(Editor.EditorSettings settings, ProjectManager p
     public IMain CreateMainViewModel(string gpuName)
     {
         IDirectoryLocateService dirLocator = new DirectoryLocateService();
-        ISettingsPluginsList PluginList = CreatePluginListViewModel();
+        ISettingsPlugInsList PlugInList = CreatePlugInListViewModel();
 
         _syncContext = SynchronizationContext.Current;
 
-        _contentCreators = [.. _hostContentServices.ContentPluginService.Plugins.Where(item => item.Value.CanCreateContent)
+        _contentCreators = [.. _hostContentServices.ContentPlugInService.PlugIns.Where(item => item.Value.CanCreateContent)
                                                                             .Select(item => item.Value)
-                                                                            .OfType<IContentPluginMetadata>()];
+                                                                            .OfType<IContentPlugInMetadata>()];
 
         EditorSettings settingsVm = new();
-        IEnumerable<ISettingsCategory> categories = GetPluginSettingsCategories();
+        IEnumerable<ISettingsCategory> categories = GetPlugInSettingsCategories();
         settingsVm.Initialize(new EditorSettingsParameters
         {
-            Categories = new[] { PluginList }.Concat(categories),
-            PluginsList = PluginList,
+            Categories = new[] { PlugInList }.Concat(categories),
+            PlugInsList = PlugInList,
             HostServices = _hostContentServices
         });
 
@@ -543,8 +543,8 @@ internal class ViewModelFactory(Editor.EditorSettings settings, ProjectManager p
             throw new ArgumentNullException(nameof(projectData));
         }
 
-        _hostContentServices.ToolPluginService.ProjectDeactivated();
-        _hostContentServices.ContentPluginService.ProjectDeactivated();
+        _hostContentServices.ToolPlugInService.ProjectDeactivated();
+        _hostContentServices.ContentPlugInService.ProjectDeactivated();
 
         FileExplorer fileExplorer = null;
         ProjectEditor result = new();
@@ -588,8 +588,8 @@ internal class ViewModelFactory(Editor.EditorSettings settings, ProjectManager p
             ContentCreators = _contentCreators
         });
 
-        _hostContentServices.ToolPluginService.ProjectActivated(fileExplorer, tempWriter);
-        _hostContentServices.ContentPluginService.ProjectActivated(fileSystem, fileExplorer, tempWriter);
+        _hostContentServices.ToolPlugInService.ProjectActivated(fileExplorer, tempWriter);
+        _hostContentServices.ContentPlugInService.ProjectActivated(fileSystem, fileExplorer, tempWriter);
 
         // Empty this list, it will be rebuilt when we save, and having it lying around is a waste.
         projectData.ProjectItems.Clear();

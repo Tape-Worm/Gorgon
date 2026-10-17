@@ -14,6 +14,7 @@
 // all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -183,12 +184,12 @@ public class GorgonComputerInfo
             SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX* cpuInfo = (SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX*)cpuPtr;
             SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX* coreInfo = (SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX*)corePtr;
 
-            if (!PInvoke.GetLogicalProcessorInformationEx(LOGICAL_PROCESSOR_RELATIONSHIP.RelationProcessorPackage, cpuInfo, ref cpuByteCount))
+            if (!PInvoke.GetLogicalProcessorInformationEx(LOGICAL_PROCESSOR_RELATIONSHIP.RelationProcessorPackage, cpuInfo, &cpuByteCount))
             {
                 return;
             }
 
-            if (!PInvoke.GetLogicalProcessorInformationEx(LOGICAL_PROCESSOR_RELATIONSHIP.RelationProcessorCore, coreInfo, ref coreByteCount))
+            if (!PInvoke.GetLogicalProcessorInformationEx(LOGICAL_PROCESSOR_RELATIONSHIP.RelationProcessorCore, coreInfo, &coreByteCount))
             {
                 return;
             }

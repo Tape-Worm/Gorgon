@@ -24,7 +24,7 @@
 // 
 
 using Gorgon.Editor.Content;
-using Gorgon.Editor.Plugins;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.TextureAtlasTool.Properties;
 using Gorgon.Editor.UI.Controls;
@@ -36,19 +36,19 @@ using Gorgon.UI.OLDE;
 namespace Gorgon.Editor.TextureAtlasTool;
 
 /// <summary>
-/// A plugin used to create a texture atlas
+/// A plug-in used to create a texture atlas
 /// </summary>
 /// <remarks>
 /// <para>
-/// This plugin varies from the Image atlas tool in that it uses sprites that are already defined and bound to separate images
+/// This plug-in varies from the Image atlas tool in that it uses sprites that are already defined and bound to separate images
 /// </para>
 /// </remarks>
-internal class TextureAtlasToolPlugin
-    : ToolPlugin
+internal class TextureAtlasToolPlugIn
+    : ToolPlugIn
 {
 
     // The cached button definition.
-    private ToolPluginRibbonButton _button;
+    private ToolPlugInRibbonButton _button;
     // The default image codec to use.
     private IGorgonImageCodec _defaultImageCodec;
     // The default sprite codec to use.
@@ -137,7 +137,7 @@ internal class TextureAtlasToolPlugin
 
         try
         {
-            settings = HostToolServices.ToolPluginService.ReadContentSettings<TextureAtlasSettings>(typeof(TextureAtlasToolPlugin).FullName);
+            settings = HostToolServices.ToolPlugInService.ReadContentSettings<TextureAtlasSettings>(typeof(TextureAtlasToolPlugIn).FullName);
 
             settings ??= new TextureAtlasSettings();
 
@@ -162,7 +162,7 @@ internal class TextureAtlasToolPlugin
             HostToolServices.BusyService.SetIdle();
             form.ShowDialog(GorgonApplication.MainForm);
 
-            HostToolServices.ToolPluginService.WriteContentSettings(typeof(TextureAtlasToolPlugin).FullName, settings);
+            HostToolServices.ToolPlugInService.WriteContentSettings(typeof(TextureAtlasToolPlugIn).FullName, settings);
         }
         catch (Exception ex)
         {
@@ -179,35 +179,35 @@ internal class TextureAtlasToolPlugin
     /// <returns>A new tool ribbon button instance.</returns>
     /// <remarks>
     ///   <para>
-    /// Tool plugin developers must override this method to return the button which is inserted on the application ribbon, under the "Tools" tab. If the method returns <b>null</b>, then the tool is
+    /// Tool plug-in developers must override this method to return the button which is inserted on the application ribbon, under the "Tools" tab. If the method returns <b>null</b>, then the tool is
     /// ignored.
     /// </para>
     ///   <para>
-    /// The resulting data structure will contain the means to handle the click event for the tool, and as such, is the only means of communication between the main UI and the plugin.
+    /// The resulting data structure will contain the means to handle the click event for the tool, and as such, is the only means of communication between the main UI and the plug-in.
     /// </para>
     /// </remarks>
-    protected override IToolPluginRibbonButton OnGetToolButton()
+    protected override IToolPlugInRibbonButton OnGetToolButton()
     {
         _button.ClickCallback ??= ShowForm;
 
         return _button;
     }
 
-    /// <summary>Function to provide initialization for the Plugin.</summary>
-    /// <remarks>This method is only called when the Plugin is loaded at startup.</remarks>
+    /// <summary>Function to provide initialization for the plug-in.</summary>
+    /// <remarks>This method is only called when the plug-in is loaded at startup.</remarks>
     protected override void OnInitialize()
     {
         _defaultImageCodec = new GorgonCodecDds();
         _defaultSpriteCodec = new GorgonV3SpriteBinaryCodec(HostToolServices.GraphicsContext.Renderer2D);
 
-        _button = new ToolPluginRibbonButton(Resources.GORTAG_TEXT_BUTTON, Resources.texture_atlas_48x48, Resources.texture_atlas_16x16, Resources.GORTAG_GROUP_BUTTON)
+        _button = new ToolPlugInRibbonButton(Resources.GORTAG_TEXT_BUTTON, Resources.texture_atlas_48x48, Resources.texture_atlas_16x16, Resources.GORTAG_GROUP_BUTTON)
         {
             Description = Resources.GORTAG_DESC_BUTTON
         };
         _button.ValidateButton();
     }
 
-    /// <summary>Function to provide clean up for the Plugin.</summary>
+    /// <summary>Function to provide clean up for the plug-in.</summary>
     protected override void OnShutdown()
     {
         // Disconnect from the button to ensure that we don't get this thing keeping us around longer than we should.
@@ -220,9 +220,9 @@ internal class TextureAtlasToolPlugin
         base.OnShutdown();
     }
 
-    /// <summary>Initializes a new instance of the <see cref="TextureAtlasToolPlugin"/> class.</summary>
-    public TextureAtlasToolPlugin()
-        : base(Resources.GORTAG_plugin_DESC)
+    /// <summary>Initializes a new instance of the <see cref="TextureAtlasToolPlugIn"/> class.</summary>
+    public TextureAtlasToolPlugIn()
+        : base(Resources.GORTAG_PLUGIN_DESC)
     {
     }
 }

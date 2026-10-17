@@ -14,6 +14,7 @@
 // all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -28,7 +29,7 @@ using Gorgon.Diagnostics;
 using Gorgon.IO;
 using Gorgon.IO.FileSystem;
 using Gorgon.IO.FileSystem.Providers;
-using Gorgon.Plugins;
+using Gorgon.PlugIns;
 
 namespace Gorgon.Examples;
 
@@ -56,10 +57,10 @@ namespace Gorgon.Examples;
 internal static class Program
 {
 
-    private const string PluginName = "Gorgon.IO.FileSystem.Providers.ZipPlugin";
+    private const string PlugInName = "Gorgon.IO.FileSystem.Providers.ZipPlugIn";
 
-    // The Plugin assemblies.
-    private static GorgonMefPluginCache _pluginAssemblies;
+    // The plug-in assemblies.
+    private static GorgonMefPlugInCache _plugInAssemblies;
     // Get our zip file provider.
     private static IGorgonFileSystemProvider _provider;
     // File system.
@@ -68,17 +69,17 @@ internal static class Program
     private static IGorgonLog _log;
 
     /// <summary>
-    /// Function to retrieve the directory that contains the Plugins for an application.
+    /// Function to retrieve the directory that contains the plug-ins for an application.
     /// </summary>
-    /// <param name="pluginDirectory">The directory containing the plugins.</param>
-    /// <returns>A directory information object for the Plugin path.</returns>
-    private static DirectoryInfo GetPluginPath(DirectoryInfo pluginDirectory)
+    /// <param name="plugInDirectory">The directory containing the plug-ins.</param>
+    /// <returns>A directory information object for the plug-in path.</returns>
+    private static DirectoryInfo GetPlugInPath(DirectoryInfo plugInDirectory)
     {
-        string path = pluginDirectory.FullName;
+        string path = plugInDirectory.FullName;
 
         if (string.IsNullOrWhiteSpace(path))
         {
-            throw new IOException("No plugin path has been assigned.");
+            throw new IOException("No plug-in path has been assigned.");
         }
 
         if (path.Contains("{0}"))
@@ -99,19 +100,19 @@ internal static class Program
     }
 
     /// <summary>
-    /// Function to load the zip file provider Plugin.
+    /// Function to load the zip file provider plug-in.
     /// </summary>
-    /// <param name="pluginDirectory">The directory containing the plugins.</param>
+    /// <param name="plugInDirectory">The directory containing the plug-ins.</param>
     /// <returns><b>true</b> if successfully loaded, <b>false</b> if not.</returns>
-    private static bool LoadZipProviderPlugin(DirectoryInfo pluginDirectory)
+    private static bool LoadZipProviderPlugIn(DirectoryInfo plugInDirectory)
     {
-        FileInfo zipProviderFile = new(Path.Combine(GetPluginPath(pluginDirectory).FullName.FormatDirectory(Path.DirectorySeparatorChar), "Gorgon.IO.FileSystem.Zip.dll"));
+        FileInfo zipProviderFile = new(Path.Combine(GetPlugInPath(plugInDirectory).FullName.FormatDirectory(Path.DirectorySeparatorChar), "Gorgon.IO.FileSystem.Zip.dll"));
 
         // Check to see if the file exists.
         if (!zipProviderFile.Exists)
         {
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("Could not find the Plugin assembly file:\n'{0}'.", zipProviderFile.FullName);
+            Console.WriteLine("Could not find the Plug-in assembly file:\n'{0}'.", zipProviderFile.FullName);
             Console.ResetColor();
 #if DEBUG
             Console.ReadKey();
@@ -120,11 +121,11 @@ internal static class Program
         }
 
         // Create our file system provider factory so we can retrieve the zip file provider.
-        GorgonFileSystemProviderFactory providerFactory = new(_pluginAssemblies, _log);
+        GorgonFileSystemProviderFactory providerFactory = new(_plugInAssemblies, _log);
 
         try
         {
-            _provider = providerFactory.CreateProvider(zipProviderFile.FullName, PluginName);
+            _provider = providerFactory.CreateProvider(zipProviderFile.FullName, PlugInName);
         }
         catch (GorgonException gEx)
         {
@@ -149,13 +150,13 @@ internal static class Program
     private static void Main()
     {
         DirectoryInfo resourceBaseDirectory = new(Path.Combine(ExampleConfig.Default.ResourceLocation, "FileSystems", "FileSystem.zip"));
-        DirectoryInfo PluginLocationDirectory = new(ExampleConfig.Default.PluginLocation);
+        DirectoryInfo PlugInLocationDirectory = new(ExampleConfig.Default.PlugInLocation);
 
         _log = new GorgonTextFileLog("ZipFileSystem", "Tape_Worm");
         _log.LogStart();
 
-        // Create the Plugin assembly cache.
-        _pluginAssemblies = new GorgonMefPluginCache(_log);
+        // Create the plug-in assembly cache.
+        _plugInAssemblies = new GorgonMefPlugInCache(_log);
 
         try
         {
@@ -173,7 +174,7 @@ internal static class Program
             // Unlike the folder file system example, we need to load
             // a provider to handle zip files before trying to mount
             // one.
-            if (!LoadZipProviderPlugin(PluginLocationDirectory))
+            if (!LoadZipProviderPlugIn(PlugInLocationDirectory))
             {
                 return;
             }
@@ -251,7 +252,7 @@ internal static class Program
         finally
         {
             // Always dispose the cache to clean up the temporary app domain it creates.
-            _pluginAssemblies.Dispose();
+            _plugInAssemblies.Dispose();
             _log.LogEnd();
         }
     }

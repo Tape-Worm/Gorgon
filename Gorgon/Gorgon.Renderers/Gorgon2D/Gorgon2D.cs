@@ -525,12 +525,12 @@ public sealed class Gorgon2D
             _timingValuesBuffer = GorgonConstantBufferView.CreateConstantBuffer(Graphics, in _currentTimingValues, "[Gorgon2D] Timing values.");
             unchecked
             {
-                _lastFrameCount = GorgonTiming.FrameCountULong;
+                _lastFrameCount = (ulong)GorgonTiming.FrameCount;
             }
             return;
         }
 
-        if ((_lastFrameCount != 0) && (GorgonTiming.FrameCountULong == _lastFrameCount))
+        if ((_lastFrameCount != 0) && ((ulong)GorgonTiming.FrameCount == _lastFrameCount))
         {
             return;
         }
@@ -540,7 +540,7 @@ public sealed class Gorgon2D
         _currentTimingValues = timingValues;
         unchecked
         {
-            _lastFrameCount = GorgonTiming.FrameCountULong;
+            _lastFrameCount = (ulong)GorgonTiming.FrameCount;
         }
     }
 

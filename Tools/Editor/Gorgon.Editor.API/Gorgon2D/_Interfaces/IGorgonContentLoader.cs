@@ -43,8 +43,8 @@ namespace Gorgon.IO;
 /// <para>
 /// <note type="important">
 /// <para>
-/// These methods load the data using the layout and metadata information as provided by the default plugins for the editor.  Custom plugins for sprite data, etc... may not work with these methods 
-/// unless those plugins follow the same file layout as the default plugins
+/// These methods load the data using the layout and metadata information as provided by the default plug-ins for the editor.  Custom plug-ins for sprite data, etc... may not work with these methods 
+/// unless those plug-ins follow the same file layout as the default plug-ins
 /// </para>
 /// </note>
 /// </para>
@@ -143,12 +143,12 @@ public interface IGorgonContentLoader
     /// </para>
     /// <para>
     /// If the image is not in a format known by Gorgon, then users should add the <see cref="IGorgonImageCodec"/> for reading the sprite data to the <see cref="ExternalImageCodecs"/> list. 
-    /// Doing this will allow a user to create a custom image codec plugin and use that to read image data.
+    /// Doing this will allow a user to create a custom image codec plug-in and use that to read image data.
     /// </para>
     /// <para>
     /// <h2>Technical info</h2>
     /// <para>
-    /// Plug ins must generate the following metadata for the files in the editor file system.
+    /// Plug-ins must generate the following metadata for the files in the editor file system.
     /// </para>
     /// <para>
     /// The texture file metadata must have the following attributes: <c>Type</c> with a value set to the <see cref="CommonEditorContentTypes.ImageType"/>, and an attribute called <c>ImageCodec</c> 
@@ -174,7 +174,7 @@ public interface IGorgonContentLoader
     /// </para>
     /// <para>
     /// If the animation is not in a format known by Gorgon, then users should add the <see cref="IGorgonAnimationCodec"/> for reading the sprite data to the <see cref="ExternalAnimationCodecs"/> list. 
-    /// Doing this will allow a user to create a custom image codec plugin and use that to read animation data.
+    /// Doing this will allow a user to create a custom image codec plug-in and use that to read animation data.
     /// </para>
     /// <para>
     /// When the <paramref name="textureOverrides"/> contains a list of textures, the loader will override any matching textures in any texture tracks within the animation. This allows user defined pre 
@@ -184,7 +184,7 @@ public interface IGorgonContentLoader
     /// <para>
     /// <h2>Technical info</h2>
     /// <para>
-    /// Plug ins must generate the following metadata for the files in the editor file system.
+    /// Plug-ins must generate the following metadata for the files in the editor file system.
     /// </para>
     /// <para>
     /// The animation file metadata must have the following attributes: <c>Type</c> with a value set to the <see cref="CommonEditorContentTypes.AnimationType"/>, and an attribute called <c>AnimationCodec</c> 
@@ -206,7 +206,7 @@ public interface IGorgonContentLoader
     /// </para>
     /// <para>
     /// If the texture image is not in a format known by Gorgon, then users should add the <see cref="IGorgonImageCodec"/> for reading the sprite data to the <see cref="ExternalImageCodecs"/> list. 
-    /// Doing this will allow a user to create a custom image codec plugin and use that to read image data.
+    /// Doing this will allow a user to create a custom image codec plug-in and use that to read image data.
     /// </para>
     /// <para>
     /// If the <paramref name="cache"/> parameter is set to <b>true</b>, then this method will load the data from the <see cref="TextureCache"/>. If the texture data is not in the cache, then it will 
@@ -216,7 +216,7 @@ public interface IGorgonContentLoader
     /// <para>
     /// <h2>Technical info</h2>
     /// <para>
-    /// Plug ins must generate the following metadata for the files in the editor file system.
+    /// Plug-ins must generate the following metadata for the files in the editor file system.
     /// </para>
     /// <para>
     /// The texture file metadata must have the following attributes: <c>Type</c> with a value set to the <see cref="CommonEditorContentTypes.ImageType"/>, and an attribute called <c>ImageCodec</c> 
@@ -246,12 +246,12 @@ public interface IGorgonContentLoader
     /// </para>
     /// <para>
     /// If the sprite is not in a format known by Gorgon, then users should add the <see cref="IGorgonSpriteCodec"/> for reading the sprite data to the <see cref="ExternalSpriteCodecs"/> list. 
-    /// Doing this will allow a user to create a custom sprite codec plugin and use that to read sprite data.
+    /// Doing this will allow a user to create a custom sprite codec plug-in and use that to read sprite data.
     /// </para>
     /// <para>
     /// <h2>Technical info</h2>
     /// <para>
-    /// Plug ins must generate the following metadata for the files in the editor file system.
+    /// Plug-ins must generate the following metadata for the files in the editor file system.
     /// </para>
     /// <para>
     /// The sprite file metadata must have the following attributes: <c>Type</c> with a value of "Sprite", and <c>SpriteCodec</c>, and its associated texture must have a dependency type of <c>Image</c> 

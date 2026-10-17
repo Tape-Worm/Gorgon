@@ -141,7 +141,7 @@ internal sealed class BatchRenderer
                                                 Usage = ResourceUsage.Immutable,
                                                 Binding = VertexIndexBufferBinding.None
                                             },
-                                            (GorgonPtr<int>)indices);
+                                            ((GorgonPtr<int>)indices).ToReadOnlySpan());
     }
 
     /// <summary>
@@ -230,7 +230,7 @@ internal sealed class BatchRenderer
             CopyMode copyMode = _vertexBufferByteOffset == 0 ? CopyMode.Discard : CopyMode.NoOverwrite;
 
             // Copy a chunk of the cache.
-            vertexBuffer.SetData<Gorgon2DVertex>(_vertexCache.AsSpan(cacheIndex, vertexCount), _vertexBufferByteOffset, copyMode);
+            vertexBuffer.SetData(_vertexCache.AsSpan(cacheIndex, vertexCount), _vertexBufferByteOffset, copyMode);
 
             drawCall.VertexStartIndex = _vertexBufferIndex;
             drawCall.VertexCount = vertexCount;
@@ -281,7 +281,7 @@ internal sealed class BatchRenderer
             CopyMode copyMode = _vertexBufferByteOffset == 0 ? CopyMode.Discard : CopyMode.NoOverwrite;
 
             // Copy a chunk of the cache.
-            vertexBuffer.SetData<Gorgon2DVertex>(_vertexCache.AsSpan(cacheIndex, vertexCount), _vertexBufferByteOffset, copyMode);
+            vertexBuffer.SetData(_vertexCache.AsSpan(cacheIndex, vertexCount), _vertexBufferByteOffset, copyMode);
 
             drawCall.BaseVertexIndex = _indexBufferBaseVertexIndex;
             drawCall.IndexStart = _indexStart;

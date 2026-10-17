@@ -12,6 +12,7 @@
 // all copies or substantial portions of the Software.
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -173,8 +174,7 @@ public interface IGorgonChunkReader
     /// <param name="data">The array that will receive the data from the chunk.</param>
     /// <param name="index">[Optional] The index within the <paramref name="data"/> array to start filling with data.</param>
     /// <param name="count">[Optional] The number of items to read.</param>
-    /// <exception cref="ArgumentException">The index is less than 0, or greater than/equal to the size of the <paramref name="data"/> array.
-    /// <para>-or-</para>
+    /// <exception cref="ArgumentException"><para>The index is less than 0, or greater than/equal to the size of the <paramref name="data"/> array.</para>
     /// <para>The <paramref name="count"/> minus the <paramref name="index"/> is too large for the <paramref name="data"/> array.</para>
     /// </exception>
     /// <exception cref="EndOfStreamException">Thrown if the reader tries to read beyond the size of the chunk.</exception>
@@ -223,7 +223,7 @@ public interface IGorgonChunkReader
     /// </summary>
     /// <param name="bytes">The number of bytes to skip, if this is less than or equal to 0, then nothing will happen.</param>
     /// <returns>The number of bytes skipped.</returns>
-    int Skip(int bytes);
+    long Skip(long bytes);
 
     /// <summary>
     /// Function to deserialize object data from the underlying file stream.

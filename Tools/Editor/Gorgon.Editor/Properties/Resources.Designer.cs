@@ -501,17 +501,17 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to An error occurred while loading the plugin.
+        ///   Looks up a localized string similar to An error occurred while loading the plug-in.
         ///Exception: {0}.
         /// </summary>
-        internal static string GOREDIT_DISABLE_CONTENT_plugin_EXCEPTION {
+        internal static string GOREDIT_DISABLE_CONTENT_PLUGIN_EXCEPTION {
             get {
-                return ResourceManager.GetString("GOREDIT_DISABLE_CONTENT_plugin_EXCEPTION", resourceCulture);
+                return ResourceManager.GetString("GOREDIT_DISABLE_CONTENT_PLUGIN_EXCEPTION", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to An error occurred while loading the plugin.
+        ///   Looks up a localized string similar to An error occurred while loading the plug-in.
         ///Exception: {0}.
         /// </summary>
         internal static string GOREDIT_DISABLE_FILE_PROVIDER_EXCEPTION {
@@ -771,22 +771,22 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There was an error loading the Plugins.
+        ///   Looks up a localized string similar to There was an error loading the plug-ins.
         ///
         ///The application will continue, but some functionality will be unavailable..
         /// </summary>
-        internal static string GOREDIT_ERR_LOADING_pluginS {
+        internal static string GOREDIT_ERR_LOADING_PLUGINS {
             get {
-                return ResourceManager.GetString("GOREDIT_ERR_LOADING_pluginS", resourceCulture);
+                return ResourceManager.GetString("GOREDIT_ERR_LOADING_PLUGINS", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There is no Plugin loaded that can handle opening the file &apos;{0}&apos;..
+        ///   Looks up a localized string similar to There is no plug-in loaded that can handle opening the file &apos;{0}&apos;..
         /// </summary>
-        internal static string GOREDIT_ERR_NO_plugin_FOR_CONTENT {
+        internal static string GOREDIT_ERR_NO_PLUGIN_FOR_CONTENT {
             get {
-                return ResourceManager.GetString("GOREDIT_ERR_NO_plugin_FOR_CONTENT", resourceCulture);
+                return ResourceManager.GetString("GOREDIT_ERR_NO_PLUGIN_FOR_CONTENT", resourceCulture);
             }
         }
         
@@ -928,13 +928,13 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There was an error selecting the plugin.
+        ///   Looks up a localized string similar to There was an error selecting the plug-in.
         ///
         ///Please try again..
         /// </summary>
-        internal static string GOREDIT_ERR_SELECTING_plugin {
+        internal static string GOREDIT_ERR_SELECTING_PLUGIN {
             get {
-                return ResourceManager.GetString("GOREDIT_ERR_SELECTING_plugin", resourceCulture);
+                return ResourceManager.GetString("GOREDIT_ERR_SELECTING_PLUGIN", resourceCulture);
             }
         }
         
@@ -990,9 +990,9 @@ namespace Gorgon.Editor.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Loaded.
         /// </summary>
-        internal static string GOREDIT_plugin_STATE_LOADED {
+        internal static string GOREDIT_PLUGIN_STATE_LOADED {
             get {
-                return ResourceManager.GetString("GOREDIT_plugin_STATE_LOADED", resourceCulture);
+                return ResourceManager.GetString("GOREDIT_PLUGIN_STATE_LOADED", resourceCulture);
             }
         }
         
@@ -1024,11 +1024,11 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Plug ins.
+        ///   Looks up a localized string similar to plug-ins.
         /// </summary>
-        internal static string GOREDIT_SETTINGS_CATEGORY_pluginS {
+        internal static string GOREDIT_SETTINGS_CATEGORY_PLUGINS {
             get {
-                return ResourceManager.GetString("GOREDIT_SETTINGS_CATEGORY_pluginS", resourceCulture);
+                return ResourceManager.GetString("GOREDIT_SETTINGS_CATEGORY_PLUGINS", resourceCulture);
             }
         }
         
@@ -1087,11 +1087,11 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to No reason was given by the plugin author..
+        ///   Looks up a localized string similar to No reason was given by the plug-in author..
         /// </summary>
-        internal static string GOREDIT_TEXT_DISABLED_plugin_DEFAULT_TEXT {
+        internal static string GOREDIT_TEXT_DISABLED_PLUGIN_DEFAULT_TEXT {
             get {
-                return ResourceManager.GetString("GOREDIT_TEXT_DISABLED_plugin_DEFAULT_TEXT", resourceCulture);
+                return ResourceManager.GetString("GOREDIT_TEXT_DISABLED_PLUGIN_DEFAULT_TEXT", resourceCulture);
             }
         }
         
@@ -1150,29 +1150,29 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Loading content plugins....
+        ///   Looks up a localized string similar to Loading content plug-ins....
         /// </summary>
-        internal static string GOREDIT_TEXT_LOADING_CONTENT_pluginS {
+        internal static string GOREDIT_TEXT_LOADING_CONTENT_PLUGINS {
             get {
-                return ResourceManager.GetString("GOREDIT_TEXT_LOADING_CONTENT_pluginS", resourceCulture);
+                return ResourceManager.GetString("GOREDIT_TEXT_LOADING_CONTENT_PLUGINS", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Loading file system plugins....
+        ///   Looks up a localized string similar to Loading file system plug-ins....
         /// </summary>
-        internal static string GOREDIT_TEXT_LOADING_FILESYSTEM_pluginS {
+        internal static string GOREDIT_TEXT_LOADING_FILESYSTEM_PLUGINS {
             get {
-                return ResourceManager.GetString("GOREDIT_TEXT_LOADING_FILESYSTEM_pluginS", resourceCulture);
+                return ResourceManager.GetString("GOREDIT_TEXT_LOADING_FILESYSTEM_PLUGINS", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Loading tool plugins....
+        ///   Looks up a localized string similar to Loading tool plug-ins....
         /// </summary>
-        internal static string GOREDIT_TEXT_LOADING_TOOL_pluginS {
+        internal static string GOREDIT_TEXT_LOADING_TOOL_PLUGINS {
             get {
-                return ResourceManager.GetString("GOREDIT_TEXT_LOADING_TOOL_pluginS", resourceCulture);
+                return ResourceManager.GetString("GOREDIT_TEXT_LOADING_TOOL_PLUGINS", resourceCulture);
             }
         }
         
@@ -1215,9 +1215,9 @@ namespace Gorgon.Editor.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Loaded successfully..
         /// </summary>
-        internal static string GOREDIT_TEXT_plugin_LOADED_SUCCESSFULLY {
+        internal static string GOREDIT_TEXT_PLUGIN_LOADED_SUCCESSFULLY {
             get {
-                return ResourceManager.GetString("GOREDIT_TEXT_plugin_LOADED_SUCCESSFULLY", resourceCulture);
+                return ResourceManager.GetString("GOREDIT_TEXT_PLUGIN_LOADED_SUCCESSFULLY", resourceCulture);
             }
         }
         

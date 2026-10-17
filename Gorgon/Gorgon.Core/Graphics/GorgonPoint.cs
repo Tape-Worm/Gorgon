@@ -12,6 +12,7 @@
 // all copies or substantial portions of the Software.
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -41,13 +42,6 @@ namespace Gorgon.Graphics;
 /// </para>
 /// <para>
 /// If floating point coordinates are required, use the .NET <see cref="Vector2"/> type.
-/// </para>
-/// <para>
-/// <note type="important">
-/// <para>
-/// This value type merely represents the position of a point in space, it does not draw a point. 
-/// </para>
-/// </note>
 /// </para>
 /// </remarks>
 /// <param name="x">The horiztonal position of the point.</param>

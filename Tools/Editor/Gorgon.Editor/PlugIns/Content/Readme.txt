@@ -1,0 +1,1 @@
+﻿This folder will contain content specific Plug-ins.

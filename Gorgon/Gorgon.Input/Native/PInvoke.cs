@@ -13,6 +13,7 @@
 // all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -69,7 +70,7 @@ internal static partial class PInvoke
     /// <param name="states">The current state of the keyboard.</param>
     /// <param name="buffer">The buffer that will receive the unicode character.</param>
     /// <returns>The character as a string, or an empty string if no character is applicable.</returns>
-    public unsafe static string ToUnicodeChar(VirtualKeys key, ReadOnlySpan<byte> states, Span<char> buffer)
+    public static string ToUnicodeChar(VirtualKeys key, ReadOnlySpan<byte> states, Span<char> buffer)
     {
         int result = ToUnicode((uint)key, 0, states, buffer, 0);
 

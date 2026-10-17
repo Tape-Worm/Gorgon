@@ -12,6 +12,7 @@
 // all copies or substantial portions of the Software.
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -158,8 +159,7 @@ public interface IGorgonChunkWriter
     /// <param name="data">The array to write to the chunk.</param>
     /// <param name="index">[Optional] The index within the <paramref name="data"/> array to start at when writing to the chunk.</param>
     /// <param name="count">[Optional] The number of items to write.</param>
-    /// <exception cref="ArgumentException">The index is less than 0, or greater than/equal to the size of the <paramref name="data"/> array.
-    /// <para>-or-</para>
+    /// <exception cref="ArgumentException"><para>The index is less than 0, or greater than/equal to the size of the <paramref name="data"/> array.</para>
     /// <para>The <paramref name="count"/> minus the <paramref name="index"/> is too large for the <paramref name="data"/> array.</para>
     /// </exception>
     /// <exception cref="IOException">Thrown if the method is called while the <see cref="Serialize{T}"/> method is executing.</exception>

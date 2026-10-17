@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Numerics;
 using Gorgon.Math;
 
 namespace Gorgon.Core.Tests;
@@ -524,6 +525,230 @@ public class GorgonMathTests
 
         Assert.AreEqual(expectedDecimal1, (-3645.0M).WrapAngle());
         Assert.AreEqual(expectedDecimal2, (3645.0M).WrapAngle());
+    }
+
+    [TestMethod]
+    public void TestWrapExclusive()
+    {
+        sbyte sbexpected = 10;
+        sbyte sbactual = sbexpected.Wrap(0, 10, false);
+
+        Assert.AreEqual(sbexpected, sbactual);
+
+        sbactual = (sbyte)20.Wrap(1, 10, false);
+
+        Assert.AreEqual(1, sbactual);
+
+        byte bexpected = 10;
+        byte bactual = bexpected.Wrap(0, 10, false);
+
+        Assert.AreEqual(bexpected, bactual);
+
+        bactual = (byte)20.Wrap(1, 10, false);
+
+        Assert.AreEqual(1, bactual);
+
+        short sexpected = 10;
+        short sactual = sexpected.Wrap(0, 10, false);
+
+        Assert.AreEqual(sexpected, sactual);
+
+        sactual = (short)20.Wrap(1, 10, false);
+
+        Assert.AreEqual(1, sactual);
+
+        ushort usexpected = 10;
+        ushort usactual = usexpected.Wrap(0, 10, false);
+
+        Assert.AreEqual(usexpected, usactual);
+
+        usactual = (ushort)20.Wrap(1, 10, false);
+
+        Assert.AreEqual(1, usactual);
+
+        int iexpected = 10;
+        int iactual = iexpected.Wrap(0, 10, false);
+
+        Assert.AreEqual(iexpected, iactual);
+
+        iactual = 20.Wrap(1, 10, false);
+
+        Assert.AreEqual(1, iactual);
+
+        uint uiexpected = 10;
+        uint uiactual = uiexpected.Wrap(0, 10, false);
+
+        Assert.AreEqual(uiexpected, uiactual);
+
+        uiactual = (uint)20.Wrap(1, 10, false);
+
+        Assert.AreEqual((uint)1, uiactual);
+
+        long lexpected = 10;
+        long lactual = lexpected.Wrap(0, 10, false);
+
+        Assert.AreEqual(lexpected, lactual);
+
+        lactual = 20L.Wrap(1, 10, false);
+
+        Assert.AreEqual(1, lactual);
+
+        ulong ulexpected = 10;
+        ulong ulactual = ulexpected.Wrap(0, 10, false);
+
+        Assert.AreEqual(ulexpected, ulactual);
+
+        ulactual = 20UL.Wrap(1, 10, false);
+
+        Assert.AreEqual(1UL, ulactual);
+
+        float fexpected = 10;
+        float factual = fexpected.Wrap(0, 10, false);
+
+        Assert.AreEqual(fexpected, factual);
+
+        factual = 20.0f.Wrap(1, 10, false);
+
+        Assert.AreEqual(1, factual);
+
+        double dexpected = 10;
+        double dactual = dexpected.Wrap(0, 10, false);
+
+        Assert.AreEqual(dexpected, dactual);
+
+        dactual = 20.0.Wrap(1, 10, false);
+
+        Assert.AreEqual(1, dactual);
+
+        decimal deexpected = 10;
+        decimal deactual = deexpected.Wrap(0, 10, false);
+
+        Assert.AreEqual(deexpected, deactual);
+
+        deactual = 20.0M.Wrap(1, 10, false);
+
+        Assert.AreEqual(1, deactual);
+
+        BigInteger biexpected = 10;
+        BigInteger biactual = biexpected.Wrap(0, 10, false);
+
+        Assert.AreEqual(biexpected, biactual);
+
+        biactual = (BigInteger)20.Wrap(1, 10, false);
+
+        Assert.AreEqual(1, biactual);
+    }
+
+    [TestMethod]
+    public void TestWrapInclusive()
+    {
+        sbyte sbexpected = 5;
+        sbyte sbactual = sbexpected.Wrap(0, 10, true);
+
+        Assert.AreEqual(sbexpected, sbactual);
+
+        sbactual = (sbyte)10.Wrap(1, 10, true);
+
+        Assert.AreEqual(1, sbactual);
+
+        byte bexpected = 5;
+        byte bactual = bexpected.Wrap(0, 10, true);
+
+        Assert.AreEqual(bexpected, bactual);
+
+        bactual = (byte)10.Wrap(1, 10, true);
+
+        Assert.AreEqual(1, bactual);
+
+        short sexpected = 5;
+        short sactual = sexpected.Wrap(0, 10, true);
+
+        Assert.AreEqual(sexpected, sactual);
+
+        sactual = (short)10.Wrap(1, 10, true);
+
+        Assert.AreEqual(1, sactual);
+
+        ushort usexpected = 5;
+        ushort usactual = usexpected.Wrap(0, 10, true);
+
+        Assert.AreEqual(usexpected, usactual);
+
+        usactual = (ushort)10.Wrap(1, 10, true);
+
+        Assert.AreEqual(1, usactual);
+
+        int iexpected = 5;
+        int iactual = iexpected.Wrap(0, 10, true);
+
+        Assert.AreEqual(iexpected, iactual);
+
+        iactual = 10.Wrap(1, 10, true);
+
+        Assert.AreEqual(1, iactual);
+
+        uint uiexpected = 5;
+        uint uiactual = uiexpected.Wrap(0, 10, true);
+
+        Assert.AreEqual(uiexpected, uiactual);
+
+        uiactual = (uint)10.Wrap(1, 10, true);
+
+        Assert.AreEqual((uint)1, uiactual);
+
+        long lexpected = 5;
+        long lactual = lexpected.Wrap(0, 10, true);
+
+        Assert.AreEqual(lexpected, lactual);
+
+        lactual = 10L.Wrap(1, 10, true);
+
+        Assert.AreEqual(1, lactual);
+
+        ulong ulexpected = 5;
+        ulong ulactual = ulexpected.Wrap(0, 10, true);
+
+        Assert.AreEqual(ulexpected, ulactual);
+
+        ulactual = 10UL.Wrap(1, 10, true);
+
+        Assert.AreEqual(1UL, ulactual);
+
+        float fexpected = 5;
+        float factual = fexpected.Wrap(0, 10, true);
+
+        Assert.AreEqual(fexpected, factual);
+
+        factual = 10.0f.Wrap(1, 10, true);
+
+        Assert.AreEqual(1, factual);
+
+        double dexpected = 5;
+        double dactual = dexpected.Wrap(0, 10, true);
+
+        Assert.AreEqual(dexpected, dactual);
+
+        dactual = 10.0.Wrap(1, 10, true);
+
+        Assert.AreEqual(1, dactual);
+
+        decimal deexpected = 5;
+        decimal deactual = deexpected.Wrap(0, 10, true);
+
+        Assert.AreEqual(deexpected, deactual);
+
+        deactual = 10.0M.Wrap(1, 10, true);
+
+        Assert.AreEqual(1, deactual);
+
+        BigInteger biexpected = 5;
+        BigInteger biactual = biexpected.Wrap(0, 10, true);
+
+        Assert.AreEqual(biexpected, biactual);
+
+        biactual = (BigInteger)10.Wrap(1, 10, true);
+
+        Assert.AreEqual(1, biactual);
     }
 
     [TestMethod]

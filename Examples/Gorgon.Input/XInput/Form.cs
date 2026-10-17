@@ -13,6 +13,7 @@
 // all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -22,6 +23,7 @@
 // Created: Friday, January 11, 2013 8:27:21 AM
 // 
 
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Numerics;
 using System.Text;
@@ -68,6 +70,7 @@ public partial class Form
     /// <summary>
     /// Property to return the input system.
     /// </summary>
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public required IGorgonInput Input
     {
         get;
@@ -77,6 +80,7 @@ public partial class Form
     /// <summary>
     /// Property to return the application loop.
     /// </summary>
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public required GorgonApplicationLoop Loop
     {
         get;
@@ -86,6 +90,7 @@ public partial class Form
     /// <summary>
     /// Property to return the application log.
     /// </summary>
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public required IGorgonLog Log
     {
         get;
@@ -454,10 +459,7 @@ public partial class Form
         {
             Panel? panel = (Panel?)panelControllers.Controls["panelController" + deviceInfo.XInputSlot];
 
-            if (panel is not null)
-            {
-                panel.Visible = false;
-            }
+            panel?.Visible = false;
 
             _controllers.Remove(_controllers[deviceIndex]);
         }

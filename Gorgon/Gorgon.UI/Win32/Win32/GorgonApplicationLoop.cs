@@ -12,6 +12,7 @@
 // all copies or substantial portions of the Software.
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -46,7 +47,7 @@ public sealed class GorgonApplicationLoop
     // The instance.
     private static volatile GorgonApplicationLoop? _instance = null;
     // The lock used to create a single instance.
-    private static readonly object _instanceLock = new();
+    private static readonly Lock _instanceLock = new();
 
     /// <summary>
     /// Property to return whether the application loop is running or not.
@@ -97,7 +98,7 @@ public sealed class GorgonApplicationLoop
             Stop();
         }
         else
-        {            
+        {
             _cancellationTokenSource.Cancel();
         }
 
@@ -146,6 +147,11 @@ public sealed class GorgonApplicationLoop
             {
                 Stop();
                 return;
+            }
+
+            if (!GorgonTiming.TimingStarted)
+            {
+                GorgonTiming.StartTiming(new GorgonTimer());
             }
 
             try

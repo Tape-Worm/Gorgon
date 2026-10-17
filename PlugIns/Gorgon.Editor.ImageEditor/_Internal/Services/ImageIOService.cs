@@ -40,7 +40,7 @@ namespace Gorgon.Editor.ImageEditor;
 /// Provides I/O functionality for reading/writing image data
 /// </summary>
 /// <remarks>Initializes a new instance of the <see cref="ImageEditor.ImageIO"/> class.</remarks>
-/// <param name="defaultCodec">The default codec used by the plugin.</param>
+/// <param name="defaultCodec">The default codec used by the plug-in.</param>
 /// <param name="installedCodecs">The list of installed codecs.</param>
 /// <param name="importDialog">The dialog service used to export an image.</param>
 /// <param name="exportDialog">The dialog used to export an image.</param>
@@ -74,7 +74,7 @@ internal class ImageIOService(IGorgonImageCodec defaultCodec,
     private readonly IGorgonImage _noThumbImage = noThumbnailImage;
 
     /// <summary>
-    /// Property to return the default Plugin codec.
+    /// Property to return the default plug-in codec.
     /// </summary>
     public IGorgonImageCodec DefaultCodec
     {

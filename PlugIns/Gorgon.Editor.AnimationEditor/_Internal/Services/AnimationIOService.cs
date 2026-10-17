@@ -464,7 +464,7 @@ internal class AnimationIOService(IContentFileManager fileManager, ITextureCache
             animFile.IsOpen = true;
             if (backgroundImage is not null)
             {
-                animFile.Metadata.DependsOn[AnimationEditorPlugin.BgImageDependencyName] = [backgroundImage.Path];
+                animFile.Metadata.DependsOn[AnimationEditorPlugIn.BgImageDependencyName] = [backgroundImage.Path];
             }
 
             animFile.LinkContent(primarySpriteFile);

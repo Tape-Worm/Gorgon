@@ -12,6 +12,7 @@
 // all copies or substantial portions of the Software.
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -160,11 +161,8 @@ public abstract class GorgonChunkFile
     /// </note>
     /// </remarks>
     /// <exception cref="GorgonException">Thrown when the chunk file format header ID does not match when reading.
-    /// <para>-or-</para>
     /// <para>Thrown when application specific header ID in the file was not found in the list passed to the constructor when reading.</para>
-    /// <para>-or-</para>
     /// <para>Thrown if the chunk file table offset is less than or equal to the size of the header when reading.</para>
-    /// <para>-or-</para>
     /// <para>Thrown if the file size recorded in the header is less than the size of the header when reading.</para>
     /// </exception>
     public void Open()

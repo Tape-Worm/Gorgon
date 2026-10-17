@@ -29,7 +29,7 @@ using Gorgon.Collections;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.Metadata;
-using Gorgon.Editor.Plugins;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.ProjectData;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.Services;
@@ -75,23 +75,23 @@ internal class ProjectEditor
     private IEditorContent _currentContent;
     // The content previewer view model.
     private IContentPreview _contentPreviewer;
-    // The file manager used to manage content through content plugins.
+    // The file manager used to manage content through content plug-ins.
     private IContentFileManager _contentFileManager;
     // The list of tool buttons.
-    private IReadOnlyDictionary<string, IReadOnlyList<IToolPluginRibbonButton>> _toolButtons = new Dictionary<string, IReadOnlyList<IToolPluginRibbonButton>>(StringComparer.CurrentCultureIgnoreCase);
+    private IReadOnlyDictionary<string, IReadOnlyList<IToolPlugInRibbonButton>> _toolButtons = new Dictionary<string, IReadOnlyList<IToolPlugInRibbonButton>>(StringComparer.CurrentCultureIgnoreCase);
     // The settings for the application.
     private Editor.EditorSettings _settings;
     // The project save dialog service.
     private EditorFileSaveDialogService _saveDialog;
-    // The list of plugins that can create content.
-    private IReadOnlyList<IContentPluginMetadata> _contentCreators;
+    // The list of plug-ins that can create content.
+    private IReadOnlyList<IContentPlugInMetadata> _contentCreators;
     // The current clipboard context.
     private IClipboardHandler _clipboardContext;
 
     /// <summary>
-    /// Property to return the available tool plugin button definitions for the application.
+    /// Property to return the available tool plug-in button definitions for the application.
     /// </summary>
-    public IReadOnlyDictionary<string, IReadOnlyList<IToolPluginRibbonButton>> ToolButtons
+    public IReadOnlyDictionary<string, IReadOnlyList<IToolPlugInRibbonButton>> ToolButtons
     {
         get => _toolButtons;
         private set
@@ -102,7 +102,7 @@ internal class ProjectEditor
             }
 
             OnPropertyChanging();
-            _toolButtons = value ?? new Dictionary<string, IReadOnlyList<IToolPluginRibbonButton>>(StringComparer.CurrentCultureIgnoreCase);
+            _toolButtons = value ?? new Dictionary<string, IReadOnlyList<IToolPlugInRibbonButton>>(StringComparer.CurrentCultureIgnoreCase);
             OnPropertyChanged();
         }
     }
@@ -189,7 +189,7 @@ internal class ProjectEditor
     }
 
     /// <summary>
-    /// Property to set or return the content file manager for managing content file systems through content plugins.
+    /// Property to set or return the content file manager for managing content file systems through content plug-ins.
     /// </summary>
     public IContentFileManager ContentFileManager
     {
@@ -647,10 +647,10 @@ internal class ProjectEditor
                 ShowWaitPanel(string.Format(Resources.GOREDIT_TEXT_OPENING, file.Name));
             }
 
-            // Find the associated plugin.
-            if (!HostServices.ContentPluginService.Plugins.TryGetValue(file.Metadata.PluginName, out ContentPlugin Plugin))
+            // Find the associated plug-in.
+            if (!HostServices.ContentPlugInService.PlugIns.TryGetValue(file.Metadata.PlugInName, out ContentPlugIn PlugIn))
             {
-                HostServices.MessageDisplay.ShowError(string.Format(Resources.GOREDIT_ERR_NO_plugin_FOR_CONTENT, file.Name));
+                HostServices.MessageDisplay.ShowError(string.Format(Resources.GOREDIT_ERR_NO_PLUGIN_FOR_CONTENT, file.Name));
                 return;
             }
 
@@ -660,7 +660,7 @@ internal class ProjectEditor
             // Create a content object.                
             if (!inPlaceOpen)
             {
-                IEditorContent content = await Plugin.OpenContentAsync(file, _contentFileManager, _projectData, undoService);
+                IEditorContent content = await PlugIn.OpenContentAsync(file, _contentFileManager, _projectData, undoService);
 
                 if (content is null)
                 {
@@ -682,7 +682,7 @@ internal class ProjectEditor
             }
             else
             {
-                Plugin.OpenInPlace(file, CurrentContent, undoService);
+                PlugIn.OpenInPlace(file, CurrentContent, undoService);
             }
         }
         catch (Exception ex)
@@ -709,7 +709,7 @@ internal class ProjectEditor
     private async Task DoSaveProjectToPackFile(CancelEventArgs args)
     {
         CancellationTokenSource cancelSource = new();
-        FileWriterPlugin writer = null;
+        FileWriterPlugIn writer = null;
 
         try
         {
@@ -737,9 +737,9 @@ internal class ProjectEditor
             path = Path.GetFullPath(path);
             writer = _saveDialog.CurrentWriter;
 
-            Debug.Assert(writer is not null, "Must have a writer plugin.");
+            Debug.Assert(writer is not null, "Must have a writer plug-in.");
 
-            HostServices.Log.Print($"File writer plugin is: {writer.Name}.", LoggingLevel.Verbose);
+            HostServices.Log.Print($"File writer plug-in is: {writer.Name}.", LoggingLevel.Verbose);
             HostServices.Log.Print($"Saving to '{path}'...", LoggingLevel.Simple);
 
             ProgressPanelUpdateArgs panelUpdateArgs = new()
@@ -815,15 +815,15 @@ internal class ProjectEditor
 
         try
         {
-            IContentPluginMetadata metadata = _contentCreators.FirstOrDefault(item => id == item.NewIconID);
+            IContentPlugInMetadata metadata = _contentCreators.FirstOrDefault(item => id == item.NewIconID);
 
-            Debug.Assert(metadata is not null, $"Could not locate the content Plugin metadata for {id}.");
+            Debug.Assert(metadata is not null, $"Could not locate the content Plug-in metadata for {id}.");
 
             ShowWaitPanel(string.Format(Resources.GOREDIT_TEXT_CREATING_CONTENT, metadata.ContentType));
 
-            ContentPlugin Plugin = HostServices.ContentPluginService.Plugins.FirstOrDefault(item => item.Value == metadata).Value;
+            ContentPlugIn PlugIn = HostServices.ContentPlugInService.PlugIns.FirstOrDefault(item => item.Value == metadata).Value;
 
-            Debug.Assert(Plugin is not null, $"Could not locate the content plugin for {id}.");
+            Debug.Assert(PlugIn is not null, $"Could not locate the content plug-in for {id}.");
 
             directory = _fileExplorer.SelectedDirectory ?? _fileExplorer.Root;
 
@@ -852,14 +852,14 @@ internal class ProjectEditor
             }
 
             // Get a new name (and any default data).
-            (contentName, contentData, contentMetadata) = await Plugin.GetDefaultContentAsync(Plugin.ContentTypeID, directory.Files.Select(item => item.Name).ToHashSet(StringComparer.OrdinalIgnoreCase));
+            (contentName, contentData, contentMetadata) = await PlugIn.GetDefaultContentAsync(PlugIn.ContentTypeID, directory.Files.Select(item => item.Name).ToHashSet(StringComparer.OrdinalIgnoreCase));
 
             if ((contentName is null) || (contentData is null))
             {
                 return;
             }
 
-            // Now that we have a file, we need to populate it with default data from the content Plugin.
+            // Now that we have a file, we need to populate it with default data from the content plug-in.
             string path = $"{directory.FullPath}{contentName.FormatFileName()}";
             contentStream = ContentFileManager.OpenStream(path, FileMode.Create);
             foreach (ReadOnlyMemory<byte> memory in contentData.GetReadOnlySequence())
@@ -973,7 +973,7 @@ internal class ProjectEditor
 
         FileExplorer.OpenContentFileCommand = new EditorAsyncCommand<object>(DoOpenContentAsync, CanOpenContent);
 
-        ToolButtons = HostServices.ToolPluginService.RibbonButtons;
+        ToolButtons = HostServices.ToolPlugInService.RibbonButtons;
     }
 
     /// <summary>

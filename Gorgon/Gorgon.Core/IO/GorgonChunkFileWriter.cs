@@ -14,6 +14,7 @@
 // all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -176,7 +177,6 @@ public sealed class GorgonChunkFileWriter
     /// <param name="chunkId">The ID of the chunk to create.</param>
     /// <returns>A <see cref="IGorgonChunkWriter" /> that will allow writing within the chunk.</returns>
     /// <exception cref="IOException">Thrown if the chunk was opened without calling <see cref="GorgonChunkFile.Open"/> first.
-    /// <para>-or-</para>
     /// <para>Thrown if another <see cref="IGorgonChunkWriter"/> is open elsewhere.</para>
     /// </exception>
     /// <remarks>
@@ -201,7 +201,6 @@ public sealed class GorgonChunkFileWriter
     /// <param name="chunkId">The ID of the chunk to create.</param>
     /// <returns>A <see cref="IGorgonChunkWriter" /> that will allow writing within the chunk.</returns>
     /// <exception cref="IOException">Thrown if the chunk was opened without calling <see cref="GorgonChunkFile.Open"/> first.
-    /// <para>-or-</para>
     /// <para>Thrown if another <see cref="IGorgonChunkWriter"/> is open elsewhere.</para>
     /// </exception>
     /// <remarks>
@@ -265,8 +264,7 @@ public sealed class GorgonChunkFileWriter
     /// </summary>
     /// <param name="stream">The stream that contains the chunk file to write.</param>
     /// <param name="appHeaderId">An application specific header ID to write to the file for validation.</param>
-    /// <exception cref="ArgumentException">Thrown when the <paramref name="stream" /> is has its <see cref="Stream.CanSeek" /> property set to <b>false</b> 
-    /// <para>-or-</para>
+    /// <exception cref="ArgumentException"><para>Thrown when the <paramref name="stream" /> is has its <see cref="Stream.CanSeek" /> property set to <b>false</b>.</para>
     /// <para>
     /// Thrown when the <paramref name="stream"/> is read-only.
     /// </para>

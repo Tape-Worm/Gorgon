@@ -13,10 +13,10 @@ trigger:
 jobs:
   - job: 'Feature_Build'
     pool:
-      vmImage: 'windows-latest'
+      vmImage: 'windows-2025-vs2026'
 
     variables:
-      solution: 'Gorgon.sln'
+      solution: 'Gorgon.slnx'
       buildPlatform: 'Any CPU'
       buildConfiguration: 'Debug'
 

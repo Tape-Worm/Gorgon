@@ -12,6 +12,7 @@
 // all copies or substantial portions of the Software.
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -33,7 +34,7 @@ internal sealed class Pixel16BppBgr565
     public override GorgonColor Decode(ushort value)
     {
         uint r = (uint)(value >> 11) & 0x1f;
-        uint g = (uint)(value >> 6) & 0x3f;
+        uint g = (uint)(value >> 5) & 0x3f;
         uint b = (uint)(value & 0x1f);
 
         return new GorgonColor(r / 31.0f, g / 63.0f, b / 31.0f, 1.0f);
@@ -46,7 +47,7 @@ internal sealed class Pixel16BppBgr565
         uint g = (uint)(color.Green * 63.0f) & 0x3f;
         uint b = (uint)(color.Blue * 31.0f) & 0x1f;
 
-        return (ushort)(r << 11 | g << 6 | b);
+        return (ushort)(r << 11 | g << 5 | b);
     }
 
     /// <inheritdoc/>

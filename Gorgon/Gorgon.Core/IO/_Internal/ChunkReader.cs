@@ -12,6 +12,7 @@
 // all copies or substantial portions of the Software.
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -217,13 +218,13 @@ internal class ChunkReader(GorgonChunk chunk, Stream parentStream, Action onClos
     }
 
     /// <inheritdoc/>
-    public int Skip(int bytes)
+    public long Skip(long bytes)
     {
         CheckIfDeserializing();
 
         if (bytes + _reader.BaseStream.Position > _reader.BaseStream.Length)
         {
-            bytes = (int)(_reader.BaseStream.Length - _reader.BaseStream.Position);
+            bytes = _reader.BaseStream.Length - _reader.BaseStream.Position;
         }
 
         if (bytes <= 0)
@@ -252,7 +253,7 @@ internal class ChunkReader(GorgonChunk chunk, Stream parentStream, Action onClos
             T value = deserializeCallback(subStream);
 
             // Move our position ahead.
-            _reader.BaseStream.Position += subStream.Length;
+            _reader.BaseStream.Position += subStream.Position;
 
             return value;
         }

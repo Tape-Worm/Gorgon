@@ -34,7 +34,7 @@ internal class Settings
     : SettingsCategoryBase<SettingsParameters>, ISettings
 {
 
-    // The settings data for the plugin.
+    // The settings data for the plug-in.
     private FontEditorSettings _settings;
 
     /// <summary>Property to set or return the default font face.</summary>
@@ -55,7 +55,7 @@ internal class Settings
     }
 
     /// <summary>Property to return the name of this object.</summary>
-    public override string Name => "Example Plug in - Text Content";
+    public override string Name => "Example Plug-in - Text Content";
 
     /// <summary>Function to inject dependencies for the view model.</summary>
     /// <param name="injectionParameters">The parameters to inject.</param>

@@ -14,6 +14,7 @@
 // all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -263,7 +264,8 @@ internal static partial class RawInputApi
 
             RAWINPUT inputPacket = default;
 
-            if (PInvoke.GetRawInputData(new HRAWINPUT(msg.lParam), RAW_INPUT_DATA_COMMAND_FLAGS.RID_INPUT, &inputPacket, ref bufferSize, _headerSize) < 0)
+
+            if (PInvoke.GetRawInputData(new HRAWINPUT(msg.lParam), RAW_INPUT_DATA_COMMAND_FLAGS.RID_INPUT, &inputPacket, &bufferSize, _headerSize) < 0)
             {
                 throw new Win32Exception(Resources.GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA);
             }
@@ -279,7 +281,7 @@ internal static partial class RawInputApi
     /// <returns>The size of the data block, in bytes.</returns>
     /// <exception cref="Win32Exception">Thrown if the size could not be retrieved.</exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public unsafe static int GetPreparsedDataSize(HANDLE deviceHandle)
+    public static int GetPreparsedDataSize(HANDLE deviceHandle)
     {
         uint dataSize = 0;
         if (PInvoke.GetRawInputDeviceInfo(deviceHandle, RAW_INPUT_DEVICE_INFO_COMMAND.RIDI_PREPARSEDDATA, null, ref dataSize) < 0)
@@ -297,7 +299,7 @@ internal static partial class RawInputApi
     /// <param name="deviceHandle">The handle to the device.</param>
     /// <param name="buffer">The buffer to populate.</param>
     /// <returns>A pointer to the block of memory holding the HID preparsed data.</returns>
-    public unsafe static void GetPreparsedDeviceInfoData(HANDLE deviceHandle, Span<byte> buffer)
+    public static void GetPreparsedDeviceInfoData(HANDLE deviceHandle, Span<byte> buffer)
     {
         int win32Error;
 
@@ -306,15 +308,12 @@ internal static partial class RawInputApi
             throw new InternalBufferOverflowException(string.Format(Resources.GORINP_RAW_ERR_BUFFER_TOO_SMALL, buffer.Length));
         }
 
-        fixed (byte* result = buffer)
-        {
-            uint dataSize = (uint)buffer.Length;
+        uint dataSize = (uint)buffer.Length;
 
-            if (PInvoke.GetRawInputDeviceInfo(deviceHandle, RAW_INPUT_DEVICE_INFO_COMMAND.RIDI_PREPARSEDDATA, result, ref dataSize) < 0)
-            {
-                win32Error = Marshal.GetLastWin32Error();
-                throw new Win32Exception(string.Format(Resources.GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA, win32Error));
-            }
+        if (PInvoke.GetRawInputDeviceInfo(deviceHandle, RAW_INPUT_DEVICE_INFO_COMMAND.RIDI_PREPARSEDDATA, buffer, ref dataSize) < 0)
+        {
+            win32Error = Marshal.GetLastWin32Error();
+            throw new Win32Exception(string.Format(Resources.GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA, win32Error));
         }
     }
 
@@ -368,7 +367,7 @@ internal static partial class RawInputApi
     /// Function to perform the enumeration and translation of raw input native structures.
     /// </summary>
     /// <returns>The raw input device list.</returns>
-    public unsafe static RAWINPUTDEVICELIST[] EnumerateRawInputDevices()
+    public static RAWINPUTDEVICELIST[] EnumerateRawInputDevices()
     {
         uint deviceCount = 0;
         uint structSize = (uint)Unsafe.SizeOf<RAWINPUTDEVICELIST>();
@@ -445,7 +444,7 @@ internal static partial class RawInputApi
         }
 
         RID_DEVICE_INFO result = default;
-        errCode = (int)PInvoke.GetRawInputDeviceInfo(device.hDevice, RAW_INPUT_DEVICE_INFO_COMMAND.RIDI_DEVICEINFO, &result, ref dataSize);
+        errCode = (int)PInvoke.GetRawInputDeviceInfo(device.hDevice, RAW_INPUT_DEVICE_INFO_COMMAND.RIDI_DEVICEINFO, &result, &dataSize);
 
         if (errCode < -1)
         {
@@ -483,7 +482,7 @@ internal static partial class RawInputApi
         char* data = stackalloc char[(int)dataSize];
 
         // ReSharper disable once InvertIf
-        if (((int)PInvoke.GetRawInputDeviceInfo(device.hDevice, RAW_INPUT_DEVICE_INFO_COMMAND.RIDI_DEVICENAME, data, ref dataSize)) < 0)
+        if (((int)PInvoke.GetRawInputDeviceInfo(device.hDevice, RAW_INPUT_DEVICE_INFO_COMMAND.RIDI_DEVICENAME, data, &dataSize)) < 0)
         {
             int win32Error = Marshal.GetLastWin32Error();
             throw new Win32Exception(win32Error, Resources.GORINP_RAW_ERR_CANNOT_READ_DEVICE_DATA);

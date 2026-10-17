@@ -23,23 +23,23 @@
 // Created: March 25, 2019 9:47:13 AM
 // 
 
-using Gorgon.Editor.Plugins;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI.ViewModels;
 
 namespace Gorgon.Editor.SpriteEditor;
 
 /// <summary>
-/// The parameters to pass to the <see cref="IEditorPluginSettings"/> view model
+/// The parameters to pass to the <see cref="IEditorPlugInSettings"/> view model
 /// </summary>
 /// <remarks>Initializes a new instance of the <see cref="SettingsParameters"/> class.</remarks>
-/// <param name="settings">The plugin settings.</param>
+/// <param name="settings">The plug-in settings.</param>
 /// <param name="hostServices">Common application services.</param>
 /// <exception cref="ArgumentNullException">Thrown when the <paramref name="settings" /> parameter is <strong>null</strong>.</exception>
 internal class SettingsParameters(SpriteEditorSettings settings, IHostContentServices hostServices)
         : ViewModelInjection<IHostContentServices>(hostServices)
 {
     /// <summary>
-    /// Property to return the settings for the plugin.
+    /// Property to return the settings for the plug-in.
     /// </summary>
     public SpriteEditorSettings Settings
     {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.CodeDom.Compiler;
+using System.ComponentModel;
 using System.Drawing;
 using System.Globalization;
 using System.Windows.Forms;
@@ -53,6 +54,7 @@ public partial class ColorPickerPanel
     /// </summary>
     public event EventHandler OldColorChanged;
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public bool AlphaEnabled
     {
         get => _alphaEnabled;
@@ -63,6 +65,8 @@ public partial class ColorPickerPanel
             numAlpha.Enabled = _alphaEnabled;
         }
     }
+
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public Color OldColor
     {
         get => _oldColor.ToColor();
@@ -73,6 +77,8 @@ public partial class ColorPickerPanel
             OldColorChanged?.Invoke(this, EventArgs.Empty);
         }
     }
+
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public Color SelectedColor
     {
         get => _selColor.ToColor();
@@ -83,6 +89,8 @@ public partial class ColorPickerPanel
             ColorChanged?.Invoke(this, EventArgs.Empty);
         }
     }
+
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public PrimaryAttrib PrimaryAttribute
     {
         get => _primAttrib;

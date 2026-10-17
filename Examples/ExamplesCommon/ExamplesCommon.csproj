@@ -1,9 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
     <ForceDesignerDpiUnaware>true</ForceDesignerDpiUnaware>
     <ApplicationIcon>Gorgon2.ico</ApplicationIcon>
+    <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
     <UseWindowsForms>true</UseWindowsForms>
     <Authors>Michael Winsor</Authors>
     <Company>Tape_Worm</Company>
@@ -27,9 +28,8 @@
     <AssemblyVersion>4.0.0.0</AssemblyVersion>
     <FileVersion>4.0.0.0</FileVersion>
     <VersionPrefix>4.0.0</VersionPrefix>
-  </PropertyGroup>
-  <PropertyGroup>
     <EmbeddedResourceUseDependentUponConvention>true</EmbeddedResourceUseDependentUponConvention>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DocumentationFile></DocumentationFile>
@@ -49,12 +49,11 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.6" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.6" />
     <PackageReference Include="SharpDX.Mathematics" Version="4.2.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Gorgon\Gorgon.Renderers\Gorgon2D\Gorgon.Renderers.Gorgon2D.csproj" />
+    <ProjectReference Include="..\..\Gorgon\Gorgon.Graphics\Core\Gorgon.Graphics.Core.csproj" />
+    <ProjectReference Include="..\..\Gorgon\Gorgon.Graphics\Imaging.GdiPlus\Gorgon.Graphics.Imaging.GdiPlus.csproj" />
     <ProjectReference Include="..\..\Gorgon\Gorgon.UI\WindowsForms\Gorgon.UI.WindowsForms.csproj" />
   </ItemGroup>
   <ItemGroup>

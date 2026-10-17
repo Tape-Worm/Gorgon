@@ -60,7 +60,7 @@ public enum SaveReason
     /// </summary>
     AppProjectShutdown = 1,
     /// <summary>
-    /// The content is closing. Plug in developers should use this state to bypass error handling in a command to allow exceptions to bubble up.
+    /// The content is closing. Plug-in developers should use this state to bypass error handling in a command to allow exceptions to bubble up.
     /// </summary>
     ContentShutdown = 2
 }

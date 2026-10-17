@@ -7,15 +7,18 @@ namespace Fetze.WinFormsColor;
 
 public static class ExtMethodsSystemDrawingColor
 {
-    public static float GetLuminance(this System.Drawing.Color color) => (0.2126f * color.R + 0.7152f * color.G + 0.0722f * color.B) / 255.0f;
-    public static float GetHSVHue(this System.Drawing.Color color) => color.GetHue() / 360.0f;
-    public static float GetHSVBrightness(this System.Drawing.Color color) => Math.Max(Math.Max(color.R, color.G), color.B) / 255.0f;
-    public static float GetHSVSaturation(this System.Drawing.Color color)
+    extension(Color color)
     {
-        int max = Math.Max(color.R, Math.Max(color.G, color.B));
-        int min = Math.Min(color.R, Math.Min(color.G, color.B));
+        public float GetLuminance() => (0.2126f * color.R + 0.7152f * color.G + 0.0722f * color.B) / 255.0f;
+        public float GetHSVHue() => color.GetHue() / 360.0f;
+        public float GetHSVBrightness() => Math.Max(Math.Max(color.R, color.G), color.B) / 255.0f;
+        public float GetHSVSaturation()
+        {
+            int max = Math.Max(color.R, Math.Max(color.G, color.B));
+            int min = Math.Min(color.R, Math.Min(color.G, color.B));
 
-        return (max == 0) ? 0.0f : 1.0f - (1.0f * min / max);
+            return (max == 0) ? 0.0f : 1.0f - (1.0f * min / max);
+        }
     }
 
     public static System.Drawing.Color ColorFromHSV(float hue, float saturation, float value)

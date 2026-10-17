@@ -12,6 +12,7 @@
 // all copies or substantial portions of the Software.
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -21,6 +22,7 @@
 // Created: March 4, 2025 4:32:05 PM
 //
 
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Numerics;
 using System.Text;
@@ -98,6 +100,7 @@ public partial class Form
     /// <summary>
     /// Property to return our input service.
     /// </summary>
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public required IGorgonInput Input
     {
         get;
@@ -107,6 +110,7 @@ public partial class Form
     /// <summary>
     /// Property to return the application loop.
     /// </summary>
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public required GorgonApplicationLoop Loop
     {
         get;
@@ -116,6 +120,7 @@ public partial class Form
     /// <summary>
     /// Property to return the log used for debug messages.
     /// </summary>
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public required IGorgonLog Log
     {
         get;
@@ -859,7 +864,7 @@ public partial class Form
     /// </summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
-    /// <exception cref="NotSupportedException"></exception>
+    /// <exception cref="NotSupportedException"/>
     private void PanelDisplay_Resize(object? sender, EventArgs e)
     {
         if (WindowState == FormWindowState.Minimized)

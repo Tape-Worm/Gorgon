@@ -28,25 +28,25 @@ using System.Text.Json.Serialization;
 namespace Gorgon.Editor.ImageEditor;
 
 /// <summary>
-/// The settings for the image editor plugin
+/// The settings for the image editor plug-in
 /// </summary>
 internal class ImageEditorSettings
 {
     /// <summary>
-    /// Property to return the list of additional image codec plugins to load.
+    /// Property to return the list of additional image codec plug-ins to load.
     /// </summary>
     [JsonInclude]
-    public Dictionary<string, string> CodecPluginPaths
+    public Dictionary<string, string> CodecPlugInPaths
     {
         get;
         private set;
     } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
     /// <summary>
-    /// Property to set or return the last codec plugin path.
+    /// Property to set or return the last codec plug-in path.
     /// </summary>
     [JsonInclude]
-    public string LastCodecPluginPath
+    public string LastCodecPlugInPath
     {
         get;
         set;

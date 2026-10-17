@@ -4,6 +4,6 @@
     "useSafeHandles": false,
     "allowMarshaling": false,
     "comInterop": {
-        "preserveSigMethods": ["IPropertyBag2.Read"]
+        "preserveSigMethods": ["IPropertyBag2.Read", "IWICBitmapDecoder.QueryCapability"]
     }
 }

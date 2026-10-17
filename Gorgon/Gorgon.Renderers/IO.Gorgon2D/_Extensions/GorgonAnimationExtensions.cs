@@ -33,30 +33,32 @@ namespace Gorgon.IO;
 /// </summary>
 public static class GorgonAnimationExtensions
 {
-    /// <summary>
-    /// Function to convert a <see cref="IGorgonAnimation"/> to a JSON string.
-    /// </summary>
-    /// <param name="animation">The animation to convert.</param>
-    /// <param name="prettyFormat">[Optional] <b>true</b> to use pretty formatting for the string, or <b>false</b> to use a compact form.</param>
-    /// <returns>The animation encoded as a JSON string.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="animation"/> parameter is <b>null</b>.</exception>
-    /// <seealso cref="IGorgonAnimation"/>
-    public static string ToJson(this IGorgonAnimation animation, bool prettyFormat = false)
+    extension(IGorgonAnimation animation)
     {
-        if (animation is null)
+        /// <summary>
+        /// Function to convert a <see cref="IGorgonAnimation"/> to a JSON string.
+        /// </summary>
+        /// <param name="prettyFormat">[Optional] <b>true</b> to use pretty formatting for the string, or <b>false</b> to use a compact form.</param>
+        /// <returns>The animation encoded as a JSON string.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the animation is <b>null</b>.</exception>
+        /// <seealso cref="IGorgonAnimation"/>
+        public string ToJson(bool prettyFormat = false)
         {
-            throw new ArgumentNullException(nameof(animation));
-        }
+            if (animation is null)
+            {
+                throw new ArgumentNullException(nameof(animation));
+            }
 
-        JsonSerializerOptions options = new()
-        {
-            WriteIndented = prettyFormat,
-            Converters =
+            JsonSerializerOptions options = new()
+            {
+                WriteIndented = prettyFormat,
+                Converters =
             {
                 new JsonAnimationConverter(null, null, null)
             }
-        };
+            };
 
-        return JsonSerializer.Serialize(animation, options);
+            return JsonSerializer.Serialize(animation, options);
+        }
     }
 }

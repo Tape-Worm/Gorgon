@@ -13,6 +13,7 @@
 // all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -174,12 +175,9 @@ public sealed class GorgonChunkFileReader
     /// <summary>
     /// Function to read in the header information from the chunk file and validate it.
     /// </summary>
-    /// <exception cref="GorgonException">Thrown when the chunked file format header ID does not match.
-    /// <para>-or-</para>
+    /// <exception cref="GorgonException"><para>Thrown when the chunked file format header ID does not match.</para>
     /// <para>Thrown when application specific header ID in the file was not found in the list passed to the constructor.</para>
-    /// <para>-or-</para>
     /// <para>Thrown if the chunk file table offset is less than or equal to the size of the header.</para>
-    /// <para>-or-</para>
     /// <para>Thrown if the file size recorded in the header is less than the size of the header.</para>
     /// </exception>
     protected override void OnOpen()
@@ -320,8 +318,7 @@ public sealed class GorgonChunkFileReader
     /// validating the data that lives within the chunk.
     /// </para>
     /// </remarks>
-    /// <exception cref="IOException">Thrown if the chunk was opened without calling <see cref="GorgonChunkFile.Open"/> first.
-    /// <para>-or-</para>
+    /// <exception cref="IOException"><para>Thrown if the chunk was opened without calling <see cref="GorgonChunkFile.Open"/> first.</para>
     /// <para>Thrown if another <see cref="IGorgonChunkReader"/> is open elsewhere.</para>
     /// </exception>
     /// <exception cref="GorgonException">Thrown when the <paramref name="chunkId" /> does not match the chunk in the file.</exception>
@@ -343,8 +340,7 @@ public sealed class GorgonChunkFileReader
     /// validating the data that lives within the chunk.
     /// </para>
     /// </remarks>
-    /// <exception cref="IOException">Thrown if the chunk was opened without calling <see cref="GorgonChunkFile.Open"/> first.
-    /// <para>-or-</para>
+    /// <exception cref="IOException"><para>Thrown if the chunk was opened without calling <see cref="GorgonChunkFile.Open"/> first.</para>
     /// <para>Thrown if another <see cref="IGorgonChunkReader"/> is open elsewhere.</para>
     /// </exception>
     /// <exception cref="GorgonException">Thrown when the <paramref name="chunkId" /> does not match the chunk in the file.</exception>
@@ -408,8 +404,7 @@ public sealed class GorgonChunkFileReader
     /// <param name="appSpecificIds">The allowable application specific ids for file validation.</param>
     /// <remarks>
     /// </remarks>
-    /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="appSpecificIds"/> contains no values.
-    /// <para>-or-</para>
+    /// <exception cref="ArgumentEmptyException"><para>Thrown when the <paramref name="appSpecificIds"/> contains no values.</para>
     /// <para>Thrown when the <paramref name="stream"/> is write-only</para>
     /// </exception>
     /// <exception cref="EndOfStreamException">Thrown when the <paramref name="stream"/> is at its end.</exception>

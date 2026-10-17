@@ -64,11 +64,13 @@ public class GorgonChunkFileTests
 
         stream.Position = 0;
 
+#pragma warning disable MSTEST0051 // Assert.Throws should contain only a single statement/expression
         Assert.ThrowsExactly<GorgonException>(() =>
         {
             using GorgonChunkFileReader reader = new(stream, [0x12345679]);
             reader.Open();
         });
+#pragma warning restore MSTEST0051 // Assert.Throws should contain only a single statement/expression
     }
 
     [TestMethod]

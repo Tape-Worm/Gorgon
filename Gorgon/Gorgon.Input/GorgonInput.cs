@@ -12,6 +12,7 @@
 // all copies or substantial portions of the Software.
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -93,8 +94,8 @@ public sealed class GorgonInput
     private Action<IGorgonInputDeviceInfo>? _deviceDetachedCallback;
     private Func<GorgonInputEvent, bool>? _inputEventCallback;
     // Device update lock.
-    private readonly object _deviceUpdateLock = new();
-    private static readonly object _inputCreateLock = new();
+    private readonly Lock _deviceUpdateLock = new();
+    private static readonly Lock _inputCreateLock = new();
 
     /// <inheritdoc/>
     public IReadOnlyList<IGorgonMouseInfo> Mice => _mouseDevices;

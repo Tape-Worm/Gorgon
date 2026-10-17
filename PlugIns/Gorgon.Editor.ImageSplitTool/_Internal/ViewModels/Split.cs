@@ -27,7 +27,7 @@ using System.ComponentModel;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
 using Gorgon.Editor.ImageSplitTool.Properties;
-using Gorgon.Editor.Plugins;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.Tools;
 using Gorgon.Editor.UI;
@@ -64,7 +64,7 @@ internal class ImageSelection
     private IGorgonImage _previewImage;
     // The file system used for writing temporary data.
     private IGorgonFileSystem _tempFileSystem;
-    // Plug in settings.
+    // Plug-in settings.
     private ImageSplitToolSettings _settings;
     // The content file manager for the host application.
     private IContentFileManager _fileManager;

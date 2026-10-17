@@ -12,6 +12,7 @@
 // all copies or substantial portions of the Software.
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -113,7 +114,8 @@ public class GorgonStreamSlice
     /// <returns>
     /// A long value representing the length of the stream in bytes.
     /// </returns>
-    /// <exception cref="NotSupportedException">A class derived from Stream does not support seeking. </exception><exception cref="ObjectDisposedException">Methods were called after the stream was closed. </exception><filterpriority>1</filterpriority>
+    /// <exception cref="NotSupportedException">A class derived from Stream does not support seeking. </exception>
+    /// <exception cref="ObjectDisposedException">Methods were called after the stream was closed. </exception>
     public override long Length => _streamLength;
 
     /// <summary>
@@ -486,7 +488,6 @@ public class GorgonStreamSlice
     /// <exception cref="ArgumentException">Thrown when the <see cref="Stream.CanSeek"/> property on the parent stream is <b>false</b>.</exception>
     /// <exception cref="IOException">Thrown when the <paramref name="parentStream"/> is read only and the <paramref name="allowWrite"/> flag is set to <b>true</b>.</exception>
     /// <exception cref="EndOfStreamException">Thrown when the <paramref name="streamStart"/> is greater than or equal to the length of the <paramref name="parentStream"/>.
-    /// <para>-or-</para>
     /// <para>Thrown when the <paramref name="streamSize"/> is greater than the <paramref name="parentStream"/> length minus the <paramref name="streamStart"/>.</para>
     /// </exception>
     /// <remarks>

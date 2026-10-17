@@ -24,7 +24,7 @@
 // 
 
 using Gorgon.Editor.Content;
-using Gorgon.Editor.Plugins;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.UI.ViewModels;
 
@@ -34,7 +34,7 @@ namespace Gorgon.Editor.ExtractSpriteTool;
 /// Parameters for the <see cref="IExtract"/> view model
 /// </summary>
 /// <remarks>Initializes a new instance of the <see cref="ExtractParameters"/> class.</remarks>
-/// <param name="settings">The plugin settings.</param>
+/// <param name="settings">The plug-in settings.</param>
 /// <param name="extractData">The data used for extraction.</param>
 /// <param name="extractor">The sprite extractor service used to create the sprites.</param>
 /// <param name="textureFile">The file that contains the texture to extract from.</param>
@@ -53,7 +53,7 @@ internal class ExtractParameters(ExtractSpriteToolSettings settings, SpriteExtra
     } = extractData ?? throw new ArgumentNullException(nameof(extractData));
 
     /// <summary>
-    /// Property to return the settings for the plugin.
+    /// Property to return the settings for the plug-in.
     /// </summary>
     public ExtractSpriteToolSettings Settings
     {

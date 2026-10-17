@@ -27,7 +27,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
-using Gorgon.Editor.Plugins;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Properties;
 using Gorgon.Editor.UI;
 using Gorgon.Graphics.Imaging;

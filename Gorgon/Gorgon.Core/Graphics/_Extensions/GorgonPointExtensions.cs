@@ -12,6 +12,7 @@
 // all copies or substantial portions of the Software.
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -32,35 +33,40 @@ namespace Gorgon.Graphics;
 /// </summary>
 public static class GorgonPointExtensions
 {
-    /// <summary>
-    /// Function to convert a <see cref="Point"/> to a <see cref="Vector2"/>.
-    /// </summary>
-    /// <param name="point">The point to convert.</param>
-    /// <returns>The converted vector.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Vector2 ToVector2(this Point point) => new(point.X, point.Y);
+    extension(Point point)
+    {
+        /// <summary>
+        /// Function to convert a <see cref="Point"/> to a <see cref="Vector2"/>.
+        /// </summary>
+        /// <returns>The converted vector.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Vector2 ToVector2() => new(point.X, point.Y);
+    }
 
-    /// <summary>
-    /// Function to convert a <see cref="PointF"/> to a <see cref="Vector2"/>.
-    /// </summary>
-    /// <param name="point">The point to convert.</param>
-    /// <returns>The converted vector.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Vector2 ToVector2(this PointF point) => new(point.X, point.Y);
+    extension(PointF point)
+    {
+        /// <summary>
+        /// Function to convert a <see cref="PointF"/> to a <see cref="Vector2"/>.
+        /// </summary>
+        /// <returns>The converted vector.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Vector2 ToVector2() => new(point.X, point.Y);
+    }
 
-    /// <summary>
-    /// Function to convert a <see cref="Vector2"/> to a <see cref="PointF"/>.
-    /// </summary>
-    /// <param name="vector">The vector to convert.</param>
-    /// <returns>The converted point.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static PointF ToPointF(this Vector2 vector) => new(vector.X, vector.Y);
+    extension(Vector2 vector)
+    {
+        /// <summary>
+        /// Function to convert a <see cref="Vector2"/> to a <see cref="PointF"/>.
+        /// </summary>
+        /// <returns>The converted point.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public PointF ToPointF() => new(vector.X, vector.Y);
 
-    /// <summary>
-    /// Function to convert a <see cref="Vector2"/> to a <see cref="PointF"/>.
-    /// </summary>
-    /// <param name="vector">The vector to convert.</param>
-    /// <returns>The converted point.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Point ToPoint(this Vector2 vector) => new((int)vector.X, (int)vector.Y);
+        /// <summary>
+        /// Function to convert a <see cref="Vector2"/> to a <see cref="PointF"/>.
+        /// </summary>
+        /// <returns>The converted point.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Point ToPoint() => new((int)vector.X, (int)vector.Y);
+    }
 }

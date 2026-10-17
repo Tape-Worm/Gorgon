@@ -35,7 +35,7 @@ namespace Gorgon.Editor.Services;
 /// </summary>
 /// <remarks>
 /// <para>
-/// Use this service when rendering the UI for editing the <see cref="GorgonSprite.Anchor"/> on a <see cref="GorgonSprite"/>. Plug in developers should use this to provide interaction with the anchor 
+/// Use this service when rendering the UI for editing the <see cref="GorgonSprite.Anchor"/> on a <see cref="GorgonSprite"/>. Plug-in developers should use this to provide interaction with the anchor 
 /// point. 
 /// </para>
 /// </remarks>

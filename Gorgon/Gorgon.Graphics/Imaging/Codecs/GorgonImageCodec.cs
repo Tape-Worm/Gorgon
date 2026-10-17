@@ -14,6 +14,7 @@
 // all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -52,7 +53,10 @@ public abstract class GorgonImageCodec<TEncOpt, TDecOpt>(TEncOpt encodingOptions
         }
 
         /// <inheritdoc/>
-        public IGorgonOptionBag Options => new GorgonOptionBag([]);
+        public IGorgonOptionBag Options
+        {
+            get;
+        } = new GorgonOptionBag([]);
     }
 
     /// <summary>
@@ -71,7 +75,10 @@ public abstract class GorgonImageCodec<TEncOpt, TDecOpt>(TEncOpt encodingOptions
         }
 
         /// <inheritdoc/>
-        public IGorgonOptionBag Options => new GorgonOptionBag([]);
+        public IGorgonOptionBag Options
+        {
+            get;
+        } = new GorgonOptionBag([]);
     }
 
     /// <summary>
@@ -177,16 +184,16 @@ public abstract class GorgonImageCodec<TEncOpt, TDecOpt>(TEncOpt encodingOptions
             throw new ArgumentException(Resources.GORIMG_ERR_STREAM_IS_WRITEONLY, nameof(stream));
         }
 
-        size ??= stream.Length;
-
-        if (size + stream.Position > stream.Length)
+        if (!stream.CanSeek)
         {
-            throw new EndOfStreamException();
+            throw new ArgumentException(Resources.GORIMG_ERR_STREAM_CANNOT_SEEK, nameof(stream));
         }
 
-        if (size < 1)
+        size ??= stream.Length - stream.Position;
+
+        if ((size < 1) || (size + stream.Position > stream.Length))
         {
-            throw new ArgumentOutOfRangeException(nameof(size), Resources.GORIMG_ERR_IMAGE_BYTE_LENGTH_TOO_SHORT);
+            throw new EndOfStreamException();
         }
 
         long basePosition = stream.Position;

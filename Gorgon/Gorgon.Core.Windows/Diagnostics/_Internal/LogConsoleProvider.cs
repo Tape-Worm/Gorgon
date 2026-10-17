@@ -14,6 +14,7 @@
 // all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -33,6 +34,7 @@ using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.Storage.FileSystem;
 using Windows.Win32.System.Console;
+using static System.MemoryExtensions;
 
 namespace Gorgon.Diagnostics.LogProviders;
 
@@ -251,7 +253,7 @@ internal class LogConsoleProvider
         }
 
         ReadOnlySpan<char> messageSpan = message.AsSpan();
-        GorgonSpanCharEnumerator spanEnum = messageSpan.Split(_lineSep);
+        GorgonSpanCharEnumerator spanEnum = messageSpan.SplitString(_lineSep);
 
         foreach (ReadOnlySpan<char> line in spanEnum)
         {

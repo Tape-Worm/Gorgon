@@ -26,7 +26,7 @@
 using System.ComponentModel;
 using Gorgon.Diagnostics;
 using Gorgon.Editor.Content;
-using Gorgon.Editor.Plugins;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.Services;
 using Gorgon.Editor.TextureAtlasTool.Properties;
 using Gorgon.Editor.UI;

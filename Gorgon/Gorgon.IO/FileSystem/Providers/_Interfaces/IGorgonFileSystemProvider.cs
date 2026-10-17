@@ -14,6 +14,7 @@
 // all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -37,7 +38,7 @@ namespace Gorgon.IO.FileSystem.Providers;
 /// file system file, or a file inside of a zip archive.  
 /// </para>
 /// <para>
-/// <note type="important">
+/// <note type="information">
 /// <para>
 /// This provider is read only, meaning it will only read data from the physical file system.
 /// </para>
@@ -138,8 +139,7 @@ public interface IGorgonFileSystemProvider
     /// <param name="physicalMountPoint">The physical path that is mounted in the file system.</param>
     /// <param name="virtualRootDirectory">A virtual directory path that the directories and files from the physical file system will be mounted into.</param>		
     /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="physicalPath"/>, or the <paramref name="virtualRootDirectory"/> parameter is empty.</exception>
-    /// <exception cref="GorgonException">Thrown if the physical file system could not be read.
-    /// <para>-or-</para>
+    /// <exception cref="GorgonException"><para>Thrown if the physical file system could not be read.</para>
     /// <para>The <paramref name="physicalPath"/> is not under the <paramref name="physicalMountPoint"/> path.</para>
     /// </exception>
     /// <returns>A <see cref="GorgonPhysicalFileSystemData"/> object containing information about the directories and files contained within the physical file system.</returns>
@@ -151,7 +151,7 @@ public interface IGorgonFileSystemProvider
     /// <c>/MyMount/MyDirectory/MyTextFile.txt</c>.
     /// </para>
     /// <para>
-    /// Implementors of a <see cref="GorgonFileSystemProvider"/> plugin can override this method to read the list of files from another type of file system, like a Zip file.
+    /// Implementors of a <see cref="GorgonFileSystemProvider"/> plug-in can override this method to read the list of files from another type of file system, like a Zip file.
     /// </para>
     /// </remarks>
     GorgonPhysicalFileSystemData Enumerate(ReadOnlySpan<char> physicalPath, ReadOnlySpan<char> physicalMountPoint, ReadOnlySpan<char> virtualRootDirectory);

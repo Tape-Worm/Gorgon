@@ -14,6 +14,7 @@
 // all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -42,7 +43,7 @@ namespace Gorgon.Timing;
 /// </remarks>
 /// <example>
 /// When using the <c>Gorgon.UI.GorgonApplication</c> class, the timing code is automatically updated by its own idle loop:
-/// <code lang="csharp">
+/// <code language="csharp">
 /// <![CDATA[
 ///	public static bool MyLoop()
 /// {
@@ -60,7 +61,7 @@ namespace Gorgon.Timing;
 /// ]]>
 /// </code> 
 /// And here is a a custom application loop using the <see cref="GorgonTiming"/> class:
-/// <code lang="csharp">
+/// <code language="csharp">
 /// <![CDATA[
 /// // This assumes the Win32 API call to PeekMessage is imported
 /// public void DoLoop()
@@ -201,18 +202,9 @@ public static class GorgonTiming
     }
 
     /// <summary>
-    /// Property to return the number of frames that have been presented.
-    /// </summary>
-    public static uint FrameCount
-    {
-        get;
-        private set;
-    }
-
-    /// <summary>
     /// Property to return the number of frames that have been presented (using an unsigned 64 bit value).
     /// </summary>
-    public static ulong FrameCountULong
+    public static long FrameCount
     {
         get;
         private set;
@@ -419,8 +411,11 @@ public static class GorgonTiming
 
         unchecked
         {
+            if (FrameCount == long.MaxValue)
+            {
+                FrameCount = 0;
+            }
             FrameCount++;
-            FrameCountULong++;
 
             frameDelta = (_lastTimerValue - _lastTime);
 
@@ -521,7 +516,7 @@ public static class GorgonTiming
         Delta = 0.0f;
         UnscaledDelta = 0.0f;
         FPS = 0.0f;
-        FrameCountULong = FrameCount = 0;
+        FrameCount = 0;
         _averageCounter = 0;
         _frameCounter = 0;
         _lastTime = 0.0;

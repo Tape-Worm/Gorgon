@@ -14,6 +14,7 @@
 // all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -23,18 +24,20 @@
 // Created: Monday, November 03, 2014 8:32:52 PM
 // 
 
+using Gorgon.Diagnostics;
 using Gorgon.Examples;
+using TerraFX.Interop.Windows;
 
 namespace Graphics.Examples;
 
 /// <summary>
 /// This is an example to show a developer how to create their own image codec for loading/saving images
 /// 
-/// A custom image codec may be implemented as a plugin that can be loaded dynamically, or statically within an application.  This example 
-/// will focus on using a plugin to create a fairly useless image codec that will save only the red, green, blue and alpha channels as one 
+/// A custom image codec may be implemented as a plug-in that can be loaded dynamically, or statically within an application.  This example 
+/// will focus on using a plug-in to create a fairly useless image codec that will save only the red, green, blue and alpha channels as one 
 /// channel per pixel.  That is, the first pixel will be the red channel, the second will be the green, etc... 
 /// 
-/// This application will be the UI for the image codec plugin and will do nothing more than load a DDS image, save it in our custom format 
+/// This application will be the UI for the image codec plug-in and will do nothing more than load a DDS image, save it in our custom format 
 /// and then load it as a texture for display in the window
 /// </summary>
 internal static class Program
@@ -44,14 +47,15 @@ internal static class Program
     /// </summary>
     [STAThread]
     private static void Main()
-    {
+    {        
+        ApplicationConfiguration.Initialize();
+
         try
         {
-            Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
+            MainForm mainForm = new();
+            mainForm.ClientSize = mainForm.LogicalToDeviceUnits(new Size(ExampleConfig.Default.Resolution.X, ExampleConfig.Default.Resolution.Y));
 
-            Application.Run(new Form());
+            Application.Run(mainForm);
         }
         catch (Exception ex)
         {

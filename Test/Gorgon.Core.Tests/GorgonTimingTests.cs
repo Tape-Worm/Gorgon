@@ -46,7 +46,6 @@ public class GorgonTimingTests
         Assert.IsTrue(GorgonTiming.HighestDelta.EqualsEpsilon(0.0625f, 0.0001f));
         Assert.IsTrue(GorgonTiming.LowestDelta.EqualsEpsilon(0.0166f, 0.0001f));
         Assert.AreEqual(1000u, GorgonTiming.FrameCount);
-        Assert.AreEqual(GorgonTiming.FrameCount, GorgonTiming.FrameCountULong);
         Assert.AreEqual(60, GorgonTiming.HighestFPS);
         Assert.AreEqual(16, GorgonTiming.LowestFPS);
         Assert.IsTrue(GorgonTiming.SecondsSinceStart.EqualsEpsilon(35.233f, 0.001f));

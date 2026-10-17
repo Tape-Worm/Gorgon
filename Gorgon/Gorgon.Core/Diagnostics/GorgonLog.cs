@@ -14,6 +14,7 @@
 // all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -40,7 +41,7 @@ public abstract class GorgonLog
     // Logging filter.
     private LoggingLevel _filterLevel = LoggingLevel.All;
     // Synchronization lock for multiple threads.
-    private readonly object _syncLock = new();
+    private readonly Lock _syncLock = new();
     // The application version.
     private readonly Version? _appVersion;
 
@@ -318,11 +319,11 @@ public abstract class GorgonLog
 
         if ((string.IsNullOrEmpty(message)) || (message == "\n") || (message == "\r"))
         {
-            finalMessage = $"[{Environment.CurrentManagedThreadId}][{DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}]";
+            finalMessage = $"[{Environment.CurrentManagedThreadId}][{DateTime.Now:d} {DateTime.Now:t}]";
         }
         else if ((!message.Contains('\n')) && (!message.Contains('\r')))
         {
-            finalMessage = $"[{Environment.CurrentManagedThreadId}][{DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}]{prefix} {message}";
+            finalMessage = $"[{Environment.CurrentManagedThreadId}][{DateTime.Now:d} {DateTime.Now:t}]{prefix} {message}";
         }
         else
         {

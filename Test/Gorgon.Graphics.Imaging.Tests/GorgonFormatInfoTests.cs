@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
+using Gorgon.Math;
 
 namespace Gorgon.Graphics.Imaging.Tests;
 
@@ -84,7 +85,7 @@ public class GorgonFormatInfoTests
             GorgonFormatInfo info = new(format);
 
             Assert.IsTrue(groupedFormats.ContainsKey(info.Group), $"{info.Group} not found.");
-            Assert.IsTrue(groupedFormats[info.Group].Contains(info.Format), $"{info.Format} not found in group {info.Group}");
+            Assert.Contains(info.Format, groupedFormats[info.Group], $"{info.Format} not found in group {info.Group}");
         }
     }
 
@@ -128,8 +129,7 @@ public class GorgonFormatInfoTests
         BufferFormat[] formats = [
             BufferFormat.R8G8_B8G8_UNorm,
             BufferFormat.G8R8_G8B8_UNorm,
-            BufferFormat.Y410,
-            BufferFormat.Y416,
+            BufferFormat.YUY2,
             BufferFormat.Y210,
             BufferFormat.Y216
         ];
@@ -259,6 +259,7 @@ public class GorgonFormatInfoTests
             BufferFormat.B8G8R8A8_UNorm_SRgb,
             BufferFormat.B5G5R5A1_UNorm,
             BufferFormat.B4G4R4A4_UNorm,
+            BufferFormat.A4B4G4R4_UNorm,
             BufferFormat.A8_UNorm
         ];
 
@@ -350,10 +351,10 @@ public class GorgonFormatInfoTests
             (BufferFormat.B8G8R8A8_UNorm_SRgb, 32),
             (BufferFormat.B8G8R8X8_Typeless, 32),
             (BufferFormat.B8G8R8X8_UNorm_SRgb, 32),
-            (BufferFormat.R8G8_B8G8_UNorm, 32),
-            (BufferFormat.G8R8_G8B8_UNorm, 32),
+            (BufferFormat.R8G8_B8G8_UNorm, 16),
+            (BufferFormat.G8R8_G8B8_UNorm, 16),
             (BufferFormat.Y410, 32),
-            (BufferFormat.Y416, 32),
+            (BufferFormat.Y416, 64),
             (BufferFormat.AYUV, 32),
             (BufferFormat.R9G9B9E5_SharedExp, 32),
             (BufferFormat.R16_Typeless, 16),
@@ -371,18 +372,19 @@ public class GorgonFormatInfoTests
             (BufferFormat.B5G5R5A1_UNorm, 16),
             (BufferFormat.B5G6R5_UNorm, 16),
             (BufferFormat.B4G4R4A4_UNorm, 16),
+            (BufferFormat.A4B4G4R4_UNorm, 16),
             (BufferFormat.A8P8, 16),
-            (BufferFormat.P010, 16),
-            (BufferFormat.P016, 16),
-            (BufferFormat.Y210, 16),
-            (BufferFormat.Y216, 16),
-            (BufferFormat.YUY2, 16),
-            (BufferFormat.NV11, 16),
-            (BufferFormat.NV12, 16),
-            (BufferFormat.Opaque420, 16),
+            (BufferFormat.P010, 24),
+            (BufferFormat.P016, 24),
+            (BufferFormat.Y210, 64),
+            (BufferFormat.Y216, 64),
+            (BufferFormat.YUY2, 32),
+            (BufferFormat.NV11, 12),
+            (BufferFormat.NV12, 12),
+            (BufferFormat.Opaque420, 12),
             (BufferFormat.P208, 16),
             (BufferFormat.V208, 16),
-            (BufferFormat.V408, 16),
+            (BufferFormat.V408, 24),
             (BufferFormat.R8_Typeless, 8),
             (BufferFormat.R8_UNorm, 8),
             (BufferFormat.R8_UInt, 8),
@@ -392,7 +394,7 @@ public class GorgonFormatInfoTests
             (BufferFormat.AI44, 8),
             (BufferFormat.IA44, 8),
             (BufferFormat.P8, 8),
-            (BufferFormat.R1_UNorm, 8)
+            (BufferFormat.R1_UNorm, 1)
         ];
 
         foreach ((BufferFormat format, int bitSize) in formats)
@@ -400,7 +402,8 @@ public class GorgonFormatInfoTests
             GorgonFormatInfo info = new(format);
 
             Assert.AreEqual(bitSize, info.BitDepth, $"{format} bit size should be {bitSize}, but is {info.BitDepth}");
-            Assert.AreEqual(bitSize / 8, info.SizeInBytes);
+            // Nothing is smaller than 1 byte. Compressed formats report the size of a 4x4 block, which matches their bit depth.
+            Assert.AreEqual((bitSize / 8).Max(format == BufferFormat.Unknown ? 0 : 1), info.SizeInBytes, $"{format} size in bytes.");
         }
     }
 
@@ -479,6 +482,7 @@ public class GorgonFormatInfoTests
             (BufferFormat.R8G8_SInt, 2),
             (BufferFormat.B5G5R5A1_UNorm, 4),
             (BufferFormat.B5G6R5_UNorm, 3),
+            (BufferFormat.A4B4G4R4_UNorm, 4),
             (BufferFormat.B4G4R4A4_UNorm, 4),
             (BufferFormat.A8P8, 2),
             (BufferFormat.R8_Typeless, 1),
@@ -531,6 +535,86 @@ public class GorgonFormatInfoTests
 
             Assert.AreEqual(300, actual, $"Planar {format} scanline count incorrect.");
         }
+
+        // DirectXTex ComputeScanlines.
+        Assert.AreEqual(400, new GorgonFormatInfo(BufferFormat.P208).CalculateScanlines(200), $"{BufferFormat.P208} scanline count incorrect.");
+        Assert.AreEqual(400, new GorgonFormatInfo(BufferFormat.V208).CalculateScanlines(200), $"{BufferFormat.V208} scanline count incorrect.");
+        Assert.AreEqual(600, new GorgonFormatInfo(BufferFormat.V408).CalculateScanlines(200), $"{BufferFormat.V408} scanline count incorrect.");
+    }
+
+    [TestMethod]
+    public void CalculateScanLinesCompressedSmallMip()
+    {
+        // A compressed mip 4 pixels high (or less) is still one row of blocks.
+        GorgonFormatInfo info = new(BufferFormat.BC1_UNorm);
+
+        Assert.AreEqual(1, info.CalculateScanlines(4), "4 pixels high");
+        Assert.AreEqual(1, info.CalculateScanlines(1), "1 pixel high");
+        Assert.AreEqual(64, info.CalculateScanlines(256), "256 pixels high");
+    }
+
+    [TestMethod]
+    public void DepthStencilFormatsArePlanar()
+    {
+        // Planar in D3D12 (DirectXTex IsPlanar with isd3d12 = true).
+        BufferFormat[] formats =
+        [
+            BufferFormat.R32G8X24_Typeless, BufferFormat.D32_Float_S8X24_UInt, BufferFormat.R32_Float_X8X24_Typeless, BufferFormat.X32_Typeless_G8X24_UInt,
+            BufferFormat.R24G8_Typeless, BufferFormat.D24_UNorm_S8_UInt, BufferFormat.R24_UNorm_X8_Typeless, BufferFormat.X24_Typeless_G8_UInt
+        ];
+
+        foreach (BufferFormat format in formats)
+        {
+            GorgonFormatInfo info = new(format);
+
+            Assert.IsTrue(info.IsPlanar, $"{format} should be planar.");
+            Assert.IsFalse(info.IsVideo, $"{format} should not be a video format.");
+        }
+    }
+
+    [TestMethod]
+    public void DepthStencilPitch()
+    {
+        // Planar, but not video, so the pitch comes from the bit depth.
+        GorgonPitchLayout layout = new GorgonFormatInfo(BufferFormat.D24_UNorm_S8_UInt).GetPitchForFormat(256, 256);
+
+        Assert.AreEqual(1024, layout.RowPitch, $"{BufferFormat.D24_UNorm_S8_UInt} row pitch incorrect.");
+        Assert.AreEqual(1024 * 256, layout.SlicePitch, $"{BufferFormat.D24_UNorm_S8_UInt} slice pitch incorrect.");
+    }
+
+    [TestMethod]
+    public void Y410Pitch()
+    {
+        // Not packed: 32 bits per pixel.
+        GorgonPitchLayout layout = new GorgonFormatInfo(BufferFormat.Y410).GetPitchForFormat(256, 256);
+
+        Assert.AreEqual(1024, layout.RowPitch, $"{BufferFormat.Y410} row pitch incorrect.");
+    }
+
+    [TestMethod]
+    public void R1Pitch()
+    {
+        // 1 bit per pixel.
+        GorgonPitchLayout layout = new GorgonFormatInfo(BufferFormat.R1_UNorm).GetPitchForFormat(256, 1);
+
+        Assert.AreEqual(32, layout.RowPitch, $"{BufferFormat.R1_UNorm} row pitch incorrect.");
+    }
+
+    [TestMethod]
+    public void IsSigned()
+    {
+        BufferFormat[] formats =
+        [
+            BufferFormat.R8G8B8A8_SNorm, BufferFormat.R16G16B16A16_SNorm, BufferFormat.R16G16_SNorm, BufferFormat.R8G8_SNorm, BufferFormat.R16_SNorm, BufferFormat.R8_SNorm,
+            BufferFormat.R8G8B8A8_SInt, BufferFormat.R32_SInt, BufferFormat.R32G32B32A32_Float, BufferFormat.BC4_SNorm, BufferFormat.BC5_SNorm, BufferFormat.BC6H_Sf16
+        ];
+
+        foreach (BufferFormat format in formats)
+        {
+            Assert.IsTrue(new GorgonFormatInfo(format).IsSigned, $"{format} should be signed.");
+        }
+
+        Assert.IsFalse(new GorgonFormatInfo(BufferFormat.R8G8B8A8_UNorm).IsSigned, $"{BufferFormat.R8G8B8A8_UNorm} should not be signed.");
     }
 
     [TestMethod]
@@ -567,8 +651,9 @@ public class GorgonFormatInfoTests
         info = new(BufferFormat.Y210);
         layout = info.GetPitchForFormat(320, 200, PitchFlags.None);
 
-        Assert.AreEqual(2560, layout.RowPitch, $"{BufferFormat.Y210} row pitch incorrect.");
-        Assert.AreEqual(512_000, layout.SlicePitch, $"{BufferFormat.R8G8B8A8_UNorm} slice pitch incorrect.");
+        // 2 pixels = Y0 U Y1 V at 16 bits each = 8 bytes (DirectXTex ComputePitch).
+        Assert.AreEqual(1280, layout.RowPitch, $"{BufferFormat.Y210} row pitch incorrect.");
+        Assert.AreEqual(256_000, layout.SlicePitch, $"{BufferFormat.Y210} slice pitch incorrect.");
 
         info = new(BufferFormat.NV11);
         layout = info.GetPitchForFormat(320, 200, PitchFlags.None);
@@ -598,12 +683,33 @@ public class GorgonFormatInfoTests
         layout = info.GetPitchForFormat(320, 200, PitchFlags.None);
 
         Assert.AreEqual(320, layout.RowPitch, $"{BufferFormat.V208} row pitch incorrect.");
-        Assert.AreEqual(192_000, layout.SlicePitch, $"{BufferFormat.V208} silce pitch incorrect.");
+        Assert.AreEqual(128_000, layout.SlicePitch, $"{BufferFormat.V208} slice pitch incorrect.");
 
         info = new(BufferFormat.V408);
         layout = info.GetPitchForFormat(320, 200, PitchFlags.None);
 
         Assert.AreEqual(320, layout.RowPitch, $"{BufferFormat.V408} row pitch incorrect.");
         Assert.AreEqual(192_000, layout.SlicePitch, $"{BufferFormat.V408} slice pitch incorrect.");
+    }
+
+    [TestMethod]
+    [DataRow(BufferFormat.R9G9B9E5_SharedExp)]
+    [DataRow(BufferFormat.BC6H_Uf16)]
+    [DataRow(BufferFormat.BC6H_Sf16)]
+    public void FloatingPointFormatsMissingFromList(BufferFormat format)
+    {
+        GorgonFormatInfo info = new(format);
+
+        Assert.IsTrue(info.IsFloatingPoint, $"{format} should be a floating point format.");
+    }
+
+    [TestMethod]
+    [DataRow(BufferFormat.BC6H_Uf16)]
+    [DataRow(BufferFormat.BC6H_Sf16)]
+    public void HalfFloatFormatsMissingFromList(BufferFormat format)
+    {
+        GorgonFormatInfo info = new(format);
+
+        Assert.IsTrue(info.IsHalf, $"{format} should be a half floating point format.");
     }
 }

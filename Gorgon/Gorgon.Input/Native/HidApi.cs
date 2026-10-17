@@ -12,6 +12,7 @@
 // all copies or substantial portions of the Software.
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -75,7 +76,7 @@ internal static class HidApi
         }
 
         fixed (byte* ptr = preparsedData)
-        {        
+        {
             PHIDP_PREPARSED_DATA dataPtr = new((nint)ptr);
             HIDP_VALUE_CAPS* buttonCapsData = stackalloc HIDP_VALUE_CAPS[valueCaps.Length];
             ushort buttonLength = (ushort)valueCaps.Length;
@@ -102,7 +103,7 @@ internal static class HidApi
             return;
         }
 
-        fixed (byte* ptr = preparsedData)        
+        fixed (byte* ptr = preparsedData)
         {
             PHIDP_PREPARSED_DATA dataPtr = new((nint)ptr);
             HIDP_BUTTON_CAPS* buttonCapsData = stackalloc HIDP_BUTTON_CAPS[buttonCaps.Length];
@@ -123,7 +124,7 @@ internal static class HidApi
     /// <param name="fileHandle">The file handle to the HID device.</param>
     /// <returns>The plain text, friendly product name for the device.</returns>
     /// <exception cref="Win32Exception">Thrown if the name could not be retrieved.</exception>
-    public static unsafe string GetProductString(HANDLE fileHandle)
+    public static string GetProductString(HANDLE fileHandle)
     {
         if ((fileHandle.IsNull) || (fileHandle == HANDLE.INVALID_HANDLE_VALUE))
         {
@@ -162,7 +163,7 @@ internal static class HidApi
     /// <param name="fileHandle">The file handle to the HID device.</param>
     /// <returns>The plain text, friendly manufacturer name for the device.</returns>
     /// <exception cref="Win32Exception">Thrown if the name could not be retrieved.</exception>
-    public static unsafe string GetManufacturerString(HANDLE fileHandle)
+    public static string GetManufacturerString(HANDLE fileHandle)
     {
         if ((fileHandle.IsNull) || (fileHandle == HANDLE.INVALID_HANDLE_VALUE))
         {

@@ -106,7 +106,7 @@ namespace Gorgon.Renderers;
 /// <seealso cref="Gorgon2DBatchState"/>
 /// <seealso cref="GorgonShader"/>
 public class Gorgon2DShaderStateBuilder<T>
-    : IGorgonFluentBuilder<Gorgon2DShaderStateBuilder<T>, Gorgon2DShaderState<T>, IGorgonAllocator<Gorgon2DShaderState<T>>>
+    : IGorgonFluentBuilderWithBuildDoNotUse<Gorgon2DShaderStateBuilder<T>, Gorgon2DShaderState<T>, IGorgonAllocator<Gorgon2DShaderState<T>>>
     where T : GorgonShader
 {
 

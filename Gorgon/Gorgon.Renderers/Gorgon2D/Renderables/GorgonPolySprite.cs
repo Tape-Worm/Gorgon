@@ -464,7 +464,7 @@ public class GorgonPolySprite
     /// The vertices should be ordered in a clockwise orientation. This can be achieved by setting up the indices to point at each vertex in the desired order. For example:
     /// </para>
     /// <para>
-    /// <code lang="csharp">
+    /// <code language="csharp">
     /// <![CDATA[
     ///     // These define the corners of a rectangle.
     ///     Gorgon2PolySpriteVertex[] vertices = new Gorgon2PolySpriteVertex[4];
@@ -539,7 +539,7 @@ public class GorgonPolySprite
     /// The vertices should be ordered in a clockwise orientation. This can be achieved by setting up the indices to point at each vertex in the desired order. For example:
     /// </para>
     /// <para>
-    /// <code lang="csharp">
+    /// <code language="csharp">
     /// <![CDATA[
     ///     // These define the corners of a rectangle.
     ///     Gorgon2PolySpriteVertex[] vertices = new Gorgon2PolySpriteVertex[4];
@@ -647,7 +647,7 @@ public class GorgonPolySprite
             Usage = ResourceUsage.Immutable
         }, newSprite.RwIndices);
 
-        newSprite.Renderable.VertexBuffer = GorgonVertexBufferBinding.CreateVertexBuffer<Gorgon2DVertex>(graphics, new GorgonVertexBufferInfo(newSprite.Renderable.Vertices.Length * Gorgon2DVertex.SizeInBytes)
+        newSprite.Renderable.VertexBuffer = GorgonVertexBufferBinding.CreateVertexBuffer(graphics, new GorgonVertexBufferInfo(newSprite.Renderable.Vertices.Length * Gorgon2DVertex.SizeInBytes)
         {
             Usage = ResourceUsage.Immutable,
             Binding = VertexIndexBufferBinding.None

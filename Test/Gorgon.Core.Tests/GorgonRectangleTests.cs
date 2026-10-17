@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using System.Runtime.Intrinsics;
 using System.Text.Json;
 using Gorgon.Graphics;
 
@@ -894,5 +895,99 @@ public class GorgonRectangleTests
 
         Assert.AreEqual(10.25f, actualf.X, 0.00001f);
         Assert.AreEqual(10.15f, actualf.Y, 0.00001f);
+    }
+
+    [TestMethod]
+    public void ToVector128ReturnsLeftTopRightBottom()
+    {
+        // Arrange
+        GorgonRectangle rectangle = new(10, 20, 30, 40);
+
+        // Act
+        Vector128<int> vector = GorgonRectangle.ToVector128(rectangle);
+
+        // Assert
+        Assert.AreEqual(10, vector[0]);
+        Assert.AreEqual(20, vector[1]);
+        Assert.AreEqual(40, vector[2]);
+        Assert.AreEqual(60, vector[3]);
+    }
+
+    [TestMethod]
+    public void FromVector128UsesLeftTopRightBottom()
+    {
+        // Arrange
+        Vector128<int> vector = Vector128.Create(10, 20, 40, 60);
+
+        // Act
+        GorgonRectangle rectangle = GorgonRectangle.FromVector128(vector);
+
+        // Assert
+        Assert.AreEqual(10, rectangle.X);
+        Assert.AreEqual(20, rectangle.Y);
+        Assert.AreEqual(30, rectangle.Width);
+        Assert.AreEqual(40, rectangle.Height);
+    }
+
+    [TestMethod]
+    public void ExplicitConversionToAndFromVector128RoundTrips()
+    {
+        // Arrange
+        GorgonRectangle expected = new(-5, 7, 128, 64);
+
+        // Act
+        Vector128<int> vector = (Vector128<int>)expected;
+        GorgonRectangle actual = (GorgonRectangle)vector;
+
+        // Assert
+        Assert.AreEqual(Vector128.Create(-5, 7, 123, 71), vector);
+        Assert.AreEqual(expected, actual);
+    }
+
+    [TestMethod]
+    public void ToVector4ReturnsLeftTopRightBottom()
+    {
+        // Arrange
+        GorgonRectangleF rectangle = new(10.5f, 20.25f, 30.0f, 40.0f);
+
+        // Act
+        Vector4 vector = GorgonRectangleF.ToVector4(rectangle);
+
+        // Assert
+        Assert.AreEqual(10.5f, vector.X, 0.00001f);
+        Assert.AreEqual(20.25f, vector.Y, 0.00001f);
+        Assert.AreEqual(40.5f, vector.Z, 0.00001f);
+        Assert.AreEqual(60.25f, vector.W, 0.00001f);
+    }
+
+    [TestMethod]
+    public void FromVector4UsesLeftTopRightBottom()
+    {
+        // Arrange
+        Vector4 vector = new(10.5f, 20.25f, 40.5f, 60.25f);
+
+        // Act
+        GorgonRectangleF rectangle = GorgonRectangleF.FromVector4(vector);
+
+        // Assert
+        Assert.AreEqual(10.5f, rectangle.X, 0.00001f);
+        Assert.AreEqual(20.25f, rectangle.Y, 0.00001f);
+        Assert.AreEqual(30.0f, rectangle.Width, 0.00001f);
+        Assert.AreEqual(40.0f, rectangle.Height, 0.00001f);
+    }
+
+    [TestMethod]
+    public void ExplicitConversionToAndFromVector4RoundTrips()
+    {
+        // Arrange
+        GorgonRectangleF expected = new(-5.5f, 7.25f, 128.0f, 64.0f);
+
+        // Act
+        Vector4 vector = (Vector4)expected;
+        GorgonRectangleF actual = (GorgonRectangleF)vector;
+
+        // Assert
+        Assert.AreEqual(new Vector4(-5.5f, 7.25f, 122.5f, 71.25f), vector);
+        Assert.AreEqual(expected, actual);
     }
 }

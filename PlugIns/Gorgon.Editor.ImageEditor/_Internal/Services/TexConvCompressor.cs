@@ -107,7 +107,7 @@ internal class TexConvCompressor(FileInfo texConvFile, IGorgonFileSystem scratch
     private readonly FileInfo _texConv = texConvFile;
     // The file system writer to use.
     private readonly IGorgonFileSystem _writer = scratchWriter;
-    // Plugin image file codec.
+    // Plug-in image file codec.
     private readonly IGorgonImageCodec _codec = codec;
 
     /// <summary>

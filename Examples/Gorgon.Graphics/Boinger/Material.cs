@@ -14,6 +14,7 @@
 // all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -29,34 +30,6 @@ using Gorgon.Graphics.Core;
 namespace Gorgon.Examples;
 
 /// <summary>
-/// Represents a material applied to a model
+/// Represents a material applied to a model.
 /// </summary>
-public class Material
-{
-    /// <summary>
-    /// Property to set or return the diffuse color for the model.
-    /// </summary>
-    public GorgonColor Diffuse
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// Property to set or return the texture for the model.
-    /// </summary>
-    public GorgonTexture2DView Texture
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// Property to set or return the sampler used to sample the texture in the shader.
-    /// </summary>
-    public GorgonSamplerState TextureSampler
-    {
-        get;
-        set;
-    }
-}
+internal record class Material(GorgonColor Diffuse, IGorgonTextureView<GorgonTexture> Texture, GorgonSampler TextureSampler);

@@ -14,6 +14,7 @@
 // all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -24,7 +25,7 @@
 // 
 
 using Gorgon.Graphics.Imaging.Codecs;
-using Gorgon.Graphics.Imaging.Codecs.Plugins;
+using Gorgon.Graphics.Imaging.Codecs.PlugIns;
 
 namespace Gorgon.Examples;
 
@@ -32,16 +33,16 @@ namespace Gorgon.Examples;
 /// Our entry point into the TV image codec
 /// </summary>
 /// <remarks>
-/// This plugin will encode/decode images as 1 pixel per channel.  This will give the image an appearance similar to the line patterns on a CRT TV screen.  Well, somewhat
+/// This plug-in will encode/decode images as 1 pixel per channel.  This will give the image an appearance similar to the line patterns on a CRT TV screen.  Well, somewhat
 /// </remarks>
-public class TvImageCodecPlugin
-    : GorgonImageCodecPlugin
+public class TvImageCodecPlugIn
+    : GorgonImageCodecPlugIn
 {
     /// <summary>
-    /// Property to return the names of the available codecs for this plugin.
+    /// Property to return the names of the available codecs for this plug-in.
     /// </summary>
     /// <remarks>
-    /// This returns a <see cref="IReadOnlyDictionary{TKey,TValue}"/> containing the name of the plugin as its key, and an optional friendly description as its value.
+    /// This returns a <see cref="IReadOnlyDictionary{TKey,TValue}"/> containing the name of the plug-in as its key, and an optional friendly description as its value.
     /// </remarks>
     public override IReadOnlyList<GorgonImageCodecName> Codecs
     {
@@ -51,11 +52,11 @@ public class TvImageCodecPlugin
     /// <summary>
     /// Function to create a new <see cref="IGorgonImageCodec"/>.
     /// </summary>
-    /// <param name="codec">The codec to retrieve from the plugin.</param>
+    /// <param name="codec">The codec to retrieve from the plug-in.</param>
     /// <returns>A new <see cref="IGorgonImageCodec"/> object.</returns>
     /// <remarks>
     /// <para>
-    /// Implementors must implement this method to return the codec from the plugin assembly.
+    /// Implementors must implement this method to return the codec from the plug-in assembly.
     /// </para>
     /// </remarks>
     protected override IGorgonImageCodec OnCreateCodec(GorgonImageCodecName codec) => new TvImageCodec();
@@ -87,9 +88,9 @@ public class TvImageCodecPlugin
     protected override IGorgonImageCodecEncodingOptions? OnCreateCodecEncodingOptions(GorgonImageCodecName codec) => null;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="TvImageCodecPlugin"/> class.
+    /// Initializes a new instance of the <see cref="TvImageCodecPlugIn"/> class.
     /// </summary>
-    public TvImageCodecPlugin()
+    public TvImageCodecPlugIn()
         : base("A TV image codec, used for example only.") => Codecs = [new GorgonImageCodecName(typeof(TvImageCodec), Description)];
 
 }

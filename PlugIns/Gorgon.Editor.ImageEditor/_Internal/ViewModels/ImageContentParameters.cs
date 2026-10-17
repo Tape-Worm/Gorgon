@@ -40,7 +40,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels;
 /// <param name="fileManager">The file manager for content files.</param>
 /// <param name="file">The file for the image content.</param>
 /// <param name="settings">The settings for the image editor.</param>
-/// <param name="pluginSettings">The plugin settings for the image editor.</param>
+/// <param name="plugInSettings">The plug-in settings for the image editor.</param>
 /// <param name="imagePicker">The image picker used to import image data into the current image.</param>
 /// <param name="cropResizeSettings">The crop/resize settings view model.</param>
 /// <param name="dimensionSettings">The image dimensions settings view model.</param>
@@ -57,7 +57,7 @@ namespace Gorgon.Editor.ImageEditor.ViewModels;
 internal class ImageContentParameters(IContentFileManager fileManager,
     IContentFile file,
     ISettings settings,
-    ISettingsPlugins pluginSettings,
+    ISettingsPlugIns plugInSettings,
     IImagePicker imagePicker,
     ICropResizeSettings cropResizeSettings,
     IDimensionSettings dimensionSettings,
@@ -159,7 +159,7 @@ internal class ImageContentParameters(IContentFileManager fileManager,
     } = videoAdapter ?? throw new ArgumentNullException(nameof(videoAdapter));
 
     /// <summary>
-    /// Property to return the settings for the image editor Plugin.
+    /// Property to return the settings for the image editor plug-in.
     /// </summary>
     public ISettings Settings
     {
@@ -167,12 +167,12 @@ internal class ImageContentParameters(IContentFileManager fileManager,
     } = settings ?? throw new ArgumentNullException(nameof(settings));
 
     /// <summary>
-    /// Property to return the plugin settings for the image editor.
+    /// Property to return the plug-in settings for the image editor.
     /// </summary>
-    public ISettingsPlugins PluginSettings
+    public ISettingsPlugIns PlugInSettings
     {
         get;
-    } = pluginSettings ?? throw new ArgumentNullException(nameof(pluginSettings));
+    } = plugInSettings ?? throw new ArgumentNullException(nameof(plugInSettings));
 
     /// <summary>
     /// Property to return the original format for the image.

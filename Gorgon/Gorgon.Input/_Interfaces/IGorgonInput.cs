@@ -12,6 +12,7 @@
 // all copies or substantial portions of the Software.
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -359,8 +360,8 @@ public interface IGorgonInput
     /// </code>
     /// </para>
     /// <para>
-    /// <note type="important">
-    /// Be aware that any events processed using the callback (by returning <b>true</b> from the callback) will be consumed and will not be available for polling.
+    /// <note type="information">
+    /// Any events processed using the callback (by returning <b>true</b> from the callback) will be consumed and will not be available for polling.
     /// </note>
     /// </para>
     /// <para>

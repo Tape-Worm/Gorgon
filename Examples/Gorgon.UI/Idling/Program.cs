@@ -14,6 +14,7 @@
 // all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -93,13 +94,10 @@ internal static class Program
 
         try
         {
-            Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
+            ApplicationConfiguration.Initialize();
 
             _form = new Form
             {
-                ClientSize = new Size(1280, 800),
                 Log = log
             };
 
@@ -112,9 +110,7 @@ internal static class Program
             // Run the application with an idle loop.
             // This will set the idle loop running as soon as the application goes into an idle state (after the call to Application.Run).
             loop = GorgonApplicationLoop.Create(log);
-            loop.Run(Idle);
-
-            Application.Run(_form);
+            loop.RunWithWindow(Idle, _form);
         }
         catch (Exception ex)
         {

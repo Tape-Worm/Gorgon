@@ -14,6 +14,7 @@
 // all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -23,8 +24,11 @@
 // Created: February 7, 2021 12:31:53 AM
 // 
 
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 using Gorgon.Graphics;
-using Microsoft.Extensions.Configuration;
+using Gorgon.Json;
 
 namespace Gorgon.Examples;
 
@@ -32,81 +36,84 @@ namespace Gorgon.Examples;
 /// Configuration information for the example application
 /// </summary>
 public class ExampleConfig
-{
-    // The default instance.
-    private static ExampleConfig _default;
+{    
+    private readonly static Lazy<ExampleConfig> _default;    
+
+    // Options used to deserialize a JSON string.
+    private static readonly JsonSerializerOptions _jsonOptions = new()
+    {
+        Converters =
+        {
+            new GorgonPointJsonConverter()
+        }
+    };
 
     /// <summary>
     /// Function to load the configuration.
     /// </summary>
-    private static void LoadConfig()
+    /// <returns>The configuration file.</returns>
+    private static ExampleConfig LoadConfig()
     {
-        IConfigurationRoot config = new ConfigurationBuilder()
-                                        .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
-                                        .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
-                                        .Build();
+        using StreamReader reader = new(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appsettings.json"));
+        string configJson = reader.ReadToEnd();
 
-        IConfigurationSection section = config.GetSection(nameof(ExampleConfig));
+        JsonObject? result = JsonSerializer.Deserialize<JsonObject>(configJson, _jsonOptions);
 
-        _default = new ExampleConfig();
-
-        if (section is null)
+        if ((result is null) || (result.Count != 1))
         {
-            return;
+            return new ExampleConfig();
         }
 
-        section.Bind(_default);
+        return result[0].Deserialize<ExampleConfig>(_jsonOptions) ?? new ExampleConfig();
     }
 
     /// <summary>
     /// Property to return the default settings.
     /// </summary>
-    public static ExampleConfig Default
-    {
-        get
-        {
-            if (_default is null)
-            {
-                LoadConfig();
-            }
-
-            return _default;
-        }
-    }
+    public static ExampleConfig Default => _default.Value;
 
     /// <summary>
     /// Property to set or return the path to the resources for the example.
     /// </summary>
+    [JsonInclude]
     public string ResourceLocation
     {
         get;
         set;
-    }
+    } = string.Empty;
 
     /// <summary>
-    /// Property to set or return the path to the location for example plugins.
+    /// Property to set or return the path to the location for example plug-ins.
     /// </summary>
-    public string PluginLocation
+    [JsonInclude]
+    public string PlugInLocation
     {
         get;
         set;
-    }
+    } = string.Empty;
 
     /// <summary>
     /// Property to set or return the desired window resolution.
     /// </summary>
+    [JsonInclude]
     public GorgonPoint Resolution
     {
         get;
         set;
-    } = new GorgonPoint(1280, 800);
+    } = GorgonPoint.Zero;
 
     /// <summary>
     /// Property to set or return whether the example runs in windowed mode, or full screen mode.
     /// </summary>
+    [JsonInclude]
     public bool IsWindowed
     {
         get;
         set;
     } = true;
+
+    /// <summary>
+    /// Initializes a new static instance of <see cref="ExampleConfig"/>
+    /// </summary>
+    static ExampleConfig() => _default = new Lazy<ExampleConfig>(LoadConfig);
 }

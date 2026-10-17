@@ -115,341 +115,343 @@ public static class GorgonTextFormat
         return size;
     }
 
-    /// <summary>
-    /// Function to format a string for rendering using a <see cref="GorgonFont"/>.
-    /// </summary>
-    /// <param name="renderText">The text to render.</param>
-    /// <param name="tabSpacing">[Optional] The number of spaces used to replace a tab control character.</param>
-    /// <returns>The formatted text.</returns>
-    /// <remarks>
-    /// <para>
-    /// This method will format the string so that all control characters such as carriage return, and tabs are converted into spaces. 
-    /// </para>
-    /// <para>
-    /// If the <paramref name="tabSpacing"/> parameter is changed from its default of 4, then that will be the number of spaces substituted for the tab control character.
-    /// </para>
-    /// <para>
-    /// <note type="warning">
-    /// <para>
-    /// This method is <b>NOT</b> thread safe.
-    /// </para>
-    /// </note>
-    /// </para>
-    /// </remarks>
-    public static string FormatStringForRendering(this string renderText, int tabSpacing = 4)
+    extension(string renderText)
     {
-        if (string.IsNullOrEmpty(renderText))
+        /// <summary>
+        /// Function to format a string for rendering using a <see cref="GorgonFont"/>.
+        /// </summary>
+        /// <param name="tabSpacing">[Optional] The number of spaces used to replace a tab control character.</param>
+        /// <returns>The formatted text.</returns>
+        /// <remarks>
+        /// <para>
+        /// This method will format the string so that all control characters such as carriage return, and tabs are converted into spaces. 
+        /// </para>
+        /// <para>
+        /// If the <paramref name="tabSpacing"/> parameter is changed from its default of 4, then that will be the number of spaces substituted for the tab control character.
+        /// </para>
+        /// <para>
+        /// <note type="warning">
+        /// <para>
+        /// This method is <b>NOT</b> thread safe.
+        /// </para>
+        /// </note>
+        /// </para>
+        /// </remarks>
+        public string FormatStringForRendering(int tabSpacing = 4)
         {
-            return string.Empty;
+            if (string.IsNullOrEmpty(renderText))
+            {
+                return string.Empty;
+            }
+
+            _workingBuffer.Length = 0;
+            _workingBuffer.Append(renderText);
+
+            tabSpacing = tabSpacing.Max(1);
+
+            // Strip all carriage returns.
+            _workingBuffer.Replace("\r", string.Empty);
+
+            // Convert tabs to spaces.
+            _workingBuffer.Replace("\t", new string(' ', tabSpacing));
+
+            return _workingBuffer.ToString();
         }
-
-        _workingBuffer.Length = 0;
-        _workingBuffer.Append(renderText);
-
-        tabSpacing = tabSpacing.Max(1);
-
-        // Strip all carriage returns.
-        _workingBuffer.Replace("\r", string.Empty);
-
-        // Convert tabs to spaces.
-        _workingBuffer.Replace("\t", new string(' ', tabSpacing));
-
-        return _workingBuffer.ToString();
     }
 
-    /// <summary>
-    /// Function to perform word wrapping on a string based on a Gorgon font.
-    /// </summary>
-    /// <param name="text">The text to word wrap.</param>
-    /// <param name="font">The font to use.</param>
-    /// <param name="wordWrapWidth">The maximum width, in pixels, that must be met for word wrapping to occur.</param>
-    /// <returns>The string with word wrapping.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="font"/> parameter is <b>null</b>.</exception>
-    /// <exception cref="GorgonException">Thrown if the <paramref name="font"/> does not have a glyph for its default character.</exception>
-    /// <remarks>
-    /// <para>
-    /// The <paramref name="wordWrapWidth"/> is the maximum number of pixels required for word wrapping, if an individual font glyph cell width (the <see cref="GorgonGlyph.Offset"/> + 
-    /// <see cref="GorgonGlyph.Advance"/>) exceeds that of the <paramref name="wordWrapWidth"/>, then the parameter value is updated to glyph cell width.
-    /// </para>
-    /// <para>
-    /// <note type="warning">
-    /// <para>
-    /// This method is <b>NOT</b> thread safe.
-    /// </para>
-    /// </note>
-    /// </para>
-    /// </remarks>
-    public static string WordWrap(this string text, GorgonFont font, float wordWrapWidth)
+    extension(string text)
     {
-        if (font is null)
+        /// <summary>
+        /// Function to perform word wrapping on a string based on a Gorgon font.
+        /// </summary>
+        /// <param name="font">The font to use.</param>
+        /// <param name="wordWrapWidth">The maximum width, in pixels, that must be met for word wrapping to occur.</param>
+        /// <returns>The string with word wrapping.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="font"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="GorgonException">Thrown if the <paramref name="font"/> does not have a glyph for its default character.</exception>
+        /// <remarks>
+        /// <para>
+        /// The <paramref name="wordWrapWidth"/> is the maximum number of pixels required for word wrapping, if an individual font glyph cell width (the <see cref="GorgonGlyph.Offset"/> + 
+        /// <see cref="GorgonGlyph.Advance"/>) exceeds that of the <paramref name="wordWrapWidth"/>, then the parameter value is updated to glyph cell width.
+        /// </para>
+        /// <para>
+        /// <note type="warning">
+        /// <para>
+        /// This method is <b>NOT</b> thread safe.
+        /// </para>
+        /// </note>
+        /// </para>
+        /// </remarks>
+        public string WordWrap(GorgonFont font, float wordWrapWidth)
         {
-            throw new ArgumentNullException(nameof(font));
-        }
-
-        if (string.IsNullOrEmpty(text))
-        {
-            return text;
-        }
-
-        _wordWrapBuffer.Length = 0;
-        _wordWrapBuffer.Append(text);
-
-        if (!font.TryGetDefaultGlyph(out GorgonGlyph defaultGlyph))
-        {
-            throw new GorgonException(GorgonResult.CannotEnumerate, string.Format(Resources.GORGFX_ERR_FONT_DEFAULT_CHAR_NOT_VALID, font.DefaultCharacter));
-        }
-
-        int maxLength = _wordWrapBuffer.Length;
-        int index = 0;
-        float position = 0.0f;
-        bool firstChar = true;
-
-        while (index < maxLength)
-        {
-            char character = _wordWrapBuffer[index];
-
-            // Don't count newline or carriage return.
-            if (character is '\n' or '\r')
+            if (font is null)
             {
-                firstChar = true;
-                position = 0;
-                ++index;
-                continue;
+                throw new ArgumentNullException(nameof(font));
             }
 
-            if (!font.Glyphs.TryGetValue(character, out GorgonGlyph glyph))
+            if (string.IsNullOrEmpty(text))
             {
-                glyph = defaultGlyph;
+                return text;
             }
 
-            float glyphCellWidth = glyph.Advance;
+            _wordWrapBuffer.Length = 0;
+            _wordWrapBuffer.Append(text);
 
-            if (firstChar)
+            if (!font.TryGetDefaultGlyph(out GorgonGlyph defaultGlyph))
             {
-                glyphCellWidth += glyph.Offset.X;
-                firstChar = false;
+                throw new GorgonException(GorgonResult.CannotEnumerate, string.Format(Resources.GORGFX_ERR_FONT_DEFAULT_CHAR_NOT_VALID, font.DefaultCharacter));
             }
 
-            // If we're using kerning, then adjust for the kerning value.
-            if ((font.UseKerningPairs)
-                && (index < maxLength - 1))
+            int maxLength = _wordWrapBuffer.Length;
+            int index = 0;
+            float position = 0.0f;
+            bool firstChar = true;
+
+            while (index < maxLength)
             {
-                if (font.KerningPairs.TryGetValue(new GorgonKerningPair(character, _wordWrapBuffer[index + 1]), out int kernValue))
+                char character = _wordWrapBuffer[index];
+
+                // Don't count newline or carriage return.
+                if (character is '\n' or '\r')
                 {
-                    glyphCellWidth += kernValue;
-                }
-            }
-
-            position += glyphCellWidth;
-
-            // Update the word wrap boundary if the cell size exceeds it.
-            if (glyphCellWidth > wordWrapWidth)
-            {
-                wordWrapWidth = glyphCellWidth;
-            }
-
-            // We're not at the break yet.
-            if (position < wordWrapWidth)
-            {
-                ++index;
-                continue;
-            }
-
-            int whiteSpaceIndex = index;
-
-            // If we hit the max width, then we need to find the previous whitespace and inject a newline.
-            while ((whiteSpaceIndex <= index) && (whiteSpaceIndex >= 0))
-            {
-                char breakChar = _wordWrapBuffer[whiteSpaceIndex];
-
-                if ((char.IsWhiteSpace(breakChar))
-                    && (breakChar != '\n')
-                    && (breakChar != '\r'))
-                {
-                    index = whiteSpaceIndex;
-                    break;
-                }
-
-                --whiteSpaceIndex;
-            }
-
-            // If we're at the beginning, then we cannot wrap this text, so we'll break it at the border specified.
-            if (index != whiteSpaceIndex)
-            {
-                if (index != 0)
-                {
-                    _wordWrapBuffer.Insert(index, '\n');
-                    maxLength = _wordWrapBuffer.Length;
+                    firstChar = true;
+                    position = 0;
                     ++index;
+                    continue;
                 }
+
+                if (!font.Glyphs.TryGetValue(character, out GorgonGlyph glyph))
+                {
+                    glyph = defaultGlyph;
+                }
+
+                float glyphCellWidth = glyph.Advance;
+
+                if (firstChar)
+                {
+                    glyphCellWidth += glyph.Offset.X;
+                    firstChar = false;
+                }
+
+                // If we're using kerning, then adjust for the kerning value.
+                if ((font.UseKerningPairs)
+                    && (index < maxLength - 1))
+                {
+                    if (font.KerningPairs.TryGetValue(new GorgonKerningPair(character, _wordWrapBuffer[index + 1]), out int kernValue))
+                    {
+                        glyphCellWidth += kernValue;
+                    }
+                }
+
+                position += glyphCellWidth;
+
+                // Update the word wrap boundary if the cell size exceeds it.
+                if (glyphCellWidth > wordWrapWidth)
+                {
+                    wordWrapWidth = glyphCellWidth;
+                }
+
+                // We're not at the break yet.
+                if (position < wordWrapWidth)
+                {
+                    ++index;
+                    continue;
+                }
+
+                int whiteSpaceIndex = index;
+
+                // If we hit the max width, then we need to find the previous whitespace and inject a newline.
+                while ((whiteSpaceIndex <= index) && (whiteSpaceIndex >= 0))
+                {
+                    char breakChar = _wordWrapBuffer[whiteSpaceIndex];
+
+                    if ((char.IsWhiteSpace(breakChar))
+                        && (breakChar != '\n')
+                        && (breakChar != '\r'))
+                    {
+                        index = whiteSpaceIndex;
+                        break;
+                    }
+
+                    --whiteSpaceIndex;
+                }
+
+                // If we're at the beginning, then we cannot wrap this text, so we'll break it at the border specified.
+                if (index != whiteSpaceIndex)
+                {
+                    if (index != 0)
+                    {
+                        _wordWrapBuffer.Insert(index, '\n');
+                        maxLength = _wordWrapBuffer.Length;
+                        ++index;
+                    }
+                    position = 0;
+                    firstChar = true;
+                    // Move to next character.
+                    ++index;
+                    continue;
+                }
+
+                // Extract the space.
+                _wordWrapBuffer[whiteSpaceIndex] = '\n';
                 position = 0;
                 firstChar = true;
-                // Move to next character.
-                ++index;
-                continue;
+                index = whiteSpaceIndex + 1;
             }
 
-            // Extract the space.
-            _wordWrapBuffer[whiteSpaceIndex] = '\n';
-            position = 0;
-            firstChar = true;
-            index = whiteSpaceIndex + 1;
+            return _wordWrapBuffer.ToString();
         }
 
-        return _wordWrapBuffer.ToString();
-    }
-
-    /// <summary>
-    /// Function to measure a single line of text using a Gorgon font.
-    /// </summary>
-    /// <param name="text">The single line of text to measure.</param>
-    /// <param name="font">The font to use.</param>
-    /// <param name="useOutline">[Optional] <b>true</b> to include the outline in the measurement, <b>false</b> to exclude.</param>
-    /// <param name="lineSpacing">[Optional] The factor used to determine the amount of space between each line.</param>
-    /// <returns>A vector containing the width and height of the text line when rendered using this font.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="font"/> parameter is <b>null</b>.</exception>
-    /// <exception cref="GorgonException">Thrown if the <paramref name="font"/> does not have a glyph for its default character.</exception>
-    /// <remarks>
-    /// <para>
-    /// This will measure the specified <paramref name="text"/> and return the size, in pixels, of the region containing the text. Unlike the <see cref="MeasureText"/> method, this method does not format 
-    /// the text or take into account newline/carriage returns. It is meant for a single line of text only.
-    /// </para>
-    /// <para>
-    /// If the <paramref name="useOutline"/> parameter is <b>true</b>, then the outline size is taken into account when measuring, otherwise only the standard glyph size is taken into account. If the font 
-    /// <see cref="GorgonFont.HasOutline"/> property is <b>false</b>, then this parameter is ignored.
-    /// </para>
-    /// <para>
-    /// The <paramref name="lineSpacing"/> parameter adjusts the amount of space between each line by multiplying it with the <see cref="GorgonFont.FontHeight"/> value (and the 
-    /// <see cref="IGorgonFontInfo.OutlineSize"/> * 2 if <paramref name="useOutline"/> is <b>true</b> and <see cref="GorgonFont.HasOutline"/> is <b>true</b>). For example, to achieve a double spacing 
-    /// effect, change this value to 2.0f.
-    /// </para>
-    /// </remarks>
-    /// <seealso cref="MeasureText"/>
-    public static Vector2 MeasureLine(this string text, GorgonFont font, bool useOutline = false, float lineSpacing = 1.0f)
-    {
-        if (font is null)
+        /// <summary>
+        /// Function to measure a single line of text using a Gorgon font.
+        /// </summary>
+        /// <param name="font">The font to use.</param>
+        /// <param name="useOutline">[Optional] <b>true</b> to include the outline in the measurement, <b>false</b> to exclude.</param>
+        /// <param name="lineSpacing">[Optional] The factor used to determine the amount of space between each line.</param>
+        /// <returns>A vector containing the width and height of the text line when rendered using this font.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="font"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="GorgonException">Thrown if the <paramref name="font"/> does not have a glyph for its default character.</exception>
+        /// <remarks>
+        /// <para>
+        /// This will measure the string and return the size, in pixels, of the region containing the text. Unlike the <see cref="MeasureText"/> method, this method does not format 
+        /// the text or take into account newline/carriage returns. It is meant for a single line of text only.
+        /// </para>
+        /// <para>
+        /// If the <paramref name="useOutline"/> parameter is <b>true</b>, then the outline size is taken into account when measuring, otherwise only the standard glyph size is taken into account. If the font 
+        /// <see cref="GorgonFont.HasOutline"/> property is <b>false</b>, then this parameter is ignored.
+        /// </para>
+        /// <para>
+        /// The <paramref name="lineSpacing"/> parameter adjusts the amount of space between each line by multiplying it with the <see cref="GorgonFont.FontHeight"/> value (and the 
+        /// <see cref="IGorgonFontInfo.OutlineSize"/> * 2 if <paramref name="useOutline"/> is <b>true</b> and <see cref="GorgonFont.HasOutline"/> is <b>true</b>). For example, to achieve a double spacing 
+        /// effect, change this value to 2.0f.
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="MeasureText"/>
+        public Vector2 MeasureLine(GorgonFont font, bool useOutline = false, float lineSpacing = 1.0f)
         {
-            throw new ArgumentNullException(nameof(font));
-        }
+            if (font is null)
+            {
+                throw new ArgumentNullException(nameof(font));
+            }
 
-        if (string.IsNullOrEmpty(text))
-        {
-            return Vector2.Zero;
-        }
+            if (string.IsNullOrEmpty(text))
+            {
+                return Vector2.Zero;
+            }
 
-        float lineWidth = GetLineWidth(font, text, useOutline);
-
-        if ((font.HasOutline) && (useOutline))
-        {
-            lineWidth += font.OutlineSize;
-        }
-
-        return new Vector2(lineWidth, font.FontHeight.FastFloor() * lineSpacing);
-    }
-
-    /// <summary>
-    /// Function to measure the specified text using a Gorgon font.
-    /// </summary>
-    /// <param name="text">The text to measure.</param>
-    /// <param name="font">The font to use.</param>
-    /// <param name="useOutline">[Optional] <b>true</b> to include the outline in the measurement, <b>false</b> to exclude.</param>
-    /// <param name="tabSpaceCount">[Optional] The number of spaces represented by a tab control character.</param>
-    /// <param name="lineSpacing">[Optional] The factor used to determine the amount of space between each line.</param>
-    /// <param name="wordWrapWidth">[Optional] The maximum width to return if word wrapping is required.</param>
-    /// <returns>A vector containing the width and height of the text when rendered using this font.</returns>
-    /// <exception cref="ArgumentNullException">Thrown when the <paramref name="font"/> parameter is <b>null</b>.</exception>
-    /// <exception cref="GorgonException">Thrown if the <paramref name="font"/> does not have a glyph for its default character.</exception>
-    /// <remarks>
-    /// <para>
-    /// This will measure the specified <paramref name="text"/> and return the size, in pixels, of the region containing the text.
-    /// </para>
-    /// <para>
-    /// If the <paramref name="wordWrapWidth"/> is specified and greater than zero, then word wrapping is assumed to be on and the text will be handled using word wrapping.
-    /// </para>
-    /// <para>
-    /// If the <paramref name="useOutline"/> parameter is <b>true</b>, then the outline size is taken into account when measuring, otherwise only the standard glyph size is taken into account. If the 
-    /// font <see cref="GorgonFont.HasOutline"/> property is <b>false</b>, then this parameter is ignored.
-    /// </para>
-    /// <para>
-    /// The <paramref name="lineSpacing"/> parameter adjusts the amount of space between each line by multiplying it with the <see cref="GorgonFont.FontHeight"/> value (and the 
-    /// <see cref="IGorgonFontInfo.OutlineSize"/> * 2 if <paramref name="useOutline"/> is <b>true</b> and <see cref="GorgonFont.HasOutline"/> is <b>true</b>). For example, to achieve a double spacing 
-    /// effect, change this value to 2.0f.
-    /// </para>
-    /// <para>
-    /// If measuring a single line of text with no breaks (i.e. newline or carriage return), and no word wrapping, then call the <see cref="MeasureLine"/> method instead for better performance.
-    /// </para>
-    /// <para>
-    /// <note type="warning">
-    /// <para>
-    /// This method is <b>NOT</b> thread safe.
-    /// </para>
-    /// </note>
-    /// </para>
-    /// </remarks>
-    /// <seealso cref="MeasureLine"/>
-    public static Vector2 MeasureText(this string text, GorgonFont font, bool useOutline = false, int tabSpaceCount = 4, float lineSpacing = 1.0f, float? wordWrapWidth = null)
-    {
-        if (font is null)
-        {
-            throw new ArgumentNullException(nameof(font));
-        }
-
-        if (string.IsNullOrEmpty(text))
-        {
-            return Vector2.Zero;
-        }
-
-        string formattedText = FormatStringForRendering(text, tabSpaceCount);
-
-        if (string.IsNullOrEmpty(formattedText))
-        {
-            return Vector2.Zero;
-        }
-
-        Vector2 result = Vector2.Zero;
-
-        if (wordWrapWidth is not null)
-        {
-            formattedText = WordWrap(formattedText, font, wordWrapWidth.Value);
-        }
-
-        string[] lines = formattedText.GetLines();
-        float fontHeight = font.FontHeight.FastFloor();
-
-        if (lines.Length == 0)
-        {
-            return result;
-        }
-
-        if (lineSpacing.EqualsEpsilon(1.0f))
-        {
-            result.Y = lines.Length * fontHeight;
-        }
-        else
-        {
-            // For a modified line spacing, we have to adjust for the last line not being affected by the line spacing.
-            result.Y = ((lines.Length - 1) * (fontHeight * lineSpacing)) + fontHeight;
-        }
-
-        if ((font.HasOutline) && (useOutline))
-        {
-            result.Y += font.OutlineSize * 0.5f;
-        }
-
-        // Get width.
-        // ReSharper disable once ForCanBeConvertedToForeach
-        for (int i = 0; i < lines.Length; ++i)
-        {
-            float lineWidth = GetLineWidth(font, lines[i], useOutline);
+            float lineWidth = GetLineWidth(font, text, useOutline);
 
             if ((font.HasOutline) && (useOutline))
             {
                 lineWidth += font.OutlineSize;
             }
 
-            result.X = result.X.Max(lineWidth);
+            return new Vector2(lineWidth, font.FontHeight.FastFloor() * lineSpacing);
         }
 
-        return result;
+        /// <summary>
+        /// Function to measure the specified text using a Gorgon font.
+        /// </summary>
+        /// <param name="font">The font to use.</param>
+        /// <param name="useOutline">[Optional] <b>true</b> to include the outline in the measurement, <b>false</b> to exclude.</param>
+        /// <param name="tabSpaceCount">[Optional] The number of spaces represented by a tab control character.</param>
+        /// <param name="lineSpacing">[Optional] The factor used to determine the amount of space between each line.</param>
+        /// <param name="wordWrapWidth">[Optional] The maximum width to return if word wrapping is required.</param>
+        /// <returns>A vector containing the width and height of the text when rendered using this font.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="font"/> parameter is <b>null</b>.</exception>
+        /// <exception cref="GorgonException">Thrown if the <paramref name="font"/> does not have a glyph for its default character.</exception>
+        /// <remarks>
+        /// <para>
+        /// This will measure the string and return the size, in pixels, of the region containing the text.
+        /// </para>
+        /// <para>
+        /// If the <paramref name="wordWrapWidth"/> is specified and greater than zero, then word wrapping is assumed to be on and the text will be handled using word wrapping.
+        /// </para>
+        /// <para>
+        /// If the <paramref name="useOutline"/> parameter is <b>true</b>, then the outline size is taken into account when measuring, otherwise only the standard glyph size is taken into account. If the 
+        /// font <see cref="GorgonFont.HasOutline"/> property is <b>false</b>, then this parameter is ignored.
+        /// </para>
+        /// <para>
+        /// The <paramref name="lineSpacing"/> parameter adjusts the amount of space between each line by multiplying it with the <see cref="GorgonFont.FontHeight"/> value (and the 
+        /// <see cref="IGorgonFontInfo.OutlineSize"/> * 2 if <paramref name="useOutline"/> is <b>true</b> and <see cref="GorgonFont.HasOutline"/> is <b>true</b>). For example, to achieve a double spacing 
+        /// effect, change this value to 2.0f.
+        /// </para>
+        /// <para>
+        /// If measuring a single line of text with no breaks (i.e. newline or carriage return), and no word wrapping, then call the <see cref="MeasureLine"/> method instead for better performance.
+        /// </para>
+        /// <para>
+        /// <note type="warning">
+        /// <para>
+        /// This method is <b>NOT</b> thread safe.
+        /// </para>
+        /// </note>
+        /// </para>
+        /// </remarks>
+        /// <seealso cref="MeasureLine"/>
+        public Vector2 MeasureText(GorgonFont font, bool useOutline = false, int tabSpaceCount = 4, float lineSpacing = 1.0f, float? wordWrapWidth = null)
+        {
+            if (font is null)
+            {
+                throw new ArgumentNullException(nameof(font));
+            }
+
+            if (string.IsNullOrEmpty(text))
+            {
+                return Vector2.Zero;
+            }
+
+            string formattedText = FormatStringForRendering(text, tabSpaceCount);
+
+            if (string.IsNullOrEmpty(formattedText))
+            {
+                return Vector2.Zero;
+            }
+
+            Vector2 result = Vector2.Zero;
+
+            if (wordWrapWidth is not null)
+            {
+                formattedText = WordWrap(formattedText, font, wordWrapWidth.Value);
+            }
+
+            string[] lines = formattedText.GetLines();
+            float fontHeight = font.FontHeight.FastFloor();
+
+            if (lines.Length == 0)
+            {
+                return result;
+            }
+
+            if (lineSpacing.EqualsEpsilon(1.0f))
+            {
+                result.Y = lines.Length * fontHeight;
+            }
+            else
+            {
+                // For a modified line spacing, we have to adjust for the last line not being affected by the line spacing.
+                result.Y = ((lines.Length - 1) * (fontHeight * lineSpacing)) + fontHeight;
+            }
+
+            if ((font.HasOutline) && (useOutline))
+            {
+                result.Y += font.OutlineSize * 0.5f;
+            }
+
+            // Get width.
+            // ReSharper disable once ForCanBeConvertedToForeach
+            for (int i = 0; i < lines.Length; ++i)
+            {
+                float lineWidth = GetLineWidth(font, lines[i], useOutline);
+
+                if ((font.HasOutline) && (useOutline))
+                {
+                    lineWidth += font.OutlineSize;
+                }
+
+                result.X = result.X.Max(lineWidth);
+            }
+
+            return result;
+        }
     }
 }

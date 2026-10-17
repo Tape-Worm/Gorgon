@@ -68,7 +68,7 @@ namespace Gorgon.Renderers;
 /// </remarks>
 /// <param name="renderer">The renderer interface to use for building the polygon sprite.</param>
 public class GorgonPolySpriteBuilder(Gorgon2D renderer)
-        : IGorgonFluentBuilder<GorgonPolySpriteBuilder, GorgonPolySprite>, IEnumerable<GorgonPolySpriteVertex>, IGorgonGraphicsObject
+        : IGorgonFluentBuilderDoNotUse<GorgonPolySpriteBuilder, GorgonPolySprite>, IEnumerable<GorgonPolySpriteVertex>, IGorgonGraphicsObject
 {
     // The working sprite.
     private readonly GorgonPolySprite _workingSprite = new();
@@ -509,7 +509,7 @@ public class GorgonPolySpriteBuilder(Gorgon2D renderer)
             Usage = ResourceUsage.Immutable
         }, indices);
 
-        newSprite.Renderable.VertexBuffer = GorgonVertexBufferBinding.CreateVertexBuffer<Gorgon2DVertex>(Graphics, new GorgonVertexBufferInfo(newSprite.Renderable.Vertices.Length * Gorgon2DVertex.SizeInBytes)
+        newSprite.Renderable.VertexBuffer = GorgonVertexBufferBinding.CreateVertexBuffer(Graphics, new GorgonVertexBufferInfo(newSprite.Renderable.Vertices.Length * Gorgon2DVertex.SizeInBytes)
         {
             Usage = ResourceUsage.Immutable,
             Binding = VertexIndexBufferBinding.None

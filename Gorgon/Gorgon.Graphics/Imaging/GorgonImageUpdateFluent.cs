@@ -14,6 +14,7 @@
 // all copies or substantial portions of the Software
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -69,16 +70,16 @@ public partial class GorgonImage
         }
 
         // If we've asked for 4 bit per channel BGRA, then we have to convert the base image to B8R8G8A8,and then convert manually (no support in WIC).
-        if (format == BufferFormat.B4G4R4A4_UNorm)
+        if (format is BufferFormat.B4G4R4A4_UNorm or BufferFormat.A4B4G4R4_UNorm)
         {
-            ConvertToB4G4R4A4(dithering);
+            ConvertTo4444(dithering, format);
             return;
         }
 
         // If we're currently using B4G4R4A4, then manually convert (no support in WIC).
-        if (Format == BufferFormat.B4G4R4A4_UNorm)
+        if (Format is BufferFormat.B4G4R4A4_UNorm or BufferFormat.A4B4G4R4_UNorm)
         {
-            ConvertFromB4G4R4A4(format);
+            ConvertFrom4444(format);
             return;
         }
 
@@ -97,6 +98,8 @@ public partial class GorgonImage
     {
         Debug.Assert(newImage is not null, "New image is null");
 
+        // The old buffers point into the memory that's about to be freed, so detach them before taking the new image's buffers.
+        _buffers.Dispose();
         _imageBuffer?.Dispose();
         _imageInfo = newImage._imageInfo;
         SizeInBytes = CalculateSizeInBytes(_imageInfo);
@@ -107,11 +110,12 @@ public partial class GorgonImage
     }
 
     /// <summary>
-    /// Function to convert the pixel data in the buffers from B8G8RAA8 or R8G8B8A8 to B4G4R4A4.
+    /// Function to convert the pixel data in the buffers from B8G8RAA8 or R8G8B8A8 to 4 bit RGB + alpha.
     /// </summary>
     /// <param name="dest">The destination buffer to receive the newly formatted data.</param>
     /// <param name="src">The source buffer to containing the source pixels to convert.</param>
-    private static void ConvertPixelsToB4G4R4A4(IGorgonImageBuffer dest, IGorgonImageBuffer src)
+    /// <param name="format">The format to convert into.</param>
+    private static void ConvertPixelsTo4444(IGorgonImageBuffer dest, IGorgonImageBuffer src, BufferFormat format)
     {
         GorgonPtr<ushort> destBufferPtr = (GorgonPtr<ushort>)dest.ImageData;
         GorgonPtr<uint> srcBufferPtr = (GorgonPtr<uint>)src.ImageData;
@@ -135,7 +139,14 @@ public partial class GorgonImage
                 r = (srcPixel & 0xff) >> 4;
             }
 
-            (destBufferPtr++).Value = (ushort)((a << 12) | (r << 8) | (g << 4) | b);
+            if (format == BufferFormat.B4G4R4A4_UNorm)
+            {
+                (destBufferPtr++).Value = (ushort)((a << 12) | (r << 8) | (g << 4) | b);
+            }
+            else
+            {
+                (destBufferPtr++).Value = (ushort)((r << 12) | (g << 8) | (b << 4) | a);
+            }
         }
     }
 
@@ -144,19 +155,21 @@ public partial class GorgonImage
     /// </summary>
     /// <param name="dest">The destination buffer to receive the newly formatted data.</param>
     /// <param name="src">The source buffer to containing the source pixels to convert.</param>
+    /// <param name="format">The format to convert into.</param>
     [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-    private unsafe static void ConvertPixelsToB4G4R4A4Simd(IGorgonImageBuffer dest, IGorgonImageBuffer src)
+    private unsafe static void ConvertPixelsTo4444Simd(IGorgonImageBuffer dest, IGorgonImageBuffer src, BufferFormat format)
     {
         uint* srcPtr = (uint*)src.ImageData;
         ushort* destPtr = (ushort*)dest.ImageData;
 
-        int count = Vector256<byte>.Count;
-        long maxByteSize = src.SizeInBytes;
-        long maxLength = ((maxByteSize - count) / count) >> 1;
+        // Each vector iteration converts 16 pixels (two Vector256<uint> loads).
+        long pixelCount = src.SizeInBytes / sizeof(uint);
+        long blockCount = pixelCount / 16;
+        long remainingPixels = pixelCount % 16;
 
         bool isBgr = src.Format is BufferFormat.B8G8R8A8_UNorm or BufferFormat.B8G8R8A8_UNorm_SRgb or BufferFormat.B8G8R8X8_UNorm or BufferFormat.B8G8R8X8_UNorm_SRgb;
 
-        for (long i = 0; i <= maxLength; ++i, maxByteSize -= (count << 1))
+        for (long i = 0; i < blockCount; ++i)
         {
             Vector256<uint> pixelsLo = Vector256.ShiftRightLogical(Unsafe.ReadUnaligned<Vector256<uint>>(srcPtr), 4);
 
@@ -174,10 +187,10 @@ public partial class GorgonImage
             Vector256<uint> gHi = Vector256.BitwiseAnd(Vector256.ShiftRightLogical(pixelsHi, 8), _32bppAndMask);
             Vector256<uint> rHi = !isBgr ? Vector256.BitwiseAnd(pixelsHi, _32bppAndMask) : Vector256.BitwiseAnd(Vector256.ShiftRightLogical(pixelsHi, 16), _32bppAndMask);
 
-            Vector256<ushort> a16bpp = Vector256.ShiftLeft(Vector256.Narrow(aLo, aHi), 12);
-            Vector256<ushort> r16bpp = Vector256.ShiftLeft(Vector256.Narrow(rLo, rHi), 8);
-            Vector256<ushort> g16bpp = Vector256.ShiftLeft(Vector256.Narrow(gLo, gHi), 4);
-            Vector256<ushort> b16bpp = Vector256.Narrow(bLo, bHi);
+            Vector256<ushort> a16bpp = format == BufferFormat.B4G4R4A4_UNorm ? Vector256.ShiftLeft(Vector256.Narrow(aLo, aHi), 12) : Vector256.Narrow(aLo, aHi);
+            Vector256<ushort> r16bpp = format == BufferFormat.B4G4R4A4_UNorm ? Vector256.ShiftLeft(Vector256.Narrow(rLo, rHi), 8) : Vector256.ShiftLeft(Vector256.Narrow(rLo, rHi), 12);
+            Vector256<ushort> g16bpp = format == BufferFormat.B4G4R4A4_UNorm ? Vector256.ShiftLeft(Vector256.Narrow(gLo, gHi), 4) : Vector256.ShiftLeft(Vector256.Narrow(gLo, gHi), 8);
+            Vector256<ushort> b16bpp = format == BufferFormat.B4G4R4A4_UNorm ? Vector256.Narrow(bLo, bHi) : Vector256.ShiftLeft(Vector256.Narrow(bLo, bHi), 4);
 
             Vector256<ushort> pixel = Vector256.BitwiseOr(Vector256.BitwiseOr(Vector256.BitwiseOr(a16bpp, r16bpp), g16bpp), b16bpp);
 
@@ -187,12 +200,7 @@ public partial class GorgonImage
             destPtr += 16;
         }
 
-        if (maxByteSize <= 0)
-        {
-            return;
-        }
-
-        for (long i = 0; i < maxByteSize; ++i)
+        for (long i = 0; i < remainingPixels; ++i)
         {
             uint srcPixel = *srcPtr++;
             uint b, g, r, a;
@@ -211,16 +219,23 @@ public partial class GorgonImage
                 r = (srcPixel & 0xff) >> 4;
             }
 
-            *destPtr++ = (ushort)((a << 12) | (r << 8) | (g << 4) | b);
+            if (format == BufferFormat.B4G4R4A4_UNorm)
+            {
+                *destPtr++ = (ushort)((a << 12) | (r << 8) | (g << 4) | b);
+            }
+            else
+            {
+                *destPtr++ = (ushort)(a | (r << 12) | (g << 8) | (b << 4));
+            }
         }
     }
 
     /// <summary>
-    /// Function to convert the pixel data in the buffers from B4G4R4A4 to B8G8R8A8 or R8G8B8A8.
+    /// Function to convert the pixel data in the buffers from 4 bit RGB + alpha to B8G8R8A8 or R8G8B8A8.
     /// </summary>
     /// <param name="dest">The destination buffer to receive the newly formatted data.</param>
     /// <param name="src">The source buffer to containing the source pixels to convert.</param>        
-    private static void ConvertPixelsFromB4G4R4A4(IGorgonImageBuffer dest, IGorgonImageBuffer src)
+    private void ConvertPixelsFrom4444(IGorgonImageBuffer dest, IGorgonImageBuffer src)
     {
         GorgonPtr<ushort> srcBufferPtr = (GorgonPtr<ushort>)src.ImageData;
         GorgonPtr<uint> destBufferPtr = (GorgonPtr<uint>)dest.ImageData;
@@ -229,10 +244,10 @@ public partial class GorgonImage
         {
             ushort srcPixel = (srcBufferPtr++).Value;
 
-            int a = ((srcPixel >> 12) & 0xf);
-            int r = ((srcPixel >> 8) & 0xf);
-            int g = ((srcPixel >> 4) & 0xf);
-            int b = (srcPixel & 0xf);
+            int a = Format == BufferFormat.B4G4R4A4_UNorm ? ((srcPixel >> 12) & 0xf) : (srcPixel & 0xf);
+            int r = Format == BufferFormat.B4G4R4A4_UNorm ? ((srcPixel >> 8) & 0xf) : ((srcPixel >> 12) & 0xf);
+            int g = Format == BufferFormat.B4G4R4A4_UNorm ? ((srcPixel >> 4) & 0xf) : ((srcPixel >> 8) & 0xf);
+            int b = Format == BufferFormat.B4G4R4A4_UNorm ? (srcPixel & 0xf) : ((srcPixel >> 4) & 0xf);
 
             // Adjust the values to fill out a 32 bit integer: If r == 0xc in the 16 bit format, then r == 0xcc in the 32 bit format by taking the value and 
             // shifting it left by 4 bits and OR'ing the original r value again. ((0xc << 4 = 0xc0) OR 0xc = 0xcc).
@@ -250,29 +265,30 @@ public partial class GorgonImage
     }
 
     /// <summary>
-    /// Function to convert the pixel data in the buffers from B4G4R4A4 to B8G8R8A8 or R8G8B8A8 using SIMD.
+    /// Function to convert the pixel data in the buffers from 4 bit RGBA + Alpha to B8G8R8A8 or R8G8B8A8 using SIMD.
     /// </summary>
     /// <param name="dest">The destination buffer to receive the newly formatted data.</param>
     /// <param name="src">The source buffer to containing the source pixels to convert.</param>    
-    private unsafe static void ConvertPixelsFromB4G4R4A4Simd(IGorgonImageBuffer dest, IGorgonImageBuffer src)
+    private unsafe void ConvertPixelsFrom4444Simd(IGorgonImageBuffer dest, IGorgonImageBuffer src)
     {
         ushort* srcPtr = (ushort*)src.ImageData;
         uint* destPtr = (uint*)dest.ImageData;
 
-        int count = Vector256<byte>.Count;
-        long maxByteSize = dest.SizeInBytes;
-        long maxLength = ((maxByteSize - count) / count) >> 1;
+        // Each vector iteration converts 16 pixels (one Vector256<ushort> load).
+        long pixelCount = src.SizeInBytes / sizeof(ushort);
+        long blockCount = pixelCount / 16;
+        long remainingPixels = pixelCount % 16;
 
         bool isBgr = dest.Format is BufferFormat.B8G8R8A8_UNorm or BufferFormat.B8G8R8A8_UNorm_SRgb or BufferFormat.B8G8R8X8_UNorm or BufferFormat.B8G8R8X8_UNorm_SRgb;
 
-        for (long i = 0; i <= maxLength; ++i, maxByteSize -= (count << 1))
+        for (long i = 0; i < blockCount; ++i)
         {
             Vector256<ushort> pixels = Unsafe.ReadUnaligned<Vector256<ushort>>(srcPtr);
 
-            Vector256<ushort> a = Vector256.BitwiseAnd(Vector256.ShiftRightLogical(pixels, 12), _16bppAndMask);
-            Vector256<ushort> r = Vector256.BitwiseAnd(Vector256.ShiftRightLogical(pixels, 8), _16bppAndMask);
-            Vector256<ushort> g = Vector256.BitwiseAnd(Vector256.ShiftRightLogical(pixels, 4), _16bppAndMask);
-            Vector256<ushort> b = Vector256.BitwiseAnd(pixels, _16bppAndMask);
+            Vector256<ushort> a = Format == BufferFormat.B4G4R4A4_UNorm ? Vector256.BitwiseAnd(Vector256.ShiftRightLogical(pixels, 12), _16bppAndMask) : Vector256.BitwiseAnd(pixels, _16bppAndMask);
+            Vector256<ushort> r = Format == BufferFormat.B4G4R4A4_UNorm ? Vector256.BitwiseAnd(Vector256.ShiftRightLogical(pixels, 8), _16bppAndMask) : Vector256.BitwiseAnd(Vector256.ShiftRightLogical(pixels, 12), _16bppAndMask);
+            Vector256<ushort> g = Format == BufferFormat.B4G4R4A4_UNorm ? Vector256.BitwiseAnd(Vector256.ShiftRightLogical(pixels, 4), _16bppAndMask) : Vector256.BitwiseAnd(Vector256.ShiftRightLogical(pixels, 8), _16bppAndMask);
+            Vector256<ushort> b = Format == BufferFormat.B4G4R4A4_UNorm ? Vector256.BitwiseAnd(pixels, _16bppAndMask) : Vector256.BitwiseAnd(Vector256.ShiftRightLogical(pixels, 4), _16bppAndMask);
 
             (Vector256<uint> aLo, Vector256<uint> aHi) = Vector256.Widen(Vector256.BitwiseOr(Vector256.ShiftLeft(a, 4), a));
             (Vector256<uint> rLo, Vector256<uint> rHi) = Vector256.Widen(Vector256.BitwiseOr(Vector256.ShiftLeft(r, 4), r));
@@ -297,7 +313,7 @@ public partial class GorgonImage
             }
             else
             {
-                rLo = Vector256.ShiftLeft(rLo, 16);
+                rHi = Vector256.ShiftLeft(rHi, 16);
             }
             gHi = Vector256.ShiftLeft(gHi, 8);
 
@@ -313,19 +329,14 @@ public partial class GorgonImage
             srcPtr += 16;
         }
 
-        if (maxByteSize <= 0)
-        {
-            return;
-        }
-
-        for (long i = 0; i < maxByteSize; ++i)
+        for (long i = 0; i < remainingPixels; ++i)
         {
             ushort srcPixel = *srcPtr++;
 
-            int a = ((srcPixel >> 12) & 0xf);
-            int r = ((srcPixel >> 8) & 0xf);
-            int g = ((srcPixel >> 4) & 0xf);
-            int b = (srcPixel & 0xf);
+            int a = Format == BufferFormat.B4G4R4A4_UNorm ? ((srcPixel >> 12) & 0xf) : (srcPixel & 0xf);
+            int r = Format == BufferFormat.B4G4R4A4_UNorm ? ((srcPixel >> 8) & 0xf) : ((srcPixel >> 12) & 0xf);
+            int g = Format == BufferFormat.B4G4R4A4_UNorm ? ((srcPixel >> 4) & 0xf) : ((srcPixel >> 8) & 0xf);
+            int b = Format == BufferFormat.B4G4R4A4_UNorm ? (srcPixel & 0xf) : ((srcPixel >> 4) & 0xf);
 
             // Adjust the values to fill out a 32 bit integer: If r == 0xc in the 16 bit format, then r == 0xcc in the 32 bit format by taking the value and 
             // shifting it left by 4 bits and OR'ing the original r value again. ((0xc << 4 = 0xc0) OR 0xc = 0xcc).
@@ -342,11 +353,11 @@ public partial class GorgonImage
     }
 
     /// <summary>
-    /// Function to convert the image from B4G4R4A4.
+    /// Function to convert the image from 4 bit RGB + alpha.
     /// </summary>
     /// <param name="destFormat">The destination format.</param>
     /// <returns>The updated image.</returns>
-    private GorgonImage ConvertFromB4G4R4A4(BufferFormat destFormat)
+    private GorgonImage ConvertFrom4444(BufferFormat destFormat)
     {
         // If we're converting to R8G8B8A8 or B8G8R8A8, then use those formats, otherwise, default to B8G8R8A8 as an intermediate buffer.
         BufferFormat tempFormat = (destFormat is not BufferFormat.B8G8R8A8_UNorm and not BufferFormat.R8G8B8A8_UNorm) ? BufferFormat.B8G8R8A8_UNorm : destFormat;
@@ -375,11 +386,11 @@ public partial class GorgonImage
 
                     if ((srcBuffer.SizeInBytes <= 262_144) || (!Vector256.IsHardwareAccelerated))
                     {
-                        ConvertPixelsFromB4G4R4A4(destBuffer, srcBuffer);
+                        ConvertPixelsFrom4444(destBuffer, srcBuffer);
                     }
                     else
                     {
-                        ConvertPixelsFromB4G4R4A4Simd(destBuffer, srcBuffer);
+                        ConvertPixelsFrom4444Simd(destBuffer, srcBuffer);
                     }
                 }
             }
@@ -397,15 +408,16 @@ public partial class GorgonImage
     }
 
     /// <summary>
-    /// Function to convert the image to B4G4R4A4.
+    /// Function to convert the image to 4 bit RGB + alpha.
     /// </summary>
     /// <param name="dithering">Dithering to apply to the converstion to B8G8R8A8.</param>
+    /// <param name="format">The format to convert into.</param>
     /// <returns>The updated image.</returns>
-    private GorgonImage ConvertToB4G4R4A4(ImageDithering dithering)
+    private GorgonImage ConvertTo4444(ImageDithering dithering, BufferFormat format)
     {
         GorgonImageInfo destInfo = _imageInfo with
         {
-            Format = BufferFormat.B4G4R4A4_UNorm
+            Format = format
         };
 
         // This is our working buffer for B4G4R4A4.
@@ -436,11 +448,11 @@ public partial class GorgonImage
 
                     if ((srcBuffer.SizeInBytes <= 262_144) || (!_isHwAccelerated))
                     {
-                        ConvertPixelsToB4G4R4A4(destBuffer, srcBuffer);
+                        ConvertPixelsTo4444(destBuffer, srcBuffer, format);
                     }
                     else
                     {
-                        ConvertPixelsToB4G4R4A4Simd(destBuffer, srcBuffer);
+                        ConvertPixelsTo4444Simd(destBuffer, srcBuffer, format);
                     }
                 }
             }
@@ -481,8 +493,8 @@ public partial class GorgonImage
                 mipCount = maxMips;
             }
 
-            // If we don't have any mip levels, then return the image as-is.
-            if (mipCount < 2)
+            // A single mip level trims the chain down to the top level. There's nothing to do if the image already has just the one.
+            if ((mipCount == 1) && (MipCount == 1))
             {
                 return;
             }
@@ -495,28 +507,33 @@ public partial class GorgonImage
             GorgonImage newImage = new(destSettings);
 
             // Copy the top mip level from the source image to the dest image.
-            for (int array = 0; array < ArrayCount; ++array)
+            int arrayOrDepth = ImageType == ImageDataType.Image3D ? Depth : ArrayCount;
+
+            for (int i = 0; i < arrayOrDepth; ++i)
             {
-                GorgonPtr<byte> buffer = newImage.Buffers[0, array].ImageData;
-                buffer.Slice(0, buffer.SizeInBytes).CopyTo(buffer.Slice(0, buffer.SizeInBytes));
+                Buffers[0, i].CopyTo(newImage.Buffers[0, i]);
             }
 
-            // If we have 4 bits per channel, then we need to convert to 8 bit per channel to make WIC happy.
-            if (Format == BufferFormat.B4G4R4A4_UNorm)
+            // With a single mip level, the top level copied above is the whole image.
+            if (mipCount > 1)
             {
-                newImage.BeginUpdate()
-                        .ConvertToFormat(BufferFormat.R8G8B8A8_UNorm, ImageDithering.None)
-                        .EndUpdate();
-            }
+                // If we have 4 bits per channel, then we need to convert to 8 bit per channel to make WIC happy.
+                if (Format is BufferFormat.B4G4R4A4_UNorm or BufferFormat.A4B4G4R4_UNorm)
+                {
+                    newImage.BeginUpdate()
+                            .ConvertToFormat(BufferFormat.R8G8B8A8_UNorm, ImageDithering.None)
+                            .EndUpdate();
+                }
 
-            _wic.GenerateMipImages(newImage, filter);
+                _wic.GenerateMipImages(newImage, filter);
 
-            // Convert back if we asked for 4 bit per channel.
-            if (Format == BufferFormat.B4G4R4A4_UNorm)
-            {
-                newImage.BeginUpdate()
-                        .ConvertToFormat(BufferFormat.B4G4R4A4_UNorm, ImageDithering.None)
-                        .EndUpdate();
+                // Convert back if we asked for 4 bit per channel.
+                if (Format is BufferFormat.B4G4R4A4_UNorm or BufferFormat.A4B4G4R4_UNorm)
+                {
+                    newImage.BeginUpdate()
+                            .ConvertToFormat(Format, ImageDithering.None)
+                            .EndUpdate();
+                }
             }
 
             UpdateImagePtr(newImage);
@@ -543,6 +560,8 @@ public partial class GorgonImage
             throw new ArgumentOutOfRangeException(nameof(newDepth), Resources.GORIMG_ERR_IMAGE_DEPTH_TOO_SMALL);
         }
 
+        newDepth = newDepth.Value.Min(Depth.Max(1));
+
         void DoCrop()
         {
             // Only use the appropriate dimensions.
@@ -557,34 +576,35 @@ public partial class GorgonImage
                     break;
             }
 
-            // If the intersection of the crop rectangle and the source buffer are the same (and the depth is the same), then we don't need to crop.
             GorgonRectangle bufferRect = new(0, 0, Width, Height);
             GorgonRectangle clipRect = GorgonRectangle.Intersect(cropRect, bufferRect);
 
-            if ((bufferRect.Equals(clipRect)) && (newDepth == Depth))
+            // A crop rectangle that doesn't touch the image leaves nothing to keep, and the rects being the same size
+            // in all dimensions leaves us with the same image, so there's nothing to do.
+            if ((clipRect.Width <= 0) || (clipRect.Height <= 0) || ((bufferRect.Equals(clipRect)) && (newDepth == Depth)))
             {
                 return;
             }
 
-            int calcMipLevels = GorgonImageInfo.GetMaximumMipCount(cropRect.Width, cropRect.Height, newDepth.Value).Min(MipCount);
+            int calcMipLevels = GorgonImageInfo.GetMaximumMipCount(clipRect.Width, clipRect.Height, newDepth.Value).Min(MipCount);
             GorgonImage newImage;
 
-            if (Format == BufferFormat.B4G4R4A4_UNorm)
+            if (Format is BufferFormat.B4G4R4A4_UNorm or BufferFormat.A4B4G4R4_UNorm)
             {
                 using GorgonImage tempImage = new(this);
-                tempImage.ConvertFromB4G4R4A4(BufferFormat.R8G8B8A8_UNorm);
-                newImage = _wic.Resize(tempImage, cropRect.X, cropRect.Y, cropRect.Width, cropRect.Height, newDepth.Value, calcMipLevels, ImageFilter.Point, ResizeMode.Crop);
+                tempImage.ConvertFrom4444(BufferFormat.R8G8B8A8_UNorm);
+                newImage = _wic.Resize(tempImage, clipRect.X, clipRect.Y, clipRect.Width, clipRect.Height, newDepth.Value, calcMipLevels, ImageFilter.Point, ResizeMode.Crop);
             }
             else
             {
-                newImage = _wic.Resize(this, cropRect.X, cropRect.Y, cropRect.Width, cropRect.Height, newDepth.Value, calcMipLevels, ImageFilter.Point, ResizeMode.Crop);
+                newImage = _wic.Resize(this, clipRect.X, clipRect.Y, clipRect.Width, clipRect.Height, newDepth.Value, calcMipLevels, ImageFilter.Point, ResizeMode.Crop);
             }
 
             // Convert back to 4 bit per channel.
-            if (Format == BufferFormat.B4G4R4A4_UNorm)
+            if (Format is BufferFormat.B4G4R4A4_UNorm or BufferFormat.A4B4G4R4_UNorm)
             {
                 newImage.BeginUpdate()
-                        .ConvertToFormat(BufferFormat.B4G4R4A4_UNorm, ImageDithering.None)
+                        .ConvertToFormat(Format, ImageDithering.None)
                         .EndUpdate();
             }
 
@@ -638,10 +658,10 @@ public partial class GorgonImage
             int calcMipLevels = GorgonImageInfo.GetMaximumMipCount(newWidth, newHeight, newDepth.Value).Min(MipCount);
             GorgonImage workingImage;
 
-            if (Format == BufferFormat.B4G4R4A4_UNorm)
+            if (Format is BufferFormat.B4G4R4A4_UNorm or BufferFormat.A4B4G4R4_UNorm)
             {
                 using GorgonImage tempImage = new(this);
-                tempImage.ConvertFromB4G4R4A4(BufferFormat.R8G8B8A8_UNorm);
+                tempImage.ConvertFrom4444(BufferFormat.R8G8B8A8_UNorm);
                 workingImage = _wic.Resize(tempImage, offset.Value.X, offset.Value.Y, newWidth, newHeight, newDepth.Value, calcMipLevels, ImageFilter.Point, ResizeMode.Expand);
             }
             else
@@ -650,10 +670,10 @@ public partial class GorgonImage
             }
 
             // Convert back to 4 bit per channel.
-            if (Format == BufferFormat.B4G4R4A4_UNorm)
+            if (Format is BufferFormat.B4G4R4A4_UNorm or BufferFormat.A4B4G4R4_UNorm)
             {
                 workingImage.BeginUpdate()
-                            .ConvertToFormat(BufferFormat.B4G4R4A4_UNorm, ImageDithering.None)
+                            .ConvertToFormat(Format, ImageDithering.None)
                             .EndUpdate();
             }
 
@@ -679,7 +699,7 @@ public partial class GorgonImage
 
         newDepth ??= Depth.Max(1);
 
-        if (ImageType is ImageDataType.Image2D or ImageDataType.ImageCube)
+        if (ImageType is ImageDataType.Image2D or ImageDataType.ImageCube or ImageDataType.Image3D)
         {
             ArgumentOutOfRangeException.ThrowIfLessThan(newHeight, 1);
         }
@@ -712,10 +732,10 @@ public partial class GorgonImage
             int calcMipLevels = GorgonImageInfo.GetMaximumMipCount(newWidth, newHeight, newDepth.Value).Min(MipCount);
             GorgonImage newImage;
 
-            if (Format == BufferFormat.B4G4R4A4_UNorm)
+            if (Format is BufferFormat.B4G4R4A4_UNorm or BufferFormat.A4B4G4R4_UNorm)
             {
                 using GorgonImage tempImage = new(this);
-                tempImage.ConvertFromB4G4R4A4(BufferFormat.R8G8B8A8_UNorm);
+                tempImage.ConvertFrom4444(BufferFormat.R8G8B8A8_UNorm);
                 newImage = _wic.Resize(tempImage, 0, 0, newWidth, newHeight, newDepth.Value, calcMipLevels, filter, ResizeMode.Scale);
             }
             else
@@ -724,9 +744,9 @@ public partial class GorgonImage
             }
 
             // Convert back to 4 bit per channel.
-            if (Format == BufferFormat.B4G4R4A4_UNorm)
+            if (Format is BufferFormat.B4G4R4A4_UNorm or BufferFormat.A4B4G4R4_UNorm)
             {
-                newImage.ConvertToB4G4R4A4(ImageDithering.None);
+                newImage.ConvertTo4444(ImageDithering.None, Format);
             }
 
             UpdateImagePtr(newImage);
@@ -741,6 +761,11 @@ public partial class GorgonImage
     {
         ObjectDisposedException.ThrowIf(_imageBuffer is null, this);
 
+        if (_wic is null)
+        {
+            throw new GorgonException(GorgonResult.NotInitialized, Resources.GORIMG_ERR_NOT_EDITING);
+        }
+
         if ((format == BufferFormat.Unknown) || (!CanConvertToFormat(format)))
         {
             throw new GorgonException(GorgonResult.FormatNotSupported, string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, format));
@@ -753,11 +778,16 @@ public partial class GorgonImage
     }
 
     /// <inheritdoc/>
-    IGorgonImageUpdateFluent IGorgonImageUpdateFluent.ConvertFromPremultipedAlpha()
+    IGorgonImageUpdateFluent IGorgonImageUpdateFluent.ConvertFromPremultipliedAlpha()
     {
         ObjectDisposedException.ThrowIf(_imageBuffer is null, this);
 
-        void DoConvertFromPremultipedAlpha()
+        if (_wic is null)
+        {
+            throw new GorgonException(GorgonResult.NotInitialized, Resources.GORIMG_ERR_NOT_EDITING);
+        }
+
+        void DoConvertFromPremultipliedAlpha()
         {
             if (!FormatInfo.HasAlpha)
             {
@@ -767,12 +797,12 @@ public partial class GorgonImage
             _imageInfo = _imageInfo with
             {
                 IsPremultiplied = false
-            };
-
-            int arrayOrDepth = ImageType == ImageDataType.Image3D ? Depth : ArrayCount;
+            };            
 
             for (int mip = 0; mip < MipCount; ++mip)
             {
+                int arrayOrDepth = ImageType == ImageDataType.Image3D ? GetDepthCount(mip) : ArrayCount;
+
                 for (int i = 0; i < arrayOrDepth; ++i)
                 {
                     IGorgonImageBuffer buffer = Buffers[mip, i];
@@ -788,7 +818,7 @@ public partial class GorgonImage
             }
         }
 
-        _commands.Enqueue(DoConvertFromPremultipedAlpha);
+        _commands.Enqueue(DoConvertFromPremultipliedAlpha);
 
         return this;
     }
@@ -797,6 +827,11 @@ public partial class GorgonImage
     IGorgonImageUpdateFluent IGorgonImageUpdateFluent.ConvertToPremultipliedAlpha()
     {
         ObjectDisposedException.ThrowIf(_imageBuffer is null, this);
+
+        if (_wic is null)
+        {
+            throw new GorgonException(GorgonResult.NotInitialized, Resources.GORIMG_ERR_NOT_EDITING);
+        }
 
         void DoConvertToPremultipliedAlpha()
         {
@@ -810,10 +845,10 @@ public partial class GorgonImage
                 IsPremultiplied = true
             };
 
-            int arrayOrDepth = ImageType == ImageDataType.Image3D ? Depth : ArrayCount;
-
             for (int mip = 0; mip < MipCount; ++mip)
             {
+                int arrayOrDepth = ImageType == ImageDataType.Image3D ? GetDepthCount(mip) : ArrayCount;
+
                 for (int i = 0; i < arrayOrDepth; ++i)
                 {
                     IGorgonImageBuffer buffer = Buffers[mip, i];
@@ -856,6 +891,12 @@ public partial class GorgonImage
                 command();
             }
         }
+        catch
+        {
+            // The operations after the one that failed would run against an image in an unknown state, so they're discarded.
+            _commands.Clear();
+            throw;
+        }
         finally
         {
             _isEditing = false;
@@ -882,6 +923,7 @@ public partial class GorgonImage
             throw new InvalidOperationException(Resources.GORIMG_ERR_ALREADY_EDITING);
         }
 
+        _commands.Clear();
         _isEditing = true;
         _wic = new WicUtilities();
 

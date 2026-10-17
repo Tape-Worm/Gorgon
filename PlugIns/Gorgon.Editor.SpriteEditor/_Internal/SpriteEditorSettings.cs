@@ -29,25 +29,25 @@ using Gorgon.Graphics;
 namespace Gorgon.Editor.SpriteEditor;
 
 /// <summary>
-/// The settings for the sprite importer plugin
+/// The settings for the sprite importer plug-in
 /// </summary>
 internal class SpriteImportSettings
 {
     /// <summary>
-    /// Property to return the list of additional sprite codec plugins to load.
+    /// Property to return the list of additional sprite codec plug-ins to load.
     /// </summary>
     [JsonInclude]
-    public Dictionary<string, string> CodecPluginPaths
+    public Dictionary<string, string> CodecPlugInPaths
     {
         get;
         private set;
     } = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
     /// <summary>
-    /// Property to set or return the last codec plugin path.
+    /// Property to set or return the last codec plug-in path.
     /// </summary>
     [JsonInclude]
-    public string LastCodecPluginPath
+    public string LastCodecPlugInPath
     {
         get;
         set;
@@ -55,7 +55,7 @@ internal class SpriteImportSettings
 }
 
 /// <summary>
-/// The settings for the sprite editor plugin
+/// The settings for the sprite editor plug-in
 /// </summary>
 internal class SpriteEditorSettings
 {

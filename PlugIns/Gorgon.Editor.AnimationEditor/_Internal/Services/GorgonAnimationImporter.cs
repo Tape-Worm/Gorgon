@@ -161,7 +161,7 @@ internal class GorgonAnimationImporter(IGorgonFileSystem projectFileSystem, IGor
 
             _log.Print("Importing associated texture for animation...", LoggingLevel.Simple);
 
-            IGorgonAnimationCodec sourceCodec = AnimationImporterPlugin.GetCodec(physicalFilePath, _codecs);
+            IGorgonAnimationCodec sourceCodec = AnimationImporterPlugIn.GetCodec(physicalFilePath, _codecs);
             Debug.Assert(sourceCodec is not null, "We shouldn't be able to get this far without a codec.");
 
             textures = GetTextures(physicalFilePath, sourceCodec);

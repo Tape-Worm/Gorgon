@@ -12,6 +12,7 @@
 // all copies or substantial portions of the Software.
 // 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
@@ -30,34 +31,35 @@ namespace Gorgon.Core;
 /// </summary>
 public static class GorgonSpanExtensions
 {
-    /// <summary>
-    /// Function to provide an enumerator that allows the splitting of a span of characters using the specified separators.
-    /// </summary>
-    /// <param name="chars">The read only span containing the characters to evaluate.</param>
-    /// <param name="separators">The separators to use.</param>
-    /// <param name="includeBlanks">[Optional] <b>true</b> to keep empty entries, <b>false</b> to skip.</param>
-    /// <returns>The <see cref="GorgonSpanCharEnumerator"/> that will enumerate the span of characters.</returns>
-    /// <remarks>
-    /// <para>
-    /// This provides an enumerator that does not perform any allocations, which will deliver a more performant way to split strings.
-    /// </para>
-    /// </remarks>
-    public static GorgonSpanCharEnumerator Split(this ReadOnlySpan<char> chars, ReadOnlySpan<char> separators, bool includeBlanks = false) => new(chars, separators, includeBlanks, false);
+    extension(ReadOnlySpan<char> chars)
+    {
+        /// <summary>
+        /// Function to provide an enumerator that allows the splitting of a span of characters using the specified separators.
+        /// </summary>
+        /// <param name="separators">The separators to use.</param>
+        /// <param name="includeBlanks">[Optional] <b>true</b> to keep empty entries, <b>false</b> to skip.</param>
+        /// <returns>The <see cref="GorgonSpanCharEnumerator"/> that will enumerate the span of characters.</returns>
+        /// <remarks>
+        /// <para>
+        /// This provides an enumerator that does not perform any allocations, which will deliver a more performant way to split strings.
+        /// </para>
+        /// </remarks>
+        public GorgonSpanCharEnumerator SplitString(ReadOnlySpan<char> separators, bool includeBlanks = false) => new(chars, separators, includeBlanks, false);
 
-    /// <summary>
-    /// Function to provide an enumerator that allows the splitting of a span of characters using the specified separators.
-    /// </summary>
-    /// <param name="chars">The read only span containing the characters to evaluate.</param>
-    /// <param name="separators">The separators to use.</param>
-    /// <param name="includeBlanks">[Optional] <b>true</b> to keep empty entries, <b>false</b> to skip.</param>
-    /// <returns>The <see cref="GorgonSpanCharEnumerator"/> that will enumerate the span of characters.</returns>
-    /// <remarks>
-    /// <para>
-    /// This provides an enumerator that does not perform any allocations, which will deliver a more performant way to split strings.
-    /// </para>
-    /// <para>
-    /// This method provides an iterator that walks through the span in reverse.
-    /// </para>
-    /// </remarks>
-    public static GorgonSpanCharEnumerator SplitReverse(this ReadOnlySpan<char> chars, ReadOnlySpan<char> separators, bool includeBlanks = false) => new(chars, separators, includeBlanks, true);
+        /// <summary>
+        /// Function to provide an enumerator that allows the splitting of a span of characters using the specified separators.
+        /// </summary>
+        /// <param name="separators">The separators to use.</param>
+        /// <param name="includeBlanks">[Optional] <b>true</b> to keep empty entries, <b>false</b> to skip.</param>
+        /// <returns>The <see cref="GorgonSpanCharEnumerator"/> that will enumerate the span of characters.</returns>
+        /// <remarks>
+        /// <para>
+        /// This provides an enumerator that does not perform any allocations, which will deliver a more performant way to split strings.
+        /// </para>
+        /// <para>
+        /// This method provides an iterator that walks through the span in reverse.
+        /// </para>
+        /// </remarks>
+        public GorgonSpanCharEnumerator SplitStringReverse(ReadOnlySpan<char> separators, bool includeBlanks = false) => new(chars, separators, includeBlanks, true);
+    }
 }

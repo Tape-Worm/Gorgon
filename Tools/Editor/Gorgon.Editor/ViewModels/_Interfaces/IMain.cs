@@ -23,7 +23,7 @@
 // Created: August 26, 2018 9:34:44 PM
 // 
 
-using Gorgon.Editor.Plugins;
+using Gorgon.Editor.PlugIns;
 using Gorgon.Editor.UI;
 
 namespace Gorgon.Editor.ViewModels;
@@ -43,9 +43,9 @@ internal interface IMain
     }
 
     /// <summary>
-    /// Property to return a list of content Plugins that can create their own content.
+    /// Property to return a list of content plug-ins that can create their own content.
     /// </summary>
-    IReadOnlyList<IContentPluginMetadata> ContentCreators
+    IReadOnlyList<IContentPlugInMetadata> ContentCreators
     {
         get;
     }

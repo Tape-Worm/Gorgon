@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+    <ItemGroup>
+        <None Include="$(PkgMicrosoft_Direct3D_WARP)\build\native\bin\x64\d3d10warp.dll" Condition="'$(PkgMicrosoft_Direct3D_WARP)' != ''">
+          <Link>runtimes\win-x64\native\d3d10warp.dll</Link>
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>	
+      
+        <None Include="$(PkgMicrosoft_Direct3D_WARP)\build\native\bin\win32\d3d10warp.dll" Condition="'$(PkgMicrosoft_Direct3D_WARP)' != ''">
+          <Link>runtimes\win-x86\native\d3d10warp.dll</Link>
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>	
+    </ItemGroup>
+</Project>

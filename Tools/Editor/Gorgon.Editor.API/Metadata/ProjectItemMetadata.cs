@@ -24,7 +24,7 @@
 // 
 
 using System.Text.Json.Serialization;
-using Gorgon.Editor.Plugins;
+using Gorgon.Editor.PlugIns;
 
 namespace Gorgon.Editor.Metadata;
 
@@ -34,8 +34,8 @@ namespace Gorgon.Editor.Metadata;
 public class ProjectItemMetadata
 {
 
-    // The metadata for a content Plugin.
-    private IContentPluginMetadata _contentMetadata;
+    // The metadata for a content plug-in.
+    private IContentPlugInMetadata _contentMetadata;
 
     /// <summary>
     /// Property to return the ID for the item.
@@ -48,13 +48,13 @@ public class ProjectItemMetadata
     }
 
     /// <summary>
-    /// Property to set or return the name of the Plugin associated with the metadata file path.
+    /// Property to set or return the name of the plug-in associated with the metadata file path.
     /// </summary>
     /// <remarks>
-    /// If this value is <b>null</b>, then the Plugin hasn't been set.  If it's an empty string, then no Plugin is associated with this metadata.
+    /// If this value is <b>null</b>, then the plug-in hasn't been set.  If it's an empty string, then no plug-in is associated with this metadata.
     /// </remarks>
     [JsonInclude]
-    public string PluginName
+    public string PlugInName
     {
         get;
         set;
@@ -91,20 +91,20 @@ public class ProjectItemMetadata
     }
 
     /// <summary>
-    /// Property to return the content Plugin metadata associated with this project item.
+    /// Property to return the content plug-in metadata associated with this project item.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// Setting this value will set the value for <see cref="PluginName"/>.
+    /// Setting this value will set the value for <see cref="PlugInName"/>.
     /// </para>
     /// </remarks>        
     [JsonIgnore]
-    public IContentPluginMetadata ContentMetadata
+    public IContentPlugInMetadata ContentMetadata
     {
         get => _contentMetadata;
         set
         {
-            PluginName = value?.PluginName;
+            PlugInName = value?.PlugInName;
             _contentMetadata = value;
         }
     }
@@ -113,7 +113,7 @@ public class ProjectItemMetadata
     /// <param name="oldVersion">The old version of project metadata.</param>
     internal ProjectItemMetadata(ProjectItemMetadata30 oldVersion)
     {
-        PluginName = oldVersion.PluginName;
+        PlugInName = oldVersion.PlugInName;
 
         foreach (KeyValuePair<string, string> attr in oldVersion.Attributes)
         {
@@ -141,7 +141,7 @@ public class ProjectItemMetadata
         }
 
         _contentMetadata = metadata.ContentMetadata;
-        PluginName = metadata.PluginName;
+        PlugInName = metadata.PlugInName;
 
         foreach (KeyValuePair<string, string> attribute in metadata.Attributes)
         {

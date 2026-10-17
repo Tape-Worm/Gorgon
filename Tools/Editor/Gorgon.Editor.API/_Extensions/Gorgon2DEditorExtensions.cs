@@ -41,8 +41,8 @@ namespace Gorgon.IO;
 /// <para>
 /// <note type="important">
 /// <para>
-/// These methods load the data using the layout and metadata information as provided by the default plugins for the editor.  Custom plugins for sprite data, etc... may not work with these methods 
-/// unless those plugins follow the same file layout as the default plugins
+/// These methods load the data using the layout and metadata information as provided by the default plug-ins for the editor.  Custom plug-ins for sprite data, etc... may not work with these methods 
+/// unless those plug-ins follow the same file layout as the default plug-ins
 /// </para>
 /// </note>
 /// </para>

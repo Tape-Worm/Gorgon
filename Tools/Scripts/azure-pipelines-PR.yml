@@ -5,6 +5,8 @@
 
 name: 4.0.$(Rev:r).$(DayOfYear)
 
+trigger: none
+
 pr:
   branches:
     include:
@@ -13,10 +15,10 @@ pr:
 jobs:
   - job: 'PR_Build'
     pool:
-      vmImage: 'windows-2022'
+      vmImage: 'windows-latest'
 
     variables:
-      solution: 'Gorgon.sln'
+      solution: 'Gorgon.slnx'
       buildPlatform: 'Any CPU'
       buildConfiguration: 'Debug'
 
@@ -36,10 +38,6 @@ jobs:
       - task: NuGetCommand@2
         inputs:
           restoreSolution: '$(solution)'
-
-      - task: DownloadSecureFile@1
-        inputs:
-          secureFile: GorgonFull.snk
 
       - task: VSBuild@1
         inputs:

@@ -34,7 +34,7 @@ namespace Gorgon.Editor.ImageEditor;
 /// The panel used to display settings for image codec support
 /// </summary>
 internal partial class ImageCodecSettingsPanel
-    : SettingsBaseControl, IDataContext<ISettingsPlugins>
+    : SettingsBaseControl, IDataContext<ISettingsPlugIns>
 {
     /// <summary>Property to return the ID of the panel.</summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -42,7 +42,7 @@ internal partial class ImageCodecSettingsPanel
 
     /// <summary>Property to return the data context assigned to this view.</summary>
     [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public ISettingsPlugins ViewModel
+    public ISettingsPlugIns ViewModel
     {
         get;
         private set;
@@ -60,14 +60,14 @@ internal partial class ImageCodecSettingsPanel
         }
 
         ButtonAddCodec.Enabled = true;
-        ButtonRemoveCodecs.Enabled = ViewModel.UnloadPluginAssembliesCommand?.CanExecute(null) ?? false;
+        ButtonRemoveCodecs.Enabled = ViewModel.UnloadPlugInAssembliesCommand?.CanExecute(null) ?? false;
     }
 
     /// <summary>
     /// Function to populate the list of codecs.
     /// </summary>
     /// <param name="dataContext">The current data context.</param>
-    private void FillList(ISettingsPlugins dataContext)
+    private void FillList(ISettingsPlugIns dataContext)
     {
         ListCodecs.BeginUpdate();
 
@@ -81,7 +81,7 @@ internal partial class ImageCodecSettingsPanel
                 return;
             }
 
-            foreach (CodecSetting setting in dataContext.CodecPluginPaths)
+            foreach (CodecSetting setting in dataContext.CodecPlugInPaths)
             {
                 ListViewItem item = new()
                 {
@@ -90,7 +90,7 @@ internal partial class ImageCodecSettingsPanel
                     Tag = setting
                 };
 
-                item.SubItems.Add(setting.Plugin.PluginPath);
+                item.SubItems.Add(setting.PlugIn.PlugInPath);
 
                 ListCodecs.Items.Add(item);
             }
@@ -132,12 +132,12 @@ internal partial class ImageCodecSettingsPanel
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonAddCodec_Click(object sender, EventArgs e)
     {
-        if ((ViewModel?.LoadPluginAssemblyCommand is null) || (!ViewModel.LoadPluginAssemblyCommand.CanExecute(null)))
+        if ((ViewModel?.LoadPlugInAssemblyCommand is null) || (!ViewModel.LoadPlugInAssemblyCommand.CanExecute(null)))
         {
             return;
         }
 
-        ViewModel.LoadPluginAssemblyCommand.Execute(null);
+        ViewModel.LoadPlugInAssemblyCommand.Execute(null);
     }
 
     /// <summary>Handles the Click event of the ButtonRemoveCodecs control.</summary>
@@ -145,18 +145,18 @@ internal partial class ImageCodecSettingsPanel
     /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
     private void ButtonRemoveCodecs_Click(object sender, EventArgs e)
     {
-        if ((ViewModel?.UnloadPluginAssembliesCommand is null) || (!ViewModel.UnloadPluginAssembliesCommand.CanExecute(null)))
+        if ((ViewModel?.UnloadPlugInAssembliesCommand is null) || (!ViewModel.UnloadPlugInAssembliesCommand.CanExecute(null)))
         {
             return;
         }
 
-        ViewModel.UnloadPluginAssembliesCommand.Execute(null);
+        ViewModel.UnloadPlugInAssembliesCommand.Execute(null);
     }
 
-    /// <summary>Handles the CollectionChanged event of the CodecPluginPaths control.</summary>
+    /// <summary>Handles the CollectionChanged event of the CodecPlugInPaths control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="NotifyCollectionChangedEventArgs"/> instance containing the event data.</param>
-    private void CodecPluginPaths_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+    private void CodecPlugInPaths_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
     {
         ListCodecs.BeginUpdate();
         try
@@ -173,7 +173,7 @@ internal partial class ImageCodecSettingsPanel
                             Tag = setting
                         };
 
-                        item.SubItems.Add(setting.Plugin.PluginPath);
+                        item.SubItems.Add(setting.PlugIn.PlugInPath);
 
                         ListCodecs.Items.Add(item);
                     }
@@ -254,7 +254,7 @@ internal partial class ImageCodecSettingsPanel
         }
 
         ViewModel.SelectedCodecs.CollectionChanged -= SelectedCodecs_CollectionChanged;
-        ViewModel.CodecPluginPaths.CollectionChanged -= CodecPluginPaths_CollectionChanged;
+        ViewModel.CodecPlugInPaths.CollectionChanged -= CodecPlugInPaths_CollectionChanged;
     }
 
     /// <summary>
@@ -266,7 +266,7 @@ internal partial class ImageCodecSettingsPanel
     /// Function to initialize the control from the specified data context.
     /// </summary>
     /// <param name="dataContext">The data context to apply.</param>
-    private void InitializeFromDataContext(ISettingsPlugins dataContext)
+    private void InitializeFromDataContext(ISettingsPlugIns dataContext)
     {
         if (dataContext is null)
         {
@@ -289,7 +289,7 @@ internal partial class ImageCodecSettingsPanel
     /// <summary>Function to assign a data context to the view as a view model.</summary>
     /// <param name="dataContext">The data context to assign.</param>
     /// <remarks>Data contexts should be nullable, in that, they should reset the view back to its original state when the context is null.</remarks>
-    public void SetDataContext(ISettingsPlugins dataContext)
+    public void SetDataContext(ISettingsPlugIns dataContext)
     {
         UnassignEvents();
 
@@ -301,7 +301,7 @@ internal partial class ImageCodecSettingsPanel
             return;
         }
 
-        ViewModel.CodecPluginPaths.CollectionChanged += CodecPluginPaths_CollectionChanged;
+        ViewModel.CodecPlugInPaths.CollectionChanged += CodecPlugInPaths_CollectionChanged;
         ViewModel.SelectedCodecs.CollectionChanged += SelectedCodecs_CollectionChanged;
     }
 
