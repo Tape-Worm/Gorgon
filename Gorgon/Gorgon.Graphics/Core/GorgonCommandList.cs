@@ -2656,6 +2656,88 @@ public sealed unsafe class GorgonCommandList
     }
 
     /// <summary>
+    /// Function to set a buffer value that decides whether the GPU skips the commands recorded after this call.
+    /// </summary>
+    /// <param name="buffer">The buffer that holds the predication value, or <b>null</b> to turn predication off.</param>
+    /// <param name="offset">[Optional] The offset, in bytes, of the predication value within the <paramref name="buffer"/>.</param>
+    /// <param name="operation">[Optional] The operation that decides, from the predication value, whether commands are skipped.</param>
+    /// <inheritdoc cref="AddPresenter" path="/returns"/>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown if the <paramref name="offset"/> is less than 0.</exception>
+    /// <exception cref="ArgumentException">Thrown if the <paramref name="offset"/> plus the size of the predication value (8 bytes) exceeds the size of the <paramref name="buffer"/>.</exception>
+    /// <remarks>
+    /// <para>
+    /// Predication lets the GPU decide, rather than the CPU, whether commands are executed. The predication value is a 64-bit unsigned integer stored in the <paramref name="buffer"/> at the 
+    /// <paramref name="offset"/>, which must be a multiple of 8 bytes. If the <paramref name="offset"/> is left at its default, the value is read from the start of the <paramref name="buffer"/>. The 
+    /// <paramref name="operation"/> compares the value against 0 to decide whether commands are skipped. If the <paramref name="operation"/> is left at its default, commands are skipped when the value is 0.
+    /// </para>
+    /// <para>
+    /// The most common use is occlusion culling. A simple shape, such as a bounding box, is drawn inside of an <see cref="QueryType.Occlusion"/> or <see cref="QueryType.BinaryOcclusion"/> query, the result is 
+    /// copied into a buffer with <see cref="ResolveQueryToGpuBuffer"/>, and that buffer is passed to this method so the detailed object is only drawn if the shape was visible. Any buffer can be used though, 
+    /// including one written by a shader.
+    /// </para>
+    /// <para>
+    /// The GPU reads the predication value when it reaches this command. Changing the contents of the <paramref name="buffer"/> afterward has no effect on commands that follow, until this method is called 
+    /// again.
+    /// </para>
+    /// <para>
+    /// Predication stays active on this command list until this method is called with a <paramref name="buffer"/> of <b>null</b>, or the command list is submitted. Every command list starts with predication 
+    /// turned off.
+    /// </para>
+    /// <para>
+    /// <note type="important">
+    /// <para>
+    /// While predication is active, every draw, execute, clear, copy, write and multisample resolve recorded on this command list is skipped when the predication value says so, not just draws. Turn 
+    /// predication off before recording commands that must always run. Beginning, ending and resolving queries are never skipped.
+    /// </para>
+    /// </note>
+    /// </para>
+    /// </remarks>
+    /// <example>
+    /// <para>
+    /// The following code only draws a mesh if its bounding box is visible. The draw call for the bounding box uses a pipeline state that does not write color or depth.
+    /// </para>
+    /// <code language="csharp">
+    /// <![CDATA[
+    /// GorgonQuery visibility = new(graphics, "Visibility", QueryType.BinaryOcclusion, 1);
+    ///
+    /// commandList.BeginQuery(visibility, 0);
+    /// commandList.Draw(boundingBoxDrawCall);
+    /// commandList.EndQuery(visibility, 0);
+    ///
+    /// commandList.ResolveQueryToGpuBuffer(visibility, 0, 1, predicationBuffer);
+    ///
+    /// commandList.SetPredication(predicationBuffer, 0, PredicationOperation.SkipIfZero);
+    /// commandList.Draw(meshDrawCall);
+    /// commandList.SetPredication(null);
+    /// ]]>
+    /// </code>
+    /// </example>
+    /// <seealso cref="PredicationOperation"/>
+    /// <seealso cref="GorgonQuery"/>
+    public GorgonCommandList SetPredication(GorgonGpuBufferCommon? buffer, long offset = 0, PredicationOperation operation = PredicationOperation.SkipIfZero)
+    {
+        if (buffer is null)
+        {
+            D3DGraphicsCommandList.Get()->SetPredication(null, 0, D3D12_PREDICATION_OP.D3D12_PREDICATION_OP_EQUAL_ZERO);
+            return this;
+        }
+
+        ArgumentOutOfRangeException.ThrowIfNegative(offset);
+
+        if (offset + sizeof(ulong) > buffer.SizeInBytes)
+        {
+            throw new ArgumentException(string.Format(Resources.GORGFX_ERR_BUFFER_OVERRUN, offset, sizeof(ulong), buffer.SizeInBytes));
+        }
+
+        Queue.Tracker.TrackResource(buffer);
+        SetBarrier(buffer, BarrierSync.ExecuteIndirect, BarrierAccess.IndirectArgument, true);
+
+        D3DGraphicsCommandList.Get()->SetPredication((PID3D12Resource2)buffer.D3DResource.Get(), buffer.ResourceOffset + (ulong)offset, (D3D12_PREDICATION_OP)operation);
+
+        return this;
+    }
+
+    /// <summary>
     /// Initializes a new instance of a <see cref="GorgonCommandList"/> class.
     /// </summary>
     /// <param name="graphics">The graphics interface that owns this object.</param>
