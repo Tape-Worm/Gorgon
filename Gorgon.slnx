@@ -70,12 +70,7 @@
     <Project Path="Test/Gorgon.Graphics.Imaging.Tests/Gorgon.Graphics.Imaging.Tests.csproj" />
   </Folder>
   <Folder Name="/Tools/" />
-  <Folder Name="/__Experiments__/">
-    <Project Path="Test/Experimental/Gorgon.D3D12.RulesTest/Gorgon.D3D12.RulesTest.csproj" />
-    <Project Path="Test/Experimental/Gorgon.Graphics.TestApp/Gorgon.Graphics.TestApp.csproj" />
-    <Project Path="Test/Experimental/GraphicsCoreFunctions/GraphicsCoreFunctions.csproj" />
-    <Project Path="Test/Experimental/ImagingFunctions/ImagingFunctions.csproj" />
-  </Folder>
+  <Folder Name="/__Experiments__/" />
   <Project Path="Gorgon/Gorgon.Core.Windows/Gorgon.Core.Windows.csproj" />
   <Project Path="Gorgon/Gorgon.Core/Gorgon.Core.csproj" />
   <Project Path="Gorgon/Gorgon.Graphics/Core/Gorgon.Graphics.Core.csproj" />

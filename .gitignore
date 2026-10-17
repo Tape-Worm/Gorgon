@@ -217,6 +217,7 @@ FakesAssemblies/
 /PlugIns/DummySpriteImport/
 Ignore
 *_472
+/Dependencies/Gorgon.BCnEncoder.NET/
 
 .claude
 Claude.md
