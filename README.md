@@ -3,7 +3,7 @@
 What is Gorgon?
 ===================
 
-A modular set of libraries useful for graphics and/or video game development.  Gorgon uses Direct 3D 11.2 (via [SharpDX](http://sharpdx.org)) to provide high performance graphics for your applications.
+A modular set of libraries useful for graphics and/or video game development.  Gorgon uses Direct 3D 12 (via [TerraFX](https://github.com/terrafx)) to provide high performance graphics for your applications.
 
 What is not Gorgon?
 ===================
@@ -135,10 +135,10 @@ Gorgon provides a set of libraries that are capable of handling pretty much any 
 What's required?
 ----------------
 
-  * [.NET 8.0](https://dotnet.microsoft.com/download)
-  * Windows 10 (Build 15063 or later).
-  * A video card that supports Microsoft DirectX 11.2 or better
-  * [Microsoft Visual Studio 2022](https://visualstudio.microsoft.com/vs/) or [JetBrains Rider](https://www.jetbrains.com/rider/)
+  * [.NET 10.0](https://dotnet.microsoft.com/download)
+  * Windows 11.
+  * A video card that supports Microsoft DirectX 12.0 Tier 2 or better
+  * [Microsoft Visual Studio 2026](https://visualstudio.microsoft.com/vs/) or [JetBrains Rider](https://www.jetbrains.com/rider/)
 
 To compile the library
 ----------------------
@@ -148,13 +148,13 @@ To compile the library
 To use the library
 ------------------
 
-  * You may use any .NET 8.0 enabled language (e.g. Visual Basic .NET) to write an application with Gorgon.
+  * You may use any .NET 10.0 enabled language (e.g. Visual Basic .NET) to write an application with Gorgon.
 
 Source code
 -----------
 
-The develop branch contains the current development version of Gorgon 4.0.  
 The [main](https://github.com/Tape-Worm/Gorgon/tree/main) branch contains the release version of Gorgon 3.2.
+Gorgon 4.0 is in development.
 
 Acknowledgements
 ================
