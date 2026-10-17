@@ -75,6 +75,9 @@ internal sealed class MemoryServices(CpuResourceHeapPool uploadHeaps, CpuResourc
         get;
     } = megaBuffer;
 
+    /// <summary>
+    /// Property to return the pool for texture tiles.
+    /// </summary>
     public VirtualTextureTilePool TextureTilePool
     {
         get;

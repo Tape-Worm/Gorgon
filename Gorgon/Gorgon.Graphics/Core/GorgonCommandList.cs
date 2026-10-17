@@ -105,6 +105,9 @@ public sealed unsafe class GorgonCommandList
     private readonly CpuResourceHeapPool _uploadHeaps;
     private GorgonIndexBuffer? _currentIndexBuffer;
     private ushort _dirtyRootConstants;
+    private readonly Queue<List<int>> _queryListIndexPool = [];
+    private readonly Dictionary<GorgonQuery, List<int>> _activeQueries = [];
+    private readonly Dictionary<GorgonQuery, List<int>> _endedQueries = [];
 
     /// <summary>
     /// Property to set or return the allocator associated with the command list.
@@ -729,10 +732,50 @@ public sealed unsafe class GorgonCommandList
     }
 
     /// <summary>
+    /// Function to resolve any queries that are finished.
+    /// </summary>
+    private void ResolveCompletedQueries()
+    {
+        if (_endedQueries.Count == 0)
+        {
+            return;
+        }
+
+        foreach (KeyValuePair<GorgonQuery, List<int>> querySlots in _endedQueries)
+        {
+            List<int> indices = querySlots.Value;
+            GorgonQuery query = querySlots.Key;
+
+            uint recordSize = (uint)query.ReadResults.SizeInBytes / (uint)query.MaximumRecordCount;
+            Span<int> sortedIndices = CollectionsMarshal.AsSpan(indices);
+            sortedIndices.Sort();
+
+            int runStart = 0;
+
+            for (int i = 1; i <= sortedIndices.Length; ++i)
+            {
+                Queue.QueryTracker.AddResolvedQueryIndex(query, sortedIndices[i - 1]);
+
+                // If there's no gap in the indices and we're not at the end of the list, continue,
+                // otherwise we'll resolve the query range.
+                if ((i != sortedIndices.Length) && (sortedIndices[i] == sortedIndices[i - 1] + 1))
+                {
+                    continue;
+                }
+
+                D3DGraphicsCommandList.Get()->ResolveQueryData(query.D3DQueryHeap.Get(), (D3D12_QUERY_TYPE)query.QueryType, (uint)sortedIndices[runStart], (uint)(i - runStart), (PID3D12Resource2)query.D3DReadbackBuffer.Get(), (uint)sortedIndices[runStart] * recordSize);
+                runStart = i;
+            }            
+        }
+    }
+
+    /// <summary>
     /// Function to close the list for recording.
     /// </summary>
     internal void Close()
     {
+        ResolveCompletedQueries();
+
         _list.Get()->Close()
             .ThrowIfFailed(GorgonResult.CannotExecute, () => string.Format(Resources.GORGFX_ERR_CANNOT_CLOSE_COMMAND_LIST, Name));
 
@@ -754,6 +797,46 @@ public sealed unsafe class GorgonCommandList
         BarrierManager.Clear();
         _currentIndexBuffer = null;
         _dirtyRootConstants = 0;
+
+        foreach (List<int> indices in _activeQueries.Values)
+        {
+            _queryListIndexPool.Enqueue(indices);
+            indices.Clear();
+        }
+
+        foreach (List<int> indices in _endedQueries.Values)
+        {
+            _queryListIndexPool.Enqueue(indices);
+            indices.Clear();
+        }
+
+        _activeQueries.Clear();
+        _endedQueries.Clear();
+    }
+
+    /// <summary>
+    /// Function to check for queries that have not been added to the end query list.
+    /// </summary>
+    internal void CheckOpenQueries()
+    {
+        if (_activeQueries.Count == 0)
+        {
+            return;
+        }
+
+        // Force the queries to end so the list can be closed without error (and hiding our error).
+        int queryCount = _activeQueries.Count;
+        foreach (KeyValuePair<GorgonQuery, List<int>> query in _activeQueries) 
+        {
+            for (int i = 0; i < query.Value.Count; ++i)
+            {
+                D3DGraphicsCommandList.Get()->EndQuery(query.Key.D3DQueryHeap.Get(), (D3D12_QUERY_TYPE)query.Key.QueryType, (uint)query.Value[i]);
+            }            
+        }
+
+        _activeQueries.Clear();
+
+        throw new GorgonException(GorgonResult.CannotExecute, string.Format(Resources.GORGFX_ERR_QUERIES_STILL_OPEN, queryCount, Name));
     }
 
     /// <summary>
@@ -2361,6 +2444,213 @@ public sealed unsafe class GorgonCommandList
 
         _rtvsCount = (uint)renderTargets.Length;
         _rtvsChanged = true;
+
+        return this;
+    }
+
+    /// <summary>
+    /// Function to begin recording a query record.
+    /// </summary>
+    /// <param name="query">The query that holds the record.</param>
+    /// <param name="recordIndex">The index of the record to begin.</param>
+    /// <inheritdoc cref="AddPresenter" path="/returns"/>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown if the <paramref name="recordIndex"/> is less than 0, or greater than or equal to the <see cref="GorgonQuery.MaximumRecordCount"/>.</exception>
+    /// <exception cref="GorgonException">Thrown if the record belongs to another command list.</exception>
+    /// <remarks>
+    /// <para>
+    /// The commands recorded on this command list between this call and a call to <see cref="EndQuery"/> with the same <paramref name="recordIndex"/> are measured by the record. For 
+    /// <see cref="QueryType.Timestamp"/> queries, nothing is measured between the two calls, and the timestamp is written when <see cref="EndQuery"/> is called. This method must still be called first to claim 
+    /// the record.
+    /// </para>
+    /// <para>
+    /// From this call, the record belongs to this command list until its data has been delivered, either to the <see cref="GorgonQuery.ReadResults"/> buffer or to a buffer through 
+    /// <see cref="ResolveQueryToGpuBuffer"/>. Other command lists, including command lists on other threads, can record into the other records of the same query at the same time.
+    /// </para>
+    /// <para>
+    /// If the record has already been begun on this command list, and not yet ended, the call is ignored. If the record has already been ended on this command list, the record starts over and its previous 
+    /// data is discarded.
+    /// </para>
+    /// <para>
+    /// Every record begun on this command list must be ended with <see cref="EndQuery"/> before the command list is submitted, otherwise <see cref="GorgonGraphics.Submit(GorgonCommandList)"/> will throw an 
+    /// exception.
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="GorgonQuery"/>
+    public GorgonCommandList BeginQuery(GorgonQuery query, int recordIndex)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegative(recordIndex);
+        ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(recordIndex, query.MaximumRecordCount);
+
+        // If we already own this index, see if we've ended the query, if not, reset it so we can reuse the index.
+        if (!query.Allocate(this, recordIndex))
+        {
+            if ((!_endedQueries.TryGetValue(query, out List<int>? ended))
+                || (!ended.Remove(recordIndex)))
+            {
+                return this;
+            }
+
+            if (ended.Count == 0)
+            {
+                _queryListIndexPool.Enqueue(ended);
+                _endedQueries.Remove(query);
+            }
+        }
+
+        if (query.QueryType != QueryType.Timestamp)
+        {
+            D3DGraphicsCommandList.Get()->BeginQuery(query.D3DQueryHeap.Get(), (D3D12_QUERY_TYPE)query.QueryType, (uint)recordIndex);
+        }
+
+        if (!_activeQueries.TryGetValue(query, out List<int>? list))
+        {
+            _activeQueries[query] = list = _queryListIndexPool.Count == 0 ? [] : _queryListIndexPool.Dequeue();
+        }
+
+        list.Add(recordIndex);
+
+        return this;
+    }
+
+    /// <summary>
+    /// Function to end recording of a query record.
+    /// </summary>
+    /// <param name="query">The query that holds the record.</param>
+    /// <param name="recordIndex">The index of the record to end.</param>
+    /// <inheritdoc cref="AddPresenter" path="/returns"/>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown if the <paramref name="recordIndex"/> is less than 0, or greater than or equal to the <see cref="GorgonQuery.MaximumRecordCount"/>.</exception>
+    /// <remarks>
+    /// <para>
+    /// This ends a record that was begun with <see cref="BeginQuery"/> on this command list. For <see cref="QueryType.Timestamp"/> queries, this is where the timestamp is written.
+    /// </para>
+    /// <para>
+    /// If the record is not being recorded on this command list (it was never begun, it was already ended, or it was begun on another command list), the call is ignored.
+    /// </para>
+    /// <para>
+    /// Once ended, the data for the record is copied into the <see cref="GorgonQuery.ReadResults"/> buffer after this command list is submitted and the GPU has finished with it, unless the record is copied to 
+    /// a GPU buffer with <see cref="ResolveQueryToGpuBuffer"/> first.
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="GorgonQuery"/>
+    public GorgonCommandList EndQuery(GorgonQuery query, int recordIndex)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegative(recordIndex);
+        ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(recordIndex, query.MaximumRecordCount);
+
+        if ((!_activeQueries.TryGetValue(query, out List<int>? active))
+            || (!active.Remove(recordIndex)))
+        {
+            return this;
+        }
+
+        if (active.Count == 0)
+        {
+            _activeQueries.Remove(query);
+            _queryListIndexPool.Enqueue(active);
+        }
+
+        D3DGraphicsCommandList.Get()->EndQuery(query.D3DQueryHeap.Get(), (D3D12_QUERY_TYPE)query.QueryType, (uint)recordIndex);
+
+        if (!_endedQueries.TryGetValue(query, out List<int>? list))
+        {
+            _endedQueries[query] = list = _queryListIndexPool.Count == 0 ? [] : _queryListIndexPool.Dequeue();
+        }
+
+        list.Add(recordIndex);
+
+        return this;
+    }
+
+    /// <summary>
+    /// Function to copy the data for a range of ended query records into a GPU buffer.
+    /// </summary>
+    /// <param name="query">The query that holds the records.</param>
+    /// <param name="recordIndex">The index of the first record to copy.</param>
+    /// <param name="recordCount">The number of records to copy.</param>
+    /// <param name="buffer">The buffer that will receive the data.</param>
+    /// <param name="destinationOffset">[Optional] The offset, in bytes, within the <paramref name="buffer"/> to start writing at.</param>
+    /// <inheritdoc cref="AddPresenter" path="/returns"/>
+    /// <exception cref="ArgumentOutOfRangeException">
+    /// <para>Thrown if the <paramref name="recordIndex"/>, or the <paramref name="destinationOffset"/> is less than 0.</para>
+    /// <para>Thrown if the <paramref name="recordCount"/> is less than 1.</para>
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    /// <para>Thrown if the <paramref name="recordIndex"/> plus the <paramref name="recordCount"/> is greater than the <see cref="GorgonQuery.MaximumRecordCount"/>.</para>
+    /// <para>Thrown if the data for the records does not fit within the <paramref name="buffer"/> at the <paramref name="destinationOffset"/>.</para>
+    /// </exception>
+    /// <remarks>
+    /// <para>
+    /// Use this method when the query data is needed on the GPU, for example to be read by a shader. The records are written one after another, starting at the <paramref name="destinationOffset"/>, and each 
+    /// record is the size described by the <see cref="GorgonQuery.MaximumRecordCount"/> property. The <paramref name="destinationOffset"/> must be a multiple of 8 bytes.
+    /// </para>
+    /// <para>
+    /// <note type="important">
+    /// <para>
+    /// Every record in the range must have been ended with <see cref="EndQuery"/> on this command list, and not already copied with this method. If a record in the range was not passed to 
+    /// <see cref="EndQuery"/>, or was begun on another command list, this method does nothing. No data is copied, and the <paramref name="buffer"/> keeps whatever data it held before. A warning is written to 
+    /// the log naming the query, the <paramref name="buffer"/>, and the index of the record that was not ended (when other records of the query were ended on this command list). If the 
+    /// <paramref name="buffer"/> does not contain the expected data, check the log for this warning.
+    /// </para>
+    /// </note>
+    /// </para>
+    /// <para>
+    /// Records copied with this method are not written to the <see cref="GorgonQuery.ReadResults"/> buffer, and they are released as soon as this method is called, so they do not affect the 
+    /// <see cref="GorgonQuery.IsReady"/> property. A released record can be begun again right away, on this command list or another. The GPU runs command lists in the order they are submitted, so a command 
+    /// list that begins one of these records again must be submitted after this one, otherwise the data copied into the <paramref name="buffer"/> is undefined.
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="GorgonQuery"/>
+    public GorgonCommandList ResolveQueryToGpuBuffer(GorgonQuery query, int recordIndex, int recordCount, GorgonGpuBuffer buffer, int destinationOffset = 0)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegative(recordIndex);
+        ArgumentOutOfRangeException.ThrowIfNegative(destinationOffset);
+        ArgumentOutOfRangeException.ThrowIfLessThan(recordCount, 1);
+
+        int recordSize = (int)query.ReadResults.SizeInBytes / query.MaximumRecordCount;
+
+        if (recordIndex + recordCount > query.MaximumRecordCount)
+        {
+            throw new ArgumentException(string.Format(Resources.GORGFX_ERR_BUFFER_OVERRUN, recordIndex, recordCount, query.MaximumRecordCount));
+        }
+
+        if (destinationOffset + recordCount * recordSize > buffer.SizeInBytes)
+        {
+            throw new ArgumentException(string.Format(Resources.GORGFX_ERR_BUFFER_OVERRUN, destinationOffset, recordCount * recordSize, buffer.SizeInBytes));
+        }
+
+        // This query isn't available yet, or never existed.
+        if (!_endedQueries.TryGetValue(query, out List<int>? indices))
+        {
+            Graphics.Log.PrintWarning($"The query '{query.Name}' is either not ended (call EndQuery), or was never started on this command list. No data will be resolved into '{buffer.Name}'.", LoggingLevel.Intermediate);
+            return this;
+        }
+
+        for (int i = recordIndex; i < recordIndex + recordCount; ++i)
+        {
+            if (!indices.Contains(i))
+            {
+                Graphics.Log.PrintWarning($"The query '{query.Name}' for index {i} is either not ended (call EndQuery), or was never started on this command list. No data will be resolved into '{buffer.Name}'.", LoggingLevel.Intermediate);
+                return this;
+            }
+
+            indices.Remove(i);
+        }
+
+        if (indices.Count == 0)
+        {
+            _endedQueries.Remove(query);
+            _queryListIndexPool.Enqueue(indices);
+        }
+
+        Queue.Tracker.TrackResource(buffer);
+        SetBarrier(buffer, BarrierSync.Copy, BarrierAccess.CopyDestination, true);
+
+        D3DGraphicsCommandList.Get()->ResolveQueryData(query.D3DQueryHeap.Get(), (D3D12_QUERY_TYPE)query.QueryType, (uint)recordIndex, (uint)recordCount, (PID3D12Resource2)buffer.D3DResource.Get(), buffer.ResourceOffset + (ulong)destinationOffset);
+
+        for (int i = recordIndex; i < recordIndex + recordCount; ++i)
+        {
+            query.Free(i);
+        }
 
         return this;
     }

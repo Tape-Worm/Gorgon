@@ -196,6 +196,31 @@ public unsafe sealed class GorgonGraphics
     /// <see cref="InFlightFrameCount"/>
     public int CurrentFrame => _currentFrame;
 
+    /// <summary>
+    /// Property to return the frequency, in ticks per second, of the timestamps recorded by queries on command lists from this graphics interface.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// A <see cref="QueryType.Timestamp"/> query records the GPU clock in ticks. To convert the difference between two timestamps into seconds, divide it by this value.
+    /// </para>
+    /// <para>
+    /// This value applies to command lists returned by <see cref="GetCommandList"/>. Each queue on the GPU can run at its own frequency, so timestamps should only be compared with timestamps recorded on the 
+    /// same queue. For command lists on the compute queue, use the <see cref="GorgonComputeEngine.QueryTimestampFrequency"/> property.
+    /// </para>
+    /// <para>
+    /// If the frequency cannot be retrieved from the video adapter, this value is 0.
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="GorgonQuery"/>
+    public long QueryTimestampFrequency
+    {
+        get
+        {
+            ulong frequency = 0;
+            return Queues.GraphicsQueue.D3DQueue.Get()->GetTimestampFrequency(&frequency).FAILED ? 0 : (long)frequency;
+        }
+    }
+
     /// <inheritdoc cref="GorgonGraphicsFactory.Dispose(bool)"/>
     private void Dispose(bool disposing)
     {
@@ -504,6 +529,8 @@ public unsafe sealed class GorgonGraphics
         Memory.MegaBuffer.Signal();
         Memory.TextureTilePool.Signal();
         Queues.GraphicsQueue.AllocatorPool.Signal();
+        Queues.GraphicsQueue.QueryTracker.Signal();
+        Queues.ComputeQueue.QueryTracker.Signal();
         Memory.UploadHeaps.Signal();
         Descriptors.GpuSamplerDescriptors.Signal();
         Descriptors.GpuViewDescriptors.Signal();
@@ -909,6 +936,7 @@ public unsafe sealed class GorgonGraphics
     /// Function to end the current frame, move to the next frame, and clean up per frame resources.
     /// </summary>
     /// <param name="commandList">The command list to execute at the end of the frame.</param>
+    /// <inheritdoc cref="Submit(ReadOnlySpan{GorgonCommandList})" path="/exception"/>
     /// <remarks>
     /// <inheritdoc cref="Submit(ReadOnlySpan{GorgonCommandList})" path="/remarks/para"/>
     /// </remarks>
@@ -924,6 +952,8 @@ public unsafe sealed class GorgonGraphics
     /// Function to end the current frame, move to the next frame, and clean up per frame resources.
     /// </summary>
     /// <param name="commandLists">The command lists to execute at the end of the frame.</param>
+    /// <exception cref="GorgonException">Thrown if a command list has query records begun with <see cref="GorgonCommandList.BeginQuery"/> that were not ended with <see cref="GorgonCommandList.EndQuery"/>.</exception>
+    /// <exception cref="AggregateException">Thrown if one or more command lists could not be closed after an error occurred during submission. The first inner exception is the original error.</exception>
     /// <remarks>
     /// <para>
     /// This method submits the command lists to the GPU in a single batch, and then ends the current frame. Every command list obtained from <see cref="GetCommandList"/> during the frame must be

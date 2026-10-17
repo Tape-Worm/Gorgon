@@ -353,6 +353,15 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There was an error while creating the heap for the query..
+        /// </summary>
+        internal static string GORGFX_ERR_CANNOT_CREATE_QUERY {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_CANNOT_CREATE_QUERY", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to There was an error creating the resource..
         /// </summary>
         internal static string GORGFX_ERR_CANNOT_CREATE_RESOURCE {
@@ -692,33 +701,6 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This type of execution call does not allow index buffers..
-        /// </summary>
-        internal static string GORGFX_ERR_EXECUTE_CALL_INDEX_BUFFER_NOT_ALLOWED {
-            get {
-                return ResourceManager.GetString("GORGFX_ERR_EXECUTE_CALL_INDEX_BUFFER_NOT_ALLOWED", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The size of the command list is {0} bytes. The execute call requires a value that is a multiple of 4..
-        /// </summary>
-        internal static string GORGFX_ERR_EXECUTE_COMMAND_COUNT_NOT_MULTIPLE_OF_4 {
-            get {
-                return ResourceManager.GetString("GORGFX_ERR_EXECUTE_COMMAND_COUNT_NOT_MULTIPLE_OF_4", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The constant at index {0} plus the count of {1} is too large for the available constant indices: {2}..
-        /// </summary>
-        internal static string GORGFX_ERR_EXECUTE_CONSTANT_RANGE_INVALID {
-            get {
-                return ResourceManager.GetString("GORGFX_ERR_EXECUTE_CONSTANT_RANGE_INVALID", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The execute buffer &apos;{0}&apos; has {1} commands of {2} bytes, and {3} counters. It must have at least 1 command, a command size of at least 16 bytes that is a multiple of 4, and 0 or more counters..
         /// </summary>
         internal static string GORGFX_ERR_EXECUTE_BUFFER_INVALID {
@@ -737,11 +719,20 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The commands in the execute buffer &apos;{0}&apos; are {1} bytes, which is smaller than the {2} bytes needed by the execute call..
+        ///   Looks up a localized string similar to This type of execution call does not allow index buffers..
         /// </summary>
-        internal static string GORGFX_ERR_EXECUTE_COMMAND_SIZE_TOO_SMALL {
+        internal static string GORGFX_ERR_EXECUTE_CALL_INDEX_BUFFER_NOT_ALLOWED {
             get {
-                return ResourceManager.GetString("GORGFX_ERR_EXECUTE_COMMAND_SIZE_TOO_SMALL", resourceCulture);
+                return ResourceManager.GetString("GORGFX_ERR_EXECUTE_CALL_INDEX_BUFFER_NOT_ALLOWED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The size of the command list is {0} bytes. The execute call requires a value that is a multiple of 4..
+        /// </summary>
+        internal static string GORGFX_ERR_EXECUTE_COMMAND_COUNT_NOT_MULTIPLE_OF_4 {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_EXECUTE_COMMAND_COUNT_NOT_MULTIPLE_OF_4", resourceCulture);
             }
         }
         
@@ -751,6 +742,33 @@ namespace Gorgon.Graphics.Core.Properties {
         internal static string GORGFX_ERR_EXECUTE_COMMAND_SIZE_MISMATCH {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_EXECUTE_COMMAND_SIZE_MISMATCH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The commands in the execute buffer &apos;{0}&apos; are {1} bytes, which is smaller than the {2} bytes needed by the execute call..
+        /// </summary>
+        internal static string GORGFX_ERR_EXECUTE_COMMAND_SIZE_TOO_SMALL {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_EXECUTE_COMMAND_SIZE_TOO_SMALL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The constant at index {0} plus the count of {1} is too large for the available constant indices: {2}..
+        /// </summary>
+        internal static string GORGFX_ERR_EXECUTE_CONSTANT_RANGE_INVALID {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_EXECUTE_CONSTANT_RANGE_INVALID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The counter index {0} is outside of the {1} counters in the counters buffer..
+        /// </summary>
+        internal static string GORGFX_ERR_EXECUTE_COUNTER_INDEX_INVALID {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_EXECUTE_COUNTER_INDEX_INVALID", resourceCulture);
             }
         }
         
@@ -769,15 +787,6 @@ namespace Gorgon.Graphics.Core.Properties {
         internal static string GORGFX_ERR_EXECUTE_RANGE_INVALID {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_EXECUTE_RANGE_INVALID", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The counter index {0} is outside of the {1} counters in the counters buffer..
-        /// </summary>
-        internal static string GORGFX_ERR_EXECUTE_COUNTER_INDEX_INVALID {
-            get {
-                return ResourceManager.GetString("GORGFX_ERR_EXECUTE_COUNTER_INDEX_INVALID", resourceCulture);
             }
         }
         
@@ -1255,6 +1264,24 @@ namespace Gorgon.Graphics.Core.Properties {
         internal static string GORGFX_ERR_PSO_STENCIL_ENABLED_FORMAT_NO_STENCIL {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_PSO_STENCIL_ENABLED_FORMAT_NO_STENCIL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There are {0} active queries on the command list &apos;{1}&apos; that have not been ended..
+        /// </summary>
+        internal static string GORGFX_ERR_QUERIES_STILL_OPEN {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_QUERIES_STILL_OPEN", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The record index {0} is already allocated to command list &apos;{1}&apos;..
+        /// </summary>
+        internal static string GORGFX_ERR_QUERY_CANNOT_ALLOCATE {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_QUERY_CANNOT_ALLOCATE", resourceCulture);
             }
         }
         

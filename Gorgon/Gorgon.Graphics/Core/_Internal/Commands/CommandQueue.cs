@@ -113,6 +113,14 @@ internal sealed unsafe class CommandQueue : IDisposable
     }
 
     /// <summary>
+    /// Property to return the tracker for in flight queries.
+    /// </summary>
+    public QueryTracking QueryTracker
+    {
+        get;
+    }
+
+    /// <summary>
     /// Property to return the D3D 12 command queue.
     /// </summary>
     public ref readonly ComPtr<ID3D12CommandQueue> D3DQueue => ref _d3dQueue;
@@ -128,9 +136,10 @@ internal sealed unsafe class CommandQueue : IDisposable
         if (disposing)
         {
             Graphics.Log.Print($"Destroying {nameof(ID3D12Fence1)} on ({Type} queue)...", LoggingLevel.Verbose);
-            Graphics.Log.Print($"Destroying {nameof(ID3D12CommandQueue)} ({Type})...", LoggingLevel.Verbose);            
+            Graphics.Log.Print($"Destroying {nameof(ID3D12CommandQueue)} ({Type})...", LoggingLevel.Verbose);
 
             // Ensure that any pending in-flight resources are removed.
+            QueryTracker.Dispose();
             Tracker.Dispose();
 
             ListPool.Dispose();
@@ -309,6 +318,9 @@ internal sealed unsafe class CommandQueue : IDisposable
                 for (int i = 0; i < commandList.Length; ++i)
                 {
                     GorgonCommandList list = commandList[i];
+                    
+                    list.CheckOpenQueries();
+
                     (ArraySegment<D3D12_BUFFER_BARRIER> bufferBarriers, ArraySegment<D3D12_TEXTURE_BARRIER> textureBarriers) = list.BarrierManager.ResolveInitialStates(this);
 
                     Debug.Assert(bufferBarriers.Array is not null, "Buffer barrier array is null.");
@@ -352,21 +364,36 @@ internal sealed unsafe class CommandQueue : IDisposable
 
                 previousList?.Close();
             }
-            catch
+            catch(Exception ex)
             {
+                List<Exception> cmdListCloseExceptions = [];
+
                 // A throw leaves command lists open. Close them, so the pools never hand out a command list, or
                 // an allocator, that D3D12 still considers to be recording.
                 for (int j = 0; j < commandList.Length; ++j)
                 {
                     if (commandList[j].IsRecording)
                     {
-                        commandList[j].Close();
+                        try
+                        {
+                            commandList[j].Close();
+                        }
+                        catch (Exception clEx)
+                        {
+                            cmdListCloseExceptions.Add(clEx);
+                        }
                     }
                 }
 
                 if (barrierList is not null)
                 {
                     ListPool.Return(barrierList);
+                }
+
+                if (cmdListCloseExceptions.Count > 0)
+                {
+                    cmdListCloseExceptions.Insert(0, ex);
+                    throw new AggregateException(cmdListCloseExceptions);
                 }
 
                 throw;
@@ -474,6 +501,7 @@ internal sealed unsafe class CommandQueue : IDisposable
         AllocatorPool = new CommandAllocatorPool(this);
         ListPool = new CommandListPool(this);
         Tracker = new ResourceTracker(this);
+        QueryTracker = new QueryTracking(this);
 
         _d3dQueue = CreateNativeQueue(in graphics.D3DDevice);
         _d3dFence = CreateNativeFence(in graphics.D3DDevice);

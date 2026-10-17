@@ -704,4 +704,13 @@ The format {1} is {2} bits or the incorrect data type.</value>
   <data name="GORGFX_ERR_EXECUTE_GPU_NEEDS_COUNTERS" xml:space="preserve">
     <value>The execute buffer '{0}' has no counters. An execute call that renders on the GPU needs at least 1 counter.</value>
   </data>
+  <data name="GORGFX_ERR_CANNOT_CREATE_QUERY" xml:space="preserve">
+    <value>There was an error while creating the heap for the query.</value>
+  </data>
+  <data name="GORGFX_ERR_QUERY_CANNOT_ALLOCATE" xml:space="preserve">
+    <value>The record index {0} is already allocated to command list '{1}'.</value>
+  </data>
+  <data name="GORGFX_ERR_QUERIES_STILL_OPEN" xml:space="preserve">
+    <value>There are {0} active queries on the command list '{1}' that have not been ended.</value>
+  </data>
 </root>
