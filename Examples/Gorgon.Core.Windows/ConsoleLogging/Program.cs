@@ -1,4 +1,6 @@
-﻿using Gorgon.Core;
+﻿using System;
+using System.Windows.Forms;
+using Gorgon.Core;
 using Gorgon.Diagnostics;
 
 namespace Gorgon.Examples;

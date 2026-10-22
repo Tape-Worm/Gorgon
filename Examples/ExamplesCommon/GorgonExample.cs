@@ -24,23 +24,25 @@
 // Created: August 23, 2018 4:42:41 PM
 // 
 
-using System.Numerics;
+using System;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
+using System.IO;
 using System.Reflection;
-using System.Text;
+using System.Threading;
+using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
+using Gorgon.Graphics.Imaging;
 //using Gorgon.Graphics.Fonts;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.IO;
 //using Gorgon.Renderers;
-using Gorgon.Timing;
 using Gorgon.UI.WindowsForms;
-using Gorgon.Graphics.Imaging;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Gorgon.Examples;
 
@@ -338,14 +340,13 @@ public static class GorgonExample
     /// </summary>
     public static void UnloadResources()
     {
-        //OLDE.GorgonTextureBlitter blitter = Interlocked.Exchange(ref _blitterOlde, null);
-        //OLDE.GorgonTexture2DView logo = Interlocked.Exchange(ref _logoOlde, null);        
+        GorgonTextureBlitter? blitter = Interlocked.Exchange(ref _blitter, null);
+        IGorgonTextureView<GorgonTexture>? logo = Interlocked.Exchange(ref _logo, null);
         //GorgonFont font = Interlocked.Exchange(ref _statsFont, null);
         //GorgonFontFactory factory = Interlocked.Exchange(ref _factory, null);
 
-        _logo?.Dispose();
-        _blitter?.Dispose();
-        //logo?.Dispose();
+        blitter?.Dispose();
+        logo?.Dispose();
         //font?.Dispose();
         //factory?.Dispose();
     }
@@ -436,7 +437,7 @@ public static class GorgonExample
 
         _mainForm = new FormMain
         {
-            Text = appTitle            
+            Text = appTitle
         };
 
         _mainForm.ClientSize = _mainForm.LogicalToDeviceUnits(new Size(resolution.X, resolution.Y));

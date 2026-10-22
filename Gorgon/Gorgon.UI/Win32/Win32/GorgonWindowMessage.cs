@@ -22,6 +22,7 @@
 // Created: July 12, 2025 7:33:51 PM
 //
 
+using System;
 using System.Runtime.CompilerServices;
 using Gorgon.Graphics;
 

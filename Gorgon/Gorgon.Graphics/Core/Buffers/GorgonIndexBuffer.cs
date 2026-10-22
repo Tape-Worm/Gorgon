@@ -22,22 +22,16 @@
 // Created: January 14, 2026 9:28:58 PM
 //
 
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Numerics;
+using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Text;
+using System.Threading;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
-using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
-using Gorgon.Native;
 using TerraFX.Interop.DirectX;
 using TerraFX.Interop.Windows;
-using WinRT;
 using Win32 = TerraFX.Interop.Windows.Windows;
 
 namespace Gorgon.Graphics.Core;
@@ -109,11 +103,21 @@ public sealed unsafe class GorgonIndexBuffer
     /// <inheritdoc cref="IGorgonIndexBufferInfo.Use32BitIndices"/>
     public bool Use32BitIndices => _info.Use32BitIndices;
 
+    /// <summary>
+    /// Property to return the total number of indices that can be contained inside the buffer.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This property takes into account the size of an individual index, and compensates for it.
+    /// </para>
+    /// </remarks>
+    public int IndexCount => (int)(SizeInBytes / (Use32BitIndices ? sizeof(uint) : sizeof(ushort)));
+
     /// <inheritdoc/>
     private protected sealed override void Dispose(bool disposing)
-    {        
+    {
         if (disposing)
-        {            
+        {
             // One of the few places where I don't care about using LINQ.
             // We only call dispose for the views that do not own this resource.
             foreach (GorgonResourceView view in _typedUavs.Values.Cast<GorgonResourceView>()
@@ -154,7 +158,7 @@ public sealed unsafe class GorgonIndexBuffer
         Graphics.Memory.Allocator.Get()->CreateResource3(&allocDesc, &desc, D3D12_BARRIER_LAYOUT.D3D12_BARRIER_LAYOUT_UNDEFINED,
             null, 0, null,
             _bufferAllocation.GetAddressOf(), Win32.__uuidof<ID3D12Resource2>(), (void**)resource.GetAddressOf())
-            .ThrowIfFailed(GorgonResult.CannotCreate, () => string.Format(Resources.GORGFX_ERR_CANNOT_CREATE_RESOURCE));
+            .ThrowIfFailed(GorgonResult.CannotCreate, Resources.GORGFX_ERR_CANNOT_CREATE_RESOURCE);
 
         resource.SetD3DDebugName(Name);
 
@@ -205,12 +209,9 @@ public sealed unsafe class GorgonIndexBuffer
 
             ViewKey key = new((byte)BufferFormat.Unknown, (int)startIndex, count.Value);
 
-            if (_rawUavs.TryGetValue(key, out GorgonRawBufferRwView? result))
-            {
-                return result;
-            }
-
-            return _rawUavs[key] = new GorgonRawBufferRwView(Graphics, Name, this, startIndex, count.Value, owned);
+            return _rawUavs.TryGetValue(key, out GorgonRawBufferRwView? result)
+                ? result
+                : (_rawUavs[key] = new GorgonRawBufferRwView(Graphics, Name, this, startIndex, count.Value, owned));
         }
     }
 
@@ -252,8 +253,8 @@ public sealed unsafe class GorgonIndexBuffer
         {
             GorgonFormatInfo formatInfo = new(format);
 
-            if ((formatInfo.IsFloatingPoint) 
-                || (((Use32BitIndices) && (formatInfo.SizeInBytes != sizeof(uint))) || (!Use32BitIndices) && (formatInfo.SizeInBytes != sizeof(ushort))))
+            if ((formatInfo.IsFloatingPoint)
+                || (((Use32BitIndices) && (formatInfo.SizeInBytes != sizeof(uint))) || ((!Use32BitIndices) && (formatInfo.SizeInBytes != sizeof(ushort)))))
             {
                 throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_INDEXBUFFER_TYPED_VIEW_INCOMPATIBLE, Name, format, formatInfo.BitDepth));
             }
@@ -268,12 +269,9 @@ public sealed unsafe class GorgonIndexBuffer
 
             ViewKey key = new((byte)format, (int)startIndex, count.Value);
 
-            if (_typedUavs.TryGetValue(key, out GorgonTypedBufferRwView? result))
-            {
-                return result;
-            }
-
-            return _typedUavs[key] = new GorgonTypedBufferRwView(Graphics, Name, this, formatInfo, startIndex, count.Value, owned);
+            return _typedUavs.TryGetValue(key, out GorgonTypedBufferRwView? result)
+                ? result
+                : (_typedUavs[key] = new GorgonTypedBufferRwView(Graphics, Name, this, formatInfo, startIndex, count.Value, owned));
         }
     }
 
@@ -338,6 +336,6 @@ public sealed unsafe class GorgonIndexBuffer
 
         Graphics.Log.Print($"Creating Gorgon index buffer '{Name}'.", LoggingLevel.Simple);
 
-        CreateNative();        
+        CreateNative();
     }
 }

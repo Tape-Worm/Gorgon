@@ -110,7 +110,7 @@ public sealed class GorgonTypedBufferView
         {
             Format = (DXGI_FORMAT)Format,
             ViewDimension = D3D12_SRV_DIMENSION.D3D12_SRV_DIMENSION_BUFFER,
-            Shader4ComponentMapping = D3D12.D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING,            
+            Shader4ComponentMapping = D3D12.D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING,
         };
 
         desc.Buffer.StructureByteStride = 0;

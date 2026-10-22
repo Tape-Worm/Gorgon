@@ -36,7 +36,9 @@
 //
 // DirectXTex: https://github.com/Microsoft/DirectXTex
 
+using System;
 using System.Diagnostics;
+using System.Linq;
 using Gorgon.Graphics.Imaging.Properties;
 using Gorgon.Math;
 
@@ -307,17 +309,9 @@ public sealed record class GorgonFormatInfo
             return format is BufferFormat.BC1_Typeless or BufferFormat.BC1_UNorm or BufferFormat.BC1_UNorm_SRgb or BufferFormat.BC4_Typeless or BufferFormat.BC4_SNorm or BufferFormat.BC4_UNorm ? 8 : 16;
         }
 
-        int sizeInBytes;
+        int sizeInBytes = bitDepth >= 8 ? bitDepth >> 3 : 1;
 
         // Can't have a data type smaller than 1 byte.
-        if (bitDepth >= 8)
-        {
-            sizeInBytes = bitDepth >> 3;
-        }
-        else
-        {
-            sizeInBytes = 1;
-        }
 
         return sizeInBytes;
     }
@@ -681,8 +675,8 @@ public sealed record class GorgonFormatInfo
     /// </summary>
     /// <param name="format">The format to evaluate.</param>
     /// <returns><b>true</b> if the format uses signed values, <b>false</b> if not.</returns>
-    private static bool GetIsSigned(BufferFormat format) => format is BufferFormat.R32G32B32A32_SInt or BufferFormat.R32G32B32_SInt or BufferFormat.R32G32_SInt or BufferFormat.R32_SInt 
-                or BufferFormat.R16G16B16A16_SInt or BufferFormat.R16G16_SInt or BufferFormat.R16_SInt or BufferFormat.R8G8B8A8_SInt or BufferFormat.R8G8_SInt or BufferFormat.R8_SInt 
+    private static bool GetIsSigned(BufferFormat format) => format is BufferFormat.R32G32B32A32_SInt or BufferFormat.R32G32B32_SInt or BufferFormat.R32G32_SInt or BufferFormat.R32_SInt
+                or BufferFormat.R16G16B16A16_SInt or BufferFormat.R16G16_SInt or BufferFormat.R16_SInt or BufferFormat.R8G8B8A8_SInt or BufferFormat.R8G8_SInt or BufferFormat.R8_SInt
                 or BufferFormat.R16G16B16A16_SNorm or BufferFormat.R16G16_SNorm or BufferFormat.R16_SNorm or BufferFormat.R8G8B8A8_SNorm or BufferFormat.R8G8_SNorm or BufferFormat.R8_SNorm
                 or BufferFormat.BC4_SNorm or BufferFormat.BC5_SNorm or BufferFormat.BC6H_Sf16;
 
@@ -844,25 +838,17 @@ public sealed record class GorgonFormatInfo
         {
             rowPitch = (((width * bitsPerPixel) + 31) / 32) * sizeof(int);
         }
-        else if ((flags & PitchFlags.Align4K) == PitchFlags.Align4K)
-        {
-            rowPitch = (((width * bitsPerPixel) + 32767) / 32768) * 4096;
-        }
-        else if ((flags & PitchFlags.Align64Byte) == PitchFlags.Align64Byte)
-        {
-            rowPitch = (((width * bitsPerPixel) + 511) / 512) * 64;
-        }
-        else if ((flags & PitchFlags.Align32Byte) == PitchFlags.Align32Byte)
-        {
-            rowPitch = (((width * bitsPerPixel) + 255) / 256) * 32;
-        }
-        else if ((flags & PitchFlags.Align16Byte) == PitchFlags.Align16Byte)
-        {
-            rowPitch = (((width * bitsPerPixel) + 127) / 128) * 16;
-        }
         else
         {
-            rowPitch = (((width * bitsPerPixel) + 7) / 8);
+            rowPitch = (flags & PitchFlags.Align4K) == PitchFlags.Align4K
+                ? (((width * bitsPerPixel) + 32767) / 32768) * 4096
+                : (flags & PitchFlags.Align64Byte) == PitchFlags.Align64Byte
+                ? (((width * bitsPerPixel) + 511) / 512) * 64
+                : (flags & PitchFlags.Align32Byte) == PitchFlags.Align32Byte
+                ? (((width * bitsPerPixel) + 255) / 256) * 32
+                : (flags & PitchFlags.Align16Byte) == PitchFlags.Align16Byte
+                ? (((width * bitsPerPixel) + 127) / 128) * 16
+                : ((width * bitsPerPixel) + 7) / 8;
         }
 
         return new GorgonPitchLayout(rowPitch, rowPitch * height);
@@ -887,7 +873,7 @@ public sealed record class GorgonFormatInfo
                 BufferFormat.NV11 or BufferFormat.P208 => height << 1,
                 BufferFormat.V208 => height + (((height + 1) >> 1) << 1),
                 BufferFormat.V408 => height + ((height >> 1) << 2),
-                BufferFormat.NV12 or BufferFormat.P010 or BufferFormat.P016 or BufferFormat.Opaque420 => height + ((height + 1) >> 1),                
+                BufferFormat.NV12 or BufferFormat.P010 or BufferFormat.P016 or BufferFormat.Opaque420 => height + ((height + 1) >> 1),
                 // All other formats report height as-is.
                 _ => height
             };

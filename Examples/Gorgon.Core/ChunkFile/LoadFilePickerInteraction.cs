@@ -22,9 +22,11 @@
 // Created: April 28, 2025 10:35:04 PM
 //
 
+using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Reactive;
-using System.Reactive.Linq;
-using ReactiveUI;
+using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using Gorgon.IO;
@@ -55,12 +57,7 @@ internal static class LoadFilePickerInteraction
             SuggestedStartLocation = await topLevel.StorageProvider.TryGetFolderFromPathAsync(defaultPath)
         });
 
-        if (files.Count == 0)
-        {
-            return string.Empty;
-        }
-
-        return files[0].Path.LocalPath;
+        return files.Count == 0 ? string.Empty : files[0].Path.LocalPath;
     }
 
     /// <summary>

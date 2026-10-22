@@ -22,7 +22,10 @@
 // Created: January 19, 2025 11:55:54 PM
 //
 
+using System;
 using System.Buffers;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using Gorgon.Input.Properties;
 using Gorgon.Math;
@@ -210,41 +213,26 @@ public class GorgonKeyboard(IGorgonKeyboardInfo? keyboardDevice = null)
 
         try
         {
-            if (((modifier & VirtualKeys.ShiftModifier) == VirtualKeys.ShiftModifier)
+            charStates[shiftKey] = ((modifier & VirtualKeys.ShiftModifier) == VirtualKeys.ShiftModifier)
                 || ((modifier & VirtualKeys.Shift) == VirtualKeys.Shift)
                 || ((modifier & VirtualKeys.LeftShift) == VirtualKeys.LeftShift)
-                || ((modifier & VirtualKeys.RightShift) == VirtualKeys.RightShift))
-            {
-                charStates[shiftKey] = 0xff;
-            }
-            else
-            {
-                charStates[shiftKey] = 0;
-            }
+                || ((modifier & VirtualKeys.RightShift) == VirtualKeys.RightShift)
+                ? (byte)0xff
+                : (byte)0;
 
-            if (((modifier & VirtualKeys.ControlModifier) == VirtualKeys.ControlModifier)
+            charStates[ctrlKey] = ((modifier & VirtualKeys.ControlModifier) == VirtualKeys.ControlModifier)
                 || ((modifier & VirtualKeys.Control) == VirtualKeys.Control)
                 || ((modifier & VirtualKeys.LeftControl) == VirtualKeys.LeftControl)
-                || ((modifier & VirtualKeys.RightControl) == VirtualKeys.RightControl))
-            {
-                charStates[ctrlKey] = 0xff;
-            }
-            else
-            {
-                charStates[ctrlKey] = 0;
-            }
+                || ((modifier & VirtualKeys.RightControl) == VirtualKeys.RightControl)
+                ? (byte)0xff
+                : (byte)0;
 
-            if (((modifier & VirtualKeys.AltModifier) == VirtualKeys.AltModifier)
+            charStates[altKey] = ((modifier & VirtualKeys.AltModifier) == VirtualKeys.AltModifier)
                 || ((modifier & VirtualKeys.Alt) == VirtualKeys.Alt)
                 || ((modifier & VirtualKeys.LeftAlt) == VirtualKeys.LeftAlt)
-                || ((modifier & VirtualKeys.RightAlt) == VirtualKeys.RightAlt))
-            {
-                charStates[altKey] = 0xff;
-            }
-            else
-            {
-                charStates[altKey] = 0;
-            }
+                || ((modifier & VirtualKeys.RightAlt) == VirtualKeys.RightAlt)
+                ? (byte)0xff
+                : (byte)0;
 
             return PInvoke.ToUnicodeChar(key, charStates, characterBuffer);
         }

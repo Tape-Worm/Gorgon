@@ -24,6 +24,8 @@
 // Created: Wednesday, July 15, 2015 11:36:46 PM
 // 
 
+using System.Collections.Generic;
+
 namespace Gorgon.Native;
 
 /// <summary>

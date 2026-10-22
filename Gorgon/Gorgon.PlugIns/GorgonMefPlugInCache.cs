@@ -24,12 +24,17 @@
 // Created: Thursday, June 23, 2011 11:22:58 AM
 // 
 
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Composition.Primitives;
 using System.ComponentModel.Composition.Registration;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.PortableExecutable;
+using System.Threading;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Properties;
@@ -190,19 +195,14 @@ public sealed class GorgonMefPlugInCache
             return (false, AssemblyPlatformType.Unknown);
         }
 
-        if ((peReader.PEHeaders.CorHeader.Flags & CorFlags.ILOnly) == CorFlags.ILOnly)
-        {
-            platformType = AssemblyPlatformType.AnyCpu;
-        }
-        else
-        {
-            platformType = machine switch
+        platformType = (peReader.PEHeaders.CorHeader.Flags & CorFlags.ILOnly) == CorFlags.ILOnly
+            ? AssemblyPlatformType.AnyCpu
+            : machine switch
             {
                 Machine.IA64 or Machine.Amd64 => AssemblyPlatformType.x64,
                 Machine.I386 => AssemblyPlatformType.x86,
                 _ => AssemblyPlatformType.Unknown
             };
-        }
 
         return (true, platformType);
     }

@@ -22,6 +22,7 @@
 // Created: October 5, 2025 4:22:39 PM
 //
 
+using System.IO;
 using System.Text;
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
@@ -158,7 +159,7 @@ public sealed class GorgonCodecShader(GorgonGraphics graphics)
             throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORGFX_ERR_SHADER_TYPE_NOT_SUPPORTED, shaderType));
         }
 
-        byte[] shaderBinaryData =[];
+        byte[] shaderBinaryData = [];
         byte[] hashData = [];
         byte[] pdbData = [];
         byte[] reflectionData = [];

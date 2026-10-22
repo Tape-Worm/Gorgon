@@ -22,7 +22,10 @@
 // Created: March 12, 2025 12:18:20 AM
 //
 
+using System;
 using System.ComponentModel;
+using System.Drawing;
+using System.Windows.Forms;
 
 namespace Gorgon.UI.WindowsForms;
 
@@ -33,9 +36,7 @@ internal partial class FormDialog
     : Form
 {
     // The dialog button visbility state.
-    private FormDialogButtons _buttonState;
     // The details text.
-    private string _details = string.Empty;
 
     /// <summary>
     /// Property to set or return the message to place in the message label.
@@ -53,13 +54,13 @@ internal partial class FormDialog
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public string Details
     {
-        get => _details;
+        get;
         set
         {
-            _details = value;
-            TextDetails.Text = _details.Replace("\n", Environment.NewLine);
+            field = value;
+            TextDetails.Text = field.Replace("\n", Environment.NewLine);
         }
-    }
+    } = string.Empty;
 
     /// <summary>
     /// Property to set or return whether to show the OK button.
@@ -67,15 +68,15 @@ internal partial class FormDialog
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public FormDialogButtons Buttons
     {
-        get => _buttonState;
+        get;
         set
         {
-            if (_buttonState == value)
+            if (field == value)
             {
                 return;
             }
 
-            _buttonState = value;
+            field = value;
 
             if (IsHandleCreated)
             {
@@ -104,7 +105,7 @@ internal partial class FormDialog
     /// </summary>
     private void UpdateButtonVisibility()
     {
-        if (_buttonState == FormDialogButtons.None)
+        if (Buttons == FormDialogButtons.None)
         {
             ButtonOK.Visible = ButtonYes.Visible = ButtonNo.Visible = ButtonCancel.Visible = CheckDetail.Visible = CheckToAll.Visible = PanelDetails.Visible = false;
             return;
@@ -112,12 +113,12 @@ internal partial class FormDialog
 
         PanelDetails.Visible = false;
 
-        ButtonOK.Visible = (_buttonState & FormDialogButtons.OK) == FormDialogButtons.OK;
-        ButtonCancel.Visible = (_buttonState & FormDialogButtons.Cancel) == FormDialogButtons.Cancel;
-        ButtonYes.Visible = (_buttonState & FormDialogButtons.Yes) == FormDialogButtons.Yes;
-        ButtonNo.Visible = (_buttonState & FormDialogButtons.No) == FormDialogButtons.No;
-        CheckDetail.Visible = (_buttonState & FormDialogButtons.Details) == FormDialogButtons.Details;
-        CheckToAll.Visible = (_buttonState & FormDialogButtons.ToAll) == FormDialogButtons.ToAll;
+        ButtonOK.Visible = (Buttons & FormDialogButtons.OK) == FormDialogButtons.OK;
+        ButtonCancel.Visible = (Buttons & FormDialogButtons.Cancel) == FormDialogButtons.Cancel;
+        ButtonYes.Visible = (Buttons & FormDialogButtons.Yes) == FormDialogButtons.Yes;
+        ButtonNo.Visible = (Buttons & FormDialogButtons.No) == FormDialogButtons.No;
+        CheckDetail.Visible = (Buttons & FormDialogButtons.Details) == FormDialogButtons.Details;
+        CheckToAll.Visible = (Buttons & FormDialogButtons.ToAll) == FormDialogButtons.ToAll;
     }
 
     /// <inheritdoc/>
@@ -131,8 +132,8 @@ internal partial class FormDialog
 
         MaximumSize = new Size(current.WorkingArea.Width / 2, current.WorkingArea.Height - 256);
 
-        int maxWidth = MaximumSize.Width - (LabelMessage.Left + LabelMessage.Margin.Left + LabelMessage.Margin.Right + SystemInformation.Border3DSize.Width * 2);
-        int maxHeight = MaximumSize.Height - (LabelMessage.Margin.Bottom + LabelMessage.Margin.Top + LabelMessage.Top + ButtonOK.Top + ButtonOK.Margin.Top + SystemInformation.Border3DSize.Height * 2 + SystemInformation.CaptionHeight);
+        int maxWidth = MaximumSize.Width - (LabelMessage.Left + LabelMessage.Margin.Left + LabelMessage.Margin.Right + (SystemInformation.Border3DSize.Width * 2));
+        int maxHeight = MaximumSize.Height - (LabelMessage.Margin.Bottom + LabelMessage.Margin.Top + LabelMessage.Top + ButtonOK.Top + ButtonOK.Margin.Top + (SystemInformation.Border3DSize.Height * 2) + SystemInformation.CaptionHeight);
 
         LabelMessage.MaximumSize = new Size(maxWidth, maxHeight);
 

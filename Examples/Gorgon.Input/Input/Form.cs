@@ -22,10 +22,16 @@
 // Created: March 4, 2025 4:32:05 PM
 //
 
+using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Drawing;
+using System.Linq;
 using System.Numerics;
 using System.Text;
+using System.Threading;
+using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics;
@@ -380,18 +386,10 @@ public partial class Form
             }
         }
 
-        bool hasThrottle;
+        bool hasThrottle = _lastThrottle.TryGetValue(alphaAxis, out int lastThrottle) ? (currentThrottle - lastThrottle) != 0 : currentThrottle > 0;
 
         // Check for a change in the throttle/trigger value. If we don't have a change, then don't bother 
         // setting an alpha value for the brush.
-        if (_lastThrottle.TryGetValue(alphaAxis, out int lastThrottle))
-        {
-            hasThrottle = (currentThrottle - lastThrottle) != 0;
-        }
-        else
-        {
-            hasThrottle = currentThrottle > 0;
-        }
 
         _lastThrottle[alphaAxis] = currentThrottle;
 
@@ -780,16 +778,16 @@ public partial class Form
                     _sprayAction = SprayAction.Erase;
                     break;
                 case VirtualKeys.Left:
-                    _cursorPosition = new Vector2(_cursorPosition.X - offset.X * moveAccel, _cursorPosition.Y);
+                    _cursorPosition = new Vector2(_cursorPosition.X - (offset.X * moveAccel), _cursorPosition.Y);
                     break;
                 case VirtualKeys.Right:
-                    _cursorPosition = new Vector2(_cursorPosition.X + offset.X * moveAccel, _cursorPosition.Y);
+                    _cursorPosition = new Vector2(_cursorPosition.X + (offset.X * moveAccel), _cursorPosition.Y);
                     break;
                 case VirtualKeys.Up:
-                    _cursorPosition = new Vector2(_cursorPosition.X, _cursorPosition.Y - offset.Y * moveAccel);
+                    _cursorPosition = new Vector2(_cursorPosition.X, _cursorPosition.Y - (offset.Y * moveAccel));
                     break;
                 case VirtualKeys.Down:
-                    _cursorPosition = new Vector2(_cursorPosition.X, _cursorPosition.Y + offset.Y * moveAccel);
+                    _cursorPosition = new Vector2(_cursorPosition.X, _cursorPosition.Y + (offset.Y * moveAccel));
                     break;
                 case VirtualKeys.Add:
                 case VirtualKeys.OemEquals when (modifiers & VirtualKeys.ShiftModifier) == VirtualKeys.ShiftModifier:
@@ -944,14 +942,9 @@ public partial class Form
             // Finally, we'll add the name/description of the gaming device to our list.
             // For XInput devices (if there are more than 1), we'll also show which slot the controller occupies. This is done by determining which part 
             // of the led is lit up (XBox 360 Controllers at least, Series X/S controllers don't seem to show this, but still work).
-            if (((gameInfo.Capabilities & GamingDeviceCapabilityFlags.IsXInputDevice) != GamingDeviceCapabilityFlags.IsXInputDevice) || (xinputCount < 2))
-            {
-                item = $"{(isActive ? "*" : string.Empty)}{i + 1}. {gameInfo.Description}";
-            }
-            else
-            {
-                item = $"{(isActive ? "*" : string.Empty)}{i + 1}. {gameInfo.Description} #{gameInfo.XInputSlot + 1}";
-            }
+            item = ((gameInfo.Capabilities & GamingDeviceCapabilityFlags.IsXInputDevice) != GamingDeviceCapabilityFlags.IsXInputDevice) || (xinputCount < 2)
+                ? $"{(isActive ? "*" : string.Empty)}{i + 1}. {gameInfo.Description}"
+                : $"{(isActive ? "*" : string.Empty)}{i + 1}. {gameInfo.Description} #{gameInfo.XInputSlot + 1}";
 
             ListJoysticks.Items.Add(item);
         }
@@ -1063,7 +1056,7 @@ public partial class Form
         _currentSyncContext?.Send(obj =>
         {
             // This is better than capturing the data in a closure.
-            var info = (IGorgonGamingDeviceInfo?)obj;
+            IGorgonGamingDeviceInfo? info = (IGorgonGamingDeviceInfo?)obj;
 
             // This shouldn't happen, but we'll put a check in just to be safe.
             Debug.Assert(info is not null, "Device information is null");
@@ -1113,7 +1106,7 @@ public partial class Form
         _currentSyncContext?.Send(obj =>
         {
             // This is better than capturing the data in a closure.
-            var gameDevice = (IGorgonGamingDevice?)obj;
+            IGorgonGamingDevice? gameDevice = (IGorgonGamingDevice?)obj;
 
             // This shouldn't happen, but we'll do it anyway just to be safe.
             Debug.Assert(gameDevice is not null, "Game device is null.");

@@ -23,10 +23,8 @@
 //
 
 using System;
-using System.Collections.Generic;
-using System.Numerics;
 using System.Runtime.CompilerServices;
-using System.Text;
+using System.Threading;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
@@ -46,7 +44,7 @@ internal unsafe sealed class CpuDescriptorHeap
     private ComPtr<D3D12MA_VirtualBlock> _memoryBlock;
 
     private readonly Lock _lock = new();
-    private uint _used;    
+    private uint _used;
 
     /// <summary>
     /// Property to return the D3D COM pointer to the descriptor heap.
@@ -114,7 +112,7 @@ internal unsafe sealed class CpuDescriptorHeap
         D3D12MA_VIRTUAL_BLOCK_DESC maDesc = new(numDescriptors);
 
         D3D12MemAlloc.D3D12MA_CreateVirtualBlock(&maDesc, _memoryBlock.GetAddressOf())
-            .ThrowIfFailed(GorgonResult.CannotCreate, () => string.Format(Resources.GORGFX_ERR_CANNOT_CREATE_DESCRIPTOR_HEAP, Pool.HeapType));
+            .ThrowIfFailed(GorgonResult.CannotCreate, Resources.GORGFX_ERR_CANNOT_CREATE_DESCRIPTOR_HEAP, Pool.HeapType);
 
         string heapName = $"Gorgon D3D12 {Pool.HeapType} CPU visible Descriptor Heap ({numDescriptors} descriptors)";
         ComPtr<ID3D12DescriptorHeap> heap = default;
@@ -129,7 +127,7 @@ internal unsafe sealed class CpuDescriptorHeap
         };
 
         device.Get()->CreateDescriptorHeap(&desc, Win32.__uuidof<ID3D12DescriptorHeap>(), (void**)heap.GetAddressOf())
-            .ThrowIfFailed(GorgonResult.CannotCreate, () => string.Format(Resources.GORGFX_ERR_CANNOT_CREATE_DESCRIPTOR_HEAP, Pool.HeapType));
+            .ThrowIfFailed(GorgonResult.CannotCreate, Resources.GORGFX_ERR_CANNOT_CREATE_DESCRIPTOR_HEAP, Pool.HeapType);
 
         heap.SetD3DDebugName(heapName);
 
@@ -141,7 +139,7 @@ internal unsafe sealed class CpuDescriptorHeap
     {
         Dispose(true);
         GC.SuppressFinalize(this);
-    }   
+    }
 
     /// <summary>
     /// Function to allocate a handle on the heap.
@@ -158,7 +156,7 @@ internal unsafe sealed class CpuDescriptorHeap
         ulong location = 0;
 
         _memoryBlock.Get()->Allocate(&desc, &vmAllocation, &location)
-            .ThrowIfFailed(GorgonResult.OutOfMemory, () => string.Format(Resources.GORGFX_ERR_DESCRIPTORHEAP_OUT_OF_MEMORY, Pool.HeapType));
+            .ThrowIfFailed(GorgonResult.OutOfMemory, Resources.GORGFX_ERR_DESCRIPTORHEAP_OUT_OF_MEMORY, Pool.HeapType);
 
         D3D12_CPU_DESCRIPTOR_HANDLE handle = Start;
         handle.Offset((int)location, DescriptorSize);
@@ -179,7 +177,7 @@ internal unsafe sealed class CpuDescriptorHeap
     /// </remarks>
     public void Free(ref CpuDescriptorAllocation allocation)
     {
-        if (allocation.IsNull) 
+        if (allocation.IsNull)
         {
             return;
         }

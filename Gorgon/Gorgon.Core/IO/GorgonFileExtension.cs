@@ -23,6 +23,7 @@
 // Created: Sunday, September 22, 2013 8:28:38 PM
 // 
 
+using System;
 using Gorgon.Core;
 using Gorgon.Properties;
 
@@ -296,16 +297,8 @@ public readonly struct GorgonFileExtension
     /// <returns>
     /// true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.
     /// </returns>
-    public bool Equals(string? other)
-    {
-        if (string.IsNullOrWhiteSpace(other))
-        {
-            return false;
-        }
-
-        return other.StartsWith('.') ? string.Equals(FullExtension, other, StringComparison.OrdinalIgnoreCase)
-            : string.Equals(Extension, other, StringComparison.OrdinalIgnoreCase);
-    }
+    public bool Equals(string? other) => !string.IsNullOrWhiteSpace(other) && (other.StartsWith('.') ? string.Equals(FullExtension, other, StringComparison.OrdinalIgnoreCase)
+            : string.Equals(Extension, other, StringComparison.OrdinalIgnoreCase));
 
     /// <summary>
     /// Compares the current object with another object of the same type.
@@ -314,16 +307,10 @@ public readonly struct GorgonFileExtension
     /// <returns>
     /// A value that indicates the relative order of the objects being compared. The return value has the following meanings: Value Meaning Less than zero This object is less than the <paramref name="other" /> parameter.Zero This object is equal to <paramref name="other" />. Greater than zero This object is greater than <paramref name="other" />.
     /// </returns>    
-    public int CompareTo(string? other)
-    {
-        if (string.IsNullOrWhiteSpace(other))
-        {
-            return 1;
-        }
-
-        return other.StartsWith('.') ? string.Compare(FullExtension, other, StringComparison.OrdinalIgnoreCase)
+    public int CompareTo(string? other) => string.IsNullOrWhiteSpace(other)
+            ? 1
+            : other.StartsWith('.') ? string.Compare(FullExtension, other, StringComparison.OrdinalIgnoreCase)
             : string.Compare(Extension, other, StringComparison.OrdinalIgnoreCase);
-    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonFileExtension"/> struct.

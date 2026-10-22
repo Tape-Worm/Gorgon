@@ -22,7 +22,9 @@
 // Created: March 12, 2025 1:18:42 PM
 //
 
+using System;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;

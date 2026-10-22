@@ -1,4 +1,6 @@
-﻿namespace Gorgon.Timing;
+﻿using System;
+
+namespace Gorgon.Timing;
 
 /// <summary>
 /// Functionality to measure an interval of time

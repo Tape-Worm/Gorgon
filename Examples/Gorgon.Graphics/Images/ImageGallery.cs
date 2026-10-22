@@ -24,9 +24,15 @@
 // Created: April 4, 2018 9:39:05 PM
 // 
 
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
+using System.IO;
+using System.Linq;
+using System.Threading;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Imaging;
@@ -110,7 +116,7 @@ internal class ImageGallery
             for (int x = 0; x < sourceImage.Width; ++x)
             {
                 float rColorFade = ((x / width) * aspect).Cos();
-                GorgonColor color = new(rColorFade, 1.0f - rColorFade * ((float)y / (x + 1)).Min(1.0f), bColorFade, 1.0f);
+                GorgonColor color = new(rColorFade, 1.0f - (rColorFade * ((float)y / (x + 1)).Min(1.0f)), bColorFade, 1.0f);
 
                 // Set the pixel to the color.
                 GorgonPixels.Pixel32BppRgba.SetPixel(sourceImage.Buffers[0], new GorgonPoint(x, y), color);
@@ -160,7 +166,7 @@ internal class ImageGallery
         _images[3].BeginUpdate()
                   .Resize(newSize.Width, newSize.Height, 1)
                   // We will also, center the image within the newly expanded area.
-                  .Expand(_imageSize.Width, _imageSize.Height, 1, new GorgonPoint(_imageSize.Width / 2 - newSize.Width / 2, _imageSize.Height / 2 - newSize.Height / 2))
+                  .Expand(_imageSize.Width, _imageSize.Height, 1, new GorgonPoint((_imageSize.Width / 2) - (newSize.Width / 2), (_imageSize.Height / 2) - (newSize.Height / 2)))
                   .EndUpdate();
 
         // Pass in the frame delays to the animation interface. 

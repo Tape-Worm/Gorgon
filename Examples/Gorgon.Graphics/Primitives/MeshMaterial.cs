@@ -25,7 +25,6 @@
 // 
 
 using System.Numerics;
-using Gorgon.Collections;
 using Gorgon.Graphics.Core;
 
 namespace Gorgon.Examples;
@@ -33,15 +32,19 @@ namespace Gorgon.Examples;
 /// <summary>
 /// A material for a mesh
 /// </summary>
-internal class MeshMaterial
+/// <param name="pipelineState">The pipeline state for the object.</param>
+internal class MeshMaterial(GorgonGraphicsPso pipelineState)
 {
     /// <summary>
     /// Property to return the textures for this mesh.
     /// </summary>
-    public GorgonArray<string> Textures
+    /// <remarks>
+    /// Textures are ordered as follows: 0 = diffuse, 1 = normal, 2 = specular.
+    /// </remarks>
+    public IGorgonTextureView<GorgonTexture>[] Textures
     {
         get;
-    }
+    } = new IGorgonTextureView<GorgonTexture>[3];
 
     /// <summary>
     /// Property to set or return an offset for the textures.
@@ -59,42 +62,13 @@ internal class MeshMaterial
     {
         get;
         set;
-    }
+    } = 1.0f;
 
     /// <summary>
-    /// Property to set or return the vertex shader for this mesh.
+    /// Property to return the pipeline state for the object.
     /// </summary>
-    public string VertexShader
+    public GorgonGraphicsPso PipelineState
     {
         get;
-        set;
-    }
-
-    /// <summary>
-    /// Property to set or return the pixel shader for this mesh.
-    /// </summary>
-    public string PixelShader
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// Property to set or return the blending state for this mesh.
-    /// </summary>
-    public GorgonBlendState BlendState
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="MeshMaterial"/> class.
-    /// </summary>
-    public MeshMaterial()
-    {
-        SpecularPower = 1.0f;
-        Textures = new GorgonArray<string>(3);
-        BlendState = GorgonBlendState.NoBlending;
-    }
+    } = pipelineState;
 }

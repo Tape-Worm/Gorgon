@@ -22,6 +22,7 @@
 // Created: July 6, 2025 3:49:07 PM
 //
 
+using System;
 using TerraFX.Interop.DirectX;
 using TerraFX.Interop.Windows;
 

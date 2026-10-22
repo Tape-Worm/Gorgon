@@ -22,6 +22,8 @@
 // Created: June 24, 2026 11:37:34 PM
 //
 
+using System;
+
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
@@ -96,7 +98,7 @@ internal sealed class SharedResources
         ShaderCompiler.AddInclude(new GorgonShaderInclude(GorgonTextureBlitter.GorgonTextureBlitterShadersName, GorgonTextureBlitter.GorgonTextureBlitterShader));
 
         CompileFlags flags = graphics.IsInDebugMode ? CompileFlags.Debug : CompileFlags.OptimizationLevel3;
-        
+
         BlitterVertexShader = ShaderCompiler.Compile(GorgonTextureBlitter.GorgonTextureBlitterShader, "GorgonBlitterVS", ShaderType.VertexShader, flags: flags);
         BlitterPixelShader = ShaderCompiler.Compile(GorgonTextureBlitter.GorgonTextureBlitterShader, "GorgonBlitterPS", ShaderType.PixelShader, flags: flags);
         FullScreenBlitterVertexShader = ShaderCompiler.Compile(GorgonTextureBlitter.GorgonTextureBlitterShader, "GorgonFullScreenVertexShader", ShaderType.VertexShader, flags: flags);

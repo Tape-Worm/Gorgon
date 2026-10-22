@@ -24,7 +24,12 @@
 // Created: Monday, June 27, 2011 9:00:18 AM
 // 
 
+using System;
 using System.Buffers;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.IO.FileSystem.Properties;
@@ -210,17 +215,11 @@ internal sealed class FolderFileSystemProvider(IGorgonLog log)
     }
 
     /// <inheritdoc/>
-    protected override GorgonFileSystemStream? OnOpenReadFileStream(IGorgonPhysicalFileInfo fileInfo, ReadOnlySpan<char> physicalMountPoint, Action<string, string>? onCloseCallback)
-    {
-        if (!File.Exists(fileInfo.FullPath))
-        {
-            return null;
-        }
-
-        return new GorgonFileSystemStream(fileInfo,
+    protected override GorgonFileSystemStream? OnOpenReadFileStream(IGorgonPhysicalFileInfo fileInfo, ReadOnlySpan<char> physicalMountPoint, Action<string, string>? onCloseCallback) => !File.Exists(fileInfo.FullPath)
+            ? null
+            : new GorgonFileSystemStream(fileInfo,
                                           File.Open(fileInfo.FullPath, FileMode.Open, FileAccess.Read, FileShare.Read),
                                           onCloseCallback);
-    }
 
     /// <inheritdoc/>
     protected override bool OnCanReadFileSystem(ReadOnlySpan<char> physicalPath)
@@ -261,16 +260,9 @@ internal sealed class FolderFileSystemProvider(IGorgonLog log)
     /// <inheritdoc/>
     protected override GorgonPhysicalFileSystemData OnEnumerate(ReadOnlySpan<char> physicalLocation, ReadOnlySpan<char> physicalMountPoint, ReadOnlySpan<char> mountDirectory)
     {
-        string fullPath;
-
-        if (!Path.IsPathRooted(physicalLocation))
-        {
-            fullPath = Path.GetFullPath(physicalLocation.ToString()).AsSpan().FormatDirectory(PhysicalPathSeparator).ToString();
-        }
-        else
-        {
-            fullPath = physicalLocation.FormatDirectory(PhysicalPathSeparator).ToString();
-        }
+        string fullPath = !Path.IsPathRooted(physicalLocation)
+            ? Path.GetFullPath(physicalLocation.ToString()).AsSpan().FormatDirectory(PhysicalPathSeparator).ToString()
+            : physicalLocation.FormatDirectory(PhysicalPathSeparator).ToString();
 
         DirectoryInfo directoryInfo = new(fullPath);
 
@@ -602,12 +594,9 @@ internal sealed class FolderFileSystemProvider(IGorgonLog log)
             ?? throw new IOException(string.Format(Resources.GORFS_ERR_FILE_NOT_FOUND, sourceFile.FullPath));
         using FileStream destStream = File.Open(physicalPath, FileMode.Create, FileAccess.Write, FileShare.None);
 
-        if (!BlockCopyStreams(sourceFile.FullPath, physicalPath, sourceStream, destStream, options))
-        {
-            throw new Exception(string.Format(Resources.GORFS_ERR_COPY_FAILED, sourceFile.FullPath, destinationPath.ToString()));
-        }
-
-        return new PhysicalFileInfo(new FileInfo(physicalPath), destinationPath.ToString());
+        return !BlockCopyStreams(sourceFile.FullPath, physicalPath, sourceStream, destStream, options)
+            ? throw new Exception(string.Format(Resources.GORFS_ERR_COPY_FAILED, sourceFile.FullPath, destinationPath.ToString()))
+            : (IGorgonPhysicalFileInfo)new PhysicalFileInfo(new FileInfo(physicalPath), destinationPath.ToString());
     }
 
     /// <inheritdoc/>

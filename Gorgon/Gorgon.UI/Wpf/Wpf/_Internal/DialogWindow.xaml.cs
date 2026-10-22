@@ -24,6 +24,7 @@
 // Created: January 30, 2021 10:36:37 PM
 // 
 
+using System;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Media;
@@ -42,11 +43,9 @@ internal partial class DialogWindow
     : Window
 {
     // The dialog button visbility state.
-    private WindowDialogButtons _buttonState;
     // The details text.
-    private string _details = string.Empty;
+
     // The confirmation result when clicking on a button.
-    private ConfirmationResult _confirmResult = ConfirmationResult.None;
 
     /// <summary>
     /// Property to set or return the message to place in the message label.
@@ -62,28 +61,28 @@ internal partial class DialogWindow
     /// </summary>
     public string Details
     {
-        get => _details;
+        get;
         set
         {
-            _details = value;
-            TextDetails.Text = _details.Replace("\n", Environment.NewLine);
+            field = value;
+            TextDetails.Text = field.Replace("\n", Environment.NewLine);
         }
-    }
+    } = string.Empty;
 
     /// <summary>
     /// Property to set or return whether to show the OK button.
     /// </summary>
     public WindowDialogButtons Buttons
     {
-        get => _buttonState;
+        get;
         set
         {
-            if (_buttonState == value)
+            if (field == value)
             {
                 return;
             }
 
-            _buttonState = value;
+            field = value;
             UpdateButtonVisibility();
         }
     }
@@ -105,7 +104,7 @@ internal partial class DialogWindow
     /// <summary>
     /// Property to return the result from a confirmation dialog.
     /// </summary>
-    public ConfirmationResult ConfirmationResult => _confirmResult;
+    public ConfirmationResult ConfirmationResult { get; private set; } = ConfirmationResult.None;
 
     /// <summary>
     /// Function called when the details button is checked.
@@ -119,7 +118,7 @@ internal partial class DialogWindow
     /// </summary>
     private void UpdateButtonVisibility()
     {
-        if (_buttonState == WindowDialogButtons.None)
+        if (Buttons == WindowDialogButtons.None)
         {
             ButtonOK.Visibility = ButtonYes.Visibility = ButtonNo.Visibility = ButtonCancel.Visibility = CheckDetail.Visibility = CheckToAll.Visibility = PanelDetails.Visibility = Visibility.Collapsed;
             return;
@@ -127,12 +126,12 @@ internal partial class DialogWindow
 
         PanelDetails.Visibility = Visibility.Collapsed;
 
-        ButtonOK.Visibility = (_buttonState & WindowDialogButtons.OK) == WindowDialogButtons.OK ? Visibility.Visible : Visibility.Collapsed;
-        ButtonCancel.Visibility = (_buttonState & WindowDialogButtons.Cancel) == WindowDialogButtons.Cancel ? Visibility.Visible : Visibility.Collapsed;
-        ButtonYes.Visibility = (_buttonState & WindowDialogButtons.Yes) == WindowDialogButtons.Yes ? Visibility.Visible : Visibility.Collapsed;
-        ButtonNo.Visibility = (_buttonState & WindowDialogButtons.No) == WindowDialogButtons.No ? Visibility.Visible : Visibility.Collapsed;
-        CheckDetail.Visibility = (_buttonState & WindowDialogButtons.Details) == WindowDialogButtons.Details ? Visibility.Visible : Visibility.Collapsed;
-        CheckToAll.Visibility = (_buttonState & WindowDialogButtons.ToAll) == WindowDialogButtons.ToAll ? Visibility.Visible : Visibility.Collapsed;
+        ButtonOK.Visibility = (Buttons & WindowDialogButtons.OK) == WindowDialogButtons.OK ? Visibility.Visible : Visibility.Collapsed;
+        ButtonCancel.Visibility = (Buttons & WindowDialogButtons.Cancel) == WindowDialogButtons.Cancel ? Visibility.Visible : Visibility.Collapsed;
+        ButtonYes.Visibility = (Buttons & WindowDialogButtons.Yes) == WindowDialogButtons.Yes ? Visibility.Visible : Visibility.Collapsed;
+        ButtonNo.Visibility = (Buttons & WindowDialogButtons.No) == WindowDialogButtons.No ? Visibility.Visible : Visibility.Collapsed;
+        CheckDetail.Visibility = (Buttons & WindowDialogButtons.Details) == WindowDialogButtons.Details ? Visibility.Visible : Visibility.Collapsed;
+        CheckToAll.Visibility = (Buttons & WindowDialogButtons.ToAll) == WindowDialogButtons.ToAll ? Visibility.Visible : Visibility.Collapsed;
     }
 
     /// <summary>
@@ -149,7 +148,7 @@ internal partial class DialogWindow
     /// <param name="e">The event parameters.</param>
     private void ButtonCancel_Click(object sender, RoutedEventArgs e)
     {
-        _confirmResult = ConfirmationResult.Cancel;
+        ConfirmationResult = ConfirmationResult.Cancel;
         DialogResult = false;
     }
 
@@ -160,11 +159,11 @@ internal partial class DialogWindow
     /// <param name="e">The event parameters.</param>
     private void ButtonYes_Click(object sender, RoutedEventArgs e)
     {
-        _confirmResult = ConfirmationResult.Yes;
+        ConfirmationResult = ConfirmationResult.Yes;
 
         if (CheckToAll.IsChecked ?? false)
         {
-            _confirmResult |= ConfirmationResult.ToAll;
+            ConfirmationResult |= ConfirmationResult.ToAll;
         }
         DialogResult = true;
     }
@@ -176,11 +175,11 @@ internal partial class DialogWindow
     /// <param name="e">The event parameters.</param>
     private void ButtonNo_Click(object sender, RoutedEventArgs e)
     {
-        _confirmResult = ConfirmationResult.No;
+        ConfirmationResult = ConfirmationResult.No;
 
         if (CheckToAll.IsChecked ?? false)
         {
-            _confirmResult |= ConfirmationResult.ToAll;
+            ConfirmationResult |= ConfirmationResult.ToAll;
         }
         DialogResult = true;
     }
@@ -211,7 +210,7 @@ internal partial class DialogWindow
         MaxHeight = (monitor.rcWork.Height / 2) / scale.DpiScaleY;
 
         // Ensure the label doesn't push it self beyond the window height.
-        LabelMessage.MaxHeight = MaxHeight - (captionHeight + borderHeight * 2 + labelPos.Y + PanelDetails.MinHeight * scale.DpiScaleY);
+        LabelMessage.MaxHeight = MaxHeight - (captionHeight + (borderHeight * 2) + labelPos.Y + (PanelDetails.MinHeight * scale.DpiScaleY));
 
         UpdateButtonVisibility();
     }

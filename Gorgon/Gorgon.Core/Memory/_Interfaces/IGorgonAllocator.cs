@@ -23,6 +23,8 @@
 // Created: September 24, 2019 9:34:01 AM
 // 
 
+using System;
+
 namespace Gorgon.Memory;
 
 /// <summary>

@@ -23,6 +23,9 @@
 // Created: Saturday, September 19, 2015 8:34:24 PM
 // 
 
+using System;
+using System.IO;
+
 namespace Gorgon.IO.FileSystem.Providers;
 
 /// <summary>

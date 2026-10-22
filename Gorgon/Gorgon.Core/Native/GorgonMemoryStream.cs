@@ -22,6 +22,9 @@
 // Created: June 1, 2025 6:42:47 PM
 //
 
+using System;
+using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using Gorgon.Core;
 using Gorgon.Math;

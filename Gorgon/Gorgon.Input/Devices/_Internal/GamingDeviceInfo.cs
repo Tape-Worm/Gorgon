@@ -23,9 +23,14 @@
 // Created: Sunday, September 13, 2015 12:02:50 PM
 // 
 
+using System;
 using System.Buffers;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading;
+using System.Threading.Tasks;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Input.Devices;
@@ -212,15 +217,7 @@ internal record class GamingDeviceInfo(Guid DeviceID,
     /// </summary>
     /// <param name="hidPath">The HID path of the device to evaluate.</param>
     /// <returns><b>true</b> if the device is an XInput compatible device, <b>false</b> if not.</returns>
-    private static bool IsXInputDevice(string hidPath)
-    {
-        if (string.IsNullOrWhiteSpace(hidPath))
-        {
-            return false;
-        }
-
-        return hidPath.Contains("&IG_", StringComparison.OrdinalIgnoreCase);
-    }
+    private static bool IsXInputDevice(string hidPath) => !string.IsNullOrWhiteSpace(hidPath) && hidPath.Contains("&IG_", StringComparison.OrdinalIgnoreCase);
 
     /// <summary>
     /// Function to get the human readable name for a gaming device from a <see cref="RID_DEVICE_INFO_HID"/> object.

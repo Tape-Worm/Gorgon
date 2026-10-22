@@ -298,7 +298,7 @@ public record class GorgonVirtualTextureInfo
         IsShaderResource = isShaderResource,
         HasReadWriteAccess = allowReadWriteAccess,
         IsRenderTarget = true,
-        IsCube =true
+        IsCube = true
     };
 
     /// <summary>

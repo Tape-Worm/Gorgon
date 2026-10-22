@@ -24,9 +24,10 @@
 // Created: Monday, November 03, 2014 8:32:52 PM
 // 
 
-using Gorgon.Diagnostics;
+using System;
+using System.Drawing;
+using System.Windows.Forms;
 using Gorgon.Examples;
-using TerraFX.Interop.Windows;
 
 namespace Graphics.Examples;
 
@@ -47,7 +48,7 @@ internal static class Program
     /// </summary>
     [STAThread]
     private static void Main()
-    {        
+    {
         ApplicationConfiguration.Initialize();
 
         try

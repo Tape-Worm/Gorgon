@@ -49,7 +49,7 @@ internal sealed class Pixel16BppA4Bgr444
         uint b = (uint)(color.Blue * 15.0f) & 0xf;
         uint a = (uint)(color.Alpha * 15.0f) & 0xf;
 
-        return (ushort)(r << 12 | g << 8 | b << 4 | a);
+        return (ushort)((r << 12) | (g << 8) | (b << 4) | a);
     }
 
     /// <inheritdoc/>

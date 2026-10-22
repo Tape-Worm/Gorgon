@@ -21,12 +21,12 @@
 //
 // Created: October 8, 2026 3:28:56 PM
 //
-using Gorgon.Core;
+using System;
+using System.Linq;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Math;
 using TerraFX.Interop.DirectX;
 using TerraFX.Interop.Windows;
-using Win32 = TerraFX.Interop.Windows.Windows;
 
 namespace Gorgon.Graphics.Core;
 

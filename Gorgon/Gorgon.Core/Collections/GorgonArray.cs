@@ -23,7 +23,10 @@
 // Created: April 2, 2017 2:04:59 PM
 // 
 
+using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using Gorgon.Math;
 
@@ -118,15 +121,7 @@ public class GorgonArray<T>
     /// <param name="right">The right item to compare.</param>
     /// <returns><b>true</b> if the two items are the same, or <b>false</b> if not.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static bool AreValuesEqual(T left, T right)
-    {
-        if ((left is null) && (right is null))
-        {
-            return true;
-        }
-
-        return (right is not null) && (left is not null) && (left.Equals(right));
-    }
+    private static bool AreValuesEqual(T left, T right) => ((left is null) && (right is null)) || ((right is not null) && (left is not null) && (left.Equals(right)));
 
     /// <summary>
     /// Function to update the starting dirty index, and the count of dirty items.
@@ -334,25 +329,9 @@ public class GorgonArray<T>
     /// </note>
     /// </para>
     /// </remarks>
-    public ReadOnlySpan<T> GetDirtySpan(bool keepDirtyState = false)
-    {
-        if ((!keepDirtyState) && (_dirtyIndices == 0))
-        {
-            if ((_dirtyStartIndex == -1) || (_dirtyIndexCount == -1))
-            {
-                return [];
-            }
-
-            return _backingArray.AsSpan(_dirtyStartIndex, _dirtyIndexCount);
-        }
-
-        if (!UpdateDirtyIndexAndCount(keepDirtyState))
-        {
-            return [];
-        }
-
-        return _backingArray.AsSpan(_dirtyStartIndex, _dirtyIndexCount);
-    }
+    public ReadOnlySpan<T> GetDirtySpan(bool keepDirtyState = false) => (!keepDirtyState) && (_dirtyIndices == 0)
+            ? (_dirtyStartIndex == -1) || (_dirtyIndexCount == -1) ? [] : (ReadOnlySpan<T>)_backingArray.AsSpan(_dirtyStartIndex, _dirtyIndexCount)
+            : !UpdateDirtyIndexAndCount(keepDirtyState) ? [] : (ReadOnlySpan<T>)_backingArray.AsSpan(_dirtyStartIndex, _dirtyIndexCount);
 
     /// <summary>
     /// Function to retrieve the starting index of the first dirty entry, and the number of dirty entries in the array.

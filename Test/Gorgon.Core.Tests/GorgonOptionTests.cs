@@ -52,7 +52,7 @@ public class GorgonOptionTests
         byte defaultValue = 10;
 
         // Act and Assert
-        Assert.ThrowsExactly<ArgumentEmptyException>(() => _ = GorgonOption.CreateByteOption(name, defaultValue));
+        _ = Assert.ThrowsExactly<ArgumentEmptyException>(() => _ = GorgonOption.CreateByteOption(name, defaultValue));
     }
 
     [TestMethod]
@@ -181,7 +181,7 @@ public class GorgonOptionTests
         sbyte defaultValue = 10;
 
         // Act and Assert
-        Assert.ThrowsExactly<ArgumentEmptyException>(() => _ = GorgonOption.CreateSByteOption(name, defaultValue));
+        _ = Assert.ThrowsExactly<ArgumentEmptyException>(() => _ = GorgonOption.CreateSByteOption(name, defaultValue));
     }
 
     [TestMethod]
@@ -310,7 +310,7 @@ public class GorgonOptionTests
         short defaultValue = 10;
 
         // Act and Assert
-        Assert.ThrowsExactly<ArgumentEmptyException>(() => _ = GorgonOption.CreateInt16Option(name, defaultValue));
+        _ = Assert.ThrowsExactly<ArgumentEmptyException>(() => _ = GorgonOption.CreateInt16Option(name, defaultValue));
     }
 
     [TestMethod]
@@ -439,7 +439,7 @@ public class GorgonOptionTests
         ushort defaultValue = 10;
 
         // Act and Assert
-        Assert.ThrowsExactly<ArgumentEmptyException>(() => _ = GorgonOption.CreateUInt16Option(name, defaultValue));
+        _ = Assert.ThrowsExactly<ArgumentEmptyException>(() => _ = GorgonOption.CreateUInt16Option(name, defaultValue));
     }
 
     [TestMethod]
@@ -551,7 +551,7 @@ public class GorgonOptionTests
         int defaultValue = 10;
 
         // Act and Assert
-        Assert.ThrowsExactly<ArgumentEmptyException>(() => _ = GorgonOption.CreateInt32Option(name, defaultValue));
+        _ = Assert.ThrowsExactly<ArgumentEmptyException>(() => _ = GorgonOption.CreateInt32Option(name, defaultValue));
     }
 
     [TestMethod]
@@ -697,7 +697,7 @@ public class GorgonOptionTests
         uint defaultValue = 10;
 
         // Act and Assert
-        Assert.ThrowsExactly<ArgumentEmptyException>(() => _ = GorgonOption.CreateUInt32Option(name, defaultValue));
+        _ = Assert.ThrowsExactly<ArgumentEmptyException>(() => _ = GorgonOption.CreateUInt32Option(name, defaultValue));
     }
 
     [TestMethod]
@@ -809,7 +809,7 @@ public class GorgonOptionTests
         long defaultValue = 10;
 
         // Act and Assert
-        Assert.ThrowsExactly<ArgumentEmptyException>(() => _ = GorgonOption.CreateInt64Option(name, defaultValue));
+        _ = Assert.ThrowsExactly<ArgumentEmptyException>(() => _ = GorgonOption.CreateInt64Option(name, defaultValue));
     }
 
     [TestMethod]
@@ -955,7 +955,7 @@ public class GorgonOptionTests
         ulong defaultValue = 10;
 
         // Act and Assert
-        Assert.ThrowsExactly<ArgumentEmptyException>(() => _ = GorgonOption.CreateUInt64Option(name, defaultValue));
+        _ = Assert.ThrowsExactly<ArgumentEmptyException>(() => _ = GorgonOption.CreateUInt64Option(name, defaultValue));
     }
 
     [TestMethod]
@@ -1084,7 +1084,7 @@ public class GorgonOptionTests
         float defaultValue = 10.0f;
 
         // Act and Assert
-        Assert.ThrowsExactly<ArgumentEmptyException>(() => _ = GorgonOption.CreateSingleOption(name, defaultValue));
+        _ = Assert.ThrowsExactly<ArgumentEmptyException>(() => _ = GorgonOption.CreateSingleOption(name, defaultValue));
     }
 
     [TestMethod]
@@ -1213,7 +1213,7 @@ public class GorgonOptionTests
         double defaultValue = 10.0;
 
         // Act and Assert
-        Assert.ThrowsExactly<ArgumentEmptyException>(() => _ = GorgonOption.CreateDoubleOption(name, defaultValue));
+        _ = Assert.ThrowsExactly<ArgumentEmptyException>(() => _ = GorgonOption.CreateDoubleOption(name, defaultValue));
     }
 
     [TestMethod]
@@ -1342,7 +1342,7 @@ public class GorgonOptionTests
         decimal defaultValue = 10.0m;
 
         // Act and Assert
-        Assert.ThrowsExactly<ArgumentEmptyException>(() => _ = GorgonOption.CreateDecimalOption(name, defaultValue));
+        _ = Assert.ThrowsExactly<ArgumentEmptyException>(() => _ = GorgonOption.CreateDecimalOption(name, defaultValue));
     }
 
     [TestMethod]
@@ -1471,7 +1471,7 @@ public class GorgonOptionTests
         DateTime defaultValue = DateTime.Now;
 
         // Act and Assert
-        Assert.ThrowsExactly<ArgumentEmptyException>(() => _ = GorgonOption.CreateDateTimeOption(name, defaultValue));
+        _ = Assert.ThrowsExactly<ArgumentEmptyException>(() => _ = GorgonOption.CreateDateTimeOption(name, defaultValue));
     }
 
     [TestMethod]
@@ -1596,7 +1596,7 @@ public class GorgonOptionTests
         bool defaultValue = true;
 
         // Act and Assert
-        Assert.ThrowsExactly<ArgumentEmptyException>(() => _ = GorgonOption.CreateOption(name, defaultValue));
+        _ = Assert.ThrowsExactly<ArgumentEmptyException>(() => _ = GorgonOption.CreateOption(name, defaultValue));
     }
 
     [TestMethod]
@@ -1671,7 +1671,7 @@ public class GorgonOptionTests
         string? defaultValue = "Default";
 
         // Act and Assert
-        Assert.ThrowsExactly<ArgumentEmptyException>(() => _ = GorgonOption.CreateOption<string?>(name, defaultValue));
+        _ = Assert.ThrowsExactly<ArgumentEmptyException>(() => _ = GorgonOption.CreateOption<string?>(name, defaultValue));
     }
 
     [TestMethod]

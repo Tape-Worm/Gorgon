@@ -3036,12 +3036,9 @@ internal sealed class MockProvider()
     {
         string physPath = MapToPhysicalPath(virtualPath, physicalMountPoint, virtualRootDirectory).ToString();
 
-        if (_oldFiles.TryGetValue(physPath, out IGorgonPhysicalFileInfo? info))
-        {
-            return info;
-        }
-
-        return CreateFileInfo(virtualPath.ToString(), physPath, DateTime.Now, DateTime.Now);
+        return _oldFiles.TryGetValue(physPath, out IGorgonPhysicalFileInfo? info)
+            ? info
+            : CreateFileInfo(virtualPath.ToString(), physPath, DateTime.Now, DateTime.Now);
     }
 
     public GorgonFileSystemStream OpenWriteFileStream(ReadOnlySpan<char> virtualPath, ReadOnlySpan<char> physicalMountPoint, ReadOnlySpan<char> virtualRootDirectory, Action<string, string>? onCloseCallback)
@@ -3095,7 +3092,7 @@ internal sealed class MockProvider()
     public void DeleteFile(ReadOnlySpan<char> virtualPath, ReadOnlySpan<char> physicalMountPoint, ReadOnlySpan<char> virtualRootDirectory)
     {
         string physPath = MapToPhysicalPath(virtualPath, physicalMountPoint, virtualRootDirectory).ToString();
-        _oldFiles.Remove(physPath);
+        _ = _oldFiles.Remove(physPath);
     }
 
     public IGorgonPhysicalFileInfo CopyFile(IGorgonVirtualFile sourceFile, ReadOnlySpan<char> destinationPath, ReadOnlySpan<char> physicalMountPoint, ReadOnlySpan<char> virtualRootDirectory, GorgonFileSystemCopyOptions options)
@@ -3131,7 +3128,7 @@ internal sealed class MockProvider()
             _oldFiles[physPath] = info = CreateFileInfo(newVirtPath, physPath, date, date);
         }
 
-        _oldFiles.Remove(oldPhysPath);
+        _ = _oldFiles.Remove(oldPhysPath);
 
         return info;
     }

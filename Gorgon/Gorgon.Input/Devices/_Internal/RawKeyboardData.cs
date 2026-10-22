@@ -24,6 +24,7 @@
 // Created: Saturday, July 18, 2015 4:38:03 PM
 // 
 
+using System;
 using System.Runtime.InteropServices;
 using Gorgon.Input.Devices;
 

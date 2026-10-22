@@ -1,12 +1,20 @@
-// Texture and sampler for blitting a texture.
-Texture2D _texture : register(t0);
-SamplerState _sampler : register(s0);
-
-// The ID of the vertex streamed from our application into the shader.
-// We use this ID to generate vertices on the fly to pass to our geometry shader.
-struct VertexIn
+// Data used to render the scene per frame.
+struct RenderData
 {
-	uint ID : SV_VertexID;
+    // The world matrix for transforming vertices.
+    float4x4 world;
+
+    // The projection matrix for projecting to the display.
+    float4x4 projection;
+
+    // Offset for animation.
+    float offset;
+    
+    // The handle for the texture view on the texture descriptor heap.
+    int textureHandle;
+
+    // The handle for the sampler on the sampler descriptor heap.
+    int samplerHandle;
 };
 
 // Our default blitting vertex.
@@ -17,51 +25,38 @@ struct VertexOutput
    float2 uv : TEXCOORD;
 };
 
-// The transformation matrices (for vertex shader).
-cbuffer WorldViewProjection : register(b0)
-{
-	float4x4 Projection;
-	float4x4 World;	
-	float Offset;
-}
+// The constant buffer holding the per frame render data.
+ConstantBuffer<RenderData> _renderData : register(b0);
 
 // Our vertex shader used to generate vertices for our geometry shader.
-VertexOutput BufferlessVs(VertexIn vsIn)
+// The ID of the vertex is streamed from our application into the shader.
+// We use this ID to generate vertices on the fly to pass to our geometry shader.
+VertexOutput VsMain(uint id : SV_VertexID)
 {
-	VertexOutput output;
+    VertexOutput output;
 
-	switch(vsIn.ID)
-	{
+    switch(id)
+    {
         case 0:
             output.position = float4(0, -0.5f, 0.5f, 1.0f);
             output.color = float4(1.0f, 0.0f, 0.0f, 1.0f);			
-			output.uv = float2(0.5f, 0);
+            output.uv = float2(0.5f, 0);
             break;
         case 1:
-            output.position = float4(0.5f, -0.5f, -0.5f, 1.0f);
+            output.position = float4(0.433f, -0.5f, -0.25f, 1.0f);
             output.color = float4(0.0f, 1.0f, 0.0f, 1.0f);
-			output.uv = float2(1.0f, 1.0f);
+            output.uv = float2(1.0f, 1.0f);
             break;
         case 2:
-            output.position = float4(-0.5f, -0.5f, -0.5f, 1.0f);
+            output.position = float4(-0.433f, -0.5f, -0.25f, 1.0f);
             output.color = float4(0.0f, 0.0f, 1.0f, 1.0f);
-			output.uv = float2(0, 1.0f);
+            output.uv = float2(0, 1.0f);
             break;
-	}
+    }
 
-	output.position = mul(World, output.position);	
+    output.position = mul(_renderData.world, output.position);	
 
-	return output;
-}
-
-// Our vertex shader for drawing to our render target.
-VertexOutput VsMain(VertexOutput vertex)
-{
-	VertexOutput output = vertex;
-
-	output.position = mul(World * Projection, output.position);
-
-	return output;
+    return output;
 }
 
 // Our geometry shader.  
@@ -69,46 +64,49 @@ VertexOutput VsMain(VertexOutput vertex)
 [maxvertexcount(12)]
 void GsMain( triangle VertexOutput input[3], inout TriangleStream<VertexOutput> output )
 {
-	VertexOutput outVtx;
+    VertexOutput outVtx;
 
-	float4 tipPos = float4(((input[0].position.xyz + input[1].position.xyz + input[2].position.xyz) / 3.0f) + float3(0, Offset, 0), 1.0f);
+    float4 tipPos = float4(((input[0].position.xyz + input[1].position.xyz + input[2].position.xyz) / 3.0f) + float3(0, _renderData.offset, 0), 1.0f);
 
-	// Build the walls of the pyramid.
-	for (int i = 0; i < 3; ++i)
-	{
-		outVtx.position = mul(Projection, input[i].position);
-		outVtx.uv = input[1].uv;
-		outVtx.color = input[i].color;
-		output.Append(outVtx);
+    // Build the walls of the pyramid.
+    for (int i = 0; i < 3; ++i)
+    {
+        outVtx.position = mul(_renderData.projection, input[i].position);
+        outVtx.uv = input[1].uv;
+        outVtx.color = input[i].color;
+        output.Append(outVtx);
 
-		int index = (i + 1) % 3;
-		outVtx.position = mul(Projection, input[index].position);
-		outVtx.uv = input[2].uv;
-		outVtx.color = input[index].color;
-		output.Append(outVtx);
+        int index = (i + 1) % 3;
+        outVtx.position = mul(_renderData.projection, input[index].position);
+        outVtx.uv = input[2].uv;
+        outVtx.color = input[index].color;
+        output.Append(outVtx);
 
-		outVtx.position = mul(Projection, tipPos);
-		outVtx.uv = input[0].uv;
-		outVtx.color = input[0].color;
-		output.Append(outVtx);
+        outVtx.position = mul(_renderData.projection, tipPos);
+        outVtx.uv = input[0].uv;
+        outVtx.color = input[0].color;
+        output.Append(outVtx);
 
-		output.RestartStrip();
-	}
+        output.RestartStrip();
+    }
 
-	// Draw the actual triangle we sent in.
-	for (int i = 2; i >= 0; --i)
-	{
-		outVtx.position = mul(Projection, input[i].position);
-		outVtx.uv = input[i].uv;
-		outVtx.color = input[i].color;
-		output.Append(outVtx);
-	}
+    // Draw the actual triangle we sent in.
+    for (int i = 2; i >= 0; --i)
+    {
+        outVtx.position = mul(_renderData.projection, input[i].position);
+        outVtx.uv = input[i].uv;
+        outVtx.color = input[i].color;
+        output.Append(outVtx);
+    }
 
-	output.RestartStrip();
+    output.RestartStrip();
 }
 
 // Our pixel shader for drawing to our render target.
 float4 PsMain(VertexOutput vertex) : SV_Target
 {
-	return _texture.Sample(_sampler, vertex.uv) * vertex.color;	
+    SamplerState sampler = SamplerDescriptorHeap[_renderData.samplerHandle];
+    Texture2D texture = ResourceDescriptorHeap[_renderData.textureHandle];
+
+    return texture.Sample(sampler, vertex.uv) * vertex.color;	
 }

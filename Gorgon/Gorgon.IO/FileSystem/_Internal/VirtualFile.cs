@@ -24,7 +24,9 @@
 // Created: Monday, June 27, 2011 8:59:25 AM
 // 
 
+using System;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using Gorgon.IO.FileSystem.Providers;
 
 namespace Gorgon.IO.FileSystem;

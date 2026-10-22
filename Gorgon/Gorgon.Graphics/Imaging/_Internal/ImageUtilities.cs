@@ -24,6 +24,8 @@
 // Created: June 29, 2016 10:49:02 PM
 // 
 
+using System;
+using System.Linq;
 using Gorgon.Core;
 #if GDI_PLUS
 using Gorgon.Graphics.Imaging.GdiPlus.Properties;
@@ -178,14 +180,7 @@ internal static class ImageUtilities
             case BufferFormat.R10G10B10_Xr_Bias_A2_UNorm:
                 for (int i = 0; i < size; i += 4)
                 {
-                    if (src != dest)
-                    {
-                        pixel = (srcPtr++).Value;
-                    }
-                    else
-                    {
-                        pixel = (destPtr).Value;
-                    }
+                    pixel = src != dest ? (srcPtr++).Value : (destPtr).Value;
 
                     r = ((pixel & 0x3FF00000) >> 20);
                     g = (pixel & 0x000FFC00);
@@ -208,14 +203,7 @@ internal static class ImageUtilities
             case BufferFormat.B8G8R8X8_UNorm_SRgb:
                 for (int i = 0; i < size; i += 4)
                 {
-                    if (src != dest)
-                    {
-                        pixel = (srcPtr++).Value;
-                    }
-                    else
-                    {
-                        pixel = (destPtr).Value;
-                    }
+                    pixel = src != dest ? (srcPtr++).Value : (destPtr).Value;
 
                     r = ((pixel & 0xFF0000) >> 16);
                     g = (pixel & 0x00FF00);

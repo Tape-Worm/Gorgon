@@ -24,7 +24,10 @@
 // Created: Tuesday, June 2, 2015 9:56:56 PM
 // 
 
+using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.IO.FileSystem.Properties;

@@ -24,6 +24,9 @@
 // Created: Monday, June 27, 2011 8:58:26 AM
 // 
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.IO.FileSystem.Providers;
@@ -140,12 +143,7 @@ internal class VirtualDirectory
     {
         ArgumentEmptyException.ThrowIfNullOrWhiteSpace(fileName);
 
-        if (Files.ContainsKey(fileName))
-        {
-            return true;
-        }
-
-        return GetAllSubDirectories().Any(item => item.Files.ContainsKey(fileName));
+        return Files.ContainsKey(fileName) || GetAllSubDirectories().Any(item => item.Files.ContainsKey(fileName));
     }
 
     /// <summary>

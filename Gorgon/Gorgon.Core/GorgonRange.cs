@@ -22,6 +22,7 @@
 // Created: March 15, 2024 6:15:16 PM
 //
 
+using System;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -316,20 +317,7 @@ public readonly struct GorgonRange<T>
     /// <param name="value">The value to clamp.</param>
     /// <returns>The clamped value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public T Clamp(T value)
-    {
-        if (value < Minimum)
-        {
-            return Minimum;
-        }
-
-        if (value > Maximum)
-        {
-            return Maximum;
-        }
-
-        return value;
-    }
+    public T Clamp(T value) => value < Minimum ? Minimum : value > Maximum ? Maximum : value;
 
     /// <summary>
     /// Implements the operator ==.

@@ -69,7 +69,7 @@ internal class Sphere
         int vertexCount = (ringCount + 1) * (segmentCount + 1);
         int indexCount = 6 * ringCount * (segmentCount + 1);
 
-        Vertices = new Vertex[vertexCount];
+        Vertices = new GorgonVertexPosUv[vertexCount];
         Indices = new ushort[indexCount];
 
         Radius = radius;
@@ -95,11 +95,7 @@ internal class Sphere
                 textureDelta.X += textureOffset.X;
                 textureDelta.Y += textureOffset.Y;
 
-                Vertices[vertexIndex++] = new Vertex()
-                {
-                    Position = new Vector4(position, 1.0f),
-                    UV =textureDelta
-                };
+                Vertices[vertexIndex++] = new GorgonVertexPosUv(new Vector4(position, 1.0f), textureDelta);
 
                 // Add the indices and skip the last ring.
                 if (ring == ringCount)
@@ -117,7 +113,7 @@ internal class Sphere
             }
         }
 
-        VertexBufferView = GorgonStructuredBufferView.CreateStructuredBuffer<Vertex>(graphics, "Boinger sphere vertex buffer", vertexCount);
+        VertexBufferView = GorgonStructuredBufferView.CreateStructuredBuffer<GorgonVertexPosUv>(graphics, "Boinger sphere vertex buffer", vertexCount);
         IndexBuffer = new GorgonIndexBuffer(graphics, "Boinger sphere index buffer", new GorgonIndexBufferInfo(Indices.Length * sizeof(ushort), false));
     }
 }

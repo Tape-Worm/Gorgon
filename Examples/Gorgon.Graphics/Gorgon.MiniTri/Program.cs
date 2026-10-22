@@ -24,19 +24,22 @@
 // Created: March 2, 2017 7:46:50 PM
 // 
 
+using System;
+using System.Collections.Generic;
 using System.Numerics;
+using System.Runtime.InteropServices;
+using System.Windows.Forms;
 using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
-using Gorgon.Renderers.Cameras;
-using Gorgon.UI.WindowsForms;
+using Gorgon.Math;
 
 namespace Gorgon.Examples;
 
 /// <summary>
 /// This is an example based on the MiniTri example that will draw a single triangle
 /// 
-/// Here we will use shaders, a vertex buffer, an input layout and a constant buffer to define how to render a multicolored triangle to the window
+/// Here we will use shaders, a vertex buffer and rendering data to define how to render a multicolored triangle to the window
 /// 
 /// This example is a little more complex than the Initialization example, and requires more code to set everything up. But, compared to a Direct 
 /// 3D version of this code, it is still much more simple
@@ -53,48 +56,101 @@ namespace Gorgon.Examples;
 /// has all of the information it needs (hence why a draw call has so many fields), and will set that state per call (of course, if a state has 
 /// not changed, it will not set it because there's no need)
 /// </summary>
-internal static class Program
+internal class Program
+    : IDisposable
 {
+    /// <summary>
+    /// Data to tell the GPU what to render, how to render it.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This is used to tell the GPU what vertex buffer it should be reading from in the vertex shader.  We also send the WorldViewProjection matrix across with it as well because that allows us to update 
+    /// the positioning of the view, and triangle.
+    /// </para>
+    /// </remarks>
+    [StructLayout(LayoutKind.Sequential)]
+    private struct RenderData
+    {
+        /// <summary>
+        /// The world/view/projection matrix used to transform our triangle vertices.
+        /// </summary>
+        public Matrix4x4 WorldViewProjection;
+        /// <summary>
+        /// The handle to the vertex buffer containing the triangle geometry.
+        /// </summary>
+        public int VertexBufferHandle;
+    }
 
     // The graphics interface for the application.
-    private static GorgonGraphics _graphics;
+    private readonly GorgonGraphics _graphics;
     // Our primary swap chain.
-    private static GorgonSwapChain _swap;
-    // The shader used to draw our pixels when rendering.
-    private static GorgonPixelShader _pixelShader;
-    // The shader used to transform our vertices when rendering.
-    private static GorgonVertexShader _vertexShader;
-    // The layout defining how a single vertex is laid out in memory.
-    private static GorgonInputLayout _inputLayout;
-    // The vertex buffer that will hold our vertices.
-    private static GorgonVertexBufferBinding _vertexBuffer;
-    // The buffer used to send data over to our shaders when rendering.
-    // In this case, we will be sending a projection matrix so we know to project the vertices from a 3D space into a 2D space.
-    private static GorgonConstantBufferView _constantBuffer;
+    private readonly GorgonSwapChain _swap;
+    // The factory for pipeline state objects.
+    private readonly GorgonGraphicsPsoFactory _psoFactory;
+    // The vertex buffer holding the triangle vertices.
+    private readonly GorgonStructuredBufferView _vertexBuffer;
     // This defines the data to send to the GPU.  
     // A draw call tells the GPU what to draw, and what special states to apply when rendering. This will be submitted to our GorgonGraphics object so that the 
     // GPU can queue up the data for rendering.
-    private static GorgonDrawCall _drawCall;
+    private readonly GorgonDrawCall _drawCall;
+    // The data we need to send to the GPU on each frame.
+    private RenderData _renderData;
+
+    /// <summary>
+    /// Property to return the window for the applicatin.
+    /// </summary>
+    public FormMain Window
+    {
+        get;
+    }
 
     /// <summary>
     /// Function to handle idle time for the application.
     /// </summary>
     /// <returns><b>true</b> to continue processing, <b>false</b> to stop.</returns>
-    private static bool Idle()
+    private bool Idle()
     {
-        // This will clear the swap chain to the specified color.  
-        _swap.RenderTargetView.Clear(Color.CornflowerBlue);
+        // To render anything, we need a command list to instruct the GPU on what needs to be drawn.
+        // To retrieve one, we ask the graphics object for a command list.
+        //
+        // For those worried about garbage, each command list is pooled and reused as needed, there 
+        // are objects for the GC to collect.
+        GorgonCommandList list = _graphics.GetCommandList("MiniTri Render Commandlist")
+                                          // First we tell the command list that we want the swap chain to present its back buffer to the display.
+                                          // By adding it as a presenter, the command list will guarantee the swap chain will display its contents                                          
+                                          .AddPresenter(_swap)
+                                          // If you recall, we have a constant buffer with data used to render the scene. This is how we pass it 
+                                          // to the constant buffer at slot 0. If we don't do this, nothing renders.
+                                          .WriteConstant(0, _renderData)
+                                          // Next we need to tell the GPU how big our view port and clipping regions are.
+                                          // For this example, they're the same size as our window.
+                                          .SetScissorRectangle(new GorgonRectangle(0, 0, _swap.Width, _swap.Height))
+                                          .SetViewport(new GorgonViewport(0, 0, _swap.Width, _swap.Height))
+                                          // Now, we will assign the swap chain as the target that will receive our rendering.
+                                          // If we had a depth buffer, we could attach it here as well.
+                                          .SetRenderTarget(_swap)
+                                          // Finally, clear the swap chain to the colour of Cornflower Blue.
+                                          .ClearRenderTarget(_swap, GorgonColors.CornFlowerBlue);
 
-        // Draw our triangle.
-        _graphics.Submit(_drawCall);
+        // Our command list is now set up. And now we have to tell it what to draw.
+        // Why is this not on the fluent interface. This command represents a capture of the state assigned thus far.
+        // This is an effective end to the recording -for this draw call-. Subsequent changes and draw calls can and 
+        // should be made on the same list.
+        // e.g. 
+        // list.Draw(_drawCall);
+        // 
+        // list.SetRenderTarget(myOtherTarget)
+        //     .ClearRenderTarget(myOtherTarget, GorgonColors.Black)
+        //     .Draw(otherDrawCall);
+        //    
+        list.Draw(_drawCall);
 
-        GorgonExample.BlitLogo(_graphics);
+        // This is part of the example helper code that just blits Gorgon's logo in the lower left corner.
+        GorgonExample.BlitLogo(list);
 
-        // Now we flip our buffers on the swap chain.  
-        // We need to this or we won't see anything at all except the standard window background color. Clearly, we don't want that. 
-        // This method will take the current frame back buffer and flip it to the front buffer (the window). If we had more than one swap chain tied to multiple 
-        // windows, then we'd need to do this for every swap chain.
-        _swap.Present(1);
+        // Finally, we tell the GPU to execute the commands recorded into the list by submitting the list:
+        _graphics.Submit(list);
+
 
         return true;
     }
@@ -102,97 +158,113 @@ internal static class Program
     /// <summary>
     /// Function to create a new vertex and pixel shader for use when rendering our triangle.
     /// </summary>
-    private static void CreateShaders()
+    /// <param name="graphics">The graphics interface to use.</param>
+    /// <returns>A tuple containing the vertex, and pixel shaders.</returns>
+    private (GorgonShader VertexShader, GorgonShader PixelShader) CreateShaders(GorgonGraphics graphics)
     {
+        using GorgonShaderCompiler compiler = new(graphics);
+
         // We compile the vertex shader program into byte code for use by the GPU.  When we do this we have to provide the shader source code, and the name of the function 
         // that represents the entry point for the vertex shader.
-        _vertexShader = GorgonShaderFactory.Compile<GorgonVertexShader>(_graphics, Resources.MiniTriShaders, "MiniTriVS");
+        GorgonShader vertexShader = compiler.Compile(Resources.MiniTriShaders, "MiniTriVS", ShaderType.VertexShader);
 
         // Next, we'll compile the pixel shader.
-        _pixelShader = GorgonShaderFactory.Compile<GorgonPixelShader>(_graphics, Resources.MiniTriShaders, "MiniTriPS");
+        GorgonShader pixelShader = compiler.Compile(Resources.MiniTriShaders, "MiniTriPS", ShaderType.PixelShader);
+
+        return (vertexShader, pixelShader);
     }
 
     /// <summary>
     /// Function to create a new vertex buffer and fill it with the vertices that represent our triangle.
     /// </summary>
-    private static void CreateVertexBuffer()
+    /// <param name="graphics">The graphics interface to use.</param>
+    /// <returns>The structured vertex buffer view for the vertex data.</returns>
+    private GorgonStructuredBufferView CreateVertexBuffer(GorgonGraphics graphics)
     {
         // Define the points that make up our triangle.
         // We'll push it back half a unit along the Z-Axis so that we can see it.
         MiniTriVertex[] vertices = [
-                           new MiniTriVertex(new Vector3(0, 0.5f, 1.0f), new GorgonColor(1, 0, 0)),
-                           new MiniTriVertex(new Vector3(0.5f, -0.5f, 1.0f), new GorgonColor(0, 1, 0)),
-                           new MiniTriVertex(new Vector3(-0.5f, -0.5f, 1.0f), new GorgonColor(0, 0, 1))
+                           new MiniTriVertex(new Vector4(0, 0.5f, 1.0f, 1.0f), new GorgonColor(1, 0, 0)),
+                           new MiniTriVertex(new Vector4(0.5f, -0.5f, 1.0f, 1.0f), new GorgonColor(0, 1, 0)),
+                           new MiniTriVertex(new Vector4(-0.5f, -0.5f, 1.0f, 1.0f), new GorgonColor(0, 0, 1))
                        ];
 
         // Create the vertex buffer.
         //
         // This will be responsible for sending vertex data to the GPU. The buffer size is specified in bytes, so we need to ensure it has enough room to hold all 
         // 3 vertices.
-        _vertexBuffer = GorgonVertexBufferBinding.CreateVertexBuffer<MiniTriVertex>(_graphics,
-                                                                     new GorgonVertexBufferInfo(MiniTriVertex.SizeInBytes * vertices.Length)
-                                                                     {
-                                                                         Name = "MiniTri Vertex Buffer",
-                                                                         Usage = ResourceUsage.Default
-                                                                     });
+        GorgonStructuredBufferView vertexBuffer = GorgonStructuredBufferView.CreateStructuredBuffer<MiniTriVertex>(graphics, "MiniTri Vertex Buffer", vertices.Length);
 
-        // Send the vertex data into the buffer.
-        _vertexBuffer.VertexBuffer.SetData<MiniTriVertex>(vertices);
+        // Now we fill the vertex buffer with the vertex data.
+        // We do this with an object known as a command list, which we use to instruct the GPU to copy data from system memory, up to the GPUs memory.
+        // You'll see the list is fluent, so we can just write out our commands as we go.
+        GorgonCommandList uploadList = graphics.GetCommandList("MiniTri Upload List")
+                                               .CopyRange(vertices, vertexBuffer.Buffer);
+
+        // Now tell the GPU to execute the commands.
+        graphics.Submit(uploadList);
+
+        // We need to wait for the GPU to finish the copy of the data before we continue. 
+        // Failure to do so would result in a race condition where our data may not be ready for rendering, and the output may be undesirable.
+        graphics.WaitForGpu();
+
+        return vertexBuffer;
     }
 
     /// <summary>
-    /// Function to create a new constant buffer so we can upload data to the shaders on the GPU.
+    /// Function to dispose managed and unmanaged objects.
     /// </summary>
-    private static void CreateConstantBuffer()
+    /// <param name="disposing"><b>true</b> to dispose both managed and umanaged objects, <b>false</b> to only dispose unmanaged.</param>
+    private void Dispose(bool disposing)
     {
-        // Use a camera to build our projection matrix.
-
-        // Build our projection matrix using a 65 degree field of view and an aspect ratio that matches our current window aspect ratio.
-        // Note that we depth a depth range from 0.125f up to 1000.0f.  This provides a near and far plane for clipping.  
-        // These clipping values must have the world transformed vertex data inside of it or else it will not render. Note that the near/far plane is not a 
-        // linear range and Z accuracy can get worse the further from the near plane that you get (particularly with depth buffers).
-        GorgonPerspectiveCamera camera = new(_graphics, new Vector2(_swap.Width, _swap.Height), 0.125f, 1000.0f)
+        if (disposing)
         {
-            Fov = 65.0f
-        };
+            GorgonExample.UnloadResources();
 
-        // Create our constant buffer.
-        //
-        // The data we pass into here will apply the projection transformation to our vertex data so we can transform from 3D space into 2D space.
-        _constantBuffer = GorgonConstantBufferView.CreateConstantBuffer(_graphics, in camera.GetProjectionMatrix(), "MiniTri WVP Constant Buffer");
+            _vertexBuffer.Dispose();
+            _psoFactory.Dispose();
+            _swap.Dispose();
+            _graphics.Dispose();
+        }
+    }
+
+    /// <inheritdoc/>
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
     }
 
     /// <summary>
-    /// Function to initialize the application.
+    /// Initializes a new instance of the <see cref="Program"/> class.
     /// </summary>
-    /// <returns>The main window.</returns>
-    private static FormMain Initialize()
+    /// <param name="graphicsFactory">The factory used to create graphics objects.</param>
+    private Program(GorgonGraphicsFactory graphicsFactory)
     {
         // Create our form and center on the primary monitor.
-        FormMain window = GorgonExample.Initialize(new GorgonPoint(1280, 800), "Gorgon MiniTri");
+        Window = GorgonExample.Initialize(ExampleConfig.Default.Resolution, "Gorgon MiniTri");
 
         try
         {
-            // First we create and enumerate the list of video devices installed in the computer.
+            // First we enumerate the list of video devices installed in the computer.
             // We must do this in order to tell Gorgon which video device we intend to use. Note that this method may be quite slow (particularly when running DEBUG versions of 
             // Direct 3D). To counter this, this object and its Enumerate method are thread safe so this can be run in the background while keeping the main UI responsive.
             // Find out which devices we have installed in the system.
 
-            // If no suitable device was found (no Direct 3D 12.0 support) in the computer, this method will throw an exception. However, if it succeeds, then the devices object 
+            // If no suitable device was found (no Direct 3D 12.0 tier 2 support) in the computer, this method will throw an exception. However, if it succeeds, then the devices object 
             // will be populated with the IGorgonVideoDeviceInfo for each video device in the system.
             //
             // Using this method, we could also enumerate the software rasterizer. These devices are typically used to determine if there's a driver error, and can be terribly slow to render 
             // It is recommended that these only be used in diagnostic scenarios only.
-            IReadOnlyList<IGorgonVideoAdapterInfo> deviceList = GorgonGraphics.EnumerateAdapters(log: GorgonExample.Log);
+            IReadOnlyList<GorgonVideoAdapterInfo> deviceList = graphicsFactory.EnumerateAdapters();
 
             if (deviceList.Count == 0)
             {
-                throw new
-                    NotSupportedException("There are no suitable video adapters available in the system. This example is unable to continue and will now exit.");
+                throw new NotSupportedException("There are no suitable video adapters available in the system. This example is unable to continue and will now exit.");
             }
 
             // Now we create the main graphics interface with the first applicable video device.
-            _graphics = new GorgonGraphics(deviceList[0], log: GorgonExample.Log);
+            _graphics = graphicsFactory.CreateGraphics(deviceList[0]);
 
             // Check to ensure that we can support the format required for our swap chain.
             // If a video device can't support this format, then the odds are good it won't render anything. Since we're asking for a very common display format, this will 
@@ -201,77 +273,71 @@ internal static class Program
             //
             // This method is also used to determine if a format can be used for other objects (e.g. a texture, render target, etc...) Like the swap chain format, this is also a 
             // best practice to check if the object you're creating supports the desired format.
-            if ((_graphics.FormatSupport[BufferFormat.R8G8B8A8_UNorm].FormatSupport & BufferFormatSupport.Display) != BufferFormatSupport.Display)
+            if (!_graphics.FormatSupport[BufferFormat.R8G8B8A8_UNorm].IsDisplayFormat)
             {
                 // We should never see this unless you've performed some form of black magic.
-                GorgonDialogs.Error(window, "We should not see this error.");
-                return window;
+                throw new Exception("We should not see this error.");
             }
 
             // Finally, create a swap chain to display our output.
             // In this case we're setting up our swap chain to bind with our main window, and we use its client size to determine the width/height of the swap chain back buffers.
             // This width/height does not need to be the same size as the window, but, except for some scenarios, that would produce undesirable image quality.
             _swap = new GorgonSwapChain(_graphics,
-                                        window,
-                                        new GorgonSwapChainInfo(window.ClientSize.Width,
-                                                                     window.ClientSize.Height,
-                                                                     BufferFormat.R8G8B8A8_UNorm)
-                                        {
-                                            Name = "Main Swap Chain"
-                                        })
-            {
-                DoNotAutoResizeBackBuffer = true
-            };
-            _graphics.SetRenderTarget(_swap.RenderTargetView);
+                                        "MiniTri Main Swap Chain",
+                                        Window.Handle,
+                                        new GorgonSwapChainInfo(Window.ClientSize.Width,
+                                                                     Window.ClientSize.Height,
+                                                                     BufferFormat.R8G8B8A8_UNorm));
 
             // Create the shaders used to render the triangle.
             // These shaders provide transformation and coloring for the output pixel data.
-            CreateShaders();
-
-            // Set up our input layout.
-            //
-            // We'll be using this to describe to Direct 3D how the elements of a vertex is laid out in memory. 
-            // In order to provide synchronization between the layout on the CPU side and the GPU side, we have to pass the vertex shader because it will contain the vertex 
-            // layout to match with our C# input layout.
-            _inputLayout = GorgonInputLayout.CreateUsingType<MiniTriVertex>(_graphics, nameof(MiniTriVertex), _vertexShader);
+            (GorgonShader vertexShader, GorgonShader pixelShader) = CreateShaders(_graphics);
 
             // Set up the triangle vertices.
-            CreateVertexBuffer();
+            _vertexBuffer = CreateVertexBuffer(_graphics);
 
-            // Set up the constant buffer.
-            //
-            // This is used (but could be used for more) to transform the vertex data from 3D space into 2D space.
-            CreateConstantBuffer();
+            // To define the state for the rendering pipeline, a pipeline state object is required. These are handled by a special factory that caches and reuses these objects 
+            // as a performance enhancement. 
+            _psoFactory = new(_graphics);
 
-            // This defines where to send the pixel data when rendering. For now, this goes to our swap chain.
-            _graphics.SetRenderTarget(_swap.RenderTargetView);
+            // We now need to create the state to apply when rendering.
+            // To do this, we build a pipeline state using a pipeline state builder to define our raster state, depth state, blending states and which shaders will be used.
+            GorgonGraphicsPsoBuilder psoBuilder = new(_graphics);
+            psoBuilder.PixelShader(pixelShader)
+                      .RasterizerState(GorgonRasterState.NoCulling)
+                      .BlendState(GorgonBlendState.NoBlending)
+                      // This one is required because the pipeline state object needs to know what type of value should be returned from the pixel shader to the
+                      // current render target.
+                      .OutputFormat(_swap.Format);
+
+            // We now ask the pipeline factory to either build or retrieve an existing pipeline state object that contains our rendering state.
+            // You'll note that the vertex shader is passed separately. This is because we must have, at minimum, a vertex shader for a PSO.
+            GorgonGraphicsPso pso = _psoFactory.CreateOrGetPso("MiniTri PSO", vertexShader, psoBuilder);
 
             // Create our draw call.
             //
-            // This will pass all the necessary information to the GPU to render the triangle
-            //
-            // Since draw calls are immutable objects, we use builders to create them (and any pipeline state). Once a draw
-            // call is built, it cannot be changed (except for the vertex, and if applicable, index, and instance ranges).
-            //
-            // Builders work on a fluent interface.  Much like LINQ and can be used to create multiple draw calls from the same 
-            // builder.
-            GorgonDrawCallBuilder drawCallBuilder = new();
-            GorgonPipelineStateBuilder pipelineStateBuilder = new(_graphics);
+            // This will pass all the necessary information to the GPU to render the triangle. Namely the state of the graphics pipeline, and the number of vertices we are 
+            // going to render.
+            _drawCall = new GorgonDrawCall(3, pso);
+            // We need to tell the system that we're using this vertex buffer, and where, and in what capacity.
+            // This allows the GPU to configure itself for the rendering process. 
+            _drawCall.AssignBuffer(new GorgonUsedBuffer(_vertexBuffer, ShaderStage.Vertex, BufferUsage.ReadOnly));
 
-            _drawCall = drawCallBuilder.VertexBuffer(_inputLayout, _vertexBuffer)
-                                       .VertexRange(0, 3)
-                                       .ConstantBuffer(ShaderType.Vertex, _constantBuffer)
-                                       .PipelineState(pipelineStateBuilder
-                                                      .PixelShader(_pixelShader)
-                                                      .VertexShader(_vertexShader)
-                                                      .RasterState(GorgonRasterState.NoCulling))
-                                       .Build();
+            // Now we can set up our rendering data to pass to the shader.
+            // You'll see we're passing the structured view's handle directly.
+            // This is because Gorgon uses a technique called bindless rendering (and vertex pulling), which allows the shader to extract vertex data directly from the
+            // buffer. The handle is used to tell the shader where in memory that buffer resides.
+            //
+            // Normally, this data could be built dynamically in the Idle method, but for the purposes of this example, we can initialize it here.
+            _renderData = new RenderData
+            {
+                WorldViewProjection = Matrix4x4.CreatePerspectiveFieldOfViewLeftHanded((65.0f).ToRadians(), (float)_swap.Width / _swap.Height, 0.125f, 1000f),
+                VertexBufferHandle = _vertexBuffer.GetViewHandle()
+            };
 
             GorgonExample.LoadResources(_graphics);
 
             GorgonExample.Loop.Run(Idle);
-
-            return window;
         }
         finally
         {
@@ -285,14 +351,27 @@ internal static class Program
     [STAThread]
     private static void Main()
     {
-        Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
-        Application.EnableVisualStyles();
-        Application.SetCompatibleTextRenderingDefault(false);
+        ApplicationConfiguration.Initialize();
 
         try
         {
+            // The first step is to create a factory that will create the GorgonGraphics object that is used to communicate with the GPU.
+            // This also allows us to apply debug settings to determine if the underlying GPU API is behaving correctly.
+            //
+            // All applications must create this factory in order to access the graphics functionality.
+#if DEBUG
+            using GorgonGraphicsFactory factory = new(GorgonGraphicsDebugFlags.SynchronizedCommandQueueValidation
+                | GorgonGraphicsDebugFlags.GpuBasedValidation
+                | GorgonGraphicsDebugFlags.GpuBasedStateTrackingValidation
+                | GorgonGraphicsDebugFlags.ObjectTracking, log: GorgonExample.Log);
+#else
+            using GorgonGraphicsFactory factory = new(log: GorgonExample.Log);
+#endif     
+
+            using Program program = new(factory);
+
             // Now begin running the application idle loop.
-            Application.Run(Initialize());
+            Application.Run(program.Window);
         }
         catch (Exception ex)
         {
@@ -300,17 +379,6 @@ internal static class Program
         }
         finally
         {
-            // Always clean up when you're done.
-            // Since Gorgon uses Direct 3D 11.x, which allocate objects that use native memory and COM objects, we must be careful to dispose of any objects that implement 
-            // IDisposable. Failure to do so can lead to warnings from the Direct 3D runtime when running in DEBUG mode.
-            _constantBuffer?.Dispose();
-            _vertexBuffer.VertexBuffer?.Dispose();
-            _inputLayout?.Dispose();
-            _vertexShader?.Dispose();
-            _pixelShader?.Dispose();
-            _swap?.Dispose();
-            _graphics?.Dispose();
-
             GorgonExample.ShutDown();
         }
     }

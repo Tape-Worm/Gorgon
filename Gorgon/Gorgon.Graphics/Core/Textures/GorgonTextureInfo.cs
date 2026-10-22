@@ -383,7 +383,7 @@ public record class GorgonTextureInfo(TextureType Type, BufferFormat Format)
         IsShaderResource = isShaderResource,
         HasReadWriteAccess = allowReadWriteAccess,
         IsRenderTarget = true,
-        IsCube =true,
+        IsCube = true,
         MultisampleInfo = multisampleInfo ?? GorgonMultisampleInfo.NoMultisampling
     };
 

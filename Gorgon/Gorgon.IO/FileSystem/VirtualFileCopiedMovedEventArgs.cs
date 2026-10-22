@@ -24,6 +24,8 @@
 // Created: January 14, 2020 8:52:21 AM
 // 
 
+using System;
+
 namespace Gorgon.IO.FileSystem;
 
 /// <summary>

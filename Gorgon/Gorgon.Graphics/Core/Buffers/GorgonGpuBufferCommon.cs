@@ -22,21 +22,18 @@
 // Created: March 26, 2026 9:01:06 PM
 //
 
-using TerraFX.Interop.Windows;
 using TerraFX.Interop.DirectX;
+using TerraFX.Interop.Windows;
 
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
 /// Common functionality for GPU buffers.
 /// </summary>
-/// <param name="graphics"><inheritdoc cref="GorgonGpuResource(GorgonGraphics, string, ComPtr{ID3D12Resource2})" path="/param[@name='graphics']"/></param>
-/// <param name="name"><inheritdoc cref="GorgonGpuResource(GorgonGraphics, string, ComPtr{ID3D12Resource2})" path="/param[@name='name']"/></param>
-/// <param name="info">Information used to create the buffer.</param>
-public abstract class GorgonGpuBufferCommon(GorgonGraphics graphics, string name, GorgonCommonBufferInfo info)
-        : GorgonGpuResource(graphics, name), IGorgonCommonBufferInfo
+public abstract class GorgonGpuBufferCommon
+        : GorgonGpuResource, IGorgonCommonBufferInfo
 {
-    private readonly GorgonCommonBufferInfo _info = info;
+    private readonly GorgonCommonBufferInfo _info;
 
     /// <inheritdoc/>
     public long SizeInBytes => _info.SizeInBytes;
@@ -56,4 +53,14 @@ public abstract class GorgonGpuBufferCommon(GorgonGraphics graphics, string name
     /// Function to validate the settings for the buffer.
     /// </summary>
     private protected abstract void ValidateInfo();
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GorgonGpuBufferCommon"/> class.
+    /// </summary>
+    /// <param name="graphics"><inheritdoc cref="GorgonGpuResource(GorgonGraphics, string, ComPtr{ID3D12Resource2})" path="/param[@name='graphics']"/></param>
+    /// <param name="name"><inheritdoc cref="GorgonGpuResource(GorgonGraphics, string, ComPtr{ID3D12Resource2})" path="/param[@name='name']"/></param>
+    /// <param name="info">Information used to create the buffer.</param>
+    /// <param name="generateResourceID"><inheritdoc cref="GorgonGpuResource(GorgonGraphics, string, bool)" path="/param[@name='generateResourceID']"/></param>
+    private protected GorgonGpuBufferCommon(GorgonGraphics graphics, string name, GorgonCommonBufferInfo info, bool generateResourceID = true)
+        : base(graphics, name, generateResourceID) => _info = info;
 }

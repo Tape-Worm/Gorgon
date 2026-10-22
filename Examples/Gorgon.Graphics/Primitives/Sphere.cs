@@ -24,10 +24,10 @@
 // Created: Sunday, December 30, 2012 10:25:22 AM
 // 
 
+using System.Drawing;
 using System.Numerics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
-using Gorgon.Renderers.Geometry;
 
 namespace Gorgon.Examples;
 
@@ -37,7 +37,6 @@ namespace Gorgon.Examples;
 internal class Sphere
     : MoveableMesh
 {
-
     // Initial orientation.
     private Matrix4x4 _orientation;
 
@@ -150,22 +149,12 @@ internal class Sphere
                     ringCount,
                     segmentCount);
 
-        VertexBuffer = GorgonVertexBuffer.Create<GorgonVertexPosNormUvTangent>(graphics,
-                                              new GorgonVertexBufferInfo(GorgonVertexPosNormUvTangent.SizeInBytes * vertexData.Length)
-                                              {
-                                                  Name = "SphereVertexBuffer",
-                                                  Usage = ResourceUsage.Immutable
-                                              },
-                                              vertexData);
-
-        IndexBuffer = new GorgonIndexBuffer(graphics,
-                                            new GorgonIndexBufferInfo(IndexCount)
-                                            {
-                                                Name = "SphereIndexBuffer",
-                                                Usage = ResourceUsage.Immutable
-                                            },
-                                            indexData);
+        VertexBuffer = GorgonStructuredBufferView.CreateStructuredBuffer<GorgonVertexPosNormUvTangent>(graphics, "Primitive Sphere VB", vertexData.Length);
+        IndexBuffer = new GorgonIndexBuffer(graphics, "Primitive Sphere IB", new GorgonIndexBufferInfo(indexData.Length * sizeof(int), true));
 
         UpdateAabb(vertexData);
+
+        Vertices = vertexData;
+        Indices = indexData;
     }
 }

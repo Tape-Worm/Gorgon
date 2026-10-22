@@ -312,7 +312,7 @@ public interface IGorgonFluentBuilderWithAllocator<out TB, TBo, in TBa>
     /// around for as long as we need them, instead of creating objects that can potentially end up in the large object heap or in Gen 2.
     /// </para>
     /// </remarks>
-    TBo Build(TBa? allocator = null);        
+    TBo Build(TBa? allocator = null);
 
     /// <summary>
     /// Function to reset the builder to the specified state provided by the object passed in.

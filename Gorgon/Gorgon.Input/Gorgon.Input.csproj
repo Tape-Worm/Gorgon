@@ -23,7 +23,7 @@ Uses Windows RawInput API to poll the data from the devices.</Description>
     <SignAssembly>false</SignAssembly>
     <AssemblyOriginatorKeyFile />
     <DelaySign>false</DelaySign>
-    <ImplicitUsings>enable</ImplicitUsings>
+    <ImplicitUsings>disable</ImplicitUsings>
     <AssemblyVersion>4.0.0.0</AssemblyVersion>
     <FileVersion>4.0.0.0</FileVersion>
     <EmbeddedResourceUseDependentUponConvention>true</EmbeddedResourceUseDependentUponConvention>

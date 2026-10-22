@@ -25,7 +25,6 @@
 // 
 
 using Gorgon.Graphics.Core.Properties;
-using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
 using TerraFX.Interop.DirectX;
 

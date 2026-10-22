@@ -22,6 +22,7 @@
 // Created: May 31, 2025 7:34:37 PM
 //
 
+using System;
 using Gorgon.Graphics.Imaging.Codecs.PlugIns.Properties;
 
 namespace Gorgon.Graphics.Imaging.Codecs.PlugIns;

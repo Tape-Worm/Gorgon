@@ -100,6 +100,10 @@
 // contributors exclude the implied warranties of merchantability, fitness for a
 // particular purpose and non-infringement.
 
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using Gorgon.Graphics.Imaging.Properties;
@@ -258,14 +262,9 @@ public sealed class GorgonCodecTga
                 break;
             case TgaImageType.BlackAndWhite:
             case TgaImageType.BlackAndWhiteRLE:
-                if (header.BPP == 8)
-                {
-                    pixelFormat = BufferFormat.R8_UNorm;
-                }
-                else
-                {
-                    throw new IOException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, header.ImageType));
-                }
+                pixelFormat = header.BPP == 8
+                    ? BufferFormat.R8_UNorm
+                    : throw new IOException(string.Format(Resources.GORIMG_ERR_FORMAT_NOT_SUPPORTED, header.ImageType));
 
                 if (header.ImageType == TgaImageType.BlackAndWhiteRLE)
                 {
@@ -537,21 +536,14 @@ public sealed class GorgonCodecTga
 
             byte rleBlock = reader.ReadByte();
             int size = (rleBlock & 0x7F) + 1;
-            (bool IsLineTransparent, long BytesRead) decodeResult;
+            (bool IsLineTransparent, long BytesRead) = (rleBlock & 0x80) != 0
+                ? ((bool IsLineTransparent, long BytesRead))DecodeRleEncodedRun(reader, destPtr, size, expand, format)
+                : ((bool IsLineTransparent, long BytesRead))DecodeUncompressedRun(reader, destPtr, size, expand, format);
 
-            if ((rleBlock & 0x80) != 0)
-            {
-                decodeResult = DecodeRleEncodedRun(reader, destPtr, size, expand, format);
-            }
-            else
-            {
-                decodeResult = DecodeUncompressedRun(reader, destPtr, size, expand, format);
-            }
-
-            destPtr += decodeResult.BytesRead;
+            destPtr += BytesRead;
             x += size;
 
-            if (!decodeResult.IsLineTransparent)
+            if (!IsLineTransparent)
             {
                 setOpaque = false;
             }
@@ -904,27 +896,7 @@ public sealed class GorgonCodecTga
             stream.Position = position;
         }
 
-        if ((header.ColorMapType != 0) || (header.ColorMapLength != 0))
-        {
-            return false;
-        }
-
-        if ((header.Descriptor & (TgaDescriptor.Interleaved2Way | TgaDescriptor.Interleaved4Way)) != 0)
-        {
-            return false;
-        }
-
-        if ((header.Width <= 0) || (header.Height <= 0))
-        {
-            return false;
-        }
-
-        if (header.ImageType is not TgaImageType.TrueColor and not TgaImageType.TrueColorRLE and not TgaImageType.BlackAndWhite and not TgaImageType.BlackAndWhiteRLE)
-        {
-            return false;
-        }
-
-        return (header.ImageType is not TgaImageType.BlackAndWhite and not TgaImageType.BlackAndWhiteRLE) || (header.BPP is 8);
+        return header.ColorMapType == 0 && header.ColorMapLength == 0 && (header.Descriptor & (TgaDescriptor.Interleaved2Way | TgaDescriptor.Interleaved4Way)) == 0 && header.Width > 0 && header.Height > 0 && header.ImageType is TgaImageType.TrueColor or TgaImageType.TrueColorRLE or TgaImageType.BlackAndWhite or TgaImageType.BlackAndWhiteRLE && ((header.ImageType is not TgaImageType.BlackAndWhite and not TgaImageType.BlackAndWhiteRLE) || (header.BPP is 8));
     }
 
     /// <summary>

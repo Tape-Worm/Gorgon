@@ -151,8 +151,8 @@ public class GorgonRectangleTests
         // Assert
         Assert.AreEqual(rectangle.X - amount, expandedRectangle.X);
         Assert.AreEqual(rectangle.Y - amount, expandedRectangle.Y);
-        Assert.AreEqual(rectangle.Width + amount * 2, expandedRectangle.Width);
-        Assert.AreEqual(rectangle.Height + amount * 2, expandedRectangle.Height);
+        Assert.AreEqual(rectangle.Width + (amount * 2), expandedRectangle.Width);
+        Assert.AreEqual(rectangle.Height + (amount * 2), expandedRectangle.Height);
     }
 
     [TestMethod]
@@ -168,8 +168,8 @@ public class GorgonRectangleTests
         // Assert
         Assert.AreEqual(rectangle.X - amount, expandedRectangle.X);
         Assert.AreEqual(rectangle.Y - amount, expandedRectangle.Y);
-        Assert.AreEqual(rectangle.Width + amount * 2, expandedRectangle.Width);
-        Assert.AreEqual(rectangle.Height + amount * 2, expandedRectangle.Height);
+        Assert.AreEqual(rectangle.Width + (amount * 2), expandedRectangle.Width);
+        Assert.AreEqual(rectangle.Height + (amount * 2), expandedRectangle.Height);
     }
 
     [TestMethod]
@@ -185,7 +185,7 @@ public class GorgonRectangleTests
         // Assert
         Assert.AreEqual(rectangle.X - amount, expandedRectangle.X);
         Assert.AreEqual(rectangle.Y, expandedRectangle.Y);
-        Assert.AreEqual(rectangle.Width + amount * 2, expandedRectangle.Width);
+        Assert.AreEqual(rectangle.Width + (amount * 2), expandedRectangle.Width);
         Assert.AreEqual(rectangle.Height, expandedRectangle.Height);
 
         // Act
@@ -195,7 +195,7 @@ public class GorgonRectangleTests
         Assert.AreEqual(rectangle.X, expandedRectangle.X);
         Assert.AreEqual(rectangle.Y - amount, expandedRectangle.Y);
         Assert.AreEqual(rectangle.Width, expandedRectangle.Width);
-        Assert.AreEqual(rectangle.Height + amount * 2, expandedRectangle.Height);
+        Assert.AreEqual(rectangle.Height + (amount * 2), expandedRectangle.Height);
     }
 
     [TestMethod]

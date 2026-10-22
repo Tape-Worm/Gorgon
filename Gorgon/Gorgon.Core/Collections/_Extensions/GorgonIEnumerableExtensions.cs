@@ -22,6 +22,10 @@
 // Created: March 23, 2024 6:42:51 PM
 //
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
 namespace Gorgon.Collections;
 
 /// <summary>

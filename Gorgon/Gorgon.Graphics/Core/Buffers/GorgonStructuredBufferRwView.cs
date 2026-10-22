@@ -22,6 +22,7 @@
 // Created: March 22, 2026 3:02:19 PM
 //
 
+using System;
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 using TerraFX.Interop.DirectX;
@@ -95,9 +96,9 @@ public sealed class GorgonStructuredBufferRwView
         D3D12_UNORDERED_ACCESS_VIEW_DESC desc = new()
         {
             Format = DXGI_FORMAT.DXGI_FORMAT_UNKNOWN,
-            ViewDimension = D3D12_UAV_DIMENSION.D3D12_UAV_DIMENSION_BUFFER            
+            ViewDimension = D3D12_UAV_DIMENSION.D3D12_UAV_DIMENSION_BUFFER
         };
-               
+
         uint elementSize = (uint)ElementSize;
 
         desc.Buffer.StructureByteStride = elementSize;
@@ -110,7 +111,7 @@ public sealed class GorgonStructuredBufferRwView
     }
 
     /// <inheritdoc/>
-    private protected override void OnAllocateDescriptors() => AllocateDescriptors(CounterBuffer);    
+    private protected override void OnAllocateDescriptors() => AllocateDescriptors(CounterBuffer);
 
     /// <summary>
     /// Function to validate the view settings.

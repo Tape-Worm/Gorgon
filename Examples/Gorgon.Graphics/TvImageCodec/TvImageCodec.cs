@@ -24,6 +24,9 @@
 // Created: March 5, 2017 10:05:08 PM
 // 
 
+using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -157,13 +160,10 @@ internal class TvImageCodec
         }
 
         // Ensure the width/height are valid.
-        if ((header.Width < 0)
-            || (header.Height < 0))
-        {
-            throw new ArgumentException(@"The image in this stream has an invalid width/height.", nameof(stream));
-        }
-
-        return GorgonImageInfo.Create2DImageInfo(BufferFormat.R8G8B8A8_UNorm, header.Width, header.Height);
+        return (header.Width < 0)
+            || (header.Height < 0)
+            ? throw new ArgumentException(@"The image in this stream has an invalid width/height.", nameof(stream))
+            : GorgonImageInfo.Create2DImageInfo(BufferFormat.R8G8B8A8_UNorm, header.Width, header.Height);
     }
 
     /// <summary>

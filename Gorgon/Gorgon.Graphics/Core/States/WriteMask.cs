@@ -24,6 +24,7 @@
 // Created: May 29, 2018 8:51:27 AM
 // 
 
+using System;
 using TerraFX.Interop.DirectX;
 
 namespace Gorgon.Graphics.Core;

@@ -61,12 +61,12 @@ internal static class ImagingTestHelper
     public static void SetU32(IGorgonImageBuffer buffer, int x, int y, uint value) => ((GorgonPtr<uint>)Row(buffer, y))[x] = value;
 
     // Channel access for 4 channel formats with 16 bit or 32 bit channels.
-    public static ushort U16Channel(IGorgonImageBuffer buffer, int x, int y, int channel) => ((GorgonPtr<ushort>)Row(buffer, y))[x * 4 + channel];
-    public static void SetU16Channel(IGorgonImageBuffer buffer, int x, int y, int channel, ushort value) => ((GorgonPtr<ushort>)Row(buffer, y))[x * 4 + channel] = value;
-    public static Half F16Channel(IGorgonImageBuffer buffer, int x, int y, int channel) => ((GorgonPtr<Half>)Row(buffer, y))[x * 4 + channel];
-    public static void SetF16Channel(IGorgonImageBuffer buffer, int x, int y, int channel, Half value) => ((GorgonPtr<Half>)Row(buffer, y))[x * 4 + channel] = value;
-    public static float F32Channel(IGorgonImageBuffer buffer, int x, int y, int channel) => ((GorgonPtr<float>)Row(buffer, y))[x * 4 + channel];
-    public static void SetF32Channel(IGorgonImageBuffer buffer, int x, int y, int channel, float value) => ((GorgonPtr<float>)Row(buffer, y))[x * 4 + channel] = value;
+    public static ushort U16Channel(IGorgonImageBuffer buffer, int x, int y, int channel) => ((GorgonPtr<ushort>)Row(buffer, y))[(x * 4) + channel];
+    public static void SetU16Channel(IGorgonImageBuffer buffer, int x, int y, int channel, ushort value) => ((GorgonPtr<ushort>)Row(buffer, y))[(x * 4) + channel] = value;
+    public static Half F16Channel(IGorgonImageBuffer buffer, int x, int y, int channel) => ((GorgonPtr<Half>)Row(buffer, y))[(x * 4) + channel];
+    public static void SetF16Channel(IGorgonImageBuffer buffer, int x, int y, int channel, Half value) => ((GorgonPtr<Half>)Row(buffer, y))[(x * 4) + channel] = value;
+    public static float F32Channel(IGorgonImageBuffer buffer, int x, int y, int channel) => ((GorgonPtr<float>)Row(buffer, y))[(x * 4) + channel];
+    public static void SetF32Channel(IGorgonImageBuffer buffer, int x, int y, int channel, float value) => ((GorgonPtr<float>)Row(buffer, y))[(x * 4) + channel] = value;
 
     // Packs an RGBA color into the memory layout of an R8G8B8A8 pixel (R in the lowest byte).
     public static uint Rgba(byte r, byte g, byte b, byte a) => (uint)(r | (g << 8) | (b << 16) | (a << 24));

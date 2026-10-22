@@ -24,6 +24,9 @@
 // Created: Thursday, January 17, 2013 11:07:10 PM
 // 
 
+using System;
+using System.IO;
+using System.Linq;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.IO;

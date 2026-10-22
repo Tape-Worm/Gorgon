@@ -22,8 +22,12 @@
 // Created: April 28, 2025 10:12:23 PM
 //
 
+using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Avalonia.Controls.Selection;
 using Gorgon.IO;
@@ -45,7 +49,6 @@ namespace Gorgon.Examples;
 internal class ChunkFileViewModel
     : ReactiveObject
 {
-    private string _chunkFileData = string.Empty;
     private string _filePath = string.Empty;
     // These are the types of chunked files we're able to read.
     // We can load v3.0 sprite files, v3.1 animation files and v1.1 font files.
@@ -56,20 +59,18 @@ internal class ChunkFileViewModel
     /// </summary>
     public string ChunkFileData
     {
-        get => _chunkFileData;
-        private set => this.RaiseAndSetIfChanged(ref _chunkFileData, value);
-    }
-
-    private string _errorMessage = string.Empty;
+        get;
+        private set => this.RaiseAndSetIfChanged(ref field, value);
+    } = string.Empty;
 
     /// <summary>
     /// Property to return any error message.
     /// </summary>
     public string ErrorMessage
     {
-        get => _errorMessage;
-        private set => this.RaiseAndSetIfChanged(ref _errorMessage, value);
-    }
+        get;
+        private set => this.RaiseAndSetIfChanged(ref field, value);
+    } = string.Empty;
 
     /// <summary>
     /// Property to return the title for the application.
@@ -94,16 +95,14 @@ internal class ChunkFileViewModel
         private set;
     }
 
-    private ObservableCollection<string> _chunks = [];
-
     /// <summary>
     /// Property to return the list of chunks in the file.
     /// </summary>
     public ObservableCollection<string> Chunks
     {
-        get => _chunks;
-        private set => this.RaiseAndSetIfChanged(ref _chunks, value);
-    }
+        get;
+        private set => this.RaiseAndSetIfChanged(ref field, value);
+    } = [];
 
     /// <summary>
     /// Property to return the selection model for our chunk list.

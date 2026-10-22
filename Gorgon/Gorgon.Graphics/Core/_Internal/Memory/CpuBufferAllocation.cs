@@ -23,10 +23,7 @@
 //
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Text;
-using TerraFX.Interop.WinRT;
 
 namespace Gorgon.Graphics.Core;
 
@@ -50,7 +47,7 @@ internal readonly unsafe struct CpuBufferAllocation(CpuBufferHeap? heap, ulong h
     public readonly CpuBufferHeap? Heap = heap;
 
     /// <summary>
-    /// The virtual allocation handle associated with the allocation.
+    /// The identifier for the allocation within its heap.
     /// </summary>
     public readonly ulong Handle = handle;
 

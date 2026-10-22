@@ -22,9 +22,9 @@
 // Created: July 6, 2025 4:11:03 PM
 //
 
+using System;
 using System.Runtime.CompilerServices;
 using System.Text;
-using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
 using Gorgon.Native;
 using TerraFX.Interop.DirectX;
@@ -117,7 +117,7 @@ internal static class D3DConversionExtensions
             D3D_SHADER_MODEL.D3D_HIGHEST_SHADER_MODEL => ShaderModel.ShaderModel_6_8,
             _ => ShaderModel.Unsupported
         };
-    }    
+    }
 
     extension(GorgonBox box)
     {
@@ -235,5 +235,20 @@ internal static class D3DConversionExtensions
         /// <returns>The <see cref="GorgonPtr{T}"/> pointing at the blob's contents.</returns>
         public unsafe GorgonPtr<T> ToGorgonPtr<T>()
             where T : unmanaged => new((T*)blob.Get()->GetBufferPointer(), (long)blob.Get()->GetBufferSize());
+    }
+
+    extension(D3D12_COMMAND_LIST_TYPE listType)
+    {
+        /// <summary>
+        /// Function to return the friendly name as a string constant for each D3D12 queue type.
+        /// </summary>
+        /// <returns>The queue type.</returns>
+        public string ToStringConstant() => listType switch
+        {
+            D3D12_COMMAND_LIST_TYPE.D3D12_COMMAND_LIST_TYPE_DIRECT => nameof(D3D12_COMMAND_LIST_TYPE.D3D12_COMMAND_LIST_TYPE_DIRECT),
+            D3D12_COMMAND_LIST_TYPE.D3D12_COMMAND_LIST_TYPE_COPY => nameof(D3D12_COMMAND_LIST_TYPE.D3D12_COMMAND_LIST_TYPE_COPY),
+            D3D12_COMMAND_LIST_TYPE.D3D12_COMMAND_LIST_TYPE_COMPUTE => nameof(D3D12_COMMAND_LIST_TYPE.D3D12_COMMAND_LIST_TYPE_COMPUTE),
+            _ => string.Empty
+        };
     }
 }

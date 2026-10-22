@@ -22,6 +22,8 @@
 // Created: May 6, 2025 11:11:02 PM
 //
 
+using System;
+using System.Collections.Generic;
 using Gorgon.Native;
 using Windows.Win32.Graphics.Imaging;
 

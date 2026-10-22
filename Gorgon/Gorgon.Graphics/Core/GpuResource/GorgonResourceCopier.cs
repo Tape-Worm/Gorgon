@@ -22,10 +22,14 @@
 // Created: January 16, 2026 2:28:28 PM
 //
 
+using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Threading;
+using System.Threading.Tasks;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
@@ -136,17 +140,17 @@ public unsafe sealed class GorgonResourceCopier
     {
         PrepUpload();
 
-        _commandQueue.Tracker.TrackResource(buffer.D3DResource);
-        
+        _commandList.TrackResource(buffer.D3DResource);
+
         _commandList.SetBarrier(buffer, BarrierSync.Copy, BarrierAccess.CopyDestination, true);
 
         _uploadHeaps.Allocate(count, Graphics.Adapter.HasTightAlignmentSupport ? 0 : D3D12.D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT, out CpuBufferAllocation allocation);
         Debug.Assert(allocation.IsAvailable, $"The transient heap for '{buffer.Name}' is not valid.");
 
-        _commandQueue.Tracker.TrackResource(allocation.Heap.D3DResource);
+        _commandList.TrackResource(allocation.Heap.D3DResource);
 
         NativeMemory.Copy(data, allocation.CpuPointer, (nuint)count);
-        
+
         _commandList.D3DGraphicsCommandList.Get()->CopyBufferRegion((PID3D12Resource2)buffer.D3DResource.Get(), buffer.ResourceOffset + offset, (PID3D12Resource2)allocation.Heap.D3DResource.Get(), allocation.Offset, count);
     }
 
@@ -206,8 +210,8 @@ public unsafe sealed class GorgonResourceCopier
 
         PrepUpload();
 
-        _commandQueue.Tracker.TrackResource(source.D3DResource);
-        _commandQueue.Tracker.TrackResource(destination.D3DResource);
+        _commandList.TrackResource(source.D3DResource);
+        _commandList.TrackResource(destination.D3DResource);
 
         GorgonSubResourceRange srcSubRange = new(sourceMipLevel, 1, sourceArrayIndex, 1, sourcePlane, 1);
         GorgonSubResourceRange destSubRange = new(destinationMipLevel, 1, destinationZOrArrayIndex, 1, destinationPlane, 1);
@@ -248,15 +252,15 @@ public unsafe sealed class GorgonResourceCopier
         if ((ReferenceEquals(source, destination)) && (sourceSubIndex == destSubIndex) && (sourceRegion.IntersectsWith(destRect)))
         {
             throw new ArgumentException(string.Format(Resources.GORGFX_ERR_CANNOT_COPY_TEXTURE_INTO_ITSELF, source.Name, sourceSubIndex));
-        }       
+        }
 
         ID3D12Resource* srcRes = (PID3D12Resource2)source.D3DResource.Get();
         ID3D12Resource* destRes = (PID3D12Resource2)destination.D3DResource.Get();
 
         PrepUpload();
 
-        _commandQueue.Tracker.TrackResource(source.D3DResource);
-        _commandQueue.Tracker.TrackResource(destination.D3DResource);
+        _commandList.TrackResource(source.D3DResource);
+        _commandList.TrackResource(destination.D3DResource);
 
         GorgonSubResourceRange srcSubRange = new(sourceMipLevel, 1, sourceArrayIndex, 1, sourcePlane, 1);
         GorgonSubResourceRange destSubRange = new(destinationMipLevel, 1, destinationZOrArrayIndex, 1, destinationPlane, 1);
@@ -303,12 +307,12 @@ public unsafe sealed class GorgonResourceCopier
 
         PrepUpload();
 
-        _commandQueue.Tracker.TrackResource(source.D3DResource);
-        _commandQueue.Tracker.TrackResource(destination.D3DResource);
+        _commandList.TrackResource(source.D3DResource);
+        _commandList.TrackResource(destination.D3DResource);
 
         GorgonSubResourceRange srcSubRange = new(sourceMipLevel, 1, 0, 1, sourcePlane, 1);
         GorgonSubResourceRange destSubRange = new(destinationMipLevel, 1, destinationZOrArrayIndex, 1, destinationPlane, 1);
-                
+
         _commandList.SetBarrier(source, BarrierSync.Copy, BarrierAccess.CopySource, BarrierLayout.Common, srcSubRange);
         _commandList.SetBarrier(destination, BarrierSync.Copy, BarrierAccess.CopyDestination, BarrierLayout.Common, destSubRange, force: true);
 
@@ -393,7 +397,7 @@ public unsafe sealed class GorgonResourceCopier
 
         sourceRegion.Width = sourceRegion.Width.Min(destRegion.Width).Max(0);
         sourceRegion.Height = sourceRegion.Height.Min(destRegion.Height).Max(0);
-        sourceRegion.Depth = sourceRegion.Depth.Min(destRegion.Depth).Max(0);        
+        sourceRegion.Depth = sourceRegion.Depth.Min(destRegion.Depth).Max(0);
 
         return sourceRegion.IsEmpty ? new GorgonCopyTextureSubResource() : new GorgonCopyTextureSubResource(sourceRegion)
         {
@@ -488,7 +492,7 @@ public unsafe sealed class GorgonResourceCopier
         sourceRegion.Depth = sourceRegion.Depth.Min(destRegion.Depth).Max(0);
 
         return sourceRegion.IsEmpty ? new GorgonCopyVirtualToTexture() : new GorgonCopyVirtualToTexture(sourceRegion, parameters.SourceHandle)
-        {                        
+        {
             DestinationX = destinationX,
             DestinationY = destinationY,
             DestinationZOrArrayIndex = destinationZOrArrayIndex,
@@ -518,7 +522,7 @@ public unsafe sealed class GorgonResourceCopier
         short destOffsetZ = (short)destDims.Front;
         destDims.Top = destDims.Left = destDims.Front = 0;
 
-        short sourceMipLevel = parameters.SourceMipLevel.Min((short)(source.MipCount - 1)).Max(0);        
+        short sourceMipLevel = parameters.SourceMipLevel.Min((short)(source.MipCount - 1)).Max(0);
         GorgonBox sourceRegion = parameters.SourceRegion.IsEmpty ? srcDims : parameters.SourceRegion;
 
         if (source.Type != TextureType.Texture3D)
@@ -560,7 +564,7 @@ public unsafe sealed class GorgonResourceCopier
 
         int destinationX = destRegion.X + destOffsetX;
         int destinationY = destRegion.Y + destOffsetY;
-        short destinationZ =  (short)(destRegion.Z + destOffsetZ);
+        short destinationZ = (short)(destRegion.Z + destOffsetZ);
 
         sourceRegion.Width = sourceRegion.Width.Min(destRegion.Width).Max(0);
         sourceRegion.Height = sourceRegion.Height.Min(destRegion.Height).Max(0);
@@ -568,10 +572,10 @@ public unsafe sealed class GorgonResourceCopier
 
         return sourceRegion.IsEmpty ? new GorgonCopyTextureToVirtual() : new GorgonCopyTextureToVirtual(sourceRegion, parameters.DestinationHandle)
         {
-            SourceMipLevel = sourceMipLevel,            
+            SourceMipLevel = sourceMipLevel,
             DestinationX = destinationX,
             DestinationY = destinationY,
-            DestinationZ = destinationZ            
+            DestinationZ = destinationZ
         };
     }
 
@@ -685,7 +689,7 @@ public unsafe sealed class GorgonResourceCopier
             isSourceEmpty = parameters.SourceRegion.IsEmpty;
         }
 
-        if (((destination.Type != TextureType.Texture3D) || (parameters.DestinationZOrArrayIndex == 0)) 
+        if (((destination.Type != TextureType.Texture3D) || (parameters.DestinationZOrArrayIndex == 0))
             && (parameters.DestinationX == 0) && (parameters.DestinationY == 0) && (isSourceEmpty))
         {
             return;
@@ -768,13 +772,13 @@ public unsafe sealed class GorgonResourceCopier
     /// <param name="sourceHandle">The source handle for the virtual texture allocation.</param>
     /// <param name="destHandle">The destination handle for the virtual texture allocation.</param>
     /// <inheritdoc cref="IGorgonCopyMethodsFluent{IGorgonResourceWriter}.CopyVirtualToVirtual(GorgonVirtualTexture, GorgonVirtualTexture, ref readonly GorgonCopyVirtualToVirtual)" path="/exception"/>
-    private static void ValidateCopyTexture(GorgonVirtualTexture source, GorgonVirtualTexture destination, GorgonVirtualTextureHandle sourceHandle, GorgonVirtualTextureHandle destHandle )
+    private static void ValidateCopyTexture(GorgonVirtualTexture source, GorgonVirtualTexture destination, GorgonVirtualTextureHandle sourceHandle, GorgonVirtualTextureHandle destHandle)
     {
         if (sourceHandle.Equals(destHandle))
         {
             throw new ArgumentException(string.Format(Resources.GORGFX_ERR_CANNOT_COPY_VIRTUAL_TO_SAME_HANDLE, source.Name));
         }
-        
+
         if (source.FormatInfo.Group != destination.FormatInfo.Group)
         {
             throw new ArgumentException(string.Format(Resources.GORGFX_ERR_TEXTURE_COPY_FORMAT_GROUPS_DIFFERENT, source.Name, source.FormatInfo.Group, destination.Name, destination.FormatInfo.Group), nameof(destination));
@@ -795,7 +799,7 @@ public unsafe sealed class GorgonResourceCopier
             copyQueue.Execute(_commandList);
             ulong fence = copyQueue.IncrementFence();
 
-            copyQueue.WaitForFence(fence, Timeout.Infinite);            
+            copyQueue.WaitForFence(fence);
         }
         finally
         {
@@ -827,7 +831,7 @@ public unsafe sealed class GorgonResourceCopier
 
         PrepDownload();
 
-        _commandQueue.Tracker.TrackResource(buffer.D3DResource);
+        _commandList.TrackResource(buffer.D3DResource);
 
         // Do the copy.
         _commandList.SetBarrier(buffer, BarrierSync.Copy, BarrierAccess.CopySource, true);
@@ -865,15 +869,9 @@ public unsafe sealed class GorgonResourceCopier
     /// </remarks>
     /// <seealso cref="GorgonGpuBufferCommon"/>
     /// <seealso cref="IGorgonResourceWriter"/>
-    public IGorgonResourceWriter BeginUpload()
-    {        
-        if (Interlocked.CompareExchange(ref _batchState, 1, 0) != 0)
-        {
-            throw new GorgonException(GorgonResult.CannotInitialize, Resources.GORGFX_ERR_BATCH_STARTED);
-        }
-
-        return this;
-    }
+    public IGorgonResourceWriter BeginUpload() => Interlocked.CompareExchange(ref _batchState, 1, 0) != 0
+            ? throw new GorgonException(GorgonResult.CannotInitialize, Resources.GORGFX_ERR_BATCH_STARTED)
+            : (IGorgonResourceWriter)this;
 
     /// <inheritdoc/>
     public void Dispose()
@@ -891,7 +889,7 @@ public unsafe sealed class GorgonResourceCopier
         }
 
         if (!_hasDelayedWrites)
-        {            
+        {
             Cleanup();
             return Task.CompletedTask;
         }
@@ -912,7 +910,7 @@ public unsafe sealed class GorgonResourceCopier
         {
             try
             {
-                _commandQueue.WaitForFence(fence, Timeout.Infinite);
+                _commandQueue.WaitForFence(fence);
             }
             finally
             {
@@ -944,16 +942,16 @@ public unsafe sealed class GorgonResourceCopier
         ulong fence = _commandQueue.IncrementFence();
 
         try
-        {            
-            _commandQueue.WaitForFence(fence, Timeout.Infinite);
+        {
+            _commandQueue.WaitForFence(fence);
         }
         finally
         {
             _commandQueue.Tracker.Signal();
             _commandQueue.AllocatorPool.Signal();
             _commandQueue.ListPool.Return(_commandList);
-            Cleanup();            
-        }        
+            Cleanup();
+        }
     }
 
     /// <inheritdoc/>
@@ -1038,7 +1036,7 @@ public unsafe sealed class GorgonResourceCopier
             throw new GorgonException(GorgonResult.CannotWrite, Resources.GORGFX_ERR_BATCH_NOT_STARTED);
         }
 
-        long sizeToCopy = count ?? (source.SizeInBytes - sourceOffset).Min(destination.SizeInBytes - destinationOffset);        
+        long sizeToCopy = count ?? (source.SizeInBytes - sourceOffset).Min(destination.SizeInBytes - destinationOffset);
 
         ArgumentOutOfRangeException.ThrowIfNegative(sourceOffset);
         ArgumentOutOfRangeException.ThrowIfNegative(destinationOffset);
@@ -1065,8 +1063,8 @@ public unsafe sealed class GorgonResourceCopier
 
         PrepUpload();
 
-        _commandQueue.Tracker.TrackResource(source.D3DResource);
-        _commandQueue.Tracker.TrackResource(destination.D3DResource);
+        _commandList.TrackResource(source.D3DResource);
+        _commandList.TrackResource(destination.D3DResource);
 
         // If the buffers are pointing to the same resource (as in the mega buffer), then we need a combination of states.
         if (source.ResourceID == destination.ResourceID)
@@ -1131,12 +1129,12 @@ public unsafe sealed class GorgonResourceCopier
 
             PrepUpload();
 
-            _commandQueue.Tracker.TrackResource(texture.D3DResource);
+            _commandList.TrackResource(texture.D3DResource);
 
             _uploadHeaps.Allocate((ulong)working.SizeInBytes, texture.Info.Alignment, out CpuBufferAllocation allocation);
             Debug.Assert(allocation.IsAvailable, $"The returned resource heap allocation is not valid.");
 
-            _commandQueue.Tracker.TrackResource(allocation.Heap.D3DResource);
+            _commandList.TrackResource(allocation.Heap.D3DResource);
 
             // Copy to upload resource.
             NativeMemory.Copy((void*)working.ImageData, allocation.CpuPointer, (nuint)working.SizeInBytes);
@@ -1216,7 +1214,7 @@ public unsafe sealed class GorgonResourceCopier
 
         PrepUpload();
 
-        _commandQueue.Tracker.TrackResource(texture.D3DResource);
+        _commandList.TrackResource(texture.D3DResource);
 
         // Planes are not supported by IGorgonImage, so leave at 0.
         int destResourceIndex = texture.GetSubResourceIndex(destinationMipLevel, destinationZOrArrayIndex, destinationPlane);
@@ -1225,7 +1223,7 @@ public unsafe sealed class GorgonResourceCopier
         _uploadHeaps.Allocate((ulong)imageBuffer.SizeInBytes, texture.Info.Alignment, out CpuBufferAllocation allocation);
         Debug.Assert(allocation.IsAvailable, $"The returned resource heap allocation is not valid.");
 
-        _commandQueue.Tracker.TrackResource(allocation.Heap.D3DResource);
+        _commandList.TrackResource(allocation.Heap.D3DResource);
 
         // Copy to upload resource.
         NativeMemory.Copy((void*)imageBuffer.ImageData, allocation.CpuPointer, (nuint)imageBuffer.SizeInBytes);
@@ -1282,7 +1280,7 @@ public unsafe sealed class GorgonResourceCopier
 
         PrepUpload();
 
-        _commandQueue.Tracker.TrackResource(texture.D3DResource);
+        _commandList.TrackResource(texture.D3DResource);
 
         // Planes are not supported by IGorgonImage, so leave at 0.
         int destResourceIndex = texture.GetSubResourceIndex(destinationMipLevel, destinationArrayIndex, 0);
@@ -1290,7 +1288,7 @@ public unsafe sealed class GorgonResourceCopier
         _uploadHeaps.Allocate((ulong)imageBuffer.SizeInBytes, texture.Info.Alignment, out CpuBufferAllocation allocation);
         Debug.Assert(allocation.IsAvailable, $"The returned resource heap allocation is not valid.");
 
-        _commandQueue.Tracker.TrackResource(allocation.Heap.D3DResource);
+        _commandList.TrackResource(allocation.Heap.D3DResource);
 
         // Copy to upload resource.
         NativeMemory.Copy((void*)imageBuffer.ImageData, allocation.CpuPointer, (nuint)imageBuffer.SizeInBytes);
@@ -1346,7 +1344,7 @@ public unsafe sealed class GorgonResourceCopier
 
         ulong copyQueueFence = Graphics.Queues.GraphicsQueue.FenceValue;
         _commandQueue.D3DQueue.Get()->Wait((PID3D12Fence1)Graphics.Queues.GraphicsQueue.D3DFence.Get(), copyQueueFence)
-            .ThrowIfFailed(GorgonResult.CannotExecute, () => string.Format(Resources.GORGFX_ERR_WAIT_FAILED, nameof(Graphics.Queues.CopyQueue), nameof(Graphics.Queues.GraphicsQueue)));
+            .ThrowIfFailed(GorgonResult.CannotExecute, Resources.GORGFX_ERR_WAIT_FAILED, nameof(Graphics.Queues.CopyQueue), nameof(Graphics.Queues.GraphicsQueue));
         return this;
     }
 
@@ -1376,7 +1374,7 @@ public unsafe sealed class GorgonResourceCopier
 
         ulong computeQueueFence = Graphics.Queues.ComputeQueue.FenceValue;
         _commandQueue.D3DQueue.Get()->Wait((PID3D12Fence1)Graphics.Queues.ComputeQueue.D3DFence.Get(), computeQueueFence)
-            .ThrowIfFailed(GorgonResult.CannotExecute, () => string.Format(Resources.GORGFX_ERR_WAIT_FAILED, nameof(Graphics.Queues.CopyQueue), nameof(Graphics.Queues.ComputeQueue)));
+            .ThrowIfFailed(GorgonResult.CannotExecute, Resources.GORGFX_ERR_WAIT_FAILED, nameof(Graphics.Queues.CopyQueue), nameof(Graphics.Queues.ComputeQueue));
         return this;
     }
 
@@ -1398,7 +1396,7 @@ public unsafe sealed class GorgonResourceCopier
         // We don't need to limit the destination values because the GetSubResourceIndex method will ensure we can't go beyond the limits of the 
         // texture sub resources.
         int subResourceIndex = texture.GetSubResourceIndex(parameters.DestinationMipLevel, parameters.DestinationArrayIndex, parameters.DestinationPlane);
-        GorgonSubResourceInfo subInfo = texture.SubResources[subResourceIndex];        
+        GorgonSubResourceInfo subInfo = texture.SubResources[subResourceIndex];
 
         if (subInfo.SizeInBytes < (buffer.SizeInBytes - parameters.SourceOffset))
         {
@@ -1416,10 +1414,10 @@ public unsafe sealed class GorgonResourceCopier
         long height = (rowCount * (texture.FormatInfo.IsCompressed ? 4 : 1)).Min(subInfo.Height);
         long depth = (rowCount / subInfo.RowCount).Min(subInfo.Depth).Max(1);
 
-        PrepUpload();        
+        PrepUpload();
 
-        _commandQueue.Tracker.TrackResource(buffer.D3DResource);
-        _commandQueue.Tracker.TrackResource(texture.D3DResource);
+        _commandList.TrackResource(buffer.D3DResource);
+        _commandList.TrackResource(texture.D3DResource);
 
         D3D12_PLACED_SUBRESOURCE_FOOTPRINT footPrint = subInfo.ToD3DPlacedSubResourceFootPrint(0);
         footPrint.Offset = (ulong)parameters.SourceOffset + buffer.ResourceOffset;
@@ -1461,8 +1459,8 @@ public unsafe sealed class GorgonResourceCopier
 
         PrepUpload();
 
-        _commandQueue.Tracker.TrackResource(buffer.D3DResource);
-        _commandQueue.Tracker.TrackResource(texture.D3DResource);
+        _commandList.TrackResource(buffer.D3DResource);
+        _commandList.TrackResource(texture.D3DResource);
 
         D3D12_PLACED_SUBRESOURCE_FOOTPRINT footPrint = subInfo.ToD3DPlacedSubResourceFootPrint(0);
         footPrint.Offset = (ulong)parameters.DestinationOffset + buffer.ResourceOffset;
@@ -1474,7 +1472,7 @@ public unsafe sealed class GorgonResourceCopier
         _commandList.SetBarrier(buffer, BarrierSync.Copy, BarrierAccess.CopyDestination);
         _commandList.SetBarrier(texture, BarrierSync.Copy, BarrierAccess.CopySource, BarrierLayout.Common, force: true);
 
-        D3D12_BOX box = new(0, 0,  0, subInfo.Width, subInfo.Height, subInfo.Depth);
+        D3D12_BOX box = new(0, 0, 0, subInfo.Width, subInfo.Height, subInfo.Depth);
 
         _commandList.D3DGraphicsCommandList.Get()->CopyTextureRegion(&destLoc, 0, 0, 0, &srcLoc, &box);
 
@@ -1542,8 +1540,8 @@ public unsafe sealed class GorgonResourceCopier
         _commandList.SetBarrier(source, BarrierSync.Copy, BarrierAccess.CopySource, BarrierLayout.Common);
         _commandList.SetBarrier(destination, BarrierSync.Copy, BarrierAccess.CopyDestination, BarrierLayout.Common, force: true);
 
-        _commandQueue.Tracker.TrackResource(source.D3DResource);
-        _commandQueue.Tracker.TrackResource(destination.D3DResource);
+        _commandList.TrackResource(source.D3DResource);
+        _commandList.TrackResource(destination.D3DResource);
 
         _commandList.D3DGraphicsCommandList.Get()->CopyResource(destRes, srcRes);
 
@@ -1730,8 +1728,8 @@ public unsafe sealed class GorgonResourceCopier
 
         PrepUpload();
 
-        _commandQueue.Tracker.TrackResource(buffer.D3DResource);
-        _commandQueue.Tracker.TrackResource(texture.D3DResource);
+        _commandList.TrackResource(buffer.D3DResource);
+        _commandList.TrackResource(texture.D3DResource);
 
         GorgonSubResourceInfo subInfo = texture.SubResources[destinationMipLevel, destinationArrayIndex];
         D3D12_PLACED_SUBRESOURCE_FOOTPRINT footPrint = new()
@@ -1954,12 +1952,12 @@ public unsafe sealed class GorgonResourceCopier
 
         PrepDownload();
 
-        _commandQueue.Tracker.TrackResource(texture.D3DResource);
+        _commandList.TrackResource(texture.D3DResource);
 
         _downloadHeaps.Allocate((ulong)image.SizeInBytes, texture.Info.Alignment, out CpuBufferAllocation allocation);
         Debug.Assert(allocation.IsAvailable, "The returned resource heap allocation is not valid.");
 
-        _commandQueue.Tracker.TrackResource(allocation.Heap.D3DResource);
+        _commandList.TrackResource(allocation.Heap.D3DResource);
 
         ulong offsetCalc = allocation.Offset;
         int arrayCount = image.ArrayCount.Min(texture.ArrayCount);
@@ -1993,7 +1991,7 @@ public unsafe sealed class GorgonResourceCopier
 
                     offsetCalc += (ulong)(buffer.SizeInBytes * depth);
 
-                    depth = (depth >> 1).Max(1);                    
+                    depth = (depth >> 1).Max(1);
                 }
             }
 
@@ -2074,7 +2072,7 @@ public unsafe sealed class GorgonResourceCopier
 
             PrepDownload();
 
-            _commandQueue.Tracker.TrackResource(texture.D3DResource);
+            _commandList.TrackResource(texture.D3DResource);
 
             int srcResourceIndex = texture.GetSubResourceIndex(sourceMipLevel, sourceZOrArrayIndex, sourcePlane);
             GorgonSubResourceInfo srcInfo = texture.SubResources[srcResourceIndex];
@@ -2082,7 +2080,7 @@ public unsafe sealed class GorgonResourceCopier
             _downloadHeaps.Allocate((ulong)buffer.SizeInBytes, texture.Info.Alignment, out CpuBufferAllocation allocation);
             Debug.Assert(allocation.IsAvailable, "The returned resource heap allocation is not valid.");
 
-            _commandQueue.Tracker.TrackResource(allocation.Heap.D3DResource);
+            _commandList.TrackResource(allocation.Heap.D3DResource);
 
             // Copy queues can only use Common layouts.
             _commandList.SetBarrier(texture, BarrierSync.Copy, BarrierAccess.CopySource, BarrierLayout.Common, force: true);
@@ -2133,7 +2131,7 @@ public unsafe sealed class GorgonResourceCopier
         _batchState = int.MaxValue;
         _commandAllocator = list.Allocator;
         _commandList = list;
-        _commandQueue = list.Queue;        
+        _commandQueue = list.Queue;
 
         // Release any previous resources that may have been used in copy operations.
         _commandQueue.Tracker.Signal();

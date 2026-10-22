@@ -21,6 +21,7 @@
 //
 // Created: October 7, 2026 12:35:00 AM
 //
+using System;
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 using TerraFX.Interop.DirectX;
@@ -201,7 +202,7 @@ public unsafe sealed class GorgonExecuteCall
         ComPtr<ID3D12CommandSignature> result = default;
 
         Graphics.D3DDevice.Get()->CreateCommandSignature(&sigDesc, rootSignature, Win32.__uuidof<ID3D12CommandSignature>(), (void**)result.GetAddressOf())
-            .ThrowIfFailed(GorgonResult.CannotCreate, () => Resources.GORGFX_ERR_CANNOT_CREATE_EXECUTION_CALL);
+            .ThrowIfFailed(GorgonResult.CannotCreate, Resources.GORGFX_ERR_CANNOT_CREATE_EXECUTION_CALL);
 
         return result;
     }

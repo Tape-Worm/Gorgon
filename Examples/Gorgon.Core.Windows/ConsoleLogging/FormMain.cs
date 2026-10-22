@@ -22,7 +22,9 @@
 // Created: May 5, 2025 11:24:57 PM
 //
 
+using System;
 using System.ComponentModel;
+using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 

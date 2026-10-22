@@ -24,7 +24,9 @@
 // Created: Wednesday, November 02, 2011 9:05:14 AM
 // 
 
+using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Gorgon.Core.Windows.Properties;
 using Gorgon.Native;

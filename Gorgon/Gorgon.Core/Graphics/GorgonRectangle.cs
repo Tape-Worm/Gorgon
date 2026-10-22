@@ -22,7 +22,9 @@
 // Created: December 18, 2023 2:22:03 PM
 //
 
+using System;
 using System.Drawing;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Intrinsics;
@@ -169,7 +171,7 @@ public struct GorgonRectangle
     /// <summary>
     /// Property to return the center of the rectangle.
     /// </summary>
-    public readonly GorgonPoint Center => new(Width / 2 + Left, Height / 2 + Top);
+    public readonly GorgonPoint Center => new((Width / 2) + Left, (Height / 2) + Top);
 
     /// <summary>
     /// Returns a <see cref="string" /> that represents this instance.
@@ -334,12 +336,7 @@ public struct GorgonRectangle
         int right = rectangle2.Right.Min(rectangle1.Right);
         int bottom = rectangle2.Bottom.Min(rectangle1.Bottom);
 
-        if ((right <= left) || (bottom <= top))
-        {
-            return Empty;
-        }
-
-        return FromLTRB(left, top, right, bottom);
+        return (right <= left) || (bottom <= top) ? Empty : FromLTRB(left, top, right, bottom);
     }
 
     /// <summary>
@@ -432,12 +429,7 @@ public struct GorgonRectangle
         int r = rectangle1.Right.Max(rectangle2.Right);
         int b = rectangle1.Bottom.Max(rectangle2.Bottom);
 
-        if ((r < l) || (b < t))
-        {
-            return Empty;
-        }
-
-        return FromLTRB(l, t, r, b);
+        return (r < l) || (b < t) ? Empty : FromLTRB(l, t, r, b);
     }
 
     /// <summary>
@@ -557,15 +549,9 @@ public struct GorgonRectangle
     /// </para>
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static GorgonRectangle Expand(GorgonRectangle rectangle, int amountX, int amountY)
-    {
-        if ((amountX == 0) && (amountY == 0))
-        {
-            return rectangle;
-        }
-
-        return new(rectangle.X - amountX, rectangle.Y - amountY, rectangle.Width + amountX * 2, rectangle.Height + amountY * 2);
-    }
+    public static GorgonRectangle Expand(GorgonRectangle rectangle, int amountX, int amountY) => (amountX == 0) && (amountY == 0)
+            ? rectangle
+            : new(rectangle.X - amountX, rectangle.Y - amountY, rectangle.Width + (amountX * 2), rectangle.Height + (amountY * 2));
 
     /// <summary>
     /// Operator to implicitly convert this <see cref="GorgonRectangle"/> ot a <see cref="GorgonRectangleF"/>.

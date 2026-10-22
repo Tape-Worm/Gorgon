@@ -22,8 +22,6 @@
 // Created: October 12, 2025 2:04:51 PM
 //
 
-using TerraFX.Interop.DirectX;
-
 namespace Gorgon.Graphics;
 
 /// <summary>

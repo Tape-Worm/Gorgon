@@ -22,9 +22,13 @@
 // Created: April 13, 2026 4:55:42 PM
 //
 
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
@@ -203,8 +207,8 @@ public sealed unsafe class GorgonVirtualTexture
                 int subResIndex = GetSubResourceIndex((short)m, (short)a);
                 D3D12_SUBRESOURCE_TILING data = subResources[subResIndex];
 
-                result.Add(new GorgonSubResourceTileInfo(subResIndex, 
-                    (int)data.WidthInTiles, (short)data.HeightInTiles, (short)data.DepthInTiles, 
+                result.Add(new GorgonSubResourceTileInfo(subResIndex,
+                    (int)data.WidthInTiles, (short)data.HeightInTiles, (short)data.DepthInTiles,
                     (short)a, (short)m, 1));
             }
 
@@ -212,10 +216,10 @@ public sealed unsafe class GorgonVirtualTexture
             {
                 int subResIndex = GetSubResourceIndex(packedMipInfo.NumStandardMips, (short)a);
                 D3D12_SUBRESOURCE_TILING data = subResources[subResIndex];
-                
+
                 result.Add(new GorgonSubResourceTileInfo(subResIndex,
                     (int)packedMipInfo.NumTilesForPackedMips, 1, 1,
-                    (short)a, packedMipInfo.NumStandardMips, packedMipInfo.NumPackedMips));                
+                    (short)a, packedMipInfo.NumStandardMips, packedMipInfo.NumPackedMips));
             }
         }
 
@@ -251,7 +255,7 @@ public sealed unsafe class GorgonVirtualTexture
                 // larger than 64-bits, and offset by a non-aligned by 64 value, so we have to to break 
                 // it up into chunks and set each qword individually.
 
-                int tileRow = tileSlice + tileInfo.Width * y;
+                int tileRow = tileSlice + (tileInfo.Width * y);
                 int rowStart = tileRow + tileRegion.Left;
                 int rowEnd = (tileRow + tileRegion.Right) - 1;
 
@@ -305,7 +309,7 @@ public sealed unsafe class GorgonVirtualTexture
 
             for (int y = tileRegion.Top; y < tileRegion.Bottom; ++y)
             {
-                int tileRow = tileSlice + tileInfo.Width * y;
+                int tileRow = tileSlice + (tileInfo.Width * y);
                 int rowStart = tileRow + tileRegion.Left;
                 int rowEnd = (tileRow + tileRegion.Right) - 1;
 
@@ -331,7 +335,7 @@ public sealed unsafe class GorgonVirtualTexture
                 }
 
                 // If the head or tail are intersecting with our region, then this region is allocated.
-                if (((bitmap[qwordStart] & headMask) != 0) || ((bitmap[qwordEnd] & tailMask) !=  0))
+                if (((bitmap[qwordStart] & headMask) != 0) || ((bitmap[qwordEnd] & tailMask) != 0))
                 {
                     return true;
                 }
@@ -420,7 +424,7 @@ public sealed unsafe class GorgonVirtualTexture
         Graphics.D3DDevice.Get()->CreateReservedResource2(&desc, D3D12_BARRIER_LAYOUT.D3D12_BARRIER_LAYOUT_UNDEFINED,
             clearValue, null, (uint)castable.Length, castPtr,
             Win32.__uuidof<ID3D12Resource2>(), (void**)result.GetAddressOf())
-            .ThrowIfFailed(GorgonResult.CannotCreate, () => Resources.GORGFX_ERR_CANNOT_CREATE_RESOURCE);
+            .ThrowIfFailed(GorgonResult.CannotCreate, Resources.GORGFX_ERR_CANNOT_CREATE_RESOURCE);
 
         result.SetD3DDebugName(textureName);
 
@@ -449,7 +453,7 @@ public sealed unsafe class GorgonVirtualTexture
     /// </exception>
     private protected override GorgonTextureInfo ValidateInfo(GorgonTextureInfo info)
     {
-        info = base.ValidateInfo(info);        
+        info = base.ValidateInfo(info);
 
         if (!Graphics.FormatSupport[info.Format].IsTiledFormat)
         {
@@ -484,12 +488,9 @@ public sealed unsafe class GorgonVirtualTexture
         // texture sizes is wasteful.
         D3D12_RESOURCE_ALLOCATION_INFO resInfo = Graphics.D3DDevice.Get()->GetResourceAllocationInfo(0, 1, &desc);
 
-        if (resInfo.SizeInBytes < 4UL * 1024UL * 1024UL)
-        {
-            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_VIRTUAL_TEXTURE_TOO_SMALL, Name, resInfo.SizeInBytes.FormatMemory(), resInfo.SizeInBytes));
-        }
-
-        return info;
+        return resInfo.SizeInBytes < 4UL * 1024UL * 1024UL
+            ? throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_VIRTUAL_TEXTURE_TOO_SMALL, Name, resInfo.SizeInBytes.FormatMemory(), resInfo.SizeInBytes))
+            : info;
     }
 
     /// <summary>
@@ -503,7 +504,7 @@ public sealed unsafe class GorgonVirtualTexture
     {
         GorgonPoint pixels = ToPixel(texel, mipLevel);
 
-        return new ((int)((double)pixels.X / _tileShape.WidthInTexels).FastFloor(),
+        return new((int)((double)pixels.X / _tileShape.WidthInTexels).FastFloor(),
                    (int)((double)pixels.Y / _tileShape.HeightInTexels).FastFloor());
     }
 
@@ -576,7 +577,7 @@ public sealed unsafe class GorgonVirtualTexture
     {
         Vector3 pixels = ToPixel(texel, mipLevel);
 
-        return new ((int)((double)pixels.X / _tileShape.WidthInTexels).FastFloor(),
+        return new((int)((double)pixels.X / _tileShape.WidthInTexels).FastFloor(),
                    (int)((double)pixels.Y / _tileShape.HeightInTexels).FastFloor(),
                    (int)((double)pixels.Z / _tileShape.DepthInTexels).FastFloor());
     }
@@ -688,7 +689,7 @@ public sealed unsafe class GorgonVirtualTexture
         mipLevel = mipLevel.Max(0).Min((short)(mipsPerArray - 1).Max(0));
         arrayIndex = arrayIndex.Max(0).Min((short)(Type == TextureType.Texture3D ? 0 : (ArrayCount - 1)));
 
-        return arrayIndex * mipsPerArray + mipLevel;
+        return (arrayIndex * mipsPerArray) + mipLevel;
     }
 
     /// <summary>
@@ -712,7 +713,7 @@ public sealed unsafe class GorgonVirtualTexture
             short mipsPerArray = (short)(_packedMipStartIndex.Min((short)(MipCount - 1)) + 1);
             arrayIndex = arrayIndex.Max(0).Min((short)(Type == TextureType.Texture3D ? 0 : (ArrayCount - 1)));
             mipLevel = mipLevel.Max(0).Min((short)(mipsPerArray - 1).Max(0));
-            int subResourceIndex = arrayIndex * mipsPerArray + mipLevel;
+            int subResourceIndex = (arrayIndex * mipsPerArray) + mipLevel;
 
             float l = texels.Left.Max(0).Min(1.0f);
             float t = texels.Top.Max(0).Min(1.0f);
@@ -766,6 +767,11 @@ public sealed unsafe class GorgonVirtualTexture
     {
         using (_allocLock.EnterScope())
         {
+            if (_textureAllocations.Count == 0)
+            {
+                return;
+            }
+
             foreach (ulong key in _textureAllocations.Keys)
             {
                 Graphics.Memory.TextureTilePool.Free(key);
@@ -779,7 +785,7 @@ public sealed unsafe class GorgonVirtualTexture
                 {
                     Array.Clear(_allocationMasks[i]);
                 }
-            }           
+            }
 
             // Wait for the GPU to finish whatever it's doing so we can actually free all the tiles.
             Graphics.WaitForGpu();
@@ -882,8 +888,8 @@ public sealed unsafe class GorgonVirtualTexture
             short mipsPerArray = (short)(_packedMipStartIndex.Min((short)(MipCount - 1)) + 1);
             short tileMipLevel = mipLevel.Max(0).Min((short)(mipsPerArray - 1).Max(0));
             arrayIndex = arrayIndex.Max(0).Min((short)(Type == TextureType.Texture3D ? 0 : (ArrayCount - 1)));
-            int subResourceIndex = arrayIndex * mipsPerArray + tileMipLevel;
-            
+            int subResourceIndex = (arrayIndex * mipsPerArray) + tileMipLevel;
+
             float l = texels.Left.Max(0).Min(1.0f);
             float t = texels.Top.Max(0).Min(1.0f);
             float f = Type != TextureType.Texture3D ? 0 : texels.Front.Max(0).Min(1.0f);
@@ -917,8 +923,8 @@ public sealed unsafe class GorgonVirtualTexture
             uint tileCount = (uint)tileBox.Width * (uint)tileBox.Height * (uint)tileBox.Depth;
 
             Debug.Assert(tileCount != 0, "0 tiles to allocate!");
-            
-            ulong actualHandle = Graphics.Memory.TextureTilePool.Allocate(in D3DResource, tileCount, arrayIndex * MipCount + tileMipLevel, in tileBox);
+
+            ulong actualHandle = Graphics.Memory.TextureTilePool.Allocate(in D3DResource, tileCount, (arrayIndex * MipCount) + tileMipLevel, in tileBox);
 
             _textureAllocations[actualHandle] = new VirtualTextureAllocation(tileBox, mipLevel, arrayIndex);
 

@@ -24,6 +24,7 @@
 // Created: June 29, 2016 10:46:00 PM
 // 
 
+using System.Collections.Generic;
 using Gorgon.Configuration;
 using Gorgon.Graphics.Imaging.Properties;
 
@@ -91,7 +92,7 @@ public class GorgonGifDecodingOptions
     /// <para>
     /// This value does not remap the pixel values to the corresponding palette color, therefore, palettes assigned to the image may not give the desired results without careful palette selection.
     /// </para>
-/// <para>
+    /// <para>
     /// The default value is an empty list.
     /// </para>
     /// </remarks>

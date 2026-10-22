@@ -22,6 +22,8 @@
 // Created: March 25, 2025 8:47:07 PM
 //
 
+using System;
+using System.Windows.Forms;
 using Gorgon.UI.WindowsForms;
 
 namespace Gorgon.Examples;

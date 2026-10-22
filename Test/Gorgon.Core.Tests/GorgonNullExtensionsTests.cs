@@ -47,7 +47,7 @@ public class GorgonNullExtensionsTests
         Assert.IsNull(numericValue.AsNullable<int>());
 
         numericValue = 1;
-        Assert.IsInstanceOfType<int?>(numericValue.AsNullable<int>());
+        _ = Assert.IsInstanceOfType<int?>(numericValue.AsNullable<int>());
 
         numericValue = TestEnumeration.E3;
         TestEnumeration? asNull = numericValue.AsNullable<TestEnumeration>();

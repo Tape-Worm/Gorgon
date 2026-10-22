@@ -24,20 +24,13 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Numerics;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Text;
+using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
-using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
-using Gorgon.Collections;
 using TerraFX.Interop.DirectX;
-using TerraFX.Interop.Windows;
-using Win32 = TerraFX.Interop.Windows.Windows;
 
 namespace Gorgon.Graphics.Core;
 
@@ -123,30 +116,18 @@ internal unsafe sealed class TextureView<T>
         {
             uint cubeCount = (uint)(ArrayCount / 6).Max(1);
 
-            if (cubeCount > 1)
-            {
-                return D3D12_SHADER_RESOURCE_VIEW_DESC.TexCubeArray((DXGI_FORMAT)Format, cubeCount, (uint)MipCount, (uint)ArrayIndex, (uint)MipLevel, MinimumLodClamp, D3D12.D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING);
-            }
-
-            return D3D12_SHADER_RESOURCE_VIEW_DESC.TexCube((DXGI_FORMAT)Format, (uint)MipCount, (uint)MipLevel, MinimumLodClamp, D3D12.D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING);
+            return cubeCount > 1
+                ? D3D12_SHADER_RESOURCE_VIEW_DESC.TexCubeArray((DXGI_FORMAT)Format, cubeCount, (uint)MipCount, (uint)ArrayIndex, (uint)MipLevel, MinimumLodClamp, D3D12.D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING)
+                : D3D12_SHADER_RESOURCE_VIEW_DESC.TexCube((DXGI_FORMAT)Format, (uint)MipCount, (uint)MipLevel, MinimumLodClamp, D3D12.D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING);
         }
 
-        if (isMultiSampled)
-        {
-            if (isArray)
-            {
-                return D3D12_SHADER_RESOURCE_VIEW_DESC.Tex2DMSArray((DXGI_FORMAT)Format, (uint)ArrayCount, (uint)ArrayIndex, D3D12.D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING);
-            }
-
-            return D3D12_SHADER_RESOURCE_VIEW_DESC.Tex2DMS((DXGI_FORMAT)Format, D3D12.D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING);
-        }
-
-        if (isArray)
-        {
-            return D3D12_SHADER_RESOURCE_VIEW_DESC.Tex2DArray((DXGI_FORMAT)Format, (uint)ArrayCount, (uint)MipCount, (uint)ArrayIndex, (uint)MipLevel, PlaneIndex, MinimumLodClamp, D3D12.D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING);
-        }
-
-        return D3D12_SHADER_RESOURCE_VIEW_DESC.Tex2D((DXGI_FORMAT)Format, (uint)MipCount, (uint)MipLevel, PlaneIndex, MinimumLodClamp, D3D12.D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING);
+        return isMultiSampled
+            ? isArray
+                ? D3D12_SHADER_RESOURCE_VIEW_DESC.Tex2DMSArray((DXGI_FORMAT)Format, (uint)ArrayCount, (uint)ArrayIndex, D3D12.D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING)
+                : D3D12_SHADER_RESOURCE_VIEW_DESC.Tex2DMS((DXGI_FORMAT)Format, D3D12.D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING)
+            : isArray
+            ? D3D12_SHADER_RESOURCE_VIEW_DESC.Tex2DArray((DXGI_FORMAT)Format, (uint)ArrayCount, (uint)MipCount, (uint)ArrayIndex, (uint)MipLevel, PlaneIndex, MinimumLodClamp, D3D12.D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING)
+            : D3D12_SHADER_RESOURCE_VIEW_DESC.Tex2D((DXGI_FORMAT)Format, (uint)MipCount, (uint)MipLevel, PlaneIndex, MinimumLodClamp, D3D12.D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING);
     }
 
     /// <summary>
@@ -324,7 +305,7 @@ internal unsafe sealed class TextureView<T>
             {
                 throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_TEXTURE_VIEW_CANNOT_BE_CAST, name, textureFormatInfo.Format, viewFormatInfo.Format));
             }
-        }        
+        }
     }
 
     /// <inheritdoc/>

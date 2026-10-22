@@ -23,10 +23,16 @@
 // Created: Friday, January 11, 2013 8:27:21 AM
 // 
 
+using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Drawing;
+using System.Linq;
 using System.Numerics;
 using System.Text;
+using System.Threading;
+using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics;
@@ -340,17 +346,10 @@ public partial class Form
     /// </summary>
     /// <param name="index">The index of the controller.</param>
     /// <returns>The color to assign.</returns>
-    private GorgonColor GetControllerColor(int index)
-    {
+    private GorgonColor GetControllerColor(int index) =>
         // Here we get the color based on the controller index by shifting it into either the Red, Green or Blue
         // (now you see why we limit to 3 controllers) values.
-        if (index is >= 0 and < 3)
-        {
-            return GorgonColor.FromARGB((int)(((uint)0xFF << (index << 3)) | 0xFF000000));
-        }
-
-        return GorgonColors.BlackTransparent;
-    }
+        index is >= 0 and < 3 ? GorgonColor.FromARGB((int)(((uint)0xFF << (index << 3)) | 0xFF000000)) : GorgonColors.BlackTransparent;
 
     /// <summary>
     /// Function to enumerate and update the active controllers list.

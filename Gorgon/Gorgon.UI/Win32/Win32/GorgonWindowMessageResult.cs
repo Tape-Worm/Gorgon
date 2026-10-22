@@ -22,6 +22,8 @@
 // Created: July 12, 2025 7:43:02 PM
 //
 
+using System;
+
 namespace Gorgon.UI.Win32;
 
 /// <summary>

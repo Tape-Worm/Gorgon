@@ -22,6 +22,7 @@
 // Created: May 10, 2025 3:39:42 PM
 //
 
+using System;
 using Windows.Win32;
 
 namespace Gorgon.Graphics.Imaging.Wic;

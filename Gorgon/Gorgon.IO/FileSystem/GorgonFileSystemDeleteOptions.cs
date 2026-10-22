@@ -22,6 +22,9 @@
 // Created: May 7, 2024 3:02:06 PM
 //
 
+using System;
+using System.Threading;
+
 namespace Gorgon.IO.FileSystem;
 
 /// <summary>

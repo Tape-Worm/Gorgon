@@ -22,10 +22,14 @@
 // Created: February 20, 2025 9:50:47 AM
 //
 
+using System;
 using System.Buffers;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Numerics;
+using System.Threading;
 using Gorgon.Input.Devices;
 using Gorgon.Math;
 
@@ -56,12 +60,8 @@ public sealed class GorgonInputEventBuffer
     private GorgonInputEvent[] _gamingBuffer = [];
 
     // The maximum size of the buffers.
-    private int _maxSize = 16;
 
     // The indices into each buffer (which will be used as the count when reading).
-    private int _keyboardEventCount;
-    private int _mouseEventCount;
-    private int _gamingDeviceEventCount;
 
     // The local queue used to process a snapshot of the thread queue.
     private readonly Queue<GorgonInputEvent> _localQueue = new(16);
@@ -69,22 +69,31 @@ public sealed class GorgonInputEventBuffer
     /// <summary>
     /// Property to return the number of keyboard events in the buffer.
     /// </summary>
-    public int KeyboardEventCount => _keyboardEventCount;
+    public int KeyboardEventCount
+    {
+        get; private set;
+    }
 
     /// <summary>
     /// Property to return the number of mouse events in the buffer.
     /// </summary>
-    public int MouseEventCount => _mouseEventCount;
+    public int MouseEventCount
+    {
+        get; private set;
+    }
 
     /// <summary>
     /// Property to return the number of gaming device events in the buffer.
     /// </summary>
-    public int GamingDeviceEventCount => _gamingDeviceEventCount;
+    public int GamingDeviceEventCount
+    {
+        get; private set;
+    }
 
     /// <summary>
     /// Property to return the current maximum size of the buffer.
     /// </summary>
-    public int BufferLength => _maxSize;
+    public int BufferLength { get; private set; } = 16;
 
     /// <summary>
     /// Function to resize the buffer to accomodate new input events.
@@ -92,12 +101,12 @@ public sealed class GorgonInputEventBuffer
     /// <param name="newCount">The new count that exceeds the current buffer count.</param>
     private void Resize(int newCount)
     {
-        if (newCount <= _maxSize)
+        if (newCount <= BufferLength)
         {
             return;
         }
 
-        int oldMax = _maxSize;
+        int oldMax = BufferLength;
         int maxSize = (int)BitOperations.RoundUpToPowerOf2((uint)newCount) * 2;
 
         GorgonInputEvent[] keyboardBuffer = ArrayPool<GorgonInputEvent>.Shared.Rent(maxSize);
@@ -125,7 +134,7 @@ public sealed class GorgonInputEventBuffer
         _mouseBuffer = mouseBuffer;
         _gamingBuffer = gamingBuffer;
 
-        _maxSize = maxSize;
+        BufferLength = maxSize;
 
         return;
     }
@@ -196,7 +205,7 @@ public sealed class GorgonInputEventBuffer
     {
         lock (_syncLock)
         {
-            _keyboardEventCount = _mouseEventCount = _gamingDeviceEventCount = 0;
+            KeyboardEventCount = MouseEventCount = GamingDeviceEventCount = 0;
             _localQueue.Clear();
 
             if (sourceQueue.IsEmpty)
@@ -245,9 +254,9 @@ public sealed class GorgonInputEventBuffer
 
                 GorgonInputEvent inputEvent = (filter & source.DeviceType) switch
                 {
-                    InputDeviceType.Mouse => _mouseBuffer[_mouseEventCount++],
-                    InputDeviceType.Keyboard => _keyboardBuffer[_keyboardEventCount++],
-                    InputDeviceType.GamingDevice => _gamingBuffer[_gamingDeviceEventCount++],
+                    InputDeviceType.Mouse => _mouseBuffer[MouseEventCount++],
+                    InputDeviceType.Keyboard => _keyboardBuffer[KeyboardEventCount++],
+                    InputDeviceType.GamingDevice => _gamingBuffer[GamingDeviceEventCount++],
                     _ => GorgonInputEvent.Empty
                 };
 
@@ -257,7 +266,7 @@ public sealed class GorgonInputEventBuffer
                 }
 
                 // This really should never happen as the local queue doesn't change size during emptying, but I'm so very paranoid.
-                Debug.Assert(_localQueue.Count == 0 || (_mouseEventCount < _mouseBuffer.Length && _keyboardEventCount < _keyboardBuffer.Length && _gamingDeviceEventCount < _gamingBuffer.Length), "Buffer overrun.");
+                Debug.Assert(_localQueue.Count == 0 || (MouseEventCount < _mouseBuffer.Length && KeyboardEventCount < _keyboardBuffer.Length && GamingDeviceEventCount < _gamingBuffer.Length), "Buffer overrun.");
 
                 source.CopyTo(inputEvent);
             }
@@ -278,9 +287,9 @@ public sealed class GorgonInputEventBuffer
     /// </summary>
     public GorgonInputEventBuffer()
     {
-        _keyboardBuffer = ArrayPool<GorgonInputEvent>.Shared.Rent(_maxSize);
-        _mouseBuffer = ArrayPool<GorgonInputEvent>.Shared.Rent(_maxSize);
-        _gamingBuffer = ArrayPool<GorgonInputEvent>.Shared.Rent(_maxSize);
+        _keyboardBuffer = ArrayPool<GorgonInputEvent>.Shared.Rent(BufferLength);
+        _mouseBuffer = ArrayPool<GorgonInputEvent>.Shared.Rent(BufferLength);
+        _gamingBuffer = ArrayPool<GorgonInputEvent>.Shared.Rent(BufferLength);
 
         // All arrays are the same size.
         for (int i = 0; i < _keyboardBuffer.Length; ++i)

@@ -24,11 +24,12 @@
 // Created: Sunday, December 30, 2012 10:25:22 AM
 // 
 
+using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
-using Gorgon.Renderers.Geometry;
 
 namespace Gorgon.Examples;
 
@@ -347,26 +348,18 @@ internal class IcoSphere
 
         CalculateTangents(vertexData, indexData);
 
-        VertexBuffer = GorgonVertexBuffer.Create<GorgonVertexPosNormUvTangent>(graphics,
-                                                new GorgonVertexBufferInfo(vertexData.Length * GorgonVertexPosNormUvTangent.SizeInBytes)
-                                                {
-                                                    Name = "IcoSphereVertexBuffer",
-                                                    Usage = ResourceUsage.Immutable
-                                                },
-                                                vertexData);
-        IndexBuffer = new GorgonIndexBuffer(graphics,
-                                            new GorgonIndexBufferInfo(IndexCount)
-                                            {
-                                                Usage = ResourceUsage.Immutable
-                                            },
-                                            indexData);
+        VertexBuffer = GorgonStructuredBufferView.CreateStructuredBuffer<GorgonVertexPosNormUvTangent>(graphics, "Primitive IcoSphere VB", vertexData.Length);
+        IndexBuffer = new GorgonIndexBuffer(graphics, "Primitive IcoSphere IB", new GorgonIndexBufferInfo(IndexCount * sizeof(int), true));
 
         UpdateAabb(vertexData);
+
+        Vertices = vertexData;
+        Indices = indexData;
     }
 
     /// <summary>Function to retrieve the 2D axis aligned bounding box for the mesh.</summary>
     /// <returns>The rectangle that represents a 2D axis aligned bounding box.</returns>
-    public override GorgonRectangleF GetAABB() => new(-Radius * 0.5f + Position.X, -Radius * 0.5f + Position.Y, Radius, Radius);
+    public override GorgonRectangleF GetAABB() => new((-Radius * 0.5f) + Position.X, (-Radius * 0.5f) + Position.Y, Radius, Radius);
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Sphere" /> class.

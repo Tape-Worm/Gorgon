@@ -22,7 +22,9 @@
 // Created: June 14, 2026 4:31:28 PM
 //
 
+using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using Gorgon.Core;
 using Gorgon.Math;
 using TerraFX.Interop.DirectX;
@@ -58,7 +60,7 @@ namespace Gorgon.Graphics.Core;
 /// <seealso cref="GorgonGraphicsPsoBuilder"/>
 public sealed class GorgonGraphicsPso
     : IGorgonNamedObject, IEquatable<GorgonGraphicsPso>
-{    
+{
     private ComPtr<ID3D12PipelineState> _d3dPso;
 
     private byte[] _psoBlob = [];
@@ -79,12 +81,12 @@ public sealed class GorgonGraphicsPso
     /// <summary>
     /// Property to return the underlying Direct3D PSO object.
     /// </summary>
-    internal ref ComPtr<ID3D12PipelineState> D3DPso => ref _d3dPso;    
+    internal ref ComPtr<ID3D12PipelineState> D3DPso => ref _d3dPso;
 
     /// <summary>
     /// Property to return the PSO blob holding the cached compiled blob data.
     /// </summary>
-    public ReadOnlySpan<byte> PsoCachedBlob 
+    public ReadOnlySpan<byte> PsoCachedBlob
     {
         get => _psoBlob;
         internal set => _psoBlob = (value.Length == 0 ? [] : value.ToArray());
@@ -127,7 +129,7 @@ public sealed class GorgonGraphicsPso
     /// <seealso cref="DepthStencilFormat"/>
     /// <seealso cref="GorgonDrawCall"/>
     /// <seealso cref="GorgonIndexedDrawCall"/>
-    public ReadOnlySpan<BufferFormat> OutputFormats 
+    public ReadOnlySpan<BufferFormat> OutputFormats
     {
         get => RWFormats.AsSpan(0, RWFormatCount);
         internal set
@@ -143,7 +145,7 @@ public sealed class GorgonGraphicsPso
 
             if (RWFormatCount < RWFormats.Length)
             {
-                Array.Fill(RWFormats, BufferFormat.Unknown, RWFormatCount, RWFormats.Length - RWFormatCount); 
+                Array.Fill(RWFormats, BufferFormat.Unknown, RWFormatCount, RWFormats.Length - RWFormatCount);
             }
 
             value[..RWFormatCount].CopyTo(RWFormats);
@@ -578,10 +580,10 @@ public sealed class GorgonGraphicsPso
         && other.HullShader == HullShader
         && other.IndexBufferStripCutIdentifier == IndexBufferStripCutIdentifier
         && other.IsAlphaToCoverageEnabled == IsAlphaToCoverageEnabled
-        && other.IsIndependentBlendingEnabled == IsIndependentBlendingEnabled        
+        && other.IsIndependentBlendingEnabled == IsIndependentBlendingEnabled
         && other.OutputFormats.SequenceEqual(OutputFormats)
         && other.Multisample.Equals(Multisample)
-        && other.MultisampleMask == MultisampleMask        
+        && other.MultisampleMask == MultisampleMask
         && other.RasterizerState.Equals(RasterizerState)
         && other.BlendStates.SequenceEqual(BlendStates)
         && other.DepthStencilState == DepthStencilState);

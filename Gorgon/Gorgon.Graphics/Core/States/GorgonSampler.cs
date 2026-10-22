@@ -22,12 +22,13 @@
 // Created: April 13, 2026 6:56:41 PM
 //
 
+using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Math;
-using Gorgon.Memory;
 using TerraFX.Interop.DirectX;
 
 namespace Gorgon.Graphics.Core;
@@ -285,7 +286,7 @@ public sealed unsafe class GorgonSampler
 
             Graphics?.Log.Print($"Destroying sampler '{Name}'...", LoggingLevel.Simple);
 
-            ResetDescriptor();            
+            ResetDescriptor();
         }
     }
 
@@ -544,5 +545,5 @@ public sealed unsafe class GorgonSampler
         Graphics = graphics;
         _descriptors = graphics.Descriptors.GpuSamplerDescriptors;
         this.RegisterDisposable(Graphics);
-    }    
+    }
 }

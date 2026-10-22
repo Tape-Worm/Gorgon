@@ -22,6 +22,8 @@
 // Created: July 6, 2025 3:49:07 PM
 //
 
+using System;
+
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
@@ -88,7 +90,7 @@ internal sealed class QueueServices
     /// Function to collect the garbage on the queues.
     /// </summary>
     public void GarbageCollect()
-    {        
+    {
         GraphicsQueue.GarbageCollect();
         CopyQueue.GarbageCollect();
         ComputeQueue.GarbageCollect();

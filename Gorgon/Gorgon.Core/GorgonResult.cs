@@ -22,6 +22,7 @@
 // Created: November 17, 2023 5:06:05 PM
 //
 
+using System;
 using Gorgon.Properties;
 
 namespace Gorgon.Core;
@@ -43,7 +44,7 @@ public readonly struct GorgonResult
     /// <summary>
     /// Initialization was already performed.
     /// </summary>
-    public static GorgonResult AlreadyInitialized => new(nameof(AlreadyInitialized), ErrorBase + 2, Resources.GOR_RESULT_DESC_NOT_INITIALIZED);
+    public static GorgonResult AlreadyInitialized => new(nameof(AlreadyInitialized), ErrorBase + 2, Resources.GOR_RESULT_DESC_ALREADY_INITIALIZED);
 
     /// <summary>
     /// There was an error during creation.

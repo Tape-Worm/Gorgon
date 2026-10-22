@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using Gorgon.Native;
 
@@ -17,7 +16,7 @@ public class GorgonNativeExtensionsTests
         using MemoryStream stream = new();
         GorgonPtr<int> ptr = GorgonPtr<int>.NullPtr;
 
-        Assert.ThrowsExactly<NullReferenceException>(() => stream.Read(ptr));
+        _ = Assert.ThrowsExactly<NullReferenceException>(() => stream.Read(ptr));
     }
 
     [TestMethod]
@@ -32,7 +31,7 @@ public class GorgonNativeExtensionsTests
             byte* p = stackalloc byte[10];
             GorgonPtr<byte> ptr = new(p, 10);
 
-            Assert.ThrowsExactly<EndOfStreamException>(() => stream.Read(ptr));
+            _ = Assert.ThrowsExactly<EndOfStreamException>(() => stream.Read(ptr));
         }
     }
 
@@ -61,7 +60,7 @@ public class GorgonNativeExtensionsTests
         using MemoryStream stream = new();
         GorgonPtr<int> ptr = GorgonPtr<int>.NullPtr;
 
-        Assert.ThrowsExactly<NullReferenceException>(() => stream.Write(ptr));
+        _ = Assert.ThrowsExactly<NullReferenceException>(() => stream.Write(ptr));
     }
 
     [TestMethod]
@@ -74,7 +73,7 @@ public class GorgonNativeExtensionsTests
             byte* p = stackalloc byte[4];
             GorgonPtr<byte> ptr = new(p, 4);
 
-            Assert.ThrowsExactly<IOException>(() => stream.Write(ptr));
+            _ = Assert.ThrowsExactly<IOException>(() => stream.Write(ptr));
         }
     }
 
@@ -93,7 +92,7 @@ public class GorgonNativeExtensionsTests
 
                 stream.Position = 0;
                 byte[] result = new byte[data.Length];
-                stream.Read(result, 0, data.Length);
+                _ = stream.Read(result, 0, data.Length);
 
                 Assert.AreSequenceEqual(data, result);
             }
@@ -106,7 +105,7 @@ public class GorgonNativeExtensionsTests
         using MemoryStream stream = new();
         GorgonNativeBuffer<byte> buffer = new(10);
 
-        Assert.ThrowsExactly<ArgumentException>(() => stream.Write(buffer, 11, 1));
+        _ = Assert.ThrowsExactly<ArgumentException>(() => stream.Write(buffer, 11, 1));
     }
 
     [TestMethod]
@@ -115,7 +114,7 @@ public class GorgonNativeExtensionsTests
         using MemoryStream stream = new();
         GorgonNativeBuffer<byte> buffer = new(10);
 
-        Assert.ThrowsExactly<ArgumentException>(() => stream.Write(buffer, 0, 11));
+        _ = Assert.ThrowsExactly<ArgumentException>(() => stream.Write(buffer, 0, 11));
     }
 
     [TestMethod]
@@ -133,7 +132,7 @@ public class GorgonNativeExtensionsTests
 
         stream.Position = 0;
         byte[] result = new byte[data.Length];
-        stream.Read(result, 0, data.Length);
+        _ = stream.Read(result, 0, data.Length);
 
         Assert.AreSequenceEqual(data, result);
     }
@@ -162,7 +161,7 @@ public class GorgonNativeExtensionsTests
 
         GorgonNativeBuffer<byte> buffer = new(10);
 
-        Assert.ThrowsExactly<EndOfStreamException>(() => stream.Read(buffer, 0));
+        _ = Assert.ThrowsExactly<EndOfStreamException>(() => stream.Read(buffer, 0));
     }
 
     [TestMethod]
@@ -172,7 +171,7 @@ public class GorgonNativeExtensionsTests
         using MemoryStream stream = new(data);
         GorgonNativeBuffer<byte> buffer = new(10);
 
-        Assert.ThrowsExactly<ArgumentException>(() => stream.Read(buffer, 11));
+        _ = Assert.ThrowsExactly<ArgumentException>(() => stream.Read(buffer, 11));
     }
 
     [TestMethod]
@@ -212,7 +211,7 @@ public class GorgonNativeExtensionsTests
         using MemoryStream stream = new(data);
         GorgonNativeBuffer<byte> buffer = new(2);
 
-        Assert.ThrowsExactly<ArgumentException>(() => stream.Read(buffer, 0, 3));
+        _ = Assert.ThrowsExactly<ArgumentException>(() => stream.Read(buffer, 0, 3));
     }
 
     [TestMethod]
@@ -267,7 +266,7 @@ public class GorgonNativeExtensionsTests
         int[] data = [1, 2, 3, 4, 5];
 
         // Act
-        Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => _ = data.PinAsNativeBuffer(-1));
+        _ = Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => _ = data.PinAsNativeBuffer(-1));
     }
 
     [TestMethod]
@@ -277,7 +276,7 @@ public class GorgonNativeExtensionsTests
         int[] data = [1, 2, 3, 4, 5];
 
         // Act
-        Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => _ = data.PinAsNativeBuffer(0, -1));
+        _ = Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => _ = data.PinAsNativeBuffer(0, -1));
     }
 
     [TestMethod]
@@ -287,7 +286,7 @@ public class GorgonNativeExtensionsTests
         int[] data = [1, 2, 3, 4, 5];
 
         // Act
-        Assert.ThrowsExactly<ArgumentException>(() => _ = data.PinAsNativeBuffer(1, 5));
+        _ = Assert.ThrowsExactly<ArgumentException>(() => _ = data.PinAsNativeBuffer(1, 5));
     }
 
     [TestMethod]

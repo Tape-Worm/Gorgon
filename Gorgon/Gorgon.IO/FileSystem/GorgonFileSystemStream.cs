@@ -23,6 +23,11 @@
 // Created: Monday, June 27, 2011 9:01:45 AM
 // 
 
+using System;
+using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Gorgon.IO.FileSystem.Providers;
 using Gorgon.Math;
 

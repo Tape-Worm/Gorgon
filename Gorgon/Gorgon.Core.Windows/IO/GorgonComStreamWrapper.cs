@@ -22,8 +22,11 @@
 // Created: May 11, 2025 12:48:52 AM
 //
 
+using System;
 using System.Buffers;
 using System.Collections;
+using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Gorgon.Math;

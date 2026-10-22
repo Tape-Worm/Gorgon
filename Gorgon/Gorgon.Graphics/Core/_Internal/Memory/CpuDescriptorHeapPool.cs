@@ -24,16 +24,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.Linq;
 using System.Numerics;
-using System.Text;
-using Gorgon.Core;
+using System.Threading;
 using Gorgon.Diagnostics;
-using Gorgon.Graphics.Core.Properties;
 using Gorgon.Math;
 using TerraFX.Interop.DirectX;
-using TerraFX.Interop.Windows;
-using Win32 = TerraFX.Interop.Windows.Windows;
 
 namespace Gorgon.Graphics.Core;
 
@@ -200,7 +196,7 @@ internal unsafe sealed class CpuDescriptorHeapPool
     public CpuDescriptorHeapPool(GorgonGraphics graphics, D3D12_DESCRIPTOR_HEAP_TYPE heapType)
     {
         Graphics = graphics;
-        HeapType = heapType;        
+        HeapType = heapType;
         DescriptorSize = graphics.D3DDevice.Get()->GetDescriptorHandleIncrementSize(HeapType);
     }
 }

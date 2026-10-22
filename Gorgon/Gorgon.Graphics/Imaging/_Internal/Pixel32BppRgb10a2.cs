@@ -49,7 +49,7 @@ internal sealed class Pixel32BppRgb10a2
         uint b = (uint)(color.Blue * 0x3ff) & 0x3ff;
         uint a = (uint)(color.Alpha * 3) & 3;
 
-        return r | g << 10 | b << 20 | a << 30;
+        return r | (g << 10) | (b << 20) | (a << 30);
     }
 
     /// <inheritdoc/>

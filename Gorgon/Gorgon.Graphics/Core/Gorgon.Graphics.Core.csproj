@@ -24,7 +24,7 @@
     <SignAssembly>false</SignAssembly>
     <AssemblyOriginatorKeyFile></AssemblyOriginatorKeyFile>
     <DelaySign>false</DelaySign>
-    <ImplicitUsings>enable</ImplicitUsings>
+    <ImplicitUsings>disable</ImplicitUsings>
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
     <Nullable>enable</Nullable>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
@@ -172,10 +172,6 @@
       <PackagePath>runtimes\win-x86\native</PackagePath>
     </Content>
 </ItemGroup>
-  
-  <ItemGroup>
-    <Folder Include="Targets\_Internal\" />
-  </ItemGroup>
   
   <ItemGroup>
     <ProjectReference Include="..\..\Gorgon.Core.Windows\Gorgon.Core.Windows.csproj" />

@@ -21,13 +21,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE
 // 
-// Created: March 4, 2017 9:51:18 AM
+// Created: March 2, 2017 7:36:41 PM
 // 
 
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using Gorgon.Graphics.Core;
 
 namespace Gorgon.Examples;
 
@@ -35,15 +34,12 @@ namespace Gorgon.Examples;
 /// This represents a single vertex in our triangle
 /// 
 /// It will contain a position, and a texture coordinate. We have to specify the packing and the layout ordering so we can safely transfer the data from the managed 
-/// environment of .NET into the unmanaged world of Direct 3D
+/// environment of .NET into the unmanaged world of the GPU.
 /// </summary>
-/// <remarks>
-/// Initializes a new instance of the <see cref="MiniTriVertex"/> struct
-/// </remarks>
 /// <param name="position">The position of the vertex in object space.</param>
-/// <param name="uv">The texture coordinate for this vertex.</param>
+/// <param name="uv">The texture coordinate for the vertex.</param>
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
-internal struct MiniTriVertex(Vector3 position, Vector2 uv)
+internal struct MiniTriVertex(Vector4 position, Vector2 uv)
 {
     /// <summary>
     /// This is the size of the vertex, in bytes. 
@@ -58,15 +54,10 @@ internal struct MiniTriVertex(Vector3 position, Vector2 uv)
     /// Note that the member is decorated with an InputElement attribute. This tells the shader how to interpret the vertex data by the semantic provided in the string, and the order of the data
     /// as indicated by the integer parameter.
     /// </summary>
-    [InputElement(0, "SV_POSITION")]
-    public Vector4 Position = new(position, 1.0f);
+    public Vector4 Position = position;
 
     /// <summary>
-    /// This will be the texture coordinate for the vertex.
-    /// 
-    /// This specifies the location on the texture that will be sampled by the pixel shader when rendering. This value is in texel space coordinates where 0, 0 is the upper-left of the 
-    /// texture, and 1, 1 is the lower-right of the texture.
+    /// This is the texture coordinate for the vertex. It ranges from 0 to 1 to cover the whole size of the texture, where 0 is upper/left, and 1.0 is bottom/right.
     /// </summary>
-    [InputElement(1, "TEX_COORD")]
-    public Vector2 UV = uv;
+    public Vector2 Uv = uv;
 }

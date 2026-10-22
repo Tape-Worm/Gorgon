@@ -24,6 +24,7 @@
 // Created: Tuesday, September 07, 2015 2:15:24 PM
 // 
 
+using System;
 using Gorgon.Diagnostics;
 using Microsoft.Win32;
 
@@ -81,12 +82,7 @@ internal static class RawInputDeviceRegistryInfo
 
         regValue = deviceDesc.Split(';');
 
-        if (regValue.Length == 0)
-        {
-            return string.Empty;
-        }
-
-        return regValue[^1];
+        return regValue.Length == 0 ? string.Empty : regValue[^1];
     }
 
     /// <summary>

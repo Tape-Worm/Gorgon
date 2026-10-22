@@ -22,6 +22,7 @@
 // Created: March 19, 2024 11:12:39 AM
 //
 
+using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Gorgon.Core;
@@ -39,13 +40,7 @@ public class GorgonColorJsonConverter
     public override void Write(Utf8JsonWriter writer, GorgonColor value, JsonSerializerOptions options) => writer.WriteNumberValue(GorgonColor.ToARGB(value));
 
     /// <inheritdoc/>
-    public override GorgonColor Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        if (reader.TokenType != JsonTokenType.Number)
-        {
-            throw new GorgonException(GorgonResult.CannotRead);
-        }
-
-        return GorgonColor.FromARGB(reader.GetInt32());
-    }
+    public override GorgonColor Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) => reader.TokenType != JsonTokenType.Number
+            ? throw new GorgonException(GorgonResult.CannotRead)
+            : GorgonColor.FromARGB(reader.GetInt32());
 }

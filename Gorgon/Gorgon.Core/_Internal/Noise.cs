@@ -2,6 +2,8 @@
 // Author: Benjamin Ward
 // Originally authored by Heikki Törmälä
 
+using System;
+
 namespace Simplex;
 
 /// <summary>
@@ -10,8 +12,6 @@ namespace Simplex;
 /// </summary>
 internal class Noise
 {
-    private static int _seed;
-
     static Noise()
     {
         Perm = new byte[_permOriginal.Length];
@@ -20,10 +20,10 @@ internal class Noise
 
     public static int Seed
     {
-        get => _seed;
+        get;
         set
         {
-            if (_seed == value)
+            if (field == value)
             {
                 return;
             }
@@ -40,7 +40,7 @@ internal class Noise
                 random.NextBytes(Perm);
             }
 
-            _seed = value;
+            field = value;
         }
     }
 

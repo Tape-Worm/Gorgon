@@ -32,7 +32,7 @@ public class GorgonPoolTests
     public void ShouldThrowWhenItemAllocatorReturnsNull()
     {
         GorgonPool<string> pool = new(1, () => null!);
-        Assert.ThrowsExactly<GorgonException>(() => _ = pool.Allocate());
+        _ = Assert.ThrowsExactly<GorgonException>(() => _ = pool.Allocate());
     }
 
     [TestMethod]
@@ -78,10 +78,10 @@ public class GorgonPoolTests
         GorgonPool<string> pool = new(5, () => Guid.NewGuid().ToString());
         for (int i = 0; i < 5; i++)
         {
-            pool.Allocate();
+            _ = pool.Allocate();
         }
 
-        Assert.ThrowsExactly<GorgonException>(() => _ = pool.Allocate());
+        _ = Assert.ThrowsExactly<GorgonException>(() => _ = pool.Allocate());
     }
 
     [TestMethod]

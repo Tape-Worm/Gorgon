@@ -23,6 +23,8 @@
 // Created: Sunday, October 14, 2012 4:37:30 PM
 // 
 
+using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using CenterCLR.XorRandomGenerator;
@@ -64,7 +66,6 @@ namespace Gorgon.Core;
 public static class GorgonRandom
 {
     // Seed used to generate random numbers.
-    private static int _seed;
     // Random number generator.    
     private static XorRandom _rnd;
 
@@ -73,13 +74,13 @@ public static class GorgonRandom
     /// </summary>    
     public static int Seed
     {
-        get => _seed;
+        get;
         [MemberNotNull(nameof(_rnd))]
         set
         {
             Noise.Seed = value;
-            _seed = value;
-            _rnd = new XorRandom(_seed);
+            field = value;
+            _rnd = new XorRandom(field);
         }
     }
 

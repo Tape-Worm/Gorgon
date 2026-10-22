@@ -24,6 +24,9 @@
 // Created: Tuesday, July 23, 2013 7:58:34 PM
 // 
 
+using System;
+using System.Linq;
+using System.Threading;
 using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Properties;
 using Gorgon.Math;
@@ -37,8 +40,8 @@ public class GorgonImageBuffer
 {
     // The data buffer owned by the image buffer.
     private GorgonNativeBuffer<byte>? _ownedBuffer;
+
     // The bounds for the buffer.
-    private readonly GorgonRectangle _bounds;
 
     /// <summary>
     /// An empty image buffer.
@@ -51,7 +54,10 @@ public class GorgonImageBuffer
     public static readonly GorgonImageBuffer Empty = new(GorgonPtr<byte>.NullPtr, GorgonPitchLayout.Empty, 0, 0, 0, 0, 0, 0, new GorgonFormatInfo(BufferFormat.Unknown));
 
     /// <inheritdoc/>
-    public GorgonRectangle Bounds => _bounds;
+    public GorgonRectangle Bounds
+    {
+        get;
+    }
 
     /// <inheritdoc/>
     public BufferFormat Format
@@ -172,7 +178,7 @@ public class GorgonImageBuffer
 
         updateAlphaRange ??= (FormatInformation.IsFloatingPoint || FormatInformation.IsSigned) ? new GorgonRange<float>(-1.0f, 1.0f) : new GorgonRange<float>(0, 1);
 
-        GorgonRectangle updateRegion = region is null ? _bounds : GorgonRectangle.Intersect(region.Value, _bounds);
+        GorgonRectangle updateRegion = region is null ? Bounds : GorgonRectangle.Intersect(region.Value, Bounds);
 
         if ((updateRegion.Width <= 0) || (updateRegion.Height <= 0))
         {
@@ -186,7 +192,7 @@ public class GorgonImageBuffer
         {
             ImageUtilities.SetAlphaScanline(rowPtr, rowSize, Format, alphaValue, updateAlphaRange.Value.Minimum, updateAlphaRange.Value.Maximum);
             rowPtr += PitchInformation.RowPitch;
-        }    
+        }
     }
 
     /// <inheritdoc/>
@@ -211,9 +217,9 @@ public class GorgonImageBuffer
         }
 
         GorgonPoint destOffset = destination ?? GorgonPoint.Zero;
-        GorgonRectangle srcRect = sourceRegion is null ? _bounds : GorgonRectangle.Intersect(sourceRegion.Value, _bounds);
+        GorgonRectangle srcRect = sourceRegion is null ? Bounds : GorgonRectangle.Intersect(sourceRegion.Value, Bounds);
 
-        GorgonRectangle dstRect = GorgonRectangle.Intersect(new GorgonRectangle(destOffset.X, destOffset.Y,srcRect.Width, srcRect.Height),
+        GorgonRectangle dstRect = GorgonRectangle.Intersect(new GorgonRectangle(destOffset.X, destOffset.Y, srcRect.Width, srcRect.Height),
                                                             new GorgonRectangle(0, 0, buffer.Width, buffer.Height));
 
         // If nothing lands in the destination, then there's nothing to copy.
@@ -228,7 +234,7 @@ public class GorgonImageBuffer
 
         if ((srcX == 0)
             && (srcY == 0)
-            && (dstRect.Equals(_bounds))
+            && (dstRect.Equals(Bounds))
             && (buffer.Width == Width)
             && (buffer.Height == Height)
             && (buffer.PitchInformation.RowPitch == PitchInformation.RowPitch))
@@ -261,7 +267,7 @@ public class GorgonImageBuffer
             lineSize = destWidth * FormatInformation.SizeInBytes;
             srcData = ImageData + (srcBlockY * PitchInformation.RowPitch) + (srcBlockX * FormatInformation.SizeInBytes);
             dstData = buffer.ImageData + (destBlockY * buffer.PitchInformation.RowPitch) + (destBlockX * FormatInformation.SizeInBytes);
-        }        
+        }
 
         for (int y = 0; y < destHeight; ++y)
         {
@@ -277,7 +283,7 @@ public class GorgonImageBuffer
     {
         ObjectDisposedException.ThrowIf(ImageData == GorgonPtr<byte>.NullPtr, this);
 
-        GorgonRectangle finalRegion = GorgonRectangle.Intersect(clipRegion, _bounds);
+        GorgonRectangle finalRegion = GorgonRectangle.Intersect(clipRegion, Bounds);
 
         if (FormatInformation.IsCompressed)
         {
@@ -286,7 +292,7 @@ public class GorgonImageBuffer
             int srcWidth = ((finalRegion.Right + 3) >> 2) - srcX;
             int srcHeight = ((finalRegion.Bottom + 3) >> 2) - srcY;
 
-            finalRegion = new GorgonRectangle(srcX << 2, srcY << 2, (srcWidth << 2).Min(Width - (srcX << 2)), (srcHeight << 2).Min(Height - (srcY <<2)));
+            finalRegion = new GorgonRectangle(srcX << 2, srcY << 2, (srcWidth << 2).Min(Width - (srcX << 2)), (srcHeight << 2).Min(Height - (srcY << 2)));
         }
 
         if ((finalRegion.Width <= 0)
@@ -342,7 +348,7 @@ public class GorgonImageBuffer
                                int depth,
                                GorgonFormatInfo formatInfo)
     {
-        _bounds = new GorgonRectangle(0, 0, width, height);
+        Bounds = new GorgonRectangle(0, 0, width, height);
         ImageData = data;
         PitchInformation = pitchInfo;
         MipLevel = mipLevel;
@@ -393,10 +399,10 @@ public class GorgonImageBuffer
             throw new GorgonException(GorgonResult.CannotCreate, Resources.GORIMG_ERR_BUFFER_TOO_SMALL);
         }
 
-        _bounds = new GorgonRectangle(0, 0, width, height);
+        Bounds = new GorgonRectangle(0, 0, width, height);
         _ownedBuffer = new GorgonNativeBuffer<byte>(PitchInformation.SlicePitch);
         ImageData = (GorgonPtr<byte>)_ownedBuffer;
-                
+
         MipLevel = 0;
         ArrayIndex = 0;
         DepthSliceIndex = 0;

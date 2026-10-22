@@ -74,5 +74,5 @@ public enum DebugInfoCategory
     /// <summary>
     /// State update category.
     /// </summary>
-    StateUpdate = D3D12_MESSAGE_CATEGORY.D3D12_MESSAGE_CATEGORY_STATE_SETTING    
+    StateUpdate = D3D12_MESSAGE_CATEGORY.D3D12_MESSAGE_CATEGORY_STATE_SETTING
 }

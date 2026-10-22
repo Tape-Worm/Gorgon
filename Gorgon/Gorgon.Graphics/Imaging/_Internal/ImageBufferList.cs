@@ -24,8 +24,12 @@
 // Created: June 20, 2016 10:52:04 PM
 // 
 
+using System;
 using System.Buffers;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using Gorgon.Math;
 using Gorgon.Native;
 
@@ -39,8 +43,8 @@ sealed class ImageBufferList
 {
     // List of buffers.
     private IGorgonImageBuffer[] _buffers = [];
+
     // The number of buffers.
-    private int _bufferCount;
     // The number of array indices.
     private int _arrayCount;
     // The number of mip levels.
@@ -58,21 +62,13 @@ sealed class ImageBufferList
     } = [];
 
     /// <inheritdoc/>
-    public int Count => _bufferCount;
+    public int Count
+    {
+        get; private set;
+    }
 
     /// <inheritdoc/>
-    IGorgonImageBuffer IReadOnlyList<IGorgonImageBuffer>.this[int index]
-    {
-        get
-        {
-            if ((index < 0) || (index >= _bufferCount))
-            {
-                throw new IndexOutOfRangeException();
-            }
-
-            return _buffers[index];
-        }
-    }
+    IGorgonImageBuffer IReadOnlyList<IGorgonImageBuffer>.this[int index] => (index < 0) || (index >= Count) ? throw new IndexOutOfRangeException() : _buffers[index];
 
     /// <inheritdoc/>
     public IGorgonImageBuffer this[int mipLevel, int depthSliceOrArrayIndex = 0]
@@ -82,7 +78,7 @@ sealed class ImageBufferList
             int bufferIndex;
             int mipDepth;
 
-            if (_bufferCount == 0)
+            if (Count == 0)
             {
                 throw new IndexOutOfRangeException();
             }
@@ -97,7 +93,7 @@ sealed class ImageBufferList
                 ArgumentOutOfRangeException.ThrowIfLessThan(depthSliceOrArrayIndex, 0);
                 ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(depthSliceOrArrayIndex, mipDepth);
 
-                
+
                 return _buffers[bufferIndex + depthSliceOrArrayIndex];
             }
 
@@ -119,7 +115,7 @@ sealed class ImageBufferList
     {
         if (disposing)
         {
-            _arrayCount = _bufferCount = _mipCount = 0;
+            _arrayCount = Count = _mipCount = 0;
             _imageType = ImageDataType.Unknown;
 
             IGorgonImageBuffer[] buffers = Interlocked.Exchange(ref _buffers, []);
@@ -221,7 +217,7 @@ sealed class ImageBufferList
     /// </returns>
     public IEnumerator<IGorgonImageBuffer> GetEnumerator()
     {
-        for (int i = 0; i < _bufferCount; ++i)
+        for (int i = 0; i < Count; ++i)
         {
             yield return _buffers[i];
         }
@@ -252,7 +248,7 @@ sealed class ImageBufferList
     {
         (int, int) offsetSize;
 
-        if (_bufferCount == 0)
+        if (Count == 0)
         {
             return -1;
         }
@@ -313,7 +309,7 @@ sealed class ImageBufferList
         _arrayCount = info.ArrayCount;
         _mipCount = info.MipCount;
 
-        (_bufferCount, _buffers) = CreateBuffers(info.Width, info.Height, info.Depth, formatInfo, data);
+        (Count, _buffers) = CreateBuffers(info.Width, info.Height, info.Depth, formatInfo, data);
     }
 
     /// <summary>

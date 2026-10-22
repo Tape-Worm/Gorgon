@@ -24,6 +24,10 @@
 // Created: Monday, June 27, 2011 9:33:12 AM
 // 
 
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using Gorgon.Diagnostics;
 using Gorgon.IO.FileSystem.Providers.Properties;
 using ICSharpCode.SharpZipLib.Zip;
@@ -76,14 +80,7 @@ internal class ZipProvider(IGorgonLog log)
             ReadOnlySpan<char> entryName = entry.Name.AsSpan().FormatPath(PhysicalPathSeparator);
             ReadOnlySpan<char> directoryName = Path.GetDirectoryName(entryName).FormatDirectory(PhysicalPathSeparator);
 
-            if (directoryName.IsEmpty)
-            {
-                directoryPath = virtualRootDirectory.ToString();
-            }
-            else
-            {
-                directoryPath = string.Concat(virtualRootDirectory, directoryName);
-            }
+            directoryPath = directoryName.IsEmpty ? virtualRootDirectory.ToString() : string.Concat(virtualRootDirectory, directoryName);
 
             string physicalDirectoryPath = string.Concat(physicalMountPoint, "::", pathSep, directoryName);
 
@@ -160,12 +157,9 @@ internal class ZipProvider(IGorgonLog log)
     {
         string path = physicalMountPoint.FormatPath(Path.DirectorySeparatorChar).ToString();
 
-        if (!File.Exists(path))
-        {
-            return null;
-        }
-
-        return new ZipFileStream(fileInfo, File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read), onCloseCallback);
+        return !File.Exists(path)
+            ? null
+            : (GorgonFileSystemStream)new ZipFileStream(fileInfo, File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read), onCloseCallback);
     }
 
     /// <inheritdoc/>

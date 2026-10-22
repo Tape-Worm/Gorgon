@@ -22,6 +22,7 @@
 // Created: January 21, 2025 6:13:04 PM
 //
 
+using System;
 using System.Runtime.CompilerServices;
 
 namespace Gorgon.Input.Devices;

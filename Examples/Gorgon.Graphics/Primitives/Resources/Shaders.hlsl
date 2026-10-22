@@ -1,48 +1,40 @@
-﻿// Our default texture and sampler.
-Texture2D _texture : register(t0);
-Texture2D _normalTexture : register(t1); 
-Texture2D _specTexture : register(t2); 
-SamplerState _sampler : register(s0);
-SamplerState _normalSampler : register(s1);
-SamplerState _specSampler : register(s2);
-
-// The transformation matrices.
-cbuffer ViewProjectionData : register(b0)
+﻿// Per frame data.
+struct RenderData
 {
-	float4x4 View;
-	float4x4 Projection;
-	float4x4 ViewProjection;	
-}
+	float4x4 viewProjection;	
+	float4 cameraPosition;
+	int samplerHandle;	
+	int lightConstantBufferHandle;
+};
 
-// The world matrix.
-cbuffer WorldMatrix : register(b1)
+// Data pertaining to the object being rendered.
+struct ObjectData
 {
-	float4x4 World;
-}
-
-cbuffer Material : register(b2)
-{
+	float4x4 world;
 	float2 uvOffset;
 	float matSpecularPower;
-}
+	int vertexBufferHandle;
+	int textureHandle;
+	int normalHandle;
+	int specularHandle;
+};
 
-// Camera data.
-cbuffer Camera : register(b0)
+// Lighting information.
+struct Light
 {
-	float3 CameraPosition;
-}
+	float4 position;
+	float4 attenuation;
+	float4 attributes;
+	float4 color;
+};
 
-// The light used for lighting calculations.
-cbuffer Light : register(b1)
+struct LightData
 {
-	struct LightData
-	{
-		float4 LightPosition;
-		float4 LightAttenuation;
-		float4 LightAttributes;
-		float4 LightColor;
-	} lights[8];
-}
+	Light lights[8];
+};
+
+ConstantBuffer<RenderData> _renderData : register(b0);
+ConstantBuffer<ObjectData> _objectData : register(b1);
 
 // Our vertex.
 struct PrimVertex
@@ -68,21 +60,22 @@ struct VertexOut
 	float3 bitangent : BITANGENT;
 };
 
-
 // Our default vertex shader.
-VertexOut PrimVS(PrimVertex vertex)
+VertexOut PrimVS(uint vertexIndex : SV_VertexID)
 {
+	StructuredBuffer<PrimVertex> vertexBuffer = ResourceDescriptorHeap[_objectData.vertexBufferHandle];
+	PrimVertex vertex = vertexBuffer[vertexIndex];
 	VertexOut output;
 
-	float4 worldPos = mul(World, vertex.position);
+	float4 worldPos = mul(_objectData.world, vertex.position);
 	output.worldPos = worldPos.xyz;
-	output.position = mul(ViewProjection, worldPos);	
+	output.position = mul(_renderData.viewProjection, worldPos);	
 	
-	output.normal = normalize(mul((float3x3)World, vertex.normal));
+	output.normal = normalize(mul((float3x3)_objectData.world, vertex.normal));
 	
 	output.uv = vertex.uv;
 
-	output.tangent = normalize(mul((float3x3)World, vertex.tangent.xyz));
+	output.tangent = normalize(mul((float3x3)_objectData.world, vertex.tangent.xyz));
 	output.bitangent = normalize(cross(output.tangent, output.normal) * vertex.tangent.w);
 	
 	return output;
@@ -91,27 +84,31 @@ VertexOut PrimVS(PrimVertex vertex)
 // Function to perform blinn/phong lighting.
 float4 blinn(VertexOut vertex, float3 normal, float3 spec)
 {
-	float4 textureColor = _texture.Sample(_sampler, vertex.uv);
+	SamplerState textureSampler = SamplerDescriptorHeap[_renderData.samplerHandle];
+	ConstantBuffer<LightData> lightBuffer = ResourceDescriptorHeap[_renderData.lightConstantBufferHandle];
+	Texture2D texture = ResourceDescriptorHeap[_objectData.textureHandle];
+	
+	float4 textureColor = texture.Sample(textureSampler, vertex.uv);
 	float3 output = float3(0, 0, 0);
 
 	clip(textureColor.a < 0.02f ? -1 : 1);
 
 	for (int i = 0; i < 8; ++i)
 	{
-		LightData light = lights[i];
+		Light light = lightBuffer.lights[i];
 
-		float specularPower = light.LightAttributes.x;
-		float lightMaxRange = light.LightAttenuation.w;
+		float specularPower = light.attributes.x;
+		float lightMaxRange = light.attenuation.w;
 
-		if ((light.LightAttenuation.x <= 0.0f)
-			&& (light.LightAttenuation.y <= 0.0f)
-			&& (light.LightAttenuation.z <= 0.0f))
+		if ((light.attenuation.x <= 0.0f)
+			&& (light.attenuation.y <= 0.0f)
+			&& (light.attenuation.z <= 0.0f))
 		{			
 			output += float3(0.392157f * 0.025f, 0.584314f * 0.025f, 0.929412f * 0.025f);
 			continue;
 		}
 
-		float3 lightPos = float3(light.LightPosition.x, light.LightPosition.y, -light.LightPosition.z);
+		float3 lightPos = float3(light.position.x, light.position.y, -light.position.z);
 		float3 lightRange = lightPos - vertex.worldPos;
 		float distance = length(lightRange);
 
@@ -123,42 +120,47 @@ float4 blinn(VertexOut vertex, float3 normal, float3 spec)
 		}
 
 		float3 lightDirection = lightRange / distance; 
-		float atten = 1.0f / (light.LightAttenuation.x + (distance * light.LightAttenuation.y) + (distance * distance * light.LightAttenuation.z));
+		float atten = 1.0f / (light.attenuation.x + (distance * light.attenuation.y) + (distance * distance * light.attenuation.z));
 		float ndotl = saturate(dot(lightDirection, normal));
 
-		float3 result = textureColor.rgb * ndotl * light.LightColor.rgb; 
+		float3 result = textureColor.rgb * ndotl * light.color.rgb; 
 				
-		if ((matSpecularPower > 0) && (specularPower >= 1.0f))
+		if ((_objectData.matSpecularPower > 0) && (specularPower >= 1.0f))
 		{
 			// Using Blinn half angle modification for performance over correctness
-			float3 h = normalize(normalize(CameraPosition - vertex.worldPos) + lightRange);
+			float3 h = normalize(normalize(_renderData.cameraPosition.xyz - vertex.worldPos) + lightRange);
 			float specLighting = pow(saturate(dot(h, normal)), specularPower);
-			result += textureColor.rgb * (specLighting * 0.5 * spec.r * matSpecularPower);
+			result += textureColor.rgb * (specLighting * 0.5 * spec.r * _objectData.matSpecularPower);
 		}		
 
 		result *= atten;
 		output += saturate(result);
 	}	
 	
-	return float4(saturate(float3(0.392157f * 0.025f, 0.584314f * 0.025f, 0.929412f * 0.025f) + output), textureColor.a);	
+	return float4(saturate(float3(0.392157f * 0.025f, 0.584314f * 0.025f, 0.929412f * 0.025f) + output), textureColor.a);
 }
 
 // Our bump mapped pixel shader that will render the bump mapped texture.
 float4 PrimPSWaterBump(VertexOut vertex) : SV_Target
 {
+	SamplerState sampler = SamplerDescriptorHeap[_renderData.samplerHandle];
+	Texture2D normalTexture = ResourceDescriptorHeap[_objectData.normalHandle];	
+	float2 uvOffset = _objectData.uvOffset;
+
 	float2 scaledUv = vertex.uv * 2.0f;
-	float3 bumpAmount = 1.0f * (_normalTexture.Sample(_normalSampler, scaledUv + uvOffset).xyz * 2.0f - 1.0f);
-	bumpAmount += saturate(0.5f * (_normalTexture.Sample(_normalSampler, scaledUv + uvOffset * 2.0f).xyz * 2.0f - 1.0f));
-	bumpAmount += saturate(0.25f * (_normalTexture.Sample(_normalSampler, scaledUv + uvOffset * 4.0f).xyz * 2.0f - 1.0f));
+	float3 bumpAmount = 1.0f * (normalTexture.Sample(sampler, scaledUv + uvOffset).xyz * 2.0f - 1.0f);
+	bumpAmount += saturate(0.5f * (normalTexture.Sample(sampler, scaledUv + uvOffset * 2.0f).xyz * 2.0f - 1.0f));
+	bumpAmount += saturate(0.25f * (normalTexture.Sample(sampler, scaledUv + uvOffset * 4.0f).xyz * 2.0f - 1.0f));
 	float3 normal = normalize(vertex.normal + (bumpAmount.x * vertex.tangent + bumpAmount.y * vertex.bitangent));
 		
 	float3 spec = 0; 
 	
-	if (matSpecularPower > 0)
+	if (_objectData.matSpecularPower > 0)
 	{
-		spec = _specTexture.Sample(_specSampler, scaledUv + uvOffset).xyz;
-		spec += 2.0f * _specTexture.Sample(_specSampler, scaledUv + uvOffset * 0.5f).xyz;
-		spec += 4.0 * _specTexture.Sample(_specSampler, scaledUv + uvOffset * 0.25f).xyz;
+		Texture2D specTexture = ResourceDescriptorHeap[_objectData.specularHandle];
+		spec = specTexture.Sample(sampler, scaledUv + uvOffset).xyz;
+		spec += 2.0f * specTexture.Sample(sampler, scaledUv + uvOffset * 0.5f).xyz;
+		spec += 4.0 * specTexture.Sample(sampler, scaledUv + uvOffset * 0.25f).xyz;
 	}
 
 	return blinn(vertex, normal, spec);
@@ -167,13 +169,17 @@ float4 PrimPSWaterBump(VertexOut vertex) : SV_Target
 // Our bump mapped pixel shader that will render the bump mapped texture.
 float4 PrimPSBump(VertexOut vertex) : SV_Target
 {
-	float3 bumpAmount = 1.0f * (_normalTexture.Sample(_normalSampler, vertex.uv).xyz * 2.0f - 1.0f);
+	SamplerState sampler = SamplerDescriptorHeap[_renderData.samplerHandle];
+	Texture2D normalTexture = ResourceDescriptorHeap[_objectData.normalHandle];	
+
+	float3 bumpAmount = 1.0f * (normalTexture.Sample(sampler, vertex.uv).xyz * 2.0f - 1.0f);
 	float3 normal = normalize(vertex.normal + (bumpAmount.x * vertex.tangent + bumpAmount.y * vertex.bitangent));
 	float3 spec = 0;
 
-	if (matSpecularPower > 0)
+	if (_objectData.matSpecularPower > 0)
 	{
-		spec = _specTexture.Sample(_specSampler, vertex.uv).xyz;
+		Texture2D specTexture = ResourceDescriptorHeap[_objectData.specularHandle];
+		spec = specTexture.Sample(sampler, vertex.uv).xyz;
 	}
 
 	return blinn(vertex, normal, spec);
@@ -185,12 +191,14 @@ float4 PrimPS(VertexOut vertex) : SV_Target
 	return blinn(vertex, vertex.normal, float3(1, 0, 0));
 }
 
-NormalVertex NormalVS(NormalVertex vertex)
+NormalVertex NormalVS(uint vertexIndex : SV_VertexID)
 {
+	StructuredBuffer<NormalVertex> vertexBuffer = ResourceDescriptorHeap[_objectData.vertexBufferHandle];
+	NormalVertex vertex = vertexBuffer[vertexIndex];
 	NormalVertex output;
 
-	float4 worldPos = mul(World, vertex.pos);
-	output.pos = mul(ViewProjection, worldPos);
+	float4 worldPos = mul(_objectData.world, vertex.pos);
+	output.pos = mul(_renderData.viewProjection, worldPos);
 
 	return output;
 }

@@ -22,14 +22,16 @@
 // Created: October 20, 2025 5:51:04 PM
 //
 
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
-using TerraFX.Interop.DirectX;
 using TerraFX.Interop.Windows;
-using Win32 = TerraFX.Interop.Windows.Windows;
 
 namespace Gorgon.Graphics.Core;
 
@@ -82,7 +84,7 @@ internal unsafe sealed class CommandListPool(CommandQueue queue)
     /// <exception cref="GorgonException">Thrown if the command list fails its reset operation.</exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public GorgonCommandList Get(string name, CommandAllocator allocator)
-    {   
+    {
         using (_lock.EnterScope())
         {
             Debug.Assert(allocator.Type == _queue.Type, $"The command allocator and command list types are mismatched. {allocator.Type} != {_queue.Type}");
@@ -92,19 +94,24 @@ internal unsafe sealed class CommandListPool(CommandQueue queue)
             if (_free.Count > 0)
             {
                 list = _free[^1];
-                list.ResetState(name, allocator);                
+                list.ResetState(name, allocator);
 
                 _free.RemoveAt(_free.Count - 1);
                 _active.Add(list);
             }
-            else 
+            else
             {
                 list = new GorgonCommandList(_graphics, name, allocator, _queue);
                 _active.Add(list);
-            }            
+            }
 
-            list.D3DGraphicsCommandList.Get()->Reset(allocator.D3DAllocator.Get(), null)
-                .ThrowIfFailed(GorgonResult.CannotInitialize, () => Resources.GORGFX_ERR_CANNOT_RESET_COMMAND_LIST);
+            HRESULT err = list.D3DGraphicsCommandList.Get()->Reset(allocator.D3DAllocator.Get(), null);
+
+            if (err.FAILED)
+            {
+                err.ThrowIfFailed(GorgonResult.CannotInitialize, Resources.GORGFX_ERR_CANNOT_RESET_COMMAND_LIST);
+            }
+
             list.IsRecording = true;
 
             return list;

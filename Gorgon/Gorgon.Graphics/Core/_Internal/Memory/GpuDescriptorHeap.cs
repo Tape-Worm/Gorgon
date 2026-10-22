@@ -22,8 +22,10 @@
 // Created: October 18, 2025 11:36:04 PM
 //
 
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
+using System.Threading;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
@@ -41,11 +43,10 @@ internal unsafe class GpuDescriptorHeap
 {
     private ComPtr<ID3D12DescriptorHeap> _heap;
     private ComPtr<D3D12MA_VirtualBlock> _memoryBlock;
-    
+
     private readonly Lock _syncLock = new();
     private readonly GorgonGraphics _graphics;
     private readonly D3D12_DESCRIPTOR_HEAP_TYPE _type;
-    private uint _used;
     private readonly Queue<(ulong GfxFenceValue, ulong ComputeFenceValue, GpuDescriptorAllocation Allocation)> _freedAllocations = new(65536);
 
     /// <summary>
@@ -62,7 +63,7 @@ internal unsafe class GpuDescriptorHeap
     public D3D12_CPU_DESCRIPTOR_HANDLE D3DCpuHandle
     {
         get;
-    } 
+    }
 
     /// <summary>
     /// Property to return the GPU handle of the view heap.
@@ -83,7 +84,10 @@ internal unsafe class GpuDescriptorHeap
     /// <summary>
     /// Property to return the amount of the heap that's been been consumed.
     /// </summary>
-    public uint Used => _used;
+    public uint Used
+    {
+        get; private set;
+    }
 
     /// <summary>
     /// Property to return the view heap object for this heap.
@@ -95,7 +99,6 @@ internal unsafe class GpuDescriptorHeap
     {
         if (disposing)
         {
-            _graphics.WaitForGpu(GorgonGraphics.WaitFenceTimeout);
             _graphics.Log.Print($"Cleaning up GPU {_type} view heap.", LoggingLevel.Simple);
         }
 
@@ -117,7 +120,7 @@ internal unsafe class GpuDescriptorHeap
         D3D12MA_VIRTUAL_BLOCK_DESC maDesc = new(Count);
 
         D3D12MemAlloc.D3D12MA_CreateVirtualBlock(&maDesc, _memoryBlock.GetAddressOf())
-            .ThrowIfFailed(GorgonResult.CannotCreate, () => string.Format(Resources.GORGFX_ERR_CANNOT_CREATE_DESCRIPTOR_HEAP, _type));
+            .ThrowIfFailed(GorgonResult.CannotCreate, Resources.GORGFX_ERR_CANNOT_CREATE_DESCRIPTOR_HEAP, _type);
 
         string heapName = $"Gorgon D3D12 {_type} GPU visible Descriptor Heap ({Count} descriptors)";
 
@@ -131,7 +134,7 @@ internal unsafe class GpuDescriptorHeap
         };
 
         _graphics.D3DDevice.Get()->CreateDescriptorHeap(&desc, Win32.__uuidof<ID3D12DescriptorHeap>(), (void**)_heap.GetAddressOf())
-            .ThrowIfFailed(GorgonResult.CannotCreate, () => string.Format(Resources.GORGFX_ERR_CANNOT_CREATE_DESCRIPTOR_HEAP, _type));
+            .ThrowIfFailed(GorgonResult.CannotCreate, Resources.GORGFX_ERR_CANNOT_CREATE_DESCRIPTOR_HEAP, _type);
 
         _heap.SetD3DDebugName(heapName);
 
@@ -165,11 +168,11 @@ internal unsafe class GpuDescriptorHeap
             ulong location = 0;
 
             _memoryBlock.Get()->Allocate(&desc, &vmAllocation, &location)
-                .ThrowIfFailed(GorgonResult.OutOfMemory, () => string.Format(Resources.GORGFX_ERR_DESCRIPTORHEAP_OUT_OF_MEMORY, _type));
+                .ThrowIfFailed(GorgonResult.OutOfMemory, Resources.GORGFX_ERR_DESCRIPTORHEAP_OUT_OF_MEMORY, _type);
 
             allocation = new(vmAllocation.AllocHandle, (int)location, count);
-            
-            _used += count;
+
+            Used += count;
         }
     }
 
@@ -223,7 +226,7 @@ internal unsafe class GpuDescriptorHeap
                     });
                 }
 
-                _used -= item.Allocation.Count;
+                Used -= item.Allocation.Count;
 
                 _freedAllocations.Dequeue();
             }

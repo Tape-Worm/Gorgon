@@ -24,7 +24,9 @@
 // Created: Friday, June 24, 2011 10:05:35 AM
 // 
 
+using System;
 using System.Buffers;
+using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Gorgon.Core;
@@ -194,7 +196,7 @@ public class GorgonGamingDevice
         Vector2 position = new(deviceXAxis.Value, deviceYAxis.Value);
         float maxRange = xAxisInfo.Range.Range.Max(yAxisInfo.Range.Range) * 0.5f;
 
-        float dist = (position.X * position.X + position.Y * position.Y).Sqrt();
+        float dist = ((position.X * position.X) + (position.Y * position.Y)).Sqrt();
         float wanted = (ConstrainLinear((int)dist.FastFloor(), deadZone) / (maxRange - deadZone)).Min(1);
         float scale = wanted > 0 ? wanted / dist : 0;
         float x = (position.X * scale) * maxRange;
@@ -247,17 +249,7 @@ public class GorgonGamingDevice
         // If we've not determined the slot for the device yet, then try to do so now.
         Info.RefreshXInputSlot();
 
-        if (Info.XInputSlot == -1)
-        {
-            return 0;
-        }
-
-        if ((motorIndex < 0) || (motorIndex >= _motorValues.Length))
-        {
-            return 0;
-        }
-
-        return _motorValues[motorIndex];
+        return Info.XInputSlot == -1 ? 0 : (motorIndex < 0) || (motorIndex >= _motorValues.Length) ? 0 : _motorValues[motorIndex];
     }
 
     /// <inheritdoc/>
@@ -303,12 +295,7 @@ public class GorgonGamingDevice
         // If we've not determined the slot for the device yet, then try to do so now.
         Info.RefreshXInputSlot();
 
-        if (Info.XInputSlot == -1)
-        {
-            return GamingDeviceBatteryLevel.Disconnected;
-        }
-
-        return XInputApi.GetBatteryLevel(Info.XInputSlot);
+        return Info.XInputSlot == -1 ? GamingDeviceBatteryLevel.Disconnected : XInputApi.GetBatteryLevel(Info.XInputSlot);
     }
 
     /// <inheritdoc/>

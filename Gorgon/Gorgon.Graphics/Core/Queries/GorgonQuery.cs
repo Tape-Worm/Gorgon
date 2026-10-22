@@ -22,13 +22,14 @@
 // Created: October 13, 2026 1:26:10 PM
 //
 
+using System;
+using System.Threading;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Native;
 using TerraFX.Interop.DirectX;
 using TerraFX.Interop.Windows;
-using TerraFX.Interop.WinRT;
 using Win32 = TerraFX.Interop.Windows.Windows;
 
 namespace Gorgon.Graphics.Core;
@@ -144,6 +145,8 @@ public unsafe sealed class GorgonQuery
     private int _allocatedSlots = -1;
     private byte* _readbackPtr;
 
+    private int _isDisposed;
+
     /// <summary>
     /// Property to return the D3D COM pointer for the query heap.
     /// </summary>
@@ -167,6 +170,9 @@ public unsafe sealed class GorgonQuery
     {
         get;
     }
+
+    /// <inheritdoc cref="GorgonGraphics.IsDisposed"/>
+    public bool IsDisposed => _isDisposed != 0;
 
     /// <summary>
     /// Property to return the data from the query that can be read by the CPU.
@@ -249,16 +255,22 @@ public unsafe sealed class GorgonQuery
     /// <inheritdoc cref="GorgonGraphicsFactory.Dispose(bool)"/>
     private void Dispose(bool disposing)
     {
+        if (Interlocked.Exchange(ref _isDisposed, 1) != 0)
+        {
+            return;
+        }
+
         if (disposing)
         {
             this.UnregisterDisposable(Graphics);
+
+            Graphics.Log.Print($"Destroying {nameof(GorgonQuery)} '{Name}'.", LoggingLevel.Simple);
+            Graphics.Log.Print($"Destroying {nameof(ID3D12QueryHeap)} '{Name}'.", LoggingLevel.Verbose);
 
             // Ensure the GPU is done its work before dispose any query heaps.
             Graphics.WaitForGpu();
 
             ReadResults.Dispose();
-
-            Graphics.Log.Print($"Destroying {nameof(ID3D12QueryHeap)} '{Name}'.", LoggingLevel.Verbose);
         }
 
         _bufferAllocation.Dispose();
@@ -293,7 +305,7 @@ public unsafe sealed class GorgonQuery
         Graphics.Log.Print($"Creating {nameof(ID3D12QueryHeap)} '{Name}'...", LoggingLevel.Verbose);
 
         Graphics.D3DDevice.Get()->CreateQueryHeap(&desc, Win32.__uuidof<ID3D12QueryHeap>(), (void**)heap.GetAddressOf())
-            .ThrowIfFailed(GorgonResult.CannotCreate, () => Resources.GORGFX_ERR_CANNOT_CREATE_QUERY);
+            .ThrowIfFailed(GorgonResult.CannotCreate, Resources.GORGFX_ERR_CANNOT_CREATE_QUERY);
 
         _queryHeap = heap;
 
@@ -303,17 +315,17 @@ public unsafe sealed class GorgonQuery
         D3D12MA_ALLOCATION_DESC allocDesc = new(D3D12_HEAP_TYPE.D3D12_HEAP_TYPE_READBACK);
         D3D12_RESOURCE_DESC1 resDesc = D3D12_RESOURCE_DESC1.Buffer((ulong)MaximumRecordCount * (ulong)(QueryType == QueryType.PipelineStatistics ? sizeof(GorgonQueryPipelineStats) : sizeof(ulong)), flags);
         Graphics.Memory.Allocator.Get()->CreateResource3(&allocDesc, &resDesc, D3D12_BARRIER_LAYOUT.D3D12_BARRIER_LAYOUT_UNDEFINED, null, 0, null, allocation.GetAddressOf(), Win32.__uuidof<ID3D12Resource2>(), (void**)readback.GetAddressOf())
-            .ThrowIfFailed(GorgonResult.CannotCreate, () => Resources.GORGFX_ERR_CANNOT_CREATE_QUERY);
+            .ThrowIfFailed(GorgonResult.CannotCreate, Resources.GORGFX_ERR_CANNOT_CREATE_QUERY);
 
         _bufferAllocation = allocation;
         _readbackBuffer = readback;
         _readbackBuffer.SetD3DDebugName(readbackName);
         byte* readbackPtr = null;
         _readbackBuffer.Get()->Map(0, null, (void**)&readbackPtr)
-            .ThrowIfFailed(GorgonResult.CannotCreate, () => Resources.GORGFX_ERR_CANNOT_CREATE_QUERY);
+            .ThrowIfFailed(GorgonResult.CannotCreate, Resources.GORGFX_ERR_CANNOT_CREATE_QUERY);
         _readbackPtr = readbackPtr;
 
-        return new GorgonPtr<byte>(readbackPtr, (long)resDesc.Width);            
+        return new GorgonPtr<byte>(readbackPtr, (long)resDesc.Width);
     }
 
     /// <summary>
@@ -323,7 +335,7 @@ public unsafe sealed class GorgonQuery
     /// <param name="index">The index of the record to allocate.</param>
     /// <returns><b>true</b> if the allocation succeeded, <b>false</b> if it failed because the command list already owns the index.</returns>
     internal bool Allocate(GorgonCommandList commandList, int index)
-    {        
+    {
         GorgonCommandList? owner = Interlocked.CompareExchange(ref _slots[index], commandList, null);
 
         if (owner == commandList)
@@ -350,7 +362,7 @@ public unsafe sealed class GorgonQuery
     {
         if (Interlocked.Exchange(ref _slots[index], null) is not null)
         {
-            Interlocked.Decrement(ref _allocatedSlots);                
+            Interlocked.Decrement(ref _allocatedSlots);
         }
     }
 
@@ -366,7 +378,6 @@ public unsafe sealed class GorgonQuery
     /// </remarks>
     public void Dispose()
     {
-        Graphics.Log.Print($"Destroying {nameof(GorgonQuery)} '{Name}'.", LoggingLevel.Simple);
         Dispose(true);
         GC.SuppressFinalize(this);
     }
@@ -387,9 +398,9 @@ public unsafe sealed class GorgonQuery
     /// <exception cref="GorgonException">Thrown if the query could not be created.</exception>
     public GorgonQuery(GorgonGraphics graphics, string name, QueryType queryType, int maximumRecordCount)
     {
-        ArgumentOutOfRangeException.ThrowIfLessThan(maximumRecordCount, 1);        
+        ArgumentOutOfRangeException.ThrowIfLessThan(maximumRecordCount, 1);
 
-        Graphics = graphics;       
+        Graphics = graphics;
 
         Name = GorgonGraphicsFactory.GenerateName(name, nameof(GorgonQuery));
         QueryType = queryType;
@@ -398,7 +409,7 @@ public unsafe sealed class GorgonQuery
 
         Graphics.Log.Print($"Creating {nameof(GorgonQuery)} '{Name}' with a maximum of {MaximumRecordCount} records...", LoggingLevel.Simple);
 
-        ReadResults = new GorgonNativeBuffer<byte>(CreateNative());       
+        ReadResults = new GorgonNativeBuffer<byte>(CreateNative());
 
         this.RegisterDisposable(Graphics);
     }

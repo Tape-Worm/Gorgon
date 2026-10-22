@@ -22,6 +22,7 @@
 // Created: February 2, 2025 4:40:17 PM
 //
 
+using System;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 using Gorgon.Input.Properties;
@@ -144,12 +145,9 @@ internal static class HidApi
 
                     // If we can't retrieve the product string, but we receive a success code, then return an empty string so 
                     // we can try other methods.
-                    if (err == WIN32_ERROR.ERROR_SUCCESS)
-                    {
-                        return string.Empty;
-                    }
-
-                    throw new Win32Exception((int)err, Resources.GORINP_WIN32_CANNOT_RETRIEVE_PRODUCT_DATA);
+                    return err == WIN32_ERROR.ERROR_SUCCESS
+                        ? string.Empty
+                        : throw new Win32Exception((int)err, Resources.GORINP_WIN32_CANNOT_RETRIEVE_PRODUCT_DATA);
                 }
 
                 return Marshal.PtrToStringUni((nint)bufferPtr) ?? string.Empty;
@@ -183,12 +181,9 @@ internal static class HidApi
 
                     // The call was succesful, but the HID call failed, so just return an empty string.
                     // This happens with XBOX controllers.
-                    if (lastError == WIN32_ERROR.ERROR_SUCCESS)
-                    {
-                        return string.Empty;
-                    }
-
-                    throw new Win32Exception((int)lastError, Resources.GORINP_WIN32_CANNOT_RETRIEVE_MANUFACTURER_DATA);
+                    return lastError == WIN32_ERROR.ERROR_SUCCESS
+                        ? string.Empty
+                        : throw new Win32Exception((int)lastError, Resources.GORINP_WIN32_CANNOT_RETRIEVE_MANUFACTURER_DATA);
                 }
 
                 return Marshal.PtrToStringUni((nint)bufferPtr) ?? string.Empty;

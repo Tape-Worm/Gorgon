@@ -22,9 +22,14 @@
 // Created: October 3, 2025 3:07:13 PM
 //
 
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Threading;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
@@ -123,6 +128,7 @@ public unsafe sealed class GorgonGraphicsFactory
     private static readonly Lock _factoryCreationLock = new();
     private readonly IGorgonLog _log;
     private readonly List<GorgonGraphics> _graphicsObjects = [];
+    private int _isDisposed;
 
     /// <summary>
     /// Property to return the debugging flags specified on factory creation.
@@ -147,12 +153,20 @@ public unsafe sealed class GorgonGraphicsFactory
         private set;
     }
 
+    /// <inheritdoc cref="GorgonGraphics.IsDisposed"/>
+    public bool IsDisposed => _isDisposed != 0;
+
     /// <summary>
     /// Function called to dispose of unmanaged and managed resources.
     /// </summary>
     /// <param name="disposing"><b>true</b> to dispose of unmanaged and managed resources, <b>false</b> to dispose of unmanaged resources only.</param>
     private void Dispose(bool disposing)
     {
+        if (Interlocked.Exchange(ref _isDisposed, 1) != 0)
+        {
+            return;
+        }
+
         if (disposing)
         {
             using (_objectCreationLock.EnterScope())
@@ -183,6 +197,7 @@ public unsafe sealed class GorgonGraphicsFactory
 
         if ((!disposing) || (Interlocked.Decrement(ref _debugCreateCounter) <= 0))
         {
+            Interlocked.Exchange(ref _debugCreateCounter, 0);
             _dred.Dispose();
             _d3dDebug.Dispose();
             _dxgiDebug.Dispose();
@@ -190,6 +205,7 @@ public unsafe sealed class GorgonGraphicsFactory
 
         if ((!disposing) || (Interlocked.Decrement(ref _factoryCreateCounter) <= 0))
         {
+            Interlocked.Exchange(ref _factoryCreateCounter, 0);
             _deviceFactory.Dispose();
             _sdkConfig.Dispose();
         }
@@ -214,12 +230,12 @@ public unsafe sealed class GorgonGraphicsFactory
             try
             {
                 DX.D3D12GetInterface((Guid*)Unsafe.AsPointer(ref Unsafe.AsRef(in CLSID.CLSID_D3D12SDKConfiguration)), Win32.__uuidof<ID3D12SDKConfiguration1>(), (void**)config.GetAddressOf())
-                    .ThrowIfFailed(GorgonResult.CannotCreate, () => Resources.GORGFX_ERR_LOAD_AGILITY_FAILED);
+                    .ThrowIfFailed(GorgonResult.CannotCreate, Resources.GORGFX_ERR_LOAD_AGILITY_FAILED);
 
                 ComPtr<ID3D12DeviceFactory> factory = default;
 
                 config.Get()->CreateDeviceFactory(CommonConstants.AgilitySDKVersion, (sbyte*)pathPtr, Win32.__uuidof<ID3D12DeviceFactory>(), (void**)factory.GetAddressOf())
-                    .ThrowIfFailed(GorgonResult.CannotCreate, () => Resources.GORGFX_ERR_LOAD_AGILITY_FAILED);
+                    .ThrowIfFailed(GorgonResult.CannotCreate, Resources.GORGFX_ERR_LOAD_AGILITY_FAILED);
 
                 _sdkConfig = config;
                 _deviceFactory = factory;
@@ -260,7 +276,7 @@ public unsafe sealed class GorgonGraphicsFactory
 
                 debug |= GorgonGraphicsDebugFlags.GpuBasedValidation;
             }
-            
+
             if ((debug & GorgonGraphicsDebugFlags.GpuBasedValidation) == GorgonGraphicsDebugFlags.GpuBasedValidation)
             {
                 _log.Print("[DEBUG] GPU based validation is enabled.", LoggingLevel.Intermediate);
@@ -329,7 +345,7 @@ public unsafe sealed class GorgonGraphicsFactory
         _log.Print($"Creating {nameof(IDXGIFactory7)} '{factoryName}'.", LoggingLevel.Verbose);
 
         DX.CreateDXGIFactory2(flags, Win32.__uuidof<IDXGIFactory7>(), (void**)factory7.GetAddressOf())
-            .ThrowIfFailed(GorgonResult.CannotEnumerate, () => Resources.GORGFX_ERR_CANNOT_CREATE_FACTORY);
+            .ThrowIfFailed(GorgonResult.CannotEnumerate, Resources.GORGFX_ERR_CANNOT_CREATE_FACTORY);
 
         factory7.SetDXGIDebugName(factoryName);
 
@@ -340,17 +356,17 @@ public unsafe sealed class GorgonGraphicsFactory
             using ComPtr<IDXGIAdapter1> adapter1 = new();
 
             factory7.Get()->EnumAdapters1((uint)adapter.Index, adapter1.ReleaseAndGetAddressOf())
-                .ThrowIfFailed(GorgonResult.CannotCreate, () => string.Format(Resources.GORGFX_ERR_CANNOT_CREATE_ADAPTER, adapter.Index));
+                .ThrowIfFailed(GorgonResult.CannotCreate, Resources.GORGFX_ERR_CANNOT_CREATE_ADAPTER, adapter.Index);
 
             adapter1.As(&adapter4)
-                .ThrowIfFailed(GorgonResult.CannotCreate, () => string.Format(Resources.GORGFX_ERR_CANNOT_CREATE_ADAPTER, adapter.Index));
+                .ThrowIfFailed(GorgonResult.CannotCreate, Resources.GORGFX_ERR_CANNOT_CREATE_ADAPTER, adapter.Index);
         }
         else
         {
             _log.PrintWarning($"NOTE: {adapter.Name} is a WARP Software adapter! WARP Software adapters are much slower than hardware devices, and should only be used for diagnostics or experimental code.", LoggingLevel.All);
 
             factory7.Get()->EnumWarpAdapter(Win32.__uuidof<IDXGIAdapter4>(), (void**)adapter4.GetAddressOf())
-                .ThrowIfFailed(GorgonResult.CannotCreate, () => string.Format(Resources.GORGFX_ERR_CANNOT_CREATE_ADAPTER, "WARP"));
+                .ThrowIfFailed(GorgonResult.CannotCreate, Resources.GORGFX_ERR_CANNOT_CREATE_ADAPTER, "WARP");
         }
 
         adapter4.SetDXGIDebugName(adapterName);
@@ -358,7 +374,7 @@ public unsafe sealed class GorgonGraphicsFactory
         _log.Print($"Creating {nameof(ID3D12Device14)} '{d3dDeviceName}' (Feature Level 12.2).", LoggingLevel.Verbose);
 
         _deviceFactory.Get()->CreateDevice((PIDXGIAdapter4)adapter4.Get(), D3D_FEATURE_LEVEL.D3D_FEATURE_LEVEL_12_2, Win32.__uuidof<ID3D12Device14>(), (void**)d3dDevice14.GetAddressOf())
-            .ThrowIfFailed(GorgonResult.CannotCreate, () => string.Format(Resources.GORGFX_ERR_CANNOT_CREATE_D3D12_DEVICE, adapterName));
+            .ThrowIfFailed(GorgonResult.CannotCreate, Resources.GORGFX_ERR_CANNOT_CREATE_D3D12_DEVICE, adapterName);
         d3dDevice14.SetD3DDebugName(d3dDeviceName);
 
         return (factory7, adapter4, d3dDevice14);
@@ -391,7 +407,7 @@ public unsafe sealed class GorgonGraphicsFactory
         Dispose(true);
         GC.SuppressFinalize(this);
     }
-    
+
     /// <summary>
     /// Function to retrieve information about the installed video adapters on the system.
     /// </summary>
@@ -504,8 +520,8 @@ public unsafe sealed class GorgonGraphicsFactory
             {
                 throw new GorgonException(GorgonResult.CannotCreate, Resources.GORGFX_ERR_NO_SUITABLE_ADAPTER);
             }
-            
-            adapter = adapters[0];            
+
+            adapter = adapters[0];
         }
 
         (ComPtr<IDXGIFactory7> dxgiFactory, ComPtr<IDXGIAdapter4> dxgiAdapter, ComPtr<ID3D12Device14> d3dDevice) = CreateDeviceObjects(adapter);

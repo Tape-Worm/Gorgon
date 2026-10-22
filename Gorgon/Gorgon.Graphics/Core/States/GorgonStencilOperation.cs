@@ -31,7 +31,7 @@ namespace Gorgon.Graphics.Core;
 /// <summary>
 /// Information used to define the parameters for the stencil portion of a <see cref="GorgonDepthStencilState"/>.
 /// </summary>
-public sealed record class GorgonStencilOperation    
+public sealed record class GorgonStencilOperation
 {
     /// <summary>
     /// Property to return the comparison function to use for stencil testing.

@@ -28,7 +28,7 @@ namespace Gorgon.Graphics.Core;
 /// Represents an allocation of a region from a <see cref="GorgonVirtualTexture"/>.
 /// </summary>
 /// <seealso cref="GorgonVirtualTexture"/>
-internal readonly struct VirtualTextureAllocation    
+internal readonly struct VirtualTextureAllocation
 {
     /// <summary>
     /// The region that covers the tiles that were allocated on the texture.

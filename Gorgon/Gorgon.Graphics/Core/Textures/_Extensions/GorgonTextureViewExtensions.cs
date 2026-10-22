@@ -22,6 +22,8 @@
 // Created: April 20, 2026 8:01:46 PM
 //
 
+using System;
+using System.Collections.Generic;
 using Gorgon.Core;
 using Gorgon.Graphics.Imaging;
 

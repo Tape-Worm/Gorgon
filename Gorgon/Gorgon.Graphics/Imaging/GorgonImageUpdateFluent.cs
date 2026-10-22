@@ -24,11 +24,14 @@
 // Created: December 27, 2020 4:49:31 PM
 // 
 
+using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.Intrinsics;
+using System.Threading;
 using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Properties;
 using Gorgon.Graphics.Imaging.Wic;
@@ -139,14 +142,9 @@ public partial class GorgonImage
                 r = (srcPixel & 0xff) >> 4;
             }
 
-            if (format == BufferFormat.B4G4R4A4_UNorm)
-            {
-                (destBufferPtr++).Value = (ushort)((a << 12) | (r << 8) | (g << 4) | b);
-            }
-            else
-            {
-                (destBufferPtr++).Value = (ushort)((r << 12) | (g << 8) | (b << 4) | a);
-            }
+            (destBufferPtr++).Value = format == BufferFormat.B4G4R4A4_UNorm
+                ? (ushort)((a << 12) | (r << 8) | (g << 4) | b)
+                : (ushort)((r << 12) | (g << 8) | (b << 4) | a);
         }
     }
 
@@ -219,14 +217,9 @@ public partial class GorgonImage
                 r = (srcPixel & 0xff) >> 4;
             }
 
-            if (format == BufferFormat.B4G4R4A4_UNorm)
-            {
-                *destPtr++ = (ushort)((a << 12) | (r << 8) | (g << 4) | b);
-            }
-            else
-            {
-                *destPtr++ = (ushort)(a | (r << 12) | (g << 8) | (b << 4));
-            }
+            *destPtr++ = format == BufferFormat.B4G4R4A4_UNorm
+                ? (ushort)((a << 12) | (r << 8) | (g << 4) | b)
+                : (ushort)(a | (r << 12) | (g << 8) | (b << 4));
         }
     }
 
@@ -797,7 +790,7 @@ public partial class GorgonImage
             _imageInfo = _imageInfo with
             {
                 IsPremultiplied = false
-            };            
+            };
 
             for (int mip = 0; mip < MipCount; ++mip)
             {

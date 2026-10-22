@@ -100,7 +100,11 @@
 // contributors exclude the implied warranties of merchantability, fitness for a
 // particular purpose and non-infringement.
 
+using System;
 using System.Buffers;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using Gorgon.Core;
@@ -312,27 +316,15 @@ public sealed class GorgonCodecDds
             return ((flags & DdsConversionFlags.A8P8) == DdsConversionFlags.A8P8) ? DdsConversionFlags.A8P8 : DdsConversionFlags.Palette;
         }
 
-        if ((flags & DdsConversionFlags.RGB888) == DdsConversionFlags.RGB888)
-        {
-            return DdsConversionFlags.RGB888;
-        }
-
-        if ((flags & DdsConversionFlags.RGB332) == DdsConversionFlags.RGB332)
-        {
-            return DdsConversionFlags.RGB332;
-        }
-
-        if ((flags & DdsConversionFlags.RGB8332) == DdsConversionFlags.RGB8332)
-        {
-            return DdsConversionFlags.RGB8332;
-        }
-
-        if ((flags & DdsConversionFlags.A4L4) == DdsConversionFlags.A4L4)
-        {
-            return DdsConversionFlags.A4L4;
-        }
-
-        return (flags & DdsConversionFlags.RGB4444) == DdsConversionFlags.RGB4444
+        return (flags & DdsConversionFlags.RGB888) == DdsConversionFlags.RGB888
+            ? DdsConversionFlags.RGB888
+            : (flags & DdsConversionFlags.RGB332) == DdsConversionFlags.RGB332
+            ? DdsConversionFlags.RGB332
+            : (flags & DdsConversionFlags.RGB8332) == DdsConversionFlags.RGB8332
+            ? DdsConversionFlags.RGB8332
+            : (flags & DdsConversionFlags.A4L4) == DdsConversionFlags.A4L4
+            ? DdsConversionFlags.A4L4
+            : (flags & DdsConversionFlags.RGB4444) == DdsConversionFlags.RGB4444
                    ? DdsConversionFlags.RGB4444
                    : DdsConversionFlags.None;
 

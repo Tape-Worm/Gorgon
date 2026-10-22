@@ -24,18 +24,20 @@
 // Created: July 30, 2017 1:49:31 PM
 // 
 
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using Gorgon.Collections;
+using System.Windows.Forms;
+using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
-using Gorgon.Renderers.Cameras;
-using Gorgon.Renderers.Data;
-using Gorgon.Renderers.Debug;
-using Gorgon.Renderers.Geometry;
-using Gorgon.Renderers.Lights;
+using Gorgon.Math;
+//using Gorgon.Renderers.Cameras;
+//using Gorgon.Renderers.Data;
+//using Gorgon.Renderers.Debug;
+//using Gorgon.Renderers.Geometry;
+//using Gorgon.Renderers.Lights;
 
 namespace Gorgon.Examples;
 
@@ -45,116 +47,116 @@ namespace Gorgon.Examples;
 internal class SimpleRenderer
     : IDisposable
 {
+    /// <summary>
+    /// Per-frame data to send to the GPU.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    private struct RenderData
+    {
+        /// <summary>
+        /// The view/projection matrix.
+        /// </summary>
+        public Matrix4x4 ViewProjection;
+        /// <summary>
+        /// The position of the camera.
+        /// </summary>
+        public Vector4 CameraPosition;
+        /// <summary>
+        /// The handle for the default sampler.
+        /// </summary>
+        public int SamplerHandle;
+        /// <summary>
+        /// The handle for the buffer that contains the light data.
+        /// </summary>
+        public int LightBufferHandle;
+    }
+
+    /// <summary>
+    /// Per object data to send to the GPU.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    private struct ObjectData
+    {
+        /// <summary>
+        /// The world matrix for the object.
+        /// </summary>
+        public Matrix4x4 World;
+        /// <summary>
+        /// The UV offset for the object's texture.
+        /// </summary>
+        public Vector2 UvOffset;
+        /// <summary>
+        /// Specular power.
+        /// </summary>
+        public float SpecularPower;
+        /// <summary>
+        /// The handle to the object's vertex buffer.
+        /// </summary>
+        public int VertexBufferHandle;
+        /// <summary>
+        /// The handle to the object's texture.
+        /// </summary>
+        public int TextureHandle;
+        /// <summary>
+        /// The handle to the object's normal map texture.
+        /// </summary>
+        public int NormalMapHandle;
+        /// <summary>
+        /// The handle to the object's specular map texture..
+        /// </summary>
+        public int SpecularHandle;
+    }
 
     // The maximum number of available lights.
     private const int MaxLights = 8;
 
-    /// <summary>
-    /// View/projection matrices.
-    /// </summary>
-    [StructLayout(LayoutKind.Sequential, Size = 192)]
-    private struct ViewProjectionData
-    {
-        /// <summary>
-        /// The view matrix.
-        /// </summary>
-        public Matrix4x4 View;
-
-        /// <summary>
-        /// The projection matrix.
-        /// </summary>
-        public Matrix4x4 Projection;
-
-        /// <summary>
-        /// The view * project matrix.
-        /// </summary>
-        public Matrix4x4 ViewProjection;
-    }
-
-    /// <summary>
-    /// Material data.
-    /// </summary>
-    [StructLayout(LayoutKind.Sequential, Pack = 16, Size = 16)]
-    private struct Material
-    {
-        /// <summary>
-        /// The offset of the texture.
-        /// </summary>
-        public Vector2 UVOffset;
-
-        /// <summary>
-        /// The specular power for the texture.
-        /// </summary>
-        public float SpecularPower;
-    }
-
     // The graphics interface to use.
     private readonly GorgonGraphics _graphics;
-    // A constant buffer for holding the projection*view matrix.
-    private GorgonConstantBufferView _viewProjectionBuffer;
-    // A constant buffer for holding the world transformation matrix.
-    private GorgonConstantBufferView _worldBuffer;
-    // A constant buffer for holding the vectors used for the camera.
-    private GorgonConstantBufferView _cameraBuffer;
-    // A constant buffer for holding light information.
-    private GorgonConstantBufferView _lightBuffer;
-    // A constant buffer for holding material information.
-    private GorgonConstantBufferView _materialBuffer;
-    // The light data to send to the constant buffer.
-    private readonly GorgonGpuLightData[] _lightData = new GorgonGpuLightData[MaxLights];
-    // The list of meshes to render.
-    private readonly ObservableCollection<Mesh> _meshes = [];
-    // The draw calls for the available meshes.
-    private readonly List<GorgonDrawIndexCall> _drawCalls = [];
-    // The layout of a vertex.
-    private GorgonInputLayout _vertexLayout;
-    // The default sampler state.
-    private readonly GorgonSamplerState _defaultSampler;
-    // The builder used to create draw calls.
-    private readonly GorgonDrawIndexCallBuilder _drawBuilder;
-    // The builder used to create pipeline state.
-    private readonly GorgonPipelineStateBuilder _stateBuilder;
+
+    // The swap chain used to display our rendering.
+    private readonly GorgonSwapChain _swapChain;
+    // The depth/stencil buffer for the scene.
+    private GorgonDepthStencilView _depthStencil;
+    // The constant buffer to hold the light list.
+    private readonly GorgonConstantBufferView _lightBuffer;
+    // The meshes to render.
+    private readonly List<Mesh> _meshes = [];
+    // The lights in the scene.
+    private readonly List<GorgonLightCommon> _lights = [];
+    // Flag to indicate that the lights buffer needs updating.
+    private bool _updateLights = true;
+    // The list of draw calls to make.
+    private readonly List<GorgonIndexedDrawCall> _drawCalls = [];
     // The frustum for the camera.
     private readonly GorgonBoundingFrustum _frustum = new();
+    // Per frame rendering data.
+    private RenderData _renderData;
     // The visual for AABBs.
     private readonly GorgonAABBVisual _aabbVisual;
 
     /// <summary>
-    /// Property to return the list of meshes to render.
-    /// </summary>
-    public IList<Mesh> Meshes => _meshes;
-
-    /// <summary>
-    /// Property to return the lights used in rendering.
-    /// </summary>
-    public GorgonArray<GorgonPointLight> Lights
-    {
-        get;
-    }
-
-    /// <summary>
-    /// Property to return the camera used for rendering.
+    /// Property to return the camera for the renderer.
     /// </summary>
     public GorgonPerspectiveCamera Camera
     {
         get;
+    }
+
+    /// <summary>
+    /// Property to return the factory cache for the pipeline state objects.
+    /// </summary>
+    public GorgonGraphicsPsoFactory PsoFactory
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to set or return the texture to use as a default fallback.
+    /// </summary>
+    public IGorgonTextureView<GorgonTexture>? DefaultTexture
+    {
+        get;
         set;
-    }
-
-    /// <summary>
-    /// Property to return the shaders loaded into the renderer.
-    /// </summary>
-    public Dictionary<string, GorgonShader> ShaderCache
-    {
-        get;
-    }
-
-    /// <summary>
-    /// Property to return the textures loaded into the renderer.
-    /// </summary>
-    public Dictionary<string, GorgonTexture2DView> TextureCache
-    {
-        get;
     }
 
     /// <summary>
@@ -166,216 +168,45 @@ internal class SimpleRenderer
         set;
     }
 
-    /// <summary>
-    /// Function to create a draw call based on a mesh.
-    /// </summary>
-    /// <param name="mesh">The mesh to evaluate.</param>
-    private void AddDrawCall(Mesh mesh)
+    /// <inheritdoc cref="Primitives.Dispose(bool)">
+    private void Dispose(bool disposing)
     {
-        // Find out which shaders are used by the mesh and retrieve them from the cache.
-        if (!ShaderCache.TryGetValue(mesh.Material.VertexShader, out GorgonShader shader))
+        if (disposing)
+        {
+            _lightBuffer.Dispose();
+            _depthStencil.Dispose();
+            _swapChain.Dispose();
+            PsoFactory.Dispose();
+        }
+    }
+
+    /// <summary>
+    /// Function to perform the final set up for the scene.
+    /// </summary>
+    /// <param name="list">The command list to use.</param>
+    private void UpdateLights(GorgonCommandList list)
+    {
+        if (!_updateLights)
         {
             return;
         }
 
-        GorgonVertexShader vertexShader = (GorgonVertexShader)shader;
+        Span<GorgonGpuLightData> lights = stackalloc GorgonGpuLightData[MaxLights];
 
-        if (!ShaderCache.TryGetValue(mesh.Material.PixelShader, out shader))
+        for (int i = 0; i < MaxLights.Min(_lights.Count); i++)
         {
-            return;
+            lights[i] = _lights[i].GetGpuData();
+            list.CopyRange(lights, _lightBuffer.Buffer);
         }
 
-        // Not an ideal place for this, but since we don't know when a vertex shader will be added to our renderer, and we require a vertex shader for our 
-        // input layout, then this will have to suffice.  In a real renderer, we'd cache the vertex inputs per shader and just look it up because the type 
-        // of vertex may not be what we expect. In this case, we *know* that we're using GorgonVertexPosNormUvTangent and no other vertex type, so we're 100% safe doing it 
-        // here in this example.
-        if ((_vertexLayout is null) && (vertexShader is not null))
-        {
-            _vertexLayout = GorgonInputLayout.CreateUsingType<GorgonVertexPosNormUvTangent>(_graphics, nameof(GorgonVertexPosNormUvTangent), vertexShader);
-        }
-
-        GorgonPixelShader pixelShader = (GorgonPixelShader)shader;
-
-        GorgonPipelineState pipelineState = _stateBuilder.Clear()
-                                                         .DepthStencilState(mesh.IsDepthWriteEnabled
-                                                                                ? GorgonDepthStencilState.DepthEnabled
-                                                                                : GorgonDepthStencilState.DepthEnabledNoWrite)
-                                                         .PixelShader(pixelShader)
-                                                         .VertexShader(vertexShader)
-                                                         .BlendState(mesh.Material.BlendState)
-                                                         .PrimitiveType(mesh.PrimitiveType)
-                                                         .Build();
-
-        _drawBuilder.Clear()
-                    .PipelineState(pipelineState)
-                    .IndexBuffer(mesh.IndexBuffer, 0, mesh.IndexCount)
-                    .VertexBuffer(_vertexLayout, new GorgonVertexBufferBinding(mesh.VertexBuffer, GorgonVertexPosNormUvTangent.SizeInBytes))
-                    .ConstantBuffer(ShaderType.Vertex, _viewProjectionBuffer)
-                    .ConstantBuffer(ShaderType.Vertex, _worldBuffer, 1)
-                    .ConstantBuffer(ShaderType.Pixel, _cameraBuffer)
-                    .ConstantBuffer(ShaderType.Pixel, _lightBuffer, 1)
-                    .ConstantBuffer(ShaderType.Pixel, _materialBuffer, 2);
-
-        ReadOnlySpan<string> textures = mesh.Material.Textures.GetDirtySpan();
-
-        for (int i = 0; i < textures.Length; ++i)
-        {
-            if (!TextureCache.TryGetValue(textures[i], out GorgonTexture2DView texture))
-            {
-                continue;
-            }
-
-            _drawBuilder.ShaderResource(ShaderType.Pixel, texture, i)
-                        .SamplerState(ShaderType.Pixel, _defaultSampler, i);
-        }
-
-        _drawCalls.Add(_drawBuilder.Build());
+        _updateLights = false;
     }
 
-    /// <summary>
-    /// Handles the CollectionChanged event of the Meshes control.
-    /// </summary>
-    /// <param name="sender">The source of the event.</param>
-    /// <param name="e">The <see cref="NotifyCollectionChangedEventArgs"/> instance containing the event data.</param>
-    private void Meshes_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+    /// <inheritdoc/>
+    public void Dispose()
     {
-        switch (e.Action)
-        {
-            case NotifyCollectionChangedAction.Add:
-                AddDrawCall(e.NewItems.OfType<Mesh>().FirstOrDefault());
-                break;
-            case NotifyCollectionChangedAction.Remove:
-                _drawCalls.RemoveAt(e.OldStartingIndex);
-                break;
-            case NotifyCollectionChangedAction.Reset:
-                _drawCalls.Clear();
-                break;
-        }
-    }
-
-    /// <summary>
-    /// Function to determine if any lights have a dirty property.
-    /// </summary>
-    /// <returns><b>true</b> if a light is dirty, or <b>false</b> if not.</returns>
-    private bool LightPropsDirty()
-    {
-        if (Lights.IsDirty)
-        {
-            return true;
-        }
-
-        for (int i = 0; i < Lights.Length; ++i)
-        {
-            if ((Lights[i] is not null) && (Lights[i].IsUpdated))
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /// <summary>
-    /// Function to update the list of lights.
-    /// </summary>
-    private void UpdateLights()
-    {
-        if (!LightPropsDirty())
-        {
-            return;
-        }
-
-        ReadOnlySpan<GorgonPointLight> dirtyLights = Lights.GetDirtySpan();
-
-        for (int i = 0; i < MaxLights; ++i)
-        {
-            if (i < dirtyLights.Length)
-            {
-                _lightData[i] = dirtyLights[i].GetGpuData();
-            }
-            else
-            {
-                _lightData[i] = GorgonGpuLightData.Empty;
-            }
-        }
-
-        // Send to the constant buffer right away.
-        _lightBuffer.Buffer.SetData<GorgonGpuLightData>(_lightData);
-    }
-
-    /// <summary>
-    /// Function to initialize the constant buffers for this renderer.
-    /// </summary>
-    private void InitializeConstantBuffers()
-    {
-
-        _viewProjectionBuffer = new GorgonConstantBuffer(_graphics,
-                                                         new GorgonConstantBufferInfo(Unsafe.SizeOf<ViewProjectionData>())
-                                                         {
-                                                             Name = "Projection/View Buffer",
-                                                             Usage = ResourceUsage.Dynamic
-                                                         }).GetView();
-
-        _worldBuffer = new GorgonConstantBuffer(_graphics,
-                                                new GorgonConstantBufferInfo(Unsafe.SizeOf<Matrix4x4>())
-                                                {
-                                                    Name = "WorldBuffer",
-                                                    Usage = ResourceUsage.Dynamic
-                                                }).GetView();
-
-        _cameraBuffer = new GorgonConstantBuffer(_graphics,
-                                                 new GorgonConstantBufferInfo(Unsafe.SizeOf<Vector3>())
-                                                 {
-                                                     Name = "CameraBuffer",
-                                                     Usage = ResourceUsage.Dynamic
-                                                 }).GetView();
-
-        _materialBuffer = new GorgonConstantBuffer(_graphics,
-                                                   new GorgonConstantBufferInfo(Unsafe.SizeOf<Material>())
-                                                   {
-                                                       Name = "MaterialBuffer",
-                                                       Usage = ResourceUsage.Dynamic
-                                                   }).GetView();
-
-        _lightBuffer = new GorgonConstantBuffer(_graphics,
-                                                new GorgonConstantBufferInfo(GorgonGpuLightData.SizeInBytes * MaxLights)
-                                                {
-                                                    Name = "LightDataBuffer",
-                                                    Usage = ResourceUsage.Dynamic
-                                                }).GetView();
-
-        // Initialize the constant buffers.
-        ViewProjectionData emptyViewProjection = new()
-        {
-            Projection = Matrix4x4.Identity,
-            View = Matrix4x4.Identity,
-            ViewProjection = Matrix4x4.Identity
-        };
-        Matrix4x4 emptyWorld = Matrix4x4.Identity;
-
-        Material emptyMaterial = new()
-        {
-            SpecularPower = 1.0f,
-            UVOffset = Vector2.Zero
-        };
-
-        _viewProjectionBuffer.Buffer.SetData(in emptyViewProjection);
-        _worldBuffer.Buffer.SetData(in emptyWorld);
-        _cameraBuffer.Buffer.SetData(Vector3.Zero);
-        _materialBuffer.Buffer.SetData(in emptyMaterial);
-    }
-
-    /// <summary>
-    /// Function to update the materials for a mesh.
-    /// </summary>
-    private void UpdateMaterials(MeshMaterial material)
-    {
-        Material materialData = new()
-        {
-            UVOffset = material.TextureOffset,
-            SpecularPower = material.SpecularPower
-        };
-        _materialBuffer.Buffer.SetData(in materialData);
+        Dispose(true);
+        GC.SuppressFinalize(this);
     }
 
     /// <summary>
@@ -383,108 +214,208 @@ internal class SimpleRenderer
     /// </summary>
     public void Render()
     {
-        if (Camera is null)
-        {
-            return;
-        }
-
-        UpdateLights();
-
-        // Send the camera projection and view to the GPU.
         if (Camera.Changes != CameraChange.None)
         {
+            ref Matrix4x4 viewProjection = ref _renderData.ViewProjection;
+            ref Vector4 camPos = ref _renderData.CameraPosition;
+
             if ((Camera.Changes & CameraChange.View) == CameraChange.View)
             {
-                ref readonly Matrix4x4 view = ref Camera.GetViewMatrix();
-
-                _cameraBuffer.Buffer.SetData(Camera.Position);
+                camPos = new Vector4(Camera.Position, 1.0f);
             }
 
-            ViewProjectionData viewProjData = new()
-            {
-                Projection = Camera.GetProjectionMatrix(),
-                View = Camera.GetViewMatrix()
-            };
+            ref readonly Matrix4x4 view = ref Camera.GetViewMatrix();
+            ref readonly Matrix4x4 proj = ref Camera.GetProjectionMatrix();
 
-            viewProjData.ViewProjection = Matrix4x4.Multiply(viewProjData.View, viewProjData.Projection);
-
-            _viewProjectionBuffer.Buffer.SetData(in viewProjData);
-            _frustum.Update(in viewProjData.ViewProjection);
+            viewProjection = Matrix4x4.Multiply(view, proj);
+            _frustum.Update(in viewProjection);
         }
 
-        for (int i = 0; i < _drawCalls.Count; ++i)
+        _swapChain.WaitForFrameLatency();
+
+        GorgonCommandList list = _graphics.GetCommandList("Primitives Commandlist")
+                                          .AddPresenter(_swapChain)
+                                          .SetRenderTarget(_swapChain, _depthStencil)
+                                          .SetScissorRectangle(new GorgonRectangle(0, 0, _swapChain.Width, _swapChain.Height))
+                                          .SetViewport(new GorgonViewport(0, 0, _swapChain.Width, _swapChain.Height))
+                                          .ClearRenderTarget(_swapChain, GorgonColors.CornFlowerBlue)
+                                          .ClearDepthStencil(_depthStencil, 1.0f, 0)
+                                          .WriteConstant(0, in _renderData);
+
+        UpdateLights(list);
+
+        int blackHandle = DefaultTexture?.GetViewHandle() ?? -1;
+
+        if (blackHandle == -1)
         {
-            ref readonly GorgonBoundingBox aabb = ref _meshes[i].Aabb;
-            GorgonBoundingBox worldaabb = default;
+            throw new KeyNotFoundException("The default texture was not found.");
+        }
 
-            if (_meshes[i] is MoveableMesh movableMesh)
+        for (int i = 0; i < _meshes.Count; ++i)
+        {
+            Mesh mesh = _meshes[i];
+
+            if ((mesh.Material is null) || (mesh.VertexBuffer is null))
             {
-                _worldBuffer.Buffer.SetData(in movableMesh.WorldMatrix);
-                GorgonBoundingBox.Transform(in aabb, in movableMesh.WorldMatrix, out worldaabb);
-            }
-
-            UpdateMaterials(_meshes[i].Material);
-
-            if (aabb.IsEmpty)
-            {
-                _graphics.Submit(_drawCalls[i]);
                 continue;
             }
 
-            if (GorgonIntersections.FrustumIntersectsBox(_frustum, in worldaabb))
-            {
-                _graphics.Submit(_drawCalls[i]);
+            ref readonly GorgonBoundingBox aabb = ref mesh.Aabb;
+            GorgonBoundingBox worldaabb = default;
 
-                if (ShowAABB)
+            if (mesh is MoveableMesh movableMesh)
+            {
+                Matrix4x4 translation;
+                scoped ref readonly Matrix4x4 matrix = ref movableMesh.WorldMatrix;
+
+                if (mesh is Sphere or IcoSphere)
                 {
-                    _aabbVisual.Draw(in worldaabb, in Camera.GetViewMatrix(), in Camera.GetProjectionMatrix(), GorgonDepthStencilState.DepthEnabled);
+                    translation = Matrix4x4.CreateTranslation(movableMesh.Position);
+                    matrix = ref translation;
                 }
+
+                GorgonBoundingBox.Transform(in aabb, in matrix, out worldaabb);
+            }
+
+            if (!GorgonIntersections.FrustumIntersectsBox(_frustum, in worldaabb))
+            {
+                continue;
+            }
+
+            int textureHandle = mesh.Material.Textures[0].GetViewHandle();
+            int normalHandle = mesh.Material.Textures[1]?.GetViewHandle() ?? blackHandle;
+            int specularHandle = mesh.Material.Textures[2]?.GetViewHandle() ?? blackHandle;
+
+            ObjectData objectData = new()
+            {
+                World = mesh is MoveableMesh mover ? mover.WorldMatrix : Matrix4x4.Identity,
+                SpecularPower = mesh.Material.SpecularPower,
+                UvOffset = mesh.Material.TextureOffset,
+                TextureHandle = textureHandle,
+                NormalMapHandle = normalHandle,
+                SpecularHandle = specularHandle,
+                VertexBufferHandle = mesh.VertexBuffer.GetViewHandle()
+            };
+
+            list.WriteConstant(1, in objectData);
+            list.Draw(_drawCalls[i]);
+
+            if (ShowAABB)
+            {
+                _aabbVisual.Draw(list, in worldaabb, in Camera.GetViewMatrix(), in Camera.GetProjectionMatrix(), mesh.Material.PipelineState.DepthStencilState);
             }
         }
+
+        GorgonExample.BlitLogo(list);
+
+        _graphics.Submit(list);
     }
 
     /// <summary>
-    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// Function to add a light to the scene.
     /// </summary>
-    public void Dispose()
+    /// <param name="light">The light to add.</param>
+    public void AddLight(GorgonLightCommon light)
     {
-        _materialBuffer?.Dispose();
-        _viewProjectionBuffer?.Dispose();
-        _worldBuffer?.Dispose();
-        _cameraBuffer?.Dispose();
-        _lightBuffer?.Dispose();
-        _vertexLayout?.Dispose();
+        _lights.Add(light);
+        _updateLights = true;
+    }
 
-        foreach (KeyValuePair<string, GorgonShader> shader in ShaderCache)
+    /// <summary>
+    /// Function to add a mesh to the renderer.
+    /// </summary>
+    /// <param name="mesh">The mesh to add to the scene.</param>
+    public void AddMesh(Mesh mesh)
+    {
+        if ((mesh.IndexBuffer is null) || (mesh.Material is null) || (mesh.VertexBuffer is null))
         {
-            shader.Value.Dispose();
+            throw new ArgumentException("The mesh is not valid.", nameof(mesh));
         }
 
-        foreach (KeyValuePair<string, GorgonTexture2DView> texture in TextureCache)
+        _meshes.Add(mesh);
+
+        GorgonIndexedDrawCall drawCall = new(mesh.IndexCount, mesh.IndexBuffer, mesh.Material.PipelineState);
+        drawCall.UsedBuffers.Add(new GorgonUsedBuffer(mesh.VertexBuffer, ShaderStage.Vertex, BufferUsage.ReadOnly));
+        drawCall.UsedBuffers.Add(new GorgonUsedBuffer(_lightBuffer, ShaderStage.Pixel, BufferUsage.ConstantBuffer));
+
+        for (int i = 0; i < mesh.Material.Textures.Length; ++i)
         {
-            texture.Value.Dispose();
+            if (mesh.Material.Textures[i] is not null)
+            {
+                drawCall.UsedTextures.Add(new GorgonUsedTexture(mesh.Material.Textures[i], ShaderStage.Pixel, TextureUsage.ReadOnly));
+            }
         }
+
+        drawCall.UsedTextures.Add(new GorgonUsedTexture(DefaultTexture?.Texture ?? throw new NullReferenceException(), ShaderStage.Pixel, TextureUsage.ReadOnly));
+
+        _drawCalls.Add(drawCall);
+    }
+
+    /// <summary>
+    /// Function to upload mesh data to the GPU.
+    /// </summary>
+    public void UploadMeshData()
+    {
+        GorgonCommandList uploadList = _graphics.GetCommandList("Primitives Upload");
+
+        foreach (Mesh mesh in _meshes)
+        {
+            if (mesh.VertexBuffer is null)
+            {
+                continue;
+            }
+
+            uploadList.CopyRange(mesh.Vertices, mesh.VertexBuffer.Buffer);
+
+            if (mesh.IndexBuffer is not null)
+            {
+                uploadList.CopyRange(mesh.Indices, mesh.IndexBuffer);
+            }
+        }
+
+        _graphics.Submit(uploadList);
+
+        // Wait for the GPU so we can avoid a potential race condition.
+        _graphics.WaitForGpu();
+    }
+
+    /// <summary>
+    /// Function to resize the swap chain and associated back buffer.
+    /// </summary>
+    /// <param name="width">The width of the swap chain.</param>
+    /// <param name="height">The height of the swap chain.</param>
+    public void ResizeSwapChain(int width, int height)
+    {
+        _swapChain.Resize(width, height);
+        _depthStencil.Dispose();
+        _depthStencil = GorgonDepthStencilView.CreateDepthStencilView(_graphics, "Primitives Depth/Stencil Buffer", BufferFormat.D24_UNorm_S8_UInt, _swapChain.Width, _swapChain.Height);
+        Camera.ViewDimensions = new Vector2(_swapChain.Width, _swapChain.Height);
+        Camera.Fov = (2.0f * ((75.0f / 2).ToRadians().Tan() / Camera.AspectRatio)).ToDegrees();
     }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SimpleRenderer"/> class.
     /// </summary>
     /// <param name="graphics">The graphics interface to use for rendering.</param>
-    public SimpleRenderer(GorgonGraphics graphics)
+    /// <param name="window">The window for the application.</param>
+    public SimpleRenderer(GorgonGraphics graphics, Form window)
     {
-        _graphics = graphics ?? throw new ArgumentNullException(nameof(graphics));
+        _graphics = graphics;
+        PsoFactory = new GorgonGraphicsPsoFactory(_graphics);
+        _swapChain = new GorgonSwapChain(_graphics, "Primitives Swapchain", window.Handle, new GorgonSwapChainInfo(window.ClientSize.Width, window.ClientSize.Height, BufferFormat.R8G8B8A8_UNorm));
+        _depthStencil = GorgonDepthStencilView.CreateDepthStencilView(_graphics, "Primitives Depth/Stencil Buffer", BufferFormat.D24_UNorm_S8_UInt, _swapChain.Width, _swapChain.Height);
+        Camera = new GorgonPerspectiveCamera(new Vector2(_swapChain.Width, _swapChain.Height))
+        {
+            Position = new Vector3(0, 0, -0.5f)
+        };
+        Camera.Fov = 2.0f * ((75.0f / 2).ToRadians().Tan() / Camera.AspectRatio).ToDegrees();
+        _lightBuffer = GorgonConstantBufferView.CreateConstantBuffer(_graphics, "Primitives Light List", MaxLights * GorgonGpuLightData.SizeInBytes);
+        _aabbVisual = new GorgonAABBVisual(_graphics, PsoFactory);
 
-        _aabbVisual = new GorgonAABBVisual(_graphics);
-        _drawBuilder = new GorgonDrawIndexCallBuilder();
-        _stateBuilder = new GorgonPipelineStateBuilder(_graphics);
-        GorgonSamplerStateBuilder sampleBuilder = new(_graphics);
-        _defaultSampler = sampleBuilder.Wrapping(TextureWrap.Wrap, TextureWrap.Wrap).Build();
-
-        TextureCache = new Dictionary<string, GorgonTexture2DView>(StringComparer.Ordinal);
-        ShaderCache = new Dictionary<string, GorgonShader>(StringComparer.Ordinal);
-        Lights = new GorgonArray<GorgonPointLight>(8);
-        _meshes.CollectionChanged += Meshes_CollectionChanged;
-
-        InitializeConstantBuffers();
+        _renderData = new RenderData()
+        {
+            LightBufferHandle = _lightBuffer.GetViewHandle(),
+            SamplerHandle = GorgonSampler.LinearWrapping(_graphics).GetViewHandle()
+        };
     }
 }

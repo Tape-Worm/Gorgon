@@ -22,6 +22,7 @@
 // Created: January 25, 2026 8:43:01 PM
 //
 
+using System;
 using System.Runtime.InteropServices;
 using Gorgon.Core;
 using Gorgon.Graphics.Imaging;

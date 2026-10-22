@@ -24,8 +24,12 @@
 // Created: Monday, June 27, 2011 8:59:02 AM
 // 
 
+using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
+using System.Linq;
 using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.IO.FileSystem.Properties;
@@ -99,15 +103,7 @@ internal class VirtualDirectoryCollection(VirtualDirectory parent)
     /// <returns>
     /// true if <paramref name="item" /> was successfully removed from the <see cref="ICollection{T}" />; otherwise, false. This method also returns false if <paramref name="item" /> is not found in the original <see cref="ICollection{T}" />.
     /// </returns>
-    public bool Remove(VirtualDirectory item)
-    {
-        if (item is null)
-        {
-            return false;
-        }
-
-        return _directories.Remove(item.Name);
-    }
+    public bool Remove(VirtualDirectory item) => item is not null && _directories.Remove(item.Name);
 
     /// <summary>
     /// Function to return a directory by its name.
@@ -204,12 +200,9 @@ internal class VirtualDirectoryCollection(VirtualDirectory parent)
             directory = newDirectoryInfo;
         }
 
-        if (directory == _parent)
-        {
-            throw new ArgumentException(string.Format(Resources.GORFS_ERR_PATH_INVALID, virtualDirectoryPath), nameof(virtualDirectoryPath));
-        }
-
-        return directory;
+        return directory == _parent
+            ? throw new ArgumentException(string.Format(Resources.GORFS_ERR_PATH_INVALID, virtualDirectoryPath), nameof(virtualDirectoryPath))
+            : directory;
     }
 
     /// <summary>

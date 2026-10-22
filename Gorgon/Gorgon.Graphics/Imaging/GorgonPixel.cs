@@ -22,6 +22,7 @@
 // Created: June 2, 2025 3:01:33 PM
 //
 
+using System;
 using System.Runtime.CompilerServices;
 using Gorgon.Graphics.Imaging.Properties;
 using Gorgon.Native;
@@ -67,7 +68,7 @@ public abstract class GorgonPixel<T>()
 
     /// <summary>
     /// Function to decode a color from an encoded value.
-/// </summary>
+    /// </summary>
     /// <param name="value">The value from an image buffer to decode.</param>
     /// <returns>The color represented by the value.</returns>
     public abstract GorgonColor Decode(T value);
@@ -93,7 +94,7 @@ public abstract class GorgonPixel<T>()
     /// </para>
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    protected unsafe void SetPixelUnsafe(IGorgonImageBuffer buffer, int x, int y, T value) => *((T*)((void*)(buffer.ImageData + (y * buffer.PitchInformation.RowPitch + x * buffer.FormatInformation.SizeInBytes)))) = value;
+    protected unsafe void SetPixelUnsafe(IGorgonImageBuffer buffer, int x, int y, T value) => *((T*)((void*)(buffer.ImageData + ((y * buffer.PitchInformation.RowPitch) + (x * buffer.FormatInformation.SizeInBytes))))) = value;
 
     /// <summary>
     /// Function to retrieve a pixel value at a specified coordinate.
@@ -116,7 +117,7 @@ public abstract class GorgonPixel<T>()
     /// </para>
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    protected unsafe T GetPixelUnsafe(IGorgonImageBuffer buffer, int x, int y) => *((T*)((void*)(buffer.ImageData + (y * buffer.PitchInformation.RowPitch + x * buffer.FormatInformation.SizeInBytes))));
+    protected unsafe T GetPixelUnsafe(IGorgonImageBuffer buffer, int x, int y) => *((T*)((void*)(buffer.ImageData + ((y * buffer.PitchInformation.RowPitch) + (x * buffer.FormatInformation.SizeInBytes)))));
 
     /// <summary>
     /// Function to set a pixel at a specified coordinate with the specified color.
@@ -191,11 +192,6 @@ public abstract class GorgonPixel<T>()
 
         GorgonRectangle bounds = new(0, 0, buffer.Bounds.Width - 1, buffer.Bounds.Height - 1);
 
-        if (!bounds.Contains(point))
-        {
-            return GorgonColors.BlackTransparent;
-        }
-
-        return Decode(GetPixelUnsafe(buffer, point.X, point.Y));
+        return !bounds.Contains(point) ? GorgonColors.BlackTransparent : Decode(GetPixelUnsafe(buffer, point.X, point.Y));
     }
 }

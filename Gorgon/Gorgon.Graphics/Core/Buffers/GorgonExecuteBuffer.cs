@@ -22,6 +22,9 @@
 // Created: October 9, 2026 11:49:15 PM
 //
 
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
@@ -106,7 +109,7 @@ public sealed unsafe class GorgonExecuteBuffer
         Graphics.Memory.Allocator.Get()->CreateResource3(&allocDesc, &desc, D3D12_BARRIER_LAYOUT.D3D12_BARRIER_LAYOUT_UNDEFINED,
             null, 0, null,
             _bufferAllocation.GetAddressOf(), Win32.__uuidof<ID3D12Resource2>(), (void**)resource.GetAddressOf())
-            .ThrowIfFailed(GorgonResult.CannotCreate, () => string.Format(Resources.GORGFX_ERR_CANNOT_CREATE_RESOURCE));
+            .ThrowIfFailed(GorgonResult.CannotCreate, Resources.GORGFX_ERR_CANNOT_CREATE_RESOURCE);
 
         resource.SetD3DDebugName(Name);
 
@@ -129,12 +132,9 @@ public sealed unsafe class GorgonExecuteBuffer
 
             ViewKey key = new(startIndex, count);
 
-            if (_rawUavs.TryGetValue(key, out GorgonRawBufferRwView? result))
-            {
-                return result;
-            }
-
-            return _rawUavs[key] = new GorgonRawBufferRwView(Graphics, Name, this, startIndex, count, false);
+            return _rawUavs.TryGetValue(key, out GorgonRawBufferRwView? result)
+                ? result
+                : (_rawUavs[key] = new GorgonRawBufferRwView(Graphics, Name, this, startIndex, count, false));
         }
     }
 

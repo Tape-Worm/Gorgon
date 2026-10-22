@@ -24,20 +24,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using System.Numerics;
+using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Text;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
-using Gorgon.Graphics.Imaging;
-using Gorgon.Math;
 using TerraFX.Interop.DirectX;
-using TerraFX.Interop.Windows;
-using Win32 = TerraFX.Interop.Windows.Windows;
 
 namespace Gorgon.Graphics.Core;
 
@@ -226,7 +218,7 @@ public unsafe sealed class GorgonRenderTargetView
                 desc.Texture2DMSArray = new D3D12_TEX2DMS_ARRAY_RTV
                 {
                     ArraySize = (uint)ArrayCount,
-                    FirstArraySlice = (uint)ArrayIndex                    
+                    FirstArraySlice = (uint)ArrayIndex
                 };
             }
 
@@ -240,7 +232,7 @@ public unsafe sealed class GorgonRenderTargetView
                 ArraySize = (uint)ArrayCount,
                 FirstArraySlice = (uint)ArrayIndex,
                 MipSlice = (uint)MipLevel,
-                PlaneSlice = PlaneIndex                
+                PlaneSlice = PlaneIndex
             };
             return;
         }
@@ -248,7 +240,7 @@ public unsafe sealed class GorgonRenderTargetView
         desc.Texture2D = new D3D12_TEX2D_RTV
         {
             MipSlice = (uint)MipLevel,
-            PlaneSlice = PlaneIndex            
+            PlaneSlice = PlaneIndex
         };
     }
 
@@ -261,7 +253,7 @@ public unsafe sealed class GorgonRenderTargetView
     {
         MipSlice = (uint)MipLevel,
         FirstWSlice = (uint)StartDepth,
-        WSize = (uint)DepthCount        
+        WSize = (uint)DepthCount
     };
 
     /// <summary>
@@ -490,9 +482,9 @@ public unsafe sealed class GorgonRenderTargetView
             _ => false
         };
 
-        TextureView = texture.GetTextureView<GorgonTextureCommon>(compatibleFormat ? Format : texture.Format, 
-            mipLevel, 1, 
-            ArrayIndex, ArrayCount, 0, 
+        TextureView = texture.GetTextureView<GorgonTextureCommon>(compatibleFormat ? Format : texture.Format,
+            mipLevel, 1,
+            ArrayIndex, ArrayCount, 0,
             planeIndex, false);
     }
 }

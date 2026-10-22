@@ -23,6 +23,7 @@
 // Created: September 17, 2018 8:19:33 AM
 // 
 
+using System;
 using Gorgon.Properties;
 
 namespace Gorgon.Core;

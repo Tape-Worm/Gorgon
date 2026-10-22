@@ -23,8 +23,8 @@
 // Created: December 1, 2020 9:29:00 PM
 // 
 
-using System.Collections;
-using System.Diagnostics.CodeAnalysis;
+using System;
+using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -197,12 +197,9 @@ public unsafe readonly struct GorgonPtr<T>
 
             (int offset, int length) = range.GetOffsetAndLength((int)(Length.Min(int.MaxValue)));
 
-            if ((offset < 0) || (offset >= Length))
-            {
-                throw new ArgumentOutOfRangeException(nameof(range), string.Format(Resources.GOR_ERR_INDEX_OUT_OF_RANGE, offset, 0, Length));
-            }
-
-            return new GorgonPtr<T>(_ptr + offset, length);
+            return (offset < 0) || (offset >= Length)
+                ? throw new ArgumentOutOfRangeException(nameof(range), string.Format(Resources.GOR_ERR_INDEX_OUT_OF_RANGE, offset, 0, Length))
+                : new GorgonPtr<T>(_ptr + offset, length);
         }
     }
 
@@ -642,15 +639,7 @@ public unsafe readonly struct GorgonPtr<T>
     /// <param name="right">The right pointer to subtract.</param>
     /// <returns>The difference in bytes between the two pointers.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static long Subtract(GorgonPtr<T> left, GorgonPtr<T> right)
-    {
-        if ((left == NullPtr) || (right == NullPtr))
-        {
-            return long.MaxValue;
-        }
-
-        return ((byte*)left._ptr) - ((byte*)right._ptr);
-    }
+    public static long Subtract(GorgonPtr<T> left, GorgonPtr<T> right) => (left == NullPtr) || (right == NullPtr) ? long.MaxValue : ((byte*)left._ptr) - ((byte*)right._ptr);
 
     /// <summary>
     /// Function to increment the pointer by the given index offset.
@@ -674,12 +663,9 @@ public unsafe readonly struct GorgonPtr<T>
 
         long newIndex = ptr._indexOffset + indexOffset;
 
-        if ((newIndex < 0) || (newIndex >= ptr.Length + ptr._indexOffset))
-        {
-            return NullPtr;
-        }
-
-        return new(ptr._ptr + indexOffset, newIndex, ptr.Length - indexOffset);
+        return (newIndex < 0) || (newIndex >= ptr.Length + ptr._indexOffset)
+            ? NullPtr
+            : new(ptr._ptr + indexOffset, newIndex, ptr.Length - indexOffset);
     }
 
     /// <summary>
@@ -704,12 +690,9 @@ public unsafe readonly struct GorgonPtr<T>
 
         long newIndex = ptr._indexOffset - indexOffset;
 
-        if ((newIndex < 0) || (newIndex >= ptr.Length + ptr._indexOffset))
-        {
-            return NullPtr;
-        }
-
-        return new(ptr._ptr - indexOffset, newIndex, ptr.Length + indexOffset);
+        return (newIndex < 0) || (newIndex >= ptr.Length + ptr._indexOffset)
+            ? NullPtr
+            : new(ptr._ptr - indexOffset, newIndex, ptr.Length + indexOffset);
     }
 
     /// <summary>
@@ -762,12 +745,9 @@ public unsafe readonly struct GorgonPtr<T>
         long toSize = Unsafe.SizeOf<TTo>();
         long newCount = ptr.SizeInBytes / toSize;
 
-        if ((newCount == 0) || ((newCount * toSize) > ptr.SizeInBytes))
-        {
-            throw new InvalidCastException(string.Format(Resources.GOR_ERR_PTR_CONVERT_WIDENING, toSize, ptr.SizeInBytes));
-        }
-
-        return new((TTo*)ptr._ptr, newCount);
+        return (newCount == 0) || ((newCount * toSize) > ptr.SizeInBytes)
+            ? throw new InvalidCastException(string.Format(Resources.GOR_ERR_PTR_CONVERT_WIDENING, toSize, ptr.SizeInBytes))
+            : new((TTo*)ptr._ptr, newCount);
     }
 
     /// <inheritdoc cref="GorgonNativeBuffer{T}.AsRef{TTo}(long)" path="/summary"/>
@@ -842,12 +822,7 @@ public unsafe readonly struct GorgonPtr<T>
 
         long actualCount = count.Min(Length - index);
 
-        if (actualCount <= 0)
-        {
-            return NullPtr;
-        }
-
-        return new(_ptr + index, actualCount);
+        return actualCount <= 0 ? NullPtr : new(_ptr + index, actualCount);
     }
 
     /// <summary>
@@ -952,15 +927,7 @@ public unsafe readonly struct GorgonPtr<T>
     /// </note>
     /// </para>
     /// </remarks>
-    public Span<T> ToSpan()
-    {
-        if (_ptr is null)
-        {
-            throw new NullReferenceException();
-        }
-
-        return new(_ptr, (int)(Length.Min(int.MaxValue)));
-    }
+    public Span<T> ToSpan() => _ptr is null ? throw new NullReferenceException() : new(_ptr, (int)(Length.Min(int.MaxValue)));
 
     /// <summary>
     /// Function to access native data as a span slice.
@@ -976,15 +943,7 @@ public unsafe readonly struct GorgonPtr<T>
     /// </note>
     /// </para>
     /// </remarks>
-    public ReadOnlySpan<T> ToReadOnlySpan()
-    {
-        if (_ptr is null)
-        {
-            throw new NullReferenceException();
-        }
-
-        return new(_ptr, (int)(Length.Min(int.MaxValue)));
-    }
+    public ReadOnlySpan<T> ToReadOnlySpan() => _ptr is null ? throw new NullReferenceException() : new(_ptr, (int)(Length.Min(int.MaxValue)));
 
     /// <summary>
     /// Function to convert a pointer into a pointer with a different data type.
@@ -1018,12 +977,9 @@ public unsafe readonly struct GorgonPtr<T>
             count *= dataSize;
         }
 
-        if (dataSize > SizeInBytes)
-        {
-            throw new OverflowException(string.Format(Resources.GOR_ERR_BUFFER_OVERFLOW, typeof(K).FullName ?? string.Empty));
-        }
-
-        return new((K*)_ptr, count / dataSize);
+        return dataSize > SizeInBytes
+            ? throw new OverflowException(string.Format(Resources.GOR_ERR_BUFFER_OVERFLOW, typeof(K).FullName ?? string.Empty))
+            : new((K*)_ptr, count / dataSize);
     }
 
     /// <summary>Returns a <see cref="string" /> that represents this instance.</summary>
@@ -1391,14 +1347,7 @@ public unsafe readonly struct GorgonPtr<T>
             throw new NullReferenceException(Resources.GOR_ERR_PTR_NULL);
         }
 
-        if (count <= 0)
-        {
-            count = pointer.Length;
-        }
-        else
-        {
-            count = pointer.Length.Min(count);
-        }
+        count = count <= 0 ? pointer.Length : pointer.Length.Min(count);
 
         _indexOffset = 0;
         _ptr = pointer._ptr;

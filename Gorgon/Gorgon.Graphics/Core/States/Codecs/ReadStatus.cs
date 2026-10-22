@@ -22,6 +22,8 @@
 // Created: July 20, 2026 6:37:57 PM
 //
 
+using System.IO;
+
 namespace Gorgon.Graphics.Core.Codecs;
 
 /// <summary>

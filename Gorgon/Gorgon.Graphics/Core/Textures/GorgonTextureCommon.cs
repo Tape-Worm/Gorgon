@@ -27,12 +27,11 @@ using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Text;
+using System.Threading;
 using Gorgon.Core;
-using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
@@ -40,7 +39,6 @@ using Gorgon.Native;
 using TerraFX.Interop.DirectX;
 using TerraFX.Interop.Windows;
 using DX = TerraFX.Interop.DirectX.DirectX;
-using Win32 = TerraFX.Interop.Windows.Windows;
 
 namespace Gorgon.Graphics.Core;
 
@@ -266,7 +264,7 @@ public unsafe abstract class GorgonTextureCommon
     private protected virtual GorgonTextureInfo ValidateInfo(GorgonTextureInfo info)
     {
         GorgonTextureInfo result = info;
-        bool isMultisampled = !info.MultisampleInfo.Equals(GorgonMultisampleInfo.NoMultisampling);        
+        bool isMultisampled = !info.MultisampleInfo.Equals(GorgonMultisampleInfo.NoMultisampling);
 
         if (info.MipCount < 1)
         {
@@ -495,12 +493,9 @@ public unsafe abstract class GorgonTextureCommon
             }
         }
 
-        if ((result.IsCube) && (!Graphics.FormatSupport[result.Format].IsCubeTextureFormat))
-        {
-            throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_CUBE_TEXTURE_FORMAT_INVALID, result.Format));
-        }
-
-        return result;
+        return (result.IsCube) && (!Graphics.FormatSupport[result.Format].IsCubeTextureFormat)
+            ? throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_CUBE_TEXTURE_FORMAT_INVALID, result.Format))
+            : result;
     }
 
     /// <inheritdoc/>
@@ -653,8 +648,8 @@ public unsafe abstract class GorgonTextureCommon
         }
 
         PopulateSubResourceInfo(in _d3dDesc);
-        
-        AssignResource(in result);        
+
+        AssignResource(in result);
     }
 
     /// <summary>
@@ -787,23 +782,9 @@ public unsafe abstract class GorgonTextureCommon
             mipLevel = mipLevel.Max(0).Min((short)(MipCount - 1));
             arrayIndex = arrayIndex.Max(0).Min((short)(ArrayCount - 1));
 
-            if (mipCount <= 0)
-            {
-                mipCount = (short)(MipCount - mipLevel);
-            }
-            else
-            {
-                mipCount = mipCount.Min((short)(MipCount - mipLevel)).Max(1);
-            }
+            mipCount = mipCount <= 0 ? (short)(MipCount - mipLevel) : mipCount.Min((short)(MipCount - mipLevel)).Max(1);
 
-            if (arrayCount <= 0)
-            {
-                arrayCount = (short)(ArrayCount - arrayIndex);
-            }
-            else
-            {
-                arrayCount = arrayCount.Min((short)(ArrayCount - arrayIndex)).Max(1);
-            }
+            arrayCount = arrayCount <= 0 ? (short)(ArrayCount - arrayIndex) : arrayCount.Min((short)(ArrayCount - arrayIndex)).Max(1);
 
             planeIndex = planeIndex.Min((byte)(planeCount - 1));
 
@@ -886,14 +867,9 @@ public unsafe abstract class GorgonTextureCommon
             arrayIndexOrDepthSlice = arrayIndexOrDepthSlice.Max(0).Min((short)(maxArrayOrDepth - 1));
             planeIndex = planeIndex.Max(0).Min((byte)(planeCount - 1));
 
-            if (arrayCountOrDepthCount <= 0)
-            {
-                arrayCountOrDepthCount = (short)(maxArrayOrDepth - arrayIndexOrDepthSlice);
-            }
-            else
-            {
-                arrayCountOrDepthCount = arrayCountOrDepthCount.Min((short)(maxArrayOrDepth - arrayIndexOrDepthSlice)).Max(1);
-            }
+            arrayCountOrDepthCount = arrayCountOrDepthCount <= 0
+                ? (short)(maxArrayOrDepth - arrayIndexOrDepthSlice)
+                : arrayCountOrDepthCount.Min((short)(maxArrayOrDepth - arrayIndexOrDepthSlice)).Max(1);
 
             ViewKey key = new((short)format, mipLevel, arrayIndexOrDepthSlice, arrayCountOrDepthCount, planeIndex, 0, 0);
 
@@ -974,14 +950,9 @@ public unsafe abstract class GorgonTextureCommon
             arrayIndexOrDepthSlice = arrayIndexOrDepthSlice.Max(0).Min((short)(maxArrayOrDepth - 1));
             planeIndex = planeIndex.Max(0).Min((byte)(planeCount - 1));
 
-            if (arrayCountOrDepthCount <= 0)
-            {
-                arrayCountOrDepthCount = (short)(maxArrayOrDepth - arrayIndexOrDepthSlice);
-            }
-            else
-            {
-                arrayCountOrDepthCount = arrayCountOrDepthCount.Min((short)(maxArrayOrDepth - arrayIndexOrDepthSlice)).Max(1);
-            }
+            arrayCountOrDepthCount = arrayCountOrDepthCount <= 0
+                ? (short)(maxArrayOrDepth - arrayIndexOrDepthSlice)
+                : arrayCountOrDepthCount.Min((short)(maxArrayOrDepth - arrayIndexOrDepthSlice)).Max(1);
 
             ViewKey key = new((short)format, mipLevel, arrayIndexOrDepthSlice, arrayCountOrDepthCount, planeIndex, 0, 0);
 
@@ -1257,7 +1228,7 @@ public unsafe abstract class GorgonTextureCommon
     /// </remarks>
     /// <seealso cref="GorgonBoxF"/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public GorgonBox ToPixelBox(GorgonBoxF texels, short mipLevel = 0) 
+    public GorgonBox ToPixelBox(GorgonBoxF texels, short mipLevel = 0)
     {
         ToPixelBox(in texels, out GorgonBox pixels, mipLevel);
         return pixels;
@@ -1353,8 +1324,8 @@ public unsafe abstract class GorgonTextureCommon
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonTextureCommon"/> class.
     /// </summary>
-    /// <param name="graphics"><inheritdoc cref="GorgonGpuResource(GorgonGraphics, string)" path="/param[@name='graphics']"/></param>
-    /// <param name="name"><inheritdoc cref="GorgonGpuResource(GorgonGraphics, string)" path="/param[@name='name']"/></param>
+    /// <param name="graphics"><inheritdoc cref="GorgonGpuResource(GorgonGraphics, string, bool)" path="/param[@name='graphics']"/></param>
+    /// <param name="name"><inheritdoc cref="GorgonGpuResource(GorgonGraphics, string, bool)" path="/param[@name='name']"/></param>
     /// <param name="info">Information used to create the texture.</param>
     protected GorgonTextureCommon(GorgonGraphics graphics, string name, GorgonTextureInfo info)
         : base(graphics, name)

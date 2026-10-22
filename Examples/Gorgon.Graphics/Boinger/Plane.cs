@@ -48,16 +48,16 @@ internal class Plane
     /// <param name="graphics">The graphics interface used to create the buffers for this object.</param>
     /// <param name="size">The width and height of the plane.</param>
     /// <param name="textureCoordinates">Texture coordinates.</param>
-    public Plane(GorgonGraphics graphics,Vector2 size, GorgonRectangleF textureCoordinates)
+    public Plane(GorgonGraphics graphics, Vector2 size, GorgonRectangleF textureCoordinates)
     {
         Size = size;
 
         // Create our vertices.
         Vertices = [
-                       new Vertex() { Position = new Vector4(-size.X, size.Y, 0.0f, 1), UV = new Vector2(textureCoordinates.Left, textureCoordinates.Top) },
-                       new Vertex() { Position = new Vector4(size.X, size.Y, 0.0f, 1), UV = new Vector2(textureCoordinates.Right, textureCoordinates.Top) },
-                       new Vertex() { Position = new Vector4(size.X, -size.Y, 0.0f, 1), UV = new Vector2(textureCoordinates.Right, textureCoordinates.Bottom) },
-                       new Vertex() { Position = new Vector4(-size.X, -size.Y, 0.0f, 1), UV = new Vector2(textureCoordinates.Left, textureCoordinates.Bottom) }
+                       new GorgonVertexPosUv(new Vector4(-size.X, size.Y, 0.0f, 1), new Vector2(textureCoordinates.Left, textureCoordinates.Top)),
+                       new GorgonVertexPosUv(new Vector4(size.X, size.Y, 0.0f, 1), new Vector2(textureCoordinates.Right, textureCoordinates.Top)),
+                       new GorgonVertexPosUv(new Vector4(size.X, -size.Y, 0.0f, 1), new Vector2(textureCoordinates.Right, textureCoordinates.Bottom)),
+                       new GorgonVertexPosUv(new Vector4(-size.X, -size.Y, 0.0f, 1), new Vector2(textureCoordinates.Left, textureCoordinates.Bottom))
                    ];
 
         // Create our indices.
@@ -70,7 +70,7 @@ internal class Plane
                       0
                   ];
 
-        VertexBufferView = GorgonStructuredBufferView.CreateStructuredBuffer<Vertex>(graphics, "Boinger plane vertex buffer", Vertices.Length);
+        VertexBufferView = GorgonStructuredBufferView.CreateStructuredBuffer<GorgonVertexPosUv>(graphics, "Boinger plane vertex buffer", Vertices.Length);
         IndexBuffer = new GorgonIndexBuffer(graphics, "Boinger plane index buffer", new GorgonIndexBufferInfo(Indices.Length * sizeof(ushort), false));
     }
 }

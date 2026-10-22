@@ -22,6 +22,8 @@
 // Created: July 6, 2025 3:49:07 PM
 //
 
+using System;
+
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
@@ -40,7 +42,7 @@ internal sealed record class DescriptorServices(GpuDescriptorHeap GpuSamplerDesc
     {
         GpuSamplerDescriptors.Dispose();
         GpuViewDescriptors.Dispose();
-        RtvDescriptors.Dispose(); 
+        RtvDescriptors.Dispose();
         DsvDescriptors.Dispose();
         CbvSrvUavDescriptors.Dispose();
 
@@ -55,5 +57,5 @@ internal sealed record class DescriptorServices(GpuDescriptorHeap GpuSamplerDesc
         RtvDescriptors.GarbageCollect();
         DsvDescriptors.GarbageCollect();
         CbvSrvUavDescriptors.GarbageCollect();
-    }    
+    }
 }

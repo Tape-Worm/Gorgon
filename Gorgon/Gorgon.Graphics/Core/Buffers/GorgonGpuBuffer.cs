@@ -22,7 +22,10 @@
 // Created: January 14, 2026 9:28:58 PM
 //
 
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
@@ -110,6 +113,9 @@ public sealed unsafe class GorgonGpuBuffer
 
     /// <inheritdoc/>
     internal override bool IsMegaBufferResource => true;
+
+    /// <inheritdoc/>
+    internal override ulong ResourceID => _bufferAllocation.ResourceID;
 
     /// <inheritdoc/>
     public int Alignment => _info.Alignment;
@@ -290,12 +296,9 @@ public sealed unsafe class GorgonGpuBuffer
 
             ViewKey key = new((byte)BufferFormat.Unknown, false, (int)startIndex, count.Value, structSize);
 
-            if (_structs.TryGetValue(key, out GorgonStructuredBufferView? result))
-            {
-                return result;
-            }
-
-            return _structs[key] = new GorgonStructuredBufferView(Graphics, Name, this, startIndex.Min(maxElements - 1), structSize, count.Value, owned);
+            return _structs.TryGetValue(key, out GorgonStructuredBufferView? result)
+                ? result
+                : (_structs[key] = new GorgonStructuredBufferView(Graphics, Name, this, startIndex.Min(maxElements - 1), structSize, count.Value, owned));
         }
     }
 
@@ -341,12 +344,9 @@ public sealed unsafe class GorgonGpuBuffer
 
             ViewKey key = new((byte)BufferFormat.Unknown, includeCounter, (int)startIndex, count.Value, structSize);
 
-            if (_structUavs.TryGetValue(key, out GorgonStructuredBufferRwView? result))
-            {
-                return result;
-            }
-
-            return _structUavs[key] = new GorgonStructuredBufferRwView(Graphics, Name, this, startIndex, structSize, count.Value, includeCounter, owned);
+            return _structUavs.TryGetValue(key, out GorgonStructuredBufferRwView? result)
+                ? result
+                : (_structUavs[key] = new GorgonStructuredBufferRwView(Graphics, Name, this, startIndex, structSize, count.Value, includeCounter, owned));
         }
     }
 
@@ -390,12 +390,9 @@ public sealed unsafe class GorgonGpuBuffer
 
             ViewKey key = new((byte)BufferFormat.Unknown, false, (int)startIndex, count.Value, 0);
 
-            if (_raws.TryGetValue(key, out GorgonRawBufferView? result))
-            {
-                return result;
-            }
-
-            return _raws[key] = new GorgonRawBufferView(Graphics, Name, this, startIndex, count.Value, owned);
+            return _raws.TryGetValue(key, out GorgonRawBufferView? result)
+                ? result
+                : (_raws[key] = new GorgonRawBufferView(Graphics, Name, this, startIndex, count.Value, owned));
         }
     }
 
@@ -434,12 +431,9 @@ public sealed unsafe class GorgonGpuBuffer
 
             ViewKey key = new((byte)BufferFormat.Unknown, false, (int)startIndex, count.Value, 0);
 
-            if (_rawUavs.TryGetValue(key, out GorgonRawBufferRwView? result))
-            {
-                return result;
-            }
-
-            return _rawUavs[key] = new GorgonRawBufferRwView(Graphics, Name, this, startIndex, count.Value, owned);
+            return _rawUavs.TryGetValue(key, out GorgonRawBufferRwView? result)
+                ? result
+                : (_rawUavs[key] = new GorgonRawBufferRwView(Graphics, Name, this, startIndex, count.Value, owned));
         }
     }
 
@@ -487,12 +481,9 @@ public sealed unsafe class GorgonGpuBuffer
 
             ViewKey key = new((byte)format, false, (int)startIndex, count.Value, 0);
 
-            if (_typeds.TryGetValue(key, out GorgonTypedBufferView? result))
-            {
-                return result;
-            }
-
-            return _typeds[key] = new GorgonTypedBufferView(Graphics, Name, this, formatInfo, startIndex, count.Value, owned);
+            return _typeds.TryGetValue(key, out GorgonTypedBufferView? result)
+                ? result
+                : (_typeds[key] = new GorgonTypedBufferView(Graphics, Name, this, formatInfo, startIndex, count.Value, owned));
         }
     }
 
@@ -535,12 +526,9 @@ public sealed unsafe class GorgonGpuBuffer
 
             ViewKey key = new((byte)format, false, (int)startIndex, count.Value, 0);
 
-            if (_typedUavs.TryGetValue(key, out GorgonTypedBufferRwView? result))
-            {
-                return result;
-            }
-
-            return _typedUavs[key] = new GorgonTypedBufferRwView(Graphics, Name, this, formatInfo, startIndex, count.Value, owned);
+            return _typedUavs.TryGetValue(key, out GorgonTypedBufferRwView? result)
+                ? result
+                : (_typedUavs[key] = new GorgonTypedBufferRwView(Graphics, Name, this, formatInfo, startIndex, count.Value, owned));
         }
     }
 
@@ -729,7 +717,7 @@ public sealed unsafe class GorgonGpuBuffer
     /// </remarks>
     /// <seealso cref="GorgonGpuBufferInfo"/>
     public GorgonGpuBuffer(GorgonGraphics graphics, string name, GorgonGpuBufferInfo info)
-        : base(graphics, name, info)
+        : base(graphics, name, info, false)
     {
         _info = info;
         _megaBuffer = graphics.Memory.MegaBuffer;
@@ -738,6 +726,6 @@ public sealed unsafe class GorgonGpuBuffer
 
         Graphics.Log.Print($"Creating Gorgon buffer '{Name}'.", LoggingLevel.Simple);
 
-        CreateNative();        
+        CreateNative();
     }
 }

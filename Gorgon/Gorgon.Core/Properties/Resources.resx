@@ -226,6 +226,9 @@ Code: 0x{2}</value>
   <data name="GOR_RESULT_DESC_ACCESS_DENIED" xml:space="preserve">
     <value>Access is denied.</value>
   </data>
+  <data name="GOR_RESULT_DESC_ALREADY_INITIALIZED" xml:space="preserve">
+    <value>The object has already been initialized.</value>
+  </data>
   <data name="GOR_RESULT_DESC_CANNOT_BIND" xml:space="preserve">
     <value>There was an error during binding.</value>
   </data>

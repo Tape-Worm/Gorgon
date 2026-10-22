@@ -57,7 +57,7 @@ public class GorgonMemoryStreamTests
         using GorgonNativeBuffer<uint> buffer = new(64);
         using GorgonMemoryStream<uint> stream = new(buffer);
 
-        stream.Seek(32, SeekOrigin.Begin);
+        _ = stream.Seek(32, SeekOrigin.Begin);
 
         Assert.AreEqual(32, stream.Position);
     }
@@ -68,7 +68,7 @@ public class GorgonMemoryStreamTests
         using GorgonNativeBuffer<uint> buffer = new(16);
         using GorgonMemoryStream<uint> stream = new(buffer);
 
-        stream.Seek(-32, SeekOrigin.End);
+        _ = stream.Seek(-32, SeekOrigin.End);
 
         Assert.AreEqual(32, stream.Position);
     }
@@ -79,11 +79,11 @@ public class GorgonMemoryStreamTests
         using GorgonNativeBuffer<uint> buffer = new(16);
         using GorgonMemoryStream<uint> stream = new(buffer);
 
-        stream.Seek(32, SeekOrigin.Current);
+        _ = stream.Seek(32, SeekOrigin.Current);
 
         Assert.AreEqual(32, stream.Position);
 
-        stream.Seek(-16, SeekOrigin.Current);
+        _ = stream.Seek(-16, SeekOrigin.Current);
 
         Assert.AreEqual(16, stream.Position);
     }

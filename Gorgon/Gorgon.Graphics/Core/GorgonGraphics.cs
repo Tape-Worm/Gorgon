@@ -22,12 +22,16 @@
 // Created: July 6, 2025 3:49:07 PM
 //
 
+using System;
 using System.Buffers;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
@@ -59,11 +63,6 @@ public unsafe sealed class GorgonGraphics
     private const int MaxRootParamCount = 18;
 
     /// <summary>
-    /// The maximum time to wait for a fence to be signalled, in milliseconds.
-    /// </summary>
-    internal const int WaitFenceTimeout = 10_000;
-
-    /// <summary>
     /// The maximum number of slots for root constant buffer views.
     /// </summary>
     public const int MaxRootCbvCount = 16;
@@ -87,8 +86,9 @@ public unsafe sealed class GorgonGraphics
     private GorgonNativeBuffer<Guid>? _infoQueueInstanceGuid;
     private static readonly Lock _infoQueueCallbackLock = new();
     private readonly static Dictionary<Guid, GorgonDebugInformationCallback> _infoQueueCallbackMethods = [];
-    private int _currentFrame;    
-    private readonly ConcurrentBag<ComPtr<ID3D12CommandList>> _commands =[];
+    private int _currentFrame;
+    private readonly ConcurrentBag<ComPtr<ID3D12CommandList>> _commands = [];
+    private int _isDisposed;
 
     /// <summary>
     /// Property to return the internal Direct 3D 12 device pointer.
@@ -159,6 +159,11 @@ public unsafe sealed class GorgonGraphics
     }
 
     /// <summary>
+    /// Property to return whether the object has been disposed or not.
+    /// </summary>
+    public bool IsDisposed => _isDisposed != 0;
+
+    /// <summary>
     /// Property to return whether Gorgon is in debug mode or not.
     /// </summary>
     public bool IsInDebugMode => _debug is not null;
@@ -226,13 +231,25 @@ public unsafe sealed class GorgonGraphics
     {
         ComPtr<D3D12MA_Allocator> allocator = default;
 
+        if (Interlocked.Exchange(ref _isDisposed, 1) == 1)
+        {
+            return;
+        }
+
         if (disposing)
         {
+            Log.Print("Waiting for GPU to finish work...", LoggingLevel.Intermediate);
+
             // Ensure the frame is ended.
             FinalizeFrame();
 
-            // Let the GPU finish whatever it's doing.
-            WaitForGpu(WaitFenceTimeout);
+            GorgonTimer sw = new();
+            // Wait for the GPU to finish whatever it's doing.
+            // Give it 5 seconds, if we take longer than this, we're probably in trouble.
+            WaitForGpu();
+            Log.Print($"GPU finished work in {sw.Elapsed}.", LoggingLevel.Intermediate);
+
+            Log.Print("Shutting down graphics interface...", LoggingLevel.Simple);
 
             if (_debug is not null)
             {
@@ -241,8 +258,12 @@ public unsafe sealed class GorgonGraphics
 
             _parentFactory.Unregister(this);
 
+            // User objects free descriptors, mega buffer ranges and D3D12MA allocations, and queries wait on the queues, so these
+            // must be disposed before the systems below.
+            this.DisposeAll();
+
             // Remove our queues.
-            SharedResources.Dispose();          
+            SharedResources.Dispose();
             SamplerStates.Dispose();
             allocator = new ComPtr<D3D12MA_Allocator>(Memory.Allocator);
             Descriptors.Dispose();
@@ -250,9 +271,6 @@ public unsafe sealed class GorgonGraphics
             Queues.Dispose();
 
             _infoQueueInstanceGuid?.Dispose();
-
-            // Ensure everything is released before we continue.
-            this.DisposeAll();
 
             Log.Print($"Destroying {nameof(D3D12MA_Allocator)}...", LoggingLevel.Verbose);
 
@@ -267,7 +285,7 @@ public unsafe sealed class GorgonGraphics
             if (!allocator.IsNull)
             {
                 DumpMemoryStats(in allocator);
-            }            
+            }
         }
 
         _rootSignature.Dispose();
@@ -336,10 +354,10 @@ public unsafe sealed class GorgonGraphics
 
         // Add any messages we want to ignore here:
         D3D12_MESSAGE_ID* filters = stackalloc D3D12_MESSAGE_ID[MaxIDDenyCount]
-        {            
+        {
             D3D12_MESSAGE_ID.D3D12_MESSAGE_ID_CLEARRENDERTARGETVIEW_MISMATCHINGCLEARVALUE,
             D3D12_MESSAGE_ID.D3D12_MESSAGE_ID_CLEARDEPTHSTENCILVIEW_MISMATCHINGCLEARVALUE,
-            D3D12_MESSAGE_ID.D3D12_MESSAGE_ID_CREATE_SAMPLER_COMPARISON_FUNC_IGNORED            
+            D3D12_MESSAGE_ID.D3D12_MESSAGE_ID_CREATE_SAMPLER_COMPARISON_FUNC_IGNORED
         };
 
         D3D12_INFO_QUEUE_FILTER filter = new()
@@ -354,7 +372,7 @@ public unsafe sealed class GorgonGraphics
         result.Get()->SetBreakOnID(D3D12_MESSAGE_ID.D3D12_MESSAGE_ID_GETHEAPPROPERTIES_INVALIDRESOURCE, false);
 
         result.Get()->AddStorageFilterEntries(&filter)
-            .ThrowIfFailed(GorgonResult.CannotCreate, () => Resources.GORGFX_ERR_CANNOT_SETUP_DEBUG_INFO);
+            .ThrowIfFailed(GorgonResult.CannotCreate, Resources.GORGFX_ERR_CANNOT_SETUP_DEBUG_INFO);
 
         return result;
     }
@@ -488,21 +506,21 @@ public unsafe sealed class GorgonGraphics
     /// <returns>The pointer to the main allocator.</returns>
     private ComPtr<D3D12MA_Allocator> BuildAllocator(string adapterName, ComPtr<IDXGIAdapter4> adapter, ComPtr<ID3D12Device14> device)
     {
-        ComPtr<D3D12MA_Allocator> result = default;        
+        ComPtr<D3D12MA_Allocator> result = default;
 
         D3D12MA_ALLOCATOR_DESC desc = new()
         {
             Flags = D3D12MA_ALLOCATOR_FLAGS.D3D12MA_ALLOCATOR_FLAG_NONE,
             pAdapter = (PIDXGIAdapter4)adapter.Get(),
-            pDevice = (PID3D12Device14)device.Get(),            
+            pDevice = (PID3D12Device14)device.Get(),
             PreferredBlockSize = 0 // Defaults to 64 MB.
         };
-        
+
         Log.Print($"Creating {nameof(D3D12MA_Allocator)} on {adapterName}.", LoggingLevel.Verbose);
-        
+
         D3D12MemAlloc.D3D12MA_CreateAllocator(&desc, result.GetAddressOf())
-            .ThrowIfFailed(GorgonResult.CannotCreate, () => string.Format(Resources.GORGFX_ERR_CANNOT_CREATE_ALLOCATOR, adapterName));
-        
+            .ThrowIfFailed(GorgonResult.CannotCreate, Resources.GORGFX_ERR_CANNOT_CREATE_ALLOCATOR, adapterName);
+
         return result;
     }
 
@@ -511,16 +529,13 @@ public unsafe sealed class GorgonGraphics
     /// </summary>
     private void FinalizeFrame()
     {
+        int finishedFrame = _currentFrame;
         int nextFrame = Interlocked.Increment(ref _currentFrame);
         nextFrame %= InFlightFrameCount;
 
         ulong gfxNextFence = Queues.GraphicsQueue.IncrementFence();
-        ulong computeNextFence = Queues.ComputeQueue.IncrementFence();
-        ulong copyNextFence = Queues.CopyQueue.IncrementFence();
 
-        Interlocked.Exchange(ref Queues.GraphicsQueue.FrameFenceValue[nextFrame], gfxNextFence);
-        Interlocked.Exchange(ref Queues.ComputeQueue.FrameFenceValue[nextFrame], computeNextFence);
-        Interlocked.Exchange(ref Queues.CopyQueue.FrameFenceValue[nextFrame], copyNextFence);
+        Interlocked.Exchange(ref Queues.GraphicsQueue.FrameFenceValue[finishedFrame], gfxNextFence);
         Interlocked.Exchange(ref _currentFrame, nextFrame);
 
         Queues.GraphicsQueue.CollectOutstandingLists();
@@ -605,7 +620,7 @@ public unsafe sealed class GorgonGraphics
                     continue;
                 }
 
-                Queues.GraphicsQueue.Tracker.TrackResource(commandList.D3DGraphicsCommandList);
+                commandList.TrackResource(commandList.D3DGraphicsCommandList);
 
                 if (commandList.Presenters.Count > 0)
                 {
@@ -675,10 +690,14 @@ public unsafe sealed class GorgonGraphics
 
         Log.Print("Creating Gorgon D3D 12 global bindless root signature...", LoggingLevel.Verbose);
 
-        _d3dDevice.As(&devConfig)
-            .ThrowIfFailed((hr) => new InvalidCastException(null, hr));
+        HRESULT err = _d3dDevice.As(&devConfig);
 
-        HRESULT err = devConfig.Get()->SerializeVersionedRootSignature(&rootDesc, serialized.GetAddressOf(), errors.GetAddressOf());
+        if (err.FAILED)
+        {
+            throw new InvalidCastException(null, err);
+        }
+
+        err = devConfig.Get()->SerializeVersionedRootSignature(&rootDesc, serialized.GetAddressOf(), errors.GetAddressOf());
 
         if ((err.FAILED) || (serialized.IsNull))
         {
@@ -697,7 +716,7 @@ public unsafe sealed class GorgonGraphics
 
             throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_CANNOT_CREATE_ROOT, exceptionText));
         }
-            
+
         _d3dDevice.Get()->CreateRootSignature(0, serialized.Get()->GetBufferPointer(), serialized.Get()->GetBufferSize(), Win32.__uuidof<ID3D12RootSignature>(), (void**)result.GetAddressOf());
 
         return result;
@@ -749,17 +768,7 @@ public unsafe sealed class GorgonGraphics
     /// <inheritdoc/>
     public void Dispose()
     {
-        Log.Print("Waiting for GPU to finish work...", LoggingLevel.Intermediate);
-        GorgonTimer sw = new();
-        // Wait for the GPU to finish whatever it's doing.
-        // Give it 5 seconds, if we take longer than this, we're probably in trouble.
-        WaitForGpu(WaitFenceTimeout);
-        Log.Print($"GPU finished work in {sw.Elapsed}.", LoggingLevel.Intermediate);
-
-        Log.Print("Shutting down graphics interface...", LoggingLevel.Simple);
-
         Dispose(true);
-
         GC.SuppressFinalize(this);
     }
 
@@ -781,7 +790,7 @@ public unsafe sealed class GorgonGraphics
         LARGE_INTEGER li = default;
 
         DXGIAdapter.Get()->CheckInterfaceSupport(Win32.__uuidof<IDXGIDevice>(), &li)
-            .ThrowIfFailed(GorgonResult.CannotRead, () => Resources.GORGFX_ERR_CANNOT_RETRIEVE_DRIVER_VERSION);
+            .ThrowIfFailed(GorgonResult.CannotRead, Resources.GORGFX_ERR_CANNOT_RETRIEVE_DRIVER_VERSION);
 
         return li.QuadPart;
     }
@@ -802,7 +811,7 @@ public unsafe sealed class GorgonGraphics
         DXGI_QUERY_VIDEO_MEMORY_INFO info = default;
 
         DXGIAdapter.Get()->QueryVideoMemoryInfo(0, DXGI_MEMORY_SEGMENT_GROUP.DXGI_MEMORY_SEGMENT_GROUP_LOCAL, &info)
-            .ThrowIfFailed(GorgonResult.CannotRead, () => string.Format(Resources.GORGFX_ERR_CANNOT_READ_GPU_BUDGET, Adapter.Name));
+            .ThrowIfFailed(GorgonResult.CannotRead, Resources.GORGFX_ERR_CANNOT_READ_GPU_BUDGET, Adapter.Name);
 
         return ((long)info.CurrentUsage, (long)info.Budget);
     }
@@ -888,12 +897,11 @@ public unsafe sealed class GorgonGraphics
     /// <summary>
     /// Function to make the CPU wait for the GPU to finish its current timeline of work.
     /// </summary>
-    /// <param name="timeout">[Optional] The number of milliseconds to wait before continuing.</param>
-    public void WaitForGpu(int timeout = Timeout.Infinite) 
+    public void WaitForGpu()
     {
-        Queues.GraphicsQueue.WaitForGpu(timeout);
-        Queues.ComputeQueue.WaitForGpu(timeout);
-        Queues.CopyQueue.WaitForGpu(timeout); 
+        Queues.GraphicsQueue.WaitForGpu();
+        Queues.ComputeQueue.WaitForGpu();
+        Queues.CopyQueue.WaitForGpu();
     }
 
     /// <summary>
@@ -1011,7 +1019,7 @@ public unsafe sealed class GorgonGraphics
     {
         ulong copyQueueFence = Queues.CopyQueue.FenceValue;
         Queues.GraphicsQueue.D3DQueue.Get()->Wait((PID3D12Fence1)Queues.CopyQueue.D3DFence.Get(), copyQueueFence)
-            .ThrowIfFailed(GorgonResult.CannotExecute, () => string.Format(Resources.GORGFX_ERR_WAIT_FAILED, nameof(Queues.GraphicsQueue), nameof(Queues.CopyQueue)));
+            .ThrowIfFailed(GorgonResult.CannotExecute, Resources.GORGFX_ERR_WAIT_FAILED, nameof(Queues.GraphicsQueue), nameof(Queues.CopyQueue));
     }
 
     /// <summary>
@@ -1043,7 +1051,7 @@ public unsafe sealed class GorgonGraphics
     {
         ulong computeQueueFence = Queues.ComputeQueue.FenceValue;
         Queues.GraphicsQueue.D3DQueue.Get()->Wait((PID3D12Fence1)Queues.ComputeQueue.D3DFence.Get(), computeQueueFence)
-            .ThrowIfFailed(GorgonResult.CannotExecute, () => string.Format(Resources.GORGFX_ERR_WAIT_FAILED, nameof(Queues.GraphicsQueue), nameof(Queues.ComputeQueue)));
+            .ThrowIfFailed(GorgonResult.CannotExecute, Resources.GORGFX_ERR_WAIT_FAILED, nameof(Queues.GraphicsQueue), nameof(Queues.ComputeQueue));
     }
 
     /// <summary>
@@ -1066,7 +1074,7 @@ public unsafe sealed class GorgonGraphics
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void GarbageCollect(bool forceDotNetGc = false)
     {
-        WaitForGpu(WaitFenceTimeout);
+        WaitForGpu();
 
         Queues.GarbageCollect();
         Memory.GarbageCollect();
@@ -1119,8 +1127,8 @@ public unsafe sealed class GorgonGraphics
 
         ComPtr<D3D12MA_Allocator> allocator = BuildAllocator(adapter.Name, _dxgiAdapter, _d3dDevice);
 
-        Memory = new MemoryServices(new CpuResourceHeapPool(this, false), 
-            new CpuResourceHeapPool(this, true), 
+        Memory = new MemoryServices(new CpuResourceHeapPool(this, false),
+            new CpuResourceHeapPool(this, true),
             new MegaBufferPool(this, bufferPercent),
             new VirtualTextureTilePool(this),
             in allocator);

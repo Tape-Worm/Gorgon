@@ -22,6 +22,7 @@
 // Created: September 29, 2025 12:59:13 PM
 //
 
+using System;
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 
@@ -106,15 +107,9 @@ public readonly record struct GorgonShaderCompileResult
     /// </summary>
     /// <returns>A <see cref="GorgonException"/> containing the compilation errors.</returns>
     /// <exception cref="InvalidCastException">Thrown if the compilation result was <see cref="Success">successful</see> and no errors were generated.</exception>
-    public Exception GetCompilationException()
-    {
-        if (Success)
-        {
-            throw new InvalidCastException();
-        }
-
-        return new GorgonException(GorgonResult.CannotCompile, string.Format(Resources.GORGFX_ERR_SHADER_COMPILE_ERROR, _message));
-    }
+    public Exception GetCompilationException() => Success
+            ? throw new InvalidCastException()
+            : (Exception)new GorgonException(GorgonResult.CannotCompile, string.Format(Resources.GORGFX_ERR_SHADER_COMPILE_ERROR, _message));
 
     /// <inheritdoc/>
     public override string ToString() => string.IsNullOrWhiteSpace(_message) ? nameof(GorgonShaderCompileResult) : _message;

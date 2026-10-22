@@ -22,6 +22,7 @@
 // Created: November 17, 2023 6:27:06 PM
 //
 
+using System;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 
@@ -106,15 +107,7 @@ public static class GorgonMathExtensions
         /// <param name="maxInclusive">[Optional] <b>true</b> to check if the value is greater than, or equal to the <paramref name="max"/>, <b>false</b> to only check if the value is greater than <paramref name="max"/>.</param>
         /// <returns>the value if less than or equal to <paramref name="max"/>, or <paramref name="min"/> otherwise.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public byte Wrap(byte min, byte max, bool maxInclusive = true)
-        {
-            if (((maxInclusive) && (value >= max)) || (value > max))
-            {
-                return min;
-            }
-
-            return value;
-        }
+        public byte Wrap(byte min, byte max, bool maxInclusive = true) => ((maxInclusive) && (value >= max)) || (value > max) ? min : value;
 
         /// <summary>
         /// Function to wrap a value to 0 when it exceeds the maximum.
@@ -165,15 +158,7 @@ public static class GorgonMathExtensions
         /// <param name="maxInclusive">[Optional] <b>true</b> to check if the value is greater than, or equal to the <paramref name="max"/>, <b>false</b> to only check if the value is greater than <paramref name="max"/>.</param>
         /// <returns>the value if less than or equal to <paramref name="max"/>, or <paramref name="min"/> otherwise.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public uint Wrap(uint min, uint max, bool maxInclusive = true)
-        {
-            if (((maxInclusive) && (value >= max)) || (value > max))
-            {
-                return min;
-            }
-
-            return value;
-        }
+        public uint Wrap(uint min, uint max, bool maxInclusive = true) => ((maxInclusive) && (value >= max)) || (value > max) ? min : value;
 
         /// <summary>
         /// Function to wrap a value to 0 when it exceeds the maximum.
@@ -224,15 +209,7 @@ public static class GorgonMathExtensions
         /// <param name="maxInclusive">[Optional] <b>true</b> to check if the value is greater than, or equal to the <paramref name="max"/>, <b>false</b> to only check if the value is greater than <paramref name="max"/>.</param>
         /// <returns>the value if less than or equal to <paramref name="max"/>, or <paramref name="min"/> otherwise.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ushort Wrap(ushort min, ushort max, bool maxInclusive = true)
-        {
-            if (((maxInclusive) && (value >= max)) || (value > max))
-            {
-                return min;
-            }
-
-            return value;
-        }
+        public ushort Wrap(ushort min, ushort max, bool maxInclusive = true) => ((maxInclusive) && (value >= max)) || (value > max) ? min : value;
 
         /// <summary>
         /// Function to wrap a value to 0 when it exceeds the maximum.
@@ -274,15 +251,7 @@ public static class GorgonMathExtensions
         /// </summary>
         /// <returns>0 if the value is 0, -1 if the value is less than 0, and 1 if the value is greater than 0.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int Sign()
-        {
-            if (value == 0)
-            {
-                return 0;
-            }
-
-            return value < 0 ? -1 : 1;
-        }
+        public int Sign() => value == 0 ? 0 : value < 0 ? -1 : 1;
 
         /// <summary>
         /// Function to clamp a value to the range specified by the minimum and maximum value.
@@ -305,15 +274,7 @@ public static class GorgonMathExtensions
         /// <param name="maxInclusive">[Optional] <b>true</b> to check if the value is greater than, or equal to the <paramref name="max"/>, <b>false</b> to only check if the value is greater than <paramref name="max"/>.</param>
         /// <returns>the value if less than or equal to <paramref name="max"/>, or <paramref name="min"/> otherwise.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public short Wrap(short min, short max, bool maxInclusive = true)
-        {
-            if (((maxInclusive) && (value >= max)) || (value > max))
-            {
-                return min;
-            }
-
-            return value;
-        }
+        public short Wrap(short min, short max, bool maxInclusive = true) => ((maxInclusive) && (value >= max)) || (value > max) ? min : value;
 
         /// <summary>
         /// Function to wrap a value to 0 when it exceeds the maximum.
@@ -359,7 +320,7 @@ public static class GorgonMathExtensions
         /// </para>
         /// </remarks>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int MulDiv(int numerator, int denominator) => unchecked((int)(((long)value * numerator + denominator >> 1) / denominator));
+        public int MulDiv(int numerator, int denominator) => unchecked((int)(((((long)value * numerator) + denominator) >> 1) / denominator));
 
         /// <summary>
         /// Function to return the absolute value of an <see cref="int"/> value.
@@ -373,15 +334,7 @@ public static class GorgonMathExtensions
         /// </summary>
         /// <returns>0 if the value is 0, -1 if the value is less than 0, and 1 if the value is greater than 0.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int Sign()
-        {
-            if (value == 0)
-            {
-                return 0;
-            }
-
-            return value < 0 ? -1 : 1;
-        }
+        public int Sign() => value == 0 ? 0 : value < 0 ? -1 : 1;
 
         /// <summary>
         /// Function to clamp a value to the range specified by the minimum and maximum value.
@@ -404,15 +357,7 @@ public static class GorgonMathExtensions
         /// <param name="maxInclusive">[Optional] <b>true</b> to check if the value is greater than, or equal to the <paramref name="max"/>, <b>false</b> to only check if the value is greater than <paramref name="max"/>.</param>
         /// <returns>the value if less than or equal to <paramref name="max"/>, or <paramref name="min"/> otherwise.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int Wrap(int min, int max, bool maxInclusive = true)
-        {
-            if (((maxInclusive) && (value >= max)) || (value > max))
-            {
-                return min;
-            }
-
-            return value;
-        }
+        public int Wrap(int min, int max, bool maxInclusive = true) => ((maxInclusive) && (value >= max)) || (value > max) ? min : value;
 
         /// <summary>
         /// Function to wrap a value to 0 when it exceeds the maximum.
@@ -454,15 +399,7 @@ public static class GorgonMathExtensions
         /// </summary>
         /// <returns>0 if the value is 0, -1 if the value is less than 0, and 1 if the value is greater than 0.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int Sign()
-        {
-            if (value == 0)
-            {
-                return 0;
-            }
-
-            return value < 0 ? -1 : 1;
-        }
+        public int Sign() => value == 0 ? 0 : value < 0 ? -1 : 1;
 
         /// <summary>
         /// Function to clamp a value to the range specified by the minimum and maximum value.
@@ -485,15 +422,7 @@ public static class GorgonMathExtensions
         /// <param name="maxInclusive">[Optional] <b>true</b> to check if the value is greater than, or equal to the <paramref name="max"/>, <b>false</b> to only check if the value is greater than <paramref name="max"/>.</param>
         /// <returns>the value if less than or equal to <paramref name="max"/>, or <paramref name="min"/> otherwise.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public long Wrap(long min, long max, bool maxInclusive = true)
-        {
-            if (((maxInclusive) && (value >= max)) || (value > max))
-            {
-                return min;
-            }
-
-            return value;
-        }
+        public long Wrap(long min, long max, bool maxInclusive = true) => ((maxInclusive) && (value >= max)) || (value > max) ? min : value;
 
         /// <summary>
         /// Function to wrap a value to 0 when it exceeds the maximum.
@@ -529,15 +458,7 @@ public static class GorgonMathExtensions
         /// <param name="maxInclusive">[Optional] <b>true</b> to check if the value is greater than, or equal to the <paramref name="max"/>, <b>false</b> to only check if the value is greater than <paramref name="max"/>.</param>
         /// <returns>the value if less than or equal to <paramref name="max"/>, or <paramref name="min"/> otherwise.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ulong Wrap(ulong min, ulong max, bool maxInclusive = true)
-        {
-            if (((maxInclusive) && (value >= max)) || (value > max))
-            {
-                return min;
-            }
-
-            return value;
-        }
+        public ulong Wrap(ulong min, ulong max, bool maxInclusive = true) => ((maxInclusive) && (value >= max)) || (value > max) ? min : value;
 
         /// <summary>
         /// Function to wrap a value to 0 when it exceeds the maximum.
@@ -645,15 +566,7 @@ public static class GorgonMathExtensions
         /// </summary>
         /// <returns>0 if the value is 0, -1 if the value is less than 0, and 1 if the value is greater than 0.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int Sign()
-        {
-            if (value.EqualsEpsilon(0))
-            {
-                return 0;
-            }
-
-            return value < 0 ? -1 : 1;
-        }
+        public int Sign() => value.EqualsEpsilon(0) ? 0 : value < 0 ? -1 : 1;
 
         /// <summary>
         /// Function to clamp a value to the range specified by the minimum and maximum value.
@@ -677,15 +590,7 @@ public static class GorgonMathExtensions
         /// <param name="maxInclusive">[Optional] <b>true</b> to check if the value is greater than, or equal to the <paramref name="max"/>, <b>false</b> to only check if the value is greater than <paramref name="max"/>.</param>
         /// <returns>the value if less than or equal to <paramref name="max"/>, or <paramref name="min"/> otherwise.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public float Wrap(float min, float max, bool maxInclusive = true)
-        {
-            if (((maxInclusive) && (value >= max)) || (value > max))
-            {
-                return min;
-            }
-
-            return value;
-        }
+        public float Wrap(float min, float max, bool maxInclusive = true) => ((maxInclusive) && (value >= max)) || (value > max) ? min : value;
 
         /// <summary>
         /// Function to wrap a value to 0 when it exceeds the maximum.
@@ -1108,15 +1013,7 @@ public static class GorgonMathExtensions
         /// </summary>
         /// <returns>0 if the value is 0, -1 if the value is less than 0, and 1 if the value is greater than 0.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int Sign()
-        {
-            if (value.EqualsEpsilon(0))
-            {
-                return 0;
-            }
-
-            return value < 0 ? -1 : 1;
-        }
+        public int Sign() => value.EqualsEpsilon(0) ? 0 : value < 0 ? -1 : 1;
 
         /// <summary>
         /// Function to clamp a value to the range specified by the minimum and maximum value.
@@ -1140,15 +1037,7 @@ public static class GorgonMathExtensions
         /// <param name="maxInclusive">[Optional] <b>true</b> to check if the value is greater than, or equal to the <paramref name="max"/>, <b>false</b> to only check if the value is greater than <paramref name="max"/>.</param>
         /// <returns>the value if less than or equal to <paramref name="max"/>, or <paramref name="min"/> otherwise.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public double Wrap(double min, double max, bool maxInclusive = true)
-        {
-            if (((maxInclusive) && (value >= max)) || (value > max))
-            {
-                return min;
-            }
-
-            return value;
-        }
+        public double Wrap(double min, double max, bool maxInclusive = true) => ((maxInclusive) && (value >= max)) || (value > max) ? min : value;
 
 
         /// <summary>
@@ -1244,15 +1133,7 @@ public static class GorgonMathExtensions
         /// </summary>
         /// <returns>0 if the value is 0, -1 if the value is less than 0, and 1 if the value is greater than 0.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int Sign()
-        {
-            if (value == 0)
-            {
-                return 0;
-            }
-
-            return value < 0 ? -1 : 1;
-        }
+        public int Sign() => value == 0 ? 0 : value < 0 ? -1 : 1;
 
         /// <summary>
         /// Function to clamp a value to the range specified by the minimum and maximum value.
@@ -1275,15 +1156,7 @@ public static class GorgonMathExtensions
         /// <param name="maxInclusive">[Optional] <b>true</b> to check if the value is greater than, or equal to the <paramref name="max"/>, <b>false</b> to only check if the value is greater than <paramref name="max"/>.</param>
         /// <returns>the value if less than or equal to <paramref name="max"/>, or <paramref name="min"/> otherwise.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public decimal Wrap(decimal min, decimal max, bool maxInclusive = true)
-        {
-            if (((maxInclusive) && (value >= max)) || (value > max))
-            {
-                return min;
-            }
-
-            return value;
-        }
+        public decimal Wrap(decimal min, decimal max, bool maxInclusive = true) => ((maxInclusive) && (value >= max)) || (value > max) ? min : value;
 
         /// <summary>
         /// Function to wrap a value to 0 when it exceeds the maximum.
@@ -1355,15 +1228,7 @@ public static class GorgonMathExtensions
         /// <param name="maxInclusive">[Optional] <b>true</b> to check if the value is greater than, or equal to the <paramref name="max"/>, <b>false</b> to only check if the value is greater than <paramref name="max"/>.</param>
         /// <returns>the value if less than or equal to <paramref name="max"/>, or <paramref name="min"/> otherwise.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public sbyte Wrap(sbyte min, sbyte max, bool maxInclusive = true)
-        {
-            if (((maxInclusive) && (value >= max)) || (value > max))
-            {
-                return min;
-            }
-
-            return value;
-        }
+        public sbyte Wrap(sbyte min, sbyte max, bool maxInclusive = true) => ((maxInclusive) && (value >= max)) || (value > max) ? min : value;
 
         /// <summary>
         /// Function to wrap a value to 0 when it exceeds the maximum.
@@ -1385,15 +1250,7 @@ public static class GorgonMathExtensions
         /// <param name="maxInclusive">[Optional] <b>true</b> to check if the value is greater than, or equal to the <paramref name="max"/>, <b>false</b> to only check if the value is greater than <paramref name="max"/>.</param>
         /// <returns>the value if less than or equal to <paramref name="max"/>, or <paramref name="min"/> otherwise.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public BigInteger Wrap(BigInteger min, BigInteger max, bool maxInclusive = true)
-        {
-            if (((maxInclusive) && (value >= max)) || (value > max))
-            {
-                return min;
-            }
-
-            return value;
-        }
+        public BigInteger Wrap(BigInteger min, BigInteger max, bool maxInclusive = true) => ((maxInclusive) && (value >= max)) || (value > max) ? min : value;
 
         /// <summary>
         /// Function to wrap a value to 0 when it exceeds the maximum.

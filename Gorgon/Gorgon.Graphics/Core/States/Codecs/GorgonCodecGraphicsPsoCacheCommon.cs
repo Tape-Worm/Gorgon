@@ -22,12 +22,12 @@
 // Created: July 20, 2026 6:37:57 PM
 //
 
+using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Runtime.CompilerServices;
 using Gorgon.Core;
-using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
-using Gorgon.Memory;
-using TerraFX.Interop.Windows;
 
 namespace Gorgon.Graphics.Core.Codecs;
 
@@ -133,7 +133,7 @@ public abstract class GorgonCodecGraphicsPsoCacheCommon(GorgonGraphics graphics)
     /// <seealso cref="GorgonGraphicsPso"/>
     /// <seealso cref="GorgonGraphicsPsoFactory"/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    protected GorgonGraphicsPso BuildAndCachePso(string name, byte[] psoBlob, GorgonShader vertexShader, GorgonGraphicsPsoFactory cache) =>  cache.CreateOrGetPso(name, vertexShader, PsoBuilder, psoBlob);
+    protected GorgonGraphicsPso BuildAndCachePso(string name, byte[] psoBlob, GorgonShader vertexShader, GorgonGraphicsPsoFactory cache) => cache.CreateOrGetPso(name, vertexShader, PsoBuilder, psoBlob);
 
     /// <summary>
     /// Function to retrieve the <see cref="GorgonShader"/> object from the cache that matches the shader blob loaded from the stream.
@@ -361,7 +361,7 @@ public abstract class GorgonCodecGraphicsPsoCacheCommon(GorgonGraphics graphics)
         {
             result.Dispose();
             throw;
-        }        
+        }
     }
 
     /// <summary>

@@ -24,14 +24,16 @@
 // Created: Thursday, January 7, 2016 7:15:06 PM
 // 
 
+using System;
 using System.Buffers;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Gorgon.Core;
 using TerraFX.Interop.DirectX;
 using TerraFX.Interop.Windows;
-using Windows.Web.AtomPub;
 
 namespace Gorgon.Graphics.Core;
 
@@ -299,10 +301,10 @@ public enum ColorSpace
 /// </para>
 /// </remarks>
 /// <seealso cref="GorgonVideoAdapterInfo"/>
-public record class GorgonVideoOutputInfo(string Name, 
-                                          int Index, 
-                                          nint DeviceHandle, 
-                                          GorgonRectangle Bounds, 
+public record class GorgonVideoOutputInfo(string Name,
+                                          int Index,
+                                          nint DeviceHandle,
+                                          GorgonRectangle Bounds,
                                           bool IsAttached,
                                           RotationMode Rotation,
                                           IReadOnlyList<GorgonVideoMode> VideoModes,
@@ -335,12 +337,7 @@ public record class GorgonVideoOutputInfo(string Name,
             Format = format
         };
 
-        if (d3dDevice.Get()->CheckFeatureSupport(D3D12_FEATURE.D3D12_FEATURE_FORMAT_SUPPORT, &support, (uint)Unsafe.SizeOf<D3D12_FEATURE_DATA_FORMAT_SUPPORT>()).FAILED)
-        {
-            return false;
-        }
-
-        return (support.Support1 & D3D12_FORMAT_SUPPORT1.D3D12_FORMAT_SUPPORT1_DISPLAY) == D3D12_FORMAT_SUPPORT1.D3D12_FORMAT_SUPPORT1_DISPLAY;
+        return !d3dDevice.Get()->CheckFeatureSupport(D3D12_FEATURE.D3D12_FEATURE_FORMAT_SUPPORT, &support, (uint)Unsafe.SizeOf<D3D12_FEATURE_DATA_FORMAT_SUPPORT>()).FAILED && (support.Support1 & D3D12_FORMAT_SUPPORT1.D3D12_FORMAT_SUPPORT1_DISPLAY) == D3D12_FORMAT_SUPPORT1.D3D12_FORMAT_SUPPORT1_DISPLAY;
     }
 
     /// <summary>
@@ -402,17 +399,18 @@ public record class GorgonVideoOutputInfo(string Name,
     {
         DXGI_OUTPUT_DESC1 desc = default;
 
-        output.Get()->GetDesc1(&desc)
-            .ThrowIfFailed(err => throw new Win32Exception(err.Value));
+        HRESULT err = output.Get()->GetDesc1(&desc);
 
-        return new(((ReadOnlySpan<char>)desc.DeviceName).Trim('\0').ToString(),
+        return err.FAILED
+            ? throw new Win32Exception(err.Value)
+            : new(((ReadOnlySpan<char>)desc.DeviceName).Trim('\0').ToString(),
             index,
             desc.Monitor,
             GorgonRectangle.FromLTRB(desc.DesktopCoordinates.left, desc.DesktopCoordinates.top, desc.DesktopCoordinates.right, desc.DesktopCoordinates.bottom),
             desc.AttachedToDesktop,
             (RotationMode)desc.Rotation,
             EnumerateVideoModes(output, d3dDevice),
-            (int)desc.BitsPerColor,                        
+            (int)desc.BitsPerColor,
             (ColorSpace)desc.ColorSpace,
             new Vector2(desc.WhitePoint[0], desc.WhitePoint[1]),
             new Vector2(desc.RedPrimary[0], desc.RedPrimary[1]),

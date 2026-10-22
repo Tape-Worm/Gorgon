@@ -29,7 +29,7 @@ public class GorgonOptionBagTests
         IGorgonOption option2 = GorgonOption.CreateOption("TestOption", "Default");
 
         // Act and Assert
-        Assert.ThrowsExactly<ArgumentException>(() => _ = new GorgonOptionBag([option1, option2]));
+        _ = Assert.ThrowsExactly<ArgumentException>(() => _ = new GorgonOptionBag([option1, option2]));
     }
 
     [TestMethod]
@@ -56,7 +56,7 @@ public class GorgonOptionBagTests
         GorgonOptionBag optionBag = new([option]);
 
         // Act and Assert
-        Assert.ThrowsExactly<KeyNotFoundException>(() => _ = optionBag.GetOptionValue<string>("InvalidOptionName"));
+        _ = Assert.ThrowsExactly<KeyNotFoundException>(() => _ = optionBag.GetOptionValue<string>("InvalidOptionName"));
     }
 
     [TestMethod]
@@ -84,7 +84,7 @@ public class GorgonOptionBagTests
         GorgonOptionBag optionBag = new([option]);
 
         // Act and Assert
-        Assert.ThrowsExactly<KeyNotFoundException>(() => optionBag.SetOptionValue("InvalidOptionName", "New Value"));
+        _ = Assert.ThrowsExactly<KeyNotFoundException>(() => optionBag.SetOptionValue("InvalidOptionName", "New Value"));
     }
 
     [TestMethod]
@@ -168,7 +168,7 @@ public class GorgonOptionBagTests
         GorgonOptionBag optionBag = new([option]);
 
         // Act and Assert
-        Assert.ThrowsExactly<KeyNotFoundException>(() => _ = optionBag.GetByName("InvalidOptionName"));
+        _ = Assert.ThrowsExactly<KeyNotFoundException>(() => _ = optionBag.GetByName("InvalidOptionName"));
     }
 
     [TestMethod]

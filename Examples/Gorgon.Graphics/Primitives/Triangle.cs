@@ -26,7 +26,6 @@
 
 using System.Numerics;
 using Gorgon.Graphics.Core;
-using Gorgon.Renderers.Geometry;
 
 namespace Gorgon.Examples;
 
@@ -55,32 +54,22 @@ internal class Triangle
         point2.Tangent = new Vector4(1.0f, 0, 0, 1.0f);
         point3.Tangent = new Vector4(1.0f, 0, 0, 1.0f);
 
-        GorgonVertexPosNormUvTangent[] points = new GorgonVertexPosNormUvTangent[3];
+        GorgonVertexPosNormUvTangent[] vertices = new GorgonVertexPosNormUvTangent[3];
         int[] indices = new int[3];
 
-        points[0] = point1;
-        points[1] = point2;
-        points[2] = point3;
+        vertices[0] = point1;
+        vertices[1] = point2;
+        vertices[2] = point3;
         indices[0] = 0;
         indices[1] = 1;
         indices[2] = 2;
 
-        VertexBuffer = GorgonVertexBuffer.Create<GorgonVertexPosNormUvTangent>(graphics,
-                                                new GorgonVertexBufferInfo(GorgonVertexPosNormUvTangent.SizeInBytes * 3)
-                                                {
-                                                    Name = "TriVB",
-                                                    Usage = ResourceUsage.Immutable
-                                                },
-                                                points);
+        VertexBuffer = GorgonStructuredBufferView.CreateStructuredBuffer<GorgonVertexPosNormUvTangent>(graphics, "Primitive Triangle VB", 3);
+        IndexBuffer = new GorgonIndexBuffer(graphics, "Primitive Triangle IB", new GorgonIndexBufferInfo(3 * sizeof(uint), true));
 
-        IndexBuffer = new GorgonIndexBuffer(graphics,
-                                            new GorgonIndexBufferInfo(3)
-                                            {
-                                                Name = "TriIB",
-                                                Usage = ResourceUsage.Dynamic
-                                            },
-                                            indices);
+        UpdateAabb(vertices);
 
-        UpdateAabb(points);
+        Vertices = vertices;
+        Indices = indices;
     }
 }

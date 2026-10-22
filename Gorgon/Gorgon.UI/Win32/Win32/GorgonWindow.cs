@@ -22,9 +22,13 @@
 // Created: July 12, 2025 12:48:51 AM
 //
 
+using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Threading;
 using Gorgon.Core;
 using Gorgon.Graphics;
 using Gorgon.Math;
@@ -147,15 +151,9 @@ public sealed class GorgonWindow
     private nint _hwnd;
     private int _isDisposing;
     private HINSTANCE _instance;
-    private bool _visible = true;
-    private WindowState _state = WindowState.Normal;
-    private string _caption = string.Empty;
     private nint _icon;
     private GorgonRectangle _bounds;
     private GorgonRectangle? _desiredBounds = null;
-    private WindowBorder _border = WindowBorder.Resizable;
-    private WindowDecorations _decorations = WindowDecorations.All;
-    private bool _topMost;
     private GorgonPoint _clientSize;
     private GorgonWindowProcedure _wndProc;
 
@@ -167,12 +165,12 @@ public sealed class GorgonWindow
     /// <summary>
     /// Property to return whether the window is visible or not.
     /// </summary>
-    public bool IsVisible => _visible;
+    public bool IsVisible { get; private set; } = true;
 
     /// <summary>
     /// Property to return the window caption.
     /// </summary>
-    public string Caption => _caption;
+    public string Caption { get; private set; } = string.Empty;
 
     /// <summary>
     /// Property to return the unique name for this window.
@@ -188,7 +186,7 @@ public sealed class GorgonWindow
     /// <seealso cref="Minimize"/>
     /// <seealso cref="Maximize"/>
     /// <seealso cref="Restore"/>
-    public WindowState State => _state;
+    public WindowState State { get; private set; } = WindowState.Normal;
 
     /// <summary>
     /// Property to return the bounds of the window.
@@ -214,19 +212,22 @@ public sealed class GorgonWindow
     /// Property to return the style of border on the window.
     /// </summary>
     /// <seealso cref="SetBorder"/>
-    public WindowBorder BorderStyle => _border;
+    public WindowBorder BorderStyle { get; private set; } = WindowBorder.Resizable;
 
     /// <summary>
     /// Property to return the window decorations for the window.
     /// </summary>
     /// <see cref="SetDecorations"/>
-    public WindowDecorations Decorations => _decorations;
+    public WindowDecorations Decorations { get; private set; } = WindowDecorations.All;
 
     /// <summary>
     /// Property to return whether the window is always at the top of the window Z-order for non-topmost windows.
     /// </summary>
     /// <seealso cref="SetTopMost"/>
-    public bool IsTopMost => _topMost;
+    public bool IsTopMost
+    {
+        get; private set;
+    }
 
     /// <summary>
     /// Property to return whether this window contains keyboard focus.
@@ -331,22 +332,22 @@ public sealed class GorgonWindow
                     throw new Win32Exception(string.Format(Resources.GOR_ERR_CANNOT_REGISTER_WINDOW, errCode));
                 }
 
-                WINDOW_STYLE style = CalculateStyle(_visible, _border, _decorations);
-                WINDOW_EX_STYLE exStyle = _topMost ? WINDOW_EX_STYLE.WS_EX_TOPMOST : 0;
+                WINDOW_STYLE style = CalculateStyle(IsVisible, BorderStyle, Decorations);
+                WINDOW_EX_STYLE exStyle = IsTopMost ? WINDOW_EX_STYLE.WS_EX_TOPMOST : 0;
                 RECT rect = new(0, 0, _clientSize.X, _clientSize.Y);
 
                 if (_desiredBounds is not null)
                 {
                     _bounds = _desiredBounds.Value;
                 }
-                else if (PInvoke.AdjustWindowRectEx(ref rect, style & ~WINDOW_STYLE.WS_OVERLAPPED, false, _topMost ? WINDOW_EX_STYLE.WS_EX_TOPMOST : 0))
+                else if (PInvoke.AdjustWindowRectEx(ref rect, style & ~WINDOW_STYLE.WS_OVERLAPPED, false, IsTopMost ? WINDOW_EX_STYLE.WS_EX_TOPMOST : 0))
                 {
                     _bounds = new GorgonRectangle(_bounds.X, _bounds.Y, rect.Width, rect.Height);
                 }
 
                 _desiredBounds = null;
 
-                _hwnd = PInvoke.CreateWindowEx(exStyle, Name, _caption, style, _bounds.Left, _bounds.Top, _bounds.Width.Max(0), _bounds.Height.Max(0), HWND.Null, HMENU.Null, _instance, null);
+                _hwnd = PInvoke.CreateWindowEx(exStyle, Name, Caption, style, _bounds.Left, _bounds.Top, _bounds.Width.Max(0), _bounds.Height.Max(0), HWND.Null, HMENU.Null, _instance, null);
 
                 if (_hwnd == IntPtr.Zero)
                 {
@@ -359,12 +360,12 @@ public sealed class GorgonWindow
                 PInvoke.GetClientRect(new HWND(_hwnd), out RECT r);
                 _clientSize = new GorgonPoint(r.Width, r.Height);
 
-                if (_visible)
+                if (IsVisible)
                 {
                     PInvoke.ShowWindow(new HWND(_hwnd), SHOW_WINDOW_CMD.SW_SHOWNORMAL);
                 }
 
-                switch (_state)
+                switch (State)
                 {
                     case WindowState.Maximized:
                         SetState(WindowState.Maximized);
@@ -400,7 +401,7 @@ public sealed class GorgonWindow
             // Handle minimize by keeping our previous size, but setting the state only.
             // This will keep apps from tripping up on weird client sizes/positions.
             case GorgonWindowMessages.WM_SIZE when wParam.Value == 1:
-                proc.Window._state = WindowState.Minimized;
+                proc.Window.State = WindowState.Minimized;
                 break;
             case GorgonWindowMessages.WM_SIZE:
                 // Handle minimized scenario.
@@ -408,11 +409,11 @@ public sealed class GorgonWindow
                 {
                     // Restore.
                     case 0:
-                        proc.Window._state = WindowState.Normal;
+                        proc.Window.State = WindowState.Normal;
                         break;
                     // Maximized.
                     case 2:
-                        proc.Window._state = WindowState.Maximized;
+                        proc.Window.State = WindowState.Maximized;
                         break;
                 }
 
@@ -433,12 +434,7 @@ public sealed class GorgonWindow
         GorgonWindowMessage message = new(proc.Window, (int)msg, wParam, lParam);
         GorgonWindowMessageResult result = proc.WndProc(in message);
 
-        if (result.Handled)
-        {
-            return new LRESULT(result.Result);
-        }
-
-        return PInvoke.DefWindowProc(hwnd, msg, wParam, lParam);
+        return result.Handled ? new LRESULT(result.Result) : PInvoke.DefWindowProc(hwnd, msg, wParam, lParam);
     }
 
     /// <summary>
@@ -448,7 +444,7 @@ public sealed class GorgonWindow
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void SetState(WindowState state)
     {
-        _state = state;
+        State = state;
 
         if (_hwnd != IntPtr.Zero)
         {
@@ -538,12 +534,7 @@ public sealed class GorgonWindow
     {
         CreateWindow();
 
-        if (_hwnd == IntPtr.Zero)
-        {
-            return IntPtr.Zero;
-        }
-
-        return MonitorHandleFromWindow(Handle);
+        return _hwnd == IntPtr.Zero ? nint.Zero : MonitorHandleFromWindow(Handle);
     }
 
     /// <summary>
@@ -564,7 +555,7 @@ public sealed class GorgonWindow
         _desiredBounds = null;
 
         RECT rect = new(0, 0, newSize.X, newSize.Y);
-        if (PInvoke.AdjustWindowRectEx(ref rect, CalculateStyle(_visible, _border, _decorations) & ~WINDOW_STYLE.WS_OVERLAPPED, false, _topMost ? WINDOW_EX_STYLE.WS_EX_TOPMOST : 0))
+        if (PInvoke.AdjustWindowRectEx(ref rect, CalculateStyle(IsVisible, BorderStyle, Decorations) & ~WINDOW_STYLE.WS_OVERLAPPED, false, IsTopMost ? WINDOW_EX_STYLE.WS_EX_TOPMOST : 0))
         {
             _bounds = new GorgonRectangle(_bounds.X, _bounds.Y, rect.Width, rect.Height);
         }
@@ -587,11 +578,11 @@ public sealed class GorgonWindow
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public GorgonWindow SetBorder(WindowBorder border)
     {
-        _border = border;
+        BorderStyle = border;
 
         if (_hwnd != IntPtr.Zero)
         {
-            WINDOW_STYLE style = CalculateStyle(_visible, _border, _decorations);
+            WINDOW_STYLE style = CalculateStyle(IsVisible, BorderStyle, Decorations);
             User32Api.SetWindowAttribute(_hwnd, GwlIndex.GwlStyle, (nint)style);
             UpdateFrame();
         }
@@ -613,11 +604,11 @@ public sealed class GorgonWindow
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public GorgonWindow SetDecorations(WindowDecorations decorations)
     {
-        _decorations = decorations;
+        Decorations = decorations;
 
         if (_hwnd != IntPtr.Zero)
         {
-            WINDOW_STYLE style = CalculateStyle(_visible, _border, _decorations);
+            WINDOW_STYLE style = CalculateStyle(IsVisible, BorderStyle, Decorations);
             User32Api.SetWindowAttribute(_hwnd, GwlIndex.GwlStyle, (nint)style);
             UpdateFrame();
         }
@@ -732,7 +723,7 @@ public sealed class GorgonWindow
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public GorgonWindow SetCaption(string caption)
     {
-        _caption ??= string.Empty;
+        Caption ??= string.Empty;
 
         if (_hwnd != IntPtr.Zero)
         {
@@ -758,13 +749,13 @@ public sealed class GorgonWindow
 
         if (_hwnd == IntPtr.Zero)
         {
-            _visible = true;
+            IsVisible = true;
             return this;
         }
 
         PInvoke.ShowWindow(new HWND(_hwnd), SHOW_WINDOW_CMD.SW_SHOW);
 
-        _visible = true;
+        IsVisible = true;
 
         return this;
     }
@@ -781,7 +772,7 @@ public sealed class GorgonWindow
             PInvoke.ShowWindow(new HWND(_hwnd), SHOW_WINDOW_CMD.SW_HIDE);
         }
 
-        _visible = false;
+        IsVisible = false;
 
         return this;
     }
@@ -794,11 +785,11 @@ public sealed class GorgonWindow
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public GorgonWindow SetTopMost(bool topMost)
     {
-        _topMost = topMost;
+        IsTopMost = topMost;
 
         if (_hwnd != IntPtr.Zero)
         {
-            PInvoke.SetWindowPos(new HWND(_hwnd), _topMost ? HWND.HWND_TOPMOST : HWND.HWND_NOTOPMOST, 0, 0, 0, 0, SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOSIZE);
+            PInvoke.SetWindowPos(new HWND(_hwnd), IsTopMost ? HWND.HWND_TOPMOST : HWND.HWND_NOTOPMOST, 0, 0, 0, 0, SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOSIZE);
         }
 
         return this;
@@ -862,7 +853,7 @@ public sealed class GorgonWindow
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public GorgonWindow SendToBack()
     {
-        if ((_hwnd == IntPtr.Zero) || (_topMost))
+        if ((_hwnd == IntPtr.Zero) || (IsTopMost))
         {
             return this;
         }
@@ -966,13 +957,13 @@ public sealed class GorgonWindow
     {
         ArgumentEmptyException.ThrowIfNullOrWhiteSpace(name);
 
-        _caption = caption ?? string.Empty;
+        Caption = caption ?? string.Empty;
         _clientSize = clientSize;
         _wndProc = wndProc;
         Name = name;
 
         RECT adjustedBounds = new(0, 0, clientSize.X, clientSize.Y);
-        PInvoke.AdjustWindowRectEx(ref adjustedBounds, CalculateStyle(_visible, _border, _decorations) & ~WINDOW_STYLE.WS_OVERLAPPED, false, 0);
+        PInvoke.AdjustWindowRectEx(ref adjustedBounds, CalculateStyle(IsVisible, BorderStyle, Decorations) & ~WINDOW_STYLE.WS_OVERLAPPED, false, 0);
         _bounds = new GorgonRectangle(position.X, position.Y, adjustedBounds.Width, adjustedBounds.Height);
 
         if (icon is null)

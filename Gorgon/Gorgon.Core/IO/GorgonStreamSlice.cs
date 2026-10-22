@@ -22,6 +22,10 @@
 // Created: February 1, 2024 2:27:03 PM
 //
 
+using System;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using Gorgon.Properties;
 
 namespace Gorgon.IO;
@@ -527,7 +531,7 @@ public class GorgonStreamSlice
 
         _parentOffset = parentStream.Position + streamStart;
         _readWrite = allowWrite;
-        _streamLength = streamSize ?? parentStream.Length - _parentOffset;
+        _streamLength = streamSize ?? (parentStream.Length - _parentOffset);
 
         if (_streamLength > parentStream.Length - _parentOffset)
         {

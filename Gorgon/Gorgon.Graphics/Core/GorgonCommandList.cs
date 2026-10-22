@@ -22,24 +22,23 @@
 // Created: October 20, 2025 5:57:46 PM
 //
 
-using System.Buffers;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Numerics;
-using System.Reflection.Metadata.Ecma335;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Intrinsics;
-using Gorgon.Collections;
+using System.Text;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Math;
-using Gorgon.Memory;
 using Gorgon.Native;
 using TerraFX.Interop.DirectX;
 using TerraFX.Interop.Windows;
-using TerraFX.Interop.WinRT;
 using Win32 = TerraFX.Interop.Windows.Windows;
 
 namespace Gorgon.Graphics.Core;
@@ -78,8 +77,6 @@ public sealed unsafe class GorgonCommandList
 {
     private ComPtr<ID3D12GraphicsCommandList10> _list;
     private ComPtr<ID3D12CommandList> _baseList;
-
-    private CommandAllocator? _commandAllocator;
     private string _name;
     private readonly GorgonResourceCopier _resourceCopier;
     private readonly IGorgonResourceWriter _resourceWriter;
@@ -103,28 +100,32 @@ public sealed unsafe class GorgonCommandList
     private readonly MegaBufferPool _megaBuffer;
     private readonly VirtualTextureTilePool _textureTilePool;
     private readonly CpuResourceHeapPool _uploadHeaps;
+    private CpuBufferHeap? _constantHeap;
     private GorgonIndexBuffer? _currentIndexBuffer;
+    private GorgonGraphicsPso? _currentPso;
+    private readonly HashSet<nint> _trackedResources = new(256);
     private ushort _dirtyRootConstants;
     private readonly Queue<List<int>> _queryListIndexPool = [];
     private readonly Dictionary<GorgonQuery, List<int>> _activeQueries = [];
     private readonly Dictionary<GorgonQuery, List<int>> _endedQueries = [];
+    private readonly StringBuilder _nameBuilder = new();
 
     /// <summary>
     /// Property to set or return the allocator associated with the command list.
     /// </summary>
     internal CommandAllocator? Allocator
     {
-        get => _commandAllocator;
+        get;
         private set
         {
-            if (ReferenceEquals(_commandAllocator, value))
+            if (ReferenceEquals(field, value))
             {
                 return;
             }
 
-            _commandAllocator?.HasCommandList = false;
-            _commandAllocator = value;
-            _commandAllocator?.HasCommandList = true;
+            field?.HasCommandList = false;
+            field = value;
+            field?.HasCommandList = true;
         }
     }
 
@@ -219,11 +220,23 @@ public sealed unsafe class GorgonCommandList
         get => _name;
         private set
         {
-            _name = GorgonGraphicsFactory.GenerateName(value, nameof(GorgonCommandList));
+            string name = GorgonGraphicsFactory.GenerateName(value, nameof(GorgonCommandList));
+
+            if (string.Equals(name, _name, StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
+            _name = name;
 
             if (!D3DGraphicsCommandList.IsNull)
             {
-                D3DGraphicsCommandList.SetD3DDebugName($"D3D12 {Queue.Type} '{Name}'");
+                _nameBuilder.Length = 0;
+                _nameBuilder.Append("D3D12 ");
+                _nameBuilder.Append(Queue.Type.ToStringConstant());
+                _nameBuilder.Append(' ');
+                _nameBuilder.Append(_name);
+                D3DGraphicsCommandList.SetD3DDebugName(_nameBuilder.ToString());
             }
         }
     }
@@ -239,9 +252,14 @@ public sealed unsafe class GorgonCommandList
         Graphics.Log.Print($"Creating {nameof(GorgonCommandList)} '{Name}'...", LoggingLevel.Intermediate);
 
         Graphics.D3DDevice.Get()->CreateCommandList1(0, Queue.Type, D3D12_COMMAND_LIST_FLAGS.D3D12_COMMAND_LIST_FLAG_NONE, Win32.__uuidof<ID3D12GraphicsCommandList10>(), (void**)result.GetAddressOf())
-            .ThrowIfFailed(GorgonResult.CannotCreate, () => Resources.GORGFX_ERR_CANNOT_CREATE_COMMAND_LIST);
+            .ThrowIfFailed(GorgonResult.CannotCreate, Resources.GORGFX_ERR_CANNOT_CREATE_COMMAND_LIST);
 
-        result.SetD3DDebugName($"D3D12 {Queue.Type} '{Name}'");
+        _nameBuilder.Length = 0;
+        _nameBuilder.Append("D3D12 ");
+        _nameBuilder.Append(Queue.Type);
+        _nameBuilder.Append(' ');
+        _nameBuilder.Append(_name);
+        result.SetD3DDebugName(_nameBuilder.ToString());
 
         return result;
     }
@@ -270,7 +288,7 @@ public sealed unsafe class GorgonCommandList
             throw new ObjectDisposedException(nameof(GorgonIndexBuffer), string.Format(Resources.GORGFX_ERR_BUFFER_DISPOSED, indexBuffer.Name));
         }
 
-        Queue.Tracker.TrackResource(indexBuffer);
+        TrackResource(indexBuffer);
         SetBarrier(indexBuffer, BarrierSync.IndexInput, BarrierAccess.IndexBuffer);
 
         D3D12_INDEX_BUFFER_VIEW view = new()
@@ -330,7 +348,7 @@ public sealed unsafe class GorgonCommandList
                 throw new ObjectDisposedException(texture.GetType().Name, string.Format(Resources.GORGFX_ERR_BUFFER_DISPOSED, texture.Name));
             }
 
-            Queue.Tracker.TrackResource(texture);
+            TrackResource(texture);
 
             BarrierSync sync = shader.ToSync();
 
@@ -383,7 +401,7 @@ public sealed unsafe class GorgonCommandList
 
                 (GorgonGpuBufferCommon? otherBuffer, ShaderStage otherStage, BufferUsage otherUsage) = buffers[i];
 
-                if (otherBuffer is null)
+                if ((otherBuffer is null) || (otherBuffer.ResourceID != buffer.ResourceID))
                 {
                     continue;
                 }
@@ -429,8 +447,11 @@ public sealed unsafe class GorgonCommandList
             if (!buffer.IsMegaBufferResource)
             {
                 // If this buffer is not from the mega buffer, then just set its barrier as-is.
-                BarrierManager.AddBarrier(buffer, sync, access);
-                Queue.Tracker.TrackResource(buffer);
+                if (BarrierManager.AddBarrier(buffer, sync, access))
+                {
+                    TrackResource(buffer);
+                }
+
                 continue;
             }
 
@@ -455,8 +476,10 @@ public sealed unsafe class GorgonCommandList
             megaSync |= sync;
             megaAccess |= access;
 
-            BarrierManager.AddBarrier(buffer, megaSync, megaAccess);
-            Queue.Tracker.TrackResource(buffer);
+            if (BarrierManager.AddBarrier(buffer, megaSync, megaAccess))
+            {
+                TrackResource(buffer);
+            }
         }
     }
 
@@ -485,6 +508,7 @@ public sealed unsafe class GorgonCommandList
         }
 
         _rtvsChanged = false;
+        _depthStencilChanged = false;
     }
 
     /// <summary>
@@ -497,10 +521,16 @@ public sealed unsafe class GorgonCommandList
         Debug.Assert(!pso.D3DPso.IsNull, $"The pipeline state object '{pso.Name}' no longer has a pointer to a native pipeline state object.");
         ObjectDisposedException.ThrowIf(pso.D3DPso.IsNull, pso);
 
-        Queue.Tracker.TrackResource(pso.D3DPso);
+        if (_currentPso == pso)
+        {
+            return;
+        }
+
+        TrackResource(pso.D3DPso);
 
         _list.Get()->SetPipelineState((PID3D12PipelineState)pso.D3DPso.Get());
         _list.Get()->IASetPrimitiveTopology((D3D_PRIMITIVE_TOPOLOGY)pso.PrimitiveType);
+        _currentPso = pso;
     }
 
     /// <summary>
@@ -572,7 +602,7 @@ public sealed unsafe class GorgonCommandList
             return this;
         }
 
-        Queue.Tracker.TrackResource(depthStencil.Texture);
+        TrackResource(depthStencil.Texture);
         // Every plane of the view is covered: clearing a depth/stencil format writes the stencil plane too.
         GorgonSubResourceRange range = new(depthStencil.MipLevel, 1, depthStencil.ArrayIndex, depthStencil.ArrayCount, 0, Graphics.FormatSupport[depthStencil.Format].PlaneCount);
 
@@ -658,7 +688,7 @@ public sealed unsafe class GorgonCommandList
     {
         SetBarrier(view.Buffer, BarrierSync.ClearReadWriteView, BarrierAccess.ReadWrite, force: true);
 
-        Queue.Tracker.TrackResource(view.Buffer);
+        TrackResource(view.Buffer);
 
         D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle = Graphics.Descriptors.GpuViewDescriptors.D3DGpuHandle;
         gpuHandle.Offset(view.GetViewHandle(), Graphics.Descriptors.GpuViewDescriptors.DescriptorSize);
@@ -691,7 +721,7 @@ public sealed unsafe class GorgonCommandList
         ResetState(Name, Allocator);
 
         // Wait for the next frame to become available.
-        Queue.WaitForFence(Queue.FrameFenceValue[currentFrame], Timeout.Infinite);
+        Queue.WaitForFence(Queue.FrameFenceValue[currentFrame]);
 
         // Signal any resources that are awaiting destruction.
         Queue.Tracker.Signal();
@@ -765,8 +795,44 @@ public sealed unsafe class GorgonCommandList
 
                 D3DGraphicsCommandList.Get()->ResolveQueryData(query.D3DQueryHeap.Get(), (D3D12_QUERY_TYPE)query.QueryType, (uint)sortedIndices[runStart], (uint)(i - runStart), (PID3D12Resource2)query.D3DReadbackBuffer.Get(), (uint)sortedIndices[runStart] * recordSize);
                 runStart = i;
-            }            
+            }
         }
+    }
+
+    /// <summary>
+    /// Function to record a resource used by this command list, so it can be tracked when the list is submitted.
+    /// </summary>
+    /// <typeparam name="T">The type of COM object to track.</typeparam>
+    /// <param name="resource">The resource to track.</param>
+    /// <remarks>
+    /// <para>
+    /// The reference is taken by <see cref="CommitTracking"/>, not here. Taking it here would need a lock and an AddRef (both are locked instructions), and a locked
+    /// instruction flushes the CPU write combining buffers, stalling every upload memory write that follows it in the draw loop.
+    /// </para>
+    /// </remarks>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal void TrackResource<T>(ComPtr<T> resource)
+        where T : unmanaged, IUnknown.Interface
+    {
+        if (resource.IsNull)
+        {
+            return;
+        }
+
+        _trackedResources.Add((nint)resource.Get());
+    }
+
+    /// <inheritdoc cref="TrackResource{T}(ComPtr{T})"/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal void TrackResource(GorgonGpuResource resource) => TrackResource(resource.D3DResource);
+
+    /// <summary>
+    /// Function to hand the resources recorded by this command list to the queue's resource tracker.
+    /// </summary>
+    internal void CommitTracking()
+    {
+        Queue.Tracker.TrackResources(_trackedResources);
+        _trackedResources.Clear();
     }
 
     /// <summary>
@@ -777,7 +843,7 @@ public sealed unsafe class GorgonCommandList
         ResolveCompletedQueries();
 
         _list.Get()->Close()
-            .ThrowIfFailed(GorgonResult.CannotExecute, () => string.Format(Resources.GORGFX_ERR_CANNOT_CLOSE_COMMAND_LIST, Name));
+            .ThrowIfFailed(GorgonResult.CannotExecute, Resources.GORGFX_ERR_CANNOT_CLOSE_COMMAND_LIST, Name);
 
         IsRecording = false;
         Array.Clear(_constantWriteData);
@@ -796,6 +862,9 @@ public sealed unsafe class GorgonCommandList
         Presenters.Clear();
         BarrierManager.Clear();
         _currentIndexBuffer = null;
+        _currentPso = null;
+        _constantHeap = null;
+        _trackedResources.Clear();
         _dirtyRootConstants = 0;
 
         foreach (List<int> indices in _activeQueries.Values)
@@ -826,12 +895,12 @@ public sealed unsafe class GorgonCommandList
 
         // Force the queries to end so the list can be closed without error (and hiding our error).
         int queryCount = _activeQueries.Count;
-        foreach (KeyValuePair<GorgonQuery, List<int>> query in _activeQueries) 
+        foreach (KeyValuePair<GorgonQuery, List<int>> query in _activeQueries)
         {
             for (int i = 0; i < query.Value.Count; ++i)
             {
                 D3DGraphicsCommandList.Get()->EndQuery(query.Key.D3DQueryHeap.Get(), (D3D12_QUERY_TYPE)query.Key.QueryType, (uint)query.Value[i]);
-            }            
+            }
         }
 
         _activeQueries.Clear();
@@ -1105,7 +1174,6 @@ public sealed unsafe class GorgonCommandList
             countOffset = executeCall.Commands.CountersOffset + ((ulong)executeCall.CounterIndex * sizeof(uint));
         }
 
-        Queue.Tracker.TrackResource(executeCall.Commands);
         SetBarrier(executeCall.Commands, BarrierSync.ExecuteIndirect, BarrierAccess.IndirectArgument);
 
         // Apply pending barrier calls.
@@ -1114,12 +1182,12 @@ public sealed unsafe class GorgonCommandList
         ApplyConstantWrites();
         ApplyRenderTargets();
         ApplyPso(executeCall.Pso);
-        ApplyViewSetup();        
+        ApplyViewSetup();
 
         BarrierManager.Submit(this);
 
-        _list.Get()->ExecuteIndirect(executeCall.D3DCommandSignature.Get(), (uint)executeCall.CommandExecutionCount, (PID3D12Resource2)executeCall.Commands.D3DResource.Get(), 
-                                    ((ulong)executeCall.CommandExecutionStartIndex * (uint)executeCall.CommandSizeInBytes) + executeCall.Commands.ResourceOffset, 
+        _list.Get()->ExecuteIndirect(executeCall.D3DCommandSignature.Get(), (uint)executeCall.CommandExecutionCount, (PID3D12Resource2)executeCall.Commands.D3DResource.Get(),
+                                    ((ulong)executeCall.CommandExecutionStartIndex * (uint)executeCall.CommandSizeInBytes) + executeCall.Commands.ResourceOffset,
                                     countBuffer, countOffset);
     }
 
@@ -1155,7 +1223,6 @@ public sealed unsafe class GorgonCommandList
             countOffset = executeCall.Commands.CountersOffset + ((ulong)executeCall.CounterIndex * sizeof(uint));
         }
 
-        Queue.Tracker.TrackResource(executeCall.Commands);
         SetBarrier(executeCall.Commands, BarrierSync.ExecuteIndirect, BarrierAccess.IndirectArgument);
 
         // Apply pending barrier calls.
@@ -1218,8 +1285,8 @@ public sealed unsafe class GorgonCommandList
         }
 
         Presenters.Add((swapChain, interval));
-        Queue.Tracker.TrackResource(swapChain.DXGISwapChain);
-        Queue.Tracker.TrackResource(swapChain.Target.Texture.D3DResource);
+        TrackResource(swapChain.DXGISwapChain);
+        TrackResource(swapChain.Target.Texture.D3DResource);
 
         return this;
     }
@@ -1247,7 +1314,7 @@ public sealed unsafe class GorgonCommandList
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public GorgonCommandList ClearRenderTarget(GorgonSwapChain swapChain, GorgonColor color, IReadOnlyList<GorgonRectangle>? clearRects = null)
     {
-        Queue.Tracker.TrackResource(swapChain.DXGISwapChain);
+        TrackResource(swapChain.DXGISwapChain);
         ClearRenderTarget(swapChain.Target, color, clearRects);
         return this;
     }
@@ -1279,7 +1346,7 @@ public sealed unsafe class GorgonCommandList
         clearRects ??= [];
 
         float* r = &color.Red;
-        Queue.Tracker.TrackResource(renderTarget.Texture);
+        TrackResource(renderTarget.Texture);
 
         if (clearRects.Count == 0)
         {
@@ -1420,7 +1487,7 @@ public sealed unsafe class GorgonCommandList
     {
         SetBarrier(view.Buffer, BarrierSync.ClearReadWriteView, BarrierAccess.ReadWrite, force: true);
 
-        Queue.Tracker.TrackResource(view.Buffer);
+        TrackResource(view.Buffer);
 
         D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle = Graphics.Descriptors.GpuViewDescriptors.D3DGpuHandle;
         gpuHandle.Offset(view.GetViewHandle(), Graphics.Descriptors.GpuViewDescriptors.DescriptorSize);
@@ -1457,7 +1524,7 @@ public sealed unsafe class GorgonCommandList
 
         clearRects ??= [];
 
-        Queue.Tracker.TrackResource(view.Texture);
+        TrackResource(view.Texture);
 
         D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle = Graphics.Descriptors.GpuViewDescriptors.D3DGpuHandle;
         gpuHandle.Offset(view.GetViewHandle(), Graphics.Descriptors.GpuViewDescriptors.DescriptorSize);
@@ -1503,7 +1570,7 @@ public sealed unsafe class GorgonCommandList
 
         clearRects ??= [];
 
-        Queue.Tracker.TrackResource(view.Texture);
+        TrackResource(view.Texture);
 
         D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle = Graphics.Descriptors.GpuViewDescriptors.D3DGpuHandle;
         gpuHandle.Offset(view.GetViewHandle(), Graphics.Descriptors.GpuViewDescriptors.DescriptorSize);
@@ -1581,7 +1648,7 @@ public sealed unsafe class GorgonCommandList
         for (int i = 0; i < textures.Length; ++i)
         {
             GorgonTextureCommon texture = textures[i].Texture;
-            Queue.Tracker.TrackResource(texture);
+            TrackResource(texture);
             SetBarrier(texture, BarrierSync.None, BarrierAccess.None, BarrierLayout.Common);
         }
 
@@ -1992,7 +2059,10 @@ public sealed unsafe class GorgonCommandList
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public GorgonCommandList SetBarrier(GorgonGpuBufferCommon buffer, BarrierSync sync, BarrierAccess access, bool force = false)
     {
-        BarrierManager.AddBarrier(buffer, sync, access);
+        if (BarrierManager.AddBarrier(buffer, sync, access))
+        {
+            TrackResource(buffer);
+        }
 
         if ((force) && (!BarrierManager.IsEmpty))
         {
@@ -2085,10 +2155,16 @@ public sealed unsafe class GorgonCommandList
 
         nuint typeSize = (nuint)Unsafe.SizeOf<T>();
 
-        _uploadHeaps.Allocate(typeSize, D3D12.D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT, out CpuBufferAllocation allocation);
-        Debug.Assert(allocation.IsAvailable, "Allocation for constant write is not valid.");
+        ulong size = ((ulong)typeSize).AlignUp((ulong)D3D12.D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
 
-        Queue.Tracker.TrackResource(allocation.Heap.D3DResource);
+        if ((_constantHeap is null) || (!_constantHeap.CanFit(size, D3D12.D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT)))
+        {
+            _constantHeap = _uploadHeaps.Rent(size);
+            TrackResource(_constantHeap.D3DResource);
+        }
+
+        _constantHeap.Allocate(size, D3D12.D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT, out CpuBufferAllocation allocation);
+        Debug.Assert(allocation.IsAvailable, "Allocation for constant write is not valid.");
 
         fixed (T* src = &data)
         {
@@ -2166,8 +2242,8 @@ public sealed unsafe class GorgonCommandList
             throw new ArgumentException(string.Format(Resources.GORGFX_ERR_BUFFER_OVERRUN, offset, upload.SizeInBytes, buffer.SizeInBytes));
         }
 
-        Queue.Tracker.TrackResource(upload.Allocation.Heap.D3DResource);
-        Queue.Tracker.TrackResource(buffer);
+        TrackResource(upload.Allocation.Heap.D3DResource);
+        TrackResource(buffer);
 
         SetBarrier(buffer, BarrierSync.Copy, BarrierAccess.CopyDestination, true);
         D3DGraphicsCommandList.Get()->CopyBufferRegion((PID3D12Resource2)buffer.D3DResource.Get(), buffer.ResourceOffset + (ulong)offset, (PID3D12Resource2)upload.Allocation.Heap.D3DResource.Get(), upload.Allocation.Offset, (ulong)upload.SizeInBytes);
@@ -2362,7 +2438,7 @@ public sealed unsafe class GorgonCommandList
 
         if (renderTarget is not null)
         {
-            Queue.Tracker.TrackResource(renderTarget.Resource);
+            TrackResource(renderTarget.Resource);
 
             GorgonSubResourceRange range = new(renderTarget.MipLevel, 1, renderTarget.ArrayIndex, renderTarget.ArrayCount, renderTarget.PlaneIndex, 1);
             SetBarrier(renderTarget.Texture, BarrierSync.RenderTarget, BarrierAccess.RenderTarget, BarrierLayout.RenderTarget, range);
@@ -2378,7 +2454,7 @@ public sealed unsafe class GorgonCommandList
 
         if (depthStencil is not null)
         {
-            Queue.Tracker.TrackResource(depthStencil.Resource);
+            TrackResource(depthStencil.Resource);
 
             GorgonSubResourceRange range = new(depthStencil.MipLevel, 1, depthStencil.ArrayIndex, depthStencil.ArrayCount, 0, Graphics.FormatSupport[depthStencil.Format].PlaneCount);
             SetBarrier(depthStencil.Texture, BarrierSync.DepthStencil, BarrierAccess.DepthStencilWrite, BarrierLayout.DepthStencilWrite, range);
@@ -2423,7 +2499,7 @@ public sealed unsafe class GorgonCommandList
         {
             GorgonRenderTargetView view = _renderTargetViews[i] = renderTargets[i];
 
-            Queue.Tracker.TrackResource(view.Resource);
+            TrackResource(view.Resource);
             _d3dRtvs[i] = view.GetCpuHandle();
 
             GorgonSubResourceRange range = new(view.MipLevel, 1, view.ArrayIndex, view.ArrayCount, view.PlaneIndex, 1);
@@ -2432,7 +2508,7 @@ public sealed unsafe class GorgonCommandList
 
         if (depthStencil is not null)
         {
-            Queue.Tracker.TrackResource(depthStencil.Resource);
+            TrackResource(depthStencil.Resource);
 
             GorgonSubResourceRange range = new(depthStencil.MipLevel, 1, depthStencil.ArrayIndex, depthStencil.ArrayCount, 0, Graphics.FormatSupport[depthStencil.Format].PlaneCount);
             SetBarrier(depthStencil.Texture, BarrierSync.DepthStencil, BarrierAccess.DepthStencilWrite, BarrierLayout.DepthStencilWrite, range);
@@ -2613,7 +2689,7 @@ public sealed unsafe class GorgonCommandList
             throw new ArgumentException(string.Format(Resources.GORGFX_ERR_BUFFER_OVERRUN, recordIndex, recordCount, query.MaximumRecordCount));
         }
 
-        if (destinationOffset + recordCount * recordSize > buffer.SizeInBytes)
+        if (destinationOffset + (recordCount * recordSize) > buffer.SizeInBytes)
         {
             throw new ArgumentException(string.Format(Resources.GORGFX_ERR_BUFFER_OVERRUN, destinationOffset, recordCount * recordSize, buffer.SizeInBytes));
         }
@@ -2642,7 +2718,7 @@ public sealed unsafe class GorgonCommandList
             _queryListIndexPool.Enqueue(indices);
         }
 
-        Queue.Tracker.TrackResource(buffer);
+        TrackResource(buffer);
         SetBarrier(buffer, BarrierSync.Copy, BarrierAccess.CopyDestination, true);
 
         D3DGraphicsCommandList.Get()->ResolveQueryData(query.D3DQueryHeap.Get(), (D3D12_QUERY_TYPE)query.QueryType, (uint)recordIndex, (uint)recordCount, (PID3D12Resource2)buffer.D3DResource.Get(), buffer.ResourceOffset + (ulong)destinationOffset);
@@ -2729,7 +2805,7 @@ public sealed unsafe class GorgonCommandList
             throw new ArgumentException(string.Format(Resources.GORGFX_ERR_BUFFER_OVERRUN, offset, sizeof(ulong), buffer.SizeInBytes));
         }
 
-        Queue.Tracker.TrackResource(buffer);
+        TrackResource(buffer);
         SetBarrier(buffer, BarrierSync.ExecuteIndirect, BarrierAccess.IndirectArgument, true);
 
         D3DGraphicsCommandList.Get()->SetPredication((PID3D12Resource2)buffer.D3DResource.Get(), buffer.ResourceOffset + (ulong)offset, (D3D12_PREDICATION_OP)operation);

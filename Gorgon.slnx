@@ -32,8 +32,14 @@
   <Folder Name="/Examples/Gorgon.Graphics/">
     <Project Path="Examples/Gorgon.Graphics/Boinger/Boinger.csproj" />
     <Project Path="Examples/Gorgon.Graphics/CodecPlugIn/CodecPlugIn.csproj" />
+    <Project Path="Examples/Gorgon.Graphics/GeometryShaders/GeometryShaders.csproj" />
+    <Project Path="Examples/Gorgon.Graphics/GlassCube/GlassCube.csproj" />
+    <Project Path="Examples/Gorgon.Graphics/Gorgon.MiniTri.Texture/Gorgon.MiniTri.Texture.csproj" />
+    <Project Path="Examples/Gorgon.Graphics/Gorgon.MiniTri/Gorgon.MiniTri.csproj" />
     <Project Path="Examples/Gorgon.Graphics/Images/Images.csproj" />
+    <Project Path="Examples/Gorgon.Graphics/IndirectCube/IndirectCube.csproj" />
     <Project Path="Examples/Gorgon.Graphics/Initialization/Initialization.csproj" />
+    <Project Path="Examples/Gorgon.Graphics/Primitives/Primitives.csproj" />
   </Folder>
   <Folder Name="/Examples/Gorgon.Input/">
     <Project Path="Examples/Gorgon.Input/Input/Input.csproj" />
@@ -70,7 +76,13 @@
     <Project Path="Test/Gorgon.Graphics.Imaging.Tests/Gorgon.Graphics.Imaging.Tests.csproj" />
   </Folder>
   <Folder Name="/Tools/" />
-  <Folder Name="/__Experiments__/" />
+  <Folder Name="/__Experiments__/">
+    <Project Path="Test/Experimental/DrawStress12/DrawStress12.csproj" />
+    <Project Path="Test/Experimental/Gorgon.D3D12.RulesTest/Gorgon.D3D12.RulesTest.csproj" />
+    <Project Path="Test/Experimental/Gorgon.Graphics.TestApp/Gorgon.Graphics.TestApp.csproj" />
+    <Project Path="Test/Experimental/GraphicsCoreFunctions/GraphicsCoreFunctions.csproj" />
+    <Project Path="Test/Experimental/ImagingFunctions/ImagingFunctions.csproj" />
+  </Folder>
   <Project Path="Gorgon/Gorgon.Core.Windows/Gorgon.Core.Windows.csproj" />
   <Project Path="Gorgon/Gorgon.Core/Gorgon.Core.csproj" />
   <Project Path="Gorgon/Gorgon.Graphics/Core/Gorgon.Graphics.Core.csproj" />

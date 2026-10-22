@@ -24,6 +24,7 @@
 // Created: Wednesday, September 16, 2015 11:20:25 PM
 // 
 
+using System;
 using Gorgon.Graphics;
 
 namespace Gorgon.Input.Devices;

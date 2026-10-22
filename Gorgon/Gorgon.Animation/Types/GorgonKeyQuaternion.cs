@@ -23,7 +23,16 @@
 // Created: Wednesday, October 3, 2012 9:13:59 PM
 // 
 
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Net.Http;
 using System.Numerics;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace Gorgon.Animation;
 

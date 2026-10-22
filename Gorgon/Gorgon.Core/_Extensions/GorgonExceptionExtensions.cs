@@ -23,9 +23,11 @@
 // Created: Thursday, May 21, 2015 1:16:41 AM
 // 
 
+using System;
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using System.Text;
 using Gorgon.Collections;
 using Gorgon.Diagnostics;
 using Gorgon.Properties;

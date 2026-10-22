@@ -24,9 +24,15 @@
 // Created: Thursday, January 17, 2013 11:07:02 PM
 // 
 
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
+using System.IO;
+using System.Linq;
 using System.Text;
+using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.IO.FileSystem;
 using Gorgon.IO.FileSystem.Providers;
@@ -284,14 +290,7 @@ public partial class Form
                 // The VFS does not care if the data is in a zip file or folder, and Gorgon
                 // does very little to differentiate it.  After all, the whole point of
                 // have a unified file system is to abstract away the differences.
-                if (subDirectory.Name != "ZipFile")
-                {
-                    directoryNode.SelectedImageIndex = directoryNode.ImageIndex = 0;
-                }
-                else
-                {
-                    directoryNode.SelectedImageIndex = directoryNode.ImageIndex = 2;
-                }
+                directoryNode.SelectedImageIndex = subDirectory.Name != "ZipFile" ? (directoryNode.ImageIndex = 0) : (directoryNode.ImageIndex = 2);
 
                 // Add a dummy node if there are files or sub directories.
                 if ((subDirectory.Directories.Count > 0) || (subDirectory.Files.Count() > 0))

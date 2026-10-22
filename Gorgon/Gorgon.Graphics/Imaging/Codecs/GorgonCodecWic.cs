@@ -24,6 +24,10 @@
 // Created: June 27, 2016 7:53:02 PM
 // 
 
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using Gorgon.Configuration;
 using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Properties;

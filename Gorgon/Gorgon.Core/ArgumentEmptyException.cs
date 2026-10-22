@@ -24,6 +24,8 @@
 // Created: April 26, 2017 12:46:08 PM
 // 
 
+using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Gorgon.Native;
 using Gorgon.Properties;

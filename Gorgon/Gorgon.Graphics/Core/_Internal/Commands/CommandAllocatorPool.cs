@@ -22,14 +22,14 @@
 // Created: October 20, 2025 5:51:04 PM
 //
 
-using System.Diagnostics;
-using System.Runtime.CompilerServices;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
-using TerraFX.Interop.DirectX;
 using TerraFX.Interop.Windows;
-using Win32 = TerraFX.Interop.Windows.Windows;
 
 namespace Gorgon.Graphics.Core;
 
@@ -59,10 +59,10 @@ internal unsafe sealed class CommandAllocatorPool(CommandQueue queue)
                 while (_inUse.Count > 0)
                 {
                     Release();
-                }                
+                }
 
                 foreach (CommandAllocator allocator in _free.Concat(_active))
-                {                    
+                {
                     allocator.Dispose();
                 }
 
@@ -87,14 +87,14 @@ internal unsafe sealed class CommandAllocatorPool(CommandQueue queue)
 
         ulong completed = _queue.D3DFence.Get()->GetCompletedValue();
 
-        while(_inUse.TryPeek(out CommandAllocator? allocator))
+        while (_inUse.TryPeek(out CommandAllocator? allocator))
         {
             if (completed < allocator.Fence)
             {
                 break;
             }
 
-            _inUse.Dequeue();            
+            _inUse.Dequeue();
             _free.Add(allocator);
         }
     }
@@ -112,7 +112,7 @@ internal unsafe sealed class CommandAllocatorPool(CommandQueue queue)
     /// <param name="name">The name of the command allocator.</param>
     /// <returns>The command allocator.</returns>
     public CommandAllocator Get(string name)
-    {   
+    {
         using (_lock.EnterScope())
         {
             CommandAllocator? allocator = null;
@@ -137,8 +137,12 @@ internal unsafe sealed class CommandAllocatorPool(CommandQueue queue)
                 _active.Add(allocator);
             }
 
-            allocator.D3DAllocator.Get()->Reset()
-                .ThrowIfFailed(GorgonResult.CannotInitialize, () => Resources.GORGFX_ERR_CANNOT_RESET_CMD_ALLOCATOR);
+            HRESULT err = allocator.D3DAllocator.Get()->Reset();
+
+            if (err.FAILED)
+            {
+                err.ThrowIfFailed(GorgonResult.CannotInitialize, Resources.GORGFX_ERR_CANNOT_RESET_CMD_ALLOCATOR);
+            }
 
             return allocator;
         }

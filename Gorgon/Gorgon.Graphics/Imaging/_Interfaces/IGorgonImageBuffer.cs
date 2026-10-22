@@ -24,6 +24,7 @@
 // Created: June 29, 2016 9:43:51 PM
 // 
 
+using System;
 using Gorgon.Core;
 using Gorgon.Native;
 

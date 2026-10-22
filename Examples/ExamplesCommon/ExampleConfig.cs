@@ -24,6 +24,8 @@
 // Created: February 7, 2021 12:31:53 AM
 // 
 
+using System;
+using System.IO;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
@@ -36,8 +38,8 @@ namespace Gorgon.Examples;
 /// Configuration information for the example application
 /// </summary>
 public class ExampleConfig
-{    
-    private readonly static Lazy<ExampleConfig> _default;    
+{
+    private readonly static Lazy<ExampleConfig> _default;
 
     // Options used to deserialize a JSON string.
     private static readonly JsonSerializerOptions _jsonOptions = new()
@@ -59,12 +61,9 @@ public class ExampleConfig
 
         JsonObject? result = JsonSerializer.Deserialize<JsonObject>(configJson, _jsonOptions);
 
-        if ((result is null) || (result.Count != 1))
-        {
-            return new ExampleConfig();
-        }
-
-        return result[0].Deserialize<ExampleConfig>(_jsonOptions) ?? new ExampleConfig();
+        return (result is null) || (result.Count != 1)
+            ? new ExampleConfig()
+            : result[0].Deserialize<ExampleConfig>(_jsonOptions) ?? new ExampleConfig();
     }
 
     /// <summary>

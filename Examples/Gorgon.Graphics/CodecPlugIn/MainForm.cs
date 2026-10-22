@@ -24,8 +24,12 @@
 // Created: March 5, 2017 10:33:01 PM
 // 
 
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Numerics;
+using System.Windows.Forms;
 using Gorgon.Examples;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
@@ -273,7 +277,7 @@ public partial class MainForm : Form
             // Load the image to use as a texture.
             IGorgonImageCodec png = new GorgonCodecPng();
             _image = png.FromFile(Path.Combine(GorgonExample.GetResourcePath(@"Textures\CodecPlugIn\").FullName, "SourceTexture.png"));
-                        
+
             GorgonExample.LoadResources(_graphics);
 
             ConvertImage();

@@ -22,6 +22,8 @@
 // Created: January 8, 2025 9:37:51 PM
 //
 
+using System;
+using System.Collections.Generic;
 using Gorgon.Input.Devices;
 
 namespace Gorgon.Input;

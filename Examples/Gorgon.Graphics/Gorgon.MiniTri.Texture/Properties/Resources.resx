@@ -117,56 +117,8 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="MiniTriShaders" xml:space="preserve">
-    <value>// This is the reference to our texture that we've loaded.
-// Note how it has a "t0" register.  This means that the texture is expected to be 
-// located in slot 0, and as such, on the C# side we must ensure that our texture 
-// is also bound to slot 0.
-Texture2D _texture : register(t0);
-// This is a reference to our texture sampler information.
-// Like the texture, it too must be assigned to a register slot.
-SamplerState _sampler : register(s0);
-
-
-// The transformation matrices combined together.
-//
-// This is a combination of a World transform (the position, scale and rotation of a vertex mesh), View transform (the camera position, 
-// scale, and rotation), and the Projection transform (transforms 3D space into 2D space).
-// 
-// This is a Matrix4x4 on the C# side, and is transferred via a constant buffer.
-cbuffer WorldViewProjection : register(b0)
-{
-	float4x4 WVP;
-}
-
-// The shader replication of our MiniTri vertex.
-// Note that the semantics at the end of each element matches that of our definition in C#.
-struct MiniTriVertex
-{
-   float4 position : SV_POSITION;
-   float2 uv : TEX_COORD;
-};
-
-
-// Our vertex shader.
-// This transforms a vertex from object space into world space by multiplying it by the World/View/Projection matrix passed to the shader.
-MiniTriVertex MiniTriVS(MiniTriVertex vertex)
-{
-	MiniTriVertex output = vertex;
-
-	// Transform from object space into world space by multiplying the vertex position by the world/view/projection matrix.
-	output.position = mul(WVP, output.position);
-
-	return output;
-}
-
-// Our pixel shader.
-// This applies coloring (shading) to the pixel that is currently rendering on the GPU.
-// For this example, our output is very simple.  We just return the color of the vertex.  In more complex examples we could sample from 
-// a texture, performing per-pixel lighting, etc...
-float4 MiniTriPS(MiniTriVertex vertex) : SV_Target
-{
-	return _texture.Sample(_sampler, vertex.uv);;
-}</value>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="MiniTriShaders" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Minitri.hlsl;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
 </root>

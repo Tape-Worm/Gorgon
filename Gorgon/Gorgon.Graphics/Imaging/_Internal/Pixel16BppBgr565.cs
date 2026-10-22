@@ -47,7 +47,7 @@ internal sealed class Pixel16BppBgr565
         uint g = (uint)(color.Green * 63.0f) & 0x3f;
         uint b = (uint)(color.Blue * 31.0f) & 0x1f;
 
-        return (ushort)(r << 11 | g << 5 | b);
+        return (ushort)((r << 11) | (g << 5) | b);
     }
 
     /// <inheritdoc/>

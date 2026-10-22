@@ -26,19 +26,14 @@ using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Reflection.Metadata.Ecma335;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Text;
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Math;
 using Gorgon.Memory;
-using Gorgon.Native;
-using Gorgon.Timing;
 using TerraFX.Interop.DirectX;
-using TerraFX.Interop.Windows;
-using DX = TerraFX.Interop.DirectX.DirectX;
 
 namespace Gorgon.Graphics.Core;
 
@@ -127,15 +122,7 @@ internal unsafe class BarrierManager(GorgonGraphics graphics)
     /// Function to allocate a new sub resource list for a texture barrier.
     /// </summary>
     /// <returns>The texture barrier from the pool, or if none are available, a new list.</returns>
-    private List<TextureBarrierEntry> AllocateList()
-    {
-        if (!_listPool.TryPop(out List<TextureBarrierEntry>? result))
-        {
-            return [];
-        }
-
-        return result;
-    }
+    private List<TextureBarrierEntry> AllocateList() => !_listPool.TryPop(out List<TextureBarrierEntry>? result) ? [] : result;
 
     /// <summary>
     /// Function to deallocate a list of barriers and their sub resource lists.
@@ -455,7 +442,7 @@ internal unsafe class BarrierManager(GorgonGraphics graphics)
                 {
                     ref readonly TextureBarrierEntry currentEntry = ref current[j];
 
-                    if ((currentEntry.Barrier.Equals(pendingEntry.Barrier)) && ((pendingEntry.Barrier.Access & WriteAccessMask) == BarrierAccess.None))
+                    if ((currentEntry.Barrier.Equals(pendingEntry.Barrier)) && ((pendingEntry.Barrier.Access & WriteAccessMask) == BarrierAccess.Common))
                     {
                         continue;
                     }
@@ -491,7 +478,8 @@ internal unsafe class BarrierManager(GorgonGraphics graphics)
     /// <param name="buffer">The buffer resource to set a barrier on.</param>
     /// <param name="sync">The resource synchronization value.</param>
     /// <param name="access">The resource access level.</param>
-    public void AddBarrier(GorgonGpuBufferCommon buffer, BarrierSync sync, BarrierAccess access)
+    /// <returns><b>true</b> if this is the first barrier for the buffer on the command list, <b>false</b> if the buffer already has a barrier on the command list.</returns>
+    public bool AddBarrier(GorgonGpuBufferCommon buffer, BarrierSync sync, BarrierAccess access)
     {
         GorgonBufferBarrier newBarrier = new(buffer, sync, access);
 
@@ -501,17 +489,18 @@ internal unsafe class BarrierManager(GorgonGraphics graphics)
         {
             current = newBarrier;
             _initialBuffers[buffer.ResourceID] = newBarrier;
-            return;
+            return true;
         }
 
         // Redundant state. Writes are never redundant: the barrier makes later work wait for the write.
-        if ((current.Equals(newBarrier)) && ((access & WriteAccessMask) == BarrierAccess.None))
+        if ((current.Equals(newBarrier)) && ((access & WriteAccessMask) == BarrierAccess.Common))
         {
             _pendingBuffers.Remove(buffer.ResourceID);
-            return;
+            return false;
         }
 
         _pendingBuffers[buffer.ResourceID] = newBarrier;
+        return false;
     }
 
     /// <summary>
@@ -544,7 +533,7 @@ internal unsafe class BarrierManager(GorgonGraphics graphics)
         {
             pending.Clear();
 
-            if ((current.Length == 1) && (current[0].Barrier.Equals(newBarrier)) && ((newBarrier.Access & WriteAccessMask) == BarrierAccess.None))
+            if ((current.Length == 1) && (current[0].Barrier.Equals(newBarrier)) && ((newBarrier.Access & WriteAccessMask) == BarrierAccess.Common))
             {
                 return;
             }
@@ -642,7 +631,7 @@ internal unsafe class BarrierManager(GorgonGraphics graphics)
                     BarrierSync sync = barriers.IsEmpty ? BarrierSync.None : barriers[0].Sync;
                     BarrierAccess access = barriers.IsEmpty ? BarrierAccess.None : barriers[0].Access;
 
-                    if ((sync == bufferBarrier.Value.Sync) && (access == bufferBarrier.Value.Access) && ((access & WriteAccessMask) == BarrierAccess.None))
+                    if ((sync == bufferBarrier.Value.Sync) && (access == bufferBarrier.Value.Access) && ((access & WriteAccessMask) == BarrierAccess.Common))
                     {
                         continue;
                     }
@@ -681,7 +670,7 @@ internal unsafe class BarrierManager(GorgonGraphics graphics)
                         }
 
                         if ((barrier.Sync == textureBarrier.Value.Sync) && (barrier.Access == textureBarrier.Value.Access) && (barrier.Layout == textureBarrier.Value.Layout)
-                            && ((barrier.Access & WriteAccessMask) == BarrierAccess.None))
+                            && ((barrier.Access & WriteAccessMask) == BarrierAccess.Common))
                         {
                             continue;
                         }

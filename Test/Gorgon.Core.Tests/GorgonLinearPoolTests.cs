@@ -18,10 +18,10 @@ public class GorgonLinearPoolTests
         GorgonLinearPool<string> pool = new(poolSize, () => "Test");
         for (int i = 0; i < poolSize; i++)
         {
-            pool.Allocate();
+            _ = pool.Allocate();
         }
         // Now the pool is full, the next allocation should throw an exception.
-        Assert.ThrowsExactly<GorgonException>(() => _ = pool.Allocate());
+        _ = Assert.ThrowsExactly<GorgonException>(() => _ = pool.Allocate());
     }
 
     [TestMethod]
@@ -104,7 +104,7 @@ public class GorgonLinearPoolTests
     public void ShouldThrowWhenItemAllocatorReturnsNull()
     {
         GorgonLinearPool<string> pool = new(1, () => null!);
-        Assert.ThrowsExactly<GorgonException>(() => _ = pool.Allocate());
+        _ = Assert.ThrowsExactly<GorgonException>(() => _ = pool.Allocate());
     }
 
     private sealed class DisposableObject : IDisposable

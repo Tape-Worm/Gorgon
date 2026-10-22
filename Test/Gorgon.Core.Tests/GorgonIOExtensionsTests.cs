@@ -169,7 +169,7 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
         using MemoryStream destinationStream = new([], false); // Read-only stream
 
         // Act & Assert
-        Assert.ThrowsExactly<ArgumentException>(() => _ = sourceStream.CopyToStream(destinationStream, testData.Length));
+        _ = Assert.ThrowsExactly<ArgumentException>(() => _ = sourceStream.CopyToStream(destinationStream, testData.Length));
     }
 
     [TestMethod]
@@ -235,7 +235,7 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
         using MemoryStream destinationStream = new([], false); // Read-only stream
 
         // Act & Assert
-        await Assert.ThrowsExactlyAsync<ArgumentException>(() => sourceStream.CopyToStreamAsync(destinationStream, testData.Length));
+        _ = await Assert.ThrowsExactlyAsync<ArgumentException>(() => sourceStream.CopyToStreamAsync(destinationStream, testData.Length));
     }
 
     [TestMethod]
@@ -247,7 +247,7 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
         using MemoryStream destinationStream = new();
 
         // Act & Assert
-        await Assert.ThrowsExactlyAsync<ArgumentException>(() => sourceStream.CopyToStreamAsync(destinationStream, testData.Length, 0));
+        _ = await Assert.ThrowsExactlyAsync<ArgumentException>(() => sourceStream.CopyToStreamAsync(destinationStream, testData.Length, 0));
     }
 
     /* This test is disabled because we can't reliably test cancellation in a unit test.
@@ -346,7 +346,7 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
             GorgonPtr<byte> destBuffer = new(pBuffer, buffer.Length);
 
             // Act & Assert
-            Assert.ThrowsExactly<EndOfStreamException>(() => reader.ReadToPointer(destBuffer));
+            _ = Assert.ThrowsExactly<EndOfStreamException>(() => reader.ReadToPointer(destBuffer));
         }
     }
 
@@ -360,7 +360,7 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
         GorgonPtr<byte> nullPointer = GorgonPtr<byte>.NullPtr;
 
         // Act & Assert
-        Assert.ThrowsExactly<NullReferenceException>(() => reader.ReadToPointer(nullPointer));
+        _ = Assert.ThrowsExactly<NullReferenceException>(() => reader.ReadToPointer(nullPointer));
     }
 
     [TestMethod]
@@ -393,7 +393,7 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
         using BinaryReader reader = new(stream);
 
         // Act & Assert
-        Assert.ThrowsExactly<EndOfStreamException>(() => reader.ReadValue<GorgonPoint>(out _));
+        _ = Assert.ThrowsExactly<EndOfStreamException>(() => reader.ReadValue<GorgonPoint>(out _));
     }
 
     [TestMethod]
@@ -471,7 +471,7 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
         GorgonPoint[] result = [];
 
         // Act & Assert
-        Assert.ThrowsExactly<ArgumentEmptyException>(() => reader.ReadRange(result));
+        _ = Assert.ThrowsExactly<ArgumentEmptyException>(() => reader.ReadRange(result));
     }
 
     [TestMethod]
@@ -501,7 +501,7 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
         using MemoryStream stream = new(new byte[100], false); // Write-only stream.
 
         // Act & Assert
-        Assert.ThrowsExactly<IOException>(() => _ = stream.WriteString(data));
+        _ = Assert.ThrowsExactly<IOException>(() => _ = stream.WriteString(data));
     }
 
     [TestMethod]
@@ -565,7 +565,7 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
 
         Encoding encoding = Encoding.UTF8;
         using MemoryStream stream = new();
-        stream.WriteString(LoremIpsum, encoding);
+        _ = stream.WriteString(LoremIpsum, encoding);
         stream.Position = 0;
 
         using BinaryReader reader = new(stream, encoding); // leaveOpen is set to true.
@@ -582,7 +582,7 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
 
         Encoding encoding = Encoding.Unicode;
         using MemoryStream stream = new();
-        stream.WriteString(LoremIpsum, encoding);
+        _ = stream.WriteString(LoremIpsum, encoding);
         stream.Position = 0;
 
         using BinaryReader reader = new(stream, encoding); // leaveOpen is set to true.
@@ -599,7 +599,7 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
         using MemoryStream stream = new();
 
         // Act & Assert
-        Assert.ThrowsExactly<IOException>(() => _ = stream.ReadString());
+        _ = Assert.ThrowsExactly<IOException>(() => _ = stream.ReadString());
     }
 
     [TestMethod]
@@ -880,7 +880,7 @@ Massa massa ultricies mi quis hendrerit dolor magna eget. Libero enim sed faucib
     public void ChunkIDEmptyInputThrowsArgumentEmptyException()
     {
         string chunkName = string.Empty;
-        Assert.ThrowsExactly<ArgumentEmptyException>(() => _ = chunkName.ChunkID());
+        _ = Assert.ThrowsExactly<ArgumentEmptyException>(() => _ = chunkName.ChunkID());
     }
 
     [TestMethod]

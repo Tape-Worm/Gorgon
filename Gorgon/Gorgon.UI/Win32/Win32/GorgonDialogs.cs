@@ -23,6 +23,7 @@
 // Created: Saturday, June 18, 2011 4:20:00 PM
 // 
 
+using System;
 using Gorgon.UI.Win32.Properties;
 using Windows.Win32;
 using Windows.Win32.Foundation;

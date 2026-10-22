@@ -25,9 +25,8 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Text;
+using System.Threading;
 using TerraFX.Interop.DirectX;
 
 namespace Gorgon.Graphics.Core;
@@ -76,12 +75,7 @@ internal class GlobalBarrierState
         ref readonly GlobalBarrier barrier = ref barriers[barrierIndex];
 
         // This means not initialized.
-        if (barrier.Barriers is null)
-        {
-            return ref GlobalBarrier.Default;
-        }
-
-        return ref barrier;            
+        return ref barrier.Barriers is null ? ref GlobalBarrier.Default : ref barrier;
     }
 
     /// <summary>

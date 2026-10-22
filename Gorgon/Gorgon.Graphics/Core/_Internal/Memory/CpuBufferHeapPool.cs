@@ -25,16 +25,12 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Numerics;
-using System.Text;
-using Gorgon.Core;
+using System.Threading;
 using Gorgon.Diagnostics;
-using Gorgon.Graphics.Core.Properties;
 using Gorgon.Math;
 using Gorgon.Native;
-using TerraFX.Interop.DirectX;
-using TerraFX.Interop.Windows;
-using Win32 = TerraFX.Interop.Windows.Windows;
 
 namespace Gorgon.Graphics.Core;
 
@@ -52,6 +48,7 @@ internal unsafe sealed class CpuResourceHeapPool(GorgonGraphics graphics, bool i
     private readonly Queue<CpuBufferHeap> _inUse = new(128);
     private readonly List<CpuBufferHeap> _free = new(128);
     private readonly List<CpuBufferHeap> _active = new(128);
+    private readonly List<CpuBufferHeap> _rented = new(128);
     private readonly bool _isDownload = isDownload;
     private CpuBufferHeap? _lastHeap;
 
@@ -68,20 +65,17 @@ internal unsafe sealed class CpuResourceHeapPool(GorgonGraphics graphics, bool i
     {
         if (disposing)
         {
-            Graphics.WaitForGpu(GorgonGraphics.WaitFenceTimeout);
-
-            // Wait for the GPU to finish with our heaps.
-            while(_inUse.Count > 0)
+            while (_inUse.Count > 0)
             {
                 Release();
             }
 
-            foreach (CpuBufferHeap heap in _free.Concat(_active))
+            foreach (CpuBufferHeap heap in _free.Concat(_active).Concat(_rented))
             {
                 heap.Dispose();
             }
 
-            Graphics.Log.Print($"Freed {_free.Count + _active.Count} dynamic resource heaps from the pool.", LoggingLevel.Intermediate);
+            Graphics.Log.Print($"Freed {_free.Count + _active.Count + _rented.Count} dynamic resource heaps from the pool.", LoggingLevel.Intermediate);
 
             _lastHeap = null;
         }
@@ -101,7 +95,7 @@ internal unsafe sealed class CpuResourceHeapPool(GorgonGraphics graphics, bool i
         ulong computeCompleted = Graphics.Queues.ComputeQueue.D3DFence.Get()->GetCompletedValue();
         ulong copyCompleted = Graphics.Queues.CopyQueue.D3DFence.Get()->GetCompletedValue();
 
-        while(_inUse.TryPeek(out CpuBufferHeap? heap))
+        while (_inUse.TryPeek(out CpuBufferHeap? heap))
         {
             Debug.Assert(heap.GfxFence != 0 || heap.ComputeFence != 0 || heap.CopyFence != 0, "The heap does not have a valid fence value. Cannot safely remove this heap.");
 
@@ -137,7 +131,7 @@ internal unsafe sealed class CpuResourceHeapPool(GorgonGraphics graphics, bool i
             CpuBufferHeap? heap = null;
             ulong alignedSize = size.AlignUp((ulong)alignment);
 
-            if ((_lastHeap is not null) && (_lastHeap.Used + alignedSize <= _lastHeap.Size))
+            if ((_lastHeap is not null) && (_lastHeap.CanFit(alignedSize, alignment)))
             {
                 heap = _lastHeap;
             }
@@ -149,7 +143,7 @@ internal unsafe sealed class CpuResourceHeapPool(GorgonGraphics graphics, bool i
                 {
                     searchHeap = _active[i];
 
-                    if (searchHeap.Used + alignedSize <= searchHeap.Size)
+                    if (searchHeap.CanFit(alignedSize, alignment))
                     {
                         heap = searchHeap;
                         break;
@@ -173,17 +167,48 @@ internal unsafe sealed class CpuResourceHeapPool(GorgonGraphics graphics, bool i
                     }
                 }
             }
-                        
+
             if (heap is null)
             {
                 // No available heap. So create it.
                 ulong newSize = BitOperations.RoundUpToPowerOf2(alignedSize * 2).Max(DefaultHeapSize);
                 heap = new CpuBufferHeap(this, newSize, _isDownload);
                 _active.Add(heap);
-            }            
+            }
 
-            heap.Allocate(size, alignment, out allocation);
+            heap.Allocate(alignedSize, alignment, out allocation);
             _lastHeap = heap;
+        }
+    }
+
+    /// <summary>
+    /// Function to rent a heap for exclusive use by a command list.
+    /// </summary>
+    /// <param name="size">The minimum size of the heap, in bytes.</param>
+    /// <returns>The rented heap.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown if the <paramref name="size"/> is less than 1.</exception>
+    public CpuBufferHeap Rent(ulong size)
+    {
+        ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(size, 0u, nameof(size));
+
+        using (_lock.EnterScope())
+        {
+            CpuBufferHeap? heap = null;
+
+            for (int i = _free.Count - 1; i >= 0; --i)
+            {
+                if (size <= _free[i].Size)
+                {
+                    heap = _free[i];
+                    _free.RemoveAt(i);
+                    break;
+                }
+            }
+
+            heap ??= new CpuBufferHeap(this, BitOperations.RoundUpToPowerOf2(size * 2).Max(DefaultHeapSize), _isDownload);
+            _rented.Add(heap);
+
+            return heap;
         }
     }
 
@@ -198,10 +223,13 @@ internal unsafe sealed class CpuResourceHeapPool(GorgonGraphics graphics, bool i
 
             _lastHeap = null;
 
-            if (_active.Count == 0)
+            if ((_active.Count == 0) && (_rented.Count == 0))
             {
                 return;
             }
+
+            _active.AddRange(_rented);
+            _rented.Clear();
 
             while (_active.Count > 0)
             {

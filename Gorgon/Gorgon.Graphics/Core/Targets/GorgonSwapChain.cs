@@ -22,7 +22,10 @@
 // Created: December 29, 2025 12:58:41 AM
 //
 
+using System;
+using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
@@ -40,8 +43,6 @@ public unsafe sealed class GorgonSwapChain
     : IGorgonSwapChainInfo, IDisposable, IGorgonNamedObject
 {
     private ComPtr<IDXGISwapChain4> _dxgiSwapChain;
-
-    private bool _isDisposed;
     private GorgonSwapChainInfo _info;
     private HANDLE _waitHandle;
     private uint _descFlags;
@@ -51,7 +52,7 @@ public unsafe sealed class GorgonSwapChain
     /// <summary>
     /// Property to return the internal DXGI swap chain.
     /// </summary>
-    internal ref readonly ComPtr<IDXGISwapChain4> DXGISwapChain => ref _dxgiSwapChain;    
+    internal ref readonly ComPtr<IDXGISwapChain4> DXGISwapChain => ref _dxgiSwapChain;
 
     /// <inheritdoc/>
     public string Name
@@ -62,7 +63,10 @@ public unsafe sealed class GorgonSwapChain
     /// <summary>
     /// Property to return whether the object has been disposed or not.
     /// </summary>
-    public bool IsDisposed => _isDisposed;
+    public bool IsDisposed
+    {
+        get; private set;
+    }
 
     /// <summary>
     /// Property to return the graphics interface that is associated with this swap chain.
@@ -153,7 +157,7 @@ public unsafe sealed class GorgonSwapChain
         if (!_dxgiSwapChain.IsNull)
         {
             _dxgiSwapChain.Get()->SetFullscreenState(false, null);
-        }        
+        }
 
         if (disposing)
         {
@@ -173,7 +177,7 @@ public unsafe sealed class GorgonSwapChain
 
             Graphics.Log.Print($"Destroying {nameof(IDXGISwapChain4)} '{Name}'.", LoggingLevel.Verbose);
 
-            _renderTargetViews =[];
+            _renderTargetViews = [];
         }
 
         if ((_waitHandle != HANDLE.NULL) && (_waitHandle != HANDLE.INVALID_VALUE))
@@ -184,7 +188,7 @@ public unsafe sealed class GorgonSwapChain
         _waitHandle = HANDLE.NULL;
         _dxgiSwapChain.Dispose();
 
-        _isDisposed = true;
+        IsDisposed = true;
     }
 
     /// <summary>
@@ -210,7 +214,7 @@ public unsafe sealed class GorgonSwapChain
         DXGI_SWAP_CHAIN_DESC1 desc = _info.ToDXGI();
 
         _dxgiSwapChain.Get()->ResizeBuffers(0, desc.Width, desc.Height, DXGI_FORMAT.DXGI_FORMAT_UNKNOWN, desc.Flags)
-            .ThrowIfFailed(GorgonResult.CannotInitialize, () => string.Format(Resources.GORGFX_ERR_CANNOT_RESIZE_SWAPCHAIN, Name));
+            .ThrowIfFailed(GorgonResult.CannotInitialize, Resources.GORGFX_ERR_CANNOT_RESIZE_SWAPCHAIN, Name);
 
         ResizeResources();
 
@@ -248,10 +252,10 @@ public unsafe sealed class GorgonSwapChain
     /// Function to perform the resize of the back buffers for the swap chain.
     /// </summary>
     private void ResizeResources()
-    {   
+    {
         for (uint i = 0; i < _renderTargetViews.Length; ++i)
         {
-            GorgonTexture backBuffer = GorgonTexture.FromSwapChain(this, i);            
+            GorgonTexture backBuffer = GorgonTexture.FromSwapChain(this, i);
             _renderTargetViews[i] = backBuffer.GetRenderTargetView();
             // We own these, so we don't need to control them in the public interface.
             _renderTargetViews[i].UnregisterDisposable(Graphics);
@@ -269,11 +273,11 @@ public unsafe sealed class GorgonSwapChain
     {
         using ComPtr<IDXGISwapChain1> initialObj = default;
 
-        ComPtr<IDXGISwapChain4> result = default;        
+        ComPtr<IDXGISwapChain4> result = default;
 
         HWND hwnd = new((void*)WindowHandle);
         HANDLE waitHandle = HANDLE.NULL;
-        string swapChainName = $"Gorgon DXGI Swap Chain '{Name}'";        
+        string swapChainName = $"Gorgon DXGI Swap Chain '{Name}'";
 
         DXGI_SWAP_CHAIN_DESC1 desc = _info.ToDXGI();
 
@@ -282,16 +286,17 @@ public unsafe sealed class GorgonSwapChain
         // Store for later use in Resize method.
         _descFlags = desc.Flags;
         factory.Get()->CreateSwapChainForHwnd((PID3D12CommandQueue)cmdQueue.Get(), hwnd, &desc, null, null, initialObj.GetAddressOf())
-            .ThrowIfFailed(GorgonResult.CannotCreate, () => string.Format(Resources.GORGFX_ERR_CANNOT_CREATE_SWAPCHAIN, Name));
+            .ThrowIfFailed(GorgonResult.CannotCreate, Resources.GORGFX_ERR_CANNOT_CREATE_SWAPCHAIN, Name);
 
         Graphics.Log.PrintError(factory.Get()->MakeWindowAssociation(hwnd, DXGI.DXGI_MWA_NO_ALT_ENTER | DXGI.DXGI_MWA_NO_WINDOW_CHANGES),
             "Could not assign window association flags for the swap chain. This swap chain may have unpredictable behaviour.", LoggingLevel.Simple);
 
         initialObj.As(ref result)
-            .ThrowIfFailed(GorgonResult.CannotCreate, () => string.Format(Resources.GORGFX_ERR_CANNOT_CREATE_SWAPCHAIN, Name));
-        
+            .ThrowIfFailed(GorgonResult.CannotCreate, Resources.GORGFX_ERR_CANNOT_CREATE_SWAPCHAIN, Name);
+
         result.SetDXGIDebugName(swapChainName);
 
+        result.Get()->SetMaximumFrameLatency(2);
         waitHandle = result.Get()->GetFrameLatencyWaitableObject();
 
         if ((waitHandle == HANDLE.INVALID_VALUE) || (waitHandle == HANDLE.NULL))
@@ -349,7 +354,7 @@ public unsafe sealed class GorgonSwapChain
                 Graphics.Log.PrintError(err, "Fatal error during presentation.", LoggingLevel.Verbose);
             }
 
-            err.ThrowIfFailed(GorgonResult.DriverError, () => Resources.GORGFX_ERR_DEVICE_REMOVED);
+            err.ThrowIfFailed(GorgonResult.DriverError, Resources.GORGFX_ERR_DEVICE_REMOVED);
         }
 
         CurrentBackBufferIndex = (int)_dxgiSwapChain.Get()->GetCurrentBackBufferIndex();
@@ -403,7 +408,7 @@ public unsafe sealed class GorgonSwapChain
             Graphics.Log.Print($"Resizing swap chain {Name}...", LoggingLevel.Verbose);
 
             // Wait for the GPU to finish its current work.
-            Graphics.WaitForGpu(GorgonGraphics.WaitFenceTimeout * 6);
+            Graphics.WaitForGpu();
 
             // Ensure we release any holds on our render targets.
             Graphics.Queues.GraphicsQueue.Tracker.Signal();
@@ -479,7 +484,7 @@ public unsafe sealed class GorgonSwapChain
 
         try
         {
-            Graphics.WaitForGpu(GorgonGraphics.WaitFenceTimeout * 6);
+            Graphics.WaitForGpu();
 
             Graphics.Queues.GraphicsQueue.Tracker.Signal();
             Graphics.Queues.ComputeQueue.Tracker.Signal();
@@ -513,15 +518,15 @@ public unsafe sealed class GorgonSwapChain
                 DXGI_SWAP_CHAIN_DESC1 desc = _info.ToDXGI();
 
                 _dxgiSwapChain.Get()->ResizeBuffers(desc.BufferCount, desc.Width, desc.Height, desc.Format, desc.Flags)
-                    .ThrowIfFailed(GorgonResult.CannotInitialize, () => string.Format(Resources.GORGFX_ERR_CANNOT_RESIZE_SWAPCHAIN, Name));
+                    .ThrowIfFailed(GorgonResult.CannotInitialize, Resources.GORGFX_ERR_CANNOT_RESIZE_SWAPCHAIN, Name);
             }
 
             using ComPtr<IDXGIOutput> dxgiOutput = default;
             Graphics.DXGIAdapter.Get()->EnumOutputs((uint)output.Index, dxgiOutput.GetAddressOf())
-                .ThrowIfFailed(GorgonResult.AccessDenied, () => string.Format(Resources.GORGFX_ERR_CANNOT_SET_FULLSCREEN, Graphics.Adapter.Name));
+                .ThrowIfFailed(GorgonResult.AccessDenied, Resources.GORGFX_ERR_CANNOT_SET_FULLSCREEN, Graphics.Adapter.Name);
 
             _dxgiSwapChain.Get()->SetFullscreenState(true, dxgiOutput.Get())
-                .ThrowIfFailed(GorgonResult.CannotExecute, () => string.Format(Resources.GORGFX_ERR_CANNOT_SET_SCREEN_MODE, Graphics.Adapter.Name));
+                .ThrowIfFailed(GorgonResult.CannotExecute, Resources.GORGFX_ERR_CANNOT_SET_SCREEN_MODE, Graphics.Adapter.Name);
 
             FullscreenOutput = output;
 
@@ -565,7 +570,7 @@ public unsafe sealed class GorgonSwapChain
 
         try
         {
-            Graphics.WaitForGpu(GorgonGraphics.WaitFenceTimeout * 6);
+            Graphics.WaitForGpu();
 
             Graphics.Queues.GraphicsQueue.Tracker.Signal();
             Graphics.Queues.ComputeQueue.Tracker.Signal();
@@ -574,7 +579,7 @@ public unsafe sealed class GorgonSwapChain
             OnBeforeResize();
 
             _dxgiSwapChain.Get()->SetFullscreenState(false, null)
-                .ThrowIfFailed(GorgonResult.CannotExecute, () => string.Format(Resources.GORGFX_ERR_CANNOT_SET_SCREEN_MODE, Graphics.Adapter.Name));
+                .ThrowIfFailed(GorgonResult.CannotExecute, Resources.GORGFX_ERR_CANNOT_SET_SCREEN_MODE, Graphics.Adapter.Name);
 
             FullscreenOutput = GorgonVideoOutputInfo.Empty;
 
@@ -648,7 +653,7 @@ public unsafe sealed class GorgonSwapChain
         if (windowHandle == nint.Zero)
         {
             throw new ArgumentNullException(nameof(windowHandle), Resources.GORGFX_ERR_NULL_WINDOW_HANDLE);
-        }        
+        }
 
         Graphics = graphics;
         Name = GorgonGraphicsFactory.GenerateName(name, nameof(GorgonSwapChain));

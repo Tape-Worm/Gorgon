@@ -46,7 +46,7 @@ internal static unsafe class ReadWriteViewDescriptors
     /// <param name="desc">The description of the view.</param>
     /// <param name="cpuAllocation">The allocation in the heap that is not visible to shaders. Any existing allocation is released first.</param>
     /// <param name="gpuAllocation">The allocation in the shader visible heap. Any existing allocation is released first.</param>
-    public static void Allocate(GorgonGraphics graphics, ID3D12Resource* resource, ID3D12Resource* counterResource, D3D12_UNORDERED_ACCESS_VIEW_DESC desc, 
+    public static void Allocate(GorgonGraphics graphics, ID3D12Resource* resource, ID3D12Resource* counterResource, D3D12_UNORDERED_ACCESS_VIEW_DESC desc,
                                 ref CpuDescriptorAllocation cpuAllocation, ref GpuDescriptorAllocation gpuAllocation)
     {
         Free(graphics, ref cpuAllocation, ref gpuAllocation);

@@ -23,6 +23,8 @@
 // Created: Sunday, January 27, 2013 9:41:28 AM
 // 
 
+using System;
+
 namespace Gorgon.Core;
 
 /// <summary>

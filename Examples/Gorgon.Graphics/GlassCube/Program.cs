@@ -24,6 +24,9 @@
 // Created: March 4, 2017 12:47:54 PM
 // 
 
+using System;
+using System.Windows.Forms;
+
 namespace Gorgon.Examples;
 
 /// <summary>
@@ -56,11 +59,9 @@ internal static class Program
     {
         try
         {
-            Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
+            ApplicationConfiguration.Initialize();
 
-            Application.Run(new Form());
+            Application.Run(mainForm: new Form());
         }
         catch (Exception ex)
         {

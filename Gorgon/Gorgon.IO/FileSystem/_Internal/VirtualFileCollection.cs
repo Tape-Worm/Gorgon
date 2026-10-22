@@ -24,8 +24,12 @@
 // Created: Monday, June 27, 2011 8:59:49 AM
 // 
 
+using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
+using System.Linq;
 using Gorgon.IO.FileSystem.Properties;
 
 using Gorgon.IO.FileSystem.Providers;
@@ -52,12 +56,9 @@ internal class VirtualFileCollection
         {
             fileName = fileName.FormatFileName();
 
-            if (!_files.TryGetValue(fileName, out VirtualFile? value))
-            {
-                throw new FileNotFoundException(string.Format(Resources.GORFS_ERR_FILE_NOT_FOUND, fileName));
-            }
-
-            return value;
+            return !_files.TryGetValue(fileName, out VirtualFile? value)
+                ? throw new FileNotFoundException(string.Format(Resources.GORFS_ERR_FILE_NOT_FOUND, fileName))
+                : value;
         }
         set
         {
@@ -170,15 +171,7 @@ internal class VirtualFileCollection
     /// <returns>
     /// true if <paramref name="item" /> was successfully removed from the <see cref="ICollection{T}" />; otherwise, false. This method also returns false if <paramref name="item" /> is not found in the original <see cref="ICollection{T}" />.
     /// </returns>
-    public bool Remove(VirtualFile item)
-    {
-        if (item is null)
-        {
-            return false;
-        }
-
-        return _files.Remove(item.Name);
-    }
+    public bool Remove(VirtualFile item) => item is not null && _files.Remove(item.Name);
 
     /// <summary>
     /// Function to return the concrete file types for this collection.

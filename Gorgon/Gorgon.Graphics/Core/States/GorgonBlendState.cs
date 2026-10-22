@@ -313,26 +313,10 @@ public sealed record class GorgonBlendState()
             return PremultipliedBlend;
         }
 
-        if (state == AdditiveBlend)
-        {
-            return AdditiveBlend;
-        }
-
-        if (state == ModulatedColorBlend)
-        {
-            return ModulatedColorBlend;
-        }
-
-        if (state == PremultipliedColorBlend)
-        {
-            return PremultipliedColorBlend;
-        }
-
-        if (state == AdditiveColorBlend)
-        {
-            return AdditiveColorBlend;
-        }
-
-        return state;
+        return state == AdditiveBlend
+            ? AdditiveBlend
+            : state == ModulatedColorBlend
+            ? ModulatedColorBlend
+            : state == PremultipliedColorBlend ? PremultipliedColorBlend : state == AdditiveColorBlend ? AdditiveColorBlend : state;
     }
 }

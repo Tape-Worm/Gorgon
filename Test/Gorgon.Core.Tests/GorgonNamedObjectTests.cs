@@ -54,8 +54,8 @@ public class GorgonNamedObjectTests
 
         Assert.AreEqual(item4, itemFinal);
 
-        Assert.ThrowsExactly<KeyNotFoundException>(() => _ = objects.GetByName(item3.Name.ToLower(), StringComparer.InvariantCulture));
-        Assert.ThrowsExactly<KeyNotFoundException>(() => _ = objects.GetByName(Guid.Empty.ToString()));
+        _ = Assert.ThrowsExactly<KeyNotFoundException>(() => _ = objects.GetByName(item3.Name.ToLower(), StringComparer.InvariantCulture));
+        _ = Assert.ThrowsExactly<KeyNotFoundException>(() => _ = objects.GetByName(Guid.Empty.ToString()));
 
         Assert.IsTrue(enumObjects.ContainsName(item1.Name));
         Assert.IsFalse(enumObjects.ContainsName(item1.Name.ToLower(), StringComparer.Ordinal));
@@ -67,7 +67,7 @@ public class GorgonNamedObjectTests
 
         Assert.AreEqual(item4, itemFinal);
 
-        Assert.ThrowsExactly<KeyNotFoundException>(() => _ = enumObjects.GetByName(item3.Name.ToLower(), StringComparer.InvariantCulture));
-        Assert.ThrowsExactly<KeyNotFoundException>(() => _ = enumObjects.GetByName(Guid.Empty.ToString()));
+        _ = Assert.ThrowsExactly<KeyNotFoundException>(() => _ = enumObjects.GetByName(item3.Name.ToLower(), StringComparer.InvariantCulture));
+        _ = Assert.ThrowsExactly<KeyNotFoundException>(() => _ = enumObjects.GetByName(Guid.Empty.ToString()));
     }
 }

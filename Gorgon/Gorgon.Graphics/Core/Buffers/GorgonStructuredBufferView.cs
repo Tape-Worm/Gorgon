@@ -22,6 +22,7 @@
 // Created: March 22, 2026 3:02:19 PM
 //
 
+using System;
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 using TerraFX.Interop.DirectX;
@@ -58,7 +59,7 @@ public sealed class GorgonStructuredBufferView
         {
             Format = DXGI_FORMAT.DXGI_FORMAT_UNKNOWN,
             ViewDimension = D3D12_SRV_DIMENSION.D3D12_SRV_DIMENSION_BUFFER,
-            Shader4ComponentMapping = D3D12.D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING,            
+            Shader4ComponentMapping = D3D12.D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING,
         };
 
         uint elementSize = (uint)ElementSize;

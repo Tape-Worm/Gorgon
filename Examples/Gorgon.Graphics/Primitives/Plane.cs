@@ -24,10 +24,10 @@
 // Created: Saturday, August 9, 2014 10:47:56 AM
 // 
 
+using System.Drawing;
 using System.Numerics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
-using Gorgon.Renderers.Geometry;
 
 namespace Gorgon.Examples;
 
@@ -138,21 +138,11 @@ internal class Plane
 
         CalculateTangents(vertexData, indexData);
 
-        VertexBuffer = GorgonVertexBuffer.Create<GorgonVertexPosNormUvTangent>(graphics,
-                                                                               new GorgonVertexBufferInfo(GorgonVertexPosNormUvTangent.SizeInBytes * vertexData.Length)
-                                                                               {
-                                                                                   Name = "PlaneVB",
-                                                                                   Usage = ResourceUsage.Immutable
-                                                                               },
-                                                                               vertexData);
-
-        IndexBuffer = new GorgonIndexBuffer(graphics,
-                                            new GorgonIndexBufferInfo(IndexCount)
-                                            {
-                                                Usage = ResourceUsage.Immutable
-                                            },
-                                            indexData);
+        VertexBuffer = GorgonStructuredBufferView.CreateStructuredBuffer<GorgonVertexPosNormUvTangent>(graphics, "Primitive Plane VB", VertexCount);
+        IndexBuffer = new GorgonIndexBuffer(graphics, "Primitive Plane IB", new GorgonIndexBufferInfo(sizeof(int) * IndexCount, true));
 
         UpdateAabb(vertexData);
+        Vertices = vertexData;
+        Indices = indexData;
     }
 }

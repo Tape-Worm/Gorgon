@@ -24,6 +24,7 @@
 // Created: March 22, 2018 11:38:18 AM
 // 
 
+using System;
 using Gorgon.Core;
 using Gorgon.Diagnostics.LogProviders;
 

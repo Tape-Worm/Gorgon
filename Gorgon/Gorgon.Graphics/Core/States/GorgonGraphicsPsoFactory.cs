@@ -22,15 +22,18 @@
 // Created: July 20, 2026 4:58:49 PM
 //
 
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
-using TerraFX.Interop.DirectX;
-using TerraFX.Interop.Windows;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Native;
+using TerraFX.Interop.DirectX;
+using TerraFX.Interop.Windows;
 using Win32 = TerraFX.Interop.Windows.Windows;
 
 namespace Gorgon.Graphics.Core;
@@ -275,7 +278,7 @@ public unsafe sealed class GorgonGraphicsPsoFactory
             // So, reset the pointer on the PSO so we don't leak. 
             result.Dispose();
             pso.SetComPtr(default);
-            err.ThrowIfFailed(GorgonResult.CannotCreate, () => string.Format(Resources.GORGFX_ERR_ERROR_BUILDING_PSO, pso.Name));
+            err.ThrowIfFailed(GorgonResult.CannotCreate, Resources.GORGFX_ERR_ERROR_BUILDING_PSO, pso.Name);
         }
 
         GorgonPtr<byte> blobPtr = blob.ToGorgonPtr<byte>();
@@ -374,12 +377,7 @@ public unsafe sealed class GorgonGraphicsPsoFactory
     {
         using (_cacheLock.EnterScope())
         {
-            if (_rasterStates.TryGetValue(state, out GorgonRasterState? cached))
-            {
-                return cached;
-            }
-
-            return null;
+            return _rasterStates.TryGetValue(state, out GorgonRasterState? cached) ? cached : null;
         }
     }
 
@@ -393,12 +391,7 @@ public unsafe sealed class GorgonGraphicsPsoFactory
     {
         using (_cacheLock.EnterScope())
         {
-            if (_blendStates.TryGetValue(state, out GorgonBlendState? cached))
-            {
-                return cached;
-            }
-
-            return null;
+            return _blendStates.TryGetValue(state, out GorgonBlendState? cached) ? cached : null;
         }
     }
 
@@ -412,12 +405,7 @@ public unsafe sealed class GorgonGraphicsPsoFactory
     {
         using (_cacheLock.EnterScope())
         {
-            if (_depthStencilStates.TryGetValue(state, out GorgonDepthStencilState? cached))
-            {
-                return cached;
-            }
-
-            return null;
+            return _depthStencilStates.TryGetValue(state, out GorgonDepthStencilState? cached) ? cached : null;
         }
     }
 
@@ -486,10 +474,15 @@ public unsafe sealed class GorgonGraphicsPsoFactory
     {
         Graphics.Log.Print("Flushing the Pipeline State Object cache and Shader cache.", LoggingLevel.Simple);
 
-        Graphics.WaitForGpu(GorgonGraphics.WaitFenceTimeout);
-
         using (_cacheLock.EnterScope())
         {
+            if (_cache.Count == 0)
+            {
+                return;
+            }
+
+            Graphics.WaitForGpu();
+
             foreach (GorgonGraphicsPso pso in _cache.Values)
             {
                 ref ComPtr<ID3D12PipelineState> psoPtr = ref pso.D3DPso;
@@ -547,13 +540,37 @@ public unsafe sealed class GorgonGraphicsPsoFactory
     /// </remarks>
     /// <seealso cref="GorgonGraphicsPso"/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool TryGetPso(string psoName, [NotNullWhen(true)] out GorgonGraphicsPso? pso) 
-    {        
+    public bool TryGetPso(string psoName, [NotNullWhen(true)] out GorgonGraphicsPso? pso)
+    {
         ArgumentEmptyException.ThrowIfNullOrWhiteSpace(psoName);
 
         using (_cacheLock.EnterScope())
         {
             return _cache.TryGetValue(psoName, out pso);
+        }
+    }
+
+    /// <summary>
+    /// Function to to return a <see cref="GorgonGraphicsPso"/> from the factory.
+    /// </summary>
+    /// <param name="psoName">The name of the pipeline state object to return.</param>
+    /// <returns>The pso in the factory..</returns>
+    /// <exception cref="ArgumentEmptyException">Thrown if the <paramref name="psoName"/> is empty.</exception>
+    /// <exception cref="KeyNotFoundException">Thrown if no PSO with the <paramref name="psoName"/> was found.</exception>
+    /// <remarks>
+    /// <para>
+    /// The <paramref name="psoName"/> is not case sensitive.
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="GorgonGraphicsPso"/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public GorgonGraphicsPso GetPso(string psoName)
+    {
+        ArgumentEmptyException.ThrowIfNullOrWhiteSpace(psoName);
+
+        using (_cacheLock.EnterScope())
+        {
+            return !_cache.TryGetValue(psoName, out GorgonGraphicsPso? pso) ? throw new KeyNotFoundException() : pso;
         }
     }
 
@@ -696,7 +713,7 @@ public unsafe sealed class GorgonGraphicsPsoFactory
     /// </summary>
     /// <param name="graphics">The graphics interface that is associated with this factory.</param>
     public GorgonGraphicsPsoFactory(GorgonGraphics graphics)
-    { 
+    {
         Graphics = graphics;
         this.RegisterDisposable(graphics);
 

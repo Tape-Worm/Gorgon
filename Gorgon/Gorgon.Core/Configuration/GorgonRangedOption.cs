@@ -92,20 +92,9 @@ public sealed class GorgonRangedOption<T>(string name, T defaultValue, string? d
     /// <param name="minValue">The lower limit, or <b>null</b> for no lower limit.</param>
     /// <param name="maxValue">The upper limit, or <b>null</b> for no upper limit.</param>
     /// <returns>The clamped value.</returns>
-    private static T Clamp(T value, T? minValue, T? maxValue)
-    {
-        if ((minValue is not null) && (value.CompareTo(minValue.Value) < 0))
-        {
-            return minValue.Value;
-        }
-
-        if ((maxValue is not null) && (value.CompareTo(maxValue.Value) > 0))
-        {
-            return maxValue.Value;
-        }
-
-        return value;
-    }
+    private static T Clamp(T value, T? minValue, T? maxValue) => (minValue is not null) && (value.CompareTo(minValue.Value) < 0)
+            ? minValue.Value
+            : (maxValue is not null) && (value.CompareTo(maxValue.Value) > 0) ? maxValue.Value : value;
 
     /// <inheritdoc/>
     protected override T OnClampValue(T value) => Clamp(value, MinValue, MaxValue);

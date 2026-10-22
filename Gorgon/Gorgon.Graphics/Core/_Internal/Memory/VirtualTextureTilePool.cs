@@ -26,20 +26,16 @@ using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Numerics;
-using System.Reflection.Metadata.Ecma335;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Text;
+using System.Threading;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Math;
-using Gorgon.Native;
 using TerraFX.Interop.DirectX;
 using TerraFX.Interop.Windows;
-using Windows.Storage.Streams;
-using Windows.System.Preview;
 using Win32 = TerraFX.Interop.Windows.Windows;
 
 namespace Gorgon.Graphics.Core;
@@ -87,10 +83,10 @@ internal unsafe sealed class VirtualTextureTilePool(GorgonGraphics graphics)
     // 256MB/heap div 65536 bytes per tile = 4096 tiles per heap.
     private const uint MaxTilesPerHeap = (uint)(HeapSize / 65536);
 
-    private readonly List<ComPtr<ID3D12Heap>> _d3dHeaps = new(64);    
+    private readonly List<ComPtr<ID3D12Heap>> _d3dHeaps = new(64);
 
     private readonly List<ulong> _tiles = new(64);
-    private readonly GorgonGraphics _graphics = graphics;    
+    private readonly GorgonGraphics _graphics = graphics;
     private readonly Queue<(ulong GfxFence, ulong ComputeFence, ulong CopyFence, ulong Handle)> _pendingDeletions = new(65536);
     private readonly Queue<int> _emptyHeaps = [];
     private readonly Dictionary<ulong, HeapAllocation> _allocations = [];
@@ -112,7 +108,7 @@ internal unsafe sealed class VirtualTextureTilePool(GorgonGraphics graphics)
                 if (!alloc.Resource.IsNull)
                 {
                     alloc.Resource.Get()->Release();
-                }                
+                }
             }
 
             while (_unmapQueue.TryDequeue(out HeapAllocation? alloc))
@@ -175,7 +171,7 @@ internal unsafe sealed class VirtualTextureTilePool(GorgonGraphics graphics)
             _graphics.Log.Print($"Creating '{name}'...", LoggingLevel.Verbose);
 
             _graphics.D3DDevice.Get()->CreateHeap(&desc, Win32.__uuidof<ID3D12Heap>(), (void**)result.GetAddressOf())
-                .ThrowIfFailed(GorgonResult.CannotCreate, () => string.Format(Resources.GORGFX_ERR_CANNOT_CREATE_HEAP, name));
+                .ThrowIfFailed(GorgonResult.CannotCreate, Resources.GORGFX_ERR_CANNOT_CREATE_HEAP, name);
 
             result.SetD3DDebugName(name);
 
@@ -256,15 +252,15 @@ internal unsafe sealed class VirtualTextureTilePool(GorgonGraphics graphics)
 
                     // Do update here.
                     queue.D3DQueue.Get()->UpdateTileMappings((PID3D12Resource2)alloc.Resource.Get(), destOffset, coords, ranges,
-                        _d3dHeaps[heapIndex].Get(), 
-                        1, null, &heapOffset, &count, 
-                        D3D12_TILE_MAPPING_FLAGS.D3D12_TILE_MAPPING_FLAG_NONE);                    
+                        _d3dHeaps[heapIndex].Get(),
+                        1, null, &heapOffset, &count,
+                        D3D12_TILE_MAPPING_FLAGS.D3D12_TILE_MAPPING_FLAG_NONE);
                 }
             }
             finally
-            {                
+            {
                 if (!alloc.Resource.IsNull)
-                {                    
+                {
                     _pendingDeallocations.Enqueue((queue.Type, queue.FenceValue + 1, alloc.Resource));
                 }
             }
@@ -288,7 +284,7 @@ internal unsafe sealed class VirtualTextureTilePool(GorgonGraphics graphics)
 
             try
             {
-                ref readonly GorgonBox tileBox = ref alloc.TileBox;                
+                ref readonly GorgonBox tileBox = ref alloc.TileBox;
                 uint tileSize = (uint)(tileBox.Width * tileBox.Height * tileBox.Depth);
 
                 D3D12_TILED_RESOURCE_COORDINATE coord = new((uint)tileBox.X, (uint)tileBox.Y, (uint)tileBox.Z, (uint)alloc.SubresourceIndex);
@@ -330,7 +326,7 @@ internal unsafe sealed class VirtualTextureTilePool(GorgonGraphics graphics)
     {
         int startHeap = 0;
 
-        List<(int HeapIndex, ulong TileMask)> heapAllocations = [];        
+        List<(int HeapIndex, ulong TileMask)> heapAllocations = [];
 
         while (tileCount > 0)
         {
@@ -378,7 +374,7 @@ internal unsafe sealed class VirtualTextureTilePool(GorgonGraphics graphics)
         }
 
         unchecked
-        {   
+        {
             HeapAllocation alloc = new(heapAllocations, in resource, subResourceIndex, in tileBox);
             _allocations[++_allocationID] = alloc;
 
@@ -443,7 +439,7 @@ internal unsafe sealed class VirtualTextureTilePool(GorgonGraphics graphics)
                         _emptyHeaps.Enqueue(heapIndex);
                     }
                 }
-                                
+
                 heaps.HeapTiles.Clear();
                 // Ensure the resource lives until we can unmap it.
                 heaps.Resource.Get()->AddRef();
@@ -465,7 +461,7 @@ internal unsafe sealed class VirtualTextureTilePool(GorgonGraphics graphics)
                 if (completed < item.Fence)
                 {
                     break;
-                }                
+                }
 
                 if (!item.Resource.IsNull)
                 {

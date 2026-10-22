@@ -83,7 +83,7 @@ public unsafe sealed class GorgonGraphicsDebug
 
         if (err.FAILED)
         {
-            _log.PrintError(err, "There was an error returning the DRED data from the device. Could not find the interface.", LoggingLevel.Verbose);        
+            _log.PrintError(err, "There was an error returning the DRED data from the device. Could not find the interface.", LoggingLevel.Verbose);
             return;
         }
 

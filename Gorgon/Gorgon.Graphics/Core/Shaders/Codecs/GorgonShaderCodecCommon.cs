@@ -22,6 +22,9 @@
 // Created: October 5, 2025 3:29:29 PM
 //
 
+using System;
+using System.Collections.Generic;
+using System.IO;
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 
@@ -48,7 +51,7 @@ public enum ShaderDataBlocks
     /// <summary>
     /// Shader data contains reflection information.
     /// </summary>
-    ReflectionData = 4    
+    ReflectionData = 4
 }
 
 /// <summary>
@@ -280,12 +283,9 @@ public abstract class GorgonShaderCodecCommon(GorgonGraphics graphics)
 
         size ??= stream.Length - stream.Position;
 
-        if ((size <= 0) || (stream.Position + size > stream.Length))
-        {
-            throw new EndOfStreamException();
-        }
-
-        return OnDecodeFromStream(stream, size.Value);
+        return (size <= 0) || (stream.Position + size > stream.Length)
+            ? throw new EndOfStreamException()
+            : OnDecodeFromStream(stream, size.Value);
     }
 
     /// <summary>

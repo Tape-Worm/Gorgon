@@ -854,6 +854,15 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to An attempt to update the {0} queue was made after it was disposed. This means an object is still alive that should have been disposed..
+        /// </summary>
+        internal static string GORGFX_ERR_ILLEGAL_QUEUE_ACCESS {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_ILLEGAL_QUEUE_ACCESS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The index buffer strip cut identifier is only usable on strip primitive types. The current primitive type is {0}..
         /// </summary>
         internal static string GORGFX_ERR_INDEX_CUT_NON_STRIP_PRIMITIVE {

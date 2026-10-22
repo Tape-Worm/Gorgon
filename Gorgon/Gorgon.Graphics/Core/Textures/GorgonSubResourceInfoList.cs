@@ -23,6 +23,7 @@
 //
 
 using System.Collections;
+using System.Collections.Generic;
 
 namespace Gorgon.Graphics.Core;
 
@@ -76,7 +77,7 @@ public sealed class GorgonSubResourceInfoList
     {
         _owner = owner;
         _list = list;
-    }    
+    }
 }
 
 /// <summary>

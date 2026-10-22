@@ -23,6 +23,15 @@
 // Created: August 28, 2020 7:19:52 PM
 // 
 
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows.Forms;
 using Gorgon.Graphics.Core.OLDE;
 using Gorgon.Graphics;
 

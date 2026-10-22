@@ -24,7 +24,12 @@
 // Created: Monday, June 27, 2011 9:31:05 AM
 // 
 
+using System;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Gorgon.IO.FileSystem.Providers.Properties;
 using Gorgon.Math;
 using ICSharpCode.SharpZipLib.Zip;

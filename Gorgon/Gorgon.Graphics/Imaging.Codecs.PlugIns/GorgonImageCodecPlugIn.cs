@@ -25,6 +25,8 @@
 // 
 #endregion
 
+using System.Collections.Generic;
+using System.Linq;
 using Gorgon.Core;
 using Gorgon.Graphics.Imaging.Codecs.PlugIns.Properties;
 using Gorgon.PlugIns;

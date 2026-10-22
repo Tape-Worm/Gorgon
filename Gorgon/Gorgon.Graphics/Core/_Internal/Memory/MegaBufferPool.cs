@@ -22,7 +22,9 @@
 // Created: April 11, 2026 2:19:04 PM
 //
 
+using System;
 using System.Diagnostics;
+using System.Threading;
 using TerraFX.Interop.DirectX;
 using TerraFX.Interop.Windows;
 
@@ -38,7 +40,7 @@ internal class MegaBufferPool(GorgonGraphics graphics, int sizePercent)
 {
     private readonly GorgonGraphics _graphics = graphics;
     private readonly int _sizePercent = sizePercent;
-    private readonly Lock _lock = new();    
+    private readonly Lock _lock = new();
     private readonly MegaBuffer?[] _pool = new MegaBuffer[256];     // This gives us a maximum of 256 * 2GB = 512GB of space. If we hit this limit there's no hope.
     private MegaBuffer? _current;
     private int _poolCount;
@@ -48,8 +50,6 @@ internal class MegaBufferPool(GorgonGraphics graphics, int sizePercent)
     {
         if (disposing)
         {
-            _graphics.WaitForGpu(GorgonGraphics.WaitFenceTimeout);
-
             foreach (MegaBuffer? buffer in _pool)
             {
                 buffer?.Dispose();

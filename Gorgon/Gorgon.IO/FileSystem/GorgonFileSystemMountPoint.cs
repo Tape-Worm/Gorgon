@@ -24,6 +24,7 @@
 // Created: Saturday, January 19, 2013 4:13:55 PM
 // 
 
+using System;
 using Gorgon.Core;
 using Gorgon.IO.FileSystem.Properties;
 using Gorgon.IO.FileSystem.Providers;

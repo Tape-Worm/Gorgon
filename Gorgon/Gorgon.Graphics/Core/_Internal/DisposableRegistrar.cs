@@ -25,6 +25,9 @@
 // 
 
 
+using System;
+using System.Collections.Generic;
+using System.Threading;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 
@@ -76,7 +79,7 @@ internal static class DisposableRegistrar
                 graphics.Log.PrintWarning($"Cleaning up {disposables.Count} outstanding user objects. Please Dispose() your objects when done with them.", LoggingLevel.Intermediate);
 
                 while (disposables.Count > 0)
-                {                    
+                {
                     WeakReference<IDisposable> weakRef = disposables[^1];
                     if (!weakRef.TryGetTarget(out IDisposable? disposeRef))
                     {

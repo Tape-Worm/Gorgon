@@ -23,9 +23,12 @@
 // Created: Saturday, January 12, 2013 4:44:57 PM
 // 
 
+using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
 using System.Drawing.Imaging;
+using System.Windows.Forms;
 using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
 using Gorgon.Timing;
@@ -179,7 +182,7 @@ internal class DrawingSurface
         using SolidBrush brush = new(spray.SprayColor);
         int size = (int)spray.SprayPointSize;
         int halfSize = (int)(size * 0.5f);
-        var position = (GorgonPoint)spray.Position;
+        GorgonPoint position = (GorgonPoint)spray.Position;
         _imageGraphics?.FillEllipse(brush, new GorgonRectangle(position.X - halfSize, position.Y - halfSize, size, size));
     }
 

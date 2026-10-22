@@ -22,6 +22,8 @@
 // Created: November 17, 2023 3:15:59 PM
 //
 
+using System.Collections.Generic;
+
 namespace Gorgon.Core;
 
 /// <summary>

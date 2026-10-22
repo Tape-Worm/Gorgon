@@ -22,11 +22,7 @@
 // Created: January 3, 2026 2:26:29 AM
 //
 
-using System;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System.Text;
-using Gorgon.Graphics.Imaging;
 using TerraFX.Interop.DirectX;
 
 namespace Gorgon.Graphics.Core;
@@ -132,7 +128,7 @@ internal readonly struct GpuResourceInfo
     /// <returns>The graphics resource information.</returns>
     internal static GpuResourceInfo FromD3D(ref readonly D3D12_RESOURCE_DESC1 desc)
     {
-        GraphicsResourceUsage flags = (GraphicsResourceUsage)desc.Flags | 
+        GraphicsResourceUsage flags = (GraphicsResourceUsage)desc.Flags |
             ((desc.Flags & D3D12_RESOURCE_FLAGS.D3D12_RESOURCE_FLAG_DENY_SHADER_RESOURCE) == D3D12_RESOURCE_FLAGS.D3D12_RESOURCE_FLAG_DENY_SHADER_RESOURCE ? GraphicsResourceUsage.None : GraphicsResourceUsage.ShaderResource);
 
         return desc.Dimension switch

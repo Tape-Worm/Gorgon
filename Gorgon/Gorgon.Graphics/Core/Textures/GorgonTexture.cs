@@ -22,12 +22,10 @@
 // Created: January 11, 2026 11:49:16 AM
 //
 
-using System.Buffers;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using System.Numerics;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
@@ -36,7 +34,6 @@ using Gorgon.Math;
 using Gorgon.Native;
 using TerraFX.Interop.DirectX;
 using TerraFX.Interop.Windows;
-using DX = TerraFX.Interop.DirectX.DirectX;
 using Win32 = TerraFX.Interop.Windows.Windows;
 
 namespace Gorgon.Graphics.Core;
@@ -187,7 +184,7 @@ namespace Gorgon.Graphics.Core;
 /// <seealso cref="TextureType"/>
 public sealed unsafe class GorgonTexture
     : GorgonTextureCommon
-{   
+{
     private ComPtr<D3D12MA_Allocation> _resourceAllocation;
 
     private readonly Lock _viewLock = new();
@@ -295,7 +292,7 @@ public sealed unsafe class GorgonTexture
         Graphics.Memory.Allocator.Get()->CreateResource3(&allocDesc, &desc, D3D12_BARRIER_LAYOUT.D3D12_BARRIER_LAYOUT_UNDEFINED,
                                                          clearValue, (uint)castable.Length, castPtr,
                                                          resourcePtr.GetAddressOf(), Win32.__uuidof<ID3D12Resource2>(), (void**)result.GetAddressOf())
-            .ThrowIfFailed(GorgonResult.CannotCreate, () => Resources.GORGFX_ERR_CANNOT_CREATE_RESOURCE);
+            .ThrowIfFailed(GorgonResult.CannotCreate, Resources.GORGFX_ERR_CANNOT_CREATE_RESOURCE);
 
         _resourceAllocation = resourcePtr;
 
@@ -329,7 +326,7 @@ public sealed unsafe class GorgonTexture
     /// <param name="index">The index of the back buffer for the render target view.</param>
     /// <returns>A new render target view.</returns>
     internal static GorgonTexture FromSwapChain(GorgonSwapChain swapChain, uint index)
-    {        
+    {
         ComPtr<ID3D12Resource2> d3dResource = default;
 
         string backBufferName = $"{swapChain.Name} D3D 12 Backbuffer Resource #{index}";
@@ -337,7 +334,7 @@ public sealed unsafe class GorgonTexture
         swapChain.Graphics.Log.Print($"Retrieving D3D 12 Resource (Swap chain back buffer): {backBufferName}.", LoggingLevel.Verbose);
 
         swapChain.DXGISwapChain.Get()->GetBuffer(index, Win32.__uuidof<ID3D12Resource2>(), (void**)d3dResource.GetAddressOf())
-            .ThrowIfFailed(GorgonResult.CannotCreate, () => string.Format(Resources.GORGFX_ERR_CANNOT_RETRIEVE_BACKBUFFER, index, swapChain.Name));
+            .ThrowIfFailed(GorgonResult.CannotCreate, Resources.GORGFX_ERR_CANNOT_RETRIEVE_BACKBUFFER, index, swapChain.Name);
 
         d3dResource.SetD3DDebugName(backBufferName);
 
@@ -457,14 +454,7 @@ public sealed unsafe class GorgonTexture
             mipLevel = mipLevel.Max(0).Min((short)(MipCount - 1));
             arrayIndex = arrayIndex.Max(0).Min((short)(ArrayCount - 1));
 
-            if (arrayCount <= 0)
-            {
-                arrayCount = (short)(ArrayCount - arrayIndex);
-            }
-            else
-            {
-                arrayCount = arrayCount.Min((short)(ArrayCount - arrayIndex)).Max(1);
-            }
+            arrayCount = arrayCount <= 0 ? (short)(ArrayCount - arrayIndex) : arrayCount.Min((short)(ArrayCount - arrayIndex)).Max(1);
 
             ViewKey key = new((short)format, (short)access, mipLevel, arrayIndex, arrayCount, 0, 0);
 

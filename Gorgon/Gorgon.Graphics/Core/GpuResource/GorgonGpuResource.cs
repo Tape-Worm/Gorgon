@@ -22,7 +22,9 @@
 // Created: January 3, 2026 2:11:32 AM
 //
 
+using System;
 using System.Diagnostics;
+using System.Threading;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using TerraFX.Interop.DirectX;
@@ -108,7 +110,6 @@ public abstract unsafe class GorgonGpuResource
     : IGorgonNamedObject, IDisposable
 {
     private ComPtr<ID3D12Resource2> _d3dResource;
-    private static ulong _resHandleAccumulator = 0;
     private GpuResourceInfo _info;
     private readonly ulong _resHandle;
     private int _disposed;
@@ -128,23 +129,15 @@ public abstract unsafe class GorgonGpuResource
     /// </summary>
     /// <remarks>
     /// <para>
-    /// If the resource belongs to the <see cref="MegaBuffer"/>, then this value <b>always</b> returns 0. 0 is a reserved ID for the mega buffer resource.
-    /// </para>
-    /// <para>
     /// <note type="warning">
     /// This ID is for the lifetime of the application. It is not guaranteed to be consistent between application restarts. This makes it unusable as a external unique identifer.
     /// </note>
     /// </para>
     /// </remarks>
-    internal ulong ResourceID
+    internal virtual ulong ResourceID
     {
         get
         {
-            if (IsMegaBufferResource)
-            {
-                return 0;
-            }
-
             Debug.Assert(_resHandle != 0, "Resource ID handle is 0, this is a reserved value.");
             return _resHandle;
         }
@@ -258,7 +251,7 @@ public abstract unsafe class GorgonGpuResource
         D3D12_RESOURCE_DESC1 desc = resource.Get()->GetDesc1();
         _info = GpuResourceInfo.FromD3D(in desc);
 
-        _resHandle = Interlocked.Increment(ref _resHandleAccumulator);
+        _resHandle = IDSequence.Next();
         Debug.Assert(_resHandle != 0, "Resource ID handle is 0, this is a reserved value.");
     }
 
@@ -267,9 +260,13 @@ public abstract unsafe class GorgonGpuResource
     /// </summary>
     /// <param name="graphics"><inheritdoc cref="GorgonGpuResource(GorgonGraphics, string, ComPtr{ID3D12Resource2})" path="/param[@name='graphics']"/></param>
     /// <param name="name"><inheritdoc cref="GorgonGpuResource(GorgonGraphics, string, ComPtr{ID3D12Resource2})" path="/param[@name='name']"/></param>
+    /// <param name="generateResourceID">[Optional] <b>true</b> to assign a new unique ID to the resource, <b>false</b> to leave it unassigned.</param>
     /// <remarks>
+    /// <para>
+    /// Set <paramref name="generateResourceID"/> to <b>false</b> only when the derived type overrides <see cref="ResourceID"/> and supplies the ID itself. An unassigned ID is 0, which is reserved.
+    /// </para>
     /// </remarks>
-    private protected GorgonGpuResource(GorgonGraphics graphics, string name)
+    private protected GorgonGpuResource(GorgonGraphics graphics, string name, bool generateResourceID = true)
     {
         Graphics = graphics;
 
@@ -277,7 +274,12 @@ public abstract unsafe class GorgonGpuResource
 
         Name = GorgonGraphicsFactory.GenerateName(name, nameof(GorgonGpuResource));
 
-        _resHandle = Interlocked.Increment(ref _resHandleAccumulator);
+        if (!generateResourceID)
+        {
+            return;
+        }
+
+        _resHandle = IDSequence.Next();
         Debug.Assert(_resHandle != 0, "Resource ID handle is 0, this is a reserved value.");
     }
 }

@@ -23,6 +23,7 @@
 // Created: Sunday, October 11, 2015 11:51:54 PM
 // 
 
+using System;
 using Gorgon.Properties;
 
 namespace Gorgon.Math;

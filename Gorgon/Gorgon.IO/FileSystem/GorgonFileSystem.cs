@@ -24,9 +24,15 @@
 // Created: Monday, June 27, 2011 8:54:59 AM
 // 
 
+using System;
 using System.Buffers;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text;
+using System.Threading;
 using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
@@ -584,12 +590,7 @@ public class GorgonFileSystem
         // If we have the search mask wrapped in wildcards, then we're looking for an occurrence within the name.
         if ((searchMask[0] == '*') && (searchMask[^1] == '*'))
         {
-            if (searchMask.Length == 2)
-            {
-                return false;
-            }
-
-            return name.IndexOf(searchMask[1..^1], StringComparison.OrdinalIgnoreCase) >= 0;
+            return searchMask.Length != 2 && name.IndexOf(searchMask[1..^1], StringComparison.OrdinalIgnoreCase) >= 0;
         }
 
         // If we have a wild card at the beginning, then match on names that contain the value after the wildcard.
@@ -728,15 +729,7 @@ public class GorgonFileSystem
     /// <param name="path">The path to evaluate.</param>
     /// <returns>The path prepended with the directory separator, or the original path if the <paramref name="path"/> already has a directory separator.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static ReadOnlySpan<char> PrependPath(ReadOnlySpan<char> path)
-    {
-        if (path[0] != DirectorySeparator)
-        {
-            return string.Concat(DirectorySeparatorList, path).AsSpan();
-        }
-
-        return path;
-    }
+    private static ReadOnlySpan<char> PrependPath(ReadOnlySpan<char> path) => path[0] != DirectorySeparator ? string.Concat(DirectorySeparatorList, path).AsSpan() : path;
 
     /// <summary>
     /// Function to check if the source and destination paths are the same.
@@ -1571,14 +1564,9 @@ public class GorgonFileSystem
         ReadOnlySpan<char> source = PrependPath(sourcePath.AsSpan()).FormatPath(DirectorySeparator);
         ReadOnlySpan<char> destination = destinationPath.AsSpan();
 
-        if (destination.Contains(DirectorySeparatorList, StringComparison.Ordinal))
-        {
-            destination = PrependPath(destination).FormatPath(DirectorySeparator);
-        }
-        else
-        {
-            destination = string.Concat(Path.GetDirectoryName(source), DirectorySeparatorList, destination).FormatPath(DirectorySeparator);
-        }
+        destination = destination.Contains(DirectorySeparatorList, StringComparison.Ordinal)
+            ? PrependPath(destination).FormatPath(DirectorySeparator)
+            : string.Concat(Path.GetDirectoryName(source), DirectorySeparatorList, destination).FormatPath(DirectorySeparator);
 
         if (GetVirtualDirectory(Path.GetDirectoryName(destination).FormatDirectory(DirectorySeparator)) is null)
         {
@@ -1670,14 +1658,9 @@ public class GorgonFileSystem
         ReadOnlySpan<char> source = PrependPath(sourcePath.AsSpan()).FormatPath(DirectorySeparator);
         ReadOnlySpan<char> destination = destinationPath.AsSpan();
 
-        if (destination.Contains(DirectorySeparatorList, StringComparison.Ordinal))
-        {
-            destination = PrependPath(destination).FormatPath(DirectorySeparator);
-        }
-        else
-        {
-            destination = string.Concat(Path.GetDirectoryName(source), DirectorySeparatorList, destination).FormatPath(DirectorySeparator);
-        }
+        destination = destination.Contains(DirectorySeparatorList, StringComparison.Ordinal)
+            ? PrependPath(destination).FormatPath(DirectorySeparator)
+            : string.Concat(Path.GetDirectoryName(source), DirectorySeparatorList, destination).FormatPath(DirectorySeparator);
 
         if (GetVirtualDirectory(Path.GetDirectoryName(destination).FormatDirectory(DirectorySeparator)) is null)
         {

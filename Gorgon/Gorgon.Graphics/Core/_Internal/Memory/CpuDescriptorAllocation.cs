@@ -22,7 +22,7 @@
 // Created: January 3, 2026 2:09:37 PM
 //
 
-using System.Diagnostics.CodeAnalysis;
+using System;
 using TerraFX.Interop.DirectX;
 
 namespace Gorgon.Graphics.Core;

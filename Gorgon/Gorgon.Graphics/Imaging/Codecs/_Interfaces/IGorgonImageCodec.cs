@@ -23,6 +23,9 @@
 // Created: August 4, 2016 6:21:01 PM
 // 
 
+using System;
+using System.Collections.Generic;
+using System.IO;
 using Gorgon.Core;
 
 namespace Gorgon.Graphics.Imaging.Codecs;
@@ -340,7 +343,7 @@ public interface IGorgonImageCodec
     /// <remarks>
     /// <para>
     /// When overloading this method, the implementor should remember to reset the stream position back to the original position when they are done reading the data. Failure to do so may cause 
-/// undesirable results or an exception. 
+    /// undesirable results or an exception. 
     /// </para>
     /// </remarks>
     bool IsReadable(Stream stream);
@@ -356,7 +359,7 @@ public interface IGorgonImageCodec
     /// <remarks>
     /// <para>
     /// When overloading this method, the implementor should remember to reset the stream position back to the original position when they are done reading the data. Failure to do so 
-/// may cause undesirable results.
+    /// may cause undesirable results.
     /// </para> 
     /// </remarks>
     GorgonImageInfo GetMetaData(Stream stream);

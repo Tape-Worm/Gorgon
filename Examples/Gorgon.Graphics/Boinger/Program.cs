@@ -24,7 +24,9 @@
 // Created: March 2, 2017 7:46:37 PM
 // 
 
-using Gorgon.Diagnostics;
+using System;
+using System.Collections.Generic;
+using System.IO;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.UI.WindowsForms;
@@ -74,9 +76,9 @@ internal static partial class Program
             using GorgonGraphics graphics = factory.CreateGraphics(adapters[0]);
 
             // Create our primary swap chain.
-            using GorgonSwapChain swap = new(graphics, "Boinger Swap Chain", mainForm.Handle, 
-                new GorgonSwapChainInfo(ExampleConfig.Default.Resolution.X, 
-                                             ExampleConfig.Default.Resolution.Y, 
+            using GorgonSwapChain swap = new(graphics, "Boinger Swap Chain", mainForm.Handle,
+                new GorgonSwapChainInfo(ExampleConfig.Default.Resolution.X,
+                                             ExampleConfig.Default.Resolution.Y,
                                              BufferFormat.R8G8B8A8_UNorm));
 
             // Start up our example application.

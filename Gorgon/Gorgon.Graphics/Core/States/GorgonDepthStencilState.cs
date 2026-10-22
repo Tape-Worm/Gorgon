@@ -43,7 +43,7 @@ public sealed record class GorgonDepthStencilState()
     : IPsoState<GorgonDepthStencilState>
 {
     /// <summary>
-    /// The default depth/stencil state.
+    /// Depth/stencil disabled.
     /// </summary>
     public static readonly GorgonDepthStencilState Default = new();
 
@@ -336,26 +336,10 @@ public sealed record class GorgonDepthStencilState()
             return DepthLessEqualStencilEnabledNoWrite;
         }
 
-        if (state == DepthLessEqualEnabled)
-        {
-            return DepthLessEqualEnabled;
-        }
-
-        if (state == DepthLessEqualEnabledNoWrite)
-        {
-            return DepthLessEqualEnabledNoWrite;
-        }
-
-        if (state == StencilEnabled)
-        {
-            return StencilEnabled;
-        }
-
-        if (state == DepthStencilEnabledGreaterEqual)
-        {
-            return DepthStencilEnabledGreaterEqual;
-        }
-
-        return state;
+        return state == DepthLessEqualEnabled
+            ? DepthLessEqualEnabled
+            : state == DepthLessEqualEnabledNoWrite
+            ? DepthLessEqualEnabledNoWrite
+            : state == StencilEnabled ? StencilEnabled : state == DepthStencilEnabledGreaterEqual ? DepthStencilEnabledGreaterEqual : state;
     }
 }

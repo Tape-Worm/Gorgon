@@ -24,9 +24,12 @@
 // Created: Thursday, January 10, 2013 8:33:49 AM
 // 
 
+using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
 using System.Drawing.Imaging;
+using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Examples.Properties;
 using Gorgon.Graphics;

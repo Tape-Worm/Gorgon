@@ -25,9 +25,13 @@
 // Much of the code present was adapted from the Simple Direct Media layer (SDL v3.xx) game controller code found at
 // https://github.com/libsdl-org/SDL
 
+using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics;
@@ -633,7 +637,7 @@ public sealed class GorgonInput
             rawInputEvents.TryDequeue(out RAWINPUT inputPacket);
             timeStamp += increment;
 
-            var deviceType = (RID_DEVICE_INFO_TYPE)inputPacket.header.dwType;
+            RID_DEVICE_INFO_TYPE deviceType = (RID_DEVICE_INFO_TYPE)inputPacket.header.dwType;
 
             switch (deviceType)
             {

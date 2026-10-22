@@ -22,6 +22,7 @@
 // Created: April 14, 2026 8:59:51 PM
 //
 
+using System;
 using System.Runtime.CompilerServices;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Memory;
@@ -121,7 +122,7 @@ public sealed class GorgonSamplerBuilder(GorgonGraphics graphics)
     /// </remarks>
     public GorgonSampler Build(string name, IGorgonAllocator<GorgonSampler>? allocator = null)
     {
-        allocator ??= _allocator;        
+        allocator ??= _allocator;
         _worker.Name = GorgonGraphicsFactory.GenerateName(name, nameof(GorgonSampler));
 
         GorgonSampler result = allocator.Allocate(s =>
@@ -203,7 +204,7 @@ public sealed class GorgonSamplerBuilder(GorgonGraphics graphics)
     /// <exception cref="ArgumentOutOfRangeException">Thrown if the <paramref name="lodOffset"/> value is less than <see cref="GorgonSampler.MipLodBiasMinimum"/> or greater than <see cref="GorgonSampler.MipLodBiasMaximum"/>.</exception>
     /// <inheritdoc cref="GorgonSampler.MipLodBias" path="/remarks"/>
     public GorgonSamplerBuilder MipLodBias(float lodOffset)
-    {        
+    {
         ArgumentOutOfRangeException.ThrowIfLessThan(lodOffset, GorgonSampler.MipLodBiasMinimum);
         ArgumentOutOfRangeException.ThrowIfGreaterThan(lodOffset, GorgonSampler.MipLodBiasMaximum);
 

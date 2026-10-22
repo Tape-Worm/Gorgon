@@ -300,28 +300,9 @@ public sealed record class GorgonRasterState()
         };
 
     /// <inheritdoc/>
-    public static GorgonRasterState GetDefinedState(GorgonRasterState state)
-    {
-        if (state == Default)
-        {
-            return Default;
-        }
-        
-        if (state == NoCulling)
-        {
-            return NoCulling;
-        }
-        
-        if (state == CullFrontFace)
-        {
-            return CullFrontFace;
-        }
-        
-        if (state == WireFrameNoCulling)
-        {
-            return WireFrameNoCulling;
-        }
-
-        return state;
-    }
+    public static GorgonRasterState GetDefinedState(GorgonRasterState state) => state == Default
+            ? Default
+            : state == NoCulling
+            ? NoCulling
+            : state == CullFrontFace ? CullFrontFace : state == WireFrameNoCulling ? WireFrameNoCulling : state;
 }

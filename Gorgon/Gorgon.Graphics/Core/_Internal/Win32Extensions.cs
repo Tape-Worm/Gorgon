@@ -22,10 +22,7 @@
 // Created: December 28, 2025 9:26:52 PM
 //
 
-using System;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using System.Text;
 using Gorgon.Core;
 using TerraFX.Interop.Windows;
 
@@ -58,27 +55,48 @@ internal static class Win32Extensions
         /// <summary>
         /// Function to throw a <see cref="GorgonException"/> if the HRESULT passed in is a failure.
         /// </summary>
-        /// <param name="exception">A callback method that returns the exception to throw.</param>
+        /// <param name="resultCode">The Gorgon exception result code.</param>
+        /// <param name="message">The message to pass in.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void ThrowIfFailed(Func<HRESULT, Exception> exception)
+        public void ThrowIfFailed(GorgonResult resultCode, string message)
         {
             if (hr.FAILED)
             {
-                throw exception(hr);
+                throw new GorgonException(resultCode, $"{message} Error code: 0x{hr.Value.FormatHex()}.");
             }
         }
 
         /// <summary>
         /// Function to throw a <see cref="GorgonException"/> if the HRESULT passed in is a failure.
         /// </summary>
+        /// <typeparam name="TArg">The type of the argument to format into the message.</typeparam>
         /// <param name="resultCode">The Gorgon exception result code.</param>
-        /// <param name="message">The message to pass in.</param>
+        /// <param name="format">The composite format string for the message.</param>
+        /// <param name="arg">The argument to format into the message.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void ThrowIfFailed(GorgonResult resultCode, Func<string> message)
+        public void ThrowIfFailed<TArg>(GorgonResult resultCode, string format, TArg arg)
         {
             if (hr.FAILED)
             {
-                throw new GorgonException(resultCode, $"{message()} Error code: 0x{hr.Value.FormatHex()}.");
+                throw new GorgonException(resultCode, $"{string.Format(format, arg)} Error code: 0x{hr.Value.FormatHex()}.");
+            }
+        }
+
+        /// <summary>
+        /// Function to throw a <see cref="GorgonException"/> if the HRESULT passed in is a failure.
+        /// </summary>
+        /// <typeparam name="TArg0">The type of the first argument to format into the message.</typeparam>
+        /// <typeparam name="TArg1">The type of the second argument to format into the message.</typeparam>
+        /// <param name="resultCode">The Gorgon exception result code.</param>
+        /// <param name="format">The composite format string for the message.</param>
+        /// <param name="arg0">The first argument to format into the message.</param>
+        /// <param name="arg1">The second argument to format into the message.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void ThrowIfFailed<TArg0, TArg1>(GorgonResult resultCode, string format, TArg0 arg0, TArg1 arg1)
+        {
+            if (hr.FAILED)
+            {
+                throw new GorgonException(resultCode, $"{string.Format(format, arg0, arg1)} Error code: 0x{hr.Value.FormatHex()}.");
             }
         }
     }

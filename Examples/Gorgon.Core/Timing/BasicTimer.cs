@@ -22,6 +22,7 @@
 // Created: April 27, 2025 8:29:44 PM
 //
 
+using System;
 using System.Diagnostics;
 using Gorgon.Timing;
 

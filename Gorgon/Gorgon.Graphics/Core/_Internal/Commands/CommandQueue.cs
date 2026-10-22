@@ -27,8 +27,9 @@ using System.Buffers;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
+using System.Threading;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
@@ -47,7 +48,7 @@ internal sealed unsafe class CommandQueue : IDisposable
     private ComPtr<ID3D12CommandQueue> _d3dQueue;
     private ComPtr<ID3D12Fence1> _d3dFence;
 
-    private readonly Lock _fenceLock = new();    
+    private readonly Lock _fenceLock = new();
     private ulong _previousFenceValue = 0;
     private ulong _nextFenceValue = 1;
     private readonly MegaBufferPool _megaBuffer;
@@ -158,14 +159,14 @@ internal sealed unsafe class CommandQueue : IDisposable
     /// <exception cref="GorgonException">Thrown if the D3D fence could not be created.</exception>
     private ComPtr<ID3D12Fence1> CreateNativeFence(ref readonly ComPtr<ID3D12Device14> device)
     {
-        ComPtr<ID3D12Fence1> result = default;       
+        ComPtr<ID3D12Fence1> result = default;
 
         string fenceName = $"Gorgon D3D12 fence ({Type} queue)";
 
         Graphics.Log.Print($"Creating {nameof(ID3D12Fence1)} on {Type} queue...", LoggingLevel.Verbose);
 
         device.Get()->CreateFence(0, D3D12_FENCE_FLAGS.D3D12_FENCE_FLAG_NONE, Win32.__uuidof<ID3D12Fence1>(), (void**)result.GetAddressOf())
-                .ThrowIfFailed(GorgonResult.CannotCreate, () => string.Format(Resources.GORGFX_ERR_CANNOT_CREATE_FENCE, Type));
+                .ThrowIfFailed(GorgonResult.CannotCreate, Resources.GORGFX_ERR_CANNOT_CREATE_FENCE, Type);
 
         result.Get()->SetD3DDebugName(fenceName);
 
@@ -181,7 +182,7 @@ internal sealed unsafe class CommandQueue : IDisposable
     private ComPtr<ID3D12CommandQueue> CreateNativeQueue(ref readonly ComPtr<ID3D12Device14> device)
     {
         ComPtr<ID3D12CommandQueue> result = default;
-        
+
         string commandQueueName = $"Gorgon D3D12 command queue ({Type})";
 
         Graphics.Log.Print($"Creating {nameof(ID3D12CommandQueue)} ({Type})...", LoggingLevel.Verbose);
@@ -194,7 +195,7 @@ internal sealed unsafe class CommandQueue : IDisposable
         };
 
         device.Get()->CreateCommandQueue(&desc, Win32.__uuidof<ID3D12CommandQueue>(), (void**)result.GetAddressOf())
-            .ThrowIfFailed(GorgonResult.CannotCreate, () => string.Format(Resources.GORGFX_ERR_CANNOT_CREATE_COMMAND_QUEUE, Type));
+            .ThrowIfFailed(GorgonResult.CannotCreate, Resources.GORGFX_ERR_CANNOT_CREATE_COMMAND_QUEUE, Type);
 
         result.Get()->SetD3DDebugName(commandQueueName);
 
@@ -246,8 +247,7 @@ internal sealed unsafe class CommandQueue : IDisposable
     /// Function to pause the CPU if there is work pending on the GPU.
     /// </summary>
     /// <param name="fenceValue">The fence value to wait for.</param>
-    /// <param name="timeout">The timeout, in milliseconds, for the CPU wait event.</param>
-    public void WaitForFence(ulong fenceValue, int timeout)
+    public void WaitForFence(ulong fenceValue)
     {
         if (IsFenceComplete(fenceValue))
         {
@@ -263,7 +263,7 @@ internal sealed unsafe class CommandQueue : IDisposable
         }
 
         _previousFenceValue = fenceValue;
-    }    
+    }
 
     /// <summary>
     /// Function to execute command lists on the queue.
@@ -272,7 +272,7 @@ internal sealed unsafe class CommandQueue : IDisposable
     /// <exception cref="ObjectDisposedException">Thrown if the queue object has been disposed.</exception>
     public void Execute(ReadOnlySpan<GorgonCommandList> commandList)
     {
-        ObjectDisposedException.ThrowIf(_d3dQueue.IsNull, this);        
+        ObjectDisposedException.ThrowIf(_d3dQueue.IsNull, this);
 
         static void PopulateCommandList(GorgonCommandList list, ArraySegment<D3D12_BUFFER_BARRIER> bufferBarriers, ArraySegment<D3D12_TEXTURE_BARRIER> textureBarriers)
         {
@@ -318,7 +318,7 @@ internal sealed unsafe class CommandQueue : IDisposable
                 for (int i = 0; i < commandList.Length; ++i)
                 {
                     GorgonCommandList list = commandList[i];
-                    
+
                     list.CheckOpenQueries();
 
                     (ArraySegment<D3D12_BUFFER_BARRIER> bufferBarriers, ArraySegment<D3D12_TEXTURE_BARRIER> textureBarriers) = list.BarrierManager.ResolveInitialStates(this);
@@ -332,8 +332,8 @@ internal sealed unsafe class CommandQueue : IDisposable
                         {
                             if (previousList is null)
                             {
-                                listAllocator = AllocatorPool.Get($"Resource transition allocator '{list.Name}'");
-                                barrierList = ListPool.Get($"Resource transition list '{list.Name}'", listAllocator);
+                                listAllocator = AllocatorPool.Get("Resource transition allocator");
+                                barrierList = ListPool.Get("Resource transition list", listAllocator);
 
                                 PopulateCommandList(barrierList, bufferBarriers, textureBarriers);
                                 barrierList.Close();
@@ -354,6 +354,7 @@ internal sealed unsafe class CommandQueue : IDisposable
                         _activeLists.Add(list);
 
                         list.CommitBarriers();
+                        list.CommitTracking();
                     }
                     finally
                     {
@@ -364,7 +365,7 @@ internal sealed unsafe class CommandQueue : IDisposable
 
                 previousList?.Close();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 List<Exception> cmdListCloseExceptions = [];
 
@@ -397,7 +398,7 @@ internal sealed unsafe class CommandQueue : IDisposable
                 }
 
                 throw;
-            }        
+            }
 
             _d3dQueue.Get()->ExecuteCommandLists(commandListCount, commands);
 
@@ -422,7 +423,10 @@ internal sealed unsafe class CommandQueue : IDisposable
     /// <returns>The current fence value.</returns>
     public ulong IncrementFence()
     {
-        Debug.Assert(!_d3dQueue.IsNull, "The D3D12 backing queue is NULL.");
+        if ((_d3dFence.IsNull) || (_d3dQueue.IsNull))
+        {
+            throw new GorgonException(GorgonResult.NotInitialized, string.Format(Resources.GORGFX_ERR_ILLEGAL_QUEUE_ACCESS, Type));
+        }
 
         using (_fenceLock.EnterScope())
         {
@@ -441,9 +445,8 @@ internal sealed unsafe class CommandQueue : IDisposable
     /// <summary>
     /// Function to pause the CPU while waiting for the GPU to finish whatever it's executing.
     /// </summary>
-    /// <param name="timeout">The timeout, in milliseconds, for the CPU wait event.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void WaitForGpu(int timeout) => WaitForFence(IncrementFence(), timeout);
+    public void WaitForGpu() => WaitForFence(IncrementFence());
 
     /// <summary>
     /// Function to purge any unused heaps.
@@ -490,7 +493,7 @@ internal sealed unsafe class CommandQueue : IDisposable
     /// </summary>
     /// <param name="graphics">The graphics object associated with this queue.</param>
     /// <param name="type">The type of commands that this queue will execute.</param>
-    public CommandQueue(GorgonGraphics graphics,  D3D12_COMMAND_LIST_TYPE type)
+    public CommandQueue(GorgonGraphics graphics, D3D12_COMMAND_LIST_TYPE type)
     {
         Graphics = graphics;
         _megaBuffer = Graphics.Memory.MegaBuffer;

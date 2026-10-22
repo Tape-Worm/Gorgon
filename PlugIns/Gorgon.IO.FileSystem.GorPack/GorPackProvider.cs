@@ -24,7 +24,10 @@
 // Created: Sunday, July 03, 2011 9:16:14 AM
 // 
 
+using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Text;
 using System.Xml.Linq;
 using Gorgon.Core;
@@ -293,12 +296,9 @@ internal class GorPackProvider(IGorgonLog log)
     {
         string path = physicalMountPoint.FormatPath(Path.DirectorySeparatorChar).ToString();
 
-        if (!File.Exists(path))
-        {
-            return null;
-        }
-
-        return new GorPackFileStream(fileInfo, File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read), onCloseCallback);
+        return !File.Exists(path)
+            ? null
+            : (GorgonFileSystemStream)new GorPackFileStream(fileInfo, File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read), onCloseCallback);
     }
 
     /// <inheritdoc/>
@@ -309,11 +309,6 @@ internal class GorPackProvider(IGorgonLog log)
         using BinaryReader reader = new(File.Open(physicalPath.ToString(), FileMode.Open, FileAccess.Read, FileShare.Read));
 
         // If the length of the stream is less or equal to the header size, it's unlikely that we can read this file.
-        if (reader.BaseStream.Length <= GorPackHeader.Length)
-        {
-            return false;
-        }
-
-        return string.Equals(reader.ReadString(), GorPackHeader, StringComparison.Ordinal);
+        return reader.BaseStream.Length > GorPackHeader.Length && string.Equals(reader.ReadString(), GorPackHeader, StringComparison.Ordinal);
     }
 }

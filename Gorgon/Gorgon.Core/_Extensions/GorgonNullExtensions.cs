@@ -23,6 +23,7 @@
 // Created: September 4, 2018 9:49:20 AM
 // 
 
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
@@ -74,12 +75,7 @@ public static class GorgonNullExtensions
 
             Type type = typeof(T);
 
-            if ((type.IsEnum) && (type.IsEnumDefined(value)))
-            {
-                return (T)value;
-            }
-
-            return (T)Convert.ChangeType(value, type);
+            return (type.IsEnum) && (type.IsEnumDefined(value)) ? (T)value : (T)Convert.ChangeType(value, type);
         }
     }
 }

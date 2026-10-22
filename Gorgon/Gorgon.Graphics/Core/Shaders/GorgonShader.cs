@@ -22,7 +22,9 @@
 // Created: September 29, 2025 12:47:46 PM
 //
 
+using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Runtime.CompilerServices;
 
 namespace Gorgon.Graphics.Core;
@@ -238,13 +240,13 @@ public sealed class GorgonShader
     /// <param name="reflectionData">The reflection information for the shader.</param>
     /// <param name="shaderType">The type of shader.</param>
     /// <param name="shaderModel">The shader model.</param>
-    internal GorgonShader(GorgonGraphics graphics, 
-        byte[] shaderData, 
+    internal GorgonShader(GorgonGraphics graphics,
+        byte[] shaderData,
         byte[]? hash,
-        byte[]? pdbData, 
+        byte[]? pdbData,
         string? pdbName,
-        byte[]? reflectionData, 
-        ShaderType shaderType, 
+        byte[]? reflectionData,
+        ShaderType shaderType,
         ShaderModel shaderModel)
     {
         Graphics = graphics;
@@ -254,7 +256,7 @@ public sealed class GorgonShader
         _pdbData = pdbData ?? [];
         PdbName = pdbName ?? string.Empty;
         _reflectionData = reflectionData ?? [];
-        ShaderType = shaderType;    
-        ShaderModel = shaderModel;        
+        ShaderType = shaderType;
+        ShaderModel = shaderModel;
     }
 }

@@ -22,6 +22,7 @@
 // Created: April 29, 2025 9:16:19 AM
 //
 
+using System;
 using System.Globalization;
 using Avalonia.Data.Converters;
 
@@ -34,15 +35,7 @@ internal class EmptyStringBooleanConverter
     : IValueConverter
 {
     /// <inheritdoc/>
-    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
-    {
-        if (value is not string stringValue)
-        {
-            return false;
-        }
-
-        return !string.IsNullOrWhiteSpace(stringValue);
-    }
+    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture) => value is string stringValue && !string.IsNullOrWhiteSpace(stringValue);
 
     /// <inheritdoc/>
     public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) => string.Empty;

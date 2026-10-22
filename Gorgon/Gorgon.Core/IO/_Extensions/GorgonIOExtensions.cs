@@ -22,8 +22,14 @@
 // Created: January 30, 2024 3:25:14 PM
 //
 
+using System;
 using System.Buffers;
+using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using Gorgon.Core;
 using Gorgon.Math;
 using Gorgon.Memory;
@@ -196,8 +202,8 @@ public static class GorgonIOExtensions
         /// <param name="bufferSize">[Optional] The size of the temporary buffer used to buffer the data between streams.</param>
         /// <returns>The number of bytes copied, or 0 if no data was copied or at the end of a stream.</returns>
         /// <exception cref="ArgumentException"><para>Thrown when the stream is write-only.</para>
-            /// <para>Thrown when the <paramref name="destination"/> is read-only.</para>
-            /// <para>Thrown when the <paramref name="bufferSize"/> is less than 1.</para>
+        /// <para>Thrown when the <paramref name="destination"/> is read-only.</para>
+        /// <para>Thrown when the <paramref name="bufferSize"/> is less than 1.</para>
         /// </exception>
         /// <remarks>
         /// <para>
@@ -235,8 +241,8 @@ public static class GorgonIOExtensions
         /// <param name="cancelToken">[Optional] The token used to cancel the operation.</param>
         /// <returns>The number of bytes copied, or 0 if no data was copied or at the end of a stream.</returns>
         /// <exception cref="ArgumentException"><para>Thrown when the stream is write-only.</para>
-            /// <para>Thrown when the <paramref name="destination"/> is read-only.</para>
-            /// <para>Thrown when the <paramref name="bufferSize"/> is less than 1.</para>
+        /// <para>Thrown when the <paramref name="destination"/> is read-only.</para>
+        /// <para>Thrown when the <paramref name="bufferSize"/> is less than 1.</para>
         /// </exception>
         /// <remarks>
         /// <para>
@@ -283,7 +289,7 @@ public static class GorgonIOExtensions
         /// <returns>The number of bytes copied, or 0 if no data was copied or at the end of a stream.</returns>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="buffer"/> size is less than 1 byte.</exception>
         /// <exception cref="ArgumentException"><para>Thrown when the stream is write-only.</para>
-            /// <para>Thrown when the <paramref name="destination"/> is read-only.</para>
+        /// <para>Thrown when the <paramref name="destination"/> is read-only.</para>
         /// </exception>
         /// <remarks>
         /// <para>
@@ -341,7 +347,7 @@ public static class GorgonIOExtensions
         /// <returns>The number of bytes copied, or 0 if no data was copied or at the end of a stream.</returns>
         /// <exception cref="ArgumentEmptyException">Thrown when the <paramref name="buffer"/> size is less than 1 byte.</exception>
         /// <exception cref="ArgumentException"><para>Thrown when the stream is write-only.</para>
-            /// <para>Thrown when the <paramref name="destination"/> is read-only.</para>
+        /// <para>Thrown when the <paramref name="destination"/> is read-only.</para>
         /// </exception>
         /// <remarks>
         /// <para>

@@ -87,7 +87,7 @@ public class GorgonRingPoolTests
     public void ShouldThrowWhenItemAllocatorReturnsNull()
     {
         GorgonRingPool<string> pool = new(1, () => null!);
-        Assert.ThrowsExactly<GorgonException>(() => _ = pool.Allocate());
+        _ = Assert.ThrowsExactly<GorgonException>(() => _ = pool.Allocate());
     }
 
     private sealed class DisposableObject : IDisposable

@@ -24,9 +24,12 @@
 // Created: Tuesday, June 14, 2011 8:50:49 PM
 // 
 
+using System;
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using System.Text;
+using System.Threading;
 using Gorgon.Collections;
 using Gorgon.Core;
 using Gorgon.Diagnostics.LogProviders;
@@ -39,7 +42,6 @@ public abstract class GorgonLog
     : IGorgonLog
 {
     // Logging filter.
-    private LoggingLevel _filterLevel = LoggingLevel.All;
     // Synchronization lock for multiple threads.
     private readonly Lock _syncLock = new();
     // The application version.
@@ -71,17 +73,17 @@ public abstract class GorgonLog
     /// <inheritdoc/>
     public LoggingLevel LogFilterLevel
     {
-        get => _filterLevel;
+        get;
         set
         {
-            if (_filterLevel != value)
+            if (field != value)
             {
                 Print($"\n**** Filter level: {value}\n", LoggingLevel.All);
             }
 
-            _filterLevel = value;
+            field = value;
         }
-    }
+    } = LoggingLevel.All;
 
     /// <inheritdoc/>
     public string LogApplication

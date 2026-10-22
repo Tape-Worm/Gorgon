@@ -23,6 +23,9 @@
 // Created: Saturday, February 23, 2013 4:00:19 PM
 // 
 
+using System;
+using System.Collections.Generic;
+using System.Threading;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
@@ -77,7 +80,7 @@ internal unsafe class VideoAdapterEnumerator
 
         if (err.FAILED)
         {
-            log.PrintError(err, $"There was an error retrieving the features for the adapter '{name}'. This adapter will be skipped.", LoggingLevel.Verbose);        
+            log.PrintError(err, $"There was an error retrieving the features for the adapter '{name}'. This adapter will be skipped.", LoggingLevel.Verbose);
             return false;
         }
 
@@ -123,7 +126,7 @@ internal unsafe class VideoAdapterEnumerator
 
         if (err.FAILED)
         {
-            log.PrintError(err, $"There was an error retrieving the enhanced barrier support for the adapter '{name}'. This adapter will be skipped.", LoggingLevel.Verbose);        
+            log.PrintError(err, $"There was an error retrieving the enhanced barrier support for the adapter '{name}'. This adapter will be skipped.", LoggingLevel.Verbose);
             return false;
         }
 
@@ -203,16 +206,13 @@ internal unsafe class VideoAdapterEnumerator
 
         if (err.FAILED)
         {
-            log.PrintError(err, "Could not retrieve the details for the WARP device. This adapter will not be available.", LoggingLevel.Simple);        
+            log.PrintError(err, "Could not retrieve the details for the WARP device. This adapter will not be available.", LoggingLevel.Simple);
             return null;
         }
 
-        if (!ValidateAdapter(d3dDevice, "WARP", log, out ShaderModel sm))
-        {
-            return null;
-        }
-
-        return GorgonVideoAdapterInfo.FromD3D(index, "WARP Software Adapter", in desc, adapter, d3dDevice, allowTearing, sm, VideoDeviceType.Software);
+        return !ValidateAdapter(d3dDevice, "WARP", log, out ShaderModel sm)
+            ? null
+            : GorgonVideoAdapterInfo.FromD3D(index, "WARP Software Adapter", in desc, adapter, d3dDevice, allowTearing, sm, VideoDeviceType.Software);
     }
 
     /// <summary>
@@ -288,7 +288,7 @@ internal unsafe class VideoAdapterEnumerator
 
         if (err.FAILED)
         {
-            log.PrintError(err, "There was an error creating the Direct 3D 12 device object.", LoggingLevel.Simple);        
+            log.PrintError(err, "There was an error creating the Direct 3D 12 device object.", LoggingLevel.Simple);
             return default;
         }
 
@@ -306,7 +306,7 @@ internal unsafe class VideoAdapterEnumerator
 
         if (err.FAILED)
         {
-            log.PrintError(err, "There was an error querying the Direct 3D 12 device object for feature level support.", LoggingLevel.Verbose);        
+            log.PrintError(err, "There was an error querying the Direct 3D 12 device object for feature level support.", LoggingLevel.Verbose);
             return default;
         }
 
@@ -320,7 +320,7 @@ internal unsafe class VideoAdapterEnumerator
         err = deviceFactory.Get()->CreateDevice((PIDXGIAdapter4)adapter.Get(), levels.MaxSupportedFeatureLevel, riid, (void**)d3dDevice.ReleaseAndGetAddressOf());
         if (err.FAILED)
         {
-            log.PrintError(err, $"There was an error creating the Direct 3D 12 device object for feature level {D3D_FEATURE_LEVEL.D3D_FEATURE_LEVEL_12_2}.", LoggingLevel.Simple);        
+            log.PrintError(err, $"There was an error creating the Direct 3D 12 device object for feature level {D3D_FEATURE_LEVEL.D3D_FEATURE_LEVEL_12_2}.", LoggingLevel.Simple);
             return default;
         }
 
@@ -357,7 +357,7 @@ internal unsafe class VideoAdapterEnumerator
         uint flags = allowDebugging ? DXGI.DXGI_CREATE_FACTORY_DEBUG : 0U;
 
         DirectX.CreateDXGIFactory2(flags, Win32.__uuidof<IDXGIFactory7>(), (void**)factory.GetAddressOf())
-            .ThrowIfFailed(GorgonResult.CannotEnumerate, () => Resources.GORGFX_ERR_CANNOT_CREATE_FACTORY);
+            .ThrowIfFailed(GorgonResult.CannotEnumerate, Resources.GORGFX_ERR_CANNOT_CREATE_FACTORY);
 
         log.Print("Enumerating video adapters...", LoggingLevel.Simple);
 
@@ -371,9 +371,9 @@ internal unsafe class VideoAdapterEnumerator
 
         do
         {
-            int currentIndex = (int)index;            
+            int currentIndex = (int)index;
 
-            HRESULT err = sortByPerformance ? factory.Get()->EnumAdapterByGpuPreference(index++, DXGI_GPU_PREFERENCE.DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE, &adapterGuid, (void**)adapter1.ReleaseAndGetAddressOf()) 
+            HRESULT err = sortByPerformance ? factory.Get()->EnumAdapterByGpuPreference(index++, DXGI_GPU_PREFERENCE.DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE, &adapterGuid, (void**)adapter1.ReleaseAndGetAddressOf())
                                             : factory.Get()->EnumAdapters1(index++, adapter1.ReleaseAndGetAddressOf());
 
             if (err.Value == DXGI.DXGI_ERROR_NOT_FOUND)
@@ -389,7 +389,7 @@ internal unsafe class VideoAdapterEnumerator
 
             err = adapter1.As(&adapter4);
 
-            if (err.FAILED)                
+            if (err.FAILED)
             {
                 log.PrintError(err, $"The adapter at index [{currentIndex}] does not support DXGI v1.6. This adapter will be skipped.", LoggingLevel.Simple);
                 continue;
@@ -398,7 +398,7 @@ internal unsafe class VideoAdapterEnumerator
             DXGI_ADAPTER_DESC3 desc;
 
             err = adapter4.Get()->GetDesc3(&desc);
-            if (err.FAILED) 
+            if (err.FAILED)
             {
                 log.PrintError(err, $"Could not retrieve the details for the adapter at index [{currentIndex}]. This adapter will be skipped.", LoggingLevel.Verbose);
                 continue;

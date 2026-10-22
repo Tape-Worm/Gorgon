@@ -24,9 +24,9 @@
 // Created: June 29, 2016 10:46:00 PM
 // 
 
+using System.Collections.Generic;
 using Gorgon.Configuration;
 using Gorgon.Graphics.Imaging.Properties;
-using Gorgon.Math;
 
 namespace Gorgon.Graphics.Imaging.Codecs;
 

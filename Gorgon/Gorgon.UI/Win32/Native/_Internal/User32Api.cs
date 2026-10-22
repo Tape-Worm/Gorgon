@@ -22,6 +22,7 @@
 // Created: July 12, 2025 12:00:09 PM
 //
 
+using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
@@ -114,15 +115,9 @@ internal static partial class User32Api
     /// <param name="newAttribute">The new value to assign to the attribute.</param>
     /// <returns>The previously assigned attribute.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static nint SetWindowAttribute(nint hwnd, GwlIndex attribute, nint newAttribute)
-    {
-        if (Environment.Is64BitProcess)
-        {
-            return SetWindowLongPtrW(hwnd, attribute, newAttribute);
-        }
-
-        return SetWindowLongW(hwnd, attribute, newAttribute.ToInt32());
-    }
+    public static nint SetWindowAttribute(nint hwnd, GwlIndex attribute, nint newAttribute) => Environment.Is64BitProcess
+            ? SetWindowLongPtrW(hwnd, attribute, newAttribute)
+            : SetWindowLongW(hwnd, attribute, newAttribute.ToInt32());
 
     /// <summary>
     /// Function to retrieve a window attribute.
@@ -131,13 +126,5 @@ internal static partial class User32Api
     /// <param name="attribute">The attribute to read.</param>
     /// <returns>The currently assigned attribute value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static nint GetWindowAttribute(nint hwnd, GwlIndex attribute)
-    {
-        if (Environment.Is64BitProcess)
-        {
-            return GetWindowLongPtrW(hwnd, attribute);
-        }
-
-        return GetWindowLongW(hwnd, attribute);
-    }
+    public static nint GetWindowAttribute(nint hwnd, GwlIndex attribute) => Environment.Is64BitProcess ? GetWindowLongPtrW(hwnd, attribute) : GetWindowLongW(hwnd, attribute);
 }

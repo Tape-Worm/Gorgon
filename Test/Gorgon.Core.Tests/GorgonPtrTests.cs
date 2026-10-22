@@ -13,9 +13,9 @@ public class GorgonPtrTests
     {
         int* nullPtr = null;
 
-        Assert.ThrowsExactly<NullReferenceException>(() => _ = new GorgonPtr<int>(nullPtr, 1), "Expected NullReferenceException for null pointer.");
-        Assert.ThrowsExactly<NullReferenceException>(() => _ = new GorgonPtr<int>((nint)null, 1), "Expected NullReferenceException for null nint.");
-        Assert.ThrowsExactly<NullReferenceException>(() => _ = new GorgonPtr<int>((nuint)null, 1), "Expected NullReferenceException for null nuint.");
+        _ = Assert.ThrowsExactly<NullReferenceException>(() => _ = new GorgonPtr<int>(nullPtr, 1), "Expected NullReferenceException for null pointer.");
+        _ = Assert.ThrowsExactly<NullReferenceException>(() => _ = new GorgonPtr<int>((nint)null, 1), "Expected NullReferenceException for null nint.");
+        _ = Assert.ThrowsExactly<NullReferenceException>(() => _ = new GorgonPtr<int>((nuint)null, 1), "Expected NullReferenceException for null nuint.");
     }
 
     [TestMethod]
@@ -26,9 +26,9 @@ public class GorgonPtrTests
         nint dummyNint = (nint)dummyPtr;
         nuint dummyNuint = (nuint)dummyPtr;
 
-        Assert.ThrowsExactly<ArgumentException>(() => _ = new GorgonPtr<int>(dummyPtr, -1), "Expected ArgumentException for negative count with pointer constructor.");
-        Assert.ThrowsExactly<ArgumentException>(() => _ = new GorgonPtr<int>(dummyNint, -1), "Expected ArgumentException for negative count with nint constructor.");
-        Assert.ThrowsExactly<ArgumentException>(() => _ = new GorgonPtr<int>(dummyNuint, -1), "Expected ArgumentException for negative count with nuint constructor.");
+        _ = Assert.ThrowsExactly<ArgumentException>(() => _ = new GorgonPtr<int>(dummyPtr, -1), "Expected ArgumentException for negative count with pointer constructor.");
+        _ = Assert.ThrowsExactly<ArgumentException>(() => _ = new GorgonPtr<int>(dummyNint, -1), "Expected ArgumentException for negative count with nint constructor.");
+        _ = Assert.ThrowsExactly<ArgumentException>(() => _ = new GorgonPtr<int>(dummyNuint, -1), "Expected ArgumentException for negative count with nuint constructor.");
     }
 
     [TestMethod]
@@ -39,9 +39,9 @@ public class GorgonPtrTests
         nint dummyNint = (nint)dummyPtr;
         nuint dummyNuint = (nuint)dummyPtr;
 
-        Assert.ThrowsExactly<ArgumentException>(() => _ = new GorgonPtr<int>(dummyPtr, 0), "Expected ArgumentException for zero count with pointer constructor.");
-        Assert.ThrowsExactly<ArgumentException>(() => _ = new GorgonPtr<int>(dummyNint, 0), "Expected ArgumentException for zero count with nint constructor.");
-        Assert.ThrowsExactly<ArgumentException>(() => _ = new GorgonPtr<int>(dummyNuint, 0), "Expected ArgumentException for zero count with nuint constructor.");
+        _ = Assert.ThrowsExactly<ArgumentException>(() => _ = new GorgonPtr<int>(dummyPtr, 0), "Expected ArgumentException for zero count with pointer constructor.");
+        _ = Assert.ThrowsExactly<ArgumentException>(() => _ = new GorgonPtr<int>(dummyNint, 0), "Expected ArgumentException for zero count with nint constructor.");
+        _ = Assert.ThrowsExactly<ArgumentException>(() => _ = new GorgonPtr<int>(dummyNuint, 0), "Expected ArgumentException for zero count with nuint constructor.");
     }
 
     [TestMethod]
@@ -353,8 +353,8 @@ public class GorgonPtrTests
         {
             GorgonPtr<int> tenItems = new(dataPtr, data.Length);
 
-            Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => { GorgonPtr<int> _ = tenItems[-1..5]; });
-            Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => { GorgonPtr<int> _ = tenItems[10..15]; });
+            _ = Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => { _ = tenItems[-1..5]; });
+            _ = Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => { _ = tenItems[10..15]; });
         }
     }
 
@@ -457,7 +457,7 @@ public class GorgonPtrTests
         GorgonPtr<int> gorgonPtrInt = GorgonPtr<int>.NullPtr;
 
         // Expect a NullReferenceException when trying to reinterpret the null GorgonPtr<int>
-        Assert.ThrowsExactly<NullReferenceException>(() => _ = gorgonPtrInt.AsRef<byte>());
+        _ = Assert.ThrowsExactly<NullReferenceException>(() => _ = gorgonPtrInt.AsRef<byte>());
     }
 
     [TestMethod]
@@ -468,7 +468,7 @@ public class GorgonPtrTests
         GorgonPtr<int> gorgonPtrInt = new(&dummyInt, 1);
 
         // Expect an ArgumentOutOfRangeException when trying to reinterpret the GorgonPtr<int> with an offset that is out of range
-        Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => _ = gorgonPtrInt.AsRef<byte>(sizeof(int)));
+        _ = Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => _ = gorgonPtrInt.AsRef<byte>(sizeof(int)));
     }
 
     [TestMethod]
@@ -479,7 +479,7 @@ public class GorgonPtrTests
         GorgonPtr<int> gorgonPtrInt = new(&dummyInt, 1);
 
         // Expect an ArgumentOutOfRangeException when trying to reinterpret the GorgonPtr<int> with an offset that is less than 0
-        Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => _ = gorgonPtrInt.AsRef<byte>(-1));
+        _ = Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => _ = gorgonPtrInt.AsRef<byte>(-1));
     }
 
     [TestMethod]
@@ -509,7 +509,7 @@ public class GorgonPtrTests
         GorgonPtr<byte> gorgonPtrByte = GorgonPtr<byte>.NullPtr;
 
         // Expect a NullReferenceException when trying to fill the null GorgonPtr<byte>
-        Assert.ThrowsExactly<NullReferenceException>(() => gorgonPtrByte.Fill(0x7F));
+        _ = Assert.ThrowsExactly<NullReferenceException>(() => gorgonPtrByte.Fill(0x7F));
     }
 
     [TestMethod]
@@ -519,7 +519,7 @@ public class GorgonPtrTests
         GorgonPtr<int> gorgonPtrInt = GorgonPtr<int>.NullPtr;
 
         // Expect a NullReferenceException when trying to convert the null GorgonPtr<int>
-        Assert.ThrowsExactly<NullReferenceException>(() => _ = GorgonPtr<int>.To<byte>(gorgonPtrInt));
+        _ = Assert.ThrowsExactly<NullReferenceException>(() => _ = GorgonPtr<int>.To<byte>(gorgonPtrInt));
     }
 
     [TestMethod]
@@ -530,7 +530,7 @@ public class GorgonPtrTests
         GorgonPtr<byte> gorgonPtrByte = new(&dummyArray, 1);
 
         // Expect an InvalidCastException when trying to convert GorgonPtr<byte> to GorgonPtr<int>
-        Assert.ThrowsExactly<InvalidCastException>(() => _ = GorgonPtr<byte>.To<int>(gorgonPtrByte));
+        _ = Assert.ThrowsExactly<InvalidCastException>(() => _ = GorgonPtr<byte>.To<int>(gorgonPtrByte));
     }
 
     [TestMethod]
@@ -699,7 +699,7 @@ public class GorgonPtrTests
             GorgonPtr<int> gorgonPtrSource = GorgonPtr<int>.NullPtr;
 
             // Expect an exception when trying to copy
-            Assert.ThrowsExactly<NullReferenceException>(() => gorgonPtrSource.CopyTo(gorgonPtrDestination));
+            _ = Assert.ThrowsExactly<NullReferenceException>(() => gorgonPtrSource.CopyTo(gorgonPtrDestination));
         }
     }
 
@@ -716,7 +716,7 @@ public class GorgonPtrTests
             GorgonPtr<int> gorgonPtrDestination = GorgonPtr<int>.NullPtr;
 
             // Expect an exception when trying to copy
-            Assert.ThrowsExactly<ArgumentNullException>(() => gorgonPtrSource.CopyTo(gorgonPtrDestination));
+            _ = Assert.ThrowsExactly<ArgumentNullException>(() => gorgonPtrSource.CopyTo(gorgonPtrDestination));
         }
     }
 
@@ -777,7 +777,7 @@ public class GorgonPtrTests
         {
             GorgonPtr<byte> bytePtr = new(sourcePtr, 1);
 
-            Assert.ThrowsExactly<OverflowException>(() => bytePtr.ToPointerType<uint>());
+            _ = Assert.ThrowsExactly<OverflowException>(() => bytePtr.ToPointerType<uint>());
         }
     }
 

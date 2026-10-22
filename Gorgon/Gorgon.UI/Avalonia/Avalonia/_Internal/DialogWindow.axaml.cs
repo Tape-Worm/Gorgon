@@ -22,6 +22,7 @@
 // Created: April 6, 2025 6:46:15 PM
 //
 
+using System;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
@@ -36,11 +37,9 @@ internal partial class DialogWindow
     : Window
 {
     // The dialog button visbility state.
-    private WindowDialogButtons _buttonState;
     // The details text.
-    private string _details = string.Empty;
+
     // The confirmation result when clicking on a button.
-    private ConfirmationResult _confirmResult = ConfirmationResult.None;
 
     /// <summary>
     /// Property to set or return the message to place in the message label.
@@ -56,28 +55,28 @@ internal partial class DialogWindow
     /// </summary>
     public string Details
     {
-        get => _details;
+        get;
         set
         {
-            _details = value;
-            TextDetails.Text = _details;//.Replace("\n", Environment.NewLine);
+            field = value;
+            TextDetails.Text = field;//.Replace("\n", Environment.NewLine);
         }
-    }
+    } = string.Empty;
 
     /// <summary>
     /// Property to set or return whether to show the OK button.
     /// </summary>
     public WindowDialogButtons Buttons
     {
-        get => _buttonState;
+        get;
         set
         {
-            if (_buttonState == value)
+            if (field == value)
             {
                 return;
             }
 
-            _buttonState = value;
+            field = value;
             UpdateButtonVisibility();
         }
     }
@@ -99,7 +98,7 @@ internal partial class DialogWindow
     /// <summary>
     /// Property to return the result from a confirmation dialog.
     /// </summary>
-    public ConfirmationResult ConfirmationResult => _confirmResult;
+    public ConfirmationResult ConfirmationResult { get; private set; } = ConfirmationResult.None;
 
     /// <summary>
     /// Function called when the details button is checked.
@@ -113,7 +112,7 @@ internal partial class DialogWindow
     /// </summary>
     private void UpdateButtonVisibility()
     {
-        if (_buttonState == WindowDialogButtons.None)
+        if (Buttons == WindowDialogButtons.None)
         {
             ButtonOK.IsVisible = ButtonYes.IsVisible = ButtonNo.IsVisible = ButtonCancel.IsVisible = CheckDetail.IsVisible = CheckToAll.IsVisible = PanelDetails.IsVisible = false;
             return;
@@ -121,12 +120,12 @@ internal partial class DialogWindow
 
         PanelDetails.IsVisible = false;
 
-        ButtonOK.IsVisible = (_buttonState & WindowDialogButtons.OK) == WindowDialogButtons.OK;
-        ButtonCancel.IsVisible = (_buttonState & WindowDialogButtons.Cancel) == WindowDialogButtons.Cancel;
-        ButtonYes.IsVisible = (_buttonState & WindowDialogButtons.Yes) == WindowDialogButtons.Yes;
-        ButtonNo.IsVisible = (_buttonState & WindowDialogButtons.No) == WindowDialogButtons.No;
-        CheckDetail.IsVisible = (_buttonState & WindowDialogButtons.Details) == WindowDialogButtons.Details;
-        CheckToAll.IsVisible = (_buttonState & WindowDialogButtons.ToAll) == WindowDialogButtons.ToAll;
+        ButtonOK.IsVisible = (Buttons & WindowDialogButtons.OK) == WindowDialogButtons.OK;
+        ButtonCancel.IsVisible = (Buttons & WindowDialogButtons.Cancel) == WindowDialogButtons.Cancel;
+        ButtonYes.IsVisible = (Buttons & WindowDialogButtons.Yes) == WindowDialogButtons.Yes;
+        ButtonNo.IsVisible = (Buttons & WindowDialogButtons.No) == WindowDialogButtons.No;
+        CheckDetail.IsVisible = (Buttons & WindowDialogButtons.Details) == WindowDialogButtons.Details;
+        CheckToAll.IsVisible = (Buttons & WindowDialogButtons.ToAll) == WindowDialogButtons.ToAll;
     }
 
     /// <summary>
@@ -143,7 +142,7 @@ internal partial class DialogWindow
     /// <param name="e">The event parameters.</param>
     private void ButtonCancel_Click(object sender, RoutedEventArgs e)
     {
-        _confirmResult = ConfirmationResult.Cancel;
+        ConfirmationResult = ConfirmationResult.Cancel;
         Close(false);
     }
 
@@ -154,11 +153,11 @@ internal partial class DialogWindow
     /// <param name="e">The event parameters.</param>
     private void ButtonYes_Click(object sender, RoutedEventArgs e)
     {
-        _confirmResult = ConfirmationResult.Yes;
+        ConfirmationResult = ConfirmationResult.Yes;
 
         if (CheckToAll.IsChecked ?? false)
         {
-            _confirmResult |= ConfirmationResult.ToAll;
+            ConfirmationResult |= ConfirmationResult.ToAll;
         }
         Close(true);
     }
@@ -170,11 +169,11 @@ internal partial class DialogWindow
     /// <param name="e">The event parameters.</param>
     private void ButtonNo_Click(object sender, RoutedEventArgs e)
     {
-        _confirmResult = ConfirmationResult.No;
+        ConfirmationResult = ConfirmationResult.No;
 
         if (CheckToAll.IsChecked ?? false)
         {
-            _confirmResult |= ConfirmationResult.ToAll;
+            ConfirmationResult |= ConfirmationResult.ToAll;
         }
         Close(true);
     }

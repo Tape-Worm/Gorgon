@@ -13,7 +13,7 @@ public class GorgonNativeBufferTests
         GorgonPtr<int> pointer = GorgonPtr<int>.NullPtr;
 
         // Act & Assert
-        Assert.ThrowsExactly<NullReferenceException>(() => _ = new GorgonNativeBuffer<int>(pointer));
+        _ = Assert.ThrowsExactly<NullReferenceException>(() => _ = new GorgonNativeBuffer<int>(pointer));
     }
 
     [TestMethod]
@@ -125,7 +125,7 @@ public class GorgonNativeBufferTests
         using GorgonNativeBuffer<int> buffer = new(5); // Assuming constructor takes length as parameter.
 
         // Act & Assert
-        Assert.ThrowsExactly<IndexOutOfRangeException>(() => { int value = buffer[10]; }); // Accessing an out-of-range index.
+        _ = Assert.ThrowsExactly<IndexOutOfRangeException>(() => { int value = buffer[10]; }); // Accessing an out-of-range index.
     }
 
     [TestMethod]
@@ -162,7 +162,7 @@ public class GorgonNativeBufferTests
         using GorgonNativeBuffer<int> buffer = new(5); // Assuming constructor takes length as parameter.
 
         // Act & Assert
-        Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => { GorgonPtr<int> ptr = buffer[5..10]; }); // Accessing an out-of-range slice.
+        _ = Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => { GorgonPtr<int> ptr = buffer[5..10]; }); // Accessing an out-of-range slice.
     }
 
     [TestMethod]
@@ -172,7 +172,7 @@ public class GorgonNativeBufferTests
         using GorgonNativeBuffer<int> buffer = new(5); // Assuming constructor takes length as parameter.
 
         // Act & Assert
-        Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => { GorgonPtr<int> ptr = buffer[-1..3]; }); // Accessing a slice with a starting index less than 0.
+        _ = Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => { GorgonPtr<int> ptr = buffer[-1..3]; }); // Accessing a slice with a starting index less than 0.
     }
 
     [TestMethod]
@@ -273,7 +273,7 @@ public class GorgonNativeBufferTests
 
         // Act & Assert
 #pragma warning disable IDE0305 // Simplify collection initialization (This breaks the test)
-        Assert.ThrowsExactly<NullReferenceException>(() => _ = GorgonNativeBuffer<int>.FromSpan(ptr.ToSpan()));
+        _ = Assert.ThrowsExactly<NullReferenceException>(() => _ = GorgonNativeBuffer<int>.FromSpan(ptr.ToSpan()));
 #pragma warning restore IDE0305 // Simplify collection initialization
     }
 
@@ -357,7 +357,7 @@ public class GorgonNativeBufferTests
         using GorgonNativeBuffer<int> buffer = new(5);
 
         // Act & Assert
-        Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => _ = buffer.AsRef<byte>(-1));
+        _ = Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => _ = buffer.AsRef<byte>(-1));
     }
 
     [TestMethod]
@@ -367,7 +367,7 @@ public class GorgonNativeBufferTests
         using GorgonNativeBuffer<int> buffer = new(5);
 
         // Act & Assert
-        Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => _ = buffer.AsRef<byte>(buffer.SizeInBytes));
+        _ = Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => _ = buffer.AsRef<byte>(buffer.SizeInBytes));
     }
 
     [TestMethod]
@@ -443,7 +443,7 @@ public class GorgonNativeBufferTests
         // Arrange
         GorgonNativeBuffer<int> sourceBuffer = new(5);
         GorgonNativeBuffer<int> destinationBuffer = new(5);
-        Assert.ThrowsExactly<ArgumentOutOfRangeException>(() =>
+        _ = Assert.ThrowsExactly<ArgumentOutOfRangeException>(() =>
 
                 // Act
                 sourceBuffer.CopyTo(destinationBuffer, -1));
@@ -455,7 +455,7 @@ public class GorgonNativeBufferTests
         // Arrange
         GorgonNativeBuffer<int> sourceBuffer = new(5);
         GorgonNativeBuffer<int> destinationBuffer = new(5);
-        Assert.ThrowsExactly<ArgumentOutOfRangeException>(() =>
+        _ = Assert.ThrowsExactly<ArgumentOutOfRangeException>(() =>
 
                 // Act
                 sourceBuffer.CopyTo(destinationBuffer, 0, null, -1));
@@ -467,7 +467,7 @@ public class GorgonNativeBufferTests
         // Arrange
         GorgonNativeBuffer<int> sourceBuffer = new(5);
         GorgonNativeBuffer<int> destinationBuffer = new(5);
-        Assert.ThrowsExactly<ArgumentException>(() =>
+        _ = Assert.ThrowsExactly<ArgumentException>(() =>
 
                 // Act
                 sourceBuffer.CopyTo(destinationBuffer, 0, 6));
@@ -563,14 +563,14 @@ public class GorgonNativeBufferTests
     public void ResizeCountTooSmall()
     {
         using GorgonNativeBuffer<byte> buffer = new(5);
-        Assert.ThrowsExactly<ArgumentException>(() => buffer.Resize(0));
+        _ = Assert.ThrowsExactly<ArgumentException>(() => buffer.Resize(0));
     }
 
     [TestMethod]
     public void ResizeAlignNotPow2()
     {
         using GorgonNativeBuffer<byte> buffer = new(5);
-        Assert.ThrowsExactly<ArgumentException>(() => buffer.Resize(5, 5));
+        _ = Assert.ThrowsExactly<ArgumentException>(() => buffer.Resize(5, 5));
     }
 
     [TestMethod]

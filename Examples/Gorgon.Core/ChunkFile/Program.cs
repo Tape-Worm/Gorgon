@@ -22,6 +22,7 @@
 // Created: April 28, 2025 9:35:11 PM
 //
 
+using System;
 using Avalonia;
 using ReactiveUI.Avalonia;
 

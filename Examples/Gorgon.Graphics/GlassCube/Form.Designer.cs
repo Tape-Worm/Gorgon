@@ -89,7 +89,6 @@ partial class Form
         this.CheckSmoothing.TabIndex = 1;
         this.CheckSmoothing.Text = "Texture Smoothing";
         this.CheckSmoothing.UseVisualStyleBackColor = true;
-        this.CheckSmoothing.Click += new System.EventHandler(this.CheckSmoothing_Click);
         // 
         // LabelFPS
         // 

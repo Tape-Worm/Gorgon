@@ -22,6 +22,10 @@
 // Created: May 8, 2025 1:31:13 PM
 //
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Imaging.Properties;
 using Gorgon.Graphics.Imaging.Wic;
@@ -241,15 +245,9 @@ public partial class GorgonImage
                               pitchFlags);
 
     /// <inheritdoc/>
-    public int GetDepthCount(int mipLevel)
-    {
-        if ((mipLevel < 0) || (mipLevel >= MipCount))
-        {
-            throw new ArgumentOutOfRangeException(nameof(mipLevel), mipLevel, string.Format(Resources.GORIMG_ERR_INDEX_OUT_OF_RANGE, 0, _imageInfo.MipCount));
-        }
-
-        return ImageType == ImageDataType.Image3D ? _buffers.MipOffsetSize[mipLevel].MipDepth : 1;
-    }
+    public int GetDepthCount(int mipLevel) => (mipLevel < 0) || (mipLevel >= MipCount)
+            ? throw new ArgumentOutOfRangeException(nameof(mipLevel), mipLevel, string.Format(Resources.GORIMG_ERR_INDEX_OUT_OF_RANGE, 0, _imageInfo.MipCount))
+            : ImageType == ImageDataType.Image3D ? _buffers.MipOffsetSize[mipLevel].MipDepth : 1;
 
     /// <inheritdoc/>
     public bool CanConvertToFormat(BufferFormat format)

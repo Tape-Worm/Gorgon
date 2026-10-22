@@ -22,6 +22,8 @@
 // Created: September 11, 2025 12:27:17 PM
 //
 
+using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using TerraFX.Interop.DirectX;
 using TerraFX.Interop.Windows;
@@ -307,80 +309,80 @@ public enum BarrierSync
     /// </summary>
     ClearReadWriteView = D3D12_BARRIER_SYNC.D3D12_BARRIER_SYNC_CLEAR_UNORDERED_ACCESS_VIEW,
     /* TODO: We do not support ray tracing or video encoding/decoding (yet).  Leave this here for now, but ignore it. */
-/*    /// <summary>
-    /// <para>
-    /// Synchronize scope for Video Decode execution.
-    /// </para>
-    /// <para>
-    /// <see cref="BarrierAccess">Access types</see> in this scope are limited to the following values:
-    /// <list type="bullet">
-    /// <item><description><see cref="BarrierAccess.VideoDecodeRead"/></description></item>
-    /// <item><description><see cref="BarrierAccess.VideoDecodeWrite"/></description></item>
-    /// <item><description><see cref="BarrierAccess.Common"/> (See the note on the <see cref="BarrierSync"/> description.)</description></item>
-    /// </list>
-    /// </para>
-    /// </summary>
-    VideoDecode = D3D12_BARRIER_SYNC.D3D12_BARRIER_SYNC_VIDEO_DECODE,
-    /// <summary>
-    /// <para>
-    /// Synchronize scope for Video Process execution.
-    /// </para>
-    /// <para>
-    /// <see cref="BarrierAccess">Access types</see> in this scope are limited to the following values:
-    /// <list type="bullet">
-    /// <item><description><see cref="BarrierAccess.VideoProcessRead"/></description></item>
-    /// <item><description><see cref="BarrierAccess.VideoProcessWrite"/></description></item>
-    /// <item><description><see cref="BarrierAccess.Common"/> (See the note on the <see cref="BarrierSync"/> description.)</description></item>
-    /// </list>
-    /// </para>
-    /// </summary>
-    VideoProcess = D3D12_BARRIER_SYNC.D3D12_BARRIER_SYNC_VIDEO_PROCESS,
-    /// <summary>
-    /// <para>
-    /// Synchronize scope for Video Encode execution.
-    /// </para>
-    /// <para>
-    /// <see cref="BarrierAccess">Access types</see> in this scope are limited to the following values:
-    /// <list type="bullet">
-    /// <item><description><see cref="BarrierAccess.VideoEncodeRead"/></description></item>
-    /// <item><description><see cref="BarrierAccess.VideoEncodeWrite"/></description></item>
-    /// <item><description><see cref="BarrierAccess.Common"/> (See the note on the <see cref="BarrierSync"/> description.)</description></item>
-    /// </list>
-    /// </para>
-    /// </summary>
-    VideoEncode = D3D12_BARRIER_SYNC.D3D12_BARRIER_SYNC_VIDEO_ENCODE,
-    /// <summary>
-    /// <para>
-    /// Synchronize scope for <see cref="GorgonGraphicsCommandContext.BuildAccelerationStructure"/> work.
-    /// </para>
-    /// <para>
-    /// Corresponding <see cref="BarrierAccess"/> (both <c>Before</c> and <c>After</c>) must have the <see cref="BarrierAccess.RayTracingAccelerationStructureWrite"/> bit set.
-    /// </para>
-    /// <para>
-    /// <see cref="BarrierAccess">Access types</see> in this scope are limited to the following values:
-    /// <list type="bullet">
-    /// <item><description><see cref="BarrierAccess.RayTracingAccelerationStructureRead"/></description></item>
-    /// <item><description><see cref="BarrierAccess.Common"/> (See the note on the <see cref="BarrierSync"/> description.)</description></item>
-    /// </list>
-    /// </para>
-    /// </summary>
-    BuildRayTracingAccelerationStructure = D3D12_BARRIER_SYNC.D3D12_BARRIER_SYNC_BUILD_RAYTRACING_ACCELERATION_STRUCTURE,
-    /// <summary>
-    /// <para>
-    /// Synchronize scope for <see cref="GorgonGraphicsCommandContext.CopyRaytracingAccelerationStructure"/> work.
-    /// </para>
-    /// <para>
-    /// Corresponding <see cref="BarrierAccess"/> (both <c>Before</c> and <c>After</c>) must have the <see cref="BarrierAccess.RayTracingAccelerationStructureWrite"/> bit set.
-    /// </para>
-    /// <para>
-    /// <see cref="BarrierAccess">Access types</see> in this scope are limited to the following values:
-    /// <list type="bullet">
-    /// <item><description><see cref="BarrierAccess.RayTracingAccelerationStructureRead"/></description></item>
-    /// <item><description><see cref="BarrierAccess.Common"/> (See the note on the <see cref="BarrierSync"/> description.)</description></item>
-    /// </list>
-    /// </para>
-    /// </summary>
-    CopyRayTracingAccelerationStructure = D3D12_BARRIER_SYNC.D3D12_BARRIER_SYNC_COPY_RAYTRACING_ACCELERATION_STRUCTURE,*/
+    /*    /// <summary>
+        /// <para>
+        /// Synchronize scope for Video Decode execution.
+        /// </para>
+        /// <para>
+        /// <see cref="BarrierAccess">Access types</see> in this scope are limited to the following values:
+        /// <list type="bullet">
+        /// <item><description><see cref="BarrierAccess.VideoDecodeRead"/></description></item>
+        /// <item><description><see cref="BarrierAccess.VideoDecodeWrite"/></description></item>
+        /// <item><description><see cref="BarrierAccess.Common"/> (See the note on the <see cref="BarrierSync"/> description.)</description></item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        VideoDecode = D3D12_BARRIER_SYNC.D3D12_BARRIER_SYNC_VIDEO_DECODE,
+        /// <summary>
+        /// <para>
+        /// Synchronize scope for Video Process execution.
+        /// </para>
+        /// <para>
+        /// <see cref="BarrierAccess">Access types</see> in this scope are limited to the following values:
+        /// <list type="bullet">
+        /// <item><description><see cref="BarrierAccess.VideoProcessRead"/></description></item>
+        /// <item><description><see cref="BarrierAccess.VideoProcessWrite"/></description></item>
+        /// <item><description><see cref="BarrierAccess.Common"/> (See the note on the <see cref="BarrierSync"/> description.)</description></item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        VideoProcess = D3D12_BARRIER_SYNC.D3D12_BARRIER_SYNC_VIDEO_PROCESS,
+        /// <summary>
+        /// <para>
+        /// Synchronize scope for Video Encode execution.
+        /// </para>
+        /// <para>
+        /// <see cref="BarrierAccess">Access types</see> in this scope are limited to the following values:
+        /// <list type="bullet">
+        /// <item><description><see cref="BarrierAccess.VideoEncodeRead"/></description></item>
+        /// <item><description><see cref="BarrierAccess.VideoEncodeWrite"/></description></item>
+        /// <item><description><see cref="BarrierAccess.Common"/> (See the note on the <see cref="BarrierSync"/> description.)</description></item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        VideoEncode = D3D12_BARRIER_SYNC.D3D12_BARRIER_SYNC_VIDEO_ENCODE,
+        /// <summary>
+        /// <para>
+        /// Synchronize scope for <see cref="GorgonGraphicsCommandContext.BuildAccelerationStructure"/> work.
+        /// </para>
+        /// <para>
+        /// Corresponding <see cref="BarrierAccess"/> (both <c>Before</c> and <c>After</c>) must have the <see cref="BarrierAccess.RayTracingAccelerationStructureWrite"/> bit set.
+        /// </para>
+        /// <para>
+        /// <see cref="BarrierAccess">Access types</see> in this scope are limited to the following values:
+        /// <list type="bullet">
+        /// <item><description><see cref="BarrierAccess.RayTracingAccelerationStructureRead"/></description></item>
+        /// <item><description><see cref="BarrierAccess.Common"/> (See the note on the <see cref="BarrierSync"/> description.)</description></item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        BuildRayTracingAccelerationStructure = D3D12_BARRIER_SYNC.D3D12_BARRIER_SYNC_BUILD_RAYTRACING_ACCELERATION_STRUCTURE,
+        /// <summary>
+        /// <para>
+        /// Synchronize scope for <see cref="GorgonGraphicsCommandContext.CopyRaytracingAccelerationStructure"/> work.
+        /// </para>
+        /// <para>
+        /// Corresponding <see cref="BarrierAccess"/> (both <c>Before</c> and <c>After</c>) must have the <see cref="BarrierAccess.RayTracingAccelerationStructureWrite"/> bit set.
+        /// </para>
+        /// <para>
+        /// <see cref="BarrierAccess">Access types</see> in this scope are limited to the following values:
+        /// <list type="bullet">
+        /// <item><description><see cref="BarrierAccess.RayTracingAccelerationStructureRead"/></description></item>
+        /// <item><description><see cref="BarrierAccess.Common"/> (See the note on the <see cref="BarrierSync"/> description.)</description></item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        CopyRayTracingAccelerationStructure = D3D12_BARRIER_SYNC.D3D12_BARRIER_SYNC_COPY_RAYTRACING_ACCELERATION_STRUCTURE,*/
     /// <summary>
     /// <para>
     /// Special sync bit indicating a split barrier. Used as an <c>After</c> state to indicates the start of a split barrier. The application must provide a matching barrier with this value as a 
@@ -988,7 +990,7 @@ public enum BarrierLayout
     /// Allows reading from the graphics queue by the compute queue.
     /// </para>
     /// </summary>
-    GraphicsQueueGenericReadFromCompute = D3D12_BARRIER_LAYOUT.D3D12_BARRIER_LAYOUT_DIRECT_QUEUE_GENERIC_READ_COMPUTE_QUEUE_ACCESSIBLE,    
+    GraphicsQueueGenericReadFromCompute = D3D12_BARRIER_LAYOUT.D3D12_BARRIER_LAYOUT_DIRECT_QUEUE_GENERIC_READ_COMPUTE_QUEUE_ACCESSIBLE,
 }
 
 /// <summary>
@@ -1161,7 +1163,7 @@ public readonly struct GorgonBufferBarrier
     /// <param name="resource"><inheritdoc cref="Resource" path="/summary"/></param>
     /// <param name="sync"><inheritdoc cref="Sync" path="/summary"/></param>
     /// <param name="access"><inheritdoc cref="Access" path="/summary"/></param>
-    internal GorgonBufferBarrier(ComPtr<ID3D12Resource2> resource, BarrierSync sync, BarrierAccess access)        
+    internal GorgonBufferBarrier(ComPtr<ID3D12Resource2> resource, BarrierSync sync, BarrierAccess access)
     {
         Resource = resource;
         Sync = sync;

@@ -23,10 +23,6 @@
 //
 
 using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Text;
-using TerraFX.Interop.DirectX;
 
 namespace Gorgon.Graphics.Core;
 

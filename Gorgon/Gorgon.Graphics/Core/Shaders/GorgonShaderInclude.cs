@@ -24,6 +24,7 @@
 // Created: July 20, 2016 11:17:52 PM
 // 
 
+using System.IO;
 using Gorgon.Core;
 
 namespace Gorgon.Graphics.Core;

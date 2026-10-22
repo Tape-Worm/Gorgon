@@ -65,7 +65,7 @@ public interface IGorgonTextureInfo
     /// </remarks>
     short ArrayCount
     {
-        get;        
+        get;
     }
 
     /// <summary>
@@ -78,7 +78,7 @@ public interface IGorgonTextureInfo
     /// </remarks>
     short Depth
     {
-        get;        
+        get;
     }
 
     /// <summary>
@@ -86,7 +86,7 @@ public interface IGorgonTextureInfo
     /// </summary>
     BufferFormat Format
     {
-        get;        
+        get;
     }
 
     /// <summary>
@@ -99,7 +99,7 @@ public interface IGorgonTextureInfo
     /// </remarks>
     int Height
     {
-        get;        
+        get;
     }
 
     /// <summary>
@@ -112,7 +112,7 @@ public interface IGorgonTextureInfo
     /// </remarks>
     bool IsCube
     {
-        get;        
+        get;
     }
 
     /// <summary>
@@ -125,7 +125,7 @@ public interface IGorgonTextureInfo
     /// </remarks>
     bool IsDepthStencil
     {
-        get;        
+        get;
     }
 
     /// <summary>
@@ -133,7 +133,7 @@ public interface IGorgonTextureInfo
     /// </summary>
     bool IsRenderTarget
     {
-        get;        
+        get;
     }
 
     /// <summary>
@@ -150,7 +150,7 @@ public interface IGorgonTextureInfo
     /// </remarks>
     bool IsShaderResource
     {
-        get;        
+        get;
     }
 
     /// <summary>
@@ -165,7 +165,7 @@ public interface IGorgonTextureInfo
     /// </remarks>
     bool HasReadWriteAccess
     {
-        get;        
+        get;
     }
 
     /// <summary>
@@ -173,7 +173,7 @@ public interface IGorgonTextureInfo
     /// </summary>
     short MipCount
     {
-        get;        
+        get;
     }
 
     /// <summary>
@@ -186,7 +186,7 @@ public interface IGorgonTextureInfo
     /// </remarks>
     GorgonMultisampleInfo MultisampleInfo
     {
-        get;        
+        get;
     }
 
     /// <summary>
@@ -194,7 +194,7 @@ public interface IGorgonTextureInfo
     /// </summary>
     TextureType Type
     {
-        get;        
+        get;
     }
 
     /// <summary>
@@ -202,7 +202,7 @@ public interface IGorgonTextureInfo
     /// </summary>
     int Width
     {
-        get;        
+        get;
     }
 
     /// <summary>

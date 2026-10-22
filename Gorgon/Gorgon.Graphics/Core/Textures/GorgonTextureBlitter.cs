@@ -22,17 +22,12 @@
 // Created: October 20, 2025 5:57:46 PM
 //
 
+using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using Gorgon.Core;
 using Gorgon.Diagnostics;
-using Gorgon.Graphics.Core.Properties;
-using Gorgon.Graphics.Imaging;
-using Gorgon.Math;
-using Gorgon.Memory;
-using TerraFX.Interop.Windows;
 
 namespace Gorgon.Graphics.Core;
 
@@ -181,7 +176,7 @@ public unsafe class GorgonTextureBlitter
 
         	    return result;
             }        
-        """;    
+        """;
 
     /// <summary>
     /// The name of the include for attaching the Gorgon blitter shaders to a custom shader.
@@ -335,7 +330,7 @@ public unsafe class GorgonTextureBlitter
     private void BuildPSO(GorgonCommandList commandList, GorgonBlendState blendState, GorgonShader pixelShader, ref readonly PsoKey key)
     {
         GorgonGraphicsPso pso;
-        Span<BufferFormat> outputFormats = stackalloc BufferFormat[commandList.RenderTargets.Length];        
+        Span<BufferFormat> outputFormats = stackalloc BufferFormat[commandList.RenderTargets.Length];
 
         if (commandList.RenderTargets.Length > 1)
         {
@@ -347,7 +342,7 @@ public unsafe class GorgonTextureBlitter
         else
         {
             outputFormats[0] = commandList.RenderTargets[0].Format;
-        }               
+        }
 
         GorgonGraphicsPsoBuilder psoFactory = new(Graphics);
         psoFactory.PixelShader(pixelShader)
@@ -355,7 +350,7 @@ public unsafe class GorgonTextureBlitter
                   .Multisample(commandList.RenderTargets[0].Texture.MultisampleInfo)
                   .BlendState(blendState);
 
-        _cachedPsos[key] = pso = _psoFactory.CreateOrGetPso($"Gorgon Blitter PSO - {commandList.Name}:{Guid.NewGuid():N}", Graphics.SharedResources.BlitterVertexShader, psoFactory);        
+        _cachedPsos[key] = pso = _psoFactory.CreateOrGetPso($"Gorgon Blitter PSO - {commandList.Name}:{Guid.NewGuid():N}", Graphics.SharedResources.BlitterVertexShader, psoFactory);
         _currentPso = (key, pso);
     }
 
@@ -445,7 +440,7 @@ public unsafe class GorgonTextureBlitter
     private void UpdateDrawCall(IGorgonTextureView<GorgonTextureCommon> texture)
     {
         if (_drawCall is null)
-        {            
+        {
             _drawCall = new GorgonIndexedDrawCall(6, _indexBuffer, _currentPso.Pso);
             _drawCall.AssignBuffer(new GorgonUsedBuffer(_vertexBuffer, ShaderStage.Vertex, BufferUsage.VertexBuffer));
         }
@@ -617,7 +612,7 @@ public unsafe class GorgonTextureBlitter
         if (!texture.Texture.MultisampleInfo.Equals(GorgonMultisampleInfo.NoMultisampling))
         {
             Graphics.Log.PrintWarning($"The texture '{texture.Texture.Name}' is a multisampled texture. The blitter cannot blit these until they are resolved into a non-multisampled texture. Nothing will be drawn.", LoggingLevel.Intermediate);
-            return;            
+            return;
         }
 
         GorgonColor actualColor = color ?? GorgonColors.White;
@@ -743,7 +738,7 @@ public unsafe class GorgonTextureBlitter
     /// </code>
     /// </example>
     /// <seealso cref="Blit"/>
-    public void BlitFullScreen(GorgonCommandList commandList, IGorgonTextureView<GorgonTextureCommon> texture, GorgonSampler? sampler = null, GorgonBlendState ? blendState = null)
+    public void BlitFullScreen(GorgonCommandList commandList, IGorgonTextureView<GorgonTextureCommon> texture, GorgonSampler? sampler = null, GorgonBlendState? blendState = null)
     {
         if (commandList.Viewports.IsEmpty)
         {
@@ -770,7 +765,7 @@ public unsafe class GorgonTextureBlitter
         }
 
         sampler ??= GorgonSampler.Default(Graphics);
-        blendState ??= GorgonBlendState.NoBlending;        
+        blendState ??= GorgonBlendState.NoBlending;
 
         BuildPsoKey(blendState, commandList.RenderTargets, Graphics.SharedResources.FullScreenBlitterPixelShader, out PsoKey key);
 
@@ -822,7 +817,7 @@ public unsafe class GorgonTextureBlitter
         GorgonCommandList initData = Graphics.GetCommandList("Gorgon Blitter Data Initialization Command List")
                                              .CopyRange(indices, _indexBuffer);
         Graphics.Submit(initData);
-        Graphics.WaitForGpu(GorgonGraphics.WaitFenceTimeout);
+        Graphics.WaitForGpu();
     }
 }
 

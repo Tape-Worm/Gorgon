@@ -34,9 +34,6 @@ namespace Gorgon.Examples;
 /// <summary>
 /// Defines a mesh that can be transformed
 /// </summary>
-/// <remarks>
-/// Initializes a new instance of the <see cref="MoveableMesh" /> class
-/// </remarks>
 /// <param name="graphics">The graphics interface that owns this object.</param>
 internal abstract class MoveableMesh(GorgonGraphics graphics)
         : Mesh(graphics)
@@ -64,7 +61,6 @@ internal abstract class MoveableMesh(GorgonGraphics graphics)
 
     // Flags to indicate that the object needs to update its transform.
     private bool _needsPosTransform;
-
     private bool _needsSclTransform;
     private bool _needsRotTransform;
     private bool _needsWorldUpdate;

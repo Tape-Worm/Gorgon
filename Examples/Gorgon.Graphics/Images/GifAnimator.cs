@@ -24,7 +24,12 @@
 // Created: April 5, 2018 12:49:36 PM
 // 
 
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
+using System.Threading;
+using System.Threading.Tasks;
 using Gorgon.Timing;
 
 namespace Gorgon.Examples;

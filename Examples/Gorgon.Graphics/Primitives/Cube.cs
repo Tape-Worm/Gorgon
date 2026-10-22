@@ -24,10 +24,11 @@
 // Created: Sunday, August 10, 2014 10:49:01 PM
 // 
 
+using System;
+using System.Drawing;
 using System.Numerics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
-using Gorgon.Renderers.Geometry;
 
 namespace Gorgon.Examples;
 
@@ -165,22 +166,12 @@ internal class Cube
 
         CalculateTangents(vertexData, indexData);
 
-        VertexBuffer = GorgonVertexBuffer.Create<GorgonVertexPosNormUvTangent>(graphics,
-                                                 new GorgonVertexBufferInfo(GorgonVertexPosNormUvTangent.SizeInBytes * vertexData.Length)
-                                                 {
-                                                     Name = "CubeVB",
-                                                     Usage = ResourceUsage.Immutable
-                                                 },
-                                                 vertexData);
-
-        IndexBuffer = new GorgonIndexBuffer(graphics,
-                                            new GorgonIndexBufferInfo(IndexCount)
-                                            {
-                                                Name = "CubeIB",
-                                                Usage = ResourceUsage.Immutable
-                                            },
-                                            indexData);
+        VertexBuffer = GorgonStructuredBufferView.CreateStructuredBuffer<GorgonVertexPosNormUvTangent>(graphics, "Primitive Cube VB", vertexData.Length);
+        IndexBuffer = new GorgonIndexBuffer(graphics, "Primitive Cube IB", new GorgonIndexBufferInfo(IndexCount * sizeof(int), true));
 
         UpdateAabb(vertexData);
+
+        Vertices = vertexData;
+        Indices = indexData;
     }
 }

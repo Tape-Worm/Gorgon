@@ -133,7 +133,7 @@ public unsafe sealed class GorgonIndexedExecuteCall
         ComPtr<ID3D12CommandSignature> result = default;
 
         Graphics.D3DDevice.Get()->CreateCommandSignature(&sigDesc, rootSignature, Win32.__uuidof<ID3D12CommandSignature>(), (void**)result.GetAddressOf())
-            .ThrowIfFailed(GorgonResult.CannotCreate, () => Resources.GORGFX_ERR_CANNOT_CREATE_EXECUTION_CALL);
+            .ThrowIfFailed(GorgonResult.CannotCreate, Resources.GORGFX_ERR_CANNOT_CREATE_EXECUTION_CALL);
 
         return result;
     }

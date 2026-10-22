@@ -24,8 +24,11 @@
 // Created: August 23, 2018 4:45:05 PM
 // 
 
+using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Threading;
+using System.Windows.Forms;
 
 namespace Gorgon.Examples;
 

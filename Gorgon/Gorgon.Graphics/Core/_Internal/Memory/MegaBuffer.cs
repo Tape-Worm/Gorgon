@@ -28,15 +28,12 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Text;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Math;
-using Gorgon.Native;
 using TerraFX.Interop.DirectX;
 using TerraFX.Interop.Windows;
-using Windows.Storage.Streams;
 using Win32 = TerraFX.Interop.Windows.Windows;
 
 namespace Gorgon.Graphics.Core;
@@ -86,7 +83,7 @@ internal unsafe sealed class MegaBuffer
     private readonly ComPtr<ID3D12Heap>[] _d3dHeaps = [];
 
     private static readonly uint[] _tileCounts = new uint[MaxTilesPerHeap];
-    private readonly ulong _maxAddressSpace;    
+    private readonly ulong _maxAddressSpace;
     private readonly GorgonGraphics _graphics;
     private readonly Stack<ushort>[] _tiles;
     private readonly List<GorgonRange<ushort>> _pendingCommits = [];
@@ -95,7 +92,7 @@ internal unsafe sealed class MegaBuffer
     private ushort _heapIndex;
     private readonly Queue<(ulong GfxFence, ulong ComputeFence, ulong CopyFence, GpuBufferAllocation Allocation)> _pendingDeletions = new(65536);
     private readonly List<ushort> _unmappedTiles = [];
-    private readonly List<int> _emptyHeaps = [];    
+    private readonly List<int> _emptyHeaps = [];
     private ulong _used;
 
     /// <summary>
@@ -107,6 +104,14 @@ internal unsafe sealed class MegaBuffer
     /// Property to return the index of the megabuffer within the megabuffer pool.
     /// </summary>
     public byte PoolIndex
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the unique ID for the megabuffer resource.
+    /// </summary>
+    public ulong ResourceID
     {
         get;
     }
@@ -147,7 +152,7 @@ internal unsafe sealed class MegaBuffer
             _memoryBlock.Dispose();
         }
 
-        _d3dBuffer.Dispose();        
+        _d3dBuffer.Dispose();
     }
 
     /// <summary>
@@ -164,10 +169,10 @@ internal unsafe sealed class MegaBuffer
         _graphics.Log.Print($"Creating '{name}'...", LoggingLevel.Verbose);
 
         _graphics.D3DDevice.Get()->CreateHeap(&desc, Win32.__uuidof<ID3D12Heap>(), (void**)result.GetAddressOf())
-            .ThrowIfFailed(GorgonResult.CannotCreate, () => string.Format(Resources.GORGFX_ERR_CANNOT_CREATE_HEAP, name));
+            .ThrowIfFailed(GorgonResult.CannotCreate, Resources.GORGFX_ERR_CANNOT_CREATE_HEAP, name);
 
         result.SetD3DDebugName(name);
-        
+
         for (int i = 0; i < MaxTilesPerHeap; ++i)
         {
             _tiles[_heapIndex].Push((ushort)i);
@@ -180,7 +185,7 @@ internal unsafe sealed class MegaBuffer
     /// Function to create the native backing store for the mega buffer.
     /// </summary>
     /// <returns>The pointer to the mega buffer resource and virtual memory block.</returns>
-    private (ComPtr<ID3D12Resource2> resource,ComPtr<D3D12MA_VirtualBlock> memoryBlock) CreateNative()
+    private (ComPtr<ID3D12Resource2> resource, ComPtr<D3D12MA_VirtualBlock> memoryBlock) CreateNative()
     {
         string name = $"Gorgon Mega Buffer ({SizeInBytes.FormatMemory()})";
         D3D12_RESOURCE_FLAGS flags = D3D12_RESOURCE_FLAGS.D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
@@ -197,10 +202,10 @@ internal unsafe sealed class MegaBuffer
 
         D3D12_RESOURCE_DESC desc = D3D12_RESOURCE_DESC.Buffer(_maxAddressSpace, flags);
 
-        _graphics.D3DDevice.Get()->CreateReservedResource2(&desc, D3D12_BARRIER_LAYOUT.D3D12_BARRIER_LAYOUT_UNDEFINED, 
-            null, null, 0, null, 
+        _graphics.D3DDevice.Get()->CreateReservedResource2(&desc, D3D12_BARRIER_LAYOUT.D3D12_BARRIER_LAYOUT_UNDEFINED,
+            null, null, 0, null,
             Win32.__uuidof<ID3D12Resource2>(), (void**)resource.GetAddressOf())
-            .ThrowIfFailed(GorgonResult.CannotCreate, () => Resources.GORGFX_ERR_CANNOT_CREATE_RESOURCE);
+            .ThrowIfFailed(GorgonResult.CannotCreate, Resources.GORGFX_ERR_CANNOT_CREATE_RESOURCE);
 
         resource.SetD3DDebugName(name);
 
@@ -209,7 +214,7 @@ internal unsafe sealed class MegaBuffer
         D3D12MA_VIRTUAL_BLOCK_DESC maDesc = new(SizeInBytes);
 
         D3D12MemAlloc.D3D12MA_CreateVirtualBlock(&maDesc, memoryBlock.GetAddressOf())
-            .ThrowIfFailed(GorgonResult.CannotCreate, () => string.Format(Resources.GORGFX_ERR_CANNOT_CREATE_HEAP, name));
+            .ThrowIfFailed(GorgonResult.CannotCreate, Resources.GORGFX_ERR_CANNOT_CREATE_HEAP, name);
 
         return (resource, memoryBlock);
     }
@@ -245,7 +250,7 @@ internal unsafe sealed class MegaBuffer
         if (_heapIndex >= _d3dHeaps.Length)
         {
             throw new GorgonException(GorgonResult.OutOfMemory, string.Format(Resources.GORGFX_ERR_HEAP_OUT_OF_MEMORY, "Mega Buffer", SizeInBytes.FormatMemory()));
-        }               
+        }
 
         _d3dHeaps[_heapIndex] = CreateHeap();
     }
@@ -480,7 +485,7 @@ internal unsafe sealed class MegaBuffer
             }
             else
             {
-                err.ThrowIfFailed(GorgonResult.CannotCreate, () => Resources.GORGFX_ERR_MEMORY_ALLOCATION);
+                err.ThrowIfFailed(GorgonResult.CannotCreate, Resources.GORGFX_ERR_MEMORY_ALLOCATION);
             }
         }
 
@@ -488,7 +493,7 @@ internal unsafe sealed class MegaBuffer
 
         (ushort start, ushort end) = MapTilesAndHeaps(location, size);
 
-        allocation = new GpuBufferAllocation(vmAllocation.AllocHandle, PoolIndex, (uint)desc.Size, (uint)location, start, end);
+        allocation = new GpuBufferAllocation(vmAllocation.AllocHandle, PoolIndex, ResourceID, (uint)desc.Size, (uint)location, start, end);
 
         _used += allocation.SizeInBytes;
 
@@ -506,8 +511,8 @@ internal unsafe sealed class MegaBuffer
             return;
         }
 
-        _pendingDeletions.Enqueue((_graphics.Queues.GraphicsQueue.FenceValue, 
-                                   _graphics.Queues.ComputeQueue.FenceValue, 
+        _pendingDeletions.Enqueue((_graphics.Queues.GraphicsQueue.FenceValue,
+                                   _graphics.Queues.ComputeQueue.FenceValue,
                                    _graphics.Queues.CopyQueue.FenceValue, allocation));
 
         allocation = GpuBufferAllocation.Null;
@@ -608,9 +613,10 @@ internal unsafe sealed class MegaBuffer
     public MegaBuffer(GorgonGraphics graphics, byte poolIndex, int sizePercent)
     {
         D3D12MA_Budget local = default;
-        
+
         _graphics = graphics;
         PoolIndex = poolIndex;
+        ResourceID = IDSequence.Next();
         _maxAddressSpace = 1UL << (_graphics.Adapter.MaxAddressBitsPerResource).Min(31);
 
         uint pageTableCounts = (uint)(_maxAddressSpace >> 16);

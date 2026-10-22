@@ -22,7 +22,9 @@
 // Created: October 2, 2025 3:01:10 PM
 //
 
+using System;
 using System.ComponentModel;
+using System.IO;
 using System.Runtime.InteropServices;
 using Gorgon.Core;
 using Gorgon.IO;
@@ -87,11 +89,6 @@ internal unsafe static class NativeLoader
 
         handle = LoadLibrary(path, false);
 
-        if ((handle != HMODULE.NULL) && (handle != HMODULE.INVALID_VALUE))
-        {
-            return handle;
-        }
-
-        return LoadLibrary(dllFileName, throwExceptionOnError);
+        return (handle != HMODULE.NULL) && (handle != HMODULE.INVALID_VALUE) ? handle : LoadLibrary(dllFileName, throwExceptionOnError);
     }
 }

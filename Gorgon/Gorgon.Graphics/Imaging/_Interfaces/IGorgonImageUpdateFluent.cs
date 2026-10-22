@@ -23,6 +23,8 @@
 // Created: December 27, 2020 4:23:52 PM
 // 
 
+using System;
+
 namespace Gorgon.Graphics.Imaging;
 
 /// <summary>

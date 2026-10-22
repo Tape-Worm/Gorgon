@@ -24,15 +24,21 @@
 // Created: March 4, 2017 10:22:14 AM
 // 
 
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Drawing;
+using System.IO;
 using System.Numerics;
-using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
+using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
-using Gorgon.Renderers.Cameras;
-using Gorgon.Renderers.Geometry;
+using Gorgon.Math;
 using Gorgon.Timing;
 using Gorgon.UI.WindowsForms;
 
@@ -43,80 +49,87 @@ namespace Gorgon.Examples;
 /// </summary>
 public partial class Form : System.Windows.Forms.Form
 {
+    /// <summary>
+    /// Data to tell the GPU what to render, how to render it.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    private struct RenderData
+    {
+        /// <summary>
+        /// The world/view/projection matrix used to transform our cube vertices.
+        /// </summary>
+        public Matrix4x4 WorldViewProjection;
+        /// <summary>
+        /// The handle to the vertex buffer containing the cube geometry.
+        /// </summary>
+        public int VertexBufferHandle;
+        /// <summary>
+        /// The handle to the texture sampler used to sample texels from the texture.
+        /// </summary>
+        public int SamplerHandle;
+        /// <summary>
+        /// The handle to the texture view to apply to the geometry.
+        /// </summary>
+        public int TextureHandle;
+    }
 
     // The target delta time.
     private const float TargetDelta = 1 / 60.0f;
 
-    // The primary graphics interface.
-    private GorgonGraphics _graphics;
-    // The swap chain for displaying the graphics.
-    private GorgonSwapChain _swap;
-    // The layout for a cube vertex.
-    private GorgonInputLayout _inputLayout;
-    // The constant buffer that will hold our world/view/projection matrix.
-    private GorgonConstantBufferView _wvpBuffer;
-    // The pixel shader used to draw to the swap chain target.
-    private GorgonPixelShader _pixelShader;
-    // The vertex shader used to transform the vertices.
-    private GorgonVertexShader _vertexShader;
-    // The texture to apply to the cube.
-    private GorgonTexture2DView _texture;
-    // The draw call used to submit data to the GPU, using a pixellated texture look.
-    private GorgonDrawIndexCall _drawCallPixel;
-    // The draw call used to submit data to the GPU, using a smooth look.
-    private GorgonDrawIndexCall _drawCallSmooth;
-    // The current draw call.
-    private GorgonDrawIndexCall _drawCall;
     // The cube to draw.
-    private Cube _cube;
-    // The camera for viewing the cube.
-    private GorgonPerspectiveCamera _camera;
+    private Cube? _cube;
+    // The graphics object factory.
+    private GorgonGraphicsFactory? _factory;
+    // The primary graphics interface.    
+    private GorgonGraphics? _graphics;
+    // The swap chain for displaying the graphics.
+    private GorgonSwapChain? _swap;
+    private IGorgonTextureView<GorgonTexture>? _texture;
+    // The factory used to cache and deliver pipeline state objects.
+    private GorgonGraphicsPsoFactory? _psoFactory;
+    // The draw call used to submit data to the GPU.
+    private GorgonIndexedDrawCall? _drawCall;
     // The rotation to apply to the cube, in degrees.
     private Vector3 _rotation;
     // The current time.
     private float _accumulator;
     // The timer used for updating the text block.
-    private IGorgonTimer _timer;
+    private readonly GorgonTimer _timer = new();
+    // The projection matrix. Updates when the view is altered.
+    private Matrix4x4 _projectionMatrix = Matrix4x4.Identity;
 
     /// <summary>Handles the Resize event of the AfterSwapChain control.</summary>
     /// <param name="sender">The source of the event.</param>
     /// <param name="e">The <see cref="SwapChainResizedEventArgs" /> instance containing the event data.</param>
-    private void AfterSwapChain_Resize(object sender, SwapChainResizedEventArgs e)
+    protected override void OnResize(EventArgs e)
     {
-        if (_camera is null)
+        base.OnResize(e);
+
+        if ((_swap is null) || (WindowState == FormWindowState.Minimized))
         {
             return;
         }
 
-        _camera.ViewDimensions = e.Size;
+        _swap.Resize(ClientSize.Width, ClientSize.Height);
+        _projectionMatrix = Matrix4x4.CreatePerspectiveFieldOfViewLeftHanded((80.0f).ToRadians(), (float)_swap.Width / _swap.Height, 0.1f, 1000f);
     }
 
     /// <summary>
     /// Function to update the world/view/projection matrix.
     /// </summary>
     /// <param name="world">The world matrix to update.</param>
+    /// <param name="renderData">The render data to update.</param>
     /// <remarks>
     /// <para>
     /// This is what sends the transformation information for the model plus any view space transforms (projection & view) to the GPU so the shader can transform the vertices in the 
     /// model and project them into 2D space on your render target.
     /// </para>
     /// </remarks>
-    private void UpdateWVP(ref readonly Matrix4x4 world)
+    private void UpdateWVP(ref readonly Matrix4x4 world, ref RenderData renderData)
     {
-        // Get the view and projection from the camera.
-        // These values are cached and returned as read only references for performance.
-        ref readonly Matrix4x4 viewMatrix = ref _camera.GetViewMatrix();
-        ref readonly Matrix4x4 projMatrix = ref _camera.GetProjectionMatrix();
-
-        // Build our world/vi ew/projection matrix to send to
-        // the shader.
-        Matrix4x4 temp = Matrix4x4.Multiply(world, viewMatrix);
-        // Direct 3D 11 requires that we transpose our matrix 
-        // before sending it to the shader.
-        Matrix4x4 wvp = Matrix4x4.Transpose(Matrix4x4.Multiply(temp, projMatrix));
-
-        // Update the constant buffer.
-        _wvpBuffer.Buffer.SetData(in wvp);
+        ref Matrix4x4 wvp = ref renderData.WorldViewProjection;
+        Matrix4x4 view = Matrix4x4.Multiply(world, Matrix4x4.CreateTranslation(0, 0, 1.5f));
+        wvp = Matrix4x4.Transpose(Matrix4x4.Multiply(view, _projectionMatrix));
     }
 
     /// <summary>
@@ -125,9 +138,7 @@ public partial class Form : System.Windows.Forms.Form
     /// <returns><b>true</b> to continue processing, <b>false</b> to stop.</returns>
     private bool Idle()
     {
-        int jitter1 = GorgonRandom.RandomInt32(1, 3);
-        int jitter2 = GorgonRandom.RandomInt32(1, 3);
-        int jitter3 = GorgonRandom.RandomInt32(1, 3);
+        Debug.Assert(_graphics is not null && _swap is not null && _texture is not null && _cube is not null && _drawCall is not null, "Not initialized.");
 
         if (_timer.Milliseconds > 500)
         {
@@ -135,8 +146,16 @@ public partial class Form : System.Windows.Forms.Form
             _timer.Reset();
         }
 
-        // Do nothing here.  When we need to update, we will.
-        _swap.RenderTargetView.Clear(GorgonColors.White);
+        int jitter1 = GorgonRandom.RandomInt32(1, 3);
+        int jitter2 = GorgonRandom.RandomInt32(1, 3);
+        int jitter3 = GorgonRandom.RandomInt32(1, 3);
+
+        RenderData renderData = new()
+        {
+            SamplerHandle = CheckSmoothing.Checked ? GorgonSampler.Linear(_graphics).GetViewHandle() : GorgonSampler.Default(_graphics).GetViewHandle(),
+            TextureHandle = _texture.GetViewHandle(),
+            VertexBufferHandle = _cube.VertexBuffer.GetViewHandle()
+        };
 
         // Use a fixed step timing to animate the cube.
         _accumulator += GorgonTiming.Delta;
@@ -163,7 +182,7 @@ public partial class Form : System.Windows.Forms.Form
                 _rotation.Z -= 360.0f;
             }
 
-            if (_drawCall == _drawCallPixel)
+            if (!CheckSmoothing.Checked)
             {
                 _cube.RotateXYZ(((int)_rotation.X / jitter1) * jitter1,
                                 ((int)_rotation.Y / jitter2) * jitter2,
@@ -177,84 +196,66 @@ public partial class Form : System.Windows.Forms.Form
             _accumulator -= TargetDelta;
         }
 
-        // Send our world matrix to the constant buffer so the vertex shader can update the vertices.
-        UpdateWVP(in _cube.WorldMatrix);
+        UpdateWVP(in _cube.WorldMatrix, ref renderData);
 
-        // And, as always, send the cube to the GPU for rendering.
-        _graphics.Submit(_drawCall);
+        _swap.WaitForFrameLatency();
 
-        GorgonExample.BlitLogo(_graphics);
+        GorgonCommandList list = _graphics.GetCommandList("Main command list")
+                                          .AddPresenter(_swap)
+                                          .ClearRenderTarget(_swap, GorgonColors.White)
+                                          .SetScissorRectangle(new GorgonRectangle(0, 0, _swap.Width, _swap.Height))
+                                          .SetViewport(new GorgonViewport(0, 0, _swap.Width, _swap.Height))
+                                          .SetRenderTarget(_swap)
+                                          .WriteConstant(0, in renderData);
 
-        _swap.Present(1);
+        list.Draw(_drawCall);
+
+        GorgonExample.BlitLogo(list);
+
+        _graphics.Submit(list);
+
         return true;
     }
 
     /// <summary>
     /// Function to provide initialization for our example.
     /// </summary>
-    private void Initialize()
+    /// <param name="graphics">The graphics interface to use.</param>
+    /// <param name="swap">The swap chain to use.</param>
+    private void Initialize(GorgonGraphics graphics, GorgonSwapChain swap)
     {
-#if DEBUG
-        GorgonGraphics.IsDebugEnabled = true;
-        GorgonGraphics.IsObjectTrackingEnabled = true;
-#endif
         // Load the texture.
-        _texture = GorgonTexture2DView.FromFile(_graphics,
-                                                Path.Combine(GorgonExample.GetResourcePath(@"Textures\GlassCube\").FullName, "Glass.png"),
-                                                new GorgonCodecPng());
+        GorgonCodecPng pngCodec = new();
+        using IGorgonImage image = pngCodec.FromFile(Path.Combine(GorgonExample.GetResourcePath(@"Textures\GlassCube\").FullName, "Glass.png"));
+        _texture = IGorgonTextureView<GorgonTexture>.CreateTexture(graphics, "Cube Texture", image);
 
-        // Create our shaders.
-        _vertexShader = GorgonShaderFactory.Compile<GorgonVertexShader>(_graphics, Resources.GlassCubeShaders, "GlassCubeVS");
-        _pixelShader = GorgonShaderFactory.Compile<GorgonPixelShader>(_graphics, Resources.GlassCubeShaders, "GlassCubePS");
+        // Create the pixel shader used to render our cube, and the vertex shader used to transform the cube geometry.
+        using GorgonShaderCompiler compiler = new(graphics);
+        GorgonShader _vertexShader = compiler.Compile(Resources.CubeShaders, "GlassCubeVS", ShaderType.VertexShader);
+        GorgonShader _pixelShader = compiler.Compile(Resources.CubeShaders, "GlassCubePS", ShaderType.PixelShader);
 
-        // Create the input layout for a cube vertex.
-        _inputLayout = GorgonInputLayout.CreateUsingType<GorgonVertexPosUv>(_graphics, nameof(GorgonVertexPosUv), _vertexShader);
+        _psoFactory = new GorgonGraphicsPsoFactory(graphics);
+        GorgonGraphicsPsoBuilder psoBuilder = new(graphics);
+        psoBuilder.OutputFormat(swap.Format)
+                  .PrimitiveType(PrimitiveType.TriangleList)
+                  .BlendState(GorgonBlendState.Default, 0)
+                  .RasterizerState(GorgonRasterState.NoCulling)
+                  .PixelShader(_pixelShader);
+        GorgonGraphicsPso cubePso = _psoFactory.CreateOrGetPso("Cube PSO", _vertexShader, psoBuilder);
 
-        // Create our constant buffer so we can send our transformation information to the shader.
-        _wvpBuffer = GorgonConstantBufferView.CreateConstantBuffer(_graphics, new GorgonConstantBufferInfo(Unsafe.SizeOf<Matrix4x4>())
-        {
-            Name = "GlassCube WVP Constant Buffer"
-        });
+        _cube = new Cube(graphics);
 
-        // Pull the camera back 1.5 units on the Z axis. Otherwise, we'd end up inside of the cube.
-        _camera = new GorgonPerspectiveCamera(_graphics, new Vector2(ClientSize.Width, ClientSize.Height), 0.1f, 10.0f, "GlassCube Camera")
-        {
-            Fov = 60.0f,
-            Position = new Vector3(0.0f, 0.0f, -1.5f)
-        };
+        _drawCall = new GorgonIndexedDrawCall(_cube.IndexBuffer.IndexCount, _cube.IndexBuffer, cubePso);
+        _drawCall.AssignTexture(new GorgonUsedTexture(_texture, ShaderStage.Pixel, TextureUsage.ReadOnly));
+        _drawCall.AssignBuffer(new GorgonUsedBuffer(_cube.VertexBuffer, ShaderStage.Vertex, BufferUsage.None));
 
-        _cube = new Cube(_graphics, _inputLayout);
+        _projectionMatrix = Matrix4x4.CreatePerspectiveFieldOfViewLeftHanded((80.0f).ToRadians(), (float)swap.Width / swap.Height, 0.1f, 1000f);
 
-        // Assign our swap chain as the primary render target.
-        _graphics.SetRenderTarget(_swap.RenderTargetView);
+        GorgonExample.LoadResources(graphics);
+        GorgonExample.EndInit();
 
-        // Set up the pipeline to draw the cube.
-        GorgonDrawIndexCallBuilder drawCallBuilder = new();
-        GorgonPipelineStateBuilder stateBuilder = new(_graphics);
-
-        // This draw call will use point filtering on the texture.
-        _drawCall = _drawCallPixel = drawCallBuilder.VertexBuffer(_inputLayout, _cube.VertexBuffer[0])
-                                                    .IndexBuffer(_cube.IndexBuffer, 0, _cube.IndexBuffer.IndexCount)
-                                                    .ShaderResource(ShaderType.Pixel, _texture)
-                                                    .ConstantBuffer(ShaderType.Vertex, _wvpBuffer)
-                                                    .SamplerState(ShaderType.Pixel, GorgonSamplerState.PointFiltering)
-                                                    .PipelineState(stateBuilder.PixelShader(_pixelShader)
-                                                                               .VertexShader(_vertexShader)
-                                                                               .RasterState(GorgonRasterState.NoCulling))
-                                                    .Build();
-
-        // And this one will use bilinear filtering.
-        _drawCallSmooth = drawCallBuilder.SamplerState(ShaderType.Pixel, GorgonSamplerState.Default).Build();
-
-        GorgonExample.LoadResources(_graphics);
-
-        _timer = new GorgonTimer();
+        _timer.Reset();
     }
-
-    /// <summary>Handles the Click event of the CheckSmoothing control.</summary>
-    /// <param name="sender">The source of the event.</param>
-    /// <param name="e">The <see cref="EventArgs" /> instance containing the event data.</param>
-    private void CheckSmoothing_Click(object sender, EventArgs e) => _drawCall = _drawCall == _drawCallPixel ? _drawCallSmooth : _drawCallPixel;
 
     /// <summary>Processes a dialog box key.</summary>
     /// <param name="keyData">One of the <see cref="T:System.Windows.Forms.Keys">Keys</see> values that represents the key to process.</param>
@@ -283,8 +284,7 @@ public partial class Form : System.Windows.Forms.Form
             return base.ProcessDialogKey(keyData);
         }
 
-        _drawCall = _drawCall == _drawCallPixel ? _drawCallSmooth : _drawCallPixel;
-        CheckSmoothing.Checked = _drawCall == _drawCallSmooth;
+        CheckSmoothing.Checked = !CheckSmoothing.Checked;
         return true;
     }
 
@@ -297,16 +297,14 @@ public partial class Form : System.Windows.Forms.Form
         base.OnFormClosing(e);
 
         // Always clean up after yourself.
-        GorgonExample.UnloadResources();
+        GorgonExample.ShutDown();
 
+        _psoFactory?.Dispose();
         _cube?.Dispose();
         _texture?.Dispose();
-        _wvpBuffer?.Dispose();
-        _inputLayout?.Dispose();
-        _pixelShader?.Dispose();
-        _vertexShader?.Dispose();
         _swap?.Dispose();
         _graphics?.Dispose();
+        _factory?.Dispose();
     }
 
     /// <summary>
@@ -320,38 +318,38 @@ public partial class Form : System.Windows.Forms.Form
         try
         {
             GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
+            ClientSize = LogicalToDeviceUnits(new Size(ExampleConfig.Default.Resolution.X, ExampleConfig.Default.Resolution.Y));
+            CenterToScreen();
 
-            // Initialize Gorgon as we have in the other examples.
-            // Find out which devices we have installed in the system.
-            IReadOnlyList<IGorgonVideoAdapterInfo> deviceList = GorgonGraphics.EnumerateAdapters(log: GorgonExample.Log);
+#if DEBUG
+            _factory = new(GorgonGraphicsDebugFlags.SynchronizedCommandQueueValidation
+                | GorgonGraphicsDebugFlags.GpuBasedValidation
+                | GorgonGraphicsDebugFlags.GpuBasedStateTrackingValidation
+                | GorgonGraphicsDebugFlags.ObjectTracking, log: GorgonExample.Log);
+#else
+            _factory = new(log: GorgonExample.Log);
+#endif     
 
-            if (deviceList.Count == 0)
+            // Ensure that we have an appropriate GPU that we can use.
+            IReadOnlyList<GorgonVideoAdapterInfo> adapters = _factory.EnumerateAdapters();
+
+            if (adapters.Count == 0)
             {
                 GorgonDialogs.Error(this, "There are no suitable video adapters available in the system. This example is unable to continue and will now exit.");
                 Application.Exit();
                 return;
             }
 
-            _graphics = new GorgonGraphics(deviceList[0], log: GorgonExample.Log);
+            _graphics = _factory.CreateGraphics(adapters[0]);
 
             // Build our swap chain.
             _swap = new GorgonSwapChain(_graphics,
-                                        this,
-                                        new GorgonSwapChainInfo(ClientSize.Width, ClientSize.Height, BufferFormat.R8G8B8A8_UNorm)
-                                        {
-                                            Name = "GlassCube SwapChain",
-                                            // We don't need this, as it's the default, but it's included for 
-                                            // completeness.
-                                            StretchBackBuffer = true
-                                        });
-
-            // Register an event to tell us when the swap chain was resized.
-            // We need to do this in order to resize our projection matrix & viewport to match our client area.
-            // Also, when a swap chain is resized, it is unbound from the pipeline, and needs to be reassigned to the draw call.
-            _swap.SwapChainResized += AfterSwapChain_Resize;
+                                        "GlassCube SwapChain",
+                                        Handle,
+                                        new GorgonSwapChainInfo(new GorgonSwapChainInfo(ClientSize.Width, ClientSize.Height, BufferFormat.R8G8B8A8_UNorm)));
 
             // Initialize the app.
-            Initialize();
+            Initialize(_graphics, _swap);
 
             // Assign idle event.
             GorgonExample.Loop.Run(Idle);

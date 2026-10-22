@@ -23,6 +23,7 @@
 // Created: Friday, September 02, 2011 6:32:30 AM
 // 
 
+using System;
 using System.Drawing;
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -243,15 +244,9 @@ public readonly struct GorgonColor
     /// <param name="color">The color to convert.</param>
     /// <returns>The non-premultiplied color.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static GorgonColor RemovePremultipliedAlpha(GorgonColor color)
-    {
-        if (color.Alpha.EqualsEpsilon(0))
-        {
-            return new(0, 0, 0, 0);
-        }
-
-        return new(color.Red / color.Alpha, color.Green / color.Alpha, color.Blue / color.Alpha, color.Alpha);
-    }
+    public static GorgonColor RemovePremultipliedAlpha(GorgonColor color) => color.Alpha.EqualsEpsilon(0)
+            ? new(0, 0, 0, 0)
+            : new(color.Red / color.Alpha, color.Green / color.Alpha, color.Blue / color.Alpha, color.Alpha);
 
     /// <summary>
     /// Function to perform linear interpolation between two <see cref="GorgonColor"/> values.
@@ -567,7 +562,7 @@ public readonly struct GorgonColor
         }
         else
         {
-            r = r.Pow(pow) * 1.055f - 0.055f;
+            r = (r.Pow(pow) * 1.055f) - 0.055f;
         }
 
         if (g <= 0.0031308f)
@@ -576,7 +571,7 @@ public readonly struct GorgonColor
         }
         else
         {
-            g = g.Pow(pow) * 1.055f - 0.055f;
+            g = (g.Pow(pow) * 1.055f) - 0.055f;
         }
 
         if (b <= 0.0031308f)
@@ -585,7 +580,7 @@ public readonly struct GorgonColor
         }
         else
         {
-            b = b.Pow(pow) * 1.055f - 0.055f;
+            b = (b.Pow(pow) * 1.055f) - 0.055f;
         }
 
         return new(r, g, b, color.Alpha);

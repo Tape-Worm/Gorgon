@@ -34,7 +34,7 @@ public enum TextureAddressing
     /// <summary>
     /// Repeats the texture on the axis this mode is applied to.
     /// </summary>
-    Wrap = D3D12_TEXTURE_ADDRESS_MODE.D3D12_TEXTURE_ADDRESS_MODE_WRAP, 
+    Wrap = D3D12_TEXTURE_ADDRESS_MODE.D3D12_TEXTURE_ADDRESS_MODE_WRAP,
     /// <summary>
     /// Mirrors the texture on the axis this mode is applied to.
     /// </summary>

@@ -22,6 +22,9 @@
 // Created: February 9, 2024 2:14:59 PM
 //
 
+using System;
+using System.IO;
+using System.Text;
 using Gorgon.Native;
 
 namespace Gorgon.IO;

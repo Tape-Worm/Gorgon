@@ -22,6 +22,7 @@
 // Created: November 17, 2023 6:26:10 PM
 //
 
+using System;
 using System.Globalization;
 using Gorgon.Math;
 using Gorgon.Properties;

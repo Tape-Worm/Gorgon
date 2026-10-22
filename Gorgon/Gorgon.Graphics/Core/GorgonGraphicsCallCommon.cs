@@ -22,6 +22,8 @@
 // Created: July 1, 2026 10:55:24 PM
 //
 
+using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Gorgon.Core;
 
@@ -101,7 +103,7 @@ public readonly record struct GorgonUsedTexture(GorgonTextureCommon Texture, Sha
     /// <param name="view">The read/write view containing the texture being used.</param>
     /// <param name="stage"><inheritdoc cref="GorgonUsedTexture(GorgonTextureCommon, ShaderStage, TextureUsage)" path="/param[@name='Shader']"/></param>
     public GorgonUsedTexture(GorgonTextureRwView view, ShaderStage stage)
-        : this(view.Texture, stage, TextureUsage.ReadWrite)=> SubResources = new(view.MipLevel, 1, view.ArrayIndex, view.ArrayCount, view.PlaneIndex, 1);
+        : this(view.Texture, stage, TextureUsage.ReadWrite) => SubResources = new(view.MipLevel, 1, view.ArrayIndex, view.ArrayCount, view.PlaneIndex, 1);
 }
 
 /// <summary>

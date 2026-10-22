@@ -23,6 +23,11 @@
 // Created: Monday, June 15, 2015 8:57:39 PM
 // 
 
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
 using Gorgon.Core;
 using Gorgon.Properties;
 
@@ -285,12 +290,7 @@ public sealed class GorgonChunkFileReader
 
             ulong appHeaderID = reader.ReadUInt64();
 
-            if (!appIDs.Contains(appHeaderID))
-            {
-                return false;
-            }
-
-            return true;
+            return appIDs.Contains(appHeaderID);
         }
         catch
         {

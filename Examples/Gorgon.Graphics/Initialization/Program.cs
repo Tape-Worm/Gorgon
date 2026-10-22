@@ -24,12 +24,14 @@
 // Created: March 2, 2017 12:11:47 AM
 // 
 
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
+using System.Windows.Forms;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
-using Gorgon.Math;
 using Gorgon.Timing;
 using Gorgon.UI.WindowsForms;
 
@@ -161,7 +163,7 @@ internal static class Program
 
         // Command lists use a fluent interface to allow us to chain multiple commands together at once.
 
-                   // This tells the command list that we want to present the back buffer to the screen at the end of the execution of the command list.
+        // This tells the command list that we want to present the back buffer to the screen at the end of the execution of the command list.
         commandList.AddPresenter(_swap)
                    // This sets the swap chain as the destination for our rendered graphics.
                    .SetRenderTarget(_swap.Target)
@@ -347,7 +349,7 @@ internal static class Program
         Size screenSize = new(output.Bounds.Width, output.Bounds.Height);
 
         if (!_swap.IsWindowed)
-        {            
+        {
             _swap.ExitFullscreen();
 
             // Our original window size should now be set back.
@@ -377,7 +379,7 @@ internal static class Program
             log.LogStart(new GorgonComputerInfo());
 
 #if DEBUG
-            _factory = new GorgonGraphicsFactory(GorgonGraphicsDebugFlags.SynchronizedCommandQueueValidation 
+            _factory = new GorgonGraphicsFactory(GorgonGraphicsDebugFlags.SynchronizedCommandQueueValidation
                 | GorgonGraphicsDebugFlags.GpuBasedValidation
                 | GorgonGraphicsDebugFlags.GpuBasedStateTrackingValidation
                 | GorgonGraphicsDebugFlags.ObjectTracking, log: log);

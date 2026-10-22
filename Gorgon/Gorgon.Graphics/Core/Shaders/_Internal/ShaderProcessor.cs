@@ -24,7 +24,9 @@
 // Created: July 7, 2016 11:53:48 PM
 // 
 
+using System;
 using System.Collections.Concurrent;
+using System.IO;
 using System.Text;
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
@@ -137,12 +139,9 @@ internal static class ShaderProcessor
 
         string includePath = Path.GetFullPath(line.ToString(1, endQuote - 1));
 
-        if (includePath.Length == 0)
-        {
-            throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORGFX_ERR_SHADER_INCLUDE_PATH_INVALID, includeLine));
-        }
-
-        return new GorgonShaderInclude(includeName, includePath);
+        return includePath.Length == 0
+            ? throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORGFX_ERR_SHADER_INCLUDE_PATH_INVALID, includeLine))
+            : new GorgonShaderInclude(includeName, includePath);
 
     }
 

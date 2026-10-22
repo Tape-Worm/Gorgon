@@ -113,7 +113,7 @@ public unsafe abstract class GorgonShaderBufferView
 
         D3D12_SHADER_RESOURCE_VIEW_DESC desc = GetDesc();
 
-        _descriptors.Allocate(1, out _allocation);        
+        _descriptors.Allocate(1, out _allocation);
 
         D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle = _descriptors.D3DCpuHandle;
 
@@ -163,7 +163,7 @@ public unsafe abstract class GorgonShaderBufferView
     /// <param name="elementCount">The number of elements in the buffer to view.</param>
     /// <param name="elementSize">The size of the element.</param>
     /// <param name="owned"><inheritdoc cref="GorgonResourceView(GorgonGraphics, string, GorgonGpuResource, bool)" path="/param[@name='owned']"/></param>
-    internal GorgonShaderBufferView(GorgonGraphics graphics, string name, GorgonGpuBuffer buffer, long startIndex, int elementCount, int elementSize , bool owned)
+    internal GorgonShaderBufferView(GorgonGraphics graphics, string name, GorgonGpuBuffer buffer, long startIndex, int elementCount, int elementSize, bool owned)
         : base(graphics, name, buffer, owned)
     {
         _descriptors = graphics.Descriptors.GpuViewDescriptors;

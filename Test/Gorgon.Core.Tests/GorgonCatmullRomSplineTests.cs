@@ -37,7 +37,7 @@ public class GorgonCatmullRomSplineTests
         spline.UpdateTangents();
 
         // Act & Assert
-        Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => _ = spline.GetInterpolatedValue(4, 0.5f));
+        _ = Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => _ = spline.GetInterpolatedValue(4, 0.5f));
     }
 
     [TestMethod]

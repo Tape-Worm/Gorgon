@@ -22,10 +22,11 @@
 // Created: June 15, 2026 1:09:18 PM
 //
 
+using System;
+using System.Linq;
 using Gorgon.Core;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Math;
-using Gorgon.Memory;
 using Gorgon.Patterns;
 using TerraFX.Interop.DirectX;
 
@@ -60,7 +61,7 @@ public sealed class GorgonGraphicsPsoBuilder(GorgonGraphics graphics)
     {
         get;
     } = graphics;
-    
+
     /// <summary>
     /// Function to copy the state from one pso object to another.
     /// </summary>
@@ -69,8 +70,8 @@ public sealed class GorgonGraphicsPsoBuilder(GorgonGraphics graphics)
     private static void Copy(GorgonGraphicsPso source, GorgonGraphicsPso destination)
     {
         destination.Name = source.Name;
-        destination.OutputFormats = source.OutputFormats;        
-        
+        destination.OutputFormats = source.OutputFormats;
+
         destination.PrimitiveType = source.PrimitiveType;
         destination.IndexBufferStripCutIdentifier = source.IndexBufferStripCutIdentifier;
 
@@ -79,13 +80,13 @@ public sealed class GorgonGraphicsPsoBuilder(GorgonGraphics graphics)
         destination.GeometryShader = source.GeometryShader;
         destination.DomainShader = source.DomainShader;
         destination.HullShader = source.HullShader;
-        
+
         destination.DepthStencilState = source.DepthStencilState;
         destination.DepthStencilFormat = source.DepthStencilFormat;
 
         destination.RasterizerState = source.RasterizerState;
 
-        destination.IsAlphaToCoverageEnabled = source.IsAlphaToCoverageEnabled;        
+        destination.IsAlphaToCoverageEnabled = source.IsAlphaToCoverageEnabled;
         destination.IsIndependentBlendingEnabled = source.IsIndependentBlendingEnabled;
         destination.BlendStates = source.BlendStates;
 
@@ -117,7 +118,7 @@ public sealed class GorgonGraphicsPsoBuilder(GorgonGraphics graphics)
             throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_NO_DEPTH_BOUNDS_TEST_SUPPORT, Graphics.Adapter.Name));
         }
 
-        if ((!Graphics.Adapter.SupportsIndependentFrontAndBackStencilRef) && (_worker.DepthStencilState.IsStencilEnabled) 
+        if ((!Graphics.Adapter.SupportsIndependentFrontAndBackStencilRef) && (_worker.DepthStencilState.IsStencilEnabled)
             && ((_worker.DepthStencilState.FrontFaceStencilOperation.ReadMask != _worker.DepthStencilState.BackFaceStencilOperation.ReadMask)
              || (_worker.DepthStencilState.FrontFaceStencilOperation.WriteMask != _worker.DepthStencilState.BackFaceStencilOperation.WriteMask)))
         {
@@ -130,7 +131,7 @@ public sealed class GorgonGraphicsPsoBuilder(GorgonGraphics graphics)
         }
 
         if ((_worker.HullShader is not null) && (_worker.PrimitiveType.ToTopologyType() != D3D12_PRIMITIVE_TOPOLOGY_TYPE.D3D12_PRIMITIVE_TOPOLOGY_TYPE_PATCH))
-        {        
+        {
             throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_PSO_HULL_DOMAIN_PRIMTYPE_NOT_PATCH, _worker.PrimitiveType));
         }
 
@@ -622,7 +623,7 @@ public sealed class GorgonGraphicsPsoBuilder(GorgonGraphics graphics)
         _worker.VertexShader = _worker.PixelShader = _worker.GeometryShader = _worker.DomainShader = _worker.HullShader = null;
         _worker.RWFormatCount = 0;
         _worker.Name = string.Empty;
-        _worker.DepthStencilFormat = BufferFormat.Unknown;        
+        _worker.DepthStencilFormat = BufferFormat.Unknown;
         _worker.IsAlphaToCoverageEnabled = false;
         _worker.IsIndependentBlendingEnabled = false;
         _worker.Multisample = GorgonMultisampleInfo.NoMultisampling;
@@ -630,7 +631,7 @@ public sealed class GorgonGraphicsPsoBuilder(GorgonGraphics graphics)
         _worker.PrimitiveType = Core.PrimitiveType.TriangleList;
         _worker.IndexBufferStripCutIdentifier = Core.IndexBufferStripCutIdentifier.Disabled;
         _worker.DepthStencilState = GorgonDepthStencilState.Default;
-        _worker.RasterizerState = GorgonRasterState.Default;        
+        _worker.RasterizerState = GorgonRasterState.Default;
 
         Array.Fill(_worker.RWBlendStates, GorgonBlendState.NoBlending);
         Array.Fill(_worker.RWFormats, BufferFormat.Unknown);
@@ -641,7 +642,7 @@ public sealed class GorgonGraphicsPsoBuilder(GorgonGraphics graphics)
     /// <inheritdoc cref="IGorgonFluentBuilder{TB, TBo}.ResetTo(TBo)"/>
     public GorgonGraphicsPsoBuilder ResetTo(GorgonGraphicsPso builderObject)
     {
-        Copy(builderObject, _worker);        
+        Copy(builderObject, _worker);
         _worker.Name = string.Empty;
         return this;
     }

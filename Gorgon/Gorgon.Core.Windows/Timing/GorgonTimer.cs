@@ -24,6 +24,7 @@
 // Created: Saturday, June 18, 2011 10:35:53 AM
 // 
 
+using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Gorgon.Core.Windows.Properties;

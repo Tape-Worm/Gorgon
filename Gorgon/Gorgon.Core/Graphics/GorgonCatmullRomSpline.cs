@@ -23,6 +23,8 @@
 // Created: Wednesday, October 02, 2012 07:17:00 AM
 // 
 
+using System;
+using System.Collections.Generic;
 using System.Numerics;
 using Gorgon.Math;
 using Gorgon.Properties;
@@ -133,14 +135,14 @@ public class GorgonCatmullRomSpline
             return Points[startPointIndex + 1];
         }
 
-        var deltaCubeSquare = new Vector4(delta * delta * delta, delta * delta, delta, 1.0f);
+        Vector4 deltaCubeSquare = new(delta * delta * delta, delta * delta, delta, 1.0f);
 
         calculations.SetRow(0, Points[startPointIndex]);
         calculations.SetRow(1, Points[startPointIndex + 1]);
         calculations.SetRow(2, _tangents[startPointIndex]);
         calculations.SetRow(3, _tangents[startPointIndex + 1]);
 
-        var calcResult = Matrix4x4.Multiply(_coefficients, calculations);
+        Matrix4x4 calcResult = Matrix4x4.Multiply(_coefficients, calculations);
         return Vector4.Transform(deltaCubeSquare, calcResult);
     }
 
@@ -229,7 +231,7 @@ public class GorgonCatmullRomSpline
                 }
             }
 
-            var diff = Vector4.Subtract(next, prev);
+            Vector4 diff = Vector4.Subtract(next, prev);
             _tangents[i] = Vector4.Multiply(diff, 0.5f);
         }
     }

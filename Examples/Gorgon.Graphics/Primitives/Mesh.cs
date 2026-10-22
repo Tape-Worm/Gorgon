@@ -24,33 +24,38 @@
 // Created: Thursday, September 18, 2014 2:11:22 AM
 // 
 
+using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Numerics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
-using Gorgon.Renderers.Geometry;
 
 namespace Gorgon.Examples;
 
 /// <summary>
 /// Base class for a mesh object
 /// </summary>
-/// <remarks>
-/// Initializes a new instance of the <see cref="Mesh"/> class
-/// </remarks>
 /// <param name="graphics">The graphics interface that owns this object.</param>
 internal abstract class Mesh(GorgonGraphics graphics)
         : IDisposable
 {
     // The axis aligned bounding box for the mesh.
     private GorgonBoundingBox _aabb;
+    // The indices for the mesh.
+    private int[] _indices = [];
+    // The vertices for the mesh.
+    private GorgonVertexPosNormUvTangent[] _vertices = [];
 
     /// <summary>
     /// Property to return the material for this mesh.
     /// </summary>
+    [MaybeNull]
     public MeshMaterial Material
     {
         get;
-    } = new MeshMaterial();
+        set;
+    }
 
     /// <summary>
     /// Property to return the graphics interface that owns this object.
@@ -99,7 +104,8 @@ internal abstract class Mesh(GorgonGraphics graphics)
     /// <summary>
     /// Property to return the vertex buffer.
     /// </summary>
-    public GorgonVertexBuffer VertexBuffer
+    [MaybeNull]
+    public GorgonStructuredBufferView VertexBuffer
     {
         get;
         protected set;
@@ -108,6 +114,7 @@ internal abstract class Mesh(GorgonGraphics graphics)
     /// <summary>
     /// Property to return the index buffer.
     /// </summary>
+    [MaybeNull]
     public GorgonIndexBuffer IndexBuffer
     {
         get;
@@ -115,18 +122,53 @@ internal abstract class Mesh(GorgonGraphics graphics)
     }
 
     /// <summary>
+    /// Property to return the list of vertices for the mesh.
+    /// </summary>
+    public ReadOnlySpan<GorgonVertexPosNormUvTangent> Vertices
+    {
+        get => _vertices;
+        protected set
+        {
+            if (value.Length == 0)
+            {
+                _vertices = [];
+            }
+
+            if (_vertices.Length != value.Length)
+            {
+                _vertices = new GorgonVertexPosNormUvTangent[value.Length];
+            }
+
+            value.CopyTo(_vertices);
+        }
+    }
+
+    /// <summary>
+    /// Property to return the list of indices for the mesh.
+    /// </summary>
+    public ReadOnlySpan<int> Indices
+    {
+        get => _indices;
+        protected set
+        {
+            if (value.Length == 0)
+            {
+                _indices = [];
+            }
+
+            if (_indices.Length != value.Length)
+            {
+                _indices = new int[value.Length];
+            }
+
+            value.CopyTo(_indices);
+        }
+    }
+
+    /// <summary>
     /// Property to return the axis aligned bounding box for the mesh.
     /// </summary>
     public ref readonly GorgonBoundingBox Aabb => ref _aabb;
-
-    /// <summary>
-    /// Property to set or return whether writing to the depth buffer is enabled or not.
-    /// </summary>
-    public bool IsDepthWriteEnabled
-    {
-        get;
-        set;
-    } = true;
 
     /// <summary>
     /// Function to update the axis aligned bounding box for the mesh.

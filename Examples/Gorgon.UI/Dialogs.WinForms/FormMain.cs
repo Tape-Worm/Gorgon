@@ -24,6 +24,8 @@
 // Created: December 7, 2020 3:17:59 PM
 // 
 
+using System;
+using System.Windows.Forms;
 using Gorgon.UI;
 using Gorgon.UI.WindowsForms;
 

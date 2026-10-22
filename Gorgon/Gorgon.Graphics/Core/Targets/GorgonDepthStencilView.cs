@@ -23,20 +23,11 @@
 //
 
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Numerics;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Text;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
-using Gorgon.Graphics.Imaging;
-using Gorgon.Math;
 using TerraFX.Interop.DirectX;
-using TerraFX.Interop.Windows;
-using Win32 = TerraFX.Interop.Windows.Windows;
 
 namespace Gorgon.Graphics.Core;
 
@@ -49,7 +40,7 @@ public enum DepthStencilViewAccess
     /// <summary>
     /// Depth and stencil values are both writable.
     /// </summary>
-    None = D3D12_DSV_FLAGS.D3D12_DSV_FLAG_NONE,    
+    None = D3D12_DSV_FLAGS.D3D12_DSV_FLAG_NONE,
     /// <summary>
     /// Depth values are read only.
     /// </summary>
@@ -166,7 +157,7 @@ public unsafe sealed class GorgonDepthStencilView
                 desc.Texture2DMSArray = new D3D12_TEX2DMS_ARRAY_DSV
                 {
                     ArraySize = (uint)ArrayCount,
-                    FirstArraySlice = (uint)ArrayIndex                    
+                    FirstArraySlice = (uint)ArrayIndex
                 };
             }
 
@@ -179,7 +170,7 @@ public unsafe sealed class GorgonDepthStencilView
             {
                 ArraySize = (uint)ArrayCount,
                 FirstArraySlice = (uint)ArrayIndex,
-                MipSlice = (uint)MipLevel             
+                MipSlice = (uint)MipLevel
             };
             return;
         }
@@ -202,16 +193,9 @@ public unsafe sealed class GorgonDepthStencilView
 
         bool hasMultiSample = !Texture.MultisampleInfo.Equals(GorgonMultisampleInfo.NoMultisampling);
         bool hasArrays = Texture.ArrayCount > 1;
-        D3D12_DSV_DIMENSION dimension;
-
-        if (hasMultiSample)
-        {
-            dimension = hasArrays ? D3D12_DSV_DIMENSION.D3D12_DSV_DIMENSION_TEXTURE2DMSARRAY : D3D12_DSV_DIMENSION.D3D12_DSV_DIMENSION_TEXTURE2DMS;
-        }
-        else
-        {
-            dimension = hasArrays ? D3D12_DSV_DIMENSION.D3D12_DSV_DIMENSION_TEXTURE2DARRAY : D3D12_DSV_DIMENSION.D3D12_DSV_DIMENSION_TEXTURE2D;
-        }
+        D3D12_DSV_DIMENSION dimension = hasMultiSample
+            ? hasArrays ? D3D12_DSV_DIMENSION.D3D12_DSV_DIMENSION_TEXTURE2DMSARRAY : D3D12_DSV_DIMENSION.D3D12_DSV_DIMENSION_TEXTURE2DMS
+            : hasArrays ? D3D12_DSV_DIMENSION.D3D12_DSV_DIMENSION_TEXTURE2DARRAY : D3D12_DSV_DIMENSION.D3D12_DSV_DIMENSION_TEXTURE2D;
 
         D3D12_DEPTH_STENCIL_VIEW_DESC desc = new()
         {

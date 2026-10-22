@@ -23,6 +23,15 @@
 // Created: August 14, 2018 6:43:34 PM
 // 
 
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.IO.Properties;
 using Gorgon.Plugins;

@@ -22,6 +22,8 @@
 // Created: May 6, 2024 7:56:07 PM
 //
 
+using System;
+
 namespace Gorgon.Collections;
 
 /// <summary>
@@ -77,14 +79,7 @@ public ref struct GorgonSpanCharEnumerator(ReadOnlySpan<char> chars, ReadOnlySpa
                 return true;
             }
 
-            if (index < _chars.Length - 1)
-            {
-                _chars = current[(index + 1)..];
-            }
-            else
-            {
-                _chars = [];
-            }
+            _chars = index < _chars.Length - 1 ? current[(index + 1)..] : [];
 
             ReadOnlySpan<char> item = current[..index];
 
@@ -124,14 +119,7 @@ public ref struct GorgonSpanCharEnumerator(ReadOnlySpan<char> chars, ReadOnlySpa
                 return true;
             }
 
-            if (index < _chars.Length - 1)
-            {
-                _chars = current[..index];
-            }
-            else
-            {
-                _chars = [];
-            }
+            _chars = index < _chars.Length - 1 ? current[..index] : [];
 
             ReadOnlySpan<char> item = current[(index + 1)..];
 
@@ -159,11 +147,6 @@ public ref struct GorgonSpanCharEnumerator(ReadOnlySpan<char> chars, ReadOnlySpa
     {
         ReadOnlySpan<char> current = _chars;
 
-        if (current.IsEmpty)
-        {
-            return false;
-        }
-
-        return _reverse ? Backward(current) : Forward(current);
+        return !current.IsEmpty && (_reverse ? Backward(current) : Forward(current));
     }
 }

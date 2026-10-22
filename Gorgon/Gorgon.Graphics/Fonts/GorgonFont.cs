@@ -22,8 +22,17 @@
 // Created: Friday, April 13, 2012 6:51:08 AM
 // 
 
+using System;
+using System.Collections.Generic;
+using System.Drawing;
 using System.Drawing.Imaging;
 using System.Drawing.Text;
+using System.IO;
+using System.Linq;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Graphics.Core.OLDE;
 using Gorgon.Graphics.Fonts.Properties;

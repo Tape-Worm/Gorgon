@@ -22,7 +22,6 @@
 // Created: August 26, 2025 9:52:31 PM
 //
 
-using Gorgon.Graphics.Imaging;
 using TerraFX.Interop.DirectX;
 
 namespace Gorgon.Graphics.Core;
@@ -138,7 +137,7 @@ public record class GorgonSwapChainInfo(int Width, int Height, BufferFormat Form
         : this(info.Width, info.Height, info.Format)
     {
         FlipDiscard = info.FlipDiscard;
-        TripleBuffer = info.TripleBuffer; 
+        TripleBuffer = info.TripleBuffer;
         AllowScaling = info.AllowScaling;
     }
 }

@@ -22,12 +22,15 @@
 // Created: September 28, 2025 11:58:26 PM
 //
 
+using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
-using Gorgon.Graphics.Core.Codecs;
 using Gorgon.Graphics.Core.Properties;
 using Gorgon.Native;
 using TerraFX.Interop.DirectX;
@@ -153,6 +156,7 @@ public unsafe class GorgonShaderCompiler
 
     private static readonly Lock _compilerLock = new();
     private static int _compilerCreateCounter;
+    private int _isDisposed;
 
     private static readonly Dictionary<CompileFlags, List<string>> _compileFlagValues = new()
     {
@@ -217,6 +221,9 @@ public unsafe class GorgonShaderCompiler
     {
         get;
     }
+
+    /// <inheritdoc cref="GorgonGraphics.IsDisposed"/>
+    public bool IsDisposed => _isDisposed != 0;
 
     /// <summary>
     /// Property to return the list of <see cref="GorgonShaderInclude"/> definitions to include with compiled shaders.
@@ -365,14 +372,11 @@ public unsafe class GorgonShaderCompiler
         using ComPtr<IDxcBlobUtf8> errors = default;
 
         result.Get()->GetOutput(DXC_OUT_KIND.DXC_OUT_ERRORS, Win32.__uuidof<IDxcBlobUtf8>(), (void**)errors.GetAddressOf(), null)
-            .ThrowIfFailed(GorgonResult.CannotRead, () => Resources.GORGFX_ERR_CANNOT_RETRIEVE_SHADER_COMPILATION_ERRORS);
+            .ThrowIfFailed(GorgonResult.CannotRead, Resources.GORGFX_ERR_CANNOT_RETRIEVE_SHADER_COMPILATION_ERRORS);
 
-        if ((errors.Get()->GetBufferSize() == 0) || (errors.Get()->GetBufferPointer() is null))
-        {
-            return string.Empty;
-        }
-
-        return Encoding.UTF8.GetString((byte*)errors.Get()->GetBufferPointer(), (int)errors.Get()->GetBufferSize());
+        return (errors.Get()->GetBufferSize() == 0) || (errors.Get()->GetBufferPointer() is null)
+            ? string.Empty
+            : Encoding.UTF8.GetString((byte*)errors.Get()->GetBufferPointer(), (int)errors.Get()->GetBufferSize());
     }
 
     /// <summary>
@@ -391,7 +395,7 @@ public unsafe class GorgonShaderCompiler
         fixed (char* shaderCodePtr = processedSource)
         {
             _utils.Get()->CreateBlob(shaderCodePtr, (uint)(Encoding.Unicode.GetByteCount(processedSource)), DXC.DXC_CP_UTF16, result.GetAddressOf())
-                .ThrowIfFailed(GorgonResult.CannotCompile, () => string.Format(Resources.GORGFX_ERR_CANNOT_COMPILE_SHADER, profile));
+                .ThrowIfFailed(GorgonResult.CannotCompile, Resources.GORGFX_ERR_CANNOT_COMPILE_SHADER, profile);
         }
 
         buffer = new DxcBuffer
@@ -484,11 +488,11 @@ public unsafe class GorgonShaderCompiler
             }
 
             DX.DxcCreateInstance((Guid*)Unsafe.AsPointer(ref Unsafe.AsRef(in CLSID.CLSID_DxcUtils)), Win32.__uuidof<IDxcUtils>(), (void**)_utils.GetAddressOf())
-                .ThrowIfFailed(GorgonResult.CannotCreate, () => Resources.GORGFX_ERR_CANNOT_CREATE_DXCOMPILER);
+                .ThrowIfFailed(GorgonResult.CannotCreate, Resources.GORGFX_ERR_CANNOT_CREATE_DXCOMPILER);
             DX.DxcCreateInstance((Guid*)Unsafe.AsPointer(ref Unsafe.AsRef(in CLSID.CLSID_DxcCompiler)), Win32.__uuidof<IDxcCompiler3>(), (void**)_compiler.GetAddressOf())
-                .ThrowIfFailed(GorgonResult.CannotCreate, () => Resources.GORGFX_ERR_CANNOT_CREATE_DXCOMPILER);
+                .ThrowIfFailed(GorgonResult.CannotCreate, Resources.GORGFX_ERR_CANNOT_CREATE_DXCOMPILER);
             _utils.Get()->CreateDefaultIncludeHandler(_includeHandler.GetAddressOf())
-                .ThrowIfFailed(GorgonResult.CannotCreate, () => Resources.GORGFX_ERR_CANNOT_CREATE_DXCOMPILER);
+                .ThrowIfFailed(GorgonResult.CannotCreate, Resources.GORGFX_ERR_CANNOT_CREATE_DXCOMPILER);
         }
     }
 
@@ -496,6 +500,11 @@ public unsafe class GorgonShaderCompiler
     private void Dispose(bool disposing)
     {
         this.UnregisterDisposable(Graphics);
+
+        if (Interlocked.Exchange(ref _isDisposed, 1) != 0)
+        {
+            return;
+        }
 
         if (disposing)
         {
@@ -509,6 +518,9 @@ public unsafe class GorgonShaderCompiler
         {
             return;
         }
+
+        // Limit to 0.
+        Interlocked.Exchange(ref _compilerCreateCounter, 0);
 
         _includeHandler.Dispose();
         _compiler.Dispose();
@@ -700,7 +712,7 @@ public unsafe class GorgonShaderCompiler
         try
         {
             _compiler.Get()->Compile(&buffer, cstrs, argCount, _includeHandler.Get(), Win32.__uuidof<IDxcResult>(), (void**)result.GetAddressOf())
-                .ThrowIfFailed(GorgonResult.CannotCompile, () => string.Format(Resources.GORGFX_ERR_CANNOT_COMPILE_SHADER, shaderModelProfile));
+                .ThrowIfFailed(GorgonResult.CannotCompile, Resources.GORGFX_ERR_CANNOT_COMPILE_SHADER, shaderModelProfile);
         }
         finally
         {
@@ -711,7 +723,7 @@ public unsafe class GorgonShaderCompiler
 
         HRESULT compileErr;
         result.Get()->GetStatus(&compileErr)
-            .ThrowIfFailed(GorgonResult.CannotCompile, () => string.Format(Resources.GORGFX_ERR_CANNOT_COMPILE_SHADER, shaderModelProfile));
+            .ThrowIfFailed(GorgonResult.CannotCompile, Resources.GORGFX_ERR_CANNOT_COMPILE_SHADER, shaderModelProfile);
 
         if (compileErr.FAILED)
         {
@@ -728,7 +740,7 @@ public unsafe class GorgonShaderCompiler
         Graphics.Log.Print($"Creating a D3D blob containing the shader data.", LoggingLevel.Verbose);
 
         result.Get()->GetResult((IDxcBlob**)shaderBlob.GetAddressOf())
-            .ThrowIfFailed(GorgonResult.CannotCompile, () => string.Format(Resources.GORGFX_ERR_CANNOT_COMPILE_SHADER, shaderModelProfile));
+            .ThrowIfFailed(GorgonResult.CannotCompile, Resources.GORGFX_ERR_CANNOT_COMPILE_SHADER, shaderModelProfile);
 
         byte[] hash = [];
         byte[] pdbData = [];
@@ -747,7 +759,7 @@ public unsafe class GorgonShaderCompiler
                 Graphics.Log.PrintError(err, "There was an error retrieving the shader hash.", LoggingLevel.Verbose);
             }
             else
-            {                
+            {
                 GorgonPtr<byte> hashDigest = hashBlob.ToGorgonPtr<byte>();
                 hash = new byte[hashDigest.Length];
                 hashDigest.CopyTo(hash);
@@ -765,7 +777,7 @@ public unsafe class GorgonShaderCompiler
             {
                 pdbName = new(blobName.Get()->GetStringPointer(), 0, (int)blobName.Get()->GetStringLength());
             }
-            
+
             if (err.FAILED)
             {
                 Graphics.Log.PrintError(err, "There was an error retrieving the PDB information for the shader.", LoggingLevel.Verbose);

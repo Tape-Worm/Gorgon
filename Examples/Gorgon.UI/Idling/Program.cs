@@ -24,9 +24,9 @@
 // Created: Wednesday, September 12, 2012 8:26:10 PM
 // 
 
+using System;
 using System.Diagnostics;
 using System.Drawing;
-using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Timing;

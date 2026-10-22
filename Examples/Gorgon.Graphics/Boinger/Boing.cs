@@ -22,10 +22,12 @@
 // Created: July 31, 2026 12:40:51 AM
 //
 
+using System;
 using System.Diagnostics;
-using System.Media;
+using System.Drawing;
 using System.Numerics;
 using System.Runtime.InteropServices;
+using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.Examples.Properties;
 using Gorgon.Graphics;
@@ -36,9 +38,6 @@ using Gorgon.Math;
 using Gorgon.Timing;
 using Gorgon.UI.WindowsForms;
 using NAudio.Extras;
-using NAudio.Wave;
-using NAudio.Wave.SampleProviders;
-using TerraFX.Interop.Windows;
 
 namespace Gorgon.Examples;
 
@@ -295,14 +294,7 @@ internal class Boing
         {
             triggerSound = true;
             _bounceH = !_bounceH;
-            if (_bounceH)
-            {
-                position.X = -2.3f;
-            }
-            else
-            {
-                position.X = 2.3f;
-            }
+            position.X = _bounceH ? -2.3f : 2.3f;
         }
 
         if (position.Y is > 2.0f or < (-2.5f))
@@ -360,7 +352,7 @@ internal class Boing
         Vector3 sphereRotation = _sphere.Rotation;
 
         // Offset the position of the ball so we can fake a shadow under the ball.
-        _sphere.Position = _orthoProjection ? new Vector3(spherePosition.X + 0.2f, spherePosition.Y - 0.2f, spherePosition.Z + 0.5f) 
+        _sphere.Position = _orthoProjection ? new Vector3(spherePosition.X + 0.2f, spherePosition.Y - 0.2f, spherePosition.Z + 0.5f)
                                             : new Vector3(spherePosition.X, spherePosition.Y - 0.125f, spherePosition.Z + 0.5f);
         // Scale on the z-axis so the ball "shadow" has no real depth, and on the x & y to make it look slightly bigger.
         if (!_orthoProjection)
@@ -379,7 +371,7 @@ internal class Boing
         _sphere.Position = spherePosition;
         // Reset scale on the z-axis so the ball so it'll be normal.
         if (!_orthoProjection)
-        {        
+        {
             _sphere.Scale = Vector3.One;
         }
         // Reset the rotation.
@@ -576,14 +568,9 @@ internal class Boing
             return;
         }
 
-        if (_swap.Width > _swap.Height)
-        {
-            _projection = Matrix4x4.CreateOrthographicLeftHanded(((float)_swap.Width / _swap.Height) * 8.0f, 8.0f, 0.1f, 1000.0f);
-        }
-        else
-        {
-            _projection = Matrix4x4.CreateOrthographicLeftHanded(13.0f, ((float)_swap.Height / _swap.Width) * 13.0f, 0.1f, 1000.0f);
-        }
+        _projection = _swap.Width > _swap.Height
+            ? Matrix4x4.CreateOrthographicLeftHanded(((float)_swap.Width / _swap.Height) * 8.0f, 8.0f, 0.1f, 1000.0f)
+            : Matrix4x4.CreateOrthographicLeftHanded(13.0f, ((float)_swap.Height / _swap.Width) * 13.0f, 0.1f, 1000.0f);
     }
 
     /// <summary>
@@ -655,7 +642,7 @@ internal class Boing
             // This can change during the lifetime of the application, so we dispose of it here.
             _depth.Dispose();
         }
-    }    
+    }
 
     /// <summary>
     /// Function to run the application.
@@ -667,19 +654,19 @@ internal class Boing
     {
         using GorgonApplicationLoop loop = GorgonApplicationLoop.Create(graphics.Log);
         using AudioPlaybackEngine audio = new();
-        using GorgonGraphicsPsoFactory psoFactory = new(graphics);   
+        using GorgonGraphicsPsoFactory psoFactory = new(graphics);
         using IGorgonTextureView<GorgonTexture> texture = LoadTexture(graphics);
 
         Material defaultMaterial = new(GorgonColors.White, texture, GorgonSampler.Default(graphics));
 
-        using Sphere sphere = CreateSphere(graphics, defaultMaterial);        
-        Plane[] planes = [];        
+        using Sphere sphere = CreateSphere(graphics, defaultMaterial);
+        Plane[] planes = [];
 
         try
         {
             planes = CreatePlanes(graphics, defaultMaterial);
 
-            Boing program = new(form, graphics, swap, loop, audio, psoFactory, sphere, planes);            
+            Boing program = new(form, graphics, swap, loop, audio, psoFactory, sphere, planes);
             program.Run();
         }
         finally

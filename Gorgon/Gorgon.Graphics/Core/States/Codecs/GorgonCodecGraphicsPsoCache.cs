@@ -22,7 +22,11 @@
 // Created: June 30, 2026 7:31:00 PM
 //
 
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using Gorgon.Core;
@@ -228,7 +232,7 @@ public class GorgonCodecGraphicsPsoCache(GorgonGraphics graphics)
                 reader.Skip(size);
                 return [];
             }
-                        
+
             byte[] buffer = new byte[size];
             reader.ReadArray(buffer);
             return buffer;
@@ -406,7 +410,7 @@ public class GorgonCodecGraphicsPsoCache(GorgonGraphics graphics)
 
         AssemblyInformationalVersionAttribute? attribute = Graphics.GetType().Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
 
-        Debug.Assert(!string.IsNullOrWhiteSpace(attribute?.InformationalVersion), "No version number was found for the assembly.");        
+        Debug.Assert(!string.IsNullOrWhiteSpace(attribute?.InformationalVersion), "No version number was found for the assembly.");
 
         long driverVersion = Graphics.GetDriverVersion();
 
@@ -487,22 +491,22 @@ public class GorgonCodecGraphicsPsoCache(GorgonGraphics graphics)
             if (pso.PixelShader is not null)
             {
                 psoWriter.WriteInt32(shaderTable[pso.PixelShader]);
-            }            
+            }
 
             if (pso.GeometryShader is not null)
             {
                 psoWriter.WriteInt32(shaderTable[pso.GeometryShader]);
-            }            
+            }
 
             if (pso.HullShader is not null)
             {
                 psoWriter.WriteInt32(shaderTable[pso.HullShader]);
-            }            
+            }
 
             if (pso.DomainShader is not null)
             {
                 psoWriter.WriteInt32(shaderTable[pso.DomainShader]);
-            }            
+            }
 
             psoWriter.WriteInt32((int)pso.PrimitiveType);
             psoWriter.WriteInt32((int)pso.IndexBufferStripCutIdentifier);
@@ -545,7 +549,7 @@ public class GorgonCodecGraphicsPsoCache(GorgonGraphics graphics)
 
             // Depth state.
             psoWriter.WriteInt32((int)pso.DepthStencilFormat);
-            
+
             if (depthStencilTable.TryGetValue(pso.DepthStencilState, out int depthStencilIndex))
             {
                 psoWriter.WriteInt32(depthStencilIndex);
@@ -554,7 +558,7 @@ public class GorgonCodecGraphicsPsoCache(GorgonGraphics graphics)
             {
                 psoWriter.WriteInt32(depthStencilTable[GorgonDepthStencilState.Default]);
             }
-            
+
         }
     }
 
@@ -608,7 +612,7 @@ public class GorgonCodecGraphicsPsoCache(GorgonGraphics graphics)
                 throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORGFX_ERR_PSO_DRIVER_MISMATCH, name));
             }
         }
-        
+
         Dictionary<int, GorgonShader> shaders = [];
         Dictionary<int, GorgonRasterState> rasterStates = [];
         Dictionary<int, GorgonBlendState> blendStates = [];
@@ -889,7 +893,7 @@ public class GorgonCodecGraphicsPsoCache(GorgonGraphics graphics)
 
             return status;
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             Graphics.Log.PrintError("There was an error retrieving the status for the pipeline state cache data.", LoggingLevel.Simple);
             Graphics.Log.PrintException(ex);

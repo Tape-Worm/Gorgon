@@ -25,7 +25,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 
 namespace Gorgon.Graphics.Core;
 
@@ -46,6 +45,10 @@ internal unsafe sealed class QueryTracking(CommandQueue queue)
     {
         if (disposing)
         {
+            while (_inUse.Count > 0)
+            {
+                Release();
+            }
         }
     }
 

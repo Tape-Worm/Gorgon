@@ -23,6 +23,16 @@
 // Created: February 23, 2017 9:49:20 PM
 // 
 
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
 namespace Gorgon.Graphics.Fonts;
 
 /// <summary>

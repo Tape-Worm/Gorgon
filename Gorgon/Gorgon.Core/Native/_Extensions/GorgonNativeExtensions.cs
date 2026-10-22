@@ -22,6 +22,9 @@
 // Created: January 22, 2024 4:19:42 PM
 //
 
+using System;
+using System.IO;
+using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -309,8 +312,8 @@ public static class GorgonNativeExtensions
         /// <exception cref="IOException">Thrown when the stream is read only.</exception>
         /// <exception cref="EndOfStreamException">Thrown when the stream is at its end.</exception>"
         /// <exception cref="ArgumentException"><para>Thrown if the <paramref name="index"/> is larger than the <see cref="GorgonNativeBuffer{T}.Length"/> of the <see cref="GorgonNativeBuffer{T}"/>.</para>
-            /// <para>Thrown if the <paramref name="index"/> is less than 0, or the <paramref name="count"/> parameter is less than 1.</para>
-            /// <para>Thrown if the <paramref name="index"/> plus the <paramref name="count"/> is larger than the buffer or stream.</para>
+        /// <para>Thrown if the <paramref name="index"/> is less than 0, or the <paramref name="count"/> parameter is less than 1.</para>
+        /// <para>Thrown if the <paramref name="index"/> plus the <paramref name="count"/> is larger than the buffer or stream.</para>
         /// </exception>
         /// <remarks>
         /// <para>
@@ -433,8 +436,8 @@ public static class GorgonNativeExtensions
         /// <exception cref="NullReferenceException">Thrown when this pointer is <b>null</b>.</exception>
         /// <exception cref="IOException">Thrown when the stream is read only.</exception>
         /// <exception cref="ArgumentException"><para>Thrown if the <paramref name="index"/> is larger than the <see cref="GorgonNativeBuffer{T}.Length"/> of the <see cref="GorgonNativeBuffer{T}"/>.</para>
-            /// <para>Thrown if the <paramref name="index"/> is less than 0, or the <paramref name="count"/> parameter is less than 1.</para>
-            /// <para>Thrown if the <paramref name="index"/> plus the <paramref name="count"/> is larger than the buffer or stream.</para>
+        /// <para>Thrown if the <paramref name="index"/> is less than 0, or the <paramref name="count"/> parameter is less than 1.</para>
+        /// <para>Thrown if the <paramref name="index"/> plus the <paramref name="count"/> is larger than the buffer or stream.</para>
         /// </exception>
         /// <remarks>
         /// <para>
@@ -548,7 +551,7 @@ public static class GorgonNativeExtensions
                 throw new ArgumentException(string.Format(Resources.GOR_ERR_DATABUFF_SIZE_OFFSET_TOO_LARGE, index, count));
             }
 
-            var handle = GCHandle.Alloc(array, GCHandleType.Pinned);
+            GCHandle handle = GCHandle.Alloc(array, GCHandleType.Pinned);
 
             return new GorgonNativeBuffer<T>(handle, index, count.Value);
         }
@@ -577,7 +580,7 @@ public static class GorgonNativeExtensions
         public GorgonNativeBuffer<byte> PinAsNativeByteBuffer()
         {
             int srcSize = Unsafe.SizeOf<T>();
-            var handle = GCHandle.Alloc(value, GCHandleType.Pinned);
+            GCHandle handle = GCHandle.Alloc(value, GCHandleType.Pinned);
 
             return new GorgonNativeBuffer<byte>(handle, 0, srcSize);
         }
@@ -589,7 +592,7 @@ public static class GorgonNativeExtensions
         /// <summary>
         /// Function to copy the contents of a <see cref="Span{T}"/> to the memory pointed at by a <see cref="GorgonPtr{T}"/>.
         /// </summary>
-        
+
         /// <param name="ptr">The <see cref="GorgonPtr{T}"/> that points to the memory that will receive the data.</param>
         /// <param name="count">[Optional] The number of items to copy.</param>
         /// <exception cref="ArgumentNullException">Thrown when the <paramref name="ptr"/> parameter is <see cref="GorgonPtr{T}.NullPtr"/>.</exception>

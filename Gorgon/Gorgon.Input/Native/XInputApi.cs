@@ -22,6 +22,9 @@
 // Created: March 4, 2025 1:43:29 PM
 //
 
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Gorgon.Diagnostics;
 using Gorgon.Input.Devices;
 using Windows.Win32;
@@ -49,28 +52,25 @@ internal static partial class XInputApi
     {
         WIN32_ERROR err = (WIN32_ERROR)PInvoke.XInputGetBatteryInformation((uint)slot, BATTERY_DEVTYPE.BATTERY_DEVTYPE_GAMEPAD, out XINPUT_BATTERY_INFORMATION batteryInfo);
 
-        if (err == WIN32_ERROR.ERROR_DEVICE_NOT_CONNECTED)
-        {
-            return GamingDeviceBatteryLevel.Disconnected;
-        }
-
-        return err switch
-        {
-            WIN32_ERROR.ERROR_SUCCESS => batteryInfo.BatteryType switch
+        return err == WIN32_ERROR.ERROR_DEVICE_NOT_CONNECTED
+            ? GamingDeviceBatteryLevel.Disconnected
+            : err switch
             {
-                BATTERY_TYPE.BATTERY_TYPE_DISCONNECTED => GamingDeviceBatteryLevel.Disconnected,
-                BATTERY_TYPE.BATTERY_TYPE_WIRED => GamingDeviceBatteryLevel.Wired,
-                _ => batteryInfo.BatteryLevel switch
+                WIN32_ERROR.ERROR_SUCCESS => batteryInfo.BatteryType switch
                 {
-                    BATTERY_LEVEL.BATTERY_LEVEL_EMPTY => GamingDeviceBatteryLevel.Empty,
-                    BATTERY_LEVEL.BATTERY_LEVEL_LOW => GamingDeviceBatteryLevel.Low,
-                    BATTERY_LEVEL.BATTERY_LEVEL_MEDIUM => GamingDeviceBatteryLevel.Medium,
-                    BATTERY_LEVEL.BATTERY_LEVEL_FULL => GamingDeviceBatteryLevel.Full,
-                    _ => GamingDeviceBatteryLevel.Unknown
+                    BATTERY_TYPE.BATTERY_TYPE_DISCONNECTED => GamingDeviceBatteryLevel.Disconnected,
+                    BATTERY_TYPE.BATTERY_TYPE_WIRED => GamingDeviceBatteryLevel.Wired,
+                    _ => batteryInfo.BatteryLevel switch
+                    {
+                        BATTERY_LEVEL.BATTERY_LEVEL_EMPTY => GamingDeviceBatteryLevel.Empty,
+                        BATTERY_LEVEL.BATTERY_LEVEL_LOW => GamingDeviceBatteryLevel.Low,
+                        BATTERY_LEVEL.BATTERY_LEVEL_MEDIUM => GamingDeviceBatteryLevel.Medium,
+                        BATTERY_LEVEL.BATTERY_LEVEL_FULL => GamingDeviceBatteryLevel.Full,
+                        _ => GamingDeviceBatteryLevel.Unknown
+                    },
                 },
-            },
-            _ => GamingDeviceBatteryLevel.Error
-        };
+                _ => GamingDeviceBatteryLevel.Error
+            };
 
     }
 

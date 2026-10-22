@@ -100,7 +100,7 @@ public class GorgonTypedOptionTests
     {
         GorgonRangedOption<byte> option = GorgonOption.CreateByteOption("TestOption", 10, null, 0, 100);
 
-        Assert.ThrowsExactly<OverflowException>(() => option.SetValue(500));
+        _ = Assert.ThrowsExactly<OverflowException>(() => option.SetValue(500));
     }
 
     [TestMethod]

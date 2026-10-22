@@ -23,7 +23,10 @@
 // Created: March 31, 2018 1:12:38 PM
 // 
 
+using System;
 using System.Diagnostics;
+using System.Threading;
+using System.Windows.Forms;
 
 namespace Gorgon.Examples;
 

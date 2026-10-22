@@ -23,6 +23,8 @@
 // Created: Thursday, March 15, 2012 7:34:32 PM
 // 
 
+using System;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text.Json.Serialization;
@@ -191,7 +193,7 @@ public struct GorgonBox
     /// <summary>
     /// Property to return the center of the box.
     /// </summary>
-    public readonly (int x, int y, int z) Center => (Width / 2 + Left, Height / 2 + Top, Depth / 2 + Front);
+    public readonly (int x, int y, int z) Center => ((Width / 2) + Left, (Height / 2) + Top, (Depth / 2) + Front);
 
     /// <summary>
     /// Property to set or return the location of the box.
@@ -492,9 +494,9 @@ public struct GorgonBox
             X = box.X - amount,
             Y = box.Y - amount,
             Z = box.Z - amount,
-            Width = box.Width + amount * 2,
-            Height = box.Height + amount * 2,
-            Depth = box.Depth + amount * 2
+            Width = box.Width + (amount * 2),
+            Height = box.Height + (amount * 2),
+            Depth = box.Depth + (amount * 2)
         };
     }
 

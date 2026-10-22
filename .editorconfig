@@ -14,6 +14,7 @@ tab_width = 4
 # New line preferences
 end_of_line = crlf
 insert_final_newline = false
+trim_trailing_whitespace = true
 
 #### .NET Coding Conventions ####
 
@@ -369,3 +370,10 @@ dotnet_diagnostic.CA1304.severity = none
 # Stops the "loose match" suggestions like custom-type -> ReadOnlySpan<T> via a conversion.
 dotnet_style_prefer_collection_expression = when_types_exactly_match
     
+# Shader files
+[*.{hlsl,hlsli,fx}]
+indent_style = space
+indent_size = 4
+tab_width = 4
+end_of_line = crlf
+trim_trailing_whitespace = true

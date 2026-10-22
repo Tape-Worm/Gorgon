@@ -22,7 +22,9 @@
 // Created: December 18, 2023 2:30:57 PM
 //
 
+using System;
 using System.Drawing;
+using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -143,7 +145,7 @@ public struct GorgonRectangleF
     /// <summary>
     /// Property to return the center of the rectangle.
     /// </summary>
-    public readonly Vector2 Center => new(Width / 2 + Left, Height / 2 + Top);
+    public readonly Vector2 Center => new((Width / 2) + Left, (Height / 2) + Top);
 
     /// <summary>
     /// Property to set or return the location of the rectangle.
@@ -334,12 +336,7 @@ public struct GorgonRectangleF
         float right = rectangle2.Right.Min(rectangle1.Right);
         float bottom = rectangle2.Bottom.Min(rectangle1.Bottom);
 
-        if ((right <= left) || (bottom <= top))
-        {
-            return Empty;
-        }
-
-        return FromLTRB(left, top, right, bottom);
+        return (right <= left) || (bottom <= top) ? Empty : FromLTRB(left, top, right, bottom);
     }
 
     /// <summary>
@@ -450,12 +447,7 @@ public struct GorgonRectangleF
         float r = rectangle1.Right.Max(rectangle2.Right);
         float b = rectangle1.Bottom.Max(rectangle2.Bottom);
 
-        if ((r < l) || (b < t))
-        {
-            return Empty;
-        }
-
-        return FromLTRB(l, t, r, b);
+        return (r < l) || (b < t) ? Empty : FromLTRB(l, t, r, b);
     }
 
     /// <summary>
@@ -581,15 +573,9 @@ public struct GorgonRectangleF
     /// </para>
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static GorgonRectangleF Expand(GorgonRectangleF rectangle, float amountX, float amountY)
-    {
-        if ((amountX.EqualsEpsilon(0)) && (amountY.EqualsEpsilon(0)))
-        {
-            return rectangle;
-        }
-
-        return new(rectangle.X - amountX, rectangle.Y - amountY, rectangle.Width + amountX * 2, rectangle.Height + amountY * 2);
-    }
+    public static GorgonRectangleF Expand(GorgonRectangleF rectangle, float amountX, float amountY) => (amountX.EqualsEpsilon(0)) && (amountY.EqualsEpsilon(0))
+            ? rectangle
+            : new(rectangle.X - amountX, rectangle.Y - amountY, rectangle.Width + (amountX * 2), rectangle.Height + (amountY * 2));
 
     /// <summary>
     /// Function to ceiling the values of a <see cref="GorgonRectangleF"/>.

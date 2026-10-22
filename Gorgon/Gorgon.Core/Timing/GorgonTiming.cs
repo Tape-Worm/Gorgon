@@ -24,6 +24,8 @@
 // Created: Saturday, June 18, 2011 10:29:46 AM
 // 
 
+using System.Linq;
+using System.Threading;
 using Gorgon.Math;
 
 namespace Gorgon.Timing;
@@ -101,8 +103,8 @@ public static class GorgonTiming
     private static float _averageUnscaledDeltaTotal;
     // Average delta draw time total.
     private static float _averageDeltaTotal;
+
     // Maximum number of samples for average reset.
-    private static long _maxAverageSamples = 500;
     // Flag to indicate that timing has started.
     private static int _timingStarted;
     // The lowest frames per second.
@@ -327,17 +329,17 @@ public static class GorgonTiming
     /// </remarks>
     public static long MaximumAverageSamples
     {
-        get => _maxAverageSamples;
+        get;
         set
         {
-            if (_maxAverageSamples < 0)
+            if (field < 0)
             {
-                _maxAverageSamples = 0;
+                field = 0;
             }
 
-            _maxAverageSamples = value;
+            field = value;
         }
-    }
+    } = 500;
 
     /// <summary>
     /// Property to return the number of frames per second.
@@ -460,7 +462,7 @@ public static class GorgonTiming
             _averageCounter++;
 
             // Reset the average.
-            if (_averageCounter < _maxAverageSamples)
+            if (_averageCounter < MaximumAverageSamples)
             {
                 return;
             }

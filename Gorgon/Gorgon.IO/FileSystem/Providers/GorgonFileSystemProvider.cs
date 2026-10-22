@@ -24,7 +24,10 @@
 // Created: Monday, June 27, 2011 9:00:18 AM
 // 
 
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.IO.FileSystem.Properties;
@@ -231,14 +234,9 @@ public abstract class GorgonFileSystemProvider
             return [];
         }
 
-        if (virtualRootDirectory.IsEmpty)
-        {
-            virtualRootDirectory = GorgonFileSystem.DirectorySeparatorList;
-        }
-        else
-        {
-            virtualRootDirectory = PrefixVirtualPath(virtualRootDirectory).FormatDirectory(GorgonFileSystem.DirectorySeparator);
-        }
+        virtualRootDirectory = virtualRootDirectory.IsEmpty
+            ? (ReadOnlySpan<char>)GorgonFileSystem.DirectorySeparatorList
+            : PrefixVirtualPath(virtualRootDirectory).FormatDirectory(GorgonFileSystem.DirectorySeparator);
 
         return OnMapToVirtualPath(physicalPath, physicalMountPoint, virtualRootDirectory);
     }
@@ -254,14 +252,9 @@ public abstract class GorgonFileSystemProvider
 
         virtualPath = PrefixVirtualPath(virtualPath);
 
-        if (virtualRootDirectory.IsEmpty)
-        {
-            virtualRootDirectory = GorgonFileSystem.DirectorySeparatorList;
-        }
-        else
-        {
-            virtualRootDirectory = PrefixVirtualPath(virtualRootDirectory).FormatDirectory(GorgonFileSystem.DirectorySeparator);
-        }
+        virtualRootDirectory = virtualRootDirectory.IsEmpty
+            ? (ReadOnlySpan<char>)GorgonFileSystem.DirectorySeparatorList
+            : PrefixVirtualPath(virtualRootDirectory).FormatDirectory(GorgonFileSystem.DirectorySeparator);
 
         return OnMapToPhysicalPath(virtualPath, physicalMountPoint, virtualRootDirectory);
     }
@@ -273,21 +266,13 @@ public abstract class GorgonFileSystemProvider
         ArgumentEmptyException.ThrowIfEmpty(physicalMountPoint);
         ArgumentEmptyException.ThrowIfEmpty(virtualRootDirectory);
 
-        if (virtualRootDirectory.IsEmpty)
-        {
-            virtualRootDirectory = GorgonFileSystem.DirectorySeparatorList;
-        }
-        else
-        {
-            virtualRootDirectory = PrefixVirtualPath(virtualRootDirectory).FormatDirectory(GorgonFileSystem.DirectorySeparator);
-        }
+        virtualRootDirectory = virtualRootDirectory.IsEmpty
+            ? (ReadOnlySpan<char>)GorgonFileSystem.DirectorySeparatorList
+            : PrefixVirtualPath(virtualRootDirectory).FormatDirectory(GorgonFileSystem.DirectorySeparator);
 
-        if (!physicalPath.StartsWith(physicalMountPoint, StringComparison.OrdinalIgnoreCase))
-        {
-            throw new GorgonException(GorgonResult.CannotEnumerate, string.Format(Resources.GORFS_ERR_PHYSICAL_MISMATCH, physicalPath.ToString()));
-        }
-
-        return OnEnumerate(physicalPath, physicalMountPoint, virtualRootDirectory);
+        return !physicalPath.StartsWith(physicalMountPoint, StringComparison.OrdinalIgnoreCase)
+            ? throw new GorgonException(GorgonResult.CannotEnumerate, string.Format(Resources.GORFS_ERR_PHYSICAL_MISMATCH, physicalPath.ToString()))
+            : OnEnumerate(physicalPath, physicalMountPoint, virtualRootDirectory);
     }
 
     /// <inheritdoc/>
@@ -297,12 +282,9 @@ public abstract class GorgonFileSystemProvider
 
         ReadOnlySpan<char> physicalPath = fileInfo.FullPath;
 
-        if (!physicalPath.StartsWith(physicalMountPoint, StringComparison.OrdinalIgnoreCase))
-        {
-            throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORFS_ERR_PHYSICAL_MISMATCH, fileInfo.VirtualPath));
-        }
-
-        return OnOpenReadFileStream(fileInfo, physicalMountPoint, onCloseCallback);
+        return !physicalPath.StartsWith(physicalMountPoint, StringComparison.OrdinalIgnoreCase)
+            ? throw new GorgonException(GorgonResult.CannotRead, string.Format(Resources.GORFS_ERR_PHYSICAL_MISMATCH, fileInfo.VirtualPath))
+            : OnOpenReadFileStream(fileInfo, physicalMountPoint, onCloseCallback);
     }
 
     /// <inheritdoc/>    
@@ -334,12 +316,9 @@ public abstract class GorgonFileSystemProvider
 
         string physicalPath = OnMapToPhysicalPath(virtualPath, physicalMountPoint, virtualRootDirectory).ToString();
 
-        if (!File.Exists(physicalPath))
-        {
-            throw new FileNotFoundException(string.Format(Resources.GORFS_ERR_FILE_NOT_FOUND, physicalPath));
-        }
-
-        return new PhysicalFileInfo(new FileInfo(physicalPath), virtualPath.ToString());
+        return !File.Exists(physicalPath)
+            ? throw new FileNotFoundException(string.Format(Resources.GORFS_ERR_FILE_NOT_FOUND, physicalPath))
+            : (IGorgonPhysicalFileInfo)new PhysicalFileInfo(new FileInfo(physicalPath), virtualPath.ToString());
     }
 
     /// <remarks>

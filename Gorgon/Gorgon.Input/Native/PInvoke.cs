@@ -23,9 +23,11 @@
 // Created: Wednesday, August 12, 2015 11:29:45 PM
 // 
 
+using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Threading;
 using Gorgon.Input.Devices;
 using Gorgon.Input.Properties;
 using Microsoft.Win32.SafeHandles;

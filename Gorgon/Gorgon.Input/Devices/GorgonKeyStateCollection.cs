@@ -23,7 +23,9 @@
 // Created: Thursday, September 10, 2015 10:11:39 PM
 // 
 
+using System;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace Gorgon.Input.Devices;
 

@@ -22,6 +22,7 @@
 // Created: March 23, 2026 8:29:07 PM
 //
 
+using System;
 using Gorgon.Core;
 
 namespace Gorgon.Graphics.Core;
@@ -31,22 +32,28 @@ namespace Gorgon.Graphics.Core;
 /// </summary>
 /// <param name="handle"><inheritdoc cref="Handle" path="/summary"/></param>
 /// <param name="poolIndex"><inheritdoc cref="PoolIndex" path="/summary"/></param>
+/// <param name="resourceID"><inheritdoc cref="ResourceID" path="/summary"/></param>
 /// <param name="size"><inheritdoc cref="SizeInBytes" path="/summary"/></param>
 /// <param name="offset"><inheritdoc cref="Offset" path="/summary"/></param>
 /// <param name="tileStart"><inheritdoc cref="TileStart" path="/summary"/></param>
 /// <param name="tileEnd"><inheritdoc cref="TileEnd" path="/summary"/></param>
-internal readonly struct GpuBufferAllocation(ulong handle, byte poolIndex, uint size, uint offset, ushort tileStart, ushort tileEnd)
+internal readonly struct GpuBufferAllocation(ulong handle, byte poolIndex, ulong resourceID, uint size, uint offset, ushort tileStart, ushort tileEnd)
     : IEquatable<GpuBufferAllocation>, IGorgonEquatableByRef<GpuBufferAllocation>
 {
     /// <summary>
     /// A representation for a null allocation.
     /// </summary>
-    public static readonly GpuBufferAllocation Null = new();    
+    public static readonly GpuBufferAllocation Null = new();
 
     /// <summary>
     /// The virtual allocation handle.
     /// </summary>
     public readonly ulong Handle = handle;
+
+    /// <summary>
+    /// The resource ID of the mega buffer that holds this allocation.
+    /// </summary>
+    public readonly ulong ResourceID = resourceID;
 
     /// <summary>
     /// The total size of the allocation block.

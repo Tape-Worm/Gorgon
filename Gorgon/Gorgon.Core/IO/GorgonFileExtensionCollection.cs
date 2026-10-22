@@ -23,7 +23,9 @@
 // Created: Sunday, September 22, 2013 8:43:37 PM
 // 
 
+using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Gorgon.Core;
 using Gorgon.Properties;

@@ -50,7 +50,7 @@ namespace Gorgon.Graphics.Core;
 /// <see cref="BufferFormat.D24_UNorm_S8_UInt"/> texture uses <see cref="BufferFormat.R32_Typeless"/>, and the stencil plane (1) uses <see cref="BufferFormat.R8_Typeless"/>.
 /// </para>
 /// </remarks>
-public record class GorgonSubResourceInfo(int SubResourceIndex, int Width, short Height, short Depth, short ArrayIndex, short MipLevel, byte Plane, BufferFormat PlaneFormat, long RowPitch,long RowSize, int RowCount, long Offset)
+public record class GorgonSubResourceInfo(int SubResourceIndex, int Width, short Height, short Depth, short ArrayIndex, short MipLevel, byte Plane, BufferFormat PlaneFormat, long RowPitch, long RowSize, int RowCount, long Offset)
 {
     /// <summary>
     /// Function to convert this information object into a Direct 3D sub resource foot print.
@@ -116,7 +116,7 @@ public record class GorgonSubResourceTileInfo(int SubResourceIndex, int Width, s
     {
         get;
         init;
-    }    
+    }
 
     /// <summary>
     /// Property to return the total size, in tiles, of the sub resource.

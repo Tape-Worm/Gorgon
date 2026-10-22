@@ -713,4 +713,7 @@ The format {1} is {2} bits or the incorrect data type.</value>
   <data name="GORGFX_ERR_QUERIES_STILL_OPEN" xml:space="preserve">
     <value>There are {0} active queries on the command list '{1}' that have not been ended.</value>
   </data>
+  <data name="GORGFX_ERR_ILLEGAL_QUEUE_ACCESS" xml:space="preserve">
+    <value>An attempt to update the {0} queue was made after it was disposed. This means an object is still alive that should have been disposed.</value>
+  </data>
 </root>

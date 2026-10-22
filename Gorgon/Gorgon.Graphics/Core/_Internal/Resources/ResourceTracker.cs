@@ -24,14 +24,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Runtime.CompilerServices;
-using System.Text;
-using Gorgon.Core;
-using Gorgon.Graphics.Core.Properties;
-using TerraFX.Interop.DirectX;
+using System.Threading;
 using TerraFX.Interop.Windows;
-using Win32 = TerraFX.Interop.Windows.Windows;
 
 namespace Gorgon.Graphics.Core;
 
@@ -51,8 +45,6 @@ internal unsafe class ResourceTracker(CommandQueue queue)
     {
         if (disposing)
         {
-            _queue.WaitForGpu(GorgonGraphics.WaitFenceTimeout);
-
             using (_fenceLock.EnterScope())
             {
                 for (int i = 0; i < _trackedResources.Count; ++i)
@@ -72,34 +64,27 @@ internal unsafe class ResourceTracker(CommandQueue queue)
     }
 
     /// <summary>
-    /// Function to track a resource used by the command list on the GPU.
+    /// Function to track a batch of resources recorded by a command list.
     /// </summary>
-    /// <typeparam name="T">The type of COM object to track.</typeparam>
-    /// <param name="resource">The resource to track.</param>
-    /// <remarks>
-    /// <para>
-    /// Objects in use by the GPU must be tracked so they won't be destroyed while in use.
-    /// </para>
-    /// </remarks>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void TrackResource<T>(ComPtr<T> resource)
-        where T : unmanaged, IUnknown.Interface
+    /// <param name="resources">The native pointers for the resources to track.</param>
+    public void TrackResources(HashSet<nint> resources)
     {
+        if (resources.Count == 0)
+        {
+            return;
+        }
+
         using (_fenceLock.EnterScope())
         {
-            if (resource.IsNull)
-            {
-                return;
-            }
+            ulong fence = _queue.FenceValue + 1;
 
-            ComPtr<IUnknown> unk = new((IUnknown*)resource.Get());
-            _trackedResources.Add(new(_queue.FenceValue, unk));
+            foreach (nint resource in resources)
+            {
+                ComPtr<IUnknown> unk = new((IUnknown*)resource);
+                _trackedResources.Add(new(fence, unk));
+            }
         }
     }
-
-    /// <inheritdoc cref="TrackResource{T}(ComPtr{T})"/>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void TrackResource(GorgonGpuResource resource) => TrackResource(resource.D3DResource);
 
     /// <summary>
     /// Function to tell the parent queue to signal that the items are no longer in flight.
@@ -108,20 +93,23 @@ internal unsafe class ResourceTracker(CommandQueue queue)
     {
         using (_fenceLock.EnterScope())
         {
-            for(int i = _trackedResources.Count - 1; i >= 0; --i)
+            ulong currentFence = _queue.D3DFence.Get()->GetCompletedValue();
+            int i;
+
+            for (i = 0; i < _trackedResources.Count; ++i)
             {
-                ulong currentFence = _queue.D3DFence.Get()->GetCompletedValue();
                 (ulong fence, ComPtr<IUnknown> resource) = _trackedResources[i];
 
                 if (currentFence < fence)
                 {
                     // We're not done with this one yet.
-                    continue;
+                    break;
                 }
-                                
+
                 resource.Dispose();
-                _trackedResources.RemoveAt(i);
             }
+
+            _trackedResources.RemoveRange(0, i);
         }
     }
 

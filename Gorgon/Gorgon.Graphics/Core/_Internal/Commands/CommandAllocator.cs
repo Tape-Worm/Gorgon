@@ -22,7 +22,8 @@
 // Created: October 20, 2025 5:57:46 PM
 //
 
-using System.Runtime.CompilerServices;
+using System;
+using System.Text;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
 using Gorgon.Graphics.Core.Properties;
@@ -42,6 +43,7 @@ internal unsafe class CommandAllocator
 
     private readonly GorgonGraphics _graphics;
     private string _name;
+    private readonly StringBuilder _nameBuilder = new();
 
     /// <summary>
     /// Property to return the D3D command allocator. 
@@ -82,8 +84,19 @@ internal unsafe class CommandAllocator
         get => _name;
         set
         {
+            if (string.Equals(_name, value, StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
             _name = value;
-            _allocator.SetD3DDebugName($"Gorgon D3D12 Command Allocator '{_name}' ({Type})");
+
+            _nameBuilder.Length = 0;
+            _nameBuilder.Append("Gorgon D3D12 Command Allocator '");
+            _nameBuilder.Append(_name);
+            _nameBuilder.Append("' ");
+            _nameBuilder.Append(Type.ToStringConstant());
+            _allocator.SetD3DDebugName(_nameBuilder.ToString());
         }
     }
 
@@ -121,7 +134,7 @@ internal unsafe class CommandAllocator
 
         ComPtr<ID3D12CommandAllocator> allocator = default;
         _graphics.D3DDevice.Get()->CreateCommandAllocator(type, Win32.__uuidof<ID3D12CommandAllocator>(), (void**)allocator.GetAddressOf())
-            .ThrowIfFailed(GorgonResult.CannotCreate, () => Resources.GORGFX_ERR_CANNOT_CREATE_COMMAND_ALLOCATOR);
+            .ThrowIfFailed(GorgonResult.CannotCreate, Resources.GORGFX_ERR_CANNOT_CREATE_COMMAND_ALLOCATOR);
 
         allocator.SetD3DDebugName(debugName);
 

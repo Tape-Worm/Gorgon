@@ -22,6 +22,7 @@
 // Created: March 12, 2025 1:18:42 PM
 //
 
+using System;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using Gorgon.Core;

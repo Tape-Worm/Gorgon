@@ -41,8 +41,8 @@ internal class SprayCan
     private float _time;
     // Maximum time.
     private float _maxTime;
+
     // Flag to indicate that the spray is active.
-    private bool _isActive;
     // Time at which the spray became active.
     private float _activeStartTime;
     // Current alpha.
@@ -87,7 +87,7 @@ internal class SprayCan
     /// </summary>
     public bool IsActive
     {
-        get => _isActive;
+        get;
         set
         {
             if ((_alpha <= 0.0f) || (_maxTime <= 0.0f))
@@ -97,18 +97,18 @@ internal class SprayCan
                 _maxTime = 0.0f;
                 _vibAmount = 0.0f;
                 _sprayAmount = 0.0f;
-                _isActive = false;
+                field = false;
             }
             else
             {
-                _isActive = value;
+                field = value;
             }
 
             _activeStartTime = GorgonTiming.SecondsSinceStart;
 
             SprayPointSize = 0.0f;
 
-            if (!_isActive)
+            if (!field)
             {
                 _time = 0;
             }
@@ -205,7 +205,7 @@ internal class SprayCan
         // Get unit time.
         float unitTime = (appTime / _maxTime).Max(0).Min(1);
 
-        float magnitude = (sprayVector.X * sprayVector.X + sprayVector.Y * sprayVector.Y).Sqrt();
+        float magnitude = ((sprayVector.X * sprayVector.X) + (sprayVector.Y * sprayVector.Y)).Sqrt();
 
         // Decrease spray time.
         _time = _maxTime - appTime;

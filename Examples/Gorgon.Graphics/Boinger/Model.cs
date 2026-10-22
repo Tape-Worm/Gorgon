@@ -22,35 +22,13 @@
 // Created: July 30, 2026 9:37:04 PM
 //
 
+using System;
 using System.Diagnostics;
 using System.Numerics;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
 
 namespace Gorgon.Examples;
-
-/// <summary>
-/// A vertex in our geometry.
-/// </summary>
-[StructLayout(LayoutKind.Sequential)]
-internal struct Vertex
-{
-    /// <summary>
-    /// The size of the vertex, in bytes.
-    /// </summary>
-    public static readonly int Size = Unsafe.SizeOf<Vertex>();
-
-    /// <summary>
-    /// The object space position of the vertex.
-    /// </summary>
-    public Vector4 Position;
-    /// <summary>
-    /// The texture UV coordinates.
-    /// </summary>
-    public Vector2 UV;
-}
 
 /// <summary>
 /// The base model object
@@ -82,7 +60,7 @@ internal abstract class Model
     /// <summary>
     /// Property to set or return the vertices for our object.
     /// </summary>
-    protected Vertex[] Vertices
+    protected GorgonVertexPosUv[] Vertices
     {
         get;
         set;

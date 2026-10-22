@@ -23,6 +23,8 @@
 // Created: Friday, May 23, 2015 2:36:10 PM
 // 
 
+using System;
+
 namespace Gorgon.Diagnostics;
 
 /// <summary>

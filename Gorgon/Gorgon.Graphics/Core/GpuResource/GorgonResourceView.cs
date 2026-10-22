@@ -22,6 +22,7 @@
 // Created: January 3, 2026 12:18:17 PM
 //
 
+using System;
 using System.Diagnostics;
 using Gorgon.Core;
 using Gorgon.Diagnostics;
@@ -70,7 +71,7 @@ public abstract class GorgonResourceView
     {
         get;
         private set;
-    }    
+    }
 
     /// <summary>
     /// Property to return whether the view resource is disposed or not.
@@ -120,7 +121,7 @@ public abstract class GorgonResourceView
             {
                 Graphics.Log.Print($"Destroying resource '{Resource.Name}' because it is owned by this view.", LoggingLevel.Intermediate);
                 Resource.Dispose();
-            }            
+            }
         }
     }
 
@@ -140,7 +141,7 @@ public abstract class GorgonResourceView
     /// <param name="owned"><b>true</b> if the resource is owned by this view, <b>false</b> if not.</param>
     private protected GorgonResourceView(GorgonGraphics graphics, string name, GorgonGpuResource resource, bool owned)
     {
-        Graphics = graphics;       
+        Graphics = graphics;
 
         Name = GorgonGraphicsFactory.GenerateName(name, GetType().Name);
         OwnsResource = owned;

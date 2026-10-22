@@ -24,6 +24,8 @@
 // Created: Saturday, June 18, 2011 4:20:00 PM
 // 
 
+using System;
+using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.UI.WindowsForms.Properties;
 
