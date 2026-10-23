@@ -218,6 +218,6 @@ FakesAssemblies/
 Ignore
 *_472
 /Dependencies/Gorgon.BCnEncoder.NET/
-
+/Dependencies/Microsoft.Wpf.Interop.DirectX/
 .claude
 Claude.md
