@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    C# replacement for Microsoft.Wpf.Interop.DirectX (C++/CLI, D3D10/D3D11 surface queue).
+
+    WPF's D3DImage only presents an IDirect3DSurface9. This assembly owns a D3D9Ex device and a shared render target texture; a Direct3D 12
+    renderer opens that texture's shared handle with ID3D12Device::OpenSharedHandle and renders into it directly. No D3D10/D3D11.
+    Independent of Gorgon.Graphics; to be merged into Gorgon.Graphics.Wpf later.
+  -->
+
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
+    <SupportedOSPlatformVersion>10.0.26100.0</SupportedOSPlatformVersion>
+    <UseWPF>true</UseWPF>
+    <Authors>Michael Winsor</Authors>
+    <Company>Tape_Worm</Company>
+    <Product>Gorgon</Product>
+    <Description>Presents Direct3D 12 rendering in WPF through D3DImage.</Description>
+    <Copyright>(C)opyright Tape_Worm, 2026</Copyright>
+    <PackageProjectUrl>https://www.tape-worm.net</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Tape-Worm/Gorgon</RepositoryUrl>
+    <RepositoryType>Git</RepositoryType>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RootNamespace>Gorgon.Wpf.Interop</RootNamespace>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <EnableNETAnalyzers>True</EnableNETAnalyzers>
+    <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <AssemblyVersion>4.0.0.0</AssemblyVersion>
+    <FileVersion>4.0.0.0</FileVersion>
+    <VersionPrefix>4.0.0</VersionPrefix>
+    <NeutralLanguage>en-us</NeutralLanguage>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Keep in sync with Gorgon.Graphics.Core.csproj. -->
+    <PackageReference Include="TerraFX.Interop.Windows" Version="10.0.26100.6" />
+  </ItemGroup>
+
+</Project>

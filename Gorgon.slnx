@@ -4,7 +4,7 @@
     <Platform Name="x64" />
   </Configurations>
   <Folder Name="/Dependencies/">
-    <Project Path="Dependencies/Microsoft.Wpf.Interop.DirectX/src/Microsoft.Wpf.Interop.DirectX/Microsoft.Wpf.Interop.DirectX_winsdk.vcxproj" Id="157a478d-fe02-4eb2-bd7c-8cf3bf1cb9a2" />
+    <Project Path="Dependencies/Gorgon.Wpf.Interop.D3D12/Gorgon.Wpf.Interop.D3D12.csproj" />
     <Project Path="Dependencies/WinFormsColor/Source/WinFormsColor/WinFormsColor.csproj" />
   </Folder>
   <Folder Name="/Examples/">
