@@ -58,4 +58,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <UpToDateCheckInput Include="**\*.hlsl" />
+  </ItemGroup>
 </Project>

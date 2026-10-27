@@ -74,8 +74,8 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Gorgon.Core;
+using Gorgon.Graphics;
 using Gorgon.Math;
-using DX = SharpDX;
 
 namespace Gorgon.Examples;
 
@@ -109,13 +109,13 @@ public struct GorgonRay(Vector3 position, Vector3 direction)
     /// <param name="viewport">The viewport to use.</param>
     /// <param name="worldViewProjection">The world, view, projection matrix.</param>
     /// <param name="result">The resulting world space ray.</param>
-    public static void GetPickRay(int x, int y, ref readonly DX.ViewportF viewport, ref readonly Matrix4x4 worldViewProjection, out GorgonRay result)
+    public static void GetPickRay(int x, int y, ref readonly GorgonViewport viewport, ref readonly Matrix4x4 worldViewProjection, out GorgonRay result)
     {
         Vector3 nearPoint = new(x, y, 0);
         Vector3 farPoint = new(x, y, 1);
 
-        nearPoint = nearPoint.Unproject(viewport.X, viewport.Y, viewport.Width, viewport.Height, viewport.MinDepth, viewport.MaxDepth, in worldViewProjection);
-        farPoint = farPoint.Unproject(viewport.X, viewport.Y, viewport.Width, viewport.Height, viewport.MinDepth, viewport.MaxDepth, in worldViewProjection);
+        nearPoint = nearPoint.Unproject(viewport.X, viewport.Y, viewport.Width, viewport.Height, viewport.MinimumDepth, viewport.MaximumDepth, in worldViewProjection);
+        farPoint = farPoint.Unproject(viewport.X, viewport.Y, viewport.Width, viewport.Height, viewport.MinimumDepth, viewport.MaximumDepth, in worldViewProjection);
 
         Vector3 direction = Vector3.Normalize(farPoint - nearPoint);
 
@@ -131,7 +131,7 @@ public struct GorgonRay(Vector3 position, Vector3 direction)
     /// <param name="worldViewProjection">The world, view, projection matrix.</param>
     /// <returns>The resulting world space ray.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static GorgonRay GetPickRay(int x, int y, DX.ViewportF viewport, Matrix4x4 worldViewProjection)
+    public static GorgonRay GetPickRay(int x, int y, GorgonViewport viewport, Matrix4x4 worldViewProjection)
     {
         GetPickRay(x, y, ref viewport, ref worldViewProjection, out GorgonRay result);
         return result;

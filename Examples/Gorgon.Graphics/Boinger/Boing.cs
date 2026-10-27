@@ -531,7 +531,7 @@ internal class Boing
         result[0] = new(_sphere.IndexCount, _sphere.IndexBuffer, _pipelineState);
 
         result[0].AssignTexture(new GorgonUsedTexture(_sphere.Material.Texture, ShaderStage.Pixel, TextureUsage.ReadOnly));
-        result[0].AssignBuffer(new GorgonUsedBuffer(_sphere.VertexBufferView, ShaderStage.Vertex, BufferUsage.VertexBuffer));
+        result[0].AssignBuffer(new GorgonUsedBuffer(_sphere.VertexBufferView, ShaderStage.Vertex, BufferUsage.ReadOnly));
 
         for (int i = 0; i < _planes.Length; ++i)
         {
@@ -545,7 +545,7 @@ internal class Boing
             {
                 UsedBuffers =
                 {
-                    new GorgonUsedBuffer(plane.VertexBufferView, ShaderStage.Vertex, BufferUsage.VertexBuffer)
+                    new GorgonUsedBuffer(plane.VertexBufferView, ShaderStage.Vertex, BufferUsage.ReadOnly)
                 },
                 UsedTextures =
                 {

@@ -33,11 +33,6 @@ using System.Windows.Forms;
 using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Math;
-//using Gorgon.Renderers.Cameras;
-//using Gorgon.Renderers.Data;
-//using Gorgon.Renderers.Debug;
-//using Gorgon.Renderers.Geometry;
-//using Gorgon.Renderers.Lights;
 
 namespace Gorgon.Examples;
 

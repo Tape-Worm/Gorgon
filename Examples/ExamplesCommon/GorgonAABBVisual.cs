@@ -36,24 +36,9 @@ namespace Gorgon.Examples;
 /// <summary>
 /// Provides a visual wireframe box to display a bounding box for debug purposes.
 /// </summary>
-public class GorgonAABBVisual
+public partial class GorgonAABBVisual
     : IDisposable
 {
-    /// <summary>
-    /// The render data to pass to the GPU.
-    /// </summary>
-    private struct DebugRenderData
-    {
-        /// <summary>
-        /// The view projection for the debug visualization.
-        /// </summary>
-        public Matrix4x4 ViewProjection;
-        /// <summary>
-        /// The handle to the vertex buffer containing the vertices for the visualization.
-        /// </summary>
-        public int VertexBufferHandle;
-    }
-
     // The pipeline state object builder.
     private readonly GorgonGraphicsPsoBuilder _psoBuilder;
     // The pipeline state object factory.
@@ -62,8 +47,6 @@ public class GorgonAABBVisual
     private GorgonGraphicsPso? _pso;
     // The last known depth/stencil state.
     private readonly Dictionary<GorgonDepthStencilState, GorgonGraphicsPso> _psoCache = [];
-    // The current PSO.
-    private (GorgonDepthStencilState DepthStencilState, GorgonGraphicsPso Pso) _currentPso;
     // The draw call to submit to the graphics interface.
     private GorgonDrawCall? _drawCall;
     // The vertex buffer.
@@ -89,14 +72,12 @@ public class GorgonAABBVisual
     {
         if (_psoCache.TryGetValue(depthStencilState, out GorgonGraphicsPso? pso))
         {
-            _currentPso = (depthStencilState, pso);
             return pso;
         }
 
         _psoBuilder.DepthStencilState(depthStencilState, depthBufferFormat);
         pso = _psoFactory.CreateOrGetPso("Gorgon Debug AABB Visualization PSO", _vertexShader, _psoBuilder);
         _psoCache[depthStencilState] = pso;
-        _currentPso = (depthStencilState, pso);
 
         return pso;
     }
@@ -109,7 +90,7 @@ public class GorgonAABBVisual
     /// <returns>The draw call to use.</returns>
     private GorgonDrawCall BuildDrawCall(GorgonDepthStencilState depthStencilState, BufferFormat depthBufferFormat)
     {
-        if ((_pso is null) || (_currentPso.DepthStencilState != depthStencilState))
+        if ((_pso is null) || (_pso.DepthStencilState != depthStencilState))
         {
             _pso = BuildPso(depthStencilState, depthBufferFormat);
         }

@@ -30,6 +30,7 @@
     <Project Path="Examples/Gorgon.FileSystem/ZipFileSystem/ZipFileSystem.csproj" />
   </Folder>
   <Folder Name="/Examples/Gorgon.Graphics/">
+    <Project Path="Examples/Gorgon.Graphics/AssImp/AssImp.csproj" />
     <Project Path="Examples/Gorgon.Graphics/Boinger/Boinger.csproj" />
     <Project Path="Examples/Gorgon.Graphics/CodecPlugIn/CodecPlugIn.csproj" />
     <Project Path="Examples/Gorgon.Graphics/GeometryShaders/GeometryShaders.csproj" />

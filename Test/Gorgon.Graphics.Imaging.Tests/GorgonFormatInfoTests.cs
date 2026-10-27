@@ -5,6 +5,7 @@ using Gorgon.Math;
 namespace Gorgon.Graphics.Imaging.Tests;
 
 [TestClass]
+[OSCondition(OperatingSystems.Windows)]
 public class GorgonFormatInfoTests
 {
     //#error Finish me.

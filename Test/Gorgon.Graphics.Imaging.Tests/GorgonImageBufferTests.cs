@@ -7,6 +7,7 @@ using Gorgon.Core;
 namespace Gorgon.Graphics.Imaging.Tests;
 
 [TestClass]
+[OSCondition(OperatingSystems.Windows)]
 public class GorgonImageBufferTests
 {
     [TestMethod]

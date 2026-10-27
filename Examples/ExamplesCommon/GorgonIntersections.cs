@@ -521,7 +521,7 @@ public static class GorgonIntersections
         //Same thing as RayIntersectsSphere except that the radius of the sphere (point)
         //is the epsilon for zero.
         float b = Vector3.Dot(m, ray.Direction);
-        float c = Vector3.Dot(m, m) - SharpDX.MathUtil.ZeroTolerance;
+        float c = Vector3.Dot(m, m) - (1E-06f);
 
         if (c > 0f && b > 0f)
         {
@@ -559,12 +559,12 @@ public static class GorgonIntersections
         float denominator = cross.Length();
 
         //Lines are parallel.
-        if (SharpDX.MathUtil.IsZero(denominator))
+        if  (denominator.EqualsEpsilon(0))
         {
             //Lines are parallel and on top of each other.
-            if (SharpDX.MathUtil.NearEqual(ray2.Position.X, ray1.Position.X) &&
-                SharpDX.MathUtil.NearEqual(ray2.Position.Y, ray1.Position.Y) &&
-                SharpDX.MathUtil.NearEqual(ray2.Position.Z, ray1.Position.Z))
+            if ((ray2.Position.X.EqualsEpsilon(ray1.Position.X)) &&
+                (ray2.Position.Y.EqualsEpsilon(ray1.Position.Y)) &&
+                (ray2.Position.Z.EqualsEpsilon(ray1.Position.Z)))
             {
                 return (true, Vector3.Zero);
             }
@@ -615,9 +615,9 @@ public static class GorgonIntersections
         Vector3 point2 = ray2.Position + (t * ray2.Direction);
 
         //If the points are not equal, no intersection has occurred.
-        if (!SharpDX.MathUtil.NearEqual(point2.X, point1.X) ||
-            !SharpDX.MathUtil.NearEqual(point2.Y, point1.Y) ||
-            !SharpDX.MathUtil.NearEqual(point2.Z, point1.Z))
+        if ((!point2.X.Equals(point1.X)) ||
+            (!point2.Y.Equals(point1.Y)) ||
+            (!point2.Z.Equals(point1.Z)))
         {
             return (false, Vector3.Zero);
         }
@@ -639,7 +639,7 @@ public static class GorgonIntersections
 
         float direction = Vector3.Dot(plane.Normal, ray.Direction);
 
-        if (SharpDX.MathUtil.IsZero(direction))
+        if (direction.EqualsEpsilon(0))
         {
             return (false, 0);
         }
@@ -727,7 +727,7 @@ public static class GorgonIntersections
         //If the ray is parallel to the triangle plane, there is no collision.
         //This also means that we are not culling, the ray may hit both the
         //back and the front of the triangle.
-        if (SharpDX.MathUtil.IsZero(determinant))
+        if (determinant.EqualsEpsilon(0))
         {
             return (false, 0);
         }
@@ -815,7 +815,7 @@ public static class GorgonIntersections
         float distance = 0f;
         float tmax = float.MaxValue;
 
-        if (SharpDX.MathUtil.IsZero(ray.Direction.X))
+        if (ray.Direction.X.EqualsEpsilon(0))
         {
             if (ray.Position.X < box.Minimum.X || ray.Position.X > box.Maximum.X)
             {
@@ -842,7 +842,7 @@ public static class GorgonIntersections
             }
         }
 
-        if (SharpDX.MathUtil.IsZero(ray.Direction.Y))
+        if (ray.Direction.Y.EqualsEpsilon(0))
         {
             if (ray.Position.Y < box.Minimum.Y || ray.Position.Y > box.Maximum.Y)
             {
@@ -869,7 +869,7 @@ public static class GorgonIntersections
             }
         }
 
-        if (SharpDX.MathUtil.IsZero(ray.Direction.Z))
+        if (ray.Direction.Z.EqualsEpsilon(0))
         {
             if (ray.Position.Z < box.Minimum.Z || ray.Position.Z > box.Maximum.Z)
             {
@@ -1004,7 +1004,7 @@ public static class GorgonIntersections
         //coincident. It is not an intersection. The dot product will tell us.
         float denominator = Vector3.Dot(direction, direction);
 
-        return !SharpDX.MathUtil.IsZero(denominator);
+        return !denominator.EqualsEpsilon(0);
     }
 
     /// <summary>
@@ -1035,7 +1035,7 @@ public static class GorgonIntersections
         //We assume the planes are normalized, therefore the denominator
         //only serves as a parallel and coincident check. Otherwise we need
         //to divide the point by the denominator.
-        if (SharpDX.MathUtil.IsZero(denominator))
+        if (denominator.EqualsEpsilon(0))
         {
             line = default;
             return false;

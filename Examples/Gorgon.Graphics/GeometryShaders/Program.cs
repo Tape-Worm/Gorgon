@@ -83,17 +83,17 @@ internal class Program
     }
 
     // The application window.
-    private Form _window;
+    private readonly Form _window;
     // The graphics interface for the application.
-    private GorgonGraphics _graphics;
+    private readonly GorgonGraphics _graphics;
     // The application swap chain used to display our graphics.
-    private GorgonSwapChain _swap;
+    private readonly GorgonSwapChain _swap;
     // The camera for the view.
-    private GorgonPerspectiveCamera _camera;
+    private readonly GorgonPerspectiveCamera _camera;
     // The draw call used to draw the primitives.
     private GorgonDrawCall? _drawCall;
     // The pipline state builder.
-    private GorgonGraphicsPsoFactory _psoFactory;
+    private readonly GorgonGraphicsPsoFactory _psoFactory;
     // The texture to apply to the primitives.
     private IGorgonTextureView<GorgonTexture>? _texture;
     // The depth/stencil view.
@@ -177,59 +177,6 @@ internal class Program
         _graphics.Submit(list);
 
         return true;
-    }
-
-    /// <summary>
-    /// Function used to initialize the application.
-    /// </summary>
-    private static void Initialize()
-    {
-        /*
-            // Load the shaders from a file on disc.
-            LoadShaders();
-
-            // Load the texture.
-            _texture = GorgonTexture2DView.FromFile(_graphics,
-                                                    Path.Combine(GorgonExample.GetResourcePath(@"Textures\GeometryShader\").FullName, "GSTexture.png"),
-                                                    new GorgonCodecPng());
-
-            // Create our builders so we can compose a draw call and pipeline state.
-            _drawCallBuilder = new GorgonDrawCallBuilder();
-            _psoFactory = new GorgonPipelineStateBuilder(_graphics);
-
-            // Set our swap chain as the active rendering target and the depth/stencil buffer.
-            _graphics.SetRenderTarget(_swap.RenderTargetView, _depthStencil);
-
-            // Create a constant buffer so we can adjust the positioning of the data.
-            _camera = new GorgonPerspectiveCamera(_graphics, new Vector2(_swap.Width, _swap.Height), 0.125f, 1000.0f)
-            {
-                Fov = 65.0f
-            };
-
-            _vsConstants = GorgonConstantBufferView.CreateConstantBuffer(_graphics,
-                                                                         new GorgonConstantBufferInfo((Unsafe.SizeOf<Matrix4x4>() * 2) + Unsafe.SizeOf<Vector4>())
-                                                                         {
-                                                                             Name = "WorldProjection CBuffer"
-                                                                         });
-            _vsConstants.Buffer.SetData(in _camera.GetProjectionMatrix(), copyMode: CopyMode.Discard);
-            _vsConstants.Buffer.SetData(in _worldMatrix, 64, CopyMode.NoOverwrite);
-
-            // Create a draw call so we actually have something we can draw.
-            _drawCall = _drawCallBuilder.VertexRange(0, 3)
-                                        .PipelineState(_psoFactory.PixelShader(_pixelShader)
-                                                                        .VertexShader(_bufferless)
-                                                                        .GeometryShader(_geometryShader)
-                                                                        .DepthStencilState(GorgonDepthStencilState.DepthEnabled))
-                                        .ShaderResource(ShaderType.Pixel, _texture)
-                                        .ConstantBuffer(ShaderType.Vertex, _vsConstants)
-                                        .ConstantBuffer(ShaderType.Geometry, _vsConstants)
-                                        .Build();
-
-        }
-        finally
-        {
-            
-        }*/
     }
 
     /// <summary>

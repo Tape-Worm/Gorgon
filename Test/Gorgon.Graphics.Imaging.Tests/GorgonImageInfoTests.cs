@@ -1,6 +1,7 @@
 namespace Gorgon.Graphics.Imaging.Tests;
 
 [TestClass]
+[OSCondition(OperatingSystems.Windows)]
 public class GorgonImageInfoTests
 {
     [TestMethod]

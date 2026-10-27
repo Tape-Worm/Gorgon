@@ -37,11 +37,6 @@ public enum BufferUsage
     None,
 
     /// <summary>
-    /// Buffer will be used for vertex data.
-    /// </summary>
-    VertexBuffer,
-
-    /// <summary>
     /// Buffer will be used to hold shader constants.
     /// </summary>
     ConstantBuffer,

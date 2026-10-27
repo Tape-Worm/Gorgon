@@ -6,6 +6,7 @@ using Gorgon.Graphics.Imaging.Codecs;
 namespace Gorgon.Graphics.Imaging.Tests;
 
 [TestClass]
+[OSCondition(OperatingSystems.Windows)]
 public class CodecOptionTests
 {
     [TestMethod]

@@ -442,7 +442,7 @@ public unsafe class GorgonTextureBlitter
         if (_drawCall is null)
         {
             _drawCall = new GorgonIndexedDrawCall(6, _indexBuffer, _currentPso.Pso);
-            _drawCall.AssignBuffer(new GorgonUsedBuffer(_vertexBuffer, ShaderStage.Vertex, BufferUsage.VertexBuffer));
+            _drawCall.AssignBuffer(new GorgonUsedBuffer(_vertexBuffer, ShaderStage.Vertex, BufferUsage.ReadOnly));
         }
         else if (_drawCall.Pso != _currentPso.Pso)
         {

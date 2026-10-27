@@ -32,59 +32,10 @@ namespace Gorgon.Examples;
 /// <summary>
 /// Represents a material applied to a model
 /// </summary>
-public class Material
-{
-    /// <summary>
-    /// Property to set or return the diffuse color for the model.
-    /// </summary>
-    public GorgonColor Diffuse
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// Property to set or return the emissive color.
-    /// </summary>
-    public GorgonColor Emissive
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// Property to set or return the specular color.
-    /// </summary>
-    public GorgonColor Specular
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// Property to set or return the specular power.
-    /// </summary>
-    public float SpecularPower
-    {
-        get;
-        set;
-    } = 1.0f;
-
-    /// <summary>
-    /// Property to set or return the texture for the model.
-    /// </summary>
-    public GorgonTexture2DView Texture
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// Property to set or return the sampler used to sample the texture in the shader.
-    /// </summary>
-    public GorgonSamplerState TextureSampler
-    {
-        get;
-        set;
-    }
-}
+/// <param name="Diffuse">The diffuse color for the model,</param>
+/// <param name="Emissive">The emissive color.</param>
+/// <param name="Specular">The specular color.</param>
+/// <param name="SpecularPower">The specular power.</param>
+/// <param name="Texture">The texture for the model.</param>
+/// <param name="Sampler">The sampler used to sample the texture in the shader.</param>
+public record class Material(GorgonColor Diffuse, GorgonColor Emissive, GorgonColor Specular, float SpecularPower, IGorgonTextureView<GorgonTexture>? Texture, GorgonSampler? Sampler);

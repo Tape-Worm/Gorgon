@@ -36,7 +36,6 @@ using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
 using Gorgon.Graphics.Imaging.Codecs.PlugIns;
-using Gorgon.IO;
 using Gorgon.PlugIns;
 using Gorgon.UI.WindowsForms;
 
@@ -164,7 +163,7 @@ public partial class MainForm : Form
         Debug.Assert(_graphics is not null, "Graphics interface not found.");
 
         // The path to our image file for our custom codec.
-        string tempPath = Path.ChangeExtension(Path.GetTempPath().FormatDirectory(Path.DirectorySeparatorChar) + Path.GetRandomFileName(), "tvImage");
+        string tempPath = Path.ChangeExtension(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()), "tvImage");
 
         try
         {
@@ -268,7 +267,7 @@ public partial class MainForm : Form
             _graphics = _factory.CreateGraphics(deviceList[0]);
 
             _swap = new GorgonSwapChain(_graphics,
-                                        "Codec plug-in SwapChain",
+                                        "Codec plugin SwapChain",
                                         Handle,
                                         new GorgonSwapChainInfo(ClientSize.Width, ClientSize.Height, BufferFormat.R8G8B8A8_UNorm));
 
@@ -276,7 +275,7 @@ public partial class MainForm : Form
 
             // Load the image to use as a texture.
             IGorgonImageCodec png = new GorgonCodecPng();
-            _image = png.FromFile(Path.Combine(GorgonExample.GetResourcePath(@"Textures\CodecPlugIn\").FullName, "SourceTexture.png"));
+            _image = png.FromFile(Path.Combine(GorgonExample.GetResourcePath(@"Textures\CodecPlugin\").FullName, "SourceTexture.png"));
 
             GorgonExample.LoadResources(_graphics);
 
