@@ -23,7 +23,7 @@
 // Created: April 20, 2019 10:23:20 AM
 // 
 
-using Gorgon.Editor.PlugIns;
+using Gorgon.Editor.Plugins;
 using Gorgon.Editor.UI;
 
 namespace Gorgon.Editor.ViewModels;
@@ -44,9 +44,9 @@ internal class EditorSettingsParameters
     }
 
     /// <summary>
-    /// Property to set or return the list of plug-ins for the fixed plug-in list category.
+    /// Property to set or return the list of plugins for the fixed plugin list category.
     /// </summary>
-    public ISettingsPlugInsList PlugInsList
+    public ISettingsPluginsList PluginsList
     {
         get;
         set;

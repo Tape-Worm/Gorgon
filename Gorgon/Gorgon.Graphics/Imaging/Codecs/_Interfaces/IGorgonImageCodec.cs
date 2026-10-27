@@ -185,7 +185,7 @@ namespace Gorgon.Graphics.Imaging.Codecs;
 /// </para>
 /// </para>
 /// <para>
-/// While many of the image formats supplied will be useful out of the box, the system can read/write images via a plug-in if the supplied formats are too limited or do not 
+/// While many of the image formats supplied will be useful out of the box, the system can read/write images via a plugin if the supplied formats are too limited or do not 
 /// support a necessary feature.
 /// </para>
 /// </remarks>

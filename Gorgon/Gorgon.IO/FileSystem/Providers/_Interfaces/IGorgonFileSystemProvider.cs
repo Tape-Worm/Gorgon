@@ -154,7 +154,7 @@ public interface IGorgonFileSystemProvider
     /// <c>/MyMount/MyDirectory/MyTextFile.txt</c>.
     /// </para>
     /// <para>
-    /// Implementors of a <see cref="GorgonFileSystemProvider"/> plug-in can override this method to read the list of files from another type of file system, like a Zip file.
+    /// Implementors of a <see cref="GorgonFileSystemProvider"/> plugin can override this method to read the list of files from another type of file system, like a Zip file.
     /// </para>
     /// </remarks>
     GorgonPhysicalFileSystemData Enumerate(ReadOnlySpan<char> physicalPath, ReadOnlySpan<char> physicalMountPoint, ReadOnlySpan<char> virtualRootDirectory);

@@ -32,7 +32,7 @@ using Gorgon.Graphics.Core;
 using Gorgon.IO;
 using Gorgon.IO.FileSystem;
 using Gorgon.IO.FileSystem.Providers;
-using Gorgon.PlugIns;
+using Gorgon.Plugins;
 using Gorgon.Renderers;
 using Gorgon.Timing;
 
@@ -89,8 +89,8 @@ static class Program
     private static GorgonSpriteAnimationController _controller;
     // The current animation.
     private static AnimationName _current;
-    // The cache for our plug-in assemblies.
-    private static GorgonMefPlugInCache _assemblyCache;
+    // The cache for our plugin assemblies.
+    private static GorgonMefPluginCache _assemblyCache;
     // The cache for holding sprite textures.
     private static GorgonTextureCache<GorgonTexture2D> _textureCache;
 
@@ -326,7 +326,7 @@ static class Program
     private static async Task InitializeAsync(FormMain window)
     {
         GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
-        GorgonExample.PlugInLocationDirectory = new DirectoryInfo(ExampleConfig.Default.PlugInLocation);
+        GorgonExample.PluginLocationDirectory = new DirectoryInfo(ExampleConfig.Default.PluginLocation);
 
         IReadOnlyList<IGorgonVideoAdapterInfo> videoDevices = GorgonGraphics.EnumerateAdapters(log: GorgonExample.Log);
 
@@ -362,12 +362,12 @@ static class Program
 
         GorgonExample.LoadResources(_graphics);
 
-        // Load our packed file system plug-in.
-        _assemblyCache = new GorgonMefPlugInCache(GorgonExample.Log);
+        // Load our packed file system plugin.
+        _assemblyCache = new GorgonMefPluginCache(GorgonExample.Log);
 
         // Load the file system containing our application data (sprites, images, etc...)
         IGorgonFileSystemProviderFactory providerFactory = new GorgonFileSystemProviderFactory(_assemblyCache, GorgonExample.Log);
-        IGorgonFileSystemProvider provider = providerFactory.CreateProvider(Path.Combine(GorgonExample.GetPlugInPath().FullName, "Gorgon.IO.FileSystem.GorPack.dll"), "Gorgon.IO.FileSystem.Providers.GorPackPlugIn");
+        IGorgonFileSystemProvider provider = providerFactory.CreateProvider(Path.Combine(GorgonExample.GetPluginPath().FullName, "Gorgon.IO.FileSystem.GorPack.dll"), "Gorgon.IO.FileSystem.Providers.GorPackPlugin");
         IGorgonFileSystem fileSystem = new GorgonFileSystem(GorgonExample.Log);
 
         // We can load the editor file system directly.

@@ -36,7 +36,7 @@ using Gorgon.IO.Extensions;
 using Gorgon.IO.FileSystem;
 using Gorgon.IO.FileSystem.Providers;
 using Gorgon.Math;
-using Gorgon.PlugIns;
+using Gorgon.Plugins;
 using Gorgon.Renderers;
 using Gorgon.Timing;
 
@@ -53,14 +53,14 @@ namespace Gorgon.Examples;
 /// 
 /// The difference between this example and the folder file system example is that we're loading
 /// a packed file from the previous version of Gorgon as a file system.  The scenario is the same
-/// as loading a zip file:  Load the provider plug-in into the file system, and mount the packed
+/// as loading a zip file:  Load the provider plugin into the file system, and mount the packed
 /// file
 /// </remarks>
 public partial class Form
     : System.Windows.Forms.Form
 {
-    // The plug-in assembly cache.
-    private GorgonMefPlugInCache _assemblyCache;
+    // The plugin assembly cache.
+    private GorgonMefPluginCache _assemblyCache;
     // The file system.
     private IGorgonFileSystem _fileSystem;
     // The graphics interface.		
@@ -97,25 +97,25 @@ public partial class Form
     private bool _showStats;
 
     /// <summary>
-    /// Function to load the Gorgon pack file provider plug-in.
+    /// Function to load the Gorgon pack file provider plugin.
     /// </summary>
     /// <returns>The file system provider.</returns>
     private IGorgonFileSystemProvider LoadGorPackProvider()
     {
-        // The Gorgon packed file provider plug-in dll.
+        // The Gorgon packed file provider plugin dll.
         const string gorPackDll = "Gorgon.IO.FileSystem.GorPack.dll";
-        // The name of the Gorgon packed file plug-in.
-        const string gorPackPlugInName = "Gorgon.IO.FileSystem.Providers.GorPackPlugIn";
+        // The name of the Gorgon packed file plugin.
+        const string gorPackPluginName = "Gorgon.IO.FileSystem.Providers.GorPackPlugin";
 
-        // Like the zip file example, we'll just create the plug-in infrastructure, grab the provider object 
-        // and get rid of the plug-in stuff since we won't need it again.
-        _assemblyCache = new GorgonMefPlugInCache(GorgonExample.Log);
-        _assemblyCache.LoadPlugInAssemblies(GorgonExample.GetPlugInPath().FullName, gorPackDll);
+        // Like the zip file example, we'll just create the plugin infrastructure, grab the provider object 
+        // and get rid of the plugin stuff since we won't need it again.
+        _assemblyCache = new GorgonMefPluginCache(GorgonExample.Log);
+        _assemblyCache.LoadPluginAssemblies(GorgonExample.GetPluginPath().FullName, gorPackDll);
 
-        GorgonMefPlugInService PlugIns = new(_assemblyCache);
-        GorgonFileSystemProviderPlugIn PlugIn = PlugIns.GetPlugIn<GorgonFileSystemProviderPlugIn>(gorPackPlugInName);
+        GorgonMefPluginService Plugins = new(_assemblyCache);
+        GorgonFileSystemProviderPlugin Plugin = Plugins.GetPlugin<GorgonFileSystemProviderPlugin>(gorPackPluginName);
 
-        return PlugIn.CreateProvider(GorgonExample.Log);
+        return Plugin.CreateProvider(GorgonExample.Log);
     }
 
     /// <summary>
@@ -258,7 +258,7 @@ public partial class Form
     /// </summary>
     private void Initialize()
     {
-        GorgonExample.PlugInLocationDirectory = new DirectoryInfo(ExampleConfig.Default.PlugInLocation);
+        GorgonExample.PluginLocationDirectory = new DirectoryInfo(ExampleConfig.Default.PluginLocation);
         GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
 
         // Resize and center the screen.

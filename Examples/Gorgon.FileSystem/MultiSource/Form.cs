@@ -36,7 +36,7 @@ using System.Windows.Forms;
 using Gorgon.Core;
 using Gorgon.IO.FileSystem;
 using Gorgon.IO.FileSystem.Providers;
-using Gorgon.PlugIns;
+using Gorgon.Plugins;
 using Gorgon.UI.WindowsForms;
 
 namespace Gorgon.Examples;
@@ -75,8 +75,8 @@ public partial class Form
     private IGorgonFileSystemProvider? _zipProvider;
     // Loaded image.
     private Image? _image;
-    // File system plug-in assembly cache.
-    private GorgonMefPlugInCache? _cache;
+    // File system plugin assembly cache.
+    private GorgonMefPluginCache? _cache;
 
     /// <summary>
     /// Handles the NodeMouseDoubleClick event of the treeFileSystem control.
@@ -201,16 +201,16 @@ public partial class Form
     [MemberNotNull(nameof(_fileSystem), nameof(_zipProvider), nameof(_cache))]
     private void LoadZipFileSystemProvider()
     {
-        // Name of our zip provider plug-in.
-        const string zipProviderPlugInName = "Gorgon.IO.FileSystem.Providers.ZipPlugIn";
+        // Name of our zip provider plugin.
+        const string zipProviderPluginName = "Gorgon.IO.FileSystem.Providers.ZipPlugin";
 
-        // We can load the objects we need and discard the plug-in system after.
+        // We can load the objects we need and discard the plugin system after.
         // This works because we keep the references to the objects that our 
-        // plug-in creates, even after the plug-in is gone.
-        _cache = new GorgonMefPlugInCache(GorgonExample.Log);
+        // plugin creates, even after the plugin is gone.
+        _cache = new GorgonMefPluginCache(GorgonExample.Log);
 
         GorgonFileSystemProviderFactory providerFactory = new(_cache, GorgonExample.Log);
-        _zipProvider = providerFactory.CreateProvider(Path.Combine(GorgonExample.GetPlugInPath().FullName, "Gorgon.IO.FileSystem.Zip.DLL"), zipProviderPlugInName);
+        _zipProvider = providerFactory.CreateProvider(Path.Combine(GorgonExample.GetPluginPath().FullName, "Gorgon.IO.FileSystem.Zip.DLL"), zipProviderPluginName);
 
         _fileSystem = new GorgonFileSystem(GorgonExample.Log);
     }
@@ -344,7 +344,7 @@ public partial class Form
         try
         {
             GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
-            GorgonExample.PlugInLocationDirectory = new DirectoryInfo(ExampleConfig.Default.PlugInLocation);
+            GorgonExample.PluginLocationDirectory = new DirectoryInfo(ExampleConfig.Default.PluginLocation);
 
             // Get the zip file provider.
             LoadZipFileSystemProvider();

@@ -24,12 +24,12 @@
 // 
 
 using Gorgon.Editor.Content;
-using Gorgon.Editor.PlugIns;
+using Gorgon.Editor.Plugins;
 
 namespace Gorgon.Editor.UI;
 
 /// <summary>
-/// Defines values to inject into tool plug-in view models
+/// Defines values to inject into tool plugin view models
 /// </summary>
 public interface IEditorToolViewModelInjection
     : IViewModelInjection<IHostContentServices>

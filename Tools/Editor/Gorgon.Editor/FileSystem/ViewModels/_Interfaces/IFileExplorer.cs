@@ -24,7 +24,7 @@
 // 
 
 using System.Collections.ObjectModel;
-using Gorgon.Editor.PlugIns;
+using Gorgon.Editor.Plugins;
 using Gorgon.Editor.UI;
 
 namespace Gorgon.Editor.ViewModels;
@@ -49,9 +49,9 @@ internal interface IFileExplorer
     }
 
     /// <summary>
-    /// Property to return the metadata for the content plug-ins.
+    /// Property to return the metadata for the content plugins.
     /// </summary>
-    IReadOnlyList<IContentPlugInMetadata> PlugInMetadata
+    IReadOnlyList<IContentPluginMetadata> PluginMetadata
     {
         get;
     }

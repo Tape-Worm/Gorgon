@@ -82,10 +82,10 @@ public class ExampleConfig
     } = string.Empty;
 
     /// <summary>
-    /// Property to set or return the path to the location for example plug-ins.
+    /// Property to set or return the path to the location for example plugins.
     /// </summary>
     [JsonInclude]
-    public string PlugInLocation
+    public string PluginLocation
     {
         get;
         set;

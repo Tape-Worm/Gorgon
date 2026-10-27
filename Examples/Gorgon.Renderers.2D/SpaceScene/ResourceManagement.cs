@@ -34,7 +34,7 @@ using Gorgon.Graphics.Core;
 using Gorgon.IO;
 using Gorgon.IO.FileSystem;
 using Gorgon.IO.FileSystem.Providers;
-using Gorgon.PlugIns;
+using Gorgon.Plugins;
 using Gorgon.Renderers;
 using Gorgon.UI.OLDE;
 
@@ -49,8 +49,8 @@ namespace Gorgon.Examples;
 /// </remarks>
 /// <remarks>Initializes a new instance of the <see cref="ResourceManagement"/> class.</remarks>
 /// <param name="renderer">The renderer for the application.</param>
-/// <param name="plug-ins>The plug-in service used to load file system providers.</param>
-internal class ResourceManagement(Gorgon2D renderer, GorgonMefPlugInCache plugIns)
+/// <param name="plugins>The plugin service used to load file system providers.</param>
+internal class ResourceManagement(Gorgon2D renderer, GorgonMefPluginCache plugins)
         : IDisposable
 {
 
@@ -62,8 +62,8 @@ internal class ResourceManagement(Gorgon2D renderer, GorgonMefPlugInCache plugIn
     private readonly GorgonGraphics _graphics = renderer.Graphics;
     // The 2D renderer interface for the application.
     private readonly Gorgon2D _renderer = renderer;
-    // The plug-in service for the application.
-    private readonly GorgonMefPlugInCache _plugIns = plugIns;
+    // The plugin service for the application.
+    private readonly GorgonMefPluginCache _plugins = plugins;
     // The file system where resources are kept.
     private IGorgonFileSystem _fileSystem;
     // The list of shaders.
@@ -352,9 +352,9 @@ internal class ResourceManagement(Gorgon2D renderer, GorgonMefPlugInCache plugIn
     public void Load(string path)
     {
         // Load the file system containing our application data (sprites, images, etc...)
-        IGorgonFileSystemProviderFactory providerFactory = new GorgonFileSystemProviderFactory(_plugIns, GorgonApplication.Log);
-        IGorgonFileSystemProvider provider = providerFactory.CreateProvider(Path.Combine(GorgonExample.GetPlugInPath().FullName, "Gorgon.IO.FileSystem.GorPack.dll"),
-                                                                            "Gorgon.IO.FileSystem.Providers.GorPackPlugIn");
+        IGorgonFileSystemProviderFactory providerFactory = new GorgonFileSystemProviderFactory(_plugins, GorgonApplication.Log);
+        IGorgonFileSystemProvider provider = providerFactory.CreateProvider(Path.Combine(GorgonExample.GetPluginPath().FullName, "Gorgon.IO.FileSystem.GorPack.dll"),
+                                                                            "Gorgon.IO.FileSystem.Providers.GorPackPlugin");
         _fileSystem = new GorgonFileSystem(GorgonApplication.Log);
         _fileSystem.Mount(path, provider: provider);
 

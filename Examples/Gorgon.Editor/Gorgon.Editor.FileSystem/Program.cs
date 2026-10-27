@@ -33,7 +33,7 @@ using Gorgon.Graphics.Core;
 using Gorgon.IO;
 using Gorgon.IO.FileSystem;
 using Gorgon.IO.FileSystem.Providers;
-using Gorgon.PlugIns;
+using Gorgon.Plugins;
 using Gorgon.Renderers;
 using Gorgon.Timing;
 
@@ -45,8 +45,8 @@ namespace Gorgon.Examples;
 static class Program
 {
 
-    // The plug-in assembly cache.
-    private static GorgonMefPlugInCache _assemblyCache;
+    // The plugin assembly cache.
+    private static GorgonMefPluginCache _assemblyCache;
     // The core graphics functionality.
     private static GorgonGraphics _graphics;
     // Our swap chain that represents our "Screen".
@@ -72,22 +72,22 @@ static class Program
     private static float _pos;
 
     /// <summary>
-    /// Function to load the Gorgon pack file provider plug-in.
+    /// Function to load the Gorgon pack file provider plugin.
     /// </summary>
     /// <returns>The file system provider.</returns>
     private static IGorgonFileSystemProvider LoadGorPackProvider()
     {
-        // The Gorgon packed file provider plug-in dll.
+        // The Gorgon packed file provider plugin dll.
         const string gorPackDll = "Gorgon.IO.FileSystem.GorPack.dll";
-        // The name of the Gorgon packed file plug-in.
-        const string gorPackPlugInName = "Gorgon.IO.FileSystem.Providers.GorPackPlugIn";
+        // The name of the Gorgon packed file plugin.
+        const string gorPackPluginName = "Gorgon.IO.FileSystem.Providers.GorPackPlugin";
 
-        // Like the zip file example, we'll just create the plug-in infrastructure, grab the provider object 
-        // and get rid of the plug-in stuff since we won't need it again.
-        _assemblyCache = new GorgonMefPlugInCache(GorgonExample.Log);
+        // Like the zip file example, we'll just create the plugin infrastructure, grab the provider object 
+        // and get rid of the plugin stuff since we won't need it again.
+        _assemblyCache = new GorgonMefPluginCache(GorgonExample.Log);
         IGorgonFileSystemProviderFactory factory = new GorgonFileSystemProviderFactory(_assemblyCache);
 
-        return factory.CreateProvider(Path.Combine(GorgonExample.GetPlugInPath().FullName, gorPackDll), gorPackPlugInName);
+        return factory.CreateProvider(Path.Combine(GorgonExample.GetPluginPath().FullName, gorPackDll), gorPackPluginName);
     }
 
     /// <summary>
@@ -134,14 +134,14 @@ static class Program
     private static async Task InitializeAsync(FormMain window)
     {
         GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
-        GorgonExample.PlugInLocationDirectory = new DirectoryInfo(ExampleConfig.Default.PlugInLocation);
+        GorgonExample.PluginLocationDirectory = new DirectoryInfo(ExampleConfig.Default.PluginLocation);
 
         try
         {
-            // Load our packed file system plug-in.
-            window.UpdateStatus("Loading Plug-ins...");
+            // Load our packed file system plugin.
+            window.UpdateStatus("Loading Plugins...");
 
-            // Load in the plug-in that will allow us to read a packed file system.
+            // Load in the plugin that will allow us to read a packed file system.
             IGorgonFileSystemProvider provider = await Task.Run(LoadGorPackProvider);
 
             // Load the file system.

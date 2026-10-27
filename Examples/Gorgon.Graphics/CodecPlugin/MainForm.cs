@@ -35,8 +35,8 @@ using Gorgon.Graphics;
 using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Imaging;
 using Gorgon.Graphics.Imaging.Codecs;
-using Gorgon.Graphics.Imaging.Codecs.PlugIns;
-using Gorgon.PlugIns;
+using Gorgon.Graphics.Imaging.Codecs.Plugins;
+using Gorgon.Plugins;
 using Gorgon.UI.WindowsForms;
 
 namespace Graphics.Examples;
@@ -46,8 +46,8 @@ namespace Graphics.Examples;
 /// </summary>
 public partial class MainForm : Form
 {
-    // The cache that holds plug-in information.
-    private readonly GorgonMefPlugInCache _plugInCache;
+    // The cache that holds plugin information.
+    private readonly GorgonMefPluginCache _pluginCache;
     // The graphics object factory.
     private GorgonGraphicsFactory? _factory;
     // The main graphics interface.
@@ -56,11 +56,11 @@ public partial class MainForm : Form
     private GorgonSwapChain? _swap;
     // The blitter used to display the logo.
     private GorgonTextureBlitter? _blitter;
-    // Image to display, loaded from our plug-in.
+    // Image to display, loaded from our plugin.
     private IGorgonTextureView<GorgonTexture>? _texture;
     // The image in system memory.
     private IGorgonImage? _image;
-    // Our custom codec loaded from the plug-in.
+    // Our custom codec loaded from the plugin.
     private IGorgonImageCodec? _customCodec;
 
     /// <summary>
@@ -126,29 +126,29 @@ public partial class MainForm : Form
     }
 
     /// <summary>
-    /// Function to load our useless image codec plug-in.
+    /// Function to load our useless image codec plugin.
     /// </summary>
     /// <returns><b>true</b> if successful, <b>false</b> if not.</returns>
     private bool LoadCodec()
     {
-        const string PlugInName = "Gorgon.Examples.TvImageCodecPlugIn";
+        const string PluginName = "Gorgon.Examples.TvImageCodecPlugin";
 
-        // Load our plug-in.
-        _plugInCache.LoadPlugInAssemblies(Application.StartupPath, "TVImageCodec.dll");
+        // Load our plugin.
+        _pluginCache.LoadPluginAssemblies(Application.StartupPath, "TVImageCodec.dll");
 
-        // Activate the plug-in service.
-        IGorgonPlugInService plugInService = new GorgonMefPlugInService(_plugInCache);
+        // Activate the plugin service.
+        IGorgonPluginService pluginService = new GorgonMefPluginService(_pluginCache);
 
-        // Find the plug-in.
-        GorgonImageCodecPlugIn? plugIn = plugInService.GetPlugIn<GorgonImageCodecPlugIn>(PlugInName);
+        // Find the plugin.
+        GorgonImageCodecPlugin? plugin = pluginService.GetPlugin<GorgonImageCodecPlugin>(PluginName);
 
-        if ((plugIn is null) || (plugIn.Codecs.Count == 0))
+        if ((plugin is null) || (plugin.Codecs.Count == 0))
         {
             return false;
         }
 
-        // Normally you would enumerate the plug-ins, but in this case we know there's only one.
-        _customCodec = plugIn.CreateCodec(plugIn.Codecs[0]);
+        // Normally you would enumerate the plugins, but in this case we know there's only one.
+        _customCodec = plugin.CreateCodec(plugin.Codecs[0]);
 
         return _customCodec is not null;
     }
@@ -216,7 +216,7 @@ public partial class MainForm : Form
 
         GorgonExample.UnloadResources();
 
-        _plugInCache?.Dispose();
+        _pluginCache?.Dispose();
         _texture?.Dispose();
         _blitter?.Dispose();
         _swap?.Dispose();
@@ -239,7 +239,7 @@ public partial class MainForm : Form
             // Load the custom codec.
             if (!LoadCodec())
             {
-                GorgonDialogs.Error(this, "Unable to load the image codec plug-in.");
+                GorgonDialogs.Error(this, "Unable to load the image codec plugin.");
                 Application.Exit();
                 return;
             }
@@ -305,7 +305,7 @@ public partial class MainForm : Form
     {
         InitializeComponent();
 
-        _plugInCache = new GorgonMefPlugInCache(GorgonExample.Log);
+        _pluginCache = new GorgonMefPluginCache(GorgonExample.Log);
     }
 
 }

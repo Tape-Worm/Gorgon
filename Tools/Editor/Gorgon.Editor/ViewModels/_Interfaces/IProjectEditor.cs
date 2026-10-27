@@ -25,7 +25,7 @@
 
 using System.ComponentModel;
 using Gorgon.Editor.Content;
-using Gorgon.Editor.PlugIns;
+using Gorgon.Editor.Plugins;
 using Gorgon.Editor.UI;
 
 namespace Gorgon.Editor.ViewModels;
@@ -37,9 +37,9 @@ internal interface IProjectEditor
     : IViewModel
 {
     /// <summary>
-    /// Property to return the available tool plug-in button definitions for the application.
+    /// Property to return the available tool plugin button definitions for the application.
     /// </summary>
-    IReadOnlyDictionary<string, IReadOnlyList<IToolPlugInRibbonButton>> ToolButtons
+    IReadOnlyDictionary<string, IReadOnlyList<IToolPluginRibbonButton>> ToolButtons
     {
         get;
     }
@@ -53,7 +53,7 @@ internal interface IProjectEditor
     }
 
     /// <summary>
-    /// Property to return the content file manager for managing content file systems through content plug-ins.
+    /// Property to return the content file manager for managing content file systems through content plugins.
     /// </summary>
     IContentFileManager ContentFileManager
     {

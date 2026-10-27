@@ -768,7 +768,7 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The plug-in &apos;{0}&apos; did not produce any content..
+        ///   Looks up a localized string similar to The plugin &apos;{0}&apos; did not produce any content..
         /// </summary>
         internal static string GOREDIT_ERR_NO_CONTENT_FROM_PLUGIN {
             get {
@@ -777,7 +777,7 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The plug-in &apos;{0}&apos; did not produce any importers..
+        ///   Looks up a localized string similar to The plugin &apos;{0}&apos; did not produce any importers..
         /// </summary>
         internal static string GOREDIT_ERR_NO_CONTENT_IMPORTER_FROM_PLUGIN {
             get {
@@ -867,7 +867,7 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There was an error while loading the plug-ins..
+        ///   Looks up a localized string similar to There was an error while loading the plugins..
         /// </summary>
         internal static string GOREDIT_ERR_UNABLE_TO_LOAD_PLUGINS {
             get {
@@ -876,7 +876,7 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There was an error while unloading the plug-ins..
+        ///   Looks up a localized string similar to There was an error while unloading the plugins..
         /// </summary>
         internal static string GOREDIT_ERR_UNABLE_TO_UNLOAD_PLUGINS {
             get {
@@ -979,7 +979,7 @@ namespace Gorgon.Editor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unknown plug-in type..
+        ///   Looks up a localized string similar to Unknown plugin type..
         /// </summary>
         internal static string GOREDIT_PLUGIN_TYPE_UNKNOWN {
             get {

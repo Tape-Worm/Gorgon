@@ -214,7 +214,7 @@ UpgradeLog*.htm
 # Microsoft Fakes
 FakesAssemblies/
 .gorgon.editor.metadata
-/PlugIns/DummySpriteImport/
+/Plugins/DummySpriteImport/
 Ignore
 *_472
 /Dependencies/Gorgon.BCnEncoder.NET/

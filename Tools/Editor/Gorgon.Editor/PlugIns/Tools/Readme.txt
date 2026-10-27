@@ -1,1 +1,0 @@
-﻿This folder will contain editor tool specific Plug-ins.

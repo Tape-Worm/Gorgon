@@ -4,7 +4,7 @@ function Update-Config()
 
     $configData = (Get-Content $configFile | ConvertFrom-Json)
     $configData.ExampleConfig.ResourceLocation = "..\Resources\"
-    $configData.ExampleConfig.PlugInLocation = "..\PlugIns\"
+    $configData.ExampleConfig.PluginLocation = "..\Plugins\"
 
     (ConvertTo-Json $configData | Set-Content $configfile)
 }
@@ -12,7 +12,7 @@ function Update-Config()
 $artifactDir = "$env:BUILD_ARTIFACTSTAGINGDIRECTORY\\Examples"
 
 $artifactBin = "$artifactDir\\Bin\\"
-$artifactPlugIns = "$artifactDir\\PlugIns\\"
+$artifactPlugins = "$artifactDir\\Plugins\\"
 $artifactImagesFolder = "$artifactBin\\Images\\"
 $baseSrcResources = "Resources\\"
 $baseSrcImages = "Examples\\Gorgon.Graphics\\Images\\Images\\*.*"
@@ -25,13 +25,13 @@ if (Test-Path $artifactDir)
 mkdir $artifactDir
 mkdir $artifactBin
 mkdir $artifactImagesFolder
-mkdir $artifactPlugIns
+mkdir $artifactPlugins
 
 $gorgonExamples = (Get-ChildItem "Examples\\" -include *.dll,*.exe,appsettings.json,*.runtimeconfig.json,TextViewerContentExample_Installation.txt  -Recurse | Where-Object {$_.FullName -match "\\bin\\" -and $_.FullName -notmatch "\\net48\\" -and $_.FullName -notmatch "app.config" -and $_.FullName -notmatch ".vshost.exe" -and $_.FullName -notmatch "\\debug\\" -and $_.FullName -notmatch "\\obj\\" -and $_.FullName -notmatch "_Test" -and $_.FullName -notmatch "\\publish\\" -and $_.FullName -notmatch "\\ref\\" -and $_.FullName -notmatch "\\runtimes\\" })
-$plugInDlls = (Get-ChildItem "PlugIns\\Bin\\" -include *.dll -Recurse | Where-Object { $_.FullName -notmatch "\\debug\\" -and $_.FullName -notmatch "\\net48\\" })
+$pluginDlls = (Get-ChildItem "Plugins\\Bin\\" -include *.dll -Recurse | Where-Object { $_.FullName -notmatch "\\debug\\" -and $_.FullName -notmatch "\\net48\\" })
 
 Write-Output "$($gorgonExamples.Length) Example files to copy."
-Write-Output "$($plugInDlls.Length) Plug-in files to copy."
+Write-Output "$($pluginDlls.Length) Plugin files to copy."
 
 Copy-Item -Path $baseSrcResources -Exclude Krypton_DarkO2k10Theme.xml -Destination $artifactDir -Recurse -Container
 Copy-Item -Path $baseSrcImages -Destination $artifactImagesFolder -Container: $false
@@ -63,7 +63,7 @@ ForEach ($example in $gorgonExamples)
     Copy-Item $example.FullName $artifactBin
 }
 
-ForEach ($plugInDll in $plugInDlls)
+ForEach ($pluginDll in $pluginDlls)
 {
-    Copy-Item $plugInDll.FullName $artifactPlugIns
+    Copy-Item $pluginDll.FullName $artifactPlugins
 }

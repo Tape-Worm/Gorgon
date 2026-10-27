@@ -82,12 +82,12 @@ jobs:
           Overwrite: true
 
       - task: CopyFiles@2
-        displayName: 'Copying Plug-ins to $(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/PlugIns'
+        displayName: 'Copying Plugins to $(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/Plugins'
         inputs:
-          SourceFolder: '$(Build.SourcesDirectory)/PlugIns/Bin/$(buildConfiguration)/'
+          SourceFolder: '$(Build.SourcesDirectory)/Plugins/Bin/$(buildConfiguration)/'
           Contents: '**/?(*.dll|Gorgon*.pdb)'
           CleanTargetFolder: true
-          TargetFolder: '$(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/PlugIns'
+          TargetFolder: '$(Build.ArtifactStagingDirectory)/$(buildConfiguration)/Gorgon/Plugins'
 
       - task: CopyFiles@2
         displayName: 'Copying Tools to $(Build.ArtifactStagingDirectory)/Gorgon/Tools'

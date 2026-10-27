@@ -94,9 +94,9 @@ public static class GorgonExample
     public static GorgonApplicationLoop Loop => _lazyLoop.Value;
 
     /// <summary>
-    /// Property to set or return the path to the plug-in directory.
+    /// Property to set or return the path to the plugin directory.
     /// </summary>
-    public static DirectoryInfo? PlugInLocationDirectory
+    public static DirectoryInfo? PluginLocationDirectory
     {
         get;
         set;
@@ -140,16 +140,16 @@ public static class GorgonExample
     }
 
     /// <summary>
-    /// Function to retrieve the directory that contains the plug-ins for an application.
+    /// Function to retrieve the directory that contains the plugins for an application.
     /// </summary>
-    /// <returns>A directory information object for the plug-in path.</returns>
-    public static DirectoryInfo GetPlugInPath()
+    /// <returns>A directory information object for the plugin path.</returns>
+    public static DirectoryInfo GetPluginPath()
     {
-        string path = PlugInLocationDirectory?.FullName ?? throw new DirectoryNotFoundException();
+        string path = PluginLocationDirectory?.FullName ?? throw new DirectoryNotFoundException();
 
         if (string.IsNullOrWhiteSpace(path))
         {
-            throw new IOException("No plug-in path has been assigned.");
+            throw new IOException("No plugin path has been assigned.");
         }
 
         if (path.Contains("{0}"))
@@ -168,7 +168,7 @@ public static class GorgonExample
 
         DirectoryInfo result = new(Path.GetFullPath(path));
 
-        Log.Print($"Example plug-in path: {result.FullName}", LoggingLevel.Simple);
+        Log.Print($"Example plugin path: {result.FullName}", LoggingLevel.Simple);
 
         return result;
     }

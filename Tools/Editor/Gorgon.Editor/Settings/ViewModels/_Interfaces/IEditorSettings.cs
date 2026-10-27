@@ -51,9 +51,9 @@ internal interface IEditorSettings
     }
 
     /// <summary>
-    /// Property to return the list of plug-ins for the fixed plug-in list category.
+    /// Property to return the list of plugins for the fixed plugin list category.
     /// </summary>
-    ISettingsPlugInsList PlugInsList
+    ISettingsPluginsList PluginsList
     {
         get;
     }

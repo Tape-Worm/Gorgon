@@ -24,7 +24,7 @@
 // 
 
 using Gorgon.Core;
-using Gorgon.Editor.PlugIns;
+using Gorgon.Editor.Plugins;
 
 namespace Gorgon.Editor.UI;
 
@@ -33,8 +33,8 @@ namespace Gorgon.Editor.UI;
 /// </summary>
 /// <remarks>
 /// <para>
-/// This is a view model that is used provide a settings interface for a plug-in. The editor will pick these up and present your custom settings view (along with the view model) so that users can make 
-/// changes to plug-in settings. These settings objects are returned to the host editor application by way of the <see cref="EditorPlugIn.OnGetSettings"/> method
+/// This is a view model that is used provide a settings interface for a plugin. The editor will pick these up and present your custom settings view (along with the view model) so that users can make 
+/// changes to plugin settings. These settings objects are returned to the host editor application by way of the <see cref="EditorPlugin.OnGetSettings"/> method
 /// </para>
 /// </remarks>
 public interface ISettingsCategory

@@ -32,7 +32,7 @@ using Gorgon.Graphics.Core;
 using Gorgon.Graphics.Fonts;
 using Gorgon.Input;
 using Gorgon.Input.Devices;
-using Gorgon.PlugIns;
+using Gorgon.Plugins;
 using Gorgon.Renderers;
 using Gorgon.Renderers.Cameras;
 using DX = SharpDX;
@@ -48,8 +48,8 @@ namespace Gorgon.Examples;
 static class Program
 {
 
-    // The cache for our plug-in assemblies.
-    private static GorgonMefPlugInCache _assemblyCache;
+    // The cache for our plugin assemblies.
+    private static GorgonMefPluginCache _assemblyCache;
     // The primary graphics interface.
     private static GorgonGraphics _graphics;
     // The main "screen" for the application.
@@ -318,12 +318,12 @@ static class Program
         try
         {
             GorgonExample.ResourceBaseDirectory = new DirectoryInfo(ExampleConfig.Default.ResourceLocation);
-            GorgonExample.PlugInLocationDirectory = new DirectoryInfo(ExampleConfig.Default.PlugInLocation);
+            GorgonExample.PluginLocationDirectory = new DirectoryInfo(ExampleConfig.Default.PluginLocation);
 
-            // Load our packed file system plug-in.
-            window.UpdateStatus("Loading Plug-ins...");
+            // Load our packed file system plugin.
+            window.UpdateStatus("Loading Plugins...");
 
-            _assemblyCache = new GorgonMefPlugInCache(GorgonExample.Log);
+            _assemblyCache = new GorgonMefPluginCache(GorgonExample.Log);
 
             window.UpdateStatus("Initializing graphics...");
 
