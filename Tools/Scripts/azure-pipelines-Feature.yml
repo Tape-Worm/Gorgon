@@ -22,7 +22,7 @@ jobs:
 
     steps:
       - checkout: self
-        submodules: true
+        submodules: false
 
       - task: CmdLine@2
         displayName: 'Updating version to $(Build.BuildNumber)'
