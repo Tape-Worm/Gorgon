@@ -32,5 +32,5 @@ internal static class CommonConstants
     /// <summary>
     /// The Agility SDK version to use.
     /// </summary>
-    public const uint AgilitySDKVersion = 620;
+    public const uint AgilitySDKVersion = 618;
 }
