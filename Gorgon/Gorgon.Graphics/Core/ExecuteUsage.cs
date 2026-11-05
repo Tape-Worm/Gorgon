@@ -25,7 +25,7 @@
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Defines how the commands for a <see cref="GorgonExecuteCall"/> or <see cref="GorgonIndexedExecuteCall"/> are written.
+/// Defines how the commands for a <see cref="GorgonExecuteCall"/>, <see cref="GorgonIndexedExecuteCall"/>, or <see cref="GorgonComputeExecuteCall"/> are written.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -37,9 +37,13 @@ namespace Gorgon.Graphics.Core;
 /// executed, the GPU reads the count that the shader wrote, so the results never travel back to the CPU. This lets the GPU do work such as culling, and draw only what is left, without waiting on the CPU. The 
 /// application only sets the maximum number of commands to execute, and the count written by the shader decides how many of those are executed.
 /// </para>
+/// <para>
+/// The same applies to a <see cref="GorgonComputeExecuteCall"/>, where each command is a dispatch instead of a draw.
+/// </para>
 /// </remarks>
 /// <seealso cref="GorgonExecuteCall"/>
 /// <seealso cref="GorgonIndexedExecuteCall"/>
+/// <seealso cref="GorgonComputeExecuteCall"/>
 /// <seealso cref="GorgonExecuteBuffer"/>
 public enum ExecuteUsage
 {

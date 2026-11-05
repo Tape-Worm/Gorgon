@@ -29,7 +29,7 @@ using Gorgon.Core;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// The result of a single <see cref="QueryType.PipelineStatistics"/> query slot.
+/// The result of a single <see cref="QueryType.PipelineStatistics"/> query record.
 /// </summary>
 /// <remarks>
 /// <para>

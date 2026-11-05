@@ -80,7 +80,7 @@ public enum GorgonGraphicsDebugFlags
 /// <para>
 /// Unlike previous versions of Gorgon, applications no longer create the primary <see cref="GorgonGraphics"/> object by instancing the class. Instead this factory should be used to create the object. The 
 /// reason for this change is to better handle the evolving distribution of Direct 3D 12 via the Agility SDK, and to load any required native DLLs. This will help keep Gorgon up to date with the latest 
-/// version of Direct 3D 12 and its ancilliary functionality (e.g. WARP, Dxcompiler, etc...).
+/// version of Direct 3D 12 and its ancillary functionality (e.g. WARP, Dxcompiler, etc...).
 /// </para>
 /// <para>
 /// Objects created with this factory are tracked, and as such will be destroyed when the factory's <see cref="Dispose()"/> method is called. However, users should follow best practices and dispose of any 
@@ -90,19 +90,18 @@ public enum GorgonGraphicsDebugFlags
 /// <h3>Debugging Support</h3>
 /// </para>
 /// <para>
-/// Applications can enable Direct 3D debugging by passing a <see cref="GorgonGraphicsDebug"/> object to the factory constructor. This will allow developers to examine underlying failures when rendering 
-/// using Direct 3D. This is helpful to determine if a <see cref="IDisposable.Dispose"/> call was forgotten by a developer.
+/// Applications can enable Direct 3D debugging by passing <see cref="GorgonGraphicsDebugFlags"/> to the factory constructor. This will allow developers to examine underlying failures when rendering using 
+/// Direct 3D. This is helpful to determine if a <see cref="IDisposable.Dispose"/> call was forgotten by a developer. When debugging is enabled, the <see cref="Debugging"/> property returns a 
+/// <see cref="GorgonGraphicsDebug"/> object that reports on the underlying APIs.
 /// </para>
 /// <para>
-/// In addtion to passing a <see cref="GorgonGraphicsDebug"/>, users must also use the DirectX control panel (<c>Debug -> Graphics -> DirectX Control Panel</c>) provided by Visual Studio in order to turn on 
-/// debugging. Finally, the user must then turn on Native debugging in the Project properties of their application (under the <b>Debug</b> tab) so that any debug output can be seen in the Output window 
-/// while running the application.
+/// To see the debug output in the Output window while running the application, the user must turn on Native debugging in the Project properties of their application (under the <b>Debug</b> tab).
 /// </para>
 /// <para>
 /// <h3>Requirements</h3>
 /// To create a Gorgon Graphics object the following criteria must be met:
 /// <list type="bullet">
-/// <item><term>Operating System</term><description>Windows 10 version 10.0.19043.0 (21H1) or later version (Windows 11 24H2 or later version preferred).</description></item>
+/// <item><term>Operating System</term><description>Windows 11 version 24H2 (10.0.26100) or later.</description></item>
 /// <item><term>Direct 3D Version</term><description>12, feature level 12_2.</description></item>
 /// <item><term>Shader Model</term><description>6.6.</description></item>
 /// <item><term>GPU Support</term><description>Enhanced barrier support is required.</description></item>
@@ -140,11 +139,11 @@ public unsafe sealed class GorgonGraphicsFactory
     }
 
     /// <summary>
-    /// Property to return the debugging interface.
+    /// Property to return the object used to report debugging information from the underlying APIs.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// If this value is <b>null</b>, then debugging is disabled.
+    /// If this value is <b>null</b>, then debugging is disabled (see <see cref="DebuggingFlags"/>).
     /// </para>
     /// </remarks>
     public GorgonGraphicsDebug? Debugging
@@ -195,8 +194,8 @@ public unsafe sealed class GorgonGraphicsFactory
 
         Debugging = null;
 
-        if ((!disposing) || (Interlocked.Decrement(ref _debugCreateCounter) <= 0))
-        {
+        if ((!disposing) || ((DebuggingFlags != GorgonGraphicsDebugFlags.None) && (Interlocked.Decrement(ref _debugCreateCounter) <= 0)))
+        {            
             Interlocked.Exchange(ref _debugCreateCounter, 0);
             _dred.Dispose();
             _d3dDebug.Dispose();
@@ -254,7 +253,7 @@ public unsafe sealed class GorgonGraphicsFactory
     private void CreateDebugInterface(GorgonGraphicsDebugFlags debug)
     {
         if (debug == GorgonGraphicsDebugFlags.None)
-        {
+        {            
             return;
         }
 
@@ -262,6 +261,7 @@ public unsafe sealed class GorgonGraphicsFactory
         {
             if ((++_debugCreateCounter) > 1)
             {
+                DebuggingFlags = debug;
                 return;
             }
 
@@ -418,7 +418,7 @@ public unsafe sealed class GorgonGraphicsFactory
     /// Use this to retrieve a list of video adapters available on the system. A video adapter may be a discrete video card, a device on the motherboard, or a software video adapter.
     /// </para>
     /// <para>
-    /// This resulting list will contain <see cref="GorgonVideoAdapterInfo"/> objects which can then be passed to a <see cref="GorgonGraphics"/> instance. This allows applications or users to pick and choose which 
+    /// This resulting list will contain <see cref="GorgonVideoAdapterInfo"/> objects which can then be passed to <see cref="CreateGraphics"/>. This allows applications or users to pick and choose which 
     /// adapter they wish to use for rendering.
     /// </para>
     /// <para>
@@ -446,8 +446,8 @@ public unsafe sealed class GorgonGraphicsFactory
     /// <exception cref="GorgonException">Thrown when an error occurs when trying to create the object.</exception>
     /// <remarks>
     /// <para>
-    /// This function will create an instance of the root graphics object from which all other objects are connected with. Multiple objects may be created, this is useful in cases where the system has 
-    /// multiple GPUs installed. 
+    /// This function will create an instance of the root graphics object, which all other graphics objects are associated with. Multiple objects may be created, which is useful in cases where the system has 
+    /// multiple GPUs installed.
     /// </para>
     /// <para>
     /// If the <paramref name="adapter"/> is not specified, then the system will enumerate the highest performing GPU as reported by the operating system and use that. If no applicable adapter can be found 
@@ -463,13 +463,18 @@ public unsafe sealed class GorgonGraphicsFactory
     /// </para>
     /// <para>
     /// The <paramref name="inFlightFrameCount"/> value is used to determine how many frames can be in flight at any given time while the GPU is working. The lower the value, the less latency introduced during 
-    /// frame presentations to a <see cref="GorgonSwapChain"/>, but more frame spikes will be introduced. This value cannot be less than 1.
+    /// frame presentations to a <see cref="GorgonSwapChain"/>, but more frame spikes will be introduced. Values less than 1 are treated as 1.
     /// </para>
     /// <para>
-    /// If the <paramref name="vramReservedPercent"/> is specified, it allows users to specify how much VRAM can be used to store buffers for use as bindless data. The default value is 13%. The maximum 
-    /// amount of VRAM that will be reserved is 2GB, and the minimum is 256 MB. This value is may change depending on the amount of VRAM available for the application.
+    /// The <paramref name="vramReservedPercent"/> sets the size of each block of VRAM that is reserved to store buffers, as a percentage of the VRAM available to the application. Each block is between 256 MB 
+    /// and 2 GB in size. When a block is full, another block of the same size is reserved.
+    /// </para>
+    /// <para>
     /// <note type="important">
-    /// This feature is meant for advanced usage and should only be used if memory constraints cause an issue with buffer usage/storage. Do not change this without a very good reason for doing so.
+    /// <para>
+    /// The <paramref name="vramReservedPercent"/> is meant for advanced usage and should only be changed if memory constraints cause an issue with buffer usage/storage. Do not change this without a very good 
+    /// reason for doing so.
+    /// </para>
     /// </note>
     /// </para>
     /// <para>
@@ -477,7 +482,7 @@ public unsafe sealed class GorgonGraphicsFactory
     /// <para>
     /// To create a Gorgon Graphics object the following criteria must be met:
     /// <list type="bullet">
-    /// <item><term>Operating System</term><description>Windows 10 version 10.0.19043.0 (21H1) or later version (Windows 11 24H2 or later version preferred).</description></item>
+    /// <item><term>Operating System</term><description>Windows 11 version 24H2 (10.0.26100) or later.</description></item>
     /// <item><term>Direct 3D Version</term><description>12, feature level 12_2.</description></item>
     /// <item><term>Shader Model</term><description>6.6.</description></item>
     /// <item><term>GPU Support</term><description>Enhanced barrier support is required.</description></item>
@@ -542,14 +547,14 @@ public unsafe sealed class GorgonGraphicsFactory
     ~GorgonGraphicsFactory() => Dispose(false);
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="GorgonGraphicsFactory"/> interface.
+    /// Initializes a new instance of the <see cref="GorgonGraphicsFactory"/> class.
     /// </summary>
     /// <param name="debug">[Optional] Flags used to indicate the level of debugging.</param>
     /// <param name="log">[Optional] The log used for debug messaging.</param>
     /// <remarks>
     /// <para>
     /// When the <paramref name="debug"/> parameter is set to any value other than <see cref="GorgonGraphicsDebugFlags.None"/>, then debugging is turned on for the lifetime of the application and cannot be 
-    /// disabled until the application exits. Also, when debugging is enabled a significant performance hit may be noticable when rendering.
+    /// disabled until the application exits. Also, when debugging is enabled a significant performance hit may be noticeable when rendering.
     /// </para>
     /// </remarks>
     public GorgonGraphicsFactory(GorgonGraphicsDebugFlags debug = GorgonGraphicsDebugFlags.None, IGorgonLog? log = null)

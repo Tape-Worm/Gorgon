@@ -11,6 +11,7 @@
     <File Path="Examples/.editorconfig" />
     <Project Path="Examples/ExamplesCommon/ExamplesCommon.csproj" />
   </Folder>
+  <Folder Name="/Examples/Gorgon.ComputeEngine/" />
   <Folder Name="/Examples/Gorgon.Core.Windows/">
     <Project Path="Examples/Gorgon.Core.Windows/ComputerInfo/ComputerInfo.csproj" />
     <Project Path="Examples/Gorgon.Core.Windows/ConsoleLogging/ConsoleLogging.csproj" />

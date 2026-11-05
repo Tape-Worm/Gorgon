@@ -68,27 +68,9 @@ internal sealed unsafe class CpuBufferHeap
     }
 
     /// <summary>
-    /// Property to set or return the fence value for the heap while it is in use by the graphics queue on the GPU.
+    /// Property to set or return the fence value for the heap while it is in use by the queue that owns the heap/pool.
     /// </summary>
-    public ulong GfxFence
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// Property to set or return the fence value for the heap while it is in use by the compute queue on the GPU.
-    /// </summary>
-    public ulong ComputeFence
-    {
-        get;
-        set;
-    }
-
-    /// <summary>
-    /// Property to set or return the fence value for the heap while it is in use by the copy queue on the GPU.
-    /// </summary>
-    public ulong CopyFence
+    public ulong Fence
     {
         get;
         set;
@@ -136,7 +118,7 @@ internal sealed unsafe class CpuBufferHeap
                 _resourceHeap.Get()->Unmap(0, null);
             }
 
-            CopyFence = ComputeFence = GfxFence = 0;
+            Fence = 0;
             Used = 0;
             GpuAddress = 0;
             CpuPointer = null;
@@ -189,7 +171,7 @@ internal sealed unsafe class CpuBufferHeap
     /// </remarks>
     public void FreeAll()
     {
-        CopyFence = ComputeFence = GfxFence = 0;
+        Fence = 0;
         Used = 0;
     }
 

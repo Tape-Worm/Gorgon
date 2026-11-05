@@ -59,7 +59,7 @@ public unsafe abstract class GorgonShaderBufferRwView
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This is either a <see cref="GorgonGpuBuffer"/>, or a <see cref="GorgonIndexBuffer"/>.
+    /// This is a <see cref="GorgonGpuBuffer"/>, a <see cref="GorgonIndexBuffer"/>, or a <see cref="GorgonExecuteBuffer"/>.
     /// </para>
     /// </remarks>
     public GorgonGpuBufferCommon Buffer

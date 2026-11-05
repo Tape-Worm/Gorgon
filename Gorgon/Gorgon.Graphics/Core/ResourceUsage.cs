@@ -47,7 +47,7 @@ public enum BufferUsage
     IndirectArguments,
 
     /// <summary>
-    /// Buffer is read through a read only view, such as a <see cref="GorgonStructuredBufferView"/>.
+    /// Buffer is read through a read-only view, such as a <see cref="GorgonStructuredBufferView"/>.
     /// </summary>
     ReadOnly,
 
@@ -56,26 +56,26 @@ public enum BufferUsage
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This is the usage for a buffer that is only accessed through read/write views in the draw, and is the usage assigned by the <see cref="GorgonUsedBuffer(GorgonShaderBufferRwView, ShaderStage)"/> 
+    /// This is the usage for a buffer that is only accessed through read/write views in the call, and is the usage assigned by the <see cref="GorgonUsedBuffer(GorgonShaderBufferRwView, ShaderStage)"/> 
     /// constructor.
     /// </para>
     /// <para>
-    /// If the same buffer is also read through a read only view in the same draw, use <see cref="ReadOnlyAndReadWrite"/> instead.
+    /// If the same buffer is also read through a read-only view in the same call, use <see cref="ReadOnlyAndReadWrite"/> instead.
     /// </para>
     /// <inheritdoc cref="GorgonGraphicsCallCommon.AssignBuffers(ReadOnlySpan{GorgonUsedBuffer})" path="/remarks/para[@type='declare_resources']"/>
     /// </remarks>
     ReadWrite,
 
     /// <summary>
-    /// Buffer is accessed through a read/write view, and read through a read only view, in the same draw.
+    /// Buffer is accessed through a read/write view, and read through a read-only view, in the same draw, dispatch, or execute call.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// Use this when a single buffer is bound through both a read/write view (e.g. <see cref="GorgonStructuredBufferRwView"/>) and a read only view (e.g. <see cref="GorgonStructuredBufferView"/>) in one draw. 
+    /// Use this when a single buffer is bound through both a read/write view (e.g. <see cref="GorgonStructuredBufferRwView"/>) and a read-only view (e.g. <see cref="GorgonStructuredBufferView"/>) in one call. 
     /// A buffer can be read by any number of operations while a single operation writes to it.
     /// </para>
     /// <para>
-    /// <see cref="TextureUsage"/> has no equivalent value. A texture sub resource can only be in one layout at a time, so it cannot be accessed through a read/write view and a read only view at the same time. 
+    /// <see cref="TextureUsage"/> has no equivalent value. A texture sub resource can only be in one layout at a time, so it cannot be accessed through a read/write view and a read-only view at the same time. 
     /// Buffers have no layouts, so this restriction does not apply to them.
     /// </para>
     /// </remarks>
@@ -93,7 +93,7 @@ public enum TextureUsage
     None,
 
     /// <summary>
-    /// Texture is read through a read only view, such as an <see cref="IGorgonTextureView{T}"/>.
+    /// Texture is read through a read-only view, such as an <see cref="IGorgonTextureView{T}"/>.
     /// </summary>
     ReadOnly,
 
@@ -107,8 +107,8 @@ public enum TextureUsage
     /// <inheritdoc cref="GorgonGraphicsCallCommon.AssignBuffers(ReadOnlySpan{GorgonUsedBuffer})" path="/remarks/para[@type='declare_resources']"/>
     /// <inheritdoc cref="GorgonUsedTexture.SubResources" path="/remarks/para[@type='subresource_usage']"/>
     /// <para>
-    /// Unlike <see cref="BufferUsage"/> (see <see cref="BufferUsage.ReadOnlyAndReadWrite"/>), there is no value for reading a texture sub resource through a read only view while writing to the same sub 
-    /// resource through a read/write view. A texture sub resource can only be in one layout at a time, and the read/write layout does not allow access through a read only view.
+    /// Unlike <see cref="BufferUsage"/> (see <see cref="BufferUsage.ReadOnlyAndReadWrite"/>), there is no value for reading a texture sub resource through a read-only view while writing to the same sub 
+    /// resource through a read/write view. A texture sub resource can only be in one layout at a time, and the read/write layout does not allow access through a read-only view.
     /// </para>
     /// </remarks>
     ReadWrite

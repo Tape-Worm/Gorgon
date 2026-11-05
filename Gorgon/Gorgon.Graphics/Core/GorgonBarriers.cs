@@ -150,10 +150,10 @@ public enum BarrierSync
     PixelShading = D3D12_BARRIER_SYNC.D3D12_BARRIER_SYNC_PIXEL_SHADING,
     /// <summary>
     /// <para>
-    /// Synchronize scope for non pixel shader execution.
+    /// Synchronize scope for non-pixel shader execution.
     /// </para>
     /// <para>
-    /// <see cref="BarrierAccess">Access types</see> in thi scope are limited to the following values:
+    /// <see cref="BarrierAccess">Access types</see> in this scope are limited to the following values:
     /// <list type="bullet">
     /// <item><description><see cref="BarrierAccess.VertexBuffer"/></description></item>
     /// <item><description><see cref="BarrierAccess.ConstantBuffer"/></description></item>
@@ -166,7 +166,7 @@ public enum BarrierSync
     NonPixelShading = D3D12_BARRIER_SYNC.D3D12_BARRIER_SYNC_NON_PIXEL_SHADING,
     /// <summary>
     /// <para>
-    /// Synchronize scope for depth/stencil read/write operations. This includes DSV accesses during Draw* and ClearRenderTargetView.
+    /// Synchronize scope for depth/stencil read/write operations. This includes depth/stencil accesses during draws and depth/stencil clears.
     /// </para>
     /// <para>
     /// <see cref="BarrierAccess">Access types</see> in this scope are limited to the following values:
@@ -180,7 +180,7 @@ public enum BarrierSync
     DepthStencil = D3D12_BARRIER_SYNC.D3D12_BARRIER_SYNC_DEPTH_STENCIL,
     /// <summary>
     /// <para>
-    /// Synchronize scope for render target read/write operations. This include RTV writes during Draw* and ClearRenderTargetView.
+    /// Synchronize scope for render target read/write operations. This includes render target writes during draws and render target clears.
     /// </para>
     /// <para>
     /// <see cref="BarrierAccess">Access types</see> in this scope are limited to the following values:
@@ -385,7 +385,7 @@ public enum BarrierSync
         CopyRayTracingAccelerationStructure = D3D12_BARRIER_SYNC.D3D12_BARRIER_SYNC_COPY_RAYTRACING_ACCELERATION_STRUCTURE,*/
     /// <summary>
     /// <para>
-    /// Special sync bit indicating a split barrier. Used as an <c>After</c> state to indicates the start of a split barrier. The application must provide a matching barrier with this value as a 
+    /// Special sync bit indicating a split barrier. Used as an <c>After</c> state to indicate the start of a split barrier. The application must provide a matching barrier with this value as a 
     /// <c>Before</c> bit.
     /// </para>
     /// <para>
@@ -405,7 +405,7 @@ public enum BarrierSync
 /// </summary>
 /// <remarks>
 /// <para>
-/// These values can be combined via OR'ing to provide fine grained access.
+/// These values can be combined via OR'ing to provide fine-grained access.
 /// </para>
 /// </remarks>
 [Flags]
@@ -413,7 +413,7 @@ public enum BarrierAccess
 {
     /// <summary>
     /// <para>
-    /// Default initial access for all resources in a given command context execution scope. Supports any type of access compatible with current layout and resource properties, including no-more than one 
+    /// Default initial access for all resources in a given command context execution scope. Supports any type of access compatible with current layout and resource properties, including no more than one 
     /// write access. For buffers and textures using <see cref="BarrierLayout.Common"/>, this value supports concurrent read and write accesses.
     /// </para>
     /// <para>
@@ -428,7 +428,7 @@ public enum BarrierAccess
     /// <summary>
     /// <para>
     /// Indicates a buffer resource is accessible as a vertex buffer in the current execution queue. Vertex buffer accesses occur only in <see cref="BarrierSync.VertexShading"/> scope. Runtime barrier 
-    /// validation ensure that value is used with one or more of the following sync bits:
+    /// validation ensures that this value is used with one or more of the following sync bits:
     /// <list type="bullet">
     /// <item><description><see cref="BarrierSync.All"/></description></item>
     /// <item><description><see cref="BarrierSync.VertexShading"/></description></item>
@@ -483,7 +483,7 @@ public enum BarrierAccess
     RenderTarget = D3D12_BARRIER_ACCESS.D3D12_BARRIER_ACCESS_RENDER_TARGET,
     /// <summary>
     /// <para>
-    /// Indicates a resource is accessible as an read/write resource. Runtime barrier validation ensures that this value is used with one or more of the following sync bits:
+    /// Indicates a resource is accessible as a read/write resource. Runtime barrier validation ensures that this value is used with one or more of the following sync bits:
     /// </para>
     /// <inheritdoc cref="GorgonGpuBuffer" path="/remarks/para[@type='uav_readwrite']"/>
     /// <para>
@@ -541,17 +541,17 @@ public enum BarrierAccess
     /// </para>
     /// </summary>
     ShaderResource = D3D12_BARRIER_ACCESS.D3D12_BARRIER_ACCESS_SHADER_RESOURCE,
-    ///// <summary>
-    ///// <para>
-    ///// Indicates a buffer is accessible as a stream output target. Runtime barrier validation ensures that this value is used with one or more of the following sync bits:
+    ///// <summary> 
+    ///// <para> 
+    ///// Indicates a buffer is accessible as a stream output target. Runtime barrier validation ensures that this value is used with one or more of the following sync bits: 
     ///// </para>
-    ///// <para>
-    ///// <list type="bullet">
+    ///// <para> 
+    ///// <list type="bullet"> 
     ///// <item><description><see cref="BarrierSync.All"/></description></item>
     ///// <item><description><see cref="BarrierSync.VertexShading"/></description></item>
     ///// <item><description><see cref="BarrierSync.Draw"/></description></item>
     ///// <item><description><see cref="BarrierSync.AllShading"/></description></item>
-    ///// </list>
+    ///// </list> 
     ///// </para>
     ///// </summary>
     //StreamOutput = D3D12_BARRIER_ACCESS.D3D12_BARRIER_ACCESS_STREAM_OUTPUT,
@@ -593,7 +593,7 @@ public enum BarrierAccess
     CopySource = D3D12_BARRIER_ACCESS.D3D12_BARRIER_ACCESS_COPY_SOURCE,
     /// <summary>
     /// <para>
-    /// Indicates a resource is accessible as a MSAA resolve destination. Runtime barrier validation ensures that this value is used with one or more of the following sync bits:
+    /// Indicates a resource is accessible as an MSAA resolve destination. Runtime barrier validation ensures that this value is used with one or more of the following sync bits:
     /// </para>
     /// <para>
     /// <list type="bullet">
@@ -605,7 +605,7 @@ public enum BarrierAccess
     ResolveDestination = D3D12_BARRIER_ACCESS.D3D12_BARRIER_ACCESS_RESOLVE_DEST,
     /// <summary>
     /// <para>
-    /// Indicates a resource is accessible as a MSAA resolve source. Runtime barrier validation ensures that this value is used with one or more of the following sync bits:
+    /// Indicates a resource is accessible as an MSAA resolve source. Runtime barrier validation ensures that this value is used with one or more of the following sync bits:
     /// </para>
     /// <para>
     /// <list type="bullet">
@@ -740,13 +740,13 @@ public enum BarrierAccess
     VideoEncodeWrite = D3D12_BARRIER_ACCESS.D3D12_BARRIER_ACCESS_VIDEO_ENCODE_WRITE,*/
     /// <summary>
     /// <para>
-    /// The resource is either not accessed before/after the barrier in the same command context execution context, or the data is no longer needed. This value is exclusive, and may not be combined with other 
+    /// The resource is either not accessed before/after the barrier in the same command context execution scope, or the data is no longer needed. This value is exclusive, and may not be combined with other 
     /// access bits.
     /// </para>
     /// <para>
     /// Using this value in a <c>Before</c> state with a <c>Sync Before</c> state of <see cref="BarrierSync.None"/> implies that a subresource was not accessed before the barrier in the current command context 
-    /// execution scope. Likewise, using this value in a <c>After</c> state with a <c>Sync After</c> state of <see cref="BarrierSync.None"/> implies that a subresource is not accessed after the barrier in 
-    /// the same scope.This is useful for initiating a layout transition as the final act on a resource before the end of a command context execution scope.
+    /// execution scope. Likewise, using this value in an <c>After</c> state with a <c>Sync After</c> state of <see cref="BarrierSync.None"/> implies that a subresource is not accessed after the barrier in 
+    /// the same scope. This is useful for initiating a layout transition as the final act on a resource before the end of a command context execution scope.
     /// </para>
     /// <para>
     /// Barriers used for aliased resource transitions can set this value on either <c>Before</c>/<c>After</c> states to indicate that aliased subresources do not share data across synchronization 
@@ -767,15 +767,15 @@ public enum BarrierLayout
 {
     /// <summary>
     /// <para>
-    /// Provides support for subresource layout changes where the previous layout is irrelevant or undefined. Typically, this is used for full-subresource or full-subresource Clear, Discard, and Copy 
+    /// Provides support for subresource layout changes where the previous layout is irrelevant or undefined. Typically, this is used for full-subresource or full-resource Clear, Discard, and Copy 
     /// commands.
     /// </para>
     /// <para>
-    /// This value, when suppplied to the <c>Before</c> AND <c>After</c> state, indicates a memory-access-only barrier. Many write operations support more than one layout (e.g. Copy operations support 
+    /// This value, when supplied to the <c>Before</c> AND <c>After</c> state, indicates a memory-access-only barrier. Many write operations support more than one layout (e.g. Copy operations support 
     /// <see cref="Common"/> or <see cref="CopyDestination"/>). A memory-access-only barrier can be used to flush writes to a texture without inadvertently changing the texture layout.
     /// </para>
     /// <para>
-    /// Otherwise, a <c>Before</c>c OR <c>After</c> state with this value must set the corresponding <c>Access Before</c> or <c>Access After</c> value to <see cref="BarrierAccess.None"/>. A texture with an 
+    /// Otherwise, a <c>Before</c> OR <c>After</c> state with this value must set the corresponding <c>Access Before</c> or <c>Access After</c> value to <see cref="BarrierAccess.None"/>. A texture with an 
     /// undefined layout clearly does not have meaningful data and thus should not require preservation of data or cache flushes. Barriers used for aliasing can take advantage of this to let the GPU discard 
     /// outstanding cache writes.
     /// </para>
@@ -783,7 +783,7 @@ public enum BarrierLayout
     None = D3D12_BARRIER_LAYOUT.D3D12_BARRIER_LAYOUT_UNDEFINED,
     /// <summary>
     /// <para>
-    /// Subresources with this layout are readable in any queue type without requiring a layout change. They are also writable as a copy dest in any queue type.
+    /// Subresources with this layout are readable in any queue type without requiring a layout change. They are also writable as a copy destination in any queue type.
     /// </para>
     /// <para>
     /// Before calling <see cref="GorgonSwapChain.Present"/> on a <see cref="GorgonSwapChain"/>, the current back buffer layout must be set to this value using a <see cref="GorgonTextureBarrier"/>.
@@ -799,7 +799,8 @@ public enum BarrierLayout
     GenericRead = D3D12_BARRIER_LAYOUT.D3D12_BARRIER_LAYOUT_GENERIC_READ,
     /// <summary>
     /// <para>
-    /// The resource is used as a render target. A subresource must be in this state when it is rendered to, or when it is cleared with <see cref="GorgonCommandList.ClearRenderTarget(GorgonRenderTargetView, GorgonColor, IReadOnlyList{GorgonRectangle}?)"/>.
+        /// The resource is used as a render target. A subresource must be in this state when it is rendered to, or when it is cleared with 
+    /// <see cref="GorgonCommandList.ClearRenderTarget(GorgonRenderTargetView, GorgonColor, IReadOnlyList{GorgonRectangle}?)"/>.
     /// </para>
     /// <para>
     /// This is a write-only state. To read from a render target as a shader resource, the resource must be set to <see cref="ShaderResource"/>.
@@ -808,26 +809,26 @@ public enum BarrierLayout
     RenderTarget = D3D12_BARRIER_LAYOUT.D3D12_BARRIER_LAYOUT_RENDER_TARGET,
     /// <summary>
     /// <para>
-    /// The resource is used for read/write access. A subresource must be in this state when it is accessed by the GPU via an read/write view. A subresource must also be in this state when it is cleared with 
-    /// the <see cref="GorgonCommandList.ClearReadWriteView(GorgonRawBufferRwView, System.Runtime.Intrinsics.Vector128{int})">ClearReadWriteView</see> (buffer) or 
-    /// <see cref="GorgonCommandList.ClearReadWriteView(GorgonTextureRwView, System.Runtime.Intrinsics.Vector128{int}, IReadOnlyList{GorgonRectangle})">ClearReadWriteView</see> 
-    /// (texture) methods. This is a read/write state.
+    /// The resource is used for read/write access. A subresource must be in this state when it is accessed by the GPU through a read/write view. A subresource must also be in this state when it is cleared 
+    /// with the <see cref="GorgonCommandList.ClearReadWriteView(GorgonRawBufferRwView, System.Runtime.Intrinsics.Vector128{int})">ClearReadWriteView</see> (buffer) or 
+    /// <see cref="GorgonCommandList.ClearReadWriteView(GorgonTextureRwView, System.Runtime.Intrinsics.Vector128{int}, IReadOnlyList{GorgonRectangle})">ClearReadWriteView</see> (texture) methods. This is a 
+    /// read/write state.
     /// </para>
     /// <inheritdoc cref="GorgonGpuBuffer" path="/remarks/para[@type='uav_readwrite']"/>
     /// </summary>
     ReadWrite = D3D12_BARRIER_LAYOUT.D3D12_BARRIER_LAYOUT_UNORDERED_ACCESS,
     /// <summary>
     /// <para>
-    /// This state is mutually exclusive with other states. You should use it for <see cref="GorgonCommandList.ClearDepthStencil(GorgonDepthStencilView, float, byte, IReadOnlyList{GorgonRectangle}?)"/> when the flags indicate a given subresource should be cleared 
-    /// (otherwise the subresource state doesn't matter), or when using it in a writable depth stencil view when the PSO has depth write enabled.
+    /// The resource is used for depth/stencil writes. A subresource must be in this layout when it is cleared with 
+    /// <see cref="GorgonCommandList.ClearDepthStencil(GorgonDepthStencilView, float, byte, IReadOnlyList{GorgonRectangle}?)"/>, or when it is used in a writable depth/stencil view while the PSO has depth 
+    /// writes enabled.
     /// </para>
     /// </summary>
     DepthStencilWrite = D3D12_BARRIER_LAYOUT.D3D12_BARRIER_LAYOUT_DEPTH_STENCIL_WRITE,
     /// <summary>
     /// <para>
-    /// This is a state that can be combined with other states. It should be used when the subresource is in a read-only depth stencil view, or when depth write on a PSO is disabled. It can be combined with 
-    /// other read states, such that the resource can be used for the depth or stencil test, and accessed by a shader within the same draw call. Using it when depth will be written by a draw call or clear 
-    /// command is invalid.
+    /// The resource is used for depth/stencil reads. It should be used when the subresource is in a read-only depth/stencil view, or when depth write on a PSO is disabled. In this layout, the resource can be 
+    /// used for the depth or stencil test, and accessed by a shader within the same draw call. Using it when depth will be written by a draw call or clear command is invalid.
     /// </para>
     /// </summary>
     DepthStencilRead = D3D12_BARRIER_LAYOUT.D3D12_BARRIER_LAYOUT_DEPTH_STENCIL_READ,
@@ -839,25 +840,26 @@ public enum BarrierLayout
     ShaderResource = D3D12_BARRIER_LAYOUT.D3D12_BARRIER_LAYOUT_SHADER_RESOURCE,
     /// <summary>
     /// <para>
-    /// The resource is used as the source in a copy operation. Subresources must be in this state when they are used as the source of copy operation, or a blt operation. This is a read-only state.
+    /// The resource is used as the source in a copy operation. Subresources must be in this state when they are used as the source of a copy operation, or a blit operation. This is a read-only state.
     /// </para>
     /// </summary>
     CopySource = D3D12_BARRIER_LAYOUT.D3D12_BARRIER_LAYOUT_COPY_SOURCE,
     /// <summary>
     /// <para>
-    /// The resource is used as the destination in a copy operation. Subresources must be in this state when they are used as the destination of copy operation, or a blt operation. This is a write-only state.
+        /// The resource is used as the destination in a copy operation. Subresources must be in this state when they are used as the destination of a copy operation, or a blit operation. This is a write-only 
+    /// state.
     /// </para>
     /// </summary>
     CopyDestination = D3D12_BARRIER_LAYOUT.D3D12_BARRIER_LAYOUT_COPY_DEST,
     /// <summary>
     /// <para>
-    /// The resource is used as the source in a MSAA resolve operation.
+    /// The resource is used as the source in an MSAA resolve operation.
     /// </para>
     /// </summary>
     ResolveSource = D3D12_BARRIER_LAYOUT.D3D12_BARRIER_LAYOUT_RESOLVE_SOURCE,
     /// <summary>
     /// <para>
-    /// The resource is used as the destination in a MSAA resolve operation.
+    /// The resource is used as the destination in an MSAA resolve operation.
     /// </para>
     /// </summary>
     ResolveDestination = D3D12_BARRIER_LAYOUT.D3D12_BARRIER_LAYOUT_RESOLVE_DEST,
@@ -906,10 +908,10 @@ public enum BarrierLayout
     VideoEncodeWrite = D3D12_BARRIER_LAYOUT.D3D12_BARRIER_LAYOUT_VIDEO_ENCODE_WRITE,
     /// <summary>
     /// <para>
-    /// Supports common (barrier free) usage on graphics queues only. May be more optimal than the more general <see cref="Common"/>. Can only be used in barriers on graphics queues.
+    /// Supports common (barrier-free) usage on graphics queues only. May be more optimal than the more general <see cref="Common"/>. Can only be used in barriers on graphics queues.
     /// </para>
     /// <para>
-    /// Note that this cannot be used for Presentation on a <see cref="GorgonSwapChain"/>.
+    /// Note that this cannot be used for presentation on a <see cref="GorgonSwapChain"/>.
     /// </para>
     /// </summary>
     GraphicsCommon = D3D12_BARRIER_LAYOUT.D3D12_BARRIER_LAYOUT_DIRECT_QUEUE_COMMON,
@@ -918,7 +920,7 @@ public enum BarrierLayout
     /// Same as <see cref="GenericRead"/> except with optimizations specific for graphics queues. Can only be used in barriers on graphics queues.
     /// </para>
     /// <para>
-    /// In addition,this value includes support for read-only depth, shading-rate source, and resolve source accesses on direct queues.
+    /// In addition, this value includes support for read-only depth, shading-rate source, and resolve source accesses on direct queues.
     /// </para>
     /// </summary>
     GraphicsGenericRead = D3D12_BARRIER_LAYOUT.D3D12_BARRIER_LAYOUT_DIRECT_QUEUE_GENERIC_READ,
@@ -945,13 +947,13 @@ public enum BarrierLayout
     /// Same as <see cref="CopyDestination"/> except with optimizations specific for graphics queues. Can only be used in barriers on graphics queues.
     /// </para>
     /// <para>
-    /// This flag may prevent costly, and unnecessary decompression on some layout transitions on resources with next access in a graphics queue.
+    /// This flag may prevent costly and unnecessary decompression on some layout transitions on resources with next access in a graphics queue.
     /// </para>
     /// </summary>
     GraphicsCopyDestination = D3D12_BARRIER_LAYOUT.D3D12_BARRIER_LAYOUT_DIRECT_QUEUE_COPY_DEST,
     /// <summary>
     /// <para>
-    /// Supports common (barrier free) usage on compute queues only. May be more optimal than the more general <see cref="Common"/>. Can only be used in barriers on compute queues.
+    /// Supports common (barrier-free) usage on compute queues only. May be more optimal than the more general <see cref="Common"/>. Can only be used in barriers on compute queues.
     /// </para>
     /// </summary>
     ComputeCommon = D3D12_BARRIER_LAYOUT.D3D12_BARRIER_LAYOUT_COMPUTE_QUEUE_COMMON,
@@ -987,7 +989,7 @@ public enum BarrierLayout
     ComputeCopyDestination = D3D12_BARRIER_LAYOUT.D3D12_BARRIER_LAYOUT_COMPUTE_QUEUE_COPY_DEST,
     /// <summary>
     /// <para>
-    /// Allows reading from the graphics queue by the compute queue.
+    /// Same as <see cref="GraphicsGenericRead"/>, except the resource can also be read by the compute queue while it is in this layout.
     /// </para>
     /// </summary>
     GraphicsQueueGenericReadFromCompute = D3D12_BARRIER_LAYOUT.D3D12_BARRIER_LAYOUT_DIRECT_QUEUE_GENERIC_READ_COMPUTE_QUEUE_ACCESSIBLE,
@@ -1105,7 +1107,7 @@ public readonly struct GorgonBufferBarrier
     internal readonly ComPtr<ID3D12Resource2> Resource;
 
     /// <summary>
-    /// An empty instance of a buffer barrier
+    /// An empty instance of a buffer barrier.
     /// </summary>
     public static readonly GorgonBufferBarrier Empty = new();
 
@@ -1204,7 +1206,7 @@ public readonly struct GorgonTextureBarrier
     public readonly BarrierAccess Access;
 
     /// <summary>
-    /// The layout of the texture data to apply tn the resource after the barrier has executed.
+    /// The layout of the texture data to apply to the resource after the barrier has executed.
     /// </summary>
     public readonly BarrierLayout Layout;
 
@@ -1213,7 +1215,7 @@ public readonly struct GorgonTextureBarrier
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This parameter can only be used when the <see cref="Layout"/> is set to <see cref="BarrierLayout.None"/>.
+    /// This property can only be used when the <see cref="Layout"/> is set to <see cref="BarrierLayout.None"/>.
     /// </para>
     /// </remarks>
     public bool Discard
@@ -1247,7 +1249,7 @@ public readonly struct GorgonTextureBarrier
                             in subResource,
                             Discard ? D3D12_TEXTURE_BARRIER_FLAGS.D3D12_TEXTURE_BARRIER_FLAG_DISCARD : D3D12_TEXTURE_BARRIER_FLAGS.D3D12_TEXTURE_BARRIER_FLAG_NONE);
 
-    /// <inheritodc/>
+    /// <inheritdoc/>
     public override bool Equals(object? obj) => obj is GorgonTextureBarrier barrier && Equals(barrier);
 
     /// <summary>

@@ -93,193 +93,193 @@ public enum PrimitiveType
     TriangleStripWithAdjacency = D3D_PRIMITIVE_TOPOLOGY.D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP_ADJ,
     /// <summary>
     /// <para>
-    /// Interpret the vertex data as a patch list.
+    /// Interpret the vertex data as a patch list with 1 control point per patch.
     /// </para>
     /// </summary>
     PatchListWith1ControlPoints = D3D_PRIMITIVE_TOPOLOGY.D3D_PRIMITIVE_TOPOLOGY_1_CONTROL_POINT_PATCHLIST,
     /// <summary>
     /// <para>
-    /// Interpret the vertex data as a patch list.
+    /// Interpret the vertex data as a patch list with 2 control points per patch.
     /// </para>
     /// </summary>
     PatchListWith2ControlPoints = D3D_PRIMITIVE_TOPOLOGY.D3D_PRIMITIVE_TOPOLOGY_2_CONTROL_POINT_PATCHLIST,
     /// <summary>
     /// <para>
-    /// Interpret the vertex data as a patch list.
+    /// Interpret the vertex data as a patch list with 3 control points per patch.
     /// </para>
     /// </summary>
     PatchListWith3ControlPoints = D3D_PRIMITIVE_TOPOLOGY.D3D_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST,
     /// <summary>
     /// <para>
-    /// Interpret the vertex data as a patch list.
+    /// Interpret the vertex data as a patch list with 4 control points per patch.
     /// </para>
     /// </summary>
     PatchListWith4ControlPoints = D3D_PRIMITIVE_TOPOLOGY.D3D_PRIMITIVE_TOPOLOGY_4_CONTROL_POINT_PATCHLIST,
     /// <summary>
     /// <para>
-    /// Interpret the vertex data as a patch list.
+    /// Interpret the vertex data as a patch list with 5 control points per patch.
     /// </para>
     /// </summary>
     PatchListWith5ControlPoints = D3D_PRIMITIVE_TOPOLOGY.D3D_PRIMITIVE_TOPOLOGY_5_CONTROL_POINT_PATCHLIST,
     /// <summary>
     /// <para>
-    /// Interpret the vertex data as a patch list.
+    /// Interpret the vertex data as a patch list with 6 control points per patch.
     /// </para>
     /// </summary>
     PatchListWith6ControlPoints = D3D_PRIMITIVE_TOPOLOGY.D3D_PRIMITIVE_TOPOLOGY_6_CONTROL_POINT_PATCHLIST,
     /// <summary>
     /// <para>
-    /// Interpret the vertex data as a patch list.
+    /// Interpret the vertex data as a patch list with 7 control points per patch.
     /// </para>
     /// </summary>
     PatchListWith7ControlPoints = D3D_PRIMITIVE_TOPOLOGY.D3D_PRIMITIVE_TOPOLOGY_7_CONTROL_POINT_PATCHLIST,
     /// <summary>
     /// <para>
-    /// Interpret the vertex data as a patch list.
+    /// Interpret the vertex data as a patch list with 8 control points per patch.
     /// </para>
     /// </summary>
     PatchListWith8ControlPoints = D3D_PRIMITIVE_TOPOLOGY.D3D_PRIMITIVE_TOPOLOGY_8_CONTROL_POINT_PATCHLIST,
     /// <summary>
     /// <para>
-    /// Interpret the vertex data as a patch list.
+    /// Interpret the vertex data as a patch list with 9 control points per patch.
     /// </para>
     /// </summary>
     PatchListWith9ControlPoints = D3D_PRIMITIVE_TOPOLOGY.D3D_PRIMITIVE_TOPOLOGY_9_CONTROL_POINT_PATCHLIST,
     /// <summary>
     /// <para>
-    /// Interpret the vertex data as a patch list.
+    /// Interpret the vertex data as a patch list with 10 control points per patch.
     /// </para>
     /// </summary>
     PatchListWith10ControlPoints = D3D_PRIMITIVE_TOPOLOGY.D3D_PRIMITIVE_TOPOLOGY_10_CONTROL_POINT_PATCHLIST,
     /// <summary>
     /// <para>
-    /// Interpret the vertex data as a patch list.
+    /// Interpret the vertex data as a patch list with 11 control points per patch.
     /// </para>
     /// </summary>
     PatchListWith11ControlPoints = D3D_PRIMITIVE_TOPOLOGY.D3D_PRIMITIVE_TOPOLOGY_11_CONTROL_POINT_PATCHLIST,
     /// <summary>
     /// <para>
-    /// Interpret the vertex data as a patch list.
+    /// Interpret the vertex data as a patch list with 12 control points per patch.
     /// </para>
     /// </summary>
     PatchListWith12ControlPoints = D3D_PRIMITIVE_TOPOLOGY.D3D_PRIMITIVE_TOPOLOGY_12_CONTROL_POINT_PATCHLIST,
     /// <summary>
     /// <para>
-    /// Interpret the vertex data as a patch list.
+    /// Interpret the vertex data as a patch list with 13 control points per patch.
     /// </para>
     /// </summary>
     PatchListWith13ControlPoints = D3D_PRIMITIVE_TOPOLOGY.D3D_PRIMITIVE_TOPOLOGY_13_CONTROL_POINT_PATCHLIST,
     /// <summary>
     /// <para>
-    /// Interpret the vertex data as a patch list.
+    /// Interpret the vertex data as a patch list with 14 control points per patch.
     /// </para>
     /// </summary>
     PatchListWith14ControlPoints = D3D_PRIMITIVE_TOPOLOGY.D3D_PRIMITIVE_TOPOLOGY_14_CONTROL_POINT_PATCHLIST,
     /// <summary>
     /// <para>
-    /// Interpret the vertex data as a patch list.
+    /// Interpret the vertex data as a patch list with 15 control points per patch.
     /// </para>
     /// </summary>
     PatchListWith15ControlPoints = D3D_PRIMITIVE_TOPOLOGY.D3D_PRIMITIVE_TOPOLOGY_15_CONTROL_POINT_PATCHLIST,
     /// <summary>
     /// <para>
-    /// Interpret the vertex data as a patch list.
+    /// Interpret the vertex data as a patch list with 16 control points per patch.
     /// </para>
     /// </summary>
     PatchListWith16ControlPoints = D3D_PRIMITIVE_TOPOLOGY.D3D_PRIMITIVE_TOPOLOGY_16_CONTROL_POINT_PATCHLIST,
     /// <summary>
     /// <para>
-    /// Interpret the vertex data as a patch list.
+    /// Interpret the vertex data as a patch list with 17 control points per patch.
     /// </para>
     /// </summary>
     PatchListWith17ControlPoints = D3D_PRIMITIVE_TOPOLOGY.D3D_PRIMITIVE_TOPOLOGY_17_CONTROL_POINT_PATCHLIST,
     /// <summary>
     /// <para>
-    /// Interpret the vertex data as a patch list.
+    /// Interpret the vertex data as a patch list with 18 control points per patch.
     /// </para>
     /// </summary>
     PatchListWith18ControlPoints = D3D_PRIMITIVE_TOPOLOGY.D3D_PRIMITIVE_TOPOLOGY_18_CONTROL_POINT_PATCHLIST,
     /// <summary>
     /// <para>
-    /// Interpret the vertex data as a patch list.
+    /// Interpret the vertex data as a patch list with 19 control points per patch.
     /// </para>
     /// </summary>
     PatchListWith19ControlPoints = D3D_PRIMITIVE_TOPOLOGY.D3D_PRIMITIVE_TOPOLOGY_19_CONTROL_POINT_PATCHLIST,
     /// <summary>
     /// <para>
-    /// Interpret the vertex data as a patch list.
+    /// Interpret the vertex data as a patch list with 20 control points per patch.
     /// </para>
     /// </summary>
     PatchListWith20ControlPoints = D3D_PRIMITIVE_TOPOLOGY.D3D_PRIMITIVE_TOPOLOGY_20_CONTROL_POINT_PATCHLIST,
     /// <summary>
     /// <para>
-    /// Interpret the vertex data as a patch list.
+    /// Interpret the vertex data as a patch list with 21 control points per patch.
     /// </para>
     /// </summary>
     PatchListWith21ControlPoints = D3D_PRIMITIVE_TOPOLOGY.D3D_PRIMITIVE_TOPOLOGY_21_CONTROL_POINT_PATCHLIST,
     /// <summary>
     /// <para>
-    /// Interpret the vertex data as a patch list.
+    /// Interpret the vertex data as a patch list with 22 control points per patch.
     /// </para>
     /// </summary>
     PatchListWith22ControlPoints = D3D_PRIMITIVE_TOPOLOGY.D3D_PRIMITIVE_TOPOLOGY_22_CONTROL_POINT_PATCHLIST,
     /// <summary>
     /// <para>
-    /// Interpret the vertex data as a patch list.
+    /// Interpret the vertex data as a patch list with 23 control points per patch.
     /// </para>
     /// </summary>
     PatchListWith23ControlPoints = D3D_PRIMITIVE_TOPOLOGY.D3D_PRIMITIVE_TOPOLOGY_23_CONTROL_POINT_PATCHLIST,
     /// <summary>
     /// <para>
-    /// Interpret the vertex data as a patch list.
+    /// Interpret the vertex data as a patch list with 24 control points per patch.
     /// </para>
     /// </summary>
     PatchListWith24ControlPoints = D3D_PRIMITIVE_TOPOLOGY.D3D_PRIMITIVE_TOPOLOGY_24_CONTROL_POINT_PATCHLIST,
     /// <summary>
     /// <para>
-    /// Interpret the vertex data as a patch list.
+    /// Interpret the vertex data as a patch list with 25 control points per patch.
     /// </para>
     /// </summary>
     PatchListWith25ControlPoints = D3D_PRIMITIVE_TOPOLOGY.D3D_PRIMITIVE_TOPOLOGY_25_CONTROL_POINT_PATCHLIST,
     /// <summary>
     /// <para>
-    /// Interpret the vertex data as a patch list.
+    /// Interpret the vertex data as a patch list with 26 control points per patch.
     /// </para>
     /// </summary>
     PatchListWith26ControlPoints = D3D_PRIMITIVE_TOPOLOGY.D3D_PRIMITIVE_TOPOLOGY_26_CONTROL_POINT_PATCHLIST,
     /// <summary>
     /// <para>
-    /// Interpret the vertex data as a patch list.
+    /// Interpret the vertex data as a patch list with 27 control points per patch.
     /// </para>
     /// </summary>
     PatchListWith27ControlPoints = D3D_PRIMITIVE_TOPOLOGY.D3D_PRIMITIVE_TOPOLOGY_27_CONTROL_POINT_PATCHLIST,
     /// <summary>
     /// <para>
-    /// Interpret the vertex data as a patch list.
+    /// Interpret the vertex data as a patch list with 28 control points per patch.
     /// </para>
     /// </summary>
     PatchListWith28ControlPoints = D3D_PRIMITIVE_TOPOLOGY.D3D_PRIMITIVE_TOPOLOGY_28_CONTROL_POINT_PATCHLIST,
     /// <summary>
     /// <para>
-    /// Interpret the vertex data as a patch list.
+    /// Interpret the vertex data as a patch list with 29 control points per patch.
     /// </para>
     /// </summary>
     PatchListWith29ControlPoints = D3D_PRIMITIVE_TOPOLOGY.D3D_PRIMITIVE_TOPOLOGY_29_CONTROL_POINT_PATCHLIST,
     /// <summary>
     /// <para>
-    /// Interpret the vertex data as a patch list.
+    /// Interpret the vertex data as a patch list with 30 control points per patch.
     /// </para>
     /// </summary>
     PatchListWith30ControlPoints = D3D_PRIMITIVE_TOPOLOGY.D3D_PRIMITIVE_TOPOLOGY_30_CONTROL_POINT_PATCHLIST,
     /// <summary>
     /// <para>
-    /// Interpret the vertex data as a patch list.
+    /// Interpret the vertex data as a patch list with 31 control points per patch.
     /// </para>
     /// </summary>
     PatchListWith31ControlPoints = D3D_PRIMITIVE_TOPOLOGY.D3D_PRIMITIVE_TOPOLOGY_31_CONTROL_POINT_PATCHLIST,
     /// <summary>
     /// <para>
-    /// Interpret the vertex data as a patch list.
+    /// Interpret the vertex data as a patch list with 32 control points per patch.
     /// </para>
     /// </summary>
     PatchListWith32ControlPoints = D3D_PRIMITIVE_TOPOLOGY.D3D_PRIMITIVE_TOPOLOGY_32_CONTROL_POINT_PATCHLIST

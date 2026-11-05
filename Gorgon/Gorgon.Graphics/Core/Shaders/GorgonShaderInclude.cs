@@ -37,26 +37,26 @@ namespace Gorgon.Graphics.Core;
 /// <remarks>
 /// <para>
 /// The HLSL <c>#include</c> directive locates include files on the file system. This does not work when the shader source was not loaded from a file (e.g. from a <see cref="Stream"/>), because there is no 
-/// path to search. To facilitate this, Gorgon provides a <c>#GorgonInclude</c> keyword that looks up the include by name in the <see cref="GorgonShaderCompiler.Includes"/> property <i>before</i> it tries to 
+/// path to search. To facilitate this, Gorgon provides a <c>#GorgonInclude</c> keyword that looks up the include by name in the <see cref="GorgonShaderCompiler.Includes"/> list <i>before</i> it tries to 
 /// load a file.
 /// </para>
 /// <para>
-/// To include source code from memory, add a <see cref="GorgonShaderInclude"/> containing the source code with the <see cref="GorgonShaderCompiler.AddInclude(GorgonShaderInclude)"/> method, and use its
+/// To include source code from memory, add a <see cref="GorgonShaderInclude"/> containing the source code with the <see cref="GorgonShaderCompiler.AddInclude(GorgonShaderInclude)"/> method, and use its 
 /// name in the <c>#GorgonInclude</c> keyword. When the include is loaded from a file, then its source code will automatically be added to the <see cref="GorgonShaderCompiler.Includes"/> list.
 /// </para>
 /// <para>
 /// The <c>#GorgonInclude</c> keyword is written as <c>#GorgonInclude "Name"</c>, or <c>#GorgonInclude "Name", "Path"</c>. The parameters are:
 /// <list type="bullet">
 /// <item>
-/// <term>Name</term>
+/// <term>Name</term> 
 /// <description>
-/// The name of the include. This is the key for the include in the <see cref="GorgonShaderCompiler.Includes"/> property, and is not case sensitive.
+/// The name of the include. This is the key for the include in the <see cref="GorgonShaderCompiler.Includes"/> list, and is not case sensitive.
 /// </description>
 /// </item>
 /// <item>
-/// <term>(Optional) Path</term>
+/// <term>(Optional) Path</term> 
 /// <description>
-/// The path to the shader source file to include. This is ignored if an include with the same name is already in the <see cref="GorgonShaderCompiler.Includes"/> property.
+/// The path to the shader source file to include. This is ignored if an include with the same name is already in the <see cref="GorgonShaderCompiler.Includes"/> list.
 /// </description>
 /// </item>
 /// </list>

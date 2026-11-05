@@ -268,9 +268,6 @@ public sealed class GorgonGraphicsPsoBuilder(GorgonGraphics graphics)
     /// Each bit in the <paramref name="multisampleMask"/> corresponds to a sample within a pixel, and only the samples with their bit set will be updated in the render targets. If the 
     /// <paramref name="multisampleMask"/> is omitted, then the mask that is currently assigned is kept. See <see cref="GorgonGraphicsPso.MultisampleMask"/> for more information about how the mask is applied.
     /// </para>
-    /// <para>
-    /// The default values are <see cref="GorgonMultisampleInfo.NoMultisampling"/> for the <paramref name="multisampleInfo"/>, and -1 (<c>0xFFFFFFFF</c>) for the <paramref name="multisampleMask"/>.
-    /// </para>
     /// </remarks>
     /// <seealso cref="GorgonGraphicsPso.Multisample"/>
     /// <seealso cref="GorgonGraphicsPso.MultisampleMask"/>
@@ -471,9 +468,6 @@ public sealed class GorgonGraphicsPsoBuilder(GorgonGraphics graphics)
     /// If depth bounds testing is enabled and the video adapter does not support it (see <see cref="GorgonVideoAdapterInfo.SupportsDepthBoundsTest"/>), or stencil testing is enabled with different read or 
     /// write masks for the front and back faces and the video adapter does not support it (see <see cref="GorgonVideoAdapterInfo.SupportsIndependentFrontAndBackStencilRef"/>), then an exception will be thrown 
     /// when the pipeline state object is created by <see cref="GorgonGraphicsPsoFactory.CreateOrGetPso(string, GorgonShader, GorgonGraphicsPsoBuilder)"/>.
-    /// </para>
-    /// <para>
-    /// The default values are <see cref="GorgonDepthStencilState.Default"/> for the <paramref name="depthStencilState"/>, and <see cref="BufferFormat.Unknown"/> for the <paramref name="dsvFormat"/>.
     /// </para>
     /// </remarks>
     /// <seealso cref="GorgonDepthStencilState"/>

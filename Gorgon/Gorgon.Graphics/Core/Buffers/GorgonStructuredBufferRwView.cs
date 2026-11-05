@@ -177,9 +177,6 @@ public sealed class GorgonStructuredBufferRwView
     /// </para>
     /// <inheritdoc cref="GorgonStructuredBufferRwView" path="/remarks/para[@type='counter']"/>
     /// <inheritdoc cref="GorgonStructuredBufferRwView" path="/remarks/para[@type='counter_note']"/>
-    /// <para>
-    /// The default value for the <paramref name="includeCounter"/> parameter is <b>false</b>.
-    /// </para>
     /// </remarks>
     /// <seealso cref="GorgonGpuBuffer"/>
     public static unsafe GorgonStructuredBufferRwView CreateStructuredBuffer<T>(GorgonGraphics graphics, string name, int elementCount, bool includeCounter = false)

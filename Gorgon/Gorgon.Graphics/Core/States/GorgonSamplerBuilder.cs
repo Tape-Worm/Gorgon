@@ -117,9 +117,7 @@ public sealed class GorgonSamplerBuilder(GorgonGraphics graphics)
     /// <inheritdoc/>
     /// <param name="name">The name of the sampler. If this value is empty, then a name will be generated.</param>
     /// <param name="allocator"><inheritdoc cref="IGorgonFluentBuilderWithAllocator{TB, TBo, TBa, TP1}.Build" path="/param[@name='allocator']"/></param>
-    /// <remarks>
-    /// <inheritdoc path="/remarks/para"/>
-    /// </remarks>
+    /// <inheritdoc path="/remarks"/>
     public GorgonSampler Build(string name, IGorgonAllocator<GorgonSampler>? allocator = null)
     {
         allocator ??= _allocator;
@@ -176,9 +174,6 @@ public sealed class GorgonSamplerBuilder(GorgonGraphics graphics)
     /// </para>
     /// <para>
     /// The <paramref name="maxLod"/> must be greater than or equal to <paramref name="minLod"/>. To have no upper limit on LOD, set <paramref name="maxLod"/> to <see cref="float.MaxValue"/>.
-    /// </para>
-    /// <para>
-    /// The default values are 0 for the <paramref name="minLod"/>, and <see cref="float.MaxValue"/> for the <paramref name="maxLod"/>.
     /// </para>
     /// </remarks>
     public GorgonSamplerBuilder LodRange(float minLod, float maxLod)

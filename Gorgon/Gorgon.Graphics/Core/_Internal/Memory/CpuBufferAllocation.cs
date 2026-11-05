@@ -60,7 +60,7 @@ internal readonly unsafe struct CpuBufferAllocation(CpuBufferHeap? heap, ulong h
     /// Property to return whether this resource allocation can still be used in the current frame.
     /// </summary>
     [MemberNotNullWhen(true, nameof(Heap))]
-    public bool IsAvailable => (Heap is not null) && (Heap.GfxFence <= 0) && (Heap.ComputeFence <= 0) && (Heap.CopyFence <= 0) && (Heap.CpuPointer is not null) && (Heap.GpuAddress != 0);
+    public bool IsAvailable => (Heap is not null) && (Heap.Fence <= 0) && (Heap.CpuPointer is not null) && (Heap.GpuAddress != 0);
 
     /// <summary>
     /// Property to return the address in the GPU memory for the resource data.

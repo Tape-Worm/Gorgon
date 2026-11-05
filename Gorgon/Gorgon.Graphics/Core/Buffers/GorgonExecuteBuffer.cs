@@ -41,8 +41,9 @@ namespace Gorgon.Graphics.Core;
 /// <remarks>
 /// <para>
 /// An execute buffer holds <see cref="CommandCount"/> commands of <see cref="CommandSizeInBytes"/> bytes each, followed by <see cref="CounterCount"/> counters. The commands are read by a 
-/// <see cref="GorgonExecuteCall"/> or <see cref="GorgonIndexedExecuteCall"/> when it is executed, and the counters hold the number of commands to execute when shaders write the commands on the GPU. The layout 
-/// of a command, and examples of writing commands, are described on <see cref="GorgonExecuteCall"/> and <see cref="GorgonIndexedExecuteCall"/>.
+/// <see cref="GorgonExecuteCall"/>, <see cref="GorgonIndexedExecuteCall"/> or <see cref="GorgonComputeExecuteCall"/> when it is executed, and the counters hold the number of commands to execute when shaders 
+/// write the commands on the GPU. The layout of a command, and examples of writing commands, are described on <see cref="GorgonExecuteCall"/>, <see cref="GorgonIndexedExecuteCall"/> and 
+/// <see cref="GorgonComputeExecuteCall"/>.
 /// </para>
 /// <para>
 /// For an execute call created with <see cref="ExecuteUsage.CpuRendering"/>, the application writes the commands into the buffer like any other buffer data. Counters and read/write access are not needed.
@@ -56,6 +57,7 @@ namespace Gorgon.Graphics.Core;
 /// <seealso cref="GorgonExecuteBufferInfo"/>
 /// <seealso cref="GorgonExecuteCall"/>
 /// <seealso cref="GorgonIndexedExecuteCall"/>
+/// <seealso cref="GorgonComputeExecuteCall"/>
 public sealed unsafe class GorgonExecuteBuffer
     : GorgonGpuBufferCommon, IGorgonExecuteBufferInfo
 {
@@ -159,7 +161,7 @@ public sealed unsafe class GorgonExecuteBuffer
     /// <inheritdoc/>
     private protected override void ValidateInfo()
     {
-        if ((CommandCount < 1) || (CommandSizeInBytes < sizeof(D3D12_DRAW_ARGUMENTS)) || ((CommandSizeInBytes % sizeof(uint)) != 0) || (CounterCount < 0))
+        if ((CommandCount < 1) || (CommandSizeInBytes < sizeof(D3D12_DISPATCH_ARGUMENTS)) || ((CommandSizeInBytes % sizeof(uint)) != 0) || (CounterCount < 0))
         {
             throw new GorgonException(GorgonResult.CannotCreate, string.Format(Resources.GORGFX_ERR_EXECUTE_BUFFER_INVALID, Name, CommandCount, CommandSizeInBytes, CounterCount));
         }
@@ -187,9 +189,6 @@ public sealed unsafe class GorgonExecuteBuffer
     /// The range is clipped to the commands in the buffer.
     /// </para>
     /// <inheritdoc cref="GorgonGpuBuffer.GetConstantBufferView(bool)" path="/remarks/para[@type='bindless_doc']"/>
-    /// <para>
-    /// The default values are 0 for the <paramref name="firstCommand"/>, and <b>null</b> for the <paramref name="commandCount"/>.
-    /// </para>
     /// </remarks>
     /// <seealso cref="GorgonShaderBufferRwView.GetViewHandle()"/>
     /// <seealso cref="GorgonRawBufferRwView"/>
@@ -229,9 +228,6 @@ public sealed unsafe class GorgonExecuteBuffer
     /// The range is clipped to the counters in the buffer.
     /// </para>
     /// <inheritdoc cref="GorgonGpuBuffer.GetConstantBufferView(bool)" path="/remarks/para[@type='bindless_doc']"/>
-    /// <para>
-    /// The default values are 0 for the <paramref name="firstCounter"/>, and <b>null</b> for the <paramref name="counterCount"/>.
-    /// </para>
     /// </remarks>
     /// <seealso cref="GorgonShaderBufferRwView.GetViewHandle()"/>
     /// <seealso cref="GorgonRawBufferRwView"/>
@@ -260,7 +256,7 @@ public sealed unsafe class GorgonExecuteBuffer
     /// <param name="graphics"><inheritdoc cref="GorgonGpuResource(GorgonGraphics, string, ComPtr{ID3D12Resource2})" path="/param[@name='graphics']"/></param>
     /// <param name="name"><inheritdoc cref="GorgonGpuResource(GorgonGraphics, string, ComPtr{ID3D12Resource2})" path="/param[@name='name']"/></param>
     /// <param name="info">Information used to create the buffer.</param>
-    /// <exception cref="GorgonException">Thrown if the buffer has less than 1 command, a command size that is less than 16 bytes or not a multiple of 4, or a negative number of counters.</exception>
+    /// <exception cref="GorgonException">Thrown if the buffer has less than 1 command, a command size that is less than 12 bytes or not a multiple of 4, or a negative number of counters.</exception>
     /// <seealso cref="GorgonExecuteBufferInfo"/>
     public GorgonExecuteBuffer(GorgonGraphics graphics, string name, GorgonExecuteBufferInfo info)
         : base(graphics, name, info)

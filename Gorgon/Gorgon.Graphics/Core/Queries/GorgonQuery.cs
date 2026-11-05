@@ -1,4 +1,4 @@
-// Gorgon.
+﻿// Gorgon.
 // Copyright (C) 2026 Michael Winsor
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -39,8 +39,8 @@ namespace Gorgon.Graphics.Core;
 /// </summary>
 /// <remarks>
 /// <para>
-/// Every slot in a query records the same type of data. Occlusion, binary occlusion and timestamp queries produce one 64-bit unsigned integer per slot. Pipeline statistics queries produce one 
-/// <see cref="GorgonQueryPipelineStats"/> value per slot.
+/// Every record in a query holds the same type of data. Occlusion, binary occlusion and timestamp queries produce one 64-bit unsigned integer per record. Pipeline statistics queries produce one 
+/// <see cref="GorgonQueryPipelineStats"/> value per record.
 /// </para>
 /// </remarks>
 /// <seealso cref="GorgonQueryPipelineStats"/>
@@ -85,12 +85,13 @@ public enum QueryType
 /// </para>
 /// <para>
 /// To record data, call <see cref="GorgonCommandList.BeginQuery"/> with a record index, record the commands to measure, and then call <see cref="GorgonCommandList.EndQuery"/> with the same index on the same 
-/// command list. Every record that is begun on a command list must be ended before that command list is submitted.
+/// command list. Every record that is begun on a command list must be ended before that command list is submitted. On a <see cref="GorgonComputeCommandList"/>, only <see cref="QueryType.Timestamp"/> records 
+/// can be written, with the <see cref="GorgonComputeCommandList.ExecuteQuery"/> method.
 /// </para>
 /// <para>
-/// When the command list is submitted with <see cref="GorgonGraphics.Submit(GorgonCommandList)"/>, the ended records are copied into the <see cref="ReadResults"/> buffer after the GPU has finished with them. 
-/// The <see cref="IsReady"/> property indicates when that data can be read. If the data is needed on the GPU instead, the <see cref="GorgonCommandList.ResolveQueryToGpuBuffer"/> method copies the records into 
-/// a <see cref="GorgonGpuBuffer"/>.
+/// When the command list is submitted with <see cref="GorgonGraphics.Submit(GorgonCommandList)"/> (or <see cref="GorgonComputeEngine.Submit(GorgonComputeCommandList)"/> for a compute command list), the ended 
+/// records are copied into the <see cref="ReadResults"/> buffer after the GPU has finished with them. The <see cref="IsReady"/> property indicates when that data can be read. If the data is needed on the GPU 
+/// instead, the <see cref="GorgonCommandList.ResolveQueryToGpuBuffer"/> method copies the records into a <see cref="GorgonGpuBuffer"/>.
 /// </para>
 /// <para>
 /// Records can be recorded on multiple command lists at the same time, including command lists on other threads, as long as each command list uses different record indices. A record belongs to the command 
@@ -229,8 +230,9 @@ public unsafe sealed class GorgonQuery
     /// <b>false</b> for a query that has never been used, and it becomes <b>false</b> again as soon as any record is begun with <see cref="GorgonCommandList.BeginQuery"/>.
     /// </para>
     /// <para>
-    /// This value is updated when a frame is submitted with <see cref="GorgonGraphics.Submit(GorgonCommandList)"/>. Data is delivered on the first submission after the GPU has finished with it, so the query 
-    /// will be ready one or more frames after the records were submitted. Calling <see cref="GorgonGraphics.WaitForGpu"/> does not update this value on its own.
+    /// This value is updated when a frame is submitted with <see cref="GorgonGraphics.Submit(GorgonCommandList)"/>, or with <see cref="GorgonComputeEngine.Submit(GorgonComputeCommandList)"/> for records 
+    /// written on a compute command list. Data is delivered on the first submission after the GPU has finished with it, so the query will be ready one or more frames after the records were submitted. Calling 
+    /// <see cref="GorgonGraphics.WaitForGpu"/> does not update this value on its own.
     /// </para>
     /// <para>
     /// Records copied to a GPU buffer with <see cref="GorgonCommandList.ResolveQueryToGpuBuffer"/> are released when that method is called, and do not keep this value <b>false</b>. Their data is not written 

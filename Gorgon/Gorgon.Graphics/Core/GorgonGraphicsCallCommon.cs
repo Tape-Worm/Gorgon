@@ -30,7 +30,7 @@ using Gorgon.Core;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// A record defining a buffer used in a draw or execute call.
+/// A record defining a buffer used in a draw, dispatch, or execute call.
 /// </summary>
 /// <param name="Buffer">The buffer being used.</param>
 /// <param name="Shader">The shader stage to use the buffer with.</param>
@@ -60,7 +60,7 @@ public readonly record struct GorgonUsedBuffer(GorgonGpuBufferCommon Buffer, Sha
 }
 
 /// <summary>
-/// A record defining a texture used in a draw or execute call.
+/// A record defining a texture used in a draw, dispatch, or execute call.
 /// </summary>
 /// <param name="Texture">The texture being used.</param>
 /// <param name="Shader">The shader stage to use the texture with.</param>
@@ -76,7 +76,7 @@ public readonly record struct GorgonUsedTexture(GorgonTextureCommon Texture, Sha
     /// </para>
     /// <para type="subresource_usage">
     /// Only these sub resources are prepared for the call. This allows different sub resources of the same texture to be used with different usages in one call. For example, a shader can read mip 0 through a 
-    /// read only view while writing mip 1 through a read/write view, as long as each entry is created from its own view.
+    /// read-only view while writing mip 1 through a read/write view, as long as each entry is created from its own view.
     /// </para>
     /// <para>
     /// The default value is <see cref="GorgonSubResourceRange.All"/>.
@@ -230,8 +230,8 @@ public abstract class GorgonGraphicsCallCommon(GorgonGraphicsPso pso)
     /// </note>
     /// </para>
     /// <para type="common">
-    /// The resources can be assigned when the call is set up, or later, directly on the call, in the rare cases where a resource needs to be swapped out dynamically (e.g. a texture is rebuilt 
-    /// and needs to be assigned to the call). When calling this method, all buffers are replaced with the value passed in, there is no mixing of buffer references.
+    /// The resources can be assigned when the call is set up, or later, directly on the call, in the rare cases where a resource needs to be swapped out dynamically (e.g. a texture is rebuilt and needs to be 
+    /// assigned to the call). When calling this method, all of the resources of the same type assigned to the call are replaced with the values passed in, there is no mixing of resource references.
     /// </para>
     /// <para type="common">
     /// <b>Note:</b> The order of the resources is irrelevant.
@@ -347,7 +347,8 @@ public abstract class GorgonGraphicsCallCommon(GorgonGraphicsPso pso)
     /// <para>
     /// Passing <b>null</b> for the <paramref name="texture"/> will clear any textures assigned to this call.
     /// </para>
-    /// <inheritdoc cref="AssignTextures(ReadOnlySpan{GorgonUsedTexture})" path="/remarks"/>
+    /// <inheritdoc cref="AssignBuffers(ReadOnlySpan{GorgonUsedBuffer})" path="/remarks/para[@type='common']"/>
+    /// <inheritdoc cref="AssignBuffers(ReadOnlySpan{GorgonUsedBuffer})" path="/remarks/para[@type='declare_resources']"/>
     /// </remarks>
     /// <inheritdoc cref="AssignTextures(ReadOnlySpan{GorgonUsedTexture})" path="/seealso"/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

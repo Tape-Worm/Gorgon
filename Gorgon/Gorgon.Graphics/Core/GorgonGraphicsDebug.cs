@@ -31,14 +31,16 @@ using Win32 = TerraFX.Interop.Windows.Windows;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Allows the enabling of debugging information for the underlying graphics APIs (DXGI and Direct3D 12).
+/// Provides access to debugging information from the underlying graphics APIs (DXGI and Direct3D 12).
 /// </summary>
 /// <remarks>
 /// <para>
-/// Use this to report on any living objects from the underlying APIs (DXGI and Direct3D 12). Only a single instance of this object will exist for any given time, and it must be created prior to the 
-/// creation of a <see cref="GorgonGraphics"/> instance.
+/// This object is returned by the <see cref="GorgonGraphicsFactory.Debugging"/> property when debugging is turned on for the factory (see <see cref="GorgonGraphicsFactory.DebuggingFlags"/>). It reports 
+/// the objects from the underlying APIs that are still alive, the memory allocation statistics for a <see cref="GorgonGraphics"/> interface, and the Device Removed Extended Data (DRED) after the device has 
+/// hung.
 /// </para>
 /// </remarks>
+/// <seealso cref="GorgonGraphicsFactory"/>
 public unsafe sealed class GorgonGraphicsDebug
 {
     private readonly IGorgonLog _log = GorgonLog.NullLog;
@@ -46,8 +48,13 @@ public unsafe sealed class GorgonGraphicsDebug
     private ComPtr<ID3D12DeviceRemovedExtendedDataSettings2> _dred;
 
     /// <summary>
-    /// Function to report debug data for the underlying APIs.
+    /// Function to report the objects from the underlying APIs that are still alive.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The report is written to the debug output by the underlying APIs. If the DXGI debug interface could not be retrieved when the factory was created, this method does nothing.
+    /// </para>
+    /// </remarks>
     public void Report()
     {
         if (_dxgiDebug.IsNull)
@@ -60,15 +67,30 @@ public unsafe sealed class GorgonGraphicsDebug
 
 #pragma warning disable CA1822 // Mark members as static
     /// <summary>
-    /// Function to report memory allocation statistics for Gorgon.
+    /// Function to report the memory allocation statistics for a <see cref="GorgonGraphics"/> interface.
     /// </summary>
     /// <param name="graphics">The graphics interface to retrieve the statistics from.</param>
+    /// <remarks>
+    /// <para>
+    /// The statistics are written to the debug output.
+    /// </para>
+    /// </remarks>
     public void GetMemoryStatistics(GorgonGraphics graphics) => graphics?.ReportMemory();
 #pragma warning restore CA1822 // Mark members as static
 
     /// <summary>
-    /// Function to retrieve information from the Device Removed Extended Data system after a device removal event.
+    /// Function to write the Device Removed Extended Data (DRED) to the log after the device has hung.
     /// </summary>
+    /// <param name="graphics">The graphics interface that owns the device to retrieve the data from.</param>
+    /// <remarks>
+    /// <para>
+    /// The DRED data contains the operations recorded by each command list and command queue up to the hang (the breadcrumbs), and the memory allocations around the page fault, if there was one. Use this 
+    /// data to locate the command that caused the device to hang.
+    /// </para>
+    /// <para>
+    /// If the device has not hung, a warning is written to the log and no data is written.
+    /// </para>
+    /// </remarks>
     public void GetDredData(GorgonGraphics graphics)
     {
         if (graphics.D3DDevice.Get()->GetDeviceRemovedReason() != DXGI.DXGI_ERROR_DEVICE_HUNG)

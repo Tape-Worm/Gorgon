@@ -29,7 +29,7 @@ using TerraFX.Interop.DirectX;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Provides a read/write view that interprets the data in a <see cref="GorgonGpuBuffer"/> or <see cref="GorgonIndexBuffer"/> as raw byte data.
+/// Provides a read/write view that interprets the data in a <see cref="GorgonGpuBuffer"/>, <see cref="GorgonIndexBuffer"/> or <see cref="GorgonExecuteBuffer"/> as raw byte data.
 /// </summary>
 /// <remarks>
 /// <para>

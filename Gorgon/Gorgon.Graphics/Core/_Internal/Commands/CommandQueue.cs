@@ -56,6 +56,22 @@ internal sealed unsafe class CommandQueue : IDisposable
     private readonly ConcurrentBag<GorgonCommandList> _activeLists = [];
 
     /// <summary>
+    /// Property to return the transient heaps for uploading data to the GPU.
+    /// </summary>
+    public CpuResourceHeapPool UploadHeaps
+    {
+        get;
+    }
+
+    /// <summary>
+    /// Property to return the transient heaps for downloading data from the GPU.
+    /// </summary>
+    public CpuResourceHeapPool DownloadHeaps
+    {
+        get;
+    }
+
+    /// <summary>
     /// Property to return the graphics object associated with this queue.
     /// </summary>
     public GorgonGraphics Graphics
@@ -142,6 +158,9 @@ internal sealed unsafe class CommandQueue : IDisposable
             // Ensure that any pending in-flight resources are removed.
             QueryTracker.Dispose();
             Tracker.Dispose();
+
+            UploadHeaps.Dispose();
+            DownloadHeaps.Dispose();
 
             ListPool.Dispose();
             AllocatorPool.Dispose();
@@ -455,6 +474,8 @@ internal sealed unsafe class CommandQueue : IDisposable
     public void GarbageCollect()
     {
         Tracker.Signal();
+        UploadHeaps.GarbageCollect();
+        DownloadHeaps.GarbageCollect();
         ListPool.GarbageCollect();
         AllocatorPool.GarbageCollect();
     }
@@ -496,6 +517,9 @@ internal sealed unsafe class CommandQueue : IDisposable
     public CommandQueue(GorgonGraphics graphics, D3D12_COMMAND_LIST_TYPE type)
     {
         Graphics = graphics;
+        UploadHeaps = new CpuResourceHeapPool(this, false);        
+        DownloadHeaps = new CpuResourceHeapPool(this, true);        
+
         _megaBuffer = Graphics.Memory.MegaBuffer;
         _tilePool = Graphics.Memory.TextureTilePool;
         FrameFenceValue = new ulong[Graphics.InFlightFrameCount];

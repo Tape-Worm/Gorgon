@@ -37,12 +37,10 @@ namespace Gorgon.Graphics.Core;
 /// </para>
 /// <inheritdoc cref="Core.MegaBuffer" path="/remarks/para"/>
 /// </remarks>
-/// <param name="uploadHeaps">Transient heaps for uploading data to the GPU.</param>
-/// <param name="downloadHeaps">Transient heaps for downloading data from the GPU.</param>
 /// <param name="megaBuffer">The mega buffer implementation for bindless buffers.</param>
 /// <param name="textureTilePool">The virtual texture tile pool.</param>
 /// <param name="allocator">The D3D 12 memory allocator interface pointer.</param>
-internal sealed class MemoryServices(CpuResourceHeapPool uploadHeaps, CpuResourceHeapPool downloadHeaps, MegaBufferPool megaBuffer, VirtualTextureTilePool textureTilePool, ref readonly ComPtr<D3D12MA_Allocator> allocator)
+internal sealed class MemoryServices(MegaBufferPool megaBuffer, VirtualTextureTilePool textureTilePool, ref readonly ComPtr<D3D12MA_Allocator> allocator)
         : IDisposable
 {
     private readonly ComPtr<D3D12MA_Allocator> _allocator = allocator;
@@ -51,22 +49,6 @@ internal sealed class MemoryServices(CpuResourceHeapPool uploadHeaps, CpuResourc
     /// Property to return the D3D 12 memory allocator COM pointer.
     /// </summary>
     public ref readonly ComPtr<D3D12MA_Allocator> Allocator => ref _allocator;
-
-    /// <summary>
-    /// Property to return the transient heaps for uploading data to the GPU.
-    /// </summary>
-    public CpuResourceHeapPool UploadHeaps
-    {
-        get;
-    } = uploadHeaps;
-
-    /// <summary>
-    /// Property to return the transient heaps for downloading data from the GPU.
-    /// </summary>
-    public CpuResourceHeapPool DownloadHeaps
-    {
-        get;
-    } = downloadHeaps;
 
     /// <summary>
     /// Property to return the mega buffer implementation for bindless buffers.
@@ -89,8 +71,6 @@ internal sealed class MemoryServices(CpuResourceHeapPool uploadHeaps, CpuResourc
     {
         if (disposing)
         {
-            DownloadHeaps.Dispose();
-            UploadHeaps.Dispose();
             MegaBuffer.Dispose();
             TextureTilePool.Dispose();
         }
@@ -110,8 +90,6 @@ internal sealed class MemoryServices(CpuResourceHeapPool uploadHeaps, CpuResourc
     /// </summary>
     public void GarbageCollect()
     {
-        UploadHeaps.GarbageCollect();
-        DownloadHeaps.GarbageCollect();
         MegaBuffer.GarbageCollect();
         TextureTilePool.GarbageCollect();
     }

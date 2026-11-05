@@ -546,12 +546,7 @@ public sealed unsafe class GorgonGpuBuffer
     /// <param name="count"><inheritdoc cref="GetStructuredBufferView(int, long, int?, bool)" path="/param[@name='count']"/></param>
     /// <inheritdoc cref="GetStructuredBufferView(int, long, int?, bool)" path="/returns"/>
     /// <inheritdoc cref="GetStructuredBufferView(int, long, int?, bool)" path="/exception"/>
-    /// <remarks>
-    /// <inheritdoc cref="GetStructuredBufferView(int, long, int?, bool)" path="/remarks/para"/>
-    /// <para>
-    /// The default values are 0 for the <paramref name="startIndex"/>, and <b>null</b> for the <paramref name="count"/>.
-    /// </para>
-    /// </remarks>
+    /// <inheritdoc cref="GetStructuredBufferView(int, long, int?, bool)" path="/remarks"/>
     /// <inheritdoc cref="GetStructuredBufferView(int, long, int?, bool)" path="/seealso"/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public GorgonStructuredBufferView GetStructuredBufferView(int structSize, long startIndex = 0, int? count = null) => GetStructuredBufferView(structSize, startIndex, count, false);
@@ -577,9 +572,6 @@ public sealed unsafe class GorgonGpuBuffer
     /// </para>
     /// <inheritdoc cref="GetStructuredBufferView(int, long, int?, bool)" path="/remarks/para[@type='range']"/>
     /// <inheritdoc cref="GetConstantBufferView(bool)" path="/remarks/para[@type='bindless_doc']"/>
-    /// <para>
-    /// The default values are 0 for the <paramref name="startIndex"/>, and <b>null</b> for the <paramref name="count"/>.
-    /// </para>
     /// </remarks>
     /// <inheritdoc cref="GetStructuredBufferView(int, long, int?, bool)" path="/seealso"/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -591,12 +583,7 @@ public sealed unsafe class GorgonGpuBuffer
     /// <param name="count"><inheritdoc cref="GetRawBufferView(long, int?, bool)" path="/param[@name='count']"/></param>
     /// <inheritdoc cref="GetRawBufferView(long, int?, bool)" path="/returns"/>
     /// <inheritdoc cref="GetRawBufferView(long, int?, bool)" path="/exception"/>
-    /// <remarks>
-    /// <inheritdoc cref="GetRawBufferView(long, int?, bool)" path="/remarks/para"/>
-    /// <para>
-    /// The default values are 0 for the <paramref name="startIndex"/>, and <b>null</b> for the <paramref name="count"/>.
-    /// </para>
-    /// </remarks>
+    /// <inheritdoc cref="GetRawBufferView(long, int?, bool)" path="/remarks"/>
     /// <inheritdoc cref="GetRawBufferView(long, int?, bool)" path="/seealso"/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public GorgonRawBufferView GetRawBufferView(long startIndex = 0, int? count = null) => GetRawBufferView(startIndex, count, false);
@@ -607,12 +594,7 @@ public sealed unsafe class GorgonGpuBuffer
     /// <param name="count"><inheritdoc cref="GetTypedBufferView(BufferFormat, long, int?, bool)" path="/param[@name='count']"/></param>
     /// <inheritdoc cref="GetTypedBufferView(BufferFormat, long, int?, bool)" path="/returns"/>
     /// <inheritdoc cref="GetTypedBufferView(BufferFormat, long, int?, bool)" path="/exception"/>
-    /// <remarks>
-    /// <inheritdoc cref="GetTypedBufferView(BufferFormat, long, int?, bool)" path="/remarks/para"/>
-    /// <para>
-    /// The default values are 0 for the <paramref name="startIndex"/>, and <b>null</b> for the <paramref name="count"/>.
-    /// </para>
-    /// </remarks>
+    /// <inheritdoc cref="GetTypedBufferView(BufferFormat, long, int?, bool)" path="/remarks"/>
     /// <inheritdoc cref="GetTypedBufferView(BufferFormat, long, int?, bool)" path="/seealso"/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public GorgonTypedBufferView GetTypedBufferView(BufferFormat format, long startIndex = 0, int? count = null) => GetTypedBufferView(format, startIndex, count, false);
@@ -624,12 +606,7 @@ public sealed unsafe class GorgonGpuBuffer
     /// <param name="includeCounter">[Optional] <inheritdoc cref="GetStructuredBufferReadWriteView(int, long, int?, bool, bool)" path="/param[@name='includeCounter']"/></param>
     /// <inheritdoc cref="GetStructuredBufferReadWriteView(int, long, int?, bool, bool)" path="/returns"/>
     /// <inheritdoc cref="GetStructuredBufferReadWriteView(int, long, int?, bool, bool)" path="/exception"/>
-    /// <remarks>
-    /// <inheritdoc cref="GetStructuredBufferReadWriteView(int, long, int?, bool, bool)" path="/remarks/para"/>
-    /// <para>
-    /// The default values are 0 for the <paramref name="startIndex"/>, <b>null</b> for the <paramref name="count"/>, and <b>false</b> for the <paramref name="includeCounter"/>.
-    /// </para>
-    /// </remarks>
+    /// <inheritdoc cref="GetStructuredBufferReadWriteView(int, long, int?, bool, bool)" path="/remarks"/>
     /// <inheritdoc cref="GetStructuredBufferReadWriteView(int, long, int?, bool, bool)" path="/seealso"/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public GorgonStructuredBufferRwView GetStructuredBufferReadWriteView(int structSize, long startIndex = 0, int? count = null, bool includeCounter = false) => GetStructuredBufferReadWriteView(structSize, startIndex, count, includeCounter, false);
@@ -640,7 +617,7 @@ public sealed unsafe class GorgonGpuBuffer
     /// <param name="count"><inheritdoc cref="GetStructuredBufferReadWriteView(int, long, int?, bool, bool)" path="/param[@name='count']"/></param>
     /// <param name="includeCounter">[Optional] <inheritdoc cref="GetStructuredBufferReadWriteView(int, long, int?, bool, bool)" path="/param[@name='includeCounter']"/></param>
     /// <inheritdoc cref="GetStructuredBufferReadWriteView(int, long, int?, bool, bool)" path="/returns"/>
-    /// <inheritdoc cref="GetStructuredBufferView{T}(long, int?)" path="/exception"/>
+    /// <inheritdoc cref="GetStructuredBufferReadWriteView(int, long, int?, bool, bool)" path="/exception"/>
     /// <remarks>
     /// <para>
     /// This allows shaders to read and write buffer data as a custom data structure.
@@ -654,9 +631,6 @@ public sealed unsafe class GorgonGpuBuffer
     /// <inheritdoc cref="GorgonStructuredBufferRwView" path="/remarks/para[@type='counter']"/>
     /// <inheritdoc cref="GorgonStructuredBufferRwView" path="/remarks/para[@type='counter_note']"/>
     /// <inheritdoc cref="GetConstantBufferView(bool)" path="/remarks/para[@type='bindless_doc']"/>
-    /// <para>
-    /// The default values are 0 for the <paramref name="startIndex"/>, <b>null</b> for the <paramref name="count"/>, and <b>false</b> for the <paramref name="includeCounter"/>.
-    /// </para>
     /// </remarks>
     /// <inheritdoc cref="GetStructuredBufferReadWriteView(int, long, int?, bool, bool)" path="/seealso"/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -668,12 +642,7 @@ public sealed unsafe class GorgonGpuBuffer
     /// <param name="count"><inheritdoc cref="GetRawBufferReadWriteView(long, int?, bool)" path="/param[@name='count']"/></param>
     /// <inheritdoc cref="GetRawBufferReadWriteView(long, int?, bool)" path="/returns"/>
     /// <inheritdoc cref="GetRawBufferReadWriteView(long, int?, bool)" path="/exception"/>
-    /// <remarks>
-    /// <inheritdoc cref="GetRawBufferReadWriteView(long, int?, bool)" path="/remarks/para"/>
-    /// <para>
-    /// The default values are 0 for the <paramref name="startIndex"/>, and <b>null</b> for the <paramref name="count"/>.
-    /// </para>
-    /// </remarks>
+    /// <inheritdoc cref="GetRawBufferReadWriteView(long, int?, bool)" path="/remarks"/>
     /// <inheritdoc cref="GetRawBufferReadWriteView(long, int?, bool)" path="/seealso"/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public GorgonRawBufferRwView GetRawBufferReadWriteView(long startIndex = 0, int? count = null) => GetRawBufferReadWriteView(startIndex, count, false);
@@ -684,12 +653,7 @@ public sealed unsafe class GorgonGpuBuffer
     /// <param name="count"><inheritdoc cref="GetTypedBufferReadWriteView(BufferFormat, long, int?, bool)" path="/param[@name='count']"/></param>
     /// <inheritdoc cref="GetTypedBufferReadWriteView(BufferFormat, long, int?, bool)" path="/returns"/>
     /// <inheritdoc cref="GetTypedBufferReadWriteView(BufferFormat, long, int?, bool)" path="/exception"/>
-    /// <remarks>
-    /// <inheritdoc cref="GetTypedBufferReadWriteView(BufferFormat, long, int?, bool)" path="/remarks/para"/>
-    /// <para>
-    /// The default values are 0 for the <paramref name="startIndex"/>, and <b>null</b> for the <paramref name="count"/>.
-    /// </para>
-    /// </remarks>
+    /// <inheritdoc cref="GetTypedBufferReadWriteView(BufferFormat, long, int?, bool)" path="/remarks"/>
     /// <inheritdoc cref="GetTypedBufferReadWriteView(BufferFormat, long, int?, bool)" path="/seealso"/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public GorgonTypedBufferRwView GetTypedBufferReadWriteView(BufferFormat format, long startIndex = 0, int? count = null) => GetTypedBufferReadWriteView(format, startIndex, count, false);

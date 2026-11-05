@@ -37,9 +37,9 @@ namespace Gorgon.Graphics.Core;
 /// <summary>
 /// A pool for resource heaps.
 /// </summary>
-/// <param name="graphics">The graphics interface associated with this pool.</param>
+/// <param name="queue">The queuer that owns this pool.</param>
 /// <param name="isDownload"><b>true</b> to use this heap pool for download only heaps, <b>false</b> to use it for upload only.</param>
-internal unsafe sealed class CpuResourceHeapPool(GorgonGraphics graphics, bool isDownload)
+internal unsafe sealed class CpuResourceHeapPool(CommandQueue queue, bool isDownload)
         : IDisposable
 {
     private const ulong DefaultHeapSize = 65536;
@@ -53,12 +53,17 @@ internal unsafe sealed class CpuResourceHeapPool(GorgonGraphics graphics, bool i
     private CpuBufferHeap? _lastHeap;
 
     /// <summary>
-    /// Property to return the graphics interface associated with this heap pool.
+    /// Property to return the queue that owns the heap.
     /// </summary>
-    public GorgonGraphics Graphics
+    internal CommandQueue Queue
     {
         get;
-    } = graphics;
+    } = queue;
+
+    /// <summary>
+    /// Property to return the graphics interface associated with this heap pool.
+    /// </summary>
+    public GorgonGraphics Graphics => Queue.Graphics;    
 
     /// <inheritdoc cref="GorgonGraphicsFactory.Dispose(bool)"/>
     private void Dispose(bool disposing)
@@ -91,15 +96,13 @@ internal unsafe sealed class CpuResourceHeapPool(GorgonGraphics graphics, bool i
             return;
         }
 
-        ulong gfxCompleted = Graphics.Queues.GraphicsQueue.D3DFence.Get()->GetCompletedValue();
-        ulong computeCompleted = Graphics.Queues.ComputeQueue.D3DFence.Get()->GetCompletedValue();
-        ulong copyCompleted = Graphics.Queues.CopyQueue.D3DFence.Get()->GetCompletedValue();
+        ulong complete = Queue.D3DFence.Get()->GetCompletedValue();
 
         while (_inUse.TryPeek(out CpuBufferHeap? heap))
         {
-            Debug.Assert(heap.GfxFence != 0 || heap.ComputeFence != 0 || heap.CopyFence != 0, "The heap does not have a valid fence value. Cannot safely remove this heap.");
+            Debug.Assert(heap.Fence != 0, "The heap does not have a valid fence value. Cannot safely remove this heap.");
 
-            if ((gfxCompleted < heap.GfxFence) || (computeCompleted < heap.ComputeFence) || (copyCompleted < heap.CopyFence))
+            if (complete < heap.Fence)
             {
                 break;
             }
@@ -243,9 +246,7 @@ internal unsafe sealed class CpuResourceHeapPool(GorgonGraphics graphics, bool i
                     continue;
                 }
 
-                heap.GfxFence = Graphics.Queues.GraphicsQueue.FenceValue;
-                heap.ComputeFence = Graphics.Queues.ComputeQueue.FenceValue;
-                heap.CopyFence = Graphics.Queues.CopyQueue.FenceValue;
+                heap.Fence = Queue.FenceValue;
 
                 _inUse.Enqueue(heap);
             }

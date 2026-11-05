@@ -893,13 +893,7 @@ public unsafe abstract class GorgonTextureCommon
     /// <param name="planeIndex"><inheritdoc cref="GetRenderTargetView(BufferFormat, short, short, short, byte, bool)" path="/param[@name='planeIndex']"/></param>
     /// <inheritdoc cref="GetRenderTargetView(BufferFormat, short, short, short, byte, bool)" path="/returns"/>
     /// <inheritdoc cref="GetRenderTargetView(BufferFormat, short, short, short, byte, bool)" path="/exception"/>
-    /// <remarks>
-    /// <inheritdoc cref="GetRenderTargetView(BufferFormat, short, short, short, byte, bool)" path="/remarks/para"/>
-    /// <para>
-    /// The default values are <see cref="BufferFormat.Unknown"/> for the <paramref name="format"/>, and 0 for the <paramref name="mipLevel"/>, <paramref name="arrayIndexOrDepthSlice"/>, 
-    /// <paramref name="arrayCountOrDepthCount"/> and <paramref name="planeIndex"/>.
-    /// </para>
-    /// </remarks>
+    /// <inheritdoc cref="GetRenderTargetView(BufferFormat, short, short, short, byte, bool)" path="/remarks"/>
     /// <inheritdoc cref="GetRenderTargetView(BufferFormat, short, short, short, byte, bool)" path="/seealso"/>
     public GorgonRenderTargetView GetRenderTargetView(BufferFormat format = BufferFormat.Unknown, short mipLevel = 0, short arrayIndexOrDepthSlice = 0, short arrayCountOrDepthCount = 0, byte planeIndex = 0)
         => GetRenderTargetView(format, mipLevel, arrayIndexOrDepthSlice, arrayCountOrDepthCount, planeIndex, false);
@@ -976,13 +970,7 @@ public unsafe abstract class GorgonTextureCommon
     /// <param name="planeIndex"><inheritdoc cref="GetTextureReadWriteView(BufferFormat, short, short, short, byte, bool)" path="/param[@name='planeIndex']"/></param>
     /// <inheritdoc cref="GetTextureReadWriteView(BufferFormat, short, short, short, byte, bool)" path="/returns"/>
     /// <inheritdoc cref="GetTextureReadWriteView(BufferFormat, short, short, short, byte, bool)" path="/exception"/>
-    /// <remarks>
-    /// <inheritdoc cref="GetTextureReadWriteView(BufferFormat, short, short, short, byte, bool)" path="/remarks/para"/>
-    /// <para>
-    /// The default values are <see cref="BufferFormat.Unknown"/> for the <paramref name="format"/>, and 0 for the <paramref name="mipLevel"/>, <paramref name="arrayIndexOrDepthSlice"/>, 
-    /// <paramref name="arrayCountOrDepthCount"/> and <paramref name="planeIndex"/>.
-    /// </para>
-    /// </remarks>
+    /// <inheritdoc cref="GetTextureReadWriteView(BufferFormat, short, short, short, byte, bool)" path="/remarks"/>
     /// <inheritdoc cref="GetTextureReadWriteView(BufferFormat, short, short, short, byte, bool)" path="/seealso"/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public GorgonTextureRwView GetTextureReadWriteView(BufferFormat format = BufferFormat.Unknown, short mipLevel = 0, short arrayIndexOrDepthSlice = 0, short arrayCountOrDepthCount = 0, byte planeIndex = 0)

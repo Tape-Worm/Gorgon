@@ -31,15 +31,16 @@ namespace Gorgon.Graphics;
 /// <summary>
 /// Defines a viewport for rendering.
 /// </summary>
-/// <remarks>
-/// <para>
-/// TODO: Get info from D3D help.
-/// </para>
-/// </remarks>
 /// <param name="X">The horizontal position of the viewport, in pixels.</param>
 /// <param name="Y">The vertical position of the viewport, in pixels.</param>
 /// <param name="Width">The width of the viewport, in pixels.</param>
 /// <param name="Height">The height of the viewport, in pixels.</param>
+/// <remarks>
+/// <para>
+/// A viewport maps the positions output by the shaders to pixel positions on the render target, and maps the depth values into the range defined by <see cref="MinimumDepth"/> and 
+/// <see cref="MaximumDepth"/>.
+/// </para>
+/// </remarks>
 public record struct GorgonViewport(float X, float Y, float Width, float Height)
 {
     /// <summary>
@@ -57,8 +58,16 @@ public record struct GorgonViewport(float X, float Y, float Width, float Height)
     public readonly bool IsEmpty => Equals(Empty);
 
     /// <summary>
-    /// Property to return the minimum depth value for the viewport.
+    /// Property to set or return the minimum depth value for the viewport.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This value must be between 0 and 1.
+    /// </para>
+    /// <para>
+    /// The default value is 0.
+    /// </para>
+    /// </remarks>
     public float MinimumDepth
     {
         get;
@@ -66,8 +75,16 @@ public record struct GorgonViewport(float X, float Y, float Width, float Height)
     } = 0.0f;
 
     /// <summary>
-    /// Property to return the maximum depth value for the viewport.
+    /// Property to set or return the maximum depth value for the viewport.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This value must be between 0 and 1.
+    /// </para>
+    /// <para>
+    /// The default value is 1.
+    /// </para>
+    /// </remarks>
     public float MaximumDepth
     {
         get;
@@ -84,6 +101,7 @@ public record struct GorgonViewport(float X, float Y, float Width, float Height)
     /// <summary>
     /// Function to convert the viewport to a 2D <see cref="GorgonRectangleF"/>.
     /// </summary>
+    /// <param name="viewport">The viewport to convert.</param>
     /// <returns>The 2D rectangle.</returns>
     /// <seealso cref="GorgonRectangleF"/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -92,6 +110,7 @@ public record struct GorgonViewport(float X, float Y, float Width, float Height)
     /// <summary>
     /// Function to convert the viewport to a 2D <see cref="GorgonRectangle"/>.
     /// </summary>
+    /// <param name="viewport">The viewport to convert.</param>
     /// <returns>The 2D rectangle.</returns>
     /// <seealso cref="GorgonRectangle"/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -114,18 +133,20 @@ public record struct GorgonViewport(float X, float Y, float Width, float Height)
     public static explicit operator GorgonRectangle(GorgonViewport viewport) => ToGorgonRectangle(viewport);
 
     /// <summary>
-    /// Function to convert the viewport to a 3D <see cref="GorgonBoxF"/>
+    /// Function to convert the viewport to a 3D <see cref="GorgonBoxF"/>.
     /// </summary>
     /// <param name="viewport">The viewport to convert.</param>
-    /// <returns>The 3D box.</returns>
+    /// <returns>The 3D box, with the <see cref="MinimumDepth"/> as its Z value, and the difference between the <see cref="MaximumDepth"/> and the <see cref="MinimumDepth"/> as its depth.</returns>
+    /// <seealso cref="GorgonBoxF"/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static GorgonBoxF ToGorgonBoxF(GorgonViewport viewport) => new(viewport.X, viewport.Y, viewport.MinimumDepth, viewport.Width, viewport.Height, viewport.MaximumDepth);
+    public static GorgonBoxF ToGorgonBoxF(GorgonViewport viewport) => new(viewport.X, viewport.Y, viewport.MinimumDepth, viewport.Width, viewport.Height, viewport.MaximumDepth - viewport.MinimumDepth);
 
     /// <summary>
-    /// Function to convert the viewport to a 3D <see cref="GorgonBox"/>
+    /// Function to convert the viewport to a 3D <see cref="GorgonBox"/>.
     /// </summary>
     /// <param name="viewport">The viewport to convert.</param>
-    /// <returns>The 3D box.</returns>
+    /// <returns>The 3D box, with the <see cref="MinimumDepth"/> as its Z value, and the difference between the <see cref="MaximumDepth"/> and the <see cref="MinimumDepth"/> as its depth.</returns>
+    /// <seealso cref="GorgonBox"/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static GorgonBox ToGorgonBox(GorgonViewport viewport)
     {
@@ -137,38 +158,38 @@ public record struct GorgonViewport(float X, float Y, float Width, float Height)
     /// Operator to convert this viewport to a 3D <see cref="GorgonBoxF"/>.
     /// </summary>
     /// <param name="viewport">The viewport to convert.</param>
-    /// <returns>The 3D box.</returns>
-    /// <seealso cref="GorgonRectangleF"/>
+    /// <inheritdoc cref="ToGorgonBoxF(GorgonViewport)" path="/returns"/>
+    /// <seealso cref="GorgonBoxF"/>
     public static explicit operator GorgonBoxF(GorgonViewport viewport) => ToGorgonBoxF(viewport);
 
     /// <summary>
     /// Operator to convert this viewport to a 3D <see cref="GorgonBox"/>.
     /// </summary>
     /// <param name="viewport">The viewport to convert.</param>
-    /// <returns>The 3D box.</returns>
-    /// <seealso cref="GorgonRectangle"/>
+    /// <inheritdoc cref="ToGorgonBox(GorgonViewport)" path="/returns"/>
+    /// <seealso cref="GorgonBox"/>
     public static explicit operator GorgonBox(GorgonViewport viewport) => ToGorgonBox(viewport);
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonViewport"/> value type.
     /// </summary>
-    /// <param name="box">The box defining the dimensions of the viewport.</param>
+    /// <param name="box">The box defining the dimensions of the viewport. Its front is used as the <see cref="MinimumDepth"/>, and its back is used as the <see cref="MaximumDepth"/>.</param>
     public GorgonViewport(GorgonBoxF box)
         : this(box.X, box.Y, box.Width, box.Height)
     {
-        MinimumDepth = box.Z;
-        MaximumDepth = box.Depth;
+        MinimumDepth = box.Front;
+        MaximumDepth = box.Back;
     }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonViewport"/> value type.
     /// </summary>
-    /// <param name="box">The box defining the dimensions of the viewport.</param>
+    /// <param name="box">The box defining the dimensions of the viewport. Its front is used as the <see cref="MinimumDepth"/>, and its back is used as the <see cref="MaximumDepth"/>.</param>
     public GorgonViewport(GorgonBox box)
         : this(box.X, box.Y, box.Width, box.Height)
     {
-        MinimumDepth = box.Z;
-        MaximumDepth = box.Depth;
+        MinimumDepth = box.Front;
+        MaximumDepth = box.Back;
     }
 
     /// <summary>

@@ -189,7 +189,6 @@ public sealed unsafe class GorgonTexture
 
     private readonly Lock _viewLock = new();
     private readonly Dictionary<ViewKey, GorgonDepthStencilView> _dsvs = [];
-    private readonly CpuResourceHeapPool _uploadHeaps;
 
     /// <summary>
     /// Function to build the flags for the resource description.
@@ -538,7 +537,9 @@ public sealed unsafe class GorgonTexture
     /// </para>
     /// </remarks>
     internal GorgonTexture(GorgonGraphics graphics, string name, ComPtr<ID3D12Resource2> resource, GorgonTextureInfo info)
-        : base(graphics, name, resource, info) => _uploadHeaps = graphics.Memory.UploadHeaps;
+        : base(graphics, name, resource, info)
+    {
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GorgonTexture"/> class.
@@ -622,9 +623,5 @@ public sealed unsafe class GorgonTexture
     /// <seealso cref="BufferFormat"/>
     /// <seealso cref="TextureType"/>
     public GorgonTexture(GorgonGraphics graphics, string name, GorgonTextureInfo info)
-        : base(graphics, name, info)
-    {
-        _uploadHeaps = graphics.Memory.UploadHeaps;
-        CreateNative();
-    }
+        : base(graphics, name, info) => CreateNative();
 }

@@ -280,12 +280,7 @@ public sealed unsafe class GorgonIndexBuffer
     /// <param name="count"><inheritdoc cref="GetRawBufferReadWriteView(long, int?, bool)" path="/param[@name='count']"/></param>
     /// <inheritdoc cref="GetRawBufferReadWriteView(long, int?, bool)" path="/returns"/>
     /// <inheritdoc cref="GetRawBufferReadWriteView(long, int?, bool)" path="/exception"/>
-    /// <remarks>
-    /// <inheritdoc cref="GetRawBufferReadWriteView(long, int?, bool)" path="/remarks/para"/>
-    /// <para>
-    /// The default values are 0 for the <paramref name="startIndex"/>, and <b>null</b> for the <paramref name="count"/>.
-    /// </para>
-    /// </remarks>
+    /// <inheritdoc cref="GetRawBufferReadWriteView(long, int?, bool)" path="/remarks"/>
     /// <inheritdoc cref="GetRawBufferReadWriteView(long, int?, bool)" path="/seealso"/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public GorgonRawBufferRwView GetRawBufferReadWriteView(long startIndex = 0, int? count = null) => GetRawBufferReadWriteView(startIndex, count, false);
@@ -296,12 +291,7 @@ public sealed unsafe class GorgonIndexBuffer
     /// <param name="count"><inheritdoc cref="GetTypedBufferReadWriteView(BufferFormat, long, int?, bool)" path="/param[@name='count']"/></param>
     /// <inheritdoc cref="GetTypedBufferReadWriteView(BufferFormat, long, int?, bool)" path="/returns"/>
     /// <inheritdoc cref="GetTypedBufferReadWriteView(BufferFormat, long, int?, bool)" path="/exception"/>
-    /// <remarks>
-    /// <inheritdoc cref="GetTypedBufferReadWriteView(BufferFormat, long, int?, bool)" path="/remarks/para"/>
-    /// <para>
-    /// The default values are 0 for the <paramref name="startIndex"/>, and <b>null</b> for the <paramref name="count"/>.
-    /// </para>
-    /// </remarks>
+    /// <inheritdoc cref="GetTypedBufferReadWriteView(BufferFormat, long, int?, bool)" path="/remarks"/>
     /// <inheritdoc cref="GetTypedBufferReadWriteView(BufferFormat, long, int?, bool)" path="/seealso"/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public GorgonTypedBufferRwView GetTypedBufferReadWriteView(BufferFormat format, long startIndex = 0, int? count = null) => GetTypedBufferReadWriteView(format, startIndex, count, false);

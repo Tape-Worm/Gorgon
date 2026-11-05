@@ -48,8 +48,9 @@ public interface IGorgonExecuteBufferInfo
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This value must be a multiple of 4, and must be at least 16 bytes. It must also be at least the minimum size of a command for the execute call that uses the buffer: 4 bytes for each root constant the 
-    /// commands set, plus 16 bytes for draw arguments, or 20 bytes for indexed draw arguments. A larger size leaves space after the arguments in each command, which the application can use for its own data.
+    /// This value must be a multiple of 4, and must be at least 12 bytes. It must also be at least the minimum size of a command for the execute call that uses the buffer: 4 bytes for each root constant the 
+    /// commands set, plus 16 bytes for draw arguments, 20 bytes for indexed draw arguments, or 12 bytes for dispatch arguments. A larger size leaves space after the arguments in each command, which the 
+    /// application can use for its own data.
     /// </para>
     /// </remarks>
     int CommandSizeInBytes

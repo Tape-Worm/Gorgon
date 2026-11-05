@@ -27,7 +27,7 @@ using System.IO;
 namespace Gorgon.Graphics.Core.Codecs;
 
 /// <summary>
-/// The status returned by the <see cref="GorgonCodecGraphicsPsoCacheCommon.IsReadable(Stream)"/> method.
+/// The status returned by the <see cref="GorgonCodecPsoCacheCommon{TFactory}.IsReadable(Stream)"/> method.
 /// </summary>
 public enum ReadStatus
 {

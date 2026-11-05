@@ -184,20 +184,20 @@ public unsafe class GorgonTextureBlitter
     /// <remarks>
     /// <para>
     /// A custom pixel shader passed to the <see cref="Blit"/> method must use the same inputs and constant data as the blitter's own pixel shader. To get these, include the 
-    /// <see cref="GorgonTextureBlitterShader"/> source code in the custom shader with <c>#GorgonInclude "__GORGON__BLITTER__SHADERS__"</c>. This should be the first include in the custom shader, 
-    /// before any other <c>#GorgonInclude</c> or <c>#include</c>. This include is available to every 
-    /// <see cref="GorgonShaderCompiler"/>, so no other setup is required.
+    /// <see cref="GorgonTextureBlitterShader"/> source code in the custom shader with <c>#GorgonInclude "__GORGON__BLITTER__SHADERS__"</c>. This should be the first include in the custom shader, before any 
+    /// other <c>#GorgonInclude</c> or <c>#include</c>. This include is available to every <see cref="GorgonShaderCompiler"/>, so no other setup is required.
     /// </para>
     /// <para>
     /// The included source code provides the following for a custom pixel shader:
     /// <list type="bullet">
     ///     <item>
-    ///         <term>GorgonBlitterPixelShaderInput</term>
+    ///         <term>GorgonBlitterPixelShaderInput</term> 
     ///         <description>The input to the pixel shader. This contains the position, the tint color, and the texture coordinates for the pixel.</description>
     ///     </item>
     ///     <item>
-    ///         <term>_gorgonBlitterRenderData</term>
-    ///         <description>The constant data for the blit. The <c>textureHandle</c> and <c>samplerHandle</c> members are the handles for the texture and sampler passed to the <see cref="Blit"/> method.</description>
+    ///         <term>_gorgonBlitterRenderData</term> 
+    ///         <description>The constant data for the blit. The <c>textureHandle</c> and <c>samplerHandle</c> members are the handles for the texture and sampler passed to the 
+    ///         <see cref="Blit"/> method.</description>
     ///     </item>
     /// </list>
     /// </para>

@@ -48,7 +48,7 @@ namespace Gorgon.Graphics.Core.Codecs;
 /// state object. It also records the version of Gorgon, the GPU driver version, and the GPU hardware that were used to create the data. This ensures that the data is not loaded on a system with different 
 /// hardware, a different driver version, or a different version of Gorgon. If an attempt to load this data is made with mismatched versions, then the user must regenerate their PSO cache(s).
 /// </para>
-/// <inheritdoc cref="GorgonCodecGraphicsPsoCacheCommon" path="/remarks/para[@type='common']"/>
+/// <inheritdoc cref="GorgonCodecPsoCacheCommon{TFactory}" path="/remarks/para[@type='common']"/>
 /// </remarks>
 public class GorgonCodecGraphicsPsoCache(GorgonGraphics graphics)
     : GorgonCodecGraphicsPsoCacheCommon(graphics)

@@ -54,21 +54,42 @@ namespace Gorgon.Graphics.Core;
 public delegate void GorgonDebugInformationCallback(string message, DebugInfoCategory category, DebugInfoSeverity severity, string messageID);
 
 /// <summary>
-/// The primary object for the Gorgon Graphics system
+/// The primary object for the Gorgon Graphics system, used to send graphics work to a video adapter.
 /// </summary>
+/// <remarks>
+/// <para>
+/// The graphics interface represents a single video adapter, and is created with <see cref="GorgonGraphicsFactory.CreateGraphics"/>. Every resource, view, pipeline state object, and command list is associated 
+/// with a graphics interface, and can only be used with objects associated with the same graphics interface.
+/// </para>
+/// <para>
+/// Commands are recorded on a <see cref="GorgonCommandList"/> returned by <see cref="GetCommandList"/>, and sent to the graphics queue with <see cref="Submit(ReadOnlySpan{GorgonCommandList})"/>. Each call to 
+/// submit ends a frame. The number of frames that the GPU can work on while the CPU records the next frame is set by the <see cref="InFlightFrameCount"/>.
+/// </para>
+/// <para>
+/// Copies can be sent to the copy queue with a <see cref="GorgonResourceCopier"/>, and compute work can be sent to the compute queue with a <see cref="GorgonComputeEngine"/>. Use <see cref="WaitForCopy"/> and 
+/// <see cref="WaitForCompute"/> to make the graphics queue wait for the work on those queues.
+/// </para>
+/// <para>
+/// Objects associated with the graphics interface that are still alive when it is disposed are disposed with it, and a warning is written to the log. Applications should dispose of their objects when they are 
+/// no longer required.
+/// </para>
+/// </remarks>
+/// <seealso cref="GorgonGraphicsFactory"/>
+/// <seealso cref="GorgonCommandList"/>
 public unsafe sealed class GorgonGraphics
     : IDisposable
 {
     // The maximum number of parameters on the root signature.
-    private const int MaxRootParamCount = 18;
+    internal const int MaxRootParamCount = 18;
 
     /// <summary>
-    /// The maximum number of slots for root constant buffer views.
+    /// The number of constant buffer slots that can be written with <see cref="GorgonCommandList.WriteConstant{T}(int, in T)"/>.
     /// </summary>
     public const int MaxRootCbvCount = 16;
     /// <summary>
-    /// The maximum number of slots for root constants.
+    /// The number of root constants that can be set by the commands of an execute call.
     /// </summary>
+    /// <seealso cref="GorgonExecuteCallCommon.ConstantStart"/>
     public const int MaxRootConstantCount = 8;
 
     private ComPtr<IDXGIFactory7> _dxgiFactory;
@@ -164,8 +185,13 @@ public unsafe sealed class GorgonGraphics
     public bool IsDisposed => _isDisposed != 0;
 
     /// <summary>
-    /// Property to return whether Gorgon is in debug mode or not.
+    /// Property to return whether debugging is enabled for this graphics interface.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Debugging is enabled by passing <see cref="GorgonGraphicsDebugFlags"/> to the <see cref="GorgonGraphicsFactory(GorgonGraphicsDebugFlags, IGorgonLog?)"/> constructor.
+    /// </para>
+    /// </remarks>
     public bool IsInDebugMode => _debug is not null;
 
     /// <summary>
@@ -177,28 +203,34 @@ public unsafe sealed class GorgonGraphics
     }
 
     /// <summary>
-    /// Property to return the support for the various buffer formats.
+    /// Property to return the functionality supported by each <see cref="BufferFormat"/> on the video adapter.
     /// </summary>
     /// <seealso cref="BufferFormat"/>
+    /// <seealso cref="GorgonBufferFormatSupport"/>
     public IReadOnlyDictionary<BufferFormat, GorgonBufferFormatSupport> FormatSupport => _formatSupport;
 
     /// <summary>
     /// Property to return the number of frames that can be in flight on the GPU while rendering.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This value is set when the graphics interface is created with <see cref="GorgonGraphicsFactory.CreateGraphics"/>.
+    /// </para>
+    /// </remarks>
     public int InFlightFrameCount
     {
         get;
     }
 
     /// <summary>
-    /// Property to return the current frame being worked on.
+    /// Property to return the index of the current frame being worked on.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// To see the total number of frames that can be worked on at once, check the <see cref="InFlightFrameCount"/>.
+    /// This value is between 0 and the <see cref="InFlightFrameCount"/> minus 1, and moves to the next index each time a frame is submitted.
     /// </para>
     /// </remarks>
-    /// <see cref="InFlightFrameCount"/>
+    /// <seealso cref="InFlightFrameCount"/>
     public int CurrentFrame => _currentFrame;
 
     /// <summary>
@@ -240,12 +272,11 @@ public unsafe sealed class GorgonGraphics
         {
             Log.Print("Waiting for GPU to finish work...", LoggingLevel.Intermediate);
 
+            GorgonTimer sw = new();
             // Ensure the frame is ended.
             FinalizeFrame();
-
-            GorgonTimer sw = new();
+            
             // Wait for the GPU to finish whatever it's doing.
-            // Give it 5 seconds, if we take longer than this, we're probably in trouble.
             WaitForGpu();
             Log.Print($"GPU finished work in {sw.Elapsed}.", LoggingLevel.Intermediate);
 
@@ -545,8 +576,8 @@ public unsafe sealed class GorgonGraphics
         Memory.TextureTilePool.Signal();
         Queues.GraphicsQueue.AllocatorPool.Signal();
         Queues.GraphicsQueue.QueryTracker.Signal();
-        Queues.ComputeQueue.QueryTracker.Signal();
-        Memory.UploadHeaps.Signal();
+        Queues.GraphicsQueue.UploadHeaps.Signal();
+        Queues.GraphicsQueue.DownloadHeaps.Signal();
         Descriptors.GpuSamplerDescriptors.Signal();
         Descriptors.GpuViewDescriptors.Signal();
         SpinWait waiter = new();
@@ -686,9 +717,11 @@ public unsafe sealed class GorgonGraphics
 
         D3D12_VERSIONED_ROOT_SIGNATURE_DESC.Init_1_2(ref rootDesc, MaxRootParamCount, paramList, 0, null,
                                                      D3D12_ROOT_SIGNATURE_FLAGS.D3D12_ROOT_SIGNATURE_FLAG_CBV_SRV_UAV_HEAP_DIRECTLY_INDEXED
-                                                   | D3D12_ROOT_SIGNATURE_FLAGS.D3D12_ROOT_SIGNATURE_FLAG_SAMPLER_HEAP_DIRECTLY_INDEXED);
+                                                   | D3D12_ROOT_SIGNATURE_FLAGS.D3D12_ROOT_SIGNATURE_FLAG_SAMPLER_HEAP_DIRECTLY_INDEXED
+                                                   | D3D12_ROOT_SIGNATURE_FLAGS.D3D12_ROOT_SIGNATURE_FLAG_DENY_AMPLIFICATION_SHADER_ROOT_ACCESS 
+                                                   | D3D12_ROOT_SIGNATURE_FLAGS.D3D12_ROOT_SIGNATURE_FLAG_DENY_MESH_SHADER_ROOT_ACCESS);
 
-        Log.Print("Creating Gorgon D3D 12 global bindless root signature...", LoggingLevel.Verbose);
+        Log.Print("Creating Gorgon D3D 12 global bindless graphics root signature...", LoggingLevel.Verbose);
 
         HRESULT err = _d3dDevice.As(&devConfig);
 
@@ -779,10 +812,10 @@ public unsafe sealed class GorgonGraphics
     /// <exception cref="GorgonException">Thrown if the driver version could not be retrieved.</exception>
     /// <remarks>
     /// <para>
-    /// This method will return the user mode driver version for the current GPU. It is a grouping of 4 16 bit words that make up the driver version number.
+    /// This method will return the user mode driver version for the current GPU. It is a grouping of four 16-bit words that make up the driver version number.
     /// </para>
     /// <para>
-    /// This is a version number used by Windows, and not the vendor specific driver (i.e. it is not Nvidia's format: 546.22 or AMD's format: 23.12.11, it is agnostic).
+    /// This is a version number used by Windows, and not the vendor-specific driver (i.e. it is not NVIDIA's format: 546.22 or AMD's format: 23.12.11, it is vendor-agnostic).
     /// </para>
     /// </remarks>
     public long GetDriverVersion()
@@ -796,7 +829,7 @@ public unsafe sealed class GorgonGraphics
     }
 
     /// <summary>
-    /// Functrion to retrieve the current memory used on the GPU, and the budget given to the application by the operating system.
+    /// Function to retrieve the current memory used on the GPU, and the budget given to the application by the operating system.
     /// </summary>
     /// <returns>A tuple containing the number of bytes that are currently used, and the number of bytes budgeted for the application.</returns>
     /// <exception cref="GorgonException">Thrown if the budget information could not be retrieved.</exception>
@@ -895,8 +928,15 @@ public unsafe sealed class GorgonGraphics
     }
 
     /// <summary>
-    /// Function to make the CPU wait for the GPU to finish its current timeline of work.
+    /// Function to make the CPU wait for the GPU to finish all of the work submitted to the graphics, compute, and copy queues.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This stalls the CPU until the GPU is idle. Use it sparingly, for example before releasing resources that the GPU may still be using, or when shutting down.
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="WaitForCopy"/>
+    /// <seealso cref="WaitForCompute"/>
     public void WaitForGpu()
     {
         Queues.GraphicsQueue.WaitForGpu();
@@ -911,7 +951,7 @@ public unsafe sealed class GorgonGraphics
     /// <returns>A new <see cref="GorgonCommandList"/> for sending commands to the GPU.</returns>
     /// <remarks>
     /// <para>
-    /// This method is used to create command lists to send commands to the GPU. Multiple lists can be created for use in multiple threads, which helps reduce the cost of setting up rendering.
+    /// This method is used to create command lists to send commands to the GPU. Multiple command lists can be created for use in multiple threads, which helps reduce the cost of setting up rendering.
     /// </para>
     /// <para>
     /// The optional <paramref name="commandListName"/> parameter is used to help identify the command list in debugging scenarios, so while it is optional, it is recommended to set this value as it will 
@@ -920,7 +960,7 @@ public unsafe sealed class GorgonGraphics
     /// <para>
     /// <note type="warning">
     /// <para>
-    /// While Gorgon is capable of using multiple threads to render, a <see cref="GorgonCommandList"/> is <b>NOT</b> thread safe. Only use a single list per thread.
+    /// While Gorgon is capable of using multiple threads to render, a <see cref="GorgonCommandList"/> is <b>NOT</b> thread safe. Only use a single command list per thread.
     /// </para>
     /// </note>
     /// </para>
@@ -945,9 +985,7 @@ public unsafe sealed class GorgonGraphics
     /// </summary>
     /// <param name="commandList">The command list to execute at the end of the frame.</param>
     /// <inheritdoc cref="Submit(ReadOnlySpan{GorgonCommandList})" path="/exception"/>
-    /// <remarks>
-    /// <inheritdoc cref="Submit(ReadOnlySpan{GorgonCommandList})" path="/remarks/para"/>
-    /// </remarks>
+    /// <inheritdoc cref="Submit(ReadOnlySpan{GorgonCommandList})" path="/remarks"/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Submit(GorgonCommandList commandList)
     {
@@ -964,13 +1002,13 @@ public unsafe sealed class GorgonGraphics
     /// <exception cref="AggregateException">Thrown if one or more command lists could not be closed after an error occurred during submission. The first inner exception is the original error.</exception>
     /// <remarks>
     /// <para>
-    /// This method submits the command lists to the GPU in a single batch, and then ends the current frame. Every command list obtained from <see cref="GetCommandList"/> during the frame must be
+    /// This method submits the command lists to the GPU in a single batch, and then ends the current frame. Every command list obtained from <see cref="GetCommandList"/> during the frame must be 
     /// passed to this method before the next frame begins.
     /// </para>
     /// <para>
     /// <note type="important">
     /// <para>
-    /// This method must be called from a single thread. Command lists can be recorded on multiple threads, but they must all be submitted from the same thread. Direct3D 12 serializes submissions to a
+    /// This method must be called from a single thread. Command lists can be recorded on multiple threads, but they must all be submitted from the same thread. Direct3D 12 serializes submissions to a 
     /// command queue in the order they arrive, so submitting from multiple threads provides no benefit, and makes the execution order of the command lists depend on thread timing.
     /// </para>
     /// </note>
@@ -1006,8 +1044,8 @@ public unsafe sealed class GorgonGraphics
     /// <para>
     /// <note type="information">
     /// <para>
-    /// This method is different from the <see cref="WaitForGpu"/> method in that it causes the GPU graphics queue to wait for the copy queue to finish its work. While the <see cref="WaitForGpu"/> stalls 
-    /// the CPU until the GPU is finished its work.
+    /// This method is different from the <see cref="WaitForGpu"/> method in that it causes the graphics queue to wait for the copy queue to finish its work on the GPU, while the <see cref="WaitForGpu"/> 
+    /// method stalls the CPU until the GPU has finished its work.
     /// </para>
     /// </note>
     /// </para>
@@ -1025,20 +1063,20 @@ public unsafe sealed class GorgonGraphics
     /// <summary>
     /// Function to make the GPU wait for the compute queue if it's in the process of working with data.
     /// </summary>
-    /// <remarks>
     /// <inheritdoc cref="WaitForCopy" path="/exception"/>
+    /// <remarks>
     /// <para>
-    /// This method is meant to make the graphics queue wait for the compute queue on the GPU. Developers can use this to synchronize the GPU queues. For example, if the compute copy queue is busy updating 
+    /// This method is meant to make the graphics queue wait for the compute queue on the GPU. Developers can use this to synchronize the GPU queues. For example, if the compute queue is busy updating 
     /// a texture required by the graphics queue, this will allow the graphics queue to wait until that operation has finished and then it will continue its work.
     /// </para>
     /// <para>
-    /// To make use of the copy queue, developers can use the <see cref="GorgonComputeEngine"/> functionality.
+    /// To make use of the compute queue, developers can use the <see cref="GorgonComputeEngine"/> functionality.
     /// </para>
     /// <para>
     /// <note type="information">
     /// <para>
-    /// This method is different from the <see cref="WaitForGpu"/> method in that it causes the GPU graphics queue to wait for the compute queue to finish its work. While the <see cref="WaitForGpu"/> stalls 
-    /// the CPU until the GPU is finished its work.
+    /// This method is different from the <see cref="WaitForGpu"/> method in that it causes the graphics queue to wait for the compute queue to finish its work on the GPU, while the <see cref="WaitForGpu"/> 
+    /// method stalls the CPU until the GPU has finished its work.
     /// </para>
     /// </note>
     /// </para>
@@ -1055,7 +1093,7 @@ public unsafe sealed class GorgonGraphics
     }
 
     /// <summary>
-    /// Function to perform clean up of unused heaps.
+    /// Function to release pooled memory and other internal resources that are no longer in use.
     /// </summary>
     /// <param name="forceDotNetGc">[Optional] <b>true</b> to force a .NET garbage collection, <b>false</b> to only collect internal data structures.</param>
     /// <remarks>
@@ -1063,10 +1101,10 @@ public unsafe sealed class GorgonGraphics
     /// Applications can call this method periodically (e.g. on a level load) to clean up any pooled memory that is no longer required.
     /// </para>
     /// <para>
-    /// <note type="warning">
+    /// <note type="important">
     /// <para>
-    /// This method will clean up all data that is not currently in use by the GPU. This can potentially be a very slow operation, especially when the <paramref name="forceDotNetGc"/> value is set to <b>true</b>. 
-    /// Please execise caution when using this method, and only call it if absolutely necessary.
+    /// This method waits for the GPU to finish all of its work (see <see cref="WaitForGpu"/>) before it cleans up. This can potentially be a very slow operation, especially when the
+    /// <paramref name="forceDotNetGc"/> value is set to <b>true</b>. Please exercise caution when using this method, and only call it if absolutely necessary.
     /// </para>
     /// </note>
     /// </para>
@@ -1127,9 +1165,7 @@ public unsafe sealed class GorgonGraphics
 
         ComPtr<D3D12MA_Allocator> allocator = BuildAllocator(adapter.Name, _dxgiAdapter, _d3dDevice);
 
-        Memory = new MemoryServices(new CpuResourceHeapPool(this, false),
-            new CpuResourceHeapPool(this, true),
-            new MegaBufferPool(this, bufferPercent),
+        Memory = new MemoryServices(new MegaBufferPool(this, bufferPercent),
             new VirtualTextureTilePool(this),
             in allocator);
 

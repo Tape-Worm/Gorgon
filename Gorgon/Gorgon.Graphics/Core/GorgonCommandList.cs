@@ -53,12 +53,16 @@ namespace Gorgon.Graphics.Core;
 /// be used again. A new command list is retrieved for the next frame.
 /// </para>
 /// <para>
-/// The render targets, depth/stencil, viewports, scissor rectangles and constants set on a command list are used by every draw and execute call recorded after them, until they are changed. Most methods return 
-/// the command list, so calls can be chained (e.g. <c>list.SetRenderTarget(target).SetViewport(viewport)</c>).
+/// The render targets, depth/stencil, viewports and scissor rectangles set on a command list are used by every draw and execute call recorded after them, until they are changed. Constants are used by every 
+/// draw, dispatch and execute call recorded after them. Most methods return the command list, so calls can be chained (e.g. <c>list.SetRenderTarget(target).SetViewport(viewport)</c>).
+/// </para>
+/// <para>
+/// Compute work recorded with <see cref="Dispatch(GorgonDispatchCall)"/> or <see cref="Execute(GorgonComputeExecuteCall)"/> runs on the graphics queue, in order with the draws. To run compute work on the 
+/// compute queue, use a <see cref="GorgonComputeCommandList"/> instead.
 /// </para>
 /// <para>
 /// Gorgon adds the barriers needed by the commands automatically, based on the resources that each command uses. The 
-/// <see cref="SetBarrier(GorgonTextureCommon, BarrierSync, BarrierAccess, BarrierLayout, GorgonSubResourceRange?, bool, bool)"/> and <see cref="Reset(ReadOnlySpan{IGorgonTextureView{GorgonTextureCommon}})"/> 
+/// <see cref="SetBarrier(GorgonTextureCommon, BarrierSync, BarrierAccess, BarrierLayout, GorgonSubResourceRange?, bool)"/> and <see cref="Reset(ReadOnlySpan{IGorgonTextureView{GorgonTextureCommon}})"/> 
 /// methods are available for cases that need explicit control.
 /// </para>
 /// <para>
@@ -72,8 +76,9 @@ namespace Gorgon.Graphics.Core;
 /// <seealso cref="GorgonGraphics"/>
 /// <seealso cref="GorgonDrawCall"/>
 /// <seealso cref="GorgonExecuteCall"/>
+/// <seealso cref="GorgonComputeCommandList"/>
 public sealed unsafe class GorgonCommandList
-    : IGorgonNamedObject, IGorgonCopyMethodsFluent<GorgonCommandList>
+    : IGorgonNamedObject, IGorgonCopyMethodsFluent<GorgonCommandList>, IGorgonBarrierManagement<GorgonCommandList>
 {
     private ComPtr<ID3D12GraphicsCommandList10> _list;
     private ComPtr<ID3D12CommandList> _baseList;
@@ -103,8 +108,9 @@ public sealed unsafe class GorgonCommandList
     private CpuBufferHeap? _constantHeap;
     private GorgonIndexBuffer? _currentIndexBuffer;
     private GorgonGraphicsPso? _currentPso;
+    private GorgonComputePso? _currentComputePso;
     private readonly HashSet<nint> _trackedResources = new(256);
-    private ushort _dirtyRootConstants;
+    private uint _dirtyRootConstants;
     private readonly Queue<List<int>> _queryListIndexPool = [];
     private readonly Dictionary<GorgonQuery, List<int>> _activeQueries = [];
     private readonly Dictionary<GorgonQuery, List<int>> _endedQueries = [];
@@ -306,21 +312,28 @@ public sealed unsafe class GorgonCommandList
     /// Function to apply constant value writes.
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void ApplyConstantWrites()
+    private void ApplyConstantWrites(bool compute)
     {
-        int dirty = _dirtyRootConstants;
+        uint dirty = (compute ? (_dirtyRootConstants >> 16) : _dirtyRootConstants) & 0xffff;
 
         while (dirty != 0)
         {
             int index = BitOperations.TrailingZeroCount(dirty);
             ref CpuBufferAllocation allocation = ref _constantWriteData[index];
 
-            _list.Get()->SetGraphicsRootConstantBufferView((uint)index, allocation.GpuAddress);
+            if (!compute)
+            {
+                _list.Get()->SetGraphicsRootConstantBufferView((uint)index, allocation.GpuAddress);
+            }
+            else
+            {
+                _list.Get()->SetComputeRootConstantBufferView((uint)index, allocation.GpuAddress);
+            }
 
             dirty &= (dirty - 1);
         }
 
-        _dirtyRootConstants = 0;
+        _dirtyRootConstants = compute ? (_dirtyRootConstants & 0xffff) : (_dirtyRootConstants & 0xffff0000);
     }
 
     /// <summary>
@@ -515,10 +528,8 @@ public sealed unsafe class GorgonCommandList
     /// Function to apply the PSO for the command list.
     /// </summary>
     /// <param name="pso">The pipeline state to apply.</param>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void ApplyPso(GorgonGraphicsPso pso)
     {
-        Debug.Assert(!pso.D3DPso.IsNull, $"The pipeline state object '{pso.Name}' no longer has a pointer to a native pipeline state object.");
         ObjectDisposedException.ThrowIf(pso.D3DPso.IsNull, pso);
 
         if (_currentPso == pso)
@@ -531,6 +542,27 @@ public sealed unsafe class GorgonCommandList
         _list.Get()->SetPipelineState((PID3D12PipelineState)pso.D3DPso.Get());
         _list.Get()->IASetPrimitiveTopology((D3D_PRIMITIVE_TOPOLOGY)pso.PrimitiveType);
         _currentPso = pso;
+        _currentComputePso = null;
+    }
+
+    /// <summary>
+    /// Function to apply the compute PSO for the command list.
+    /// </summary>
+    /// <param name="pso">The pipeline state to apply.</param>
+    private void ApplyComputePso(GorgonComputePso pso)
+    {
+        ObjectDisposedException.ThrowIf(pso.D3DPso.IsNull, pso);
+
+        if (_currentComputePso == pso)
+        {
+            return;
+        }
+
+        TrackResource(pso.D3DPso);
+
+        _list.Get()->SetPipelineState((PID3D12PipelineState)pso.D3DPso.Get());
+        _currentComputePso = pso;
+        _currentPso = null;
     }
 
     /// <summary>
@@ -635,12 +667,34 @@ public sealed unsafe class GorgonCommandList
     {
         if (drawCall.Pso is null)
         {
-            throw new ArgumentException(Resources.GORGFX_ERR_DRAW_NEEDS_PSO, nameof(drawCall));
+            throw new ArgumentException(Resources.GORGFX_ERR_NEEDS_PSO, nameof(drawCall));
         }
 
         if (drawCall.InstanceCount < 1)
         {
             Graphics.Log.PrintWarning($"The draw call requires at least 1 instance value. The number of instances are {drawCall.InstanceCount}. Nothing will be drawn.", LoggingLevel.Simple);
+            return false;
+        }
+
+        return true;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private bool ValidateDispatchCall(GorgonDispatchCall dispatchCall)
+    {
+        if (dispatchCall.Pso is null)
+        {
+            throw new ArgumentException(Resources.GORGFX_ERR_NEEDS_PSO, nameof(dispatchCall));
+        }
+
+        if ((dispatchCall.ThreadXGroupCount > D3D12.D3D12_CS_DISPATCH_MAX_THREAD_GROUPS_PER_DIMENSION) || (dispatchCall.ThreadYGroupCount > D3D12.D3D12_CS_DISPATCH_MAX_THREAD_GROUPS_PER_DIMENSION) || (dispatchCall.ThreadZGroupCount > D3D12.D3D12_CS_DISPATCH_MAX_THREAD_GROUPS_PER_DIMENSION))
+        {
+            throw new ArgumentException(string.Format(Resources.GORGFX_ERR_DISPATCH_THREADGROUP_COUNT_TOO_HIGH, D3D12.D3D12_CS_DISPATCH_MAX_THREAD_GROUPS_PER_DIMENSION, dispatchCall.ThreadXGroupCount, dispatchCall.ThreadYGroupCount, dispatchCall.ThreadZGroupCount), nameof(dispatchCall));
+        }
+
+        if ((dispatchCall.ThreadXGroupCount < 1) || (dispatchCall.ThreadYGroupCount < 1) || (dispatchCall.ThreadZGroupCount < 1))
+        {
+            Graphics.Log.PrintWarning($"The dispatch call requires at least 1 thread group count value for each dimension. The number of thread groups are {dispatchCall.ThreadXGroupCount}x{dispatchCall.ThreadYGroupCount}x{dispatchCall.ThreadZGroupCount}. Nothing will be executed.", LoggingLevel.Simple);
             return false;
         }
 
@@ -654,6 +708,37 @@ public sealed unsafe class GorgonCommandList
     /// <exception cref="ObjectDisposedException">Thrown if the commands buffer is disposed.</exception>
     /// <exception cref="ArgumentException">Thrown if the range of commands to execute, or the counter index used for GPU rendering, is out of range.</exception>
     private static void ValidateExecuteCall(GorgonExecuteCallCommon executeCall)
+    {
+        if (executeCall.Commands.IsDisposed)
+        {
+            throw new ObjectDisposedException(nameof(GorgonExecuteBuffer), string.Format(Resources.GORGFX_ERR_BUFFER_DISPOSED, executeCall.Commands.Name));
+        }
+
+        if ((executeCall.CommandExecutionStartIndex < 0) || (executeCall.CommandExecutionCount < 0)
+            || ((executeCall.CommandExecutionStartIndex + executeCall.CommandExecutionCount) > executeCall.CommandCount))
+        {
+            throw new ArgumentException(string.Format(Resources.GORGFX_ERR_EXECUTE_RANGE_INVALID, executeCall.CommandExecutionStartIndex, executeCall.CommandExecutionCount, executeCall.CommandCount),
+                                        nameof(executeCall));
+        }
+
+        if (executeCall.Usage != ExecuteUsage.GpuRendering)
+        {
+            return;
+        }
+
+        if ((executeCall.CounterIndex < 0) || (executeCall.CounterIndex >= executeCall.CounterCount))
+        {
+            throw new ArgumentException(string.Format(Resources.GORGFX_ERR_EXECUTE_COUNTER_INDEX_INVALID, executeCall.CounterIndex, executeCall.CounterCount), nameof(executeCall));
+        }
+    }
+
+    /// <summary>
+    /// Function to validate the state of an execute call before it is executed.
+    /// </summary>
+    /// <param name="executeCall">The execute call to validate.</param>
+    /// <exception cref="ObjectDisposedException">Thrown if the commands buffer is disposed.</exception>
+    /// <exception cref="ArgumentException">Thrown if the range of commands to execute, or the counter index used for GPU rendering, is out of range.</exception>
+    private static void ValidateExecuteCall(GorgonComputeExecuteCall executeCall)
     {
         if (executeCall.Commands.IsDisposed)
         {
@@ -737,7 +822,11 @@ public sealed unsafe class GorgonCommandList
         };
 
         _list.Get()->SetDescriptorHeaps(2, heaps);
-        _list.Get()->SetGraphicsRootSignature(rootSignature.Get());
+        if (Queue.Type == D3D12_COMMAND_LIST_TYPE.D3D12_COMMAND_LIST_TYPE_DIRECT)
+        {
+            _list.Get()->SetGraphicsRootSignature(rootSignature.Get());
+        }
+        _list.Get()->SetComputeRootSignature(rootSignature.Get());
     }
 
     /// <summary>
@@ -806,7 +895,7 @@ public sealed unsafe class GorgonCommandList
     /// <param name="resource">The resource to track.</param>
     /// <remarks>
     /// <para>
-    /// The reference is taken by <see cref="CommitTracking"/>, not here. Taking it here would need a lock and an AddRef (both are locked instructions), and a locked
+    /// The reference is taken by <see cref="CommitTracking"/>, not here. Taking it here would need a lock and an AddRef (both are locked instructions), and a locked 
     /// instruction flushes the CPU write combining buffers, stalling every upload memory write that follows it in the draw loop.
     /// </para>
     /// </remarks>
@@ -854,7 +943,6 @@ public sealed unsafe class GorgonCommandList
     /// </summary>
     /// <param name="newName">The new name for the list.</param>
     /// <param name="allocator">The allocator used by the list.</param>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal void ResetState(string newName, CommandAllocator? allocator)
     {
         Name = newName;
@@ -863,6 +951,7 @@ public sealed unsafe class GorgonCommandList
         BarrierManager.Clear();
         _currentIndexBuffer = null;
         _currentPso = null;
+        _currentComputePso = null;
         _constantHeap = null;
         _trackedResources.Clear();
         _dirtyRootConstants = 0;
@@ -1059,7 +1148,7 @@ public sealed unsafe class GorgonCommandList
         // Apply pending barrier calls.
         ApplyBufferBarriers(drawCall.UsedBuffers);
         ApplyTextureBarriers(drawCall.UsedTextures);
-        ApplyConstantWrites();
+        ApplyConstantWrites(false);
         ApplyRenderTargets();
         ApplyPso(drawCall.Pso);
         ApplyViewSetup();
@@ -1087,7 +1176,7 @@ public sealed unsafe class GorgonCommandList
     /// <see cref="GorgonVideoAdapterInfo.SupportsExtendedCommandInfo"/>), or receives them through a constant. Negative start index and start instance values are treated as 0.
     /// </para>
     /// <para>
-    /// If the instance count is less than 1, nothing is drawn, and a warning is written to the log.
+    /// If the index count or the instance count is less than 1, nothing is drawn, and a warning is written to the log.
     /// </para>
     /// </remarks>
     /// <seealso cref="GorgonIndexedDrawCall"/>
@@ -1104,9 +1193,9 @@ public sealed unsafe class GorgonCommandList
             throw new ArgumentException(Resources.GORGFX_ERR_DRAW_INDEXED_NEEDS_INDEXBUFFER, nameof(drawCall));
         }
 
-        if (drawCall.InstanceCount < 1)
+        if (drawCall.IndexCount < 1)
         {
-            Graphics.Log.PrintWarning($"The draw indexed call requires at least 1 instance value. The number of instances are {drawCall.InstanceCount}. Nothing will be drawn.", LoggingLevel.Simple);
+            Graphics.Log.PrintWarning($"The draw indexed call requires at least 1 index in its index count. The number of indices are {drawCall.IndexCount}. Nothing will be drawn.", LoggingLevel.Simple);
             return;
         }
 
@@ -1114,7 +1203,7 @@ public sealed unsafe class GorgonCommandList
         ApplyBufferBarriers(drawCall.UsedBuffers);
         ApplyTextureBarriers(drawCall.UsedTextures);
         ApplyIndexBuffer(drawCall.IndexBuffer);
-        ApplyConstantWrites();
+        ApplyConstantWrites(false);
         ApplyRenderTargets();
         ApplyPso(drawCall.Pso);
         ApplyViewSetup();
@@ -1179,7 +1268,7 @@ public sealed unsafe class GorgonCommandList
         // Apply pending barrier calls.
         ApplyBufferBarriers(executeCall.UsedBuffers);
         ApplyTextureBarriers(executeCall.UsedTextures);
-        ApplyConstantWrites();
+        ApplyConstantWrites(false);
         ApplyRenderTargets();
         ApplyPso(executeCall.Pso);
         ApplyViewSetup();
@@ -1229,10 +1318,76 @@ public sealed unsafe class GorgonCommandList
         ApplyBufferBarriers(executeCall.UsedBuffers);
         ApplyTextureBarriers(executeCall.UsedTextures);
         ApplyIndexBuffer(executeCall.IndexBuffer);
-        ApplyConstantWrites();
+        ApplyConstantWrites(false);
         ApplyRenderTargets();
         ApplyPso(executeCall.Pso);
         ApplyViewSetup();
+
+        BarrierManager.Submit(this);
+
+        _list.Get()->ExecuteIndirect(executeCall.D3DCommandSignature.Get(), (uint)executeCall.CommandExecutionCount, (PID3D12Resource2)executeCall.Commands.D3DResource.Get(),
+                                    ((ulong)executeCall.CommandExecutionStartIndex * (uint)executeCall.CommandSizeInBytes) + executeCall.Commands.ResourceOffset,
+                                    countBuffer, countOffset);
+    }
+
+    /// <summary>
+    /// Function to execute the dispatch commands in a compute execute call.
+    /// </summary>
+    /// <param name="executeCall">The execute call containing the commands, and the state used to execute them.</param>
+    /// <exception cref="ObjectDisposedException">Thrown if the <see cref="GorgonComputeExecuteCall.Commands"/> buffer is disposed.</exception>
+    /// <exception cref="ArgumentException"><para>
+    /// Thrown if the range of commands set by the <see cref="GorgonComputeExecuteCall.CommandExecutionStartIndex"/> and <see cref="GorgonComputeExecuteCall.CommandExecutionCount"/> is outside of the commands 
+    /// in the <see cref="GorgonComputeExecuteCall.Commands"/> buffer.
+    /// </para>
+    /// <para>
+    /// Thrown if the <see cref="GorgonComputeExecuteCall.Usage"/> is <see cref="ExecuteUsage.GpuRendering"/>, and the <see cref="GorgonComputeExecuteCall.CounterIndex"/> is outside of the counters in the 
+    /// <see cref="GorgonComputeExecuteCall.Commands"/> buffer.
+    /// </para>
+    /// </exception>
+    /// <remarks>
+    /// <para type="execute">
+    /// This runs the <see cref="GorgonComputeExecuteCall.CommandExecutionCount"/> commands in the <see cref="GorgonComputeExecuteCall.Commands"/> buffer, starting at the 
+    /// <see cref="GorgonComputeExecuteCall.CommandExecutionStartIndex"/>. When the <see cref="GorgonComputeExecuteCall.Usage"/> is <see cref="ExecuteUsage.GpuRendering"/>, the number of commands run is the 
+    /// lesser of the <see cref="GorgonComputeExecuteCall.CommandExecutionCount"/>, and the value of the counter selected by the <see cref="GorgonComputeExecuteCall.CounterIndex"/>.
+    /// </para>
+    /// <para type="execute">
+    /// Like a dispatch call, every command uses the state on the execute call, along with the constants set on this command list. Every command in the buffer must contain its root constants, followed by 
+    /// the three thread group counts. See <see cref="GorgonComputeExecuteCall"/> for the layout of a command.
+    /// </para>
+    /// <para type="execute">
+    /// <note type="important">
+    /// <para>
+    /// Once the call is executed, the root constants set by its commands are reset to 0. Dispatches recorded after the call that read those constants will receive 0.
+    /// </para>
+    /// </note>
+    /// </para>
+    /// <para>
+    /// On a graphics command list, the commands run on the graphics queue, in order with the other commands recorded on the command list. To run compute work on its own queue, use a 
+    /// <see cref="GorgonComputeCommandList"/> from the <see cref="GorgonComputeEngine"/> instead.
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="GorgonComputeExecuteCall"/>
+    /// <seealso cref="GorgonExecuteBuffer"/>
+    public void Execute(GorgonComputeExecuteCall executeCall)
+    {
+        ValidateExecuteCall(executeCall);
+
+        ID3D12Resource* countBuffer = null;
+        ulong countOffset = 0;
+
+        if (executeCall.Usage == ExecuteUsage.GpuRendering)
+        {
+            countBuffer = (PID3D12Resource2)executeCall.Commands.D3DResource.Get();
+            countOffset = executeCall.Commands.CountersOffset + ((ulong)executeCall.CounterIndex * sizeof(uint));
+        }
+
+        SetBarrier(executeCall.Commands, BarrierSync.ExecuteIndirect, BarrierAccess.IndirectArgument);
+
+        // Apply pending barrier calls.
+        ApplyBufferBarriers(executeCall.UsedBuffers);
+        ApplyTextureBarriers(executeCall.UsedTextures);
+        ApplyConstantWrites(true);
+        ApplyComputePso(executeCall.Pso);
 
         BarrierManager.Submit(this);
 
@@ -1258,9 +1413,6 @@ public sealed unsafe class GorgonCommandList
     /// </para>
     /// <para>
     /// Adding a swap chain that has already been added to this command list only changes its <paramref name="interval"/>.
-    /// </para>
-    /// <para>
-    /// The default value for the <paramref name="interval"/> parameter is 0.
     /// </para>
     /// </remarks>
     /// <seealso cref="GorgonSwapChain"/>
@@ -1306,9 +1458,6 @@ public sealed unsafe class GorgonCommandList
     /// <para>
     /// The rectangles are in pixels of the back buffer.
     /// </para>
-    /// <para>
-    /// The default value for the <paramref name="clearRects"/> parameter is <b>null</b>.
-    /// </para>
     /// </remarks>
     /// <seealso cref="GorgonSwapChain"/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1332,9 +1481,6 @@ public sealed unsafe class GorgonCommandList
     /// </para>
     /// <inheritdoc cref="ClearReadWriteView(GorgonTextureRwView, Vector128{int}, IReadOnlyList{GorgonRectangle}?)" path="/remarks/para[@type='texture_rects']"/>
     /// <inheritdoc cref="ClearReadWriteView(GorgonTextureRwView, Vector128{int}, IReadOnlyList{GorgonRectangle}?)" path="/remarks/para[@type='rect_coordinates']"/>
-    /// <para>
-    /// The default value for the <paramref name="clearRects"/> parameter is <b>null</b>.
-    /// </para>
     /// </remarks>
     /// <seealso cref="GorgonRenderTargetView"/>
     public GorgonCommandList ClearRenderTarget(GorgonRenderTargetView renderTarget, GorgonColor color, IReadOnlyList<GorgonRectangle>? clearRects = null)
@@ -1387,9 +1533,6 @@ public sealed unsafe class GorgonCommandList
     /// </para>
     /// <inheritdoc cref="ClearReadWriteView(GorgonTextureRwView, Vector128{int}, IReadOnlyList{GorgonRectangle}?)" path="/remarks/para[@type='texture_rects']"/>
     /// <inheritdoc cref="ClearReadWriteView(GorgonTextureRwView, Vector128{int}, IReadOnlyList{GorgonRectangle}?)" path="/remarks/para[@type='rect_coordinates']"/>
-    /// <para>
-    /// The default value for the <paramref name="clearRects"/> parameter is <b>null</b>.
-    /// </para>
     /// </remarks>
     /// <seealso cref="GorgonDepthStencilView"/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1408,9 +1551,6 @@ public sealed unsafe class GorgonCommandList
     /// <inheritdoc cref="ClearDepthStencil(GorgonDepthStencilView, float, byte, IReadOnlyList{GorgonRectangle}?)" path="/remarks/para[@type='depth_range']"/>
     /// <inheritdoc cref="ClearReadWriteView(GorgonTextureRwView, Vector128{int}, IReadOnlyList{GorgonRectangle}?)" path="/remarks/para[@type='texture_rects']"/>
     /// <inheritdoc cref="ClearReadWriteView(GorgonTextureRwView, Vector128{int}, IReadOnlyList{GorgonRectangle}?)" path="/remarks/para[@type='rect_coordinates']"/>
-    /// <para>
-    /// The default value for the <paramref name="clearRects"/> parameter is <b>null</b>.
-    /// </para>
     /// </remarks>
     /// <seealso cref="GorgonDepthStencilView"/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1431,9 +1571,6 @@ public sealed unsafe class GorgonCommandList
     /// </para>
     /// <inheritdoc cref="ClearReadWriteView(GorgonTextureRwView, Vector128{int}, IReadOnlyList{GorgonRectangle}?)" path="/remarks/para[@type='texture_rects']"/>
     /// <inheritdoc cref="ClearReadWriteView(GorgonTextureRwView, Vector128{int}, IReadOnlyList{GorgonRectangle}?)" path="/remarks/para[@type='rect_coordinates']"/>
-    /// <para>
-    /// The default value for the <paramref name="clearRects"/> parameter is <b>null</b>.
-    /// </para>
     /// </remarks>
     /// <seealso cref="GorgonDepthStencilView"/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1512,9 +1649,6 @@ public sealed unsafe class GorgonCommandList
     /// <para type="rect_coordinates">
     /// The rectangles are in pixels of the mip level being viewed. When the view covers more than one array index, the rectangles are cleared on every array index in the view.
     /// </para>
-    /// <para>
-    /// The default value for the <paramref name="clearRects"/> parameter is <b>null</b>.
-    /// </para>
     /// </remarks>
     public GorgonCommandList ClearReadWriteView(GorgonTextureRwView view, Vector128<int> values, IReadOnlyList<GorgonRectangle>? clearRects = null)
     {
@@ -1558,9 +1692,6 @@ public sealed unsafe class GorgonCommandList
     /// <inheritdoc cref="ClearReadWriteView(GorgonTypedBufferRwView, Vector4)" path="/remarks/para[@type='float_conversion']"/>
     /// <inheritdoc cref="ClearReadWriteView(GorgonTextureRwView, Vector128{int}, IReadOnlyList{GorgonRectangle}?)" path="/remarks/para[@type='texture_rects']"/>
     /// <inheritdoc cref="ClearReadWriteView(GorgonTextureRwView, Vector128{int}, IReadOnlyList{GorgonRectangle}?)" path="/remarks/para[@type='rect_coordinates']"/>
-    /// <para>
-    /// The default value for the <paramref name="clearRects"/> parameter is <b>null</b>.
-    /// </para>
     /// </remarks>
     public GorgonCommandList ClearReadWriteView(GorgonTextureRwView view, Vector4 values, IReadOnlyList<GorgonRectangle>? clearRects = null)
     {
@@ -1593,51 +1724,7 @@ public sealed unsafe class GorgonCommandList
         return this;
     }
 
-    /// <summary>
-    /// Function to reset the usage for the specified textures.
-    /// </summary>
-    /// <param name="textures">The list of textures that need their usage state reset.</param>
-    /// <inheritdoc cref="AddPresenter" path="/returns"/>
-    /// <exception cref="GorgonException">
-    /// <inheritdoc cref="SetBarrier(GorgonTextureCommon, BarrierSync, BarrierAccess, BarrierLayout, GorgonSubResourceRange?, bool, bool)" path="/exception/para[@type='barrier_issue']"/>
-    /// </exception>
-    /// <remarks>
-    /// <para>
-    /// When a texture is used in a command list on the <see cref="GorgonGraphics"/>, <see cref="GorgonResourceCopier"/> (directly), or the <see cref="GorgonComputeEngine"/> objects, it will be put into a 
-    /// state that provides optimal usage for the GPU. 
-    /// </para>
-    /// <para>
-    /// Because of this, the state of the object will need to be reset before using it on a different <see cref="GorgonGraphics"/>, <see cref="GorgonResourceCopier"/>, or the 
-    /// <see cref="GorgonComputeEngine"/> objects, otherwise an exception will be thrown when it is used without resetting it to a generalized state.
-    /// </para>
-    /// <para>
-    /// This is required because the GPU can have metadata on a resource that can be used to help with rendering, or other operations. Unfortunately that metadata, makes the resource unusable for other 
-    /// operations like copying, or use as a read/write resource. So, the resource needs to be put back into a general state before it can be consumed in those operations.
-    /// </para>
-    /// <para>
-    /// The whole texture behind each view is reset, not only the sub resources that the view covers.
-    /// </para>
-    /// <para>
-    /// <note type="important">
-    /// <para>
-    /// Any texture that has been reset cannot be used again by any command list passed to the same <see cref="GorgonGraphics.Submit(ReadOnlySpan{GorgonCommandList})"/> call, including the command list
-    /// that reset it. When the texture has been reset, we are telling the GPU that there is no intention to use the texture again until those command lists have been submitted. Use the texture in a
-    /// command list for a later submit, or on the object it was reset for.
-    /// </para>
-    /// </note>
-    /// </para>
-    /// <para>
-    /// <note type="warning">
-    /// <para>
-    /// The reset operation <b>must</b> be called on a command list from the correct object. So, if the resource was last used by a command list from a <see cref="GorgonGraphics"/> object, then only a command 
-    /// list from that object can reset the resource, otherwise an exception will be thrown.
-    /// </para>    
-    /// </note>
-    /// </para>
-    /// </remarks>
-    /// <seealso cref="GorgonGraphics"/>
-    /// <seealso cref="GorgonResourceCopier"/>
-    /// <seealso cref="GorgonComputeEngine"/>
+    /// <inheritdoc/>
     public GorgonCommandList Reset(ReadOnlySpan<IGorgonTextureView<GorgonTextureCommon>> textures)
     {
         if (textures.Length == 0)
@@ -1964,73 +2051,11 @@ public sealed unsafe class GorgonCommandList
         return this;
     }
 
-    /// <summary>
-    /// Function to set a barrier on a texture to enforce synchronization.
-    /// </summary>
-    /// <param name="texture">The texture to assign the barrier to.</param>
-    /// <param name="sync">The new synchronization state for the barrier.</param>
-    /// <param name="access">The new access level for the barrier.</param>
-    /// <param name="layout">The new layout for the texture data.</param>
-    /// <param name="subResources">[Optional] The sub resources on the texture to apply the barrier to, or <b>null</b> to apply it to the whole texture.</param>
-    /// <param name="discard">[Optional] <b>true</b> to discard the current contents of the texture, <b>false</b> to keep them.</param>
-    /// <param name="force">[Optional] <b>true</b> to apply the queued barriers right away, <b>false</b> to wait until they are needed.</param>
-    /// <inheritdoc cref="AddPresenter" path="/returns"/>
-    /// <exception cref="GorgonException">
-    /// <para type="barrier_issue">Thrown if a resource was previously used in a command list on one of the Gorgon root objects (<see cref="GorgonGraphics"/>, <see cref="GorgonResourceCopier"/>, or 
-    /// <see cref="GorgonComputeEngine"/>) and was left in a usage state that is incompatible with the root object that is currently trying to use the resource.</para>
-    /// <para type="barrier_issue">Thrown if a resource was previously reset on a command list, and then used again before the command list was submitted.</para>
-    /// </exception>
-    /// <remarks>
-    /// <para type="barrier">
-    /// Most operations in Gorgon apply the barriers for their resources automatically. However, there may be times when an application needs a more optimal barrier strategy, or Gorgon cannot set the barriers 
-    /// correctly. This method allows applications to set barriers themselves.
-    /// </para>
-    /// <para type="barrier">
-    /// <note type="information">
-    /// <para><h3>What is a barrier? What is it for?</h3></para>
-    /// <para>
-    /// Modern GPUs may require their resources to be in specific states (e.g. compressed, uncompressed, etc...) before they are used, and they also run operations in parallel. To prevent hazards for 
-    /// read-after-write, write-after-read, and write-after-write operations, applications provide barriers to indicate that they intend to perform a certain action, requiring certain access types and data 
-    /// layout. This allows the GPU to perform the operations required to ensure the data is synchronized.
-    /// </para>
-    /// <para>
-    /// For more detailed information, please refer to the <a href="https://microsoft.github.io/DirectX-Specs/d3d/D3D12EnhancedBarriers.html" target="_blank">Direct3D 12 Enhanced Barriers specification</a>.
-    /// </para>
-    /// </note>
-    /// </para>
-    /// <para type="barrier">
-    /// The synchronization bits in the <paramref name="sync"/> parameter indicate the work that must finish, or wait, around the barrier. These bits can be combined to provide multiple synchronization types.
-    /// </para>
-    /// <para type="barrier">
-    /// The access bits in the <paramref name="access"/> parameter indicate how the resource will be accessed after the barrier. Since GPUs cache many of their write operations, this allows the GPU to ensure 
-    /// that the caches are correctly flushed. These bits can be combined to provide multiple access types.
-    /// </para>
-    /// <para type="TextureBarrier">
-    /// The <paramref name="layout"/> transition is for <see cref="GorgonTextureCommon"/> objects only. This value indicates the type of read/write operation being performed so the GPU can compress or 
-    /// decompress its data (depending on the GPU architecture).
-    /// </para>
-    /// <para type="TextureBarrier">
-    /// The barrier can be applied to sub resources of a <see cref="GorgonTextureCommon"/> by assigning a value to the <paramref name="subResources"/> parameter. If this value is omitted, then the barrier is 
-    /// applied to the entire texture. Applying the barrier to a range of sub resources lets the GPU work on another portion of the texture while working on the sub resources passed to this method.
-    /// </para>
-    /// <para type="TextureBarrier">
-    /// When the <paramref name="discard"/> parameter is <b>true</b>, the contents of the texture are discarded. This is only available for the first barrier on a <see cref="GorgonTextureCommon"/> resource.
-    /// </para>
-    /// <para type="barrier">
-    /// Barriers are queued, and applied right before the next operation on the command list that needs them (e.g. a draw, clear or copy). When the <paramref name="force"/> parameter is <b>true</b>, the queued 
-    /// barriers are applied immediately. Queuing the barriers until they are needed lets them be applied together, which is more efficient on some GPUs.
-    /// </para>
-    /// <para>
-    /// The default values are <b>null</b> for the <paramref name="subResources"/>, <b>false</b> for the <paramref name="discard"/>, and <b>false</b> for the <paramref name="force"/>.
-    /// </para>
-    /// </remarks>
-    /// <seealso cref="GorgonTexture"/>
-    /// <seealso cref="GorgonVirtualTexture"/>
-    /// <seealso cref="Reset(ReadOnlySpan{IGorgonTextureView{GorgonTextureCommon}})"/>
+    /// <inheritdoc/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public GorgonCommandList SetBarrier(GorgonTextureCommon texture, BarrierSync sync, BarrierAccess access, BarrierLayout layout, GorgonSubResourceRange? subResources = null, bool discard = false, bool force = false)
+    public GorgonCommandList SetBarrier(GorgonTextureCommon texture, BarrierSync sync, BarrierAccess access, BarrierLayout layout, GorgonSubResourceRange? subResources = null, bool force = false)
     {
-        BarrierManager.AddBarrier(this, texture, sync, access, layout, subResources, discard);
+        BarrierManager.AddBarrier(this, texture, sync, access, layout, subResources);
 
         if ((force) && (!BarrierManager.IsEmpty))
         {
@@ -2040,22 +2065,7 @@ public sealed unsafe class GorgonCommandList
         return this;
     }
 
-    /// <summary>
-    /// Function to set a barrier on a buffer to enforce synchronization.
-    /// </summary>
-    /// <param name="buffer">The buffer to assign the barrier to.</param>
-    /// <param name="sync"><inheritdoc cref="SetBarrier(GorgonTextureCommon, BarrierSync, BarrierAccess, BarrierLayout, GorgonSubResourceRange?, bool, bool)" path="/param[@name='sync']"/></param>
-    /// <param name="access"><inheritdoc cref="SetBarrier(GorgonTextureCommon, BarrierSync, BarrierAccess, BarrierLayout, GorgonSubResourceRange?, bool, bool)" path="/param[@name='access']"/></param>
-    /// <param name="force"><inheritdoc cref="SetBarrier(GorgonTextureCommon, BarrierSync, BarrierAccess, BarrierLayout, GorgonSubResourceRange?, bool, bool)" path="/param[@name='force']"/></param>
-    /// <inheritdoc cref="AddPresenter" path="/returns"/>
-    /// <remarks>
-    /// <inheritdoc cref="SetBarrier(GorgonTextureCommon, BarrierSync, BarrierAccess, BarrierLayout, GorgonSubResourceRange?, bool, bool)" path="/remarks/para[@type='barrier']"/>
-    /// <para>
-    /// The default value for the <paramref name="force"/> parameter is <b>false</b>.
-    /// </para>
-    /// </remarks>
-    /// <seealso cref="GorgonGpuBuffer"/>
-    /// <seealso cref="GorgonIndexBuffer"/>
+    /// <inheritdoc/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public GorgonCommandList SetBarrier(GorgonGpuBufferCommon buffer, BarrierSync sync, BarrierAccess access, bool force = false)
     {
@@ -2087,9 +2097,9 @@ public sealed unsafe class GorgonCommandList
     /// : register(b0)</c>, index 1 is <c>ConstantBuffer&lt;T&gt; cb : register(b1)</c>, and so on, up to a maximum of <see cref="GorgonGraphics.MaxRootCbvCount"/> slots.
     /// </para>
     /// <para>
-    /// The data is copied when this method is called, and is used by every draw and execute call recorded after it on this command list, until the slot is written again. The data is not kept between command 
-    /// lists, so each command list that needs it must write it again. This makes the method well suited to data that changes often (e.g. every frame, or every draw). For constant data that rarely changes, use 
-    /// a <see cref="GorgonConstantBufferView"/>.
+    /// The data is copied when this method is called, and is used by every draw, dispatch and execute call recorded after it on this command list, until the slot is written again. The data is not kept 
+    /// between command lists, so each command list that needs it must write it again. This makes the method well suited to data that changes often (e.g. every frame, or every draw or dispatch). For 
+    /// constant data that rarely changes, use a <see cref="GorgonConstantBufferView"/>.
     /// </para>
     /// </remarks>
     /// <example>
@@ -2174,7 +2184,7 @@ public sealed unsafe class GorgonCommandList
         _constantWriteData[index] = allocation;
 
         // Record the dirty state.
-        _dirtyRootConstants |= (ushort)(1 << index);
+        _dirtyRootConstants |= 0x10001u << index;
 
         return this;
     }
@@ -2192,14 +2202,11 @@ public sealed unsafe class GorgonCommandList
     /// <exception cref="GorgonException">Thrown if the <paramref name="upload"/> memory is no longer available for use.</exception>
     /// <remarks>
     /// <para>
-    /// Upload memory is written directly by the application (see <see cref="GorgonGpuUploadMemory(GorgonGraphics, long)"/>), so large amounts of data can be sent to a buffer without copying it into an intermediate array first. This 
-    /// method copies the whole <paramref name="upload"/> memory into the <paramref name="buffer"/>. To copy a portion of it, pass a slice of the memory (see 
+    /// Upload memory is written directly by the application (see <see cref="GorgonGpuUploadMemory(GorgonGraphics, long)"/>), so large amounts of data can be sent to a buffer without copying it into an 
+    /// intermediate array first. This method copies the whole <paramref name="upload"/> memory into the <paramref name="buffer"/>. To copy a portion of it, pass a slice of the memory (see 
     /// <see cref="GorgonGpuUploadMemory.Slice(long, long?)"/>).
     /// </para>
     /// <inheritdoc cref="CopyBuffer(GorgonGpuBufferCommon, GorgonGpuBufferCommon, long, long, long?)" path="/remarks/para[@type='list_gpu']"/>
-    /// <para>
-    /// The default value for the <paramref name="offset"/> parameter is 0.
-    /// </para>
     /// </remarks>
     /// <example>
     /// <para>
@@ -2399,9 +2406,6 @@ public sealed unsafe class GorgonCommandList
     /// <see cref="SetRenderTarget(GorgonRenderTargetView?, GorgonDepthStencilView?)"/>.
     /// </para>
     /// <inheritdoc cref="SetRenderTarget(GorgonRenderTargetView?, GorgonDepthStencilView?)" path="/remarks/para[@type='rt']"/>
-    /// <para>
-    /// The default value for the <paramref name="depthStencil"/> parameter is <b>null</b>.
-    /// </para>
     /// </remarks>
     /// <seealso cref="GorgonSwapChain"/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -2421,9 +2425,6 @@ public sealed unsafe class GorgonCommandList
     /// <para type="rt">
     /// The render targets and the depth/stencil view are used by every draw and execute call recorded after this call, until they are changed. The formats of the views must match the output formats of the 
     /// pipeline state object used to draw (see <see cref="GorgonGraphicsPso.OutputFormats"/>).
-    /// </para>
-    /// <para>
-    /// The default value for the <paramref name="depthStencil"/> parameter is <b>null</b>.
     /// </para>
     /// </remarks>
     /// <seealso cref="RenderTargets"/>
@@ -2481,9 +2482,6 @@ public sealed unsafe class GorgonCommandList
     /// empty span removes all of the render targets.
     /// </para>
     /// <inheritdoc cref="SetRenderTarget(GorgonRenderTargetView?, GorgonDepthStencilView?)" path="/remarks/para[@type='rt']"/>
-    /// <para>
-    /// The default value for the <paramref name="depthStencil"/> parameter is <b>null</b>.
-    /// </para>
     /// </remarks>
     /// <seealso cref="RenderTargets"/>
     /// <seealso cref="DepthStencil"/>
@@ -2656,8 +2654,9 @@ public sealed unsafe class GorgonCommandList
     /// </exception>
     /// <remarks>
     /// <para>
-    /// Use this method when the query data is needed on the GPU, for example to be read by a shader. The records are written one after another, starting at the <paramref name="destinationOffset"/>, and each 
-    /// record is the size described by the <see cref="GorgonQuery.MaximumRecordCount"/> property. The <paramref name="destinationOffset"/> must be a multiple of 8 bytes.
+    /// Use this method when the query data is needed on the GPU, for example to be read by a shader. The records are written one after another, starting at the <paramref name="destinationOffset"/>. Each 
+    /// record is 8 bytes (a 64-bit unsigned integer), except for <see cref="QueryType.PipelineStatistics"/> queries, where each record is a <see cref="GorgonQueryPipelineStats"/> value. The 
+    /// <paramref name="destinationOffset"/> must be a multiple of 8 bytes.
     /// </para>
     /// <para>
     /// <note type="important">
@@ -2814,6 +2813,50 @@ public sealed unsafe class GorgonCommandList
     }
 
     /// <summary>
+    /// Function to dispatch thread groups to the compute shader described by a dispatch call.
+    /// </summary>
+    /// <param name="dispatchCall">The dispatch call that describes the thread groups to dispatch, and the state used to run them.</param>
+    /// <exception cref="ArgumentException">Thrown if the <see cref="GorgonDispatchCall.ThreadXGroupCount"/>, <see cref="GorgonDispatchCall.ThreadYGroupCount"/>, or 
+    /// <see cref="GorgonDispatchCall.ThreadZGroupCount"/> is greater than 65535.</exception>
+    /// <remarks>
+    /// <para type="dispatch">
+    /// The dispatch uses the pipeline state object and resources on the <paramref name="dispatchCall"/>, along with the constants set on this command list. Gorgon adds the barriers needed for the resources 
+    /// assigned to the dispatch call (see <see cref="GorgonComputeCallCommon.AssignBuffers(ReadOnlySpan{GorgonUsedBuffer})"/> and 
+    /// <see cref="GorgonComputeCallCommon.AssignTextures(ReadOnlySpan{GorgonUsedTexture})"/>) before the dispatch.
+    /// </para>
+    /// <para type="dispatch">
+    /// This dispatches <see cref="GorgonDispatchCall.ThreadXGroupCount"/> x <see cref="GorgonDispatchCall.ThreadYGroupCount"/> x <see cref="GorgonDispatchCall.ThreadZGroupCount"/> thread groups. The 
+    /// number of threads in each group is defined by the <c>numthreads</c> attribute on the compute shader.
+    /// </para>
+    /// <para type="dispatch">
+    /// If any of the thread group counts is less than 1, nothing is dispatched, and a warning is written to the log.
+    /// </para>
+    /// <para>
+    /// On a graphics command list, the dispatch runs on the graphics queue, in order with the other commands recorded on the command list. To run compute work on its own queue, use a 
+    /// <see cref="GorgonComputeCommandList"/> from the <see cref="GorgonComputeEngine"/> instead.
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="GorgonDispatchCall"/>
+    /// <seealso cref="GorgonComputePso"/>
+    public void Dispatch(GorgonDispatchCall dispatchCall)
+    {
+        if (!ValidateDispatchCall(dispatchCall))
+        {
+            return;
+        }
+
+        // Apply pending barrier calls.
+        ApplyBufferBarriers(dispatchCall.UsedBuffers);
+        ApplyTextureBarriers(dispatchCall.UsedTextures);
+        ApplyConstantWrites(true);
+        ApplyComputePso(dispatchCall.Pso);
+
+        BarrierManager.Submit(this);
+
+        D3DGraphicsCommandList.Get()->Dispatch((uint)dispatchCall.ThreadXGroupCount, (uint)dispatchCall.ThreadYGroupCount, (uint)dispatchCall.ThreadZGroupCount);
+    }
+
+    /// <summary>
     /// Initializes a new instance of a <see cref="GorgonCommandList"/> class.
     /// </summary>
     /// <param name="graphics">The graphics interface that owns this object.</param>
@@ -2825,7 +2868,7 @@ public sealed unsafe class GorgonCommandList
         Graphics = graphics;
         _megaBuffer = graphics.Memory.MegaBuffer;
         _textureTilePool = graphics.Memory.TextureTilePool;
-        _uploadHeaps = graphics.Memory.UploadHeaps;
+        _uploadHeaps = queue.UploadHeaps;
         _samplerDescriptors = Graphics.Descriptors.GpuSamplerDescriptors;
         _viewDescriptors = Graphics.Descriptors.GpuViewDescriptors;
         Queue = queue;

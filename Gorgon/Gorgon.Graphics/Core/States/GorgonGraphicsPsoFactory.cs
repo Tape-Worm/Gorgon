@@ -48,9 +48,9 @@ namespace Gorgon.Graphics.Core;
 /// creating a new one. The factory also keeps track of the shaders, and the rasterizer, blend, and depth/stencil states used by its pipeline state objects.
 /// </para>
 /// <para>
-/// Pipeline state objects remain in the factory until the <see cref="FlushCache"/> method is called, or the factory is disposed. Flushing the factory destroys the underlying state for every pipeline state 
-/// object it contains. If the application is still holding on to a pipeline state object after that happens, it can no longer be used to render. If the application does not dispose of the factory, then it 
-/// will be disposed when the <see cref="GorgonGraphics"/> interface it is associated with is disposed.
+/// Pipeline state objects remain in the factory until the <see cref="GorgonPsoFactoryCommon{GorgonGraphicsPso}.FlushCache"/> method is called, or the factory is disposed. Flushing the factory destroys 
+/// the underlying state for every pipeline state object it contains. If the application is still holding on to a pipeline state object after that happens, it can no longer be used to render. If the 
+/// application does not dispose of the factory, then it will be disposed when the <see cref="GorgonGraphics"/> interface it is associated with is disposed.
 /// </para>
 /// <para>
 /// The contents of the factory can be saved to a stream or file with a codec (e.g. <see cref="Codecs.GorgonCodecGraphicsPsoCache"/>), and loaded again at a later time. This avoids the cost of building the 
@@ -61,50 +61,12 @@ namespace Gorgon.Graphics.Core;
 /// <seealso cref="GorgonGraphicsPsoBuilder"/>
 /// <seealso cref="Codecs.GorgonCodecGraphicsPsoCache"/>
 public unsafe sealed class GorgonGraphicsPsoFactory
-    : IDisposable
+    : GorgonPsoFactoryCommon<GorgonGraphicsPso>
 {
     private readonly Lock _cacheLock = new();
-    private readonly Dictionary<string, GorgonGraphicsPso> _cache = new(StringComparer.OrdinalIgnoreCase);
-    private readonly HashSet<GorgonShader> _shaderCache = [];
     private readonly HashSet<GorgonRasterState> _rasterStates = [];
     private readonly HashSet<GorgonBlendState> _blendStates = [];
     private readonly HashSet<GorgonDepthStencilState> _depthStencilStates = [];
-
-    /// <summary>
-    /// Property to return the pipeline state objects that are stored in the factory.
-    /// </summary>
-    /// <remarks>
-    /// <para>
-    /// The pipeline state objects are keyed by name, and the names are not case sensitive.
-    /// </para>
-    /// <para>
-    /// <note type="warning">
-    /// <para>
-    /// The dictionary returned is not thread safe. Do not create PSOs, or flush the factory, in other threads while iterating through the dictionary.
-    /// </para>
-    /// </note>
-    /// </para>
-    /// </remarks>
-    /// <seealso cref="GorgonGraphicsPso"/>
-    public IReadOnlyDictionary<string, GorgonGraphicsPso> PipelineStateObjects => _cache;
-
-    /// <summary>
-    /// Property to return the graphics interface associated with this cache.
-    /// </summary>
-    public GorgonGraphics Graphics
-    {
-        get;
-    }
-
-    /// <inheritdoc cref="GorgonGraphicsFactory.Dispose(bool)"/>
-    private void Dispose(bool disposing)
-    {
-        if (disposing)
-        {
-            this.UnregisterDisposable(Graphics);
-            FlushCache();
-        }
-    }
 
     /// <summary>
     /// Function to retrieve the output formats for the PSO.
@@ -130,16 +92,8 @@ public unsafe sealed class GorgonGraphicsPsoFactory
         return new(new D3D12_RT_FORMAT_ARRAY(rtvFormats, (uint)formatCount));
     }
 
-    /// <summary>
-    /// Function to compile the pipeline state object.
-    /// </summary>
-    /// <param name="pso">The PSO to build from.</param>
-    /// <remarks>
-    /// <para>
-    /// This will rebuild the pipeline state object on the GPU and prepare it for use.
-    /// </para>
-    /// </remarks>
-    private void Compile(GorgonGraphicsPso pso)
+    /// <inheritdoc/>
+    private protected override void OnCompile(GorgonGraphicsPso pso)
     {
         ComPtr<ID3D12PipelineState> result = default;
         HRESULT err;
@@ -285,47 +239,32 @@ public unsafe sealed class GorgonGraphicsPsoFactory
         pso.PsoCachedBlob = blobPtr.ToSpan();
     }
 
-    /// <summary>
-    /// Function to add a shader to the shader cache list.
-    /// </summary>
-    /// <param name="shader">The shader to add.</param>
-    private void AddToShaderList(GorgonShader? shader)
+    /// <inheritdoc/>
+    private protected override void OnAddShaderToCache(GorgonGraphicsPso pso, HashSet<GorgonShader> shaderList)
     {
-        if (shader is null)
-        {
-            return;
-        }
-
-        _shaderCache.Add(shader);
-    }
-
-    /// <summary>
-    /// Function to add a PSO and its shaders to the cache.
-    /// </summary>
-    /// <param name="pso">The PSO with the shaders to add.</param>
-    /// <returns>The cache object.</returns>
-    private GorgonGraphicsPso Cache(GorgonGraphicsPso pso)
-    {
-        Debug.Assert(pso.VertexShader is not null, $"No vertex shader for pso {pso.Name}");
-
-        Compile(pso);
-
         using (_cacheLock.EnterScope())
         {
-            // Check to ensure that a thread hasn't already created our PSO.
-            if (_cache.TryGetValue(pso.Name, out GorgonGraphicsPso? existing))
+            shaderList.Add(pso.VertexShader);
+
+            if (pso.PixelShader is not null)
             {
-                pso.D3DPso.Dispose();
-                return existing;
+                shaderList.Add(pso.PixelShader);
             }
 
-            _cache[pso.Name] = pso;
+            if (pso.GeometryShader is not null)
+            {
+                shaderList.Add(pso.GeometryShader);
+            }
 
-            AddToShaderList(pso.VertexShader);
-            AddToShaderList(pso.PixelShader);
-            AddToShaderList(pso.GeometryShader);
-            AddToShaderList(pso.HullShader);
-            AddToShaderList(pso.DomainShader);
+            if (pso.HullShader is not null)
+            {
+                shaderList.Add(pso.HullShader);
+            }
+
+            if (pso.DomainShader is not null)
+            {
+                shaderList.Add(pso.DomainShader);
+            }
 
             _rasterStates.Add(pso.RasterizerState);
 
@@ -335,35 +274,32 @@ public unsafe sealed class GorgonGraphicsPsoFactory
             }
 
             _depthStencilStates.Add(pso.DepthStencilState);
-
-            return pso;
         }
     }
 
-    /// <summary>
-    /// Function to locate a cached shader by using its hash code and binary blob.
-    /// </summary>
-    /// <param name="hashCode">The hashcode of the shader to look up.</param>
-    /// <param name="blob">The binary blob to compare.</param>
-    /// <returns>A <see cref="GorgonShader"/> matching the hashcode and blob data, or <b>null</b> if no shader was found in the cache.</returns>
-    internal GorgonShader? FindShaderWithSignature(int hashCode, ReadOnlySpan<byte> blob)
+    /// <inheritdoc/>
+    private protected override void OnUnload(GorgonGraphicsPso pso)
+    {
+        if (!pso.IsCompiled)
+        {
+            return;
+        }
+
+        pso.D3DPso.Dispose();
+    }
+
+    /// <inheritdoc/>
+    private protected override void OnFlush()
     {
         using (_cacheLock.EnterScope())
         {
-            if (_shaderCache.Count == 0)
-            {
-                return null;
-            }
+            _rasterStates.Clear();
+            _blendStates.Clear();
+            _depthStencilStates.Clear();
 
-            foreach (GorgonShader cachedShader in _shaderCache)
-            {
-                if (cachedShader.CheckShaderBlob(hashCode, blob))
-                {
-                    return cachedShader;
-                }
-            }
-
-            return null;
+            _rasterStates.Add(GorgonRasterState.Default);
+            _blendStates.Add(GorgonBlendState.Default);
+            _depthStencilStates.Add(GorgonDepthStencilState.Default);
         }
     }
 
@@ -425,153 +361,26 @@ public unsafe sealed class GorgonGraphicsPsoFactory
     {
         ArgumentEmptyException.ThrowIfNullOrWhiteSpace(name);
 
-        GorgonGraphicsPso? result;
-
-        using (_cacheLock.EnterScope())
+        if (TryGetCachedPso(name, out GorgonGraphicsPso? result))
         {
-            if (_cache.TryGetValue(name, out result))
+            if (!builder.IsPsoDataSame(result, vertexShader))
             {
-                if (!builder.IsPsoDataSame(result, vertexShader))
-                {
-                    Graphics.Log.PrintWarning($"A PSO with the name of '{name}' is already cached, but has different settings than the builder. The cached PSO will be returned instead.", LoggingLevel.Intermediate);
-                }
-
-                if (!result.IsCompiled)
-                {
-                    Graphics.Log.PrintWarning($"The PSO '{name}' is cached and will be used, however it is not compiled yet. It will be compiled now, and may impact performance.", LoggingLevel.Verbose);
-                    Compile(result);
-                }
-
-                return result;
+                Graphics.Log.PrintWarning($"A PSO with the name of '{name}' is already cached, but has different settings than the builder. The cached PSO will be returned instead.", LoggingLevel.Intermediate);
             }
+
+            if (!result.IsCompiled)
+            {
+                Graphics.Log.PrintWarning($"The PSO '{name}' is cached and will be used, however it is not compiled yet. It will be compiled now, and may impact performance.", LoggingLevel.Verbose);
+                OnCompile(result);
+            }
+
+            return result;
         }
 
         result = builder.Build(name, vertexShader);
         result.PsoCachedBlob = psoBlob;
 
         return Cache(result);
-    }
-
-    /// <inheritdoc/>
-    public void Dispose()
-    {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
-
-    /// <summary>
-    /// Function to flush the factory, and remove all of the stored <see cref="GorgonGraphicsPso"/> objects, <see cref="GorgonShader"/> objects, and states.
-    /// </summary>
-    /// <remarks>
-    /// <para>
-    /// This will wait for the GPU to finish its work, and then destroy the underlying state for every <see cref="GorgonGraphicsPso"/> in the factory. If the application is still holding on to a 
-    /// <see cref="GorgonGraphicsPso"/> after this method is called, it can no longer be used to render, and its <see cref="GorgonGraphicsPso.IsCompiled"/> property will return <b>false</b>.
-    /// </para>
-    /// </remarks>
-    /// <seealso cref="GorgonGraphicsPso"/>
-    /// <seealso cref="GorgonShader"/>
-    public void FlushCache()
-    {
-        Graphics.Log.Print("Flushing the Pipeline State Object cache and Shader cache.", LoggingLevel.Simple);
-
-        using (_cacheLock.EnterScope())
-        {
-            if (_cache.Count == 0)
-            {
-                return;
-            }
-
-            Graphics.WaitForGpu();
-
-            foreach (GorgonGraphicsPso pso in _cache.Values)
-            {
-                ref ComPtr<ID3D12PipelineState> psoPtr = ref pso.D3DPso;
-                psoPtr.Dispose();
-            }
-
-            _cache.Clear();
-            _shaderCache.Clear();
-            _rasterStates.Clear();
-            _blendStates.Clear();
-            _depthStencilStates.Clear();
-
-            _rasterStates.Add(GorgonRasterState.Default);
-            _blendStates.Add(GorgonBlendState.Default);
-            _depthStencilStates.Add(GorgonDepthStencilState.Default);
-        }
-    }
-
-    /// <summary>
-    /// Function to determine if the requested <see cref="GorgonGraphicsPso"/> exists in the factory.
-    /// </summary>
-    /// <param name="psoName">The name of the PSO to look up.</param>
-    /// <returns><b>true</b> if the PSO is already cached, <b>false</b> if not.</returns>
-    /// <remarks>
-    /// <para>
-    /// The <paramref name="psoName"/> is not case sensitive. If the <paramref name="psoName"/> is empty, then this method will return <b>false</b>.
-    /// </para>
-    /// </remarks>
-    /// <seealso cref="GorgonGraphicsPso"/>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool HasPso(string psoName)
-    {
-        if (string.IsNullOrWhiteSpace(psoName))
-        {
-            return false;
-        }
-
-        using (_cacheLock.EnterScope())
-        {
-            return _cache.ContainsKey(psoName);
-        }
-    }
-
-    /// <summary>
-    /// Function to attempt to return a <see cref="GorgonGraphicsPso"/> from the factory.
-    /// </summary>
-    /// <param name="psoName">The name of the pipeline state object to return.</param>
-    /// <param name="pso">The resulting <see cref="GorgonGraphicsPso"/> if found, or <b>null</b> if not.</param>
-    /// <returns><b>true</b> if the <see cref="GorgonGraphicsPso"/> was found, or <b>false</b> if not.</returns>
-    /// <exception cref="ArgumentEmptyException">Thrown if the <paramref name="psoName"/> is empty.</exception>
-    /// <remarks>
-    /// <para>
-    /// The <paramref name="psoName"/> is not case sensitive.
-    /// </para>
-    /// </remarks>
-    /// <seealso cref="GorgonGraphicsPso"/>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool TryGetPso(string psoName, [NotNullWhen(true)] out GorgonGraphicsPso? pso)
-    {
-        ArgumentEmptyException.ThrowIfNullOrWhiteSpace(psoName);
-
-        using (_cacheLock.EnterScope())
-        {
-            return _cache.TryGetValue(psoName, out pso);
-        }
-    }
-
-    /// <summary>
-    /// Function to to return a <see cref="GorgonGraphicsPso"/> from the factory.
-    /// </summary>
-    /// <param name="psoName">The name of the pipeline state object to return.</param>
-    /// <returns>The pso in the factory..</returns>
-    /// <exception cref="ArgumentEmptyException">Thrown if the <paramref name="psoName"/> is empty.</exception>
-    /// <exception cref="KeyNotFoundException">Thrown if no PSO with the <paramref name="psoName"/> was found.</exception>
-    /// <remarks>
-    /// <para>
-    /// The <paramref name="psoName"/> is not case sensitive.
-    /// </para>
-    /// </remarks>
-    /// <seealso cref="GorgonGraphicsPso"/>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public GorgonGraphicsPso GetPso(string psoName)
-    {
-        ArgumentEmptyException.ThrowIfNullOrWhiteSpace(psoName);
-
-        using (_cacheLock.EnterScope())
-        {
-            return !_cache.TryGetValue(psoName, out GorgonGraphicsPso? pso) ? throw new KeyNotFoundException() : pso;
-        }
     }
 
     /// <inheritdoc cref="CreateOrGetPso(string, GorgonShader, GorgonGraphicsPsoBuilder, byte[])" path="/summary"/>
@@ -593,32 +402,6 @@ public unsafe sealed class GorgonGraphicsPsoFactory
     /// <seealso cref="GorgonGraphicsPsoBuilder"/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public GorgonGraphicsPso CreateOrGetPso(string name, GorgonShader vertexShader, GorgonGraphicsPsoBuilder builder) => CreateOrGetPso(name, vertexShader, builder, []);
-
-    /// <summary>
-    /// Function to iterate through the <see cref="GorgonGraphicsPso"/> objects in the factory, and find one based on the predicate filter passed.
-    /// </summary>
-    /// <param name="predicate">The predicate filter used to locate the pipeline state object.</param>
-    /// <returns>The first <see cref="GorgonGraphicsPso"/> object that matches the <paramref name="predicate"/>, or <b>null</b> if no match was found.</returns>
-    public GorgonGraphicsPso? FindPso(Func<GorgonGraphicsPso, bool> predicate)
-    {
-        using (_cacheLock.EnterScope())
-        {
-            if (_cache.Count == 0)
-            {
-                return null;
-            }
-
-            foreach (GorgonGraphicsPso pso in _cache.Values)
-            {
-                if (predicate(pso))
-                {
-                    return pso;
-                }
-            }
-
-            return null;
-        }
-    }
 
     /// <summary>
     /// Function to retrieve a copy of all of the raster states in the factory.
@@ -688,37 +471,16 @@ public unsafe sealed class GorgonGraphicsPsoFactory
     }
 
     /// <summary>
-    /// Function to retrieve a copy of the unique shaders used by all of the <see cref="GorgonGraphicsPso"/> objects in the factory.
-    /// </summary>
-    /// <returns>A dictionary containing each shader, and an index ID for that shader.</returns>
-    /// <inheritdoc cref="GetRasterStates" path="/remarks"/>
-    public Dictionary<GorgonShader, int> GetShaders()
-    {
-        using (_cacheLock.EnterScope())
-        {
-            Dictionary<GorgonShader, int> result = [];
-
-            int i = 0;
-            foreach (GorgonShader shader in _shaderCache)
-            {
-                result[shader] = i++;
-            }
-
-            return result;
-        }
-    }
-
-    /// <summary>
     /// Initializes a new instance of the <see cref="GorgonGraphicsPsoFactory"/> class.
     /// </summary>
     /// <param name="graphics">The graphics interface that is associated with this factory.</param>
     public GorgonGraphicsPsoFactory(GorgonGraphics graphics)
+        : base(graphics)
     {
-        Graphics = graphics;
-        this.RegisterDisposable(graphics);
-
         _rasterStates.Add(GorgonRasterState.Default);
         _blendStates.Add(GorgonBlendState.Default);
         _depthStencilStates.Add(GorgonDepthStencilState.Default);
+
+        this.RegisterDisposable(graphics);
     }
 }

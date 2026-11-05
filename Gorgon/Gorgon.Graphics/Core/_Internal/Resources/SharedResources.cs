@@ -96,6 +96,8 @@ internal sealed class SharedResources
     {
         ShaderCompiler = new GorgonShaderCompiler(graphics);
         ShaderCompiler.AddInclude(new GorgonShaderInclude(GorgonTextureBlitter.GorgonTextureBlitterShadersName, GorgonTextureBlitter.GorgonTextureBlitterShader));
+        // We take care of the disposal for this compiler on our own.
+        ShaderCompiler.UnregisterDisposable(graphics);
 
         CompileFlags flags = graphics.IsInDebugMode ? CompileFlags.Debug : CompileFlags.OptimizationLevel3;
 

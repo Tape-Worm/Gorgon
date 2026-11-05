@@ -163,9 +163,6 @@ public unsafe sealed class GorgonConstantBufferView
     /// The view returned by this method is read-only. The <paramref name="allowReadWriteAccess"/> parameter sets the <see cref="GorgonCommonBufferInfo.HasReadWriteAccess"/> property on the buffer, which 
     /// allows read/write views to be created from the <see cref="GorgonGpuBufferView.Buffer"/>.
     /// </para>
-    /// <para>
-    /// The default value for the <paramref name="allowReadWriteAccess"/> parameter is <b>false</b>.
-    /// </para>
     /// </remarks>
     /// <seealso cref="GorgonGpuBuffer"/>
     public static GorgonConstantBufferView CreateConstantBuffer(GorgonGraphics graphics, string name, long sizeInBytes, bool allowReadWriteAccess = false)

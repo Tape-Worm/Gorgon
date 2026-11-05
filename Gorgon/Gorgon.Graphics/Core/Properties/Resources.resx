@@ -573,8 +573,8 @@ Current: VendorID = {4}, SubSystemID = {5}, DeviceID = {6}, Revision = {7}.</val
   <data name="GORGFX_ERR_PSO_NO_SHADERS" xml:space="preserve">
     <value>The PSO '{0}' requires at least 1 shader, and it must be a vertex shader.</value>
   </data>
-  <data name="GORGFX_ERR_DRAW_NEEDS_PSO" xml:space="preserve">
-    <value>The draw object requires a pipeline state object.</value>
+  <data name="GORGFX_ERR_NEEDS_PSO" xml:space="preserve">
+    <value>The object requires a pipeline state object.</value>
   </data>
   <data name="GORGFX_ERR_DRAW_INDEXED_NEEDS_INDEXBUFFER" xml:space="preserve">
     <value>The draw indexed object needs an index buffer.</value>
@@ -690,7 +690,7 @@ The format {1} is {2} bits or the incorrect data type.</value>
     <value>The counter index {0} is outside of the {1} counters in the counters buffer.</value>
   </data>
   <data name="GORGFX_ERR_EXECUTE_BUFFER_INVALID" xml:space="preserve">
-    <value>The execute buffer '{0}' has {1} commands of {2} bytes, and {3} counters. It must have at least 1 command, a command size of at least 16 bytes that is a multiple of 4, and 0 or more counters.</value>
+    <value>The execute buffer '{0}' has {1} commands of {2} bytes, and {3} counters. It must have at least 1 command, a command size of at least 12 bytes that is a multiple of 4, and 0 or more counters.</value>
   </data>
   <data name="GORGFX_ERR_EXECUTE_BUFFER_NO_COUNTERS" xml:space="preserve">
     <value>The execute buffer '{0}' has no counters.</value>
@@ -715,5 +715,11 @@ The format {1} is {2} bits or the incorrect data type.</value>
   </data>
   <data name="GORGFX_ERR_ILLEGAL_QUEUE_ACCESS" xml:space="preserve">
     <value>An attempt to update the {0} queue was made after it was disposed. This means an object is still alive that should have been disposed.</value>
+  </data>
+  <data name="GORGFX_ERR_COMPUTE_QUERY_NOT_TIMESTAMP" xml:space="preserve">
+    <value>The compute engine can only execute timestamp queries.</value>
+  </data>
+  <data name="GORGFX_ERR_DISPATCH_THREADGROUP_COUNT_TOO_HIGH" xml:space="preserve">
+    <value>The maximum number for a dispatch thread group is {0}. The dispatch thread group counts are {1}x{2}x{3}.</value>
   </data>
 </root>

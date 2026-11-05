@@ -155,9 +155,6 @@ public unsafe sealed class GorgonIndexedExecuteCall
     /// bytes for the indexed draw arguments.
     /// </para>
     /// <inheritdoc cref="GorgonExecuteCall.CreateCpuRendering" path="/remarks/para[@type='constants']"/>
-    /// <para>
-    /// The default values are 0 for the <paramref name="constantStart"/>, and 0 for the <paramref name="constantCount"/>.
-    /// </para>
     /// </remarks>
     public static GorgonIndexedExecuteCall CreateCpuRendering(GorgonGraphicsPso pso, GorgonExecuteBuffer commands, GorgonIndexBuffer indexBuffer, int constantStart = 0, int constantCount = 0)
     {
@@ -180,9 +177,6 @@ public unsafe sealed class GorgonIndexedExecuteCall
     /// <inheritdoc cref="GorgonExecuteCall.CreateGpuRendering" path="/remarks/para[@type='gpu']"/>
     /// <inheritdoc cref="CreateCpuRendering" path="/remarks/para[@type='command_size']"/>
     /// <inheritdoc cref="GorgonExecuteCall.CreateCpuRendering" path="/remarks/para[@type='constants']"/>
-    /// <para>
-    /// The default values are 0 for the <paramref name="constantStart"/>, and 0 for the <paramref name="constantCount"/>.
-    /// </para>
     /// </remarks>
     public static GorgonIndexedExecuteCall CreateGpuRendering(GorgonGraphicsPso pso, GorgonExecuteBuffer commands, GorgonIndexBuffer indexBuffer, int constantStart = 0, int constantCount = 0)
     {

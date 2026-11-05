@@ -25,7 +25,7 @@
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// A list of supported values for a given format.
+/// The functionality supported by a format on the current device.
 /// </summary>
 /// <param name="Format">The format.</param>
 /// <param name="IsBufferFormat">Buffer resources supported.</param>
@@ -49,9 +49,9 @@ namespace Gorgon.Graphics.Core;
 /// <param name="SupportsMultisampleLoadInstruction">Format can be used as a multi-sampled texture and read into a shader with the HLSL Load function.</param>
 /// <param name="SupportsGatherInstruction">Format can be used with the HLSL gather function.</param>
 /// <param name="CanCastBackBufferResource">Format supports casting when the resource is a back buffer.</param>
-/// <param name="IsTypedReadWriteViewFormat">Format can be used for an read/write access view.</param>
+/// <param name="IsTypedReadWriteViewFormat">Format can be used for a typed read/write view.</param>
 /// <param name="SupportsShaderGatherCmpInstruction">Format can be used with the HLSL gather with comparison function.</param>
-/// <param name="IsDecoderFormat">Format can be used with the decoder output.</param>
+/// <param name="IsDecoderFormat">Format can be used with the video decoder output.</param>
 /// <param name="IsEncoderFormat">Format can be used with the video encoder.</param>
 /// <param name="IsVideoProcessorOutputFormat">Format can be used with the video processor output.</param>
 /// <param name="IsVideoProcessorInputFormat">Format can be used with the video processor input.</param>

@@ -62,12 +62,6 @@ public abstract unsafe class GorgonExecuteCallCommon
     private ComPtr<ID3D12CommandSignature> _d3dSignature;
 
     /// <summary>
-    /// Function to create the command signature for this call.
-    /// </summary>
-    /// <returns>The command signature.</returns>
-    private protected abstract ComPtr<ID3D12CommandSignature> CreateNative();
-
-    /// <summary>
     /// Property to return the underlying command signature for the call.
     /// </summary>
     internal ref readonly ComPtr<ID3D12CommandSignature> D3DCommandSignature => ref _d3dSignature;
@@ -285,6 +279,12 @@ public abstract unsafe class GorgonExecuteCallCommon
 
         return result;
     }
+
+    /// <summary>
+    /// Function to create the command signature for this call.
+    /// </summary>
+    /// <returns>The command signature.</returns>
+    private protected abstract ComPtr<ID3D12CommandSignature> CreateNative();
 
     /// <summary>
     /// Function to write the descriptions for the arguments that set the root constants from a command.

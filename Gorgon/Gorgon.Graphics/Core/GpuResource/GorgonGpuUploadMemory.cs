@@ -50,13 +50,15 @@ namespace Gorgon.Graphics.Core;
 /// </para>
 /// <para>
 /// Due to how Gorgon works internally, the data in transient GPU memory needs to be placed into a <see cref="GorgonGpuBuffer"/> so it can be used with the bindless mechanism. This is done by calling the 
-/// <see cref="GorgonCommandList.UploadGpuMemoryToBuffer(ref readonly GorgonGpuUploadMemory, GorgonGpuBufferCommon, long)"/> method on a <see cref="GorgonCommandList"/>.
+/// <see cref="GorgonCommandList.UploadGpuMemoryToBuffer(ref readonly GorgonGpuUploadMemory, GorgonGpuBufferCommon, long)"/> method on a <see cref="GorgonCommandList"/>, or the 
+/// <see cref="GorgonComputeCommandList.UploadGpuMemoryToBuffer(ref readonly GorgonGpuUploadMemory, GorgonGpuBufferCommon, long)"/> method on a <see cref="GorgonComputeCommandList"/>.
 /// </para>
 /// </remarks>
 /// <seealso cref="GorgonCommandList.UploadGpuMemoryToBuffer(ref readonly GorgonGpuUploadMemory, GorgonGpuBufferCommon, long)"/>
 /// <seealso cref="GorgonResourceCopier"/>
 /// <seealso cref="GorgonGpuBuffer"/>
 /// <seealso cref="GorgonCommandList"/>
+/// <seealso cref="GorgonComputeCommandList"/>
 public unsafe readonly ref struct GorgonGpuUploadMemory
 {
     /// <summary>
@@ -253,7 +255,31 @@ public unsafe readonly ref struct GorgonGpuUploadMemory
     public GorgonGpuUploadMemory(GorgonGraphics graphics, long size)
     {
         SizeInBytes = size;
-        graphics.Memory.UploadHeaps.Allocate((ulong)size, graphics.Adapter.HasTightAlignmentSupport ? 0 : D3D12.D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT, out Allocation);
+        graphics.Queues.GraphicsQueue.UploadHeaps.Allocate((ulong)size, graphics.Adapter.HasTightAlignmentSupport ? 0 : D3D12.D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT, out Allocation);
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GorgonGpuUploadMemory"/> value type.
+    /// </summary>
+    /// <param name="computeEngine">The compute engine interface associated with the upload memory.</param>
+    /// <param name="size">The size, in bytes, of the upload memory block.</param>
+    /// <remarks>
+    /// <para>
+    /// This allocates a block of transient GPU memory that the application writes into directly (e.g. with <see cref="WriteRange{T}(ReadOnlySpan{T}, long)"/>), and then copies into a buffer with 
+    /// <see cref="GorgonComputeCommandList.UploadGpuMemoryToBuffer(ref readonly GorgonGpuUploadMemory, GorgonGpuBufferCommon, long)"/>.
+    /// </para>
+    /// <para>
+    /// <note type="important">
+    /// <para>
+    /// The memory is transient, and is only available until the end of the current frame.
+    /// </para>
+    /// </note>
+    /// </para>
+    /// </remarks>
+    public GorgonGpuUploadMemory(GorgonComputeEngine computeEngine, long size)
+    {
+        SizeInBytes = size;
+        computeEngine.Queues.ComputeQueue.UploadHeaps.Allocate((ulong)size, computeEngine.Graphics.Adapter.HasTightAlignmentSupport ? 0 : D3D12.D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT, out Allocation);
     }
 
     /// <summary>

@@ -71,6 +71,7 @@ public unsafe sealed class GorgonResourceCopier
     private bool _hasDelayedWrites;
     private readonly CpuResourceHeapPool _uploadHeaps;
     private readonly CpuResourceHeapPool _downloadHeaps;
+    private readonly GorgonComputeEngine? _computeEngine;
 
     /// <summary>
     /// Property to return the graphics interface associated with this writer.
@@ -791,7 +792,7 @@ public unsafe sealed class GorgonResourceCopier
     private void ExecuteDownload()
     {
         Debug.Assert(_commandList is not null, "No command list to execute the download.");
-        CommandQueue copyQueue = Graphics.Queues.CopyQueue;
+        CommandQueue copyQueue = _commandList.Queue;
 
         // Finalize the command.
         try
@@ -803,7 +804,6 @@ public unsafe sealed class GorgonResourceCopier
         }
         finally
         {
-            _downloadHeaps.Signal();
             copyQueue.Tracker.Signal();
             copyQueue.AllocatorPool.Signal();
             copyQueue.ListPool.Return(_commandList);
@@ -845,11 +845,17 @@ public unsafe sealed class GorgonResourceCopier
         // This synchronously downloads the data from the GPU. It waits until the GPU is done with its
         // work before returning.  This safely allows us to capture the data into the destination.
         // TODO: Perhaps make an Async version? 
-        ExecuteDownload();
+        try
+        {
+            ExecuteDownload();
 
-        NativeMemory.Copy(allocation.CpuPointer, destination, (nuint)sizeInBytes);
-
-        Cleanup();
+            NativeMemory.Copy(allocation.CpuPointer, destination, (nuint)sizeInBytes);
+        }
+        finally
+        {
+            _downloadHeaps.Signal();
+            Cleanup();
+        }
     }
 
     /// <summary>
@@ -890,7 +896,7 @@ public unsafe sealed class GorgonResourceCopier
 
         if (!_hasDelayedWrites)
         {
-            Cleanup();
+            this.Cleanup();
             return Task.CompletedTask;
         }
 
@@ -898,28 +904,47 @@ public unsafe sealed class GorgonResourceCopier
 
         ulong fence = 0;
 
-        unsafe
+        void Cleanup(GorgonCommandList commandList)
         {
-            _commandQueue.Execute(_commandList);
-
-            fence = _commandQueue.IncrementFence();
+            commandList.Queue.Tracker.Signal();
+            commandList.Queue.UploadHeaps.Signal();
+            commandList.Queue.AllocatorPool.Signal();
+            commandList.Queue.ListPool.Return(commandList);
+            this.Cleanup();
         }
 
-        // Spin up a background task to wait for the GPU.
-        return Task.Run(() =>
+        void AsyncCallback(object? cl)
         {
+            (GorgonCommandList CommandList, ulong QueueFence)? data = ((GorgonCommandList, ulong)?)cl;
+            Debug.Assert(data is not null);
+
             try
             {
-                _commandQueue.WaitForFence(fence);
+                data.Value.CommandList.Queue.WaitForFence(data.Value.QueueFence);
             }
             finally
             {
-                _commandQueue.Tracker.Signal();
-                _commandQueue.AllocatorPool.Signal();
-                _commandQueue.ListPool.Return(_commandList);
-                Cleanup();
+                Cleanup(data.Value.CommandList);
             }
-        });
+        }
+
+        unsafe
+        {
+            try
+            {
+                _commandQueue.Execute(_commandList);
+
+                fence = _commandQueue.IncrementFence();
+            }
+            catch
+            {
+                Cleanup(_commandList);
+                throw;
+            }
+        }
+
+        // Spin up a background task to wait for the GPU.
+        return Task.Factory.StartNew(AsyncCallback, (_commandList, fence), CancellationToken.None, TaskCreationOptions.DenyChildAttach, TaskScheduler.Default);
     }
 
     /// <inheritdoc/>
@@ -938,16 +963,17 @@ public unsafe sealed class GorgonResourceCopier
 
         Debug.Assert(_commandList is not null && _commandAllocator is not null, "Command list and/or allocator are null.");
 
-        _commandQueue.Execute(_commandList);
-        ulong fence = _commandQueue.IncrementFence();
-
         try
         {
+            _commandQueue.Execute(_commandList);
+            ulong fence = _commandQueue.IncrementFence();
+
             _commandQueue.WaitForFence(fence);
         }
         finally
         {
             _commandQueue.Tracker.Signal();
+            _uploadHeaps.Signal();
             _commandQueue.AllocatorPool.Signal();
             _commandQueue.ListPool.Return(_commandList);
             Cleanup();
@@ -2007,6 +2033,7 @@ public unsafe sealed class GorgonResourceCopier
         }
         finally
         {
+            _downloadHeaps.Signal();
             Cleanup();
         }
     }
@@ -2069,7 +2096,6 @@ public unsafe sealed class GorgonResourceCopier
 
         try
         {
-
             PrepDownload();
 
             _commandList.TrackResource(texture.D3DResource);
@@ -2110,10 +2136,11 @@ public unsafe sealed class GorgonResourceCopier
 
             ExecuteDownload();
 
-            NativeMemory.Copy(allocation.CpuPointer, (void*)buffer.ImageData, (nuint)buffer.SizeInBytes);
+            NativeMemory.Copy(allocation.CpuPointer, (void*)buffer.ImageData, (nuint)buffer.SizeInBytes);            
         }
         finally
         {
+            _downloadHeaps.Signal();
             Cleanup();
         }
     }
@@ -2126,8 +2153,28 @@ public unsafe sealed class GorgonResourceCopier
     internal GorgonResourceCopier(GorgonGraphics graphics, GorgonCommandList list)
     {
         Graphics = graphics;
-        _uploadHeaps = Graphics.Memory.UploadHeaps;
-        _downloadHeaps = Graphics.Memory.DownloadHeaps;
+        _uploadHeaps = Graphics.Queues.GraphicsQueue.UploadHeaps;
+        _downloadHeaps = Graphics.Queues.GraphicsQueue.DownloadHeaps;
+        _batchState = int.MaxValue;
+        _commandAllocator = list.Allocator;
+        _commandList = list;
+        _commandQueue = list.Queue;
+
+        // Release any previous resources that may have been used in copy operations.
+        _commandQueue.Tracker.Signal();
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GorgonResourceCopier"/> class.
+    /// </summary>
+    /// <param name="computeEngine"><inheritdoc cref="GorgonResourceCopier(GorgonGraphics)" path="/param[@name='graphics']"/></param>
+    /// <param name="list">The pre-allocated command list to use for copying.</param>
+    internal GorgonResourceCopier(GorgonComputeEngine computeEngine, GorgonCommandList list)
+    {
+        Graphics = computeEngine.Graphics;
+        _computeEngine = computeEngine;
+        _uploadHeaps = computeEngine.Queues.ComputeQueue.UploadHeaps;
+        _downloadHeaps = computeEngine.Queues.ComputeQueue.DownloadHeaps;
         _batchState = int.MaxValue;
         _commandAllocator = list.Allocator;
         _commandList = list;
@@ -2144,8 +2191,8 @@ public unsafe sealed class GorgonResourceCopier
     internal GorgonResourceCopier(CommandQueue queue)
     {
         Graphics = queue.Graphics;
-        _uploadHeaps = Graphics.Memory.UploadHeaps;
-        _downloadHeaps = Graphics.Memory.DownloadHeaps;
+        _uploadHeaps = queue.UploadHeaps;
+        _downloadHeaps = queue.DownloadHeaps;
         _commandQueue = queue;
     }
 
@@ -2154,10 +2201,7 @@ public unsafe sealed class GorgonResourceCopier
     /// </summary>
     /// <param name="graphics">The graphics interface that is associated with this writer.</param>
     public GorgonResourceCopier(GorgonGraphics graphics)
+        : this(graphics.Queues.CopyQueue)
     {
-        Graphics = graphics;
-        _uploadHeaps = Graphics.Memory.UploadHeaps;
-        _downloadHeaps = Graphics.Memory.DownloadHeaps;
-        _commandQueue = Graphics.Queues.CopyQueue;
     }
 }

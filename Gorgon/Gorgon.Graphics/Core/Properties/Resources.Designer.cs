@@ -546,6 +546,15 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The compute engine can only execute timestamp queries..
+        /// </summary>
+        internal static string GORGFX_ERR_COMPUTE_QUERY_NOT_TIMESTAMP {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_COMPUTE_QUERY_NOT_TIMESTAMP", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The constant buffer &apos;{0}&apos; view is {1} bytes. The maximum size for a constant buffer view is 64KB (65,536 bytes)..
         /// </summary>
         internal static string GORGFX_ERR_CONSTANT_BUFFER_VIEW_TOO_LARGE {
@@ -638,6 +647,15 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The maximum number for a dispatch thread group is {0}. The dispatch thread group counts are {1}x{2}x{3}..
+        /// </summary>
+        internal static string GORGFX_ERR_DISPATCH_THREADGROUP_COUNT_TOO_HIGH {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_DISPATCH_THREADGROUP_COUNT_TOO_HIGH", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The number of indices must be at least 1..
         /// </summary>
         internal static string GORGFX_ERR_DRAW_INDEX_COUNT {
@@ -661,15 +679,6 @@ namespace Gorgon.Graphics.Core.Properties {
         internal static string GORGFX_ERR_DRAW_INSTANCE_COUNT {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_DRAW_INSTANCE_COUNT", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The draw object requires a pipeline state object..
-        /// </summary>
-        internal static string GORGFX_ERR_DRAW_NEEDS_PSO {
-            get {
-                return ResourceManager.GetString("GORGFX_ERR_DRAW_NEEDS_PSO", resourceCulture);
             }
         }
         
@@ -701,7 +710,7 @@ namespace Gorgon.Graphics.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The execute buffer &apos;{0}&apos; has {1} commands of {2} bytes, and {3} counters. It must have at least 1 command, a command size of at least 16 bytes that is a multiple of 4, and 0 or more counters..
+        ///   Looks up a localized string similar to The execute buffer &apos;{0}&apos; has {1} commands of {2} bytes, and {3} counters. It must have at least 1 command, a command size of at least 12 bytes that is a multiple of 4, and 0 or more counters..
         /// </summary>
         internal static string GORGFX_ERR_EXECUTE_BUFFER_INVALID {
             get {
@@ -1052,6 +1061,15 @@ namespace Gorgon.Graphics.Core.Properties {
         internal static string GORGFX_ERR_MULTISAMPLE_SOURCE_DEST_DIFFERENT {
             get {
                 return ResourceManager.GetString("GORGFX_ERR_MULTISAMPLE_SOURCE_DEST_DIFFERENT", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The object requires a pipeline state object..
+        /// </summary>
+        internal static string GORGFX_ERR_NEEDS_PSO {
+            get {
+                return ResourceManager.GetString("GORGFX_ERR_NEEDS_PSO", resourceCulture);
             }
         }
         

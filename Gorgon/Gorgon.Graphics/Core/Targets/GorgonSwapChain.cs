@@ -121,7 +121,7 @@ public unsafe sealed class GorgonSwapChain
     /// </summary>
     /// <remarks>
     /// <para>
-    /// When the swap chain is in windowed mode, this value returns <b>true</b>. To enter fullscreen mode and set this value to <b>false</b>, call the <see cref="EnterFullscreen"/> method. To return this
+    /// When the swap chain is in windowed mode, this value returns <b>true</b>. To enter fullscreen mode and set this value to <b>false</b>, call the <see cref="EnterFullscreen"/> method. To return this 
     /// value to <b>true</b>, call the <see cref="ExitFullscreen"/> method.
     /// </para>
     /// <para>
@@ -137,7 +137,7 @@ public unsafe sealed class GorgonSwapChain
     /// </summary>
     /// <remarks>
     /// <para>
-    /// If the <see cref="IsWindowed"/> property is <b>false</b> (by calling <see cref="EnterFullscreen"/>), then this will return information about the output that is being used. Otherwise, if the
+    /// If the <see cref="IsWindowed"/> property is <b>false</b> (by calling <see cref="EnterFullscreen"/>), then this will return information about the output that is being used. Otherwise, if the 
     /// <see cref="IsWindowed"/> property is <b>true</b> (by calling <see cref="ExitFullscreen"/>), then this will return <see cref="GorgonVideoOutputInfo.Empty"/>.
     /// </para>
     /// </remarks>
@@ -368,17 +368,17 @@ public unsafe sealed class GorgonSwapChain
     /// <exception cref="GorgonException">Thrown if the swap chain buffers could not be resized.</exception>
     /// <remarks>
     /// <para>
-    /// This method is used to change the size of the swap chain buffers. Usually applications will call this in response to a window size change event of some kind so that the swap chain back buffers are
-    /// set to the same size as the client area of the window. However, applications can call this to set the buffer size to anything they wish (from 1 to 16384 pixels for width/height). Values outside of
+    /// This method is used to change the size of the swap chain buffers. Usually applications will call this in response to a window size change event of some kind so that the swap chain back buffers are 
+    /// set to the same size as the client area of the window. However, applications can call this to set the buffer size to anything they wish (from 1 to 16384 pixels for width/height). Values outside of 
     /// this range are clamped.
     /// </para>
     /// <para>
     /// If the new size is the same as the current size, then this method will do nothing.
     /// </para>
     /// <para>
-    /// <note type="warning">
+    /// <note type="important">
     /// <para>
-    /// It is recommended to keep the swap chain buffer size the same as the window client size when in fullscreen mode, or in windowed mode when multiplane overlays are in effect. Keeping the buffers at the
+    /// It is recommended to keep the swap chain buffer size the same as the window client size when in fullscreen mode, or in windowed mode when multiplane overlays are in effect. Keeping the buffers at the 
     /// correct size will yield performance improvements, but a mismatch in size will impair performance by returning control to the DWM and increasing latency.
     /// </para>
     /// <para>
@@ -443,8 +443,8 @@ public unsafe sealed class GorgonSwapChain
     /// Use this to enter fullscreen mode on the swap chain. This method will find the video mode that is closest to the client size of the window, and use that as the dimensions for fullscreen mode.
     /// </para>
     /// <para>
-    /// If the <paramref name="output"/> is <b>null</b>, or <see cref="GorgonVideoOutputInfo.Empty"/>, then Gorgon will find the output that contains the largest portion of the window bound to the swap chain. The output that is used for fullscreen mode 
-    /// will be assigned to the <see cref="FullscreenOutput"/> property.
+    /// If the <paramref name="output"/> is <b>null</b>, or <see cref="GorgonVideoOutputInfo.Empty"/>, then Gorgon will find the output that contains the largest portion of the window bound to the swap chain. 
+    /// The output that is used for fullscreen mode will be assigned to the <see cref="FullscreenOutput"/> property.
     /// </para>
     /// <para>
     /// Applications can determine if they're in fullscreen mode by checking the <see cref="IsWindowed"/> property. To exit fullscreen mode, call the <see cref="ExitFullscreen"/> method.
@@ -453,7 +453,7 @@ public unsafe sealed class GorgonSwapChain
     /// If the swap chain is already in fullscreen mode, then this method will do nothing.
     /// </para>
     /// <para>
-    /// <note type="warning">
+    /// <note type="important">
     /// <para>
     /// An "exclusive" fullscreen mode no longer provides any benefit and has been replaced by DirectFlip/Fullscreen performance optimizations starting with Windows 10. Instead, the desktop is switched to 
     /// the appropriate video mode, and a fullscreen borderless window is used. 
@@ -597,11 +597,12 @@ public unsafe sealed class GorgonSwapChain
     /// <param name="timeout">[Optional] The number of milliseconds to wait before continuing.</param>
     /// <remarks>
     /// <para>
-    /// This method allows an application to lower frame latency by waiting until the previous frame is rendered and displayed before moving on to the next frame. Applications should call this method before any 
-    /// rendering operations are executed (including the very first frame). 
+    /// This method allows an application to lower frame latency by waiting until the swap chain can queue another frame for display. The swap chain allows up to 2 frames to be queued, so the application can 
+    /// prepare the next frame while the previous frame is rendered and displayed. Applications should call this method before any rendering operations are executed (including the very first frame).
     /// </para>
     /// <para>
-    /// The <paramref name="timeout"/> value defaults to <see cref="Timeout.Infinite"/>, but applications may pass a shorter time frame to avoid having the application freeze indefinitely (this should never really happen).
+    /// The <paramref name="timeout"/> value defaults to <see cref="Timeout.Infinite"/>, but applications may pass a shorter time frame to avoid having the application freeze indefinitely (this should never 
+    /// really happen).
     /// </para>
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

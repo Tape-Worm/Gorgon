@@ -234,9 +234,6 @@ public unsafe sealed class GorgonExecuteCall
     /// <para type="constants">
     /// See <see cref="GorgonExecuteCallCommon.ConstantStart"/> for how the root constants are declared in shaders.
     /// </para>
-    /// <para>
-    /// The default values are 0 for the <paramref name="constantStart"/>, and 0 for the <paramref name="constantCount"/>.
-    /// </para>
     /// </remarks>
     public static GorgonExecuteCall CreateCpuRendering(GorgonGraphicsPso pso, GorgonExecuteBuffer commands, int constantStart = 0, int constantCount = 0)
     {
@@ -280,9 +277,6 @@ public unsafe sealed class GorgonExecuteCall
     /// </para>
     /// <inheritdoc cref="CreateCpuRendering" path="/remarks/para[@type='command_size']"/>
     /// <inheritdoc cref="CreateCpuRendering" path="/remarks/para[@type='constants']"/>
-    /// <para>
-    /// The default values are 0 for the <paramref name="constantStart"/>, and 0 for the <paramref name="constantCount"/>.
-    /// </para>
     /// </remarks>
     public static GorgonExecuteCall CreateGpuRendering(GorgonGraphicsPso pso, GorgonExecuteBuffer commands, int constantStart = 0, int constantCount = 0)
     {

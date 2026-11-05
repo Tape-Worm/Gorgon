@@ -512,9 +512,8 @@ internal unsafe class BarrierManager(GorgonGraphics graphics)
     /// <param name="access">The resource access level.</param>
     /// <param name="layout">The layout for the texture.</param>
     /// <param name="subResourceRange">[Optional] The subresources on the texture to apply the barrier to.</param>
-    /// <param name="discard">[Optional] <b>true</b> to discard the resource content, <b>false</b> to leave as-is.</param>
     /// <exception cref="GorgonException">Thrown when the <paramref name="texture"/> was previously used and is in a state that is incompatible with the current object setting the barrier, or the texture was reset and used on the same command list.</exception>
-    public void AddBarrier(GorgonCommandList commandList, GorgonTextureCommon texture, BarrierSync sync, BarrierAccess access, BarrierLayout layout, GorgonSubResourceRange? subResourceRange = null, bool discard = false)
+    public void AddBarrier(GorgonCommandList commandList, GorgonTextureCommon texture, BarrierSync sync, BarrierAccess access, BarrierLayout layout, GorgonSubResourceRange? subResourceRange = null)
     {
         static void CheckForResourceReuse(string textureName, string commandListName, BarrierSync sync, BarrierAccess access, List<TextureBarrierEntry> pendingBarriers, List<TextureBarrierEntry> currentBarriers)
         {
@@ -541,10 +540,7 @@ internal unsafe class BarrierManager(GorgonGraphics graphics)
             pending.Add(new TextureBarrierEntry(newBarrier, GorgonSubResourceRange.All, mipCount, arrayCount, planeCount));
         }
 
-        GorgonTextureBarrier newBarrier = new(texture, sync, access, layout)
-        {
-            Discard = discard
-        };
+        GorgonTextureBarrier newBarrier = new(texture, sync, access, layout);
 
         byte formatPlaneCount = texture.Graphics.FormatSupport[texture.Format].PlaneCount;
         short arrayCount = texture.ArrayCount;

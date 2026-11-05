@@ -37,16 +37,16 @@ namespace Gorgon.Graphics.Core;
 /// There is a performance penalty for setting the <see cref="Quality"/> value to higher levels.
 /// </para>
 /// <para>
-/// Setting the <see cref="Count"/> and <see cref="Quality"/> values to 1 and 0 respectively, will disable multisampling.
+/// Setting the <see cref="Count"/> and <see cref="Quality"/> values to 1 and 0 respectively disables multisampling (see <see cref="NoMultisampling"/>).
 /// </para>
 /// <para>
 /// If multisample anti-aliasing is being used, all bound render targets and depth buffers must have the same sample counts and quality levels.
 /// </para>
 /// <para>
-/// <note type="warning">
+/// <note type="important">
 /// <para>
-/// This value must be 0 or less than/equal to the <see cref="Quality"/> returned by <see cref="GorgonBufferFormatSupport.MaxMultipleSampleValues"/>.  Failure to do so will cause an exception for objects 
-/// that use this type.
+/// The <see cref="Quality"/> value must be between 0 and the <see cref="Quality"/> returned by <see cref="GorgonBufferFormatSupport.MaxMultipleSampleValues"/> for the format being used. Failure to do so 
+/// will cause an exception for objects that use this type.
 /// </para>
 /// </note>
 /// </para>
@@ -64,7 +64,7 @@ public record struct GorgonMultisampleInfo(int Count, int Quality)
     /// </summary>
     /// <remarks>
     /// <para>
-    /// This value is always supported in Gorgon because it can only use Direct 3D 10 or better devices, and these devices are required to implement this pattern.
+    /// This value is always supported in Gorgon, because Gorgon only uses devices that support feature level 12_2, and these devices are required to implement this pattern.
     /// </para>
     /// </remarks>
     public static readonly int StandardMultisamplePatternQuality = unchecked((int)0xffffffff);

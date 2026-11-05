@@ -131,9 +131,6 @@ public sealed class GorgonStructuredBufferView
     /// The view returned by this method is read-only. The <paramref name="allowReadWriteAccess"/> parameter sets the <see cref="GorgonCommonBufferInfo.HasReadWriteAccess"/> property on the buffer, which 
     /// allows read/write views to be created from the <see cref="GorgonGpuBufferView.Buffer"/>.
     /// </para>
-    /// <para>
-    /// The default value for the <paramref name="allowReadWriteAccess"/> parameter is <b>false</b>.
-    /// </para>
     /// </remarks>
     /// <seealso cref="GorgonGpuBuffer"/>
     public static unsafe GorgonStructuredBufferView CreateStructuredBuffer<T>(GorgonGraphics graphics, string name, int elementCount, bool allowReadWriteAccess = false)
