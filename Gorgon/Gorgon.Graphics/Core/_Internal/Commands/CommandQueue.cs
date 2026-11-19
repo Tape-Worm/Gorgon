@@ -176,7 +176,7 @@ internal sealed unsafe class CommandQueue : IDisposable
     /// <param name="device">The D3D device responsible for creating the object.</param>
     /// <returns>The COM pointer to the D3D fence object.</returns>
     /// <exception cref="GorgonException">Thrown if the D3D fence could not be created.</exception>
-    private ComPtr<ID3D12Fence1> CreateNativeFence(ref readonly ComPtr<ID3D12Device14> device)
+    private ComPtr<ID3D12Fence1> CreateNativeFence(ref readonly ComPtr<ID3D12Device16> device)
     {
         ComPtr<ID3D12Fence1> result = default;
 
@@ -198,7 +198,7 @@ internal sealed unsafe class CommandQueue : IDisposable
     /// <param name="device">The D3D device responsible for creating the object.</param>
     /// <returns>The COM pointer to the D3D command queue object.</returns>
     /// <exception cref="GorgonException">Thrown if the D3D command queue could not be created.</exception>
-    private ComPtr<ID3D12CommandQueue> CreateNativeQueue(ref readonly ComPtr<ID3D12Device14> device)
+    private ComPtr<ID3D12CommandQueue> CreateNativeQueue(ref readonly ComPtr<ID3D12Device16> device)
     {
         ComPtr<ID3D12CommandQueue> result = default;
 

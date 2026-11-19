@@ -202,7 +202,7 @@ internal class Boing
 
         _depth.Dispose();
 
-        _swap.Resize(window.Width, window.Height);
+        _swap.Resize(window.ClientSize.Width, window.ClientSize.Height);
         _depth = GorgonDepthStencilView.CreateDepthStencilView(_graphics, "Boinger depth/stencil buffer", BufferFormat.D24_UNorm_S8_UInt, _swap.Width, _swap.Height);
 
         CalculateProjection();
@@ -227,13 +227,6 @@ internal class Boing
         else
         {
             _swap.ExitFullscreen();
-        }
-
-        // Refresh our depth buffer, we shouldn't need to, but let's just be safe for now.
-        if ((_depth.Texture.Width != _swap.Width) || (_depth.Texture.Height != _swap.Height))
-        {
-            _depth.Dispose();
-            _depth = GorgonDepthStencilView.CreateDepthStencilView(_graphics, "Boinger depth/stencil buffer", BufferFormat.D24_UNorm_S8_UInt, _swap.Width, _swap.Height);
         }
 
         CalculateProjection();
@@ -585,7 +578,7 @@ internal class Boing
 
         materialData.Diffuse = model.Material.Diffuse;
         materialData.TextureHandle = model.Material.Texture.GetViewHandle();
-        materialData.SamplerHandle = GorgonSampler.Default(_graphics).GetViewHandle();
+        materialData.SamplerHandle = GorgonSampler.Default(_graphics).GetSamplerHandle();
     }
 
     /// <summary>

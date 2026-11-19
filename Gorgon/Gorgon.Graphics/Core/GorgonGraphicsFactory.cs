@@ -330,12 +330,12 @@ public unsafe sealed class GorgonGraphicsFactory
     /// </summary>
     /// <param name="adapter">The adapter used to render.</param>
     /// <returns>The pointers to the DXGI factory, and adapter, and the Direct3D 12 device object.</returns>
-    private (ComPtr<IDXGIFactory7> dxgiFactory, ComPtr<IDXGIAdapter4> dxgiAdapter, ComPtr<ID3D12Device14> d3dDevice) CreateDeviceObjects(GorgonVideoAdapterInfo adapter)
+    private (ComPtr<IDXGIFactory7> dxgiFactory, ComPtr<IDXGIAdapter4> dxgiAdapter, ComPtr<ID3D12Device16> d3dDevice) CreateDeviceObjects(GorgonVideoAdapterInfo adapter)
     {
         Guid datGuid = DX.WKPDID_D3DDebugObjectNameW;
         ComPtr<IDXGIFactory7> factory7 = default;
         ComPtr<IDXGIAdapter4> adapter4 = default;
-        ComPtr<ID3D12Device14> d3dDevice14 = default;
+        ComPtr<ID3D12Device16> d3dDevice14 = default;
         string factoryName = "Gorgon DXGI Factory";
         string adapterName = $"Gorgon DXGI Adapter ({adapter.Name})";
         string d3dDeviceName = $"Gorgon D3D12 Device on {adapter.Name}";
@@ -371,9 +371,9 @@ public unsafe sealed class GorgonGraphicsFactory
 
         adapter4.SetDXGIDebugName(adapterName);
 
-        _log.Print($"Creating {nameof(ID3D12Device14)} '{d3dDeviceName}' (Feature Level 12.2).", LoggingLevel.Verbose);
+        _log.Print($"Creating {nameof(ID3D12Device16)} '{d3dDeviceName}' (Feature Level 12.2).", LoggingLevel.Verbose);
 
-        _deviceFactory.Get()->CreateDevice((PIDXGIAdapter4)adapter4.Get(), D3D_FEATURE_LEVEL.D3D_FEATURE_LEVEL_12_2, Win32.__uuidof<ID3D12Device14>(), (void**)d3dDevice14.GetAddressOf())
+        _deviceFactory.Get()->CreateDevice((PIDXGIAdapter4)adapter4.Get(), D3D_FEATURE_LEVEL.D3D_FEATURE_LEVEL_12_2, Win32.__uuidof<ID3D12Device16>(), (void**)d3dDevice14.GetAddressOf())
             .ThrowIfFailed(GorgonResult.CannotCreate, Resources.GORGFX_ERR_CANNOT_CREATE_D3D12_DEVICE, adapterName);
         d3dDevice14.SetD3DDebugName(d3dDeviceName);
 
@@ -529,7 +529,7 @@ public unsafe sealed class GorgonGraphicsFactory
             adapter = adapters[0];
         }
 
-        (ComPtr<IDXGIFactory7> dxgiFactory, ComPtr<IDXGIAdapter4> dxgiAdapter, ComPtr<ID3D12Device14> d3dDevice) = CreateDeviceObjects(adapter);
+        (ComPtr<IDXGIFactory7> dxgiFactory, ComPtr<IDXGIAdapter4> dxgiAdapter, ComPtr<ID3D12Device16> d3dDevice) = CreateDeviceObjects(adapter);
 
         GorgonGraphics result = new(adapter, this, inFlightFrameCount.Max(1), vramReservedPercent, dxgiFactory, dxgiAdapter, d3dDevice, Debugging, _log);
 

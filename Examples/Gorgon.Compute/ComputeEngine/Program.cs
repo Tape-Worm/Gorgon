@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -40,22 +41,6 @@ using Gorgon.Graphics.Core;
 using Gorgon.Math;
 
 namespace Gorgon.Examples;
-
-/// <summary>
-/// The output data returned from the shader
-/// </summary>
-[StructLayout(LayoutKind.Sequential, Pack = 4)]
-internal struct OutputData
-{
-    /// <summary>
-    /// The sum of integer data.
-    /// </summary>
-    public int Sum;
-    /// <summary>
-    /// The product of floating point data.
-    /// </summary>
-    public float Product;
-}
 
 /// <summary>
 /// An example showing how to use the Compute engine functionality for Gorgon
@@ -73,68 +58,73 @@ internal struct OutputData
 /// values to produce another set of values stored as a structured buffer
 /// 
 /// To do this, we first create a graphics interface so we can access the GPU from the compute engine, then we create the compute engine itself and 
-/// bind the buffers containing the input values and the output buffer. Then, finally, we execute the compute shader and retrieve the result values from 
-/// the output buffer into a buffer that the CPU can read and test them for accuracy
+/// the buffers containing the input values and the output buffer. Then, finally, we execute the compute shader and retrieve the result values from 
+/// the output buffer into a buffer that the CPU can read and test them for accuracy.
 /// </remarks>
 internal class Program
 {
-
     // The maximum number of elements to send and receive.
-    private const int MaxValues = 10000;
+    private const int MaxValues = 16384;
 
-    // The log for the application.
-    private static IGorgonLog _log;
-    // The graphics device used to by the compute engine.
-    private static GorgonGraphics _graphics;
-    // The compute shader to run.
-    private static GorgonComputeShader _computeShader;
-    // Floating point data to send to the shader.
-    private static GorgonBuffer _floatBuffer;
-    // Integer data to send to the shader.
-    private static GorgonBuffer _intBuffer;
-    // The data retrieved from the shader.
-    private static GorgonBuffer _outputBuffer;
-    // The compute engine.
-    private static GorgonComputeEngine _engine;
-    // The dispatch call builder.
-    private static GorgonDispatchCallBuilder _dispatchBuilder;
+    /// <summary>
+    /// The output data returned from the shader
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 4)]
+    private struct OutputData
+    {
+        /// <summary>
+        /// The sum of integer data.
+        /// </summary>
+        public int Sum;
+        /// <summary>
+        /// The product of floating point data.
+        /// </summary>
+        public float Product;
+    }
+
+    /// <summary>
+    /// The data to send to the compute engine.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential, Size = 16)]
+    private struct InputData
+    {
+        /// <summary>
+        /// The handle for the integer point input buffer view.
+        /// </summary>
+        public int IntBufferHandle;
+        /// <summary>
+        /// The handle for the floating point input buffer view.
+        /// </summary>
+        public int FloatBufferHandle;
+        /// <summary>
+        /// The handle for the output buffer structured UAV.
+        /// </summary>
+        public int OutputBufferHandle;
+    }
 
     /// <summary>
     /// A function to create our input/input buffers and populate the input buffers with the data to send to the GPU.
     /// </summary>
-    private static void BuildInputOutputBuffers()
+    /// <param name="graphics">The graphics interface for the application.</param>
+    /// <returns>The buffers, pre-populated.</returns>
+    private static (GorgonStructuredBufferRwView Output, GorgonGpuBuffer IntBuffer, GorgonGpuBuffer FloatBuffer) BuildInputOutputBuffers(GorgonGraphics graphics)
     {
         // This structured buffer will contain the output from the compute operation. It is only accessible to the GPU, so we'll 
-        // have to copy this data to a CPU accessible buffer once we're done, thus we have the _cpuData buffer below.
-        // The GPU output data buffer will be bound to the compute engine as an unordered access view (UAV) so that we can write 
+        // have to copy this data to a CPU accessible buffer once we're done execution.
+        // The GPU output data buffer will be sent to the compute engine as an unordered access view (UAV) so that we can write 
         // the data back into the buffer.
-        _outputBuffer = new GorgonBuffer(_graphics,
-                                         new GorgonBufferInfo(Unsafe.SizeOf<OutputData>() * MaxValues)
-                                         {
-                                             Name = "OutputData",
-                                             Usage = ResourceUsage.Default,
-                                             Binding = BufferBinding.ReadWrite,
-                                             StructureSize = Unsafe.SizeOf<OutputData>(),
-                                             AllowCpuRead = true
-                                         });
-
+        GorgonStructuredBufferRwView outputBuffer = GorgonStructuredBufferRwView.CreateStructuredBuffer<OutputData>(graphics, "Output Buffer", MaxValues);
+        
         // This is our input data buffers. One for integer values, and another for floating point.
-        // These are just standard buffers that will be bound as a shader resource view (SRV).
-        _intBuffer = new GorgonBuffer(_graphics,
-                                      new GorgonBufferInfo(sizeof(int) * MaxValues)
-                                      {
-                                          Name = "IntData",
-                                          Usage = ResourceUsage.Default,
-                                          Binding = BufferBinding.Shader
-                                      });
-
-        _floatBuffer = new GorgonBuffer(_graphics,
-                                        new GorgonBufferInfo(sizeof(float) * MaxValues)
-                                        {
-                                            Name = "FloatData",
-                                            Usage = ResourceUsage.Default,
-                                            Binding = BufferBinding.Shader
-                                        });
+        // These are just standard buffers that will be sent as a shader resource view (SRV).
+        GorgonGpuBuffer intBuffer = new(graphics, "Integer Buffer", new GorgonGpuBufferInfo(sizeof(int) * MaxValues)
+        {
+            Alignment = sizeof(int)
+        });
+        GorgonGpuBuffer floatBuffer = new(graphics, "Float Buffer", new GorgonGpuBufferInfo(sizeof(float) * MaxValues)
+        {
+            Alignment = sizeof(float)
+        });
 
         // Now, stage some data and upload into the buffers.
         int[] inputInts = new int[MaxValues];
@@ -149,78 +139,73 @@ internal class Program
         }
 
         // Send to the buffers.
-        _intBuffer.SetData<int>(inputInts);
-        _floatBuffer.SetData<float>(inputFloats);
+        GorgonCommandList list = graphics.GetCommandList("Upload");
+
+        list.CopyRange(inputInts, intBuffer)
+            .CopyRange(inputFloats, floatBuffer);
+
+        graphics.Submit(list);
+        graphics.WaitForGpu();
+
+        return (outputBuffer, intBuffer, floatBuffer);
     }
 
     /// <summary>
-    /// Function to initialize the example and prepare the required components.
+    /// Function to initialize the dispatch operation.
     /// </summary>
-    private static void Initialize()
+    /// <param name="psoFactory">The factory used to create a PSO for the compute shader.</param>
+    /// <param name="threadGroupCount">The number of thread groups to execute.</param>
+    /// <returns>The dispatch call to execute.</returns>
+    private static GorgonDispatchCall BuildDispatch(GorgonComputePsoFactory psoFactory, int threadGroupCount)
     {
-        // We will need to access the graphics device in order to use compute functionality, so we'll use the first usable device in the system.
-        // Find out which devices we have installed in the system.
-        IReadOnlyList<IGorgonVideoAdapterInfo> deviceList = GorgonGraphics.EnumerateAdapters(log: _log);
-
-        Console.WriteLine("Enumerating video devices...");
-
-        IGorgonVideoAdapterInfo firstDevice = deviceList.FirstOrDefault(item => item.FeatureSet >= FeatureSet.Level_11_2);
-
-        // If a device with a feature set of at least 12.0 not found, then we cannot run this example. The compute engine requires a minimum 
-        // of feature level 12.0 to run.
-        if (firstDevice is null)
-        {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("No Level 11.2 or better adapters found in the system. This example requires a FeatureLevel 11.2 or better adapter.");
-            Console.ResetColor();
-            return;
-        }
-
-        Console.WriteLine($"Using the '{firstDevice.Name}' video device.\n");
-
-        // We have to create a graphics interface to allow the compute engine to communicate with the GPU.
-        _graphics = new GorgonGraphics(firstDevice, log: _log);
-
         // We will also need to compile a compute shader so we can actually perform the work.
         Console.WriteLine("Compiling the compute shader (SimpleCompute)...");
-        _computeShader = GorgonShaderFactory.Compile<GorgonComputeShader>(_graphics, Resources.ComputeShader, "SimpleCompute");
 
-        _dispatchBuilder = new GorgonDispatchCallBuilder(_computeShader);
+        using GorgonShaderCompiler compiler = new(psoFactory.Graphics);
+        GorgonShader computeShader = compiler.Compile(Resources.ComputeShader, "SimpleCompute", ShaderType.ComputeShader, flags: (psoFactory.Graphics.IsInDebugMode ? CompileFlags.Debug : CompileFlags.OptimizationLevel3));
 
-        // Finally, the star of the show, the compute engine.
-        Console.WriteLine("Creating compute engine...");
-        _engine = new GorgonComputeEngine(_graphics);
+        GorgonComputePso pso = psoFactory.CreateOrGetPso("ComputePSO", computeShader);
+
+        // We'll send 10 thread groups of 1,000 threads (MaxValues = 10,000) to the GPU.
+        return new(pso, threadGroupCount, 1, 1);
     }
 
     /// <summary>
     /// Function to execute the compute shader with the compute engine.
     /// </summary>
-    /// <returns>An array of <see cref="OutputData"/> values.  These contain the results from the compute engine.</returns>
-    private static OutputData[] Execute()
+    /// <param name="engine">The compute engine.</param>
+    /// <param name="dispatch">The dispatch call for the compute engine to execute.</param>
+    /// <param name="data">The data to pass to the compute engine.</param>
+    private static void Execute(GorgonComputeEngine engine, GorgonDispatchCall dispatch, InputData data)
     {
-        // The first step is to provide the compute shader with the information it needs to do its job.
-        GorgonReadWriteViewBinding resourceView = new(_outputBuffer.GetStructuredReadWriteView());
-        GorgonDispatchCall dispatch = _dispatchBuilder.ShaderResource(_intBuffer.GetShaderResourceView(BufferFormat.R32_SInt))
-                                                      .ShaderResource(_floatBuffer.GetShaderResourceView(BufferFormat.R32_Float), 1)
-                                                      .ReadWriteView(in resourceView)
-                                                      .ComputeShader(_computeShader)
-                                                      .Build();
+        // Set up the command list for the compute operation.
+        GorgonComputeCommandList list = engine.GetCommandList("Main");
 
-        // Now, we execute the shader with MaxValues threads for the first thread group.
-        _engine.Execute(dispatch, MaxValues, 1, 1);
+        list.WriteConstant(0, data)
+            .Dispatch(dispatch);
 
-        // Finally, let's turn this into some meaningful data structures rather than raw buffer data.
-        // This will enable us handle the data better in our code.
-        return _outputBuffer.GetData<OutputData>();
+        // Send to the GPU for execution.
+        engine.Submit(list);
+
+        // Wait until the GPU is done.
+        engine.WaitForGpu();
     }
 
     /// <summary>
     /// Function to perform tests on the output data from the engine.
     /// </summary>
-    /// <param name="results">The output data results from the engine.</param>
+    /// <param name="graphics">The graphics interface for the application.</param>
+    /// <param name="outputData">The output data from the compute shader.</param>
     /// <returns>A list of errors if any were found, or an empty list if the operation was completely successful.</returns>
-    private static IReadOnlyList<(int Index, OutputData Expected, OutputData Actual)> TestResults(OutputData[] results)
+    private static IReadOnlyList<(int Index, OutputData Expected, OutputData Actual)> TestResults(GorgonStructuredBufferRwView outputData)
     {
+        OutputData[] results = new OutputData[MaxValues];
+
+        // Download the contents of the output buffer into CPU accessible memory.
+        using GorgonResourceCopier copier = new(outputData.Graphics);
+        
+        copier.CopyToRange(outputData.Buffer, results);        
+
         List<(int Index, OutputData Expected, OutputData Actual)> errors = [];
 
         // Compare the results.
@@ -248,6 +233,13 @@ internal class Program
     /// </summary>
     private static void Main()
     {
+        GorgonStructuredBufferRwView? outputView = null;
+        GorgonGpuBuffer? intInputBuffer = null;
+        GorgonGpuBuffer? floatInputBuffer = null;
+
+        IGorgonLog log = new GorgonTextFileLog("ComputeEngine", "Tape_Worm", typeof(Program).Assembly.GetName().Version);
+        log.LogStart(new GorgonComputerInfo());
+
         try
         {
             Console.ForegroundColor = ConsoleColor.White;
@@ -260,23 +252,71 @@ internal class Program
             Console.WriteLine("them for accuracy.\n");
             Console.ResetColor();
 
-            _log = new GorgonTextFileLog("ComputeEngine", "Tape_Worm", typeof(Program).Assembly.GetName().Version);
-            _log.LogStart(new GorgonComputerInfo());
-
             // Initialize the required objects.
             Console.WriteLine("Initializing...");
-            Initialize();
+
+            // Create the factory used to create our graphics functionality.
+            // This is required to create the primary graphics object used for accessing the GPU.
+#if DEBUG
+            using GorgonGraphicsFactory factory = new(GorgonGraphicsDebugFlags.SynchronizedCommandQueueValidation
+                | GorgonGraphicsDebugFlags.GpuBasedValidation
+                | GorgonGraphicsDebugFlags.GpuBasedStateTrackingValidation
+                | GorgonGraphicsDebugFlags.ObjectTracking, log: log);
+#else
+            using GorgonGraphicsFactory factory = new(log: log);
+#endif     
+            Console.WriteLine("Enumerating video devices...");
+            
+            // We will need to access the graphics device in order to use compute functionality, so we'll use the first usable device in the system.
+            // Find out which devices we have installed in the system.
+            IReadOnlyList<GorgonVideoAdapterInfo> deviceList = factory.EnumerateAdapters();
+
+            // Error out if no direct 3D 12 capable devices are available.
+            if (deviceList.Count == 0)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("No Direct3D 12 or better adapters found in the system. This example requires a Direct3D 12 or better adapter.");
+                Console.ResetColor();
+                return;
+            }
+
+            using GorgonGraphics graphics = factory.CreateGraphics(deviceList[0]);
+            using GorgonComputePsoFactory psoFactory = new(graphics);
+
+            // Finally, the star of the show, the compute engine.
+            Console.WriteLine("Creating compute engine...");
+            using GorgonComputeEngine engine = new(graphics);
 
             // Initialize our input and output data structures.
             Console.WriteLine("Creating data...");
-            BuildInputOutputBuffers();
+            (outputView, intInputBuffer, floatInputBuffer) = BuildInputOutputBuffers(graphics);
 
-            // Now create the engine and execute the shader.
-            Console.WriteLine("Executing...");
-            OutputData[] results = Execute();
+            // Initialize and configure our dispatch call.
+            // We'll execute 64 threads across 256 thread groups (MaxValues = 16384, numthreads = 64).
+            GorgonDispatchCall dispatch = BuildDispatch(psoFactory, MaxValues / 64);
+
+            // Tell the GPU how we'll be using these buffers.
+            dispatch.AssignBuffers([
+                new GorgonUsedBuffer(outputView, ShaderStage.Compute, BufferUsage.ReadWrite),
+                new GorgonUsedBuffer(intInputBuffer, ShaderStage.Compute, BufferUsage.ReadOnly),
+                new GorgonUsedBuffer(floatInputBuffer, ShaderStage.Compute, BufferUsage.ReadOnly)
+            ]);
+
+            GorgonTypedBufferView intView = intInputBuffer.GetTypedBufferView(BufferFormat.R32_SInt);
+            GorgonTypedBufferView floatView = floatInputBuffer.GetTypedBufferView(BufferFormat.R32_Float);
+
+            // Now execute the compute shader.
+            Console.WriteLine($"Executing {MaxValues / 64} thread groups...");
+
+            Execute(engine, dispatch, new InputData()
+            {
+                OutputBufferHandle = outputView.GetViewHandle(),
+                IntBufferHandle = intView.GetViewHandle(),
+                FloatBufferHandle = floatView.GetViewHandle()
+            });
 
             // Now test the results to ensure we the engine did what we wanted.
-            IReadOnlyList<(int Index, OutputData Expected, OutputData Actual)> errors = TestResults(results);
+            IReadOnlyList<(int Index, OutputData Expected, OutputData Actual)> errors = TestResults(outputView);
 
             if (errors.Count != 0)
             {
@@ -288,14 +328,16 @@ internal class Program
                     if (Expected.Sum != Actual.Sum)
                     {
                         Console.WriteLine($"Sum should be: {Expected.Sum}, Got: {Actual.Sum}");
+                        Console.ResetColor();
+                        break;
                     }
 
                     if (!Expected.Product.EqualsEpsilon(Actual.Product))
                     {
                         Console.WriteLine($"Product should be: {Expected.Product}, Got: {Actual.Product}");
-                    }
-
-                    Console.ResetColor();
+                        Console.ResetColor();
+                        break;
+                    }                    
                 }
             }
             else
@@ -314,13 +356,11 @@ internal class Program
         }
         finally
         {
-            _floatBuffer?.Dispose();
-            _intBuffer?.Dispose();
-            _outputBuffer?.Dispose();
-            _computeShader?.Dispose();
-            _graphics?.Dispose();
+            floatInputBuffer?.Dispose();
+            intInputBuffer?.Dispose();
+            outputView?.Dispose();
 
-            _log.LogEnd();
+            log.LogEnd();
         }
 
         // Wait for the user to exit.

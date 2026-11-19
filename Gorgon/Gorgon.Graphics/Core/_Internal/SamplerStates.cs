@@ -143,9 +143,9 @@ internal class SamplerStates
         LinearWrapping.UnregisterDisposable(graphics);
 
         // Pre-allocate the handles.
-        Default.GetViewHandle();
-        Wrapping.GetViewHandle();
-        Linear.GetViewHandle();
-        LinearWrapping.GetViewHandle();
+        Default.GetSamplerHandle();
+        Wrapping.GetSamplerHandle();
+        Linear.GetSamplerHandle();
+        LinearWrapping.GetSamplerHandle();
     }
 }

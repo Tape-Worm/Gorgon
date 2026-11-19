@@ -51,7 +51,7 @@ namespace Gorgon.Graphics.Core;
 /// </remarks>
 /// <seealso cref="GorgonGraphicsPsoFactory"/>
 /// <seealso cref="GorgonComputePsoFactory"/>
-public abstract unsafe class GorgonPsoFactoryCommon<TPso>(GorgonGraphics graphics)
+public abstract class GorgonPsoFactoryCommon<TPso>(GorgonGraphics graphics)
     : IDisposable
     where TPso : class, IGorgonNamedObject
 {

@@ -204,7 +204,7 @@ internal class Program
             {
                 VertexBufferHandle = _model.VertexData.GetViewHandle(),
                 TextureHandle = mesh.Key.Texture?.GetViewHandle() ?? _fallbackTexture.GetViewHandle(),
-                SamplerHandle = mesh.Key.Sampler?.GetViewHandle() ?? GorgonSampler.Wrapping(_graphics).GetViewHandle(),
+                SamplerHandle = mesh.Key.Sampler?.GetSamplerHandle() ?? GorgonSampler.Wrapping(_graphics).GetSamplerHandle(),
                 Diffuse = mesh.Key.Diffuse,
                 Emissive = mesh.Key.Emissive,
                 Specular = new(mesh.Key.Specular, mesh.Key.SpecularPower)
@@ -244,6 +244,7 @@ internal class Program
             _fallbackTexture?.Dispose();
             _model?.Dispose();
             _psoFactory.Dispose();
+            _depthBuffer.Dispose();
             _swap.Dispose();
         }
     }
@@ -262,8 +263,8 @@ internal class Program
             return;
         }
 
-        _depthBuffer = BuildDepthBuffer(_swap.Width, _swap.Height, _depthBuffer);
         _swap.Resize(form.ClientSize.Width, form.ClientSize.Height);
+        _depthBuffer = BuildDepthBuffer(_swap.Width, _swap.Height, _depthBuffer);
         _camera.ViewDimensions = new Vector2(_swap.Width, _swap.Height);
     }
 

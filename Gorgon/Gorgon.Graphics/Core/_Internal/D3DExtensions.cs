@@ -25,6 +25,9 @@
 using System;
 using System.Runtime.CompilerServices;
 using System.Text;
+using Gorgon.Core;
+using Gorgon.Diagnostics;
+using Gorgon.Graphics.Core.Properties;
 using Gorgon.Math;
 using Gorgon.Native;
 using TerraFX.Interop.DirectX;
@@ -33,9 +36,9 @@ using TerraFX.Interop.Windows;
 namespace Gorgon.Graphics.Core;
 
 /// <summary>
-/// Extension methods used to convert Gorgon and DXGI/Direct3D specific values.
+/// Extension methods used to perform conversions and other operations on D3D objects.
 /// </summary>
-internal static class D3DConversionExtensions
+internal static class D3DExtensions
 {
     extension(PrimitiveType gorgonPt)
     {
@@ -250,5 +253,69 @@ internal static class D3DConversionExtensions
             D3D12_COMMAND_LIST_TYPE.D3D12_COMMAND_LIST_TYPE_COMPUTE => nameof(D3D12_COMMAND_LIST_TYPE.D3D12_COMMAND_LIST_TYPE_COMPUTE),
             _ => string.Empty
         };
+    }
+
+    extension(D3D_FEATURE_LEVEL featureLevel)
+    {
+        /// <summary>
+        /// Convert a D3D12 feature level into a version object.
+        /// </summary>
+        /// <returns>The version for the feature level.</returns>
+        public Version AsVersion() => featureLevel switch
+            {
+                D3D_FEATURE_LEVEL.D3D_FEATURE_LEVEL_12_2 => new Version(12, 2, 0, 0),
+                D3D_FEATURE_LEVEL.D3D_FEATURE_LEVEL_12_1 => new Version(12, 1, 0, 0),
+                D3D_FEATURE_LEVEL.D3D_FEATURE_LEVEL_12_0 => new Version(12, 0, 0, 0),
+                D3D_FEATURE_LEVEL.D3D_FEATURE_LEVEL_11_1 => new Version(11, 1, 0, 0),
+                D3D_FEATURE_LEVEL.D3D_FEATURE_LEVEL_11_0 => new Version(11, 0, 0, 0),
+                D3D_FEATURE_LEVEL.D3D_FEATURE_LEVEL_10_1 => new Version(10, 1, 0, 0),
+                D3D_FEATURE_LEVEL.D3D_FEATURE_LEVEL_10_0 => new Version(10, 0, 0, 0),
+                D3D_FEATURE_LEVEL.D3D_FEATURE_LEVEL_9_3 => new Version(9, 3, 0, 0),
+                D3D_FEATURE_LEVEL.D3D_FEATURE_LEVEL_9_2 => new Version(9, 2, 0, 0),
+                D3D_FEATURE_LEVEL.D3D_FEATURE_LEVEL_9_1 => new Version(9, 1, 0, 0),
+                _ => new Version(0, 0, 0, 0)
+            };
+    }
+
+    extension<T>(ComPtr<T> device) where T : unmanaged, ID3D12Device.Interface
+    {
+        /// <summary>
+        /// Function to create the COM object interface used for the Direct 3D 12 information queue for debugging.
+        /// </summary>
+        /// <returns>The pointer to the D3D 12 information queue.</returns>
+        public unsafe ComPtr<ID3D12InfoQueue1> GetInfoQueue(IGorgonLog log)
+        {
+            ComPtr<ID3D12InfoQueue1> result = default;
+
+            log.Print($"[DEBUG] Creating a {nameof(ID3D12InfoQueue1)} object for callbacks...", LoggingLevel.Verbose);
+
+            HRESULT err = device.As(ref result);
+
+            if (err.FAILED)
+            {
+                log.PrintWarning(err, $"Unable to retrieve the {nameof(ID3D12InfoQueue1)} object. Debugging information will be limited.", LoggingLevel.Intermediate);
+                return default;
+            }
+
+            // Add any messages we want to ignore here:
+            fixed (D3D12_MESSAGE_ID* filters = &CommonConstants.DenyMessages[0])
+            {
+                D3D12_INFO_QUEUE_FILTER filter = new()
+                {
+                    DenyList = new D3D12_INFO_QUEUE_FILTER_DESC()
+                    {
+                        NumIDs = (uint)CommonConstants.DenyMessages.Length,
+                        pIDList = filters
+                    }
+                };
+
+                result.Get()->SetBreakOnID(D3D12_MESSAGE_ID.D3D12_MESSAGE_ID_GETHEAPPROPERTIES_INVALIDRESOURCE, false);
+
+                result.Get()->AddStorageFilterEntries(&filter)
+                    .ThrowIfFailed(GorgonResult.CannotCreate, Resources.GORGFX_ERR_CANNOT_SETUP_DEBUG_INFO);
+            }
+
+            return result;
+        }
     }
 }

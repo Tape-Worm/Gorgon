@@ -86,6 +86,8 @@ public unsafe sealed class GorgonResourceCopier
     {
         if (disposing)
         {
+            this.UnregisterDisposable(Graphics);
+
             if ((_batchState != int.MaxValue) && (_commandList is not null))
             {
                 _commandList.Close();
@@ -791,22 +793,21 @@ public unsafe sealed class GorgonResourceCopier
     /// </summary>
     private void ExecuteDownload()
     {
-        Debug.Assert(_commandList is not null, "No command list to execute the download.");
-        CommandQueue copyQueue = _commandList.Queue;
+        Debug.Assert(_commandList is not null, "No command list to execute the download.");        
 
         // Finalize the command.
         try
         {
-            copyQueue.Execute(_commandList);
-            ulong fence = copyQueue.IncrementFence();
+            _commandQueue.Execute(_commandList);
+            ulong fence = _commandQueue.IncrementFence();
 
-            copyQueue.WaitForFence(fence);
+            _commandQueue.WaitForFence(fence);
         }
         finally
         {
-            copyQueue.Tracker.Signal();
-            copyQueue.AllocatorPool.Signal();
-            copyQueue.ListPool.Return(_commandList);
+            _commandQueue.Tracker.Signal();
+            _commandQueue.AllocatorPool.Signal();
+            _commandQueue.ListPool.Return(_commandList);
         }
     }
 
@@ -2201,7 +2202,5 @@ public unsafe sealed class GorgonResourceCopier
     /// </summary>
     /// <param name="graphics">The graphics interface that is associated with this writer.</param>
     public GorgonResourceCopier(GorgonGraphics graphics)
-        : this(graphics.Queues.CopyQueue)
-    {
-    }
+        : this(graphics.Queues.CopyQueue) => this.RegisterDisposable(graphics);
 }

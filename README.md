@@ -171,7 +171,10 @@ http://https://icons8.com
 Sprites example textures from:
 http://millionthvector.blogspot.com/
 
-This following image(s) is/are not redistributable without permission from the original author.
+Other textures:
+["Marble Black"](https://opengameart.org/content/seamless-surface-texture-pack-marble-blackpng) by Exalted Man
+
+This following image are not redistributable without permission from the original author.
 
 ["HotPocket.dds"](Resources/Textures/HotPocket.DDS) by Starkiteckt 
 https://www.artstation.com/starkiteckt

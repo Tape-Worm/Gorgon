@@ -349,7 +349,7 @@ internal class Program
             {
                 WorldViewProjection = Matrix4x4.CreatePerspectiveFieldOfViewLeftHanded((65.0f).ToRadians(), (float)_swap.Width / _swap.Height, 0.125f, 1000f),
                 VertexBufferHandle = _vertexBuffer.GetViewHandle(),
-                SamplerHandle = GorgonSampler.Linear(_graphics).GetViewHandle(),
+                SamplerHandle = GorgonSampler.Linear(_graphics).GetSamplerHandle(),
                 TextureHandle = _texture.GetViewHandle()
             };
 

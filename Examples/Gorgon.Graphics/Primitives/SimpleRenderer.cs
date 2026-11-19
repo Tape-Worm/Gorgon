@@ -410,7 +410,7 @@ internal class SimpleRenderer
         _renderData = new RenderData()
         {
             LightBufferHandle = _lightBuffer.GetViewHandle(),
-            SamplerHandle = GorgonSampler.LinearWrapping(_graphics).GetViewHandle()
+            SamplerHandle = GorgonSampler.LinearWrapping(_graphics).GetSamplerHandle()
         };
     }
 }

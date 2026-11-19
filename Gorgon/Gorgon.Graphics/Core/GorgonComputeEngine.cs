@@ -202,7 +202,7 @@ public unsafe class GorgonComputeEngine
     {
         if (commandList.ComputeEngine != this)
         {
-            Log.PrintWarning($"The command list {commandList.Name} was not created by the same graphics object. It will be skipped. Only submit command lists created by the same graphics object.", LoggingLevel.Simple);
+            Log.PrintWarning($"The command list {commandList.Name} was not created by the same compute engine object. It will be skipped. Only submit command lists created by the same compute engine object.", LoggingLevel.Simple);
             return;
         }
 
@@ -242,7 +242,7 @@ public unsafe class GorgonComputeEngine
 
                 if (commandList.ComputeEngine != this)
                 {
-                    Log.PrintWarning($"The command list '{commandList.Name}' at index {i} was not created by the same graphics object. It will be skipped. Only submit command lists created by the same graphics object.", LoggingLevel.Simple);
+                    Log.PrintWarning($"The command list '{commandList.Name}' at index {i} was not created by the same compute engine object. It will be skipped. Only submit command lists created by the same compute engine object.", LoggingLevel.Simple);
                     continue;
                 }
 

@@ -53,8 +53,9 @@ public readonly record struct GorgonUsedBuffer(GorgonGpuBufferCommon Buffer, Sha
     /// </summary>
     /// <param name="view">The read/write view containing the buffer being used.</param>
     /// <param name="stage"><inheritdoc cref="GorgonUsedBuffer(GorgonGpuBufferCommon, ShaderStage, BufferUsage)" path="/param[@name='Shader']"/></param>
-    public GorgonUsedBuffer(GorgonShaderBufferRwView view, ShaderStage stage)
-        : this(view.Buffer, stage, BufferUsage.ReadWrite)
+    /// <param name="usage"><inheritdoc cref="GorgonUsedBuffer(GorgonGpuBufferCommon, ShaderStage, BufferUsage)" path="/param[@name='Usage']"/></param>
+    public GorgonUsedBuffer(GorgonShaderBufferRwView view, ShaderStage stage, BufferUsage usage)
+        : this(view.Buffer, stage, usage)
     {
     }
 }

@@ -251,7 +251,7 @@ internal class Program
             {
                 Projection = _camera.GetProjectionMatrix(),
                 TextureHandle = _texture.GetViewHandle(),
-                SamplerHandle = _renderData.SamplerHandle = GorgonSampler.Linear(_graphics).GetViewHandle()
+                SamplerHandle = _renderData.SamplerHandle = GorgonSampler.Linear(_graphics).GetSamplerHandle()
             };
 
             _window.Resize += Window_Resize;

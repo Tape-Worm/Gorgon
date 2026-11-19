@@ -51,14 +51,14 @@
     <VersionSuffix>Dev</VersionSuffix>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="12.1.5" />
-    <PackageReference Include="Avalonia.Desktop" Version="12.1.5" />
-    <PackageReference Include="Avalonia.Diagnostics" Version="11.3.22" />
-    <PackageReference Include="Avalonia.Markup.Xaml.Loader" Version="12.1.5" />
-    <PackageReference Include="Avalonia.Native" Version="12.1.5" />
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.5" />
+    <PackageReference Include="Avalonia" Version="12.1.6" />
+    <PackageReference Include="Avalonia.Desktop" Version="12.1.6" />
+    <PackageReference Include="Avalonia.Diagnostics" Version="11.3.23" />
+    <PackageReference Include="Avalonia.Markup.Xaml.Loader" Version="12.1.6" />
+    <PackageReference Include="Avalonia.Native" Version="12.1.6" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.6" />
     <PackageReference Include="Microsoft.SourceLink.GitHub">
-      <Version>10.0.403</Version>
+      <Version>11.0.100</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>

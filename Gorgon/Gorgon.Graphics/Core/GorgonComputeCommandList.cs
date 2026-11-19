@@ -80,7 +80,7 @@ namespace Gorgon.Graphics.Core;
 /// <seealso cref="GorgonComputeEngine"/>
 /// <seealso cref="GorgonDispatchCall"/>
 /// <seealso cref="GorgonComputeExecuteCall"/>
-public sealed unsafe class GorgonComputeCommandList
+public sealed class GorgonComputeCommandList
     : IGorgonNamedObject, IGorgonCopyMethodsFluent<GorgonComputeCommandList>, IGorgonBarrierManagement<GorgonComputeCommandList>
 {
     private string _name = string.Empty;

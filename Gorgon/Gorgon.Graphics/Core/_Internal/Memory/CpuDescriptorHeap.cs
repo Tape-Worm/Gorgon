@@ -107,7 +107,7 @@ internal unsafe sealed class CpuDescriptorHeap
     /// <param name="device">The direct 3D device used to create the initial heap.</param>
     /// <param name="numDescriptors">The number of descriptors in the heap.</param>
     /// <returns>The COM pointer to the descriptor heap.</returns>
-    private ComPtr<ID3D12DescriptorHeap> CreateNativeHeap(ref readonly ComPtr<ID3D12Device14> device, uint numDescriptors)
+    private ComPtr<ID3D12DescriptorHeap> CreateNativeHeap(ref readonly ComPtr<ID3D12Device16> device, uint numDescriptors)
     {
         D3D12MA_VIRTUAL_BLOCK_DESC maDesc = new(numDescriptors);
 

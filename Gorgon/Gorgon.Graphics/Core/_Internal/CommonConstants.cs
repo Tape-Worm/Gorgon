@@ -22,6 +22,8 @@
 // Created: October 12, 2025 2:04:51 PM
 //
 
+using TerraFX.Interop.DirectX;
+
 namespace Gorgon.Graphics;
 
 /// <summary>
@@ -32,5 +34,14 @@ internal static class CommonConstants
     /// <summary>
     /// The Agility SDK version to use.
     /// </summary>
-    public const uint AgilitySDKVersion = 618;
+    public const uint AgilitySDKVersion = D3D12.D3D12_SDK_VERSION;
+
+    /// <summary>
+    /// The messages to remove from the debug output.
+    /// </summary>
+    public static readonly D3D12_MESSAGE_ID[] DenyMessages = [
+        D3D12_MESSAGE_ID.D3D12_MESSAGE_ID_CLEARRENDERTARGETVIEW_MISMATCHINGCLEARVALUE,
+        D3D12_MESSAGE_ID.D3D12_MESSAGE_ID_CLEARDEPTHSTENCILVIEW_MISMATCHINGCLEARVALUE,
+        D3D12_MESSAGE_ID.D3D12_MESSAGE_ID_CREATE_SAMPLER_COMPARISON_FUNC_IGNORED
+    ];
 }

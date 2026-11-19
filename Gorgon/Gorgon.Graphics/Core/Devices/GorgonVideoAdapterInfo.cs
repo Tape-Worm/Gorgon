@@ -320,7 +320,7 @@ public record class GorgonVideoAdapterInfo(string Name,
     /// <param name="adapter">The adapter being evaluated.</param>
     /// <param name="d3dDevice">The Direct3D device for the adapter.</param>
     /// <returns>The list of outputs on the adapter.</returns>
-    private static unsafe Dictionary<string, GorgonVideoOutputInfo> EnumerateOutputs(ComPtr<IDXGIAdapter4> adapter, ComPtr<ID3D12Device14> d3dDevice)
+    private static unsafe Dictionary<string, GorgonVideoOutputInfo> EnumerateOutputs(ComPtr<IDXGIAdapter4> adapter, ComPtr<ID3D12Device16> d3dDevice)
     {
         uint count = 0;
         Dictionary<string, GorgonVideoOutputInfo> outputs = new(StringComparer.OrdinalIgnoreCase);
@@ -367,7 +367,7 @@ public record class GorgonVideoAdapterInfo(string Name,
     /// <param name="deviceType">The type of video adapter.</param>
     /// <exception cref="Win32Exception">Thrown if the adapter description would not be retrieved.</exception>
     /// <returns>A new <see cref="GorgonVideoAdapterInfo"/> filled with information about the video adapter.</returns>
-    internal unsafe static GorgonVideoAdapterInfo FromD3D(int index, string name, ref readonly DXGI_ADAPTER_DESC3 desc, ComPtr<IDXGIAdapter4> adapter, ComPtr<ID3D12Device14> d3dDevice, bool allowTearing, ShaderModel shaderModel, VideoDeviceType deviceType)
+    internal unsafe static GorgonVideoAdapterInfo FromD3D(int index, string name, ref readonly DXGI_ADAPTER_DESC3 desc, ComPtr<IDXGIAdapter4> adapter, ComPtr<ID3D12Device16> d3dDevice, bool allowTearing, ShaderModel shaderModel, VideoDeviceType deviceType)
     {
         LUID luid = d3dDevice.Get()->GetAdapterLuid();
 
@@ -383,37 +383,37 @@ public record class GorgonVideoAdapterInfo(string Name,
         D3D12_FEATURE_DATA_TIGHT_ALIGNMENT tightAlignment = default;
         D3D12_FEATURE_DATA_GPU_VIRTUAL_ADDRESS_SUPPORT addressSupport = default;
 
-        d3dDevice.Get()->CheckFeatureSupport(D3D12_FEATURE.D3D12_FEATURE_D3D12_OPTIONS, &options, (uint)sizeof(D3D12_FEATURE_DATA_D3D12_OPTIONS))
+        d3dDevice.Get()->CheckFeatureSupport1(D3D12_FEATURE.D3D12_FEATURE_D3D12_OPTIONS, &options, (uint)sizeof(D3D12_FEATURE_DATA_D3D12_OPTIONS), CommonConstants.AgilitySDKVersion)
             .ThrowIfFailed(GorgonResult.CannotEnumerate, Resources.GORGFX_ERR_CANNOT_ENUMERATE_GPU, name);
 
-        d3dDevice.Get()->CheckFeatureSupport(D3D12_FEATURE.D3D12_FEATURE_ARCHITECTURE1, &arch, (uint)sizeof(D3D12_FEATURE_DATA_ARCHITECTURE1))
+        d3dDevice.Get()->CheckFeatureSupport1(D3D12_FEATURE.D3D12_FEATURE_ARCHITECTURE1, &arch, (uint)sizeof(D3D12_FEATURE_DATA_ARCHITECTURE1), CommonConstants.AgilitySDKVersion)
             .ThrowIfFailed(GorgonResult.CannotEnumerate, Resources.GORGFX_ERR_CANNOT_ENUMERATE_GPU, name);
 
-        d3dDevice.Get()->CheckFeatureSupport(D3D12_FEATURE.D3D12_FEATURE_D3D12_OPTIONS16, &options16, (uint)sizeof(D3D12_FEATURE_DATA_D3D12_OPTIONS16))
+        d3dDevice.Get()->CheckFeatureSupport1(D3D12_FEATURE.D3D12_FEATURE_D3D12_OPTIONS16, &options16, (uint)sizeof(D3D12_FEATURE_DATA_D3D12_OPTIONS16), CommonConstants.AgilitySDKVersion)
             .ThrowIfFailed(GorgonResult.CannotEnumerate, Resources.GORGFX_ERR_CANNOT_ENUMERATE_GPU, name);
 
-        d3dDevice.Get()->CheckFeatureSupport(D3D12_FEATURE.D3D12_FEATURE_D3D12_TIGHT_ALIGNMENT, &tightAlignment, (uint)sizeof(D3D12_FEATURE_DATA_TIGHT_ALIGNMENT))
+        d3dDevice.Get()->CheckFeatureSupport1(D3D12_FEATURE.D3D12_FEATURE_D3D12_TIGHT_ALIGNMENT, &tightAlignment, (uint)sizeof(D3D12_FEATURE_DATA_TIGHT_ALIGNMENT), CommonConstants.AgilitySDKVersion)
             .ThrowIfFailed(GorgonResult.CannotEnumerate, Resources.GORGFX_ERR_CANNOT_ENUMERATE_GPU, name);
 
-        d3dDevice.Get()->CheckFeatureSupport(D3D12_FEATURE.D3D12_FEATURE_GPU_VIRTUAL_ADDRESS_SUPPORT, &addressSupport, (uint)sizeof(D3D12_FEATURE_DATA_GPU_VIRTUAL_ADDRESS_SUPPORT))
+        d3dDevice.Get()->CheckFeatureSupport1(D3D12_FEATURE.D3D12_FEATURE_GPU_VIRTUAL_ADDRESS_SUPPORT, &addressSupport, (uint)sizeof(D3D12_FEATURE_DATA_GPU_VIRTUAL_ADDRESS_SUPPORT), CommonConstants.AgilitySDKVersion)
             .ThrowIfFailed(GorgonResult.CannotEnumerate, Resources.GORGFX_ERR_CANNOT_ENUMERATE_GPU, name);
 
-        d3dDevice.Get()->CheckFeatureSupport(D3D12_FEATURE.D3D12_FEATURE_D3D12_OPTIONS2, &options2, (uint)sizeof(D3D12_FEATURE_DATA_D3D12_OPTIONS2))
+        d3dDevice.Get()->CheckFeatureSupport1(D3D12_FEATURE.D3D12_FEATURE_D3D12_OPTIONS2, &options2, (uint)sizeof(D3D12_FEATURE_DATA_D3D12_OPTIONS2), CommonConstants.AgilitySDKVersion)
             .ThrowIfFailed(GorgonResult.CannotEnumerate, Resources.GORGFX_ERR_CANNOT_ENUMERATE_GPU, name);
 
-        d3dDevice.Get()->CheckFeatureSupport(D3D12_FEATURE.D3D12_FEATURE_D3D12_OPTIONS3, &options3, (uint)sizeof(D3D12_FEATURE_DATA_D3D12_OPTIONS3))
+        d3dDevice.Get()->CheckFeatureSupport1(D3D12_FEATURE.D3D12_FEATURE_D3D12_OPTIONS3, &options3, (uint)sizeof(D3D12_FEATURE_DATA_D3D12_OPTIONS3), CommonConstants.AgilitySDKVersion)
             .ThrowIfFailed(GorgonResult.CannotEnumerate, Resources.GORGFX_ERR_CANNOT_ENUMERATE_GPU, name);
 
-        d3dDevice.Get()->CheckFeatureSupport(D3D12_FEATURE.D3D12_FEATURE_D3D12_OPTIONS13, &options13, (uint)sizeof(D3D12_FEATURE_DATA_D3D12_OPTIONS13))
+        d3dDevice.Get()->CheckFeatureSupport1(D3D12_FEATURE.D3D12_FEATURE_D3D12_OPTIONS13, &options13, (uint)sizeof(D3D12_FEATURE_DATA_D3D12_OPTIONS13), CommonConstants.AgilitySDKVersion)
             .ThrowIfFailed(GorgonResult.CannotEnumerate, Resources.GORGFX_ERR_CANNOT_ENUMERATE_GPU, name);
 
-        d3dDevice.Get()->CheckFeatureSupport(D3D12_FEATURE.D3D12_FEATURE_D3D12_OPTIONS14, &options14, (uint)sizeof(D3D12_FEATURE_DATA_D3D12_OPTIONS14))
+        d3dDevice.Get()->CheckFeatureSupport1(D3D12_FEATURE.D3D12_FEATURE_D3D12_OPTIONS14, &options14, (uint)sizeof(D3D12_FEATURE_DATA_D3D12_OPTIONS14), CommonConstants.AgilitySDKVersion)
             .ThrowIfFailed(GorgonResult.CannotEnumerate, Resources.GORGFX_ERR_CANNOT_ENUMERATE_GPU, name);
 
-        d3dDevice.Get()->CheckFeatureSupport(D3D12_FEATURE.D3D12_FEATURE_D3D12_OPTIONS19, &options19, (uint)sizeof(D3D12_FEATURE_DATA_D3D12_OPTIONS19))
+        d3dDevice.Get()->CheckFeatureSupport1(D3D12_FEATURE.D3D12_FEATURE_D3D12_OPTIONS19, &options19, (uint)sizeof(D3D12_FEATURE_DATA_D3D12_OPTIONS19), CommonConstants.AgilitySDKVersion)
             .ThrowIfFailed(GorgonResult.CannotEnumerate, Resources.GORGFX_ERR_CANNOT_ENUMERATE_GPU, name);
 
-        d3dDevice.Get()->CheckFeatureSupport(D3D12_FEATURE.D3D12_FEATURE_D3D12_OPTIONS21, &options21, (uint)sizeof(D3D12_FEATURE_DATA_D3D12_OPTIONS21))
+        d3dDevice.Get()->CheckFeatureSupport1(D3D12_FEATURE.D3D12_FEATURE_D3D12_OPTIONS21, &options21, (uint)sizeof(D3D12_FEATURE_DATA_D3D12_OPTIONS21), CommonConstants.AgilitySDKVersion)
             .ThrowIfFailed(GorgonResult.CannotEnumerate, Resources.GORGFX_ERR_CANNOT_ENUMERATE_GPU, name);
 
         GorgonVideoAdapterOutputList outputs = new(EnumerateOutputs(adapter, d3dDevice));

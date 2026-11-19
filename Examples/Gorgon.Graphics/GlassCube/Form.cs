@@ -152,7 +152,7 @@ public partial class Form : System.Windows.Forms.Form
 
         RenderData renderData = new()
         {
-            SamplerHandle = CheckSmoothing.Checked ? GorgonSampler.Linear(_graphics).GetViewHandle() : GorgonSampler.Default(_graphics).GetViewHandle(),
+            SamplerHandle = CheckSmoothing.Checked ? GorgonSampler.Linear(_graphics).GetSamplerHandle() : GorgonSampler.Default(_graphics).GetSamplerHandle(),
             TextureHandle = _texture.GetViewHandle(),
             VertexBufferHandle = _cube.VertexBuffer.GetViewHandle()
         };

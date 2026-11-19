@@ -50,14 +50,14 @@ internal unsafe class VideoAdapterEnumerator
     /// <param name="log">The log for debug messages.</param>
     /// <param name="highestShaderModel">The highest shader model level for the adapter.</param>
     /// <returns><b>true</b> if the adapter is valid, <b>false</b> if not.</returns>
-    private static bool ValidateAdapter(ComPtr<ID3D12Device14> d3dDevice, string name, IGorgonLog log, out ShaderModel highestShaderModel)
+    private static bool ValidateAdapter(ComPtr<ID3D12Device16> d3dDevice, string name, IGorgonLog log, out ShaderModel highestShaderModel)
     {
         D3D12_FEATURE_DATA_SHADER_MODEL smData = new()
         {
             HighestShaderModel = D3D_SHADER_MODEL.D3D_SHADER_MODEL_6_8
         };
 
-        HRESULT err = d3dDevice.Get()->CheckFeatureSupport(D3D12_FEATURE.D3D12_FEATURE_SHADER_MODEL, &smData, (uint)sizeof(D3D12_FEATURE_DATA_SHADER_MODEL));
+        HRESULT err = d3dDevice.Get()->CheckFeatureSupport1(D3D12_FEATURE.D3D12_FEATURE_SHADER_MODEL, &smData, (uint)sizeof(D3D12_FEATURE_DATA_SHADER_MODEL), CommonConstants.AgilitySDKVersion);
 
         if (err.FAILED)
         {
@@ -76,7 +76,7 @@ internal unsafe class VideoAdapterEnumerator
 
         D3D12_FEATURE_DATA_D3D12_OPTIONS options = default;
 
-        err = d3dDevice.Get()->CheckFeatureSupport(D3D12_FEATURE.D3D12_FEATURE_D3D12_OPTIONS, &options, (uint)sizeof(D3D12_FEATURE_DATA_D3D12_OPTIONS));
+        err = d3dDevice.Get()->CheckFeatureSupport1(D3D12_FEATURE.D3D12_FEATURE_D3D12_OPTIONS, &options, (uint)sizeof(D3D12_FEATURE_DATA_D3D12_OPTIONS), CommonConstants.AgilitySDKVersion);
 
         if (err.FAILED)
         {
@@ -98,7 +98,7 @@ internal unsafe class VideoAdapterEnumerator
 
         D3D12_FEATURE_DATA_GPU_VIRTUAL_ADDRESS_SUPPORT addressSupport = default;
 
-        err = d3dDevice.Get()->CheckFeatureSupport(D3D12_FEATURE.D3D12_FEATURE_GPU_VIRTUAL_ADDRESS_SUPPORT, &addressSupport, (uint)sizeof(D3D12_FEATURE_DATA_GPU_VIRTUAL_ADDRESS_SUPPORT));
+        err = d3dDevice.Get()->CheckFeatureSupport1(D3D12_FEATURE.D3D12_FEATURE_GPU_VIRTUAL_ADDRESS_SUPPORT, &addressSupport, (uint)sizeof(D3D12_FEATURE_DATA_GPU_VIRTUAL_ADDRESS_SUPPORT), CommonConstants.AgilitySDKVersion);
 
         if (err.FAILED)
         {
@@ -122,7 +122,7 @@ internal unsafe class VideoAdapterEnumerator
 
         D3D12_FEATURE_DATA_D3D12_OPTIONS12 options12 = default;
 
-        err = d3dDevice.Get()->CheckFeatureSupport(D3D12_FEATURE.D3D12_FEATURE_D3D12_OPTIONS12, &options12, (uint)sizeof(D3D12_FEATURE_DATA_D3D12_OPTIONS12));
+        err = d3dDevice.Get()->CheckFeatureSupport1(D3D12_FEATURE.D3D12_FEATURE_D3D12_OPTIONS12, &options12, (uint)sizeof(D3D12_FEATURE_DATA_D3D12_OPTIONS12), CommonConstants.AgilitySDKVersion);
 
         if (err.FAILED)
         {
@@ -138,7 +138,7 @@ internal unsafe class VideoAdapterEnumerator
 
         D3D12_FEATURE_DATA_D3D12_OPTIONS13 options13 = default;
 
-        err = d3dDevice.Get()->CheckFeatureSupport(D3D12_FEATURE.D3D12_FEATURE_D3D12_OPTIONS13, &options13, (uint)sizeof(D3D12_FEATURE_DATA_D3D12_OPTIONS13));
+        err = d3dDevice.Get()->CheckFeatureSupport1(D3D12_FEATURE.D3D12_FEATURE_D3D12_OPTIONS13, &options13, (uint)sizeof(D3D12_FEATURE_DATA_D3D12_OPTIONS13), CommonConstants.AgilitySDKVersion);
 
         if (err.FAILED)
         {
@@ -154,7 +154,7 @@ internal unsafe class VideoAdapterEnumerator
 
         D3D12_FEATURE_DATA_D3D12_OPTIONS19 options19 = default;
 
-        err = d3dDevice.Get()->CheckFeatureSupport(D3D12_FEATURE.D3D12_FEATURE_D3D12_OPTIONS19, &options19, (uint)sizeof(D3D12_FEATURE_DATA_D3D12_OPTIONS19));
+        err = d3dDevice.Get()->CheckFeatureSupport1(D3D12_FEATURE.D3D12_FEATURE_D3D12_OPTIONS19, &options19, (uint)sizeof(D3D12_FEATURE_DATA_D3D12_OPTIONS19), CommonConstants.AgilitySDKVersion);
 
         if (err.FAILED)
         {
@@ -192,7 +192,7 @@ internal unsafe class VideoAdapterEnumerator
             return null;
         }
 
-        using ComPtr<ID3D12Device14> d3dDevice = CreateD3DDevice(adapter, deviceFactory, log);
+        using ComPtr<ID3D12Device16> d3dDevice = CreateD3DDevice(adapter, deviceFactory, log);
 
         if (d3dDevice.IsNull)
         {
@@ -279,10 +279,10 @@ internal unsafe class VideoAdapterEnumerator
     /// <param name="deviceFactory">The device factory used to create the D3D device.</param>
     /// <param name="log">The log used for debug messages.</param>
     /// <returns>The D3D 12 device..</returns>
-    private static ComPtr<ID3D12Device14> CreateD3DDevice(ComPtr<IDXGIAdapter4> adapter, ComPtr<ID3D12DeviceFactory> deviceFactory, IGorgonLog log)
+    private static ComPtr<ID3D12Device16> CreateD3DDevice(ComPtr<IDXGIAdapter4> adapter, ComPtr<ID3D12DeviceFactory> deviceFactory, IGorgonLog log)
     {
-        ComPtr<ID3D12Device14> d3dDevice = default;
-        Guid* riid = Win32.__uuidof<ID3D12Device14>();
+        ComPtr<ID3D12Device16> d3dDevice = default;
+        Guid* riid = Win32.__uuidof<ID3D12Device16>();
 
         HRESULT err = deviceFactory.Get()->CreateDevice((PIDXGIAdapter4)adapter.Get(), D3D_FEATURE_LEVEL.D3D_FEATURE_LEVEL_12_0, riid, (void**)d3dDevice.GetAddressOf());
 
@@ -302,17 +302,17 @@ internal unsafe class VideoAdapterEnumerator
         levels.NumFeatureLevels = 3;
         levels.pFeatureLevelsRequested = featureLevels;
 
-        err = d3dDevice.Get()->CheckFeatureSupport(D3D12_FEATURE.D3D12_FEATURE_FEATURE_LEVELS, &levels, (uint)sizeof(D3D12_FEATURE_DATA_FEATURE_LEVELS));
+        err = d3dDevice.Get()->CheckFeatureSupport1(D3D12_FEATURE.D3D12_FEATURE_FEATURE_LEVELS, &levels, (uint)sizeof(D3D12_FEATURE_DATA_FEATURE_LEVELS), CommonConstants.AgilitySDKVersion);
 
         if (err.FAILED)
         {
-            log.PrintError(err, "There was an error querying the Direct 3D 12 device object for feature level support.", LoggingLevel.Verbose);
+            log.PrintError(err, "There was an error querying the device for feature level support.", LoggingLevel.Verbose);
             return default;
         }
 
         if (levels.MaxSupportedFeatureLevel < D3D_FEATURE_LEVEL.D3D_FEATURE_LEVEL_12_2)
-        {
-            log.PrintWarning("Device does not support feature level 12.2", LoggingLevel.Intermediate);
+        {            
+            log.PrintWarning($"Device does not support feature level 12.2. The maximum supported feature level is {levels.MaxSupportedFeatureLevel.AsVersion().ToString(2)}", LoggingLevel.Intermediate);
             return default;
         }
 
@@ -320,7 +320,7 @@ internal unsafe class VideoAdapterEnumerator
         err = deviceFactory.Get()->CreateDevice((PIDXGIAdapter4)adapter.Get(), levels.MaxSupportedFeatureLevel, riid, (void**)d3dDevice.ReleaseAndGetAddressOf());
         if (err.FAILED)
         {
-            log.PrintError(err, $"There was an error creating the Direct 3D 12 device object for feature level {D3D_FEATURE_LEVEL.D3D_FEATURE_LEVEL_12_2}.", LoggingLevel.Simple);
+            log.PrintError(err, $"There was an error creating the device object for feature level {D3D_FEATURE_LEVEL.D3D_FEATURE_LEVEL_12_2.AsVersion().ToString(2)}.", LoggingLevel.Simple);
             return default;
         }
 
@@ -412,7 +412,7 @@ internal unsafe class VideoAdapterEnumerator
 
             string name = ((ReadOnlySpan<char>)desc.Description).Trim('\0').ToString();
 
-            using ComPtr<ID3D12Device14> d3dDevice = CreateD3DDevice(adapter4, deviceFactory, log);
+            using ComPtr<ID3D12Device16> d3dDevice = CreateD3DDevice(adapter4, deviceFactory, log);            
 
             if (d3dDevice.IsNull)
             {
@@ -420,22 +420,36 @@ internal unsafe class VideoAdapterEnumerator
                 continue;
             }
 
-            if (!ValidateAdapter(d3dDevice, name, log, out ShaderModel sm))
+            ComPtr<ID3D12InfoQueue1> debugQueue = default;
+
+            try
             {
-                continue;
+                if (allowDebugging)
+                {
+                    debugQueue = d3dDevice.GetInfoQueue(log);
+                }
+
+                if (!ValidateAdapter(d3dDevice, name, log, out ShaderModel sm))
+                {
+                    continue;
+                }
+
+                GorgonVideoAdapterInfo adapterInfo = GorgonVideoAdapterInfo.FromD3D(currentIndex,
+                        name,
+                        in desc,
+                        adapter4,
+                        d3dDevice,
+                        allowTearing != 0,
+                        sm,
+                        VideoDeviceType.Hardware);
+                devices.Add(adapterInfo);
+
+                PrintLog(adapterInfo, log);
             }
-
-            GorgonVideoAdapterInfo adapterInfo = GorgonVideoAdapterInfo.FromD3D(currentIndex,
-                    name,
-                    in desc,
-                    adapter4,
-                    d3dDevice,
-                    allowTearing != 0,
-                    sm,
-                    VideoDeviceType.Hardware);
-            devices.Add(adapterInfo);
-
-            PrintLog(adapterInfo, log);
+            finally
+            {
+                debugQueue.Dispose();
+            }
         } while (true);
 
         if (enumerateWARPDevice)

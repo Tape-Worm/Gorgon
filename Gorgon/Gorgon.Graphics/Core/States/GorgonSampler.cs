@@ -43,7 +43,7 @@ namespace Gorgon.Graphics.Core;
 /// <para>
 /// These objects are bindless objects, meaning that they are passed to the shaders by use of a view handle. These handles allow indexing into the sampler descriptor heap from the shader by calling the 
 /// <a href="https://microsoft.github.io/DirectX-Specs/d3d/HLSL_SM_6_6_DynamicResources.html#resourcedescriptorheap-and-samplerdescriptorheap"><c>SamplerDescriptorHeap</c></a> HLSL intrinsic. See the 
-/// <see cref="GetViewHandle"/> method for an example.
+/// <see cref="GetSamplerHandle"/> method for an example.
 /// </para>
 /// <para>
 /// Several common samplers used by applications can be retrieved with the static methods on this class (e.g. <see cref="Default(GorgonGraphics)"/>). It is more efficient to use these than to define your own.
@@ -53,7 +53,7 @@ namespace Gorgon.Graphics.Core;
 /// </para>
 /// </remarks>
 /// <seealso cref="GorgonSamplerBuilder"/>
-/// <seealso cref="GetViewHandle"/>
+/// <seealso cref="GetSamplerHandle"/>
 public sealed unsafe class GorgonSampler
     : IDisposable, IGorgonNamedObject, IEquatable<GorgonSampler>
 {
@@ -474,7 +474,7 @@ public sealed unsafe class GorgonSampler
     /// {
     ///    RenderData data = new()
     ///    {
-    ///       SamplerHandle = sampler.GetViewHandle(),
+    ///       SamplerHandle = sampler.GetSamplerHandle(),
     ///       TextureHandle = tv.GetViewHandle()
     ///    };
     ///    
@@ -486,7 +486,7 @@ public sealed unsafe class GorgonSampler
     /// </example>
     /// <seealso cref="GorgonCommandList.WriteConstant{T}(int, in T)"/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public int GetViewHandle()
+    public int GetSamplerHandle()
     {
         if (_allocation.Equals(in GpuDescriptorAllocation.Null))
         {

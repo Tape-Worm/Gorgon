@@ -36,7 +36,7 @@
 
   <ItemGroup>
     <!-- Keep in sync with Gorgon.Graphics.Core.csproj. -->
-    <PackageReference Include="TerraFX.Interop.Windows" Version="10.0.26100.6" />
+    <PackageReference Include="TerraFX.Interop.Windows" Version="10.0.28000" />
   </ItemGroup>
 
 </Project>

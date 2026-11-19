@@ -330,14 +330,15 @@ public record class GorgonVideoOutputInfo(string Name,
     /// <param name="d3dDevice">The active Direct3D device.</param>
     /// <param name="format">The format to evaluate.</param>
     /// <returns><b>true</b> if the format is suppported for display, or <b>false</b> if not.</returns>
-    private static unsafe bool IsDisplayFormat(ComPtr<ID3D12Device14> d3dDevice, DXGI_FORMAT format)
+    private static unsafe bool IsDisplayFormat(ComPtr<ID3D12Device16> d3dDevice, DXGI_FORMAT format)
     {
         D3D12_FEATURE_DATA_FORMAT_SUPPORT support = new()
         {
             Format = format
         };
 
-        return !d3dDevice.Get()->CheckFeatureSupport(D3D12_FEATURE.D3D12_FEATURE_FORMAT_SUPPORT, &support, (uint)Unsafe.SizeOf<D3D12_FEATURE_DATA_FORMAT_SUPPORT>()).FAILED && (support.Support1 & D3D12_FORMAT_SUPPORT1.D3D12_FORMAT_SUPPORT1_DISPLAY) == D3D12_FORMAT_SUPPORT1.D3D12_FORMAT_SUPPORT1_DISPLAY;
+        return (!d3dDevice.Get()->CheckFeatureSupport1(D3D12_FEATURE.D3D12_FEATURE_FORMAT_SUPPORT, &support, (uint)Unsafe.SizeOf<D3D12_FEATURE_DATA_FORMAT_SUPPORT>(), CommonConstants.AgilitySDKVersion).FAILED) 
+            && ((support.Support1 & D3D12_FORMAT_SUPPORT1.D3D12_FORMAT_SUPPORT1_DISPLAY) == D3D12_FORMAT_SUPPORT1.D3D12_FORMAT_SUPPORT1_DISPLAY);
     }
 
     /// <summary>
@@ -346,7 +347,7 @@ public record class GorgonVideoOutputInfo(string Name,
     /// <param name="output">The output to evaluate.</param>
     /// <param name="d3dDevice">The Direct3D device used to filter display modes.</param>
     /// <returns>A list of available full screen video modes.</returns>
-    private static unsafe List<GorgonVideoMode> EnumerateVideoModes(ComPtr<IDXGIOutput6> output, ComPtr<ID3D12Device14> d3dDevice)
+    private static unsafe List<GorgonVideoMode> EnumerateVideoModes(ComPtr<IDXGIOutput6> output, ComPtr<ID3D12Device16> d3dDevice)
     {
         List<GorgonVideoMode> result = [];
 
@@ -395,7 +396,7 @@ public record class GorgonVideoOutputInfo(string Name,
     /// <param name="output">The output to evaluate.</param>
     /// <param name="d3dDevice">The Direct3D device used to filter display modes.</param>
     /// <exception cref="Win32Exception">Thrown if the output description would not be retrieved.</exception>
-    internal unsafe static GorgonVideoOutputInfo FromD3D(int index, ComPtr<IDXGIOutput6> output, ComPtr<ID3D12Device14> d3dDevice)
+    internal unsafe static GorgonVideoOutputInfo FromD3D(int index, ComPtr<IDXGIOutput6> output, ComPtr<ID3D12Device16> d3dDevice)
     {
         DXGI_OUTPUT_DESC1 desc = default;
 

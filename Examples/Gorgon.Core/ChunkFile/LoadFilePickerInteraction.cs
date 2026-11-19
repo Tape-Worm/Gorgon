@@ -29,6 +29,7 @@ using System.Reactive;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
+using ReactiveUI.Binding;
 using Gorgon.IO;
 
 namespace Gorgon.Examples;

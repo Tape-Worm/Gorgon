@@ -319,7 +319,7 @@ internal partial class Program
             _renderData.Amplitude = StartAmplitude;
             _renderData.SliceCount = SliceCount;
             _renderData.TextureHandle = _texture.GetViewHandle();
-            _renderData.SamplerHandle = GorgonSampler.Linear(_graphics).GetViewHandle();
+            _renderData.SamplerHandle = GorgonSampler.Linear(_graphics).GetSamplerHandle();
 
             GorgonExample.LoadResources(_graphics);
             GorgonExample.EndInit();

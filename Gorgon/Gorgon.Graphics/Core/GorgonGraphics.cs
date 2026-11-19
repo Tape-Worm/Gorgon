@@ -94,7 +94,7 @@ public unsafe sealed class GorgonGraphics
 
     private ComPtr<IDXGIFactory7> _dxgiFactory;
     private ComPtr<IDXGIAdapter4> _dxgiAdapter;
-    private ComPtr<ID3D12Device14> _d3dDevice;
+    private ComPtr<ID3D12Device16> _d3dDevice;
     private ComPtr<ID3D12InfoQueue1> _d3dInfoQueue;
     private ComPtr<D3D12MA_Allocator> _allocator;
     private ComPtr<ID3D12RootSignature> _rootSignature;
@@ -114,7 +114,7 @@ public unsafe sealed class GorgonGraphics
     /// <summary>
     /// Property to return the internal Direct 3D 12 device pointer.
     /// </summary>
-    internal ref readonly ComPtr<ID3D12Device14> D3DDevice => ref _d3dDevice;
+    internal ref readonly ComPtr<ID3D12Device16> D3DDevice => ref _d3dDevice;
 
     /// <summary>
     /// Property to return the internal DXGI adapter pointer.
@@ -310,7 +310,7 @@ public unsafe sealed class GorgonGraphics
                 Log.Print($"[DEBUG] Destroying {nameof(ID3D12InfoQueue1)}...", LoggingLevel.Verbose);
             }
 
-            Log.Print($"Destroying {nameof(ID3D12Device14)}...", LoggingLevel.Verbose);
+            Log.Print($"Destroying {nameof(ID3D12Device16)}...", LoggingLevel.Verbose);
             Log.Print($"Destroying {nameof(IDXGIAdapter4)}, and {nameof(IDXGIFactory7)}...", LoggingLevel.Verbose);
 
             if (!allocator.IsNull)
@@ -364,51 +364,6 @@ public unsafe sealed class GorgonGraphics
     }
 
     /// <summary>
-    /// Function to create the COM object interface used for the Direct 3D 12 information queue for debugging.
-    /// </summary>
-    /// <returns>The pointer to the D3D 12 information queue.</returns>
-    private ComPtr<ID3D12InfoQueue1> CreateDebugInfoQueue()
-    {
-        const int MaxIDDenyCount = 3;
-
-        ComPtr<ID3D12InfoQueue1> result = default;
-
-        Log.Print($"[DEBUG] Creating a {nameof(ID3D12InfoQueue1)} object for callbacks...", LoggingLevel.Verbose);
-
-        HRESULT err = D3DDevice.As(ref result);
-
-        if (err.FAILED)
-        {
-            Log.PrintWarning(err, $"Unable to retrieve the {nameof(ID3D12InfoQueue1)} object. Debugging information will be limited.", LoggingLevel.Intermediate);
-            return default;
-        }
-
-        // Add any messages we want to ignore here:
-        D3D12_MESSAGE_ID* filters = stackalloc D3D12_MESSAGE_ID[MaxIDDenyCount]
-        {
-            D3D12_MESSAGE_ID.D3D12_MESSAGE_ID_CLEARRENDERTARGETVIEW_MISMATCHINGCLEARVALUE,
-            D3D12_MESSAGE_ID.D3D12_MESSAGE_ID_CLEARDEPTHSTENCILVIEW_MISMATCHINGCLEARVALUE,
-            D3D12_MESSAGE_ID.D3D12_MESSAGE_ID_CREATE_SAMPLER_COMPARISON_FUNC_IGNORED
-        };
-
-        D3D12_INFO_QUEUE_FILTER filter = new()
-        {
-            DenyList = new D3D12_INFO_QUEUE_FILTER_DESC()
-            {
-                NumIDs = MaxIDDenyCount,
-                pIDList = filters
-            }
-        };
-
-        result.Get()->SetBreakOnID(D3D12_MESSAGE_ID.D3D12_MESSAGE_ID_GETHEAPPROPERTIES_INVALIDRESOURCE, false);
-
-        result.Get()->AddStorageFilterEntries(&filter)
-            .ThrowIfFailed(GorgonResult.CannotCreate, Resources.GORGFX_ERR_CANNOT_SETUP_DEBUG_INFO);
-
-        return result;
-    }
-
-    /// <summary>
     /// Function to retrieve the multi sample maximum quality level support for a given format.
     /// </summary>
     /// <param name="format">The DXGI format support to evaluate.</param>
@@ -416,7 +371,7 @@ public unsafe sealed class GorgonGraphics
     /// <returns>A <see cref="GorgonMultisampleInfo"/> value containing the max count and max quality level.</returns>
     private GorgonMultisampleInfo GetMultisampleSupport(DXGI_FORMAT format, bool tiled)
     {
-        ID3D12Device14* devPtr = _d3dDevice.Get();
+        ID3D12Device16* devPtr = _d3dDevice.Get();
 
         for (uint count = D3D12.D3D12_MAX_MULTISAMPLE_SAMPLE_COUNT; count > 1; --count)
         {
@@ -427,7 +382,7 @@ public unsafe sealed class GorgonGraphics
                 Flags = tiled ? D3D12_MULTISAMPLE_QUALITY_LEVEL_FLAGS.D3D12_MULTISAMPLE_QUALITY_LEVELS_FLAG_TILED_RESOURCE : D3D12_MULTISAMPLE_QUALITY_LEVEL_FLAGS.D3D12_MULTISAMPLE_QUALITY_LEVELS_FLAG_NONE
             };
 
-            if (devPtr->CheckFeatureSupport(D3D12_FEATURE.D3D12_FEATURE_MULTISAMPLE_QUALITY_LEVELS, &samples, (uint)sizeof(D3D12_FEATURE_DATA_MULTISAMPLE_QUALITY_LEVELS)).FAILED)
+            if (devPtr->CheckFeatureSupport1(D3D12_FEATURE.D3D12_FEATURE_MULTISAMPLE_QUALITY_LEVELS, &samples, (uint)sizeof(D3D12_FEATURE_DATA_MULTISAMPLE_QUALITY_LEVELS), CommonConstants.AgilitySDKVersion).FAILED)
             {
                 continue;
             }
@@ -458,7 +413,7 @@ public unsafe sealed class GorgonGraphics
                 Format = format
             };
 
-            if (D3DDevice.Get()->CheckFeatureSupport(D3D12_FEATURE.D3D12_FEATURE_FORMAT_SUPPORT, &support, (uint)sizeof(D3D12_FEATURE_DATA_FORMAT_SUPPORT)).FAILED)
+            if (D3DDevice.Get()->CheckFeatureSupport1(D3D12_FEATURE.D3D12_FEATURE_FORMAT_SUPPORT, &support, (uint)sizeof(D3D12_FEATURE_DATA_FORMAT_SUPPORT), CommonConstants.AgilitySDKVersion).FAILED)
             {
                 continue;
             }
@@ -477,7 +432,7 @@ public unsafe sealed class GorgonGraphics
                 PlaneCount = 0
             };
 
-            if (D3DDevice.Get()->CheckFeatureSupport(D3D12_FEATURE.D3D12_FEATURE_FORMAT_INFO, &formatInfo, (uint)sizeof(D3D12_FEATURE_DATA_FORMAT_INFO)).FAILED)
+            if (D3DDevice.Get()->CheckFeatureSupport1(D3D12_FEATURE.D3D12_FEATURE_FORMAT_INFO, &formatInfo, (uint)sizeof(D3D12_FEATURE_DATA_FORMAT_INFO), CommonConstants.AgilitySDKVersion).FAILED)
             {
                 formatInfo.PlaneCount = 1;
             }
@@ -535,7 +490,7 @@ public unsafe sealed class GorgonGraphics
     /// <param name="adapter">The selected video adapter to use.</param>
     /// <param name="device">The D3D 12 device object.</param>
     /// <returns>The pointer to the main allocator.</returns>
-    private ComPtr<D3D12MA_Allocator> BuildAllocator(string adapterName, ComPtr<IDXGIAdapter4> adapter, ComPtr<ID3D12Device14> device)
+    private ComPtr<D3D12MA_Allocator> BuildAllocator(string adapterName, ComPtr<IDXGIAdapter4> adapter, ComPtr<ID3D12Device16> device)
     {
         ComPtr<D3D12MA_Allocator> result = default;
 
@@ -543,7 +498,7 @@ public unsafe sealed class GorgonGraphics
         {
             Flags = D3D12MA_ALLOCATOR_FLAGS.D3D12MA_ALLOCATOR_FLAG_NONE,
             pAdapter = (PIDXGIAdapter4)adapter.Get(),
-            pDevice = (PID3D12Device14)device.Get(),
+            pDevice = (PID3D12Device16)device.Get(),
             PreferredBlockSize = 0 // Defaults to 64 MB.
         };
 
@@ -1143,7 +1098,7 @@ public unsafe sealed class GorgonGraphics
     /// <param name="d3dDevice">The Direct 3D 12 device used to render.</param>
     /// <param name="debug">The GPU debugging interface.</param>
     /// <param name="log">The log used for debug messaging.</param>
-    internal GorgonGraphics(GorgonVideoAdapterInfo adapter, GorgonGraphicsFactory parentFactory, int frameCount, int bufferPercent, ComPtr<IDXGIFactory7> dxgiFactory, ComPtr<IDXGIAdapter4> dxgiAdapter, ComPtr<ID3D12Device14> d3dDevice, GorgonGraphicsDebug? debug, IGorgonLog log)
+    internal GorgonGraphics(GorgonVideoAdapterInfo adapter, GorgonGraphicsFactory parentFactory, int frameCount, int bufferPercent, ComPtr<IDXGIFactory7> dxgiFactory, ComPtr<IDXGIAdapter4> dxgiAdapter, ComPtr<ID3D12Device16> d3dDevice, GorgonGraphicsDebug? debug, IGorgonLog log)
     {
         Log = log;
 
@@ -1160,7 +1115,7 @@ public unsafe sealed class GorgonGraphics
 
         if (debug is not null)
         {
-            _d3dInfoQueue = CreateDebugInfoQueue();
+            _d3dInfoQueue = _d3dDevice.GetInfoQueue(Log);
         }
 
         ComPtr<D3D12MA_Allocator> allocator = BuildAllocator(adapter.Name, _dxgiAdapter, _d3dDevice);

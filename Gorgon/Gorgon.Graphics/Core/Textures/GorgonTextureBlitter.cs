@@ -651,7 +651,7 @@ public unsafe class GorgonTextureBlitter
             Wvp = _projection,
             VertexBufferHandle = _vertexBuffer.GetViewHandle(),
             TextureHandle = texture.GetViewHandle(),
-            SamplerHandle = sampler.GetViewHandle()
+            SamplerHandle = sampler.GetSamplerHandle()
         };
 
         Span<Vertex> vertices = [
@@ -784,7 +784,7 @@ public unsafe class GorgonTextureBlitter
         FullScreenRenderData data = new()
         {
             TextureHandle = texture.GetViewHandle(),
-            SamplerHandle = sampler.GetViewHandle(),
+            SamplerHandle = sampler.GetSamplerHandle(),
             NoBlending = (blendState == GorgonBlendState.NoBlending) ? 1 : 0
         };
 
